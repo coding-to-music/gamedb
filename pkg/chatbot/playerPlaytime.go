@@ -6,7 +6,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	. "go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type CommandPlayerPlaytime struct {
@@ -20,7 +20,7 @@ func (c CommandPlayerPlaytime) Output(input string) (message discordgo.MessageSe
 
 	matches := c.Regex().FindStringSubmatch(input)
 
-	player, err := mongo.SearchPlayer(matches[1], M{"_id": 1, "persona_name": 1, "play_time": 1})
+	player, err := mongo.SearchPlayer(matches[1], bson.M{"_id": 1, "persona_name": 1, "play_time": 1})
 	if err != nil {
 		return message, err
 	}

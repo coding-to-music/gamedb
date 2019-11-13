@@ -8,7 +8,7 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	. "go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 var ErrInvalidGroupID = errors.New("invalid group id")
@@ -36,7 +36,7 @@ type Group struct {
 	Type          string    `bson:"type"`
 }
 
-func (group Group) BSON() D {
+func (group Group) BSON() bson.D {
 
 	if group.CreatedAt.IsZero() {
 		group.CreatedAt = time.Now()
@@ -44,7 +44,7 @@ func (group Group) BSON() D {
 
 	group.UpdatedAt = time.Now()
 
-	return D{
+	return bson.D{
 		{"_id", group.ID64},
 		{"id", group.ID},
 		{"created_at", group.CreatedAt},
@@ -108,11 +108,17 @@ func GetGroup(id string) (group Group, err error) {
 	}
 
 	if len(id) == 18 {
-		err = FindOne(CollectionGroups, D{{"_id", id}}, nil, nil, &group)
+		err = FindOne(CollectionGroups, bson.D{{"_id", id}}, nil, nil, &group)
 	} else {
+
 		i, err := strconv.ParseInt(id, 10, 32)
-		if err == nil {
-			err = FindOne(CollectionGroups, D{{"id", i}}, nil, nil, &group)
+		if err != nil {
+			return group, err
+		}
+
+		err = FindOne(CollectionGroups, bson.D{{"id", i}}, nil, nil, &group)
+		if err != nil {
+			return group, err
 		}
 	}
 
@@ -123,7 +129,7 @@ func GetGroup(id string) (group Group, err error) {
 	return group, err
 }
 
-func GetGroupsByID(ids []string, projection M) (groups []Group, err error) {
+func GetGroupsByID(ids []string, projection bson.M) (groups []Group, err error) {
 
 	if len(ids) < 1 {
 		return groups, nil
@@ -140,8 +146,8 @@ func GetGroupsByID(ids []string, projection M) (groups []Group, err error) {
 
 			defer wg.Done()
 
-			var id64sBSON A
-			var idsBSON A
+			var id64sBSON bson.A
+			var idsBSON bson.A
 
 			for _, groupID := range chunk {
 				if len(groupID) == 18 {
@@ -153,17 +159,17 @@ func GetGroupsByID(ids []string, projection M) (groups []Group, err error) {
 				}
 			}
 
-			var or = A{}
+			var or = bson.A{}
 
 			if len(id64sBSON) > 0 {
-				or = append(or, M{"_id": M{"$in": id64sBSON}})
+				or = append(or, bson.M{"_id": bson.M{"$in": id64sBSON}})
 			}
 
 			if len(idsBSON) > 0 {
-				or = append(or, M{"id": M{"$in": idsBSON}})
+				or = append(or, bson.M{"id": bson.M{"$in": idsBSON}})
 			}
 
-			resp, err := getGroups(0, 0, nil, D{{"$or", or}}, projection)
+			resp, err := getGroups(0, 0, nil, bson.D{{"$or", or}}, projection)
 			if err != nil {
 				log.Err(err)
 				return
@@ -179,12 +185,12 @@ func GetGroupsByID(ids []string, projection M) (groups []Group, err error) {
 	return groups, err
 }
 
-func GetGroups(limit int64, offset int64, sort D, filter D, projection M) (groups []Group, err error) {
+func GetGroups(limit int64, offset int64, sort bson.D, filter bson.D, projection bson.M) (groups []Group, err error) {
 
 	return getGroups(offset, limit, sort, filter, projection)
 }
 
-func getGroups(offset int64, limit int64, sort D, filter D, projection M) (groups []Group, err error) {
+func getGroups(offset int64, limit int64, sort bson.D, filter bson.D, projection bson.M) (groups []Group, err error) {
 
 	cur, ctx, err := Find(CollectionGroups, offset, limit, sort, filter, projection, nil)
 	if err != nil {

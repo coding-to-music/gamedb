@@ -7,7 +7,7 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	. "go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -24,8 +24,8 @@ type PlayerFriend struct {
 	Relationship string    `bson:"relationship"`
 }
 
-func (f PlayerFriend) BSON() D {
-	return D{
+func (f PlayerFriend) BSON() bson.D {
+	return bson.D{
 		{"_id", f.getKey()},
 		{"player_id", f.PlayerID},
 		{"friend_id", f.FriendID},
@@ -75,7 +75,7 @@ func (f PlayerFriend) GetLevel() string {
 
 func CountFriends(playerID int64) (count int64, err error) {
 
-	return CountDocuments(CollectionPlayerFriends, D{{"player_id", playerID}}, 0)
+	return CountDocuments(CollectionPlayerFriends, bson.D{{"player_id", playerID}}, 0)
 }
 
 func DeleteFriends(playerID int64, friends []int64) (err error) {
@@ -89,7 +89,7 @@ func DeleteFriends(playerID int64, friends []int64) (err error) {
 		return err
 	}
 
-	keys := A{}
+	keys := bson.A{}
 	for _, friendID := range friends {
 
 		friend := PlayerFriend{}
@@ -100,7 +100,7 @@ func DeleteFriends(playerID int64, friends []int64) (err error) {
 	}
 
 	collection := client.Database(MongoDatabase).Collection(CollectionPlayerFriends.String())
-	_, err = collection.DeleteMany(ctx, M{"_id": M{"$in": keys}})
+	_, err = collection.DeleteMany(ctx, bson.M{"_id": bson.M{"$in": keys}})
 	return err
 }
 
@@ -119,7 +119,7 @@ func UpdateFriends(friends []*PlayerFriend) (err error) {
 	for _, friend := range friends {
 
 		write := mongo.NewReplaceOneModel()
-		write.SetFilter(M{"_id": friend.getKey()})
+		write.SetFilter(bson.M{"_id": friend.getKey()})
 		write.SetReplacement(friend.BSON())
 		write.SetUpsert(true)
 
@@ -131,9 +131,9 @@ func UpdateFriends(friends []*PlayerFriend) (err error) {
 	return err
 }
 
-func GetFriends(playerID int64, offset int64, limit int64, sort D) (friends []PlayerFriend, err error) {
+func GetFriends(playerID int64, offset int64, limit int64, sort bson.D) (friends []PlayerFriend, err error) {
 
-	var filter = D{{"player_id", playerID}}
+	var filter = bson.D{{"player_id", playerID}}
 
 	cur, ctx, err := Find(CollectionPlayerFriends, offset, limit, sort, filter, nil, nil)
 	if err != nil {

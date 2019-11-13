@@ -27,7 +27,7 @@ import (
 	influx "github.com/influxdata/influxdb1-client"
 	"github.com/nicklaw5/helix"
 	"github.com/streadway/amqp"
-	. "go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type appMessage struct {
@@ -376,7 +376,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 	if app.GroupID != "" {
 		err = ProduceGroup([]string{app.GroupID}, message.Force)
-		log.Err()
+		log.Err(err)
 	}
 
 	//
@@ -1001,7 +1001,7 @@ func updateAppReviews(app *sql.App) error {
 	}
 
 	// Get players
-	players, err := mongo.GetPlayersByID(playersSlice, M{"_id": 1, "persona_name": 1})
+	players, err := mongo.GetPlayersByID(playersSlice, bson.M{"_id": 1, "persona_name": 1})
 	if err != nil {
 		return err
 	}
@@ -1263,14 +1263,14 @@ func scrapeApp(app *sql.App) (sales []mongo.Sale, err error) {
 				var t time.Time
 				var timeSet bool
 
-				if timeSet == false {
+				if !timeSet {
 					t, err = time.Parse("2 January", dateString)
 					if err == nil {
 						timeSet = true
 					}
 				}
 
-				if timeSet == false {
+				if !timeSet {
 					t, err = time.Parse("January 2", dateString)
 					if err == nil {
 						timeSet = true
@@ -1464,7 +1464,7 @@ func updateAppTwitch(app *sql.App) error {
 
 func getCurrentAppItems(appID int) (items []int, err error) {
 
-	resp, err := mongo.GetAppItems(0, 0, D{{"app_id", appID}}, M{"item_def_id": 1})
+	resp, err := mongo.GetAppItems(0, 0, bson.D{{"app_id", appID}}, bson.M{"item_def_id": 1})
 	for _, v := range resp {
 		items = append(items, v.ItemDefID)
 	}
@@ -1622,6 +1622,9 @@ func saveAppItems(appID int, newItems []steam.ItemDefArchive, currentItemIDs []i
 		}
 	}
 	err = mongo.UpdateAppItems(newDocuments)
+	if err != nil {
+		return err
+	}
 
 	// Find removed items
 	var oldDocumentIDs []int
@@ -1631,7 +1634,6 @@ func saveAppItems(appID int, newItems []steam.ItemDefArchive, currentItemIDs []i
 			oldDocumentIDs = append(oldDocumentIDs, v)
 		}
 	}
-	err = mongo.DeleteAppItems(appID, oldDocumentIDs)
 
-	return nil
+	return mongo.DeleteAppItems(appID, oldDocumentIDs)
 }

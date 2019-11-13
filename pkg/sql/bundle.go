@@ -137,7 +137,7 @@ func GetBundle(id int, columns []string) (bundle Bundle, err error) {
 		return bundle, db.Error
 	}
 
-	if columns != nil && len(columns) > 0 {
+	if len(columns) > 0 {
 		db = db.Select(columns)
 		if db.Error != nil {
 			return bundle, db.Error

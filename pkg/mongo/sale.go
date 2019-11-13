@@ -9,7 +9,7 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	. "go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -37,9 +37,9 @@ type Sale struct {
 	SaleName        string                  `bson:"offer_name"`
 }
 
-func (offer Sale) BSON() D {
+func (offer Sale) BSON() bson.D {
 
-	return D{
+	return bson.D{
 		{"_id", offer.GetKey()},
 		{"sub_id", offer.SubID},
 		{"sub_order", offer.SubOrder},
@@ -128,7 +128,7 @@ func (offer Sale) IsLowest(code steam.ProductCC) int {
 }
 
 func GetAppSales(appID int) (offers []Sale, err error) {
-	return getSales(0, 0, D{{"app_id", appID}}, D{{"offer_end", 1}}, M{"sub_id": 1, "offer_start": 1})
+	return getSales(0, 0, bson.D{{"app_id", appID}}, bson.D{{"offer_end", 1}}, bson.M{"sub_id": 1, "offer_start": 1})
 }
 
 func CountSales() (count int64, err error) {
@@ -137,7 +137,7 @@ func CountSales() (count int64, err error) {
 
 	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
 
-		return CountDocuments(CollectionAppSales, D{{"offer_end", M{"$gt": time.Now()}}}, 0)
+		return CountDocuments(CollectionAppSales, bson.D{{"offer_end", bson.M{"$gt": time.Now()}}}, 0)
 	})
 
 	return count, err
@@ -145,18 +145,18 @@ func CountSales() (count int64, err error) {
 
 func GetHighestSaleOrder() (int, error) {
 
-	sales, err := getSales(0, 1, D{{"offer_end", M{"$gt": time.Now()}}}, D{{"sub_order", -1}}, M{"sub_order": 1})
+	sales, err := getSales(0, 1, bson.D{{"offer_end", bson.M{"$gt": time.Now()}}}, bson.D{{"sub_order", -1}}, bson.M{"sub_order": 1})
 	if err != nil {
 		return 0, err
 	}
 	return sales[0].SubOrder, nil
 }
 
-func GetAllSales(offset int64, limit int64, filter D, sort D) (offers []Sale, err error) {
+func GetAllSales(offset int64, limit int64, filter bson.D, sort bson.D) (offers []Sale, err error) {
 	return getSales(offset, limit, filter, sort, nil)
 }
 
-func getSales(offset int64, limit int64, filter D, sort D, projection M) (offers []Sale, err error) {
+func getSales(offset int64, limit int64, filter bson.D, sort bson.D, projection bson.M) (offers []Sale, err error) {
 
 	cur, ctx, err := Find(CollectionAppSales, offset, limit, sort, filter, projection, nil)
 	if err != nil {
@@ -196,7 +196,7 @@ func UpdateSales(offers []Sale) (err error) {
 	for _, offer := range offers {
 
 		write := mongo.NewReplaceOneModel()
-		write.SetFilter(M{"_id": offer.GetKey()})
+		write.SetFilter(bson.M{"_id": offer.GetKey()})
 		write.SetReplacement(offer.BSON())
 		write.SetUpsert(true)
 
@@ -221,7 +221,7 @@ func GetUniqueSaleTypes() (types []string, err error) {
 
 		c := client.Database(MongoDatabase, options.Database()).Collection(CollectionAppSales.String())
 
-		resp, err := c.Distinct(ctx, "offer_type", M{"offer_end": M{"$gt": time.Now()}}, options.Distinct())
+		resp, err := c.Distinct(ctx, "offer_type", bson.M{"offer_end": bson.M{"$gt": time.Now()}}, options.Distinct())
 		if err != nil {
 			return types, err
 		}

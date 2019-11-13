@@ -4,7 +4,7 @@ import (
 	"strconv"
 
 	"github.com/gamedb/gamedb/pkg/log"
-	. "go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -19,9 +19,9 @@ type PackageApp struct {
 	AppDLCCount  int      `bson:"app_dlc_count"`
 }
 
-func (app PackageApp) BSON() D {
+func (app PackageApp) BSON() bson.D {
 
-	return D{
+	return bson.D{
 		{"_id", app.getKey()},
 		{"package_id", app.PackageID},
 		{"app_id", app.AppID},
@@ -52,7 +52,7 @@ func UpdatePackageApps(apps []PackageApp) (err error) {
 	for _, app := range apps {
 
 		write := mongo.NewReplaceOneModel()
-		write.SetFilter(M{"_id": app.getKey()})
+		write.SetFilter(bson.M{"_id": app.getKey()})
 		write.SetReplacement(app.BSON())
 		write.SetUpsert(true)
 
@@ -75,7 +75,7 @@ func DeletePackageApps(packageID int, appIDs []int) (err error) {
 		return err
 	}
 
-	keys := A{}
+	keys := bson.A{}
 	for _, appID := range appIDs {
 
 		player := PackageApp{}
@@ -86,13 +86,13 @@ func DeletePackageApps(packageID int, appIDs []int) (err error) {
 	}
 
 	collection := client.Database(MongoDatabase).Collection(CollectionPackageApps.String())
-	_, err = collection.DeleteMany(ctx, M{"_id": M{"$in": keys}})
+	_, err = collection.DeleteMany(ctx, bson.M{"_id": bson.M{"$in": keys}})
 	return err
 }
 
-func GetPackageApps(packageID int, offset int64, sort D) (apps []PackageApp, err error) {
+func GetPackageApps(packageID int, offset int64, sort bson.D) (apps []PackageApp, err error) {
 
-	var filter = D{{"package_id", packageID}}
+	var filter = bson.D{{"package_id", packageID}}
 
 	cur, ctx, err := Find(CollectionPackageApps, offset, 100, sort, filter, nil, nil)
 	if err != nil {

@@ -8,7 +8,7 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	. "go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type PlayerBadgeSummary struct {
@@ -21,9 +21,9 @@ type PlayerBadgeSummary struct {
 	Badge        PlayerBadge       `bson:"-"`
 }
 
-func (pbs PlayerBadgeSummary) BSON() D {
+func (pbs PlayerBadgeSummary) BSON() bson.D {
 
-	return D{
+	return bson.D{
 		{"_id", pbs.ID},
 		{"players", pbs.PlayersCount},
 		{"max_level", pbs.MaxLevel},
@@ -115,9 +115,9 @@ func UpdateBadgeSummary(id int) (err error) {
 		// Get the top player badge
 		err = FindOne(
 			CollectionPlayerBadges,
-			D{{"app_id", 0}, {"badge_id", badge.BadgeID}},
-			D{{"badge_level", -1}, {"badge_completion_time", 1}},
-			M{"badge_level": 1, "badge_completion_time": 1},
+			bson.D{{"app_id", 0}, {"badge_id", badge.BadgeID}},
+			bson.D{{"badge_level", -1}, {"badge_completion_time", 1}},
+			bson.M{"badge_level": 1, "badge_completion_time": 1},
 			&topPlayerBadge,
 		)
 
@@ -129,9 +129,9 @@ func UpdateBadgeSummary(id int) (err error) {
 		winningBadges, err := getPlayerBadges(
 			0,
 			0,
-			D{{"app_id", 0}, {"badge_id", badge.BadgeID}, {"badge_level", topPlayerBadge.BadgeLevel}, {"badge_completion_time", topPlayerBadge.BadgeCompletionTime}},
-			D{{"badge_completion_time", -1}},
-			M{"badge_level": 1, "_id": -1, "player_id": 1, "player_name": 1},
+			bson.D{{"app_id", 0}, {"badge_id", badge.BadgeID}, {"badge_level", topPlayerBadge.BadgeLevel}, {"badge_completion_time", topPlayerBadge.BadgeCompletionTime}},
+			bson.D{{"badge_completion_time", -1}},
+			bson.M{"badge_level": 1, "_id": -1, "player_id": 1, "player_name": 1},
 		)
 
 		if err != nil {
@@ -145,7 +145,7 @@ func UpdateBadgeSummary(id int) (err error) {
 		}
 
 		// Get number of players with badge
-		summary.PlayersCount, err = CountDocuments(CollectionPlayerBadges, D{{"app_id", 0}, {"badge_id", badge.BadgeID}}, 0)
+		summary.PlayersCount, err = CountDocuments(CollectionPlayerBadges, bson.D{{"app_id", 0}, {"badge_id", badge.BadgeID}}, 0)
 		if err != nil {
 			return err
 		}
@@ -157,9 +157,9 @@ func UpdateBadgeSummary(id int) (err error) {
 		// Get the top player badge, foil=false
 		err = FindOne(
 			CollectionPlayerBadges,
-			D{{"app_id", badge.AppID}, {"badge_id", M{"$gt": 0}}, {"badge_foil", false}},
-			D{{"badge_level", -1}, {"badge_completion_time", 1}},
-			M{"badge_level": 1, "_id": -1, "player_id": 1, "player_name": 1},
+			bson.D{{"app_id", badge.AppID}, {"badge_id", bson.M{"$gt": 0}}, {"badge_foil", false}},
+			bson.D{{"badge_level", -1}, {"badge_completion_time", 1}},
+			bson.M{"badge_level": 1, "_id": -1, "player_id": 1, "player_name": 1},
 			&topPlayerBadge,
 		)
 
@@ -173,9 +173,9 @@ func UpdateBadgeSummary(id int) (err error) {
 		// Get the top player badge, foil=true
 		err = FindOne(
 			CollectionPlayerBadges,
-			D{{"app_id", badge.AppID}, {"badge_id", M{"$gt": 0}}, {"badge_foil", true}},
-			D{{"badge_level", -1}, {"badge_completion_time", 1}},
-			M{"badge_level": 1, "_id": -1, "player_id": 1, "player_name": 1},
+			bson.D{{"app_id", badge.AppID}, {"badge_id", bson.M{"$gt": 0}}, {"badge_foil", true}},
+			bson.D{{"badge_level", -1}, {"badge_completion_time", 1}},
+			bson.M{"badge_level": 1, "_id": -1, "player_id": 1, "player_name": 1},
 			&topPlayerBadge,
 		)
 
@@ -187,12 +187,12 @@ func UpdateBadgeSummary(id int) (err error) {
 		summary.MaxLevelFoil = topPlayerBadge.BadgeLevel
 
 		// Get number of players with badge
-		summary.PlayersCount, err = CountDocuments(CollectionPlayerBadges, D{{"app_id", badge.AppID}, {"badge_id", M{"$gt": 0}}}, 0)
+		summary.PlayersCount, err = CountDocuments(CollectionPlayerBadges, bson.D{{"app_id", badge.AppID}, {"badge_id", bson.M{"$gt": 0}}}, 0)
 		if err != nil {
 			return err
 		}
 	}
 
-	_, err = ReplaceOne(CollectionPlayerBadgesSummary, D{{"_id", summary.ID}}, summary)
+	_, err = ReplaceOne(CollectionPlayerBadgesSummary, bson.D{{"_id", summary.ID}}, summary)
 	return err
 }

@@ -106,6 +106,9 @@ func getTotalCommits() (total int, err error) {
 		operation := func() (err error) {
 
 			contributors, _, err := client.Repositories.ListContributorsStats(ctx, "gamedb", "gamedb")
+			if err != nil {
+				return err
+			}
 			for _, v := range contributors {
 				total += v.GetTotal()
 			}

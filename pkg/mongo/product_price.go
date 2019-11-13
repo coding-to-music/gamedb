@@ -10,7 +10,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
-	. "go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -28,9 +27,9 @@ type ProductPrice struct {
 	DifferencePercent float64            `bson:"difference_percent"`
 }
 
-func (price ProductPrice) BSON() D {
+func (price ProductPrice) BSON() bson.D {
 
-	return D{
+	return bson.D{
 		{"created_at", price.CreatedAt},
 		{"app_id", price.AppID},
 		{"package_id", price.PackageID},
@@ -102,7 +101,7 @@ func GetPricesByID(IDs []string) (prices []ProductPrice, err error) {
 		return prices, nil
 	}
 
-	var idsBSON A
+	var idsBSON bson.A
 	for _, ID := range IDs {
 
 		objectID, err := primitive.ObjectIDFromHex(ID)
@@ -112,12 +111,12 @@ func GetPricesByID(IDs []string) (prices []ProductPrice, err error) {
 		}
 	}
 
-	return getProductPrices(D{{"_id", M{"$in": idsBSON}}}, 0, 0, D{{"created_at", 1}})
+	return getProductPrices(bson.D{{"_id", bson.M{"$in": idsBSON}}}, 0, 0, bson.D{{"created_at", 1}})
 }
 
 func GetPricesForProduct(productID int, productType helpers.ProductType, cc steam.ProductCC) (prices []ProductPrice, err error) {
 
-	var filter = D{{"prod_cc", string(cc)}}
+	var filter = bson.D{{"prod_cc", string(cc)}}
 
 	if productType == helpers.ProductTypeApp {
 		filter = append(filter, bson.E{Key: "app_id", Value: productID})
@@ -127,15 +126,15 @@ func GetPricesForProduct(productID int, productType helpers.ProductType, cc stea
 		return prices, errors.New("invalid product type")
 	}
 
-	return getProductPrices(filter, 0, 0, D{{"created_at", 1}})
+	return getProductPrices(filter, 0, 0, bson.D{{"created_at", 1}})
 }
 
-func GetPrices(offset int64, limit int64, filter D) (prices []ProductPrice, err error) {
+func GetPrices(offset int64, limit int64, filter bson.D) (prices []ProductPrice, err error) {
 
-	return getProductPrices(filter, offset, limit, D{{"created_at", -1}})
+	return getProductPrices(filter, offset, limit, bson.D{{"created_at", -1}})
 }
 
-func getProductPrices(filter D, offset int64, limit int64, sort D) (prices []ProductPrice, err error) {
+func getProductPrices(filter bson.D, offset int64, limit int64, sort bson.D) (prices []ProductPrice, err error) {
 
 	cur, ctx, err := Find(CollectionProductPrices, offset, limit, sort, filter, nil, nil)
 	if err != nil {

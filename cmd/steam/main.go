@@ -10,7 +10,7 @@ import (
 	"github.com/Philipp15b/go-steam"
 	"github.com/Philipp15b/go-steam/protocol"
 	"github.com/Philipp15b/go-steam/protocol/protobuf"
-	. "github.com/Philipp15b/go-steam/protocol/steamlang"
+	"github.com/Philipp15b/go-steam/protocol/steamlang"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -147,7 +147,7 @@ func checkForChanges() {
 			}
 
 			var t = true
-			steamClient.Write(protocol.NewClientMsgProtobuf(EMsg_ClientPICSChangesSinceRequest, &protobuf.CMsgClientPICSChangesSinceRequest{
+			steamClient.Write(protocol.NewClientMsgProtobuf(steamlang.EMsg_ClientPICSChangesSinceRequest, &protobuf.CMsgClientPICSChangesSinceRequest{
 				SendAppInfoChanges:     &t,
 				SendPackageInfoChanges: &t,
 				SinceChangeNumber:      &steamChangeNumber,
@@ -164,13 +164,13 @@ type packetHandler struct {
 func (ph packetHandler) HandlePacket(packet *protocol.Packet) {
 
 	switch packet.EMsg {
-	case EMsg_ClientPICSProductInfoResponse:
+	case steamlang.EMsg_ClientPICSProductInfoResponse:
 		ph.handleProductInfo(packet)
-	case EMsg_ClientPICSChangesSinceResponse:
+	case steamlang.EMsg_ClientPICSChangesSinceResponse:
 		ph.handleChangesSince(packet)
-	case EMsg_ClientFriendProfileInfoResponse:
+	case steamlang.EMsg_ClientFriendProfileInfoResponse:
 		ph.handleProfileInfo(packet)
-	case EMsg_ClientMarketingMessageUpdate2:
+	case steamlang.EMsg_ClientMarketingMessageUpdate2:
 		log.Debug(packet.String())
 	default:
 		// log.Info(packet.String())
@@ -183,11 +183,7 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 	packet.ReadProtoMsg(&body)
 
 	apps := body.GetApps()
-	packages := body.GetPackages()
-	unknownApps := body.GetUnknownAppids()
-	unknownPackages := body.GetUnknownPackageids()
-
-	if apps != nil {
+	if len(apps) > 0 {
 		for _, app := range apps {
 
 			m := map[string]interface{}{}
@@ -210,7 +206,8 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 		}
 	}
 
-	if packages != nil {
+	packages := body.GetPackages()
+	if len(packages) > 0 {
 		for _, pack := range packages {
 
 			m := map[string]interface{}{}
@@ -236,7 +233,8 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 		}
 	}
 
-	if unknownApps != nil {
+	unknownApps := body.GetUnknownAppids()
+	if len(unknownApps) > 0 {
 		for _, app := range unknownApps {
 
 			var id = int(app)
@@ -248,7 +246,8 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 		}
 	}
 
-	if unknownPackages != nil {
+	unknownPackages := body.GetUnknownPackageids()
+	if len(unknownPackages) > 0 {
 		for _, pack := range unknownPackages {
 
 			var id = int(pack)
@@ -277,7 +276,7 @@ func (ph packetHandler) handleChangesSince(packet *protocol.Packet) {
 	packet.ReadProtoMsg(&body)
 
 	appChanges := body.GetAppChanges()
-	if appChanges != nil && len(appChanges) > 0 {
+	if len(appChanges) > 0 {
 		log.Info(strconv.Itoa(len(appChanges)) + " apps in change " + strconv.FormatUint(uint64(steamChangeNumber), 10))
 		for _, appChange := range appChanges {
 
@@ -291,7 +290,7 @@ func (ph packetHandler) handleChangesSince(packet *protocol.Packet) {
 	}
 
 	packageChanges := body.GetPackageChanges()
-	if packageChanges != nil && len(packageChanges) > 0 {
+	if len(packageChanges) > 0 {
 		log.Info(strconv.Itoa(len(packageChanges)) + " packages in change " + strconv.FormatUint(uint64(steamChangeNumber), 10))
 		for _, packageChange := range packageChanges {
 
@@ -303,7 +302,7 @@ func (ph packetHandler) handleChangesSince(packet *protocol.Packet) {
 		}
 	}
 
-	steamClient.Write(protocol.NewClientMsgProtobuf(EMsg_ClientPICSProductInfoRequest, &protobuf.CMsgClientPICSProductInfoRequest{
+	steamClient.Write(protocol.NewClientMsgProtobuf(steamlang.EMsg_ClientPICSProductInfoRequest, &protobuf.CMsgClientPICSProductInfoRequest{
 		Apps:         apps,
 		Packages:     packages,
 		MetaDataOnly: &false,

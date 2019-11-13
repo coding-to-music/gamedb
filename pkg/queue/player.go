@@ -17,7 +17,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/websockets"
 	influx "github.com/influxdata/influxdb1-client"
 	"github.com/streadway/amqp"
-	. "go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type playerMessage struct {
@@ -595,7 +595,7 @@ func updatePlayerFriends(player *mongo.Player) error {
 	}
 
 	// Fill in missing map the map
-	friendRows, err := mongo.GetPlayersByID(friendIDsToAdd, M{
+	friendRows, err := mongo.GetPlayersByID(friendIDsToAdd, bson.M{
 		"_id":             1,
 		"avatar":          1,
 		"games_count":     1,
@@ -705,6 +705,9 @@ func updatePlayerGroups(player *mongo.Player, force bool) error {
 	player.GroupsCount = len(resp.GetIDs())
 
 	newGroupsSlice, err := mongo.GetGroupsByID(resp.GetIDs(), nil)
+	if err != nil {
+		return err
+	}
 
 	var newGroupsMap = map[string]mongo.Group{}
 	for _, v := range newGroupsSlice {
@@ -873,7 +876,7 @@ func updatePlayerComments(player *mongo.Player) error {
 
 func savePlayerMongo(player mongo.Player) error {
 
-	_, err := mongo.ReplaceOne(mongo.CollectionPlayers, D{{"_id", player.ID}}, player)
+	_, err := mongo.ReplaceOne(mongo.CollectionPlayers, bson.D{{"_id", player.ID}}, player)
 	return err
 }
 

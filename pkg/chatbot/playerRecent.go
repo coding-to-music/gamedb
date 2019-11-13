@@ -7,7 +7,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	. "go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type CommandPlayerRecent struct {
@@ -26,7 +26,7 @@ func (c CommandPlayerRecent) Output(input string) (message discordgo.MessageSend
 		return message, err
 	}
 
-	recent, err := mongo.GetRecentApps(player.ID, 0, 10, D{{"playtime_2_weeks", -1}})
+	recent, err := mongo.GetRecentApps(player.ID, 0, 10, bson.D{{"playtime_2_weeks", -1}})
 	if err != nil {
 		return message, err
 	}

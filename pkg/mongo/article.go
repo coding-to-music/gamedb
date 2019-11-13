@@ -7,7 +7,7 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	. "go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type Article struct {
@@ -26,9 +26,9 @@ type Article struct {
 	AppIcon    string    `bson:"app_icon"`
 }
 
-func (article Article) BSON() D {
+func (article Article) BSON() bson.D {
 
-	return D{
+	return bson.D{
 		{"_id", article.ID},
 		{"title", article.Title},
 		{"url", article.URL},
@@ -95,17 +95,17 @@ func GetArticlesByApps(appIDs []int, limit int64, afterDate time.Time) (news []A
 		return news, nil
 	}
 
-	appsFilter := A{}
+	appsFilter := bson.A{}
 	for _, v := range appIDs {
 		appsFilter = append(appsFilter, v)
 	}
 
-	filter := D{
-		{"app_id", M{"$in": appsFilter}},
+	filter := bson.D{
+		{"app_id", bson.M{"$in": appsFilter}},
 	}
 
 	if !afterDate.IsZero() {
-		filter = append(filter, E{Key: "date", Value: M{"$gte": afterDate}})
+		filter = append(filter, bson.E{Key: "date", Value: bson.M{"$gte": afterDate}})
 	}
 
 	return getArticles(0, limit, filter)
@@ -113,7 +113,7 @@ func GetArticlesByApps(appIDs []int, limit int64, afterDate time.Time) (news []A
 
 func GetArticlesByApp(appID int, offset int64) (news []Article, err error) {
 
-	return getArticles(offset, 100, D{{"app_id", appID}})
+	return getArticles(offset, 100, bson.D{{"app_id", appID}})
 }
 
 func GetArticles(offset int64) (news []Article, err error) {
@@ -121,9 +121,9 @@ func GetArticles(offset int64) (news []Article, err error) {
 	return getArticles(offset, 100, nil)
 }
 
-func getArticles(offset int64, limit int64, filter D) (news []Article, err error) {
+func getArticles(offset int64, limit int64, filter bson.D) (news []Article, err error) {
 
-	var sort = D{{"date", -1}}
+	var sort = bson.D{{"date", -1}}
 
 	cur, ctx, err := Find(CollectionAppArticles, offset, limit, sort, filter, nil, nil)
 	if err != nil {

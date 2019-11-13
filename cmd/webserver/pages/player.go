@@ -17,7 +17,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
 	"github.com/justinas/nosurf"
-	. "go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func PlayerRouter() http.Handler {
@@ -315,13 +315,15 @@ func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
 	var friendIDsMap = map[int64]bool{}
 
 	friends, err := mongo.GetFriends(idx, 0, 0, nil)
+	log.Err(err)
 	for _, v := range friends {
 		friendIDs = append(friendIDs, v.FriendID)
 		friendIDsMap[v.FriendID] = true
 	}
 
 	// Remove players we already have
-	players, err := mongo.GetPlayersByID(friendIDs, M{"_id": 1})
+	players, err := mongo.GetPlayersByID(friendIDs, bson.M{"_id": 1})
+	log.Err(err)
 	for _, v := range players {
 		delete(friendIDsMap, v.ID)
 	}
@@ -608,7 +610,7 @@ func playerBadgesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Make filter
-	var filter = D{{"app_id", M{"$gt": 0}}, {"player_id", idx}}
+	var filter = bson.D{{"app_id", bson.M{"$gt": 0}}, {"player_id", idx}}
 
 	//
 	var wg sync.WaitGroup
@@ -850,19 +852,19 @@ func playerGroupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	message, err, success := func(r *http.Request) (string, error, bool) {
+	message, success, err := func(r *http.Request) (string, bool, error) {
 
 		if !nosurf.VerifyToken(nosurf.Token(r), r.URL.Query().Get("csrf")) || r.URL.Query().Get("csrf") == "" {
-			return "Invalid CSRF token, please refresh", nil, false
+			return "Invalid CSRF token, please refresh", false, nil
 		}
 
 		idx, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 		if err != nil {
-			return "Invalid Player ID", err, false
+			return "Invalid Player ID", false, err
 		}
 
 		if !helpers.IsValidPlayerID(idx) {
-			return "Invalid Player ID", err, false
+			return "Invalid Player ID", false, err
 		}
 
 		var message string
@@ -874,7 +876,7 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			message = "Looking for new player!"
 		} else {
 			log.Err(err, r)
-			return "Error looking for player", err, false
+			return "Error looking for player", false, err
 		}
 
 		updateType := mongo.PlayerUpdateManual
@@ -884,18 +886,18 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if !player.NeedsUpdate(updateType) {
-			return "Player can't be updated yet", nil, false
+			return "Player can't be updated yet", false, nil
 		}
 
 		err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: []int64{player.ID}}, false)
 		if err == queue.ErrInQueue {
-			return "Player already queued", err, false
+			return "Player already queued", false, err
 		} else if err != nil {
 			log.Err(err, r)
-			return "Something has gone wrong", err, false
+			return "Something has gone wrong", false, err
 		}
 
-		return message, err, true
+		return message, true, err
 	}(r)
 
 	var response = PlayersUpdateResponse{

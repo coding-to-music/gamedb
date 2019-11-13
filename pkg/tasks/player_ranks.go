@@ -8,7 +8,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"go.mongodb.org/mongo-driver/bson"
-	. "go.mongodb.org/mongo-driver/bson"
 	mongodb "go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -33,7 +32,7 @@ func (c PlayerRanks) work() {
 	// err2 := mongo.UpdateManyUnset(mongo.CollectionPlayers, M{"ranks": 1})
 	// log.Info(err2)
 
-	var ranks = map[int64]M{}
+	var ranks = map[int64]bson.M{}
 	var fields = []rankTask{
 		{"level", mongo.RankKeyLevel},
 		{"games_count", mongo.RankKeyGames},
@@ -61,12 +60,12 @@ func (c PlayerRanks) work() {
 
 		for _, field := range fields {
 
-			filter := D{{field.readCol, M{"$exists": true, "$gt": 0}}}
+			filter := bson.D{{field.readCol, bson.M{"$exists": true, "$gt": 0}}}
 			if cc != mongo.RankCountryAll {
 				filter = append(filter, bson.E{Key: "country_code", Value: cc})
 			}
 
-			players, err := mongo.GetPlayers(0, 0, D{{field.readCol, -1}}, filter, M{"_id": 1})
+			players, err := mongo.GetPlayers(0, 0, bson.D{{field.readCol, -1}}, filter, bson.M{"_id": 1})
 			if err != nil {
 				log.Err(err)
 				continue
@@ -77,7 +76,7 @@ func (c PlayerRanks) work() {
 				key := strconv.Itoa(int(field.writeCol)) + "_" + cc
 
 				if _, ok := ranks[v.ID]; !ok {
-					ranks[v.ID] = M{}
+					ranks[v.ID] = bson.M{}
 				}
 
 				ranks[v.ID][key] = playerK + 1
@@ -104,9 +103,9 @@ func (c PlayerRanks) work() {
 
 			for _, field := range fields {
 
-				filter := D{{"country_code", cc}, {"status_code", stateCode}, {field.readCol, M{"$exists": true, "$gt": 0}}}
+				filter := bson.D{{"country_code", cc}, {"status_code", stateCode}, {field.readCol, bson.M{"$exists": true, "$gt": 0}}}
 
-				players, err := mongo.GetPlayers(0, 0, D{{field.readCol, -1}}, filter, M{"_id": 1})
+				players, err := mongo.GetPlayers(0, 0, bson.D{{field.readCol, -1}}, filter, bson.M{"_id": 1})
 				if err != nil {
 					log.Err(err)
 					continue
@@ -117,7 +116,7 @@ func (c PlayerRanks) work() {
 					key := strconv.Itoa(int(field.writeCol)) + "_s-" + stateCode.Key
 
 					if _, ok := ranks[v.ID]; !ok {
-						ranks[v.ID] = M{}
+						ranks[v.ID] = bson.M{}
 					}
 
 					ranks[v.ID][key] = playerK + 1
@@ -135,8 +134,8 @@ func (c PlayerRanks) work() {
 	for playerID, m := range ranks {
 
 		write := mongodb.NewUpdateOneModel()
-		write.SetFilter(M{"_id": playerID})
-		write.SetUpdate(M{"$set": M{"ranks": m}})
+		write.SetFilter(bson.M{"_id": playerID})
+		write.SetUpdate(bson.M{"$set": bson.M{"ranks": m}})
 		write.SetUpsert(false)
 
 		writes = append(writes, write)

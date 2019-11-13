@@ -17,7 +17,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
 	"github.com/microcosm-cc/bluemonday"
-	. "go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func HomeRouter() http.Handler {
@@ -127,10 +127,10 @@ type homeSpotlight struct {
 
 func homePricesHandler(w http.ResponseWriter, r *http.Request) {
 
-	var filter = D{
+	var filter = bson.D{
 		{"prod_cc", string(helpers.GetProductCC(r))},
-		{"app_id", M{"$gt": 0}},
-		{"difference", M{"$lt": 0}},
+		{"app_id", bson.M{"$gt": 0}},
+		{"difference", bson.M{"$lt": 0}},
 	}
 
 	priceChanges, err := mongo.GetPrices(0, 15, filter)
@@ -184,13 +184,13 @@ func homeSalesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	filter := D{
+	filter := bson.D{
 		{"app_type", "game"},
 		{"sub_order", 0},
-		{"offer_end", M{"$gt": time.Now()}},
+		{"offer_end", bson.M{"$gt": time.Now()}},
 	}
 
-	sales, err := mongo.GetAllSales(0, 15, filter, D{{sort, order}})
+	sales, err := mongo.GetAllSales(0, 15, filter, bson.D{{sort, order}})
 	if err != nil {
 		log.Err(err)
 	}
@@ -303,14 +303,14 @@ func getPlayersForHome(sort string) (players []mongo.Player, err error) {
 
 	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &players, func() (interface{}, error) {
 
-		projection := M{
+		projection := bson.M{
 			"_id":          1,
 			"persona_name": 1,
 			"avatar":       1,
 			sort:           1,
 		}
 
-		return mongo.GetPlayers(0, 15, D{{sort, -1}}, D{{sort, M{"$gt": 0}}}, projection)
+		return mongo.GetPlayers(0, 15, bson.D{{sort, -1}}, bson.D{{sort, bson.M{"$gt": 0}}}, projection)
 	})
 
 	return players, err

@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
-	. "go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 var ErrInvalidAppID = errors.New("invalid app id")
@@ -17,9 +17,9 @@ type App struct {
 	PlaytimeAverage               float64 `bson:"playtime_average"` // Minutes
 }
 
-func (a App) BSON() (ret D) {
+func (a App) BSON() (ret bson.D) {
 
-	return D{
+	return bson.D{
 		{"_id", a.ID},
 		{"achievements_total", a.AchievementsCount},
 		{"achievements_average_completion", a.AchievementsAverageCompletion},
@@ -30,7 +30,7 @@ func (a App) BSON() (ret D) {
 
 func (a App) Save() (err error) {
 
-	_, err = ReplaceOne(CollectionApps, D{{"_id", a.ID}}, a)
+	_, err = ReplaceOne(CollectionApps, bson.D{{"_id", a.ID}}, a)
 	return err
 }
 
@@ -40,7 +40,7 @@ func GetApp(id int) (app App, err error) {
 		return app, ErrInvalidAppID
 	}
 
-	err = FindOne(CollectionApps, D{{"_id", id}}, nil, nil, &app)
+	err = FindOne(CollectionApps, bson.D{{"_id", id}}, nil, nil, &app)
 	if err != nil {
 		return app, err
 	}

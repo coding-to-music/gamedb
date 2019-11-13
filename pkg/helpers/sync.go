@@ -10,7 +10,7 @@ import (
 func KeepAlive() {
 
 	signals := make(chan os.Signal)
-	signal.Notify(signals, syscall.SIGTERM, os.Interrupt, os.Kill)
+	signal.Notify(signals, syscall.SIGTERM, os.Interrupt)
 
 	wg := &sync.WaitGroup{} // Must be pointer
 	wg.Add(1)

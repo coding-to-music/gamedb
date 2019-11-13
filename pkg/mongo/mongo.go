@@ -10,7 +10,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	. "go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -23,7 +23,7 @@ var (
 )
 
 type Document interface {
-	BSON() D
+	BSON() bson.D
 }
 
 type collection string
@@ -117,10 +117,10 @@ func getMongo() (client *mongo.Client, ctx context.Context, err error) {
 }
 
 // Does not return error on nothing returned
-func FindOne(collection collection, filter D, sort D, projection M, document Document) (err error) {
+func FindOne(collection collection, filter bson.D, sort bson.D, projection bson.M, document Document) (err error) {
 
 	if filter == nil {
-		filter = D{}
+		filter = bson.D{}
 	}
 
 	client, ctx, err := getMongo()
@@ -165,7 +165,7 @@ func InsertOne(collection collection, document Document) (resp *mongo.InsertOneR
 }
 
 // Create or update whole document
-func ReplaceOne(collection collection, filter D, document Document) (resp *mongo.UpdateResult, err error) {
+func ReplaceOne(collection collection, filter bson.D, document Document) (resp *mongo.UpdateResult, err error) {
 
 	client, ctx, err := getMongo()
 	if err != nil {
@@ -182,7 +182,7 @@ func ReplaceOne(collection collection, filter D, document Document) (resp *mongo
 	return r, err
 }
 
-func DeleteMany(collection collection, filter D) (err error) {
+func DeleteMany(collection collection, filter bson.D) (err error) {
 
 	client, ctx, err := getMongo()
 	if err != nil {
@@ -199,7 +199,7 @@ func DeleteMany(collection collection, filter D) (err error) {
 	return err
 }
 
-func DeleteOne(collection collection, filter D) (err error) {
+func DeleteOne(collection collection, filter bson.D) (err error) {
 
 	client, ctx, err := getMongo()
 	if err != nil {
@@ -216,7 +216,7 @@ func DeleteOne(collection collection, filter D) (err error) {
 	return err
 }
 
-func UpdateManySet(collection collection, filter D, update D) (result *mongo.UpdateResult, err error) {
+func UpdateManySet(collection collection, filter bson.D, update bson.D) (result *mongo.UpdateResult, err error) {
 
 	client, ctx, err := getMongo()
 	if err != nil {
@@ -226,14 +226,14 @@ func UpdateManySet(collection collection, filter D, update D) (result *mongo.Upd
 	ql := helpers.QueryLogger{}
 	ql.Start("UpdateMany", collection.String(), filter, nil)
 
-	_, err = client.Database(MongoDatabase, options.Database()).Collection(collection.String()).UpdateMany(ctx, filter, M{"$set": update}, options.Update())
+	_, err = client.Database(MongoDatabase, options.Database()).Collection(collection.String()).UpdateMany(ctx, filter, bson.M{"$set": update}, options.Update())
 
 	ql.End()
 
 	return result, err
 }
 
-func UpdateManyUnset(collection collection, columns D) (err error) {
+func UpdateManyUnset(collection collection, columns bson.D) (err error) {
 
 	client, ctx, err := getMongo()
 	if err != nil {
@@ -243,7 +243,7 @@ func UpdateManyUnset(collection collection, columns D) (err error) {
 	ql := helpers.QueryLogger{}
 	ql.Start("UpdateMany", collection.String(), nil, nil)
 
-	_, err = client.Database(MongoDatabase, options.Database()).Collection(collection.String()).UpdateMany(ctx, M{}, M{"$unset": columns})
+	_, err = client.Database(MongoDatabase, options.Database()).Collection(collection.String()).UpdateMany(ctx, bson.M{}, bson.M{"$unset": columns})
 
 	ql.End()
 
@@ -287,10 +287,10 @@ func InsertMany(collection collection, documents []Document) (resp *mongo.Insert
 	return resp, err
 }
 
-func CountDocuments(collection collection, filter D, ttl int32) (count int64, err error) {
+func CountDocuments(collection collection, filter bson.D, ttl int32) (count int64, err error) {
 
 	if filter == nil {
-		filter = D{}
+		filter = bson.D{}
 	}
 
 	item := helpers.MemcacheMongoCount(mongoFilterToMemcacheKey(collection, filter))
@@ -323,10 +323,10 @@ func CountDocuments(collection collection, filter D, ttl int32) (count int64, er
 }
 
 // Need to close cursor after calling this
-func Find(collection collection, offset int64, limit int64, sort D, filter D, projection M, ops *options.FindOptions) (cur *mongo.Cursor, ctx context.Context, err error) {
+func Find(collection collection, offset int64, limit int64, sort bson.D, filter bson.D, projection bson.M, ops *options.FindOptions) (cur *mongo.Cursor, ctx context.Context, err error) {
 
 	if filter == nil {
-		filter = D{}
+		filter = bson.D{}
 	}
 
 	client, ctx, err := getMongo()
@@ -360,10 +360,10 @@ func Find(collection collection, offset int64, limit int64, sort D, filter D, pr
 	return cur, ctx, err
 }
 
-func mongoFilterToMemcacheKey(collection collection, filter D) string {
+func mongoFilterToMemcacheKey(collection collection, filter bson.D) string {
 
 	if filter == nil {
-		filter = D{}
+		filter = bson.D{}
 	}
 
 	b, err := json.Marshal(filter)

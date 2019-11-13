@@ -26,7 +26,7 @@ func (ql *QueryLogger) Start(method string, collection string, filter interface{
 
 func (ql QueryLogger) End() {
 
-	diff := time.Now().Sub(ql.startTime)
+	diff := time.Since(ql.startTime)
 
 	if diff > (time.Second * 3) {
 

@@ -5,7 +5,7 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	. "go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -22,9 +22,9 @@ type PlayerGroup struct {
 	GroupURL     string `bson:"group_url"`
 }
 
-func (group PlayerGroup) BSON() D {
+func (group PlayerGroup) BSON() bson.D {
 
-	return D{
+	return bson.D{
 		{"_id", group.getKey()},
 		{"player_id", group.PlayerID},
 		{"group_id_64", group.GroupID64},
@@ -81,7 +81,7 @@ func InsertPlayerGroups(groups []PlayerGroup) (err error) {
 	for _, group := range groups {
 
 		write := mongo.NewReplaceOneModel()
-		write.SetFilter(M{"_id": group.getKey()})
+		write.SetFilter(bson.M{"_id": group.getKey()})
 		write.SetReplacement(group.BSON())
 		write.SetUpsert(true)
 
@@ -104,7 +104,7 @@ func DeletePlayerGroups(playerID int64, groupIDs []string) (err error) {
 		return err
 	}
 
-	keys := A{}
+	keys := bson.A{}
 	for _, groupID := range groupIDs {
 
 		player := PlayerGroup{}
@@ -115,13 +115,13 @@ func DeletePlayerGroups(playerID int64, groupIDs []string) (err error) {
 	}
 
 	collection := client.Database(MongoDatabase).Collection(CollectionPlayerGroups.String())
-	_, err = collection.DeleteMany(ctx, M{"_id": M{"$in": keys}})
+	_, err = collection.DeleteMany(ctx, bson.M{"_id": bson.M{"$in": keys}})
 	return err
 }
 
-func GetPlayerGroups(playerID int64, offset int64, limit int64, sort D) (groups []PlayerGroup, err error) {
+func GetPlayerGroups(playerID int64, offset int64, limit int64, sort bson.D) (groups []PlayerGroup, err error) {
 
-	var filter = D{{"player_id", playerID}}
+	var filter = bson.D{{"player_id", playerID}}
 
 	cur, ctx, err := Find(CollectionPlayerGroups, offset, limit, sort, filter, nil, nil)
 	if err != nil {

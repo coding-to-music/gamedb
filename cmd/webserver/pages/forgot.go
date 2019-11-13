@@ -213,6 +213,7 @@ func forgotResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 	if success {
 
 		err := session.SetFlash(r, helpers.SessionGood, message)
+		log.Err(err)
 
 		err = session.Save(w, r)
 		log.Err(err, r)

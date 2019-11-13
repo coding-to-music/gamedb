@@ -8,7 +8,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
-	. "go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func GroupsRouter() http.Handler {
@@ -52,27 +52,27 @@ func groupsTrendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	query.limit(r)
 
 	// Filter
-	filter := D{}
+	filter := bson.D{}
 
 	search := helpers.RegexNonAlphaNumericSpace.ReplaceAllString(query.getSearchString("search"), "")
 	if len(search) >= 2 {
-		filter = append(filter, E{Key: "$or", Value: A{
-			M{"name": M{"$regex": search, "$options": "i"}},
-			M{"abbreviation": M{"$regex": search, "$options": "i"}},
-			M{"url": M{"$regex": search, "$options": "i"}},
+		filter = append(filter, bson.E{Key: "$or", Value: bson.A{
+			bson.M{"name": bson.M{"$regex": search, "$options": "i"}},
+			bson.M{"abbreviation": bson.M{"$regex": search, "$options": "i"}},
+			bson.M{"url": bson.M{"$regex": search, "$options": "i"}},
 		}})
 	}
 
 	typ := query.getSearchString("type")
 	if typ == "group" || typ == "game" {
-		filter = append(filter, E{Key: "type", Value: typ})
+		filter = append(filter, bson.E{Key: "type", Value: typ})
 	}
 
 	showErrors := query.getSearchString("errors")
 	if showErrors == "removed" {
-		filter = append(filter, E{Key: "error", Value: M{"$exists": true, "$ne": ""}})
+		filter = append(filter, bson.E{Key: "error", Value: bson.M{"$exists": true, "$ne": ""}})
 	} else if showErrors == "notremoved" {
-		filter = append(filter, E{Key: "error", Value: M{"$exists": true, "$eq": ""}})
+		filter = append(filter, bson.E{Key: "error", Value: bson.M{"$exists": true, "$eq": ""}})
 	}
 
 	//

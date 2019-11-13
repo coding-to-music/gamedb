@@ -244,6 +244,7 @@ func adminQueues(r *http.Request) {
 
 		val = strings.TrimSpace(val)
 		count, err := strconv.Atoi(val)
+		log.Err(err)
 
 		for i := 1; i <= count; i++ {
 

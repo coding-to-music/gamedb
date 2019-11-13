@@ -23,7 +23,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/tdewolff/minify/v2"
 	minhtml "github.com/tdewolff/minify/v2/html"
-	. "go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func setHeaders(w http.ResponseWriter, r *http.Request, contentType string) {
@@ -648,7 +648,7 @@ func (q DataTablesQuery) getOrderSQL(columns map[string]string, defaultCol strin
 	return strings.Join(ret, ", ")
 }
 
-func (q DataTablesQuery) getOrderMongo(columns map[string]string, colEdit func(string) string) D {
+func (q DataTablesQuery) getOrderMongo(columns map[string]string, colEdit func(string) string) bson.D {
 
 	for _, v := range q.Order {
 
@@ -666,10 +666,10 @@ func (q DataTablesQuery) getOrderMongo(columns map[string]string, colEdit func(s
 								}
 
 								if dir == "desc" {
-									return D{{col, -1}}
+									return bson.D{{col, -1}}
 								}
 
-								return D{{col, 1}}
+								return bson.D{{col, 1}}
 							}
 						}
 					}
@@ -678,7 +678,7 @@ func (q DataTablesQuery) getOrderMongo(columns map[string]string, colEdit func(s
 		}
 	}
 
-	return D{}
+	return bson.D{}
 }
 
 func (q DataTablesQuery) getOrderString(columns map[string]string) (col string) {

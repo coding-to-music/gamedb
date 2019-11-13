@@ -6,7 +6,7 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	. "go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type Change struct {
@@ -16,22 +16,22 @@ type Change struct {
 	Packages  []int     `bson:"packages"`
 }
 
-func (change Change) BSON() D {
+func (change Change) BSON() bson.D {
 
 	// Apps
-	var apps A
+	var apps bson.A
 	for _, v := range change.Apps {
 		apps = append(apps, v)
 	}
 
 	// Packages
-	var packages A
+	var packages bson.A
 	for _, v := range change.Packages {
 		packages = append(packages, v)
 	}
 
 	// BSON
-	return D{
+	return bson.D{
 		{"_id", change.ID},
 		{"created_at", change.CreatedAt},
 		{"apps", apps},
@@ -103,7 +103,7 @@ func GetChange(id int64) (change Change, err error) {
 
 		var change Change
 
-		err = FindOne(CollectionChanges, D{{"_id", id}}, nil, nil, &change)
+		err = FindOne(CollectionChanges, bson.D{{"_id", id}}, nil, nil, &change)
 		if change.ID == 0 {
 			return change, ErrNoDocuments
 		}
@@ -116,7 +116,7 @@ func GetChange(id int64) (change Change, err error) {
 
 func GetChanges(offset int64) (changes []Change, err error) {
 
-	var sort = D{{"_id", -1}}
+	var sort = bson.D{{"_id", -1}}
 
 	cur, ctx, err := Find(CollectionChanges, offset, 100, sort, nil, nil, nil)
 	if err != nil {

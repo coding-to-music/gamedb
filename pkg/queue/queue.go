@@ -247,7 +247,7 @@ func (payload *baseMessage) ackRetry() (actionAlreadyTaken bool) {
 		log.Err(err)
 	}
 
-	leftStr, err := durationfmt.Format(payload.getNextAttempt().Sub(time.Now()), "%mm %ss")
+	leftStr, err := durationfmt.Format(time.Until(payload.getNextAttempt()), "%mm %ss")
 	if err != nil {
 		log.Err(err)
 	}

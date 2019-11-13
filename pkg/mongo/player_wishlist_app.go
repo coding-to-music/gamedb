@@ -7,7 +7,7 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	. "go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -24,9 +24,9 @@ type PlayerWishlistApp struct {
 	AppPrices          map[steam.ProductCC]int `bson:"app_prices"`
 }
 
-func (app PlayerWishlistApp) BSON() D {
+func (app PlayerWishlistApp) BSON() bson.D {
 
-	return D{
+	return bson.D{
 		{"_id", app.getKey()},
 		{"player_id", app.PlayerID},
 		{"order", app.Order},
@@ -79,7 +79,7 @@ func InsertPlayerWishlistApps(apps []PlayerWishlistApp) (err error) {
 	for _, app := range apps {
 
 		write := mongo.NewReplaceOneModel()
-		write.SetFilter(M{"_id": app.getKey()})
+		write.SetFilter(bson.M{"_id": app.getKey()})
 		write.SetReplacement(app.BSON())
 		write.SetUpsert(true)
 
@@ -102,7 +102,7 @@ func DeletePlayerWishlistApps(playerID int64, apps []int) (err error) {
 		return err
 	}
 
-	keys := A{}
+	keys := bson.A{}
 	for _, appID := range apps {
 
 		player := PlayerWishlistApp{}
@@ -113,21 +113,21 @@ func DeletePlayerWishlistApps(playerID int64, apps []int) (err error) {
 	}
 
 	collection := client.Database(MongoDatabase).Collection(CollectionPlayerWishlistApps.String())
-	_, err = collection.DeleteMany(ctx, M{"_id": M{"$in": keys}})
+	_, err = collection.DeleteMany(ctx, bson.M{"_id": bson.M{"$in": keys}})
 	return err
 }
 
 func GetPlayerWishlistAppsByApp(appID int) (apps []PlayerWishlistApp, err error) {
 
-	return getPlayerWishlistApps(0, 0, D{{"app_id", appID}}, nil, M{"order": 1})
+	return getPlayerWishlistApps(0, 0, bson.D{{"app_id", appID}}, nil, bson.M{"order": 1})
 }
 
-func GetPlayerWishlistAppsByPlayer(playerID int64, offset int64, limit int64, order D) (apps []PlayerWishlistApp, err error) {
+func GetPlayerWishlistAppsByPlayer(playerID int64, offset int64, limit int64, order bson.D) (apps []PlayerWishlistApp, err error) {
 
-	return getPlayerWishlistApps(offset, limit, D{{"player_id", playerID}}, order, nil)
+	return getPlayerWishlistApps(offset, limit, bson.D{{"player_id", playerID}}, order, nil)
 }
 
-func getPlayerWishlistApps(offset int64, limit int64, filter D, sort D, projection M) (apps []PlayerWishlistApp, err error) {
+func getPlayerWishlistApps(offset int64, limit int64, filter bson.D, sort bson.D, projection bson.M) (apps []PlayerWishlistApp, err error) {
 
 	cur, ctx, err := Find(CollectionPlayerWishlistApps, offset, limit, sort, filter, projection, nil)
 	if err != nil {

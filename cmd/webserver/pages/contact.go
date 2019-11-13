@@ -137,6 +137,7 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		err = session.SetFlash(r, helpers.SessionGood, "Message sent!")
 	}
+	log.Err(err)
 
 	err = session.Save(w, r)
 	log.Err(err)

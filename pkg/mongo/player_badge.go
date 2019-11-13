@@ -7,7 +7,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gosimple/slug"
-	. "go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -34,9 +34,9 @@ type PlayerBadge struct {
 	PlayerIcon          string    `bson:"player_icon"`
 }
 
-func (pb PlayerBadge) BSON() D {
+func (pb PlayerBadge) BSON() bson.D {
 
-	return D{
+	return bson.D{
 		{"_id", pb.getKey()},
 		{"app_id", pb.AppID},
 		{"app_name", pb.AppName},
@@ -117,7 +117,7 @@ func (pb PlayerBadge) GetPlayerIcon() string {
 
 func UpdatePlayerBadges(badges []PlayerBadge) (err error) {
 
-	if badges == nil || len(badges) == 0 {
+	if len(badges) == 0 {
 		return nil
 	}
 
@@ -130,7 +130,7 @@ func UpdatePlayerBadges(badges []PlayerBadge) (err error) {
 	for _, badge := range badges {
 
 		write := mongo.NewReplaceOneModel()
-		write.SetFilter(M{"_id": badge.getKey()})
+		write.SetFilter(bson.M{"_id": badge.getKey()})
 		write.SetReplacement(badge.BSON())
 		write.SetUpsert(true)
 
@@ -144,15 +144,15 @@ func UpdatePlayerBadges(badges []PlayerBadge) (err error) {
 	return err
 }
 
-func GetPlayerEventBadges(offset int64, filter D) (badges []PlayerBadge, err error) {
-	return getPlayerBadges(offset, 100, filter, D{{"badge_completion_time", -1}}, nil)
+func GetPlayerEventBadges(offset int64, filter bson.D) (badges []PlayerBadge, err error) {
+	return getPlayerBadges(offset, 100, filter, bson.D{{"badge_completion_time", -1}}, nil)
 }
 
-func GetBadgePlayers(offset int64, filter D) (badges []PlayerBadge, err error) {
-	return getPlayerBadges(offset, 100, filter, D{{"badge_level", -1}, {"badge_completion_time", 1}}, nil)
+func GetBadgePlayers(offset int64, filter bson.D) (badges []PlayerBadge, err error) {
+	return getPlayerBadges(offset, 100, filter, bson.D{{"badge_level", -1}, {"badge_completion_time", 1}}, nil)
 }
 
-func getPlayerBadges(offset int64, limit int64, filter D, sort D, projection M) (badges []PlayerBadge, err error) {
+func getPlayerBadges(offset int64, limit int64, filter bson.D, sort bson.D, projection bson.M) (badges []PlayerBadge, err error) {
 
 	cur, ctx, err := Find(CollectionPlayerBadges, offset, limit, sort, filter, projection, nil)
 	if err != nil {

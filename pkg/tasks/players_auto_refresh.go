@@ -7,7 +7,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
-	. "go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type AutoPlayerRefreshes struct {
@@ -53,7 +53,7 @@ func (c AutoPlayerRefreshes) work() {
 
 	var groupIDs []string
 
-	players, err := mongo.GetPlayersByID(playerIDs, M{"primary_clan_id_string": 1})
+	players, err := mongo.GetPlayersByID(playerIDs, bson.M{"primary_clan_id_string": 1})
 	for _, v := range players {
 		if v.PrimaryClanIDString != "" {
 			groupIDs = append(groupIDs, v.PrimaryClanIDString)

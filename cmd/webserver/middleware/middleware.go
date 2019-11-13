@@ -72,7 +72,6 @@ func MiddlewareAuthCheck() func(http.Handler) http.Handler {
 			log.Err(err, r)
 
 			http.Redirect(w, r, "/login", http.StatusFound)
-			return
 		})
 	}
 }

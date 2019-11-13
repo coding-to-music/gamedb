@@ -12,7 +12,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
-	. "go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func SalesRouter() http.Handler {
@@ -156,15 +156,15 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	log.Err(err, r)
 
 	var code = helpers.GetProductCC(r)
-	var filter = D{
-		{"offer_end", M{"$gt": time.Now()}},
+	var filter = bson.D{
+		{"offer_end", bson.M{"$gt": time.Now()}},
 	}
 
 	search := helpers.RegexNonAlphaNumericSpace.ReplaceAllString(query.getSearchString("search"), "")
 	if search != "" {
-		filter = append(filter, E{Key: "$or", Value: A{
-			M{"app_name": M{"$regex": search, "$options": "i"}},
-			M{"offer_name": M{"$regex": search, "$options": "i"}},
+		filter = append(filter, bson.E{Key: "$or", Value: bson.A{
+			bson.M{"app_name": bson.M{"$regex": search, "$options": "i"}},
+			bson.M{"offer_name": bson.M{"$regex": search, "$options": "i"}},
 		}})
 	}
 
@@ -173,7 +173,7 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	if index != "" {
 		orderI, err := strconv.Atoi(strings.TrimSuffix(index, ".00"))
 		if err == nil {
-			filter = append(filter, E{Key: "sub_order", Value: M{"$lte": orderI - 1}})
+			filter = append(filter, bson.E{Key: "sub_order", Value: bson.M{"$lte": orderI - 1}})
 		}
 	}
 
@@ -188,10 +188,10 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		log.Err(err, r)
 
 		if low > 0 {
-			filter = append(filter, E{Key: "app_rating", Value: M{"$gte": low}})
+			filter = append(filter, bson.E{Key: "app_rating", Value: bson.M{"$gte": low}})
 		}
 		if high < 100 {
-			filter = append(filter, E{Key: "app_rating", Value: M{"$lte": high}})
+			filter = append(filter, bson.E{Key: "app_rating", Value: bson.M{"$lte": high}})
 		}
 	}
 
@@ -206,10 +206,10 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		log.Err(err, r)
 
 		if low > 0 {
-			filter = append(filter, E{Key: "app_prices." + string(code), Value: M{"$gte": low * 100}})
+			filter = append(filter, bson.E{Key: "app_prices." + string(code), Value: bson.M{"$gte": low * 100}})
 		}
 		if high < 100 {
-			filter = append(filter, E{Key: "app_prices." + string(code), Value: M{"$lte": high * 100}})
+			filter = append(filter, bson.E{Key: "app_prices." + string(code), Value: bson.M{"$lte": high * 100}})
 		}
 	}
 
@@ -224,10 +224,10 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		log.Err(err, r)
 
 		if low > 0 {
-			filter = append(filter, E{Key: "offer_percent", Value: M{"$lte": -low}})
+			filter = append(filter, bson.E{Key: "offer_percent", Value: bson.M{"$lte": -low}})
 		}
 		if high < 100 {
-			filter = append(filter, E{Key: "offer_percent", Value: M{"$gte": -high}})
+			filter = append(filter, bson.E{Key: "offer_percent", Value: bson.M{"$gte": -high}})
 		}
 	}
 
@@ -235,75 +235,75 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	appTypes := query.getSearchSlice("app-type")
 	if len(appTypes) > 0 {
 
-		var or A
+		var or bson.A
 		for _, v := range appTypes {
-			or = append(or, M{"app_type": v})
+			or = append(or, bson.M{"app_type": v})
 		}
-		filter = append(filter, E{Key: "$or", Value: or})
+		filter = append(filter, bson.E{Key: "$or", Value: or})
 	}
 
 	// Sale type
 	saleTypes := query.getSearchSlice("sale-type")
 	if len(saleTypes) > 0 {
 
-		var or A
+		var or bson.A
 		for _, v := range saleTypes {
-			or = append(or, M{"offer_type": v})
+			or = append(or, bson.M{"offer_type": v})
 		}
-		filter = append(filter, E{Key: "$or", Value: or})
+		filter = append(filter, bson.E{Key: "$or", Value: or})
 	}
 
 	// Tag in
 	tagsIn := query.getSearchSlice("tags-in")
 	if len(tagsIn) > 0 {
 
-		var or A
+		var or bson.A
 		for _, tag := range tagsIn {
 			i, err := strconv.Atoi(tag)
 			if err == nil {
-				or = append(or, M{"app_tags": i})
+				or = append(or, bson.M{"app_tags": i})
 			}
 		}
-		filter = append(filter, E{Key: "$or", Value: or})
+		filter = append(filter, bson.E{Key: "$or", Value: or})
 	}
 
 	// Tag out
 	tagsOut := query.getSearchSlice("tags-out")
 	if len(tagsOut) > 0 {
 
-		var or A
+		var or bson.A
 		for _, tag := range tagsOut {
 			i, err := strconv.Atoi(tag)
 			if err == nil {
-				or = append(or, M{"app_tags": M{"$ne": i}})
+				or = append(or, bson.M{"app_tags": bson.M{"$ne": i}})
 			}
 		}
-		filter = append(filter, E{Key: "$or", Value: or})
+		filter = append(filter, bson.E{Key: "$or", Value: or})
 	}
 
 	// Categories
 	categories := query.getSearchSlice("categories")
 	if len(categories) > 0 {
 
-		var in A
+		var in bson.A
 		for _, tag := range categories {
 			i, err := strconv.Atoi(tag)
 			if err == nil {
 				in = append(in, i)
 			}
 		}
-		filter = append(filter, E{Key: "app_categories", Value: M{"$in": in}})
+		filter = append(filter, bson.E{Key: "app_categories", Value: bson.M{"$in": in}})
 	}
 
 	// Platforms
 	platforms := query.getSearchSlice("platforms")
 	if len(platforms) > 0 {
 
-		var in A
+		var in bson.A
 		for _, tag := range platforms {
 			in = append(in, tag)
 		}
-		filter = append(filter, E{Key: "app_platforms", Value: M{"$in": in}})
+		filter = append(filter, bson.E{Key: "app_platforms", Value: bson.M{"$in": in}})
 	}
 
 	//
@@ -326,9 +326,9 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		var order = query.getOrderMongo(columns, nil)
-		order = append(order, E{Key: "app_rating", Value: -1})
-		order = append(order, E{Key: "app_name", Value: 1})
-		order = append(order, E{Key: "sub_order", Value: 1})
+		order = append(order, bson.E{Key: "app_rating", Value: -1})
+		order = append(order, bson.E{Key: "app_name", Value: 1})
+		order = append(order, bson.E{Key: "sub_order", Value: 1})
 
 		var err error
 		offers, err = mongo.GetAllSales(query.getOffset64(), 100, filter, order)

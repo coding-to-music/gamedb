@@ -7,7 +7,7 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	. "go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -40,9 +40,9 @@ type AppItem struct {
 	WorkshopID       int64      `bson:"workshop_id"`
 }
 
-func (a AppItem) BSON() D {
+func (a AppItem) BSON() bson.D {
 
-	return D{
+	return bson.D{
 		{"_id", a.getKey()},
 		{"app_id", a.AppID},
 		{"bundle", a.Bundle},
@@ -99,9 +99,7 @@ func (a *AppItem) SetExchange(exchange string) {
 	a.Exchange = []string{}
 
 	split := strings.Split(exchange, ";")
-	for _, v := range split {
-		a.Exchange = append(a.Exchange, v)
-	}
+	a.Exchange = append(a.Exchange, split...)
 }
 
 func (a *AppItem) Link() string {
@@ -132,9 +130,9 @@ func (a *AppItem) Image(size int, crop bool) string {
 	return "https://images.weserv.nl?" + params.Encode()
 }
 
-func GetAppItems(offset int64, limit int64, filter D, projection M) (items []AppItem, err error) {
+func GetAppItems(offset int64, limit int64, filter bson.D, projection bson.M) (items []AppItem, err error) {
 
-	var sort = D{{"item_def_id", 1}}
+	var sort = bson.D{{"item_def_id", 1}}
 
 	cur, ctx, err := Find(CollectionAppItems, offset, limit, sort, filter, projection, nil)
 	if err != nil {
@@ -174,7 +172,7 @@ func UpdateAppItems(items []AppItem) (err error) {
 	for _, item := range items {
 
 		write := mongo.NewReplaceOneModel()
-		write.SetFilter(M{"_id": item.getKey()})
+		write.SetFilter(bson.M{"_id": item.getKey()})
 		write.SetReplacement(item.BSON())
 		write.SetUpsert(true)
 
@@ -197,7 +195,7 @@ func DeleteAppItems(appID int, items []int) (err error) {
 		return err
 	}
 
-	keys := A{}
+	keys := bson.A{}
 	for _, itemID := range items {
 
 		item := AppItem{}
@@ -208,7 +206,7 @@ func DeleteAppItems(appID int, items []int) (err error) {
 	}
 
 	collection := client.Database(MongoDatabase).Collection(CollectionAppItems.String())
-	_, err = collection.DeleteMany(ctx, M{"_id": M{"$in": keys}})
+	_, err = collection.DeleteMany(ctx, bson.M{"_id": bson.M{"$in": keys}})
 
 	return err
 }

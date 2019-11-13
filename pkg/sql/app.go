@@ -395,8 +395,6 @@ func (app *App) SetLocalization(localization pics.Localisation) {
 	// Snappy to save space
 	encoded := snappy.Encode(nil, b)
 	app.Localization = string(encoded)
-
-	return
 }
 
 func (app App) GetSystemRequirements() (ret []SystemRequirement, err error) {
@@ -1049,7 +1047,7 @@ func GetApp(id int, columns []string) (app App, err error) {
 		return app, err
 	}
 
-	if columns != nil && len(columns) > 0 {
+	if len(columns) > 0 {
 		db = db.Select(columns)
 		if db.Error != nil {
 			return app, db.Error

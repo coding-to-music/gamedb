@@ -3,7 +3,7 @@ package mongo
 import (
 	"time"
 
-	. "go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -19,14 +19,14 @@ type Stat struct {
 	MeanPlayers int                `bson:"mean_players"`
 }
 
-func (t Stat) BSON() D {
+func (t Stat) BSON() bson.D {
 
 	t.UpdatedAt = time.Now()
 	if t.CreatedAt.IsZero() {
 		t.CreatedAt = time.Now()
 	}
 
-	return D{
+	return bson.D{
 		{"_id", t.ID},
 		{"created_at", t.CreatedAt},
 		{"updated_at", t.UpdatedAt},
@@ -44,7 +44,7 @@ func GetStats(c collection, offset int64, limit int64) (stats []Stat) {
 
 func UpdateStats(c collection, stats []Stat) (err error) {
 
-	if stats == nil || len(stats) == 0 {
+	if len(stats) == 0 {
 		return nil
 	}
 
@@ -57,7 +57,7 @@ func UpdateStats(c collection, stats []Stat) (err error) {
 	for _, stat := range stats {
 
 		write := mongo.NewReplaceOneModel()
-		write.SetFilter(M{"_id": stat.ID})
+		write.SetFilter(bson.M{"_id": stat.ID})
 		write.SetReplacement(stat.BSON())
 		write.SetUpsert(true)
 
@@ -79,7 +79,7 @@ func FindOrCreate(c collection, name string, id int, row Stat) (foundID int, err
 
 	collection := client.Database(MongoDatabase, options.Database()).Collection(CollectionPlayerApps.String())
 
-	result := collection.FindOne(ctx, M{}, options.FindOne())
+	result := collection.FindOne(ctx, bson.M{}, options.FindOne())
 	if result.Err() != nil && err != ErrNoDocuments {
 		return 0, result.Err()
 	}

@@ -313,8 +313,6 @@ func APIEndpointHandler(callback func(api.APIRequest) (ret interface{}, err erro
 
 		err = call.SaveToInflux(true, nil)
 		log.Err(err, r)
-
-		return
 	}
 }
 

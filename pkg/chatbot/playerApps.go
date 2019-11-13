@@ -6,7 +6,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	. "go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type CommandPlayerApps struct {
@@ -20,7 +20,7 @@ func (c CommandPlayerApps) Output(input string) (message discordgo.MessageSend, 
 
 	matches := c.Regex().FindStringSubmatch(input)
 
-	player, err := mongo.SearchPlayer(matches[2], M{"_id": 1, "persona_name": 1, "games_count": 1})
+	player, err := mongo.SearchPlayer(matches[2], bson.M{"_id": 1, "persona_name": 1, "games_count": 1})
 	if err != nil {
 		return message, err
 	}

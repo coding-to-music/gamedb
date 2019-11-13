@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/log"
-	. "go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -15,9 +15,9 @@ type BundlePrice struct {
 	Discount  int       `bson:"price"`
 }
 
-func (price BundlePrice) BSON() D {
+func (price BundlePrice) BSON() bson.D {
 
-	return D{
+	return bson.D{
 		{"_id", price.getKey()},
 		{"created_at", price.CreatedAt},
 		{"bundle_id", price.BundleID},
@@ -31,8 +31,8 @@ func (price BundlePrice) getKey() string {
 
 func GetBundlePrices(bundleID int) (prices []BundlePrice, err error) {
 
-	var sort = D{{"created_at", 1}}
-	var filter = D{{"bundle_id", bundleID}}
+	var sort = bson.D{{"created_at", 1}}
+	var filter = bson.D{{"bundle_id", bundleID}}
 
 	cur, ctx, err := Find(CollectionBundlePrices, 0, 0, sort, filter, nil, nil)
 	if err != nil {

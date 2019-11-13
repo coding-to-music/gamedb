@@ -13,7 +13,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/tasks"
 	"github.com/go-chi/chi"
-	. "go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 const CAF = "C-AF"
@@ -192,7 +192,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var sortOrder = query.getOrderMongo(columns, nil)
-	var filter = D{}
+	var filter = bson.D{}
 	var isContinent bool
 
 	// Continent
@@ -200,11 +200,11 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		if v.Key == country {
 			isContinent = true
 			countriesIn := helpers.CountriesInContinent(v.Value)
-			var countriesInA A
+			var countriesInA bson.A
 			for _, v := range countriesIn {
 				countriesInA = append(countriesInA, v)
 			}
-			filter = append(filter, E{Key: "country_code", Value: M{"$in": countriesInA}})
+			filter = append(filter, bson.E{Key: "country_code", Value: bson.M{"$in": countriesInA}})
 			break
 		}
 	}
@@ -214,14 +214,14 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		if country == mongo.RankCountryNone {
 			country = ""
 		}
-		filter = append(filter, E{Key: "country_code", Value: country})
+		filter = append(filter, bson.E{Key: "country_code", Value: country})
 	}
 
 	for _, cc := range mongo.CountriesWithStates {
 		if cc == country {
 			state := query.getSearchString(cc + "-state")
 			if state != "" && len(state) <= 3 {
-				filter = append(filter, E{Key: "status_code", Value: state})
+				filter = append(filter, bson.E{Key: "status_code", Value: state})
 			}
 		}
 	}
@@ -229,9 +229,9 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	search := query.getSearchString("search")
 	if len(search) >= 2 {
 		sortOrder = nil
-		filter = append(filter, E{Key: "$or", Value: A{
-			M{"$text": M{"$search": search}},
-			M{"_id": search},
+		filter = append(filter, bson.E{Key: "$or", Value: bson.A{
+			bson.M{"$text": bson.M{"$search": search}},
+			bson.M{"_id": search},
 		}})
 	}
 
@@ -247,7 +247,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 
-		players, err = mongo.GetPlayers(query.getOffset64(), 100, sortOrder, filter, M{
+		players, err = mongo.GetPlayers(query.getOffset64(), 100, sortOrder, filter, bson.M{
 			"_id":          1,
 			"persona_name": 1,
 			"avatar":       1,

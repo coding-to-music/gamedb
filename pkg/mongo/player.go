@@ -10,7 +10,7 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	. "go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -91,9 +91,9 @@ type Player struct {
 	PlayTime     int `bson:"play_time"`
 }
 
-func (player Player) BSON() D {
+func (player Player) BSON() bson.D {
 
-	return D{
+	return bson.D{
 		{"_id", player.ID},
 		{"avatar", player.Avatar},
 		{"background_app_id", player.BackgroundAppID},
@@ -309,7 +309,7 @@ func GetPlayer(id int64) (player Player, err error) {
 			return player, ErrInvalidPlayerID
 		}
 
-		err = FindOne(CollectionPlayers, D{{"_id", id}}, nil, nil, &player)
+		err = FindOne(CollectionPlayers, bson.D{{"_id", id}}, nil, nil, &player)
 		if err != nil {
 			return player, err
 		}
@@ -325,7 +325,7 @@ func GetPlayer(id int64) (player Player, err error) {
 	return player, err
 }
 
-func SearchPlayer(s string, projection M) (player Player, err error) {
+func SearchPlayer(s string, projection bson.M) (player Player, err error) {
 
 	if s == "" {
 		return player, ErrInvalidPlayerID
@@ -336,13 +336,13 @@ func SearchPlayer(s string, projection M) (player Player, err error) {
 		return player, err
 	}
 
-	var filter M
+	var filter bson.M
 
 	i, _ := strconv.ParseInt(s, 10, 64)
 	if helpers.IsValidPlayerID(i) {
-		filter = M{"_id": s}
+		filter = bson.M{"_id": s}
 	} else {
-		filter = M{"$text": M{"$search": s}}
+		filter = bson.M{"$text": bson.M{"$search": s}}
 	}
 
 	ops := options.FindOne()
@@ -357,21 +357,21 @@ func SearchPlayer(s string, projection M) (player Player, err error) {
 	return player, err
 }
 
-func GetPlayersByID(ids []int64, projection M) (players []Player, err error) {
+func GetPlayersByID(ids []int64, projection bson.M) (players []Player, err error) {
 
 	if len(ids) < 1 {
 		return players, nil
 	}
 
-	var idsBSON A
+	var idsBSON bson.A
 	for _, v := range ids {
 		idsBSON = append(idsBSON, v)
 	}
 
-	return GetPlayers(0, 0, nil, D{{"_id", M{"$in": idsBSON}}}, projection)
+	return GetPlayers(0, 0, nil, bson.D{{"_id", bson.M{"$in": idsBSON}}}, projection)
 }
 
-func GetPlayers(offset int64, limit int64, sort D, filter D, projection M) (players []Player, err error) {
+func GetPlayers(offset int64, limit int64, sort bson.D, filter bson.D, projection bson.M) (players []Player, err error) {
 
 	cur, ctx, err := Find(CollectionPlayers, offset, limit, sort, filter, projection, nil)
 	if err != nil {
@@ -409,7 +409,7 @@ func GetUniquePlayerCountries() (codes []string, err error) {
 
 		c := client.Database(MongoDatabase, options.Database()).Collection(CollectionPlayers.String())
 
-		resp, err := c.Distinct(ctx, "country_code", M{}, options.Distinct())
+		resp, err := c.Distinct(ctx, "country_code", bson.M{}, options.Distinct())
 		if err != nil {
 			return codes, err
 		}
@@ -439,7 +439,7 @@ func GetUniquePlayerStates(country string) (codes []helpers.Tuple, err error) {
 
 		c := client.Database(MongoDatabase, options.Database()).Collection(CollectionPlayers.String())
 
-		resp, err := c.Distinct(ctx, "status_code", M{"country_code": country}, options.Distinct())
+		resp, err := c.Distinct(ctx, "status_code", bson.M{"country_code": country}, options.Distinct())
 		if err != nil {
 			return codes, err
 		}
