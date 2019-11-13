@@ -87,17 +87,17 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Number of players
-	var players int64
-	wg.Add(1)
-	go func(player mongo.Player) {
-
-		defer wg.Done()
-
-		var err error
-		players, err = mongo.CountPlayers()
-		log.Err(err, r)
-
-	}(player)
+	// var players int64
+	// wg.Add(1)
+	// go func(player mongo.Player) {
+	//
+	// 	defer wg.Done()
+	//
+	// 	var err error
+	// 	players, err = mongo.CountPlayers()
+	// 	log.Err(err, r)
+	//
+	// }(player)
 
 	// Get bans
 	var bans mongo.PlayerBans
@@ -944,7 +944,7 @@ func playersHistoryAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var hc helpers.HighChartsJson
+	var hc helpers.HighChartsJSON
 
 	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
 
