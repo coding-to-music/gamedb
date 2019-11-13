@@ -7,6 +7,7 @@ import (
 
 	"cloud.google.com/go/pubsub"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/log"
 )
 
 // Topics
@@ -37,10 +38,11 @@ func GetPubSub() (client *pubsub.Client, ctx context.Context, err error) {
 	ctx = context.Background()
 
 	if pubSubClient == nil {
-		client, err = pubsub.NewClient(ctx, config.Config.GoogleProject.Get())
+		log.Info("Getting PubSub")
+		pubSubClient, err = pubsub.NewClient(ctx, config.Config.GoogleProject.Get())
 	}
 
-	return client, ctx, err
+	return pubSubClient, ctx, err
 }
 
 func Publish(topic PubSubTopic, message interface{}) (res *pubsub.PublishResult, err error) {
