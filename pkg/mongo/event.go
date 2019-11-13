@@ -163,7 +163,7 @@ func CreatePlayerEvent(r *http.Request, steamID int64, eventType EventEnum) (err
 
 func CreateUserEvent(r *http.Request, userID int, eventType EventEnum) (err error) {
 
-	event := &Event{}
+	event := Event{}
 	event.CreatedAt = time.Now()
 	event.UserID = userID
 	event.Type = string(eventType)
