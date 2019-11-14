@@ -100,6 +100,7 @@ func LogSteamError(err error, interfaces ...interface{}) {
 		}
 
 		steamErrors := []string{
+			"An error occurred while processing your request",
 			"Bad Gateway",
 			"Client.Timeout exceeded while awaiting headers",
 			"connection reset by peer",
