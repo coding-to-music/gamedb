@@ -298,19 +298,15 @@ func getPlayersForHome(sort string) (players []mongo.Player, err error) {
 	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &players, func() (interface{}, error) {
 
 		projection := bson.M{
-			"_id":          1,
-			"persona_name": 1,
-			"avatar":       1,
-
+			"_id":            1,
+			"persona_name":   1,
+			"avatar":         1,
 			"level":          1,
 			"badges_count":   1,
-
 			"games_count":    1,
 			"play_time":      1,
-
 			"bans_game":      1,
 			"bans_cav":       1,
-
 			"friends_count":  1,
 			"comments_count": 1,
 		}
