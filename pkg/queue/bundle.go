@@ -16,6 +16,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/gocolly/colly"
 	"github.com/streadway/amqp"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type bundleMessage struct {
@@ -223,11 +224,14 @@ func savePriceToMongo(bundle sql.Bundle, oldBundle sql.Bundle) (err error) {
 
 	if bundle.Discount != oldBundle.Discount {
 
-		_, err = mongo.InsertOne(mongo.CollectionBundlePrices, mongo.BundlePrice{
+		doc := mongo.BundlePrice{
 			CreatedAt: time.Now(),
 			BundleID:  bundle.ID,
 			Discount:  bundle.Discount,
-		})
+		}
+
+		// Does a replace, as sometimes doing a InsertOne would error on key already existing
+		_, err = mongo.ReplaceOne(mongo.CollectionBundlePrices, bson.D{{"_id", doc.GetKey()}}, doc)
 	}
 
 	return err

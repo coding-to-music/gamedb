@@ -18,14 +18,14 @@ type BundlePrice struct {
 func (price BundlePrice) BSON() bson.D {
 
 	return bson.D{
-		{"_id", price.getKey()},
+		{"_id", price.GetKey()},
 		{"created_at", price.CreatedAt},
 		{"bundle_id", price.BundleID},
 		{"price", price.Discount},
 	}
 }
 
-func (price BundlePrice) getKey() string {
+func (price BundlePrice) GetKey() string {
 	return strconv.Itoa(price.BundleID) + "-" + price.CreatedAt.Format(time.RFC3339)
 }
 
@@ -49,7 +49,7 @@ func GetBundlePrices(bundleID int) (prices []BundlePrice, err error) {
 		var price BundlePrice
 		err := cur.Decode(&price)
 		if err != nil {
-			log.Err(err, price.getKey())
+			log.Err(err, price.GetKey())
 		}
 		prices = append(prices, price)
 	}
