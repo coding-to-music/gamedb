@@ -200,23 +200,23 @@
                     : $pagination.show();
 
                 // Update URL
-                if ($(parent.element).is(":visible")) {
-
-                    const order = dt.order();
-                    if (JSON.stringify(parent.initialValues.s) === JSON.stringify(order)) {
-                        deleteUrlParam('o');
-                        deleteUrlParam('s');
-                    } else {
-                        setUrlParam('o', order[0][1]);
-                        setUrlParam('s', order[0][0]);
-                    }
-
-                    if (dt.page.info().page === 0) {
-                        deleteUrlParam('p');
-                    } else {
-                        setUrlParam('p', dt.page.info().page + 1);
-                    }
-                }
+                // if ($(parent.element).is(":visible")) {
+                //
+                //     const order = dt.order();
+                //     if (JSON.stringify(parent.initialValues.s) === JSON.stringify(order)) {
+                //         deleteUrlParam('o');
+                //         deleteUrlParam('s');
+                //     } else {
+                //         setUrlParam('o', order[0][1]);
+                //         setUrlParam('s', order[0][0]);
+                //     }
+                //
+                //     if (dt.page.info().page === 0) {
+                //         deleteUrlParam('p');
+                //     } else {
+                //         setUrlParam('p', dt.page.info().page + 1);
+                //     }
+                // }
 
                 // Bold rows
                 parent.highlightRows();
