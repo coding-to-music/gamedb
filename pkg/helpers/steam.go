@@ -107,6 +107,7 @@ func LogSteamError(err error, interfaces ...interface{}) {
 			"html response",
 			"Internal Server Error",
 			"invalid character '<' looking for beginning of value",
+			"Service Unavailable",
 			"something went wrong",
 			"TLS handshake timeout",
 			"unexpected end of JSON input",
