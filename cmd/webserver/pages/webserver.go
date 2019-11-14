@@ -231,7 +231,7 @@ type GlobalTemplate struct {
 	UserID        int
 	UserName      string
 	UserProductCC helpers.ProductCountryCode
-	userLevel     int
+	userLevel     int // Donation level
 
 	PlayerID   int64
 	PlayerName string
