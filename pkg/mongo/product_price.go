@@ -63,7 +63,7 @@ func (price ProductPrice) GetIcon() string {
 func (price ProductPrice) GetPercentChange() float64 {
 
 	if math.IsInf(price.DifferencePercent, 0) {
-		return 0
+		return 0 // This is because JSON can not handle infinite
 	}
 	return helpers.RoundFloatTo2DP(price.DifferencePercent)
 }
