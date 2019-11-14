@@ -525,8 +525,8 @@ type DataTablesAjaxResponse struct {
 	Draw            string          `json:"draw"`
 	RecordsTotal    int64           `json:"recordsTotal,string"`
 	RecordsFiltered int64           `json:"recordsFiltered,string"`
-	Data            [][]interface{} `json:"data"`
 	LevelLimited    bool            `json:"limited"`
+	Data            [][]interface{} `json:"data"`
 }
 
 func (t *DataTablesAjaxResponse) AddRow(row []interface{}) {
