@@ -67,12 +67,30 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			if err == nil {
 				filter = append(filter, bson.E{Key: "difference_percent", Value: bson.M{"$gte": min}})
 			}
+
+			// Dont show infinite difference_percent
+			if min > -100 {
+				filter = append(filter, bson.E{Key: "$or", Value: bson.A{
+					bson.M{"difference_percent": bson.M{"$gt": 0}},
+					bson.M{"difference_percent": bson.M{"$lt": 0}},
+					bson.M{"difference": bson.M{"$gte": 0}},
+				}})
+			}
 		}
 		if percents[1] != "100.00" {
 			max, err := strconv.ParseFloat(percents[1], 64)
 			log.Err(err)
 			if err == nil {
 				filter = append(filter, bson.E{Key: "difference_percent", Value: bson.M{"$lte": max}})
+			}
+
+			// Dont show infinite difference_percent
+			if max < 100 {
+				filter = append(filter, bson.E{Key: "$or", Value: bson.A{
+					bson.M{"difference_percent": bson.M{"$gt": 0}},
+					bson.M{"difference_percent": bson.M{"$lt": 0}},
+					bson.M{"difference": bson.M{"$lte": 0}},
+				}})
 			}
 		}
 	}
