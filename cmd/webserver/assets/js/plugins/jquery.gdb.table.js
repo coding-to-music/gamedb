@@ -131,18 +131,19 @@
         }
 
         // Add pagination url params to options
-        if (urlParams.has('p')) {
-            const page = urlParams.get('p');
-            options.tableOptions.displayStart = (page - 1) * options.tableOptions.pageLength;
-            currentValues['p'] = page;
-        }
-        if (urlParams.has('s') && urlParams.has('o')) {
-            const sort = urlParams.get('s');
-            const order = urlParams.get('o');
-            options.tableOptions.order = [[parseInt(sort), order]];
-            currentValues['s'] = sort;
-            currentValues['o'] = order;
-        }
+        // Commented out as the initial sort/order value becomes whatever is in the url
+        // if (urlParams.has('p')) {
+        //     const page = urlParams.get('p');
+        //     options.tableOptions.displayStart = (page - 1) * options.tableOptions.pageLength;
+        //     currentValues['p'] = page;
+        // }
+        // if (urlParams.has('s') && urlParams.has('o')) {
+        //     const sort = urlParams.get('s');
+        //     const order = urlParams.get('o');
+        //     options.tableOptions.order = [[parseInt(sort), order]];
+        //     currentValues['s'] = sort;
+        //     currentValues['o'] = order;
+        // }
 
         //
         this.options = options;
@@ -150,6 +151,7 @@
         this.user = user;
         this.initialValues = initialValues;
         this.currentValues = currentValues;
+        this.urlParams = urlParams;
         this.init();
     }
 
