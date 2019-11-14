@@ -44,6 +44,7 @@ func badgeHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, val.BadgeName, "")
 	t.Badge = val
 	t.Foil = r.URL.Query().Get("foil")
+	t.IncludeSocialJS = true
 
 	returnTemplate(w, r, "badge", t)
 }

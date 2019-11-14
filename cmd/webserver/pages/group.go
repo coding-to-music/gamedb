@@ -68,6 +68,7 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, group.GetName(), "")
 	t.addAssetHighCharts()
 	t.Canonical = group.GetPath()
+	t.IncludeSocialJS = true
 
 	// Update group
 	func() {
@@ -76,7 +77,7 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if group.UpdatedAt.Unix() > time.Now().Add(time.Hour * -1).Unix() {
+		if group.UpdatedAt.Unix() > time.Now().Add(time.Hour*-1).Unix() {
 			return
 		}
 

@@ -125,6 +125,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, pack.GetName(), "")
 	t.metaImage = pack.GetMetaImage()
 	t.addAssetHighCharts()
+	t.IncludeSocialJS = true
 	t.Package = pack
 	t.Apps = appsMap
 	t.Bundles = bundles

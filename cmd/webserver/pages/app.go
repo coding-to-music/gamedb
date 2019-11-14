@@ -71,6 +71,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	t.metaImage = app.GetMetaImage()
 	t.addAssetCarousel()
 	t.addAssetHighCharts()
+	t.IncludeSocialJS = true
 	t.App = app
 	t.Description = template.HTML(app.ShortDescription)
 	t.Canonical = app.GetPath()

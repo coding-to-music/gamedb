@@ -230,6 +230,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	t.setBackground(backgroundApp, true, false)
 	t.fill(w, r, player.PersonaName, "")
 	t.addAssetHighCharts()
+	t.IncludeSocialJS = true
 
 	t.Badges = player.GetSpecialBadges()
 	t.BadgeStats = badgeStats
