@@ -24,10 +24,13 @@ if ($homePage.length > 0) {
             cache: true,
             success: function (data, textStatus, jqXHR) {
 
-                $('#sales span[data-sort]').removeClass('badge-success');
-                $('#sales span[data-sort]').addClass('cursor-pointer');
-                $('#sales span[data-sort="' + sort + '"]').addClass('badge-success');
-                $('#sales span[data-sort="' + sort + '"]').removeClass('cursor-pointer');
+                const $allCols = $('#sales span[data-sort]');
+                $allCols.removeClass('badge-success');
+                $allCols.addClass('cursor-pointer');
+
+                const $thisCol = $('#sales span[data-sort="' + sort + '"]');
+                $thisCol.addClass('badge-success');
+                $thisCol.removeClass('cursor-pointer');
 
                 $('#sales tbody tr').remove();
                 $('#sales .change').html(sort);
@@ -99,62 +102,90 @@ if ($homePage.length > 0) {
             cache: true,
             success: function (data, textStatus, jqXHR) {
 
-                $('#players span[data-sort]').removeClass('badge-success');
-                $('#players span[data-sort]').addClass('cursor-pointer');
-                $('#players span[data-sort="' + sort + '"]').addClass('badge-success');
-                $('#players span[data-sort="' + sort + '"]').removeClass('cursor-pointer');
+                const $allCols = $('#players span[data-sort]');
+                $allCols.removeClass('badge-success');
+                $allCols.addClass('cursor-pointer');
+
+                const $thisCol = $('#players span[data-sort="' + sort + '"]');
+                $thisCol.addClass('badge-success');
+                $thisCol.removeClass('cursor-pointer');
 
                 $('#players tbody tr').remove();
-                $('#players .change').html(sort);
 
                 if (isIterable(data)) {
 
                     const $container = $('#players tbody');
 
+                    const tds = [
+                        {
+                            '<>': 'td', 'class': 'font-weight-bold', 'html': '${rank}'
+                        },
+                        {
+                            '<>': 'td', 'class': 'img', 'html': [
+                                {
+                                    '<>': 'div', 'class': 'icon-name', 'html': [
+                                        {
+                                            '<>': 'div', 'class': 'icon', 'html': [{'<>': 'img', 'data-lazy': '${avatar}', 'alt': '', 'data-lazy-alt': '${name}'}],
+                                        },
+                                        {
+                                            '<>': 'div', 'class': 'name', 'html': '${name}'
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                    ];
+
+                    const $change1 = $('#players .change1');
+                    const $change2 = $('#players .change2');
+
+                    switch (sort) {
+                        case 'level':
+                            tds.push({
+                                '<>': 'td', 'nowrap': 'nowrap', 'class': 'img', 'html': '<div class="icon-name"><div class="icon"><div class="${class}"></div></div><div class="name min">${level}</div></div>',
+                            });
+                            tds.push({
+                                '<>': 'td', 'nowrap': 'nowrap', 'html': "${badges}"
+                            });
+                            $change1.html('Level');
+                            $change2.html('Badges');
+                            break;
+                        case 'games':
+                            tds.push({
+                                '<>': 'td', 'nowrap': 'nowrap', 'html': "${games}"
+                            });
+                            tds.push({
+                                '<>': 'td', 'nowrap': 'nowrap', 'html': "${playtime}"
+                            });
+                            $change1.html('Games');
+                            $change2.html('Playtime');
+                            break;
+                        case 'bans':
+                            tds.push({
+                                '<>': 'td', 'nowrap': 'nowrap', 'html': "${game_bans}"
+                            });
+                            tds.push({
+                                '<>': 'td', 'nowrap': 'nowrap', 'html': "${vac_bans}"
+                            });
+                            $change1.html('Game Bans');
+                            $change2.html('VAC Bans');
+                            break;
+                        case 'profile':
+                            tds.push({
+                                '<>': 'td', 'nowrap': 'nowrap', 'html': "${friends}"
+                            });
+                            tds.push({
+                                '<>': 'td', 'nowrap': 'nowrap', 'html': "${comments}"
+                            });
+                            $change1.html('Friends');
+                            $change2.html('Comments');
+                            break;
+                    }
+
                     $container.json2html(
                         data,
                         {
-                            '<>': 'tr', 'data-link': '${link}', 'html': [
-                                {
-                                    '<>': 'td', 'class': 'font-weight-bold', 'html': '${rank}'
-                                },
-                                {
-                                    '<>': 'td', 'class': 'img', 'html': [
-                                        {
-                                            '<>': 'div', 'class': 'icon-name', 'html': [
-                                                {
-                                                    '<>': 'div', 'class': 'icon', 'html': [{'<>': 'img', 'data-lazy': '${avatar}', 'alt': '', 'data-lazy-alt': '${name}'}],
-                                                },
-                                                {
-                                                    '<>': 'div', 'class': 'name', 'html': '${name}'
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                {
-                                    '<>': 'td', 'nowrap': 'nowrap', 'class': function () {
-                                        if (sort === 'level') {
-                                            return 'img';
-                                        } else {
-                                            return '';
-                                        }
-                                    }, 'html': function () {
-
-                                        switch (sort) {
-                                            case 'level':
-                                                return '<div class="icon-name"><div class="icon"><div class="' + this.class + '"></div></div><div class="name min">' + this.value + '</div></div>';
-                                            case 'games':
-                                            case 'badges':
-                                            case 'friends':
-                                            case 'comments':
-                                                return this.value + ' ' + sort;
-                                            default:
-                                                return this.value;
-                                        }
-                                    },
-                                },
-                            ]
+                            '<>': 'tr', 'data-link': '${link}', 'html': tds,
                         },
                         {
                             prepend: false,

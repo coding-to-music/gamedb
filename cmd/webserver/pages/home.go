@@ -237,14 +237,10 @@ func homePlayersHandler(w http.ResponseWriter, r *http.Request) {
 		sort = "level"
 	case "games":
 		sort = "games_count"
-	case "badges":
-		sort = "badges_count"
-	case "time":
-		sort = "play_time"
-	case "friends":
+	case "bans":
+		sort = "bans_game"
+	case "profile":
 		sort = "friends_count"
-	case "comments":
-		sort = "comments_count"
 	default:
 		return
 	}
@@ -259,42 +255,40 @@ func homePlayersHandler(w http.ResponseWriter, r *http.Request) {
 
 	for k, player := range players {
 
-		homePlayer := homePlayer{
-			Name:   player.GetName(),
-			Link:   player.GetPath(),
-			Avatar: player.GetAvatar(),
-			Rank:   helpers.OrdinalComma(k + 1),
-		}
-
-		switch id {
-		case "level":
-			homePlayer.Value = humanize.Comma(int64(player.Level))
-			homePlayer.Class = helpers.GetPlayerAvatar2(player.Level)
-		case "games":
-			homePlayer.Value = humanize.Comma(int64(player.GamesCount))
-		case "badges":
-			homePlayer.Value = humanize.Comma(int64(player.BadgesCount))
-		case "time":
-			homePlayer.Value = helpers.GetTimeLong(player.PlayTime, 2)
-		case "friends":
-			homePlayer.Value = humanize.Comma(int64(player.FriendsCount))
-		case "comments":
-			homePlayer.Value = humanize.Comma(int64(player.CommentsCount))
-		}
-
-		resp = append(resp, homePlayer)
+		resp = append(resp, homePlayer{
+			Name:     player.GetName(),
+			Link:     player.GetPath(),
+			Avatar:   player.GetAvatar(),
+			Rank:     helpers.OrdinalComma(k + 1),
+			Class:    helpers.GetPlayerAvatar2(player.Level),
+			Level:    humanize.Comma(int64(player.Level)),
+			Badges:   humanize.Comma(int64(player.BadgesCount)),
+			Games:    humanize.Comma(int64(player.GamesCount)),
+			Playtime: helpers.GetTimeLong(player.PlayTime, 2),
+			GameBans: humanize.Comma(int64(player.NumberOfGameBans)),
+			VACBans:  humanize.Comma(int64(player.NumberOfVACBans)),
+			Friends:  humanize.Comma(int64(player.FriendsCount)),
+			Comments: humanize.Comma(int64(player.CommentsCount)),
+		})
 	}
 
 	returnJSON(w, r, resp)
 }
 
 type homePlayer struct {
-	Rank   string `json:"rank"`
-	Name   string `json:"name"`
-	Value  string `json:"value"`
-	Link   string `json:"link"`
-	Avatar string `json:"avatar"`
-	Class  string `json:"class"`
+	Rank     string `json:"rank"`
+	Name     string `json:"name"`
+	Link     string `json:"link"`
+	Avatar   string `json:"avatar"`
+	Class    string `json:"class"`
+	Level    string `json:"level"`
+	Badges   string `json:"badges"`
+	Games    string `json:"games"`
+	Playtime string `json:"playtime"`
+	GameBans string `json:"game_bans"`
+	VACBans  string `json:"vac_bans"`
+	Friends  string `json:"friends"`
+	Comments string `json:"comments"`
 }
 
 func getPlayersForHome(sort string) (players []mongo.Player, err error) {
@@ -307,7 +301,18 @@ func getPlayersForHome(sort string) (players []mongo.Player, err error) {
 			"_id":          1,
 			"persona_name": 1,
 			"avatar":       1,
-			sort:           1,
+
+			"level":          1,
+			"badges_count":   1,
+
+			"games_count":    1,
+			"play_time":      1,
+
+			"bans_game":      1,
+			"bans_cav":       1,
+
+			"friends_count":  1,
+			"comments_count": 1,
 		}
 
 		return mongo.GetPlayers(0, 15, bson.D{{sort, -1}}, bson.D{{sort, bson.M{"$gt": 0}}}, projection)
