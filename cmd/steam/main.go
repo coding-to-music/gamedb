@@ -206,6 +206,19 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 		}
 	}
 
+	unknownApps := body.GetUnknownAppids()
+	if len(unknownApps) > 0 {
+		for _, app := range unknownApps {
+
+			var id = int(app)
+			var key = "app-" + strconv.Itoa(id)
+			var force = queue.IDsToForce.Read(key)
+
+			err := queue.ProduceApp(queue.AppPayload{ID: id, Force: force})
+			log.Err(err)
+		}
+	}
+
 	packages := body.GetPackages()
 	if len(packages) > 0 {
 		for _, pack := range packages {
@@ -229,19 +242,6 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 				VDF:          m,
 				Force:        force,
 			})
-			log.Err(err)
-		}
-	}
-
-	unknownApps := body.GetUnknownAppids()
-	if len(unknownApps) > 0 {
-		for _, app := range unknownApps {
-
-			var id = int(app)
-			var key = "app-" + strconv.Itoa(id)
-			var force = queue.IDsToForce.Read(key)
-
-			err := queue.ProduceApp(queue.AppPayload{ID: id, Force: force})
 			log.Err(err)
 		}
 	}
