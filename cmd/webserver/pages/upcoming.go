@@ -53,14 +53,14 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	filtered := 0
 
 	gorm = gorm.Model(sql.App{})
-	gorm = gorm.Select([]string{"id", "name", "icon", "type", "prices", "release_date_unix"})
+	gorm = gorm.Select([]string{"id", "name", "icon", "type", "prices", "release_date_unix", "group_followers"})
 	gorm = gorm.Where("release_date_unix >= ?", time.Now().AddDate(0, 0, -1).Unix())
 	if search != "" {
 		gorm = gorm.Where("name LIKE ?", "%"+search+"%")
 		gorm = gorm.Count(&filtered)
 		log.Err(gorm.Error, r)
 	}
-	gorm = gorm.Order("release_date_unix ASC, name ASC")
+	gorm = gorm.Order("release_date_unix ASC, group_followers DESC, name ASC")
 	gorm = gorm.Limit(100)
 	gorm = gorm.Offset(query.getOffset())
 
@@ -84,13 +84,15 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	for _, app := range apps {
 
 		response.AddRow([]interface{}{
-			app.ID,
-			app.GetName(),
-			app.GetIcon(),
-			app.GetPath(),
-			app.GetType(),
-			app.GetPrice(code).GetFinal(),
-			app.GetDaysToRelease() + " (" + app.GetReleaseDateNice() + ")",
+			app.ID,                        // 0
+			app.GetName(),                 // 1
+			app.GetIcon(),                 // 2
+			app.GetPath(),                 // 3
+			app.GetType(),                 // 4
+			app.GetPrice(code).GetFinal(), // 5
+			app.GetDaysToRelease() + " (" + app.GetReleaseDateNice() + ")", // 6
+			app.GroupFollowers,              // 7
+			helpers.GetAppStoreLink(app.ID), // 8
 		})
 	}
 

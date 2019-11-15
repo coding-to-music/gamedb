@@ -22,7 +22,7 @@ if ($('#upcoming-page').length > 0) {
                 let group = this.data()[6];
                 if (last !== group) {
                     $(rows).eq(rowIdx).before(
-                        '<tr class="table-success"><td colspan="3">' + group + '</td></tr>'
+                        '<tr class="table-success"><td colspan="5">' + group + '</td></tr>'
                     );
                     last = group;
                 }
@@ -44,6 +44,17 @@ if ($('#upcoming-page').length > 0) {
             {
                 "targets": 1,
                 "render": function (data, type, row) {
+                    return row[7].toLocaleString();
+                },
+                "createdCell": function (td, cellData, rowData, row, col) {
+                    $(td).attr('nowrap', 'nowrap');
+                },
+                "orderable": false,
+            },
+            // App Type
+            {
+                "targets": 2,
+                "render": function (data, type, row) {
                     return row[4];
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
@@ -53,12 +64,23 @@ if ($('#upcoming-page').length > 0) {
             },
             // Price
             {
-                "targets": 2,
+                "targets": 3,
                 "render": function (data, type, row) {
                     return row[5];
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
+                },
+                "orderable": false,
+            },
+            // Link
+            {
+                "targets": 4,
+                "render": function (data, type, row) {
+                    if (row[8]) {
+                        return '<a href="' + row[8] + '" target="_blank" rel="nofollow"><i class="fas fa-link"></i></a>';
+                    }
+                    return '';
                 },
                 "orderable": false,
             },
