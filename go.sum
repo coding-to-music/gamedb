@@ -58,6 +58,8 @@ github.com/Jleagle/unmarshal-go v0.0.0-20190127220637-8ab9c10d2f0a/go.mod h1:+hH
 github.com/Jleagle/unmarshal-go v0.0.0-20190220084824-1808d9beaef9/go.mod h1:uj173bb7OmVLObjyg6vHW/6F5QbA8G51veCJI1tCmpI=
 github.com/Jleagle/unmarshal-go v0.0.0-20190815120521-15f0bd3950ff h1:onx8Unigu+TjRhAjLJmIR0M3fBJVi17UaVt6qL9d34o=
 github.com/Jleagle/unmarshal-go v0.0.0-20190815120521-15f0bd3950ff/go.mod h1:uj173bb7OmVLObjyg6vHW/6F5QbA8G51veCJI1tCmpI=
+github.com/Jleagle/unmarshal-go v0.0.0-20191115124251-320828cd121a h1:VLYWxRzMHWfgL+trhTnJkzn7qVDm03Eb38/6g+9p578=
+github.com/Jleagle/unmarshal-go v0.0.0-20191115124251-320828cd121a/go.mod h1:xLE2HRYT6+ddAGBH4GsVGf3BxFcZi0exNLddrcg2zbw=
 github.com/Jleagle/valve-data-format-go v0.0.0-20190920220236-44295ceb456d h1:j5qsGTCqjBpAbJ4MOwx12Go6pBMFvudkMwGlyVvPjTA=
 github.com/Jleagle/valve-data-format-go v0.0.0-20190920220236-44295ceb456d/go.mod h1:9j7pWT19NnlK5wZnx1Ys+xXgjDgdyMAKebl8hGqYKCU=
 github.com/Jleagle/valve-data-format-go v0.0.0-20191004113530-a0add993534f h1:tApbby/nl+Y70z3mWiEg4Wb4v+VWb8T5atkvFYxT7pQ=
