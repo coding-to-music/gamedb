@@ -64,7 +64,7 @@ func groupsTrendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	typex := query.getSearchString("type")
-	if typex == "group" || typex == "game" {
+	if typex == helpers.GroupTypeGroup || typex == helpers.GroupTypeGame {
 		filter = append(filter, bson.E{Key: "type", Value: typex})
 	}
 

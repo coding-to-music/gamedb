@@ -511,9 +511,9 @@ func getGroupType(id string) (string, error) {
 	u := resp.Request.URL.String()
 
 	if strings.Contains(u, "/games/") {
-		return "game", err
+		return helpers.GroupTypeGame, err
 	} else if strings.Contains(u, "/groups/") {
-		return "group", err
+		return helpers.GroupTypeGroup, err
 	}
 
 	return "", err

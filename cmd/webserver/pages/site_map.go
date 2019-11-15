@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/sitemap-go/sitemap"
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
@@ -125,7 +126,7 @@ func SiteMapGroups(w http.ResponseWriter, r *http.Request) {
 
 	sm := sitemap.NewSitemap()
 
-	groups, err := mongo.GetGroups(1000, 0, bson.D{{"members", -1}}, bson.D{{"type", "group"}}, bson.M{"_id": 1, "name": 1, "updated_at": 1})
+	groups, err := mongo.GetGroups(1000, 0, bson.D{{"members", -1}}, bson.D{{"type", helpers.GroupTypeGroup}}, bson.M{"_id": 1, "name": 1, "updated_at": 1})
 	log.Err(err)
 	for _, v := range groups {
 		sm.AddLocation(urlBase+v.GetPath(), v.UpdatedAt, sitemap.FrequencyWeekly, 0.9)
