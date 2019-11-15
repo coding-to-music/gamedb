@@ -186,22 +186,21 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 	if len(apps) > 0 {
 		for _, app := range apps {
 
-			m := map[string]interface{}{}
-
-			kv, err := vdf.ReadBytes(app.GetBuffer())
-			if err != nil {
-				log.Err(err)
-			} else {
-				m = kv.ToMap()
-			}
-
+			var m = map[string]interface{}{}
 			var id = int(app.GetAppid())
 			var key = "app-" + strconv.Itoa(id)
 			var force = queue.IDsToForce.Read(key)
 
+			kv, err := vdf.ReadBytes(app.GetBuffer())
+			if err != nil {
+				log.Err(err, id)
+			} else {
+				m = kv.ToMap()
+			}
+
 			err = queue.ProduceApp(queue.AppPayload{ID: id, ChangeNumber: int(app.GetChangeNumber()), VDF: m, Force: force})
 			if err != nil {
-				log.Err(err)
+				log.Err(err, id)
 			}
 		}
 	}
@@ -215,7 +214,7 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 			var force = queue.IDsToForce.Read(key)
 
 			err := queue.ProduceApp(queue.AppPayload{ID: id, Force: force})
-			log.Err(err)
+			log.Err(err, id)
 		}
 	}
 
@@ -223,18 +222,17 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 	if len(packages) > 0 {
 		for _, pack := range packages {
 
-			m := map[string]interface{}{}
-
-			kv, err := vdf.ReadBytes(pack.GetBuffer())
-			if err != nil {
-				log.Err(err)
-			} else {
-				m = kv.ToMap()
-			}
-
+			var m = map[string]interface{}{}
 			var id = int(pack.GetPackageid())
 			var key = "package-" + strconv.Itoa(id)
 			var force = queue.IDsToForce.Read(key)
+
+			kv, err := vdf.ReadBytes(pack.GetBuffer())
+			if err != nil {
+				log.Err(err, id)
+			} else {
+				m = kv.ToMap()
+			}
 
 			err = queue.ProducePackage(queue.PackagePayload{
 				ID:           int(pack.GetPackageid()),
@@ -242,7 +240,7 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 				VDF:          m,
 				Force:        force,
 			})
-			log.Err(err)
+			log.Err(err, id)
 		}
 	}
 
@@ -255,7 +253,7 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 			var force = queue.IDsToForce.Read(key)
 
 			err := queue.ProducePackage(queue.PackagePayload{ID: int(pack), Force: force})
-			log.Err(err)
+			log.Err(err, id)
 		}
 	}
 }
