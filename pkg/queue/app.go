@@ -374,6 +374,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
+	// Queue group
 	if app.GroupID != "" {
 		err = ProduceGroup([]string{app.GroupID}, message.Force)
 		log.Err(err)
