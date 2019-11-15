@@ -131,13 +131,51 @@ func (q groupQueueScrape) processMessages(msgs []amqp.Delivery) {
 		//
 		var wg sync.WaitGroup
 
-		// Update row
+		// Read from MySQL
+		wg.Add(1)
+		var app sql.App
+		go func() {
+
+			defer wg.Done()
+
+			var err error
+
+			app, err = getAppFromGroup(group)
+			if err != nil {
+				log.Err(err, group.ID64)
+				ackRetry(msg, &message)
+				return
+			}
+		}()
+
+		//
+		wg.Wait()
+
+		if message.actionTaken {
+			return
+		}
+
+		// Save to MySQL
 		wg.Add(1)
 		go func() {
 
 			defer wg.Done()
 
-			err = saveGroupToMongo(group)
+			err = saveAppsGroupID(app, group)
+			if err != nil {
+				log.Err(err, group.ID64)
+				ackRetry(msg, &message)
+				return
+			}
+		}()
+
+		// Save to Mongo
+		wg.Add(1)
+		go func() {
+
+			defer wg.Done()
+
+			err = saveGroup(group)
 			if err != nil {
 				log.Err(err, groupID)
 				ackRetry(msg, &message)
@@ -425,7 +463,7 @@ func getGroupTrending(group *mongo.Group) (err error) {
 	return nil
 }
 
-func saveGroupToMongo(group mongo.Group) (err error) {
+func saveGroup(group mongo.Group) (err error) {
 
 	_, err = mongo.ReplaceOne(mongo.CollectionGroups, bson.D{{"_id", group.ID64}}, group)
 	return err
@@ -434,21 +472,15 @@ func saveGroupToMongo(group mongo.Group) (err error) {
 func getAppFromGroup(group mongo.Group) (app sql.App, err error) {
 
 	if group.Type == helpers.GroupTypeGame && group.AppID > 0 {
-
-		app, err = sql.GetApp(group.AppID, []string{"id"})
-		if err != nil {
-			return
-		}
-
-		app.GroupID = group.ID64
+		return sql.GetApp(group.AppID, []string{"id", "group_id"})
 	}
 
 	return app, err
 }
 
-func saveAppsGroupID(app sql.App, groupID string) (err error) {
+func saveAppsGroupID(app sql.App, group mongo.Group) (err error) {
 
-	if app.ID == 0 || groupID == "" || app.GroupID == groupID {
+	if app.ID == 0 || group.ID64 == "" || app.GroupID == group.ID64 || group.Type != helpers.GroupTypeGame {
 		return nil
 	}
 
@@ -457,7 +489,7 @@ func saveAppsGroupID(app sql.App, groupID string) (err error) {
 		return err
 	}
 
-	db = db.Model(&app).Update("group_id", groupID)
+	db = db.Model(&app).Update("group_id", group.ID64)
 	return db.Error
 }
 

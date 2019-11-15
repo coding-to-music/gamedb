@@ -136,13 +136,13 @@ func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
-	// Save to Mongo
+	// Save to MySQL
 	wg.Add(1)
 	go func() {
 
 		defer wg.Done()
 
-		err = saveGroupToMongo(group)
+		err = saveAppsGroupID(app, group)
 		if err != nil {
 			log.Err(err, id)
 			ackRetry(msg, &message)
@@ -150,13 +150,13 @@ func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {
 		}
 	}()
 
-	// Save to MySQL
+	// Save to Mongo
 	wg.Add(1)
 	go func() {
 
 		defer wg.Done()
 
-		err = saveAppsGroupID(app, group.ID64)
+		err = saveGroup(group)
 		if err != nil {
 			log.Err(err, id)
 			ackRetry(msg, &message)
