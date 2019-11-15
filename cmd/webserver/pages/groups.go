@@ -55,7 +55,7 @@ func groupsTrendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	filter := bson.D{}
 
 	search := helpers.RegexNonAlphaNumericSpace.ReplaceAllString(query.getSearchString("search"), "")
-	if len(search) >= 2 {
+	if len(search) > 0 {
 		filter = append(filter, bson.E{Key: "$or", Value: bson.A{
 			bson.M{"name": bson.M{"$regex": search, "$options": "i"}},
 			bson.M{"abbreviation": bson.M{"$regex": search, "$options": "i"}},
