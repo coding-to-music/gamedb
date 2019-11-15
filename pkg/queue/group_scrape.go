@@ -489,7 +489,11 @@ func saveAppsGroupID(app sql.App, group mongo.Group) (err error) {
 		return err
 	}
 
-	db = db.Model(&app).Update("group_id", group.ID64)
+	db = db.Model(&app).Updates(map[string]interface{}{
+		"group_id":        group.ID64,
+		"group_followers": group.Members,
+	})
+
 	return db.Error
 }
 
