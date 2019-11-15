@@ -63,9 +63,9 @@ func groupsTrendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}})
 	}
 
-	typ := query.getSearchString("type")
-	if typ == "group" || typ == "game" {
-		filter = append(filter, bson.E{Key: "type", Value: typ})
+	typex := query.getSearchString("type")
+	if typex == "group" || typex == "game" {
+		filter = append(filter, bson.E{Key: "type", Value: typex})
 	}
 
 	showErrors := query.getSearchString("errors")
