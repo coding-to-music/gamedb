@@ -61,7 +61,7 @@ if ($appPage.length > 0) {
                 case '#players':
                     loadAppPlayersChart();
                     loadAppPlayerTimes();
-                    loadGroupChart();
+                    loadGroupChart($appPage);
                     break;
                 case '#reviews':
                     loadAppReviewsChart();

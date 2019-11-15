@@ -14,17 +14,19 @@ if ($groupPage.length > 0) {
     loadGroupChart();
 }
 
-function loadGroupChart() {
+function loadGroupChart($page = null) {
 
     const $groupChart = $('#group-chart');
     if ($groupChart.length === 0) {
         return
     }
 
+    $page = $page || $groupPage;
+
     // Load chart
     $.ajax({
         type: "GET",
-        url: '/groups/' + $groupPage.attr('data-group-id') + '/members.json',
+        url: '/groups/' + $page.attr('data-group-id') + '/members.json',
         dataType: 'json',
         success: function (data, textStatus, jqXHR) {
 
