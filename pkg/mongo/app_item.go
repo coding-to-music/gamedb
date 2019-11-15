@@ -89,7 +89,11 @@ func (a *AppItem) SetTags(tags string) {
 		split := strings.Split(tags, ";")
 		for _, v := range split {
 			split2 := strings.Split(v, ":")
-			a.Tags = append(a.Tags, []string{split2[0], split2[1]})
+			if len(split2) == 2 {
+				a.Tags = append(a.Tags, []string{split2[0], split2[1]})
+			} else {
+				log.Warning(a.AppID, "weird app item tags")
+			}
 		}
 	}
 }
