@@ -11,6 +11,7 @@ import (
 
 	"github.com/Jleagle/influxql"
 	"github.com/Jleagle/steam-go/steam"
+	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -256,6 +257,15 @@ func (app App) GetPICSUpdatedNice() string {
 
 func (app App) GetIcon() (ret string) {
 	return helpers.GetAppIcon(app.ID, app.Icon)
+}
+
+func (app App) GetFollowers() (ret string) {
+
+	if app.GroupID == "" {
+		return "-"
+	}
+
+	return humanize.Comma(int64(app.GroupFollowers))
 }
 
 func (app App) GetPrices() (prices ProductPrices, err error) {

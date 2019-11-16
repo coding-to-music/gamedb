@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
@@ -84,14 +83,6 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	for _, app := range apps {
 
-		// Followers
-		var followers interface{}
-		if app.GroupID == "" {
-			followers = "-"
-		} else {
-			followers = humanize.Comma(int64(app.GroupFollowers))
-		}
-
 		response.AddRow([]interface{}{
 			app.ID,                        // 0
 			app.GetName(),                 // 1
@@ -100,7 +91,7 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			app.GetType(),                 // 4
 			app.GetPrice(code).GetFinal(), // 5
 			app.GetDaysToRelease() + " (" + app.GetReleaseDateNice() + ")", // 6
-			followers,                       // 7
+			app.GetFollowers(),              // 7
 			helpers.GetAppStoreLink(app.ID), // 8
 		})
 	}
