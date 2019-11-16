@@ -40,11 +40,11 @@ if ($('#upcoming-page').length > 0) {
                 },
                 "orderable": false,
             },
-            // App Type
+            // Followers
             {
                 "targets": 1,
                 "render": function (data, type, row) {
-                    return row[7].toLocaleString();
+                    return row[7];
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
