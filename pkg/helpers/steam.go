@@ -88,15 +88,15 @@ func LogSteamError(err error, interfaces ...interface{}) {
 		// Sleeps on rate limits etc
 		if val, ok := err.(steam.Error); ok {
 
+			// Rate limit
 			if val.Code == 429 {
 				time.Sleep(time.Second * 10)
 			}
 
+			// access is denied
 			if val.Code == 403 {
 				time.Sleep(time.Second * 5)
 			}
-
-			return false
 		}
 
 		steamErrors := []string{
