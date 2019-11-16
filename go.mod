@@ -3,7 +3,7 @@ module github.com/gamedb/gamedb
 go 1.13
 
 require (
-	cloud.google.com/go v0.47.0 // indirect
+	cloud.google.com/go v0.48.0 // indirect
 	cloud.google.com/go/logging v1.0.0
 	cloud.google.com/go/pubsub v1.0.1
 	github.com/Jleagle/go-durationfmt v0.0.0-20190307132420-e57bfad84057
@@ -21,8 +21,8 @@ require (
 	github.com/ahmdrz/goinsta/v2 v2.4.4
 	github.com/andybalholm/cascadia v1.1.0 // indirect
 	github.com/antchfx/htmlquery v1.2.0 // indirect
-	github.com/antchfx/xmlquery v1.1.0 // indirect
-	github.com/antchfx/xpath v1.1.0 // indirect
+	github.com/antchfx/xmlquery v1.2.0 // indirect
+	github.com/antchfx/xpath v1.1.1 // indirect
 	github.com/badoux/checkmail v0.0.0-20181210160741-9661bd69e9ad
 	github.com/beefsack/go-rate v0.0.0-20180408011153-efa7637bb9b6 // indirect
 	github.com/bradfitz/gomemcache v0.0.0-20190913173617-a41fca850d0b // indirect
@@ -37,8 +37,9 @@ require (
 	github.com/djherbis/fscache v0.9.0
 	github.com/dustin/go-humanize v1.0.0
 	github.com/frustra/bbcode v0.0.0-20180807171629-48be21ce690c
+	github.com/gavv/monotime v0.0.0-20190418164738-30dba4353424 // indirect
 	github.com/getkin/kin-openapi v0.2.0
-	github.com/getsentry/sentry-go v0.3.0
+	github.com/getsentry/sentry-go v0.3.1
 	github.com/go-chi/chi v4.0.2+incompatible
 	github.com/go-chi/cors v1.0.0
 	github.com/go-sql-driver/mysql v1.4.1
@@ -48,18 +49,22 @@ require (
 	github.com/golang/protobuf v1.3.2
 	github.com/golang/snappy v0.0.1
 	github.com/google/go-github/v27 v27.0.6
+	github.com/gorilla/schema v1.1.0 // indirect
 	github.com/gorilla/sessions v1.2.0
 	github.com/gorilla/websocket v1.4.1
 	github.com/gosimple/slug v1.9.0
 	github.com/hashicorp/golang-lru v0.5.3 // indirect
 	github.com/influxdata/influxdb1-client v0.0.0-20190809212627-fc22c7df067e
+	github.com/iris-contrib/formBinder v5.0.0+incompatible // indirect
+	github.com/iris-contrib/httpexpect v0.0.0-20180314041918-ebe99fcebbce // indirect
 	github.com/jinzhu/gorm v1.9.11
 	github.com/jinzhu/now v1.1.1
 	github.com/jstemmer/go-junit-report v0.9.1 // indirect
 	github.com/justinas/nosurf v1.1.0
 	github.com/jzelinskie/geddit v0.0.0-20190913104144-95ef6806b073
+	github.com/kataras/iris v11.1.1+incompatible // indirect
 	github.com/kennygrant/sanitize v1.2.4 // indirect
-	github.com/logrusorgru/aurora v0.0.0-20191017060258-dc85c304c434
+	github.com/logrusorgru/aurora v0.0.0-20191116043053-66b7ad493a23
 	github.com/mattn/go-runewidth v0.0.6 // indirect
 	github.com/microcosm-cc/bluemonday v1.0.2
 	github.com/mxpv/patreon-go v0.0.0-20190917022727-646111f1d983
@@ -85,22 +90,22 @@ require (
 	github.com/uber-go/atomic v1.4.0 // indirect
 	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect
 	github.com/xdg/stringprep v1.0.0 // indirect
+	github.com/xeipuuv/gojsonpointer v0.0.0-20190809123943-df4f5c81cb3b // indirect
 	github.com/yohcop/openid-go v1.0.0
 	go.mongodb.org/mongo-driver v1.1.3
 	go.opencensus.io v0.22.2 // indirect
 	go.uber.org/atomic v1.4.0 // indirect
-	golang.org/x/crypto v0.0.0-20191108234033-bd318be0434a
-	golang.org/x/exp v0.0.0-20191030013958-a1ab85dbe136 // indirect
-	golang.org/x/net v0.0.0-20191109021931-daa7c04131f5 // indirect
+	golang.org/x/crypto v0.0.0-20191112222119-e1110fd1c708
+	golang.org/x/net v0.0.0-20191112182307-2180aed22343 // indirect
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e // indirect
-	golang.org/x/sys v0.0.0-20191105231009-c1f44814a5cd // indirect
+	golang.org/x/sys v0.0.0-20191115151921-52ab43148777 // indirect
 	golang.org/x/text v0.3.2
 	golang.org/x/time v0.0.0-20191024005414-555d28b269f0 // indirect
-	golang.org/x/tools v0.0.0-20191108193012-7d206e10da11 // indirect
-	google.golang.org/api v0.13.0 // indirect
+	golang.org/x/tools v0.0.0-20191115202509-3a792d9c32b2 // indirect
+	google.golang.org/api v0.14.0 // indirect
 	google.golang.org/appengine v1.6.5 // indirect
-	google.golang.org/genproto v0.0.0-20191108220845-16a3f7862a1a // indirect
+	google.golang.org/genproto v0.0.0-20191115221424-83cc0476cb11 // indirect
 	google.golang.org/grpc v1.25.1
 	gopkg.in/djherbis/atime.v1 v1.0.0 // indirect
 	gopkg.in/djherbis/stream.v1 v1.2.0 // indirect
