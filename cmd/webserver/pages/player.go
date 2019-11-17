@@ -64,6 +64,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 
+			log.Info(log.LogNameTriggerUpdate, r, r.UserAgent())
 			err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: []int64{idx}}, false)
 			err = helpers.IgnoreErrors(err, queue.ErrInQueue)
 			log.Err(err)
@@ -176,6 +177,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	// Add to Rabbit
 	if player.NeedsUpdate(mongo.PlayerUpdateAuto) && !helpers.IsBot(r.UserAgent()) {
 
+		log.Info(log.LogNameTriggerUpdate, r, r.UserAgent())
 		err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: []int64{player.ID}}, false)
 		if err != nil && err != queue.ErrInQueue {
 			log.Err(err, r)
@@ -335,6 +337,7 @@ func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
 		missingPlayerIDs = append(missingPlayerIDs, friendID)
 	}
 
+	log.Info(log.LogNameTriggerUpdate, r, r.UserAgent())
 	err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: missingPlayerIDs}, false)
 	err = helpers.IgnoreErrors(err, queue.ErrInQueue)
 	log.Err(err)
@@ -890,6 +893,7 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			return "Player can't be updated yet", false, nil
 		}
 
+		log.Info(log.LogNameTriggerUpdate, r, r.UserAgent())
 		err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: []int64{player.ID}}, false)
 		if err == queue.ErrInQueue {
 			return "Player already queued", false, err
