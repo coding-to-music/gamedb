@@ -224,7 +224,7 @@ if ($homePage.length > 0) {
                         "id": data.Data[0],
                         "link": data.Data[5],
                         "after": data.Data[7],
-                        "discount": data.Data[16],
+                        "discount": data.Data[15],
                         "time": data.Data[11],
                         "avatar": data.Data[4],
                     }], true);

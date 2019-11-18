@@ -14,10 +14,9 @@ if ($('#commits-page').length > 0) {
             {
                 "targets": 0,
                 "render": function (data, type, row) {
-                    return row[0];
+                    return '<div class="icon-name"><div class="name">' + row[0] + '</div></div>'
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
-
                     $(td).attr('id', rowData[5]);
                     $(td).attr('nowrap', 'nowrap');
                 },

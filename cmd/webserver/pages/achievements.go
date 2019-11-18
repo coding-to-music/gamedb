@@ -82,15 +82,14 @@ func achievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		response.AddRow([]interface{}{
-			app.ID,                                // 0
-			app.GetName(),                         // 1
-			app.GetIcon(),                         // 2
-			app.GetPath() + "#achievements",       // 3
-			app.GetPrice(code).GetFinal(),         // 4
-			app.AchievementsCount,                 // 5
-			app.AchievementsAverageCompletion,     // 6
-			filteredIcons,                         // 7
-			helpers.InsertNewLines(app.GetName()), // 8
+			app.ID,                            // 0
+			app.GetName(),                     // 1
+			app.GetIcon(),                     // 2
+			app.GetPath() + "#achievements",   // 3
+			app.GetPrice(code).GetFinal(),     // 4
+			app.AchievementsCount,             // 5
+			app.AchievementsAverageCompletion, // 6
+			filteredIcons,                     // 7
 		})
 	}
 

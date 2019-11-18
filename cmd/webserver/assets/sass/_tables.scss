@@ -76,12 +76,6 @@ table.table {
         div.progress {
             height: 24px;
         }
-    }
-
-    td.img {
-        @extend .pt-0;
-        @extend .pb-0;
-        padding-left: 6px;
 
         div.icon-name {
             display: table;
@@ -93,20 +87,28 @@ table.table {
             }
 
             > div.name {
-                @extend .pt-2;
-                @extend .pb-2;
-                @extend .pl-2;
-
                 display: table-cell;
                 vertical-align: middle;
                 min-width: 150px;
                 word-break: break-word;
+                white-space: pre-wrap;
             }
 
             > div.name.min {
                 min-width: auto;
             }
+
+            > div.icon + div.name {
+                @extend .pl-2;
+            }
         }
+    }
+
+    td.img {
+        @extend .pt-0;
+        @extend .pb-0;
+
+        padding-left: 6px;
 
         img {
             @extend .rounded;

@@ -90,7 +90,7 @@ if ($('#price-changes-page').length > 0) {
                 "targets": 0,
                 "render": function (data, type, row) {
 
-                    let tagName = row[15];
+                    let tagName = row[3];
                     if ($typeField.val() === 'all') {
                         if (row[0] > 0) {
                             tagName = tagName + ' <span class="badge badge-success float-right">App</span>';

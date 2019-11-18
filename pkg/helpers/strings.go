@@ -81,12 +81,6 @@ func RandString(n int, chars string) string {
 	return string(b)
 }
 
-var newLineRegex = regexp.MustCompile("(.{5})")
-
-func InsertNewLines(s string) string {
-	return newLineRegex.ReplaceAllString(s, "$1<wbr />")
-}
-
 func ChunkStrings(strings []string, n int) (chunks [][]string) {
 
 	for i := 0; i < len(strings); i += n {
