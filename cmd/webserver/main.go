@@ -18,7 +18,6 @@ import (
 	"github.com/go-chi/chi/middleware"
 )
 
-//noinspection GoUnusedGlobalVariable
 var version string
 
 func main() {

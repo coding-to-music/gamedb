@@ -75,7 +75,6 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		gorm = gorm.Find(&bundles)
 
 		log.Err(gorm.Error, r)
-
 	}(r)
 
 	// Get total
