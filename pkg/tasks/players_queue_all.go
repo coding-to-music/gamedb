@@ -25,12 +25,11 @@ func (c PlayersQueueAll) Cron() string {
 	return ""
 }
 
-func (c PlayersQueueAll) work() {
+func (c PlayersQueueAll) work() (err error) {
 
 	players, err := mongo.GetPlayers(0, 0, bson.D{{"_id", 1}}, nil, bson.M{"_id": 1})
 	if err != nil {
-		log.Err(err)
-		return
+		return err
 	}
 
 	var playerIDs []int64
@@ -39,8 +38,12 @@ func (c PlayersQueueAll) work() {
 	}
 
 	err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: playerIDs}, true)
-	log.Err(err)
+	if err != nil {
+		return err
+	}
 
 	//
 	log.Info(strconv.Itoa(len(players)) + " players added to rabbit")
+
+	return nil
 }

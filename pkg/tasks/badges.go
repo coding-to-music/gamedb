@@ -4,7 +4,6 @@ import (
 	"math/rand"
 	"reflect"
 
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 )
 
@@ -24,13 +23,12 @@ func (c SetBadgeCache) Cron() string {
 	return CronTimeSetBadgeCache
 }
 
-func (c SetBadgeCache) work() {
+func (c SetBadgeCache) work() (err error) {
 
 	// Get random map key
 	keys := reflect.ValueOf(mongo.GlobalBadges).MapKeys()
 	randomID := keys[rand.Intn(len(keys))].Interface().(int)
 
 	// Update random badge
-	err := mongo.UpdateBadgeSummary(randomID)
-	log.Err(err)
+	return mongo.UpdateBadgeSummary(randomID)
 }

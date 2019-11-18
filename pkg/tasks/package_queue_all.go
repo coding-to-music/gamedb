@@ -24,12 +24,11 @@ func (c PackagesQueueAll) Cron() string {
 	return ""
 }
 
-func (c PackagesQueueAll) work() {
+func (c PackagesQueueAll) work() (err error) {
 
 	apps, err := sql.GetAppsWithColumnDepth("packages", 2, []string{"packages"})
 	if err != nil {
-		log.Err(err)
-		return
+		return err
 	}
 
 	packageMap := map[int]bool{}
@@ -53,8 +52,12 @@ func (c PackagesQueueAll) work() {
 	}
 
 	err = queue.ProduceToSteam(queue.SteamPayload{PackageIDs: packageSlice}, true)
-	log.Err(err)
+	if err != nil {
+		return err
+	}
 
 	//
 	log.Info(strconv.Itoa(len(packageMap)) + " packages added to rabbit")
+
+	return nil
 }

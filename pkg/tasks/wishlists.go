@@ -27,7 +27,7 @@ package tasks
 // 	return CronTimeWishlists
 // }
 //
-// func (c Wishlists) work() {
+// func (c Wishlists) work() (err error) {
 //
 // 	// Get app counts
 // 	var appCounts = map[int]int{}

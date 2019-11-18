@@ -27,13 +27,12 @@ func (c Tags) Cron() string {
 	return CronTimeTags
 }
 
-func (c Tags) work() {
+func (c Tags) work() (err error) {
 
 	// Get current tags, to delete old ones
 	tags, err := sql.GetAllTags()
 	if err != nil {
-		log.Err(err)
-		return
+		return err
 	}
 
 	tagsToDelete := map[int]int{}
@@ -45,14 +44,15 @@ func (c Tags) work() {
 	tagsResp, b, err := helpers.GetSteam().GetTags()
 	err = helpers.AllowSteamCodes(err, b, nil)
 	if err != nil {
-		log.Err(err)
-		return
+		return err
 	}
 
 	steamTagMap := tagsResp.GetMap()
 
 	appsWithTags, err := sql.GetAppsWithColumnDepth("tags", 2, []string{"tags", "prices", "reviews_score"})
-	log.Err(err)
+	if err != nil {
+		return err
+	}
 
 	log.Info("Found " + strconv.Itoa(len(appsWithTags)) + " apps with tags")
 
@@ -105,15 +105,13 @@ func (c Tags) work() {
 
 		err := sql.DeleteTags(tagsToDeleteSlice)
 		log.Err(err)
-
 	}()
 
 	wg.Wait()
 
 	gorm, err := sql.GetMySQLClient()
 	if err != nil {
-		log.Err(err)
-		return
+		return err
 	}
 
 	// Update current tags
@@ -155,7 +153,6 @@ func (c Tags) work() {
 	}
 	wg.Wait()
 
-	//
-	err = helpers.RemoveKeyFromMemCacheViaPubSub(helpers.MemcacheTagKeyNames.Key)
-	log.Err(err)
+	// Clear cache
+	return helpers.RemoveKeyFromMemCacheViaPubSub(helpers.MemcacheTagKeyNames.Key)
 }

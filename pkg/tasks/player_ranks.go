@@ -27,7 +27,7 @@ func (c PlayerRanks) Cron() string {
 	return CronTimePlayerRanks
 }
 
-func (c PlayerRanks) work() {
+func (c PlayerRanks) work() (err error) {
 
 	// err2 := mongo.UpdateManyUnset(mongo.CollectionPlayers, M{"ranks": 1})
 	// log.Info(err2)
@@ -45,8 +45,7 @@ func (c PlayerRanks) work() {
 	// Countries
 	countryCodes, err := mongo.GetUniquePlayerCountries()
 	if err != nil {
-		log.Err(err)
-		return
+		return err
 	}
 	countryCodes = append(countryCodes, mongo.RankCountryAll)
 
@@ -94,7 +93,7 @@ func (c PlayerRanks) work() {
 		stateCodes, err := mongo.GetUniquePlayerStates(cc)
 		if err != nil {
 			log.Err(err)
-			return
+			continue
 		}
 
 		for k2, stateCode := range stateCodes {
@@ -157,6 +156,8 @@ func (c PlayerRanks) work() {
 
 		time.Sleep(time.Second * 1 / 2)
 	}
+
+	return nil
 }
 
 type rankTask struct {

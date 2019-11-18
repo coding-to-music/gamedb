@@ -24,12 +24,11 @@ func (c AppPlayers) Cron() string {
 	return CronTimeAppPlayers
 }
 
-func (c AppPlayers) work() {
+func (c AppPlayers) work() (err error) {
 
 	gorm, err := sql.GetMySQLClient()
 	if err != nil {
-		log.Critical(err)
-		return
+		return err
 	}
 
 	gorm = gorm.Select([]string{"id"})
@@ -39,7 +38,7 @@ func (c AppPlayers) work() {
 	var appIDs []int
 	gorm = gorm.Pluck("id", &appIDs)
 	if gorm.Error != nil {
-		log.Critical(gorm.Error)
+		return gorm.Error
 	}
 
 	log.Info("Found " + strconv.Itoa(len(appIDs)) + " apps")
@@ -63,4 +62,6 @@ func (c AppPlayers) work() {
 		err = queue.ProduceAppPlayers(chunk)
 		log.Err(err)
 	}
+
+	return nil
 }

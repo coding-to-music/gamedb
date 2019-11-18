@@ -27,13 +27,12 @@ func (c Genres) Cron() string {
 	return CronTimeGenres
 }
 
-func (c Genres) work() {
+func (c Genres) work() (err error) {
 
 	// Get current genres, to delete old ones
 	currentGenres, err := sql.GetAllGenres(true)
 	if err != nil {
-		log.Err(err)
-		return
+		return err
 	}
 
 	genresToDelete := map[int]bool{}
@@ -48,7 +47,9 @@ func (c Genres) work() {
 
 	// Get apps from mysql
 	appsWithGenres, err := sql.GetAppsWithColumnDepth("genres", 2, []string{"genres", "prices", "reviews_score"})
-	log.Err(err)
+	if err != nil {
+		return err
+	}
 
 	log.Info("Found " + strconv.Itoa(len(appsWithGenres)) + " apps with genres")
 
@@ -119,15 +120,13 @@ func (c Genres) work() {
 
 		err := sql.DeleteGenres(genresToDeleteSlice)
 		log.Err(err)
-
 	}()
 
 	wg.Wait()
 
 	gorm, err := sql.GetMySQLClient()
 	if err != nil {
-		log.Err(err)
-		return
+		return err
 	}
 
 	// Update current genres
@@ -169,7 +168,6 @@ func (c Genres) work() {
 	}
 	wg.Wait()
 
-	//
-	err = helpers.RemoveKeyFromMemCacheViaPubSub(helpers.MemcacheGenreKeyNames.Key)
-	log.Err(err)
+	// Clear cache
+	return helpers.RemoveKeyFromMemCacheViaPubSub(helpers.MemcacheGenreKeyNames.Key)
 }

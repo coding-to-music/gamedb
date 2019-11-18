@@ -26,19 +26,17 @@ func (c AutoPlayerRefreshes) Cron() string {
 	return CronTimeAutoPlayerRefreshes
 }
 
-func (c AutoPlayerRefreshes) work() {
+func (c AutoPlayerRefreshes) work() (err error) {
 
 	gorm, err := sql.GetMySQLClient()
 	if err != nil {
-		log.Err(err)
-		return
+		return err
 	}
 
 	var users []sql.User
 	gorm = gorm.Select([]string{"steam_id", "steam_id"}).Where("patreon_level >= ?", 2).Where("steam_id > ?", 0).Find(&users)
 	if gorm.Error != nil {
-		log.Err(gorm.Error)
-		return
+		return gorm.Error
 	}
 
 	var playerIDs []int64
@@ -61,7 +59,11 @@ func (c AutoPlayerRefreshes) work() {
 	}
 
 	err = queue.ProduceGroup(groupIDs, false)
-	log.Err(err)
+	if err != nil {
+		return err
+	}
 
 	log.Info("Auto updated " + strconv.Itoa(len(users)) + " players")
+
+	return nil
 }

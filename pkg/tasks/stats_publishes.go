@@ -27,13 +27,12 @@ func (c Publishers) Cron() string {
 	return CronTimePublishers
 }
 
-func (c Publishers) work() {
+func (c Publishers) work() (err error) {
 
 	// Get current publishers, to delete old ones
 	allPublishers, err := sql.GetAllPublishers()
 	if err != nil {
-		log.Err(err)
-		return
+		return err
 	}
 
 	publishersToDelete := map[int]bool{}
@@ -48,7 +47,9 @@ func (c Publishers) work() {
 
 	// Get apps from mysql
 	appsWithPublishers, err := sql.GetAppsWithColumnDepth("publishers", 2, []string{"publishers", "prices", "reviews_score"})
-	log.Err(err)
+	if err != nil {
+		return err
+	}
 
 	log.Info("Found " + strconv.Itoa(len(appsWithPublishers)) + " apps with publishers")
 
@@ -119,15 +120,13 @@ func (c Publishers) work() {
 
 		err := sql.DeletePublishers(pubsToDeleteSlice)
 		log.Err(err)
-
 	}()
 
 	wg.Wait()
 
 	gorm, err := sql.GetMySQLClient()
 	if err != nil {
-		log.Err(err)
-		return
+		return err
 	}
 
 	// Update current publishers
@@ -170,7 +169,6 @@ func (c Publishers) work() {
 
 	wg.Wait()
 
-	//
-	err = helpers.RemoveKeyFromMemCacheViaPubSub(helpers.MemcachePublisherKeyNames.Key)
-	log.Err(err)
+	// Clear cache
+	return helpers.RemoveKeyFromMemCacheViaPubSub(helpers.MemcachePublisherKeyNames.Key)
 }

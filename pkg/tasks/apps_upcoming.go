@@ -2,7 +2,6 @@ package tasks
 
 import (
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 )
 
 type ClearUpcomingCache struct {
@@ -21,13 +20,12 @@ func (c ClearUpcomingCache) Cron() string {
 	return CronTimeClearUpcomingCache
 }
 
-func (c ClearUpcomingCache) work() {
-
-	var err error
+func (c ClearUpcomingCache) work() (err error) {
 
 	err = helpers.RemoveKeyFromMemCacheViaPubSub(helpers.MemcacheUpcomingAppsCount.Key)
-	log.Err(err)
+	if err != nil {
+		return err
+	}
 
-	err = helpers.RemoveKeyFromMemCacheViaPubSub(helpers.MemcacheUpcomingPackagesCount.Key)
-	log.Err(err)
+	return helpers.RemoveKeyFromMemCacheViaPubSub(helpers.MemcacheUpcomingPackagesCount.Key)
 }

@@ -16,6 +16,7 @@ func (c DevCodeRun) Cron() string {
 	return ""
 }
 
-func (c DevCodeRun) work() {
+func (c DevCodeRun) work() (err error) {
 
+	return nil
 }

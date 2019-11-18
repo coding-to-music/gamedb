@@ -60,7 +60,7 @@ type TaskInterface interface {
 	ID() string
 	Name() string
 	Cron() string
-	work()
+	work() error
 }
 
 type BaseTask struct {
@@ -115,10 +115,15 @@ func Run(task TaskInterface) {
 	page.Send(websockets.AdminPayload{TaskID: task.ID(), Action: "started"})
 
 	// Do work
-	task.work()
+	policy := backoff.NewConstantBackOff(time.Minute)
+
+	err := backoff.RetryNotify(task.work, backoff.WithMaxRetries(policy, 10), func(err error, t time.Duration) { log.Info(err, task.ID(), err) })
+	if err != nil {
+		log.Critical(task.ID(), err)
+	}
 
 	// Save config row
-	err := sql.SetConfig(sql.ConfigID("task-"+task.ID()), strconv.FormatInt(time.Now().Unix(), 10))
+	err = sql.SetConfig(sql.ConfigID("task-"+task.ID()), strconv.FormatInt(time.Now().Unix(), 10))
 	log.Err(err)
 
 	// Send websocket

@@ -27,13 +27,12 @@ func (c Developers) Cron() string {
 	return CronTimeDevelopers
 }
 
-func (c Developers) work() {
+func (c Developers) work() (err error) {
 
 	// Get current developers, to delete old ones
 	allDevelopers, err := sql.GetAllDevelopers([]string{"id", "name"})
 	if err != nil {
-		log.Err(err)
-		return
+		return err
 	}
 
 	developersToDelete := map[int]bool{}
@@ -48,7 +47,9 @@ func (c Developers) work() {
 
 	// Get apps from mysql
 	appsWithDevelopers, err := sql.GetAppsWithColumnDepth("developers", 2, []string{"developers", "prices", "reviews_score"})
-	log.Err(err)
+	if err != nil {
+		return err
+	}
 
 	log.Info("Found " + strconv.Itoa(len(appsWithDevelopers)) + " apps with developers")
 
@@ -118,15 +119,13 @@ func (c Developers) work() {
 
 		err := sql.DeleteDevelopers(devsToDeleteSlice)
 		log.Err(err)
-
 	}()
 
 	wg.Wait()
 
 	gorm, err := sql.GetMySQLClient()
 	if err != nil {
-		log.Err(err)
-		return
+		return err
 	}
 
 	// Update current developers
@@ -168,7 +167,6 @@ func (c Developers) work() {
 	}
 	wg.Wait()
 
-	//
-	err = helpers.RemoveKeyFromMemCacheViaPubSub(helpers.MemcacheDeveloperKeyNames.Key)
-	log.Err(err)
+	// Clear cache
+	return helpers.RemoveKeyFromMemCacheViaPubSub(helpers.MemcacheDeveloperKeyNames.Key)
 }
