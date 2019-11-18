@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/go-durationfmt"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/log"
 )
 
@@ -28,7 +29,7 @@ func (ql QueryLogger) End() {
 
 	diff := time.Since(ql.startTime)
 
-	if diff > (time.Second * 3) {
+	if diff > (time.Second) && !config.IsLocal() {
 
 		diffFormatted, err := durationfmt.Format(diff, "%s.%is")
 		if err != nil {
