@@ -8,12 +8,19 @@
             <p class="lead mb-2">{{ .Description }} Donations will go towards a new extra quick site-wide search,
                 high definition charts, tracking every currency, faster hosting & more!</p>
 
-            <div id="patreon-button">
-                <a href="https://www.patreon.com/bePatron?u=9962078" data-patreon-widget-type="become-patron-button">Become a Patron!</a>
-                <script async src="https://c6.patreon.com/becomePatronButton.bundle.js"></script>
-            </div>
+            <a class="btn" role="button" href="https://www.patreon.com/bePatron?u=9962078" target="_blank" style="background-color: #f96854; color: #fff">
+                <i class="fab fa-patreon"></i> Patreon
+            </a>
 
-            <small class="d-block mt-2">Or a one off <a href="https://paypal.me/jimeagle/10" target="_blank">PayPal</a> / <a href="https://github.com/sponsors/Jleagle" target="_blank">GitHub</a> donation.</small>
+            <a class="btn" role="button" href="https://github.com/sponsors/Jleagle" target="_blank" style="background-color: #4078c0; color: #fff">
+                <i class="fab fa-github"></i> GitHub
+            </a>
+
+            <a class="btn" role="button" href="https://paypal.me/jimeagle/15" target="_blank" style="background-color: #003087; color: #fff">
+                <i class="fab fa-cc-paypal"></i> PayPal
+            </a>
+
+            <p class="mb-0 mt-2">GitHub is currently matching any donation made!</p>
         </div>
 
         {{ template "_flashes" . }}
@@ -26,10 +33,10 @@
                     <table class="table table-hover table-striped table-datatable mb-0" data-ordering="false">
                         <thead class="thead-light">
                         <tr>
-                            <th scope="col">Patreon Perks</th>
-                            <th scope="col">Donator</th>
-                            <th scope="col">Upgrade</th>
-                            <th scope="col">Pro</th>
+                            <th scope="col">Patreon/GitHub Perks</th>
+                            <th scope="col">1$</th>
+                            <th scope="col">3$</th>
+                            <th scope="col">20$</th>
                         </tr>
                         </thead>
                         <tbody>
