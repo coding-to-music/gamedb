@@ -103,13 +103,7 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		appIDs, err := bundle.GetPackageIDs()
-		if err != nil {
-			log.Err(err, r)
-			return
-		}
-
-		packages, err = sql.GetPackages(appIDs, []string{})
+		packages, err = sql.GetPackages(bundle.GetPackageIDs(), []string{})
 		log.Err(err, r)
 
 	}()

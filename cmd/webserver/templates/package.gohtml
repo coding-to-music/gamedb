@@ -183,7 +183,7 @@
                                         </td>
                                         <td>{{ .Discount }}%</td>
                                         <td>{{ .AppsCount }}</td>
-                                        <td>{{ .PackagesCount }}</td>
+                                        <td>{{ len .GetPackageIDs }}</td>
                                         <td>{{ .GetUpdatedNice }}</td>
                                     </tr>
                                 {{ end }}

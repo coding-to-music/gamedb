@@ -86,17 +86,12 @@ func (bundle Bundle) AppsCount() int {
 	return len(apps)
 }
 
-func (bundle Bundle) GetPackageIDs() (ids []int, err error) {
+func (bundle Bundle) GetPackageIDs() (ids []int) {
 
-	err = helpers.Unmarshal([]byte(bundle.PackageIDs), &ids)
-	return ids, err
-}
-
-func (bundle Bundle) PackagesCount() int {
-
-	packages, err := bundle.GetPackageIDs()
+	err := helpers.Unmarshal([]byte(bundle.PackageIDs), &ids)
 	log.Err(err)
-	return len(packages)
+
+	return ids
 }
 
 func (bundle Bundle) OutputForJSON() (output []interface{}) {
@@ -106,9 +101,9 @@ func (bundle Bundle) OutputForJSON() (output []interface{}) {
 		bundle.GetName(), // 1
 		bundle.GetPath(), // 2
 		strconv.FormatInt(bundle.UpdatedAt.Unix(), 10), // 3
-		bundle.Discount,        // 4
-		bundle.AppsCount(),     // 5
-		bundle.PackagesCount(), // 6
+		bundle.Discount,             // 4
+		bundle.AppsCount(),          // 5
+		len(bundle.GetPackageIDs()), // 6
 		bundle.HighestDiscount == bundle.Discount && bundle.Discount != 0, // 7 Highest ever discount
 		bundle.GetStoreLink(), // 8
 	}

@@ -33,14 +33,7 @@ func (c PackagesQueueAll) work() (err error) {
 
 	packageMap := map[int]bool{}
 	for _, app := range apps {
-
-		packagesIDs, err := app.GetPackageIDs()
-		if err != nil {
-			log.Err(app.ID, err)
-			continue
-		}
-
-		for _, packageID := range packagesIDs {
+		for _, packageID := range app.GetPackageIDs() {
 			packageMap[packageID] = true
 		}
 	}

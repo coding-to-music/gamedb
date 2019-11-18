@@ -672,13 +672,14 @@ func (app App) GetDLCs() (apps []App, err error) {
 	return apps, err
 }
 
-func (app App) GetPackageIDs() (packages []int, err error) {
+func (app App) GetPackageIDs() (packages []int) {
 
 	packages = []int{} // Needed for marshalling into type
 
-	err = helpers.Unmarshal([]byte(app.Packages), &packages)
+	err := helpers.Unmarshal([]byte(app.Packages), &packages)
 	log.Err(err)
-	return packages, err
+
+	return packages
 }
 
 func (app App) GetReviews() (reviews AppReviewSummary, err error) {
