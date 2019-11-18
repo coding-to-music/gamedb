@@ -141,6 +141,7 @@ func (q groupQueueScrape) processMessages(msgs []amqp.Delivery) {
 			var err error
 
 			app, err = getAppFromGroup(group)
+			err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
 			if err != nil {
 				log.Err(err, group.ID64)
 				ackRetry(msg, &message)
@@ -472,7 +473,10 @@ func saveGroup(group mongo.Group) (err error) {
 func getAppFromGroup(group mongo.Group) (app sql.App, err error) {
 
 	if group.Type == helpers.GroupTypeGame && group.AppID > 0 {
-		return sql.GetApp(group.AppID, []string{"id", "group_id"})
+		app, err = sql.GetApp(group.AppID, []string{"id", "group_id"})
+		if err == sql.ErrRecordNotFound {
+			err = ProduceToSteam(SteamPayload{AppIDs: []int{group.AppID}}, true)
+		}
 	}
 
 	return app, err
