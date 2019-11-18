@@ -233,7 +233,7 @@ func init() {
 	// Defaults
 	Config.GameDBShortName.SetDefault("GameDB")
 	Config.NewReleaseDays.SetDefault("14")
-	Config.SteamAPIKey.SetDefault("x")
+	Config.SteamAPIKey.SetDefault("unset")
 
 	switch Config.Environment.Get() {
 	case EnvProd:
