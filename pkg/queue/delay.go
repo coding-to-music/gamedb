@@ -134,7 +134,7 @@ func (q delayQueue) processMessages(msgs []amqp.Delivery) {
 			return
 		}
 
-	case queueGroups:
+	case queueGroups, queueGroups2:
 
 		message2 := groupMessage{}
 		message2.Force = message.Force

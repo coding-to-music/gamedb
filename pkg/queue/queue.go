@@ -28,6 +28,7 @@ const (
 	queueDelays    queueName = "GameDB_Go_Delays"
 	queueFailed    queueName = "GameDB_Go_Failed"
 	queueGroups    queueName = "GameDB_Go_Groups"
+	queueGroups2   queueName = "GameDB_Go_Groups2"
 	queueGroupsNew queueName = "GameDB_Go_Groups_New"
 	queuePackages  queueName = "GameDB_Go_Packages"
 	queuePlayers   queueName = "GameDB_Go_Profiles"
@@ -64,6 +65,10 @@ var (
 		},
 		queueGroups: {
 			Name:  queueGroups,
+			queue: &groupQueueScrape{},
+		},
+		queueGroups2: {
+			Name:  queueGroups2,
 			queue: &groupQueueScrape{},
 		},
 		queueGroupsNew: {
