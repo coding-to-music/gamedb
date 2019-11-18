@@ -18,7 +18,7 @@ require (
 	github.com/Jleagle/valve-data-format-go v0.0.0-20191105130353-2651328f1d36
 	github.com/Philipp15b/go-steam v1.0.1-0.20190816133340-b04c5a83c1c0
 	github.com/PuerkitoBio/goquery v1.5.0 // indirect
-	github.com/ahmdrz/goinsta/v2 v2.4.4
+	github.com/ahmdrz/goinsta/v2 v2.4.5-0.20191021103459-79702a8f3eda
 	github.com/andybalholm/cascadia v1.1.0 // indirect
 	github.com/antchfx/htmlquery v1.2.0 // indirect
 	github.com/antchfx/xmlquery v1.2.0 // indirect
@@ -29,6 +29,7 @@ require (
 	github.com/buger/jsonparser v0.0.0-20191004114745-ee4c978eae7e // indirect
 	github.com/bwmarrin/discordgo v0.20.1
 	github.com/cenkalti/backoff v2.2.1+incompatible
+	github.com/cenkalti/backoff/v3 v3.0.0
 	github.com/derekstavis/go-qs v0.0.0-20180720192143-9eef69e6c4e7
 	github.com/dghubble/go-twitter v0.0.0-20190719072343-39e5462e111f
 	github.com/dghubble/oauth1 v0.6.0
@@ -48,7 +49,9 @@ require (
 	github.com/golang/groupcache v0.0.0-20191027212112-611e8accdfc9 // indirect
 	github.com/golang/protobuf v1.3.2
 	github.com/golang/snappy v0.0.1
+	github.com/google/go-github v17.0.0+incompatible // indirect
 	github.com/google/go-github/v27 v27.0.6
+	github.com/google/go-github/v28 v28.1.1
 	github.com/gorilla/schema v1.1.0 // indirect
 	github.com/gorilla/sessions v1.2.0
 	github.com/gorilla/websocket v1.4.1

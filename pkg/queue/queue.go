@@ -9,7 +9,7 @@ import (
 
 	"github.com/Jleagle/go-durationfmt"
 	"github.com/Philipp15b/go-steam"
-	"github.com/cenkalti/backoff"
+	"github.com/cenkalti/backoff/v3"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/streadway/amqp"
