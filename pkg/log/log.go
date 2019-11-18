@@ -7,7 +7,6 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"reflect"
 	"runtime/debug"
 	"strconv"
 	"strings"
@@ -181,22 +180,10 @@ func log(interfaces ...interface{}) {
 			continue
 		case error:
 			entry.error = val
-		case bool:
-			entry.texts = append(entry.texts, strconv.FormatBool(val))
-		case int:
-			entry.texts = append(entry.texts, strconv.Itoa(val))
-		case uint32:
-			entry.texts = append(entry.texts, strconv.FormatUint(uint64(val), 10))
-		case uint64:
-			entry.texts = append(entry.texts, strconv.FormatUint(val, 10))
-		case int64:
-			entry.texts = append(entry.texts, strconv.FormatInt(val, 10))
 		case float32:
 			entry.texts = append(entry.texts, strconv.FormatFloat(float64(val), 'f', -1, 32))
 		case float64:
 			entry.texts = append(entry.texts, strconv.FormatFloat(val, 'f', -1, 64))
-		case string:
-			entry.texts = append(entry.texts, val)
 		case []byte:
 			entry.texts = append(entry.texts, string(val))
 		case []string:
@@ -216,8 +203,9 @@ func log(interfaces ...interface{}) {
 		case Service:
 			loggingServices = append(loggingServices, val)
 		case Option:
+			//
 		default:
-			Warning("Invalid value given to log: " + reflect.TypeOf(val).String())
+			entry.texts = append(entry.texts, fmt.Sprint(val))
 		}
 	}
 
