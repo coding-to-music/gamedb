@@ -52,7 +52,10 @@ func groupsTrendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	query.limit(r)
 
 	// Filter
-	filter := bson.D{}
+	var filter = bson.D{
+		{"type", helpers.GroupTypeGroup},
+	}
+	var unfiltered = filter
 
 	search := helpers.RegexNonAlphaNumericSpace.ReplaceAllString(query.getSearchString("search"), "")
 	if len(search) > 0 {
@@ -61,18 +64,6 @@ func groupsTrendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			bson.M{"abbreviation": bson.M{"$regex": search, "$options": "i"}},
 			bson.M{"url": bson.M{"$regex": search, "$options": "i"}},
 		}})
-	}
-
-	typex := query.getSearchString("type")
-	if typex == helpers.GroupTypeGroup || typex == helpers.GroupTypeGame {
-		filter = append(filter, bson.E{Key: "type", Value: typex})
-	}
-
-	showErrors := query.getSearchString("errors")
-	if showErrors == "removed" {
-		filter = append(filter, bson.E{Key: "error", Value: bson.M{"$exists": true, "$ne": ""}})
-	} else if showErrors == "notremoved" {
-		filter = append(filter, bson.E{Key: "error", Value: bson.M{"$exists": true, "$eq": ""}})
 	}
 
 	//
@@ -105,16 +96,26 @@ func groupsTrendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		total, err = mongo.CountDocuments(mongo.CollectionGroups, filter, 0)
+		total, err = mongo.CountDocuments(mongo.CollectionGroups, unfiltered, 60*60*6)
 		log.Err(err, r)
+	}(r)
 
+	var totalFiltered int64
+	wg.Add(1)
+	go func(r *http.Request) {
+
+		defer wg.Done()
+
+		var err error
+		totalFiltered, err = mongo.CountDocuments(mongo.CollectionGroups, filter, 60*60)
+		log.Err(err, r)
 	}(r)
 
 	wg.Wait()
 
 	response := DataTablesAjaxResponse{}
 	response.RecordsTotal = total
-	response.RecordsFiltered = total
+	response.RecordsFiltered = totalFiltered
 	response.Draw = query.Draw
 	response.limit(r)
 

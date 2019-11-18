@@ -6,19 +6,19 @@ if ($('#groups-page').length > 0) {
             $(row).attr('data-group-id64', data[0]);
             $(row).attr('data-group-id', data[11]);
             $(row).attr('data-link', data[2]);
-            if (data[7] === 'game' && !$('#type').val()) {
-                $(row).addClass('table-primary');
-            }
-            if (data[9]) {
-                $(row).addClass('table-danger');
-            }
         },
         "columnDefs": [
             // Icon / Name
             {
                 "targets": 0,
                 "render": function (data, type, row) {
-                    return '<div class="icon-name"><div class="icon"><img data-src="/assets/img/no-app-image-square.jpg" data-lazy="' + row[3] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></div>'
+
+                    let name = row[1];
+                    if (row[9]) {
+                        name += '<span class="badge badge-danger float-right">Removed</span>';
+                    }
+
+                    return '<div class="icon-name"><div class="icon"><img data-src="/assets/img/no-app-image-square.jpg" data-lazy="' + row[3] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + name + '</div></div>'
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img');
@@ -59,8 +59,8 @@ if ($('#groups-page').length > 0) {
         tableOptions: options,
         searchFields: [
             $('#search'),
-            $('#type'),
-            $('#errors'),
+            // $('#type'),
+            // $('#errors'),
         ],
     });
 }
