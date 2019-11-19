@@ -3,7 +3,6 @@ package helpers
 import (
 	"fmt"
 	"math/rand"
-	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -23,13 +22,7 @@ func TruncateString(str string, size int, tail string) string {
 }
 
 func GetHashTag(string string) (ret string) {
-
-	reg, err := regexp.Compile("[^a-zA-Z0-9]+")
-	if err != nil {
-		return ""
-	}
-
-	return "#" + reg.ReplaceAllString(string, "")
+	return "#" + RegexNonAlphaNumeric.ReplaceAllString(string, "")
 }
 
 func InterfaceToString(i interface{}) string {

@@ -2,12 +2,13 @@ package helpers
 
 import "regexp"
 
+var botRegex = regexp.MustCompile("/bot|crawl|slurp|wget|curl|spider|yandex|baidu|google|msn|bing|yahoo|jeeves|twitter|facebook/i")
+
 func IsBot(userAgent string) bool {
 
 	if userAgent == "" {
 		return true
 	}
 
-	r, _ := regexp.Compile("/bot|crawl|slurp|wget|curl|spider|yandex|baidu|google|msn|bing|yahoo|jeeves|twitter|facebook/i")
-	return r.MatchString(userAgent)
+	return botRegex.MatchString(userAgent)
 }
