@@ -12,10 +12,11 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func PatreonRouter() http.Handler {
+func WebhooksRouter() http.Handler {
 
 	r := chi.NewRouter()
-	r.Post("/webhooks", patreonWebhookPostHandler)
+	r.Post("/patreon", patreonWebhookPostHandler)
+	r.Post("/github", gitHubWebhookPostHandler)
 	return r
 }
 
@@ -83,4 +84,8 @@ func saveWebhookEvent(r *http.Request, event mongo.EventEnum, pwr patreon.Webhoo
 	}
 
 	return nil
+}
+
+func gitHubWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
+
 }

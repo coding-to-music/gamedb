@@ -80,7 +80,6 @@ func main() {
 	r.Mount("/new-releases", pages.NewReleasesRouter())
 	r.Mount("/news", pages.NewsRouter())
 	r.Mount("/packages", pages.PackagesRouter())
-	r.Mount("/patreon", pages.PatreonRouter())
 	r.Mount("/players", pages.PlayersRouter())
 	r.Mount("/price-changes", pages.PriceChangeRouter())
 	r.Mount("/product-keys", pages.ProductKeysRouter())
@@ -93,6 +92,7 @@ func main() {
 	r.Mount("/steam-api", pages.SteamAPIRouter())
 	r.Mount("/tags", pages.TagsRouter())
 	r.Mount("/upcoming", pages.UpcomingRouter())
+	r.Mount("/webhooks", pages.WebhooksRouter())
 	r.Mount("/websocket", pages.WebsocketsRouter())
 
 	// Sitemaps, Google doesnt like having a sitemap in a sub directory
