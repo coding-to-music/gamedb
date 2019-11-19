@@ -93,7 +93,10 @@ func GetUserIDFromSesion(r *http.Request) (id int, err error) {
 	return strconv.Atoi(idx)
 }
 
-var ccLock sync.Mutex
+var (
+	ccLock    sync.Mutex
+	maxMindDB *maxminddb.Reader
+)
 
 func GetProductCC(r *http.Request) steam.ProductCC {
 
@@ -121,15 +124,13 @@ func GetProductCC(r *http.Request) steam.ProductCC {
 		}
 
 		// Get from Maxmind
-		db, err := maxminddb.Open("./assets/files/GeoLite2-Country.mmdb")
-		if err != nil {
-			log.Err(err)
-			return steam.ProductCCUS
+		if maxMindDB == nil {
+			maxMindDB, err = maxminddb.Open("./assets/files/GeoLite2-Country.mmdb")
+			if err != nil {
+				log.Err(err)
+				return steam.ProductCCUS
+			}
 		}
-		defer func() {
-			err = db.Close()
-			log.Err(err)
-		}()
 
 		ip := net.ParseIP(r.RemoteAddr)
 
@@ -144,7 +145,7 @@ func GetProductCC(r *http.Request) steam.ProductCC {
 				} `maxminddb:"country"`
 			}
 
-			err = db.Lookup(ip, &record)
+			err = maxMindDB.Lookup(ip, &record)
 			if err != nil {
 				log.Err(err)
 				return steam.ProductCCUS
