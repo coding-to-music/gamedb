@@ -230,8 +230,8 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	if len(search) >= 2 {
 		sortOrder = nil
 		filter = append(filter, bson.E{Key: "$or", Value: bson.A{
-			bson.M{"$text": bson.M{"$search": search}},
-			bson.M{"_id": search},
+			bson.M{"persona_name": bson.M{"$regex": search, "$options": "i"}},
+			bson.M{"vanity_url": bson.M{"$regex": search, "$options": "i"}},
 		}})
 	}
 
