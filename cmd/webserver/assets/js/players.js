@@ -3,6 +3,7 @@ if ($('#players-page').length > 0) {
     const countriesWithStates = ['AU', 'CA', 'FR', 'GB', 'NZ', 'PH', 'SI', 'US'];
 
     const $country = $('#country');
+    const $search = $('#search');
 
     $country.on('change', function (e) {
         toggleStateDropDown();
@@ -23,7 +24,9 @@ if ($('#players-page').length > 0) {
 
     const options = {
         "language": {
-            "zeroRecords": "No players found <a href='/players/add'>Add a Player</a>",
+            "zeroRecords": function () {
+                return 'Players can be searched for using their username or vanity URL. <a href="/players/add?search=' + $search.val() + '">If a player is missing, add them here</a>.';
+            },
         },
         "order": [[3, 'desc']],
         "createdRow": function (row, data, dataIndex) {
@@ -188,7 +191,7 @@ if ($('#players-page').length > 0) {
 
     let searchFields = [
         $country,
-        $('#search'),
+        $search,
     ];
 
     for (const cc of countriesWithStates) {
