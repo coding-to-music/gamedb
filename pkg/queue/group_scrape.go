@@ -475,7 +475,7 @@ func getAppFromGroup(group mongo.Group) (app sql.App, err error) {
 	if group.Type == helpers.GroupTypeGame && group.AppID > 0 {
 		app, err = sql.GetApp(group.AppID, []string{"id", "group_id"})
 		if err == sql.ErrRecordNotFound {
-			err = ProduceToSteam(SteamPayload{AppIDs: []int{group.AppID}}, true)
+			err = ProduceToSteam(SteamPayload{AppIDs: []int{group.AppID}, Force: true})
 		}
 	}
 

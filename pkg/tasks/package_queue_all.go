@@ -44,7 +44,7 @@ func (c PackagesQueueAll) work() (err error) {
 		packageSlice = append(packageSlice, k)
 	}
 
-	err = queue.ProduceToSteam(queue.SteamPayload{PackageIDs: packageSlice}, true)
+	err = queue.ProduceToSteam(queue.SteamPayload{PackageIDs: packageSlice, Force: true})
 	if err != nil {
 		return err
 	}

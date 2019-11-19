@@ -19,9 +19,10 @@ type SteamPayload struct {
 	AppIDs     []int
 	PackageIDs []int
 	ProfileIDs []int64
+	Force      bool
 }
 
-func ProduceToSteam(payload SteamPayload, force bool) (err error) {
+func ProduceToSteam(payload SteamPayload) (err error) {
 
 	if len(payload.AppIDs) == 0 && len(payload.PackageIDs) == 0 && len(payload.ProfileIDs) == 0 {
 		return nil
@@ -37,7 +38,7 @@ func ProduceToSteam(payload SteamPayload, force bool) (err error) {
 
 	for _, appID := range payload.AppIDs {
 
-		if !config.IsLocal() && !force {
+		if !config.IsLocal() && !payload.Force {
 
 			item := helpers.MemcacheAppInQueue(appID)
 
@@ -58,7 +59,7 @@ func ProduceToSteam(payload SteamPayload, force bool) (err error) {
 
 	for _, packageID := range payload.PackageIDs {
 
-		if !config.IsLocal() && !force {
+		if !config.IsLocal() && !payload.Force {
 
 			item := helpers.MemcachePackageInQueue(packageID)
 
@@ -79,7 +80,7 @@ func ProduceToSteam(payload SteamPayload, force bool) (err error) {
 
 	for _, profileID := range payload.ProfileIDs {
 
-		if !config.IsLocal() && !force {
+		if !config.IsLocal() && !payload.Force {
 
 			item := helpers.MemcachePlayerInQueue(profileID)
 
@@ -105,7 +106,7 @@ func ProduceToSteam(payload SteamPayload, force bool) (err error) {
 			PlayerIDs:  profileIDs,
 		},
 	}
-	message.Force = force
+	message.Force = payload.Force
 
 	return produce(message, QueueSteam)
 }

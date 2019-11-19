@@ -268,7 +268,8 @@ func adminQueues(r *http.Request) {
 		AppIDs:     appIDs,
 		PackageIDs: packageIDs,
 		ProfileIDs: playerIDs,
-	}, true)
+		Force:      true,
+	})
 	log.Err(err)
 }
 

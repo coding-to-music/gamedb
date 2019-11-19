@@ -65,7 +65,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		if err == mongo.ErrNoDocuments {
 
 			log.Info(log.LogNameTriggerUpdate, r, r.UserAgent())
-			err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: []int64{idx}}, false)
+			err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: []int64{idx}, Force: false})
 			err = helpers.IgnoreErrors(err, queue.ErrInQueue)
 			log.Err(err)
 
@@ -142,7 +142,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 			backgroundApp, err = sql.GetApp(player.BackgroundAppID, []string{"id", "name", "background"})
 			err = helpers.IgnoreErrors(err, sql.ErrInvalidAppID)
 			if err == sql.ErrRecordNotFound {
-				err := queue.ProduceToSteam(queue.SteamPayload{AppIDs: []int{player.BackgroundAppID}}, false)
+				err := queue.ProduceToSteam(queue.SteamPayload{AppIDs: []int{player.BackgroundAppID}, Force: false})
 				log.Err(err, player.BackgroundAppID)
 			} else if err != nil {
 				log.Err(err, player.BackgroundAppID)
@@ -178,7 +178,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	if player.NeedsUpdate(mongo.PlayerUpdateAuto) && !helpers.IsBot(r.UserAgent()) {
 
 		log.Info(log.LogNameTriggerUpdate, r, r.UserAgent())
-		err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: []int64{player.ID}}, false)
+		err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: []int64{player.ID}, Force: false})
 		if err != nil && err != queue.ErrInQueue {
 			log.Err(err, r)
 		} else {
@@ -338,7 +338,7 @@ func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Info(log.LogNameTriggerUpdate, r, r.UserAgent())
-	err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: missingPlayerIDs}, false)
+	err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: missingPlayerIDs, Force: false})
 	err = helpers.IgnoreErrors(err, queue.ErrInQueue)
 	log.Err(err)
 
@@ -894,7 +894,7 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		log.Info(log.LogNameTriggerUpdate, r, r.UserAgent())
-		err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: []int64{player.ID}}, false)
+		err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: []int64{player.ID}, Force: false})
 		if err == queue.ErrInQueue {
 			return "Player already queued", false, err
 		} else if err != nil {
