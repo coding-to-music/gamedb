@@ -123,7 +123,12 @@
 
             if (name && urlParams.has(name)) {
 
-                const value = urlParams.getAll(name);
+                let value;
+                if (isFieldMultiple($field)) {
+                    value = urlParams.getAll(name);
+                } else {
+                    value = urlParams.get(name);
+                }
 
                 setFieldValue($field, value);
                 currentValues[name] = value;
@@ -430,6 +435,21 @@
         } else {
 
             return $field.attr('name');
+        }
+    }
+
+    function isFieldMultiple($field) {
+
+        if ($field.hasClass('noUi-target')) {
+
+            return getFieldValue($field).length > 1;
+
+        } else if ($field.prop('multiple')) {
+
+            return true;
+
+        } else {
+            return false;
         }
     }
 
