@@ -200,14 +200,15 @@ func homeSalesHandler(w http.ResponseWriter, r *http.Request) {
 	var homeSales []homeSale
 	for _, v := range sales {
 		homeSales = append(homeSales, homeSale{
-			ID:     v.AppID,
-			Name:   v.AppName,
-			Icon:   v.AppIcon,
-			Type:   v.SaleType,
-			Ends:   v.SaleEnd,
-			Rating: v.GetAppRating(),
-			Price:  v.GetPriceString(code),
-			Link:   helpers.GetAppStoreLink(v.AppID),
+			ID:        v.AppID,
+			Name:      v.AppName,
+			Icon:      v.AppIcon,
+			Type:      v.SaleType,
+			Ends:      v.SaleEnd,
+			Rating:    v.GetAppRating(),
+			Price:     v.GetPriceString(code),
+			Link:      helpers.GetAppPath(v.AppID, v.AppName),
+			StoreLink: helpers.GetAppStoreLink(v.AppID),
 		})
 	}
 
@@ -215,15 +216,16 @@ func homeSalesHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type homeSale struct {
-	ID       int       `json:"id"`
-	Name     string    `json:"name"`
-	Icon     string    `json:"icon"`
-	Type     string    `json:"type"`
-	Price    string    `json:"price"`
-	Discount int       `json:"discount"`
-	Rating   string    `json:"rating"`
-	Ends     time.Time `json:"ends"`
-	Link     string    `json:"link"`
+	ID        int       `json:"id"`
+	Name      string    `json:"name"`
+	Icon      string    `json:"icon"`
+	Type      string    `json:"type"`
+	Price     string    `json:"price"`
+	Discount  int       `json:"discount"`
+	Rating    string    `json:"rating"`
+	Ends      time.Time `json:"ends"`
+	Link      string    `json:"link"`
+	StoreLink string    `json:"store_link"`
 }
 
 func homePlayersHandler(w http.ResponseWriter, r *http.Request) {
