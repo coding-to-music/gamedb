@@ -62,7 +62,7 @@ func playerAddHandler(w http.ResponseWriter, r *http.Request) {
 				return ""
 			}
 
-			return "Player " + search + "not found on Steam"
+			return "Player " + search + " not found on Steam"
 		}()
 
 		if message != "" {
