@@ -40,18 +40,20 @@ func GetAPIKey(tag string, getUnusedKey bool) (err error) {
 			return err
 		}
 
-		// / https://stackoverflow.com/questions/7698211/prevent-two-calls-to-the-same-script-from-selecting-the-same-mysql-row
-		db = db.Raw("SELECT GET_LOCK(" + sqlKeyName + ", 10) as `lock`")
+		// https://stackoverflow.com/questions/7698211/prevent-two-calls-to-the-same-script-from-selecting-the-same-mysql-row
+		db = db.New().Raw("SELECT GET_LOCK('" + sqlKeyName + "', 10) as `lock`")
 		if db.Error != nil {
 			return db.Error
 		}
 
 		defer func() {
-			db = db.Raw("SELECT RELEASE_LOCK(" + sqlKeyName + ")")
+			db = db.New().Raw("SELECT RELEASE_LOCK('" + sqlKeyName + "')")
 			if db.Error != nil {
 				log.Err(db.Error)
 			}
 		}()
+
+		db = db.New()
 
 		// Get key
 		var row = APIKey{}
