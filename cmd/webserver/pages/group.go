@@ -78,7 +78,7 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if group.UpdatedAt.Unix() > time.Now().Add(time.Hour*-1).Unix() {
+		if group.UpdatedAt.After(time.Now().Add(time.Hour * -3)) {
 			return
 		}
 
