@@ -398,7 +398,7 @@ func (t GlobalTemplate) GetMetaImage() (text string) {
 
 func (t GlobalTemplate) GetCookieFlag(key string) interface{} {
 
-	c, err := t.request.Cookie("gamedb-session-2")
+	c, err := t.request.Cookie("__Host-gamedb-session-2")
 
 	if err == http.ErrNoCookie {
 		return false
