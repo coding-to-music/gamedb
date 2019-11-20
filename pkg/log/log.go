@@ -25,6 +25,7 @@ const (
 	LogNameCrons     LogName = "binary-crons"
 	LogNameSteam     LogName = "binary-steam"
 	LogNameWebserver LogName = "binary-webserver"
+	LogNameTest      LogName = "binary-test"
 
 	LogNameMongo         LogName = "mongo"
 	LogNameInflux        LogName = "influx"
