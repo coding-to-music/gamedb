@@ -17,4 +17,4 @@ schema:
         - ../../.git
         - ../../node_modules
         - ../../vendor
-        - ../../assets
+        - ./assets
