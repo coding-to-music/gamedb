@@ -448,7 +448,7 @@ func (t GlobalTemplate) IsStatsPage() bool {
 }
 
 func (t GlobalTemplate) IsMorePage() bool {
-	return helpers.SliceHasString([]string{"packages", "bundles", "price-changes", "changes", "chat", "chat-bot", "contact", "coop", "experience", "info", "queues", "steam-api", "api"}, strings.TrimPrefix(t.Path, "/"))
+	return helpers.SliceHasString([]string{"packages", "bundles", "price-changes", "changes", "chat", "chat-bot", "contact", "coop", "experience", "info", "queues", "info", "steam-api", "api"}, strings.TrimPrefix(t.Path, "/"))
 }
 
 func (t GlobalTemplate) IsSidebarPage() bool {

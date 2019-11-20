@@ -25,6 +25,48 @@
 
                     <div class="tab-pane show active" id="questions" role="tabpanel">
 
+                        <h5>Game DB</h5>
+                        <ul>
+                            <li>Game DB has existed in one form or another since 2015.</li>
+                            <li>Game DB is fully open sourced at <a href="https://github.com/gamedb" target="_blank">github.com/gamedb</a>.</li>
+                            <li>Game DB gets all of its data from <a href="/steam-api">Steam APIs</a>, or <a href="https://github.com/SteamRE/SteamKit" target="_blank" rel="noopener">SteamKit</a>.</li>
+                        </ul>
+
+                        <h5>Apps (Games)</h5>
+                        <ul>
+                            <li>Apps are updated instantly when the developer makes a change.</li>
+                            <li>App review scores are calculated using <a href="https://en.wikipedia.org/wiki/Additive_smoothing" target="_blank" rel="noopener">Additive Smoothing</a>.</li>
+                            <li>App twitch counts only include the 100 streamers for that app.</li>
+                            <li>App trend values currently use the algorithm taken from <a href="https://stackoverflow.com/a/49604913/472084" target="_blank" rel="noopener">this post</a>.</li>
+                        </ul>
+
+                        <h5>Bundles</h5>
+                        <ul>
+                            <li></li>
+                        </ul>
+
+                        <h5>Changes</h5>
+                        <ul>
+                            <li></li>
+                        </ul>
+
+                        <h5>Groups</h5>
+                        <ul>
+                            <li></li>
+                        </ul>
+
+                        <h5>Packages</h5>
+                        <ul>
+                            <li></li>
+                        </ul>
+
+                        <h5>Players</h5>
+                        <ul>
+                            <li>Player ranks are calculated only from players on Game DB.</li>
+                            <li>Player ranks are calculated started at midnight UTC and can take some time to finish processing.</li>
+                        </ul>
+
+                        <!--
                         <h5>Where else can I find Game DB?</h5>
                         <div class="clearfix mb-2">
                             <div class="social-link mr-2" data-toggle="tooltip" data-placement="top" title="Steam">
@@ -94,33 +136,33 @@
 
                         <h5>Can I see the Game DB source code</h5>
                         <p>Game DB is fully open sourced on <a target="_blank" rel="noopener" href="https://github.com/gamedb">GitHub</a> to see exactly what's going on under the hood.</p>
+                        -->
 
                     </div>
 
                     <div class="tab-pane" id="links" role="tabpanel">
 
-                        <p class="mb-2">Some other interesting websites.</p>
-
                         <div class="row">
                             <div class="col-sm-12 col-lg-6">
-                                <h5>Players</h5>
+
+                                <h5>For Players</h5>
                                 <ul>
                                     <li>
                                         <img src="https://astats.astats.nl/astats/favicon.ico" alt="">
                                         <a target="_blank" rel="noopener" href="https://astats.astats.nl">astats.astats.nl</a>
                                     </li>
-                                    {{/*                                <li>*/}}
-                                    {{/*                                    <img src="https://api.faviconkit.com/levels.gg/16" alt="">*/}}
-                                    {{/*                                    <a target="_blank" rel="noopener" href="https://levels.gg/">levels.gg</a>*/}}
-                                    {{/*                                </li>*/}}
+                                    <li>
+                                        <img src="https://api.faviconkit.com/levels.gg/16" alt="">
+                                        <a target="_blank" rel="noopener" href="https://levels.gg/">levels.gg</a>
+                                    </li>
                                     <li>
                                         <img src="https://www.lorenzostanco.com/lab/steam/favicon-16x16.png" alt="">
                                         <a target="_blank" rel="noopener" href="https://lorenzostanco.com/lab/steam/">lorenzostanco.com</a>
                                     </li>
-                                    {{/*                                <li>*/}}
-                                    {{/*                                    <img src="https://api.faviconkit.com/steam.madjoki.com/16" alt="">*/}}
-                                    {{/*                                    <a target="_blank" rel="noopener" href="https://steam.madjoki.com/">steam.madjoki.com</a>*/}}
-                                    {{/*                                </li>*/}}
+                                    <li>
+                                        <img src="https://api.faviconkit.com/steam.madjoki.com/16" alt="">
+                                        <a target="_blank" rel="noopener" href="https://steam.madjoki.com/">steam.madjoki.com</a>
+                                    </li>
                                     <li>
                                         <img src="https://steamcharts.com/assets/favicon.ico" alt="">
                                         <a target="_blank" rel="noopener" href="https://steamcharts.com/">steamcharts.com</a>
@@ -152,7 +194,8 @@
                                 </ul>
                             </div>
                             <div class="col-sm-12 col-lg-6">
-                                <h5>Traders</h5>
+
+                                <h5>For Traders</h5>
                                 <ul>
                                     <li>
                                         <img src="https://bartervg.com/imgs/ico/barter/favicon-16x16.png" alt="">
