@@ -5,6 +5,7 @@ import (
 
 	"github.com/Jleagle/patreon-go/patreon"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -46,9 +47,9 @@ func (pw PatreonWebhook) Raw() (raw patreon.Webhook, err error) {
 
 func CountPatreonWebhooks(userID int) (count int64, err error) {
 
-	var item = helpers.MemcachePatreonWebhooksCount(userID)
+	var item = memcache.MemcachePatreonWebhooksCount(userID)
 
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
 
 		return CountDocuments(CollectionPatreonWebhooks, bson.D{{"user_id", userID}}, 0)
 	})

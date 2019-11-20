@@ -6,6 +6,7 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
@@ -27,7 +28,7 @@ func main() {
 
 	// Load pubsub
 	log.Info("Listening to PubSub for memcache")
-	go helpers.ListenToPubSubMemcache()
+	go memcache.ListenToPubSubMemcache()
 
 	// Load PPROF
 	if config.IsLocal() {

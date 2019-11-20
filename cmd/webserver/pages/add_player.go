@@ -9,6 +9,7 @@ import (
 	"github.com/Jleagle/session-go/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
 )
 
@@ -31,8 +32,8 @@ func playerAddHandler(w http.ResponseWriter, r *http.Request) {
 
 			search = path.Base(search)
 
-			steam := helpers.GetSteam()
-			id, err := steam.GetID(search)
+			client := steam.GetSteam()
+			id, err := client.GetID(search)
 
 			if err == nil && id > 0 {
 
@@ -53,8 +54,8 @@ func playerAddHandler(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 
-			resp, b, err := steam.ResolveVanityURL(search, 1)
-			err = helpers.AllowSteamCodes(err, b, nil)
+			resp, b, err := client.ResolveVanityURL(search, 1)
+			err = steam.AllowSteamCodes(err, b, nil)
 
 			if err == nil && resp.Success > 0 && resp.SteamID > 0 {
 

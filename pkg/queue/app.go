@@ -18,6 +18,10 @@ import (
 	"github.com/cenkalti/backoff/v3"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
+	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
+	"github.com/gamedb/gamedb/pkg/helpers/twitch"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
@@ -131,28 +135,28 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 		schema, err := updateAppSchema(&app)
 		if err != nil {
-			helpers.LogSteamError(err, id)
+			steamHelper.LogSteamError(err, id)
 			ackRetry(msg, &message)
 			return
 		}
 
 		err = updateAppAchievements(&app, schema)
 		if err != nil {
-			helpers.LogSteamError(err, id)
+			steamHelper.LogSteamError(err, id)
 			ackRetry(msg, &message)
 			return
 		}
 
 		err = updateAppNews(&app)
 		if err != nil {
-			helpers.LogSteamError(err, id)
+			steamHelper.LogSteamError(err, id)
 			ackRetry(msg, &message)
 			return
 		}
 
 		newItems, err = updateAppItems(&app)
 		if err != nil {
-			helpers.LogSteamError(err, id)
+			steamHelper.LogSteamError(err, id)
 			ackRetry(msg, &message)
 			return
 		}
@@ -169,21 +173,21 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 		err = updateAppDetails(&app)
 		if err != nil && err != steam.ErrAppNotFound {
-			helpers.LogSteamError(err, id)
+			steamHelper.LogSteamError(err, id)
 			ackRetry(msg, &message)
 			return
 		}
 
 		err = updateAppReviews(&app)
 		if err != nil {
-			helpers.LogSteamError(err, id)
+			steamHelper.LogSteamError(err, id)
 			ackRetry(msg, &message)
 			return
 		}
 
 		sales, err = scrapeApp(&app)
 		if err != nil {
-			helpers.LogSteamError(err, id)
+			steamHelper.LogSteamError(err, id)
 			ackRetry(msg, &message)
 			return
 		}
@@ -334,17 +338,17 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 		if app.ReleaseDateUnix > time.Now().Unix() && newApp {
 
-			err = helpers.RemoveKeyFromMemCacheViaPubSub(
-				helpers.MemcacheUpcomingAppsCount.Key,
-				helpers.MemcacheAppInQueue(app.ID).Key,
-				helpers.MemcacheAppTags(app.ID).Key,
-				helpers.MemcacheAppCategories(app.ID).Key,
-				helpers.MemcacheAppGenres(app.ID).Key,
-				helpers.MemcacheAppDemos(app.ID).Key,
-				helpers.MemcacheAppDLC(app.ID).Key,
-				helpers.MemcacheAppDevelopers(app.ID).Key,
-				helpers.MemcacheAppPublishers(app.ID).Key,
-				helpers.MemcacheAppBundles(app.ID).Key,
+			err = memcache.RemoveKeyFromMemCacheViaPubSub(
+				memcache.MemcacheUpcomingAppsCount.Key,
+				memcache.MemcacheAppInQueue(app.ID).Key,
+				memcache.MemcacheAppTags(app.ID).Key,
+				memcache.MemcacheAppCategories(app.ID).Key,
+				memcache.MemcacheAppGenres(app.ID).Key,
+				memcache.MemcacheAppDemos(app.ID).Key,
+				memcache.MemcacheAppDLC(app.ID).Key,
+				memcache.MemcacheAppDevelopers(app.ID).Key,
+				memcache.MemcacheAppPublishers(app.ID).Key,
+				memcache.MemcacheAppBundles(app.ID).Key,
 			)
 			log.Err(err, id)
 		}
@@ -571,8 +575,8 @@ func updateAppDetails(app *sql.App) (err error) {
 			filter = []string{"price_overview"}
 		}
 
-		response, b, err := helpers.GetSteam().GetAppDetails(app.ID, code.ProductCode, steam.LanguageEnglish, filter)
-		err = helpers.AllowSteamCodes(err, b, nil)
+		response, b, err := steamHelper.GetSteam().GetAppDetails(app.ID, code.ProductCode, steam.LanguageEnglish, filter)
+		err = steamHelper.AllowSteamCodes(err, b, nil)
 		if err == steam.ErrAppNotFound {
 			continue
 		}
@@ -823,8 +827,8 @@ func updateAppAchievements(app *sql.App, schema steam.SchemaForGame) error {
 	app.AchievementsCount = len(schema.AvailableGameStats.Achievements)
 
 	//
-	resp, b, err := helpers.GetSteam().GetGlobalAchievementPercentagesForApp(app.ID)
-	err = helpers.AllowSteamCodes(err, b, []int{403, 500})
+	resp, b, err := steamHelper.GetSteam().GetGlobalAchievementPercentagesForApp(app.ID)
+	err = steamHelper.AllowSteamCodes(err, b, []int{403, 500})
 	if err != nil {
 		return err
 	}
@@ -876,8 +880,8 @@ func updateAppAchievements(app *sql.App, schema steam.SchemaForGame) error {
 
 func updateAppSchema(app *sql.App) (schema steam.SchemaForGame, err error) {
 
-	resp, b, err := helpers.GetSteam().GetSchemaForGame(app.ID)
-	err = helpers.AllowSteamCodes(err, b, []int{400, 403})
+	resp, b, err := steamHelper.GetSteam().GetSchemaForGame(app.ID)
+	err = steamHelper.AllowSteamCodes(err, b, []int{400, 403})
 	if err != nil {
 		return schema, err
 	}
@@ -904,14 +908,14 @@ func updateAppSchema(app *sql.App) (schema steam.SchemaForGame, err error) {
 
 func updateAppItems(app *sql.App) (archive []steam.ItemDefArchive, err error) {
 
-	meta, _, err := helpers.GetSteam().GetItemDefMeta(app.ID)
+	meta, _, err := steamHelper.GetSteam().GetItemDefMeta(app.ID)
 	if err != nil {
 		return archive, err
 	}
 
 	if meta.Response.Digest != "" && meta.Response.Digest != app.ItemsDigest {
 
-		archive, _, err = helpers.GetSteam().GetItemDefArchive(app.ID, meta.Response.Digest)
+		archive, _, err = steamHelper.GetSteam().GetItemDefArchive(app.ID, meta.Response.Digest)
 		if err != nil {
 			return archive, err
 		}
@@ -925,8 +929,8 @@ func updateAppItems(app *sql.App) (archive []steam.ItemDefArchive, err error) {
 
 func updateAppNews(app *sql.App) error {
 
-	resp, b, err := helpers.GetSteam().GetNews(app.ID, 10000)
-	err = helpers.AllowSteamCodes(err, b, []int{403})
+	resp, b, err := steamHelper.GetSteam().GetNews(app.ID, 10000)
+	err = steamHelper.AllowSteamCodes(err, b, []int{403})
 	if err != nil {
 		return err
 	}
@@ -984,8 +988,8 @@ func updateAppNews(app *sql.App) error {
 
 func updateAppReviews(app *sql.App) error {
 
-	resp, b, err := helpers.GetSteam().GetReviews(app.ID)
-	err = helpers.AllowSteamCodes(err, b, nil)
+	resp, b, err := steamHelper.GetSteam().GetReviews(app.ID)
+	err = steamHelper.AllowSteamCodes(err, b, nil)
 	if err != nil {
 		return err
 	}
@@ -1175,7 +1179,7 @@ func scrapeApp(app *sql.App) (sales []mongo.Sale, err error) {
 			colly.URLFilters(appStorePage),
 		)
 
-		jar, err := helpers.GetAgeCheckCookieJar()
+		jar, err := steamHelper.GetAgeCheckCookieJar()
 		if err != nil {
 			return err
 		}
@@ -1336,7 +1340,7 @@ func scrapeApp(app *sql.App) (sales []mongo.Sale, err error) {
 
 		//
 		c.OnError(func(r *colly.Response, err error) {
-			helpers.LogSteamError(err)
+			steamHelper.LogSteamError(err)
 		})
 
 		err = c.Visit("https://store.steampowered.com/app/" + strconv.Itoa(app.ID))
@@ -1406,8 +1410,8 @@ func saveAppToInflux(app sql.App) (err error) {
 		fields["price_us_discount"] = price.DiscountPercent
 	}
 
-	_, err = helpers.InfluxWrite(helpers.InfluxRetentionPolicyAllTime, influx.Point{
-		Measurement: string(helpers.InfluxMeasurementApps),
+	_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, influx.Point{
+		Measurement: string(influxHelper.InfluxMeasurementApps),
 		Tags: map[string]string{
 			"app_id": strconv.Itoa(app.ID),
 		},
@@ -1425,7 +1429,7 @@ func updateAppTwitch(app *sql.App) error {
 		return nil
 	}
 
-	client, err := helpers.GetTwitch()
+	client, err := twitch.GetTwitch()
 	if err != nil {
 		return err
 	}

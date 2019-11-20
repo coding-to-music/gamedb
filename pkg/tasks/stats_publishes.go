@@ -7,6 +7,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
 )
@@ -170,5 +171,5 @@ func (c Publishers) work() (err error) {
 	wg.Wait()
 
 	// Clear cache
-	return helpers.RemoveKeyFromMemCacheViaPubSub(helpers.MemcachePublisherKeyNames.Key)
+	return memcache.RemoveKeyFromMemCacheViaPubSub(memcache.MemcachePublisherKeyNames.Key)
 }

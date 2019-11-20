@@ -14,10 +14,10 @@ import (
 	"golang.org/x/oauth2"
 )
 
-type steam struct {
+type steamConnection struct {
 }
 
-func (s steam) getID(r *http.Request, token *oauth2.Token) interface{} {
+func (s steamConnection) getID(r *http.Request, token *oauth2.Token) interface{} {
 
 	// Get Steam ID
 	openID, err := openid.Verify(config.Config.GameDBDomain.Get()+r.URL.String(), openid.NewSimpleDiscoveryCache(), openid.NewSimpleNonceStore())
@@ -40,31 +40,31 @@ func (s steam) getID(r *http.Request, token *oauth2.Token) interface{} {
 	return steamID
 }
 
-func (s steam) getName() string {
+func (s steamConnection) getName() string {
 	return "Steam"
 }
 
-func (s steam) getEnum() connectionEnum {
+func (s steamConnection) getEnum() connectionEnum {
 	return ConnectionSteam
 }
 
-func (s steam) getConfig(login bool) oauth2.Config {
+func (s steamConnection) getConfig(login bool) oauth2.Config {
 	return oauth2.Config{}
 }
 
-func (s steam) getEmptyVal() interface{} {
+func (s steamConnection) getEmptyVal() interface{} {
 	return 0
 }
 
-func (s steam) LinkHandler(w http.ResponseWriter, r *http.Request) {
+func (s steamConnection) LinkHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (s steam) UnlinkHandler(w http.ResponseWriter, r *http.Request) {
+func (s steamConnection) UnlinkHandler(w http.ResponseWriter, r *http.Request) {
 	unlink(w, r, s, mongo.EventUnlinkSteam)
 }
 
-func (s steam) LinkCallbackHandler(w http.ResponseWriter, r *http.Request) {
+func (s steamConnection) LinkCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	callback(r, s, mongo.EventLinkSteam, nil, false)
 
@@ -74,12 +74,12 @@ func (s steam) LinkCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/settings", http.StatusFound)
 }
 
-func (s steam) LoginHandler(w http.ResponseWriter, r *http.Request) {
+func (s steamConnection) LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	// id := s.getID(r, nil)
 }
 
-func (s steam) LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
+func (s steamConnection) LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	callback(r, s, mongo.EventLogin, nil, true)
 

@@ -8,6 +8,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql/pics"
 	"github.com/jinzhu/gorm"
@@ -355,9 +356,9 @@ func (pack Package) GetDaysToRelease() string {
 
 func (pack Package) GetBundles() (bundles []Bundle, err error) {
 
-	var item = helpers.MemcachePackageBundles(pack.ID)
+	var item = memcache.MemcachePackageBundles(pack.ID)
 
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &bundles, func() (interface{}, error) {
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &bundles, func() (interface{}, error) {
 
 		db, err := GetMySQLClient()
 		if err != nil {
@@ -391,9 +392,9 @@ func IsValidPackageID(id int) bool {
 
 func GetPackage(id int) (pack Package, err error) {
 
-	var item = helpers.MemcachePackage(id)
+	var item = memcache.MemcachePackage(id)
 
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &pack, func() (interface{}, error) {
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &pack, func() (interface{}, error) {
 
 		var pack Package
 
@@ -455,9 +456,9 @@ func GetPackagesAppIsIn(appID int) (packages []Package, err error) {
 
 func CountPackages() (count int, err error) {
 
-	var item = helpers.MemcachePackagesCount
+	var item = memcache.MemcachePackagesCount
 
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
 
 		var count int
 

@@ -45,13 +45,13 @@ func New(s connectionEnum) ConnectionInterface {
 
 	switch s {
 	case ConnectionDiscord:
-		return discord{}
+		return discordConnection{}
 	case ConnectionGoogle:
-		return google{}
+		return googleConnection{}
 	case ConnectionPatreon:
-		return patreon{}
+		return patreonConnection{}
 	case ConnectionSteam:
-		return steam{}
+		return steamConnection{}
 	default:
 		panic("invalid connection")
 	}

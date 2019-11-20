@@ -9,6 +9,7 @@ import (
 	"github.com/Philipp15b/go-steam/protocol/protobuf"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
 )
@@ -34,13 +35,13 @@ func ProduceToSteam(payload SteamPayload) (err error) {
 	var packageIDs []int
 	var profileIDs []int64
 
-	mc := helpers.GetMemcache()
+	mc := memcache.GetClient()
 
 	for _, appID := range payload.AppIDs {
 
 		if !config.IsLocal() && !payload.Force {
 
-			item := helpers.MemcacheAppInQueue(appID)
+			item := memcache.MemcacheAppInQueue(appID)
 
 			_, err := mc.Get(item.Key)
 			if err == nil {
@@ -61,7 +62,7 @@ func ProduceToSteam(payload SteamPayload) (err error) {
 
 		if !config.IsLocal() && !payload.Force {
 
-			item := helpers.MemcachePackageInQueue(packageID)
+			item := memcache.MemcachePackageInQueue(packageID)
 
 			_, err := mc.Get(item.Key)
 			if err == nil {
@@ -82,7 +83,7 @@ func ProduceToSteam(payload SteamPayload) (err error) {
 
 		if !config.IsLocal() && !payload.Force {
 
-			item := helpers.MemcachePlayerInQueue(profileID)
+			item := memcache.MemcachePlayerInQueue(profileID)
 
 			_, err := mc.Get(item.Key)
 			if err == nil {
@@ -260,7 +261,7 @@ func ProduceGroup(ids []string, force bool) (err error) {
 
 	time.Sleep(time.Millisecond)
 
-	mc := helpers.GetMemcache()
+	mc := memcache.GetClient()
 
 	var filteredIDs []string
 
@@ -272,7 +273,7 @@ func ProduceGroup(ids []string, force bool) (err error) {
 
 			if !config.IsLocal() && !force {
 
-				item := helpers.MemcacheGroupInQueue(id)
+				item := memcache.MemcacheGroupInQueue(id)
 
 				_, err := mc.Get(item.Key)
 				if err == nil {

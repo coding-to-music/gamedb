@@ -9,6 +9,9 @@ import (
 	"github.com/Jleagle/influxql"
 	"github.com/cenkalti/backoff/v3"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
+	"github.com/gamedb/gamedb/pkg/helpers/steam"
+	"github.com/gamedb/gamedb/pkg/helpers/twitch"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
 	influx "github.com/influxdata/influxdb1-client"
@@ -153,7 +156,7 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 				var err error
 				appPlayersNow, err = getAppOnlinePlayers(appID)
 				if err != nil {
-					helpers.LogSteamError(err, appID)
+					steam.LogSteamError(err, appID)
 					ackRetry(msg, &message)
 					return
 				}
@@ -209,7 +212,7 @@ func getAppTwitchStreamers(twitchID int) (viewers int, err error) {
 
 	if twitchID > 0 {
 
-		client, err := helpers.GetTwitch()
+		client, err := twitch.GetTwitch()
 		if err != nil {
 			return 0, err
 		}
@@ -259,17 +262,17 @@ func getAppOnlinePlayers(appID int) (count int, err error) {
 	// err2 := c.Visit("https://steamcommunity.com/app/440")
 	// log.Err(err2)
 
-	client := helpers.GetSteamUnlimited()
+	client := steam.GetSteamUnlimited()
 
 	count, b, err := client.GetNumberOfCurrentPlayers(appID)
-	err = helpers.AllowSteamCodes(err, b, []int{404})
+	err = steam.AllowSteamCodes(err, b, []int{404})
 	return count, err
 }
 
 func saveAppPlayerToInflux(appID int, viewers int, players int) (err error) {
 
-	_, err = helpers.InfluxWrite(helpers.InfluxRetentionPolicyAllTime, influx.Point{
-		Measurement: string(helpers.InfluxMeasurementApps),
+	_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, influx.Point{
+		Measurement: string(influxHelper.InfluxMeasurementApps),
 		Tags: map[string]string{
 			"app_id": strconv.Itoa(appID),
 		},
@@ -288,49 +291,49 @@ func getAppTopPlayersWeek(appID int) (val int64, err error) {
 
 	builder := influxql.NewBuilder()
 	builder.AddSelect("max(player_count)", "max_player_count")
-	builder.SetFrom(helpers.InfluxGameDB, helpers.InfluxRetentionPolicyAllTime.String(), helpers.InfluxMeasurementApps.String())
+	builder.SetFrom(influxHelper.InfluxGameDB, influxHelper.InfluxRetentionPolicyAllTime.String(), influxHelper.InfluxMeasurementApps.String())
 	builder.AddWhere("time", ">", "NOW() - 7d")
 	builder.AddWhere("app_id", "=", appID)
 	builder.SetFillNone()
 
-	resp, err := helpers.InfluxQuery(builder.String())
+	resp, err := influxHelper.InfluxQuery(builder.String())
 	if err != nil {
 		return 0, err
 	}
 
-	return helpers.GetFirstInfluxInt(resp), nil
+	return influxHelper.GetFirstInfluxInt(resp), nil
 }
 
 func getAppAveragePlayersWeek(appID int) (val float64, err error) {
 
 	builder := influxql.NewBuilder()
 	builder.AddSelect("mean(player_count)", "mean_player_count")
-	builder.SetFrom(helpers.InfluxGameDB, helpers.InfluxRetentionPolicyAllTime.String(), helpers.InfluxMeasurementApps.String())
+	builder.SetFrom(influxHelper.InfluxGameDB, influxHelper.InfluxRetentionPolicyAllTime.String(), influxHelper.InfluxMeasurementApps.String())
 	builder.AddWhere("time", ">", "NOW() - 7d")
 	builder.AddWhere("app_id", "=", appID)
 
-	resp, err := helpers.InfluxQuery(builder.String())
+	resp, err := influxHelper.InfluxQuery(builder.String())
 	if err != nil {
 		return 0, err
 	}
 
-	return helpers.GetFirstInfluxFloat(resp), nil
+	return influxHelper.GetFirstInfluxFloat(resp), nil
 }
 
 func getAppTopPlayersAlltime(appID int) (val int64, err error) {
 
 	builder := influxql.NewBuilder()
 	builder.AddSelect("max(player_count)", "max_player_count")
-	builder.SetFrom(helpers.InfluxGameDB, helpers.InfluxRetentionPolicyAllTime.String(), helpers.InfluxMeasurementApps.String())
+	builder.SetFrom(influxHelper.InfluxGameDB, influxHelper.InfluxRetentionPolicyAllTime.String(), influxHelper.InfluxMeasurementApps.String())
 	builder.AddWhere("app_id", "=", appID)
 	builder.SetFillNone()
 
-	resp, err := helpers.InfluxQuery(builder.String())
+	resp, err := influxHelper.InfluxQuery(builder.String())
 	if err != nil {
 		return 0, err
 	}
 
-	return helpers.GetFirstInfluxInt(resp), nil
+	return influxHelper.GetFirstInfluxInt(resp), nil
 }
 
 func getAppTrendValue(appID int) (trend int64, err error) {
@@ -338,7 +341,7 @@ func getAppTrendValue(appID int) (trend int64, err error) {
 	// Trend value - https://stackoverflow.com/questions/41361734/get-difference-since-30-days-ago-in-influxql-influxdb
 	subBuilder := influxql.NewBuilder()
 	subBuilder.AddSelect("difference(last(player_count))", "")
-	subBuilder.SetFrom(helpers.InfluxGameDB, helpers.InfluxRetentionPolicyAllTime.String(), helpers.InfluxMeasurementApps.String())
+	subBuilder.SetFrom(influxHelper.InfluxGameDB, influxHelper.InfluxRetentionPolicyAllTime.String(), influxHelper.InfluxMeasurementApps.String())
 	subBuilder.AddWhere("app_id", "=", appID)
 	subBuilder.AddWhere("time", ">=", "NOW() - 7d")
 	subBuilder.AddGroupByTime("1h")
@@ -347,7 +350,7 @@ func getAppTrendValue(appID int) (trend int64, err error) {
 	builder.AddSelect("cumulative_sum(difference)", "")
 	builder.SetFromSubQuery(subBuilder)
 
-	resp, err := helpers.InfluxQuery(builder.String())
+	resp, err := influxHelper.InfluxQuery(builder.String())
 	if err != nil {
 		return 0, err
 	}

@@ -1,4 +1,4 @@
-package helpers
+package github
 
 import (
 	"context"
@@ -10,24 +10,24 @@ import (
 )
 
 var (
-	githubContext = context.Background()
-	githubClient  *github.Client
-	githubMutex   sync.Mutex
+	client *github.Client
+	ctx    = context.Background()
+	lock   sync.Mutex
 )
 
 func GetGithub() (*github.Client, context.Context) {
 
-	githubMutex.Lock()
-	defer githubMutex.Unlock()
+	lock.Lock()
+	defer lock.Unlock()
 
-	if githubClient == nil {
-		githubClient = github.NewClient(oauth2.NewClient(
-			githubContext,
+	if client == nil {
+		client = github.NewClient(oauth2.NewClient(
+			ctx,
 			oauth2.StaticTokenSource(
 				&oauth2.Token{
 					AccessToken: config.Config.GithubToken.Get()},
 			)))
 	}
 
-	return githubClient, githubContext
+	return client, ctx
 }

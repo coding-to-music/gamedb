@@ -8,6 +8,7 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 )
 
 type Publisher struct {
@@ -97,9 +98,9 @@ func GetAllPublishers() (publishers []Publisher, err error) {
 
 func GetPublishersForSelect() (pubs []Publisher, err error) {
 
-	var item = helpers.MemcachePublisherKeyNames
+	var item = memcache.MemcachePublisherKeyNames
 
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &pubs, func() (interface{}, error) {
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &pubs, func() (interface{}, error) {
 
 		var pubs []Publisher
 

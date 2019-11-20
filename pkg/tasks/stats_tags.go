@@ -7,6 +7,8 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
+	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
 )
@@ -41,8 +43,8 @@ func (c Tags) work() (err error) {
 	}
 
 	// Get tags from Steam
-	tagsResp, b, err := helpers.GetSteam().GetTags()
-	err = helpers.AllowSteamCodes(err, b, nil)
+	tagsResp, b, err := steamHelper.GetSteam().GetTags()
+	err = steamHelper.AllowSteamCodes(err, b, nil)
 	if err != nil {
 		return err
 	}
@@ -154,5 +156,5 @@ func (c Tags) work() (err error) {
 	wg.Wait()
 
 	// Clear cache
-	return helpers.RemoveKeyFromMemCacheViaPubSub(helpers.MemcacheTagKeyNames.Key)
+	return memcache.RemoveKeyFromMemCacheViaPubSub(memcache.MemcacheTagKeyNames.Key)
 }

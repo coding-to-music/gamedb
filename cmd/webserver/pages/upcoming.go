@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
@@ -101,9 +102,9 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 func countUpcomingApps() (count int, err error) {
 
-	var item = helpers.MemcacheUpcomingAppsCount
+	var item = memcache.MemcacheUpcomingAppsCount
 
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
 
 		var count int
 

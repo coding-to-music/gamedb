@@ -7,6 +7,7 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/discord"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
@@ -182,7 +183,7 @@ func sendChangeToDiscord(changes []*mongo.Change, appMap map[int]string, package
 
 	if config.IsProd() {
 
-		discord, err := helpers.GetDiscordBot(config.Config.DiscordChangesBotToken.Get(), true)
+		client, err := discord.GetDiscordBot(config.Config.DiscordChangesBotToken.Get(), true)
 		if err != nil {
 			return err
 		}
@@ -200,7 +201,7 @@ func sendChangeToDiscord(changes []*mongo.Change, appMap map[int]string, package
 			if len(apps) > 0 {
 
 				var msg = "Change " + strconv.Itoa(change.ID) + ": " + strings.Join(apps, ", ")
-				_, err := discord.ChannelMessageSend("574563721045606431", msg)
+				_, err := client.ChannelMessageSend("574563721045606431", msg)
 				log.Err(err)
 			}
 		}

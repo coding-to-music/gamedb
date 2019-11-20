@@ -6,6 +6,7 @@ import (
 
 	"github.com/Jleagle/influxql"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
@@ -113,23 +114,23 @@ func trendingChartsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	builder := influxql.NewBuilder()
 	builder.AddSelect("max(player_count)", "max_player_count")
-	builder.SetFrom(helpers.InfluxGameDB, helpers.InfluxRetentionPolicyAllTime.String(), helpers.InfluxMeasurementApps.String())
+	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
 	builder.AddWhere("time", ">", "NOW()-7d")
 	builder.AddWhereRaw("(" + strings.Join(or, " OR ") + ")")
 	builder.AddGroupByTime("1h")
 	builder.AddGroupBy("app_id")
 	builder.SetFillNone()
 
-	resp, err := helpers.InfluxQuery(builder.String())
+	resp, err := influx.InfluxQuery(builder.String())
 	if err != nil {
 		log.Err(err, r, builder.String())
 		return
 	}
 
-	ret := map[string]helpers.HighChartsJSON{}
+	ret := map[string]influx.HighChartsJSON{}
 	if len(resp.Results) > 0 {
 		for _, v := range resp.Results[0].Series {
-			ret[v.Tags["app_id"]] = helpers.InfluxResponseToHighCharts(v)
+			ret[v.Tags["app_id"]] = influx.InfluxResponseToHighCharts(v)
 		}
 	}
 

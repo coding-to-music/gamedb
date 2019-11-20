@@ -3,7 +3,7 @@ package tasks
 import (
 	"strconv"
 
-	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/queue"
 )
@@ -32,8 +32,8 @@ func (c AppQueueAll) work() (err error) {
 
 	for keepGoing {
 
-		apps, b, err := helpers.GetSteam().GetAppList(1000, last, 0, "")
-		err = helpers.AllowSteamCodes(err, b, nil)
+		apps, b, err := steam.GetSteam().GetAppList(1000, last, 0, "")
+		err = steam.AllowSteamCodes(err, b, nil)
 		if err != nil {
 			return err
 		}

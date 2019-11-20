@@ -8,6 +8,7 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 )
 
 type Developer struct {
@@ -85,9 +86,9 @@ func GetAllDevelopers(fields []string) (developers []Developer, err error) {
 
 func GetDevelopersForSelect() (devs []Developer, err error) {
 
-	var item = helpers.MemcacheDeveloperKeyNames
+	var item = memcache.MemcacheDeveloperKeyNames
 
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &devs, func() (interface{}, error) {
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &devs, func() (interface{}, error) {
 
 		var devs []Developer
 

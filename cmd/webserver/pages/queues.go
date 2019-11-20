@@ -5,7 +5,8 @@ import (
 	"strings"
 
 	"github.com/Jleagle/influxql"
-	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/influx"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/go-chi/chi"
 )
@@ -32,10 +33,10 @@ type queuesTemplate struct {
 
 func queuesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	var item = helpers.MemcacheQueues
-	var highcharts = map[string]helpers.HighChartsJSON{}
+	var item = memcache.MemcacheQueues
+	var highcharts = map[string]influx.HighChartsJSON{}
 
-	err := helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &highcharts, func() (interface{}, error) {
+	err := memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &highcharts, func() (interface{}, error) {
 
 		fields := []string{
 			// `"queue"='GameDB_CS_Apps'`,
@@ -50,23 +51,23 @@ func queuesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		builder := influxql.NewBuilder()
 		builder.AddSelect(`sum("messages")`, "sum_messages")
-		builder.SetFrom(helpers.InfluxTelegrafDB, helpers.InfluxRetentionPolicy14Day.String(), helpers.InfluxMeasurementRabbitQueue.String())
+		builder.SetFrom(influx.InfluxTelegrafDB, influx.InfluxRetentionPolicy14Day.String(), influx.InfluxMeasurementRabbitQueue.String())
 		builder.AddWhere("time", ">=", "now() - 1h")
 		builder.AddWhereRaw("(" + strings.Join(fields, " OR ") + ")")
 		builder.AddGroupByTime("10s")
 		builder.AddGroupBy("queue")
 		builder.SetFillNone()
 
-		resp, err := helpers.InfluxQuery(builder.String())
+		resp, err := influx.InfluxQuery(builder.String())
 		if err != nil {
 			log.Err(builder.String(), r)
 			return highcharts, err
 		}
 
-		ret := map[string]helpers.HighChartsJSON{}
+		ret := map[string]influx.HighChartsJSON{}
 		if len(resp.Results) > 0 {
 			for _, v := range resp.Results[0].Series {
-				ret[strings.Replace(v.Tags["queue"], "GameDB_Go_", "", 1)] = helpers.InfluxResponseToHighCharts(v)
+				ret[strings.Replace(v.Tags["queue"], "GameDB_Go_", "", 1)] = influx.InfluxResponseToHighCharts(v)
 			}
 		}
 

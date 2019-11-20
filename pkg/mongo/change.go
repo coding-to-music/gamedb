@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -97,9 +98,9 @@ type changeProduct struct {
 
 func GetChange(id int64) (change Change, err error) {
 
-	var item = helpers.MemcacheChange(id)
+	var item = memcache.MemcacheChange(id)
 
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &change, func() (interface{}, error) {
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &change, func() (interface{}, error) {
 
 		var change Change
 

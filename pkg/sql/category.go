@@ -7,6 +7,7 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 )
 
 type Category struct {
@@ -81,9 +82,9 @@ func GetCategoriesByID(ids []int, columns []string) (categories []Category, err 
 
 func GetCategoriesForSelect() (tags []Category, err error) {
 
-	var item = helpers.MemcacheCategoryKeyNames
+	var item = memcache.MemcacheCategoryKeyNames
 
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &tags, func() (interface{}, error) {
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &tags, func() (interface{}, error) {
 
 		var cats []Category
 

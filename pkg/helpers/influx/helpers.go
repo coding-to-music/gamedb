@@ -1,31 +1,16 @@
-package helpers
+package influx
 
 import (
 	"encoding/json"
-	"net/url"
 	"reflect"
 	"sort"
-	"sync"
 	"time"
 
-	"github.com/cenkalti/backoff/v3"
-	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/cenkalti/backoff"
 	"github.com/gamedb/gamedb/pkg/log"
 	influx "github.com/influxdata/influxdb1-client"
-	"github.com/influxdata/influxdb1-client/models"
+	influxModels "github.com/influxdata/influxdb1-client/models"
 )
-
-type InfluxRetentionPolicy string
-
-func (irp InfluxRetentionPolicy) String() string {
-	return string(irp)
-}
-
-type InfluxMeasurement string
-
-func (im InfluxMeasurement) String() string {
-	return string(im)
-}
 
 const (
 	InfluxGameDB     = "GameDB"
@@ -45,34 +30,16 @@ const (
 	InfluxMeasurementAPICalls    InfluxMeasurement = "api_calls"
 )
 
-var (
-	influxClient *influx.Client
-	influxLock   sync.Mutex
-)
+type InfluxRetentionPolicy string
 
-func GetInfluxClient() (client *influx.Client, err error) {
+func (irp InfluxRetentionPolicy) String() string {
+	return string(irp)
+}
 
-	influxLock.Lock()
-	defer influxLock.Unlock()
+type InfluxMeasurement string
 
-	if influxClient == nil {
-
-		var host *url.URL
-		host, err = url.Parse(config.Config.InfluxURL.Get())
-		if err != nil {
-			return
-		}
-
-		conf := influx.Config{
-			URL:      *host,
-			Username: config.Config.InfluxUsername.Get(),
-			Password: config.Config.InfluxPassword.Get(),
-		}
-
-		influxClient, err = influx.NewClient(conf)
-	}
-
-	return influxClient, err
+func (im InfluxMeasurement) String() string {
+	return string(im)
 }
 
 func InfluxWrite(retention InfluxRetentionPolicy, point influx.Point) (resp *influx.Response, err error) {
@@ -92,16 +59,16 @@ func InfluxWriteMany(retention InfluxRetentionPolicy, batch influx.BatchPoints) 
 		batch.Time = time.Now()
 	}
 
-	client, err := GetInfluxClient()
+	influx, err := getInfluxClient()
 	if err != nil {
-		return &influx.Response{}, err
+		return resp, err
 	}
 
 	policy := backoff.NewExponentialBackOff()
 	policy.InitialInterval = time.Second
 
 	operation := func() (err error) {
-		resp, err = client.Write(batch)
+		resp, err = influx.Write(batch)
 		return err
 	}
 
@@ -111,9 +78,9 @@ func InfluxWriteMany(retention InfluxRetentionPolicy, batch influx.BatchPoints) 
 
 func InfluxQuery(query string) (resp *influx.Response, err error) {
 
-	client, err := GetInfluxClient()
+	client, err := getInfluxClient()
 	if err != nil {
-		return &influx.Response{}, err
+		return resp, err
 	}
 
 	resp, err = client.Query(influx.Query{
@@ -127,7 +94,7 @@ func InfluxQuery(query string) (resp *influx.Response, err error) {
 
 type HighChartsJSON map[string][][]interface{}
 
-func InfluxResponseToHighCharts(series models.Row) HighChartsJSON {
+func InfluxResponseToHighCharts(series influxModels.Row) HighChartsJSON {
 
 	resp := HighChartsJSON{}
 

@@ -10,6 +10,8 @@ import (
 	"github.com/Jleagle/valve-data-format-go/vdf"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/reddit"
+	"github.com/gamedb/gamedb/pkg/helpers/twitter"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
@@ -300,7 +302,7 @@ func savePriceChanges(before sql.ProductInterface, after sql.ProductInterface) (
 			if ok && appBefore.IsOnSale() {
 
 				// Twitter
-				_, _, err = helpers.GetTwitter().Statuses.Update("["+helpers.FloatToString(percentIncrease, 0)+"%] ($"+helpers.FloatToString(float64(newPrice)/100, 2)+") gamedb.online/apps/"+strconv.Itoa(before.GetID())+" #freegame #steam "+helpers.GetHashTag(before.GetName()), nil)
+				_, _, err = twitter.GetTwitter().Statuses.Update("["+helpers.FloatToString(percentIncrease, 0)+"%] ($"+helpers.FloatToString(float64(newPrice)/100, 2)+") gamedb.online/apps/"+strconv.Itoa(before.GetID())+" #freegame #steam "+helpers.GetHashTag(before.GetName()), nil)
 				if err != nil {
 					if !strings.Contains(err.Error(), "Status is a duplicate") {
 						log.Critical(err)
@@ -308,7 +310,7 @@ func savePriceChanges(before sql.ProductInterface, after sql.ProductInterface) (
 				}
 
 				// Reddit
-				err = helpers.PostToReddit("["+helpers.FloatToString(percentIncrease, 0)+"%] "+before.GetName()+" ($"+helpers.FloatToString(float64(newPrice)/100, 2)+")", "https://gamedb.online"+before.GetPath())
+				err = reddit.PostToReddit("["+helpers.FloatToString(percentIncrease, 0)+"%] "+before.GetName()+" ($"+helpers.FloatToString(float64(newPrice)/100, 2)+")", "https://gamedb.online"+before.GetPath())
 				if err != nil {
 					log.Critical(err)
 				}

@@ -9,7 +9,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/cenkalti/backoff/v3"
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/discord"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/go-chi/chi"
@@ -29,9 +29,9 @@ func ChatRouter() http.Handler {
 	return r
 }
 
-func getDiscord() (discord *discordgo.Session, err error) {
+func getDiscord() (*discordgo.Session, error) {
 
-	return helpers.GetDiscordBot(config.Config.DiscordRelayBotToken.Get(), true, func(s *discordgo.Session, m *discordgo.MessageCreate) {
+	return discord.GetDiscordBot(config.Config.DiscordRelayBotToken.Get(), true, func(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 		if m.Author.Bot {
 			return
@@ -79,7 +79,7 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 
 		operation := func() (err error) {
 
-			discord, err := getDiscord()
+			client, err := getDiscord()
 			if err != nil {
 				if strings.Contains(err.Error(), "Authentication failed") {
 					err = backoff.Permanent(err)
@@ -87,7 +87,7 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 				return err
 			}
 
-			channelsResponse, err = discord.GuildChannels(guildID)
+			channelsResponse, err = client.GuildChannels(guildID)
 			return err
 		}
 
@@ -123,7 +123,7 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 
 		operation := func() (err error) {
 
-			discord, err := getDiscord()
+			client, err := getDiscord()
 			if err != nil {
 				if strings.Contains(err.Error(), "Authentication failed") {
 					err = backoff.Permanent(err)
@@ -131,7 +131,7 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 				return err
 			}
 
-			membersResponse, err = discord.GuildMembers(guildID, "", 1000)
+			membersResponse, err = client.GuildMembers(guildID, "", 1000)
 			return err
 		}
 
@@ -180,7 +180,7 @@ func chatAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	operation := func() (err error) {
 
-		discord, err := getDiscord()
+		client, err := getDiscord()
 		if err != nil {
 			if strings.Contains(err.Error(), "Authentication failed") {
 				err = backoff.Permanent(err)
@@ -188,7 +188,7 @@ func chatAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			return err
 		}
 
-		messagesResponse, err = discord.ChannelMessages(id, 50, "", "", "")
+		messagesResponse, err = client.ChannelMessages(id, 50, "", "", "")
 		return err
 	}
 

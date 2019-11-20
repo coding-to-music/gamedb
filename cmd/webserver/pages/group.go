@@ -8,6 +8,7 @@ import (
 
 	"github.com/Jleagle/influxql"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
@@ -135,23 +136,23 @@ func groupAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// builder.AddSelect(`max("members_in_chat")`, "max_members_in_chat")
 	// builder.AddSelect(`max("members_in_game")`, "max_members_in_game")
 	// builder.AddSelect(`max("members_online")`, "max_members_online")
-	builder.SetFrom(helpers.InfluxGameDB, helpers.InfluxRetentionPolicyAllTime.String(), helpers.InfluxMeasurementGroups.String())
+	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementGroups.String())
 	builder.AddWhere("group_id", "=", id)
 	// builder.AddWhere("time", ">", "now()-365d")
 	builder.AddGroupByTime("1h")
 	builder.SetFillLinear()
 
-	resp, err := helpers.InfluxQuery(builder.String())
+	resp, err := influx.InfluxQuery(builder.String())
 	if err != nil {
 		log.Err(err, r, builder.String())
 		return
 	}
 
-	var hc helpers.HighChartsJSON
+	var hc influx.HighChartsJSON
 
 	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
 
-		hc = helpers.InfluxResponseToHighCharts(resp.Results[0].Series[0])
+		hc = influx.InfluxResponseToHighCharts(resp.Results[0].Series[0])
 	}
 
 	returnJSON(w, r, hc)

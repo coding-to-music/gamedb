@@ -11,6 +11,7 @@ import (
 	"github.com/Jleagle/session-go/session"
 	"github.com/gamedb/gamedb/cmd/webserver/middleware"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
@@ -939,23 +940,23 @@ func playersHistoryAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	builder.AddSelect(`mean("badges_rank")`, "mean_badges_rank")
 	builder.AddSelect(`mean("playtime_rank")`, "mean_playtime_rank")
 	builder.AddSelect(`mean("friends_rank")`, "mean_friends_rank")
-	builder.SetFrom(helpers.InfluxGameDB, helpers.InfluxRetentionPolicyAllTime.String(), helpers.InfluxMeasurementPlayers.String())
+	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementPlayers.String())
 	builder.AddWhere("player_id", "=", id)
 	builder.AddWhere("time", ">", "now()-365d")
 	builder.AddGroupByTime("1d")
 	builder.SetFillNone()
 
-	resp, err := helpers.InfluxQuery(builder.String())
+	resp, err := influx.InfluxQuery(builder.String())
 	if err != nil {
 		log.Err(err, r, builder.String())
 		return
 	}
 
-	var hc helpers.HighChartsJSON
+	var hc influx.HighChartsJSON
 
 	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
 
-		hc = helpers.InfluxResponseToHighCharts(resp.Results[0].Series[0])
+		hc = influx.InfluxResponseToHighCharts(resp.Results[0].Series[0])
 	}
 
 	returnJSON(w, r, hc)

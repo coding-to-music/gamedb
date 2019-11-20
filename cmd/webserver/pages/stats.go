@@ -9,6 +9,8 @@ import (
 	"github.com/Jleagle/influxql"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/influx"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
@@ -106,9 +108,9 @@ func statsAppTypesHandler(w http.ResponseWriter, r *http.Request) {
 
 	var ret statsAppTypes
 	var code = helpers.GetProductCC(r)
-	var item = helpers.MemcacheStatsAppTypes(code)
+	var item = memcache.MemcacheStatsAppTypes(code)
 
-	err := helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &ret, func() (interface{}, error) {
+	err := memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &ret, func() (interface{}, error) {
 
 		var code = helpers.GetProductCC(r)
 		var rows []statsAppTypesRow
@@ -173,22 +175,22 @@ func statsClientPlayersHandler(w http.ResponseWriter, r *http.Request) {
 	builder := influxql.NewBuilder()
 	builder.AddSelect("max(player_count)", "max_player_count")
 	builder.AddSelect("max(player_online)", "max_player_online")
-	builder.SetFrom(helpers.InfluxGameDB, helpers.InfluxRetentionPolicyAllTime.String(), helpers.InfluxMeasurementApps.String())
+	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
 	builder.AddWhere("time", ">", "NOW() - 7d")
 	builder.AddWhere("app_id", "=", "0")
 	builder.AddGroupByTime("30m")
 	builder.SetFillLinear()
-	resp, err := helpers.InfluxQuery(builder.String())
+	resp, err := influx.InfluxQuery(builder.String())
 	if err != nil {
 		log.Err(err, r, builder.String())
 		return
 	}
 
-	var hc helpers.HighChartsJSON
+	var hc influx.HighChartsJSON
 
 	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
 
-		hc = helpers.InfluxResponseToHighCharts(resp.Results[0].Series[0])
+		hc = influx.InfluxResponseToHighCharts(resp.Results[0].Series[0])
 	}
 
 	returnJSON(w, r, hc)

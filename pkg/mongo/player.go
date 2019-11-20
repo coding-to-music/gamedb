@@ -9,6 +9,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -299,9 +300,9 @@ func (player Player) NeedsUpdate(updateType UpdateType) bool {
 
 func GetPlayer(id int64) (player Player, err error) {
 
-	var item = helpers.MemcachePlayer(id)
+	var item = memcache.MemcachePlayer(id)
 
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &player, func() (interface{}, error) {
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &player, func() (interface{}, error) {
 
 		if !helpers.IsValidPlayerID(id) {
 			return player, ErrInvalidPlayerID
@@ -396,9 +397,9 @@ func GetPlayers(offset int64, limit int64, sort bson.D, filter bson.D, projectio
 
 func GetUniquePlayerCountries() (codes []string, err error) {
 
-	var item = helpers.MemcacheUniquePlayerCountryCodes
+	var item = memcache.MemcacheUniquePlayerCountryCodes
 
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &codes, func() (interface{}, error) {
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &codes, func() (interface{}, error) {
 
 		client, ctx, err := getMongo()
 		if err != nil {
@@ -426,9 +427,9 @@ func GetUniquePlayerCountries() (codes []string, err error) {
 
 func GetUniquePlayerStates(country string) (codes []helpers.Tuple, err error) {
 
-	var item = helpers.MemcacheUniquePlayerStateCodes(country)
+	var item = memcache.MemcacheUniquePlayerStateCodes(country)
 
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &codes, func() (interface{}, error) {
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &codes, func() (interface{}, error) {
 
 		client, ctx, err := getMongo()
 		if err != nil {
@@ -466,9 +467,9 @@ func GetUniquePlayerStates(country string) (codes []helpers.Tuple, err error) {
 
 func CountPlayers() (count int64, err error) {
 
-	var item = helpers.MemcachePlayersCount
+	var item = memcache.MemcachePlayersCount
 
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
 
 		return CountDocuments(CollectionPlayers, nil, 0)
 	})

@@ -9,6 +9,7 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -293,12 +294,12 @@ func CountDocuments(collection collection, filter bson.D, ttl int32) (count int6
 		filter = bson.D{}
 	}
 
-	item := helpers.MemcacheMongoCount(mongoFilterToMemcacheKey(collection, filter))
+	item := memcache.MemcacheMongoCount(mongoFilterToMemcacheKey(collection, filter))
 	if ttl > 0 {
 		item.Expiration = ttl
 	}
 
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
 
 		client, ctx, err := getMongo()
 		if err != nil {

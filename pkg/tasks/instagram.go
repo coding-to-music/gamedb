@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/instagram"
 	"github.com/gamedb/gamedb/pkg/sql"
 )
 
@@ -68,5 +69,5 @@ func (c Instagram) work() (err error) {
 	// err = helpers.UpdateBio("https://gamedb.online" + app.GetPath())
 	// log.Err(err)
 
-	return helpers.UploadInstagram(url, text)
+	return instagram.UploadInstagram(url, text)
 }

@@ -14,6 +14,8 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/influx"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql/pics"
 	"github.com/golang/snappy"
@@ -464,20 +466,20 @@ func (app App) IsOnSale() bool {
 
 func (app App) GetOnlinePlayers() (players int64, err error) {
 
-	var item = helpers.MemcacheAppPlayersRow(app.ID)
+	var item = memcache.MemcacheAppPlayersRow(app.ID)
 
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &players, func() (interface{}, error) {
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &players, func() (interface{}, error) {
 
 		builder := influxql.NewBuilder()
 		builder.AddSelect("player_count", "")
-		builder.SetFrom(helpers.InfluxGameDB, helpers.InfluxRetentionPolicyAllTime.String(), helpers.InfluxMeasurementApps.String())
+		builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
 		builder.AddWhere("app_id", "=", app.ID)
 		builder.AddOrderBy("time", false)
 		builder.SetLimit(1)
 
-		resp, err := helpers.InfluxQuery(builder.String())
+		resp, err := influx.InfluxQuery(builder.String())
 
-		return helpers.GetFirstInfluxInt(resp), err
+		return influx.GetFirstInfluxInt(resp), err
 	})
 
 	return players, err
@@ -585,9 +587,9 @@ func (app App) GetDemos() (demos []App, err error) {
 
 	demos = []App{} // Needed for marshalling into type
 
-	var item = helpers.MemcacheAppDemos(app.ID)
+	var item = memcache.MemcacheAppDemos(app.ID)
 
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &demos, func() (interface{}, error) {
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &demos, func() (interface{}, error) {
 
 		ids, err := app.GetDemoIDs()
 		if err != nil {
@@ -653,9 +655,9 @@ func (app App) GetDLCIDs() (dlcs []int, err error) {
 
 func (app App) GetDLCs() (apps []App, err error) {
 
-	var item = helpers.MemcacheAppDLC(app.ID)
+	var item = memcache.MemcacheAppDLC(app.ID)
 
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &apps, func() (interface{}, error) {
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &apps, func() (interface{}, error) {
 
 		ids, err := app.GetDLCIDs()
 		if err != nil {
@@ -705,9 +707,9 @@ func (app App) GetGenreIDs() (genres []int, err error) {
 
 func (app App) GetGenres() (genres []Genre, err error) {
 
-	var item = helpers.MemcacheAppGenres(app.ID)
+	var item = memcache.MemcacheAppGenres(app.ID)
 
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &genres, func() (interface{}, error) {
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &genres, func() (interface{}, error) {
 
 		ids, err := app.GetGenreIDs()
 		if err != nil {
@@ -736,9 +738,9 @@ func (app App) GetCategoryIDs() (categories []int) {
 
 func (app App) GetCategories() (categories []Category, err error) {
 
-	var item = helpers.MemcacheAppCategories(app.ID)
+	var item = memcache.MemcacheAppCategories(app.ID)
 
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &categories, func() (interface{}, error) {
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &categories, func() (interface{}, error) {
 
 		return GetCategoriesByID(app.GetCategoryIDs(), []string{"id", "name"})
 	})
@@ -771,9 +773,9 @@ func (app App) GetTagIDs() (tags []int) {
 
 func (app App) GetTags() (tags []Tag, err error) {
 
-	var item = helpers.MemcacheAppTags(app.ID)
+	var item = memcache.MemcacheAppTags(app.ID)
 
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &tags, func() (interface{}, error) {
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &tags, func() (interface{}, error) {
 
 		return GetTagsByID(app.GetTagIDs(), []string{"id", "name"})
 	})
@@ -799,9 +801,9 @@ func (app App) GetDeveloperIDs() (developers []int, err error) {
 
 func (app App) GetDevelopers() (developers []Developer, err error) {
 
-	var item = helpers.MemcacheAppDevelopers(app.ID)
+	var item = memcache.MemcacheAppDevelopers(app.ID)
 
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &developers, func() (interface{}, error) {
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &developers, func() (interface{}, error) {
 
 		ids, err := app.GetDeveloperIDs()
 		if err != nil {
@@ -829,9 +831,9 @@ func (app App) GetPublisherIDs() (publishers []int, err error) {
 
 func (app App) GetPublishers() (publishers []Publisher, err error) {
 
-	var item = helpers.MemcacheAppPublishers(app.ID)
+	var item = memcache.MemcacheAppPublishers(app.ID)
 
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &publishers, func() (interface{}, error) {
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &publishers, func() (interface{}, error) {
 
 		ids, err := app.GetPublisherIDs()
 		if err != nil {
@@ -850,9 +852,9 @@ func (app App) GetPublishers() (publishers []Publisher, err error) {
 
 func (app App) GetBundles() (bundles []Bundle, err error) {
 
-	var item = helpers.MemcacheAppBundles(app.ID)
+	var item = memcache.MemcacheAppBundles(app.ID)
 
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &bundles, func() (interface{}, error) {
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &bundles, func() (interface{}, error) {
 
 		db, err := GetMySQLClient()
 		if err != nil {
@@ -889,9 +891,9 @@ func (app App) GetMetaImage() string {
 
 func PopularApps() (apps []App, err error) {
 
-	var item = helpers.MemcachePopularApps
+	var item = memcache.MemcachePopularApps
 
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &apps, func() (interface{}, error) {
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &apps, func() (interface{}, error) {
 
 		db, err := GetMySQLClient()
 		if err != nil {
@@ -912,9 +914,9 @@ func PopularApps() (apps []App, err error) {
 
 func PopularNewApps() (apps []App, err error) {
 
-	var item = helpers.MemcachePopularNewApps
+	var item = memcache.MemcachePopularNewApps
 
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &apps, func() (interface{}, error) {
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &apps, func() (interface{}, error) {
 
 		db, err := GetMySQLClient()
 		if err != nil {
@@ -936,9 +938,9 @@ func PopularNewApps() (apps []App, err error) {
 
 func TrendingApps() (apps []App, err error) {
 
-	var item = helpers.MemcacheTrendingApps
+	var item = memcache.MemcacheTrendingApps
 
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &apps, func() (interface{}, error) {
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &apps, func() (interface{}, error) {
 
 		db, err := GetMySQLClient()
 		if err != nil {
@@ -1154,9 +1156,9 @@ func GetAppsWithColumnDepth(column string, depth int, columns []string) (apps []
 
 func CountApps() (count int, err error) {
 
-	var item = helpers.MemcacheAppsCount
+	var item = memcache.MemcacheAppsCount
 
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
 
 		var count int
 
@@ -1175,9 +1177,9 @@ func CountApps() (count int, err error) {
 
 func CountAppsWithAchievements() (count int, err error) {
 
-	var item = helpers.MemcacheAppsWithAchievementsCount
+	var item = memcache.MemcacheAppsWithAchievementsCount
 
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
 
 		var count int
 

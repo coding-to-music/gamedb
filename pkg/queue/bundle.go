@@ -10,6 +10,7 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/cenkalti/backoff/v3"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
@@ -72,7 +73,7 @@ func (q bundleQueue) processMessages(msgs []amqp.Delivery) {
 
 	err = updateBundle(&bundle)
 	if err != nil && err != steam.ErrAppNotFound {
-		helpers.LogSteamError(err, message.Message.ID)
+		steamHelper.LogSteamError(err, message.Message.ID)
 		ackRetry(msg, &message)
 		return
 	}
@@ -135,7 +136,7 @@ func updateBundle(bundle *sql.Bundle) (err error) {
 		colly.AllowURLRevisit(), // This is for retrys
 	)
 
-	jar, err := helpers.GetAgeCheckCookieJar()
+	jar, err := steamHelper.GetAgeCheckCookieJar()
 	if err != nil {
 		return err
 	}

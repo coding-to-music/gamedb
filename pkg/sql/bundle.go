@@ -6,6 +6,7 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gosimple/slug"
 	"github.com/jinzhu/gorm"
@@ -148,9 +149,9 @@ func GetBundle(id int, columns []string) (bundle Bundle, err error) {
 
 func CountBundles() (count int, err error) {
 
-	var item = helpers.MemcacheBundlesCount
+	var item = memcache.MemcacheBundlesCount
 
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
 
 		var count int
 

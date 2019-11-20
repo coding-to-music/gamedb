@@ -12,8 +12,9 @@ import (
 	"github.com/didip/tollbooth/limiter"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/sql"
-	"github.com/influxdata/influxdb1-client"
+	influx "github.com/influxdata/influxdb1-client"
 	"github.com/jinzhu/gorm"
 )
 
@@ -118,8 +119,8 @@ func (r APIRequest) SaveToInflux(success bool, callError error) (err error) {
 	}
 
 	// Save to Influx
-	_, err = helpers.InfluxWrite(helpers.InfluxRetentionPolicyAllTime, client.Point{
-		Measurement: string(helpers.InfluxMeasurementAPICalls),
+	_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, influx.Point{
+		Measurement: string(influxHelper.InfluxMeasurementAPICalls),
 		Tags:        tags,
 		Fields:      fields,
 		Time:        time.Now(),

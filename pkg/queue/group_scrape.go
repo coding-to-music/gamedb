@@ -13,6 +13,9 @@ import (
 	"github.com/Jleagle/influxql"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
+	"github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
@@ -78,7 +81,7 @@ func (q groupQueueScrape) processMessages(msgs []amqp.Delivery) {
 
 			group.Type, err = getGroupType(groupID)
 			if err != nil {
-				helpers.LogSteamError(err, groupID)
+				steam.LogSteamError(err, groupID)
 				ackRetry(msg, &message)
 				return
 			}
@@ -109,7 +112,7 @@ func (q groupQueueScrape) processMessages(msgs []amqp.Delivery) {
 		if group.ID64 == "" {
 			err = produceGroupNew(groupID)
 			if err != nil {
-				helpers.LogSteamError(err, groupID)
+				steam.LogSteamError(err, groupID)
 			}
 			message.ack(msg)
 			return
@@ -206,7 +209,7 @@ func (q groupQueueScrape) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Clear memcache
-	err = helpers.RemoveKeyFromMemCacheViaPubSub(message.Message.IDs...)
+	err = memcache.RemoveKeyFromMemCacheViaPubSub(message.Message.IDs...)
 	log.Err(err)
 
 	// Send websocket
@@ -322,7 +325,7 @@ func updateGameGroup(id string, group *mongo.Group) (foundNumbers bool, err erro
 
 	//
 	c.OnError(func(r *colly.Response, err error) {
-		helpers.LogSteamError(err)
+		steam.LogSteamError(err)
 	})
 
 	return foundNumbers, c.Visit("https://steamcommunity.com/gid/" + id)
@@ -418,7 +421,7 @@ func updateRegularGroup(id string, group *mongo.Group) (foundMembers bool, err e
 
 	//
 	c.OnError(func(r *colly.Response, err error) {
-		helpers.LogSteamError(err)
+		steam.LogSteamError(err)
 	})
 
 	return foundMembers, c.Visit("https://steamcommunity.com/gid/" + id)
@@ -430,7 +433,7 @@ func getGroupTrending(group *mongo.Group) (err error) {
 
 	subBuilder := influxql.NewBuilder()
 	subBuilder.AddSelect("difference(last(members_count))", "")
-	subBuilder.SetFrom(helpers.InfluxGameDB, helpers.InfluxRetentionPolicyAllTime.String(), helpers.InfluxMeasurementGroups.String())
+	subBuilder.SetFrom(influxHelper.InfluxGameDB, influxHelper.InfluxRetentionPolicyAllTime.String(), influxHelper.InfluxMeasurementGroups.String())
 	subBuilder.AddWhere("group_id", "=", group.ID64)
 	subBuilder.AddWhere("time", ">=", "NOW() - 21d")
 	subBuilder.AddGroupByTime("1h")
@@ -439,7 +442,7 @@ func getGroupTrending(group *mongo.Group) (err error) {
 	builder.AddSelect("cumulative_sum(difference)", "")
 	builder.SetFromSubQuery(subBuilder)
 
-	resp, err := helpers.InfluxQuery(builder.String())
+	resp, err := influxHelper.InfluxQuery(builder.String())
 	if err != nil {
 		return err
 	}
@@ -510,8 +513,8 @@ func saveGroupToInflux(group mongo.Group) (err error) {
 		"members_online":  group.MembersOnline,
 	}
 
-	_, err = helpers.InfluxWrite(helpers.InfluxRetentionPolicyAllTime, influx.Point{
-		Measurement: string(helpers.InfluxMeasurementGroups),
+	_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, influx.Point{
+		Measurement: string(influxHelper.InfluxMeasurementGroups),
 		Tags: map[string]string{
 			"group_id":   group.ID64,
 			"group_type": group.Type,
@@ -563,8 +566,8 @@ func updateGroupFromXML(id string, group *mongo.Group) (err error) {
 
 	groupXMLRateLimit.Take()
 
-	resp, b, err := helpers.GetSteam().GetGroupByID(id)
-	err = helpers.AllowSteamCodes(err, b, nil)
+	resp, b, err := steam.GetSteam().GetGroupByID(id)
+	err = steam.AllowSteamCodes(err, b, nil)
 	if err != nil {
 		return err
 	}

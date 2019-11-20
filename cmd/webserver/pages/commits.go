@@ -7,7 +7,8 @@ import (
 
 	"github.com/cenkalti/backoff/v3"
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/helpers"
+	githubHelper "github.com/gamedb/gamedb/pkg/helpers/github"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/go-chi/chi"
 	"github.com/google/go-github/v28/github"
@@ -50,7 +51,7 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query.limit(r)
 
-	client, ctx := helpers.GetGithub()
+	client, ctx := githubHelper.GetGithub()
 
 	commits, _, err := client.Repositories.ListCommits(ctx, "gamedb", "website", &github.CommitsListOptions{
 		ListOptions: github.ListOptions{
@@ -97,11 +98,11 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 func getTotalCommits() (total int, err error) {
 
-	client, ctx := helpers.GetGithub()
+	client, ctx := githubHelper.GetGithub()
 
-	var item = helpers.MemcacheTotalCommits
+	var item = memcache.MemcacheTotalCommits
 
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &total, func() (interface{}, error) {
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &total, func() (interface{}, error) {
 
 		operation := func() (err error) {
 

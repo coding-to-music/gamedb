@@ -8,6 +8,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -133,9 +134,9 @@ func GetAppSales(appID int) (offers []Sale, err error) {
 
 func CountSales() (count int64, err error) {
 
-	var item = helpers.MemcacheSalesCount
+	var item = memcache.MemcacheSalesCount
 
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
 
 		return CountDocuments(CollectionAppSales, bson.D{{"offer_end", bson.M{"$gt": time.Now()}}}, 0)
 	})
@@ -210,9 +211,9 @@ func UpdateSales(offers []Sale) (err error) {
 
 func GetUniqueSaleTypes() (types []string, err error) {
 
-	var item = helpers.MemcacheUniqueSaleTypes
+	var item = memcache.MemcacheUniqueSaleTypes
 
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &types, func() (interface{}, error) {
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &types, func() (interface{}, error) {
 
 		client, ctx, err := getMongo()
 		if err != nil {

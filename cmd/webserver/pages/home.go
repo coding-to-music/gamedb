@@ -12,6 +12,7 @@ import (
 
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
@@ -295,9 +296,9 @@ type homePlayer struct {
 
 func getPlayersForHome(sort string) (players []mongo.Player, err error) {
 
-	var item = helpers.MemcacheHomePlayers(sort)
+	var item = memcache.MemcacheHomePlayers(sort)
 
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &players, func() (interface{}, error) {
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &players, func() (interface{}, error) {
 
 		projection := bson.M{
 			"_id":            1,

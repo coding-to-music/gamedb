@@ -7,6 +7,7 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 )
 
@@ -59,9 +60,9 @@ func GetAllTags() (tags []Tag, err error) {
 
 func GetTagsForSelect() (tags []Tag, err error) {
 
-	var item = helpers.MemcacheTagKeyNames
+	var item = memcache.MemcacheTagKeyNames
 
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &tags, func() (interface{}, error) {
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &tags, func() (interface{}, error) {
 
 		var tags []Tag
 

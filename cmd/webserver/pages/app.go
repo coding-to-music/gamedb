@@ -10,6 +10,7 @@ import (
 
 	"github.com/Jleagle/influxql"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
@@ -536,23 +537,23 @@ func appPlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	builder := influxql.NewBuilder()
 	builder.AddSelect("max(player_count)", "max_player_count")
 	builder.AddSelect("max(twitch_viewers)", "max_twitch_viewers")
-	builder.SetFrom(helpers.InfluxGameDB, helpers.InfluxRetentionPolicyAllTime.String(), helpers.InfluxMeasurementApps.String())
+	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
 	builder.AddWhere("time", ">", "NOW()-7d")
 	builder.AddWhere("app_id", "=", id)
 	builder.AddGroupByTime("10m")
 	builder.SetFillNone()
 
-	resp, err := helpers.InfluxQuery(builder.String())
+	resp, err := influx.InfluxQuery(builder.String())
 	if err != nil {
 		log.Err(err, r, builder.String())
 		return
 	}
 
-	var hc helpers.HighChartsJSON
+	var hc influx.HighChartsJSON
 
 	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
 
-		hc = helpers.InfluxResponseToHighCharts(resp.Results[0].Series[0])
+		hc = influx.InfluxResponseToHighCharts(resp.Results[0].Series[0])
 	}
 
 	returnJSON(w, r, hc)
@@ -698,23 +699,23 @@ func appReviewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	builder.AddSelect("mean(reviews_score)", "mean_reviews_score")
 	builder.AddSelect("mean(reviews_positive)", "mean_reviews_positive")
 	builder.AddSelect("mean(reviews_negative)", "mean_reviews_negative")
-	builder.SetFrom(helpers.InfluxGameDB, helpers.InfluxRetentionPolicyAllTime.String(), helpers.InfluxMeasurementApps.String())
+	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
 	builder.AddWhere("time", ">", "NOW()-365d")
 	builder.AddWhere("app_id", "=", id)
 	builder.AddGroupByTime("1d")
 	builder.SetFillNone()
 
-	resp, err := helpers.InfluxQuery(builder.String())
+	resp, err := influx.InfluxQuery(builder.String())
 	if err != nil {
 		log.Err(err, r, builder.String())
 		return
 	}
 
-	var hc helpers.HighChartsJSON
+	var hc influx.HighChartsJSON
 
 	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
 
-		hc = helpers.InfluxResponseToHighCharts(resp.Results[0].Series[0])
+		hc = influx.InfluxResponseToHighCharts(resp.Results[0].Series[0])
 	}
 
 	returnJSON(w, r, hc)

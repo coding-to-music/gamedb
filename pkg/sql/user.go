@@ -7,6 +7,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 )
 
 const (
@@ -138,9 +139,9 @@ func DeleteUser(id int64) (err error) {
 
 func GetUserFromKeyCache(key string) (user User, err error) {
 
-	var item = helpers.MemcacheUserByAPIKey(key)
+	var item = memcache.MemcacheUserByAPIKey(key)
 
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &user, func() (interface{}, error) {
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &user, func() (interface{}, error) {
 
 		return GetUserByKey("api_key", key, 0)
 	})

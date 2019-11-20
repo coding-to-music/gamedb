@@ -1,21 +1,10 @@
-package helpers
+package memcache
 
 import (
-	"encoding/json"
 	"strconv"
 
-	"cloud.google.com/go/pubsub"
 	"github.com/Jleagle/memcache-go/memcache"
 	"github.com/Jleagle/steam-go/steam"
-	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/log"
-)
-
-type MemcacheItem = memcache.Item
-
-var (
-	ErrCacheMiss   = memcache.ErrCacheMiss
-	memcacheClient = memcache.New("game-db-", config.Config.MemcacheDSN.Get())
 )
 
 var (
@@ -85,34 +74,3 @@ var (
 	MemcacheUniquePlayerStateCodes   = func(c string) memcache.Item { return memcache.Item{Key: "unique-player-state-codes-" + c, Expiration: 60 * 60 * 24 * 7} }
 	MemcacheUniqueSaleTypes          = memcache.Item{Key: "unique-sale-types", Expiration: 60 * 60 * 1}
 )
-
-func GetMemcache() *memcache.Memcache {
-	return memcacheClient
-}
-
-func ListenToPubSubMemcache() {
-
-	mc := GetMemcache()
-
-	err := PubSubSubscribe(PubSubMemcache, func(m *pubsub.Message) {
-
-		var ids []string
-
-		err := json.Unmarshal(m.Data, &ids)
-		log.Err(err)
-
-		for _, id := range ids {
-			err = mc.Delete(id)
-			err = IgnoreErrors(err, memcache.ErrCacheMiss)
-			log.Err(err)
-		}
-	})
-	log.Err(err)
-}
-
-//
-func RemoveKeyFromMemCacheViaPubSub(keys ...string) (err error) {
-
-	_, err = Publish(PubSubTopicMemcache, keys)
-	return err
-}

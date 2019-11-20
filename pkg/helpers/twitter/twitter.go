@@ -1,4 +1,4 @@
-package helpers
+package twitter
 
 import (
 	"sync"
@@ -9,24 +9,24 @@ import (
 )
 
 var (
-	twitterClient *twitter.Client
-	twitterLock   sync.Mutex
+	client *twitter.Client
+	lock   sync.Mutex
 )
 
 func GetTwitter() *twitter.Client {
 
-	twitterLock.Lock()
-	defer twitterLock.Unlock()
+	lock.Lock()
+	defer lock.Unlock()
 
-	if twitterClient == nil {
+	if client == nil {
 
 		confi := oauth1.NewConfig(config.Config.TwitterConsumerKey.Get(), config.Config.TwitterConsumerSecret.Get())
 		token := oauth1.NewToken(config.Config.TwitterAccessToken.Get(), config.Config.TwitterAccessTokenSecret.Get())
 
 		httpClient := confi.Client(oauth1.NoContext, token)
 
-		twitterClient = twitter.NewClient(httpClient)
+		client = twitter.NewClient(httpClient)
 	}
 
-	return twitterClient
+	return client
 }

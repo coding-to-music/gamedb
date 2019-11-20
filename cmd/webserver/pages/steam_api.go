@@ -12,6 +12,8 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	githubHelper "github.com/gamedb/gamedb/pkg/helpers/github"
+	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/go-chi/chi"
@@ -149,8 +151,8 @@ func (interfaces *Interfaces) addInterface(in steam.APIInterface, documented boo
 
 func (interfaces *Interfaces) addDocumented(w http.ResponseWriter, r *http.Request) (err error) {
 
-	steamResp, b, err := helpers.GetSteam().GetSupportedAPIList()
-	err = helpers.AllowSteamCodes(err, b, nil)
+	steamResp, b, err := steamHelper.GetSteam().GetSupportedAPIList()
+	err = steamHelper.AllowSteamCodes(err, b, nil)
 	if err != nil {
 		return err
 	}
@@ -165,7 +167,7 @@ func (interfaces *Interfaces) addDocumented(w http.ResponseWriter, r *http.Reque
 
 func (interfaces *Interfaces) addUndocumented() (err error) {
 
-	client, ctx := helpers.GetGithub()
+	client, ctx := githubHelper.GetGithub()
 	_, dirs, _, err := client.Repositories.GetContents(ctx, "SteamDatabase", "SteamTracking", "API", nil)
 	if err != nil {
 		return err

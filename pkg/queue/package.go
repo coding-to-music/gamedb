@@ -13,6 +13,9 @@ import (
 	"github.com/Jleagle/valve-data-format-go/vdf"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
+	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/sql/pics"
@@ -116,7 +119,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 		if err == steam.ErrHTMLResponse {
 			log.Info(err, id)
 		} else {
-			helpers.LogSteamError(err, id)
+			steamHelper.LogSteamError(err, id)
 		}
 
 		ackRetry(msg, &message)
@@ -126,7 +129,7 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	// Scrape
 	err = scrapePackage(&pack)
 	if err != nil {
-		helpers.LogSteamError(err, id)
+		steamHelper.LogSteamError(err, id)
 		ackRetry(msg, &message)
 		return
 	}
@@ -174,10 +177,10 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 	// Clear caches
 	if pack.ReleaseDateUnix > time.Now().Unix() && newPackage {
 
-		err = helpers.RemoveKeyFromMemCacheViaPubSub(
-			helpers.MemcacheUpcomingPackagesCount.Key,
-			helpers.MemcachePackageInQueue(pack.ID).Key,
-			helpers.MemcachePackageBundles(pack.ID).Key,
+		err = memcache.RemoveKeyFromMemCacheViaPubSub(
+			memcache.MemcacheUpcomingPackagesCount.Key,
+			memcache.MemcachePackageInQueue(pack.ID).Key,
+			memcache.MemcachePackageBundles(pack.ID).Key,
 		)
 		log.Err(err)
 	}
@@ -361,7 +364,7 @@ func scrapePackage(pack *sql.Package) (err error) {
 
 	//
 	c.OnError(func(r *colly.Response, err error) {
-		helpers.LogSteamError(err)
+		steamHelper.LogSteamError(err)
 	})
 
 	err = c.Visit("https://store.steampowered.com/sub/" + strconv.Itoa(pack.ID))
@@ -380,8 +383,8 @@ func updatePackageFromStore(pack *sql.Package) (err error) {
 	for _, cc := range helpers.GetProdCCs(true) {
 
 		// Get package details
-		response, b, err := helpers.GetSteam().GetPackageDetails(pack.ID, cc.ProductCode, steam.LanguageEnglish)
-		err = helpers.AllowSteamCodes(err, b, nil)
+		response, b, err := steamHelper.GetSteam().GetPackageDetails(pack.ID, cc.ProductCode, steam.LanguageEnglish)
+		err = steamHelper.AllowSteamCodes(err, b, nil)
 		if err == steam.ErrPackageNotFound {
 			continue
 		}
@@ -477,8 +480,8 @@ func savePackageToInflux(pack sql.Package) error {
 		return nil
 	}
 
-	_, err := helpers.InfluxWrite(helpers.InfluxRetentionPolicyAllTime, influx.Point{
-		Measurement: string(helpers.InfluxMeasurementPackages),
+	_, err := influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, influx.Point{
+		Measurement: string(influxHelper.InfluxMeasurementPackages),
 		Tags: map[string]string{
 			"package_id": strconv.Itoa(pack.ID),
 		},

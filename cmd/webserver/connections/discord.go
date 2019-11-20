@@ -6,17 +6,18 @@ import (
 	"github.com/Jleagle/session-go/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/discord"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"golang.org/x/oauth2"
 )
 
-type discord struct {
+type discordConnection struct {
 }
 
-func (d discord) getID(r *http.Request, token *oauth2.Token) interface{} {
+func (d discordConnection) getID(r *http.Request, token *oauth2.Token) interface{} {
 
-	discord, err := helpers.GetDiscordBot(token.AccessToken, false)
+	client, err := discord.GetDiscordBot(token.AccessToken, false)
 	if err != nil {
 		log.Err(err)
 		err = session.SetFlash(r, helpers.SessionBad, "Invalid token")
@@ -24,7 +25,7 @@ func (d discord) getID(r *http.Request, token *oauth2.Token) interface{} {
 		return nil
 	}
 
-	discordUser, err := discord.User("@me")
+	discordUser, err := client.User("@me")
 	if err != nil {
 		log.Err(err)
 		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1003)")
@@ -41,15 +42,15 @@ func (d discord) getID(r *http.Request, token *oauth2.Token) interface{} {
 	return discordUser.ID
 }
 
-func (d discord) getName() string {
+func (d discordConnection) getName() string {
 	return "Discord"
 }
 
-func (d discord) getEnum() connectionEnum {
+func (d discordConnection) getEnum() connectionEnum {
 	return ConnectionDiscord
 }
 
-func (d discord) getConfig(login bool) oauth2.Config {
+func (d discordConnection) getConfig(login bool) oauth2.Config {
 
 	var redirectURL string
 	if login {
@@ -70,19 +71,19 @@ func (d discord) getConfig(login bool) oauth2.Config {
 	}
 }
 
-func (d discord) getEmptyVal() interface{} {
+func (d discordConnection) getEmptyVal() interface{} {
 	return ""
 }
 
-func (d discord) LinkHandler(w http.ResponseWriter, r *http.Request) {
+func (d discordConnection) LinkHandler(w http.ResponseWriter, r *http.Request) {
 	linkOAuth(w, r, d, false)
 }
 
-func (d discord) UnlinkHandler(w http.ResponseWriter, r *http.Request) {
+func (d discordConnection) UnlinkHandler(w http.ResponseWriter, r *http.Request) {
 	unlink(w, r, d, mongo.EventUnlinkDiscord)
 }
 
-func (d discord) LinkCallbackHandler(w http.ResponseWriter, r *http.Request) {
+func (d discordConnection) LinkCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	callbackOAuth(r, d, mongo.EventLinkDiscord, false)
 
@@ -92,11 +93,11 @@ func (d discord) LinkCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/settings", http.StatusFound)
 }
 
-func (d discord) LoginHandler(w http.ResponseWriter, r *http.Request) {
+func (d discordConnection) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	linkOAuth(w, r, d, true)
 }
 
-func (d discord) LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
+func (d discordConnection) LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	callbackOAuth(r, d, mongo.EventLogin, true)
 

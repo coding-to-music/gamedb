@@ -7,6 +7,8 @@ import (
 	"sync"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
+	"github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
@@ -94,7 +96,7 @@ func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {
 			// expected element type <memberList> but have <html>
 			_, ok = err.(xml.UnmarshalError)
 			if ok {
-				helpers.LogSteamError(err, id)
+				steam.LogSteamError(err, id)
 				message.ack(msg)
 				return
 			}
@@ -102,12 +104,12 @@ func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {
 			// XML syntax error on line 7
 			_, ok = err.(*xml.SyntaxError)
 			if ok {
-				helpers.LogSteamError(err, id)
+				steam.LogSteamError(err, id)
 				message.ack(msg)
 				return
 			}
 
-			helpers.LogSteamError(err, id)
+			steam.LogSteamError(err, id)
 			ackRetry(msg, &message)
 			return
 		}
@@ -185,9 +187,9 @@ func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Send PubSub
-	err = helpers.RemoveKeyFromMemCacheViaPubSub(
-		helpers.MemcacheGroup(group.ID64).Key,
-		helpers.MemcacheGroup(strconv.Itoa(group.ID)).Key,
+	err = memcache.RemoveKeyFromMemCacheViaPubSub(
+		memcache.MemcacheGroup(group.ID64).Key,
+		memcache.MemcacheGroup(strconv.Itoa(group.ID)).Key,
 	)
 	if err != nil {
 		log.Err(err, id)

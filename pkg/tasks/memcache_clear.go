@@ -1,7 +1,7 @@
 package tasks
 
 import (
-	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 )
 
 type MemcacheClear struct {
@@ -22,5 +22,5 @@ func (c MemcacheClear) Cron() string {
 
 func (c MemcacheClear) work() (err error) {
 
-	return helpers.GetMemcache().DeleteAll()
+	return memcache.GetClient().DeleteAll()
 }

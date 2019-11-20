@@ -7,6 +7,7 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 )
 
 type Genre struct {
@@ -61,9 +62,9 @@ func GetAllGenres(includeDeleted bool) (genres []Genre, err error) {
 
 func GetGenresForSelect() (genres []Genre, err error) {
 
-	var item = helpers.MemcacheGenreKeyNames
+	var item = memcache.MemcacheGenreKeyNames
 
-	err = helpers.GetMemcache().GetSetInterface(item.Key, item.Expiration, &genres, func() (interface{}, error) {
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &genres, func() (interface{}, error) {
 
 		var genres []Genre
 

@@ -1,4 +1,4 @@
-package helpers
+package discord
 
 import (
 	"sync"
@@ -7,11 +7,14 @@ import (
 )
 
 var (
-	discordConnections = map[string]*discordgo.Session{}
-	discordMutex       sync.Mutex
+	sessions = map[string]*discordgo.Session{}
+	lock     sync.Mutex
 )
 
 func GetDiscordBot(authToken string, bot bool, handlers ...interface{}) (session *discordgo.Session, err error) {
+
+	lock.Lock()
+	defer lock.Unlock()
 
 	if bot {
 		authToken = "Bot " + authToken
@@ -19,10 +22,7 @@ func GetDiscordBot(authToken string, bot bool, handlers ...interface{}) (session
 		authToken = "Bearer " + authToken
 	}
 
-	discordMutex.Lock()
-	defer discordMutex.Unlock()
-
-	_, ok := discordConnections[authToken]
+	_, ok := sessions[authToken]
 	if !ok {
 		discord, err := discordgo.New(authToken)
 		if err != nil {
@@ -41,8 +41,8 @@ func GetDiscordBot(authToken string, bot bool, handlers ...interface{}) (session
 			}
 		}
 
-		discordConnections[authToken] = discord
+		sessions[authToken] = discord
 	}
 
-	return discordConnections[authToken], err
+	return sessions[authToken], err
 }

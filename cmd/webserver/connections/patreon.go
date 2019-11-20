@@ -9,20 +9,20 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	pat "github.com/mxpv/patreon-go"
+	"github.com/mxpv/patreon-go"
 	"golang.org/x/oauth2"
 )
 
-type patreon struct {
+type patreonConnection struct {
 }
 
-func (p patreon) getID(r *http.Request, token *oauth2.Token) interface{} {
+func (p patreonConnection) getID(r *http.Request, token *oauth2.Token) interface{} {
 
 	// Get Patreon user
 	ts := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: token.AccessToken})
 	tc := oauth2.NewClient(context.TODO(), ts)
 
-	patreonUser, err := pat.NewClient(tc).FetchUser()
+	patreonUser, err := patreon.NewClient(tc).FetchUser()
 	if err != nil {
 		log.Err(err)
 		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1003)")
@@ -39,15 +39,15 @@ func (p patreon) getID(r *http.Request, token *oauth2.Token) interface{} {
 	return patreonUser.Data.ID
 }
 
-func (p patreon) getName() string {
+func (p patreonConnection) getName() string {
 	return "Patreon"
 }
 
-func (p patreon) getEnum() connectionEnum {
+func (p patreonConnection) getEnum() connectionEnum {
 	return ConnectionPatreon
 }
 
-func (p patreon) getConfig(login bool) oauth2.Config {
+func (p patreonConnection) getConfig(login bool) oauth2.Config {
 
 	var redirectURL string
 	if login {
@@ -62,27 +62,27 @@ func (p patreon) getConfig(login bool) oauth2.Config {
 		Scopes:       []string{"identity", "identity[email]"}, // identity[email] scope is only needed as the Patreon package we are using only handles v1 API
 		RedirectURL:  redirectURL,
 		Endpoint: oauth2.Endpoint{
-			AuthURL:  pat.AuthorizationURL,
-			TokenURL: pat.AccessTokenURL,
+			AuthURL:  patreon.AuthorizationURL,
+			TokenURL: patreon.AccessTokenURL,
 		},
 	}
 }
 
-func (p patreon) getEmptyVal() interface{} {
+func (p patreonConnection) getEmptyVal() interface{} {
 	return ""
 }
 
-func (p patreon) LinkHandler(w http.ResponseWriter, r *http.Request) {
+func (p patreonConnection) LinkHandler(w http.ResponseWriter, r *http.Request) {
 
 	linkOAuth(w, r, p, false)
 }
 
-func (p patreon) UnlinkHandler(w http.ResponseWriter, r *http.Request) {
+func (p patreonConnection) UnlinkHandler(w http.ResponseWriter, r *http.Request) {
 
 	unlink(w, r, p, mongo.EventLinkPatreon)
 }
 
-func (p patreon) LinkCallbackHandler(w http.ResponseWriter, r *http.Request) {
+func (p patreonConnection) LinkCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	callbackOAuth(r, p, mongo.EventUnlinkPatreon, false)
 
@@ -92,12 +92,12 @@ func (p patreon) LinkCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/settings", http.StatusFound)
 }
 
-func (p patreon) LoginHandler(w http.ResponseWriter, r *http.Request) {
+func (p patreonConnection) LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	linkOAuth(w, r, p, true)
 }
 
-func (p patreon) LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
+func (p patreonConnection) LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	callbackOAuth(r, p, mongo.EventLogin, true)
 

@@ -11,13 +11,13 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"golang.org/x/oauth2"
-	goog "golang.org/x/oauth2/google"
+	"golang.org/x/oauth2/google"
 )
 
-type google struct {
+type googleConnection struct {
 }
 
-func (g google) getID(r *http.Request, token *oauth2.Token) interface{} {
+func (g googleConnection) getID(r *http.Request, token *oauth2.Token) interface{} {
 
 	response, err := http.Get("https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + token.AccessToken)
 	if err != nil {
@@ -59,15 +59,15 @@ func (g google) getID(r *http.Request, token *oauth2.Token) interface{} {
 	return userInfo.ID
 }
 
-func (g google) getName() string {
+func (g googleConnection) getName() string {
 	return "Google"
 }
 
-func (g google) getEnum() connectionEnum {
+func (g googleConnection) getEnum() connectionEnum {
 	return ConnectionGoogle
 }
 
-func (g google) getConfig(login bool) oauth2.Config {
+func (g googleConnection) getConfig(login bool) oauth2.Config {
 
 	var redirectURL string
 	if login {
@@ -81,25 +81,25 @@ func (g google) getConfig(login bool) oauth2.Config {
 		ClientSecret: config.Config.GoogleOauthClientSecret.Get(),
 		Scopes:       []string{"profile"},
 		RedirectURL:  redirectURL,
-		Endpoint:     goog.Endpoint,
+		Endpoint:     google.Endpoint,
 	}
 }
 
-func (g google) getEmptyVal() interface{} {
+func (g googleConnection) getEmptyVal() interface{} {
 	return ""
 }
 
-func (g google) LinkHandler(w http.ResponseWriter, r *http.Request) {
+func (g googleConnection) LinkHandler(w http.ResponseWriter, r *http.Request) {
 
 	linkOAuth(w, r, g, false)
 }
 
-func (g google) UnlinkHandler(w http.ResponseWriter, r *http.Request) {
+func (g googleConnection) UnlinkHandler(w http.ResponseWriter, r *http.Request) {
 
 	unlink(w, r, g, mongo.EventUnlinkGoogle)
 }
 
-func (g google) LinkCallbackHandler(w http.ResponseWriter, r *http.Request) {
+func (g googleConnection) LinkCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	callbackOAuth(r, g, mongo.EventLinkGoogle, false)
 
@@ -109,12 +109,12 @@ func (g google) LinkCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/settings", http.StatusFound)
 }
 
-func (g google) LoginHandler(w http.ResponseWriter, r *http.Request) {
+func (g googleConnection) LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	linkOAuth(w, r, g, true)
 }
 
-func (g google) LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
+func (g googleConnection) LoginCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	callbackOAuth(r, g, mongo.EventLogin, true)
 

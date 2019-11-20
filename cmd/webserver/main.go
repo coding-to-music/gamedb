@@ -8,15 +8,16 @@ import (
 	"time"
 
 	"github.com/Jleagle/recaptcha-go"
-	middleware2 "github.com/gamedb/gamedb/cmd/webserver/middleware"
+	"github.com/gamedb/gamedb/cmd/webserver/middleware"
 	"github.com/gamedb/gamedb/cmd/webserver/pages"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
+	chiMiddleware "github.com/go-chi/chi/middleware"
 )
 
 var version string
@@ -40,7 +41,7 @@ func main() {
 	}
 
 	go websockets.ListenToPubSub()
-	go helpers.ListenToPubSubMemcache()
+	go memcache.ListenToPubSubMemcache()
 
 	// Setup Recaptcha
 	recaptcha.SetSecret(config.Config.RecaptchaPrivate.Get())
@@ -49,10 +50,10 @@ func main() {
 
 	// Routes
 	r := chi.NewRouter()
-	r.Use(middleware2.MiddlewareCors())
-	r.Use(middleware.RedirectSlashes)
-	r.Use(middleware2.MiddlewareRealIP)
-	r.Use(middleware.DefaultCompress)
+	r.Use(middleware.MiddlewareCors())
+	r.Use(chiMiddleware.RedirectSlashes)
+	r.Use(middleware.MiddlewareRealIP)
+	r.Use(chiMiddleware.DefaultCompress)
 
 	// Pages
 	r.Get("/", pages.HomeHandler)
@@ -116,7 +117,7 @@ func main() {
 
 	// Profiling
 	if config.IsLocal() {
-		r.Mount("/debug", middleware.Profiler())
+		r.Mount("/debug", chiMiddleware.Profiler())
 	}
 
 	// Files
