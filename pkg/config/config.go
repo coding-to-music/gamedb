@@ -346,7 +346,7 @@ func GetSteamKeyTag() string {
 
 	key := Config.SteamAPIKey.Get()
 	if len(key) > 5 {
-		key = key[0:5]
+		key = key[len(key)-5:]
 	}
 
 	return strings.ToUpper(key)
