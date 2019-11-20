@@ -1549,6 +1549,7 @@ func saveSales(app sql.App, newSales []mongo.Sale) (err error) {
 		newSales[k].AppLowestPrice = map[steam.ProductCC]int{} // todo
 		newSales[k].AppRating = app.ReviewsScore
 		newSales[k].AppReleaseDate = time.Unix(app.ReleaseDateUnix, 0)
+		newSales[k].AppReleaseDateString = app.ReleaseDate
 		newSales[k].AppPlayersWeek = app.PlayerPeakWeek
 		newSales[k].AppTags = app.GetTagIDs()
 		newSales[k].AppPlatforms = app.GetPlatforms()

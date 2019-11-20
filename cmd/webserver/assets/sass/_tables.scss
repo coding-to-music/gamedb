@@ -92,6 +92,11 @@ table.table {
                 min-width: 150px;
                 word-break: break-word;
                 white-space: pre-wrap;
+                line-height: 18px; // For when there are 2 lines of text
+
+                small {
+                    color: #768390;
+                }
             }
 
             > div.name.min {

@@ -121,6 +121,10 @@ if ($('#sales-page').length > 0) {
                             field = field + ' <span class="badge badge-success float-right">Lowest Ever!</span>';
                         }
 
+                        if (row[15] != null && row[15].includes(777)) {
+                            field = field + ' <span class="badge badge-success float-right">Low Confidence</span>';
+                        }
+
                         return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[2] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + field + '</div></div>'
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
@@ -176,7 +180,10 @@ if ($('#sales-page').length > 0) {
                 {
                     "targets": 5,
                     "render": function (data, type, row) {
-                        return '<span data-toggle="tooltip" data-placement="left" title="' + row[9] + '" data-livestamp="' + row[9] + '"></span>';
+                        if (!row[9].startsWith('1970-01-01')) {
+                            return '<span data-toggle="tooltip" data-placement="left" title="' + row[9] + '" data-livestamp="' + row[9] + '"></span>';
+                        }
+                        return row[14];
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).attr('nowrap', 'nowrap');

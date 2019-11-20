@@ -391,6 +391,8 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			offer.IsLowest(code),                           // 11
 			offer.SaleEndEstimate,                          // 12
 			helpers.GetAppType(offer.AppType),              // 13
+			offer.AppReleaseDateString,                     // 14
+			offer.AppCategories,                            // 15
 		})
 	}
 
