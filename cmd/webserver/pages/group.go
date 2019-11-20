@@ -4,7 +4,6 @@ import (
 	"html/template"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/Jleagle/influxql"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -78,7 +77,7 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if group.UpdatedAt.After(time.Now().Add(time.Hour * -3)) {
+		if !group.ShouldUpdate() {
 			return
 		}
 

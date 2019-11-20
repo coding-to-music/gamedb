@@ -100,6 +100,10 @@ func (group Group) GetIcon() string {
 	return helpers.AvatarBase + group.Icon
 }
 
+func (group Group) ShouldUpdate() bool {
+	return group.UpdatedAt.Before(time.Now().Add(time.Hour * -3))
+}
+
 // Don't cache, as we need updatedAt to be live for notifications etc
 func GetGroup(id string) (group Group, err error) {
 

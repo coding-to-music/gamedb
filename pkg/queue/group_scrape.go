@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/Jleagle/influxql"
-	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
@@ -72,7 +71,7 @@ func (q groupQueueScrape) processMessages(msgs []amqp.Delivery) {
 		}
 
 		// Skip if updated recently
-		if config.IsProd() && group.UpdatedAt.Unix() > time.Now().Add(time.Hour*-1).Unix() {
+		if !group.ShouldUpdate() {
 			continue
 		}
 
