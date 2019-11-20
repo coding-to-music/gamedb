@@ -100,7 +100,7 @@ type BaseConfig struct {
 	// Steam
 	SteamUsername ConfigItem
 	SteamPassword ConfigItem
-	SteamAPIKey   ConfigItem
+	SteamAPIKey   ConfigItem // Not set from ENV
 
 	// Twitch
 	TwitchClientID     ConfigItem
@@ -209,7 +209,6 @@ func init() {
 	// Steam
 	Config.SteamUsername.Set("PROXY_USERNAME")
 	Config.SteamPassword.Set("PROXY_PASSWORD")
-	Config.SteamAPIKey.Set("API_KEY")
 
 	// Twitch
 	Config.TwitchClientID.Set("TWITCH_CLIENT_ID")

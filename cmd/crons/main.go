@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/tasks"
 	"github.com/robfig/cron/v3"
 )
@@ -14,7 +15,12 @@ func main() {
 	config.SetVersion(version)
 	log.Initialise([]log.LogName{log.LogNameCrons})
 
-	log.Info("Starting crons")
+	// Get API key
+	err := sql.GetAPIKey("crons", false)
+	if err != nil {
+		log.Critical(err)
+		return
+	}
 
 	c := cron.New(
 		cron.WithLogger(cronLogger{}),
@@ -31,6 +37,7 @@ func main() {
 		}(task)
 	}
 
+	log.Info("Starting crons")
 	c.Run() // Blocks
 }
 

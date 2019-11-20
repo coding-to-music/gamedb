@@ -10,6 +10,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/sql"
 )
 
 const debugAuthorID = "145456943912189952"
@@ -20,6 +21,13 @@ func main() {
 
 	config.SetVersion(version)
 	log.Initialise([]log.LogName{log.LogNameChatbot})
+
+	// Get API key
+	err := sql.GetAPIKey("chatbot", false) // todo, change to true when we have more keys
+	if err != nil {
+		log.Critical(err)
+		return
+	}
 
 	log.Info("Starting chatbot")
 
@@ -90,7 +98,7 @@ func main() {
 		}
 	}
 
-	_, err := helpers.GetDiscordBot(config.Config.DiscordChatBotToken.Get(), true, handler)
+	_, err = helpers.GetDiscordBot(config.Config.DiscordChatBotToken.Get(), true, handler)
 	if err != nil {
 		log.Err(err)
 		return

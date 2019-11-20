@@ -13,6 +13,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -25,13 +26,19 @@ func main() {
 	config.SetVersion(version)
 	log.Initialise([]log.LogName{log.LogNameWebserver})
 
+	// Get API key
+	err := sql.GetAPIKey("webserver", false) // todo, change to true when we have more keys
+	if err != nil {
+		log.Critical(err)
+		return
+	}
+
 	//
 	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
 		log.Critical("GOOGLE_APPLICATION_CREDENTIALS not found")
 		os.Exit(1)
 	}
 
-	log.Info("Starting PubSub")
 	go websockets.ListenToPubSub()
 	go helpers.ListenToPubSubMemcache()
 
@@ -117,13 +124,11 @@ func main() {
 	r.Get("/robots.txt", pages.RootFileHandler)
 	r.Get("/site.webmanifest", pages.RootFileHandler)
 	r.Get("/ads.txt", pages.RootFileHandler)
+	fileServer(r, "/assets", http.Dir("./assets"))
 
 	// Redirects
 	r.Get("/sitemap/index.xml", pages.RedirectHandler("/sitemap.xml"))
 	r.Get("/trending", pages.RedirectHandler("/apps/trending"))
-
-	// File server
-	fileServer(r, "/assets", http.Dir("./assets"))
 
 	// 404
 	r.NotFound(pages.Error404Handler)
