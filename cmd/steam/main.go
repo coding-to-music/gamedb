@@ -240,7 +240,9 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 				VDF:          m,
 				Force:        force,
 			})
-			log.Err(err, id)
+			if err != nil {
+				log.Err(err, id)
+			}
 		}
 	}
 
