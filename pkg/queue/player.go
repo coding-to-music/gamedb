@@ -60,10 +60,6 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
-	if message.Attempt > 1 {
-		log.Info("Consuming player " + strconv.FormatInt(message.Message.ID, 10) + ", attempt " + strconv.Itoa(message.Attempt))
-	}
-
 	// Update player
 	player, err := mongo.GetPlayer(message.Message.ID)
 	err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)

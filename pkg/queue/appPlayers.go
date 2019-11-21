@@ -62,10 +62,6 @@ func (q appPlayerQueue) processMessages(msgs []amqp.Delivery) {
 
 	for _, appID := range message.Message.IDs {
 
-		if message.Attempt > 1 {
-			log.Info("Consuming app player " + strconv.Itoa(appID) + ", attempt " + strconv.Itoa(message.Attempt))
-		}
-
 		app, ok := appMap[appID]
 		if ok {
 

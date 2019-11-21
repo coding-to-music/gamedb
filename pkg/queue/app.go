@@ -66,10 +66,6 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 
 	var id = message.Message.ID
 
-	if message.Attempt > 1 {
-		log.Info("Consuming app " + strconv.Itoa(id) + ", attempt " + strconv.Itoa(message.Attempt) + " - " + string(msg.Body))
-	}
-
 	if !helpers.IsValidAppID(id) {
 		log.Err(errors.New("invalid app ID: "+strconv.Itoa(id)), msg.Body)
 		ackFail(msg, &message)

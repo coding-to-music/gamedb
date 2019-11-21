@@ -57,10 +57,6 @@ func (q packageQueue) processMessages(msgs []amqp.Delivery) {
 
 	var id = message.Message.ID
 
-	if message.Attempt > 1 {
-		log.Info("Consuming package " + strconv.Itoa(id) + ", attempt " + strconv.Itoa(message.Attempt))
-	}
-
 	if !sql.IsValidPackageID(id) {
 		log.Info(errors.New("invalid package ID: "+strconv.Itoa(id)), msg.Body)
 		ackFail(msg, &message)
