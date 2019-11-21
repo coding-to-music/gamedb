@@ -4,6 +4,7 @@
 /cmd/crons/crons
 /cmd/webserver/webserver
 /cmd/steam/steam
+/cmd/test/test
 
 # Source maps
 /cmd/webserver/assets/dist/main.css.map
