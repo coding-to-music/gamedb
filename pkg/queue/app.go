@@ -656,7 +656,7 @@ func updateAppDetails(app *sql.App) (err error) {
 			var publisherIDs []int
 			for _, v := range response.Data.Publishers {
 				var publisher sql.Publisher
-				gorm = gorm.Unscoped().FirstOrCreate(&publisher, sql.Publisher{Name: strings.TrimSpace(v)})
+				gorm = gorm.Unscoped().FirstOrCreate(&publisher, sql.Publisher{Name: sql.TrimPublisherName(v)})
 				if gorm.Error != nil {
 					return gorm.Error
 				}

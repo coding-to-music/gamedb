@@ -3,12 +3,14 @@ package sql
 import (
 	"sort"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
+	"github.com/jinzhu/gorm"
 )
 
 type Publisher struct {
@@ -20,6 +22,21 @@ type Publisher struct {
 	Apps      int        `gorm:"not null"`
 	MeanPrice string     `gorm:"not null"` // map[steam.CountryCode]float64
 	MeanScore float64    `gorm:"not null"`
+}
+
+func (p *Publisher) BeforeCreate(scope *gorm.Scope) error {
+	return p.Before(scope)
+}
+
+func (p *Publisher) BeforeSave(scope *gorm.Scope) error {
+	return p.Before(scope)
+}
+
+func (p *Publisher) Before(scope *gorm.Scope) error {
+
+	p.Name = TrimPublisherName(p.Name)
+
+	return nil
 }
 
 func (p Publisher) GetPath() string {
@@ -40,6 +57,15 @@ func (p Publisher) GetMeanPrice(code steam.ProductCC) (string, error) {
 
 func (p Publisher) GetMeanScore() string {
 	return helpers.FloatToString(p.MeanScore, 2) + "%"
+}
+
+func TrimPublisherName(name string) string {
+
+	if len(name) > 255 {
+		name = name[:255]
+	}
+
+	return strings.TrimSpace(name)
 }
 
 func GetPublisher(id int) (publisher Publisher, err error) {
