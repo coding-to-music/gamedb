@@ -116,7 +116,7 @@ func init() {
 
 				log.Warning("Consumer connection closed", err)
 				time.Sleep(time.Second * 5)
-				log.Info("Getting new producer connection")
+				log.Info("Getting producer connection")
 
 				producerConnection, err = getConnection()
 				if err != nil {
@@ -331,7 +331,7 @@ func (q baseQueue) ConsumeMessages() {
 
 				if consumerConnection == nil {
 
-					log.Info("Getting new consumer connection")
+					log.Info("Getting consumer connection")
 
 					consumerConnection, err = getConnection()
 					if err != nil {
@@ -417,7 +417,7 @@ func produce(message messageInterface, queue queueName) (err error) {
 
 		if producerConnection == nil {
 
-			log.Info("Getting new producer connection")
+			log.Info("Getting producer connection")
 
 			producerConnection, err = getConnection()
 			if err != nil {
