@@ -811,11 +811,11 @@
                                     <div class="tab-pane" id="dev-options" role="tabpanel">
 
                                         <div class="table-responsive">
-                                            <table class="table table-hover table-striped table-datatable mb-0" data-order='[[1, "asc"]]'>
+                                            <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
                                                 <thead class="thead-light">
                                                 <tr>
-                                                    <th scope="col" class="thin">Section</th>
                                                     <th scope="col">Key</th>
+                                                    <th scope="col" class="thin">Section</th>
                                                     <th scope="col">Value</th>
                                                     <th scope="col" class="thin">Raw</th>
                                                 </tr>
@@ -823,37 +823,37 @@
                                                 {{ range .Extended }}
                                                     <tr data-raw="{{ htmlEscape .Value }}">
                                                         {{/*<td nowrap="nowrap"><a href="/product-keys?type=app&key={{ .Key }}&value={{ .Value }}">{{ .Key }}</a></td>*/}}
-                                                        <td>Extended</td>
                                                         <td nowrap="nowrap">{{ .Key }}</td>
+                                                        <td>Extended</td>
                                                         <td class="{{ .TDClass }}">{{ .ValueFormatted }}</td>
                                                         <td><i class="fas fa-eye"></i></td>
                                                     </tr>
                                                 {{ end }}
                                                 {{ range .Common }}
                                                     <tr data-raw="{{ htmlEscape .Value }}">
-                                                        <td>Common</td>
                                                         <td nowrap="nowrap">
                                                             {{ .Key }}
                                                             {{ if ne .Description "" }}
                                                                 <small>({{ .Description }})</small>
                                                             {{ end }}
                                                         </td>
+                                                        <td>Common</td>
                                                         <td class="{{ .TDClass }}">{{ .ValueFormatted }}</td>
                                                         <td><i class="fas fa-eye"></i></td>
                                                     </tr>
                                                 {{ end }}
                                                 {{ range .UFS }}
                                                     <tr data-raw="{{ htmlEscape .Value }}">
-                                                        <td>UFS</td>
                                                         <td nowrap="nowrap">{{ .Key }}</td>
+                                                        <td>UFS</td>
                                                         <td class="{{ .TDClass }}">{{ .ValueFormatted }}</td>
                                                         <td><i class="fas fa-eye"></i></td>
                                                     </tr>
                                                 {{ end }}
                                                 {{ range $key, $value := .Config }}
                                                     <tr data-raw="{{ htmlEscape .Value }}">
-                                                        <td>Config</td>
                                                         <td nowrap="nowrap">{{ .Key }}</td>
+                                                        <td>Config</td>
                                                         <td class="{{ .TDClass }}">{{ .ValueFormatted }}</td>
                                                         <td><i class="fas fa-eye"></i></td>
                                                     </tr>
