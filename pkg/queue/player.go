@@ -561,10 +561,10 @@ func updatePlayerFriends(player *mongo.Player) error {
 		return err
 	}
 
-	newFriendsSlice, b, err := steamHelper.GetSteam().GetFriendList(player.ID)
-	err = steamHelper.AllowSteamCodes(err, b, []int{401})
-	if err != nil {
-		return err
+	// If it's a 401, it returns no results, we dont want to change remove the players friends.
+	newFriendsSlice, _, err := steamHelper.GetSteam().GetFriendList(player.ID)
+	if err2, ok := err.(steam.Error); ok && err2.Code == 401 {
+		return nil
 	}
 
 	newFriendsMap := map[int64]steam.Friend{}
