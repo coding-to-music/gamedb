@@ -1,6 +1,7 @@
 package queue2
 
 import (
+	"sync"
 	"time"
 
 	"github.com/cenkalti/backoff"
@@ -9,34 +10,50 @@ import (
 	"github.com/streadway/amqp"
 )
 
-func NewConnection(config amqp.Config) (*connection, error) {
+type connection struct {
+	connection *amqp.Connection
+	config     amqp.Config
+	closeChan  chan *amqp.Error
+	// queues     []*queue
+	sync.Mutex
+}
+
+func NewConnection(config amqp.Config) (error) {
 
 	conn := &connection{
 		config:    config,
 		closeChan: make(chan *amqp.Error),
 	}
 
-	return conn, conn.connect()
-}
+	err := conn.connect()
+	if err != nil {
+		return err
+	}
 
-type connection struct {
-	conn      *amqp.Connection
-	config    amqp.Config
-	closeChan chan *amqp.Error
+	conn.listen()
+
+	return nil
 }
 
 func (connection *connection) connect() error {
+
+	connection.Lock()
+	defer connection.Unlock()
+
+	if !connection.connection.IsClosed() {
+		return nil
+	}
 
 	log.Info("Creating Rabbit connection")
 
 	operation := func() (err error) {
 
-		connection.conn, err = amqp.DialConfig(config.RabbitDSN(), connection.config)
+		connection.connection, err = amqp.DialConfig(config.RabbitDSN(), connection.config)
 		if err != nil {
 			return nil
 		}
 
-		connection.conn.NotifyClose(connection.closeChan)
+		connection.connection.NotifyClose(connection.closeChan)
 
 		return err
 	}
@@ -46,4 +63,22 @@ func (connection *connection) connect() error {
 	policy.InitialInterval = 5 * time.Second
 
 	return backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err) })
+}
+
+func (connection *connection) listen() {
+	go func() {
+		for {
+			var err error
+			select {
+			case err = <-connection.closeChan:
+
+				log.Warning("Consumer connection closed", err)
+
+				time.Sleep(time.Second * 10)
+
+				err = connection.connect()
+				log.Err(err)
+			}
+		}
+	}()
 }

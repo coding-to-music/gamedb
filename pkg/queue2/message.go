@@ -16,13 +16,13 @@ const (
 	headerForce      = "force"
 )
 
-type messageNew struct {
+type message struct {
 	msg         *amqp.Delivery
 	actionTaken bool
 	sync.Mutex
 }
 
-func (message messageNew) ack() error {
+func (message message) ack() error {
 
 	message.Lock()
 	defer message.Unlock()
@@ -36,15 +36,16 @@ func (message messageNew) ack() error {
 	return message.msg.Ack(false)
 }
 
-func (message messageNew) failQueue() error {
+func (message message) failQueue() error {
 	return message.moveQueue(queue.queueFailed)
 }
 
-func (message messageNew) retryQueue() error {
+// todo, send to originalQueue+"_Retry"
+func (message message) retryQueue() error {
 	return message.moveQueue(queue.queueDelays)
 }
 
-func (message messageNew) moveQueue(queue queue.queueName) error {
+func (message message) moveQueue(queue queue.queueName) error {
 
 	message.Lock()
 	defer message.Unlock()
@@ -63,7 +64,7 @@ func (message messageNew) moveQueue(queue queue.queueName) error {
 	return message.msg.Ack(false)
 }
 
-func (message messageNew) getTryCount() int {
+func (message message) getTryCount() int {
 
 	val, ok := message.msg.Headers["try"]
 	if ok {
@@ -72,8 +73,8 @@ func (message messageNew) getTryCount() int {
 	return 0
 }
 
-func amqpMessage(msg *amqp.Delivery) *messageNew {
-	return &messageNew{
+func amqpMessage(msg *amqp.Delivery) *message {
+	return &message{
 		msg: msg,
 	}
 }
