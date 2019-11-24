@@ -63,7 +63,9 @@ func GetAPIKey(tag string, getUnusedKey bool) (err error) {
 		}
 
 		db = db.Order("expires ASC").First(&row)
-		if db.Error != nil {
+		if db.Error == ErrRecordNotFound {
+			return errors.New("waiting for API key")
+		} else if db.Error != nil {
 			return db.Error
 		}
 
@@ -74,9 +76,7 @@ func GetAPIKey(tag string, getUnusedKey bool) (err error) {
 				"expires": time.Now().Add(apiSessionLength),
 				"owner":   tag,
 			})
-			if db.Error == ErrRecordNotFound {
-				return errors.New("waiting for API key")
-			} else if db.Error != nil {
+			if db.Error != nil {
 				return db.Error
 			}
 		}
