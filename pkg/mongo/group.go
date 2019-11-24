@@ -139,7 +139,7 @@ func GetGroupsByID(ids []string, projection bson.M) (groups []Group, err error) 
 		return groups, nil
 	}
 
-	chunks := helpers.ChunkStrings(ids, 100)
+	chunks := helpers.ChunkStrings(ids, 50)
 
 	var wg sync.WaitGroup
 
