@@ -3,9 +3,9 @@ module github.com/gamedb/gamedb
 go 1.13
 
 require (
-	cloud.google.com/go v0.48.0 // indirect
+	cloud.google.com/go v0.49.0 // indirect
 	cloud.google.com/go/logging v1.0.0
-	cloud.google.com/go/pubsub v1.0.1
+	cloud.google.com/go/pubsub v1.1.0
 	github.com/Jleagle/go-durationfmt v0.0.0-20190307132420-e57bfad84057
 	github.com/Jleagle/influxql v0.0.0-20190502115937-4ac053a1ed8e
 	github.com/Jleagle/memcache-go v0.0.0-20191017205741-83516ce5e61a
@@ -13,7 +13,7 @@ require (
 	github.com/Jleagle/recaptcha-go v0.0.0-20190220085232-0e548dc7cc83
 	github.com/Jleagle/session-go v0.0.0-20190515070633-3c8712426233
 	github.com/Jleagle/sitemap-go v0.0.0-20190405195207-2bdddbb3bd50
-	github.com/Jleagle/steam-go v0.0.0-20191105130514-b9bdeae5b53a
+	github.com/Jleagle/steam-go v0.0.0-20191122180648-5acb2653ef81
 	github.com/Jleagle/unmarshal-go v0.0.0-20191115124251-320828cd121a
 	github.com/Jleagle/valve-data-format-go v0.0.0-20191105130353-2651328f1d36
 	github.com/Philipp15b/go-steam v1.0.1-0.20190816133340-b04c5a83c1c0
@@ -21,15 +21,15 @@ require (
 	github.com/ahmdrz/goinsta/v2 v2.4.5-0.20191021103459-79702a8f3eda
 	github.com/andybalholm/cascadia v1.1.0 // indirect
 	github.com/antchfx/htmlquery v1.2.0 // indirect
-	github.com/antchfx/xmlquery v1.2.0 // indirect
-	github.com/antchfx/xpath v1.1.1 // indirect
+	github.com/antchfx/xmlquery v1.2.1 // indirect
+	github.com/antchfx/xpath v1.1.2 // indirect
 	github.com/badoux/checkmail v0.0.0-20181210160741-9661bd69e9ad
 	github.com/beefsack/go-rate v0.0.0-20180408011153-efa7637bb9b6 // indirect
 	github.com/bradfitz/gomemcache v0.0.0-20190913173617-a41fca850d0b // indirect
 	github.com/buger/jsonparser v0.0.0-20191004114745-ee4c978eae7e // indirect
 	github.com/bwmarrin/discordgo v0.20.1
 	github.com/cenkalti/backoff v2.2.1+incompatible
-	github.com/cenkalti/backoff/v3 v3.0.0
+	github.com/cenkalti/backoff/v3 v3.1.1
 	github.com/derekstavis/go-qs v0.0.0-20180720192143-9eef69e6c4e7
 	github.com/dghubble/go-twitter v0.0.0-20190719072343-39e5462e111f
 	github.com/dghubble/oauth1 v0.6.0
@@ -68,12 +68,11 @@ require (
 	github.com/kataras/iris v11.1.1+incompatible // indirect
 	github.com/kennygrant/sanitize v1.2.4 // indirect
 	github.com/logrusorgru/aurora v0.0.0-20191116043053-66b7ad493a23
-	github.com/mattn/go-runewidth v0.0.6 // indirect
 	github.com/microcosm-cc/bluemonday v1.0.2
 	github.com/mxpv/patreon-go v0.0.0-20190917022727-646111f1d983
 	github.com/nicklaw5/helix v0.5.4
 	github.com/nlopes/slack v0.6.0
-	github.com/olekukonko/tablewriter v0.0.2 // indirect
+	github.com/olekukonko/tablewriter v0.0.3 // indirect
 	github.com/oschwald/maxminddb-golang v1.5.0
 	github.com/pariz/gountries v0.0.0-20191029140926-233bc78cf5b5
 	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
@@ -98,20 +97,19 @@ require (
 	go.mongodb.org/mongo-driver v1.1.3
 	go.opencensus.io v0.22.2 // indirect
 	go.uber.org/atomic v1.4.0 // indirect
-	golang.org/x/crypto v0.0.0-20191112222119-e1110fd1c708
-	golang.org/x/net v0.0.0-20191112182307-2180aed22343 // indirect
-	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
+	golang.org/x/crypto v0.0.0-20191122220453-ac88ee75c92c
+	golang.org/x/net v0.0.0-20191119073136-fc4aabc6c914 // indirect
+	golang.org/x/oauth2 v0.0.0-20191122200657-5d9234df094c
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e // indirect
-	golang.org/x/sys v0.0.0-20191115151921-52ab43148777 // indirect
+	golang.org/x/sys v0.0.0-20191120155948-bd437916bb0e // indirect
 	golang.org/x/text v0.3.2
 	golang.org/x/time v0.0.0-20191024005414-555d28b269f0 // indirect
-	golang.org/x/tools v0.0.0-20191115202509-3a792d9c32b2 // indirect
-	google.golang.org/api v0.14.0 // indirect
+	golang.org/x/tools v0.0.0-20191122232904-2a6ccf25d769 // indirect
 	google.golang.org/appengine v1.6.5 // indirect
 	google.golang.org/genproto v0.0.0-20191115221424-83cc0476cb11 // indirect
 	google.golang.org/grpc v1.25.1
 	gopkg.in/djherbis/atime.v1 v1.0.0 // indirect
 	gopkg.in/djherbis/stream.v1 v1.2.0 // indirect
-	gopkg.in/yaml.v2 v2.2.5 // indirect
+	gopkg.in/yaml.v2 v2.2.7 // indirect
 	jaytaylor.com/html2text v0.0.0-20190408195923-01ec452cbe43
 )
