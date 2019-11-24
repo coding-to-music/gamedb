@@ -1,9 +1,12 @@
-package queue2
+package consumers
 
 import (
+	"encoding/json"
 	"sync"
+	"time"
 
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/streadway/amqp"
 )
 
@@ -11,23 +14,26 @@ type queue struct {
 	connection    *connection
 	queue         *amqp.Queue
 	channel       *amqp.Channel
+	closeChan     chan *amqp.Error
 	name          string
 	prefetchCount int
+	batchSize     int
 	sync.Mutex
 }
 
-func NewQueue(connection *connection, name string, prefetchCount int) (*queue, error) {
+func NewQueue(connection *connection, name string, prefetchCount int, batchSize int) (*queue, error) {
 
 	qu := &queue{
 		connection:    connection,
 		name:          name,
 		prefetchCount: prefetchCount,
+		batchSize:     batchSize,
 	}
 
-	return qu, qu.init()
+	return qu, qu.connect()
 }
 
-func (queue *queue) init() error {
+func (queue *queue) connect() error {
 
 	queue.Lock()
 	defer queue.Unlock()
@@ -44,6 +50,8 @@ func (queue *queue) init() error {
 			return err
 		}
 
+		_ = ch.NotifyClose(queue.closeChan)
+
 		queue.channel = ch
 	}
 
@@ -58,6 +66,41 @@ func (queue *queue) init() error {
 	}
 
 	return nil
+}
+
+func (queue *queue) listen() {
+	go func() {
+		for {
+			var err error
+			select {
+			case err = <-queue.closeChan:
+
+				log.Warning("Rabbit channel closed", err)
+
+				time.Sleep(time.Second * 10)
+
+				err = queue.connect()
+				log.Err(err)
+			}
+		}
+	}()
+}
+
+func (queue *queue) produce(message message) error {
+
+	message.setupHeadersForProduce(queue.name, true)
+
+	b, err := json.Marshal(message)
+	if err != nil {
+		return err
+	}
+
+	return queue.channel.Publish("", queue.name, false, false, amqp.Publishing{
+		DeliveryMode: amqp.Persistent,
+		ContentType:  "application/json",
+		Body:         b,
+	})
+
 }
 
 func (queue *queue) consume() error {
@@ -80,18 +123,9 @@ func (queue *queue) consume() error {
 				msgSlice = append(msgSlice, msg)
 			}
 
-			if len(msgSlice) >= q.batchSize {
+			if len(msgSlice) >= queue.batchSize {
 
-				switch v := q.queue.(type) {
-				case *steamQueue:
-					v.SteamClient = q.SteamClient
-					q.queue = v
-				case *delayQueue:
-					v.BaseQueue = q
-					q.queue = v
-				}
-
-				q.queue.processMessages(msgSlice)
+				queue.processMessages(msgSlice)
 				msgSlice = []amqp.Delivery{}
 			}
 		}

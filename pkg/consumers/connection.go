@@ -1,4 +1,4 @@
-package queue2
+package consumers
 
 import (
 	"sync"
@@ -14,11 +14,10 @@ type connection struct {
 	connection *amqp.Connection
 	config     amqp.Config
 	closeChan  chan *amqp.Error
-	// queues     []*queue
 	sync.Mutex
 }
 
-func NewConnection(config amqp.Config) (error) {
+func NewConnection(config amqp.Config) (*connection, error) {
 
 	conn := &connection{
 		config:    config,
@@ -27,12 +26,12 @@ func NewConnection(config amqp.Config) (error) {
 
 	err := conn.connect()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	conn.listen()
 
-	return nil
+	return conn, nil
 }
 
 func (connection *connection) connect() error {
@@ -72,7 +71,7 @@ func (connection *connection) listen() {
 			select {
 			case err = <-connection.closeChan:
 
-				log.Warning("Consumer connection closed", err)
+				log.Warning("Rabbit connection closed", err)
 
 				time.Sleep(time.Second * 10)
 
