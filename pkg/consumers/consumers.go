@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/consumers/framework"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/streadway/amqp"
 )
@@ -29,8 +30,8 @@ const (
 )
 
 var (
-	consumerConnection *connection
-	producerConnection *connection
+	consumerConnection *framework.connection
+	producerConnection *framework.connection
 )
 
 func init() {
@@ -42,15 +43,15 @@ func init() {
 
 	var err error
 
-	consumerConnection, err = NewConnection(amqp.Config{Heartbeat: heartbeat})
+	consumerConnection, err = framework.NewConnection(amqp.Config{Heartbeat: heartbeat})
 	if err != nil {
 		log.Info(err)
 		return
 	}
 
-	NewQueue(consumerConnection, "apps", 10, 1)
+	framework.NewQueue(consumerConnection, "apps", 10, 1)
 
-	producerConnection, err = NewConnection(amqp.Config{Heartbeat: heartbeat})
+	producerConnection, err = framework.NewConnection(amqp.Config{Heartbeat: heartbeat})
 	if err != nil {
 		log.Info(err)
 		return

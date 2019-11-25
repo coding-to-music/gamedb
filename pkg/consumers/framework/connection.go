@@ -1,4 +1,4 @@
-package consumers
+package framework
 
 import (
 	"sync"
@@ -19,19 +19,33 @@ type connection struct {
 
 func NewConnection(config amqp.Config) (*connection, error) {
 
-	conn := &connection{
+	connection := &connection{
 		config:    config,
 		closeChan: make(chan *amqp.Error),
 	}
 
-	err := conn.connect()
+	err := connection.connect()
 	if err != nil {
 		return nil, err
 	}
 
-	conn.listen()
+	go func() {
+		for {
+			var err error
+			select {
+			case err = <-connection.closeChan:
 
-	return conn, nil
+				log.Warning("Rabbit connection closed", err)
+
+				time.Sleep(time.Second * 10)
+
+				err = connection.connect()
+				log.Err(err)
+			}
+		}
+	}()
+
+	return connection, nil
 }
 
 func (connection *connection) connect() error {
@@ -62,22 +76,4 @@ func (connection *connection) connect() error {
 	policy.InitialInterval = 5 * time.Second
 
 	return backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err) })
-}
-
-func (connection *connection) listen() {
-	go func() {
-		for {
-			var err error
-			select {
-			case err = <-connection.closeChan:
-
-				log.Warning("Rabbit connection closed", err)
-
-				time.Sleep(time.Second * 10)
-
-				err = connection.connect()
-				log.Err(err)
-			}
-		}
-	}()
 }
