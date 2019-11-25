@@ -219,6 +219,8 @@ func (payload *baseMessage) ackFail() (actionAlreadyTaken bool) {
 
 func ackFail(msg amqp.Delivery, message messageInterface) {
 
+	log.Info("Sending to fail queue: " + string(msg.Body))
+
 	b := message.ackFail()
 	if b {
 		return
