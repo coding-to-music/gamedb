@@ -80,6 +80,10 @@ func (p Page) GetName() WebsocketPage {
 }
 
 func (p Page) CountConnections() int {
+
+	p.Lock()
+	defer p.Unlock()
+
 	return len(p.connections)
 }
 
