@@ -14,7 +14,7 @@ const (
 	apiSessionRefresh = time.Second * 60 // Heartbeat to retake the key
 	apiSessionRetry   = time.Second * 10 // Retry on no keys availabile
 
-	sqlKeyName = "api_keys"
+	sqlLockName = "api_keys"
 )
 
 type APIKey struct {
@@ -41,13 +41,13 @@ func GetAPIKey(tag string, getUnusedKey bool) (err error) {
 		}
 
 		// https://stackoverflow.com/questions/7698211/prevent-two-calls-to-the-same-script-from-selecting-the-same-mysql-row
-		db = db.New().Raw("SELECT GET_LOCK('" + sqlKeyName + "', 10) as `lock`")
+		db = db.New().Raw("SELECT GET_LOCK('" + sqlLockName + "', 10)")
 		if db.Error != nil {
 			return db.Error
 		}
 
 		defer func() {
-			db = db.New().Raw("SELECT RELEASE_LOCK('" + sqlKeyName + "')")
+			db = db.New().Raw("SELECT RELEASE_LOCK('" + sqlLockName + "')")
 			if db.Error != nil {
 				log.Err(db.Error)
 			}
