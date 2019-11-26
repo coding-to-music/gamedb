@@ -18,8 +18,8 @@ const (
 
 	// Pages
 	UserLevelLimit0 = 10 // Free
-	UserLevelLimit1 = 10
-	UserLevelLimit2 = 0
+	UserLevelLimit1 = 20
+	UserLevelLimit2 = 100
 	UserLevelLimit3 = 0
 )
 
