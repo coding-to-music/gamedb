@@ -142,7 +142,7 @@ if ($homePage.length > 0) {
                     switch (sort) {
                         case 'level':
                             tds.push({
-                                '<>': 'td', 'nowrap': 'nowrap', 'class': 'img', 'html': '<div class="icon-name"><div class="icon"><div class="${class}"></div></div><div class="name min">${level}</div></div>',
+                                '<>': 'td', 'class': 'img', 'html': '<div class="icon-name"><div class="icon"><div class="${class}"></div></div><div class="name min nowrap">${level}</div></div>',
                             });
                             tds.push({
                                 '<>': 'td', 'nowrap': 'nowrap', 'html': "${badges}"
