@@ -47,6 +47,7 @@ func GetAPIKey(tag string, getUnusedKey bool) (err error) {
 		}
 
 		defer func() {
+			db.Error = nil
 			db = db.New().Raw("SELECT RELEASE_LOCK('" + sqlLockName + "')")
 			if db.Error != nil {
 				log.Err(db.Error)
