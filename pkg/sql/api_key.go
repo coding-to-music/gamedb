@@ -54,15 +54,13 @@ func GetAPIKey(tag string, getUnusedKey bool) (err error) {
 			}
 		}()
 
-		db = db.New()
-
 		// Get key
-		var row = APIKey{}
-
+		db = db.New()
 		if getUnusedKey {
 			db = db.Where("expires < ?", time.Now())
 		}
 
+		var row = APIKey{}
 		db = db.Order("expires ASC").First(&row)
 		if db.Error == ErrRecordNotFound {
 			return errors.New("waiting for API key")
