@@ -227,7 +227,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		gorm = gorm.Model(sql.App{})
-		gorm = gorm.Select([]string{"id", "name", "icon", "reviews_score", "prices", "player_peak_week"})
+		gorm = gorm.Select([]string{"id", "name", "icon", "reviews_score", "prices", "player_peak_week", "group_followers"})
 
 		// Types
 		types := query.getSearchSlice("types")
@@ -421,6 +421,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			app.PlayerPeakWeek,                        // 7
 			app.GetStoreLink(),                        // 8
 			query.getOffset() + k + 1,                 // 9
+			app.GroupFollowers,                        // 10
 		})
 	}
 

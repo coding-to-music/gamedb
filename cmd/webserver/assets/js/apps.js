@@ -103,9 +103,17 @@ if ($('#apps-page').length > 0) {
                     },
                     "orderSequence": ["desc"],
                 },
-                // Score
+                // Followers
                 {
                     "targets": 3,
+                    "render": function (data, type, row) {
+                        return row[10].toLocaleString();
+                    },
+                    "orderSequence": ["desc"],
+                },
+                // Score
+                {
+                    "targets": 4,
                     "render": function (data, type, row) {
                         return row[5] + '%';
                     },
@@ -113,7 +121,7 @@ if ($('#apps-page').length > 0) {
                 },
                 // Price
                 {
-                    "targets": 4,
+                    "targets": 5,
                     "render": function (data, type, row) {
                         return row[6];
                     },
@@ -122,7 +130,7 @@ if ($('#apps-page').length > 0) {
 
                 // Link
                 {
-                    "targets": 5,
+                    "targets": 6,
                     "render": function (data, type, row) {
                         if (row[8]) {
                             return '<a href="' + row[8] + '" target="_blank" rel="nofollow"><i class="fas fa-link"></i></a>';
