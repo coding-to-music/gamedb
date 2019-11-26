@@ -9,32 +9,36 @@ import (
 	"github.com/streadway/amqp"
 )
 
-type queueName string
-
 const (
-	QueueSteam queueName = "GameDB_Go_Steam"
+	queueApps      framework.QueueName = "GameDB_Go_Apps"
+	queueAppPlayer framework.QueueName = "GameDB_Go_App_Players"
+	queueBundles   framework.QueueName = "GameDB_Go_Bundles"
+	queueChanges   framework.QueueName = "GameDB_Go_Changes"
+	queueFailed    framework.QueueName = "GameDB_Go_Failed"
+	queueGroups    framework.QueueName = "GameDB_Go_Groups"
+	queueGroups2   framework.QueueName = "GameDB_Go_Groups2"
+	queueGroupsNew framework.QueueName = "GameDB_Go_Groups_New"
+	queuePackages  framework.QueueName = "GameDB_Go_Packages"
+	queuePlayers   framework.QueueName = "GameDB_Go_Profiles"
+	queuePlayers2  framework.QueueName = "GameDB_Go_Profiles2"
+	queueSteam     framework.QueueName = "GameDB_Go_Steam"
+	queueTest      framework.QueueName = "GameDB_Go_Test"
 
-	queueApps      queueName = "GameDB_Go_Apps"
-	queueAppPlayer queueName = "GameDB_Go_App_Players"
-	queueBundles   queueName = "GameDB_Go_Bundles"
-	queueChanges   queueName = "GameDB_Go_Changes"
-	queueDelays    queueName = "GameDB_Go_Delays"
-	queueFailed    queueName = "GameDB_Go_Failed"
-	queueGroups    queueName = "GameDB_Go_Groups"
-	queueGroups2   queueName = "GameDB_Go_Groups2"
-	queueGroupsNew queueName = "GameDB_Go_Groups_New"
-	queuePackages  queueName = "GameDB_Go_Packages"
-	queuePlayers   queueName = "GameDB_Go_Profiles"
-	queuePlayers2  queueName = "GameDB_Go_Profiles2"
-	queueTest      queueName = "GameDB_Go_Test"
+	CConsumer = "consumer"
+	CProducer = "producer"
 )
 
 var (
-	consumerConnection *framework.connection
-	producerConnection *framework.connection
+	consumerConnection *framework.Connection
+	producerConnection *framework.Connection
+
+	queues = map[string]map[framework.QueueName]*framework.Queue{
+		CConsumer: {},
+		CProducer: {},
+	}
 )
 
-func init() {
+func Init() {
 
 	heartbeat := time.Minute
 	if config.IsLocal() {
@@ -49,11 +53,57 @@ func init() {
 		return
 	}
 
-	framework.NewQueue(consumerConnection, "apps", 10, 1)
-
 	producerConnection, err = framework.NewConnection(amqp.Config{Heartbeat: heartbeat})
 	if err != nil {
 		log.Info(err)
 		return
+	}
+
+	queueHandlers := map[framework.QueueName]framework.Handler{
+		queueApps:      appHandler,
+		queueAppPlayer: nil,
+		queueBundles:   bundleHandler,
+		queueChanges:   nil,
+		queueFailed:    nil,
+		queueGroups:    nil,
+		queueGroups2:   nil,
+		queueGroupsNew: nil,
+		queuePackages:  nil,
+		queuePlayers:   nil,
+		queueTest:      nil,
+		queuePlayers2:  nil,
+		// queueSteam:     nil,
+	}
+
+	var q *framework.Queue
+	for k, v := range queueHandlers {
+		if v != nil {
+
+			// Producer
+			q, err = framework.NewQueue(producerConnection, k, 10, 1, v)
+			if err == nil {
+				queues[CProducer][k] = q
+			}
+
+			if err != nil {
+				log.Err(string(k), err)
+			}
+
+			// Consumer
+			q, err = framework.NewQueue(consumerConnection, k, 10, 1, v)
+			if err == nil {
+				queues[CConsumer][k] = q
+			}
+
+			if err != nil {
+				log.Err(string(k), err)
+			}
+		}
+	}
+
+	// Start consuming
+	for _, queue := range queues[CConsumer] {
+		err = queue.Consume()
+		log.Err(err)
 	}
 }
