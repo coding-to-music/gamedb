@@ -6,14 +6,14 @@ import (
 	"github.com/streadway/amqp"
 )
 
-type message struct {
-	queue       *queue
-	message     *amqp.Delivery
+type Message struct {
+	queue       *Queue
+	messages    []*amqp.Delivery // Slice for bulk acking
 	actionTaken bool
 	sync.Mutex
 }
 
-func (message *message) ack() error {
+func (message *Message) ack() error {
 
 	message.Lock()
 	defer message.Unlock()
@@ -24,22 +24,23 @@ func (message *message) ack() error {
 
 	message.actionTaken = true
 
-	return message.message.Ack(false)
+	if len(message.messages) > 1 {
+		var last = message.messages[len(message.messages)-1]
+		return last.Ack(true)
+	} else if len(message.messages) == 1 {
+		return message.messages[0].Ack(false)
+	}
+	return nil
 }
 
-func (message message) sendToQueue(queues ...*queue) error {
+func (message Message) SendToQueue(queues ...*Queue) error {
 
 	message.Lock()
 	defer message.Unlock()
 
-	if message.actionTaken {
-		return nil
-	}
-
-	message.actionTaken = true
-
+	// Prodice to new queue
 	if len(queues) == 0 {
-		queues = []*queue{message.queue}
+		queues = []*Queue{message.queue}
 	}
 
 	for _, queue := range queues {
@@ -50,5 +51,11 @@ func (message message) sendToQueue(queues ...*queue) error {
 		}
 	}
 
-	return message.message.Ack(false)
+	// Ack
+	if message.actionTaken {
+		return nil
+	}
+	message.actionTaken = true
+
+	return message.ack()
 }

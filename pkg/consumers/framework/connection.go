@@ -10,16 +10,16 @@ import (
 	"github.com/streadway/amqp"
 )
 
-type connection struct {
+type Connection struct {
 	connection *amqp.Connection
 	config     amqp.Config
 	closeChan  chan *amqp.Error
 	sync.Mutex
 }
 
-func NewConnection(config amqp.Config) (*connection, error) {
+func NewConnection(config amqp.Config) (*Connection, error) {
 
-	connection := &connection{
+	connection := &Connection{
 		config:    config,
 		closeChan: make(chan *amqp.Error),
 	}
@@ -48,12 +48,12 @@ func NewConnection(config amqp.Config) (*connection, error) {
 	return connection, nil
 }
 
-func (connection *connection) connect() error {
+func (connection *Connection) connect() error {
 
 	connection.Lock()
 	defer connection.Unlock()
 
-	if !connection.connection.IsClosed() {
+	if connection.connection != nil && !connection.connection.IsClosed() {
 		return nil
 	}
 

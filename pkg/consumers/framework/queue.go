@@ -10,25 +10,25 @@ import (
 	"github.com/streadway/amqp"
 )
 
-type queueName string
+type QueueName string
 
-type queueHandler func(message message)
+type Handler func(message Message)
 
-type queue struct {
-	connection    *connection
+type Queue struct {
+	connection    *Connection
 	queue         *amqp.Queue
 	channel       *amqp.Channel
 	closeChan     chan *amqp.Error
-	handler       queueHandler
-	name          queueName
+	handler       Handler
+	name          QueueName
 	prefetchCount int
 	batchSize     int
 	sync.Mutex
 }
 
-func NewQueue(connection *connection, name queueName, prefetchCount int, batchSize int, handler queueHandler) (*queue, error) {
+func NewQueue(connection *Connection, name QueueName, prefetchCount int, batchSize int, handler Handler) (*Queue, error) {
 
-	queue := &queue{
+	queue := &Queue{
 		connection:    connection,
 		name:          name,
 		prefetchCount: prefetchCount,
@@ -61,7 +61,7 @@ func NewQueue(connection *connection, name queueName, prefetchCount int, batchSi
 	return queue, nil
 }
 
-func (queue *queue) connect() error {
+func (queue *Queue) connect() error {
 
 	queue.Lock()
 	defer queue.Unlock()
@@ -105,59 +105,74 @@ const (
 	headerForce      = "force"
 )
 
-func (queue *queue) produce(message message) error {
+func (queue *Queue) produce(message Message) error {
 
-	// Sort headers
-	if message.message == nil {
-		message.message = &amqp.Delivery{}
+	// Headers
+	for _, message := range message.messages {
+
+		// if message == nil {
+		// 	message = &amqp.Delivery{}
+		// }
+
+		if message.Headers == nil {
+			message.Headers = amqp.Table{}
+		}
+
+		//
+		attempt, ok := message.Headers[headerAttempt]
+		if ok {
+			message.Headers[headerAttempt] = attempt.(int32) + 1
+		} else {
+			message.Headers[headerAttempt] = 1
+		}
+
+		//
+		_, ok = message.Headers[headerFirstSeen]
+		if !ok {
+			message.Headers[headerFirstSeen] = time.Now().Unix()
+		}
+
+		//
+		message.Headers[headerLastSeen] = time.Now().Unix()
+
+		//
+		_, ok = message.Headers[headerFirstQueue]
+		if !ok {
+			// message.Headers[headerFirstQueue] = queue
+		}
+
+		//
+		message.Headers[headerLastQueue] = time.Now().Unix()
+
+		//
+		oldForce, ok := message.Headers[headerForce]
+		if ok {
+			message.Headers[headerForce] = oldForce
+		} else {
+			message.Headers[headerForce] = false
+		}
+
+		//
+		b, err := json.Marshal(message)
+		if err != nil {
+			return err
+		}
+
+		err = queue.channel.Publish("", string(queue.name), false, false, amqp.Publishing{
+			Headers:      message.Headers,
+			DeliveryMode: amqp.Persistent,
+			ContentType:  "application/json",
+			Body:         b,
+		})
+		if err != nil {
+			return err
+		}
 	}
 
-	if message.message.Headers == nil {
-		message.message.Headers = amqp.Table{}
-	}
-
-	attempt, ok := message.message.Headers[headerAttempt]
-	if ok {
-		message.message.Headers[headerAttempt] = attempt.(int) + 1
-	} else {
-		message.message.Headers[headerAttempt] = 1
-	}
-
-	_, ok = message.message.Headers[headerFirstSeen]
-	if !ok {
-		message.message.Headers[headerFirstSeen] = time.Now().Unix()
-	}
-
-	message.message.Headers[headerLastSeen] = time.Now().Unix()
-
-	_, ok = message.message.Headers[headerFirstQueue]
-	if !ok {
-		message.message.Headers[headerFirstQueue] = queue
-	}
-
-	message.message.Headers[headerLastQueue] = time.Now().Unix()
-
-	oldForce, ok := message.message.Headers[headerForce]
-	if ok {
-		message.message.Headers[headerForce] = oldForce
-	} else {
-		message.message.Headers[headerForce] = false
-	}
-
-	//
-	b, err := json.Marshal(message)
-	if err != nil {
-		return err
-	}
-
-	return queue.channel.Publish("", queue.name, false, false, amqp.Publishing{
-		DeliveryMode: amqp.Persistent,
-		ContentType:  "application/json",
-		Body:         b,
-	})
+	return nil
 }
 
-func (queue *queue) consume() error {
+func (queue *Queue) Consume() error {
 
 	name := config.Config.Environment.Get() + "-" + config.GetSteamKeyTag()
 
@@ -169,21 +184,25 @@ func (queue *queue) consume() error {
 	// In a anon function so can return at anytime
 	go func(msgs <-chan amqp.Delivery) {
 
-		var msgSlice []message
+		message := Message{}
+		message.queue = queue
 
 		for {
-			msg := <-msgs
+			select {
+			case msg := <-msgs:
+				message.messages = append(message.messages, &msg)
+			}
 
-			message := message{}
-			message.message = &msg
-			message.queue = queue
+			if len(message.messages) >= queue.batchSize {
 
-			if len(msgSlice) >= queue.batchSize {
-
-				queue.processMessages(msgSlice)
-				msgSlice = []amqp.Delivery{}
+				if queue.handler != nil {
+					queue.handler(message)
+					message.messages = nil
+				}
 			}
 		}
 
 	}(msgs)
+
+	return nil
 }
