@@ -13,7 +13,7 @@ type Message struct {
 	sync.Mutex
 }
 
-func (message *Message) ack() error {
+func (message *Message) Ack() (err error) {
 
 	message.Lock()
 	defer message.Unlock()
@@ -22,15 +22,18 @@ func (message *Message) ack() error {
 		return nil
 	}
 
-	message.actionTaken = true
-
 	if len(message.messages) > 1 {
 		var last = message.messages[len(message.messages)-1]
-		return last.Ack(true)
+		err = last.Ack(true)
 	} else if len(message.messages) == 1 {
-		return message.messages[0].Ack(false)
+		err = message.messages[0].Ack(false)
 	}
-	return nil
+
+	if err == nil {
+		message.actionTaken = true
+	}
+
+	return err
 }
 
 func (message Message) SendToQueue(queues ...*Queue) error {
