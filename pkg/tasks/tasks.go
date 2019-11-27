@@ -1,7 +1,6 @@
 package tasks
 
 import (
-	"runtime"
 	"strconv"
 	"time"
 
@@ -120,22 +119,20 @@ func Run(task TaskInterface) {
 	err := backoff.RetryNotify(task.work, backoff.WithMaxRetries(policy, 10), func(err error, t time.Duration) { log.Info(err, task.ID(), err) })
 	if err != nil {
 		log.Critical(task.ID(), err)
+	} else {
+
+		// Save config row
+		err = sql.SetConfig(sql.ConfigID("task-"+task.ID()), strconv.FormatInt(time.Now().Unix(), 10))
+		log.Err(err)
+
+		// Send websocket
+		page = websockets.GetPage(websockets.PageAdmin)
+		page.Send(websockets.AdminPayload{
+			TaskID: task.ID(),
+			Action: "finished",
+			Time:   Next(task).Unix(),
+		})
 	}
-
-	// Save config row
-	err = sql.SetConfig(sql.ConfigID("task-"+task.ID()), strconv.FormatInt(time.Now().Unix(), 10))
-	log.Err(err)
-
-	// Send websocket
-	page = websockets.GetPage(websockets.PageAdmin)
-	page.Send(websockets.AdminPayload{
-		TaskID: task.ID(),
-		Action: "finished",
-		Time:   Next(task).Unix(),
-	})
-
-	// GC
-	runtime.GC()
 
 	//
 	log.Info("Cron complete: " + task.Name())
