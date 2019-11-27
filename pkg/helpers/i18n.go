@@ -524,22 +524,22 @@ var States = map[string]map[string]string{
 
 // Continents
 const (
-	CAF = "C-AF"
-	CAN = "C-AN"
-	CAS = "C-AS"
-	CEU = "C-EU"
-	CNA = "C-NA"
-	CSA = "C-SA"
-	COC = "C-OC"
+	ContinentAfrica       = "C-AF"
+	ContinentAntarctica   = "C-AN"
+	ContinentAsia         = "C-AS"
+	ContinentEurope       = "C-EU"
+	ContinentNorthAmerica = "C-NA"
+	ContinentSouthAmerica = "C-SA"
+	ContinentOceania      = "C-OC"
 )
 
 // These strings must match the continents in the gountries library
 var Continents = []Tuple{
-	{Key: CAF, Value: "Africa"},
-	{Key: CAN, Value: "Antarctica"},
-	{Key: CAS, Value: "Asia"},
-	{Key: CEU, Value: "Australia"},
-	{Key: CNA, Value: "Europe"},
-	{Key: CSA, Value: "North America"},
-	{Key: COC, Value: "South America"},
+	{Key: ContinentAfrica, Value: "Africa"},
+	{Key: ContinentAntarctica, Value: "Antarctica"},
+	{Key: ContinentAsia, Value: "Asia"},
+	{Key: ContinentEurope, Value: "Europe"},
+	{Key: ContinentNorthAmerica, Value: "North America"},
+	{Key: ContinentSouthAmerica, Value: "South America"},
+	{Key: ContinentOceania, Value: "Oceania"},
 }
