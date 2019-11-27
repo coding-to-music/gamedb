@@ -10,6 +10,11 @@ import (
 	"github.com/streadway/amqp"
 )
 
+const (
+	Consumer = "c"
+	Producer = "p"
+)
+
 type Connection struct {
 	connection *amqp.Connection
 	config     amqp.Config
@@ -66,7 +71,7 @@ func (connection *Connection) connect() error {
 			return nil
 		}
 
-		connection.connection.NotifyClose(connection.closeChan)
+		_ = connection.connection.NotifyClose(connection.closeChan)
 
 		return err
 	}
