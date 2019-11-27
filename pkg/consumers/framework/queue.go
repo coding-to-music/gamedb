@@ -5,6 +5,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/cenkalti/backoff"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/streadway/amqp"
@@ -21,6 +22,7 @@ type Queue struct {
 	closeChan     chan *amqp.Error
 	handler       Handler
 	name          QueueName
+	isOpen        bool
 	prefetchCount int
 	batchSize     int
 	sync.Mutex
@@ -48,6 +50,8 @@ func NewQueue(connection *Connection, name QueueName, prefetchCount int, batchSi
 			select {
 			case err = <-queue.closeChan:
 
+				queue.isOpen = false
+
 				log.Warning("Rabbit channel closed", err)
 
 				time.Sleep(time.Second * 10)
@@ -66,14 +70,20 @@ func (queue *Queue) connect() error {
 	queue.Lock()
 	defer queue.Unlock()
 
+	if queue.isOpen {
+		return nil
+	}
+
+	log.Info("Creating Rabbit channel/queue " + queue.name)
+
 	operation := func() (err error) {
 
 		if queue.channel == nil {
 
-		ch, err := queue.connection.connection.Channel()
-		if err != nil {
-			return err
-		}
+			ch, err := queue.connection.connection.Channel()
+			if err != nil {
+				return err
+			}
 
 			err = ch.Qos(queue.prefetchCount, 0, false)
 			if err != nil {
@@ -199,16 +209,18 @@ func (queue *Queue) Consume() error {
 		message.queue = queue
 
 		for {
-			select {
-			case msg := <-msgs:
-				message.messages = append(message.messages, &msg)
-			}
+			if !queue.connection.connection.IsClosed() && queue.isOpen {
+				select {
+				case msg := <-msgs:
+					message.messages = append(message.messages, &msg)
+				}
 
-			if len(message.messages) >= queue.batchSize {
+				if len(message.messages) >= queue.batchSize {
 
-				if queue.handler != nil {
-					queue.handler(message)
-					message.messages = nil
+					if queue.handler != nil {
+						queue.handler(message)
+						message.messages = nil
+					}
 				}
 			}
 		}
