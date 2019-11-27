@@ -387,6 +387,23 @@ func CountryCodeToName(code string) string {
 	return country.Name.Common
 }
 
+func CountryCodeToContinent(code string) string {
+
+	country, err := gountriesInstance.FindCountryByAlpha(code)
+	if err != nil {
+		log.Err(err)
+		return code
+	}
+
+	for _, v := range Continents {
+		if v.Value == country.Continent {
+			return v.Key
+		}
+	}
+
+	return ""
+}
+
 //
 func CountriesInContinent(continent string) (ret []string) {
 
@@ -503,4 +520,26 @@ var States = map[string]map[string]string{
 		"WV": "West Virginia",
 		"WY": "Wyoming",
 	},
+}
+
+// Continents
+const (
+	CAF = "C-AF"
+	CAN = "C-AN"
+	CAS = "C-AS"
+	CEU = "C-EU"
+	CNA = "C-NA"
+	CSA = "C-SA"
+	COC = "C-OC"
+)
+
+// These strings must match the continents in the gountries library
+var Continents = []Tuple{
+	{Key: CAF, Value: "Africa"},
+	{Key: CAN, Value: "Antarctica"},
+	{Key: CAS, Value: "Asia"},
+	{Key: CEU, Value: "Australia"},
+	{Key: CNA, Value: "Europe"},
+	{Key: CSA, Value: "North America"},
+	{Key: COC, Value: "South America"},
 }

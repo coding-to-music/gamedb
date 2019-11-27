@@ -16,30 +16,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-const CAF = "C-AF"
-const CAN = "C-AN"
-const CAS = "C-AS"
-const CEU = "C-EU"
-const CNA = "C-NA"
-const CSA = "C-SA"
-const COC = "C-OC"
-
-type continent struct {
-	Key   string
-	Value string
-}
-
-// These strings must match the continents in the gountries library
-var continents = []continent{
-	{Key: CAF, Value: "Africa"},
-	{Key: CAN, Value: "Antarctica"},
-	{Key: CAS, Value: "Asia"},
-	{Key: CEU, Value: "Australia"},
-	{Key: CNA, Value: "Europe"},
-	{Key: CSA, Value: "North America"},
-	{Key: COC, Value: "South America"},
-}
-
 func PlayersRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", playersHandler)
@@ -142,7 +118,7 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, "Players", "See where you come against the rest of the world ("+template.HTML(helpers.ShortHandNumber(count))+" players).")
 	t.Date = date
 	t.Countries = countries
-	t.Continents = continents
+	t.Continents = helpers.Continents
 	t.States = states
 
 	returnTemplate(w, r, "players", t)
@@ -152,7 +128,7 @@ type playersTemplate struct {
 	GlobalTemplate
 	Date       string
 	Countries  []playersCountriesTemplate
-	Continents []continent
+	Continents []helpers.Tuple
 	States     map[string][]helpers.Tuple
 }
 
@@ -196,7 +172,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var isContinent bool
 
 	// Continent
-	for _, v := range continents {
+	for _, v := range helpers.Continents {
 		if v.Key == country {
 			isContinent = true
 			countriesIn := helpers.CountriesInContinent(v.Value)
