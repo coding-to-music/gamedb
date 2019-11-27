@@ -376,8 +376,9 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		// Order, offset, limit
 		cols := map[string]string{
 			"2": "player_peak_week",
-			"3": "reviews_score",
-			"4": "JSON_EXTRACT(prices, \"$." + string(code) + ".final\")",
+			"3": "group_followers",
+			"4": "reviews_score",
+			"5": "JSON_EXTRACT(prices, \"$." + string(code) + ".final\")",
 		}
 		gorm = query.setOrderOffsetGorm(gorm, cols, "2")
 		gorm = gorm.Limit(100)
