@@ -890,12 +890,12 @@
                                                     <th scope="col">Max Size</th>
                                                     <th scope="col">App</th>
                                                     <th scope="col">DLC App</th>
-                                                    <th scope="col">System Defined</th>
-                                                    <th scope="col">Optional</th>
-                                                    <th scope="col">Shared Install</th>
-                                                    <th scope="col">Shared Depot Type</th>
-                                                    <th scope="col">LV Cache</th>
-                                                    <th scope="col">Allow Add Remove While Running</th>
+                                                    <th scope="col" data-toggle="tooltip" data-placement="top" title="System Defined">SD</th>
+                                                    <th scope="col" data-toggle="tooltip" data-placement="top" title="Optional">Op</th>
+                                                    <th scope="col" data-toggle="tooltip" data-placement="top" title="Shared Install">SI</th>
+                                                    <th scope="col" data-toggle="tooltip" data-placement="top" title="Shared Depot Type">SD</th>
+                                                    <th scope="col" data-toggle="tooltip" data-placement="top" title="LV Cache">LV</th>
+                                                    <th scope="col" data-toggle="tooltip" data-placement="top" title="Allow Add Remove While Running">AR</th>
                                                 </tr>
                                                 </thead>
                                                 {{ range $key, $value := .App.GetDepots.Depots }}
