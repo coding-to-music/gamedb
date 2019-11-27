@@ -88,7 +88,7 @@ func GetAPIKey(tag string, getUnusedKey bool) (err error) {
 	}
 
 	policy := backoff.NewConstantBackOff(apiSessionRetry)
-	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Warning(err) })
+	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err) })
 	if err != nil {
 		return err
 	}
