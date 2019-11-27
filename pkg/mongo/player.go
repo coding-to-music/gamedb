@@ -65,7 +65,7 @@ type Player struct {
 	BadgeStats          string         `bson:"badge_stats"`            // ProfileBadgeStats
 	Bans                string         `bson:"bans"`                   // PlayerBans
 	CommentsCount       int            `bson:"comments_count"`         //
-	ContinentCode       string         `bson:"continent_code"`         //
+	ContinentCode       string         `bson:"continent_code"`         // Saved here for easier queries
 	CountryCode         string         `bson:"country_code"`           //
 	Donated             int            `bson:"donated"`                //
 	FriendsCount        int            `bson:"friends_count"`          //
