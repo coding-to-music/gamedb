@@ -389,10 +389,21 @@ func CountryCodeToName(code string) string {
 
 func CountryCodeToContinent(code string) string {
 
+	switch code {
+	case "":
+		return ""
+	case "BQ":
+		return ContinentSouthAmerica
+	case "SH":
+		return ContinentAfrica
+	case "YU", "FX", "XK":
+		return ContinentEurope
+	}
+
 	country, err := gountriesInstance.FindCountryByAlpha(code)
 	if err != nil {
-		log.Err(err)
-		return code
+		log.Err(err, code)
+		return ""
 	}
 
 	for _, v := range Continents {

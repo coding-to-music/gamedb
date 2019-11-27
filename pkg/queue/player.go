@@ -279,6 +279,7 @@ func updatePlayerSummary(player *mongo.Player) error {
 	//
 	player.VanintyURL = path.Base(summary.ProfileURL)
 	player.CountryCode = summary.LOCCountryCode
+	player.ContinentCode = helpers.CountryCodeToContinent(summary.LOCCountryCode)
 	player.StateCode = summary.LOCStateCode
 	player.PersonaName = summary.PersonaName
 	player.TimeCreated = time.Unix(summary.TimeCreated, 0)
