@@ -66,34 +66,45 @@ func (queue *Queue) connect() error {
 	queue.Lock()
 	defer queue.Unlock()
 
-	if queue.channel == nil {
+	operation := func() (err error) {
+
+		if queue.channel == nil {
 
 		ch, err := queue.connection.connection.Channel()
 		if err != nil {
 			return err
 		}
 
-		err = ch.Qos(queue.prefetchCount, 0, false)
-		if err != nil {
-			return err
+			err = ch.Qos(queue.prefetchCount, 0, false)
+			if err != nil {
+				return err
+			}
+
+			_ = ch.NotifyClose(queue.closeChan)
+
+			queue.channel = ch
 		}
 
-		_ = ch.NotifyClose(queue.closeChan)
+		if queue.queue == nil {
 
-		queue.channel = ch
-	}
+			qu, err := queue.channel.QueueDeclare(string(queue.name), true, false, false, false, nil)
+			if err != nil {
+				return err
+			}
 
-	if queue.queue == nil {
-
-		qu, err := queue.channel.QueueDeclare(string(queue.name), true, false, false, false, nil)
-		if err != nil {
-			return err
+			queue.queue = &qu
 		}
 
-		queue.queue = &qu
+		queue.isOpen = true
+
+		return nil
 	}
 
-	return nil
+	policy := backoff.NewExponentialBackOff()
+	policy.MaxElapsedTime = 0
+	policy.InitialInterval = 5 * time.Second
+
+	return backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err) })
 }
 
 const (
