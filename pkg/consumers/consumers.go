@@ -23,18 +23,12 @@ const (
 	queuePlayers2  framework.QueueName = "GameDB_Go_Profiles2"
 	queueSteam     framework.QueueName = "GameDB_Go_Steam"
 	queueTest      framework.QueueName = "GameDB_Go_Test"
-
-	CConsumer = "consumer"
-	CProducer = "producer"
 )
 
 var (
-	consumerConnection *framework.Connection
-	producerConnection *framework.Connection
-
 	queues = map[string]map[framework.QueueName]*framework.Queue{
-		CConsumer: {},
-		CProducer: {},
+		framework.Consumer: {},
+		framework.Producer: {},
 	}
 )
 
@@ -45,15 +39,13 @@ func Init() {
 		heartbeat = time.Hour
 	}
 
-	var err error
-
-	consumerConnection, err = framework.NewConnection(amqp.Config{Heartbeat: heartbeat})
+	consumerConnection, err := framework.NewConnection(amqp.Config{Heartbeat: heartbeat})
 	if err != nil {
 		log.Info(err)
 		return
 	}
 
-	producerConnection, err = framework.NewConnection(amqp.Config{Heartbeat: heartbeat})
+	producerConnection, err := framework.NewConnection(amqp.Config{Heartbeat: heartbeat})
 	if err != nil {
 		log.Info(err)
 		return
@@ -75,14 +67,13 @@ func Init() {
 		// queueSteam:     nil,
 	}
 
-	var q *framework.Queue
 	for k, v := range queueHandlers {
 		if v != nil {
 
 			// Producer
-			q, err = framework.NewQueue(producerConnection, k, 10, 1, v)
+			q, err := framework.NewQueue(producerConnection, k, 10, 1, v)
 			if err == nil {
-				queues[CProducer][k] = q
+				queues[framework.Producer][k] = q
 			}
 
 			if err != nil {
@@ -92,7 +83,7 @@ func Init() {
 			// Consumer
 			q, err = framework.NewQueue(consumerConnection, k, 10, 1, v)
 			if err == nil {
-				queues[CConsumer][k] = q
+				queues[framework.Consumer][k] = q
 			}
 
 			if err != nil {
@@ -102,7 +93,7 @@ func Init() {
 	}
 
 	// Start consuming
-	for _, queue := range queues[CConsumer] {
+	for _, queue := range queues[framework.Consumer] {
 		err = queue.Consume()
 		log.Err(err)
 	}

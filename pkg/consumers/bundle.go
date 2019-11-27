@@ -9,7 +9,7 @@ func bundleHandler(message framework.Message) {
 
 	log.Info("bundle handler")
 
-	err := message.SendToQueue(queues[CProducer][queueApps])
+	err := message.SendToQueue(queues[framework.Producer][queueApps])
 	log.Err(err)
 
 }
