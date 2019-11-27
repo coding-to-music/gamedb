@@ -51,11 +51,5 @@ func (message Message) SendToQueue(queues ...*Queue) error {
 		}
 	}
 
-	// Ack
-	if message.actionTaken {
-		return nil
-	}
-	message.actionTaken = true
-
-	return message.ack()
+	return message.Ack()
 }
