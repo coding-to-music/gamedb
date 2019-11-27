@@ -38,6 +38,7 @@ func (c Instagram) work() (err error) {
 	gorm = gorm.Where("name != ?", "")
 	gorm = gorm.Where("type = ?", "game")
 	gorm = gorm.Where("reviews_score >= ?", 90)
+	gorm = gorm.Where("JSON_CONTAINS(tags, '[12095]') = 0") // Sexual content
 	gorm = gorm.Order("RAND()")
 	gorm = gorm.Limit(1)
 
