@@ -227,7 +227,7 @@ func UpdateManySet(collection collection, filter bson.D, update bson.D) (result 
 	ql := helpers.QueryLogger{}
 	ql.Start("UpdateMany", collection.String(), filter, nil)
 
-	_, err = client.Database(MongoDatabase, options.Database()).Collection(collection.String()).UpdateMany(ctx, filter, bson.M{"$set": update}, options.Update())
+	result, err = client.Database(MongoDatabase, options.Database()).Collection(collection.String()).UpdateMany(ctx, filter, bson.M{"$set": update}, options.Update())
 
 	ql.End()
 
