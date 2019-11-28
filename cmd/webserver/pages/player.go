@@ -216,7 +216,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 				Position: position,
 			})
 		}
-		if position, ok := player.Ranks[strconv.Itoa(int(v))+"_c-"+player.StateCode]; ok {
+		if position, ok := player.Ranks[strconv.Itoa(int(v))+"_C-"+player.StateCode]; ok {
 			t.Ranks = append(t.Ranks, playerRankTemplate{
 				List:     "In the continent",
 				Metric:   v,

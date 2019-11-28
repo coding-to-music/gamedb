@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"go.mongodb.org/mongo-driver/bson"
@@ -42,6 +43,41 @@ func (c PlayerRanks) work() (err error) {
 		{"comments_count", mongo.RankKeyComments},
 	}
 
+	// Continents
+	for k, continent := range helpers.Continents {
+
+		log.Info("Continent: " + continent.Value + " (" + strconv.Itoa(k+1) + "/" + strconv.Itoa(len(helpers.Continents)) + ")")
+
+		for _, field := range fields {
+
+			filter := bson.D{
+				{field.readCol, bson.M{"$exists": true, "$gt": 0}},
+				{"continent_code", continent.Key},
+			}
+
+			players, err := mongo.GetPlayers(0, 0, bson.D{{field.readCol, -1}}, filter, bson.M{"_id": 1})
+			if err != nil {
+				log.Err(err)
+				continue
+			}
+
+			for position, v := range players {
+
+				key := strconv.Itoa(int(field.writeCol)) + "_" + continent.Key
+
+				if _, ok := ranks[v.ID]; !ok {
+					ranks[v.ID] = bson.M{}
+				}
+
+				ranks[v.ID][key] = position + 1
+			}
+
+			time.Sleep(time.Second * 1 / 2)
+		}
+
+		runtime.GC()
+	}
+
 	// Countries
 	countryCodes, err := mongo.GetUniquePlayerCountries()
 	if err != nil {
@@ -70,7 +106,7 @@ func (c PlayerRanks) work() (err error) {
 				continue
 			}
 
-			for playerK, v := range players {
+			for position, v := range players {
 
 				key := strconv.Itoa(int(field.writeCol)) + "_" + cc
 
@@ -78,7 +114,7 @@ func (c PlayerRanks) work() (err error) {
 					ranks[v.ID] = bson.M{}
 				}
 
-				ranks[v.ID][key] = playerK + 1
+				ranks[v.ID][key] = position + 1
 			}
 
 			time.Sleep(time.Second * 1 / 2)
@@ -102,7 +138,10 @@ func (c PlayerRanks) work() (err error) {
 
 			for _, field := range fields {
 
-				filter := bson.D{{"country_code", cc}, {"status_code", stateCode}, {field.readCol, bson.M{"$exists": true, "$gt": 0}}}
+				filter := bson.D{
+					{"country_code", cc}, {"status_code", stateCode},
+					{field.readCol, bson.M{"$exists": true, "$gt": 0}},
+				}
 
 				players, err := mongo.GetPlayers(0, 0, bson.D{{field.readCol, -1}}, filter, bson.M{"_id": 1})
 				if err != nil {
@@ -110,7 +149,7 @@ func (c PlayerRanks) work() (err error) {
 					continue
 				}
 
-				for playerK, v := range players {
+				for position, v := range players {
 
 					key := strconv.Itoa(int(field.writeCol)) + "_s-" + stateCode.Key
 
@@ -118,7 +157,7 @@ func (c PlayerRanks) work() (err error) {
 						ranks[v.ID] = bson.M{}
 					}
 
-					ranks[v.ID][key] = playerK + 1
+					ranks[v.ID][key] = position + 1
 				}
 
 				time.Sleep(time.Second * 1 / 2)
