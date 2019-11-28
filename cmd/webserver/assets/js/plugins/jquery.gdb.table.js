@@ -224,7 +224,7 @@
                 // }
 
                 // Bold rows
-                parent.highlightRows();
+                highLightOwnedGames($(parent.element));
 
                 // Lazy load images
                 observeLazyImages($(parent.element).find('img[data-lazy]'));
@@ -361,40 +361,6 @@
             // Keep track of tables, so we can recalculate fixed headers on tab changes etc
             window.gdbTables = window.gdbTables || [];
             window.gdbTables.push();
-        },
-        highlightRows: function () {
-
-            if (this.user.isLoggedIn) {
-                let games = localStorage.getItem('gamedb-games');
-                if (games != null) {
-                    games = JSON.parse(games);
-                    if (games != null) {
-                        $('[data-app-id]').each(function () {
-                            const id = $(this).attr('data-app-id');
-                            if (games.includes(parseInt(id))) {
-                                $(this).addClass('font-weight-bold')
-                            }
-                        });
-                    }
-                }
-
-                let groups = localStorage.getItem('gamedb-groups');
-                if (groups != null) {
-                    groups = JSON.parse(groups);
-                    if (groups != null) {
-                        $('[data-group-id]').each(function () {
-                            const id = $(this).attr('data-group-id');
-                            if (groups.includes(id)) {
-                                $(this).addClass('font-weight-bold')
-                            }
-                            const id64 = $(this).attr('data-group-id64');
-                            if (groups.includes(id64)) {
-                                $(this).addClass('font-weight-bold')
-                            }
-                        });
-                    }
-                }
-            }
         },
     });
 

@@ -42,7 +42,7 @@ if ($homePage.length > 0) {
                     $container.json2html(
                         data,
                         {
-                            '<>': 'tr', 'data-link': '${link}', 'html': [
+                            '<>': 'tr', 'data-app-id': '${id}', 'data-link': '${link}', 'html': [
                                 {
                                     '<>': 'td', 'class': 'img', 'html': [
                                         {
@@ -89,6 +89,7 @@ if ($homePage.length > 0) {
                     );
 
                     observeLazyImages($container.find('img[data-lazy]'));
+                    highLightOwnedGames($('#sales'));
                 }
             },
         });
@@ -240,7 +241,7 @@ if ($homePage.length > 0) {
         $container.json2html(
             data,
             {
-                '<>': 'tr', 'data-link': '${link}', 'html': [
+                '<>': 'tr', 'data-app-id': '${id}', 'data-link': '${link}', 'html': [
                     {
                         '<>': 'td', 'class': 'img', 'html': [
                             {
@@ -278,5 +279,6 @@ if ($homePage.length > 0) {
         $container.find('tr').slice(15).remove();
 
         observeLazyImages($container.find('img[data-lazy]'));
+        highLightOwnedGames($('#prices'));
     }
 }
