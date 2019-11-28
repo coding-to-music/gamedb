@@ -35,7 +35,7 @@ func (rk RankKey) String() string {
 	case RankKeyPlaytime:
 		return "Playtime"
 	}
-	return "xx"
+	return ""
 }
 
 const (
