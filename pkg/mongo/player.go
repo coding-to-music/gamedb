@@ -249,15 +249,6 @@ func (player Player) GetGameStats(code steam.ProductCC) (stats PlayerAppStatsTem
 	return stats, err
 }
 
-func (player Player) GetRank(metric RankKey, cc string) (i int, found bool) {
-
-	if val, ok := player.Ranks[strconv.Itoa(int(metric))+"_"+cc]; ok {
-		return val, true
-	}
-
-	return 0, false
-}
-
 type UpdateType string
 
 const (
