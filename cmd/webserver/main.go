@@ -116,9 +116,17 @@ func main() {
 	})
 
 	// Profiling
-	if config.IsLocal() {
-		r.Mount("/debug", chiMiddleware.Profiler())
-	}
+	r.Route("/debug", func(r chi.Router) {
+
+		r.Use(middleware.MiddlewareAuthCheck())
+		r.Use(middleware.MiddlewareAdminCheck(pages.Error404Handler))
+
+		r.Mount("/", chiMiddleware.Profiler())
+	})
+
+	// if config.IsLocal() {
+	// 	r.Mount("/debug", chiMiddleware.Profiler())
+	// }
 
 	// Files
 	r.Get("/browserconfig.xml", pages.RootFileHandler)
