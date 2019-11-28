@@ -95,6 +95,7 @@ func (player Player) BSON() bson.D {
 		{"badge_ids", player.BadgeIDs},
 		{"badge_stats", player.BadgeStats},
 		{"bans", player.Bans},
+		{"continent_code", player.ContinentCode},
 		{"country_code", player.CountryCode},
 		{"donated", player.Donated},
 		{"game_stats", player.GameStats},
