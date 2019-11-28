@@ -903,7 +903,7 @@ func savePlayerToInflux(player mongo.Player) (err error) {
 
 	for k, v := range gamesRank {
 
-		val, ok := player.GetRank(k, mongo.RankCountryAll)
+		val, ok := player.GetRank(k, "") // Global
 		if val > 0 && ok {
 			fields[v] = val
 		}

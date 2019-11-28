@@ -364,8 +364,8 @@ func GetProdCCs(activeOnly bool) (ccs []ProductCountryCode) {
 func CountryCodeToName(code string) string {
 
 	switch code {
-	case "":
-		return code
+	case "", "_":
+		return "No Country"
 	case "BQ":
 		return "Bonaire, Sint Eustatius and Saba"
 	case "SH":
@@ -1194,13 +1194,13 @@ var States = map[string]map[string]string{
 
 // Continents
 const (
-	ContinentAfrica       = "C-AF"
-	ContinentAntarctica   = "C-AN"
-	ContinentAsia         = "C-AS"
-	ContinentEurope       = "C-EU"
-	ContinentNorthAmerica = "C-NA"
-	ContinentSouthAmerica = "C-SA"
-	ContinentOceania      = "C-OC"
+	ContinentAfrica       = "AF"
+	ContinentAntarctica   = "AN"
+	ContinentAsia         = "AS"
+	ContinentEurope       = "EU"
+	ContinentNorthAmerica = "NA"
+	ContinentSouthAmerica = "SA"
+	ContinentOceania      = "OC"
 )
 
 // These strings must match the continents in the gountries library

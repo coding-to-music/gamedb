@@ -47,11 +47,6 @@ const (
 	RankKeyPlaytime RankKey = 6
 )
 
-const (
-	RankCountryAll  = "ALL"
-	RankCountryNone = "NONE"
-)
-
 var (
 	ErrInvalidPlayerID   = errors.New("invalid player id")
 	ErrInvalidPlayerName = errors.New("invalid player name")

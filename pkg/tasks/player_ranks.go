@@ -30,9 +30,6 @@ func (c PlayerRanks) Cron() string {
 
 func (c PlayerRanks) work() (err error) {
 
-	// err2 := mongo.UpdateManyUnset(mongo.CollectionPlayers, M{"ranks": 1})
-	// log.Info(err2)
-
 	var ranks = map[int64]bson.M{}
 	var fields = []rankTask{
 		{"level", mongo.RankKeyLevel},
@@ -43,6 +40,39 @@ func (c PlayerRanks) work() (err error) {
 		{"comments_count", mongo.RankKeyComments},
 	}
 
+	var updatePlayers = func(key string, field rankTask, filter bson.D) {
+
+		players, err := mongo.GetPlayers(0, 0, bson.D{{field.readCol, -1}}, filter, bson.M{"_id": 1})
+		if err != nil {
+			log.Err(err)
+			return
+		}
+
+		for position, v := range players {
+
+			if _, ok := ranks[v.ID]; !ok {
+				ranks[v.ID] = bson.M{}
+			}
+
+			ranks[v.ID][key] = position + 1
+		}
+
+		runtime.GC()
+
+		time.Sleep(time.Second * 1 / 2)
+	}
+
+	// Global
+	for _, field := range fields {
+
+		var key = strconv.Itoa(int(field.writeCol))
+		var filter = bson.D{
+			{field.readCol, bson.M{"$exists": true, "$gt": 0}},
+		}
+
+		updatePlayers(key, field, filter)
+	}
+
 	// Continents
 	for k, continent := range helpers.Continents {
 
@@ -50,32 +80,14 @@ func (c PlayerRanks) work() (err error) {
 
 		for _, field := range fields {
 
-			filter := bson.D{
+			var key = strconv.Itoa(int(field.writeCol)) + "_continent-" + continent.Key
+			var filter = bson.D{
 				{field.readCol, bson.M{"$exists": true, "$gt": 0}},
 				{"continent_code", continent.Key},
 			}
 
-			players, err := mongo.GetPlayers(0, 0, bson.D{{field.readCol, -1}}, filter, bson.M{"_id": 1})
-			if err != nil {
-				log.Err(err)
-				continue
-			}
-
-			for position, v := range players {
-
-				key := strconv.Itoa(int(field.writeCol)) + "_" + continent.Key
-
-				if _, ok := ranks[v.ID]; !ok {
-					ranks[v.ID] = bson.M{}
-				}
-
-				ranks[v.ID][key] = position + 1
-			}
-
-			time.Sleep(time.Second * 1 / 2)
+			updatePlayers(key, field, filter)
 		}
-
-		runtime.GC()
 	}
 
 	// Countries
@@ -83,44 +95,21 @@ func (c PlayerRanks) work() (err error) {
 	if err != nil {
 		return err
 	}
-	countryCodes = append(countryCodes, mongo.RankCountryAll)
 
 	for k, cc := range countryCodes {
-
-		if cc == "" {
-			cc = mongo.RankCountryNone
-		}
 
 		log.Info("Country: " + cc + " (" + strconv.Itoa(k+1) + "/" + strconv.Itoa(len(countryCodes)) + ")")
 
 		for _, field := range fields {
 
-			filter := bson.D{{field.readCol, bson.M{"$exists": true, "$gt": 0}}}
-			if cc != mongo.RankCountryAll {
-				filter = append(filter, bson.E{Key: "country_code", Value: cc})
+			var key = strconv.Itoa(int(field.writeCol)) + "_country-" + cc
+			var filter = bson.D{
+				{field.readCol, bson.M{"$exists": true, "$gt": 0}},
+				{"country_code", cc},
 			}
 
-			players, err := mongo.GetPlayers(0, 0, bson.D{{field.readCol, -1}}, filter, bson.M{"_id": 1})
-			if err != nil {
-				log.Err(err)
-				continue
-			}
-
-			for position, v := range players {
-
-				key := strconv.Itoa(int(field.writeCol)) + "_" + cc
-
-				if _, ok := ranks[v.ID]; !ok {
-					ranks[v.ID] = bson.M{}
-				}
-
-				ranks[v.ID][key] = position + 1
-			}
-
-			time.Sleep(time.Second * 1 / 2)
+			updatePlayers(key, field, filter)
 		}
-
-		runtime.GC()
 	}
 
 	// Rank by State
@@ -138,32 +127,15 @@ func (c PlayerRanks) work() (err error) {
 
 			for _, field := range fields {
 
-				filter := bson.D{
-					{"country_code", cc}, {"status_code", stateCode},
+				var key = strconv.Itoa(int(field.writeCol)) + "_state-" + stateCode.Key
+				var filter = bson.D{
 					{field.readCol, bson.M{"$exists": true, "$gt": 0}},
+					{"country_code", cc},
+					{"status_code", stateCode},
 				}
 
-				players, err := mongo.GetPlayers(0, 0, bson.D{{field.readCol, -1}}, filter, bson.M{"_id": 1})
-				if err != nil {
-					log.Err(err)
-					continue
-				}
-
-				for position, v := range players {
-
-					key := strconv.Itoa(int(field.writeCol)) + "_s-" + stateCode.Key
-
-					if _, ok := ranks[v.ID]; !ok {
-						ranks[v.ID] = bson.M{}
-					}
-
-					ranks[v.ID][key] = position + 1
-				}
-
-				time.Sleep(time.Second * 1 / 2)
+				updatePlayers(key, field, filter)
 			}
-
-			runtime.GC()
 		}
 	}
 

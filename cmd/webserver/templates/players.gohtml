@@ -43,7 +43,7 @@
                                 <option value="">Any</option>
                                 <optgroup label="Continents">
                                     {{ range .Continents }}
-                                        <option value="{{ .Key }}">{{ .Value }}</option>
+                                        <option value="c-{{ .Key }}">{{ .Value }}</option>
                                     {{ end }}
                                 </optgroup>
                                 <optgroup label="Countries">

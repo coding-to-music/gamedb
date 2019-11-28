@@ -81,17 +81,15 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 				star = " *"
 			}
 
+			// Change value for empty country
 			if cc == "" {
-				countries = append(countries, playersCountriesTemplate{
-					CC:   mongo.RankCountryNone,
-					Name: "No Country" + star,
-				})
-			} else {
-				countries = append(countries, playersCountriesTemplate{
-					CC:   cc,
-					Name: helpers.CountryCodeToName(cc) + star,
-				})
+				cc = "_"
 			}
+
+			countries = append(countries, playersCountriesTemplate{
+				CC:   cc,
+				Name: helpers.CountryCodeToName(cc) + star,
+			})
 		}
 
 		sort.Slice(countries, func(i, j int) bool {
@@ -173,21 +171,16 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Continent
 	for _, v := range helpers.Continents {
-		if v.Key == country {
+		if "c-"+v.Key == country {
 			isContinent = true
-			countriesIn := helpers.CountriesInContinent(v.Value)
-			var countriesInA bson.A
-			for _, v := range countriesIn {
-				countriesInA = append(countriesInA, v)
-			}
-			filter = append(filter, bson.E{Key: "country_code", Value: bson.M{"$in": countriesInA}})
+			filter = append(filter, bson.E{Key: "continent_code", Value: v.Key})
 			break
 		}
 	}
 
 	// Country
 	if !isContinent && country != "" {
-		if country == mongo.RankCountryNone {
+		if country == "_" { // No country set
 			country = ""
 		}
 		filter = append(filter, bson.E{Key: "country_code", Value: country})
