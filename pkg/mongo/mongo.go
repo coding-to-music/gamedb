@@ -158,11 +158,11 @@ func InsertOne(collection collection, document Document) (resp *mongo.InsertOneR
 	ql := helpers.QueryLogger{}
 	ql.Start("InsertOne", collection.String(), nil, nil)
 
-	r, err := client.Database(MongoDatabase).Collection(collection.String()).InsertOne(ctx, document.BSON(), options.InsertOne())
+	resp, err = client.Database(MongoDatabase).Collection(collection.String()).InsertOne(ctx, document.BSON(), options.InsertOne())
 
 	ql.End()
 
-	return r, err
+	return resp, err
 }
 
 // Create or update whole document
@@ -176,79 +176,79 @@ func ReplaceOne(collection collection, filter bson.D, document Document) (resp *
 	ql := helpers.QueryLogger{}
 	ql.Start("ReplaceOne", collection.String(), filter, nil)
 
-	r, err := client.Database(MongoDatabase).Collection(collection.String()).ReplaceOne(ctx, filter, document.BSON(), options.Replace().SetUpsert(true))
+	resp, err = client.Database(MongoDatabase).Collection(collection.String()).ReplaceOne(ctx, filter, document.BSON(), options.Replace().SetUpsert(true))
 
 	ql.End()
 
-	return r, err
+	return resp, err
 }
 
-func DeleteMany(collection collection, filter bson.D) (err error) {
+func DeleteMany(collection collection, filter bson.D) (resp *mongo.DeleteResult, err error) {
 
 	client, ctx, err := getMongo()
 	if err != nil {
-		return nil
+		return resp, nil
 	}
 
 	ql := helpers.QueryLogger{}
 	ql.Start("DeleteMany", collection.String(), filter, nil)
 
-	_, err = client.Database(MongoDatabase, options.Database()).Collection(collection.String()).DeleteMany(ctx, filter)
+	resp, err = client.Database(MongoDatabase, options.Database()).Collection(collection.String()).DeleteMany(ctx, filter)
 
 	ql.End()
 
-	return err
+	return resp, err
 }
 
-func DeleteOne(collection collection, filter bson.D) (err error) {
+func DeleteOne(collection collection, filter bson.D) (resp *mongo.DeleteResult, err error) {
 
 	client, ctx, err := getMongo()
 	if err != nil {
-		return err
+		return resp, err
 	}
 
 	ql := helpers.QueryLogger{}
 	ql.Start("DeleteOne", collection.String(), filter, nil)
 
-	_, err = client.Database(MongoDatabase, options.Database()).Collection(collection.String()).DeleteOne(ctx, filter, options.Delete())
+	resp, err = client.Database(MongoDatabase, options.Database()).Collection(collection.String()).DeleteOne(ctx, filter, options.Delete())
 
 	ql.End()
 
-	return err
+	return resp, err
 }
 
-func UpdateManySet(collection collection, filter bson.D, update bson.D) (result *mongo.UpdateResult, err error) {
+func UpdateManySet(collection collection, filter bson.D, update bson.D) (resp *mongo.UpdateResult, err error) {
 
 	client, ctx, err := getMongo()
 	if err != nil {
-		return result, nil
+		return resp, nil
 	}
 
 	ql := helpers.QueryLogger{}
 	ql.Start("UpdateMany", collection.String(), filter, nil)
 
-	result, err = client.Database(MongoDatabase, options.Database()).Collection(collection.String()).UpdateMany(ctx, filter, bson.M{"$set": update}, options.Update())
+	resp, err = client.Database(MongoDatabase, options.Database()).Collection(collection.String()).UpdateMany(ctx, filter, bson.M{"$set": update}, options.Update())
 
 	ql.End()
 
-	return result, err
+	return resp, err
 }
 
-func UpdateManyUnset(collection collection, columns bson.D) (err error) {
+func UpdateManyUnset(collection collection, columns bson.D) (resp *mongo.UpdateResult, err error) {
 
 	client, ctx, err := getMongo()
 	if err != nil {
-		return nil
+		return resp, nil
 	}
 
 	ql := helpers.QueryLogger{}
 	ql.Start("UpdateMany", collection.String(), nil, nil)
 
-	_, err = client.Database(MongoDatabase, options.Database()).Collection(collection.String()).UpdateMany(ctx, bson.M{}, bson.M{"$unset": columns})
+	resp, err = client.Database(MongoDatabase, options.Database()).Collection(collection.String()).UpdateMany(ctx, bson.M{}, bson.M{"$unset": columns})
 
 	ql.End()
 
-	return err
+	return resp, err
 }
 
 // Will skip documents that already exist
