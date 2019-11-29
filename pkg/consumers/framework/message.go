@@ -38,9 +38,6 @@ func (message *Message) Ack() (err error) {
 
 func (message Message) SendToQueue(queues ...*Queue) error {
 
-	message.Lock()
-	defer message.Unlock()
-
 	// Prodice to new queue
 	if len(queues) == 0 {
 		queues = []*Queue{message.queue}
