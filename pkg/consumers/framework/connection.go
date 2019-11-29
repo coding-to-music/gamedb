@@ -17,15 +17,17 @@ const (
 
 type Connection struct {
 	connection *amqp.Connection
+	name       string
 	config     amqp.Config
 	closeChan  chan *amqp.Error
 	sync.Mutex
 }
 
-func NewConnection(config amqp.Config) (*Connection, error) {
+func NewConnection(name string, config amqp.Config) (*Connection, error) {
 
 	connection := &Connection{
 		config:    config,
+		name:      name,
 		closeChan: make(chan *amqp.Error),
 	}
 

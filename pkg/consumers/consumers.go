@@ -39,13 +39,13 @@ func Init() {
 		heartbeat = time.Hour
 	}
 
-	consumerConnection, err := framework.NewConnection(amqp.Config{Heartbeat: heartbeat})
+	consumerConnection, err := framework.NewConnection("consumer", amqp.Config{Heartbeat: heartbeat})
 	if err != nil {
 		log.Info(err)
 		return
 	}
 
-	producerConnection, err := framework.NewConnection(amqp.Config{Heartbeat: heartbeat})
+	producerConnection, err := framework.NewConnection("producer", amqp.Config{Heartbeat: heartbeat})
 	if err != nil {
 		log.Info(err)
 		return
