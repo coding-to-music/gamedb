@@ -117,6 +117,42 @@ func (queue *Queue) connect() error {
 	return backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err) })
 }
 
+func (queue *Queue) Produce(message Message) error {
+
+	// Headers
+	for _, message := range message.messages {
+
+		message.Headers = queue.prepareHeaders(message.Headers)
+
+		err := queue.channel.Publish("", string(queue.name), false, false, amqp.Publishing{
+			Headers:      message.Headers,
+			DeliveryMode: amqp.Persistent,
+			ContentType:  "application/json",
+			Body:         message.Body,
+		})
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (queue *Queue) ProduceInterface(message interface{}) error {
+
+	b, err := json.Marshal(message)
+	if err != nil {
+		return err
+	}
+
+	return queue.channel.Publish("", string(queue.name), false, false, amqp.Publishing{
+		Headers:      queue.prepareHeaders(nil),
+		DeliveryMode: amqp.Persistent,
+		ContentType:  "application/json",
+		Body:         b,
+	})
+}
+
 const (
 	headerAttempt    = "attempt"
 	headerFirstSeen  = "first-seen"
@@ -126,71 +162,52 @@ const (
 	headerForce      = "force"
 )
 
-func (queue *Queue) produce(message Message) error {
+func (queue Queue) prepareHeaders(headers amqp.Table) amqp.Table {
 
-	// Headers
-	for _, message := range message.messages {
-
-		// if message == nil {
-		// 	message = &amqp.Delivery{}
-		// }
-
-		if message.Headers == nil {
-			message.Headers = amqp.Table{}
-		}
-
-		//
-		attempt, ok := message.Headers[headerAttempt]
-		if ok {
-			message.Headers[headerAttempt] = attempt.(int32) + 1
-		} else {
-			message.Headers[headerAttempt] = 1
-		}
-
-		//
-		_, ok = message.Headers[headerFirstSeen]
-		if !ok {
-			message.Headers[headerFirstSeen] = time.Now().Unix()
-		}
-
-		//
-		message.Headers[headerLastSeen] = time.Now().Unix()
-
-		//
-		_, ok = message.Headers[headerFirstQueue]
-		if !ok {
-			// message.Headers[headerFirstQueue] = queue
-		}
-
-		//
-		message.Headers[headerLastQueue] = time.Now().Unix()
-
-		//
-		oldForce, ok := message.Headers[headerForce]
-		if ok {
-			message.Headers[headerForce] = oldForce
-		} else {
-			message.Headers[headerForce] = false
-		}
-
-		//
-		b, err := json.Marshal(message)
-		if err != nil {
-			return err
-		}
-
-		err = queue.channel.Publish("", string(queue.name), false, false, amqp.Publishing{
-			Headers:      message.Headers,
-			DeliveryMode: amqp.Persistent,
-			ContentType:  "application/json",
-			Body:         b,
-		})
-		if err != nil {
-			return err
-		}
+	if headers == nil {
+		headers = amqp.Table{}
 	}
 
-	return nil
+	//
+	attemptSet := false
+	attempt, ok := headers[headerAttempt]
+	if ok {
+		if val, ok2 := attempt.(int32); ok2 {
+			headers[headerAttempt] = val + 1
+			attemptSet = true
+		}
+	}
+	if !attemptSet {
+		headers[headerAttempt] = 1
+	}
+
+	//
+	_, ok = headers[headerFirstSeen]
+	if !ok {
+		headers[headerFirstSeen] = time.Now().Unix()
+	}
+
+	//
+	headers[headerLastSeen] = time.Now().Unix()
+
+	//
+	_, ok = headers[headerFirstQueue]
+	if !ok {
+		headers[headerFirstQueue] = queue.name
+	}
+
+	//
+	headers[headerLastQueue] = queue.name
+
+	//
+	oldForce, ok := headers[headerForce]
+	if ok {
+		headers[headerForce] = oldForce
+	} else {
+		headers[headerForce] = false
+	}
+
+	return headers
 }
 
 func (queue *Queue) Consume() error {

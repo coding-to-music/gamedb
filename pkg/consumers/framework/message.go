@@ -45,7 +45,7 @@ func (message Message) SendToQueue(queues ...*Queue) error {
 
 	for _, queue := range queues {
 
-		err := queue.produce(message)
+		err := queue.Produce(message)
 		if err != nil {
 			return err
 		}
