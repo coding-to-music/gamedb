@@ -16,12 +16,12 @@ type QueueName string
 type Handler func(message []Message)
 
 type Queue struct {
+	Name          QueueName
 	connection    *Connection
 	queue         *amqp.Queue
 	channel       *amqp.Channel
 	closeChan     chan *amqp.Error
 	handler       Handler
-	name          QueueName
 	isOpen        bool
 	prefetchCount int
 	batchSize     int
@@ -33,7 +33,7 @@ func NewQueue(connection *Connection, name QueueName, prefetchCount int, batchSi
 
 	queue := &Queue{
 		connection:    connection,
-		name:          name,
+		Name:          name,
 		prefetchCount: prefetchCount,
 		batchSize:     batchSize,
 		closeChan:     make(chan *amqp.Error),
@@ -97,7 +97,7 @@ func (queue *Queue) connect() error {
 
 		if queue.queue == nil {
 
-			qu, err := queue.channel.QueueDeclare(string(queue.name), true, false, false, false, nil)
+			qu, err := queue.channel.QueueDeclare(string(queue.Name), true, false, false, false, nil)
 			if err != nil {
 				return err
 			}
@@ -125,7 +125,7 @@ func (queue *Queue) Produce(message Message) error {
 	}
 
 	//
-	return queue.channel.Publish("", string(queue.name), false, false, amqp.Publishing{
+	return queue.channel.Publish("", string(queue.Name), false, false, amqp.Publishing{
 		Headers:      message.Message.Headers,
 		DeliveryMode: amqp.Persistent,
 		ContentType:  "application/json",
@@ -145,7 +145,7 @@ func (queue *Queue) ProduceInterface(message interface{}) error {
 		headers = queue.prepareHeaders(headers)
 	}
 
-	return queue.channel.Publish("", string(queue.name), false, false, amqp.Publishing{
+	return queue.channel.Publish("", string(queue.Name), false, false, amqp.Publishing{
 		Headers:      headers,
 		DeliveryMode: amqp.Persistent,
 		ContentType:  "application/json",
@@ -184,11 +184,11 @@ func (queue Queue) prepareHeaders(headers amqp.Table) amqp.Table {
 	//
 	_, ok = headers[HeaderFirstQueue]
 	if !ok {
-		headers[HeaderFirstQueue] = string(queue.name)
+		headers[HeaderFirstQueue] = string(queue.Name)
 	}
 
 	//
-	headers[HeaderLastQueue] = string(queue.name)
+	headers[HeaderLastQueue] = string(queue.Name)
 
 	return headers
 }
