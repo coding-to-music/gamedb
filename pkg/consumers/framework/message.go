@@ -87,11 +87,11 @@ func (message Message) FirstSeen() (i int64) {
 	return i
 }
 
-func (message Message) FirstQueue() (i string) {
+func (message Message) FirstQueue() (i QueueName) {
 	i = ""
 	if val, ok := message.Messages[0].Headers[HeaderLastSeen]; ok {
 		if val2, ok2 := val.(string); ok2 {
-			i = val2
+			i = QueueName(val2)
 		}
 	}
 	return i
@@ -107,11 +107,11 @@ func (message Message) LastSeen() (i int64) {
 	return i
 }
 
-func (message Message) LastQueue() (i string) {
+func (message Message) LastQueue() (i QueueName) {
 	i = ""
 	if val, ok := message.Messages[0].Headers[HeaderLastQueue]; ok {
 		if val2, ok2 := val.(string); ok2 {
-			i = val2
+			i = QueueName(val2)
 		}
 	}
 	return i

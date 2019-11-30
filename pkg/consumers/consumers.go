@@ -43,7 +43,7 @@ var (
 		queuePlayerRanks: playerRanksHandler,
 		queueSteam:       nil,
 
-		queueDelay: nil,
+		queueDelay: delayHandler,
 		queueTest:  nil,
 	}
 )
@@ -130,4 +130,15 @@ func sendToBackOfQueue(message framework.Message) {
 
 func sendToRetryQueue(message framework.Message) {
 	message.SendToQueue(queues[framework.Producer][queueDelay])
+}
+
+func sendToFirstQueue(message framework.Message) {
+
+	queue := message.FirstQueue()
+
+	if queue == "" {
+		queue = queueFailed
+	}
+
+	message.SendToQueue(queues[framework.Producer][queue])
 }
