@@ -74,8 +74,6 @@ func (queue *Queue) connect() error {
 		return nil
 	}
 
-	log.Info("Creating Rabbit channel/queue " + queue.name)
-
 	operation := func() (err error) {
 
 		if queue.channel == nil {
