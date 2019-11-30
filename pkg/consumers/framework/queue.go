@@ -160,14 +160,6 @@ func (queue *Queue) ProduceInterface(message interface{}) error {
 	})
 }
 
-const (
-	headerAttempt    = "attempt"
-	headerFirstSeen  = "first-seen"
-	headerLastSeen   = "last-seen"
-	headerFirstQueue = "first-queue"
-	headerLastQueue  = "last-queue"
-)
-
 func (queue Queue) prepareHeaders(headers amqp.Table) amqp.Table {
 
 	if headers == nil {
@@ -176,34 +168,34 @@ func (queue Queue) prepareHeaders(headers amqp.Table) amqp.Table {
 
 	//
 	attemptSet := false
-	attempt, ok := headers[headerAttempt]
+	attempt, ok := headers[HeaderAttempt]
 	if ok {
 		if val, ok2 := attempt.(int32); ok2 {
-			headers[headerAttempt] = val + 1
+			headers[HeaderAttempt] = val + 1
 			attemptSet = true
 		}
 	}
 	if !attemptSet {
-		headers[headerAttempt] = 1
+		headers[HeaderAttempt] = 1
 	}
 
 	//
-	_, ok = headers[headerFirstSeen]
+	_, ok = headers[HeaderFirstSeen]
 	if !ok {
-		headers[headerFirstSeen] = time.Now().Unix()
+		headers[HeaderFirstSeen] = time.Now().Unix()
 	}
 
 	//
-	headers[headerLastSeen] = time.Now().Unix()
+	headers[HeaderLastSeen] = time.Now().Unix()
 
 	//
-	_, ok = headers[headerFirstQueue]
+	_, ok = headers[HeaderFirstQueue]
 	if !ok {
-		headers[headerFirstQueue] = string(queue.name)
+		headers[HeaderFirstQueue] = string(queue.name)
 	}
 
 	//
-	headers[headerLastQueue] = string(queue.name)
+	headers[HeaderLastQueue] = string(queue.name)
 
 	return headers
 }
