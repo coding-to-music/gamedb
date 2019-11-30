@@ -30,7 +30,7 @@ func (q delayQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	// Limits
-	if q.BaseQueue.getMaxTime() > 0 && message.FirstSeen.Add(q.BaseQueue.getMaxTime()).Unix() < time.Now().Unix() {
+	if q.BaseQueue.getMaxTime() > 0 && message.FirstSeen.Add(q.BaseQueue.getMaxTime()).Before(time.Now()) {
 
 		log.Info("Message removed from delay queue (Over " + q.BaseQueue.getMaxTime().String() + " / " + message.FirstSeen.Add(q.BaseQueue.getMaxTime()).String() + "): " + string(msg.Body))
 		ackFail(msg, &message)
@@ -54,7 +54,7 @@ func (q delayQueue) processMessages(msgs []amqp.Delivery) {
 	//
 	var queue queueName
 
-	if message.getNextAttempt().Unix() <= time.Now().Unix() {
+	if message.getNextAttempt().Before(time.Now()) {
 
 		log.Info("Sending back to " + string(message.OriginalQueue))
 		queue = message.OriginalQueue

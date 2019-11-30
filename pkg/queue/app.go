@@ -96,7 +96,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 	// Skip if updated in last day, unless its from PICS
 	if !message.Force {
 		if !config.IsLocal() {
-			if app.UpdatedAt.Unix() > time.Now().Add(time.Hour*24*-1).Unix() {
+			if app.UpdatedAt.After(time.Now().Add(time.Hour * 24 * -1)) {
 				if app.ChangeNumber >= message.Message.ChangeNumber && message.Message.ChangeNumber > 0 {
 					log.Info("Skipping app, updated in last day")
 					message.ack(msg)
@@ -1283,7 +1283,7 @@ func scrapeApp(app *sql.App) (sales []mongo.Sale, err error) {
 					now := time.Now()
 
 					t = t.AddDate(now.Year(), 0, 0)
-					if t.Unix() < now.Unix() {
+					if t.Before(now) {
 						t = t.AddDate(1, 0, 0)
 					}
 

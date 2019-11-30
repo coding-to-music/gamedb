@@ -157,7 +157,7 @@ func (ids *IDsToForceType) Cleanup() {
 	defer ids.Unlock()
 
 	for k, v := range ids.IDs {
-		if v.Unix() < time.Now().Add(-time.Minute).Unix() {
+		if v.Before(time.Now().Add(-time.Minute)) {
 			delete(ids.IDs, k)
 		}
 	}

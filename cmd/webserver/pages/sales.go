@@ -130,7 +130,7 @@ func (ud upcomingSale) ID() string {
 }
 
 func (ud upcomingSale) Time() int64 {
-	if ud.Start.Unix() < time.Now().Unix() {
+	if ud.Start.Before(time.Now()) {
 		return ud.Start.AddDate(0, 0, ud.Days).Unix() * 1000
 	} else {
 		return ud.Start.Unix() * 1000
@@ -138,11 +138,11 @@ func (ud upcomingSale) Time() int64 {
 }
 
 func (ud upcomingSale) Started() bool {
-	return ud.Start.Unix() < time.Now().Unix()
+	return ud.Start.Before(time.Now())
 }
 
 func (ud upcomingSale) Ended() bool {
-	return ud.Start.AddDate(0, 0, ud.Days).Unix() < time.Now().Unix()
+	return ud.Start.AddDate(0, 0, ud.Days).Before(time.Now())
 }
 
 func (ud upcomingSale) Show() bool {

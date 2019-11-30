@@ -90,7 +90,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if app.UpdatedAt.Unix() > time.Now().Add(time.Hour*-24).Unix() {
+		if app.UpdatedAt.After(time.Now().Add(time.Hour * -24)) {
 			return
 		}
 
