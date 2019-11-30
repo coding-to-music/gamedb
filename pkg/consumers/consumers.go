@@ -63,7 +63,12 @@ func InitProducers() {
 
 	for k, v := range handlers {
 
-		q, err := framework.NewQueue(connection, k, 10, 1, v)
+		updateHeaders := true
+		if k == queueDelay {
+			updateHeaders = false
+		}
+
+		q, err := framework.NewQueue(connection, k, 10, 1, v, updateHeaders)
 		if err != nil {
 			log.Critical(string(k), err)
 		} else {
@@ -93,7 +98,13 @@ func InitConsumers() {
 
 	for k, v := range handlers {
 		if v != nil {
-			q, err := framework.NewQueue(connection, k, 10, 1, v)
+
+			updateHeaders := true
+			if k == queueDelay {
+				updateHeaders = false
+			}
+
+			q, err := framework.NewQueue(connection, k, 10, 1, v, updateHeaders)
 			if err != nil {
 				log.Critical(string(k), err)
 			} else {

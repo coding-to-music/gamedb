@@ -25,10 +25,11 @@ type Queue struct {
 	isOpen        bool
 	prefetchCount int
 	batchSize     int
+	updateHeaders bool
 	sync.Mutex
 }
 
-func NewQueue(connection *Connection, name QueueName, prefetchCount int, batchSize int, handler Handler) (*Queue, error) {
+func NewQueue(connection *Connection, name QueueName, prefetchCount int, batchSize int, handler Handler, updateHeaders bool) (*Queue, error) {
 
 	queue := &Queue{
 		connection:    connection,
@@ -37,6 +38,7 @@ func NewQueue(connection *Connection, name QueueName, prefetchCount int, batchSi
 		batchSize:     batchSize,
 		closeChan:     make(chan *amqp.Error),
 		handler:       handler,
+		updateHeaders: updateHeaders,
 	}
 
 	err := queue.connect()
@@ -120,7 +122,9 @@ func (queue *Queue) Produce(message Message) error {
 	// Headers
 	for _, message := range message.Messages {
 
-		message.Headers = queue.prepareHeaders(message.Headers)
+		if queue.updateHeaders {
+			message.Headers = queue.prepareHeaders(message.Headers)
+		}
 
 		err := queue.channel.Publish("", string(queue.name), false, false, amqp.Publishing{
 			Headers:      message.Headers,
@@ -143,8 +147,13 @@ func (queue *Queue) ProduceInterface(message interface{}) error {
 		return err
 	}
 
+	headers := amqp.Table{}
+	if queue.updateHeaders {
+		headers = queue.prepareHeaders(headers)
+	}
+
 	return queue.channel.Publish("", string(queue.name), false, false, amqp.Publishing{
-		Headers:      queue.prepareHeaders(nil),
+		Headers:      headers,
 		DeliveryMode: amqp.Persistent,
 		ContentType:  "application/json",
 		Body:         b,
