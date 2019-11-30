@@ -2,6 +2,7 @@ package framework
 
 import (
 	"encoding/json"
+	"errors"
 	"sync"
 	"time"
 
@@ -118,6 +119,10 @@ func (queue *Queue) connect() error {
 }
 
 func (queue *Queue) Produce(message Message) error {
+
+	if queue == nil {
+		return errors.New("queue has been removed")
+	}
 
 	// Headers
 	if queue.updateHeaders {
