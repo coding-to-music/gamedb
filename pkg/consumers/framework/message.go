@@ -9,12 +9,20 @@ import (
 
 type Message struct {
 	Queue       *Queue
-	Messages    []*amqp.Delivery // Slice for bulk acking
+	Message     *amqp.Delivery
 	actionTaken bool
 	sync.Mutex
 }
 
 func (message *Message) Ack() {
+	message.ack(false)
+}
+
+func (message *Message) AckMultiple() {
+	message.ack(true)
+}
+
+func (message *Message) ack(multiple bool) {
 
 	message.Lock()
 	defer message.Unlock()
@@ -23,15 +31,7 @@ func (message *Message) Ack() {
 		return
 	}
 
-	var err error
-
-	if len(message.Messages) > 1 {
-		var last = message.Messages[len(message.Messages)-1]
-		err = last.Ack(true)
-	} else if len(message.Messages) == 1 {
-		err = message.Messages[0].Ack(false)
-	}
-
+	err := message.Message.Ack(multiple)
 	if err != nil {
 		log.Err(err)
 	} else {
@@ -69,7 +69,7 @@ const (
 
 func (message Message) Attempt() (i int32) {
 	i = 1
-	if val, ok := message.Messages[0].Headers[HeaderAttempt]; ok {
+	if val, ok := message.Message.Headers[HeaderAttempt]; ok {
 		if val2, ok2 := val.(int32); ok2 {
 			i = val2
 		}
@@ -79,7 +79,7 @@ func (message Message) Attempt() (i int32) {
 
 func (message Message) FirstSeen() (i int64) {
 	i = 0
-	if val, ok := message.Messages[0].Headers[HeaderFirstSeen]; ok {
+	if val, ok := message.Message.Headers[HeaderFirstSeen]; ok {
 		if val2, ok2 := val.(int64); ok2 {
 			i = val2
 		}
@@ -89,7 +89,7 @@ func (message Message) FirstSeen() (i int64) {
 
 func (message Message) FirstQueue() (i QueueName) {
 	i = ""
-	if val, ok := message.Messages[0].Headers[HeaderLastSeen]; ok {
+	if val, ok := message.Message.Headers[HeaderLastSeen]; ok {
 		if val2, ok2 := val.(string); ok2 {
 			i = QueueName(val2)
 		}
@@ -99,7 +99,7 @@ func (message Message) FirstQueue() (i QueueName) {
 
 func (message Message) LastSeen() (i int64) {
 	i = 0
-	if val, ok := message.Messages[0].Headers[HeaderFirstQueue]; ok {
+	if val, ok := message.Message.Headers[HeaderFirstQueue]; ok {
 		if val2, ok2 := val.(int64); ok2 {
 			i = val2
 		}
@@ -109,7 +109,7 @@ func (message Message) LastSeen() (i int64) {
 
 func (message Message) LastQueue() (i QueueName) {
 	i = ""
-	if val, ok := message.Messages[0].Headers[HeaderLastQueue]; ok {
+	if val, ok := message.Message.Headers[HeaderLastQueue]; ok {
 		if val2, ok2 := val.(string); ok2 {
 			i = QueueName(val2)
 		}

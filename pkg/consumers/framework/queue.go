@@ -13,7 +13,7 @@ import (
 
 type QueueName string
 
-type Handler func(message Message)
+type Handler func(message []Message)
 
 type Queue struct {
 	connection    *Connection
@@ -120,24 +120,17 @@ func (queue *Queue) connect() error {
 func (queue *Queue) Produce(message Message) error {
 
 	// Headers
-	for _, message := range message.Messages {
-
-		if queue.updateHeaders {
-			message.Headers = queue.prepareHeaders(message.Headers)
-		}
-
-		err := queue.channel.Publish("", string(queue.name), false, false, amqp.Publishing{
-			Headers:      message.Headers,
-			DeliveryMode: amqp.Persistent,
-			ContentType:  "application/json",
-			Body:         message.Body,
-		})
-		if err != nil {
-			return err
-		}
+	if queue.updateHeaders {
+		message.Message.Headers = queue.prepareHeaders(message.Message.Headers)
 	}
 
-	return nil
+	//
+	return queue.channel.Publish("", string(queue.name), false, false, amqp.Publishing{
+		Headers:      message.Message.Headers,
+		DeliveryMode: amqp.Persistent,
+		ContentType:  "application/json",
+		Body:         message.Message.Body,
+	})
 }
 
 func (queue *Queue) ProduceInterface(message interface{}) error {
@@ -212,21 +205,23 @@ func (queue *Queue) Consume() error {
 	// In a anon function so can return at anytime
 	go func(msgs <-chan amqp.Delivery) {
 
-		message := Message{}
-		message.Queue = queue
+		var messages []Message
 
 		for {
 			if !queue.connection.connection.IsClosed() && queue.isOpen {
 				select {
 				case msg := <-msgs:
-					message.Messages = append(message.Messages, &msg)
+					messages = append(messages, Message{
+						Queue:   queue,
+						Message: &msg,
+					})
 				}
 
-				if len(message.Messages) >= queue.batchSize {
+				if len(messages) >= queue.batchSize {
 
 					if queue.handler != nil {
-						queue.handler(message)
-						message.Messages = nil
+						queue.handler(messages)
+						messages = nil
 					}
 				}
 			}
