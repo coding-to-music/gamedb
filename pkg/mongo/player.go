@@ -18,9 +18,9 @@ import (
 
 var CountriesWithStates = []string{"AU", "CA", "FR", "GB", "NZ", "PH", "SI", "US"}
 
-type RankKey int
+type RankMetric string
 
-func (rk RankKey) String() string {
+func (rk RankMetric) String() string {
 	switch rk {
 	case RankKeyLevel:
 		return "Level"
@@ -39,12 +39,12 @@ func (rk RankKey) String() string {
 }
 
 const (
-	RankKeyLevel    RankKey = 1
-	RankKeyBadges   RankKey = 2
-	RankKeyFriends  RankKey = 3
-	RankKeyComments RankKey = 4
-	RankKeyGames    RankKey = 5
-	RankKeyPlaytime RankKey = 6
+	RankKeyLevel    RankMetric = "l"
+	RankKeyBadges   RankMetric = "b"
+	RankKeyFriends  RankMetric = "f"
+	RankKeyComments RankMetric = "c"
+	RankKeyGames    RankMetric = "g"
+	RankKeyPlaytime RankMetric = "p"
 )
 
 var (
@@ -88,6 +88,11 @@ type Player struct {
 
 func (player Player) BSON() bson.D {
 
+	// Stops ranks saving as null
+	if player.Ranks == nil {
+		player.Ranks = map[string]int{}
+	}
+
 	return bson.D{
 		{"_id", player.ID},
 		{"avatar", player.Avatar},
@@ -115,7 +120,7 @@ func (player Player) BSON() bson.D {
 		{"groups_count", player.GroupsCount},
 		{"ranks", player.Ranks},
 
-		// Ranked
+		// Rank Metrics
 		{"badges_count", player.BadgesCount},
 		{"friends_count", player.FriendsCount},
 		{"games_count", player.GamesCount},

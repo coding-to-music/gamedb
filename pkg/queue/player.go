@@ -892,7 +892,7 @@ func savePlayerToInflux(player mongo.Player) (err error) {
 	}
 
 	// Add ranks to map
-	gamesRank := map[mongo.RankKey]string{
+	gamesRank := map[mongo.RankMetric]string{
 		mongo.RankKeyLevel:    "level_rank",
 		mongo.RankKeyGames:    "games_rank",
 		mongo.RankKeyBadges:   "badges_rank",
@@ -903,7 +903,7 @@ func savePlayerToInflux(player mongo.Player) (err error) {
 
 	for k, v := range gamesRank {
 
-		if val, ok := player.Ranks[strconv.Itoa(int(k))]; ok && val > 0 {
+		if val, ok := player.Ranks[string(k)]; ok && val > 0 {
 			fields[v] = val
 		}
 	}
