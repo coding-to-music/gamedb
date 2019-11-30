@@ -11,12 +11,6 @@ func appHandler(messages []framework.Message) {
 
 	for _, message := range messages {
 
-		log.Info(message.Attempt())
-
-		if message.Attempt() > 5 {
-			message.Ack()
-		} else {
-			message.SendToQueue(queues[framework.Producer][queueBundles])
-		}
+		message.SendToQueue(queues[framework.Producer][queueBundles])
 	}
 }

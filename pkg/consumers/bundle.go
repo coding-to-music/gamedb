@@ -11,8 +11,6 @@ func bundleHandler(messages []framework.Message) {
 
 	for _, message := range messages {
 
-		log.Info(message.Attempt())
-
 		message.SendToQueue(queues[framework.Producer][queueApps])
 	}
 }
