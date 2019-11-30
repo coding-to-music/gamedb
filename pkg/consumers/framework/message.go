@@ -68,12 +68,22 @@ const (
 )
 
 func (message Message) Attempt() (i int32) {
+
 	i = 1
+	found := false
 	if val, ok := message.Message.Headers[HeaderAttempt]; ok {
 		if val2, ok2 := val.(int32); ok2 {
 			i = val2
+			found = true
 		}
 	}
+
+	// Write it onto the message so it's acurate when
+	// produced by something outside of this library
+	if !found {
+		message.Message.Headers[HeaderAttempt] = i
+	}
+
 	return i
 }
 
