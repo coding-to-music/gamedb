@@ -11,6 +11,7 @@ import (
 	"github.com/gamedb/gamedb/cmd/webserver/middleware"
 	"github.com/gamedb/gamedb/cmd/webserver/pages"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -33,6 +34,8 @@ func main() {
 		log.Critical(err)
 		return
 	}
+
+	consumers.InitProducers()
 
 	//
 	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
