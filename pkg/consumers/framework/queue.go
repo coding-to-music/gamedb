@@ -78,19 +78,19 @@ func (queue *Queue) connect() error {
 
 		if queue.channel == nil {
 
-			ch, err := queue.connection.connection.Channel()
+			channel, err := queue.connection.connection.Channel()
 			if err != nil {
 				return err
 			}
 
-			err = ch.Qos(queue.prefetchCount, 0, false)
+			err = channel.Qos(queue.prefetchCount, 0, false)
 			if err != nil {
 				return err
 			}
 
-			_ = ch.NotifyClose(queue.closeChan)
+			_ = channel.NotifyClose(queue.closeChan)
 
-			queue.channel = ch
+			queue.channel = channel
 		}
 
 		if queue.queue == nil {
