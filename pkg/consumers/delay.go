@@ -9,6 +9,8 @@ import (
 
 func delayHandler(message framework.Message) {
 
+	time.Sleep(time.Second / 10)
+
 	firstMessage := message.Messages[0]
 
 	// Get the last seen header
