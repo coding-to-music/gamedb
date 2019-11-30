@@ -157,7 +157,6 @@ const (
 	headerLastSeen   = "last-seen"
 	headerFirstQueue = "first-queue"
 	headerLastQueue  = "last-queue"
-	headerForce      = "force"
 )
 
 func (queue Queue) prepareHeaders(headers amqp.Table) amqp.Table {
@@ -196,14 +195,6 @@ func (queue Queue) prepareHeaders(headers amqp.Table) amqp.Table {
 
 	//
 	headers[headerLastQueue] = string(queue.name)
-
-	//
-	oldForce, ok := headers[headerForce]
-	if ok {
-		headers[headerForce] = oldForce
-	} else {
-		headers[headerForce] = false
-	}
 
 	return headers
 }
