@@ -13,7 +13,7 @@ require (
 	github.com/Jleagle/recaptcha-go v0.0.0-20190220085232-0e548dc7cc83
 	github.com/Jleagle/session-go v0.0.0-20190515070633-3c8712426233
 	github.com/Jleagle/sitemap-go v0.0.0-20190405195207-2bdddbb3bd50
-	github.com/Jleagle/steam-go v0.0.0-20191122180648-5acb2653ef81
+	github.com/Jleagle/steam-go v0.0.0-20191127215008-3a143d8f8dbc
 	github.com/Jleagle/unmarshal-go v0.0.0-20191115124251-320828cd121a
 	github.com/Jleagle/valve-data-format-go v0.0.0-20191105130353-2651328f1d36
 	github.com/Philipp15b/go-steam v1.0.1-0.20190816133340-b04c5a83c1c0
@@ -86,7 +86,8 @@ require (
 	github.com/sendgrid/sendgrid-go v3.5.0+incompatible
 	github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf // indirect
 	github.com/streadway/amqp v0.0.0-20190827072141-edfb9018d271
-	github.com/tdewolff/minify/v2 v2.5.2
+	github.com/tdewolff/minify/v2 v2.6.1
+	github.com/tdewolff/parse/v2 v2.4.0 // indirect
 	github.com/temoto/robotstxt v1.1.1 // indirect
 	github.com/tidwall/pretty v1.0.0 // indirect
 	github.com/uber-go/atomic v1.4.0 // indirect
@@ -97,14 +98,16 @@ require (
 	go.mongodb.org/mongo-driver v1.1.3
 	go.opencensus.io v0.22.2 // indirect
 	go.uber.org/atomic v1.4.0 // indirect
-	golang.org/x/crypto v0.0.0-20191122220453-ac88ee75c92c
-	golang.org/x/net v0.0.0-20191119073136-fc4aabc6c914 // indirect
+	golang.org/x/crypto v0.0.0-20191128160524-b544559bb6d1
+	golang.org/x/exp v0.0.0-20191129062945-2f5052295587 // indirect
+	golang.org/x/lint v0.0.0-20191125180803-fdd1cda4f05f // indirect
+	golang.org/x/net v0.0.0-20191126235420-ef20fe5d7933 // indirect
 	golang.org/x/oauth2 v0.0.0-20191122200657-5d9234df094c
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e // indirect
-	golang.org/x/sys v0.0.0-20191120155948-bd437916bb0e // indirect
+	golang.org/x/sys v0.0.0-20191128015809-6d18c012aee9 // indirect
 	golang.org/x/text v0.3.2
 	golang.org/x/time v0.0.0-20191024005414-555d28b269f0 // indirect
-	golang.org/x/tools v0.0.0-20191122232904-2a6ccf25d769 // indirect
+	golang.org/x/tools v0.0.0-20191130070609-6e064ea0cf2d // indirect
 	google.golang.org/appengine v1.6.5 // indirect
 	google.golang.org/genproto v0.0.0-20191115221424-83cc0476cb11 // indirect
 	google.golang.org/grpc v1.25.1
