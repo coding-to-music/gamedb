@@ -38,7 +38,7 @@ func (message *Message) Ack() (err error) {
 
 func (message Message) SendToQueue(queues ...*Queue) error {
 
-	// Prodice to new queue
+	// Produce to new queue
 	if len(queues) == 0 {
 		queues = []*Queue{message.queue}
 	}
