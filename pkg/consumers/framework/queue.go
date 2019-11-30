@@ -118,7 +118,7 @@ func (queue *Queue) connect() error {
 func (queue *Queue) Produce(message Message) error {
 
 	// Headers
-	for _, message := range message.messages {
+	for _, message := range message.Messages {
 
 		message.Headers = queue.prepareHeaders(message.Headers)
 
@@ -191,11 +191,11 @@ func (queue Queue) prepareHeaders(headers amqp.Table) amqp.Table {
 	//
 	_, ok = headers[headerFirstQueue]
 	if !ok {
-		headers[headerFirstQueue] = queue.name
+		headers[headerFirstQueue] = string(queue.name)
 	}
 
 	//
-	headers[headerLastQueue] = queue.name
+	headers[headerLastQueue] = string(queue.name)
 
 	//
 	oldForce, ok := headers[headerForce]
@@ -221,20 +221,20 @@ func (queue *Queue) Consume() error {
 	go func(msgs <-chan amqp.Delivery) {
 
 		message := Message{}
-		message.queue = queue
+		message.Queue = queue
 
 		for {
 			if !queue.connection.connection.IsClosed() && queue.isOpen {
 				select {
 				case msg := <-msgs:
-					message.messages = append(message.messages, &msg)
+					message.Messages = append(message.Messages, &msg)
 				}
 
-				if len(message.messages) >= queue.batchSize {
+				if len(message.Messages) >= queue.batchSize {
 
 					if queue.handler != nil {
 						queue.handler(message)
-						message.messages = nil
+						message.Messages = nil
 					}
 				}
 			}

@@ -10,19 +10,20 @@ import (
 )
 
 const (
-	queueApps      framework.QueueName = "GameDB_Go_Apps"
-	queueAppPlayer framework.QueueName = "GameDB_Go_App_Players"
-	queueBundles   framework.QueueName = "GameDB_Go_Bundles"
-	queueChanges   framework.QueueName = "GameDB_Go_Changes"
-	queueFailed    framework.QueueName = "GameDB_Go_Failed"
-	queueGroups    framework.QueueName = "GameDB_Go_Groups"
-	queueGroups2   framework.QueueName = "GameDB_Go_Groups2"
-	queueGroupsNew framework.QueueName = "GameDB_Go_Groups_New"
-	queuePackages  framework.QueueName = "GameDB_Go_Packages"
-	queuePlayers   framework.QueueName = "GameDB_Go_Profiles"
-	queuePlayers2  framework.QueueName = "GameDB_Go_Profiles2"
-	queueSteam     framework.QueueName = "GameDB_Go_Steam"
-	queueTest      framework.QueueName = "GameDB_Go_Test"
+	queueApps        framework.QueueName = "GDB_Apps"
+	queueAppPlayer   framework.QueueName = "GDB_App_Players"
+	queueBundles     framework.QueueName = "GDB_Bundles"
+	queueChanges     framework.QueueName = "GDB_Changes"
+	queueGroups      framework.QueueName = "GDB_Groups"
+	queueGroupsNew   framework.QueueName = "GDB_Groups_New"
+	queuePackages    framework.QueueName = "GDB_Packages"
+	queuePlayers     framework.QueueName = "GDB_Profiles"
+	queuePlayerRanks framework.QueueName = "GDB_Player_Ranks"
+	queueSteam       framework.QueueName = "GDB_Steam"
+
+	queueDelay  framework.QueueName = "GDB_Delay"
+	queueFailed framework.QueueName = "GDB_Failed"
+	queueTest   framework.QueueName = "GDB_Test"
 )
 
 var (
@@ -30,64 +31,73 @@ var (
 		framework.Consumer: {},
 		framework.Producer: {},
 	}
+	handlers = map[framework.QueueName]framework.Handler{
+		queueApps:        appHandler,
+		queueAppPlayer:   nil,
+		queueBundles:     bundleHandler,
+		queueChanges:     nil,
+		queueGroups:      nil,
+		queueGroupsNew:   nil,
+		queuePackages:    nil,
+		queuePlayers:     nil,
+		queuePlayerRanks: playerRanksHandler,
+		queueSteam:       nil,
+
+		queueDelay: nil,
+		queueTest:  nil,
+	}
 )
 
-func Init() {
+func InitProducers() {
 
 	heartbeat := time.Minute
 	if config.IsLocal() {
 		heartbeat = time.Hour
 	}
 
-	consumerConnection, err := framework.NewConnection("consumer", amqp.Config{Heartbeat: heartbeat})
+	connection, err := framework.NewConnection("producer", amqp.Config{Heartbeat: heartbeat})
 	if err != nil {
 		log.Info(err)
 		return
 	}
 
-	producerConnection, err := framework.NewConnection("producer", amqp.Config{Heartbeat: heartbeat})
+	for k, v := range handlers {
+
+		q, err := framework.NewQueue(connection, k, 10, 1, v)
+		if err != nil {
+			log.Critical(string(k), err)
+		} else {
+			queues[framework.Producer][k] = q
+		}
+	}
+
+	// Start consuming
+	for _, queue := range queues[framework.Consumer] {
+		err = queue.Consume()
+		log.Err(err)
+	}
+}
+
+func InitConsumers() {
+
+	heartbeat := time.Minute
+	if config.IsLocal() {
+		heartbeat = time.Hour
+	}
+
+	connection, err := framework.NewConnection("consumer", amqp.Config{Heartbeat: heartbeat})
 	if err != nil {
 		log.Info(err)
 		return
 	}
 
-	queueHandlers := map[framework.QueueName]framework.Handler{
-		queueApps:      appHandler,
-		queueAppPlayer: nil,
-		queueBundles:   bundleHandler,
-		queueChanges:   nil,
-		queueFailed:    nil,
-		queueGroups:    nil,
-		queueGroups2:   nil,
-		queueGroupsNew: nil,
-		queuePackages:  nil,
-		queuePlayers:   nil,
-		queueTest:      nil,
-		queuePlayers2:  nil,
-		// queueSteam:     nil,
-	}
-
-	for k, v := range queueHandlers {
+	for k, v := range handlers {
 		if v != nil {
-
-			// Producer
-			q, err := framework.NewQueue(producerConnection, k, 10, 1, v)
-			if err == nil {
-				queues[framework.Producer][k] = q
-			}
-
+			q, err := framework.NewQueue(connection, k, 10, 1, v)
 			if err != nil {
-				log.Err(string(k), err)
-			}
-
-			// Consumer
-			q, err = framework.NewQueue(consumerConnection, k, 10, 1, v)
-			if err == nil {
+				log.Critical(string(k), err)
+			} else {
 				queues[framework.Consumer][k] = q
-			}
-
-			if err != nil {
-				log.Err(string(k), err)
 			}
 		}
 	}
@@ -97,4 +107,16 @@ func Init() {
 		err = queue.Consume()
 		log.Err(err)
 	}
+}
+
+func sendToFailQueue(message framework.Message) {
+	message.SendToQueue(queues[framework.Producer][queueFailed])
+}
+
+func sendToBackOfQueue(message framework.Message) {
+	message.SendToQueue(message.Queue)
+}
+
+func sendToRetryQueue(message framework.Message) {
+	message.SendToQueue(queues[framework.Producer][queueDelay])
 }
