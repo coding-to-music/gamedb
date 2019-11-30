@@ -36,6 +36,11 @@ func playerRanksHandler(messages []framework.Message) {
 			return
 		}
 
+		if payload.ObjectKey == "" || payload.SortColumn == "" {
+			sendToFailQueue(message)
+			return
+		}
+
 		// Create filter
 		var filter = bson.D{}
 		if payload.Continent != nil {
@@ -49,7 +54,7 @@ func playerRanksHandler(messages []framework.Message) {
 		}
 		filter = append(filter, bson.E{Key: payload.SortColumn, Value: bson.M{"$exists": true, "$gt": 0}}) // Put last to help indexes
 
-		log.Info(filter)
+		log.Info(message.Queue.Name, filter)
 
 		// Get players
 		players, err := mongo.GetPlayers(0, 0, bson.D{{payload.SortColumn, -1}}, filter, bson.M{"_id": 1})
