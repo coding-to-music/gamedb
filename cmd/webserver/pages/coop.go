@@ -3,6 +3,7 @@ package pages
 import (
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -60,9 +61,8 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 		foundPlayerIDs = append(foundPlayerIDs, player.ID)
 	}
 
+	// Queue players we dont already have
 	for _, playerID := range playerIDs {
-
-		// If we couldnt find player
 		if !helpers.SliceHasInt64(foundPlayerIDs, playerID) {
 
 			log.Info(log.LogNameTriggerUpdate, r, r.UserAgent())
@@ -87,13 +87,9 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 
 		_, ok := allAppsByPlayer[playerApp.PlayerID]
 		if ok {
-
 			allAppsByPlayer[playerApp.PlayerID] = append(allAppsByPlayer[playerApp.PlayerID], playerApp.AppID)
-
 		} else {
-
 			allAppsByPlayer[playerApp.PlayerID] = []int{playerApp.AppID}
-
 		}
 	}
 
@@ -116,27 +112,48 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// Convert to slice
-	var appsSlice []int
-	for k := range allApps {
-		appsSlice = append(appsSlice, k)
-	}
+	if len(allApps) > 0 {
 
-	games, err := sql.GetAppsByID(appsSlice, []string{"id", "name", "icon", "platforms", "achievements", "tags"})
-	if err != nil {
-		log.Err(err, r)
-	}
+		// Convert to slice
+		var appsSlice []int
+		for k := range allApps {
+			appsSlice = append(appsSlice, k)
+		}
 
-	// Make visible tags
-	for _, v := range games {
+		appsSlice = helpers.Unique(appsSlice)
 
-		coopTags, err := v.GetCoopTags()
-		log.Err(err, r)
+		db, err := sql.GetMySQLClient()
+		if err != nil {
+			returnErrorTemplate(w, r, errorTemplate{Code: 500, Error: err})
+			return
+		}
 
-		t.Games = append(t.Games, coopGameTemplate{
-			Game: v,
-			Tags: coopTags,
-		})
+		var or []string
+		for _, v := range []int{128, 1685, 3843, 3841, 4508, 3859, 7368, 17770} {
+			or = append(or, "JSON_CONTAINS(tags, '["+strconv.Itoa(v)+"]') = 1")
+		}
+
+		var apps []sql.App
+
+		db = db.Select([]string{"id", "name", "icon", "platforms", "achievements", "tags"})
+		db = db.Where("id IN (?)", appsSlice)
+		db = db.Where(strings.Join(or, " OR "))
+		db = db.Find(&apps)
+		if db.Error != nil {
+			log.Err(err, r)
+		}
+
+		// Make visible tags
+		for _, app := range apps {
+
+			coopTags, err := app.GetCoopTags()
+			log.Err(err, r)
+
+			t.Games = append(t.Games, coopGameTemplate{
+				Game: app,
+				Tags: coopTags,
+			})
+		}
 	}
 
 	returnTemplate(w, r, "coop", t)
