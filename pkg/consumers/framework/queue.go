@@ -200,9 +200,9 @@ func (queue Queue) prepareHeaders(headers amqp.Table) amqp.Table {
 
 func (queue *Queue) Consume() error {
 
-	name := config.Config.Environment.Get() + "-" + config.GetSteamKeyTag()
+	tag := config.Config.Environment.Get() + "-" + config.GetSteamKeyTag()
 
-	msgs, err := queue.channel.Consume(queue.queue.Name, name, false, false, false, false, nil)
+	msgs, err := queue.channel.Consume(queue.queue.Name, tag, false, false, false, false, nil)
 	if err != nil {
 		return err
 	}

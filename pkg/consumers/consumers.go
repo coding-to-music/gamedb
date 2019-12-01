@@ -101,16 +101,17 @@ func InitConsumers() {
 			q, err := framework.NewQueue(connection, k, 10, 1, v, updateHeaders)
 			if err != nil {
 				log.Critical(string(k), err)
-			} else {
-				queues[framework.Consumer][k] = q
+				continue
+			}
+
+			queues[framework.Consumer][k] = q
+
+			err = q.Consume()
+			if err != nil {
+				log.Critical(string(k), err)
+				continue
 			}
 		}
-	}
-
-	// Start consuming
-	for _, queue := range queues[framework.Consumer] {
-		err = queue.Consume()
-		log.Err(err)
 	}
 }
 
