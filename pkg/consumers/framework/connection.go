@@ -70,7 +70,7 @@ func (connection *Connection) connect() error {
 
 		connection.connection, err = amqp.DialConfig(config.RabbitDSN(), connection.config)
 		if err != nil {
-			return nil
+			return err
 		}
 
 		_ = connection.connection.NotifyClose(connection.closeChan)
