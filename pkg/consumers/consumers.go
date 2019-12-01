@@ -75,12 +75,6 @@ func InitProducers() {
 			queues[framework.Producer][k] = q
 		}
 	}
-
-	// Start consuming
-	for _, queue := range queues[framework.Consumer] {
-		err = queue.Consume()
-		log.Err(err)
-	}
 }
 
 func InitConsumers() {
