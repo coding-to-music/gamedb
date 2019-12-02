@@ -2,6 +2,7 @@ package framework
 
 import (
 	"sync"
+	"time"
 
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/streadway/amqp"
@@ -87,11 +88,10 @@ func (message Message) Attempt() (i int32) {
 	return i
 }
 
-func (message Message) FirstSeen() (i int64) {
-	i = 0
+func (message Message) FirstSeen() (i time.Time) {
 	if val, ok := message.Message.Headers[HeaderFirstSeen]; ok {
 		if val2, ok2 := val.(int64); ok2 {
-			i = val2
+			i = time.Unix(val2, 0)
 		}
 	}
 	return i
@@ -107,11 +107,10 @@ func (message Message) FirstQueue() (i QueueName) {
 	return i
 }
 
-func (message Message) LastSeen() (i int64) {
-	i = 0
+func (message Message) LastSeen() (i time.Time) {
 	if val, ok := message.Message.Headers[HeaderFirstQueue]; ok {
 		if val2, ok2 := val.(int64); ok2 {
-			i = val2
+			i = time.Unix(val2, 0)
 		}
 	}
 	return i
