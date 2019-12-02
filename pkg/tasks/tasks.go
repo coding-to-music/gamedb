@@ -37,7 +37,7 @@ var (
 		DevCodeRun{},
 		Developers{},
 		Genres{},
-		Instagram{},
+		// Instagram{},
 		MemcacheClear{},
 		SetBadgeCache{},
 		PackagesQueueAll{},
