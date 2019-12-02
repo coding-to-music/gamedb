@@ -6,18 +6,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Jleagle/steam-go/steam"
 	"github.com/Jleagle/valve-data-format-go/vdf"
-	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/helpers/reddit"
-	"github.com/gamedb/gamedb/pkg/helpers/twitter"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/sql/pics"
 	"github.com/gamedb/gamedb/pkg/websockets"
-	"github.com/nlopes/slack"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -289,39 +284,39 @@ func savePriceChanges(before sql.ProductInterface, after sql.ProductInterface) (
 		}
 
 		// Tweet / Post to Reddit
-		var percentIncrease = helpers.PercentageChange(oldPrice, newPrice)
-
-		if productCC.ProductCode == steam.ProductCCUS &&
-			before.GetProductType() == helpers.ProductTypeApp &&
-			helpers.SliceHasString([]string{"Game", "Package"}, before.GetType()) &&
-			percentIncrease <= -80 &&
-			oldPrice > newPrice && // Incase it goes from -90% to -80%
-			newPrice > 0 { // Free games are usually just removed from the store
-
-			appBefore, ok := before.(sql.App)
-			if ok && appBefore.IsOnSale() {
-
-				// Twitter
-				_, _, err = twitter.GetTwitter().Statuses.Update("["+helpers.FloatToString(percentIncrease, 0)+"%] ($"+helpers.FloatToString(float64(newPrice)/100, 2)+") gamedb.online/apps/"+strconv.Itoa(before.GetID())+" #freegame #steam "+helpers.GetHashTag(before.GetName()), nil)
-				if err != nil {
-					if !strings.Contains(err.Error(), "Status is a duplicate") {
-						log.Critical(err)
-					}
-				}
-
-				// Reddit
-				err = reddit.PostToReddit("["+helpers.FloatToString(percentIncrease, 0)+"%] "+before.GetName()+" ($"+helpers.FloatToString(float64(newPrice)/100, 2)+")", "https://gamedb.online"+before.GetPath())
-				if err != nil {
-					log.Critical(err)
-				}
-
-				// Slack message
-				err = slack.PostWebhook(config.Config.SlackSocialWebhook.Get(), &slack.WebhookMessage{
-					Text: "https://gamedb.online" + before.GetPath(),
-				})
-				log.Err(err)
-			}
-		}
+		// var percentIncrease = helpers.PercentageChange(oldPrice, newPrice)
+		//
+		// if productCC.ProductCode == steam.ProductCCUS &&
+		// 	before.GetProductType() == helpers.ProductTypeApp &&
+		// 	helpers.SliceHasString([]string{"Game", "Package"}, before.GetType()) &&
+		// 	percentIncrease <= -80 &&
+		// 	oldPrice > newPrice && // Incase it goes from -90% to -80%
+		// 	newPrice > 0 { // Free games are usually just removed from the store
+		//
+		// 	appBefore, ok := before.(sql.App)
+		// 	if ok && appBefore.IsOnSale() {
+		//
+		// 		// Twitter
+		// 		_, _, err = twitter.GetTwitter().Statuses.Update("["+helpers.FloatToString(percentIncrease, 0)+"%] ($"+helpers.FloatToString(float64(newPrice)/100, 2)+") gamedb.online/apps/"+strconv.Itoa(before.GetID())+" #freegame #steam "+helpers.GetHashTag(before.GetName()), nil)
+		// 		if err != nil {
+		// 			if !strings.Contains(err.Error(), "Status is a duplicate") {
+		// 				log.Critical(err)
+		// 			}
+		// 		}
+		//
+		// 		// Reddit
+		// 		err = reddit.PostToReddit("["+helpers.FloatToString(percentIncrease, 0)+"%] "+before.GetName()+" ($"+helpers.FloatToString(float64(newPrice)/100, 2)+")", "https://gamedb.online"+before.GetPath())
+		// 		if err != nil {
+		// 			log.Critical(err)
+		// 		}
+		//
+		// 		// Slack message
+		// 		err = slack.PostWebhook(config.Config.SlackSocialWebhook.Get(), &slack.WebhookMessage{
+		// 			Text: "https://gamedb.online" + before.GetPath(),
+		// 		})
+		// 		log.Err(err)
+		// 	}
+		// }
 	}
 
 	result, err := mongo.InsertMany(mongo.CollectionProductPrices, documents)
