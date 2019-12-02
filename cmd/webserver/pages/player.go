@@ -65,10 +65,13 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 
-			log.Info(log.LogNameTriggerUpdate, r, r.UserAgent())
 			err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: []int64{idx}, Force: false})
 			err = helpers.IgnoreErrors(err, queue.ErrInQueue)
-			log.Err(err)
+			if err != nil {
+				log.Err(err)
+			} else {
+				log.Info(log.LogNameTriggerUpdate, r, r.UserAgent())
+			}
 
 			// Template
 			tm := playerMissingTemplate{}
@@ -178,11 +181,11 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	// Add to Rabbit
 	if player.NeedsUpdate(mongo.PlayerUpdateAuto) && !helpers.IsBot(r.UserAgent()) {
 
-		log.Info(log.LogNameTriggerUpdate, r, r.UserAgent())
 		err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: []int64{player.ID}, Force: false})
 		if err != nil && err != queue.ErrInQueue {
 			log.Err(err, r)
 		} else {
+			log.Info(log.LogNameTriggerUpdate, r, r.UserAgent())
 			t.addToast(Toast{Title: "Update", Message: "Player has been queued for an update"})
 		}
 	}
@@ -334,10 +337,13 @@ func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
 		missingPlayerIDs = append(missingPlayerIDs, friendID)
 	}
 
-	log.Info(log.LogNameTriggerUpdate, r, r.UserAgent())
 	err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: missingPlayerIDs, Force: false})
 	err = helpers.IgnoreErrors(err, queue.ErrInQueue)
-	log.Err(err)
+	if err != nil {
+		log.Err(err)
+	} else {
+		log.Info(log.LogNameTriggerUpdate, r, r.UserAgent())
+	}
 
 	err = session.SetFlash(r, helpers.SessionGood, strconv.Itoa(len(friendIDsMap))+" friends queued")
 	log.Err(err)
@@ -890,13 +896,14 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			return "Player can't be updated yet", false, nil
 		}
 
-		log.Info(log.LogNameTriggerUpdate, r, r.UserAgent())
 		err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: []int64{player.ID}, Force: false})
 		if err == queue.ErrInQueue {
 			return "Player already queued", false, err
 		} else if err != nil {
 			log.Err(err, r)
 			return "Something has gone wrong", false, err
+		} else {
+			log.Info(log.LogNameTriggerUpdate, r, r.UserAgent())
 		}
 
 		return message, true, err
