@@ -89,7 +89,7 @@ func playerRanksHandler(messages []framework.Message) {
 				log.Err(err)
 			}
 
-			time.Sleep(time.Second * 1 / 2)
+			time.Sleep(time.Second)
 		}
 
 		message.Ack()
