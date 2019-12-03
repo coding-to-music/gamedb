@@ -20,7 +20,8 @@ type PlayerRanksMessage struct {
 }
 
 func (msg PlayerRanksMessage) Produce() error {
-	return queues[framework.Producer][queuePlayerRanks].ProduceInterface(msg)
+	channel := channels[framework.Producer][queuePlayerRanks]
+	return channel.ProduceInterface(msg)
 }
 
 func playerRanksHandler(messages []framework.Message) {
@@ -54,7 +55,7 @@ func playerRanksHandler(messages []framework.Message) {
 		}
 		filter = append(filter, bson.E{Key: payload.SortColumn, Value: bson.M{"$exists": true, "$gt": 0}}) // Put last to help indexes
 
-		log.Info(message.Queue.Name, filter)
+		log.Info(message.Channel.Name, filter)
 
 		// Get players
 		players, err := mongo.GetPlayers(0, 0, bson.D{{payload.SortColumn, -1}}, filter, bson.M{"_id": 1})

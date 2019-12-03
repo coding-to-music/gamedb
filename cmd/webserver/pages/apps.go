@@ -101,8 +101,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 				// Convert to int
 				publisherID, err := strconv.Atoi(v)
 				if err != nil {
-					log.Err(err, r)
-					continue
+					continue // No need to log invalid values
 				}
 
 				// Check if we already have this publisher
@@ -151,8 +150,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 				// Convert to int
 				developerID, err := strconv.Atoi(v)
 				if err != nil {
-					log.Info(err, r)
-					continue
+					continue // No need to log invalid values
 				}
 
 				// Check if we already have this developer
