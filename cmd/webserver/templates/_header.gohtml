@@ -154,23 +154,27 @@
                             <a class="dropdown-item" href="/packages">Packages</a>
                             <a class="dropdown-item" href="/bundles">Bundles</a>
                             <a class="dropdown-item" href="/price-changes">Price Changes</a>
+                            <a class="dropdown-item" href="/changes">Product Changes</a>
 
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="/changes">Product Changes</a>
-                            {{ if eq .Env "local" }}
-                                <a class="dropdown-item" href="/chat">Chat</a>
-                                <a class="dropdown-item" href="/chat-bot">Chat Bot</a>
-                            {{ end }}
-                            <a class="dropdown-item" href="/contact">Contact</a>
+
                             <a class="dropdown-item" href="/coop">Co-op Games</a>
                             <a class="dropdown-item" href="/experience">Experience Table</a>
-                            {{/*<a class="dropdown-item" href="/info">Info</a>*/}}
-                            <a class="dropdown-item" href="/queues">Queues</a>
+
+                            <div class="dropdown-divider"></div>
+
+                            {{ if eq .Env "local" }}
+                                <a class="dropdown-item" href="/chat">Chat</a>
+                            {{ end }}
+                            <a class="dropdown-item" href="/contact">Contact</a>
                             <a class="dropdown-item" href="/info">Info</a>
 
                             <div class="dropdown-divider"></div>
+
                             <a class="dropdown-item" href="/api">API (Game DB)</a>
                             <a class="dropdown-item" href="/steam-api">API (Steam)</a>
+                            <a class="dropdown-item" href="/chat-bot">Chat Bot</a>
+                            <a class="dropdown-item" href="/queues">Queues</a>
                         </div>
                     </li>
 
