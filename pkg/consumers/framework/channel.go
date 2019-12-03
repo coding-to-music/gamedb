@@ -12,14 +12,14 @@ import (
 	"github.com/streadway/amqp"
 )
 
-type QueueName string
+type (
+	QueueName string
+	Handler   func(message []Message)
+)
 
-type Handler func(message []Message)
-
-type Queue struct {
+type Channel struct {
 	Name          QueueName
-	connection    *Connection
-	queue         *amqp.Queue
+	connection    Connection
 	channel       *amqp.Channel
 	closeChan     chan *amqp.Error
 	handler       Handler
@@ -30,9 +30,9 @@ type Queue struct {
 	sync.Mutex
 }
 
-func NewQueue(connection *Connection, name QueueName, prefetchCount int, batchSize int, handler Handler, updateHeaders bool) (*Queue, error) {
+func NewChannel(connection Connection, name QueueName, prefetchCount int, batchSize int, handler Handler, updateHeaders bool) (c Channel, err error) {
 
-	queue := &Queue{
+	channel := Channel{
 		connection:    connection,
 		Name:          name,
 		prefetchCount: prefetchCount,
@@ -42,71 +42,70 @@ func NewQueue(connection *Connection, name QueueName, prefetchCount int, batchSi
 		updateHeaders: updateHeaders,
 	}
 
-	err := queue.connect()
+	err = channel.connect()
 	if err != nil {
-		return nil, err
+		return c, err
 	}
 
 	go func() {
 		for {
 			var err error
+			// var open bool
 			select {
-			case err = <-queue.closeChan:
+			case err, _ = <-channel.closeChan:
 
-				queue.isOpen = false
-
-				log.Warning("Rabbit channel closed", err)
+				// if open {
+				// 	log.Warning("Rabbit channel closed", err)
+				// } else {
+				// 	channel.isOpen = false
+				// 	log.Warning("Rabbit channel closed")
+				// }
 
 				time.Sleep(time.Second * 10)
 
-				err = queue.connect()
-				log.Err(err)
+				err = channel.connect()
+				log.Err("Channel connecting", err)
 			}
 		}
 	}()
 
-	return queue, nil
+	return channel, nil
 }
 
-func (queue *Queue) connect() error {
+func (channel *Channel) connect() error {
 
-	queue.Lock()
-	defer queue.Unlock()
+	channel.Lock()
+	defer channel.Unlock()
 
-	if queue.isOpen {
+	if channel.isOpen {
 		return nil
 	}
 
 	operation := func() (err error) {
 
-		if queue.channel == nil {
+		if channel.channel == nil {
 
-			channel, err := queue.connection.connection.Channel()
+			c, err := channel.connection.connection.Channel()
 			if err != nil {
 				return err
 			}
 
-			err = channel.Qos(queue.prefetchCount, 0, false)
+			err = c.Qos(channel.prefetchCount, 0, false)
 			if err != nil {
 				return err
 			}
 
-			_ = channel.NotifyClose(queue.closeChan)
+			_ = c.NotifyClose(channel.closeChan)
 
-			queue.channel = channel
+			channel.channel = c
 		}
 
-		if queue.queue == nil {
-
-			qu, err := queue.channel.QueueDeclare(string(queue.Name), true, false, false, false, nil)
-			if err != nil {
-				return err
-			}
-
-			queue.queue = &qu
+		_, err = channel.channel.QueueDeclare(string(channel.Name), true, false, false, false, nil)
+		if err != nil {
+			return err
 		}
 
-		queue.isOpen = true
+		channel.isOpen = true
 
 		return nil
 	}
@@ -118,19 +117,19 @@ func (queue *Queue) connect() error {
 	return backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err) })
 }
 
-func (queue *Queue) Produce(message Message) error {
+func (channel *Channel) Produce(message Message) error {
 
-	if queue == nil {
+	if channel == nil {
 		return errors.New("queue has been removed")
 	}
 
 	// Headers
-	if queue.updateHeaders {
-		message.Message.Headers = queue.prepareHeaders(message.Message.Headers)
+	if channel.updateHeaders {
+		message.Message.Headers = channel.prepareHeaders(message.Message.Headers)
 	}
 
 	//
-	return queue.channel.Publish("", string(queue.Name), false, false, amqp.Publishing{
+	return channel.channel.Publish("", string(channel.Name), false, false, amqp.Publishing{
 		Headers:      message.Message.Headers,
 		DeliveryMode: amqp.Persistent,
 		ContentType:  "application/json",
@@ -138,7 +137,7 @@ func (queue *Queue) Produce(message Message) error {
 	})
 }
 
-func (queue *Queue) ProduceInterface(message interface{}) error {
+func (channel *Channel) ProduceInterface(message interface{}) error {
 
 	b, err := json.Marshal(message)
 	if err != nil {
@@ -146,11 +145,11 @@ func (queue *Queue) ProduceInterface(message interface{}) error {
 	}
 
 	headers := amqp.Table{}
-	if queue.updateHeaders {
-		headers = queue.prepareHeaders(headers)
+	if channel.updateHeaders {
+		headers = channel.prepareHeaders(headers)
 	}
 
-	return queue.channel.Publish("", string(queue.Name), false, false, amqp.Publishing{
+	return channel.channel.Publish("", string(channel.Name), false, false, amqp.Publishing{
 		Headers:      headers,
 		DeliveryMode: amqp.Persistent,
 		ContentType:  "application/json",
@@ -158,7 +157,7 @@ func (queue *Queue) ProduceInterface(message interface{}) error {
 	})
 }
 
-func (queue Queue) prepareHeaders(headers amqp.Table) amqp.Table {
+func (channel Channel) prepareHeaders(headers amqp.Table) amqp.Table {
 
 	if headers == nil {
 		headers = amqp.Table{}
@@ -189,20 +188,20 @@ func (queue Queue) prepareHeaders(headers amqp.Table) amqp.Table {
 	//
 	_, ok = headers[HeaderFirstQueue]
 	if !ok {
-		headers[HeaderFirstQueue] = string(queue.Name)
+		headers[HeaderFirstQueue] = string(channel.Name)
 	}
 
 	//
-	headers[HeaderLastQueue] = string(queue.Name)
+	headers[HeaderLastQueue] = string(channel.Name)
 
 	return headers
 }
 
-func (queue *Queue) Consume() error {
+func (channel *Channel) Consume() error {
 
 	tag := config.Config.Environment.Get() + "-" + config.GetSteamKeyTag()
 
-	msgs, err := queue.channel.Consume(queue.queue.Name, tag, false, false, false, false, nil)
+	msgs, err := channel.channel.Consume(string(channel.Name), tag, false, false, false, false, nil)
 	if err != nil {
 		return err
 	}
@@ -213,21 +212,21 @@ func (queue *Queue) Consume() error {
 		var messages []Message
 
 		for {
-			if !queue.connection.connection.IsClosed() && queue.isOpen {
-				select {
-				case msg := <-msgs:
+			select {
+			case msg, open := <-msgs:
+				if open && !channel.connection.connection.IsClosed() && channel.isOpen {
 					messages = append(messages, Message{
-						Queue:   queue,
+						Channel: *channel,
 						Message: &msg,
 					})
 				}
+			}
 
-				if len(messages) >= queue.batchSize {
+			if len(messages) >= channel.batchSize {
 
-					if queue.handler != nil {
-						queue.handler(messages)
-						messages = nil
-					}
+				if channel.handler != nil {
+					channel.handler(messages)
+					messages = nil
 				}
 			}
 		}

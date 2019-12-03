@@ -11,6 +11,6 @@ func bundleHandler(messages []framework.Message) {
 
 	for _, message := range messages {
 
-		message.SendToQueue(queues[framework.Producer][queueApps])
+		message.SendToQueue(channels[framework.Producer][queueApps])
 	}
 }

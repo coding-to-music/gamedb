@@ -9,7 +9,7 @@ import (
 )
 
 type Message struct {
-	Queue       *Queue
+	Channel     Channel
 	Message     *amqp.Delivery
 	actionTaken bool
 	sync.Mutex
@@ -40,18 +40,18 @@ func (message *Message) ack(multiple bool) {
 	}
 }
 
-func (message Message) SendToQueue(queues ...*Queue) {
+func (message Message) SendToQueue(channels ...Channel) {
 
 	// Send to back of current queue if none specified
-	if len(queues) == 0 {
-		queues = []*Queue{message.Queue}
+	if len(channels) == 0 {
+		channels = []Channel{message.Channel}
 	}
 
 	//
 	var err error
 
-	for _, queue := range queues {
-		err = queue.Produce(message)
+	for _, channel := range channels {
+		err = channel.Produce(message)
 		log.Err(err)
 	}
 

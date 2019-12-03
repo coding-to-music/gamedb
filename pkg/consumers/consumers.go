@@ -27,7 +27,7 @@ const (
 )
 
 var (
-	queues = map[string]map[framework.QueueName]*framework.Queue{
+	channels = map[string]map[framework.QueueName]framework.Channel{
 		framework.Consumer: {},
 		framework.Producer: {},
 	}
@@ -68,11 +68,11 @@ func InitProducers() {
 			updateHeaders = false
 		}
 
-		q, err := framework.NewQueue(connection, k, 10, 1, v, updateHeaders)
+		q, err := framework.NewChannel(connection, k, 10, 1, v, updateHeaders)
 		if err != nil {
 			log.Critical(string(k), err)
 		} else {
-			queues[framework.Producer][k] = q
+			channels[framework.Producer][k] = q
 		}
 	}
 }
@@ -98,13 +98,13 @@ func InitConsumers() {
 				updateHeaders = false
 			}
 
-			q, err := framework.NewQueue(connection, k, 10, 1, v, updateHeaders)
+			q, err := framework.NewChannel(connection, k, 10, 1, v, updateHeaders)
 			if err != nil {
 				log.Critical(string(k), err)
 				continue
 			}
 
-			queues[framework.Consumer][k] = q
+			channels[framework.Consumer][k] = q
 
 			err = q.Consume()
 			if err != nil {
@@ -116,15 +116,15 @@ func InitConsumers() {
 }
 
 func sendToFailQueue(message framework.Message) {
-	message.SendToQueue(queues[framework.Producer][queueFailed])
+	message.SendToQueue(channels[framework.Producer][queueFailed])
 }
 
 func sendToBackOfQueue(message framework.Message) {
-	message.SendToQueue(message.Queue)
+	message.SendToQueue(message.Channel)
 }
 
 func sendToRetryQueue(message framework.Message) {
-	message.SendToQueue(queues[framework.Producer][queueDelay])
+	message.SendToQueue(channels[framework.Producer][queueDelay])
 }
 
 func sendToFirstQueue(message framework.Message) {
@@ -135,5 +135,5 @@ func sendToFirstQueue(message framework.Message) {
 		queue = queueFailed
 	}
 
-	message.SendToQueue(queues[framework.Producer][queue])
+	message.SendToQueue(channels[framework.Producer][queue])
 }

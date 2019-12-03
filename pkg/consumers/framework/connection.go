@@ -23,31 +23,38 @@ type Connection struct {
 	sync.Mutex
 }
 
-func NewConnection(name string, config amqp.Config) (*Connection, error) {
+func NewConnection(name string, config amqp.Config) (c Connection, err error) {
 
-	connection := &Connection{
+	connection := Connection{
 		config:    config,
 		name:      name,
 		closeChan: make(chan *amqp.Error),
 	}
 
-	err := connection.connect()
+	err = connection.connect()
 	if err != nil {
-		return nil, err
+		return c, err
 	}
 
 	go func() {
 		for {
-			var err error
-			select {
-			case err = <-connection.closeChan:
 
-				log.Warning("Rabbit connection closed", err)
+			var err error
+			var open bool
+
+			select {
+			case err, open = <-connection.closeChan:
+
+				if open {
+					log.Warning("Rabbit connection closed", err)
+				} else {
+					log.Warning("Rabbit connection closed")
+				}
 
 				time.Sleep(time.Second * 10)
 
 				err = connection.connect()
-				log.Err(err)
+				log.Err("Connection connecting", err)
 			}
 		}
 	}()
