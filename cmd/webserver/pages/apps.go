@@ -240,8 +240,11 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			var or []string
 			var vals []interface{}
 			for _, v := range tags {
-				or = append(or, "JSON_CONTAINS(tags, ?) = 1")
-				vals = append(vals, "["+v+"]")
+				_, err := strconv.Atoi(v)
+				if err == nil {
+					or = append(or, "JSON_CONTAINS(tags, ?) = 1")
+					vals = append(vals, "["+v+"]")
+				}
 			}
 
 			gorm = gorm.Where(strings.Join(or, " OR "), vals...)
@@ -254,8 +257,11 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			var or []string
 			var vals []interface{}
 			for _, v := range genres {
-				or = append(or, "JSON_CONTAINS(genres, ?) = 1")
-				vals = append(vals, "["+v+"]")
+				_, err := strconv.Atoi(v)
+				if err == nil {
+					or = append(or, "JSON_CONTAINS(genres, ?) = 1")
+					vals = append(vals, "["+v+"]")
+				}
 			}
 
 			gorm = gorm.Where(strings.Join(or, " OR "), vals...)
@@ -268,8 +274,11 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			var or []string
 			var vals []interface{}
 			for _, v := range developers {
-				or = append(or, "JSON_CONTAINS(developers, ?) = 1")
-				vals = append(vals, "["+v+"]")
+				_, err := strconv.Atoi(v)
+				if err == nil {
+					or = append(or, "JSON_CONTAINS(developers, ?) = 1")
+					vals = append(vals, "["+v+"]")
+				}
 			}
 
 			gorm = gorm.Where(strings.Join(or, " OR "), vals...)
@@ -282,8 +291,11 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			var or []string
 			var vals []interface{}
 			for _, v := range publishers {
-				or = append(or, "JSON_CONTAINS(publishers, ?) = 1")
-				vals = append(vals, "["+v+"]")
+				_, err := strconv.Atoi(v)
+				if err == nil {
+					or = append(or, "JSON_CONTAINS(publishers, ?) = 1")
+					vals = append(vals, "["+v+"]")
+				}
 			}
 
 			gorm = gorm.Where(strings.Join(or, " OR "), vals...)
@@ -296,8 +308,11 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			var or []string
 			var vals []interface{}
 			for _, v := range categories {
-				or = append(or, "JSON_CONTAINS(categories, ?) = 1")
-				vals = append(vals, "["+v+"]")
+				_, err := strconv.Atoi(v)
+				if err == nil {
+					or = append(or, "JSON_CONTAINS(categories, ?) = 1")
+					vals = append(vals, "["+v+"]")
+				}
 			}
 
 			gorm = gorm.Where(strings.Join(or, " OR "), vals...)
