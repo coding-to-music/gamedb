@@ -36,8 +36,7 @@ func LogSteamError(err error, interfaces ...interface{}) {
 		// Sleeps on rate limits etc
 		if val, ok := err.(steam.Error); ok {
 
-			if val.Code == 429 {
-				// Rate limit
+			if val.Code == 429 { // Rate limit
 				time.Sleep(time.Second * 30)
 			} else {
 				time.Sleep(time.Second * 5)
@@ -60,6 +59,7 @@ func LogSteamError(err error, interfaces ...interface{}) {
 			"something went wrong",
 			"TLS handshake timeout",
 			"unexpected end of JSON input",
+			"unexpected EOF",
 			"XML syntax error",
 		}
 
