@@ -26,9 +26,8 @@ type Connection struct {
 func NewConnection(name string, config amqp.Config) (c Connection, err error) {
 
 	connection := Connection{
-		config:    config,
-		name:      name,
-		closeChan: make(chan *amqp.Error),
+		config: config,
+		name:   name,
 	}
 
 	err = connection.connect()
@@ -38,22 +37,18 @@ func NewConnection(name string, config amqp.Config) (c Connection, err error) {
 
 	go func() {
 		for {
-
-			var err error
-			var open bool
-
 			select {
-			case err, open = <-connection.closeChan:
+			case amqpErr, open := <-connection.closeChan:
 
 				if open {
-					log.Warning("Rabbit connection closed", err)
+					log.Warning("Rabbit connection closed", amqpErr)
 				} else {
 					log.Warning("Rabbit connection closed")
 				}
 
 				time.Sleep(time.Second * 10)
 
-				err = connection.connect()
+				err := connection.connect()
 				log.Err("Connection connecting", err)
 			}
 		}
@@ -75,11 +70,14 @@ func (connection *Connection) connect() error {
 
 	operation := func() (err error) {
 
+		// Connect
 		connection.connection, err = amqp.DialConfig(config.RabbitDSN(), connection.config)
 		if err != nil {
 			return err
 		}
 
+		// Set new close channel
+		connection.closeChan = make(chan *amqp.Error)
 		_ = connection.connection.NotifyClose(connection.closeChan)
 
 		return err

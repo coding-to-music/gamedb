@@ -37,7 +37,6 @@ func NewChannel(connection Connection, name QueueName, prefetchCount int, batchS
 		Name:          name,
 		prefetchCount: prefetchCount,
 		batchSize:     batchSize,
-		closeChan:     make(chan *amqp.Error),
 		handler:       handler,
 		updateHeaders: updateHeaders,
 	}
@@ -49,22 +48,20 @@ func NewChannel(connection Connection, name QueueName, prefetchCount int, batchS
 
 	go func() {
 		for {
-			var err error
-			// var open bool
 			select {
-			case err, _ = <-channel.closeChan:
+			case amqpErr, open := <-channel.closeChan:
 
-				// if open {
-				// 	log.Warning("Rabbit channel closed", err)
-				// } else {
-				// 	channel.isOpen = false
-				// 	log.Warning("Rabbit channel closed")
-				// }
+				if open {
+					log.Warning("Rabbit channel closed", amqpErr)
+				} else {
+					channel.isOpen = false
+					log.Warning("Rabbit channel closed")
+				}
 
 				time.Sleep(time.Second * 10)
 
-				err = channel.connect()
-				log.Err("Channel connecting", err)
+				err := channel.connect()
+				log.Err("Channel reconnecting", err, log.OptionNoStack)
 			}
 		}
 	}()
@@ -95,11 +92,14 @@ func (channel *Channel) connect() error {
 				return err
 			}
 
+			// Set pre-fetch
 			err = c.Qos(channel.prefetchCount, 0, false)
 			if err != nil {
 				return err
 			}
 
+			// Set new close channel
+			channel.closeChan = make(chan *amqp.Error)
 			_ = c.NotifyClose(channel.closeChan)
 
 			channel.channel = c
