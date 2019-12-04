@@ -157,7 +157,7 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var code = helpers.GetProductCC(r)
 	var filter = bson.D{
-		{"offer_end", bson.M{"$gt": time.Now()}},
+		{Key: "offer_end", Value: bson.M{"$gt": time.Now()}},
 	}
 
 	search := helpers.RegexNonAlphaNumericSpace.ReplaceAllString(query.getSearchString("search"), "")

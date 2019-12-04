@@ -53,7 +53,7 @@ func groupsTrendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Filter
 	var filter = bson.D{
-		{"type", helpers.GroupTypeGroup},
+		{Key: "type", Value: helpers.GroupTypeGroup},
 	}
 	var unfiltered = filter
 

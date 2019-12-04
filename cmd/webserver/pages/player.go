@@ -617,7 +617,10 @@ func playerBadgesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Make filter
-	var filter = bson.D{{"app_id", bson.M{"$gt": 0}}, {"player_id", idx}}
+	var filter = bson.D{
+		{Key: "app_id", Value: bson.M{"$gt": 0}},
+		{Key: "player_id", Value: idx},
+	}
 
 	//
 	var wg sync.WaitGroup

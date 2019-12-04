@@ -436,7 +436,7 @@ func appItemsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var search = query.getSearchString("search")
 
 	filter := bson.D{
-		{"app_id", idx},
+		{Key: "app_id", Value: idx},
 	}
 
 	if len(search) > 1 {
@@ -473,7 +473,7 @@ func appItemsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		total, err = mongo.CountDocuments(mongo.CollectionAppItems, bson.D{{"app_id", idx}}, 0)
+		total, err = mongo.CountDocuments(mongo.CollectionAppItems, bson.D{{Key: "app_id", Value: idx}}, 0)
 		log.Err(err, r)
 	}()
 
@@ -592,7 +592,10 @@ func appTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query.limit(r)
 
-	playerAppFilter := bson.D{{"app_id", idx}, {"app_time", bson.M{"$gt": 0}}}
+	playerAppFilter := bson.D{
+		{Key: "app_id", Value: idx},
+		{Key: "app_time", Value: bson.M{"$gt": 0}},
+	}
 
 	playerApps, err := mongo.GetPlayerAppsByApp(query.getOffset64(), playerAppFilter)
 	if err != nil {

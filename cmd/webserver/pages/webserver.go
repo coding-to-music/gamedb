@@ -667,10 +667,10 @@ func (q DataTablesQuery) getOrderMongo(columns map[string]string, colEdit func(s
 								}
 
 								if dir == "desc" {
-									return bson.D{{col, -1}}
+									return bson.D{{Key: col, Value: -1}}
 								}
 
-								return bson.D{{col, 1}}
+								return bson.D{{Key: col, Value: 1}}
 							}
 						}
 					}

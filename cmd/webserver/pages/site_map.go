@@ -111,7 +111,7 @@ func SiteMapPlayersByLevel(w http.ResponseWriter, r *http.Request) {
 
 	sm := sitemap.NewSitemap()
 
-	players, err := mongo.GetPlayers(0, 1000, bson.D{{"level", -1}}, nil, bson.M{"_id": 1, "persona_name": 1, "updated_at": 1})
+	players, err := mongo.GetPlayers(0, 1000, bson.D{{Key: "level", Value: -1}}, nil, bson.M{"_id": 1, "persona_name": 1, "updated_at": 1})
 	log.Err(err)
 	for _, player := range players {
 		sm.AddLocation(urlBase+player.GetPath(), player.UpdatedAt, sitemap.FrequencyWeekly, 0.9)
@@ -126,7 +126,7 @@ func SiteMapGroups(w http.ResponseWriter, r *http.Request) {
 
 	sm := sitemap.NewSitemap()
 
-	groups, err := mongo.GetGroups(1000, 0, bson.D{{"members", -1}}, bson.D{{"type", helpers.GroupTypeGroup}}, bson.M{"_id": 1, "name": 1, "updated_at": 1})
+	groups, err := mongo.GetGroups(1000, 0, bson.D{{Key: "members", Value: -1}}, bson.D{{Key: "type", Value: helpers.GroupTypeGroup}}, bson.M{"_id": 1, "name": 1, "updated_at": 1})
 	log.Err(err)
 	for _, v := range groups {
 		sm.AddLocation(urlBase+v.GetPath(), v.UpdatedAt, sitemap.FrequencyWeekly, 0.9)
@@ -153,7 +153,7 @@ func SiteMapPlayersByGamesCount(w http.ResponseWriter, r *http.Request) {
 
 	sm := sitemap.NewSitemap()
 
-	players, err := mongo.GetPlayers(0, 1000, bson.D{{"games_count", -1}}, nil, bson.M{"_id": 1, "persona_name": 1, "updated_at": 1})
+	players, err := mongo.GetPlayers(0, 1000, bson.D{{Key: "games_count", Value: -1}}, nil, bson.M{"_id": 1, "persona_name": 1, "updated_at": 1})
 	log.Err(err)
 	for _, player := range players {
 		sm.AddLocation(urlBase+player.GetPath(), player.UpdatedAt, sitemap.FrequencyWeekly, 0.9)

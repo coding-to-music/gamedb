@@ -49,7 +49,7 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var code = helpers.GetProductCC(r)
 
 	var filter = bson.D{
-		{"prod_cc", string(code)},
+		{Key: "prod_cc", Value: string(code)},
 	}
 
 	typex := query.getSearchString("type")
@@ -148,7 +148,7 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		total, err = mongo.CountDocuments(mongo.CollectionProductPrices, bson.D{{"prod_cc", string(code)}}, 0)
+		total, err = mongo.CountDocuments(mongo.CollectionProductPrices, bson.D{{Key: "prod_cc", Value: string(code)}}, 0)
 		log.Err(err, r)
 	}(r)
 

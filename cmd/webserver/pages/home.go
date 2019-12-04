@@ -129,9 +129,9 @@ type homeSpotlight struct {
 func homePricesHandler(w http.ResponseWriter, r *http.Request) {
 
 	var filter = bson.D{
-		{"prod_cc", string(helpers.GetProductCC(r))},
-		{"app_id", bson.M{"$gt": 0}},
-		{"difference", bson.M{"$lt": 0}},
+		{Key: "prod_cc", Value: string(helpers.GetProductCC(r))},
+		{Key: "app_id", Value: bson.M{"$gt": 0}},
+		{Key: "difference", Value: bson.M{"$lt": 0}},
 	}
 
 	priceChanges, err := mongo.GetPrices(0, 15, filter)
@@ -186,12 +186,12 @@ func homeSalesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	filter := bson.D{
-		{"app_type", "game"},
-		{"sub_order", 0},
-		{"offer_end", bson.M{"$gt": time.Now()}},
+		{Key: "app_type", Value: "game"},
+		{Key: "sub_order", Value: 0},
+		{Key: "offer_end", Value: bson.M{"$gt": time.Now()}},
 	}
 
-	sales, err := mongo.GetAllSales(0, 15, filter, bson.D{{sort, order}})
+	sales, err := mongo.GetAllSales(0, 15, filter, bson.D{{Key: sort, Value: order}})
 	if err != nil {
 		log.Err(err)
 	}
@@ -314,7 +314,7 @@ func getPlayersForHome(sort string) (players []mongo.Player, err error) {
 			"comments_count": 1,
 		}
 
-		return mongo.GetPlayers(0, 15, bson.D{{sort, -1}}, bson.D{{sort, bson.M{"$gt": 0}}}, projection)
+		return mongo.GetPlayers(0, 15, bson.D{{Key: sort, Value: -1}}, bson.D{{Key: sort, Value: bson.M{"$gt": 0}}}, projection)
 	})
 
 	return players, err
