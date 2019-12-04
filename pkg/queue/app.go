@@ -341,6 +341,7 @@ func (q appQueue) processMessages(msgs []amqp.Delivery) {
 				memcache.MemcacheAppCategories(app.ID).Key,
 				memcache.MemcacheAppGenres(app.ID).Key,
 				memcache.MemcacheAppDemos(app.ID).Key,
+				memcache.MemcacheAppRelated(app.ID).Key,
 				memcache.MemcacheAppDLC(app.ID).Key,
 				memcache.MemcacheAppDevelopers(app.ID).Key,
 				memcache.MemcacheAppPublishers(app.ID).Key,
@@ -1186,7 +1187,7 @@ func scrapeApp(app *sql.App) (sales []mongo.Sale, err error) {
 			bundleIDs = append(bundleIDs, e.Attr("value"))
 		})
 
-		// Related apps
+		// Related apps - DOESNT WORK - Not in page source
 		c.OnHTML("#recommended_block a[data-ds-appid]", func(e *colly.HTMLElement) {
 			i, err := strconv.Atoi(e.Attr("data-ds-appid"))
 			if err != nil {

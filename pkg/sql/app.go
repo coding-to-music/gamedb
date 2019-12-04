@@ -705,6 +705,31 @@ func (app App) GetGenreIDs() (genres []int, err error) {
 	return genres, err
 }
 
+func (app App) GetRelatedIDs() (apps []int, err error) {
+
+	err = helpers.Unmarshal([]byte(app.RelatedAppIDs), &apps)
+	return apps, err
+}
+
+func (app App) GetRelatedApps() (apps []App, err error) {
+
+	apps = []App{} // Needed for marshalling into type
+
+	var item = memcache.MemcacheAppRelated(app.ID)
+
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &apps, func() (interface{}, error) {
+
+		ids, err := app.GetRelatedIDs()
+		if err != nil {
+			return apps, err
+		}
+
+		return GetAppsByID(ids, []string{"id", "name"})
+	})
+
+	return apps, err
+}
+
 func (app App) GetGenres() (genres []Genre, err error) {
 
 	var item = memcache.MemcacheAppGenres(app.ID)

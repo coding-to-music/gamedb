@@ -157,6 +157,17 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		log.Err(err, r)
 	}()
 
+	// Get related apps
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		t.Related, err = app.GetRelatedApps()
+		log.Err(err, r)
+	}()
+
 	// Get demos
 	wg.Add(1)
 	go func() {
@@ -280,6 +291,7 @@ type appTemplate struct {
 	Common       []pics.KeyValue
 	Config       []pics.KeyValue
 	Demos        []sql.App
+	Related      []sql.App
 	Developers   []sql.Developer
 	DLCs         []sql.App
 	Extended     []pics.KeyValue
