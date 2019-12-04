@@ -181,6 +181,8 @@ func sendChangesWebsocket(changes []*mongo.Change, appMap map[int]string, packag
 // todo, add packages to return
 func sendChangeToDiscord(changes []*mongo.Change, appMap map[int]string, packageMap map[int]string) (err error) {
 
+	return // Disable for now
+
 	if config.IsProd() {
 
 		client, err := discord.GetDiscordBot(config.Config.DiscordChangesBotToken.Get(), true)
