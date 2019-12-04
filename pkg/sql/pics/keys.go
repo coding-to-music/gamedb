@@ -114,6 +114,7 @@ var ConfigKeys = map[string]PicsKey{
 	"steamcontrollerconfigdetails": {FormatType: picsTypeJSON},
 	"steamcontrollertemplateindex": {FormatType: picsTypeBool},
 	"systemprofile":                {FormatType: picsTypeBool},
+	"uselaunchcommandline":         {FormatType: picsTypeBool},
 	"usesfrenemies":                {FormatType: picsTypeBool},
 	"usemms":                       {FormatType: picsTypeBool},
 	"verifyupdates":                {FormatType: picsTypeBool},
