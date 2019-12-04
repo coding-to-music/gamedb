@@ -2,7 +2,6 @@ package queue
 
 import (
 	"encoding/json"
-	"net/http"
 	"path"
 	"sort"
 	"strconv"
@@ -206,7 +205,17 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 
 		defer wg.Done()
 
-		err = mongo.CreatePlayerEvent(&http.Request{}, player.ID, mongo.EventRefresh)
+		user, err := sql.GetUserByKey("steam_id", player.ID, 0)
+		if err == sql.ErrRecordNotFound {
+			return
+		}
+		if err != nil {
+			log.Err(err, message.Message.ID)
+			ackRetry(msg, &message)
+			return
+		}
+
+		err = mongo.CreateUserEvent(nil, user.ID, mongo.EventRefresh)
 		if err != nil {
 			log.Err(err, message.Message.ID)
 			ackRetry(msg, &message)

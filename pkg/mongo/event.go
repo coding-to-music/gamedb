@@ -8,7 +8,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/sql"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -148,28 +147,17 @@ func GetEvents(userID int, offset int64) (events []Event, err error) {
 	return events, cur.Err()
 }
 
-func CreatePlayerEvent(r *http.Request, steamID int64, eventType EventEnum) (err error) {
-
-	user, err := sql.GetUserByKey("steam_id", steamID, 0)
-	if err != nil {
-		if err == sql.ErrRecordNotFound {
-			return nil
-		} else {
-			return err
-		}
-	}
-
-	return CreateUserEvent(r, user.ID, eventType)
-}
-
 func CreateUserEvent(r *http.Request, userID int, eventType EventEnum) (err error) {
 
 	event := Event{}
 	event.CreatedAt = time.Now()
 	event.UserID = userID
 	event.Type = string(eventType)
-	event.UserAgent = r.Header.Get("User-Agent")
-	event.IP = r.RemoteAddr
+
+	if r != nil {
+		event.UserAgent = r.Header.Get("User-Agent")
+		event.IP = r.RemoteAddr
+	}
 
 	_, err = InsertOne(CollectionEvents, event)
 	if err != nil {

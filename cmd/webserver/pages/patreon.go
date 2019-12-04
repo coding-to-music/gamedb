@@ -8,6 +8,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -70,20 +71,29 @@ func saveWebhookToMongo(event string, pwr patreon.Webhook, body []byte) (err err
 
 func saveWebhookEvent(r *http.Request, event mongo.EventEnum, pwr patreon.Webhook) (err error) {
 
-	if pwr.User.Attributes.Email != "" {
-		player := mongo.Player{}
-		err = mongo.FindOne(mongo.CollectionPlayers, bson.D{{Key: "email", Value: pwr.User.Attributes.Email}}, nil, bson.M{"_id": 1}, &player)
-		if err == mongo.ErrNoDocuments || (err == nil && player.ID == 0) {
-			return nil
-		}
-		if err != nil {
-			return err
-		}
-
-		return mongo.CreatePlayerEvent(r, player.ID, mongo.EventPatreonWebhook+"-"+event)
+	email := pwr.User.Attributes.Email
+	if email == "" {
+		return nil
 	}
 
-	return nil
+	player := mongo.Player{}
+	err = mongo.FindOne(mongo.CollectionPlayers, bson.D{{Key: "email", Value: email}}, nil, bson.M{"_id": 1}, &player)
+	if err == mongo.ErrNoDocuments || (err == nil && player.ID == 0) {
+		return nil
+	}
+	if err != nil {
+		return err
+	}
+
+	user, err := sql.GetUserByKey("steam_id", player.ID, 0)
+	if err == sql.ErrRecordNotFound {
+		return nil
+	}
+	if err != nil {
+		return err
+	}
+
+	return mongo.CreateUserEvent(r, user.ID, mongo.EventPatreonWebhook+"-"+event)
 }
 
 func gitHubWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
