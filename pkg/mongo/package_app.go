@@ -22,14 +22,14 @@ type PackageApp struct {
 func (app PackageApp) BSON() bson.D {
 
 	return bson.D{
-		{"_id", app.getKey()},
-		{"package_id", app.PackageID},
-		{"app_id", app.AppID},
-		{"app_icon", app.AppIcon},
-		{"app_name", app.AppName},
-		{"app_type", app.AppType},
-		{"app_platforms", app.AppPlatforms},
-		{"app_dlc_count", app.AppDLCCount},
+		{Key: "_id", Value: app.getKey()},
+		{Key: "package_id", Value: app.PackageID},
+		{Key: "app_id", Value: app.AppID},
+		{Key: "app_icon", Value: app.AppIcon},
+		{Key: "app_name", Value: app.AppName},
+		{Key: "app_type", Value: app.AppType},
+		{Key: "app_platforms", Value: app.AppPlatforms},
+		{Key: "app_dlc_count", Value: app.AppDLCCount},
 	}
 }
 
