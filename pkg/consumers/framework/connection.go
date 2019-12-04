@@ -23,9 +23,9 @@ type Connection struct {
 	sync.Mutex
 }
 
-func NewConnection(name string, config amqp.Config) (c Connection, err error) {
+func NewConnection(name string, config amqp.Config) (c *Connection, err error) {
 
-	connection := Connection{
+	connection := &Connection{
 		config: config,
 		name:   name,
 	}

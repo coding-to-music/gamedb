@@ -5,7 +5,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 )
 
-func bundleHandler(messages []framework.Message) {
+func bundleHandler(messages []*framework.Message) {
 
 	log.Info("bundle handler")
 

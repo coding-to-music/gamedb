@@ -14,12 +14,12 @@ import (
 
 type (
 	QueueName string
-	Handler   func(message []Message)
+	Handler   func(message []*Message)
 )
 
 type Channel struct {
 	Name          QueueName
-	connection    Connection
+	connection    *Connection
 	channel       *amqp.Channel
 	closeChan     chan *amqp.Error
 	handler       Handler
@@ -30,9 +30,9 @@ type Channel struct {
 	sync.Mutex
 }
 
-func NewChannel(connection Connection, name QueueName, prefetchCount int, batchSize int, handler Handler, updateHeaders bool) (c Channel, err error) {
+func NewChannel(connection *Connection, name QueueName, prefetchCount int, batchSize int, handler Handler, updateHeaders bool) (c *Channel, err error) {
 
-	channel := Channel{
+	channel := &Channel{
 		connection:    connection,
 		Name:          name,
 		prefetchCount: prefetchCount,
@@ -122,7 +122,7 @@ func (channel *Channel) connect() error {
 	return backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err) })
 }
 
-func (channel *Channel) Produce(message Message) error {
+func (channel *Channel) Produce(message *Message) error {
 
 	if channel == nil {
 		return errors.New("queue has been removed")
@@ -214,14 +214,14 @@ func (channel *Channel) Consume() error {
 	// In a anon function so can return at anytime
 	go func(msgs <-chan amqp.Delivery) {
 
-		var messages []Message
+		var messages []*Message
 
 		for {
 			select {
 			case msg, open := <-msgs:
 				if open && channel.connection.connection != nil && !channel.connection.connection.IsClosed() && channel.isOpen {
-					messages = append(messages, Message{
-						Channel: *channel,
+					messages = append(messages, &Message{
+						Channel: channel,
 						Message: &msg,
 					})
 				}

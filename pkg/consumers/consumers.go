@@ -27,7 +27,7 @@ const (
 )
 
 var (
-	channels = map[string]map[framework.QueueName]framework.Channel{
+	channels = map[string]map[framework.QueueName]*framework.Channel{
 		framework.Consumer: {},
 		framework.Producer: {},
 	}
@@ -115,19 +115,19 @@ func InitConsumers() {
 	}
 }
 
-func sendToFailQueue(message framework.Message) {
+func sendToFailQueue(message *framework.Message) {
 	message.SendToQueue(channels[framework.Producer][queueFailed])
 }
 
-func sendToBackOfQueue(message framework.Message) {
+func sendToBackOfQueue(message *framework.Message) {
 	message.SendToQueue(message.Channel)
 }
 
-func sendToRetryQueue(message framework.Message) {
+func sendToRetryQueue(message *framework.Message) {
 	message.SendToQueue(channels[framework.Producer][queueDelay])
 }
 
-func sendToFirstQueue(message framework.Message) {
+func sendToFirstQueue(message *framework.Message) {
 
 	queue := message.FirstQueue()
 

@@ -9,7 +9,7 @@ import (
 )
 
 type Message struct {
-	Channel     Channel
+	Channel     *Channel
 	Message     *amqp.Delivery
 	actionTaken bool
 	sync.Mutex
@@ -40,11 +40,11 @@ func (message *Message) ack(multiple bool) {
 	}
 }
 
-func (message Message) SendToQueue(channels ...Channel) {
+func (message *Message) SendToQueue(channels ...*Channel) {
 
 	// Send to back of current queue if none specified
 	if len(channels) == 0 {
-		channels = []Channel{message.Channel}
+		channels = []*Channel{message.Channel}
 	}
 
 	//

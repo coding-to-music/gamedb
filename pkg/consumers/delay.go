@@ -7,7 +7,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/consumers/framework"
 )
 
-func delayHandler(messages []framework.Message) {
+func delayHandler(messages []*framework.Message) {
 
 	for _, message := range messages {
 

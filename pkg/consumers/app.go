@@ -5,7 +5,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 )
 
-func appHandler(messages []framework.Message) {
+func appHandler(messages []*framework.Message) {
 
 	log.Info("app handler")
 

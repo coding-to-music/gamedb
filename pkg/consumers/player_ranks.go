@@ -20,11 +20,10 @@ type PlayerRanksMessage struct {
 }
 
 func (msg PlayerRanksMessage) Produce() error {
-	channel := channels[framework.Producer][queuePlayerRanks]
-	return channel.ProduceInterface(msg)
+	return channels[framework.Producer][queuePlayerRanks].ProduceInterface(msg)
 }
 
-func playerRanksHandler(messages []framework.Message) {
+func playerRanksHandler(messages []*framework.Message) {
 
 	for _, message := range messages {
 
