@@ -1,3 +1,6 @@
 # rabbitmq-go
 
-Handles batching, reconnecting, webapi
+- Batching
+- Reconnecting
+- Exponential backoff
+- Web API
