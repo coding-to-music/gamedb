@@ -46,9 +46,6 @@ if ($appPage.length > 0) {
         if (!to.attr('loaded')) {
             to.attr('loaded', 1);
             switch (to.attr('href')) {
-                case '#media':
-                    loadMedia();
-                    break;
                 case '#news':
                     loadNews();
                     break;
@@ -71,16 +68,12 @@ if ($appPage.length > 0) {
 
         // On leaving tab
         if (from.attr('href') === '#media') {
-            resetVideos();
+            $('video').each(function (index) {
+                $(this)[0].pause();
+                $(this)[0].currentTime = 0;
+            });
         }
     });
-
-    function resetVideos() {
-        $('video').each(function (index) {
-            $(this)[0].pause();
-            $(this)[0].currentTime = 0;
-        });
-    }
 
     // Websockets
     websocketListener('app', function (e) {
@@ -90,77 +83,6 @@ if ($appPage.length > 0) {
             toast(true, 'Click to refresh', 'This app has been updated', -1, 'refresh');
         }
     });
-
-    // Media carousels
-    function loadMedia() {
-
-        $('#carousel1 img, #carousel2 img').each(function (index) {
-            loadImage($(this));
-        });
-
-        const $carousel1 = $('#carousel1');
-        const $carousel2 = $('#carousel2');
-
-        // noinspection JSUnresolvedFunction
-        $carousel1.slick({
-            waitForAnimate: false,
-            arrows: false,
-            autoplay: false,
-            dots: false,
-            asNavFor: $carousel2,
-            adaptiveHeight: true,
-            lazyLoad: 'ondemand',
-        });
-
-        // noinspection JSUnresolvedFunction
-        $carousel2.slick({
-            waitForAnimate: false,
-            arrows: false,
-            slidesToShow: 15,
-            autoplay: false,
-            dots: false,
-            variableWidth: true,
-            asNavFor: $carousel1,
-            focusOnSelect: true,
-            centerMode: true,
-            infinite: true,
-        });
-
-        $carousel1.on('afterChange', function (event, slick, currentSlide) {
-
-            // Stop all videos
-            resetVideos();
-
-            // Auto play current video
-            const $video = $carousel1.find('div[data-slick-index=' + currentSlide + '] video');
-            if ($video.length > 0) {
-                $video[0].play();
-            }
-        });
-
-        $(document).on('keydown', function (e) {
-            if ($('a.active[href="#media"]').length > 0) {
-                if (e.keyCode === 37) {
-                    // noinspection JSUnresolvedFunction
-                    $carousel1.slick('slickPrev');
-                }
-                if (e.keyCode === 39) {
-                    // noinspection JSUnresolvedFunction
-                    $carousel1.slick('slickNext');
-                }
-            }
-        });
-
-        // Fix layout when images lazy load
-        $('#carousel1 img').on('load', function () {
-            $carousel1.slick('setPosition');
-            $carousel2.slick('setPosition');
-        });
-        $('#carousel2 img').on('load', function () {
-            $carousel1.slick('setPosition');
-            $carousel2.slick('setPosition');
-        });
-    }
 
     // News data table
     function loadNews() {

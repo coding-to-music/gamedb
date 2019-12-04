@@ -688,33 +688,16 @@
 
                         {{if or (gt (len .Screenshots) 0) (gt (len .Movies) 0) }}
 
-                            <div id="carousel1">
-                                {{ range $key, $value := .Screenshots }}
-                                    <div>
-                                        <img src="" data-lazy="{{ .PathFull }}" alt="" data-lazy-alt="Media {{ $key }}">
-                                    </div>
-                                {{ end }}
-                                {{ range $key, $value := .Movies }}
-                                    <div>
-                                        <video controls preload="metadata">
-                                            <source src="{{ https .PathFull }}" type="video/webm">
-                                            Sorry, your browser doesn't support embedded videos.
-                                        </video>
-                                    </div>
-                                {{ end }}
-                            </div>
+                            {{ range $key, $value := .Screenshots }}
+                                <img src="" data-lazy="{{ .PathFull }}" alt="" data-lazy-alt="Media {{ $key }}">
+                            {{ end }}
 
-                            <div id="carousel2">
-                                {{ range $key, $value := .Screenshots }}
-                                    <div class="thumb"><img src="" data-lazy="{{ .PathThumbnail }}" alt="" data-lazy-alt="Thumbnail {{ $key }}"></div>
-                                {{ end }}
-                                {{ range $key, $value := .Movies }}
-                                    <div class="thumb">
-                                        <img src="" data-lazy="{{ .PathThumbnail }}" alt="" data-lazy-alt="{{ .Title }}">
-                                        <i class="fas fa-play"></i>
-                                    </div>
-                                {{ end }}
-                            </div>
+                            {{ range $key, $value := .Movies }}
+                                <video controls preload="metadata">
+                                    <source src="{{ https .PathFull }}" type="video/webm">
+                                    Sorry, your browser doesn't support embedded videos.
+                                </video>
+                            {{ end }}
 
                         {{ else }}
 
