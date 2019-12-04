@@ -133,7 +133,7 @@ func (e entry) toText(severity Severity) string {
 
 var (
 	googleClient *logging.Client
-	logger       = l.New(os.Stderr, "", l.Ltime)
+	logger       = l.New(os.Stderr, "", 0)
 	defaultLogs  []LogName
 )
 
