@@ -219,7 +219,7 @@ func (channel *Channel) Consume() error {
 		for {
 			select {
 			case msg, open := <-msgs:
-				if open && !channel.connection.connection.IsClosed() && channel.isOpen {
+				if open && channel.connection.connection != nil && !channel.connection.connection.IsClosed() && channel.isOpen {
 					messages = append(messages, Message{
 						Channel: *channel,
 						Message: &msg,
