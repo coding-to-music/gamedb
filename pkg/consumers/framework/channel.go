@@ -85,6 +85,11 @@ func (channel *Channel) connect() error {
 
 		if channel.channel == nil {
 
+			if channel.connection.connection == nil || channel.connection.connection.IsClosed() {
+				return errors.New("waiting for connecting before channel")
+			}
+
+			// Connect
 			c, err := channel.connection.connection.Channel()
 			if err != nil {
 				return err
