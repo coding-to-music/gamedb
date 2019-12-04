@@ -439,6 +439,17 @@ func FormatPrice(currencyCode steam.CurrencyCode, value int, returnNumber ...boo
 }
 
 var States = map[string]map[string]string{
+	"AT": {
+		"01": "Burgenland",
+		"02": "Karnten",
+		"03": "Niederosterreich",
+		"04": "Oberosterreich",
+		"05": "Salzburg",
+		"06": "Steiermark",
+		"07": "Tirol",
+		"08": "Vorarlberg",
+		"09": "Wien",
+	},
 	"AU": {
 		"ACT": "Australian Capital Territory",
 		"JBT": "Jervis Bay Territory",

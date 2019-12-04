@@ -16,7 +16,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-var CountriesWithStates = []string{"AU", "CA", "FR", "GB", "NZ", "PH", "SI", "US"}
+var CountriesWithStates = []string{"AT", "AU", "CA", "FR", "GB", "NZ", "PH", "SI", "US"}
 
 type RankMetric string
 
