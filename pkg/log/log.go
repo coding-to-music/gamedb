@@ -39,6 +39,8 @@ const (
 	SeverityWarning  Severity = 3
 	SeverityError    Severity = 4
 	SeverityCritical Severity = 5
+
+	OptionNoStack = iota
 )
 
 type LogName string
@@ -89,6 +91,7 @@ type entry struct {
 	logNames  []LogName
 	severity  Severity
 	timestamp time.Time
+	noStack   bool
 }
 
 func (e entry) toText(severity Severity) string {
@@ -121,7 +124,7 @@ func (e entry) toText(severity Severity) string {
 	str := strings.Join(ret, " - ")
 
 	// Stack
-	if severity > 3 {
+	if severity > 3 && !e.noStack {
 		str += "\n" + string(debug.Stack())
 	}
 
@@ -204,7 +207,9 @@ func log(interfaces ...interface{}) {
 		case Service:
 			loggingServices = append(loggingServices, val)
 		case Option:
-			//
+			if val == OptionNoStack {
+				entry.noStack = true
+			}
 		default:
 			entry.texts = append(entry.texts, fmt.Sprint(val))
 		}
