@@ -91,8 +91,9 @@ table.table {
                 vertical-align: middle;
                 min-width: 150px;
                 word-break: break-word;
-                white-space: pre-wrap;
-                line-height: 18px; // For when there are 2 lines of text
+                white-space: normal;
+                line-height: 20px;
+                padding: .75rem 0;
 
                 small {
                     color: #768390;
