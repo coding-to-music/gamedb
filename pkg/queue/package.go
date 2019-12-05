@@ -240,7 +240,7 @@ func updatePackageFromPICS(pack *sql.Package, message packageMessage) (err error
 	pack.BillingType = 0
 	pack.LicenseType = 0
 	pack.Status = 0
-	pack.AppIDs = ""
+	pack.AppIDs = "[]"
 	pack.AppsCount = 0
 	pack.DepotIDs = ""
 	pack.AppItems = ""
@@ -279,14 +279,16 @@ func updatePackageFromPICS(pack *sql.Package, message packageMessage) (err error
 			// Empty
 		case "appids":
 
-			apps := helpers.StringSliceToIntSlice(child.GetChildrenAsSlice())
+			appIDs := helpers.StringSliceToIntSlice(child.GetChildrenAsSlice())
+
+			// mongo.UpdatePackageApps()
 
 			var b []byte
-			b, err = json.Marshal(apps)
+			b, err = json.Marshal(appIDs)
 
 			if err == nil {
 				pack.AppIDs = string(b)
-				pack.AppsCount = len(apps)
+				pack.AppsCount = len(appIDs)
 			}
 
 		case "depotids":
