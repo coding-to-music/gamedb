@@ -138,6 +138,9 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 		db = db.Select([]string{"id", "name", "icon", "platforms", "achievements", "tags"})
 		db = db.Where("id IN (?)", appsSlice)
 		db = db.Where(strings.Join(or, " OR "))
+		db = db.Where("type = ?", "game")
+		db = db.Order("reviews_score DESC")
+		db = db.Limit(500)
 		db = db.Find(&apps)
 		if db.Error != nil {
 			log.Err(err, r)

@@ -37,6 +37,12 @@
         <div class="card">
             <div class="card-body">
 
+                {{ if ge (len .Games) 500 }}
+                    <div class="alert alert-warning" role="alert">
+                        <div>We are only able to show the first 500 games. The games with the lowest review score are hidden.</div>
+                    </div>
+                {{ end }}
+
                 {{if gt (len .Players) 0 }}
 
                     <h5>Players</h5>
