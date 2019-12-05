@@ -93,7 +93,6 @@ table.table {
                 word-break: break-word;
                 white-space: normal;
                 line-height: 20px;
-                padding: .75rem 0;
 
                 small {
                     color: #768390;
@@ -137,6 +136,12 @@ table.table {
 
         img.wide {
             width: auto;
+        }
+
+        div.icon-name {
+            > div.name {
+                padding: .75rem 0;
+            }
         }
     }
 
