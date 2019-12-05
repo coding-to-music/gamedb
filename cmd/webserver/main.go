@@ -35,7 +35,7 @@ func main() {
 		return
 	}
 
-	consumers.InitProducers()
+	consumers.Init(false)
 
 	//
 	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {

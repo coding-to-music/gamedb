@@ -49,8 +49,7 @@ func main() {
 		}
 	}
 
-	consumers.InitProducers()
-	consumers.InitConsumers()
+	consumers.Init(true)
 
 	//
 	helpers.KeepAlive()
