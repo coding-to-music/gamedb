@@ -93,9 +93,11 @@ func (channel *Channel) connect() error {
 			}
 
 			// Set pre-fetch
-			err = c.Qos(channel.prefetchCount, 0, false)
-			if err != nil {
-				return err
+			if channel.prefetchCount > 0 {
+				err = c.Qos(channel.prefetchCount, 0, false)
+				if err != nil {
+					return err
+				}
 			}
 
 			// Set new close channel
