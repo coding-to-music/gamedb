@@ -36,7 +36,7 @@ type App struct {
 	Achievements                  string    `gorm:"not null;column:achievements;type:text"`           // []AppAchievement
 	AchievementsAverageCompletion float64   `gorm:"not null;column:achievements_average_completion"`  //
 	AchievementsCount             int       `gorm:"not null;column:achievements_count"`               //
-	AlbumMetaData                 string    `gorm:"not null;column:albummetadata;type:text"`          // map[string]interface{}
+	AlbumMetaData                 string    `gorm:"not null;column:albummetadata;type:text"`          // AlbumMetaData
 	Background                    string    `gorm:"not null;column:background"`                       //
 	BundleIDs                     string    `gorm:"not null;column:bundle_ids"`                       // []int
 	Categories                    string    `gorm:"not null;column:categories;type:json"`             // []int8
