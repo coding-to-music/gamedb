@@ -71,3 +71,17 @@ func ShortHandNumber(i int64) string {
 func RoundTo(x, unit float64) float64 {
 	return math.Round(x/unit) * unit
 }
+
+func ChunkInts(ints []int, n int) (chunks [][]int) {
+
+	for i := 0; i < len(ints); i += n {
+		end := i + n
+
+		if end > len(ints) {
+			end = len(ints)
+		}
+
+		chunks = append(chunks, ints[i:end])
+	}
+	return chunks
+}
