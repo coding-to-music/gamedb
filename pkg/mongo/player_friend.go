@@ -24,51 +24,51 @@ type PlayerFriend struct {
 	Relationship string    `bson:"relationship"`
 }
 
-func (f PlayerFriend) BSON() bson.D {
+func (friend PlayerFriend) BSON() bson.D {
 	return bson.D{
-		{"_id", f.getKey()},
-		{"player_id", f.PlayerID},
-		{"friend_id", f.FriendID},
-		{"since", f.FriendSince},
-		{"avatar", f.Avatar},
-		{"name", f.Name},
-		{"games", f.Games},
-		{"level", f.Level},
-		{"logged_off", f.LoggedOff},
+		{"_id", friend.getKey()},
+		{"player_id", friend.PlayerID},
+		{"friend_id", friend.FriendID},
+		{"since", friend.FriendSince},
+		{"avatar", friend.Avatar},
+		{"name", friend.Name},
+		{"games", friend.Games},
+		{"level", friend.Level},
+		{"logged_off", friend.LoggedOff},
 	}
 }
 
-func (f PlayerFriend) getKey() (ret interface{}) {
+func (friend PlayerFriend) getKey() (ret interface{}) {
 
-	return strconv.FormatInt(f.PlayerID, 10) + "-" + strconv.FormatInt(f.FriendID, 10)
+	return strconv.FormatInt(friend.PlayerID, 10) + "-" + strconv.FormatInt(friend.FriendID, 10)
 }
 
-func (f PlayerFriend) Scanned() bool {
-	return !f.LoggedOff.IsZero()
+func (friend PlayerFriend) Scanned() bool {
+	return !friend.LoggedOff.IsZero()
 }
 
-func (f PlayerFriend) GetPath() string {
-	return helpers.GetPlayerPath(f.FriendID, f.Name)
+func (friend PlayerFriend) GetPath() string {
+	return helpers.GetPlayerPath(friend.FriendID, friend.Name)
 }
 
-func (f PlayerFriend) GetLoggedOff() string {
-	if f.Scanned() {
-		return f.LoggedOff.Format(helpers.DateYearTime)
+func (friend PlayerFriend) GetLoggedOff() string {
+	if friend.Scanned() {
+		return friend.LoggedOff.Format(helpers.DateYearTime)
 	}
 	return "-"
 }
 
-func (f PlayerFriend) GetFriendSince() string {
-	return f.FriendSince.Format(helpers.DateYearTime)
+func (friend PlayerFriend) GetFriendSince() string {
+	return friend.FriendSince.Format(helpers.DateYearTime)
 }
 
-func (f PlayerFriend) GetName() string {
-	return helpers.GetPlayerName(f.FriendID, f.Name)
+func (friend PlayerFriend) GetName() string {
+	return helpers.GetPlayerName(friend.FriendID, friend.Name)
 }
 
-func (f PlayerFriend) GetLevel() string {
-	if f.Scanned() {
-		return humanize.Comma(int64(f.Level))
+func (friend PlayerFriend) GetLevel() string {
+	if friend.Scanned() {
+		return humanize.Comma(int64(friend.Level))
 	}
 	return "-"
 }

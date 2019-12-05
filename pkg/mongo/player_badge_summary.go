@@ -21,25 +21,25 @@ type PlayerBadgeSummary struct {
 	Badge        PlayerBadge       `bson:"-"`
 }
 
-func (pbs PlayerBadgeSummary) BSON() bson.D {
+func (badge PlayerBadgeSummary) BSON() bson.D {
 
 	return bson.D{
-		{"_id", pbs.ID},
-		{"players", pbs.PlayersCount},
-		{"max_level", pbs.MaxLevel},
-		{"max_level_foil", pbs.MaxLevelFoil},
-		{"leaders", pbs.Leaders},
-		{"leaders_foil", pbs.LeadersFoil},
+		{"_id", badge.ID},
+		{"players", badge.PlayersCount},
+		{"max_level", badge.MaxLevel},
+		{"max_level_foil", badge.MaxLevelFoil},
+		{"leaders", badge.Leaders},
+		{"leaders_foil", badge.LeadersFoil},
 	}
 }
 
-func (pbs PlayerBadgeSummary) GetSpecialLeaders() (ret template.HTML) {
+func (badge PlayerBadgeSummary) GetSpecialLeaders() (ret template.HTML) {
 
-	if len(pbs.Leaders) > 1 {
-		return template.HTML(strconv.Itoa(len(pbs.Leaders))) + " joint firsts"
+	if len(badge.Leaders) > 1 {
+		return template.HTML(strconv.Itoa(len(badge.Leaders))) + " joint firsts"
 	}
 
-	for playerID, playerName := range pbs.Leaders {
+	for playerID, playerName := range badge.Leaders {
 		i, err := strconv.ParseInt(playerID, 10, 64)
 		if err != nil {
 			log.Err(err)
@@ -51,13 +51,13 @@ func (pbs PlayerBadgeSummary) GetSpecialLeaders() (ret template.HTML) {
 	return "None"
 }
 
-func (pbs PlayerBadgeSummary) GetAppLeader(foil bool) (ret template.HTML) {
+func (badge PlayerBadgeSummary) GetAppLeader(foil bool) (ret template.HTML) {
 
 	var leaders map[string]string
 	if foil {
-		leaders = pbs.LeadersFoil
+		leaders = badge.LeadersFoil
 	} else {
-		leaders = pbs.Leaders
+		leaders = badge.Leaders
 	}
 
 	for playerID, playerName := range leaders {

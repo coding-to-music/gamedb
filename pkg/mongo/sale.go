@@ -39,64 +39,64 @@ type Sale struct {
 	SaleName             string                  `bson:"offer_name"`
 }
 
-func (offer Sale) BSON() bson.D {
+func (sale Sale) BSON() bson.D {
 
 	return bson.D{
-		{"_id", offer.GetKey()},
-		{"sub_id", offer.SubID},
-		{"sub_order", offer.SubOrder},
-		{"app_id", offer.AppID},
-		{"app_name", offer.AppName},
-		{"app_icon", offer.AppIcon},
-		{"app_rating", offer.AppRating},
-		{"app_date", offer.AppReleaseDate},
-		{"app_prices", offer.AppPrices},
-		{"app_lowest_price", offer.AppLowestPrice},
-		{"app_players", offer.AppPlayersWeek},
-		{"app_categories", offer.AppCategories},
-		{"app_type", offer.AppType},
-		{"app_platforms", offer.AppPlatforms},
-		{"app_tags", offer.AppTags},
-		{"offer_start", offer.SaleStart},
-		{"offer_end", offer.SaleEnd},
-		{"offer_end_estimate", offer.SaleEndEstimate},
-		{"offer_type", offer.SaleType},
-		{"offer_percent", offer.SalePercent},
-		{"offer_name", offer.SaleName},
+		{"_id", sale.GetKey()},
+		{"sub_id", sale.SubID},
+		{"sub_order", sale.SubOrder},
+		{"app_id", sale.AppID},
+		{"app_name", sale.AppName},
+		{"app_icon", sale.AppIcon},
+		{"app_rating", sale.AppRating},
+		{"app_date", sale.AppReleaseDate},
+		{"app_prices", sale.AppPrices},
+		{"app_lowest_price", sale.AppLowestPrice},
+		{"app_players", sale.AppPlayersWeek},
+		{"app_categories", sale.AppCategories},
+		{"app_type", sale.AppType},
+		{"app_platforms", sale.AppPlatforms},
+		{"app_tags", sale.AppTags},
+		{"offer_start", sale.SaleStart},
+		{"offer_end", sale.SaleEnd},
+		{"offer_end_estimate", sale.SaleEndEstimate},
+		{"offer_type", sale.SaleType},
+		{"offer_percent", sale.SalePercent},
+		{"offer_name", sale.SaleName},
 	}
 }
 
-func (offer Sale) GetKey() (ret string) {
-	return strconv.Itoa(offer.AppID) + "-" + strconv.Itoa(offer.SubID)
+func (sale Sale) GetKey() (ret string) {
+	return strconv.Itoa(sale.AppID) + "-" + strconv.Itoa(sale.SubID)
 }
 
-func (offer Sale) GetType() string {
-	return strings.Title(offer.SaleType)
+func (sale Sale) GetType() string {
+	return strings.Title(sale.SaleType)
 }
 
-func (offer Sale) GetOfferName() string {
-	return strings.TrimPrefix(offer.SaleName, "Buy ")
+func (sale Sale) GetOfferName() string {
+	return strings.TrimPrefix(sale.SaleName, "Buy ")
 }
 
-func (offer Sale) GetAppRating() string {
-	if offer.AppRating == 0 {
+func (sale Sale) GetAppRating() string {
+	if sale.AppRating == 0 {
 		return "-"
 	} else {
-		return helpers.FloatToString(offer.AppRating, 1) + "%"
+		return helpers.FloatToString(sale.AppRating, 1) + "%"
 	}
 }
 
-func (offer Sale) GetPriceInt() string {
-	if offer.AppRating == 0 {
+func (sale Sale) GetPriceInt() string {
+	if sale.AppRating == 0 {
 		return "-"
 	} else {
-		return helpers.FloatToString(offer.AppRating, 1) + "%"
+		return helpers.FloatToString(sale.AppRating, 1) + "%"
 	}
 }
 
-func (offer Sale) GetPriceString(code steam.ProductCC) string {
+func (sale Sale) GetPriceString(code steam.ProductCC) string {
 
-	priceInt, ok := offer.AppPrices[code]
+	priceInt, ok := sale.AppPrices[code]
 	if ok {
 		cc := helpers.GetProdCC(code)
 		return helpers.FormatPrice(cc.CurrencyCode, priceInt)
@@ -106,14 +106,14 @@ func (offer Sale) GetPriceString(code steam.ProductCC) string {
 }
 
 // 0:not lowest - 1:match lowest - 2:lowest ever
-func (offer Sale) IsLowest(code steam.ProductCC) int {
+func (sale Sale) IsLowest(code steam.ProductCC) int {
 
-	price, ok := offer.AppPrices[code]
+	price, ok := sale.AppPrices[code]
 	if !ok {
 		return 0
 	}
 
-	lowestPrice, ok := offer.AppLowestPrice[code]
+	lowestPrice, ok := sale.AppLowestPrice[code]
 	if !ok {
 		return 0
 	}

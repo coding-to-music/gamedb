@@ -19,23 +19,23 @@ type PlayerRecentApp struct {
 	Logo            string `bson:"logo"`
 }
 
-func (g PlayerRecentApp) BSON() bson.D {
+func (app PlayerRecentApp) BSON() bson.D {
 
 	return bson.D{
-		{"_id", g.getKey()},
-		{"player_id", g.PlayerID},
-		{"app_id", g.AppID},
-		{"name", g.AppName},
-		{"playtime_2_weeks", g.PlayTime2Weeks},
-		{"playtime_forever", g.PlayTimeForever},
-		{"icon", g.Icon},
-		{"logo", g.Logo},
+		{"_id", app.getKey()},
+		{"player_id", app.PlayerID},
+		{"app_id", app.AppID},
+		{"name", app.AppName},
+		{"playtime_2_weeks", app.PlayTime2Weeks},
+		{"playtime_forever", app.PlayTimeForever},
+		{"icon", app.Icon},
+		{"logo", app.Logo},
 	}
 }
 
-func (g PlayerRecentApp) getKey() (ret interface{}) {
+func (app PlayerRecentApp) getKey() (ret interface{}) {
 
-	return strconv.FormatInt(g.PlayerID, 10) + "-" + strconv.Itoa(g.AppID)
+	return strconv.FormatInt(app.PlayerID, 10) + "-" + strconv.Itoa(app.AppID)
 }
 
 func DeleteRecentApps(playerID int64, apps []int) (err error) {

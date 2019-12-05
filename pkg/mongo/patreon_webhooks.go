@@ -23,25 +23,25 @@ type PatreonWebhook struct {
 	DataPledgeRelationshipStart time.Time `bson:"pledge_relationship_start"`
 }
 
-func (pw PatreonWebhook) BSON() bson.D {
+func (webhook PatreonWebhook) BSON() bson.D {
 
 	return bson.D{
-		{"created_at", pw.CreatedAt},
-		{"request_body", pw.RequestBody},
-		{"event", pw.Event},
-		{"user_id", pw.UserID},
-		{"user_email", pw.UserEmail},
-		{"data_lifetime_support_cents", pw.DataLifetimeSupportCents},
-		{"data_patron_status", pw.DataPatronStatus},
-		{"data_pledge_amount_cents", pw.DataPledgeAmountCents},
-		{"data_pledge_cap_amount_cents", pw.DataPledgeCapAmountCents},
-		{"data_pledge_relationship_start", pw.DataPledgeRelationshipStart},
+		{"created_at", webhook.CreatedAt},
+		{"request_body", webhook.RequestBody},
+		{"event", webhook.Event},
+		{"user_id", webhook.UserID},
+		{"user_email", webhook.UserEmail},
+		{"data_lifetime_support_cents", webhook.DataLifetimeSupportCents},
+		{"data_patron_status", webhook.DataPatronStatus},
+		{"data_pledge_amount_cents", webhook.DataPledgeAmountCents},
+		{"data_pledge_cap_amount_cents", webhook.DataPledgeCapAmountCents},
+		{"data_pledge_relationship_start", webhook.DataPledgeRelationshipStart},
 	}
 }
 
-func (pw PatreonWebhook) Raw() (raw patreon.Webhook, err error) {
+func (webhook PatreonWebhook) Raw() (raw patreon.Webhook, err error) {
 
-	err = helpers.Unmarshal([]byte(pw.RequestBody), &raw)
+	err = helpers.Unmarshal([]byte(webhook.RequestBody), &raw)
 	return raw, err
 }
 

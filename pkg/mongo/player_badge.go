@@ -34,85 +34,85 @@ type PlayerBadge struct {
 	PlayerIcon          string    `bson:"player_icon"`
 }
 
-func (pb PlayerBadge) BSON() bson.D {
+func (badge PlayerBadge) BSON() bson.D {
 
 	return bson.D{
-		{"_id", pb.getKey()},
-		{"app_id", pb.AppID},
-		{"app_name", pb.AppName},
-		{"badge_completion_time", pb.BadgeCompletionTime},
-		{"badge_foil", pb.BadgeFoil},
-		{"badge_icon", pb.BadgeIcon},
-		{"badge_id", pb.BadgeID},
-		{"badge_level", pb.BadgeLevel},
-		{"badge_scarcity", pb.BadgeScarcity},
-		{"badge_xp", pb.BadgeXP},
-		{"player_id", pb.PlayerID},
-		{"player_icon", pb.PlayerIcon},
-		{"player_name", pb.PlayerName},
+		{"_id", badge.getKey()},
+		{"app_id", badge.AppID},
+		{"app_name", badge.AppName},
+		{"badge_completion_time", badge.BadgeCompletionTime},
+		{"badge_foil", badge.BadgeFoil},
+		{"badge_icon", badge.BadgeIcon},
+		{"badge_id", badge.BadgeID},
+		{"badge_level", badge.BadgeLevel},
+		{"badge_scarcity", badge.BadgeScarcity},
+		{"badge_xp", badge.BadgeXP},
+		{"player_id", badge.PlayerID},
+		{"player_icon", badge.PlayerIcon},
+		{"player_name", badge.PlayerName},
 	}
 }
 
-func (pb PlayerBadge) getKey() string {
-	return strconv.FormatInt(pb.PlayerID, 10) + "-" + strconv.Itoa(pb.AppID) + "-" + strconv.Itoa(pb.BadgeID) + "-" + strconv.FormatBool(pb.BadgeFoil)
+func (badge PlayerBadge) getKey() string {
+	return strconv.FormatInt(badge.PlayerID, 10) + "-" + strconv.Itoa(badge.AppID) + "-" + strconv.Itoa(badge.BadgeID) + "-" + strconv.FormatBool(badge.BadgeFoil)
 }
 
-func (pb PlayerBadge) IsSpecial() bool {
-	return pb.AppID == 0
+func (badge PlayerBadge) IsSpecial() bool {
+	return badge.AppID == 0
 }
 
-func (pb PlayerBadge) GetUniqueID() int {
-	if pb.IsSpecial() {
-		return pb.BadgeID
+func (badge PlayerBadge) GetUniqueID() int {
+	if badge.IsSpecial() {
+		return badge.BadgeID
 	}
-	return pb.AppID
+	return badge.AppID
 }
 
-func (pb PlayerBadge) GetName() string {
-	return pb.BadgeName
+func (badge PlayerBadge) GetName() string {
+	return badge.BadgeName
 }
 
-func (pb PlayerBadge) GetPath() string {
-	if pb.IsSpecial() {
-		return "/badges/" + strconv.Itoa(pb.BadgeID) + "/" + slug.Make(pb.BadgeName)
+func (badge PlayerBadge) GetPath() string {
+	if badge.IsSpecial() {
+		return "/badges/" + strconv.Itoa(badge.BadgeID) + "/" + slug.Make(badge.BadgeName)
 	}
-	return "/badges/" + strconv.Itoa(pb.AppID) + "/" + slug.Make(pb.BadgeName)
+	return "/badges/" + strconv.Itoa(badge.AppID) + "/" + slug.Make(badge.BadgeName)
 }
 
-func (pb PlayerBadge) GetPlayerPath() string {
-	return helpers.GetPlayerPath(pb.PlayerID, pb.PlayerName) + "#badges"
+func (badge PlayerBadge) GetPlayerPath() string {
+	return helpers.GetPlayerPath(badge.PlayerID, badge.PlayerName) + "#badges"
 }
 
-func (pb PlayerBadge) GetTimeFormatted() string {
-	return pb.BadgeCompletionTime.Format(helpers.DateYearTime)
+func (badge PlayerBadge) GetTimeFormatted() string {
+	return badge.BadgeCompletionTime.Format(helpers.DateYearTime)
 }
 
-func (pb PlayerBadge) GetAppPath() string {
-	return helpers.GetAppPath(pb.AppID, pb.AppName)
+func (badge PlayerBadge) GetAppPath() string {
+	return helpers.GetAppPath(badge.AppID, badge.AppName)
 }
 
-func (pb PlayerBadge) GetAppName() string {
-	if pb.AppID == 0 {
+func (badge PlayerBadge) GetAppName() string {
+	if badge.AppID == 0 {
 		return "Special Badge"
 	}
-	return helpers.GetAppName(pb.AppID, pb.AppName)
+	return helpers.GetAppName(badge.AppID, badge.AppName)
 }
 
-func (pb PlayerBadge) GetBadgeIcon() string {
+func (badge PlayerBadge) GetBadgeIcon() string {
 
-	if pb.BadgeIcon == "" {
+	if badge.BadgeIcon == "" {
 		return helpers.DefaultAppIcon
 	}
 
-	if pb.AppID > 0 {
-		return eventImageBase + "/" + strconv.Itoa(pb.AppID) + "/" + pb.BadgeIcon + ".png"
+	if badge.AppID > 0 {
+		return eventImageBase + "/" + strconv.Itoa(badge.AppID) + "/" + badge.BadgeIcon + ".png"
 	}
 
-	return specialImageBase + pb.BadgeIcon
+	return specialImageBase + badge.BadgeIcon
 }
 
-func (pb PlayerBadge) GetPlayerIcon() string {
-	return helpers.GetPlayerAvatar(pb.PlayerIcon)
+func (badge PlayerBadge) GetPlayerIcon() string {
+	return helpers.GetPlayerAvatar(badge.PlayerIcon)
 }
 
 func UpdatePlayerBadges(badges []PlayerBadge) (err error) {

@@ -19,22 +19,22 @@ type Stat struct {
 	MeanPlayers int                `bson:"mean_players"`
 }
 
-func (t Stat) BSON() bson.D {
+func (stat Stat) BSON() bson.D {
 
-	t.UpdatedAt = time.Now()
-	if t.CreatedAt.IsZero() {
-		t.CreatedAt = time.Now()
+	stat.UpdatedAt = time.Now()
+	if stat.CreatedAt.IsZero() {
+		stat.CreatedAt = time.Now()
 	}
 
 	return bson.D{
-		{"_id", t.ID},
-		{"created_at", t.CreatedAt},
-		{"updated_at", t.UpdatedAt},
-		{"name", t.Name},
-		{"apps", t.Apps},
-		{"mean_price", t.MeanPrice},
-		{"mean_score", t.MeanScore},
-		{"mean_players", t.MeanPlayers},
+		{"_id", stat.ID},
+		{"created_at", stat.CreatedAt},
+		{"updated_at", stat.UpdatedAt},
+		{"name", stat.Name},
+		{"apps", stat.Apps},
+		{"mean_price", stat.MeanPrice},
+		{"mean_score", stat.MeanScore},
+		{"mean_players", stat.MeanPlayers},
 	}
 }
 

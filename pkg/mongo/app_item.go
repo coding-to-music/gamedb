@@ -40,91 +40,91 @@ type AppItem struct {
 	WorkshopID       int64      `bson:"workshop_id"`
 }
 
-func (a AppItem) BSON() bson.D {
+func (item AppItem) BSON() bson.D {
 
 	return bson.D{
-		{"_id", a.getKey()},
-		{"app_id", a.AppID},
-		{"bundle", a.Bundle},
-		{"commodity", a.Commodity},
-		{"date_created", a.DateCreated},
-		{"description", a.Description},
-		{"display_type", a.DisplayType},
-		{"drop_interval", a.DropInterval},
-		{"drop_max_per_window", a.DropMaxPerWindow},
-		{"exchange", a.Exchange},
-		{"hash", a.Hash},
-		{"icon_url", a.IconURL},
-		{"icon_url_large", a.IconURLLarge},
-		{"item_def_id", a.ItemDefID},
-		{"item_quality", a.ItemQuality},
-		{"marketable", a.Marketable},
-		{"modified", a.Modified},
-		{"name", a.Name},
-		{"price", a.Price},
-		{"promo", a.Promo},
-		{"quantity", a.Quantity},
-		{"tags", a.Tags},
-		{"timestamp", a.Timestamp},
-		{"tradable", a.Tradable},
-		{"type", a.Type},
-		{"workshop_id", a.WorkshopID},
+		{"_id", item.getKey()},
+		{"app_id", item.AppID},
+		{"bundle", item.Bundle},
+		{"commodity", item.Commodity},
+		{"date_created", item.DateCreated},
+		{"description", item.Description},
+		{"display_type", item.DisplayType},
+		{"drop_interval", item.DropInterval},
+		{"drop_max_per_window", item.DropMaxPerWindow},
+		{"exchange", item.Exchange},
+		{"hash", item.Hash},
+		{"icon_url", item.IconURL},
+		{"icon_url_large", item.IconURLLarge},
+		{"item_def_id", item.ItemDefID},
+		{"item_quality", item.ItemQuality},
+		{"marketable", item.Marketable},
+		{"modified", item.Modified},
+		{"name", item.Name},
+		{"price", item.Price},
+		{"promo", item.Promo},
+		{"quantity", item.Quantity},
+		{"tags", item.Tags},
+		{"timestamp", item.Timestamp},
+		{"tradable", item.Tradable},
+		{"type", item.Type},
+		{"workshop_id", item.WorkshopID},
 	}
 }
 
-func (a AppItem) getKey() string {
-	return strconv.Itoa(a.AppID) + "-" + strconv.Itoa(a.ItemDefID)
+func (item AppItem) getKey() string {
+	return strconv.Itoa(item.AppID) + "-" + strconv.Itoa(item.ItemDefID)
 }
 
-func (a AppItem) GetType() string {
+func (item AppItem) GetType() string {
 
-	switch a.Type {
+	switch item.Type {
 	default:
-		return strings.Title(a.Type)
+		return strings.Title(item.Type)
 	}
 }
 
-func (a *AppItem) SetTags(tags string) {
+func (item *AppItem) SetTags(tags string) {
 	if tags != "" {
 		split := strings.Split(tags, ";")
 		for _, v := range split {
 			split2 := strings.Split(v, ":")
 			if len(split2) == 2 {
-				a.Tags = append(a.Tags, []string{split2[0], split2[1]})
+				item.Tags = append(item.Tags, []string{split2[0], split2[1]})
 			} else {
-				log.Warning(a.AppID, "weird app item tags")
+				log.Warning(item.AppID, "weird app item tags")
 			}
 		}
 	}
 }
 
-func (a *AppItem) SetExchange(exchange string) {
+func (item *AppItem) SetExchange(exchange string) {
 
-	a.Exchange = []string{}
+	item.Exchange = []string{}
 
 	split := strings.Split(exchange, ";")
-	a.Exchange = append(a.Exchange, split...)
+	item.Exchange = append(item.Exchange, split...)
 }
 
-func (a *AppItem) Link() string {
-	if !a.Marketable {
+func (item *AppItem) Link() string {
+	if !item.Marketable {
 		return ""
 	}
-	return "https://steamcommunity.com/market/listings/" + strconv.Itoa(a.AppID) + "/" + url.PathEscape(a.Name)
+	return "https://steamcommunity.com/market/listings/" + strconv.Itoa(item.AppID) + "/" + url.PathEscape(item.Name)
 }
 
-func (a AppItem) ShortDescription() string {
-	return helpers.TruncateString(a.Description, 150, "...")
+func (item AppItem) ShortDescription() string {
+	return helpers.TruncateString(item.Description, 150, "...")
 }
 
-func (a *AppItem) Image(size int, crop bool) string {
+func (item *AppItem) Image(size int, crop bool) string {
 
-	if a.IconURL == "" {
+	if item.IconURL == "" {
 		return ""
 	}
 
 	params := url.Values{}
-	params.Set("url", a.IconURL)
+	params.Set("url", item.IconURL)
 	params.Set("w", strconv.Itoa(size))
 	params.Set("h", strconv.Itoa(size))
 	if crop {

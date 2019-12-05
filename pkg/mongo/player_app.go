@@ -22,54 +22,54 @@ type PlayerApp struct {
 	AppPriceHour map[string]float64 `bson:"app_prices_hour"`
 }
 
-func (pa PlayerApp) BSON() bson.D {
+func (app PlayerApp) BSON() bson.D {
 
 	var prices = bson.M{}
-	for k, v := range pa.AppPrices {
+	for k, v := range app.AppPrices {
 		prices[k] = v
 	}
 
 	var pricesHour = bson.M{}
-	for k, v := range pa.AppPriceHour {
+	for k, v := range app.AppPriceHour {
 		pricesHour[k] = v
 	}
 
 	return bson.D{
-		{"_id", pa.getKey()},
-		{"player_id", pa.PlayerID},
-		{"app_id", pa.AppID},
-		{"app_name", pa.AppName},
-		{"app_icon", pa.AppIcon},
-		{"app_time", pa.AppTime},
+		{"_id", app.getKey()},
+		{"player_id", app.PlayerID},
+		{"app_id", app.AppID},
+		{"app_name", app.AppName},
+		{"app_icon", app.AppIcon},
+		{"app_time", app.AppTime},
 		{"app_prices", prices},
 		{"app_prices_hour", pricesHour},
 	}
 }
 
-func (pa PlayerApp) getKey() string {
-	return strconv.FormatInt(pa.PlayerID, 10) + "-" + strconv.Itoa(pa.AppID)
+func (app PlayerApp) getKey() string {
+	return strconv.FormatInt(app.PlayerID, 10) + "-" + strconv.Itoa(app.AppID)
 }
 
-func (pa PlayerApp) GetPath() string {
-	return helpers.GetAppPath(pa.AppID, pa.AppName)
+func (app PlayerApp) GetPath() string {
+	return helpers.GetAppPath(app.AppID, app.AppName)
 }
 
-func (pa PlayerApp) GetIcon() string {
+func (app PlayerApp) GetIcon() string {
 
-	if pa.AppIcon == "" {
+	if app.AppIcon == "" {
 		return "/assets/img/no-player-image.jpg"
 	}
-	return "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/" + strconv.Itoa(pa.AppID) + "/" + pa.AppIcon + ".jpg"
+	return "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/" + strconv.Itoa(app.AppID) + "/" + app.AppIcon + ".jpg"
 }
 
-func (pa PlayerApp) GetTimeNice() string {
+func (app PlayerApp) GetTimeNice() string {
 
-	return helpers.GetTimeShort(pa.AppTime, 2)
+	return helpers.GetTimeShort(app.AppTime, 2)
 }
 
-func (pa PlayerApp) GetPriceFormatted(code steam.ProductCC) string {
+func (app PlayerApp) GetPriceFormatted(code steam.ProductCC) string {
 
-	val, ok := pa.AppPrices[string(code)]
+	val, ok := app.AppPrices[string(code)]
 	if ok {
 		return helpers.FormatPrice(helpers.GetProdCC(code).CurrencyCode, val)
 	} else {
@@ -77,9 +77,9 @@ func (pa PlayerApp) GetPriceFormatted(code steam.ProductCC) string {
 	}
 }
 
-func (pa PlayerApp) GetPriceHourFormatted(code steam.ProductCC) string {
+func (app PlayerApp) GetPriceHourFormatted(code steam.ProductCC) string {
 
-	val, ok := pa.AppPriceHour[string(code)]
+	val, ok := app.AppPriceHour[string(code)]
 	if ok {
 		if val < 0 {
 			return "∞"
