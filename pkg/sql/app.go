@@ -17,6 +17,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql/pics"
 	"github.com/golang/snappy"
 	"github.com/jinzhu/gorm"
@@ -111,6 +112,12 @@ func (app *App) BeforeCreate(scope *gorm.Scope) error {
 }
 
 func (app *App) BeforeSave(scope *gorm.Scope) error {
+
+	err := app.SaveToMongo()
+	if err != nil {
+		return err
+	}
+
 	return app.Before(scope)
 }
 
@@ -202,6 +209,86 @@ func (app *App) Before(scope *gorm.Scope) error {
 	}
 
 	return nil
+}
+
+// Sync sql apps to mongo apps
+func (app App) SaveToMongo() error {
+
+	mApp := mongo.App{}
+	// m.Achievements = app.Achievements
+	// m.AchievementsAverageCompletion = app.AchievementsAverageCompletion
+	// m.AchievementsCount = app.AchievementsCount
+	// m.AlbumMetaData = app.AlbumMetaData
+	// m.Background = app.Background
+	// m.BundleIDs = app.BundleIDs
+	// m.Categories = app.GetCategoryIDs()
+	// m.ChangeNumber = app.ChangeNumber
+	// m.ChangeNumberDate = app.ChangeNumberDate
+	// m.ClientIcon = app.ClientIcon
+	// m.ComingSoon = app.ComingSoon
+	// m.Common = app.Common
+	// m.Config = app.Config
+	// m.CreatedAt = app.CreatedAt
+	// m.DemoIDs, _ = app.GetDemoIDs()
+	// m.Depots = app.Depots
+	// m.Developers, _ = app.GetDeveloperIDs()
+	// m.DLC, _ = app.GetDLCIDs()
+	// m.DLCCount = app.DLCCount
+	// m.Extended = app.Extended
+	// m.GameID = app.GameID
+	// m.GameName = app.GameName
+	// m.Genres, _ = app.GetGenreIDs()
+	// m.GroupID = app.GroupID
+	// m.GroupFollowers = app.GroupFollowers
+	// m.Homepage = app.Homepage
+	// m.Icon = app.Icon
+	mApp.ID = app.ID
+	// m.Install = app.Install
+	// m.IsFree = app.IsFree
+	// m.Items = app.Items
+	// m.ItemsDigest = app.ItemsDigest
+	// m.Launch = app.Launch
+	// m.Localization = app.Localization
+	// m.Logo = app.Logo
+	// m.MetacriticScore = app.MetacriticScore
+	// m.MetacriticURL = app.MetacriticURL
+	// m.Movies = app.Movies
+	// m.Name = app.Name
+	// m.NewsIDs, _ = app.GetNewsIDs()
+	// m.Packages = app.GetPackageIDs()
+	// m.Platforms = app.GetPlatforms()
+	// m.PlayerAverageWeek = app.PlayerAverageWeek
+	// m.PlayerPeakAllTime = app.PlayerPeakAllTime
+	// m.PlayerPeakWeek = app.PlayerPeakWeek
+	// m.PlayerTrend = app.PlayerTrend
+	// m.PlaytimeAverage = app.PlaytimeAverage
+	// m.PlaytimeTotal = app.PlaytimeTotal
+	// m.Prices = app.Prices
+	// m.PublicOnly = app.PublicOnly
+	// m.Publishers, _ = app.GetPublisherIDs()
+	// m.RelatedAppIDs, _ = app.GetRelatedIDs()
+	// m.ReleaseDate = app.ReleaseDate
+	// m.ReleaseDateUnix = app.ReleaseDateUnix
+	// m.ReleaseState = app.ReleaseState
+	// m.Reviews = app.Reviews
+	// m.ReviewsScore = app.ReviewsScore
+	// m.Screenshots = app.Screenshots
+	// m.ShortDescription = app.ShortDescription
+	// m.Stats = app.Stats
+	// m.SteamSpy = app.SteamSpy
+	// m.SystemRequirements = app.SystemRequirements
+	// m.Tags = app.GetTagIDs()
+	// m.TwitchID = app.TwitchID
+	// m.TwitchURL = app.TwitchURL
+	// m.Type = app.Type
+	// m.UFS = app.UFS
+	// m.UpdatedAt = app.UpdatedAt
+	// m.Version = app.Version
+	// m.WishlistAvgPosition = app.WishlistAvgPosition
+	// m.WishlistCount = app.WishlistCount
+
+	return nil
+	return mApp.Save()
 }
 
 func (app App) GetID() int {
