@@ -1143,20 +1143,33 @@ func GetAppsByID(ids []int, columns []string) (apps []App, err error) {
 		return apps, nil
 	}
 
-	ids = helpers.Unique(ids)
-
 	db, err := GetMySQLClient()
 	if err != nil {
 		return apps, err
 	}
 
-	if len(columns) > 0 {
-		db = db.Select(columns)
+	ids = helpers.Unique(ids)
+
+	chunks := helpers.ChunkInts(ids, 100)
+	for _, chunk := range chunks {
+
+		db = db.New()
+
+		if len(columns) > 0 {
+			db = db.Select(columns)
+		}
+
+		var appsChunk []App
+		db = db.Where("id IN (?)", chunk).Find(&appsChunk)
+		if db.Error != nil {
+			log.Err(db.Error)
+			return apps, db.Error
+		}
+
+		apps = append(apps, appsChunk...)
 	}
 
-	db.Where("id IN (?)", ids).Find(&apps)
-
-	return apps, db.Error
+	return apps, nil
 }
 
 func GetAppsWithColumnDepth(column string, depth int, columns []string) (apps []App, err error) {
