@@ -114,7 +114,7 @@ func (app App) BSON() bson.D {
 		{"group_followers", app.GroupFollowers},
 		{"homepage", app.Homepage},
 		{"icon", app.Icon},
-		{"id", app.ID},
+		{"_id", app.ID},
 		{"install", app.Install},
 		{"is_free", app.IsFree},
 		{"items", app.Items},
