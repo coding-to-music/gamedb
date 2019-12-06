@@ -719,9 +719,11 @@
                                     <li class="nav-item">
                                         <a class="nav-link nav-link-small active" data-toggle="tab" href="#dev-details" role="tab">Details</a>
                                     </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-options" role="tab">Options</a>
-                                    </li>
+                                    {{ if or (gt (len .Extended) 0) (gt (len .Common) 0) (gt (len .UFS) 0) (gt (len .Config) 0) }}
+                                        <li class="nav-item">
+                                            <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-options" role="tab">Options</a>
+                                        </li>
+                                    {{ end }}
                                     {{ if gt (len .App.GetInstall) 0}}
                                         <li class="nav-item">
                                             <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-install" role="tab">Install</a>
