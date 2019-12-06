@@ -11,77 +11,77 @@ import (
 var ErrInvalidAppID = errors.New("invalid app id")
 
 type App struct {
-	Achievements                  string                 `gorm:"achievements"`                    // []AppAchievement
-	AchievementsAverageCompletion float64                `gorm:"achievements_average_completion"` //
-	AchievementsCount             int                    `gorm:"achievements_count"`              //
-	AlbumMetaData                 string                 `gorm:"albummetadata"`                   // AlbumMetaData
-	Background                    string                 `gorm:"background"`                      //
-	BundleIDs                     []int                  `gorm:"bundle_ids"`                      //
-	Categories                    []int                  `gorm:"categories"`                      //
-	ChangeNumber                  int                    `gorm:"change_number"`                   //
-	ChangeNumberDate              time.Time              `gorm:"change_number_date"`              //
-	ClientIcon                    string                 `gorm:"client_icon"`                     //
-	ComingSoon                    bool                   `gorm:"coming_soon"`                     //
-	Common                        string                 `gorm:"common"`                          // PICSAppCommon
-	Config                        string                 `gorm:"config"`                          // PICSAppConfig
-	CreatedAt                     time.Time              `gorm:"created_at"`                      //
-	DemoIDs                       []int                  `gorm:"demo_ids"`                        //
-	Depots                        string                 `gorm:"depots"`                          // Depots
-	Developers                    []int                  `gorm:"developers"`                      //
-	DLC                           []int                  `gorm:"dlc"`                             //
-	DLCCount                      int                    `gorm:"dlc_count"`                       //
-	Extended                      string                 `gorm:"extended"`                        // PICSExtended
-	GameID                        int                    `gorm:"game_id"`                         //
-	GameName                      string                 `gorm:"game_name"`                       //
-	Genres                        []int                  `gorm:"genres"`                          //
-	GroupID                       string                 `gorm:"group_id"`                        //
-	GroupFollowers                int                    `gorm:"group_followers"`                 //
-	Homepage                      string                 `gorm:"homepage"`                        //
-	Icon                          string                 `gorm:"icon"`                            //
-	ID                            int                    `gorm:"id;primary_key"`                  //
-	Install                       map[string]interface{} `gorm:"install"`                         //
-	IsFree                        bool                   `gorm:"is_free"`                         //
-	Items                         int                    `gorm:"items"`                           //
-	ItemsDigest                   string                 `gorm:"items_digest"`                    //
-	Launch                        string                 `gorm:"launch"`                          // []db.PICSAppConfigLaunchItem
-	Localization                  map[string]interface{} `gorm:"localization"`                    //
-	Logo                          string                 `gorm:"logo"`                            //
-	MetacriticScore               int8                   `gorm:"metacritic_score"`                //
-	MetacriticURL                 string                 `gorm:"metacritic_url"`                  //
-	Movies                        string                 `gorm:"movies"`                          // []AppVideo
-	Name                          string                 `gorm:"name"`                            //
-	NewsIDs                       []int64                `gorm:"news_ids"`                        //
-	Packages                      []int                  `gorm:"packages"`                        //
-	Platforms                     []string               `gorm:"platforms"`                       //
-	PlayerAverageWeek             float64                `gorm:"player_avg_week"`                 //
-	PlayerPeakAllTime             int                    `gorm:"player_peak_alltime"`             //
-	PlayerPeakWeek                int                    `gorm:"player_peak_week"`                //
-	PlayerTrend                   int64                  `gorm:"player_trend"`                    //
-	PlaytimeAverage               float64                `gorm:"playtime_average"`                // Minutes
-	PlaytimeTotal                 int64                  `gorm:"playtime_total"`                  // Minutes
-	Prices                        string                 `gorm:"prices"`                          // ProductPrices
-	PublicOnly                    bool                   `gorm:"public_only"`                     //
-	Publishers                    []int                  `gorm:"publishers"`                      //
-	RelatedAppIDs                 []int                  `gorm:"related_app_ids"`                 //
-	ReleaseDate                   string                 `gorm:"release_date"`                    //
-	ReleaseDateUnix               int64                  `gorm:"release_date_unix"`               //
-	ReleaseState                  string                 `gorm:"release_state"`                   //
-	Reviews                       string                 `gorm:"reviews"`                         // AppReviewSummary
-	ReviewsScore                  float64                `gorm:"reviews_score"`                   //
-	Screenshots                   string                 `gorm:"screenshots"`                     // []AppImage
-	ShortDescription              string                 `gorm:"description_short"`               //
-	Stats                         string                 `gorm:"stats"`                           // []AppStat
-	SteamSpy                      string                 `gorm:"steam_spy"`                       // AppSteamSpy
-	SystemRequirements            map[string]interface{} `gorm:"system_requirements"`             //
-	Tags                          []int                  `gorm:"tags"`                            //
-	TwitchID                      int                    `gorm:"twitch_id"`                       //
-	TwitchURL                     string                 `gorm:"twitch_url"`                      //
-	Type                          string                 `gorm:"type"`                            //
-	UFS                           string                 `gorm:"ufs"`                             // PICSAppUFS
-	UpdatedAt                     time.Time              `gorm:"updated_at"`                      //
-	Version                       string                 `gorm:"version"`                         //
-	WishlistAvgPosition           float64                `gorm:"wishlist_avg_position"`           //
-	WishlistCount                 int                    `gorm:"wishlist_count"`                  //
+	Achievements                  string    `gorm:"achievements"`                    // []AppAchievement
+	AchievementsAverageCompletion float64   `gorm:"achievements_average_completion"` //
+	AchievementsCount             int       `gorm:"achievements_count"`              //
+	AlbumMetaData                 string    `gorm:"albummetadata"`                   // AlbumMetaData
+	Background                    string    `gorm:"background"`                      //
+	BundleIDs                     []int     `gorm:"bundle_ids"`                      //
+	Categories                    []int     `gorm:"categories"`                      //
+	ChangeNumber                  int       `gorm:"change_number"`                   //
+	ChangeNumberDate              time.Time `gorm:"change_number_date"`              //
+	ClientIcon                    string    `gorm:"client_icon"`                     //
+	ComingSoon                    bool      `gorm:"coming_soon"`                     //
+	Common                        string    `gorm:"common"`                          // PICSAppCommon
+	Config                        string    `gorm:"config"`                          // PICSAppConfig
+	CreatedAt                     time.Time `gorm:"created_at"`                      //
+	DemoIDs                       []int     `gorm:"demo_ids"`                        //
+	Depots                        string    `gorm:"depots"`                          // Depots
+	Developers                    []int     `gorm:"developers"`                      //
+	DLC                           []int     `gorm:"dlc"`                             //
+	DLCCount                      int       `gorm:"dlc_count"`                       //
+	Extended                      string    `gorm:"extended"`                        // PICSExtended
+	GameID                        int       `gorm:"game_id"`                         //
+	GameName                      string    `gorm:"game_name"`                       //
+	Genres                        []int     `gorm:"genres"`                          //
+	GroupID                       string    `gorm:"group_id"`                        //
+	GroupFollowers                int       `gorm:"group_followers"`                 //
+	Homepage                      string    `gorm:"homepage"`                        //
+	Icon                          string    `gorm:"icon"`                            //
+	ID                            int       `gorm:"id;primary_key"`                  //
+	Install                       string    `gorm:"install"`                         // map[string]interface{}
+	IsFree                        bool      `gorm:"is_free"`                         //
+	Items                         int       `gorm:"items"`                           //
+	ItemsDigest                   string    `gorm:"items_digest"`                    //
+	Launch                        string    `gorm:"launch"`                          // []db.PICSAppConfigLaunchItem
+	Localization                  string    `gorm:"localization"`                    // pics.Localisation
+	Logo                          string    `gorm:"logo"`                            //
+	MetacriticScore               int8      `gorm:"metacritic_score"`                //
+	MetacriticURL                 string    `gorm:"metacritic_url"`                  //
+	Movies                        string    `gorm:"movies"`                          // []AppVideo
+	Name                          string    `gorm:"name"`                            //
+	NewsIDs                       []int64   `gorm:"news_ids"`                        //
+	Packages                      []int     `gorm:"packages"`                        //
+	Platforms                     []string  `gorm:"platforms"`                       //
+	PlayerAverageWeek             float64   `gorm:"player_avg_week"`                 //
+	PlayerPeakAllTime             int       `gorm:"player_peak_alltime"`             //
+	PlayerPeakWeek                int       `gorm:"player_peak_week"`                //
+	PlayerTrend                   int64     `gorm:"player_trend"`                    //
+	PlaytimeAverage               float64   `gorm:"playtime_average"`                // Minutes
+	PlaytimeTotal                 int64     `gorm:"playtime_total"`                  // Minutes
+	Prices                        string    `gorm:"prices"`                          // ProductPrices
+	PublicOnly                    bool      `gorm:"public_only"`                     //
+	Publishers                    []int     `gorm:"publishers"`                      //
+	RelatedAppIDs                 []int     `gorm:"related_app_ids"`                 //
+	ReleaseDate                   string    `gorm:"release_date"`                    //
+	ReleaseDateUnix               int64     `gorm:"release_date_unix"`               //
+	ReleaseState                  string    `gorm:"release_state"`                   //
+	Reviews                       string    `gorm:"reviews"`                         // AppReviewSummary
+	ReviewsScore                  float64   `gorm:"reviews_score"`                   //
+	Screenshots                   string    `gorm:"screenshots"`                     // []AppImage
+	ShortDescription              string    `gorm:"description_short"`               //
+	Stats                         string    `gorm:"stats"`                           // []AppStat
+	SteamSpy                      string    `gorm:"steam_spy"`                       // AppSteamSpy
+	SystemRequirements            string    `gorm:"system_requirements"`             // map[string]interface{}
+	Tags                          []int     `gorm:"tags"`                            //
+	TwitchID                      int       `gorm:"twitch_id"`                       //
+	TwitchURL                     string    `gorm:"twitch_url"`                      //
+	Type                          string    `gorm:"type"`                            //
+	UFS                           string    `gorm:"ufs"`                             // PICSAppUFS
+	UpdatedAt                     time.Time `gorm:"updated_at"`                      //
+	Version                       string    `gorm:"version"`                         //
+	WishlistAvgPosition           float64   `gorm:"wishlist_avg_position"`           //
+	WishlistCount                 int       `gorm:"wishlist_count"`                  //
 }
 
 func (app App) BSON() bson.D {
