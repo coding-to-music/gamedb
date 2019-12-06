@@ -381,8 +381,10 @@ func (q baseQueue) ConsumeMessages() {
 						log.Warning("Consumer connection closed", err)
 						consumerConnection = nil
 						return
-					case msg := <-msgs:
-						msgSlice = append(msgSlice, msg)
+					case msg, open := <-msgs:
+						if open {
+							msgSlice = append(msgSlice, msg)
+						}
 					}
 
 					if len(msgSlice) >= q.batchSize {
