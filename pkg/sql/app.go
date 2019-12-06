@@ -113,12 +113,12 @@ func (app *App) BeforeCreate(scope *gorm.Scope) error {
 
 func (app *App) BeforeSave(scope *gorm.Scope) error {
 
-	err := app.SaveToMongo()
+	err := app.Before(scope)
 	if err != nil {
 		return err
 	}
 
-	return app.Before(scope)
+	return app.SaveToMongo()
 }
 
 func (app *App) Before(scope *gorm.Scope) error {
