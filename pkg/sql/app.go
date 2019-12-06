@@ -962,23 +962,22 @@ func (app App) GetPublishers() (publishers []Publisher, err error) {
 	return publishers, err
 }
 
+func (app App) getBundleIDs() (ids []int) {
+
+	ids = []int{} // Needed for marshalling into type
+
+	err := helpers.Unmarshal([]byte(app.BundleIDs), &ids)
+	log.Err(err)
+
+	return ids
+}
+
 func (app App) GetBundles() (bundles []Bundle, err error) {
 
 	var item = memcache.MemcacheAppBundles(app.ID)
 
 	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &bundles, func() (interface{}, error) {
-
-		db, err := GetMySQLClient()
-		if err != nil {
-			return bundles, err
-		}
-
-		var bundles []Bundle
-
-		db = db.Where("JSON_CONTAINS(app_ids, '[" + strconv.Itoa(app.ID) + "]')")
-		db = db.Find(&bundles)
-
-		return bundles, db.Error
+		return GetAppsByID(app.getBundleIDs(), []string{})
 	})
 
 	if len(bundles) == 0 {
