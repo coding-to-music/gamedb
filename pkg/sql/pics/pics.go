@@ -14,6 +14,14 @@ func (kv PICSKeyValues) GetValue(key string) string {
 	return ""
 }
 
+func (kv PICSKeyValues) Map() (m map[string]string) {
+	m = map[string]string{}
+	for k, v := range kv {
+		m[k] = v
+	}
+	return m
+}
+
 func (kv PICSKeyValues) Formatted(productID int, keys map[string]PicsKey) (ret []KeyValue, err error) {
 
 	for k, v := range kv {

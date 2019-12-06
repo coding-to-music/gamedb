@@ -226,15 +226,15 @@ func (app App) SaveToMongo() error {
 	mApp.ChangeNumberDate = app.ChangeNumberDate
 	mApp.ClientIcon = app.ClientIcon
 	mApp.ComingSoon = app.ComingSoon
-	mApp.Common = app.Common
-	mApp.Config = app.Config
+	mApp.Common = app.GetCommon().Map()
+	mApp.Config = app.GetConfig().Map()
 	mApp.CreatedAt = app.CreatedAt
 	mApp.DemoIDs, _ = app.GetDemoIDs()
 	mApp.Depots = app.Depots
 	mApp.Developers, _ = app.GetDeveloperIDs()
 	mApp.DLC, _ = app.GetDLCIDs()
 	mApp.DLCCount = app.DLCCount
-	mApp.Extended = app.Extended
+	mApp.Extended = app.GetExtended().Map()
 	mApp.GameID = app.GameID
 	mApp.GameName = app.GameName
 	mApp.Genres, _ = app.GetGenreIDs()
@@ -281,7 +281,7 @@ func (app App) SaveToMongo() error {
 	mApp.TwitchID = app.TwitchID
 	mApp.TwitchURL = app.TwitchURL
 	mApp.Type = app.Type
-	mApp.UFS = app.UFS
+	mApp.UFS = app.GetUFS().Map()
 	mApp.UpdatedAt = app.UpdatedAt
 	mApp.Version = app.Version
 	mApp.WishlistAvgPosition = app.WishlistAvgPosition
