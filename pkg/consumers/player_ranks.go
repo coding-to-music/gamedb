@@ -19,10 +19,6 @@ type PlayerRanksMessage struct {
 	State      *string `json:"state"`
 }
 
-func (msg PlayerRanksMessage) Produce() error {
-	return channels[framework.Producer][queuePlayerRanks].ProduceInterface(msg)
-}
-
 func playerRanksHandler(messages []*framework.Message) {
 
 	for _, message := range messages {

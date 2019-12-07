@@ -142,3 +142,7 @@ func sendToFirstQueue(message *framework.Message) {
 func ProduceBundle(payload BundleMessage) error {
 	return channels[framework.Producer][queueBundles].ProduceInterface(payload)
 }
+
+func ProducePlayerRank(payload PlayerRanksMessage) error {
+	return channels[framework.Producer][queuePlayerRanks].ProduceInterface(payload)
+}

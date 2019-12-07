@@ -43,26 +43,21 @@ func (c PlayerRanks) work() (err error) {
 
 	// Global
 	for read, write := range fields {
-
-		msg := consumers.PlayerRanksMessage{}
-		msg.SortColumn = read
-		msg.ObjectKey = string(write)
-
-		err = msg.Produce()
+		err = consumers.ProducePlayerRank(consumers.PlayerRanksMessage{
+			SortColumn: read,
+			ObjectKey:  string(write),
+		})
 		log.Err(err)
 	}
 
 	// Continents
 	for _, continent := range helpers.Continents {
-
 		for read, write := range fields {
-
-			msg := consumers.PlayerRanksMessage{}
-			msg.SortColumn = read
-			msg.ObjectKey = string(write) + "_continent-" + continent.Key
-			msg.Continent = &continent.Key
-
-			err = msg.Produce()
+			err = consumers.ProducePlayerRank(consumers.PlayerRanksMessage{
+				SortColumn: read,
+				ObjectKey:  string(write) + "_continent-" + continent.Key,
+				Continent:  &continent.Key,
+			})
 			log.Err(err)
 		}
 	}
@@ -74,15 +69,12 @@ func (c PlayerRanks) work() (err error) {
 	}
 
 	for _, cc := range countryCodes {
-
 		for read, write := range fields {
-
-			msg := consumers.PlayerRanksMessage{}
-			msg.SortColumn = read
-			msg.ObjectKey = string(write) + "_country-" + cc
-			msg.Country = &cc
-
-			err = msg.Produce()
+			err = consumers.ProducePlayerRank(consumers.PlayerRanksMessage{
+				SortColumn: read,
+				ObjectKey:  string(write) + "_country-" + cc,
+				Country:    &cc,
+			})
 			log.Err(err)
 		}
 	}
@@ -97,16 +89,13 @@ func (c PlayerRanks) work() (err error) {
 		}
 
 		for _, state := range stateCodes {
-
 			for read, write := range fields {
-
-				msg := consumers.PlayerRanksMessage{}
-				msg.SortColumn = read
-				msg.ObjectKey = string(write) + "_state-" + state.Key
-				msg.Country = &cc
-				msg.State = &state.Key
-
-				err = msg.Produce()
+				err = consumers.ProducePlayerRank(consumers.PlayerRanksMessage{
+					SortColumn: read,
+					ObjectKey:  string(write) + "_state-" + state.Key,
+					Country:    &cc,
+					State:      &state.Key,
+				})
 				log.Err(err)
 			}
 		}
