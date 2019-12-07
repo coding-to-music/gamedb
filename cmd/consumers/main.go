@@ -43,7 +43,7 @@ func main() {
 	// Load consumers
 	log.Info("Starting consumers")
 
-	consumers.Init(true)
+	consumers.Init(consumers.QueueDefinitions, true)
 
 	for queueName, q := range queue.QueueRegister {
 		if !q.DoNotScale {

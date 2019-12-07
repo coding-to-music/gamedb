@@ -34,7 +34,7 @@ var (
 		framework.Producer: {},
 	}
 
-	queueDefinitions = []queue{
+	QueueDefinitions = []queue{
 		{name: queueApps, consumer: appHandler},
 		{name: queueAppsRegular},
 		{name: queueAppPlayers},
@@ -47,9 +47,17 @@ var (
 		{name: queuePlayers},
 		{name: queuePlayersRegular},
 		{name: queuePlayerRanks, consumer: playerRanksHandler},
-		{name: queueSteam},
+		{name: queueSteam, consumer: nil},
 		{name: queueDelay, consumer: delayHandler, skipHeaders: true},
 		{name: queueFailed},
+	}
+
+	QueueSteamDefinitions = []queue{
+		{name: queueApps, consumer: nil},
+		{name: queuePackages, consumer: nil},
+		{name: queuePlayers, consumer: nil},
+		{name: queueChanges, consumer: nil},
+		{name: queueSteam, consumer: steamHandler},
 	}
 )
 
@@ -61,7 +69,7 @@ type queue struct {
 	batchSize     int
 }
 
-func Init(consume bool) {
+func Init(definitions []queue, consume bool) {
 
 	heartbeat := time.Minute
 	if config.IsLocal() {
@@ -74,7 +82,7 @@ func Init(consume bool) {
 		return
 	}
 
-	for _, queue := range queueDefinitions {
+	for _, queue := range definitions {
 
 		q, err := framework.NewChannel(connection, queue.name, queue.prefetchCount, queue.batchSize, queue.consumer, !queue.skipHeaders)
 		if err != nil {
@@ -93,7 +101,7 @@ func Init(consume bool) {
 			return
 		}
 
-		for _, queue := range queueDefinitions {
+		for _, queue := range definitions {
 			if queue.consumer != nil {
 
 				q, err := framework.NewChannel(connection, queue.name, queue.prefetchCount, queue.batchSize, queue.consumer, !queue.skipHeaders)

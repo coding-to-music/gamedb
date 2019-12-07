@@ -12,6 +12,7 @@ import (
 	"github.com/Philipp15b/go-steam/protocol/protobuf"
 	"github.com/Philipp15b/go-steam/protocol/steamlang"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/queue"
@@ -54,6 +55,8 @@ func main() {
 	steamClient.RegisterPacketHandler(packetHandler{})
 	steamClient.Connect()
 
+	consumers.SetSteamClient(steamClient)
+
 	go func() {
 		for event := range steamClient.Events() {
 
@@ -72,9 +75,7 @@ func main() {
 
 				// Load consumer
 				log.Info("Starting Steam consumers")
-				q := queue.QueueRegister[queue.QueueSteam]
-				q.SteamClient = steamClient
-				go q.ConsumeMessages()
+				consumers.Init(consumers.QueueSteamDefinitions, true)
 
 			case *steam.LoggedOffEvent:
 
@@ -113,13 +114,6 @@ func main() {
 			case error:
 				log.Err(e)
 			}
-		}
-	}()
-
-	go func() {
-		for {
-			queue.IDsToForce.Cleanup()
-			time.Sleep(time.Minute)
 		}
 	}()
 
@@ -190,8 +184,6 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 
 			var m = map[string]interface{}{}
 			var id = int(app.GetAppid())
-			var key = "app-" + strconv.Itoa(id)
-			var force = queue.IDsToForce.Read(key)
 
 			kv, err := vdf.ReadBytes(app.GetBuffer())
 			if err != nil {
@@ -200,7 +192,7 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 				m = kv.ToMap()
 			}
 
-			err = queue.ProduceApp(queue.AppPayload{ID: id, ChangeNumber: int(app.GetChangeNumber()), VDF: m, Force: force})
+			err = queue.ProduceApp(queue.AppPayload{ID: id, ChangeNumber: int(app.GetChangeNumber()), VDF: m})
 			if err != nil {
 				log.Err(err, id)
 			}
@@ -212,10 +204,7 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 		for _, app := range unknownApps {
 
 			var id = int(app)
-			var key = "app-" + strconv.Itoa(id)
-			var force = queue.IDsToForce.Read(key)
-
-			err := queue.ProduceApp(queue.AppPayload{ID: id, Force: force})
+			err := queue.ProduceApp(queue.AppPayload{ID: id})
 			log.Err(err, id)
 		}
 	}
@@ -226,8 +215,6 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 
 			var m = map[string]interface{}{}
 			var id = int(pack.GetPackageid())
-			var key = "package-" + strconv.Itoa(id)
-			var force = queue.IDsToForce.Read(key)
 
 			kv, err := vdf.ReadBytes(pack.GetBuffer())
 			if err != nil {
@@ -240,7 +227,6 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 				ID:           int(pack.GetPackageid()),
 				ChangeNumber: int(pack.GetChangeNumber()),
 				VDF:          m,
-				Force:        force,
 			})
 			if err != nil {
 				log.Err(err, id)
@@ -253,10 +239,7 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 		for _, pack := range unknownPackages {
 
 			var id = int(pack)
-			var key = "package-" + strconv.Itoa(id)
-			var force = queue.IDsToForce.Read(key)
-
-			err := queue.ProducePackage(queue.PackagePayload{ID: int(pack), Force: force})
+			err := queue.ProducePackage(queue.PackagePayload{ID: int(pack)})
 			log.Err(err, id)
 		}
 	}
@@ -328,9 +311,6 @@ func (ph packetHandler) handleProfileInfo(packet *protocol.Packet) {
 	packet.ReadProtoMsg(&body)
 
 	var id = int64(body.GetSteamidFriend())
-	var key = "player-" + strconv.FormatInt(id, 10)
-	var force = queue.IDsToForce.Read(key)
-
-	err := queue.ProducePlayer(queue.PlayerPayload{ID: id, PBResponse: &body, Force: force})
-	log.Err(err)
+	err := queue.ProducePlayer(queue.PlayerPayload{ID: id, PBResponse: &body})
+	log.Err(err, id)
 }

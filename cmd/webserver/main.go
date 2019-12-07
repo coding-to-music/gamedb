@@ -35,7 +35,7 @@ func main() {
 		return
 	}
 
-	consumers.Init(false)
+	consumers.Init(consumers.QueueDefinitions, false)
 
 	//
 	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
