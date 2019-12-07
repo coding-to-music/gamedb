@@ -1176,11 +1176,7 @@ func scrapeApp(app *sql.App) (sales []mongo.Sale, err error) {
 			colly.URLFilters(appStorePage),
 		)
 
-		jar, err := steamHelper.GetAgeCheckCookieJar()
-		if err != nil {
-			return err
-		}
-		c.SetCookieJar(jar)
+		steamHelper.SetAgeCheckCookieJar(c)
 
 		// Bundles
 		c.OnHTML("div.game_area_purchase_game_wrapper input[name=bundleid]", func(e *colly.HTMLElement) {

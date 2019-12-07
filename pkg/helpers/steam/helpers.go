@@ -10,6 +10,7 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gocolly/colly"
 )
 
 func AllowSteamCodes(err error, bytes []byte, allowedCodes []int) error {
@@ -81,14 +82,11 @@ func LogSteamError(err error, interfaces ...interface{}) {
 	}
 }
 
-func GetAgeCheckCookieJar() (jar *cookiejar.Jar, err error) {
+func SetAgeCheckCookieJar(c *colly.Collector) {
 
 	cookieURL, _ := url.Parse("https://store.steampowered.com")
 
-	jar, err = cookiejar.New(nil)
-	if err != nil {
-		return jar, err
-	}
+	jar, _ := cookiejar.New(nil)
 
 	jar.SetCookies(cookieURL, []*http.Cookie{
 		{Name: "birthtime", Value: "536457601", Path: "/", Domain: "store.steampowered.com"},
@@ -96,5 +94,5 @@ func GetAgeCheckCookieJar() (jar *cookiejar.Jar, err error) {
 		{Name: "mature_content", Value: "1", Path: "/", Domain: "store.steampowered.com"},
 	})
 
-	return jar, err
+	c.SetCookieJar(jar)
 }
