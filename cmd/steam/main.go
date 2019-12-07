@@ -117,8 +117,10 @@ func main() {
 	}()
 
 	go func() {
-		queue.IDsToForce.Cleanup()
-		time.Sleep(time.Minute)
+		for {
+			queue.IDsToForce.Cleanup()
+			time.Sleep(time.Minute)
+		}
 	}()
 
 	helpers.KeepAlive()
