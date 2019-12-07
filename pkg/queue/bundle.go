@@ -32,6 +32,7 @@ func (q bundleQueue) processMessages(msgs []amqp.Delivery) {
 	}
 
 	payload := consumers.BundleMessage{}
+	payload.ID = message.Message.ID
 
 	err = consumers.ProduceBundle(payload)
 	if err != nil {
