@@ -11,7 +11,7 @@ import (
 type Message struct {
 	Channel     *Channel
 	Message     *amqp.Delivery
-	actionTaken bool
+	ActionTaken bool
 	sync.Mutex
 }
 
@@ -28,7 +28,7 @@ func (message *Message) ack(multiple bool) {
 	message.Lock()
 	defer message.Unlock()
 
-	if message.actionTaken {
+	if message.ActionTaken {
 		return
 	}
 
@@ -36,7 +36,7 @@ func (message *Message) ack(multiple bool) {
 	if err != nil {
 		log.Err(err)
 	} else {
-		message.actionTaken = true
+		message.ActionTaken = true
 	}
 }
 
