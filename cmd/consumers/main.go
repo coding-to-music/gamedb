@@ -42,14 +42,15 @@ func main() {
 
 	// Load consumers
 	log.Info("Starting consumers")
+
+	consumers.Init(true)
+
 	for queueName, q := range queue.QueueRegister {
 		if !q.DoNotScale {
 			q.Name = queueName
 			go q.ConsumeMessages()
 		}
 	}
-
-	consumers.Init(true)
 
 	//
 	helpers.KeepAlive()
