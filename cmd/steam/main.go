@@ -15,7 +15,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/queue"
 )
 
 const (
@@ -107,7 +106,7 @@ func main() {
 			case steam.FatalErrorEvent:
 
 				// Disconnects
-				log.Info("Steam: Disconnected because of error")
+				log.Info("Steam: Disconnected:", e.Error())
 				steamLoggedOn = false
 				go steamClient.Connect()
 
@@ -121,35 +120,34 @@ func main() {
 }
 
 func checkForChanges() {
-	if !config.IsLocal() || checkForChangesOnLocal {
-		for {
-			if !steamClient.Connected() || !steamLoggedOn {
-				continue
-			}
+	for {
+		if !config.IsLocal() || checkForChangesOnLocal {
+			if steamClient.Connected() && steamLoggedOn {
 
-			steamChangeLock.Lock()
+				steamChangeLock.Lock()
 
-			// Get last change number from file
-			if steamChangeNumber == 0 {
-				b, _ := ioutil.ReadFile(steamCurrentChangeFilename)
-				if len(b) > 0 {
-					ui, err := strconv.ParseUint(string(b), 10, 32)
-					log.Err(err)
-					if err == nil {
-						steamChangeNumber = uint32(ui)
-						log.Err(err)
+				// Get last change number from file
+				if steamChangeNumber == 0 {
+					b, _ := ioutil.ReadFile(steamCurrentChangeFilename)
+					if len(b) > 0 {
+						ui, err := strconv.ParseUint(string(b), 10, 32)
+						if err != nil {
+							log.Err(err)
+						} else {
+							steamChangeNumber = uint32(ui)
+						}
 					}
 				}
+
+				var true = true
+				steamClient.Write(protocol.NewClientMsgProtobuf(steamlang.EMsg_ClientPICSChangesSinceRequest, &protobuf.CMsgClientPICSChangesSinceRequest{
+					SendAppInfoChanges:     &true,
+					SendPackageInfoChanges: &true,
+					SinceChangeNumber:      &steamChangeNumber,
+				}))
+
+				time.Sleep(time.Second * 5)
 			}
-
-			var t = true
-			steamClient.Write(protocol.NewClientMsgProtobuf(steamlang.EMsg_ClientPICSChangesSinceRequest, &protobuf.CMsgClientPICSChangesSinceRequest{
-				SendAppInfoChanges:     &t,
-				SendPackageInfoChanges: &t,
-				SinceChangeNumber:      &steamChangeNumber,
-			}))
-
-			time.Sleep(time.Second * 5)
 		}
 	}
 }
@@ -192,7 +190,7 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 				m = kv.ToMap()
 			}
 
-			err = queue.ProduceApp(queue.AppPayload{ID: id, ChangeNumber: int(app.GetChangeNumber()), VDF: m})
+			err = consumers.ProduceApp(consumers.AppMessage{ID: id, ChangeNumber: int(app.GetChangeNumber()), VDF: m})
 			if err != nil {
 				log.Err(err, id)
 			}
@@ -204,7 +202,7 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 		for _, app := range unknownApps {
 
 			var id = int(app)
-			err := queue.ProduceApp(queue.AppPayload{ID: id})
+			err := consumers.ProduceApp(consumers.AppMessage{ID: id})
 			log.Err(err, id)
 		}
 	}
@@ -223,11 +221,7 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 				m = kv.ToMap()
 			}
 
-			err = queue.ProducePackage(queue.PackagePayload{
-				ID:           int(pack.GetPackageid()),
-				ChangeNumber: int(pack.GetChangeNumber()),
-				VDF:          m,
-			})
+			err = consumers.ProducePackage(consumers.PackageMessage{ID: int(pack.GetPackageid()), ChangeNumber: int(pack.GetChangeNumber()), VDF: m,})
 			if err != nil {
 				log.Err(err, id)
 			}
@@ -239,7 +233,7 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 		for _, pack := range unknownPackages {
 
 			var id = int(pack)
-			err := queue.ProducePackage(queue.PackagePayload{ID: int(pack)})
+			err := consumers.ProducePackage(consumers.PackageMessage{ID: id})
 			log.Err(err, id)
 		}
 	}
@@ -249,23 +243,30 @@ func (ph packetHandler) handleChangesSince(packet *protocol.Packet) {
 
 	defer steamChangeLock.Unlock()
 
+	body := protobuf.CMsgClientPICSChangesSinceResponse{}
+	packet.ReadProtoMsg(&body)
+
+	if body.GetCurrentChangeNumber() <= steamChangeNumber {
+		return
+	}
+
 	var false = false
 
-	var appMap = map[int]int{}
-	var packageMap = map[int]int{}
+	var appMap = map[uint32]uint32{}
+	var packageMap = map[uint32]uint32{}
 
 	var apps []*protobuf.CMsgClientPICSProductInfoRequest_AppInfo
 	var packages []*protobuf.CMsgClientPICSProductInfoRequest_PackageInfo
 
-	body := protobuf.CMsgClientPICSChangesSinceResponse{}
-	packet.ReadProtoMsg(&body)
-
+	// Apps
 	appChanges := body.GetAppChanges()
 	if len(appChanges) > 0 {
-		log.Info(strconv.Itoa(len(appChanges)) + " apps in change " + strconv.FormatUint(uint64(steamChangeNumber), 10))
+
+		log.Info(strconv.Itoa(len(appChanges)) + " apps since change " + strconv.FormatUint(uint64(body.GetSinceChangeNumber()), 10))
+
 		for _, appChange := range appChanges {
 
-			appMap[int(appChange.GetChangeNumber())] = int(appChange.GetAppid())
+			appMap[appChange.GetChangeNumber()] = appChange.GetAppid()
 
 			apps = append(apps, &protobuf.CMsgClientPICSProductInfoRequest_AppInfo{
 				Appid:      appChange.Appid,
@@ -274,12 +275,13 @@ func (ph packetHandler) handleChangesSince(packet *protocol.Packet) {
 		}
 	}
 
+	// Packages
 	packageChanges := body.GetPackageChanges()
 	if len(packageChanges) > 0 {
-		log.Info(strconv.Itoa(len(packageChanges)) + " packages in change " + strconv.FormatUint(uint64(steamChangeNumber), 10))
+		log.Info(strconv.Itoa(len(packageChanges)) + " packages since change " + strconv.FormatUint(uint64(body.GetSinceChangeNumber()), 10))
 		for _, packageChange := range packageChanges {
 
-			packageMap[int(packageChange.GetChangeNumber())] = int(packageChange.GetPackageid())
+			packageMap[packageChange.GetChangeNumber()] = packageChange.GetPackageid()
 
 			packages = append(packages, &protobuf.CMsgClientPICSProductInfoRequest_PackageInfo{
 				Packageid: packageChange.Packageid,
@@ -287,13 +289,18 @@ func (ph packetHandler) handleChangesSince(packet *protocol.Packet) {
 		}
 	}
 
+	// Send off for app/package info
 	steamClient.Write(protocol.NewClientMsgProtobuf(steamlang.EMsg_ClientPICSProductInfoRequest, &protobuf.CMsgClientPICSProductInfoRequest{
 		Apps:         apps,
 		Packages:     packages,
 		MetaDataOnly: &false,
 	}))
 
-	err := queue.ProduceChange(appMap, packageMap)
+	// Save change
+	err := consumers.ProduceChanges(consumers.ChangesMessage{
+		AppIDs:     appMap,
+		PackageIDs: packageMap,
+	})
 	if err != nil {
 		log.Err(err)
 		return
@@ -301,7 +308,7 @@ func (ph packetHandler) handleChangesSince(packet *protocol.Packet) {
 
 	// Update cached change number
 	steamChangeNumber = body.GetCurrentChangeNumber()
-	err = ioutil.WriteFile(steamCurrentChangeFilename, []byte(strconv.FormatUint(uint64(body.GetCurrentChangeNumber()), 10)), 0644)
+	err = ioutil.WriteFile(steamCurrentChangeFilename, []byte(strconv.FormatUint(uint64(steamChangeNumber), 10)), 0644)
 	log.Err(err)
 }
 
@@ -311,6 +318,6 @@ func (ph packetHandler) handleProfileInfo(packet *protocol.Packet) {
 	packet.ReadProtoMsg(&body)
 
 	var id = int64(body.GetSteamidFriend())
-	err := queue.ProducePlayer(queue.PlayerPayload{ID: id, PBResponse: &body})
+	err := consumers.ProducePlayer(consumers.PlayerMessage{ID: id})
 	log.Err(err, id)
 }

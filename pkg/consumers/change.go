@@ -1,6 +1,6 @@
 package consumers
 
 type ChangesMessage struct {
-	AppIDs     map[int]int `json:"app_ids"`
-	PackageIDs map[int]int `json:"package_ids"`
+	AppIDs     map[uint32]uint32 `json:"app_ids"`
+	PackageIDs map[uint32]uint32 `json:"package_ids"`
 }
