@@ -114,6 +114,7 @@ func Init(consume bool) {
 	}
 }
 
+// Message helpers
 func sendToFailQueue(message *framework.Message) {
 	message.SendToQueue(channels[framework.Producer][queueFailed])
 }
@@ -135,4 +136,9 @@ func sendToFirstQueue(message *framework.Message) {
 	}
 
 	message.SendToQueue(channels[framework.Producer][queue])
+}
+
+// Producers
+func ProduceBundle(payload BundleMessage) error {
+	return channels[framework.Producer][queueBundles].ProduceInterface(payload)
 }

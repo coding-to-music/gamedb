@@ -17,6 +17,7 @@ import (
 	"github.com/Jleagle/valve-data-format-go/vdf"
 	"github.com/cenkalti/backoff/v3"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
@@ -1356,16 +1357,16 @@ func scrapeApp(app *sql.App) (sales []mongo.Sale, err error) {
 	}
 
 	// Save bundle IDs
-	var IDInts = helpers.StringSliceToIntSlice(bundleIDs)
+	var bundleIntIDs = helpers.StringSliceToIntSlice(bundleIDs)
 
-	for _, v := range IDInts {
-		err := ProduceBundle(v, app.ID)
+	for _, bundleID := range bundleIntIDs {
+		err = consumers.ProduceBundle(consumers.BundleMessage{ID: bundleID})
 		if err != nil {
 			return sales, err
 		}
 	}
 
-	b, err := json.Marshal(IDInts)
+	b, err := json.Marshal(bundleIntIDs)
 	if err != nil {
 		return sales, err
 	}

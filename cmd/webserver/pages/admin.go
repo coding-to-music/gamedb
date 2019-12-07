@@ -9,6 +9,7 @@ import (
 	"github.com/Jleagle/session-go/session"
 	"github.com/gamedb/gamedb/cmd/webserver/middleware"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -235,7 +236,7 @@ func adminQueues(r *http.Request) {
 			bundleID, err := strconv.Atoi(val)
 			if err == nil {
 
-				err = queue.ProduceBundle(bundleID, 0)
+				err = consumers.ProduceBundle(consumers.BundleMessage{ID: bundleID})
 				log.Err(err, r)
 			}
 		}

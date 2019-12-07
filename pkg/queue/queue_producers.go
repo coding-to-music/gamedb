@@ -215,18 +215,6 @@ func ProduceChange(apps map[int]int, packages map[int]int) (err error) {
 	}, queueChanges)
 }
 
-func ProduceBundle(ID int, appID int) (err error) {
-
-	time.Sleep(time.Millisecond)
-
-	return produce(&bundleMessage{
-		Message: bundleMessageInner{
-			ID:    ID,
-			AppID: appID,
-		},
-	}, queueBundles)
-}
-
 func ProduceTest(id int) (err error) {
 
 	time.Sleep(time.Millisecond)
