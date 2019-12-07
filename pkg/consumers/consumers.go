@@ -147,7 +147,7 @@ func sendToFirstQueue(message *framework.Message) {
 }
 
 // Producers
-func ProduceApp(payload BundleMessage) error {
+func ProduceApp(payload AppMessage) error {
 	return channels[framework.Producer][queueApps].ProduceInterface(payload)
 }
 
