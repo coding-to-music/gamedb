@@ -96,16 +96,6 @@ func (message Message) FirstSeen() (i time.Time) {
 	return i
 }
 
-func (message Message) FirstQueue() (i QueueName) {
-	i = ""
-	if val, ok := message.Message.Headers[HeaderFirstQueue]; ok {
-		if val2, ok2 := val.(string); ok2 {
-			i = QueueName(val2)
-		}
-	}
-	return i
-}
-
 func (message Message) LastSeen() (i time.Time) {
 
 	i = time.Now()
@@ -117,6 +107,16 @@ func (message Message) LastSeen() (i time.Time) {
 
 	message.Message.Headers[HeaderLastSeen] = i
 
+	return i
+}
+
+func (message Message) FirstQueue() (i QueueName) {
+	i = ""
+	if val, ok := message.Message.Headers[HeaderFirstQueue]; ok {
+		if val2, ok2 := val.(string); ok2 {
+			i = QueueName(val2)
+		}
+	}
 	return i
 }
 
