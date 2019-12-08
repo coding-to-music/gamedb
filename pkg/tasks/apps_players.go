@@ -3,8 +3,9 @@ package tasks
 import (
 	"strconv"
 
+	"github.com/gamedb/gamedb/pkg/consumers"
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
 )
 
@@ -26,40 +27,28 @@ func (c AppPlayers) Cron() string {
 
 func (c AppPlayers) work() (err error) {
 
-	gorm, err := sql.GetMySQLClient()
+	db, err := sql.GetMySQLClient()
 	if err != nil {
 		return err
 	}
 
-	gorm = gorm.Select([]string{"id"})
-	gorm = gorm.Order("id ASC")
-	gorm = gorm.Model(&[]sql.App{})
+	db = db.Select([]string{"id"})
+	db = db.Order("id ASC")
+	db = db.Model(&[]sql.App{})
 
 	var appIDs []int
-	gorm = gorm.Pluck("id", &appIDs)
-	if gorm.Error != nil {
-		return gorm.Error
+	db = db.Pluck("id", &appIDs)
+	if db.Error != nil {
+		return db.Error
 	}
 
 	log.Info("Found " + strconv.Itoa(len(appIDs)) + " apps")
 
-	// Chunk appIDs
-	var chunks [][]int
-	for i := 0; i < len(appIDs); i += 10 {
-		end := i + 10
-
-		if end > len(appIDs) {
-			end = len(appIDs)
-		}
-
-		chunks = append(chunks, appIDs[i:end])
-	}
-
-	log.Info("Chunking")
+	chunks := helpers.ChunkInts(appIDs, 10)
 
 	for _, chunk := range chunks {
 
-		err = queue.ProduceAppPlayers(chunk)
+		err = consumers.ProduceAppPlayers(consumers.AppPlayerMessage{IDs: chunk})
 		log.Err(err)
 	}
 

@@ -187,21 +187,6 @@ func ProduceTest(id int) (err error) {
 	}, queueTest)
 }
 
-func ProduceAppPlayers(IDs []int) (err error) {
-
-	time.Sleep(time.Millisecond)
-
-	if len(IDs) == 0 {
-		return nil
-	}
-
-	return produce(&appPlayerMessage{
-		Message: appPlayerMessageInner{
-			IDs: IDs,
-		},
-	}, queueAppPlayer)
-}
-
 func ProduceGroup(ids []string, force bool) (err error) {
 
 	if len(ids) == 0 {
