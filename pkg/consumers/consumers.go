@@ -6,6 +6,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/consumers/framework"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/streadway/amqp"
 )
 
@@ -172,6 +173,11 @@ func ProduceGroup(payload interface{}) error {
 }
 
 func ProducePackage(payload PackageMessage) error {
+
+	if !sql.IsValidPackageID(payload.ID) {
+		return sql.ErrInvalidPackageID
+	}
+
 	return channels[framework.Producer][queuePackages].ProduceInterface(payload)
 }
 
@@ -192,5 +198,10 @@ func ProducePlayerRank(payload PlayerRanksMessage) error {
 }
 
 func ProduceSteam(payload SteamMessage) error {
+
+	if len(payload.AppIDs) == 0 && len(payload.PackageIDs) == 0 {
+		return nil
+	}
+
 	return channels[framework.Producer][queueSteam].ProduceInterface(payload)
 }
