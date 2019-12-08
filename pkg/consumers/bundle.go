@@ -61,7 +61,7 @@ func bundleHandler(messages []*framework.Message) {
 
 		err = updateBundle(&bundle)
 		if err != nil && err != steam.ErrAppNotFound {
-			steamHelper.LogSteamError(err, payload.ID)
+			steamHelper.LogSteamError(err, message.Message.Body)
 			sendToRetryQueue(message)
 			return
 		}

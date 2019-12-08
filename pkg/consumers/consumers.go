@@ -45,7 +45,7 @@ var (
 		{name: queueGroupsNew, consumer: newGroupsHandler},
 		{name: queuePackages, consumer: packageHandler},
 		{name: queuePackagesRegular},
-		{name: queuePlayers},
+		{name: queuePlayers, consumer: playerHandler},
 		{name: queuePlayersRegular},
 		{name: queuePlayerRanks, consumer: playerRanksHandler},
 		{name: queueDelay, consumer: delayHandler, skipHeaders: true},
