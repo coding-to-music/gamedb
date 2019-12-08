@@ -38,7 +38,7 @@ var (
 	QueueDefinitions = []queue{
 		{name: queueApps, consumer: appHandler},
 		{name: queueAppsRegular},
-		{name: queueAppPlayers},
+		{name: queueAppPlayers, consumer: appPlayersHandler},
 		{name: queueBundles, consumer: bundleHandler},
 		{name: queueChanges, consumer: changesHandler},
 		{name: queueGroups},
