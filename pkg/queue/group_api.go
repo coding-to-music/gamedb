@@ -1,17 +1,9 @@
 package queue
 
 import (
-	"encoding/xml"
-	"errors"
-	"strconv"
-	"sync"
-
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/helpers/memcache"
-	"github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/streadway/amqp"
 )
 
@@ -20,187 +12,25 @@ type groupQueueAPI struct {
 
 func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {
 
-	msg := msgs[0]
+	message := appMessage{}
 
-	var err error
-
-	message := groupMessage{}
-	message.OriginalQueue = queueGroupsNew
-
-	err = helpers.Unmarshal(msg.Body, &message)
+	err := helpers.Unmarshal(msgs[0].Body, &message)
 	if err != nil {
-		log.Err(err, msg.Body)
-		ackFail(msg, &message)
+		log.Err(err, msgs[0].Body)
+		ackFail(msgs[0], &message)
 		return
 	}
 
-	//
-	if len(message.Message.IDs) == 0 {
-		log.Err(errors.New("no ids"), msg.Body)
-		ackFail(msg, &message)
-		return
-	}
+	payload := consumers.AppMessage{}
+	payload.ID = message.Message.ID
+	payload.ChangeNumber = message.Message.ChangeNumber
+	payload.VDF = message.Message.VDF
 
-	if len(message.Message.IDs) > 1 {
-		for _, v := range message.Message.IDs {
-			err = produceGroupNew(v)
-			if err != nil {
-				log.Err(err, msg.Body)
-			}
-		}
-		message.ack(msg)
-		return
-	}
-
-	var id = message.Message.IDs[0]
-
-	//
-	if !helpers.IsValidGroupID(id) {
-		log.Err(errors.New("invalid group id: "+id), msg.Body)
-		ackFail(msg, &message)
-		return
-	}
-
-	// See if it's been added
-	group, err := mongo.GetGroup(id)
-	if err == nil {
-		log.Info("Putting group back into first queue")
-		err = ProduceGroup([]string{id}, message.Force)
-		if err != nil {
-			log.Err(err, msg.Body)
-			ackRetry(msg, &message)
-		} else {
-			message.ack(msg)
-		}
-		return
-	} else if err != mongo.ErrNoDocuments {
-		log.Err(err)
-	}
-
-	//
-	var wg sync.WaitGroup
-
-	// Read from steamcommunity.com
-	wg.Add(1)
-	go func() {
-
-		defer wg.Done()
-
-		var err error
-
-		err = updateGroupFromXML(id, &group)
-		if err != nil {
-
-			var ok bool
-
-			// expected element type <memberList> but have <html>
-			_, ok = err.(xml.UnmarshalError)
-			if ok {
-				steam.LogSteamError(err, id)
-				message.ack(msg)
-				return
-			}
-
-			// XML syntax error on line 7
-			_, ok = err.(*xml.SyntaxError)
-			if ok {
-				steam.LogSteamError(err, id)
-				message.ack(msg)
-				return
-			}
-
-			steam.LogSteamError(err, id)
-			ackRetry(msg, &message)
-			return
-		}
-	}()
-
-	// Read from MySQL
-	wg.Add(1)
-	var app sql.App
-	go func() {
-
-		defer wg.Done()
-
-		var err error
-
-		app, err = getAppFromGroup(group)
-		if err != nil {
-			log.Err(err, id)
-			ackRetry(msg, &message)
-			return
-		}
-	}()
-
-	wg.Wait()
-
-	if message.actionTaken {
-		return
-	}
-
-	// Save to MySQL
-	wg.Add(1)
-	go func() {
-
-		defer wg.Done()
-
-		err = saveAppsGroupID(app, group)
-		if err != nil {
-			log.Err(err, id)
-			ackRetry(msg, &message)
-			return
-		}
-	}()
-
-	// Save to Mongo
-	wg.Add(1)
-	go func() {
-
-		defer wg.Done()
-
-		err = saveGroup(group)
-		if err != nil {
-			log.Err(err, id)
-			ackRetry(msg, &message)
-			return
-		}
-	}()
-
-	// Save to Influx
-	wg.Add(1)
-	go func() {
-
-		defer wg.Done()
-
-		err = saveGroupToInflux(group)
-		if err != nil {
-			log.Err(err, id)
-			ackRetry(msg, &message)
-			return
-		}
-	}()
-
-	wg.Wait()
-
-	if message.actionTaken {
-		return
-	}
-
-	// Send PubSub
-	err = memcache.RemoveKeyFromMemCacheViaPubSub(
-		memcache.MemcacheGroup(group.ID64).Key,
-		memcache.MemcacheGroup(strconv.Itoa(group.ID)).Key,
-	)
+	err = consumers.ProduceApp(payload)
 	if err != nil {
-		log.Err(err, id)
+		log.Err(err, msgs[0].Body)
+		ackRetry(msgs[0], &message)
+	} else {
+		message.ack(msgs[0])
 	}
-
-	//
-	err = sendGroupWebsocket([]string{id})
-	if err != nil {
-		log.Err(err, id)
-	}
-
-	//
-	message.ack(msg)
 }

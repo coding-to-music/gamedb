@@ -41,8 +41,8 @@ var (
 		{name: queueAppPlayers, consumer: appPlayersHandler},
 		{name: queueBundles, consumer: bundleHandler},
 		{name: queueChanges, consumer: changesHandler},
-		{name: queueGroups},
-		{name: queueGroupsNew},
+		{name: queueGroups, consumer: groupsHandler},
+		{name: queueGroupsNew, consumer: newGroupsHandler},
 		{name: queuePackages, consumer: packageHandler},
 		{name: queuePackagesRegular},
 		{name: queuePlayers},
@@ -173,8 +173,12 @@ func ProduceChanges(payload ChangesMessage) error {
 	return channels[framework.Producer][queueChanges].ProduceInterface(payload)
 }
 
-func ProduceGroup(payload interface{}) error {
+func ProduceGroup(payload GroupMessage) error {
 	return channels[framework.Producer][queueGroups].ProduceInterface(payload)
+}
+
+func ProduceGroupNew(payload GroupMessage) error {
+	return channels[framework.Producer][queueGroupsNew].ProduceInterface(payload)
 }
 
 func ProducePackage(payload PackageMessage) error {
