@@ -118,28 +118,28 @@ func appHandler(messages []*framework.Message) {
 
 			schema, err := updateAppSchema(&app)
 			if err != nil {
-				steamHelper.LogSteamError(err, id)
+				steamHelper.LogSteamError(err, message.Message.Body)
 				sendToRetryQueue(message)
 				return
 			}
 
 			err = updateAppAchievements(&app, schema)
 			if err != nil {
-				steamHelper.LogSteamError(err, id)
+				steamHelper.LogSteamError(err, message.Message.Body)
 				sendToRetryQueue(message)
 				return
 			}
 
 			err = updateAppNews(&app)
 			if err != nil {
-				steamHelper.LogSteamError(err, id)
+				steamHelper.LogSteamError(err, message.Message.Body)
 				sendToRetryQueue(message)
 				return
 			}
 
 			newItems, err = updateAppItems(&app)
 			if err != nil {
-				steamHelper.LogSteamError(err, id)
+				steamHelper.LogSteamError(err, message.Message.Body)
 				sendToRetryQueue(message)
 				return
 			}
@@ -156,21 +156,21 @@ func appHandler(messages []*framework.Message) {
 
 			err = updateAppDetails(&app)
 			if err != nil && err != steam.ErrAppNotFound {
-				steamHelper.LogSteamError(err, id)
+				steamHelper.LogSteamError(err, message.Message.Body)
 				sendToRetryQueue(message)
 				return
 			}
 
 			err = updateAppReviews(&app)
 			if err != nil {
-				steamHelper.LogSteamError(err, id)
+				steamHelper.LogSteamError(err, message.Message.Body)
 				sendToRetryQueue(message)
 				return
 			}
 
 			sales, err = scrapeApp(&app)
 			if err != nil {
-				steamHelper.LogSteamError(err, id)
+				steamHelper.LogSteamError(err, message.Message.Body)
 				sendToRetryQueue(message)
 				return
 			}
@@ -364,7 +364,7 @@ func appHandler(messages []*framework.Message) {
 
 		// Queue group
 		if app.GroupID != "" {
-			err = ProduceGroup([]string{app.GroupID})
+			err = ProduceGroup(GroupMessage{IDs: []string{app.GroupID}})
 			log.Err(err)
 		}
 
