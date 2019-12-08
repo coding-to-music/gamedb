@@ -43,7 +43,7 @@ var (
 		{name: queueChanges, consumer: changesHandler},
 		{name: queueGroups},
 		{name: queueGroupsNew},
-		{name: queuePackages},
+		{name: queuePackages, consumer: packageHandler},
 		{name: queuePackagesRegular},
 		{name: queuePlayers},
 		{name: queuePlayersRegular},
