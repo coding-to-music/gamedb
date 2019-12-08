@@ -68,32 +68,31 @@ const (
 	HeaderLastQueue  = "last-queue"
 )
 
-func (message Message) Attempt() (i int32) {
+func (message Message) Attempt() (i int) {
 
 	i = 1
-	found := false
 	if val, ok := message.Message.Headers[HeaderAttempt]; ok {
 		if val2, ok2 := val.(int32); ok2 {
-			i = val2
-			found = true
+			i = int(val2)
 		}
 	}
 
-	// Write it onto the message so it's acurate when
-	// produced by something outside of this library
-	if !found {
-		message.Message.Headers[HeaderAttempt] = i
-	}
+	message.Message.Headers[HeaderAttempt] = i
 
 	return i
 }
 
 func (message Message) FirstSeen() (i time.Time) {
+
+	i = time.Now()
 	if val, ok := message.Message.Headers[HeaderFirstSeen]; ok {
 		if val2, ok2 := val.(int64); ok2 {
 			i = time.Unix(val2, 0)
 		}
 	}
+
+	message.Message.Headers[HeaderFirstSeen] = i
+
 	return i
 }
 
@@ -108,11 +107,16 @@ func (message Message) FirstQueue() (i QueueName) {
 }
 
 func (message Message) LastSeen() (i time.Time) {
+
+	i = time.Now()
 	if val, ok := message.Message.Headers[HeaderFirstQueue]; ok {
 		if val2, ok2 := val.(int64); ok2 {
 			i = time.Unix(val2, 0)
 		}
 	}
+
+	message.Message.Headers[HeaderFirstQueue] = i
+
 	return i
 }
 
