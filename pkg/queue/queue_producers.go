@@ -139,33 +139,6 @@ func ProduceApp(payload AppPayload) (err error) {
 	return produce(message, queueApps)
 }
 
-type PackagePayload struct {
-	ID           int
-	ChangeNumber int
-	VDF          map[string]interface{}
-	Force        bool
-}
-
-func ProducePackage(payload PackagePayload) (err error) {
-
-	time.Sleep(time.Millisecond)
-
-	if !sql.IsValidPackageID(payload.ID) {
-		return sql.ErrInvalidPackageID
-	}
-
-	message := &packageMessage{
-		Message: packageMessageInner{
-			ID:           payload.ID,
-			ChangeNumber: payload.ChangeNumber,
-			VDF:          payload.VDF,
-		},
-	}
-	message.Force = payload.Force
-
-	return produce(message, queuePackages)
-}
-
 type PlayerPayload struct {
 	ID         int64
 	PBResponse *protobuf.CMsgClientFriendProfileInfoResponse
@@ -201,18 +174,6 @@ func ProducePlayer(payload PlayerPayload) (err error) {
 	message.Force = payload.Force
 
 	return produce(message, queuePlayers)
-}
-
-func ProduceChange(apps map[int]int, packages map[int]int) (err error) {
-
-	time.Sleep(time.Millisecond)
-
-	return produce(&changeMessage{
-		Message: changeMessageInner{
-			AppIDs:     apps,
-			PackageIDs: packages,
-		},
-	}, queueChanges)
 }
 
 func ProduceTest(id int) (err error) {
