@@ -157,6 +157,11 @@ func ProduceAppRegular(payload AppMessage) error {
 }
 
 func ProduceAppPlayers(payload AppPlayerMessage) error {
+
+	if len(payload.IDs) == 0 {
+		return nil
+	}
+
 	return channels[framework.Producer][queueAppPlayers].ProduceInterface(payload)
 }
 
