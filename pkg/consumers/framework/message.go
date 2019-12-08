@@ -111,6 +111,7 @@ func (message Message) LastSeen() (i time.Time) {
 }
 
 func (message Message) FirstQueue() (i QueueName) {
+
 	i = ""
 	if val, ok := message.Message.Headers[HeaderFirstQueue]; ok {
 		if val2, ok2 := val.(string); ok2 {
@@ -121,6 +122,7 @@ func (message Message) FirstQueue() (i QueueName) {
 }
 
 func (message Message) LastQueue() (i QueueName) {
+
 	i = ""
 	if val, ok := message.Message.Headers[HeaderLastQueue]; ok {
 		if val2, ok2 := val.(string); ok2 {

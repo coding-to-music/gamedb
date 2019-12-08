@@ -39,7 +39,7 @@ var (
 		{name: queueAppsRegular},
 		{name: queueAppPlayers},
 		{name: queueBundles, consumer: bundleHandler},
-		{name: queueChanges},
+		{name: queueChanges, consumer: changesHandler},
 		{name: queueGroups},
 		{name: queueGroupsNew},
 		{name: queuePackages},
@@ -47,17 +47,17 @@ var (
 		{name: queuePlayers},
 		{name: queuePlayersRegular},
 		{name: queuePlayerRanks, consumer: playerRanksHandler},
-		{name: queueSteam, consumer: nil},
 		{name: queueDelay, consumer: delayHandler, skipHeaders: true},
-		{name: queueFailed},
+		{name: queueSteam, consumer: nil},
+		{name: queueFailed, consumer: nil},
 	}
 
 	QueueSteamDefinitions = []queue{
+		{name: queueSteam, consumer: steamHandler},
 		{name: queueApps, consumer: nil},
 		{name: queuePackages, consumer: nil},
 		{name: queuePlayers, consumer: nil},
 		{name: queueChanges, consumer: nil},
-		{name: queueSteam, consumer: steamHandler},
 	}
 )
 
