@@ -44,7 +44,7 @@ func bundleHandler(messages []*framework.Message) {
 		// Load current bundle
 		gorm, err := sql.GetMySQLClient()
 		if err != nil {
-			log.Err(err, message.Message.Body)
+			log.Err(err)
 			sendToRetryQueue(message)
 			return
 		}
@@ -52,7 +52,7 @@ func bundleHandler(messages []*framework.Message) {
 		bundle := sql.Bundle{}
 		gorm = gorm.FirstOrInit(&bundle, sql.Bundle{ID: payload.ID})
 		if gorm.Error != nil {
-			log.Err(gorm.Error, message.Message.Body)
+			log.Err(gorm.Error, payload.ID)
 			sendToRetryQueue(message)
 			return
 		}
@@ -61,7 +61,7 @@ func bundleHandler(messages []*framework.Message) {
 
 		err = updateBundle(&bundle)
 		if err != nil && err != steam.ErrAppNotFound {
-			steamHelper.LogSteamError(err, message.Message.Body)
+			steamHelper.LogSteamError(err, payload.ID)
 			sendToRetryQueue(message)
 			return
 		}
@@ -76,7 +76,7 @@ func bundleHandler(messages []*framework.Message) {
 
 			gorm = gorm.Save(&bundle)
 			if gorm.Error != nil {
-				log.Err(gorm.Error, message.Message.Body)
+				log.Err(gorm.Error, payload.ID)
 				sendToRetryQueue(message)
 				return
 			}
@@ -92,7 +92,7 @@ func bundleHandler(messages []*framework.Message) {
 
 			err = saveBundlePriceToMongo(bundle, oldBundle)
 			if err != nil {
-				log.Err(err, message.Message.Body)
+				log.Err(err, payload.ID)
 				sendToRetryQueue(message)
 				return
 			}

@@ -91,8 +91,8 @@ func changesHandler(messages []*framework.Message) {
 		log.Err(err)
 
 		// Send to Discord
-		err = sendChangeToDiscord(changeSlice, appMap, packageMap)
-		log.Err(err)
+		// err = sendChangeToDiscord(changeSlice, appMap, packageMap)
+		// log.Err(err)
 
 		message.Ack()
 	}
@@ -170,8 +170,6 @@ func sendChangesWebsocket(changes []*mongo.Change, appMap map[int]string, packag
 
 // todo, add packages to return
 func sendChangeToDiscord(changes []*mongo.Change, appMap map[int]string, packageMap map[int]string) (err error) {
-
-	return // Disable for now
 
 	if config.IsProd() {
 

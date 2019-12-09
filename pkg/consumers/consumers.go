@@ -1,10 +1,13 @@
 package consumers
 
 import (
+	"errors"
+	"strconv"
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/consumers/framework"
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/streadway/amqp"
@@ -77,7 +80,7 @@ func Init(definitions []queue, consume bool) {
 		heartbeat = time.Hour
 	}
 
-	connection, err := framework.NewConnection("Producer", amqp.Config{Heartbeat: heartbeat})
+	producerConnection, err := framework.NewConnection("Producer", amqp.Config{Heartbeat: heartbeat})
 	if err != nil {
 		log.Info(err)
 		return
@@ -85,7 +88,7 @@ func Init(definitions []queue, consume bool) {
 
 	for _, queue := range definitions {
 
-		q, err := framework.NewChannel(connection, queue.name, queue.prefetchCount, queue.batchSize, queue.consumer, !queue.skipHeaders)
+		q, err := framework.NewChannel(producerConnection, queue.name, 10, queue.batchSize, queue.consumer, !queue.skipHeaders)
 		if err != nil {
 			log.Critical(string(queue.name), err)
 		} else {
@@ -96,7 +99,7 @@ func Init(definitions []queue, consume bool) {
 	// Consume
 	if consume {
 
-		connection, err := framework.NewConnection("Consumer", amqp.Config{Heartbeat: heartbeat})
+		consumerConnection, err := framework.NewConnection("Consumer", amqp.Config{Heartbeat: heartbeat})
 		if err != nil {
 			log.Info(err)
 			return
@@ -105,7 +108,7 @@ func Init(definitions []queue, consume bool) {
 		for _, queue := range definitions {
 			if queue.consumer != nil {
 
-				q, err := framework.NewChannel(connection, queue.name, queue.prefetchCount, queue.batchSize, queue.consumer, !queue.skipHeaders)
+				q, err := framework.NewChannel(consumerConnection, queue.name, 10, queue.batchSize, queue.consumer, !queue.skipHeaders)
 				if err != nil {
 					log.Critical(string(queue.name), err)
 					continue
@@ -145,6 +148,11 @@ func sendToFirstQueue(message *framework.Message) {
 
 // Producers
 func ProduceApp(payload AppMessage) error {
+
+	if !helpers.IsValidAppID(payload.ID) {
+		return sql.ErrInvalidAppID
+	}
+
 	return channels[framework.Producer][queueApps].ProduceInterface(payload)
 }
 
@@ -191,6 +199,11 @@ func ProducePackageRegular(payload PackageMessage) error {
 }
 
 func ProducePlayer(payload PlayerMessage) error {
+
+	if !helpers.IsValidPlayerID(payload.ID) {
+		return errors.New("invalid player id: " + strconv.FormatInt(payload.ID, 10))
+	}
+
 	return channels[framework.Producer][queuePlayers].ProduceInterface(payload)
 }
 

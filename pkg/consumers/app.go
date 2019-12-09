@@ -50,31 +50,31 @@ func appHandler(messages []*framework.Message) {
 		if err != nil {
 			log.Err(err, message.Message.Body)
 			sendToFailQueue(message)
-			return
+			continue
 		}
 
 		var id = payload.ID
 
 		if !helpers.IsValidAppID(id) {
-			log.Err(err, message.Message.Body)
+			log.Err(err, payload.ID)
 			sendToFailQueue(message)
-			return
+			continue
 		}
 
 		// Load current app
 		gorm, err := sql.GetMySQLClient()
 		if err != nil {
-			log.Err(err, message.Message.Body)
+			log.Err(err)
 			sendToRetryQueue(message)
-			return
+			continue
 		}
 
 		app := sql.App{}
 		gorm = gorm.FirstOrInit(&app, sql.App{ID: id})
 		if gorm.Error != nil {
-			log.Err(gorm.Error, message.Message.Body)
+			log.Err(gorm.Error, payload.ID)
 			sendToRetryQueue(message)
-			return
+			continue
 		}
 
 		var newApp bool
@@ -88,7 +88,7 @@ func appHandler(messages []*framework.Message) {
 				if app.ChangeNumber >= payload.ChangeNumber && payload.ChangeNumber > 0 {
 					log.Info("Skipping app, updated in last day")
 					message.Ack()
-					return
+					continue
 				}
 			}
 		}
@@ -101,7 +101,7 @@ func appHandler(messages []*framework.Message) {
 		if err != nil {
 			log.Err(err, message.Message.Body)
 			sendToRetryQueue(message)
-			return
+			continue
 		}
 
 		//
@@ -118,28 +118,28 @@ func appHandler(messages []*framework.Message) {
 
 			schema, err := updateAppSchema(&app)
 			if err != nil {
-				steamHelper.LogSteamError(err, message.Message.Body)
+				steamHelper.LogSteamError(err, payload.ID)
 				sendToRetryQueue(message)
 				return
 			}
 
 			err = updateAppAchievements(&app, schema)
 			if err != nil {
-				steamHelper.LogSteamError(err, message.Message.Body)
+				steamHelper.LogSteamError(err, payload.ID)
 				sendToRetryQueue(message)
 				return
 			}
 
 			err = updateAppNews(&app)
 			if err != nil {
-				steamHelper.LogSteamError(err, message.Message.Body)
+				steamHelper.LogSteamError(err, payload.ID)
 				sendToRetryQueue(message)
 				return
 			}
 
 			newItems, err = updateAppItems(&app)
 			if err != nil {
-				steamHelper.LogSteamError(err, message.Message.Body)
+				steamHelper.LogSteamError(err, payload.ID)
 				sendToRetryQueue(message)
 				return
 			}
@@ -156,21 +156,21 @@ func appHandler(messages []*framework.Message) {
 
 			err = updateAppDetails(&app)
 			if err != nil && err != steam.ErrAppNotFound {
-				steamHelper.LogSteamError(err, message.Message.Body)
+				steamHelper.LogSteamError(err, payload.ID)
 				sendToRetryQueue(message)
 				return
 			}
 
 			err = updateAppReviews(&app)
 			if err != nil {
-				steamHelper.LogSteamError(err, message.Message.Body)
+				steamHelper.LogSteamError(err, payload.ID)
 				sendToRetryQueue(message)
 				return
 			}
 
 			sales, err = scrapeApp(&app)
 			if err != nil {
-				steamHelper.LogSteamError(err, message.Message.Body)
+				steamHelper.LogSteamError(err, payload.ID)
 				sendToRetryQueue(message)
 				return
 			}
@@ -200,7 +200,7 @@ func appHandler(messages []*framework.Message) {
 
 			err = updateAppTwitch(&app)
 			if err != nil {
-				log.Err(err, message.Message.Body)
+				log.Err(err, payload.ID)
 				sendToRetryQueue(message)
 				return
 			}
@@ -217,21 +217,21 @@ func appHandler(messages []*framework.Message) {
 
 			err = updateAppPlaytimeStats(&app)
 			if err != nil {
-				log.Err(err, message.Message.Body)
+				log.Err(err, payload.ID)
 				sendToRetryQueue(message)
 				return
 			}
 
 			currentAppItems, err = getCurrentAppItems(app.ID)
 			if err != nil {
-				log.Err(err, message.Message.Body)
+				log.Err(err, payload.ID)
 				sendToRetryQueue(message)
 				return
 			}
 
 			err = getWishlistCount(&app)
 			if err != nil {
-				log.Err(err, message.Message.Body)
+				log.Err(err, payload.ID)
 				sendToRetryQueue(message)
 				return
 			}
@@ -253,21 +253,21 @@ func appHandler(messages []*framework.Message) {
 
 			err = savePriceChanges(appBeforeUpdate, app)
 			if err != nil {
-				log.Err(err, message.Message.Body)
+				log.Err(err, payload.ID)
 				sendToRetryQueue(message)
 				return
 			}
 
 			err = saveAppItems(app.ID, newItems, currentAppItems)
 			if err != nil {
-				log.Err(err, message.Message.Body)
+				log.Err(err, payload.ID)
 				sendToRetryQueue(message)
 				return
 			}
 
 			err = saveSales(app, sales)
 			if err != nil {
-				log.Err(err, message.Message.Body)
+				log.Err(err, payload.ID)
 				sendToRetryQueue(message)
 				return
 			}
@@ -283,7 +283,7 @@ func appHandler(messages []*framework.Message) {
 
 			gorm = gorm.Save(&app)
 			if gorm.Error != nil {
-				log.Err(gorm.Error, message.Message.Body)
+				log.Err(gorm.Error, payload.ID)
 				sendToRetryQueue(message)
 				return
 			}
@@ -299,7 +299,7 @@ func appHandler(messages []*framework.Message) {
 
 			err = saveAppToInflux(app)
 			if err != nil {
-				log.Err(err, message.Message.Body)
+				log.Err(err, payload.ID)
 				sendToRetryQueue(message)
 				return
 			}
@@ -359,7 +359,7 @@ func appHandler(messages []*framework.Message) {
 		wg.Wait()
 
 		if message.ActionTaken {
-			return
+			continue
 		}
 
 		// Queue group

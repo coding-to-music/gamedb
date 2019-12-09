@@ -53,7 +53,7 @@ func groupsHandler(messages []*framework.Message) {
 
 			group, err := mongo.GetGroup(groupID)
 			if err != nil && err != mongo.ErrNoDocuments {
-				log.Err(err, message.Message.Body)
+				log.Err(err, payload.IDs)
 				sendToRetryQueue(message)
 				continue
 			}
@@ -68,7 +68,7 @@ func groupsHandler(messages []*framework.Message) {
 
 				group.Type, err = getGroupType(groupID)
 				if err != nil {
-					steam.LogSteamError(err, message.Message.Body)
+					steam.LogSteamError(err, payload.IDs)
 					sendToRetryQueue(message)
 					continue
 				}
@@ -114,7 +114,7 @@ func groupsHandler(messages []*framework.Message) {
 			// Get trending value
 			err = getGroupTrending(&group)
 			if err != nil {
-				log.Err(err, message.Message.Body)
+				log.Err(err, payload.IDs)
 				sendToRetryQueue(message)
 				continue
 			}
@@ -134,7 +134,7 @@ func groupsHandler(messages []*framework.Message) {
 				app, err = getAppFromGroup(group)
 				err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
 				if err != nil {
-					log.Err(err, message.Message.Body)
+					log.Err(err, payload.IDs)
 					sendToRetryQueue(message)
 					return
 				}
@@ -155,7 +155,7 @@ func groupsHandler(messages []*framework.Message) {
 
 				err = saveAppsGroupID(app, group)
 				if err != nil {
-					log.Err(err, message.Message.Body)
+					log.Err(err, payload.IDs)
 					sendToRetryQueue(message)
 					return
 				}
@@ -169,7 +169,7 @@ func groupsHandler(messages []*framework.Message) {
 
 				err = saveGroup(group)
 				if err != nil {
-					log.Err(err, message.Message.Body)
+					log.Err(err, payload.IDs)
 					sendToRetryQueue(message)
 					return
 				}
@@ -183,7 +183,7 @@ func groupsHandler(messages []*framework.Message) {
 
 				err = saveGroupToInflux(group)
 				if err != nil {
-					log.Err(err, message.Message.Body)
+					log.Err(err, payload.IDs)
 					sendToRetryQueue(message)
 					return
 				}

@@ -44,7 +44,7 @@ func playerHandler(messages []*framework.Message) {
 		err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
 		if err != nil {
 
-			log.Err(err, message.Message.Body)
+			log.Err(err, payload.ID)
 			if err == mongo.ErrInvalidPlayerID {
 				sendToFailQueue(message)
 			} else {
@@ -78,49 +78,49 @@ func playerHandler(messages []*framework.Message) {
 
 			err = updatePlayerGames(&player)
 			if err != nil {
-				steamHelper.LogSteamError(err, message.Message.Body)
+				steamHelper.LogSteamError(err, payload.ID)
 				sendToRetryQueue(message)
 				return
 			}
 
 			err = updatePlayerRecentGames(&player)
 			if err != nil {
-				steamHelper.LogSteamError(err, message.Message.Body)
+				steamHelper.LogSteamError(err, payload.ID)
 				sendToRetryQueue(message)
 				return
 			}
 
 			err = updatePlayerBadges(&player)
 			if err != nil {
-				steamHelper.LogSteamError(err, message.Message.Body)
+				steamHelper.LogSteamError(err, payload.ID)
 				sendToRetryQueue(message)
 				return
 			}
 
 			err = updatePlayerFriends(&player)
 			if err != nil {
-				steamHelper.LogSteamError(err, message.Message.Body)
+				steamHelper.LogSteamError(err, payload.ID)
 				sendToRetryQueue(message)
 				return
 			}
 
 			err = updatePlayerLevel(&player)
 			if err != nil {
-				steamHelper.LogSteamError(err, message.Message.Body)
+				steamHelper.LogSteamError(err, payload.ID)
 				sendToRetryQueue(message)
 				return
 			}
 
 			err = updatePlayerBans(&player)
 			if err != nil {
-				steamHelper.LogSteamError(err, message.Message.Body)
+				steamHelper.LogSteamError(err, payload.ID)
 				sendToRetryQueue(message)
 				return
 			}
 
 			err = updatePlayerGroups(&player)
 			if err != nil {
-				steamHelper.LogSteamError(err, message.Message.Body)
+				steamHelper.LogSteamError(err, payload.ID)
 				sendToRetryQueue(message)
 				return
 			}

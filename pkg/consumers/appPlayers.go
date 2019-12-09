@@ -40,7 +40,7 @@ func appPlayersHandler(messages []*framework.Message) {
 		appMap := map[int]sql.App{}
 		apps, err := sql.GetAppsByID(payload.IDs, []string{"id", "twitch_id"})
 		if err != nil {
-			log.Err(err, message.Message.Body)
+			log.Err(err, payload.IDs)
 			sendToRetryQueue(message)
 			return
 		}
@@ -66,7 +66,7 @@ func appPlayersHandler(messages []*framework.Message) {
 					var err error
 					viewers, err = getAppTwitchStreamers(app.TwitchID)
 					if err != nil {
-						log.Err(err, message.Message.Body)
+						log.Err(err, payload.IDs)
 						sendToRetryQueue(message)
 						return
 					}
@@ -81,7 +81,7 @@ func appPlayersHandler(messages []*framework.Message) {
 					var err error
 					appPlayersWeek, err = getAppTopPlayersWeek(appID)
 					if err != nil {
-						log.Err(err, message.Message.Body)
+						log.Err(err, payload.IDs)
 						sendToRetryQueue(message)
 						return
 					}
@@ -96,7 +96,7 @@ func appPlayersHandler(messages []*framework.Message) {
 					var err error
 					appPlayersWeekAverage, err = getAppAveragePlayersWeek(appID)
 					if err != nil {
-						log.Err(err, message.Message.Body)
+						log.Err(err, payload.IDs)
 						sendToRetryQueue(message)
 						return
 					}
@@ -111,7 +111,7 @@ func appPlayersHandler(messages []*framework.Message) {
 					var err error
 					appPlayersAlltime, err = getAppTopPlayersAlltime(appID)
 					if err != nil {
-						log.Err(err, message.Message.Body)
+						log.Err(err, payload.IDs)
 						sendToRetryQueue(message)
 						return
 					}
@@ -126,7 +126,7 @@ func appPlayersHandler(messages []*framework.Message) {
 					var err error
 					appTrend, err = getAppTrendValue(appID)
 					if err != nil {
-						log.Err(err, message.Message.Body)
+						log.Err(err, payload.IDs)
 						sendToRetryQueue(message)
 						return
 					}
@@ -141,7 +141,7 @@ func appPlayersHandler(messages []*framework.Message) {
 					var err error
 					appPlayersNow, err = getAppOnlinePlayers(appID)
 					if err != nil {
-						steam.LogSteamError(err, message.Message.Body)
+						steam.LogSteamError(err, payload.IDs)
 						sendToRetryQueue(message)
 						return
 					}
@@ -161,7 +161,7 @@ func appPlayersHandler(messages []*framework.Message) {
 
 					err = saveAppPlayerToInflux(appID, viewers, appPlayersNow)
 					if err != nil {
-						log.Err(err, message.Message.Body)
+						log.Err(err, payload.IDs)
 						sendToRetryQueue(message)
 						return
 					}
@@ -175,7 +175,7 @@ func appPlayersHandler(messages []*framework.Message) {
 
 					err = updateAppPlayerInfoRow(appID, appTrend, appPlayersWeek, appPlayersAlltime, appPlayersWeekAverage)
 					if err != nil {
-						log.Err(err, message.Message.Body)
+						log.Err(err, payload.IDs)
 						sendToRetryQueue(message)
 						return
 					}

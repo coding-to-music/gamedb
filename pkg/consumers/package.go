@@ -47,7 +47,7 @@ func packageHandler(messages []*framework.Message) {
 		var id = payload.ID
 
 		if !sql.IsValidPackageID(id) {
-			log.Err(err, message.Message.Body)
+			log.Err(err, payload.ID)
 			sendToFailQueue(message)
 			return
 		}
@@ -55,7 +55,7 @@ func packageHandler(messages []*framework.Message) {
 		// Load current package
 		gorm, err := sql.GetMySQLClient()
 		if err != nil {
-			log.Err(err, message.Message.Body)
+			log.Err(err)
 			sendToRetryQueue(message)
 			return
 		}
@@ -63,7 +63,7 @@ func packageHandler(messages []*framework.Message) {
 		pack := sql.Package{}
 		gorm = gorm.FirstOrInit(&pack, sql.Package{ID: id})
 		if gorm.Error != nil {
-			log.Err(gorm.Error, message.Message.Body)
+			log.Err(gorm.Error, payload.ID)
 			sendToRetryQueue(message)
 			return
 		}
@@ -89,7 +89,7 @@ func packageHandler(messages []*framework.Message) {
 		// Update from PICS
 		err = updatePackageFromPICS(&pack, message, payload)
 		if err != nil {
-			log.Err(err, message.Message.Body)
+			log.Err(err, payload.ID)
 			sendToRetryQueue(message)
 			return
 		}
@@ -112,7 +112,7 @@ func packageHandler(messages []*framework.Message) {
 		// Scrape
 		err = scrapePackage(&pack)
 		if err != nil {
-			steamHelper.LogSteamError(err, message.Message.Body)
+			steamHelper.LogSteamError(err, payload.ID)
 			sendToRetryQueue(message)
 			return
 		}
@@ -120,7 +120,7 @@ func packageHandler(messages []*framework.Message) {
 		// Set package name to app name
 		err = updatePackageNameFromApp(&pack)
 		if err != nil {
-			log.Err(err, message.Message.Body)
+			log.Err(err, payload.ID)
 			sendToRetryQueue(message)
 			return
 		}
@@ -128,7 +128,7 @@ func packageHandler(messages []*framework.Message) {
 		// Save price changes
 		err = savePriceChanges(packageBeforeUpdate, pack)
 		if err != nil {
-			log.Err(err, message.Message.Body)
+			log.Err(err, payload.ID)
 			sendToRetryQueue(message)
 			return
 		}
@@ -136,7 +136,7 @@ func packageHandler(messages []*framework.Message) {
 		// Save new data
 		gorm = gorm.Save(&pack)
 		if gorm.Error != nil {
-			log.Err(gorm.Error, message.Message.Body)
+			log.Err(gorm.Error, payload.ID)
 			sendToRetryQueue(message)
 			return
 		}
@@ -144,7 +144,7 @@ func packageHandler(messages []*framework.Message) {
 		// Save to InfluxDB
 		err = savePackageToInflux(pack)
 		if err != nil {
-			log.Err(err, message.Message.Body)
+			log.Err(err, payload.ID)
 			sendToRetryQueue(message)
 			return
 		}
