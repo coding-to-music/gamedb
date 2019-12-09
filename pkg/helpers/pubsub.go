@@ -38,7 +38,7 @@ func GetPubSub() (client *pubsub.Client, ctx context.Context, err error) {
 	ctx = context.Background()
 
 	if pubSubClient == nil {
-		log.Info("Getting PubSub")
+		log.Info("Connecting to PubSub")
 		pubSubClient, err = pubsub.NewClient(ctx, config.Config.GoogleProject.Get())
 	}
 

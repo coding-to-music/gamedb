@@ -82,7 +82,7 @@ func GetAPIKey(tag string, getUnusedKey bool) (err error) {
 
 		config.Config.SteamAPIKey.SetDefault(row.Key)
 
-		log.Info("Using key: " + config.GetSteamKeyTag())
+		log.Info("Using Steam API key: " + config.GetSteamKeyTag())
 
 		return nil
 	}

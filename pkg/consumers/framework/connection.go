@@ -66,7 +66,7 @@ func (connection *Connection) connect() error {
 		return nil
 	}
 
-	log.Info("Creating Rabbit connection")
+	log.Info("Creating Rabbit connection: " + connection.name)
 
 	operation := func() (err error) {
 

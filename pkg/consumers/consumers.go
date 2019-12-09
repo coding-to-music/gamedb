@@ -77,7 +77,7 @@ func Init(definitions []queue, consume bool) {
 		heartbeat = time.Hour
 	}
 
-	connection, err := framework.NewConnection("producer", amqp.Config{Heartbeat: heartbeat})
+	connection, err := framework.NewConnection("Producer", amqp.Config{Heartbeat: heartbeat})
 	if err != nil {
 		log.Info(err)
 		return
@@ -96,7 +96,7 @@ func Init(definitions []queue, consume bool) {
 	// Consume
 	if consume {
 
-		connection, err := framework.NewConnection("consumer", amqp.Config{Heartbeat: heartbeat})
+		connection, err := framework.NewConnection("Consumer", amqp.Config{Heartbeat: heartbeat})
 		if err != nil {
 			log.Info(err)
 			return
