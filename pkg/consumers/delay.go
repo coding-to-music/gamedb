@@ -25,7 +25,7 @@ func delayHandler(messages []*framework.Message) {
 		if message.LastSeen().Add(time.Second * time.Duration(int64(seconds))).Before(time.Now()) {
 			sendToFirstQueue(message)
 		} else {
-			sendToBackOfQueue(message)
+			sendToRetryQueue(message)
 		}
 	}
 }

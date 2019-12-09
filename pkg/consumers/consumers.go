@@ -128,10 +128,6 @@ func sendToFailQueue(message *framework.Message) {
 	message.SendToQueue(channels[framework.Producer][queueFailed])
 }
 
-func sendToBackOfQueue(message *framework.Message) {
-	message.SendToQueue(message.Channel)
-}
-
 func sendToRetryQueue(message *framework.Message) {
 	message.SendToQueue(channels[framework.Producer][queueDelay])
 }
