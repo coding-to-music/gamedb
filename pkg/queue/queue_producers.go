@@ -2,16 +2,13 @@ package queue
 
 import (
 	"errors"
-	"strconv"
 	"strings"
 	"time"
 
-	"github.com/Philipp15b/go-steam/protocol/protobuf"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/sql"
 )
 
 var ErrInQueue = errors.New("already in queue")
@@ -110,70 +107,6 @@ func ProduceToSteam(payload SteamPayload) (err error) {
 	message.Force = payload.Force
 
 	return produce(message, QueueSteam)
-}
-
-type AppPayload struct {
-	ID           int
-	ChangeNumber int
-	VDF          map[string]interface{}
-	Force        bool
-}
-
-func ProduceApp(payload AppPayload) (err error) {
-
-	time.Sleep(time.Millisecond)
-
-	if !helpers.IsValidAppID(payload.ID) {
-		return sql.ErrInvalidAppID
-	}
-
-	message := &appMessage{
-		Message: appMessageInner{
-			ID:           payload.ID,
-			ChangeNumber: payload.ChangeNumber,
-			VDF:          payload.VDF,
-		},
-	}
-	message.Force = payload.Force
-
-	return produce(message, queueApps)
-}
-
-type PlayerPayload struct {
-	ID         int64
-	PBResponse *protobuf.CMsgClientFriendProfileInfoResponse
-	Force      bool
-}
-
-func ProducePlayer(payload PlayerPayload) (err error) {
-
-	time.Sleep(time.Millisecond)
-
-	if payload.PBResponse == nil {
-		payload.PBResponse = &protobuf.CMsgClientFriendProfileInfoResponse{}
-	}
-
-	if !helpers.IsValidPlayerID(payload.ID) {
-		return errors.New("invalid player id: " + strconv.FormatInt(payload.ID, 10))
-	}
-
-	message := &playerMessage{
-		Message: playerMessageInner{
-			ID:            payload.ID,
-			Eresult:       payload.PBResponse.GetEresult(),
-			SteamidFriend: int64(payload.PBResponse.GetSteamidFriend()),
-			TimeCreated:   payload.PBResponse.GetTimeCreated(),
-			RealName:      payload.PBResponse.GetRealName(),
-			CityName:      payload.PBResponse.GetCityName(),
-			StateName:     payload.PBResponse.GetStateName(),
-			CountryName:   payload.PBResponse.GetCountryName(),
-			Headline:      payload.PBResponse.GetHeadline(),
-			Summary:       payload.PBResponse.GetSummary(),
-		},
-	}
-	message.Force = payload.Force
-
-	return produce(message, queuePlayers)
 }
 
 func ProduceTest(id int) (err error) {
