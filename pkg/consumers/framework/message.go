@@ -12,6 +12,8 @@ type Message struct {
 	Channel     *Channel
 	Message     *amqp.Delivery
 	ActionTaken bool
+	BatchTotal  int
+	BatchItem   int
 	sync.Mutex
 }
 
@@ -58,6 +60,10 @@ func (message *Message) SendToQueue(channels ...*Channel) {
 	if err == nil {
 		message.Ack()
 	}
+}
+
+func (message *Message) PercentOfBatch() float64 {
+	return float64(message.BatchItem) / float64(message.BatchTotal) * 100
 }
 
 const (
