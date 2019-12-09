@@ -126,9 +126,9 @@ func (channel *Channel) connect() error {
 
 func (channel *Channel) Produce(message *Message) error {
 
-	if channel == nil {
-		return errors.New("queue has been removed")
-	}
+	// if channel == nil {
+	// 	return errors.New("queue has been removed")
+	// }
 
 	// Headers
 	if channel.updateHeaders {
