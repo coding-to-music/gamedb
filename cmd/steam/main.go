@@ -258,11 +258,13 @@ func (ph packetHandler) handleChangesSince(packet *protocol.Packet) {
 	var apps []*protobuf.CMsgClientPICSProductInfoRequest_AppInfo
 	var packages []*protobuf.CMsgClientPICSProductInfoRequest_PackageInfo
 
+	var changes = strconv.FormatUint(uint64(body.GetSinceChangeNumber()), 10) + " (latest: " + strconv.FormatUint(uint64(body.GetCurrentChangeNumber()), 10) + ")"
+
 	// Apps
 	appChanges := body.GetAppChanges()
 	if len(appChanges) > 0 {
 
-		log.Info(strconv.Itoa(len(appChanges)) + " apps since change " + strconv.FormatUint(uint64(body.GetSinceChangeNumber()), 10))
+		log.Info(strconv.Itoa(len(appChanges)) + " apps since change " + changes)
 
 		for _, appChange := range appChanges {
 
@@ -278,7 +280,9 @@ func (ph packetHandler) handleChangesSince(packet *protocol.Packet) {
 	// Packages
 	packageChanges := body.GetPackageChanges()
 	if len(packageChanges) > 0 {
-		log.Info(strconv.Itoa(len(packageChanges)) + " packages since change " + strconv.FormatUint(uint64(body.GetSinceChangeNumber()), 10))
+
+		log.Info(strconv.Itoa(len(packageChanges)) + " pack since change " + changes)
+
 		for _, packageChange := range packageChanges {
 
 			packageMap[packageChange.GetChangeNumber()] = packageChange.GetPackageid()
