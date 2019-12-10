@@ -35,6 +35,7 @@ func main() {
 		return
 	}
 
+	// Start consumers for send to
 	consumers.Init(consumers.QueueDefinitions, false)
 
 	//
