@@ -39,14 +39,14 @@ func queuesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	err := memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &highcharts, func() (interface{}, error) {
 
 		fields := []string{
-			// `"queue"='GameDB_CS_Apps'`,
-			// `"queue"='GameDB_CS_Packages'`,
-			// `"queue"='GameDB_CS_Profiles'`,
-			`"queue"='GameDB_Go_Apps'`,
-			`"queue"='GameDB_Go_Changes'`,
-			`"queue"='GameDB_Go_Groups'`,
-			`"queue"='GameDB_Go_Packages'`,
-			`"queue"='GameDB_Go_Profiles'`,
+			`"queue"='GDB_Apps'`,
+			`"queue"='GDB_Bundles'`,
+			`"queue"='GDB_Changes'`,
+			`"queue"='GDB_Groups'`,
+			`"queue"='GDB_Packages'`,
+			`"queue"='GDB_Player_Ranks'`,
+			`"queue"='GDB_Players'`,
+			`"queue"='GDB_Steam'`,
 		}
 
 		builder := influxql.NewBuilder()
