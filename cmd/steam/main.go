@@ -15,6 +15,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/queue"
 )
 
 const (
@@ -75,6 +76,10 @@ func main() {
 				// Load consumer
 				log.Info("Starting Steam consumers")
 				consumers.Init(consumers.QueueSteamDefinitions, true)
+
+				q := queue.QueueRegister[queue.QueueSteam]
+				q.SteamClient = steamClient
+				go q.ConsumeMessages()
 
 			case *steam.LoggedOffEvent:
 
