@@ -149,8 +149,6 @@ func main() {
 	log.Info("Starting Webserver")
 	err = http.ListenAndServe(config.ListenOn(), r)
 	log.Critical(err)
-
-	select {}
 }
 
 // FileServer conveniently sets up a http.FileServer handler to serve
