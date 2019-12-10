@@ -174,7 +174,7 @@ func (channel Channel) prepareHeaders(headers amqp.Table) amqp.Table {
 	attemptSet := false
 	attempt, ok := headers[HeaderAttempt]
 	if ok {
-		if val, ok2 := attempt.(int32); ok2 {
+		if val, ok2 := attempt.(int); ok2 {
 			headers[HeaderAttempt] = val + 1
 			attemptSet = true
 		}
