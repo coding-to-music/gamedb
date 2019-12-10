@@ -150,7 +150,7 @@ func main() {
 	err = http.ListenAndServe(config.ListenOn(), r)
 	log.Critical(err)
 
-	helpers.KeepAlive()
+	select {}
 }
 
 // FileServer conveniently sets up a http.FileServer handler to serve

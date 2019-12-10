@@ -6,7 +6,6 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/consumers"
-	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/queue"
@@ -51,6 +50,5 @@ func main() {
 		}
 	}
 
-	//
-	helpers.KeepAlive()
+	select {}
 }
