@@ -84,15 +84,19 @@ func (item AppItem) GetType() string {
 	}
 }
 
-func (item *AppItem) SetTags(tags string) {
-	if tags != "" {
-		split := strings.Split(tags, ";")
-		for _, v := range split {
-			split2 := strings.Split(v, ":")
-			if len(split2) == 2 {
-				item.Tags = append(item.Tags, []string{split2[0], split2[1]})
-			} else {
-				log.Warning(item.AppID, "weird app item tags")
+func (item *AppItem) SetTags(tagsString string) {
+	tagsString = strings.TrimSpace(tagsString)
+	if tagsString != "" {
+		tags := strings.Split(tagsString, ";")
+		for _, tag := range tags {
+			tag = strings.TrimSpace(tag)
+			if tag != "" {
+				tagKeyVal := strings.Split(tag, ":")
+				if len(tagKeyVal) == 2 {
+					item.Tags = append(item.Tags, []string{tagKeyVal[0], tagKeyVal[1]})
+				} else {
+					log.Warning(item.AppID, "weird app item tagsString")
+				}
 			}
 		}
 	}
