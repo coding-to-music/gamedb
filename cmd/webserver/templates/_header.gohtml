@@ -199,16 +199,16 @@
                                 <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">{{ if .PlayerName }}{{ .PlayerName }}{{ else }}Account{{ end }}</a>
                                 <div class="dropdown-menu" id="header-settings">
                                     {{ if .PlayerName }}
-                                        <a class="dropdown-item" href="/players/{{ .PlayerID }}"><i class="fas fa-user"></i> Profile</a>
+                                        <a class="dropdown-item" href="/players/{{ .PlayerID }}"><i class="fas fa-user fa-fw"></i> Profile</a>
                                     {{ end }}
 
                                     {{ if .IsAdmin }}
-                                        <a class="dropdown-item" href="/admin"><i class="fas fa-users-cog"></i> Admin</a>
+                                        <a class="dropdown-item" href="/admin"><i class="fas fa-users-cog fa-fw"></i> Admin</a>
                                     {{ end }}
 
                                     {{ if .IsLoggedIn }}
-                                        <a class="dropdown-item" href="/settings"><i class="fas fa-cog"></i> Settings</a>
-                                        <a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                                        <a class="dropdown-item" href="/settings"><i class="fas fa-cog fa-fw"></i> Settings</a>
+                                        <a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt fa-fw"></i> Logout</a>
                                     {{ end }}
                                 </div>
                             </li>
