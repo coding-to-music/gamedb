@@ -5,7 +5,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 type PlayerRanks struct {
@@ -27,22 +26,13 @@ func (c PlayerRanks) Cron() string {
 func (c PlayerRanks) work() (err error) {
 
 	// Fix nulls
-	_, err = mongo.UpdateManySet(mongo.CollectionPlayers, bson.D{{"ranks", nil}}, bson.D{{"ranks", bson.M{}}})
-	if err != nil {
-		return err
-	}
-
-	var fields = map[string]mongo.RankMetric{
-		"level":          mongo.RankKeyLevel,
-		"games_count":    mongo.RankKeyGames,
-		"badges_count":   mongo.RankKeyBadges,
-		"play_time":      mongo.RankKeyPlaytime,
-		"friends_count":  mongo.RankKeyFriends,
-		"comments_count": mongo.RankKeyComments,
-	}
+	// _, err = mongo.UpdateManySet(mongo.CollectionPlayers, bson.D{{"ranks", nil}}, bson.D{{"ranks", bson.M{}}})
+	// if err != nil {
+	// 	return err
+	// }
 
 	// Global
-	for read, write := range fields {
+	for read, write := range mongo.PlayerRankFields {
 		err = consumers.ProducePlayerRank(consumers.PlayerRanksMessage{
 			SortColumn: read,
 			ObjectKey:  string(write),
@@ -52,7 +42,7 @@ func (c PlayerRanks) work() (err error) {
 
 	// Continents
 	for _, continent := range helpers.Continents {
-		for read, write := range fields {
+		for read, write := range mongo.PlayerRankFields {
 			err = consumers.ProducePlayerRank(consumers.PlayerRanksMessage{
 				SortColumn: read,
 				ObjectKey:  string(write) + "_continent-" + continent.Key,
@@ -69,7 +59,7 @@ func (c PlayerRanks) work() (err error) {
 	}
 
 	for _, cc := range countryCodes {
-		for read, write := range fields {
+		for read, write := range mongo.PlayerRankFields {
 			err = consumers.ProducePlayerRank(consumers.PlayerRanksMessage{
 				SortColumn: read,
 				ObjectKey:  string(write) + "_country-" + cc,
@@ -89,7 +79,7 @@ func (c PlayerRanks) work() (err error) {
 		}
 
 		for _, state := range stateCodes {
-			for read, write := range fields {
+			for read, write := range mongo.PlayerRankFields {
 				err = consumers.ProducePlayerRank(consumers.PlayerRanksMessage{
 					SortColumn: read,
 					ObjectKey:  string(write) + "_state-" + state.Key,

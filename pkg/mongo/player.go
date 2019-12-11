@@ -47,6 +47,15 @@ const (
 	RankKeyPlaytime RankMetric = "p"
 )
 
+var PlayerRankFields = map[string]RankMetric{
+	"level":          RankKeyLevel,
+	"games_count":    RankKeyGames,
+	"badges_count":   RankKeyBadges,
+	"play_time":      RankKeyPlaytime,
+	"friends_count":  RankKeyFriends,
+	"comments_count": RankKeyComments,
+}
+
 var (
 	ErrInvalidPlayerID   = errors.New("invalid player id")
 	ErrInvalidPlayerName = errors.New("invalid player name")
@@ -289,6 +298,36 @@ func (player Player) NeedsUpdate(updateType UpdateType) bool {
 	}
 
 	return false
+}
+
+func createPlayerIndexes() {
+
+	var indexModels []mongo.IndexModel
+
+	// These are for the ranking cron
+	for col := range PlayerRankFields {
+		indexModels = append(indexModels, mongo.IndexModel{
+			Keys: bson.D{{col, -1}},
+		})
+		indexModels = append(indexModels, mongo.IndexModel{
+			Keys: bson.D{{"continent_code", 1}, {col, -1}},
+		})
+		indexModels = append(indexModels, mongo.IndexModel{
+			Keys: bson.D{{"country_code", 1}, {col, -1}},
+		})
+		indexModels = append(indexModels, mongo.IndexModel{
+			Keys: bson.D{{"country_code", 1}, {"status_code", 1}, {col, -1}},
+		})
+	}
+
+	client, ctx, err := getMongo()
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	_, err = client.Database(MongoDatabase).Collection(CollectionPlayers.String()).Indexes().CreateMany(ctx, indexModels)
+	log.Err(err)
 }
 
 func GetPlayer(id int64) (player Player, err error) {
