@@ -182,7 +182,7 @@
                                                     {{ range $key, $value := .Ranks }}
                                                         <tr>
                                                             <td>{{ .Metric.String }}</td>
-                                                            <td data-toggle="tooltip" data-placement="top" title="Players: {{ .GetPlayers }} - Top: {{ .Percentile }} percentile">{{ .Rank }}</td>
+                                                            <td data-toggle="tooltip" data-placement="top" title="Players: {{ .GetPlayers }} (Top {{ .Percentile }} percent)">{{ .Rank }}</td>
                                                             <td>{{ .List }}</td>
                                                         </tr>
                                                     {{ end }}

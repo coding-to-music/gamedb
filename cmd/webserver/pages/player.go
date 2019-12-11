@@ -104,6 +104,48 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		log.Err(err, r)
 	}()
 
+	var playersContinent int64
+	if player.ContinentCode != "" {
+
+		wg.Add(1)
+		go func() {
+
+			defer wg.Done()
+
+			var err error
+			playersContinent, err = mongo.CountDocuments(mongo.CollectionPlayers, bson.D{{"continent_code", player.ContinentCode}}, 60*60*24*7)
+			log.Err(err, r)
+		}()
+	}
+
+	var playersCountry int64
+	if player.CountryCode != "" {
+
+		wg.Add(1)
+		go func() {
+
+			defer wg.Done()
+
+			var err error
+			playersCountry, err = mongo.CountDocuments(mongo.CollectionPlayers, bson.D{{"country_code", player.CountryCode}}, 60*60*24*7)
+			log.Err(err, r)
+		}()
+	}
+
+	var playersState int64
+	if player.StateCode != "" {
+
+		wg.Add(1)
+		go func() {
+
+			defer wg.Done()
+
+			var err error
+			playersState, err = mongo.CountDocuments(mongo.CollectionPlayers, bson.D{{"country_code", player.CountryCode}, {"status_code", player.StateCode}}, 60*60*24*7)
+			log.Err(err, r)
+		}()
+	}
+
 	// Get bans
 	var bans mongo.PlayerBans
 	wg.Add(1)
@@ -204,7 +246,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		if position, ok := player.Ranks[string(v)+"_continent-"+player.ContinentCode]; ok {
 			t.Ranks = append(t.Ranks, playerRankTemplate{
-				Players:  players,
+				Players:  playersContinent,
 				List:     "In the continent",
 				Metric:   v,
 				Position: position,
@@ -212,7 +254,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		if position, ok := player.Ranks[string(v)+"_country-"+player.CountryCode]; ok {
 			t.Ranks = append(t.Ranks, playerRankTemplate{
-				Players:  players,
+				Players:  playersCountry,
 				List:     "In the country",
 				Metric:   v,
 				Position: position,
@@ -220,7 +262,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		if position, ok := player.Ranks[string(v)+"_state-"+player.StateCode]; ok {
 			t.Ranks = append(t.Ranks, playerRankTemplate{
-				Players:  players,
+				Players:  playersState,
 				List:     "In the state",
 				Metric:   v,
 				Position: position,
