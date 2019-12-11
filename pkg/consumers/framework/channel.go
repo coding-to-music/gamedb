@@ -219,34 +219,29 @@ func (channel *Channel) Consume() error {
 		var messages []*Message
 
 		for {
-			if channel.connection.connection != nil && !channel.connection.connection.IsClosed() && channel.isOpen {
-
-				select {
-				case msg, open := <-msgs:
-					if open {
-						messages = append(messages, &Message{
-							Channel: channel,
-							Message: &msg,
-						})
-					}
-				default:
-					// Continue
+			select {
+			case msg, open := <-msgs:
+				if open && channel.connection.connection != nil && !channel.connection.connection.IsClosed() && channel.isOpen {
+					messages = append(messages, &Message{
+						Channel: channel,
+						Message: &msg,
+					})
 				}
+			}
 
-				if len(messages) >= channel.batchSize {
+			if len(messages) > 0 && len(messages) >= channel.batchSize {
 
-					if channel.handler != nil {
+				if channel.handler != nil {
 
-						// Fill in batch info
-						for k := range messages {
-							messages[k].BatchTotal = len(messages)
-							messages[k].BatchItem = k + 1
-						}
-
-						//
-						channel.handler(messages)
-						messages = nil
+					// Fill in batch info
+					for k := range messages {
+						messages[k].BatchTotal = len(messages)
+						messages[k].BatchItem = k + 1
 					}
+
+					//
+					channel.handler(messages)
+					messages = nil
 				}
 			}
 		}
