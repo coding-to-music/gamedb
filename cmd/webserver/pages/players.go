@@ -180,17 +180,18 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Country
 	if !isContinent && country != "" {
+
 		if country == "_" { // No country set
 			country = ""
 		}
 		filter = append(filter, bson.E{Key: "country_code", Value: country})
-	}
 
-	for _, cc := range mongo.CountriesWithStates {
-		if cc == country {
-			state := query.getSearchString(cc + "-state")
-			if state != "" && len(state) <= 3 {
-				filter = append(filter, bson.E{Key: "status_code", Value: state})
+		for _, cc := range mongo.CountriesWithStates {
+			if cc == country {
+				state := query.getSearchString(cc + "-state")
+				if state != "" && len(state) <= 3 {
+					filter = append(filter, bson.E{Key: "status_code", Value: state})
+				}
 			}
 		}
 	}
