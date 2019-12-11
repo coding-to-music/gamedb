@@ -147,6 +147,41 @@ func GetBundle(id int, columns []string) (bundle Bundle, err error) {
 	return bundle, nil
 }
 
+func GetBundlesByID(ids []int, columns []string) (bundles []Bundle, err error) {
+
+	if len(ids) == 0 {
+		return bundles, nil
+	}
+
+	db, err := GetMySQLClient()
+	if err != nil {
+		return bundles, err
+	}
+
+	ids = helpers.Unique(ids)
+
+	chunks := helpers.ChunkInts(ids, 100)
+	for _, chunk := range chunks {
+
+		db = db.New()
+
+		if len(columns) > 0 {
+			db = db.Select(columns)
+		}
+
+		var bundlesChunk []Bundle
+		db = db.Where("id IN (?)", chunk).Find(&bundlesChunk)
+		if db.Error != nil {
+			log.Err(db.Error)
+			return bundles, db.Error
+		}
+
+		bundles = append(bundles, bundlesChunk...)
+	}
+
+	return bundles, nil
+}
+
 func CountBundles() (count int, err error) {
 
 	var item = memcache.MemcacheBundlesCount

@@ -976,7 +976,7 @@ func (app App) GetBundles() (bundles []Bundle, err error) {
 	var item = memcache.MemcacheAppBundles(app.ID)
 
 	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &bundles, func() (interface{}, error) {
-		return GetAppsByID(app.getBundleIDs(), []string{})
+		return GetBundlesByID(app.getBundleIDs(), []string{})
 	})
 
 	if len(bundles) == 0 {
