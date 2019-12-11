@@ -9,6 +9,7 @@ import (
 
 	"github.com/Jleagle/influxql"
 	"github.com/Jleagle/session-go/session"
+	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/cmd/webserver/middleware"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/influx"
@@ -92,17 +93,16 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Number of players
-	// var players int64
-	// wg.Add(1)
-	// go func(player mongo.Player) {
-	//
-	// 	defer wg.Done()
-	//
-	// 	var err error
-	// 	players, err = mongo.CountPlayers()
-	// 	log.Err(err, r)
-	//
-	// }(player)
+	var players int64
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		players, err = mongo.CountPlayers()
+		log.Err(err, r)
+	}()
 
 	// Get bans
 	var bans mongo.PlayerBans
@@ -196,6 +196,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	for _, v := range ranks {
 		if position, ok := player.Ranks[string(v)]; ok {
 			t.Ranks = append(t.Ranks, playerRankTemplate{
+				Players:  players,
 				List:     "Globally",
 				Metric:   v,
 				Position: position,
@@ -203,6 +204,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		if position, ok := player.Ranks[string(v)+"_continent-"+player.ContinentCode]; ok {
 			t.Ranks = append(t.Ranks, playerRankTemplate{
+				Players:  players,
 				List:     "In the continent",
 				Metric:   v,
 				Position: position,
@@ -210,6 +212,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		if position, ok := player.Ranks[string(v)+"_country-"+player.CountryCode]; ok {
 			t.Ranks = append(t.Ranks, playerRankTemplate{
+				Players:  players,
 				List:     "In the country",
 				Metric:   v,
 				Position: position,
@@ -217,6 +220,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		if position, ok := player.Ranks[string(v)+"_state-"+player.StateCode]; ok {
 			t.Ranks = append(t.Ranks, playerRankTemplate{
+				Players:  players,
 				List:     "In the state",
 				Metric:   v,
 				Position: position,
@@ -270,10 +274,28 @@ type playerRankTemplate struct {
 	List     string
 	Metric   mongo.RankMetric
 	Position int
+	Players  int64
 }
 
 func (pr playerRankTemplate) Rank() string {
 	return helpers.OrdinalComma(pr.Position)
+}
+
+func (pr playerRankTemplate) GetPlayers() string {
+	return humanize.FormatFloat("#,###.", float64(pr.Players))
+}
+
+func (pr playerRankTemplate) Percentile() string {
+
+	p := float64(pr.Position) / float64(pr.Players) * 100
+
+	if p < 1 {
+		return helpers.FloatToString(p, 2)
+	} else if p < 10 {
+		return helpers.FloatToString(p, 1)
+	} else {
+		return helpers.FloatToString(p, 0)
+	}
 }
 
 func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
