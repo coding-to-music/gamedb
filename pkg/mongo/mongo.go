@@ -350,3 +350,11 @@ func ChunkWriteModels(models []mongo.WriteModel, size int) (chunks [][]mongo.Wri
 	}
 	return chunks
 }
+
+type index struct {
+	V          int            `json:"v"`
+	Key        map[string]int `json:"key"`
+	Name       string         `json:"name"`
+	NS         string         `json:"ns"`
+	Background bool           `json:"background"`
+}
