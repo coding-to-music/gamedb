@@ -182,8 +182,8 @@ func ProduceGroup(payload GroupMessage) error {
 	return Channels[framework.Producer][QueueGroups].ProduceInterface(payload)
 }
 
-func produceGroupNew(ids []string) error {
-	return Channels[framework.Producer][QueueGroupsNew].ProduceInterface(GroupMessage{IDs: ids})
+func produceGroupNew(id string) error {
+	return Channels[framework.Producer][QueueGroupsNew].ProduceInterface(GroupSingleMessage{ID: id})
 }
 
 func ProducePackage(payload PackageMessage) error {

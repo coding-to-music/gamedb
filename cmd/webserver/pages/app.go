@@ -12,9 +12,9 @@ import (
 	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/influx"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/sql/pics"
 	"github.com/go-chi/chi"
@@ -96,7 +96,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		err = consumers.ProduceSteam(consumers.SteamMessage{AppIDs: []int{app.ID}})
-		if err != nil && err != queue.ErrInQueue {
+		if err != nil && err != memcache.ErrInQueue {
 			log.Err(err, r)
 		} else {
 			t.addToast(Toast{Title: "Update", Message: "App has been queued for an update"})

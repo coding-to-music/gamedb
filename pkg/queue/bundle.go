@@ -31,10 +31,7 @@ func (q bundleQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
-	payload := consumers.BundleMessage{}
-	payload.ID = message.Message.ID
-
-	err = consumers.ProduceBundle(payload)
+	err = consumers.ProduceBundle(message.Message.ID)
 	if err != nil {
 		log.Err(err, msgs[0].Body)
 		ackRetry(msgs[0], &message)

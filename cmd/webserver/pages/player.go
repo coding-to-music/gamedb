@@ -14,9 +14,9 @@ import (
 	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/influx"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
 	"github.com/justinas/nosurf"
@@ -68,7 +68,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		if err == mongo.ErrNoDocuments {
 
 			err = consumers.ProducePlayer(idx)
-			err = helpers.IgnoreErrors(err, queue.ErrInQueue)
+			err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 			if err != nil {
 				log.Err(err)
 			} else {
@@ -225,7 +225,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	if player.NeedsUpdate(mongo.PlayerUpdateAuto) && !helpers.IsBot(r.UserAgent()) {
 
 		err = consumers.ProducePlayer(player.ID)
-		if err != nil && err != queue.ErrInQueue {
+		if err != nil && err != memcache.ErrInQueue {
 			log.Err(err, r)
 		} else {
 			log.Info(log.LogNameTriggerUpdate, r, r.UserAgent())
@@ -400,7 +400,7 @@ func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
 	for friendID := range friendIDsMap {
 
 		err = consumers.ProducePlayer(friendID)
-		err = helpers.IgnoreErrors(err, queue.ErrInQueue)
+		err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 		if err != nil {
 			log.Err(err)
 		} else {
@@ -963,7 +963,7 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		err = consumers.ProducePlayer(player.ID)
-		if err == queue.ErrInQueue {
+		if err == memcache.ErrInQueue {
 			return "Player already queued", false, err
 		} else if err != nil {
 			log.Err(err, r)

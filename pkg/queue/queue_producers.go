@@ -1,7 +1,6 @@
 package queue
 
 import (
-	"errors"
 	"strings"
 	"time"
 
@@ -10,8 +9,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 )
-
-var ErrInQueue = errors.New("already in queue")
 
 type SteamPayload struct {
 	AppIDs     []int
@@ -43,7 +40,7 @@ func ProduceToSteam(payload SteamPayload) (err error) {
 			_, err := mc.Get(item.Key)
 			if err == nil {
 				if len(payload.AppIDs) == 1 {
-					return ErrInQueue
+					return memcache.ErrInQueue
 				}
 				continue
 			}
@@ -64,7 +61,7 @@ func ProduceToSteam(payload SteamPayload) (err error) {
 			_, err := mc.Get(item.Key)
 			if err == nil {
 				if len(payload.PackageIDs) == 1 {
-					return ErrInQueue
+					return memcache.ErrInQueue
 				}
 				continue
 			}
@@ -85,7 +82,7 @@ func ProduceToSteam(payload SteamPayload) (err error) {
 			_, err := mc.Get(item.Key)
 			if err == nil {
 				if len(payload.ProfileIDs) == 1 {
-					return ErrInQueue
+					return memcache.ErrInQueue
 				}
 				continue
 			}

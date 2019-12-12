@@ -1344,7 +1344,8 @@ func scrapeApp(app *sql.App) (sales []mongo.Sale, err error) {
 	var bundleIntIDs = helpers.StringSliceToIntSlice(bundleIDs)
 
 	for _, bundleID := range bundleIntIDs {
-		err = ProduceBundle(BundleMessage{ID: bundleID})
+
+		err = ProduceBundle(bundleID)
 		if err != nil {
 			return sales, err
 		}

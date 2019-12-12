@@ -7,9 +7,9 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
@@ -67,7 +67,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 		if !helpers.SliceHasInt64(foundPlayerIDs, playerID) {
 
 			err = consumers.ProducePlayer(playerID)
-			if err != nil && err != queue.ErrInQueue {
+			if err != nil && err != memcache.ErrInQueue {
 				log.Err(err)
 			} else {
 				log.Info(log.LogNameTriggerUpdate, r, r.UserAgent())

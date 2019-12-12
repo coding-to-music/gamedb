@@ -14,11 +14,15 @@ import (
 	"github.com/gamedb/gamedb/pkg/sql"
 )
 
+type GroupSingleMessage struct {
+	ID string `json:"id"`
+}
+
 func newGroupsHandler(messages []*framework.Message) {
 
 	for _, message := range messages {
 
-		payload := GroupMessage{}
+		payload := GroupSingleMessage{}
 
 		err := helpers.Unmarshal(message.Message.Body, &payload)
 		if err != nil {
@@ -28,36 +32,17 @@ func newGroupsHandler(messages []*framework.Message) {
 		}
 
 		//
-		if len(payload.IDs) == 0 {
-			sendToFailQueue(message)
-			return
-		}
-
-		if len(payload.IDs) > 1 {
-			for _, v := range payload.IDs {
-				err = produceGroupNew(GroupMessage{IDs: []string{v}})
-				if err != nil {
-					log.Err(err, message.Message.Body)
-				}
-			}
-			message.Ack()
-			return
-		}
-
-		var id = payload.IDs[0]
-
-		//
-		if !helpers.IsValidGroupID(id) {
+		if !helpers.IsValidGroupID(payload.ID) {
 			log.Err(err, message.Message.Body)
 			sendToFailQueue(message)
 			return
 		}
 
 		// See if it's been added
-		group, err := mongo.GetGroup(id)
+		group, err := mongo.GetGroup(payload.ID)
 		if err == nil {
 			log.Info("Putting group back into first queue")
-			err = ProduceGroup(GroupMessage{IDs: []string{id}})
+			err = ProduceGroup(GroupMessage{IDs: []string{payload.ID}})
 			if err != nil {
 				log.Err(err, message.Message.Body)
 				sendToRetryQueue(message)
@@ -80,7 +65,7 @@ func newGroupsHandler(messages []*framework.Message) {
 
 			var err error
 
-			err = updateGroupFromXML(id, &group)
+			err = updateGroupFromXML(payload.ID, &group)
 			if err != nil {
 
 				var ok bool
@@ -184,13 +169,13 @@ func newGroupsHandler(messages []*framework.Message) {
 			memcache.MemcacheGroup(strconv.Itoa(group.ID)).Key,
 		)
 		if err != nil {
-			log.Err(err, id)
+			log.Err(err, payload.ID)
 		}
 
 		//
-		err = sendGroupWebsocket([]string{id})
+		err = sendGroupWebsocket([]string{payload.ID})
 		if err != nil {
-			log.Err(err, id)
+			log.Err(err, payload.ID)
 		}
 
 		//

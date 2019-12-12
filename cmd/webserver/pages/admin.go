@@ -236,7 +236,7 @@ func adminQueues(r *http.Request) {
 			bundleID, err := strconv.Atoi(val)
 			if err == nil {
 
-				err = consumers.ProduceBundle(consumers.BundleMessage{ID: bundleID})
+				err = consumers.ProduceBundle(bundleID)
 				log.Err(err, r)
 			}
 		}
