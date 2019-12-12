@@ -86,6 +86,7 @@ type App struct {
 	PublicOnly                    bool      `gorm:"not null;column:public_only"`                      //
 	Publishers                    string    `gorm:"not null;column:publishers;type:json"`             // []int
 	RelatedAppIDs                 string    `gorm:"not null;column:related_app_ids;type:json"`        // []int
+	RelatedOwnersAppIDs           string    `gorm:"-"`                                                // []int
 	ReleaseDate                   string    `gorm:"not null;column:release_date"`                     //
 	ReleaseDateUnix               int64     `gorm:"not null;column:release_date_unix"`                //
 	ReleaseState                  string    `gorm:"not null;column:release_state"`                    //
@@ -267,6 +268,7 @@ func (app App) SaveToMongo() error {
 	mApp.PublicOnly = app.PublicOnly
 	mApp.Publishers, _ = app.GetPublisherIDs()
 	mApp.RelatedAppIDs, _ = app.GetRelatedIDs()
+	mApp.RelatedOwnersAppIDs, _ = app.GetRelatedOwnerIDs()
 	mApp.ReleaseDate = app.ReleaseDate
 	mApp.ReleaseDateUnix = app.ReleaseDateUnix
 	mApp.ReleaseState = app.ReleaseState
@@ -794,6 +796,12 @@ func (app App) GetGenreIDs() (genres []int, err error) {
 func (app App) GetRelatedIDs() (apps []int, err error) {
 
 	err = helpers.Unmarshal([]byte(app.RelatedAppIDs), &apps)
+	return apps, err
+}
+
+func (app App) GetRelatedOwnerIDs() (apps []helpers.TupleInt, err error) {
+
+	err = helpers.Unmarshal([]byte(app.RelatedOwnersAppIDs), &apps)
 	return apps, err
 }
 

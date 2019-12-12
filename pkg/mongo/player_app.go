@@ -114,9 +114,14 @@ func GetPlayersApps(playerIDs []int64, projection bson.M) (apps []PlayerApp, err
 	return getPlayerApps(0, 0, bson.D{{"player_id", bson.M{"$in": playersFilter}}}, nil, projection)
 }
 
-func GetAppPlayTimes(appID int) (apps []PlayerApp, err error) {
+func GetAppPlayTimes(appID int) ([]PlayerApp, error) {
 
 	return getPlayerApps(0, 0, bson.D{{"app_id", appID}}, nil, bson.M{"_id": -1, "app_time": 1})
+}
+
+func GetAppOwners(appID int) ([]PlayerApp, error) {
+
+	return getPlayerApps(0, 0, bson.D{{"app_id", appID}}, nil, bson.M{"_id": -1, "player_id": 1})
 }
 
 func getPlayerApps(offset int64, limit int64, filter bson.D, sort bson.D, projection bson.M) (apps []PlayerApp, err error) {

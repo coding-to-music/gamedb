@@ -118,10 +118,8 @@ func updateBundle(bundle *sql.Bundle) (err error) {
 
 	c := colly.NewCollector(
 		colly.AllowedDomains("store.steampowered.com"),
-		colly.AllowURLRevisit(), // This is for retrys
+		steamHelper.WithAgeCheckCookie,
 	)
-
-	steamHelper.SetAgeCheckCookieJar(c)
 
 	// Title
 	c.OnHTML("h2.pageheader", func(e *colly.HTMLElement) {

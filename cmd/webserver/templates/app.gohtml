@@ -71,6 +71,9 @@
                             <a class="nav-link nav-link-small" data-toggle="tab" href="#bundles" role="tab">Bundles</a>
                         </li>
                     {{end}}
+                    <li class="nav-item d-none">
+                        <a class="nav-link nav-link-small" data-toggle="tab" href="#similar" role="tab">Similar</a>
+                    </li>
                     {{if gt (len .Achievements) 0}}
                         <li class="nav-item">
                             <a class="nav-link nav-link-small" data-toggle="tab" href="#achievements" role="tab">Achievements</a>
@@ -609,7 +612,6 @@
 
                     <div class="tab-pane" id="bundles" role="tabpanel">
 
-                        {{/* Bundles */}}
                         <div class="table-responsive">
                             <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
                                 <thead class="thead-light">
@@ -637,6 +639,17 @@
                                 {{ end }}
                             </table>
                         </div>
+
+                    </div>
+
+                    <div class="tab-pane" id="similar" role="tabpanel">
+
+                        <h5>Similar by tag</h5>
+                        {{ range $key, $value := .App.GetRelatedIDs }}
+                            <img src="https://steamcdn-a.akamaihd.net/steam/apps/{{$value}}/header_292x136.jpg" alt="">
+                        {{ end }}
+
+                        <h5>People who own this game also own</h5>
 
                     </div>
 

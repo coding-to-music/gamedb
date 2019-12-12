@@ -174,6 +174,13 @@ func appHandler(messages []*framework.Message) {
 				sendToRetryQueue(message)
 				return
 			}
+
+			err = scrapeSimilar(&app)
+			if err != nil {
+				steamHelper.LogSteamError(err, payload.ID)
+				sendToRetryQueue(message)
+				return
+			}
 		}()
 
 		// Calls to steamspy.com
@@ -230,6 +237,13 @@ func appHandler(messages []*framework.Message) {
 			}
 
 			err = getWishlistCount(&app)
+			if err != nil {
+				log.Err(err, payload.ID)
+				sendToRetryQueue(message)
+				return
+			}
+
+			err = getSimilarOwners(&app)
 			if err != nil {
 				log.Err(err, payload.ID)
 				sendToRetryQueue(message)
@@ -1133,8 +1147,7 @@ func updateAppSteamSpy(app *sql.App) error {
 	return nil
 }
 
-//noinspection RegExpRedundantEscape
-var appStorePage = regexp.MustCompile(`store\.steampowered\.com\/app\/[0-9]+$`)
+var appStorePage = regexp.MustCompile(`store\.steampowered\.com/app/[0-9]+$`)
 
 func scrapeApp(app *sql.App) (sales []mongo.Sale, err error) {
 
@@ -1149,7 +1162,6 @@ func scrapeApp(app *sql.App) (sales []mongo.Sale, err error) {
 	}
 
 	var bundleIDs []string
-	var relatedAppIDs []int
 
 	// Retry call
 	operation := func() (err error) {
@@ -1158,23 +1170,12 @@ func scrapeApp(app *sql.App) (sales []mongo.Sale, err error) {
 
 		c := colly.NewCollector(
 			colly.URLFilters(appStorePage),
+			steamHelper.WithAgeCheckCookie,
 		)
-
-		steamHelper.SetAgeCheckCookieJar(c)
 
 		// Bundles
 		c.OnHTML("div.game_area_purchase_game_wrapper input[name=bundleid]", func(e *colly.HTMLElement) {
 			bundleIDs = append(bundleIDs, e.Attr("value"))
-		})
-
-		// Related apps - DOESNT WORK - Not in page source
-		c.OnHTML("#recommended_block a[data-ds-appid]", func(e *colly.HTMLElement) {
-			i, err := strconv.Atoi(e.Attr("data-ds-appid"))
-			if err != nil {
-				log.Err(app.ID, err)
-			} else {
-				relatedAppIDs = append(relatedAppIDs, i)
-			}
 		})
 
 		// Sales
@@ -1356,15 +1357,65 @@ func scrapeApp(app *sql.App) (sales []mongo.Sale, err error) {
 
 	app.BundleIDs = string(b)
 
-	// Save related apps
-	b, err = json.Marshal(relatedAppIDs)
+	return sales, nil
+}
+
+var appStoreSimilarPage = regexp.MustCompile(`store\.steampowered\.com/recommended/morelike/app/[0-9]+$`)
+
+func scrapeSimilar(app *sql.App) (err error) {
+
+	var relatedAppIDs []int
+
+	// Retry call
+	operation := func() (err error) {
+
+		c := colly.NewCollector(
+			colly.URLFilters(appStoreSimilarPage),
+			steamHelper.WithAgeCheckCookie,
+		)
+
+		c.OnHTML(".similar_grid_capsule", func(e *colly.HTMLElement) {
+			i, err := strconv.Atoi(e.Attr("data-ds-appid"))
+			if err != nil {
+				log.Err(app.ID, err)
+			} else {
+				relatedAppIDs = append(relatedAppIDs, i)
+			}
+		})
+
+		//
+		c.OnError(func(r *colly.Response, err error) {
+			steamHelper.LogSteamError(err)
+		})
+
+		err = c.Visit("https://store.steampowered.com/recommended/morelike/app/" + strconv.Itoa(app.ID))
+		if err != nil {
+			if strings.Contains(err.Error(), "because its not in AllowedDomains") {
+				log.Info(err)
+				return nil
+			}
+		}
+
+		return err
+	}
+
+	policy := backoff.NewExponentialBackOff()
+	policy.InitialInterval = time.Second
+
+	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err, app.ID) })
 	if err != nil {
-		return sales, err
+		return err
+	}
+
+	// Save related apps
+	b, err := json.Marshal(relatedAppIDs)
+	if err != nil {
+		return err
 	}
 
 	app.RelatedAppIDs = string(b)
 
-	return sales, nil
+	return nil
 }
 
 func saveAppToInflux(app sql.App) (err error) {
@@ -1502,6 +1553,59 @@ func getWishlistCount(app *sql.App) (err error) {
 	} else {
 		app.WishlistAvgPosition = float64(total) / float64(count)
 	}
+
+	return nil
+}
+
+func getSimilarOwners(app *sql.App) (err error) {
+
+	ownerRows, err := mongo.GetAppOwners(app.ID)
+	if err != nil {
+		return err
+	}
+	if len(ownerRows) == 0 {
+		return nil
+	}
+
+	var playerIDs []int64
+	for _, v := range ownerRows {
+		playerIDs = append(playerIDs, v.PlayerID)
+	}
+
+	apps, err := mongo.GetPlayersApps(playerIDs, bson.M{"_id": -1, "app_id": 1})
+	if err != nil {
+		return err
+	}
+
+	var countMap = map[int]int{}
+	for _, v := range apps {
+		if _, ok := countMap[v.AppID]; ok {
+			countMap[v.AppID]++
+		} else {
+			countMap[v.AppID] = 1
+		}
+	}
+
+	var countSlice []helpers.TupleInt
+	for k, v := range countMap {
+		countSlice = append(countSlice, helpers.TupleInt{Key: k, Value: v})
+	}
+
+	sort.Slice(countSlice, func(i, j int) bool {
+		return countSlice[i].Value > countSlice[j].Value
+	})
+
+	if len(countSlice) > 100 {
+		countSlice = countSlice[0:100]
+	}
+
+	// Save related apps
+	b, err := json.Marshal(countSlice)
+	if err != nil {
+		return err
+	}
+
+	app.RelatedOwnersAppIDs = string(b)
 
 	return nil
 }

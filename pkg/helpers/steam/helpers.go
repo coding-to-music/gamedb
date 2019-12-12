@@ -82,7 +82,7 @@ func LogSteamError(err error, interfaces ...interface{}) {
 	}
 }
 
-func SetAgeCheckCookieJar(c *colly.Collector) {
+func WithAgeCheckCookie(c *colly.Collector) {
 
 	cookieURL, _ := url.Parse("https://store.steampowered.com")
 
