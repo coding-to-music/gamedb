@@ -250,3 +250,8 @@ func (channel *Channel) Consume() error {
 
 	return nil
 }
+
+func (channel *Channel) Inspect() (amqp.Queue, error) {
+
+	return channel.channel.QueueInspect(string(channel.Name))
+}
