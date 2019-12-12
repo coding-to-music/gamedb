@@ -11,6 +11,7 @@ import (
 	"github.com/Jleagle/session-go/session"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/cmd/webserver/middleware"
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -66,7 +67,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 
-			err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: []int64{idx}, Force: false})
+			err = consumers.ProducePlayer(idx)
 			err = helpers.IgnoreErrors(err, queue.ErrInQueue)
 			if err != nil {
 				log.Err(err)
@@ -188,7 +189,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 			backgroundApp, err = sql.GetApp(player.BackgroundAppID, []string{"id", "name", "background"})
 			err = helpers.IgnoreErrors(err, sql.ErrInvalidAppID)
 			if err == sql.ErrRecordNotFound {
-				err := queue.ProduceToSteam(queue.SteamPayload{AppIDs: []int{player.BackgroundAppID}, Force: false})
+				err = consumers.ProduceSteam(consumers.SteamMessage{AppIDs: []int{player.BackgroundAppID}})
 				log.Err(err, player.BackgroundAppID)
 			} else if err != nil {
 				log.Err(err, player.BackgroundAppID)
@@ -223,7 +224,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	// Add to Rabbit
 	if player.NeedsUpdate(mongo.PlayerUpdateAuto) && !helpers.IsBot(r.UserAgent()) {
 
-		err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: []int64{player.ID}, Force: false})
+		err = consumers.ProducePlayer(player.ID)
 		if err != nil && err != queue.ErrInQueue {
 			log.Err(err, r)
 		} else {
@@ -396,17 +397,15 @@ func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Queue the rest
-	var missingPlayerIDs []int64
 	for friendID := range friendIDsMap {
-		missingPlayerIDs = append(missingPlayerIDs, friendID)
-	}
 
-	err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: missingPlayerIDs, Force: false})
-	err = helpers.IgnoreErrors(err, queue.ErrInQueue)
-	if err != nil {
-		log.Err(err)
-	} else {
-		log.Info(log.LogNameTriggerUpdate, r, r.UserAgent())
+		err = consumers.ProducePlayer(friendID)
+		err = helpers.IgnoreErrors(err, queue.ErrInQueue)
+		if err != nil {
+			log.Err(err)
+		} else {
+			log.Info(log.LogNameTriggerUpdate, r, r.UserAgent())
+		}
 	}
 
 	err = session.SetFlash(r, helpers.SessionGood, strconv.Itoa(len(friendIDsMap))+" friends queued")
@@ -963,7 +962,7 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			return "Player can't be updated yet", false, nil
 		}
 
-		err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: []int64{player.ID}, Force: false})
+		err = consumers.ProducePlayer(player.ID)
 		if err == queue.ErrInQueue {
 			return "Player already queued", false, err
 		} else if err != nil {

@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -65,7 +66,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 	for _, playerID := range playerIDs {
 		if !helpers.SliceHasInt64(foundPlayerIDs, playerID) {
 
-			err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: []int64{playerID}, Force: false})
+			err = consumers.ProducePlayer(playerID)
 			if err != nil && err != queue.ErrInQueue {
 				log.Err(err)
 			} else {

@@ -30,6 +30,7 @@ const (
 
 	QueueDelay  framework.QueueName = "GDB_Delay"
 	QueueFailed framework.QueueName = "GDB_Failed"
+	QueueTest   framework.QueueName = "GDB_Test"
 )
 
 var (
@@ -169,8 +170,8 @@ func ProduceAppPlayers(payload AppPlayerMessage) error {
 	return Channels[framework.Producer][QueueAppPlayers].ProduceInterface(payload)
 }
 
-func ProduceBundle(payload BundleMessage) error {
-	return Channels[framework.Producer][QueueBundles].ProduceInterface(payload)
+func ProduceBundle(id int) error {
+	return Channels[framework.Producer][QueueBundles].ProduceInterface(BundleMessage{ID: id})
 }
 
 func ProduceChanges(payload ChangesMessage) error {
@@ -181,8 +182,8 @@ func ProduceGroup(payload GroupMessage) error {
 	return Channels[framework.Producer][QueueGroups].ProduceInterface(payload)
 }
 
-func ProduceGroupNew(payload GroupMessage) error {
-	return Channels[framework.Producer][QueueGroupsNew].ProduceInterface(payload)
+func produceGroupNew(ids []string) error {
+	return Channels[framework.Producer][QueueGroupsNew].ProduceInterface(GroupMessage{IDs: ids})
 }
 
 func ProducePackage(payload PackageMessage) error {
@@ -198,17 +199,17 @@ func ProducePackageRegular(payload PackageMessage) error {
 	return Channels[framework.Producer][QueuePackagesRegular].ProduceInterface(payload)
 }
 
-func ProducePlayer(payload PlayerMessage) error {
+func ProducePlayer(id int64) error {
 
-	if !helpers.IsValidPlayerID(payload.ID) {
-		return errors.New("invalid player id: " + strconv.FormatInt(payload.ID, 10))
+	if !helpers.IsValidPlayerID(id) {
+		return errors.New("invalid player id: " + strconv.FormatInt(id, 10))
 	}
 
-	return Channels[framework.Producer][QueuePlayers].ProduceInterface(payload)
+	return Channels[framework.Producer][QueuePlayers].ProduceInterface(PlayerMessage{ID: id})
 }
 
-func ProducePlayerRegular(payload PlayerMessage) error {
-	return Channels[framework.Producer][QueuePlayersRegular].ProduceInterface(payload)
+func ProducePlayerRegular(id int64) error {
+	return Channels[framework.Producer][QueuePlayersRegular].ProduceInterface(PlayerMessage{ID: id})
 }
 
 func ProducePlayerRank(payload PlayerRanksMessage) error {
@@ -222,4 +223,8 @@ func ProduceSteam(payload SteamMessage) error {
 	}
 
 	return Channels[framework.Producer][QueueSteam].ProduceInterface(payload)
+}
+
+func ProduceTest(id int) error {
+	return Channels[framework.Producer][QueueTest].ProduceInterface(TestMessage{ID: id})
 }

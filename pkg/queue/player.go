@@ -39,10 +39,7 @@ func (q playerQueue) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
-	payload := consumers.PlayerMessage{}
-	payload.ID = message.Message.ID
-
-	err = consumers.ProducePlayer(payload)
+	err = consumers.ProducePlayer(message.Message.ID)
 	if err != nil {
 		log.Err(err, msgs[0].Body)
 		ackRetry(msgs[0], &message)

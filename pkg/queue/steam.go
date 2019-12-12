@@ -37,7 +37,7 @@ func (q steamQueue) processMessages(msgs []amqp.Delivery) {
 	//
 	for _, v := range message.Message.PlayerIDs {
 
-		err = consumers.ProducePlayer(consumers.PlayerMessage{ID: v})
+		err = consumers.ProducePlayer(v)
 		if err != nil {
 			log.Err(err, msgs[0].Body)
 		}

@@ -98,7 +98,7 @@ func groupsHandler(messages []*framework.Message) {
 			// Some pages dont contain the ID64, so use the API
 			if group.ID64 == "" {
 
-				err = ProduceGroupNew(GroupMessage{IDs: []string{groupID}})
+				err = produceGroupNew(GroupMessage{IDs: []string{groupID}})
 				if err != nil {
 					steam.LogSteamError(err, groupID)
 				}

@@ -3,6 +3,7 @@ package tasks
 import (
 	"strconv"
 
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
@@ -45,7 +46,7 @@ func (c AutoPlayerRefreshes) work() (err error) {
 
 		playerIDs = append(playerIDs, user.SteamID)
 
-		err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: []int64{user.SteamID}, Force: true})
+		err = consumers.ProducePlayer(user.SteamID)
 		log.Err(err)
 	}
 

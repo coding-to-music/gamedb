@@ -109,17 +109,6 @@ func ProduceToSteam(payload SteamPayload) (err error) {
 	return produce(message, QueueSteam)
 }
 
-func ProduceTest(id int) (err error) {
-
-	time.Sleep(time.Millisecond)
-
-	return produce(&testMessage{
-		Message: testMessageInner{
-			ID: id,
-		},
-	}, queueTest)
-}
-
 func ProduceGroup(ids []string, force bool) (err error) {
 
 	if len(ids) == 0 {
@@ -172,28 +161,6 @@ func ProduceGroup(ids []string, force bool) (err error) {
 
 		err = produce(message, queueGroups)
 		log.Err(err)
-	}
-
-	return nil
-}
-
-func produceGroupNew(id string) (err error) {
-
-	time.Sleep(time.Millisecond)
-
-	id = strings.TrimSpace(id)
-
-	if !helpers.IsValidGroupID(id) {
-		return nil
-	}
-
-	err = produce(&groupMessage{
-		Message: groupMessageInner{
-			IDs: []string{id},
-		},
-	}, queueGroupsNew)
-	if err != nil {
-		log.Err(err, id)
 	}
 
 	return nil

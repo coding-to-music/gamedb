@@ -6,6 +6,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/queue"
@@ -84,7 +85,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		err = queue.ProduceToSteam(queue.SteamPayload{AppIDs: missingAppIDs, Force: false})
+		err = consumers.ProduceSteam(consumers.SteamMessage{AppIDs: missingAppIDs})
 		err = helpers.IgnoreErrors(err, queue.ErrInQueue)
 		log.Err(err)
 	}()
@@ -142,7 +143,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = queue.ProduceToSteam(queue.SteamPayload{PackageIDs: []int{pack.ID}, Force: false})
+		err = consumers.ProduceSteam(consumers.SteamMessage{PackageIDs: []int{pack.ID}})
 		if err != nil && err != queue.ErrInQueue {
 			log.Err(err, r)
 		} else {

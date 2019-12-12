@@ -65,7 +65,7 @@ func main() {
 						log.Err(err)
 					} else {
 						for _, v := range players {
-							err = consumers.ProducePlayer(consumers.PlayerMessage{ID: v.ID})
+							err = consumers.ProducePlayer(v.ID)
 							log.Err(err)
 						}
 					}

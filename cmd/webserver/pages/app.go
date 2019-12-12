@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/influxql"
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -94,7 +95,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = queue.ProduceToSteam(queue.SteamPayload{AppIDs: []int{app.ID}, Force: false})
+		err = consumers.ProduceSteam(consumers.SteamMessage{AppIDs: []int{app.ID}})
 		if err != nil && err != queue.ErrInQueue {
 			log.Err(err, r)
 		} else {

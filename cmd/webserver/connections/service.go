@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/Jleagle/session-go/session"
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -238,7 +239,7 @@ func callback(r *http.Request, c ConnectionInterface, event mongo.EventEnum, tok
 
 		if player.NeedsUpdate(mongo.PlayerUpdateManual) {
 
-			err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: []int64{player.ID}, Force: false})
+			err = consumers.ProducePlayer(player.ID)
 			if err != nil && err != queue.ErrInQueue {
 				log.Err(err, r)
 			} else {

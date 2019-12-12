@@ -3,9 +3,9 @@ package tasks
 import (
 	"strconv"
 
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -32,14 +32,12 @@ func (c PlayersQueueAll) work() (err error) {
 		return err
 	}
 
-	var playerIDs []int64
 	for _, player := range players {
-		playerIDs = append(playerIDs, player.ID)
-	}
 
-	err = queue.ProduceToSteam(queue.SteamPayload{ProfileIDs: playerIDs, Force: true})
-	if err != nil {
-		return err
+		err = consumers.ProducePlayer(player.ID)
+		if err != nil {
+			log.Err(err)
+		}
 	}
 
 	//

@@ -209,7 +209,6 @@ func adminQueues(r *http.Request) {
 		}
 	}
 
-	var playerIDs []int64
 	if val := r.PostForm.Get("player-id"); val != "" {
 
 		vals := strings.Split(val, ",")
@@ -220,7 +219,8 @@ func adminQueues(r *http.Request) {
 
 			playerID, err := strconv.ParseInt(val, 10, 64)
 			if err == nil {
-				playerIDs = append(playerIDs, playerID)
+				err = consumers.ProducePlayer(playerID)
+				log.Err(err)
 			}
 		}
 	}
@@ -250,7 +250,7 @@ func adminQueues(r *http.Request) {
 
 		for i := 1; i <= count; i++ {
 
-			err = queue.ProduceTest(i)
+			err = consumers.ProduceTest(i)
 			log.Err(err, r)
 		}
 	}
@@ -266,12 +266,7 @@ func adminQueues(r *http.Request) {
 		}
 	}
 
-	err := queue.ProduceToSteam(queue.SteamPayload{
-		AppIDs:     appIDs,
-		PackageIDs: packageIDs,
-		ProfileIDs: playerIDs,
-		Force:      true,
-	})
+	err := consumers.ProduceSteam(consumers.SteamMessage{AppIDs: appIDs, PackageIDs: packageIDs})
 	log.Err(err)
 }
 

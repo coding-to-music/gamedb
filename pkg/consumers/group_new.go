@@ -35,7 +35,7 @@ func newGroupsHandler(messages []*framework.Message) {
 
 		if len(payload.IDs) > 1 {
 			for _, v := range payload.IDs {
-				err = ProduceGroupNew(GroupMessage{IDs: []string{v}})
+				err = produceGroupNew(GroupMessage{IDs: []string{v}})
 				if err != nil {
 					log.Err(err, message.Message.Body)
 				}
