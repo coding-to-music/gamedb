@@ -149,10 +149,10 @@ func checkForChanges() {
 					SendPackageInfoChanges: &true,
 					SinceChangeNumber:      &steamChangeNumber,
 				}))
-
-				time.Sleep(time.Second * 5)
 			}
 		}
+
+		time.Sleep(time.Second * 5)
 	}
 }
 
