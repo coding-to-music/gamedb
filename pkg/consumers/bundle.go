@@ -24,10 +24,6 @@ type BundleMessage struct {
 	ID int `json:"id"`
 }
 
-func (msg BundleMessage) Produce() error {
-	return channels[framework.Producer][queueBundles].ProduceInterface(msg)
-}
-
 func bundleHandler(messages []*framework.Message) {
 
 	for _, message := range messages {
