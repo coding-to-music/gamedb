@@ -14,54 +14,54 @@ import (
 )
 
 const (
-	queueApps            framework.QueueName = "GDB_Apps"
-	queueAppsRegular     framework.QueueName = "GDB_Apps_Regular"
-	queueAppPlayers      framework.QueueName = "GDB_App_Players"
-	queueBundles         framework.QueueName = "GDB_Bundles"
-	queueChanges         framework.QueueName = "GDB_Changes"
-	queueGroups          framework.QueueName = "GDB_Groups"
-	queueGroupsNew       framework.QueueName = "GDB_Groups_New"
-	queuePackages        framework.QueueName = "GDB_Packages"
-	queuePackagesRegular framework.QueueName = "GDB_Packages_Regular"
-	queuePlayers         framework.QueueName = "GDB_Players"
-	queuePlayersRegular  framework.QueueName = "GDB_Players_Regular"
-	queuePlayerRanks     framework.QueueName = "GDB_Player_Ranks"
-	queueSteam           framework.QueueName = "GDB_Steam"
+	QueueApps            framework.QueueName = "GDB_Apps"
+	QueueAppsRegular     framework.QueueName = "GDB_Apps_Regular"
+	QueueAppPlayers      framework.QueueName = "GDB_App_Players"
+	QueueBundles         framework.QueueName = "GDB_Bundles"
+	QueueChanges         framework.QueueName = "GDB_Changes"
+	QueueGroups          framework.QueueName = "GDB_Groups"
+	QueueGroupsNew       framework.QueueName = "GDB_Groups_New"
+	QueuePackages        framework.QueueName = "GDB_Packages"
+	QueuePackagesRegular framework.QueueName = "GDB_Packages_Regular"
+	QueuePlayers         framework.QueueName = "GDB_Players"
+	QueuePlayersRegular  framework.QueueName = "GDB_Players_Regular"
+	QueuePlayerRanks     framework.QueueName = "GDB_Player_Ranks"
+	QueueSteam           framework.QueueName = "GDB_Steam"
 
-	queueDelay  framework.QueueName = "GDB_Delay"
-	queueFailed framework.QueueName = "GDB_Failed"
+	QueueDelay  framework.QueueName = "GDB_Delay"
+	QueueFailed framework.QueueName = "GDB_Failed"
 )
 
 var (
-	channels = map[string]map[framework.QueueName]*framework.Channel{
+	Channels = map[string]map[framework.QueueName]*framework.Channel{
 		framework.Consumer: {},
 		framework.Producer: {},
 	}
 
 	QueueDefinitions = []queue{
-		{name: queueApps, consumer: appHandler},
-		{name: queueAppsRegular},
-		{name: queueAppPlayers, consumer: appPlayersHandler},
-		{name: queueBundles, consumer: bundleHandler},
-		{name: queueChanges, consumer: changesHandler},
-		{name: queueGroups, consumer: groupsHandler},
-		{name: queueGroupsNew, consumer: newGroupsHandler},
-		{name: queuePackages, consumer: packageHandler},
-		{name: queuePackagesRegular},
-		{name: queuePlayers, consumer: playerHandler},
-		{name: queuePlayersRegular},
-		{name: queuePlayerRanks, consumer: playerRanksHandler},
-		{name: queueDelay, consumer: delayHandler, skipHeaders: true},
-		{name: queueSteam, consumer: nil},
-		{name: queueFailed, consumer: nil},
+		{name: QueueApps, consumer: appHandler},
+		{name: QueueAppsRegular},
+		{name: QueueAppPlayers, consumer: appPlayersHandler},
+		{name: QueueBundles, consumer: bundleHandler},
+		{name: QueueChanges, consumer: changesHandler},
+		{name: QueueGroups, consumer: groupsHandler},
+		{name: QueueGroupsNew, consumer: newGroupsHandler},
+		{name: QueuePackages, consumer: packageHandler},
+		{name: QueuePackagesRegular},
+		{name: QueuePlayers, consumer: playerHandler},
+		{name: QueuePlayersRegular},
+		{name: QueuePlayerRanks, consumer: playerRanksHandler},
+		{name: QueueDelay, consumer: delayHandler, skipHeaders: true},
+		{name: QueueSteam, consumer: nil},
+		{name: QueueFailed, consumer: nil},
 	}
 
 	QueueSteamDefinitions = []queue{
-		{name: queueSteam, consumer: steamHandler},
-		{name: queueApps, consumer: nil},
-		{name: queuePackages, consumer: nil},
-		{name: queuePlayers, consumer: nil},
-		{name: queueChanges, consumer: nil},
+		{name: QueueSteam, consumer: steamHandler},
+		{name: QueueApps, consumer: nil},
+		{name: QueuePackages, consumer: nil},
+		{name: QueuePlayers, consumer: nil},
+		{name: QueueChanges, consumer: nil},
 	}
 )
 
@@ -92,7 +92,7 @@ func Init(definitions []queue, consume bool) {
 		if err != nil {
 			log.Critical(string(queue.name), err)
 		} else {
-			channels[framework.Producer][queue.name] = q
+			Channels[framework.Producer][queue.name] = q
 		}
 	}
 
@@ -114,7 +114,7 @@ func Init(definitions []queue, consume bool) {
 					continue
 				}
 
-				channels[framework.Consumer][queue.name] = q
+				Channels[framework.Consumer][queue.name] = q
 
 				err = q.Consume()
 				if err != nil {
@@ -128,11 +128,11 @@ func Init(definitions []queue, consume bool) {
 
 // Message helpers
 func sendToFailQueue(message *framework.Message) {
-	message.SendToQueue(channels[framework.Producer][queueFailed])
+	message.SendToQueue(Channels[framework.Producer][QueueFailed])
 }
 
 func sendToRetryQueue(message *framework.Message) {
-	message.SendToQueue(channels[framework.Producer][queueDelay])
+	message.SendToQueue(Channels[framework.Producer][QueueDelay])
 }
 
 func sendToFirstQueue(message *framework.Message) {
@@ -140,10 +140,10 @@ func sendToFirstQueue(message *framework.Message) {
 	queue := message.FirstQueue()
 
 	if queue == "" {
-		queue = queueFailed
+		queue = QueueFailed
 	}
 
-	message.SendToQueue(channels[framework.Producer][queue])
+	message.SendToQueue(Channels[framework.Producer][queue])
 }
 
 // Producers
@@ -153,11 +153,11 @@ func ProduceApp(payload AppMessage) error {
 		return sql.ErrInvalidAppID
 	}
 
-	return channels[framework.Producer][queueApps].ProduceInterface(payload)
+	return Channels[framework.Producer][QueueApps].ProduceInterface(payload)
 }
 
 func ProduceAppRegular(payload AppMessage) error {
-	return channels[framework.Producer][queueAppsRegular].ProduceInterface(payload)
+	return Channels[framework.Producer][QueueAppsRegular].ProduceInterface(payload)
 }
 
 func ProduceAppPlayers(payload AppPlayerMessage) error {
@@ -166,23 +166,23 @@ func ProduceAppPlayers(payload AppPlayerMessage) error {
 		return nil
 	}
 
-	return channels[framework.Producer][queueAppPlayers].ProduceInterface(payload)
+	return Channels[framework.Producer][QueueAppPlayers].ProduceInterface(payload)
 }
 
 func ProduceBundle(payload BundleMessage) error {
-	return channels[framework.Producer][queueBundles].ProduceInterface(payload)
+	return Channels[framework.Producer][QueueBundles].ProduceInterface(payload)
 }
 
 func ProduceChanges(payload ChangesMessage) error {
-	return channels[framework.Producer][queueChanges].ProduceInterface(payload)
+	return Channels[framework.Producer][QueueChanges].ProduceInterface(payload)
 }
 
 func ProduceGroup(payload GroupMessage) error {
-	return channels[framework.Producer][queueGroups].ProduceInterface(payload)
+	return Channels[framework.Producer][QueueGroups].ProduceInterface(payload)
 }
 
 func ProduceGroupNew(payload GroupMessage) error {
-	return channels[framework.Producer][queueGroupsNew].ProduceInterface(payload)
+	return Channels[framework.Producer][QueueGroupsNew].ProduceInterface(payload)
 }
 
 func ProducePackage(payload PackageMessage) error {
@@ -191,11 +191,11 @@ func ProducePackage(payload PackageMessage) error {
 		return sql.ErrInvalidPackageID
 	}
 
-	return channels[framework.Producer][queuePackages].ProduceInterface(payload)
+	return Channels[framework.Producer][QueuePackages].ProduceInterface(payload)
 }
 
 func ProducePackageRegular(payload PackageMessage) error {
-	return channels[framework.Producer][queuePackagesRegular].ProduceInterface(payload)
+	return Channels[framework.Producer][QueuePackagesRegular].ProduceInterface(payload)
 }
 
 func ProducePlayer(payload PlayerMessage) error {
@@ -204,15 +204,15 @@ func ProducePlayer(payload PlayerMessage) error {
 		return errors.New("invalid player id: " + strconv.FormatInt(payload.ID, 10))
 	}
 
-	return channels[framework.Producer][queuePlayers].ProduceInterface(payload)
+	return Channels[framework.Producer][QueuePlayers].ProduceInterface(payload)
 }
 
 func ProducePlayerRegular(payload PlayerMessage) error {
-	return channels[framework.Producer][queuePlayersRegular].ProduceInterface(payload)
+	return Channels[framework.Producer][QueuePlayersRegular].ProduceInterface(payload)
 }
 
 func ProducePlayerRank(payload PlayerRanksMessage) error {
-	return channels[framework.Producer][queuePlayerRanks].ProduceInterface(payload)
+	return Channels[framework.Producer][QueuePlayerRanks].ProduceInterface(payload)
 }
 
 func ProduceSteam(payload SteamMessage) error {
@@ -221,5 +221,5 @@ func ProduceSteam(payload SteamMessage) error {
 		return nil
 	}
 
-	return channels[framework.Producer][queueSteam].ProduceInterface(payload)
+	return Channels[framework.Producer][QueueSteam].ProduceInterface(payload)
 }

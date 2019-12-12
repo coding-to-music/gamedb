@@ -321,6 +321,21 @@ func Find(collection collection, offset int64, limit int64, sort bson.D, filter 
 	return cur, ctx, err
 }
 
+func GetRandomRows(collection collection, count int) (cur *mongo.Cursor, ctx context.Context, err error) {
+
+	client, ctx, err := getMongo()
+	if err != nil {
+		return cur, ctx, err
+	}
+
+	pipeline := mongo.Pipeline{
+		{{Key: "$sample", Value: bson.D{{Key: "size", Value: count}}}},
+	}
+
+	c, err := client.Database(MongoDatabase, options.Database()).Collection(collection.String()).Aggregate(ctx, pipeline, options.Aggregate())
+	return c, ctx, err
+}
+
 func mongoFilterToMemcacheKey(collection collection, filter bson.D) string {
 
 	if filter == nil {
