@@ -159,15 +159,17 @@ func packageHandler(messages []*framework.Message) {
 		log.Err(err)
 
 		// Clear caches
-		if pack.ReleaseDateUnix > time.Now().Unix() && newPackage {
-
-			err = memcache.RemoveKeyFromMemCacheViaPubSub(
-				memcache.MemcacheUpcomingPackagesCount.Key,
-				memcache.MemcachePackageInQueue(pack.ID).Key,
-				memcache.MemcachePackageBundles(pack.ID).Key,
-			)
-			log.Err(err)
+		var keys = []string{
+			memcache.MemcachePackageInQueue(pack.ID).Key,
+			memcache.MemcachePackageBundles(pack.ID).Key,
 		}
+
+		if pack.ReleaseDateUnix > time.Now().Unix() && newPackage {
+			keys = append(keys, memcache.MemcacheUpcomingPackagesCount.Key)
+		}
+
+		err = memcache.RemoveKeyFromMemCacheViaPubSub(keys...)
+		log.Err(err)
 
 		// Queue apps
 		// Commented out because queued too many apps
