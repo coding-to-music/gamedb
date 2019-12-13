@@ -13,7 +13,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/tasks"
 	"github.com/gamedb/gamedb/pkg/websockets"
@@ -261,7 +260,7 @@ func adminQueues(r *http.Request) {
 
 		for _, val := range vals {
 
-			err := queue.ProduceGroup([]string{val}, true)
+			err := consumers.ProduceGroup(consumers.GroupMessage{IDs: []string{val}})
 			log.Err(err, r)
 		}
 	}

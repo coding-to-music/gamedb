@@ -6,7 +6,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -59,7 +58,7 @@ func (c AutoPlayerRefreshes) work() (err error) {
 		}
 	}
 
-	err = queue.ProduceGroup(groupIDs, false)
+	err = consumers.ProduceGroup(consumers.GroupMessage{IDs: groupIDs})
 	if err != nil {
 		return err
 	}

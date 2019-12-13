@@ -6,11 +6,11 @@ import (
 	"strings"
 
 	"github.com/Jleagle/influxql"
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
 )
@@ -86,7 +86,7 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 		// 	return
 		// }
 
-		err = queue.ProduceGroup([]string{group.ID64}, false)
+		err = consumers.ProduceGroup(consumers.GroupMessage{IDs: []string{group.ID64}})
 		if err != nil {
 			log.Err(err, r)
 		} else {
