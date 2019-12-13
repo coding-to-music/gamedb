@@ -263,7 +263,9 @@ func (ph packetHandler) handleChangesSince(packet *protocol.Packet) {
 	appChanges := body.GetAppChanges()
 	if len(appChanges) > 0 {
 
-		log.Info(strconv.Itoa(len(appChanges)) + " apps since change " + changes)
+		if config.IsLocal() {
+			log.Info(strconv.Itoa(len(appChanges)) + " apps since change " + changes)
+		}
 
 		for _, appChange := range appChanges {
 
@@ -280,7 +282,9 @@ func (ph packetHandler) handleChangesSince(packet *protocol.Packet) {
 	packageChanges := body.GetPackageChanges()
 	if len(packageChanges) > 0 {
 
-		log.Info(strconv.Itoa(len(packageChanges)) + " pack since change " + changes)
+		if config.IsLocal() {
+			log.Info(strconv.Itoa(len(packageChanges)) + " pack since change " + changes)
+		}
 
 		for _, packageChange := range packageChanges {
 
