@@ -21,6 +21,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
+	pubsubHelpers "github.com/gamedb/gamedb/pkg/helpers/pubsub"
 	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/helpers/twitch"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -364,7 +365,7 @@ func appHandler(messages []*framework.Message) {
 			wsPayload.ID = id
 			wsPayload.Pages = []websockets.WebsocketPage{websockets.PageApp}
 
-			_, err = helpers.Publish(helpers.PubSubTopicWebsockets, wsPayload)
+			_, err = pubsubHelpers.Publish(pubsubHelpers.PubSubTopicWebsockets, wsPayload)
 			if err != nil {
 				log.Err(err, id)
 			}

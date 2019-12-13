@@ -8,6 +8,7 @@ import (
 	"cloud.google.com/go/pubsub"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	pubsubHelpers "github.com/gamedb/gamedb/pkg/helpers/pubsub"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
@@ -140,7 +141,7 @@ type WebsocketPayload struct {
 // Converts pubsub messages into websockets
 func ListenToPubSub() {
 
-	err := helpers.PubSubSubscribe(helpers.PubSubWebsockets, func(m *pubsub.Message) {
+	err := pubsubHelpers.PubSubSubscribe(pubsubHelpers.PubSubWebsockets, func(m *pubsub.Message) {
 
 		// log.Info("PubSub (" + humanize.Bytes(uint64(len(m.Data))) + "): " + string(m.Data))
 

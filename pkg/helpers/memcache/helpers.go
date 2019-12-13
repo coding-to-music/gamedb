@@ -7,6 +7,7 @@ import (
 	"cloud.google.com/go/pubsub"
 	"github.com/Jleagle/memcache-go/memcache"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	pubsubHelpers "github.com/gamedb/gamedb/pkg/helpers/pubsub"
 	"github.com/gamedb/gamedb/pkg/log"
 )
 
@@ -31,7 +32,7 @@ func ListenToPubSubMemcache() {
 
 	mc := GetClient()
 
-	err := helpers.PubSubSubscribe(helpers.PubSubMemcache, func(m *pubsub.Message) {
+	err := pubsubHelpers.PubSubSubscribe(pubsubHelpers.PubSubMemcache, func(m *pubsub.Message) {
 
 		var ids []string
 
@@ -50,6 +51,6 @@ func ListenToPubSubMemcache() {
 //
 func RemoveKeyFromMemCacheViaPubSub(keys ...string) (err error) {
 
-	_, err = helpers.Publish(helpers.PubSubTopicMemcache, keys)
+	_, err = pubsubHelpers.Publish(pubsubHelpers.PubSubTopicMemcache, keys)
 	return err
 }

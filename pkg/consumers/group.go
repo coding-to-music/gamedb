@@ -15,6 +15,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
+	pubsubHelpers "github.com/gamedb/gamedb/pkg/helpers/pubsub"
 	"github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -522,7 +523,7 @@ func sendGroupWebsocket(ids []string) (err error) {
 	wsPayload.IDs = ids
 	wsPayload.Pages = []websockets.WebsocketPage{websockets.PageGroup}
 
-	_, err = helpers.Publish(helpers.PubSubTopicWebsockets, wsPayload)
+	_, err = pubsubHelpers.Publish(pubsubHelpers.PubSubTopicWebsockets, wsPayload)
 	return err
 }
 

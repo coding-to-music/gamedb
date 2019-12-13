@@ -13,6 +13,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
+	pubsubHelpers "github.com/gamedb/gamedb/pkg/helpers/pubsub"
 	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -234,7 +235,7 @@ func playerHandler(messages []*framework.Message) {
 			wsPayload.ID = strconv.FormatInt(player.ID, 10)
 			wsPayload.Pages = []websockets.WebsocketPage{websockets.PagePlayer}
 
-			_, err = helpers.Publish(helpers.PubSubTopicWebsockets, wsPayload)
+			_, err = pubsubHelpers.Publish(pubsubHelpers.PubSubTopicWebsockets, wsPayload)
 			if err != nil {
 				log.Err(err, payload.ID)
 			}

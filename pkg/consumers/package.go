@@ -16,6 +16,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
+	pubsubHelpers "github.com/gamedb/gamedb/pkg/helpers/pubsub"
 	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
@@ -154,7 +155,7 @@ func packageHandler(messages []*framework.Message) {
 		wsPayload.ID = pack.ID
 		wsPayload.Pages = []websockets.WebsocketPage{websockets.PagePackage, websockets.PagePackages}
 
-		_, err = helpers.Publish(helpers.PubSubTopicWebsockets, wsPayload)
+		_, err = pubsubHelpers.Publish(pubsubHelpers.PubSubTopicWebsockets, wsPayload)
 		log.Err(err)
 
 		// Clear caches

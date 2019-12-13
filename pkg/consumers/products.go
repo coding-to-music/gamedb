@@ -8,6 +8,7 @@ import (
 
 	"github.com/Jleagle/valve-data-format-go/vdf"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	pubsubHelpers "github.com/gamedb/gamedb/pkg/helpers/pubsub"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
@@ -338,7 +339,7 @@ func savePriceChanges(before sql.ProductInterface, after sql.ProductInterface) (
 			wsPayload.IDs = priceIDs
 			wsPayload.Pages = []websockets.WebsocketPage{websockets.PagePrices}
 
-			_, err2 := helpers.Publish(helpers.PubSubTopicWebsockets, wsPayload)
+			_, err2 := pubsubHelpers.Publish(pubsubHelpers.PubSubTopicWebsockets, wsPayload)
 			if err2 != nil {
 				log.Err(err2)
 			}

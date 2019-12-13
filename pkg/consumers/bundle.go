@@ -11,6 +11,7 @@ import (
 	"github.com/cenkalti/backoff"
 	"github.com/gamedb/gamedb/pkg/consumers/framework"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	pubsubHelpers "github.com/gamedb/gamedb/pkg/helpers/pubsub"
 	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -105,7 +106,7 @@ func bundleHandler(messages []*framework.Message) {
 		wsPaload.ID = payload.ID
 		wsPaload.Pages = []websockets.WebsocketPage{websockets.PageBundle, websockets.PageBundles}
 
-		_, err = helpers.Publish(helpers.PubSubTopicWebsockets, wsPaload)
+		_, err = pubsubHelpers.Publish(pubsubHelpers.PubSubTopicWebsockets, wsPaload)
 		if err != nil {
 			log.Err(err, payload.ID)
 		}
