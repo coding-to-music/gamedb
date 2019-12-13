@@ -11,7 +11,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
 )
 
@@ -45,14 +44,7 @@ func main() {
 	// Load consumers
 	consumers.Init(consumers.QueueDefinitions, true)
 
-	log.Info("Starting old consumers")
-	for queueName, q := range queue.QueueRegister {
-		if !q.DoNotScale {
-			q.Name = queueName
-			go q.ConsumeMessages()
-		}
-	}
-
+	// Auto add players
 	if config.IsProd() {
 		go func() {
 			for {
