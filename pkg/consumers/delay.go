@@ -22,10 +22,10 @@ func delayHandler(messages []*framework.Message) {
 		seconds = math.Min(seconds, max.Seconds())
 
 		// Requeue
-		if message.LastSeen().Add(time.Second * time.Duration(int64(seconds))).Before(time.Now()) {
-			sendToFirstQueue(message)
-		} else {
+		if message.FirstSeen().Add(time.Second * time.Duration(int64(seconds))).Before(time.Now()) {
 			sendToRetryQueue(message)
+		} else {
+			sendToLastQueue(message)
 		}
 	}
 }

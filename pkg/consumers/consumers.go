@@ -136,9 +136,9 @@ func sendToRetryQueue(message *framework.Message) {
 	message.SendToQueue(Channels[framework.Producer][QueueDelay])
 }
 
-func sendToFirstQueue(message *framework.Message) {
+func sendToLastQueue(message *framework.Message) {
 
-	queue := message.FirstQueue()
+	queue := message.LastQueue()
 
 	if queue == "" {
 		queue = QueueFailed
