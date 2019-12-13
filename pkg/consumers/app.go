@@ -244,12 +244,12 @@ func appHandler(messages []*framework.Message) {
 				return
 			}
 
-			err = getSimilarOwners(&app)
-			if err != nil {
-				log.Err(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
+			// err = getSimilarOwners(&app)
+			// if err != nil {
+			// 	log.Err(err, payload.ID)
+			// 	sendToRetryQueue(message)
+			// 	return
+			// }
 		}()
 
 		wg.Wait()
