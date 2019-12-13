@@ -12,7 +12,7 @@ type groupQueueAPI struct {
 
 func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {
 
-	message := appMessage{}
+	message := groupMessage{}
 
 	err := helpers.Unmarshal(msgs[0].Body, &message)
 	if err != nil {
@@ -21,12 +21,10 @@ func (q groupQueueAPI) processMessages(msgs []amqp.Delivery) {
 		return
 	}
 
-	payload := consumers.AppMessage{}
-	payload.ID = message.Message.ID
-	payload.ChangeNumber = message.Message.ChangeNumber
-	payload.VDF = message.Message.VDF
+	payload := consumers.GroupMessage{}
+	payload.IDs = message.Message.IDs
 
-	err = consumers.ProduceApp(payload)
+	err = consumers.ProduceGroup(payload)
 	if err != nil {
 		log.Err(err, msgs[0].Body)
 		ackRetry(msgs[0], &message)
