@@ -11,6 +11,7 @@ import (
 	"github.com/cenkalti/backoff"
 	"github.com/gamedb/gamedb/pkg/consumers/framework"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	pubsubHelpers "github.com/gamedb/gamedb/pkg/helpers/pubsub"
 	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -110,6 +111,12 @@ func bundleHandler(messages []*framework.Message) {
 		if err != nil {
 			log.Err(err, payload.ID)
 		}
+
+		// Clear caches
+		err = memcache.RemoveKeyFromMemCacheViaPubSub(
+			memcache.MemcacheBundleInQueue(bundle.ID).Key,
+		)
+		log.Err(err)
 
 		message.Ack()
 	}
