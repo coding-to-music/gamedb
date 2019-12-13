@@ -8,6 +8,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/consumers/framework"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/streadway/amqp"
@@ -148,20 +149,33 @@ func sendToLastQueue(message *framework.Message) {
 }
 
 // Producers
-func ProduceApp(payload AppMessage) error {
+func ProduceApp(payload AppMessage) (err error) {
 
 	if !helpers.IsValidAppID(payload.ID) {
 		return sql.ErrInvalidAppID
 	}
 
-	return Channels[framework.Producer][QueueApps].ProduceInterface(payload)
+	mc := memcache.GetClient()
+
+	item := memcache.MemcacheAppInQueue(payload.ID)
+	_, err = mc.Get(item.Key)
+	if err == nil {
+		return memcache.ErrInQueue
+	}
+
+	err = Channels[framework.Producer][QueueApps].ProduceInterface(payload)
+	if err == nil {
+		err = mc.Set(&item)
+	}
+
+	return err
 }
 
-func ProduceAppRegular(payload AppMessage) error {
+func ProduceAppRegular(payload AppMessage) (err error) {
 	return Channels[framework.Producer][QueueAppsRegular].ProduceInterface(payload)
 }
 
-func ProduceAppPlayers(payload AppPlayerMessage) error {
+func ProduceAppPlayers(payload AppPlayerMessage) (err error) {
 
 	if len(payload.IDs) == 0 {
 		return nil
@@ -170,53 +184,93 @@ func ProduceAppPlayers(payload AppPlayerMessage) error {
 	return Channels[framework.Producer][QueueAppPlayers].ProduceInterface(payload)
 }
 
-func ProduceBundle(id int) error {
-	return Channels[framework.Producer][QueueBundles].ProduceInterface(BundleMessage{ID: id})
+func ProduceBundle(id int) (err error) {
+
+	mc := memcache.GetClient()
+
+	item := memcache.MemcacheBundleInQueue(id)
+	_, err = mc.Get(item.Key)
+	if err == nil {
+		return memcache.ErrInQueue
+	}
+
+	err = Channels[framework.Producer][QueueBundles].ProduceInterface(BundleMessage{ID: id})
+	if err == nil {
+		err = mc.Set(&item)
+	}
+
+	return err
 }
 
-func ProduceChanges(payload ChangesMessage) error {
+func ProduceChanges(payload ChangesMessage) (err error) {
 	return Channels[framework.Producer][QueueChanges].ProduceInterface(payload)
 }
 
-func ProduceGroup(payload GroupMessage) error {
+func ProduceGroup(payload GroupMessage) (err error) {
 	return Channels[framework.Producer][QueueGroups].ProduceInterface(payload)
 }
 
-func produceGroupNew(id string) error {
+func produceGroupNew(id string) (err error) {
 	return Channels[framework.Producer][QueueGroupsNew].ProduceInterface(GroupSingleMessage{ID: id})
 }
 
-func ProducePackage(payload PackageMessage) error {
+func ProducePackage(payload PackageMessage) (err error) {
 
 	if !sql.IsValidPackageID(payload.ID) {
 		return sql.ErrInvalidPackageID
 	}
 
-	return Channels[framework.Producer][QueuePackages].ProduceInterface(payload)
+	mc := memcache.GetClient()
+
+	item := memcache.MemcachePackageInQueue(payload.ID)
+	_, err = mc.Get(item.Key)
+	if err == nil {
+		return memcache.ErrInQueue
+	}
+
+	err = Channels[framework.Producer][QueuePackages].ProduceInterface(payload)
+	if err == nil {
+		err = mc.Set(&item)
+	}
+
+	return err
 }
 
-func ProducePackageRegular(payload PackageMessage) error {
+func ProducePackageRegular(payload PackageMessage) (err error) {
 	return Channels[framework.Producer][QueuePackagesRegular].ProduceInterface(payload)
 }
 
-func ProducePlayer(id int64) error {
+func ProducePlayer(id int64) (err error) {
 
 	if !helpers.IsValidPlayerID(id) {
 		return errors.New("invalid player id: " + strconv.FormatInt(id, 10))
 	}
 
-	return Channels[framework.Producer][QueuePlayers].ProduceInterface(PlayerMessage{ID: id})
+	mc := memcache.GetClient()
+
+	item := memcache.MemcachePlayerInQueue(id)
+	_, err = mc.Get(item.Key)
+	if err == nil {
+		return memcache.ErrInQueue
+	}
+
+	err = Channels[framework.Producer][QueuePlayers].ProduceInterface(PlayerMessage{ID: id})
+	if err == nil {
+		err = mc.Set(&item)
+	}
+
+	return err
 }
 
-func ProducePlayerRegular(id int64) error {
+func ProducePlayerRegular(id int64) (err error) {
 	return Channels[framework.Producer][QueuePlayersRegular].ProduceInterface(PlayerMessage{ID: id})
 }
 
-func ProducePlayerRank(payload PlayerRanksMessage) error {
+func ProducePlayerRank(payload PlayerRanksMessage) (err error) {
 	return Channels[framework.Producer][QueuePlayerRanks].ProduceInterface(payload)
 }
 
-func ProduceSteam(payload SteamMessage) error {
+func ProduceSteam(payload SteamMessage) (err error) {
 
 	if len(payload.AppIDs) == 0 && len(payload.PackageIDs) == 0 {
 		return nil
@@ -225,6 +279,6 @@ func ProduceSteam(payload SteamMessage) error {
 	return Channels[framework.Producer][QueueSteam].ProduceInterface(payload)
 }
 
-func ProduceTest(id int) error {
+func ProduceTest(id int) (err error) {
 	return Channels[framework.Producer][QueueTest].ProduceInterface(TestMessage{ID: id})
 }
