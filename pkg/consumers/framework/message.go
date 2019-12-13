@@ -4,7 +4,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/streadway/amqp"
 )
@@ -33,10 +32,6 @@ func (message *Message) ack(multiple bool) {
 
 	if message.ActionTaken {
 		return
-	}
-
-	if config.IsLocal() {
-		log.Info("Ack: " + string(message.Channel.Name) + ": " + string(message.Message.Body))
 	}
 
 	err := message.Message.Ack(multiple)
