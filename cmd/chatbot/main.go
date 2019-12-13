@@ -8,6 +8,7 @@ import (
 	"github.com/didip/tollbooth/v5"
 	"github.com/gamedb/gamedb/pkg/chatbot"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/discord"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
@@ -104,7 +105,7 @@ func main() {
 		return
 	}
 
-	select {}
+	helpers.KeepAlive()
 }
 
 func isPrivateChannel(s *discordgo.Session, m *discordgo.MessageCreate) (bool, error) {
