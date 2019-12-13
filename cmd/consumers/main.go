@@ -52,7 +52,7 @@ func main() {
 				q, err := consumers.Channels[framework.Producer][consumers.QueuePlayers].Inspect()
 				if err != nil {
 					log.Err(err)
-				} else if q.Messages < 10 {
+				} else if q.Messages == 0 {
 					players, err := mongo.GetRandomPlayers(10)
 					if err != nil {
 						log.Err(err)
@@ -66,7 +66,7 @@ func main() {
 
 				}
 
-				time.Sleep(time.Second * 10)
+				time.Sleep(time.Second * 30)
 			}
 		}()
 	}
