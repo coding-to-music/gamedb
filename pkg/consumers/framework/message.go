@@ -57,12 +57,16 @@ func (message *Message) SendToQueue(channels ...*Channel) {
 	//
 	var err error
 
+	var ack = true
 	for _, channel := range channels {
 		err = channel.Produce(message)
-		log.Err(err)
+		if err != nil {
+			log.Err(err)
+			ack = false
+		}
 	}
 
-	if err == nil {
+	if ack {
 		message.Ack()
 	}
 }
