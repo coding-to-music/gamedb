@@ -86,7 +86,7 @@ type App struct {
 	PublicOnly                    bool      `gorm:"not null;column:public_only"`                      //
 	Publishers                    string    `gorm:"not null;column:publishers;type:json"`             // []int
 	RelatedAppIDs                 string    `gorm:"not null;column:related_app_ids;type:json"`        // []int
-	RelatedOwnersAppIDs           string    `gorm:"-"`                                                // []int
+	RelatedOwnersAppIDs           string    `gorm:"not null;column:related_owners_app_ids;type:json"` // []int
 	ReleaseDate                   string    `gorm:"not null;column:release_date"`                     //
 	ReleaseDateUnix               int64     `gorm:"not null;column:release_date_unix"`                //
 	ReleaseState                  string    `gorm:"not null;column:release_state"`                    //
