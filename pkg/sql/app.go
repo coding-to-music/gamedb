@@ -187,6 +187,12 @@ func (app *App) Before(scope *gorm.Scope) error {
 	if app.Publishers == "" {
 		app.Publishers = "[]"
 	}
+	if app.RelatedAppIDs == "" {
+		app.RelatedAppIDs = "[]"
+	}
+	if app.RelatedOwnersAppIDs == "" {
+		app.RelatedOwnersAppIDs = "[]"
+	}
 	if app.Reviews == "" {
 		app.Reviews = "{}"
 	}
