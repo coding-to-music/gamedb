@@ -38,7 +38,6 @@ require (
 	github.com/djherbis/fscache v0.9.0
 	github.com/dustin/go-humanize v1.0.0
 	github.com/frustra/bbcode v0.0.0-20180807171629-48be21ce690c
-	github.com/gavv/monotime v0.0.0-20190418164738-30dba4353424 // indirect
 	github.com/getkin/kin-openapi v0.2.0
 	github.com/getsentry/sentry-go v0.3.1
 	github.com/go-chi/chi v4.0.2+incompatible
@@ -49,23 +48,16 @@ require (
 	github.com/golang/groupcache v0.0.0-20191027212112-611e8accdfc9 // indirect
 	github.com/golang/protobuf v1.3.2
 	github.com/golang/snappy v0.0.1
-	github.com/google/go-github v17.0.0+incompatible // indirect
-	github.com/google/go-github/v27 v27.0.6
 	github.com/google/go-github/v28 v28.1.1
-	github.com/gorilla/schema v1.1.0 // indirect
 	github.com/gorilla/sessions v1.2.0
 	github.com/gorilla/websocket v1.4.1
 	github.com/gosimple/slug v1.9.0
-	github.com/hashicorp/golang-lru v0.5.3 // indirect
 	github.com/influxdata/influxdb1-client v0.0.0-20191209144304-8bf82d3c094d
-	github.com/iris-contrib/formBinder v5.0.0+incompatible // indirect
-	github.com/iris-contrib/httpexpect v0.0.0-20180314041918-ebe99fcebbce // indirect
 	github.com/jinzhu/gorm v1.9.11
 	github.com/jinzhu/now v1.1.1
 	github.com/jstemmer/go-junit-report v0.9.1 // indirect
 	github.com/justinas/nosurf v1.1.0
 	github.com/jzelinskie/geddit v0.0.0-20190913104144-95ef6806b073
-	github.com/kataras/iris v11.1.1+incompatible // indirect
 	github.com/kennygrant/sanitize v1.2.4 // indirect
 	github.com/logrusorgru/aurora v0.0.0-20191116043053-66b7ad493a23
 	github.com/microcosm-cc/bluemonday v1.0.2
@@ -93,7 +85,6 @@ require (
 	github.com/uber-go/atomic v1.4.0 // indirect
 	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect
 	github.com/xdg/stringprep v1.0.0 // indirect
-	github.com/xeipuuv/gojsonpointer v0.0.0-20190809123943-df4f5c81cb3b // indirect
 	github.com/yohcop/openid-go v1.0.0
 	go.mongodb.org/mongo-driver v1.2.0
 	go.opencensus.io v0.22.2 // indirect
