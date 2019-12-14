@@ -338,6 +338,7 @@ func scrapePackage(pack *sql.Package) (err error) {
 
 	c := colly.NewCollector(
 		colly.URLFilters(packageRegex),
+		colly.AllowURLRevisit(),
 	)
 	c.SetRequestTimeout(time.Second * 60)
 

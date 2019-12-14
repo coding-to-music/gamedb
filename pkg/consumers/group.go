@@ -214,7 +214,9 @@ func updateGameGroup(id string, group *mongo.Group) (foundNumbers bool, err erro
 
 	groupScrapeRateLimit.Take()
 
-	c := colly.NewCollector()
+	c := colly.NewCollector(
+		colly.AllowURLRevisit(),
+	)
 	c.SetRequestTimeout(time.Second * 15)
 
 	// ID64
@@ -331,7 +333,9 @@ func updateRegularGroup(id string, group *mongo.Group) (foundMembers bool, err e
 
 	group.AppID = 0
 
-	c := colly.NewCollector()
+	c := colly.NewCollector(
+		colly.AllowURLRevisit(),
+	)
 	c.SetRequestTimeout(time.Second * 60)
 
 	// ID64

@@ -127,6 +127,7 @@ func updateBundle(bundle *sql.Bundle) (err error) {
 	c := colly.NewCollector(
 		colly.AllowedDomains("store.steampowered.com"),
 		steamHelper.WithAgeCheckCookie,
+		colly.AllowURLRevisit(),
 	)
 
 	// Title

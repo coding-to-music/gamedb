@@ -231,7 +231,9 @@ func getAppOnlinePlayers(appID int) (count int, err error) {
 
 	// var regexIntsOnly = regexp.MustCompile("[^0-9]+")
 	//
-	// c := colly.NewCollector()
+	// c := colly.NewCollector(
+	//   colly.AllowURLRevisit()
+	// )
 	// c.SetRequestTimeout(time.Second * 5)
 	//
 	// // ID64

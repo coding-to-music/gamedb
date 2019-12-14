@@ -1172,6 +1172,7 @@ func scrapeApp(app *sql.App) (sales []mongo.Sale, err error) {
 		c := colly.NewCollector(
 			colly.URLFilters(appStorePage),
 			steamHelper.WithAgeCheckCookie,
+			colly.AllowURLRevisit(),
 		)
 
 		// Bundles
@@ -1375,6 +1376,7 @@ func scrapeSimilar(app *sql.App) (err error) {
 		c := colly.NewCollector(
 			colly.URLFilters(appStoreSimilarPage),
 			steamHelper.WithAgeCheckCookie,
+			colly.AllowURLRevisit(),
 		)
 
 		c.OnHTML(".similar_grid_capsule", func(e *colly.HTMLElement) {
