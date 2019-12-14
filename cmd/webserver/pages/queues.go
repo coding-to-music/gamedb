@@ -44,7 +44,6 @@ func queuesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			`"queue"='GDB_Changes'`,
 			`"queue"='GDB_Groups'`,
 			`"queue"='GDB_Packages'`,
-			`"queue"='GDB_Player_Ranks'`,
 			`"queue"='GDB_Players'`,
 			`"queue"='GDB_Steam'`,
 		}
