@@ -6,6 +6,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/Philipp15b/go-steam/steamid"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
@@ -102,6 +103,35 @@ func (group Group) GetIcon() string {
 
 func (group Group) ShouldUpdate() bool {
 	return group.UpdatedAt.Before(time.Now().Add(time.Hour * -3))
+}
+
+func (group Group) GetID64() string {
+
+	if len(group.ID64) == 18 {
+		return group.ID64
+	}
+
+	if group.ID > 0 {
+		id := steamid.NewIdAdv(uint32(group.ID), 0, 1, 7)
+		return strconv.FormatUint(uint64(id), 10)
+	}
+
+	log.Warning("empty group ids")
+	return ""
+}
+
+func (group Group) GetID32() (i int, err error) {
+
+	if group.ID > 0 {
+		return group.ID, nil
+	}
+
+	id, err := steamid.NewId(group.ID64)
+	if err != nil {
+		return i, err
+	}
+
+	return int(id.GetAccountId()), nil
 }
 
 // Don't cache, as we need updatedAt to be live for notifications etc
