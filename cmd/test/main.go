@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
@@ -8,6 +9,7 @@ import (
 
 func main() {
 
+	config.SetVersion("")
 	log.Initialise([]log.LogName{log.LogNameTest})
 
 	// Get API key
