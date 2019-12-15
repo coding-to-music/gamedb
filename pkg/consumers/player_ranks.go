@@ -50,8 +50,6 @@ func playerRanksHandler(messages []*framework.Message) {
 		}
 		filter = append(filter, bson.E{Key: payload.SortColumn, Value: bson.M{"$exists": true, "$gt": 0}}) // Put last to help indexes
 
-		log.Info(message.Channel.Name, filter)
-
 		// Get players
 		players, err := mongo.GetPlayers(0, 0, bson.D{{payload.SortColumn, -1}}, filter, bson.M{"_id": 1})
 		if err != nil {
