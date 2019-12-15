@@ -43,6 +43,13 @@ func (group Group) BSON() bson.D {
 		group.CreatedAt = time.Now()
 	}
 
+	if group.ID == 0 {
+
+		var err error
+		group.ID, err = group.GetID32()
+		log.Err(err)
+	}
+
 	group.UpdatedAt = time.Now()
 
 	return bson.D{
