@@ -33,7 +33,8 @@ var (
 )
 
 type GroupMessage struct {
-	IDs []string `json:"ids"`
+	IDs []string `json:"ids"` // OLD
+	ID  string   `json:"id"`
 }
 
 func groupsHandler(messages []*framework.Message) {
@@ -48,6 +49,18 @@ func groupsHandler(messages []*framework.Message) {
 			sendToFailQueue(message)
 			continue
 		}
+
+		// Handle old payloads
+		if len(payload.IDs) > 0 {
+			for _, id := range payload.IDs {
+				err = ProduceGroup(id)
+				log.Err(err)
+			}
+			message.Ack()
+			continue
+		}
+
+		payload.IDs = []string{payload.ID}
 
 		//
 		for _, groupID := range payload.IDs {
@@ -96,8 +109,8 @@ func groupsHandler(messages []*framework.Message) {
 				continue
 			}
 
-			// Some pages dont contain the ID64, so use the API
-			if group.ID64 == "" {
+			// Some pages dont contain the ID, so use the API
+			if group.ID == "" {
 
 				err = produceGroupNew(groupID)
 				if err != nil {
@@ -219,10 +232,10 @@ func updateGameGroup(id string, group *mongo.Group) (foundNumbers bool, err erro
 	)
 	c.SetRequestTimeout(time.Second * 15)
 
-	// ID64
+	// ID
 	c.OnHTML("a[href^=\"steam:\"]", func(e *colly.HTMLElement) {
 		e.Text = helpers.RegexNonInts.ReplaceAllString(e.Text, "")
-		group.ID64 = path.Base(e.Attr("href"))
+		group.ID = path.Base(e.Attr("href"))
 	})
 
 	// URL
@@ -338,11 +351,11 @@ func updateRegularGroup(id string, group *mongo.Group) (foundMembers bool, err e
 	)
 	c.SetRequestTimeout(time.Second * 60)
 
-	// ID64
+	// ID
 	c.OnHTML("[id^=commentthread_Clan_]", func(e *colly.HTMLElement) {
 		matches := regularGroupID64Regex.FindStringSubmatch(e.Attr("id"))
 		if len(matches) > 1 {
-			group.ID64 = matches[1]
+			group.ID = matches[1]
 		}
 	})
 
@@ -428,7 +441,7 @@ func getGroupTrending(group *mongo.Group) (err error) {
 	subBuilder := influxql.NewBuilder()
 	subBuilder.AddSelect("difference(last(members_count))", "")
 	subBuilder.SetFrom(influxHelper.InfluxGameDB, influxHelper.InfluxRetentionPolicyAllTime.String(), influxHelper.InfluxMeasurementGroups.String())
-	subBuilder.AddWhere("group_id", "=", group.ID64)
+	subBuilder.AddWhere("group_id", "=", group.ID)
 	subBuilder.AddWhere("time", ">=", "NOW() - 21d")
 	subBuilder.AddGroupByTime("1h")
 
@@ -463,7 +476,7 @@ func getGroupTrending(group *mongo.Group) (err error) {
 
 func saveGroup(group mongo.Group) (err error) {
 
-	_, err = mongo.ReplaceOne(mongo.CollectionGroups, bson.D{{"_id", group.ID64}}, group)
+	_, err = mongo.ReplaceOne(mongo.CollectionGroups, bson.D{{"_id", group.ID}}, group)
 	return err
 }
 
@@ -481,7 +494,7 @@ func getAppFromGroup(group mongo.Group) (app sql.App, err error) {
 
 func saveAppsGroupID(app sql.App, group mongo.Group) (err error) {
 
-	if app.ID == 0 || group.ID64 == "" || app.GroupID == group.ID64 || group.Type != helpers.GroupTypeGame {
+	if app.ID == 0 || group.ID == "" || app.GroupID == group.ID || group.Type != helpers.GroupTypeGame {
 		return nil
 	}
 
@@ -491,7 +504,7 @@ func saveAppsGroupID(app sql.App, group mongo.Group) (err error) {
 	}
 
 	db = db.Model(&app).Updates(map[string]interface{}{
-		"group_id":        group.ID64,
+		"group_id":        group.ID,
 		"group_followers": group.Members,
 	})
 
@@ -510,7 +523,7 @@ func saveGroupToInflux(group mongo.Group) (err error) {
 	_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, influx.Point{
 		Measurement: string(influxHelper.InfluxMeasurementGroups),
 		Tags: map[string]string{
-			"group_id":   group.ID64,
+			"group_id":   group.ID,
 			"group_type": group.Type,
 		},
 		Fields:    fields,
@@ -554,55 +567,4 @@ func getGroupType(id string) (string, error) {
 	}
 
 	return "", err
-}
-
-func updateGroupFromXML(id string, group *mongo.Group) (err error) {
-
-	groupXMLRateLimit.Take()
-
-	resp, b, err := steam.GetSteam().GetGroupByID(id)
-	err = steam.AllowSteamCodes(err, b, nil)
-	if err != nil {
-		return err
-	}
-
-	group.SetID(id)
-	group.ID64 = resp.ID64
-	if resp.Details.Name != "" {
-		group.Name = resp.Details.Name
-	}
-	group.URL = resp.Details.URL
-	group.Headline = resp.Details.Headline
-	group.Summary = resp.Details.Summary
-	group.Members = int(resp.Details.MemberCount)
-	group.MembersInChat = int(resp.Details.MembersInChat)
-	group.MembersInGame = int(resp.Details.MembersInGame)
-	group.MembersOnline = int(resp.Details.MembersOnline)
-	group.Type = resp.Type
-
-	// Try to get App ID from URL
-	i, err := strconv.Atoi(resp.Details.URL)
-	if err == nil && i > 0 {
-		group.AppID = i
-	}
-
-	// Get working icon
-	if helpers.GetResponseCode(resp.Details.AvatarFull) == 200 {
-
-		group.Icon = strings.Replace(resp.Details.AvatarFull, helpers.AvatarBase, "", 1)
-
-	} else if helpers.GetResponseCode(resp.Details.AvatarMedium) == 200 {
-
-		group.Icon = strings.Replace(resp.Details.AvatarMedium, helpers.AvatarBase, "", 1)
-
-	} else if helpers.GetResponseCode(resp.Details.AvatarIcon) == 200 {
-
-		group.Icon = strings.Replace(resp.Details.AvatarIcon, helpers.AvatarBase, "", 1)
-
-	} else {
-
-		group.Icon = ""
-	}
-
-	return nil
 }

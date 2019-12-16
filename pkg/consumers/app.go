@@ -379,7 +379,7 @@ func appHandler(messages []*framework.Message) {
 
 		// Queue group
 		if app.GroupID != "" {
-			err = ProduceGroup(GroupMessage{IDs: []string{app.GroupID}})
+			err = ProduceGroup(app.GroupID)
 			log.Err(err)
 		}
 

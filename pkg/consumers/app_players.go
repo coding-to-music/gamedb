@@ -236,7 +236,7 @@ func getAppOnlinePlayers(appID int) (count int, err error) {
 	// )
 	// c.SetRequestTimeout(time.Second * 5)
 	//
-	// // ID64
+	// // ID
 	// c.OnHTML(".apphub_NumInApp", func(e *colly.HTMLElement) {
 	// 	e.Text = regexIntsOnly.ReplaceAllString(e.Text, "")
 	// 	log.Info(e.Text)

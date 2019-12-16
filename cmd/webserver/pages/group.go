@@ -86,7 +86,7 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 		// 	return
 		// }
 
-		err = consumers.ProduceGroup(consumers.GroupMessage{IDs: []string{group.ID64}})
+		err = consumers.ProduceGroup(group.ID)
 		if err != nil {
 			log.Err(err, r)
 		} else {

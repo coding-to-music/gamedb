@@ -908,8 +908,8 @@ func playerGroupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	for _, group := range groups {
 		response.AddRow([]interface{}{
-			group.GroupID64,    // 0
-			group.PlayerID,     // 1
+			group.GroupID,      // 0
+			"",                 // 1
 			group.GetName(),    // 2
 			group.GetPath(),    // 3
 			group.GetIcon(),    // 4

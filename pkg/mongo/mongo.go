@@ -221,6 +221,18 @@ func UpdateManyUnset(collection collection, columns bson.D) (resp *mongo.UpdateR
 	return resp, err
 }
 
+func UpdateOne(collection collection, filter bson.D, update bson.D) (resp *mongo.UpdateResult, err error) {
+
+	client, ctx, err := getMongo()
+	if err != nil {
+		return resp, nil
+	}
+
+	resp, err = client.Database(MongoDatabase, options.Database()).Collection(collection.String()).UpdateOne(ctx, filter, bson.M{"$set": update}, options.Update())
+
+	return resp, err
+}
+
 // Will skip documents that already exist
 func InsertMany(collection collection, documents []Document) (resp *mongo.InsertManyResult, err error) {
 

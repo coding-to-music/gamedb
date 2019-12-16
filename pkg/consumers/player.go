@@ -24,7 +24,8 @@ import (
 )
 
 type PlayerMessage struct {
-	ID int64 `json:"id"`
+	ID              int64 `json:"id"`
+	DontQueueGroups bool  `json:"dont_queue_groups"`
 }
 
 func playerHandler(messages []*framework.Message) {
@@ -119,7 +120,7 @@ func playerHandler(messages []*framework.Message) {
 				return
 			}
 
-			err = updatePlayerGroups(&player)
+			err = updatePlayerGroups(&player, payload)
 			if err != nil {
 				steamHelper.LogSteamError(err, payload.ID)
 				sendToRetryQueue(message)
@@ -275,7 +276,7 @@ func updatePlayerSummary(player *mongo.Player) error {
 	player.PersonaName = summary.PersonaName
 	player.TimeCreated = time.Unix(summary.TimeCreated, 0)
 	player.LastLogOff = time.Unix(summary.LastLogOff, 0)
-	player.PrimaryClanIDString = summary.PrimaryClanID
+	player.PrimaryGroupID = summary.PrimaryClanID
 
 	return err
 }
@@ -684,7 +685,7 @@ func updatePlayerBans(player *mongo.Player) error {
 }
 
 // todo, get old groups first, then i only need to GetGroupsByID for ids that are not in old groups.
-func updatePlayerGroups(player *mongo.Player) error {
+func updatePlayerGroups(player *mongo.Player, payload PlayerMessage) error {
 
 	// New groups
 	resp, b, err := steamHelper.GetSteam().GetUserGroupList(player.ID)
@@ -702,7 +703,7 @@ func updatePlayerGroups(player *mongo.Player) error {
 
 	var newGroupsMap = map[string]mongo.Group{}
 	for _, v := range newGroupsSlice {
-		newGroupsMap[v.ID64] = v
+		newGroupsMap[v.ID] = v
 	}
 
 	// Old groups
@@ -713,14 +714,14 @@ func updatePlayerGroups(player *mongo.Player) error {
 
 	oldGroupsMap := map[string]mongo.PlayerGroup{}
 	for _, v := range oldGroupsSlice {
-		oldGroupsMap[v.GroupID64] = v
+		oldGroupsMap[v.GroupID] = v
 	}
 
 	// Delete
 	var toDelete []string
 	for _, v := range oldGroupsSlice {
-		if _, ok := newGroupsMap[v.GroupID64]; !ok {
-			toDelete = append(toDelete, v.GroupID64)
+		if _, ok := newGroupsMap[v.GroupID]; !ok {
+			toDelete = append(toDelete, v.GroupID)
 		}
 	}
 
@@ -732,16 +733,15 @@ func updatePlayerGroups(player *mongo.Player) error {
 	// Add
 	var toAdd []mongo.PlayerGroup
 	for _, v := range newGroupsSlice {
-		if _, ok := oldGroupsMap[v.ID64]; !ok {
+		if _, ok := oldGroupsMap[v.ID]; !ok {
 			toAdd = append(toAdd, mongo.PlayerGroup{
 				PlayerID:     player.ID,
-				GroupID64:    v.ID64,
 				GroupID:      v.ID,
 				GroupName:    v.Name,
 				GroupIcon:    v.Icon,
 				GroupMembers: v.Members,
 				GroupType:    v.Type,
-				GroupPrimary: player.PrimaryClanIDString == v.ID64 || player.PrimaryClanIDString == strconv.Itoa(v.ID),
+				GroupPrimary: player.PrimaryGroupID == v.ID,
 				GroupURL:     v.URL,
 			})
 		}
@@ -753,8 +753,12 @@ func updatePlayerGroups(player *mongo.Player) error {
 	}
 
 	// Queue groups for update
-	err = ProduceGroup(GroupMessage{IDs: resp.GetIDs()})
-	log.Err(err)
+	if !payload.DontQueueGroups {
+		for _, id := range resp.GetIDs() {
+			err = ProduceGroup(id)
+			log.Err(err)
+		}
+	}
 
 	return nil
 }

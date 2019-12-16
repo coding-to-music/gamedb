@@ -260,7 +260,7 @@ func adminQueues(r *http.Request) {
 
 		for _, val := range vals {
 
-			err := consumers.ProduceGroup(consumers.GroupMessage{IDs: []string{val}})
+			err := consumers.ProduceGroup(val)
 			log.Err(err, r)
 		}
 	}

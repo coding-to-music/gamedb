@@ -28,10 +28,6 @@ function highLightOwnedGames($element) {
                     if (groups.indexOf(id) !== -1) {
                         $(this).addClass('font-weight-bold')
                     }
-                    const id64 = $(this).attr('data-group-id64');
-                    if (groups.indexOf(id64) !== -1) {
-                        $(this).addClass('font-weight-bold')
-                    }
                 });
             }
         }

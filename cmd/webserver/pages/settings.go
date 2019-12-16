@@ -127,7 +127,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		for _, v := range groups {
-			groupIDs = append(groupIDs, v.GroupID64)
+			groupIDs = append(groupIDs, v.GroupID)
 		}
 
 		b, err := json.Marshal(groupIDs)

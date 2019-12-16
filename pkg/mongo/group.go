@@ -2,11 +2,8 @@ package mongo
 
 import (
 	"errors"
-	"strconv"
-	"sync"
 	"time"
 
-	"github.com/Philipp15b/go-steam/steamid"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
@@ -17,8 +14,7 @@ var ErrInvalidGroupID = errors.New("invalid group id")
 // { name: 'text', url: 'text', headline: 'text' }, { weights: { name: 3, url: 2, headline: 1 }}
 
 type Group struct {
-	ID64          string    `bson:"_id"` // Too big for int64
-	ID            int       `bson:"id"`
+	ID            string    `bson:"_id"` // Too big for int64 in Javascript (Mongo BD)
 	CreatedAt     time.Time `bson:"created_at"`
 	UpdatedAt     time.Time `bson:"updated_at"`
 	Name          string    `bson:"name"`
@@ -43,18 +39,10 @@ func (group Group) BSON() bson.D {
 		group.CreatedAt = time.Now()
 	}
 
-	if group.ID == 0 {
-
-		var err error
-		group.ID, err = group.GetID32()
-		log.Err(err)
-	}
-
 	group.UpdatedAt = time.Now()
 
 	return bson.D{
-		{"_id", group.ID64},
-		{"id", group.ID},
+		{"_id", group.ID},
 		{"created_at", group.CreatedAt},
 		{"updated_at", group.UpdatedAt},
 		{"name", group.Name},
@@ -74,18 +62,8 @@ func (group Group) BSON() bson.D {
 	}
 }
 
-func (group *Group) SetID(id string) {
-
-	if len(id) < 18 {
-		i, err := strconv.ParseInt(id, 10, 32)
-		if err == nil {
-			group.ID = int(i)
-		}
-	}
-}
-
 func (group Group) GetPath() string {
-	return helpers.GetGroupPath(group.ID64, group.Name)
+	return helpers.GetGroupPath(group.ID, group.Name)
 }
 
 func (group Group) GetType() string {
@@ -101,7 +79,7 @@ func (group Group) GetURL() string {
 }
 
 func (group Group) GetName() string {
-	return helpers.GetGroupName(group.Name, group.ID64)
+	return helpers.GetGroupName(group.Name, group.ID)
 }
 
 func (group Group) GetIcon() string {
@@ -112,58 +90,16 @@ func (group Group) ShouldUpdate() bool {
 	return group.UpdatedAt.Before(time.Now().Add(time.Hour * -3))
 }
 
-func (group Group) GetID64() string {
-
-	if len(group.ID64) == 18 {
-		return group.ID64
-	}
-
-	if group.ID > 0 {
-		id := steamid.NewIdAdv(uint32(group.ID), 0, 1, 7)
-		return strconv.FormatUint(uint64(id), 10)
-	}
-
-	log.Warning("empty group ids")
-	return ""
-}
-
-func (group Group) GetID32() (i int, err error) {
-
-	if group.ID > 0 {
-		return group.ID, nil
-	}
-
-	id, err := steamid.NewId(group.ID64)
-	if err != nil {
-		return i, err
-	}
-
-	return int(id.GetAccountId()), nil
-}
-
 // Don't cache, as we need updatedAt to be live for notifications etc
 func GetGroup(id string) (group Group, err error) {
 
-	if !helpers.IsValidGroupID(id) {
-		return group, ErrInvalidGroupID
+	id, err = helpers.UpgradeGroupID(id)
+	if err != nil {
+		return group, err
 	}
 
-	if len(id) == 18 {
-		err = FindOne(CollectionGroups, bson.D{{"_id", id}}, nil, nil, &group)
-	} else {
-
-		i, err := strconv.ParseInt(id, 10, 32)
-		if err != nil {
-			return group, err
-		}
-
-		err = FindOne(CollectionGroups, bson.D{{"id", i}}, nil, nil, &group)
-		if err != nil {
-			return group, err
-		}
-	}
-
-	if group.ID64 == "" {
+	err = FindOne(CollectionGroups, bson.D{{"_id", id}}, nil, nil, &group)
+	if group.ID == "" {
 		return group, ErrNoDocuments
 	}
 
@@ -172,56 +108,33 @@ func GetGroup(id string) (group Group, err error) {
 
 func GetGroupsByID(ids []string, projection bson.M) (groups []Group, err error) {
 
-	if len(ids) < 1 {
+	if len(ids) == 0 {
 		return groups, nil
 	}
 
-	chunks := helpers.ChunkStrings(ids, 50)
-
-	var wg sync.WaitGroup
+	chunks := helpers.ChunkStrings(ids, 100)
 
 	for _, chunk := range chunks {
 
-		wg.Add(1)
-		go func(chunk []string) {
+		var idsBSON bson.A
 
-			defer wg.Done()
+		for _, groupID := range chunk {
 
-			var id64sBSON bson.A
-			var idsBSON bson.A
-
-			for _, groupID := range chunk {
-				if len(groupID) == 18 {
-					id64sBSON = append(id64sBSON, groupID)
-				} else {
-					i, err := strconv.Atoi(groupID)
-					log.Err(err)
-					idsBSON = append(idsBSON, i)
-				}
-			}
-
-			var or = bson.A{}
-
-			if len(id64sBSON) > 0 {
-				or = append(or, bson.M{"_id": bson.M{"$in": id64sBSON}})
-			}
-
-			if len(idsBSON) > 0 {
-				or = append(or, bson.M{"id": bson.M{"$in": idsBSON}})
-			}
-
-			resp, err := getGroups(0, 0, nil, bson.D{{"$or", or}}, projection)
+			groupID, err = helpers.UpgradeGroupID(groupID)
 			if err != nil {
 				log.Err(err)
-				return
+				continue
 			}
+			idsBSON = append(idsBSON, groupID)
+		}
 
-			groups = append(groups, resp...)
+		resp, err := getGroups(0, 0, nil, bson.D{{"_id", bson.M{"$in": idsBSON}}}, projection)
+		if err != nil {
+			return groups, err
+		}
 
-		}(chunk)
+		groups = append(groups, resp...)
 	}
-
-	wg.Wait()
 
 	return groups, err
 }

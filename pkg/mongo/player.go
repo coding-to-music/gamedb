@@ -62,37 +62,37 @@ var (
 )
 
 type Player struct {
-	Avatar              string         `bson:"avatar"`                 //
-	BackgroundAppID     int            `bson:"background_app_id"`      //
-	BadgeIDs            []int          `bson:"badge_ids"`              // []int - Only special badges
-	BadgesCount         int            `bson:"badges_count"`           //
-	BadgeStats          string         `bson:"badge_stats"`            // ProfileBadgeStats
-	Bans                string         `bson:"bans"`                   // PlayerBans
-	CommentsCount       int            `bson:"comments_count"`         //
-	ContinentCode       string         `bson:"continent_code"`         // Saved here for easier queries
-	CountryCode         string         `bson:"country_code"`           //
-	Donated             int            `bson:"donated"`                //
-	FriendsCount        int            `bson:"friends_count"`          //
-	GamesByType         map[string]int `bson:"games_by_type"`          //
-	GamesCount          int            `bson:"games_count"`            //
-	GameStats           string         `bson:"game_stats"`             // PlayerAppStatsTemplate
-	GroupsCount         int            `bson:"groups_count"`           //
-	ID                  int64          `bson:"_id"`                    //
-	LastBan             time.Time      `bson:"bans_last"`              //
-	LastLogOff          time.Time      `bson:"time_logged_off"`        //
-	Level               int            `bson:"level"`                  //
-	NumberOfGameBans    int            `bson:"bans_game"`              //
-	NumberOfVACBans     int            `bson:"bans_cav"`               //
-	PersonaName         string         `bson:"persona_name"`           //
-	PlayTime            int            `bson:"play_time"`              //
-	PrimaryClanIDString string         `bson:"primary_clan_id_string"` //
-	Ranks               map[string]int `bson:"ranks"`                  //
-	RecentAppsCount     int            `bson:"recent_apps_count"`      //
-	StateCode           string         `bson:"status_code"`            //
-	TimeCreated         time.Time      `bson:"time_created"`           //
-	UpdatedAt           time.Time      `bson:"updated_at"`             //
-	VanintyURL          string         `bson:"vanity_url"`             //
-	WishlistAppsCount   int            `bson:"wishlist_apps_count"`    //
+	Avatar              string         `bson:"avatar"`               //
+	BackgroundAppID     int            `bson:"background_app_id"`    //
+	BadgeIDs            []int          `bson:"badge_ids"`            // []int - Only special badges
+	BadgesCount         int            `bson:"badges_count"`         //
+	BadgeStats          string         `bson:"badge_stats"`          // ProfileBadgeStats
+	Bans                string         `bson:"bans"`                 // PlayerBans
+	CommentsCount       int            `bson:"comments_count"`       //
+	ContinentCode       string         `bson:"continent_code"`       // Saved here for easier queries
+	CountryCode         string         `bson:"country_code"`         //
+	Donated             int            `bson:"donated"`              //
+	FriendsCount        int            `bson:"friends_count"`        //
+	GamesByType         map[string]int `bson:"games_by_type"`        //
+	GamesCount          int            `bson:"games_count"`          //
+	GameStats         string         `bson:"game_stats"`             // PlayerAppStatsTemplate
+	GroupsCount       int            `bson:"groups_count"`           //
+	ID                int64          `bson:"_id"`                    //
+	LastBan           time.Time      `bson:"bans_last"`              //
+	LastLogOff        time.Time      `bson:"time_logged_off"`        //
+	Level             int            `bson:"level"`                  //
+	NumberOfGameBans  int            `bson:"bans_game"`              //
+	NumberOfVACBans   int            `bson:"bans_cav"`               //
+	PersonaName       string         `bson:"persona_name"`           //
+	PlayTime          int            `bson:"play_time"`              //
+	PrimaryGroupID    string         `bson:"primary_clan_id_string"` //
+	Ranks             map[string]int `bson:"ranks"`                  //
+	RecentAppsCount   int            `bson:"recent_apps_count"`      //
+	StateCode         string         `bson:"status_code"`            //
+	TimeCreated       time.Time      `bson:"time_created"`           //
+	UpdatedAt         time.Time      `bson:"updated_at"`             //
+	VanintyURL        string         `bson:"vanity_url"`             //
+	WishlistAppsCount int            `bson:"wishlist_apps_count"`    //
 }
 
 func (player Player) BSON() bson.D {
@@ -119,7 +119,7 @@ func (player Player) BSON() bson.D {
 		{"bans_game", player.NumberOfGameBans},
 		{"bans_cav", player.NumberOfVACBans},
 		{"persona_name", player.PersonaName},
-		{"primary_clan_id_string", player.PrimaryClanIDString},
+		{"primary_clan_id_string", player.PrimaryGroupID},
 		{"status_code", player.StateCode},
 		{"time_created", player.TimeCreated},
 		{"updated_at", time.Now()},

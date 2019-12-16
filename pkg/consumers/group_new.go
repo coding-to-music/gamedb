@@ -3,6 +3,7 @@ package consumers
 import (
 	"encoding/xml"
 	"strconv"
+	"strings"
 	"sync"
 
 	"github.com/gamedb/gamedb/pkg/consumers/framework"
@@ -14,7 +15,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/sql"
 )
 
-type GroupSingleMessage struct {
+type GroupNewMessage struct {
 	ID string `json:"id"`
 }
 
@@ -22,7 +23,7 @@ func newGroupsHandler(messages []*framework.Message) {
 
 	for _, message := range messages {
 
-		payload := GroupSingleMessage{}
+		payload := GroupNewMessage{}
 
 		err := helpers.Unmarshal(message.Message.Body, &payload)
 		if err != nil {
@@ -32,7 +33,8 @@ func newGroupsHandler(messages []*framework.Message) {
 		}
 
 		//
-		if !helpers.IsValidGroupID(payload.ID) {
+		payload.ID, err = helpers.UpgradeGroupID(payload.ID)
+		if err != nil {
 			log.Err(err, message.Message.Body)
 			sendToFailQueue(message)
 			return
@@ -42,7 +44,7 @@ func newGroupsHandler(messages []*framework.Message) {
 		group, err := mongo.GetGroup(payload.ID)
 		if err == nil {
 			log.Info("Putting group back into first queue")
-			err = ProduceGroup(GroupMessage{IDs: []string{payload.ID}})
+			err = ProduceGroup(payload.ID)
 			if err != nil {
 				log.Err(err, message.Message.Body)
 				sendToRetryQueue(message)
@@ -165,8 +167,7 @@ func newGroupsHandler(messages []*framework.Message) {
 
 		// Send PubSub
 		err = memcache.RemoveKeyFromMemCacheViaPubSub(
-			memcache.MemcacheGroup(group.ID64).Key,
-			memcache.MemcacheGroup(strconv.Itoa(group.ID)).Key,
+			memcache.MemcacheGroup(group.ID).Key,
 		)
 		if err != nil {
 			log.Err(err, payload.ID)
@@ -181,4 +182,54 @@ func newGroupsHandler(messages []*framework.Message) {
 		//
 		message.Ack()
 	}
+}
+
+func updateGroupFromXML(id string, group *mongo.Group) (err error) {
+
+	groupXMLRateLimit.Take()
+
+	resp, b, err := steam.GetSteam().GetGroupByID(id)
+	err = steam.AllowSteamCodes(err, b, nil)
+	if err != nil {
+		return err
+	}
+
+	group.ID = id
+	group.URL = resp.Details.URL
+	group.Headline = resp.Details.Headline
+	group.Summary = resp.Details.Summary
+	group.Members = int(resp.Details.MemberCount)
+	group.MembersInChat = int(resp.Details.MembersInChat)
+	group.MembersInGame = int(resp.Details.MembersInGame)
+	group.MembersOnline = int(resp.Details.MembersOnline)
+	group.Type = resp.Type
+	if resp.Details.Name != "" {
+		group.Name = resp.Details.Name
+	}
+
+	// Try to get App ID from URL
+	i, err := strconv.Atoi(resp.Details.URL)
+	if err == nil && i > 0 {
+		group.AppID = i
+	}
+
+	// Get working icon
+	if helpers.GetResponseCode(resp.Details.AvatarFull) == 200 {
+
+		group.Icon = strings.Replace(resp.Details.AvatarFull, helpers.AvatarBase, "", 1)
+
+	} else if helpers.GetResponseCode(resp.Details.AvatarMedium) == 200 {
+
+		group.Icon = strings.Replace(resp.Details.AvatarMedium, helpers.AvatarBase, "", 1)
+
+	} else if helpers.GetResponseCode(resp.Details.AvatarIcon) == 200 {
+
+		group.Icon = strings.Replace(resp.Details.AvatarIcon, helpers.AvatarBase, "", 1)
+
+	} else {
+
+		group.Icon = ""
+	}
+
+	return nil
 }

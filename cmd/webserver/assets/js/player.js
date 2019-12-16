@@ -244,8 +244,7 @@ if ($playerPage.length > 0) {
             "order": [[1, 'desc']],
             "createdRow": function (row, data, dataIndex) {
                 $(row).attr('data-link', data[3]);
-                $(row).attr('data-group-id64', data[0]);
-                $(row).attr('data-group-id', data[1]);
+                $(row).attr('data-group-id', data[0]);
             },
             "columnDefs": [
                 // Group

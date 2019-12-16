@@ -156,11 +156,13 @@ func ProduceApp(payload AppMessage) (err error) {
 	}
 
 	mc := memcache.GetClient()
-
 	item := memcache.MemcacheAppInQueue(payload.ID)
-	_, err = mc.Get(item.Key)
-	if err == nil {
-		return memcache.ErrInQueue
+
+	if payload.ChangeNumber == 0 {
+		_, err = mc.Get(item.Key)
+		if err == nil {
+			return memcache.ErrInQueue
+		}
 	}
 
 	err = Channels[framework.Producer][QueueApps].ProduceInterface(payload)
@@ -206,12 +208,18 @@ func ProduceChanges(payload ChangesMessage) (err error) {
 	return Channels[framework.Producer][QueueChanges].ProduceInterface(payload)
 }
 
-func ProduceGroup(payload GroupMessage) (err error) {
-	return Channels[framework.Producer][QueueGroups].ProduceInterface(payload)
+func ProduceGroup(id string) (err error) {
+
+	id, err = helpers.UpgradeGroupID(id)
+	if err != nil {
+		return err
+	}
+
+	return Channels[framework.Producer][QueueGroups].ProduceInterface(GroupMessage{ID: id})
 }
 
 func produceGroupNew(id string) (err error) {
-	return Channels[framework.Producer][QueueGroupsNew].ProduceInterface(GroupSingleMessage{ID: id})
+	return Channels[framework.Producer][QueueGroupsNew].ProduceInterface(GroupNewMessage{ID: id})
 }
 
 func ProducePackage(payload PackageMessage) (err error) {
@@ -221,11 +229,13 @@ func ProducePackage(payload PackageMessage) (err error) {
 	}
 
 	mc := memcache.GetClient()
-
 	item := memcache.MemcachePackageInQueue(payload.ID)
-	_, err = mc.Get(item.Key)
-	if err == nil {
-		return memcache.ErrInQueue
+
+	if payload.ChangeNumber == 0 {
+		_, err = mc.Get(item.Key)
+		if err == nil {
+			return memcache.ErrInQueue
+		}
 	}
 
 	err = Channels[framework.Producer][QueuePackages].ProduceInterface(payload)
@@ -240,7 +250,7 @@ func ProducePackageRegular(payload PackageMessage) (err error) {
 	return Channels[framework.Producer][QueuePackagesRegular].ProduceInterface(payload)
 }
 
-func ProducePlayer(id int64) (err error) {
+func ProducePlayer(id int64, dontQueueGroups ...bool) (err error) {
 
 	if !helpers.IsValidPlayerID(id) {
 		return errors.New("invalid player id: " + strconv.FormatInt(id, 10))
@@ -254,7 +264,12 @@ func ProducePlayer(id int64) (err error) {
 		return memcache.ErrInQueue
 	}
 
-	err = Channels[framework.Producer][QueuePlayers].ProduceInterface(PlayerMessage{ID: id})
+	payload := PlayerMessage{ID: id}
+	if len(dontQueueGroups) > 0 {
+		payload.DontQueueGroups = true
+	}
+
+	err = Channels[framework.Producer][QueuePlayers].ProduceInterface(payload)
 	if err == nil {
 		err = mc.Set(&item)
 	}

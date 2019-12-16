@@ -58,7 +58,7 @@ func main() {
 						log.Err(err)
 					} else {
 						for _, v := range players {
-							err = consumers.ProducePlayer(v.ID)
+							err = consumers.ProducePlayer(v.ID, true)
 							err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 							log.Err(err)
 						}

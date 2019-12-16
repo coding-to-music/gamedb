@@ -121,7 +121,7 @@ func groupsTrendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	for _, group := range groups {
 		response.AddRow([]interface{}{
-			group.ID64,                         // 0
+			group.ID,                           // 0
 			group.GetName(),                    // 1
 			group.GetPath(),                    // 2
 			group.GetIcon(),                    // 3
@@ -132,7 +132,6 @@ func groupsTrendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			group.GetURL(),                     // 8
 			group.Error != "",                  // 9
 			helpers.TrendValue(group.Trending), // 10
-			group.ID,                           // 11
 		})
 	}
 

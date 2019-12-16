@@ -221,7 +221,7 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 				m = kv.ToMap()
 			}
 
-			err = consumers.ProducePackage(consumers.PackageMessage{ID: int(pack.GetPackageid()), ChangeNumber: int(pack.GetChangeNumber()), VDF: m,})
+			err = consumers.ProducePackage(consumers.PackageMessage{ID: int(pack.GetPackageid()), ChangeNumber: int(pack.GetChangeNumber()), VDF: m})
 			if err != nil {
 				log.Err(err, id)
 			}

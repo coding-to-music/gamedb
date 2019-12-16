@@ -12,8 +12,7 @@ import (
 
 type PlayerGroup struct {
 	PlayerID     int64  `bson:"player_id"`
-	GroupID64    string `bson:"group_id_64"`
-	GroupID      int    `bson:"group_id"`
+	GroupID      string `bson:"group_id_64"`
 	GroupName    string `bson:"group_name"`
 	GroupIcon    string `bson:"group_icon"`
 	GroupMembers int    `bson:"group_members"`
@@ -27,7 +26,6 @@ func (group PlayerGroup) BSON() bson.D {
 	return bson.D{
 		{"_id", group.getKey()},
 		{"player_id", group.PlayerID},
-		{"group_id_64", group.GroupID64},
 		{"group_id", group.GroupID},
 		{"group_name", group.GroupName},
 		{"group_icon", group.GroupIcon},
@@ -39,11 +37,11 @@ func (group PlayerGroup) BSON() bson.D {
 }
 
 func (group PlayerGroup) getKey() string {
-	return strconv.FormatInt(group.PlayerID, 10) + "-" + group.GroupID64
+	return strconv.FormatInt(group.PlayerID, 10) + "-" + group.GroupID
 }
 
 func (group PlayerGroup) GetPath() string {
-	return helpers.GetGroupPath(group.GroupID64, group.GroupName)
+	return helpers.GetGroupPath(group.GroupID, group.GroupName)
 }
 
 func (group PlayerGroup) GetType() string {
@@ -59,7 +57,7 @@ func (group PlayerGroup) GetURL() string {
 }
 
 func (group PlayerGroup) GetName() string {
-	return helpers.GetGroupName(group.GroupName, group.GroupID64)
+	return helpers.GetGroupName(group.GroupName, group.GroupID)
 }
 
 func (group PlayerGroup) GetIcon() string {
@@ -109,7 +107,7 @@ func DeletePlayerGroups(playerID int64, groupIDs []string) (err error) {
 
 		player := PlayerGroup{}
 		player.PlayerID = playerID
-		player.GroupID64 = groupID
+		player.GroupID = groupID
 
 		keys = append(keys, player.getKey())
 	}

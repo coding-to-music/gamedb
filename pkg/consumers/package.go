@@ -342,7 +342,7 @@ func scrapePackage(pack *sql.Package) (err error) {
 	)
 	c.SetRequestTimeout(time.Second * 60)
 
-	// ID64
+	// ID
 	c.OnHTML("h2.pageheader", func(e *colly.HTMLElement) {
 		pack.SetName(e.Text, true)
 		pack.InStore = true
