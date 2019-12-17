@@ -51,18 +51,22 @@ func groupsHandler(messages []*framework.Message) {
 		}
 
 		// Handle old payloads
-		if len(payload.IDs) > 0 {
-			for _, id := range payload.IDs {
-				err = ProduceGroup(id)
-				log.Err(err)
-			}
-			message.Ack()
-			continue
-		} else if payload.ID != "" {
-			payload.IDs = []string{payload.ID}
-		} else {
-			message.Ack()
-			continue
+		// if len(payload.IDs) > 0 {
+		// 	for _, id := range payload.IDs {
+		// 		err = ProduceGroup(id)
+		// 		log.Err(err)
+		// 	}
+		// 	message.Ack()
+		// 	continue
+		// } else if payload.ID != "" {
+		// 	payload.IDs = []string{payload.ID}
+		// } else {
+		// 	message.Ack()
+		// 	continue
+		// }
+
+		if payload.ID != "" {
+			payload.IDs = append(payload.IDs, payload.ID)
 		}
 
 		//
