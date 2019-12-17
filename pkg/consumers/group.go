@@ -58,9 +58,12 @@ func groupsHandler(messages []*framework.Message) {
 			}
 			message.Ack()
 			continue
+		} else if payload.ID != "" {
+			payload.IDs = []string{payload.ID}
+		} else {
+			message.Ack()
+			continue
 		}
-
-		payload.IDs = []string{payload.ID}
 
 		//
 		for _, groupID := range payload.IDs {
