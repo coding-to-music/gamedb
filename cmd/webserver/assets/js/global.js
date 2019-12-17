@@ -221,7 +221,7 @@ function addDataTablesRow(options, data, limit, $table) {
 
 function setCookieFlag(key, value) {
 
-    const cookieName = '__Host-gamedb-session-2';
+    const cookieName = 'gamedb-session-2';
 
     let cookie = Cookies.get(cookieName);
     if (cookie === undefined || cookie === '') {
@@ -232,7 +232,7 @@ function setCookieFlag(key, value) {
 
     cookie[key] = value;
 
-    Cookies.set(cookieName, JSON.stringify(cookie));
+    Cookies.set(cookieName, JSON.stringify(cookie), {expires: 30, secure: user.isProd});
 }
 
 $('.jumbotron button.close').on('click', function (e) {

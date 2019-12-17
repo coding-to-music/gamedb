@@ -382,6 +382,7 @@ func (t GlobalTemplate) GetUserJSON() string {
 		"toasts":             t.toasts,
 		"log":                config.IsLocal() || t.IsAdmin(),
 		"isLoggedIn":         t.IsLoggedIn(),
+		"isProd":             config.IsProd(),
 	}
 
 	b, err := json.Marshal(stringMap)
@@ -401,7 +402,7 @@ func (t GlobalTemplate) GetMetaImage() (text string) {
 
 func (t GlobalTemplate) GetCookieFlag(key string) interface{} {
 
-	c, err := t.request.Cookie("__Host-gamedb-session-2")
+	c, err := t.request.Cookie("gamedb-session-2")
 
 	if err == http.ErrNoCookie {
 		return false

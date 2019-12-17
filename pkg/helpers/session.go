@@ -50,16 +50,11 @@ func InitSession() {
 	sessionInit.CookieName = SessionCookieName
 	sessionInit.CookieOptions = sessions.Options{
 		HttpOnly: true,
-		SameSite: http.SameSiteDefaultMode, // Can't be strict, stops oauth callbacks working
-		MaxAge:   2419200,                  // 30 days
+		SameSite: http.SameSiteLaxMode, // Can't be strict, stops oauth callbacks working
+		MaxAge:   2419200,              // 30 days
 		Path:     "/",
-		Domain:   "", // https://scotthelme.co.uk/tough-cookies/
-		Secure:   false,
-	}
-
-	if config.IsProd() {
-		sessionInit.CookieName = "__Host-" + sessionInit.CookieName // https://scotthelme.co.uk/tough-cookies/
-		sessionInit.CookieOptions.Secure = true
+		Domain:   "",
+		Secure:   config.IsProd(),
 	}
 
 	session.Initialise(sessionInit)
