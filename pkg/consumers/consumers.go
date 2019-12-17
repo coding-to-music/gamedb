@@ -68,11 +68,10 @@ var (
 )
 
 type queue struct {
-	name          framework.QueueName
-	consumer      framework.Handler
-	skipHeaders   bool
-	prefetchCount int
-	batchSize     int
+	name        framework.QueueName
+	consumer    framework.Handler
+	skipHeaders bool
+	batchSize   int
 }
 
 func Init(definitions []queue, consume bool) {
