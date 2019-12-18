@@ -133,13 +133,19 @@ func (e entry) toText(severity Severity) string {
 
 var (
 	googleClient *logging.Client
-	logger       = l.New(os.Stderr, "", 0)
+	logger       *l.Logger
 	defaultLogs  []LogName
 )
 
 func Initialise(logs []LogName) {
 
 	defaultLogs = logs
+
+	if config.IsLocal() {
+		logger = l.New(os.Stderr, "", 0)
+	} else {
+		logger = l.New(os.Stderr, "", l.LstdFlags)
+	}
 
 	var err error
 
