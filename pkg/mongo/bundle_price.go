@@ -50,8 +50,9 @@ func GetBundlePrices(bundleID int) (prices []BundlePrice, err error) {
 		err := cur.Decode(&price)
 		if err != nil {
 			log.Err(err, price.GetKey())
+		} else {
+			prices = append(prices, price)
 		}
-		prices = append(prices, price)
 	}
 
 	return prices, cur.Err()

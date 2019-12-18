@@ -149,8 +149,11 @@ func getProductPrices(filter bson.D, offset int64, limit int64, sort bson.D) (pr
 
 		var price ProductPrice
 		err := cur.Decode(&price)
-		log.Err(err)
-		prices = append(prices, price)
+		if err != nil {
+			log.Err(err, price)
+		} else {
+			prices = append(prices, price)
+		}
 	}
 
 	return prices, cur.Err()

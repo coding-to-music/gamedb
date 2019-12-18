@@ -141,8 +141,9 @@ func getArticles(offset int64, limit int64, filter bson.D) (news []Article, err 
 		err := cur.Decode(&article)
 		if err != nil {
 			log.Err(err, article.ID)
+		} else {
+			news = append(news, article)
 		}
-		news = append(news, article)
 	}
 
 	return news, cur.Err()

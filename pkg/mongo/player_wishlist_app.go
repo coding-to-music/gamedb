@@ -145,8 +145,9 @@ func getPlayerWishlistApps(offset int64, limit int64, filter bson.D, sort bson.D
 		err := cur.Decode(&app)
 		if err != nil {
 			log.Err(err, app.getKey())
+		} else {
+			apps = append(apps, app)
 		}
-		apps = append(apps, app)
 	}
 
 	return apps, cur.Err()

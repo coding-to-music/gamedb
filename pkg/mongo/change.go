@@ -133,8 +133,11 @@ func GetChanges(offset int64) (changes []Change, err error) {
 
 		var change Change
 		err := cur.Decode(&change)
-		log.Err(err)
-		changes = append(changes, change)
+		if err != nil {
+			log.Err(err)
+		} else {
+			changes = append(changes, change)
+		}
 	}
 
 	return changes, cur.Err()

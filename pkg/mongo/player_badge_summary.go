@@ -90,9 +90,10 @@ func GetBadgeSummaries() (badges []PlayerBadgeSummary, err error) {
 		err := cur.Decode(&badge)
 		if err != nil {
 			log.Err(err, fmt.Sprint(badge))
+		} else {
+			badge.Badge = GlobalBadges[badge.ID]
+			badges = append(badges, badge)
 		}
-		badge.Badge = GlobalBadges[badge.ID]
-		badges = append(badges, badge)
 	}
 
 	return badges, cur.Err()

@@ -75,8 +75,9 @@ func GetPatreonWebhooks(offset int64, limit int64, sort bson.D, filter bson.D, p
 		err := cur.Decode(&webhook)
 		if err != nil {
 			log.Err(err)
+		} else {
+			webhooks = append(webhooks, webhook)
 		}
-		webhooks = append(webhooks, webhook)
 	}
 
 	return webhooks, cur.Err()

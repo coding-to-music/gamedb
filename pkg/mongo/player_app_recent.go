@@ -111,8 +111,9 @@ func GetRecentApps(playerID int64, offset int64, limit int64, sort bson.D) (apps
 		err := cur.Decode(&app)
 		if err != nil {
 			log.Err(err, app.getKey())
+		} else {
+			apps = append(apps, app)
 		}
-		apps = append(apps, app)
 	}
 
 	return apps, cur.Err()

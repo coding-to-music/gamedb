@@ -162,8 +162,9 @@ func getGroups(offset int64, limit int64, sort bson.D, filter bson.D, projection
 		err := cur.Decode(&group)
 		if err != nil {
 			log.Err(err, group.ID)
+		} else {
+			groups = append(groups, group)
 		}
-		groups = append(groups, group)
 	}
 
 	return groups, cur.Err()

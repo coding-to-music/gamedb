@@ -170,8 +170,9 @@ func getPlayerBadges(offset int64, limit int64, filter bson.D, sort bson.D, proj
 		err := cur.Decode(&badge)
 		if err != nil {
 			log.Err(err, badge.getKey())
+		} else {
+			badges = append(badges, badge)
 		}
-		badges = append(badges, badge)
 	}
 
 	return badges, cur.Err()

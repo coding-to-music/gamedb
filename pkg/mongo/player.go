@@ -62,19 +62,19 @@ var (
 )
 
 type Player struct {
-	Avatar              string         `bson:"avatar"`               //
-	BackgroundAppID     int            `bson:"background_app_id"`    //
-	BadgeIDs            []int          `bson:"badge_ids"`            // []int - Only special badges
-	BadgesCount         int            `bson:"badges_count"`         //
-	BadgeStats          string         `bson:"badge_stats"`          // ProfileBadgeStats
-	Bans                string         `bson:"bans"`                 // PlayerBans
-	CommentsCount       int            `bson:"comments_count"`       //
-	ContinentCode       string         `bson:"continent_code"`       // Saved here for easier queries
-	CountryCode         string         `bson:"country_code"`         //
-	Donated             int            `bson:"donated"`              //
-	FriendsCount        int            `bson:"friends_count"`        //
-	GamesByType         map[string]int `bson:"games_by_type"`        //
-	GamesCount          int            `bson:"games_count"`          //
+	Avatar            string         `bson:"avatar"`                 //
+	BackgroundAppID   int            `bson:"background_app_id"`      //
+	BadgeIDs          []int          `bson:"badge_ids"`              // []int - Only special badges
+	BadgesCount       int            `bson:"badges_count"`           //
+	BadgeStats        string         `bson:"badge_stats"`            // ProfileBadgeStats
+	Bans              string         `bson:"bans"`                   // PlayerBans
+	CommentsCount     int            `bson:"comments_count"`         //
+	ContinentCode     string         `bson:"continent_code"`         // Saved here for easier queries
+	CountryCode       string         `bson:"country_code"`           //
+	Donated           int            `bson:"donated"`                //
+	FriendsCount      int            `bson:"friends_count"`          //
+	GamesByType       map[string]int `bson:"games_by_type"`          //
+	GamesCount        int            `bson:"games_count"`            //
 	GameStats         string         `bson:"game_stats"`             // PlayerAppStatsTemplate
 	GroupsCount       int            `bson:"groups_count"`           //
 	ID                int64          `bson:"_id"`                    //
@@ -445,8 +445,9 @@ func GetPlayers(offset int64, limit int64, sort bson.D, filter bson.D, projectio
 		err := cur.Decode(&player)
 		if err != nil {
 			log.Err(err, player.ID)
+		} else {
+			players = append(players, player)
 		}
-		players = append(players, player)
 	}
 
 	return players, cur.Err()

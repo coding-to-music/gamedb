@@ -151,8 +151,9 @@ func GetFriends(playerID int64, offset int64, limit int64, sort bson.D) (friends
 		err := cur.Decode(&friend)
 		if err != nil {
 			log.Err(err, friend.getKey())
+		} else {
+			friends = append(friends, friend)
 		}
-		friends = append(friends, friend)
 	}
 
 	return friends, cur.Err()

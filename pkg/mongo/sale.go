@@ -176,8 +176,9 @@ func getSales(offset int64, limit int64, filter bson.D, sort bson.D, projection 
 		err := cur.Decode(&sale)
 		if err != nil {
 			log.Err(err)
+		} else {
+			offers = append(offers, sale)
 		}
-		offers = append(offers, sale)
 	}
 
 	return offers, cur.Err()

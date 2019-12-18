@@ -158,8 +158,9 @@ func GetAppItems(offset int64, limit int64, filter bson.D, projection bson.M) (i
 		err := cur.Decode(&item)
 		if err != nil {
 			log.Err(err, item.getKey())
+		} else {
+			items = append(items, item)
 		}
-		items = append(items, item)
 	}
 
 	return items, cur.Err()

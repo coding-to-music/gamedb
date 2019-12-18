@@ -138,10 +138,13 @@ func getPlayerApps(offset int64, limit int64, filter bson.D, sort bson.D, projec
 
 	for cur.Next(ctx) {
 
-		var app PlayerApp
-		err := cur.Decode(&app)
-		log.Err(err)
-		apps = append(apps, app)
+		var playerApp PlayerApp
+		err := cur.Decode(&playerApp)
+		if err != nil {
+			log.Err(err, playerApp.getKey())
+		} else {
+			apps = append(apps, playerApp)
+		}
 	}
 
 	return apps, cur.Err()

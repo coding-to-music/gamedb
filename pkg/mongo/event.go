@@ -140,8 +140,11 @@ func GetEvents(userID int, offset int64) (events []Event, err error) {
 
 		var event Event
 		err := cur.Decode(&event)
-		log.Err(err)
-		events = append(events, event)
+		if err != nil {
+			log.Err(err)
+		} else {
+			events = append(events, event)
+		}
 	}
 
 	return events, cur.Err()
