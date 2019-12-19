@@ -51,6 +51,8 @@ func NewChannel(connection *Connection, name QueueName, prefetchCount int, batch
 			select {
 			case amqpErr, open := <-channel.closeChan:
 
+				channel.channel = nil
+
 				if open {
 					log.Warning("Rabbit channel closed", amqpErr)
 				} else {
@@ -61,7 +63,7 @@ func NewChannel(connection *Connection, name QueueName, prefetchCount int, batch
 				time.Sleep(time.Second * 10)
 
 				err := channel.connect()
-				log.Err("Channel reconnecting", err, log.OptionNoStack)
+				log.Err("Failed to reconnect channel", err, log.OptionNoStack)
 			}
 		}
 	}()
@@ -80,11 +82,11 @@ func (channel *Channel) connect() error {
 
 	operation := func() (err error) {
 
-		if channel.channel == nil {
+		if channel.connection.connection == nil || channel.connection.connection.IsClosed() {
+			return errors.New("waiting for connecting before channel")
+		}
 
-			if channel.connection.connection == nil || channel.connection.connection.IsClosed() {
-				return errors.New("waiting for connecting before channel")
-			}
+		if channel.channel == nil {
 
 			// Connect
 			c, err := channel.connection.connection.Channel()

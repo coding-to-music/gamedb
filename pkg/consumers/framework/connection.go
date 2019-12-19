@@ -40,6 +40,8 @@ func NewConnection(name string, config amqp.Config) (c *Connection, err error) {
 			select {
 			case amqpErr, open := <-connection.closeChan:
 
+				connection.connection = nil
+
 				if open {
 					log.Warning("Rabbit connection closed", amqpErr)
 				} else {
@@ -49,7 +51,7 @@ func NewConnection(name string, config amqp.Config) (c *Connection, err error) {
 				time.Sleep(time.Second * 10)
 
 				err := connection.connect()
-				log.Err("Connection connecting", err)
+				log.Err("Failed to reconnect connection", err)
 			}
 		}
 	}()
@@ -87,5 +89,5 @@ func (connection *Connection) connect() error {
 	policy.MaxElapsedTime = 0
 	policy.InitialInterval = 5 * time.Second
 
-	return backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err) })
+	return backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info("Trying to connect to Rabbit", err) })
 }
