@@ -40,7 +40,7 @@ const (
 	SeverityError    Severity = 4
 	SeverityCritical Severity = 5
 
-	OptionNoStack = iota
+	OptionNoStack Option = iota
 )
 
 type LogName string
