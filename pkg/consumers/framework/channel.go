@@ -63,7 +63,9 @@ func NewChannel(connection *Connection, name QueueName, prefetchCount int, batch
 				time.Sleep(time.Second * 10)
 
 				err := channel.connect()
-				log.Err("Failed to reconnect channel", err, log.OptionNoStack)
+				if err != nil {
+					log.Err("Failed to reconnect channel", err, log.OptionNoStack)
+				}
 			}
 		}
 	}()

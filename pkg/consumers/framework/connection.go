@@ -51,7 +51,9 @@ func NewConnection(name string, config amqp.Config) (c *Connection, err error) {
 				time.Sleep(time.Second * 10)
 
 				err := connection.connect()
-				log.Err("Failed to reconnect connection", err)
+				if err != nil {
+					log.Err("Failed to reconnect connection", err, log.OptionNoStack)
+				}
 			}
 		}
 	}()
