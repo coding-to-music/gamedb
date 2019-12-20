@@ -51,23 +51,8 @@ func NewChannel(connection *Connection, name QueueName, prefetchCount int, batch
 		go func() {
 			for {
 				select {
-				case amqpErr, open := <-channel.closeChan:
-
-					channel.isOpen = false
-
-					if open {
-						log.Warning("Rabbit channel closed", amqpErr)
-					} else {
-						channel.isOpen = false
-						log.Warning("Rabbit channel closed")
-					}
-
-					time.Sleep(time.Second * 10)
-
-					err := channel.connect()
-					if err != nil {
-						log.Err("Failed to reconnect channel", err, log.OptionNoStack)
-					}
+				case amqpErr, _ := <-channel.closeChan:
+					channel.onDisconnect(amqpErr)
 				}
 			}
 		}()
@@ -146,6 +131,20 @@ func (channel *Channel) Produce(message *Message) error {
 		ContentType:  "application/json",
 		Body:         message.Message.Body,
 	})
+}
+
+func (channel *Channel) onDisconnect(amqpErr *amqp.Error) {
+
+	channel.isOpen = false
+
+	log.Warning("Rabbit channel closed ("+channel.Name+")", amqpErr, log.OptionNoStack)
+
+	err := channel.connect()
+	if err != nil {
+		log.Err("Failed to reconnect channel", err, log.OptionNoStack)
+	}
+
+	time.Sleep(time.Second * 20)
 }
 
 func (channel *Channel) ProduceInterface(message interface{}) error {
@@ -233,26 +232,11 @@ func (channel *Channel) Consume() {
 
 			for {
 				select {
-				case amqpErr, open := <-channel.closeChan:
+				case amqpErr, _ := <-channel.closeChan:
 
-					channel.isOpen = false
-
-					if open {
-						log.Warning("Rabbit chan closed", amqpErr, log.OptionNoStack)
-					} else {
-						log.Warning("Rabbit chan closed")
-					}
-
-					time.Sleep(time.Second * 10)
-
-					err := channel.connect()
-					if err != nil {
-						log.Err("Failed to reconnect channel", err, log.OptionNoStack)
-					}
-
-					time.Sleep(time.Second * 20)
-
+					channel.onDisconnect(amqpErr)
 					return
+
 				case msg, open := <-msgs:
 					if open && channel.connection.connection != nil && !channel.connection.connection.IsClosed() {
 						messages = append(messages, &Message{
