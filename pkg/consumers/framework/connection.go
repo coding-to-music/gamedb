@@ -10,24 +10,26 @@ import (
 	"github.com/streadway/amqp"
 )
 
+type ConnType string
+
 const (
-	Consumer = "c"
-	Producer = "p"
+	Consumer ConnType = "consumer"
+	Producer ConnType = "producer"
 )
 
 type Connection struct {
 	connection *amqp.Connection
-	name       string
 	config     amqp.Config
 	closeChan  chan *amqp.Error
+	connType   ConnType
 	sync.Mutex
 }
 
-func NewConnection(name string, config amqp.Config) (c *Connection, err error) {
+func NewConnection(conType ConnType, config amqp.Config) (c *Connection, err error) {
 
 	connection := &Connection{
-		config: config,
-		name:   name,
+		config:   config,
+		connType: conType,
 	}
 
 	err = connection.connect()
@@ -70,7 +72,7 @@ func (connection *Connection) connect() error {
 		return nil
 	}
 
-	log.Info("Creating Rabbit connection: " + connection.name)
+	log.Info("Creating Rabbit connection (" + connection.connType + ")")
 
 	operation := func() (err error) {
 
@@ -91,5 +93,9 @@ func (connection *Connection) connect() error {
 	policy.MaxElapsedTime = 0
 	policy.InitialInterval = 5 * time.Second
 
-	return backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info("Trying to connect to Rabbit", err) })
+	err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Warning("Trying to connect to Rabbit", err) })
+	if err == nil {
+		log.Info("Rabbit conn connected (" + connection.connType + ")")
+	}
+	return err
 }

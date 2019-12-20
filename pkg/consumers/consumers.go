@@ -35,27 +35,28 @@ const (
 )
 
 var (
-	Channels = map[string]map[framework.QueueName]*framework.Channel{
+	Channels = map[framework.ConnType]map[framework.QueueName]*framework.Channel{
 		framework.Consumer: {},
 		framework.Producer: {},
 	}
 
 	QueueDefinitions = []queue{
-		{name: QueueApps, consumer: appHandler},
-		{name: QueueAppsRegular},
-		{name: QueueAppPlayers, consumer: appPlayersHandler},
-		{name: QueueBundles, consumer: bundleHandler},
-		{name: QueueChanges, consumer: changesHandler},
-		{name: QueueGroups, consumer: groupsHandler},
-		{name: QueueGroupsNew, consumer: newGroupsHandler},
-		{name: QueuePackages, consumer: packageHandler},
-		{name: QueuePackagesRegular},
-		{name: QueuePlayers, consumer: playerHandler},
-		{name: QueuePlayersRegular},
-		{name: QueuePlayerRanks, consumer: playerRanksHandler},
-		{name: QueueDelay, consumer: delayHandler, skipHeaders: true},
-		{name: QueueSteam, consumer: nil},
-		{name: QueueFailed, consumer: nil},
+		// {name: QueueApps, consumer: appHandler},
+		// {name: QueueAppsRegular},
+		// {name: QueueAppPlayers, consumer: appPlayersHandler},
+		// {name: QueueBundles, consumer: bundleHandler},
+		// {name: QueueChanges, consumer: changesHandler},
+		// {name: QueueGroups, consumer: groupsHandler},
+		// {name: QueueGroupsNew, consumer: newGroupsHandler},
+		// {name: QueuePackages, consumer: packageHandler},
+		// {name: QueuePackagesRegular},
+		// {name: QueuePlayers, consumer: playerHandler},
+		// {name: QueuePlayersRegular},
+		// {name: QueuePlayerRanks, consumer: playerRanksHandler},
+		// {name: QueueDelay, consumer: delayHandler, skipHeaders: true},
+		// {name: QueueSteam, consumer: nil},
+		// {name: QueueFailed, consumer: nil},
+		{name: QueueTest, consumer: testHandler},
 	}
 
 	QueueSteamDefinitions = []queue{
@@ -81,7 +82,8 @@ func Init(definitions []queue, consume bool) {
 		heartbeat = time.Hour
 	}
 
-	producerConnection, err := framework.NewConnection("Producer", amqp.Config{Heartbeat: heartbeat})
+	// Producers
+	producerConnection, err := framework.NewConnection(framework.Producer, amqp.Config{Heartbeat: heartbeat})
 	if err != nil {
 		log.Info(err)
 		return
@@ -97,10 +99,10 @@ func Init(definitions []queue, consume bool) {
 		}
 	}
 
-	// Consume
+	// Consumers
 	if consume {
 
-		consumerConnection, err := framework.NewConnection("Consumer", amqp.Config{Heartbeat: heartbeat})
+		consumerConnection, err := framework.NewConnection(framework.Consumer, amqp.Config{Heartbeat: heartbeat})
 		if err != nil {
 			log.Info(err)
 			return
@@ -117,11 +119,7 @@ func Init(definitions []queue, consume bool) {
 
 				Channels[framework.Consumer][queue.name] = q
 
-				err = q.Consume()
-				if err != nil {
-					log.Critical(string(queue.name), err)
-					continue
-				}
+				go q.Consume()
 			}
 		}
 	}

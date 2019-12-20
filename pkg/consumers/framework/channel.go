@@ -27,7 +27,7 @@ type Channel struct {
 	prefetchCount int
 	batchSize     int
 	updateHeaders bool
-	sync.Mutex
+	connectLock   sync.Mutex
 }
 
 func NewChannel(connection *Connection, name QueueName, prefetchCount int, batchSize int, handler Handler, updateHeaders bool) (c *Channel, err error) {
@@ -46,37 +46,40 @@ func NewChannel(connection *Connection, name QueueName, prefetchCount int, batch
 		return c, err
 	}
 
-	go func() {
-		for {
-			select {
-			case amqpErr, open := <-channel.closeChan:
+	// For producer channels
+	if connection.connType == Producer {
+		go func() {
+			for {
+				select {
+				case amqpErr, open := <-channel.closeChan:
 
-				channel.channel = nil
-
-				if open {
-					log.Warning("Rabbit channel closed", amqpErr)
-				} else {
 					channel.isOpen = false
-					log.Warning("Rabbit channel closed")
-				}
 
-				time.Sleep(time.Second * 10)
+					if open {
+						log.Warning("Rabbit channel closed", amqpErr)
+					} else {
+						channel.isOpen = false
+						log.Warning("Rabbit channel closed")
+					}
 
-				err := channel.connect()
-				if err != nil {
-					log.Err("Failed to reconnect channel", err, log.OptionNoStack)
+					time.Sleep(time.Second * 10)
+
+					err := channel.connect()
+					if err != nil {
+						log.Err("Failed to reconnect channel", err, log.OptionNoStack)
+					}
 				}
 			}
-		}
-	}()
+		}()
+	}
 
 	return channel, nil
 }
 
 func (channel *Channel) connect() error {
 
-	channel.Lock()
-	defer channel.Unlock()
+	channel.connectLock.Lock()
+	defer channel.connectLock.Unlock()
 
 	if channel.isOpen {
 		return nil
@@ -88,35 +91,36 @@ func (channel *Channel) connect() error {
 			return errors.New("waiting for connecting before channel")
 		}
 
-		if channel.channel == nil {
+		// Connect
+		c, err := channel.connection.connection.Channel()
+		if err != nil {
+			return err
+		}
 
-			// Connect
-			c, err := channel.connection.connection.Channel()
+		// Set pre-fetch
+		if channel.prefetchCount > 0 {
+			err = c.Qos(channel.prefetchCount, 0, false)
 			if err != nil {
 				return err
 			}
-
-			// Set pre-fetch
-			if channel.prefetchCount > 0 {
-				err = c.Qos(channel.prefetchCount, 0, false)
-				if err != nil {
-					return err
-				}
-			}
-
-			// Set new close channel
-			channel.closeChan = make(chan *amqp.Error)
-			_ = c.NotifyClose(channel.closeChan)
-
-			channel.channel = c
 		}
 
+		// Set new close channel
+		channel.closeChan = make(chan *amqp.Error)
+		_ = c.NotifyClose(channel.closeChan)
+
+		channel.channel = c
+
+		// Queue
 		_, err = channel.channel.QueueDeclare(string(channel.Name), true, false, false, false, nil)
 		if err != nil {
 			return err
 		}
 
+		//
 		channel.isOpen = true
+
+		log.Info("Rabbit chan connected (" + string(channel.connection.connType) + "/" + string(channel.Name) + ")")
 
 		return nil
 	}
@@ -125,14 +129,10 @@ func (channel *Channel) connect() error {
 	policy.MaxElapsedTime = 0
 	policy.InitialInterval = 5 * time.Second
 
-	return backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err) })
+	return backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Warning("Connecting to channel: ", err) })
 }
 
 func (channel *Channel) Produce(message *Message) error {
-
-	// if channel == nil {
-	// 	return errors.New("queue has been removed")
-	// }
 
 	// Headers
 	if channel.updateHeaders {
@@ -208,51 +208,80 @@ func (channel Channel) prepareHeaders(headers amqp.Table) amqp.Table {
 	return headers
 }
 
-func (channel *Channel) Consume() error {
+func (channel *Channel) Consume() {
 
-	tag := config.Config.Environment.Get() + "-" + config.GetSteamKeyTag()
+	for {
 
-	msgs, err := channel.channel.Consume(string(channel.Name), tag, false, false, false, false, nil)
-	if err != nil {
-		return err
-	}
-
-	// In a anon function so can return at anytime
-	go func(msgs <-chan amqp.Delivery) {
-
-		var messages []*Message
-
-		for {
-			select {
-			case msg, open := <-msgs:
-				if open && channel.connection.connection != nil && !channel.connection.connection.IsClosed() && channel.isOpen {
-					messages = append(messages, &Message{
-						Channel: channel,
-						Message: &msg,
-					})
-				}
-			}
-
-			if len(messages) > 0 && len(messages) >= channel.batchSize {
-
-				if channel.handler != nil {
-
-					// Fill in batch info
-					for k := range messages {
-						messages[k].BatchTotal = len(messages)
-						messages[k].BatchItem = k + 1
-					}
-
-					//
-					channel.handler(messages)
-					messages = nil
-				}
-			}
+		if !channel.isOpen || channel.channel == nil {
+			log.Info("Can't consume when channel is nil/closed")
+			time.Sleep(time.Second * 5)
+			continue
 		}
 
-	}(msgs)
+		tag := config.Config.Environment.Get() + "-" + config.GetSteamKeyTag()
 
-	return nil
+		msgs, err := channel.channel.Consume(string(channel.Name), tag, false, false, false, false, nil)
+		if err != nil {
+			log.Err("Getting Rabbit channel chan", err, log.OptionNoStack)
+			continue
+		}
+
+		// In a anon function so can return at anytime
+		func() {
+
+			var messages []*Message
+
+			for {
+				select {
+				case amqpErr, open := <-channel.closeChan:
+
+					channel.isOpen = false
+
+					if open {
+						log.Warning("Rabbit chan closed", amqpErr, log.OptionNoStack)
+					} else {
+						log.Warning("Rabbit chan closed")
+					}
+
+					time.Sleep(time.Second * 10)
+
+					err := channel.connect()
+					if err != nil {
+						log.Err("Failed to reconnect channel", err, log.OptionNoStack)
+					}
+
+					time.Sleep(time.Second * 20)
+
+					return
+				case msg, open := <-msgs:
+					if open && channel.connection.connection != nil && !channel.connection.connection.IsClosed() {
+						messages = append(messages, &Message{
+							Channel: channel,
+							Message: &msg,
+						})
+					}
+				}
+
+				if len(messages) > 0 && len(messages) >= channel.batchSize {
+
+					if channel.handler != nil {
+
+						// Fill in batch info
+						for k := range messages {
+							messages[k].BatchTotal = len(messages)
+							messages[k].BatchItem = k + 1
+						}
+
+						//
+						channel.handler(messages)
+						messages = nil
+					}
+				}
+			}
+		}()
+
+		time.Sleep(time.Second * 5)
+	}
 }
 
 func (channel *Channel) Inspect() (amqp.Queue, error) {
