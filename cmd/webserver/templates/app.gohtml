@@ -701,6 +701,19 @@
                     {{/* Media */}}
                     <div class="tab-pane" id="media" role="tabpanel">
 
+                        <table class="table">
+                            <tbody>
+                            <tr>
+                                <th scope="row" style="width: 15%;">Screenshots</th>
+                                <td>{{ comma (len .Screenshots) }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" nowrap="nowrap">Movies</th>
+                                <td>{{ comma (len .Movies) }}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+
                         {{if or (gt (len .Screenshots) 0) (gt (len .Movies) 0) }}
 
                             {{ range $key, $value := .Screenshots }}
