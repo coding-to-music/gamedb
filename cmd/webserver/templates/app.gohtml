@@ -903,13 +903,13 @@
                                                         <td>{{ .ID }}</td>
                                                         <td nowrap="nowrap">{{ .Name }}</td>
                                                         <td>
-                                                            <div class="json">{{ json .Configs }}</div>
+                                                            <div class="json-hover">{{ json .Configs }}</div>
                                                         </td>
                                                         <td>
-                                                            <div class="json">{{ json .Manifests }}</div>
+                                                            <div class="json-hover">{{ json .Manifests }}</div>
                                                         </td>
                                                         <td>
-                                                            <div class="json">{{ .EncryptedManifests }}</div>
+                                                            <div class="json-hover">{{ .EncryptedManifests }}</div>
                                                         </td>
                                                         <td>{{ bytes .MaxSize }}</td>
                                                         <td>{{ if ne .App 0 }}<a rel="nofollow" href="/apps/{{ .App }}">{{ .App }}</a>{{ end }}</td>

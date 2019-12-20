@@ -544,6 +544,11 @@ div.json.fullheight {
     max-height: none;
 }
 
+div.json-hover {
+    @extend div.json;
+    @extend div.json.fullheight;
+}
+
 // NoUI Slider
 .slider {
 
