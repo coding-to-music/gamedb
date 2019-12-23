@@ -856,6 +856,10 @@ func playerGroupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if !helpers.IsValidPlayerID(idx) {
+		return
+	}
+
 	query := DataTablesQuery{}
 	err = query.fillFromURL(r.URL.Query())
 	if err != nil {
