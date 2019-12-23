@@ -247,7 +247,7 @@ func ProducePackageRegular(payload PackageMessage) (err error) {
 	return Channels[framework.Producer][QueuePackagesRegular].ProduceInterface(payload)
 }
 
-func ProducePlayer(id int64, dontQueueGroups ...bool) (err error) {
+func ProducePlayer(id int64, skipGroups ...bool) (err error) {
 
 	if !helpers.IsValidPlayerID(id) {
 		return errors.New("invalid player id: " + strconv.FormatInt(id, 10))
@@ -262,7 +262,7 @@ func ProducePlayer(id int64, dontQueueGroups ...bool) (err error) {
 	}
 
 	payload := PlayerMessage{ID: id}
-	if len(dontQueueGroups) > 0 {
+	if len(skipGroups) > 0 {
 		payload.DontQueueGroups = true
 	}
 
