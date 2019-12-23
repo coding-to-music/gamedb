@@ -174,7 +174,7 @@ func newGroupsHandler(messages []*framework.Message) {
 		}
 
 		//
-		err = sendGroupWebsocket([]string{payload.ID})
+		err = sendGroupWebsocket(payload.ID)
 		if err != nil {
 			log.Err(err, payload.ID)
 		}

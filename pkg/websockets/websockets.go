@@ -181,14 +181,12 @@ func ListenToPubSub() {
 
 			case PageGroup:
 
-				idsPayload := PubSubIDStringsPayload{} // ID too large for int64
+				idsPayload := PubSubIDStringPayload{} // ID too large for int64 in JS
 
 				err = helpers.Unmarshal(m.Data, &idsPayload)
 				log.Err(err)
 
-				for _, v := range idsPayload.IDs {
-					wsPage.Send(v)
-				}
+				wsPage.Send(idsPayload.ID)
 
 			case PageChanges:
 

@@ -33,8 +33,7 @@ var (
 )
 
 type GroupMessage struct {
-	IDs []string `json:"ids"` // OLD
-	ID  string   `json:"id"`
+	ID string `json:"id"`
 }
 
 func groupsHandler(messages []*framework.Message) {
@@ -50,179 +49,160 @@ func groupsHandler(messages []*framework.Message) {
 			continue
 		}
 
-		// Handle old payloads
-		// if len(payload.IDs) > 0 {
-		// 	for _, id := range payload.IDs {
-		// 		err = ProduceGroup(id)
-		// 		log.Err(err)
-		// 	}
-		// 	message.Ack()
-		// 	continue
-		// } else if payload.ID != "" {
-		// 	payload.IDs = []string{payload.ID}
-		// } else {
-		// 	message.Ack()
-		// 	continue
-		// }
-
-		if payload.ID != "" {
-			payload.IDs = append(payload.IDs, payload.ID)
+		//
+		group, err := mongo.GetGroup(payload.ID)
+		if err == mongo.ErrNoDocuments {
+			group = mongo.Group{}
+		} else if err != nil {
+			log.Err(err, payload.ID)
+			sendToRetryQueue(message)
+			continue
 		}
 
-		//
-		for _, groupID := range payload.IDs {
+		// Skip if updated recently
+		if !group.ShouldUpdate() {
+			message.Ack()
+			continue
+		}
 
-			group, err := mongo.GetGroup(groupID)
-			if err != nil && err != mongo.ErrNoDocuments {
-				log.Err(err, payload.IDs)
+		// Get `type` if missing
+		if group.Type == "" {
+
+			group.Type, err = getGroupType(payload.ID)
+			if err != nil {
+				steam.LogSteamError(err, payload.ID)
 				sendToRetryQueue(message)
 				continue
 			}
 
-			// Skip if updated recently
-			if !group.ShouldUpdate() {
-				continue
-			}
-
-			// Get `type` if missing
+			// Deleted groups can not redirect to get a type.
 			if group.Type == "" {
-
-				group.Type, err = getGroupType(groupID)
-				if err != nil {
-					steam.LogSteamError(err, payload.IDs)
-					sendToRetryQueue(message)
-					continue
-				}
-
-				// Deleted groups can not redirect to get a type.
-				if group.Type == "" {
-					message.Ack()
-					continue
-				}
-			}
-
-			// Update group
-			var found bool
-			if group.Type == helpers.GroupTypeGame {
-				found, err = updateGameGroup(groupID, &group)
-			} else {
-				found, err = updateRegularGroup(groupID, &group)
-			}
-
-			// Skip if we cant find numbers
-			if !found {
-				log.Info("Group counts not found", groupID)
-				sendToRetryQueue(message)
-				continue
-			}
-
-			// Some pages dont contain the ID, so use the API
-			if group.ID == "" {
-
-				err = produceGroupNew(groupID)
-				if err != nil {
-					steam.LogSteamError(err, groupID)
-				}
 				message.Ack()
 				continue
 			}
+		}
 
-			// Fix group data
-			if group.Summary == "No information given." {
-				group.Summary = ""
-			}
+		// Update group
+		var found bool
+		if group.Type == helpers.GroupTypeGame {
+			found, err = updateGameGroup(payload.ID, &group)
+		} else {
+			found, err = updateRegularGroup(payload.ID, &group)
+		}
 
-			// Get trending value
-			err = getGroupTrending(&group)
+		// Skip if we cant find numbers
+		if !found {
+			log.Info("Group counts not found", payload.ID)
+			sendToRetryQueue(message)
+			continue
+		}
+
+		// Some pages dont contain the ID, so use the API
+		if group.ID == "" {
+
+			err = produceGroupNew(payload.ID)
 			if err != nil {
-				log.Err(err, payload.IDs)
+				steam.LogSteamError(err, payload.ID)
+			}
+			message.Ack()
+			continue
+		}
+
+		// Fix group data
+		if group.Summary == "No information given." {
+			group.Summary = ""
+		}
+
+		// Get trending value
+		err = getGroupTrending(&group)
+		if err != nil {
+			log.Err(err, payload.ID)
+			sendToRetryQueue(message)
+			continue
+		}
+
+		//
+		var wg sync.WaitGroup
+
+		// Read from MySQL
+		wg.Add(1)
+		var app sql.App
+		go func() {
+
+			defer wg.Done()
+
+			var err error
+
+			app, err = getAppFromGroup(group)
+			err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
+			if err != nil {
+				log.Err(err, payload.ID)
 				sendToRetryQueue(message)
-				continue
+				return
 			}
+		}()
 
-			//
-			var wg sync.WaitGroup
+		//
+		wg.Wait()
 
-			// Read from MySQL
-			wg.Add(1)
-			var app sql.App
-			go func() {
+		if message.ActionTaken {
+			continue
+		}
 
-				defer wg.Done()
+		// Save to MySQL
+		wg.Add(1)
+		go func() {
 
-				var err error
+			defer wg.Done()
 
-				app, err = getAppFromGroup(group)
-				err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
-				if err != nil {
-					log.Err(err, payload.IDs)
-					sendToRetryQueue(message)
-					return
-				}
-			}()
-
-			//
-			wg.Wait()
-
-			if message.ActionTaken {
-				continue
+			err = saveAppsGroupID(app, group)
+			if err != nil {
+				log.Err(err, payload.ID)
+				sendToRetryQueue(message)
+				return
 			}
+		}()
 
-			// Save to MySQL
-			wg.Add(1)
-			go func() {
+		// Save to Mongo
+		wg.Add(1)
+		go func() {
 
-				defer wg.Done()
+			defer wg.Done()
 
-				err = saveAppsGroupID(app, group)
-				if err != nil {
-					log.Err(err, payload.IDs)
-					sendToRetryQueue(message)
-					return
-				}
-			}()
-
-			// Save to Mongo
-			wg.Add(1)
-			go func() {
-
-				defer wg.Done()
-
-				err = saveGroup(group)
-				if err != nil {
-					log.Err(err, payload.IDs)
-					sendToRetryQueue(message)
-					return
-				}
-			}()
-
-			// Save to Influx
-			wg.Add(1)
-			go func() {
-
-				defer wg.Done()
-
-				err = saveGroupToInflux(group)
-				if err != nil {
-					log.Err(err, payload.IDs)
-					sendToRetryQueue(message)
-					return
-				}
-			}()
-
-			wg.Wait()
-
-			if message.ActionTaken {
-				continue
+			err = saveGroup(group)
+			if err != nil {
+				log.Err(err, payload.ID)
+				sendToRetryQueue(message)
+				return
 			}
+		}()
+
+		// Save to Influx
+		wg.Add(1)
+		go func() {
+
+			defer wg.Done()
+
+			err = saveGroupToInflux(group)
+			if err != nil {
+				log.Err(err, payload.ID)
+				sendToRetryQueue(message)
+				return
+			}
+		}()
+
+		wg.Wait()
+
+		if message.ActionTaken {
+			continue
 		}
 
 		// Clear memcache
-		err = memcache.RemoveKeyFromMemCacheViaPubSub(payload.IDs...)
+		err = memcache.RemoveKeyFromMemCacheViaPubSub(payload.ID)
 		log.Err(err)
 
 		// Send websocket
-		err = sendGroupWebsocket(payload.IDs)
+		err = sendGroupWebsocket(payload.ID)
 		log.Err(err)
 
 		//
@@ -541,10 +521,10 @@ func saveGroupToInflux(group mongo.Group) (err error) {
 	return err
 }
 
-func sendGroupWebsocket(ids []string) (err error) {
+func sendGroupWebsocket(id string) (err error) {
 
-	wsPayload := websockets.PubSubIDStringsPayload{} // String as int64 too large for js
-	wsPayload.IDs = ids
+	wsPayload := websockets.PubSubIDStringPayload{} // String as int64 too large for js
+	wsPayload.ID = id
 	wsPayload.Pages = []websockets.WebsocketPage{websockets.PageGroup}
 
 	_, err = pubsubHelpers.Publish(pubsubHelpers.PubSubTopicWebsockets, wsPayload)
