@@ -465,6 +465,11 @@ func getGroupTrending(group *mongo.Group) (err error) {
 func saveGroup(group mongo.Group) (err error) {
 
 	_, err = mongo.ReplaceOne(mongo.CollectionGroups, bson.D{{"_id", group.ID}}, group)
+	if err != nil {
+		return err
+	}
+
+	_, err = mongo.UpdateManySet(mongo.CollectionPlayerGroups, bson.D{{"group_id", group.ID}}, bson.D{{"group_members", group.Members}})
 	return err
 }
 
