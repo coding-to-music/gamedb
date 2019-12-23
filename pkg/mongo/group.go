@@ -87,7 +87,7 @@ func (group Group) GetIcon() string {
 }
 
 func (group Group) ShouldUpdate() bool {
-	return group.UpdatedAt.Before(time.Now().Add(time.Hour * -3))
+	return group.UpdatedAt.Before(time.Now().Add(time.Hour * -1))
 }
 
 // Don't cache, as we need updatedAt to be live for notifications etc
