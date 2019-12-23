@@ -3,7 +3,7 @@ module github.com/gamedb/gamedb
 go 1.13
 
 require (
-	cloud.google.com/go v0.49.0 // indirect
+	cloud.google.com/go v0.50.0 // indirect
 	cloud.google.com/go/logging v1.0.0
 	cloud.google.com/go/pubsub v1.1.0
 	github.com/DataDog/zstd v1.4.4 // indirect
@@ -89,19 +89,17 @@ require (
 	go.mongodb.org/mongo-driver v1.2.0
 	go.opencensus.io v0.22.2 // indirect
 	go.uber.org/atomic v1.4.0 // indirect
-	golang.org/x/crypto v0.0.0-20191206172530-e9b2fee46413
-	golang.org/x/exp v0.0.0-20191129062945-2f5052295587 // indirect
-	golang.org/x/lint v0.0.0-20191125180803-fdd1cda4f05f // indirect
+	golang.org/x/crypto v0.0.0-20191219195013-becbf705a915
 	golang.org/x/net v0.0.0-20191209160850-c0dbc17a3553 // indirect
 	golang.org/x/oauth2 v0.0.0-20191202225959-858c2ad4c8b6
-	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e // indirect
-	golang.org/x/sys v0.0.0-20191210023423-ac6580df4449 // indirect
+	golang.org/x/sys v0.0.0-20191220220014-0732a990476f // indirect
 	golang.org/x/text v0.3.2
 	golang.org/x/time v0.0.0-20191024005414-555d28b269f0 // indirect
-	golang.org/x/tools v0.0.0-20191213221258-04c2e8eff935 // indirect
+	golang.org/x/tools v0.0.0-20191220234730-f13409bbebaf // indirect
+	google.golang.org/api v0.15.0 // indirect
 	google.golang.org/appengine v1.6.5 // indirect
-	google.golang.org/genproto v0.0.0-20191206224255-0243a4be9c8f // indirect
-	google.golang.org/grpc v1.25.1
+	google.golang.org/genproto v0.0.0-20191220175831-5c49e3ecc1c1 // indirect
+	google.golang.org/grpc v1.26.0
 	gopkg.in/djherbis/atime.v1 v1.0.0 // indirect
 	gopkg.in/djherbis/stream.v1 v1.2.0 // indirect
 	gopkg.in/yaml.v2 v2.2.7 // indirect
