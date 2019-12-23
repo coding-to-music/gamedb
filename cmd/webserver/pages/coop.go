@@ -66,7 +66,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 	for _, playerID := range playerIDs {
 		if !helpers.SliceHasInt64(foundPlayerIDs, playerID) {
 
-			err = consumers.ProducePlayer(playerID)
+			err = consumers.ProducePlayer(consumers.PlayerMessage{ID: playerID, Request: r})
 			if err != nil && err != memcache.ErrInQueue {
 				log.Err(err)
 			} else {

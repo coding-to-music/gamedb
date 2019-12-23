@@ -218,7 +218,7 @@ func adminQueues(r *http.Request) {
 
 			playerID, err := strconv.ParseInt(val, 10, 64)
 			if err == nil {
-				err = consumers.ProducePlayer(playerID)
+				err = consumers.ProducePlayer(consumers.PlayerMessage{ID: playerID, Request: r})
 				log.Err(err)
 			}
 		}

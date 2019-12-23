@@ -47,7 +47,7 @@ func (c AutoPlayerRefreshes) work() (err error) {
 
 		playerIDs = append(playerIDs, user.SteamID)
 
-		err = consumers.ProducePlayer(user.SteamID)
+		err = consumers.ProducePlayer(consumers.PlayerMessage{ID: user.SteamID})
 		log.Err(err)
 	}
 

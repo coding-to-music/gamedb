@@ -247,23 +247,24 @@ func ProducePackageRegular(payload PackageMessage) (err error) {
 	return Channels[framework.Producer][QueuePackagesRegular].ProduceInterface(payload)
 }
 
-func ProducePlayer(id int64, skipGroups ...bool) (err error) {
+var ErrIsBot = errors.New("bots can't update players")
 
-	if !helpers.IsValidPlayerID(id) {
-		return errors.New("invalid player id: " + strconv.FormatInt(id, 10))
+func ProducePlayer(payload PlayerMessage) (err error) {
+
+	if !helpers.IsValidPlayerID(payload.ID) {
+		return errors.New("invalid player id: " + strconv.FormatInt(payload.ID, 10))
+	}
+
+	if payload.Request != nil && helpers.IsBot(payload.Request.UserAgent()) {
+		return ErrIsBot
 	}
 
 	mc := memcache.GetClient()
 
-	item := memcache.MemcachePlayerInQueue(id)
+	item := memcache.MemcachePlayerInQueue(payload.ID)
 	_, err = mc.Get(item.Key)
 	if err == nil {
 		return memcache.ErrInQueue
-	}
-
-	payload := PlayerMessage{ID: id}
-	if len(skipGroups) > 0 {
-		payload.DontQueueGroups = true
 	}
 
 	err = Channels[framework.Producer][QueuePlayers].ProduceInterface(payload)

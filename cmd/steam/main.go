@@ -326,6 +326,6 @@ func (ph packetHandler) handleProfileInfo(packet *protocol.Packet) {
 	packet.ReadProtoMsg(&body)
 
 	var id = int64(body.GetSteamidFriend())
-	err := consumers.ProducePlayer(id)
+	err := consumers.ProducePlayer(consumers.PlayerMessage{ID: id})
 	log.Err(err, id)
 }

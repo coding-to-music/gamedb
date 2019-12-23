@@ -67,7 +67,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 
-			err = consumers.ProducePlayer(idx)
+			err = consumers.ProducePlayer(consumers.PlayerMessage{ID: idx, Request: r})
 			err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 			if err != nil {
 				log.Err(err)
@@ -224,7 +224,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	// Add to Rabbit
 	if player.NeedsUpdate(mongo.PlayerUpdateAuto) && !helpers.IsBot(r.UserAgent()) {
 
-		err = consumers.ProducePlayer(player.ID)
+		err = consumers.ProducePlayer(consumers.PlayerMessage{ID: player.ID, Request: r})
 		if err != nil && err != memcache.ErrInQueue {
 			log.Err(err, r)
 		} else {
@@ -399,7 +399,7 @@ func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
 	// Queue the rest
 	for friendID := range friendIDsMap {
 
-		err = consumers.ProducePlayer(friendID)
+		err = consumers.ProducePlayer(consumers.PlayerMessage{ID: friendID, Request: r})
 		err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 		if err != nil {
 			log.Err(err)
@@ -962,7 +962,7 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			return "Player can't be updated yet", false, nil
 		}
 
-		err = consumers.ProducePlayer(player.ID)
+		err = consumers.ProducePlayer(consumers.PlayerMessage{ID: player.ID, Request: r})
 		if err == memcache.ErrInQueue {
 			return "Player already queued", false, err
 		} else if err != nil {

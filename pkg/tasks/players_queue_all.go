@@ -34,7 +34,7 @@ func (c PlayersQueueAll) work() (err error) {
 
 	for _, player := range players {
 
-		err = consumers.ProducePlayer(player.ID)
+		err = consumers.ProducePlayer(consumers.PlayerMessage{ID: player.ID})
 		if err != nil {
 			log.Err(err)
 		}

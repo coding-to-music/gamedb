@@ -239,7 +239,7 @@ func callback(r *http.Request, c ConnectionInterface, event mongo.EventEnum, tok
 
 		if player.NeedsUpdate(mongo.PlayerUpdateManual) {
 
-			err = consumers.ProducePlayer(player.ID)
+			err = consumers.ProducePlayer(consumers.PlayerMessage{ID: player.ID})
 			if err != nil && err != memcache.ErrInQueue {
 				log.Err(err, r)
 			} else {
