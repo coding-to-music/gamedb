@@ -22,8 +22,8 @@ const ( //                        min hour
 	CronTimeDevelopers          = "0 6"
 	CronTimeCategories          = "0 7"
 	CronTimeInstagram           = "0 12"
-	CronTimeAppPlayers          = "0 */6"
-	CronTimeAutoPlayerRefreshes = "0 */6"
+	CronTimeAppPlayers          = "1 */6"
+	CronTimeAutoPlayerRefreshes = "1 */6"
 )
 
 var (
