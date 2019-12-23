@@ -12,7 +12,7 @@ import (
 
 type PlayerGroup struct {
 	PlayerID     int64  `bson:"player_id"`
-	GroupID      string `bson:"group_id_64"`
+	GroupID      string `bson:"group_id"`
 	GroupName    string `bson:"group_name"`
 	GroupIcon    string `bson:"group_icon"`
 	GroupMembers int    `bson:"group_members"`
