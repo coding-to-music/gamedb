@@ -205,14 +205,22 @@ func ProduceChanges(payload ChangesMessage) (err error) {
 	return Channels[framework.Producer][QueueChanges].ProduceInterface(payload)
 }
 
-func ProduceGroup(id string) (err error) {
+func ProduceGroup(payload GroupMessage) (err error) {
 
-	id, err = helpers.UpgradeGroupID(id)
+	if !helpers.IsValidGroupID(payload.ID) {
+		return errors.New("invalid group id: " + payload.ID)
+	}
+
+	if payload.UserAgent != nil && helpers.IsBot(*payload.UserAgent) {
+		return ErrIsBot
+	}
+
+	payload.ID, err = helpers.UpgradeGroupID(payload.ID)
 	if err != nil {
 		return err
 	}
 
-	return Channels[framework.Producer][QueueGroups].ProduceInterface(GroupMessage{ID: id})
+	return Channels[framework.Producer][QueueGroups].ProduceInterface(payload)
 }
 
 func produceGroupNew(id string) (err error) {
@@ -255,7 +263,7 @@ func ProducePlayer(payload PlayerMessage) (err error) {
 		return errors.New("invalid player id: " + strconv.FormatInt(payload.ID, 10))
 	}
 
-	if payload.Request != nil && helpers.IsBot(payload.Request.UserAgent()) {
+	if payload.UserAgent != nil && helpers.IsBot(*payload.UserAgent) {
 		return ErrIsBot
 	}
 

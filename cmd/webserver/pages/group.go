@@ -86,7 +86,8 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 		// 	return
 		// }
 
-		err = queue.ProduceGroup(group.ID)
+		ua := r.UserAgent()
+		err = queue.ProduceGroup(queue.GroupMessage{ID: group.ID, UserAgent: &ua})
 		if err != nil {
 			log.Err(err, r)
 		} else {

@@ -19,9 +19,9 @@ const (
 
 func IsValidGroupID(id string) bool {
 
-	if len(id) != 18 {
-		return false
-	}
+	// if len(id) != 18 {
+	// 	return false
+	// }
 
 	if !RegexNumbers.MatchString(id) {
 		return false

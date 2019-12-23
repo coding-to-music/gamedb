@@ -55,7 +55,7 @@ func (c AutoPlayerRefreshes) work() (err error) {
 	players, err := mongo.GetPlayersByID(playerIDs, bson.M{"primary_clan_id_string": 1})
 	for _, v := range players {
 		if v.PrimaryGroupID != "" {
-			err = queue.ProduceGroup(v.PrimaryGroupID)
+			err = queue.ProduceGroup(queue.GroupMessage{ID: v.PrimaryGroupID})
 			if err != nil {
 				return err
 			}

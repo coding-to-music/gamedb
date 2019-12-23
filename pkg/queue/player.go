@@ -2,7 +2,6 @@ package queue
 
 import (
 	"encoding/json"
-	"net/http"
 	"path"
 	"sort"
 	"strconv"
@@ -25,9 +24,9 @@ import (
 )
 
 type PlayerMessage struct {
-	ID         int64         `json:"id"`
-	SkipGroups bool          `json:"dont_queue_groups"`
-	Request    *http.Request `json:"-"`
+	ID         int64   `json:"id"`
+	SkipGroups bool    `json:"dont_queue_groups"`
+	UserAgent  *string `json:"user_agent"`
 }
 
 func playerHandler(messages []*framework.Message) {
@@ -757,7 +756,7 @@ func updatePlayerGroups(player *mongo.Player, payload PlayerMessage) error {
 	// Queue groups for update
 	if !payload.SkipGroups {
 		for _, id := range resp.GetIDs() {
-			err = ProduceGroup(id)
+			err = ProduceGroup(GroupMessage{ID: id, UserAgent: payload.UserAgent})
 			log.Err(err)
 		}
 	}

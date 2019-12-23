@@ -239,7 +239,8 @@ func callback(r *http.Request, c ConnectionInterface, event mongo.EventEnum, tok
 
 		if player.NeedsUpdate(mongo.PlayerUpdateManual) {
 
-			err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID})
+			ua := r.UserAgent()
+			err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID, UserAgent: &ua})
 			if err != nil && err != memcache.ErrInQueue {
 				log.Err(err, r)
 			} else {

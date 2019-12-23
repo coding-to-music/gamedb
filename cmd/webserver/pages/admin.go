@@ -155,6 +155,9 @@ func adminRunCron(r *http.Request) {
 
 func adminQueues(r *http.Request) {
 
+	ua := r.UserAgent()
+
+	//
 	var appIDs []int
 	if val := r.PostForm.Get("app-id"); val != "" {
 
@@ -218,7 +221,7 @@ func adminQueues(r *http.Request) {
 
 			playerID, err := strconv.ParseInt(val, 10, 64)
 			if err == nil {
-				err = queue.ProducePlayer(queue.PlayerMessage{ID: playerID, Request: r})
+				err = queue.ProducePlayer(queue.PlayerMessage{ID: playerID, UserAgent: &ua})
 				log.Err(err)
 			}
 		}
@@ -260,7 +263,7 @@ func adminQueues(r *http.Request) {
 
 		for _, val := range vals {
 
-			err := queue.ProduceGroup(val)
+			err := queue.ProduceGroup(queue.GroupMessage{ID: val, UserAgent: &ua})
 			log.Err(err, r)
 		}
 	}

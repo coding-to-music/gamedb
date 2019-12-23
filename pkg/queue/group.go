@@ -33,7 +33,8 @@ var (
 )
 
 type GroupMessage struct {
-	ID string `json:"id"`
+	ID        string  `json:"id"`
+	UserAgent *string `json:"user_agent"`
 }
 
 func groupsHandler(messages []*framework.Message) {

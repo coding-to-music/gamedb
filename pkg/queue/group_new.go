@@ -44,7 +44,7 @@ func newGroupsHandler(messages []*framework.Message) {
 		group, err := mongo.GetGroup(payload.ID)
 		if err == nil {
 			log.Info("Putting group back into first queue")
-			err = ProduceGroup(payload.ID)
+			err = ProduceGroup(GroupMessage{ID: payload.ID})
 			if err != nil {
 				log.Err(err, message.Message.Body)
 				sendToRetryQueue(message)
