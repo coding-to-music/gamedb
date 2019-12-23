@@ -469,7 +469,15 @@ func saveGroup(group mongo.Group) (err error) {
 		return err
 	}
 
-	_, err = mongo.UpdateManySet(mongo.CollectionPlayerGroups, bson.D{{"group_id", group.ID}}, bson.D{{"group_members", group.Members}})
+	//
+	update := bson.D{
+		{"group_name", group.Name},
+		{"group_icon", group.Icon},
+		{"group_members", group.Members},
+		{"group_url", group.URL},
+	}
+
+	_, err = mongo.UpdateManySet(mongo.CollectionPlayerGroups, bson.D{{"group_id", group.ID}}, update)
 	return err
 }
 
