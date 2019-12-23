@@ -7,11 +7,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
 )
@@ -89,7 +89,7 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 				}
 
 				if !found {
-					err = consumers.ProduceSteam(consumers.SteamMessage{AppIDs: []int{v}})
+					err = queue.ProduceSteam(queue.SteamMessage{AppIDs: []int{v}})
 					err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 					log.Err(err)
 				}

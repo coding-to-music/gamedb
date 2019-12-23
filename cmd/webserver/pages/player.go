@@ -11,12 +11,12 @@ import (
 	"github.com/Jleagle/session-go/session"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/cmd/webserver/middleware"
-	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
 	"github.com/justinas/nosurf"
@@ -67,7 +67,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 
-			err = consumers.ProducePlayer(consumers.PlayerMessage{ID: idx, Request: r})
+			err = queue.ProducePlayer(queue.PlayerMessage{ID: idx, Request: r})
 			err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 			if err != nil {
 				log.Err(err)
@@ -189,7 +189,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 			backgroundApp, err = sql.GetApp(player.BackgroundAppID, []string{"id", "name", "background"})
 			err = helpers.IgnoreErrors(err, sql.ErrInvalidAppID)
 			if err == sql.ErrRecordNotFound {
-				err = consumers.ProduceSteam(consumers.SteamMessage{AppIDs: []int{player.BackgroundAppID}})
+				err = queue.ProduceSteam(queue.SteamMessage{AppIDs: []int{player.BackgroundAppID}})
 				log.Err(err, player.BackgroundAppID)
 			} else if err != nil {
 				log.Err(err, player.BackgroundAppID)
@@ -224,7 +224,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	// Add to Rabbit
 	if player.NeedsUpdate(mongo.PlayerUpdateAuto) && !helpers.IsBot(r.UserAgent()) {
 
-		err = consumers.ProducePlayer(consumers.PlayerMessage{ID: player.ID, Request: r})
+		err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID, Request: r})
 		if err != nil && err != memcache.ErrInQueue {
 			log.Err(err, r)
 		} else {
@@ -399,7 +399,7 @@ func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
 	// Queue the rest
 	for friendID := range friendIDsMap {
 
-		err = consumers.ProducePlayer(consumers.PlayerMessage{ID: friendID, Request: r})
+		err = queue.ProducePlayer(queue.PlayerMessage{ID: friendID, Request: r})
 		err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 		if err != nil {
 			log.Err(err)
@@ -962,7 +962,7 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			return "Player can't be updated yet", false, nil
 		}
 
-		err = consumers.ProducePlayer(consumers.PlayerMessage{ID: player.ID, Request: r})
+		err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID, Request: r})
 		if err == memcache.ErrInQueue {
 			return "Player already queued", false, err
 		} else if err != nil {

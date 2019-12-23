@@ -1,10 +1,10 @@
 package tasks
 
 import (
-	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/queue"
 )
 
 type PlayerRanks struct {
@@ -33,7 +33,7 @@ func (c PlayerRanks) work() (err error) {
 
 	// Global
 	for read, write := range mongo.PlayerRankFields {
-		err = consumers.ProducePlayerRank(consumers.PlayerRanksMessage{
+		err = queue.ProducePlayerRank(queue.PlayerRanksMessage{
 			SortColumn: read,
 			ObjectKey:  string(write),
 		})
@@ -43,7 +43,7 @@ func (c PlayerRanks) work() (err error) {
 	// Continents
 	for _, continent := range helpers.Continents {
 		for read, write := range mongo.PlayerRankFields {
-			err = consumers.ProducePlayerRank(consumers.PlayerRanksMessage{
+			err = queue.ProducePlayerRank(queue.PlayerRanksMessage{
 				SortColumn: read,
 				ObjectKey:  string(write) + "_continent-" + continent.Key,
 				Continent:  &continent.Key,
@@ -60,7 +60,7 @@ func (c PlayerRanks) work() (err error) {
 
 	for _, cc := range countryCodes {
 		for read, write := range mongo.PlayerRankFields {
-			err = consumers.ProducePlayerRank(consumers.PlayerRanksMessage{
+			err = queue.ProducePlayerRank(queue.PlayerRanksMessage{
 				SortColumn: read,
 				ObjectKey:  string(write) + "_country-" + cc,
 				Country:    &cc,
@@ -80,7 +80,7 @@ func (c PlayerRanks) work() (err error) {
 
 		for _, state := range stateCodes {
 			for read, write := range mongo.PlayerRankFields {
-				err = consumers.ProducePlayerRank(consumers.PlayerRanksMessage{
+				err = queue.ProducePlayerRank(queue.PlayerRanksMessage{
 					SortColumn: read,
 					ObjectKey:  string(write) + "_state-" + state.Key,
 					Country:    &cc,

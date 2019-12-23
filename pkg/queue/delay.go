@@ -1,10 +1,10 @@
-package consumers
+package queue
 
 import (
 	"math"
 	"time"
 
-	"github.com/gamedb/gamedb/pkg/consumers/framework"
+	"github.com/gamedb/gamedb/pkg/queue/framework"
 )
 
 func delayHandler(messages []*framework.Message) {

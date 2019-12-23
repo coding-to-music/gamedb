@@ -1,4 +1,4 @@
-package consumers
+package queue
 
 import (
 	"encoding/json"
@@ -8,12 +8,12 @@ import (
 
 	"github.com/Jleagle/influxql"
 	"github.com/cenkalti/backoff"
-	"github.com/gamedb/gamedb/pkg/consumers/framework"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/helpers/twitch"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/queue/framework"
 	"github.com/gamedb/gamedb/pkg/sql"
 	influx "github.com/influxdata/influxdb1-client"
 	"github.com/nicklaw5/helix"

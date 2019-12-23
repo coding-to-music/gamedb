@@ -1,9 +1,9 @@
 package tasks
 
 import (
-	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -47,7 +47,7 @@ func (c AutoPlayerRefreshes) work() (err error) {
 
 		playerIDs = append(playerIDs, user.SteamID)
 
-		err = consumers.ProducePlayer(consumers.PlayerMessage{ID: user.SteamID})
+		err = queue.ProducePlayer(queue.PlayerMessage{ID: user.SteamID})
 		log.Err(err)
 	}
 
@@ -55,7 +55,7 @@ func (c AutoPlayerRefreshes) work() (err error) {
 	players, err := mongo.GetPlayersByID(playerIDs, bson.M{"primary_clan_id_string": 1})
 	for _, v := range players {
 		if v.PrimaryGroupID != "" {
-			err = consumers.ProduceGroup(v.PrimaryGroupID)
+			err = queue.ProduceGroup(v.PrimaryGroupID)
 			if err != nil {
 				return err
 			}

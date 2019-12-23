@@ -6,12 +6,12 @@ import (
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/consumers"
-	"github.com/gamedb/gamedb/pkg/consumers/framework"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/queue"
+	"github.com/gamedb/gamedb/pkg/queue/framework"
 	"github.com/gamedb/gamedb/pkg/sql"
 )
 
@@ -43,13 +43,13 @@ func main() {
 	}
 
 	// Load consumers
-	consumers.Init(consumers.QueueDefinitions, true)
+	queue.Init(queue.QueueDefinitions, true)
 
 	// Auto add players
 	if config.IsProd() {
 		go func() {
 			for {
-				q, err := consumers.Channels[framework.Producer][consumers.QueuePlayers].Inspect()
+				q, err := queue.Channels[framework.Producer][queue.QueuePlayers].Inspect()
 				if err != nil {
 					log.Err(err)
 				} else if q.Messages == 0 {
@@ -58,7 +58,7 @@ func main() {
 						log.Err(err)
 					} else {
 						for _, v := range players {
-							err = consumers.ProducePlayer(consumers.PlayerMessage{ID: v.ID, SkipGroups: true})
+							err = queue.ProducePlayer(queue.PlayerMessage{ID: v.ID, SkipGroups: true})
 							err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 							log.Err(err)
 						}

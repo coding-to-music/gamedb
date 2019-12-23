@@ -3,9 +3,9 @@ package tasks
 import (
 	"strconv"
 
-	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -34,7 +34,7 @@ func (c PlayersQueueAll) work() (err error) {
 
 	for _, player := range players {
 
-		err = consumers.ProducePlayer(consumers.PlayerMessage{ID: player.ID})
+		err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID})
 		if err != nil {
 			log.Err(err)
 		}

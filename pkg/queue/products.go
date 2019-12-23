@@ -1,4 +1,4 @@
-package consumers
+package queue
 
 import (
 	"encoding/json"

@@ -3,8 +3,8 @@ package tasks
 import (
 	"strconv"
 
-	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
 )
 
@@ -44,7 +44,7 @@ func (c PackagesQueueAll) work() (err error) {
 		packageSlice = append(packageSlice, k)
 	}
 
-	err = consumers.ProduceSteam(consumers.SteamMessage{PackageIDs: packageSlice})
+	err = queue.ProduceSteam(queue.SteamMessage{PackageIDs: packageSlice})
 	if err != nil {
 		return err
 	}

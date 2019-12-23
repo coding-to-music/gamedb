@@ -3,9 +3,9 @@ package tasks
 import (
 	"strconv"
 
-	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
 )
 
@@ -48,7 +48,7 @@ func (c AppPlayers) work() (err error) {
 
 	for _, chunk := range chunks {
 
-		err = consumers.ProduceAppPlayers(consumers.AppPlayerMessage{IDs: chunk})
+		err = queue.ProduceAppPlayers(queue.AppPlayerMessage{IDs: chunk})
 		log.Err(err)
 	}
 

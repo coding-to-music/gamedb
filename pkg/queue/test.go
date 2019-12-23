@@ -1,10 +1,10 @@
-package consumers
+package queue
 
 import (
 	"time"
 
-	"github.com/gamedb/gamedb/pkg/consumers/framework"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/queue/framework"
 )
 
 type TestMessage struct {

@@ -16,6 +16,6 @@ func (c StatsCategories) Cron() string {
 	return CronTimeCategories
 }
 
-func (c StatsCategories) work() (err error){
+func (c StatsCategories) work() (err error) {
 	return nil
 }

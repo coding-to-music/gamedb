@@ -3,9 +3,9 @@ package tasks
 import (
 	"strconv"
 
-	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/queue"
 )
 
 type AppQueueAll struct {
@@ -42,7 +42,7 @@ func (c AppQueueAll) work() (err error) {
 
 		for _, v := range apps.Apps {
 
-			err = consumers.ProduceApp(consumers.AppMessage{ID: v.AppID})
+			err = queue.ProduceApp(queue.AppMessage{ID: v.AppID})
 			if err != nil {
 				log.Err(err, strconv.Itoa(v.AppID))
 				continue

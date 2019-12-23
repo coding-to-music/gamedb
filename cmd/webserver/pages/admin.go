@@ -9,10 +9,10 @@ import (
 	"github.com/Jleagle/session-go/session"
 	"github.com/gamedb/gamedb/cmd/webserver/middleware"
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/tasks"
 	"github.com/gamedb/gamedb/pkg/websockets"
@@ -218,7 +218,7 @@ func adminQueues(r *http.Request) {
 
 			playerID, err := strconv.ParseInt(val, 10, 64)
 			if err == nil {
-				err = consumers.ProducePlayer(consumers.PlayerMessage{ID: playerID, Request: r})
+				err = queue.ProducePlayer(queue.PlayerMessage{ID: playerID, Request: r})
 				log.Err(err)
 			}
 		}
@@ -235,7 +235,7 @@ func adminQueues(r *http.Request) {
 			bundleID, err := strconv.Atoi(val)
 			if err == nil {
 
-				err = consumers.ProduceBundle(bundleID)
+				err = queue.ProduceBundle(bundleID)
 				log.Err(err, r)
 			}
 		}
@@ -249,7 +249,7 @@ func adminQueues(r *http.Request) {
 
 		for i := 1; i <= count; i++ {
 
-			err = consumers.ProduceTest(i)
+			err = queue.ProduceTest(i)
 			log.Err(err, r)
 		}
 	}
@@ -260,12 +260,12 @@ func adminQueues(r *http.Request) {
 
 		for _, val := range vals {
 
-			err := consumers.ProduceGroup(val)
+			err := queue.ProduceGroup(val)
 			log.Err(err, r)
 		}
 	}
 
-	err := consumers.ProduceSteam(consumers.SteamMessage{AppIDs: appIDs, PackageIDs: packageIDs})
+	err := queue.ProduceSteam(queue.SteamMessage{AppIDs: appIDs, PackageIDs: packageIDs})
 	log.Err(err)
 }
 

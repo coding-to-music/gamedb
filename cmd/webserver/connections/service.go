@@ -7,11 +7,11 @@ import (
 	"strings"
 
 	"github.com/Jleagle/session-go/session"
-	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"golang.org/x/oauth2"
 )
@@ -239,7 +239,7 @@ func callback(r *http.Request, c ConnectionInterface, event mongo.EventEnum, tok
 
 		if player.NeedsUpdate(mongo.PlayerUpdateManual) {
 
-			err = consumers.ProducePlayer(consumers.PlayerMessage{ID: player.ID})
+			err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID})
 			if err != nil && err != memcache.ErrInQueue {
 				log.Err(err, r)
 			} else {

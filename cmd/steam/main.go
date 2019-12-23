@@ -12,9 +12,9 @@ import (
 	"github.com/Philipp15b/go-steam/protocol/protobuf"
 	"github.com/Philipp15b/go-steam/protocol/steamlang"
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/queue"
 )
 
 const (
@@ -54,7 +54,7 @@ func main() {
 	steamClient.RegisterPacketHandler(packetHandler{})
 	steamClient.Connect()
 
-	consumers.SetSteamClient(steamClient)
+	queue.SetSteamClient(steamClient)
 
 	go func() {
 		for event := range steamClient.Events() {
@@ -74,7 +74,7 @@ func main() {
 
 				// Load consumer
 				log.Info("Starting Steam consumers")
-				consumers.Init(consumers.QueueSteamDefinitions, true)
+				queue.Init(queue.QueueSteamDefinitions, true)
 
 			case *steam.LoggedOffEvent:
 
@@ -190,7 +190,7 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 				m = kv.ToMap()
 			}
 
-			err = consumers.ProduceApp(consumers.AppMessage{ID: id, ChangeNumber: int(app.GetChangeNumber()), VDF: m})
+			err = queue.ProduceApp(queue.AppMessage{ID: id, ChangeNumber: int(app.GetChangeNumber()), VDF: m})
 			if err != nil {
 				log.Err(err, id)
 			}
@@ -202,7 +202,7 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 		for _, app := range unknownApps {
 
 			var id = int(app)
-			err := consumers.ProduceApp(consumers.AppMessage{ID: id})
+			err := queue.ProduceApp(queue.AppMessage{ID: id})
 			log.Err(err, id)
 		}
 	}
@@ -221,7 +221,7 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 				m = kv.ToMap()
 			}
 
-			err = consumers.ProducePackage(consumers.PackageMessage{ID: int(pack.GetPackageid()), ChangeNumber: int(pack.GetChangeNumber()), VDF: m})
+			err = queue.ProducePackage(queue.PackageMessage{ID: int(pack.GetPackageid()), ChangeNumber: int(pack.GetChangeNumber()), VDF: m})
 			if err != nil {
 				log.Err(err, id)
 			}
@@ -233,7 +233,7 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 		for _, pack := range unknownPackages {
 
 			var id = int(pack)
-			err := consumers.ProducePackage(consumers.PackageMessage{ID: id})
+			err := queue.ProducePackage(queue.PackageMessage{ID: id})
 			log.Err(err, id)
 		}
 	}
@@ -305,7 +305,7 @@ func (ph packetHandler) handleChangesSince(packet *protocol.Packet) {
 	}))
 
 	// Save change
-	err := consumers.ProduceChanges(consumers.ChangesMessage{
+	err := queue.ProduceChanges(queue.ChangesMessage{
 		AppIDs:     appMap,
 		PackageIDs: packageMap,
 	})
@@ -326,6 +326,6 @@ func (ph packetHandler) handleProfileInfo(packet *protocol.Packet) {
 	packet.ReadProtoMsg(&body)
 
 	var id = int64(body.GetSteamidFriend())
-	err := consumers.ProducePlayer(consumers.PlayerMessage{ID: id})
+	err := queue.ProducePlayer(queue.PlayerMessage{ID: id})
 	log.Err(err, id)
 }
