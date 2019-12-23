@@ -106,7 +106,7 @@ func GetAPIKey(tag string, getUnusedKey bool) (err error) {
 				time.Sleep(apiSessionRefresh)
 
 				// Update key
-				db = db.Model(&APIKey{}).Where("`key` = ?", config.Config.SteamAPIKey.Get()).Updates(map[string]interface{}{
+				db = db.New().Model(&APIKey{}).Where("`key` = ?", config.Config.SteamAPIKey.Get()).Updates(map[string]interface{}{
 					"expires": time.Now().Add(apiSessionLength),
 					"owner":   tag,
 				})
