@@ -860,6 +860,12 @@ func playerGroupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	player, err := mongo.GetPlayer(idx)
+	if err != nil {
+		log.Err(err, r)
+		return
+	}
+
 	query := DataTablesQuery{}
 	err = query.fillFromURL(r.URL.Query())
 	if err != nil {
@@ -915,15 +921,15 @@ func playerGroupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	for _, group := range groups {
 		response.AddRow([]interface{}{
-			group.GroupID,      // 0
-			"",                 // 1
-			group.GetName(),    // 2
-			group.GetPath(),    // 3
-			group.GetIcon(),    // 4
-			group.GroupMembers, // 5
-			group.GetType(),    // 6
-			group.GroupPrimary, // 7
-			group.GetURL(),     // 8
+			group.GroupID,                          // 0
+			"",                                     // 1
+			group.GetName(),                        // 2
+			group.GetPath(),                        // 3
+			group.GetIcon(),                        // 4
+			group.GroupMembers,                     // 5
+			group.GetType(),                        // 6
+			group.GroupID == player.PrimaryGroupID, // 7
+			group.GetURL(),                         // 8
 		})
 	}
 

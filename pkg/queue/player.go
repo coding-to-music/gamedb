@@ -685,27 +685,7 @@ func updatePlayerBans(player *mongo.Player) error {
 	return nil
 }
 
-// todo, get old groups first, then i only need to GetGroupsByID for ids that are not in old groups.
 func updatePlayerGroups(player *mongo.Player, payload PlayerMessage) error {
-
-	// New groups
-	resp, b, err := steamHelper.GetSteam().GetUserGroupList(player.ID)
-	err = steamHelper.AllowSteamCodes(err, b, []int{403})
-	if err != nil {
-		return err
-	}
-
-	player.GroupsCount = len(resp.GetIDs())
-
-	newGroupsSlice, err := mongo.GetGroupsByID(resp.GetIDs(), nil)
-	if err != nil {
-		return err
-	}
-
-	var newGroupsMap = map[string]mongo.Group{}
-	for _, v := range newGroupsSlice {
-		newGroupsMap[v.ID] = v
-	}
 
 	// Old groups
 	oldGroupsSlice, err := mongo.GetPlayerGroups(player.ID, 0, 0, nil)
@@ -718,10 +698,57 @@ func updatePlayerGroups(player *mongo.Player, payload PlayerMessage) error {
 		oldGroupsMap[v.GroupID] = v
 	}
 
+	// Current groups response
+	currentSlice, b, err := steamHelper.GetSteam().GetUserGroupList(player.ID)
+	err = steamHelper.AllowSteamCodes(err, b, []int{403})
+	if err != nil {
+		return err
+	}
+
+	player.GroupsCount = len(currentSlice.GetIDs())
+
+	currentMap := map[string]string{}
+	for _, v := range currentSlice.GetIDs() {
+		currentMap[v] = v
+	}
+
+	// Make list of groups to add
+	var newGroupIDs []string
+	for _, v := range currentSlice.GetIDs() {
+		if _, ok := oldGroupsMap[v]; !ok {
+			newGroupIDs = append(newGroupIDs, v)
+		}
+	}
+
+	// Find new groups
+	newGroupsSlice, err := mongo.GetGroupsByID(newGroupIDs, nil)
+	if err != nil {
+		return err
+	}
+
+	// Add
+	var newPlayerGroupSlice []mongo.PlayerGroup
+	for _, v := range newGroupsSlice {
+		newPlayerGroupSlice = append(newPlayerGroupSlice, mongo.PlayerGroup{
+			PlayerID:     player.ID,
+			GroupID:      v.ID,
+			GroupName:    v.Name,
+			GroupIcon:    v.Icon,
+			GroupMembers: v.Members,
+			GroupType:    v.Type,
+			GroupURL:     v.URL,
+		})
+	}
+
+	err = mongo.InsertPlayerGroups(newPlayerGroupSlice)
+	if err != nil {
+		return err
+	}
+
 	// Delete
 	var toDelete []string
 	for _, v := range oldGroupsSlice {
-		if _, ok := newGroupsMap[v.GroupID]; !ok {
+		if _, ok := currentMap[v.GroupID]; !ok {
 			toDelete = append(toDelete, v.GroupID)
 		}
 	}
@@ -731,31 +758,9 @@ func updatePlayerGroups(player *mongo.Player, payload PlayerMessage) error {
 		return err
 	}
 
-	// Add
-	var toAdd []mongo.PlayerGroup
-	for _, v := range newGroupsSlice {
-		if _, ok := oldGroupsMap[v.ID]; !ok {
-			toAdd = append(toAdd, mongo.PlayerGroup{
-				PlayerID:     player.ID,
-				GroupID:      v.ID,
-				GroupName:    v.Name,
-				GroupIcon:    v.Icon,
-				GroupMembers: v.Members,
-				GroupType:    v.Type,
-				GroupPrimary: player.PrimaryGroupID == v.ID,
-				GroupURL:     v.URL,
-			})
-		}
-	}
-
-	err = mongo.InsertPlayerGroups(toAdd)
-	if err != nil {
-		return err
-	}
-
 	// Queue groups for update
 	if !payload.SkipGroups {
-		for _, id := range resp.GetIDs() {
+		for _, id := range currentSlice.GetIDs() {
 			err = ProduceGroup(GroupMessage{ID: id, UserAgent: payload.UserAgent})
 			log.Err(err)
 		}

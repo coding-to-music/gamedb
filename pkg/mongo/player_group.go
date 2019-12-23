@@ -17,7 +17,6 @@ type PlayerGroup struct {
 	GroupIcon    string `bson:"group_icon"`
 	GroupMembers int    `bson:"group_members"`
 	GroupType    string `bson:"group_type"`
-	GroupPrimary bool   `bson:"group_primary"`
 	GroupURL     string `bson:"group_url"`
 }
 
@@ -31,7 +30,6 @@ func (group PlayerGroup) BSON() bson.D {
 		{"group_icon", group.GroupIcon},
 		{"group_members", group.GroupMembers},
 		{"group_type", group.GroupType},
-		{"group_primary", group.GroupPrimary},
 		{"group_url", group.GroupURL},
 	}
 }
@@ -136,7 +134,7 @@ func GetPlayerGroups(playerID int64, offset int64, limit int64, sort bson.D) (gr
 		var group PlayerGroup
 		err := cur.Decode(&group)
 		if err != nil {
-			log.Err(err, group.getKey(), cur.Current.String())
+			// log.Err(err, group.getKey(), cur.Current.String())
 		} else {
 			groups = append(groups, group)
 		}
