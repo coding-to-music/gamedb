@@ -59,7 +59,7 @@ func InfluxWriteMany(retention InfluxRetentionPolicy, batch influx.BatchPoints) 
 		batch.Time = time.Now()
 	}
 
-	influx, err := getInfluxClient()
+	client, err := getInfluxClient()
 	if err != nil {
 		return resp, err
 	}
@@ -68,7 +68,7 @@ func InfluxWriteMany(retention InfluxRetentionPolicy, batch influx.BatchPoints) 
 	policy.InitialInterval = time.Second
 
 	operation := func() (err error) {
-		resp, err = influx.Write(batch)
+		resp, err = client.Write(batch)
 		return err
 	}
 
