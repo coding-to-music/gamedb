@@ -10,8 +10,10 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/discord"
+	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
+	influx "github.com/influxdata/influxdb1-client"
 )
 
 const debugAuthorID = "145456943912189952"
@@ -59,6 +61,8 @@ func main() {
 			msg := m.Message.Content
 
 			if command.Regex().MatchString(msg) {
+
+				saveToInflux(m, command)
 
 				chanID := m.ChannelID
 
@@ -117,4 +121,27 @@ func isPrivateChannel(s *discordgo.Session, m *discordgo.MessageCreate) (bool, e
 	}
 
 	return channel.Type == discordgo.ChannelTypeDM, nil
+}
+
+func saveToInflux(m *discordgo.MessageCreate, command chatbot.Command) {
+
+	if config.IsLocal() {
+		return
+	}
+
+	_, err := influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, influx.Point{
+		Measurement: string(influxHelper.InfluxMeasurementAPICalls),
+		Tags: map[string]string{
+			"guild_id":   m.GuildID,
+			"channel_id": m.ChannelID,
+			"author_id":  m.Author.ID,
+			"command":    command.Regex().String(),
+		},
+		Fields: map[string]interface{}{
+			"request": 1,
+		},
+		Time:      time.Now(),
+		Precision: "u",
+	})
+	log.Err(err)
 }
