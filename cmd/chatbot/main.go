@@ -49,7 +49,7 @@ func main() {
 		// Rate limit
 		err := tollbooth.LimitByKeys(lmt, []string{m.Author.ID})
 		if err != nil {
-			log.Info(m.Author.ID + " over rate limit")
+			log.Warning(m.Author.ID + " over rate limit")
 			return
 		}
 
