@@ -25,12 +25,6 @@ func (c PlayerRanks) Cron() string {
 
 func (c PlayerRanks) work() (err error) {
 
-	// Fix nulls
-	// _, err = mongo.UpdateManySet(mongo.CollectionPlayers, bson.D{{"ranks", nil}}, bson.D{{"ranks", bson.M{}}})
-	// if err != nil {
-	// 	return err
-	// }
-
 	// Global
 	for read, write := range mongo.PlayerRankFields {
 		err = queue.ProducePlayerRank(queue.PlayerRanksMessage{
