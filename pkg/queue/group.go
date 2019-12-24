@@ -477,6 +477,7 @@ func saveGroup(group mongo.Group) (err error) {
 		{"group_url", group.URL},
 	}
 
+	// This uses a bunch of cpu
 	_, err = mongo.UpdateManySet(mongo.CollectionPlayerGroups, bson.D{{"group_id", group.ID}}, update)
 	return err
 }
