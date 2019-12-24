@@ -56,7 +56,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 	if option != "" {
 
 		err := session.SetFlash(r, helpers.SessionGood, option+" run")
-		log.Err(err)
+		log.Err(err, r)
 
 		http.Redirect(w, r, "/admin?"+option, http.StatusFound)
 		return
@@ -222,7 +222,7 @@ func adminQueues(r *http.Request) {
 			playerID, err := strconv.ParseInt(val, 10, 64)
 			if err == nil {
 				err = queue.ProducePlayer(queue.PlayerMessage{ID: playerID, UserAgent: &ua})
-				log.Err(err)
+				log.Err(err, r)
 			}
 		}
 	}
@@ -248,7 +248,7 @@ func adminQueues(r *http.Request) {
 
 		val = strings.TrimSpace(val)
 		count, err := strconv.Atoi(val)
-		log.Err(err)
+		log.Err(err, r)
 
 		for i := 1; i <= count; i++ {
 
@@ -269,7 +269,7 @@ func adminQueues(r *http.Request) {
 	}
 
 	err := queue.ProduceSteam(queue.SteamMessage{AppIDs: appIDs, PackageIDs: packageIDs})
-	log.Err(err)
+	log.Err(err, r)
 }
 
 func adminDeleteBinLogs(r *http.Request) {
@@ -279,7 +279,7 @@ func adminDeleteBinLogs(r *http.Request) {
 
 		gorm, err := sql.GetMySQLClient()
 		if err != nil {
-			log.Err(err)
+			log.Err(err, r)
 			return
 		}
 

@@ -45,7 +45,7 @@ func groupsTrendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	query := DataTablesQuery{}
 	err := query.fillFromURL(r.URL.Query())
 	if err != nil {
-		log.Err(err)
+		log.Err(err, r)
 		return
 	}
 

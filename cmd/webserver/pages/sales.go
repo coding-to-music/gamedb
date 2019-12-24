@@ -103,7 +103,7 @@ func salesHandler(w http.ResponseWriter, r *http.Request) {
 
 	t.AppTypes = sql.GetTypesForSelect()
 	t.SaleTypes, err = mongo.GetUniqueSaleTypes()
-	log.Err(err)
+	log.Err(err, r)
 
 	returnTemplate(w, r, "sales", t)
 }

@@ -74,7 +74,7 @@ func returnJSON(w http.ResponseWriter, r *http.Request, i interface{}) {
 
 	b, err := json.Marshal(i)
 	if err != nil {
-		log.Err(err)
+		log.Err(err, r)
 		return
 	}
 
@@ -344,7 +344,7 @@ func (t *GlobalTemplate) setRandomBackground(title bool, link bool) {
 	}
 
 	popularApps, err := sql.PopularApps()
-	log.Err(err)
+	log.Err(err, t.request)
 
 	var popularAppsWithBackground []sql.App
 	for _, app := range popularApps {
@@ -386,7 +386,7 @@ func (t GlobalTemplate) GetUserJSON() string {
 	}
 
 	b, err := json.Marshal(stringMap)
-	log.Err(err)
+	log.Err(err, t.request)
 
 	return string(b)
 }
