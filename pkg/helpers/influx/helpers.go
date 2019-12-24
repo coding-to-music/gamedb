@@ -6,7 +6,7 @@ import (
 	"sort"
 	"time"
 
-	"github.com/cenkalti/backoff"
+	"github.com/cenkalti/backoff/v3"
 	"github.com/gamedb/gamedb/pkg/log"
 	influx "github.com/influxdata/influxdb1-client"
 	influxModels "github.com/influxdata/influxdb1-client/models"

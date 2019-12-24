@@ -15,7 +15,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/Jleagle/valve-data-format-go/vdf"
-	"github.com/cenkalti/backoff"
+	"github.com/cenkalti/backoff/v3"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
