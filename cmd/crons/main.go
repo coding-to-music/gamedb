@@ -16,7 +16,7 @@ func main() {
 	log.Initialise([]log.LogName{log.LogNameCrons})
 
 	// Get API key
-	err := sql.GetAPIKey("crons", false)
+	err := sql.GetAPIKey("crons", true)
 	if err != nil {
 		log.Critical(err)
 		return

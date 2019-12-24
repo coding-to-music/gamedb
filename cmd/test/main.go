@@ -13,7 +13,7 @@ func main() {
 	log.Initialise([]log.LogName{log.LogNameTest})
 
 	// Get API key
-	err := sql.GetAPIKey("test", false)
+	err := sql.GetAPIKey("test", true)
 	if err != nil {
 		log.Critical(err)
 		return

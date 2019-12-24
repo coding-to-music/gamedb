@@ -24,7 +24,7 @@ func main() {
 	log.Initialise([]log.LogName{log.LogNameChatbot})
 
 	// Get API key
-	err := sql.GetAPIKey("chatbot", false) // todo, change to true when we have more keys
+	err := sql.GetAPIKey("chatbot", true)
 	if err != nil {
 		log.Critical(err)
 		return

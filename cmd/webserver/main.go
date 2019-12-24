@@ -29,7 +29,7 @@ func main() {
 	log.Initialise([]log.LogName{log.LogNameWebserver})
 
 	// Get API key
-	err := sql.GetAPIKey("webserver", false) // todo, change to true when we have more keys
+	err := sql.GetAPIKey("webserver", true)
 	if err != nil {
 		log.Critical(err)
 		return
