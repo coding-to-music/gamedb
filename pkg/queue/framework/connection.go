@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/cenkalti/backoff/v3"
-	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/streadway/amqp"
 )
@@ -18,6 +17,7 @@ const (
 )
 
 type Connection struct {
+	dial       string
 	connection *amqp.Connection
 	config     amqp.Config
 	closeChan  chan *amqp.Error
@@ -25,9 +25,10 @@ type Connection struct {
 	sync.Mutex
 }
 
-func NewConnection(conType ConnType, config amqp.Config) (c *Connection, err error) {
+func NewConnection(dial string, conType ConnType, config amqp.Config) (c *Connection, err error) {
 
 	connection := &Connection{
+		dial:     dial,
 		config:   config,
 		connType: conType,
 	}
@@ -77,7 +78,7 @@ func (connection *Connection) connect() error {
 	operation := func() (err error) {
 
 		// Connect
-		connection.connection, err = amqp.DialConfig(config.RabbitDSN(), connection.config)
+		connection.connection, err = amqp.DialConfig(connection.dial, connection.config)
 		if err != nil {
 			return err
 		}
