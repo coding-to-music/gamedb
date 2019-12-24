@@ -56,6 +56,15 @@ var PlayerRankFields = map[string]RankMetric{
 	"comments_count": RankKeyComments,
 }
 
+var PlayerRankFieldsInflux = map[RankMetric]string{
+	RankKeyLevel:    "level_rank",
+	RankKeyGames:    "games_rank",
+	RankKeyBadges:   "badges_rank",
+	RankKeyPlaytime: "playtime_rank",
+	RankKeyFriends:  "friends_rank",
+	RankKeyComments: "comments_rank",
+}
+
 var (
 	ErrInvalidPlayerID   = errors.New("invalid player id")
 	ErrInvalidPlayerName = errors.New("invalid player name")

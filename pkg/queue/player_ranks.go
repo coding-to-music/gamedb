@@ -1,12 +1,15 @@
 package queue
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
+	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue/framework"
+	influx "github.com/influxdata/influxdb1-client"
 	"go.mongodb.org/mongo-driver/bson"
 	mongodb "go.mongodb.org/mongo-driver/mongo"
 )
@@ -84,6 +87,41 @@ func playerRanksHandler(messages []*framework.Message) {
 			}
 
 			time.Sleep(time.Second)
+		}
+
+		// Build bulk influx update
+		var points []influx.Point
+		if len(payload.ObjectKey) == 1 {
+			for position, player := range players {
+				if position < 1000 {
+					if val, ok := mongo.PlayerRankFieldsInflux[mongo.RankMetric(payload.ObjectKey)]; ok {
+						points = append(points, influx.Point{
+							Measurement: string(influxHelper.InfluxMeasurementAPICalls),
+							Tags: map[string]string{
+								"player_id": strconv.FormatInt(player.ID, 10),
+							},
+							Fields: map[string]interface{}{
+								val: position + 1,
+							},
+							Time:      time.Now(),
+							Precision: "s",
+						})
+					}
+				}
+			}
+		}
+
+		// Save to Influx
+		_, err = influxHelper.InfluxWriteMany(influxHelper.InfluxRetentionPolicyAllTime, influx.BatchPoints{
+			Points:          points,
+			Database:        influxHelper.InfluxGameDB,
+			RetentionPolicy: influxHelper.InfluxRetentionPolicyAllTime.String(),
+			Precision:       "s",
+		})
+		if err != nil {
+			log.Err(err)
+			sendToRetryQueue(message)
+			return
 		}
 
 		message.Ack()
