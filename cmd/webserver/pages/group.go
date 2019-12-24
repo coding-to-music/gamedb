@@ -8,6 +8,7 @@ import (
 	"github.com/Jleagle/influxql"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/influx"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
@@ -73,21 +74,13 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 	// Update group
 	func() {
 
-		if helpers.IsBot(r.UserAgent()) {
-			return
-		}
-
 		if !group.ShouldUpdate() {
 			return
 		}
 
-		// An error does not mean group is deleted, keep queueing
-		// if group.Error != "" {
-		// 	return
-		// }
-
 		ua := r.UserAgent()
 		err = queue.ProduceGroup(queue.GroupMessage{ID: group.ID, UserAgent: &ua})
+		err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
 		if err != nil {
 			log.Err(err, r)
 		} else {

@@ -68,7 +68,8 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 
 			ua := r.UserAgent()
 			err = queue.ProducePlayer(queue.PlayerMessage{ID: playerID, UserAgent: &ua})
-			if err != nil && err != memcache.ErrInQueue {
+			err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
+			if err != nil {
 				log.Err(err)
 			} else {
 				log.Info(log.LogNameTriggerUpdate, r, r.UserAgent())

@@ -241,7 +241,8 @@ func callback(r *http.Request, c ConnectionInterface, event mongo.EventEnum, tok
 
 			ua := r.UserAgent()
 			err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID, UserAgent: &ua})
-			if err != nil && err != memcache.ErrInQueue {
+			err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
+			if err != nil {
 				log.Err(err, r)
 			} else {
 				log.Info(log.LogNameTriggerUpdate, r, r.UserAgent())

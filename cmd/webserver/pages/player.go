@@ -227,7 +227,8 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 		ua := r.UserAgent()
 		err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID, UserAgent: &ua})
-		if err != nil && err != memcache.ErrInQueue {
+		err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
+		if err != nil {
 			log.Err(err, r)
 		} else {
 			log.Info(log.LogNameTriggerUpdate, r, r.UserAgent())
@@ -403,7 +404,7 @@ func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
 
 		ua := r.UserAgent()
 		err = queue.ProducePlayer(queue.PlayerMessage{ID: friendID, UserAgent: &ua})
-		err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
+		err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
 		if err != nil {
 			log.Err(err)
 		} else {
@@ -977,9 +978,8 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		ua := r.UserAgent()
 		err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID, UserAgent: &ua})
-		if err == memcache.ErrInQueue {
-			return "Player already queued", false, err
-		} else if err != nil {
+		err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
+		if err != nil {
 			log.Err(err, r)
 			return "Something has gone wrong", false, err
 		} else {
