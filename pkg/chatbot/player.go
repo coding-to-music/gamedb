@@ -2,6 +2,7 @@ package chatbot
 
 import (
 	"regexp"
+	"strings"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
@@ -25,12 +26,17 @@ func (c CommandPlayer) Output(input string) (message discordgo.MessageSend, err 
 		return message, err
 	}
 
+	avatar := player.GetAvatar()
+	if strings.HasPrefix(avatar, "/") {
+		avatar = "https://gamedb.online" + avatar
+	}
+
 	message.Embed = &discordgo.MessageEmbed{
 		Title:  player.GetName(),
 		URL:    "https://gamedb.online" + player.GetPath(),
 		Author: author,
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
-			URL: "https://gamedb.online" + player.GetAvatar(),
+			URL: avatar,
 		},
 		Fields: []*discordgo.MessageEmbedField{
 			{
