@@ -22,7 +22,12 @@ func (c CommandPlayerRecent) Output(input string) (message discordgo.MessageSend
 	matches := c.Regex().FindStringSubmatch(input)
 
 	player, err := mongo.SearchPlayer(matches[1], nil)
-	if err != nil {
+	if err == mongo.ErrNoDocuments {
+
+		message.Content = "Player **" + matches[1] + "** not found"
+		return message, nil
+
+	} else if err != nil {
 		return message, err
 	}
 

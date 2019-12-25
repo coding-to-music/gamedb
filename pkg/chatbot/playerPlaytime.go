@@ -21,12 +21,16 @@ func (c CommandPlayerPlaytime) Output(input string) (message discordgo.MessageSe
 	matches := c.Regex().FindStringSubmatch(input)
 
 	player, err := mongo.SearchPlayer(matches[1], bson.M{"_id": 1, "persona_name": 1, "play_time": 1})
-	if err != nil {
+	if err == mongo.ErrNoDocuments {
+
+		message.Content = "Player **" + matches[1] + "** not found"
+		return message, nil
+
+	} else if err != nil {
 		return message, err
 	}
 
 	message.Content = player.GetName() + " has played for **" + helpers.GetTimeLong(player.PlayTime, 0) + "**"
-
 	return message, nil
 }
 

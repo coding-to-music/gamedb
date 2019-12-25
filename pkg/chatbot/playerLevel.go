@@ -21,12 +21,16 @@ func (c CommandPlayerLevel) Output(input string) (message discordgo.MessageSend,
 	matches := c.Regex().FindStringSubmatch(input)
 
 	player, err := mongo.SearchPlayer(matches[1], bson.M{"_id": 1, "persona_name": 1, "level": 1})
-	if err != nil {
+	if err == mongo.ErrNoDocuments {
+
+		message.Content = "Player **" + matches[1] + "** not found"
+		return message, nil
+
+	} else if err != nil {
 		return message, err
 	}
 
 	message.Content = player.GetName() + " is level **" + strconv.Itoa(player.Level) + "**"
-
 	return message, nil
 }
 
