@@ -101,7 +101,6 @@ type statsTemplate struct {
 	PackagesCount      int
 	PlayersCount       int64
 	OnlinePlayersCount int64
-	TypeTotal          string
 }
 
 func statsAppTypesHandler(w http.ResponseWriter, r *http.Request) {

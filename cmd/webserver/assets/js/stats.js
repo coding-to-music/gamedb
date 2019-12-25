@@ -226,7 +226,7 @@ if ($('#stats-page').length > 0) {
                     }
                 );
 
-                $('total-price').text(data.total);
+                $('#total-price').text(data.total);
 
                 $('#app-types').gdbTable();
             },
