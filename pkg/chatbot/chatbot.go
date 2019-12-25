@@ -4,6 +4,7 @@ import (
 	"regexp"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/gamedb/gamedb/pkg/config"
 )
 
 type CommandType string
@@ -41,4 +42,11 @@ var author = &discordgo.MessageEmbedAuthor{
 	Name:    "gamedb.online",
 	URL:     "https://gamedb.online/",
 	IconURL: "https://gamedb.online/assets/img/sa-bg-32x32.png",
+}
+
+func init() {
+	if config.IsLocal() {
+		author.Name = "localhost:8081"
+		author.URL = "http://localhost:8081/"
+	}
 }
