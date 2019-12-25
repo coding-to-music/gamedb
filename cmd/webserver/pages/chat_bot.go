@@ -76,5 +76,5 @@ type chatBotTemplate struct {
 }
 
 func (cbt chatBotTemplate) AddBotLink() string {
-	return "https://discordapp.com/oauth2/authorize?&client_id=" + chatBotClientID + "&scope=bot"
+	return "https://discordapp.com/oauth2/authorize?client_id=" + chatBotClientID + "&scope=bot&permissions=0"
 }
