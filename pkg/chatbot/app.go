@@ -29,7 +29,7 @@ func (c CommandApp) Output(input string) (message discordgo.MessageSend, err err
 		URL:    "https://gamedb.online" + app.GetPath(),
 		Author: author,
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
-			URL: "https://gamedb.online" + app.GetHeaderImage(),
+			URL: app.GetHeaderImage(),
 		},
 		Fields: []*discordgo.MessageEmbedField{
 			{
