@@ -412,9 +412,10 @@ func SearchPlayer(s string, projection bson.M) (player Player, err error) {
 
 	} else {
 
+		// Regex for case insensitivity
 		filter = bson.M{"$or": bson.A{
-			bson.M{"persona_name": bson.M{"$regex": s, "$options": "i"}},
-			bson.M{"vanity_url": bson.M{"$regex": s, "$options": "i"}},
+			bson.M{"persona_name": bson.M{"$regex": "^" + s + "$", "$options": "i"}},
+			bson.M{"vanity_url": bson.M{"$regex": "^" + s + "$", "$options": "i"}},
 		}}
 	}
 
