@@ -36,11 +36,16 @@ func (CommandAppsTrending) Output(input string) (message discordgo.MessageSend, 
 
 	var code []string
 
-	for k, v := range apps {
+	for k, app := range apps {
+
+		avatar := app.GetHeaderImage()
+		if strings.HasPrefix(avatar, "/") {
+			avatar = "https://gamedb.online" + avatar
+		}
 
 		if k == 0 {
 			message.Embed.Thumbnail = &discordgo.MessageEmbedThumbnail{
-				URL: "https://gamedb.online" + v.GetHeaderImage(),
+				URL: avatar,
 			}
 		}
 
@@ -49,7 +54,7 @@ func (CommandAppsTrending) Output(input string) (message discordgo.MessageSend, 
 			space = " "
 		}
 
-		code = append(code, helpers.OrdinalComma(k+1)+". "+space+v.GetName()+" - "+humanize.Comma(int64(v.PlayerTrend))+" trend value")
+		code = append(code, helpers.OrdinalComma(k+1)+". "+space+app.GetName()+" - "+humanize.Comma(app.PlayerTrend)+" trend value")
 	}
 
 	message.Embed.Description = "```" + strings.Join(code, "\n") + "```"

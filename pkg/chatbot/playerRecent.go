@@ -52,9 +52,14 @@ func (c CommandPlayerRecent) Output(input string) (message discordgo.MessageSend
 
 		for k, app := range recent {
 
+			avatar := helpers.GetAppIcon(app.AppID, app.Icon)
+			if strings.HasPrefix(avatar, "/") {
+				avatar = "https://gamedb.online" + avatar
+			}
+
 			if k == 0 {
 				message.Embed.Thumbnail = &discordgo.MessageEmbedThumbnail{
-					URL: "https://gamedb.online" + helpers.GetAppIcon(app.AppID, app.Icon),
+					URL: avatar,
 				}
 			}
 
