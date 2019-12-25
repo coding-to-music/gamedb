@@ -5,6 +5,7 @@ import (
 	"math"
 	"sort"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
@@ -392,22 +393,34 @@ func GetRandomPlayers(count int) (players []Player, err error) {
 
 func SearchPlayer(s string, projection bson.M) (player Player, err error) {
 
+	s = strings.TrimSpace(s)
+
 	if s == "" {
 		return player, ErrInvalidPlayerID
+	}
+
+	//
+	var filter bson.M
+
+	if helpers.RegexNumbers.MatchString(s) {
+
+		i, err := strconv.ParseInt(s, 10, 64)
+		if err != nil {
+			return player, ErrInvalidPlayerID
+		}
+		filter = bson.M{"_id": i}
+
+	} else {
+
+		filter = bson.M{"$or": bson.A{
+			bson.M{"persona_name": bson.M{"$regex": s, "$options": "i"}},
+			bson.M{"vanity_url": bson.M{"$regex": s, "$options": "i"}},
+		}}
 	}
 
 	client, ctx, err := getMongo()
 	if err != nil {
 		return player, err
-	}
-
-	var filter bson.M
-
-	i, _ := strconv.ParseInt(s, 10, 64)
-	if helpers.IsValidPlayerID(i) {
-		filter = bson.M{"_id": s}
-	} else {
-		filter = bson.M{"$text": bson.M{"$search": s}}
 	}
 
 	ops := options.FindOne()
