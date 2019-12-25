@@ -66,6 +66,7 @@ func main() {
 
 				chanID := m.ChannelID
 
+				// Allow private messaging for admins
 				if m.Author.ID == debugAuthorID {
 
 					private, err := isPrivateChannel(s, m)
