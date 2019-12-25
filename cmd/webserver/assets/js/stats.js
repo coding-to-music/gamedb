@@ -154,6 +154,44 @@ if ($('#stats-page').length > 0) {
 
         $.ajax({
             type: "GET",
+            url: '/stats/player-levels.json',
+            dataType: 'json',
+            success: function (data, textStatus, jqXHR) {
+
+                if (data === null) {
+                    // data = [];
+                }
+
+                let categories = [];
+                let dataArray = [];
+
+                data.forEach(function (value, index, array) {
+                    categories.push(data[index]['_id']);
+                    dataArray.push(value['count']);
+                });
+
+                Highcharts.chart('player-levels', $.extend(true, {}, defaultStatsChartOptions, {
+                    xAxis: {
+                        tickInterval: 5,
+                        categories: categories,
+                    },
+                    yAxis: {
+                        type: 'logarithmic',
+                    },
+                    tooltip: {
+                        formatter: function () {
+                            return this.y.toLocaleString() + ' people are level ' + this.x;
+                        },
+                    },
+                    series: [{
+                        data: dataArray
+                    }]
+                }));
+            },
+        });
+
+        $.ajax({
+            type: "GET",
             url: '/stats/release-dates.json',
             dataType: 'json',
             success: function (data, textStatus, jqXHR) {

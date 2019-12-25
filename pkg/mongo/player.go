@@ -546,6 +546,53 @@ func GetUniquePlayerStates(country string) (codes []helpers.Tuple, err error) {
 	return codes, err
 }
 
+func GetPlayerLevels() (counts []count, err error) {
+
+	var item = memcache.MemcachePlayerLevels
+
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &counts, func() (interface{}, error) {
+
+		client, ctx, err := getMongo()
+		if err != nil {
+			return counts, err
+		}
+
+		pipeline := mongo.Pipeline{
+			{{Key: "$match", Value: bson.M{"level": bson.M{"$gt": 0}}}},
+			{{Key: "$group", Value: bson.M{"_id": "$level", "count": bson.M{"$sum": 1}}}},
+		}
+
+		cur, err := client.Database(MongoDatabase, options.Database()).Collection(CollectionPlayers.String()).Aggregate(ctx, pipeline, options.Aggregate())
+		if err != nil {
+			return counts, err
+		}
+
+		defer func() {
+			err = cur.Close(ctx)
+			log.Err(err)
+		}()
+
+		var counts []count
+		for cur.Next(ctx) {
+
+			var level count
+			err := cur.Decode(&level)
+			if err != nil {
+				log.Err(err, level.ID)
+			}
+			counts = append(counts, level)
+		}
+
+		sort.Slice(counts, func(i, j int) bool {
+			return counts[i].ID < counts[j].ID
+		})
+
+		return counts, cur.Err()
+	})
+
+	return counts, err
+}
+
 func CountPlayers() (count int64, err error) {
 
 	var item = memcache.MemcachePlayersCount

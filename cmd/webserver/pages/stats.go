@@ -25,6 +25,7 @@ func StatsRouter() http.Handler {
 	r.Get("/release-dates.json", statsDatesHandler)
 	r.Get("/app-scores.json", statsScoresHandler)
 	r.Get("/app-types.json", statsAppTypesHandler)
+	r.Get("/player-levels.json", playerLevelsHandler)
 	return r
 }
 
@@ -101,6 +102,17 @@ type statsTemplate struct {
 	PackagesCount      int
 	PlayersCount       int64
 	OnlinePlayersCount int64
+}
+
+func playerLevelsHandler(w http.ResponseWriter, r *http.Request) {
+
+	levels, err := mongo.GetPlayerLevels()
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	returnJSON(w, r, levels)
 }
 
 func statsAppTypesHandler(w http.ResponseWriter, r *http.Request) {

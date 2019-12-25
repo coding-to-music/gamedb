@@ -64,6 +64,9 @@ var (
 	// Package Bits
 	MemcachePackageBundles = func(packageID int) memcache.Item { return memcache.Item{Key: "package-bundles-" + strconv.Itoa(packageID), Expiration: 0} }
 
+	// Players
+	MemcachePlayerLevels = memcache.Item{Key: "player-levels", Expiration: 60 * 60 * 24}
+
 	// Other
 	MemcacheQueues                   = memcache.Item{Key: "queues", Expiration: 10}
 	MemcachePopularApps              = memcache.Item{Key: "popular-apps", Expiration: 60 * 3}

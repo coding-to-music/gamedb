@@ -385,3 +385,8 @@ type index struct {
 	NS         string         `json:"ns"`
 	Background bool           `json:"background"`
 }
+
+type count struct {
+	ID    int `json:"_id"`
+	Count int `json:"count"`
+}
