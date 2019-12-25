@@ -131,7 +131,7 @@ func saveToInflux(m *discordgo.MessageCreate, command chatbot.Command) {
 	}
 
 	_, err := influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, influx.Point{
-		Measurement: string(influxHelper.InfluxMeasurementAPICalls),
+		Measurement: string(influxHelper.InfluxMeasurementChatBot),
 		Tags: map[string]string{
 			"guild_id":   m.GuildID,
 			"channel_id": m.ChannelID,

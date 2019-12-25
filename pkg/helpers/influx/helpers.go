@@ -28,6 +28,7 @@ const (
 	InfluxMeasurementStats       InfluxMeasurement = "stats"
 	InfluxMeasurementTags        InfluxMeasurement = "tags"
 	InfluxMeasurementAPICalls    InfluxMeasurement = "api_calls"
+	InfluxMeasurementChatBot     InfluxMeasurement = "chat_bot"
 )
 
 type InfluxRetentionPolicy string
