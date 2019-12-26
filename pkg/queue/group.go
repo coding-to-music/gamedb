@@ -213,6 +213,8 @@ func groupsHandler(messages []*framework.Message) {
 
 func updateGameGroup(id string, group *mongo.Group) (foundNumbers bool, err error) {
 
+	group.Abbr = "" // Game groups don't have abbr's
+
 	groupScrapeRateLimit.Take()
 
 	c := colly.NewCollector(
