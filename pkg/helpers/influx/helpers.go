@@ -52,6 +52,10 @@ func InfluxWrite(retention InfluxRetentionPolicy, point influx.Point) (resp *inf
 
 func InfluxWriteMany(retention InfluxRetentionPolicy, batch influx.BatchPoints) (resp *influx.Response, err error) {
 
+	if len(batch.Points) == 0 {
+		return nil, nil
+	}
+
 	batch.Database = InfluxGameDB
 	batch.RetentionPolicy = string(retention)
 	batch.Precision = batch.Points[0].Precision // Must be in batch and point
