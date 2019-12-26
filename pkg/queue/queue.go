@@ -21,7 +21,6 @@ const (
 	QueueBundles         framework.QueueName = "GDB_Bundles"
 	QueueChanges         framework.QueueName = "GDB_Changes"
 	QueueGroups          framework.QueueName = "GDB_Groups"
-	QueueGroupsNew       framework.QueueName = "GDB_Groups_New"
 	QueuePackages        framework.QueueName = "GDB_Packages"
 	QueuePackagesRegular framework.QueueName = "GDB_Packages_Regular"
 	QueuePlayers         framework.QueueName = "GDB_Players"
@@ -47,7 +46,6 @@ var (
 		{name: QueueBundles, consumer: bundleHandler},
 		{name: QueueChanges, consumer: changesHandler},
 		{name: QueueGroups, consumer: groupsHandler},
-		{name: QueueGroupsNew, consumer: newGroupsHandler},
 		{name: QueuePackages, consumer: packageHandler},
 		{name: QueuePackagesRegular},
 		{name: QueuePlayers, consumer: playerHandler},
