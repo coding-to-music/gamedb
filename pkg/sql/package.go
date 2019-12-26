@@ -256,32 +256,33 @@ func (pack Package) GetAppsCountString() string {
 	return strconv.Itoa(pack.AppsCount)
 }
 
-func (pack Package) GetAppIDs() (apps []int, err error) {
+func (pack Package) GetAppIDs() (apps []int) {
 
-	err = helpers.Unmarshal([]byte(pack.AppIDs), &apps)
-	return apps, err
+	err := helpers.Unmarshal([]byte(pack.AppIDs), &apps)
+	log.Err(err)
+
+	return apps
 }
 
-func (pack Package) GetDepotIDs() (depots []int, err error) {
+func (pack Package) GetDepotIDs() (depots []int) {
 
-	err = helpers.Unmarshal([]byte(pack.DepotIDs), &depots)
-	return depots, err
+	err := helpers.Unmarshal([]byte(pack.DepotIDs), &depots)
+	log.Err(err)
+
+	return depots
 }
 
-func (pack Package) GetPrices() (prices ProductPrices, err error) {
+func (pack Package) GetPrices() (prices ProductPrices) {
 
-	err = helpers.Unmarshal([]byte(pack.Prices), &prices)
-	return prices, err
+	err := helpers.Unmarshal([]byte(pack.Prices), &prices)
+	log.Err(err)
+
+	return prices
 }
 
 func (pack Package) GetPrice(code steam.ProductCC) (price ProductPrice) {
 
-	prices, err := pack.GetPrices()
-	if err != nil {
-		return price
-	}
-
-	return prices.Get(code)
+	return pack.GetPrices().Get(code)
 }
 
 func (pack Package) GetExtended() (extended pics.PICSKeyValues) {
@@ -294,28 +295,27 @@ func (pack Package) GetExtended() (extended pics.PICSKeyValues) {
 	return extended
 }
 
-func (pack Package) GetController() (controller pics.PICSController, err error) {
+func (pack Package) GetController() (controller pics.PICSController) {
 
 	controller = pics.PICSController{}
 
-	err = helpers.Unmarshal([]byte(pack.Controller), &controller)
-	return controller, err
+	err := helpers.Unmarshal([]byte(pack.Controller), &controller)
+	log.Err(err)
+
+	return controller
 }
 
-func (pack Package) GetPlatforms() (platforms []string, err error) {
+func (pack Package) GetPlatforms() (platforms []string) {
 
-	err = helpers.Unmarshal([]byte(pack.Platforms), &platforms)
-	return platforms, err
+	err := helpers.Unmarshal([]byte(pack.Platforms), &platforms)
+	log.Err(err)
+
+	return platforms
 }
 
-func (pack Package) GetPlatformImages() (ret template.HTML, err error) {
+func (pack Package) GetPlatformImages() (ret template.HTML) {
 
-	platforms, err := pack.GetPlatforms()
-	if err != nil {
-		return ret, err
-	}
-
-	for _, v := range platforms {
+	for _, v := range pack.GetPlatforms() {
 		if v == "macos" {
 			ret = ret + `<i class="fab fa-apple"></i>`
 		} else if v == "windows" {
@@ -325,7 +325,7 @@ func (pack Package) GetPlatformImages() (ret template.HTML, err error) {
 		}
 	}
 
-	return ret, nil
+	return ret
 }
 
 func (pack Package) GetMetaImage() string {

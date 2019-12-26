@@ -31,34 +31,20 @@ func (app *App) Fill(sqlApp sql.App) (err error) {
 	app.ID = sqlApp.ID
 	app.Name = sqlApp.GetName()
 	app.Tags = sqlApp.GetTagIDs()
-	app.Genres, err = sqlApp.GetGenreIDs()
-	if err != nil {
-		return err
-	}
-	app.Developers, err = sqlApp.GetDeveloperIDs()
-	if err != nil {
-		return err
-	}
+	app.Genres = sqlApp.GetGenreIDs()
+	app.Developers = sqlApp.GetDeveloperIDs()
 	app.Categories = sqlApp.GetCategoryIDs()
-	app.Publishers, err = sqlApp.GetPublisherIDs()
-	if err != nil {
-		return err
-	}
-	app.Prices, err = sqlApp.GetPrices()
-	if err != nil {
-		return err
-	}
+	app.Publishers = sqlApp.GetPublisherIDs()
+	app.Prices = sqlApp.GetPrices()
 	app.PlayersMax = sqlApp.PlayerPeakAllTime
 	app.PlayersWeekMax = sqlApp.PlayerPeakWeek
 	app.PlayersWeekAvg = sqlApp.PlayerAverageWeek
 	app.ReleaseDate = sqlApp.ReleaseDateUnix
-	reviews, err := sqlApp.GetReviews()
-	if err != nil {
-		return err
-	}
+	app.ReviewsScore = sqlApp.ReviewsScore
+
+	reviews := sqlApp.GetReviews()
 	app.ReviewsPositive = reviews.Positive
 	app.ReviewsNegative = reviews.Negative
-	app.ReviewsScore = sqlApp.ReviewsScore
 
 	return nil
 }

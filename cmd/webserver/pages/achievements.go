@@ -71,11 +71,10 @@ func achievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		//noinspection GoPreferNilSlice
 		var filteredIcons = []sql.AppAchievement{}
 
-		icons, _ := app.GetAchievements()
-		for _, v := range icons {
+		for _, v := range app.GetAchievements() {
 			if v.Active && strings.HasSuffix(v.Icon, ".jpg") {
 				filteredIcons = append(filteredIcons, v)
-				if len(filteredIcons) == 5 {
+				if len(filteredIcons) >= 5 {
 					break
 				}
 			}

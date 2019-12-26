@@ -57,12 +57,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		// Get apps
-		appIDs, err := pack.GetAppIDs()
-		if err != nil {
-			log.Err(err, r)
-			return
-		}
-
+		appIDs := pack.GetAppIDs()
 		for _, v := range appIDs {
 			appsMap[v] = sql.App{ID: v}
 		}
@@ -153,18 +148,10 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Functions that get called multiple times in the template
 	t.Price = pack.GetPrice(helpers.GetProductCC(r))
-
-	t.Prices, err = t.Package.GetPrices()
-	log.Err(err, r)
-
-	t.Extended, err = t.Package.GetExtended().Formatted(pack.ID, pics.ExtendedKeys)
-	log.Err(err, r)
-
-	t.Controller, err = pack.GetController()
-	log.Err(err, r)
-
-	t.DepotIDs, err = pack.GetDepotIDs()
-	log.Err(err, r)
+	t.Prices = t.Package.GetPrices()
+	t.Controller = pack.GetController()
+	t.DepotIDs = pack.GetDepotIDs()
+	t.Extended = t.Package.GetExtended().Formatted(pack.ID, pics.ExtendedKeys)
 
 	//
 	returnTemplate(w, r, "package", t)

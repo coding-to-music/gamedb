@@ -174,14 +174,9 @@ func packageHandler(messages []*framework.Message) {
 		// Queue apps
 		// Commented out because queued too many apps
 		// Uncommented out to help with finding sales
-		appIDs, err := pack.GetAppIDs()
-		if err != nil {
+		for _, appID := range pack.GetAppIDs() {
+			err = ProducePackage(PackageMessage{ID: appID})
 			log.Err(err)
-		} else {
-			for _, appID := range appIDs {
-				err = ProducePackage(PackageMessage{ID: appID})
-				log.Err(err)
-			}
 		}
 
 		//
@@ -193,11 +188,7 @@ func updatePackageNameFromApp(pack *sql.Package) (err error) {
 
 	if pack.AppsCount == 1 {
 
-		appIDs, err := pack.GetAppIDs()
-		if err != nil {
-			return err
-		}
-
+		appIDs := pack.GetAppIDs()
 		app, err := sql.GetApp(appIDs[0], nil)
 		if err == nil && app.Name != "" && (pack.Name == "" || pack.Name == "Package "+strconv.Itoa(pack.ID) || pack.Name == strconv.Itoa(pack.ID)) {
 

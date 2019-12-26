@@ -13,7 +13,7 @@ type ProductInterface interface {
 	GetName() string
 	GetIcon() string
 	GetPrice(code steam.ProductCC) (price ProductPrice)
-	GetPrices() (prices ProductPrices, err error)
+	GetPrices() (prices ProductPrices)
 	GetPath() string
 	GetType() string
 }

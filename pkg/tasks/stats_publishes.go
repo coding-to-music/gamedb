@@ -57,11 +57,7 @@ func (c Publishers) work() (err error) {
 	newPublishers := make(map[int]*statsRow)
 	for _, app := range appsWithPublishers {
 
-		appPublishers, err := app.GetPublisherIDs()
-		if err != nil {
-			log.Err(err)
-			continue
-		}
+		appPublishers := app.GetPublisherIDs()
 
 		if len(appPublishers) == 0 {
 			// appPublishers = []string{""}

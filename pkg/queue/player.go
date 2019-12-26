@@ -335,12 +335,7 @@ func updatePlayerGames(player *mongo.Player) error {
 		}
 
 		//
-		prices, err := gameRow.GetPrices()
-		if err != nil {
-			log.Err(err)
-			continue
-		}
-
+		prices := gameRow.GetPrices()
 		for code, vv := range prices {
 
 			vv = prices.Get(code)
@@ -839,14 +834,7 @@ func updatePlayerWishlistApps(player *mongo.Player) error {
 	}
 
 	for k, v := range toAdd {
-
-		prices, err := appsMap[v.AppID].GetPrices()
-		if err != nil {
-			log.Err(err)
-			continue
-		}
-
-		toAdd[k].AppPrices = prices.Map()
+		toAdd[k].AppPrices = appsMap[v.AppID].GetPrices().Map()
 		toAdd[k].AppName = appsMap[v.AppID].Name
 		toAdd[k].AppIcon = appsMap[v.AppID].Icon
 		toAdd[k].AppReleaseState = appsMap[v.AppID].ReleaseState

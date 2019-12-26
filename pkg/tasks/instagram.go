@@ -54,10 +54,7 @@ func (c Instagram) work() (err error) {
 
 	var app = apps[0]
 
-	screenshots, err := app.GetScreenshots()
-	if err != nil {
-		return err
-	}
+	var screenshots = app.GetScreenshots()
 
 	var url = screenshots[rand.Intn(len(screenshots))].PathFull
 	if url == "" {

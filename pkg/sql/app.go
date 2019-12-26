@@ -236,15 +236,15 @@ func (app App) SaveToMongo() error {
 	mApp.Common = app.GetCommon().Map()
 	mApp.Config = app.GetConfig().Map()
 	mApp.CreatedAt = app.CreatedAt
-	mApp.DemoIDs, _ = app.GetDemoIDs()
+	mApp.DemoIDs = app.GetDemoIDs()
 	mApp.Depots = app.Depots
-	mApp.Developers, _ = app.GetDeveloperIDs()
+	mApp.Developers = app.GetDeveloperIDs()
 	mApp.DLC, _ = app.GetDLCIDs()
 	mApp.DLCCount = app.DLCCount
 	mApp.Extended = app.GetExtended().Map()
 	mApp.GameID = app.GameID
 	mApp.GameName = app.GameName
-	mApp.Genres, _ = app.GetGenreIDs()
+	mApp.Genres = app.GetGenreIDs()
 	mApp.GroupID = app.GroupID
 	mApp.GroupFollowers = app.GroupFollowers
 	mApp.Homepage = app.Homepage
@@ -261,7 +261,7 @@ func (app App) SaveToMongo() error {
 	mApp.MetacriticURL = app.MetacriticURL
 	mApp.Movies = app.Movies
 	mApp.Name = app.Name
-	mApp.NewsIDs, _ = app.GetNewsIDs()
+	mApp.NewsIDs = app.GetNewsIDs()
 	mApp.Packages = app.GetPackageIDs()
 	mApp.Platforms = app.GetPlatforms()
 	mApp.PlayerAverageWeek = app.PlayerAverageWeek
@@ -272,7 +272,7 @@ func (app App) SaveToMongo() error {
 	mApp.PlaytimeTotal = app.PlaytimeTotal
 	mApp.Prices = app.Prices
 	mApp.PublicOnly = app.PublicOnly
-	mApp.Publishers, _ = app.GetPublisherIDs()
+	mApp.Publishers = app.GetPublisherIDs()
 	mApp.RelatedAppIDs, _ = app.GetRelatedIDs()
 	mApp.RelatedOwnersAppIDs, _ = app.GetRelatedOwnerIDs()
 	mApp.ReleaseDate = app.ReleaseDate
@@ -364,36 +364,31 @@ func (app App) GetFollowers() (ret string) {
 	return humanize.Comma(int64(app.GroupFollowers))
 }
 
-func (app App) GetPrices() (prices ProductPrices, err error) {
+func (app App) GetPrices() (prices ProductPrices) {
 
-	err = helpers.Unmarshal([]byte(app.Prices), &prices)
+	prices = ProductPrices{}
 
-	// Needed for marshalling into array
-	if len(prices) == 0 {
-		prices = ProductPrices{}
-	}
+	err := helpers.Unmarshal([]byte(app.Prices), &prices)
+	log.Err(err)
 
-	return prices, err
+	return prices
 }
 
 func (app App) GetPrice(code steam.ProductCC) (price ProductPrice) {
 
-	prices, err := app.GetPrices()
-	if err != nil {
-		return price
-	}
-
-	return prices.Get(code)
+	return app.GetPrices().Get(code)
 }
 
-func (app App) GetNewsIDs() (ids []int64, err error) {
+func (app App) GetNewsIDs() (ids []int64) {
 
 	if app.NewsIDs == "" {
-		return ids, err
+		return ids
 	}
 
-	err = helpers.Unmarshal([]byte(app.NewsIDs), &ids)
-	return ids, err
+	err := helpers.Unmarshal([]byte(app.NewsIDs), &ids)
+	log.Err(err)
+
+	return ids
 }
 
 func (app App) GetExtended() (extended pics.PICSKeyValues) {
@@ -613,25 +608,28 @@ func (app App) GetMetacriticLink() template.URL {
 	return template.URL("https://www.metacritic.com/game/" + app.MetacriticURL)
 }
 
-func (app App) GetScreenshots() (screenshots []AppImage, err error) {
+func (app App) GetScreenshots() (screenshots []AppImage) {
 
-	err = helpers.Unmarshal([]byte(app.Screenshots), &screenshots)
+	err := helpers.Unmarshal([]byte(app.Screenshots), &screenshots)
 	log.Err(err)
-	return screenshots, err
+
+	return screenshots
 }
 
-func (app App) GetMovies() (movies []AppVideo, err error) {
+func (app App) GetMovies() (movies []AppVideo) {
 
-	err = helpers.Unmarshal([]byte(app.Movies), &movies)
+	err := helpers.Unmarshal([]byte(app.Movies), &movies)
 	log.Err(err)
-	return movies, err
+
+	return movies
 }
 
-func (app App) GetSteamSpy() (ss AppSteamSpy, err error) {
+func (app App) GetSteamSpy() (ss AppSteamSpy) {
 
-	err = helpers.Unmarshal([]byte(app.SteamSpy), &ss)
+	err := helpers.Unmarshal([]byte(app.SteamSpy), &ss)
 	log.Err(err)
-	return ss, err
+
+	return ss
 }
 
 func (app App) GetCoopTags() (string, error) {
@@ -659,22 +657,28 @@ func (app App) GetCoopTags() (string, error) {
 }
 
 // Template
-func (app App) GetAchievements() (achievements []AppAchievement, err error) {
+func (app App) GetAchievements() (achievements []AppAchievement) {
 
-	err = helpers.Unmarshal([]byte(app.Achievements), &achievements)
-	return achievements, err
+	err := helpers.Unmarshal([]byte(app.Achievements), &achievements)
+	log.Err(err)
+
+	return achievements
 }
 
-func (app App) GetStats() (stats []AppStat, err error) {
+func (app App) GetStats() (stats []AppStat) {
 
-	err = helpers.Unmarshal([]byte(app.Stats), &stats)
-	return stats, err
+	err := helpers.Unmarshal([]byte(app.Stats), &stats)
+	log.Err(err)
+
+	return stats
 }
 
-func (app App) GetDemoIDs() (demos []int, err error) {
+func (app App) GetDemoIDs() (demos []int) {
 
-	err = helpers.Unmarshal([]byte(app.DemoIDs), &demos)
-	return demos, err
+	err := helpers.Unmarshal([]byte(app.DemoIDs), &demos)
+	log.Err(err)
+
+	return demos
 }
 
 func (app App) GetDemos() (demos []App, err error) {
@@ -684,13 +688,7 @@ func (app App) GetDemos() (demos []App, err error) {
 	var item = memcache.MemcacheAppDemos(app.ID)
 
 	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &demos, func() (interface{}, error) {
-
-		ids, err := app.GetDemoIDs()
-		if err != nil {
-			return demos, err
-		}
-
-		return GetAppsByID(ids, []string{"id", "name"})
+		return GetAppsByID(app.GetDemoIDs(), []string{"id", "name"})
 	})
 
 	return demos, err
@@ -778,28 +776,29 @@ func (app App) GetPackageIDs() (packages []int) {
 	return packages
 }
 
-func (app App) GetReviews() (reviews AppReviewSummary, err error) {
+func (app App) GetReviews() (reviews AppReviewSummary) {
 
 	reviews = AppReviewSummary{} // Needed for marshalling into type
 
-	err = helpers.Unmarshal([]byte(app.Reviews), &reviews)
+	err := helpers.Unmarshal([]byte(app.Reviews), &reviews)
 	log.Err(err)
-	return reviews, err
+
+	return reviews
 }
 
-func (app App) GetGenreIDs() (genres []int, err error) {
+func (app App) GetGenreIDs() (genres []int) {
 
-	err = helpers.Unmarshal([]byte(app.Genres), &genres)
+	genres = []int{}
 
-	// Needed for marshalling into array
-	if len(genres) == 0 {
-		genres = []int{}
-	}
+	err := helpers.Unmarshal([]byte(app.Genres), &genres)
+	log.Err(err)
 
-	return genres, err
+	return genres
 }
 
 func (app App) GetRelatedIDs() (apps []int, err error) {
+
+	apps = []int{}
 
 	err = helpers.Unmarshal([]byte(app.RelatedAppIDs), &apps)
 	return apps, err
@@ -832,21 +831,13 @@ func (app App) GetRelatedApps() (apps []App, err error) {
 
 func (app App) GetGenres() (genres []Genre, err error) {
 
+	genres = []Genre{} // Needed for marshalling into type
+
 	var item = memcache.MemcacheAppGenres(app.ID)
 
 	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &genres, func() (interface{}, error) {
-
-		ids, err := app.GetGenreIDs()
-		if err != nil {
-			return genres, err
-		}
-
-		return GetGenresByID(ids, []string{"id", "name"})
+		return GetGenresByID(app.GetGenreIDs(), []string{"id", "name"})
 	})
-
-	if len(genres) == 0 {
-		genres = []Genre{} // Needed for marshalling into type
-	}
 
 	return genres, err
 }
@@ -912,16 +903,14 @@ func (app App) GetTags() (tags []Tag, err error) {
 	return tags, err
 }
 
-func (app App) GetDeveloperIDs() (developers []int, err error) {
+func (app App) GetDeveloperIDs() (developers []int) {
 
-	err = helpers.Unmarshal([]byte(app.Developers), &developers)
+	developers = []int{}
 
-	// Needed for marshalling into array
-	if len(developers) == 0 {
-		developers = []int{}
-	}
+	err := helpers.Unmarshal([]byte(app.Developers), &developers)
+	log.Err(err)
 
-	return developers, err
+	return developers
 }
 
 func (app App) GetDevelopers() (developers []Developer, err error) {
@@ -929,13 +918,7 @@ func (app App) GetDevelopers() (developers []Developer, err error) {
 	var item = memcache.MemcacheAppDevelopers(app.ID)
 
 	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &developers, func() (interface{}, error) {
-
-		ids, err := app.GetDeveloperIDs()
-		if err != nil {
-			return developers, err
-		}
-
-		return GetDevelopersByID(ids, []string{"id", "name"})
+		return GetDevelopersByID(app.GetDeveloperIDs(), []string{"id", "name"})
 	})
 
 	if len(developers) == 0 {
@@ -945,32 +928,25 @@ func (app App) GetDevelopers() (developers []Developer, err error) {
 	return developers, err
 }
 
-func (app App) GetPublisherIDs() (publishers []int, err error) {
+func (app App) GetPublisherIDs() (publishers []int) {
 
 	publishers = []int{} // Needed for marshalling into type
 
-	err = helpers.Unmarshal([]byte(app.Publishers), &publishers)
+	err := helpers.Unmarshal([]byte(app.Publishers), &publishers)
 	log.Err(err)
-	return publishers, err
+
+	return publishers
 }
 
 func (app App) GetPublishers() (publishers []Publisher, err error) {
 
+	publishers = []Publisher{} // Needed for marshalling into type
+
 	var item = memcache.MemcacheAppPublishers(app.ID)
 
 	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &publishers, func() (interface{}, error) {
-
-		ids, err := app.GetPublisherIDs()
-		if err != nil {
-			return publishers, err
-		}
-
-		return GetPublishersByID(ids, []string{"id", "name"})
+		return GetPublishersByID(app.GetPublisherIDs(), []string{"id", "name"})
 	})
-
-	if len(publishers) == 0 {
-		publishers = []Publisher{} // Needed for marshalling into type
-	}
 
 	return publishers, err
 }
@@ -1006,8 +982,8 @@ func (app App) GetName() string {
 
 func (app App) GetMetaImage() string {
 
-	ss, err := app.GetScreenshots()
-	if err != nil || len(ss) == 0 {
+	ss := app.GetScreenshots()
+	if len(ss) == 0 {
 		return app.GetHeaderImage()
 	}
 	return ss[0].PathFull

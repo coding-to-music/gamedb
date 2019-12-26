@@ -931,10 +931,7 @@ func updateAppNews(app *sql.App) error {
 		return err
 	}
 
-	ids, err := app.GetNewsIDs()
-	if err != nil {
-		return err
-	}
+	ids := app.GetNewsIDs()
 
 	var documents []mongo.Document
 	for _, v := range resp.Items {
@@ -1425,10 +1422,7 @@ func scrapeSimilar(app *sql.App) (err error) {
 
 func saveAppToInflux(app sql.App) (err error) {
 
-	reviews, err := app.GetReviews()
-	if err != nil {
-		return err
-	}
+	reviews := app.GetReviews()
 
 	fields := map[string]interface{}{
 		"reviews_score":    app.ReviewsScore,
@@ -1648,10 +1642,7 @@ func saveSales(app sql.App, newSales []mongo.Sale) (err error) {
 			newSales[k].SaleStart = time.Now()
 		}
 
-		prices, err := app.GetPrices()
-		if err == nil {
-			newSales[k].AppPrices = prices.Map()
-		}
+		newSales[k].AppPrices = app.GetPrices().Map()
 	}
 
 	return mongo.UpdateSales(newSales)

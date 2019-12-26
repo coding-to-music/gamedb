@@ -22,7 +22,7 @@ func (kv PICSKeyValues) Map() (m map[string]string) {
 	return m
 }
 
-func (kv PICSKeyValues) Formatted(productID int, keys map[string]PicsKey) (ret []KeyValue, err error) {
+func (kv PICSKeyValues) Formatted(productID int, keys map[string]PicsKey) (ret []KeyValue) {
 
 	for k, v := range kv {
 		ret = append(ret, KeyValue{
@@ -38,7 +38,7 @@ func (kv PICSKeyValues) Formatted(productID int, keys map[string]PicsKey) (ret [
 		return ret[i].Key < ret[j].Key
 	})
 
-	return ret, err
+	return ret
 }
 
 type KeyValue struct {

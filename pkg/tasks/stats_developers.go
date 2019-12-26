@@ -57,11 +57,7 @@ func (c Developers) work() (err error) {
 	newDevelopers := make(map[int]*statsRow)
 	for _, app := range appsWithDevelopers {
 
-		appDevelopers, err := app.GetDeveloperIDs()
-		if err != nil {
-			log.Err(err)
-			continue
-		}
+		appDevelopers := app.GetDeveloperIDs()
 
 		if len(appDevelopers) == 0 {
 			// appDevelopers = []string{""}

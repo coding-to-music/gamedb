@@ -57,11 +57,7 @@ func (c Genres) work() (err error) {
 	newGenres := make(map[int]*statsRow)
 	for _, app := range appsWithGenres {
 
-		appGenreIDs, err := app.GetGenreIDs()
-		if err != nil {
-			log.Err(err)
-			continue
-		}
+		appGenreIDs := app.GetGenreIDs()
 
 		if len(appGenreIDs) == 0 {
 			// appGenreIDs = []db.AppGenre{{ID: 0, Name: ""}}

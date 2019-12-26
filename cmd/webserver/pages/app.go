@@ -218,44 +218,20 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Functions that get called multiple times in the template
 	t.Price = app.GetPrice(helpers.GetProductCC(r))
-
 	t.Album = t.App.GetAlbum()
+	t.Achievements = t.App.GetAchievements()
+	t.NewsIDs = t.App.GetNewsIDs()
+	t.Stats = t.App.GetStats()
+	t.Prices = t.App.GetPrices()
+	t.Screenshots = t.App.GetScreenshots()
+	t.Movies = t.App.GetMovies()
+	t.Reviews = t.App.GetReviews()
+	t.SteamSpy = t.App.GetSteamSpy()
 
-	t.Achievements, err = t.App.GetAchievements()
-	log.Err(err, r)
-
-	t.NewsIDs, err = t.App.GetNewsIDs()
-	log.Err(err, r)
-
-	t.Stats, err = t.App.GetStats()
-	log.Err(err, r)
-
-	t.Prices, err = t.App.GetPrices()
-	log.Err(err, r)
-
-	t.Screenshots, err = t.App.GetScreenshots()
-	log.Err(err, r)
-
-	t.Movies, err = t.App.GetMovies()
-	log.Err(err, r)
-
-	t.Reviews, err = t.App.GetReviews()
-	log.Err(err, r)
-
-	t.SteamSpy, err = t.App.GetSteamSpy()
-	log.Err(err, r)
-
-	t.Common, err = t.App.GetCommon().Formatted(app.ID, pics.CommonKeys)
-	log.Err(err, r)
-
-	t.Extended, err = t.App.GetExtended().Formatted(app.ID, pics.ExtendedKeys)
-	log.Err(err, r)
-
-	t.Config, err = t.App.GetConfig().Formatted(app.ID, pics.ConfigKeys)
-	log.Err(err, r)
-
-	t.UFS, err = t.App.GetUFS().Formatted(app.ID, pics.UFSKeys)
-	log.Err(err, r)
+	t.Common = t.App.GetCommon().Formatted(app.ID, pics.CommonKeys)
+	t.Extended = t.App.GetExtended().Formatted(app.ID, pics.ExtendedKeys)
+	t.Config = t.App.GetConfig().Formatted(app.ID, pics.ConfigKeys)
+	t.UFS = t.App.GetUFS().Formatted(app.ID, pics.UFSKeys)
 
 	//
 	sort.Slice(t.Reviews.Reviews, func(i, j int) bool {
@@ -382,14 +358,7 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		newsIDs, err := app.GetNewsIDs()
-		if err != nil {
-			log.Err(err, r, idx)
-			return
-		}
-
-		total = len(newsIDs)
-
+		total = len(app.GetNewsIDs())
 	}(r)
 
 	// Wait
