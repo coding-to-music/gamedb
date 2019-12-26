@@ -173,13 +173,16 @@ func packageHandler(messages []*framework.Message) {
 
 		// Queue apps
 		// Commented out because queued too many apps
-		// appIDs, err := pack.GetAppIDs()
-		// if err != nil {
-		// 	log.Err(err)
-		// } else {
-		// 	err = ProduceToSteam(SteamPayload{AppIDs: appIDs}, true)
-		// 	log.Err(err)
-		// }
+		// Uncommented out to help with finding sales
+		appIDs, err := pack.GetAppIDs()
+		if err != nil {
+			log.Err(err)
+		} else {
+			for _, appID := range appIDs {
+				err = ProducePackage(PackageMessage{ID: appID})
+				log.Err(err)
+			}
+		}
 
 		//
 		message.Ack()
