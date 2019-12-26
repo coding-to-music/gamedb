@@ -53,7 +53,7 @@ func InfluxWrite(retention InfluxRetentionPolicy, point influx.Point) (resp *inf
 func InfluxWriteMany(retention InfluxRetentionPolicy, batch influx.BatchPoints) (resp *influx.Response, err error) {
 
 	if len(batch.Points) == 0 {
-		return nil, nil
+		return &influx.Response{}, nil
 	}
 
 	batch.Database = InfluxGameDB
