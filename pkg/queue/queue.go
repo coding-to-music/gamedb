@@ -223,10 +223,6 @@ func ProduceGroup(payload GroupMessage) (err error) {
 	return Channels[framework.Producer][QueueGroups].ProduceInterface(payload)
 }
 
-func produceGroupNew(id string) (err error) {
-	return Channels[framework.Producer][QueueGroupsNew].ProduceInterface(GroupNewMessage{ID: id})
-}
-
 func ProducePackage(payload PackageMessage) (err error) {
 
 	if !sql.IsValidPackageID(payload.ID) {

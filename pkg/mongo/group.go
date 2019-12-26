@@ -1,17 +1,12 @@
 package mongo
 
 import (
-	"errors"
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
 )
-
-var ErrInvalidGroupID = errors.New("invalid group id")
-
-// { name: 'text', url: 'text', headline: 'text' }, { weights: { name: 3, url: 2, headline: 1 }}
 
 type Group struct {
 	ID            string    `bson:"_id"` // Too big for int64 in Javascript (Mongo BD)

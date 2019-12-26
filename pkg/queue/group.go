@@ -50,11 +50,23 @@ func groupsHandler(messages []*framework.Message) {
 			continue
 		}
 
+		payload.ID, err = helpers.UpgradeGroupID(payload.ID)
+		if err != nil {
+			log.Err(err, message.Message.Body)
+			sendToFailQueue(message)
+			return
+		}
+
 		//
 		group, err := mongo.GetGroup(payload.ID)
 		if err == mongo.ErrNoDocuments {
-			group = mongo.Group{}
+
+			group = mongo.Group{
+				ID: payload.ID,
+			}
+
 		} else if err != nil {
+
 			log.Err(err, payload.ID)
 			sendToRetryQueue(message)
 			continue
@@ -66,19 +78,19 @@ func groupsHandler(messages []*framework.Message) {
 			continue
 		}
 
-		// Get `type` if missing
-		if group.Type == "" {
+		// Get type/URL
+		if group.Type == "" || group.URL == "" {
 
-			group.Type, err = getGroupType(payload.ID)
-			if err != nil {
+			group.Type, group.URL, err = getGroupType(payload.ID)
+			if err == helpers.ErrInvalidGroupID {
+
+				message.Ack()
+				continue
+
+			} else if err != nil {
+
 				steam.LogSteamError(err, payload.ID)
 				sendToRetryQueue(message)
-				continue
-			}
-
-			// Deleted groups can not redirect to get a type.
-			if group.Type == "" {
-				message.Ack()
 				continue
 			}
 		}
@@ -95,17 +107,6 @@ func groupsHandler(messages []*framework.Message) {
 		if !found {
 			log.Info("Group counts not found", payload.ID)
 			sendToRetryQueue(message)
-			continue
-		}
-
-		// Some pages dont contain the ID, so use the API
-		if group.ID == "" {
-
-			err = produceGroupNew(payload.ID)
-			if err != nil {
-				steam.LogSteamError(err, payload.ID)
-			}
-			message.Ack()
 			continue
 		}
 
@@ -229,12 +230,12 @@ func updateGameGroup(id string, group *mongo.Group) (foundNumbers bool, err erro
 	})
 
 	// URL
-	c.OnHTML("#eventsBlock a", func(e *colly.HTMLElement) {
-		if strings.HasSuffix(e.Attr("href"), "/events") {
-			var url = strings.TrimSuffix(e.Attr("href"), "/events")
-			group.URL = path.Base(url)
-		}
-	})
+	// c.OnHTML("#eventsBlock a", func(e *colly.HTMLElement) {
+	// 	if strings.HasSuffix(e.Attr("href"), "/events") {
+	// 		var url = strings.TrimSuffix(e.Attr("href"), "/events")
+	// 		group.URL = path.Base(url)
+	// 	}
+	// })
 
 	// Name
 	c.OnHTML("#mainContents > h1", func(e *colly.HTMLElement) {
@@ -364,9 +365,9 @@ func updateRegularGroup(id string, group *mongo.Group) (foundMembers bool, err e
 	})
 
 	// URL
-	c.OnHTML("form#join_group_form", func(e *colly.HTMLElement) {
-		group.URL = path.Base(e.Attr("action"))
-	})
+	// c.OnHTML("form#join_group_form", func(e *colly.HTMLElement) {
+	// 	group.URL = path.Base(e.Attr("action"))
+	// })
 
 	// Headline
 	c.OnHTML("div.group_content.group_summary h1", func(e *colly.HTMLElement) {
@@ -548,13 +549,20 @@ func sendGroupWebsocket(id string) (err error) {
 	return err
 }
 
-func getGroupType(id string) (string, error) {
+func getGroupType(id string) (groupType string, groupURL string, err error) {
 
 	groupScrapeRateLimit.Take()
 
-	resp, err := http.Get("https://steamcommunity.com/gid/" + id)
+	client := &http.Client{
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			return http.ErrUseLastResponse
+		},
+	}
+	req, err := http.NewRequest("GET", "https://steamcommunity.com/gid/"+id, nil)
+
+	resp, err := client.Do(req)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	defer func() {
@@ -562,13 +570,17 @@ func getGroupType(id string) (string, error) {
 		log.Err(err)
 	}()
 
-	u := resp.Request.URL.String()
-
-	if strings.Contains(u, "/games/") {
-		return helpers.GroupTypeGame, err
-	} else if strings.Contains(u, "/groups/") {
-		return helpers.GroupTypeGroup, err
+	if resp.StatusCode != 302 {
+		return "", "", helpers.ErrInvalidGroupID
 	}
 
-	return "", err
+	redirectURL := resp.Header.Get("Location")
+
+	if strings.Contains(redirectURL, "/games/") {
+		return helpers.GroupTypeGame, path.Base(redirectURL), nil
+	} else if strings.Contains(redirectURL, "/groups/") {
+		return helpers.GroupTypeGroup, path.Base(redirectURL), nil
+	}
+
+	return "", "", helpers.ErrInvalidGroupID
 }
