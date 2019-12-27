@@ -82,7 +82,7 @@ func Init(definitions []queue, consume bool) {
 
 	// Producers
 	producerConnection, err := framework.NewConnection(config.RabbitDSN(), framework.Producer, amqp.Config{Heartbeat: heartbeat, Properties: map[string]interface{}{
-		"connection_name": config.Config.Environment.Get() + "-" + string(framework.Producer),
+		"connection_name": config.Config.Environment.Get() + "-" + string(framework.Consumer) + "-" + config.GetSteamKeyTag(),
 	}})
 	if err != nil {
 		log.Info(err)
@@ -103,7 +103,7 @@ func Init(definitions []queue, consume bool) {
 	if consume {
 
 		consumerConnection, err := framework.NewConnection(config.RabbitDSN(), framework.Consumer, amqp.Config{Heartbeat: heartbeat, Properties: map[string]interface{}{
-			"connection_name": config.Config.Environment.Get() + "-" + string(framework.Consumer),
+			"connection_name": config.Config.Environment.Get() + "-" + string(framework.Consumer) + "-" + config.GetSteamKeyTag(),
 		}})
 		if err != nil {
 			log.Info(err)
