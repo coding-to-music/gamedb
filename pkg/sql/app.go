@@ -1194,7 +1194,11 @@ func SearchApp(s string, columns []string) (app App, err error) {
 		}
 	}
 
-	i, _ := strconv.Atoi(s)
+	i, err := strconv.Atoi(s)
+	if err != nil {
+		return app, err
+	}
+
 	if helpers.IsValidAppID(i) {
 		db = db.First(&app, "id = ?", s)
 	} else {
