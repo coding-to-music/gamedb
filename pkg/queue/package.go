@@ -176,6 +176,7 @@ func packageHandler(messages []*framework.Message) {
 		// Uncommented out to help with finding sales
 		for _, appID := range pack.GetAppIDs() {
 			err = ProducePackage(PackageMessage{ID: appID})
+			err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 			log.Err(err)
 		}
 
