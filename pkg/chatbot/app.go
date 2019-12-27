@@ -19,7 +19,7 @@ func (c CommandApp) Output(input string) (message discordgo.MessageSend, err err
 
 	matches := c.Regex().FindStringSubmatch(input)
 
-	app, err := sql.SearchApp(matches[2], nil)
+	app, err := sql.SearchApps(matches[2], nil)
 	if err != nil {
 		return message, err
 	}

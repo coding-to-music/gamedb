@@ -1180,7 +1180,7 @@ func GetApp(id int, columns []string) (app App, err error) {
 	return app, nil
 }
 
-func SearchApp(s string, columns []string) (app App, err error) {
+func SearchApps(s string, columns []string) (app App, err error) {
 
 	db, err := GetMySQLClient()
 	if err != nil {
