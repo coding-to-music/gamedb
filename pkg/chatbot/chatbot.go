@@ -13,7 +13,8 @@ var (
 	TypeGame   CommandType = "game"
 	TypeGames  CommandType = "games"
 	TypePlayer CommandType = "player"
-	TypeOther  CommandType = "Other"
+	TypeGroup  CommandType = "group"
+	TypeOther  CommandType = "other"
 )
 
 type Command interface {
@@ -30,6 +31,7 @@ var CommandRegister = []Command{
 	CommandAppsNew{},
 	CommandAppsPopular{},
 	CommandAppsTrending{},
+	CommandGroup{},
 	CommandPlayer{},
 	CommandPlayerApps{},
 	CommandPlayerLevel{},

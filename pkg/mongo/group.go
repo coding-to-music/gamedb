@@ -1,6 +1,7 @@
 package mongo
 
 import (
+	"regexp"
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -137,6 +138,38 @@ func GetGroupsByID(ids []string, projection bson.M) (groups []Group, err error) 
 func GetGroups(limit int64, offset int64, sort bson.D, filter bson.D, projection bson.M) (groups []Group, err error) {
 
 	return getGroups(offset, limit, sort, filter, projection)
+}
+
+func SearchGroups(s string) (group Group, err error) {
+
+	filter := bson.D{}
+
+	if helpers.IsValidGroupID(s) {
+
+		s, err = helpers.UpgradeGroupID(s)
+		if err != nil {
+			return group, err
+		}
+
+		filter = bson.D{{"_id", s}}
+
+	} else {
+
+		quoted := regexp.QuoteMeta(s)
+
+		filter = bson.D{{Key: "$or", Value: bson.A{
+			bson.M{"name": bson.M{"$regex": "^" + quoted + "$", "$options": "i"}},
+			bson.M{"abbreviation": bson.M{"$regex": "^" + quoted + "$", "$options": "i"}},
+			bson.M{"url": bson.M{"$regex": "^" + quoted + "$", "$options": "i"}},
+		}}}
+	}
+
+	err = FindOne(CollectionGroups, filter, bson.D{{"members", -1}}, nil, &group)
+	if group.ID == "" {
+		return group, ErrNoDocuments
+	}
+
+	return group, err
 }
 
 func getGroups(offset int64, limit int64, sort bson.D, filter bson.D, projection bson.M) (groups []Group, err error) {
