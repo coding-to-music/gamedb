@@ -81,7 +81,9 @@ func Init(definitions []queue, consume bool) {
 	}
 
 	// Producers
-	producerConnection, err := framework.NewConnection(config.RabbitDSN(), framework.Producer, amqp.Config{Heartbeat: heartbeat})
+	producerConnection, err := framework.NewConnection(config.RabbitDSN(), framework.Producer, amqp.Config{Heartbeat: heartbeat, Properties: map[string]interface{}{
+		"connection_name": config.Config.Environment.Get() + "-" + string(framework.Producer),
+	}})
 	if err != nil {
 		log.Info(err)
 		return
@@ -100,7 +102,9 @@ func Init(definitions []queue, consume bool) {
 	// Consumers
 	if consume {
 
-		consumerConnection, err := framework.NewConnection(config.RabbitDSN(), framework.Consumer, amqp.Config{Heartbeat: heartbeat})
+		consumerConnection, err := framework.NewConnection(config.RabbitDSN(), framework.Consumer, amqp.Config{Heartbeat: heartbeat, Properties: map[string]interface{}{
+			"connection_name": config.Config.Environment.Get() + "-" + string(framework.Consumer),
+		}})
 		if err != nil {
 			log.Info(err)
 			return
