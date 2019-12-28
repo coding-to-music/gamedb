@@ -1,3 +1,10 @@
-#experience-page tr[data-level] {
-    cursor: pointer;
+#experience-page {
+    table {
+
+        table-layout: fixed;
+
+        tr[data-level] {
+            cursor: pointer;
+        }
+    }
 }

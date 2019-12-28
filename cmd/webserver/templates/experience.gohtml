@@ -41,11 +41,12 @@
                         <table class="table table-hover table-striped mb-0" data-order='[[0, "asc"]]'>
                             <thead class="thead-light">
                             <tr>
-                                <th scope="col" style="width: 20%;">Level</th>
-                                <th scope="col" style="width: 20%;">Start XP</th>
-                                <th scope="col" style="width: 20%;">End XP</th>
-                                <th scope="col" style="width: 20%;">For Next Level</th>
-                                <th scope="col" style="width: 20%;">Friends Max</th>
+                                <th scope="col">Level</th>
+                                <th scope="col">Start XP</th>
+                                <th scope="col">End XP</th>
+                                <th scope="col">For Next Level</th>
+                                <th scope="col">Friends Max</th>
+                                <th scope="col" data-toggle="tooltip" data-placement="top" title="Game DB Players">Players</th>
                             </tr>
                             </thead>
                             {{ range $keyx, $valuex := $value }}
@@ -62,6 +63,7 @@
                                     <td>{{ comma .End }}</td>
                                     <td>{{ comma .Diff }}</td>
                                     <td>{{ comma .GetFriends }}</td>
+                                    <td>{{ comma .Players }}</td>
                                 </tr>
                             {{ end }}
                         </table>

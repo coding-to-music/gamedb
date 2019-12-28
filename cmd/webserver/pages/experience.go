@@ -9,6 +9,7 @@ import (
 	"github.com/Jleagle/session-go/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
 )
 
@@ -83,24 +84,35 @@ func experienceHandler(w http.ResponseWriter, r *http.Request) {
 
 func getExperienceRows() (chunked [][]level) {
 
+	levels, err := mongo.GetPlayerLevels()
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	var levelsMap = map[int]int{}
+	for _, v := range levels {
+		levelsMap[v.ID] = v.Count
+	}
+
 	//noinspection GoPreferNilSlice
 	var rows = []level{}
 	xp := 0
 
 	for i := 0; i <= totalRows+1; i++ {
 
-		rows = append(rows, level{
+		var row = level{
 			Level: i,
 			Start: xp,
-		})
+		}
+
+		if val, ok := levelsMap[i]; ok {
+			row.Players = val
+		}
+
+		rows = append(rows, row)
 
 		xp = xp + int((math.Ceil((float64(i)+1)/10))*100)
-	}
-
-	rows[0] = level{
-		Level: 0,
-		End:   99,
-		Diff:  100,
 	}
 
 	for i := 1; i <= totalRows; i++ {
@@ -137,11 +149,12 @@ type experienceTemplate struct {
 }
 
 type level struct {
-	Level int
-	Start int
-	End   int
-	Diff  int
-	Count int
+	Level   int
+	Start   int
+	End     int
+	Diff    int
+	Count   int
+	Players int
 }
 
 func (l level) GetFriends() int {
