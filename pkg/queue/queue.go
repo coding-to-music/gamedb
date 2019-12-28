@@ -64,6 +64,15 @@ var (
 		{name: QueuePlayers, consumer: nil},
 		{name: QueueChanges, consumer: nil},
 	}
+
+	QueueCronsDefinitions = []queue{
+		{name: QueueApps, consumer: nil},
+		{name: QueueAppPlayers, consumer: nil},
+		{name: QueueGroups, consumer: nil},
+		{name: QueuePlayers, consumer: nil},
+		{name: QueuePlayerRanks, consumer: nil},
+		{name: QueueSteam, consumer: nil},
+	}
 )
 
 type queue struct {

@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/tasks"
 	"github.com/robfig/cron/v3"
@@ -14,6 +15,9 @@ func main() {
 
 	config.SetVersion(version)
 	log.Initialise([]log.LogName{log.LogNameCrons})
+
+	// Load queue producers
+	queue.Init(queue.QueueCronsDefinitions, false)
 
 	// Get API key
 	err := sql.GetAPIKey("crons", true)
