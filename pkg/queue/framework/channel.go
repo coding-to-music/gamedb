@@ -127,8 +127,8 @@ func (channel *Channel) produceMessage(message *Message) error {
 	//
 	return channel.channel.Publish("", string(channel.Name), false, false, amqp.Publishing{
 		Headers:      message.Message.Headers,
-		DeliveryMode: amqp.Persistent,
-		ContentType:  "application/json",
+		DeliveryMode: message.Message.DeliveryMode,
+		ContentType:  message.Message.ContentType,
 		Body:         message.Message.Body,
 	})
 }
