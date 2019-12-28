@@ -1,7 +1,7 @@
 package memcache
 
 import (
-	"github.com/Jleagle/memcache-go/memcache"
+	"github.com/Jleagle/memcache-go"
 	"github.com/gamedb/gamedb/pkg/config"
 )
 

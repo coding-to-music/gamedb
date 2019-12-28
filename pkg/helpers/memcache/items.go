@@ -3,7 +3,7 @@ package memcache
 import (
 	"strconv"
 
-	"github.com/Jleagle/memcache-go/memcache"
+	"github.com/Jleagle/memcache-go"
 	"github.com/Jleagle/steam-go/steam"
 )
 

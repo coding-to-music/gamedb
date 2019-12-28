@@ -5,7 +5,7 @@ import (
 	"errors"
 
 	"cloud.google.com/go/pubsub"
-	"github.com/Jleagle/memcache-go/memcache"
+	"github.com/Jleagle/memcache-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	pubsubHelpers "github.com/gamedb/gamedb/pkg/helpers/pubsub"
 	"github.com/gamedb/gamedb/pkg/log"
