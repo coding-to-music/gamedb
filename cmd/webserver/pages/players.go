@@ -3,6 +3,7 @@ package pages
 import (
 	"html/template"
 	"net/http"
+	"regexp"
 	"sort"
 	"strconv"
 	"sync"
@@ -198,9 +199,12 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	search := query.getSearchString("search")
 	if len(search) >= 2 {
+
+		quoted := regexp.QuoteMeta(search)
+
 		filter = append(filter, bson.E{Key: "$or", Value: bson.A{
-			bson.M{"persona_name": bson.M{"$regex": search, "$options": "i"}},
-			bson.M{"vanity_url": bson.M{"$regex": search, "$options": "i"}},
+			bson.M{"persona_name": bson.M{"$regex": quoted, "$options": "i"}},
+			bson.M{"vanity_url": bson.M{"$regex": quoted, "$options": "i"}},
 		}})
 	}
 

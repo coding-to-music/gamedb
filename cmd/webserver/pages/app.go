@@ -3,6 +3,7 @@ package pages
 import (
 	"html/template"
 	"net/http"
+	"regexp"
 	"sort"
 	"strconv"
 	"sync"
@@ -410,9 +411,12 @@ func appItemsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(search) > 1 {
+
+		quoted := regexp.QuoteMeta(search)
+
 		filter = append(filter, bson.E{Key: "$or", Value: bson.A{
-			bson.M{"name": bson.M{"$regex": search, "$options": "i"}},
-			bson.M{"description": bson.M{"$regex": search, "$options": "i"}},
+			bson.M{"name": bson.M{"$regex": quoted, "$options": "i"}},
+			bson.M{"description": bson.M{"$regex": quoted, "$options": "i"}},
 		}})
 	}
 

@@ -2,6 +2,7 @@ package pages
 
 import (
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 	"sync"
@@ -163,9 +164,12 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	search := helpers.RegexNonAlphaNumericSpace.ReplaceAllString(query.getSearchString("search"), "")
 	if search != "" {
+
+		quoted := regexp.QuoteMeta(search)
+
 		filter = append(filter, bson.E{Key: "$or", Value: bson.A{
-			bson.M{"app_name": bson.M{"$regex": search, "$options": "i"}},
-			bson.M{"offer_name": bson.M{"$regex": search, "$options": "i"}},
+			bson.M{"app_name": bson.M{"$regex": quoted, "$options": "i"}},
+			bson.M{"offer_name": bson.M{"$regex": quoted, "$options": "i"}},
 		}})
 	}
 
