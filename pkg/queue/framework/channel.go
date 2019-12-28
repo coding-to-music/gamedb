@@ -133,20 +133,6 @@ func (channel *Channel) produceMessage(message *Message) error {
 	})
 }
 
-func (channel *Channel) onDisconnect(amqpErr *amqp.Error) {
-
-	channel.isOpen = false
-
-	log.Warning("Rabbit channel closed ("+channel.Name+")", amqpErr, log.OptionNoStack)
-
-	err := channel.connect()
-	if err != nil {
-		log.Err("Failed to reconnect channel", err, log.OptionNoStack)
-	}
-
-	time.Sleep(time.Second * 20)
-}
-
 func (channel *Channel) Produce(message interface{}) error {
 
 	b, err := json.Marshal(message)
@@ -165,6 +151,20 @@ func (channel *Channel) Produce(message interface{}) error {
 		ContentType:  "application/json",
 		Body:         b,
 	})
+}
+
+func (channel *Channel) onDisconnect(amqpErr *amqp.Error) {
+
+	channel.isOpen = false
+
+	log.Warning("Rabbit channel closed ("+channel.Name+")", amqpErr, log.OptionNoStack)
+
+	err := channel.connect()
+	if err != nil {
+		log.Err("Failed to reconnect channel", err, log.OptionNoStack)
+	}
+
+	time.Sleep(time.Second * 20)
 }
 
 func (channel Channel) prepareHeaders(headers amqp.Table) amqp.Table {
