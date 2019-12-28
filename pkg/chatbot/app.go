@@ -44,6 +44,10 @@ func (c CommandApp) Output(input string) (message discordgo.MessageSend, err err
 				Name:  "Review Score",
 				Value: app.GetReviewScore(),
 			},
+			{
+				Name:  "Followers",
+				Value: app.GetFollowers(),
+			},
 		},
 	}
 
