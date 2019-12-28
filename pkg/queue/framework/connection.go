@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/cenkalti/backoff/v3"
+	"github.com/cenkalti/backoff/v4"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/streadway/amqp"
 )

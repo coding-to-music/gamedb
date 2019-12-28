@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/cenkalti/backoff/v3"
+	"github.com/cenkalti/backoff/v4"
 	"github.com/gamedb/gamedb/pkg/config"
 	githubHelper "github.com/gamedb/gamedb/pkg/helpers/github"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"

@@ -21,15 +21,16 @@ require (
 	github.com/PuerkitoBio/goquery v1.5.0 // indirect
 	github.com/ahmdrz/goinsta/v2 v2.4.5-0.20191021103459-79702a8f3eda
 	github.com/andybalholm/cascadia v1.1.0 // indirect
-	github.com/antchfx/htmlquery v1.2.0 // indirect
-	github.com/antchfx/xmlquery v1.2.1 // indirect
+	github.com/antchfx/htmlquery v1.2.1 // indirect
+	github.com/antchfx/xmlquery v1.2.2 // indirect
 	github.com/antchfx/xpath v1.1.2 // indirect
 	github.com/badoux/checkmail v0.0.0-20181210160741-9661bd69e9ad
 	github.com/beefsack/go-rate v0.0.0-20180408011153-efa7637bb9b6 // indirect
 	github.com/buger/jsonparser v0.0.0-20191204142016-1a29609e0929 // indirect
-	github.com/bwmarrin/discordgo v0.20.1
+	github.com/bwmarrin/discordgo v0.20.2
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
-	github.com/cenkalti/backoff/v3 v3.1.1
+	github.com/cenkalti/backoff/v3 v3.2.1 // indirect
+	github.com/cenkalti/backoff/v4 v4.0.0
 	github.com/derekstavis/go-qs v0.0.0-20180720192143-9eef69e6c4e7
 	github.com/dghubble/go-twitter v0.0.0-20190719072343-39e5462e111f
 	github.com/dghubble/oauth1 v0.6.0
@@ -45,7 +46,7 @@ require (
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/gocolly/colly v1.2.0
-	github.com/golang/groupcache v0.0.0-20191027212112-611e8accdfc9 // indirect
+	github.com/golang/groupcache v0.0.0-20191227052852-215e87163ea7 // indirect
 	github.com/golang/protobuf v1.3.2
 	github.com/golang/snappy v0.0.1
 	github.com/google/go-github/v28 v28.1.1
@@ -65,7 +66,7 @@ require (
 	github.com/nicklaw5/helix v0.5.4
 	github.com/nlopes/slack v0.6.0
 	github.com/olekukonko/tablewriter v0.0.4 // indirect
-	github.com/oschwald/maxminddb-golang v1.5.0
+	github.com/oschwald/maxminddb-golang v1.6.0
 	github.com/pariz/gountries v0.0.0-20191029140926-233bc78cf5b5
 	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
 	github.com/powerslacker/ratelimit v0.0.0-20190505003410-df2fcffc8e0d
@@ -89,16 +90,16 @@ require (
 	go.mongodb.org/mongo-driver v1.2.0
 	go.opencensus.io v0.22.2 // indirect
 	go.uber.org/atomic v1.4.0 // indirect
-	golang.org/x/crypto v0.0.0-20191219195013-becbf705a915
+	golang.org/x/crypto v0.0.0-20191227163750-53104e6ec876
+	golang.org/x/exp v0.0.0-20191227195350-da58074b4299 // indirect
 	golang.org/x/net v0.0.0-20191209160850-c0dbc17a3553 // indirect
 	golang.org/x/oauth2 v0.0.0-20191202225959-858c2ad4c8b6
-	golang.org/x/sys v0.0.0-20191220220014-0732a990476f // indirect
 	golang.org/x/text v0.3.2
 	golang.org/x/time v0.0.0-20191024005414-555d28b269f0 // indirect
-	golang.org/x/tools v0.0.0-20191220234730-f13409bbebaf // indirect
+	golang.org/x/tools v0.0.0-20191227053925-7b8e75db28f4 // indirect
 	google.golang.org/api v0.15.0 // indirect
 	google.golang.org/appengine v1.6.5 // indirect
-	google.golang.org/genproto v0.0.0-20191220175831-5c49e3ecc1c1 // indirect
+	google.golang.org/genproto v0.0.0-20191223191004-3caeed10a8bf // indirect
 	google.golang.org/grpc v1.26.0
 	gopkg.in/djherbis/atime.v1 v1.0.0 // indirect
 	gopkg.in/djherbis/stream.v1 v1.2.0 // indirect

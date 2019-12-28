@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/influxql"
-	"github.com/cenkalti/backoff/v3"
+	"github.com/cenkalti/backoff/v4"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/helpers/steam"

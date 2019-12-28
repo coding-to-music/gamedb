@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/cenkalti/backoff/v3"
+	"github.com/cenkalti/backoff/v4"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/websockets"

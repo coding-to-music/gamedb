@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/cenkalti/backoff/v3"
+	"github.com/cenkalti/backoff/v4"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers/discord"
 	"github.com/gamedb/gamedb/pkg/log"
