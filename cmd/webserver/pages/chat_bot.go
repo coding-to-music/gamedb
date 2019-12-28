@@ -66,6 +66,8 @@ func chatBotHandler(w http.ResponseWriter, r *http.Request) {
 		return t.Commands[i].Example() < t.Commands[j].Example()
 	})
 
+	log.Info(strconv.Itoa(t.Guilds) + " guilds")
+
 	returnTemplate(w, r, "chat_bot", t)
 }
 
