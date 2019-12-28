@@ -24,18 +24,21 @@ module.exports = {
         path: path.resolve(__dirname, 'cmd/webserver/assets/dist'),
         publicPath: '/assets/dist/',
     },
-    devtool: "source-map",
+    // devtool: "source-map",
     optimization: {
         minimizer: [
             new OptimizeCssAssetsPlugin({
                 cssProcessorOptions: {
-                    map: { // Creates a CSS source map
-                        inline: false
+                    cssProcessorOptions: {
+                        map: {
+                            inline: false,
+                            annotation: false
+                        }
                     }
                 }
             }),
             new UglifyJSPlugin({
-                sourceMap: true,
+                sourceMap: false,
                 parallel: true,
                 cache: true,
             }),
@@ -53,20 +56,20 @@ module.exports = {
                     {
                         loader: MiniCssExtractPlugin.loader,
                         options: {
-                            sourceMap: true,
+                            sourceMap: false,
                         },
                     },
                     {
                         loader: "css-loader",
                         options: {
-                            sourceMap: true,
+                            sourceMap: false,
                         },
                     },
                     {
                         loader: "sass-loader",
                         options: {
                             // name: 'css/[name].blocks.css',
-                            sourceMap: true,
+                            sourceMap: false,
                             // minimize: true,
                             implementation: require("node-sass"),
                             sassOptions: {
@@ -99,7 +102,7 @@ module.exports = {
         ),
         new ConcatPlugin({
             uglify: true,
-            sourceMap: true,
+            sourceMap: false,
             outputPath: './',
             fileName: 'main.js',
             filesToConcat: [
