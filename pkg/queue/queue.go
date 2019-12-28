@@ -173,7 +173,7 @@ func ProduceApp(payload AppMessage) (err error) {
 		}
 	}
 
-	err = Channels[framework.Producer][QueueApps].Produce(payload)
+	err = produce(QueueApps, payload)
 	if err == nil {
 		err = mc.Set(&item)
 	}
@@ -182,7 +182,7 @@ func ProduceApp(payload AppMessage) (err error) {
 }
 
 func ProduceAppRegular(payload AppMessage) (err error) {
-	return Channels[framework.Producer][QueueAppsRegular].Produce(payload)
+	return produce(QueueAppsRegular, payload)
 }
 
 func ProduceAppPlayers(payload AppPlayerMessage) (err error) {
@@ -191,7 +191,7 @@ func ProduceAppPlayers(payload AppPlayerMessage) (err error) {
 		return nil
 	}
 
-	return Channels[framework.Producer][QueueAppPlayers].Produce(payload)
+	return produce(QueueAppPlayers, payload)
 }
 
 func ProduceBundle(id int) (err error) {
@@ -204,7 +204,7 @@ func ProduceBundle(id int) (err error) {
 		return memcache.ErrInQueue
 	}
 
-	err = Channels[framework.Producer][QueueBundles].Produce(BundleMessage{ID: id})
+	err = produce(QueueBundles, BundleMessage{ID: id})
 	if err == nil {
 		err = mc.Set(&item)
 	}
@@ -213,7 +213,7 @@ func ProduceBundle(id int) (err error) {
 }
 
 func ProduceChanges(payload ChangesMessage) (err error) {
-	return Channels[framework.Producer][QueueChanges].Produce(payload)
+	return produce(QueueChanges, payload)
 }
 
 func ProduceGroup(payload GroupMessage) (err error) {
@@ -231,7 +231,7 @@ func ProduceGroup(payload GroupMessage) (err error) {
 		return err
 	}
 
-	return Channels[framework.Producer][QueueGroups].Produce(payload)
+	return produce(QueueGroups, payload)
 }
 
 func ProducePackage(payload PackageMessage) (err error) {
@@ -250,7 +250,7 @@ func ProducePackage(payload PackageMessage) (err error) {
 		}
 	}
 
-	err = Channels[framework.Producer][QueuePackages].Produce(payload)
+	err = produce(QueuePackages, payload)
 	if err == nil {
 		err = mc.Set(&item)
 	}
@@ -259,7 +259,7 @@ func ProducePackage(payload PackageMessage) (err error) {
 }
 
 func ProducePackageRegular(payload PackageMessage) (err error) {
-	return Channels[framework.Producer][QueuePackagesRegular].Produce(payload)
+	return produce(QueuePackagesRegular, payload)
 }
 
 var ErrIsBot = errors.New("bots can't update players")
@@ -282,7 +282,7 @@ func ProducePlayer(payload PlayerMessage) (err error) {
 		return memcache.ErrInQueue
 	}
 
-	err = Channels[framework.Producer][QueuePlayers].Produce(payload)
+	err = produce(QueuePlayers, payload)
 	if err == nil {
 		err = mc.Set(&item)
 	}
@@ -291,11 +291,11 @@ func ProducePlayer(payload PlayerMessage) (err error) {
 }
 
 func ProducePlayerRegular(id int64) (err error) {
-	return Channels[framework.Producer][QueuePlayersRegular].Produce(PlayerMessage{ID: id})
+	return produce(QueuePlayersRegular, PlayerMessage{ID: id})
 }
 
 func ProducePlayerRank(payload PlayerRanksMessage) (err error) {
-	return Channels[framework.Producer][QueuePlayerRanks].Produce(payload)
+	return produce(QueuePlayerRanks, payload)
 }
 
 func ProduceSteam(payload SteamMessage) (err error) {
@@ -304,9 +304,18 @@ func ProduceSteam(payload SteamMessage) (err error) {
 		return nil
 	}
 
-	return Channels[framework.Producer][QueueSteam].Produce(payload)
+	return produce(QueueSteam, payload)
 }
 
 func ProduceTest(id int) (err error) {
-	return Channels[framework.Producer][QueueTest].Produce(TestMessage{ID: id})
+	return produce(QueueTest, TestMessage{ID: id})
+}
+
+func produce(q framework.QueueName, payload interface{}) error {
+
+	if val, ok := Channels[framework.Producer][q]; ok {
+		return val.Produce(payload)
+	}
+
+	return errors.New("channel does not exist")
 }
