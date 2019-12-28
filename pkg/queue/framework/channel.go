@@ -117,7 +117,7 @@ func (channel *Channel) connect() error {
 	return backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Warning("Connecting to channel: ", err) })
 }
 
-func (channel *Channel) Produce(message *Message) error {
+func (channel *Channel) produceMessage(message *Message) error {
 
 	// Headers
 	if channel.updateHeaders {
@@ -147,7 +147,7 @@ func (channel *Channel) onDisconnect(amqpErr *amqp.Error) {
 	time.Sleep(time.Second * 20)
 }
 
-func (channel *Channel) ProduceInterface(message interface{}) error {
+func (channel *Channel) Produce(message interface{}) error {
 
 	b, err := json.Marshal(message)
 	if err != nil {
