@@ -166,7 +166,7 @@ if ($('#stats-page').length > 0) {
                 let dataArray = [];
 
                 data.forEach(function (value, index, array) {
-                    categories.push(data[index]['_id']);
+                    categories.push(data[index]['id']);
                     dataArray.push(value['count']);
                 });
 

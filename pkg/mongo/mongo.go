@@ -387,6 +387,6 @@ type index struct {
 }
 
 type count struct {
-	ID    int `json:"_id"`
+	ID    int `json:"id" bson:"_id"`
 	Count int `json:"count"`
 }
