@@ -4,9 +4,9 @@ import (
 	"net/http"
 
 	"github.com/Jleagle/session-go/session"
+	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/helpers/discord"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"golang.org/x/oauth2"
@@ -17,15 +17,13 @@ type discordConnection struct {
 
 func (d discordConnection) getID(r *http.Request, token *oauth2.Token) interface{} {
 
-	client, err := discord.GetDiscordBot(token.AccessToken, false)
+	discord, err := discordgo.New("Bearer " + token.AccessToken)
 	if err != nil {
-		log.Err(err)
-		err = session.SetFlash(r, helpers.SessionBad, "Invalid token")
 		log.Err(err)
 		return nil
 	}
 
-	discordUser, err := client.User("@me")
+	discordUser, err := discord.User("@me")
 	if err != nil {
 		log.Err(err)
 		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1003)")

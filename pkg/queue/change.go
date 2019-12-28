@@ -5,9 +5,9 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/helpers/discord"
 	pubsubHelpers "github.com/gamedb/gamedb/pkg/helpers/pubsub"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -15,6 +15,12 @@ import (
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/websockets"
 )
+
+var discordClient *discordgo.Session
+
+func SetDiscordClient(c *discordgo.Session) {
+	discordClient = c
+}
 
 type ChangesMessage struct {
 	AppIDs     map[uint32]uint32 `json:"app_ids"`
@@ -174,11 +180,6 @@ func sendChangeToDiscord(changes []*mongo.Change, appMap map[int]string, package
 
 	if config.IsProd() {
 
-		client, err := discord.GetDiscordBot(config.Config.DiscordChangesBotToken.Get(), true)
-		if err != nil {
-			return err
-		}
-
 		for _, change := range changes {
 
 			var apps []string
@@ -192,7 +193,7 @@ func sendChangeToDiscord(changes []*mongo.Change, appMap map[int]string, package
 			if len(apps) > 0 {
 
 				var msg = "Change " + strconv.Itoa(change.ID) + ": " + strings.Join(apps, ", ")
-				_, err := client.ChannelMessageSend("574563721045606431", msg)
+				_, err := discordClient.ChannelMessageSend("574563721045606431", msg)
 				log.Err(err)
 			}
 		}

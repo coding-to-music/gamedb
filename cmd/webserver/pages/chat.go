@@ -9,7 +9,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/cenkalti/backoff/v4"
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/helpers/discord"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/go-chi/chi"
@@ -21,21 +20,23 @@ const (
 	generalChannelID = "407493777058693121"
 )
 
-func ChatRouter() http.Handler {
-	r := chi.NewRouter()
-	r.Get("/", chatHandler)
-	r.Get("/{id}", chatHandler)
-	r.Get("/{id}/chat.json", chatAjaxHandler)
-	return r
-}
+var discordRelayBotSession *discordgo.Session
 
-func getDiscord() (*discordgo.Session, error) {
+func init() {
 
-	return discord.GetDiscordBot(config.Config.DiscordRelayBotToken.Get(), true, func(s *discordgo.Session, m *discordgo.MessageCreate) {
+	var err error
 
-		if m.Author.Bot {
-			return
-		}
+	discordRelayBotSession, err = discordgo.New("Bot " + config.Config.DiscordRelayBotToken.Get())
+	if err != nil {
+		log.Err(err)
+		panic(err)
+	}
+
+	discordRelayBotSession.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
+
+		// if m.Author.Bot {
+		// 	return
+		// }
 
 		page := websockets.GetPage(websockets.PageChat)
 		page.Send(websockets.ChatPayload{
@@ -48,6 +49,21 @@ func getDiscord() (*discordgo.Session, error) {
 			I:            0,
 		})
 	})
+
+	// Open connection
+	err = discordRelayBotSession.Open()
+	if err != nil {
+		log.Err(err)
+		panic(err)
+	}
+}
+
+func ChatRouter() http.Handler {
+	r := chi.NewRouter()
+	r.Get("/", chatHandler)
+	r.Get("/{id}", chatHandler)
+	r.Get("/{id}/chat.json", chatAjaxHandler)
+	return r
 }
 
 func chatHandler(w http.ResponseWriter, r *http.Request) {
@@ -78,16 +94,7 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 		var channelsResponse []*discordgo.Channel
 
 		operation := func() (err error) {
-
-			client, err := getDiscord()
-			if err != nil {
-				if strings.Contains(err.Error(), "Authentication failed") {
-					err = backoff.Permanent(err)
-				}
-				return err
-			}
-
-			channelsResponse, err = client.GuildChannels(guildID)
+			channelsResponse, err = discordRelayBotSession.GuildChannels(guildID)
 			return err
 		}
 
@@ -122,16 +129,7 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 		var membersResponse []*discordgo.Member
 
 		operation := func() (err error) {
-
-			client, err := getDiscord()
-			if err != nil {
-				if strings.Contains(err.Error(), "Authentication failed") {
-					err = backoff.Permanent(err)
-				}
-				return err
-			}
-
-			membersResponse, err = client.GuildMembers(guildID, "", 1000)
+			membersResponse, err = discordRelayBotSession.GuildMembers(guildID, "", 1000)
 			return err
 		}
 
@@ -179,16 +177,7 @@ func chatAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var messagesResponse []*discordgo.Message
 
 	operation := func() (err error) {
-
-		client, err := getDiscord()
-		if err != nil {
-			if strings.Contains(err.Error(), "Authentication failed") {
-				err = backoff.Permanent(err)
-			}
-			return err
-		}
-
-		messagesResponse, err = client.ChannelMessages(id, 50, "", "", "")
+		messagesResponse, err = discordRelayBotSession.ChannelMessages(id, 50, "", "", "")
 		return err
 	}
 

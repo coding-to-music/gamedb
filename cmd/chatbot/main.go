@@ -9,7 +9,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/chatbot"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/helpers/discord"
 	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
@@ -18,7 +17,10 @@ import (
 
 const debugAuthorID = "145456943912189952"
 
-var version string
+var (
+	version        string
+	discordSession *discordgo.Session
+)
 
 func main() {
 
@@ -41,7 +43,13 @@ func main() {
 	ops := limiter.ExpirableOptions{DefaultExpirationTTL: time.Second}
 	lmt := limiter.New(&ops).SetMax(1).SetBurst(2)
 
-	handler := func(s *discordgo.Session, m *discordgo.MessageCreate) {
+	//
+	discordSession, err = discordgo.New("Bot " + config.Config.DiscordChatBotToken.Get())
+	if err != nil {
+		panic("Can't create Discord session")
+	}
+
+	discordSession.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 		// Don't reply to bots
 		if m.Author.Bot {
@@ -49,8 +57,8 @@ func main() {
 		}
 
 		// Rate limit
-		err := tollbooth.LimitByKeys(lmt, []string{m.Author.ID})
-		if err != nil {
+		httpErr := tollbooth.LimitByKeys(lmt, []string{m.Author.ID})
+		if httpErr != nil {
 			log.Warning(m.Author.ID + " over rate limit")
 			return
 		}
@@ -63,6 +71,9 @@ func main() {
 			if command.Regex().MatchString(msg) {
 
 				saveToInflux(m, command)
+
+				err := discordSession.ChannelTyping(m.ChannelID)
+				log.Err(err)
 
 				chanID := m.ChannelID
 
@@ -102,12 +113,11 @@ func main() {
 				return
 			}
 		}
-	}
+	})
 
-	_, err = discord.GetDiscordBot(config.Config.DiscordChatBotToken.Get(), true, handler)
+	err = discordSession.Open()
 	if err != nil {
-		log.Err(err)
-		return
+		panic("Can't connect to Discord session")
 	}
 
 	helpers.KeepAlive()

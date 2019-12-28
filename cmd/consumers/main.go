@@ -5,6 +5,7 @@ import (
 	_ "net/http/pprof"
 	"time"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
@@ -32,6 +33,19 @@ func main() {
 	// Load pubsub
 	log.Info("Listening to PubSub for memcache")
 	go memcache.ListenToPubSubMemcache()
+
+	// Load Discord
+	discord, err := discordgo.New("Bot " + config.Config.DiscordChangesBotToken.Get())
+	if err != nil {
+		panic(err)
+	}
+
+	err = discord.Open()
+	if err != nil {
+		panic(err)
+	}
+
+	queue.SetDiscordClient(discord)
 
 	// Load PPROF
 	if config.IsLocal() {

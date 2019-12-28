@@ -3,10 +3,11 @@ package pages
 import (
 	"net/http"
 	"sort"
+	"strconv"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/chatbot"
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/helpers/discord"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/go-chi/chi"
 )
@@ -14,6 +15,19 @@ import (
 const (
 	chatBotClientID = "567257603185311745"
 )
+
+var discordChatBotSession *discordgo.Session
+
+func init() {
+
+	var err error
+
+	discordChatBotSession, err = discordgo.New("Bot " + config.Config.DiscordChatBotToken.Get())
+	if err != nil {
+		log.Err(err)
+		panic(err)
+	}
+}
 
 func ChatBotRouter() http.Handler {
 
@@ -29,21 +43,15 @@ func chatBotHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, "Chat", "The Game DB community.")
 	t.Commands = chatbot.CommandRegister
 
-	// Get amount of guilds
+	// Get amount of guilds, todo, cache
 	func() {
-
-		client, err := discord.GetDiscordBot(config.Config.DiscordChatBotToken.Get(), true)
-		if err != nil {
-			log.Warning(err)
-			return
-		}
 
 		after := ""
 		more := true
 
 		for more {
 
-			guilds, err := client.UserGuilds(100, "", after)
+			guilds, err := discordChatBotSession.UserGuilds(100, "", after)
 			if err != nil {
 				log.Warning(err)
 				return
