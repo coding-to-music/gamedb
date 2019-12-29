@@ -10,11 +10,10 @@ import (
 type CommandType string
 
 var (
-	TypeGame   CommandType = "game"
-	TypeGames  CommandType = "games"
-	TypePlayer CommandType = "player"
-	TypeGroup  CommandType = "group"
-	TypeOther  CommandType = "other"
+	TypeGame   CommandType = "Game"
+	TypePlayer CommandType = "Player"
+	TypeGroup  CommandType = "Group"
+	TypeOther  CommandType = "Other"
 )
 
 type Command interface {

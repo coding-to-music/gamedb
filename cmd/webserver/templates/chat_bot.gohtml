@@ -16,26 +16,32 @@
         <div class="card">
             <div class="card-body">
 
-                <div class="table-responsive">
-                    <table class="table table-hover table-striped table-datatable mb-3" data-ordering="false" id="bin-logs">
-                        <thead class="thead-light">
-                        <tr>
-                            <th scope="col">Example</th>
-                            <th scope="col">Regex</th>
-                            <th scope="col">Description</th>
-                        </tr>
-                        </thead>
-                        <tbody class="tags-list">
-                        {{ range $key, $value := .Commands }}
+                {{ range $key, $value := .Commands }}
+
+                    <h5>{{ (index $value 0).Type }} Commands </h5>
+
+                    <div class="table-responsive mb-4">
+                        <table class="table table-hover table-striped table-datatable mb-3" data-ordering="false" id="bin-logs">
+                            <thead class="thead-light">
                             <tr>
-                                <td>{{ .Example }}</td>
-                                <td>{{ .Regex }}</td>
-                                <td>{{ .Description }}</td>
+                                <th scope="col">Example</th>
+                                <th scope="col">Regex</th>
+                                <th scope="col">Description</th>
                             </tr>
-                        {{ end }}
-                        </tbody>
-                    </table>
-                </div>
+                            </thead>
+                            <tbody class="tags-list">
+                            {{ range $value }}
+                                <tr>
+                                    <td class="nowrap" style="width: 25%;">{{ .Example }}</td>
+                                    <td class="nowrap" style="width: 25%;">{{ .Regex }}</td>
+                                    <td>{{ .Description }}</td>
+                                </tr>
+                            {{ end }}
+                            </tbody>
+                        </table>
+                    </div>
+
+                {{ end }}
 
             </div>
         </div>

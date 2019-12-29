@@ -65,5 +65,5 @@ func (CommandAppsNew) Description() string {
 }
 
 func (CommandAppsNew) Type() CommandType {
-	return TypeGames
+	return TypeGame
 }

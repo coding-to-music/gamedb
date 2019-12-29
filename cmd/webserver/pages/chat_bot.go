@@ -41,7 +41,7 @@ func chatBotHandler(w http.ResponseWriter, r *http.Request) {
 	// Template
 	t := chatBotTemplate{}
 	t.fill(w, r, "Chat", "The Game DB community.")
-	t.Commands = chatbot.CommandRegister
+	t.Commands = t.CommandsGrouped()
 
 	// Get amount of guilds, todo, cache
 	func() {
@@ -67,24 +67,51 @@ func chatBotHandler(w http.ResponseWriter, r *http.Request) {
 
 			t.Guilds = t.Guilds + len(guilds)
 		}
+
+		log.Info(strconv.Itoa(t.Guilds) + " guilds")
 	}()
-
-	//
-	sort.Slice(t.Commands, func(i, j int) bool {
-		return t.Commands[i].Example() < t.Commands[j].Example()
-	})
-
-	log.Info(strconv.Itoa(t.Guilds) + " guilds")
 
 	returnTemplate(w, r, "chat_bot", t)
 }
 
 type chatBotTemplate struct {
 	GlobalTemplate
-	Commands []chatbot.Command
+	Commands [][]chatbot.Command
 	Guilds   int
 }
 
 func (cbt chatBotTemplate) AddBotLink() string {
 	return "https://discordapp.com/oauth2/authorize?client_id=" + chatBotClientID + "&scope=bot&permissions=0"
+}
+
+func (cbt chatBotTemplate) CommandsGrouped() (ret [][]chatbot.Command) {
+
+	var groupedMap = map[chatbot.CommandType][]chatbot.Command{}
+	for _, v := range chatbot.CommandRegister {
+
+		if _, ok := groupedMap[v.Type()]; ok {
+
+			groupedMap[v.Type()] = append(groupedMap[v.Type()], v)
+
+		} else {
+
+			groupedMap[v.Type()] = []chatbot.Command{v}
+
+		}
+	}
+
+	for _, v := range groupedMap {
+
+		sort.Slice(v, func(i, j int) bool {
+			return v[i].Example() < v[j].Example()
+		})
+
+		ret = append(ret, v)
+	}
+
+	sort.Slice(ret, func(i, j int) bool {
+		return ret[i][0].Type() < ret[j][0].Type()
+	})
+
+	return ret
 }

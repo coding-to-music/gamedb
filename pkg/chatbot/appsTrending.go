@@ -72,5 +72,5 @@ func (CommandAppsTrending) Description() string {
 }
 
 func (CommandAppsTrending) Type() CommandType {
-	return TypeGames
+	return TypeGame
 }
