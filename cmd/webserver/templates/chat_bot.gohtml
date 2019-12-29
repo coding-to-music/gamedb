@@ -4,11 +4,14 @@
     <div class="container" id="chat-bot-page">
 
         <div class="jumbotron">
-            <a href="{{ .AddBotLink }}" target="_blank">
+            <a href="{{ .Link }}" target="_blank">
                 <img src="/assets/img/discord.png" class="float-right" alt="Discord">
             </a>
             <h1><i class="fas fa-robot"></i> Chat Bot <small>(BETA)</small></h1>
             <p class="lead">Add Game DB to your Discord server by clicking the image to the right.</p>
+            {{ if gt .Guilds 19 }}
+                <small>Used on {{ .Guilds }} servers so far.</small>
+            {{ end }}
         </div>
 
         {{ template "_flashes" . }}

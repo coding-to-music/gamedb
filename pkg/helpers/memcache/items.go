@@ -78,4 +78,5 @@ var (
 	MemcacheUniquePlayerCountryCodes = memcache.Item{Key: "unique-player-country-codes", Expiration: 60 * 60 * 24 * 7}
 	MemcacheUniquePlayerStateCodes   = func(c string) memcache.Item { return memcache.Item{Key: "unique-player-state-codes-" + c, Expiration: 60 * 60 * 24 * 7} }
 	MemcacheUniqueSaleTypes          = memcache.Item{Key: "unique-sale-types", Expiration: 60 * 60 * 1}
+	MemcacheChatBotGuilds            = memcache.Item{Key: "chat-bot-guilds", Expiration: 60 * 60 * 24}
 )
