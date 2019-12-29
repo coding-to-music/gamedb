@@ -35,8 +35,9 @@ func main() {
 		return
 	}
 
-	// Start consumers for send to
-	queue.Init(queue.QueueDefinitions, false)
+	// Start queue producers to send to.
+	// In a go routine so if Rabbit is not working, the webserver still starts
+	go queue.Init(queue.QueueDefinitions, false)
 
 	//
 	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
