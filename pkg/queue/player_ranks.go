@@ -4,6 +4,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -32,12 +33,18 @@ func playerRanksHandler(messages []*framework.Message) {
 		if err != nil {
 			log.Err(err, message.Message.Body)
 			sendToFailQueue(message)
-			return
+			continue
 		}
 
 		if payload.ObjectKey == "" || payload.SortColumn == "" {
 			sendToFailQueue(message)
-			return
+			continue
+		}
+
+		// todo, remove when we have more memory
+		if config.IsProd() && payload.Country == nil && payload.State == nil {
+			sendToRetryQueue(message)
+			continue
 		}
 
 		// Create filter
@@ -58,7 +65,7 @@ func playerRanksHandler(messages []*framework.Message) {
 		if err != nil {
 			log.Err(err)
 			sendToRetryQueue(message)
-			return
+			continue
 		}
 
 		// Build bulk update
