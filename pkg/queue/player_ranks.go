@@ -85,15 +85,25 @@ func playerRanksHandler(messages []*framework.Message) {
 		for _, chunk := range chunks {
 
 			err = mongo.BulkUpdatePlayers(chunk)
-			if val, ok := err.(mongodb.BulkWriteException); ok {
-				for _, err2 := range val.WriteErrors {
-					log.Err(err2, err2.Request)
+			if err != nil {
+
+				if val, ok := err.(mongodb.BulkWriteException); ok {
+					for _, err2 := range val.WriteErrors {
+						log.Err(err2, err2.Request)
+					}
+				} else {
+					log.Err(err)
 				}
-			} else {
-				log.Err(err)
+
+				sendToRetryQueue(message)
+				break
 			}
 
 			time.Sleep(time.Second)
+		}
+
+		if err != nil {
+			continue
 		}
 
 		// Build bulk influx update
