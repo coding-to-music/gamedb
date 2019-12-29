@@ -25,6 +25,12 @@ var version string
 
 func main() {
 
+	//
+	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
+		log.Critical("GOOGLE_APPLICATION_CREDENTIALS not found")
+		os.Exit(1)
+	}
+
 	config.SetVersion(version)
 	log.Initialise([]log.LogName{log.LogNameWebserver})
 
@@ -38,12 +44,6 @@ func main() {
 	// Start queue producers to send to.
 	// In a go routine so if Rabbit is not working, the webserver still starts
 	go queue.Init(queue.QueueDefinitions, false)
-
-	//
-	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
-		log.Critical("GOOGLE_APPLICATION_CREDENTIALS not found")
-		os.Exit(1)
-	}
 
 	go websockets.ListenToPubSub()
 	go memcache.ListenToPubSubMemcache()
