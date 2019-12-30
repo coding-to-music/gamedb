@@ -77,7 +77,7 @@ func packageHandler(messages []*framework.Message) {
 		// Skip if updated in last day, unless its from PICS
 		if !config.IsLocal() {
 			if pack.UpdatedAt.After(time.Now().Add(time.Hour * 24 * -1)) {
-				if pack.ChangeNumber >= payload.ChangeNumber && payload.ChangeNumber > 0 {
+				if pack.ChangeNumber >= payload.ChangeNumber {
 					log.Info("Skipping package, updated in last day")
 					message.Ack()
 					return
