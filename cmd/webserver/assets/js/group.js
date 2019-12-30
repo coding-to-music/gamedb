@@ -12,6 +12,21 @@ if ($groupPage.length > 0) {
     });
 
     loadGroupChart();
+    loadGroupPlayers();
+}
+
+function loadGroupPlayers() {
+
+    // $.ajax({
+    //     type: "GET",
+    //     url: '/groups/' + $groupPage.attr('data-group-id') + '/table.json',
+    //     dataType: 'json',
+    //     success: function (data, textStatus, jqXHR) {
+    //
+    //
+    //
+    //     },
+    // });
 }
 
 function loadGroupChart($page = null) {

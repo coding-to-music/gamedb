@@ -4,6 +4,7 @@ import (
 	"html/template"
 	"net/http"
 	"strings"
+	"sync"
 
 	"github.com/Jleagle/influxql"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -14,6 +15,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func GroupRouter() http.Handler {
@@ -21,6 +23,7 @@ func GroupRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", groupHandler)
 	r.Get("/members.json", groupAjaxHandler)
+	r.Get("/table.json", groupTableAjaxHandler)
 	r.Get("/{slug}", groupHandler)
 	return r
 }
@@ -104,6 +107,77 @@ type groupTemplate struct {
 	GlobalTemplate
 	Group   mongo.Group
 	Summary template.HTML
+}
+
+func groupTableAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		return
+	}
+
+	if !helpers.IsValidGroupID(id) {
+		return
+	}
+
+	//
+	query := DataTablesQuery{}
+	err := query.fillFromURL(r.URL.Query())
+	if err != nil {
+		log.Err(err, r)
+		return
+	}
+
+	query.limit(r)
+
+	//
+	var wg sync.WaitGroup
+
+	// Get players
+	var playerGroups []mongo.PlayerGroup
+	wg.Add(1)
+	go func(r *http.Request) {
+
+		defer wg.Done()
+
+		var err error
+		playerGroups, err = mongo.GetGroupPlayers(id, query.getOffset64())
+		if err != nil {
+			log.Err(err, r)
+			return
+		}
+	}(r)
+
+	// Get total
+	var total int64
+	wg.Add(1)
+	go func(r *http.Request) {
+
+		defer wg.Done()
+
+		var err error
+		total, err = mongo.CountDocuments(mongo.CollectionGroups, bson.D{{"group_id", id}}, 60*60*6)
+		log.Err(err, r)
+	}(r)
+
+	wg.Wait()
+
+	response := DataTablesAjaxResponse{}
+	response.RecordsTotal = total
+	response.RecordsFiltered = total
+	response.Draw = query.Draw
+	response.limit(r)
+
+	for _, playerGroup := range playerGroups {
+		response.AddRow([]interface{}{
+			playerGroup.PlayerID,          // 0
+			playerGroup.GetPlayerName(),   // 1
+			playerGroup.GetPlayerLink(),   // 2
+			playerGroup.GetPlayerAvatar(), // 3
+		})
+	}
+
+	response.output(w, r)
 }
 
 func groupAjaxHandler(w http.ResponseWriter, r *http.Request) {

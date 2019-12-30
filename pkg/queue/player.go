@@ -726,6 +726,8 @@ func updatePlayerGroups(player *mongo.Player, payload PlayerMessage) error {
 	for _, v := range newGroupsSlice {
 		newPlayerGroupSlice = append(newPlayerGroupSlice, mongo.PlayerGroup{
 			PlayerID:     player.ID,
+			PlayerName:   player.PersonaName,
+			PlayerAvatar: player.Avatar,
 			GroupID:      v.ID,
 			GroupName:    v.Name,
 			GroupIcon:    v.Icon,

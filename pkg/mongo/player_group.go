@@ -12,6 +12,8 @@ import (
 
 type PlayerGroup struct {
 	PlayerID     int64  `bson:"player_id"`
+	PlayerName   string `bson:"player_name"`
+	PlayerAvatar string `bson:"player_avatar"`
 	GroupID      string `bson:"group_id"`
 	GroupName    string `bson:"group_name"`
 	GroupIcon    string `bson:"group_icon"`
@@ -25,6 +27,8 @@ func (group PlayerGroup) BSON() bson.D {
 	return bson.D{
 		{"_id", group.getKey()},
 		{"player_id", group.PlayerID},
+		{"player_name", group.PlayerName},
+		{"player_avatar", group.PlayerAvatar},
 		{"group_id", group.GroupID},
 		{"group_name", group.GroupName},
 		{"group_icon", group.GroupIcon},
@@ -44,6 +48,18 @@ func (group PlayerGroup) GetPath() string {
 
 func (group PlayerGroup) GetType() string {
 	return helpers.GetGroupType(group.GroupType)
+}
+
+func (group PlayerGroup) GetPlayerName() string {
+	return helpers.GetPlayerName(group.PlayerID, group.PlayerName)
+}
+
+func (group PlayerGroup) GetPlayerLink() string {
+	return helpers.GetPlayerPath(group.PlayerID, group.PlayerName)
+}
+
+func (group PlayerGroup) GetPlayerAvatar() string {
+	return helpers.GetPlayerAvatar(group.PlayerAvatar)
 }
 
 func (group PlayerGroup) IsOfficial() bool {
@@ -119,9 +135,21 @@ func GetPlayerGroups(playerID int64, offset int64, limit int64, sort bson.D) (gr
 
 	var filter = bson.D{{"player_id", playerID}}
 
+	return getPlayerGroups(offset, limit, filter, sort)
+}
+
+func GetGroupPlayers(groupID string, offset int64) (players []PlayerGroup, err error) {
+
+	var filter = bson.D{{"group_id", groupID}}
+
+	return getPlayerGroups(offset, 100, filter, nil)
+}
+
+func getPlayerGroups(offset int64, limit int64, filter bson.D, sort bson.D) (players []PlayerGroup, err error) {
+
 	cur, ctx, err := Find(CollectionPlayerGroups, offset, limit, sort, filter, nil, nil)
 	if err != nil {
-		return groups, err
+		return players, err
 	}
 
 	defer func(cur *mongo.Cursor) {
@@ -136,9 +164,9 @@ func GetPlayerGroups(playerID int64, offset int64, limit int64, sort bson.D) (gr
 		if err != nil {
 			// log.Err(err, group.getKey(), cur.Current.String())
 		} else {
-			groups = append(groups, group)
+			players = append(players, group)
 		}
 	}
 
-	return groups, cur.Err()
+	return players, cur.Err()
 }
