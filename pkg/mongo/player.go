@@ -293,16 +293,19 @@ func (player Player) NeedsUpdate(updateType UpdateType) bool {
 	case PlayerUpdateAdmin:
 		return true
 	case PlayerUpdateAuto:
-		if player.UpdatedAt.Add(time.Hour * 24 * 7).Before(time.Now()) { // 1 week
+		// On page requests
+		if player.UpdatedAt.Add(time.Hour * 24).Before(time.Now()) {
 			return true
 		}
 	case PlayerUpdateManual:
+		// Non donators
 		if player.Donated == 0 {
-			if player.UpdatedAt.Add(time.Hour * 24).Before(time.Now()) { // 1 day
+			if player.UpdatedAt.Add(time.Hour * 6).Before(time.Now()) {
 				return true
 			}
 		} else {
-			if player.UpdatedAt.Add(time.Hour * 1).Before(time.Now()) { // 1 hour
+			// Donators
+			if player.UpdatedAt.Add(time.Minute * 10).Before(time.Now()) {
 				return true
 			}
 		}
