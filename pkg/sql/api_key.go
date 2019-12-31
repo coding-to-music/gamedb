@@ -48,7 +48,7 @@ func GetAPIKey(tag string, getUnusedKey bool) (err error) {
 		// todo, this probably needs work
 		// https://stackoverflow.com/questions/7698211/prevent-two-calls-to-the-same-script-from-selecting-the-same-mysql-row
 		lock := Lock{}
-		db = db.New().Raw("SELECT GET_LOCK('" + sqlLockName + "', 10) as `success`").Scan(&lock)
+		db = db.New().Raw("SELECT GET_LOCK('" + sqlLockName + "', 10) as `success`")
 		if db.Error != nil {
 			return db.Error
 		}
