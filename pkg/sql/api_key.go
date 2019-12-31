@@ -67,7 +67,7 @@ func GetAPIKey(tag string, getUnusedKey bool) (err error) {
 		// Get key
 		db = db.New()
 		if getUnusedKey {
-			db = db.Where("expires < ?", time.Now()).Where("use = ?", 1)
+			db = db.Where("expires < ?", time.Now()).Where("`use` = ?", 1)
 		}
 
 		var row = APIKey{}
