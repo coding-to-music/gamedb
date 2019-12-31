@@ -40,10 +40,11 @@ func main() {
 		panic(err)
 	}
 
-	err = discord.Open()
-	if err != nil {
-		panic(err)
-	}
+	// Not used right now
+	// err = discord.Open()
+	// if err != nil {
+	// 	panic(err)
+	// }
 
 	queue.SetDiscordClient(discord)
 
