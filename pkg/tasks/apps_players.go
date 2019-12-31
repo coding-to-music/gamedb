@@ -6,6 +6,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/queue"
+	"github.com/gamedb/gamedb/pkg/queue/framework"
 	"github.com/gamedb/gamedb/pkg/sql"
 )
 
@@ -27,6 +28,17 @@ func (c AppPlayers) Cron() string {
 
 func (c AppPlayers) work() (err error) {
 
+	// Check queue size
+	q, err := queue.Channels[framework.Producer][queue.QueueAppPlayers].Inspect()
+	if err != nil {
+		return err
+	}
+
+	if q.Messages > 1000 {
+		return nil
+	}
+
+	// Add apps to queue
 	db, err := sql.GetMySQLClient()
 	if err != nil {
 		return err

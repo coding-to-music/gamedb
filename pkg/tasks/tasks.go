@@ -14,6 +14,7 @@ import (
 const ( //                        min hour
 	CronTimeSetBadgeCache       = "*/10 *"
 	CronTimeSteamClientPlayers  = "*/10 *"
+	CronTimeAppPlayers          = "*/10 *"
 	CronTimeClearUpcomingCache  = "0 0"
 	CronTimePlayerRanks         = "0 0"
 	CronTimeGenres              = "0 3"
@@ -22,7 +23,6 @@ const ( //                        min hour
 	CronTimeDevelopers          = "0 6"
 	CronTimeCategories          = "0 7"
 	CronTimeInstagram           = "0 12"
-	CronTimeAppPlayers          = "1 */6"
 	CronTimeAutoPlayerRefreshes = "1 */6"
 )
 
