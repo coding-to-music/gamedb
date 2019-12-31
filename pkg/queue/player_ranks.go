@@ -4,7 +4,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -13,6 +12,11 @@ import (
 	influx "github.com/influxdata/influxdb1-client"
 	"go.mongodb.org/mongo-driver/bson"
 	mongodb "go.mongodb.org/mongo-driver/mongo"
+)
+
+const (
+	batchSize   = 20000
+	addToInflux = 1000
 )
 
 type PlayerRanksMessage struct {
@@ -41,12 +45,6 @@ func playerRanksHandler(messages []*framework.Message) {
 			continue
 		}
 
-		// todo, remove when we have more memory
-		if config.IsProd() && payload.Country == nil && payload.State == nil {
-			sendToRetryQueue(message)
-			continue
-		}
-
 		// Create filter
 		var filter = bson.D{}
 		if payload.Continent != nil {
@@ -60,33 +58,71 @@ func playerRanksHandler(messages []*framework.Message) {
 		}
 		filter = append(filter, bson.E{Key: payload.SortColumn, Value: bson.M{"$exists": true, "$gt": 0}}) // Put last to help indexes
 
-		// Get players
-		players, err := mongo.GetPlayers(0, 0, bson.D{{payload.SortColumn, -1}}, filter, bson.M{"_id": 1})
-		if err != nil {
-			log.Err(err)
-			sendToRetryQueue(message)
-			continue
-		}
+		// Batched to use less memory consumer memory
+		var offset int64
+		var players []mongo.Player
 
-		// Build bulk update
-		var writes []mongodb.WriteModel
-		for position, player := range players {
+		for {
 
-			write := mongodb.NewUpdateOneModel()
-			write.SetFilter(bson.M{"_id": player.ID})
-			write.SetUpdate(bson.M{"$set": bson.M{"ranks." + payload.ObjectKey: position + 1}})
-			write.SetUpsert(true)
+			err := func() error {
 
-			writes = append(writes, write)
-		}
+				// Get players
+				players, err = mongo.GetPlayers(offset, batchSize, bson.D{{payload.SortColumn, -1}}, filter, bson.M{"_id": 1})
+				if err != nil {
+					return err
+				}
 
-		// Update player ranks
-		chunks := mongo.ChunkWriteModels(writes, 100000)
-		for _, chunk := range chunks {
+				// Update players
+				var writes []mongodb.WriteModel
+				for position, player := range players {
 
-			err = mongo.BulkUpdatePlayers(chunk)
+					write := mongodb.NewUpdateOneModel()
+					write.SetFilter(bson.M{"_id": player.ID})
+					write.SetUpdate(bson.M{"$set": bson.M{"ranks." + payload.ObjectKey: offset + int64(position) + 1}})
+					write.SetUpsert(true)
+
+					writes = append(writes, write)
+				}
+
+				err = mongo.BulkUpdatePlayers(writes)
+				if err != nil {
+					return err
+				}
+
+				// Add player ranks to Influx
+				var points []influx.Point
+				if len(payload.ObjectKey) == 1 { // Global
+					for position, player := range players {
+						if position < addToInflux {
+							if val, ok := mongo.PlayerRankFieldsInflux[mongo.RankMetric(payload.ObjectKey)]; ok {
+								points = append(points, influx.Point{
+									Measurement: string(influxHelper.InfluxMeasurementAPICalls),
+									Tags: map[string]string{
+										"player_id": strconv.FormatInt(player.ID, 10),
+									},
+									Fields: map[string]interface{}{
+										val: offset + int64(position) + 1,
+									},
+									Time:      time.Now(),
+									Precision: "s",
+								})
+							}
+						}
+					}
+				}
+
+				_, err = influxHelper.InfluxWriteMany(influxHelper.InfluxRetentionPolicyAllTime, influx.BatchPoints{
+					Points:          points,
+					Database:        influxHelper.InfluxGameDB,
+					RetentionPolicy: influxHelper.InfluxRetentionPolicyAllTime.String(),
+					Precision:       "s",
+				})
+
+				return err
+			}()
+
+			// Error, add to retry queue and bail
 			if err != nil {
-
 				if val, ok := err.(mongodb.BulkWriteException); ok {
 					for _, err2 := range val.WriteErrors {
 						log.Err(err2, err2.Request)
@@ -99,46 +135,12 @@ func playerRanksHandler(messages []*framework.Message) {
 				break
 			}
 
-			time.Sleep(time.Second)
-		}
-
-		if err != nil {
-			continue
-		}
-
-		// Build bulk influx update
-		var points []influx.Point
-		if len(payload.ObjectKey) == 1 {
-			for position, player := range players {
-				if position < 1000 {
-					if val, ok := mongo.PlayerRankFieldsInflux[mongo.RankMetric(payload.ObjectKey)]; ok {
-						points = append(points, influx.Point{
-							Measurement: string(influxHelper.InfluxMeasurementAPICalls),
-							Tags: map[string]string{
-								"player_id": strconv.FormatInt(player.ID, 10),
-							},
-							Fields: map[string]interface{}{
-								val: position + 1,
-							},
-							Time:      time.Now(),
-							Precision: "s",
-						})
-					}
-				}
+			// Last batch, bail
+			if len(players) < batchSize {
+				break
 			}
-		}
 
-		// Save to Influx
-		_, err = influxHelper.InfluxWriteMany(influxHelper.InfluxRetentionPolicyAllTime, influx.BatchPoints{
-			Points:          points,
-			Database:        influxHelper.InfluxGameDB,
-			RetentionPolicy: influxHelper.InfluxRetentionPolicyAllTime.String(),
-			Precision:       "s",
-		})
-		if err != nil {
-			log.Err(err)
-			sendToRetryQueue(message)
-			return
+			offset += batchSize
 		}
 
 		message.Ack()
