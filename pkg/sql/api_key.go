@@ -25,6 +25,10 @@ type APIKey struct {
 	Notes   string    `gorm:"-"`
 }
 
+type Lock struct {
+	Success bool `gorm:"not null;column:success"`
+}
+
 func GetAPIKey(tag string, getUnusedKey bool) (err error) {
 
 	tag = config.Config.Environment.Get() + "-" + tag
@@ -41,10 +45,15 @@ func GetAPIKey(tag string, getUnusedKey bool) (err error) {
 			return err
 		}
 
+		// todo, this probably needs work
 		// https://stackoverflow.com/questions/7698211/prevent-two-calls-to-the-same-script-from-selecting-the-same-mysql-row
-		db = db.New().Raw("SELECT GET_LOCK('" + sqlLockName + "', 10)")
+		lock := Lock{}
+		db = db.New().Raw("SELECT GET_LOCK('" + sqlLockName + "', 10) as `success`").Scan(&lock)
 		if db.Error != nil {
 			return db.Error
+		}
+		if lock.Success == false {
+			// return errors.New("lock taken")
 		}
 
 		defer func() {
