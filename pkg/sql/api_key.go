@@ -19,6 +19,7 @@ const (
 
 type APIKey struct {
 	Key     string    `gorm:"not null;column:key;PRIMARY_KEY"`
+	Use     bool      `gorm:"not null;column:use;"`
 	Expires time.Time `gorm:"not null;column:expires;type:datetime"`
 	Owner   string    `gorm:"not null;column:owner"`
 	Notes   string    `gorm:"-"`
@@ -57,7 +58,7 @@ func GetAPIKey(tag string, getUnusedKey bool) (err error) {
 		// Get key
 		db = db.New()
 		if getUnusedKey {
-			db = db.Where("expires < ?", time.Now())
+			db = db.Where("expires < ?", time.Now()).Where("use = ?", 1)
 		}
 
 		var row = APIKey{}
