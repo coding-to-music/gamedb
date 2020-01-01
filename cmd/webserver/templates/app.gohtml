@@ -226,14 +226,23 @@
                                 {{ if ne .App.TwitchURL "" }}
                                     <tr>
                                         <th scope="row">Twitch</th>
-                                        <td>
-                                            <a href="https://www.twitch.tv/directory/game/{{ pathEscape .App.TwitchURL }}" target="_blank" style="color: #6441A4;">
-                                                <i class="fab fa-twitch"></i>
-                                                {{ .App.TwitchURL }}
+                                        <td class="img">
+                                            <a href="https://www.twitch.tv/directory/game/{{ pathEscape .App.TwitchURL }}" target="_blank">
+                                                <img src="https://assets.help.twitch.tv/Glitch_Purple_RGB.png" alt="Twitch">
+                                                https://twitch.tv/directory/game/{{ .App.TwitchURL }}
                                             </a>
                                         </td>
                                     </tr>
                                 {{ end }}
+                                <tr>
+                                    <th scope="row">Steam Prices</th>
+                                    <td class="img">
+                                        <a href="https://www.steamprices.com/uk/app/{{ .App.ID }}/{{ slug .App.GetName }}" target="_blank">
+                                            <img src="https://pbs.twimg.com/profile_images/598791990084575232/KonQ1bk8_400x400.png" alt="Steam Prices">
+                                            https://steamprices.com/uk/app/{{ .App.ID }}/{{ slug .App.GetName }}
+                                        </a>
+                                    </td>
+                                </tr>
                             </table>
                         </div>
                     </div>

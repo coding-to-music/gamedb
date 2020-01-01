@@ -21,6 +21,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gosimple/slug"
 	"github.com/jinzhu/gorm"
 	"github.com/tdewolff/minify/v2"
 	minhtml "github.com/tdewolff/minify/v2/html"
@@ -208,6 +209,7 @@ func getTemplateFuncMap() map[string]interface{} {
 		"pathEscape":   func(text string) string { return url.PathEscape(text) },
 		"round":        func(i int) string { return helpers.ShortHandNumber(int64(i)) },
 		"round64":      func(i int64) string { return helpers.ShortHandNumber(i) },
+		"slug":         func(s string) string { return slug.Make(s) },
 	}
 }
 

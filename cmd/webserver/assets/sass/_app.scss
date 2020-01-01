@@ -9,7 +9,7 @@
     }
 
     #details {
-        img {
+        > img {
             width: 100%;
             @include media-breakpoint-up(md) {
                 width: auto;
@@ -17,6 +17,10 @@
                 right: 1.25rem;
                 height: 150px;
             }
+        }
+
+        table img {
+
         }
     }
 
