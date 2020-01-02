@@ -92,10 +92,12 @@ func (item *AppItem) SetTags(tagsString string) {
 			tag = strings.TrimSpace(tag)
 			if tag != "" {
 				tagKeyVal := strings.Split(tag, ":")
-				if len(tagKeyVal) == 2 {
+				if len(tagKeyVal) == 1 {
+					item.Tags = append(item.Tags, []string{tagKeyVal[0], ""})
+				} else if len(tagKeyVal) == 2 {
 					item.Tags = append(item.Tags, []string{tagKeyVal[0], tagKeyVal[1]})
 				} else {
-					log.Warning(item.AppID, "weird app item tagsString")
+					log.Warning(item.AppID, "Weird tags")
 				}
 			}
 		}
