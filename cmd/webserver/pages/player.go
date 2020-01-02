@@ -223,13 +223,16 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	t := playerTemplate{}
 
 	// Add to Rabbit
-	if player.NeedsUpdate(mongo.PlayerUpdateAuto) && !helpers.IsBot(r.UserAgent()) {
+	if player.NeedsUpdate(mongo.PlayerUpdateAuto) {
 
 		ua := r.UserAgent()
 		err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID, UserAgent: &ua})
-		err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
-		if err != nil {
+		err = helpers.IgnoreErrors(err, queue.ErrIsBot)
+		if err == memcache.ErrInQueue {
+			t.addToast(Toast{Title: "Update", Message: "Player is already queued for an update"})
+		} else if err != nil {
 			log.Err(err, r)
+			t.addToast(Toast{Title: "Update", Message: "Something went wrong"})
 		} else {
 			log.Info(log.LogNameTriggerUpdate, r, r.UserAgent())
 			t.addToast(Toast{Title: "Update", Message: "Player has been queued for an update"})
@@ -961,6 +964,7 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			message = "Updating player!"
 		} else if err == mongo.ErrNoDocuments {
 			message = "Looking for new player!"
+			player = mongo.Player{ID: idx}
 		} else {
 			log.Err(err, r)
 			return "Error looking for player", false, err
