@@ -149,7 +149,7 @@
 
                     <li class="nav-item dropdown {{if .IsMorePage }}active{{end}}">
                         <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">More</a>
-                        <div class="dropdown-menu" id="header-settings">
+                        <div class="dropdown-menu">
 
                             <a class="dropdown-item" href="/packages">Packages</a>
                             <a class="dropdown-item" href="/bundles">Bundles</a>
@@ -195,7 +195,7 @@
 
                             <li class="nav-item dropdown {{if .IsMorePage }}active{{end}}">
                                 <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">{{ if .PlayerName }}{{ .PlayerName }}{{ else }}Account{{ end }}</a>
-                                <div class="dropdown-menu" id="header-settings">
+                                <div class="dropdown-menu">
                                     {{ if .PlayerName }}
                                         <a class="dropdown-item" href="/players/{{ .PlayerID }}"><i class="fas fa-user fa-fw"></i> Profile</a>
                                     {{ end }}
@@ -224,7 +224,7 @@
                         <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
                             <img src="/assets/img/flags/{{ .UserProductCC.GetFlag }}.png" alt="{{ .UserProductCC.Name }}">
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right" id="header-settings">
+                        <div class="dropdown-menu dropdown-menu-right">
                             {{ range $key, $value:= .ProductCCs }}
                                 {{ if .Enabled }}
                                     <a class="dropdown-item" href="/currency/{{ .ProductCode }}">
