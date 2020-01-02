@@ -16,7 +16,7 @@
         <div class="card">
             <div class="card-body">
 
-                <div class="mb-4 row">
+                <div class="row">
                     <div class="form-group col-sm-4">
                         <label for="from">Starting Level</label>
                         <input type="number" class="form-control" id="from" placeholder="From" value="{{ .PlayerLevel }}">
@@ -38,7 +38,7 @@
                 {{/* XP Table */}}
                 <div class="table-responsive">
                     {{ range $key, $value := .Chunks }}
-                        <table class="table table-hover table-striped mb-0" data-order='[[0, "asc"]]'>
+                        <table class="table table-hover table-striped mb-0 mt-4" data-order='[[0, "asc"]]'>
                             <thead class="thead-light">
                             <tr>
                                 <th scope="col">Level</th>
