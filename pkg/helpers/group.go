@@ -19,9 +19,9 @@ const (
 
 func IsValidGroupID(id string) bool {
 
-	// if len(id) != 18 {
-	// 	return false
-	// }
+	if strings.TrimSpace(id) == "" {
+		return false
+	}
 
 	if !RegexNumbers.MatchString(id) {
 		return false
@@ -60,6 +60,10 @@ func GetGroupIcon(icon string) string {
 var ErrInvalidGroupID = errors.New("invalid group id")
 
 func UpgradeGroupID(id string) (string, error) {
+
+	if !IsValidGroupID(id) {
+		return id, ErrInvalidGroupID
+	}
 
 	if len(id) > 18 {
 
