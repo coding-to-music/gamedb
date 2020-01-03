@@ -783,9 +783,16 @@ func updateAppDetails(app *sql.App) (err error) {
 
 					if _, ok := assetMap["library_hero"]; ok {
 
-						bg := "https://steamcdn-a.akamaihd.net/steam/fpo_apps/" + strconv.Itoa(app.ID) + "/library_hero.jpg"
-						if helpers.GetResponseCode(bg) == 200 {
-							app.Background = bg
+						urls := []string{
+							"https://steamcdn-a.akamaihd.net/steam/app/" + strconv.Itoa(app.ID) + "/library_hero.jpg",
+							"https://steamcdn-a.akamaihd.net/steam/fpo_apps/" + strconv.Itoa(app.ID) + "/library_hero.jpg",
+						}
+
+						for _, u := range urls {
+							if helpers.GetResponseCode(u) == 200 {
+								app.Background = u
+								break
+							}
 						}
 					}
 				}
