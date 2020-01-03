@@ -446,6 +446,12 @@ func updateAppPICS(app *sql.App, message *framework.Message, payload AppMessage)
 						app.Name = name
 					}
 				}
+				if vv.Key == "type" {
+					name := strings.TrimSpace(vv.Value)
+					if name != "" {
+						app.Type = strings.ToLower(name) // Has priority over store API
+					}
+				}
 
 				common[vv.Key] = vv.String()
 			}
@@ -792,7 +798,11 @@ func updateAppDetails(app *sql.App) (err error) {
 				app.Name = strings.TrimSpace(response.Data.Name)
 			}
 
-			app.Type = strings.ToLower(response.Data.Type)
+			// Getting type from PICS has priority
+			if app.Type == "" {
+				app.Type = strings.ToLower(response.Data.Type)
+			}
+
 			app.IsFree = response.Data.IsFree
 			app.ShortDescription = response.Data.ShortDescription
 			app.MetacriticScore = response.Data.Metacritic.Score
