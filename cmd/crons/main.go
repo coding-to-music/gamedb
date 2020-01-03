@@ -20,7 +20,7 @@ func main() {
 	queue.Init(queue.QueueCronsDefinitions, false)
 
 	// Get API key
-	err := sql.GetAPIKey("crons", true)
+	err := sql.GetAPIKey("crons")
 	if err != nil {
 		log.Critical(err)
 		return

@@ -24,7 +24,7 @@ func main() {
 	log.Initialise([]log.LogName{log.LogNameConsumers})
 
 	// Get API key
-	err := sql.GetAPIKey("consumer", true)
+	err := sql.GetAPIKey("consumer")
 	if err != nil {
 		log.Critical(err)
 		return

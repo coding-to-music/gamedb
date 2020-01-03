@@ -35,7 +35,7 @@ func main() {
 	log.Initialise([]log.LogName{log.LogNameWebserver})
 
 	// Get API key
-	err := sql.GetAPIKey("webserver", true)
+	err := sql.GetAPIKey("webserver")
 	if err != nil {
 		log.Critical(err)
 		return

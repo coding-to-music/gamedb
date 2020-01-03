@@ -13,8 +13,6 @@ const (
 	apiSessionLength  = time.Second * 70 // Time to keep the key for
 	apiSessionRefresh = time.Second * 60 // Heartbeat to retake the key
 	apiSessionRetry   = time.Second * 10 // Retry on no keys availabile
-
-	sqlLockName = "api_keys"
 )
 
 type APIKey struct {
@@ -29,13 +27,9 @@ type Lock struct {
 	Success bool `gorm:"not null;column:success"`
 }
 
-func GetAPIKey(tag string, getUnusedKey bool) (err error) {
+func GetAPIKey(tag string) (err error) {
 
 	tag = config.Config.Environment.Get() + "-" + tag
-
-	if config.IsLocal() {
-		getUnusedKey = false
-	}
 
 	// Retrying as this call can fail
 	operation := func() (err error) {
@@ -45,56 +39,47 @@ func GetAPIKey(tag string, getUnusedKey bool) (err error) {
 			return err
 		}
 
-		// todo, this probably needs work
-		// https://stackoverflow.com/questions/7698211/prevent-two-calls-to-the-same-script-from-selecting-the-same-mysql-row
-		lock := Lock{}
-		db = db.New().Raw("SELECT GET_LOCK('" + sqlLockName + "', 10) as `success`")
+		db = db.Begin()
 		if db.Error != nil {
 			return db.Error
 		}
-		if lock.Success == false {
-			// return errors.New("lock taken")
-		}
 
-		defer func() {
-			db.Error = nil
-			db = db.New().Raw("SELECT RELEASE_LOCK('" + sqlLockName + "')")
-			if db.Error != nil {
-				log.Err(db.Error)
-			}
-		}()
-
-		// Get key
-		db = db.New()
-		if getUnusedKey {
-			db = db.Where("expires < ?", time.Now()).Where("`use` = ?", 1)
-		}
-
+		// Find a row
 		var row = APIKey{}
-		db = db.Order("expires ASC").First(&row)
+
+		db = db.Where("`expires` < ?", time.Now())
+		db = db.Where("`use` = ?", 1)
+		db = db.Set("gorm:query_option", "FOR UPDATE") // Locks row
+		db = db.Order("`expires` ASC")
+		db = db.First(&row)
+
 		if db.Error == ErrRecordNotFound {
+			db.Rollback()
 			return errors.New("waiting for API key")
 		} else if db.Error != nil {
+			db.Rollback()
 			return db.Error
 		}
 
-		// Update key
-		if getUnusedKey {
-
-			db = db.New().Table("api_keys").Where("`key` = ?", row.Key).Updates(map[string]interface{}{
-				"expires": time.Now().Add(apiSessionLength),
-				"owner":   tag,
-			})
-			if db.Error != nil {
-				return db.Error
-			}
+		// Update the row
+		db = db.New().Table("api_keys").Where("`key` = ?", row.Key).Updates(map[string]interface{}{
+			"expires": time.Now().Add(apiSessionLength),
+			"owner":   tag,
+		})
+		if db.Error != nil {
+			db.Rollback()
+			return db.Error
 		}
 
-		config.Config.SteamAPIKey.SetDefault(row.Key)
+		//
+		db = db.Commit()
 
-		log.Info("Using Steam API key: " + config.GetSteamKeyTag())
+		if db.Error == nil {
+			config.Config.SteamAPIKey.SetDefault(row.Key)
+			log.Info("Using Steam API key: " + config.GetSteamKeyTag())
+		}
 
-		return nil
+		return db.Error
 	}
 
 	policy := backoff.NewConstantBackOff(apiSessionRetry)
@@ -104,28 +89,30 @@ func GetAPIKey(tag string, getUnusedKey bool) (err error) {
 	}
 
 	// Keep the key in use with a heartbeat
-	if getUnusedKey {
+	go func() {
 
 		db, err := GetMySQLClient()
 		if err != nil {
-			return err
+			log.Err(err)
+			return
 		}
 
-		go func() {
-			for {
-				time.Sleep(apiSessionRefresh)
+		db = db.Model(&APIKey{})
+		db = db.Where("`key` = ?", config.Config.SteamAPIKey.Get())
 
-				// Update key
-				db = db.New().Model(&APIKey{}).Where("`key` = ?", config.Config.SteamAPIKey.Get()).Updates(map[string]interface{}{
-					"expires": time.Now().Add(apiSessionLength),
-					"owner":   tag,
-				})
-				if db.Error != nil {
-					log.Err(db.Error)
-				}
+		for {
+			time.Sleep(apiSessionRefresh)
+
+			// Update key
+			db = db.Updates(map[string]interface{}{
+				"expires": time.Now().Add(apiSessionLength),
+				"owner":   tag,
+			})
+			if db.Error != nil {
+				log.Err(db.Error)
 			}
-		}()
-	}
+		}
+	}()
 
 	return err
 }
