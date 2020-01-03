@@ -136,8 +136,8 @@
                                     <td>
                                         {{ .App.GetReviewScore }}
                                         <small>
-                                            ({{ comma .Reviews.Positive }}<i class="fas fa-angle-up"></i>
-                                            {{ comma .Reviews.Negative }}<i class="fas fa-angle-down"></i>)
+                                            (<span class="text-success">{{ comma .Reviews.Positive }}</span> <i class="fas fa-angle-up"></i>
+                                            <span class="text-danger">{{ comma .Reviews.Negative }}</span> <i class="fas fa-angle-down"></i>)
                                         </small>
                                     </td>
                                 </tr>
