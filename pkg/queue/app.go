@@ -784,7 +784,7 @@ func updateAppDetails(app *sql.App) (err error) {
 					if _, ok := assetMap["library_hero"]; ok {
 
 						urls := []string{
-							"https://steamcdn-a.akamaihd.net/steam/app/" + strconv.Itoa(app.ID) + "/library_hero.jpg",
+							"https://steamcdn-a.akamaihd.net/steam/apps/" + strconv.Itoa(app.ID) + "/library_hero.jpg",
 							"https://steamcdn-a.akamaihd.net/steam/fpo_apps/" + strconv.Itoa(app.ID) + "/library_hero.jpg",
 						}
 
