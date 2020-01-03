@@ -989,6 +989,22 @@ func (app App) GetMetaImage() string {
 	return ss[0].PathFull
 }
 
+func (app App) GetSteamPricesURL() string {
+
+	switch app.Type {
+	case "game":
+		return "app"
+	case "dlc":
+		return "dlc"
+	case "application":
+		return "sw"
+	case "hardware":
+		return "hw"
+	default:
+		return ""
+	}
+}
+
 func PopularApps() (apps []App, err error) {
 
 	var item = memcache.MemcachePopularApps

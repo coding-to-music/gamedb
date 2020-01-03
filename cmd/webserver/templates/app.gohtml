@@ -234,15 +234,17 @@
                                         </td>
                                     </tr>
                                 {{ end }}
-                                <tr>
-                                    <th scope="row">Steam Prices</th>
-                                    <td class="img">
-                                        <a href="https://www.steamprices.com/{{ .UserProductCC.ProductCode }}/app/{{ .App.ID }}/{{ slug .App.GetName }}" target="_blank">
-                                            <img src="https://pbs.twimg.com/profile_images/598791990084575232/KonQ1bk8_400x400.png" alt="Steam Prices">
-                                            https://steamprices.com/{{ .UserProductCC.ProductCode }}/app/{{ .App.ID }}/{{ slug .App.GetName }}
-                                        </a>
-                                    </td>
-                                </tr>
+                                {{ if ne .App.GetSteamPricesURL "" }}
+                                    <tr>
+                                        <th scope="row">Steam Prices</th>
+                                        <td class="img">
+                                            <a href="https://steamprices.com/{{ .App.GetSteamPricesURL }}/{{ .App.ID }}" target="_blank">
+                                                <img src="https://pbs.twimg.com/profile_images/598791990084575232/KonQ1bk8_400x400.png" alt="Steam Prices">
+                                                steamprices.com/{{ .App.GetSteamPricesURL }}/{{ .App.ID }}
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {{ end }}
                             </table>
                         </div>
                     </div>
