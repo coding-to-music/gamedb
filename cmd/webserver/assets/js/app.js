@@ -2,17 +2,10 @@ const $appPage = $('#app-page');
 
 if ($appPage.length > 0) {
 
-    const $modal = $('#news-modal');
+    $('.followers-link').on('click', function (e) {
 
-    // Detials image click
-    const $detailsImage = $('#details img');
-
-    $detailsImage.on('click', function () {
-        $('.card-header-tabs a[href="#media"]').tab('show');
-    });
-    $detailsImage.on("error", function () {
-        $(this).attr('src', '/assets/img/no-app-image-banner.jpg');
-        $(this).hide();
+        $('a.nav-link[href="#players"]').tab('show');
+        return false;
     });
 
     // Show dev raw row

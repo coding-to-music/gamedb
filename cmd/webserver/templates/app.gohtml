@@ -121,131 +121,163 @@
                             {{ end }}
                         {{ end }}
 
-                        <img class="rounded{{if or (gt (len .Screenshots) 0) (gt (len .Movies) 0)}} cursor-pointer{{ end }}" src="{{ .App.GetHeaderImage }}" alt="{{ .App.GetName }}">
+                        {{/*<img class="rounded{{if or (gt (len .Screenshots) 0) (gt (len .Movies) 0)}} cursor-pointer{{ end }}" src="{{ .App.GetHeaderImage }}" alt="{{ .App.GetName }}">*/}}
 
-                        <div class="table-responsive">
-                            <table class="table mb-0">
-                                {{ if ne .App.GameName "" }}
-                                    <tr>
-                                        <th scope="row" nowrap="nowrap" class="thin">For Game</th>
-                                        <td><a href="/apps/{{ .App.GameID }}">{{ .App.GameName }}</a></td>
-                                    </tr>
-                                {{ end }}
-                                <tr>
-                                    <th scope="row" nowrap="nowrap" class="thin">Review Score</th>
-                                    <td>
-                                        {{ .App.GetReviewScore }}
-                                        <small>
-                                            (<span class="text-success">{{ comma .Reviews.Positive }}</span> <i class="fas fa-angle-up"></i>
-                                            <span class="text-danger">{{ comma .Reviews.Negative }}</span> <i class="fas fa-angle-down"></i>)
-                                        </small>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th scope="row" nowrap="nowrap" class="thin">Price</th>
-                                    <td>{{ .Price.GetFinal }}</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row" nowrap="nowrap" class="thin">Followers</th>
-                                    <td><a href="#players" data-toggle="tab">{{ .App.GetFollowers }}</a></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row" nowrap="nowrap" class="thin">App Type</th>
-                                    <td>{{ .App.GetType }}</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row" nowrap="nowrap" class="thin">Release Date</th>
-                                    <td>{{ .GetReleaseDate }}</td>
-                                </tr>
-                                {{ if gt (len .App.GetPlatforms) 0 }}
-                                    <tr>
-                                        <th scope="row" nowrap="nowrap" class="thin">Platforms</th>
-                                        <td class="platforms">{{ .App.GetPlatformImages }}</td>
-                                    </tr>
-                                {{ end }}
-                                {{ if gt (len .Demos) 0 }}
-                                    <tr>
-                                        <th scope="row" nowrap="nowrap" class="thin">Demos</th>
-                                        <td>
-                                            {{ range $key, $value := .Demos }}
-                                                <a class="badge badge-success" href="{{ .GetPath }}">{{ .GetName }}</a>
-                                            {{ end }}
-                                        </td>
-                                    </tr>
-                                {{ end }}
-                                {{ if gt (len .Genres) 0 }}
-                                    <tr>
-                                        <th scope="row" nowrap="nowrap" class="thin">Genres</th>
-                                        <td>
-                                            {{ range $key, $value := .Genres }}
-                                                <a class="badge badge-success" href="/apps?genres={{ .ID }}">{{ .GetName }}</a>
-                                            {{ end }}
-                                        </td>
-                                    </tr>
-                                {{ end }}
-                                {{ if gt (len .Tags) 0 }}
-                                    <tr>
-                                        <th scope="row" nowrap="nowrap" class="thin">Tags</th>
-                                        <td>
-                                            {{ range $key, $value := .Tags }}
-                                                <a class="badge badge-success" href="/apps?tags={{ .ID }}">{{ .GetName }}</a>
-                                            {{ end }}
-                                        </td>
-                                    </tr>
-                                {{ end }}
-                                {{ if ne .App.Categories "" }}
-                                    <tr>
-                                        <th scope="row" nowrap="nowrap" class="thin">Categories</th>
-                                        <td>
-                                            {{ range $key, $value := .Categories }}
-                                                <a class="badge badge-success" href="/apps?categories={{ .ID }}">{{ .GetName }}</a>
-                                            {{ end }}
-                                        </td>
-                                    </tr>
-                                {{ end }}
-                                {{ if gt (len .Developers) 0 }}
-                                    <tr>
-                                        <th scope="row" nowrap="nowrap" class="thin">Developers</th>
-                                        <td>
-                                            {{ range $key, $value := .Developers }}
-                                                <a class="badge badge-success" href="/apps?developers={{ .ID }}">{{ .GetName }}</a>
-                                            {{ end }}
-                                        </td>
-                                    </tr>
-                                {{ end }}
-                                {{ if gt (len .Publishers) 0 }}
-                                    <tr>
-                                        <th scope="row" nowrap="nowrap" class="thin">Publishers</th>
-                                        <td>
-                                            {{ range $key, $value := .Publishers }}
-                                                <a class="badge badge-success" href="/apps?publishers={{ .ID }}">{{ .GetName }}</a>
-                                            {{ end }}
-                                        </td>
-                                    </tr>
-                                {{ end }}
-                                {{ if ne .App.TwitchURL "" }}
-                                    <tr>
-                                        <th scope="row">Twitch</th>
-                                        <td class="img">
-                                            <a href="https://twitch.tv/directory/game/{{ pathEscape .App.TwitchURL }}" target="_blank">
-                                                <img src="https://assets.help.twitch.tv/Glitch_Purple_RGB.png" alt="Twitch">
-                                                twitch.tv/directory/game/{{ .App.TwitchURL }}
-                                            </a>
-                                        </td>
-                                    </tr>
-                                {{ end }}
-                                {{ if ne .App.GetSteamPricesURL "" }}
-                                    <tr>
-                                        <th scope="row">Steam Prices</th>
-                                        <td class="img">
-                                            <a href="https://steamprices.com/{{ .App.GetSteamPricesURL }}/{{ .App.ID }}" target="_blank">
-                                                <img src="https://pbs.twimg.com/profile_images/598791990084575232/KonQ1bk8_400x400.png" alt="Steam Prices">
-                                                steamprices.com/{{ .App.GetSteamPricesURL }}/{{ .App.ID }}
-                                            </a>
-                                        </td>
-                                    </tr>
-                                {{ end }}
-                            </table>
+                        <div class="row">
+                            <div class="col-12 col-lg-6">
+
+                                <div class="table-responsive">
+                                    <table class="table mb-0">
+
+                                        <tr>
+                                            <th scope="row" nowrap="nowrap" class="thin">Price</th>
+                                            <td>{{ .Price.GetFinal }}</td>
+                                        </tr>
+
+                                        {{ if ne .App.GameName "" }}
+                                            <tr>
+                                                <th scope="row" nowrap="nowrap" class="thin">For Game</th>
+                                                <td><a href="/apps/{{ .App.GameID }}">{{ .App.GameName }}</a></td>
+                                            </tr>
+                                        {{ end }}
+
+                                        <tr>
+                                            <th scope="row" nowrap="nowrap" class="thin">Review Score</th>
+                                            <td>
+                                                {{ .App.GetReviewScore }}
+                                                <small>
+                                                    (<span class="text-success">{{ comma .Reviews.Positive }}</span> <i class="fas fa-angle-up"></i>
+                                                    <span class="text-danger">{{ comma .Reviews.Negative }}</span> <i class="fas fa-angle-down"></i>)
+                                                </small>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <th scope="row" nowrap="nowrap" class="thin">Followers</th>
+                                            <td><a href="#players" class="followers-link">{{ .App.GetFollowers }}</a></td>
+                                        </tr>
+
+                                        {{ if gt (len .App.GetPlatforms) 0 }}
+                                            <tr>
+                                                <th scope="row" nowrap="nowrap" class="thin">Platforms</th>
+                                                <td class="platforms">{{ .App.GetPlatformImages }}</td>
+                                            </tr>
+                                        {{ end }}
+
+                                        <tr>
+                                            <th scope="row" nowrap="nowrap" class="thin">Release Date</th>
+                                            <td>{{ .App.GetReleaseDateNice }}</td>
+                                        </tr>
+
+                                        <tr>
+                                            <th scope="row" nowrap="nowrap" class="thin">App Type</th>
+                                            <td>{{ .App.GetType }}</td>
+                                        </tr>
+
+                                        {{ if gt (len .Demos) 0 }}
+                                            <tr>
+                                                <th scope="row" nowrap="nowrap" class="thin">Demos</th>
+                                                <td>
+                                                    {{ range $key, $value := .Demos }}
+                                                        <a class="badge badge-success" href="{{ .GetPath }}">{{ .GetName }}</a>
+                                                    {{ end }}
+                                                </td>
+                                            </tr>
+                                        {{ end }}
+
+                                        {{ if gt (len .Developers) 0 }}
+                                            <tr>
+                                                <th scope="row" nowrap="nowrap" class="thin">Developers</th>
+                                                <td>
+                                                    {{ range $key, $value := .Developers }}
+                                                        <a class="badge badge-success" href="/apps?developers={{ .ID }}">{{ .GetName }}</a>
+                                                    {{ end }}
+                                                </td>
+                                            </tr>
+                                        {{ end }}
+
+                                        {{ if gt (len .Publishers) 0 }}
+                                            <tr>
+                                                <th scope="row" nowrap="nowrap" class="thin">Publishers</th>
+                                                <td>
+                                                    {{ range $key, $value := .Publishers }}
+                                                        <a class="badge badge-success" href="/apps?publishers={{ .ID }}">{{ .GetName }}</a>
+                                                    {{ end }}
+                                                </td>
+                                            </tr>
+                                        {{ end }}
+
+                                        {{ if ne .App.TwitchURL "" }}
+                                            <tr>
+                                                <th scope="row">Twitch</th>
+                                                <td class="img">
+                                                    <img src="https://assets.help.twitch.tv/Glitch_Purple_RGB.png" alt="Twitch">
+                                                    <a href="https://twitch.tv/directory/game/{{ pathEscape .App.TwitchURL }}" target="_blank">
+                                                        twitch.tv/directory/game/{{ .App.TwitchURL }}
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        {{ end }}
+
+                                        {{ if ne .App.GetSteamPricesURL "" }}
+                                            <tr>
+                                                <th scope="row">Steam Prices</th>
+                                                <td class="img">
+                                                    <img src="https://pbs.twimg.com/profile_images/598791990084575232/KonQ1bk8_400x400.png" alt="Steam Prices">
+                                                    <a href="https://steamprices.com/{{ .App.GetSteamPricesURL }}/{{ .App.ID }}/{{ slug .App.GetName }}" target="_blank">
+                                                        steamprices.com/{{ .App.GetSteamPricesURL }}/{{ .App.ID }}/{{ slug .App.GetName }}
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        {{ end }}
+
+                                    </table>
+                                </div>
+
+                            </div>
+                            <div class="col-12 col-lg-6">
+
+                                <div class="table-responsive">
+                                    <table class="table mb-0">
+
+                                        {{ if gt (len .Genres) 0 }}
+                                            <tr>
+                                                <th scope="row" nowrap="nowrap" class="thin">Genres</th>
+                                                <td>
+                                                    {{ range $key, $value := .Genres }}
+                                                        <a class="badge badge-success" href="/apps?genres={{ .ID }}">{{ .GetName }}</a>
+                                                    {{ end }}
+                                                </td>
+                                            </tr>
+                                        {{ end }}
+
+                                        {{ if gt (len .Tags) 0 }}
+                                            <tr>
+                                                <th scope="row" nowrap="nowrap" class="thin">Tags</th>
+                                                <td>
+                                                    {{ range $key, $value := .Tags }}
+                                                        <a class="badge badge-success" href="/apps?tags={{ .ID }}">{{ .GetName }}</a>
+                                                    {{ end }}
+                                                </td>
+                                            </tr>
+                                        {{ end }}
+
+                                        {{ if ne .App.Categories "" }}
+                                            <tr>
+                                                <th scope="row" nowrap="nowrap" class="thin">Categories</th>
+                                                <td>
+                                                    {{ range $key, $value := .Categories }}
+                                                        <a class="badge badge-success" href="/apps?categories={{ .ID }}">{{ .GetName }}</a>
+                                                    {{ end }}
+                                                </td>
+                                            </tr>
+                                        {{ end }}
+
+                                    </table>
+                                </div>
+
+                            </div>
+
                         </div>
                     </div>
 
