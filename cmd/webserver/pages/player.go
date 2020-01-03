@@ -201,8 +201,6 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	player.VanintyURL = helpers.TruncateString(player.VanintyURL, 14, "...")
-
 	// Game stats
 	gameStats, err := player.GetGameStats(code)
 	log.Err(err, r)
@@ -296,6 +294,10 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	t.DefaultAvatar = helpers.DefaultPlayerAvatar
 	t.GameStats = gameStats
 	t.Player = player
+	t.Player.VanintyURL = helpers.TruncateString(t.Player.VanintyURL, 14, "...")
+
+	t.Types, err = sql.GetAppTypeCounts()
+	log.Err(err)
 
 	returnTemplate(w, r, "player", t)
 }
@@ -311,6 +313,22 @@ type playerTemplate struct {
 	GameStats     mongo.PlayerAppStatsTemplate
 	Player        mongo.Player
 	Ranks         []playerRankTemplate
+	Types         map[string]int
+}
+
+func (pt playerTemplate) TypePercent(typex string) string {
+
+	if _, ok := pt.Player.GamesByType[typex]; !ok {
+		return "0%"
+	}
+
+	if _, ok := pt.Types[typex]; !ok {
+		return "0%"
+	}
+
+	f := float64(pt.Player.GamesByType[typex]) / float64(pt.Types[typex]) * 100
+
+	return helpers.FloatToString(f, 2) + "%"
 }
 
 type playerMissingTemplate struct {

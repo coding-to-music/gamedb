@@ -453,8 +453,9 @@
                                             <table class="table table-datatable" data-order='[[1, "desc"]]'>
                                                 <thead>
                                                 <tr>
-                                                    <th data-disabled>Type</th>
-                                                    <th data-disabled>Count</th>
+                                                    <th>Type</th>
+                                                    <th>Count</th>
+                                                    <th data-toggle="tooltip" data-placement="top" title="Percent of Steam catalogue">%</th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
@@ -462,6 +463,7 @@
                                                     <tr>
                                                         <td>{{ $key }}</td>
                                                         <td>{{ comma $value }}</td>
+                                                        <td><small>{{ $.TypePercent $key }}</small></td>
                                                     </tr>
                                                 {{ end }}
                                                 </tbody>

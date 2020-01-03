@@ -1313,6 +1313,35 @@ func CountAppsWithAchievements() (count int, err error) {
 	return count, err
 }
 
+type AppTypeCount struct {
+	Type  string
+	Count int
+}
+
+func GetAppTypeCounts() (counts map[string]int, err error) {
+
+	var item = memcache.MemcacheAppTypeCounts
+
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &counts, func() (interface{}, error) {
+
+		db, err := GetMySQLClient()
+		if err != nil {
+			return counts, err
+		}
+
+		var rows []AppTypeCount
+		db = db.Table("apps").Select("type, count(type) as count").Group("type").Scan(&rows)
+
+		counts = map[string]int{}
+		for _, v := range rows {
+			counts[helpers.GetAppType(v.Type)] = v.Count
+		}
+		return counts, db.Error
+	})
+
+	return counts, err
+}
+
 //
 type AppImage struct {
 	PathFull      string `json:"f"`
