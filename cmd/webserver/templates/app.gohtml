@@ -130,7 +130,7 @@
                                     <table class="table mb-0">
 
                                         <tr>
-                                            <th scope="row" nowrap="nowrap" class="thin">Price</th>
+                                            <th scope="row" nowrap="nowrap" class="thin" style="width: 130px;">Price</th>
                                             <td>{{ .Price.GetFinal }}</td>
                                         </tr>
 
@@ -207,30 +207,6 @@
                                             </tr>
                                         {{ end }}
 
-                                        {{ if ne .App.TwitchURL "" }}
-                                            <tr>
-                                                <th scope="row">Twitch</th>
-                                                <td class="img">
-                                                    <img src="https://assets.help.twitch.tv/Glitch_Purple_RGB.png" alt="Twitch">
-                                                    <a href="https://twitch.tv/directory/game/{{ pathEscape .App.TwitchURL }}" target="_blank">
-                                                        twitch.tv/directory/game/{{ .App.TwitchURL }}
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        {{ end }}
-
-                                        {{ if ne .App.GetSteamPricesURL "" }}
-                                            <tr>
-                                                <th scope="row">Steam Prices</th>
-                                                <td class="img">
-                                                    <img src="https://pbs.twimg.com/profile_images/598791990084575232/KonQ1bk8_400x400.png" alt="Steam Prices">
-                                                    <a href="https://steamprices.com/{{ .App.GetSteamPricesURL }}/{{ .App.ID }}/{{ slug .App.GetName }}" target="_blank">
-                                                        steamprices.com/{{ .App.GetSteamPricesURL }}/{{ .App.ID }}/{{ slug .App.GetName }}
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        {{ end }}
-
                                     </table>
                                 </div>
 
@@ -269,6 +245,39 @@
                                                     {{ range $key, $value := .Categories }}
                                                         <a class="badge badge-success" href="/apps?categories={{ .ID }}">{{ .GetName }}</a>
                                                     {{ end }}
+                                                </td>
+                                            </tr>
+                                        {{ end }}
+
+                                    </table>
+                                </div>
+
+                            </div>
+                            <div class="col-12">
+
+                                <div class="table-responsive">
+                                    <table class="table mb-0">
+
+                                        {{ if ne .App.TwitchURL "" }}
+                                            <tr>
+                                                <th scope="row" style="width: 130px;">Twitch</th>
+                                                <td class="img">
+                                                    <img src="https://assets.help.twitch.tv/Glitch_Purple_RGB.png" alt="Twitch">
+                                                    <a href="https://twitch.tv/directory/game/{{ pathEscape .App.TwitchURL }}" target="_blank">
+                                                        twitch.tv/directory/game/{{ .App.TwitchURL }}
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        {{ end }}
+
+                                        {{ if ne .App.GetSteamPricesURL "" }}
+                                            <tr>
+                                                <th scope="row">Steam Prices</th>
+                                                <td class="img">
+                                                    <img src="https://pbs.twimg.com/profile_images/598791990084575232/KonQ1bk8_400x400.png" alt="Steam Prices">
+                                                    <a href="https://steamprices.com/{{ .App.GetSteamPricesURL }}/{{ .App.ID }}/{{ slug .App.GetName }}" target="_blank">
+                                                        steamprices.com/{{ .App.GetSteamPricesURL }}/{{ .App.ID }}/{{ slug .App.GetName }}
+                                                    </a>
                                                 </td>
                                             </tr>
                                         {{ end }}
