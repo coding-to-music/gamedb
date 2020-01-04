@@ -12,9 +12,11 @@ import (
 )
 
 const ( //                        min hour
+	CronTimeUpdateRandomPlayers = "* *"
 	CronTimeSetBadgeCache       = "*/10 *"
 	CronTimeSteamClientPlayers  = "*/10 *"
 	CronTimeAppPlayers          = "*/10 *"
+	CronTimeAutoPlayerRefreshes = "0 */6"
 	CronTimeClearUpcomingCache  = "0 0"
 	CronTimePlayerRanks         = "0 0"
 	CronTimeGenres              = "0 3"
@@ -23,7 +25,6 @@ const ( //                        min hour
 	CronTimeDevelopers          = "0 6"
 	CronTimeCategories          = "0 7"
 	CronTimeInstagram           = "0 12"
-	CronTimeAutoPlayerRefreshes = "1 */6"
 )
 
 var (
@@ -37,7 +38,6 @@ var (
 		DevCodeRun{},
 		Developers{},
 		Genres{},
-		// Instagram{},
 		MemcacheClear{},
 		SetBadgeCache{},
 		PackagesQueueAll{},
@@ -46,6 +46,8 @@ var (
 		Publishers{},
 		SteamClientPlayers{},
 		Tags{},
+		UpdateRandomPlayers{},
+		// Instagram{},
 	}
 )
 
