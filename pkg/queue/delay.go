@@ -4,10 +4,10 @@ import (
 	"math"
 	"time"
 
-	"github.com/gamedb/gamedb/pkg/queue/framework"
+	"github.com/Jleagle/rabbit-go"
 )
 
-func delayHandler(messages []*framework.Message) {
+func delayHandler(messages []*rabbit.Message) {
 
 	for _, message := range messages {
 

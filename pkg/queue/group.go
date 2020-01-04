@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/influxql"
+	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
@@ -18,7 +19,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/queue/framework"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/gocolly/colly"
@@ -37,7 +37,7 @@ type GroupMessage struct {
 	UserAgent *string `json:"user_agent"`
 }
 
-func groupsHandler(messages []*framework.Message) {
+func groupsHandler(messages []*rabbit.Message) {
 
 	for _, message := range messages {
 
@@ -74,7 +74,7 @@ func groupsHandler(messages []*framework.Message) {
 
 		// Skip if updated recently
 		if !group.ShouldUpdate() {
-			message.Ack()
+			message.Ack(false)
 			continue
 		}
 
@@ -84,7 +84,7 @@ func groupsHandler(messages []*framework.Message) {
 			group.Type, group.URL, err = getGroupType(payload.ID)
 			if err == helpers.ErrInvalidGroupID {
 
-				message.Ack()
+				message.Ack(false)
 				continue
 
 			} else if err != nil {
@@ -208,7 +208,7 @@ func groupsHandler(messages []*framework.Message) {
 		log.Err(err)
 
 		//
-		message.Ack()
+		message.Ack(false)
 	}
 }
 

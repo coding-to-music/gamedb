@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/Jleagle/rabbit-go"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/cenkalti/backoff/v4"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -15,7 +16,6 @@ import (
 	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/queue/framework"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/gocolly/colly"
@@ -26,7 +26,7 @@ type BundleMessage struct {
 	ID int `json:"id"`
 }
 
-func bundleHandler(messages []*framework.Message) {
+func bundleHandler(messages []*rabbit.Message) {
 
 	for _, message := range messages {
 
@@ -118,7 +118,7 @@ func bundleHandler(messages []*framework.Message) {
 		)
 		log.Err(err)
 
-		message.Ack()
+		message.Ack(false)
 	}
 }
 

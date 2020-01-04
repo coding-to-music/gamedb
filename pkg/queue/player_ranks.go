@@ -4,11 +4,11 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/queue/framework"
 	influx "github.com/influxdata/influxdb1-client"
 	"go.mongodb.org/mongo-driver/bson"
 	mongodb "go.mongodb.org/mongo-driver/mongo"
@@ -27,7 +27,7 @@ type PlayerRanksMessage struct {
 	State      *string `json:"state"`
 }
 
-func playerRanksHandler(messages []*framework.Message) {
+func playerRanksHandler(messages []*rabbit.Message) {
 
 	for _, message := range messages {
 
@@ -143,6 +143,6 @@ func playerRanksHandler(messages []*framework.Message) {
 			offset += batchSize
 		}
 
-		message.Ack()
+		message.Ack(false)
 	}
 }

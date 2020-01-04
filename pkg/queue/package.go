@@ -9,6 +9,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/Jleagle/rabbit-go"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/Jleagle/valve-data-format-go/vdf"
 	"github.com/gamedb/gamedb/pkg/config"
@@ -18,7 +19,6 @@ import (
 	pubsubHelpers "github.com/gamedb/gamedb/pkg/helpers/pubsub"
 	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/queue/framework"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/sql/pics"
 	"github.com/gamedb/gamedb/pkg/websockets"
@@ -32,7 +32,7 @@ type PackageMessage struct {
 	VDF          map[string]interface{} `json:"vdf"`
 }
 
-func packageHandler(messages []*framework.Message) {
+func packageHandler(messages []*rabbit.Message) {
 
 	for _, message := range messages {
 
@@ -79,7 +79,7 @@ func packageHandler(messages []*framework.Message) {
 			if pack.UpdatedAt.After(time.Now().Add(time.Hour * 24 * -1)) {
 				if pack.ChangeNumber >= payload.ChangeNumber {
 					log.Info("Skipping package, updated in last day")
-					message.Ack()
+					message.Ack(false)
 					return
 				}
 			}
@@ -181,7 +181,7 @@ func packageHandler(messages []*framework.Message) {
 		}
 
 		//
-		message.Ack()
+		message.Ack(false)
 	}
 }
 
@@ -206,7 +206,7 @@ func updatePackageNameFromApp(pack *sql.Package) (err error) {
 	return nil
 }
 
-func updatePackageFromPICS(pack *sql.Package, message *framework.Message, payload PackageMessage) (err error) {
+func updatePackageFromPICS(pack *sql.Package, message *rabbit.Message, payload PackageMessage) (err error) {
 
 	if payload.ChangeNumber == 0 || pack.ChangeNumber >= payload.ChangeNumber {
 		return nil

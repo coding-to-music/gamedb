@@ -3,13 +3,13 @@ package queue
 import (
 	"errors"
 
+	"github.com/Jleagle/rabbit-go"
 	"github.com/Philipp15b/go-steam"
 	"github.com/Philipp15b/go-steam/protocol"
 	"github.com/Philipp15b/go-steam/protocol/protobuf"
 	"github.com/Philipp15b/go-steam/protocol/steamlang"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/queue/framework"
 )
 
 var steamClient *steam.Client
@@ -23,7 +23,7 @@ type SteamMessage struct {
 	PackageIDs []int `json:"package_ids"`
 }
 
-func steamHandler(messages []*framework.Message) {
+func steamHandler(messages []*rabbit.Message) {
 
 	false := false
 
@@ -98,6 +98,6 @@ func steamHandler(messages []*framework.Message) {
 		// }
 
 		//
-		message.Ack()
+		message.Ack(false)
 	}
 }

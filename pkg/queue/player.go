@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/Jleagle/rabbit-go"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
@@ -16,7 +17,6 @@ import (
 	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/queue/framework"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	influx "github.com/influxdata/influxdb1-client"
@@ -29,7 +29,7 @@ type PlayerMessage struct {
 	UserAgent  *string `json:"user_agent"`
 }
 
-func playerHandler(messages []*framework.Message) {
+func playerHandler(messages []*rabbit.Message) {
 
 	for _, message := range messages {
 
@@ -71,7 +71,7 @@ func playerHandler(messages []*framework.Message) {
 			if err != nil {
 
 				if err == steam.ErrNoUserFound {
-					message.Ack()
+					message.Ack(false)
 				} else {
 					steamHelper.LogSteamError(err, payload.ID)
 					sendToRetryQueue(message)
@@ -250,7 +250,7 @@ func playerHandler(messages []*framework.Message) {
 		}
 
 		//
-		message.Ack()
+		message.Ack(false)
 	}
 }
 

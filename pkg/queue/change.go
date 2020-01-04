@@ -5,13 +5,13 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/Jleagle/rabbit-go"
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	pubsubHelpers "github.com/gamedb/gamedb/pkg/helpers/pubsub"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/queue/framework"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/websockets"
 )
@@ -27,7 +27,7 @@ type ChangesMessage struct {
 	PackageIDs map[uint32]uint32 `json:"package_ids"`
 }
 
-func changesHandler(messages []*framework.Message) {
+func changesHandler(messages []*rabbit.Message) {
 
 	for _, message := range messages {
 
@@ -101,7 +101,7 @@ func changesHandler(messages []*framework.Message) {
 		// err = sendChangeToDiscord(changeSlice, appMap, packageMap)
 		// log.Err(err)
 
-		message.Ack()
+		message.Ack(false)
 	}
 }
 

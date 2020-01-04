@@ -5,6 +5,7 @@ import (
 	_ "net/http/pprof"
 	"time"
 
+	"github.com/Jleagle/rabbit-go"
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -12,7 +13,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
-	"github.com/gamedb/gamedb/pkg/queue/framework"
 	"github.com/gamedb/gamedb/pkg/sql"
 )
 
@@ -64,7 +64,7 @@ func main() {
 	if config.IsProd() {
 		go func() {
 			for {
-				q, err := queue.Channels[framework.Producer][queue.QueuePlayers].Inspect()
+				q, err := queue.Channels[rabbit.Producer][queue.QueuePlayers].Inspect()
 				if err != nil {
 					log.Err(err)
 				} else if q.Messages == 0 {

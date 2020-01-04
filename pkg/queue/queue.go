@@ -5,41 +5,53 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/queue/framework"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/streadway/amqp"
 )
 
 const (
-	QueueApps            framework.QueueName = "GDB_Apps"
-	QueueAppsRegular     framework.QueueName = "GDB_Apps_Regular"
-	QueueAppPlayers      framework.QueueName = "GDB_App_Players"
-	QueueBundles         framework.QueueName = "GDB_Bundles"
-	QueueChanges         framework.QueueName = "GDB_Changes"
-	QueueGroups          framework.QueueName = "GDB_Groups"
-	QueuePackages        framework.QueueName = "GDB_Packages"
-	QueuePackagesRegular framework.QueueName = "GDB_Packages_Regular"
-	QueuePlayers         framework.QueueName = "GDB_Players"
-	QueuePlayersRegular  framework.QueueName = "GDB_Players_Regular"
-	QueuePlayerRanks     framework.QueueName = "GDB_Player_Ranks"
-	QueueSteam           framework.QueueName = "GDB_Steam"
+	QueueApps            rabbit.QueueName = "GDB_Apps"
+	QueueAppsRegular     rabbit.QueueName = "GDB_Apps_Regular"
+	QueueAppPlayers      rabbit.QueueName = "GDB_App_Players"
+	QueueBundles         rabbit.QueueName = "GDB_Bundles"
+	QueueChanges         rabbit.QueueName = "GDB_Changes"
+	QueueGroups          rabbit.QueueName = "GDB_Groups"
+	QueuePackages        rabbit.QueueName = "GDB_Packages"
+	QueuePackagesRegular rabbit.QueueName = "GDB_Packages_Regular"
+	QueuePlayers         rabbit.QueueName = "GDB_Players"
+	QueuePlayersRegular  rabbit.QueueName = "GDB_Players_Regular"
+	QueuePlayerRanks     rabbit.QueueName = "GDB_Player_Ranks"
+	QueueSteam           rabbit.QueueName = "GDB_Steam"
 
-	QueueDelay  framework.QueueName = "GDB_Delay"
-	QueueFailed framework.QueueName = "GDB_Failed"
-	QueueTest   framework.QueueName = "GDB_Test"
+	QueueDelay  rabbit.QueueName = "GDB_Delay"
+	QueueFailed rabbit.QueueName = "GDB_Failed"
+	QueueTest   rabbit.QueueName = "GDB_Test"
 )
 
+func init() {
+	rabbit.SetLogInfo(func(i ...interface{}) {
+		log.Info(i...)
+	})
+	rabbit.SetLogWarning(func(i ...interface{}) {
+		log.Warning(i...)
+	})
+	rabbit.SetLogError(func(i ...interface{}) {
+		log.Err(i...)
+	})
+}
+
 var (
-	Channels = map[framework.ConnType]map[framework.QueueName]*framework.Channel{
-		framework.Consumer: {},
-		framework.Producer: {},
+	Channels = map[rabbit.ConnType]map[rabbit.QueueName]*rabbit.Channel{
+		rabbit.Consumer: {},
+		rabbit.Producer: {},
 	}
 
-	QueueDefinitions = []queue{
+	QueueDefinitions = []queueDef{
 		{name: QueueApps, consumer: appHandler},
 		{name: QueueAppsRegular},
 		{name: QueueAppPlayers, consumer: appPlayersHandler},
@@ -57,7 +69,7 @@ var (
 		{name: QueueTest, consumer: testHandler},
 	}
 
-	QueueSteamDefinitions = []queue{
+	QueueSteamDefinitions = []queueDef{
 		{name: QueueSteam, consumer: steamHandler},
 		{name: QueueApps, consumer: nil},
 		{name: QueuePackages, consumer: nil},
@@ -65,7 +77,7 @@ var (
 		{name: QueueChanges, consumer: nil},
 	}
 
-	QueueCronsDefinitions = []queue{
+	QueueCronsDefinitions = []queueDef{
 		{name: QueueApps, consumer: nil},
 		{name: QueueAppPlayers, consumer: nil},
 		{name: QueueGroups, consumer: nil},
@@ -75,14 +87,15 @@ var (
 	}
 )
 
-type queue struct {
-	name        framework.QueueName
-	consumer    framework.Handler
-	skipHeaders bool
-	batchSize   int
+type queueDef struct {
+	name         rabbit.QueueName
+	consumer     rabbit.Handler
+	skipHeaders  bool
+	batchSize    int
+	prefetchSize int
 }
 
-func Init(definitions []queue, consume bool) {
+func Init(definitions []queueDef, consume bool) {
 
 	heartbeat := time.Minute
 	if config.IsLocal() {
@@ -90,8 +103,8 @@ func Init(definitions []queue, consume bool) {
 	}
 
 	// Producers
-	producerConnection, err := framework.NewConnection(config.RabbitDSN(), framework.Producer, amqp.Config{Heartbeat: heartbeat, Properties: map[string]interface{}{
-		"connection_name": config.Config.Environment.Get() + "-" + string(framework.Consumer) + "-" + config.GetSteamKeyTag(),
+	producerConnection, err := rabbit.NewConnection(config.RabbitDSN(), rabbit.Producer, amqp.Config{Heartbeat: heartbeat, Properties: map[string]interface{}{
+		"connection_name": config.Config.Environment.Get() + "-" + string(rabbit.Consumer) + "-" + config.GetSteamKeyTag(),
 	}})
 	if err != nil {
 		log.Info(err)
@@ -100,19 +113,24 @@ func Init(definitions []queue, consume bool) {
 
 	for _, queue := range definitions {
 
-		q, err := framework.NewChannel(producerConnection, queue.name, 10, queue.batchSize, queue.consumer, !queue.skipHeaders)
+		prefetchSize := 10
+		if queue.prefetchSize > 0 {
+			prefetchSize = queue.prefetchSize
+		}
+
+		q, err := rabbit.NewChannel(producerConnection, queue.name, "consumer-name", prefetchSize, queue.batchSize, queue.consumer, !queue.skipHeaders)
 		if err != nil {
 			log.Critical(string(queue.name), err)
 		} else {
-			Channels[framework.Producer][queue.name] = q
+			Channels[rabbit.Producer][queue.name] = q
 		}
 	}
 
 	// Consumers
 	if consume {
 
-		consumerConnection, err := framework.NewConnection(config.RabbitDSN(), framework.Consumer, amqp.Config{Heartbeat: heartbeat, Properties: map[string]interface{}{
-			"connection_name": config.Config.Environment.Get() + "-" + string(framework.Consumer) + "-" + config.GetSteamKeyTag(),
+		consumerConnection, err := rabbit.NewConnection(config.RabbitDSN(), rabbit.Consumer, amqp.Config{Heartbeat: heartbeat, Properties: map[string]interface{}{
+			"connection_name": config.Config.Environment.Get() + "-" + string(rabbit.Consumer) + "-" + config.GetSteamKeyTag(),
 		}})
 		if err != nil {
 			log.Info(err)
@@ -122,13 +140,18 @@ func Init(definitions []queue, consume bool) {
 		for _, queue := range definitions {
 			if queue.consumer != nil {
 
-				q, err := framework.NewChannel(consumerConnection, queue.name, 10, queue.batchSize, queue.consumer, !queue.skipHeaders)
+				prefetchSize := 10
+				if queue.prefetchSize > 0 {
+					prefetchSize = queue.prefetchSize
+				}
+
+				q, err := rabbit.NewChannel(consumerConnection, queue.name, "consumer-name", prefetchSize, queue.batchSize, queue.consumer, !queue.skipHeaders)
 				if err != nil {
 					log.Critical(string(queue.name), err)
 					continue
 				}
 
-				Channels[framework.Consumer][queue.name] = q
+				Channels[rabbit.Consumer][queue.name] = q
 
 				go q.Consume()
 			}
@@ -137,15 +160,15 @@ func Init(definitions []queue, consume bool) {
 }
 
 // Message helpers
-func sendToFailQueue(message *framework.Message) {
-	message.SendToQueue(Channels[framework.Producer][QueueFailed])
+func sendToFailQueue(message *rabbit.Message) {
+	message.SendToQueue(Channels[rabbit.Producer][QueueFailed])
 }
 
-func sendToRetryQueue(message *framework.Message) {
-	message.SendToQueue(Channels[framework.Producer][QueueDelay])
+func sendToRetryQueue(message *rabbit.Message) {
+	message.SendToQueue(Channels[rabbit.Producer][QueueDelay])
 }
 
-func sendToLastQueue(message *framework.Message) {
+func sendToLastQueue(message *rabbit.Message) {
 
 	queue := message.LastQueue()
 
@@ -153,7 +176,7 @@ func sendToLastQueue(message *framework.Message) {
 		queue = QueueFailed
 	}
 
-	message.SendToQueue(Channels[framework.Producer][queue])
+	message.SendToQueue(Channels[rabbit.Producer][queue])
 }
 
 // Producers
@@ -311,9 +334,9 @@ func ProduceTest(id int) (err error) {
 	return produce(QueueTest, TestMessage{ID: id})
 }
 
-func produce(q framework.QueueName, payload interface{}) error {
+func produce(q rabbit.QueueName, payload interface{}) error {
 
-	if val, ok := Channels[framework.Producer][q]; ok {
+	if val, ok := Channels[rabbit.Producer][q]; ok {
 		return val.Produce(payload)
 	}
 

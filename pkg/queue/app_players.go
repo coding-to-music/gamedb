@@ -7,13 +7,13 @@ import (
 	"time"
 
 	"github.com/Jleagle/influxql"
+	"github.com/Jleagle/rabbit-go"
 	"github.com/cenkalti/backoff/v4"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/helpers/twitch"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/queue/framework"
 	"github.com/gamedb/gamedb/pkg/sql"
 	influx "github.com/influxdata/influxdb1-client"
 	"github.com/nicklaw5/helix"
@@ -23,7 +23,7 @@ type AppPlayerMessage struct {
 	IDs []int `json:"ids"`
 }
 
-func appPlayersHandler(messages []*framework.Message) {
+func appPlayersHandler(messages []*rabbit.Message) {
 
 	for _, message := range messages {
 
@@ -190,7 +190,7 @@ func appPlayersHandler(messages []*framework.Message) {
 		}
 
 		//
-		message.Ack()
+		message.Ack(false)
 	}
 }
 
