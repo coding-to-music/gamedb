@@ -100,12 +100,15 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get states
 	states := map[string][]helpers.Tuple{}
+	statesLock := sync.Mutex{}
 	for _, cc := range mongo.CountriesWithStates {
 		wg.Add(1)
 		go func(cc string) {
 			defer wg.Done()
 			var err error
+			statesLock.Lock()
 			states[cc], err = mongo.GetUniquePlayerStates(cc)
+			statesLock.Unlock()
 			log.Err(err)
 		}(cc)
 	}
