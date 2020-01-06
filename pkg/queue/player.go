@@ -524,7 +524,9 @@ func updatePlayerBadges(player *mongo.Player) error {
 	// Make map of app rows
 	var appRowsMap = map[int]sql.App{}
 	appRows, err := sql.GetAppsByID(appIDSlice, []string{"id", "name", "icon"})
-	log.Err(err)
+	if err != nil {
+		return err
+	}
 
 	for _, v := range appRows {
 		appRowsMap[v.ID] = v
