@@ -27,15 +27,25 @@ func (c UpdateRandomPlayers) Cron() string {
 
 func (c UpdateRandomPlayers) work() (err error) {
 
-	q, err := queue.Channels[rabbit.Producer][queue.QueuePlayers].Inspect()
-	if err != nil {
-		return err
+	// Skip if queues have activity
+	queues := map[rabbit.QueueName]int{
+		queue.QueueApps:    50,
+		queue.QueuePlayers: 0,
 	}
 
-	if q.Messages > 0 {
-		return nil
+	for q, limit := range queues {
+
+		q, err := queue.Channels[rabbit.Producer][q].Inspect()
+		if err != nil {
+			return err
+		}
+
+		if q.Messages > limit {
+			return nil
+		}
 	}
 
+	// Queue players
 	players, err := mongo.GetRandomPlayers(10)
 	if err != nil {
 		return err
