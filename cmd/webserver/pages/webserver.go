@@ -346,11 +346,21 @@ func (t *GlobalTemplate) setRandomBackground(title bool, link bool) {
 	}
 
 	popularApps, err := sql.PopularApps()
-	log.Err(err, t.request)
+	if err != nil {
+		log.Err(err, t.request)
+		return
+	}
+
+	blacklist := []int{
+		431960, // Wallpaper Engine
+		236850, // Europa Universalis IV
+		582010, // Monster Hunter
+		289070, // Civilization VI
+	}
 
 	var popularAppsWithBackground []sql.App
 	for _, app := range popularApps {
-		if app.Background != "" && app.ID != 431960 && app.ID != 236850 {
+		if app.Background != "" && !helpers.SliceHasInt(blacklist, app.ID) {
 			popularAppsWithBackground = append(popularAppsWithBackground, app)
 		}
 	}
