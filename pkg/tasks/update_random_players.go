@@ -31,6 +31,7 @@ func (c UpdateRandomPlayers) work() (err error) {
 	queues := map[rabbit.QueueName]int{
 		queue.QueueApps:    50,
 		queue.QueuePlayers: 0,
+		queue.QueueDelay:   0,
 	}
 
 	for q, limit := range queues {
