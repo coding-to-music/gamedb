@@ -30,6 +30,10 @@ if ($('#chat-page').length > 0) {
 
         const fadeClass = (addToTop ? ' fade-green' : '');
 
+        if (!data.content && data.embeds) {
+            data.content = '<small>Content not available via our website.</small>';
+        }
+
         $container.json2html(
             data,
             {

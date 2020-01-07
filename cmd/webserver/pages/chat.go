@@ -32,16 +32,17 @@ func init() {
 		panic(err)
 	}
 
-	discordRelayBotSession.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
+	discordRelayBotSession.AddHandler(func(session *discordgo.Session, message *discordgo.MessageCreate) {
 
 		page := websockets.GetPage(websockets.PageChat)
 		page.Send(websockets.ChatPayload{
-			AuthorID:     m.Author.ID,
-			AuthorUser:   m.Author.Username,
-			AuthorAvatar: m.Author.Avatar,
-			Content:      string(blackfriday.Run([]byte(m.Content), blackfriday.WithNoExtensions())),
-			Channel:      m.ChannelID,
-			Time:         string(m.Timestamp),
+			AuthorID:     message.Author.ID,
+			AuthorUser:   message.Author.Username,
+			AuthorAvatar: message.Author.Avatar,
+			Content:      string(blackfriday.Run([]byte(message.Content), blackfriday.WithNoExtensions())),
+			Channel:      message.ChannelID,
+			Time:         string(message.Timestamp),
+			Embeds:       len(message.Embeds) > 0,
 			I:            0,
 		})
 	})
@@ -187,17 +188,18 @@ func chatAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var messages []websockets.ChatPayload
 	var i float32
-	for _, v := range messagesResponse {
+	for _, message := range messagesResponse {
 
-		if v.Type == discordgo.MessageTypeDefault {
+		if message.Type == discordgo.MessageTypeDefault {
 
 			messages = append(messages, websockets.ChatPayload{
-				AuthorID:     v.Author.ID,
-				AuthorUser:   v.Author.Username,
-				AuthorAvatar: v.Author.Avatar,
-				Content:      string(blackfriday.Run([]byte(v.Content), blackfriday.WithNoExtensions())),
-				Channel:      v.ChannelID,
-				Time:         string(v.Timestamp),
+				AuthorID:     message.Author.ID,
+				AuthorUser:   message.Author.Username,
+				AuthorAvatar: message.Author.Avatar,
+				Content:      string(blackfriday.Run([]byte(message.Content), blackfriday.WithNoExtensions())),
+				Channel:      message.ChannelID,
+				Time:         string(message.Timestamp),
+				Embeds:       len(message.Embeds) > 0,
 				I:            i / 20,
 			})
 

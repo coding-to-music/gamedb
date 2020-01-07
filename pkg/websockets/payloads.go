@@ -43,4 +43,5 @@ type ChatPayload struct {
 	Content      string  `json:"content"`
 	Channel      string  `json:"channel"`
 	Time         string  `json:"timestamp"`
+	Embeds       bool    `json:"embeds"`
 }
