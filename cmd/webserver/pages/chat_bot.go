@@ -106,7 +106,9 @@ func (cbt chatBotTemplate) Guilds() (guilds int) {
 			count += len(guilds)
 		}
 
-		log.Info(strconv.Itoa(count) + " guilds")
+		if count < 20 {
+			log.Info(strconv.Itoa(count) + " guilds")
+		}
 
 		return count, nil
 	})
