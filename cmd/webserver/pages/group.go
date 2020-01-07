@@ -88,6 +88,7 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 			log.Err(err, r)
 		} else {
 			t.addToast(Toast{Title: "Update", Message: "Group has been queued for an update"})
+			log.Info(log.LogNameTriggerUpdate, r, r.UserAgent())
 		}
 	}()
 
