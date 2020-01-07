@@ -34,10 +34,6 @@ func init() {
 
 	discordRelayBotSession.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
 
-		// if m.Author.Bot {
-		// 	return
-		// }
-
 		page := websockets.GetPage(websockets.PageChat)
 		page.Send(websockets.ChatPayload{
 			AuthorID:     m.Author.ID,
