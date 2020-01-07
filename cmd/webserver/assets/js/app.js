@@ -2,6 +2,11 @@ const $appPage = $('#app-page');
 
 if ($appPage.length > 0) {
 
+    $('#media video').on('click', function (e) {
+        const video = $(this)[0];
+        video.paused ? video.play() : video.pause();
+    });
+
     $('.followers-link').on('click', function (e) {
 
         $('a.nav-link[href="#players"]').tab('show');
