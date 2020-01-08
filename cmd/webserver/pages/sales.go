@@ -90,7 +90,7 @@ func salesHandler(w http.ResponseWriter, r *http.Request) {
 		{time.Date(2019, 11, 26, 10, 0, 0, 0, pst), 7, "Autumn Sale", "🍁"},
 		{time.Date(2019, 12, 12, 10, 0, 0, 0, pst), 1, "Game Awards", "🕹️"},
 		{time.Date(2019, 12, 19, 10, 0, 0, 0, pst), 14, "Winter Sale", "⛄"},
-		{time.Date(2020, 01, 23, 10, 0, 0, 0, pst), 14, "Lunar New Year Sale", "🌕"},
+		{time.Date(2020, 01, 23, 10, 0, 0, 0, pst), 4, "Lunar New Year Sale", "🌑"},
 	}
 
 	for _, v := range upcomingSales {
