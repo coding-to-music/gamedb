@@ -82,7 +82,7 @@ require (
 	github.com/sendgrid/sendgrid-go v3.5.0+incompatible
 	github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf // indirect
 	github.com/streadway/amqp v0.0.0-20200108173154-1c71cc93ed71
-	github.com/tdewolff/minify/v2 v2.6.3
+	github.com/tdewolff/minify/v2 v2.7.0
 	github.com/temoto/robotstxt v1.1.1 // indirect
 	github.com/tidwall/pretty v1.0.0 // indirect
 	github.com/uber-go/atomic v1.4.0 // indirect
@@ -91,12 +91,13 @@ require (
 	github.com/yohcop/openid-go v1.0.0
 	go.mongodb.org/mongo-driver v1.2.1
 	go.uber.org/atomic v1.4.0 // indirect
-	golang.org/x/crypto v0.0.0-20191227163750-53104e6ec876
+	golang.org/x/crypto v0.0.0-20200108215511-5d647ca15757
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sys v0.0.0-20200107162124-548cf772de50 // indirect
 	golang.org/x/text v0.3.2
 	golang.org/x/time v0.0.0-20191024005414-555d28b269f0 // indirect
 	golang.org/x/tools v0.0.0-20200108203644-89082a384178 // indirect
+	google.golang.org/genproto v0.0.0-20200108215221-bd8f9a0ef82f // indirect
 	google.golang.org/grpc v1.26.0
 	gopkg.in/djherbis/atime.v1 v1.0.0 // indirect
 	gopkg.in/djherbis/stream.v1 v1.2.0 // indirect
