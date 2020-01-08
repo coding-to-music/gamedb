@@ -37,7 +37,6 @@ func appPlayersHandler(messages []*rabbit.Message) {
 		}
 
 		// Get apps
-		appMap := map[int]sql.App{}
 		apps, err := sql.GetAppsByID(payload.IDs, []string{"id", "twitch_id"})
 		if err != nil {
 			log.Err(err, payload.IDs)
@@ -45,147 +44,139 @@ func appPlayersHandler(messages []*rabbit.Message) {
 			return
 		}
 
-		for _, v := range apps {
-			appMap[v.ID] = v
-		}
+		for _, app := range apps {
 
-		for _, appID := range payload.IDs {
+			var wg sync.WaitGroup
 
-			app, ok := appMap[appID]
-			if ok {
+			// Reads
+			wg.Add(1)
+			var viewers int
+			go func() {
 
-				var wg sync.WaitGroup
+				defer wg.Done()
 
-				// Reads
-				wg.Add(1)
-				var viewers int
-				go func() {
-
-					defer wg.Done()
-
-					var err error
-					viewers, err = getAppTwitchStreamers(app.TwitchID)
-					if err != nil {
-						log.Err(err, payload.IDs)
-						sendToRetryQueue(message)
-						return
-					}
-				}()
-
-				wg.Add(1)
-				var appPlayersWeek int64
-				go func() {
-
-					defer wg.Done()
-
-					var err error
-					appPlayersWeek, err = getAppTopPlayersWeek(appID)
-					if err != nil {
-						log.Err(err, payload.IDs)
-						sendToRetryQueue(message)
-						return
-					}
-				}()
-
-				wg.Add(1)
-				var appPlayersWeekAverage float64
-				go func() {
-
-					defer wg.Done()
-
-					var err error
-					appPlayersWeekAverage, err = getAppAveragePlayersWeek(appID)
-					if err != nil {
-						log.Err(err, payload.IDs)
-						sendToRetryQueue(message)
-						return
-					}
-				}()
-
-				wg.Add(1)
-				var appPlayersAlltime int64
-				go func() {
-
-					defer wg.Done()
-
-					var err error
-					appPlayersAlltime, err = getAppTopPlayersAlltime(appID)
-					if err != nil {
-						log.Err(err, payload.IDs)
-						sendToRetryQueue(message)
-						return
-					}
-				}()
-
-				wg.Add(1)
-				var appTrend int64
-				go func() {
-
-					defer wg.Done()
-
-					var err error
-					appTrend, err = getAppTrendValue(appID)
-					if err != nil {
-						log.Err(err, payload.IDs)
-						sendToRetryQueue(message)
-						return
-					}
-				}()
-
-				wg.Add(1)
-				var appPlayersNow int
-				go func() {
-
-					defer wg.Done()
-
-					var err error
-					appPlayersNow, err = getAppOnlinePlayers(appID)
-					if err != nil {
-						steam.LogSteamError(err, payload.IDs)
-						sendToRetryQueue(message)
-						return
-					}
-				}()
-
-				wg.Wait()
-
-				if message.ActionTaken {
-					continue
+				var err error
+				viewers, err = getAppTwitchStreamers(app.TwitchID)
+				if err != nil {
+					log.Err(err, payload.IDs)
+					sendToRetryQueue(message)
+					return
 				}
+			}()
 
-				// Save counts to Influx
-				wg.Add(1)
-				go func() {
+			wg.Add(1)
+			var appPlayersWeek int64
+			go func() {
 
-					defer wg.Done()
+				defer wg.Done()
 
-					err = saveAppPlayerToInflux(appID, viewers, appPlayersNow)
-					if err != nil {
-						log.Err(err, payload.IDs)
-						sendToRetryQueue(message)
-						return
-					}
-				}()
-
-				// Save to MySQL
-				wg.Add(1)
-				go func() {
-
-					defer wg.Done()
-
-					err = updateAppPlayerInfoRow(appID, appTrend, appPlayersWeek, appPlayersAlltime, appPlayersWeekAverage)
-					if err != nil {
-						log.Err(err, payload.IDs)
-						sendToRetryQueue(message)
-						return
-					}
-				}()
-
-				wg.Wait()
-
-				if message.ActionTaken {
-					continue
+				var err error
+				appPlayersWeek, err = getAppTopPlayersWeek(app.ID)
+				if err != nil {
+					log.Err(err, payload.IDs)
+					sendToRetryQueue(message)
+					return
 				}
+			}()
+
+			wg.Add(1)
+			var appPlayersWeekAverage float64
+			go func() {
+
+				defer wg.Done()
+
+				var err error
+				appPlayersWeekAverage, err = getAppAveragePlayersWeek(app.ID)
+				if err != nil {
+					log.Err(err, payload.IDs)
+					sendToRetryQueue(message)
+					return
+				}
+			}()
+
+			wg.Add(1)
+			var appPlayersAlltime int64
+			go func() {
+
+				defer wg.Done()
+
+				var err error
+				appPlayersAlltime, err = getAppTopPlayersAlltime(app.ID)
+				if err != nil {
+					log.Err(err, payload.IDs)
+					sendToRetryQueue(message)
+					return
+				}
+			}()
+
+			wg.Add(1)
+			var appTrend int64
+			go func() {
+
+				defer wg.Done()
+
+				var err error
+				appTrend, err = getAppTrendValue(app.ID)
+				if err != nil {
+					log.Err(err, payload.IDs)
+					sendToRetryQueue(message)
+					return
+				}
+			}()
+
+			wg.Add(1)
+			var appPlayersNow int
+			go func() {
+
+				defer wg.Done()
+
+				var err error
+				appPlayersNow, err = getAppOnlinePlayers(app.ID)
+				if err != nil {
+					steam.LogSteamError(err, payload.IDs)
+					sendToRetryQueue(message)
+					return
+				}
+			}()
+
+			wg.Wait()
+
+			if message.ActionTaken {
+				continue
+			}
+
+			// Save counts to Influx
+			wg.Add(1)
+			go func() {
+
+				defer wg.Done()
+
+				err = saveAppPlayerToInflux(app.ID, viewers, appPlayersNow)
+				if err != nil {
+					log.Err(err, payload.IDs)
+					sendToRetryQueue(message)
+					return
+				}
+			}()
+
+			// Save to MySQL
+			wg.Add(1)
+			go func() {
+
+				defer wg.Done()
+
+				err = updateAppPlayerInfoRow(app.ID, appTrend, appPlayersWeek, appPlayersAlltime, appPlayersWeekAverage)
+				if err != nil {
+					log.Err(err, payload.IDs)
+					sendToRetryQueue(message)
+					return
+				}
+			}()
+
+			wg.Wait()
+
+			if message.ActionTaken {
+				continue
 			}
 		}
 
