@@ -471,26 +471,32 @@
 
                         {{ if gt (len .Album.Tracks) 0 }}
 
-                            <div class="table-responsive">
-                                <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"],[1, "asc"]]'>
-                                    <thead class="thead-light">
-                                    <tr>
-                                        <th scope="col" class="thin">Disk</th>
-                                        <th scope="col" class="thin">Track</th>
-                                        <th scope="col">Name</th>
-                                        <th scope="col" class="thin">Duration</th>
-                                    </tr>
-                                    </thead>
-                                    {{ range $key, $value := .Album.Tracks }}
+                            {{ range $key, $value := .Album.Albums }}
+
+                                <div class="table-responsive mb-4">
+                                    <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
+                                        <thead class="thead-light">
                                         <tr>
-                                            <td>{{ .DiscNumber }}</td>
-                                            <td>{{ .TrackNumber }}</td>
-                                            <td>{{ .OriginalName }}</td>
-                                            <td>{{ .Minutes }}:{{ .Seconds }}</td>
+                                            <th scope="col" class="thin">#</th>
+                                            <th scope="col">Disc {{ $key }}</th>
+                                            <th scope="col" class="thin">Duration</th>
                                         </tr>
-                                    {{ end }}
-                                </table>
-                            </div>
+                                        </thead>
+                                        {{ range $key, $value := $value }}
+                                            <tr>
+                                                <td>{{ .TrackNumber }}</td>
+                                                <td>{{ .OriginalName }}</td>
+                                                <td>{{ .Minutes }}:{{ .Seconds }}</td>
+                                            </tr>
+                                        {{ end }}
+                                    </table>
+                                </div>
+
+                            {{ end }}
+
+                            {{ if ne .Album.CDNAssets.AlbumCover "" }}
+                                <img src="https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/{{.App.ID}}/{{.Album.CDNAssets.AlbumCover}}.jpg" alt="Album Cover" id="album-cover">
+                            {{ end }}
 
                         {{ else }}
 

@@ -17,6 +17,21 @@ type AlbumMetaData struct {
 	Tracks map[string]AlbumTrack `json:"tracks"`
 }
 
+func (a AlbumMetaData) Albums() (albums map[string][]AlbumTrack) {
+
+	albums = map[string][]AlbumTrack{}
+
+	for _, v := range a.Tracks {
+		if _, ok := albums[v.DiscNumber]; ok {
+			albums[v.DiscNumber] = append(albums[v.DiscNumber], v)
+		} else {
+			albums[v.DiscNumber] = []AlbumTrack{v}
+		}
+	}
+
+	return albums
+}
+
 type AlbumTrack struct {
 	OriginalName string `json:"originalname"`
 	DiscNumber   string `json:"discnumber"`
