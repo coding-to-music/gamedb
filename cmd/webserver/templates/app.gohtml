@@ -71,7 +71,7 @@
                             <a class="nav-link nav-link-small" data-toggle="tab" href="#bundles" role="tab">Bundles</a>
                         </li>
                     {{end}}
-                    <li class="nav-item d-none">
+                    <li class="nav-item">
                         <a class="nav-link nav-link-small" data-toggle="tab" href="#similar" role="tab">Similar</a>
                     </li>
                     {{if gt (len .Achievements) 0}}
@@ -703,11 +703,18 @@
                     <div class="tab-pane" id="similar" role="tabpanel">
 
                         <h5>Similar by tag</h5>
-                        {{ range $key, $value := .App.GetRelatedIDs }}
-                            <img src="https://steamcdn-a.akamaihd.net/steam/apps/{{$value}}/header_292x136.jpg" alt="">
-                        {{ end }}
+                        <div class="row">
+                            {{ range $key, $value := .Related }}
+                                <div class="col-6 col-md-4 col-lg-3 mb-4">
+                                    <a href="{{ .GetPath }}">
+                                        <img src="https://steamcdn-a.akamaihd.net/steam/apps/{{ .ID }}/header_292x136.jpg" alt="{{ .GetName }}" data-toggle="tooltip" data-placement="top" title="{{ .GetName }}">
+                                    </a>
+                                </div>
+                            {{ end }}
+                        </div>
 
                         <h5>People who own this game also own</h5>
+                        <p>Coming soon</p>
 
                     </div>
 
