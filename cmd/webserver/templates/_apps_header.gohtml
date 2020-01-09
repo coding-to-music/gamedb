@@ -31,13 +31,13 @@
                     <a class="nav-link" href="/upcoming" role="tab"><i class="fas fa-gamepad"></i> Upcoming</a>
                 {{end}}
             </li>
-            <li class="nav-item">
-                {{if endsWith .Path "/apps/trending" }}
-                    <span class="nav-link active" role="tab"><i class="fas fa-gamepad"></i> Trending</span>
-                {{else}}
-                    <a class="nav-link" href="/apps/trending" role="tab"><i class="fas fa-gamepad"></i> Trending</a>
-                {{end}}
-            </li>
+            {{/*            <li class="nav-item">*/}}
+            {{/*                {{if endsWith .Path "/apps/trending" }}*/}}
+            {{/*                    <span class="nav-link active" role="tab"><i class="fas fa-gamepad"></i> Trending</span>*/}}
+            {{/*                {{else}}*/}}
+            {{/*                    <a class="nav-link" href="/apps/trending" role="tab"><i class="fas fa-gamepad"></i> Trending</a>*/}}
+            {{/*                {{end}}*/}}
+            {{/*            </li>*/}}
             <li class="nav-item">
                 {{if endsWith .Path "/achievements" }}
                     <span class="nav-link active" role="tab"><i class="fas fa-gamepad"></i> Achievements</span>
