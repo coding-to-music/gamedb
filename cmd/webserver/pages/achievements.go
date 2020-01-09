@@ -43,7 +43,7 @@ func achievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	gorm = gorm.Model(sql.App{})
 	gorm = gorm.Select([]string{"id", "name", "icon", "achievements", "achievements_count", "achievements_average_completion", "prices"})
 	gorm = gorm.Limit(100)
-	gorm = gorm.Where("achievements_count > 0")
+	gorm = gorm.Where("achievements_count > ?", 0)
 
 	columns := map[string]string{
 		"1": "achievements_count",
