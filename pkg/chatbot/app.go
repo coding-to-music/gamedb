@@ -20,7 +20,12 @@ func (c CommandApp) Output(input string) (message discordgo.MessageSend, err err
 	matches := c.Regex().FindStringSubmatch(input)
 
 	app, err := sql.SearchApps(matches[2], nil)
-	if err != nil {
+	if err == sql.ErrRecordNotFound || err == sql.ErrInvalidAppID {
+
+		message.Content = "App **" + matches[2] + "** not found"
+		return message, nil
+
+	} else if err != nil {
 		return message, err
 	}
 

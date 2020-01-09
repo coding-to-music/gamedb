@@ -21,7 +21,12 @@ func (c CommandGroup) Output(input string) (message discordgo.MessageSend, err e
 	matches := c.Regex().FindStringSubmatch(input)
 
 	group, err := mongo.SearchGroups(matches[2])
-	if err != nil {
+	if err == mongo.ErrNoDocuments {
+
+		message.Content = "Group **" + matches[2] + "** not found"
+		return message, nil
+
+	} else if err != nil {
 		return message, err
 	}
 
