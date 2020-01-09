@@ -46,59 +46,61 @@
                     <li class="nav-item">
                         <a class="nav-link nav-link-small" data-toggle="tab" href="#players" role="tab">Players</a>
                     </li>
-                    {{if gt (len .Prices) 0}}
+                    {{ if gt (len .Prices) 0 }}
                         <li class="nav-item">
                             <a class="nav-link nav-link-small" data-toggle="tab" href="#prices" role="tab">Prices</a>
                         </li>
-                    {{end}}
+                    {{ end }}
                     {{ if gt (len .Album.Tracks) 0 }}
                         <li class="nav-item">
                             <a class="nav-link nav-link-small" data-toggle="tab" href="#tracks" role="tab">Tracks</a>
                         </li>
                     {{ end }}
-                    {{if gt (len .DLCs) 0}}
+                    {{ if gt (len .DLCs) 0 }}
                         <li class="nav-item">
                             <a class="nav-link nav-link-small" data-toggle="tab" href="#dlc" role="tab">DLC</a>
                         </li>
-                    {{end}}
-                    {{if gt (len .Packages) 0}}
+                    {{ end }}
+                    {{ if gt (len .Packages) 0 }}
                         <li class="nav-item">
                             <a class="nav-link nav-link-small" data-toggle="tab" href="#packages" role="tab">Packages</a>
                         </li>
-                    {{end}}
-                    {{if gt (len .Bundles) 0}}
+                    {{ end }}
+                    {{ if gt (len .Bundles) 0 }}
                         <li class="nav-item">
                             <a class="nav-link nav-link-small" data-toggle="tab" href="#bundles" role="tab">Bundles</a>
                         </li>
-                    {{end}}
-                    <li class="nav-item">
-                        <a class="nav-link nav-link-small" data-toggle="tab" href="#similar" role="tab">Similar</a>
-                    </li>
-                    {{if gt (len .Achievements) 0}}
+                    {{ end }}
+                    {{ if gt (len .Related) 0 }}
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-small" data-toggle="tab" href="#similar" role="tab">Similar</a>
+                        </li>
+                    {{ end }}
+                    {{ if gt (len .Achievements) 0 }}
                         <li class="nav-item">
                             <a class="nav-link nav-link-small" data-toggle="tab" href="#achievements" role="tab">Achievements</a>
                         </li>
-                    {{end}}
-                    {{if gt .App.Items 0}}
+                    {{ end }}
+                    {{ if gt .App.Items 0 }}
                         <li class="nav-item">
                             <a class="nav-link nav-link-small" data-toggle="tab" href="#items" role="tab">Items</a>
                         </li>
-                    {{end}}
-                    {{if gt (len .NewsIDs) 0}}
+                    {{ end }}
+                    {{ if gt (len .NewsIDs) 0 }}
                         <li class="nav-item">
                             <a class="nav-link nav-link-small" data-toggle="tab" href="#news" role="tab">News</a>
                         </li>
-                    {{end}}
-                    {{if gt .Reviews.GetTotal 0}}
+                    {{ end }}
+                    {{ if gt .Reviews.GetTotal 0 }}
                         <li class="nav-item">
                             <a class="nav-link nav-link-small" data-toggle="tab" href="#reviews" role="tab">Reviews</a>
                         </li>
-                    {{end}}
-                    {{if or (gt (len .Screenshots) 0) (gt (len .Movies) 0)}}
+                    {{ end }}
+                    {{ if or (gt (len .Screenshots) 0) (gt (len .Movies) 0) }}
                         <li class="nav-item">
                             <a class="nav-link nav-link-small" data-toggle="tab" href="#media" role="tab">Media</a>
                         </li>
-                    {{end}}
+                    {{ end }}
                     <li class="nav-item">
                         <a class="nav-link nav-link-small" data-toggle="tab" href="#dev" role="tab">Dev</a>
                     </li>
