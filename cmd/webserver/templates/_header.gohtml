@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css" integrity="sha256-R91pD48xW+oHbpJYGn5xR0Q7tMhH4xOrWn1QqMRINtA=" crossorigin="anonymous"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.0.3/nouislider.min.css" integrity="sha256-IQnSeew8zCA+RvM5fNRro/UY0Aib18qU2WBwGOHZOP0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.0.3/nouislider.min.css" integrity="sha256-IQnSeew8zCA+RvM5fNRro/UY0Aib18qU2WBwGOHZOP0=" crossorigin="anonymous"/>
     {{ range .CSSFiles }}
         <link rel="stylesheet" href="{{ .URL }}" integrity="{{ .Integrity }}" crossorigin="anonymous">
     {{ end }}
@@ -119,8 +119,29 @@
             <div class="collapse navbar-collapse" id="navbar">
                 <ul class="navbar-nav mr-auto">
 
-                    <li class="nav-item {{if startsWith .Path "/apps" }}active{{end}}">
-                        <a class="nav-link" href="/apps">Games</a>
+                    <li class="nav-item dropdown {{if .IsAppsPage }}active{{end}}">
+                        <a class="nav-link dropdown-toggle d-lg-none" href="#" data-toggle="dropdown">Games</a>
+                        <a class="nav-link dropdown-toggle d-none d-lg-block" href="/apps?types=game" data-toggle="dropdown">Games</a>
+                        <div class="dropdown-menu">
+
+                            <a class="dropdown-item" href="/apps">All Apps</a>
+                            <a class="dropdown-item" href="/new-releases">New Releases</a>
+                            <a class="dropdown-item" href="/upcoming">Upcoming</a>
+                            {{/*<a class="dropdown-item" href="/apps/trending">Trending</a>*/}}
+                            <a class="dropdown-item" href="/achievements">Achievements</a>
+
+                            <div class="dropdown-divider"></div>
+
+                            <a class="dropdown-item" href="/packages">Packages</a>
+                            <a class="dropdown-item" href="/bundles">Bundles</a>
+                            <a class="dropdown-item" href="/price-changes">Price Changes</a>
+                            <a class="dropdown-item" href="/changes">Product Changes</a>
+
+                            <div class="dropdown-divider"></div>
+
+                            <a class="dropdown-item" href="/coop">Co-op Games</a>
+
+                        </div>
                     </li>
 
                     <li class="nav-item {{if startsWith .Path "/players" }}active{{end}}">
@@ -151,20 +172,9 @@
                         <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">More</a>
                         <div class="dropdown-menu">
 
-                            <a class="dropdown-item" href="/packages">Packages</a>
-                            <a class="dropdown-item" href="/bundles">Bundles</a>
-                            <a class="dropdown-item" href="/price-changes">Price Changes</a>
-                            <a class="dropdown-item" href="/changes">Product Changes</a>
-
-                            <div class="dropdown-divider"></div>
-
-                            <a class="dropdown-item" href="/coop">Co-op Games</a>
-                            <a class="dropdown-item" href="/experience">Experience Table</a>
-
-                            <div class="dropdown-divider"></div>
-
                             <a class="dropdown-item" href="/chat">Chat</a>
                             <a class="dropdown-item" href="/contact">Contact</a>
+                            <a class="dropdown-item" href="/experience">Experience Table</a>
                             <a class="dropdown-item" href="/info">Info</a>
 
                             <div class="dropdown-divider"></div>
@@ -173,6 +183,7 @@
                             <a class="dropdown-item" href="/steam-api">API (Steam)</a>
                             <a class="dropdown-item" href="/chat-bot">Chat Bot</a>
                             <a class="dropdown-item" href="/queues">Queues</a>
+
                         </div>
                     </li>
 

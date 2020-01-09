@@ -459,12 +459,25 @@ func (t GlobalTemplate) GetVersionHash() string {
 	return ""
 }
 
+func (t GlobalTemplate) IsAppsPage() bool {
+	return helpers.SliceHasString([]string{"apps", "new-releases", "upcoming", "apps/trending", "achievements", "packages", "bundles", "price-changes", "changes", "coop"}, strings.TrimPrefix(t.Path, "/"))
+}
+
 func (t GlobalTemplate) IsStatsPage() bool {
 	return helpers.SliceHasString([]string{"stats", "tags", "genres", "publishers", "developers"}, strings.TrimPrefix(t.Path, "/"))
 }
 
 func (t GlobalTemplate) IsMorePage() bool {
-	return helpers.SliceHasString([]string{"packages", "bundles", "price-changes", "changes", "chat", "chat-bot", "contact", "coop", "experience", "info", "queues", "info", "steam-api", "api"}, strings.TrimPrefix(t.Path, "/"))
+
+	if strings.HasPrefix(t.Path, "/chat") {
+		return true
+	}
+
+	if strings.HasPrefix(t.Path, "/experience") {
+		return true
+	}
+
+	return helpers.SliceHasString([]string{"chat-bot", "contact", "info", "queues", "info", "steam-api", "api"}, strings.TrimPrefix(t.Path, "/"))
 }
 
 func (t GlobalTemplate) IsSidebarPage() bool {
