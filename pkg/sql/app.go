@@ -1210,13 +1210,19 @@ func SearchApps(s string, columns []string) (app App, err error) {
 		}
 	}
 
-	i, err := strconv.Atoi(s)
-	if err != nil {
-		return app, err
-	}
+	if helpers.RegexNumbers.MatchString(s) {
 
-	if helpers.IsValidAppID(i) {
-		db = db.First(&app, "id = ?", s)
+		i, err := strconv.Atoi(s)
+		if err != nil {
+			return app, err
+		}
+
+		if helpers.IsValidAppID(i) {
+			db = db.First(&app, "id = ?", i)
+		} else {
+			return app, ErrInvalidAppID
+		}
+
 	} else {
 		db = db.First(&app, "name = ?", s)
 	}
