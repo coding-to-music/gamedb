@@ -467,6 +467,15 @@ func (t GlobalTemplate) IsStatsPage() bool {
 	return helpers.SliceHasString([]string{"stats", "tags", "genres", "publishers", "developers"}, strings.TrimPrefix(t.Path, "/"))
 }
 
+func (t GlobalTemplate) IsSettingsPage() bool {
+
+	if strings.HasPrefix(t.Path, "/signup") {
+		return true
+	}
+
+	return helpers.SliceHasString([]string{"login", "logout", "forgot", "settings", "admin"}, strings.TrimPrefix(t.Path, "/"))
+}
+
 func (t GlobalTemplate) IsMorePage() bool {
 
 	if strings.HasPrefix(t.Path, "/chat") {

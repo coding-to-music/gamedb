@@ -201,35 +201,32 @@
                         </span>
                     </li>
 
-                    {{ if eq .Env "local" }}
-                        {{ if .IsLoggedIn }}
+                    <li class="nav-item dropdown {{ if .IsSettingsPage }}active{{end}}">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">{{ if .PlayerName }}{{ .PlayerName }}{{ else }}Account{{ end }}</a>
+                        <div class="dropdown-menu">
 
-                            <li class="nav-item dropdown {{if .IsMorePage }}active{{end}}">
-                                <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">{{ if .PlayerName }}{{ .PlayerName }}{{ else }}Account{{ end }}</a>
-                                <div class="dropdown-menu">
-                                    {{ if .PlayerName }}
-                                        <a class="dropdown-item" href="/players/{{ .PlayerID }}"><i class="fas fa-user fa-fw"></i> Profile</a>
-                                    {{ end }}
+                            {{ if .IsLoggedIn }}
 
-                                    {{ if .IsAdmin }}
-                                        <a class="dropdown-item" href="/admin"><i class="fas fa-users-cog fa-fw"></i> Admin</a>
-                                    {{ end }}
+                                {{ if .PlayerName }}
+                                    <a class="dropdown-item" href="/players/{{ .PlayerID }}"><i class="fas fa-user fa-fw"></i> Profile</a>
+                                {{ end }}
 
-                                    {{ if .IsLoggedIn }}
-                                        <a class="dropdown-item" href="/settings"><i class="fas fa-cog fa-fw"></i> Settings</a>
-                                        <a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt fa-fw"></i> Logout</a>
-                                    {{ end }}
-                                </div>
-                            </li>
+                                <a class="dropdown-item" href="/settings"><i class="fas fa-cog fa-fw"></i> Settings</a>
+                                <a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt fa-fw"></i> Logout</a>
 
-                        {{ else }}
+                                {{ if .IsAdmin }}
+                                    <a class="dropdown-item" href="/admin"><i class="fas fa-users-cog fa-fw"></i> Admin</a>
+                                {{ end }}
 
-                            <li class="nav-item {{if startsWith .Path "/login" }}active{{end}}">
-                                <a class="nav-link" href="/login">Login</a>
-                            </li>
+                            {{ else }}
 
-                        {{ end }}
-                    {{ end }}
+                                <a class="dropdown-item" href="/login"><i class="fas fa-user fa-fw"></i> Login</a>
+                                <a class="dropdown-item" href="/signup"><i class="fas fa-user fa-fw"></i> Signup</a>
+
+                            {{ end }}
+
+                        </div>
+                    </li>
 
                     <li class="nav-item dropdown" id="header-flag">
                         <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
