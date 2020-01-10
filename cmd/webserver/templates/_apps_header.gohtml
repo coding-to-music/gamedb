@@ -18,17 +18,17 @@
                 {{end}}
             </li>
             <li class="nav-item">
-                {{if endsWith .Path "/new-releases" }}
-                    <span class="nav-link active" role="tab"><i class="fas fa-gamepad"></i> New Releases</span>
-                {{else}}
-                    <a class="nav-link" href="/new-releases" role="tab"><i class="fas fa-gamepad"></i> New Releases</a>
-                {{end}}
-            </li>
-            <li class="nav-item">
                 {{if endsWith .Path "/upcoming" }}
                     <span class="nav-link active" role="tab"><i class="fas fa-gamepad"></i> Upcoming</span>
                 {{else}}
                     <a class="nav-link" href="/upcoming" role="tab"><i class="fas fa-gamepad"></i> Upcoming</a>
+                {{end}}
+            </li>
+            <li class="nav-item">
+                {{if endsWith .Path "/new-releases" }}
+                    <span class="nav-link active" role="tab"><i class="fas fa-gamepad"></i> New Releases</span>
+                {{else}}
+                    <a class="nav-link" href="/new-releases" role="tab"><i class="fas fa-gamepad"></i> New Releases</a>
                 {{end}}
             </li>
             {{/*            <li class="nav-item">*/}}
