@@ -4,7 +4,12 @@ if ($appPage.length > 0) {
 
     $('#media video').on('click', function (e) {
         const video = $(this)[0];
-        video.paused ? video.play() : video.pause();
+        if (video.paused) {
+            pauseAllVideos();
+            video.play()
+        } else {
+            video.pause()
+        }
     });
 
     $('.followers-link').on('click', function (e) {
@@ -66,12 +71,16 @@ if ($appPage.length > 0) {
 
         // On leaving tab
         if (from.attr('href') === '#media') {
-            $('video').each(function (index) {
-                $(this)[0].pause();
-                $(this)[0].currentTime = 0;
-            });
+            pauseAllVideos();
         }
     });
+
+    function pauseAllVideos() {
+        $('video').each(function (index) {
+            $(this)[0].pause();
+            // $(this)[0].currentTime = 0;
+        });
+    }
 
     // Websockets
     websocketListener('app', function (e) {
