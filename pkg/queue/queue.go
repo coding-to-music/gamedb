@@ -75,6 +75,7 @@ var (
 		{name: QueuePackages, consumer: nil},
 		{name: QueuePlayers, consumer: nil},
 		{name: QueueChanges, consumer: nil},
+		{name: QueueDelay, consumer: nil},
 	}
 
 	QueueCronsDefinitions = []queueDef{
