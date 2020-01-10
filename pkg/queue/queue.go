@@ -84,6 +84,7 @@ var (
 		{name: QueuePlayers, consumer: nil},
 		{name: QueuePlayerRanks, consumer: nil},
 		{name: QueueSteam, consumer: nil},
+		{name: QueueDelay, consumer: nil},
 	}
 )
 
