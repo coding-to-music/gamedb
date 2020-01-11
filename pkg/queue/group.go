@@ -28,7 +28,6 @@ import (
 )
 
 var (
-	groupXMLRateLimit    = ratelimit.New(1, ratelimit.WithCustomDuration(1, time.Second*60), ratelimit.WithoutSlack)
 	groupScrapeRateLimit = ratelimit.New(1, ratelimit.WithCustomDuration(1, time.Second), ratelimit.WithoutSlack)
 )
 
