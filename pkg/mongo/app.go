@@ -38,7 +38,7 @@ type App struct {
 	GroupFollowers                int                `bson:"group_followers"`                 //
 	Homepage                      string             `bson:"homepage"`                        //
 	Icon                          string             `bson:"icon"`                            //
-	ID                            int                `bson:"id;primary_key"`                  //
+	ID                            int                `bson:"_id"`                             //
 	Install                       string             `bson:"install"`                         // map[string]interface{}
 	IsFree                        bool               `bson:"is_free"`                         //
 	Items                         int                `bson:"items"`                           //
