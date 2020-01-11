@@ -241,11 +241,13 @@ func callback(r *http.Request, c ConnectionInterface, event mongo.EventEnum, tok
 
 			ua := r.UserAgent()
 			err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID, UserAgent: &ua})
+			if err == nil {
+				log.Info(log.LogNameTriggerUpdate, r, ua)
+			}
 			err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
 			if err != nil {
 				log.Err(err, r)
 			} else {
-				log.Info(log.LogNameTriggerUpdate, r, r.UserAgent())
 				err = session.SetFlash(r, helpers.SessionGood, "Player has been queued for an update")
 				log.Err(err, r)
 			}

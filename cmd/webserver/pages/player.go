@@ -69,11 +69,12 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 			ua := r.UserAgent()
 			err = queue.ProducePlayer(queue.PlayerMessage{ID: idx, UserAgent: &ua})
+			if err == nil {
+				log.Info(log.LogNameTriggerUpdate, r, ua)
+			}
 			err = helpers.IgnoreErrors(err, memcache.ErrInQueue, queue.ErrIsBot)
 			if err != nil {
 				log.Err(err)
-			} else {
-				log.Info(log.LogNameTriggerUpdate, r, r.UserAgent())
 			}
 
 			// Template
@@ -225,6 +226,9 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 		ua := r.UserAgent()
 		err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID, UserAgent: &ua})
+		if err == nil {
+			log.Info(log.LogNameTriggerUpdate, r, ua)
+		}
 		err = helpers.IgnoreErrors(err, queue.ErrIsBot)
 		if err == memcache.ErrInQueue {
 			t.addToast(Toast{Title: "Update", Message: "Player is already queued for an update"})
@@ -232,7 +236,6 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 			log.Err(err, r)
 			t.addToast(Toast{Title: "Update", Message: "Something went wrong"})
 		} else {
-			log.Info(log.LogNameTriggerUpdate, r, r.UserAgent())
 			t.addToast(Toast{Title: "Update", Message: "Player has been queued for an update"})
 		}
 	}
@@ -425,11 +428,12 @@ func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
 
 		ua := r.UserAgent()
 		err = queue.ProducePlayer(queue.PlayerMessage{ID: friendID, UserAgent: &ua})
+		if err == nil {
+			log.Info(log.LogNameTriggerUpdate, r, ua)
+		}
 		err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
 		if err != nil {
 			log.Err(err)
-		} else {
-			log.Info(log.LogNameTriggerUpdate, r, r.UserAgent())
 		}
 	}
 
@@ -1000,12 +1004,13 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		ua := r.UserAgent()
 		err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID, UserAgent: &ua})
+		if err == nil {
+			log.Info(log.LogNameTriggerUpdate, r, ua)
+		}
 		err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
 		if err != nil {
 			log.Err(err, r)
 			return "Something has gone wrong", false, err
-		} else {
-			log.Info(log.LogNameTriggerUpdate, r, r.UserAgent())
 		}
 
 		return message, true, err

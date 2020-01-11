@@ -83,12 +83,14 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 
 		ua := r.UserAgent()
 		err = queue.ProduceGroup(queue.GroupMessage{ID: group.ID, UserAgent: &ua})
+		if err == nil {
+			log.Info(log.LogNameTriggerUpdate, r, ua)
+		}
 		err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
 		if err != nil {
 			log.Err(err, r)
 		} else {
 			t.addToast(Toast{Title: "Update", Message: "Group has been queued for an update"})
-			log.Info(log.LogNameTriggerUpdate, r, r.UserAgent())
 		}
 	}()
 
