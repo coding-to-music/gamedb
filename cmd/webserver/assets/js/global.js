@@ -189,7 +189,6 @@ function addDataTablesRow(options, data, limit, $table) {
     observeLazyImages($row.find('img[data-lazy]'));
 }
 
-// Loading icon
 (function () {
 
     // const originalXhr = new window.XMLHttpRequest();
@@ -219,32 +218,51 @@ function addDataTablesRow(options, data, limit, $table) {
     });
 })();
 
+const cookieName = 'gamedb-session-2';
+
 function setCookieFlag(key, value) {
 
-    const cookieName = 'gamedb-session-2';
+    let cookieObj = getSessionCookie();
 
-    let cookie = Cookies.get(cookieName);
-    if (cookie === undefined || cookie === '') {
-        cookie = {};
-    } else {
-        cookie = JSON.parse(cookie);
-    }
+    cookieObj[key] = value;
 
-    cookie[key] = value;
-
-    Cookies.set(cookieName, JSON.stringify(cookie), {expires: 30, secure: user.isProd});
+    return Cookies.set(cookieName, JSON.stringify(cookieObj), {expires: 30, secure: user.isProd});
 }
 
+function getSessionCookie(key = null) {
+
+    let cookieText = Cookies.get(cookieName);
+    let cookieObj = {};
+
+    if (cookieText) {
+        cookieObj = JSON.parse(cookieText);
+    }
+
+    if (key) {
+        return cookieObj[key]
+    } else {
+        return cookieObj
+    }
+}
+
+//
+const $darkMode = $('#dark-mode');
+const $sun = $darkMode.find('.fa-sun');
+const $moon = $darkMode.find('.fa-moon');
+
+// Set default dark mode
+let darkMode = getSessionCookie('dark');
+if (darkMode === undefined && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    enableDarkMode();
+}
+
+//
 $('.jumbotron button.close').on('click', function (e) {
     $(this).closest('.jumbotron').slideUp();
     setCookieFlag($(this).attr('data-id'), true);
 });
 
-const $darkMode = $('#dark-mode');
 $darkMode.on('click', function (e) {
-
-    const $sun = $darkMode.find('.fa-sun');
-    const $moon = $darkMode.find('.fa-moon');
 
     if ($sun.hasClass("d-none")) {
 
@@ -254,15 +272,19 @@ $darkMode.on('click', function (e) {
         setCookieFlag('dark', false);
 
     } else {
-
-        $sun.addClass('d-none');
-        $moon.removeClass('d-none');
-        $('body').addClass('dark');
-        setCookieFlag('dark', true);
+        enableDarkMode()
     }
 
     return false;
 });
+
+function enableDarkMode() {
+
+    $sun.addClass('d-none');
+    $moon.removeClass('d-none');
+    $('body').addClass('dark');
+    setCookieFlag('dark', true);
+}
 
 function getOS() {
 
