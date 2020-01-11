@@ -14,9 +14,11 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/helpers/twitch"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
 	influx "github.com/influxdata/influxdb1-client"
 	"github.com/nicklaw5/helix"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type AppPlayerMessage struct {
@@ -355,19 +357,28 @@ func getAppTrendValue(appID int) (trend int64, err error) {
 
 func updateAppPlayerInfoRow(appID int, trend int64, week int64, alltime int64, average float64) (err error) {
 
-	gorm, err := sql.GetMySQLClient()
+	db, err := sql.GetMySQLClient()
 	if err != nil {
 		return err
 	}
 
-	data := map[string]interface{}{
+	// SQL
+	db = db.Table("apps").Where("id = ?", appID).Updates(map[string]interface{}{
 		"player_trend":        trend,
 		"player_peak_week":    week,
 		"player_peak_alltime": alltime,
 		"player_avg_week":     average,
+	})
+	if db.Error != nil {
+		return db.Error
 	}
 
-	gorm.Table("apps").Where("id = ?", appID).Updates(data)
-
-	return gorm.Error
+	// Mongo
+	_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", appID}}, bson.D{
+		{"player_trend", trend},
+		{"player_peak_week", week},
+		{"player_peak_alltime", alltime},
+		{"player_avg_week", average},
+	})
+	return err
 }

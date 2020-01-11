@@ -507,12 +507,21 @@ func saveAppsGroupID(app sql.App, group mongo.Group) (err error) {
 		return err
 	}
 
+	// SQL
 	db = db.Model(&app).Updates(map[string]interface{}{
 		"group_id":        group.ID,
 		"group_followers": group.Members,
 	})
+	if db.Error != nil {
+		return db.Error
+	}
 
-	return db.Error
+	// Mongo
+	_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", app.ID}}, bson.D{
+		{"group_id", group.ID},
+		{"group_followers", group.Members},
+	})
+	return err
 }
 
 func saveGroupToInflux(group mongo.Group) (err error) {
