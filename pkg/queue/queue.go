@@ -247,9 +247,9 @@ func ProduceGroup(payload GroupMessage) (err error) {
 		return errors.New("invalid group id: " + payload.ID)
 	}
 
-	if payload.UserAgent != nil && helpers.IsBot(*payload.UserAgent) {
-		return ErrIsBot
-	}
+	// if payload.UserAgent != nil && helpers.IsBot(*payload.UserAgent) {
+	// 	return ErrIsBot
+	// }
 
 	payload.ID, err = helpers.UpgradeGroupID(payload.ID)
 	if err != nil {
@@ -295,9 +295,9 @@ func ProducePlayer(payload PlayerMessage) (err error) {
 		return errors.New("invalid player id: " + strconv.FormatInt(payload.ID, 10))
 	}
 
-	if payload.UserAgent != nil && helpers.IsBot(*payload.UserAgent) {
-		return ErrIsBot
-	}
+	// if payload.UserAgent != nil && helpers.IsBot(*payload.UserAgent) {
+	// 	return ErrIsBot
+	// }
 
 	mc := memcache.GetClient()
 
