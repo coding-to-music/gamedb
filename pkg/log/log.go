@@ -66,6 +66,24 @@ func (s Severity) toGoole() (severity logging.Severity) {
 	}
 }
 
+func (s Severity) toRollbar() string {
+
+	switch s {
+	case SeverityDebug:
+		return rollbar.DEBUG
+	case SeverityInfo:
+		return rollbar.INFO
+	case SeverityWarning:
+		return rollbar.WARN
+	case SeverityError:
+		return rollbar.ERR
+	case SeverityCritical:
+		return rollbar.CRIT
+	default:
+		return rollbar.ERR
+	}
+}
+
 func (s Severity) string() string {
 
 	switch s {
@@ -256,17 +274,17 @@ func log(interfaces ...interface{}) {
 				})
 			}
 
-			// if entry.severity >= SeverityWarning {
-			//
-			// 	// Rollbar
-			// 	rollbar.Log(rollbar.ERR, entry.toText(SeverityInfo))
-			//
-			// 	// Sentry
-			// 	if entry.error != nil {
-			// 		sentry.CaptureException(entry.error)
-			// 	}
-			// 	sentry.Flush(time.Second * 5)
-			// }
+			if entry.severity >= SeverityWarning {
+
+				// Rollbar
+				rollbar.Log(entry.severity.toRollbar(), entry.toText(entry.severity))
+
+				// Sentry
+				if entry.error != nil {
+					sentry.CaptureException(entry.error)
+				}
+				sentry.Flush(time.Second * 5)
+			}
 		}
 	}
 }
