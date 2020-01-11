@@ -18,8 +18,7 @@ import (
 const debugAuthorID = "145456943912189952"
 
 var (
-	version        string
-	discordSession *discordgo.Session
+	version string
 )
 
 func main() {
@@ -44,7 +43,7 @@ func main() {
 	lmt := limiter.New(&ops).SetMax(1).SetBurst(2)
 
 	//
-	discordSession, err = discordgo.New("Bot " + config.Config.DiscordChatBotToken.Get())
+	discordSession, err := discordgo.New("Bot " + config.Config.DiscordChatBotToken.Get())
 	if err != nil {
 		panic("Can't create Discord session")
 	}
@@ -70,10 +69,12 @@ func main() {
 
 			if command.Regex().MatchString(msg) {
 
-				saveToInflux(m, command)
+				go saveToInflux(m, command)
 
-				err := discordSession.ChannelTyping(m.ChannelID)
-				log.Err(err)
+				go func() {
+					err := discordSession.ChannelTyping(m.ChannelID)
+					log.Err(err)
+				}()
 
 				chanID := m.ChannelID
 
