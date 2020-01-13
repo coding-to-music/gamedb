@@ -16,7 +16,7 @@
 
         {{ template "_flashes" . }}
 
-        <div class="card">
+        <div class="card mb-4">
             <div class="card-body">
 
                 {{ range $key, $value := .Commands }}
@@ -45,6 +45,12 @@
                     </div>
 
                 {{ end }}
+
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
 
                 <h5>Recent Requests</h5>
 
