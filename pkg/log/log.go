@@ -274,7 +274,7 @@ func log(interfaces ...interface{}) {
 				})
 			}
 
-			if entry.severity >= SeverityWarning {
+			if entry.severity >= SeverityError {
 
 				// Rollbar
 				rollbar.Log(entry.severity.toRollbar(), entry.toText(entry.severity))
