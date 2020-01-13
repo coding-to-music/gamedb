@@ -44,7 +44,8 @@ if ($('#chat-page').length > 0) {
                             {
                                 '<>': 'h5', 'class': 'mt-0 mb-1 rounded' + fadeClass, 'html': '${content}'
                             },
-                            {'<>': 'p', 'class': 'text-muted', 'html': 'By ${author_user} at <span data-livestamp="${timestamp}"></span>'}
+                            //{'<>': 'p', 'class': 'text-muted', 'html': 'By ${author_user} at <span data-livestamp="${timestamp}"></span>'}
+                            {'<>': 'p', 'class': 'text-muted', 'html': 'By ${author_user}'}
                         ]
                     }
                 ]
