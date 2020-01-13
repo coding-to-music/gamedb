@@ -9,14 +9,9 @@ type PubSubIDPayload struct {
 	ID int `json:"id"`
 }
 
-type PubSubID64Payload struct {
+type PubSubStringPayload struct {
 	PubSubBasePayload
-	ID string `json:"id"`
-}
-
-type PubSubIDStringPayload struct {
-	PubSubBasePayload
-	ID string `json:"id"`
+	String string `json:"id"`
 }
 
 type PubSubIDStringsPayload struct {

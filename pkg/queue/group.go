@@ -549,8 +549,8 @@ func saveGroupToInflux(group mongo.Group) (err error) {
 
 func sendGroupWebsocket(id string) (err error) {
 
-	wsPayload := websockets.PubSubIDStringPayload{} // String as int64 too large for js
-	wsPayload.ID = id
+	wsPayload := websockets.PubSubStringPayload{} // String as int64 too large for js
+	wsPayload.String = id
 	wsPayload.Pages = []websockets.WebsocketPage{websockets.PageGroup}
 
 	_, err = pubsubHelpers.Publish(pubsubHelpers.PubSubTopicWebsockets, wsPayload)

@@ -31,6 +31,7 @@ const (
 	PagePackages WebsocketPage = "packages"
 	PagePrices   WebsocketPage = "prices"
 	PagePlayer   WebsocketPage = "profile"
+	PageChatBot  WebsocketPage = "chat-bot"
 )
 
 var (
@@ -52,6 +53,7 @@ func init() {
 		PagePackages,
 		PagePrices,
 		PagePlayer,
+		PageChatBot,
 	}
 	for _, v := range pagesSlice {
 		Pages[v] = &Page{
@@ -173,23 +175,14 @@ func ListenToPubSub() {
 
 				wsPage.Send(idPayload.ID)
 
-			case PagePlayer:
+			case PageGroup, PageChatBot, PagePlayer:
 
-				idPayload := PubSubIDStringPayload{} // int64 too large for js
+				idPayload := PubSubStringPayload{}
 
 				err = helpers.Unmarshal(m.Data, &idPayload)
 				log.Err(err)
 
-				wsPage.Send(idPayload.ID)
-
-			case PageGroup:
-
-				idsPayload := PubSubIDStringPayload{} // ID too large for int64 in JS
-
-				err = helpers.Unmarshal(m.Data, &idsPayload)
-				log.Err(err)
-
-				wsPage.Send(idsPayload.ID)
+				wsPage.Send(idPayload.String)
 
 			case PageChanges:
 
