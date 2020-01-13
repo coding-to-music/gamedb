@@ -10,6 +10,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
 )
 
@@ -21,6 +22,8 @@ func ChatBotRouter() http.Handler {
 
 	r := chi.NewRouter()
 	r.Get("/", chatBotHandler)
+	r.Get("/chart.json", chatBotChartHandler)
+	r.Get("/commands.json", chatBotCommandsHandler)
 	return r
 }
 
@@ -116,4 +119,24 @@ func (cbt chatBotTemplate) Guilds() (guilds int) {
 	log.Err(err)
 
 	return guilds
+}
+
+func chatBotChartHandler(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func chatBotCommandsHandler(w http.ResponseWriter, r *http.Request) {
+
+	commands, err := mongo.GetChatBotCommands()
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	var messages []string
+	for _, v := range commands {
+		messages = append(messages, v.Message)
+	}
+
+	returnJSON(w, r, messages)
 }

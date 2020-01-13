@@ -54,6 +54,7 @@ const (
 	CollectionPlayerWishlistApps  collection = "player_wishlist_apps"
 	CollectionPlayers             collection = "players"
 	CollectionProductPrices       collection = "product_prices"
+	CollectionChatBotCommands     collection = "chat_bot_commands"
 	// CollectionWishlistApps       collection = "wishlist-apps"
 	// CollectionWishlistTags       collection = "wishlist-tags"
 

@@ -20,7 +20,7 @@ var (
 
 func WebsocketsRouter() http.Handler {
 	r := chi.NewRouter()
-	r.Get("/{id:[a-z]+}", websocketsHandler)
+	r.Get("/{id:[a-z-]+}", websocketsHandler)
 	return r
 }
 

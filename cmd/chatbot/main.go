@@ -10,8 +10,11 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
+	pubsubHelpers "github.com/gamedb/gamedb/pkg/helpers/pubsub"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/websockets"
 	influx "github.com/influxdata/influxdb1-client"
 )
 
@@ -70,6 +73,7 @@ func main() {
 			if command.Regex().MatchString(msg) {
 
 				go saveToInflux(m, command)
+				go saveToMongo(m, msg)
 
 				go func() {
 					err := discordSession.ChannelTyping(m.ChannelID)
@@ -156,4 +160,33 @@ func saveToInflux(m *discordgo.MessageCreate, command chatbot.Command) {
 		Precision: "u",
 	})
 	log.Err(err)
+}
+
+func saveToMongo(m *discordgo.MessageCreate, message string) {
+
+	if config.IsLocal() {
+		// return
+	}
+
+	var command = mongo.ChatBotCommand{
+		Guild:   m.GuildID,
+		Channel: m.ChannelID,
+		Author:  m.Author.ID,
+		Message: message,
+	}
+
+	_, err := mongo.InsertOne(mongo.CollectionChatBotCommands, command)
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	wsPayload := websockets.PubSubStringPayload{}
+	wsPayload.String = message
+	wsPayload.Pages = []websockets.WebsocketPage{websockets.PageChatBot}
+
+	_, err = pubsubHelpers.Publish(pubsubHelpers.PubSubTopicWebsockets, wsPayload)
+	if err != nil {
+		log.Err(err)
+	}
 }
