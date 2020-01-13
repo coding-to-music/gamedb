@@ -13,7 +13,7 @@ var (
 	TypeGame   CommandType = "Game"
 	TypePlayer CommandType = "Player"
 	TypeGroup  CommandType = "Group"
-	TypeOther  CommandType = "Other"
+	TypeOther  CommandType = "Miscellaneous"
 )
 
 type Command interface {
