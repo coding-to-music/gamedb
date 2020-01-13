@@ -22,7 +22,7 @@ func Publish(topic PubSubTopic, message interface{}) (res *pubsub.PublishResult,
 	t := client.Topic(string(topic))
 	res = t.Publish(ctx, &pubsub.Message{Data: b})
 
-	return res, err
+	return res, nil
 }
 
 func PubSubSubscribe(subscription PubSubSubscription, callback func(m *pubsub.Message)) (err error) {
