@@ -35,16 +35,18 @@ func init() {
 	discordRelayBotSession.AddHandler(func(session *discordgo.Session, message *discordgo.MessageCreate) {
 
 		page := websockets.GetPage(websockets.PageChat)
-		page.Send(websockets.ChatPayload{
-			AuthorID:     message.Author.ID,
-			AuthorUser:   message.Author.Username,
-			AuthorAvatar: message.Author.Avatar,
-			Content:      string(blackfriday.Run([]byte(message.Content), blackfriday.WithNoExtensions())),
-			Channel:      message.ChannelID,
-			Time:         string(message.Timestamp),
-			Embeds:       len(message.Embeds) > 0,
-			I:            0,
-		})
+		if page != nil {
+			page.Send(websockets.ChatPayload{
+				AuthorID:     message.Author.ID,
+				AuthorUser:   message.Author.Username,
+				AuthorAvatar: message.Author.Avatar,
+				Content:      string(blackfriday.Run([]byte(message.Content), blackfriday.WithNoExtensions())),
+				Channel:      message.ChannelID,
+				Time:         string(message.Timestamp),
+				Embeds:       len(message.Embeds) > 0,
+				I:            0,
+			})
+		}
 	})
 
 	// Open connection

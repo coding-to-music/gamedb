@@ -29,6 +29,10 @@ func websocketsHandler(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
 	page := websockets.GetPage(websockets.WebsocketPage(id))
+	if page == nil {
+		returnErrorTemplate(w, r, errorTemplate{Message: "Invalid websocket ID", Code: 404})
+		return
+	}
 	if page.GetName() == "" {
 
 		bytes, err := json.Marshal(websockets.WebsocketPayload{Error: "Invalid page"})

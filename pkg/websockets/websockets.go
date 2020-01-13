@@ -155,6 +155,9 @@ func ListenToPubSub() {
 		for _, page := range pubSubMsg.Pages {
 
 			wsPage := GetPage(page)
+			if wsPage == nil {
+				continue
+			}
 
 			if wsPage.CountConnections() == 0 {
 				continue

@@ -113,7 +113,9 @@ func Run(task TaskInterface) {
 
 	// Send websocket
 	page := websockets.GetPage(websockets.PageAdmin)
-	page.Send(websockets.AdminPayload{TaskID: task.ID(), Action: "started"})
+	if page != nil {
+		page.Send(websockets.AdminPayload{TaskID: task.ID(), Action: "started"})
+	}
 
 	// Do work
 	policy := backoff.NewConstantBackOff(time.Minute)
@@ -128,12 +130,13 @@ func Run(task TaskInterface) {
 		log.Err(err)
 
 		// Send websocket
-		page = websockets.GetPage(websockets.PageAdmin)
-		page.Send(websockets.AdminPayload{
-			TaskID: task.ID(),
-			Action: "finished",
-			Time:   Next(task).Unix(),
-		})
+		if page != nil {
+			page.Send(websockets.AdminPayload{
+				TaskID: task.ID(),
+				Action: "finished",
+				Time:   Next(task).Unix(),
+			})
+		}
 	}
 
 	//
