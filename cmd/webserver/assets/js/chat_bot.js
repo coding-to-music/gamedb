@@ -18,9 +18,8 @@ if ($('#chat-bot-page').length > 0) {
 
     websocketListener('chat-bot', function (e) {
 
-        console.log(e.data);
-
         const data = JSON.parse(e.data);
+        toast(true, data.Data, '', 2);
         messageRow(data.Data);
     });
 
