@@ -290,21 +290,21 @@ func log(interfaces ...interface{}) {
 }
 
 func Critical(interfaces ...interface{}) {
-	go log(append(interfaces, SeverityCritical)...)
+	log(append(interfaces, SeverityCritical)...)
 }
 
 func Err(interfaces ...interface{}) {
-	go log(append(interfaces, SeverityError)...)
+	log(append(interfaces, SeverityError)...)
 }
 
 func Warning(interfaces ...interface{}) {
-	go log(append(interfaces, SeverityWarning)...)
+	log(append(interfaces, SeverityWarning)...)
 }
 
 func Info(interfaces ...interface{}) {
-	go log(append(interfaces, SeverityInfo)...)
+	log(append(interfaces, SeverityInfo)...)
 }
 
 func Debug(interfaces ...interface{}) {
-	go log(append(interfaces, SeverityDebug)...)
+	log(append(interfaces, SeverityDebug)...)
 }
