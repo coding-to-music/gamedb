@@ -82,6 +82,7 @@ var (
 		{name: QueueApps, consumer: nil},
 		{name: QueueAppPlayers, consumer: nil},
 		{name: QueueGroups, consumer: nil},
+		{name: QueuePackages, consumer: nil},
 		{name: QueuePlayers, consumer: nil},
 		{name: QueuePlayerRanks, consumer: nil},
 		{name: QueueSteam, consumer: nil},
