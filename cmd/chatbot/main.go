@@ -43,7 +43,7 @@ func main() {
 	}
 
 	ops := limiter.ExpirableOptions{DefaultExpirationTTL: time.Second}
-	lmt := limiter.New(&ops).SetMax(1).SetBurst(2)
+	lmt := limiter.New(&ops).SetMax(1).SetBurst(5)
 
 	//
 	discordSession, err := discordgo.New("Bot " + config.Config.DiscordChatBotToken.Get())
