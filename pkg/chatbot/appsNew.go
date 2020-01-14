@@ -14,7 +14,7 @@ type CommandAppsNew struct {
 }
 
 func (CommandAppsNew) Regex() *regexp.Regexp {
-	return regexp.MustCompile(`^\.new$`)
+	return regexp.MustCompile(`^[.|!]new$`)
 }
 
 func (CommandAppsNew) Output(input string) (message discordgo.MessageSend, err error) {

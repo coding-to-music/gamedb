@@ -13,7 +13,7 @@ type CommandPlayerApps struct {
 }
 
 func (CommandPlayerApps) Regex() *regexp.Regexp {
-	return regexp.MustCompile(`^\.(games|apps) (.*)`)
+	return regexp.MustCompile(`^[.|!](games|apps) (.{2,32})$`)
 }
 
 func (c CommandPlayerApps) Output(input string) (message discordgo.MessageSend, err error) {

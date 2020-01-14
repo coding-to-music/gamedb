@@ -14,7 +14,7 @@ type CommandPlayerRecent struct {
 }
 
 func (CommandPlayerRecent) Regex() *regexp.Regexp {
-	return regexp.MustCompile(`^\.recent (.*)`)
+	return regexp.MustCompile(`^[.|!]recent (.{2,32})$`)
 }
 
 func (c CommandPlayerRecent) Output(input string) (message discordgo.MessageSend, err error) {

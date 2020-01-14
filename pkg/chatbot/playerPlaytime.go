@@ -13,7 +13,7 @@ type CommandPlayerPlaytime struct {
 }
 
 func (CommandPlayerPlaytime) Regex() *regexp.Regexp {
-	return regexp.MustCompile(`^\.playtime (.*)`)
+	return regexp.MustCompile(`^[.|!]playtime (.{2,32})$`)
 }
 
 func (c CommandPlayerPlaytime) Output(input string) (message discordgo.MessageSend, err error) {

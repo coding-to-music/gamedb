@@ -14,7 +14,7 @@ type CommandAppsPopular struct {
 }
 
 func (CommandAppsPopular) Regex() *regexp.Regexp {
-	return regexp.MustCompile(`^\.popular$`)
+	return regexp.MustCompile(`^[.|!]popular$`)
 }
 
 func (CommandAppsPopular) Output(input string) (message discordgo.MessageSend, err error) {

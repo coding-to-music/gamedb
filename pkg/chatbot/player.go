@@ -14,7 +14,7 @@ type CommandPlayer struct {
 }
 
 func (CommandPlayer) Regex() *regexp.Regexp {
-	return regexp.MustCompile(`^\.(player|user) (.*)`)
+	return regexp.MustCompile(`^[.|!](player|user) (.{2,32})$`)
 }
 
 func (c CommandPlayer) Output(input string) (message discordgo.MessageSend, err error) {

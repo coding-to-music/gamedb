@@ -10,7 +10,7 @@ type CommandHelp struct {
 }
 
 func (CommandHelp) Regex() *regexp.Regexp {
-	return regexp.MustCompile(`^\.help$`)
+	return regexp.MustCompile(`^[.|!]help$`)
 }
 
 func (CommandHelp) Output(input string) (message discordgo.MessageSend, err error) {

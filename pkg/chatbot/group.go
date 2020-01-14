@@ -13,7 +13,7 @@ type CommandGroup struct {
 }
 
 func (CommandGroup) Regex() *regexp.Regexp {
-	return regexp.MustCompile(`^\.(group|clan) (.*)`)
+	return regexp.MustCompile(`^[.|!](group|clan) (.*)`)
 }
 
 func (c CommandGroup) Output(input string) (message discordgo.MessageSend, err error) {

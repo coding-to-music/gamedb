@@ -13,7 +13,7 @@ type CommandPlayerLevel struct {
 }
 
 func (CommandPlayerLevel) Regex() *regexp.Regexp {
-	return regexp.MustCompile(`^\.level (.*)`)
+	return regexp.MustCompile(`^[.|!]level (.{2,32})$`)
 }
 
 func (c CommandPlayerLevel) Output(input string) (message discordgo.MessageSend, err error) {
