@@ -2,6 +2,7 @@ package tasks
 
 import (
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
@@ -57,9 +58,9 @@ func (c AutoPlayerRefreshes) work() (err error) {
 	for _, v := range players {
 		if v.PrimaryGroupID != "" {
 			err = queue.ProduceGroup(queue.GroupMessage{ID: v.PrimaryGroupID})
-			err = helpers.IgnoreErrors(err, queue.ErrIsBot)
+			err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
 			if err != nil {
-				log.Err(err)
+				return err
 			}
 		}
 	}
