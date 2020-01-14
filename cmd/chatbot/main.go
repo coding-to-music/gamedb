@@ -165,7 +165,7 @@ func saveToInflux(m *discordgo.MessageCreate, command chatbot.Command) {
 func saveToMongo(m *discordgo.MessageCreate, message string) {
 
 	if config.IsLocal() {
-		// return
+		return
 	}
 
 	var command = mongo.ChatBotCommand{
