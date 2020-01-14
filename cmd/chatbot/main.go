@@ -169,10 +169,12 @@ func saveToMongo(m *discordgo.MessageCreate, message string) {
 	}
 
 	var command = mongo.ChatBotCommand{
-		Guild:   m.GuildID,
-		Channel: m.ChannelID,
-		Author:  m.Author.ID,
-		Message: message,
+		GuildID:      m.GuildID,
+		ChannelID:    m.ChannelID,
+		AuthorID:     m.Author.ID,
+		AuthorName:   m.Author.Username,
+		AuthorAvatar: m.Author.Avatar,
+		Message:      message,
 	}
 
 	_, err := mongo.InsertOne(mongo.CollectionChatBotCommands, command)

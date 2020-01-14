@@ -6,18 +6,22 @@ import (
 )
 
 type ChatBotCommand struct {
-	Guild   string `bson:"guild"`
-	Channel string `bson:"channel"`
-	Author  string `bson:"author"`
-	Message string `bson:"message"`
+	GuildID      string `bson:"guild_id"`
+	ChannelID    string `bson:"channel_id"`
+	AuthorID     string `bson:"author_id"`
+	AuthorName   string `bson:"author_name"`
+	AuthorAvatar string `bson:"author_avatar"`
+	Message      string `bson:"message"`
 }
 
 func (command ChatBotCommand) BSON() bson.D {
 
 	return bson.D{
-		{"guild", command.Guild},
-		{"channel", command.Channel},
-		{"author", command.Author},
+		{"guild_id", command.GuildID},
+		{"channel_id", command.ChannelID},
+		{"author_id", command.AuthorID},
+		{"author_name", command.AuthorName},
+		{"author_avatar", command.AuthorAvatar},
 		{"message", command.Message},
 	}
 }
