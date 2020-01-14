@@ -169,7 +169,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		"11": "comments_count",
 	}
 
-	var sortOrder = query.getOrderMongo(columns, nil)
+	var sortOrder = query.getOrderMongo(columns)
 	var filter = bson.D{}
 	var isContinent bool
 

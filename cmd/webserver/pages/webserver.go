@@ -687,7 +687,7 @@ func (q DataTablesQuery) getOrderSQL(columns map[string]string, defaultCol strin
 	return strings.Join(ret, ", ")
 }
 
-func (q DataTablesQuery) getOrderMongo(columns map[string]string, colEdit func(string) string) bson.D {
+func (q DataTablesQuery) getOrderMongo(columns map[string]string) bson.D {
 
 	for _, v := range q.Order {
 
@@ -699,10 +699,6 @@ func (q DataTablesQuery) getOrderMongo(columns map[string]string, colEdit func(s
 
 						if col, ok := columns[col]; ok {
 							if ok {
-
-								if colEdit != nil {
-									col = colEdit(col)
-								}
 
 								if dir == "desc" {
 									return bson.D{{Key: col, Value: -1}}

@@ -467,20 +467,13 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		columns := map[string]string{
 			"0": "app_name",
-			"1": "app_prices",
+			"1": "app_prices" + "." + string(code),
 			"2": "app_time",
-			"3": "app_prices_hour",
-		}
-
-		colEdit := func(col string) string {
-			if col == "app_prices" || col == "app_prices_hour" {
-				col = col + "." + string(code)
-			}
-			return col
+			"3": "app_prices_hour" + "." + string(code),
 		}
 
 		var err error
-		playerApps, err = mongo.GetPlayerApps(playerIDInt, query.getOffset64(), 100, query.getOrderMongo(columns, colEdit))
+		playerApps, err = mongo.GetPlayerApps(playerIDInt, query.getOffset64(), 100, query.getOrderMongo(columns))
 		log.Err(err)
 	}()
 
@@ -560,7 +553,7 @@ func playerRecentAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		var err error
-		apps, err = mongo.GetRecentApps(playerIDInt, query.getOffset64(), 100, query.getOrderMongo(columns, nil))
+		apps, err = mongo.GetRecentApps(playerIDInt, query.getOffset64(), 100, query.getOrderMongo(columns))
 		log.Err(err)
 	}()
 
@@ -638,7 +631,7 @@ func playerFriendsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		var err error
-		friends, err = mongo.GetFriends(playerIDInt, query.getOffset64(), 100, query.getOrderMongo(columns, nil))
+		friends, err = mongo.GetFriends(playerIDInt, query.getOffset64(), 100, query.getOrderMongo(columns))
 		log.Err(err)
 	}()
 
@@ -807,7 +800,7 @@ func playerWishlistAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		var err error
-		wishlistApps, err = mongo.GetPlayerWishlistAppsByPlayer(idx, query.getOffset64(), 0, query.getOrderMongo(columns, nil))
+		wishlistApps, err = mongo.GetPlayerWishlistAppsByPlayer(idx, query.getOffset64(), 0, query.getOrderMongo(columns))
 		if err != nil {
 			log.Err(err, r)
 			return
@@ -911,7 +904,7 @@ func playerGroupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		var err error
-		groups, err = mongo.GetPlayerGroups(idx, query.getOffset64(), 100, query.getOrderMongo(columns, nil))
+		groups, err = mongo.GetPlayerGroups(idx, query.getOffset64(), 100, query.getOrderMongo(columns))
 		if err != nil {
 			log.Err(err, r)
 		}

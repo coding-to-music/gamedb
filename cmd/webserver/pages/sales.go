@@ -331,7 +331,7 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			"5": "app_date",
 		}
 
-		var order = query.getOrderMongo(columns, nil)
+		order := query.getOrderMongo(columns)
 		order = append(order, bson.E{Key: "app_rating", Value: -1})
 		order = append(order, bson.E{Key: "app_name", Value: 1})
 		order = append(order, bson.E{Key: "sub_order", Value: 1})

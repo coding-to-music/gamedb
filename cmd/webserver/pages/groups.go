@@ -85,7 +85,7 @@ func groupsTrendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			"2": "trending",
 		}
 
-		groups, err = mongo.GetGroups(100, query.getOffset64(), query.getOrderMongo(columns, nil), filter, nil)
+		groups, err = mongo.GetGroups(100, query.getOffset64(), query.getOrderMongo(columns), filter, nil)
 		if err != nil {
 			log.Err(err, r)
 			return
