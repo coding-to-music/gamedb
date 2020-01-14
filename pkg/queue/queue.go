@@ -248,9 +248,9 @@ func ProduceGroup(payload GroupMessage) (err error) {
 		return errors.New("invalid group id: " + payload.ID)
 	}
 
-	// if payload.UserAgent != nil && helpers.IsBot(*payload.UserAgent) {
-	// 	return ErrIsBot
-	// }
+	if payload.UserAgent != nil && helpers.IsBot(*payload.UserAgent) {
+		return ErrIsBot
+	}
 
 	payload.ID, err = helpers.UpgradeGroupID(payload.ID)
 	if err != nil {
