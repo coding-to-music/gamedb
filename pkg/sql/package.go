@@ -272,7 +272,7 @@ func (pack Package) GetDepotIDs() (depots []int) {
 	return depots
 }
 
-func (pack Package) GetPrices() (prices ProductPrices) {
+func (pack Package) GetPrices() (prices helpers.ProductPrices) {
 
 	err := helpers.Unmarshal([]byte(pack.Prices), &prices)
 	log.Err(err)
@@ -280,7 +280,7 @@ func (pack Package) GetPrices() (prices ProductPrices) {
 	return prices
 }
 
-func (pack Package) GetPrice(code steam.ProductCC) (price ProductPrice) {
+func (pack Package) GetPrice(code steam.ProductCC) (price helpers.ProductPrice) {
 
 	return pack.GetPrices().Get(code)
 }

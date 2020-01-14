@@ -277,8 +277,8 @@ type appTemplate struct {
 	Movies       []sql.AppVideo
 	NewsIDs      []int64
 	Packages     []sql.Package
-	Price        sql.ProductPrice
-	Prices       sql.ProductPrices
+	Price        helpers.ProductPrice
+	Prices       helpers.ProductPrices
 	Album        pics.AlbumMetaData
 	Publishers   []sql.Publisher
 	Reviews      sql.AppReviewSummary

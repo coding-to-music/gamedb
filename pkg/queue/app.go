@@ -568,7 +568,7 @@ func updateAppPICS(app *sql.App, message *rabbit.Message, payload AppMessage) (e
 
 func updateAppDetails(app *sql.App) (err error) {
 
-	prices := sql.ProductPrices{}
+	prices := helpers.ProductPrices{}
 
 	for _, code := range helpers.GetProdCCs(true) {
 

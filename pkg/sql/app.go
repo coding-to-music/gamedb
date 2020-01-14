@@ -365,9 +365,9 @@ func (app App) GetFollowers() (ret string) {
 	return humanize.Comma(int64(app.GroupFollowers))
 }
 
-func (app App) GetPrices() (prices ProductPrices) {
+func (app App) GetPrices() (prices helpers.ProductPrices) {
 
-	prices = ProductPrices{}
+	prices = helpers.ProductPrices{}
 
 	err := helpers.Unmarshal([]byte(app.Prices), &prices)
 	if err != nil {
@@ -377,7 +377,7 @@ func (app App) GetPrices() (prices ProductPrices) {
 	return prices
 }
 
-func (app App) GetPrice(code steam.ProductCC) (price ProductPrice) {
+func (app App) GetPrice(code steam.ProductCC) (price helpers.ProductPrice) {
 
 	return app.GetPrices().Get(code)
 }

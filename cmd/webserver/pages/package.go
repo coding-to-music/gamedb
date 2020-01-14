@@ -166,8 +166,8 @@ type packageTemplate struct {
 	DepotIDs   []int
 	Extended   []pics.KeyValue
 	Package    sql.Package
-	Price      sql.ProductPrice
-	Prices     sql.ProductPrices
+	Price      helpers.ProductPrice
+	Prices     helpers.ProductPrices
 }
 
 func (p packageTemplate) ShowDev() bool {

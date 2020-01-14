@@ -11,7 +11,6 @@ import (
 	pubsubHelpers "github.com/gamedb/gamedb/pkg/helpers/pubsub"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/sql/pics"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -223,10 +222,10 @@ func setAppLaunchItem(kv vdf.KeyValue, launchItem *pics.PICSAppConfigLaunchItem)
 	}
 }
 
-func savePriceChanges(before sql.ProductInterface, after sql.ProductInterface) (err error) {
+func savePriceChanges(before helpers.ProductInterface, after helpers.ProductInterface) (err error) {
 
-	var prices sql.ProductPrices
-	var price sql.ProductPrice
+	var prices helpers.ProductPrices
+	var price helpers.ProductPrice
 	var documents []mongo.Document
 
 	for _, productCC := range helpers.GetProdCCs(true) {

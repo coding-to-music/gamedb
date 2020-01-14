@@ -4,26 +4,27 @@ import (
 	"errors"
 	"strconv"
 
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
 )
 
 type App struct {
-	ID              int               `json:"id"`
-	Name            string            `json:"name"`
-	Tags            []int             `json:"tags"`
-	Genres          []int             `json:"genres"`
-	Categories      []int             `json:"categories"`
-	Developers      []int             `json:"developers"`
-	Publishers      []int             `json:"publishers"`
-	Prices          sql.ProductPrices `json:"prices"`
-	PlayersMax      int               `json:"players_max"`
-	PlayersWeekMax  int               `json:"players_week_max"`
-	PlayersWeekAvg  float64           `json:"players_week_avg"`
-	ReleaseDate     int64             `json:"release_date"`
-	ReviewsPositive int               `json:"reviews_positive"`
-	ReviewsNegative int               `json:"reviews_negative"`
-	ReviewsScore    float64           `json:"reviews_score"`
+	ID              int                   `json:"id"`
+	Name            string                `json:"name"`
+	Tags            []int                 `json:"tags"`
+	Genres          []int                 `json:"genres"`
+	Categories      []int                 `json:"categories"`
+	Developers      []int                 `json:"developers"`
+	Publishers      []int                 `json:"publishers"`
+	Prices          helpers.ProductPrices `json:"prices"`
+	PlayersMax      int                   `json:"players_max"`
+	PlayersWeekMax  int                   `json:"players_week_max"`
+	PlayersWeekAvg  float64               `json:"players_week_avg"`
+	ReleaseDate     int64                 `json:"release_date"`
+	ReviewsPositive int                   `json:"reviews_positive"`
+	ReviewsNegative int                   `json:"reviews_negative"`
+	ReviewsScore    float64               `json:"reviews_score"`
 }
 
 func (app *App) Fill(sqlApp sql.App) (err error) {

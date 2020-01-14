@@ -359,7 +359,7 @@ func scrapePackage(pack *sql.Package) (err error) {
 
 func updatePackageFromStore(pack *sql.Package) (err error) {
 
-	prices := sql.ProductPrices{}
+	prices := helpers.ProductPrices{}
 
 	for _, cc := range helpers.GetProdCCs(true) {
 
