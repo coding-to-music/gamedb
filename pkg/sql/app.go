@@ -348,6 +348,7 @@ func (app App) GetPICSUpdatedNice() string {
 	if d.IsZero() {
 		return "-"
 	}
+
 	return d.Format(helpers.DateYearTime)
 }
 
@@ -369,7 +370,9 @@ func (app App) GetPrices() (prices ProductPrices) {
 	prices = ProductPrices{}
 
 	err := helpers.Unmarshal([]byte(app.Prices), &prices)
-	log.Err(err)
+	if err != nil {
+		log.Err(err)
+	}
 
 	return prices
 }
@@ -386,7 +389,9 @@ func (app App) GetNewsIDs() (ids []int64) {
 	}
 
 	err := helpers.Unmarshal([]byte(app.NewsIDs), &ids)
-	log.Err(err)
+	if err != nil {
+		log.Err(err)
+	}
 
 	return ids
 }
@@ -396,7 +401,9 @@ func (app App) GetExtended() (extended pics.PICSKeyValues) {
 	extended = pics.PICSKeyValues{}
 
 	err := helpers.Unmarshal([]byte(app.Extended), &extended)
-	log.Err(err)
+	if err != nil {
+		log.Err(err)
+	}
 
 	return extended
 }
@@ -409,7 +416,9 @@ func (app App) GetAlbum() (data pics.AlbumMetaData) {
 
 	data = pics.AlbumMetaData{}
 	err := helpers.Unmarshal([]byte(app.AlbumMetaData), &data)
-	log.Err(err)
+	if err != nil {
+		log.Err(err)
+	}
 
 	return data
 }
@@ -418,7 +427,9 @@ func (app App) GetCommon() (common pics.PICSKeyValues) {
 
 	common = pics.PICSKeyValues{}
 	err := helpers.Unmarshal([]byte(app.Common), &common)
-	log.Err(err)
+	if err != nil {
+		log.Err(err)
+	}
 
 	return common
 }
@@ -427,7 +438,9 @@ func (app App) GetConfig() (config pics.PICSKeyValues) {
 
 	config = pics.PICSKeyValues{}
 	err := helpers.Unmarshal([]byte(app.Config), &config)
-	log.Err(err)
+	if err != nil {
+		log.Err(err)
+	}
 
 	return config
 }
@@ -444,14 +457,20 @@ func (app App) GetUFS() (ufs pics.PICSKeyValues) {
 func (app App) GetDepots() (depots pics.Depots, err error) {
 
 	err = helpers.Unmarshal([]byte(app.Depots), &depots)
-	log.Err(err)
+	if err != nil {
+		log.Err(err)
+	}
+
 	return depots, err
 }
 
 func (app App) GetLaunch() (items []pics.PICSAppConfigLaunchItem, err error) {
 
 	err = helpers.Unmarshal([]byte(app.Launch), &items)
-	log.Err(err)
+	if err != nil {
+		log.Err(err)
+	}
+
 	return items, err
 }
 
@@ -460,7 +479,10 @@ func (app App) GetInstall() (install map[string]interface{}, err error) {
 	install = map[string]interface{}{}
 
 	err = helpers.Unmarshal([]byte(app.Install), &install)
-	log.Err(err)
+	if err != nil {
+		log.Err(err)
+	}
+
 	return install, err
 }
 
@@ -611,7 +633,9 @@ func (app App) GetMetacriticLink() template.URL {
 func (app App) GetScreenshots() (screenshots []AppImage) {
 
 	err := helpers.Unmarshal([]byte(app.Screenshots), &screenshots)
-	log.Err(err)
+	if err != nil {
+		log.Err(err)
+	}
 
 	return screenshots
 }
@@ -619,7 +643,9 @@ func (app App) GetScreenshots() (screenshots []AppImage) {
 func (app App) GetMovies() (movies []AppVideo) {
 
 	err := helpers.Unmarshal([]byte(app.Movies), &movies)
-	log.Err(err)
+	if err != nil {
+		log.Err(err)
+	}
 
 	return movies
 }
@@ -627,7 +653,9 @@ func (app App) GetMovies() (movies []AppVideo) {
 func (app App) GetSteamSpy() (ss AppSteamSpy) {
 
 	err := helpers.Unmarshal([]byte(app.SteamSpy), &ss)
-	log.Err(err)
+	if err != nil {
+		log.Err(err)
+	}
 
 	return ss
 }
@@ -660,7 +688,9 @@ func (app App) GetCoopTags() (string, error) {
 func (app App) GetAchievements() (achievements []AppAchievement) {
 
 	err := helpers.Unmarshal([]byte(app.Achievements), &achievements)
-	log.Err(err)
+	if err != nil {
+		log.Err(err)
+	}
 
 	return achievements
 }
@@ -668,7 +698,9 @@ func (app App) GetAchievements() (achievements []AppAchievement) {
 func (app App) GetStats() (stats []AppStat) {
 
 	err := helpers.Unmarshal([]byte(app.Stats), &stats)
-	log.Err(err)
+	if err != nil {
+		log.Err(err)
+	}
 
 	return stats
 }
@@ -676,7 +708,9 @@ func (app App) GetStats() (stats []AppStat) {
 func (app App) GetDemoIDs() (demos []int) {
 
 	err := helpers.Unmarshal([]byte(app.DemoIDs), &demos)
-	log.Err(err)
+	if err != nil {
+		log.Err(err)
+	}
 
 	return demos
 }
@@ -699,7 +733,9 @@ func (app App) GetPlatforms() (platforms []string) {
 	platforms = []string{} // Needed for marshalling into array
 
 	err := helpers.Unmarshal([]byte(app.Platforms), &platforms)
-	log.Err(err)
+	if err != nil {
+		log.Err(err)
+	}
 
 	return platforms
 }
@@ -735,11 +771,11 @@ func (app App) GetPlatformImages() (ret template.HTML, err error) {
 
 func (app App) GetDLCIDs() (dlcs []int, err error) {
 
-	err = helpers.Unmarshal([]byte(app.DLC), &dlcs)
-	log.Err(err)
+	dlcs = []int{} // Needed for marshalling into type
 
-	if len(dlcs) == 0 {
-		dlcs = []int{} // Needed for marshalling into type
+	err = helpers.Unmarshal([]byte(app.DLC), &dlcs)
+	if err != nil {
+		log.Err(err)
 	}
 
 	return dlcs, err
@@ -748,6 +784,8 @@ func (app App) GetDLCIDs() (dlcs []int, err error) {
 func (app App) GetDLCs() (apps []App, err error) {
 
 	var item = memcache.MemcacheAppDLC(app.ID)
+
+	apps = []App{} // Needed for marshalling into type
 
 	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &apps, func() (interface{}, error) {
 
@@ -759,10 +797,6 @@ func (app App) GetDLCs() (apps []App, err error) {
 		return GetAppsByID(ids, []string{"id", "name"})
 	})
 
-	if len(apps) == 0 {
-		apps = []App{} // Needed for marshalling into type
-	}
-
 	return apps, err
 }
 
@@ -771,7 +805,9 @@ func (app App) GetPackageIDs() (packages []int) {
 	packages = []int{} // Needed for marshalling into type
 
 	err := helpers.Unmarshal([]byte(app.Packages), &packages)
-	log.Err(err)
+	if err != nil {
+		log.Err(err)
+	}
 
 	return packages
 }
@@ -781,7 +817,9 @@ func (app App) GetReviews() (reviews AppReviewSummary) {
 	reviews = AppReviewSummary{} // Needed for marshalling into type
 
 	err := helpers.Unmarshal([]byte(app.Reviews), &reviews)
-	log.Err(err)
+	if err != nil {
+		log.Err(err)
+	}
 
 	return reviews
 }
@@ -791,7 +829,9 @@ func (app App) GetGenreIDs() (genres []int) {
 	genres = []int{}
 
 	err := helpers.Unmarshal([]byte(app.Genres), &genres)
-	log.Err(err)
+	if err != nil {
+		log.Err(err)
+	}
 
 	return genres
 }
@@ -847,7 +887,9 @@ func (app App) GetCategoryIDs() (categories []int) {
 	categories = []int{} // Needed for marshalling into array
 
 	err := helpers.Unmarshal([]byte(app.Categories), &categories)
-	log.Err(err)
+	if err != nil {
+		log.Err(err)
+	}
 
 	return categories
 }
@@ -879,10 +921,7 @@ func (app App) GetTagIDs() (tags []int) {
 	err := helpers.Unmarshal([]byte(app.Tags), &tags)
 	if err != nil {
 		log.Err(err)
-		return
 	}
-
-	log.Err(err)
 
 	return tags
 }
@@ -892,7 +931,6 @@ func (app App) GetTags() (tags []Tag, err error) {
 	var item = memcache.MemcacheAppTags(app.ID)
 
 	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &tags, func() (interface{}, error) {
-
 		return GetTagsByID(app.GetTagIDs(), []string{"id", "name"})
 	})
 
@@ -908,7 +946,9 @@ func (app App) GetDeveloperIDs() (developers []int) {
 	developers = []int{}
 
 	err := helpers.Unmarshal([]byte(app.Developers), &developers)
-	log.Err(err)
+	if err != nil {
+		log.Err(err)
+	}
 
 	return developers
 }
@@ -933,7 +973,9 @@ func (app App) GetPublisherIDs() (publishers []int) {
 	publishers = []int{} // Needed for marshalling into type
 
 	err := helpers.Unmarshal([]byte(app.Publishers), &publishers)
-	log.Err(err)
+	if err != nil {
+		log.Err(err)
+	}
 
 	return publishers
 }
@@ -956,7 +998,9 @@ func (app App) getBundleIDs() (ids []int) {
 	ids = []int{} // Needed for marshalling into type
 
 	err := helpers.Unmarshal([]byte(app.BundleIDs), &ids)
-	log.Err(err)
+	if err != nil {
+		log.Err(err)
+	}
 
 	return ids
 }
