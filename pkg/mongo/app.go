@@ -5,7 +5,10 @@ import (
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var ErrInvalidAppID = errors.New("invalid app id")
@@ -170,6 +173,46 @@ func (app App) Save() (err error) {
 
 	_, err = ReplaceOne(CollectionApps, bson.D{{"_id", app.ID}}, app)
 	return err
+}
+
+func CreateAppIndexes() {
+
+	log.Info("Started")
+
+	var indexModels []mongo.IndexModel
+
+	// Text index
+	indexModels = append(indexModels, mongo.IndexModel{
+		Keys:    bson.D{{"name", "text"}},
+		Options: options.Index().SetName("text"),
+	})
+
+	// Sorting indexes, descending
+	for _, v := range []string{"player_peak_week", "group_followers", "reviews_score", "prices"} {
+		indexModels = append(indexModels, mongo.IndexModel{
+			Keys: bson.D{{v, -1}},
+			// Options: options.Index().SetName(v),
+		})
+	}
+
+	// Filter indexes, ascending
+	for _, v := range []string{"type", "tags", "genres", "developers", "publishers", "categories", "platforms", "prices", "reviews_score"} {
+		indexModels = append(indexModels, mongo.IndexModel{
+			Keys: bson.D{{v, 1}},
+			// Options: options.Index().SetName(v),
+		})
+	}
+
+	client, ctx, err := getMongo()
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	_, err = client.Database(MongoDatabase).Collection(CollectionApps.String()).Indexes().CreateMany(ctx, indexModels)
+	log.Err(err)
+
+	log.Info("Finished")
 }
 
 func GetApp(id int) (app App, err error) {
