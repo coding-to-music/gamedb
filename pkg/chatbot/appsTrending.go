@@ -14,7 +14,7 @@ type CommandAppsTrending struct {
 }
 
 func (CommandAppsTrending) Regex() *regexp.Regexp {
-	return regexp.MustCompile("^.trending$")
+	return regexp.MustCompile(`^\.trending$`)
 }
 
 func (CommandAppsTrending) Output(input string) (message discordgo.MessageSend, err error) {
