@@ -270,7 +270,7 @@ func (app App) SaveToMongo() error {
 	mApp.PlayerTrend = app.PlayerTrend
 	mApp.PlaytimeAverage = app.PlaytimeAverage
 	mApp.PlaytimeTotal = app.PlaytimeTotal
-	mApp.Prices = app.Prices
+	mApp.Prices = app.GetPrices()
 	mApp.PublicOnly = app.PublicOnly
 	mApp.Publishers = app.GetPublisherIDs()
 	mApp.RelatedAppIDs, _ = app.GetRelatedIDs()

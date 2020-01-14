@@ -8,11 +8,13 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func AppsRouter() http.Handler {
@@ -209,7 +211,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Get apps
-	var apps []sql.App
+	var apps []mongo.App
 	var recordsFiltered int64
 
 	wg.Add(1)
@@ -217,118 +219,106 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		gorm, err := sql.GetMySQLClient()
-		if err != nil {
-
-			log.Err(err, r)
-			return
-		}
-
-		gorm = gorm.Model(sql.App{})
-		gorm = gorm.Select([]string{"id", "name", "icon", "reviews_score", "prices", "player_peak_week", "group_followers"})
+		var filter = bson.D{}
+		var ops = options.Find()
 
 		// Types
 		types := query.getSearchSlice("types")
 		if len(types) > 0 {
-			gorm = gorm.Where("type IN (?)", types)
+
+			a := bson.A{}
+			for _, v := range types {
+				a = append(a, v)
+			}
+
+			filter = append(filter, bson.E{Key: "type", Value: bson.M{"$in": a}})
 		}
 
 		// Tags
 		tags := query.getSearchSlice("tags")
 		if len(tags) > 0 {
 
-			var or []string
-			var vals []interface{}
+			a := bson.A{}
 			for _, v := range tags {
-				_, err := strconv.Atoi(v)
+				i, err := strconv.Atoi(v)
 				if err == nil {
-					or = append(or, "JSON_CONTAINS(tags, ?) = 1")
-					vals = append(vals, "["+v+"]")
+					a = append(a, i)
 				}
 			}
 
-			gorm = gorm.Where(strings.Join(or, " OR "), vals...)
+			filter = append(filter, bson.E{Key: "tags", Value: bson.M{"$in": a}})
 		}
 
 		// Genres
 		genres := query.getSearchSlice("genres")
 		if len(genres) > 0 {
 
-			var or []string
-			var vals []interface{}
+			a := bson.A{}
 			for _, v := range genres {
-				_, err := strconv.Atoi(v)
+				i, err := strconv.Atoi(v)
 				if err == nil {
-					or = append(or, "JSON_CONTAINS(genres, ?) = 1")
-					vals = append(vals, "["+v+"]")
+					a = append(a, i)
 				}
 			}
 
-			gorm = gorm.Where(strings.Join(or, " OR "), vals...)
+			filter = append(filter, bson.E{Key: "genres", Value: bson.M{"$in": a}})
 		}
 
 		// Developers
 		developers := query.getSearchSlice("developers")
 		if len(developers) > 0 {
 
-			var or []string
-			var vals []interface{}
+			a := bson.A{}
 			for _, v := range developers {
-				_, err := strconv.Atoi(v)
+				i, err := strconv.Atoi(v)
 				if err == nil {
-					or = append(or, "JSON_CONTAINS(developers, ?) = 1")
-					vals = append(vals, "["+v+"]")
+					a = append(a, i)
 				}
 			}
 
-			gorm = gorm.Where(strings.Join(or, " OR "), vals...)
+			filter = append(filter, bson.E{Key: "developers", Value: bson.M{"$in": a}})
 		}
 
 		// Publishers
 		publishers := query.getSearchSlice("publishers")
 		if len(publishers) > 0 {
 
-			var or []string
-			var vals []interface{}
+			a := bson.A{}
 			for _, v := range publishers {
-				_, err := strconv.Atoi(v)
+				i, err := strconv.Atoi(v)
 				if err == nil {
-					or = append(or, "JSON_CONTAINS(publishers, ?) = 1")
-					vals = append(vals, "["+v+"]")
+					a = append(a, i)
 				}
 			}
 
-			gorm = gorm.Where(strings.Join(or, " OR "), vals...)
+			filter = append(filter, bson.E{Key: "publishers", Value: bson.M{"$in": a}})
 		}
 
 		// Categories
 		categories := query.getSearchSlice("categories")
 		if len(categories) > 0 {
 
-			var or []string
-			var vals []interface{}
+			a := bson.A{}
 			for _, v := range categories {
-				_, err := strconv.Atoi(v)
+				i, err := strconv.Atoi(v)
 				if err == nil {
-					or = append(or, "JSON_CONTAINS(categories, ?) = 1")
-					vals = append(vals, "["+v+"]")
+					a = append(a, i)
 				}
 			}
 
-			gorm = gorm.Where(strings.Join(or, " OR "), vals...)
+			filter = append(filter, bson.E{Key: "categories", Value: bson.M{"$in": a}})
 		}
 
-		// Platforms / Operating System
+		// Platforms
 		platforms := query.getSearchSlice("platforms")
 		if len(platforms) > 0 {
 
-			var or []string
-			var vals []interface{}
+			a := bson.A{}
 			for _, v := range platforms {
-				or = append(or, "JSON_CONTAINS(platforms, ?) = 1")
-				vals = append(vals, "[\""+v+"\"]")
+				a = append(a, v)
 			}
-			gorm = gorm.Where(strings.Join(or, " OR "), vals...)
+
+			filter = append(filter, bson.E{Key: "platforms", Value: bson.M{"$in": a}})
 		}
 
 		// Price range
@@ -341,20 +331,13 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			high, err := strconv.Atoi(strings.Replace(prices[1], ".", "", 1))
 			log.Err(err, r)
 
-			var column string
-
-			switch code {
-			case steam.ProductCCUS, steam.ProductCCUK, steam.ProductCCEU: // Indexed columns
-				column = "prices_" + string(code)
-			default:
-				column = "JSON_EXTRACT(prices, \"$." + string(code) + ".final\")"
-			}
+			var column = "prices." + string(code) + ".final"
 
 			if low > 0 {
-				gorm = gorm.Where("COALESCE("+column+", 0) >= ?", low)
+				filter = append(filter, bson.E{Key: column, Value: bson.M{"$gte": low}})
 			}
 			if high < 100*100 {
-				gorm = gorm.Where("COALESCE("+column+", 0) <= ?", high)
+				filter = append(filter, bson.E{Key: column, Value: bson.M{"$lte": high}})
 			}
 		}
 
@@ -369,36 +352,57 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			log.Err(err, r)
 
 			if low > 0 {
-				gorm = gorm.Where("reviews_score >= ?", low)
+				filter = append(filter, bson.E{Key: "reviews_score", Value: bson.M{"$gte": low}})
 			}
 			if high < 100 {
-				gorm = gorm.Where("reviews_score <= ?", high)
+				filter = append(filter, bson.E{Key: "reviews_score", Value: bson.M{"$lte": high}})
 			}
 		}
 
 		// Search
 		search := query.getSearchString("search")
 		if search != "" {
-			gorm = gorm.Where("name LIKE ?", "%"+search+"%")
+			filter = append(filter, bson.E{Key: "$text", Value: bson.M{"$search": search}})
 		}
+
+		var wg2 sync.WaitGroup
 
 		// Count
-		gorm = gorm.Count(&recordsFiltered)
-		log.Err(gorm.Error)
+		wg2.Add(1)
+		go func() {
 
-		// Order, offset, limit
-		cols := map[string]string{
-			"2": "player_peak_week",
-			"3": "group_followers",
-			"4": "reviews_score",
-			"5": "JSON_EXTRACT(prices, \"$." + string(code) + ".final\")",
-		}
-		gorm = query.setOrderOffsetGorm(gorm, cols, "2")
-		gorm = gorm.Limit(100)
+			defer wg2.Done()
 
-		// Get rows
-		gorm = gorm.Find(&apps)
-		log.Err(gorm.Error)
+			recordsFiltered, err = mongo.CountDocuments(mongo.CollectionApps, filter, 10)
+			if err != nil {
+				log.Err(err, r)
+			}
+		}()
+
+		// Get apps
+		wg2.Add(1)
+		go func() {
+
+			defer wg2.Done()
+
+			cols := map[string]string{
+				"2": "player_peak_week",
+				"3": "group_followers",
+				"4": "reviews_score",
+				"5": "prices." + string(code) + ".final",
+			}
+
+			projection := bson.M{"id": 1, "name": 1, "icon": 1, "reviews_score": 1, "prices": 1, "player_peak_week": 1, "group_followers": 1}
+			order := query.getOrderMongo(cols)
+			offset := query.getOffset64()
+
+			apps, err = mongo.GetApps(offset, 100, order, filter, projection, ops)
+			if err != nil {
+				log.Err(err, r)
+			}
+		}()
+
+		wg2.Wait()
 	}()
 
 	// Get total
@@ -431,7 +435,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			app.GetPath(), // 3
 			app.GetType(), // 4
 			helpers.RoundFloatTo2DP(app.ReviewsScore), // 5
-			app.GetPrice(code).GetFinal(),             // 6
+			app.Prices.Get(code).GetFinal(),           // 6
 			app.PlayerPeakWeek,                        // 7
 			app.GetStoreLink(),                        // 8
 			query.getOffset() + k + 1,                 // 9

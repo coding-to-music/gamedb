@@ -175,6 +175,26 @@ func (app App) Save() (err error) {
 	return err
 }
 
+func (app App) GetName() string {
+	return helpers.GetAppName(app.ID, app.Name)
+}
+
+func (app App) GetIcon() (ret string) {
+	return helpers.GetAppIcon(app.ID, app.Icon)
+}
+
+func (app App) GetPath() string {
+	return helpers.GetAppPath(app.ID, app.Name)
+}
+
+func (app App) GetType() (ret string) {
+	return helpers.GetAppType(app.Type)
+}
+
+func (app App) GetStoreLink() string {
+	return helpers.GetAppStoreLink(app.ID)
+}
+
 func CreateAppIndexes() {
 
 	log.Info("Started")
@@ -230,4 +250,30 @@ func GetApp(id int) (app App, err error) {
 	}
 
 	return app, err
+}
+
+func GetApps(offset int64, limit int64, sort bson.D, filter bson.D, projection bson.M, ops *options.FindOptions) (apps []App, err error) {
+
+	cur, ctx, err := Find(CollectionApps, offset, limit, sort, filter, projection, nil)
+	if err != nil {
+		return apps, err
+	}
+
+	defer func() {
+		err = cur.Close(ctx)
+		log.Err(err)
+	}()
+
+	for cur.Next(ctx) {
+
+		var app App
+		err := cur.Decode(&app)
+		if err != nil {
+			log.Err(err, app.ID)
+		} else {
+			apps = append(apps, app)
+		}
+	}
+
+	return apps, cur.Err()
 }
