@@ -761,7 +761,10 @@ func updatePlayerGroups(player *mongo.Player, payload PlayerMessage) error {
 	if !payload.SkipGroups {
 		for _, id := range currentSlice.GetIDs() {
 			err = ProduceGroup(GroupMessage{ID: id, UserAgent: payload.UserAgent})
-			log.Err(err)
+			err = helpers.IgnoreErrors(err, memcache.ErrInQueue, ErrIsBot)
+			if err != nil {
+				log.Err(err)
+			}
 		}
 	}
 
