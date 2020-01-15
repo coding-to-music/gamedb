@@ -822,13 +822,8 @@
 
                                 <ul class="nav nav-tabs card-header-tabs" role="tablist">
                                     <li class="nav-item">
-                                        <a class="nav-link nav-link-small active" data-toggle="tab" href="#dev-details" role="tab">Details</a>
+                                        <a class="nav-link nav-link-small active" data-toggle="tab" href="#dev-info" role="tab">Info</a>
                                     </li>
-                                    {{ if or (gt (len .Extended) 0) (gt (len .Common) 0) (gt (len .UFS) 0) (gt (len .Config) 0) }}
-                                        <li class="nav-item">
-                                            <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-options" role="tab">Options</a>
-                                        </li>
-                                    {{ end }}
                                     {{ if gt (len .App.GetInstall) 0}}
                                         <li class="nav-item">
                                             <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-install" role="tab">Install</a>
@@ -865,42 +860,8 @@
                             <div class="card-body">
                                 <div class="tab-content">
 
-                                    {{/* Details */}}
-                                    <div class="tab-pane show active" id="dev-details" role="tabpanel">
-
-                                        <div class="table-responsive">
-                                            <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
-                                                <thead class="thead-light">
-                                                <tr>
-                                                    <th scope="col">Key</th>
-                                                    <th scope="col">Value</th>
-                                                </tr>
-                                                </thead>
-                                                {{ if ne .App.Version "" }}
-                                                    <tr>
-                                                        <th scope="row" nowrap="nowrap" class="thin">Version</th>
-                                                        <td>{{ .App.Version }}</td>
-                                                    </tr>
-                                                {{ end }}
-                                                <tr>
-                                                    <th scope="row" nowrap="nowrap" class="thin">Change Number</th>
-                                                    <td><a href="/changes/{{ .App.ChangeNumber }}">Change {{ .App.ChangeNumber }}</a></td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row" nowrap="nowrap" class="thin">Updated on Steam</th>
-                                                    <td>{{ .App.GetPICSUpdatedNice }}</td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row" nowrap="nowrap" class="thin">Updated on Game DB</th>
-                                                    <td>{{ .App.GetUpdatedNice }}</td>
-                                                </tr>
-                                            </table>
-                                        </div>
-
-                                    </div>
-
                                     {{/* Extended / Common / UFS / Config */}}
-                                    <div class="tab-pane" id="dev-options" role="tabpanel">
+                                    <div class="tab-pane show active" id="dev-info" role="tabpanel">
 
                                         <div class="table-responsive">
                                             <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
@@ -912,6 +873,31 @@
                                                     <th scope="col" class="thin">Raw</th>
                                                 </tr>
                                                 </thead>
+                                                <tbody>
+                                                <tr>
+                                                    <td nowrap="nowrap">version</td>
+                                                    <td>Other</td>
+                                                    <td>{{ .App.Version }}</td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
+                                                    <td nowrap="nowrap">change_number</td>
+                                                    <td>Other</td>
+                                                    <td><a href="/changes/{{ .App.ChangeNumber }}">{{ .App.ChangeNumber }}</a></td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
+                                                    <td nowrap="nowrap">updated_steam</td>
+                                                    <td>Other</td>
+                                                    <td>{{ .App.GetPICSUpdatedNice }}</td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
+                                                    <td nowrap="nowrap">updated_game_db</td>
+                                                    <td>Other</td>
+                                                    <td>{{ .App.GetUpdatedNice }}</td>
+                                                    <td></td>
+                                                </tr>
                                                 {{ range .Extended }}
                                                     <tr data-raw="{{ htmlEscape .Value }}">
                                                         {{/*<td nowrap="nowrap"><a href="/product-keys?type=app&key={{ .Key }}&value={{ .Value }}">{{ .Key }}</a></td>*/}}
@@ -950,6 +936,7 @@
                                                         <td><i class="fas fa-eye"></i></td>
                                                     </tr>
                                                 {{ end }}
+                                                </tbody>
                                             </table>
                                         </div>
 
