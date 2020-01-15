@@ -20,14 +20,16 @@ import (
 )
 
 const (
+	// Binaries
 	LogNameChatbot   LogName = "binary-chatbot"
 	LogNameConsumers LogName = "binary-consumers"
 	LogNameCrons     LogName = "binary-crons"
 	LogNameSteam     LogName = "binary-steam"
 	LogNameWebserver LogName = "binary-webserver"
 	LogNameTest      LogName = "binary-test"
-
+	//
 	LogNameMongo         LogName = "mongo"
+	LogNameRabbit        LogName = "rabbit"
 	LogNameInflux        LogName = "influx"
 	LogNameRequests      LogName = "requests"
 	LogNameSQL           LogName = "sql"
