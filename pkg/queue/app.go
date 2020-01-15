@@ -1395,9 +1395,7 @@ func scrapeSimilar(app *sql.App) (err error) {
 
 		c.OnHTML(".similar_grid_capsule", func(e *colly.HTMLElement) {
 			i, err := strconv.Atoi(e.Attr("data-ds-appid"))
-			if err != nil {
-				log.Err(app.ID, err)
-			} else {
+			if err == nil {
 				relatedAppIDs = append(relatedAppIDs, i)
 			}
 		})
