@@ -23,6 +23,12 @@ function toast(success = true, body, title = '', timeout = 0, link = '') {
         extendedTimeOut: timeout * 1000
     };
 
+    if (isMobile()) {
+        options["positionClass"] = "toast-bottom-right";
+    } else {
+        options["positionClass"] = "toast-top-right";
+    }
+
     if (success) {
         toastr.success(body, title, options);
     } else {
