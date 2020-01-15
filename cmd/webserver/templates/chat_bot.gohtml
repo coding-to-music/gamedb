@@ -9,9 +9,7 @@
             </a>
             <h1><i class="fas fa-robot"></i> Steam Chat Bot <small>(BETA)</small></h1>
             <p class="lead"><a href="{{ .Link }}" target="_blank">Add the Steam Chat Bot to your Discord server</a>.</p>
-            {{ if gt .Guilds 19 }}
-                <small>Used on {{ .Guilds }} servers so far.</small>
-            {{ end }}
+            <small>Used on {{ .Guilds }}+ servers so far.</small>
         </div>
 
         {{ template "_flashes" . }}
