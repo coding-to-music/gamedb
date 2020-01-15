@@ -129,14 +129,21 @@ func chatBotCommandsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var last string
 	var messages []websockets.ChatBotPayload
 	for _, v := range commands {
-		messages = append(messages, websockets.ChatBotPayload{
-			AuthorID:     v.AuthorID,
-			AuthorName:   v.AuthorName,
-			AuthorAvatar: v.AuthorAvatar,
-			Message:      v.Message,
-		})
+
+		if last != v.AuthorID+v.Message { // Stop dupes
+
+			messages = append(messages, websockets.ChatBotPayload{
+				AuthorID:     v.AuthorID,
+				AuthorName:   v.AuthorName,
+				AuthorAvatar: v.AuthorAvatar,
+				Message:      v.Message,
+			})
+		}
+
+		last = v.AuthorID + v.Message
 	}
 
 	returnJSON(w, r, messages)
