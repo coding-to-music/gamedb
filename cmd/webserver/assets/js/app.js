@@ -2,6 +2,7 @@ const $appPage = $('#app-page');
 
 if ($appPage.length > 0) {
 
+    // Play / Pause videos
     $('#media video').on('click', function (e) {
         const video = $(this)[0];
         if (video.paused) {
@@ -12,10 +13,17 @@ if ($appPage.length > 0) {
         }
     });
 
+    // Followers link
     $('.followers-link').on('click', function (e) {
 
         $('a.nav-link[href="#players"]').tab('show');
         return false;
+    });
+
+    // Videos link
+    $("#scroll-to-videos").on('click', function (e) {
+        const st = $("#videos").offset().top;
+        $('html, body').animate({scrollTop: st - 15}, 500);
     });
 
     // Show dev raw row

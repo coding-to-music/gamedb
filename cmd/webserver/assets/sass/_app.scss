@@ -51,14 +51,14 @@
         img, video {
             width: 100%;
             margin-bottom: 1px;
-            float: left; // To fix white space
+            display: block;
         }
 
         img:last-of-type, video:last-of-type {
             margin-bottom: 0;
         }
 
-        img + video {
+        #images + #videos {
             @extend .mt-4;
         }
     }

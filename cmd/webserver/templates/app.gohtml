@@ -771,28 +771,40 @@
                         <table class="table">
                             <tbody>
                             <tr>
-                                <th scope="row" style="width: 15%;">Screenshots</th>
-                                <td>{{ comma (len .Screenshots) }}</td>
+                                <th style="width: 130px;" scope="row">Screenshots</th>
+                                <td style="width: 20px;">{{ comma (len .Screenshots) }}</td>
+                                <td></td>
                             </tr>
                             <tr>
-                                <th scope="row" nowrap="nowrap">Movies</th>
-                                <td>{{ comma (len .Movies) }}</td>
+                                <th style="width: 130px;" scope="row" nowrap="nowrap">Movies</th>
+                                <td style="width: 20px;">{{ comma (len .Movies) }}</td>
+                                <td>
+                                    {{ if and (gt (len .Movies) 0) (gt (len .Screenshots) 0) }}
+                                        <button id="scroll-to-videos" type="button" class="btn btn-success btn-sm">
+                                            <i class="fas fa-level-down-alt"></i>
+                                        </button>
+                                    {{ end }}
+                                </td>
                             </tr>
                             </tbody>
                         </table>
 
                         {{if or (gt (len .Screenshots) 0) (gt (len .Movies) 0) }}
 
-                            {{ range $key, $value := .Screenshots }}
-                                <img src="" data-lazy="{{ .PathFull }}" alt="" data-lazy-alt="Media {{ $key }}">
-                            {{ end }}
+                            <div id="images">
+                                {{ range $key, $value := .Screenshots }}
+                                    <img src="" data-lazy="{{ .PathFull }}" alt="" data-lazy-alt="Media {{ $key }}">
+                                {{ end }}
+                            </div>
 
-                            {{ range $key, $value := .Movies }}
-                                <video controls preload="metadata">
-                                    <source src="{{ https .PathFull }}" type="video/webm">
-                                    Sorry, your browser doesn't support embedded videos.
-                                </video>
-                            {{ end }}
+                            <div id="videos">
+                                {{ range $key, $value := .Movies }}
+                                    <video controls preload="metadata">
+                                        <source src="{{ https .PathFull }}" type="video/webm">
+                                        Sorry, your browser doesn't support embedded videos.
+                                    </video>
+                                {{ end }}
+                            </div>
 
                         {{ else }}
 
