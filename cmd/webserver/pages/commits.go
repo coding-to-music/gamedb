@@ -31,9 +31,7 @@ func commitsHandler(w http.ResponseWriter, r *http.Request) {
 	t := commitsTemplate{}
 	t.fill(w, r, "Commits", "")
 
-	var err error
-	t.Total, err = getTotalCommits()
-	log.Err(err)
+	t.Total = getTotalCommits()
 
 	returnTemplate(w, r, "commits", t)
 }
@@ -66,8 +64,7 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get total
-	total, err := getTotalCommits()
-	log.Err(err)
+	total := getTotalCommits()
 
 	//
 	response := DataTablesAjaxResponse{}
@@ -96,18 +93,18 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	response.output(w, r)
 }
 
-func getTotalCommits() (total int, err error) {
+func getTotalCommits() (total int) {
 
 	client, ctx := githubHelper.GetGithub()
 
 	var item = memcache.MemcacheTotalCommits
 
-	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &total, func() (interface{}, error) {
+	err := memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &total, func() (interface{}, error) {
 
 		operation := func() (err error) {
 
 			contributors, _, err := client.Repositories.ListContributorsStats(ctx, "gamedb", "gamedb")
-			if err != nil {
+			if err != nil { // github.AcceptedError
 				return err
 			}
 			for _, v := range contributors {
@@ -121,10 +118,10 @@ func getTotalCommits() (total int, err error) {
 
 		policy := backoff.NewExponentialBackOff()
 
-		err = backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 4), func(err error, t time.Duration) { log.Info(err) })
-
+		err := backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 4), func(err error, t time.Duration) { log.Info(err) })
 		return total, err
 	})
+	log.Err(err)
 
-	return total, err
+	return total
 }
