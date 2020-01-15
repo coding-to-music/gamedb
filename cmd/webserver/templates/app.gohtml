@@ -53,22 +53,22 @@
                     {{ end }}
                     {{ if gt (len .Album.Tracks) 0 }}
                         <li class="nav-item">
-                            <a class="nav-link nav-link-small" data-toggle="tab" href="#tracks" role="tab">Tracks</a>
+                            <a class="nav-link nav-link-small" data-toggle="tab" href="#tracks" role="tab">Tracks ({{ comma (len .Album.Tracks) }})</a>
                         </li>
                     {{ end }}
                     {{ if gt (len .DLCs) 0 }}
                         <li class="nav-item">
-                            <a class="nav-link nav-link-small" data-toggle="tab" href="#dlc" role="tab">DLC</a>
+                            <a class="nav-link nav-link-small" data-toggle="tab" href="#dlc" role="tab">DLC ({{ comma (len .DLCs) }})</a>
                         </li>
                     {{ end }}
                     {{ if gt (len .Packages) 0 }}
                         <li class="nav-item">
-                            <a class="nav-link nav-link-small" data-toggle="tab" href="#packages" role="tab">Packages</a>
+                            <a class="nav-link nav-link-small" data-toggle="tab" href="#packages" role="tab">Packages ({{ comma (len .Packages) }})</a>
                         </li>
                     {{ end }}
                     {{ if gt (len .Bundles) 0 }}
                         <li class="nav-item">
-                            <a class="nav-link nav-link-small" data-toggle="tab" href="#bundles" role="tab">Bundles</a>
+                            <a class="nav-link nav-link-small" data-toggle="tab" href="#bundles" role="tab">Bundles ({{ comma (len .Bundles) }})</a>
                         </li>
                     {{ end }}
                     {{ if gt (len .Related) 0 }}
@@ -78,12 +78,12 @@
                     {{ end }}
                     {{ if gt (len .Achievements) 0 }}
                         <li class="nav-item">
-                            <a class="nav-link nav-link-small" data-toggle="tab" href="#achievements" role="tab">Achievements</a>
+                            <a class="nav-link nav-link-small" data-toggle="tab" href="#achievements" role="tab">Achievements ({{ comma (len .Achievements) }})</a>
                         </li>
                     {{ end }}
                     {{ if gt .App.Items 0 }}
                         <li class="nav-item">
-                            <a class="nav-link nav-link-small" data-toggle="tab" href="#items" role="tab">Items</a>
+                            <a class="nav-link nav-link-small" data-toggle="tab" href="#items" role="tab">Items ({{ comma (len .App.Items) }})</a>
                         </li>
                     {{ end }}
                     {{ if gt (len .NewsIDs) 0 }}
@@ -98,7 +98,7 @@
                     {{ end }}
                     {{ if or (gt (len .Screenshots) 0) (gt (len .Movies) 0) }}
                         <li class="nav-item">
-                            <a class="nav-link nav-link-small" data-toggle="tab" href="#media" role="tab">Media</a>
+                            <a class="nav-link nav-link-small" data-toggle="tab" href="#media" role="tab">Media ({{ comma (sum (len .Screenshots) (len .Movies) )}})</a>
                         </li>
                     {{ end }}
                     <li class="nav-item">

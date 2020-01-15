@@ -210,6 +210,12 @@ func getTemplateFuncMap() map[string]interface{} {
 		"round":        func(i int) string { return helpers.ShortHandNumber(int64(i)) },
 		"round64":      func(i int64) string { return helpers.ShortHandNumber(i) },
 		"slug":         func(s string) string { return slug.Make(s) },
+		"sum": func(i ...int) (total int) {
+			for _, v := range i {
+				total += v
+			}
+			return total
+		},
 	}
 }
 
