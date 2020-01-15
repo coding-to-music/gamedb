@@ -39,7 +39,7 @@ func (c UpdateRandomPlayers) work() (err error) {
 		queue.QueueApps:     50,
 		queue.QueueGroups:   50,
 		queue.QueuePackages: 50,
-		queue.QueuePlayers:  10,
+		queue.QueuePlayers:  0,
 		queue.QueueDelay:    0,
 	}
 
