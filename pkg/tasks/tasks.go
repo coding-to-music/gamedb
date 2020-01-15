@@ -18,6 +18,7 @@ const ( //                        min hour
 	CronTimeSteamClientPlayers  = "*/10 *"
 	CronTimeAppPlayers          = "*/10 *"
 	CronTimeAutoPlayerRefreshes = "0 */6"
+	CronQueueAppGroups          = "0 0"
 	CronTimeClearUpcomingCache  = "0 0"
 	CronTimePlayerRanks         = "0 0"
 	CronTimeGenres              = "0 3"
