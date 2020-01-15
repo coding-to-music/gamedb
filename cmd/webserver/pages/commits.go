@@ -7,6 +7,7 @@ import (
 
 	"github.com/cenkalti/backoff/v4"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/helpers"
 	githubHelper "github.com/gamedb/gamedb/pkg/helpers/github"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -85,8 +86,9 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			commit.Commit.Author.Date.Unix(), // 1
 			deployed,                         // 2
 			commit.GetHTMLURL(),              // 3
-			commit.GetSHA() == config.Config.CommitHash.Get(), // 4
-			commit.GetSHA()[0:7],                              // 5
+			commit.GetSHA() == config.Config.CommitHash.Get(),  // 4
+			commit.GetSHA()[0:7],                               // 5
+			commit.Commit.Author.Date.Format(helpers.DateTime), // 6
 		})
 	}
 

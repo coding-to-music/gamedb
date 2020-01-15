@@ -20,18 +20,18 @@ if ($('#commits-page').length > 0) {
                     $(td).attr('id', rowData[5]);
                     $(td).attr('nowrap', 'nowrap');
                 },
-                "orderable": false
+                "orderable": false,
             },
             // Time
             {
                 "targets": 1,
                 "render": function (data, type, row) {
-                    return '<span data-toggle="tooltip" data-placement="left" title="' + row[1] + '" data-livestamp="' + row[1] + '">' + row[1] + '</span>';
+                    return '<span data-toggle="tooltip" data-placement="left" title="' + row[6] + '" data-livestamp="' + row[1] + '"></span>';
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
                 },
-                "orderable": false
+                "orderable": false,
             },
             // Hash
             {
@@ -42,7 +42,7 @@ if ($('#commits-page').length > 0) {
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
                 },
-                "orderable": false
+                "orderable": false,
             },
             // Deployed
             {
@@ -59,7 +59,7 @@ if ($('#commits-page').length > 0) {
                         return '<i class="fas fa-times"></i>';
                     }
                 },
-                "orderable": false
+                "orderable": false,
             }
         ]
     };
