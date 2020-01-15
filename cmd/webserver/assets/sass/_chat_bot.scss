@@ -4,4 +4,8 @@
             height: 105px;
         }
     }
+
+    .commands-table:last-of-type {
+        @extend .mb-0;
+    }
 }

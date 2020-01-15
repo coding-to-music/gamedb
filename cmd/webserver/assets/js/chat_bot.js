@@ -28,9 +28,23 @@ if ($('#chat-bot-page').length > 0) {
         const fadeClass = (addToTop ? ' fade-green' : '');
 
         $container.json2html(
-            {message: message},
+            message,
             {
                 '<>': 'tr', 'html': [
+                    {
+                        '<>': 'td', 'class': 'img nowrap thin', '': '', 'html': [
+                            {
+                                '<>': 'div', 'class': 'icon-name', 'html': [
+                                    {
+                                        '<>': 'div', 'class': 'icon', 'html': [{'<>': 'img', 'data-lazy': 'https://cdn.discordapp.com/avatars/${author_id}/${author_avatar}.png?size=64', 'alt': '', 'data-lazy-alt': '${author_name}'}],
+                                    },
+                                    {
+                                        '<>': 'div', 'class': 'name', 'html': '${author_name}'
+                                    }
+                                ]
+                            }
+                        ]
+                    },
                     {'<>': 'td', 'html': '${message}'}
                 ],
             },
@@ -40,5 +54,6 @@ if ($('#chat-bot-page').length > 0) {
         );
 
         $container.find('row').slice(2).remove();
+        observeLazyImages($container.find('img[data-lazy]'));
     }
 }

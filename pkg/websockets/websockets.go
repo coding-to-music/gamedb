@@ -175,7 +175,7 @@ func ListenToPubSub() {
 
 				wsPage.Send(idPayload.ID)
 
-			case PageGroup, PageChatBot, PagePlayer:
+			case PageGroup, PagePlayer:
 
 				idPayload := PubSubStringPayload{}
 
@@ -183,6 +183,15 @@ func ListenToPubSub() {
 				log.Err(err)
 
 				wsPage.Send(idPayload.String)
+
+			case PageChatBot:
+
+				cbPayload := ChatBotPayload{}
+
+				err = helpers.Unmarshal(m.Data, &cbPayload)
+				log.Err(err)
+
+				wsPage.Send(cbPayload)
 
 			case PageChanges:
 

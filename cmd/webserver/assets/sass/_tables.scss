@@ -163,6 +163,10 @@ table.table {
         }
     }
 
+    td.thin {
+        width: 1%;
+    }
+
     td.platforms.platforms-align span.space {
         display: inline-block;
         width: .875em;

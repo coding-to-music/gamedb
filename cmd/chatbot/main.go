@@ -168,27 +168,22 @@ func saveToMongo(m *discordgo.MessageCreate, message string) {
 		return
 	}
 
-	var command = mongo.ChatBotCommand{
-		GuildID:      m.GuildID,
-		ChannelID:    m.ChannelID,
-		AuthorID:     m.Author.ID,
-		AuthorName:   m.Author.Username,
-		AuthorAvatar: m.Author.Avatar,
-		Message:      message,
-	}
-
-	_, err := mongo.InsertOne(mongo.CollectionChatBotCommands, command)
+	err := mongo.CreateChatBotCommand(*m, message)
 	if err != nil {
 		log.Err(err)
 		return
 	}
 
-	wsPayload := websockets.PubSubStringPayload{}
-	wsPayload.String = message
+	wsPayload := websockets.ChatBotPayload{}
+	wsPayload.AuthorID = m.Author.ID
+	wsPayload.AuthorName = m.Author.Username
+	wsPayload.AuthorAvatar = m.Author.Avatar
+	wsPayload.Message = message
 	wsPayload.Pages = []websockets.WebsocketPage{websockets.PageChatBot}
 
 	_, err = pubsubHelpers.Publish(pubsubHelpers.PubSubTopicWebsockets, wsPayload)
 	if err != nil {
 		log.Err(err)
+		return
 	}
 }

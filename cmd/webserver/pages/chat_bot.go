@@ -3,7 +3,6 @@ package pages
 import (
 	"net/http"
 	"sort"
-	"strconv"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/chatbot"
@@ -11,6 +10,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/go-chi/chi"
 )
 
@@ -109,10 +109,6 @@ func (cbt chatBotTemplate) Guilds() (guilds int) {
 			count += len(guilds)
 		}
 
-		if count < 20 {
-			log.Info(strconv.Itoa(count) + " guilds")
-		}
-
 		return count, nil
 	})
 
@@ -133,9 +129,14 @@ func chatBotCommandsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var messages []string
+	var messages []websockets.ChatBotPayload
 	for _, v := range commands {
-		messages = append(messages, v.Message)
+		messages = append(messages, websockets.ChatBotPayload{
+			AuthorID:     v.AuthorID,
+			AuthorName:   v.AuthorName,
+			AuthorAvatar: v.AuthorAvatar,
+			Message:      v.Message,
+		})
 	}
 
 	returnJSON(w, r, messages)

@@ -40,3 +40,11 @@ type ChatPayload struct {
 	Time         string  `json:"timestamp"`
 	Embeds       bool    `json:"embeds"`
 }
+
+type ChatBotPayload struct {
+	PubSubBasePayload
+	AuthorID     string `json:"author_id"`
+	AuthorName   string `json:"author_name"`
+	AuthorAvatar string `json:"author_avatar"`
+	Message      string `json:"message"`
+}
