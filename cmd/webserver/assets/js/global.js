@@ -245,24 +245,18 @@ function getSessionCookie(key = null) {
     }
 }
 
-//
-const $darkMode = $('#dark-mode');
-const $sun = $darkMode.find('.fa-sun');
-const $moon = $darkMode.find('.fa-moon');
-
-// Set default dark mode
-let darkMode = getSessionCookie('dark');
-if (darkMode === undefined && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    enableDarkMode();
-}
-
-//
 $('.jumbotron button.close').on('click', function (e) {
     $(this).closest('.jumbotron').slideUp();
     setCookieFlag($(this).attr('data-id'), true);
 });
 
+//
+const $darkMode = $('#dark-mode');
+
 $darkMode.on('click', function (e) {
+
+    const $sun = $darkMode.find('.fa-sun');
+    const $moon = $darkMode.find('.fa-moon');
 
     if ($sun.hasClass("d-none")) {
 
@@ -272,20 +266,23 @@ $darkMode.on('click', function (e) {
         setCookieFlag('dark', false);
 
     } else {
-        enableDarkMode()
+
+        $sun.addClass('d-none');
+        $moon.removeClass('d-none');
+        $('body').addClass('dark');
+        setCookieFlag('dark', true);
     }
 
     return false;
 });
 
-function enableDarkMode() {
-
-    $sun.addClass('d-none');
-    $moon.removeClass('d-none');
-    $('body').addClass('dark');
-    setCookieFlag('dark', true);
+// Set default dark mode
+let darkMode = getSessionCookie('dark');
+if (darkMode === undefined && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    $darkMode.trigger('click');
 }
 
+//
 function getOS() {
 
     let os = "windows";
