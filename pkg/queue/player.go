@@ -233,7 +233,7 @@ func playerHandler(messages []*rabbit.Message) {
 
 			defer wg.Done()
 
-			wsPayload := websockets.PubSubStringPayload{} // String, as int64 too large for js
+			wsPayload := websockets.StringPayload{} // String, as int64 too large for js
 			wsPayload.String = strconv.FormatInt(player.ID, 10)
 			wsPayload.Pages = []websockets.WebsocketPage{websockets.PagePlayer}
 

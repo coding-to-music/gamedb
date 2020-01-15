@@ -151,7 +151,7 @@ func packageHandler(messages []*rabbit.Message) {
 		}
 
 		// Send websocket
-		wsPayload := websockets.PubSubIDPayload{}
+		wsPayload := websockets.IntPayload{}
 		wsPayload.ID = pack.ID
 		wsPayload.Pages = []websockets.WebsocketPage{websockets.PagePackage, websockets.PagePackages}
 

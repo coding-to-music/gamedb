@@ -331,7 +331,7 @@ func savePriceChanges(before helpers.ProductInterface, after helpers.ProductInte
 
 		if len(priceIDs) > 0 {
 
-			wsPayload := websockets.PubSubIDStringsPayload{}
+			wsPayload := websockets.StringsPayload{}
 			wsPayload.IDs = priceIDs
 			wsPayload.Pages = []websockets.WebsocketPage{websockets.PagePrices}
 

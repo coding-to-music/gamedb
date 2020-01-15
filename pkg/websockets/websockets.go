@@ -168,7 +168,7 @@ func ListenToPubSub() {
 			switch page {
 			case PageApp, PageBundle, PagePackage:
 
-				idPayload := PubSubIDPayload{}
+				idPayload := IntPayload{}
 
 				err = helpers.Unmarshal(m.Data, &idPayload)
 				log.Err(err)
@@ -177,7 +177,7 @@ func ListenToPubSub() {
 
 			case PageGroup, PagePlayer:
 
-				idPayload := PubSubStringPayload{}
+				idPayload := StringPayload{}
 
 				err = helpers.Unmarshal(m.Data, &idPayload)
 				log.Err(err)
@@ -193,9 +193,18 @@ func ListenToPubSub() {
 
 				wsPage.Send(cbPayload)
 
+			case PageAdmin:
+
+				adminPayload := AdminPayload{}
+
+				err = helpers.Unmarshal(m.Data, &adminPayload)
+				log.Err(err)
+
+				wsPage.Send(adminPayload)
+
 			case PageChanges:
 
-				changePayload := PubSubChangesPayload{}
+				changePayload := ChangesPayload{}
 
 				err = helpers.Unmarshal(m.Data, &changePayload)
 				log.Err(err)
@@ -204,7 +213,7 @@ func ListenToPubSub() {
 
 			case PagePackages:
 
-				idPayload := PubSubIDPayload{}
+				idPayload := IntPayload{}
 
 				err = helpers.Unmarshal(m.Data, &idPayload)
 				log.Err(err)
@@ -219,7 +228,7 @@ func ListenToPubSub() {
 
 			case PageBundles:
 
-				idPayload := PubSubIDPayload{}
+				idPayload := IntPayload{}
 
 				err = helpers.Unmarshal(m.Data, &idPayload)
 				log.Err(err)
@@ -232,7 +241,7 @@ func ListenToPubSub() {
 
 			case PagePrices:
 
-				idsPayload := PubSubIDStringsPayload{}
+				idsPayload := StringsPayload{}
 
 				err = helpers.Unmarshal(m.Data, &idsPayload)
 				log.Err(err)

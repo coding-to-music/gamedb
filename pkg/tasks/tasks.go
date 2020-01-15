@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/cenkalti/backoff/v4"
+	pubsubHelpers "github.com/gamedb/gamedb/pkg/helpers/pubsub"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/websockets"
@@ -111,16 +112,14 @@ func Run(task TaskInterface) {
 
 	log.Info("Cron started: " + task.Name())
 
-	// Send websocket
-	page := websockets.GetPage(websockets.PageAdmin)
-	if page != nil {
-		page.Send(websockets.AdminPayload{TaskID: task.ID(), Action: "started"})
-	}
+	// Send start websocket
+	_, err := pubsubHelpers.Publish(pubsubHelpers.PubSubTopicWebsockets, websockets.AdminPayload{TaskID: task.ID(), Action: "started"})
+	log.Err(err)
 
 	// Do work
 	policy := backoff.NewConstantBackOff(time.Minute)
 
-	err := backoff.RetryNotify(task.work, backoff.WithMaxRetries(policy, 10), func(err error, t time.Duration) { log.Info(err, task.ID(), err) })
+	err = backoff.RetryNotify(task.work, backoff.WithMaxRetries(policy, 10), func(err error, t time.Duration) { log.Info(err, task.ID(), err) })
 	if err != nil {
 		log.Critical(task.ID(), err)
 	} else {
@@ -129,14 +128,9 @@ func Run(task TaskInterface) {
 		err = sql.SetConfig(sql.ConfigID("task-"+task.ID()), strconv.FormatInt(time.Now().Unix(), 10))
 		log.Err(err)
 
-		// Send websocket
-		if page != nil {
-			page.Send(websockets.AdminPayload{
-				TaskID: task.ID(),
-				Action: "finished",
-				Time:   Next(task).Unix(),
-			})
-		}
+		// Send end websocket
+		_, err = pubsubHelpers.Publish(pubsubHelpers.PubSubTopicWebsockets, websockets.AdminPayload{TaskID: task.ID(), Action: "finished", Time: Next(task).Unix()})
+		log.Err(err)
 	}
 
 	//

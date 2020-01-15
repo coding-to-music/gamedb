@@ -167,7 +167,7 @@ func sendChangesWebsocket(changes []*mongo.Change, appMap map[int]string, packag
 		ws = append(ws, v.OutputForJSON(appMap, packageMap))
 	}
 
-	wsPaload := websockets.PubSubChangesPayload{}
+	wsPaload := websockets.ChangesPayload{}
 	wsPaload.Data = ws
 	wsPaload.Pages = []websockets.WebsocketPage{websockets.PageChanges}
 
