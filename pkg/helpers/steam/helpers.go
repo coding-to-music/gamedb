@@ -51,6 +51,7 @@ func LogSteamError(err error, interfaces ...interface{}) {
 			"Bad Gateway",
 			"Client.Timeout exceeded while awaiting headers",
 			"connection reset by peer",
+			"connection timed out",
 			"expected element type",
 			"Gateway Timeout",
 			"html response",
