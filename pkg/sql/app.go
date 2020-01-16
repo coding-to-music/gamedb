@@ -222,7 +222,7 @@ func (app *App) Before(scope *gorm.Scope) error {
 func (app App) SaveToMongo() error {
 
 	mApp := mongo.App{}
-	mApp.Achievements = app.Achievements
+	mApp.Achievements = app.GetAchievements()
 	mApp.AchievementsAverageCompletion = app.AchievementsAverageCompletion
 	mApp.AchievementsCount = app.AchievementsCount
 	mApp.AlbumMetaData = app.AlbumMetaData
@@ -685,7 +685,7 @@ func (app App) GetCoopTags() (string, error) {
 }
 
 // Template
-func (app App) GetAchievements() (achievements []AppAchievement) {
+func (app App) GetAchievements() (achievements []helpers.AppAchievement) {
 
 	err := helpers.Unmarshal([]byte(app.Achievements), &achievements)
 	if err != nil {
@@ -1358,27 +1358,6 @@ func CountApps() (count int, err error) {
 	return count, err
 }
 
-func CountAppsWithAchievements() (count int, err error) {
-
-	var item = memcache.MemcacheAppsWithAchievementsCount
-
-	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
-
-		var count int
-
-		db, err := GetMySQLClient()
-		if err != nil {
-			return count, err
-		}
-
-		db.Model(&App{}).Where("achievements_count > 0").Count(&count)
-
-		return count, db.Error
-	})
-
-	return count, err
-}
-
 type AppTypeCount struct {
 	Type  string
 	Count int
@@ -1418,21 +1397,6 @@ type AppVideo struct {
 	PathFull      string `json:"f"`
 	PathThumbnail string `json:"s"`
 	Title         string `json:"t"`
-}
-
-type AppAchievement struct {
-	Name        string  `json:"n"`
-	Icon        string  `json:"i"`
-	Description string  `json:"d"`
-	Completed   float64 `json:"c"`
-	Active      bool    `json:"a"`
-}
-
-func (a AppAchievement) GetIcon() string {
-	if strings.HasSuffix(a.Icon, ".jpg") {
-		return a.Icon
-	}
-	return helpers.DefaultAppIcon
 }
 
 type AppStat struct {

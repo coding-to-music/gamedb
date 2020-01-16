@@ -261,7 +261,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 
 type appTemplate struct {
 	GlobalTemplate
-	Achievements []sql.AppAchievement
+	Achievements []helpers.AppAchievement
 	App          sql.App
 	Banners      map[string][]string
 	Bundles      []sql.Bundle

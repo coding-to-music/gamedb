@@ -51,7 +51,10 @@ if ($achievementsPage.length > 0) {
             {
                 "targets": 4,
                 "render": function (data, type, row) {
-                    return json2html.transform(row[7], {'<>': 'img', 'data-lazy': '${i}', 'data-lazy-alt': '${d}', 'class': 'mr-1', 'data-toggle': 'tooltip', 'data-placement': 'top', 'data-lazy-title': '${d}'});
+                    if (isIterable(row[7])) {
+                        return json2html.transform(row[7], {'<>': 'img', 'data-lazy': '${i}', 'data-lazy-alt': '${d}', 'class': 'mr-1', 'data-toggle': 'tooltip', 'data-placement': 'top', 'data-lazy-title': '${d}'});
+                    }
+                    return '';
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img');

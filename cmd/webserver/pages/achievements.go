@@ -2,12 +2,13 @@ package pages
 
 import (
 	"net/http"
-	"strings"
+	"sync"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func AchievementsRouter() http.Handler {
@@ -34,61 +35,59 @@ func achievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query.limit(r)
 
-	gorm, err := sql.GetMySQLClient()
-	if err != nil {
-		log.Err(err, r)
-		return
-	}
+	var wg sync.WaitGroup
+	var count int64
+	var apps []mongo.App
+	var filter = bson.D{{"achievements_count", bson.M{"$gt": 0}}}
 
-	gorm = gorm.Model(sql.App{})
-	gorm = gorm.Select([]string{"id", "name", "icon", "achievements", "achievements_count", "achievements_average_completion", "prices"})
-	gorm = gorm.Limit(100)
-	gorm = gorm.Where("achievements_count > ?", 0)
+	wg.Add(1)
+	go func() {
 
-	columns := map[string]string{
-		"1": "achievements_count",
-		"2": "achievements_average_completion",
-	}
-	gorm = query.setOrderOffsetGorm(gorm, columns, "1")
+		defer wg.Done()
 
-	var apps []sql.App
-	gorm = gorm.Find(&apps)
-	log.Err(gorm.Error, r)
+		columns := map[string]string{
+			"1": "achievements_count",
+			"2": "achievements_average_completion",
+		}
 
-	count, err := sql.CountAppsWithAchievements()
-	log.Err(err)
+		var projection = bson.M{"id": 1, "name": 1, "icon": 1, "achievements_5": 1, "achievements_count": 1, "achievements_average_completion": 1, "prices": 1}
+		var sort = query.getOrderMongo(columns)
+
+		var err error
+		apps, err = mongo.GetApps(query.getOffset64(), 100, sort, filter, projection, nil)
+		log.Err(err)
+	}()
+
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		count, err = mongo.CountDocuments(mongo.CollectionApps, filter, 60*60*24)
+		log.Err(err)
+	}()
+
+	wg.Wait()
 
 	response := DataTablesAjaxResponse{}
-	response.RecordsTotal = int64(count)
-	response.RecordsFiltered = int64(count)
+	response.RecordsTotal = count
+	response.RecordsFiltered = count
 	response.Draw = query.Draw
 	response.limit(r)
 
 	var code = helpers.GetProductCC(r)
 
 	for _, app := range apps {
-
-		//noinspection GoPreferNilSlice
-		var filteredIcons = []sql.AppAchievement{}
-
-		for _, v := range app.GetAchievements() {
-			if v.Active && strings.HasSuffix(v.Icon, ".jpg") {
-				filteredIcons = append(filteredIcons, v)
-				if len(filteredIcons) >= 5 {
-					break
-				}
-			}
-		}
-
 		response.AddRow([]interface{}{
 			app.ID,                            // 0
 			app.GetName(),                     // 1
 			app.GetIcon(),                     // 2
 			app.GetPath() + "#achievements",   // 3
-			app.GetPrice(code).GetFinal(),     // 4
+			app.Prices.Get(code).GetFinal(),   // 4
 			app.AchievementsCount,             // 5
 			app.AchievementsAverageCompletion, // 6
-			filteredIcons,                     // 7
+			app.Achievements5,                 // 7
 		})
 	}
 

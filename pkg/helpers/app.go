@@ -96,3 +96,19 @@ func GetAppType(appType string) (ret string) {
 		return strings.Title(appType)
 	}
 }
+
+//
+type AppAchievement struct {
+	Name        string  `json:"n"`
+	Icon        string  `json:"i"`
+	Description string  `json:"d"`
+	Completed   float64 `json:"c"`
+	Active      bool    `json:"a"`
+}
+
+func (a AppAchievement) GetIcon() string {
+	if strings.HasSuffix(a.Icon, ".jpg") {
+		return a.Icon
+	}
+	return DefaultAppIcon
+}

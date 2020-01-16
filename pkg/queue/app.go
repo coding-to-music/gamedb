@@ -853,10 +853,10 @@ func updateAppAchievements(app *sql.App, schema steam.SchemaForGame) error {
 
 	// Make template struct
 	var total float64
-	var achievements []sql.AppAchievement
+	var achievements []helpers.AppAchievement
 	for _, v := range schema.AvailableGameStats.Achievements {
 		total += achievementsMap[v.Name]
-		achievements = append(achievements, sql.AppAchievement{
+		achievements = append(achievements, helpers.AppAchievement{
 			Name:        v.DisplayName,
 			Icon:        v.Icon,
 			Description: v.Description,
@@ -875,7 +875,7 @@ func updateAppAchievements(app *sql.App, schema steam.SchemaForGame) error {
 
 	// Add achievements that are in global but missing in schema
 	for k, v := range achievementsMap {
-		achievements = append(achievements, sql.AppAchievement{
+		achievements = append(achievements, helpers.AppAchievement{
 			Name:      k,
 			Completed: helpers.RoundFloatTo2DP(v),
 		})
