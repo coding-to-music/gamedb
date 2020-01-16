@@ -26,7 +26,7 @@ if ($achievementsPage.length > 0) {
                 "render": function (data, type, row) {
                     return row[5].toLocaleString();
                 },
-                "orderSequence": ["desc", "asc"],
+                "orderSequence": ["desc"],
             },
             // Average
             {
