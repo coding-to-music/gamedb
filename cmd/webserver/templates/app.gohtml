@@ -874,29 +874,29 @@
                                                 </tr>
                                                 </thead>
                                                 <tbody>
-                                                <tr>
+                                                <tr data-raw="{{ htmlEscape .App.Version }}">
                                                     <td nowrap="nowrap">version</td>
                                                     <td>Other</td>
                                                     <td>{{ .App.Version }}</td>
-                                                    <td></td>
+                                                    <td><i class="fas fa-eye"></i></td>
                                                 </tr>
-                                                <tr>
+                                                <tr data-raw="{{ .App.ChangeNumber }}">
                                                     <td nowrap="nowrap">change_number</td>
                                                     <td>Other</td>
                                                     <td><a href="/changes/{{ .App.ChangeNumber }}">{{ .App.ChangeNumber }}</a></td>
-                                                    <td></td>
+                                                    <td><i class="fas fa-eye"></i></td>
                                                 </tr>
-                                                <tr>
+                                                <tr data-raw="{{ htmlEscape .App.GetPICSUpdatedNice }}">
                                                     <td nowrap="nowrap">updated_steam</td>
                                                     <td>Other</td>
                                                     <td>{{ .App.GetPICSUpdatedNice }}</td>
-                                                    <td></td>
+                                                    <td><i class="fas fa-eye"></i></td>
                                                 </tr>
-                                                <tr>
+                                                <tr data-raw="{{ htmlEscape .App.GetUpdatedNice }}">
                                                     <td nowrap="nowrap">updated_game_db</td>
                                                     <td>Other</td>
                                                     <td>{{ .App.GetUpdatedNice }}</td>
-                                                    <td></td>
+                                                    <td><i class="fas fa-eye"></i></td>
                                                 </tr>
                                                 {{ range .Extended }}
                                                     <tr data-raw="{{ htmlEscape .Value }}">
