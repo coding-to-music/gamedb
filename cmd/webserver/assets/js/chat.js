@@ -38,7 +38,11 @@ if ($('#chat-page').length > 0) {
             data,
             {
                 '<>': 'li', 'class': 'media fade-in', 'style': 'animation-delay: ${i}s', 'html': [
-                    {'<>': 'img', 'class': 'mr-3 rounded', 'src': 'https://cdn.discordapp.com/avatars/${author_id}/${author_avatar}.png?size=64', 'alt': '${author_user}'},
+                    {
+                        '<>': 'img', 'class': 'mr-3 rounded', 'alt': '', 'data-lazy-alt': '${author_user}', 'data-lazy': function (obj, index) {
+                            return obj.author_avatar ? 'https://cdn.discordapp.com/avatars/' + obj.author_id + '/' + obj.author_avatar + '.png?size=64' : '/assets/img/no-app-image-square.jpg';
+                        }
+                    },
                     {
                         '<>': 'div', 'class': 'media-body', 'html': [
                             {
@@ -56,5 +60,6 @@ if ($('#chat-page').length > 0) {
         );
 
         $container.find('li').slice(50).remove();
+        observeLazyImages($container.find('img[data-lazy]'));
     }
 }
