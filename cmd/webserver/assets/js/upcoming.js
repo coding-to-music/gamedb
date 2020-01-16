@@ -8,25 +8,27 @@ if ($('#upcoming-page').length > 0) {
 
     // Table
     const options = {
-        "order": [],
+        "order": [[4, 'asc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-app-id', data[0]);
             $(row).attr('data-link', data[3]);
         },
         "drawCallback": function (settings) {
             const api = this.api();
-            const rows = api.rows({page: 'current'}).nodes();
+            if (api.order()[0] && api.order()[0][0] === 4) {
+                const rows = api.rows({page: 'current'}).nodes();
 
-            let last = null;
-            api.rows().every(function (rowIdx, tableLoop, rowLoop) {
-                let group = this.data()[6];
-                if (last !== group) {
-                    $(rows).eq(rowIdx).before(
-                        '<tr class="table-success"><td colspan="5">' + group + '</td></tr>'
-                    );
-                    last = group;
-                }
-            });
+                let last = null;
+                api.rows().every(function (rowIdx, tableLoop, rowLoop) {
+                    let group = this.data()[6];
+                    if (last !== group) {
+                        $(rows).eq(rowIdx).before(
+                            '<tr class="table-success"><td colspan="6">' + group + '</td></tr>'
+                        );
+                        last = group;
+                    }
+                });
+            }
         },
         "columnDefs": [
             // Icon / Name
@@ -49,7 +51,7 @@ if ($('#upcoming-page').length > 0) {
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
                 },
-                "orderable": false,
+                "orderSequence": ["desc"],
             },
             // App Type
             {
@@ -73,9 +75,20 @@ if ($('#upcoming-page').length > 0) {
                 },
                 "orderable": false,
             },
-            // Link
+            // Time
             {
                 "targets": 4,
+                "render": function (data, type, row) {
+                    return '<span data-toggle="tooltip" data-placement="left" title="' + row[10] + '" data-livestamp="' + row[9] + '"></span>';
+                },
+                "createdCell": function (td, cellData, rowData, row, col) {
+                    $(td).attr('nowrap', 'nowrap');
+                },
+                "orderSequence": ["asc", "desc"],
+            },
+            // Link
+            {
+                "targets": 5,
                 "render": function (data, type, row) {
                     if (row[8]) {
                         return '<a href="' + row[8] + '" target="_blank" rel="nofollow"><i class="fas fa-link"></i></a>';

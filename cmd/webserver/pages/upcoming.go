@@ -44,7 +44,7 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	err := query.fillFromURL(r.URL.Query())
 	log.Err(err, r)
 
-	gorm, err := sql.GetMySQLClient()
+	db, err := sql.GetMySQLClient()
 	if err != nil {
 		log.Err(err, r)
 		return
@@ -53,21 +53,26 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	search := query.getSearchString("search")
 	filtered := 0
 
-	gorm = gorm.Model(sql.App{})
-	gorm = gorm.Select([]string{"id", "name", "icon", "type", "prices", "release_date_unix", "group_id", "group_followers"})
-	gorm = gorm.Where("release_date_unix >= ?", time.Now().AddDate(0, 0, -1).Unix())
+	db = db.Model(sql.App{})
+	db = db.Select([]string{"id", "name", "icon", "type", "prices", "release_date_unix", "group_id", "group_followers"})
+	db = db.Where("release_date_unix >= ?", time.Now().AddDate(0, 0, -1).Unix())
 	if search != "" {
-		gorm = gorm.Where("name LIKE ?", "%"+search+"%")
-		gorm = gorm.Count(&filtered)
-		log.Err(gorm.Error, r)
+		db = db.Where("name LIKE ?", "%"+search+"%")
+		db = db.Count(&filtered)
+		log.Err(db.Error, r)
 	}
-	gorm = gorm.Order("release_date_unix ASC, group_followers DESC, name ASC")
-	gorm = gorm.Limit(100)
-	gorm = gorm.Offset(query.getOffset())
+
+	sortCols := map[string]string{
+		"1": "group_followers $dir, name ASC",
+		"4": "release_date_unix $dir, group_followers DESC, name ASC",
+	}
+	db = query.setOrderOffsetGorm(db, sortCols, "4")
+
+	db = db.Limit(100)
 
 	var apps []sql.App
-	gorm = gorm.Find(&apps)
-	log.Err(gorm.Error, r)
+	db = db.Find(&apps)
+	log.Err(db.Error, r)
 
 	var code = helpers.GetProductCC(r)
 
@@ -94,6 +99,8 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			app.GetDaysToRelease() + " (" + app.GetReleaseDateNice() + ")", // 6
 			app.GetFollowers(),              // 7
 			helpers.GetAppStoreLink(app.ID), // 8
+			app.ReleaseDateUnix,             // 9
+			time.Unix(app.ReleaseDateUnix, 0).Format(helpers.DateYear), // 10
 		})
 	}
 

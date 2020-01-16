@@ -74,7 +74,6 @@ func main() {
 
 				go saveToInflux(m, command)
 				go saveToMongo(m, msg)
-
 				go func() {
 					err := discordSession.ChannelTyping(m.ChannelID)
 					log.Err(err)

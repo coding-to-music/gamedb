@@ -684,9 +684,12 @@ func (q DataTablesQuery) getOrderSQL(columns map[string]string, defaultCol strin
 				if columns != nil {
 					col, ok := columns[col]
 					if ok {
-
 						if dir == "asc" || dir == "desc" {
-							ret = append(ret, col+" "+dir)
+							if strings.Contains(col, "$dir") {
+								ret = append(ret, strings.Replace(col, "$dir", dir, 1))
+							} else {
+								ret = append(ret, col+" "+dir)
+							}
 						}
 					}
 				}
