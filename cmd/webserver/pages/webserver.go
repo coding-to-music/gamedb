@@ -459,6 +459,10 @@ func (t GlobalTemplate) GetCanonical() (text string) {
 
 func (t GlobalTemplate) GetVersionHash() string {
 
+	if config.IsLocal() {
+		return "local"
+	}
+
 	if len(config.Config.CommitHash.Get()) >= 7 {
 		return config.Config.CommitHash.Get()[0:7]
 	}
