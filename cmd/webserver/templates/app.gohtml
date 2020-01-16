@@ -83,7 +83,7 @@
                     {{ end }}
                     {{ if gt .App.Items 0 }}
                         <li class="nav-item">
-                            <a class="nav-link nav-link-small" data-toggle="tab" href="#items" role="tab">Items ({{ comma (len .App.Items) }})</a>
+                            <a class="nav-link nav-link-small" data-toggle="tab" href="#items" role="tab">Items ({{ comma .App.Items }})</a>
                         </li>
                     {{ end }}
                     {{ if gt (len .NewsIDs) 0 }}
