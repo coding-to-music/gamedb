@@ -65,5 +65,13 @@ if ($achievementsPage.length > 0) {
         ]
     };
 
-    $('table.table').gdbTable({tableOptions: options});
+    // Init table
+    const searchFields = [
+        $('#search'),
+    ];
+
+    $('table.table').gdbTable({
+        tableOptions: options,
+        searchFields: searchFields
+    });
 }

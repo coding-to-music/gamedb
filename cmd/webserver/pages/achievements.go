@@ -36,7 +36,7 @@ func achievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	query.limit(r)
 
 	var wg sync.WaitGroup
-	var count int64
+	var count, filtered int64
 	var apps []mongo.App
 	var filter = bson.D{{"achievements_count", bson.M{"$gt": 0}}}
 
@@ -44,6 +44,13 @@ func achievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 
 		defer wg.Done()
+
+		var filter2 = filter
+
+		search := query.getSearchString("search")
+		if search != "" {
+			filter2 = append(filter2, bson.E{Key: "$text", Value: bson.M{"$search": search}})
+		}
 
 		columns := map[string]string{
 			"1": "achievements_count",
@@ -54,7 +61,10 @@ func achievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var sort = query.getOrderMongo(columns)
 
 		var err error
-		apps, err = mongo.GetApps(query.getOffset64(), 100, sort, filter, projection, nil)
+		apps, err = mongo.GetApps(query.getOffset64(), 100, sort, filter2, projection, nil)
+		log.Err(err)
+
+		filtered, err = mongo.CountDocuments(mongo.CollectionApps, filter2, 0)
 		log.Err(err)
 	}()
 
@@ -72,7 +82,7 @@ func achievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	response := DataTablesAjaxResponse{}
 	response.RecordsTotal = count
-	response.RecordsFiltered = count
+	response.RecordsFiltered = filtered
 	response.Draw = query.Draw
 	response.limit(r)
 
