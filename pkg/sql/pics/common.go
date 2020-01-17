@@ -28,7 +28,7 @@ type LibraryAssets struct {
 }
 
 type SupportedLanguages map[steam.LanguageCode]struct {
-	FullAudio ctypes.CBool `json:"full_audio"`
-	Subtitles ctypes.CBool `json:"subtitles"`
-	Supported ctypes.CBool `json:"supported"`
+	FullAudio ctypes.Bool `json:"full_audio"`
+	Subtitles ctypes.Bool `json:"subtitles"`
+	Supported ctypes.Bool `json:"supported"`
 }

@@ -2,6 +2,7 @@ package pages
 
 import (
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/Jleagle/patreon-go/patreon"
@@ -54,11 +55,14 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 
 func saveWebhookToMongo(event string, pwr patreon.Webhook, body []byte) (err error) {
 
+	userId, err := strconv.Atoi(pwr.User.ID)
+	log.Err(err)
+
 	_, err = mongo.InsertOne(mongo.CollectionPatreonWebhooks, mongo.PatreonWebhook{
 		CreatedAt:                   time.Now(),
 		RequestBody:                 string(body),
 		Event:                       event,
-		UserID:                      int(pwr.User.ID),
+		UserID:                      userId,
 		UserEmail:                   pwr.User.Attributes.Email,
 		DataPatronStatus:            pwr.Data.Attributes.PatronStatus,
 		DataLifetimeSupportCents:    pwr.Data.Attributes.LifetimeSupportCents,

@@ -9,10 +9,10 @@ type AlbumMetaData struct {
 		AlbumCover string `json:"album_cover"`
 	} `json:"cdn_assets"`
 	MetaData struct {
-		Artist       map[string]ctypes.CString `json:"artist"`
-		Composer     map[string]ctypes.CString `json:"composer"`
-		Label        map[string]ctypes.CString `json:"label"`
-		OtherCredits map[string]ctypes.CString `json:"othercredits"`
+		Artist       map[string]ctypes.String `json:"artist"`
+		Composer     map[string]ctypes.String `json:"composer"`
+		Label        map[string]ctypes.String `json:"label"`
+		OtherCredits map[string]ctypes.String `json:"othercredits"`
 	} `json:"metadata"`
 	Tracks map[string]AlbumTrack `json:"tracks"`
 }
