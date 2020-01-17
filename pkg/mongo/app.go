@@ -221,15 +221,41 @@ func CreateAppIndexes() {
 		Options: options.Index().SetName("text"),
 	})
 
-	// Filter indexes, ascending
-	for _, v := range []string{"type", "tags", "genres", "developers", "publishers", "categories", "platforms", "prices", "reviews_score", "release_date_unix", "achievements_count", "achievements_average_completion"} {
+	var ascending = []string{
+		"achievements_average_completion",
+		"achievements_count",
+		"categories",
+		"developers",
+		"genres",
+		"platforms",
+		"player_peak_week",
+		"player_trend",
+		"prices",
+		"publishers",
+		"release_date_unix",
+		"reviews_score",
+		"tags",
+		"type",
+	}
+
+	var descending = []string{
+		"achievements_average_completion",
+		"achievements_count",
+		"group_followers",
+		"player_peak_week",
+		"player_trend",
+		"prices",
+		"release_date_unix",
+		"reviews_score",
+	}
+
+	for _, v := range ascending {
 		indexModels = append(indexModels, mongo.IndexModel{
 			Keys: bson.D{{v, 1}},
 		})
 	}
 
-	// Sorting indexes, descending
-	for _, v := range []string{"player_peak_week", "group_followers", "reviews_score", "prices", "achievements_count", "achievements_average_completion"} {
+	for _, v := range descending {
 		indexModels = append(indexModels, mongo.IndexModel{
 			Keys: bson.D{{v, -1}},
 		})

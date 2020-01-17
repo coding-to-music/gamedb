@@ -2,14 +2,17 @@ package pages
 
 import (
 	"net/http"
+	"sync"
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func NewReleasesRouter() http.Handler {
@@ -47,57 +50,82 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	err := query.fillFromURL(r.URL.Query())
 	log.Err(err, r)
 
+	var wg sync.WaitGroup
 	var count int64
-	var apps []sql.App
+	var filtered int64
+	var apps []mongo.App
 	var code = helpers.GetProductCC(r)
-
-	gorm, err := sql.GetMySQLClient()
-	if err != nil {
-		log.Err(err, r)
-		return
+	var filter = bson.D{
+		{"release_date_unix", bson.M{"$lt": time.Now().Unix()}},
+		{"release_date_unix", bson.M{"$gt": time.Now().AddDate(0, 0, -config.Config.NewReleaseDays.GetInt()).Unix()}},
 	}
+	var countLock sync.Mutex
 
-	gorm = gorm.Model(sql.App{})
-	gorm = gorm.Select([]string{"id", "name", "icon", "type", "prices", "release_date_unix", "player_peak_week", "reviews_score"})
-	gorm = gorm.Where("release_date_unix < ?", time.Now().Unix())
-	gorm = gorm.Where("release_date_unix > ?", time.Now().AddDate(0, 0, -config.Config.NewReleaseDays.GetInt()).Unix())
+	wg.Add(1)
+	go func() {
 
-	// Count before limitting
-	gorm.Count(&count)
-	log.Err(gorm.Error, r)
+		defer wg.Done()
 
-	// Get apps
-	var columns = map[string]string{
-		"1": "JSON_EXTRACT(prices, \"$." + string(code) + ".final\")",
-		"2": "reviews_score",
-		"3": "player_peak_week",
-		"4": "release_date_unix",
-		"5": "player_trend",
-	}
-	gorm = query.setOrderOffsetGorm(gorm, columns, "3")
-	gorm = gorm.Limit(100)
+		var filter2 = filter
 
-	gorm = gorm.Find(&apps)
-	log.Err(gorm.Error, r)
+		var search = query.getSearchString("search")
+		if search != "" {
+			filter2 = append(filter2, bson.E{Key: "$text", Value: bson.M{"$search": search}})
+		}
+
+		var columns = map[string]string{
+			"1": "prices." + string(code) + ".final",
+			"2": "reviews_score",
+			"3": "player_peak_week",
+			"4": "release_date_unix",
+			"5": "player_trend",
+		}
+
+		var projection = bson.M{"id": 1, "name": 1, "icon": 1, "type": 1, "prices": 1, "release_date_unix": 1, "release_date": 1, "player_peak_week": 1, "reviews_score": 1}
+		var sort = query.getOrderMongo(columns)
+
+		var err error
+		apps, err = mongo.GetApps(query.getOffset64(), 100, sort, filter2, projection, nil)
+		log.Err(err)
+
+		countLock.Lock()
+		filtered, err = mongo.CountDocuments(mongo.CollectionApps, filter2, 0)
+		countLock.Unlock()
+		log.Err(err)
+	}()
+
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		countLock.Lock()
+		count, err = mongo.CountDocuments(mongo.CollectionApps, filter, 60*60*24)
+		countLock.Unlock()
+		log.Err(err)
+	}()
+
+	wg.Wait()
 
 	//
 	response := DataTablesAjaxResponse{}
 	response.RecordsTotal = count
-	response.RecordsFiltered = count
+	response.RecordsFiltered = filtered
 	response.Draw = query.Draw
 
 	for _, app := range apps {
 
 		response.AddRow([]interface{}{
-			app.ID,                        // 0
-			app.GetName(),                 // 1
-			app.GetIcon(),                 // 2
-			app.GetPath(),                 // 3
-			app.GetType(),                 // 4
-			app.GetPrice(code).GetFinal(), // 5
-			app.GetReleaseDateNice(),      // 6
-			helpers.RoundFloatTo2DP(app.ReviewsScore), // 7
-			app.PlayerPeakWeek,                        // 8
+			app.ID,                          // 0
+			app.GetName(),                   // 1
+			app.GetIcon(),                   // 2
+			app.GetPath(),                   // 3
+			app.GetType(),                   // 4
+			app.Prices.Get(code).GetFinal(), // 5
+			helpers.GetAppReleaseDateNice(app.ReleaseDateUnix, app.ReleaseDate), // 6
+			helpers.RoundFloatTo2DP(app.ReviewsScore),                           // 7
+			app.PlayerPeakWeek, // 8
 		})
 	}
 
