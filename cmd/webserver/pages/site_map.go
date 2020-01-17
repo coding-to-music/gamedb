@@ -8,7 +8,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/sql"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -84,25 +83,35 @@ func SiteMapPagesHandler(w http.ResponseWriter, r *http.Request) {
 
 func SiteMapGamesByScoreHandler(w http.ResponseWriter, r *http.Request) {
 
-	sm := sitemap.NewSitemap()
+	apps, err := mongo.GetApps(0, 1000, bson.D{{"reviews_score", -1}}, bson.D{}, bson.M{"_id": 1, "name": 1, "updated_at": 1}, nil)
+	if err != nil {
+		log.Err(err)
+		return
+	}
 
-	for _, app := range sitemapGetApps(r, "reviews_score desc") {
+	sm := sitemap.NewSitemap()
+	for _, app := range apps {
 		sm.AddLocation(urlBase+app.GetPath(), app.UpdatedAt, sitemap.FrequencyWeekly, 0.9)
 	}
 
-	_, err := sm.Write(w)
+	_, err = sm.Write(w)
 	log.Err(err)
 }
 
 func SiteMapGamesByPlayersHandler(w http.ResponseWriter, r *http.Request) {
 
-	sm := sitemap.NewSitemap()
+	apps, err := mongo.GetApps(0, 1000, bson.D{{"player_peak_week", -1}}, bson.D{}, bson.M{"_id": 1, "name": 1, "updated_at": 1}, nil)
+	if err != nil {
+		log.Err(err)
+		return
+	}
 
-	for _, app := range sitemapGetApps(r, "player_peak_week desc") {
+	sm := sitemap.NewSitemap()
+	for _, app := range apps {
 		sm.AddLocation(urlBase+app.GetPath(), app.UpdatedAt, sitemap.FrequencyWeekly, 0.9)
 	}
 
-	_, err := sm.Write(w)
+	_, err = sm.Write(w)
 	log.Err(err)
 }
 
@@ -161,23 +170,4 @@ func SiteMapPlayersByGamesCount(w http.ResponseWriter, r *http.Request) {
 
 	_, err = sm.Write(w)
 	log.Err(err)
-}
-
-func sitemapGetApps(r *http.Request, sort string) (apps []sql.App) {
-
-	// Add most played apps
-	gorm, err := sql.GetMySQLClient()
-	if err != nil {
-		log.Err(err, r)
-		return
-	}
-
-	gorm = gorm.Select([]string{"id", "name", "updated_at"})
-	gorm = gorm.Limit(1000) // Max: 50,000
-	gorm = gorm.Order(sort)
-	gorm = gorm.Find(&apps)
-
-	log.Critical(gorm.Error)
-
-	return apps
 }
