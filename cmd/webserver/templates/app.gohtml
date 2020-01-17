@@ -860,7 +860,7 @@
                             <div class="card-body">
                                 <div class="tab-content">
 
-                                    {{/* Extended / Common / UFS / Config */}}
+                                    {{/* Info / Extended / Common / UFS / Config */}}
                                     <div class="tab-pane show active" id="dev-info" role="tabpanel">
 
                                         <div class="table-responsive">
@@ -875,25 +875,25 @@
                                                 </thead>
                                                 <tbody>
                                                 <tr data-raw="{{ htmlEscape .App.Version }}">
-                                                    <td nowrap="nowrap">version</td>
+                                                    <td>version</td>
                                                     <td>Other</td>
                                                     <td>{{ .App.Version }}</td>
                                                     <td><i class="fas fa-eye"></i></td>
                                                 </tr>
                                                 <tr data-raw="{{ .App.ChangeNumber }}">
-                                                    <td nowrap="nowrap">change_number</td>
+                                                    <td>change_number</td>
                                                     <td>Other</td>
                                                     <td><a href="/changes/{{ .App.ChangeNumber }}">{{ .App.ChangeNumber }}</a></td>
                                                     <td><i class="fas fa-eye"></i></td>
                                                 </tr>
                                                 <tr data-raw="{{ htmlEscape .App.GetPICSUpdatedNice }}">
-                                                    <td nowrap="nowrap">updated_steam</td>
+                                                    <td>updated_steam</td>
                                                     <td>Other</td>
                                                     <td>{{ .App.GetPICSUpdatedNice }}</td>
                                                     <td><i class="fas fa-eye"></i></td>
                                                 </tr>
                                                 <tr data-raw="{{ htmlEscape .App.GetUpdatedNice }}">
-                                                    <td nowrap="nowrap">updated_game_db</td>
+                                                    <td>updated_game_db</td>
                                                     <td>Other</td>
                                                     <td>{{ .App.GetUpdatedNice }}</td>
                                                     <td><i class="fas fa-eye"></i></td>
