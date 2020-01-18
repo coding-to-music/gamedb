@@ -7,6 +7,7 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/sql/pics"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -212,8 +213,6 @@ func (app App) GetStoreLink() string {
 
 func CreateAppIndexes() {
 
-	log.Info("Started")
-
 	var indexModels []mongo.IndexModel
 
 	// Text index
@@ -270,8 +269,6 @@ func CreateAppIndexes() {
 
 	_, err = client.Database(MongoDatabase).Collection(CollectionApps.String()).Indexes().CreateMany(ctx, indexModels)
 	log.Err(err)
-
-	log.Info("Finished")
 }
 
 func GetApp(id int) (app App, err error) {

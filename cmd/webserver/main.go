@@ -42,6 +42,13 @@ func main() {
 		return
 	}
 
+	if config.IsLocal() {
+		log.Info("Start index check")
+		mongo.CreateAppIndexes()
+		mongo.CreatePlayerIndexes()
+		log.Info("Index check finished")
+	}
+
 	// Start queue producers to send to.
 	// In a go routine so if Rabbit is not working, the webserver still starts
 	go queue.Init(queue.QueueDefinitions, false)

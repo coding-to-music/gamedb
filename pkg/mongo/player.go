@@ -314,7 +314,7 @@ func (player Player) NeedsUpdate(updateType UpdateType) bool {
 	return false
 }
 
-func createPlayerIndexes() {
+func CreatePlayerIndexes() {
 
 	var indexModels []mongo.IndexModel
 
