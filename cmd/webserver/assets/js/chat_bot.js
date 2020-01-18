@@ -55,5 +55,6 @@ if ($('#chat-bot-page').length > 0) {
 
         $container.find('row').slice(2).remove();
         observeLazyImages($container.find('img[data-lazy]'));
+        fixBrokenImages();
     }
 }

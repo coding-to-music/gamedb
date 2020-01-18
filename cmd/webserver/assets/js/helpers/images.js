@@ -57,6 +57,7 @@ function loadImage($target) {
 
 function fixBrokenImages() {
 
+    // This can't be on document as img events dont bubble up.
     $('img').one('error', function () {
 
         const url = $(this).attr('data-src');
