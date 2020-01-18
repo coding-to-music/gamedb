@@ -90,13 +90,13 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	for _, app := range apps {
 
 		response.AddRow([]interface{}{
-			app.ID,                        // 0
-			app.GetName(),                 // 1
-			app.GetIcon(),                 // 2
-			app.GetPath(),                 // 3
-			app.GetType(),                 // 4
-			app.GetPrice(code).GetFinal(), // 5
-			app.GetDaysToRelease() + " (" + app.GetReleaseDateNice() + ")", // 6
+			app.ID,                          // 0
+			app.GetName(),                   // 1
+			app.GetIcon(),                   // 2
+			app.GetPath(),                   // 3
+			app.GetType(),                   // 4
+			app.GetPrice(code).GetFinal(),   // 5
+			app.GetReleaseDateNice(),        // 6
 			app.GetFollowers(),              // 7
 			helpers.GetAppStoreLink(app.ID), // 8
 			app.ReleaseDateUnix,             // 9
