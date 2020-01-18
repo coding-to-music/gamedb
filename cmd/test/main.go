@@ -9,8 +9,8 @@ import (
 
 func main() {
 
-	config.SetVersion("")
-	log.Initialise([]log.LogName{log.LogNameTest})
+	config.SetVersion("test")
+	log.Initialise([]log.LogName{log.LogNameTest}, "test")
 
 	// Get API key
 	err := sql.GetAPIKey("test")

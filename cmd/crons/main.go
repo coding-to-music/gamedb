@@ -14,7 +14,7 @@ var version string
 func main() {
 
 	config.SetVersion(version)
-	log.Initialise([]log.LogName{log.LogNameCrons})
+	log.Initialise([]log.LogName{log.LogNameCrons}, version)
 
 	// Load queue producers
 	queue.Init(queue.QueueCronsDefinitions, false)

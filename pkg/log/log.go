@@ -155,10 +155,12 @@ var (
 	googleClient *logging.Client
 	logger       *l.Logger
 	defaultLogs  []LogName
+	version      string
 )
 
-func Initialise(logs []LogName) {
+func Initialise(logs []LogName, v string) {
 
+	version = v
 	defaultLogs = logs
 
 	if config.IsLocal() {
@@ -272,6 +274,7 @@ func log(interfaces ...interface{}) {
 						"env":  config.Config.Environment.Get(),
 						"hash": config.Config.CommitHash.Get(),
 						"key":  config.GetSteamKeyTag(),
+						"ver":  version,
 					},
 				})
 			}
