@@ -14,6 +14,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/websockets"
@@ -108,8 +109,9 @@ func main() {
 	r.Mount("/webhooks", pages.WebhooksRouter())
 	r.Mount("/websocket", pages.WebsocketsRouter())
 
-	// Sitemaps, Google doesnt like having a sitemap in a sub directory
 	r.Route("/", func(r chi.Router) {
+
+		// Sitemaps, Google doesnt like having a sitemap in a sub directory
 		r.Get("/sitemap.xml", pages.SiteMapIndexHandler)
 		r.Get("/sitemap-pages.xml", pages.SiteMapPagesHandler)
 		r.Get("/sitemap-games-by-score.xml", pages.SiteMapGamesByScoreHandler)
@@ -118,6 +120,20 @@ func main() {
 		r.Get("/sitemap-players-by-games.xml", pages.SiteMapPlayersByGamesCount)
 		r.Get("/sitemap-groups.xml", pages.SiteMapGroups)
 		r.Get("/sitemap-badges.xml", pages.SiteMapBadges)
+
+		// Shortcuts
+		r.Get("/a{id}", func(w http.ResponseWriter, r *http.Request) {
+			http.Redirect(w, r, "/apps/"+chi.URLParam(r, "id"), http.StatusFound)
+		})
+		r.Get("/s{id}", func(w http.ResponseWriter, r *http.Request) {
+			http.Redirect(w, r, "/packages/"+chi.URLParam(r, "id"), http.StatusFound)
+		})
+		r.Get("/p{id}", func(w http.ResponseWriter, r *http.Request) {
+			http.Redirect(w, r, "/players/"+chi.URLParam(r, "id"), http.StatusFound)
+		})
+		r.Get("/b{id}", func(w http.ResponseWriter, r *http.Request) {
+			http.Redirect(w, r, "/bundles/"+chi.URLParam(r, "id"), http.StatusFound)
+		})
 	})
 
 	// Profiling
