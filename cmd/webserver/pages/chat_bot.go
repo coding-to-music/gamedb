@@ -3,6 +3,7 @@ package pages
 import (
 	"net/http"
 	"sort"
+	"strings"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/chatbot"
@@ -132,6 +133,11 @@ func chatBotCommandsHandler(w http.ResponseWriter, r *http.Request) {
 	var last string
 	var messages []websockets.ChatBotPayload
 	for _, v := range commands {
+
+		// Show all command prefixes as a full stop
+		if strings.HasPrefix(v.Message, "!") {
+			v.Message = strings.Replace(v.Message, "!", ".", 1)
+		}
 
 		if last != v.AuthorID+v.Message { // Stop dupes
 
