@@ -276,13 +276,13 @@ func CreateAppIndexes() {
 	log.Err(err)
 }
 
-func GetApp(id int) (app App, err error) {
+func GetApp(id int, projection bson.M) (app App, err error) {
 
 	if !helpers.IsValidAppID(id) {
 		return app, ErrInvalidAppID
 	}
 
-	err = FindOne(CollectionApps, bson.D{{"_id", id}}, nil, nil, &app)
+	err = FindOne(CollectionApps, bson.D{{"_id", id}}, nil, projection, &app)
 	if err != nil {
 		return app, err
 	}
