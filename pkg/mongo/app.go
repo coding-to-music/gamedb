@@ -230,7 +230,7 @@ func CreateAppIndexes() {
 		"platforms",
 		"player_peak_week",
 		"player_trend",
-		"prices",
+		// "prices",
 		"publishers",
 		"release_date_unix",
 		"reviews_score",
@@ -244,9 +244,14 @@ func CreateAppIndexes() {
 		"group_followers",
 		"player_peak_week",
 		"player_trend",
-		"prices",
+		// "prices",
 		"release_date_unix",
 		"reviews_score",
+	}
+
+	for _, v := range helpers.GetProdCCs(true) {
+		ascending = append(ascending, "prices."+string(v.ProductCode)+".final")
+		descending = append(descending, "prices."+string(v.ProductCode)+".final")
 	}
 
 	for _, v := range ascending {
