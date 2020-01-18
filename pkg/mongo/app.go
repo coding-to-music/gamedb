@@ -94,10 +94,11 @@ func (app App) BSON() bson.D {
 
 	// Set Achievements5
 	app.Achievements5 = []helpers.AppAchievement{}
-	for k, v := range app.Achievements {
+	for _, v := range app.Achievements {
 		if v.Active && strings.HasSuffix(v.Icon, ".jpg") {
-			app.Achievements5 = append(app.Achievements5, v)
-			if k > 4 {
+			if len(app.Achievements5) < 5 {
+				app.Achievements5 = append(app.Achievements5, v)
+			} else {
 				break
 			}
 		}
