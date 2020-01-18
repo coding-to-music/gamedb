@@ -35,6 +35,7 @@ var (
 	tasks        = []TaskInterface{
 		AppPlayers{},
 		AppQueueAll{},
+		AppsSync{},
 		AutoPlayerRefreshes{},
 		ClearUpcomingCache{},
 		DevCodeRun{},
