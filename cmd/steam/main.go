@@ -48,7 +48,9 @@ func main() {
 	loginDetails.AuthCode = ""
 
 	err = steam.InitializeSteamDirectory()
-	log.Err(err)
+	if err != nil {
+		log.Err(err)
+	}
 
 	steamClient = steam.NewClient()
 	steamClient.RegisterPacketHandler(packetHandler{})
@@ -101,7 +103,9 @@ func main() {
 				log.Info("Steam: Updating auth hash, it should no longer ask for auth")
 				loginDetails.SentryFileHash = e.Hash
 				err = ioutil.WriteFile(steamSentryFilename, e.Hash, 0666)
-				log.Err(err)
+				if err != nil {
+					log.Err(err)
+				}
 
 			case steam.FatalErrorEvent:
 
@@ -111,7 +115,9 @@ func main() {
 				go steamClient.Connect()
 
 			case error:
-				log.Err(e)
+				if e != nil {
+					log.Err(e)
+				}
 			}
 		}
 	}()
@@ -203,7 +209,9 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 
 			var id = int(app)
 			err := queue.ProduceApp(queue.AppMessage{ID: id})
-			log.Err(err, id)
+			if err != nil {
+				log.Err(err, id)
+			}
 		}
 	}
 
@@ -234,7 +242,9 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 
 			var id = int(pack)
 			err := queue.ProducePackage(queue.PackageMessage{ID: id})
-			log.Err(err, id)
+			if err != nil {
+				log.Err(err, id)
+			}
 		}
 	}
 }
@@ -317,7 +327,9 @@ func (ph packetHandler) handleChangesSince(packet *protocol.Packet) {
 	// Update cached change number
 	steamChangeNumber = body.GetCurrentChangeNumber()
 	err = ioutil.WriteFile(steamCurrentChangeFilename, []byte(strconv.FormatUint(uint64(steamChangeNumber), 10)), 0644)
-	log.Err(err)
+	if err != nil {
+		log.Err(err)
+	}
 }
 
 func (ph packetHandler) handleProfileInfo(packet *protocol.Packet) {
@@ -327,5 +339,7 @@ func (ph packetHandler) handleProfileInfo(packet *protocol.Packet) {
 
 	var id = int64(body.GetSteamidFriend())
 	err := queue.ProducePlayer(queue.PlayerMessage{ID: id})
-	log.Err(err, id)
+	if err != nil {
+		log.Err(err, id)
+	}
 }
