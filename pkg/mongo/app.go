@@ -16,79 +16,79 @@ import (
 var ErrInvalidAppID = errors.New("invalid app id")
 
 type App struct {
-	Achievements                  []helpers.AppAchievement `bson:"achievements"`                    //
-	Achievements5                 []helpers.AppAchievement `bson:"achievements_5"`                  // The first 5 only
-	AchievementsAverageCompletion float64                  `bson:"achievements_average_completion"` //
-	AchievementsCount             int                      `bson:"achievements_count"`              //
-	AlbumMetaData                 string                   `bson:"albummetadata"`                   // AlbumMetaData
-	Background                    string                   `bson:"background"`                      //
-	BundleIDs                     []int                    `bson:"bundle_ids"`                      //
-	Categories                    []int                    `bson:"categories"`                      //
-	ChangeNumber                  int                      `bson:"change_number"`                   //
-	ChangeNumberDate              time.Time                `bson:"change_number_date"`              //
-	ClientIcon                    string                   `bson:"client_icon"`                     //
-	ComingSoon                    bool                     `bson:"coming_soon"`                     //
-	Common                        map[string]string        `bson:"common"`                          //
-	Config                        map[string]string        `bson:"config"`                          //
-	CreatedAt                     time.Time                `bson:"created_at"`                      //
-	DemoIDs                       []int                    `bson:"demo_ids"`                        //
-	Depots                        string                   `bson:"depots"`                          // Depots
-	Developers                    []int                    `bson:"developers"`                      //
-	DLC                           []int                    `bson:"dlc"`                             //
-	DLCCount                      int                      `bson:"dlc_count"`                       //
-	Extended                      map[string]string        `bson:"extended"`                        //
-	GameID                        int                      `bson:"game_id"`                         //
-	GameName                      string                   `bson:"game_name"`                       //
-	Genres                        []int                    `bson:"genres"`                          //
-	GroupID                       string                   `bson:"group_id"`                        //
-	GroupFollowers                int                      `bson:"group_followers"`                 //
-	Homepage                      string                   `bson:"homepage"`                        //
-	Icon                          string                   `bson:"icon"`                            //
-	ID                            int                      `bson:"_id"`                             //
-	Install                       string                   `bson:"install"`                         // map[string]interface{}
-	IsFree                        bool                     `bson:"is_free"`                         //
-	Items                         int                      `bson:"items"`                           //
-	ItemsDigest                   string                   `bson:"items_digest"`                    //
-	Launch                        string                   `bson:"launch"`                          // []db.PICSAppConfigLaunchItem
-	Localization                  string                   `bson:"localization"`                    // pics.Localisation
-	Logo                          string                   `bson:"logo"`                            //
-	MetacriticScore               int8                     `bson:"metacritic_score"`                //
-	MetacriticURL                 string                   `bson:"metacritic_url"`                  //
-	Movies                        string                   `bson:"movies"`                          // []AppVideo
-	Name                          string                   `bson:"name"`                            //
-	NewsIDs                       []int64                  `bson:"news_ids"`                        //
-	Packages                      []int                    `bson:"packages"`                        //
-	Platforms                     []string                 `bson:"platforms"`                       //
-	PlayerAverageWeek             float64                  `bson:"player_avg_week"`                 //
-	PlayerPeakAllTime             int                      `bson:"player_peak_alltime"`             //
-	PlayerPeakWeek                int                      `bson:"player_peak_week"`                //
-	PlayerTrend                   int64                    `bson:"player_trend"`                    //
-	PlaytimeAverage               float64                  `bson:"playtime_average"`                // Minutes
-	PlaytimeTotal                 int64                    `bson:"playtime_total"`                  // Minutes
-	Prices                        helpers.ProductPrices    `bson:"prices"`                          //
-	PublicOnly                    bool                     `bson:"public_only"`                     //
-	Publishers                    []int                    `bson:"publishers"`                      //
-	RelatedAppIDs                 []int                    `bson:"related_app_ids"`                 //
-	RelatedOwnersAppIDs           []helpers.TupleInt       `bson:"related_owners_app_ids"`          //
-	ReleaseDate                   string                   `bson:"release_date"`                    //
-	ReleaseDateUnix               int64                    `bson:"release_date_unix"`               //
-	ReleaseState                  string                   `bson:"release_state"`                   //
-	Reviews                       string                   `bson:"reviews"`                         // AppReviewSummary
-	ReviewsScore                  float64                  `bson:"reviews_score"`                   //
-	Screenshots                   string                   `bson:"screenshots"`                     // []AppImage
-	ShortDescription              string                   `bson:"description_short"`               //
-	Stats                         string                   `bson:"stats"`                           // []AppStat
-	SteamSpy                      string                   `bson:"steam_spy"`                       // AppSteamSpy
-	SystemRequirements            string                   `bson:"system_requirements"`             // map[string]interface{}
-	Tags                          []int                    `bson:"tags"`                            //
-	TwitchID                      int                      `bson:"twitch_id"`                       //
-	TwitchURL                     string                   `bson:"twitch_url"`                      //
-	Type                          string                   `bson:"type"`                            //
-	UFS                           map[string]string        `bson:"ufs"`                             //
-	UpdatedAt                     time.Time                `bson:"updated_at"`                      //
-	Version                       string                   `bson:"version"`                         //
-	WishlistAvgPosition           float64                  `bson:"wishlist_avg_position"`           //
-	WishlistCount                 int                      `bson:"wishlist_count"`                  //
+	Achievements                  []helpers.AppAchievement       `bson:"achievements"`                    //
+	Achievements5                 []helpers.AppAchievement       `bson:"achievements_5"`                  // The first 5 only
+	AchievementsAverageCompletion float64                        `bson:"achievements_average_completion"` //
+	AchievementsCount             int                            `bson:"achievements_count"`              //
+	AlbumMetaData                 pics.AlbumMetaData             `bson:"albummetadata"`                   //
+	Background                    string                         `bson:"background"`                      //
+	BundleIDs                     []int                          `bson:"bundle_ids"`                      //
+	Categories                    []int                          `bson:"categories"`                      //
+	ChangeNumber                  int                            `bson:"change_number"`                   //
+	ChangeNumberDate              time.Time                      `bson:"change_number_date"`              //
+	ClientIcon                    string                         `bson:"client_icon"`                     //
+	ComingSoon                    bool                           `bson:"coming_soon"`                     //
+	Common                        map[string]string              `bson:"common"`                          //
+	Config                        map[string]string              `bson:"config"`                          //
+	CreatedAt                     time.Time                      `bson:"created_at"`                      //
+	DemoIDs                       []int                          `bson:"demo_ids"`                        //
+	Depots                        pics.Depots                    `bson:"depots"`                          //
+	Developers                    []int                          `bson:"developers"`                      //
+	DLC                           []int                          `bson:"dlc"`                             //
+	DLCCount                      int                            `bson:"dlc_count"`                       //
+	Extended                      map[string]string              `bson:"extended"`                        //
+	GameID                        int                            `bson:"game_id"`                         //
+	GameName                      string                         `bson:"game_name"`                       //
+	Genres                        []int                          `bson:"genres"`                          //
+	GroupID                       string                         `bson:"group_id"`                        //
+	GroupFollowers                int                            `bson:"group_followers"`                 //
+	Homepage                      string                         `bson:"homepage"`                        //
+	Icon                          string                         `bson:"icon"`                            //
+	ID                            int                            `bson:"_id"`                             //
+	Install                       map[string]interface{}         `bson:"install"`                         //
+	IsFree                        bool                           `bson:"is_free"`                         //
+	Items                         int                            `bson:"items"`                           //
+	ItemsDigest                   string                         `bson:"items_digest"`                    //
+	Launch                        []pics.PICSAppConfigLaunchItem `bson:"launch"`                          //
+	Localization                  pics.Localisation              `bson:"localization"`                    //
+	Logo                          string                         `bson:"logo"`                            //
+	MetacriticScore               int8                           `bson:"metacritic_score"`                //
+	MetacriticURL                 string                         `bson:"metacritic_url"`                  //
+	Movies                        []helpers.AppVideo             `bson:"movies"`                          //
+	Name                          string                         `bson:"name"`                            //
+	NewsIDs                       []int64                        `bson:"news_ids"`                        //
+	Packages                      []int                          `bson:"packages"`                        //
+	Platforms                     []string                       `bson:"platforms"`                       //
+	PlayerAverageWeek             float64                        `bson:"player_avg_week"`                 //
+	PlayerPeakAllTime             int                            `bson:"player_peak_alltime"`             //
+	PlayerPeakWeek                int                            `bson:"player_peak_week"`                //
+	PlayerTrend                   int64                          `bson:"player_trend"`                    //
+	PlaytimeAverage               float64                        `bson:"playtime_average"`                // Minutes
+	PlaytimeTotal                 int64                          `bson:"playtime_total"`                  // Minutes
+	Prices                        helpers.ProductPrices          `bson:"prices"`                          //
+	PublicOnly                    bool                           `bson:"public_only"`                     //
+	Publishers                    []int                          `bson:"publishers"`                      //
+	RelatedAppIDs                 []int                          `bson:"related_app_ids"`                 //
+	RelatedOwnersAppIDs           []helpers.TupleInt             `bson:"related_owners_app_ids"`          //
+	ReleaseDate                   string                         `bson:"release_date"`                    //
+	ReleaseDateUnix               int64                          `bson:"release_date_unix"`               //
+	ReleaseState                  string                         `bson:"release_state"`                   //
+	Reviews                       helpers.AppReviewSummary       `bson:"reviews"`                         //
+	ReviewsScore                  float64                        `bson:"reviews_score"`                   //
+	Screenshots                   []helpers.AppImage             `bson:"screenshots"`                     //
+	ShortDescription              string                         `bson:"description_short"`               //
+	Stats                         []helpers.AppStat              `bson:"stats"`                           //
+	SteamSpy                      helpers.AppSteamSpy            `bson:"steam_spy"`                       //
+	SystemRequirements            map[string]interface{}         `bson:"system_requirements"`             //
+	Tags                          []int                          `bson:"tags"`                            //
+	TwitchID                      int                            `bson:"twitch_id"`                       //
+	TwitchURL                     string                         `bson:"twitch_url"`                      //
+	Type                          string                         `bson:"type"`                            //
+	UFS                           map[string]string              `bson:"ufs"`                             //
+	UpdatedAt                     time.Time                      `bson:"updated_at"`                      //
+	Version                       string                         `bson:"version"`                         //
+	WishlistAvgPosition           float64                        `bson:"wishlist_avg_position"`           //
+	WishlistCount                 int                            `bson:"wishlist_count"`                  //
 }
 
 func (app App) BSON() bson.D {

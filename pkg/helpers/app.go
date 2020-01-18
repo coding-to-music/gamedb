@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"html/template"
 	"strconv"
 	"strings"
 	"time"
@@ -111,4 +112,79 @@ func (a AppAchievement) GetIcon() string {
 		return a.Icon
 	}
 	return DefaultAppIcon
+}
+
+//
+type AppImage struct {
+	PathFull      string `json:"f"`
+	PathThumbnail string `json:"t"`
+}
+
+type AppVideo struct {
+	PathFull      string `json:"f"`
+	PathThumbnail string `json:"s"`
+	Title         string `json:"t"`
+}
+
+type AppStat struct {
+	Name        string `json:"n"`
+	Default     int    `json:"d"`
+	DisplayName string `json:"o"`
+}
+
+type AppSteamSpy struct {
+	SSAveragePlaytimeTwoWeeks int `json:"aw"`
+	SSAveragePlaytimeForever  int `json:"af"`
+	SSMedianPlaytimeTwoWeeks  int `json:"mw"`
+	SSMedianPlaytimeForever   int `json:"mf"`
+	SSOwnersLow               int `json:"ol"`
+	SSOwnersHigh              int `json:"oh"`
+}
+
+func (ss AppSteamSpy) GetSSAveragePlaytimeTwoWeeks() float64 {
+	return RoundFloatTo1DP(float64(ss.SSAveragePlaytimeTwoWeeks) / 60)
+}
+
+func (ss AppSteamSpy) GetSSAveragePlaytimeForever() float64 {
+	return RoundFloatTo1DP(float64(ss.SSAveragePlaytimeForever) / 60)
+}
+
+func (ss AppSteamSpy) GetSSMedianPlaytimeTwoWeeks() float64 {
+	return RoundFloatTo1DP(float64(ss.SSMedianPlaytimeTwoWeeks) / 60)
+}
+
+func (ss AppSteamSpy) GetSSMedianPlaytimeForever() float64 {
+	return RoundFloatTo1DP(float64(ss.SSMedianPlaytimeForever) / 60)
+}
+
+type AppReviewSummary struct {
+	Positive int
+	Negative int
+	Reviews  []AppReview
+}
+
+func (r AppReviewSummary) GetTotal() int {
+	return r.Negative + r.Positive
+}
+
+func (r AppReviewSummary) GetPositivePercent() float64 {
+	return float64(r.Positive) / float64(r.GetTotal()) * 100
+}
+
+func (r AppReviewSummary) GetNegativePercent() float64 {
+	return float64(r.Negative) / float64(r.GetTotal()) * 100
+}
+
+type AppReview struct {
+	Review     string `json:"r"`
+	Vote       bool   `json:"v"`
+	VotesGood  int    `json:"g"`
+	VotesFunny int    `json:"f"`
+	Created    string `json:"c"`
+	PlayerPath string `json:"p"`
+	PlayerName string `json:"n"`
+}
+
+func (ar AppReview) HTML() template.HTML {
+	return template.HTML(ar.Review)
 }

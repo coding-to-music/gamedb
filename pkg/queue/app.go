@@ -600,9 +600,9 @@ func updateAppDetails(app *sql.App) (err error) {
 		if code.ProductCode == steam.ProductCCUS {
 
 			// Screenshots
-			var images []sql.AppImage
+			var images []helpers.AppImage
 			for _, v := range response.Data.Screenshots {
-				images = append(images, sql.AppImage{
+				images = append(images, helpers.AppImage{
 					PathFull:      v.PathFull,
 					PathThumbnail: v.PathThumbnail,
 				})
@@ -616,9 +616,9 @@ func updateAppDetails(app *sql.App) (err error) {
 			app.Screenshots = string(b)
 
 			// Movies
-			var videos []sql.AppVideo
+			var videos []helpers.AppVideo
 			for _, v := range response.Data.Movies {
-				videos = append(videos, sql.AppVideo{
+				videos = append(videos, helpers.AppVideo{
 					PathFull:      v.Webm.Max,
 					PathThumbnail: v.Thumbnail,
 					Title:         v.Name,
@@ -899,9 +899,9 @@ func updateAppSchema(app *sql.App) (schema steam.SchemaForGame, err error) {
 		return schema, err
 	}
 
-	var stats []sql.AppStat
+	var stats []helpers.AppStat
 	for _, v := range resp.AvailableGameStats.Stats {
-		stats = append(stats, sql.AppStat{
+		stats = append(stats, helpers.AppStat{
 			Name:        v.Name,
 			Default:     v.DefaultValue,
 			DisplayName: v.DisplayName,
@@ -1005,7 +1005,7 @@ func updateAppReviews(app *sql.App) error {
 	}
 
 	//
-	reviews := sql.AppReviewSummary{}
+	reviews := helpers.AppReviewSummary{}
 	reviews.Positive = resp.QuerySummary.TotalPositive
 	reviews.Negative = resp.QuerySummary.TotalNegative
 
@@ -1043,7 +1043,7 @@ func updateAppReviews(app *sql.App) error {
 		regex := regexp.MustCompile("[\n]{3,}") // After comma
 		v.Review = regex.ReplaceAllString(v.Review, "\n\n")
 
-		reviews.Reviews = append(reviews.Reviews, sql.AppReview{
+		reviews.Reviews = append(reviews.Reviews, helpers.AppReview{
 			Review:     helpers.BBCodeCompiler.Compile(v.Review),
 			PlayerPath: player.GetPath(),
 			PlayerName: player.PersonaName,
@@ -1139,7 +1139,7 @@ func updateAppSteamSpy(app *sql.App) error {
 		return errors.New("steamspy is down: " + ssURL)
 	}
 
-	ss := sql.AppSteamSpy{
+	ss := helpers.AppSteamSpy{
 		SSAveragePlaytimeTwoWeeks: resp.Average2Weeks,
 		SSAveragePlaytimeForever:  resp.AverageForever,
 		SSMedianPlaytimeTwoWeeks:  resp.Median2Weeks,

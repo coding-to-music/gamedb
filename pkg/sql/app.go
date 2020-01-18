@@ -225,7 +225,7 @@ func (app App) SaveToMongo() error {
 	mApp.Achievements = app.GetAchievements()
 	mApp.AchievementsAverageCompletion = app.AchievementsAverageCompletion
 	mApp.AchievementsCount = app.AchievementsCount
-	mApp.AlbumMetaData = app.AlbumMetaData
+	mApp.AlbumMetaData = app.GetAlbum()
 	mApp.Background = app.Background
 	mApp.BundleIDs = app.getBundleIDs()
 	mApp.Categories = app.GetCategoryIDs()
@@ -237,9 +237,9 @@ func (app App) SaveToMongo() error {
 	mApp.Config = app.GetConfig().Map()
 	mApp.CreatedAt = app.CreatedAt
 	mApp.DemoIDs = app.GetDemoIDs()
-	mApp.Depots = app.Depots
+	mApp.Depots = app.GetDepots()
 	mApp.Developers = app.GetDeveloperIDs()
-	mApp.DLC, _ = app.GetDLCIDs()
+	mApp.DLC = app.GetDLCIDs()
 	mApp.DLCCount = app.DLCCount
 	mApp.Extended = app.GetExtended().Map()
 	mApp.GameID = app.GameID
@@ -250,16 +250,16 @@ func (app App) SaveToMongo() error {
 	mApp.Homepage = app.Homepage
 	mApp.Icon = app.Icon
 	mApp.ID = app.ID
-	mApp.Install = app.Install
+	mApp.Install = app.GetInstall()
 	mApp.IsFree = app.IsFree
 	mApp.Items = app.Items
 	mApp.ItemsDigest = app.ItemsDigest
-	mApp.Launch = app.Launch
-	mApp.Localization = app.Localization
+	mApp.Launch = app.GetLaunch()
+	mApp.Localization = app.GetLocalization()
 	mApp.Logo = app.Logo
 	mApp.MetacriticScore = app.MetacriticScore
 	mApp.MetacriticURL = app.MetacriticURL
-	mApp.Movies = app.Movies
+	mApp.Movies = app.GetMovies()
 	mApp.Name = app.Name
 	mApp.NewsIDs = app.GetNewsIDs()
 	mApp.Packages = app.GetPackageIDs()
@@ -274,17 +274,17 @@ func (app App) SaveToMongo() error {
 	mApp.PublicOnly = app.PublicOnly
 	mApp.Publishers = app.GetPublisherIDs()
 	mApp.RelatedAppIDs, _ = app.GetRelatedIDs()
-	mApp.RelatedOwnersAppIDs, _ = app.GetRelatedOwnerIDs()
+	mApp.RelatedOwnersAppIDs = app.GetRelatedOwnerIDs()
 	mApp.ReleaseDate = app.ReleaseDate
 	mApp.ReleaseDateUnix = app.ReleaseDateUnix
 	mApp.ReleaseState = app.ReleaseState
-	mApp.Reviews = app.Reviews
+	mApp.Reviews = app.GetReviews()
 	mApp.ReviewsScore = app.ReviewsScore
-	mApp.Screenshots = app.Screenshots
+	mApp.Screenshots = app.GetScreenshots()
 	mApp.ShortDescription = app.ShortDescription
-	mApp.Stats = app.Stats
-	mApp.SteamSpy = app.SteamSpy
-	mApp.SystemRequirements = app.SystemRequirements
+	mApp.Stats = app.GetStats()
+	mApp.SteamSpy = app.GetSteamSpy()
+	mApp.SystemRequirements = app.GetSystemRequirementsRaw()
 	mApp.Tags = app.GetTagIDs()
 	mApp.TwitchID = app.TwitchID
 	mApp.TwitchURL = app.TwitchURL
@@ -454,42 +454,42 @@ func (app App) GetUFS() (ufs pics.PICSKeyValues) {
 	return ufs
 }
 
-func (app App) GetDepots() (depots pics.Depots, err error) {
+func (app App) GetDepots() (depots pics.Depots) {
 
-	err = helpers.Unmarshal([]byte(app.Depots), &depots)
+	err := helpers.Unmarshal([]byte(app.Depots), &depots)
 	if err != nil {
 		log.Err(err)
 	}
 
-	return depots, err
+	return depots
 }
 
-func (app App) GetLaunch() (items []pics.PICSAppConfigLaunchItem, err error) {
+func (app App) GetLaunch() (items []pics.PICSAppConfigLaunchItem) {
 
-	err = helpers.Unmarshal([]byte(app.Launch), &items)
+	err := helpers.Unmarshal([]byte(app.Launch), &items)
 	if err != nil {
 		log.Err(err)
 	}
 
-	return items, err
+	return items
 }
 
-func (app App) GetInstall() (install map[string]interface{}, err error) {
+func (app App) GetInstall() (install map[string]interface{}) {
 
 	install = map[string]interface{}{}
 
-	err = helpers.Unmarshal([]byte(app.Install), &install)
+	err := helpers.Unmarshal([]byte(app.Install), &install)
 	if err != nil {
 		log.Err(err)
 	}
 
-	return install, err
+	return install
 }
 
-func (app App) GetLocalization() (localization pics.Localisation, err error) {
+func (app App) GetLocalization() (localization pics.Localisation) {
 
 	if app.Localization == "" || app.Localization == "{}" {
-		return localization, nil
+		return localization
 	}
 
 	decoded, err := snappy.Decode(nil, []byte(app.Localization))
@@ -499,7 +499,8 @@ func (app App) GetLocalization() (localization pics.Localisation, err error) {
 
 	localization = pics.Localisation{}
 	err = helpers.Unmarshal([]byte(app.Localization), &localization)
-	return localization, err
+
+	return localization
 }
 
 func (app *App) SetLocalization(localization pics.Localisation) {
@@ -521,12 +522,23 @@ func (app *App) SetLocalization(localization pics.Localisation) {
 	app.Localization = string(encoded)
 }
 
-func (app App) GetSystemRequirements() (ret []SystemRequirement, err error) {
+func (app App) GetSystemRequirementsRaw() (ret map[string]interface{}) {
+
+	err := helpers.Unmarshal([]byte(app.SystemRequirements), &ret)
+	log.Err(err)
+
+	return ret
+}
+
+func (app App) GetSystemRequirements() (ret []SystemRequirement) {
 
 	systemRequirements := map[string]interface{}{}
 
-	err = helpers.Unmarshal([]byte(app.SystemRequirements), &systemRequirements)
-	log.Err(err)
+	err := helpers.Unmarshal([]byte(app.SystemRequirements), &systemRequirements)
+	if err != nil {
+		log.Err(err)
+		return ret
+	}
 
 	flattened := helpers.FlattenMap(systemRequirements)
 
@@ -540,7 +552,7 @@ func (app App) GetSystemRequirements() (ret []SystemRequirement, err error) {
 		return ret[i].Key < ret[j].Key
 	})
 
-	return ret, err
+	return ret
 }
 
 type SystemRequirement struct {
@@ -630,7 +642,7 @@ func (app App) GetMetacriticLink() template.URL {
 	return template.URL("https://www.metacritic.com/game/" + app.MetacriticURL)
 }
 
-func (app App) GetScreenshots() (screenshots []AppImage) {
+func (app App) GetScreenshots() (screenshots []helpers.AppImage) {
 
 	err := helpers.Unmarshal([]byte(app.Screenshots), &screenshots)
 	if err != nil {
@@ -640,7 +652,7 @@ func (app App) GetScreenshots() (screenshots []AppImage) {
 	return screenshots
 }
 
-func (app App) GetMovies() (movies []AppVideo) {
+func (app App) GetMovies() (movies []helpers.AppVideo) {
 
 	err := helpers.Unmarshal([]byte(app.Movies), &movies)
 	if err != nil {
@@ -650,7 +662,7 @@ func (app App) GetMovies() (movies []AppVideo) {
 	return movies
 }
 
-func (app App) GetSteamSpy() (ss AppSteamSpy) {
+func (app App) GetSteamSpy() (ss helpers.AppSteamSpy) {
 
 	err := helpers.Unmarshal([]byte(app.SteamSpy), &ss)
 	if err != nil {
@@ -695,7 +707,7 @@ func (app App) GetAchievements() (achievements []helpers.AppAchievement) {
 	return achievements
 }
 
-func (app App) GetStats() (stats []AppStat) {
+func (app App) GetStats() (stats []helpers.AppStat) {
 
 	err := helpers.Unmarshal([]byte(app.Stats), &stats)
 	if err != nil {
@@ -769,16 +781,16 @@ func (app App) GetPlatformImages() (ret template.HTML, err error) {
 	return ret, nil
 }
 
-func (app App) GetDLCIDs() (dlcs []int, err error) {
+func (app App) GetDLCIDs() (dlcs []int) {
 
 	dlcs = []int{} // Needed for marshalling into type
 
-	err = helpers.Unmarshal([]byte(app.DLC), &dlcs)
+	err := helpers.Unmarshal([]byte(app.DLC), &dlcs)
 	if err != nil {
 		log.Err(err)
 	}
 
-	return dlcs, err
+	return dlcs
 }
 
 func (app App) GetDLCs() (apps []App, err error) {
@@ -789,12 +801,7 @@ func (app App) GetDLCs() (apps []App, err error) {
 
 	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &apps, func() (interface{}, error) {
 
-		ids, err := app.GetDLCIDs()
-		if err != nil {
-			return apps, err
-		}
-
-		return GetAppsByID(ids, []string{"id", "name"})
+		return GetAppsByID(app.GetDLCIDs(), []string{"id", "name"})
 	})
 
 	return apps, err
@@ -812,9 +819,9 @@ func (app App) GetPackageIDs() (packages []int) {
 	return packages
 }
 
-func (app App) GetReviews() (reviews AppReviewSummary) {
+func (app App) GetReviews() (reviews helpers.AppReviewSummary) {
 
-	reviews = AppReviewSummary{} // Needed for marshalling into type
+	reviews = helpers.AppReviewSummary{} // Needed for marshalling into type
 
 	err := helpers.Unmarshal([]byte(app.Reviews), &reviews)
 	if err != nil {
@@ -844,10 +851,12 @@ func (app App) GetRelatedIDs() (apps []int, err error) {
 	return apps, err
 }
 
-func (app App) GetRelatedOwnerIDs() (apps []helpers.TupleInt, err error) {
+func (app App) GetRelatedOwnerIDs() (apps []helpers.TupleInt) {
 
-	err = helpers.Unmarshal([]byte(app.RelatedOwnersAppIDs), &apps)
-	return apps, err
+	err := helpers.Unmarshal([]byte(app.RelatedOwnersAppIDs), &apps)
+	log.Err(err)
+
+	return apps
 }
 
 func (app App) GetRelatedApps() (apps []App, err error) {
@@ -1388,79 +1397,4 @@ func GetAppTypeCounts() (counts map[string]int, err error) {
 	})
 
 	return counts, err
-}
-
-//
-type AppImage struct {
-	PathFull      string `json:"f"`
-	PathThumbnail string `json:"t"`
-}
-
-type AppVideo struct {
-	PathFull      string `json:"f"`
-	PathThumbnail string `json:"s"`
-	Title         string `json:"t"`
-}
-
-type AppStat struct {
-	Name        string `json:"n"`
-	Default     int    `json:"d"`
-	DisplayName string `json:"o"`
-}
-
-type AppSteamSpy struct {
-	SSAveragePlaytimeTwoWeeks int `json:"aw"`
-	SSAveragePlaytimeForever  int `json:"af"`
-	SSMedianPlaytimeTwoWeeks  int `json:"mw"`
-	SSMedianPlaytimeForever   int `json:"mf"`
-	SSOwnersLow               int `json:"ol"`
-	SSOwnersHigh              int `json:"oh"`
-}
-
-func (ss AppSteamSpy) GetSSAveragePlaytimeTwoWeeks() float64 {
-	return helpers.RoundFloatTo1DP(float64(ss.SSAveragePlaytimeTwoWeeks) / 60)
-}
-
-func (ss AppSteamSpy) GetSSAveragePlaytimeForever() float64 {
-	return helpers.RoundFloatTo1DP(float64(ss.SSAveragePlaytimeForever) / 60)
-}
-
-func (ss AppSteamSpy) GetSSMedianPlaytimeTwoWeeks() float64 {
-	return helpers.RoundFloatTo1DP(float64(ss.SSMedianPlaytimeTwoWeeks) / 60)
-}
-
-func (ss AppSteamSpy) GetSSMedianPlaytimeForever() float64 {
-	return helpers.RoundFloatTo1DP(float64(ss.SSMedianPlaytimeForever) / 60)
-}
-
-type AppReviewSummary struct {
-	Positive int
-	Negative int
-	Reviews  []AppReview
-}
-
-func (r AppReviewSummary) GetTotal() int {
-	return r.Negative + r.Positive
-}
-
-func (r AppReviewSummary) GetPositivePercent() float64 {
-	return float64(r.Positive) / float64(r.GetTotal()) * 100
-}
-
-func (r AppReviewSummary) GetNegativePercent() float64 {
-	return float64(r.Negative) / float64(r.GetTotal()) * 100
-}
-
-type AppReview struct {
-	Review     string `json:"r"`
-	Vote       bool   `json:"v"`
-	VotesGood  int    `json:"g"`
-	VotesFunny int    `json:"f"`
-	Created    string `json:"c"`
-	PlayerPath string `json:"p"`
-	PlayerName string `json:"n"`
-}
-
-func (ar AppReview) HTML() template.HTML {
-	return template.HTML(ar.Review)
 }

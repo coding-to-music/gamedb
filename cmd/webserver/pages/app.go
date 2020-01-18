@@ -264,29 +264,29 @@ type appTemplate struct {
 	Achievements []helpers.AppAchievement
 	App          sql.App
 	Banners      map[string][]string
-	Bundles      []sql.Bundle
-	Categories   []sql.Category
-	Common       []pics.KeyValue
-	Config       []pics.KeyValue
-	Demos        []sql.App
-	Related      []sql.App
-	Developers   []sql.Developer
-	DLCs         []sql.App
-	Extended     []pics.KeyValue
-	Genres       []sql.Genre
-	Movies       []sql.AppVideo
-	NewsIDs      []int64
-	Packages     []sql.Package
-	Price        helpers.ProductPrice
-	Prices       helpers.ProductPrices
-	Album        pics.AlbumMetaData
-	Publishers   []sql.Publisher
-	Reviews      sql.AppReviewSummary
-	Screenshots  []sql.AppImage
-	SteamSpy     sql.AppSteamSpy
-	Stats        []sql.AppStat
-	Tags         []sql.Tag
-	UFS          []pics.KeyValue
+	Bundles     []sql.Bundle
+	Categories  []sql.Category
+	Common      []pics.KeyValue
+	Config      []pics.KeyValue
+	Demos       []sql.App
+	Related     []sql.App
+	Developers  []sql.Developer
+	DLCs        []sql.App
+	Extended    []pics.KeyValue
+	Genres      []sql.Genre
+	Movies      []helpers.AppVideo
+	NewsIDs     []int64
+	Packages    []sql.Package
+	Price       helpers.ProductPrice
+	Prices      helpers.ProductPrices
+	Album       pics.AlbumMetaData
+	Publishers  []sql.Publisher
+	Reviews     helpers.AppReviewSummary
+	Screenshots []helpers.AppImage
+	SteamSpy    helpers.AppSteamSpy
+	Stats       []helpers.AppStat
+	Tags        []sql.Tag
+	UFS         []pics.KeyValue
 }
 
 func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
