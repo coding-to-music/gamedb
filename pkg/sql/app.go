@@ -1171,6 +1171,8 @@ func (a SteamSpyAppResponse) GetOwners() (ret []int) {
 
 func GetTypesForSelect() []AppType {
 
+	// todo, get from db and cache
+
 	types := []string{
 		"game",
 		"advertising",
@@ -1184,6 +1186,7 @@ func GetTypesForSelect() []AppType {
 		"media",
 		"mod",
 		"movie",
+		"music",
 		"series",
 		"tool",
 		"", // Displays as Unknown
