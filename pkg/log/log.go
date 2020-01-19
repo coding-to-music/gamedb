@@ -279,17 +279,17 @@ func log(interfaces ...interface{}) {
 				})
 			}
 
-			if entry.severity >= SeverityError {
-
-				// Rollbar
-				rollbar.Log(entry.severity.toRollbar(), entry.toText(entry.severity))
-
-				// Sentry
-				if entry.error != nil {
-					sentry.CaptureException(entry.error)
-				}
-				sentry.Flush(time.Second * 5)
-			}
+			// if entry.severity >= SeverityError {
+			//
+			// 	// Rollbar
+			// 	rollbar.Log(entry.severity.toRollbar(), entry.toText(entry.severity))
+			//
+			// 	// Sentry
+			// 	if entry.error != nil {
+			// 		sentry.CaptureException(entry.error)
+			// 	}
+			// 	sentry.Flush(time.Second * 5)
+			// }
 		}
 	}
 }
