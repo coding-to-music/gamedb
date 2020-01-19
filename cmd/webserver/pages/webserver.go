@@ -364,15 +364,15 @@ func (t *GlobalTemplate) setRandomBackground(title bool, link bool) {
 		289070, // Civilization VI
 	}
 
-	var popularAppsWithBackground []sql.App
+	var filteredApps []mongo.App
 	for _, app := range popularApps {
 		if app.Background != "" && !helpers.SliceHasInt(blacklist, app.ID) {
-			popularAppsWithBackground = append(popularAppsWithBackground, app)
+			filteredApps = append(filteredApps, app)
 		}
 	}
 
-	if len(popularAppsWithBackground) > 0 {
-		t.setBackground(popularAppsWithBackground[rand.Intn(len(popularAppsWithBackground))], title, link)
+	if len(filteredApps) > 0 {
+		t.setBackground(filteredApps[rand.Intn(len(filteredApps))], title, link)
 	}
 }
 
