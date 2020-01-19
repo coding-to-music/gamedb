@@ -841,7 +841,7 @@
                                     {{ end }}
                                     {{ if and (ne .App.SystemRequirements "") (ne .App.SystemRequirements "{}") }}
                                         <li class="nav-item">
-                                            <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-system-requirements" role="tab">System</a>
+                                            <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-system-requirements" role="tab">System Requirements</a>
                                         </li>
                                     {{ end }}
                                     {{ if or (gt (len .App.GetDepots.Depots) 0) (gt (len .App.GetDepots.Branches) 0) (gt (len .App.GetDepots.Extra) 0)}}
@@ -945,7 +945,6 @@
                                     {{/* System Requirements */}}
                                     <div class="tab-pane" id="dev-system-requirements" role="tabpanel">
 
-                                        <h5>System Requirements</h5>
                                         <ul class="mb-0 pl-3">
                                             {{ range .App.GetSystemRequirements }}
                                                 <li>{{ .Key }}: <span class="font-weight-bold">{{ .Format }}</span></li>
