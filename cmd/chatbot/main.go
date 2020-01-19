@@ -72,8 +72,11 @@ func main() {
 
 			if command.Regex().MatchString(msg) {
 
-				go saveToInflux(m, command)
-				go saveToMongo(m, msg)
+				if config.IsProd() {
+					go saveToInflux(m, command)
+					go saveToMongo(m, msg)
+				}
+
 				go func() {
 					err := discordSession.ChannelTyping(m.ChannelID)
 					log.Err(err)
