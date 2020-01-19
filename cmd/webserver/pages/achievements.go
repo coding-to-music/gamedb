@@ -31,7 +31,9 @@ func achievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
 	err := query.fillFromURL(r.URL.Query())
-	log.Err(err, r)
+	if err != nil {
+		log.Err(err, r)
+	}
 
 	query.limit(r)
 
@@ -64,12 +66,16 @@ func achievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		apps, err = mongo.GetApps(query.getOffset64(), 100, sort, filter2, projection, nil)
-		log.Err(err)
+		if err != nil {
+			log.Err(err)
+		}
 
 		countLock.Lock()
 		filtered, err = mongo.CountDocuments(mongo.CollectionApps, filter2, 0)
 		countLock.Unlock()
-		log.Err(err)
+		if err != nil {
+			log.Err(err, r)
+		}
 	}()
 
 	wg.Add(1)
@@ -81,7 +87,9 @@ func achievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		countLock.Lock()
 		count, err = mongo.CountDocuments(mongo.CollectionApps, filter, 60*60*24)
 		countLock.Unlock()
-		log.Err(err)
+		if err != nil {
+			log.Err(err, r)
+		}
 	}()
 
 	wg.Wait()

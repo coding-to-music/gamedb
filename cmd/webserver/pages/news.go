@@ -34,10 +34,14 @@ func newsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	t.Articles, err = mongo.GetArticlesByApps(appIDs, 0, time.Now().AddDate(0, 0, -7))
-	log.Err(err, r)
+	if err != nil {
+		log.Err(err, r)
+	}
 
 	count, err := mongo.CountDocuments(mongo.CollectionAppArticles, nil, 0)
-	log.Err(err, r)
+	if err != nil {
+		log.Err(err, r)
+	}
 
 	t.Count = helpers.ShortHandNumber(count)
 

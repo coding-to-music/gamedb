@@ -33,7 +33,9 @@ func newReleasesHandler(w http.ResponseWriter, r *http.Request) {
 	t.Days = config.Config.NewReleaseDays.GetInt()
 
 	t.Apps, err = countNewReleaseApps()
-	log.Err(err, r)
+	if err != nil {
+		log.Err(err, r)
+	}
 
 	returnTemplate(w, r, "new_releases", t)
 }
@@ -48,7 +50,9 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
 	err := query.fillFromURL(r.URL.Query())
-	log.Err(err, r)
+	if err != nil {
+		log.Err(err, r)
+	}
 
 	var wg sync.WaitGroup
 	var count int64
@@ -86,12 +90,16 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		apps, err = mongo.GetApps(query.getOffset64(), 100, sort, filter2, projection, nil)
-		log.Err(err)
+		if err != nil {
+			log.Err(err, r)
+		}
 
 		countLock.Lock()
 		filtered, err = mongo.CountDocuments(mongo.CollectionApps, filter2, 0)
 		countLock.Unlock()
-		log.Err(err)
+		if err != nil {
+			log.Err(err, r)
+		}
 	}()
 
 	wg.Add(1)
@@ -103,7 +111,9 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		countLock.Lock()
 		count, err = mongo.CountDocuments(mongo.CollectionApps, filter, 60*60*24)
 		countLock.Unlock()
-		log.Err(err)
+		if err != nil {
+			log.Err(err, r)
+		}
 	}()
 
 	wg.Wait()

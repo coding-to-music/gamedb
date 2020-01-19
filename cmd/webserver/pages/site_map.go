@@ -85,7 +85,7 @@ func SiteMapGamesByScoreHandler(w http.ResponseWriter, r *http.Request) {
 
 	apps, err := mongo.GetApps(0, 1000, bson.D{{"reviews_score", -1}}, bson.D{}, bson.M{"_id": 1, "name": 1, "updated_at": 1}, nil)
 	if err != nil {
-		log.Err(err)
+		log.Err(err, r)
 		return
 	}
 
@@ -95,14 +95,16 @@ func SiteMapGamesByScoreHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, err = sm.Write(w)
-	log.Err(err)
+	if err != nil {
+		log.Err(err, r)
+	}
 }
 
 func SiteMapGamesByPlayersHandler(w http.ResponseWriter, r *http.Request) {
 
 	apps, err := mongo.GetApps(0, 1000, bson.D{{"player_peak_week", -1}}, bson.D{}, bson.M{"_id": 1, "name": 1, "updated_at": 1}, nil)
 	if err != nil {
-		log.Err(err)
+		log.Err(err, r)
 		return
 	}
 
@@ -112,7 +114,9 @@ func SiteMapGamesByPlayersHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, err = sm.Write(w)
-	log.Err(err)
+	if err != nil {
+		log.Err(err, r)
+	}
 }
 
 //noinspection GoUnusedParameter

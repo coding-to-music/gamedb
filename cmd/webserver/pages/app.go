@@ -156,7 +156,9 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.Packages, err = sql.GetPackagesAppIsIn(app.ID)
-		log.Err(err, r)
+		if err != nil {
+			log.Err(err, r)
+		}
 	}()
 
 	// Get related apps
@@ -178,7 +180,9 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.Demos, err = app.GetDemos()
-		log.Err(err, r)
+		if err != nil {
+			log.Err(err, r)
+		}
 	}()
 
 	// Get DLC
@@ -189,7 +193,9 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.DLCs, err = app.GetDLCs()
-		log.Err(err, r)
+		if err != nil {
+			log.Err(err, r)
+		}
 	}()
 
 	// Get Developers

@@ -65,7 +65,9 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		news, err := mongo.GetArticlesByApps(appIDs, 20, time.Time{})
-		log.Err(err, r)
+		if err != nil {
+			log.Err(err, r)
+		}
 
 		p := bluemonday.StrictPolicy() // Strip all tags
 
@@ -135,7 +137,9 @@ func homePricesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	priceChanges, err := mongo.GetPrices(0, 15, filter)
-	log.Err(err, r)
+	if err != nil {
+		log.Err(err, r)
+	}
 
 	var prices []homePrice
 	for _, price := range priceChanges {
