@@ -29,7 +29,7 @@ func (c UpdateRandomPlayers) Cron() string {
 
 const (
 	cronInterval = time.Minute
-	playerCount  = 20
+	playerCount  = 5 // Per consumer
 )
 
 func (c UpdateRandomPlayers) work() (err error) {
@@ -43,15 +43,20 @@ func (c UpdateRandomPlayers) work() (err error) {
 		queue.QueueDelay:    0,
 	}
 
+	var consumers = 1
 	for q, limit := range queues {
 
-		q, err := queue.Channels[rabbit.Producer][q].Inspect()
+		c, err := queue.Channels[rabbit.Producer][q].Inspect()
 		if err != nil {
 			return err
 		}
 
-		if q.Messages > limit {
+		if c.Messages > limit {
 			return nil
+		}
+
+		if q == queue.QueuePackages {
+			consumers = c.Consumers
 		}
 	}
 
@@ -68,7 +73,7 @@ func (c UpdateRandomPlayers) work() (err error) {
 			log.Err(err)
 		}
 
-		time.Sleep(cronInterval / playerCount)
+		time.Sleep(cronInterval / playerCount * time.Duration(consumers))
 	}
 
 	return err
