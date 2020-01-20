@@ -19,7 +19,9 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gosimple/slug"
 	"github.com/jinzhu/gorm"
@@ -320,7 +322,7 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	t.setFlashes()
 }
 
-func (t *GlobalTemplate) setBackground(app sql.App, title bool, link bool) {
+func (t *GlobalTemplate) setBackground(app mongo.App, title bool, link bool) {
 
 	t.backgroundSet = true
 
@@ -351,7 +353,7 @@ func (t *GlobalTemplate) setRandomBackground(title bool, link bool) {
 		return
 	}
 
-	popularApps, err := sql.PopularApps()
+	popularApps, err := mongo.PopularApps()
 	if err != nil {
 		log.Err(err, t.request)
 		return
@@ -792,4 +794,111 @@ func getUserFromSession(r *http.Request) (user sql.User, err error) {
 	}
 
 	return sql.GetUserByID(userID)
+}
+
+func GetAppTags(app mongo.App) (tags []sql.Tag, err error) {
+
+	tags = []sql.Tag{} // Needed for marshalling into type
+
+	if len(app.Tags) == 0 {
+		return tags, nil
+	}
+
+	var item = memcache.MemcacheAppTags(app.ID)
+
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &tags, func() (interface{}, error) {
+		return sql.GetTagsByID(app.Tags, []string{"id", "name"})
+	})
+
+	return tags, err
+}
+
+func GetAppGenres(app mongo.App) (genres []sql.Genre, err error) {
+
+	genres = []sql.Genre{} // Needed for marshalling into type
+
+	if len(app.Genres) == 0 {
+		return genres, nil
+	}
+
+	var item = memcache.MemcacheAppGenres(app.ID)
+
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &genres, func() (interface{}, error) {
+		return sql.GetGenresByID(app.Genres, []string{"id", "name"})
+	})
+
+	return genres, err
+}
+
+func GetDevelopers(app mongo.App) (developers []sql.Developer, err error) {
+
+	developers = []sql.Developer{} // Needed for marshalling into type
+
+	if len(app.Developers) == 0 {
+		return developers, nil
+	}
+
+	var item = memcache.MemcacheAppDevelopers(app.ID)
+
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &developers, func() (interface{}, error) {
+		return sql.GetDevelopersByID(app.Developers, []string{"id", "name"})
+	})
+
+	return developers, err
+}
+
+func GetPublishers(app mongo.App) (publishers []sql.Publisher, err error) {
+
+	publishers = []sql.Publisher{} // Needed for marshalling into type
+
+	if len(app.Publishers) == 0 {
+		return publishers, nil
+	}
+
+	var item = memcache.MemcacheAppPublishers(app.ID)
+
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &publishers, func() (interface{}, error) {
+		return sql.GetPublishersByID(app.Publishers, []string{"id", "name"})
+	})
+
+	return publishers, err
+}
+
+func GetAppCategories(app mongo.App) (categories []sql.Category, err error) {
+
+	if len(app.Categories) == 0 {
+		return categories, nil
+	}
+
+	var item = memcache.MemcacheAppCategories(app.ID)
+
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &categories, func() (interface{}, error) {
+
+		return sql.GetCategoriesByID(app.Categories, []string{"id", "name"})
+	})
+
+	if len(categories) == 0 {
+		categories = []sql.Category{} // Needed for marshalling into type
+	}
+
+	return categories, err
+}
+
+func GetAppBundles(app mongo.App) (bundles []sql.Bundle, err error) {
+
+	if len(app.Bundles) == 0 {
+		return bundles, nil
+	}
+
+	var item = memcache.MemcacheAppBundles(app.ID)
+
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &bundles, func() (interface{}, error) {
+		return sql.GetBundlesByID(app.Bundles, []string{})
+	})
+
+	if len(bundles) == 0 {
+		bundles = []sql.Bundle{} // Needed for marshalling into type
+	}
+
+	return bundles, err
 }

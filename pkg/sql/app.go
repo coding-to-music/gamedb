@@ -227,7 +227,7 @@ func (app App) SaveToMongo() error {
 	mApp.AchievementsCount = app.AchievementsCount
 	mApp.AlbumMetaData = app.GetAlbum()
 	mApp.Background = app.Background
-	mApp.BundleIDs = app.getBundleIDs()
+	mApp.Bundles = app.getBundleIDs()
 	mApp.Categories = app.GetCategoryIDs()
 	mApp.ChangeNumber = app.ChangeNumber
 	mApp.ChangeNumberDate = app.ChangeNumberDate
@@ -236,7 +236,7 @@ func (app App) SaveToMongo() error {
 	mApp.Common = app.GetCommon().Map()
 	mApp.Config = app.GetConfig().Map()
 	mApp.CreatedAt = app.CreatedAt
-	mApp.DemoIDs = app.GetDemoIDs()
+	mApp.Demos = app.GetDemoIDs()
 	mApp.Depots = app.GetDepots()
 	mApp.Developers = app.GetDeveloperIDs()
 	mApp.DLC = app.GetDLCIDs()
@@ -530,7 +530,7 @@ func (app App) GetSystemRequirementsRaw() (ret map[string]interface{}) {
 	return ret
 }
 
-func (app App) GetSystemRequirements() (ret []SystemRequirement) {
+func (app App) GetSystemRequirements() (ret []helpers.SystemRequirement) {
 
 	systemRequirements := map[string]interface{}{}
 
@@ -544,7 +544,7 @@ func (app App) GetSystemRequirements() (ret []SystemRequirement) {
 
 	for k, v := range flattened {
 		if val, ok := v.(string); ok {
-			ret = append(ret, SystemRequirement{Key: k, Val: val})
+			ret = append(ret, helpers.SystemRequirement{Key: k, Val: val})
 		}
 	}
 
@@ -553,27 +553,6 @@ func (app App) GetSystemRequirements() (ret []SystemRequirement) {
 	})
 
 	return ret
-}
-
-type SystemRequirement struct {
-	Key string
-	Val string
-}
-
-func (sr SystemRequirement) Format() template.HTML {
-
-	switch sr.Val {
-	case "0":
-		return `<i class="fas fa-times text-danger"></i>`
-	case "1":
-		return `<i class="fas fa-check text-success"></i>`
-	case "warn":
-		return `<span class="text-warning">Warn</span>`
-	case "deny":
-		return `<span class="text-danger">Deny</span>`
-	default:
-		return template.HTML(sr.Val)
-	}
 }
 
 func (app App) IsOnSale() bool {

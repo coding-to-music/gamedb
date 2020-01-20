@@ -7,7 +7,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/mongo"
 )
 
 type CommandAppsNew struct {
@@ -24,7 +24,7 @@ func (CommandAppsNew) Output(input string) (message discordgo.MessageSend, err e
 		Author: author,
 	}
 
-	apps, err := sql.PopularNewApps()
+	apps, err := mongo.PopularNewApps()
 	if err != nil {
 		return message, err
 	}

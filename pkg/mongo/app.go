@@ -2,15 +2,29 @@ package mongo
 
 import (
 	"errors"
+	"html/template"
+	"sort"
+	"strconv"
 	"strings"
 	"time"
 
+	"github.com/Jleagle/influxql"
+	"github.com/dustin/go-humanize"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/influx"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql/pics"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+)
+
+const (
+	platformWindows = "windows"
+	platformMac     = "macos"
+	platformLinux   = "linux"
 )
 
 var ErrInvalidAppID = errors.New("invalid app id")
@@ -22,7 +36,7 @@ type App struct {
 	AchievementsCount             int                            `bson:"achievements_count"`              //
 	AlbumMetaData                 pics.AlbumMetaData             `bson:"albummetadata"`                   //
 	Background                    string                         `bson:"background"`                      //
-	BundleIDs                     []int                          `bson:"bundle_ids"`                      //
+	Bundles                       []int                          `bson:"bundle_ids"`                      //
 	Categories                    []int                          `bson:"categories"`                      //
 	ChangeNumber                  int                            `bson:"change_number"`                   //
 	ChangeNumberDate              time.Time                      `bson:"change_number_date"`              //
@@ -31,7 +45,7 @@ type App struct {
 	Common                        map[string]string              `bson:"common"`                          //
 	Config                        map[string]string              `bson:"config"`                          //
 	CreatedAt                     time.Time                      `bson:"created_at"`                      //
-	DemoIDs                       []int                          `bson:"demo_ids"`                        //
+	Demos                         []int                          `bson:"demo_ids"`                        //
 	Depots                        pics.Depots                    `bson:"depots"`                          //
 	Developers                    []int                          `bson:"developers"`                      //
 	DLC                           []int                          `bson:"dlc"`                             //
@@ -112,7 +126,7 @@ func (app App) BSON() bson.D {
 		{"achievements_count", app.AchievementsCount},
 		{"albummetadata", app.AlbumMetaData},
 		{"background", app.Background},
-		{"bundle_ids", app.BundleIDs},
+		{"bundle_ids", app.Bundles},
 		{"categories", app.Categories},
 		{"change_number", app.ChangeNumber},
 		{"change_number_date", app.ChangeNumberDate},
@@ -121,7 +135,7 @@ func (app App) BSON() bson.D {
 		{"common", app.Common},
 		{"config", app.Config},
 		{"created_at", app.CreatedAt},
-		{"demo_ids", app.DemoIDs},
+		{"demo_ids", app.Demos},
 		{"depots", app.Depots},
 		{"developers", app.Developers},
 		{"dlc", app.DLC},
@@ -209,6 +223,210 @@ func (app App) GetType() (ret string) {
 
 func (app App) GetStoreLink() string {
 	return helpers.GetAppStoreLink(app.ID)
+}
+
+func (app App) GetHeaderImage() string {
+	return "https://steamcdn-a.akamaihd.net/steam/apps/" + strconv.Itoa(app.ID) + "/header.jpg"
+}
+
+func (app App) GetCommunityLink() string {
+	name := config.Config.GameDBShortName.Get()
+	return "https://steamcommunity.com/app/" + strconv.Itoa(app.ID) + "?utm_source=" + name + "&utm_medium=link&curator_clanid=" // todo curator_clanid
+}
+
+func (app App) GetInstallLink() template.URL {
+	return template.URL("steam://install/" + strconv.Itoa(app.ID))
+}
+
+func (app App) GetReviewScore() string {
+	return helpers.FloatToString(app.ReviewsScore, 2) + "%"
+}
+
+func (app App) GetFollowers() (ret string) {
+
+	if app.GroupID == "" {
+		return "-"
+	}
+
+	return humanize.Comma(int64(app.GroupFollowers))
+}
+
+func (app App) GetPlatformImages() (ret template.HTML, err error) {
+
+	if len(app.Platforms) == 0 {
+		return "", nil
+	}
+
+	if helpers.SliceHasString(app.Platforms, platformWindows) {
+		ret = ret + `<a href="/apps?platforms=windows"><i class="fab fa-windows" data-toggle="tooltip" data-placement="top" title="Windows"></i></a>`
+	} else {
+		ret = ret + `<span class="space"></span>`
+	}
+
+	if helpers.SliceHasString(app.Platforms, platformMac) {
+		ret = ret + `<a href="/apps?platforms=macos"><i class="fab fa-apple" data-toggle="tooltip" data-placement="top" title="Mac"></i></a>`
+	} else {
+		ret = ret + `<span class="space"></span>`
+	}
+
+	if helpers.SliceHasString(app.Platforms, platformLinux) {
+		ret = ret + `<a href="/apps?platforms=linux"><i class="fab fa-linux" data-toggle="tooltip" data-placement="top" title="Linux"></i></a>`
+	} else {
+		ret = ret + `<span class="space"></span>`
+	}
+
+	return ret, nil
+}
+
+func (app App) GetMetaImage() string {
+
+	ss := app.Screenshots
+	if len(ss) == 0 {
+		return app.GetHeaderImage()
+	}
+	return ss[0].PathFull
+}
+
+func (app App) GetAppRelatedApps() (apps []App, err error) {
+
+	apps = []App{} // Needed for marshalling into type
+
+	if len(app.RelatedAppIDs) == 0 {
+		return apps, nil
+	}
+
+	var item = memcache.MemcacheAppRelated(app.ID)
+
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &apps, func() (interface{}, error) {
+
+		return GetAppsByID(app.RelatedAppIDs, bson.M{"id": 1, "name": 1})
+	})
+
+	return apps, err
+}
+
+func (app App) GetDemos() (demos []App, err error) {
+
+	demos = []App{} // Needed for marshalling into type
+
+	if len(app.Demos) == 0 {
+		return demos, nil
+	}
+
+	var item = memcache.MemcacheAppDemos(app.ID)
+
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &demos, func() (interface{}, error) {
+		return GetAppsByID(app.Demos, bson.M{"id": 1, "name": 1})
+	})
+
+	return demos, err
+}
+
+func (app App) GetDLCs() (apps []App, err error) {
+
+	apps = []App{} // Needed for marshalling into type
+
+	if len(app.DLC) == 0 {
+		return apps, nil
+	}
+
+	var item = memcache.MemcacheAppDLC(app.ID)
+
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &apps, func() (interface{}, error) {
+
+		return GetAppsByID(app.DLC, bson.M{"id": 1, "name": 1})
+	})
+
+	return apps, err
+}
+
+func (app App) ReadPICS(m map[string]string) (config pics.PICSKeyValues) {
+
+	config = pics.PICSKeyValues{}
+
+	for k, v := range m {
+		config[k] = v
+	}
+
+	return config
+}
+
+func (app App) GetReleaseDateNice() string {
+	return helpers.GetAppReleaseDateNice(app.ReleaseDateUnix, app.ReleaseDate)
+}
+
+func (app App) GetSteamPricesURL() string {
+
+	switch app.Type {
+	case "game":
+		return "app"
+	case "dlc":
+		return "dlc"
+	case "application":
+		return "sw"
+	case "hardware":
+		return "hw"
+	default:
+		return ""
+	}
+}
+
+func (app App) GetOnlinePlayers() (players int64, err error) {
+
+	var item = memcache.MemcacheAppPlayersRow(app.ID)
+
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &players, func() (interface{}, error) {
+
+		builder := influxql.NewBuilder()
+		builder.AddSelect("player_count", "")
+		builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
+		builder.AddWhere("app_id", "=", app.ID)
+		builder.AddOrderBy("time", false)
+		builder.SetLimit(1)
+
+		resp, err := influx.InfluxQuery(builder.String())
+
+		return influx.GetFirstInfluxInt(resp), err
+	})
+
+	return players, err
+}
+
+func (app App) GetSystemRequirements() (ret []helpers.SystemRequirement) {
+
+	flattened := helpers.FlattenMap(app.SystemRequirements)
+
+	for k, v := range flattened {
+		if val, ok := v.(string); ok {
+			ret = append(ret, helpers.SystemRequirement{Key: k, Val: val})
+		}
+	}
+
+	sort.Slice(ret, func(i, j int) bool {
+		return ret[i].Key < ret[j].Key
+	})
+
+	return ret
+}
+
+func (app App) GetPICSUpdatedNice() string {
+
+	d := app.ChangeNumberDate
+
+	// 0000-01-01 00:00:00
+	if d.Unix() == -62167219200 {
+		return "-"
+	}
+
+	if d.IsZero() {
+		return "-"
+	}
+
+	return d.Format(helpers.DateYearTime)
+}
+
+func (app App) GetUpdatedNice() string {
+	return app.UpdatedAt.Format(helpers.DateYearTime)
 }
 
 func CreateAppIndexes() {
@@ -328,3 +546,95 @@ func GetApps(offset int64, limit int64, sort bson.D, filter bson.D, projection b
 
 	return apps, cur.Err()
 }
+
+func GetAppsByID(ids []int, projection bson.M) (apps []App, err error) {
+
+	a := bson.A{}
+	for _, v := range ids {
+		a = append(a, v)
+	}
+
+	return GetApps(0, 0, nil, bson.D{{"_id", bson.M{"$in": a}}}, projection, nil)
+}
+
+func PopularApps() (apps []App, err error) {
+
+	var item = memcache.MemcachePopularApps
+
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &apps, func() (interface{}, error) {
+
+		return GetApps(
+			0,
+			30,
+			bson.D{{"player_peak_week", -1}},
+			bson.D{{"type", "game"}},
+			bson.M{"id": 1, "name": 1, "player_peak_week": 1, "background": 1},
+			nil)
+	})
+
+	return apps, err
+}
+
+func PopularNewApps() (apps []App, err error) {
+
+	var item = memcache.MemcachePopularNewApps
+
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &apps, func() (interface{}, error) {
+
+		releaseDate := time.Now().AddDate(0, 0, -config.Config.NewReleaseDays.GetInt()).Unix()
+
+		return GetApps(
+			0,
+			25,
+			bson.D{{Key: "player_peak_week", Value: -1}},
+			bson.D{
+				{Key: "release_date_unix", Value: bson.M{"$gt": releaseDate}},
+				{Key: "type", Value: "game"},
+			},
+			bson.M{"id": 1, "name": 1, "player_peak_week": 1},
+			nil,
+		)
+	})
+
+	return apps, err
+}
+
+func TrendingApps() (apps []App, err error) {
+
+	var item = memcache.MemcacheTrendingApps
+
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &apps, func() (interface{}, error) {
+		return GetApps(
+			0,
+			10,
+			bson.D{{"player_trend", -1}},
+			nil,
+			bson.M{"id": 1, "name": 1, "player_trend": 1},
+			nil,
+		)
+	})
+
+	return apps, err
+}
+
+// func WishlistedApps() (appsMap map[int]bool, err error) {
+//
+// 	apps, err:= GetApps(0)
+//
+// 	db, err := GetMySQLClient()
+// 	if err != nil {
+// 		return appsMap, err
+// 	}
+//
+// 	var apps []App
+// 	db = db.Select([]string{"id"})
+// 	db = db.Where("wishlist_count > ?", 0)
+// 	db = db.Find(&apps)
+//
+// 	appsMap = map[int]bool{}
+// 	for _, app := range apps {
+// 		appsMap[app.ID] = true
+// 	}
+//
+// 	return appsMap, err
+// }

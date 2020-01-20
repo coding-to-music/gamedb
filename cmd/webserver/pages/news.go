@@ -8,7 +8,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
 )
 
@@ -25,8 +24,10 @@ func newsHandler(w http.ResponseWriter, r *http.Request) {
 	t := newsTemplate{}
 	t.fill(w, r, "News", "All the news from all the games")
 
-	apps, err := sql.PopularApps()
-	log.Err(err, r)
+	apps, err := mongo.PopularApps()
+	if err != nil {
+		log.Err(err, r)
+	}
 
 	var appIDs []int
 	for _, app := range apps {

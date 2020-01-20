@@ -188,3 +188,25 @@ type AppReview struct {
 func (ar AppReview) HTML() template.HTML {
 	return template.HTML(ar.Review)
 }
+
+type SystemRequirement struct {
+	Key string
+	Val string
+}
+
+func (sr SystemRequirement) Format() template.HTML {
+
+	switch sr.Val {
+	case "0":
+		return `<i class="fas fa-times text-danger"></i>`
+	case "1":
+		return `<i class="fas fa-check text-success"></i>`
+	case "warn":
+		return `<span class="text-warning">Warn</span>`
+	case "deny":
+		return `<span class="text-danger">Deny</span>`
+	default:
+		return template.HTML(sr.Val)
+	}
+}
+

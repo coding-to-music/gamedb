@@ -9,10 +9,12 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/sql/pics"
 	"github.com/go-chi/chi"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func PackageRouter() http.Handler {
@@ -49,8 +51,8 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	var wg sync.WaitGroup
 
-	var appsMap = map[int]sql.App{}
-	var appsSlice []sql.App
+	var appsMap = map[int]mongo.App{}
+	var appsSlice []mongo.App
 	wg.Add(1)
 	go func() {
 
@@ -59,10 +61,10 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 		// Get apps
 		appIDs := pack.GetAppIDs()
 		for _, v := range appIDs {
-			appsMap[v] = sql.App{ID: v}
+			appsMap[v] = mongo.App{ID: v}
 		}
 
-		appsSlice, err = sql.GetAppsByID(appIDs, []string{"id", "name", "icon", "type", "platforms", "dlc", "common", "background"})
+		appsSlice, err = mongo.GetAppsByID(appIDs, bson.M{"id": 1, "name": 1, "icon": 1, "type": 1, "platforms": 1, "dlc": 1, "common": 1, "background": 1})
 		if err != nil {
 			log.Err(err, r)
 			return
@@ -159,7 +161,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 
 type packageTemplate struct {
 	GlobalTemplate
-	Apps       map[int]sql.App
+	Apps       map[int]mongo.App
 	Bundles    []sql.Bundle
 	Banners    map[string][]string
 	Controller pics.PICSController

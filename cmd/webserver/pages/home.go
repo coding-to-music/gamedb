@@ -15,7 +15,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
 	"github.com/microcosm-cc/bluemonday"
 	"go.mongodb.org/mongo-driver/bson"
@@ -44,8 +43,10 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.Games, err = sql.PopularNewApps()
-		log.Err(err, r)
+		t.Games, err = mongo.PopularNewApps()
+		if err != nil {
+			log.Err(err, r)
+		}
 	}()
 
 	// News
@@ -54,11 +55,13 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		apps, err := sql.PopularApps()
-		log.Err(err, r)
+		apps, err := mongo.PopularApps()
+		if err != nil {
+			log.Err(err, r)
+		}
 
 		var appIDs []int
-		var appIDmap = map[int]sql.App{}
+		var appIDmap = map[int]mongo.App{}
 		for _, app := range apps {
 			appIDs = append(appIDs, app.ID)
 			appIDmap[app.ID] = app
@@ -108,7 +111,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 type homeTemplate struct {
 	GlobalTemplate
-	Games     []sql.App
+	Games     []mongo.App
 	News      []homeNews
 	NewsID    int64
 	Players   []mongo.Player

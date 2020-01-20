@@ -7,7 +7,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/mongo"
 )
 
 type CommandAppsTrending struct {
@@ -25,7 +25,7 @@ func (CommandAppsTrending) Output(input string) (message discordgo.MessageSend, 
 		Author: author,
 	}
 
-	apps, err := sql.TrendingApps()
+	apps, err := mongo.TrendingApps()
 	if err != nil {
 		return message, err
 	}

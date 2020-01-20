@@ -13,7 +13,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
-	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -60,9 +59,9 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 	if group.Type == helpers.GroupTypeGame && group.AppID > 0 {
 
 		var err error
-		app, err := sql.GetApp(group.AppID, []string{"id", "name", "background"})
+		app, err := mongo.GetApp(group.AppID, bson.M{"id": 1, "name": 1, "background": 1})
 		if err != nil {
-			err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
+			err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
 			log.Err(err)
 		} else {
 			t.setBackground(app, true, true)

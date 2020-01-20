@@ -46,14 +46,14 @@
                     <li class="nav-item">
                         <a class="nav-link nav-link-small" data-toggle="tab" href="#players" role="tab">Players</a>
                     </li>
-                    {{ if gt (len .Prices) 0 }}
+                    {{ if gt (len .App.Prices) 0 }}
                         <li class="nav-item">
                             <a class="nav-link nav-link-small" data-toggle="tab" href="#prices" role="tab">Prices</a>
                         </li>
                     {{ end }}
-                    {{ if gt (len .Album.Tracks) 0 }}
+                    {{ if gt (len .App.AlbumMetaData.Tracks) 0 }}
                         <li class="nav-item">
-                            <a class="nav-link nav-link-small" data-toggle="tab" href="#tracks" role="tab">Tracks ({{ comma (len .Album.Tracks) }})</a>
+                            <a class="nav-link nav-link-small" data-toggle="tab" href="#tracks" role="tab">Tracks ({{ comma (len .App.AlbumMetaData.Tracks) }})</a>
                         </li>
                     {{ end }}
                     {{ if gt (len .DLCs) 0 }}
@@ -76,9 +76,9 @@
                             <a class="nav-link nav-link-small" data-toggle="tab" href="#similar" role="tab">Similar</a>
                         </li>
                     {{ end }}
-                    {{ if gt (len .Achievements) 0 }}
+                    {{ if gt (len .App.Achievements) 0 }}
                         <li class="nav-item">
-                            <a class="nav-link nav-link-small" data-toggle="tab" href="#achievements" role="tab">Achievements ({{ comma (len .Achievements) }})</a>
+                            <a class="nav-link nav-link-small" data-toggle="tab" href="#achievements" role="tab">Achievements ({{ comma (len .App.Achievements) }})</a>
                         </li>
                     {{ end }}
                     {{ if gt .App.Items 0 }}
@@ -86,19 +86,19 @@
                             <a class="nav-link nav-link-small" data-toggle="tab" href="#items" role="tab">Items ({{ comma .App.Items }})</a>
                         </li>
                     {{ end }}
-                    {{ if gt (len .NewsIDs) 0 }}
+                    {{ if gt (len .App.NewsIDs) 0 }}
                         <li class="nav-item">
                             <a class="nav-link nav-link-small" data-toggle="tab" href="#news" role="tab">News</a>
                         </li>
                     {{ end }}
-                    {{ if gt .Reviews.GetTotal 0 }}
+                    {{ if gt .App.Reviews.GetTotal 0 }}
                         <li class="nav-item">
                             <a class="nav-link nav-link-small" data-toggle="tab" href="#reviews" role="tab">Reviews</a>
                         </li>
                     {{ end }}
-                    {{ if or (gt (len .Screenshots) 0) (gt (len .Movies) 0) }}
+                    {{ if or (gt (len .App.Screenshots) 0) (gt (len .App.Movies) 0) }}
                         <li class="nav-item">
-                            <a class="nav-link nav-link-small" data-toggle="tab" href="#media" role="tab">Media ({{ comma (sum (len .Screenshots) (len .Movies) )}})</a>
+                            <a class="nav-link nav-link-small" data-toggle="tab" href="#media" role="tab">Media ({{ comma (sum (len .App.Screenshots) (len .App.Movies) )}})</a>
                         </li>
                     {{ end }}
                     <li class="nav-item">
@@ -123,7 +123,7 @@
                             {{ end }}
                         {{ end }}
 
-                        {{/*<img class="rounded{{if or (gt (len .Screenshots) 0) (gt (len .Movies) 0)}} cursor-pointer{{ end }}" src="{{ .App.GetHeaderImage }}" alt="{{ .App.GetName }}">*/}}
+                        {{/*<img class="rounded{{if or (gt (len .App.Screenshots) 0) (gt (len .App.Movies) 0)}} cursor-pointer{{ end }}" src="{{ .App.GetHeaderImage }}" alt="{{ .App.GetName }}">*/}}
 
                         <div class="row">
                             <div class="col-12 col-lg-6">
@@ -148,8 +148,8 @@
                                             <td>
                                                 {{ .App.GetReviewScore }}
                                                 <small>
-                                                    (<span class="text-success">{{ comma .Reviews.Positive }}</span> <i class="fas fa-angle-up"></i>
-                                                    <span class="text-danger">{{ comma .Reviews.Negative }}</span> <i class="fas fa-angle-down"></i>)
+                                                    (<span class="text-success">{{ comma .App.Reviews.Positive }}</span> <i class="fas fa-angle-up"></i>
+                                                    <span class="text-danger">{{ comma .App.Reviews.Negative }}</span> <i class="fas fa-angle-down"></i>)
                                                 </small>
                                             </td>
                                         </tr>
@@ -159,7 +159,7 @@
                                             <td><a href="#players" class="followers-link">{{ .App.GetFollowers }}</a></td>
                                         </tr>
 
-                                        {{ if gt (len .App.GetPlatforms) 0 }}
+                                        {{ if gt (len .App.Platforms) 0 }}
                                             <tr>
                                                 <th scope="row" nowrap="nowrap" class="thin">Platforms</th>
                                                 <td class="platforms">{{ .App.GetPlatformImages }}</td>
@@ -240,7 +240,7 @@
                                             </tr>
                                         {{ end }}
 
-                                        {{ if ne .App.Categories "" }}
+                                        {{ if gt (len .App.Categories) 0 }}
                                             <tr>
                                                 <th scope="row" nowrap="nowrap" class="thin">Categories</th>
                                                 <td>
@@ -309,8 +309,8 @@
                                     <th scope="col" nowrap="nowrap">Discount %</th>
                                 </tr>
                                 </thead>
-                                {{ range $key, $value := .Prices }}
-                                    {{ $price := $.Prices.Get $key }}
+                                {{ range $key, $value := .App.Prices }}
+                                    {{ $price := $.App.Prices.Get $key }}
                                     <tr data-code="{{ $key }}">
                                         <td class="img">
                                             <div class="icon-name">
@@ -355,23 +355,23 @@
                                     <tbody>
                                     <tr>
                                         <td>Owners</td>
-                                        <td>{{ comma .SteamSpy.SSOwnersLow }} - {{ comma .SteamSpy.SSOwnersHigh }}</td>
+                                        <td>{{ comma .App.SteamSpy.SSOwnersLow }} - {{ comma .App.SteamSpy.SSOwnersHigh }}</td>
                                     </tr>
                                     <tr>
                                         <td>Average Playtime (Two Weeks)</td>
-                                        <td>{{ .SteamSpy.GetSSAveragePlaytimeTwoWeeks }} hours</td>
+                                        <td>{{ .App.SteamSpy.GetSSAveragePlaytimeTwoWeeks }} hours</td>
                                     </tr>
                                     <tr>
                                         <td>Average Playtime (Forever)</td>
-                                        <td>{{ .SteamSpy.GetSSAveragePlaytimeForever }} hours</td>
+                                        <td>{{ .App.SteamSpy.GetSSAveragePlaytimeForever }} hours</td>
                                     </tr>
                                     <tr>
                                         <td>Median Playtime (Two Weeks)</td>
-                                        <td>{{ .SteamSpy.GetSSMedianPlaytimeTwoWeeks }} hours</td>
+                                        <td>{{ .App.SteamSpy.GetSSMedianPlaytimeTwoWeeks }} hours</td>
                                     </tr>
                                     <tr>
                                         <td>Median Playtime (Forever)</td>
-                                        <td>{{ .SteamSpy.GetSSMedianPlaytimeForever }} hours</td>
+                                        <td>{{ .App.SteamSpy.GetSSMedianPlaytimeForever }} hours</td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -471,9 +471,9 @@
                     {{/* Album Tracks */}}
                     <div class="tab-pane" id="tracks" role="tabpanel">
 
-                        {{ if gt (len .Album.Tracks) 0 }}
+                        {{ if gt (len .App.AlbumMetaData.Tracks) 0 }}
 
-                            {{ range $key, $value := .Album.Albums }}
+                            {{ range $key, $value := .App.AlbumMetaData.Albums }}
 
                                 <div class="table-responsive mb-4">
                                     <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
@@ -496,8 +496,8 @@
 
                             {{ end }}
 
-                            {{ if ne .Album.CDNAssets.AlbumCover "" }}
-                                <img src="https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/{{.App.ID}}/{{.Album.CDNAssets.AlbumCover}}.jpg" alt="Album Cover" id="album-cover">
+                            {{ if ne .App.AlbumMetaData.CDNAssets.AlbumCover "" }}
+                                <img src="https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/{{.App.ID}}/{{ .App.AlbumMetaData.CDNAssets.AlbumCover }}.jpg" alt="Album Cover" id="album-cover">
                             {{ end }}
 
                         {{ else }}
@@ -530,7 +530,7 @@
                             </tbody>
                         </table>
 
-                        {{if gt (len .Achievements) 0}}
+                        {{if gt (len .App.Achievements) 0}}
 
                             <div class="table-responsive">
                                 <table class="table table-hover table-striped table-datatable mb-0" data-order='[[2, "desc"]]'>
@@ -542,7 +542,7 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {{ range $key, $value := .Achievements }}
+                                    {{ range $key, $value := .App.Achievements }}
                                         <tr>
                                             <td class="img">
                                                 <div class="icon-name">
@@ -571,7 +571,7 @@
                     {{/* News */}}
                     <div class="tab-pane" id="news" role="tabpanel">
 
-                        {{if gt (len .NewsIDs) 0}}
+                        {{if gt (len .App.NewsIDs) 0}}
 
                             <div class="table-responsive">
                                 <table class="table table-hover table-striped mb-0" data-path="/apps/{{ .App.ID }}/news.json" id="news-table">
@@ -723,7 +723,7 @@
                     {{/* Reviews */}}
                     <div class="tab-pane" id="reviews" role="tabpanel">
 
-                        {{if gt .Reviews.GetTotal 0}}
+                        {{if gt .App.Reviews.GetTotal 0}}
 
                             <table class="table mb-0">
                                 <tbody>
@@ -738,9 +738,9 @@
                                 <i class="fas fa-spinner fa-spin"></i>
                             </div>
 
-                            <h5>A selection of the {{ comma .Reviews.GetTotal }} reviews, see them all on the <a href="{{ .App.GetStoreLink }}" target="_blank">store page</a>.</h5>
+                            <h5>A selection of the {{ comma .App.Reviews.GetTotal }} reviews, see them all on the <a href="{{ .App.GetStoreLink }}" target="_blank">store page</a>.</h5>
 
-                            {{ range $key, $value := .Reviews.Reviews }}
+                            {{ range $key, $value := .App.Reviews.Reviews }}
                                 {{ if ne .HTML "" }}
 
                                     <div class="card mt-3">
@@ -772,14 +772,14 @@
                             <tbody>
                             <tr>
                                 <th style="width: 130px;" scope="row">Screenshots</th>
-                                <td style="width: 20px;">{{ comma (len .Screenshots) }}</td>
+                                <td style="width: 20px;">{{ comma (len .App.Screenshots) }}</td>
                                 <td></td>
                             </tr>
                             <tr>
                                 <th style="width: 130px;" scope="row" nowrap="nowrap">Movies</th>
-                                <td style="width: 20px;">{{ comma (len .Movies) }}</td>
+                                <td style="width: 20px;">{{ comma (len .App.Movies) }}</td>
                                 <td>
-                                    {{ if and (gt (len .Movies) 0) (gt (len .Screenshots) 0) }}
+                                    {{ if and (gt (len .App.Movies) 0) (gt (len .App.Screenshots) 0) }}
                                         <button id="scroll-to-videos" type="button" class="btn btn-success btn-sm">
                                             <i class="fas fa-level-down-alt"></i>
                                         </button>
@@ -789,16 +789,16 @@
                             </tbody>
                         </table>
 
-                        {{if or (gt (len .Screenshots) 0) (gt (len .Movies) 0) }}
+                        {{if or (gt (len .App.Screenshots) 0) (gt (len .App.Movies) 0) }}
 
                             <div id="images">
-                                {{ range $key, $value := .Screenshots }}
+                                {{ range $key, $value := .App.Screenshots }}
                                     <img src="" data-lazy="{{ .PathFull }}" alt="" data-lazy-alt="Media {{ $key }}">
                                 {{ end }}
                             </div>
 
                             <div id="videos">
-                                {{ range $key, $value := .Movies }}
+                                {{ range $key, $value := .App.Movies }}
                                     <video controls preload="metadata">
                                         <source src="{{ https .PathFull }}" type="video/webm">
                                         Sorry, your browser doesn't support embedded videos.
@@ -824,32 +824,32 @@
                                     <li class="nav-item">
                                         <a class="nav-link nav-link-small active" data-toggle="tab" href="#dev-info" role="tab">Info</a>
                                     </li>
-                                    {{ if gt (len .App.GetInstall) 0}}
+                                    {{ if gt (len .App.Install) 0}}
                                         <li class="nav-item">
                                             <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-install" role="tab">Install</a>
                                         </li>
                                     {{ end }}
-                                    {{ if .App.GetLocalization.HasLanguages }}
+                                    {{ if .App.Localization.HasLanguages }}
                                         <li class="nav-item">
                                             <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-localisation" role="tab">Localisation</a>
                                         </li>
                                     {{ end }}
-                                    {{ if gt (len .Stats) 0}}
+                                    {{ if gt (len .App.Stats) 0}}
                                         <li class="nav-item">
                                             <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-stats" role="tab">Stats</a>
                                         </li>
                                     {{ end }}
-                                    {{ if and (ne .App.SystemRequirements "") (ne .App.SystemRequirements "{}") }}
+                                    {{ if gt (len .App.SystemRequirements) 0 }}
                                         <li class="nav-item">
                                             <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-system-requirements" role="tab">System Requirements</a>
                                         </li>
                                     {{ end }}
-                                    {{ if or (gt (len .App.GetDepots.Depots) 0) (gt (len .App.GetDepots.Branches) 0) (gt (len .App.GetDepots.Extra) 0)}}
+                                    {{ if or (gt (len .App.Depots.Depots) 0) (gt (len .App.Depots.Branches) 0) (gt (len .App.Depots.Extra) 0)}}
                                         <li class="nav-item">
                                             <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-depots" role="tab">Depots</a>
                                         </li>
                                     {{ end }}
-                                    {{ if gt (len .App.GetLaunch) 0}}
+                                    {{ if gt (len .App.Launch) 0}}
                                         <li class="nav-item">
                                             <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-launch" role="tab">Launch</a>
                                         </li>
@@ -976,7 +976,7 @@
                                                     <th scope="col" data-toggle="tooltip" data-placement="top" title="Allow Add Remove While Running">AR</th>
                                                 </tr>
                                                 </thead>
-                                                {{ range $key, $value := .App.GetDepots.Depots }}
+                                                {{ range $key, $value := .App.Depots.Depots }}
                                                     <tr>
                                                         <td>{{ .ID }}</td>
                                                         <td nowrap="nowrap">{{ .Name }}</td>
@@ -1003,7 +1003,7 @@
                                             </table>
                                         </div>
 
-                                        {{ if gt (len .App.GetDepots.Branches) 0 }}
+                                        {{ if gt (len .App.Depots.Branches) 0 }}
                                             <h5>Branches</h5>
                                             <div class="table-responsive mb-4">
                                                 <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
@@ -1019,7 +1019,7 @@
                                                         <th scope="col">Unlock For Subs</th>
                                                     </tr>
                                                     </thead>
-                                                    {{ range $key, $value := .App.GetDepots.Branches }}
+                                                    {{ range $key, $value := .App.Depots.Branches }}
                                                         <tr>
                                                             <td>{{ .Name }}</td>
                                                             <td nowrap="nowrap">{{ .Description }}</td>
@@ -1035,7 +1035,7 @@
                                             </div>
                                         {{ end }}
 
-                                        {{ if gt (len .App.GetDepots.Extra) 0 }}
+                                        {{ if gt (len .App.Depots.Extra) 0 }}
                                             <h5>Extra</h5>
                                             <div class="table-responsive">
                                                 <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
@@ -1045,7 +1045,7 @@
                                                         <th scope="col">Value</th>
                                                     </tr>
                                                     </thead>
-                                                    {{ range $key, $value := .App.GetDepots.Extra }}
+                                                    {{ range $key, $value := .App.Depots.Extra }}
                                                         <tr>
                                                             <td>{{ $key }}</td>
                                                             <td>{{ $value }}</td>
@@ -1078,7 +1078,7 @@
                                                     <th scope="col">VR Mode</th>
                                                 </tr>
                                                 </thead>
-                                                {{ range $key, $value := .App.GetLaunch }}
+                                                {{ range $key, $value := .App.Launch }}
                                                     <tr>
                                                         <td>{{ .Order }}</td>
                                                         <td nowrap="nowrap">{{ .Executable }}</td>
@@ -1110,7 +1110,7 @@
                                                     <th scope="col">Value</th>
                                                 </tr>
                                                 </thead>
-                                                {{ range $key, $value := .App.GetInstall }}
+                                                {{ range $key, $value := .App.Install }}
                                                     <tr>
                                                         <td>{{ $key }}</td>
                                                         <td>
@@ -1127,12 +1127,12 @@
                                     <div class="tab-pane" id="dev-localisation" role="tabpanel">
 
                                         <div class="clearfix mb-2">
-                                            {{ range $key, $value := .App.GetLocalization.RichPresence }}
+                                            {{ range $key, $value := .App.Localization.RichPresence }}
                                                 <a class="btn btn-primary btn-sm float-left mr-1 mb-1" href="#{{ $key }}" role="button">{{ title $key }}</a>
                                             {{ end }}
                                         </div>
 
-                                        {{ range $key, $value := .App.GetLocalization.RichPresence }}
+                                        {{ range $key, $value := .App.Localization.RichPresence }}
                                             <div class="table-responsive mb-2" id="{{ $key }}">
                                                 <table class="table table-hover table-striped mb-0" data-order='[[0, "asc"]]'>
                                                     <thead class="thead-light">
@@ -1167,7 +1167,7 @@
                                                     <th scope="col">Default</th>
                                                 </tr>
                                                 </thead>
-                                                {{ range $key, $value := .Stats }}
+                                                {{ range $key, $value := .App.Stats }}
                                                     <tr>
                                                         <td>{{ .Name }}</td>
                                                         <td>{{ .DisplayName }}</td>

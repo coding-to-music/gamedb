@@ -55,10 +55,10 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get app
-	app, err := sql.GetApp(idx, nil)
+	app, err := mongo.GetApp(idx, nil)
 	if err != nil {
 
-		if err == sql.ErrRecordNotFound {
+		if err == mongo.ErrNoDocuments {
 			returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Sorry but we can not find this app."})
 			return
 		}
@@ -106,36 +106,42 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Tags
 	wg.Add(1)
-	go func(app sql.App) {
+	go func() {
 
 		defer wg.Done()
 
 		var err error
-		t.Tags, err = app.GetTags()
-		log.Err(err, r)
-	}(app)
+		t.Tags, err = GetAppTags(app)
+		if err != nil {
+			log.Err(err, r)
+		}
+	}()
 
 	// Categories
 	wg.Add(1)
-	go func(app sql.App) {
+	go func() {
 
 		defer wg.Done()
 
 		var err error
-		t.Categories, err = app.GetCategories()
-		log.Err(err, r)
-	}(app)
+		t.Categories, err = GetAppCategories(app)
+		if err != nil {
+			log.Err(err, r)
+		}
+	}()
 
 	// Genres
 	wg.Add(1)
-	go func(app sql.App) {
+	go func() {
 
 		defer wg.Done()
 
 		var err error
-		t.Genres, err = app.GetGenres()
-		log.Err(err, r)
-	}(app)
+		t.Genres, err = GetAppGenres(app)
+		if err != nil {
+			log.Err(err, r)
+		}
+	}()
 
 	// Bundles
 	wg.Add(1)
@@ -144,8 +150,10 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.Bundles, err = app.GetBundles()
-		log.Err(err, r)
+		t.Bundles, err = GetAppBundles(app)
+		if err != nil {
+			log.Err(err, r)
+		}
 	}()
 
 	// Get packages
@@ -168,8 +176,10 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.Related, err = app.GetRelatedApps()
-		log.Err(err, r)
+		t.Related, err = app.GetAppRelatedApps()
+		if err != nil {
+			log.Err(err, r)
+		}
 	}()
 
 	// Get demos
@@ -205,8 +215,10 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.Developers, err = t.App.GetDevelopers()
-		log.Err(err, r)
+		t.Developers, err = GetDevelopers(app)
+		if err != nil {
+			log.Err(err, r)
+		}
 	}()
 
 	// Get Publishers
@@ -216,33 +228,25 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.Publishers, err = t.App.GetPublishers()
-		log.Err(err, r)
+		t.Publishers, err = GetPublishers(app)
+		if err != nil {
+			log.Err(err, r)
+		}
 	}()
 
 	// Wait
 	wg.Wait()
 
 	// Functions that get called multiple times in the template
-	t.Price = app.GetPrice(helpers.GetProductCC(r))
-	t.Album = t.App.GetAlbum()
-	t.Achievements = t.App.GetAchievements()
-	t.NewsIDs = t.App.GetNewsIDs()
-	t.Stats = t.App.GetStats()
-	t.Prices = t.App.GetPrices()
-	t.Screenshots = t.App.GetScreenshots()
-	t.Movies = t.App.GetMovies()
-	t.Reviews = t.App.GetReviews()
-	t.SteamSpy = t.App.GetSteamSpy()
-
-	t.Common = t.App.GetCommon().Formatted(app.ID, pics.CommonKeys)
-	t.Extended = t.App.GetExtended().Formatted(app.ID, pics.ExtendedKeys)
-	t.Config = t.App.GetConfig().Formatted(app.ID, pics.ConfigKeys)
-	t.UFS = t.App.GetUFS().Formatted(app.ID, pics.UFSKeys)
+	t.Price = app.Prices.Get(helpers.GetProductCC(r))
+	t.Common = app.ReadPICS(app.Common).Formatted(app.ID, pics.CommonKeys)
+	t.Extended = app.ReadPICS(app.Common).Formatted(app.ID, pics.ExtendedKeys)
+	t.Config = app.ReadPICS(app.Common).Formatted(app.ID, pics.ConfigKeys)
+	t.UFS = app.ReadPICS(app.Common).Formatted(app.ID, pics.UFSKeys)
 
 	//
-	sort.Slice(t.Reviews.Reviews, func(i, j int) bool {
-		return t.Reviews.Reviews[i].VotesGood > t.Reviews.Reviews[j].VotesGood
+	sort.Slice(app.Reviews.Reviews, func(i, j int) bool {
+		return app.Reviews.Reviews[i].VotesGood > app.Reviews.Reviews[j].VotesGood
 	})
 
 	// Make banners
@@ -255,7 +259,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		banners["primary"] = append(banners["primary"], "This app record is for the Steam client")
 	}
 
-	if app.GetCommon().GetValue("app_retired_publisher_request") == "1" {
+	if app.ReadPICS(app.Common).GetValue("app_retired_publisher_request") == "1" {
 		banners["warning"] = append(banners["warning"], "At the request of the publisher, "+app.GetName()+" is no longer available for sale on Steam.")
 	}
 
@@ -267,32 +271,23 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 
 type appTemplate struct {
 	GlobalTemplate
-	Achievements []helpers.AppAchievement
-	App          sql.App
-	Banners      map[string][]string
-	Bundles     []sql.Bundle
-	Categories  []sql.Category
-	Common      []pics.KeyValue
-	Config      []pics.KeyValue
-	Demos       []sql.App
-	Related     []sql.App
-	Developers  []sql.Developer
-	DLCs        []sql.App
-	Extended    []pics.KeyValue
-	Genres      []sql.Genre
-	Movies      []helpers.AppVideo
-	NewsIDs     []int64
-	Packages    []sql.Package
-	Price       helpers.ProductPrice
-	Prices      helpers.ProductPrices
-	Album       pics.AlbumMetaData
-	Publishers  []sql.Publisher
-	Reviews     helpers.AppReviewSummary
-	Screenshots []helpers.AppImage
-	SteamSpy    helpers.AppSteamSpy
-	Stats       []helpers.AppStat
-	Tags        []sql.Tag
-	UFS         []pics.KeyValue
+	App        mongo.App
+	Banners    map[string][]string
+	Bundles    []sql.Bundle
+	Categories []sql.Category
+	Common     []pics.KeyValue
+	Config     []pics.KeyValue
+	Demos      []mongo.App
+	Related    []mongo.App
+	Developers []sql.Developer
+	DLCs       []mongo.App
+	Extended   []pics.KeyValue
+	Genres     []sql.Genre
+	Packages   []sql.Package
+	Price      helpers.ProductPrice
+	Publishers []sql.Publisher
+	Tags       []sql.Tag
+	UFS        []pics.KeyValue
 }
 
 func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {

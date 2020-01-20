@@ -62,7 +62,7 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Get apps
-	var apps []sql.App
+	var apps []mongo.App
 	wg.Add(1)
 	go func(bundle sql.Bundle) {
 
@@ -74,7 +74,7 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		apps, err = sql.GetAppsByID(appIDs, []string{})
+		apps, err = mongo.GetAppsByID(appIDs, nil)
 		log.Err(err, r)
 
 		// Queue missing apps
@@ -134,7 +134,7 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 type bundleTemplate struct {
 	GlobalTemplate
 	Bundle   sql.Bundle
-	Apps     []sql.App
+	Apps     []mongo.App
 	Packages []sql.Package
 }
 

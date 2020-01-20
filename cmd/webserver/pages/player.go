@@ -180,7 +180,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	}(player)
 
 	// Get background app
-	var backgroundApp sql.App
+	var backgroundApp mongo.App
 	if player.BackgroundAppID > 0 {
 		wg.Add(1)
 		go func(player mongo.Player) {
@@ -188,9 +188,9 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 			defer wg.Done()
 
 			var err error
-			backgroundApp, err = sql.GetApp(player.BackgroundAppID, []string{"id", "name", "background"})
+			backgroundApp, err = mongo.GetApp(player.BackgroundAppID, bson.M{"id": 1, "name": 1, "background": 1})
 			err = helpers.IgnoreErrors(err, sql.ErrInvalidAppID)
-			if err == sql.ErrRecordNotFound {
+			if err == mongo.ErrNoDocuments {
 				err = queue.ProduceSteam(queue.SteamMessage{AppIDs: []int{player.BackgroundAppID}})
 				log.Err(err, player.BackgroundAppID)
 			} else if err != nil {

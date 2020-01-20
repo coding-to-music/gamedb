@@ -438,6 +438,7 @@ func GetPackages(ids []int, columns []string) (packages []Package, err error) {
 	return packages, db.Error
 }
 
+// todo, cache?
 func GetPackagesAppIsIn(appID int) (packages []Package, err error) {
 
 	db, err := GetMySQLClient()
