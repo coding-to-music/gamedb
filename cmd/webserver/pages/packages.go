@@ -93,7 +93,7 @@ func packagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	response := DataTablesAjaxResponse{}
+	response := DataTablesResponse{}
 	response.RecordsTotal = int64(count)
 	response.RecordsFiltered = int64(count)
 	response.Draw = query.Draw

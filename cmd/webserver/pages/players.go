@@ -286,7 +286,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	response := DataTablesAjaxResponse{}
+	response := DataTablesResponse{}
 	response.RecordsTotal = total
 	response.RecordsFiltered = filtered
 	response.Draw = query.Draw

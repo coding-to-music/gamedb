@@ -570,8 +570,8 @@ type Asset struct {
 	Integrity string
 }
 
-// DataTablesAjaxResponse
-type DataTablesAjaxResponse struct {
+// DataTablesResponse
+type DataTablesResponse struct {
 	Draw            string          `json:"draw"`
 	RecordsTotal    int64           `json:"recordsTotal,string"`
 	RecordsFiltered int64           `json:"recordsFiltered,string"`
@@ -579,11 +579,11 @@ type DataTablesAjaxResponse struct {
 	Data            [][]interface{} `json:"data"`
 }
 
-func (t *DataTablesAjaxResponse) AddRow(row []interface{}) {
+func (t *DataTablesResponse) AddRow(row []interface{}) {
 	t.Data = append(t.Data, row)
 }
 
-func (t DataTablesAjaxResponse) output(w http.ResponseWriter, r *http.Request) {
+func (t DataTablesResponse) output(w http.ResponseWriter, r *http.Request) {
 
 	if len(t.Data) == 0 {
 		t.Data = make([][]interface{}, 0)
@@ -592,7 +592,7 @@ func (t DataTablesAjaxResponse) output(w http.ResponseWriter, r *http.Request) {
 	returnJSON(w, r, t)
 }
 
-func (t *DataTablesAjaxResponse) limit(r *http.Request) {
+func (t *DataTablesResponse) limit(r *http.Request) {
 
 	level := sql.UserLevel(helpers.GetUserLevel(r))
 	max := level.MaxResults(100)

@@ -455,7 +455,7 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
-	response := DataTablesAjaxResponse{}
+	response := DataTablesResponse{}
 	response.RecordsTotal = total
 	response.RecordsFiltered = total
 	response.Draw = query.Draw
@@ -508,7 +508,7 @@ func settingsDonationsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
-	response := DataTablesAjaxResponse{}
+	response := DataTablesResponse{}
 	response.RecordsTotal = total
 	response.RecordsFiltered = total
 	response.Draw = query.Draw

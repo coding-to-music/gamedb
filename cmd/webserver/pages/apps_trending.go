@@ -74,7 +74,7 @@ func trendingAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		log.Err(err, r)
 	}
 
-	response := DataTablesAjaxResponse{}
+	response := DataTablesResponse{}
 	response.RecordsTotal = count
 	response.RecordsFiltered = count
 	response.Draw = query.Draw

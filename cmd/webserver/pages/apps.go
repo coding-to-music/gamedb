@@ -422,7 +422,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	response := DataTablesAjaxResponse{}
+	response := DataTablesResponse{}
 	response.RecordsTotal = count
 	response.RecordsFiltered = recordsFiltered
 	response.Draw = query.Draw

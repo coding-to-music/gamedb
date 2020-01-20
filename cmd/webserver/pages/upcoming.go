@@ -79,7 +79,7 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	count, err := countUpcomingApps()
 	log.Err(err)
 
-	response := DataTablesAjaxResponse{}
+	response := DataTablesResponse{}
 	response.RecordsTotal = int64(count)
 	response.RecordsFiltered = int64(count)
 	if search != "" {

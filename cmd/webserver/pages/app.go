@@ -355,7 +355,7 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	response := DataTablesAjaxResponse{}
+	response := DataTablesResponse{}
 	response.RecordsTotal = int64(total)
 	response.RecordsFiltered = int64(total)
 	response.Draw = query.Draw
@@ -456,7 +456,7 @@ func appItemsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	response := DataTablesAjaxResponse{}
+	response := DataTablesResponse{}
 	response.RecordsTotal = total
 	response.RecordsFiltered = filtered
 	response.Draw = query.Draw
@@ -633,7 +633,7 @@ func appTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	response := DataTablesAjaxResponse{}
+	response := DataTablesResponse{}
 	response.RecordsTotal = total
 	response.RecordsFiltered = total
 	response.Draw = query.Draw

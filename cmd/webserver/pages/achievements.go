@@ -96,7 +96,7 @@ func achievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	//
-	response := DataTablesAjaxResponse{}
+	response := DataTablesResponse{}
 	response.RecordsTotal = count
 	response.RecordsFiltered = filtered
 	response.Draw = query.Draw

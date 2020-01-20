@@ -64,7 +64,7 @@ package pages
 //
 // 	wg.Wait()
 //
-// 	response := DataTablesAjaxResponse{}
+// 	response := DataTablesResponse{}
 // 	response.RecordsTotal = count
 // 	response.RecordsFiltered = count
 // 	response.Draw = query.Draw
@@ -141,7 +141,7 @@ package pages
 // 	// Wait
 // 	wg.Wait()
 //
-// 	response := DataTablesAjaxResponse{}
+// 	response := DataTablesResponse{}
 // 	response.RecordsTotal = int64(count)
 // 	response.RecordsFiltered = int64(count)
 // 	response.Draw = query.Draw
@@ -185,7 +185,7 @@ package pages
 //
 // 	wg.Wait()
 //
-// 	response := DataTablesAjaxResponse{}
+// 	response := DataTablesResponse{}
 // 	response.RecordsTotal = count
 // 	response.RecordsFiltered = count
 // 	response.Draw = query.Draw

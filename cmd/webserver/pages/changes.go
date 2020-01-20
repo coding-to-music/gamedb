@@ -101,7 +101,7 @@ func changesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
-	response := DataTablesAjaxResponse{}
+	response := DataTablesResponse{}
 	response.RecordsTotal = count
 	response.RecordsFiltered = count
 	response.Draw = query.Draw

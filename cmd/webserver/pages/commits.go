@@ -68,7 +68,7 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	total := getTotalCommits()
 
 	//
-	response := DataTablesAjaxResponse{}
+	response := DataTablesResponse{}
 	response.RecordsTotal = int64(total)
 	response.RecordsFiltered = int64(total)
 	response.Draw = query.Draw
