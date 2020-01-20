@@ -39,7 +39,9 @@ func trendingAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
 	err := query.fillFromURL(r.URL.Query())
-	log.Err(err, r)
+	if err != nil {
+		log.Err(err, r)
+	}
 
 	query.limit(r)
 
@@ -62,7 +64,9 @@ func trendingAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var apps []sql.App
 	gorm = gorm.Find(&apps)
-	log.Err(gorm.Error, r)
+	if gorm.Error != nil {
+		log.Err(gorm.Error, r)
+	}
 
 	count, err := sql.CountApps()
 	log.Err(err)

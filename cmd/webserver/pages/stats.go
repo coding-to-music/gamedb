@@ -65,7 +65,9 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.BundlesCount, err = sql.CountBundles()
-		log.Err(err, r)
+		if err != nil {
+			log.Err(err, r)
+		}
 	}()
 
 	wg.Add(1)
@@ -75,7 +77,9 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.PackagesCount, err = sql.CountPackages()
-		log.Err(err, r)
+		if err != nil {
+			log.Err(err, r)
+		}
 	}()
 
 	wg.Add(1)
@@ -87,7 +91,9 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 		a := sql.App{}
 		t.OnlinePlayersCount, err = a.GetOnlinePlayers()
-		log.Err(err, r)
+		if err != nil {
+			log.Err(err, r)
+		}
 	}()
 
 	wg.Wait()

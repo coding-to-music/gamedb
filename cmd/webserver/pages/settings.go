@@ -244,8 +244,8 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			passwordBytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
-			log.Err(err, r)
 			if err != nil {
+				log.Err(err, r)
 				return "/settings", "", "Something went wrong encrypting your password"
 			}
 
@@ -275,8 +275,8 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Save user
 		db, err := sql.GetMySQLClient()
-		log.Err(err)
 		if err != nil {
+			log.Err(err, r)
 			return "/settings", "", "We had trouble saving your settings"
 		}
 
@@ -311,15 +311,21 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	if good != "" {
 		err = session.SetFlash(r, helpers.SessionGood, good)
-		log.Err(err)
+		if err != nil {
+			log.Err(err, r)
+		}
 	}
 	if bad != "" {
 		err = session.SetFlash(r, helpers.SessionBad, bad)
-		log.Err(err)
+		if err != nil {
+			log.Err(err, r)
+		}
 	}
 
 	err = session.Save(w, r)
-	log.Err(err)
+	if err != nil {
+		log.Err(err, r)
+	}
 
 	http.Redirect(w, r, redirect, http.StatusFound)
 }
@@ -332,8 +338,8 @@ func settingsNewKeyHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Get user
 		user, err := getUserFromSession(r)
-		log.Err(err)
 		if err != nil {
+			log.Err(err, r)
 			return "", "User not found"
 		}
 
@@ -366,15 +372,21 @@ func settingsNewKeyHandler(w http.ResponseWriter, r *http.Request) {
 
 	if good != "" {
 		err = session.SetFlash(r, helpers.SessionGood, good)
-		log.Err(err)
+		if err != nil {
+			log.Err(err, r)
+		}
 	}
 	if bad != "" {
 		err = session.SetFlash(r, helpers.SessionBad, bad)
-		log.Err(err)
+		if err != nil {
+			log.Err(err, r)
+		}
 	}
 
 	err = session.Save(w, r)
-	log.Err(err)
+	if err != nil {
+		log.Err(err, r)
+	}
 
 	http.Redirect(w, r, "/settings", http.StatusFound)
 }
@@ -389,7 +401,9 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
 	err = query.fillFromURL(r.URL.Query())
-	log.Err(err, r)
+	if err != nil {
+		log.Err(err, r)
+	}
 
 	query.limit(r)
 
@@ -447,7 +461,9 @@ func settingsDonationsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
 	err = query.fillFromURL(r.URL.Query())
-	log.Err(err, r)
+	if err != nil {
+		log.Err(err, r)
+	}
 
 	query.limit(r)
 
@@ -471,7 +487,6 @@ func settingsDonationsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		total, err = mongo.CountPatreonWebhooks(user.ID)
 		log.Err(err, r)
-
 	}(r)
 
 	wg.Wait()

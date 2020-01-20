@@ -117,7 +117,9 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 			var err error
 			playersContinent, err = mongo.CountDocuments(mongo.CollectionPlayers, bson.D{{"continent_code", player.ContinentCode}}, 60*60*24*7)
-			log.Err(err, r)
+			if err != nil {
+				log.Err(err, r)
+			}
 		}()
 	}
 
@@ -131,7 +133,9 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 			var err error
 			playersCountry, err = mongo.CountDocuments(mongo.CollectionPlayers, bson.D{{"country_code", player.CountryCode}}, 60*60*24*7)
-			log.Err(err, r)
+			if err != nil {
+				log.Err(err, r)
+			}
 		}()
 	}
 
@@ -145,7 +149,9 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 			var err error
 			playersState, err = mongo.CountDocuments(mongo.CollectionPlayers, bson.D{{"country_code", player.CountryCode}, {"status_code", player.StateCode}}, 60*60*24*7)
-			log.Err(err, r)
+			if err != nil {
+				log.Err(err, r)
+			}
 		}()
 	}
 
@@ -158,7 +164,9 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		bans, err = player.GetBans()
-		log.Err(err, r)
+		if err != nil {
+			log.Err(err, r)
+		}
 
 		if err == nil {
 			bans.EconomyBan = strings.Title(bans.EconomyBan)
@@ -175,7 +183,9 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		badgeStats, err = player.GetBadgeStats()
-		log.Err(err, r)
+		if err != nil {
+			log.Err(err, r)
+		}
 
 	}(player)
 
@@ -204,7 +214,9 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Game stats
 	gameStats, err := player.GetGameStats(code)
-	log.Err(err, r)
+	if err != nil {
+		log.Err(err, r)
+	}
 
 	// Make banners
 	banners := make(map[string][]string)
@@ -296,7 +308,9 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	t.Player.VanintyURL = helpers.TruncateString(t.Player.VanintyURL, 14, "...")
 
 	t.Types, err = sql.GetAppTypeCounts()
-	log.Err(err)
+	if err != nil {
+		log.Err(err, r)
+	}
 
 	returnTemplate(w, r, "player", t)
 }

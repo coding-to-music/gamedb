@@ -41,7 +41,9 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 		config, err := tasks.GetTaskConfig(tasks.PlayerRanks{})
 		if err != nil {
 			err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
-			log.Err(err, r)
+			if err != nil {
+				log.Err(err, r)
+			}
 		} else {
 			date = config.Value
 		}
@@ -109,7 +111,9 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 			statesLock.Lock()
 			states[cc], err = mongo.GetUniquePlayerStates(cc)
 			statesLock.Unlock()
-			log.Err(err)
+			if err != nil {
+				log.Err(err, r)
+			}
 		}(cc)
 	}
 
@@ -266,7 +270,9 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		filtered, err = mongo.CountDocuments(mongo.CollectionPlayers, filter, 0)
-		log.Err(err, r)
+		if err != nil {
+			log.Err(err, r)
+		}
 	}()
 
 	// Wait

@@ -51,7 +51,9 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
 	err := query.fillFromURL(r.URL.Query())
-	log.Err(err, r)
+	if err != nil {
+		log.Err(err, r)
+	}
 
 	//
 	var wg sync.WaitGroup
@@ -96,7 +98,9 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Count
 		gorm = gorm.Count(&recordsFiltered)
-		log.Err(gorm.Error, r)
+		if gorm.Error != nil {
+			log.Err(gorm.Error, r)
+		}
 
 		// Order, offset, limit
 		gorm = gorm.Limit(100)
@@ -105,7 +109,9 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Get rows
 		gorm = gorm.Find(&products)
-		log.Err(gorm.Error, r)
+		if gorm.Error != nil {
+			log.Err(gorm.Error, r)
+		}
 	}()
 
 	// Get total
