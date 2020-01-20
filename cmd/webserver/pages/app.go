@@ -163,7 +163,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.Packages, err = sql.GetPackagesAppIsIn(app.ID)
+		t.Packages, err = GetAppPackages(app)
 		if err != nil {
 			log.Err(err, r)
 		}

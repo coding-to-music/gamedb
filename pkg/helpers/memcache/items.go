@@ -61,6 +61,7 @@ var (
 	MemcacheAppPublishers = func(appID int) memcache.Item { return memcache.Item{Key: "app-publishers-" + strconv.Itoa(appID), Expiration: 0} }
 	MemcacheAppDevelopers = func(appID int) memcache.Item { return memcache.Item{Key: "app-developers-" + strconv.Itoa(appID), Expiration: 0} }
 	MemcacheAppBundles    = func(appID int) memcache.Item { return memcache.Item{Key: "app-bundles-" + strconv.Itoa(appID), Expiration: 0} }
+	MemcacheAppPackages   = func(appID int) memcache.Item { return memcache.Item{Key: "app-packages-" + strconv.Itoa(appID), Expiration: 0} }
 
 	// Package Bits
 	MemcachePackageBundles = func(packageID int) memcache.Item { return memcache.Item{Key: "package-bundles-" + strconv.Itoa(packageID), Expiration: 0} }

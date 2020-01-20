@@ -348,6 +348,7 @@ func appHandler(messages []*rabbit.Message) {
 					memcache.MemcacheAppDevelopers(app.ID).Key,
 					memcache.MemcacheAppPublishers(app.ID).Key,
 					memcache.MemcacheAppBundles(app.ID).Key,
+					memcache.MemcacheAppPackages(app.ID).Key,
 				)
 				log.Err(err, id)
 			}

@@ -438,23 +438,6 @@ func GetPackages(ids []int, columns []string) (packages []Package, err error) {
 	return packages, db.Error
 }
 
-// todo, cache?
-func GetPackagesAppIsIn(appID int) (packages []Package, err error) {
-
-	db, err := GetMySQLClient()
-	if err != nil {
-		return packages, err
-	}
-
-	db = db.Where("JSON_CONTAINS(apps, '[" + strconv.Itoa(appID) + "]')").Order("id DESC").Find(&packages)
-
-	if db.Error != nil {
-		return packages, db.Error
-	}
-
-	return packages, nil
-}
-
 func CountPackages() (count int, err error) {
 
 	var item = memcache.MemcachePackagesCount

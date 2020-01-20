@@ -902,3 +902,22 @@ func GetAppBundles(app mongo.App) (bundles []sql.Bundle, err error) {
 
 	return bundles, err
 }
+
+func GetAppPackages(app mongo.App) (packages []sql.Package, err error) {
+
+	if len(app.Packages) == 0 {
+		return packages, nil
+	}
+
+	var item = memcache.MemcacheAppPackages(app.ID)
+
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &packages, func() (interface{}, error) {
+		return sql.GetPackages(app.Packages, nil)
+	})
+
+	if len(packages) == 0 {
+		packages = []sql.Package{} // Needed for marshalling into type
+	}
+
+	return packages, err
+}
