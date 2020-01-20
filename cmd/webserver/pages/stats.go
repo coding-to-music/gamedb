@@ -44,8 +44,10 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.PlayersCount, err = mongo.CountPlayers()
-		log.Err(err, r)
+		t.PlayersCount, err = mongo.CountDocuments(mongo.CollectionPlayers, nil, 0)
+		if err != nil {
+			log.Err(err, r)
+		}
 	}()
 
 	wg.Add(1)
@@ -54,8 +56,10 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.AppsCount, err = sql.CountApps()
-		log.Err(err, r)
+		t.AppsCount, err = mongo.CountDocuments(mongo.CollectionApps, nil, 0)
+		if err != nil {
+			log.Err(err, r)
+		}
 	}()
 
 	wg.Add(1)
@@ -103,7 +107,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 type statsTemplate struct {
 	GlobalTemplate
-	AppsCount          int
+	AppsCount          int64
 	BundlesCount       int
 	PackagesCount      int
 	PlayersCount       int64

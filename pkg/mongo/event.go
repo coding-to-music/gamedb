@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -163,25 +162,5 @@ func CreateUserEvent(r *http.Request, userID int, eventType EventEnum) (err erro
 	}
 
 	_, err = InsertOne(CollectionEvents, event)
-	if err != nil {
-		return err
-	}
-
-	// Clear cache
-	err = memcache.RemoveKeyFromMemCacheViaPubSub(memcache.MemcacheUserEventsCount(userID).Key)
-	log.Err(err)
-
 	return err
-}
-
-func CountEvents(userID int) (count int64, err error) {
-
-	var item = memcache.MemcacheUserEventsCount(userID)
-
-	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
-
-		return CountDocuments(CollectionEvents, bson.D{{"user_id", userID}}, 0)
-	})
-
-	return count, err
 }

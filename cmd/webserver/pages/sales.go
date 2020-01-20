@@ -52,7 +52,7 @@ func salesHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.Count, err = mongo.CountSales()
+		t.Count, err = mongo.CountDocuments(mongo.CollectionAppSales, bson.D{{"offer_end", bson.M{"$gte": time.Now()}}}, 0)
 		log.Err(err, r)
 	}()
 

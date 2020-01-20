@@ -1328,27 +1328,6 @@ func GetAppsWithColumnDepth(column string, depth int, columns []string) (apps []
 
 }
 
-func CountApps() (count int, err error) {
-
-	var item = memcache.MemcacheAppsCount
-
-	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
-
-		var count int
-
-		db, err := GetMySQLClient()
-		if err != nil {
-			return count, err
-		}
-
-		db.Model(&App{}).Count(&count)
-
-		return count, db.Error
-	})
-
-	return count, err
-}
-
 type AppTypeCount struct {
 	Type  string
 	Count int

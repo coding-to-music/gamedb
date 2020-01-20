@@ -45,10 +45,11 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		count, err := sql.CountApps()
-		t.Description = "A live database of all " + template.HTML(helpers.ShortHandNumber(int64(count))) + " Steam games."
-		log.Err(err, r)
-
+		count, err := mongo.CountDocuments(mongo.CollectionApps, nil, 0)
+		t.Description = "A live database of all " + template.HTML(helpers.ShortHandNumber(count)) + " Steam games."
+		if err != nil {
+			log.Err(err, r)
+		}
 	}()
 
 	// Get tags
@@ -406,14 +407,14 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	// Get total
-	var count int
+	var count int64
 	wg.Add(1)
 	go func() {
 
 		defer wg.Done()
 
 		var err error
-		count, err = sql.CountApps()
+		count, err = mongo.CountDocuments(mongo.CollectionApps, nil, 0)
 		log.Err(err, r)
 
 	}()
@@ -422,7 +423,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	response := DataTablesAjaxResponse{}
-	response.RecordsTotal = int64(count)
+	response.RecordsTotal = count
 	response.RecordsFiltered = recordsFiltered
 	response.Draw = query.Draw
 

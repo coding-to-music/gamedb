@@ -9,20 +9,15 @@ import (
 
 var (
 	// Counts
-	MemcacheAppsCount                 = memcache.Item{Key: "apps-count", Expiration: 86400}
 	MemcacheAppsWithAchievementsCount = memcache.Item{Key: "apps-achievements-count", Expiration: 86400}
 	MemcachePackagesCount             = memcache.Item{Key: "packages-count", Expiration: 86400}
 	MemcacheBundlesCount              = memcache.Item{Key: "bundles-count", Expiration: 86400}
 	MemcacheUpcomingAppsCount         = memcache.Item{Key: "upcoming-apps-count", Expiration: 86400}
 	MemcacheNewReleaseAppsCount       = memcache.Item{Key: "newly-released-apps-count", Expiration: 86400}
 	MemcacheUpcomingPackagesCount     = memcache.Item{Key: "upcoming-packages-count", Expiration: 86400}
-	MemcachePlayersCount              = memcache.Item{Key: "players-count", Expiration: 86400 * 1}
-	MemcacheSalesCount                = memcache.Item{Key: "sales-count", Expiration: 60 * 10}
 	MemcachePricesCount               = memcache.Item{Key: "prices-count", Expiration: 86400 * 7}
 	MemcacheAppTypeCounts             = memcache.Item{Key: "app-type-counts", Expiration: 60 * 60 * 24 * 2}
 	MemcacheMongoCount                = func(key string) memcache.Item { return memcache.Item{Key: "mongo-count-" + key, Expiration: 60 * 60} }
-	MemcacheUserEventsCount           = func(userID int) memcache.Item { return memcache.Item{Key: "players-events-count-" + strconv.Itoa(userID), Expiration: 86400} }
-	MemcachePatreonWebhooksCount      = func(userID int) memcache.Item { return memcache.Item{Key: "patreon-webhooks-count-" + strconv.Itoa(userID), Expiration: 86400} }
 
 	// Apps Page Dropdowns
 	MemcacheTagKeyNames       = memcache.Item{Key: "tag-key-names", Expiration: 86400 * 7}
@@ -31,7 +26,7 @@ var (
 	MemcachePublisherKeyNames = memcache.Item{Key: "publisher-key-names", Expiration: 86400 * 7}
 	MemcacheDeveloperKeyNames = memcache.Item{Key: "developer-key-names", Expiration: 86400 * 7}
 
-	// Rows
+	// Single Rows
 	MemcacheChange        = func(changeID int64) memcache.Item { return memcache.Item{Key: "change-" + strconv.FormatInt(changeID, 10), Expiration: 0} }
 	MemcacheGroup         = func(id string) memcache.Item { return memcache.Item{Key: "group-" + id, Expiration: 60 * 30} } // 30 mins, cant be infinite as we need the 'updatedAt' field to be fairly upto date
 	MemcachePackage       = func(id int) memcache.Item { return memcache.Item{Key: "package-" + strconv.Itoa(id), Expiration: 0} }

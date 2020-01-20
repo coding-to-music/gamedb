@@ -7,6 +7,7 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
 )
@@ -115,16 +116,17 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	// Get total
-	var count int
+	var count int64
 	wg.Add(1)
 	go func() {
 
 		defer wg.Done()
 
 		var err error
-		count, err = sql.CountApps()
-		log.Err(err, r)
-
+		count, err = mongo.CountDocuments(mongo.CollectionApps, nil, 0)
+		if err != nil {
+			log.Err(err, r)
+		}
 	}()
 
 	// Wait

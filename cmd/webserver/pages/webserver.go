@@ -195,7 +195,7 @@ func getTemplateFuncMap() map[string]interface{} {
 		"lower":        func(a string) string { return strings.ToLower(a) },
 		"comma":        func(a int) string { return humanize.Comma(int64(a)) },
 		"comma64":      func(a int64) string { return humanize.Comma(a) },
-		"commaf":       func(a float64) string { return humanize.Commaf(a) },
+		"commaf":       func(a float64) string { return humanize.FormatFloat("#,###.##", a) },
 		"bytes":        func(a uint64) string { return humanize.Bytes(a) },
 		"seconds":      func(a int64) string { return humanize.RelTime(time.Now(), time.Now().Add(time.Second*time.Duration(a)), "", "") },
 		"startsWith":   func(a string, b string) bool { return strings.HasPrefix(a, b) },

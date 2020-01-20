@@ -103,8 +103,10 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		players, err = mongo.CountPlayers()
-		log.Err(err, r)
+		players, err = mongo.CountDocuments(mongo.CollectionPlayers, nil, 0)
+		if err != nil {
+			log.Err(err, r)
+		}
 	}()
 
 	var playersContinent int64
@@ -307,6 +309,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	t.Player = player
 	t.Player.VanintyURL = helpers.TruncateString(t.Player.VanintyURL, 14, "...")
 
+	// todo, move to wg
 	t.Types, err = sql.GetAppTypeCounts()
 	if err != nil {
 		log.Err(err, r)

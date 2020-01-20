@@ -133,18 +133,6 @@ func GetAppSales(appID int) (offers []Sale, err error) {
 	return getSales(0, 0, bson.D{{"app_id", appID}}, bson.D{{"offer_end", 1}}, bson.M{"sub_id": 1, "offer_start": 1})
 }
 
-func CountSales() (count int64, err error) {
-
-	var item = memcache.MemcacheSalesCount
-
-	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
-
-		return CountDocuments(CollectionAppSales, bson.D{{"offer_end", bson.M{"$gt": time.Now()}}}, 0)
-	})
-
-	return count, err
-}
-
 func GetHighestSaleOrder() (int, error) {
 
 	sales, err := getSales(0, 1, bson.D{{"offer_end", bson.M{"$gt": time.Now()}}}, bson.D{{"sub_order", -1}}, bson.M{"sub_order": 1})

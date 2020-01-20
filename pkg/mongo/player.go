@@ -599,18 +599,6 @@ func GetPlayerLevels() (counts []count, err error) {
 	return counts, err
 }
 
-func CountPlayers() (count int64, err error) {
-
-	var item = memcache.MemcachePlayersCount
-
-	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
-
-		return CountDocuments(CollectionPlayers, nil, 0)
-	})
-
-	return count, err
-}
-
 func BulkUpdatePlayers(writes []mongo.WriteModel) (err error) {
 
 	if len(writes) == 0 {

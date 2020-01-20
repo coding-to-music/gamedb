@@ -447,9 +447,10 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		total, err = mongo.CountEvents(user.ID)
-		log.Err(err, r)
-
+		total, err = mongo.CountDocuments(mongo.CollectionEvents, bson.D{{"user_id", user.ID}}, 86400)
+		if err != nil {
+			log.Err(err, r)
+		}
 	}(r)
 
 	wg.Wait()
@@ -501,7 +502,7 @@ func settingsDonationsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		total, err = mongo.CountPatreonWebhooks(user.ID)
+		total, err = mongo.CountDocuments(mongo.CollectionPatreonWebhooks, bson.D{{"user_id", user.ID}}, 0)
 		log.Err(err, r)
 	}(r)
 

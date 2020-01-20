@@ -57,8 +57,10 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		count, err = mongo.CountPlayers()
-		log.Err(err, r)
+		count, err = mongo.CountDocuments(mongo.CollectionPlayers, nil, 0)
+		if err != nil {
+			log.Err(err, r)
+		}
 	}()
 
 	// Get countries list
@@ -227,7 +229,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 
-		players, err = mongo.GetPlayers(query.getOffset64(), 100, sortOrder, filter, bson.M{
+		var projection = bson.M{
 			"_id":          1,
 			"persona_name": 1,
 			"avatar":       1,
@@ -245,8 +247,12 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			//
 			"friends_count":  1,
 			"comments_count": 1,
-		})
-		log.Err(err)
+		}
+
+		players, err = mongo.GetPlayers(query.getOffset64(), 100, sortOrder, filter, projection)
+		if err != nil {
+			log.Err(err, r)
+		}
 	}()
 
 	// Get total
@@ -257,8 +263,10 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		total, err = mongo.CountPlayers()
-		log.Err(err, r)
+		total, err = mongo.CountDocuments(mongo.CollectionPlayers, nil, 0)
+		if err != nil {
+			log.Err(err, r)
+		}
 	}()
 
 	// Get filtered total

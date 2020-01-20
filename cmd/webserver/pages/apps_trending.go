@@ -8,6 +8,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
 )
@@ -68,12 +69,14 @@ func trendingAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		log.Err(gorm.Error, r)
 	}
 
-	count, err := sql.CountApps()
-	log.Err(err)
+	count, err := mongo.CountDocuments(mongo.CollectionApps, nil, 0)
+	if err != nil {
+		log.Err(err, r)
+	}
 
 	response := DataTablesAjaxResponse{}
-	response.RecordsTotal = int64(count)
-	response.RecordsFiltered = int64(count)
+	response.RecordsTotal = count
+	response.RecordsFiltered = count
 	response.Draw = query.Draw
 	response.limit(r)
 
