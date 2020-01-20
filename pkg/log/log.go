@@ -271,10 +271,10 @@ func log(interfaces ...interface{}) {
 					Timestamp: entry.timestamp,
 					Payload:   entry.toText(entry.severity),
 					Labels: map[string]string{
-						"env":  config.Config.Environment.Get(),
-						"hash": config.Config.CommitHash.Get(),
-						"key":  config.GetSteamKeyTag(),
-						"ver":  version,
+						"env":     config.Config.Environment.Get(),
+						"hash":    config.Config.CommitHash.Get(),
+						"key":     config.GetSteamKeyTag(),
+						"version": version,
 					},
 				})
 			}
