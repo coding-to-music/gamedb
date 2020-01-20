@@ -796,6 +796,7 @@ func getUserFromSession(r *http.Request) (user sql.User, err error) {
 	return sql.GetUserByID(userID)
 }
 
+// App calls
 func GetAppTags(app mongo.App) (tags []sql.Tag, err error) {
 
 	tags = []sql.Tag{} // Needed for marshalling into type
@@ -866,6 +867,8 @@ func GetPublishers(app mongo.App) (publishers []sql.Publisher, err error) {
 
 func GetAppCategories(app mongo.App) (categories []sql.Category, err error) {
 
+	categories = []sql.Category{} // Needed for marshalling into type
+
 	if len(app.Categories) == 0 {
 		return categories, nil
 	}
@@ -877,14 +880,12 @@ func GetAppCategories(app mongo.App) (categories []sql.Category, err error) {
 		return sql.GetCategoriesByID(app.Categories, []string{"id", "name"})
 	})
 
-	if len(categories) == 0 {
-		categories = []sql.Category{} // Needed for marshalling into type
-	}
-
 	return categories, err
 }
 
 func GetAppBundles(app mongo.App) (bundles []sql.Bundle, err error) {
+
+	bundles = []sql.Bundle{} // Needed for marshalling into type
 
 	if len(app.Bundles) == 0 {
 		return bundles, nil
@@ -896,14 +897,12 @@ func GetAppBundles(app mongo.App) (bundles []sql.Bundle, err error) {
 		return sql.GetBundlesByID(app.Bundles, []string{})
 	})
 
-	if len(bundles) == 0 {
-		bundles = []sql.Bundle{} // Needed for marshalling into type
-	}
-
 	return bundles, err
 }
 
 func GetAppPackages(app mongo.App) (packages []sql.Package, err error) {
+
+	packages = []sql.Package{} // Needed for marshalling into type
 
 	if len(app.Packages) == 0 {
 		return packages, nil
@@ -914,10 +913,6 @@ func GetAppPackages(app mongo.App) (packages []sql.Package, err error) {
 	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &packages, func() (interface{}, error) {
 		return sql.GetPackages(app.Packages, nil)
 	})
-
-	if len(packages) == 0 {
-		packages = []sql.Package{} // Needed for marshalling into type
-	}
 
 	return packages, err
 }
