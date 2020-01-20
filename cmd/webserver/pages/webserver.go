@@ -514,8 +514,6 @@ func (t GlobalTemplate) IsAdmin() bool {
 
 func (t GlobalTemplate) ShowAds() bool {
 
-	return false // While low traffic
-
 	if config.IsLocal() {
 		return false
 	}
