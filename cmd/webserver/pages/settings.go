@@ -65,18 +65,24 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get user
 	t.User, err = getUserFromSession(r)
-	log.Err(err)
+	if err != nil {
+		log.Err(err, r)
+	}
 
 	if t.User.SteamID > 0 {
 
 		// Get player
 		t.Player, err = mongo.GetPlayer(t.User.SteamID)
 		err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
-		log.Err(err)
+		if err != nil {
+			log.Err(err, r)
+		}
 
 		// Set Steam player name to session if missing, can happen after linking
 		err = session.Set(r, helpers.SessionPlayerName, t.Player.PersonaName)
-		log.Err(err)
+		if err != nil {
+			log.Err(err, r)
+		}
 	}
 
 	//
@@ -104,7 +110,9 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		b, err := json.Marshal(appIDs)
-		log.Err(err)
+		if err != nil {
+			log.Err(err, r)
+		}
 
 		t.Games = string(b)
 	}()
@@ -131,7 +139,9 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		b, err := json.Marshal(groupIDs)
-		log.Err(err)
+		if err != nil {
+			log.Err(err, r)
+		}
 
 		t.Groups = string(b)
 	}()
@@ -184,15 +194,21 @@ func deletePostHandler(w http.ResponseWriter, r *http.Request) {
 
 	if good != "" {
 		err = session.SetFlash(r, helpers.SessionGood, good)
-		log.Err(err)
+		if err != nil {
+			log.Err(err, r)
+		}
 	}
 	if bad != "" {
 		err = session.SetFlash(r, helpers.SessionBad, bad)
-		log.Err(err)
+		if err != nil {
+			log.Err(err, r)
+		}
 	}
 
 	err = session.Save(w, r)
-	log.Err(err)
+	if err != nil {
+		log.Err(err, r)
+	}
 
 	http.Redirect(w, r, redirect, http.StatusFound)
 }
@@ -205,15 +221,15 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Get user
 		user, err := getUserFromSession(r)
-		log.Err(err)
 		if err != nil {
+			log.Err(err, r)
 			return "/settings", "", "User not found"
 		}
 
 		// Parse form
 		err = r.ParseForm()
-		log.Err(err)
 		if err != nil {
+			log.Err(err, r)
 			return "/settings", "", "Could not read form data"
 		}
 
