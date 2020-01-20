@@ -358,10 +358,11 @@ func (t *GlobalTemplate) setRandomBackground(title bool, link bool) {
 	}
 
 	blacklist := []int{
-		431960, // Wallpaper Engine
+		4000,   // Garry's Mod
 		236850, // Europa Universalis IV
-		582010, // Monster Hunter
 		289070, // Civilization VI
+		431960, // Wallpaper Engine
+		582010, // Monster Hunter
 	}
 
 	var filteredApps []mongo.App
