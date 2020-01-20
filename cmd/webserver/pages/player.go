@@ -211,6 +211,20 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		}()
 	}
 
+	// Type counts
+	var typeCounts = map[string]int{}
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		typeCounts, err = sql.GetAppTypeCounts()
+		if err != nil {
+			log.Err(err, r)
+		}
+	}()
+
 	// Wait
 	wg.Wait()
 
@@ -308,12 +322,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	t.GameStats = gameStats
 	t.Player = player
 	t.Player.VanintyURL = helpers.TruncateString(t.Player.VanintyURL, 14, "...")
-
-	// todo, move to wg
-	t.Types, err = sql.GetAppTypeCounts()
-	if err != nil {
-		log.Err(err, r)
-	}
+	t.Types = typeCounts
 
 	returnTemplate(w, r, "player", t)
 }
