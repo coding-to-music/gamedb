@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/rabbit-go"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -42,6 +43,12 @@ func playerRanksHandler(messages []*rabbit.Message) {
 
 		if payload.ObjectKey == "" || payload.SortColumn == "" {
 			sendToFailQueue(message)
+			continue
+		}
+
+		// todo, remove when we have more memory
+		if config.IsProd() && payload.Country == nil && payload.State == nil {
+			sendToRetryQueue(message)
 			continue
 		}
 
