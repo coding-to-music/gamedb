@@ -279,17 +279,25 @@ func log(interfaces ...interface{}) {
 				})
 			}
 
-			// if entry.severity >= SeverityError {
-			//
-			// 	// Rollbar
-			// 	rollbar.Log(entry.severity.toRollbar(), entry.toText(entry.severity))
-			//
-			// 	// Sentry
-			// 	if entry.error != nil {
-			// 		sentry.CaptureException(entry.error)
-			// 	}
-			// 	sentry.Flush(time.Second * 5)
-			// }
+			var sendToRollbar = true
+			for _, v := range entry.logNames {
+				if v == LogNameRabbit {
+					sendToRollbar = false
+					break
+				}
+			}
+
+			if sendToRollbar && entry.severity >= SeverityError {
+
+				// Rollbar
+				rollbar.Log(entry.severity.toRollbar(), entry.toText(entry.severity))
+
+				// Sentry
+				if entry.error != nil {
+					sentry.CaptureException(entry.error)
+				}
+				sentry.Flush(time.Second * 5)
+			}
 		}
 	}
 }
