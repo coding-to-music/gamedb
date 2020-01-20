@@ -213,14 +213,6 @@ func (app App) GetStoreLink() string {
 
 func CreateAppIndexes() {
 
-	var indexModels []mongo.IndexModel
-
-	// Text index
-	indexModels = append(indexModels, mongo.IndexModel{
-		Keys:    bson.D{{"name", "text"}},
-		Options: options.Index().SetName("text"),
-	})
-
 	var ascending = []string{
 		"achievements_average_completion",
 		"achievements_count",
@@ -249,11 +241,14 @@ func CreateAppIndexes() {
 		"reviews_score",
 	}
 
+	// Price fields
 	for _, v := range helpers.GetProdCCs(true) {
 		ascending = append(ascending, "prices."+string(v.ProductCode)+".final")
 		descending = append(descending, "prices."+string(v.ProductCode)+".final")
 	}
 
+	//
+	var indexModels []mongo.IndexModel
 	for _, v := range ascending {
 		indexModels = append(indexModels, mongo.IndexModel{
 			Keys: bson.D{{v, 1}},
@@ -266,6 +261,21 @@ func CreateAppIndexes() {
 		})
 	}
 
+	// Text index
+	indexModels = append(indexModels, mongo.IndexModel{
+		Keys:    bson.D{{"name", "text"}},
+		Options: options.Index().SetName("text"),
+	})
+
+	// Achievements page
+	indexModels = append(indexModels, mongo.IndexModel{
+		Keys: bson.D{{"achievements_count", 1}},
+	})
+	indexModels = append(indexModels, mongo.IndexModel{
+		Keys: bson.D{{"achievements_count", -1}, {"achievements_average_completion", -1}},
+	})
+
+	//
 	client, ctx, err := getMongo()
 	if err != nil {
 		log.Err(err)

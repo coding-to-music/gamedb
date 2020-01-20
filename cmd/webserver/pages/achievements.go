@@ -63,6 +63,7 @@ func achievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var projection = bson.M{"id": 1, "name": 1, "icon": 1, "achievements_5": 1, "achievements_count": 1, "achievements_average_completion": 1, "prices": 1}
 		var sort = query.getOrderMongo(columns)
+		sort = append(sort, bson.E{Key: "achievements_average_completion", Value: -1})
 
 		var err error
 		apps, err = mongo.GetApps(query.getOffset64(), 100, sort, filter2, projection, nil)
