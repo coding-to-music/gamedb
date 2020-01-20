@@ -193,7 +193,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	var backgroundApp mongo.App
 	if player.BackgroundAppID > 0 {
 		wg.Add(1)
-		go func(player mongo.Player) {
+		go func() {
 
 			defer wg.Done()
 
@@ -206,7 +206,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 			} else if err != nil {
 				log.Err(err, player.BackgroundAppID)
 			}
-		}(player)
+		}()
 	}
 
 	// Wait
