@@ -171,7 +171,9 @@ func returnErrorTemplate(w http.ResponseWriter, r *http.Request, data errorTempl
 		data.Code = 500
 	}
 
-	log.Err(data.Error)
+	if data.Error != nil {
+		log.Err(data.Error)
+	}
 
 	data.fill(w, r, "Error", "Something has gone wrong!")
 
