@@ -64,7 +64,7 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 	// Get apps
 	var apps []mongo.App
 	wg.Add(1)
-	go func(bundle sql.Bundle) {
+	go func() {
 
 		defer wg.Done()
 
@@ -75,7 +75,9 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		apps, err = mongo.GetAppsByID(appIDs, nil)
-		log.Err(err, r)
+		if err != nil {
+			log.Err(err, r)
+		}
 
 		// Queue missing apps
 		if len(appIDs) != len(apps) {
@@ -91,11 +93,13 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 				if !found {
 					err = queue.ProduceSteam(queue.SteamMessage{AppIDs: []int{v}})
 					err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
-					log.Err(err)
+					if err != nil {
+						log.Err(err, r)
+					}
 				}
 			}
 		}
-	}(bundle)
+	}()
 
 	// Get packages
 	var packages []sql.Package
@@ -105,8 +109,9 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		packages, err = sql.GetPackages(bundle.GetPackageIDs(), []string{})
-		log.Err(err, r)
-
+		if err != nil {
+			log.Err(err, r)
+		}
 	}()
 
 	// Wait
@@ -168,8 +173,9 @@ func bundlePricesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Add current price
 	price, err := sql.GetBundle(idx, []string{"discount"})
-	log.Err(err)
-	if err == nil {
+	if err != nil {
+		log.Err(err)
+	} else {
 		prices = append(prices, []int64{time.Now().Unix() * 1000, int64(price.Discount)})
 	}
 
