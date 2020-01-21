@@ -51,7 +51,8 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 	idx, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
-		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid Player ID: " + id, Error: err})
+		log.Err(r, err)
+		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid Player ID: " + id})
 		return
 	}
 
@@ -87,7 +88,8 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 			returnTemplate(w, r, "player_missing", tm)
 		} else {
-			returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the player.", Error: err})
+			log.Err(r, err)
+			returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the player."})
 		}
 		return
 	}

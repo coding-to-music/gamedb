@@ -54,7 +54,8 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the bundle.", Error: err})
+		log.Err(r, err)
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the bundle."})
 		return
 	}
 

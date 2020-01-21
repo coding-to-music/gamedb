@@ -29,7 +29,8 @@ func developersHandler(w http.ResponseWriter, r *http.Request) {
 	// Get developers
 	developers, err := sql.GetAllDevelopers([]string{})
 	if err != nil {
-		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the developers.", Error: err})
+		log.Err(r, err)
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the developers."})
 		return
 	}
 

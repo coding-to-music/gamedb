@@ -29,7 +29,8 @@ func statsCategoriesHandler(w http.ResponseWriter, r *http.Request) {
 	// Get categories
 	categories, err := sql.GetAllCategories()
 	if err != nil {
-		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the categories.", Error: err})
+		log.Err(r, err)
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the categories."})
 		return
 	}
 

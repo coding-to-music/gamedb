@@ -53,7 +53,8 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	t.Players, err = mongo.GetPlayersByID(playerIDs, bson.M{"_id": 1, "persona_name": 1, "avatar": 1})
 	if err != nil {
-		returnErrorTemplate(w, r, errorTemplate{Code: 500, Error: err})
+		log.Err(r, err)
+		returnErrorTemplate(w, r, errorTemplate{Code: 500})
 		return
 	}
 
@@ -129,7 +130,8 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 
 		db, err := sql.GetMySQLClient()
 		if err != nil {
-			returnErrorTemplate(w, r, errorTemplate{Code: 500, Error: err})
+			log.Err(r, err)
+			returnErrorTemplate(w, r, errorTemplate{Code: 500})
 			return
 		}
 

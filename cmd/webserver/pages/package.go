@@ -31,7 +31,8 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 
 	idx, err := strconv.Atoi(id)
 	if err != nil {
-		returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Invalid package ID.", Error: err})
+		log.Err(r, err)
+		returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Invalid package ID."})
 		return
 	}
 
@@ -44,7 +45,8 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the package.", Error: err})
+		log.Err(r, err)
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the package."})
 		return
 	}
 

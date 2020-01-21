@@ -161,25 +161,21 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 	}
 }
 
-func returnErrorTemplate(w http.ResponseWriter, r *http.Request, data errorTemplate) {
+func returnErrorTemplate(w http.ResponseWriter, r *http.Request, t errorTemplate) {
 
-	if data.Title == "" {
-		data.Title = "Error " + strconv.Itoa(data.Code)
+	if t.Title == "" {
+		t.Title = "Error " + strconv.Itoa(t.Code)
 	}
 
-	if data.Code == 0 {
-		data.Code = 500
+	if t.Code == 0 {
+		t.Code = 500
 	}
 
-	if data.Error != nil {
-		log.Err(data.Error)
-	}
+	t.fill(w, r, "Error", "Something has gone wrong!")
 
-	data.fill(w, r, "Error", "Something has gone wrong!")
+	w.WriteHeader(t.Code)
 
-	w.WriteHeader(data.Code)
-
-	returnTemplate(w, r, "error", data)
+	returnTemplate(w, r, "error", t)
 }
 
 type errorTemplate struct {
@@ -187,7 +183,6 @@ type errorTemplate struct {
 	Title   string
 	Message string
 	Code    int
-	Error   error
 	DataID  int64 // To add to the page attribute
 }
 
