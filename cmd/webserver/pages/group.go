@@ -63,7 +63,9 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 		app, err := mongo.GetApp(group.AppID, bson.M{"id": 1, "name": 1, "background": 1})
 		if err != nil {
 			err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
-			log.Err(err)
+			if err != nil {
+				log.Err(err, r)
+			}
 		} else {
 			t.setBackground(app, true, true)
 		}

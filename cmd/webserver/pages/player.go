@@ -51,7 +51,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 	idx, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
-		log.Err(r, err)
+		log.Err(err, r)
 		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid Player ID: " + id})
 		return
 	}
@@ -75,7 +75,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 			}
 			err = helpers.IgnoreErrors(err, memcache.ErrInQueue, queue.ErrIsBot)
 			if err != nil {
-				log.Err(err)
+				log.Err(err, r)
 			}
 
 			// Template
@@ -88,7 +88,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 			returnTemplate(w, r, "player_missing", tm)
 		} else {
-			log.Err(r, err)
+			log.Err(err, r)
 			returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the player."})
 		}
 		return
@@ -206,9 +206,9 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 			err = helpers.IgnoreErrors(err, sql.ErrInvalidAppID)
 			if err == mongo.ErrNoDocuments {
 				err = queue.ProduceSteam(queue.SteamMessage{AppIDs: []int{player.BackgroundAppID}})
-				log.Err(err, player.BackgroundAppID)
+				log.Err(err, r, player.BackgroundAppID)
 			} else if err != nil {
-				log.Err(err, player.BackgroundAppID)
+				log.Err(err, r, player.BackgroundAppID)
 			}
 		}()
 	}

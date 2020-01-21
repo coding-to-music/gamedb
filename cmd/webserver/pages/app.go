@@ -63,7 +63,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		log.Err(r, err)
+		log.Err(err, r)
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the app."})
 		return
 	}
@@ -424,7 +424,7 @@ func appItemsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		items, err = mongo.GetAppItems(query.getOffset64(), 100, filter, nil)
 		if err != nil {
-			log.Err(err)
+			log.Err(err, r)
 			return
 		}
 
@@ -591,7 +591,7 @@ func appTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		players, err := mongo.GetPlayersByID(playerIDsSlice, bson.M{"_id": 1, "persona_name": 1, "avatar": 1, "country_code": 1})
 		if err != nil {
-			log.Err(err)
+			log.Err(err, r)
 			return
 		}
 

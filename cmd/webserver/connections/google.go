@@ -21,9 +21,9 @@ func (g googleConnection) getID(r *http.Request, token *oauth2.Token) interface{
 
 	response, err := http.Get("https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + token.AccessToken)
 	if err != nil {
-		log.Err(err)
+		log.Err(err, r)
 		err = session.SetFlash(r, helpers.SessionBad, "Invalid token")
-		log.Err(err)
+		log.Err(err, r)
 		return nil
 	}
 	defer func(response *http.Response) {

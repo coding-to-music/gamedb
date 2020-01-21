@@ -61,7 +61,7 @@ func MiddlewareAuthCheck() func(http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 			loggedIn, err := helpers.IsLoggedIn(r)
-			log.Err(err)
+			log.Err(err, r)
 
 			if loggedIn && err == nil {
 				next.ServeHTTP(w, r)

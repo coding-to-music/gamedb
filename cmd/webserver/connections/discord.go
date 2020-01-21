@@ -19,21 +19,21 @@ func (d discordConnection) getID(r *http.Request, token *oauth2.Token) interface
 
 	discord, err := discordgo.New("Bearer " + token.AccessToken)
 	if err != nil {
-		log.Err(err)
+		log.Err(err, r)
 		return nil
 	}
 
 	discordUser, err := discord.User("@me")
 	if err != nil {
-		log.Err(err)
+		log.Err(err, r)
 		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1003)")
-		log.Err(err)
+		log.Err(err, r)
 		return nil
 	}
 
 	// if !discordUser.Verified { // Seems ot always be false
 	// 	err = session.SetFlash(r, helpers.SessionBad, "This Discord account has not been verified")
-	// 	log.Err(err)
+	// 	log.Err(err, r)
 	// 	return
 	// }
 
@@ -86,7 +86,7 @@ func (d discordConnection) LinkCallbackHandler(w http.ResponseWriter, r *http.Re
 	callbackOAuth(r, d, mongo.EventLinkDiscord, false)
 
 	err := session.Save(w, r)
-	log.Err(err)
+	log.Err(err, r)
 
 	http.Redirect(w, r, "/settings", http.StatusFound)
 }

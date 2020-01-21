@@ -425,20 +425,20 @@ func (t GlobalTemplate) GetCookieFlag(key string) interface{} {
 	if err == http.ErrNoCookie {
 		return false
 	} else if err != nil {
-		log.Err(err)
+		log.Err(err, t.request)
 		return false
 	}
 
 	c.Value, err = url.PathUnescape(c.Value)
 	if err != nil {
-		log.Err(err)
+		log.Err(err, t.request)
 		return false
 	}
 
 	var vals = map[string]interface{}{}
 	err = json.Unmarshal([]byte(c.Value), &vals)
 	if err != nil {
-		log.Err(err)
+		log.Err(err, t.request)
 		return false
 	}
 

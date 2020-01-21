@@ -22,7 +22,7 @@ func badgesHandler(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 	t.Badges, err = mongo.GetBadgeSummaries()
-	log.Err(err)
+	log.Err(err, r)
 
 	returnTemplate(w, r, "badges", t)
 }

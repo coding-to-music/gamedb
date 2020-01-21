@@ -74,7 +74,7 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 
 		codes, err := mongo.GetUniquePlayerCountries()
 		if err != nil {
-			log.Err(err)
+			log.Err(err, r)
 			return
 		}
 
@@ -156,7 +156,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	country := query.getSearchString("country")
 	if len(country) > 4 {
 		_, err = w.Write([]byte("invalid cc"))
-		log.Err(err)
+		log.Err(err, r)
 		return
 	}
 

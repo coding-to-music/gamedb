@@ -68,7 +68,7 @@ func achievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		apps, err = mongo.GetApps(query.getOffset64(), 100, sort, filter2, projection, nil)
 		if err != nil {
-			log.Err(err)
+			log.Err(err, r)
 		}
 
 		countLock.Lock()
