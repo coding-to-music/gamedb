@@ -66,7 +66,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 			appsMap[v] = mongo.App{ID: v}
 		}
 
-		appsSlice, err = mongo.GetAppsByID(appIDs, bson.M{"id": 1, "name": 1, "icon": 1, "type": 1, "platforms": 1, "dlc": 1, "common": 1, "background": 1})
+		appsSlice, err = mongo.GetAppsByID(appIDs, bson.M{"_id": 1, "name": 1, "icon": 1, "type": 1, "platforms": 1, "dlc": 1, "common": 1, "background": 1})
 		if err != nil {
 			log.Err(err, r)
 			return

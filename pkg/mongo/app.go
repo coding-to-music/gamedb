@@ -299,7 +299,7 @@ func (app App) GetAppRelatedApps() (apps []App, err error) {
 
 	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &apps, func() (interface{}, error) {
 
-		return GetAppsByID(app.RelatedAppIDs, bson.M{"id": 1, "name": 1})
+		return GetAppsByID(app.RelatedAppIDs, bson.M{"_id": 1, "name": 1})
 	})
 
 	return apps, err
@@ -316,7 +316,7 @@ func (app App) GetDemos() (demos []App, err error) {
 	var item = memcache.MemcacheAppDemos(app.ID)
 
 	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &demos, func() (interface{}, error) {
-		return GetAppsByID(app.Demos, bson.M{"id": 1, "name": 1})
+		return GetAppsByID(app.Demos, bson.M{"_id": 1, "name": 1})
 	})
 
 	return demos, err
@@ -334,7 +334,7 @@ func (app App) GetDLCs() (apps []App, err error) {
 
 	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &apps, func() (interface{}, error) {
 
-		return GetAppsByID(app.DLC, bson.M{"id": 1, "name": 1})
+		return GetAppsByID(app.DLC, bson.M{"_id": 1, "name": 1})
 	})
 
 	return apps, err

@@ -39,7 +39,7 @@ func appPlayersHandler(messages []*rabbit.Message) {
 		}
 
 		// Get apps
-		apps, err := sql.GetAppsByID(payload.IDs, []string{"id", "twitch_id"})
+		apps, err := mongo.GetAppsByID(payload.IDs, bson.M{"_id": 1, "twitch_id": 1})
 		if err != nil {
 			log.Err(err, payload.IDs)
 			sendToRetryQueue(message)

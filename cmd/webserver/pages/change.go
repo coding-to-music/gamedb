@@ -9,6 +9,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func ChangeRouter() http.Handler {
@@ -41,7 +42,7 @@ func changeHandler(w http.ResponseWriter, r *http.Request) {
 	t := changeTemplate{}
 	t.fill(w, r, change.GetName(), "")
 	t.Change = change
-	t.Apps = map[int]sql.App{}
+	t.Apps = map[int]mongo.App{}
 	t.Packages = map[int]sql.Package{}
 	t.Canonical = change.GetPath()
 
@@ -54,17 +55,16 @@ func changeHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		appsSlice, err := sql.GetAppsByID(change.Apps, []string{"id", "icon", "type", "name"})
+		apps, err := mongo.GetAppsByID(change.Apps, bson.M{"_id": 1, "icon": 1, "type": 1, "name": 1})
 		if err != nil {
 
 			log.Err(err, r)
 			return
 		}
 
-		for _, v := range appsSlice {
+		for _, v := range apps {
 			t.Apps[v.ID] = v
 		}
-
 	}()
 
 	// Get packages
@@ -83,7 +83,6 @@ func changeHandler(w http.ResponseWriter, r *http.Request) {
 		for _, v := range packagesSlice {
 			t.Packages[v.ID] = v
 		}
-
 	}()
 
 	// Wait
@@ -95,6 +94,6 @@ func changeHandler(w http.ResponseWriter, r *http.Request) {
 type changeTemplate struct {
 	GlobalTemplate
 	Change   mongo.Change
-	Apps     map[int]sql.App
+	Apps     map[int]mongo.App
 	Packages map[int]sql.Package
 }

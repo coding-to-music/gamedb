@@ -318,7 +318,7 @@ func updatePlayerGames(player *mongo.Player) error {
 	player.PlayTime = playtime
 
 	// Getting missing price info from MySQL
-	gameRows, err := sql.GetAppsByID(appIDs, []string{"id", "prices", "type"})
+	gameRows, err := mongo.GetAppsByID(appIDs, bson.M{"_id": 1, "prices": 1, "type": 1})
 	if err != nil {
 		return err
 	}
@@ -335,10 +335,9 @@ func updatePlayerGames(player *mongo.Player) error {
 		}
 
 		//
-		prices := gameRow.GetPrices()
-		for code, vv := range prices {
+		for code, vv := range gameRow.Prices {
 
-			vv = prices.Get(code)
+			vv = gameRow.Prices.Get(code)
 
 			appPrices[gameRow.ID][string(code)] = vv.Final
 			if appPrices[gameRow.ID][string(code)] > 0 && playerApps[gameRow.ID].AppTime == 0 {
@@ -522,8 +521,8 @@ func updatePlayerBadges(player *mongo.Player) error {
 	player.BadgeIDs = helpers.Unique(specialBadgeIDSlice)
 
 	// Make map of app rows
-	var appRowsMap = map[int]sql.App{}
-	appRows, err := sql.GetAppsByID(appIDSlice, []string{"id", "name", "icon"})
+	var appRowsMap = map[int]mongo.App{}
+	appRows, err := mongo.GetAppsByID(appIDSlice, bson.M{"_id": 1, "name": 1, "icon": 1})
 	if err != nil {
 		return err
 	}
@@ -830,18 +829,18 @@ func updatePlayerWishlistApps(player *mongo.Player) error {
 	}
 
 	// Fill in data from SQL
-	apps, err := sql.GetAppsByID(appIDs, []string{"id", "name", "icon", "release_state", "release_date", "release_date_unix", "prices"})
+	apps, err := mongo.GetAppsByID(appIDs, bson.M{"_id": 1, "name": 1, "icon": 1, "release_state": 1, "release_date": 1, "release_date_unix": 1, "prices": 1})
 	if err != nil {
 		return err
 	}
 
-	var appsMap = map[int]sql.App{}
+	var appsMap = map[int]mongo.App{}
 	for _, app := range apps {
 		appsMap[app.ID] = app
 	}
 
 	for k, v := range toAdd {
-		toAdd[k].AppPrices = appsMap[v.AppID].GetPrices().Map()
+		toAdd[k].AppPrices = appsMap[v.AppID].Prices.Map()
 		toAdd[k].AppName = appsMap[v.AppID].Name
 		toAdd[k].AppIcon = appsMap[v.AppID].Icon
 		toAdd[k].AppReleaseState = appsMap[v.AppID].ReleaseState

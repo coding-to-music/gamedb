@@ -14,6 +14,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/websockets"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 var discordClient *discordgo.Session
@@ -140,8 +141,10 @@ func getChangesAppsAndPackages(changes []*mongo.Change) (appMap map[int]string, 
 	}
 
 	// Apps & packages for all changes
-	apps, err := sql.GetAppsByID(appIDs, []string{"id", "name"})
-	log.Err(err)
+	apps, err := mongo.GetAppsByID(appIDs, bson.M{"_id": 1, "name": 1})
+	if err != nil {
+		log.Err(err)
+	}
 
 	for _, v := range apps {
 		appMap[v.ID] = v.GetName()

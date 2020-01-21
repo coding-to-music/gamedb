@@ -706,19 +706,6 @@ func (app App) GetDemoIDs() (demos []int) {
 	return demos
 }
 
-func (app App) GetDemos() (demos []App, err error) {
-
-	demos = []App{} // Needed for marshalling into type
-
-	var item = memcache.MemcacheAppDemos(app.ID)
-
-	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &demos, func() (interface{}, error) {
-		return GetAppsByID(app.GetDemoIDs(), []string{"id", "name"})
-	})
-
-	return demos, err
-}
-
 func (app App) GetPlatforms() (platforms []string) {
 
 	platforms = []string{} // Needed for marshalling into array
@@ -772,20 +759,6 @@ func (app App) GetDLCIDs() (dlcs []int) {
 	return dlcs
 }
 
-func (app App) GetDLCs() (apps []App, err error) {
-
-	var item = memcache.MemcacheAppDLC(app.ID)
-
-	apps = []App{} // Needed for marshalling into type
-
-	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &apps, func() (interface{}, error) {
-
-		return GetAppsByID(app.GetDLCIDs(), []string{"id", "name"})
-	})
-
-	return apps, err
-}
-
 func (app App) GetPackageIDs() (packages []int) {
 
 	packages = []int{} // Needed for marshalling into type
@@ -836,25 +809,6 @@ func (app App) GetRelatedOwnerIDs() (apps []helpers.TupleInt) {
 	log.Err(err)
 
 	return apps
-}
-
-func (app App) GetRelatedApps() (apps []App, err error) {
-
-	apps = []App{} // Needed for marshalling into type
-
-	var item = memcache.MemcacheAppRelated(app.ID)
-
-	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &apps, func() (interface{}, error) {
-
-		ids, err := app.GetRelatedIDs()
-		if err != nil {
-			return apps, err
-		}
-
-		return GetAppsByID(ids, []string{"id", "name"})
-	})
-
-	return apps, err
 }
 
 func (app App) GetGenres() (genres []Genre, err error) {
@@ -1142,41 +1096,6 @@ func SearchApps(s string, columns []string) (app App, err error) {
 	}
 
 	return app, nil
-}
-
-func GetAppsByID(ids []int, columns []string) (apps []App, err error) {
-
-	if len(ids) == 0 {
-		return apps, nil
-	}
-
-	db, err := GetMySQLClient()
-	if err != nil {
-		return apps, err
-	}
-
-	ids = helpers.Unique(ids)
-
-	chunks := helpers.ChunkInts(ids, 100)
-	for _, chunk := range chunks {
-
-		db = db.New()
-
-		if len(columns) > 0 {
-			db = db.Select(columns)
-		}
-
-		var appsChunk []App
-		db = db.Where("id IN (?)", chunk).Find(&appsChunk)
-		if db.Error != nil {
-			log.Err(db.Error)
-			return apps, db.Error
-		}
-
-		apps = append(apps, appsChunk...)
-	}
-
-	return apps, nil
 }
 
 func GetAppsWithColumnDepth(column string, depth int, columns []string) (apps []App, err error) {
