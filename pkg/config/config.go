@@ -6,8 +6,6 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
-
-	"github.com/rollbar/rollbar-go"
 )
 
 const EnvProd = "production"
@@ -344,8 +342,8 @@ func IsProd() bool {
 func GetSteamKeyTag() string {
 
 	key := Config.SteamAPIKey.Get()
-	if len(key) > 5 {
-		key = key[len(key)-5:]
+	if len(key) > 7 {
+		key = key[0:7]
 	}
 
 	return strings.ToUpper(key)
@@ -356,8 +354,14 @@ func SetVersion(v string) {
 	if IsLocal() && v == "" {
 		v = "local"
 	}
-
 	Config.CommitHash.SetDefault(v)
+}
 
-	rollbar.SetCodeVersion(v)
+func GetShortVersion() string {
+
+	key := Config.CommitHash.Get()
+	if len(key) > 7 {
+		key = key[0:7]
+	}
+	return key
 }

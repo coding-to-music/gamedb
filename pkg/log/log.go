@@ -155,12 +155,10 @@ var (
 	googleClient *logging.Client
 	logger       *l.Logger
 	defaultLogs  []LogName
-	version      string
 )
 
 func Initialise(logs []LogName, v string) {
 
-	version = v
 	defaultLogs = logs
 
 	if config.IsLocal() {
@@ -182,13 +180,14 @@ func Initialise(logs []LogName, v string) {
 	rollbar.SetEnvironment(config.Config.Environment.Get())
 	rollbar.SetServerHost("gamedb.online")
 	rollbar.SetServerRoot("github.com/gamedb/gamedb")
+	rollbar.SetCodeVersion(config.GetShortVersion())
 
 	// Sentry
 	err = sentry.Init(sentry.ClientOptions{
 		Dsn:              config.Config.SentryDSN.Get(),
 		AttachStacktrace: true,
 		Environment:      config.Config.Environment.Get(),
-		Release:          config.Config.CommitHash.Get(),
+		Release:          config.GetShortVersion(),
 	})
 	if err != nil {
 		fmt.Println(err)
@@ -274,11 +273,12 @@ func log(interfaces ...interface{}) {
 						"env":     config.Config.Environment.Get(),
 						"hash":    config.Config.CommitHash.Get(),
 						"key":     config.GetSteamKeyTag(),
-						"version": version,
+						"version": config.GetShortVersion(),
 					},
 				})
 			}
 
+			// Others
 			var sendToRollbar = true
 			for _, v := range entry.logNames {
 				if v == LogNameRabbit {
