@@ -56,6 +56,17 @@ func salesHandler(w http.ResponseWriter, r *http.Request) {
 		log.Err(err, r)
 	}()
 
+	// Count players
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		t.AppTypes, err = mongo.GetAppTypes()
+		log.Err(err, r)
+	}()
+
 	wg.Add(1)
 	go func() {
 
@@ -103,7 +114,6 @@ func salesHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	t.AppTypes = sql.GetTypesForSelect()
 	t.SaleTypes, err = mongo.GetUniqueSaleTypes()
 	log.Err(err, r)
 
@@ -117,7 +127,7 @@ type salesTemplate struct {
 	UpcomingSale upcomingSale
 	HighestOrder int
 	Count        int64
-	AppTypes     []sql.AppType
+	AppTypes     []mongo.AppTypeCount
 	SaleTypes    []string
 }
 

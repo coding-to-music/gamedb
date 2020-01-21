@@ -32,7 +32,6 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 	// Template
 	t := appsTemplate{}
 	t.fill(w, r, "Apps", "") // Description gets set later
-	t.Types = sql.GetTypesForSelect()
 	t.addAssetChosen()
 	t.addAssetSlider()
 
@@ -47,6 +46,19 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 
 		count, err := mongo.CountDocuments(mongo.CollectionApps, nil, 0)
 		t.Description = "A live database of all " + template.HTML(helpers.ShortHandNumber(count)) + " Steam games."
+		if err != nil {
+			log.Err(err, r)
+		}
+	}()
+
+	// Get apps types
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		t.Types, err = mongo.GetAppTypes()
 		if err != nil {
 			log.Err(err, r)
 		}
@@ -193,7 +205,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 
 type appsTemplate struct {
 	GlobalTemplate
-	Types      []sql.AppType
+	Types      []mongo.AppTypeCount
 	Tags       []sql.Tag
 	Genres     []sql.Genre
 	Categories []sql.Category

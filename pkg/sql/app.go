@@ -1157,46 +1157,6 @@ func (a SteamSpyAppResponse) GetOwners() (ret []int) {
 	return helpers.StringSliceToIntSlice(ownersStrings)
 }
 
-func GetTypesForSelect() []AppType {
-
-	// todo, get from db and cache
-
-	types := []string{
-		"game",
-		"advertising",
-		"application",
-		"config",
-		"demo",
-		"dlc",
-		"episode",
-		"guide",
-		"hardware",
-		"media",
-		"mod",
-		"movie",
-		"music",
-		"series",
-		"tool",
-		"", // Displays as Unknown
-		"video",
-	}
-
-	var ret []AppType
-	for _, v := range types {
-		ret = append(ret, AppType{
-			ID:   v,
-			Name: App{Type: v}.GetType(),
-		})
-	}
-
-	return ret
-}
-
-type AppType struct {
-	ID   string
-	Name string
-}
-
 func GetApp(id int, columns []string) (app App, err error) {
 
 	if id == 0 {

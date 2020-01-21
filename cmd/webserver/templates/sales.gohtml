@@ -93,7 +93,7 @@
                             <label for="app-type">App Type</label>
                             <select multiple data-placeholder="Choose an OS" class="form-control form-control-chosen" id="app-type" name="app-type">
                                 {{ range $key, $value := .AppTypes }}
-                                    <option value="{{ .ID }}">{{ .Name }}</option>
+                                    <option value="{{ .Type }}">{{ .Format }}</option>
                                 {{ end }}
                             </select>
                         </div>

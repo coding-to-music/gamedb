@@ -638,3 +638,66 @@ func TrendingApps() (apps []App, err error) {
 //
 // 	return appsMap, err
 // }
+
+func GetAppTypes() (counts []AppTypeCount, err error) {
+
+	var item = memcache.MemcacheAppTypesCounts
+
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &counts, func() (interface{}, error) {
+
+		client, ctx, err := getMongo()
+		if err != nil {
+			return counts, err
+		}
+
+		pipeline := mongo.Pipeline{
+			{{Key: "$group", Value: bson.M{"_id": "$type", "count": bson.M{"$sum": 1}}}},
+		}
+
+		cur, err := client.Database(MongoDatabase, options.Database()).Collection(CollectionApps.String()).Aggregate(ctx, pipeline, options.Aggregate())
+		if err != nil {
+			return counts, err
+		}
+
+		defer func() {
+			err = cur.Close(ctx)
+			log.Err(err)
+		}()
+
+		var unknown int
+		var counts []AppTypeCount
+		for cur.Next(ctx) {
+
+			var appType AppTypeCount
+			err := cur.Decode(&appType)
+			if err != nil {
+				log.Err(err, appType.Type)
+			}
+
+			if appType.Type == "" {
+				unknown = appType.Count
+			} else {
+				counts = append(counts, appType)
+			}
+		}
+
+		sort.Slice(counts, func(i, j int) bool {
+			return counts[i].Count > counts[j].Count
+		})
+
+		counts = append(counts, AppTypeCount{Count: unknown})
+
+		return counts, cur.Err()
+	})
+
+	return counts, err
+}
+
+type AppTypeCount struct {
+	Type  string `json:"type" bson:"_id"`
+	Count int    `json:"count"`
+}
+
+func (atc AppTypeCount) Format() string {
+	return helpers.GetAppType(atc.Type)
+}

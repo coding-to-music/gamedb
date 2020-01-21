@@ -25,6 +25,7 @@ var (
 	MemcacheGenreKeyNames     = memcache.Item{Key: "genre-key-names", Expiration: 86400 * 7}
 	MemcachePublisherKeyNames = memcache.Item{Key: "publisher-key-names", Expiration: 86400 * 7}
 	MemcacheDeveloperKeyNames = memcache.Item{Key: "developer-key-names", Expiration: 86400 * 7}
+	MemcacheAppTypesCounts    = memcache.Item{Key: "app-types", Expiration: 86400 * 7}
 
 	// Single Rows
 	MemcacheChange        = func(changeID int64) memcache.Item { return memcache.Item{Key: "change-" + strconv.FormatInt(changeID, 10), Expiration: 0} }
