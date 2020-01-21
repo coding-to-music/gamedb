@@ -295,8 +295,8 @@ func log(interfaces ...interface{}) {
 				// Sentry
 				if entry.error != nil {
 					sentry.CaptureException(entry.error)
+					sentry.Flush(time.Second * 5)
 				}
-				sentry.Flush(time.Second * 5)
 			}
 		}
 	}
