@@ -31,8 +31,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 
 	idx, err := strconv.Atoi(id)
 	if err != nil {
-		log.Err(r, err)
-		returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Invalid package ID."})
+		returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Invalid package ID: " + id})
 		return
 	}
 
