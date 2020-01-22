@@ -510,6 +510,10 @@ func GetApp(id int, projection bson.M) (app App, err error) {
 		return app, ErrInvalidAppID
 	}
 
+	if id == 0 {
+		id = 753
+	}
+
 	err = FindOne(CollectionApps, bson.D{{"_id", id}}, nil, projection, &app)
 	if err != nil {
 		return app, err
