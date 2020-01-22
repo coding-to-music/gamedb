@@ -60,7 +60,7 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 	if group.Type == helpers.GroupTypeGame && group.AppID > 0 {
 
 		var err error
-		app, err := mongo.GetApp(group.AppID, bson.M{"id": 1, "name": 1, "background": 1})
+		app, err := mongo.GetApp(group.AppID, bson.M{"_id": 1, "name": 1, "background": 1})
 		if err != nil {
 			err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
 			if err != nil {

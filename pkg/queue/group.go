@@ -127,7 +127,7 @@ func groupsHandler(messages []*rabbit.Message) {
 
 		// Read from MySQL
 		wg.Add(1)
-		var app sql.App
+		var app mongo.App
 		go func() {
 
 			defer wg.Done()
@@ -277,7 +277,7 @@ func updateGameGroup(id string, group *mongo.Group) (foundNumbers bool, err erro
 	if group.Icon == "" && group.URL != "" {
 		i, err := strconv.Atoi(group.URL)
 		if err == nil && i > 0 {
-			app, err := sql.GetApp(i, []string{"id", "icon"})
+			app, err := mongo.GetApp(i, bson.M{"_id": 1, "icon": 1})
 			if err != nil {
 				log.Err(group.URL, err)
 			} else {
@@ -484,10 +484,10 @@ func saveGroup(group mongo.Group) (err error) {
 	return err
 }
 
-func getAppFromGroup(group mongo.Group) (app sql.App, err error) {
+func getAppFromGroup(group mongo.Group) (app mongo.App, err error) {
 
 	if group.Type == helpers.GroupTypeGame && group.AppID > 0 {
-		app, err = sql.GetApp(group.AppID, []string{"id", "group_id"})
+		app, err = mongo.GetApp(group.AppID, bson.M{"_id": 1, "group_id": 1})
 		if err == sql.ErrRecordNotFound {
 			err = ProduceSteam(SteamMessage{AppIDs: []int{group.AppID}})
 		}
@@ -496,7 +496,7 @@ func getAppFromGroup(group mongo.Group) (app sql.App, err error) {
 	return app, err
 }
 
-func saveAppsGroupID(app sql.App, group mongo.Group) (err error) {
+func saveAppsGroupID(app mongo.App, group mongo.Group) (err error) {
 
 	if app.ID == 0 || group.ID == "" || app.GroupID == group.ID || group.Type != helpers.GroupTypeGame {
 		return nil
@@ -508,7 +508,7 @@ func saveAppsGroupID(app sql.App, group mongo.Group) (err error) {
 	}
 
 	// SQL
-	db = db.Model(&app).Updates(map[string]interface{}{
+	db = db.Table("apps").Where("id = ?", app.ID).Updates(map[string]interface{}{
 		"group_id":        group.ID,
 		"group_followers": group.Members,
 	})

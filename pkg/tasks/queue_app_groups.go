@@ -4,8 +4,9 @@ import (
 	"strconv"
 
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
-	"github.com/gamedb/gamedb/pkg/sql"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type QueueAppGroups struct {
@@ -26,19 +27,9 @@ func (c QueueAppGroups) Cron() string {
 
 func (c QueueAppGroups) work() (err error) {
 
-	db, err := sql.GetMySQLClient()
+	apps, err := mongo.GetApps(0, 0, nil, bson.D{{"group_id", bson.M{"$ne": ""}}}, bson.M{"group_id": 1}, nil)
 	if err != nil {
 		return err
-	}
-
-	var apps []sql.App
-
-	db = db.Select([]string{"group_id"})
-	db = db.Where("group_id != ''")
-	db = db.Find(&apps)
-
-	if db.Error != nil {
-		return db.Error
 	}
 
 	for _, app := range apps {

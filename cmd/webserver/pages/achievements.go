@@ -38,23 +38,20 @@ func achievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	query.limit(r)
 
 	var wg sync.WaitGroup
-	var count int64
-	var filtered int64
-	var apps []mongo.App
 	var filter = bson.D{{"achievements_count", bson.M{"$gt": 0}}}
+	var filter2 = filter
 	var countLock sync.Mutex
 
+	var search = query.getSearchString("search")
+	if search != "" {
+		filter2 = append(filter2, bson.E{Key: "$text", Value: bson.M{"$search": search}})
+	}
+
+	var apps []mongo.App
 	wg.Add(1)
 	go func() {
 
 		defer wg.Done()
-
-		var filter2 = filter
-
-		var search = query.getSearchString("search")
-		if search != "" {
-			filter2 = append(filter2, bson.E{Key: "$text", Value: bson.M{"$search": search}})
-		}
 
 		var columns = map[string]string{
 			"1": "achievements_count",
@@ -70,7 +67,15 @@ func achievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Err(err, r)
 		}
+	}()
 
+	var filtered int64
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
 		countLock.Lock()
 		filtered, err = mongo.CountDocuments(mongo.CollectionApps, filter2, 0)
 		countLock.Unlock()
@@ -79,6 +84,7 @@ func achievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
+	var count int64
 	wg.Add(1)
 	go func() {
 

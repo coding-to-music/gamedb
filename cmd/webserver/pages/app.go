@@ -316,11 +316,10 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	var wg sync.WaitGroup
 
-	// Get events
+	// Get articles
 	var articles []mongo.Article
-
 	wg.Add(1)
-	go func(r *http.Request) {
+	go func() {
 
 		defer wg.Done()
 
@@ -334,28 +333,28 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		for k, v := range articles {
 			articles[k].Contents = helpers.BBCodeCompiler.Compile(v.Contents)
 		}
-	}(r)
+	}()
 
 	// Get total
 	var total int
 	wg.Add(1)
-	go func(r *http.Request) {
+	go func() {
 
 		defer wg.Done()
 
 		var err error
-		app, err := sql.GetApp(idx, nil)
+		app, err := mongo.GetApp(idx, bson.M{"news_ids": 1})
 		if err != nil {
 			log.Err(err, r, idx)
 			return
 		}
 
-		total = len(app.GetNewsIDs())
-	}(r)
+		total = len(app.NewsIDs)
+	}()
 
-	// Wait
 	wg.Wait()
 
+	//
 	response := DataTablesResponse{}
 	response.RecordsTotal = int64(total)
 	response.RecordsFiltered = int64(total)

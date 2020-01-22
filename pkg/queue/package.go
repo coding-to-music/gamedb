@@ -19,11 +19,13 @@ import (
 	pubsubHelpers "github.com/gamedb/gamedb/pkg/helpers/pubsub"
 	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/sql/pics"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/gocolly/colly"
 	influx "github.com/influxdata/influxdb1-client"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type PackageMessage struct {
@@ -67,11 +69,6 @@ func packageHandler(messages []*rabbit.Message) {
 			log.Err(gorm.Error, payload.ID)
 			sendToRetryQueue(message)
 			return
-		}
-
-		var newPackage bool
-		if pack.CreatedAt.IsZero() {
-			newPackage = true
 		}
 
 		// Skip if updated in last day, unless its from PICS
@@ -164,10 +161,6 @@ func packageHandler(messages []*rabbit.Message) {
 			memcache.MemcachePackageBundles(pack.ID).Key,
 		}
 
-		if pack.ReleaseDateUnix > time.Now().Unix() && newPackage {
-			keys = append(keys, memcache.MemcacheUpcomingPackagesCount.Key)
-		}
-
 		err = memcache.RemoveKeyFromMemCacheViaPubSub(keys...)
 		log.Err(err)
 
@@ -190,7 +183,7 @@ func updatePackageNameFromApp(pack *sql.Package) (err error) {
 	if pack.AppsCount == 1 {
 
 		appIDs := pack.GetAppIDs()
-		app, err := sql.GetApp(appIDs[0], nil)
+		app, err := mongo.GetApp(appIDs[0], bson.M{"_id": 1, "name": 1, "icon": 1})
 		if err == nil && app.Name != "" && (pack.Name == "" || pack.Name == "Package "+strconv.Itoa(pack.ID) || pack.Name == strconv.Itoa(pack.ID)) {
 
 			pack.SetName(app.GetName(), false)

@@ -202,7 +202,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 			defer wg.Done()
 
 			var err error
-			backgroundApp, err = mongo.GetApp(player.BackgroundAppID, bson.M{"id": 1, "name": 1, "background": 1})
+			backgroundApp, err = mongo.GetApp(player.BackgroundAppID, bson.M{"_id": 1, "name": 1, "background": 1})
 			err = helpers.IgnoreErrors(err, sql.ErrInvalidAppID)
 			if err == mongo.ErrNoDocuments {
 				err = queue.ProduceSteam(queue.SteamMessage{AppIDs: []int{player.BackgroundAppID}})
@@ -220,10 +220,14 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		var err error
-		typeCounts, err = sql.GetAppTypeCounts()
+		counts, err := mongo.GetAppTypes()
 		if err != nil {
 			log.Err(err, r)
+			return
+		}
+
+		for _, v := range counts {
+			typeCounts[v.Format()] = v.Count
 		}
 	}()
 

@@ -12,6 +12,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 // Get prices ajax
@@ -33,7 +34,7 @@ func productPricesAjaxHandler(w http.ResponseWriter, r *http.Request, productTyp
 	var product helpers.ProductInterface
 
 	if productType == helpers.ProductTypeApp {
-		product, err = sql.GetApp(idx, nil)
+		product, err = mongo.GetApp(idx, bson.M{"prices": 1})
 	} else {
 		product, err = sql.GetPackage(idx)
 	}

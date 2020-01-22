@@ -2,14 +2,17 @@ package pages
 
 import (
 	"net/http"
+	"sync"
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
+	"go.mongodb.org/mongo-driver/bson"
 )
+
+var upcomingFilter = bson.D{{"release_date_unix", bson.M{"$gte": time.Now().AddDate(0, 0, -1).Unix()}}}
 
 func UpcomingRouter() http.Handler {
 
@@ -21,70 +24,105 @@ func UpcomingRouter() http.Handler {
 
 func upcomingHandler(w http.ResponseWriter, r *http.Request) {
 
-	var err error
-
-	// Template
 	t := upcomingTemplate{}
 	t.fill(w, r, "Upcoming", "The apps you have to look forward to!")
 
-	t.Apps, err = countUpcomingApps()
-	log.Err(err, r)
+	var err error
+	t.Apps, err = mongo.CountDocuments(mongo.CollectionApps, upcomingFilter, 86400)
+	if err != nil {
+		log.Err(err, r)
+	}
 
 	returnTemplate(w, r, "upcoming", t)
 }
 
 type upcomingTemplate struct {
 	GlobalTemplate
-	Apps int
+	Apps int64
 }
 
 func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
 	err := query.fillFromURL(r.URL.Query())
-	log.Err(err, r)
-
-	db, err := sql.GetMySQLClient()
 	if err != nil {
 		log.Err(err, r)
-		return
 	}
 
+	filter2 := upcomingFilter
 	search := query.getSearchString("search")
-	filtered := 0
-
-	db = db.Model(sql.App{})
-	db = db.Select([]string{"id", "name", "icon", "type", "prices", "release_date_unix", "group_id", "group_followers"})
-	db = db.Where("release_date_unix >= ?", time.Now().AddDate(0, 0, -1).Unix())
 	if search != "" {
-		db = db.Where("name LIKE ?", "%"+search+"%")
-		db = db.Count(&filtered)
-		log.Err(db.Error, r)
+		filter2 = append(filter2, bson.E{Key: "$text", Value: bson.M{"$search": search}})
 	}
 
-	sortCols := map[string]string{
-		"1": "group_followers $dir, name ASC",
-		"4": "release_date_unix $dir, group_followers DESC, name ASC",
-	}
-	db = query.setOrderOffsetGorm(db, sortCols, "4")
+	var wg sync.WaitGroup
+	var countLock sync.Mutex
 
-	db = db.Limit(100)
+	// Count
+	var apps []mongo.App
+	wg.Add(1)
+	go func() {
 
-	var apps []sql.App
-	db = db.Find(&apps)
-	log.Err(db.Error, r)
+		defer wg.Done()
 
+		var err error
+
+		columns := map[string]string{
+			"1": "group_followers $dir, name ASC",
+			"4": "release_date_unix $dir, group_followers DESC, name ASC",
+		}
+
+		projection := bson.M{"id": 1, "name": 1, "icon": 1, "type": 1, "prices": 1, "release_date_unix": 1, "group_id": 1, "group_followers": 1}
+		order := query.getOrderMongo(columns)
+		offset := query.getOffset64()
+
+		apps, err = mongo.GetApps(offset, 100, order, filter2, projection, nil)
+		if err != nil {
+			log.Err(err, r)
+		}
+	}()
+
+	// Get filtered count
+	var filtered int64
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		countLock.Lock()
+		filtered, err = mongo.CountDocuments(mongo.CollectionApps, filter2, 0)
+		countLock.Unlock()
+		if err != nil {
+			log.Err(err, r)
+		}
+	}()
+
+	// Get count
+	var count int64
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		countLock.Lock()
+		count, err = mongo.CountDocuments(mongo.CollectionApps, upcomingFilter, 86400)
+		countLock.Unlock()
+		if err != nil {
+			log.Err(err, r)
+		}
+	}()
+
+	wg.Wait()
+
+	//
 	var code = helpers.GetProductCC(r)
 
-	count, err := countUpcomingApps()
-	log.Err(err)
-
 	response := DataTablesResponse{}
-	response.RecordsTotal = int64(count)
-	response.RecordsFiltered = int64(count)
-	if search != "" {
-		response.RecordsFiltered = int64(filtered)
-	}
+	response.RecordsTotal = count
+	response.RecordsFiltered = count
+	response.RecordsFiltered = filtered
 	response.Draw = query.Draw
 
 	for _, app := range apps {
@@ -105,27 +143,4 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response.output(w, r)
-}
-
-func countUpcomingApps() (count int, err error) {
-
-	var item = memcache.MemcacheUpcomingAppsCount
-
-	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
-
-		var count int
-
-		gorm, err := sql.GetMySQLClient()
-		if err != nil {
-			return count, err
-		}
-
-		gorm = gorm.Model(sql.App{})
-		gorm = gorm.Where("release_date_unix >= ?", time.Now().AddDate(0, 0, -1).Unix())
-		gorm = gorm.Count(&count)
-
-		return count, gorm.Error
-	})
-
-	return count, err
 }

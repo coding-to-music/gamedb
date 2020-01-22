@@ -14,7 +14,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func AppsRouter() http.Handler {
@@ -217,208 +216,200 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := DataTablesQuery{}
 	err := query.fillFromURL(r.URL.Query())
-	log.Err(err, r)
+	if err != nil {
+		log.Err(err, r)
+	}
 
 	//
-	var code = helpers.GetProductCC(r)
 	var wg sync.WaitGroup
+	var code = helpers.GetProductCC(r)
+	var filter = bson.D{}
+	var countLock sync.Mutex
+
+	// Types
+	types := query.getSearchSlice("types")
+	if len(types) > 0 {
+
+		a := bson.A{}
+		for _, v := range types {
+			a = append(a, v)
+		}
+
+		filter = append(filter, bson.E{Key: "type", Value: bson.M{"$in": a}})
+	}
+
+	// Tags
+	tags := query.getSearchSlice("tags")
+	if len(tags) > 0 {
+
+		a := bson.A{}
+		for _, v := range tags {
+			i, err := strconv.Atoi(v)
+			if err == nil {
+				a = append(a, i)
+			}
+		}
+
+		filter = append(filter, bson.E{Key: "tags", Value: bson.M{"$in": a}})
+	}
+
+	// Genres
+	genres := query.getSearchSlice("genres")
+	if len(genres) > 0 {
+
+		a := bson.A{}
+		for _, v := range genres {
+			i, err := strconv.Atoi(v)
+			if err == nil {
+				a = append(a, i)
+			}
+		}
+
+		filter = append(filter, bson.E{Key: "genres", Value: bson.M{"$in": a}})
+	}
+
+	// Developers
+	developers := query.getSearchSlice("developers")
+	if len(developers) > 0 {
+
+		a := bson.A{}
+		for _, v := range developers {
+			i, err := strconv.Atoi(v)
+			if err == nil {
+				a = append(a, i)
+			}
+		}
+
+		filter = append(filter, bson.E{Key: "developers", Value: bson.M{"$in": a}})
+	}
+
+	// Publishers
+	publishers := query.getSearchSlice("publishers")
+	if len(publishers) > 0 {
+
+		a := bson.A{}
+		for _, v := range publishers {
+			i, err := strconv.Atoi(v)
+			if err == nil {
+				a = append(a, i)
+			}
+		}
+
+		filter = append(filter, bson.E{Key: "publishers", Value: bson.M{"$in": a}})
+	}
+
+	// Categories
+	categories := query.getSearchSlice("categories")
+	if len(categories) > 0 {
+
+		a := bson.A{}
+		for _, v := range categories {
+			i, err := strconv.Atoi(v)
+			if err == nil {
+				a = append(a, i)
+			}
+		}
+
+		filter = append(filter, bson.E{Key: "categories", Value: bson.M{"$in": a}})
+	}
+
+	// Platforms
+	platforms := query.getSearchSlice("platforms")
+	if len(platforms) > 0 {
+
+		a := bson.A{}
+		for _, v := range platforms {
+			a = append(a, v)
+		}
+
+		filter = append(filter, bson.E{Key: "platforms", Value: bson.M{"$in": a}})
+	}
+
+	// Price range
+	prices := query.getSearchSlice("price")
+	if len(prices) == 2 {
+
+		low, err := strconv.Atoi(strings.Replace(prices[0], ".", "", 1))
+		log.Err(err, r)
+
+		high, err := strconv.Atoi(strings.Replace(prices[1], ".", "", 1))
+		log.Err(err, r)
+
+		var column = "prices." + string(code) + ".final"
+
+		if low > 0 {
+			filter = append(filter, bson.E{Key: column, Value: bson.M{"$gte": low}})
+		}
+		if high < 100*100 {
+			filter = append(filter, bson.E{Key: column, Value: bson.M{"$lte": high}})
+		}
+	}
+
+	// Score range
+	scores := query.getSearchSlice("score")
+	if len(scores) == 2 {
+
+		low, err := strconv.Atoi(strings.TrimSuffix(scores[0], ".00"))
+		log.Err(err, r)
+
+		high, err := strconv.Atoi(strings.TrimSuffix(scores[1], ".00"))
+		log.Err(err, r)
+
+		if low > 0 {
+			filter = append(filter, bson.E{Key: "reviews_score", Value: bson.M{"$gte": low}})
+		}
+		if high < 100 {
+			filter = append(filter, bson.E{Key: "reviews_score", Value: bson.M{"$lte": high}})
+		}
+	}
+
+	// Search
+	search := query.getSearchString("search")
+	if search != "" {
+		filter = append(filter, bson.E{Key: "$text", Value: bson.M{"$search": search}})
+	}
 
 	// Get apps
 	var apps []mongo.App
-	var recordsFiltered int64
-
 	wg.Add(1)
 	go func() {
 
 		defer wg.Done()
 
-		var filter = bson.D{}
-		var ops = options.Find()
-
-		// Types
-		types := query.getSearchSlice("types")
-		if len(types) > 0 {
-
-			a := bson.A{}
-			for _, v := range types {
-				a = append(a, v)
-			}
-
-			filter = append(filter, bson.E{Key: "type", Value: bson.M{"$in": a}})
+		cols := map[string]string{
+			"2": "player_peak_week",
+			"3": "group_followers",
+			"4": "reviews_score",
+			"5": "prices." + string(code) + ".final",
 		}
 
-		// Tags
-		tags := query.getSearchSlice("tags")
-		if len(tags) > 0 {
+		projection := bson.M{"id": 1, "name": 1, "icon": 1, "reviews_score": 1, "prices": 1, "player_peak_week": 1, "group_followers": 1}
+		order := query.getOrderMongo(cols)
+		offset := query.getOffset64()
 
-			a := bson.A{}
-			for _, v := range tags {
-				i, err := strconv.Atoi(v)
-				if err == nil {
-					a = append(a, i)
-				}
-			}
-
-			filter = append(filter, bson.E{Key: "tags", Value: bson.M{"$in": a}})
-		}
-
-		// Genres
-		genres := query.getSearchSlice("genres")
-		if len(genres) > 0 {
-
-			a := bson.A{}
-			for _, v := range genres {
-				i, err := strconv.Atoi(v)
-				if err == nil {
-					a = append(a, i)
-				}
-			}
-
-			filter = append(filter, bson.E{Key: "genres", Value: bson.M{"$in": a}})
-		}
-
-		// Developers
-		developers := query.getSearchSlice("developers")
-		if len(developers) > 0 {
-
-			a := bson.A{}
-			for _, v := range developers {
-				i, err := strconv.Atoi(v)
-				if err == nil {
-					a = append(a, i)
-				}
-			}
-
-			filter = append(filter, bson.E{Key: "developers", Value: bson.M{"$in": a}})
-		}
-
-		// Publishers
-		publishers := query.getSearchSlice("publishers")
-		if len(publishers) > 0 {
-
-			a := bson.A{}
-			for _, v := range publishers {
-				i, err := strconv.Atoi(v)
-				if err == nil {
-					a = append(a, i)
-				}
-			}
-
-			filter = append(filter, bson.E{Key: "publishers", Value: bson.M{"$in": a}})
-		}
-
-		// Categories
-		categories := query.getSearchSlice("categories")
-		if len(categories) > 0 {
-
-			a := bson.A{}
-			for _, v := range categories {
-				i, err := strconv.Atoi(v)
-				if err == nil {
-					a = append(a, i)
-				}
-			}
-
-			filter = append(filter, bson.E{Key: "categories", Value: bson.M{"$in": a}})
-		}
-
-		// Platforms
-		platforms := query.getSearchSlice("platforms")
-		if len(platforms) > 0 {
-
-			a := bson.A{}
-			for _, v := range platforms {
-				a = append(a, v)
-			}
-
-			filter = append(filter, bson.E{Key: "platforms", Value: bson.M{"$in": a}})
-		}
-
-		// Price range
-		prices := query.getSearchSlice("price")
-		if len(prices) == 2 {
-
-			low, err := strconv.Atoi(strings.Replace(prices[0], ".", "", 1))
+		apps, err = mongo.GetApps(offset, 100, order, filter, projection, nil)
+		if err != nil {
 			log.Err(err, r)
-
-			high, err := strconv.Atoi(strings.Replace(prices[1], ".", "", 1))
-			log.Err(err, r)
-
-			var column = "prices." + string(code) + ".final"
-
-			if low > 0 {
-				filter = append(filter, bson.E{Key: column, Value: bson.M{"$gte": low}})
-			}
-			if high < 100*100 {
-				filter = append(filter, bson.E{Key: column, Value: bson.M{"$lte": high}})
-			}
 		}
-
-		// Score range
-		scores := query.getSearchSlice("score")
-		if len(scores) == 2 {
-
-			low, err := strconv.Atoi(strings.TrimSuffix(scores[0], ".00"))
-			log.Err(err, r)
-
-			high, err := strconv.Atoi(strings.TrimSuffix(scores[1], ".00"))
-			log.Err(err, r)
-
-			if low > 0 {
-				filter = append(filter, bson.E{Key: "reviews_score", Value: bson.M{"$gte": low}})
-			}
-			if high < 100 {
-				filter = append(filter, bson.E{Key: "reviews_score", Value: bson.M{"$lte": high}})
-			}
-		}
-
-		// Search
-		search := query.getSearchString("search")
-		if search != "" {
-			filter = append(filter, bson.E{Key: "$text", Value: bson.M{"$search": search}})
-		}
-
-		var wg2 sync.WaitGroup
-
-		// Count
-		wg2.Add(1)
-		go func() {
-
-			defer wg2.Done()
-
-			recordsFiltered, err = mongo.CountDocuments(mongo.CollectionApps, filter, 10)
-			if err != nil {
-				log.Err(err, r)
-			}
-		}()
-
-		// Get apps
-		wg2.Add(1)
-		go func() {
-
-			defer wg2.Done()
-
-			cols := map[string]string{
-				"2": "player_peak_week",
-				"3": "group_followers",
-				"4": "reviews_score",
-				"5": "prices." + string(code) + ".final",
-			}
-
-			projection := bson.M{"id": 1, "name": 1, "icon": 1, "reviews_score": 1, "prices": 1, "player_peak_week": 1, "group_followers": 1}
-			order := query.getOrderMongo(cols)
-			offset := query.getOffset64()
-
-			apps, err = mongo.GetApps(offset, 100, order, filter, projection, ops)
-			if err != nil {
-				log.Err(err, r)
-			}
-		}()
-
-		wg2.Wait()
 	}()
 
-	// Get total
+	// Get filtered count
+	var recordsFiltered int64
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		countLock.Lock()
+		recordsFiltered, err = mongo.CountDocuments(mongo.CollectionApps, filter, 10)
+		countLock.Unlock()
+		if err != nil {
+			log.Err(err, r)
+		}
+	}()
+
+	// Get count
 	var count int64
 	wg.Add(1)
 	go func() {
@@ -426,9 +417,12 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
+		countLock.Lock()
 		count, err = mongo.CountDocuments(mongo.CollectionApps, nil, 0)
-		log.Err(err, r)
-
+		countLock.Unlock()
+		if err != nil {
+			log.Err(err, r)
+		}
 	}()
 
 	// Wait

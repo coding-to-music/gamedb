@@ -70,17 +70,14 @@ func appHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		app := sql.App{}
-		gorm = gorm.FirstOrInit(&app, sql.App{ID: id})
-		if gorm.Error != nil {
+		app, err := mongo.GetApp(id, nil)
+		if err == mongo.ErrNoDocuments {
+			app = mongo.App{}
+			app.ID = id
+		} else if err != nil {
 			log.Err(gorm.Error, payload.ID)
 			sendToRetryQueue(message)
 			continue
-		}
-
-		var newApp bool
-		if app.CreatedAt.IsZero() {
-			newApp = true
 		}
 
 		// Skip if updated in last day, unless its from PICS
@@ -332,26 +329,20 @@ func appHandler(messages []*rabbit.Message) {
 
 			defer wg.Done()
 
-			var err error
-
-			if app.ReleaseDateUnix > time.Now().Unix() && newApp {
-
-				err = memcache.RemoveKeyFromMemCacheViaPubSub(
-					memcache.MemcacheUpcomingAppsCount.Key,
-					memcache.MemcacheAppInQueue(app.ID).Key,
-					memcache.MemcacheAppTags(app.ID).Key,
-					memcache.MemcacheAppCategories(app.ID).Key,
-					memcache.MemcacheAppGenres(app.ID).Key,
-					memcache.MemcacheAppDemos(app.ID).Key,
-					memcache.MemcacheAppRelated(app.ID).Key,
-					memcache.MemcacheAppDLC(app.ID).Key,
-					memcache.MemcacheAppDevelopers(app.ID).Key,
-					memcache.MemcacheAppPublishers(app.ID).Key,
-					memcache.MemcacheAppBundles(app.ID).Key,
-					memcache.MemcacheAppPackages(app.ID).Key,
-				)
-				log.Err(err, id)
-			}
+			err := memcache.RemoveKeyFromMemCacheViaPubSub(
+				memcache.MemcacheAppInQueue(app.ID).Key,
+				memcache.MemcacheAppTags(app.ID).Key,
+				memcache.MemcacheAppCategories(app.ID).Key,
+				memcache.MemcacheAppGenres(app.ID).Key,
+				memcache.MemcacheAppDemos(app.ID).Key,
+				memcache.MemcacheAppRelated(app.ID).Key,
+				memcache.MemcacheAppDLC(app.ID).Key,
+				memcache.MemcacheAppDevelopers(app.ID).Key,
+				memcache.MemcacheAppPublishers(app.ID).Key,
+				memcache.MemcacheAppBundles(app.ID).Key,
+				memcache.MemcacheAppPackages(app.ID).Key,
+			)
+			log.Err(err, id)
 		}()
 
 		// Send websocket
@@ -389,10 +380,10 @@ func appHandler(messages []*rabbit.Message) {
 	}
 }
 
-func updateAppPICS(app *sql.App, message *rabbit.Message, payload AppMessage) (err error) {
+func updateAppPICS(app *mongo.App, message *rabbit.Message, payload AppMessage) (err error) {
 
 	if payload.ChangeNumber == 0 || app.ChangeNumber >= payload.ChangeNumber {
-		return nil
+		// return nil
 	}
 
 	var kv = vdf.FromMap(payload.VDF)
@@ -405,17 +396,17 @@ func updateAppPICS(app *sql.App, message *rabbit.Message, payload AppMessage) (e
 	}
 
 	// Reset values that might be removed
-	app.Common = ""
-	app.Tags = ""
-	app.Extended = ""
-	app.Config = ""
-	app.Launch = ""
-	app.Depots = ""
+	app.Common = map[string]string{}
+	app.Tags = []int{}
+	app.Extended = map[string]string{}
+	app.Config = map[string]string{}
+	app.Launch = []pics.PICSAppConfigLaunchItem{}
+	app.Depots = pics.Depots{}
 	app.PublicOnly = false
-	app.UFS = ""
-	app.Install = ""
-	app.Localization = ""
-	app.SystemRequirements = ""
+	app.UFS = map[string]string{}
+	app.Install = map[string]interface{}{}
+	app.Localization = pics.Localisation{}
+	app.SystemRequirements = map[string]interface{}{}
 
 	if len(kv.Children) == 1 && kv.Children[0].Key == "appinfo" {
 		kv = kv.Children[0]
@@ -457,51 +448,23 @@ func updateAppPICS(app *sql.App, message *rabbit.Message, payload AppMessage) (e
 				common[vv.Key] = vv.String()
 			}
 
-			b, err := json.Marshal(common)
-			if err != nil {
-				return err
-			}
-			app.Common = string(b)
-
-			b, err = json.Marshal(tags)
-			if err != nil {
-				return err
-			}
-			app.Tags = string(b)
+			app.Common = common
+			app.Tags = tags
 
 		case "extended":
 
-			b, err := json.Marshal(child.GetChildrenAsMap())
-			if err != nil {
-				return err
-			}
-
-			app.Extended = string(b)
+			app.Extended = child.GetChildrenAsMap()
 
 		case "config":
 
 			c, launch := getAppConfig(child)
 
-			b, err := json.Marshal(c)
-			if err != nil {
-				return err
-			}
-			app.Config = string(b)
-
-			b, err = json.Marshal(launch)
-			if err != nil {
-				return err
-			}
-			app.Launch = string(b)
+			app.Config = c
+			app.Launch = launch
 
 		case "depots":
 
-			b, err := json.Marshal(getAppDepots(child))
-			if err != nil {
-				return err
-			}
-
-			app.Depots = string(b)
+			app.Depots = getAppDepots(child)
 
 		case "public_only":
 
@@ -516,16 +479,11 @@ func updateAppPICS(app *sql.App, message *rabbit.Message, payload AppMessage) (e
 				ufs[vv.Key] = vv.String()
 			}
 
-			b, err := json.Marshal(ufs)
-			if err != nil {
-				return err
-			}
-
-			app.UFS = string(b)
+			app.UFS = ufs
 
 		case "install":
 
-			app.Install = child.String()
+			app.Install = vdf.ToMapInner(child)
 
 		case "localization":
 
@@ -549,15 +507,15 @@ func updateAppPICS(app *sql.App, message *rabbit.Message, payload AppMessage) (e
 				}
 			}
 
-			app.SetLocalization(localization)
+			app.Localization = localization
 
 		case "sysreqs":
 
-			app.SystemRequirements = child.String()
+			app.SystemRequirements = vdf.ToMapInner(child)
 
 		case "albummetadata":
 
-			app.AlbumMetaData = child.String()
+			app.AlbumMetaData = vdf.ToMapInner(child)
 
 		default:
 			log.Warning(child.Key + " field in app PICS ignored (App: " + strconv.Itoa(app.ID) + ")")
@@ -567,7 +525,7 @@ func updateAppPICS(app *sql.App, message *rabbit.Message, payload AppMessage) (e
 	return nil
 }
 
-func updateAppDetails(app *sql.App) (err error) {
+func updateAppDetails(app *mongo.App) (err error) {
 
 	prices := helpers.ProductPrices{}
 
@@ -609,12 +567,7 @@ func updateAppDetails(app *sql.App) (err error) {
 				})
 			}
 
-			b, err := json.Marshal(images)
-			if err != nil {
-				return err
-			}
-
-			app.Screenshots = string(b)
+			app.Screenshots = images
 
 			// Movies
 			var videos []helpers.AppVideo
@@ -626,29 +579,14 @@ func updateAppDetails(app *sql.App) (err error) {
 				})
 			}
 
-			b, err = json.Marshal(videos)
-			if err != nil {
-				return err
-			}
-
-			app.Movies = string(b)
+			app.Movies = videos
 
 			// DLC
-			b, err = json.Marshal(response.Data.DLC)
-			if err != nil {
-				return err
-			}
-
-			app.DLC = string(b)
+			app.DLC = response.Data.DLC
 			app.DLCCount = len(response.Data.DLC)
 
 			// Packages
-			b, err = json.Marshal(response.Data.Packages)
-			if err != nil {
-				return err
-			}
-
-			app.Packages = string(b)
+			app.Packages = response.Data.Packages
 
 			// Publishers
 			gorm, err := sql.GetMySQLClient()
@@ -666,11 +604,7 @@ func updateAppDetails(app *sql.App) (err error) {
 				publisherIDs = append(publisherIDs, publisher.ID)
 			}
 
-			b, err = json.Marshal(publisherIDs)
-			if err != nil {
-				return err
-			}
-			app.Publishers = string(b)
+			app.Publishers = publisherIDs
 
 			// Developers
 			gorm, err = sql.GetMySQLClient()
@@ -688,24 +622,15 @@ func updateAppDetails(app *sql.App) (err error) {
 				developerIDs = append(developerIDs, developer.ID)
 			}
 
-			b, err = json.Marshal(developerIDs)
-			if err != nil {
-				return err
-			}
-			app.Developers = string(b)
+			app.Developers = developerIDs
 
 			// Categories
-			var categories []int8
+			var categories []int
 			for _, v := range response.Data.Categories {
-				categories = append(categories, v.ID)
+				categories = append(categories, int(v.ID))
 			}
 
-			b, err = json.Marshal(categories)
-			if err != nil {
-				return err
-			}
-
-			app.Categories = string(b)
+			app.Categories = categories
 
 			// Genres
 			gorm, err = sql.GetMySQLClient()
@@ -723,11 +648,7 @@ func updateAppDetails(app *sql.App) (err error) {
 				genreIDs = append(genreIDs, genre.ID)
 			}
 
-			b, err = json.Marshal(genreIDs)
-			if err != nil {
-				return err
-			}
-			app.Genres = string(b)
+			app.Genres = genreIDs
 
 			// Platforms
 			var platforms []string
@@ -742,12 +663,7 @@ func updateAppDetails(app *sql.App) (err error) {
 			}
 
 			// Platforms
-			b, err = json.Marshal(platforms)
-			if err != nil {
-				return err
-			}
-
-			app.Platforms = string(b)
+			app.Platforms = platforms
 
 			// Demos
 			var demos []int
@@ -755,11 +671,7 @@ func updateAppDetails(app *sql.App) (err error) {
 				demos = append(demos, int(v.AppID))
 			}
 
-			b, err = json.Marshal(demos)
-			if err != nil {
-				return err
-			}
-			app.DemoIDs = string(b)
+			app.Demos = demos
 
 			// Images
 			var wg sync.WaitGroup
@@ -772,8 +684,7 @@ func updateAppDetails(app *sql.App) (err error) {
 
 				app.Background = ""
 
-				common := app.GetCommon()
-				if assets, ok := common["library_assets"]; ok {
+				if assets, ok := app.Common["library_assets"]; ok {
 
 					assetMap := map[string]interface{}{}
 					err := helpers.Unmarshal([]byte(assets), &assetMap)
@@ -826,17 +737,12 @@ func updateAppDetails(app *sql.App) (err error) {
 		}
 	}
 
-	b, err := json.Marshal(prices)
-	if err != nil {
-		return err
-	}
-
-	app.Prices = string(b)
+	app.Prices = prices
 
 	return nil
 }
 
-func updateAppAchievements(app *sql.App, schema steam.SchemaForGame) error {
+func updateAppAchievements(app *mongo.App, schema steam.SchemaForGame) error {
 
 	app.AchievementsCount = len(schema.AvailableGameStats.Achievements)
 
@@ -882,17 +788,12 @@ func updateAppAchievements(app *sql.App, schema steam.SchemaForGame) error {
 		})
 	}
 
-	b, err = json.Marshal(achievements)
-	if err != nil {
-		return err
-	}
-
-	app.Achievements = string(b)
+	app.Achievements = achievements
 
 	return nil
 }
 
-func updateAppSchema(app *sql.App) (schema steam.SchemaForGame, err error) {
+func updateAppSchema(app *mongo.App) (schema steam.SchemaForGame, err error) {
 
 	resp, b, err := steamHelper.GetSteam().GetSchemaForGame(app.ID)
 	err = steamHelper.AllowSteamCodes(err, b, []int{400, 403})
@@ -909,18 +810,13 @@ func updateAppSchema(app *sql.App) (schema steam.SchemaForGame, err error) {
 		})
 	}
 
-	b, err = json.Marshal(stats)
-	if err != nil {
-		return schema, err
-	}
-
-	app.Stats = string(b)
+	app.Stats = stats
 	app.Version = resp.Version
 
 	return resp, nil
 }
 
-func updateAppItems(app *sql.App) (archive []steam.ItemDefArchive, err error) {
+func updateAppItems(app *mongo.App) (archive []steam.ItemDefArchive, err error) {
 
 	meta, _, err := steamHelper.GetSteam().GetItemDefMeta(app.ID)
 	if err != nil {
@@ -941,15 +837,13 @@ func updateAppItems(app *sql.App) (archive []steam.ItemDefArchive, err error) {
 	return archive, nil
 }
 
-func updateAppNews(app *sql.App) error {
+func updateAppNews(app *mongo.App) error {
 
 	resp, b, err := steamHelper.GetSteam().GetNews(app.ID, 10000)
 	err = steamHelper.AllowSteamCodes(err, b, []int{403})
 	if err != nil {
 		return err
 	}
-
-	ids := app.GetNewsIDs()
 
 	var documents []mongo.Document
 	for _, v := range resp.Items {
@@ -958,7 +852,7 @@ func updateAppNews(app *sql.App) error {
 			continue
 		}
 
-		if helpers.SliceHasInt64(ids, int64(v.GID)) {
+		if helpers.SliceHasInt64(app.NewsIDs, int64(v.GID)) {
 			continue
 		}
 
@@ -979,7 +873,7 @@ func updateAppNews(app *sql.App) error {
 		news.AppIcon = app.GetIcon()
 
 		documents = append(documents, news)
-		ids = append(ids, int64(v.GID))
+		app.NewsIDs = append(app.NewsIDs, int64(v.GID))
 	}
 
 	_, err = mongo.InsertMany(mongo.CollectionAppArticles, documents)
@@ -987,17 +881,11 @@ func updateAppNews(app *sql.App) error {
 		return err
 	}
 
-	// Update app column
-	b, err = json.Marshal(helpers.Unique64(ids))
-	if err != nil {
-		return err
-	}
-
-	app.NewsIDs = string(b)
+	app.NewsIDs = helpers.Unique64(app.NewsIDs)
 	return nil
 }
 
-func updateAppReviews(app *sql.App) error {
+func updateAppReviews(app *mongo.App) error {
 
 	resp, b, err := steamHelper.GetSteam().GetReviews(app.ID)
 	err = steamHelper.AllowSteamCodes(err, b, nil)
@@ -1073,17 +961,12 @@ func updateAppReviews(app *sql.App) error {
 		return reviews.Reviews[i].VotesGood > reviews.Reviews[j].VotesGood
 	})
 
-	// Save to App
-	b, err = json.Marshal(reviews)
-	if err != nil {
-		return err
-	}
+	app.Reviews = reviews
 
-	app.Reviews = string(b)
 	return nil
 }
 
-func updateAppSteamSpy(app *sql.App) error {
+func updateAppSteamSpy(app *mongo.App) error {
 
 	query := url.Values{}
 	query.Set("request", "appdetails")
@@ -1153,19 +1036,14 @@ func updateAppSteamSpy(app *sql.App) error {
 		ss.SSOwnersHigh = owners[1]
 	}
 
-	b, err := json.Marshal(ss)
-	if err != nil {
-		return err
-	}
-
-	app.SteamSpy = string(b)
+	app.SteamSpy = ss
 
 	return nil
 }
 
 var appStorePage = regexp.MustCompile(`store\.steampowered\.com/app/[0-9]+$`)
 
-func scrapeApp(app *sql.App) (sales []mongo.Sale, err error) {
+func scrapeApp(app *mongo.App) (sales []mongo.Sale, err error) {
 
 	// This app causes infinite redirects..
 	if app.ID == 12820 {
@@ -1369,19 +1247,14 @@ func scrapeApp(app *sql.App) (sales []mongo.Sale, err error) {
 		}
 	}
 
-	b, err := json.Marshal(bundleIntIDs)
-	if err != nil {
-		return sales, err
-	}
-
-	app.BundleIDs = string(b)
+	app.Bundles = bundleIntIDs
 
 	return sales, nil
 }
 
 var appStoreSimilarPage = regexp.MustCompile(`store\.steampowered\.com/recommended/morelike/app/[0-9]+$`)
 
-func scrapeSimilar(app *sql.App) (err error) {
+func scrapeSimilar(app *mongo.App) (err error) {
 
 	var relatedAppIDs []int
 
@@ -1425,25 +1298,17 @@ func scrapeSimilar(app *sql.App) (err error) {
 		return err
 	}
 
-	// Save related apps
-	b, err := json.Marshal(relatedAppIDs)
-	if err != nil {
-		return err
-	}
-
-	app.RelatedAppIDs = string(b)
+	app.RelatedAppIDs = relatedAppIDs
 
 	return nil
 }
 
-func saveAppToInflux(app sql.App) (err error) {
-
-	reviews := app.GetReviews()
+func saveAppToInflux(app mongo.App) (err error) {
 
 	fields := map[string]interface{}{
 		"reviews_score":    app.ReviewsScore,
-		"reviews_positive": reviews.Positive,
-		"reviews_negative": reviews.Negative,
+		"reviews_positive": app.Reviews.Positive,
+		"reviews_negative": app.Reviews.Negative,
 	}
 
 	price := app.GetPrice(steam.ProductCCUS)
@@ -1466,7 +1331,7 @@ func saveAppToInflux(app sql.App) (err error) {
 	return err
 }
 
-func updateAppTwitch(app *sql.App) error {
+func updateAppTwitch(app *mongo.App) error {
 
 	if app.Type != "game" {
 		return nil
@@ -1520,7 +1385,7 @@ func getCurrentAppItems(appID int) (items []int, err error) {
 	return items, err
 }
 
-func updateAppPlaytimeStats(app *sql.App) (err error) {
+func updateAppPlaytimeStats(app *mongo.App) (err error) {
 
 	// Playtime
 	players, err := mongo.GetAppPlayTimes(app.ID)
@@ -1547,7 +1412,7 @@ func updateAppPlaytimeStats(app *sql.App) (err error) {
 	return nil
 }
 
-func getWishlistCount(app *sql.App) (err error) {
+func getWishlistCount(app *mongo.App) (err error) {
 
 	apps, err := mongo.GetPlayerWishlistAppsByApp(app.ID)
 	if err != nil {
@@ -1625,7 +1490,7 @@ func getSimilarOwners(app *sql.App) (err error) {
 	return nil
 }
 
-func saveSales(app sql.App, newSales []mongo.Sale) (err error) {
+func saveSales(app mongo.App, newSales []mongo.Sale) (err error) {
 
 	// Get current app sales
 	oldSales, err := mongo.GetAppSales(app.ID)
@@ -1647,9 +1512,9 @@ func saveSales(app sql.App, newSales []mongo.Sale) (err error) {
 		newSales[k].AppReleaseDate = time.Unix(app.ReleaseDateUnix, 0)
 		newSales[k].AppReleaseDateString = app.ReleaseDate
 		newSales[k].AppPlayersWeek = app.PlayerPeakWeek
-		newSales[k].AppTags = app.GetTagIDs()
-		newSales[k].AppPlatforms = app.GetPlatforms()
-		newSales[k].AppCategories = app.GetCategoryIDs()
+		newSales[k].AppTags = app.Tags
+		newSales[k].AppPlatforms = app.Platforms
+		newSales[k].AppCategories = app.Categories
 		newSales[k].AppType = app.Type
 
 		if val, ok := oldSalesMap[v.GetKey()]; ok {

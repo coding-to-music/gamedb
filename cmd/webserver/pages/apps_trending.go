@@ -3,14 +3,15 @@ package pages
 import (
 	"net/http"
 	"strings"
+	"sync"
 
 	"github.com/Jleagle/influxql"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func trendingRouter() http.Handler {
@@ -46,37 +47,77 @@ func trendingAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query.limit(r)
 
-	gorm, err := sql.GetMySQLClient()
-	if err != nil {
-		log.Err(err, r)
-		return
+	var filter = bson.D{}
+	var search = query.getSearchString("search")
+	if search != "" {
+		filter = bson.D{{Key: "$text", Value: bson.M{"$search": search}}}
 	}
 
-	gorm = gorm.Model(sql.App{})
-	gorm = gorm.Select([]string{"id", "name", "icon", "prices", "player_trend", "player_peak_week"})
-	gorm = gorm.Limit(100)
+	var wg sync.WaitGroup
+	var countLock sync.Mutex
 
-	columns := map[string]string{
-		"2": "player_peak_week",
-		"3": "player_trend",
-		"4": "player_trend",
-	}
-	gorm = query.setOrderOffsetGorm(gorm, columns, "3")
+	// Count
+	var apps []mongo.App
+	wg.Add(1)
+	go func() {
 
-	var apps []sql.App
-	gorm = gorm.Find(&apps)
-	if gorm.Error != nil {
-		log.Err(gorm.Error, r)
-	}
+		defer wg.Done()
 
-	count, err := mongo.CountDocuments(mongo.CollectionApps, nil, 0)
-	if err != nil {
-		log.Err(err, r)
-	}
+		var err error
+
+		columns := map[string]string{
+			"2": "player_peak_week",
+			"3": "player_trend",
+			"4": "player_trend",
+		}
+
+		projection := bson.M{"id": 1, "name": 1, "icon": 1, "prices": 1, "player_trend": 1, "player_peak_week": 1}
+		order := query.getOrderMongo(columns)
+		offset := query.getOffset64()
+
+		apps, err = mongo.GetApps(offset, 100, order, filter, projection, nil)
+		if err != nil {
+			log.Err(err, r)
+		}
+	}()
+
+	// Get filtered count
+	var filtered int64
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		countLock.Lock()
+		filtered, err = mongo.CountDocuments(mongo.CollectionApps, filter, 0)
+		countLock.Unlock()
+		if err != nil {
+			log.Err(err, r)
+		}
+	}()
+
+	// Get count
+	var count int64
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		countLock.Lock()
+		count, err = mongo.CountDocuments(mongo.CollectionApps, nil, 0)
+		countLock.Unlock()
+		if err != nil {
+			log.Err(err, r)
+		}
+	}()
+
+	wg.Wait()
 
 	response := DataTablesResponse{}
 	response.RecordsTotal = count
-	response.RecordsFiltered = count
+	response.RecordsFiltered = filtered
 	response.Draw = query.Draw
 	response.limit(r)
 

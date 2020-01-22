@@ -37,7 +37,6 @@ var (
 		AppQueueAll{},
 		AppsSync{},
 		AutoPlayerRefreshes{},
-		ClearUpcomingCache{},
 		DevCodeRun{},
 		Developers{},
 		Genres{},

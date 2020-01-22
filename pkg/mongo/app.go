@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/influxql"
+	"github.com/Jleagle/steam-go/steam"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -195,14 +196,20 @@ func (app App) BSON() bson.D {
 	}
 }
 
-func (app App) Save() (err error) {
+func (app App) GetID() int {
+	return app.ID
+}
 
-	if app.ID == 0 {
-		return errors.New("invalid app id")
-	}
+func (app App) GetProductType() helpers.ProductType {
+	return helpers.ProductTypeApp
+}
 
-	_, err = ReplaceOne(CollectionApps, bson.D{{"_id", app.ID}}, app)
-	return err
+func (app App) GetPrice(code steam.ProductCC) (price helpers.ProductPrice) {
+	return app.Prices.Get(code)
+}
+
+func (app App) GetPrices() (prices helpers.ProductPrices) {
+	return app.Prices
 }
 
 func (app App) GetName() string {
@@ -427,6 +434,16 @@ func (app App) GetPICSUpdatedNice() string {
 
 func (app App) GetUpdatedNice() string {
 	return app.UpdatedAt.Format(helpers.DateYearTime)
+}
+
+func (app App) Save() (err error) {
+
+	if app.ID == 0 {
+		return errors.New("invalid app id")
+	}
+
+	_, err = ReplaceOne(CollectionApps, bson.D{{"_id", app.ID}}, app)
+	return err
 }
 
 func CreateAppIndexes() {

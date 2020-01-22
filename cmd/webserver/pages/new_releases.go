@@ -7,10 +7,8 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -32,17 +30,26 @@ func newReleasesHandler(w http.ResponseWriter, r *http.Request) {
 	t.addAssetHighCharts()
 	t.Days = config.Config.NewReleaseDays.GetInt()
 
-	t.Apps, err = countNewReleaseApps()
-	if err != nil {
-		log.Err(err, r)
+	// Count apps
+	{
+		var filter = bson.D{
+			{"release_date_unix", bson.M{"$lt": time.Now().Unix()}},
+			{"release_date_unix", bson.M{"$gt": time.Now().AddDate(0, 0, -config.Config.NewReleaseDays.GetInt()).Unix()}},
+		}
+
+		t.Apps, err = mongo.CountDocuments(mongo.CollectionApps, filter, 86400)
+		if err != nil {
+			log.Err(err, r)
+		}
 	}
 
+	//
 	returnTemplate(w, r, "new_releases", t)
 }
 
 type newReleasesTemplate struct {
 	GlobalTemplate
-	Apps int
+	Apps int64
 	Days int
 }
 
@@ -140,28 +147,4 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response.output(w, r)
-}
-
-func countNewReleaseApps() (count int, err error) {
-
-	var item = memcache.MemcacheNewReleaseAppsCount
-
-	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
-
-		var count int
-
-		gorm, err := sql.GetMySQLClient()
-		if err != nil {
-			return count, err
-		}
-
-		gorm = gorm.Model(sql.App{})
-		gorm = gorm.Where("release_date_unix < ?", time.Now().Unix())
-		gorm = gorm.Where("release_date_unix > ?", time.Now().AddDate(0, 0, -config.Config.NewReleaseDays.GetInt()).Unix())
-		gorm = gorm.Count(&count)
-
-		return count, gorm.Error
-	})
-
-	return count, err
 }

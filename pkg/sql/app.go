@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"html/template"
-	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -12,7 +11,6 @@ import (
 	"github.com/Jleagle/influxql"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/dustin/go-humanize"
-	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
@@ -530,31 +528,6 @@ func (app App) GetSystemRequirementsRaw() (ret map[string]interface{}) {
 	return ret
 }
 
-func (app App) GetSystemRequirements() (ret []helpers.SystemRequirement) {
-
-	systemRequirements := map[string]interface{}{}
-
-	err := helpers.Unmarshal([]byte(app.SystemRequirements), &systemRequirements)
-	if err != nil {
-		log.Err(err)
-		return ret
-	}
-
-	flattened := helpers.FlattenMap(systemRequirements)
-
-	for k, v := range flattened {
-		if val, ok := v.(string); ok {
-			ret = append(ret, helpers.SystemRequirement{Key: k, Val: val})
-		}
-	}
-
-	sort.Slice(ret, func(i, j int) bool {
-		return ret[i].Key < ret[j].Key
-	})
-
-	return ret
-}
-
 func (app App) IsOnSale() bool {
 
 	common := app.GetCommon()
@@ -587,19 +560,6 @@ func (app App) GetOnlinePlayers() (players int64, err error) {
 	return players, err
 }
 
-func (app App) GetCommunityLink() string {
-	name := config.Config.GameDBShortName.Get()
-	return "https://steamcommunity.com/app/" + strconv.Itoa(app.ID) + "?utm_source=" + name + "&utm_medium=link&curator_clanid=" // todo curator_clanid
-}
-
-func (app App) GetStoreLink() string {
-	return helpers.GetAppStoreLink(app.ID)
-}
-
-func (app App) GetPCGamingWikiLink() string {
-	return "https://pcgamingwiki.com/api/appid.php?appid=" + strconv.Itoa(app.ID)
-}
-
 func (app App) GetHeaderImage() string {
 	return "https://steamcdn-a.akamaihd.net/steam/apps/" + strconv.Itoa(app.ID) + "/header.jpg"
 }
@@ -612,14 +572,6 @@ func (app App) GetHeaderImage() string {
 //
 // 	return "https://images.weserv.nl?" + params.Encode()
 // }
-
-func (app App) GetInstallLink() template.URL {
-	return template.URL("steam://install/" + strconv.Itoa(app.ID))
-}
-
-func (app App) GetMetacriticLink() template.URL {
-	return template.URL("https://www.metacritic.com/game/" + app.MetacriticURL)
-}
 
 func (app App) GetScreenshots() (screenshots []helpers.AppImage) {
 
@@ -947,21 +899,6 @@ func (app App) getBundleIDs() (ids []int) {
 	return ids
 }
 
-func (app App) GetBundles() (bundles []Bundle, err error) {
-
-	var item = memcache.MemcacheAppBundles(app.ID)
-
-	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &bundles, func() (interface{}, error) {
-		return GetBundlesByID(app.getBundleIDs(), []string{})
-	})
-
-	if len(bundles) == 0 {
-		bundles = []Bundle{} // Needed for marshalling into type
-	}
-
-	return bundles, err
-}
-
 func (app App) GetName() string {
 	return helpers.GetAppName(app.ID, app.Name)
 }
@@ -973,22 +910,6 @@ func (app App) GetMetaImage() string {
 		return app.GetHeaderImage()
 	}
 	return ss[0].PathFull
-}
-
-func (app App) GetSteamPricesURL() string {
-
-	switch app.Type {
-	case "game":
-		return "app"
-	case "dlc":
-		return "dlc"
-	case "application":
-		return "sw"
-	case "hardware":
-		return "hw"
-	default:
-		return ""
-	}
 }
 
 type SteamSpyAppResponse struct {
@@ -1020,40 +941,6 @@ func (a SteamSpyAppResponse) GetOwners() (ret []int) {
 	owners = strings.ReplaceAll(owners, " ", "")
 	ownersStrings := strings.Split(owners, "..")
 	return helpers.StringSliceToIntSlice(ownersStrings)
-}
-
-func GetApp(id int, columns []string) (app App, err error) {
-
-	if id == 0 {
-		id = 753
-	}
-
-	if !helpers.IsValidAppID(id) {
-		return app, ErrInvalidAppID
-	}
-
-	db, err := GetMySQLClient()
-	if err != nil {
-		return app, err
-	}
-
-	if len(columns) > 0 {
-		db = db.Select(columns)
-		if db.Error != nil {
-			return app, db.Error
-		}
-	}
-
-	db = db.First(&app, id)
-	if db.Error != nil {
-		return app, db.Error
-	}
-
-	if app.ID == 0 {
-		return app, ErrRecordNotFound
-	}
-
-	return app, nil
 }
 
 func SearchApps(s string, columns []string) (app App, err error) {
@@ -1116,33 +1003,4 @@ func GetAppsWithColumnDepth(column string, depth int, columns []string) (apps []
 
 	return apps, nil
 
-}
-
-type AppTypeCount struct {
-	Type  string
-	Count int
-}
-
-func GetAppTypeCounts() (counts map[string]int, err error) {
-
-	var item = memcache.MemcacheAppTypeCounts
-
-	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &counts, func() (interface{}, error) {
-
-		db, err := GetMySQLClient()
-		if err != nil {
-			return counts, err
-		}
-
-		var rows []AppTypeCount
-		db = db.Table("apps").Select("type, count(type) as count").Group("type").Scan(&rows)
-
-		counts = map[string]int{}
-		for _, v := range rows {
-			counts[helpers.GetAppType(v.Type)] = v.Count
-		}
-		return counts, db.Error
-	})
-
-	return counts, err
 }

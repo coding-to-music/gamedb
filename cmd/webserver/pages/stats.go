@@ -93,7 +93,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 
-		a := sql.App{}
+		a := mongo.App{}
 		t.OnlinePlayersCount, err = a.GetOnlinePlayers()
 		if err != nil {
 			log.Err(err, r)
