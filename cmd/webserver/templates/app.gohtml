@@ -43,6 +43,11 @@
                     <li class="nav-item">
                         <a class="nav-link nav-link-small active" data-toggle="tab" href="#details" role="tab">Details</a>
                     </li>
+                    {{ if or (gt (len .App.Screenshots) 0) (gt (len .App.Movies) 0) }}
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-small" data-toggle="tab" href="#media" role="tab">Media ({{ comma (sum (len .App.Screenshots) (len .App.Movies) )}})</a>
+                        </li>
+                    {{ end }}
                     <li class="nav-item">
                         <a class="nav-link nav-link-small" data-toggle="tab" href="#players" role="tab">Players</a>
                     </li>
@@ -94,11 +99,6 @@
                     {{ if gt .App.Reviews.GetTotal 0 }}
                         <li class="nav-item">
                             <a class="nav-link nav-link-small" data-toggle="tab" href="#reviews" role="tab">Reviews</a>
-                        </li>
-                    {{ end }}
-                    {{ if or (gt (len .App.Screenshots) 0) (gt (len .App.Movies) 0) }}
-                        <li class="nav-item">
-                            <a class="nav-link nav-link-small" data-toggle="tab" href="#media" role="tab">Media ({{ comma (sum (len .App.Screenshots) (len .App.Movies) )}})</a>
                         </li>
                     {{ end }}
                     <li class="nav-item">
