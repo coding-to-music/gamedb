@@ -186,6 +186,7 @@ func DeleteMany(collection collection, filter bson.D) (resp *mongo.DeleteResult,
 	return resp, err
 }
 
+//noinspection GoUnusedExportedFunction
 func DeleteOne(collection collection, filter bson.D) (resp *mongo.DeleteResult, err error) {
 
 	client, ctx, err := getMongo()
@@ -210,6 +211,7 @@ func UpdateManySet(collection collection, filter bson.D, update bson.D) (resp *m
 	return resp, err
 }
 
+//noinspection GoUnusedExportedFunction
 func UpdateManyUnset(collection collection, columns bson.D) (resp *mongo.UpdateResult, err error) {
 
 	client, ctx, err := getMongo()
