@@ -383,7 +383,7 @@ func appHandler(messages []*rabbit.Message) {
 func updateAppPICS(app *mongo.App, message *rabbit.Message, payload AppMessage) (err error) {
 
 	if payload.ChangeNumber == 0 || app.ChangeNumber >= payload.ChangeNumber {
-		// return nil
+		return nil
 	}
 
 	var kv = vdf.FromMap(payload.VDF)
