@@ -116,8 +116,6 @@ func main() {
 	r.Mount("/webhooks", pages.WebhooksRouter())
 	r.Mount("/websocket", pages.WebsocketsRouter())
 
-	r.Route("/", func(r chi.Router) {
-
 	// Sitemaps, Google doesnt like having a sitemap in a sub directory
 	r.Get("/sitemap.xml", pages.SiteMapIndexHandler)
 	r.Get("/sitemap-pages.xml", pages.SiteMapPagesHandler)
