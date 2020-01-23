@@ -349,7 +349,9 @@ func appHandler(messages []*rabbit.Message) {
 				memcache.MemcacheAppBundles(app.ID).Key,
 				memcache.MemcacheAppPackages(app.ID).Key,
 			)
-			log.Err(err, id)
+			if err != nil {
+				log.Err(err, id)
+			}
 		}()
 
 		// Send websocket
