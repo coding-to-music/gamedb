@@ -23,6 +23,11 @@ if ($bundlePage.length > 0) {
                 subtitle: {
                     text: ''
                 },
+                tooltip: {
+                    formatter: function () {
+                        return this.y.toLocaleString() + '% discount on ' + moment(this.x).format("dddd DD MMM YYYY @ HH:mm");
+                    }
+                },
                 xAxis: {
                     title: {
                         text: 'Date'
