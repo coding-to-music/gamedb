@@ -293,12 +293,19 @@ func appHandler(messages []*rabbit.Message) {
 
 			app.ReleaseState = strings.ToLower(app.ReleaseState)
 
-			gorm = gorm.Save(&app)
-			if gorm.Error != nil {
-				log.Err(gorm.Error, payload.ID)
+			err = app.Save()
+			if err != nil {
+				log.Err(err, payload.ID)
 				sendToRetryQueue(message)
 				return
 			}
+
+			// gorm = gorm.Save(&app)
+			// if gorm.Error != nil {
+			// 	log.Err(gorm.Error, payload.ID)
+			// 	sendToRetryQueue(message)
+			// 	return
+			// }
 		}()
 
 		// Save app score etc to Influx
