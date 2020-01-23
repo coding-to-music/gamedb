@@ -131,17 +131,17 @@
                                 <div class="table-responsive">
                                     <table class="table mb-0">
 
-                                        <tr>
-                                            <th scope="row" nowrap="nowrap" class="thin" style="width: 130px;">Price</th>
-                                            <td>{{ .Price.GetFinal }}</td>
-                                        </tr>
-
                                         {{ if ne .App.GameName "" }}
                                             <tr>
                                                 <th scope="row" nowrap="nowrap" class="thin">For Game</th>
                                                 <td><a href="/apps/{{ .App.GameID }}">{{ .App.GameName }}</a></td>
                                             </tr>
                                         {{ end }}
+
+                                        <tr>
+                                            <th scope="row" nowrap="nowrap" class="thin" style="width: 130px;">Price</th>
+                                            <td>{{ .Price.GetFinal }}</td>
+                                        </tr>
 
                                         <tr>
                                             <th scope="row" nowrap="nowrap" class="thin">Review Score</th>
