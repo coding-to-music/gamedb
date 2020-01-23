@@ -166,6 +166,19 @@ func main() {
 	// Redirects
 	r.Get("/sitemap/index.xml", pages.RedirectHandler("/sitemap.xml"))
 	r.Get("/trending", pages.RedirectHandler("/apps/trending"))
+	r.Get("/games", func(w http.ResponseWriter, r *http.Request) {
+		q := ""
+		if r.URL.RawQuery != "" {
+			q = "?" + r.URL.RawQuery
+		}
+		http.Redirect(w, r, "/apps"+q, http.StatusFound)
+	})
+	r.Get("/games/{id}", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/apps/"+chi.URLParam(r, "id"), http.StatusFound)
+	})
+	r.Get("/games/{id}/{slug}", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/apps/"+chi.URLParam(r, "id")+"/"+chi.URLParam(r, "id"), http.StatusFound)
+	})
 
 	// 404
 	r.NotFound(pages.Error404Handler)
