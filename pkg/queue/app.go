@@ -483,7 +483,7 @@ func updateAppPICS(app *mongo.App, message *rabbit.Message, payload AppMessage) 
 
 		case "install":
 
-			app.Install = vdf.ToMapInner(child)
+			app.Install = child.ToMapInner()
 
 		case "localization":
 
@@ -511,11 +511,17 @@ func updateAppPICS(app *mongo.App, message *rabbit.Message, payload AppMessage) 
 
 		case "sysreqs":
 
-			app.SystemRequirements = vdf.ToMapInner(child)
+			app.SystemRequirements = child.ToMapInner()
 
 		case "albummetadata":
 
-			app.AlbumMetaData = vdf.ToMapInner(child)
+			amd := pics.AlbumMetaData{}
+			err = helpers.MarshalUnmarshal(child.ToMapInner(), &amd)
+			if err != nil {
+				log.Err(err)
+			} else {
+				app.AlbumMetaData = amd
+			}
 
 		default:
 			log.Warning(child.Key + " field in app PICS ignored (App: " + strconv.Itoa(app.ID) + ")")

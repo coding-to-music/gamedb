@@ -193,7 +193,7 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 			if err != nil {
 				log.Err(err, id)
 			} else {
-				m = kv.ToMap()
+				m = kv.ToMapOuter()
 			}
 
 			err = queue.ProduceApp(queue.AppMessage{ID: id, ChangeNumber: int(app.GetChangeNumber()), VDF: m})
@@ -226,7 +226,7 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 			if err != nil {
 				log.Err(err, id)
 			} else {
-				m = kv.ToMap()
+				m = kv.ToMapOuter()
 			}
 
 			err = queue.ProducePackage(queue.PackageMessage{ID: int(pack.GetPackageid()), ChangeNumber: int(pack.GetChangeNumber()), VDF: m})

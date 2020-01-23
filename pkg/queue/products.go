@@ -23,7 +23,7 @@ func getAppConfig(kv vdf.KeyValue) (config pics.PICSKeyValues, launch []pics.PIC
 		if v.Key == "launch" {
 			launch = getAppLaunch(v)
 		} else if len(v.Children) > 0 {
-			b, err := json.Marshal(v.ToMap())
+			b, err := json.Marshal(v.ToMapOuter())
 			log.Err(err)
 			config[v.Key] = string(b)
 		} else {
@@ -51,7 +51,7 @@ func getAppDepots(kv vdf.KeyValue) (depots pics.Depots) {
 			if v.Children == nil {
 				depots.Extra[v.Key] = v.Value
 			} else {
-				b, err := json.Marshal(v.ToMap())
+				b, err := json.Marshal(v.ToMapOuter())
 				log.Err(err)
 				depots.Extra[v.Key] = string(b)
 			}
@@ -72,7 +72,7 @@ func getAppDepots(kv vdf.KeyValue) (depots pics.Depots) {
 			case "manifests":
 				depot.Manifests = vv.GetChildrenAsMap()
 			case "encryptedmanifests":
-				b, err := json.Marshal(vv.ToMap())
+				b, err := json.Marshal(vv.ToMapOuter())
 				log.Err(err)
 				depot.EncryptedManifests = string(b)
 			case "maxsize":
