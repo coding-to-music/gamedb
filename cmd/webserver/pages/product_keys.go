@@ -50,11 +50,7 @@ var keyRegex = regexp.MustCompile("[0-9a-z_]+") // To stop SQL injection
 
 func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	query := DataTablesQuery{}
-	err := query.fillFromURL(r.URL.Query())
-	if err != nil {
-		log.Err(err, r)
-	}
+	query := newDataTableQuery(r, false)
 
 	//
 	var wg sync.WaitGroup

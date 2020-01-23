@@ -55,11 +55,7 @@ type newReleasesTemplate struct {
 
 func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	query := DataTablesQuery{}
-	err := query.fillFromURL(r.URL.Query())
-	if err != nil {
-		log.Err(err, r)
-	}
+	query := newDataTableQuery(r, false)
 
 	var wg sync.WaitGroup
 	var count int64

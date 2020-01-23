@@ -126,14 +126,7 @@ func groupTableAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//
-	query := DataTablesQuery{}
-	err := query.fillFromURL(r.URL.Query())
-	if err != nil {
-		log.Err(err, r)
-		return
-	}
-
-	query.limit(r)
+	query := newDataTableQuery(r, true)
 
 	//
 	var wg sync.WaitGroup

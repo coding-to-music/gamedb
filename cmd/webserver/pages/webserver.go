@@ -592,8 +592,39 @@ func (t *DataTablesResponse) limit(r *http.Request) {
 	}
 }
 
-// DataTablesQuery
-type DataTablesQuery struct {
+// dataTablesQuery
+func newDataTableQuery(r *http.Request, limit bool) (query dataTablesQuery) {
+
+	// Convert string into map
+	queryMap, err := qs.Unmarshal(r.URL.Query().Encode())
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	// Convert map into struct
+	err = helpers.MarshalUnmarshal(queryMap, &query)
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	if limit {
+
+		level := sql.UserLevel(helpers.GetUserLevel(r))
+		max := level.MaxOffset(100)
+
+		start, _ := strconv.Atoi(query.Start)
+
+		if max > 0 && int64(start) > max {
+			query.Start = strconv.FormatInt(int64(start), 10)
+		}
+	}
+
+	return query
+}
+
+type dataTablesQuery struct {
 	Draw   string                            `json:"draw"`
 	Order  map[string]map[string]interface{} `json:"order"`
 	Start  string                            `json:"start"`
@@ -602,31 +633,7 @@ type DataTablesQuery struct {
 	// Columns []string
 }
 
-func (q *DataTablesQuery) fillFromURL(url url.Values) (err error) {
-
-	// Convert string into map
-	queryMap, err := qs.Unmarshal(url.Encode())
-	if err != nil {
-		return err
-	}
-
-	// Convert map into struct
-	return helpers.MarshalUnmarshal(queryMap, q)
-}
-
-func (q *DataTablesQuery) limit(r *http.Request) {
-
-	level := sql.UserLevel(helpers.GetUserLevel(r))
-	max := level.MaxOffset(100)
-
-	start, _ := strconv.Atoi(q.Start)
-
-	if max > 0 && int64(start) > max {
-		q.Start = strconv.FormatInt(int64(start), 10)
-	}
-}
-
-func (q DataTablesQuery) getSearchString(k string) (search string) {
+func (q dataTablesQuery) getSearchString(k string) (search string) {
 
 	if val, ok := q.Search[k]; ok {
 		if ok && val != "" {
@@ -641,7 +648,7 @@ func (q DataTablesQuery) getSearchString(k string) (search string) {
 	return ""
 }
 
-func (q DataTablesQuery) getSearchSlice(k string) (search []string) {
+func (q dataTablesQuery) getSearchSlice(k string) (search []string) {
 
 	if val, ok := q.Search[k]; ok {
 		if val != "" {
@@ -657,7 +664,7 @@ func (q DataTablesQuery) getSearchSlice(k string) (search []string) {
 	return search
 }
 
-func (q DataTablesQuery) getOrderSQL(columns map[string]string, defaultCol string) (order string) {
+func (q dataTablesQuery) getOrderSQL(columns map[string]string, defaultCol string) (order string) {
 
 	var ret []string
 
@@ -690,7 +697,7 @@ func (q DataTablesQuery) getOrderSQL(columns map[string]string, defaultCol strin
 	return strings.Join(ret, ", ")
 }
 
-func (q DataTablesQuery) getOrderMongo(columns map[string]string) bson.D {
+func (q dataTablesQuery) getOrderMongo(columns map[string]string) bson.D {
 
 	for _, v := range q.Order {
 
@@ -719,7 +726,7 @@ func (q DataTablesQuery) getOrderMongo(columns map[string]string) bson.D {
 	return bson.D{}
 }
 
-func (q DataTablesQuery) getOrderString(columns map[string]string) (col string) {
+func (q dataTablesQuery) getOrderString(columns map[string]string) (col string) {
 
 	for _, v := range q.Order {
 
@@ -737,7 +744,7 @@ func (q DataTablesQuery) getOrderString(columns map[string]string) (col string) 
 	return col
 }
 
-func (q DataTablesQuery) setOrderOffsetGorm(db *gorm.DB, columns map[string]string, defaultCol string) *gorm.DB {
+func (q dataTablesQuery) setOrderOffsetGorm(db *gorm.DB, columns map[string]string, defaultCol string) *gorm.DB {
 
 	db = db.Order(q.getOrderSQL(columns, defaultCol))
 	db = db.Offset(q.Start)
@@ -745,17 +752,17 @@ func (q DataTablesQuery) setOrderOffsetGorm(db *gorm.DB, columns map[string]stri
 	return db
 }
 
-func (q DataTablesQuery) getOffset() int {
+func (q dataTablesQuery) getOffset() int {
 	i, _ := strconv.Atoi(q.Start)
 	return i
 }
 
-func (q DataTablesQuery) getOffset64() int64 {
+func (q dataTablesQuery) getOffset64() int64 {
 	i, _ := strconv.ParseInt(q.Start, 10, 64)
 	return i
 }
 
-func (q DataTablesQuery) getPage(perPage int) int {
+func (q dataTablesQuery) getPage(perPage int) int {
 
 	i, _ := strconv.Atoi(q.Start)
 

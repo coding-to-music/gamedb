@@ -307,13 +307,7 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	query := DataTablesQuery{}
-	err = query.fillFromURL(r.URL.Query())
-	if err != nil {
-		log.Err(err, r, idx)
-	}
-
-	query.limit(r)
+	query := newDataTableQuery(r, true)
 
 	//
 	var wg sync.WaitGroup
@@ -389,11 +383,7 @@ func appItemsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	query := DataTablesQuery{}
-	err = query.fillFromURL(r.URL.Query())
-	log.Err(err, r)
-
-	query.limit(r)
+	query := newDataTableQuery(r, true)
 
 	// Make filter
 	var search = query.getSearchString("search")
@@ -552,11 +542,7 @@ func appTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	query := DataTablesQuery{}
-	err = query.fillFromURL(r.URL.Query())
-	log.Err(err, r)
-
-	query.limit(r)
+	query := newDataTableQuery(r, true)
 
 	playerAppFilter := bson.D{
 		{Key: "app_id", Value: idx},

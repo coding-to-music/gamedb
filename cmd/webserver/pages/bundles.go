@@ -38,9 +38,7 @@ type bundlesTemplate struct {
 
 func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	query := DataTablesQuery{}
-	err := query.fillFromURL(r.URL.Query())
-	log.Err(err, r)
+	query := newDataTableQuery(r, false)
 
 	//
 	var wg sync.WaitGroup

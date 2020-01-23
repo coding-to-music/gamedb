@@ -147,15 +147,11 @@ type playersCountriesTemplate struct {
 
 func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	query := DataTablesQuery{}
-	err := query.fillFromURL(r.URL.Query())
-	log.Err(err, r)
-
-	query.limit(r)
+	query := newDataTableQuery(r, true)
 
 	country := query.getSearchString("country")
 	if len(country) > 4 {
-		_, err = w.Write([]byte("invalid cc"))
+		_, err := w.Write([]byte("invalid cc"))
 		log.Err(err, r)
 		return
 	}

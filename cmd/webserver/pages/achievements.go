@@ -29,13 +29,7 @@ func achievementsHandler(w http.ResponseWriter, r *http.Request) {
 
 func achievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	query := DataTablesQuery{}
-	err := query.fillFromURL(r.URL.Query())
-	if err != nil {
-		log.Err(err, r)
-	}
-
-	query.limit(r)
+	query := newDataTableQuery(r, true)
 
 	var wg sync.WaitGroup
 	var filter = bson.D{{"achievements_count", bson.M{"$gt": 0}}}

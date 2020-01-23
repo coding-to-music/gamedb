@@ -34,14 +34,7 @@ type changesTemplate struct {
 
 func changesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	query := DataTablesQuery{}
-	err := query.fillFromURL(r.URL.Query())
-	if err != nil {
-		log.Err(err, r)
-		return
-	}
-
-	query.limit(r)
+	query := newDataTableQuery(r, true)
 
 	changes, err := mongo.GetChanges(query.getOffset64())
 	if err != nil {

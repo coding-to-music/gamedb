@@ -415,13 +415,7 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	query := DataTablesQuery{}
-	err = query.fillFromURL(r.URL.Query())
-	if err != nil {
-		log.Err(err, r)
-	}
-
-	query.limit(r)
+	query := newDataTableQuery(r, true)
 
 	var wg sync.WaitGroup
 
@@ -476,13 +470,7 @@ func settingsDonationsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	query := DataTablesQuery{}
-	err = query.fillFromURL(r.URL.Query())
-	if err != nil {
-		log.Err(err, r)
-	}
-
-	query.limit(r)
+	query := newDataTableQuery(r, true)
 
 	var wg sync.WaitGroup
 

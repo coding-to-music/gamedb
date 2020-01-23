@@ -214,11 +214,7 @@ type appsTemplate struct {
 
 func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	query := DataTablesQuery{}
-	err := query.fillFromURL(r.URL.Query())
-	if err != nil {
-		log.Err(err, r)
-	}
+	query := newDataTableQuery(r, false)
 
 	//
 	var wg sync.WaitGroup
@@ -387,6 +383,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		order := query.getOrderMongo(cols)
 		offset := query.getOffset64()
 
+		var err error
 		apps, err = mongo.GetApps(offset, 100, order, filter, projection, nil)
 		if err != nil {
 			log.Err(err, r)

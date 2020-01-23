@@ -479,11 +479,7 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	query := DataTablesQuery{}
-	err = query.fillFromURL(r.URL.Query())
-	log.Err(err, r)
-
-	query.limit(r)
+	query := newDataTableQuery(r, true)
 
 	code := helpers.GetProductCC(r)
 
@@ -562,11 +558,7 @@ func playerRecentAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	query := DataTablesQuery{}
-	err = query.fillFromURL(r.URL.Query())
-	log.Err(err, r)
-
-	query.limit(r)
+	query := newDataTableQuery(r, true)
 
 	//
 	var wg sync.WaitGroup
@@ -639,11 +631,7 @@ func playerFriendsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	query := DataTablesQuery{}
-	err = query.fillFromURL(r.URL.Query())
-	log.Err(err, r)
-
-	query.limit(r)
+	query := newDataTableQuery(r, true)
 
 	//
 	var wg sync.WaitGroup
@@ -722,12 +710,7 @@ func playerBadgesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	query := DataTablesQuery{}
-	err = query.fillFromURL(r.URL.Query())
-	if err != nil {
-		log.Err(err)
-		return
-	}
+	query := newDataTableQuery(r, false)
 
 	// Make filter
 	var filter = bson.D{
@@ -804,12 +787,7 @@ func playerWishlistAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	query := DataTablesQuery{}
-	err = query.fillFromURL(r.URL.Query())
-	if err != nil {
-		log.Err(err)
-		return
-	}
+	query := newDataTableQuery(r, false)
 
 	//
 	var wg sync.WaitGroup
@@ -913,12 +891,7 @@ func playerGroupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	query := DataTablesQuery{}
-	err = query.fillFromURL(r.URL.Query())
-	if err != nil {
-		log.Err(err)
-		return
-	}
+	query := newDataTableQuery(r, false)
 
 	//
 	var wg sync.WaitGroup

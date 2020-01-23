@@ -44,11 +44,7 @@ type commitsTemplate struct {
 
 func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	query := DataTablesQuery{}
-	err := query.fillFromURL(r.URL.Query())
-	log.Err(err, r)
-
-	query.limit(r)
+	query := newDataTableQuery(r, true)
 
 	client, ctx := githubHelper.GetGithub()
 

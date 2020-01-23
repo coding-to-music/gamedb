@@ -43,14 +43,7 @@ type groupsTemplate struct {
 
 func groupsTrendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	query := DataTablesQuery{}
-	err := query.fillFromURL(r.URL.Query())
-	if err != nil {
-		log.Err(err, r)
-		return
-	}
-
-	query.limit(r)
+	query := newDataTableQuery(r, true)
 
 	// Filter
 	var filter = bson.D{
@@ -76,7 +69,7 @@ func groupsTrendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Get groups
 	var groups []mongo.Group
 	wg.Add(1)
-	go func(r *http.Request) {
+	go func() {
 
 		defer wg.Done()
 
@@ -85,12 +78,13 @@ func groupsTrendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			"2": "trending",
 		}
 
+		var err error
 		groups, err = mongo.GetGroups(100, query.getOffset64(), query.getOrderMongo(columns), filter, nil)
 		if err != nil {
 			log.Err(err, r)
 			return
 		}
-	}(r)
+	}()
 
 	// Get total
 	var total int64

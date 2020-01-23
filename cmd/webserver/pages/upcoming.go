@@ -43,11 +43,7 @@ type upcomingTemplate struct {
 
 func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	query := DataTablesQuery{}
-	err := query.fillFromURL(r.URL.Query())
-	if err != nil {
-		log.Err(err, r)
-	}
+	query := newDataTableQuery(r, false)
 
 	filter2 := upcomingFilter
 	search := query.getSearchString("search")

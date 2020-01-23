@@ -39,13 +39,7 @@ type trendingTemplate struct {
 
 func trendingAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	query := DataTablesQuery{}
-	err := query.fillFromURL(r.URL.Query())
-	if err != nil {
-		log.Err(err, r)
-	}
-
-	query.limit(r)
+	query := newDataTableQuery(r, true)
 
 	var filter = bson.D{}
 	var search = query.getSearchString("search")

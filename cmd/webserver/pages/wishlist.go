@@ -34,7 +34,7 @@ package pages
 //
 // func wishlistAppsHandler(w http.ResponseWriter, r *http.Request) {
 //
-// 	query := DataTablesQuery{}
+// 	query := dataTablesQuery{}
 // 	err := query.fillFromURL(r.URL.Query())
 // 	log.Err(err, r)
 //
@@ -85,7 +85,7 @@ package pages
 //
 //
 //
-// 	query := DataTablesQuery{}
+// 	query := dataTablesQuery{}
 // 	err := query.fillFromURL(r.URL.Query())
 // 	log.Err(err, r)
 //
@@ -155,7 +155,7 @@ package pages
 //
 // func wishlistTagsHandler(w http.ResponseWriter, r *http.Request) {
 //
-// 	query := DataTablesQuery{}
+// 	query := dataTablesQuery{}
 // 	err := query.fillFromURL(r.URL.Query())
 // 	log.Err(err, r)
 //
