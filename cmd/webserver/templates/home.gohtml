@@ -131,7 +131,7 @@
 
                             {{ range $key, $value := .News }}
                                 <li class="media mb-2" data-link="{{ .Link }}">
-                                    <img src="" data-lazy="https://images.weserv.nl/?url={{ .Image }}" alt="" data-lazy-alt="{{ .Title }}" class="mr-3 mb-2 img rounded">
+                                    <img src="" data-lazy="https://images.weserv.nl/?url={{ .Image }}&output=webp" alt="" data-lazy-alt="{{ .Title }}" class="mr-3 mb-2 img rounded">
                                     <div class="media-body">
                                         <h5 class="mt-0 mb-1">{{ .Title }}</h5>
                                         {{ .Contents }}
@@ -161,7 +161,7 @@
                     <div class="card-body p-0">
                         {{ range $key, $value := .Games }}
                             <a href="{{ .GetPath }}">
-                                <img src="" data-lazy="https://images.weserv.nl/?url={{ .GetHeaderImage }}" alt="" data-lazy-alt="{{ .GetName }}">
+                                <img src="" data-lazy="https://images.weserv.nl/?url={{ .GetHeaderImage }}&output=webp" alt="" data-lazy-alt="{{ .GetName }}">
                             </a>
                         {{ end }}
                     </div>

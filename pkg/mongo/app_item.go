@@ -133,6 +133,7 @@ func (item *AppItem) Image(size int, crop bool) string {
 	params.Set("url", item.IconURL)
 	params.Set("w", strconv.Itoa(size))
 	params.Set("h", strconv.Itoa(size))
+	params.Set("output", "webp")
 	if crop {
 		params.Set("t", "square")
 	}

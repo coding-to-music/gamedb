@@ -85,7 +85,7 @@
 <body{{ if .IsSidebarPage }} data-spy="scroll" data-target="#sidebar"{{ end }}
         class="{{ if ne .Background "" }} bg{{end}}{{ if eq .Env "local" }} local{{ end }}{{ if .GetCookieFlag "dark" }} dark{{end}}">
 
-<a {{ if ne .BackgroundLink "" }}href="{{ .BackgroundLink }}"{{end}} id="bg" {{ if ne .Background "" }}style="background-image: url('https://images.weserv.nl/?url={{ .Background }}');"{{ end }} title="{{ .BackgroundTitle }}"></a>
+<a {{ if ne .BackgroundLink "" }}href="{{ .BackgroundLink }}"{{end}} id="bg" {{ if ne .Background "" }}style="background-image: url('https://images.weserv.nl/?url={{ .Background }}&output=webp');"{{ end }} title="{{ .BackgroundTitle }}"></a>
 
 <div id="top" class="rounded">
     <i class="fas fa-level-up-alt"></i>

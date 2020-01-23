@@ -569,6 +569,7 @@ func (app App) GetHeaderImage() string {
 // 	params := url.Values{}
 // 	params.Set("url", app.GetHeaderImage())
 // 	params.Set("q", "10")
+// 	params.Set("output", "webp")
 //
 // 	return "https://images.weserv.nl?" + params.Encode()
 // }
