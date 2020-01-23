@@ -65,7 +65,7 @@ func trendingAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			"4": "player_trend",
 		}
 
-		projection := bson.M{"id": 1, "name": 1, "icon": 1, "prices": 1, "player_trend": 1, "player_peak_week": 1}
+		projection := bson.M{"_id": 1, "name": 1, "icon": 1, "prices": 1, "player_trend": 1, "player_peak_week": 1}
 		order := query.getOrderMongo(columns)
 		offset := query.getOffset64()
 

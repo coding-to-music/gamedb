@@ -88,7 +88,7 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			"5": "player_trend",
 		}
 
-		var projection = bson.M{"id": 1, "name": 1, "icon": 1, "type": 1, "prices": 1, "release_date_unix": 1, "release_date": 1, "player_peak_week": 1, "reviews_score": 1}
+		var projection = bson.M{"_id": 1, "name": 1, "icon": 1, "type": 1, "prices": 1, "release_date_unix": 1, "release_date": 1, "player_peak_week": 1, "reviews_score": 1}
 		var sort = query.getOrderMongo(columns)
 
 		var err error

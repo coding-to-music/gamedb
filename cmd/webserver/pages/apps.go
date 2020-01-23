@@ -379,7 +379,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			"5": "prices." + string(code) + ".final",
 		}
 
-		projection := bson.M{"id": 1, "name": 1, "icon": 1, "reviews_score": 1, "prices": 1, "player_peak_week": 1, "group_followers": 1}
+		projection := bson.M{"_id": 1, "name": 1, "icon": 1, "reviews_score": 1, "prices": 1, "player_peak_week": 1, "group_followers": 1}
 		order := query.getOrderMongo(cols)
 		offset := query.getOffset64()
 

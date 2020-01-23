@@ -589,7 +589,7 @@ func PopularApps() (apps []App, err error) {
 			30,
 			bson.D{{"player_peak_week", -1}},
 			bson.D{{"type", "game"}},
-			bson.M{"id": 1, "name": 1, "player_peak_week": 1, "background": 1},
+			bson.M{"_id": 1, "name": 1, "player_peak_week": 1, "background": 1},
 			nil)
 	})
 
@@ -612,7 +612,7 @@ func PopularNewApps() (apps []App, err error) {
 				{Key: "release_date_unix", Value: bson.M{"$gt": releaseDate}},
 				{Key: "type", Value: "game"},
 			},
-			bson.M{"id": 1, "name": 1, "player_peak_week": 1},
+			bson.M{"_id": 1, "name": 1, "player_peak_week": 1},
 			nil,
 		)
 	})
@@ -630,7 +630,7 @@ func TrendingApps() (apps []App, err error) {
 			10,
 			bson.D{{"player_trend", -1}},
 			nil,
-			bson.M{"id": 1, "name": 1, "player_trend": 1},
+			bson.M{"_id": 1, "name": 1, "player_trend": 1},
 			nil,
 		)
 	})
