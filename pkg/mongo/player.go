@@ -319,6 +319,7 @@ func CreatePlayerIndexes() {
 	var indexModels []mongo.IndexModel
 
 	// These are for the ranking cron
+	// And for players table  filtering
 	for col := range PlayerRankFields {
 		indexModels = append(indexModels, mongo.IndexModel{
 			Keys: bson.D{{col, -1}},
@@ -334,6 +335,26 @@ func CreatePlayerIndexes() {
 		})
 	}
 
+	// For sorting main players table
+	cols := []string{
+		"level",
+		"badges_count",
+		"games_count",
+		"play_time",
+		"bans_game",
+		"bans_cav",
+		"bans_last",
+		"friends_count",
+		"comments_count",
+	}
+
+	for _, col := range cols {
+		indexModels = append(indexModels, mongo.IndexModel{
+			Keys: bson.D{{col, -1}},
+		})
+	}
+
+	//
 	client, ctx, err := getMongo()
 	if err != nil {
 		log.Err(err)
