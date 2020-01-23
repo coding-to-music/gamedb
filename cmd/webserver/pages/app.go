@@ -98,10 +98,12 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		err = queue.ProduceSteam(queue.SteamMessage{AppIDs: []int{app.ID}})
-		if err != nil && err != memcache.ErrInQueue {
-			log.Err(err, r)
-		} else {
+		if err == nil {
 			t.addToast(Toast{Title: "Update", Message: "App has been queued for an update"})
+		}
+		err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
+		if err != nil {
+			log.Err(err, r)
 		}
 	}()
 
