@@ -17,7 +17,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
-	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
 	"github.com/justinas/nosurf"
 	"go.mongodb.org/mongo-driver/bson"
@@ -203,7 +202,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 			var err error
 			backgroundApp, err = mongo.GetApp(player.BackgroundAppID, bson.M{"_id": 1, "name": 1, "background": 1})
-			err = helpers.IgnoreErrors(err, sql.ErrInvalidAppID)
+			err = helpers.IgnoreErrors(err, mongo.ErrInvalidAppID)
 			if err == mongo.ErrNoDocuments {
 				err = queue.ProduceSteam(queue.SteamMessage{AppIDs: []int{player.BackgroundAppID}})
 				log.Err(err, r, player.BackgroundAppID)

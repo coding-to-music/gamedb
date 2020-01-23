@@ -488,7 +488,7 @@ func getAppFromGroup(group mongo.Group) (app mongo.App, err error) {
 
 	if group.Type == helpers.GroupTypeGame && group.AppID > 0 {
 		app, err = mongo.GetApp(group.AppID, bson.M{"_id": 1, "group_id": 1})
-		if err == sql.ErrRecordNotFound {
+		if err == mongo.ErrNoDocuments {
 			err = ProduceSteam(SteamMessage{AppIDs: []int{group.AppID}})
 		}
 	}

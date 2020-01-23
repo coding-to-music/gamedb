@@ -189,7 +189,7 @@ func updatePackageNameFromApp(pack *sql.Package) (err error) {
 			pack.SetName(app.GetName(), false)
 			pack.Icon = app.GetIcon()
 
-		} else if err == sql.ErrRecordNotFound {
+		} else if err == mongo.ErrNoDocuments {
 			return nil
 		} else {
 			return err
