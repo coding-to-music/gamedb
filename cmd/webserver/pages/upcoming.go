@@ -65,8 +65,10 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		// todo
 		columns := map[string]string{
-			"1": "group_followers $dir, name ASC",
-			"4": "release_date_unix $dir, group_followers DESC, name ASC",
+			// "1": "group_followers $dir, name ASC",
+			// "4": "release_date_unix $dir, group_followers DESC, name ASC",
+			"1": "group_followers",
+			"4": "release_date_unix",
 		}
 
 		projection := bson.M{"_id": 1, "name": 1, "icon": 1, "type": 1, "prices": 1, "release_date_unix": 1, "group_id": 1, "group_followers": 1}
