@@ -30,7 +30,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func setHeaders(w http.ResponseWriter, r *http.Request, contentType string) {
+func setHeaders(w http.ResponseWriter, contentType string) {
 
 	csp := []string{
 		"default-src 'none'",
@@ -73,7 +73,7 @@ func SetCacheHeaders(w http.ResponseWriter, duration time.Duration) {
 
 func returnJSON(w http.ResponseWriter, r *http.Request, i interface{}) {
 
-	setHeaders(w, r, "application/json")
+	setHeaders(w, "application/json")
 
 	b, err := json.Marshal(i)
 	if err != nil {
@@ -109,7 +109,7 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 	}
 
 	//
-	setHeaders(w, r, "text/html")
+	setHeaders(w, "text/html")
 
 	//
 	t, err := template.New("t").Funcs(getTemplateFuncMap()).ParseFiles(
