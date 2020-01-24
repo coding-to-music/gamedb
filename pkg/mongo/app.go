@@ -120,6 +120,10 @@ func (app App) BSON() bson.D {
 		}
 	}
 
+	if app.ChangeNumberDate.IsZero() {
+		app.ChangeNumberDate = time.Now()
+	}
+
 	return bson.D{
 		{"achievements", app.Achievements},
 		{"achievements_5", app.Achievements5},
