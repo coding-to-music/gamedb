@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/cenkalti/backoff/v4"
+	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	githubHelper "github.com/gamedb/gamedb/pkg/helpers/github"
@@ -44,13 +45,13 @@ type commitsTemplate struct {
 
 func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	query := newDataTableQuery(r, true)
+	query := datatable.NewDataTableQuery(r, true)
 
 	client, ctx := githubHelper.GetGithub()
 
 	commits, _, err := client.Repositories.ListCommits(ctx, "gamedb", "website", &github.CommitsListOptions{
 		ListOptions: github.ListOptions{
-			Page:    query.getPage(commitsLimit),
+			Page:    query.GetPage(commitsLimit),
 			PerPage: commitsLimit,
 		},
 	})
@@ -65,11 +66,11 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	total := getTotalCommits()
 
 	//
-	response := DataTablesResponse{}
+	response := datatable.DataTablesResponse{}
 	response.RecordsTotal = int64(total)
 	response.RecordsFiltered = int64(total)
 	response.Draw = query.Draw
-	response.limit(r)
+	response.Limit(r)
 
 	var deployed bool
 	for _, commit := range commits {
@@ -89,7 +90,7 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	response.output(w, r)
+	returnJSON(w, r, response.Output())
 }
 
 func getTotalCommits() (total int) {

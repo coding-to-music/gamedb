@@ -5,6 +5,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -43,10 +44,10 @@ type upcomingTemplate struct {
 
 func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	query := newDataTableQuery(r, false)
+	query := datatable.NewDataTableQuery(r, false)
 
 	filter2 := upcomingFilter
-	search := query.getSearchString("search")
+	search := query.GetSearchString("search")
 	if search != "" {
 		filter2 = append(filter2, bson.E{Key: "$text", Value: bson.M{"$search": search}})
 	}
@@ -72,8 +73,8 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		projection := bson.M{"_id": 1, "name": 1, "icon": 1, "type": 1, "prices": 1, "release_date_unix": 1, "group_id": 1, "group_followers": 1}
-		order := query.getOrderMongo(columns)
-		offset := query.getOffset64()
+		order := query.GetOrderMongo(columns)
+		offset := query.GetOffset64()
 
 		apps, err = mongo.GetApps(offset, 100, order, filter2, projection, nil)
 		if err != nil {
@@ -118,7 +119,7 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	var code = helpers.GetProductCC(r)
 
-	response := DataTablesResponse{}
+	response := datatable.DataTablesResponse{}
 	response.RecordsTotal = count
 	response.RecordsFiltered = filtered
 	response.Draw = query.Draw
@@ -140,5 +141,5 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	response.output(w, r)
+	returnJSON(w, r, response.Output())
 }

@@ -6,6 +6,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -36,7 +37,7 @@ type priceChangesTemplate struct {
 
 func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	query := newDataTableQuery(r, true)
+	query := datatable.NewDataTableQuery(r, true)
 
 	//
 	var wg sync.WaitGroup
@@ -48,14 +49,14 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		{Key: "prod_cc", Value: string(code)},
 	}
 
-	typex := query.getSearchString("type")
+	typex := query.GetSearchString("type")
 	if typex == "apps" {
 		filter = append(filter, bson.E{Key: "app_id", Value: bson.M{"$gt": 0}})
 	} else if typex == "packages" {
 		filter = append(filter, bson.E{Key: "package_id", Value: bson.M{"$gt": 0}})
 	}
 
-	percents := query.getSearchSlice("change")
+	percents := query.GetSearchSlice("change")
 	if len(percents) == 2 {
 		if percents[0] != "-100.00" {
 			min, err := strconv.ParseFloat(percents[0], 64)
@@ -91,7 +92,7 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	prices := query.getSearchSlice("price")
+	prices := query.GetSearchSlice("price")
 	if len(prices) == 2 {
 		if prices[0] != "0.00" {
 			min, err := strconv.Atoi(strings.Replace(prices[0], ".", "", 1))
@@ -117,7 +118,7 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		priceChanges, err = mongo.GetPrices(query.getOffset64(), 100, filter)
+		priceChanges, err = mongo.GetPrices(query.GetOffset64(), 100, filter)
 		if err != nil {
 			log.Err(err, r)
 			return
@@ -151,16 +152,16 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	response := DataTablesResponse{}
+	response := datatable.DataTablesResponse{}
 	response.RecordsTotal = total
 	response.RecordsFiltered = filtered
 	response.Draw = query.Draw
-	response.limit(r)
+	response.Limit(r)
 
 	for _, price := range priceChanges {
 
 		response.AddRow(price.OutputForJSON())
 	}
 
-	response.output(w, r)
+	returnJSON(w, r, response.Output())
 }

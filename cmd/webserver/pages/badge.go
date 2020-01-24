@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"sync"
 
+	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
@@ -75,7 +76,7 @@ func badgeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	query := newDataTableQuery(r, true)
+	query := datatable.NewDataTableQuery(r, true)
 
 	var wg sync.WaitGroup
 
@@ -97,7 +98,7 @@ func badgeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		badges, err = mongo.GetBadgePlayers(query.getOffset64(), filter)
+		badges, err = mongo.GetBadgePlayers(query.GetOffset64(), filter)
 		log.Err(err, r)
 	}()
 
@@ -114,15 +115,15 @@ func badgeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
-	response := DataTablesResponse{}
+	response := datatable.DataTablesResponse{}
 	response.RecordsTotal = count
 	response.RecordsFiltered = count
 	response.Draw = query.Draw
-	response.limit(r)
+	response.Limit(r)
 
 	for k, player := range badges {
 		response.AddRow([]interface{}{
-			query.getOffset() + k + 1, // 0
+			query.GetOffset() + k + 1, // 0
 			player.PlayerName,         // 1
 			player.GetPlayerIcon(),    // 2
 			player.BadgeLevel,         // 3
@@ -131,5 +132,5 @@ func badgeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	response.output(w, r)
+	returnJSON(w, r, response.Output())
 }

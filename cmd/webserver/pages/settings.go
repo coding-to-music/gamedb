@@ -10,6 +10,7 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/badoux/checkmail"
 	"github.com/gamedb/gamedb/cmd/webserver/connections"
+	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
 	"github.com/gamedb/gamedb/cmd/webserver/middleware"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -415,7 +416,7 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	query := newDataTableQuery(r, true)
+	query := datatable.NewDataTableQuery(r, true)
 
 	var wg sync.WaitGroup
 
@@ -426,7 +427,7 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		events, err = mongo.GetEvents(user.ID, query.getOffset64())
+		events, err = mongo.GetEvents(user.ID, query.GetOffset64())
 		if err != nil {
 			log.Err(err, r)
 			return
@@ -449,17 +450,17 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
-	response := DataTablesResponse{}
+	response := datatable.DataTablesResponse{}
 	response.RecordsTotal = total
 	response.RecordsFiltered = total
 	response.Draw = query.Draw
-	response.limit(r)
+	response.Limit(r)
 
 	for _, v := range events {
 		response.AddRow(v.OutputForJSON(r.RemoteAddr))
 	}
 
-	response.output(w, r)
+	returnJSON(w, r, response.Output())
 }
 
 func settingsDonationsAjaxHandler(w http.ResponseWriter, r *http.Request) {
@@ -470,7 +471,7 @@ func settingsDonationsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	query := newDataTableQuery(r, true)
+	query := datatable.NewDataTableQuery(r, true)
 
 	var wg sync.WaitGroup
 
@@ -496,17 +497,17 @@ func settingsDonationsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
-	response := DataTablesResponse{}
+	response := datatable.DataTablesResponse{}
 	response.RecordsTotal = total
 	response.RecordsFiltered = total
 	response.Draw = query.Draw
-	response.limit(r)
+	response.Limit(r)
 
 	for _, v := range events {
 		response.AddRow(v.OutputForJSON(r.RemoteAddr))
 	}
 
-	response.output(w, r)
+	returnJSON(w, r, response.Output())
 }
 
 // Steam

@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"sync"
 
+	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -147,9 +148,9 @@ type playersCountriesTemplate struct {
 
 func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	query := newDataTableQuery(r, true)
+	query := datatable.NewDataTableQuery(r, true)
 
-	country := query.getSearchString("country")
+	country := query.GetSearchString("country")
 	if len(country) > 4 {
 		_, err := w.Write([]byte("invalid cc"))
 		log.Err(err, r)
@@ -171,7 +172,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		"11": "comments_count",
 	}
 
-	var sortOrder = query.getOrderMongo(columns)
+	var sortOrder = query.GetOrderMongo(columns)
 	var filter = bson.D{}
 	var isContinent bool
 
@@ -194,7 +195,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		for _, cc := range mongo.CountriesWithStates {
 			if cc == country {
-				state := query.getSearchString(cc + "-state")
+				state := query.GetSearchString(cc + "-state")
 				if state != "" && len(state) <= 3 {
 					filter = append(filter, bson.E{Key: "status_code", Value: state})
 				}
@@ -202,7 +203,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	search := query.getSearchString("search")
+	search := query.GetSearchString("search")
 	if len(search) >= 2 {
 
 		quoted := regexp.QuoteMeta(search)
@@ -245,7 +246,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			"comments_count": 1,
 		}
 
-		players, err = mongo.GetPlayers(query.getOffset64(), 100, sortOrder, filter, projection)
+		players, err = mongo.GetPlayers(query.GetOffset64(), 100, sortOrder, filter, projection)
 		if err != nil {
 			log.Err(err, r)
 		}
@@ -282,16 +283,16 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	response := DataTablesResponse{}
+	response := datatable.DataTablesResponse{}
 	response.RecordsTotal = total
 	response.RecordsFiltered = filtered
 	response.Draw = query.Draw
-	response.limit(r)
+	response.Limit(r)
 
 	for k, v := range players {
 
 		response.AddRow([]interface{}{
-			helpers.OrdinalComma(query.getOffset() + k + 1), // 0
+			helpers.OrdinalComma(query.GetOffset() + k + 1), // 0
 			strconv.FormatInt(v.ID, 10),                     // 1
 			v.PersonaName,                                   // 2
 			v.GetAvatar(),                                   // 3
@@ -315,5 +316,5 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	response.output(w, r)
+	returnJSON(w, r, response.Output())
 }

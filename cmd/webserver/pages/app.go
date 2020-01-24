@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/influxql"
+	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
@@ -307,7 +308,7 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	query := newDataTableQuery(r, true)
+	query := datatable.NewDataTableQuery(r, true)
 
 	//
 	var wg sync.WaitGroup
@@ -320,7 +321,7 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		articles, err = mongo.GetArticlesByApp(idx, query.getOffset64())
+		articles, err = mongo.GetArticlesByApp(idx, query.GetOffset64())
 		if err != nil {
 			log.Err(err, r, idx)
 			return
@@ -351,17 +352,17 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	//
-	response := DataTablesResponse{}
+	response := datatable.DataTablesResponse{}
 	response.RecordsTotal = int64(total)
 	response.RecordsFiltered = int64(total)
 	response.Draw = query.Draw
-	response.limit(r)
+	response.Limit(r)
 
 	for _, v := range articles {
 		response.AddRow(v.OutputForJSON())
 	}
 
-	response.output(w, r)
+	returnJSON(w, r, response.Output())
 }
 
 func appPricesAjaxHandler(w http.ResponseWriter, r *http.Request) {
@@ -383,10 +384,10 @@ func appItemsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	query := newDataTableQuery(r, true)
+	query := datatable.NewDataTableQuery(r, true)
 
 	// Make filter
-	var search = query.getSearchString("search")
+	var search = query.GetSearchString("search")
 
 	filter := bson.D{
 		{Key: "app_id", Value: idx},
@@ -413,7 +414,7 @@ func appItemsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		items, err = mongo.GetAppItems(query.getOffset64(), 100, filter, nil)
+		items, err = mongo.GetAppItems(query.GetOffset64(), 100, filter, nil)
 		if err != nil {
 			log.Err(err, r)
 			return
@@ -448,11 +449,11 @@ func appItemsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	response := DataTablesResponse{}
+	response := datatable.DataTablesResponse{}
 	response.RecordsTotal = total
 	response.RecordsFiltered = filtered
 	response.Draw = query.Draw
-	response.limit(r)
+	response.Limit(r)
 
 	for _, item := range items {
 
@@ -490,7 +491,7 @@ func appItemsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	response.output(w, r)
+	returnJSON(w, r, response.Output())
 }
 
 // Player counts chart
@@ -542,14 +543,14 @@ func appTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	query := newDataTableQuery(r, true)
+	query := datatable.NewDataTableQuery(r, true)
 
 	playerAppFilter := bson.D{
 		{Key: "app_id", Value: idx},
 		{Key: "app_time", Value: bson.M{"$gt": 0}},
 	}
 
-	playerApps, err := mongo.GetPlayerAppsByApp(query.getOffset64(), playerAppFilter)
+	playerApps, err := mongo.GetPlayerAppsByApp(query.GetOffset64(), playerAppFilter)
 	if err != nil {
 		log.Err(err, r)
 		return
@@ -602,7 +603,7 @@ func appTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		})
 
 		for k := range playersAppRows {
-			playersAppRows[k].Rank = query.getOffset() + k + 1
+			playersAppRows[k].Rank = query.GetOffset() + k + 1
 		}
 	}()
 
@@ -621,11 +622,11 @@ func appTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	response := DataTablesResponse{}
+	response := datatable.DataTablesResponse{}
 	response.RecordsTotal = total
 	response.RecordsFiltered = total
 	response.Draw = query.Draw
-	response.limit(r)
+	response.Limit(r)
 
 	for _, v := range playersAppRows {
 
@@ -641,7 +642,7 @@ func appTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	response.output(w, r)
+	returnJSON(w, r, response.Output())
 }
 
 type appTimeAjax struct {

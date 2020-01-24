@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"sync"
 
+	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -43,7 +44,7 @@ type groupsTemplate struct {
 
 func groupsTrendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	query := newDataTableQuery(r, true)
+	query := datatable.NewDataTableQuery(r, true)
 
 	// Filter
 	var filter = bson.D{
@@ -51,7 +52,7 @@ func groupsTrendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	var unfiltered = filter
 
-	search := helpers.RegexNonAlphaNumericSpace.ReplaceAllString(query.getSearchString("search"), "")
+	search := helpers.RegexNonAlphaNumericSpace.ReplaceAllString(query.GetSearchString("search"), "")
 	if len(search) > 0 {
 
 		quoted := regexp.QuoteMeta(search)
@@ -79,7 +80,7 @@ func groupsTrendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		var err error
-		groups, err = mongo.GetGroups(100, query.getOffset64(), query.getOrderMongo(columns), filter, nil)
+		groups, err = mongo.GetGroups(100, query.GetOffset64(), query.GetOrderMongo(columns), filter, nil)
 		if err != nil {
 			log.Err(err, r)
 			return
@@ -111,11 +112,11 @@ func groupsTrendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
-	response := DataTablesResponse{}
+	response := datatable.DataTablesResponse{}
 	response.RecordsTotal = total
 	response.RecordsFiltered = totalFiltered
 	response.Draw = query.Draw
-	response.limit(r)
+	response.Limit(r)
 
 	for _, group := range groups {
 		response.AddRow([]interface{}{
@@ -133,5 +134,5 @@ func groupsTrendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	response.output(w, r)
+	returnJSON(w, r, response.Output())
 }

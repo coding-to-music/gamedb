@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"github.com/Jleagle/influxql"
+	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -39,10 +40,10 @@ type trendingTemplate struct {
 
 func trendingAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	query := newDataTableQuery(r, true)
+	query := datatable.NewDataTableQuery(r, true)
 
 	var filter = bson.D{}
-	var search = query.getSearchString("search")
+	var search = query.GetSearchString("search")
 	if search != "" {
 		filter = bson.D{{Key: "$text", Value: bson.M{"$search": search}}}
 	}
@@ -66,8 +67,8 @@ func trendingAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		projection := bson.M{"_id": 1, "name": 1, "icon": 1, "prices": 1, "player_trend": 1, "player_peak_week": 1}
-		order := query.getOrderMongo(columns)
-		offset := query.getOffset64()
+		order := query.GetOrderMongo(columns)
+		offset := query.GetOffset64()
 
 		apps, err = mongo.GetApps(offset, 100, order, filter, projection, nil)
 		if err != nil {
@@ -109,11 +110,11 @@ func trendingAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
-	response := DataTablesResponse{}
+	response := datatable.DataTablesResponse{}
 	response.RecordsTotal = count
 	response.RecordsFiltered = filtered
 	response.Draw = query.Draw
-	response.limit(r)
+	response.Limit(r)
 
 	var code = helpers.GetProductCC(r)
 
@@ -130,7 +131,7 @@ func trendingAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	response.output(w, r)
+	returnJSON(w, r, response.Output())
 }
 
 func trendingChartsAjaxHandler(w http.ResponseWriter, r *http.Request) {

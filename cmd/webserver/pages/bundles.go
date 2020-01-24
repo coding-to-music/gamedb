@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"github.com/dustin/go-humanize"
+	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
@@ -38,7 +39,7 @@ type bundlesTemplate struct {
 
 func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	query := newDataTableQuery(r, false)
+	query := datatable.NewDataTableQuery(r, false)
 
 	//
 	var wg sync.WaitGroup
@@ -68,7 +69,7 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			"3": "JSON_LENGTH(package_ids)",
 			"4": "updated_at",
 		}
-		gorm = query.setOrderOffsetGorm(gorm, sortCols, "4")
+		gorm = query.SetOrderOffsetGorm(gorm, sortCols, "4")
 
 		gorm = gorm.Find(&bundles)
 
@@ -91,7 +92,7 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	response := DataTablesResponse{}
+	response := datatable.DataTablesResponse{}
 	response.RecordsTotal = int64(count)
 	response.RecordsFiltered = int64(count)
 	response.Draw = query.Draw
@@ -100,5 +101,5 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		response.AddRow(v.OutputForJSON())
 	}
 
-	response.output(w, r)
+	returnJSON(w, r, response.Output())
 }

@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"sync"
 
+	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -50,11 +51,11 @@ var keyRegex = regexp.MustCompile("[0-9a-z_]+") // To stop SQL injection
 
 func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	query := newDataTableQuery(r, false)
+	query := datatable.NewDataTableQuery(r, false)
 
 	//
 	var wg sync.WaitGroup
-	var productType = query.getSearchString("type")
+	var productType = query.GetSearchString("type")
 
 	// Get products
 	var products []extendedRow
@@ -79,11 +80,11 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Search
-		key := query.getSearchString("key")
+		key := query.GetSearchString("key")
 		if key == "" || !keyRegex.MatchString(key) {
 			return
 		}
-		value := query.getSearchString("value")
+		value := query.GetSearchString("value")
 
 		gorm = gorm.Select([]string{"id", "name", "icon", "extended->>'$." + key + "' as value"})
 
@@ -101,7 +102,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Order, offset, limit
 		gorm = gorm.Limit(100)
-		gorm = query.setOrderOffsetGorm(gorm, nil, "")
+		gorm = query.SetOrderOffsetGorm(gorm, nil, "")
 		gorm = gorm.Order("change_number_date desc")
 
 		// Get rows
@@ -128,7 +129,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	response := DataTablesResponse{}
+	response := datatable.DataTablesResponse{}
 	response.RecordsTotal = int64(count)
 	response.RecordsFiltered = recordsFiltered
 	response.Draw = query.Draw
@@ -143,7 +144,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	response.output(w, r)
+	returnJSON(w, r, response.Output())
 }
 
 type extendedRow struct {

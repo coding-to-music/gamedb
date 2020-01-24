@@ -5,6 +5,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -55,7 +56,7 @@ type newReleasesTemplate struct {
 
 func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	query := newDataTableQuery(r, false)
+	query := datatable.NewDataTableQuery(r, false)
 
 	var wg sync.WaitGroup
 	var count int64
@@ -75,7 +76,7 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var filter2 = filter
 
-		var search = query.getSearchString("search")
+		var search = query.GetSearchString("search")
 		if search != "" {
 			filter2 = append(filter2, bson.E{Key: "$text", Value: bson.M{"$search": search}})
 		}
@@ -89,10 +90,10 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		var projection = bson.M{"_id": 1, "name": 1, "icon": 1, "type": 1, "prices": 1, "release_date_unix": 1, "release_date": 1, "player_peak_week": 1, "reviews_score": 1}
-		var sort = query.getOrderMongo(columns)
+		var sort = query.GetOrderMongo(columns)
 
 		var err error
-		apps, err = mongo.GetApps(query.getOffset64(), 100, sort, filter2, projection, nil)
+		apps, err = mongo.GetApps(query.GetOffset64(), 100, sort, filter2, projection, nil)
 		if err != nil {
 			log.Err(err, r)
 		}
@@ -122,7 +123,7 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	//
-	response := DataTablesResponse{}
+	response := datatable.DataTablesResponse{}
 	response.RecordsTotal = count
 	response.RecordsFiltered = filtered
 	response.Draw = query.Draw
@@ -142,5 +143,5 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	response.output(w, r)
+	returnJSON(w, r, response.Output())
 }

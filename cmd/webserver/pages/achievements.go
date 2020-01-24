@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"sync"
 
+	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -29,14 +30,14 @@ func achievementsHandler(w http.ResponseWriter, r *http.Request) {
 
 func achievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	query := newDataTableQuery(r, true)
+	query := datatable.NewDataTableQuery(r, true)
 
 	var wg sync.WaitGroup
 	var filter = bson.D{{"achievements_count", bson.M{"$gt": 0}}}
 	var filter2 = filter
 	var countLock sync.Mutex
 
-	var search = query.getSearchString("search")
+	var search = query.GetSearchString("search")
 	if search != "" {
 		filter2 = append(filter2, bson.E{Key: "$text", Value: bson.M{"$search": search}})
 	}
@@ -53,11 +54,11 @@ func achievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		var projection = bson.M{"_id": 1, "name": 1, "icon": 1, "achievements_5": 1, "achievements_count": 1, "achievements_average_completion": 1, "prices": 1}
-		var sort = query.getOrderMongo(columns)
+		var sort = query.GetOrderMongo(columns)
 		sort = append(sort, bson.E{Key: "achievements_average_completion", Value: -1})
 
 		var err error
-		apps, err = mongo.GetApps(query.getOffset64(), 100, sort, filter2, projection, nil)
+		apps, err = mongo.GetApps(query.GetOffset64(), 100, sort, filter2, projection, nil)
 		if err != nil {
 			log.Err(err, r)
 		}
@@ -96,11 +97,11 @@ func achievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	//
-	response := DataTablesResponse{}
+	response := datatable.DataTablesResponse{}
 	response.RecordsTotal = count
 	response.RecordsFiltered = filtered
 	response.Draw = query.Draw
-	response.limit(r)
+	response.Limit(r)
 
 	var code = helpers.GetProductCC(r)
 
@@ -117,5 +118,5 @@ func achievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	response.output(w, r)
+	returnJSON(w, r, response.Output())
 }

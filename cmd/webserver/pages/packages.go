@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"sync"
 
+	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
@@ -37,7 +38,7 @@ type packagesTemplate struct {
 
 func packagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	query := newDataTableQuery(r, false)
+	query := datatable.NewDataTableQuery(r, false)
 
 	//
 	var code = helpers.GetProductCC(r)
@@ -66,7 +67,7 @@ func packagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			"3": "apps_count",
 			"4": "change_number_date",
 		}
-		db = query.setOrderOffsetGorm(db, sortCols, "4")
+		db = query.SetOrderOffsetGorm(db, sortCols, "4")
 
 		db = db.Limit(100)
 		db = db.Find(&packages)
@@ -91,7 +92,7 @@ func packagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	response := DataTablesResponse{}
+	response := datatable.DataTablesResponse{}
 	response.RecordsTotal = int64(count)
 	response.RecordsFiltered = int64(count)
 	response.Draw = query.Draw
@@ -100,5 +101,5 @@ func packagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		response.AddRow(v.OutputForJSON(code))
 	}
 
-	response.output(w, r)
+	returnJSON(w, r, response.Output())
 }

@@ -8,6 +8,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -214,7 +215,7 @@ type appsTemplate struct {
 
 func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	query := newDataTableQuery(r, false)
+	query := datatable.NewDataTableQuery(r, false)
 
 	//
 	var wg sync.WaitGroup
@@ -223,7 +224,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var countLock sync.Mutex
 
 	// Types
-	types := query.getSearchSlice("types")
+	types := query.GetSearchSlice("types")
 	if len(types) > 0 {
 
 		a := bson.A{}
@@ -235,7 +236,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Tags
-	tags := query.getSearchSlice("tags")
+	tags := query.GetSearchSlice("tags")
 	if len(tags) > 0 {
 
 		a := bson.A{}
@@ -250,7 +251,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Genres
-	genres := query.getSearchSlice("genres")
+	genres := query.GetSearchSlice("genres")
 	if len(genres) > 0 {
 
 		a := bson.A{}
@@ -265,7 +266,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Developers
-	developers := query.getSearchSlice("developers")
+	developers := query.GetSearchSlice("developers")
 	if len(developers) > 0 {
 
 		a := bson.A{}
@@ -280,7 +281,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Publishers
-	publishers := query.getSearchSlice("publishers")
+	publishers := query.GetSearchSlice("publishers")
 	if len(publishers) > 0 {
 
 		a := bson.A{}
@@ -295,7 +296,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Categories
-	categories := query.getSearchSlice("categories")
+	categories := query.GetSearchSlice("categories")
 	if len(categories) > 0 {
 
 		a := bson.A{}
@@ -310,7 +311,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Platforms
-	platforms := query.getSearchSlice("platforms")
+	platforms := query.GetSearchSlice("platforms")
 	if len(platforms) > 0 {
 
 		a := bson.A{}
@@ -322,7 +323,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Price range
-	prices := query.getSearchSlice("price")
+	prices := query.GetSearchSlice("price")
 	if len(prices) == 2 {
 
 		low, err := strconv.Atoi(strings.Replace(prices[0], ".", "", 1))
@@ -342,7 +343,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Score range
-	scores := query.getSearchSlice("score")
+	scores := query.GetSearchSlice("score")
 	if len(scores) == 2 {
 
 		low, err := strconv.Atoi(strings.TrimSuffix(scores[0], ".00"))
@@ -360,7 +361,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Search
-	search := query.getSearchString("search")
+	search := query.GetSearchString("search")
 	if search != "" {
 		filter = append(filter, bson.E{Key: "$text", Value: bson.M{"$search": search}})
 	}
@@ -380,8 +381,8 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		projection := bson.M{"_id": 1, "name": 1, "icon": 1, "reviews_score": 1, "prices": 1, "player_peak_week": 1, "group_followers": 1}
-		order := query.getOrderMongo(cols)
-		offset := query.getOffset64()
+		order := query.GetOrderMongo(cols)
+		offset := query.GetOffset64()
 
 		var err error
 		apps, err = mongo.GetApps(offset, 100, order, filter, projection, nil)
@@ -425,7 +426,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	response := DataTablesResponse{}
+	response := datatable.DataTablesResponse{}
 	response.RecordsTotal = count
 	response.RecordsFiltered = recordsFiltered
 	response.Draw = query.Draw
@@ -442,10 +443,10 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			app.Prices.Get(code).GetFinal(),           // 6
 			app.PlayerPeakWeek,                        // 7
 			app.GetStoreLink(),                        // 8
-			query.getOffset() + k + 1,                 // 9
+			query.GetOffset() + k + 1,                 // 9
 			app.GroupFollowers,                        // 10
 		})
 	}
 
-	response.output(w, r)
+	returnJSON(w, r, response.Output())
 }

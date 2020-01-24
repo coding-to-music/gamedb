@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -164,14 +165,14 @@ func (ud upcomingSale) Show() bool {
 
 func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	query := newDataTableQuery(r, false)
+	query := datatable.NewDataTableQuery(r, false)
 
 	var code = helpers.GetProductCC(r)
 	var filter = bson.D{
 		{Key: "offer_end", Value: bson.M{"$gt": time.Now()}},
 	}
 
-	search := helpers.RegexNonAlphaNumericSpace.ReplaceAllString(query.getSearchString("search"), "")
+	search := helpers.RegexNonAlphaNumericSpace.ReplaceAllString(query.GetSearchString("search"), "")
 	if search != "" {
 
 		quoted := regexp.QuoteMeta(search)
@@ -183,7 +184,7 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Index
-	index := query.getSearchString("index")
+	index := query.GetSearchString("index")
 	if index != "" {
 		orderI, err := strconv.Atoi(strings.TrimSuffix(index, ".00"))
 		if err == nil {
@@ -192,7 +193,7 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Score
-	scores := query.getSearchSlice("score")
+	scores := query.GetSearchSlice("score")
 	if len(scores) == 2 {
 
 		low, err := strconv.Atoi(strings.TrimSuffix(scores[0], ".00"))
@@ -210,7 +211,7 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Price
-	prices := query.getSearchSlice("price")
+	prices := query.GetSearchSlice("price")
 	if len(prices) == 2 {
 
 		low, err := strconv.Atoi(strings.TrimSuffix(prices[0], ".00"))
@@ -228,7 +229,7 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Discount
-	discounts := query.getSearchSlice("discount")
+	discounts := query.GetSearchSlice("discount")
 	if len(discounts) == 2 {
 
 		low, err := strconv.Atoi(strings.TrimSuffix(discounts[0], ".00"))
@@ -246,7 +247,7 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// App type
-	appTypes := query.getSearchSlice("app-type")
+	appTypes := query.GetSearchSlice("app-type")
 	if len(appTypes) > 0 {
 
 		var or bson.A
@@ -257,7 +258,7 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Sale type
-	saleTypes := query.getSearchSlice("sale-type")
+	saleTypes := query.GetSearchSlice("sale-type")
 	if len(saleTypes) > 0 {
 
 		var or bson.A
@@ -268,7 +269,7 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Tag in
-	tagsIn := query.getSearchSlice("tags-in")
+	tagsIn := query.GetSearchSlice("tags-in")
 	if len(tagsIn) > 0 {
 
 		var or bson.A
@@ -282,7 +283,7 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Tag out
-	tagsOut := query.getSearchSlice("tags-out")
+	tagsOut := query.GetSearchSlice("tags-out")
 	if len(tagsOut) > 0 {
 
 		var or bson.A
@@ -296,7 +297,7 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Categories
-	categories := query.getSearchSlice("categories")
+	categories := query.GetSearchSlice("categories")
 	if len(categories) > 0 {
 
 		var in bson.A
@@ -310,7 +311,7 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Platforms
-	platforms := query.getSearchSlice("platforms")
+	platforms := query.GetSearchSlice("platforms")
 	if len(platforms) > 0 {
 
 		var in bson.A
@@ -339,13 +340,13 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			"5": "app_date",
 		}
 
-		order := query.getOrderMongo(columns)
+		order := query.GetOrderMongo(columns)
 		order = append(order, bson.E{Key: "app_rating", Value: -1})
 		order = append(order, bson.E{Key: "app_name", Value: 1})
 		order = append(order, bson.E{Key: "sub_order", Value: 1})
 
 		var err error
-		offers, err = mongo.GetAllSales(query.getOffset64(), 100, filter, order)
+		offers, err = mongo.GetAllSales(query.GetOffset64(), 100, filter, order)
 		if err != nil {
 			log.Err(err, r)
 			return
@@ -383,7 +384,7 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	response := DataTablesResponse{}
+	response := datatable.DataTablesResponse{}
 	response.RecordsTotal = count
 	response.RecordsFiltered = filtered
 	response.Draw = query.Draw
@@ -410,5 +411,5 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	response.output(w, r)
+	returnJSON(w, r, response.Output())
 }

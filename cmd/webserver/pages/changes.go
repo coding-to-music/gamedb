@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"sync"
 
+	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
@@ -34,9 +35,9 @@ type changesTemplate struct {
 
 func changesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	query := newDataTableQuery(r, true)
+	query := datatable.NewDataTableQuery(r, true)
 
-	changes, err := mongo.GetChanges(query.getOffset64())
+	changes, err := mongo.GetChanges(query.GetOffset64())
 	if err != nil {
 		log.Err(err, r)
 		return
@@ -108,15 +109,15 @@ func changesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
-	response := DataTablesResponse{}
+	response := datatable.DataTablesResponse{}
 	response.RecordsTotal = count
 	response.RecordsFiltered = count
 	response.Draw = query.Draw
-	response.limit(r)
+	response.Limit(r)
 
 	for _, v := range changes {
 		response.AddRow(v.OutputForJSON(appMap, packageMap))
 	}
 
-	response.output(w, r)
+	returnJSON(w, r, response.Output())
 }

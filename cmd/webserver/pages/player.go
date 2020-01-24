@@ -10,6 +10,7 @@ import (
 	"github.com/Jleagle/influxql"
 	"github.com/Jleagle/session-go/session"
 	"github.com/dustin/go-humanize"
+	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
 	"github.com/gamedb/gamedb/cmd/webserver/middleware"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/influx"
@@ -478,7 +479,7 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	query := newDataTableQuery(r, true)
+	query := datatable.NewDataTableQuery(r, true)
 
 	code := helpers.GetProductCC(r)
 
@@ -500,7 +501,7 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		var err error
-		playerApps, err = mongo.GetPlayerApps(playerIDInt, query.getOffset64(), 100, query.getOrderMongo(columns))
+		playerApps, err = mongo.GetPlayerApps(playerIDInt, query.GetOffset64(), 100, query.GetOrderMongo(columns))
 		log.Err(err)
 	}()
 
@@ -524,11 +525,11 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	response := DataTablesResponse{}
+	response := datatable.DataTablesResponse{}
 	response.RecordsTotal = int64(total)
 	response.RecordsFiltered = int64(total)
 	response.Draw = query.Draw
-	response.limit(r)
+	response.Limit(r)
 
 	for _, pa := range playerApps {
 		response.AddRow([]interface{}{
@@ -543,7 +544,7 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	response.output(w, r)
+	returnJSON(w, r, response.Output())
 
 }
 
@@ -557,7 +558,7 @@ func playerRecentAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	query := newDataTableQuery(r, true)
+	query := datatable.NewDataTableQuery(r, true)
 
 	//
 	var wg sync.WaitGroup
@@ -576,7 +577,7 @@ func playerRecentAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		var err error
-		apps, err = mongo.GetRecentApps(playerIDInt, query.getOffset64(), 100, query.getOrderMongo(columns))
+		apps, err = mongo.GetRecentApps(playerIDInt, query.GetOffset64(), 100, query.GetOrderMongo(columns))
 		log.Err(err)
 	}()
 
@@ -600,11 +601,11 @@ func playerRecentAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	response := DataTablesResponse{}
+	response := datatable.DataTablesResponse{}
 	response.RecordsTotal = total
 	response.RecordsFiltered = total
 	response.Draw = query.Draw
-	response.limit(r)
+	response.Limit(r)
 
 	for _, app := range apps {
 		response.AddRow([]interface{}{
@@ -617,7 +618,7 @@ func playerRecentAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	response.output(w, r)
+	returnJSON(w, r, response.Output())
 }
 
 func playerFriendsAjaxHandler(w http.ResponseWriter, r *http.Request) {
@@ -630,7 +631,7 @@ func playerFriendsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	query := newDataTableQuery(r, true)
+	query := datatable.NewDataTableQuery(r, true)
 
 	//
 	var wg sync.WaitGroup
@@ -650,7 +651,7 @@ func playerFriendsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		var err error
-		friends, err = mongo.GetFriends(playerIDInt, query.getOffset64(), 100, query.getOrderMongo(columns))
+		friends, err = mongo.GetFriends(playerIDInt, query.GetOffset64(), 100, query.GetOrderMongo(columns))
 		log.Err(err)
 	}()
 
@@ -672,11 +673,11 @@ func playerFriendsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	response := DataTablesResponse{}
+	response := datatable.DataTablesResponse{}
 	response.RecordsTotal = count
 	response.RecordsFiltered = count
 	response.Draw = query.Draw
-	response.limit(r)
+	response.Limit(r)
 
 	for _, friend := range friends {
 		response.AddRow([]interface{}{
@@ -692,7 +693,7 @@ func playerFriendsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	response.output(w, r)
+	returnJSON(w, r, response.Output())
 }
 
 func playerBadgesAjaxHandler(w http.ResponseWriter, r *http.Request) {
@@ -709,7 +710,7 @@ func playerBadgesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	query := newDataTableQuery(r, false)
+	query := datatable.NewDataTableQuery(r, false)
 
 	// Make filter
 	var filter = bson.D{
@@ -728,7 +729,7 @@ func playerBadgesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		badges, err = mongo.GetPlayerEventBadges(query.getOffset64(), filter)
+		badges, err = mongo.GetPlayerEventBadges(query.GetOffset64(), filter)
 		if err != nil {
 			log.Err(err, r)
 		}
@@ -750,7 +751,7 @@ func playerBadgesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
-	response := DataTablesResponse{}
+	response := datatable.DataTablesResponse{}
 	response.RecordsTotal = total
 	response.RecordsFiltered = total
 	response.Draw = query.Draw
@@ -769,7 +770,7 @@ func playerBadgesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	response.output(w, r)
+	returnJSON(w, r, response.Output())
 }
 
 func playerWishlistAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
@@ -786,7 +787,7 @@ func playerWishlistAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	query := newDataTableQuery(r, false)
+	query := datatable.NewDataTableQuery(r, false)
 
 	//
 	var wg sync.WaitGroup
@@ -809,7 +810,7 @@ func playerWishlistAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		var err error
-		wishlistApps, err = mongo.GetPlayerWishlistAppsByPlayer(idx, query.getOffset64(), 0, query.getOrderMongo(columns))
+		wishlistApps, err = mongo.GetPlayerWishlistAppsByPlayer(idx, query.GetOffset64(), 0, query.GetOrderMongo(columns))
 		if err != nil {
 			log.Err(err, r)
 			return
@@ -834,7 +835,7 @@ func playerWishlistAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
-	response := DataTablesResponse{}
+	response := datatable.DataTablesResponse{}
 	response.RecordsTotal = total
 	response.RecordsFiltered = total
 	response.Draw = query.Draw
@@ -863,7 +864,7 @@ func playerWishlistAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	response.output(w, r)
+	returnJSON(w, r, response.Output())
 }
 
 func playerGroupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
@@ -890,7 +891,7 @@ func playerGroupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	query := newDataTableQuery(r, false)
+	query := datatable.NewDataTableQuery(r, false)
 
 	//
 	var wg sync.WaitGroup
@@ -908,7 +909,7 @@ func playerGroupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		var err error
-		groups, err = mongo.GetPlayerGroups(idx, query.getOffset64(), 100, query.getOrderMongo(columns))
+		groups, err = mongo.GetPlayerGroups(idx, query.GetOffset64(), 100, query.GetOrderMongo(columns))
 		if err != nil {
 			log.Err(err, r)
 		}
@@ -933,7 +934,7 @@ func playerGroupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
-	response := DataTablesResponse{}
+	response := datatable.DataTablesResponse{}
 	response.RecordsTotal = total
 	response.RecordsFiltered = total
 	response.Draw = query.Draw
@@ -952,7 +953,7 @@ func playerGroupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	response.output(w, r)
+	returnJSON(w, r, response.Output())
 }
 
 func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {

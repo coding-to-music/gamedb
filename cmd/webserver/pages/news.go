@@ -5,6 +5,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -57,7 +58,7 @@ type newsTemplate struct {
 
 func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	query := newDataTableQuery(r, true)
+	query := datatable.NewDataTableQuery(r, true)
 
 	var wg sync.WaitGroup
 
@@ -68,7 +69,7 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		articles, err = mongo.GetArticles(query.getOffset64())
+		articles, err = mongo.GetArticles(query.GetOffset64())
 		log.Err(err, r)
 
 		for k, v := range articles {
@@ -89,15 +90,15 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
-	response := DataTablesResponse{}
+	response := datatable.DataTablesResponse{}
 	response.RecordsTotal = count
 	response.RecordsFiltered = count
 	response.Draw = query.Draw
-	response.limit(r)
+	response.Limit(r)
 
 	for _, v := range articles {
 		response.AddRow(v.OutputForJSON())
 	}
 
-	response.output(w, r)
+	returnJSON(w, r, response.Output())
 }

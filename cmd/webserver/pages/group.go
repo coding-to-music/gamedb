@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"github.com/Jleagle/influxql"
+	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
@@ -126,7 +127,7 @@ func groupTableAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//
-	query := newDataTableQuery(r, true)
+	query := datatable.NewDataTableQuery(r, true)
 
 	//
 	var wg sync.WaitGroup
@@ -139,7 +140,7 @@ func groupTableAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		playerGroups, err = mongo.GetGroupPlayers(id, query.getOffset64())
+		playerGroups, err = mongo.GetGroupPlayers(id, query.GetOffset64())
 		if err != nil {
 			log.Err(err, r)
 			return
@@ -160,11 +161,11 @@ func groupTableAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
-	response := DataTablesResponse{}
+	response := datatable.DataTablesResponse{}
 	response.RecordsTotal = total
 	response.RecordsFiltered = total
 	response.Draw = query.Draw
-	response.limit(r)
+	response.Limit(r)
 
 	for _, playerGroup := range playerGroups {
 		response.AddRow([]interface{}{
@@ -175,7 +176,7 @@ func groupTableAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	response.output(w, r)
+	returnJSON(w, r, response.Output())
 }
 
 func groupAjaxHandler(w http.ResponseWriter, r *http.Request) {
