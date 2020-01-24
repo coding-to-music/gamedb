@@ -23,7 +23,7 @@
         {{ end }}
 
         <div class="row">
-            <div class="col-12 col-md-8">
+            <div class="col-12 col-lg-8">
 
                 <div class="card mb-4" id="sales">
                     <div class="card-header">
@@ -124,7 +124,7 @@
                     </div>
                 </div>
 
-                <div class="card mb-4 mb-md-0" id="news">
+                <div class="card mb-4 mb-lg-0" id="news">
                     <div class="card-header">Popular Game News</div>
                     <div class="card-body">
                         <ul class="list-unstyled">
@@ -146,7 +146,7 @@
                 </div>
 
             </div>
-            <div class="col-12 col-md-4" id="new-releases">
+            <div class="col-12 col-lg-4" id="new-releases">
 
                 <div class="card mb-4">
                     <h5 class="card-header">{{ .Spotlight.Title }}</h5>
@@ -159,11 +159,15 @@
                 <div class="card border-0">
                     <div class="card-header">Popular New Releases</div>
                     <div class="card-body p-0">
-                        {{ range $key, $value := .Games }}
-                            <a href="{{ .GetPath }}">
-                                <img src='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 215"%3E%3C/svg%3E' data-lazy="https://images.weserv.nl/?url={{ .GetHeaderImage }}&output=webp" alt="" data-lazy-alt="{{ .GetName }}">
-                            </a>
-                        {{ end }}
+                        <div class="row">
+                            {{ range $key, $value := .Games }}
+                                <div class="col-12 col-sm-6 col-lg-12">
+                                    <a href="{{ .GetPath }}">
+                                        <img src='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 215"%3E%3C/svg%3E' data-lazy="https://images.weserv.nl/?url={{ .GetHeaderImage }}&output=webp" alt="" data-lazy-alt="{{ .GetName }}">
+                                    </a>
+                                </div>
+                            {{ end }}
+                        </div>
                     </div>
                     <div class="card-footer">
                         <a href="/new-releases">More New Released</a>

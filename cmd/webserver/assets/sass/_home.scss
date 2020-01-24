@@ -68,6 +68,26 @@
         //    border-top-right-radius: 0;
         //}
 
+        .row {
+            > div:nth-child(2n) {
+                @include media-breakpoint-up(sm) {
+                    padding-left: 0;
+                }
+                @include media-breakpoint-up(lg) {
+                    padding-left: 15px;
+                }
+            }
+
+            > div:nth-child(2n+1) {
+                @include media-breakpoint-up(sm) {
+                    padding-right: 0;
+                }
+                @include media-breakpoint-up(lg) {
+                    padding-right: 15px;
+                }
+            }
+        }
+
         a {
             img {
                 //margin-bottom: 0.5rem;
