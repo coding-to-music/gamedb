@@ -183,7 +183,6 @@
             });
 
             // Init table
-            // console.log(parent.element, this.options.tableOptions);
             const dt = $(this.element).DataTable(this.options.tableOptions);
             this.dt = dt;
             this.initialValues.s = $.extend(true, [], dt.order()); // Using extend to copy, not reference

@@ -4,30 +4,80 @@ if ($('#wishlists-page').length > 0) {
         "order": [[1, 'desc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-app-id', data[0]);
-            $(row).attr('data-link', data[2]);
+            $(row).attr('data-link', data[3]);
         },
         "columnDefs": [
             // Icon / App
             {
                 "targets": 0,
                 "render": function (data, type, row) {
-                    return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[4] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></div>'
+                    return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[2] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></div>'
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img');
-                }
+                },
+                "orderable": false,
             },
             // Count
             {
                 "targets": 1,
                 "render": function (data, type, row) {
-                    return row[3].toLocaleString();
+                    return row[4].toLocaleString();
                 },
+                "orderSequence": ["desc"],
+            },
+            // Average Position
+            {
+                "targets": 2,
+                "render": function (data, type, row) {
+                    return row[5].toLocaleString();
+                },
+                "orderSequence": ["asc", "desc"],
+            },
+            // Followers
+            {
+                "targets": 3,
+                "render": function (data, type, row) {
+                    return row[6];
+                },
+                "orderSequence": ["asc", "desc"],
+            },
+            // Price
+            {
+                "targets": 4,
+                "render": function (data, type, row) {
+                    return row[10];
+                },
+                "orderSequence": ["asc", "desc"],
+            },
+            // Release Date
+            {
+                "targets": 5,
+                "render": function (data, type, row) {
+                    return row[9];
+                },
+                "orderSequence": ["asc", "desc"],
+            },
+            // Link
+            {
+                "targets": 6,
+                "render": function (data, type, row) {
+                    if (row[7]) {
+                        return '<a href="' + row[7] + '" target="_blank" rel="nofollow"><i class="fas fa-link"></i></a>';
+                    }
+                    return '';
+                },
+                "orderable": false,
             },
         ]
     };
 
-    $('#apps table.table').gdbTable({tableOptions: appsOptions});
+    $('#apps table.table').gdbTable({
+        tableOptions: appsOptions,
+        searchFields: [
+            $('#search')
+        ]
+    });
 
     //
     const tagsOptions = {

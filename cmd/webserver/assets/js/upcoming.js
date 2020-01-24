@@ -104,5 +104,8 @@ if ($('#upcoming-page').length > 0) {
         $('#search'),
     ];
 
-    $('table.table').gdbTable({tableOptions: options, searchFields: searchFields});
+    $('table.table').gdbTable({
+        tableOptions: options,
+        searchFields: searchFields
+    });
 }

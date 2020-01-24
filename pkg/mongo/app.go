@@ -454,6 +454,7 @@ func CreateAppIndexes() {
 		"categories",
 		"developers",
 		"genres",
+		"group_followers",
 		"platforms",
 		"player_peak_week",
 		"player_trend",
@@ -463,6 +464,7 @@ func CreateAppIndexes() {
 		"reviews_score",
 		"tags",
 		"type",
+		"wishlist_avg_position",
 	}
 
 	var descending = []string{
@@ -474,6 +476,8 @@ func CreateAppIndexes() {
 		// "prices",
 		"release_date_unix",
 		"reviews_score",
+		"wishlist_avg_position",
+		"wishlist_count",
 	}
 
 	// Price fields

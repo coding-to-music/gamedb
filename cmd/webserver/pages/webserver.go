@@ -462,7 +462,11 @@ func (t GlobalTemplate) GetVersionHash() string {
 }
 
 func (t GlobalTemplate) IsAppsPage() bool {
-	return helpers.SliceHasString([]string{"apps", "new-releases", "upcoming", "apps/trending", "achievements", "packages", "bundles", "price-changes", "changes", "coop"}, strings.TrimPrefix(t.Path, "/"))
+
+	if strings.HasPrefix(t.Path, "/apps") {
+		return true
+	}
+	return helpers.SliceHasString([]string{"new-releases", "upcoming", "achievements", "wishlists", "packages", "bundles", "price-changes", "changes", "coop"}, strings.TrimPrefix(t.Path, "/"))
 }
 
 func (t GlobalTemplate) IsStatsPage() bool {
@@ -474,20 +478,14 @@ func (t GlobalTemplate) IsSettingsPage() bool {
 	if strings.HasPrefix(t.Path, "/signup") {
 		return true
 	}
-
 	return helpers.SliceHasString([]string{"login", "logout", "forgot", "settings", "admin"}, strings.TrimPrefix(t.Path, "/"))
 }
 
 func (t GlobalTemplate) IsMorePage() bool {
 
-	if strings.HasPrefix(t.Path, "/chat") {
+	if strings.HasPrefix(t.Path, "/chat") || strings.HasPrefix(t.Path, "/experience") {
 		return true
 	}
-
-	if strings.HasPrefix(t.Path, "/experience") {
-		return true
-	}
-
 	return helpers.SliceHasString([]string{"chat-bot", "contact", "info", "queues", "info", "steam-api", "api"}, strings.TrimPrefix(t.Path, "/"))
 }
 
@@ -505,14 +503,9 @@ func (t GlobalTemplate) IsAdmin() bool {
 
 func (t GlobalTemplate) ShowAds() bool {
 
-	if config.IsLocal() {
+	if config.IsLocal() || t.userLevel > 0 {
 		return false
 	}
-
-	if t.userLevel > 0 {
-		return false
-	}
-
 	return !t.hideAds
 }
 

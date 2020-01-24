@@ -1,203 +1,141 @@
 package pages
 
-//
-// import (
-// 	"net/http"
-// 	"sync"
-//
-// 	"github.com/gamedb/gamedb/pkg/helpers"
-// 	"github.com/gamedb/gamedb/pkg/log"
-// 	"github.com/gamedb/gamedb/pkg/mongo"
-// 	"github.com/gamedb/gamedb/pkg/sql"
-// 	"github.com/go-chi/chi"
-// )
-//
-// func WishlistsRouter() http.Handler {
-// 	r := chi.NewRouter()
-// 	r.Get("/", wishlistsHandler)
-// 	r.Get("/apps.json", wishlistAppsHandler)
-// 	// r.Get("/tags.json", wishlistTagsHandler)
-// 	return r
-// }
-//
-// func wishlistsHandler(w http.ResponseWriter, r *http.Request) {
-//
-// 	t := wishlistsTemplate{}
-// 	t.fill(w, r, "Wishlists", "Steam's most wishlisted games")
-//
-// 	returnTemplate(w, r, "wishlists", t)
-// }
-//
-// type wishlistsTemplate struct {
-// 	GlobalTemplate
-// }
-//
-// func wishlistAppsHandler(w http.ResponseWriter, r *http.Request) {
-//
-// 	query := dataTablesQuery{}
-// 	err := query.fillFromURL(r.URL.Query())
-// 	log.Err(err, r)
-//
-// 	var wg sync.WaitGroup
-//
-// 	var apps []mongo.WishlistApp
-// 	wg.Add(1)
-// 	go func() {
-//
-// 		defer wg.Done()
-//
-// 		var err error
-// 		apps, err = mongo.GetWishlistApps(query.getOffset64())
-// 		log.Err(err, r)
-// 	}()
-//
-// 	var count int64
-// 	wg.Add(1)
-// 	go func() {
-//
-// 		defer wg.Done()
-//
-// 		var err error
-// 		count, err = mongo.CountDocuments(mongo.CollectionWishlistApps, nil, 0)
-// 		log.Err(err, r)
-// 	}()
-//
-// 	wg.Wait()
-//
-// 	response := DataTablesResponse{}
-// 	response.RecordsTotal = count
-// 	response.RecordsFiltered = count
-// 	response.Draw = query.Draw
-//
-// 	for _, app := range apps {
-// 		response.AddRow([]interface{}{
-// 			app.AppID,
-// 			app.AppName,
-// 			app.GetAppPath(),
-// 			app.Count,
-// 			app.GetAppIcon(),
-// 		})
-// 	}
-//
-// 	response.output(w, r)
-//
-//
-//
-//
-//
-// 	query := dataTablesQuery{}
-// 	err := query.fillFromURL(r.URL.Query())
-// 	log.Err(err, r)
-//
-// 	//
-// 	var code = helpers.GetProductCC(r)
-// 	var wg sync.WaitGroup
-//
-// 	// Get apps
-// 	var packages []sql.Package
-//
-// 	wg.Add(1)
-// 	go func(r *http.Request) {
-//
-// 		defer wg.Done()
-//
-// 		db, err := sql.GetMySQLClient()
-// 		if err != nil {
-// 			log.Err(err, r)
-// 			return
-// 		}
-//
-// 		db = db.Model(&sql.Package{})
-// 		db = db.Select([]string{"id", "name", "apps_count", "change_number_date", "prices", "icon"})
-//
-// 		sortCols := map[string]string{
-// 			"1": "JSON_EXTRACT(prices, \"$." + string(code) + ".final\")",
-// 			"2": "JSON_EXTRACT(prices, \"$." + string(code) + ".discount_percent\")",
-// 			"3": "apps_count",
-// 			"4": "change_number_date",
-// 		}
-// 		db = query.setOrderOffsetGorm(db, sortCols, "4")
-//
-// 		db = db.Limit(100)
-// 		db = db.Find(&packages)
-//
-// 		log.Err(db.Error)
-//
-// 	}(r)
-//
-// 	// Get total
-// 	var count int
-// 	wg.Add(1)
-// 	go func() {
-//
-// 		defer wg.Done()
-//
-// 		var err error
-// 		count, err = sql.CountPackages()
-// 		log.Err(err, r)
-//
-// 	}()
-//
-// 	// Wait
-// 	wg.Wait()
-//
-// 	response := DataTablesResponse{}
-// 	response.RecordsTotal = int64(count)
-// 	response.RecordsFiltered = int64(count)
-// 	response.Draw = query.Draw
-//
-// 	for _, v := range packages {
-// 		response.AddRow(v.OutputForJSON(code))
-// 	}
-//
-// 	response.output(w, r)
-// }
-//
-// func wishlistTagsHandler(w http.ResponseWriter, r *http.Request) {
-//
-// 	query := dataTablesQuery{}
-// 	err := query.fillFromURL(r.URL.Query())
-// 	log.Err(err, r)
-//
-// 	var wg sync.WaitGroup
-//
-// 	var tags []mongo.WishlistTag
-// 	wg.Add(1)
-// 	go func() {
-//
-// 		defer wg.Done()
-//
-// 		var err error
-// 		tags, err = mongo.GetWishlistTags()
-// 		log.Err(err, r)
-// 	}()
-//
-// 	var count int64
-// 	wg.Add(1)
-// 	go func() {
-//
-// 		defer wg.Done()
-//
-// 		var err error
-// 		count, err = mongo.CountDocuments(mongo.CollectionWishlistTags, nil, 0)
-// 		log.Err(err, r)
-// 	}()
-//
-// 	wg.Wait()
-//
-// 	response := DataTablesResponse{}
-// 	response.RecordsTotal = count
-// 	response.RecordsFiltered = count
-// 	response.Draw = query.Draw
-//
-// 	for _, tag := range tags {
-// 		response.AddRow([]interface{}{
-// 			tag.TagID,
-// 			tag.TagName,
-// 			tag.GetTagPath(),
-// 			tag.Count,
-// 		})
-// 	}
-//
-// 	response.output(w, r)
-// }
+import (
+	"math"
+	"net/http"
+	"sync"
+
+	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/go-chi/chi"
+	"go.mongodb.org/mongo-driver/bson"
+)
+
+var wishlistFilter = bson.D{
+	{"wishlist_count", bson.M{"$gt": 0}},
+	{"wishlist_avg_position", bson.M{"$gt": 0}},
+}
+
+func WishlistsRouter() http.Handler {
+	r := chi.NewRouter()
+	r.Get("/", wishlistsHandler)
+	r.Get("/apps.json", wishlistAppsHandler)
+	// r.Get("/tags.json", wishlistTagsHandler)
+	return r
+}
+
+func wishlistsHandler(w http.ResponseWriter, r *http.Request) {
+
+	t := wishlistsTemplate{}
+	t.fill(w, r, "Wishlists", "Steam's most wishlisted games")
+
+	returnTemplate(w, r, "wishlists", t)
+}
+
+type wishlistsTemplate struct {
+	GlobalTemplate
+}
+
+func wishlistAppsHandler(w http.ResponseWriter, r *http.Request) {
+
+	query := newDataTableQuery(r, true)
+
+	filter2 := wishlistFilter
+	search := query.getSearchString("search")
+	if search != "" {
+		filter2 = append(filter2, bson.E{Key: "$text", Value: bson.M{"$search": search}})
+	}
+
+	var wg sync.WaitGroup
+	var countLock sync.Mutex
+	var code = helpers.GetProductCC(r)
+
+	// Count
+	var apps []mongo.App
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+
+		columns := map[string]string{
+			"1": "wishlist_count",
+			"2": "wishlist_avg_position",
+			"3": "group_followers",
+			"4": "prices." + string(code) + ".final",
+			"5": "release_date_unix",
+		}
+
+		projection := bson.M{"_id": 1, "name": 1, "icon": 1, "wishlist_count": 1, "wishlist_avg_position": 1, "prices": 1, "group_followers": 1, "group_id": 1, "release_date_unix": 1, "release_state": 1}
+		order := query.getOrderMongo(columns)
+		offset := query.getOffset64()
+
+		apps, err = mongo.GetApps(offset, 100, order, filter2, projection, nil)
+		if err != nil {
+			log.Err(err, r)
+		}
+	}()
+
+	// Get filtered count
+	var filtered int64
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		countLock.Lock()
+		filtered, err = mongo.CountDocuments(mongo.CollectionApps, filter2, 0)
+		countLock.Unlock()
+		if err != nil {
+			log.Err(err, r)
+		}
+	}()
+
+	// Get count
+	var count int64
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		countLock.Lock()
+		count, err = mongo.CountDocuments(mongo.CollectionApps, wishlistFilter, 86400)
+		countLock.Unlock()
+		if err != nil {
+			log.Err(err, r)
+		}
+	}()
+
+	wg.Wait()
+
+	//
+	response := DataTablesResponse{}
+	response.RecordsTotal = count
+	response.RecordsFiltered = filtered
+	response.Draw = query.Draw
+
+	for _, app := range apps {
+
+		avgPosition := math.Round(app.WishlistAvgPosition*100) / 100
+
+		response.AddRow([]interface{}{
+			app.ID,                          // 0
+			app.GetName(),                   // 1
+			app.GetIcon(),                   // 2
+			app.GetPath(),                   // 3
+			app.WishlistCount,               // 4
+			avgPosition,                     // 5
+			app.GetFollowers(),              // 6
+			helpers.GetAppStoreLink(app.ID), // 7
+			app.ReleaseDateUnix,             // 8
+			app.GetReleaseDateNice(),        // 9
+			app.GetPrice(code).GetFinal(),   // 10
+		})
+	}
+
+	response.output(w, r)
+}

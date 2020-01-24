@@ -63,6 +63,7 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 
+		// todo
 		columns := map[string]string{
 			"1": "group_followers $dir, name ASC",
 			"4": "release_date_unix $dir, group_followers DESC, name ASC",
@@ -117,7 +118,6 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	response := DataTablesResponse{}
 	response.RecordsTotal = count
-	response.RecordsFiltered = count
 	response.RecordsFiltered = filtered
 	response.Draw = query.Draw
 
