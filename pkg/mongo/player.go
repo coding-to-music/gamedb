@@ -354,6 +354,12 @@ func CreatePlayerIndexes() {
 		})
 	}
 
+	// Text index
+	indexModels = append(indexModels, mongo.IndexModel{
+		Keys:    bson.D{{"persona_name", "text"}, {"vanity_url", "text"}},
+		Options: options.Index().SetName("text").SetWeights(bson.D{{"persona_name", 1}, {"vanity_url", 1}}),
+	})
+
 	//
 	client, ctx, err := getMongo()
 	if err != nil {

@@ -7,6 +7,8 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type Group struct {
@@ -56,6 +58,35 @@ func (group Group) BSON() bson.D {
 		{"error", group.Error},
 		{"type", group.Type},
 	}
+}
+
+func CreateGroupIndexes() {
+
+	var indexModels = []mongo.IndexModel{
+		{
+			Keys:    bson.D{{"persona_name", "text"}, {"vanity_url", "text"}},
+			Options: options.Index().SetName("text").SetWeights(bson.D{{"persona_name", 2}, {"vanity_url", 1}}),
+		},
+		{
+			Keys: bson.D{{"type", 1}, {"members", -1}},
+		},
+		{
+			Keys: bson.D{{"type", 1}, {"trending", 1}},
+		},
+		{
+			Keys: bson.D{{"type", 1}, {"trending", -1}},
+		},
+	}
+
+	//
+	client, ctx, err := getMongo()
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	_, err = client.Database(MongoDatabase).Collection(CollectionGroups.String()).Indexes().CreateMany(ctx, indexModels)
+	log.Err(err)
 }
 
 func (group Group) GetPath() string {

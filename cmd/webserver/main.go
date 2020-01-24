@@ -46,6 +46,7 @@ func main() {
 		log.Info("Start index check")
 		mongo.CreateAppIndexes()
 		mongo.CreatePlayerIndexes()
+		mongo.CreateGroupIndexes()
 		log.Info("Index check finished")
 	}
 
