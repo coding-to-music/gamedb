@@ -63,13 +63,6 @@ func appHandler(messages []*rabbit.Message) {
 		}
 
 		// Load current app
-		gorm, err := sql.GetMySQLClient()
-		if err != nil {
-			log.Err(err)
-			sendToRetryQueue(message)
-			continue
-		}
-
 		app, err := mongo.GetApp(id, nil)
 		if err == mongo.ErrNoDocuments {
 			app = mongo.App{}
@@ -299,13 +292,6 @@ func appHandler(messages []*rabbit.Message) {
 				sendToRetryQueue(message)
 				return
 			}
-
-			// gorm = gorm.Save(&app)
-			// if gorm.Error != nil {
-			// 	log.Err(gorm.Error, payload.ID)
-			// 	sendToRetryQueue(message)
-			// 	return
-			// }
 		}()
 
 		// Save app score etc to Influx
