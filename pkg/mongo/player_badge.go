@@ -222,6 +222,7 @@ var GlobalBadges = map[int]PlayerBadge{
 	43:      {BadgeID: 43, BadgeIcon: "43_steamawardnominations/level04_80.png", BadgeName: "Steam Awards Nomination Committee 2019"},
 	44:      {BadgeID: 44, BadgeIcon: "44_winter2019/level15_80.png", BadgeName: "Winter Sale 2019"},
 	45:      {BadgeID: 45, BadgeIcon: "45_steamville2019/key_to_city_80.png", BadgeName: "Steamville 2019"},
+	46:      {BadgeID: 46, BadgeIcon: "46_lny2020/10_80.png", BadgeName: "Lunar New Year 2020"},
 	245070:  {BadgeID: 1, AppID: 245070, BadgeIcon: "30a5de112a3512269cbc3d428fad3b9c507c56ba", BadgeName: "2013: Summer Getaway"},
 	267420:  {BadgeID: 1, AppID: 267420, BadgeIcon: "e041163b0c4d5cba61fb54612973612636cdd970", BadgeName: "2013: Holdiay Sale"},
 	303700:  {BadgeID: 1, AppID: 303700, BadgeIcon: "b3c3fa2821b32ce6bcc127e5ee3ec47845c35308", BadgeName: "2014: Summer Adventure"},
