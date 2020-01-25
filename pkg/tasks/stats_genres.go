@@ -9,7 +9,9 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type Genres struct {
@@ -47,7 +49,7 @@ func (c Genres) work() (err error) {
 	}
 
 	// Get apps from mysql
-	appsWithGenres, err := sql.GetAppsWithColumnDepth("genres", 2, []string{"genres", "prices", "reviews_score"})
+	appsWithGenres, err := mongo.GetNonEmptyArrays("genres", bson.M{"genres": 1, "prices": 1, "reviews_score": 1})
 	if err != nil {
 		return err
 	}
@@ -57,14 +59,12 @@ func (c Genres) work() (err error) {
 	newGenres := make(map[int]*statsRow)
 	for _, app := range appsWithGenres {
 
-		appGenreIDs := app.GetGenreIDs()
-
-		if len(appGenreIDs) == 0 {
+		if len(app.Genres) == 0 {
 			// appGenreIDs = []db.AppGenre{{ID: 0, Name: ""}}
 		}
 
 		// For each genre in an app
-		for _, genreID := range appGenreIDs {
+		for _, genreID := range app.Genres {
 
 			delete(genresToDelete, genreID)
 

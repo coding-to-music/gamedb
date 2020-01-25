@@ -4,8 +4,9 @@ import (
 	"strconv"
 
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
-	"github.com/gamedb/gamedb/pkg/sql"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type PackagesQueueAll struct {
@@ -26,14 +27,14 @@ func (c PackagesQueueAll) Cron() string {
 
 func (c PackagesQueueAll) work() (err error) {
 
-	apps, err := sql.GetAppsWithColumnDepth("packages", 2, []string{"packages"})
+	apps, err := mongo.GetNonEmptyArrays("packages", bson.M{"packages": 1})
 	if err != nil {
 		return err
 	}
 
 	packageMap := map[int]bool{}
 	for _, app := range apps {
-		for _, packageID := range app.GetPackageIDs() {
+		for _, packageID := range app.Packages {
 			packageMap[packageID] = true
 		}
 	}

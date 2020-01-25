@@ -10,7 +10,9 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type Tags struct {
@@ -51,7 +53,7 @@ func (c Tags) work() (err error) {
 
 	steamTagMap := tagsResp.GetMap()
 
-	appsWithTags, err := sql.GetAppsWithColumnDepth("tags", 2, []string{"tags", "prices", "reviews_score"})
+	appsWithTags, err := mongo.GetNonEmptyArrays("tags", bson.M{"tags": 1, "prices": 1, "reviews_score": 1})
 	if err != nil {
 		return err
 	}
@@ -62,7 +64,7 @@ func (c Tags) work() (err error) {
 	for _, app := range appsWithTags {
 
 		// For each tag in an app
-		for _, tagID := range app.GetTagIDs() {
+		for _, tagID := range app.Tags {
 
 			delete(tagsToDelete, tagID)
 

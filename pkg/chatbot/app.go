@@ -5,7 +5,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/bwmarrin/discordgo"
-	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/mongo"
 )
 
 type CommandApp struct {
@@ -19,8 +19,8 @@ func (c CommandApp) Output(input string) (message discordgo.MessageSend, err err
 
 	matches := c.Regex().FindStringSubmatch(input)
 
-	app, err := sql.SearchApps(matches[2], nil)
-	if err == sql.ErrRecordNotFound || err == sql.ErrInvalidAppID {
+	app, err := mongo.SearchApps(matches[2], nil)
+	if err == mongo.ErrNoDocuments || err == mongo.ErrInvalidAppID {
 
 		message.Content = "App **" + matches[2] + "** not found"
 		return message, nil

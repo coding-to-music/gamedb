@@ -9,7 +9,9 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type Developers struct {
@@ -47,7 +49,7 @@ func (c Developers) work() (err error) {
 	}
 
 	// Get apps from mysql
-	appsWithDevelopers, err := sql.GetAppsWithColumnDepth("developers", 2, []string{"developers", "prices", "reviews_score"})
+	appsWithDevelopers, err := mongo.GetNonEmptyArrays("developers", bson.M{"developers": 1, "prices": 1, "reviews_score": 1})
 	if err != nil {
 		return err
 	}
@@ -57,14 +59,12 @@ func (c Developers) work() (err error) {
 	newDevelopers := make(map[int]*statsRow)
 	for _, app := range appsWithDevelopers {
 
-		appDevelopers := app.GetDeveloperIDs()
-
-		if len(appDevelopers) == 0 {
+		if len(app.Developers) == 0 {
 			// appDevelopers = []string{""}
 		}
 
 		// For each developer in an app
-		for _, appDeveloperID := range appDevelopers {
+		for _, appDeveloperID := range app.Developers {
 
 			delete(developersToDelete, appDeveloperID)
 

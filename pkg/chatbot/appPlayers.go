@@ -5,7 +5,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
-	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/mongo"
 )
 
 type CommandAppPlayers struct {
@@ -20,8 +20,8 @@ func (c CommandAppPlayers) Output(input string) (message discordgo.MessageSend, 
 
 	matches := c.Regex().FindStringSubmatch(input)
 
-	app, err := sql.SearchApps(matches[1], nil)
-	if err == sql.ErrRecordNotFound || err == sql.ErrInvalidAppID {
+	app, err := mongo.SearchApps(matches[1], nil)
+	if err == mongo.ErrNoDocuments || err == mongo.ErrInvalidAppID {
 
 		message.Content = "App **" + matches[1] + "** not found"
 		return message, nil

@@ -1032,7 +1032,7 @@ func updateAppSteamSpy(app *mongo.App) error {
 	}
 
 	// Unmarshal JSON
-	resp := sql.SteamSpyAppResponse{}
+	resp := mongo.SteamSpyAppResponse{}
 	err = helpers.Unmarshal(bytes, &resp)
 	if err != nil {
 		return errors.New("steamspy is down: " + ssURL)

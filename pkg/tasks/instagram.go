@@ -7,7 +7,8 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/instagram"
-	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/mongo"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type Instagram struct {
@@ -28,25 +29,16 @@ func (c Instagram) Cron() string {
 
 func (c Instagram) work() (err error) {
 
-	gorm, err := sql.GetMySQLClient()
-	if err != nil {
-		return err
+	filter := bson.D{
+		{"type", "game"},
+		{"name", bson.M{"$ne": ""}},
+		{"reviews_score", bson.M{"$gte": 95}},
+		{"tags", bson.M{"$nin": 12095}},
+		{"screenshots.0", bson.M{"$exists": true}},
 	}
+	projection := bson.M{"id": 1, "name": 1, "screenshots": 1, "reviews_score": 1}
 
-	gorm = gorm.Select([]string{"id", "name", "screenshots", "reviews_score"})
-	gorm = gorm.Where("JSON_DEPTH(screenshots) = ?", 3)
-	gorm = gorm.Where("name != ?", "")
-	gorm = gorm.Where("type = ?", "game")
-	gorm = gorm.Where("reviews_score >= ?", 95)
-	gorm = gorm.Where("JSON_CONTAINS(tags, '[12095]') = 0") // Sexual content
-	gorm = gorm.Order("RAND()")
-	gorm = gorm.Limit(1)
-
-	var apps []sql.App
-	gorm = gorm.First(&apps)
-	if gorm.Error != nil {
-		return gorm.Error
-	}
+	apps, err := mongo.GetRandomApps(1, filter, projection)
 
 	if len(apps) == 0 {
 		return errors.New("no apps found for instagram")
@@ -54,9 +46,7 @@ func (c Instagram) work() (err error) {
 
 	var app = apps[0]
 
-	var screenshots = app.GetScreenshots()
-
-	var url = screenshots[rand.Intn(len(screenshots))].PathFull
+	var url = app.Screenshots[rand.Intn(len(app.Screenshots))].PathFull
 	if url == "" {
 		return errors.New("empty url")
 	}

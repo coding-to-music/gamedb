@@ -3,14 +3,12 @@ package pages
 import (
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
-	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -121,35 +119,21 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 	if len(allApps) > 0 {
 
 		// Convert to slice
-		var appsSlice []int
-		for k := range allApps {
-			appsSlice = append(appsSlice, k)
+		var appsSlice bson.A
+		for appID := range allApps {
+			appsSlice = append(appsSlice, appID)
 		}
 
-		appsSlice = helpers.Unique(appsSlice)
+		filter := bson.D{
+			{"type", "game"},
+			{"tags", bson.M{"$in": bson.A{128, 1685, 3843, 3841, 4508, 3859, 7368, 17770}}},
+			{"_id", bson.M{"$in": appsSlice}},
+		}
 
-		db, err := sql.GetMySQLClient()
+		projection := bson.M{"id": 1, "name": 1, "icon": 1, "platforms": 1, "achievements": 1, "tags": 1}
+
+		apps, err := mongo.GetApps(0, 500, bson.D{{"reviews_score", 1}}, filter, projection, nil)
 		if err != nil {
-			log.Err(r, err)
-			returnErrorTemplate(w, r, errorTemplate{Code: 500})
-			return
-		}
-
-		var or []string
-		for _, v := range []int{128, 1685, 3843, 3841, 4508, 3859, 7368, 17770} {
-			or = append(or, "JSON_CONTAINS(tags, '["+strconv.Itoa(v)+"]') = 1")
-		}
-
-		var apps []sql.App
-
-		db = db.Select([]string{"id", "name", "icon", "platforms", "achievements", "tags"})
-		db = db.Where("id IN (?)", appsSlice)
-		db = db.Where(strings.Join(or, " OR "))
-		db = db.Where("type = ?", "game")
-		db = db.Order("reviews_score DESC")
-		db = db.Limit(500)
-		db = db.Find(&apps)
-		if db.Error != nil {
 			log.Err(err, r)
 		}
 
@@ -177,6 +161,6 @@ type coopTemplate struct {
 }
 
 type coopGameTemplate struct {
-	Game sql.App
+	Game mongo.App
 	Tags string
 }

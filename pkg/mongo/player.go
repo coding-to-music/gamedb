@@ -399,7 +399,7 @@ func GetPlayer(id int64) (player Player, err error) {
 
 func GetRandomPlayers(count int) (players []Player, err error) {
 
-	cur, ctx, err := GetRandomRows(CollectionPlayers, count)
+	cur, ctx, err := GetRandomRows(CollectionPlayers, count, nil, nil)
 	if err != nil {
 		return players, err
 	}

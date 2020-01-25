@@ -6,8 +6,9 @@ import (
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
-	"github.com/gamedb/gamedb/pkg/sql"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type AppPlayers struct {
@@ -39,28 +40,23 @@ func (c AppPlayers) work() (err error) {
 	}
 
 	// Add apps to queue
-	db, err := sql.GetMySQLClient()
+	apps, err := mongo.GetApps(0, 0, bson.D{{"_id", 1}}, nil, bson.M{"_id": 1}, nil)
 	if err != nil {
 		return err
 	}
 
-	db = db.Select([]string{"id"})
-	db = db.Order("id ASC")
-	db = db.Model(&[]sql.App{})
-
-	var appIDs []int
-	db = db.Pluck("id", &appIDs)
-	if db.Error != nil {
-		return db.Error
+	var ids []int
+	for _, v := range apps {
+		ids = append(ids, v.ID)
 	}
 
-	log.Info("Found " + strconv.Itoa(len(appIDs)) + " apps")
+	log.Info("Found " + strconv.Itoa(len(ids)) + " apps")
 
-	chunks := helpers.ChunkInts(appIDs, 10)
+	idChunks := helpers.ChunkInts(ids, 10)
 
-	for _, chunk := range chunks {
+	for _, idChunk := range idChunks {
 
-		err = queue.ProduceAppPlayers(queue.AppPlayerMessage{IDs: chunk})
+		err = queue.ProduceAppPlayers(queue.AppPlayerMessage{IDs: idChunk})
 		log.Err(err)
 	}
 

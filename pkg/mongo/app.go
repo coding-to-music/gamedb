@@ -242,6 +242,40 @@ func (app App) GetHeaderImage() string {
 	return "https://steamcdn-a.akamaihd.net/steam/apps/" + strconv.Itoa(app.ID) + "/header.jpg"
 }
 
+func (app App) GetCoopTags() (string, error) {
+
+	var tagMap = map[int]string{
+		1685: "Co-op",
+		3843: "Online co-op",
+		3841: "Local co-op",
+		4508: "Co-op campaign",
+
+		3859:  "Multiplayer",
+		128:   "Massively multiplayer",
+		7368:  "Local multiplayer",
+		17770: "Asynchronous multiplayer",
+	}
+
+	var coopTags []string
+	for _, tagID := range app.Tags {
+		if val, ok := tagMap[tagID]; ok {
+			coopTags = append(coopTags, val)
+		}
+	}
+
+	return strings.Join(coopTags, ", "), nil
+}
+
+// func (app App) GetHeaderImage2() string {
+//
+// 	params := url.Values{}
+// 	params.Set("url", app.GetHeaderImage())
+// 	params.Set("q", "10")
+// 	params.Set("output", "webp")
+//
+// 	return "https://images.weserv.nl?" + params.Encode()
+// }
+
 func (app App) GetCommunityLink() string {
 	name := config.Config.GameDBShortName.Get()
 	return "https://steamcommunity.com/app/" + strconv.Itoa(app.ID) + "?utm_source=" + name + "&utm_medium=link&curator_clanid=" // todo curator_clanid
@@ -588,6 +622,76 @@ func GetAppsByID(ids []int, projection bson.M) (apps []App, err error) {
 	return GetApps(0, 0, nil, bson.D{{"_id", bson.M{"$in": a}}}, projection, nil)
 }
 
+func SearchApps(search string, projection bson.M) (app App, err error) {
+
+	var apps []App
+
+	if helpers.RegexNumbers.MatchString(search) {
+
+		id, err := strconv.Atoi(search)
+		if err != nil {
+			return app, err
+		}
+
+		if helpers.IsValidAppID(id) {
+			apps, err = GetApps(0, 1, nil, bson.D{{"_id", id}}, projection, nil)
+			if err != nil {
+				return app, err
+			}
+		} else {
+			return app, ErrInvalidAppID
+		}
+
+	} else {
+		filter := bson.D{{"$text", bson.M{"$search": search}}}
+		projection["score"] = bson.M{"$meta": "textScore"}
+		order := bson.D{{"score", bson.M{"$meta": "textScore"}}}
+		apps, err = GetApps(0, 1, order, filter, projection, nil)
+		if err != nil {
+			return app, err
+		}
+	}
+
+	if len(apps) == 0 {
+		return app, ErrNoDocuments
+	}
+
+	return apps[0], nil
+}
+
+func GetNonEmptyArrays(column string, projection bson.M) (apps []App, err error) {
+
+	var filter = bson.D{{column + ".0", bson.M{"$exists": true}}}
+	var order = bson.D{{"_id", 1}}
+
+	return GetApps(0, 0, order, filter, projection, nil)
+}
+
+func GetRandomApps(count int, filter bson.D, projection bson.M) (apps []App, err error) {
+
+	cur, ctx, err := GetRandomRows(CollectionApps, count, filter, projection)
+	if err != nil {
+		return apps, err
+	}
+
+	defer func() {
+		err = cur.Close(ctx)
+		log.Err(err)
+	}()
+
+	for cur.Next(ctx) {
+
+		var app App
+		err := cur.Decode(&app)
+		if err != nil {
+			log.Err(err, app.ID)
+		}
+		apps = append(apps, app)
+	}
+
+	return apps, cur.Err()
+}
+
 func PopularApps() (apps []App, err error) {
 
 	var item = memcache.MemcachePopularApps
@@ -731,4 +835,35 @@ type AppTypeCount struct {
 
 func (atc AppTypeCount) Format() string {
 	return helpers.GetAppType(atc.Type)
+}
+
+type SteamSpyAppResponse struct {
+	Appid     int    `json:"appid"`
+	Name      string `json:"name"`
+	Developer string `json:"developer"`
+	Publisher string `json:"publisher"`
+	// ScoreRank      int    `json:"score_rank"` // Can be empty string
+	Positive       int    `json:"positive"`
+	Negative       int    `json:"negative"`
+	Userscore      int    `json:"userscore"`
+	Owners         string `json:"owners"`
+	AverageForever int    `json:"average_forever"`
+	Average2Weeks  int    `json:"average_2weeks"`
+	MedianForever  int    `json:"median_forever"`
+	Median2Weeks   int    `json:"median_2weeks"`
+	Price          string `json:"price"`
+	Initialprice   string `json:"initialprice"`
+	Discount       string `json:"discount"`
+	Languages      string `json:"languages"`
+	Genre          string `json:"genre"`
+	Ccu            int    `json:"ccu"`
+	// Tags           map[string]int `json:"tags"` // Can be an empty slice
+}
+
+func (a SteamSpyAppResponse) GetOwners() (ret []int) {
+
+	owners := strings.ReplaceAll(a.Owners, ",", "")
+	owners = strings.ReplaceAll(owners, " ", "")
+	ownersStrings := strings.Split(owners, "..")
+	return helpers.StringSliceToIntSlice(ownersStrings)
 }

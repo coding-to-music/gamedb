@@ -336,7 +336,7 @@ func Find(collection collection, offset int64, limit int64, sort bson.D, filter 
 	return cur, ctx, err
 }
 
-func GetRandomRows(collection collection, count int) (cur *mongo.Cursor, ctx context.Context, err error) {
+func GetRandomRows(collection collection, count int, filter bson.D, projection bson.M) (cur *mongo.Cursor, ctx context.Context, err error) {
 
 	client, ctx, err := getMongo()
 	if err != nil {
@@ -345,6 +345,14 @@ func GetRandomRows(collection collection, count int) (cur *mongo.Cursor, ctx con
 
 	pipeline := mongo.Pipeline{
 		{{Key: "$sample", Value: bson.D{{Key: "size", Value: count}}}},
+	}
+
+	if len(filter) > 0 {
+		pipeline = append(pipeline, bson.D{{"$match", filter}})
+	}
+
+	if len(filter) > 0 {
+		pipeline = append(pipeline, bson.D{{"$project", projection}})
 	}
 
 	c, err := client.Database(MongoDatabase, options.Database()).Collection(collection.String()).Aggregate(ctx, pipeline, options.Aggregate())
