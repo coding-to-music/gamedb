@@ -17,7 +17,7 @@ func DonateRouter() http.Handler {
 func donateHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := donateTemplate{}
-	t.fill(w, r, "Donate", "Databases take up a tonne of resources. Help me pay for the server costs or just buy me a beer.")
+	t.fill(w, r, "Donate", "Databases take up a tonne of resources. Help pay for the server costs or just buy me a beer.")
 	t.Pages = []int{
 		sql.UserLevelLimit0,
 		sql.UserLevelLimit1,
