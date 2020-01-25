@@ -450,13 +450,7 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
-	response := datatable.DataTablesResponse{}
-	response.Output()
-	response.RecordsTotal = total
-	response.RecordsFiltered = total
-	response.Draw = query.Draw
-	response.Limit(r)
-
+	var response = datatable.NewDataTablesResponse(r, query, total, total)
 	for _, v := range events {
 		response.AddRow(v.OutputForJSON(r.RemoteAddr))
 	}
@@ -498,13 +492,7 @@ func settingsDonationsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
-	response := datatable.DataTablesResponse{}
-	response.Output()
-	response.RecordsTotal = total
-	response.RecordsFiltered = total
-	response.Draw = query.Draw
-	response.Limit(r)
-
+	var response = datatable.NewDataTablesResponse(r, query, total, total)
 	for _, v := range events {
 		response.AddRow(v.OutputForJSON(r.RemoteAddr))
 	}

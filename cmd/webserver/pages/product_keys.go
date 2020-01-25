@@ -129,12 +129,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	response := datatable.DataTablesResponse{}
-	response.Output()
-	response.RecordsTotal = int64(count)
-	response.RecordsFiltered = recordsFiltered
-	response.Draw = query.Draw
-
+	var response = datatable.NewDataTablesResponse(r, query, count, recordsFiltered)
 	for _, v := range products {
 		response.AddRow([]interface{}{
 			v.ID,

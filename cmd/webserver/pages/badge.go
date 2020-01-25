@@ -115,13 +115,7 @@ func badgeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
-	response := datatable.DataTablesResponse{}
-	response.Output()
-	response.RecordsTotal = count
-	response.RecordsFiltered = count
-	response.Draw = query.Draw
-	response.Limit(r)
-
+	var response = datatable.NewDataTablesResponse(r, query, count, count)
 	for k, player := range badges {
 		response.AddRow([]interface{}{
 			query.GetOffset() + k + 1, // 0

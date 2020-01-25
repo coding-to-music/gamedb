@@ -112,13 +112,7 @@ func groupsTrendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
-	response := datatable.DataTablesResponse{}
-	response.Output()
-	response.RecordsTotal = total
-	response.RecordsFiltered = totalFiltered
-	response.Draw = query.Draw
-	response.Limit(r)
-
+	var response = datatable.NewDataTablesResponse(r, query, total, totalFiltered)
 	for _, group := range groups {
 		response.AddRow([]interface{}{
 			group.ID,                           // 0

@@ -525,13 +525,7 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	response := datatable.DataTablesResponse{}
-	response.Output()
-	response.RecordsTotal = int64(total)
-	response.RecordsFiltered = int64(total)
-	response.Draw = query.Draw
-	response.Limit(r)
-
+	var response = datatable.NewDataTablesResponse(r, query, int64(total), int64(total))
 	for _, pa := range playerApps {
 		response.AddRow([]interface{}{
 			pa.AppID,
@@ -602,13 +596,7 @@ func playerRecentAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	response := datatable.DataTablesResponse{}
-	response.Output()
-	response.RecordsTotal = total
-	response.RecordsFiltered = total
-	response.Draw = query.Draw
-	response.Limit(r)
-
+	var response = datatable.NewDataTablesResponse(r, query, total, total)
 	for _, app := range apps {
 		response.AddRow([]interface{}{
 			app.AppID,                               // 0
@@ -675,13 +663,7 @@ func playerFriendsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	response := datatable.DataTablesResponse{}
-	response.Output()
-	response.RecordsTotal = count
-	response.RecordsFiltered = count
-	response.Draw = query.Draw
-	response.Limit(r)
-
+	var response = datatable.NewDataTablesResponse(r, query, count, count)
 	for _, friend := range friends {
 		response.AddRow([]interface{}{
 			strconv.FormatInt(friend.PlayerID, 10), // 0
@@ -754,12 +736,7 @@ func playerBadgesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
-	response := datatable.DataTablesResponse{}
-	response.Output()
-	response.RecordsTotal = total
-	response.RecordsFiltered = total
-	response.Draw = query.Draw
-
+	var response = datatable.NewDataTablesResponse(r, query, total, total)
 	for _, badge := range badges {
 		response.AddRow([]interface{}{
 			badge.AppID,        // 0
@@ -839,14 +816,8 @@ func playerWishlistAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
-	response := datatable.DataTablesResponse{}
-	response.Output()
-	response.RecordsTotal = total
-	response.RecordsFiltered = total
-	response.Draw = query.Draw
-
-	code := helpers.GetProductCC(r)
-
+	var code = helpers.GetProductCC(r)
+	var response = datatable.NewDataTablesResponse(r, query, total, total)
 	for _, app := range wishlistApps {
 
 		var priceFormatted string
@@ -939,12 +910,7 @@ func playerGroupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
-	response := datatable.DataTablesResponse{}
-	response.Output()
-	response.RecordsTotal = total
-	response.RecordsFiltered = total
-	response.Draw = query.Draw
-
+	var response = datatable.NewDataTablesResponse(r, query, total, total)
 	for _, group := range groups {
 		response.AddRow([]interface{}{
 			group.GroupID,                          // 0

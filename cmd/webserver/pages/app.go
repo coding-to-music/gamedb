@@ -352,15 +352,9 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	//
-	response := datatable.DataTablesResponse{}
-	response.Output()
-	response.RecordsTotal = int64(total)
-	response.RecordsFiltered = int64(total)
-	response.Draw = query.Draw
-	response.Limit(r)
-
-	for _, v := range articles {
-		response.AddRow(v.OutputForJSON())
+	var response = datatable.NewDataTablesResponse(r, query, int64(total), int64(total))
+	for _, article := range articles {
+		response.AddRow(article.OutputForJSON())
 	}
 
 	returnJSON(w, r, response)
@@ -450,13 +444,7 @@ func appItemsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	response := datatable.DataTablesResponse{}
-	response.Output()
-	response.RecordsTotal = total
-	response.RecordsFiltered = filtered
-	response.Draw = query.Draw
-	response.Limit(r)
-
+	var response = datatable.NewDataTablesResponse(r, query, total, filtered)
 	for _, item := range items {
 
 		response.AddRow([]interface{}{
@@ -624,13 +612,7 @@ func appTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	response := datatable.DataTablesResponse{}
-	response.Output()
-	response.RecordsTotal = total
-	response.RecordsFiltered = total
-	response.Draw = query.Draw
-	response.Limit(r)
-
+	response := datatable.NewDataTablesResponse(r, query, total, total)
 	for _, v := range playersAppRows {
 
 		response.AddRow([]interface{}{

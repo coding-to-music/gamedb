@@ -32,6 +32,8 @@ func NewDataTableQuery(r *http.Request, limit bool) (query DataTablesQuery) {
 
 	if limit {
 
+		query.limited = true
+
 		level := sql.UserLevel(helpers.GetUserLevel(r))
 		max := level.MaxOffset(100)
 
@@ -52,6 +54,7 @@ type DataTablesQuery struct {
 	Search map[string]interface{}            `json:"search"`
 	// Time   string `json:"_"`
 	// Columns []string
+	limited bool
 }
 
 func (q DataTablesQuery) GetSearchString(k string) (search string) {
@@ -193,4 +196,3 @@ func (q DataTablesQuery) GetPage(perPage int) int {
 
 	return (i / perPage) + 1
 }
-

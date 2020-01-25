@@ -7,6 +7,28 @@ import (
 	"github.com/gamedb/gamedb/pkg/sql"
 )
 
+func NewDataTablesResponse(r *http.Request, query DataTablesQuery, count int64, countFiltered int64) (ret *DataTablesResponse) {
+
+	ret = &DataTablesResponse{}
+	ret.Draw = query.Draw
+	ret.Data = make([][]interface{}, 0)
+	ret.RecordsTotal = count
+	ret.RecordsFiltered = countFiltered
+
+	if query.limited {
+
+		level := sql.UserLevel(helpers.GetUserLevel(r))
+		max := level.MaxResults(100)
+
+		if max > 0 && max < ret.RecordsFiltered {
+			ret.RecordsFiltered = max
+			ret.LevelLimited = true
+		}
+	}
+
+	return ret
+}
+
 // DataTablesResponse
 type DataTablesResponse struct {
 	Draw            string          `json:"draw"`
@@ -19,23 +41,3 @@ type DataTablesResponse struct {
 func (t *DataTablesResponse) AddRow(row []interface{}) {
 	t.Data = append(t.Data, row)
 }
-
-func (t *DataTablesResponse) Output() [][]interface{} {
-
-	if len(t.Data) == 0 {
-		t.Data = make([][]interface{}, 0)
-	}
-	return t.Data
-}
-
-func (t *DataTablesResponse) Limit(r *http.Request) {
-
-	level := sql.UserLevel(helpers.GetUserLevel(r))
-	max := level.MaxResults(100)
-
-	if max > 0 && max < t.RecordsFiltered {
-		t.RecordsFiltered = max
-		t.LevelLimited = true
-	}
-}
-
