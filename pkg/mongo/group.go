@@ -64,8 +64,8 @@ func CreateGroupIndexes() {
 
 	var indexModels = []mongo.IndexModel{
 		{
-			Keys:    bson.D{{"persona_name", "text"}, {"vanity_url", "text"}},
-			Options: options.Index().SetName("text").SetWeights(bson.D{{"persona_name", 2}, {"vanity_url", 1}}),
+			Keys:    bson.D{{"name", "text"}, {"abbreviation", "text"}, {"url", "text"}},
+			Options: options.Index().SetName("text").SetWeights(bson.D{{"name", 3}, {"abbreviation", 2}, {"url", 1}}),
 		},
 		{
 			Keys: bson.D{{"type", 1}, {"members", -1}},
