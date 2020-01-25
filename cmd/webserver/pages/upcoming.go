@@ -120,6 +120,7 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var code = helpers.GetProductCC(r)
 
 	response := datatable.DataTablesResponse{}
+	response.Output()
 	response.RecordsTotal = count
 	response.RecordsFiltered = filtered
 	response.Draw = query.Draw
@@ -141,5 +142,5 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	returnJSON(w, r, response.Output())
+	returnJSON(w, r, response)
 }

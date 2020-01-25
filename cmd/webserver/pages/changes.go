@@ -110,6 +110,7 @@ func changesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	response := datatable.DataTablesResponse{}
+	response.Output()
 	response.RecordsTotal = count
 	response.RecordsFiltered = count
 	response.Draw = query.Draw
@@ -119,5 +120,5 @@ func changesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		response.AddRow(v.OutputForJSON(appMap, packageMap))
 	}
 
-	returnJSON(w, r, response.Output())
+	returnJSON(w, r, response)
 }

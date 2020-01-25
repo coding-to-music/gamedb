@@ -526,6 +526,7 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	response := datatable.DataTablesResponse{}
+	response.Output()
 	response.RecordsTotal = int64(total)
 	response.RecordsFiltered = int64(total)
 	response.Draw = query.Draw
@@ -544,7 +545,7 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	returnJSON(w, r, response.Output())
+	returnJSON(w, r, response)
 
 }
 
@@ -602,6 +603,7 @@ func playerRecentAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	response := datatable.DataTablesResponse{}
+	response.Output()
 	response.RecordsTotal = total
 	response.RecordsFiltered = total
 	response.Draw = query.Draw
@@ -618,7 +620,7 @@ func playerRecentAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	returnJSON(w, r, response.Output())
+	returnJSON(w, r, response)
 }
 
 func playerFriendsAjaxHandler(w http.ResponseWriter, r *http.Request) {
@@ -674,6 +676,7 @@ func playerFriendsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	response := datatable.DataTablesResponse{}
+	response.Output()
 	response.RecordsTotal = count
 	response.RecordsFiltered = count
 	response.Draw = query.Draw
@@ -693,7 +696,7 @@ func playerFriendsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	returnJSON(w, r, response.Output())
+	returnJSON(w, r, response)
 }
 
 func playerBadgesAjaxHandler(w http.ResponseWriter, r *http.Request) {
@@ -752,6 +755,7 @@ func playerBadgesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	response := datatable.DataTablesResponse{}
+	response.Output()
 	response.RecordsTotal = total
 	response.RecordsFiltered = total
 	response.Draw = query.Draw
@@ -770,7 +774,7 @@ func playerBadgesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	returnJSON(w, r, response.Output())
+	returnJSON(w, r, response)
 }
 
 func playerWishlistAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
@@ -836,6 +840,7 @@ func playerWishlistAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	response := datatable.DataTablesResponse{}
+	response.Output()
 	response.RecordsTotal = total
 	response.RecordsFiltered = total
 	response.Draw = query.Draw
@@ -864,7 +869,7 @@ func playerWishlistAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	returnJSON(w, r, response.Output())
+	returnJSON(w, r, response)
 }
 
 func playerGroupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
@@ -935,6 +940,7 @@ func playerGroupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	response := datatable.DataTablesResponse{}
+	response.Output()
 	response.RecordsTotal = total
 	response.RecordsFiltered = total
 	response.Draw = query.Draw
@@ -953,7 +959,7 @@ func playerGroupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	returnJSON(w, r, response.Output())
+	returnJSON(w, r, response)
 }
 
 func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {

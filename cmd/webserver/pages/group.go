@@ -162,6 +162,7 @@ func groupTableAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	response := datatable.DataTablesResponse{}
+	response.Output()
 	response.RecordsTotal = total
 	response.RecordsFiltered = total
 	response.Draw = query.Draw
@@ -176,7 +177,7 @@ func groupTableAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	returnJSON(w, r, response.Output())
+	returnJSON(w, r, response)
 }
 
 func groupAjaxHandler(w http.ResponseWriter, r *http.Request) {

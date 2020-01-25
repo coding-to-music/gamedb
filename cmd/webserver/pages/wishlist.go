@@ -115,6 +115,7 @@ func wishlistAppsHandler(w http.ResponseWriter, r *http.Request) {
 
 	//
 	response := datatable.DataTablesResponse{}
+	response.Output()
 	response.RecordsTotal = count
 	response.RecordsFiltered = filtered
 	response.Draw = query.Draw
@@ -138,5 +139,5 @@ func wishlistAppsHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	returnJSON(w, r, response.Output())
+	returnJSON(w, r, response)
 }

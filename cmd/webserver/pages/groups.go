@@ -113,6 +113,7 @@ func groupsTrendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	response := datatable.DataTablesResponse{}
+	response.Output()
 	response.RecordsTotal = total
 	response.RecordsFiltered = totalFiltered
 	response.Draw = query.Draw
@@ -134,5 +135,5 @@ func groupsTrendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	returnJSON(w, r, response.Output())
+	returnJSON(w, r, response)
 }

@@ -451,6 +451,7 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	response := datatable.DataTablesResponse{}
+	response.Output()
 	response.RecordsTotal = total
 	response.RecordsFiltered = total
 	response.Draw = query.Draw
@@ -460,7 +461,7 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		response.AddRow(v.OutputForJSON(r.RemoteAddr))
 	}
 
-	returnJSON(w, r, response.Output())
+	returnJSON(w, r, response)
 }
 
 func settingsDonationsAjaxHandler(w http.ResponseWriter, r *http.Request) {
@@ -498,6 +499,7 @@ func settingsDonationsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	response := datatable.DataTablesResponse{}
+	response.Output()
 	response.RecordsTotal = total
 	response.RecordsFiltered = total
 	response.Draw = query.Draw
@@ -507,7 +509,7 @@ func settingsDonationsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		response.AddRow(v.OutputForJSON(r.RemoteAddr))
 	}
 
-	returnJSON(w, r, response.Output())
+	returnJSON(w, r, response)
 }
 
 // Steam

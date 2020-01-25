@@ -153,6 +153,7 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	response := datatable.DataTablesResponse{}
+	response.Output()
 	response.RecordsTotal = total
 	response.RecordsFiltered = filtered
 	response.Draw = query.Draw
@@ -163,5 +164,5 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		response.AddRow(price.OutputForJSON())
 	}
 
-	returnJSON(w, r, response.Output())
+	returnJSON(w, r, response)
 }

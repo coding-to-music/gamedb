@@ -130,6 +130,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	response := datatable.DataTablesResponse{}
+	response.Output()
 	response.RecordsTotal = int64(count)
 	response.RecordsFiltered = recordsFiltered
 	response.Draw = query.Draw
@@ -144,7 +145,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	returnJSON(w, r, response.Output())
+	returnJSON(w, r, response)
 }
 
 type extendedRow struct {

@@ -67,6 +67,7 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	//
 	response := datatable.DataTablesResponse{}
+	response.Output()
 	response.RecordsTotal = int64(total)
 	response.RecordsFiltered = int64(total)
 	response.Draw = query.Draw
@@ -90,7 +91,7 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	returnJSON(w, r, response.Output())
+	returnJSON(w, r, response)
 }
 
 func getTotalCommits() (total int) {

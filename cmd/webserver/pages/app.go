@@ -353,6 +353,7 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	//
 	response := datatable.DataTablesResponse{}
+	response.Output()
 	response.RecordsTotal = int64(total)
 	response.RecordsFiltered = int64(total)
 	response.Draw = query.Draw
@@ -362,7 +363,7 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		response.AddRow(v.OutputForJSON())
 	}
 
-	returnJSON(w, r, response.Output())
+	returnJSON(w, r, response)
 }
 
 func appPricesAjaxHandler(w http.ResponseWriter, r *http.Request) {
@@ -450,6 +451,7 @@ func appItemsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	response := datatable.DataTablesResponse{}
+	response.Output()
 	response.RecordsTotal = total
 	response.RecordsFiltered = filtered
 	response.Draw = query.Draw
@@ -491,7 +493,7 @@ func appItemsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	returnJSON(w, r, response.Output())
+	returnJSON(w, r, response)
 }
 
 // Player counts chart
@@ -623,6 +625,7 @@ func appTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	response := datatable.DataTablesResponse{}
+	response.Output()
 	response.RecordsTotal = total
 	response.RecordsFiltered = total
 	response.Draw = query.Draw
@@ -642,7 +645,7 @@ func appTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	returnJSON(w, r, response.Output())
+	returnJSON(w, r, response)
 }
 
 type appTimeAjax struct {
