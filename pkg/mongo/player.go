@@ -3,7 +3,6 @@ package mongo
 import (
 	"errors"
 	"math"
-	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -431,7 +430,7 @@ func SearchPlayer(s string, projection bson.M) (player Player, err error) {
 	}
 
 	//
-	var filter bson.M
+	var filter bson.D
 
 	if helpers.RegexNumbers.MatchString(s) {
 
@@ -439,17 +438,17 @@ func SearchPlayer(s string, projection bson.M) (player Player, err error) {
 		if err != nil {
 			return player, ErrInvalidPlayerID
 		}
-		filter = bson.M{"_id": i}
+		filter = bson.D{{"_id", i}}
 
 	} else {
 
-		// Regex for case insensitivity
-		quoted := regexp.QuoteMeta(s)
+		filter = append(filter, bson.E{Key: "$text", Value: bson.M{"$search": s}})
 
-		filter = bson.M{"$or": bson.A{
-			bson.M{"persona_name": bson.M{"$regex": "^" + quoted + "$", "$options": "i"}},
-			bson.M{"vanity_url": bson.M{"$regex": "^" + quoted + "$", "$options": "i"}},
-		}}
+		// quoted := regexp.QuoteMeta(s)
+		// filter = bson.M{"$or": bson.A{
+		// 	bson.M{"persona_name": bson.M{"$regex": "^" + quoted + "$", "$options": "i"}},
+		// 	bson.M{"vanity_url": bson.M{"$regex": "^" + quoted + "$", "$options": "i"}},
+		// }}
 	}
 
 	client, ctx, err := getMongo()

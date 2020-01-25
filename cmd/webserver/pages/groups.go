@@ -2,7 +2,6 @@ package pages
 
 import (
 	"net/http"
-	"regexp"
 	"sync"
 
 	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
@@ -17,7 +16,7 @@ func GroupsRouter() http.Handler {
 
 	r := chi.NewRouter()
 	r.Get("/", groupsHandler)
-	r.Get("/groups.json", groupsTrendingAjaxHandler)
+	r.Get("/groups.json", groupsAjaxHandler)
 	r.Mount("/{id}", GroupRouter())
 	return r
 }
@@ -42,7 +41,7 @@ type groupsTemplate struct {
 	Count string
 }
 
-func groupsTrendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
+func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := datatable.NewDataTableQuery(r, true)
 
@@ -55,13 +54,14 @@ func groupsTrendingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	search := helpers.RegexNonAlphaNumericSpace.ReplaceAllString(query.GetSearchString("search"), "")
 	if len(search) > 0 {
 
-		quoted := regexp.QuoteMeta(search)
+		filter = append(filter, bson.E{Key: "$text", Value: bson.M{"$search": search}})
 
-		filter = append(filter, bson.E{Key: "$or", Value: bson.A{
-			bson.M{"name": bson.M{"$regex": quoted, "$options": "i"}},
-			bson.M{"abbreviation": bson.M{"$regex": quoted, "$options": "i"}},
-			bson.M{"url": bson.M{"$regex": quoted, "$options": "i"}},
-		}})
+		// quoted := regexp.QuoteMeta(search)
+		// filter = append(filter, bson.E{Key: "$or", Value: bson.A{
+		// 	bson.M{"name": bson.M{"$regex": quoted, "$options": "i"}},
+		// 	bson.M{"abbreviation": bson.M{"$regex": quoted, "$options": "i"}},
+		// 	bson.M{"url": bson.M{"$regex": quoted, "$options": "i"}},
+		// }})
 	}
 
 	//

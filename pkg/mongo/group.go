@@ -1,7 +1,6 @@
 package mongo
 
 import (
-	"regexp"
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -186,13 +185,14 @@ func SearchGroups(s string) (group Group, err error) {
 
 	} else {
 
-		quoted := regexp.QuoteMeta(s)
+		filter = append(filter, bson.E{Key: "$text", Value: bson.M{"$search": s}})
 
-		filter = bson.D{{Key: "$or", Value: bson.A{
-			bson.M{"name": bson.M{"$regex": "^" + quoted + "$", "$options": "i"}},
-			bson.M{"abbreviation": bson.M{"$regex": "^" + quoted + "$", "$options": "i"}},
-			bson.M{"url": bson.M{"$regex": "^" + quoted + "$", "$options": "i"}},
-		}}}
+		// quoted := regexp.QuoteMeta(s)
+		// filter = bson.D{{Key: "$or", Value: bson.A{
+		// 	bson.M{"name": bson.M{"$regex": "^" + quoted + "$", "$options": "i"}},
+		// 	bson.M{"abbreviation": bson.M{"$regex": "^" + quoted + "$", "$options": "i"}},
+		// 	bson.M{"url": bson.M{"$regex": "^" + quoted + "$", "$options": "i"}},
+		// }}}
 	}
 
 	err = FindOne(CollectionGroups, filter, bson.D{{"members", -1}}, nil, &group)
