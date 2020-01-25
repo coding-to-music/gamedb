@@ -124,6 +124,8 @@ func (app App) BSON() bson.D {
 		app.ChangeNumberDate = time.Now()
 	}
 
+	app.UpdatedAt = time.Now()
+
 	return bson.D{
 		{"achievements", app.Achievements},
 		{"achievements_5", app.Achievements5},
