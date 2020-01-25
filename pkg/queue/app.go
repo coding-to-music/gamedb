@@ -75,7 +75,7 @@ func appHandler(messages []*rabbit.Message) {
 			app = mongo.App{}
 			app.ID = id
 		} else if err != nil {
-			log.Err(gorm.Error, payload.ID)
+			log.Err(err, payload.ID)
 			sendToRetryQueue(message)
 			continue
 		}
