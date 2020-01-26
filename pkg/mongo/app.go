@@ -624,6 +624,10 @@ func GetAppsByID(ids []int, projection bson.M) (apps []App, err error) {
 
 func SearchApps(search string, projection bson.M) (app App, err error) {
 
+	if projection == nil {
+		projection = bson.M{}
+	}
+
 	var apps []App
 
 	if helpers.RegexNumbers.MatchString(search) {
