@@ -10,6 +10,7 @@ import (
 	"github.com/gamedb/gamedb/cmd/webserver/middleware"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/queue"
@@ -223,6 +224,7 @@ func adminQueues(r *http.Request) {
 			playerID, err := strconv.ParseInt(val, 10, 64)
 			if err == nil {
 				err = queue.ProducePlayer(queue.PlayerMessage{ID: playerID, UserAgent: &ua})
+				err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 				log.Err(err, r)
 			}
 		}
@@ -240,6 +242,7 @@ func adminQueues(r *http.Request) {
 			if err == nil {
 
 				err = queue.ProduceBundle(bundleID)
+				err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 				log.Err(err, r)
 			}
 		}
@@ -254,6 +257,7 @@ func adminQueues(r *http.Request) {
 		for i := 1; i <= count; i++ {
 
 			err = queue.ProduceTest(i)
+			err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 			log.Err(err, r)
 		}
 	}
@@ -271,6 +275,7 @@ func adminQueues(r *http.Request) {
 	}
 
 	err := queue.ProduceSteam(queue.SteamMessage{AppIDs: appIDs, PackageIDs: packageIDs})
+	err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 	log.Err(err, r)
 }
 
