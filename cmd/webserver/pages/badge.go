@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
@@ -118,12 +119,13 @@ func badgeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var response = datatable.NewDataTablesResponse(r, query, count, count)
 	for k, player := range badges {
 		response.AddRow([]interface{}{
-			query.GetOffset() + k + 1, // 0
-			player.PlayerName,         // 1
-			player.GetPlayerIcon(),    // 2
-			player.BadgeLevel,         // 3
-			player.BadgeCompletionTime.Format("2006-01-02 15:04:05"), // 4
-			player.GetPlayerPath(), // 5
+			query.GetOffset() + k + 1,                                 // 0
+			helpers.GetPlayerName(player.PlayerID, player.PlayerName), // 1
+			player.GetPlayerIcon(),                                    // 2
+			player.BadgeLevel,                                         // 3
+			player.BadgeCompletionTime.Format(helpers.DateSQL),        // 4
+			player.GetPlayerPath(),                                    // 5
+			player.GetPlayerCommunityLink(),                           // 6
 		})
 	}
 

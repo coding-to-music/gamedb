@@ -500,7 +500,8 @@ func updatePlayerBadges(player *mongo.Player) error {
 			BadgeXP:             v.XP,
 			PlayerID:            player.ID,
 			PlayerIcon:          player.Avatar,
-			PlayerName:          player.GetName(),
+			PlayerName:          player.PersonaName,
+			PlayerURL:           player.VanintyURL,
 		})
 
 		// Add significant badges to profile

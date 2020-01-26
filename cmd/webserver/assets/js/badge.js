@@ -42,6 +42,17 @@ if ($badgePage.length > 0) {
                     $(td).attr('nowrap', 'nowrap');
                 }
             },
+            // Link
+            {
+                "targets": 4,
+                "render": function (data, type, row) {
+                    if (row[6]) {
+                        return '<a href="' + row[6] + '" target="_blank" rel="nofollow"><i class="fas fa-link"></i></a>';
+                    }
+                    return '';
+                },
+                "orderable": false,
+            },
         ]
     };
 
