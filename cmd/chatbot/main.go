@@ -72,7 +72,7 @@ func main() {
 
 			if command.Regex().MatchString(msg) {
 
-				if config.IsProd() {
+				if m.Author.ID != debugAuthorID {
 					go saveToInflux(m, command)
 					go saveToMongo(m, msg)
 				}
