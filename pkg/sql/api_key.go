@@ -29,8 +29,6 @@ type Lock struct {
 
 func GetAPIKey(tag string) (err error) {
 
-	tag = config.Config.Environment.Get() + "-" + tag
-
 	// Retrying as this call can fail
 	operation := func() (err error) {
 
@@ -63,8 +61,10 @@ func GetAPIKey(tag string) (err error) {
 
 		// Update the row
 		db = db.New().Table("api_keys").Where("`key` = ?", row.Key).Updates(map[string]interface{}{
-			"expires": time.Now().Add(apiSessionLength),
-			"owner":   tag,
+			"expires":     time.Now().Add(apiSessionLength),
+			"owner":       tag,
+			"environment": config.Config.Environment.Get(),
+			"version":     config.Config.CommitHash.Get(),
 		})
 		if db.Error != nil {
 			db.Rollback()
@@ -106,7 +106,6 @@ func GetAPIKey(tag string) (err error) {
 			// Update key
 			db = db.Updates(map[string]interface{}{
 				"expires": time.Now().Add(apiSessionLength),
-				"owner":   tag,
 			})
 			if db.Error != nil {
 				log.Err(db.Error)
