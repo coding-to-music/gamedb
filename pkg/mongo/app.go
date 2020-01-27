@@ -17,6 +17,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql/pics"
+	"github.com/sahilm/fuzzy"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -104,6 +105,8 @@ type App struct {
 	Version                       string                         `bson:"version"`                         //
 	WishlistAvgPosition           float64                        `bson:"wishlist_avg_position"`           //
 	WishlistCount                 int                            `bson:"wishlist_count"`                  //
+
+	Score float64 `bson:"score"` //  Just used for search
 }
 
 func (app App) BSON() bson.D {
@@ -650,14 +653,26 @@ func SearchApps(search string, projection bson.M) (app App, err error) {
 		filter := bson.D{{"$text", bson.M{"$search": search}}}
 		projection["score"] = bson.M{"$meta": "textScore"}
 		order := bson.D{{"score", bson.M{"$meta": "textScore"}}}
-		apps, err = GetApps(0, 1, order, filter, projection, nil)
+		apps, err = GetApps(0, 20, order, filter, projection, nil)
 		if err != nil {
 			return app, err
 		}
-	}
 
-	if len(apps) == 0 {
-		return app, ErrNoDocuments
+		if len(apps) == 0 {
+			return app, ErrNoDocuments
+		}
+
+		var names []string
+		for _, v := range apps {
+			names = append(names, helpers.RegexNonAlphaNumeric.ReplaceAllString(v.GetName(), ""))
+		}
+		search = helpers.RegexNonAlphaNumeric.ReplaceAllString(search, "")
+		matches := fuzzy.Find(search, names)
+		if len(matches) > 0 {
+			return apps[matches[0].Index], nil
+		}
+
+		return apps[0], nil
 	}
 
 	return apps[0], nil

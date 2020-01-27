@@ -77,6 +77,7 @@ require (
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/rollbar/rollbar-go v1.2.0
 	github.com/russross/blackfriday v2.0.0+incompatible
+	github.com/sahilm/fuzzy v0.1.0
 	github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca // indirect
 	github.com/satori/go.uuid v1.2.0
 	github.com/sendgrid/rest v2.4.1+incompatible
