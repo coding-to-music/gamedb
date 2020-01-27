@@ -129,16 +129,16 @@ func main() {
 	r.Get("/sitemap-badges.xml", pages.SiteMapBadges)
 
 	// Shortcuts
-	r.Get("/a{id}", func(w http.ResponseWriter, r *http.Request) {
+	r.Get("/a{id:[0-9]+}", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/apps/"+chi.URLParam(r, "id"), http.StatusFound)
 	})
-	r.Get("/s{id}", func(w http.ResponseWriter, r *http.Request) {
+	r.Get("/s{id:[0-9]+}", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/packages/"+chi.URLParam(r, "id"), http.StatusFound)
 	})
-	r.Get("/p{id}", func(w http.ResponseWriter, r *http.Request) {
+	r.Get("/p{id:[0-9]+}", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/players/"+chi.URLParam(r, "id"), http.StatusFound)
 	})
-	r.Get("/b{id}", func(w http.ResponseWriter, r *http.Request) {
+	r.Get("/b{id:[0-9]+}", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/bundles/"+chi.URLParam(r, "id"), http.StatusFound)
 	})
 
@@ -172,10 +172,10 @@ func main() {
 		}
 		http.Redirect(w, r, "/apps"+q, http.StatusFound)
 	})
-	r.Get("/games/{id}", func(w http.ResponseWriter, r *http.Request) {
+	r.Get("/games/{id:[0-9]+}", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/apps/"+chi.URLParam(r, "id"), http.StatusFound)
 	})
-	r.Get("/games/{id}/{slug}", func(w http.ResponseWriter, r *http.Request) {
+	r.Get("/games/{id:[0-9]+}/{slug}", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/apps/"+chi.URLParam(r, "id")+"/"+chi.URLParam(r, "id"), http.StatusFound)
 	})
 
