@@ -10,7 +10,7 @@ import (
 func main() {
 
 	config.SetVersion("test")
-	log.Initialise([]log.LogName{log.LogNameTest}, "test")
+	log.Initialise([]log.LogName{log.LogNameTest})
 
 	// Get API key
 	err := sql.GetAPIKey("test")

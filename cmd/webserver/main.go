@@ -33,7 +33,7 @@ func main() {
 	}
 
 	config.SetVersion(version)
-	log.Initialise([]log.LogName{log.LogNameWebserver}, version)
+	log.Initialise([]log.LogName{log.LogNameWebserver})
 
 	// Get API key
 	err := sql.GetAPIKey("webserver")

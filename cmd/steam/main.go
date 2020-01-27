@@ -36,7 +36,7 @@ var (
 func main() {
 
 	config.SetVersion(version)
-	log.Initialise([]log.LogName{log.LogNameSteam}, version)
+	log.Initialise([]log.LogName{log.LogNameSteam})
 
 	var err error
 

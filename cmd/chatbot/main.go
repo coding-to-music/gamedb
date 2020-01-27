@@ -27,7 +27,7 @@ var (
 func main() {
 
 	config.SetVersion(version)
-	log.Initialise([]log.LogName{log.LogNameChatbot}, version)
+	log.Initialise([]log.LogName{log.LogNameChatbot})
 
 	// Get API key
 	err := sql.GetAPIKey("chatbot")

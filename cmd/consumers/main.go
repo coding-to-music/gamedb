@@ -18,7 +18,7 @@ var version string
 func main() {
 
 	config.SetVersion(version)
-	log.Initialise([]log.LogName{log.LogNameConsumers}, version)
+	log.Initialise([]log.LogName{log.LogNameConsumers})
 
 	// Get API key
 	err := sql.GetAPIKey("consumer")

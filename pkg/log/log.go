@@ -157,7 +157,7 @@ var (
 	defaultLogs  []LogName
 )
 
-func Initialise(logs []LogName, v string) {
+func Initialise(logs []LogName) {
 
 	defaultLogs = logs
 
