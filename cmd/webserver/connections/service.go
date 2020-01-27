@@ -30,7 +30,6 @@ type ConnectionInterface interface {
 	getName() string
 	getEnum() connectionEnum
 	getConfig(login bool) oauth2.Config
-	getEmptyVal() interface{}
 
 	//
 	LinkHandler(w http.ResponseWriter, r *http.Request)
@@ -91,7 +90,7 @@ func unlink(w http.ResponseWriter, r *http.Request, c ConnectionInterface, event
 	}
 
 	// Update user
-	err = sql.UpdateUserCol(userID, strings.ToLower(c.getName())+"_id", c.getEmptyVal())
+	err = sql.UpdateUserCol(userID, strings.ToLower(c.getName())+"_id", nil)
 	if err != nil {
 		log.Err(err, r)
 		err = session.SetFlash(r, helpers.SessionBad, "An error occurred (1002)")

@@ -69,10 +69,6 @@ func (d discordConnection) getConfig(login bool) oauth2.Config {
 	}
 }
 
-func (d discordConnection) getEmptyVal() interface{} {
-	return ""
-}
-
 func (d discordConnection) LinkHandler(w http.ResponseWriter, r *http.Request) {
 	linkOAuth(w, r, d, false)
 }

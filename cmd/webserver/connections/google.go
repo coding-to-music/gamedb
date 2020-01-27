@@ -85,10 +85,6 @@ func (g googleConnection) getConfig(login bool) oauth2.Config {
 	}
 }
 
-func (g googleConnection) getEmptyVal() interface{} {
-	return ""
-}
-
 func (g googleConnection) LinkHandler(w http.ResponseWriter, r *http.Request) {
 
 	linkOAuth(w, r, g, false)

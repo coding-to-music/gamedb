@@ -70,10 +70,11 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 		log.Err(err, r)
 	}
 
-	if t.User.SteamID > 0 {
+	steamID := t.User.GetSteamID()
+	if steamID > 0 {
 
 		// Get player
-		t.Player, err = mongo.GetPlayer(t.User.SteamID)
+		t.Player, err = mongo.GetPlayer(steamID)
 		err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
 		if err != nil {
 			log.Err(err, r)
@@ -182,7 +183,7 @@ func deletePostHandler(w http.ResponseWriter, r *http.Request) {
 			return "/settings", "", "There was an eror saving your information."
 		}
 
-		if r.PostForm.Get("id") == strconv.FormatInt(user.SteamID, 10) {
+		if r.PostForm.Get("id") == user.SteamID.String {
 
 			err = session.DeleteAll(r)
 			log.Err(err)

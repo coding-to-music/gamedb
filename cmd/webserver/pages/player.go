@@ -420,7 +420,7 @@ func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if strconv.FormatInt(user.SteamID, 10) != id {
+		if user.SteamID.String != id {
 			err = session.SetFlash(r, helpers.SessionBad, "Invalid user")
 			log.Err(err)
 			return

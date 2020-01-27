@@ -1,6 +1,7 @@
 package sql
 
 import (
+	"database/sql"
 	"errors"
 	"strconv"
 	"time"
@@ -8,6 +9,7 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
+	"github.com/gamedb/gamedb/pkg/log"
 )
 
 const (
@@ -55,15 +57,29 @@ type User struct {
 	Email         string          `gorm:"not null;column:email;unique_index"`
 	EmailVerified bool            `gorm:"not null;column:email_verified"`
 	Password      string          `gorm:"not null;column:password"`
-	SteamID       int64           `gorm:"not null;column:steam_id"`
-	PatreonID     string          `gorm:"not null;column:patreon_id"`
-	GoogleID      string          `gorm:"not null;column:google_id"`
-	DiscordID     string          `gorm:"not null;column:discord_id"`
+	SteamID       sql.NullString  `gorm:"not null;column:steam_id"`
+	PatreonID     sql.NullString  `gorm:"not null;column:patreon_id"`
+	GoogleID      sql.NullString  `gorm:"not null;column:google_id"`
+	DiscordID     sql.NullString  `gorm:"not null;column:discord_id"`
+	GitHubID      sql.NullString  `gorm:"not null;column:github_id"`
 	PatreonLevel  int8            `gorm:"not null;column:patreon_level"`
 	HideProfile   bool            `gorm:"not null;column:hide_profile"`
 	ShowAlerts    bool            `gorm:"not null;column:show_alerts"`
 	ProductCC     steam.ProductCC `gorm:"not null;column:country_code"`
 	APIKey        string          `gorm:"not null;column:api_key"`
+}
+
+func (user User) GetSteamID() (ret int64) {
+
+	if user.SteamID.Valid {
+		i, err := strconv.ParseInt(user.SteamID.String, 10, 64)
+		if err != nil {
+			log.Err(err)
+		} else {
+			return i
+		}
+	}
+	return 0
 }
 
 func (user *User) SetAPIKey() {
@@ -94,7 +110,9 @@ func UpdateUserCol(userID int, column string, value interface{}) (err error) {
 
 	var user = User{ID: userID}
 
-	db = db.Model(&user).Update(column, value)
+	db = db.Model(&user).Updates(map[string]interface{}{
+		column: value,
+	})
 	return db.Error
 }
 

@@ -68,10 +68,6 @@ func (p patreonConnection) getConfig(login bool) oauth2.Config {
 	}
 }
 
-func (p patreonConnection) getEmptyVal() interface{} {
-	return ""
-}
-
 func (p patreonConnection) LinkHandler(w http.ResponseWriter, r *http.Request) {
 
 	linkOAuth(w, r, p, false)

@@ -47,10 +47,15 @@ func (c AutoPlayerRefreshes) work() (err error) {
 	var playerIDs []int64
 	for _, user := range users {
 
-		playerIDs = append(playerIDs, user.SteamID)
+		playerID := user.GetSteamID()
 
-		err = queue.ProducePlayer(queue.PlayerMessage{ID: user.SteamID})
-		log.Err(err)
+		if playerID > 0 {
+
+			playerIDs = append(playerIDs, playerID)
+
+			err = queue.ProducePlayer(queue.PlayerMessage{ID: playerID})
+			log.Err(err)
+		}
 	}
 
 	// Update groups

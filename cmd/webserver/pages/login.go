@@ -180,17 +180,20 @@ func login(r *http.Request, user sql.User) (string, bool) {
 		helpers.SessionUserLevel:      strconv.Itoa(int(user.PatreonLevel)),
 	}
 
-	player, err := mongo.GetPlayer(user.SteamID)
-	if err == nil {
-		sessionData[helpers.SessionPlayerID] = strconv.FormatInt(player.ID, 10)
-		sessionData[helpers.SessionPlayerName] = player.PersonaName
-		sessionData[helpers.SessionPlayerLevel] = strconv.Itoa(player.Level)
-	} else {
-		err = helpers.IgnoreErrors(err, mongo.ErrInvalidPlayerID, mongo.ErrNoDocuments)
-		log.Err(err, r)
+	steamID := user.GetSteamID()
+	if steamID > 0 {
+		player, err := mongo.GetPlayer(steamID)
+		if err == nil {
+			sessionData[helpers.SessionPlayerID] = strconv.FormatInt(player.ID, 10)
+			sessionData[helpers.SessionPlayerName] = player.PersonaName
+			sessionData[helpers.SessionPlayerLevel] = strconv.Itoa(player.Level)
+		} else {
+			err = helpers.IgnoreErrors(err, mongo.ErrInvalidPlayerID, mongo.ErrNoDocuments)
+			log.Err(err, r)
+		}
 	}
 
-	err = session.SetMany(r, sessionData)
+	err := session.SetMany(r, sessionData)
 	if err != nil {
 		log.Err(err, r)
 		return "An error occurred", false

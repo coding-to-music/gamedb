@@ -52,10 +52,6 @@ func (s steamConnection) getConfig(login bool) oauth2.Config {
 	return oauth2.Config{}
 }
 
-func (s steamConnection) getEmptyVal() interface{} {
-	return 0
-}
-
 func (s steamConnection) LinkHandler(w http.ResponseWriter, r *http.Request) {
 
 }
