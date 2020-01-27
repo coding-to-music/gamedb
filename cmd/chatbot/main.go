@@ -1,6 +1,7 @@
 package main
 
 import (
+	"strings"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -22,6 +23,10 @@ const debugAuthorID = "145456943912189952"
 
 var (
 	version string
+
+	ignoreGuildIDs = []string{
+		"110373943822540800", // Discord Bots
+	}
 )
 
 func main() {
@@ -72,7 +77,7 @@ func main() {
 
 			if command.Regex().MatchString(msg) {
 
-				if m.Author.ID != debugAuthorID {
+				if m.Author.ID != debugAuthorID && !helpers.SliceHasString(ignoreGuildIDs, m.GuildID) {
 					go saveToInflux(m, command)
 					go saveToMongo(m, msg)
 				}
