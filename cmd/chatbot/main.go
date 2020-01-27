@@ -79,7 +79,16 @@ func main() {
 
 				go func() {
 					err := discordSession.ChannelTyping(m.ChannelID)
-					log.Err(err)
+					if err != nil && !strings.Contains(err.Error(), "HTTP 403 Forbidden") {
+						log.Err(err)
+					}
+				}()
+
+				go func() {
+					err = discordSession.MessageReactionAdd(m.ChannelID, m.Message.ID, "👍")
+					if err != nil && !strings.Contains(err.Error(), "HTTP 403 Forbidden") {
+						log.Err(err)
+					}
 				}()
 
 				chanID := m.ChannelID
