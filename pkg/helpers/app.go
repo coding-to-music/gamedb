@@ -75,6 +75,9 @@ func GetAppReleaseState(state string) (ret string) {
 func GetAppReleaseDateNice(releaseDateUnix int64, releaseDate string) string {
 
 	if releaseDateUnix == 0 {
+		if releaseDate == "" {
+			releaseDate = "-" // Can't return empty, for Discord
+		}
 		return releaseDate
 	}
 
@@ -209,4 +212,3 @@ func (sr SystemRequirement) Format() template.HTML {
 		return template.HTML(sr.Val)
 	}
 }
-
