@@ -32,7 +32,6 @@ type PlayerBadge struct {
 	PlayerID            int64     `bson:"player_id"`
 	PlayerName          string    `bson:"player_name"`
 	PlayerIcon          string    `bson:"player_icon"`
-	PlayerURL           string    `json:"player_url"`
 }
 
 func (badge PlayerBadge) BSON() bson.D {
@@ -51,7 +50,6 @@ func (badge PlayerBadge) BSON() bson.D {
 		{"player_id", badge.PlayerID},
 		{"player_icon", badge.PlayerIcon},
 		{"player_name", badge.PlayerName},
-		{"player_url", badge.PlayerURL},
 	}
 }
 
@@ -61,12 +59,14 @@ func (badge PlayerBadge) getKey() string {
 
 func (badge PlayerBadge) GetPlayerCommunityLink() string {
 
-	if badge.PlayerURL == "" {
-		return ""
-	} else if badge.IsSpecial() {
-		return "https://steamcommunity.com/id/" + badge.PlayerURL + "/gamecards/" + strconv.Itoa(badge.BadgeID)
+	var dir string
+	if badge.IsSpecial() {
+		dir = "gamecards"
+	} else {
+		dir = "badges"
 	}
-	return "https://steamcommunity.com/id/" + badge.PlayerURL + "/badges/" + strconv.Itoa(badge.BadgeID)
+
+	return "https://steamcommunity.com/profiles/" + strconv.FormatInt(badge.PlayerID, 10) + "/" + dir + "/" + strconv.Itoa(badge.BadgeID)
 }
 
 func (badge PlayerBadge) IsSpecial() bool {
