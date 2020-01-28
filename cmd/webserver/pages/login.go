@@ -8,7 +8,7 @@ import (
 	"github.com/Jleagle/recaptcha-go"
 	"github.com/Jleagle/session-go/session"
 	"github.com/badoux/checkmail"
-	"github.com/gamedb/gamedb/cmd/webserver/connections"
+	"github.com/gamedb/gamedb/cmd/webserver/oauth"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -26,17 +26,9 @@ func LoginRouter() http.Handler {
 	r.Get("/", loginHandler)
 	r.Post("/", loginPostHandler)
 
-	r.Get("/google", loginWithGoogleHandler)
-	r.Get("/google-callback", loginWithGoogleCallbackHandler)
+	r.Get("/oauth/{id:[a-z]+}", oauthLoginHandler)
+	r.Get("/oauth-callback/{id:[a-z]+}", oauthLCallbackHandler)
 
-	r.Get("/discord", loginWithDiscordHandler)
-	r.Get("/discord-callback", loginWithDiscordCallbackHandler)
-
-	r.Get("/patreon", loginWithPatreonHandler)
-	r.Get("/patreon-callback", loginWithPatreonCallbackHandler)
-
-	r.Get("/steam", loginWithSteamHandler)
-	r.Get("/steam-callback", loginWithSteamCallbackHandler)
 	return r
 }
 
@@ -208,50 +200,14 @@ func login(r *http.Request, user sql.User) (string, bool) {
 	return "You have been logged in", true
 }
 
-func loginWithGoogleHandler(w http.ResponseWriter, r *http.Request) {
+func oauthLoginHandler(w http.ResponseWriter, r *http.Request) {
 
-	connection := connections.New(connections.ConnectionGoogle)
+	connection := oauth.New(oauth.ConnectionSteam)
 	connection.LoginHandler(w, r)
 }
 
-func loginWithDiscordHandler(w http.ResponseWriter, r *http.Request) {
+func oauthLCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
-	connection := connections.New(connections.ConnectionDiscord)
-	connection.LoginHandler(w, r)
-}
-
-func loginWithPatreonHandler(w http.ResponseWriter, r *http.Request) {
-
-	connection := connections.New(connections.ConnectionPatreon)
-	connection.LoginHandler(w, r)
-}
-
-func loginWithSteamHandler(w http.ResponseWriter, r *http.Request) {
-
-	connection := connections.New(connections.ConnectionSteam)
-	connection.LoginHandler(w, r)
-}
-
-func loginWithGoogleCallbackHandler(w http.ResponseWriter, r *http.Request) {
-
-	connection := connections.New(connections.ConnectionGoogle)
-	connection.LoginCallbackHandler(w, r)
-}
-
-func loginWithDiscordCallbackHandler(w http.ResponseWriter, r *http.Request) {
-
-	connection := connections.New(connections.ConnectionGoogle)
-	connection.LoginCallbackHandler(w, r)
-}
-
-func loginWithPatreonCallbackHandler(w http.ResponseWriter, r *http.Request) {
-
-	connection := connections.New(connections.ConnectionGoogle)
-	connection.LoginCallbackHandler(w, r)
-}
-
-func loginWithSteamCallbackHandler(w http.ResponseWriter, r *http.Request) {
-
-	connection := connections.New(connections.ConnectionGoogle)
+	connection := oauth.New(oauth.ConnectionGoogle)
 	connection.LoginCallbackHandler(w, r)
 }

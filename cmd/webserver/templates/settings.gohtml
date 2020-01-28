@@ -107,7 +107,7 @@
                                                 <input type="hidden" name="openid.ns" value="http://specs.openid.net/auth/2.0">
                                                 <input type="hidden" name="openid.mode" value="checkid_setup">
                                                 <input type="hidden" name="openid.realm" value="{{ .Domain }}/">
-                                                <input type="hidden" name="openid.return_to" value="{{ .Domain }}/settings/steam-callback">
+                                                <input type="hidden" name="openid.return_to" value="{{ .Domain }}/settings/oauth-callback/steam">
                                                 <p>
                                                     <button type="submit" class="btn btn-success btn-sm">
                                                         <i class="fab fa-steam"></i> Link Steam Account
@@ -116,7 +116,7 @@
                                             </form>
                                         {{ else }}
                                             <p>
-                                                <a href="/settings/unlink-steam" role="button" class="btn btn-danger btn-sm">
+                                                <a href="/settings/oauth-unlink/steam" role="button" class="btn btn-danger btn-sm">
                                                     <i class="fab fa-steam"></i> Unlink Steam Account
                                                 </a>
                                             </p>
@@ -124,11 +124,11 @@
 
                                         <p>
                                             {{ if eq .User.PatreonID.String "" }}
-                                                <a href="/settings/link-patreon" role="button" class="btn btn-success btn-sm">
+                                                <a href="/settings/oauth-link/patreon" role="button" class="btn btn-success btn-sm">
                                                     <i class="fab fa-patreon"></i> Link Patreon Account
                                                 </a>
                                             {{ else }}
-                                                <a href="/settings/unlink-patreon" role="button" class="btn btn-danger btn-sm">
+                                                <a href="/settings/oauth-unlink/patreon" role="button" class="btn btn-danger btn-sm">
                                                     <i class="fab fa-patreon"></i> Unlink Patreon Account
                                                 </a>
                                             {{ end }}
@@ -136,11 +136,11 @@
 
                                         <p>
                                             {{ if eq .User.DiscordID.String "" }}
-                                                <a href="/settings/link-discord" role="button" class="btn btn-success btn-sm">
+                                                <a href="/settings/oauth-link/discord" role="button" class="btn btn-success btn-sm">
                                                     <i class="fab fa-discord"></i> Link Discord Account
                                                 </a>
                                             {{ else }}
-                                                <a href="/settings/unlink-discord" role="button" class="btn btn-danger btn-sm">
+                                                <a href="/settings/oauth-unlink/discord" role="button" class="btn btn-danger btn-sm">
                                                     <i class="fab fa-discord"></i> Unlink Discord Account
                                                 </a>
                                             {{ end }}
@@ -148,11 +148,11 @@
 
                                         <p>
                                             {{ if eq .User.GoogleID.String "" }}
-                                                <a href="/settings/link-google" role="button" class="btn btn-success btn-sm">
+                                                <a href="/settings/oauth-link/google" role="button" class="btn btn-success btn-sm">
                                                     <i class="fab fa-google"></i> Link Google Account
                                                 </a>
                                             {{ else }}
-                                                <a href="/settings/unlink-google" role="button" class="btn btn-danger btn-sm">
+                                                <a href="/settings/oauth-unlink/google" role="button" class="btn btn-danger btn-sm">
                                                     <i class="fab fa-google"></i> Unlink Google Account
                                                 </a>
                                             {{ end }}
@@ -160,12 +160,12 @@
 
                                         <p class="mb-0">
                                             {{ if eq .User.GitHubID.String "" }}
-                                                <a href="/settings/link-github" role="button" class="btn btn-success btn-sm">
+                                                <a href="/settings/oauth-link/github" role="button" class="btn btn-success btn-sm">
                                                     <i class="fab fa-github"></i> Link GitHub Account
                                                 </a>
                                             {{ else }}
-                                                <a href="/settings/unlink-github" role="button" class="btn btn-danger btn-sm">
-                                                    <i class="fab fa-google"></i> Unlink GitHub Account
+                                                <a href="/settings/oauth-unlink/github" role="button" class="btn btn-danger btn-sm">
+                                                    <i class="fab fa-github"></i> Unlink GitHub Account
                                                 </a>
                                             {{ end }}
                                         </p>

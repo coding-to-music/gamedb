@@ -9,9 +9,9 @@ import (
 	"github.com/Jleagle/session-go/session"
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/badoux/checkmail"
-	"github.com/gamedb/gamedb/cmd/webserver/connections"
 	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
 	"github.com/gamedb/gamedb/cmd/webserver/middleware"
+	"github.com/gamedb/gamedb/cmd/webserver/oauth"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -34,25 +34,9 @@ func SettingsRouter() http.Handler {
 	r.Get("/new-key", settingsNewKeyHandler)
 	r.Get("/donations.json", settingsDonationsAjaxHandler)
 
-	// r.Get("/link-steam", linkSteamHandler)
-	r.Get("/unlink-steam", unlinkSteamHandler)
-	r.Get("/steam-callback", linkSteamCallbackHandler)
-
-	r.Get("/link-patreon", linkPatreonHandler)
-	r.Get("/unlink-patreon", unlinkPatreonHandler)
-	r.Get("/patreon-callback", linkPatreonCallbackHandler)
-
-	r.Get("/link-google", linkGoogleHandler)
-	r.Get("/unlink-google", unlinkGoogleHandler)
-	r.Get("/google-callback", linkGoogleCallbackHandler)
-
-	r.Get("/link-discord", linkDiscordHandler)
-	r.Get("/unlink-discord", unlinkDiscordHandler)
-	r.Get("/discord-callback", linkDiscordCallbackHandler)
-
-	r.Get("/link-github", linkGitHubHandler)
-	r.Get("/unlink-github", unlinkGitHubHandler)
-	r.Get("/github-callback", linkGitHubCallbackHandler)
+	r.Get("/oauth-link/{id:[a-z]+}", oauthLinkHandler)
+	r.Get("/oauth-unlink/{id:[a-z]+}", oauthUnlinkHandler)
+	r.Get("/oauth-callback/{id:[a-z]+}", oauthCallbackHandler)
 
 	return r
 }
@@ -505,91 +489,32 @@ func settingsDonationsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	returnJSON(w, r, response)
 }
 
-// Steam
-func linkSteamCallbackHandler(w http.ResponseWriter, r *http.Request) {
+func oauthLinkHandler(w http.ResponseWriter, r *http.Request) {
 
-	connection := connections.New(connections.ConnectionSteam)
-	connection.LinkCallbackHandler(w, r)
+	id := oauth.ConnectionEnum(chi.URLParam(r, "id"))
+
+	if _, ok := oauth.Connections[id]; ok {
+		connection := oauth.New(id)
+		connection.LinkHandler(w, r)
+	}
 }
 
-func unlinkSteamHandler(w http.ResponseWriter, r *http.Request) {
+func oauthUnlinkHandler(w http.ResponseWriter, r *http.Request) {
 
-	connection := connections.New(connections.ConnectionSteam)
-	connection.UnlinkHandler(w, r)
+	id := oauth.ConnectionEnum(chi.URLParam(r, "id"))
+
+	if _, ok := oauth.Connections[id]; ok {
+		connection := oauth.New(id)
+		connection.UnlinkHandler(w, r)
+	}
 }
 
-// Patreon
-func linkPatreonHandler(w http.ResponseWriter, r *http.Request) {
+func oauthCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
-	connection := connections.New(connections.ConnectionPatreon)
-	connection.LinkHandler(w, r)
-}
+	id := oauth.ConnectionEnum(chi.URLParam(r, "id"))
 
-func unlinkPatreonHandler(w http.ResponseWriter, r *http.Request) {
-
-	connection := connections.New(connections.ConnectionPatreon)
-	connection.UnlinkHandler(w, r)
-}
-
-func linkPatreonCallbackHandler(w http.ResponseWriter, r *http.Request) {
-
-	connection := connections.New(connections.ConnectionPatreon)
-	connection.LinkCallbackHandler(w, r)
-}
-
-// Google
-func linkGoogleHandler(w http.ResponseWriter, r *http.Request) {
-
-	connection := connections.New(connections.ConnectionGoogle)
-	connection.LinkHandler(w, r)
-}
-
-func unlinkGoogleHandler(w http.ResponseWriter, r *http.Request) {
-
-	connection := connections.New(connections.ConnectionGoogle)
-	connection.UnlinkHandler(w, r)
-}
-
-func linkGoogleCallbackHandler(w http.ResponseWriter, r *http.Request) {
-
-	connection := connections.New(connections.ConnectionGoogle)
-	connection.LinkCallbackHandler(w, r)
-}
-
-// Discord
-func linkDiscordHandler(w http.ResponseWriter, r *http.Request) {
-
-	connection := connections.New(connections.ConnectionDiscord)
-	connection.LinkHandler(w, r)
-}
-
-func unlinkDiscordHandler(w http.ResponseWriter, r *http.Request) {
-
-	connection := connections.New(connections.ConnectionDiscord)
-	connection.UnlinkHandler(w, r)
-}
-
-func linkDiscordCallbackHandler(w http.ResponseWriter, r *http.Request) {
-
-	connection := connections.New(connections.ConnectionDiscord)
-	connection.LinkCallbackHandler(w, r)
-}
-
-// GitHub
-func linkGitHubHandler(w http.ResponseWriter, r *http.Request) {
-
-	connection := connections.New(connections.ConnectionGithub)
-	connection.LinkHandler(w, r)
-}
-
-func unlinkGitHubHandler(w http.ResponseWriter, r *http.Request) {
-
-	connection := connections.New(connections.ConnectionGithub)
-	connection.UnlinkHandler(w, r)
-}
-
-func linkGitHubCallbackHandler(w http.ResponseWriter, r *http.Request) {
-
-	connection := connections.New(connections.ConnectionGithub)
-	connection.LinkCallbackHandler(w, r)
+	if _, ok := oauth.Connections[id]; ok {
+		connection := oauth.New(id)
+		connection.LinkCallbackHandler(w, r)
+	}
 }

@@ -1,4 +1,4 @@
-package connections
+package oauth
 
 import (
 	"context"
@@ -16,20 +16,43 @@ import (
 	"golang.org/x/oauth2"
 )
 
-type connectionEnum string
+//
+type oauthError struct {
+	error error
+	flash string
+}
+
+func (oe oauthError) Error() string {
+	if oe.error != nil {
+		return oe.error.Error()
+	}
+	return ""
+}
+
+//
+type ConnectionEnum string
 
 var (
-	ConnectionDiscord connectionEnum = "discord"
-	ConnectionGoogle  connectionEnum = "google"
-	ConnectionGithub  connectionEnum = "github"
-	ConnectionPatreon connectionEnum = "patreon"
-	ConnectionSteam   connectionEnum = "steam"
+	ConnectionDiscord ConnectionEnum = "discord"
+	ConnectionGoogle  ConnectionEnum = "google"
+	ConnectionGithub  ConnectionEnum = "github"
+	ConnectionPatreon ConnectionEnum = "patreon"
+	ConnectionSteam   ConnectionEnum = "steam"
+
+	Connections = map[ConnectionEnum]bool{
+		ConnectionDiscord: true,
+		ConnectionGoogle:  true,
+		ConnectionGithub:  true,
+		ConnectionPatreon: true,
+		ConnectionSteam:   true,
+	}
 )
 
+//
 type ConnectionInterface interface {
-	getID(r *http.Request, token *oauth2.Token) interface{}
+	getID(r *http.Request, token *oauth2.Token) (string, error)
 	getName() string
-	getEnum() connectionEnum
+	getEnum() ConnectionEnum
 	getConfig(login bool) oauth2.Config
 
 	//
@@ -42,7 +65,7 @@ type ConnectionInterface interface {
 	LoginCallbackHandler(w http.ResponseWriter, r *http.Request)
 }
 
-func New(s connectionEnum) ConnectionInterface {
+func New(s ConnectionEnum) ConnectionInterface {
 
 	switch s {
 	case ConnectionDiscord:
@@ -60,7 +83,12 @@ func New(s connectionEnum) ConnectionInterface {
 	}
 }
 
-func linkOAuth(w http.ResponseWriter, r *http.Request, c ConnectionInterface, login bool) {
+//
+type baseConnection struct {
+}
+
+//
+func (bc baseConnection) linkOAuth(w http.ResponseWriter, r *http.Request, c ConnectionInterface, login bool) {
 
 	state := helpers.RandString(5, helpers.Numbers)
 
@@ -75,7 +103,7 @@ func linkOAuth(w http.ResponseWriter, r *http.Request, c ConnectionInterface, lo
 	http.Redirect(w, r, url, http.StatusFound)
 }
 
-func unlink(w http.ResponseWriter, r *http.Request, c ConnectionInterface, event mongo.EventEnum) {
+func (bc baseConnection) unlink(w http.ResponseWriter, r *http.Request, c ConnectionInterface, event mongo.EventEnum) {
 
 	defer func() {
 		err := session.Save(w, r)
@@ -123,7 +151,7 @@ func unlink(w http.ResponseWriter, r *http.Request, c ConnectionInterface, event
 	}
 }
 
-func callbackOAuth(r *http.Request, c ConnectionInterface, event mongo.EventEnum, login bool) {
+func (bc baseConnection) callbackOAuth(r *http.Request, c ConnectionInterface, event mongo.EventEnum, login bool) {
 
 	realState, err := session.Get(r, strings.ToLower(c.getName())+"-oauth-state")
 	if err != nil {
@@ -164,13 +192,18 @@ func callbackOAuth(r *http.Request, c ConnectionInterface, event mongo.EventEnum
 		return
 	}
 
-	callback(r, c, event, token, login)
+	bc.callback(r, c, event, token, login)
 }
 
-func callback(r *http.Request, c ConnectionInterface, event mongo.EventEnum, token *oauth2.Token, login bool) {
+func (bc baseConnection) callback(r *http.Request, c ConnectionInterface, event mongo.EventEnum, token *oauth2.Token, login bool) {
 
-	id := c.getID(r, token)
-	if id == nil {
+	id, err := c.getID(r, token)
+	if err != nil {
+		log.Err(err)
+		if val, ok := err.(oauthError); ok {
+			err = session.SetFlash(r, helpers.SessionBad, val.flash)
+			log.Err(err, r)
+		}
 		return
 	}
 
@@ -224,39 +257,43 @@ func callback(r *http.Request, c ConnectionInterface, event mongo.EventEnum, tok
 
 	if c.getEnum() == ConnectionSteam {
 
-		idInt64 := id.(int64)
-
-		// Queue for an update
-		player, err := mongo.GetPlayer(idInt64)
+		i, err := strconv.ParseInt(id, 10, 64)
 		if err != nil {
-
-			err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
 			log.Err(err, r)
-
 		} else {
 
-			err = session.Set(r, helpers.SessionPlayerName, player.PersonaName)
+			// Queue for an update
+			player, err := mongo.GetPlayer(i)
+			if err != nil {
+
+				err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
+				log.Err(err, r)
+
+			} else {
+
+				err = session.Set(r, helpers.SessionPlayerName, player.PersonaName)
+				log.Err(err, r)
+			}
+
+			if player.NeedsUpdate(mongo.PlayerUpdateManual) {
+
+				ua := r.UserAgent()
+				err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID, UserAgent: &ua})
+				if err == nil {
+					log.Info(log.LogNameTriggerUpdate, r, ua)
+				}
+				err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
+				if err != nil {
+					log.Err(err, r)
+				} else {
+					err = session.SetFlash(r, helpers.SessionGood, "Player has been queued for an update")
+					log.Err(err, r)
+				}
+			}
+
+			// Add player to session
+			err = session.Set(r, helpers.SessionPlayerID, strconv.FormatInt(i, 10))
 			log.Err(err, r)
 		}
-
-		if player.NeedsUpdate(mongo.PlayerUpdateManual) {
-
-			ua := r.UserAgent()
-			err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID, UserAgent: &ua})
-			if err == nil {
-				log.Info(log.LogNameTriggerUpdate, r, ua)
-			}
-			err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
-			if err != nil {
-				log.Err(err, r)
-			} else {
-				err = session.SetFlash(r, helpers.SessionGood, "Player has been queued for an update")
-				log.Err(err, r)
-			}
-		}
-
-		// Add player to session
-		err = session.Set(r, helpers.SessionPlayerID, strconv.FormatInt(idInt64, 10))
-		log.Err(err, r)
 	}
 }
