@@ -1,7 +1,6 @@
 package main
 
 import (
-	"strings"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -84,16 +83,12 @@ func main() {
 
 				go func() {
 					err := discordSession.ChannelTyping(m.ChannelID)
-					if err != nil && !strings.Contains(err.Error(), "HTTP 403 Forbidden") {
-						log.Err(err)
-					}
+					discordError(err)
 				}()
 
 				go func() {
 					err = discordSession.MessageReactionAdd(m.ChannelID, m.Message.ID, "👍")
-					if err != nil && !strings.Contains(err.Error(), "HTTP 403 Forbidden") {
-						log.Err(err)
-					}
+					discordError(err)
 				}()
 
 				chanID := m.ChannelID
@@ -202,4 +197,16 @@ func saveToMongo(m *discordgo.MessageCreate, message string) {
 		log.Err(err)
 		return
 	}
+}
+
+func discordError(err error) {
+
+	if val, ok := err.(discordgo.RESTError); ok {
+		if val.Message.Code == 10008 || val.Message.Code == 50001 {
+			log.Info(err)
+			return
+		}
+	}
+
+	log.Err(err)
 }
