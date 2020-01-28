@@ -86,10 +86,10 @@ func main() {
 					discordError(err)
 				}()
 
-				go func() {
-					err = discordSession.MessageReactionAdd(m.ChannelID, m.Message.ID, "👍")
-					discordError(err)
-				}()
+				// go func() {
+				// 	err = discordSession.MessageReactionAdd(m.ChannelID, m.Message.ID, "👍")
+				// 	discordError(err)
+				// }()
 
 				chanID := m.ChannelID
 
