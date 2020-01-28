@@ -327,7 +327,6 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	t.DefaultAvatar = helpers.DefaultPlayerAvatar
 	t.GameStats = gameStats
 	t.Player = player
-	t.Player.VanintyURL = helpers.TruncateString(t.Player.VanintyURL, 14, "...")
 	t.Types = typeCounts
 
 	returnTemplate(w, r, "player", t)
