@@ -243,10 +243,10 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Functions that get called multiple times in the template
 	t.Price = app.Prices.Get(helpers.GetProductCC(r))
-	t.Common = app.ReadPICS(app.Common).Formatted(app.ID, pics.CommonKeys)
-	t.Extended = app.ReadPICS(app.Extended).Formatted(app.ID, pics.ExtendedKeys)
-	t.Config = app.ReadPICS(app.Config).Formatted(app.ID, pics.ConfigKeys)
-	t.UFS = app.ReadPICS(app.UFS).Formatted(app.ID, pics.UFSKeys)
+	t.Common = app.Common.Formatted(app.ID, pics.CommonKeys)
+	t.Extended = app.Extended.Formatted(app.ID, pics.ExtendedKeys)
+	t.Config = app.Config.Formatted(app.ID, pics.ConfigKeys)
+	t.UFS = app.UFS.Formatted(app.ID, pics.UFSKeys)
 
 	//
 	sort.Slice(app.Reviews.Reviews, func(i, j int) bool {
