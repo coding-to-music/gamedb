@@ -5,6 +5,7 @@ import (
 	"path"
 	"sort"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -270,7 +271,10 @@ func updatePlayerSummary(player *mongo.Player) error {
 	}
 
 	//
-	player.VanintyURL = path.Base(summary.ProfileURL)
+	if strings.Contains(summary.ProfileURL, "profiles") {
+		player.VanintyURL = path.Base(summary.ProfileURL)
+	}
+
 	player.CountryCode = summary.CountryCode
 	player.ContinentCode = helpers.CountryCodeToContinent(summary.CountryCode)
 	player.StateCode = summary.StateCode
