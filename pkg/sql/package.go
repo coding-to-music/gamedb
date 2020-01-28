@@ -7,11 +7,14 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
+	"github.com/Jleagle/unmarshal-go/ctypes"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql/pics"
 	"github.com/jinzhu/gorm"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 var (
@@ -85,7 +88,37 @@ func (pack *Package) UpdateJSON(scope *gorm.Scope) error {
 		pack.Prices = "{}"
 	}
 
-	return nil
+	mon := mongo.Package{
+		AppIDs:           pack.GetAppIDs(),
+		AppItems:         pack.GetAppItems(),
+		AppsCount:        pack.AppsCount,
+		BundleIDs:        pack.GetBundleIDs(),
+		BillingType:      int(pack.BillingType),
+		ChangeNumber:     0,
+		ChangeNumberDate: time.Time{},
+		ComingSoon:       false,
+		Controller:       nil,
+		CreatedAt:        time.Time{},
+		DepotIDs:         nil,
+		Extended:         nil,
+		Icon:             "",
+		ID:               0,
+		ImageLogo:        "",
+		ImagePage:        "",
+		InStore:          false,
+		LicenseType:      0,
+		Name:             "",
+		Platforms:        nil,
+		Prices:           nil,
+		PurchaseText:     "",
+		ReleaseDate:      "",
+		ReleaseDateUnix:  0,
+		Status:           0,
+		UpdatedAt:        time.Time{},
+	}
+
+	_, err := mongo.UpdateOne(mongo.CollectionPackages, bson.D{{"_id", pack.ID}}, mon.BSON())
+	return err
 }
 
 func (pack Package) GetPath() string {
@@ -260,6 +293,29 @@ func (pack Package) GetAppIDs() (apps []int) {
 
 	err := helpers.Unmarshal([]byte(pack.AppIDs), &apps)
 	log.Err(err)
+
+	return apps
+}
+
+func (pack Package) GetBundleIDs() (apps []int) {
+
+	err := helpers.Unmarshal([]byte(pack.BundleIDs), &apps)
+	log.Err(err)
+
+	return apps
+}
+
+func (pack Package) GetAppItems() (apps map[int]int) {
+
+	cApps := map[ctypes.Int]ctypes.Int{}
+
+	err := helpers.Unmarshal([]byte(pack.AppItems), &cApps)
+	log.Err(err)
+
+	apps = map[int]int{}
+	for k, v := range cApps {
+		apps[int(k)] = int(v)
+	}
 
 	return apps
 }

@@ -5,6 +5,7 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/sql/pics"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type Package struct {
@@ -12,7 +13,7 @@ type Package struct {
 	AppItems         map[int]int           `bson:"app_items"`          //
 	AppsCount        int                   `bson:"apps_count"`         //
 	BundleIDs        []int                 `bson:"bundle_ids"`         //
-	BillingType      int8                  `bson:"billing_type"`       //
+	BillingType      int                   `bson:"billing_type"`       //
 	ChangeNumber     int                   `bson:"change_id"`          //
 	ChangeNumberDate time.Time             `bson:"change_number_date"` //
 	ComingSoon       bool                  `bson:"coming_soon"`        //
@@ -34,4 +35,13 @@ type Package struct {
 	ReleaseDateUnix  int64                 `bson:"release_date_unix"`  //
 	Status           int8                  `bson:"status"`             //
 	UpdatedAt        time.Time             `bson:"updated_at"`         //
+}
+
+func (pack Package) BSON() bson.D {
+
+	pack.UpdatedAt = time.Now()
+
+	return bson.D{
+
+	}
 }
