@@ -963,6 +963,7 @@ func updateAppReviews(app *mongo.App) error {
 	})
 
 	app.Reviews = reviews
+	app.ReviewsCount = reviews.GetTotal()
 
 	return nil
 }

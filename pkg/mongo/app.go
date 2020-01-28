@@ -91,6 +91,7 @@ type App struct {
 	ReleaseState                  string                         `bson:"release_state"`                   //
 	Reviews                       helpers.AppReviewSummary       `bson:"reviews"`                         //
 	ReviewsScore                  float64                        `bson:"reviews_score"`                   //
+	ReviewsCount                  int                            `bson:"reviews_count"`                   //
 	Screenshots                   []helpers.AppImage             `bson:"screenshots"`                     //
 	ShortDescription              string                         `bson:"description_short"`               //
 	Stats                         []helpers.AppStat              `bson:"stats"`                           //
@@ -188,6 +189,7 @@ func (app App) BSON() bson.D {
 		{"release_state", app.ReleaseState},
 		{"reviews", app.Reviews},
 		{"reviews_score", app.ReviewsScore},
+		{"reviews_count", app.ReviewsCount},
 		{"screenshots", app.Screenshots},
 		{"description_short", app.ShortDescription},
 		{"stats", app.Stats},
