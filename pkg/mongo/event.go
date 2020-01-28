@@ -29,6 +29,8 @@ const (
 	EventUnlinkGoogle  EventEnum = "unlink-google"
 	EventLinkDiscord   EventEnum = "link-discord"
 	EventUnlinkDiscord EventEnum = "unlink-discord"
+	EventLinkGitHub    EventEnum = "link-github"
+	EventUnlinkGitHub  EventEnum = "unlink-github"
 )
 
 type Event struct {

@@ -21,6 +21,7 @@ type connectionEnum string
 var (
 	ConnectionDiscord connectionEnum = "discord"
 	ConnectionGoogle  connectionEnum = "google"
+	ConnectionGithub  connectionEnum = "github"
 	ConnectionPatreon connectionEnum = "patreon"
 	ConnectionSteam   connectionEnum = "steam"
 )
@@ -52,6 +53,8 @@ func New(s connectionEnum) ConnectionInterface {
 		return patreonConnection{}
 	case ConnectionSteam:
 		return steamConnection{}
+	case ConnectionGithub:
+		return githubConnection{}
 	default:
 		panic("invalid connection")
 	}

@@ -50,6 +50,10 @@ func SettingsRouter() http.Handler {
 	r.Get("/unlink-discord", unlinkDiscordHandler)
 	r.Get("/discord-callback", linkDiscordCallbackHandler)
 
+	r.Get("/link-github", linkGitHubHandler)
+	r.Get("/unlink-github", unlinkGitHubHandler)
+	r.Get("/github-callback", linkGitHubCallbackHandler)
+
 	return r
 }
 
@@ -568,5 +572,24 @@ func unlinkDiscordHandler(w http.ResponseWriter, r *http.Request) {
 func linkDiscordCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	connection := connections.New(connections.ConnectionDiscord)
+	connection.LinkCallbackHandler(w, r)
+}
+
+// GitHub
+func linkGitHubHandler(w http.ResponseWriter, r *http.Request) {
+
+	connection := connections.New(connections.ConnectionGithub)
+	connection.LinkHandler(w, r)
+}
+
+func unlinkGitHubHandler(w http.ResponseWriter, r *http.Request) {
+
+	connection := connections.New(connections.ConnectionGithub)
+	connection.UnlinkHandler(w, r)
+}
+
+func linkGitHubCallbackHandler(w http.ResponseWriter, r *http.Request) {
+
+	connection := connections.New(connections.ConnectionGithub)
 	connection.LinkCallbackHandler(w, r)
 }

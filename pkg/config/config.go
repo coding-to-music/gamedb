@@ -34,6 +34,11 @@ type BaseConfig struct {
 	FacebookAppID     ConfigItem
 	FacebookAppSecret ConfigItem
 
+	// GitHub
+	GitHubClient ConfigItem
+	GitHubSecret ConfigItem
+	GithubToken  ConfigItem
+
 	// Google
 	GoogleBucket  ConfigItem
 	GoogleProject ConfigItem
@@ -114,7 +119,6 @@ type BaseConfig struct {
 	Environment        ConfigItem
 	GameDBDomain       ConfigItem
 	GameDBShortName    ConfigItem
-	GithubToken        ConfigItem
 	MemcacheDSN        ConfigItem
 	SendGridAPIKey     ConfigItem
 	WebserverPort      ConfigItem
@@ -142,6 +146,11 @@ func init() {
 	// Facebook
 	Config.FacebookAppID.Set("FACEBOOK_APP_ID")
 	Config.FacebookAppID.Set("FACEBOOK_APP_SECRET")
+
+	// GitHub
+	Config.GitHubClient.Set("GITHUB_CLIENT")
+	Config.GitHubSecret.Set("GITHUB_SECRET")
+	Config.GithubToken.Set("GITHUB_TOKEN")
 
 	// Google
 	Config.GoogleBucket.Set("GOOGLE_BUCKET")
@@ -221,7 +230,6 @@ func init() {
 	// Other
 	Config.GameDBDomain.Set("DOMAIN")
 	Config.Environment.Set("ENV")
-	Config.GithubToken.Set("GITHUB_TOKEN")
 	Config.SendGridAPIKey.Set("SENDGRID")
 	Config.WebserverPort.Set("PORT")
 	Config.SlackGameDBWebhook.Set("SLACK_GAMEDB_WEBHOOK")

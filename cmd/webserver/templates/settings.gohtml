@@ -146,7 +146,7 @@
                                             {{ end }}
                                         </p>
 
-                                        <p class="mb-0">
+                                        <p>
                                             {{ if eq .User.GoogleID.String "" }}
                                                 <a href="/settings/link-google" role="button" class="btn btn-success btn-sm">
                                                     <i class="fab fa-google"></i> Link Google Account
@@ -154,6 +154,18 @@
                                             {{ else }}
                                                 <a href="/settings/unlink-google" role="button" class="btn btn-danger btn-sm">
                                                     <i class="fab fa-google"></i> Unlink Google Account
+                                                </a>
+                                            {{ end }}
+                                        </p>
+
+                                        <p class="mb-0">
+                                            {{ if eq .User.GitHubID.String "" }}
+                                                <a href="/settings/link-github" role="button" class="btn btn-success btn-sm">
+                                                    <i class="fab fa-github"></i> Link GitHub Account
+                                                </a>
+                                            {{ else }}
+                                                <a href="/settings/unlink-github" role="button" class="btn btn-danger btn-sm">
+                                                    <i class="fab fa-google"></i> Unlink GitHub Account
                                                 </a>
                                             {{ end }}
                                         </p>
