@@ -5,6 +5,7 @@ import (
 
 	"github.com/Jleagle/memcache-go"
 	"github.com/Jleagle/steam-go/steam"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 var (
@@ -25,9 +26,11 @@ var (
 	MemcacheAppTypesCounts    = memcache.Item{Key: "app-types", Expiration: 86400 * 7}
 
 	// Single Rows
+	MemcacheApp           = func(id int, cols bson.M) memcache.Item { return memcache.Item{Key: "app-" + strconv.Itoa(id) + "-" + bsonMapToString(cols), Expiration: 0} }
 	MemcacheChange        = func(changeID int64) memcache.Item { return memcache.Item{Key: "change-" + strconv.FormatInt(changeID, 10), Expiration: 0} }
-	MemcacheGroup         = func(id string) memcache.Item { return memcache.Item{Key: "group-" + id, Expiration: 60 * 30} } // 30 mins, cant be infinite as we need the 'updatedAt' field to be fairly upto date
+	MemcacheGroup         = func(id string) memcache.Item { return memcache.Item{Key: "group-" + id, Expiration: 0} }
 	MemcachePackage       = func(id int) memcache.Item { return memcache.Item{Key: "package-" + strconv.Itoa(id), Expiration: 0} }
+	MemcachePackageMongo  = func(id int, cols bson.M) memcache.Item { return memcache.Item{Key: "package-" + strconv.Itoa(id) + "-" + bsonMapToString(cols), Expiration: 0} }
 	MemcachePlayer        = func(id int64) memcache.Item { return memcache.Item{Key: "player-" + strconv.FormatInt(id, 10), Expiration: 0} }
 	MemcacheConfigItem    = func(id string) memcache.Item { return memcache.Item{Key: "config-item-" + id, Expiration: 0} }
 	MemcacheAppPlayersRow = func(appID int) memcache.Item { return memcache.Item{Key: "app-players-" + strconv.Itoa(appID), Expiration: 10 * 60} }
