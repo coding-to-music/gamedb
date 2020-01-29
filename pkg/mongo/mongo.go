@@ -275,7 +275,17 @@ func CountDocuments(collection collection, filter bson.D, ttl int32) (count int6
 		filter = bson.D{}
 	}
 
-	item := memcache.MemcacheMongoCount(mongoFilterToMemcacheKey(collection, filter))
+	// Get MD5 of filter
+	b, err := json.Marshal(filter)
+	if err != nil {
+		return 0, err
+	}
+
+	h := md5.Sum(b)
+	key := hex.EncodeToString(h[:])
+
+	//
+	item := memcache.MemcacheMongoCount(collection.String() + "-" + key)
 	if ttl > 0 {
 		item.Expiration = ttl
 	}
@@ -358,22 +368,6 @@ func GetRandomRows(collection collection, count int, filter bson.D, projection b
 
 	c, err := client.Database(MongoDatabase, options.Database()).Collection(collection.String()).Aggregate(ctx, pipeline, options.Aggregate())
 	return c, ctx, err
-}
-
-func mongoFilterToMemcacheKey(collection collection, filter bson.D) string {
-
-	if filter == nil {
-		filter = bson.D{}
-	}
-
-	b, err := json.Marshal(filter)
-	log.Err(err)
-
-	h := md5.Sum(b)
-
-	key := hex.EncodeToString(h[:])
-
-	return collection.String() + "-" + key
 }
 
 func ChunkWriteModels(models []mongo.WriteModel, size int) (chunks [][]mongo.WriteModel) {
