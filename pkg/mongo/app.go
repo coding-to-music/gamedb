@@ -579,13 +579,20 @@ func GetApp(id int, projection bson.M) (app App, err error) {
 		id = 753
 	}
 
-	err = FindOne(CollectionApps, bson.D{{"_id", id}}, nil, projection, &app)
-	if err != nil {
+	var item = memcache.MemcacheApp(id, projection)
+
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &app, func() (interface{}, error) {
+
+		err := FindOne(CollectionApps, bson.D{{"_id", id}}, nil, projection, &app)
+		if err != nil {
+			return app, err
+		}
+		if app.ID == 0 {
+			return app, ErrNoDocuments
+		}
+
 		return app, err
-	}
-	if app.ID == 0 {
-		return app, ErrNoDocuments
-	}
+	})
 
 	return app, err
 }
