@@ -88,36 +88,41 @@ func (pack *Package) UpdateJSON(scope *gorm.Scope) error {
 		pack.Prices = "{}"
 	}
 
+	return pack.SaveToMongo()
+}
+
+func (pack Package) SaveToMongo() error {
+
 	mon := mongo.Package{
-		AppIDs:           pack.GetAppIDs(),
-		AppItems:         pack.GetAppItems(),
+		Apps:             pack.GetAppIDs(),
 		AppsCount:        pack.AppsCount,
-		BundleIDs:        pack.GetBundleIDs(),
+		AppItems:         pack.GetAppItems(),
+		Bundles:          pack.GetBundleIDs(),
 		BillingType:      int(pack.BillingType),
-		ChangeNumber:     0,
-		ChangeNumberDate: time.Time{},
-		ComingSoon:       false,
-		Controller:       nil,
-		CreatedAt:        time.Time{},
-		DepotIDs:         nil,
-		Extended:         nil,
-		Icon:             "",
-		ID:               0,
-		ImageLogo:        "",
-		ImagePage:        "",
-		InStore:          false,
-		LicenseType:      0,
-		Name:             "",
-		Platforms:        nil,
-		Prices:           nil,
-		PurchaseText:     "",
-		ReleaseDate:      "",
-		ReleaseDateUnix:  0,
-		Status:           0,
-		UpdatedAt:        time.Time{},
+		ChangeNumber:     pack.ChangeNumber,
+		ChangeNumberDate: pack.ChangeNumberDate,
+		ComingSoon:       pack.ComingSoon,
+		Controller:       pack.GetController(),
+		CreatedAt:        pack.CreatedAt,
+		Depots:           pack.GetDepotIDs(),
+		Extended:         pack.GetExtended(),
+		Icon:             pack.Icon,
+		ID:               pack.ID,
+		ImageLogo:        pack.ImageLogo,
+		ImagePage:        pack.ImagePage,
+		InStore:          pack.InStore,
+		LicenseType:      pack.LicenseType,
+		Name:             pack.Name,
+		Platforms:        pack.GetPlatforms(),
+		Prices:           pack.GetPrices(),
+		PurchaseText:     pack.PurchaseText,
+		ReleaseDate:      pack.ReleaseDate,
+		ReleaseDateUnix:  pack.ReleaseDateUnix,
+		Status:           pack.Status,
+		UpdatedAt:        pack.UpdatedAt,
 	}
 
-	_, err := mongo.UpdateOne(mongo.CollectionPackages, bson.D{{"_id", pack.ID}}, mon.BSON())
+	_, err := mongo.ReplaceOne(mongo.CollectionPackages, bson.D{{"_id", pack.ID}}, mon)
 	return err
 }
 
