@@ -201,12 +201,17 @@ func saveToMongo(m *discordgo.MessageCreate, message string) {
 
 func discordError(err error) {
 
-	if val, ok := err.(discordgo.RESTError); ok {
-		if val.Message.Code == 10008 || val.Message.Code == 50001 {
-			log.Info(err)
-			return
-		}
-	}
+	if err != nil {
 
-	log.Err(err)
+		if val, ok := err.(discordgo.RESTError); ok {
+
+			if val.Message.Code == 10008 || val.Message.Code == 50001 {
+
+				log.Info(err)
+				return
+			}
+		}
+
+		log.Err(err)
+	}
 }
