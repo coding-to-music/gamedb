@@ -280,9 +280,18 @@ func updatePackageFromPICS(pack *sql.Package, message *rabbit.Message, payload P
 		case "appitems":
 
 			var appItems = map[string]string{}
+
+			if len(child.Children) > 1 {
+				log.Warning("More app items", pack.ID)
+			}
+
 			for _, vv := range child.Children {
 				if len(vv.Children) == 1 {
 					appItems[vv.Key] = vv.Children[0].Value
+
+					if len(vv.Children) > 1 {
+						log.Warning("More app items2", pack.ID)
+					}
 				}
 			}
 
