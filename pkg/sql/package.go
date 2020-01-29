@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	ErrInvalidPackageID = errors.New("invalid id")
+	ErrInvalidPackageID = errors.New("invalid package id")
 )
 
 type Package struct {
