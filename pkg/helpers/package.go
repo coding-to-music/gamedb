@@ -6,6 +6,10 @@ import (
 	"github.com/gosimple/slug"
 )
 
+func IsValidPackageID(id int) bool {
+	return id != 0
+}
+
 func GetPackagePath(id int, name string) string {
 
 	path := "/packages/" + strconv.Itoa(id)
