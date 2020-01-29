@@ -11,4 +11,5 @@ type Column struct {
 	sortDesc    bool
 	sortDefault bson.D
 	sortAppend  bson.D
+	filters     bson.D
 }
