@@ -91,6 +91,10 @@ var (
 		{name: QueueSteam, consumer: nil},
 		{name: QueueDelay, consumer: nil},
 	}
+
+	ChatbotDefinitions = []queueDef{
+		{name: QueuePlayers, consumer: nil},
+	}
 )
 
 type queueDef struct {

@@ -13,6 +13,7 @@ import (
 	pubsubHelpers "github.com/gamedb/gamedb/pkg/helpers/pubsub"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	influx "github.com/influxdata/influxdb1-client"
@@ -33,6 +34,8 @@ func main() {
 	config.SetVersion(version)
 	log.Initialise([]log.LogName{log.LogNameChatbot})
 
+	log.Info("Starting chatbot")
+
 	// Get API key
 	err := sql.GetAPIKey("chatbot")
 	if err != nil {
@@ -40,12 +43,15 @@ func main() {
 		return
 	}
 
-	log.Info("Starting chatbot")
-
 	if !config.IsProd() && !config.IsLocal() {
 		log.Err("Prod & local only")
+		return
 	}
 
+	// Load consumers
+	queue.Init(queue.ChatbotDefinitions, true)
+
+	// Load discord
 	ops := limiter.ExpirableOptions{DefaultExpirationTTL: time.Second}
 	lmt := limiter.New(&ops).SetMax(1).SetBurst(5)
 
