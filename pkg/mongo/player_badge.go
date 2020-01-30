@@ -2,6 +2,7 @@ package mongo
 
 import (
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -116,6 +117,10 @@ func (badge PlayerBadge) GetBadgeIcon() string {
 		return helpers.DefaultAppIcon
 	}
 
+	if strings.HasPrefix(badge.BadgeIcon, "http") {
+		return badge.BadgeIcon
+	}
+
 	if badge.AppID > 0 {
 		return eventImageBase + "/" + strconv.Itoa(badge.AppID) + "/" + badge.BadgeIcon + ".png"
 	}
@@ -222,8 +227,10 @@ var GlobalBadges = map[int]PlayerBadge{
 	29:      {BadgeID: 29, BadgeIcon: "29_salien/6_80.png", BadgeName: "Salien"},
 	30:      {BadgeID: 30, BadgeIcon: "generic/RetiredModerator_80.png", BadgeName: "Retired Community Moderator"},
 	31:      {BadgeID: 31, BadgeIcon: "30_steamawardnominations/level04_80.png", BadgeName: "Steam Awards Nomination Committee 2018"},
+	32:      {BadgeID: 32, BadgeIcon: "generic/ValveEmployee_80.png", BadgeName: "Valve Moderator"},
 	33:      {BadgeID: 33, BadgeIcon: "33_cozycottage2018/1000000_80.png", BadgeName: "Winter 2018 Knick-Knack Collector"},
 	34:      {BadgeID: 34, BadgeIcon: "34_lny2019/10_80.png", BadgeName: "Lunar New Year 2019"},
+	35:      {BadgeID: 34, BadgeIcon: "https://steamcommunity-a.akamaihd.net/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxH5rd9eDAjcFyv45SRYAFMIcKL_PArgVSL403ulRUWEndVKv8h56EAgQkalZSsuOnegRm1aqed2oStIXlkIHez6aiNe6CkzIAuJcgiLGU8I6kjgz6ux07-Ytsxtc/96fx96f", BadgeName: "Lunar New Year 2019 Golden Profile"},
 	36:      {BadgeID: 36, BadgeIcon: "36_springcleaning2019/gold_80x80.png", BadgeName: "Spring Cleaning Event 2019"},
 	37:      {BadgeID: 37, BadgeIcon: "37_summer2019/level1000000_80.png", BadgeName: "Steam Grand Prix 2019"},
 	38:      {BadgeID: 38, BadgeIcon: "37_summer2019/hare_gold_80.png", BadgeName: "Steam Grand Prix 2019 - Team Hare"},
