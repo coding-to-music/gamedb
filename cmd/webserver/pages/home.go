@@ -139,7 +139,7 @@ func homePricesHandler(w http.ResponseWriter, r *http.Request) {
 		{Key: "difference", Value: bson.M{"$lt": 0}},
 	}
 
-	priceChanges, err := mongo.GetPrices(0, 15, filter)
+	priceChanges, err := mongo.GetPrices(0, 10, filter)
 	if err != nil {
 		log.Err(err, r)
 	}
@@ -198,7 +198,7 @@ func homeSalesHandler(w http.ResponseWriter, r *http.Request) {
 		{Key: "offer_end", Value: bson.M{"$gt": time.Now()}},
 	}
 
-	sales, err := mongo.GetAllSales(0, 15, filter, bson.D{{Key: sort, Value: order}})
+	sales, err := mongo.GetAllSales(0, 10, filter, bson.D{{Key: sort, Value: order}})
 	if err != nil {
 		log.Err(err)
 	}
@@ -321,7 +321,7 @@ func getPlayersForHome(sort string) (players []mongo.Player, err error) {
 			"comments_count": 1,
 		}
 
-		return mongo.GetPlayers(0, 15, bson.D{{Key: sort, Value: -1}}, bson.D{{Key: sort, Value: bson.M{"$gt": 0}}}, projection)
+		return mongo.GetPlayers(0, 10, bson.D{{Key: sort, Value: -1}}, bson.D{{Key: sort, Value: bson.M{"$gt": 0}}}, projection)
 	})
 
 	return players, err
