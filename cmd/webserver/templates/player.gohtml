@@ -50,16 +50,17 @@
                             <a class="nav-link nav-link-small" data-toggle="tab" href="#groups" role="tab">Groups ({{ comma .Player.GroupsCount }})</a>
                         </li>
                     {{ end }}
+
                     <li class="ml-0 ml-lg-auto"></li>
 
                     <li class="nav-item">
-                        <a id="update-button" class="nav-link nav-link-small" href="#" role="tab" data-csrf="{{ .CSRF }}" rel="nofollow">
-                            <i class="fas fa-sync-alt"></i> Update
+                        <a class="nav-link nav-link-small" href="/coop?p={{ .Player.ID }}{{ if .PlayerID }}&p={{ .PlayerID }}{{ end }}" role="tab" rel="nofollow">
+                            <i class="fas fa-user-friends"></i> Co-op
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link nav-link-small" href="/coop?p={{ .Player.ID }}{{ if .PlayerID }}&p={{ .PlayerID }}{{ end }}" role="tab" rel="nofollow">
-                            <i class="fas fa-user-friends"></i> Co-op
+                        <a id="update-button" class="nav-link nav-link-small" href="#" role="tab" data-csrf="{{ .CSRF }}" rel="nofollow">
+                            <i class="fas fa-sync-alt"></i> Update
                         </a>
                     </li>
                 </ul>
