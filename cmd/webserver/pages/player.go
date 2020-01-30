@@ -71,7 +71,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 			ua := r.UserAgent()
 			err = queue.ProducePlayer(queue.PlayerMessage{ID: idx, UserAgent: &ua})
 			if err == nil {
-				log.Info(log.LogNameTriggerUpdate, r, ua)
+				log.Info(log.LogNameTriggerUpdate, r, "new", ua)
 			}
 			err = helpers.IgnoreErrors(err, memcache.ErrInQueue, queue.ErrIsBot)
 			if err != nil {
