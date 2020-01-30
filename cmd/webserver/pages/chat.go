@@ -29,7 +29,6 @@ func init() {
 	discordRelayBotSession, err = discordgo.New("Bot " + config.Config.DiscordRelayBotToken.Get())
 	if err != nil {
 		log.Err(err)
-		panic(err)
 	}
 
 	discordRelayBotSession.AddHandler(func(session *discordgo.Session, message *discordgo.MessageCreate) {
@@ -53,7 +52,6 @@ func init() {
 	err = discordRelayBotSession.Open()
 	if err != nil {
 		log.Err(err)
-		panic(err)
 	}
 }
 
