@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"sort"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -183,6 +184,27 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		t.Related, err = app.GetAppRelatedApps()
 		if err != nil {
 			log.Err(err, r)
+			return
+		}
+
+		var tagIDs []int
+		for _, v := range t.Related {
+			for _, vv := range v.Tags {
+				if helpers.SliceHasInt(app.Tags, vv) {
+					tagIDs = append(tagIDs, vv)
+				}
+			}
+		}
+
+		tags, err := sql.GetTagsByID(tagIDs, []string{"id", "name"})
+		if err != nil {
+			log.Err(err, r)
+			return
+		}
+
+		t.RelatedTags = map[int]sql.Tag{}
+		for _, v := range tags {
+			t.RelatedTags[v.ID] = v
 		}
 	}()
 
@@ -275,23 +297,36 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 
 type appTemplate struct {
 	GlobalTemplate
-	App        mongo.App
-	Banners    map[string][]string
-	Bundles    []sql.Bundle
-	Categories []sql.Category
-	Common     []pics.KeyValue
-	Config     []pics.KeyValue
-	Demos      []mongo.App
-	Related    []mongo.App
-	Developers []sql.Developer
-	DLCs       []mongo.App
-	Extended   []pics.KeyValue
-	Genres     []sql.Genre
-	Packages   []sql.Package
-	Price      helpers.ProductPrice
-	Publishers []sql.Publisher
-	Tags       []sql.Tag
-	UFS        []pics.KeyValue
+	App         mongo.App
+	Banners     map[string][]string
+	Bundles     []sql.Bundle
+	Categories  []sql.Category
+	Common      []pics.KeyValue
+	Config      []pics.KeyValue
+	Demos       []mongo.App
+	Related     []mongo.App
+	RelatedTags map[int]sql.Tag
+	Developers  []sql.Developer
+	DLCs        []mongo.App
+	Extended    []pics.KeyValue
+	Genres      []sql.Genre
+	Packages    []sql.Package
+	Price       helpers.ProductPrice
+	Publishers  []sql.Publisher
+	Tags        []sql.Tag
+	UFS         []pics.KeyValue
+}
+
+func (t appTemplate) GetRelatedTags(relatedApp mongo.App) template.HTML {
+
+	var ret []string
+	for _, v := range relatedApp.Tags {
+		if val, ok := t.RelatedTags[v]; ok {
+			ret = append(ret, `<a href="`+val.GetPath()+`">`+val.GetName()+`</a>`)
+		}
+	}
+
+	return template.HTML(strings.Join(ret, ", "))
 }
 
 func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {

@@ -705,14 +705,29 @@
                     <div class="tab-pane" id="similar" role="tabpanel">
 
                         <h5>Similar by tag</h5>
-                        <div class="row">
-                            {{ range $key, $value := .Related }}
-                                <div class="col-6 col-md-4 col-lg-3 mb-4">
-                                    <a href="{{ .GetPath }}">
-                                        <img src="https://steamcdn-a.akamaihd.net/steam/apps/{{ .ID }}/header_292x136.jpg" alt="{{ .GetName }}" data-toggle="tooltip" data-placement="top" title="{{ .GetName }}">
-                                    </a>
-                                </div>
-                            {{ end }}
+
+                        <div class="table-responsive" style="height: auto;">
+                            <table class="table table-hover table-striped">
+                                <thead class="thead-light">
+                                <th>Game</th>
+                                <th>Matching Tags</th>
+                                </thead>
+                                <tbody>
+                                {{ range $key, $value := .Related }}
+                                    <tr data-app-id="{{ .ID }}" data-link="{{ .GetPath }}">
+                                        <td class="img">
+                                            <div class="icon-name">
+                                                <div class="icon">
+                                                    <img data-lazy="{{ .GetIcon }}" alt="" data-lazy-alt="{{ .GetName }}">
+                                                </div>
+                                                <div class="name">{{ .GetName }}</div>
+                                            </div>
+                                        </td>
+                                        <td>{{ $.GetRelatedTags $value }}</td>
+                                    </tr>
+                                {{ end }}
+                                </tbody>
+                            </table>
                         </div>
 
                         <h5>People who own this game also own</h5>

@@ -350,7 +350,7 @@ func (app App) GetAppRelatedApps() (apps []App, err error) {
 
 	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &apps, func() (interface{}, error) {
 
-		return GetAppsByID(app.RelatedAppIDs, bson.M{"_id": 1, "name": 1})
+		return GetAppsByID(app.RelatedAppIDs, bson.M{"_id": 1, "name": 1, "icon": 1, "tags": 1})
 	})
 
 	return apps, err
