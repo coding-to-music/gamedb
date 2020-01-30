@@ -16,9 +16,9 @@ func (CommandGroup) Regex() *regexp.Regexp {
 	return regexp.MustCompile(`^[.|!](group|clan) (.*)`)
 }
 
-func (c CommandGroup) Output(input string) (message discordgo.MessageSend, err error) {
+func (c CommandGroup) Output(msg *discordgo.MessageCreate) (message discordgo.MessageSend, err error) {
 
-	matches := c.Regex().FindStringSubmatch(input)
+	matches := c.Regex().FindStringSubmatch(msg.Message.Content)
 
 	group, err := mongo.SearchGroups(matches[2])
 	if err == mongo.ErrNoDocuments {
@@ -39,12 +39,12 @@ func (c CommandGroup) Output(input string) (message discordgo.MessageSend, err e
 	}
 
 	message.Embed = &discordgo.MessageEmbed{
-		Title:  group.GetName(),
-		URL:    "https://gamedb.online" + group.GetPath(),
-		Author: author,
+		Title: group.GetName(),
+		URL:   "https://gamedb.online" + group.GetPath(),
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
 			URL: group.GetIcon(),
 		},
+		Footer: getFooter(),
 		Fields: []*discordgo.MessageEmbedField{
 			{
 				Name:  "Headline",

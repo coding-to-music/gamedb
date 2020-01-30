@@ -16,9 +16,9 @@ func (CommandAppPlayers) Regex() *regexp.Regexp {
 	return regexp.MustCompile(`^[.|!](players|online) ([a-zA-Z0-9]+)`)
 }
 
-func (c CommandAppPlayers) Output(input string) (message discordgo.MessageSend, err error) {
+func (c CommandAppPlayers) Output(msg *discordgo.MessageCreate) (message discordgo.MessageSend, err error) {
 
-	matches := c.Regex().FindStringSubmatch(input)
+	matches := c.Regex().FindStringSubmatch(msg.Message.Content)
 
 	app, err := mongo.SearchApps(matches[1], nil)
 	if err == mongo.ErrNoDocuments || err == mongo.ErrInvalidAppID {

@@ -17,11 +17,11 @@ func (CommandAppsNew) Regex() *regexp.Regexp {
 	return regexp.MustCompile(`^[.|!]new$`)
 }
 
-func (CommandAppsNew) Output(input string) (message discordgo.MessageSend, err error) {
+func (CommandAppsNew) Output(msg *discordgo.MessageCreate) (message discordgo.MessageSend, err error) {
 
 	message.Embed = &discordgo.MessageEmbed{
 		Title:  "Popular New Apps",
-		Author: author,
+		Author: getAuthor(msg.Author.ID),
 	}
 
 	apps, err := mongo.PopularNewApps()

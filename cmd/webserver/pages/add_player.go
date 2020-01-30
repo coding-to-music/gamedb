@@ -7,6 +7,7 @@ import (
 
 	"github.com/Jleagle/recaptcha-go"
 	"github.com/Jleagle/session-go/session"
+	steam2 "github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/steam"
@@ -54,7 +55,7 @@ func playerAddHandler(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 
-			resp, b, err := client.ResolveVanityURL(search, 1)
+			resp, b, err := client.ResolveVanityURL(search, steam2.VanityURLProfile)
 			err = steam.AllowSteamCodes(err, b, nil)
 
 			if err == nil && resp.Success > 0 && resp.SteamID > 0 {

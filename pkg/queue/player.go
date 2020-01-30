@@ -2,10 +2,7 @@ package queue
 
 import (
 	"encoding/json"
-	"path"
-	"sort"
 	"strconv"
-	"strings"
 	"sync"
 	"time"
 
@@ -257,149 +254,12 @@ func playerHandler(messages []*rabbit.Message) {
 
 func updatePlayerSummary(player *mongo.Player) error {
 
-	summary, b, err := steamHelper.GetSteam().GetPlayer(player.ID)
-	err = steamHelper.AllowSteamCodes(err, b, nil)
-	if err != nil {
-		return err
-	}
-
-	// Avatar
-	if summary.AvatarFull != "" && helpers.GetResponseCode(helpers.AvatarBase+summary.AvatarFull) == 200 {
-		player.Avatar = summary.AvatarFull
-	} else {
-		player.Avatar = ""
-	}
-
-	//
-	if strings.Contains(summary.ProfileURL, "profiles") {
-		player.VanintyURL = path.Base(summary.ProfileURL)
-	}
-
-	player.CountryCode = summary.CountryCode
-	player.ContinentCode = helpers.CountryCodeToContinent(summary.CountryCode)
-	player.StateCode = summary.StateCode
-	player.PersonaName = summary.PersonaName
-	player.TimeCreated = time.Unix(summary.TimeCreated, 0)
-	player.LastLogOff = time.Unix(summary.LastLogOff, 0)
-	player.PrimaryGroupID = summary.PrimaryClanID
-
-	return err
+	return player.SetPlayerSummary()
 }
 
 func updatePlayerGames(player *mongo.Player) error {
 
-	// Grab games from Steam
-	resp, b, err := steamHelper.GetSteam().GetOwnedGames(player.ID)
-	err = steamHelper.AllowSteamCodes(err, b, nil)
-	if err != nil {
-		return err
-	}
-
-	// Save count
-	player.GamesCount = len(resp.Games)
-
-	// Start creating PlayerApp's
-	var playerApps = map[int]*mongo.PlayerApp{}
-	var appPrices = map[int]map[string]int{}
-	var appPriceHour = map[int]map[string]float64{}
-	var appIDs []int
-	var playtime = 0
-	for _, v := range resp.Games {
-		playtime = playtime + v.PlaytimeForever
-		appIDs = append(appIDs, v.AppID)
-		playerApps[v.AppID] = &mongo.PlayerApp{
-			PlayerID: player.ID,
-			AppID:    v.AppID,
-			AppName:  v.Name,
-			AppIcon:  v.ImgIconURL,
-			AppTime:  v.PlaytimeForever,
-		}
-		appPrices[v.AppID] = map[string]int{}
-		appPriceHour[v.AppID] = map[string]float64{}
-	}
-
-	// Save playtime
-	player.PlayTime = playtime
-
-	// Getting missing price info from MySQL
-	gameRows, err := mongo.GetAppsByID(appIDs, bson.M{"_id": 1, "prices": 1, "type": 1})
-	if err != nil {
-		return err
-	}
-
-	player.GamesByType = map[string]int{}
-
-	for _, gameRow := range gameRows {
-
-		// Set games by type
-		if _, ok := player.GamesByType[gameRow.GetType()]; ok {
-			player.GamesByType[gameRow.GetType()]++
-		} else {
-			player.GamesByType[gameRow.GetType()] = 1
-		}
-
-		//
-		for code, vv := range gameRow.Prices {
-
-			vv = gameRow.Prices.Get(code)
-
-			appPrices[gameRow.ID][string(code)] = vv.Final
-			if appPrices[gameRow.ID][string(code)] > 0 && playerApps[gameRow.ID].AppTime == 0 {
-				appPriceHour[gameRow.ID][string(code)] = -1 // Infinite
-			} else if appPrices[gameRow.ID][string(code)] > 0 && playerApps[gameRow.ID].AppTime > 0 {
-				appPriceHour[gameRow.ID][string(code)] = (float64(appPrices[gameRow.ID][string(code)]) / 100) / (float64(playerApps[gameRow.ID].AppTime) / 60) * 100
-			} else {
-				appPriceHour[gameRow.ID][string(code)] = 0 // Free
-			}
-		}
-
-		//
-		playerApps[gameRow.ID].AppPrices = appPrices[gameRow.ID]
-		log.Err(err)
-
-		//
-		playerApps[gameRow.ID].AppPriceHour = appPriceHour[gameRow.ID]
-		log.Err(err)
-	}
-
-	// Save playerApps to Datastore
-	err = mongo.UpdatePlayerApps(playerApps)
-	if err != nil {
-		return err
-	}
-
-	// Get top game for background
-	if len(appIDs) > 0 {
-
-		sort.Slice(appIDs, func(i, j int) bool {
-
-			var appID1 = appIDs[i]
-			var appID2 = appIDs[j]
-
-			return playerApps[appID1].AppTime > playerApps[appID2].AppTime
-		})
-
-		player.BackgroundAppID = appIDs[0]
-	}
-
-	// Save stats to player
-	var gameStats = mongo.PlayerAppStatsTemplate{}
-	for _, v := range playerApps {
-
-		gameStats.All.AddApp(v.AppTime, appPrices[v.AppID], appPriceHour[v.AppID])
-		if v.AppTime > 0 {
-			gameStats.Played.AddApp(v.AppTime, appPrices[v.AppID], appPriceHour[v.AppID])
-		}
-	}
-
-	b, err = json.Marshal(gameStats)
-	if err != nil {
-		return err
-	}
-
-	player.GameStats = string(b)
-
-	return nil
+	return player.SetOwnedGames(true)
 }
 
 func updatePlayerRecentGames(player *mongo.Player) error {
@@ -549,101 +409,12 @@ func updatePlayerBadges(player *mongo.Player) error {
 
 func updatePlayerFriends(player *mongo.Player) error {
 
-	// Get data
-	oldFriendsSlice, err := mongo.GetFriends(player.ID, 0, 0, nil)
-	if err != nil {
-		return err
-	}
-
-	// If it's a 401, it returns no results, we dont want to change remove the players friends.
-	newFriendsSlice, _, err := steamHelper.GetSteam().GetFriendList(player.ID)
-	if err2, ok := err.(steam.Error); ok && err2.Code == 401 {
-		return nil
-	}
-
-	newFriendsMap := map[int64]steam.Friend{}
-	for _, friend := range newFriendsSlice {
-		newFriendsMap[int64(friend.SteamID)] = friend
-	}
-
-	// Friends to add
-	var friendIDsToAdd []int64
-	var friendsToAdd = map[int64]*mongo.PlayerFriend{}
-	for _, v := range newFriendsSlice {
-		friendIDsToAdd = append(friendIDsToAdd, int64(v.SteamID))
-		friendsToAdd[int64(v.SteamID)] = &mongo.PlayerFriend{
-			PlayerID:     player.ID,
-			FriendID:     int64(v.SteamID),
-			Relationship: v.Relationship,
-			FriendSince:  time.Unix(v.FriendSince, 0),
-		}
-	}
-
-	// Friends to remove
-	var friendsToRem []int64
-	for _, v := range oldFriendsSlice {
-		if _, ok := newFriendsMap[v.FriendID]; !ok {
-			friendsToRem = append(friendsToRem, v.FriendID)
-		}
-	}
-
-	// Fill in missing map the map
-	friendRows, err := mongo.GetPlayersByID(friendIDsToAdd, bson.M{
-		"_id":             1,
-		"avatar":          1,
-		"games_count":     1,
-		"persona_name":    1,
-		"level":           1,
-		"time_logged_off": 1,
-	})
-	if err != nil {
-		return err
-	}
-
-	for _, friend := range friendRows {
-		if friend.ID != 0 {
-
-			friendsToAdd[friend.ID].Avatar = friend.Avatar
-			friendsToAdd[friend.ID].Games = friend.GamesCount
-			friendsToAdd[friend.ID].Name = friend.GetName()
-			friendsToAdd[friend.ID].Level = friend.Level
-			friendsToAdd[friend.ID].LoggedOff = friend.LastLogOff
-		}
-	}
-
-	// Update DB
-	err = mongo.DeleteFriends(player.ID, friendsToRem)
-	if err != nil {
-		return err
-	}
-
-	var friendsToAddSlice []*mongo.PlayerFriend
-	for _, v := range friendsToAdd {
-		friendsToAddSlice = append(friendsToAddSlice, v)
-	}
-
-	err = mongo.UpdateFriends(friendsToAddSlice)
-	if err != nil {
-		return err
-	}
-
-	//
-	player.FriendsCount = len(newFriendsMap)
-
-	return nil
+	return player.SetFriends(true)
 }
 
 func updatePlayerLevel(player *mongo.Player) error {
 
-	level, b, err := steamHelper.GetSteam().GetSteamLevel(player.ID)
-	err = steamHelper.AllowSteamCodes(err, b, nil)
-	if err != nil {
-		return err
-	}
-
-	player.Level = level
-
-	return nil
+	return player.SetLevel()
 }
 
 func updatePlayerBans(player *mongo.Player) error {

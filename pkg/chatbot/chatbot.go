@@ -18,7 +18,7 @@ var (
 
 type Command interface {
 	Regex() *regexp.Regexp
-	Output(input string) (discordgo.MessageSend, error)
+	Output(*discordgo.MessageCreate) (discordgo.MessageSend, error)
 	Example() string
 	Description() string
 	Type() CommandType
@@ -39,15 +39,24 @@ var CommandRegister = []Command{
 	CommandHelp{},
 }
 
-var author = &discordgo.MessageEmbedAuthor{
-	Name:    "gamedb.online",
-	URL:     "https://gamedb.online/",
-	IconURL: "https://gamedb.online/assets/img/sa-bg-32x32.png",
+func getAuthor(guildID string) *discordgo.MessageEmbedAuthor {
+
+	author := &discordgo.MessageEmbedAuthor{
+		Name:    "gamedb.online",
+		URL:     "https://gamedb.online/?utm_source=discord&utm_medium=discord&utm_content=" + guildID,
+		IconURL: "https://gamedb.online/assets/img/sa-bg-32x32.png",
+	}
+	if config.IsLocal() {
+		author.Name = "localhost:" + config.Config.WebserverPort.Get()
+		author.URL = "http://localhost:" + config.Config.WebserverPort.Get() + "/"
+	}
+	return author
 }
 
-func init() {
-	if config.IsLocal() {
-		author.Name = "localhost:8081"
-		author.URL = "http://localhost:8081/"
+func getFooter() *discordgo.MessageEmbedFooter {
+	return &discordgo.MessageEmbedFooter{
+		Text:         "gamedb.online",
+		IconURL:      "https://gamedb.online/assets/img/sa-bg-32x32.png",
+		ProxyIconURL: "",
 	}
 }

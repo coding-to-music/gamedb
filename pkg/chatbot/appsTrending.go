@@ -17,12 +17,12 @@ func (CommandAppsTrending) Regex() *regexp.Regexp {
 	return regexp.MustCompile(`^[.|!]trending$`)
 }
 
-func (CommandAppsTrending) Output(input string) (message discordgo.MessageSend, err error) {
+func (CommandAppsTrending) Output(msg *discordgo.MessageCreate) (message discordgo.MessageSend, err error) {
 
 	message.Embed = &discordgo.MessageEmbed{
 		Title:  "Trending Apps",
 		URL:    "https://gamedb.online/trending",
-		Author: author,
+		Author: getAuthor(msg.Author.ID),
 	}
 
 	apps, err := mongo.TrendingApps()

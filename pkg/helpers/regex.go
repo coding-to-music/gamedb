@@ -11,4 +11,6 @@ var (
 	RegexTimestamps           = regexp.MustCompile("1[0-9]{9}")
 	RegexNonAlphaNumeric      = regexp.MustCompile("[^a-zA-Z0-9]+")
 	RegexNonAlphaNumericSpace = regexp.MustCompile("[^a-zA-Z0-9 ]+")
+
+	RegexPlayerID = regexp.MustCompile("^[0-9]{17}$")
 )

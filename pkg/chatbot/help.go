@@ -13,7 +13,7 @@ func (CommandHelp) Regex() *regexp.Regexp {
 	return regexp.MustCompile(`^[.|!]help$`)
 }
 
-func (CommandHelp) Output(input string) (message discordgo.MessageSend, err error) {
+func (CommandHelp) Output(msg *discordgo.MessageCreate) (message discordgo.MessageSend, err error) {
 
 	message.Content = "See https://gamedb.online/chat-bot"
 

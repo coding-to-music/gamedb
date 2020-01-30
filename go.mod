@@ -15,7 +15,7 @@ require (
 	github.com/Jleagle/recaptcha-go v0.0.0-20200117124940-d00b2c62c076
 	github.com/Jleagle/session-go v0.0.0-20190515070633-3c8712426233
 	github.com/Jleagle/sitemap-go v0.0.0-20190405195207-2bdddbb3bd50
-	github.com/Jleagle/steam-go v0.0.0-20200118231150-db5de5b6e47f
+	github.com/Jleagle/steam-go v0.0.0-20200129204500-3ffd46874bfe
 	github.com/Jleagle/unmarshal-go v0.0.0-20200116184726-b8d622103706
 	github.com/Jleagle/valve-data-format-go v0.0.0-20200123123241-4418a2d5aad9
 	github.com/Philipp15b/go-steam v1.0.1-0.20190816133340-b04c5a83c1c0

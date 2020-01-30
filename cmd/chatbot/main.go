@@ -120,7 +120,7 @@ func main() {
 					}
 				}
 
-				message, err := command.Output(msg)
+				message, err := command.Output(m)
 				if err != nil {
 					log.Warning(err, msg)
 					return

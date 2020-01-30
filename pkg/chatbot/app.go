@@ -6,6 +6,7 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type CommandApp struct {
@@ -15,11 +16,11 @@ func (CommandApp) Regex() *regexp.Regexp {
 	return regexp.MustCompile(`^[.|!](app|game) (.*)`)
 }
 
-func (c CommandApp) Output(input string) (message discordgo.MessageSend, err error) {
+func (c CommandApp) Output(msg *discordgo.MessageCreate) (message discordgo.MessageSend, err error) {
 
-	matches := c.Regex().FindStringSubmatch(input)
+	matches := c.Regex().FindStringSubmatch(msg.Message.Content)
 
-	app, err := mongo.SearchApps(matches[2], nil)
+	app, err := mongo.SearchApps(matches[2], bson.M{"_id": 1, "name": 1, "prices": 1, "release_date": 1, "release_date_unix": 1, "reviews_score": 1, "group_followers": 1})
 	if err == mongo.ErrNoDocuments || err == mongo.ErrInvalidAppID {
 
 		message.Content = "App **" + matches[2] + "** not found"
@@ -30,12 +31,12 @@ func (c CommandApp) Output(input string) (message discordgo.MessageSend, err err
 	}
 
 	message.Embed = &discordgo.MessageEmbed{
-		Title:  app.GetName(),
-		URL:    "https://gamedb.online" + app.GetPath(),
-		Author: author,
+		Title: app.GetName(),
+		URL:   "https://gamedb.online" + app.GetPath(),
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
 			URL: app.GetHeaderImage(),
 		},
+		Footer: getFooter(),
 		Fields: []*discordgo.MessageEmbedField{
 			{
 				Name:  "Release Date",
