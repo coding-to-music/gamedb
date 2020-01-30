@@ -180,14 +180,14 @@ func Initialise(logs []LogName) {
 	rollbar.SetEnvironment(config.Config.Environment.Get())
 	rollbar.SetServerHost("gamedb.online")
 	rollbar.SetServerRoot("github.com/gamedb/gamedb")
-	rollbar.SetCodeVersion(config.GetShortVersion())
+	rollbar.SetCodeVersion(config.GetShortCommitHash())
 
 	// Sentry
 	err = sentry.Init(sentry.ClientOptions{
 		Dsn:              config.Config.SentryDSN.Get(),
 		AttachStacktrace: true,
 		Environment:      config.Config.Environment.Get(),
-		Release:          config.GetShortVersion(),
+		Release:          config.GetShortCommitHash(),
 	})
 	if err != nil {
 		fmt.Println(err)
@@ -273,7 +273,7 @@ func log(interfaces ...interface{}) {
 						"env":     config.Config.Environment.Get(),
 						"hash":    config.Config.CommitHash.Get(),
 						"key":     config.GetSteamKeyTag(),
-						"version": config.GetShortVersion(),
+						"version": config.GetShortCommitHash(),
 					},
 				})
 			}

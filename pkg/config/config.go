@@ -365,7 +365,7 @@ func SetVersion(v string) {
 	Config.CommitHash.SetDefault(v)
 }
 
-func GetShortVersion() string {
+func GetShortCommitHash() string {
 
 	key := Config.CommitHash.Get()
 	if len(key) > 7 {

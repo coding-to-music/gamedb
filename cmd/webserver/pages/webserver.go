@@ -455,7 +455,7 @@ func (t GlobalTemplate) GetCanonical() (text string) {
 }
 
 func (t GlobalTemplate) GetVersionHash() string {
-	return config.GetShortVersion()
+	return config.GetShortCommitHash()
 }
 
 func (t GlobalTemplate) IsAppsPage() bool {
