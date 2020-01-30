@@ -194,6 +194,14 @@ body.dark {
             color: #212529;
         }
     }
+
+    #app-page {
+        #reviews {
+            div[data-vote] {
+                color: #212529;
+            }
+        }
+    }
 }
 
 // Debug sizes
