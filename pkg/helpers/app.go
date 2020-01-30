@@ -129,6 +129,10 @@ type AppVideo struct {
 	Title         string `json:"t"`
 }
 
+func (video AppVideo) Micro() string {
+	return strings.Replace(video.PathFull, "movie_max", "microtrailer", 1)
+}
+
 type AppStat struct {
 	Name        string `json:"n"`
 	Default     int    `json:"d"`

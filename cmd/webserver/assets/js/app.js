@@ -13,6 +13,16 @@ if ($appPage.length > 0) {
         }
     });
 
+    $('#details video').on('click', function (e) {
+        const video = $(this)[0];
+        if (video.paused) {
+            video.play()
+        } else {
+            $('a.nav-link[href="#media"]').tab('show');
+            $("#scroll-to-videos").trigger('click');
+        }
+    });
+
     // Followers link
     $('.followers-link').on('click', function (e) {
 

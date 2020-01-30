@@ -331,11 +331,18 @@ func (app App) GetPlatformImages() (ret template.HTML, err error) {
 
 func (app App) GetMetaImage() string {
 
-	ss := app.Screenshots
-	if len(ss) == 0 {
+	if len(app.Screenshots) == 0 {
 		return app.GetHeaderImage()
 	}
-	return ss[0].PathFull
+	return app.Screenshots[0].PathFull
+}
+
+func (app App) GetMicroTrailer() string {
+
+	if len(app.Movies) == 0 {
+		return ""
+	}
+	return app.Movies[0].Micro()
 }
 
 func (app App) GetAppRelatedApps() (apps []App, err error) {
