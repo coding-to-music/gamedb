@@ -64,7 +64,7 @@ func GetAPIKey(tag string) (err error) {
 			"expires":     time.Now().Add(apiSessionLength),
 			"owner":       tag,
 			"environment": config.Config.Environment.Get(),
-			"version":     config.Config.CommitHash.Get(),
+			"version":     config.GetShortVersion(),
 		})
 		if db.Error != nil {
 			db.Rollback()
