@@ -55,7 +55,7 @@ func main() {
 	}
 
 	// Load consumers
-	queue.Init(queue.QueueDefinitions, true)
+	queue.Init(queue.AllDefinitions, true)
 
 	helpers.KeepAlive()
 }

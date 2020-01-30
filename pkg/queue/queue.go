@@ -54,7 +54,7 @@ var (
 		rabbit.Producer: {},
 	}
 
-	QueueDefinitions = []queueDef{
+	AllDefinitions = []queueDef{
 		{name: QueueApps, consumer: appHandler},
 		{name: QueueAppsRegular},
 		{name: QueueAppPlayers, consumer: appPlayersHandler},
