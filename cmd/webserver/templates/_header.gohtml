@@ -145,12 +145,13 @@
                         </div>
                     </li>
 
-                    <li class="nav-item dropdown {{if startsWith .Path "/players" }}active{{end}}">
+                    <li class="nav-item dropdown {{if .IsPlayersPage }}active{{end}}">
                         <a class="nav-link dropdown-toggle d-lg-none" href="#" data-toggle="dropdown">Players</a>
                         <a class="nav-link dropdown-toggle d-none d-lg-block" href="/players" data-toggle="dropdown">Players</a>
                         <div class="dropdown-menu">
 
                             <a class="dropdown-item" href="/players">Players</a>
+                            <a class="dropdown-item" href="/badges">Badges</a>
                             <a class="dropdown-item" href="/players/add">Add Player</a>
 
                         </div>
@@ -164,9 +165,9 @@
                         <a class="nav-link" href="/groups">Groups</a>
                     </li>
 
-                    <li class="nav-item {{if startsWith .Path "/badges" }}active{{end}}">
-                        <a class="nav-link" href="/badges">Badges</a>
-                    </li>
+                    {{/*                    <li class="nav-item {{if startsWith .Path "/badges" }}active{{end}}">*/}}
+                    {{/*                        <a class="nav-link" href="/badges">Badges</a>*/}}
+                    {{/*                    </li>*/}}
 
                     <li class="nav-item dropdown {{if .IsStatsPage }}active{{end}}">
                         <a class="nav-link dropdown-toggle d-lg-none" href="#" data-toggle="dropdown">Stats</a>

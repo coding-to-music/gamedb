@@ -470,6 +470,14 @@ func (t GlobalTemplate) IsStatsPage() bool {
 	return helpers.SliceHasString([]string{"stats", "tags", "genres", "publishers", "developers"}, strings.TrimPrefix(t.Path, "/"))
 }
 
+func (t GlobalTemplate) IsPlayersPage() bool {
+
+	if strings.HasPrefix(t.Path, "/players") {
+		return true
+	}
+	return helpers.SliceHasString([]string{"badges"}, strings.TrimPrefix(t.Path, "/"))
+}
+
 func (t GlobalTemplate) IsSettingsPage() bool {
 
 	if strings.HasPrefix(t.Path, "/signup") {
