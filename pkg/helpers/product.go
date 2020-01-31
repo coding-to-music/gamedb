@@ -11,7 +11,6 @@ type ProductInterface interface {
 	GetProductType() ProductType
 	GetName() string
 	GetIcon() string
-	GetPrice(code steam.ProductCC) (price ProductPrice)
 	GetPrices() (prices ProductPrices)
 	GetPath() string
 	GetType() string

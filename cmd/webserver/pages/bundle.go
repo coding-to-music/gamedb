@@ -14,6 +14,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func BundleRouter() http.Handler {
@@ -103,13 +104,13 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	// Get packages
-	var packages []sql.Package
+	var packages []mongo.Package
 	wg.Add(1)
 	go func() {
 
 		defer wg.Done()
 
-		packages, err = sql.GetPackages(bundle.GetPackageIDs(), []string{})
+		packages, err = mongo.GetPackagesByID(bundle.GetPackageIDs(), bson.M{})
 		if err != nil {
 			log.Err(err, r)
 		}
@@ -141,7 +142,7 @@ type bundleTemplate struct {
 	GlobalTemplate
 	Bundle   sql.Bundle
 	Apps     []mongo.App
-	Packages []sql.Package
+	Packages []mongo.Package
 }
 
 func bundlePricesAjaxHandler(w http.ResponseWriter, r *http.Request) {

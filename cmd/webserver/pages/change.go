@@ -7,7 +7,6 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -43,7 +42,7 @@ func changeHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, change.GetName(), "")
 	t.Change = change
 	t.Apps = map[int]mongo.App{}
-	t.Packages = map[int]sql.Package{}
+	t.Packages = map[int]mongo.Package{}
 	t.Canonical = change.GetPath()
 
 	//
@@ -73,7 +72,7 @@ func changeHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		packagesSlice, err := sql.GetPackages(change.Packages, []string{})
+		packagesSlice, err := mongo.GetPackagesByID(change.Packages, bson.M{})
 		if err != nil {
 
 			log.Err(err, r)
@@ -95,5 +94,5 @@ type changeTemplate struct {
 	GlobalTemplate
 	Change   mongo.Change
 	Apps     map[int]mongo.App
-	Packages map[int]sql.Package
+	Packages map[int]mongo.Package
 }

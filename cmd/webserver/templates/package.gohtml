@@ -35,7 +35,7 @@
                             <a class="nav-link" data-toggle="tab" href="#bundles" role="tab">Bundles ({{ comma (len .Bundles) }})</a>
                         </li>
                     {{ end }}
-                    {{if gt (len .Prices) 0}}
+                    {{if gt (len .Package.Prices) 0}}
                         <li class="nav-item">
                             <a class="nav-link" data-toggle="tab" href="#prices" role="tab">Prices</a>
                         </li>
@@ -210,8 +210,8 @@
                                     <th scope="col">Individual</th>
                                 </tr>
                                 </thead>
-                                {{ range $key, $value := .Prices }}
-                                    {{ $price := $.Prices.Get $key }}
+                                {{ range $key, $value := .Package.Prices }}
+                                    {{ $price := $.Package.Prices.Get $key }}
                                     <tr data-code="{{ $key }}">
                                         <td class="img">
                                             <div class="icon-name">
@@ -248,9 +248,9 @@
                                     <li class="nav-item">
                                         <a class="nav-link active" data-toggle="tab" href="#dev-info" role="tab">Info</a>
                                     </li>
-                                    {{if gt (len .DepotIDs) 0}}
+                                    {{if gt (len .Package.Depots) 0}}
                                         <li class="nav-item">
-                                            <a class="nav-link" data-toggle="tab" href="#dev-depots" role="tab">Depots ({{ len .DepotIDs }})</a>
+                                            <a class="nav-link" data-toggle="tab" href="#dev-depots" role="tab">Depots ({{ len .Package.Depots }})</a>
                                         </li>
                                     {{ end }}
                                 </ul>
@@ -312,7 +312,7 @@
                                                     <th scope="col">ID</th>
                                                 </tr>
                                                 </thead>
-                                                {{ range $key, $value := .DepotIDs }}
+                                                {{ range $key, $value := .Package.Depots }}
                                                     <tr>
                                                         <td>{{ $value }}</td>
                                                     </tr>

@@ -10,7 +10,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -36,7 +35,7 @@ func productPricesAjaxHandler(w http.ResponseWriter, r *http.Request, productTyp
 	if productType == helpers.ProductTypeApp {
 		product, err = mongo.GetApp(idx, bson.M{"prices": 1})
 	} else {
-		product, err = sql.GetPackage(idx)
+		product, err = mongo.GetPackage(idx, nil)
 	}
 	if err != nil {
 		log.Err(err, r)
@@ -65,7 +64,7 @@ func productPricesAjaxHandler(w http.ResponseWriter, r *http.Request, productTyp
 	}
 
 	// Add current price
-	price := product.GetPrice(code)
+	price := product.GetPrices().Get(code)
 	if price.Exists {
 		response.Prices = append(response.Prices, []float64{float64(time.Now().Unix()) * 1000, float64(price.Final) / 100})
 	}

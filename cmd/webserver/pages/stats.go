@@ -80,7 +80,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.PackagesCount, err = sql.CountPackages()
+		t.PackagesCount, err =  mongo.CountDocuments(mongo.CollectionPackages, nil, 0)
 		if err != nil {
 			log.Err(err, r)
 		}
@@ -109,7 +109,7 @@ type statsTemplate struct {
 	GlobalTemplate
 	AppsCount          int64
 	BundlesCount       int
-	PackagesCount      int
+	PackagesCount      int64
 	PlayersCount       int64
 	OnlinePlayersCount int64
 }

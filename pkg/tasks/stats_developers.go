@@ -88,7 +88,7 @@ func (c Developers) work() (err error) {
 			}
 
 			for _, code := range helpers.GetProdCCs(true) {
-				price := app.GetPrice(code.ProductCode)
+				price := app.Prices.Get(code.ProductCode)
 				if price.Exists {
 					newDevelopers[appDeveloperID].totalPrice[code.ProductCode] += price.Final
 				}

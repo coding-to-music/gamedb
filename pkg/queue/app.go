@@ -1313,7 +1313,7 @@ func saveAppToInflux(app mongo.App) (err error) {
 		"reviews_negative": app.Reviews.Negative,
 	}
 
-	price := app.GetPrice(steam.ProductCCUS)
+	price := app.Prices.Get(steam.ProductCCUS)
 	if price.Exists {
 		fields["price_us_initial"] = price.Initial
 		fields["price_us_final"] = price.Final

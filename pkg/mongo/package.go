@@ -2,8 +2,11 @@ package mongo
 
 import (
 	"errors"
+	"html/template"
+	"strconv"
 	"time"
 
+	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -25,7 +28,7 @@ type Package struct {
 	ChangeNumber     int                   `bson:"change_id"`
 	ChangeNumberDate time.Time             `bson:"change_number_date"`
 	ComingSoon       bool                  `bson:"coming_soon"`
-	Controller       map[string]bool       `bson:"controller"`
+	Controller       pics.PICSController   `bson:"controller"`
 	CreatedAt        time.Time             `bson:"created_at"`
 	Depots           []int                 `bson:"depot_ids"`
 	Extended         pics.PICSKeyValues    `bson:"extended"`
@@ -76,6 +79,187 @@ func (pack Package) BSON() bson.D {
 		{"release_date_unix", pack.ReleaseDateUnix},
 		{"status", pack.Status},
 		{"updated_at", pack.UpdatedAt},
+	}
+}
+
+func (pack Package) GetID() int {
+	return pack.ID
+}
+
+func (pack Package) GetProductType() helpers.ProductType {
+	return helpers.ProductTypePackage
+}
+
+func (pack Package) GetType() string {
+	return "Package"
+}
+
+func (pack Package) GetName() (name string) {
+
+	if (pack.Name == "") || (pack.Name == strconv.Itoa(pack.ID)) {
+		return "Package " + strconv.Itoa(pack.ID)
+	}
+
+	return pack.Name
+}
+
+func (pack Package) GetPath() string {
+	return helpers.GetPackagePath(pack.ID, pack.GetName())
+}
+
+func (pack Package) GetIcon() string {
+	if pack.Icon == "" {
+		return helpers.DefaultAppIcon
+	}
+	return pack.Icon
+}
+
+func (pack Package) GetMetaImage() string {
+	return pack.ImageLogo
+}
+
+func (pack Package) StoreLink() string {
+	if !pack.InStore {
+		return ""
+	}
+	return "https://store.steampowered.com/sub/" + strconv.Itoa(pack.ID) + "/?curator_clanid=&utm_source=GameDB" // todo curator_clanid
+}
+
+func (pack Package) GetComingSoon() string {
+
+	switch pack.ComingSoon {
+	case true:
+		return "Yes"
+	case false:
+		return "No"
+	default:
+		return "Unknown"
+	}
+}
+
+func (pack Package) GetBillingType() string {
+
+	switch pack.BillingType {
+	case 0:
+		return "No Cost"
+	case 1:
+		return "Store"
+	case 2:
+		return "Bill Monthly"
+	case 3:
+		return "CD Key"
+	case 4:
+		return "Guest Pass"
+	case 5:
+		return "Hardware Promo"
+	case 6:
+		return "Gift"
+	case 7:
+		return "Free Weekend"
+	case 8:
+		return "OEM Ticket"
+	case 9:
+		return "Recurring Option"
+	case 10:
+		return "Store or CD Key"
+	case 11:
+		return "Repurchaseable"
+	case 12:
+		return "Free on Demand"
+	case 13:
+		return "Rental"
+	case 14:
+		return "Commercial License"
+	case 15:
+		return "Free Commercial License"
+	default:
+		return "Unknown"
+	}
+}
+
+func (pack Package) GetLicenseType() string {
+
+	switch pack.LicenseType {
+	case 0:
+		return "No License"
+	case 1:
+		return "Single Purchase"
+	case 2:
+		return "Single Purchase (Limited Use)"
+	case 3:
+		return "Recurring Charge"
+	case 6:
+		return "Recurring"
+	case 7:
+		return "Limited Use Delayed Activation"
+	default:
+		return "Unknown"
+	}
+}
+
+func (pack Package) GetStatus() string {
+
+	switch pack.Status {
+	case 0:
+		return "Available"
+	case 2:
+		return "Unavailable"
+	default:
+		return "Unknown"
+	}
+}
+
+func (pack Package) GetPlatformImages() (ret template.HTML) {
+
+	for _, v := range pack.Platforms {
+		if v == "macos" {
+			ret = ret + `<i class="fab fa-apple"></i>`
+		} else if v == "windows" {
+			ret = ret + `<i class="fab fa-windows"></i>`
+		} else if v == "linux" {
+			ret = ret + `<i class="fab fa-linux"></i>`
+		}
+	}
+
+	return ret
+}
+
+func (pack Package) GetPICSUpdatedNice() string {
+
+	d := pack.ChangeNumberDate
+
+	// Empty dates
+	if d.IsZero() || d.Unix() == -62167219200 {
+		return "-"
+	}
+	return d.Format(helpers.DateYearTime)
+}
+
+func (pack Package) GetUpdatedNice() string {
+	return pack.UpdatedAt.Format(helpers.DateYearTime)
+}
+
+func (pack Package) GetPrices() (prices helpers.ProductPrices) {
+	return pack.Prices
+}
+
+func (pack Package) OutputForJSON(code steam.ProductCC) (output []interface{}) {
+
+	var changeNumberDate = pack.ChangeNumberDate.Format(helpers.DateYearTime)
+	var discount = pack.Prices.Get(code).GetDiscountPercent()
+
+	return []interface{}{
+		pack.ID,                          // 0
+		pack.GetPath(),                   // 1
+		pack.GetName(),                   // 2
+		pack.GetComingSoon(),             // 3
+		pack.AppsCount,                   // 4
+		pack.Prices.Get(code).GetFinal(), // 5
+		pack.ChangeNumberDate.Unix(),     // 6
+		changeNumberDate,                 // 7
+		pack.GetIcon(),                   // 8
+		discount,                         // 9
+		pack.StoreLink(),                 // 10
 	}
 }
 

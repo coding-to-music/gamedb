@@ -218,7 +218,7 @@ func ListenToPubSub() {
 				err = helpers.Unmarshal(m.Data, &idPayload)
 				log.Err(err)
 
-				pack, err := sql.GetPackage(idPayload.ID)
+				pack, err := mongo.GetPackage(idPayload.ID, nil)
 				if err != nil {
 					log.Err(err)
 					continue

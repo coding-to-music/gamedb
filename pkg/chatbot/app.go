@@ -45,7 +45,7 @@ func (c CommandApp) Output(msg *discordgo.MessageCreate) (message discordgo.Mess
 			},
 			{
 				Name:  "Price",
-				Value: app.GetPrice(steam.ProductCCUS).GetFinal(),
+				Value: app.Prices.Get(steam.ProductCCUS).GetFinal(),
 			},
 			{
 				Name:  "Review Score",

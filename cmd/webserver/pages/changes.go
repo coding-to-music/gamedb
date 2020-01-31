@@ -7,7 +7,6 @@ import (
 	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -84,7 +83,7 @@ func changesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Package map
-		packages, err := sql.GetPackages(packageIDs, []string{"id", "name"})
+		packages, err := mongo.GetPackagesByID(packageIDs, bson.M{"_id": 1, "name": 1})
 		if err != nil {
 			log.Err(err)
 		}

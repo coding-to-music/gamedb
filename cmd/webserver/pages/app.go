@@ -172,7 +172,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.Packages, err = GetAppPackages(app)
+		t.Packages, err = app.GetAppPackages()
 		if err != nil {
 			log.Err(err, r)
 		}
@@ -314,7 +314,7 @@ type appTemplate struct {
 	DLCs        []mongo.App
 	Extended    []pics.KeyValue
 	Genres      []sql.Genre
-	Packages    []sql.Package
+	Packages    []mongo.Package
 	Price       helpers.ProductPrice
 	Publishers  []sql.Publisher
 	Tags        []sql.Tag

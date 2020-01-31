@@ -12,7 +12,6 @@ import (
 	pubsubHelpers "github.com/gamedb/gamedb/pkg/helpers/pubsub"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -150,7 +149,7 @@ func getChangesAppsAndPackages(changes []*mongo.Change) (appMap map[int]string, 
 		appMap[v.ID] = v.GetName()
 	}
 
-	packages, err := sql.GetPackages(packageIDs, []string{"id", "name"})
+	packages, err := mongo.GetPackagesByID(packageIDs, bson.M{"id": 1, "name": 1})
 	if err != nil {
 		return appMap, packageMap, err
 	}

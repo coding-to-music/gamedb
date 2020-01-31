@@ -36,10 +36,10 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get package
-	pack, err := sql.GetPackage(idx)
+	pack, err := mongo.GetPackage(idx, nil)
 	if err != nil {
 
-		if err == sql.ErrRecordNotFound {
+		if err == mongo.ErrNoDocuments {
 			returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Sorry but we can not find this package."})
 			return
 		}
@@ -60,12 +60,11 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		// Get apps
-		appIDs := pack.GetAppIDs()
-		for _, v := range appIDs {
+		for _, v := range pack.Apps {
 			appsMap[v] = mongo.App{ID: v}
 		}
 
-		appsSlice, err = mongo.GetAppsByID(appIDs, bson.M{"_id": 1, "name": 1, "icon": 1, "type": 1, "platforms": 1, "dlc": 1, "common": 1, "background": 1})
+		appsSlice, err = mongo.GetAppsByID(pack.Apps, bson.M{"_id": 1, "name": 1, "icon": 1, "type": 1, "platforms": 1, "dlc": 1, "common": 1, "background": 1})
 		if err != nil {
 			log.Err(err, r)
 			return
@@ -95,7 +94,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		bundles, err = pack.GetBundles()
+		bundles, err = GetPackageBundles(pack)
 		if err != nil {
 			log.Err(err, r)
 		}
@@ -150,11 +149,9 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	// Functions that get called multiple times in the template
-	t.Price = pack.GetPrice(helpers.GetProductCC(r))
-	t.Prices = t.Package.GetPrices()
-	t.Controller = pack.GetController()
-	t.DepotIDs = pack.GetDepotIDs()
-	t.Extended = t.Package.GetExtended().Formatted(pack.ID, pics.ExtendedKeys)
+	t.Price = pack.Prices.Get(helpers.GetProductCC(r))
+	t.Controller = pack.Controller
+	t.Extended = t.Package.Extended.Formatted(pack.ID, pics.ExtendedKeys)
 
 	//
 	returnTemplate(w, r, "package", t)
@@ -166,16 +163,14 @@ type packageTemplate struct {
 	Bundles    []sql.Bundle
 	Banners    map[string][]string
 	Controller pics.PICSController
-	DepotIDs   []int
 	Extended   []pics.KeyValue
-	Package    sql.Package
+	Package    mongo.Package
 	Price      helpers.ProductPrice
-	Prices     helpers.ProductPrices
 }
 
 func (p packageTemplate) ShowDev() bool {
 
-	return len(p.Extended) > 0 || len(p.Controller) > 0 || len(p.DepotIDs) > 0
+	return len(p.Extended) > 0 || len(p.Controller) > 0 || len(p.Package.Depots) > 0
 }
 
 func packagePricesAjaxHandler(w http.ResponseWriter, r *http.Request) {

@@ -89,7 +89,7 @@ func (c Genres) work() (err error) {
 			}
 
 			for _, code := range helpers.GetProdCCs(true) {
-				price := app.GetPrice(code.ProductCode)
+				price := app.Prices.Get(code.ProductCode)
 				if price.Exists {
 					newGenres[genreID].totalPrice[code.ProductCode] += price.Final
 				}

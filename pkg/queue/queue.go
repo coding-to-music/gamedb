@@ -269,7 +269,7 @@ func ProduceGroup(payload GroupMessage) (err error) {
 
 func ProducePackage(payload PackageMessage) (err error) {
 
-	if !sql.IsValidPackageID(payload.ID) {
+	if !helpers.IsValidPackageID(payload.ID) {
 		return sql.ErrInvalidPackageID
 	}
 

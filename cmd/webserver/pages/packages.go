@@ -8,8 +8,9 @@ import (
 	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func PackagesRouter() http.Handler {
@@ -22,12 +23,14 @@ func PackagesRouter() http.Handler {
 
 func packagesHandler(w http.ResponseWriter, r *http.Request) {
 
-	total, err := sql.CountPackages()
-	log.Err(err, r)
+	total, err := mongo.CountDocuments(mongo.CollectionPackages, nil, 0)
+	if err != nil {
+		log.Err(err, r)
+	}
 
 	// Template
 	t := packagesTemplate{}
-	t.fill(w, r, "Packages", "The last "+template.HTML(helpers.ShortHandNumber(int64(total)))+" packages to be updated.")
+	t.fill(w, r, "Packages", "The last "+template.HTML(helpers.ShortHandNumber(total))+" packages to be updated.")
 
 	returnTemplate(w, r, "packages", t)
 }
@@ -45,46 +48,38 @@ func packagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Get apps
-	var packages []sql.Package
+	var packages []mongo.Package
 
 	wg.Add(1)
 	go func(r *http.Request) {
 
 		defer wg.Done()
 
-		db, err := sql.GetMySQLClient()
+		var err error
+		var projection = bson.M{"id": 1, "name": 1, "apps_count": 1, "change_number_date": 1, "prices": 1, "icon": 1}
+		var sortCols = map[string]string{
+			"1": "prices." + string(code) + ".final",
+			"2": "prices." + string(code) + ".discount_percent",
+			"3": "apps_count",
+			"4": "change_number_date",
+		}
+
+		packages, err = mongo.GetPackages(query.GetOffset64(), 100, query.GetOrderMongo(sortCols), nil, projection, nil)
 		if err != nil {
 			log.Err(err, r)
 			return
 		}
-
-		db = db.Model(&sql.Package{})
-		db = db.Select([]string{"id", "name", "apps_count", "change_number_date", "prices", "icon"})
-
-		sortCols := map[string]string{
-			"1": "JSON_EXTRACT(prices, \"$." + string(code) + ".final\")",
-			"2": "JSON_EXTRACT(prices, \"$." + string(code) + ".discount_percent\")",
-			"3": "apps_count",
-			"4": "change_number_date",
-		}
-		db = query.SetOrderOffsetGorm(db, sortCols, "4")
-
-		db = db.Limit(100)
-		db = db.Find(&packages)
-
-		log.Err(db.Error)
-
 	}(r)
 
 	// Get total
-	var count int
+	var count int64
 	wg.Add(1)
 	go func() {
 
 		defer wg.Done()
 
 		var err error
-		count, err = sql.CountPackages()
+		count, err = mongo.CountDocuments(mongo.CollectionPackages, nil, 0)
 		log.Err(err, r)
 
 	}()
@@ -92,7 +87,7 @@ func packagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	var response = datatable.NewDataTablesResponse(r, query, int64(count), int64(count))
+	var response = datatable.NewDataTablesResponse(r, query, count, count)
 	for _, v := range packages {
 		response.AddRow(v.OutputForJSON(code))
 	}

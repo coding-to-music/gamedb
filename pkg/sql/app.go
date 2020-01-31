@@ -5,7 +5,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/Jleagle/steam-go/steam"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 )
@@ -119,11 +118,6 @@ func (app App) GetPrices() (prices helpers.ProductPrices) {
 	}
 
 	return prices
-}
-
-func (app App) GetPrice(code steam.ProductCC) (price helpers.ProductPrice) {
-
-	return app.GetPrices().Get(code)
 }
 
 func (app App) GetHeaderImage() string {

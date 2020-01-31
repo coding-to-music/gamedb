@@ -49,7 +49,7 @@ func packageHandler(messages []*rabbit.Message) {
 
 		var id = payload.ID
 
-		if !sql.IsValidPackageID(id) {
+		if !helpers.IsValidPackageID(id) {
 			log.Err(err, payload.ID)
 			sendToFailQueue(message)
 			return

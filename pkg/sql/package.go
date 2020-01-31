@@ -9,7 +9,6 @@ import (
 	"github.com/Jleagle/steam-go/steam"
 	"github.com/Jleagle/unmarshal-go/ctypes"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql/pics"
@@ -415,106 +414,8 @@ func (pack Package) GetDaysToRelease() string {
 	return helpers.GetDaysToRelease(pack.ReleaseDateUnix)
 }
 
-func (pack Package) GetBundles() (bundles []Bundle, err error) {
-
-	var item = memcache.MemcachePackageBundles(pack.ID)
-
-	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &bundles, func() (interface{}, error) {
-
-		db, err := GetMySQLClient()
-		if err != nil {
-			return bundles, err
-		}
-
-		var bundles []Bundle
-
-		db = db.Where("JSON_CONTAINS(package_ids, '[" + strconv.Itoa(pack.ID) + "]')")
-		db = db.Find(&bundles)
-
-		return bundles, db.Error
-	})
-
-	if len(bundles) == 0 {
-		bundles = []Bundle{} // Needed for marshalling into slice type
-	}
-
-	return bundles, err
-}
-
 func (pack *Package) SetName(name string, force bool) {
 	if (pack.Name == "" || force) && name != "" {
 		pack.Name = name
 	}
-}
-
-func IsValidPackageID(id int) bool {
-	return id != 0
-}
-
-func GetPackage(id int) (pack Package, err error) {
-
-	var item = memcache.MemcachePackage(id)
-
-	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &pack, func() (interface{}, error) {
-
-		var pack Package
-
-		db, err := GetMySQLClient()
-		if err != nil {
-			return pack, err
-		}
-
-		db = db.First(&pack, id)
-		if db.Error != nil {
-			return pack, db.Error
-		}
-
-		if pack.ID == 0 {
-			return pack, ErrRecordNotFound
-		}
-
-		return pack, nil
-	})
-
-	return pack, err
-}
-
-func GetPackages(ids []int, columns []string) (packages []Package, err error) {
-
-	if len(ids) == 0 {
-		return packages, err
-	}
-
-	db, err := GetMySQLClient()
-	if err != nil {
-		return packages, err
-	}
-
-	if len(columns) > 0 {
-		db = db.Select(columns)
-	}
-
-	db.Where("id IN (?)", ids).Find(&packages)
-
-	return packages, db.Error
-}
-
-func CountPackages() (count int, err error) {
-
-	var item = memcache.MemcachePackagesCount
-
-	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
-
-		var count int
-
-		db, err := GetMySQLClient()
-		if err != nil {
-			return count, err
-		}
-
-		db.Model(&Package{}).Count(&count)
-		return count, db.Error
-	})
-
-	return count, err
 }

@@ -127,7 +127,7 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			app.GetIcon(),                   // 2
 			app.GetPath(),                   // 3
 			app.GetType(),                   // 4
-			app.GetPrice(code).GetFinal(),   // 5
+			app.Prices.Get(code).GetFinal(),   // 5
 			app.GetReleaseDateNice(),        // 6
 			app.GetFollowers(),              // 7
 			helpers.GetAppStoreLink(app.ID), // 8

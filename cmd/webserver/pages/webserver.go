@@ -576,7 +576,7 @@ func getUserFromSession(r *http.Request) (user sql.User, err error) {
 	return sql.GetUserByID(userID)
 }
 
-// App calls
+// App bits
 func GetAppTags(app mongo.App) (tags []sql.Tag, err error) {
 
 	tags = []sql.Tag{} // Needed for marshalling into type
@@ -680,19 +680,20 @@ func GetAppBundles(app mongo.App) (bundles []sql.Bundle, err error) {
 	return bundles, err
 }
 
-func GetAppPackages(app mongo.App) (packages []sql.Package, err error) {
+// Package bits
+func GetPackageBundles(pack mongo.Package) (bundles []sql.Bundle, err error) {
 
-	packages = []sql.Package{} // Needed for marshalling into type
+	bundles = []sql.Bundle{} // Needed for marshalling into type
 
-	if len(app.Packages) == 0 {
-		return packages, nil
+	if len(pack.Bundles) == 0 {
+		return bundles, nil
 	}
 
-	var item = memcache.MemcacheAppPackages(app.ID)
+	var item = memcache.MemcachePackageBundles(pack.ID)
 
-	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &packages, func() (interface{}, error) {
-		return sql.GetPackages(app.Packages, nil)
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &bundles, func() (interface{}, error) {
+		return sql.GetBundlesByID(pack.Bundles, []string{})
 	})
 
-	return packages, err
+	return bundles, err
 }

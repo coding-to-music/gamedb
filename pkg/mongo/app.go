@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/Jleagle/influxql"
-	"github.com/Jleagle/steam-go/steam"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -212,10 +211,6 @@ func (app App) GetID() int {
 
 func (app App) GetProductType() helpers.ProductType {
 	return helpers.ProductTypeApp
-}
-
-func (app App) GetPrice(code steam.ProductCC) (price helpers.ProductPrice) {
-	return app.Prices.Get(code)
 }
 
 func (app App) GetPrices() (prices helpers.ProductPrices) {
@@ -495,6 +490,23 @@ func (app App) Save() (err error) {
 
 	_, err = ReplaceOne(CollectionApps, bson.D{{"_id", app.ID}}, app)
 	return err
+}
+
+func (app App) GetAppPackages() (packages []Package, err error) {
+
+	packages = []Package{} // Needed for marshalling into type
+
+	if len(app.Packages) == 0 {
+		return packages, nil
+	}
+
+	var item = memcache.MemcacheAppPackages(app.ID)
+
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &packages, func() (interface{}, error) {
+		return GetPackagesByID(app.Packages, bson.M{})
+	})
+
+	return packages, err
 }
 
 func CreateAppIndexes() {

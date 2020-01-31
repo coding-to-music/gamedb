@@ -89,7 +89,7 @@ func (c Publishers) work() (err error) {
 			}
 
 			for _, code := range helpers.GetProdCCs(true) {
-				price := app.GetPrice(code.ProductCode)
+				price := app.Prices.Get(code.ProductCode)
 				if price.Exists {
 					newPublishers[appPublisherID].totalPrice[code.ProductCode] += price.Final
 				}
