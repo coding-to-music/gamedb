@@ -78,7 +78,7 @@ var (
 		{name: QueuePackages, consumer: nil},
 		{name: QueuePlayers, consumer: nil},
 		{name: QueueChanges, consumer: nil},
-		{name: QueueDelay, consumer: nil},
+		{name: QueueDelay, consumer: nil, skipHeaders: true},
 	}
 
 	QueueCronsDefinitions = []queueDef{
@@ -89,7 +89,7 @@ var (
 		{name: QueuePlayers, consumer: nil},
 		{name: QueuePlayerRanks, consumer: nil},
 		{name: QueueSteam, consumer: nil},
-		{name: QueueDelay, consumer: nil},
+		{name: QueueDelay, consumer: nil, skipHeaders: true},
 	}
 
 	ChatbotDefinitions = []queueDef{
