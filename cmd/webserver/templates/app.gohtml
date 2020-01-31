@@ -209,6 +209,18 @@
                                             </tr>
                                         {{ end }}
 
+                                        {{ if ne .App.GetMicroTrailer "" }}
+                                            <tr>
+                                                <th scope="row">Micro Trailer</th>
+                                                <td>
+                                                    <video controls preload="metadata">
+                                                        <source src="{{ https (.App.GetMicroTrailer) }}" type="video/webm">
+                                                        Sorry, your browser doesn't support embedded videos.
+                                                    </video>
+                                                </td>
+                                            </tr>
+                                        {{ end }}
+
                                     </table>
                                 </div>
 
@@ -247,18 +259,6 @@
                                                     {{ range $key, $value := .Categories }}
                                                         <a class="badge badge-success" href="/apps?categories={{ .ID }}">{{ .GetName }}</a>
                                                     {{ end }}
-                                                </td>
-                                            </tr>
-                                        {{ end }}
-
-                                        {{ if ne .App.GetMicroTrailer "" }}
-                                            <tr>
-                                                <th scope="row">Micro Trailer</th>
-                                                <td>
-                                                    <video controls preload="metadata">
-                                                        <source src="{{ https (.App.GetMicroTrailer) }}" type="video/webm">
-                                                        Sorry, your browser doesn't support embedded videos.
-                                                    </video>
                                                 </td>
                                             </tr>
                                         {{ end }}
