@@ -58,6 +58,10 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get app
 	app, err := mongo.GetApp(idx, nil)
+	if err != nil && strings.HasPrefix(err.Error(), "memcache: unexpected response line from \"set\":") {
+		log.Warning(err)
+		err = nil
+	}
 	if err != nil {
 
 		if err == mongo.ErrNoDocuments {
