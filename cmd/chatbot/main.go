@@ -209,7 +209,7 @@ func discordError(err error) {
 
 	if err != nil {
 
-		if val, ok := err.(discordgo.RESTError); ok {
+		if val, ok := err.(*discordgo.RESTError); ok {
 
 			if val.Message.Code == 10008 || val.Message.Code == 50001 {
 
