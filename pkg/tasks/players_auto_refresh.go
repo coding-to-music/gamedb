@@ -54,6 +54,7 @@ func (c AutoPlayerRefreshes) work() (err error) {
 			playerIDs = append(playerIDs, playerID)
 
 			err = queue.ProducePlayer(queue.PlayerMessage{ID: playerID})
+			err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 			log.Err(err)
 		}
 	}
