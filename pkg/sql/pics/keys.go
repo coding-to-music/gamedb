@@ -90,6 +90,7 @@ var ExtendedKeys = map[string]PicsKey{
 	"loadallbeforelaunch":                  {FormatType: picsTypeBool},
 	"musicalbumforappid":                   {FormatType: picsTypeLink, Link: "/apps/$val$"},
 	"noservers":                            {FormatType: picsTypeBool},
+	"onlyallowrestrictedcountries":         {FormatType: picsTypeBool},
 	"requiressse":                          {FormatType: picsTypeBool},
 	"sourcegame":                           {FormatType: picsTypeBool},
 	"vacmacmodulecache":                    {FormatType: picsTypeLink, Link: "/apps/$val$"},
