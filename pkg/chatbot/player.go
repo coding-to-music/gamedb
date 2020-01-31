@@ -46,6 +46,7 @@ func (c CommandPlayer) Output(msg *discordgo.MessageCreate) (message discordgo.M
 		avatar = "https://gamedb.online" + avatar
 	}
 
+	message.Content = "<@" + msg.Author.ID + ">"
 	message.Embed = &discordgo.MessageEmbed{
 		Title: player.GetName(),
 		URL:   "https://gamedb.online" + player.GetPath(),

@@ -51,6 +51,7 @@ func (c CommandPlayerRecent) Output(msg *discordgo.MessageCreate) (message disco
 
 	if len(recent) > 0 {
 
+		message.Content = "<@" + msg.Author.ID + ">"
 		message.Embed = &discordgo.MessageEmbed{
 			Title:  "Recent Games",
 			URL:    "https://gamedb.online" + player.GetPath() + "#games",

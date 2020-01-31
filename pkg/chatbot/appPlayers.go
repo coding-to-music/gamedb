@@ -35,7 +35,7 @@ func (c CommandAppPlayers) Output(msg *discordgo.MessageCreate) (message discord
 		return message, err
 	}
 
-	message.Content = app.GetName() + " has **" + humanize.Comma(int64(i)) + "** players"
+	message.Content = "<@" + msg.Author.ID + ">, " + app.GetName() + " has **" + humanize.Comma(i) + "** players"
 
 	return message, nil
 }

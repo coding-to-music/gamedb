@@ -19,6 +19,7 @@ func (CommandAppsPopular) Regex() *regexp.Regexp {
 
 func (CommandAppsPopular) Output(msg *discordgo.MessageCreate) (message discordgo.MessageSend, err error) {
 
+	message.Content = "<@" + msg.Author.ID + ">"
 	message.Embed = &discordgo.MessageEmbed{
 		Title:  "Popular Apps",
 		Author: getAuthor(msg.Author.ID),

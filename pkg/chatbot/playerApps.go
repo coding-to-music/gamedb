@@ -40,7 +40,7 @@ func (c CommandPlayerApps) Output(msg *discordgo.MessageCreate) (message discord
 		log.Err(err)
 	}
 
-	message.Content = player.GetName() + " has **" + strconv.Itoa(player.GamesCount) + "** apps"
+	message.Content = "<@" + msg.Author.ID + ">, " + player.GetName() + " has **" + strconv.Itoa(player.GamesCount) + "** apps"
 	return message, nil
 }
 

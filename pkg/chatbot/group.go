@@ -38,6 +38,7 @@ func (c CommandGroup) Output(msg *discordgo.MessageCreate) (message discordgo.Me
 		group.Headline = "-"
 	}
 
+	message.Content = "<@" + msg.Author.ID + ">"
 	message.Embed = &discordgo.MessageEmbed{
 		Title: group.GetName(),
 		URL:   "https://gamedb.online" + group.GetPath(),

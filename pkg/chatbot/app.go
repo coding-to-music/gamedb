@@ -30,6 +30,7 @@ func (c CommandApp) Output(msg *discordgo.MessageCreate) (message discordgo.Mess
 		return message, err
 	}
 
+	message.Content = "<@" + msg.Author.ID + ">"
 	message.Embed = &discordgo.MessageEmbed{
 		Title: app.GetName(),
 		URL:   "https://gamedb.online" + app.GetPath(),

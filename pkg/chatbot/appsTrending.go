@@ -19,6 +19,7 @@ func (CommandAppsTrending) Regex() *regexp.Regexp {
 
 func (CommandAppsTrending) Output(msg *discordgo.MessageCreate) (message discordgo.MessageSend, err error) {
 
+	message.Content = "<@" + msg.Author.ID + ">"
 	message.Embed = &discordgo.MessageEmbed{
 		Title:  "Trending Apps",
 		URL:    "https://gamedb.online/trending",

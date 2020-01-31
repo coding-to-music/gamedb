@@ -41,7 +41,7 @@ func (c CommandPlayerLevel) Output(msg *discordgo.MessageCreate) (message discor
 	}
 
 
-	message.Content = player.GetName() + " is level **" + strconv.Itoa(player.Level) + "**"
+	message.Content = "<@" + msg.Author.ID + ">, " + player.GetName() + " is level **" + strconv.Itoa(player.Level) + "**"
 	return message, nil
 }
 
