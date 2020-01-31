@@ -20,7 +20,7 @@ func (c CommandAppPlayers) Output(msg *discordgo.MessageCreate) (message discord
 
 	matches := c.Regex().FindStringSubmatch(msg.Message.Content)
 
-	app, err := mongo.SearchApps(matches[1], nil)
+	app, err := mongo.SearchApps(matches[2], nil)
 	if err == mongo.ErrNoDocuments || err == mongo.ErrInvalidAppID {
 
 		message.Content = "App **" + matches[1] + "** not found"
