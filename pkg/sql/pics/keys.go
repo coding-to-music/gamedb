@@ -105,21 +105,22 @@ var ExtendedKeys = map[string]PicsKey{
 }
 
 var ConfigKeys = map[string]PicsKey{
-	"checkforupdatesbeforelaunch":  {FormatType: picsTypeBool},
-	"enabletextfiltering":          {FormatType: picsTypeBool},
-	"installscriptoverride":        {FormatType: picsTypeBool},
-	"launchwithoutworkshopupdates": {FormatType: picsTypeBool},
-	"matchmaking_uptodate":         {FormatType: picsTypeBool},
-	"signaturescheckedonlaunch":    {FormatType: picsTypeJSON},
-	"signedfiles":                  {FormatType: picsTypeJSON},
-	"steamcontrollerconfigdetails": {FormatType: picsTypeJSON},
-	"steamcontrollertemplateindex": {FormatType: picsTypeBool},
-	"systemprofile":                {FormatType: picsTypeBool},
-	"uselaunchcommandline":         {FormatType: picsTypeBool},
-	"usesfrenemies":                {FormatType: picsTypeBool},
-	"usemms":                       {FormatType: picsTypeBool},
-	"verifyupdates":                {FormatType: picsTypeBool},
-	"vrcompositorsupport":          {FormatType: picsTypeBool},
+	"checkforupdatesbeforelaunch":       {FormatType: picsTypeBool},
+	"enabletextfiltering":               {FormatType: picsTypeBool},
+	"installscriptoverride":             {FormatType: picsTypeBool},
+	"launchwithoutworkshopupdates":      {FormatType: picsTypeBool},
+	"matchmaking_uptodate":              {FormatType: picsTypeBool},
+	"signaturescheckedonlaunch":         {FormatType: picsTypeJSON},
+	"signedfiles":                       {FormatType: picsTypeJSON},
+	"steamcontrollerconfigdetails":      {FormatType: picsTypeJSON},
+	"steamcontrollertemplateindex":      {FormatType: picsTypeBool},
+	"steamcontrollertouchconfigdetails": {FormatType: picsTypeJSON},
+	"systemprofile":                     {FormatType: picsTypeBool},
+	"uselaunchcommandline":              {FormatType: picsTypeBool},
+	"usesfrenemies":                     {FormatType: picsTypeBool},
+	"usemms":                            {FormatType: picsTypeBool},
+	"verifyupdates":                     {FormatType: picsTypeBool},
+	"vrcompositorsupport":               {FormatType: picsTypeBool},
 }
 
 var UFSKeys = map[string]PicsKey{
