@@ -68,7 +68,7 @@
                                     {{ range $key, $value := .Packages }}
                                         <tr data-link="{{.GetPath}}">
                                             <td>{{.GetName}}</td>
-                                            <td>{{ .GetAppsCountString }}</td>
+                                            <td>{{ .AppsCount }}</td>
                                         </tr>
                                     {{ end }}
                                 </table>
