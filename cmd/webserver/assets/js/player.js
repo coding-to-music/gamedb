@@ -232,6 +232,17 @@ if ($playerPage.length > 0) {
                     },
                     'orderSequence': ['asc', 'desc'],
                 },
+                // Link
+                {
+                    "targets": 5,
+                    "render": function (data, type, row) {
+                        if (row[9]) {
+                            return '<a href="' + row[9] + '" target="_blank" rel="nofollow"><i class="fas fa-link"></i></a>';
+                        }
+                        return '';
+                    },
+                    "orderable": false,
+                },
             ]
         };
 

@@ -674,6 +674,7 @@ func playerFriendsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			friend.Games,                           // 6
 			friend.GetLoggedOff(),                  // 7
 			friend.GetFriendSince(),                // 8
+			friend.CommunityLink(),                 // 9
 		})
 	}
 
