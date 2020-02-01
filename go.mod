@@ -48,7 +48,7 @@ require (
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/gocolly/colly v1.2.0
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
-	github.com/golang/protobuf v1.3.2
+	github.com/golang/protobuf v1.3.3
 	github.com/golang/snappy v0.0.1
 	github.com/google/go-github/v28 v28.1.1
 	github.com/gorilla/sessions v1.2.0
@@ -93,15 +93,16 @@ require (
 	github.com/yohcop/openid-go v1.0.0
 	go.mongodb.org/mongo-driver v1.2.1
 	go.uber.org/atomic v1.4.0 // indirect
-	golang.org/x/crypto v0.0.0-20200117160349-530e935923ad
+	golang.org/x/crypto v0.0.0-20200128174031-69ecbb4d6d5d
 	golang.org/x/exp v0.0.0-20200119233911-0405dc783f0a // indirect
+	golang.org/x/lint v0.0.0-20200130185559-910be7a94367 // indirect
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sys v0.0.0-20200124204421-9fbb57f87de9 // indirect
 	golang.org/x/text v0.3.2
 	golang.org/x/time v0.0.0-20191024005414-555d28b269f0 // indirect
-	golang.org/x/tools v0.0.0-20200124220429-8fe064f891f2 // indirect
-	google.golang.org/genproto v0.0.0-20200122232147-0452cf42e150 // indirect
-	google.golang.org/grpc v1.26.0
+	golang.org/x/tools v0.0.0-20200131211209-ecb101ed6550 // indirect
+	google.golang.org/genproto v0.0.0-20200128133413-58ce757ed39b // indirect
+	google.golang.org/grpc v1.27.0
 	gopkg.in/djherbis/atime.v1 v1.0.0 // indirect
 	gopkg.in/djherbis/stream.v1 v1.2.0 // indirect
 	gopkg.in/yaml.v2 v2.2.8 // indirect
