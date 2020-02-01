@@ -165,6 +165,10 @@ func (player Player) GetSteamTimeUnix() int64 {
 }
 
 func (player Player) GetSteamTimeNice() string {
+
+	if player.TimeCreated.IsZero() {
+		return "-"
+	}
 	return player.TimeCreated.Format(helpers.DateYear)
 }
 
@@ -173,6 +177,10 @@ func (player Player) GetLogoffUnix() int64 {
 }
 
 func (player Player) GetLogoffNice() string {
+
+	if player.LastLogOff.IsZero() {
+		return "-"
+	}
 	return player.LastLogOff.Format(helpers.DateYearTime)
 }
 
