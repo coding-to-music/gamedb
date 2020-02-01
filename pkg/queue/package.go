@@ -1,7 +1,6 @@
 package queue
 
 import (
-	"encoding/json"
 	"errors"
 	"regexp"
 	"strconv"
@@ -20,7 +19,6 @@ import (
 	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/sql/pics"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/gocolly/colly"
@@ -56,19 +54,14 @@ func packageHandler(messages []*rabbit.Message) {
 		}
 
 		// Load current package
-		gorm, err := sql.GetMySQLClient()
-		if err != nil {
-			log.Err(err)
+		pack, err := mongo.GetPackage(id, nil)
+		if err == mongo.ErrNoDocuments {
+			pack = mongo.Package{}
+			pack.ID = id
+		} else if err != nil {
+			log.Err(err, payload.ID)
 			sendToRetryQueue(message)
-			return
-		}
-
-		pack := sql.Package{}
-		gorm = gorm.FirstOrInit(&pack, sql.Package{ID: id})
-		if gorm.Error != nil {
-			log.Err(gorm.Error, payload.ID)
-			sendToRetryQueue(message)
-			return
+			continue
 		}
 
 		// Skip if updated in last day, unless its from PICS
@@ -132,9 +125,9 @@ func packageHandler(messages []*rabbit.Message) {
 		}
 
 		// Save new data
-		gorm = gorm.Save(&pack)
-		if gorm.Error != nil {
-			log.Err(gorm.Error, payload.ID)
+		err = pack.Save()
+		if err != nil {
+			log.Err(err, payload.ID)
 			sendToRetryQueue(message)
 			return
 		}
@@ -167,7 +160,7 @@ func packageHandler(messages []*rabbit.Message) {
 		// Queue apps
 		// Commented out because queued too many apps
 		// Uncommented out to help with finding sales
-		for _, appID := range pack.GetAppIDs() {
+		for _, appID := range pack.Apps {
 			err = ProducePackage(PackageMessage{ID: appID})
 			err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 			log.Err(err)
@@ -178,12 +171,11 @@ func packageHandler(messages []*rabbit.Message) {
 	}
 }
 
-func updatePackageNameFromApp(pack *sql.Package) (err error) {
+func updatePackageNameFromApp(pack *mongo.Package) (err error) {
 
-	if pack.AppsCount == 1 {
+	if len(pack.Apps) == 1 {
 
-		appIDs := pack.GetAppIDs()
-		app, err := mongo.GetApp(appIDs[0], bson.M{"_id": 1, "name": 1, "icon": 1})
+		app, err := mongo.GetApp(pack.Apps[0], bson.M{"_id": 1, "name": 1, "icon": 1})
 		if err == nil && app.Name != "" && (pack.Name == "" || pack.Name == "Package "+strconv.Itoa(pack.ID) || pack.Name == strconv.Itoa(pack.ID)) {
 
 			pack.SetName(app.GetName(), false)
@@ -199,7 +191,7 @@ func updatePackageNameFromApp(pack *sql.Package) (err error) {
 	return nil
 }
 
-func updatePackageFromPICS(pack *sql.Package, message *rabbit.Message, payload PackageMessage) (err error) {
+func updatePackageFromPICS(pack *mongo.Package, message *rabbit.Message, payload PackageMessage) (err error) {
 
 	if payload.ChangeNumber == 0 || pack.ChangeNumber >= payload.ChangeNumber {
 		return nil
@@ -215,11 +207,11 @@ func updatePackageFromPICS(pack *sql.Package, message *rabbit.Message, payload P
 	pack.BillingType = 0
 	pack.LicenseType = 0
 	pack.Status = 0
-	pack.AppIDs = "[]"
+	pack.Apps = []int{}
 	pack.AppsCount = 0
-	pack.DepotIDs = ""
-	pack.AppItems = ""
-	pack.Extended = ""
+	pack.Depots = []int{}
+	pack.AppItems = map[int]int{}
+	pack.Extended = pics.PICSKeyValues{}
 
 	if len(kv.Children) == 1 && kv.Children[0].Key == strconv.Itoa(payload.ID) {
 		kv = kv.Children[0]
@@ -236,7 +228,7 @@ func updatePackageFromPICS(pack *sql.Package, message *rabbit.Message, payload P
 
 			var i64 int64
 			i64, err = strconv.ParseInt(child.Value, 10, 8)
-			pack.BillingType = int8(i64)
+			pack.BillingType = int(i64)
 
 		case "licensetype":
 
@@ -254,32 +246,18 @@ func updatePackageFromPICS(pack *sql.Package, message *rabbit.Message, payload P
 			// Empty
 		case "appids":
 
-			appIDs := helpers.StringSliceToIntSlice(child.GetChildrenAsSlice())
+			apps := helpers.StringSliceToIntSlice(child.GetChildrenAsSlice())
 
-			// mongo.UpdatePackageApps()
-
-			var b []byte
-			b, err = json.Marshal(appIDs)
-
-			if err == nil {
-				pack.AppIDs = string(b)
-				pack.AppsCount = len(appIDs)
-			}
+			pack.Apps = apps
+			pack.AppsCount = len(apps)
 
 		case "depotids":
 
-			depots := helpers.StringSliceToIntSlice(child.GetChildrenAsSlice())
-
-			var b []byte
-			b, err = json.Marshal(depots)
-
-			if err == nil {
-				pack.DepotIDs = string(b)
-			}
+			pack.Depots = helpers.StringSliceToIntSlice(child.GetChildrenAsSlice())
 
 		case "appitems":
 
-			var appItems = map[string]string{}
+			var appItems = map[int]int{}
 
 			if len(child.Children) > 1 {
 				log.Warning("More app items", pack.ID)
@@ -287,7 +265,14 @@ func updatePackageFromPICS(pack *sql.Package, message *rabbit.Message, payload P
 
 			for _, vv := range child.Children {
 				if len(vv.Children) == 1 {
-					appItems[vv.Key] = vv.Children[0].Value
+
+					i1, err := strconv.Atoi(vv.Key)
+					if err == nil {
+						i2, err := strconv.Atoi(vv.Children[0].Value)
+						if err == nil {
+							appItems[i1] = i2
+						}
+					}
 
 					if len(vv.Children) > 1 {
 						log.Warning("More app items2", pack.ID)
@@ -295,21 +280,11 @@ func updatePackageFromPICS(pack *sql.Package, message *rabbit.Message, payload P
 				}
 			}
 
-			var b []byte
-			b, err = json.Marshal(appItems)
-
-			if err == nil {
-				pack.AppItems = string(b)
-			}
+			pack.AppItems = appItems
 
 		case "extended":
 
-			var b []byte
-			b, err = json.Marshal(child.GetChildrenAsMap())
-
-			if err == nil {
-				pack.Extended = string(b)
-			}
+			pack.Extended = child.GetChildrenAsMap()
 
 		case "":
 
@@ -329,7 +304,7 @@ func updatePackageFromPICS(pack *sql.Package, message *rabbit.Message, payload P
 
 var packageRegex = regexp.MustCompile(`store\.steampowered\.com/sub/[0-9]+$`)
 
-func scrapePackage(pack *sql.Package) (err error) {
+func scrapePackage(pack *mongo.Package) (err error) {
 
 	pack.InStore = false
 
@@ -359,7 +334,7 @@ func scrapePackage(pack *sql.Package) (err error) {
 	return err
 }
 
-func updatePackageFromStore(pack *sql.Package) (err error) {
+func updatePackageFromStore(pack *mongo.Package) (err error) {
 
 	prices := helpers.ProductPrices{}
 
@@ -385,11 +360,7 @@ func updatePackageFromStore(pack *sql.Package) (err error) {
 				controller[k] = v
 			}
 
-			b, err := json.Marshal(controller)
-			if err != nil {
-				return err
-			}
-			pack.Controller = string(b)
+			pack.Controller = controller
 
 			// Platforms
 			var platforms []string
@@ -403,11 +374,7 @@ func updatePackageFromStore(pack *sql.Package) (err error) {
 				platforms = append(platforms, "macos")
 			}
 
-			b, err = json.Marshal(platforms)
-			if err != nil {
-				return err
-			}
-			pack.Platforms = string(b)
+			pack.Platforms = platforms
 
 			// Images
 			var wg sync.WaitGroup
@@ -446,19 +413,14 @@ func updatePackageFromStore(pack *sql.Package) (err error) {
 		}
 	}
 
-	b, err := json.Marshal(prices)
-	if err != nil {
-		return err
-	}
-
-	pack.Prices = string(b)
+	pack.Prices = prices
 
 	return nil
 }
 
-func savePackageToInflux(pack sql.Package) error {
+func savePackageToInflux(pack mongo.Package) error {
 
-	price := pack.GetPrice(steam.ProductCCUS)
+	price := pack.Prices.Get(steam.ProductCCUS)
 	if !price.Exists {
 		return nil
 	}

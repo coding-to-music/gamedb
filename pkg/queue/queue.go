@@ -10,6 +10,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/streadway/amqp"
 )
@@ -270,7 +271,7 @@ func ProduceGroup(payload GroupMessage) (err error) {
 func ProducePackage(payload PackageMessage) (err error) {
 
 	if !helpers.IsValidPackageID(payload.ID) {
-		return sql.ErrInvalidPackageID
+		return mongo.ErrInvalidPackageID
 	}
 
 	mc := memcache.GetClient()

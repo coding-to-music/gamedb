@@ -263,6 +263,18 @@ func (pack Package) OutputForJSON(code steam.ProductCC) (output []interface{}) {
 	}
 }
 
+func (pack Package) Save() (err error) {
+
+	_, err = ReplaceOne(CollectionPackages, bson.D{{"_id", pack.ID}}, pack)
+	return err
+}
+
+func (pack *Package) SetName(name string, force bool) {
+	if (pack.Name == "" || force) && name != "" {
+		pack.Name = name
+	}
+}
+
 func GetPackage(id int, projection bson.M) (pack Package, err error) {
 
 	if !helpers.IsValidPackageID(id) {

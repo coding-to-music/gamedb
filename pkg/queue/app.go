@@ -276,15 +276,6 @@ func appHandler(messages []*rabbit.Message) {
 				sendToRetryQueue(message)
 				return
 			}
-		}()
-
-		// Save app to MySQL
-		wg.Add(1)
-		go func() {
-
-			defer wg.Done()
-
-			app.ReleaseState = strings.ToLower(app.ReleaseState)
 
 			err = app.Save()
 			if err != nil {

@@ -127,6 +127,7 @@ func (app App) BSON() bson.D {
 	}
 
 	app.UpdatedAt = time.Now()
+	app.ReleaseState = strings.ToLower(app.ReleaseState)
 
 	return bson.D{
 		{"achievements", app.Achievements},
