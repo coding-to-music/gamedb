@@ -81,7 +81,7 @@
                                         </div>
                                     </td>
                                     <td class="platforms">{{ .Game.GetPlatformImages }}</td>
-                                    <td>{{ comma (len .Game.GetAchievements) }}</td>
+                                    <td>{{ comma .Game.AchievementsCount }}</td>
                                     <td>{{.Tags}}</td>
                                 </tr>
                             {{ end }}
