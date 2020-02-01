@@ -74,6 +74,7 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		projection := bson.M{"_id": 1, "name": 1, "icon": 1, "type": 1, "prices": 1, "release_date_unix": 1, "group_id": 1, "group_followers": 1}
 		order := query.GetOrderMongo(columns)
+		order = append(order, bson.E{Key: "group_followers", Value: -1})
 		offset := query.GetOffset64()
 
 		apps, err = mongo.GetApps(offset, 100, order, filter2, projection, nil)
@@ -127,7 +128,7 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			app.GetIcon(),                   // 2
 			app.GetPath(),                   // 3
 			app.GetType(),                   // 4
-			app.Prices.Get(code).GetFinal(),   // 5
+			app.Prices.Get(code).GetFinal(), // 5
 			app.GetReleaseDateNice(),        // 6
 			app.GetFollowers(),              // 7
 			helpers.GetAppStoreLink(app.ID), // 8
