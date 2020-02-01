@@ -71,13 +71,13 @@ var PlayerRankFieldsInflux = map[RankMetric]string{
 }
 
 var (
-	ErrInvalidPlayerID   = errors.New("invalid player id")
+	ErrInvalidPlayerID = errors.New("invalid player id")
 )
 
 type Player struct {
 	Avatar            string         `bson:"avatar"`                 //
 	BackgroundAppID   int            `bson:"background_app_id"`      //
-	BadgeIDs          []int          `bson:"badge_ids"`              // []int - Only special badges
+	BadgeIDs          []int          `bson:"badge_ids"`              // Only special badges
 	BadgesCount       int            `bson:"badges_count"`           //
 	BadgeStats        string         `bson:"badge_stats"`            // ProfileBadgeStats
 	Bans              string         `bson:"bans"`                   // PlayerBans
@@ -102,7 +102,7 @@ type Player struct {
 	Ranks             map[string]int `bson:"ranks"`                  //
 	RecentAppsCount   int            `bson:"recent_apps_count"`      //
 	StateCode         string         `bson:"status_code"`            //
-	TimeCreated       time.Time      `bson:"time_created"`           //
+	TimeCreated       time.Time      `bson:"time_created"`           // Created on Steam
 	UpdatedAt         time.Time      `bson:"updated_at"`             //
 	VanintyURL        string         `bson:"vanity_url"`             //
 	WishlistAppsCount int            `bson:"wishlist_apps_count"`    //
