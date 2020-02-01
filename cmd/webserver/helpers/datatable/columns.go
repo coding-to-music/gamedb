@@ -15,4 +15,5 @@ type Column struct {
 	sortDefault bool
 	sortAppend  bson.D
 	filters     bson.D
+	projection  bson.M
 }
