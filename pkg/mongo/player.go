@@ -194,7 +194,7 @@ func (player Player) GetUpdatedNice() string {
 
 func (player Player) CommunityLink() string {
 
-	if player.VanintyURL != "" {
+	if player.VanintyURL != "" && player.VanintyURL != strconv.FormatInt(player.ID, 10) {
 		return "https://steamcommunity.com/id/" + player.VanintyURL
 	}
 
