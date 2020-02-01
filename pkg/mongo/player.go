@@ -565,12 +565,12 @@ func (player Player) NeedsUpdate(updateType UpdateType) bool {
 	case PlayerUpdateManual:
 		// Non donators
 		if player.Donated == 0 {
-			if player.UpdatedAt.Add(time.Hour * 6).Before(time.Now()) {
+			if player.UpdatedAt.Add(time.Minute * 10).Before(time.Now()) {
 				return true
 			}
 		} else {
 			// Donators
-			if player.UpdatedAt.Add(time.Minute * 10).Before(time.Now()) {
+			if player.UpdatedAt.Add(time.Minute * 1).Before(time.Now()) {
 				return true
 			}
 		}
