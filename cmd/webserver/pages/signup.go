@@ -7,6 +7,7 @@ import (
 	"github.com/Jleagle/recaptcha-go"
 	"github.com/Jleagle/session-go/session"
 	"github.com/badoux/checkmail"
+	webserverHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -162,7 +163,7 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 		body := "Please click the below link to verify your email address<br />" +
 			config.Config.GameDBDomain.Get() + "/signup/verify?code=" + code.Code
 
-		_, err = helpers.SendEmail(
+		_, err = webserverHelpers.SendEmail(
 			mail.NewEmail(email, email),
 			mail.NewEmail("Game DB", "no-reply@gamedb.online"),
 			"Game DB Email Verification",

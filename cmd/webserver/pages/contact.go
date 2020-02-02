@@ -6,6 +6,7 @@ import (
 
 	"github.com/Jleagle/recaptcha-go"
 	"github.com/Jleagle/session-go/session"
+	webserverHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -109,7 +110,7 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Send
-		_, err = helpers.SendEmail(
+		_, err = webserverHelpers.SendEmail(
 			mail.NewEmail(config.Config.AdminName.Get(), config.Config.AdminEmail.Get()),
 			mail.NewEmail(r.PostForm.Get("name"), r.PostForm.Get("email")),
 			"Game DB Contact Form",

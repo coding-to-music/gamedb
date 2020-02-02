@@ -7,6 +7,7 @@ import (
 	"github.com/Jleagle/recaptcha-go"
 	"github.com/Jleagle/session-go/session"
 	"github.com/badoux/checkmail"
+	webserverHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -100,7 +101,7 @@ func forgotPostHandler(w http.ResponseWriter, r *http.Request) {
 		body := "You are someone else has requested a new password for Game DB.<br>This link will reset your password: " +
 			config.Config.GameDBDomain.Get() + "/forgot/reset?code=" + code.Code
 
-		_, err = helpers.SendEmail(
+		_, err = webserverHelpers.SendEmail(
 			mail.NewEmail(email, email),
 			mail.NewEmail("Game DB", "no-reply@gamedb.online"),
 			"Game DB Forgotten Password",
@@ -187,7 +188,7 @@ func forgotResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 		// Send email
 		body := "Your new Game DB password is: " + passwordString
 
-		_, err = helpers.SendEmail(
+		_, err = webserverHelpers.SendEmail(
 			mail.NewEmail(user.Email, user.Email),
 			mail.NewEmail("Game DB", "no-reply@gamedb.online"),
 			"Game DB Forgotten Password",
