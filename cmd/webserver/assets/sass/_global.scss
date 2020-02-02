@@ -405,8 +405,8 @@ div#loading {
 // Info panels
 div.jumbotron.bottom {
 
-    @extend .mt-3;
     @extend .p-3;
+    @extend .mb-0;
 
     display: table;
     width: 100%;
