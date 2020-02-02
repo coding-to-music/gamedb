@@ -3,6 +3,7 @@ package pages
 import (
 	"html/template"
 	"net/http"
+	"path"
 	"sort"
 	"strconv"
 	"sync"
@@ -204,6 +205,8 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	search := query.GetSearchString("search")
 	if len(search) >= 2 {
+
+		search = path.Base(search) // Incase someone tries a profile URL
 
 		filter = append(filter, bson.E{Key: "$text", Value: bson.M{"$search": search}})
 
