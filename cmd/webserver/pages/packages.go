@@ -116,15 +116,14 @@ func packagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		var projection = bson.M{"id": 1, "name": 1, "apps_count": 1, "change_number_date": 1, "prices": 1, "icon": 1}
 		var sortCols = map[string]string{
 			"1": "prices." + string(code) + ".final",
 			"2": "prices." + string(code) + ".discount_percent",
 			"3": "apps_count",
-			"4": "change_number_date",
+			"5": "change_number_date",
 		}
 
-		packages, err = mongo.GetPackages(query.GetOffset64(), 100, query.GetOrderMongo(sortCols), filter, projection, nil)
+		packages, err = mongo.GetPackages(query.GetOffset64(), 100, query.GetOrderMongo(sortCols), filter, mongo.PackageOutputForJSON, nil)
 		if err != nil {
 			log.Err(err, r)
 			return

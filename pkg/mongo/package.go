@@ -298,6 +298,8 @@ func (pack Package) GetPrices() (prices helpers.ProductPrices) {
 	return pack.Prices
 }
 
+var PackageOutputForJSON = bson.M{"id": 1, "name": 1, "apps_count": 1, "prices": 1, "change_number_date": 1, "icon": 1, "billing_type": 1}
+
 func (pack Package) OutputForJSON(code steam.ProductCC) (output []interface{}) {
 
 	var changeNumberDate = pack.ChangeNumberDate.Format(helpers.DateYearTime)
@@ -307,7 +309,7 @@ func (pack Package) OutputForJSON(code steam.ProductCC) (output []interface{}) {
 		pack.ID,                          // 0
 		pack.GetPath(),                   // 1
 		pack.GetName(),                   // 2
-		pack.GetComingSoon(),             // 3
+		"",                               // 3
 		pack.AppsCount,                   // 4
 		pack.Prices.Get(code).GetFinal(), // 5
 		pack.ChangeNumberDate.Unix(),     // 6
@@ -315,6 +317,7 @@ func (pack Package) OutputForJSON(code steam.ProductCC) (output []interface{}) {
 		pack.GetIcon(),                   // 8
 		discount,                         // 9
 		pack.StoreLink(),                 // 10
+		pack.GetBillingType(),            // 11
 	}
 }
 

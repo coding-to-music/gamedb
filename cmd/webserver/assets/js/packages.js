@@ -9,7 +9,7 @@ if ($('#packages-page').length > 0) {
     });
 
     const options = {
-        "order": [[4, 'desc']],
+        "order": [[5, 'desc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-link', data[1]);
         },
@@ -52,9 +52,17 @@ if ($('#packages-page').length > 0) {
                 },
                 'orderSequence': ['desc', 'asc'],
             },
-            // Updated Time
+            // Billing Type
             {
                 "targets": 4,
+                "render": function (data, type, row) {
+                    return row[11];
+                },
+                "orderable": false,
+            },
+            // Updated Time
+            {
+                "targets": 5,
                 "render": function (data, type, row) {
                     return '<span data-toggle="tooltip" data-placement="left" title="' + row[7] + '" data-livestamp="' + row[6] + '">' + row[7] + '</span>';
                 },
@@ -65,7 +73,7 @@ if ($('#packages-page').length > 0) {
             },
             // Link
             {
-                "targets": 5,
+                "targets": 6,
                 "render": function (data, type, row) {
                     if (row[10]) {
                         return '<a href="' + row[10] + '" target="_blank" rel="nofollow"><i class="fas fa-link"></i></a>';
