@@ -136,29 +136,29 @@
                                             <table class="table mb-0">
                                                 <tr>
                                                     <th scope="col">Community Banned</th>
-                                                    <td>{{ if .Bans.CommunityBanned }}<i class="fas fa-check text-danger"></i>{{ else }}<i class="fas fa-times text-success"></i>{{ end }}</td>
+                                                    <td>{{ if .Player.Bans.CommunityBanned }}<i class="fas fa-check text-danger"></i>{{ else }}<i class="fas fa-times text-success"></i>{{ end }}</td>
                                                 </tr>
                                                 <tr>
                                                     <th scope="col">VAC Banned</th>
-                                                    <td>{{ if .Bans.VACBanned }}<i class="fas fa-check text-danger"></i>{{ else }}<i class="fas fa-times text-success"></i>{{ end }}</td>
+                                                    <td>{{ if .Player.Bans.VACBanned }}<i class="fas fa-check text-danger"></i>{{ else }}<i class="fas fa-times text-success"></i>{{ end }}</td>
                                                 </tr>
                                                 <tr>
                                                     <th scope="col">Game Bans</th>
-                                                    <td>{{ comma .Bans.NumberOfGameBans }}</td>
+                                                    <td>{{ comma .Player.Bans.NumberOfGameBans }}</td>
                                                 </tr>
                                                 <tr>
                                                     <th scope="col">VAC Bans</th>
-                                                    <td>{{ comma .Bans.NumberOfVACBans }}</td>
+                                                    <td>{{ comma .Player.Bans.NumberOfVACBans }}</td>
                                                 </tr>
                                                 <tr>
                                                     <th scope="col">Economy Ban</th>
-                                                    <td>{{ title .Bans.EconomyBan }}</td>
+                                                    <td>{{ title .Player.Bans.EconomyBan }}</td>
                                                 </tr>
                                                 <tr>
                                                     <th scope="col">Time Since VAC Ban</th>
                                                     <td>
-                                                        {{ if gt .Bans.NumberOfVACBans 0}}
-                                                            {{ comma .Bans.DaysSinceLastBan }} days
+                                                        {{ if gt .Player.Bans.NumberOfVACBans 0}}
+                                                            {{ comma .Player.Bans.DaysSinceLastBan }} days
                                                         {{ else }}
                                                             -
                                                         {{ end }}
@@ -272,18 +272,18 @@
                             </tr>
                             <tr>
                                 <th scope="row">Experience</th>
-                                <td>{{ comma .Player.ProfileBadgeStats.PlayerXP }}</td>
+                                <td>{{ comma .Player.BadgeStats.PlayerXP }}</td>
                             </tr>
                             <tr>
                                 <th scope="row">Next Level In</th>
-                                <td>{{ comma .Player.ProfileBadgeStats.PlayerXPNeededToLevelUp }}</td>
+                                <td>{{ comma .Player.BadgeStats.PlayerXPNeededToLevelUp }}</td>
                             </tr>
                             <tr>
                                 <th scope="row">This Level</th>
                                 <td>
                                     <div class="progress">
-                                        <div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: {{ max 5 .Player.ProfileBadgeStats.PercentOfLevel }}%">
-                                            {{ .BadgeStats.PercentOfLevel }}%
+                                        <div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: {{ max 5 .Player.BadgeStats.PercentOfLevel }}%">
+                                            {{ .Player.BadgeStats.PercentOfLevel }}%
                                         </div>
                                     </div>
                                 </td>
