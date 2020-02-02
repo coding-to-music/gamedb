@@ -45,6 +45,7 @@ func main() {
 	if config.IsLocal() {
 		log.Info("Start index check")
 		mongo.CreateAppIndexes()
+		mongo.CreatePackageIndexes()
 		mongo.CreatePlayerIndexes()
 		mongo.CreateGroupIndexes()
 		log.Info("Index check finished")

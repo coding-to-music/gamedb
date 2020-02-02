@@ -1,5 +1,13 @@
 if ($('#packages-page').length > 0) {
 
+    // Setup drop downs
+    $('select.form-control-chosen').chosen({
+        disable_search_threshold: 10,
+        allow_single_deselect: true,
+        rtl: false,
+        max_selected_options: 10
+    });
+
     const options = {
         "order": [[4, 'desc']],
         "createdRow": function (row, data, dataIndex) {
@@ -69,8 +77,18 @@ if ($('#packages-page').length > 0) {
         ]
     };
 
+    const searchFields = [
+        $('#status'),
+        $('#platform'),
+        $('#license'),
+        $('#billing'),
+    ];
+
     const $table = $('table.table');
-    const dt = $table.gdbTable({tableOptions: options});
+    const dt = $table.gdbTable({
+        tableOptions: options,
+        searchFields: searchFields
+    });
 
     websocketListener('packages', function (e) {
 

@@ -13,6 +13,71 @@
         <div class="card">
             <div class="card-body">
 
+                <div class="row">
+                    <div class="d-none">
+                        {{/* This div is so Chrome auto-fills this one and not the rest! */}}
+                        <label for="hidden">Hidden</label>
+                        <select multiple data-placeholder="Hidden" class="form-control form-control-chosen" id="hidden" name="hidden">
+                        </select>
+                    </div>
+                    <div class="col-sm-6 col-md-4 col-lg-3">
+                        <div class="form-group">
+                            <label for="status">Status</label>
+                            <select multiple data-placeholder="Choose a Status" class="form-control form-control-chosen" id="status" name="status">
+                                <option value="0">Available</option>
+                                <option value="2">Unavailable</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4 col-lg-3">
+                        <div class="form-group">
+                            <label for="platform">Platform</label>
+                            <select multiple data-placeholder="Choose a Platform" class="form-control form-control-chosen" id="platform" name="platform">
+                                <option value=""></option>
+                                <option value="windows">Windows</option>
+                                <option value="macos">MacOS</option>
+                                <option value="linux">Linux</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4 col-lg-3">
+                        <div class="form-group">
+                            <label for="license">License</label>
+                            <select multiple data-placeholder="Choose a License" class="form-control form-control-chosen" id="license" name="license">
+                                <option value="0">No License</option>
+                                <option value="1">Single Purchase</option>
+                                <option value="2">Single Purchase (Limited Use)</option>
+                                <option value="3">Recurring Charge</option>
+                                <option value="6">Recurring</option>
+                                <option value="7">Limited Use Delayed Activation</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4 col-lg-3">
+                        <div class="form-group">
+                            <label for="billing">Billing</label>
+                            <select multiple data-placeholder="Choose a Billing Type" class="form-control form-control-chosen" id="billing" name="billing">
+                                <option value="0">No Cost</option>
+                                <option value="1">Store</option>
+                                <option value="2">Bill Monthly</option>
+                                <option value="3">CD Key</option>
+                                <option value="4">Guest Pass</option>
+                                <option value="5">Hardware Promo</option>
+                                <option value="6">Gift</option>
+                                <option value="7">Free Weekend</option>
+                                <option value="8">OEM Ticket</option>
+                                <option value="9">Recurring Option</option>
+                                <option value="10">Store or CD Key</option>
+                                <option value="11">Repurchaseable</option>
+                                <option value="12">Free on Demand</option>
+                                <option value="13">Rental</option>
+                                <option value="14">Commercial License</option>
+                                <option value="15">Free Commercial License</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
                 {{/* Packages List */}}
                 <div class="table-responsive">
                     <table class="table table-hover table-striped" data-path="/packages/packages.json">

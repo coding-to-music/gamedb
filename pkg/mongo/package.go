@@ -12,6 +12,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql/pics"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -80,6 +81,60 @@ func (pack Package) BSON() bson.D {
 		{"status", pack.Status},
 		{"updated_at", pack.UpdatedAt},
 	}
+}
+
+func CreatePackageIndexes() {
+
+	var ascending = []string{
+		// Filters
+		"status",
+		"platforms",
+		"license_type",
+		"billing_type",
+
+		// Sorting
+		"apps_count",
+		"change_number_date",
+	}
+
+	var descending = []string{
+		// Sorting
+		"apps_count",
+		"change_number_date",
+	}
+
+	// Price fields
+	for _, v := range helpers.GetProdCCs(true) {
+		ascending = append(ascending, "prices."+string(v.ProductCode)+".final")
+		descending = append(descending, "prices."+string(v.ProductCode)+".final")
+
+		ascending = append(ascending, "prices."+string(v.ProductCode)+".discount_percent")
+		descending = append(descending, "prices."+string(v.ProductCode)+".discount_percent")
+	}
+
+	//
+	var indexModels []mongo.IndexModel
+	for _, v := range ascending {
+		indexModels = append(indexModels, mongo.IndexModel{
+			Keys: bson.D{{v, 1}},
+		})
+	}
+
+	for _, v := range descending {
+		indexModels = append(indexModels, mongo.IndexModel{
+			Keys: bson.D{{v, -1}},
+		})
+	}
+
+	//
+	client, ctx, err := getMongo()
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	_, err = client.Database(MongoDatabase).Collection(CollectionPackages.String()).Indexes().CreateMany(ctx, indexModels)
+	log.Err(err)
 }
 
 func (pack Package) GetID() int {
