@@ -152,7 +152,7 @@
                                                 </tr>
                                                 <tr>
                                                     <th scope="col">Economy Ban</th>
-                                                    <td>{{ .Bans.EconomyBan }}</td>
+                                                    <td>{{ title .Bans.EconomyBan }}</td>
                                                 </tr>
                                                 <tr>
                                                     <th scope="col">Time Since VAC Ban</th>
@@ -272,17 +272,19 @@
                             </tr>
                             <tr>
                                 <th scope="row">Experience</th>
-                                <td>{{ comma .BadgeStats.PlayerXP }}</td>
+                                <td>{{ comma .Player.ProfileBadgeStats.PlayerXP }}</td>
                             </tr>
                             <tr>
                                 <th scope="row">Next Level In</th>
-                                <td>{{ comma .BadgeStats.PlayerXPNeededToLevelUp }}</td>
+                                <td>{{ comma .Player.ProfileBadgeStats.PlayerXPNeededToLevelUp }}</td>
                             </tr>
                             <tr>
                                 <th scope="row">This Level</th>
                                 <td>
                                     <div class="progress">
-                                        <div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: {{ max 5 .BadgeStats.PercentOfLevel }}%">{{ .BadgeStats.PercentOfLevel }}%</div>
+                                        <div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: {{ max 5 .Player.ProfileBadgeStats.PercentOfLevel }}%">
+                                            {{ .BadgeStats.PercentOfLevel }}%
+                                        </div>
                                     </div>
                                 </td>
                             </tr>
@@ -412,18 +414,18 @@
                                                     <tbody>
                                                     <tr>
                                                         <th scope="col" nowrap="nowrap">Average Price</th>
-                                                        <td nowrap="nowrap">{{ .GameStats.All.GetAveragePrice }}</td>
-                                                        <td nowrap="nowrap">{{ .GameStats.Played.GetAveragePrice }}</td>
+                                                        <td nowrap="nowrap">{{ .Player.GameStats.All.GetAveragePrice }}</td>
+                                                        <td nowrap="nowrap">{{ .Player.GameStats.Played.GetAveragePrice }}</td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="col" nowrap="nowrap">Average Price / Hour</th>
-                                                        <td>{{ .GameStats.All.GetAveragePriceHour }}</td>
-                                                        <td>{{ .GameStats.Played.GetAveragePriceHour }}</td>
+                                                        <td>{{ .Player.GameStats.All.GetAveragePriceHour }}</td>
+                                                        <td>{{ .Player.GameStats.Played.GetAveragePriceHour }}</td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="col" nowrap="nowrap">Total Price</th>
-                                                        <td nowrap="nowrap">{{ .GameStats.All.GetTotalPrice }}</td>
-                                                        <td nowrap="nowrap">{{ .GameStats.Played.GetTotalPrice }}</td>
+                                                        <td nowrap="nowrap">{{ .Player.GameStats.All.GetTotalPrice }}</td>
+                                                        <td nowrap="nowrap">{{ .Player.GameStats.Played.GetTotalPrice }}</td>
                                                     </tr>
                                                     </tbody>
                                                 </table>
@@ -440,13 +442,13 @@
                                                 <tbody>
                                                 <tr>
                                                     <th scope="col" nowrap="nowrap">Average Time</th>
-                                                    <td nowrap="nowrap">{{ .GameStats.All.GetAverageTime }}</td>
-                                                    <td nowrap="nowrap">{{ .GameStats.Played.GetAverageTime }}</td>
+                                                    <td nowrap="nowrap">{{ .Player.GameStats.All.GetAverageTime }}</td>
+                                                    <td nowrap="nowrap">{{ .Player.GameStats.Played.GetAverageTime }}</td>
                                                 </tr>
                                                 <tr>
                                                     <th scope="col" nowrap="nowrap">Total Time</th>
-                                                    <td nowrap="nowrap">{{ .GameStats.All.GetTotalTime }}</td>
-                                                    <td nowrap="nowrap">{{ .GameStats.Played.GetTotalTime }}</td>
+                                                    <td nowrap="nowrap">{{ .Player.GameStats.All.GetTotalTime }}</td>
+                                                    <td nowrap="nowrap">{{ .Player.GameStats.Played.GetTotalTime }}</td>
                                                 </tr>
                                                 </tbody>
                                             </table>

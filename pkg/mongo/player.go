@@ -1,7 +1,6 @@
 package mongo
 
 import (
-	"encoding/json"
 	"errors"
 	"math"
 	"path"
@@ -75,37 +74,37 @@ var (
 )
 
 type Player struct {
-	Avatar            string         `bson:"avatar"`                 //
-	BackgroundAppID   int            `bson:"background_app_id"`      //
-	BadgeIDs          []int          `bson:"badge_ids"`              // Only special badges
-	BadgesCount       int            `bson:"badges_count"`           //
-	BadgeStats        string         `bson:"badge_stats"`            // ProfileBadgeStats
-	Bans              string         `bson:"bans"`                   // PlayerBans
-	CommentsCount     int            `bson:"comments_count"`         //
-	ContinentCode     string         `bson:"continent_code"`         // Saved here for easier queries
-	CountryCode       string         `bson:"country_code"`           //
-	Donated           int            `bson:"donated"`                //
-	FriendsCount      int            `bson:"friends_count"`          //
-	GamesByType       map[string]int `bson:"games_by_type"`          //
-	GamesCount        int            `bson:"games_count"`            //
-	GameStats         string         `bson:"game_stats"`             // PlayerAppStatsTemplate
-	GroupsCount       int            `bson:"groups_count"`           //
-	ID                int64          `bson:"_id"`                    //
-	LastBan           time.Time      `bson:"bans_last"`              //
-	LastLogOff        time.Time      `bson:"time_logged_off"`        //
-	Level             int            `bson:"level"`                  //
-	NumberOfGameBans  int            `bson:"bans_game"`              //
-	NumberOfVACBans   int            `bson:"bans_cav"`               //
-	PersonaName       string         `bson:"persona_name"`           //
-	PlayTime          int            `bson:"play_time"`              //
-	PrimaryGroupID    string         `bson:"primary_clan_id_string"` //
-	Ranks             map[string]int `bson:"ranks"`                  //
-	RecentAppsCount   int            `bson:"recent_apps_count"`      //
-	StateCode         string         `bson:"status_code"`            //
-	TimeCreated       time.Time      `bson:"time_created"`           // Created on Steam
-	UpdatedAt         time.Time      `bson:"updated_at"`             //
-	VanintyURL        string         `bson:"vanity_url"`             //
-	WishlistAppsCount int            `bson:"wishlist_apps_count"`    //
+	Avatar            string                 `bson:"avatar"`
+	BackgroundAppID   int                    `bson:"background_app_id"`
+	BadgeIDs          []int                  `bson:"badge_ids"` // Only special badges
+	BadgesCount       int                    `bson:"badges_count"`
+	BadgeStats        ProfileBadgeStats      `bson:"badge_stats"`
+	Bans              PlayerBans             `bson:"bans"`
+	CommentsCount     int                    `bson:"comments_count"`
+	ContinentCode     string                 `bson:"continent_code"`
+	CountryCode       string                 `bson:"country_code"`
+	Donated           int                    `bson:"donated"`
+	FriendsCount      int                    `bson:"friends_count"`
+	GamesByType       map[string]int         `bson:"games_by_type"`
+	GamesCount        int                    `bson:"games_count"`
+	GameStats         PlayerAppStatsTemplate `bson:"game_stats"`
+	GroupsCount       int                    `bson:"groups_count"`
+	ID                int64                  `bson:"_id"`
+	LastBan           time.Time              `bson:"bans_last"`
+	LastLogOff        time.Time              `bson:"time_logged_off"`
+	Level             int                    `bson:"level"`
+	NumberOfGameBans  int                    `bson:"bans_game"`
+	NumberOfVACBans   int                    `bson:"bans_cav"`
+	PersonaName       string                 `bson:"persona_name"`
+	PlayTime          int                    `bson:"play_time"`
+	PrimaryGroupID    string                 `bson:"primary_clan_id_string"`
+	Ranks             map[string]int         `bson:"ranks"`
+	RecentAppsCount   int                    `bson:"recent_apps_count"`
+	StateCode         string                 `bson:"status_code"`
+	TimeCreated       time.Time              `bson:"time_created"` // Created on Steam
+	UpdatedAt         time.Time              `bson:"updated_at"`
+	VanintyURL        string                 `bson:"vanity_url"`
+	WishlistAppsCount int                    `bson:"wishlist_apps_count"`
 }
 
 func (player Player) BSON() bson.D {
@@ -230,12 +229,6 @@ func (player Player) GetCountry() string {
 	return helpers.CountryCodeToName(player.CountryCode)
 }
 
-func (player Player) GetBadgeStats() (stats ProfileBadgeStats, err error) {
-
-	err = helpers.Unmarshal([]byte(player.BadgeStats), &stats)
-	return stats, err
-}
-
 func (player Player) GetAvatar2() string {
 	return helpers.GetPlayerAvatar2(player.Level)
 }
@@ -267,22 +260,6 @@ func (player Player) GetSpecialBadges() (badges []PlayerBadge) {
 	})
 
 	return badges
-}
-
-func (player Player) GetBans() (bans PlayerBans, err error) {
-
-	err = helpers.Unmarshal([]byte(player.Bans), &bans)
-	return bans, err
-}
-
-func (player Player) GetGameStats(code steam.ProductCC) (stats PlayerAppStatsTemplate, err error) {
-
-	err = helpers.Unmarshal([]byte(player.GameStats), &stats)
-
-	stats.All.ProductCC = code
-	stats.Played.ProductCC = code
-
-	return stats, err
 }
 
 func (player *Player) SetOwnedGames(saveRows bool) error {
@@ -396,12 +373,7 @@ func (player *Player) SetOwnedGames(saveRows bool) error {
 		}
 	}
 
-	b, err = json.Marshal(gameStats)
-	if err != nil {
-		return err
-	}
-
-	player.GameStats = string(b)
+	player.GameStats = gameStats
 
 	return nil
 }

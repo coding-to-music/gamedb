@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"sort"
 	"strconv"
-	"strings"
 	"sync"
 
 	"github.com/Jleagle/influxql"
@@ -61,38 +60,41 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var code = helpers.GetProductCC(r)
-
 	// Find the player row
 	player, err := mongo.GetPlayer(idx)
-	if err != nil {
-		if err == mongo.ErrNoDocuments {
+	if err == mongo.ErrNoDocuments {
 
-			ua := r.UserAgent()
-			err = queue.ProducePlayer(queue.PlayerMessage{ID: idx, UserAgent: &ua})
-			if err == nil {
-				log.Info(log.LogNameTriggerUpdate, r, "new", ua)
-			}
-			err = helpers.IgnoreErrors(err, memcache.ErrInQueue, queue.ErrIsBot)
-			if err != nil {
-				log.Err(err, r)
-			}
-
-			// Template
-			tm := playerMissingTemplate{}
-			tm.fill(w, r, "Looking for player!", "")
-			tm.addAssetHighCharts()
-			tm.addToast(Toast{Title: "Update", Message: "Player has been queued for an update"})
-			tm.Player = player
-			tm.DefaultAvatar = helpers.DefaultPlayerAvatar
-
-			returnTemplate(w, r, "player_missing", tm)
-		} else {
-			log.Err(err, r)
-			returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the player."})
+		ua := r.UserAgent()
+		err = queue.ProducePlayer(queue.PlayerMessage{ID: idx, UserAgent: &ua})
+		if err == nil {
+			log.Info(log.LogNameTriggerUpdate, r, "new", ua)
 		}
+		err = helpers.IgnoreErrors(err, memcache.ErrInQueue, queue.ErrIsBot)
+		if err != nil {
+			log.Err(err, r)
+		}
+
+		// Template
+		tm := playerMissingTemplate{}
+		tm.fill(w, r, "Looking for player!", "")
+		tm.addAssetHighCharts()
+		tm.addToast(Toast{Title: "Update", Message: "Player has been queued for an update"})
+		tm.Player = player
+		tm.DefaultAvatar = helpers.DefaultPlayerAvatar
+
+		returnTemplate(w, r, "player_missing", tm)
+		return
+
+	} else if err != nil {
+
+		log.Err(err, r)
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the player."})
 		return
 	}
+
+	var code = helpers.GetProductCC(r)
+	player.GameStats.All.ProductCC = code
+	player.GameStats.Played.ProductCC = code
 
 	//
 	var wg sync.WaitGroup
@@ -159,40 +161,6 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		}()
 	}
 
-	// Get bans
-	var bans mongo.PlayerBans
-	wg.Add(1)
-	go func(player mongo.Player) {
-
-		defer wg.Done()
-
-		var err error
-		bans, err = player.GetBans()
-		if err != nil {
-			log.Err(err, r)
-		}
-
-		if err == nil {
-			bans.EconomyBan = strings.Title(bans.EconomyBan)
-		}
-
-	}(player)
-
-	// Get badge stats
-	var badgeStats mongo.ProfileBadgeStats
-	wg.Add(1)
-	go func(player mongo.Player) {
-
-		defer wg.Done()
-
-		var err error
-		badgeStats, err = player.GetBadgeStats()
-		if err != nil {
-			log.Err(err, r)
-		}
-
-	}(player)
-
 	// Get background app
 	var backgroundApp mongo.App
 	if player.BackgroundAppID > 0 {
@@ -233,12 +201,6 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Wait
 	wg.Wait()
-
-	// Game stats
-	gameStats, err := player.GetGameStats(code)
-	if err != nil {
-		log.Err(err, r)
-	}
 
 	// Make banners
 	banners := make(map[string][]string)
@@ -319,13 +281,10 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	t.IncludeSocialJS = true
 
 	t.Badges = player.GetSpecialBadges()
-	t.BadgeStats = badgeStats
 	t.Banners = banners
-	t.Bans = bans
 	t.Canonical = player.GetPath()
 	t.CSRF = nosurf.Token(r)
 	t.DefaultAvatar = helpers.DefaultPlayerAvatar
-	t.GameStats = gameStats
 	t.Player = player
 	t.Types = typeCounts
 
@@ -335,12 +294,9 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 type playerTemplate struct {
 	GlobalTemplate
 	Badges        []mongo.PlayerBadge
-	BadgeStats    mongo.ProfileBadgeStats
 	Banners       map[string][]string
-	Bans          mongo.PlayerBans
 	CSRF          string
 	DefaultAvatar string
-	GameStats     mongo.PlayerAppStatsTemplate
 	Player        mongo.Player
 	Ranks         []playerRankTemplate
 	Types         map[string]int

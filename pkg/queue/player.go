@@ -1,7 +1,6 @@
 package queue
 
 import (
-	"encoding/json"
 	"strconv"
 	"sync"
 	"time"
@@ -331,20 +330,13 @@ func updatePlayerBadges(player *mongo.Player) error {
 	player.BadgesCount = len(response.Badges)
 
 	// Save stats
-	stats := mongo.ProfileBadgeStats{
+	player.BadgeStats = mongo.ProfileBadgeStats{
 		PlayerXP:                   response.PlayerXP,
 		PlayerLevel:                response.PlayerLevel,
 		PlayerXPNeededToLevelUp:    response.PlayerXPNeededToLevelUp,
 		PlayerXPNeededCurrentLevel: response.PlayerXPNeededCurrentLevel,
 		PercentOfLevel:             response.GetPercentOfLevel(),
 	}
-
-	b, err = json.Marshal(stats)
-	if err != nil {
-		return err
-	}
-
-	player.BadgeStats = string(b)
 
 	// Save badges
 	var playerBadgeSlice []mongo.PlayerBadge
@@ -438,20 +430,14 @@ func updatePlayerBans(player *mongo.Player) error {
 	}
 
 	//
-	bans := mongo.PlayerBans{}
-	bans.CommunityBanned = response.CommunityBanned
-	bans.VACBanned = response.VACBanned
-	bans.NumberOfVACBans = response.NumberOfVACBans
-	bans.DaysSinceLastBan = response.DaysSinceLastBan
-	bans.NumberOfGameBans = response.NumberOfGameBans
-	bans.EconomyBan = response.EconomyBan
-
-	b, err = json.Marshal(bans)
-	if err != nil {
-		return err
+	player.Bans = mongo.PlayerBans{
+		CommunityBanned:  response.CommunityBanned,
+		VACBanned:        response.VACBanned,
+		NumberOfVACBans:  response.NumberOfVACBans,
+		DaysSinceLastBan: response.DaysSinceLastBan,
+		NumberOfGameBans: response.NumberOfGameBans,
+		EconomyBan:       response.EconomyBan,
 	}
-
-	player.Bans = string(b)
 
 	return nil
 }
