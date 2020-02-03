@@ -750,7 +750,7 @@
                                 <i class="fas fa-spinner fa-spin"></i>
                             </div>
 
-                            <h5>A selection of the {{ comma .App.Reviews.GetTotal }} reviews, see them all on the <a href="{{ .App.GetStoreLink }}" target="_blank">store page</a>.</h5>
+                            <h5>A selection of the {{ comma .App.Reviews.GetTotal }} reviews</h5>
 
                             {{ range $key, $value := .App.Reviews.Reviews }}
                                 {{ if ne .HTML "" }}
