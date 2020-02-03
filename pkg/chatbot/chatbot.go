@@ -27,6 +27,7 @@ type Command interface {
 var CommandRegister = []Command{
 	CommandApp{},
 	CommandAppPlayers{},
+	CommandAppPlayersSteam{},
 	CommandAppsNew{},
 	CommandAppsPopular{},
 	CommandAppsTrending{},
