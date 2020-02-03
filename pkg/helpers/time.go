@@ -12,7 +12,7 @@ import (
 const (
 	Date         = "02 Jan"
 	DateTime     = "02 Jan 15:04"
-	DateYear     = "02 Jan 06"
+	DateYear     = "02 Jan 2006"
 	DateYearTime = "02 Jan 06 15:04"
 	DateSQL      = "2006-01-02 15:04:05"
 )
