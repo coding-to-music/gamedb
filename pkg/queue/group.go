@@ -498,7 +498,7 @@ func getAppFromGroup(group mongo.Group) (app mongo.App, err error) {
 
 func saveAppsGroupID(app mongo.App, group mongo.Group) (err error) {
 
-	if app.ID == 0 || group.ID == "" || app.GroupID == group.ID || group.Type != helpers.GroupTypeGame {
+	if app.ID == 0 || group.ID == "" || group.Type != helpers.GroupTypeGame {
 		return nil
 	}
 
