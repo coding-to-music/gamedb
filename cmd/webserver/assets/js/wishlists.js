@@ -40,7 +40,7 @@ if ($('#wishlists-page').length > 0) {
                 "render": function (data, type, row) {
                     return row[6];
                 },
-                "orderSequence": ["asc", "desc"],
+                "orderSequence": ["desc", "asc"],
             },
             // Price
             {
@@ -48,7 +48,7 @@ if ($('#wishlists-page').length > 0) {
                 "render": function (data, type, row) {
                     return row[10];
                 },
-                "orderSequence": ["asc", "desc"],
+                "orderSequence": ["desc", "asc"],
             },
             // Release Date
             {
