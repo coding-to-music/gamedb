@@ -1,6 +1,7 @@
 package main
 
 import (
+	"reflect"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -217,6 +218,8 @@ func discordError(err error) {
 				return
 			}
 		}
+
+		log.Warning(reflect.TypeOf(err).String())
 
 		log.Err(err)
 	}
