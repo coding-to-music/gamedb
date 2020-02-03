@@ -154,10 +154,12 @@
                                             </td>
                                         </tr>
 
-                                        <tr>
-                                            <th scope="row" nowrap="nowrap" class="thin">Followers</th>
-                                            <td><a href="#players" class="followers-link">{{ .App.GetFollowers }}</a></td>
-                                        </tr>
+                                        {{ if ne .App.GroupID "" }}
+                                            <tr>
+                                                <th scope="row" nowrap="nowrap" class="thin">Followers</th>
+                                                <td><a href="#players" class="followers-link">{{ .App.GetFollowers }}</a></td>
+                                            </tr>
+                                        {{ end }}
 
                                         {{ if gt (len .App.Platforms) 0 }}
                                             <tr>
@@ -400,7 +402,7 @@
 
                         {{ if ne .App.GroupID "" }}
 
-                            <h5>Followers</h5>
+                            <h5 id="followers">Followers</h5>
                             <div id="group-chart">
                                 <i class="fas fa-spinner fa-spin"></i>
                             </div>

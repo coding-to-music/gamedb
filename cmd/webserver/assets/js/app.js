@@ -27,6 +27,10 @@ if ($appPage.length > 0) {
     $('.followers-link').on('click', function (e) {
 
         $('a.nav-link[href="#players"]').tab('show');
+
+        const st = $("#followers").offset().top;
+        $('html, body').animate({scrollTop: st - 15}, 500);
+
         return false;
     });
 
