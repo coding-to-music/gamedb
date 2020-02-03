@@ -177,11 +177,6 @@
                                             <td>{{ .App.GetReleaseDateNice }}</td>
                                         </tr>
 
-                                        <tr>
-                                            <th scope="row" nowrap="nowrap" class="thin">App Type</th>
-                                            <td>{{ .App.GetType }}</td>
-                                        </tr>
-
                                         {{ if gt (len .Demos) 0 }}
                                             <tr>
                                                 <th scope="row" nowrap="nowrap" class="thin">Demos</th>
@@ -913,6 +908,12 @@
                                                     <td>updated_game_db</td>
                                                     <td>Other</td>
                                                     <td>{{ .App.GetUpdatedNice }}</td>
+                                                    <td><i class="fas fa-eye"></i></td>
+                                                </tr>
+                                                <tr data-raw="{{ htmlEscape .App.Type }}">
+                                                    <td>type</td>
+                                                    <td>Other</td>
+                                                    <td>{{ .App.GetType }}</td>
                                                     <td><i class="fas fa-eye"></i></td>
                                                 </tr>
                                                 {{ range .Extended }}
