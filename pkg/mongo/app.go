@@ -234,6 +234,18 @@ func (app App) GetType() (ret string) {
 	return helpers.GetAppType(app.Type)
 }
 
+func (app App) GetTypeLower() (ret string) {
+
+	switch app.Type {
+	case "dlc":
+		return "DLC"
+	case "":
+		return "app"
+	default:
+		return strings.ToLower(app.Type)
+	}
+}
+
 func (app App) GetStoreLink() string {
 	return helpers.GetAppStoreLink(app.ID)
 }
