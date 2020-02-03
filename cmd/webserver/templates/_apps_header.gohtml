@@ -8,7 +8,7 @@
             </h5>
         {{end}}
 
-        <ul class="nav nav-tabs card-header-tabs" role="tablist">
+        <ul class="nav nav-tabs card-header-tabs nav-fill-mobile" role="tablist">
 
             <li class="nav-item">
                 {{if endsWith .Path "/apps" }}
@@ -22,6 +22,13 @@
                     <span class="nav-link active" role="tab"><i class="fas fa-gamepad"></i> Upcoming</span>
                 {{else}}
                     <a class="nav-link" href="/upcoming" role="tab"><i class="fas fa-gamepad"></i> Upcoming</a>
+                {{end}}
+            </li>
+            <li class="nav-item">
+                {{if endsWith .Path "/sales" }}
+                    <span class="nav-link active" role="tab"><i class="fas fa-gamepad"></i> Sales</span>
+                {{else}}
+                    <a class="nav-link" href="/sales" role="tab"><i class="fas fa-gamepad"></i> Sales</a>
                 {{end}}
             </li>
             <li class="nav-item">
@@ -43,6 +50,13 @@
                     <span class="nav-link active" role="tab"><i class="fas fa-gamepad"></i> Achievements</span>
                 {{else}}
                     <a class="nav-link" href="/achievements" role="tab"><i class="fas fa-gamepad"></i> Achievements</a>
+                {{end}}
+            </li>
+            <li class="nav-item">
+                {{if endsWith .Path "/wishlists" }}
+                    <span class="nav-link active" role="tab"><i class="fas fa-gamepad"></i> Wishlists</span>
+                {{else}}
+                    <a class="nav-link" href="/wishlists" role="tab"><i class="fas fa-gamepad"></i> Wishlists</a>
                 {{end}}
             </li>
 
