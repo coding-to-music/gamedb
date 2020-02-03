@@ -623,3 +623,21 @@ div.json-hover {
 .nowrap {
     white-space: nowrap !important;
 }
+
+//
+.nav-fill-mobile {
+    .nav-item {
+        flex: 1 1 auto;
+        text-align: center;
+        flex-wrap: wrap;
+    }
+}
+
+@include media-breakpoint-up(md) {
+    .nav-fill-mobile {
+        .nav-item {
+            flex: none;
+            text-align: left;
+        }
+    }
+}
