@@ -463,7 +463,7 @@ func (t GlobalTemplate) IsAppsPage() bool {
 	if strings.HasPrefix(t.Path, "/apps") {
 		return true
 	}
-	return helpers.SliceHasString([]string{"new-releases", "upcoming", "achievements", "wishlists", "packages", "bundles", "price-changes", "changes", "coop"}, strings.TrimPrefix(t.Path, "/"))
+	return helpers.SliceHasString([]string{"new-releases", "upcoming", "achievements", "wishlists", "packages", "bundles", "price-changes", "changes", "coop", "sales"}, strings.TrimPrefix(t.Path, "/"))
 }
 
 func (t GlobalTemplate) IsStatsPage() bool {

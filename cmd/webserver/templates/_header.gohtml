@@ -126,6 +126,7 @@
 
                             <a class="dropdown-item" href="/apps">Games</a>
                             <a class="dropdown-item" href="/upcoming">Upcoming</a>
+                            <a class="dropdown-item" href="/sales">Sales</a>
                             <a class="dropdown-item" href="/new-releases">New Releases</a>
                             {{/*<a class="dropdown-item" href="/apps/trending">Trending</a>*/}}
                             <a class="dropdown-item" href="/achievements">Achievements</a>
@@ -157,18 +158,6 @@
                         </div>
                     </li>
 
-                    <li class="nav-item {{if startsWith .Path "/sales" }}active{{end}}">
-                        <a class="nav-link" href="/sales">Sales</a>
-                    </li>
-
-                    <li class="nav-item {{if startsWith .Path "/groups" }}active{{end}}">
-                        <a class="nav-link" href="/groups">Groups</a>
-                    </li>
-
-                    {{/*                    <li class="nav-item {{if startsWith .Path "/badges" }}active{{end}}">*/}}
-                    {{/*                        <a class="nav-link" href="/badges">Badges</a>*/}}
-                    {{/*                    </li>*/}}
-
                     <li class="nav-item dropdown {{if .IsStatsPage }}active{{end}}">
                         <a class="nav-link dropdown-toggle d-lg-none" href="#" data-toggle="dropdown">Stats</a>
                         <a class="nav-link dropdown-toggle d-none d-lg-block" href="/stats" data-toggle="dropdown">Stats</a>
@@ -186,6 +175,14 @@
 
                         </div>
                     </li>
+
+                    <li class="nav-item {{if startsWith .Path "/groups" }}active{{end}}">
+                        <a class="nav-link" href="/groups">Groups</a>
+                    </li>
+
+                    {{/*                    <li class="nav-item {{if startsWith .Path "/badges" }}active{{end}}">*/}}
+                    {{/*                        <a class="nav-link" href="/badges">Badges</a>*/}}
+                    {{/*                    </li>*/}}
 
                     <li class="nav-item {{if startsWith .Path "/news" }}active{{end}}">
                         <a class="nav-link" href="/news">News</a>
