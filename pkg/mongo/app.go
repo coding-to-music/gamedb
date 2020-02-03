@@ -6,6 +6,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/Jleagle/influxql"
@@ -437,7 +438,12 @@ func (app App) GetSteamPricesURL() string {
 	}
 }
 
-func (app App) GetOnlinePlayers() (players int64, err error) {
+var GetPlayersInGameLock sync.Mutex
+
+func (app App) GetPlayersInGame() (players int64, err error) {
+
+	GetPlayersInGameLock.Lock()
+	defer GetPlayersInGameLock.Unlock()
 
 	var item = memcache.MemcacheAppPlayersRow(app.ID)
 
@@ -447,6 +453,33 @@ func (app App) GetOnlinePlayers() (players int64, err error) {
 		builder.AddSelect("player_count", "")
 		builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
 		builder.AddWhere("app_id", "=", app.ID)
+		builder.AddOrderBy("time", false)
+		builder.SetLimit(1)
+
+		resp, err := influx.InfluxQuery(builder.String())
+
+		return influx.GetFirstInfluxInt(resp), err
+	})
+
+	return players, err
+}
+
+// Only used for steam app 0
+var GetPlayersOnlineLock sync.Mutex
+
+func (app App) GetPlayersOnline() (players int64, err error) {
+
+	GetPlayersOnlineLock.Lock()
+	defer GetPlayersOnlineLock.Unlock()
+
+	var item = memcache.MemcacheAppPlayersInGameRow
+
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &players, func() (interface{}, error) {
+
+		builder := influxql.NewBuilder()
+		builder.AddSelect("player_online", "")
+		builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
+		builder.AddWhere("app_id", "=", 0)
 		builder.AddOrderBy("time", false)
 		builder.SetLimit(1)
 

@@ -142,6 +142,10 @@
                                             <th scope="row" nowrap="nowrap" class="thin" style="width: 130px;">Price</th>
                                             <td>{{ .Price.GetFinal }}</td>
                                         </tr>
+                                        <tr>
+                                            <th scope="row" nowrap="nowrap" class="thin" style="width: 130px;">Players</th>
+                                            <td>{{ comma64 .App.GetPlayersInGame }} <small>now</small>, {{ comma .App.PlayerPeakWeek }} <small>weak peak</small></td>
+                                        </tr>
 
                                         <tr>
                                             <th scope="row" nowrap="nowrap" class="thin">Review Score</th>
@@ -390,7 +394,7 @@
                                     </tr>
                                     <tr>
                                         <td>Peak Last 10 minutes</td>
-                                        <td>{{ comma64 .App.GetOnlinePlayers }}</td>
+                                        <td>{{ comma64 .App.GetPlayersInGame }}</td>
                                     </tr>
                                     <tr>
                                         <td>Average Last Week</td>

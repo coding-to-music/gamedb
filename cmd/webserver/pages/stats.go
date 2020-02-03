@@ -80,7 +80,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.PackagesCount, err =  mongo.CountDocuments(mongo.CollectionPackages, nil, 0)
+		t.PackagesCount, err = mongo.CountDocuments(mongo.CollectionPackages, nil, 0)
 		if err != nil {
 			log.Err(err, r)
 		}
@@ -94,7 +94,21 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 
 		a := mongo.App{}
-		t.OnlinePlayersCount, err = a.GetOnlinePlayers()
+		t.SteamPlayersInGame, err = a.GetPlayersInGame()
+		if err != nil {
+			log.Err(err, r)
+		}
+	}()
+
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+
+		a := mongo.App{}
+		t.SteamPlayersOnline, err = a.GetPlayersOnline()
 		if err != nil {
 			log.Err(err, r)
 		}
@@ -111,7 +125,8 @@ type statsTemplate struct {
 	BundlesCount       int
 	PackagesCount      int64
 	PlayersCount       int64
-	OnlinePlayersCount int64
+	SteamPlayersOnline int64
+	SteamPlayersInGame int64
 }
 
 func playerLevelsHandler(w http.ResponseWriter, r *http.Request) {

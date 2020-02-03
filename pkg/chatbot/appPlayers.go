@@ -30,7 +30,7 @@ func (c CommandAppPlayers) Output(msg *discordgo.MessageCreate) (message discord
 		return message, err
 	}
 
-	i, err := app.GetOnlinePlayers()
+	i, err := app.GetPlayersInGame()
 	if err != nil {
 		return message, err
 	}
