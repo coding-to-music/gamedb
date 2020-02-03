@@ -215,14 +215,14 @@
                                             <th scope="row">Links</th>
                                             <td>
                                                 {{ if ne .App.TwitchURL "" }}
-                                                    <h6><a href="https://twitch.tv/directory/game/{{ pathEscape .App.TwitchURL }}" target="_blank">View app on Twitch</a></h6>
+                                                    <h6><a href="https://twitch.tv/directory/game/{{ pathEscape .App.TwitchURL }}" target="_blank">View {{ lower .App.GetType }} on Twitch</a></h6>
                                                 {{ end }}
 
                                                 {{ if ne .App.GetSteamPricesURL "" }}
-                                                    <h6><a href="https://steamprices.com/{{ .App.GetSteamPricesURL }}/{{ .App.ID }}/{{ slug .App.GetName }}" target="_blank">View app on Steam Prices</a></h6>
+                                                    <h6><a href="https://steamprices.com/{{ .App.GetSteamPricesURL }}/{{ .App.ID }}/{{ slug .App.GetName }}" target="_blank">View {{ lower .App.GetType }} on Steam Prices</a></h6>
                                                 {{ end }}
 
-                                                <h6><a href="https://www.achievementstats.com/index.php?action=games&gameId={{ .App.ID }}" target="_blank">View app on Achievement Stats</a></h6>
+                                                <h6><a href="https://www.achievementstats.com/index.php?action=games&gameId={{ .App.ID }}" target="_blank">View {{ lower .App.GetType }} on Achievement Stats</a></h6>
                                             </td>
                                         </tr>
 
