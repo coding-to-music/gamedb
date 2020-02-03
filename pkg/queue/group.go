@@ -114,8 +114,8 @@ func groupsHandler(messages []*rabbit.Message) {
 			group.Summary = ""
 		}
 
-		// Get trending value
-		err = getGroupTrending(&group)
+		// Read from Influx
+		err = setGroupTrending(&group)
 		if err != nil {
 			log.Err(err, payload.ID)
 			sendToRetryQueue(message)
@@ -125,7 +125,7 @@ func groupsHandler(messages []*rabbit.Message) {
 		//
 		var wg sync.WaitGroup
 
-		// Read from MySQL
+		// Read from Mongo
 		wg.Add(1)
 		var app mongo.App
 		go func() {
@@ -150,25 +150,18 @@ func groupsHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		// Save to MySQL
-		wg.Add(1)
-		go func() {
-
-			defer wg.Done()
-
-			err = saveAppsGroupID(app, group)
-			if err != nil {
-				log.Err(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-		}()
-
 		// Save to Mongo
 		wg.Add(1)
 		go func() {
 
 			defer wg.Done()
+
+			err = updateApp(app, group)
+			if err != nil {
+				log.Err(err, payload.ID)
+				sendToRetryQueue(message)
+				return
+			}
 
 			err = saveGroup(group)
 			if err != nil {
@@ -424,7 +417,7 @@ func updateRegularGroup(id string, group *mongo.Group) (foundMembers bool, err e
 	return foundMembers, c.Visit("https://steamcommunity.com/gid/" + id)
 }
 
-func getGroupTrending(group *mongo.Group) (err error) {
+func setGroupTrending(group *mongo.Group) (err error) {
 
 	// Trend value - https://stackoverflow.com/questions/41361734/get-difference-since-30-days-ago-in-influxql-influxdb
 
@@ -471,7 +464,7 @@ func saveGroup(group mongo.Group) (err error) {
 		return err
 	}
 
-	//
+	// This uses a bunch of cpu
 	update := bson.D{
 		{"group_name", group.Name},
 		{"group_icon", group.Icon},
@@ -479,7 +472,6 @@ func saveGroup(group mongo.Group) (err error) {
 		{"group_url", group.URL},
 	}
 
-	// This uses a bunch of cpu
 	_, err = mongo.UpdateManySet(mongo.CollectionPlayerGroups, bson.D{{"group_id", group.ID}}, update)
 	return err
 }
@@ -496,27 +488,12 @@ func getAppFromGroup(group mongo.Group) (app mongo.App, err error) {
 	return app, err
 }
 
-func saveAppsGroupID(app mongo.App, group mongo.Group) (err error) {
+func updateApp(app mongo.App, group mongo.Group) (err error) {
 
 	if app.ID == 0 || group.ID == "" || group.Type != helpers.GroupTypeGame {
 		return nil
 	}
 
-	db, err := sql.GetMySQLClient()
-	if err != nil {
-		return err
-	}
-
-	// SQL
-	db = db.Table("apps").Where("id = ?", app.ID).Updates(map[string]interface{}{
-		"group_id":        group.ID,
-		"group_followers": group.Members,
-	})
-	if db.Error != nil {
-		return db.Error
-	}
-
-	// Mongo
 	_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", app.ID}}, bson.D{
 		{"group_id", group.ID},
 		{"group_followers", group.Members},

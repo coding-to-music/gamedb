@@ -15,7 +15,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers/twitch"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/sql"
 	influx "github.com/influxdata/influxdb1-client"
 	"github.com/nicklaw5/helix"
 	"go.mongodb.org/mongo-driver/bson"
@@ -161,7 +160,7 @@ func appPlayersHandler(messages []*rabbit.Message) {
 				}
 			}()
 
-			// Save to MySQL
+			// Save to Mongo
 			wg.Add(1)
 			go func() {
 
@@ -357,23 +356,6 @@ func getAppTrendValue(appID int) (trend int64, err error) {
 
 func updateAppPlayerInfoRow(appID int, trend int64, week int64, alltime int64, average float64) (err error) {
 
-	db, err := sql.GetMySQLClient()
-	if err != nil {
-		return err
-	}
-
-	// SQL
-	db = db.Table("apps").Where("id = ?", appID).Updates(map[string]interface{}{
-		"player_trend":        trend,
-		"player_peak_week":    week,
-		"player_peak_alltime": alltime,
-		"player_avg_week":     average,
-	})
-	if db.Error != nil {
-		return db.Error
-	}
-
-	// Mongo
 	_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", appID}}, bson.D{
 		{"player_trend", trend},
 		{"player_peak_week", week},
