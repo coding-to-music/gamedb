@@ -20,6 +20,18 @@ func (CommandPlayerLevel) Regex() *regexp.Regexp {
 	return regexp.MustCompile(`^[.|!]level (.{2,32})$`)
 }
 
+func (CommandPlayerLevel) Example() string {
+	return ".level {player_name}"
+}
+
+func (CommandPlayerLevel) Description() string {
+	return "Get the level of a player"
+}
+
+func (CommandPlayerLevel) Type() CommandType {
+	return TypePlayer
+}
+
 func (c CommandPlayerLevel) Output(msg *discordgo.MessageCreate) (message discordgo.MessageSend, err error) {
 
 	matches := c.Regex().FindStringSubmatch(msg.Message.Content)
@@ -43,16 +55,4 @@ func (c CommandPlayerLevel) Output(msg *discordgo.MessageCreate) (message discor
 
 	message.Content = "<@" + msg.Author.ID + ">, " + player.GetName() + " is level **" + strconv.Itoa(player.Level) + "**"
 	return message, nil
-}
-
-func (CommandPlayerLevel) Example() string {
-	return ".level {player_name}"
-}
-
-func (CommandPlayerLevel) Description() string {
-	return "Get the level of a player"
-}
-
-func (CommandPlayerLevel) Type() CommandType {
-	return TypePlayer
 }

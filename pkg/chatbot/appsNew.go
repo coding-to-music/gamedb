@@ -17,6 +17,18 @@ func (CommandAppsNew) Regex() *regexp.Regexp {
 	return regexp.MustCompile(`^[.|!]new$`)
 }
 
+func (CommandAppsNew) Example() string {
+	return ".new"
+}
+
+func (CommandAppsNew) Description() string {
+	return "Returns the most popular newly released apps"
+}
+
+func (CommandAppsNew) Type() CommandType {
+	return TypeGame
+}
+
 func (CommandAppsNew) Output(msg *discordgo.MessageCreate) (message discordgo.MessageSend, err error) {
 
 	message.Content = "<@" + msg.Author.ID + ">"
@@ -55,16 +67,4 @@ func (CommandAppsNew) Output(msg *discordgo.MessageCreate) (message discordgo.Me
 	message.Embed.Description = "```" + strings.Join(code, "\n") + "```"
 
 	return message, nil
-}
-
-func (CommandAppsNew) Example() string {
-	return ".new"
-}
-
-func (CommandAppsNew) Description() string {
-	return "Returns the most popular newly released apps"
-}
-
-func (CommandAppsNew) Type() CommandType {
-	return TypeGame
 }

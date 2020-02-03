@@ -16,6 +16,18 @@ func (CommandAppPlayers) Regex() *regexp.Regexp {
 	return regexp.MustCompile(`^[.|!](players|online) ([a-zA-Z0-9]+)`)
 }
 
+func (CommandAppPlayers) Example() string {
+	return ".players {app_name}"
+}
+
+func (CommandAppPlayers) Description() string {
+	return "Gets the number of people playing a game."
+}
+
+func (CommandAppPlayers) Type() CommandType {
+	return TypeGame
+}
+
 func (c CommandAppPlayers) Output(msg *discordgo.MessageCreate) (message discordgo.MessageSend, err error) {
 
 	matches := c.Regex().FindStringSubmatch(msg.Message.Content)
@@ -38,16 +50,4 @@ func (c CommandAppPlayers) Output(msg *discordgo.MessageCreate) (message discord
 	message.Content = "<@" + msg.Author.ID + ">, " + app.GetName() + " has **" + humanize.Comma(i) + "** players"
 
 	return message, nil
-}
-
-func (CommandAppPlayers) Example() string {
-	return ".players {app_name}"
-}
-
-func (CommandAppPlayers) Description() string {
-	return "Gets the number of people playing."
-}
-
-func (CommandAppPlayers) Type() CommandType {
-	return TypeGame
 }

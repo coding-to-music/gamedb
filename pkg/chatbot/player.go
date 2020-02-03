@@ -21,6 +21,18 @@ func (CommandPlayer) Regex() *regexp.Regexp {
 	return regexp.MustCompile(`^[.|!](player|user) (.{2,32})$`)
 }
 
+func (CommandPlayer) Example() string {
+	return ".player {player_name}"
+}
+
+func (CommandPlayer) Description() string {
+	return "Get info on a player"
+}
+
+func (CommandPlayer) Type() CommandType {
+	return TypePlayer
+}
+
 func (c CommandPlayer) Output(msg *discordgo.MessageCreate) (message discordgo.MessageSend, err error) {
 
 	matches := c.Regex().FindStringSubmatch(msg.Message.Content)
@@ -75,16 +87,4 @@ func (c CommandPlayer) Output(msg *discordgo.MessageCreate) (message discordgo.M
 	}
 
 	return message, nil
-}
-
-func (CommandPlayer) Example() string {
-	return ".player {player_name}"
-}
-
-func (CommandPlayer) Description() string {
-	return "Get info on a player"
-}
-
-func (CommandPlayer) Type() CommandType {
-	return TypePlayer
 }

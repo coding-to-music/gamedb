@@ -19,6 +19,18 @@ func (CommandPlayerPlaytime) Regex() *regexp.Regexp {
 	return regexp.MustCompile(`^[.|!]playtime (.{2,32})$`)
 }
 
+func (CommandPlayerPlaytime) Example() string {
+	return ".playtime {player_name}"
+}
+
+func (CommandPlayerPlaytime) Description() string {
+	return "Get the playtime of a player"
+}
+
+func (CommandPlayerPlaytime) Type() CommandType {
+	return TypePlayer
+}
+
 func (c CommandPlayerPlaytime) Output(msg *discordgo.MessageCreate) (message discordgo.MessageSend, err error) {
 
 	matches := c.Regex().FindStringSubmatch(msg.Message.Content)
@@ -41,16 +53,4 @@ func (c CommandPlayerPlaytime) Output(msg *discordgo.MessageCreate) (message dis
 
 	message.Content = "<@" + msg.Author.ID + ">, " + player.GetName() + " has played for **" + helpers.GetTimeLong(player.PlayTime, 0) + "**"
 	return message, nil
-}
-
-func (CommandPlayerPlaytime) Example() string {
-	return ".playtime {player_name}"
-}
-
-func (CommandPlayerPlaytime) Description() string {
-	return "Get the playtime of a player"
-}
-
-func (CommandPlayerPlaytime) Type() CommandType {
-	return TypePlayer
 }

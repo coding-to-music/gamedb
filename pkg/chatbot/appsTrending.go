@@ -17,6 +17,18 @@ func (CommandAppsTrending) Regex() *regexp.Regexp {
 	return regexp.MustCompile(`^[.|!]trending$`)
 }
 
+func (CommandAppsTrending) Example() string {
+	return ".trending"
+}
+
+func (CommandAppsTrending) Description() string {
+	return "Returns the most positively trending apps"
+}
+
+func (CommandAppsTrending) Type() CommandType {
+	return TypeGame
+}
+
 func (CommandAppsTrending) Output(msg *discordgo.MessageCreate) (message discordgo.MessageSend, err error) {
 
 	message.Content = "<@" + msg.Author.ID + ">"
@@ -62,16 +74,4 @@ func (CommandAppsTrending) Output(msg *discordgo.MessageCreate) (message discord
 
 	return message, nil
 
-}
-
-func (CommandAppsTrending) Example() string {
-	return ".trending"
-}
-
-func (CommandAppsTrending) Description() string {
-	return "Returns the most positively trending apps"
-}
-
-func (CommandAppsTrending) Type() CommandType {
-	return TypeGame
 }

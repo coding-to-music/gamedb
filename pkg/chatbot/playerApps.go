@@ -20,6 +20,18 @@ func (CommandPlayerApps) Regex() *regexp.Regexp {
 	return regexp.MustCompile(`^[.|!](games|apps) (.{2,32})$`)
 }
 
+func (CommandPlayerApps) Example() string {
+	return ".games {player_name}"
+}
+
+func (CommandPlayerApps) Description() string {
+	return "Get the amount of games a player has in their library"
+}
+
+func (CommandPlayerApps) Type() CommandType {
+	return TypePlayer
+}
+
 func (c CommandPlayerApps) Output(msg *discordgo.MessageCreate) (message discordgo.MessageSend, err error) {
 
 	matches := c.Regex().FindStringSubmatch(msg.Message.Content)
@@ -42,16 +54,4 @@ func (c CommandPlayerApps) Output(msg *discordgo.MessageCreate) (message discord
 
 	message.Content = "<@" + msg.Author.ID + ">, " + player.GetName() + " has **" + strconv.Itoa(player.GamesCount) + "** apps"
 	return message, nil
-}
-
-func (CommandPlayerApps) Example() string {
-	return ".games {player_name}"
-}
-
-func (CommandPlayerApps) Description() string {
-	return "Get the amount of games a player has in their library"
-}
-
-func (CommandPlayerApps) Type() CommandType {
-	return TypePlayer
 }

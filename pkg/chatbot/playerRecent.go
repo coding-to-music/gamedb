@@ -20,6 +20,18 @@ func (CommandPlayerRecent) Regex() *regexp.Regexp {
 	return regexp.MustCompile(`^[.|!]recent (.{2,32})$`)
 }
 
+func (CommandPlayerRecent) Example() string {
+	return ".recent {player_name}"
+}
+
+func (CommandPlayerRecent) Description() string {
+	return "Returns the last 10 games played by user"
+}
+
+func (CommandPlayerRecent) Type() CommandType {
+	return TypePlayer
+}
+
 func (c CommandPlayerRecent) Output(msg *discordgo.MessageCreate) (message discordgo.MessageSend, err error) {
 
 	matches := c.Regex().FindStringSubmatch(msg.Message.Content)
@@ -88,16 +100,4 @@ func (c CommandPlayerRecent) Output(msg *discordgo.MessageCreate) (message disco
 	}
 
 	return message, nil
-}
-
-func (CommandPlayerRecent) Example() string {
-	return ".recent {player_name}"
-}
-
-func (CommandPlayerRecent) Description() string {
-	return "Returns the last 10 games played by user"
-}
-
-func (CommandPlayerRecent) Type() CommandType {
-	return TypePlayer
 }

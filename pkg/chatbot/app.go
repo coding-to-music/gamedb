@@ -16,6 +16,18 @@ func (CommandApp) Regex() *regexp.Regexp {
 	return regexp.MustCompile(`^[.|!](app|game) (.*)`)
 }
 
+func (CommandApp) Example() string {
+	return ".game {game_name}"
+}
+
+func (CommandApp) Description() string {
+	return "Get info on a game"
+}
+
+func (CommandApp) Type() CommandType {
+	return TypeGame
+}
+
 func (c CommandApp) Output(msg *discordgo.MessageCreate) (message discordgo.MessageSend, err error) {
 
 	matches := c.Regex().FindStringSubmatch(msg.Message.Content)
@@ -59,16 +71,4 @@ func (c CommandApp) Output(msg *discordgo.MessageCreate) (message discordgo.Mess
 	}
 
 	return message, nil
-}
-
-func (CommandApp) Example() string {
-	return ".game {game_name}"
-}
-
-func (CommandApp) Description() string {
-	return "Get info on a game"
-}
-
-func (CommandApp) Type() CommandType {
-	return TypeGame
 }

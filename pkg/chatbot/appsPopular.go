@@ -17,6 +17,18 @@ func (CommandAppsPopular) Regex() *regexp.Regexp {
 	return regexp.MustCompile(`^[.|!]popular$`)
 }
 
+func (CommandAppsPopular) Example() string {
+	return ".popular"
+}
+
+func (CommandAppsPopular) Description() string {
+	return "Returns the most popular apps in order of players over the last week"
+}
+
+func (CommandAppsPopular) Type() CommandType {
+	return TypeGame
+}
+
 func (CommandAppsPopular) Output(msg *discordgo.MessageCreate) (message discordgo.MessageSend, err error) {
 
 	message.Content = "<@" + msg.Author.ID + ">"
@@ -55,16 +67,4 @@ func (CommandAppsPopular) Output(msg *discordgo.MessageCreate) (message discordg
 	message.Embed.Description = "```" + strings.Join(code, "\n") + "```"
 
 	return message, nil
-}
-
-func (CommandAppsPopular) Example() string {
-	return ".popular"
-}
-
-func (CommandAppsPopular) Description() string {
-	return "Returns the most popular apps in order of players over the last week"
-}
-
-func (CommandAppsPopular) Type() CommandType {
-	return TypeGame
 }
