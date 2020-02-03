@@ -202,12 +202,20 @@ func login(r *http.Request, user sql.User) (string, bool) {
 
 func oauthLoginHandler(w http.ResponseWriter, r *http.Request) {
 
-	connection := oauth.New(oauth.ConnectionSteam)
-	connection.LoginHandler(w, r)
+	id := oauth.ConnectionEnum(chi.URLParam(r, "id"))
+
+	if _, ok := oauth.Connections[id]; ok {
+		connection := oauth.New(id)
+		connection.LoginHandler(w, r)
+	}
 }
 
 func oauthLCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
-	connection := oauth.New(oauth.ConnectionGoogle)
-	connection.LoginCallbackHandler(w, r)
+	id := oauth.ConnectionEnum(chi.URLParam(r, "id"))
+
+	if _, ok := oauth.Connections[id]; ok {
+		connection := oauth.New(id)
+		connection.LoginCallbackHandler(w, r)
+	}
 }
