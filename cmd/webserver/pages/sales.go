@@ -168,9 +168,11 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	query := datatable.NewDataTableQuery(r, false)
 
 	var code = helpers.GetProductCC(r)
-	var filter = bson.D{
+	var countLock sync.Mutex
+	var baseFilter = bson.D{
 		{Key: "offer_end", Value: bson.M{"$gt": time.Now()}},
 	}
+	var filter = baseFilter
 
 	search := helpers.RegexNonAlphaNumericSpace.ReplaceAllString(query.GetSearchString("search"), "")
 	if search != "" {
@@ -361,7 +363,9 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		count, err = mongo.CountDocuments(mongo.CollectionAppSales, nil, 0)
+		countLock.Lock()
+		count, err = mongo.CountDocuments(mongo.CollectionAppSales, baseFilter, 0)
+		countLock.Unlock()
 		if err != nil {
 			log.Err(err, r)
 		}
@@ -375,7 +379,9 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
+		countLock.Lock()
 		filtered, err = mongo.CountDocuments(mongo.CollectionAppSales, filter, 0)
+		countLock.Unlock()
 		if err != nil {
 			log.Err(err, r)
 		}
