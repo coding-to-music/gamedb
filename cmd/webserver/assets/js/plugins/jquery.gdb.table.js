@@ -206,10 +206,10 @@
                 }
 
                 // Hide empty pagination
-                const $pagination = $(parent.element).parent().find('.dt-pagination');
-                (dt.page.info().pages <= 1)
-                    ? $pagination.hide()
-                    : $pagination.show();
+                // const $pagination = $(parent.element).parent().find('.dt-pagination');
+                // (dt.page.info().pages <= 1)
+                //     ? $pagination.hide()
+                //     : $pagination.show();
 
                 // Update URL
                 if ($(parent.element).is(":visible")) {
