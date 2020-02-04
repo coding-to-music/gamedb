@@ -30,7 +30,7 @@
     #reviews {
 
         #reviews-chart {
-            height: 250px;
+            height: 300px;
         }
 
         // todo, get these from BS variables
@@ -52,7 +52,7 @@
         }
 
         img:last-of-type, video:last-of-type {
-            margin-bottom: 0;
+            @extend .mb-0;
         }
 
         #images + #videos {
