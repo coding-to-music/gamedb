@@ -39,7 +39,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	playerIDs = helpers.Unique64(playerIDs)
+	playerIDs = helpers.UniqueInt64(playerIDs)
 
 	// Check for max number of players
 	if len(playerIDs) > maxPlayers {

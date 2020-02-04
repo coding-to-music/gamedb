@@ -873,7 +873,7 @@ func updateAppNews(app *mongo.App) error {
 		return err
 	}
 
-	app.NewsIDs = helpers.Unique64(app.NewsIDs)
+	app.NewsIDs = helpers.UniqueInt64(app.NewsIDs)
 	return nil
 }
 

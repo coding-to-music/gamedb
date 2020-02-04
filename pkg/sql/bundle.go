@@ -158,7 +158,7 @@ func GetBundlesByID(ids []int, columns []string) (bundles []Bundle, err error) {
 		return bundles, err
 	}
 
-	ids = helpers.Unique(ids)
+	ids = helpers.UniqueInt(ids)
 
 	chunks := helpers.ChunkInts(ids, 100)
 	for _, chunk := range chunks {
