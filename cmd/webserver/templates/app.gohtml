@@ -231,7 +231,7 @@
                                             <tr>
                                                 <th scope="row">Micro Trailer</th>
                                                 <td>
-                                                    <video controls preload="metadata">
+                                                    <video controls preload="metadata" class="cursor-pointer">
                                                         <source src="{{ https (.App.GetMicroTrailer) }}" type="video/webm">
                                                         Sorry, your browser doesn't support embedded videos.
                                                     </video>
@@ -811,7 +811,7 @@
 
                             <div id="videos">
                                 {{ range $key, $value := .App.Movies }}
-                                    <video controls preload="metadata">
+                                    <video controls preload="metadata" class="cursor-pointer">
                                         <source src="{{ https .PathFull }}" type="video/webm">
                                         Sorry, your browser doesn't support embedded videos.
                                     </video>

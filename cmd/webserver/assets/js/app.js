@@ -120,6 +120,7 @@ if ($appPage.length > 0) {
             "order": [[2, 'desc']],
             "createdRow": function (row, data, dataIndex) {
                 $(row).attr('data-id', data[0]);
+                $(row).addClass('cursor-pointer');
             },
             "columnDefs": [
                 // Title
@@ -195,6 +196,7 @@ if ($appPage.length > 0) {
             "order": [[2, 'desc']],
             "createdRow": function (row, data, dataIndex) {
                 $(row).attr('data-id', data[0]);
+                $(row).addClass('cursor-pointer');
             },
             "columnDefs": [
                 // Description

@@ -1,13 +1,5 @@
 #app-page {
 
-    div.jumbotron {
-        small {
-            a {
-                @extend .mr-2;
-            }
-        }
-    }
-
     #details {
         > img {
             width: 100%;
@@ -21,7 +13,6 @@
 
         video {
             max-width: 100%;
-            cursor: pointer;
         }
     }
 
@@ -71,11 +62,6 @@
 
     #news {
 
-        // Normal rows
-        table.table tr[role=row] td {
-            cursor: pointer;
-        }
-
         // Extra rows
         table.table tr:not([role=row]) td {
             @include news-content;
@@ -83,11 +69,6 @@
     }
 
     #items {
-
-        // Normal rows
-        table.table tr[role=row] td {
-            cursor: pointer;
-        }
 
         .detail-row {
             strong {
