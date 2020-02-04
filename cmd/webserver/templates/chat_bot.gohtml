@@ -53,22 +53,24 @@
             </div>
         </div>
 
-        <div class="card">
-            <div class="card-body">
+        {{ if .IsAdmin }}
+            <div class="card">
+                <div class="card-body">
 
-                <h5>Recent Requests</h5>
+                    <h5>Recent Requests</h5>
 
-                <div id="chart"></div>
+                    <div id="chart"></div>
 
-                <div class="table-responsive">
-                    <table id="recent" class="table table-hover table-striped mb-0">
-                        <tbody>
-                        </tbody>
-                    </table>
+                    <div class="table-responsive">
+                        <table id="recent" class="table table-hover table-striped mb-0">
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+
                 </div>
-
             </div>
-        </div>
+        {{ end }}
 
     </div>
 
