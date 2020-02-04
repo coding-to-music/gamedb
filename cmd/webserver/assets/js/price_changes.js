@@ -15,7 +15,7 @@ if ($('#price-changes-page').length > 0) {
     const changeSlider = noUiSlider.create($changeElement[0], {
         start: [
             parseInt(changeLow ? changeLow : -100),
-            parseInt(changeHigh ? changeHigh : 0)
+            parseInt(changeHigh ? changeHigh : 100)
         ],
         connect: true,
         step: 1,
