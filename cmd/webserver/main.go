@@ -48,6 +48,7 @@ func main() {
 		mongo.CreatePackageIndexes()
 		mongo.CreatePlayerIndexes()
 		mongo.CreateGroupIndexes()
+		mongo.CreateSaleIndexes()
 		log.Info("Index check finished")
 	}
 

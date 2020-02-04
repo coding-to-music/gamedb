@@ -66,6 +66,55 @@ func (sale Sale) BSON() bson.D {
 	}
 }
 
+func CreateSaleIndexes() {
+
+	var indexModels []mongo.IndexModel
+
+	ascending := []string{
+		"offer_name",
+		"offer_end",
+		"offer_percent",
+		"offer_end",
+		"app_date",
+	}
+
+	descending := []string{
+		"offer_name",
+		"offer_end",
+		"app_rating",
+		"app_date",
+	}
+
+	// Price fields
+	for _, v := range helpers.GetProdCCs(true) {
+		ascending = append(ascending, "app_prices."+string(v.ProductCode))
+		descending = append(descending, "app_lowest_price."+string(v.ProductCode))
+	}
+
+	//
+	for _, col := range ascending {
+		indexModels = append(indexModels, mongo.IndexModel{
+			Keys: bson.D{{col, 1}},
+		})
+	}
+
+	for _, col := range descending {
+		indexModels = append(indexModels, mongo.IndexModel{
+			Keys: bson.D{{col, -1}},
+		})
+	}
+
+	//
+	client, ctx, err := getMongo()
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	_, err = client.Database(MongoDatabase).Collection(CollectionAppSales.String()).Indexes().CreateMany(ctx, indexModels)
+	log.Err(err)
+}
+
 func (sale Sale) GetKey() (ret string) {
 	return strconv.Itoa(sale.AppID) + "-" + strconv.Itoa(sale.SubID)
 }
