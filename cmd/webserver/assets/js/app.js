@@ -129,7 +129,7 @@ if ($appPage.length > 0) {
                         return '<div><i class="fas fa-newspaper"></i> ' + row[1] + '</div><div class="d-none">' + row[5] + '</div>';
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
-                        $(td).attr('nowrap', 'nowrap');
+                        $(td).attr('style', 'min-width: 300px;')
                     },
                     "orderable": false
                 },
@@ -140,7 +140,6 @@ if ($appPage.length > 0) {
                         return row[2];
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
-                        $(td).attr('nowrap', 'nowrap');
                     },
                     "orderable": false
                 },
