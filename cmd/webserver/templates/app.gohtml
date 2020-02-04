@@ -14,21 +14,21 @@
             {{ end }}
 
             <small>
-                <a href="{{ .App.GetStoreLink }}" target="_blank">
+                <a href="{{ .App.GetStoreLink }}" target="_blank" class="mr-2">
                     <i class="fas fa-shopping-cart"></i> Store Page
                 </a>
-                <a href="{{ .App.GetCommunityLink }}" target="_blank">
+                <a href="{{ .App.GetCommunityLink }}" target="_blank" class="mr-2">
                     <i class="fas fa-users"></i> Community Hub
                 </a>
-                <a href="https://steamcommunity.com/market/search?appid={{ .App.ID }}" target="_blank">
+                <a href="https://steamcommunity.com/market/search?appid={{ .App.ID }}" target="_blank" class="mr-2">
                     <i class="fas fa-exchange-alt"></i> Market
                 </a>
                 {{if ne .App.Homepage ""}}
-                    <a href="{{ .App.Homepage }}" target="_blank">
+                    <a href="{{ .App.Homepage }}" target="_blank" class="mr-2">
                         <i class="fas fa-home"></i> Homepage
                     </a>
                 {{end}}
-                <a href="{{ .App.GetInstallLink }}">
+                <a href="{{ .App.GetInstallLink }}" class="mr-2">
                     <i class="fas fa-sign-in-alt"></i> Install
                 </a>
             </small>
