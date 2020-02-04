@@ -1,7 +1,6 @@
 package pages
 
 import (
-	"html/template"
 	"net/http"
 	"sort"
 	"strconv"
@@ -31,25 +30,12 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := appsTemplate{}
-	t.fill(w, r, "Apps", "") // Description gets set later
+	t.fill(w, r, "Games", "A live database of all Steam games")
 	t.addAssetChosen()
 	t.addAssetSlider()
 
 	//
 	var wg sync.WaitGroup
-
-	// Get apps count
-	wg.Add(1)
-	go func() {
-
-		defer wg.Done()
-
-		count, err := mongo.CountDocuments(mongo.CollectionApps, nil, 0)
-		t.Description = "A live database of all " + template.HTML(helpers.ShortHandNumber(count)) + " Steam games."
-		if err != nil {
-			log.Err(err, r)
-		}
-	}()
 
 	// Get apps types
 	wg.Add(1)

@@ -29,7 +29,7 @@ func WishlistsRouter() http.Handler {
 func wishlistsHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := wishlistsTemplate{}
-	t.fill(w, r, "Wishlists", "Steam's most wishlisted games")
+	t.fill(w, r, "Wishlists", "Games on the most wishlists")
 
 	returnTemplate(w, r, "wishlists", t)
 }

@@ -1,11 +1,9 @@
 package pages
 
 import (
-	"html/template"
 	"net/http"
 	"sync"
 
-	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
@@ -23,12 +21,8 @@ func BundlesRouter() http.Handler {
 
 func bundlesHandler(w http.ResponseWriter, r *http.Request) {
 
-	total, err := sql.CountBundles()
-	log.Err(err, r)
-
-	// Template
 	t := bundlesTemplate{}
-	t.fill(w, r, "Bundles", "The last "+template.HTML(humanize.Comma(int64(total)))+" bundles to be updated.")
+	t.fill(w, r, "Bundles", "All the bundles on Steam")
 
 	returnTemplate(w, r, "bundles", t)
 }

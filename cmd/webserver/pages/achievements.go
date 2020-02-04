@@ -23,7 +23,7 @@ func AchievementsRouter() http.Handler {
 func achievementsHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := GlobalTemplate{}
-	t.fill(w, r, "Achievements", "")
+	t.fill(w, r, "Achievements", "Games with the most achievements")
 
 	returnTemplate(w, r, "achievements", t)
 }

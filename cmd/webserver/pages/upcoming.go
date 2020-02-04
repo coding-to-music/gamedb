@@ -26,20 +26,13 @@ func UpcomingRouter() http.Handler {
 func upcomingHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := upcomingTemplate{}
-	t.fill(w, r, "Upcoming", "The apps you have to look forward to!")
-
-	var err error
-	t.Apps, err = mongo.CountDocuments(mongo.CollectionApps, upcomingFilter, 86400)
-	if err != nil {
-		log.Err(err, r)
-	}
+	t.fill(w, r, "Upcoming", "Games with a release date in the future")
 
 	returnTemplate(w, r, "upcoming", t)
 }
 
 type upcomingTemplate struct {
 	GlobalTemplate
-	Apps int64
 }
 
 func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {

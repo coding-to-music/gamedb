@@ -24,7 +24,7 @@ func PriceChangeRouter() http.Handler {
 func priceChangesHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := priceChangesTemplate{}
-	t.fill(w, r, "Price Changes", "Pick up a bargain.")
+	t.fill(w, r, "Price Changes", "All game price changes")
 	t.addAssetChosen()
 	t.addAssetSlider()
 

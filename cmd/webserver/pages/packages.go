@@ -1,7 +1,6 @@
 package pages
 
 import (
-	"html/template"
 	"net/http"
 	"strconv"
 	"sync"
@@ -24,14 +23,8 @@ func PackagesRouter() http.Handler {
 
 func packagesHandler(w http.ResponseWriter, r *http.Request) {
 
-	total, err := mongo.CountDocuments(mongo.CollectionPackages, nil, 0)
-	if err != nil {
-		log.Err(err, r)
-	}
-
-	// Template
 	t := packagesTemplate{}
-	t.fill(w, r, "Packages", "The last "+template.HTML(helpers.ShortHandNumber(total))+" packages to be updated.")
+	t.fill(w, r, "Packages", "All the packages on Steam")
 	t.addAssetChosen()
 
 	returnTemplate(w, r, "packages", t)

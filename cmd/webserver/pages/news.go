@@ -23,7 +23,7 @@ func NewsRouter() http.Handler {
 func newsHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := newsTemplate{}
-	t.fill(w, r, "News", "All the news from all the games")
+	t.fill(w, r, "News", "All the news from all the games on Steam")
 
 	apps, err := mongo.PopularApps()
 	if err != nil {
@@ -40,20 +40,12 @@ func newsHandler(w http.ResponseWriter, r *http.Request) {
 		log.Err(err, r)
 	}
 
-	count, err := mongo.CountDocuments(mongo.CollectionAppArticles, nil, 0)
-	if err != nil {
-		log.Err(err, r)
-	}
-
-	t.Count = helpers.ShortHandNumber(count)
-
 	returnTemplate(w, r, "news", t)
 }
 
 type newsTemplate struct {
 	GlobalTemplate
 	Articles []mongo.Article
-	Count    string
 }
 
 func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {

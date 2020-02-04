@@ -1,6 +1,7 @@
 package pages
 
 import (
+	"html/template"
 	"net/http"
 	"sync"
 	"time"
@@ -24,25 +25,9 @@ func NewReleasesRouter() http.Handler {
 
 func newReleasesHandler(w http.ResponseWriter, r *http.Request) {
 
-	var err error
-
 	t := newReleasesTemplate{}
-	t.fill(w, r, "New Releases", "")
+	t.fill(w, r, "New Releases", "Games released in the last "+template.HTML(config.Config.NewReleaseDays.Get())+" days")
 	t.addAssetHighCharts()
-	t.Days = config.Config.NewReleaseDays.GetInt()
-
-	// Count apps
-	{
-		var filter = bson.D{
-			{"release_date_unix", bson.M{"$lt": time.Now().Unix()}},
-			{"release_date_unix", bson.M{"$gt": time.Now().AddDate(0, 0, -config.Config.NewReleaseDays.GetInt()).Unix()}},
-		}
-
-		t.Apps, err = mongo.CountDocuments(mongo.CollectionApps, filter, 86400)
-		if err != nil {
-			log.Err(err, r)
-		}
-	}
 
 	//
 	returnTemplate(w, r, "new_releases", t)
@@ -50,8 +35,6 @@ func newReleasesHandler(w http.ResponseWriter, r *http.Request) {
 
 type newReleasesTemplate struct {
 	GlobalTemplate
-	Apps int64
-	Days int
 }
 
 func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {

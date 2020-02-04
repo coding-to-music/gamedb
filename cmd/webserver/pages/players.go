@@ -1,7 +1,6 @@
 package pages
 
 import (
-	"html/template"
 	"net/http"
 	"path"
 	"sort"
@@ -47,20 +46,6 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		} else {
 			date = config.Value
-		}
-	}()
-
-	// Count players
-	var count int64
-	wg.Add(1)
-	go func() {
-
-		defer wg.Done()
-
-		var err error
-		count, err = mongo.CountDocuments(mongo.CollectionPlayers, nil, 0)
-		if err != nil {
-			log.Err(err, r)
 		}
 	}()
 
@@ -124,7 +109,7 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	t := playersTemplate{}
-	t.fill(w, r, "Players", "See where you come against the rest of the world ("+template.HTML(helpers.ShortHandNumber(count))+" players).")
+	t.fill(w, r, "Players", "See where you come against the rest of the world")
 	t.Date = date
 	t.Countries = countries
 	t.Continents = helpers.Continents

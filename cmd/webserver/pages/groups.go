@@ -23,22 +23,14 @@ func GroupsRouter() http.Handler {
 
 func groupsHandler(w http.ResponseWriter, r *http.Request) {
 
-	var err error
-
 	t := groupsTemplate{}
-	t.fill(w, r, "Groups", "A database of all Steam groups")
-
-	count, err := mongo.CountDocuments(mongo.CollectionGroups, nil, 0)
-	log.Err(err, r)
-
-	t.Count = helpers.ShortHandNumber(count)
+	t.fill(w, r, "Groups", "All the groups on Steam")
 
 	returnTemplate(w, r, "groups", t)
 }
 
 type groupsTemplate struct {
 	GlobalTemplate
-	Count string
 }
 
 func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {

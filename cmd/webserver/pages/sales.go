@@ -31,7 +31,7 @@ func salesHandler(w http.ResponseWriter, r *http.Request) {
 	t.addAssetChosen()
 	t.addAssetSlider()
 	t.addAssetCountdown()
-	t.fill(w, r, "Offers", "")
+	t.fill(w, r, "Offers", "Discounted games")
 
 	var wg sync.WaitGroup
 
@@ -43,17 +43,6 @@ func salesHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.Tags, err = sql.GetTagsForSelect()
-		log.Err(err, r)
-	}()
-
-	// Count players
-	wg.Add(1)
-	go func() {
-
-		defer wg.Done()
-
-		var err error
-		t.Count, err = mongo.CountDocuments(mongo.CollectionAppSales, bson.D{{"offer_end", bson.M{"$gte": time.Now()}}}, 0)
 		log.Err(err, r)
 	}()
 
@@ -127,7 +116,6 @@ type salesTemplate struct {
 	Categories   []sql.Category
 	UpcomingSale upcomingSale
 	HighestOrder int
-	Count        int64
 	AppTypes     []mongo.AppTypeCount
 	SaleTypes    []string
 }
