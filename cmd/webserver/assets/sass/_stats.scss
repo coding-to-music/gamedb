@@ -1,7 +1,11 @@
 #stats-page {
 
-    .chart, table.table, .btn.btn-success {
-        margin-bottom: 1rem;
+    .btn.btn-success {
+        @extend .mb-2;
+    }
+
+    .chart {
+        @extend .mb-4;
     }
 
     .chart {
