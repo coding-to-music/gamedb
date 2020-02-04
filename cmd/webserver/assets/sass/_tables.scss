@@ -230,10 +230,32 @@ table.dataTable thead > tr > td.sorting {
     }
 }
 
-.dt-pagination:not(:empty):nth-of-type(1) {
-    @extend .mb-3;
+.dt-header {
+
+    @include clearfix();
+
+    .dt-pagination:not(:empty) {
+        @include media-breakpoint-up(md) {
+            margin-bottom: 1rem !important; // Can't @extend inside @include
+            float: left;
+        }
+    }
+
+    .dt-info:not(:empty) {
+        @include media-breakpoint-up(md) {
+            margin-bottom: 1rem !important; // Can't @extend inside @include
+            float: right;
+        }
+        line-height: 42px;
+
+        div {
+            @extend .pt-0;
+        }
+    }
 }
 
-.dt-pagination:not(:empty):nth-of-type(2) {
-    @extend .mt-3;
+.dt-footer {
+    .dt-pagination:not(:empty) {
+        @extend .mt-3;
+    }
 }

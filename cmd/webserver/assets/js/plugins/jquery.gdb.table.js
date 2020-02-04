@@ -9,9 +9,9 @@
         searchFields: [],
         tableOptions: {
             "autoWidth": false,
-            "dom": '<"dt-pagination"p>t<"dt-pagination"p>r',
+            "dom": '<"dt-header"<"dt-pagination"p><"dt-info"i>>t<"dt-footer"<"dt-pagination"p>>r',
             "fixedHeader": true,
-            "info": false,
+            "info": true, // Counts
             "processing": false,
             "language": {
                 "processing": '<i class="fas fa-spinner fa-spin fa-3x fa-fw"></i>',
@@ -19,6 +19,8 @@
                     "next": '<i class="fas fa-chevron-right"></i>',
                     "previous": '<i class="fas fa-chevron-left"></i>',
                 },
+                "info": "_TOTAL_ rows",
+                "infoFiltered": " (_MAX_ total)"
             },
             "lengthChange": false,
             "ordering": true,
@@ -38,6 +40,12 @@
 
         options = $.extend(true, {}, defaults, options);
 
+        // Remove info text unless we want it
+        if (!$(element).hasClass('table-counts')) {
+            options.tableOptions.dom = options.tableOptions.dom.replace("<\"dt-info\"i>", "");
+        }
+
+        // Add helper
         options.isAjax = function () {
             return $(element).attr('data-path') != null;
         };
