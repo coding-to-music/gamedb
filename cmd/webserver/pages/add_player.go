@@ -8,6 +8,7 @@ import (
 	"github.com/Jleagle/recaptcha-go"
 	"github.com/Jleagle/session-go/session"
 	steam2 "github.com/Jleagle/steam-go/steam"
+	"github.com/Jleagle/steam-go/steamid"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/steam"
@@ -34,11 +35,11 @@ func playerAddHandler(w http.ResponseWriter, r *http.Request) {
 			search = path.Base(search)
 
 			client := steam.GetSteam()
-			id, err := client.GetID(search)
+			id, err := steamid.ParsePlayerID(search)
 
 			if err == nil && id > 0 {
 
-				http.Redirect(w, r, "/players/"+strconv.FormatInt(id, 10), http.StatusFound)
+				http.Redirect(w, r, "/players/"+strconv.FormatUint(uint64(id), 10), http.StatusFound)
 				return ""
 			}
 

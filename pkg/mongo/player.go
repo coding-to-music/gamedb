@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steam"
+	"github.com/Jleagle/steam-go/steamid"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
@@ -703,7 +704,7 @@ func SearchPlayer(search string, projection bson.M) (player Player, queue bool, 
 	c := client.Database(MongoDatabase).Collection(CollectionPlayers.String())
 
 	// Get by ID
-	id, err := steamHelper.GetSteam().GetID(search)
+	id, err := steamid.ParsePlayerID(search)
 	if err == nil {
 
 		err = c.FindOne(ctx, bson.D{{"_id", id}}, ops).Decode(&player)
