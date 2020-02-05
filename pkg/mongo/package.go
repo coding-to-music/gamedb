@@ -281,13 +281,10 @@ func (pack Package) GetPlatformImages() (ret template.HTML) {
 
 func (pack Package) GetPICSUpdatedNice() string {
 
-	d := pack.ChangeNumberDate
-
-	// Empty dates
-	if d.IsZero() || d.Unix() == -62167219200 {
+	if pack.ChangeNumberDate.IsZero() || pack.ChangeNumberDate.Unix() == 0 {
 		return "-"
 	}
-	return d.Format(helpers.DateYearTime)
+	return pack.ChangeNumberDate.Format(helpers.DateYearTime)
 }
 
 func (pack Package) GetUpdatedNice() string {

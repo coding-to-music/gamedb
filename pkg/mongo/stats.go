@@ -22,7 +22,7 @@ type Stat struct {
 func (stat Stat) BSON() bson.D {
 
 	stat.UpdatedAt = time.Now()
-	if stat.CreatedAt.IsZero() {
+	if stat.CreatedAt.IsZero() || stat.CreatedAt.Unix() == 0 {
 		stat.CreatedAt = time.Now()
 	}
 

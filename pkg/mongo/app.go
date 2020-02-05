@@ -123,7 +123,7 @@ func (app App) BSON() bson.D {
 		}
 	}
 
-	if app.ChangeNumberDate.IsZero() {
+	if app.ChangeNumberDate.IsZero() || app.ChangeNumberDate.Unix() == 0 {
 		app.ChangeNumberDate = time.Now()
 	}
 
@@ -510,18 +510,11 @@ func (app App) GetSystemRequirements() (ret []helpers.SystemRequirement) {
 
 func (app App) GetPICSUpdatedNice() string {
 
-	d := app.ChangeNumberDate
-
-	// 0000-01-01 00:00:00
-	if d.Unix() == -62167219200 {
+	if app.ChangeNumberDate.IsZero() || app.ChangeNumberDate.Unix() == 0 {
 		return "-"
 	}
 
-	if d.IsZero() {
-		return "-"
-	}
-
-	return d.Format(helpers.DateYearTime)
+	return app.ChangeNumberDate.Format(helpers.DateYearTime)
 }
 
 func (app App) GetUpdatedNice() string {

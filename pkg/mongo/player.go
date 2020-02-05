@@ -165,7 +165,7 @@ func (player Player) GetSteamTimeUnix() int64 {
 
 func (player Player) GetSteamTimeNice() string {
 
-	if player.TimeCreated.IsZero() {
+	if player.TimeCreated.IsZero() || player.TimeCreated.Unix() == 0 {
 		return "-"
 	}
 	return player.TimeCreated.Format(helpers.DateYear)
@@ -177,7 +177,7 @@ func (player Player) GetLogoffUnix() int64 {
 
 func (player Player) GetLogoffNice() string {
 
-	if player.LastLogOff.IsZero() {
+	if player.LastLogOff.IsZero() || player.LastLogOff.Unix() == 0 {
 		return "-"
 	}
 	return player.LastLogOff.Format(helpers.DateYearTime)
@@ -759,7 +759,7 @@ func SearchPlayer(search string, projection bson.M) (player Player, queue bool, 
 					go func() {
 						defer wg.Done()
 						summaryLock.Lock()
-						if player.TimeCreated.IsZero() {
+						if player.TimeCreated.IsZero() || player.TimeCreated.Unix() == 0 {
 							err = player.SetPlayerSummary()
 							log.Err(err)
 						}

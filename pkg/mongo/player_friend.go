@@ -44,7 +44,7 @@ func (friend PlayerFriend) getKey() (ret interface{}) {
 }
 
 func (friend PlayerFriend) Scanned() bool {
-	return !friend.LoggedOff.IsZero()
+	return !friend.LoggedOff.IsZero() && friend.LoggedOff.Unix() != 0
 }
 
 func (friend PlayerFriend) GetPath() string {

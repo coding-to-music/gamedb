@@ -104,7 +104,7 @@ func GetArticlesByApps(appIDs []int, limit int64, afterDate time.Time) (news []A
 		{"app_id", bson.M{"$in": appsFilter}},
 	}
 
-	if !afterDate.IsZero() {
+	if !afterDate.IsZero() && afterDate.Unix() != 0 {
 		filter = append(filter, bson.E{Key: "date", Value: bson.M{"$gte": afterDate}})
 	}
 

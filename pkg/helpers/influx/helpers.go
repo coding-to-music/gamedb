@@ -60,7 +60,7 @@ func InfluxWriteMany(retention InfluxRetentionPolicy, batch influx.BatchPoints) 
 	batch.RetentionPolicy = string(retention)
 	batch.Precision = batch.Points[0].Precision // Must be in batch and point
 
-	if batch.Time.IsZero() {
+	if batch.Time.IsZero() || batch.Time.Unix() == 0 {
 		batch.Time = time.Now()
 	}
 

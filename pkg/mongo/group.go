@@ -32,7 +32,7 @@ type Group struct {
 
 func (group Group) BSON() bson.D {
 
-	if group.CreatedAt.IsZero() {
+	if group.CreatedAt.IsZero() || group.CreatedAt.Unix() == 0 {
 		group.CreatedAt = time.Now()
 	}
 
