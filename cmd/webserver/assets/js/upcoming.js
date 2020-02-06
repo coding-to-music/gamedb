@@ -15,7 +15,7 @@ if ($('#upcoming-page').length > 0) {
         },
         "drawCallback": function (settings) {
             const api = this.api();
-            if (api.order()[0] && api.order()[0][0] === 4) {
+            if (api.order()[0] && api.order()[0][0] === 3) {
                 const rows = api.rows({page: 'current'}).nodes();
 
                 let last = null;
