@@ -188,7 +188,7 @@
 
                                         {{ if gt (len .Ranks) 0 }}
                                             <div class="table-responsive">
-                                                <table class="table mb-0">
+                                                <table class="table table-sm mb-0">
                                                     {{ range $key, $value := .Ranks }}
                                                         <tr>
                                                             <td>{{ .Metric.String }}</td>
