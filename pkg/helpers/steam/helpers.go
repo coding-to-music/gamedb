@@ -74,7 +74,7 @@ func LogSteamError(err error, interfaces ...interface{}) {
 		return true
 	}()
 
-	interfaces = append(interfaces, err)
+	interfaces = append(interfaces, err, log.LogNameSteamErrors)
 
 	if isError {
 		log.Err(interfaces...)

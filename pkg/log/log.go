@@ -34,6 +34,7 @@ const (
 	LogNameRequests      LogName = "requests"
 	LogNameSQL           LogName = "sql"
 	LogNameTriggerUpdate LogName = "trigger-update"
+	LogNameSteamErrors   LogName = "steam-errors"
 
 	// Severities
 	SeverityDebug    Severity = 1
