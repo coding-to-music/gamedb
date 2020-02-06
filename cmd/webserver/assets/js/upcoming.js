@@ -8,7 +8,7 @@ if ($('#upcoming-page').length > 0) {
 
     // Table
     const options = {
-        "order": [[4, 'asc']],
+        "order": [[3, 'asc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-app-id', data[0]);
             $(row).attr('data-link', data[3]);
@@ -65,19 +65,19 @@ if ($('#upcoming-page').length > 0) {
                 "orderable": false,
             },
             // Price
-            {
-                "targets": 3,
-                "render": function (data, type, row) {
-                    return row[5];
-                },
-                "createdCell": function (td, cellData, rowData, row, col) {
-                    $(td).attr('nowrap', 'nowrap');
-                },
-                "orderable": false,
-            },
+            // {
+            //     "targets": 3,
+            //     "render": function (data, type, row) {
+            //         return row[5];
+            //     },
+            //     "createdCell": function (td, cellData, rowData, row, col) {
+            //         $(td).attr('nowrap', 'nowrap');
+            //     },
+            //     "orderable": false,
+            // },
             // Time
             {
-                "targets": 4,
+                "targets": 3,
                 "render": function (data, type, row) {
                     return '<span data-toggle="tooltip" data-placement="left" title="' + row[10] + '" data-livestamp="' + row[9] + '"></span>';
                 },
@@ -88,7 +88,7 @@ if ($('#upcoming-page').length > 0) {
             },
             // Link
             {
-                "targets": 5,
+                "targets": 4,
                 "render": function (data, type, row) {
                     if (row[8]) {
                         return '<a href="' + row[8] + '" target="_blank" rel="nofollow"><i class="fas fa-link"></i></a>';

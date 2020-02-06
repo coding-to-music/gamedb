@@ -59,10 +59,10 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		columns := map[string]string{
 			"1": "group_followers",
-			"4": "release_date_unix",
+			"3": "release_date_unix",
 		}
 
-		projection := bson.M{"_id": 1, "name": 1, "icon": 1, "type": 1, "prices": 1, "release_date_unix": 1, "group_id": 1, "group_followers": 1}
+		projection := bson.M{"_id": 1, "name": 1, "icon": 1, "type": 1, "release_date_unix": 1, "group_id": 1, "group_followers": 1}
 		order := query.GetOrderMongo(columns)
 		order = append(order, bson.E{Key: "group_followers", Value: -1}, bson.E{Key: "name", Value: 1})
 		offset := query.GetOffset64()
@@ -108,7 +108,6 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	//
-	var code = helpers.GetProductCC(r)
 	var response = datatable.NewDataTablesResponse(r, query, count, filtered)
 	for _, app := range apps {
 
@@ -118,7 +117,7 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			app.GetIcon(),                   // 2
 			app.GetPath(),                   // 3
 			app.GetType(),                   // 4
-			app.Prices.Get(code).GetFinal(), // 5
+			"",                              // 5
 			app.GetReleaseDateNice(),        // 6
 			app.GetFollowers(),              // 7
 			helpers.GetAppStoreLink(app.ID), // 8
