@@ -22,7 +22,7 @@ func (c QueueAppGroups) Name() string {
 }
 
 func (c QueueAppGroups) Cron() string {
-	return CronQueueAppGroups
+	return CronTimeQueueAppGroups
 }
 
 func (c QueueAppGroups) work() (err error) {
