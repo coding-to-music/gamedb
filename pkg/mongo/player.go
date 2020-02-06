@@ -995,6 +995,10 @@ type PlayerBans struct {
 	EconomyBan       string `json:"economy_ban"`
 }
 
+func (pb PlayerBans) History() bool {
+	return pb.CommunityBanned || pb.VACBanned || pb.NumberOfVACBans > 0 || pb.DaysSinceLastBan > 0 || pb.NumberOfGameBans > 0 || pb.EconomyBan != "none"
+}
+
 // PlayerAppStatsTemplate
 type PlayerAppStatsTemplate struct {
 	Played playerAppStatsInnerTemplate
