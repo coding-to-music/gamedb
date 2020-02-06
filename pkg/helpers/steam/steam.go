@@ -23,8 +23,8 @@ func GetSteam() *steam.Steam {
 		clientNormal = &steam.Steam{}
 		clientNormal.SetKey(config.Config.SteamAPIKey.Get())
 		clientNormal.SetUserAgent("gamedb.online")
-		clientNormal.SetAPIRateLimit(time.Millisecond*1000, 10)
-		clientNormal.SetStoreRateLimit(time.Millisecond*1800, 10)
+		clientNormal.SetAPIRateLimit(time.Millisecond*950, 10)
+		clientNormal.SetStoreRateLimit(time.Millisecond*1750, 10)
 		clientNormal.SetLogger(steamLogger{})
 	}
 
