@@ -204,7 +204,7 @@ func appHandler(messages []*rabbit.Message) {
 			}
 		}()
 
-		// Calls to Mongo
+		// Read from Mongo
 		var currentAppItems []int
 		wg.Add(1)
 		go func() {
