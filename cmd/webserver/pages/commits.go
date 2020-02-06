@@ -31,16 +31,13 @@ func CommitsRouter() http.Handler {
 func commitsHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := commitsTemplate{}
-	t.fill(w, r, "Commits", "")
-
-	t.Total = getTotalCommits()
+	t.fill(w, r, "Commits", "All the open source commits for Game DB")
 
 	returnTemplate(w, r, "commits", t)
 }
 
 type commitsTemplate struct {
 	GlobalTemplate
-	Total int
 }
 
 func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
