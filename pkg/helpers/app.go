@@ -37,8 +37,10 @@ func GetAppPath(id int, name string) string {
 
 func GetAppName(id int, name string) string {
 
+	name = strings.TrimSpace(name)
+
 	if name != "" {
-		return strings.TrimSpace(name)
+		return name
 	} else if id > 0 {
 		return "App " + strconv.Itoa(id)
 	}
