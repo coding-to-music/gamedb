@@ -738,9 +738,15 @@
                             <table class="table mb-0">
                                 <tbody>
                                 <tr>
-                                    <th scope="row" style="width: 10%;">Score</th>
+                                    <th scope="row" style="width: 20%;">Score</th>
                                     <td>{{ .App.GetReviewScore }} <a href="/info#app-scores"><i class="fas fa-question"></i></a></td>
                                 </tr>
+                                {{ if ne .App.MetacriticURL "" }}
+                                    <tr>
+                                        <th scope="row" style="width: 20%;">Meta Score</th>
+                                        <td><a href="{{ .App.MetacriticURL }}" target="_blank">{{ .App.MetacriticScore }}%</a></td>
+                                    </tr>
+                                {{ end }}
                                 </tbody>
                             </table>
 
