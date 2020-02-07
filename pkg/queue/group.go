@@ -270,7 +270,7 @@ func updateGameGroup(id string, group *mongo.Group) (foundNumbers bool, err erro
 	if group.Icon == "" && group.URL != "" {
 		i, err := strconv.Atoi(group.URL)
 		if err == nil && i > 0 {
-			app, err := mongo.GetApp(i, bson.M{"_id": 1, "icon": 1})
+			app, err := mongo.GetApp(i)
 			if err != nil {
 				log.Err(group.URL, err)
 			} else {
@@ -479,7 +479,7 @@ func saveGroup(group mongo.Group) (err error) {
 func getAppFromGroup(group mongo.Group) (app mongo.App, err error) {
 
 	if group.Type == helpers.GroupTypeGame && group.AppID > 0 {
-		app, err = mongo.GetApp(group.AppID, bson.M{"_id": 1, "group_id": 1})
+		app, err = mongo.GetApp(group.AppID)
 		if err == mongo.ErrNoDocuments {
 			err = ProduceSteam(SteamMessage{AppIDs: []int{group.AppID}})
 		}

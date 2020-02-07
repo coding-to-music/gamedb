@@ -58,7 +58,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get app
-	app, err := mongo.GetApp(idx, nil)
+	app, err := mongo.GetApp(idx)
 	if err != nil && strings.HasPrefix(err.Error(), "memcache: unexpected response line from \"set\":") {
 		log.Warning(err)
 		err = nil
@@ -380,7 +380,7 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		app, err := mongo.GetApp(idx, bson.M{"news_ids": 1})
+		app, err := mongo.GetApp(idx)
 		if err != nil {
 			log.Err(err, r, idx)
 			return

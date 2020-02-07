@@ -626,7 +626,7 @@ func CreateAppIndexes() {
 	log.Err(err)
 }
 
-func GetApp(id int, projection bson.M) (app App, err error) {
+func GetApp(id int) (app App, err error) {
 
 	if !helpers.IsValidAppID(id) {
 		return app, ErrInvalidAppID
@@ -636,11 +636,11 @@ func GetApp(id int, projection bson.M) (app App, err error) {
 		id = 753
 	}
 
-	var item = memcache.MemcacheApp(id, projection)
+	var item = memcache.MemcacheApp(id)
 
 	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &app, func() (interface{}, error) {
 
-		err := FindOne(CollectionApps, bson.D{{"_id", id}}, nil, projection, &app)
+		err := FindOne(CollectionApps, bson.D{{"_id", id}}, nil, nil, &app)
 		if err != nil {
 			return app, err
 		}

@@ -170,7 +170,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 			defer wg.Done()
 
 			var err error
-			backgroundApp, err = mongo.GetApp(player.BackgroundAppID, bson.M{"_id": 1, "name": 1, "background": 1})
+			backgroundApp, err = mongo.GetApp(player.BackgroundAppID)
 			err = helpers.IgnoreErrors(err, mongo.ErrInvalidAppID)
 			if err == mongo.ErrNoDocuments {
 				err = queue.ProduceSteam(queue.SteamMessage{AppIDs: []int{player.BackgroundAppID}})

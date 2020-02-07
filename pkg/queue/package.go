@@ -23,7 +23,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/gocolly/colly"
 	influx "github.com/influxdata/influxdb1-client"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 type PackageMessage struct {
@@ -175,7 +174,7 @@ func updatePackageNameFromApp(pack *mongo.Package) (err error) {
 
 	if len(pack.Apps) == 1 {
 
-		app, err := mongo.GetApp(pack.Apps[0], bson.M{"_id": 1, "name": 1, "icon": 1})
+		app, err := mongo.GetApp(pack.Apps[0])
 		if err == nil && app.Name != "" && (pack.Name == "" || pack.Name == "Package "+strconv.Itoa(pack.ID) || pack.Name == strconv.Itoa(pack.ID)) {
 
 			pack.SetName(app.GetName(), false)

@@ -63,7 +63,7 @@ func appHandler(messages []*rabbit.Message) {
 		}
 
 		// Load current app
-		app, err := mongo.GetApp(id, nil)
+		app, err := mongo.GetApp(id)
 		if err == mongo.ErrNoDocuments {
 			app = mongo.App{}
 			app.ID = id
@@ -314,6 +314,7 @@ func appHandler(messages []*rabbit.Message) {
 			defer wg.Done()
 
 			err := memcache.RemoveKeyFromMemCacheViaPubSub(
+				memcache.MemcacheApp(app.ID).Key,
 				memcache.MemcacheAppInQueue(app.ID).Key,
 				memcache.MemcacheAppTags(app.ID).Key,
 				memcache.MemcacheAppCategories(app.ID).Key,

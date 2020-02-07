@@ -33,7 +33,7 @@ func productPricesAjaxHandler(w http.ResponseWriter, r *http.Request, productTyp
 	var product helpers.ProductInterface
 
 	if productType == helpers.ProductTypeApp {
-		product, err = mongo.GetApp(idx, bson.M{"prices": 1})
+		product, err = mongo.GetApp(idx)
 	} else {
 		product, err = mongo.GetPackage(idx, nil)
 	}
