@@ -56,9 +56,19 @@
                             <a class="nav-link nav-link-small" data-toggle="tab" href="#prices" role="tab">Prices</a>
                         </li>
                     {{ end }}
+                    {{ if gt .App.Reviews.GetTotal 0 }}
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-small" data-toggle="tab" href="#reviews" role="tab">Reviews</a>
+                        </li>
+                    {{ end }}
                     {{ if gt (len .App.AlbumMetaData.Tracks) 0 }}
                         <li class="nav-item">
                             <a class="nav-link nav-link-small" data-toggle="tab" href="#tracks" role="tab">Tracks ({{ comma (len .App.AlbumMetaData.Tracks) }})</a>
+                        </li>
+                    {{ end }}
+                    {{ if gt (len .App.Achievements) 0 }}
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-small" data-toggle="tab" href="#achievements" role="tab">Achievements ({{ comma (len .App.Achievements) }})</a>
                         </li>
                     {{ end }}
                     {{ if gt (len .DLCs) 0 }}
@@ -76,29 +86,19 @@
                             <a class="nav-link nav-link-small" data-toggle="tab" href="#bundles" role="tab">Bundles ({{ comma (len .Bundles) }})</a>
                         </li>
                     {{ end }}
-                    {{ if gt (len .Related) 0 }}
-                        <li class="nav-item">
-                            <a class="nav-link nav-link-small" data-toggle="tab" href="#similar" role="tab">Similar</a>
-                        </li>
-                    {{ end }}
-                    {{ if gt (len .App.Achievements) 0 }}
-                        <li class="nav-item">
-                            <a class="nav-link nav-link-small" data-toggle="tab" href="#achievements" role="tab">Achievements ({{ comma (len .App.Achievements) }})</a>
-                        </li>
-                    {{ end }}
-                    {{ if gt .App.Items 0 }}
-                        <li class="nav-item">
-                            <a class="nav-link nav-link-small" data-toggle="tab" href="#items" role="tab">Items ({{ comma .App.Items }})</a>
-                        </li>
-                    {{ end }}
                     {{ if gt (len .App.NewsIDs) 0 }}
                         <li class="nav-item">
                             <a class="nav-link nav-link-small" data-toggle="tab" href="#news" role="tab">News</a>
                         </li>
                     {{ end }}
-                    {{ if gt .App.Reviews.GetTotal 0 }}
+                    {{ if gt (len .Related) 0 }}
                         <li class="nav-item">
-                            <a class="nav-link nav-link-small" data-toggle="tab" href="#reviews" role="tab">Reviews</a>
+                            <a class="nav-link nav-link-small" data-toggle="tab" href="#similar" role="tab">Similar</a>
+                        </li>
+                    {{ end }}
+                    {{ if gt .App.Items 0 }}
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-small" data-toggle="tab" href="#items" role="tab">Items ({{ comma .App.Items }})</a>
                         </li>
                     {{ end }}
                     <li class="nav-item">
