@@ -52,6 +52,8 @@ github.com/Jleagle/rabbit-go v0.0.0-20200103200838-b2b150939340 h1:4s6Z+kNtQ1Fo9
 github.com/Jleagle/rabbit-go v0.0.0-20200103200838-b2b150939340/go.mod h1:vjTvX9b8szrE6OhT3PjcNnopnBCqHPfHoYPaleIPqMU=
 github.com/Jleagle/rabbit-go v0.0.0-20200108133153-bf9056d05147 h1:9tHIFcGiENfmnU4O7tNMBnUYLdLxUMU64ukbrUqaGUs=
 github.com/Jleagle/rabbit-go v0.0.0-20200108133153-bf9056d05147/go.mod h1:vjTvX9b8szrE6OhT3PjcNnopnBCqHPfHoYPaleIPqMU=
+github.com/Jleagle/rabbit-go v0.0.0-20200207211543-cb89e3040e83 h1:Fpxib5Dr9DOflqsf8VLQh9Wq6j7WQ7VonJEv8RcVcUo=
+github.com/Jleagle/rabbit-go v0.0.0-20200207211543-cb89e3040e83/go.mod h1:J0f6SqQkqJajxRVuKrvve45Gh1QX0eiUJG6+IbFPZAc=
 github.com/Jleagle/recaptcha-go v0.0.0-20190220085232-0e548dc7cc83 h1:u+ekQU2p89s6sgUhl8MkK6Ii7lCmdNmcKeXjlrTj/0U=
 github.com/Jleagle/recaptcha-go v0.0.0-20190220085232-0e548dc7cc83/go.mod h1:VKGCTl3nRL0ILsYBflxYMYgTMXueYetss2Q30fKpjpE=
 github.com/Jleagle/recaptcha-go v0.0.0-20200117124940-d00b2c62c076 h1:1iC2sM36BG8CDjy7bzFocvYKmFbOed35eyYqnCElaJU=

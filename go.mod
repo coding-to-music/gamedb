@@ -11,7 +11,7 @@ require (
 	github.com/Jleagle/influxql v0.0.0-20190502115937-4ac053a1ed8e
 	github.com/Jleagle/memcache-go v0.0.0-20191228144235-986fe282434d
 	github.com/Jleagle/patreon-go v0.0.0-20200117215733-2b8b00d4eab0
-	github.com/Jleagle/rabbit-go v0.0.0-20200108133153-bf9056d05147
+	github.com/Jleagle/rabbit-go v0.0.0-20200207211543-cb89e3040e83
 	github.com/Jleagle/recaptcha-go v0.0.0-20200117124940-d00b2c62c076
 	github.com/Jleagle/session-go v0.0.0-20190515070633-3c8712426233
 	github.com/Jleagle/sitemap-go v0.0.0-20190405195207-2bdddbb3bd50

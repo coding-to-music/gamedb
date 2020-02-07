@@ -172,11 +172,23 @@ func Init(definitions []queueDef, consume bool) {
 
 // Message helpers
 func sendToFailQueue(message *rabbit.Message) {
-	message.SendToQueue(Channels[rabbit.Producer][QueueFailed])
+
+	err := message.SendToQueue(Channels[rabbit.Producer][QueueFailed])
+	log.Err(err)
 }
 
 func sendToRetryQueue(message *rabbit.Message) {
-	message.SendToQueue(Channels[rabbit.Producer][QueueDelay])
+
+	err := message.SendToQueue(Channels[rabbit.Producer][QueueDelay])
+	log.Err(err)
+}
+
+func sendToRetryQueueBulk(messages []*rabbit.Message) {
+
+	for _, message := range messages {
+		err := message.SendToQueue(Channels[rabbit.Producer][QueueDelay])
+		log.Err(err)
+	}
 }
 
 func sendToLastQueue(message *rabbit.Message) {
@@ -187,7 +199,8 @@ func sendToLastQueue(message *rabbit.Message) {
 		queue = QueueFailed
 	}
 
-	message.SendToQueue(Channels[rabbit.Producer][queue])
+	err := message.SendToQueue(Channels[rabbit.Producer][queue])
+	log.Err(err)
 }
 
 // Producers
