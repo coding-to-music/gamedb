@@ -53,7 +53,7 @@ func packageHandler(messages []*rabbit.Message) {
 		}
 
 		// Load current package
-		pack, err := mongo.GetPackage(id, nil)
+		pack, err := mongo.GetPackage(id)
 		if err == mongo.ErrNoDocuments {
 			pack = mongo.Package{}
 			pack.ID = id
@@ -149,6 +149,7 @@ func packageHandler(messages []*rabbit.Message) {
 
 		// Clear caches
 		var keys = []string{
+			memcache.MemcachePackage(pack.ID).Key,
 			memcache.MemcachePackageInQueue(pack.ID).Key,
 			memcache.MemcachePackageBundles(pack.ID).Key,
 		}

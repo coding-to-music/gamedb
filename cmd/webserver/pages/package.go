@@ -36,7 +36,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get package
-	pack, err := mongo.GetPackage(idx, nil)
+	pack, err := mongo.GetPackage(idx)
 	if err != nil {
 
 		if err == mongo.ErrNoDocuments {

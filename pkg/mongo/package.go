@@ -330,17 +330,17 @@ func (pack *Package) SetName(name string, force bool) {
 	}
 }
 
-func GetPackage(id int, projection bson.M) (pack Package, err error) {
+func GetPackage(id int) (pack Package, err error) {
 
 	if !helpers.IsValidPackageID(id) {
 		return pack, ErrInvalidPackageID
 	}
 
-	var item = memcache.MemcachePackageMongo(id, projection)
+	var item = memcache.MemcachePackage(id)
 
 	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &pack, func() (interface{}, error) {
 
-		err := FindOne(CollectionPackages, bson.D{{"_id", id}}, nil, projection, &pack)
+		err := FindOne(CollectionPackages, bson.D{{"_id", id}}, nil, nil, &pack)
 		if err != nil {
 			return pack, err
 		}
