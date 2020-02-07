@@ -626,6 +626,7 @@ func CreateAppIndexes() {
 	log.Err(err)
 }
 
+// todo, take big fields, reviews, localisation etc, out of projection
 func GetApp(id int) (app App, err error) {
 
 	if !helpers.IsValidAppID(id) {
