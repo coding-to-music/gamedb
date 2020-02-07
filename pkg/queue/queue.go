@@ -17,6 +17,7 @@ import (
 
 const (
 	QueueApps            rabbit.QueueName = "GDB_Apps"
+	QueueAppsDaily       rabbit.QueueName = "GDB_Apps_Daily"
 	QueueAppsRegular     rabbit.QueueName = "GDB_Apps_Regular"
 	QueueAppPlayers      rabbit.QueueName = "GDB_App_Players"
 	QueueBundles         rabbit.QueueName = "GDB_Bundles"
@@ -57,6 +58,7 @@ var (
 
 	AllDefinitions = []queueDef{
 		{name: QueueApps, consumer: appHandler},
+		{name: QueueAppsDaily, consumer: appDailyHandler, batchSize: 10, prefetchSize: 100},
 		{name: QueueAppsRegular},
 		{name: QueueAppPlayers, consumer: appPlayersHandler},
 		{name: QueueBundles, consumer: bundleHandler},
@@ -84,6 +86,7 @@ var (
 
 	QueueCronsDefinitions = []queueDef{
 		{name: QueueApps, consumer: nil},
+		{name: QueueAppsDaily, consumer: nil},
 		{name: QueueAppPlayers, consumer: nil},
 		{name: QueueGroups, consumer: nil},
 		{name: QueuePackages, consumer: nil},
@@ -171,19 +174,15 @@ func Init(definitions []queueDef, consume bool) {
 }
 
 // Message helpers
-func sendToFailQueue(message *rabbit.Message) {
+func sendToFailQueue(messages ...*rabbit.Message) {
 
-	err := message.SendToQueue(Channels[rabbit.Producer][QueueFailed])
-	log.Err(err)
+	for _, message := range messages {
+		err := message.SendToQueue(Channels[rabbit.Producer][QueueFailed])
+		log.Err(err)
+	}
 }
 
-func sendToRetryQueue(message *rabbit.Message) {
-
-	err := message.SendToQueue(Channels[rabbit.Producer][QueueDelay])
-	log.Err(err)
-}
-
-func sendToRetryQueueBulk(messages []*rabbit.Message) {
+func sendToRetryQueue(messages ...*rabbit.Message) {
 
 	for _, message := range messages {
 		err := message.SendToQueue(Channels[rabbit.Producer][QueueDelay])
@@ -228,7 +227,13 @@ func ProduceApp(payload AppMessage) (err error) {
 	return err
 }
 
+func ProduceAppsDaily(id int, name string) (err error) {
+
+	return produce(QueueAppsDaily, AppDailyMessage{ID: id, Name: name})
+}
+
 func ProduceAppRegular(payload AppMessage) (err error) {
+
 	return produce(QueueAppsRegular, payload)
 }
 
@@ -260,6 +265,7 @@ func ProduceBundle(id int) (err error) {
 }
 
 func ProduceChanges(payload ChangesMessage) (err error) {
+
 	return produce(QueueChanges, payload)
 }
 
@@ -306,6 +312,7 @@ func ProducePackage(payload PackageMessage) (err error) {
 }
 
 func ProducePackageRegular(payload PackageMessage) (err error) {
+
 	return produce(QueuePackagesRegular, payload)
 }
 
@@ -338,10 +345,12 @@ func ProducePlayer(payload PlayerMessage) (err error) {
 }
 
 func ProducePlayerRegular(id int64) (err error) {
+
 	return produce(QueuePlayersRegular, PlayerMessage{ID: id})
 }
 
 func ProducePlayerRank(payload PlayerRanksMessage) (err error) {
+
 	return produce(QueuePlayerRanks, payload)
 }
 
@@ -355,6 +364,7 @@ func ProduceSteam(payload SteamMessage) (err error) {
 }
 
 func ProduceTest(id int) (err error) {
+
 	return produce(QueueTest, TestMessage{ID: id})
 }
 

@@ -115,6 +115,9 @@ type BaseConfig struct {
 	TwitterConsumerKey       ConfigItem
 	TwitterConsumerSecret    ConfigItem
 
+	// YouTube
+	YoutubeAPIKey ConfigItem
+
 	// Other
 	Environment        ConfigItem
 	GameDBDomain       ConfigItem
@@ -226,6 +229,9 @@ func init() {
 	Config.TwitterAccessTokenSecret.Set("TWITTER_ACCESS_TOKEN_SECRET")
 	Config.TwitterConsumerKey.Set("TWITTER_CONSUMER_KEY")
 	Config.TwitterConsumerSecret.Set("TWITTER_CONSUMER_SECRET")
+
+	// YouTube
+	Config.YoutubeAPIKey.Set("YOUTUBE_API_KEY")
 
 	// Other
 	Config.GameDBDomain.Set("DOMAIN")
