@@ -342,9 +342,6 @@ if ($appPage.length > 0) {
                 }
 
                 Highcharts.chart('reviews-chart', $.extend(true, {}, defaultAppChartOptions, {
-                    chart: {
-                        type: 'line'
-                    },
                     yAxis: [
                         {
                             allowDecimals: false,
@@ -362,9 +359,12 @@ if ($appPage.length > 0) {
                             allowDecimals: false,
                             title: {text: ''},
                             opposite: true,
-                            min: 0,
+                            // min: 0,
                         }
                     ],
+                    // xAxis: {
+                    //     gridLineWidth: 1,
+                    // },
                     legend: {
                         enabled: true
                     },
@@ -384,22 +384,25 @@ if ($appPage.length > 0) {
                     },
                     series: [
                         {
+                            type: 'line',
                             name: 'score',
-                            color: '#28a745',
+                            color: '#007bff',
                             data: data['mean_reviews_score'],
                             yAxis: 0,
                             marker: {symbol: 'circle'}
                         },
                         {
+                            type: 'area',
                             name: 'positive',
-                            color: '#e83e8c',
+                            color: '#28a745',
                             data: data['mean_reviews_positive'],
                             yAxis: 1,
                             marker: {symbol: 'circle'}
                         },
                         {
+                            type: 'area',
                             name: 'negative',
-                            color: '#007bff',
+                            color: '#e83e8c',
                             data: data['mean_reviews_negative'],
                             yAxis: 1,
                             marker: {symbol: 'circle'}

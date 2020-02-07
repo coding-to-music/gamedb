@@ -1,6 +1,7 @@
 package pages
 
 import (
+	"encoding/json"
 	"html/template"
 	"net/http"
 	"regexp"
@@ -706,6 +707,26 @@ func appReviewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var hc influx.HighChartsJSON
 
 	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
+
+		// Update negative numbers to be negative
+		var negCol int
+		for k, v := range resp.Results[0].Series[0].Columns {
+			if strings.HasSuffix(v, "negative") {
+				negCol = k
+			}
+		}
+		if negCol > 0 {
+			for k, v := range resp.Results[0].Series[0].Values {
+				if len(v) >= negCol {
+					if val, ok := v[negCol].(json.Number); ok {
+						i, err := val.Float64()
+						if err == nil {
+							resp.Results[0].Series[0].Values[k][negCol] = json.Number(helpers.FloatToString(-i, 2))
+						}
+					}
+				}
+			}
+		}
 
 		hc = influx.InfluxResponseToHighCharts(resp.Results[0].Series[0])
 	}
