@@ -3,7 +3,7 @@ if ($('#chat-bot-page').length > 0) {
     const $container = $('table#recent tbody');
 
     $.ajax({
-        url: '/chat-bot/commands.json',
+        url: '/discord-bot/commands.json',
         dataType: 'json',
         cache: false,
         success: function (data, textStatus, jqXHR) {
