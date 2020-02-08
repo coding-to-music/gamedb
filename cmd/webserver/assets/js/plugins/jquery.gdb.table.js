@@ -212,7 +212,7 @@
                     : $pagination.show();
 
                 // Update URL
-                if ($(parent.element).is(":visible")) {
+                if ($(parent.element).is(":visible:not([data-ordering=false])")) {
 
                     const order = dt.order();
                     if (order && order[0]) {
