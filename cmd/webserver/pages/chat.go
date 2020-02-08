@@ -65,6 +65,9 @@ func ChatRouter() http.Handler {
 
 func chatHandler(w http.ResponseWriter, r *http.Request) {
 
+	http.Redirect(w, r, "https://discord.gg/c5zrcus", http.StatusFound)
+	return
+
 	// Get ID from URL
 	id := chi.URLParam(r, "id")
 	if id == "" {

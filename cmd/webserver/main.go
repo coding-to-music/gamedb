@@ -82,13 +82,13 @@ func main() {
 	r.Mount("/bundles", pages.BundlesRouter())
 	r.Mount("/categories", pages.CategoriesRouter())
 	r.Mount("/changes", pages.ChangesRouter())
-	r.Mount("/chat", pages.ChatRouter())
 	r.Mount("/commits", pages.CommitsRouter())
 	r.Mount("/contact", pages.ContactRouter())
 	r.Mount("/coop", pages.CoopRouter())
 	r.Mount("/depots", pages.DepotsRouter())
 	r.Mount("/developers", pages.DevelopersRouter())
 	r.Mount("/discord-bot", pages.ChatBotRouter())
+	r.Mount("/discord-server", pages.ChatRouter())
 	r.Mount("/donate", pages.DonateRouter())
 	r.Mount("/experience", pages.ExperienceRouter())
 	r.Mount("/forgot", pages.ForgotRouter())
@@ -182,6 +182,12 @@ func main() {
 	})
 	r.Get("/chat-bot", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/discord-bot", http.StatusFound)
+	})
+	r.Get("/chat", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/discord-server", http.StatusFound)
+	})
+	r.Get("/chat/{id}", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/discord-server", http.StatusFound)
 	})
 
 	// 404
