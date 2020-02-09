@@ -149,6 +149,20 @@
             <div class="col-12 col-lg-4" id="new-releases">
 
                 <div class="card mb-4">
+                    <h5 class="card-header">Player Search</h5>
+                    <div class="card-body">
+                        <form action="/players/add" method="post">
+                            <div class="form-group">
+                                <input type="search" class="form-control" id="search" name="search" placeholder="Steam URL / ID" autofocus required>
+                            </div>
+
+                            <button type="submit" class="btn btn-success">Search</button>
+                        </form>
+                    </div>
+
+                </div>
+
+                <div class="card mb-4">
                     <h5 class="card-header">{{ .Spotlight.Title }}</h5>
                     <div class="card-body">
                         <p class="mb-1">{{ .Spotlight.Text }}</p>
