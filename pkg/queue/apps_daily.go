@@ -10,6 +10,7 @@ import (
 	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	influx "github.com/influxdata/influxdb1-client"
+	"google.golang.org/api/googleapi"
 )
 
 type AppDailyMessage struct {
@@ -39,23 +40,31 @@ func appDailyHandler(messages []*rabbit.Message) {
 
 			views, comments, err := getYouTubeStats(name)
 			if err != nil {
+
+				if val, ok := err.(*googleapi.Error); ok && val.Code == 403 {
+					time.Sleep(time.Minute)
+				}
+
 				log.Err(err, payload.ID)
 				sendToRetryQueue(messages...)
 				return
 			}
 
-			points = append(points, influx.Point{
-				Measurement: string(influxHelper.InfluxMeasurementApps),
-				Tags: map[string]string{
-					"app_id": strconv.Itoa(payload.ID),
-				},
-				Fields: map[string]interface{}{
-					"youtube_views":    views,
-					"youtube_comments": comments,
-				},
-				Time:      time.Now(),
-				Precision: "h",
-			})
+			if views > 0 || comments > 0 {
+
+				points = append(points, influx.Point{
+					Measurement: string(influxHelper.InfluxMeasurementApps),
+					Tags: map[string]string{
+						"app_id": strconv.Itoa(payload.ID),
+					},
+					Fields: map[string]interface{}{
+						"youtube_views":    int64(views),
+						"youtube_comments": int64(comments),
+					},
+					Time:      time.Now(),
+					Precision: "h",
+				})
+			}
 		}
 
 		//

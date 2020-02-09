@@ -36,7 +36,7 @@ var (
 	TaskRegister = map[string]TaskInterface{}
 	tasks        = []TaskInterface{
 		AppPlayers{},
-		// AppsDaily{},
+		AppsDaily{},
 		AppQueueAll{},
 		AutoPlayerRefreshes{},
 		DevCodeRun{},
