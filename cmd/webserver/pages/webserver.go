@@ -10,6 +10,7 @@ import (
 	"math/rand"
 	"net/http"
 	"net/url"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -415,6 +416,36 @@ func (t GlobalTemplate) GetMetaImage() (text string) {
 	return t.metaImage
 }
 
+func (t GlobalTemplate) GetEventBadges() (badges []mongo.PlayerBadge) {
+
+	for _, v := range mongo.GlobalBadges {
+		if v.AppID == 0 {
+			badges = append(badges, v)
+		}
+	}
+
+	sort.Slice(badges, func(i, j int) bool {
+		return badges[i].GetUniqueID() > badges[j].GetUniqueID()
+	})
+
+	return badges[0:3]
+}
+
+func (t GlobalTemplate) GetAppBadges() (badges []mongo.PlayerBadge) {
+
+	for _, v := range mongo.GlobalBadges {
+		if v.AppID > 0 {
+			badges = append(badges, v)
+		}
+	}
+
+	sort.Slice(badges, func(i, j int) bool {
+		return badges[i].GetUniqueID() > badges[j].GetUniqueID()
+	})
+
+	return badges[0:3]
+}
+
 func (t GlobalTemplate) GetCookieFlag(key string) interface{} {
 
 	c, err := t.request.Cookie("gamedb-session-2")
@@ -470,12 +501,14 @@ func (t GlobalTemplate) IsStatsPage() bool {
 	return helpers.SliceHasString([]string{"stats", "tags", "genres", "publishers", "developers"}, strings.TrimPrefix(t.Path, "/"))
 }
 
+func (t GlobalTemplate) IsBadgesPage() bool {
+
+	return strings.HasPrefix(t.Path, "/badges")
+}
+
 func (t GlobalTemplate) IsPlayersPage() bool {
 
-	if strings.HasPrefix(t.Path, "/players") {
-		return true
-	}
-	return helpers.SliceHasString([]string{"badges"}, strings.TrimPrefix(t.Path, "/"))
+	return strings.HasPrefix(t.Path, "/players")
 }
 
 func (t GlobalTemplate) IsSettingsPage() bool {

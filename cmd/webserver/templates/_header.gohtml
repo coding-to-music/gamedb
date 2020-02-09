@@ -125,8 +125,29 @@
                         <div class="dropdown-menu">
 
                             <a class="dropdown-item" href="/players">Players</a>
-                            <a class="dropdown-item" href="/badges">Badges</a>
                             <a class="dropdown-item" href="/players/add">Add Player</a>
+
+                        </div>
+                    </li>
+
+                    <li class="nav-item dropdown {{if .IsBadgesPage }}active{{end}}">
+                        <a class="nav-link dropdown-toggle d-lg-none" href="#" data-toggle="dropdown">Badges</a>
+                        <a class="nav-link dropdown-toggle d-none d-lg-block" href="/badges" data-toggle="dropdown">Badges</a>
+                        <div class="dropdown-menu">
+
+                            <a class="dropdown-item" href="/badges">Badges</a>
+
+                            <div class="dropdown-divider"></div>
+
+                            {{ range $key, $value:= .GetEventBadges }}
+                                <a class="dropdown-item" href="/badges/{{ .GetUniqueID }}">{{ .BadgeName }}</a>
+                            {{ end }}
+
+                            <div class="dropdown-divider"></div>
+
+                            {{ range $key, $value:= .GetAppBadges }}
+                                <a class="dropdown-item" href="/badges/{{ .GetUniqueID }}">{{ .BadgeName }}</a>
+                            {{ end }}
 
                         </div>
                     </li>
@@ -183,10 +204,6 @@
 
                         </div>
                     </li>
-
-                    {{/*                    <li class="nav-item {{if startsWith .Path "/badges" }}active{{end}}">*/}}
-                    {{/*                        <a class="nav-link" href="/badges">Badges</a>*/}}
-                    {{/*                    </li>*/}}
 
                     <li class="nav-item dropdown {{if .IsMorePage }}active{{end}}">
                         <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">More</a>
