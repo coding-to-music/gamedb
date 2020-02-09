@@ -11,16 +11,16 @@
 
         {{ template "_flashes" . }}
 
-        {{ if not (.GetCookieFlag "home-message") }}
-            <div class="jumbotron">
-                <button type="button" class="close" data-dismiss="alert" data-id="home-message">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-                <p class="mb-0">
-                    Welcome to Game DB. We gather all the public information we can from Steam.
-                    We then use this to show statistics on players and games etc.</p>
-            </div>
-        {{ end }}
+        {{/*        {{ if not (.GetCookieFlag "home-message") }}*/}}
+        {{/*            <div class="jumbotron">*/}}
+        {{/*                <button type="button" class="close" data-dismiss="alert" data-id="home-message">*/}}
+        {{/*                    <span aria-hidden="true">&times;</span>*/}}
+        {{/*                </button>*/}}
+        {{/*                <p class="mb-0">*/}}
+        {{/*                    Welcome to Game DB. We gather all the public information we can from Steam.*/}}
+        {{/*                    We then use this to show statistics on players and games etc.</p>*/}}
+        {{/*            </div>*/}}
+        {{/*        {{ end }}*/}}
 
         <div class="row">
             <div class="col-12 col-lg-8">
