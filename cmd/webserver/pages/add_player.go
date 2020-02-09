@@ -5,7 +5,6 @@ import (
 	"path"
 	"strconv"
 
-	"github.com/Jleagle/recaptcha-go"
 	"github.com/Jleagle/session-go/session"
 	steam2 "github.com/Jleagle/steam-go/steam"
 	"github.com/Jleagle/steam-go/steamid"
@@ -44,17 +43,17 @@ func playerAddHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			// Recaptcha
-			if config.IsProd() {
-				err = recaptcha.CheckFromRequest(r)
-				if err != nil {
-
-					if err == recaptcha.ErrNotChecked {
-						return "Please check the captcha"
-					}
-
-					return err.Error()
-				}
-			}
+			// if config.IsProd() {
+			// 	err = recaptcha.CheckFromRequest(r)
+			// 	if err != nil {
+			//
+			// 		if err == recaptcha.ErrNotChecked {
+			// 			return "Please check the captcha"
+			// 		}
+			//
+			// 		return err.Error()
+			// 	}
+			// }
 
 			resp, b, err := client.ResolveVanityURL(search, steam2.VanityURLProfile)
 			err = steam.AllowSteamCodes(err, b, nil)
