@@ -130,28 +130,6 @@
                         </div>
                     </li>
 
-                    <li class="nav-item dropdown {{if .IsBadgesPage }}active{{end}}">
-                        <a class="nav-link dropdown-toggle d-lg-none" href="#" data-toggle="dropdown">Badges</a>
-                        <a class="nav-link dropdown-toggle d-none d-lg-block" href="/badges" data-toggle="dropdown">Badges</a>
-                        <div class="dropdown-menu">
-
-                            <a class="dropdown-item" href="/badges">Badges</a>
-
-                            <div class="dropdown-divider"></div>
-
-                            {{ range $key, $value:= .GetEventBadges }}
-                                <a class="dropdown-item" href="/badges/{{ .GetUniqueID }}">{{ .BadgeName }}</a>
-                            {{ end }}
-
-                            <div class="dropdown-divider"></div>
-
-                            {{ range $key, $value:= .GetAppBadges }}
-                                <a class="dropdown-item" href="/badges/{{ .GetUniqueID }}">{{ .BadgeName }}</a>
-                            {{ end }}
-
-                        </div>
-                    </li>
-
                     <li class="nav-item dropdown {{if .IsAppsPage }}active{{end}}">
                         <a class="nav-link dropdown-toggle d-lg-none" href="#" data-toggle="dropdown">Games</a>
                         <a class="nav-link dropdown-toggle d-none d-lg-block" href="/apps" data-toggle="dropdown">Games</a>
@@ -175,6 +153,28 @@
                             <div class="dropdown-divider"></div>
 
                             <a class="dropdown-item" href="/coop">Co-op Games</a>
+
+                        </div>
+                    </li>
+
+                    <li class="nav-item dropdown {{if .IsBadgesPage }}active{{end}}">
+                        <a class="nav-link dropdown-toggle d-lg-none" href="#" data-toggle="dropdown">Badges</a>
+                        <a class="nav-link dropdown-toggle d-none d-lg-block" href="/badges" data-toggle="dropdown">Badges</a>
+                        <div class="dropdown-menu">
+
+                            <a class="dropdown-item" href="/badges">Badges</a>
+
+                            <div class="dropdown-divider"></div>
+
+                            {{ range $key, $value:= .GetEventBadges }}
+                                <a class="dropdown-item" href="/badges/{{ .GetUniqueID }}">{{ .BadgeName }}</a>
+                            {{ end }}
+
+                            <div class="dropdown-divider"></div>
+
+                            {{ range $key, $value:= .GetAppBadges }}
+                                <a class="dropdown-item" href="/badges/{{ .GetUniqueID }}">{{ .BadgeName }}</a>
+                            {{ end }}
 
                         </div>
                     </li>
