@@ -269,7 +269,7 @@ func adminQueues(r *http.Request) {
 		for _, val := range vals {
 
 			err := queue.ProduceGroup(queue.GroupMessage{ID: val, UserAgent: &ua})
-			err = helpers.IgnoreErrors(err, queue.ErrIsBot)
+			err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
 			log.Err(err, r)
 		}
 	}

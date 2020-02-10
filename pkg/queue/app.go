@@ -359,6 +359,7 @@ func appHandler(messages []*rabbit.Message) {
 		// Queue group
 		if app.GroupID != "" {
 			err = ProduceGroup(GroupMessage{ID: app.GroupID})
+			err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 			log.Err(err)
 		}
 

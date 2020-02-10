@@ -192,7 +192,10 @@ func groupsHandler(messages []*rabbit.Message) {
 		}
 
 		// Clear memcache
-		err = memcache.RemoveKeyFromMemCacheViaPubSub(payload.ID)
+		err = memcache.RemoveKeyFromMemCacheViaPubSub(
+			memcache.MemcacheGroup(payload.ID).Key,
+			memcache.MemcacheGroupInQueue(payload.ID).Key,
+		)
 		log.Err(err)
 
 		// Send websocket

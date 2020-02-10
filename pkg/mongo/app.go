@@ -870,7 +870,7 @@ func TrendingApps() (apps []App, err error) {
 
 func GetAppTypes() (counts []AppTypeCount, err error) {
 
-	var item = memcache.MemcacheAppTypesCounts
+	var item = memcache.MemcacheAppTypeCounts
 
 	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &counts, func() (interface{}, error) {
 

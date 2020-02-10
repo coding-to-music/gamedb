@@ -8,13 +8,9 @@ import (
 )
 
 var (
-	// Counts
-	MemcacheAppsWithAchievementsCount = memcache.Item{Key: "apps-achievements-count", Expiration: 86400}
-	MemcachePackagesCount             = memcache.Item{Key: "packages-count", Expiration: 86400}
-	MemcacheBundlesCount              = memcache.Item{Key: "bundles-count", Expiration: 86400}
-	MemcachePricesCount               = memcache.Item{Key: "prices-count", Expiration: 86400 * 7}
-	MemcacheAppTypeCounts             = memcache.Item{Key: "app-type-counts", Expiration: 60 * 60 * 24 * 2}
-	MemcacheMongoCount                = func(key string) memcache.Item { return memcache.Item{Key: "mongo-count-" + key, Expiration: 60 * 60} }
+	// SQL Counts
+	MemcacheBundlesCount = memcache.Item{Key: "bundles-count", Expiration: 86400}
+	MemcacheMongoCount   = func(key string) memcache.Item { return memcache.Item{Key: "mongo-count-" + key, Expiration: 60 * 60} }
 
 	// Apps Page Dropdowns
 	MemcacheTagKeyNames       = memcache.Item{Key: "tag-key-names", Expiration: 86400 * 7}
@@ -22,19 +18,15 @@ var (
 	MemcacheGenreKeyNames     = memcache.Item{Key: "genre-key-names", Expiration: 86400 * 7}
 	MemcachePublisherKeyNames = memcache.Item{Key: "publisher-key-names", Expiration: 86400 * 7}
 	MemcacheDeveloperKeyNames = memcache.Item{Key: "developer-key-names", Expiration: 86400 * 7}
-	MemcacheAppTypesCounts    = memcache.Item{Key: "app-types", Expiration: 86400 * 7}
+	MemcacheAppTypeCounts     = memcache.Item{Key: "app-type-counts", Expiration: 86400 * 7}
 
 	// Single Rows
-	MemcacheApp                 = func(id int) memcache.Item { return memcache.Item{Key: "app-" + strconv.Itoa(id), Expiration: 0} }
-	MemcacheChange              = func(changeID int64) memcache.Item { return memcache.Item{Key: "change-" + strconv.FormatInt(changeID, 10), Expiration: 0} }
-	MemcacheGroup               = func(id string) memcache.Item { return memcache.Item{Key: "group-" + id, Expiration: 0} }
-	MemcachePackage             = func(id int) memcache.Item { return memcache.Item{Key: "package-" + strconv.Itoa(id), Expiration: 0} }
-	MemcachePlayer              = func(id int64) memcache.Item { return memcache.Item{Key: "player-" + strconv.FormatInt(id, 10), Expiration: 0} }
-	MemcacheConfigItem          = func(id string) memcache.Item { return memcache.Item{Key: "config-item-" + id, Expiration: 0} }
-	MemcacheAppPlayersRow       = func(appID int) memcache.Item { return memcache.Item{Key: "app-players-" + strconv.Itoa(appID), Expiration: 10 * 60} }
-	MemcacheAppPlayersInGameRow = memcache.Item{Key: "app-players-in-game-0", Expiration: 10 * 60}
-	MemcacheStatRowID           = func(c string, id int) memcache.Item { return memcache.Item{Key: c + "-stat-id-" + strconv.Itoa(id), Expiration: 60 * 60 * 24} }
-	MemcacheStatRowName         = func(c string, name string) memcache.Item { return memcache.Item{Key: c + "-stat-name-" + name, Expiration: 60 * 60 * 24} }
+	MemcacheApp        = func(id int) memcache.Item { return memcache.Item{Key: "app-" + strconv.Itoa(id), Expiration: 0} }
+	MemcacheChange     = func(changeID int64) memcache.Item { return memcache.Item{Key: "change-" + strconv.FormatInt(changeID, 10), Expiration: 0} }
+	MemcacheGroup      = func(id string) memcache.Item { return memcache.Item{Key: "group-" + id, Expiration: 0} }
+	MemcachePackage    = func(id int) memcache.Item { return memcache.Item{Key: "package-" + strconv.Itoa(id), Expiration: 0} }
+	MemcachePlayer     = func(id int64) memcache.Item { return memcache.Item{Key: "player-" + strconv.FormatInt(id, 10), Expiration: 0} }
+	MemcacheConfigItem = func(id string) memcache.Item { return memcache.Item{Key: "config-item-" + id, Expiration: 0} }
 
 	// Queue checks - 1 Hour timeout
 	MemcacheAppInQueue     = func(appID int) memcache.Item { return memcache.Item{Key: "app-in-queue-" + strconv.Itoa(appID), Expiration: 60 * 60, Value: []byte("1")} }
@@ -42,9 +34,6 @@ var (
 	MemcachePackageInQueue = func(packageID int) memcache.Item { return memcache.Item{Key: "package-in-queue-" + strconv.Itoa(packageID), Expiration: 60 * 60, Value: []byte("1")} }
 	MemcachePlayerInQueue  = func(playerID int64) memcache.Item { return memcache.Item{Key: "profile-in-queue-" + strconv.FormatInt(playerID, 10), Expiration: 60 * 60, Value: []byte("1")} }
 	MemcacheGroupInQueue   = func(groupID string) memcache.Item { return memcache.Item{Key: "group-in-queue-" + groupID, Expiration: 60 * 60, Value: []byte("1")} }
-
-	// Home
-	MemcacheHomePlayers = func(sort string) memcache.Item { return memcache.Item{Key: "home-players-" + sort, Expiration: 60 * 60 * 48} }
 
 	// App Bits
 	MemcacheAppTags       = func(appID int) memcache.Item { return memcache.Item{Key: "app-tags-" + strconv.Itoa(appID), Expiration: 0} }
@@ -61,19 +50,32 @@ var (
 	// Package Bits
 	MemcachePackageBundles = func(packageID int) memcache.Item { return memcache.Item{Key: "package-bundles-" + strconv.Itoa(packageID), Expiration: 0} }
 
-	// Players
-	MemcachePlayerLevels = memcache.Item{Key: "player-levels", Expiration: 60 * 60 * 24}
+	// Home
+	MemcacheHomePlayers = func(sort string) memcache.Item { return memcache.Item{Key: "home-players-" + sort, Expiration: 60 * 60 * 48} }
+
+	// Queues page
+	MemcacheQueues = memcache.Item{Key: "queues", Expiration: 10}
+
+	// Chat page
+	MemcacheChatBotGuilds = memcache.Item{Key: "chat-bot-guilds", Expiration: 60 * 60 * 24}
+
+	// Sales page
+	MemcacheUniqueSaleTypes = memcache.Item{Key: "unique-sale-types", Expiration: 60 * 60 * 1}
+
+	// Players online
+	MemcacheAppPlayersRow       = func(appID int) memcache.Item { return memcache.Item{Key: "app-players-" + strconv.Itoa(appID), Expiration: 10 * 60} }
+	MemcacheAppPlayersInGameRow = memcache.Item{Key: "app-players-in-game-0", Expiration: 10 * 60}
+
+	// Queries
+	MemcachePopularApps    = memcache.Item{Key: "popular-apps", Expiration: 60 * 3}
+	MemcachePopularNewApps = memcache.Item{Key: "popular-new-apps", Expiration: 60}
+	MemcacheTrendingApps   = memcache.Item{Key: "trending-apps", Expiration: 60 * 10}
 
 	// Other
-	MemcacheQueues                   = memcache.Item{Key: "queues", Expiration: 10}
-	MemcachePopularApps              = memcache.Item{Key: "popular-apps", Expiration: 60 * 3}
-	MemcachePopularNewApps           = memcache.Item{Key: "popular-new-apps", Expiration: 60}
-	MemcacheTrendingApps             = memcache.Item{Key: "trending-apps", Expiration: 60 * 10}
 	MemcacheTotalCommits             = memcache.Item{Key: "total-commits", Expiration: 60 * 60}
 	MemcacheStatsAppTypes            = func(code steam.ProductCC) memcache.Item { return memcache.Item{Key: "stats-app-types-" + string(code), Expiration: 60 * 60 * 25} }
 	MemcacheUserByAPIKey             = func(key string) memcache.Item { return memcache.Item{Key: "user-level-by-key-" + key, Expiration: 10 * 60} }
 	MemcacheUniquePlayerCountryCodes = memcache.Item{Key: "unique-player-country-codes", Expiration: 60 * 60 * 24 * 7}
-	MemcacheUniquePlayerStateCodes   = func(c string) memcache.Item { return memcache.Item{Key: "unique-player-state-codes-" + c, Expiration: 60 * 60 * 24 * 7} }
-	MemcacheUniqueSaleTypes          = memcache.Item{Key: "unique-sale-types", Expiration: 60 * 60 * 1}
-	MemcacheChatBotGuilds            = memcache.Item{Key: "chat-bot-guilds", Expiration: 60 * 60 * 24}
+	MemcacheUniquePlayerStateCodes   = func(countryCode string) memcache.Item { return memcache.Item{Key: "unique-player-state-codes-" + countryCode, Expiration: 60 * 60 * 24 * 7} }
+	MemcachePlayerLevels             = memcache.Item{Key: "player-levels", Expiration: 60 * 60 * 24}
 )

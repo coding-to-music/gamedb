@@ -1,14 +1,18 @@
 package mongo
 
 import (
+	"errors"
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
+
+var ErrInvalidGroupID = errors.New("invalid group id")
 
 type Group struct {
 	ID            string    `bson:"_id"` // Too big for int64 in Javascript (Mongo BD)
@@ -116,18 +120,26 @@ func (group Group) ShouldUpdate() bool {
 	return group.UpdatedAt.Before(time.Now().Add(time.Hour * -1))
 }
 
-// Don't cache, as we need updatedAt to be live for notifications etc
 func GetGroup(id string) (group Group, err error) {
 
-	id, err = helpers.UpgradeGroupID(id)
-	if err != nil {
-		return group, err
+	if !helpers.IsValidGroupID(id) {
+		return group, ErrInvalidGroupID
 	}
 
-	err = FindOne(CollectionGroups, bson.D{{"_id", id}}, nil, nil, &group)
-	if group.ID == "" {
-		return group, ErrNoDocuments
-	}
+	var item = memcache.MemcacheGroup(id)
+
+	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &group, func() (interface{}, error) {
+
+		err = FindOne(CollectionGroups, bson.D{{"_id", id}}, nil, nil, &group)
+		if err != nil {
+			return group, err
+		}
+		if group.ID == "" {
+			return group, ErrNoDocuments
+		}
+
+		return group, err
+	})
 
 	return group, err
 }

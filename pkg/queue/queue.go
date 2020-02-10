@@ -284,7 +284,20 @@ func ProduceGroup(payload GroupMessage) (err error) {
 		return err
 	}
 
-	return produce(QueueGroups, payload)
+	mc := memcache.GetClient()
+	item := memcache.MemcacheGroupInQueue(payload.ID)
+
+	_, err = mc.Get(item.Key)
+	if err == nil {
+		return memcache.ErrInQueue
+	}
+
+	err = produce(QueueGroups, payload)
+	if err == nil {
+		err = mc.Set(&item)
+	}
+
+	return err
 }
 
 func ProducePackage(payload PackageMessage) (err error) {

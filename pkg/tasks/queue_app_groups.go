@@ -3,6 +3,8 @@ package tasks
 import (
 	"strconv"
 
+	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
@@ -35,6 +37,7 @@ func (c QueueAppGroups) work() (err error) {
 	for _, app := range apps {
 
 		err = queue.ProduceGroup(queue.GroupMessage{ID: app.GroupID})
+		err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 		if err != nil {
 			log.Err(err)
 		}
