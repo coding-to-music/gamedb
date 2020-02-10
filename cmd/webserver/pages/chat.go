@@ -2,8 +2,6 @@ package pages
 
 import (
 	"net/http"
-	"strings"
-	"sync"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -16,7 +14,7 @@ import (
 )
 
 const (
-	guildID          = "407493776597057538"
+	// guildID          = "407493776597057538"
 	generalChannelID = "407493777058693121"
 )
 
@@ -29,30 +27,31 @@ func init() {
 	discordRelayBotSession, err = discordgo.New("Bot " + config.Config.DiscordRelayBotToken.Get())
 	if err != nil {
 		log.Err(err)
+		return
 	}
 
-	discordRelayBotSession.AddHandler(func(session *discordgo.Session, message *discordgo.MessageCreate) {
-
-		page := websockets.GetPage(websockets.PageChat)
-		if page != nil {
-			page.Send(websockets.ChatPayload{
-				AuthorID:     message.Author.ID,
-				AuthorUser:   message.Author.Username,
-				AuthorAvatar: message.Author.Avatar,
-				Content:      string(blackfriday.Run([]byte(message.Content), blackfriday.WithNoExtensions())),
-				Channel:      message.ChannelID,
-				Time:         string(message.Timestamp),
-				Embeds:       len(message.Embeds) > 0,
-				I:            0,
-			})
-		}
-	})
-
-	// Open connection
-	err = discordRelayBotSession.Open()
-	if err != nil {
-		log.Err(err)
-	}
+	// discordRelayBotSession.AddHandler(func(session *discordgo.Session, message *discordgo.MessageCreate) {
+	//
+	// 	page := websockets.GetPage(websockets.PageChat)
+	// 	if page != nil {
+	// 		page.Send(websockets.ChatPayload{
+	// 			AuthorID:     message.Author.ID,
+	// 			AuthorUser:   message.Author.Username,
+	// 			AuthorAvatar: message.Author.Avatar,
+	// 			Content:      string(blackfriday.Run([]byte(message.Content), blackfriday.WithNoExtensions())),
+	// 			Channel:      message.ChannelID,
+	// 			Time:         string(message.Timestamp),
+	// 			Embeds:       len(message.Embeds) > 0,
+	// 			I:            0,
+	// 		})
+	// 	}
+	// })
+	//
+	// // Open connection
+	// err = discordRelayBotSession.Open()
+	// if err != nil {
+	// 	log.Err(err)
+	// }
 }
 
 func ChatRouter() http.Handler {
@@ -66,106 +65,105 @@ func ChatRouter() http.Handler {
 func chatHandler(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, "https://discord.gg/c5zrcus", http.StatusFound)
-	return
 
-	// Get ID from URL
-	id := chi.URLParam(r, "id")
-	if id == "" {
-		http.Redirect(w, r, "/chat/"+generalChannelID, http.StatusFound)
-		return
-	}
-
-	// Template
-	t := chatTemplate{}
-	t.fill(w, r, "Chat", "The Game DB community.")
-	t.ChannelID = id
-	t.addAssetJSON2HTML()
-
+	// // Get ID from URL
+	// id := chi.URLParam(r, "id")
+	// if id == "" {
+	// 	http.Redirect(w, r, "/chat/"+generalChannelID, http.StatusFound)
+	// 	return
+	// }
 	//
-	var wg sync.WaitGroup
-	var discordErr error
-
-	// Get channels
-	wg.Add(1)
-	go func() {
-
-		defer wg.Done()
-
-		var channelsResponse []*discordgo.Channel
-
-		operation := func() (err error) {
-			channelsResponse, err = discordRelayBotSession.GuildChannels(guildID)
-			return err
-		}
-
-		policy := backoff.NewExponentialBackOff()
-
-		err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err, r) })
-		if err != nil {
-			discordErr = err
-			log.Critical(err, r)
-		}
-
-		for _, v := range channelsResponse {
-			if v.Type == discordgo.ChannelTypeGuildText {
-
-				// Fix channel name
-				v.Name = strings.Replace(v.Name, "-", " ", 1)
-				v.Name = strings.Replace(v.Name, "db", "DB", 1)
-				v.Name = strings.Title(v.Name)
-
-				t.Channels = append(t.Channels, v)
-			}
-		}
-
-	}()
-
-	// Get members
-	wg.Add(1)
-	go func() {
-
-		defer wg.Done()
-
-		var membersResponse []*discordgo.Member
-
-		operation := func() (err error) {
-			membersResponse, err = discordRelayBotSession.GuildMembers(guildID, "", 1000)
-			return err
-		}
-
-		policy := backoff.NewExponentialBackOff()
-
-		err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err, r) })
-		if err != nil {
-			discordErr = err
-			log.Critical(err, r)
-		}
-
-		for _, v := range membersResponse {
-			if !v.User.Bot {
-				t.Members = append(t.Members, v)
-			}
-		}
-
-	}()
-
-	// Wait
-	wg.Wait()
-
-	if discordErr != nil {
-		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Could not connect to Discord."})
-		return
-	}
-
-	returnTemplate(w, r, "chat", t)
+	// // Template
+	// t := chatTemplate{}
+	// t.fill(w, r, "Chat", "The Game DB community.")
+	// t.ChannelID = id
+	// t.addAssetJSON2HTML()
+	//
+	// //
+	// var wg sync.WaitGroup
+	// var discordErr error
+	//
+	// // Get channels
+	// wg.Add(1)
+	// go func() {
+	//
+	// 	defer wg.Done()
+	//
+	// 	var channelsResponse []*discordgo.Channel
+	//
+	// 	operation := func() (err error) {
+	// 		channelsResponse, err = discordRelayBotSession.GuildChannels(guildID)
+	// 		return err
+	// 	}
+	//
+	// 	policy := backoff.NewExponentialBackOff()
+	//
+	// 	err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err, r) })
+	// 	if err != nil {
+	// 		discordErr = err
+	// 		log.Critical(err, r)
+	// 	}
+	//
+	// 	for _, v := range channelsResponse {
+	// 		if v.Type == discordgo.ChannelTypeGuildText {
+	//
+	// 			// Fix channel name
+	// 			v.Name = strings.Replace(v.Name, "-", " ", 1)
+	// 			v.Name = strings.Replace(v.Name, "db", "DB", 1)
+	// 			v.Name = strings.Title(v.Name)
+	//
+	// 			t.Channels = append(t.Channels, v)
+	// 		}
+	// 	}
+	//
+	// }()
+	//
+	// // Get members
+	// wg.Add(1)
+	// go func() {
+	//
+	// 	defer wg.Done()
+	//
+	// 	var membersResponse []*discordgo.Member
+	//
+	// 	operation := func() (err error) {
+	// 		membersResponse, err = discordRelayBotSession.GuildMembers(guildID, "", 1000)
+	// 		return err
+	// 	}
+	//
+	// 	policy := backoff.NewExponentialBackOff()
+	//
+	// 	err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err, r) })
+	// 	if err != nil {
+	// 		discordErr = err
+	// 		log.Critical(err, r)
+	// 	}
+	//
+	// 	for _, v := range membersResponse {
+	// 		if !v.User.Bot {
+	// 			t.Members = append(t.Members, v)
+	// 		}
+	// 	}
+	//
+	// }()
+	//
+	// // Wait
+	// wg.Wait()
+	//
+	// if discordErr != nil {
+	// 	returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Could not connect to Discord."})
+	// 	return
+	// }
+	//
+	// returnTemplate(w, r, "chat", t)
 }
 
-type chatTemplate struct {
-	GlobalTemplate
-	ChannelID string
-	Channels  []*discordgo.Channel
-	Members   []*discordgo.Member
-}
+// type chatTemplate struct {
+// 	GlobalTemplate
+// 	ChannelID string
+// 	Channels  []*discordgo.Channel
+// 	Members   []*discordgo.Member
+// }
 
 func chatAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
