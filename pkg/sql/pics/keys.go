@@ -2,6 +2,7 @@ package pics
 
 import (
 	"html/template"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -63,6 +64,8 @@ var CommonKeys = map[string]PicsKey{
 	"original_release_date":         {FormatType: picsTypeTimestamp},
 	"oslist":                        {FormatType: picsTypeTextListString, Link: "/apps?platforms=$val$"},
 	"openvrsupport":                 {FormatType: picsTypeBool},
+	"requireskbmouse":               {FormatType: picsTypeBool},
+	"market_presence":               {FormatType: picsTypeBool},
 	"parent":                        {FormatType: picsTypeLink, Link: "/apps/$val$"},
 	"playareavr":                    {FormatType: picsTypeJSON},
 	"primary_genre":                 {FormatType: picsTypeLink, Link: "/apps?genres=$val$"},
@@ -84,6 +87,7 @@ var ExtendedKeys = map[string]PicsKey{
 	"curatorconnect":                       {FormatType: picsTypeBool},
 	"developer_url":                        {FormatType: picsTypeLink, Link: "$val$"},
 	"dlcavailableonstore":                  {FormatType: picsTypeBool},
+	"disableoverlayinjection":              {FormatType: picsTypeBool},
 	"gamemanualurl":                        {FormatType: picsTypeLink, Link: "$val$"},
 	"homepage":                             {FormatType: picsTypeLink, Link: "$val$"},
 	"isconverteddlc":                       {FormatType: picsTypeBool},
@@ -105,6 +109,7 @@ var ExtendedKeys = map[string]PicsKey{
 	"showcdkeyinmenu":                      {FormatType: picsTypeBool},
 	"showcdkeyonlaunch":                    {FormatType: picsTypeBool},
 	"supportscdkeycopytoclipboard":         {FormatType: picsTypeBool},
+	"languages_macos":                      {FormatType: picsTypeTextListString},
 }
 
 var ConfigKeys = map[string]PicsKey{
@@ -117,6 +122,7 @@ var ConfigKeys = map[string]PicsKey{
 	"signedfiles":                       {FormatType: picsTypeJSON},
 	"steamcontrollerconfigdetails":      {FormatType: picsTypeJSON},
 	"steamcontrollertemplateindex":      {FormatType: picsTypeBool},
+	"steamcontrollertouchtemplateindex": {FormatType: picsTypeBool},
 	"steamcontrollertouchconfigdetails": {FormatType: picsTypeJSON},
 	"systemprofile":                     {FormatType: picsTypeBool},
 	"uselaunchcommandline":              {FormatType: picsTypeBool},
@@ -129,11 +135,12 @@ var ConfigKeys = map[string]PicsKey{
 }
 
 var UFSKeys = map[string]PicsKey{
-	"hidecloudui":   {FormatType: picsTypeBool},
-	"maxnumfiles":   {FormatType: picsTypeNumber},
-	"quota":         {FormatType: picsTypeBytes},
-	"savefiles":     {FormatType: picsTypeCustom},
-	"rootoverrides": {FormatType: picsTypeJSON},
+	"hidecloudui":         {FormatType: picsTypeBool},
+	"ignoreexternalfiles": {FormatType: picsTypeBool},
+	"maxnumfiles":         {FormatType: picsTypeNumber},
+	"quota":               {FormatType: picsTypeBytes},
+	"savefiles":           {FormatType: picsTypeCustom},
+	"rootoverrides":       {FormatType: picsTypeJSON},
 }
 
 type PicsKey struct {
