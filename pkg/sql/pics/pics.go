@@ -45,7 +45,7 @@ type KeyValue struct {
 	Key            string
 	Value          string
 	ValueFormatted interface{}
-	Type           PicsKeyFormatType
+	Type           int
 	Description    string
 }
 

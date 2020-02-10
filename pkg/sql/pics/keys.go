@@ -12,23 +12,24 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 )
 
-type PicsKeyFormatType string
-
 const (
-	picsTypeBool               PicsKeyFormatType = "bool"
-	picsTypeBytes              PicsKeyFormatType = "bytes"
-	picsTypeCustom             PicsKeyFormatType = "custom"
-	picsTypeImage              PicsKeyFormatType = "image"
-	picsTypeJSON               PicsKeyFormatType = "json"
-	picsTypeLink               PicsKeyFormatType = "link"
-	picsTypeMap                PicsKeyFormatType = "map"
-	picsTypeNumber             PicsKeyFormatType = "number"
-	picsTypeNumberListJSON     PicsKeyFormatType = "number-list-json"      // From JSON object
-	picsTypeNumberListJSONKeys PicsKeyFormatType = "number-list-json-keys" // From JSON object keys
-	picsTypeNumberListString   PicsKeyFormatType = "number-list-string"    // From comma string
-	picsTypeTextListString     PicsKeyFormatType = "text-list-string"      // From comma string
-	picsTypeTimestamp          PicsKeyFormatType = "timestamp"
-	picsTypeTitle              PicsKeyFormatType = "title"
+	picsTypeBool = iota + 1
+	picsTypeBytes
+	picsTypeCustom
+	picsTypeImage
+	picsTypeJSON
+	picsTypeLink
+	picsTypeMap
+	picsTypeNumber
+	picsTypeNumberListJSON     // From JSON object
+	picsTypeNumberListJSONKeys // From JSON object keys
+	picsTypeNumberListString   // From comma string
+	picsTypeStringListJSON     // From JSON bject
+	picsTypeTextListString     // From comma string
+	picsTypeTimestamp
+	picsTypeTitle
+	picsTypeTooLong
+	picsTypePercent
 )
 
 var CommonKeys = map[string]PicsKey{
@@ -132,17 +133,17 @@ var UFSKeys = map[string]PicsKey{
 }
 
 type PicsKey struct {
-	FormatType  PicsKeyFormatType
+	FormatType  int
 	Link        string
 	Description string
 }
 
-func getType(key string, keys map[string]PicsKey) PicsKeyFormatType {
+func getType(key string, keys map[string]PicsKey) int {
 
 	if val, ok := keys[key]; ok {
 		return val.FormatType
 	}
-	return ""
+	return 0
 }
 
 func getDescription(key string, keys map[string]PicsKey) string {
