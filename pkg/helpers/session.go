@@ -32,7 +32,8 @@ const (
 	SessionPlayerName  = "player-name"
 
 	//
-	SessionLastPage = "last-page"
+	SessionLastPage    = "last-page"
+	SessionCountryCode = "country-code"
 
 	// Flash groups
 	SessionGood session.FlashGroup = "good"
@@ -128,7 +129,6 @@ func GetProductCC(r *http.Request) steam.ProductCC {
 		}
 
 		ip := net.ParseIP(r.RemoteAddr)
-
 		if ip != nil {
 
 			// More fields available @ https://github.com/oschwald/geoip2-golang/blob/master/reader.go
@@ -148,7 +148,7 @@ func GetProductCC(r *http.Request) steam.ProductCC {
 
 			for _, cc := range GetProdCCs(true) {
 				for _, code := range cc.CountryCodes {
-					if record.Country.ISOCode == string(code) {
+					if record.Country.ISOCode == code {
 						return cc.ProductCode
 					}
 				}
@@ -159,6 +159,65 @@ func GetProductCC(r *http.Request) steam.ProductCC {
 	}()
 
 	err := session.Set(r, SessionUserProdCC, string(cc))
+	log.Err(err)
+
+	return cc
+}
+
+func GetCountryCode(r *http.Request) string {
+
+	ccLock.Lock()
+	defer ccLock.Unlock()
+
+	cc := func() string {
+
+		// Get from session
+		val, err := session.Get(r, SessionCountryCode)
+		log.Err(err)
+		if err == nil && val != "" {
+			return val
+		}
+
+		// If local
+		if strings.Contains(r.RemoteAddr, "[::1]:") {
+			return "GB"
+		}
+
+		// Get from Maxmind
+		if maxMindDB == nil {
+			maxMindDB, err = maxminddb.Open("./assets/files/GeoLite2-Country.mmdb")
+			if err != nil {
+				log.Err(err)
+				return "US"
+			}
+		}
+
+		ip := net.ParseIP(r.RemoteAddr)
+		if ip != nil {
+
+			// More fields available @ https://github.com/oschwald/geoip2-golang/blob/master/reader.go
+			// Only using what we need is faster
+			var record struct {
+				Country struct {
+					ISOCode           string `maxminddb:"iso_code"`
+					IsInEuropeanUnion bool   `maxminddb:"is_in_european_union"`
+				} `maxminddb:"country"`
+			}
+
+			err = maxMindDB.Lookup(ip, &record)
+			if err != nil {
+				log.Err(err)
+				return "US"
+			}
+
+			log.Info(record.Country.ISOCode, "x")
+			return record.Country.ISOCode
+		}
+
+		return "US"
+	}()
+
+	err := session.Set(r, SessionCountryCode, cc)
 	log.Err(err)
 
 	return cc

@@ -124,8 +124,14 @@
                         <a class="nav-link dropdown-toggle d-none d-lg-block" href="/players" data-toggle="dropdown">Players</a>
                         <div class="dropdown-menu">
 
-                            <a class="dropdown-item" href="/players">Players</a>
-                            <a class="dropdown-item" href="/players/add">Add Player</a>
+                            <a class="dropdown-item" href="/players">All Players</a>
+                            <a class="dropdown-item" href="/players?country={{ .CurrentCC }}">{{ .CurrentCC }} Players</a>
+
+                            <div class="dropdown-divider"></div>
+
+                            {{ range $key, $value:= .Continents }}
+                                <a class="dropdown-item" href="/players?country=c-{{ .Key }}">{{ .Value }}</a>
+                            {{ end }}
 
                         </div>
                     </li>

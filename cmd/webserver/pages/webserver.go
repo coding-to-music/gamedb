@@ -227,6 +227,8 @@ type GlobalTemplate struct {
 	IncludeSocialJS bool
 	Canonical       string
 	ProductCCs      []helpers.ProductCountryCode
+	Continents      []helpers.Tuple
+	CurrentCC       string
 
 	Background      string
 	BackgroundTitle string
@@ -264,6 +266,7 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	t.Env = config.Config.Environment.Get()
 	t.Path = r.URL.Path
 	t.ProductCCs = helpers.GetProdCCs(true)
+	t.Continents = helpers.Continents
 
 	val, err := session.Get(r, helpers.SessionUserID)
 	if err != nil {
@@ -308,9 +311,7 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	}
 
 	t.UserProductCC = helpers.GetProdCC(helpers.GetProductCC(r))
-	if err != nil {
-		log.Err(err, r)
-	}
+	t.CurrentCC = helpers.GetCountryCode(r)
 
 	//
 	t.setRandomBackground(true, false)

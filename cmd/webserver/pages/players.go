@@ -112,7 +112,6 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, "Players", "See where you come against the rest of the world")
 	t.Date = date
 	t.Countries = countries
-	t.Continents = helpers.Continents
 	t.States = states
 
 	returnTemplate(w, r, "players", t)
@@ -120,10 +119,9 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 
 type playersTemplate struct {
 	GlobalTemplate
-	Date       string
-	Countries  []playersCountriesTemplate
-	Continents []helpers.Tuple
-	States     map[string][]helpers.Tuple
+	Date      string
+	Countries []playersCountriesTemplate
+	States    map[string][]helpers.Tuple
 }
 
 type playersCountriesTemplate struct {
