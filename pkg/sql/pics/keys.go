@@ -123,6 +123,8 @@ var ConfigKeys = map[string]PicsKey{
 	"usemms":                            {FormatType: picsTypeBool},
 	"verifyupdates":                     {FormatType: picsTypeBool},
 	"vrcompositorsupport":               {FormatType: picsTypeBool},
+	"cegpublickey":                      {FormatType: picsTypeTooLong},
+	"installscriptsignature":            {FormatType: picsTypeTooLong},
 }
 
 var UFSKeys = map[string]PicsKey{
@@ -227,6 +229,11 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 			if err != nil {
 				return val
 			}
+
+			// Shrink keys
+			j = regexp.MustCompile("([A-Z0-9]{31,})").ReplaceAllStringFunc(j, func(s string) string {
+				return s[0:30] + "..."
+			})
 
 			return template.HTML("<div class=\"json\">" + j + "</div>")
 
@@ -335,6 +342,12 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 			}
 
 			return template.HTML(strings.Join(idSlice, ", "))
+
+		case picsTypeTooLong:
+
+			val = regexp.MustCompile("([a-zA-Z0-9]{31,})").ReplaceAllStringFunc(val, func(s string) string {
+				return s[0:30] + "..."
+			})
 
 		case picsTypeMap:
 
