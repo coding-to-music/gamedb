@@ -56,7 +56,7 @@ var CommonKeys = map[string]PicsKey{
 	"logo":                          {FormatType: picsTypeImage, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.jpg"},
 	"logo_small":                    {FormatType: picsTypeImage, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.jpg"},
 	"metacritic_fullurl":            {FormatType: picsTypeLink, Link: "$val$"},
-	"metacritic_score":              {FormatType: picsTypeCustom},
+	"metacritic_score":              {FormatType: picsTypePercent},
 	"onlyvrsupport":                 {FormatType: picsTypeBool},
 	"openvr_controller_bindings":    {FormatType: picsTypeJSON},
 	"original_release_date":         {FormatType: picsTypeTimestamp},
@@ -73,6 +73,7 @@ var CommonKeys = map[string]PicsKey{
 	"supported_languages":           {FormatType: picsTypeCustom},
 	"type":                          {FormatType: picsTypeTitle},
 	"workshop_visible":              {FormatType: picsTypeBool},
+	"review_percentage":             {FormatType: picsTypePercent},
 }
 
 var ExtendedKeys = map[string]PicsKey{
@@ -353,6 +354,10 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 				return template.HTML("<ul class='mb-0 pl-3'>" + strings.Join(items, "") + "</ul>")
 			}
 
+		case picsTypePercent:
+
+			return val + "%"
+
 		case picsTypeCustom:
 
 			switch key {
@@ -484,10 +489,6 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 
 					return template.HTML("<ul class='mb-0 pl-3'>" + strings.Join(items, "") + "</ul>")
 				}
-
-			case "metacritic_score":
-
-				return template.HTML(val + "<small>/100</small>")
 
 			case "savefiles":
 
