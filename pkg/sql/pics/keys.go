@@ -51,6 +51,7 @@ var CommonKeys = map[string]PicsKey{
 	"header_image":                  {FormatType: picsTypeMap},
 	"icon":                          {FormatType: picsTypeImage, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.jpg"},
 	"languages":                     {FormatType: picsTypeCustom},
+	"name_localized":                {FormatType: picsTypeStringListJSON},
 	"library_assets":                {FormatType: picsTypeJSON},
 	"linuxclienticon":               {FormatType: picsTypeLink, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.zip"},
 	"logo":                          {FormatType: picsTypeImage, Link: "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/$app$/$val$.jpg"},
@@ -293,6 +294,22 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 			}
 
 			return template.HTML(strings.Join(idSlice, ", "))
+
+		case picsTypeStringListJSON:
+
+			m := map[string]string{}
+
+			err := helpers.Unmarshal([]byte(val), &m)
+			if err != nil {
+				log.Err(err, val)
+			}
+
+			var items []string
+			for k, v := range m {
+				items = append(items, "<li>"+k+": <span class=font-weight-bold>"+v+"</span></li>")
+			}
+
+			return template.HTML("<ul class='mb-0 pl-3'>" + strings.Join(items, "") + "</ul>")
 
 		case picsTypeNumberListJSONKeys:
 
