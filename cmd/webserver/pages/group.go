@@ -72,7 +72,7 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	t.fill(w, r, group.GetName(), "")
+	t.fill(w, r, group.GetName(), template.HTML(group.Headline))
 	t.addAssetHighCharts()
 	t.Canonical = group.GetPath()
 	t.IncludeSocialJS = true

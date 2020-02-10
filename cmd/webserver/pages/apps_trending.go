@@ -28,7 +28,7 @@ func trendingHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := trendingTemplate{}
-	t.fill(w, r, "Trending", "")
+	t.fill(w, r, "Trending", "Trending Steam Games")
 	t.addAssetHighCharts()
 
 	returnTemplate(w, r, "trending_apps", t)
@@ -119,7 +119,7 @@ func trendingAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			app.GetName(),                       // 1
 			app.GetIcon(),                       // 2
 			app.GetPath(),                       // 3
-			app.Prices.Get(code).GetFinal(),       // 4
+			app.Prices.Get(code).GetFinal(),     // 4
 			helpers.TrendValue(app.PlayerTrend), // 5
 			app.PlayerPeakWeek,                  // 6
 		})

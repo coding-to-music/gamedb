@@ -43,7 +43,7 @@ func badgeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	t := badgeTemplate{}
-	t.fill(w, r, val.BadgeName, "")
+	t.fill(w, r, val.BadgeName, "Steam Badge Leaderboard")
 	t.Badge = val
 	t.Foil = r.URL.Query().Get("foil")
 	t.IncludeSocialJS = true

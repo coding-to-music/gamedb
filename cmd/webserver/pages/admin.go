@@ -69,7 +69,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := adminTemplate{}
-	t.fill(w, r, "Admin", "")
+	t.fill(w, r, "Admin", "Game DB admin")
 	t.hideAds = true
 	t.Configs = configs
 	t.Websockets = websockets.Pages

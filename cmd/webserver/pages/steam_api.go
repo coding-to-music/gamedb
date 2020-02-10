@@ -45,7 +45,7 @@ func steamAPISwaggerHandler(w http.ResponseWriter, r *http.Request) {
 func steamAPIHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := steamAPITemplate{}
-	t.fill(w, r, "Steam API", "")
+	t.fill(w, r, "Steam API", "Steam API documentation")
 
 	var err error
 	var interfaces = Interfaces{}

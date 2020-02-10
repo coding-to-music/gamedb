@@ -45,7 +45,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	t := loginTemplate{}
-	t.fill(w, r, "Login", "Login to Game DB to set your currency and other things.")
+	t.fill(w, r, "Login", "Login to Game DB")
 	t.hideAds = true
 	t.RecaptchaPublic = config.Config.RecaptchaPublic.Get()
 

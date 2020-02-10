@@ -127,7 +127,7 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 	}
-	t.fill(w, r, bundle.Name, "")
+	t.fill(w, r, bundle.Name, "Steam bundle")
 	t.addAssetHighCharts()
 	t.Bundle = bundle
 	t.Canonical = bundle.GetPath()
