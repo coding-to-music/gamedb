@@ -505,12 +505,25 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 							file.Path = ""
 						}
 
-						var platforms []string
-						for _, v := range file.Platforms {
-							platforms = append(platforms, v)
+						pieces := []string{
+							`<strong>Path:</strong> ` + string(file.Path),
+							`<strong>Pattern:</strong> ` + file.Pattern,
+							`<strong>Root:</strong> ` + file.Root,
 						}
 
-						items = append(items, `<li><strong>Path:</strong> `+string(file.Path)+`, <strong>Pattern:</strong> `+file.Pattern+`, <strong>Recursive:</strong> `+file.Recursive+`, <strong>Root:</strong> `+file.Root+`, <strong>Platforms:</strong> `+strings.Join(platforms, ", ")+`</li>`)
+						if file.Recursive != "" {
+							pieces = append(pieces, `<strong>Recursive:</strong> `+file.Recursive)
+						}
+
+						if len(file.Platforms) > 0 {
+							var platforms []string
+							for _, v := range file.Platforms {
+								platforms = append(platforms, v)
+							}
+							pieces = append(pieces, `<strong>Platforms:</strong> `+strings.Join(platforms, ", "))
+						}
+
+						items = append(items, "<li>"+strings.Join(pieces, ", ")+"</li>")
 					}
 
 					return template.HTML("<ul class='mb-0 pl-3'>" + strings.Join(items, "") + "</ul>")
