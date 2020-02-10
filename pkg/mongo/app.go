@@ -607,6 +607,11 @@ func CreateAppIndexes() {
 		Options: options.Index().SetName("text"),
 	})
 
+	// Search
+	indexModels = append(indexModels, mongo.IndexModel{
+		Keys: bson.D{{"extended.aliases", 1}},
+	})
+
 	// Achievements page
 	indexModels = append(indexModels, mongo.IndexModel{
 		Keys: bson.D{{"achievements_count", 1}},
