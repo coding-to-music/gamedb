@@ -100,7 +100,7 @@ func InfluxQuery(query string) (resp *influx.Response, err error) {
 
 type HighChartsJSON map[string][][]interface{}
 
-func InfluxResponseToHighCharts(series influxModels.Row) HighChartsJSON {
+func InfluxResponseToHighCharts(series influxModels.Row, removeZeros bool) HighChartsJSON {
 
 	resp := HighChartsJSON{}
 
@@ -109,19 +109,21 @@ func InfluxResponseToHighCharts(series influxModels.Row) HighChartsJSON {
 			for _, vv := range series.Values {
 
 				var hasValue bool
-				func() {
-					for k, vvv := range vv {
-						if k > 0 {
-							if val, ok := vvv.(json.Number); ok {
-								i, err := val.Float64()
-								if err == nil && math.Abs(i) > 0 {
-									hasValue = true
-									return
+				if removeZeros {
+					func() {
+						for k, vvv := range vv {
+							if k > 0 {
+								if val, ok := vvv.(json.Number); ok {
+									i, err := val.Float64()
+									if err == nil && math.Abs(i) > 0 {
+										hasValue = true
+										return
+									}
 								}
 							}
 						}
-					}
-				}()
+					}()
+				}
 
 				if hasValue {
 
