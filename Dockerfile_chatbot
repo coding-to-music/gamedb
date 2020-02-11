@@ -12,7 +12,7 @@ RUN apk update && apk add git
 RUN cd ./cmd/chatbot && go mod tidy && CGO_ENABLED=0 GOOS=linux go build -a -ldflags "-X main.version=`git rev-parse --verify HEAD`"
 
 # Runtime image
-FROM alpine:3.10 AS runtime-env
+FROM alpine:3.11 AS runtime-env
 WORKDIR /root/
 COPY --from=build-env /root/cmd/chatbot/chatbot ./
 COPY ./cmd/chatbot/health-check.sh ./health-check.sh
