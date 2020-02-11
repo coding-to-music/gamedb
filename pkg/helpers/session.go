@@ -210,7 +210,6 @@ func GetCountryCode(r *http.Request) string {
 				return "US"
 			}
 
-			log.Info(record.Country.ISOCode, "x")
 			return record.Country.ISOCode
 		}
 
