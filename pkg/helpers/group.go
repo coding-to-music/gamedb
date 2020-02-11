@@ -27,6 +27,10 @@ func IsValidGroupID(id string) bool {
 		return false
 	}
 
+	if !strings.HasPrefix(id, "1035") {
+		return false
+	}
+
 	return true
 }
 
