@@ -113,7 +113,7 @@ func (group Group) GetName() string {
 }
 
 func (group Group) GetIcon() string {
-	return helpers.AvatarBase + group.Icon
+	return helpers.GetGroupIcon(group.Icon)
 }
 
 func (group Group) ShouldUpdate() bool {

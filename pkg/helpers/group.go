@@ -58,5 +58,9 @@ func GetGroupName(name string, id string) string {
 }
 
 func GetGroupIcon(icon string) string {
+
+	if icon == "" {
+		return "/assets/img/no-app-image-square.jpg"
+	}
 	return AvatarBase + icon
 }
