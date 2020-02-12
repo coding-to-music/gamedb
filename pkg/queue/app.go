@@ -63,7 +63,7 @@ func appHandler(messages []*rabbit.Message) {
 		}
 
 		// Load current app
-		app, err := mongo.GetApp(id)
+		app, err := mongo.GetApp(id, true)
 		if err == mongo.ErrNoDocuments {
 			app = mongo.App{}
 			app.ID = id
@@ -496,6 +496,7 @@ func updateAppPICS(app *mongo.App, message *rabbit.Message, payload AppMessage) 
 			}
 
 			app.Localization = localization
+			app.LocalizationCount = len(localization.RichPresence)
 
 		case "sysreqs":
 

@@ -66,6 +66,7 @@ type App struct {
 	ItemsDigest                   string                         `bson:"items_digest"`
 	Launch                        []pics.PICSAppConfigLaunchItem `bson:"launch"`
 	Localization                  pics.Localisation              `bson:"localization"`
+	LocalizationCount             int                            `bson:"localization_count"`
 	Logo                          string                         `bson:"logo"`
 	MetacriticScore               int8                           `bson:"metacritic_score"`
 	MetacriticURL                 string                         `bson:"metacritic_url"`
@@ -165,6 +166,7 @@ func (app App) BSON() bson.D {
 		{"items_digest", app.ItemsDigest},
 		{"launch", app.Launch},
 		{"localization", app.Localization},
+		{"localization_count", app.LocalizationCount},
 		{"logo", app.Logo},
 		{"metacritic_score", app.MetacriticScore},
 		{"metacritic_url", app.MetacriticURL},
@@ -631,8 +633,7 @@ func CreateAppIndexes() {
 	log.Err(err)
 }
 
-// todo, take big fields, reviews, localisation etc, out of projection
-func GetApp(id int) (app App, err error) {
+func GetApp(id int, full ...bool) (app App, err error) {
 
 	if !helpers.IsValidAppID(id) {
 		return app, ErrInvalidAppID
@@ -642,20 +643,32 @@ func GetApp(id int) (app App, err error) {
 		id = 753
 	}
 
-	var item = memcache.MemcacheApp(id)
+	if len(full) > 0 && full[0] == true {
 
-	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &app, func() (interface{}, error) {
+		// Load from Mongo
+		err = FindOne(CollectionApps, bson.D{{"_id", id}}, nil, nil, &app)
 
-		err := FindOne(CollectionApps, bson.D{{"_id", id}}, nil, nil, &app)
-		if err != nil {
+	} else {
+
+		// Load from Memcache
+		var item = memcache.MemcacheApp(id)
+		err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &app, func() (interface{}, error) {
+
+			// "achievements": 0, "achievements_5": 0,
+			var projection = bson.M{"reviews.reviews": 0, "localization": 0} // Too much for memcache
+
+			err = FindOne(CollectionApps, bson.D{{"_id", id}}, nil, projection, &app)
 			return app, err
-		}
-		if app.ID == 0 {
-			return app, ErrNoDocuments
-		}
+		})
+	}
 
+	if err != nil {
 		return app, err
-	})
+	}
+
+	if app.ID == 0 {
+		return app, ErrNoDocuments
+	}
 
 	return app, err
 }

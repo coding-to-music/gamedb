@@ -28,6 +28,10 @@ import (
 func appRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", appHandler)
+
+	r.Get("/localization.html", appLocalizationHandler)
+	r.Get("/reviews.html", appReviewsHandler)
+
 	r.Get("/news.json", appNewsAjaxHandler)
 	r.Get("/prices.json", appPricesAjaxHandler)
 	r.Get("/players.json", appPlayersAjaxHandler)
@@ -332,6 +336,76 @@ func (t appTemplate) GetRelatedTags(relatedApp mongo.App) template.HTML {
 	}
 
 	return template.HTML(strings.Join(ret, ", "))
+}
+
+func appLocalizationHandler(w http.ResponseWriter, r *http.Request) {
+
+	t := appLocalizationTemplate{}
+
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		return
+	}
+
+	idx, err := strconv.Atoi(id)
+	if err != nil {
+		return
+	}
+
+	if !helpers.IsValidAppID(idx) {
+		return
+	}
+
+	app := mongo.App{}
+	err = mongo.FindOne(mongo.CollectionApps, bson.D{{"_id", idx}}, nil, bson.M{"localization": 1}, &app)
+	if err != nil {
+		err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
+		log.Err(err)
+		return
+	}
+	t.App = app
+
+	returnTemplate(w, r, "app_localization", t)
+}
+
+type appLocalizationTemplate struct {
+	GlobalTemplate
+	App mongo.App
+}
+
+func appReviewsHandler(w http.ResponseWriter, r *http.Request) {
+
+	t := appReviewsTemplate{}
+
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		return
+	}
+
+	idx, err := strconv.Atoi(id)
+	if err != nil {
+		return
+	}
+
+	if !helpers.IsValidAppID(idx) {
+		return
+	}
+
+	app := mongo.App{}
+	err = mongo.FindOne(mongo.CollectionApps, bson.D{{"_id", idx}}, nil, bson.M{"reviews": 1}, &app)
+	if err != nil {
+		err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
+		log.Err(err)
+		return
+	}
+	t.App = app
+
+	returnTemplate(w, r, "app_reviews", t)
+}
+
+type appReviewsTemplate struct {
+	GlobalTemplate
+	App mongo.App
 }
 
 func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {

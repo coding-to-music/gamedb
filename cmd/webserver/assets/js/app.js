@@ -88,6 +88,12 @@ if ($appPage.length > 0) {
                 case '#reviews':
                     loadAppReviewsChart();
                     break;
+                case '#achievements':
+                    loadAchievements();
+                    break;
+                case '#dev-localization':
+                    loadDevLocalization();
+                    break;
             }
         }
 
@@ -333,6 +339,20 @@ if ($appPage.length > 0) {
 
         $.ajax({
             type: "GET",
+            url: '/apps/' + $appPage.attr('data-id') + '/reviews.html',
+            dataType: 'html',
+            success: function (data, textStatus, jqXHR) {
+
+                if (data === null) {
+                    data = '';
+                }
+
+                $('#reviews-ajax').html(data);
+            },
+        });
+
+        $.ajax({
+            type: "GET",
             url: '/apps/' + $appPage.attr('data-id') + '/reviews.json',
             dataType: 'json',
             success: function (data, textStatus, jqXHR) {
@@ -569,5 +589,46 @@ if ($appPage.length > 0) {
         };
 
         $('#top-players-table').gdbTable({tableOptions: options});
+    }
+
+    function loadAchievements() {
+
+        // $.ajax({
+        //     type: "GET",
+        //     url: '/apps/' + $appPage.attr('data-id') + '/players.json',
+        //     dataType: 'json',
+        //     success: function (data, textStatus, jqXHR) {
+        //
+        //         if (data === null) {
+        //             const now = Date.now();
+        //             data = {
+        //                 "max_player_count": [[now, 0]],
+        //                 "max_twitch_viewers": [[now, 0]],
+        //             };
+        //         }
+        //
+        //         $('#achievements .table-datatable')
+        //
+        //     },
+        // });
+
+    }
+
+    function loadDevLocalization() {
+
+        $.ajax({
+            type: "GET",
+            url: '/apps/' + $appPage.attr('data-id') + '/localization.html',
+            dataType: 'html',
+            success: function (data, textStatus, jqXHR) {
+
+                if (data === null) {
+                    data = '';
+                }
+
+                $('#dev-localization').html(data);
+            },
+        });
+
     }
 }

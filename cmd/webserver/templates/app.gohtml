@@ -756,22 +756,9 @@
 
                             <h5>A selection of the {{ comma .App.Reviews.GetTotal }} reviews</h5>
 
-                            {{ range $key, $value := .App.Reviews.Reviews }}
-                                {{ if ne .HTML "" }}
-
-                                    <div class="card mt-3">
-                                        <div class="card-header" data-vote="{{ .Vote }}">
-                                            <div class="float-right">
-                                                {{ .VotesGood }} <i class="fas fa-thumbs-up" data-toggle="tooltip" data-placement="top" title="Good Review"></i>
-                                                {{ .VotesFunny }} <i class="fas fa-grin-squint-tears" data-toggle="tooltip" data-placement="top" title="Funny Review"></i>
-                                            </div>
-                                            By <a href="{{.PlayerPath}}" rel="nofollow">{{.PlayerName}}</a> on {{ .Created }}
-                                        </div>
-                                        <div class="card-body">{{ .HTML }}</div>
-                                    </div>
-
-                                {{ end }}
-                            {{ end }}
+                            <div id="reviews-ajax">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </div>
 
                         {{ else }}
 
@@ -845,9 +832,9 @@
                                             <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-install" role="tab">Install</a>
                                         </li>
                                     {{ end }}
-                                    {{ if .App.Localization.HasLanguages }}
+                                    {{ if gt .App.LocalizationCount 0 }}
                                         <li class="nav-item">
-                                            <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-localisation" role="tab">Localisation</a>
+                                            <a class="nav-link nav-link-small" data-toggle="tab" href="#dev-localization" role="tab">Localization</a>
                                         </li>
                                     {{ end }}
                                     {{ if gt (len .App.Stats) 0}}
@@ -1145,35 +1132,10 @@
 
                                     </div>
 
-                                    {{/* Localisation */}}
-                                    <div class="tab-pane" id="dev-localisation" role="tabpanel">
+                                    {{/* Localization */}}
+                                    <div class="tab-pane" id="dev-localization" role="tabpanel">
 
-                                        <div class="clearfix mb-2">
-                                            {{ range $key, $value := .App.Localization.RichPresence }}
-                                                <a class="btn btn-primary btn-sm float-left mr-1 mb-1" href="#{{ $key }}" role="button">{{ title $key }}</a>
-                                            {{ end }}
-                                        </div>
-
-                                        {{ range $key, $value := .App.Localization.RichPresence }}
-                                            <div class="table-responsive mb-2" id="{{ $key }}">
-                                                <table class="table table-hover table-striped mb-0" data-order='[[0, "asc"]]'>
-                                                    <thead class="thead-light">
-                                                    <tr>
-                                                        <th scope="col" colspan="2">{{ title $key }}</th>
-                                                    </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                    {{ range $key, $value := .Tokens }}
-                                                        <tr>
-                                                            <td>{{ $key }}</td>
-                                                            <td>{{ $value }}</td>
-                                                        </tr>
-                                                    {{ end }}
-                                                    </tbody>
-
-                                                </table>
-                                            </div>
-                                        {{ end }}
+                                        <i class="fas fa-spinner fa-spin"></i>
 
                                     </div>
 
