@@ -125,7 +125,7 @@ func InfluxResponseToHighCharts(series influxModels.Row, removeZeros bool) HighC
 					}()
 				}
 
-				if hasValue {
+				if hasValue || !removeZeros {
 
 					t, err := time.Parse(time.RFC3339, vv[0].(string))
 					if err != nil {
