@@ -34,6 +34,7 @@ func (c collection) String() string {
 }
 
 const (
+	CollectionAppAchievements     collection = "app_achievements"
 	CollectionAppArticles         collection = "app_articles"
 	CollectionAppItems            collection = "app_items"
 	CollectionAppSales            collection = "app_offers"
