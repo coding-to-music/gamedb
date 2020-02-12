@@ -49,11 +49,11 @@ func groupsHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		payload.ID, err = helpers.UpgradeGroupID(payload.ID)
+		payload.ID, err = helpers.IsValidGroupID(payload.ID)
 		if err != nil {
 			log.Err(err, message.Message.Body)
 			sendToFailQueue(message)
-			return
+			continue
 		}
 
 		//

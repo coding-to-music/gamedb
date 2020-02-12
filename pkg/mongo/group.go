@@ -122,7 +122,8 @@ func (group Group) ShouldUpdate() bool {
 
 func GetGroup(id string) (group Group, err error) {
 
-	if !helpers.IsValidGroupID(id) {
+	id, err = helpers.IsValidGroupID(id)
+	if err != nil {
 		return group, ErrInvalidGroupID
 	}
 
@@ -158,7 +159,7 @@ func GetGroupsByID(ids []string, projection bson.M) (groups []Group, err error) 
 
 		for _, groupID := range chunk {
 
-			groupID, err = helpers.UpgradeGroupID(groupID)
+			groupID, err = helpers.IsValidGroupID(groupID)
 			if err != nil {
 				log.Err(err)
 				continue
@@ -186,14 +187,10 @@ func SearchGroups(s string) (group Group, err error) {
 
 	filter := bson.D{}
 
-	if helpers.IsValidGroupID(s) {
+	s2, err := helpers.IsValidGroupID(s)
+	if err == nil {
 
-		s, err = helpers.UpgradeGroupID(s)
-		if err != nil {
-			return group, err
-		}
-
-		filter = bson.D{{"_id", s}}
+		filter = bson.D{{"_id", s2}}
 
 	} else {
 

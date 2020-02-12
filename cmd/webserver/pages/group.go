@@ -36,7 +36,8 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !helpers.IsValidGroupID(id) {
+	id, err := helpers.IsValidGroupID(id)
+	if err != nil {
 		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid group ID: " + id})
 		return
 	}
@@ -121,7 +122,8 @@ func groupTableAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !helpers.IsValidGroupID(id) {
+	id, err := helpers.IsValidGroupID(id)
+	if err != nil {
 		return
 	}
 
@@ -186,7 +188,8 @@ func groupAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !helpers.IsValidGroupID(id) {
+	id, err := helpers.IsValidGroupID(id)
+	if err != nil {
 		log.Info("invalid id: "+id, r)
 		return
 	}

@@ -271,15 +271,11 @@ func ProduceChanges(payload ChangesMessage) (err error) {
 
 func ProduceGroup(payload GroupMessage) (err error) {
 
-	if !helpers.IsValidGroupID(payload.ID) {
-		return errors.New("invalid group id: " + payload.ID)
-	}
-
 	if payload.UserAgent != nil && helpers.IsBot(*payload.UserAgent) {
 		return ErrIsBot
 	}
 
-	payload.ID, err = helpers.UpgradeGroupID(payload.ID)
+	payload.ID, err = helpers.IsValidGroupID(payload.ID)
 	if err != nil {
 		return err
 	}

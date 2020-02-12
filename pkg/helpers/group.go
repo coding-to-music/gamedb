@@ -2,10 +2,9 @@ package helpers
 
 import (
 	"errors"
-	"strconv"
 	"strings"
 
-	"github.com/Philipp15b/go-steam/steamid"
+	"github.com/Jleagle/steam-go/steamid"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gosimple/slug"
 )
@@ -17,21 +16,22 @@ const (
 	GroupTypeGroup = "group"
 )
 
-func IsValidGroupID(id string) bool {
+var ErrInvalidGroupID = errors.New("invalid group id")
 
-	if strings.TrimSpace(id) == "" {
-		return false
+func IsValidGroupID(id string) (string, error) {
+
+	steamID, err := steamid.ParseGroupID(id)
+	if err != nil {
+		return id, ErrInvalidGroupID
 	}
 
-	if !RegexNumbers.MatchString(id) {
-		return false
-	}
+	id = steamID.String()
 
 	if !strings.HasPrefix(id, "1035") {
-		return false
+		return id, ErrInvalidGroupID
 	}
 
-	return true
+	return id, nil
 }
 
 func GetGroupPath(id string, name string) string {
@@ -59,30 +59,4 @@ func GetGroupName(name string, id string) string {
 
 func GetGroupIcon(icon string) string {
 	return AvatarBase + icon
-}
-
-var ErrInvalidGroupID = errors.New("invalid group id")
-
-func UpgradeGroupID(id string) (string, error) {
-
-	if !IsValidGroupID(id) {
-		return id, ErrInvalidGroupID
-	}
-
-	if len(id) > 18 {
-
-		return id, ErrInvalidGroupID
-
-	} else if len(id) < 18 {
-
-		i, err := strconv.ParseUint(id, 10, 32)
-		if err != nil {
-			return id, err
-		}
-
-		steamID := steamid.NewIdAdv(uint32(i), 0, 1, 7)
-		id = strconv.FormatUint(uint64(steamID), 10)
-	}
-
-	return id, nil
 }
