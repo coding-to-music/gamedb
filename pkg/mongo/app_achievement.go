@@ -13,14 +13,14 @@ import (
 const achievementBase = "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/"
 
 type AppAchievement struct {
-	AppID       int     `bson:"app_id" json:"app_id"`
-	Key         string  `bson:"key" json:"key"`
+	AppID       int     `bson:"app_id" json:"-"`
+	Key         string  `bson:"key" json:"-"`
 	Name        string  `bson:"name" json:"name"`
-	Description string  `bson:"description" json:"description"`
+	Description string  `bson:"description" json:"-"`
 	Icon        string  `bson:"icon" json:"icon"`
-	Completed   float64 `bson:"completed" json:"completed"`
-	Hidden      bool    `bson:"hidden" json:"hidden"`
-	Active      bool    `bson:"active" json:"active"` // If it's part of the schema response
+	Completed   float64 `bson:"completed" json:"-"`
+	Hidden      bool    `bson:"hidden" json:"-"`
+	Active      bool    `bson:"active" json:"-"` // If it's part of the schema response
 }
 
 func (achievement AppAchievement) BSON() bson.D {
