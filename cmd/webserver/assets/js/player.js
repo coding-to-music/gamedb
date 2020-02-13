@@ -68,7 +68,7 @@ if ($playerPage.length > 0) {
 
         const data = JSON.parse(e.data);
         if (data.Data.toString() === $playerPage.attr('data-id')) {
-            toast(true, 'Click to refresh', 'This player has been updated', -1, 'refresh');
+            toast(true, 'Click to refresh', 'This player has been updated', 0, 'refresh');
         }
     });
 

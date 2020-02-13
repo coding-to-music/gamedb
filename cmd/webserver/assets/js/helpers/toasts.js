@@ -6,12 +6,9 @@ function toast(success = true, body, title = '', timeout = 0, link = '') {
         }
     };
 
+    // Default time
     if (timeout === 0) {
-        timeout = 8;
-    }
-
-    if (timeout === -1) {
-        timeout = 0;
+        timeout = 5;
     }
 
     const options = {

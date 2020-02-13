@@ -7,7 +7,7 @@ if ($groupPage.length > 0) {
 
         const data = JSON.parse(e.data);
         if (data.Data.toString() === $groupPage.attr('data-id')) {
-            toast(true, 'Click to refresh', 'This group has been updated', -1, 'refresh');
+            toast(true, 'Click to refresh', 'This group has been updated', 0, 'refresh');
         }
     });
 
