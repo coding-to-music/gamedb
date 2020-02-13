@@ -739,8 +739,6 @@ func updateAppDetails(app *mongo.App) (err error) {
 
 func updateAppAchievements(app *mongo.App, schema steam.SchemaForGame) error {
 
-	app.AchievementsCount = len(schema.AvailableGameStats.Achievements)
-
 	//
 	resp, b, err := steamHelper.GetSteam().GetGlobalAchievementPercentagesForApp(app.ID)
 	err = steamHelper.AllowSteamCodes(err, b, []int{403, 500})
@@ -748,42 +746,77 @@ func updateAppAchievements(app *mongo.App, schema steam.SchemaForGame) error {
 		return err
 	}
 
-	var achievementsMap = make(map[string]float64)
-	for _, v := range resp.GlobalAchievementPercentage {
-		achievementsMap[v.Name] = v.Percent
+	// Build map
+	var achievements = map[string]mongo.AppAchievement{}
+
+	for _, achievement := range resp.GlobalAchievementPercentage {
+
+		achievements[achievement.Name] = mongo.AppAchievement{
+			AppID:     app.ID,
+			Key:       achievement.Name,
+			Completed: achievement.Percent,
+		}
 	}
 
-	// Make template struct
-	var total float64
-	var achievements []helpers.AppAchievement
-	for _, v := range schema.AvailableGameStats.Achievements {
-		total += achievementsMap[v.Name]
-		achievements = append(achievements, helpers.AppAchievement{
-			Name:        v.DisplayName,
-			Icon:        v.Icon,
-			Description: v.Description,
-			Completed:   helpers.RoundFloatTo2DP(achievementsMap[v.Name]),
-			Active:      true,
-		})
+	var percentTotal float64
+	var percentCount int
 
-		delete(achievementsMap, v.Name)
+	for _, achievement := range schema.AvailableGameStats.Achievements {
+
+		if val, ok := achievements[achievement.Name]; ok {
+
+			percentTotal += val.Completed
+			percentCount++
+
+			val.Name = achievement.DisplayName
+			val.SetIcon(achievement.Icon)
+			val.Description = achievement.Description
+			val.Hidden = achievement.Hidden > 0
+			val.Active = true
+
+			achievements[achievement.Name] = val
+
+		} else {
+			log.Warning("Achevement in schema but not global", app.ID, achievement.Name)
+		}
 	}
 
-	if len(schema.AvailableGameStats.Achievements) == 0 {
+	// Convert to slice
+	var achievementsSlice []mongo.AppAchievement
+	for _, achievement := range achievements {
+		achievementsSlice = append(achievementsSlice, achievement)
+	}
+
+	// Sort by key
+	sort.Slice(achievementsSlice, func(i, j int) bool {
+		return achievementsSlice[i].Completed > achievementsSlice[j].Completed
+	})
+
+	// Save to Mongo
+	err = mongo.SaveAppAchievements(achievementsSlice)
+	if err != nil {
+		return err
+	}
+
+	// Update app row
+	if percentCount == 0 {
 		app.AchievementsAverageCompletion = 0
 	} else {
-		app.AchievementsAverageCompletion = total / float64(len(schema.AvailableGameStats.Achievements))
+		app.AchievementsAverageCompletion = percentTotal / float64(percentCount)
 	}
 
-	// Add achievements that are in global but missing in schema
-	for k, v := range achievementsMap {
-		achievements = append(achievements, helpers.AppAchievement{
-			Name:      k,
-			Completed: helpers.RoundFloatTo2DP(v),
-		})
-	}
+	app.AchievementsCount = len(schema.AvailableGameStats.Achievements)
 
-	app.Achievements = achievements
+	app.Achievements = []mongo.AppAchievement{}
+	for _, achievement := range achievementsSlice {
+		if achievement.Active && achievement.Icon != "" {
+			if len(app.Achievements) < 5 {
+				app.Achievements = append(app.Achievements, achievement)
+			} else {
+				break
+			}
+		}
+	}
 
 	return nil
 }

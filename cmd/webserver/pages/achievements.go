@@ -108,7 +108,7 @@ func achievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			app.Prices.Get(code).GetFinal(),   // 4
 			app.AchievementsCount,             // 5
 			app.AchievementsAverageCompletion, // 6
-			app.Achievements5,                 // 7
+			app.Achievements,                  // 7
 		})
 	}
 

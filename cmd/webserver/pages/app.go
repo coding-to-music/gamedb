@@ -38,6 +38,8 @@ func appRouter() http.Handler {
 	r.Get("/items.json", appItemsAjaxHandler)
 	r.Get("/reviews.json", appReviewsAjaxHandler)
 	r.Get("/time.json", appTimeAjaxHandler)
+	r.Get("/achievements.json", appAchievementsHandler)
+
 	r.Get("/{slug}", appHandler)
 	return r
 }
@@ -477,6 +479,72 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 func appPricesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	productPricesAjaxHandler(w, r, helpers.ProductTypeApp)
+}
+
+func appAchievementsHandler(w http.ResponseWriter, r *http.Request) {
+
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		return
+	}
+
+	idx, err := strconv.Atoi(id)
+	if err != nil {
+		log.Err(err, r)
+		return
+	}
+
+	query := datatable.NewDataTableQuery(r, false)
+
+	//
+	var wg sync.WaitGroup
+
+	// Get total
+	var achievements []mongo.AppAchievement
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		achievements, err = mongo.GetAppAchievements(idx, query.GetOffset64())
+		if err != nil {
+			log.Err(err, r)
+			return
+		}
+	}()
+
+	// Get total
+	var total int64
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		total, err = mongo.CountDocuments(mongo.CollectionAppAchievements, bson.D{{"app_id", idx}}, 60*60*24*28)
+		log.Info(idx)
+		log.Info(total)
+		log.Err(err, r)
+	}()
+
+	// Wait
+	wg.Wait()
+
+	response := datatable.NewDataTablesResponse(r, query, total, total)
+	for _, achievement := range achievements {
+
+		response.AddRow([]interface{}{
+			achievement.Name,                               // 0
+			achievement.Description,                        // 1
+			achievement.GetIcon(),                          // 2
+			helpers.RoundFloatTo2DP(achievement.Completed), // 3
+			achievement.Active,                             // 4
+			achievement.Hidden,                             // 5
+		})
+	}
+
+	returnJSON(w, r, response)
 }
 
 func appItemsAjaxHandler(w http.ResponseWriter, r *http.Request) {

@@ -66,9 +66,9 @@
                             <a class="nav-link nav-link-small" data-toggle="tab" href="#tracks" role="tab">Tracks ({{ comma (len .App.AlbumMetaData.Tracks) }})</a>
                         </li>
                     {{ end }}
-                    {{ if gt (len .App.Achievements) 0 }}
+                    {{ if gt .App.AchievementsCount 0 }}
                         <li class="nav-item">
-                            <a class="nav-link nav-link-small" data-toggle="tab" href="#achievements" role="tab">Achievements ({{ comma (len .App.Achievements) }})</a>
+                            <a class="nav-link nav-link-small" data-toggle="tab" href="#achievements" role="tab">Achievements ({{ comma .App.AchievementsCount }})</a>
                         </li>
                     {{ end }}
                     {{ if gt (len .DLCs) 0 }}
@@ -525,10 +525,10 @@
                             </tbody>
                         </table>
 
-                        {{if gt (len .App.Achievements) 0}}
+                        {{if gt .App.AchievementsCount 0}}
 
                             <div class="table-responsive">
-                                <table class="table table-hover table-striped table-datatable mb-0" data-order='[[2, "desc"]]'>
+                                <table class="table table-hover table-striped table-counts mb-0" data-path="/apps/{{ .App.ID }}/achievements.json" id="achievements-table" data-order='[[2, "desc"]]'>
                                     <thead class="thead-light">
                                     <tr>
                                         <th scope="col">Name</th>
@@ -537,23 +537,6 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {{ range $key, $value := .App.Achievements }}
-                                        <tr>
-                                            <td class="img">
-                                                <div class="icon-name">
-                                                    <div class="icon"><img src="" data-lazy="{{ .GetIcon }}" alt="" data-lazy-alt="{{ .Name }}"></div>
-                                                    <div class="name">
-                                                        {{ .Name }}
-                                                        {{ if not .Active }}
-                                                            <span class="badge badge-danger float-right">Hidden</span>
-                                                        {{ end }}
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td>{{ .Description }}</td>
-                                            <td>{{ .Completed }}%</td>
-                                        </tr>
-                                    {{ end }}
                                     </tbody>
                                 </table>
 

@@ -31,8 +31,7 @@ const (
 var ErrInvalidAppID = errors.New("invalid app id")
 
 type App struct {
-	Achievements                  []helpers.AppAchievement       `bson:"achievements"`
-	Achievements5                 []helpers.AppAchievement       `bson:"achievements_5"` // The first 5 only
+	Achievements                  []AppAchievement               `bson:"achievements_5"` // The first 5 only
 	AchievementsAverageCompletion float64                        `bson:"achievements_average_completion"`
 	AchievementsCount             int                            `bson:"achievements_count"`
 	AlbumMetaData                 pics.AlbumMetaData             `bson:"albummetadata"`
@@ -111,28 +110,11 @@ type App struct {
 
 func (app App) BSON() bson.D {
 
-	// Set Achievements5
-	app.Achievements5 = []helpers.AppAchievement{}
-	for _, v := range app.Achievements {
-		if v.Active && strings.HasSuffix(v.Icon, ".jpg") {
-			if len(app.Achievements5) < 5 {
-				app.Achievements5 = append(app.Achievements5, v)
-			} else {
-				break
-			}
-		}
-	}
-
-	if app.ChangeNumberDate.IsZero() || app.ChangeNumberDate.Unix() == 0 {
-		app.ChangeNumberDate = time.Now()
-	}
-
 	app.UpdatedAt = time.Now()
 	app.ReleaseState = strings.ToLower(app.ReleaseState)
 
 	return bson.D{
-		{"achievements", app.Achievements},
-		{"achievements_5", app.Achievements5},
+		{"achievements_5", app.Achievements},
 		{"achievements_average_completion", app.AchievementsAverageCompletion},
 		{"achievements_count", app.AchievementsCount},
 		{"albummetadata", app.AlbumMetaData},
@@ -654,8 +636,7 @@ func GetApp(id int, full ...bool) (app App, err error) {
 		var item = memcache.MemcacheApp(id)
 		err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &app, func() (interface{}, error) {
 
-			// "achievements": 0, "achievements_5": 0,
-			var projection = bson.M{"reviews.reviews": 0, "localization": 0} // Too much for memcache
+			var projection = bson.M{"reviews.reviews": 0, "localization": 0, "achievements": 0, "achievements_5": 0} // Too much for memcache
 
 			err = FindOne(CollectionApps, bson.D{{"_id", id}}, nil, projection, &app)
 			return app, err

@@ -593,24 +593,47 @@ if ($appPage.length > 0) {
 
     function loadAchievements() {
 
-        // $.ajax({
-        //     type: "GET",
-        //     url: '/apps/' + $appPage.attr('data-id') + '/players.json',
-        //     dataType: 'json',
-        //     success: function (data, textStatus, jqXHR) {
-        //
-        //         if (data === null) {
-        //             const now = Date.now();
-        //             data = {
-        //                 "max_player_count": [[now, 0]],
-        //                 "max_twitch_viewers": [[now, 0]],
-        //             };
-        //         }
-        //
-        //         $('#achievements .table-datatable')
-        //
-        //     },
-        // });
+        const options = {
+            "pageLength": 100,
+            "order": [[2, 'desc']],
+            "columnDefs": [
+                // Name
+                {
+                    "targets": 0,
+                    "render": function (data, type, row) {
+
+                        let name = row[0];
+                        if (!row[4]) {
+                            name += '<span class="badge badge-danger float-right">Hidden</span>';
+                        }
+
+                        return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[2] + '" alt="" data-lazy-alt="' + row[0] + '"></div><div class="name">' + name + '</div></div>'
+                    },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        $(td).addClass('img');
+                    },
+                    "orderable": false,
+                },
+                // Description
+                {
+                    "targets": 1,
+                    "render": function (data, type, row) {
+                        return row[1];
+                    },
+                    "orderable": false,
+                },
+                // Complete %
+                {
+                    "targets": 2,
+                    "render": function (data, type, row) {
+                        return row[3] + '%';
+                    },
+                    "orderable": false,
+                },
+            ]
+        };
+
+        $('#achievements-table').gdbTable({tableOptions: options});
 
     }
 
