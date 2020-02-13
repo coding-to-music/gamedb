@@ -29,7 +29,7 @@ func (ql QueryLogger) End() {
 
 	diff := time.Since(ql.startTime)
 
-	if diff > (time.Second) && !config.IsLocal() {
+	if diff > (time.Second) && config.IsProd() {
 
 		diffFormatted, err := durationfmt.Format(diff, "%s.%is")
 		if err != nil {
