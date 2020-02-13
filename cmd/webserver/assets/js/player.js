@@ -210,7 +210,7 @@ if ($playerPage.length > 0) {
                     },
                     'orderSequence': ['desc', 'asc'],
                 },
-                // Logged Off
+                // Friend Since
                 {
                     "targets": 3,
                     "render": function (data, type, row) {
@@ -219,25 +219,14 @@ if ($playerPage.length > 0) {
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).attr('nowrap', 'nowrap');
                     },
-                    'orderSequence': ['desc', 'asc'],
-                },
-                // Friend Since
-                {
-                    "targets": 4,
-                    "render": function (data, type, row) {
-                        return row[8];
-                    },
-                    "createdCell": function (td, cellData, rowData, row, col) {
-                        $(td).attr('nowrap', 'nowrap');
-                    },
                     'orderSequence': ['asc', 'desc'],
                 },
                 // Link
                 {
-                    "targets": 5,
+                    "targets": 4,
                     "render": function (data, type, row) {
-                        if (row[9]) {
-                            return '<a href="' + row[9] + '" target="_blank" rel="nofollow"><i class="fas fa-link"></i></a>';
+                        if (row[8]) {
+                            return '<a href="' + row[8] + '" target="_blank" rel="nofollow"><i class="fas fa-link"></i></a>';
                         }
                         return '';
                     },

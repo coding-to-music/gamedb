@@ -591,8 +591,7 @@ func playerFriendsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		columns := map[string]string{
 			"1": "level",
 			"2": "games",
-			"3": "logged_off",
-			"4": "since",
+			"3": "since",
 		}
 
 		var err error
@@ -628,9 +627,8 @@ func playerFriendsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			friend.GetLevel(),                      // 4
 			friend.Scanned(),                       // 5
 			friend.Games,                           // 6
-			friend.GetLoggedOff(),                  // 7
-			friend.GetFriendSince(),                // 8
-			friend.CommunityLink(),                 // 9
+			friend.GetFriendSince(),                // 7
+			friend.CommunityLink(),                 // 8
 		})
 	}
 

@@ -51,13 +51,6 @@ func (friend PlayerFriend) GetPath() string {
 	return helpers.GetPlayerPath(friend.FriendID, friend.Name)
 }
 
-func (friend PlayerFriend) GetLoggedOff() string {
-	if friend.Scanned() {
-		return friend.LoggedOff.Format(helpers.DateYearTime)
-	}
-	return "-"
-}
-
 func (friend PlayerFriend) GetFriendSince() string {
 	return friend.FriendSince.Format(helpers.DateYearTime)
 }
