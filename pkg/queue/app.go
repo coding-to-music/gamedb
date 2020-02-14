@@ -355,17 +355,25 @@ func appHandler(messages []*rabbit.Message) {
 			}
 		}()
 
+		// Queue group
+		wg.Add(1)
+		go func() {
+
+			defer wg.Done()
+
+			var err error
+
+			if app.GroupID != "" {
+				err = ProduceGroup(GroupMessage{ID: app.GroupID})
+				err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
+				log.Err(err)
+			}
+		}()
+
 		wg.Wait()
 
 		if message.ActionTaken {
 			continue
-		}
-
-		// Queue group
-		if app.GroupID != "" {
-			err = ProduceGroup(GroupMessage{ID: app.GroupID})
-			err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
-			log.Err(err)
 		}
 
 		//
