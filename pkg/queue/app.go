@@ -313,6 +313,8 @@ func appHandler(messages []*rabbit.Message) {
 
 			defer wg.Done()
 
+			var countItem = memcache.FilterToString(bson.D{{"app_id", app.ID}})
+
 			err := memcache.RemoveKeyFromMemCacheViaPubSub(
 				memcache.MemcacheApp(app.ID).Key,
 				memcache.MemcacheAppInQueue(app.ID).Key,
@@ -326,6 +328,9 @@ func appHandler(messages []*rabbit.Message) {
 				memcache.MemcacheAppPublishers(app.ID).Key,
 				memcache.MemcacheAppBundles(app.ID).Key,
 				memcache.MemcacheAppPackages(app.ID).Key,
+				memcache.MemcacheMongoCount(mongo.CollectionAppAchievements.String()+"-"+countItem).Key,
+				memcache.MemcacheMongoCount(mongo.CollectionAppItems.String()+"-"+countItem).Key,
+				memcache.MemcacheMongoCount(mongo.CollectionAppSales.String()+"-"+countItem).Key,
 			)
 			if err != nil {
 				log.Err(err, id)

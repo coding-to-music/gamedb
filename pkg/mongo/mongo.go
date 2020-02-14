@@ -2,9 +2,6 @@ package mongo
 
 import (
 	"context"
-	"crypto/md5"
-	"encoding/hex"
-	"encoding/json"
 	"sync"
 
 	"github.com/gamedb/gamedb/pkg/config"
@@ -272,21 +269,7 @@ func InsertMany(collection collection, documents []Document) (resp *mongo.Insert
 
 func CountDocuments(collection collection, filter bson.D, ttl int32) (count int64, err error) {
 
-	if filter == nil {
-		filter = bson.D{}
-	}
-
-	// Get MD5 of filter
-	b, err := json.Marshal(filter)
-	if err != nil {
-		return 0, err
-	}
-
-	h := md5.Sum(b)
-	key := hex.EncodeToString(h[:])
-
-	//
-	item := memcache.MemcacheMongoCount(collection.String() + "-" + key)
+	item := memcache.MemcacheMongoCount(collection.String() + "-" + memcache.FilterToString(filter))
 	if ttl > 0 {
 		item.Expiration = ttl
 	}

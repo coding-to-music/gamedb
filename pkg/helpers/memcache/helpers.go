@@ -1,6 +1,8 @@
 package memcache
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"sort"
@@ -44,14 +46,14 @@ func RemoveKeyFromMemCacheViaPubSub(keys ...string) (err error) {
 }
 
 //
-func bsonMapToString(b bson.M) string {
+func ProjectionToString(m bson.M) string {
 
-	if len(b) == 0 {
+	if len(m) == 0 {
 		return "*"
 	}
 
 	var cols []string
-	for k := range b {
+	for k := range m {
 		cols = append(cols, k)
 	}
 
@@ -60,4 +62,21 @@ func bsonMapToString(b bson.M) string {
 	})
 
 	return strings.Join(cols, "-")
+}
+
+func FilterToString(d bson.D) string {
+
+	if d == nil || len(d) == 0 {
+		return "[]"
+	}
+
+	b, err := json.Marshal(d)
+	if err != nil {
+		log.Err(err)
+		return "[]"
+	}
+
+	h := md5.Sum(b)
+
+	return hex.EncodeToString(h[:])
 }
