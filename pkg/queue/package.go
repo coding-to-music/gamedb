@@ -84,86 +84,178 @@ func packageHandler(messages []*rabbit.Message) {
 			return
 		}
 
-		// Update from API
-		err = updatePackageFromStore(&pack)
-		err = helpers.IgnoreErrors(err, steam.ErrPackageNotFound)
-		if err != nil {
+		var wg sync.WaitGroup
 
-			if err == steam.ErrHTMLResponse {
-				log.Info(err, id)
-			} else {
-				steamHelper.LogSteamError(err, id)
+		// Update from store.steampowered.com JSON
+		wg.Add(1)
+		go func() {
+
+			defer wg.Done()
+
+			var err error
+
+			err = updatePackageFromStore(&pack)
+			err = helpers.IgnoreErrors(err, steam.ErrPackageNotFound)
+			if err != nil {
+
+				if err == steam.ErrHTMLResponse {
+					log.Info(err, id)
+				} else {
+					steamHelper.LogSteamError(err, id)
+				}
+
+				sendToRetryQueue(message)
+				return
 			}
+		}()
 
-			sendToRetryQueue(message)
-			return
-		}
+		// Scrape from store.steampowered.com
+		wg.Add(1)
+		go func() {
 
-		// Scrape
-		err = scrapePackage(&pack)
-		if err != nil {
-			steamHelper.LogSteamError(err, payload.ID)
-			sendToRetryQueue(message)
-			return
-		}
+			defer wg.Done()
+
+			var err error
+
+			err = scrapePackage(&pack)
+			if err != nil {
+				steamHelper.LogSteamError(err, payload.ID)
+				sendToRetryQueue(message)
+				return
+			}
+		}()
 
 		// Set package name to app name
-		err = updatePackageNameFromApp(&pack)
-		if err != nil {
-			log.Err(err, payload.ID)
-			sendToRetryQueue(message)
+		wg.Add(1)
+		go func() {
+
+			defer wg.Done()
+
+			var err error
+
+			err = updatePackageNameFromApp(&pack)
+			if err != nil {
+				log.Err(err, payload.ID)
+				sendToRetryQueue(message)
+				return
+			}
+		}()
+
+		wg.Wait()
+
+		if message.ActionTaken {
 			return
 		}
 
 		// Save price changes
-		err = savePriceChanges(packageBeforeUpdate, pack)
-		if err != nil {
-			log.Err(err, payload.ID)
-			sendToRetryQueue(message)
-			return
-		}
+		wg.Add(1)
+		go func() {
 
-		// Save new data
-		err = pack.Save()
-		if err != nil {
-			log.Err(err, payload.ID)
-			sendToRetryQueue(message)
-			return
-		}
+			defer wg.Done()
+
+			var err error
+
+			err = savePackagesPricesToMongo(packageBeforeUpdate, pack)
+			if err != nil {
+				log.Err(err, payload.ID)
+				sendToRetryQueue(message)
+				return
+			}
+		}()
+
+		// Save package
+		wg.Add(1)
+		go func() {
+
+			defer wg.Done()
+
+			var err error
+
+			err = pack.Save()
+			if err != nil {
+				log.Err(err, payload.ID)
+				sendToRetryQueue(message)
+				return
+			}
+		}()
 
 		// Save to InfluxDB
-		err = savePackageToInflux(pack)
-		if err != nil {
-			log.Err(err, payload.ID)
-			sendToRetryQueue(message)
+		wg.Add(1)
+		go func() {
+
+			defer wg.Done()
+
+			var err error
+
+			err = savePackagePricesToInflux(pack)
+			if err != nil {
+				log.Err(err, payload.ID)
+				sendToRetryQueue(message)
+				return
+			}
+		}()
+
+		wg.Wait()
+
+		if message.ActionTaken {
 			return
 		}
 
 		// Send websocket
-		wsPayload := websockets.IntPayload{}
-		wsPayload.ID = pack.ID
-		wsPayload.Pages = []websockets.WebsocketPage{websockets.PagePackage, websockets.PagePackages}
+		wg.Add(1)
+		go func() {
 
-		_, err = pubsubHelpers.Publish(pubsubHelpers.PubSubTopicWebsockets, wsPayload)
-		log.Err(err)
+			defer wg.Done()
+
+			var err error
+
+			wsPayload := websockets.IntPayload{}
+			wsPayload.ID = pack.ID
+			wsPayload.Pages = []websockets.WebsocketPage{websockets.PagePackage, websockets.PagePackages}
+
+			_, err = pubsubHelpers.Publish(pubsubHelpers.PubSubTopicWebsockets, wsPayload)
+			log.Err(err)
+		}()
 
 		// Clear caches
-		var keys = []string{
-			memcache.MemcachePackage(pack.ID).Key,
-			memcache.MemcachePackageInQueue(pack.ID).Key,
-			memcache.MemcachePackageBundles(pack.ID).Key,
-		}
+		wg.Add(1)
+		go func() {
 
-		err = memcache.RemoveKeyFromMemCacheViaPubSub(keys...)
-		log.Err(err)
+			defer wg.Done()
+
+			var err error
+
+			var keys = []string{
+				memcache.MemcachePackage(pack.ID).Key,
+				memcache.MemcachePackageInQueue(pack.ID).Key,
+				memcache.MemcachePackageBundles(pack.ID).Key,
+			}
+
+			err = memcache.RemoveKeyFromMemCacheViaPubSub(keys...)
+			log.Err(err)
+		}()
 
 		// Queue apps
 		// Commented out because queued too many apps
 		// Uncommented out to help with finding sales
-		for _, appID := range pack.Apps {
-			err = ProducePackage(PackageMessage{ID: appID})
-			err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
-			log.Err(err)
+		wg.Add(1)
+		go func() {
+
+			defer wg.Done()
+
+			var err error
+
+			for _, appID := range pack.Apps {
+				err = ProducePackage(PackageMessage{ID: appID})
+				err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
+				log.Err(err)
+			}
+		}()
+
+		wg.Wait()
+
+		if message.ActionTaken {
+			return
 		}
 
 		//
@@ -418,7 +510,7 @@ func updatePackageFromStore(pack *mongo.Package) (err error) {
 	return nil
 }
 
-func savePackageToInflux(pack mongo.Package) error {
+func savePackagePricesToInflux(pack mongo.Package) error {
 
 	price := pack.Prices.Get(steam.ProductCCUS)
 	if !price.Exists {

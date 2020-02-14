@@ -222,7 +222,7 @@ func setAppLaunchItem(kv vdf.KeyValue, launchItem *pics.PICSAppConfigLaunchItem)
 	}
 }
 
-func savePriceChanges(before helpers.ProductInterface, after helpers.ProductInterface) (err error) {
+func savePackagesPricesToMongo(before helpers.ProductInterface, after helpers.ProductInterface) (err error) {
 
 	var prices helpers.ProductPrices
 	var price helpers.ProductPrice
