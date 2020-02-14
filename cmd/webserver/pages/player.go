@@ -199,6 +199,19 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
+	// Check if in queue
+	var inQueue bool
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		item := memcache.MemcachePlayerInQueue(player.ID)
+		_, err = memcache.GetClient().Get(item.Key)
+
+		inQueue = err == nil
+	}()
+
 	// Wait
 	wg.Wait()
 
@@ -287,6 +300,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	t.DefaultAvatar = helpers.DefaultPlayerAvatar
 	t.Player = player
 	t.Types = typeCounts
+	t.InQueue = inQueue
 
 	returnTemplate(w, r, "player", t)
 }
@@ -300,6 +314,7 @@ type playerTemplate struct {
 	Player        mongo.Player
 	Ranks         []playerRankTemplate
 	Types         map[string]int
+	InQueue       bool
 }
 
 func (pt playerTemplate) TypePercent(typex string) string {
