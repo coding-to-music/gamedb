@@ -523,9 +523,10 @@ func appAchievementsHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		total, err = mongo.CountDocuments(mongo.CollectionAppAchievements, bson.D{{"app_id", idx}}, 60*60*24*28)
-		log.Info(idx)
-		log.Info(total)
-		log.Err(err, r)
+		if err != nil {
+			log.Err(err, r)
+			return
+		}
 	}()
 
 	// Wait
