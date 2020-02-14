@@ -78,8 +78,12 @@ func (q DataTablesQuery) GetSearchSlice(k string) (search []string) {
 		if val != "" {
 
 			if val, ok := val.([]interface{}); ok {
-				for _, v := range val {
-					search = append(search, v.(string))
+				for k, v := range val {
+					if val2, ok2 := v.(string); ok2 {
+						if k < 10 { // Limit to 10 items
+							search = append(search, val2)
+						}
+					}
 				}
 			}
 		}
