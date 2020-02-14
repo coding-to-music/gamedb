@@ -13,7 +13,6 @@ import (
 	"github.com/Jleagle/valve-data-format-go/vdf"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	pubsubHelpers "github.com/gamedb/gamedb/pkg/helpers/pubsub"
 	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
@@ -22,7 +21,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/sql/pics"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/gocolly/colly"
-	influx "github.com/influxdata/influxdb1-client"
 )
 
 type PackageMessage struct {
@@ -172,22 +170,6 @@ func packageHandler(messages []*rabbit.Message) {
 			var err error
 
 			err = pack.Save()
-			if err != nil {
-				log.Err(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-		}()
-
-		// Save to InfluxDB
-		wg.Add(1)
-		go func() {
-
-			defer wg.Done()
-
-			var err error
-
-			err = savePackagePricesToInflux(pack)
 			if err != nil {
 				log.Err(err, payload.ID)
 				sendToRetryQueue(message)
@@ -508,29 +490,4 @@ func updatePackageFromStore(pack *mongo.Package) (err error) {
 	pack.Prices = prices
 
 	return nil
-}
-
-func savePackagePricesToInflux(pack mongo.Package) error {
-
-	price := pack.Prices.Get(steam.ProductCCUS)
-	if !price.Exists {
-		return nil
-	}
-
-	_, err := influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, influx.Point{
-		Measurement: string(influxHelper.InfluxMeasurementPackages),
-		Tags: map[string]string{
-			"package_id": strconv.Itoa(pack.ID),
-		},
-		Fields: map[string]interface{}{
-			"price_us_initial":    price.Initial,
-			"price_us_final":      price.Final,
-			"price_us_discount":   price.DiscountPercent,
-			"price_us_individual": price.Individual,
-		},
-		Time:      time.Now(),
-		Precision: "m",
-	})
-
-	return err
 }

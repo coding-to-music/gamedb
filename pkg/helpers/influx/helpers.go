@@ -21,9 +21,9 @@ const (
 	InfluxRetentionPolicy7Day    InfluxRetentionPolicy = "7d"
 	InfluxRetentionPolicy14Day   InfluxRetentionPolicy = "14d"
 
-	InfluxMeasurementApps        InfluxMeasurement = "apps"
-	InfluxMeasurementGroups      InfluxMeasurement = "groups"
-	InfluxMeasurementPackages    InfluxMeasurement = "packages"
+	InfluxMeasurementApps   InfluxMeasurement = "apps"
+	InfluxMeasurementGroups InfluxMeasurement = "groups"
+	// InfluxMeasurementPackages    InfluxMeasurement = "packages" // Not used
 	InfluxMeasurementPlayers     InfluxMeasurement = "players"
 	InfluxMeasurementRabbitQueue InfluxMeasurement = "rabbitmq_queue"
 	InfluxMeasurementStats       InfluxMeasurement = "stats"
