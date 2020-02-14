@@ -95,7 +95,13 @@
                                                 </tr>
                                                 <tr>
                                                     <th scope="col" nowrap="nowrap">On Steam</th>
-                                                    <td><span data-toggle="tooltip" data-placement="top" title="{{ .Player.GetSteamTimeNice }}" data-livestamp="{{ .Player.GetSteamTimeUnix }}">{{ .Player.GetSteamTimeNice }}</span></td>
+                                                    <td>
+                                                        {{ if eq .Player.GetSteamTimeUnix 0 }}
+                                                            -
+                                                        {{ else }}
+                                                            <span data-toggle="tooltip" data-placement="top" title="{{ .Player.GetSteamTimeNice }}" data-livestamp="{{ .Player.GetSteamTimeUnix }}">{{ .Player.GetSteamTimeNice }}</span>
+                                                        {{ end }}
+                                                    </td>
                                                 </tr>
                                                 {{/*<tr>*/}}
                                                 {{/*    <th scope="col" nowrap="nowrap">Signed Off</th>*/}}
