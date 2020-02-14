@@ -20,7 +20,6 @@ type PlayerFriend struct {
 	Name         string    `bson:"name"`
 	Games        int       `bson:"games"`
 	Level        int       `bson:"level"`
-	LoggedOff    time.Time `bson:"logged_off"`
 	Relationship string    `bson:"relationship"`
 }
 
@@ -34,7 +33,6 @@ func (friend PlayerFriend) BSON() bson.D {
 		{"name", friend.Name},
 		{"games", friend.Games},
 		{"level", friend.Level},
-		{"logged_off", friend.LoggedOff},
 	}
 }
 
@@ -44,7 +42,7 @@ func (friend PlayerFriend) getKey() (ret interface{}) {
 }
 
 func (friend PlayerFriend) Scanned() bool {
-	return !friend.LoggedOff.IsZero() && friend.LoggedOff.Unix() != 0
+	return friend.Name != ""
 }
 
 func (friend PlayerFriend) GetPath() string {

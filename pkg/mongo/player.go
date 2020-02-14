@@ -92,7 +92,6 @@ type Player struct {
 	GroupsCount       int                    `bson:"groups_count"`
 	ID                int64                  `bson:"_id"`
 	LastBan           time.Time              `bson:"bans_last"`
-	LastLogOff        time.Time              `bson:"time_logged_off"`
 	Level             int                    `bson:"level"`
 	NumberOfGameBans  int                    `bson:"bans_game"`
 	NumberOfVACBans   int                    `bson:"bans_cav"`
@@ -127,7 +126,6 @@ func (player Player) BSON() bson.D {
 		{"donated", player.Donated},
 		{"game_stats", player.GameStats},
 		{"games_by_type", player.GamesByType},
-		{"time_logged_off", player.LastLogOff},
 		{"bans_last", player.LastBan},
 		{"bans_game", player.NumberOfGameBans},
 		{"bans_cav", player.NumberOfVACBans},
@@ -170,18 +168,6 @@ func (player Player) GetSteamTimeNice() string {
 		return "-"
 	}
 	return player.TimeCreated.Format(helpers.DateYear)
-}
-
-func (player Player) GetLogoffUnix() int64 {
-	return player.LastLogOff.Unix()
-}
-
-func (player Player) GetLogoffNice() string {
-
-	if player.LastLogOff.IsZero() || player.LastLogOff.Unix() == 0 {
-		return "-"
-	}
-	return player.LastLogOff.Format(helpers.DateYearTime)
 }
 
 func (player Player) GetUpdatedUnix() int64 {
@@ -404,7 +390,6 @@ func (player *Player) SetPlayerSummary() error {
 	player.StateCode = summary.StateCode
 	player.PersonaName = summary.PersonaName
 	player.TimeCreated = time.Unix(summary.TimeCreated, 0)
-	player.LastLogOff = time.Unix(summary.LastLogOff, 0)
 	player.PrimaryGroupID = summary.PrimaryClanID
 
 	return err
@@ -490,7 +475,6 @@ func (player *Player) SetFriends(saveRows bool) error {
 			friendsToAdd[friend.ID].Games = friend.GamesCount
 			friendsToAdd[friend.ID].Name = friend.GetName()
 			friendsToAdd[friend.ID].Level = friend.Level
-			friendsToAdd[friend.ID].LoggedOff = friend.LastLogOff
 		}
 	}
 
