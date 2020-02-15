@@ -752,11 +752,14 @@ func updateAppDetails(app *mongo.App) (err error) {
 
 func updateAppAchievements(app *mongo.App, schema steam.SchemaForGame) error {
 
-	//
 	resp, b, err := steamHelper.GetSteam().GetGlobalAchievementPercentagesForApp(app.ID)
 	err = steamHelper.AllowSteamCodes(err, b, []int{403, 500})
 	if err != nil {
 		return err
+	}
+
+	if app.AchievementsCountTotal == len(resp.GlobalAchievementPercentage) {
+		return nil
 	}
 
 	// Build map
@@ -819,6 +822,7 @@ func updateAppAchievements(app *mongo.App, schema steam.SchemaForGame) error {
 	}
 
 	app.AchievementsCount = len(schema.AvailableGameStats.Achievements)
+	app.AchievementsCountTotal = len(resp.GlobalAchievementPercentage)
 
 	app.Achievements = []mongo.AppAchievement{}
 	for _, achievement := range achievementsSlice {

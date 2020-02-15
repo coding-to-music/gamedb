@@ -34,6 +34,7 @@ type App struct {
 	Achievements                  []AppAchievement               `bson:"achievements_5"` // The first 5 only
 	AchievementsAverageCompletion float64                        `bson:"achievements_average_completion"`
 	AchievementsCount             int                            `bson:"achievements_count"`
+	AchievementsCountTotal        int                            `bson:"achievements_count_total"` // Including inactive ones
 	AlbumMetaData                 pics.AlbumMetaData             `bson:"albummetadata"`
 	Background                    string                         `bson:"background"`
 	Bundles                       []int                          `bson:"bundle_ids"`
@@ -117,6 +118,7 @@ func (app App) BSON() bson.D {
 		{"achievements_5", app.Achievements},
 		{"achievements_average_completion", app.AchievementsAverageCompletion},
 		{"achievements_count", app.AchievementsCount},
+		{"achievements_count_total", app.AchievementsCountTotal},
 		{"albummetadata", app.AlbumMetaData},
 		{"background", app.Background},
 		{"bundle_ids", app.Bundles},
