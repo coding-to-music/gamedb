@@ -23,6 +23,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gobuffalo/packr/v2"
 	"github.com/gosimple/slug"
 	"github.com/tdewolff/minify/v2"
 	minhtml "github.com/tdewolff/minify/v2/html"
@@ -85,6 +86,8 @@ func returnJSON(w http.ResponseWriter, r *http.Request, i interface{}) {
 	}
 }
 
+var templatesBox = packr.New("templates", "../templates")
+
 func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageData interface{}) {
 
 	var err error
@@ -110,19 +113,37 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 	setHeaders(w, "text/html")
 
 	//
-	t, err := template.New("t").Funcs(getTemplateFuncMap()).ParseFiles(
-		"./templates/_webpack_header.gohtml",
-		"./templates/_webpack_footer.gohtml",
-		"./templates/_players_header.gohtml",
-		"./templates/_header.gohtml",
-		"./templates/_footer.gohtml",
-		"./templates/_apps_header.gohtml",
-		"./templates/_login_header.gohtml",
-		"./templates/_flashes.gohtml",
-		"./templates/_stats_header.gohtml",
-		"./templates/_social.gohtml",
-		"./templates/"+page+".gohtml",
-	)
+	t := template.New("t")
+	t = t.Funcs(getTemplateFuncMap())
+
+	templates := []string{
+		"_webpack_header.gohtml",
+		"_webpack_footer.gohtml",
+		"_players_header.gohtml",
+		"_header.gohtml",
+		"_footer.gohtml",
+		"_apps_header.gohtml",
+		"_login_header.gohtml",
+		"_flashes.gohtml",
+		"_stats_header.gohtml",
+		"_social.gohtml",
+		page + ".gohtml",
+	}
+
+	for _, v := range templates {
+
+		s, err := templatesBox.FindString(v)
+		if err != nil {
+			log.Err(err, r)
+			continue
+		}
+
+		t, err = t.Parse(s)
+		if err != nil {
+			log.Err(err, r)
+			continue
+		}
+	}
 	if err != nil {
 		log.Critical(err, r)
 		return
