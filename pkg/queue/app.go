@@ -494,14 +494,26 @@ func updateAppPICS(app *mongo.App, message *rabbit.Message, payload AppMessage) 
 			for _, vv := range child.Children {
 				if vv.Key == "richpresence" {
 					for _, vvv := range vv.Children {
+
 						localization.AddLanguage(vvv.Key, &pics.LocalisationLanguage{})
-						for _, vvvv := range vvv.Children {
-							if vvvv.Key == "tokens" {
-								for _, vvvvv := range vvvv.Children {
-									localization.RichPresence[vvv.Key].AddToken(vvvvv.Key, vvvvv.Value)
+
+						// Some apps (657730, 1025600) skip the `tokens` level
+						if vvv.HasChild("tokens") {
+
+							for _, vvvv := range vvv.Children {
+								if vvvv.Key == "tokens" {
+									for _, vvvvv := range vvvv.Children {
+										localization.RichPresence[vvv.Key].AddToken(vvvvv.Key, vvvvv.Value)
+									}
+								} else {
+									log.Info("Missing localization language key", payload.ID, vvvv.Key) // Sometimes the "tokens" map is missing.
 								}
-							} else {
-								log.Info("Missing localization language key", payload.ID, vvvv.Key) // Sometimes the "tokens" map is missing.
+							}
+
+						} else {
+
+							for _, vvvv := range vvv.Children {
+								localization.RichPresence[vvv.Key].AddToken(vvvv.Key, vvvv.Value)
 							}
 						}
 					}
