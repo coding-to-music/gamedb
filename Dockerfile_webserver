@@ -9,14 +9,13 @@ RUN go mod download
 
 COPY ./ ./
 RUN apk update && apk add git
-RUN cd ./cmd/webserver && CGO_ENABLED=0 GOOS=linux go build -a -ldflags "-X main.version=`git rev-parse --verify HEAD`"
+RUN go get -u github.com/gobuffalo/packr/v2/packr2
+RUN cd ./cmd/webserver && CGO_ENABLED=0 GOOS=linux packr2 build -a -ldflags "-X main.version=`git rev-parse --verify HEAD`"
 
 # Runtime image
 FROM alpine:3.11 AS runtime-env
 WORKDIR /root/
 COPY --from=build-env /root/cmd/webserver/webserver ./
-COPY ./cmd/webserver/assets ./assets
-COPY ./cmd/webserver/templates ./templates
 COPY ./cmd/webserver/health-check.sh ./health-check.sh
 RUN ["chmod", "+x", "health-check.sh"]
 RUN touch ./google-auth.json

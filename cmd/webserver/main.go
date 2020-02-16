@@ -4,8 +4,8 @@ import (
 	"net/http"
 	_ "net/http/pprof"
 	"os"
+	"path/filepath"
 	"strings"
-	"time"
 
 	"github.com/Jleagle/recaptcha-go"
 	"github.com/gamedb/gamedb/cmd/webserver/middleware"
@@ -20,9 +20,16 @@ import (
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/go-chi/chi"
 	chiMiddleware "github.com/go-chi/chi/middleware"
+	"github.com/gobuffalo/packr/v2"
 )
 
-var version string
+var (
+	version string
+
+	distBox  = packr.New("dist", "./assets/dist")
+	filesBox = packr.New("files", "./assets/files")
+	imgBox   = packr.New("img", "./assets/img")
+)
 
 func main() {
 
@@ -146,33 +153,29 @@ func main() {
 
 	// Profiling
 	r.Route("/debug", func(r chi.Router) {
-
 		r.Use(middleware.MiddlewareAuthCheck())
 		r.Use(middleware.MiddlewareAdminCheck(pages.Error404Handler))
-
 		r.Mount("/", chiMiddleware.Profiler())
 	})
 
-	// if config.IsLocal() {
-	// 	r.Mount("/debug", chiMiddleware.Profiler())
-	// }
+	// Assets
+	r.Route("/assets", func(r chi.Router) {
+		r.Get("/img/*", rootFileHandler(imgBox, "/assets/img"))
+		r.Get("/files/*", rootFileHandler(filesBox, "/assets/files"))
+		r.Get("/dist/*", rootFileHandler(distBox, "/assets/dist"))
+	})
 
-	// Files
-	r.Get("/browserconfig.xml", pages.RootFileHandler)
-	r.Get("/robots.txt", pages.RootFileHandler)
-	r.Get("/site.webmanifest", pages.RootFileHandler)
-	r.Get("/ads.txt", pages.RootFileHandler)
-	fileServer(r, "/assets", http.Dir("./assets"))
+	// Root files
+	r.Get("/browserconfig.xml", rootFileHandler(filesBox, ""))
+	r.Get("/robots.txt", rootFileHandler(filesBox, "xxx"))
+	r.Get("/site.webmanifest", rootFileHandler(filesBox, ""))
+	// r.Get("/ads.txt", rootFileHandler)
 
 	// Redirects
-	r.Get("/sitemap/index.xml", pages.RedirectHandler("/sitemap.xml"))
-	r.Get("/trending", pages.RedirectHandler("/apps/trending"))
+	r.Get("/sitemap/index.xml", redirectHandler("/sitemap.xml"))
+	r.Get("/trending", redirectHandler("/apps/trending"))
 	r.Get("/games", func(w http.ResponseWriter, r *http.Request) {
-		q := ""
-		if r.URL.RawQuery != "" {
-			q = "?" + r.URL.RawQuery
-		}
-		http.Redirect(w, r, "/apps"+q, http.StatusFound)
+		http.Redirect(w, r, "/apps"+"?"+r.URL.RawQuery, http.StatusFound)
 	})
 	r.Get("/games/{id:[0-9]+}", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/apps/"+chi.URLParam(r, "id"), http.StatusFound)
@@ -198,30 +201,38 @@ func main() {
 	log.Critical(err)
 }
 
-// FileServer conveniently sets up a http.FileServer handler to serve
-// static files from a http.FileSystem.
-func fileServer(r chi.Router, path string, root http.FileSystem) {
-
-	if strings.ContainsAny(path, "{}*") {
-		log.Info("Invalid URL " + path)
-		return
+func redirectHandler(url string) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, url, http.StatusFound)
 	}
+}
 
-	fs := http.StripPrefix(path, http.FileServer(root))
+func rootFileHandler(box *packr.Box, path string) func(w http.ResponseWriter, r *http.Request) {
 
-	if path != "/" && path[len(path)-1] != '/' {
-		r.Get(path, http.RedirectHandler(path+"/", http.StatusFound).ServeHTTP)
-		path += "/"
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		w.Header().Set("X-Content-Type-Options", "nosniff")
+
+		b, err := box.Find(strings.TrimPrefix(r.URL.Path, path))
+		if err != nil {
+			w.WriteHeader(404)
+			_, err := w.Write([]byte("Unable to read file."))
+			log.Err(err, r)
+			return
+		}
+
+		switch filepath.Ext(r.URL.Path) {
+		case ".js":
+			w.Header().Add("Content-Type", "text/javascript")
+		case ".css":
+			w.Header().Add("Content-Type", "text/css")
+		case ".png", ".jpg", ".webmanifest":
+			// All good
+		default:
+			log.Warning("Missing mime type: " + r.URL.Path)
+		}
+
+		_, err = w.Write(b)
+		log.Err(err, r)
 	}
-	path += "*"
-
-	if strings.Contains(path, "..") {
-		log.Info("Invalid URL " + path)
-		return
-	}
-
-	r.Get(path, func(w http.ResponseWriter, r *http.Request) {
-		pages.SetCacheHeaders(w, time.Hour*24*365)
-		fs.ServeHTTP(w, r)
-	})
 }
