@@ -5,7 +5,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/Jleagle/steam-go/steam"
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -84,7 +84,7 @@ func (c Genres) work() (err error) {
 					name:       genreName,
 					count:      1,
 					totalScore: app.ReviewsScore,
-					totalPrice: map[steam.ProductCC]int{},
+					totalPrice: map[steamapi.ProductCC]int{},
 				}
 			}
 

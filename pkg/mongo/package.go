@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/Jleagle/steam-go/steam"
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -297,7 +297,7 @@ func (pack Package) GetPrices() (prices helpers.ProductPrices) {
 
 var PackageOutputForJSON = bson.M{"id": 1, "name": 1, "apps_count": 1, "prices": 1, "change_number_date": 1, "icon": 1, "billing_type": 1}
 
-func (pack Package) OutputForJSON(code steam.ProductCC) (output []interface{}) {
+func (pack Package) OutputForJSON(code steamapi.ProductCC) (output []interface{}) {
 
 	var changeNumberDate = pack.ChangeNumberDate.Format(helpers.DateYearTime)
 	var discount = pack.Prices.Get(code).GetDiscountPercent()

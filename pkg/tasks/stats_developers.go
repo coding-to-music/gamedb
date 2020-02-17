@@ -5,7 +5,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/Jleagle/steam-go/steam"
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -82,7 +82,7 @@ func (c Developers) work() (err error) {
 				newDevelopers[appDeveloperID] = &statsRow{
 					name:       developersName,
 					count:      1,
-					totalPrice: map[steam.ProductCC]int{},
+					totalPrice: map[steamapi.ProductCC]int{},
 					totalScore: app.ReviewsScore,
 				}
 			}

@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Jleagle/steam-go/steam"
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gocolly/colly"
@@ -20,7 +20,7 @@ func AllowSteamCodes(err error, bytes []byte, allowedCodes []int) error {
 	// 	time.Sleep(time.Second * 30)
 	// }
 
-	err2, ok := err.(steam.Error)
+	err2, ok := err.(steamapi.Error)
 	if ok {
 		if allowedCodes != nil && helpers.SliceHasInt(allowedCodes, err2.Code) {
 			return nil
@@ -35,7 +35,7 @@ func LogSteamError(err error, interfaces ...interface{}) {
 	isError := func() bool {
 
 		// Sleeps on rate limits etc
-		if val, ok := err.(steam.Error); ok {
+		if val, ok := err.(steamapi.Error); ok {
 
 			if val.Code == 429 { // Rate limit
 				time.Sleep(time.Second * 30)

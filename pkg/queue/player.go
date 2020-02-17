@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/rabbit-go"
-	"github.com/Jleagle/steam-go/steam"
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
@@ -67,7 +67,7 @@ func playerHandler(messages []*rabbit.Message) {
 			err = updatePlayerSummary(&player)
 			if err != nil {
 
-				if err == steam.ErrNoUserFound {
+				if err == steamapi.ErrNoUserFound {
 					message.Ack(false)
 				} else {
 					steamHelper.LogSteamError(err, payload.ID)
@@ -277,7 +277,7 @@ func updatePlayerRecentGames(player *mongo.Player) error {
 
 	player.RecentAppsCount = len(newAppsSlice)
 
-	newAppsMap := map[int]steam.RecentlyPlayedGame{}
+	newAppsMap := map[int]steamapi.RecentlyPlayedGame{}
 	for _, app := range newAppsSlice {
 		newAppsMap[app.AppID] = app
 	}
@@ -413,7 +413,7 @@ func updatePlayerBans(player *mongo.Player) error {
 
 	response, b, err := steamHelper.GetSteam().GetPlayerBans(player.ID)
 	err = steamHelper.AllowSteamCodes(err, b, nil)
-	if err == steam.ErrNoUserFound {
+	if err == steamapi.ErrNoUserFound {
 		return nil
 	}
 	if err != nil {
@@ -536,7 +536,7 @@ func updatePlayerWishlistApps(player *mongo.Player) error {
 	// New
 	resp, b, err := steamHelper.GetSteam().GetWishlist(player.ID)
 	err = steamHelper.AllowSteamCodes(err, b, []int{500})
-	if err == steam.ErrWishlistNotFound {
+	if err == steamapi.ErrWishlistNotFound {
 		return nil
 	} else if err != nil {
 		return err
@@ -546,7 +546,7 @@ func updatePlayerWishlistApps(player *mongo.Player) error {
 
 	player.WishlistAppsCount = len(resp.Items)
 
-	var newAppMap = map[int]steam.WishlistItem{}
+	var newAppMap = map[int]steamapi.WishlistItem{}
 	for k, v := range newAppSlice {
 		newAppMap[int(k)] = v
 	}

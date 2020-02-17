@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/Jleagle/steam-go/steam"
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
@@ -13,15 +13,15 @@ import (
 )
 
 type PlayerWishlistApp struct {
-	PlayerID           int64                   `bson:"player_id"`
-	Order              int                     `bson:"order"`
-	AppID              int                     `bson:"app_id"`
-	AppName            string                  `bson:"app_name"`
-	AppIcon            string                  `bson:"app_icon"`
-	AppReleaseState    string                  `bson:"app_release_state"`
-	AppReleaseDate     time.Time               `bson:"app_release_date"`
-	AppReleaseDateNice string                  `bson:"app_release_date_nice"`
-	AppPrices          map[steam.ProductCC]int `bson:"app_prices"`
+	PlayerID           int64                      `bson:"player_id"`
+	Order              int                        `bson:"order"`
+	AppID              int                        `bson:"app_id"`
+	AppName            string                     `bson:"app_name"`
+	AppIcon            string                     `bson:"app_icon"`
+	AppReleaseState    string                     `bson:"app_release_state"`
+	AppReleaseDate     time.Time                  `bson:"app_release_date"`
+	AppReleaseDateNice string                     `bson:"app_release_date_nice"`
+	AppPrices          map[steamapi.ProductCC]int `bson:"app_prices"`
 }
 
 func (app PlayerWishlistApp) BSON() bson.D {

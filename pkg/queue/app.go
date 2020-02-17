@@ -14,8 +14,8 @@ import (
 	"time"
 
 	"github.com/Jleagle/rabbit-go"
-	"github.com/Jleagle/steam-go/steam"
-	"github.com/Jleagle/valve-data-format-go/vdf"
+	"github.com/Jleagle/steam-go/steamapi"
+	"github.com/Jleagle/steam-go/steamvdf"
 	"github.com/cenkalti/backoff/v4"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -99,7 +99,7 @@ func appHandler(messages []*rabbit.Message) {
 		var wg sync.WaitGroup
 
 		// Calls to api.steampowered.com
-		var newItems []steam.ItemDefArchive
+		var newItems []steamapi.ItemDefArchive
 		wg.Add(1)
 		go func() {
 
@@ -146,7 +146,7 @@ func appHandler(messages []*rabbit.Message) {
 			var err error
 
 			err = updateAppDetails(&app)
-			if err != nil && err != steam.ErrAppNotFound {
+			if err != nil && err != steamapi.ErrAppNotFound {
 				steamHelper.LogSteamError(err, payload.ID)
 				sendToRetryQueue(message)
 				return
@@ -389,7 +389,7 @@ func updateAppPICS(app *mongo.App, message *rabbit.Message, payload AppMessage) 
 		}
 	}
 
-	var kv = vdf.FromMap(payload.VDF)
+	var kv = steamvdf.FromMap(payload.VDF)
 
 	app.ID = payload.ID
 
@@ -554,13 +554,13 @@ func updateAppDetails(app *mongo.App) (err error) {
 	for _, code := range helpers.GetProdCCs(true) {
 
 		var filter []string
-		if code.ProductCode != steam.ProductCCUS {
+		if code.ProductCode != steamapi.ProductCCUS {
 			filter = []string{"price_overview"}
 		}
 
-		response, b, err := steamHelper.GetSteam().GetAppDetails(app.ID, code.ProductCode, steam.LanguageEnglish, filter)
+		response, b, err := steamHelper.GetSteam().GetAppDetails(app.ID, code.ProductCode, steamapi.LanguageEnglish, filter)
 		err = steamHelper.AllowSteamCodes(err, b, nil)
-		if err == steam.ErrAppNotFound {
+		if err == steamapi.ErrAppNotFound {
 			continue
 		}
 		if err != nil {
@@ -569,7 +569,7 @@ func updateAppDetails(app *mongo.App) (err error) {
 
 		// Check for missing fields
 		go func() {
-			err2 := helpers.UnmarshalStrict(b, &map[string]steam.AppDetailsBody{})
+			err2 := helpers.UnmarshalStrict(b, &map[string]steamapi.AppDetailsBody{})
 			if err != nil {
 				log.Warning(err2, app.ID)
 			}
@@ -578,7 +578,7 @@ func updateAppDetails(app *mongo.App) (err error) {
 		//
 		prices.AddPriceFromApp(code.ProductCode, response)
 
-		if code.ProductCode == steam.ProductCCUS {
+		if code.ProductCode == steamapi.ProductCCUS {
 
 			// Screenshots
 			var images []helpers.AppImage
@@ -764,7 +764,7 @@ func updateAppDetails(app *mongo.App) (err error) {
 	return nil
 }
 
-func updateAppAchievements(app *mongo.App, schema steam.SchemaForGame) error {
+func updateAppAchievements(app *mongo.App, schema steamapi.SchemaForGame) error {
 
 	resp, b, err := steamHelper.GetSteam().GetGlobalAchievementPercentagesForApp(app.ID)
 	err = steamHelper.AllowSteamCodes(err, b, []int{403, 500})
@@ -801,7 +801,7 @@ func updateAppAchievements(app *mongo.App, schema steam.SchemaForGame) error {
 			val.Name = achievement.DisplayName
 			val.SetIcon(achievement.Icon)
 			val.Description = achievement.Description
-			val.Hidden = achievement.Hidden > 0
+			val.Hidden = bool(achievement.Hidden)
 			val.Active = true
 
 			achievements[achievement.Name] = val
@@ -852,7 +852,7 @@ func updateAppAchievements(app *mongo.App, schema steam.SchemaForGame) error {
 	return nil
 }
 
-func updateAppSchema(app *mongo.App) (schema steam.SchemaForGame, err error) {
+func updateAppSchema(app *mongo.App) (schema steamapi.SchemaForGame, err error) {
 
 	resp, b, err := steamHelper.GetSteam().GetSchemaForGame(app.ID)
 	err = steamHelper.AllowSteamCodes(err, b, []int{400, 403})
@@ -875,7 +875,7 @@ func updateAppSchema(app *mongo.App) (schema steam.SchemaForGame, err error) {
 	return resp, nil
 }
 
-func updateAppItems(app *mongo.App) (archive []steam.ItemDefArchive, err error) {
+func updateAppItems(app *mongo.App) (archive []steamapi.ItemDefArchive, err error) {
 
 	meta, _, err := steamHelper.GetSteam().GetItemDefMeta(app.ID)
 	if err != nil {
@@ -1371,7 +1371,7 @@ func saveAppToInflux(app mongo.App) (err error) {
 		"reviews_negative": app.Reviews.Negative,
 	}
 
-	price := app.Prices.Get(steam.ProductCCUS)
+	price := app.Prices.Get(steamapi.ProductCCUS)
 	if price.Exists {
 		fields["price_us_initial"] = price.Initial
 		fields["price_us_final"] = price.Final
@@ -1567,7 +1567,7 @@ func saveSales(app mongo.App, newSales []mongo.Sale) (err error) {
 
 		newSales[k].AppName = app.GetName()
 		newSales[k].AppIcon = app.GetIcon()
-		newSales[k].AppLowestPrice = map[steam.ProductCC]int{} // todo
+		newSales[k].AppLowestPrice = map[steamapi.ProductCC]int{} // todo
 		newSales[k].AppRating = app.ReviewsScore
 		newSales[k].AppReleaseDate = time.Unix(app.ReleaseDateUnix, 0)
 		newSales[k].AppReleaseDateString = app.ReleaseDate
@@ -1589,7 +1589,7 @@ func saveSales(app mongo.App, newSales []mongo.Sale) (err error) {
 	return mongo.UpdateSales(newSales)
 }
 
-func saveAppItems(appID int, newItems []steam.ItemDefArchive, currentItemIDs []int) (err error) {
+func saveAppItems(appID int, newItems []steamapi.ItemDefArchive, currentItemIDs []int) (err error) {
 
 	if len(newItems) == 0 {
 		return

@@ -3,7 +3,7 @@ package chatbot
 import (
 	"regexp"
 
-	"github.com/Jleagle/steam-go/steam"
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"go.mongodb.org/mongo-driver/bson"
@@ -57,7 +57,7 @@ func (c CommandApp) Output(msg *discordgo.MessageCreate) (message discordgo.Mess
 			},
 			{
 				Name:  "Price",
-				Value: app.Prices.Get(steam.ProductCCUS).GetFinal(),
+				Value: app.Prices.Get(steamapi.ProductCCUS).GetFinal(),
 			},
 			{
 				Name:  "Review Score",

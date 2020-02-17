@@ -4,7 +4,7 @@ import (
 	"math"
 	"strconv"
 
-	"github.com/Jleagle/steam-go/steam"
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
@@ -67,7 +67,7 @@ func (app PlayerApp) GetTimeNice() string {
 	return helpers.GetTimeShort(app.AppTime, 2)
 }
 
-func (app PlayerApp) GetPriceFormatted(code steam.ProductCC) string {
+func (app PlayerApp) GetPriceFormatted(code steamapi.ProductCC) string {
 
 	val, ok := app.AppPrices[string(code)]
 	if ok {
@@ -77,7 +77,7 @@ func (app PlayerApp) GetPriceFormatted(code steam.ProductCC) string {
 	}
 }
 
-func (app PlayerApp) GetPriceHourFormatted(code steam.ProductCC) string {
+func (app PlayerApp) GetPriceHourFormatted(code steamapi.ProductCC) string {
 
 	val, ok := app.AppPriceHour[string(code)]
 	if ok {

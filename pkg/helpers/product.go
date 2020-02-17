@@ -3,7 +3,7 @@ package helpers
 import (
 	"strconv"
 
-	"github.com/Jleagle/steam-go/steam"
+	"github.com/Jleagle/steam-go/steamapi"
 )
 
 type ProductInterface interface {
@@ -17,9 +17,9 @@ type ProductInterface interface {
 }
 
 //
-type ProductPrices map[steam.ProductCC]ProductPrice
+type ProductPrices map[steamapi.ProductCC]ProductPrice
 
-func (p *ProductPrices) AddPriceFromPackage(code steam.ProductCC, prices steam.PackageDetailsBody) {
+func (p *ProductPrices) AddPriceFromPackage(code steamapi.ProductCC, prices steamapi.PackageDetailsBody) {
 
 	if prices.Data.Price.Currency == "" {
 		prices.Data.Price.Currency = GetProdCC(code).CurrencyCode
@@ -34,7 +34,7 @@ func (p *ProductPrices) AddPriceFromPackage(code steam.ProductCC, prices steam.P
 	}
 }
 
-func (p *ProductPrices) AddPriceFromApp(code steam.ProductCC, prices steam.AppDetailsBody) {
+func (p *ProductPrices) AddPriceFromApp(code steamapi.ProductCC, prices steamapi.AppDetailsBody) {
 
 	if prices.Data.PriceOverview.Currency == "" {
 		prices.Data.PriceOverview.Currency = GetProdCC(code).CurrencyCode
@@ -48,7 +48,7 @@ func (p *ProductPrices) AddPriceFromApp(code steam.ProductCC, prices steam.AppDe
 	}
 }
 
-func (p ProductPrices) Get(code steam.ProductCC) (price ProductPrice) {
+func (p ProductPrices) Get(code steamapi.ProductCC) (price ProductPrice) {
 
 	if val, ok := p[code]; ok {
 		val.Exists = true
@@ -58,9 +58,9 @@ func (p ProductPrices) Get(code steam.ProductCC) (price ProductPrice) {
 	return price
 }
 
-func (p ProductPrices) Map() (prices map[steam.ProductCC]int) {
+func (p ProductPrices) Map() (prices map[steamapi.ProductCC]int) {
 
-	prices = map[steam.ProductCC]int{}
+	prices = map[steamapi.ProductCC]int{}
 
 	for k, v := range p {
 		prices[k] = v.Final
@@ -71,23 +71,23 @@ func (p ProductPrices) Map() (prices map[steam.ProductCC]int) {
 
 //
 type ProductPrice struct {
-	Exists          bool               `json:"-"`
-	Currency        steam.CurrencyCode `json:"currency"`
-	Initial         int                `json:"initial"`
-	Final           int                `json:"final"`
-	DiscountPercent int                `json:"discount_percent"`
-	Individual      int                `json:"individual"`
+	Exists          bool                  `json:"-"`
+	Currency        steamapi.CurrencyCode `json:"currency"`
+	Initial         int                   `json:"initial"`
+	Final           int                   `json:"final"`
+	DiscountPercent int                   `json:"discount_percent"`
+	Individual      int                   `json:"individual"`
 }
 
 func (p ProductPrice) GetDiscountPercent() string {
 	return strconv.Itoa(p.DiscountPercent) + "%"
 }
 
-func (p ProductPrice) GetCountryName(code steam.ProductCC) string {
+func (p ProductPrice) GetCountryName(code steamapi.ProductCC) string {
 	return GetProdCC(code).Name
 }
 
-func (p ProductPrice) GetFlag(code steam.ProductCC) string {
+func (p ProductPrice) GetFlag(code steamapi.ProductCC) string {
 	return "/assets/img/flags/" + GetProdCC(code).GetFlag() + ".png"
 }
 

@@ -10,7 +10,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Jleagle/steam-go/steam"
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/Jleagle/steam-go/steamid"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
@@ -412,7 +412,7 @@ func (player *Player) SetFriends(saveRows bool) error {
 
 	// If it's a 401, it returns no results, we dont want to change remove the players friends.
 	newFriendsSlice, _, err := steamHelper.GetSteam().GetFriendList(player.ID)
-	if err2, ok := err.(steam.Error); ok && err2.Code == 401 {
+	if err2, ok := err.(steamapi.Error); ok && err2.Code == 401 {
 		return nil
 	}
 
@@ -429,7 +429,7 @@ func (player *Player) SetFriends(saveRows bool) error {
 		return err
 	}
 
-	newFriendsMap := map[int64]steam.Friend{}
+	newFriendsMap := map[int64]steamapi.Friend{}
 	for _, friend := range newFriendsSlice {
 		newFriendsMap[int64(friend.SteamID)] = friend
 	}
@@ -718,7 +718,7 @@ func SearchPlayer(search string, projection bson.M) (player Player, queue bool, 
 
 	if player.ID == 0 {
 
-		resp, _, err := steamHelper.GetSteam().ResolveVanityURL(search, steam.VanityURLProfile)
+		resp, _, err := steamHelper.GetSteam().ResolveVanityURL(search, steamapi.VanityURLProfile)
 		if err == nil && resp.Success > 0 {
 
 			player.ID = int64(resp.SteamID)
@@ -991,10 +991,10 @@ type PlayerAppStatsTemplate struct {
 
 type playerAppStatsInnerTemplate struct {
 	Count     int
-	Price     map[steam.ProductCC]int
-	PriceHour map[steam.ProductCC]float64
+	Price     map[steamapi.ProductCC]int
+	PriceHour map[steamapi.ProductCC]float64
 	Time      int
-	ProductCC steam.ProductCC
+	ProductCC steamapi.ProductCC
 }
 
 func (p *playerAppStatsInnerTemplate) AddApp(appTime int, prices map[string]int, priceHours map[string]float64) {
@@ -1002,11 +1002,11 @@ func (p *playerAppStatsInnerTemplate) AddApp(appTime int, prices map[string]int,
 	p.Count++
 
 	if p.Price == nil {
-		p.Price = map[steam.ProductCC]int{}
+		p.Price = map[steamapi.ProductCC]int{}
 	}
 
 	if p.PriceHour == nil {
-		p.PriceHour = map[steam.ProductCC]float64{}
+		p.PriceHour = map[steamapi.ProductCC]float64{}
 	}
 
 	for _, code := range helpers.GetProdCCs(true) {

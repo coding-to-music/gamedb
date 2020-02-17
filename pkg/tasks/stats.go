@@ -3,20 +3,20 @@ package tasks
 import (
 	"encoding/json"
 
-	"github.com/Jleagle/steam-go/steam"
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/log"
 )
 
 type statsRow struct {
 	name       string
 	count      int
-	totalPrice map[steam.ProductCC]int
+	totalPrice map[steamapi.ProductCC]int
 	totalScore float64
 }
 
 func (t statsRow) getMeanPrice() string {
 
-	means := map[steam.ProductCC]float64{}
+	means := map[steamapi.ProductCC]float64{}
 
 	for code, total := range t.totalPrice {
 		means[code] = float64(total) / float64(t.count)

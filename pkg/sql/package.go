@@ -6,7 +6,7 @@ package sql
 // 	"strconv"
 // 	"time"
 //
-// 	"github.com/Jleagle/steam-go/steam"
+// 	"github.com/Jleagle/steam-go/steamapi"
 // 	"github.com/Jleagle/unmarshal-go/ctypes"
 // 	"github.com/gamedb/gamedb/pkg/helpers"
 // 	"github.com/gamedb/gamedb/pkg/log"

@@ -1,7 +1,7 @@
 package pics
 
 import (
-	"github.com/Jleagle/steam-go/steam"
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/Jleagle/unmarshal-go/ctypes"
 )
 
@@ -27,7 +27,7 @@ type LibraryAssets struct {
 	} `json:"logo_position"`
 }
 
-type SupportedLanguages map[steam.LanguageCode]struct {
+type SupportedLanguages map[steamapi.LanguageCode]struct {
 	FullAudio ctypes.Bool `json:"full_audio"`
 	Subtitles ctypes.Bool `json:"subtitles"`
 	Supported ctypes.Bool `json:"supported"`

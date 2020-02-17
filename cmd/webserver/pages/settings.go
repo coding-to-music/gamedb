@@ -7,7 +7,7 @@ import (
 	"sync"
 
 	"github.com/Jleagle/session-go/session"
-	"github.com/Jleagle/steam-go/steam"
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/badoux/checkmail"
 	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
 	"github.com/gamedb/gamedb/cmd/webserver/middleware"
@@ -225,7 +225,7 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 
 		email := r.PostForm.Get("email")
 		password := r.PostForm.Get("password")
-		prodCC := steam.ProductCC(r.PostForm.Get("prod_cc"))
+		prodCC := steamapi.ProductCC(r.PostForm.Get("prod_cc"))
 
 		// Email
 		if email != "" && email != user.Email {
@@ -262,7 +262,7 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 		if helpers.IsValidProdCC(prodCC) {
 			user.ProductCC = prodCC
 		} else {
-			user.ProductCC = steam.ProductCCUS
+			user.ProductCC = steamapi.ProductCCUS
 		}
 
 		// Save hidden

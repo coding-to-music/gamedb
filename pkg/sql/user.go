@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/Jleagle/steam-go/steam"
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -51,22 +51,22 @@ func (ul UserLevel) MaxOffset(limit int64) int64 {
 }
 
 type User struct {
-	ID            int             `gorm:"not null;column:id;primary_key"`
-	CreatedAt     time.Time       `gorm:"not null;column:created_at"`
-	UpdatedAt     time.Time       `gorm:"not null;column:updated_at"`
-	Email         string          `gorm:"not null;column:email;unique_index"`
-	EmailVerified bool            `gorm:"not null;column:email_verified"`
-	Password      string          `gorm:"not null;column:password"`
-	SteamID       sql.NullString  `gorm:"not null;column:steam_id"`
-	PatreonID     sql.NullString  `gorm:"not null;column:patreon_id"`
-	GoogleID      sql.NullString  `gorm:"not null;column:google_id"`
-	DiscordID     sql.NullString  `gorm:"not null;column:discord_id"`
-	GitHubID      sql.NullString  `gorm:"not null;column:github_id"`
-	PatreonLevel  int8            `gorm:"not null;column:patreon_level"`
-	HideProfile   bool            `gorm:"not null;column:hide_profile"`
-	ShowAlerts    bool            `gorm:"not null;column:show_alerts"`
-	ProductCC     steam.ProductCC `gorm:"not null;column:country_code"`
-	APIKey        string          `gorm:"not null;column:api_key"`
+	ID            int                `gorm:"not null;column:id;primary_key"`
+	CreatedAt     time.Time          `gorm:"not null;column:created_at"`
+	UpdatedAt     time.Time          `gorm:"not null;column:updated_at"`
+	Email         string             `gorm:"not null;column:email;unique_index"`
+	EmailVerified bool               `gorm:"not null;column:email_verified"`
+	Password      string             `gorm:"not null;column:password"`
+	SteamID       sql.NullString     `gorm:"not null;column:steam_id"`
+	PatreonID     sql.NullString     `gorm:"not null;column:patreon_id"`
+	GoogleID      sql.NullString     `gorm:"not null;column:google_id"`
+	DiscordID     sql.NullString     `gorm:"not null;column:discord_id"`
+	GitHubID      sql.NullString     `gorm:"not null;column:github_id"`
+	PatreonLevel  int8               `gorm:"not null;column:patreon_level"`
+	HideProfile   bool               `gorm:"not null;column:hide_profile"`
+	ShowAlerts    bool               `gorm:"not null;column:show_alerts"`
+	ProductCC     steamapi.ProductCC `gorm:"not null;column:country_code"`
+	APIKey        string             `gorm:"not null;column:api_key"`
 }
 
 func (user User) GetSteamID() (ret int64) {

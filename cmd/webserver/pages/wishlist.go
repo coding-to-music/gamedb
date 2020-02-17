@@ -130,7 +130,7 @@ func wishlistAppsHandler(w http.ResponseWriter, r *http.Request) {
 			helpers.GetAppStoreLink(app.ID), // 7
 			app.ReleaseDateUnix,             // 8
 			app.GetReleaseDateNice(),        // 9
-			app.Prices.Get(code).GetFinal(),   // 10
+			app.Prices.Get(code).GetFinal(), // 10
 		})
 	}
 

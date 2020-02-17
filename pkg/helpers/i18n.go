@@ -4,7 +4,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/Jleagle/steam-go/steam"
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/pariz/gountries"
@@ -16,8 +16,8 @@ import (
 var gountriesInstance = gountries.New()
 
 type ProductCountryCode struct {
-	ProductCode  steam.ProductCC
-	CurrencyCode steam.CurrencyCode
+	ProductCode  steamapi.ProductCC
+	CurrencyCode steamapi.CurrencyCode
 	CountryCodes []string // Used to get a currency from an country from an IP
 	Name         string
 	Symbol       string
@@ -26,324 +26,324 @@ type ProductCountryCode struct {
 
 func (pcc ProductCountryCode) GetFlag() string {
 	switch pcc.ProductCode {
-	case steam.ProductCCEU:
+	case steamapi.ProductCCEU:
 		return "eu"
-	case steam.ProductCCUK:
+	case steamapi.ProductCCUK:
 		return "gb"
-	case steam.ProductCCAZ:
+	case steamapi.ProductCCAZ:
 		return "cis"
-	case steam.ProductCCPK:
+	case steamapi.ProductCCPK:
 		return "sasia"
 	default:
 		return strings.ToLower(pcc.CountryCodes[0])
 	}
 }
 
-var ProductCountryCodes = map[steam.ProductCC]ProductCountryCode{
-	steam.ProductCCAR: {
-		ProductCode:  steam.ProductCCAR,
+var ProductCountryCodes = map[steamapi.ProductCC]ProductCountryCode{
+	steamapi.ProductCCAR: {
+		ProductCode:  steamapi.ProductCCAR,
 		CountryCodes: []string{"AR"},
-		CurrencyCode: steam.CurrencyARS,
+		CurrencyCode: steamapi.CurrencyARS,
 		Name:         "Argentine Peso",
 		Symbol:       "ARS$",
 	},
-	steam.ProductCCAU: {
-		ProductCode:  steam.ProductCCAU,
+	steamapi.ProductCCAU: {
+		ProductCode:  steamapi.ProductCCAU,
 		CountryCodes: []string{"AU"},
-		CurrencyCode: steam.CurrencyAUD,
+		CurrencyCode: steamapi.CurrencyAUD,
 		Name:         "Australian Dollar",
 		Symbol:       "A$",
 	},
-	steam.ProductCCBR: {
-		ProductCode:  steam.ProductCCBR,
+	steamapi.ProductCCBR: {
+		ProductCode:  steamapi.ProductCCBR,
 		CountryCodes: []string{"BR"},
-		CurrencyCode: steam.CurrencyBRL,
+		CurrencyCode: steamapi.CurrencyBRL,
 		Name:         "Brazilian Real",
 		Symbol:       "R$",
 	},
-	steam.ProductCCCA: {
-		ProductCode:  steam.ProductCCCA,
+	steamapi.ProductCCCA: {
+		ProductCode:  steamapi.ProductCCCA,
 		CountryCodes: []string{"CA"},
-		CurrencyCode: steam.CurrencyCAD,
+		CurrencyCode: steamapi.CurrencyCAD,
 		Name:         "Canadian Dollar",
 		Symbol:       "CDN$",
 	},
-	steam.ProductCCCL: {
-		ProductCode:  steam.ProductCCCL,
+	steamapi.ProductCCCL: {
+		ProductCode:  steamapi.ProductCCCL,
 		CountryCodes: []string{"CL"},
-		CurrencyCode: steam.CurrencyCLP,
+		CurrencyCode: steamapi.CurrencyCLP,
 		Name:         "Chilean Peso",
 		Symbol:       "CLP$",
 	},
-	steam.ProductCCCN: {
-		ProductCode:  steam.ProductCCCN,
+	steamapi.ProductCCCN: {
+		ProductCode:  steamapi.ProductCCCN,
 		CountryCodes: []string{"CN"},
-		CurrencyCode: steam.CurrencyCNY,
+		CurrencyCode: steamapi.CurrencyCNY,
 		Name:         "Chinese Renminbi",
 		Symbol:       "¥",
 		Enabled:      true,
 	},
-	steam.ProductCCCO: {
-		ProductCode:  steam.ProductCCCO,
+	steamapi.ProductCCCO: {
+		ProductCode:  steamapi.ProductCCCO,
 		CountryCodes: []string{"CO"},
-		CurrencyCode: steam.CurrencyCOP,
+		CurrencyCode: steamapi.CurrencyCOP,
 		Name:         "Colombian Peso",
 		Symbol:       "COL$",
 	},
-	steam.ProductCCCR: {
-		ProductCode:  steam.ProductCCCR,
+	steamapi.ProductCCCR: {
+		ProductCode:  steamapi.ProductCCCR,
 		CountryCodes: []string{"CR"},
-		CurrencyCode: steam.CurrencyCRC,
+		CurrencyCode: steamapi.CurrencyCRC,
 		Name:         "Costa Rican Colon",
 		Symbol:       "₡",
 	},
-	steam.ProductCCEU: { // European Union
-		ProductCode:  steam.ProductCCEU,
+	steamapi.ProductCCEU: { // European Union
+		ProductCode:  steamapi.ProductCCEU,
 		CountryCodes: []string{"AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "EL", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL", "PL", "PT", "RO", "SK", "SI", "ES", "SE"},
-		CurrencyCode: steam.CurrencyEUR,
+		CurrencyCode: steamapi.CurrencyEUR,
 		Name:         "Euro",
 		Symbol:       "€",
 		Enabled:      true,
 	},
-	steam.ProductCCHK: {
-		ProductCode:  steam.ProductCCHK,
+	steamapi.ProductCCHK: {
+		ProductCode:  steamapi.ProductCCHK,
 		CountryCodes: []string{"HK"},
-		CurrencyCode: steam.CurrencyHKD,
+		CurrencyCode: steamapi.CurrencyHKD,
 		Name:         "Hong Kong Dollar",
 		Symbol:       "HK$",
 	},
-	steam.ProductCCIN: {
-		ProductCode:  steam.ProductCCIN,
+	steamapi.ProductCCIN: {
+		ProductCode:  steamapi.ProductCCIN,
 		CountryCodes: []string{"IN"},
-		CurrencyCode: steam.CurrencyINR,
+		CurrencyCode: steamapi.CurrencyINR,
 		Name:         "Indian Rupee",
 		Symbol:       "₹",
 	},
-	steam.ProductCCID: {
-		ProductCode:  steam.ProductCCID,
+	steamapi.ProductCCID: {
+		ProductCode:  steamapi.ProductCCID,
 		CountryCodes: []string{"ID"},
-		CurrencyCode: steam.CurrencyIDR,
+		CurrencyCode: steamapi.CurrencyIDR,
 		Name:         "Indonesian Rupiah",
 		Symbol:       "Rp",
 	},
-	steam.ProductCCIL: {
-		ProductCode:  steam.ProductCCIL,
+	steamapi.ProductCCIL: {
+		ProductCode:  steamapi.ProductCCIL,
 		CountryCodes: []string{"IL"},
-		CurrencyCode: steam.CurrencyILS,
+		CurrencyCode: steamapi.CurrencyILS,
 		Name:         "Israeli New Shekel",
 		Symbol:       "₪",
 	},
-	steam.ProductCCJP: {
-		ProductCode:  steam.ProductCCJP,
+	steamapi.ProductCCJP: {
+		ProductCode:  steamapi.ProductCCJP,
 		CountryCodes: []string{"JP"},
-		CurrencyCode: steam.CurrencyJPY,
+		CurrencyCode: steamapi.CurrencyJPY,
 		Name:         "Japanese Yen",
 		Symbol:       "¥",
 	},
-	steam.ProductCCKZ: {
-		ProductCode:  steam.ProductCCKZ,
+	steamapi.ProductCCKZ: {
+		ProductCode:  steamapi.ProductCCKZ,
 		CountryCodes: []string{"KZ"},
-		CurrencyCode: steam.CurrencyKZT,
+		CurrencyCode: steamapi.CurrencyKZT,
 		Name:         "Kazakhstani Tenge",
 		Symbol:       "₸",
 	},
-	steam.ProductCCKW: {
-		ProductCode:  steam.ProductCCKW,
+	steamapi.ProductCCKW: {
+		ProductCode:  steamapi.ProductCCKW,
 		CountryCodes: []string{"KW"},
-		CurrencyCode: steam.CurrencyKWD,
+		CurrencyCode: steamapi.CurrencyKWD,
 		Name:         "Kuwaiti Dinar",
 		Symbol:       "KD",
 	},
-	steam.ProductCCMY: {
-		ProductCode:  steam.ProductCCMY,
+	steamapi.ProductCCMY: {
+		ProductCode:  steamapi.ProductCCMY,
 		CountryCodes: []string{"MY"},
-		CurrencyCode: steam.CurrencyMYR,
+		CurrencyCode: steamapi.CurrencyMYR,
 		Name:         "Malaysian Ringgit",
 		Symbol:       "RM",
 	},
-	steam.ProductCCMX: {
-		ProductCode:  steam.ProductCCMX,
+	steamapi.ProductCCMX: {
+		ProductCode:  steamapi.ProductCCMX,
 		CountryCodes: []string{"MX"},
-		CurrencyCode: steam.CurrencyMXN,
+		CurrencyCode: steamapi.CurrencyMXN,
 		Name:         "Mexican Peso",
 		Symbol:       "Mex$",
 	},
-	steam.ProductCCTW: {
-		ProductCode:  steam.ProductCCTW,
+	steamapi.ProductCCTW: {
+		ProductCode:  steamapi.ProductCCTW,
 		CountryCodes: []string{"TW"},
-		CurrencyCode: steam.CurrencyTWD,
+		CurrencyCode: steamapi.CurrencyTWD,
 		Name:         "New Taiwan Dollar",
 		Symbol:       "NT$",
 	},
-	steam.ProductCCNZ: {
-		ProductCode:  steam.ProductCCNZ,
+	steamapi.ProductCCNZ: {
+		ProductCode:  steamapi.ProductCCNZ,
 		CountryCodes: []string{"NZ"},
-		CurrencyCode: steam.CurrencyNZD,
+		CurrencyCode: steamapi.CurrencyNZD,
 		Name:         "New Zealand Dollar",
 		Symbol:       "NZ$",
 	},
-	steam.ProductCCNO: {
-		ProductCode:  steam.ProductCCNO,
+	steamapi.ProductCCNO: {
+		ProductCode:  steamapi.ProductCCNO,
 		CountryCodes: []string{"NO"},
-		CurrencyCode: steam.CurrencyNOK,
+		CurrencyCode: steamapi.CurrencyNOK,
 		Name:         "Norwegian Krone",
 		Symbol:       "kr",
 	},
-	steam.ProductCCPE: {
-		ProductCode:  steam.ProductCCPE,
+	steamapi.ProductCCPE: {
+		ProductCode:  steamapi.ProductCCPE,
 		CountryCodes: []string{"PE"},
-		CurrencyCode: steam.CurrencyPEN,
+		CurrencyCode: steamapi.CurrencyPEN,
 		Name:         "Peruvian Sol",
 		Symbol:       "S/",
 	},
-	steam.ProductCCPH: {
-		ProductCode:  steam.ProductCCPH,
+	steamapi.ProductCCPH: {
+		ProductCode:  steamapi.ProductCCPH,
 		CountryCodes: []string{"PH"},
-		CurrencyCode: steam.CurrencyPHP,
+		CurrencyCode: steamapi.CurrencyPHP,
 		Name:         "Philippine Peso",
 		Symbol:       "₱",
 	},
-	steam.ProductCCPL: {
-		ProductCode:  steam.ProductCCPL,
+	steamapi.ProductCCPL: {
+		ProductCode:  steamapi.ProductCCPL,
 		CountryCodes: []string{"PL"},
-		CurrencyCode: steam.CurrencyPLN,
+		CurrencyCode: steamapi.CurrencyPLN,
 		Name:         "Polish Zloty",
 		Symbol:       "zł",
 	},
-	steam.ProductCCUK: {
-		ProductCode:  steam.ProductCCUK,
+	steamapi.ProductCCUK: {
+		ProductCode:  steamapi.ProductCCUK,
 		CountryCodes: []string{"GB"},
-		CurrencyCode: steam.CurrencyGBP,
+		CurrencyCode: steamapi.CurrencyGBP,
 		Name:         "Pound Sterling",
 		Symbol:       "£",
 		Enabled:      true,
 	},
-	steam.ProductCCQA: {
-		ProductCode:  steam.ProductCCQA,
+	steamapi.ProductCCQA: {
+		ProductCode:  steamapi.ProductCCQA,
 		CountryCodes: []string{"QA"},
-		CurrencyCode: steam.CurrencyQAR,
+		CurrencyCode: steamapi.CurrencyQAR,
 		Name:         "Qatari Riyal",
 		Symbol:       "QR",
 	},
-	steam.ProductCCRU: {
-		ProductCode:  steam.ProductCCRU,
+	steamapi.ProductCCRU: {
+		ProductCode:  steamapi.ProductCCRU,
 		CountryCodes: []string{"RU"},
-		CurrencyCode: steam.CurrencyRUB,
+		CurrencyCode: steamapi.CurrencyRUB,
 		Name:         "Russian Ruble",
 		Symbol:       "₽",
 		Enabled:      true,
 	},
-	steam.ProductCCSA: {
-		ProductCode:  steam.ProductCCSA,
+	steamapi.ProductCCSA: {
+		ProductCode:  steamapi.ProductCCSA,
 		CountryCodes: []string{"SA"},
-		CurrencyCode: steam.CurrencySAR,
+		CurrencyCode: steamapi.CurrencySAR,
 		Name:         "Saudi Riyal",
 		Symbol:       "SR",
 	},
-	steam.ProductCCSG: {
-		ProductCode:  steam.ProductCCSG,
+	steamapi.ProductCCSG: {
+		ProductCode:  steamapi.ProductCCSG,
 		CountryCodes: []string{"SG"},
-		CurrencyCode: steam.CurrencySGD,
+		CurrencyCode: steamapi.CurrencySGD,
 		Name:         "Singapore Dollar",
 		Symbol:       "S$",
 	},
-	steam.ProductCCZA: {
-		ProductCode:  steam.ProductCCZA,
+	steamapi.ProductCCZA: {
+		ProductCode:  steamapi.ProductCCZA,
 		CountryCodes: []string{"ZA"},
-		CurrencyCode: steam.CurrencyZAR,
+		CurrencyCode: steamapi.CurrencyZAR,
 		Name:         "South African Rand",
 		Symbol:       "R",
 	},
-	steam.ProductCCKR: {
-		ProductCode:  steam.ProductCCKR,
+	steamapi.ProductCCKR: {
+		ProductCode:  steamapi.ProductCCKR,
 		CountryCodes: []string{"KR"},
-		CurrencyCode: steam.CurrencyKRW,
+		CurrencyCode: steamapi.CurrencyKRW,
 		Name:         "South Korean Won",
 		Symbol:       "₩",
 	},
-	steam.ProductCCCH: {
-		ProductCode:  steam.ProductCCCH,
+	steamapi.ProductCCCH: {
+		ProductCode:  steamapi.ProductCCCH,
 		CountryCodes: []string{"CH"},
-		CurrencyCode: steam.CurrencyCHF,
+		CurrencyCode: steamapi.CurrencyCHF,
 		Name:         "Swiss Franc",
 		Symbol:       "CHF",
 	},
-	steam.ProductCCTH: {
-		ProductCode:  steam.ProductCCTH,
+	steamapi.ProductCCTH: {
+		ProductCode:  steamapi.ProductCCTH,
 		CountryCodes: []string{"TH"},
-		CurrencyCode: steam.CurrencyTHB,
+		CurrencyCode: steamapi.CurrencyTHB,
 		Name:         "Thai Baht",
 		Symbol:       "฿",
 	},
-	steam.ProductCCTR: {
-		ProductCode:  steam.ProductCCTR,
+	steamapi.ProductCCTR: {
+		ProductCode:  steamapi.ProductCCTR,
 		CountryCodes: []string{"TR"},
-		CurrencyCode: steam.CurrencyTRY,
+		CurrencyCode: steamapi.CurrencyTRY,
 		Name:         "Turkish Lira",
 		Symbol:       "₺",
 	},
-	steam.ProductCCUA: {
-		ProductCode:  steam.ProductCCUA,
+	steamapi.ProductCCUA: {
+		ProductCode:  steamapi.ProductCCUA,
 		CountryCodes: []string{"UA"},
-		CurrencyCode: steam.CurrencyUAH,
+		CurrencyCode: steamapi.CurrencyUAH,
 		Name:         "Ukrainian Hryvnia",
 		Symbol:       "₴",
 	},
-	steam.ProductCCAE: {
-		ProductCode:  steam.ProductCCAE,
+	steamapi.ProductCCAE: {
+		ProductCode:  steamapi.ProductCCAE,
 		CountryCodes: []string{"AE"},
-		CurrencyCode: steam.CurrencyAED,
+		CurrencyCode: steamapi.CurrencyAED,
 		Name:         "United Arab Emirates Dirham",
 		Symbol:       "AED"},
-	steam.ProductCCUS: {
-		ProductCode:  steam.ProductCCUS,
+	steamapi.ProductCCUS: {
+		ProductCode:  steamapi.ProductCCUS,
 		CountryCodes: []string{"US"},
-		CurrencyCode: steam.CurrencyUSD,
+		CurrencyCode: steamapi.CurrencyUSD,
 		Name:         "United States Dollar",
 		Symbol:       "$",
 		Enabled:      true,
 	},
-	steam.ProductCCAZ: { // CIS
-		ProductCode:  steam.ProductCCAZ,
+	steamapi.ProductCCAZ: { // CIS
+		ProductCode:  steamapi.ProductCCAZ,
 		CountryCodes: []string{"AM", "AZ", "BY", "GE", "KZ", "KG", "MD", "TJ", "TM", "UZ", "UA"},
-		CurrencyCode: steam.CurrencyUSD,
+		CurrencyCode: steamapi.CurrencyUSD,
 		Name:         "United States Dollar (CIS)",
 		Symbol:       "$",
 	},
-	steam.ProductCCPK: { // SASIA
-		ProductCode:  steam.ProductCCPK,
+	steamapi.ProductCCPK: { // SASIA
+		ProductCode:  steamapi.ProductCCPK,
 		CountryCodes: []string{"BD", "BT", "NP", "PK", "LK"},
-		CurrencyCode: steam.CurrencyUSD,
+		CurrencyCode: steamapi.CurrencyUSD,
 		Name:         "United States Dollar (South Asia)",
 		Symbol:       "$",
 	},
-	steam.ProductCCUY: {
-		ProductCode:  steam.ProductCCUY,
+	steamapi.ProductCCUY: {
+		ProductCode:  steamapi.ProductCCUY,
 		CountryCodes: []string{"UY"},
-		CurrencyCode: steam.CurrencyUYU,
+		CurrencyCode: steamapi.CurrencyUYU,
 		Name:         "Uruguayan Peso",
 		Symbol:       "$U",
 	},
-	steam.ProductCCVN: {
-		ProductCode:  steam.ProductCCVN,
+	steamapi.ProductCCVN: {
+		ProductCode:  steamapi.ProductCCVN,
 		CountryCodes: []string{"VN"},
-		CurrencyCode: steam.CurrencyVND,
+		CurrencyCode: steamapi.CurrencyVND,
 		Name:         "Vietnamese Dong",
 		Symbol:       "₫",
 	},
 }
 
-func IsValidProdCC(cc steam.ProductCC) bool {
+func IsValidProdCC(cc steamapi.ProductCC) bool {
 	_, ok := ProductCountryCodes[cc]
 	return ok
 }
 
-func GetProdCC(cc steam.ProductCC) ProductCountryCode {
+func GetProdCC(cc steamapi.ProductCC) ProductCountryCode {
 	val, ok := ProductCountryCodes[cc]
 	if ok {
 		return val
 	}
-	return ProductCountryCodes[steam.ProductCCUS]
+	return ProductCountryCodes[steamapi.ProductCCUS]
 }
 
 func GetProdCCs(activeOnly bool) (ccs []ProductCountryCode) {
@@ -426,7 +426,7 @@ func CountriesInContinent(continent string) (ret []string) {
 }
 
 // Value is cents
-func FormatPrice(currencyCode steam.CurrencyCode, value int, returnNumber ...bool) string {
+func FormatPrice(currencyCode steamapi.CurrencyCode, value int, returnNumber ...bool) string {
 
 	if value == 0 && len(returnNumber) == 0 {
 		return "Free"

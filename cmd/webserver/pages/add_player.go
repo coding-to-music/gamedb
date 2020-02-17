@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/Jleagle/session-go/session"
-	steam2 "github.com/Jleagle/steam-go/steam"
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/Jleagle/steam-go/steamid"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -55,7 +55,7 @@ func playerAddHandler(w http.ResponseWriter, r *http.Request) {
 			// 	}
 			// }
 
-			resp, b, err := client.ResolveVanityURL(search, steam2.VanityURLProfile)
+			resp, b, err := client.ResolveVanityURL(search, steamapi.VanityURLProfile)
 			err = steam.AllowSteamCodes(err, b, nil)
 
 			if err == nil && resp.Success > 0 && resp.SteamID > 0 {

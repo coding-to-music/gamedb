@@ -5,7 +5,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/Jleagle/steam-go/steam"
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
@@ -75,7 +75,7 @@ func (c Tags) work() (err error) {
 				newTags[tagID] = &statsRow{
 					name:       strings.TrimSpace(steamTagMap[tagID]),
 					count:      1,
-					totalPrice: map[steam.ProductCC]int{},
+					totalPrice: map[steamapi.ProductCC]int{},
 					totalScore: app.ReviewsScore,
 				}
 			}

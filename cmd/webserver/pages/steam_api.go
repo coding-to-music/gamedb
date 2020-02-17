@@ -10,7 +10,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Jleagle/steam-go/steam"
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	githubHelper "github.com/gamedb/gamedb/pkg/helpers/github"
 	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
@@ -112,7 +112,7 @@ type Param struct {
 
 var addMutex sync.Mutex
 
-func (interfaces *Interfaces) addInterface(in steam.APIInterface, documented bool) {
+func (interfaces *Interfaces) addInterface(in steamapi.APIInterface, documented bool) {
 
 	addMutex.Lock()
 	defer addMutex.Unlock()
@@ -197,7 +197,7 @@ func (interfaces *Interfaces) addUndocumented() (err error) {
 				return
 			}
 
-			i := steam.APIInterface{}
+			i := steamapi.APIInterface{}
 			err = helpers.Unmarshal(b, &i)
 			if err != nil {
 				log.Err(err)

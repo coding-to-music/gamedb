@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/Jleagle/steam-go/steam"
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
@@ -17,7 +17,7 @@ type Genre struct {
 	DeletedAt *time.Time `gorm:""`
 	Name      string     `gorm:"not null;index:name"`
 	Apps      int        `gorm:"not null"`
-	MeanPrice string     `gorm:"not null"` // map[steam.CountryCode]float64
+	MeanPrice string     `gorm:"not null"` // map[steamapi.CountryCode]float64
 	MeanScore float64    `gorm:"not null"`
 }
 
@@ -33,7 +33,7 @@ func (g Genre) GetName() string {
 	return g.Name
 }
 
-func (g Genre) GetMeanPrice(code steam.ProductCC) (string, error) {
+func (g Genre) GetMeanPrice(code steamapi.ProductCC) (string, error) {
 	return GetMeanPrice(code, g.MeanPrice)
 }
 

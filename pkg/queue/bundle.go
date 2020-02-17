@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/rabbit-go"
-	"github.com/Jleagle/steam-go/steam"
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/cenkalti/backoff/v4"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
@@ -58,7 +58,7 @@ func bundleHandler(messages []*rabbit.Message) {
 		oldBundle := bundle
 
 		err = updateBundle(&bundle)
-		if err != nil && err != steam.ErrAppNotFound {
+		if err != nil && err != steamapi.ErrAppNotFound {
 			steamHelper.LogSteamError(err, payload.ID)
 			sendToRetryQueue(message)
 			return

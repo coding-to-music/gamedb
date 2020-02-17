@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Jleagle/steam-go/steam"
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -16,27 +16,27 @@ import (
 )
 
 type Sale struct {
-	SubID                int                     `bson:"sub_id"`
-	SubOrder             int                     `bson:"sub_order"` // Order in the API response
-	AppID                int                     `bson:"app_id"`
-	AppName              string                  `bson:"app_name"`
-	AppIcon              string                  `bson:"app_icon"`
-	AppRating            float64                 `bson:"app_rating"`
-	AppReleaseDate       time.Time               `bson:"app_date"`
-	AppReleaseDateString string                  `bson:"app_date_string"`
-	AppPrices            map[steam.ProductCC]int `bson:"app_prices"`
-	AppLowestPrice       map[steam.ProductCC]int `bson:"app_lowest_price"`
-	AppPlayersWeek       int                     `bson:"app_players"`
-	AppCategories        []int                   `bson:"app_categories"`
-	AppType              string                  `bson:"app_type"`
-	AppPlatforms         []string                `bson:"app_platforms"`
-	AppTags              []int                   `bson:"app_tags"`
-	SaleStart            time.Time               `bson:"offer_start"`
-	SaleEnd              time.Time               `bson:"offer_end"`
-	SaleEndEstimate      bool                    `bson:"offer_end_estimate"`
-	SaleType             string                  `bson:"offer_type"`
-	SalePercent          int                     `bson:"offer_percent"`
-	SaleName             string                  `bson:"offer_name"`
+	SubID                int                        `bson:"sub_id"`
+	SubOrder             int                        `bson:"sub_order"` // Order in the API response
+	AppID                int                        `bson:"app_id"`
+	AppName              string                     `bson:"app_name"`
+	AppIcon              string                     `bson:"app_icon"`
+	AppRating            float64                    `bson:"app_rating"`
+	AppReleaseDate       time.Time                  `bson:"app_date"`
+	AppReleaseDateString string                     `bson:"app_date_string"`
+	AppPrices            map[steamapi.ProductCC]int `bson:"app_prices"`
+	AppLowestPrice       map[steamapi.ProductCC]int `bson:"app_lowest_price"`
+	AppPlayersWeek       int                        `bson:"app_players"`
+	AppCategories        []int                      `bson:"app_categories"`
+	AppType              string                     `bson:"app_type"`
+	AppPlatforms         []string                   `bson:"app_platforms"`
+	AppTags              []int                      `bson:"app_tags"`
+	SaleStart            time.Time                  `bson:"offer_start"`
+	SaleEnd              time.Time                  `bson:"offer_end"`
+	SaleEndEstimate      bool                       `bson:"offer_end_estimate"`
+	SaleType             string                     `bson:"offer_type"`
+	SalePercent          int                        `bson:"offer_percent"`
+	SaleName             string                     `bson:"offer_name"`
 }
 
 func (sale Sale) BSON() bson.D {
@@ -143,7 +143,7 @@ func (sale Sale) GetPriceInt() string {
 	}
 }
 
-func (sale Sale) GetPriceString(code steam.ProductCC) string {
+func (sale Sale) GetPriceString(code steamapi.ProductCC) string {
 
 	priceInt, ok := sale.AppPrices[code]
 	if ok {
@@ -155,7 +155,7 @@ func (sale Sale) GetPriceString(code steam.ProductCC) string {
 }
 
 // 0:not lowest - 1:match lowest - 2:lowest ever
-func (sale Sale) IsLowest(code steam.ProductCC) int {
+func (sale Sale) IsLowest(code steamapi.ProductCC) int {
 
 	price, ok := sale.AppPrices[code]
 	if !ok {

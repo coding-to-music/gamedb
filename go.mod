@@ -13,9 +13,8 @@ require (
 	github.com/Jleagle/recaptcha-go v0.0.0-20200117124940-d00b2c62c076
 	github.com/Jleagle/session-go v0.0.0-20190515070633-3c8712426233
 	github.com/Jleagle/sitemap-go v0.0.0-20190405195207-2bdddbb3bd50
-	github.com/Jleagle/steam-go v0.0.0-20200212124636-3e02673f2d4e
+	github.com/Jleagle/steam-go v0.0.0-20200217221028-2c2236a790bd
 	github.com/Jleagle/unmarshal-go v0.0.0-20200116184726-b8d622103706
-	github.com/Jleagle/valve-data-format-go v0.0.0-20200216203750-a44c43903e81
 	github.com/Philipp15b/go-steam v1.0.1-0.20190816133340-b04c5a83c1c0
 	github.com/PuerkitoBio/goquery v1.5.1 // indirect
 	github.com/ahmdrz/goinsta/v2 v2.4.5-0.20191021103459-79702a8f3eda
@@ -68,7 +67,6 @@ require (
 	github.com/oschwald/maxminddb-golang v1.6.0
 	github.com/pariz/gountries v0.0.0-20191029140926-233bc78cf5b5
 	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
-	github.com/pkg/errors v0.9.1 // indirect
 	github.com/powerslacker/ratelimit v0.0.0-20190505003410-df2fcffc8e0d
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/rogpeppe/go-internal v1.5.2 // indirect

@@ -4,23 +4,23 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Jleagle/steam-go/steam"
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/config"
 )
 
 var (
-	clientNormal     *steam.Steam
+	clientNormal     *steamapi.Steam
 	clientNormalLock sync.Mutex
 )
 
-func GetSteam() *steam.Steam {
+func GetSteam() *steamapi.Steam {
 
 	clientNormalLock.Lock()
 	defer clientNormalLock.Unlock()
 
 	if clientNormal == nil {
 
-		clientNormal = &steam.Steam{}
+		clientNormal = &steamapi.Steam{}
 		clientNormal.SetKey(config.Config.SteamAPIKey.Get())
 		clientNormal.SetUserAgent("gamedb.online")
 		clientNormal.SetAPIRateLimit(time.Millisecond*950, 10)
@@ -32,18 +32,18 @@ func GetSteam() *steam.Steam {
 }
 
 var (
-	clientUnlimited     *steam.Steam
+	clientUnlimited     *steamapi.Steam
 	clientUnlimitedLock sync.Mutex
 )
 
-func GetSteamUnlimited() *steam.Steam {
+func GetSteamUnlimited() *steamapi.Steam {
 
 	clientUnlimitedLock.Lock()
 	defer clientUnlimitedLock.Unlock()
 
 	if clientUnlimited == nil {
 
-		clientUnlimited = &steam.Steam{}
+		clientUnlimited = &steamapi.Steam{}
 		clientUnlimited.SetKey(config.Config.SteamAPIKey.Get())
 		clientUnlimited.SetUserAgent("gamedb.online")
 		clientUnlimited.SetLogger(steamLogger{})

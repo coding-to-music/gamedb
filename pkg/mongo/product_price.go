@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Jleagle/steam-go/steam"
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
@@ -14,17 +14,17 @@ import (
 )
 
 type ProductPrice struct {
-	CreatedAt         time.Time          `bson:"created_at"`
-	AppID             int                `bson:"app_id"`
-	PackageID         int                `bson:"package_id"`
-	Currency          steam.CurrencyCode `bson:"currency"`
-	ProdCC            steam.ProductCC    `bson:"prod_cc"`
-	Name              string             `bson:"name"`
-	Icon              string             `bson:"icon"`
-	PriceBefore       int                `bson:"price_before"`
-	PriceAfter        int                `bson:"price_after"`
-	Difference        int                `bson:"difference"`
-	DifferencePercent float64            `bson:"difference_percent"`
+	CreatedAt         time.Time             `bson:"created_at"`
+	AppID             int                   `bson:"app_id"`
+	PackageID         int                   `bson:"package_id"`
+	Currency          steamapi.CurrencyCode `bson:"currency"`
+	ProdCC            steamapi.ProductCC    `bson:"prod_cc"`
+	Name              string                `bson:"name"`
+	Icon              string                `bson:"icon"`
+	PriceBefore       int                   `bson:"price_before"`
+	PriceAfter        int                   `bson:"price_after"`
+	Difference        int                   `bson:"difference"`
+	DifferencePercent float64               `bson:"difference_percent"`
 }
 
 func (price ProductPrice) BSON() bson.D {
@@ -113,7 +113,7 @@ func GetPricesByID(IDs []string) (prices []ProductPrice, err error) {
 	return getProductPrices(bson.D{{"_id", bson.M{"$in": idsBSON}}}, 0, 0, bson.D{{"created_at", 1}})
 }
 
-func GetPricesForProduct(productID int, productType helpers.ProductType, cc steam.ProductCC) (prices []ProductPrice, err error) {
+func GetPricesForProduct(productID int, productType helpers.ProductType, cc steamapi.ProductCC) (prices []ProductPrice, err error) {
 
 	var filter = bson.D{{"prod_cc", string(cc)}}
 

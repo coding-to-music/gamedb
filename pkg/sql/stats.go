@@ -3,13 +3,13 @@ package sql
 import (
 	"math"
 
-	"github.com/Jleagle/steam-go/steam"
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
 )
 
-func GetMeanPrice(code steam.ProductCC, prices string) (string, error) {
+func GetMeanPrice(code steamapi.ProductCC, prices string) (string, error) {
 
-	means := map[steam.ProductCC]float64{}
+	means := map[steamapi.ProductCC]float64{}
 
 	err := helpers.Unmarshal([]byte(prices), &means)
 	if err == nil {

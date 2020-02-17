@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Jleagle/valve-data-format-go/vdf"
+	"github.com/Jleagle/steam-go/steamvdf"
 	"github.com/Philipp15b/go-steam"
 	"github.com/Philipp15b/go-steam/protocol"
 	"github.com/Philipp15b/go-steam/protocol/protobuf"
@@ -189,7 +189,7 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 			var m = map[string]interface{}{}
 			var id = int(app.GetAppid())
 
-			kv, err := vdf.ReadBytes(app.GetBuffer())
+			kv, err := steamvdf.ReadBytes(app.GetBuffer())
 			if err != nil {
 				log.Err(err, id)
 			} else {
@@ -222,7 +222,7 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 			var m = map[string]interface{}{}
 			var id = int(pack.GetPackageid())
 
-			kv, err := vdf.ReadBytes(pack.GetBuffer())
+			kv, err := steamvdf.ReadBytes(pack.GetBuffer())
 			if err != nil {
 				log.Err(err, id)
 			} else {

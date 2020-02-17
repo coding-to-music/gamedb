@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/session-go/session"
-	"github.com/Jleagle/steam-go/steam"
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gorilla/sessions"
@@ -94,29 +94,29 @@ var (
 	maxMindDB *maxminddb.Reader
 )
 
-func GetProductCC(r *http.Request) steam.ProductCC {
+func GetProductCC(r *http.Request) steamapi.ProductCC {
 
 	ccLock.Lock()
 	defer ccLock.Unlock()
 
-	cc := func() steam.ProductCC {
+	cc := func() steamapi.ProductCC {
 
 		// Get from URL
 		q := strings.ToUpper(r.URL.Query().Get("cc"))
-		if q != "" && steam.IsProductCC(q) {
-			return steam.ProductCC(q)
+		if q != "" && steamapi.IsProductCC(q) {
+			return steamapi.ProductCC(q)
 		}
 
 		// Get from session
 		val, err := session.Get(r, SessionUserProdCC)
 		log.Err(err)
-		if err == nil && steam.IsProductCC(val) {
-			return steam.ProductCC(val)
+		if err == nil && steamapi.IsProductCC(val) {
+			return steamapi.ProductCC(val)
 		}
 
 		// If local
 		if strings.Contains(r.RemoteAddr, "[::1]:") {
-			return steam.ProductCCUK
+			return steamapi.ProductCCUK
 		}
 
 		// Get from Maxmind
@@ -124,7 +124,7 @@ func GetProductCC(r *http.Request) steam.ProductCC {
 			maxMindDB, err = maxminddb.Open("./assets/GeoLite2-Country.mmdb")
 			if err != nil {
 				log.Err(err)
-				return steam.ProductCCUS
+				return steamapi.ProductCCUS
 			}
 		}
 
@@ -143,7 +143,7 @@ func GetProductCC(r *http.Request) steam.ProductCC {
 			err = maxMindDB.Lookup(ip, &record)
 			if err != nil {
 				log.Err(err)
-				return steam.ProductCCUS
+				return steamapi.ProductCCUS
 			}
 
 			for _, cc := range GetProdCCs(true) {
@@ -155,7 +155,7 @@ func GetProductCC(r *http.Request) steam.ProductCC {
 			}
 		}
 
-		return steam.ProductCCUS
+		return steamapi.ProductCCUS
 	}()
 
 	err := session.Set(r, SessionUserProdCC, string(cc))

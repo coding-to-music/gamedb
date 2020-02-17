@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/Jleagle/steam-go/steam"
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -42,7 +42,7 @@ func productPricesAjaxHandler(w http.ResponseWriter, r *http.Request, productTyp
 	}
 
 	// Get code
-	code := steam.ProductCC(r.URL.Query().Get("code"))
+	code := steamapi.ProductCC(r.URL.Query().Get("code"))
 	if code == "" || !helpers.IsValidProdCC(code) {
 		code = helpers.GetProductCC(r)
 	}

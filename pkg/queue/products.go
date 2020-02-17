@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Jleagle/valve-data-format-go/vdf"
+	"github.com/Jleagle/steam-go/steamvdf"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	pubsubHelpers "github.com/gamedb/gamedb/pkg/helpers/pubsub"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -16,7 +16,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func getAppConfig(kv vdf.KeyValue) (config pics.PICSKeyValues, launch []pics.PICSAppConfigLaunchItem) {
+func getAppConfig(kv steamvdf.KeyValue) (config pics.PICSKeyValues, launch []pics.PICSAppConfigLaunchItem) {
 
 	config = pics.PICSKeyValues{}
 	for _, v := range kv.Children {
@@ -34,7 +34,7 @@ func getAppConfig(kv vdf.KeyValue) (config pics.PICSKeyValues, launch []pics.PIC
 	return config, launch
 }
 
-func getAppDepots(kv vdf.KeyValue) (depots pics.Depots) {
+func getAppDepots(kv steamvdf.KeyValue) (depots pics.Depots) {
 
 	depots.Extra = map[string]string{}
 
@@ -123,7 +123,7 @@ func getAppDepots(kv vdf.KeyValue) (depots pics.Depots) {
 	return depots
 }
 
-func getAppDepotBranches(kv vdf.KeyValue) (branches []pics.AppDepotBranches) {
+func getAppDepotBranches(kv steamvdf.KeyValue) (branches []pics.AppDepotBranches) {
 
 	for _, v := range kv.Children {
 
@@ -166,7 +166,7 @@ func getAppDepotBranches(kv vdf.KeyValue) (branches []pics.AppDepotBranches) {
 	return branches
 }
 
-func getAppLaunch(kv vdf.KeyValue) (items []pics.PICSAppConfigLaunchItem) {
+func getAppLaunch(kv steamvdf.KeyValue) (items []pics.PICSAppConfigLaunchItem) {
 
 	for _, v := range kv.Children {
 
@@ -181,7 +181,7 @@ func getAppLaunch(kv vdf.KeyValue) (items []pics.PICSAppConfigLaunchItem) {
 	return items
 }
 
-func setAppLaunchItem(kv vdf.KeyValue, launchItem *pics.PICSAppConfigLaunchItem) {
+func setAppLaunchItem(kv steamvdf.KeyValue, launchItem *pics.PICSAppConfigLaunchItem) {
 
 	for _, child := range kv.Children {
 

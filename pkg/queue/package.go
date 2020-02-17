@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/Jleagle/rabbit-go"
-	"github.com/Jleagle/steam-go/steam"
-	"github.com/Jleagle/valve-data-format-go/vdf"
+	"github.com/Jleagle/steam-go/steamapi"
+	"github.com/Jleagle/steam-go/steamvdf"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
@@ -93,10 +93,10 @@ func packageHandler(messages []*rabbit.Message) {
 			var err error
 
 			err = updatePackageFromStore(&pack)
-			err = helpers.IgnoreErrors(err, steam.ErrPackageNotFound)
+			err = helpers.IgnoreErrors(err, steamapi.ErrPackageNotFound)
 			if err != nil {
 
-				if err == steam.ErrHTMLResponse {
+				if err == steamapi.ErrHTMLResponse {
 					log.Info(err, id)
 				} else {
 					steamHelper.LogSteamError(err, id)
@@ -271,7 +271,7 @@ func updatePackageFromPICS(pack *mongo.Package, message *rabbit.Message, payload
 		return nil
 	}
 
-	var kv = vdf.FromMap(payload.VDF)
+	var kv = steamvdf.FromMap(payload.VDF)
 
 	pack.ID = payload.ID
 	pack.ChangeNumber = payload.ChangeNumber
@@ -415,9 +415,9 @@ func updatePackageFromStore(pack *mongo.Package) (err error) {
 	for _, cc := range helpers.GetProdCCs(true) {
 
 		// Get package details
-		response, b, err := steamHelper.GetSteam().GetPackageDetails(pack.ID, cc.ProductCode, steam.LanguageEnglish)
+		response, b, err := steamHelper.GetSteam().GetPackageDetails(pack.ID, cc.ProductCode, steamapi.LanguageEnglish)
 		err = steamHelper.AllowSteamCodes(err, b, nil)
-		if err == steam.ErrPackageNotFound {
+		if err == steamapi.ErrPackageNotFound {
 			continue
 		}
 		if err != nil {
@@ -426,7 +426,7 @@ func updatePackageFromStore(pack *mongo.Package) (err error) {
 
 		prices.AddPriceFromPackage(cc.ProductCode, response)
 
-		if cc.ProductCode == steam.ProductCCUS {
+		if cc.ProductCode == steamapi.ProductCCUS {
 
 			// Controller
 			var controller = pics.PICSController{}

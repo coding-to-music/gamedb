@@ -6,7 +6,7 @@ import (
 	"sync"
 
 	"cloud.google.com/go/pubsub"
-	"github.com/Jleagle/steam-go/steam"
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	pubsubHelpers "github.com/gamedb/gamedb/pkg/helpers/pubsub"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -224,7 +224,7 @@ func ListenToPubSub() {
 					continue
 				}
 
-				wsPage.Send(pack.OutputForJSON(steam.ProductCCUS))
+				wsPage.Send(pack.OutputForJSON(steamapi.ProductCCUS))
 
 			case PageBundles:
 
