@@ -2,6 +2,7 @@ package pages
 
 import (
 	"net/http"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -349,6 +350,11 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Search
 	search := query.GetSearchString("search")
 	if search != "" {
+
+		if !strings.Contains(search, `"`) {
+			search = regexp.MustCompile(`([^\s]+)`).ReplaceAllString(search, `"$1"`) // Add quotes to all words
+		}
+
 		filter = append(filter, bson.E{Key: "$text", Value: bson.M{"$search": search}})
 	}
 

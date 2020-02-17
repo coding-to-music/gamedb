@@ -3,6 +3,7 @@ package mongo
 import (
 	"errors"
 	"html/template"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -738,6 +739,10 @@ func SearchApps(search string, projection bson.M) (app App, err error) {
 		// if len(matches) > 0 {
 		// 	return apps[matches[0].Index], nil
 		// }
+
+		if !strings.Contains(search, `"`) {
+			search = regexp.MustCompile(`([^\s]+)`).ReplaceAllString(search, `"$1"`) // Add quotes to all words
+		}
 
 		filter := bson.D{{"$text", bson.M{"$search": search}}}
 		apps, err := GetApps(0, 1, bson.D{{"player_peak_week", -1}}, filter, projection, nil)
