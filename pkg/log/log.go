@@ -145,7 +145,7 @@ func (e entry) toText(severity Severity) string {
 	str := strings.Join(ret, " - ")
 
 	// Stack
-	if severity > 3 && !e.noStack {
+	if severity > SeverityInfo && !e.noStack {
 		str += "\n" + string(debug.Stack())
 	}
 
