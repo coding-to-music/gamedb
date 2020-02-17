@@ -121,7 +121,7 @@ func GetProductCC(r *http.Request) steam.ProductCC {
 
 		// Get from Maxmind
 		if maxMindDB == nil {
-			maxMindDB, err = maxminddb.Open("./assets/files/GeoLite2-Country.mmdb")
+			maxMindDB, err = maxminddb.Open("./assets/GeoLite2-Country.mmdb")
 			if err != nil {
 				log.Err(err)
 				return steam.ProductCCUS
@@ -185,7 +185,7 @@ func GetCountryCode(r *http.Request) string {
 
 		// Get from Maxmind
 		if maxMindDB == nil {
-			maxMindDB, err = maxminddb.Open("./assets/files/GeoLite2-Country.mmdb")
+			maxMindDB, err = maxminddb.Open("./assets/GeoLite2-Country.mmdb")
 			if err != nil {
 				log.Err(err)
 				return "US"
