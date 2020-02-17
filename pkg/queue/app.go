@@ -807,7 +807,7 @@ func updateAppAchievements(app *mongo.App, schema steam.SchemaForGame) error {
 			achievements[achievement.Name] = val
 
 		} else {
-			log.Warning("Achevement in schema but not global", app.ID, achievement.Name)
+			log.Info("Achevement in schema but not global", app.ID, achievement.Name)
 		}
 	}
 
