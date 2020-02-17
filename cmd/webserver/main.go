@@ -221,17 +221,17 @@ func rootFileHandler(box *packr.Box, path string) func(w http.ResponseWriter, r 
 			return
 		}
 
-		switch filepath.Ext(r.URL.Path) {
-		case ".js":
-			w.Header().Add("Content-Type", "text/javascript")
-		case ".css":
-			w.Header().Add("Content-Type", "text/css")
-		case ".png", ".jpg", ".webmanifest":
-			// All good
-		default:
-			log.Warning("Missing mime type: " + r.URL.Path)
+		// Fix headers, packr seems to break them
+		types := map[string]string{
+			".js":  "text/javascript",
+			".css": "text/css",
 		}
 
+		if val, ok := types[filepath.Ext(r.URL.Path)]; ok {
+			w.Header().Add("Content-Type", val)
+		}
+
+		// Output
 		_, err = w.Write(b)
 		log.Err(err, r)
 	}
