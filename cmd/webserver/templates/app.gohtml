@@ -778,14 +778,13 @@
                             </tbody>
                         </table>
 
-                        {{if or (gt (len .App.Screenshots) 0) (gt (len .App.Movies) 0) }}
+                        <div id="images">
+                            {{ range $key, $value := .App.Screenshots }}
+                                <img src='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080"%3E%3C/svg%3E' data-lazy="{{ .PathFull }}" alt="" data-lazy-alt="Media {{ $key }}">
+                            {{ end }}
+                        </div>
 
-                            <div id="images">
-                                {{ range $key, $value := .App.Screenshots }}
-                                    <img src='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080"%3E%3C/svg%3E' data-lazy="{{ .PathFull }}" alt="" data-lazy-alt="Media {{ $key }}">
-                                {{ end }}
-                            </div>
-
+                        {{if gt (len .App.Movies) 0 }}
                             <div id="videos">
                                 {{ range $key, $value := .App.Movies }}
                                     <video controls preload="metadata" class="cursor-pointer">
@@ -794,11 +793,6 @@
                                     </video>
                                 {{ end }}
                             </div>
-
-                        {{ else }}
-
-                            <p>This app has no media.</p>
-
                         {{ end }}
 
                     </div>
