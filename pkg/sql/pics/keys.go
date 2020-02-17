@@ -96,6 +96,7 @@ var ExtendedKeys = map[string]PicsKey{
 	"languages_macos":                      {FormatType: picsTypeTextListString},
 	"listofdlc":                            {FormatType: picsTypeNumberListString, Link: "/apps/$val$"},
 	"loadallbeforelaunch":                  {FormatType: picsTypeBool},
+	"musicalbumavailableonstore":           {FormatType: picsTypeBool},
 	"musicalbumforappid":                   {FormatType: picsTypeLink, Link: "/apps/$val$"},
 	"noservers":                            {FormatType: picsTypeBool},
 	"onlyallowrestrictedcountries":         {FormatType: picsTypeBool},
