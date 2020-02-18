@@ -16,7 +16,7 @@ RUN cd ./cmd/webserver && CGO_ENABLED=0 GOOS=linux packr2 build -a -ldflags "-X 
 FROM alpine:3.11 AS runtime-env
 WORKDIR /root/
 COPY --from=build-env /root/cmd/webserver/webserver ./
-COPY ./cmd/webserver/assets ./assets
+COPY ./cmd/webserver/assets/GeoLite2-Country.mmdb ./assets/GeoLite2-Country.mmdb
 COPY ./cmd/webserver/health-check.sh ./health-check.sh
 RUN ["chmod", "+x", "health-check.sh"]
 RUN touch ./google-auth.json
