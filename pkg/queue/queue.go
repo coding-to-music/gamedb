@@ -11,7 +11,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/streadway/amqp"
 )
 
@@ -206,7 +205,7 @@ func sendToLastQueue(message *rabbit.Message) {
 func ProduceApp(payload AppMessage) (err error) {
 
 	if !helpers.IsValidAppID(payload.ID) {
-		return sql.ErrInvalidAppID
+		return mongo.ErrInvalidAppID
 	}
 
 	mc := memcache.GetClient()
