@@ -84,6 +84,7 @@ var ExtendedKeys = map[string]PicsKey{
 	"allowcrossregiontradingandgifting":    {FormatType: picsTypeBool},
 	"allowpurchasefromrestrictedcountries": {FormatType: picsTypeBool},
 	"anti_cheat_support_url":               {FormatType: picsTypeLink, Link: "$val$"},
+	"checkpkgstate":                        {FormatType: picsTypeBool},
 	"curatorconnect":                       {FormatType: picsTypeBool},
 	"developer_url":                        {FormatType: picsTypeLink, Link: "$val$"},
 	"disableoverlayinjection":              {FormatType: picsTypeBool},
