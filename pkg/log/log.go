@@ -290,6 +290,10 @@ func log(interfaces ...interface{}) {
 				}
 			}
 
+			if strings.Contains(text, "securecookie: expired timestamp") {
+				sendToRollbar = false
+			}
+
 			if sendToRollbar && entry.severity >= SeverityError {
 
 				// Rollbar
