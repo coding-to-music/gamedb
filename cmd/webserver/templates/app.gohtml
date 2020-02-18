@@ -468,40 +468,111 @@
 
                     {{/* Album Tracks */}}
                     <div class="tab-pane" id="tracks" role="tabpanel">
+                        <div class="row">
 
-                        {{ if gt (len .App.AlbumMetaData.Tracks) 0 }}
+                            {{ if .App.AlbumMetaData.HasArtist }}
+                                <div class="col-6 col-md-4 col-lg mb-2 mb-md-4">
 
-                            {{ range $key, $value := .App.AlbumMetaData.Albums }}
+                                    <div class="card text-white bg-success">
+                                        <div class="card-body p-2">
+                                            <h5 class="card-title">Artist</h5>
+                                            <p class="card-text">
+                                                {{ range $key, $value := .App.AlbumMetaData.MetaData.Artist }}
+                                                    {{ if ne $value "" }}
+                                                        {{$value}}
+                                                    {{ end }}
+                                                {{ end }}
+                                            </p>
+                                        </div>
+                                    </div>
 
-                                <div class="table-responsive mb-4">
-                                    <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
-                                        <thead class="thead-light">
-                                        <tr>
-                                            <th scope="col" class="thin">#</th>
-                                            <th scope="col">Disc {{ $key }}</th>
-                                            <th scope="col" class="thin">Duration</th>
-                                        </tr>
-                                        </thead>
-                                        {{ range $key, $value := $value }}
-                                            <tr>
-                                                <td>{{ .TrackNumber }}</td>
-                                                <td>{{ .OriginalName }}</td>
-                                                <td>{{ .Minutes }}:{{ .Seconds }}</td>
-                                            </tr>
-                                        {{ end }}
-                                    </table>
                                 </div>
-
                             {{ end }}
 
-                            {{ if ne .App.AlbumMetaData.CDNAssets.AlbumCover "" }}
-                                <img src="https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/{{.App.ID}}/{{ .App.AlbumMetaData.CDNAssets.AlbumCover }}.jpg" alt="Album Cover" id="album-cover">
+                            {{ if .App.AlbumMetaData.HasComposer }}
+                                <div class="col-6 col-md-4 col-lg mb-2 mb-md-4">
+
+                                    <div class="card text-white bg-success">
+                                        <div class="card-body p-2">
+                                            <h5 class="card-title">Composer</h5>
+                                            <p class="card-text">
+                                                {{ range $key, $value := .App.AlbumMetaData.MetaData.Composer }}
+                                                    {{ if ne $value "" }}
+                                                        {{$value}}
+                                                    {{ end }}
+                                                {{ end }}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                </div>
                             {{ end }}
 
-                        {{ else }}
+                            {{ if .App.AlbumMetaData.HasLabel }}
+                                <div class="col-6 col-md-4 col-lg mb-2 mb-md-4">
 
-                            <p>This app has no tracks.</p>
+                                    <div class="card text-white bg-success">
+                                        <div class="card-body p-2">
+                                            <h5 class="card-title">Label</h5>
+                                            <p class="card-text">
+                                                {{ range $key, $value := .App.AlbumMetaData.MetaData.Label }}
+                                                    {{ if ne $value "" }}
+                                                        {{$value}}
+                                                    {{ end }}
+                                                {{ end }}
+                                            </p>
+                                        </div>
+                                    </div>
 
+                                </div>
+                            {{ end }}
+
+                            {{ if .App.AlbumMetaData.HasCredits }}
+                                <div class="col-6 col-md-4 col-lg mb-2 mb-md-4">
+
+                                    <div class="card text-white bg-success">
+                                        <div class="card-body p-2">
+                                            <h5 class="card-title">Credits</h5>
+                                            <p class="card-text">
+                                                {{ range $key, $value := .App.AlbumMetaData.MetaData.OtherCredits }}
+                                                    {{ if ne $value "" }}
+                                                        {{$value}}
+                                                    {{ end }}
+                                                {{ end }}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            {{ end }}
+
+                        </div>
+
+                        {{ range $key, $value := .App.AlbumMetaData.Albums }}
+
+                            <div class="table-responsive mb-4">
+                                <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
+                                    <thead class="thead-light">
+                                    <tr>
+                                        <th scope="col" class="thin">#</th>
+                                        <th scope="col">Disc {{ $key }}</th>
+                                        <th scope="col" class="thin">Duration</th>
+                                    </tr>
+                                    </thead>
+                                    {{ range $key, $value := $value }}
+                                        <tr>
+                                            <td>{{ .TrackNumber }}</td>
+                                            <td>{{ .OriginalName }}</td>
+                                            <td>{{ .Minutes }}:{{ .Seconds }}</td>
+                                        </tr>
+                                    {{ end }}
+                                </table>
+                            </div>
+
+                        {{ end }}
+
+                        {{ if ne .App.AlbumMetaData.CDNAssets.AlbumCover "" }}
+                            <img src="https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/{{.App.ID}}/{{ .App.AlbumMetaData.CDNAssets.AlbumCover }}.jpg" alt="Album Cover" id="album-cover">
                         {{ end }}
 
                     </div>

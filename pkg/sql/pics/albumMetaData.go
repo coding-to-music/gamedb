@@ -32,6 +32,42 @@ func (a AlbumMetaData) Albums() (albums map[string][]AlbumTrack) {
 	return albums
 }
 
+func (a AlbumMetaData) HasArtist() bool {
+	for _, v := range a.MetaData.Artist {
+		if v != "" {
+			return true
+		}
+	}
+	return false
+}
+
+func (a AlbumMetaData) HasComposer() bool {
+	for _, v := range a.MetaData.Composer {
+		if v != "" {
+			return true
+		}
+	}
+	return false
+}
+
+func (a AlbumMetaData) HasLabel() bool {
+	for _, v := range a.MetaData.Label {
+		if v != "" {
+			return true
+		}
+	}
+	return false
+}
+
+func (a AlbumMetaData) HasCredits() bool {
+	for _, v := range a.MetaData.OtherCredits {
+		if v != "" {
+			return true
+		}
+	}
+	return false
+}
+
 type AlbumTrack struct {
 	OriginalName string `json:"originalname"`
 	DiscNumber   string `json:"discnumber"`
