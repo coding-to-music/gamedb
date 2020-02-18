@@ -100,6 +100,11 @@ func achievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var code = helpers.GetProductCC(r)
 	var response = datatable.NewDataTablesResponse(r, query, count, filtered)
 	for _, app := range apps {
+
+		for k, v := range app.Achievements {
+			app.Achievements[k].Icon = v.GetIcon()
+		}
+
 		response.AddRow([]interface{}{
 			app.ID,                            // 0
 			app.GetName(),                     // 1
