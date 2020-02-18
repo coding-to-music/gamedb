@@ -387,7 +387,7 @@ func (app App) GetDLCs() (apps []App, err error) {
 
 	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &apps, func() (interface{}, error) {
 
-		return GetAppsByID(app.DLC, bson.M{"_id": 1, "name": 1})
+		return GetAppsByID(app.DLC, bson.M{"_id": 1, "name": 1, "icon": 1, "release_date": 1, "release_date_unix": 1})
 	})
 
 	return apps, err
