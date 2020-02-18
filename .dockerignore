@@ -6,9 +6,9 @@
 /cmd/steam/steam
 /cmd/test/test
 
-# Assets
-/cmd/webserver/assets/
-!/cmd/webserver/assets/GeoLite2-Country.mmdb
+# Source maps
+/cmd/webserver/assets/dist/main.css.map
+/cmd/webserver/assets/dist/main.js.map
 
 # Vendors
 /node_modules/
