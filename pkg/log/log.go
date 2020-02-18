@@ -245,20 +245,22 @@ func log(interfaces ...interface{}) {
 
 	if len(entry.texts) > 0 || entry.error != nil {
 
+		var text = entry.toText(entry.severity)
+
 		// Local
 		switch entry.severity {
 		case SeverityCritical:
-			logger.Println(aurora.Red(aurora.Bold(entry.toText(entry.severity))))
+			logger.Println(aurora.Red(aurora.Bold(text)))
 		case SeverityError:
-			logger.Println(aurora.Red(entry.toText(entry.severity)))
+			logger.Println(aurora.Red(text))
 		case SeverityWarning:
-			logger.Println(aurora.Yellow(entry.toText(entry.severity)))
+			logger.Println(aurora.Yellow(text))
 		case SeverityInfo:
-			logger.Println(entry.toText(entry.severity))
+			logger.Println(text)
 		case SeverityDebug:
-			logger.Println(aurora.Green(entry.toText(entry.severity)))
+			logger.Println(aurora.Green(text))
 		default:
-			logger.Println(entry.toText(entry.severity))
+			logger.Println(text)
 		}
 
 		if !config.IsLocal() {
@@ -269,7 +271,7 @@ func log(interfaces ...interface{}) {
 				googleClient.Logger(string(logName)).Log(logging.Entry{
 					Severity:  entry.severity.toGoole(),
 					Timestamp: entry.timestamp,
-					Payload:   entry.toText(entry.severity),
+					Payload:   text,
 					Labels: map[string]string{
 						"env":     config.Config.Environment.Get(),
 						"hash":    config.Config.CommitHash.Get(),
@@ -291,7 +293,7 @@ func log(interfaces ...interface{}) {
 			if sendToRollbar && entry.severity >= SeverityError {
 
 				// Rollbar
-				rollbar.Log(entry.severity.toRollbar(), entry.toText(entry.severity))
+				rollbar.Log(entry.severity.toRollbar(), text)
 
 				// Sentry
 				if entry.error != nil {
