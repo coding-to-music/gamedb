@@ -772,9 +772,10 @@ func updateAppAchievements(app *mongo.App, schema steamapi.SchemaForGame) error 
 		return err
 	}
 
-	if app.AchievementsCountTotal == len(resp.GlobalAchievementPercentage) {
-		return nil
-	}
+	// Still need to update percents
+	// if app.AchievementsCountTotal == len(resp.GlobalAchievementPercentage) {
+	// 	return nil
+	// }
 
 	// Build map
 	var achievements = map[string]mongo.AppAchievement{}
