@@ -110,7 +110,7 @@ var Swagger = &openapi3.Swagger{
 						"rowsTotal":    {Value: openapi3.NewInt64Schema()},
 						"rowsFiltered": {Value: openapi3.NewInt64Schema()},
 						"pagesTotal":   {Value: openapi3.NewIntegerSchema()},
-						"pagescurrent": {Value: openapi3.NewIntegerSchema()},
+						"pagesCurrent": {Value: openapi3.NewIntegerSchema()},
 					},
 				},
 			},
