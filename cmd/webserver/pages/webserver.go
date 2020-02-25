@@ -144,10 +144,6 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 			continue
 		}
 	}
-	if err != nil {
-		log.Critical(err, r)
-		return
-	}
 
 	// Write a respone
 	buf := &bytes.Buffer{}
