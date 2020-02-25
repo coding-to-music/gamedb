@@ -103,14 +103,14 @@ var Swagger = &openapi3.Swagger{
 		Schemas: map[string]*openapi3.SchemaRef{
 			"pagination-schema": {
 				Value: &openapi3.Schema{
-					Required: []string{"total", "filtered", "pages", "current", "limit", "offset"},
+					Required: []string{"offset", "limit", "rowsTotal", "rowsFiltered", "pagesTotal", "pagescurrent"},
 					Properties: map[string]*openapi3.SchemaRef{
-						"total":    {Value: openapi3.NewIntegerSchema()},
-						"filtered": {Value: openapi3.NewIntegerSchema()},
-						"pages":    {Value: openapi3.NewIntegerSchema()},
-						"current":  {Value: openapi3.NewIntegerSchema()},
-						"limit":    {Value: openapi3.NewIntegerSchema()},
-						"offset":   {Value: openapi3.NewIntegerSchema()},
+						"offset":       {Value: openapi3.NewIntegerSchema()},
+						"limit":        {Value: openapi3.NewIntegerSchema()},
+						"rowsTotal":    {Value: openapi3.NewIntegerSchema()},
+						"rowsFiltered": {Value: openapi3.NewIntegerSchema()},
+						"pagesTotal":   {Value: openapi3.NewIntegerSchema()},
+						"pagescurrent": {Value: openapi3.NewIntegerSchema()},
 					},
 				},
 			},

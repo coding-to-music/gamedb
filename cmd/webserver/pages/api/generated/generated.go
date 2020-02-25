@@ -30,12 +30,12 @@ type ErrorSchema struct {
 
 // PaginationSchema defines model for pagination-schema.
 type PaginationSchema struct {
-	Current  int `json:"current"`
-	Filtered int `json:"filtered"`
-	Limit    int `json:"limit"`
-	Offset   int `json:"offset"`
-	Pages    int `json:"pages"`
-	Total    int `json:"total"`
+	Limit        int `json:"limit"`
+	Offset       int `json:"offset"`
+	PagesTotal   int `json:"pagesTotal"`
+	Pagescurrent int `json:"pagescurrent"`
+	RowsFiltered int `json:"rowsFiltered"`
+	RowsTotal    int `json:"rowsTotal"`
 }
 
 // PlayerSchema defines model for player-schema.
@@ -106,11 +106,11 @@ func GetAppsCtx(next http.Handler) http.Handler {
 
 		var err error
 
+		ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
+
 		ctx = context.WithValue(ctx, "key-cookie.Scopes", []string{""})
 
 		ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
-
-		ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
 
 		// Parameter object where we will unmarshal all parameters from the context
 		var params GetAppsParams
@@ -183,11 +183,11 @@ func GetAppsIdCtx(next http.Handler) http.Handler {
 
 		ctx = context.WithValue(ctx, "id", id)
 
-		ctx = context.WithValue(ctx, "key-cookie.Scopes", []string{""})
-
 		ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
 
 		ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
+
+		ctx = context.WithValue(ctx, "key-cookie.Scopes", []string{""})
 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
@@ -247,21 +247,21 @@ func HandlerFromMux(si ServerInterface, r *chi.Mux) http.Handler {
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
+	"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",
 }
 
 // GetSwagger returns the Swagger specification corresponding to the generated code
