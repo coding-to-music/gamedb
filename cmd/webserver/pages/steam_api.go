@@ -27,7 +27,7 @@ func init() {
 func SteamAPIRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", steamAPIHandler)
-	r.Get("/swagger.json", steamAPISwaggerHandler)
+	r.Get("/openapi.json", steamAPISwaggerHandler)
 	return r
 }
 
