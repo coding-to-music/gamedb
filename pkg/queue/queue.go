@@ -2,7 +2,6 @@ package queue
 
 import (
 	"errors"
-	"strconv"
 	"time"
 
 	"github.com/Jleagle/rabbit-go"
@@ -329,7 +328,7 @@ var ErrIsBot = errors.New("bots can't update players")
 func ProducePlayer(payload PlayerMessage) (err error) {
 
 	if !helpers.IsValidPlayerID(payload.ID) {
-		return errors.New("invalid player id: " + strconv.FormatInt(payload.ID, 10))
+		return mongo.ErrInvalidPlayerID
 	}
 
 	// if payload.UserAgent != nil && helpers.IsBot(*payload.UserAgent) {

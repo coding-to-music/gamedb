@@ -1,7 +1,6 @@
 package queue
 
 import (
-	"encoding/json"
 	"errors"
 	"io/ioutil"
 	"net/http"
@@ -1498,7 +1497,7 @@ func getWishlistCount(app *mongo.App) (err error) {
 	return nil
 }
 
-func getSimilarOwners(app *sql.App) (err error) {
+func getSimilarOwners(app *mongo.App) (err error) {
 
 	ownerRows, err := mongo.GetAppOwners(app.ID)
 	if err != nil {
@@ -1540,13 +1539,7 @@ func getSimilarOwners(app *sql.App) (err error) {
 		countSlice = countSlice[0:100]
 	}
 
-	// Save related apps
-	b, err := json.Marshal(countSlice)
-	if err != nil {
-		return err
-	}
-
-	app.RelatedOwnersAppIDs = string(b)
+	app.RelatedOwnersAppIDs = countSlice
 
 	return nil
 }

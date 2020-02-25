@@ -24,9 +24,9 @@
                             <div class="card-body">
 
                                 <ul class="list-group">
-                                    {{ range $key, $value := .Calls }}
-                                        <a href="#{{ .Hashtag }}" class="list-group-item list-group-item-action text-truncate" title="{{ .Title }}">
-                                            {{ .Title }}
+                                    {{ range $key, $value := .Swagger.Components.Tags }}
+                                        <a href="#{{ .Name }}" class="list-group-item list-group-item-action text-truncate" title="{{ .Name }}">
+                                            {{ title .Name }}
                                         </a>
                                     {{ end }}
                                 </ul>
@@ -40,50 +40,55 @@
             </div>
             <div class="col-12 col-xl-9">
 
-                {{ range $key, $value := .Calls }}
-                    {{ if .Handler }}
+                {{ range $pathKey, $path := .Swagger.Paths }}
+                    {{ range $verb, $endpoint := $path.Operations }}
 
-                        <div class="card mt-3" id="{{ .Hashtag }}">
+                        <div class="card mt-3">
                             <div class="card-body">
 
-                                <form action="/api{{ .GetPath }}" target="_blank" method="GET">
+                                <form action="/api" target="_blank" method="{{ $verb }}">
 
                                     <div class="card mb-4">
-                                        <h4 class="card-header">{{ .Title }}</h4>
+                                        <h4 class="card-header">{{ .Summary }}</h4>
                                         <div class="card-body">
                                             <div class="input-group mb-0">
                                                 <div class="input-group-prepend">
-                                                    <span class="input-group-text">GET</span>
+                                                    <span class="input-group-text">{{ $verb }}</span>
                                                 </div>
                                                 <!--suppress HtmlFormInputWithoutLabel -->
-                                                <input type="text" class="form-control endpoint" value="{{ $.Base }}/api{{ .GetPath }}">
+                                                <input type="text" class="form-control endpoint" value="{{ $.Base }}{{ $pathKey }}">
                                                 <div class="input-group-append">
                                                     <button class="btn btn-success" type="submit">Go</button>
                                                 </div>
                                             </div>
 
-                                        </div>
 
-                                        <div class="table-responsive">
-                                            <table class="table table-borderless table-hover table-sm mb-0">
-                                                <thead>
-                                                <tr>
-                                                    <th scope="col" class="font-weight-bold" style="width: 30%">Name</th>
-                                                    <th scope="col" class="font-weight-bold">Type</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                {{ range $key, $value := .Params }}
+                                            <div class="table-responsive">
+                                                <table class="table table-borderless table-hover table-sm mb-0">
+                                                    <thead>
                                                     <tr>
-                                                        <td>
-                                                            <input class="api-field" type="{{ .InputType }}" name="{{ .Name }}" {{ if eq .Name "key" }}value="{{ $.Key }}"{{ end }}>
-                                                        </td>
-                                                        <td>{{ .Name }}</td>
-                                                        <td>{{ .Type }}</td>
+                                                        <th scope="col" class="font-weight-bold" style="width: 30%"></th>
+                                                        <th scope="col" class="font-weight-bold">Name</th>
+                                                        <th scope="col" class="font-weight-bold">Type</th>
+                                                        <th scope="col" class="font-weight-bold">Required</th>
                                                     </tr>
-                                                {{ end }}
-                                                </tbody>
-                                            </table>
+                                                    </thead>
+                                                    <tbody>
+                                                    {{ range $key, $value := .Parameters }}
+                                                        <tr>
+                                                            <td>
+                                                                <input class="api-field" type="{{ $.InputType .Value.Schema.Value.Type .Value.Schema.Value.Format }}" name="{{ .Value.Name }}" {{ if eq .Value.Name "key" }}value="{{ $.Key }}"{{ end }}>
+                                                            </td>
+                                                            <td>{{ .Value.Name }}</td>
+                                                            <td>{{ .Value.Schema.Value.Type }}{{ if ne .Value.Schema.Value.Format "" }} ({{ .Value.Schema.Value.Format }}){{ end }}</td>
+                                                            <td>{{ if .Value.Required }}<i class="fas fa-check"></i>{{ else }}<i class="fas fa-times"></i>{{end}}</td>
+                                                        </tr>
+                                                    {{ end }}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+
                                         </div>
                                     </div>
 
@@ -91,7 +96,6 @@
 
                             </div>
                         </div>
-
                     {{ end }}
                 {{ end }}
 
