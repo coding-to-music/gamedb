@@ -105,10 +105,10 @@ var Swagger = &openapi3.Swagger{
 				Value: &openapi3.Schema{
 					Required: []string{"offset", "limit", "rowsTotal", "rowsFiltered", "pagesTotal", "pagescurrent"},
 					Properties: map[string]*openapi3.SchemaRef{
-						"offset":       {Value: openapi3.NewIntegerSchema()},
-						"limit":        {Value: openapi3.NewIntegerSchema()},
-						"rowsTotal":    {Value: openapi3.NewIntegerSchema()},
-						"rowsFiltered": {Value: openapi3.NewIntegerSchema()},
+						"offset":       {Value: openapi3.NewInt64Schema()},
+						"limit":        {Value: openapi3.NewInt64Schema()},
+						"rowsTotal":    {Value: openapi3.NewInt64Schema()},
+						"rowsFiltered": {Value: openapi3.NewInt64Schema()},
 						"pagesTotal":   {Value: openapi3.NewIntegerSchema()},
 						"pagescurrent": {Value: openapi3.NewIntegerSchema()},
 					},
