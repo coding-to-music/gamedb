@@ -157,7 +157,7 @@ var Swagger = &openapi3.Swagger{
 					}),
 				},
 			},
-			"error": {
+			"error-response": {
 				Value: &openapi3.Response{
 					Description: "An error",
 					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
@@ -165,7 +165,7 @@ var Swagger = &openapi3.Swagger{
 					}),
 				},
 			},
-			"app": {
+			"app-response": {
 				Value: &openapi3.Response{
 					Description: "An app",
 					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
@@ -173,7 +173,7 @@ var Swagger = &openapi3.Swagger{
 					}),
 				},
 			},
-			"apps": {
+			"apps-response": {
 				Value: &openapi3.Response{
 					Description: "List of apps",
 					Content: openapi3.NewContentWithJSONSchema(&openapi3.Schema{
@@ -195,7 +195,7 @@ var Swagger = &openapi3.Swagger{
 					}),
 				},
 			},
-			"player": {
+			"player-response": {
 				Value: &openapi3.Response{
 					Description: "A player",
 					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
@@ -203,7 +203,7 @@ var Swagger = &openapi3.Swagger{
 					}),
 				},
 			},
-			"players": {
+			"players-response": {
 				Value: &openapi3.Response{
 					Description: "List of players",
 					Content: openapi3.NewContentWithJSONSchema(&openapi3.Schema{
@@ -254,8 +254,7 @@ var Swagger = &openapi3.Swagger{
 				Responses: map[string]*openapi3.ResponseRef{
 					"200": {
 						Value: &openapi3.Response{
-							ExtensionProps: openapi3.ExtensionProps{},
-							Description:    "List of apps",
+							Description: "List of apps",
 							Content: openapi3.Content{
 								"application/json": &openapi3.MediaType{
 									Schema: &openapi3.SchemaRef{

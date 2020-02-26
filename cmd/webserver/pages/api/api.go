@@ -15,7 +15,7 @@ func (s Server) ReturnError(w http.ResponseWriter, code int, message string) {
 
 	w.WriteHeader(code)
 
-	e := generated.Error{Code: code, Message: message,}
+	e := generated.ErrorResponse{Code: code, Message: message,}
 
 	err := json.NewEncoder(w).Encode(e)
 	log.Err(err)

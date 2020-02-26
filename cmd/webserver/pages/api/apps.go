@@ -44,7 +44,7 @@ func (s Server) GetApps(w http.ResponseWriter, r *http.Request) {
 		log.Err(err, r)
 	}
 
-	result := generated.Apps{}
+	result := generated.AppsResponse{}
 	result.Pagination.Fill(offset, limit, total)
 
 	for _, app := range apps {

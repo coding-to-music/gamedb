@@ -22,7 +22,7 @@ func (s Server) GetAppsId(w http.ResponseWriter, r *http.Request) {
 
 		} else {
 
-			ret := generated.App{}
+			ret := generated.AppResponse{}
 			ret.Id = app.ID
 			ret.Name = app.GetName()
 
