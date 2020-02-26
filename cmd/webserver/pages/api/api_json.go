@@ -149,11 +149,12 @@ var Swagger = &openapi3.Swagger{
 			},
 		},
 		Responses: map[string]*openapi3.ResponseRef{
-			"pagination-response": {
+			"success-response": {
 				Value: &openapi3.Response{
-					Description: "Page information",
+					ExtensionProps: openapi3.ExtensionProps{},
+					Description:    "Success",
 					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-						Ref: "#/components/schemas/pagination-schema",
+						Ref: "#/components/schemas/succcess-schema",
 					}),
 				},
 			},
@@ -162,6 +163,14 @@ var Swagger = &openapi3.Swagger{
 					Description: "An error",
 					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
 						Ref: "#/components/schemas/error-schema",
+					}),
+				},
+			},
+			"pagination-response": {
+				Value: &openapi3.Response{
+					Description: "Page information",
+					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
+						Ref: "#/components/schemas/pagination-schema",
 					}),
 				},
 			},
@@ -253,16 +262,7 @@ var Swagger = &openapi3.Swagger{
 				}, test...),
 				Responses: map[string]*openapi3.ResponseRef{
 					"200": {
-						Value: &openapi3.Response{
-							Description: "List of apps",
-							Content: openapi3.Content{
-								"application/json": &openapi3.MediaType{
-									Schema: &openapi3.SchemaRef{
-										Ref: "#/components/schemas/app-schema",
-									},
-								},
-							},
-						},
+						Ref: "#/components/responses/apps-response",
 					},
 				},
 			},
@@ -283,17 +283,7 @@ var Swagger = &openapi3.Swagger{
 				},
 				Responses: map[string]*openapi3.ResponseRef{
 					"200": {
-						Value: &openapi3.Response{
-							ExtensionProps: openapi3.ExtensionProps{},
-							Description:    "An app",
-							Content: openapi3.Content{
-								"application/json": &openapi3.MediaType{
-									Schema: &openapi3.SchemaRef{
-										Ref: "#/components/schemas/app-schema",
-									},
-								},
-							},
-						},
+						Ref: "#/components/responses/app-response",
 					},
 				},
 			},
@@ -314,17 +304,7 @@ var Swagger = &openapi3.Swagger{
 				},
 				Responses: map[string]*openapi3.ResponseRef{
 					"200": {
-						Value: &openapi3.Response{
-							ExtensionProps: openapi3.ExtensionProps{},
-							Description:    "Success",
-							Content: openapi3.Content{
-								"application/json": &openapi3.MediaType{
-									Schema: &openapi3.SchemaRef{
-										Ref: "#/components/schemas/succcess-schema",
-									},
-								},
-							},
-						},
+						Ref: "#/components/responses/success-response",
 					},
 				},
 			},
