@@ -9,5 +9,5 @@ func (pagination *PaginationSchema) Fill(offset, limit, count int64) {
 	pagination.Limit = limit
 	pagination.Total = count
 	pagination.PagesTotal = int(math.Ceil(float64(count) / float64(limit)))
-	pagination.PagesCurrent = int(math.Ceil(float64(offset)/float64(limit))) + 1
+	pagination.PagesCurrent = int(math.Floor(float64(offset)/float64(limit)) + 1)
 }
