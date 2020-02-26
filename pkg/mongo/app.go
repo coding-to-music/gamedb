@@ -820,7 +820,7 @@ func PopularNewApps() (apps []App, err error) {
 
 		return GetApps(
 			0,
-			25,
+			28, // Keep even
 			bson.D{{Key: "player_peak_week", Value: -1}},
 			bson.D{
 				{Key: "release_date_unix", Value: bson.M{"$gt": releaseDate}},
