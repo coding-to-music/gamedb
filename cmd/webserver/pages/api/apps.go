@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gamedb/gamedb/cmd/webserver/pages/api/generated"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -39,6 +40,9 @@ func (s Server) GetApps(w http.ResponseWriter, r *http.Request) {
 	}
 
 	total, err := mongo.CountDocuments(mongo.CollectionApps, filter, 0)
+	if err != nil {
+		log.Err(err, r)
+	}
 
 	result := generated.Apps{}
 	result.Pagination.Fill(offset, limit, total)
