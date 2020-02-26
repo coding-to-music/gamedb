@@ -38,8 +38,10 @@ func (s Server) GetApps(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	total, err := mongo.CountDocuments(mongo.CollectionApps, filter, 0)
+
 	result := generated.Apps{}
-	result.Pagination.Fill(r.Context())
+	result.Pagination.Fill(offset, limit, total)
 
 	for _, app := range apps {
 
