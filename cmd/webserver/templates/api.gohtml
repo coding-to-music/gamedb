@@ -71,6 +71,7 @@
                                                         <th scope="col" class="font-weight-bold" style="width: 30%"></th>
                                                         <th scope="col" class="font-weight-bold">Name</th>
                                                         <th scope="col" class="font-weight-bold">Type</th>
+                                                        <th scope="col" class="font-weight-bold">Location</th>
                                                         <th scope="col" class="font-weight-bold">Required</th>
                                                     </tr>
                                                     </thead>
@@ -82,6 +83,7 @@
                                                             </td>
                                                             <td>{{ .Value.Name }}</td>
                                                             <td>{{ .Value.Schema.Value.Type }}{{ if ne .Value.Schema.Value.Format "" }} ({{ .Value.Schema.Value.Format }}){{ end }}</td>
+                                                            <td>{{ .Value.In }}</td>
                                                             <td>{{ if .Value.Required }}<i class="fas fa-check"></i>{{ else }}<i class="fas fa-times"></i>{{end}}</td>
                                                         </tr>
                                                     {{ end }}
