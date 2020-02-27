@@ -64,9 +64,9 @@ func (t apiTemplate) PathToSchema(path string) string {
 	schema := &openapi3.SchemaRef{}
 	x := api.Swagger.Paths[path]
 
-	if len(x.Get.Responses) > 0 {
+	if x.Get != nil {
 		schema = x.Get.Responses["200"].Value.Content["application/json"].Schema
-	} else if len(x.Post.Responses) > 0 {
+	} else if x.Post != nil {
 		schema = x.Post.Responses["200"].Value.Content["application/json"].Schema
 	} else {
 		return ""
