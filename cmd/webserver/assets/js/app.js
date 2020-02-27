@@ -604,6 +604,9 @@ if ($appPage.length > 0) {
 
                         let name = row[0];
                         if (!row[4]) {
+                            name += '<span class="badge badge-danger float-right">Inactive</span>';
+                        }
+                        if (row[5]) {
                             name += '<span class="badge badge-danger float-right">Hidden</span>';
                         }
 
@@ -634,7 +637,6 @@ if ($appPage.length > 0) {
         };
 
         $('#achievements-table').gdbTable({tableOptions: options});
-
     }
 
     function loadDevLocalization() {
