@@ -105,7 +105,7 @@ func main() {
 
 					private, err := isPrivateChannel(s, m)
 					if err != nil {
-						log.Warning(err, msg)
+						discordError(err)
 						return
 					}
 
@@ -113,7 +113,7 @@ func main() {
 
 						st, err := s.UserChannelCreate(m.Author.ID)
 						if err != nil {
-							log.Warning(err, msg)
+							discordError(err)
 							return
 						}
 
@@ -129,7 +129,7 @@ func main() {
 
 				_, err = s.ChannelMessageSendComplex(chanID, &message)
 				if err != nil {
-					log.Warning(err, msg)
+					discordError(err)
 					return
 				}
 
