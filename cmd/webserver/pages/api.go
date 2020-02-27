@@ -1,7 +1,6 @@
 package pages
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/Jleagle/session-go/session"
@@ -72,24 +71,30 @@ func (t apiTemplate) PathToSchema(path string) string {
 		return ""
 	}
 
-	// return t.renderSchema(schema, "")
+	// return t.renderSchema(schema)
 	return string(pretty.Pretty([]byte(t.renderSchema(schema))))
 }
 
 func (t apiTemplate) renderSchema(schema *openapi3.SchemaRef) (s string) {
 
 	if len(schema.Value.Properties) > 0 {
+
+		// Object
 		s += "{"
 		for k, v := range schema.Value.Properties {
 			s += "\"" + k + "\":  " + t.renderSchema(v) + ", "
 		}
 		s += "}"
+
 	} else if schema.Value.Items != nil && schema.Value.Type == "array" {
+
+		// Array
 		s += "[" + t.renderSchema(schema.Value.Items) + "]"
+
 	} else {
-		b, err := json.Marshal(schema)
-		log.Err(err)
-		s += string(b)
+
+		// Property
+		s += "\"" + schema.Value.Type + "\""
 	}
 
 	return s
