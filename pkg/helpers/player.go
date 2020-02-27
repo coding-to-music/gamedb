@@ -1,14 +1,22 @@
 package helpers
 
 import (
+	"errors"
 	"math"
 	"strconv"
 	"strings"
 
+	"github.com/Jleagle/steam-go/steamid"
 	"github.com/gosimple/slug"
 )
 
-const DefaultPlayerAvatar = "/assets/img/no-player-image.jpg"
+const (
+	DefaultPlayerAvatar = "/assets/img/no-player-image.jpg"
+)
+
+var (
+	ErrInvalidPlayerID = errors.New("invalid player id")
+)
 
 func GetPlayerAvatar(avatar string) string {
 
@@ -74,25 +82,31 @@ func GetPlayerName(id int64, name string) string {
 	}
 }
 
-func IsValidPlayerID(id int64) bool {
+func IsValidPlayerID(id int64) (int64, error) {
 
 	if id == 0 {
-		return false
+		return id, ErrInvalidPlayerID
 	}
 
-	idString := strconv.FormatInt(id, 10)
+	s := strconv.FormatInt(id, 10)
 
-	if !strings.HasPrefix(idString, "76") {
-		return false
+	if !strings.HasPrefix(s, "7656") {
+		return id, ErrInvalidPlayerID
 	}
 
-	if len(idString) != 17 {
-		return false
+	if len(s) != 17 {
+		return id, ErrInvalidPlayerID
 	}
 
-	return true
+	steamID, err := steamid.ParsePlayerID(s)
+	if err != nil {
+		return id, ErrInvalidGroupID
+	}
+
+	return int64(steamID), nil
 }
 
+// todo, is it 5 per level now?
 func GetPlayerMaxFriends(level int) (ret int) {
 
 	ret = 750

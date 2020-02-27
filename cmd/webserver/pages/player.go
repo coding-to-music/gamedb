@@ -55,7 +55,8 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !helpers.IsValidPlayerID(idx) {
+	idx, err = helpers.IsValidPlayerID(idx)
+	if err != nil {
 		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid Player ID: " + id})
 		return
 	}
@@ -826,7 +827,8 @@ func playerGroupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !helpers.IsValidPlayerID(idx) {
+	idx, err = helpers.IsValidPlayerID(idx)
+	if err != nil {
 		return
 	}
 
@@ -910,7 +912,8 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			return "Invalid Player ID", false, err
 		}
 
-		if !helpers.IsValidPlayerID(idx) {
+		idx, err = helpers.IsValidPlayerID(idx)
+		if err != nil {
 			return "Invalid Player ID", false, err
 		}
 

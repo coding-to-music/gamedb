@@ -45,7 +45,7 @@ func playerHandler(messages []*rabbit.Message) {
 		if err != nil {
 
 			log.Err(err, payload.ID)
-			if err == mongo.ErrInvalidPlayerID {
+			if err == helpers.ErrInvalidPlayerID {
 				sendToFailQueue(message)
 			} else {
 				sendToRetryQueue(message)

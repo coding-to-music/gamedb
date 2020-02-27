@@ -327,8 +327,9 @@ var ErrIsBot = errors.New("bots can't update players")
 
 func ProducePlayer(payload PlayerMessage) (err error) {
 
-	if !helpers.IsValidPlayerID(payload.ID) {
-		return mongo.ErrInvalidPlayerID
+	payload.ID, err = helpers.IsValidPlayerID(payload.ID)
+	if err != nil {
+		return helpers.ErrInvalidPlayerID
 	}
 
 	// if payload.UserAgent != nil && helpers.IsBot(*payload.UserAgent) {

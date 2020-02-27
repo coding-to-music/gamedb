@@ -180,7 +180,7 @@ func login(r *http.Request, user sql.User) (string, bool) {
 			sessionData[helpers.SessionPlayerName] = player.PersonaName
 			sessionData[helpers.SessionPlayerLevel] = strconv.Itoa(player.Level)
 		} else {
-			err = helpers.IgnoreErrors(err, mongo.ErrInvalidPlayerID, mongo.ErrNoDocuments)
+			err = helpers.IgnoreErrors(err, helpers.ErrInvalidPlayerID, mongo.ErrNoDocuments)
 			log.Err(err, r)
 		}
 	}

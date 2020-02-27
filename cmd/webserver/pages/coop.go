@@ -34,8 +34,11 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 	var playerIDs []int64
 	for _, v := range r.URL.Query()["p"] {
 		i, err := strconv.ParseInt(v, 10, 64)
-		if err == nil && helpers.IsValidPlayerID(i) {
-			playerIDs = append(playerIDs, i)
+		if err == nil {
+			i, err = helpers.IsValidPlayerID(i)
+			if err == nil {
+				playerIDs = append(playerIDs, i)
+			}
 		}
 	}
 

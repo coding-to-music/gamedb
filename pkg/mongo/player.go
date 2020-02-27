@@ -1,7 +1,6 @@
 package mongo
 
 import (
-	"errors"
 	"math"
 	"path"
 	"sort"
@@ -69,10 +68,6 @@ var PlayerRankFieldsInflux = map[RankMetric]string{
 	RankKeyFriends:  "friends_rank",
 	RankKeyComments: "comments_rank",
 }
-
-var (
-	ErrInvalidPlayerID = errors.New("invalid player id")
-)
 
 type Player struct {
 	Avatar            string                 `bson:"avatar"`
@@ -507,7 +502,9 @@ const (
 
 func (player Player) NeedsUpdate(updateType UpdateType) bool {
 
-	if !helpers.IsValidPlayerID(player.ID) {
+	var err error
+	player.ID, err = helpers.IsValidPlayerID(player.ID)
+	if err != nil {
 		return false
 	}
 
@@ -615,8 +612,9 @@ func GetPlayer(id int64) (player Player, err error) {
 
 	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &player, func() (interface{}, error) {
 
-		if !helpers.IsValidPlayerID(id) {
-			return player, ErrInvalidPlayerID
+		id, err := helpers.IsValidPlayerID(id)
+		if err != nil {
+			return player, helpers.ErrInvalidPlayerID
 		}
 
 		err = FindOne(CollectionPlayers, bson.D{{"_id", id}}, nil, nil, &player)
@@ -665,7 +663,7 @@ func SearchPlayer(search string, projection bson.M) (player Player, queue bool, 
 	search = strings.TrimSpace(search)
 
 	if search == "" {
-		return player, false, ErrInvalidPlayerID
+		return player, false, helpers.ErrInvalidPlayerID
 	}
 
 	//
