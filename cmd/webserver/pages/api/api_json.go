@@ -79,25 +79,13 @@ var Swagger = &openapi3.Swagger{
 	Components: openapi3.Components{
 		SecuritySchemes: map[string]*openapi3.SecuritySchemeRef{
 			"key-header": {
-				Value: &openapi3.SecurityScheme{
-					Name: "key",
-					Type: "apiKey",
-					In:   "header",
-				},
+				Value: openapi3.NewSecurityScheme().WithName("key").WithType("apiKey").WithIn("header"),
 			},
 			"key-query": {
-				Value: &openapi3.SecurityScheme{
-					Name: "key",
-					Type: "apiKey",
-					In:   "query",
-				},
+				Value: openapi3.NewSecurityScheme().WithName("key").WithType("apiKey").WithIn("query"),
 			},
 			"key-cookie": {
-				Value: &openapi3.SecurityScheme{
-					Name: "key",
-					Type: "apiKey",
-					In:   "cookie",
-				},
+				Value: openapi3.NewSecurityScheme().WithName("key").WithType("apiKey").WithIn("cookie"),
 			},
 		},
 		Schemas: map[string]*openapi3.SchemaRef{
