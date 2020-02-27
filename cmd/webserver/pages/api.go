@@ -1,6 +1,7 @@
 package pages
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/Jleagle/session-go/session"
@@ -11,6 +12,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/go-chi/chi"
+	"github.com/tidwall/pretty"
 )
 
 func APIRouter() http.Handler {
@@ -41,10 +43,10 @@ type apiTemplate struct {
 	Base    string
 }
 
-func (template apiTemplate) InputType(t string, f string) string {
+func (t apiTemplate) InputType(typex string, f string) string {
 
-	if t == "array" {
-		return template.InputType(f, f)
+	if typex == "array" {
+		return t.InputType(f, f)
 	}
 
 	switch f {
@@ -55,6 +57,42 @@ func (template apiTemplate) InputType(t string, f string) string {
 	default:
 		return "text"
 	}
+}
+
+func (t apiTemplate) PathToSchema(path string) string {
+
+	schema := &openapi3.SchemaRef{}
+	x := api.Swagger.Paths[path]
+
+	if len(x.Get.Responses) > 0 {
+		schema = x.Get.Responses["200"].Value.Content["application/json"].Schema
+	} else if len(x.Post.Responses) > 0 {
+		schema = x.Post.Responses["200"].Value.Content["application/json"].Schema
+	} else {
+		return ""
+	}
+
+	// return t.renderSchema(schema, "")
+	return string(pretty.Pretty([]byte(t.renderSchema(schema))))
+}
+
+func (t apiTemplate) renderSchema(schema *openapi3.SchemaRef) (s string) {
+
+	if len(schema.Value.Properties) > 0 {
+		s += "{"
+		for k, v := range schema.Value.Properties {
+			s += "\"" + k + "\":  " + t.renderSchema(v) + ", "
+		}
+		s += "}"
+	} else if schema.Value.Items != nil && schema.Value.Type == "array" {
+		s += "[" + t.renderSchema(schema.Value.Items) + "]"
+	} else {
+		b, err := json.Marshal(schema)
+		log.Err(err)
+		s += string(b)
+	}
+
+	return s
 }
 
 func openAPIJSONHandler(w http.ResponseWriter, r *http.Request) {

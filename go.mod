@@ -18,6 +18,7 @@ require (
 	github.com/Jleagle/unmarshal-go v0.0.0-20200217225147-fd7db71d9ac0
 	github.com/Philipp15b/go-steam v1.0.1-0.20190816133340-b04c5a83c1c0
 	github.com/PuerkitoBio/goquery v1.5.1 // indirect
+	github.com/TylerBrock/colorjson v0.0.0-20180527164720-95ec53f28296 // indirect
 	github.com/ahmdrz/goinsta/v2 v2.4.5
 	github.com/antchfx/htmlquery v1.2.2 // indirect
 	github.com/antchfx/xmlquery v1.2.3 // indirect
@@ -35,6 +36,7 @@ require (
 	github.com/didip/tollbooth/v5 v5.1.0
 	github.com/djherbis/fscache v0.10.0
 	github.com/dustin/go-humanize v1.0.0
+	github.com/fatih/color v1.9.0 // indirect
 	github.com/frustra/bbcode v0.0.0-20180807171629-48be21ce690c
 	github.com/getkin/kin-openapi v0.2.0
 	github.com/getsentry/sentry-go v0.5.1
@@ -85,6 +87,7 @@ require (
 	github.com/streadway/amqp v0.0.0-20200108173154-1c71cc93ed71
 	github.com/tdewolff/minify/v2 v2.7.2
 	github.com/temoto/robotstxt v1.1.1 // indirect
+	github.com/tidwall/pretty v1.0.1
 	github.com/uber-go/atomic v1.4.0 // indirect
 	github.com/xdg/stringprep v1.0.0 // indirect
 	github.com/yohcop/openid-go v1.0.0
