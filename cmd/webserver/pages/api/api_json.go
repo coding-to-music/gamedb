@@ -20,7 +20,7 @@ var (
 	float100 float64 = 100
 
 	// This is here because oapi-codegen wont generate params using $ref
-	test = []*openapi3.ParameterRef{
+	pagination = []*openapi3.ParameterRef{
 		{
 			Value: &openapi3.Parameter{
 				In:          openapi3.ParameterInQuery,
@@ -242,7 +242,7 @@ var Swagger = &openapi3.Swagger{
 							Schema: openapi3.NewArraySchema().WithFormat("integer").WithMaxItems(10).NewRef(),
 						},
 					},
-				}, test...),
+				}, pagination...),
 				Responses: map[string]*openapi3.ResponseRef{
 					"200": {
 						Ref: "#/components/responses/apps-response",
