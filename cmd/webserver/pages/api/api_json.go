@@ -270,6 +270,32 @@ var Swagger = &openapi3.Swagger{
 				},
 			},
 		},
+		"/players": &openapi3.PathItem{
+			Get: &openapi3.Operation{
+				Summary: "List players",
+				Parameters: append(openapi3.Parameters{
+					{
+						Value: &openapi3.Parameter{
+							In:     openapi3.ParameterInQuery,
+							Name:   "continent",
+							Schema: openapi3.NewStringSchema().WithMaxLength(2).NewRef(),
+						},
+					},
+					{
+						Value: &openapi3.Parameter{
+							In:     openapi3.ParameterInQuery,
+							Name:   "country",
+							Schema: openapi3.NewStringSchema().WithMaxLength(2).NewRef(),
+						},
+					},
+				}, pagination...),
+				Responses: map[string]*openapi3.ResponseRef{
+					"200": {
+						Ref: "#/components/responses/players-response",
+					},
+				},
+			},
+		},
 		"/players/{id}": &openapi3.PathItem{
 			Post: &openapi3.Operation{
 				Summary: "Update a player",

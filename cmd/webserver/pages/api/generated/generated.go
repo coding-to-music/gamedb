@@ -87,11 +87,25 @@ type GetAppsParams struct {
 	Limit *int `json:"limit,omitempty"`
 }
 
+// GetPlayersParams defines parameters for GetPlayers.
+type GetPlayersParams struct {
+	Continent *string `json:"continent,omitempty"`
+	Country   *string `json:"country,omitempty"`
+
+	// Offset
+	Offset *int `json:"offset,omitempty"`
+
+	// Limit
+	Limit *int `json:"limit,omitempty"`
+}
+
 type ServerInterface interface {
 	// List apps (GET /apps)
 	GetApps(w http.ResponseWriter, r *http.Request)
 	// Retrieve app (GET /apps/{id})
 	GetAppsId(w http.ResponseWriter, r *http.Request)
+	// List players (GET /players)
+	GetPlayers(w http.ResponseWriter, r *http.Request)
 	// Update a player (POST /players/{id})
 	PostPlayersId(w http.ResponseWriter, r *http.Request)
 }
@@ -108,11 +122,11 @@ func GetAppsCtx(next http.Handler) http.Handler {
 
 		var err error
 
-		ctx = context.WithValue(ctx, "key-cookie.Scopes", []string{""})
-
 		ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
 
 		ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
+
+		ctx = context.WithValue(ctx, "key-cookie.Scopes", []string{""})
 
 		// Parameter object where we will unmarshal all parameters from the context
 		var params GetAppsParams
@@ -185,11 +199,82 @@ func GetAppsIdCtx(next http.Handler) http.Handler {
 
 		ctx = context.WithValue(ctx, "id", id)
 
+		ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
+
+		ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
+
+		ctx = context.WithValue(ctx, "key-cookie.Scopes", []string{""})
+
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+
+// ParamsForGetPlayers operation parameters from context
+func ParamsForGetPlayers(ctx context.Context) *GetPlayersParams {
+	return ctx.Value("GetPlayersParams").(*GetPlayersParams)
+}
+
+// GetPlayers operation middleware
+func GetPlayersCtx(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+
+		var err error
+
+		ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
+
 		ctx = context.WithValue(ctx, "key-cookie.Scopes", []string{""})
 
 		ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
 
-		ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
+		// Parameter object where we will unmarshal all parameters from the context
+		var params GetPlayersParams
+
+		// ------------- Optional query parameter "continent" -------------
+		if paramValue := r.URL.Query().Get("continent"); paramValue != "" {
+
+		}
+
+		err = runtime.BindQueryParameter("form", true, false, "continent", r.URL.Query(), &params.Continent)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Invalid format for parameter continent: %s", err), http.StatusBadRequest)
+			return
+		}
+
+		// ------------- Optional query parameter "country" -------------
+		if paramValue := r.URL.Query().Get("country"); paramValue != "" {
+
+		}
+
+		err = runtime.BindQueryParameter("form", true, false, "country", r.URL.Query(), &params.Country)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Invalid format for parameter country: %s", err), http.StatusBadRequest)
+			return
+		}
+
+		// ------------- Optional query parameter "offset" -------------
+		if paramValue := r.URL.Query().Get("offset"); paramValue != "" {
+
+		}
+
+		err = runtime.BindQueryParameter("form", true, false, "offset", r.URL.Query(), &params.Offset)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Invalid format for parameter offset: %s", err), http.StatusBadRequest)
+			return
+		}
+
+		// ------------- Optional query parameter "limit" -------------
+		if paramValue := r.URL.Query().Get("limit"); paramValue != "" {
+
+		}
+
+		err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Invalid format for parameter limit: %s", err), http.StatusBadRequest)
+			return
+		}
+
+		ctx = context.WithValue(ctx, "GetPlayersParams", &params)
 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
@@ -239,6 +324,10 @@ func HandlerFromMux(si ServerInterface, r *chi.Mux) http.Handler {
 		r.Get("/apps/{id}", si.GetAppsId)
 	})
 	r.Group(func(r chi.Router) {
+		r.Use(GetPlayersCtx)
+		r.Get("/players", si.GetPlayers)
+	})
+	r.Group(func(r chi.Router) {
 		r.Use(PostPlayersIdCtx)
 		r.Post("/players/{id}", si.PostPlayersId)
 	})
@@ -249,22 +338,22 @@ func HandlerFromMux(si ServerInterface, r *chi.Mux) http.Handler {
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/7RXS2/bRhD+K8S0R8aUnaJoearbAoXbADXq9iTosCVH1CbcR3aXrgVD/72YffBhkbKS",
-	"KJdEy539Zvabb2bHz1ApoZVE6SyUz2DQaiUt+gXT+k36QOtKSYfSxa2WV8xxJYv3Vkn6ZqsdCka/vjW4",
-	"hRK+KQbwIuzagkCj5eFwyKFGWxmuCQlKuJUZ0xoOOXmwn+d9iviOW5epLcHaPPuPu12mWcOlPw05aKM0",
-	"Gsf7K/v/uUNhP+UqObi9RiiBGcP2tB55eQVnsByYycHgx44brKFcwyRiH+NmhrzxVSkCNEaZy2cwwJ7M",
-	"oTeZknD5OOZoOwrmnjWYcblVRgT+KKiW7fErEBNxTzCTBZMhiM+U+FS0X6S0PpKzZf/imi+Vf0q6ydUp",
-	"9SabQw62qyq09vKZImCPvJyrh+Db3yceSz1xKQ+8pn8jG1w6bEKqJRM42rHOcNkcEcVriKabvnaXPFWq",
-	"xnlfAq1lzRnuPMRgv5kW65LjlgvuuQ8FFXx//x3kM6Go7dbiucaaNWh/6YyJuV2w+Fs51s7vu7T1qrcX",
-	"TMQ483i5hDTx+CLAzdBFLiWGKPexKo8wz07ukFWCxaoz3O0fCDUAfcD9m0qpD9xjcdJ7XKYAyWSgjmn+",
-	"B/pXjU7ukNVo+pNxec7Jjx2afX8wrE6fo8SyxkK5fk528Xnr133DoKxQq09tglVeSigYb6GE91wga1r8",
-	"qaEPV5USg+/fW78FOXSGbHfOaVsWRcME1v9eKdlyiUUCpaC4a+ngg0Mmsl9/zm7v7yCHRzQ29I9rXwIa",
-	"JdMcSnh7tbpaeRm5nU9BkUaNJtQI5dnX3l0NJfyG7pb26YBhAp1v0Ot54nhNhoNoxgXgZZeDYE93obdf",
-	"r1bHHXse1xP/CcBzuNOm+mcqtTl3fR2OR7kt61oH5SoHwSUXnfC/jyv6eOwLtTznKNX5jB+6hGBPwZGn",
-	"qnd7PeN2k08n5pvVaunp6e2K6WQbCl8IRoURHkEWMh913897edBM8czrw2vCuasXpEP6GysHxo3DmQ6X",
-	"8v32Br4SGUtc/IXOcHxE/xfBLB2x8ntGtLIzlNwr6+6D5eVp8Q+MYE/vUDZuB+XNpYg5mn2m5Pyja+Yw",
-	"Y2miHPiZzlip+furjtv+ejNt5mkdW/R6Q2FbNI+Jp6ExlkXRqoq1O2Vd+ePqh+uCetxhc/g/AAD//8FO",
-	"CkZODgAA",
+	"H4sIAAAAAAAC/+xXS2/cNhD+K8K0R8ZaO0XR6lS3BQq3AWrU7cnYAyvNapmIj5CU64Wh/14MqaclrdfJ",
+	"5pZLshSH37y+jxw/Qa6l0QqVd5A9gUVntHIYFtyYN90HWudaeVS+3apEzr3QKn3vtKJvLt+j5PTrW4s7",
+	"yOCbdABP465LCbS1bJqGQYEut8IQEmRwrRJuDDSMPLhP8z5FfCecT/SOYB1L/hN+nxheChVOAwNjtUHr",
+	"RZ9y+F94lO41qTDwB4OQAbeWH2g98vICzmA5VIaBxY+1sFhAdg+TiEOM24XijVOlCNBabc/fwQh7tIfB",
+	"ZFqE88exVLZZMLe8xESonbYy1o+CqvgBv0BhWtwjlUmiyRDEJ1J8StrPYlofycm0f5bmc+Yfo27n6hh7",
+	"O5uGgavzHJ07f6cIOCCv9+ou+g75tMe6O3GtD6Kgf9tqCOWxjK1WXOJox3krVDkrlCigNd322l3zlOsC",
+	"l31JdI6XJ7gLEIP9dirWNceVkCLUPgoq+v7+O2ALoejdzuGpxoaX6H6prW17u2Lxt/a8Wt733daL3p5V",
+	"oo2Ttcl1SBOPzwLcDrfIucjQ0n3Myhnmyc0dukqwmNdW+MMdoUagD3h4k2v9QQQsQXxvl12AZDKUjhvx",
+	"B4ZXjU7ukRdo+5Pt8pSTH2u0h/5gXB0/RwnQ9d1Jn+eBHii5qCCD90IiLyv8qaQPF7mWA97vVdgCBrUl",
+	"2733xmVpWnKJxb8XWlVCYdqBEoOEr+jgnUcuk19/Tq5vb4DBA1oX74TLQGuDihsBGby92FxsAjX8PpQ1",
+	"7caHMvKeehf0dFNABr+hv6Z9OmC5RB8u3fvlYoiCDAcijEkdqMRA8sebeF9fbjbzW3gZ1/PyVcBLuNOL",
+	"8s9OPkvuem2Nx7MdrysP2YaBFErIWobfc5XOR7mozyVHnXYX/FASkj9GR6FUvdvLBbdbNp2Crzabteek",
+	"t0un02oUs5ScyB4ftjiTNSxyJH0SRfMSUW6KFaoQ38ZMgbH4va1xrb9vr+ALJb+W+1/orcAHjFM9pT+a",
+	"NtaSv21NThIK6VdQRJPmS/74DlXp95BdsflluQZVKx8+vALoqxhmfJiNtgt66Ke8ESd6VRjtFphxq11H",
+	"jfNLIwwKi83+zGLMZthpMf4xBfeY8P4vg/GLHfIav9X32+kL3K3bd/V+SzE6tA9dUYaXL0vTSue82mvn",
+	"sx83P1ym9Ig12+b/AAAA//8Wb5k3AxAAAA==",
 }
 
 // GetSwagger returns the Swagger specification corresponding to the generated code
