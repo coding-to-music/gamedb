@@ -85,43 +85,28 @@ func (pack Package) BSON() bson.D {
 
 func CreatePackageIndexes() {
 
-	var ascending = []string{
-		// Filters
-		"status",
-		"platforms",
-		"license_type",
+	var indexModels []mongo.IndexModel
+
+	var cols = []string{
+		"apps_count",
 		"billing_type",
-
-		// Sorting
-		"apps_count",
 		"change_number_date",
-	}
-
-	var descending = []string{
-		// Sorting
-		"apps_count",
-		"change_number_date",
+		"license_type",
+		"platforms",
+		"status",
 	}
 
 	// Price fields
 	for _, v := range helpers.GetProdCCs(true) {
-		ascending = append(ascending, "prices."+string(v.ProductCode)+".final")
-		descending = append(descending, "prices."+string(v.ProductCode)+".final")
-
-		ascending = append(ascending, "prices."+string(v.ProductCode)+".discount_percent")
-		descending = append(descending, "prices."+string(v.ProductCode)+".discount_percent")
+		cols = append(cols, "prices."+string(v.ProductCode)+".final")
+		cols = append(cols, "prices."+string(v.ProductCode)+".discount_percent")
 	}
 
 	//
-	var indexModels []mongo.IndexModel
-	for _, v := range ascending {
+	for _, v := range cols {
 		indexModels = append(indexModels, mongo.IndexModel{
 			Keys: bson.D{{v, 1}},
-		})
-	}
-
-	for _, v := range descending {
-		indexModels = append(indexModels, mongo.IndexModel{
+		}, mongo.IndexModel{
 			Keys: bson.D{{v, -1}},
 		})
 	}

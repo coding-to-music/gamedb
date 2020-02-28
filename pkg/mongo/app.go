@@ -536,7 +536,9 @@ func (app App) GetAppPackages() (packages []Package, err error) {
 
 func CreateAppIndexes() {
 
-	var ascending = []string{
+	var indexModels []mongo.IndexModel
+
+	var cols = []string{
 		"achievements_average_completion",
 		"achievements_count",
 		"categories",
@@ -546,44 +548,26 @@ func CreateAppIndexes() {
 		"platforms",
 		"player_peak_week",
 		"player_trend",
-		// "prices",
 		"publishers",
 		"release_date_unix",
 		"reviews_score",
 		"tags",
 		"type",
 		"wishlist_avg_position",
-	}
-
-	var descending = []string{
-		"achievements_average_completion",
-		"achievements_count",
-		"group_followers",
-		"player_peak_week",
-		"player_trend",
-		// "prices",
-		"release_date_unix",
-		"reviews_score",
-		"wishlist_avg_position",
 		"wishlist_count",
+		// "prices",
 	}
 
 	// Price fields
 	for _, v := range helpers.GetProdCCs(true) {
-		ascending = append(ascending, "prices."+string(v.ProductCode)+".final")
-		descending = append(descending, "prices."+string(v.ProductCode)+".final")
+		cols = append(cols, "prices."+string(v.ProductCode)+".final")
 	}
 
 	//
-	var indexModels []mongo.IndexModel
-	for _, v := range ascending {
+	for _, v := range cols {
 		indexModels = append(indexModels, mongo.IndexModel{
 			Keys: bson.D{{v, 1}},
-		})
-	}
-
-	for _, v := range descending {
-		indexModels = append(indexModels, mongo.IndexModel{
+		}, mongo.IndexModel{
 			Keys: bson.D{{v, -1}},
 		})
 	}
