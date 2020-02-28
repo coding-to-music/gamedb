@@ -24,10 +24,12 @@
                             <div class="card-body">
 
                                 <ul class="list-group">
-                                    {{ range $key, $value := .Swagger.Components.Tags }}
-                                        <a href="#{{ .Name }}" class="list-group-item list-group-item-action text-truncate" title="{{ .Name }}">
-                                            {{ title .Name }}
-                                        </a>
+                                    {{ range $pathKey, $path := .Swagger.Paths }}
+                                        {{ range $verb, $endpoint := $path.Operations }}
+                                            <a href="#" class="list-group-item list-group-item-action text-truncate" title="{{ .Summary }}">
+                                                {{ .Summary }}
+                                            </a>
+                                        {{ end }}
                                     {{ end }}
                                 </ul>
 

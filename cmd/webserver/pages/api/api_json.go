@@ -222,16 +222,11 @@ var Swagger = &openapi3.Swagger{
 				},
 			},
 		},
-		Tags: openapi3.Tags{
-			{Name: "apps", Description: ""},
-			{Name: "players", Description: ""},
-		},
 	},
 	Paths: openapi3.Paths{
 		"/apps": &openapi3.PathItem{
 			Get: &openapi3.Operation{
 				Summary: "List apps",
-				Tags:    []string{"apps"},
 				Parameters: append(openapi3.Parameters{
 					{
 						Value: &openapi3.Parameter{
@@ -258,7 +253,6 @@ var Swagger = &openapi3.Swagger{
 		"/apps/{id}": &openapi3.PathItem{
 			Get: &openapi3.Operation{
 				Summary: "Retrieve app",
-				Tags:    []string{"apps"},
 				Parameters: openapi3.Parameters{
 					{
 						Value: &openapi3.Parameter{
@@ -279,7 +273,6 @@ var Swagger = &openapi3.Swagger{
 		"/players/{id}": &openapi3.PathItem{
 			Post: &openapi3.Operation{
 				Summary: "Update a player",
-				Tags:    []string{"players"},
 				Parameters: openapi3.Parameters{
 					{
 						Value: &openapi3.Parameter{
