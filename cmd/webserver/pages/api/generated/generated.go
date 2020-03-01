@@ -22,9 +22,8 @@ type AppSchema struct {
 	Name string `json:"name"`
 }
 
-// ErrorSchema defines model for error-schema.
-type ErrorSchema struct {
-	Code    int    `json:"code"`
+// MessageSchema defines model for message-schema.
+type MessageSchema struct {
 	Message string `json:"message"`
 }
 
@@ -43,11 +42,6 @@ type PlayerSchema struct {
 	Name *string `json:"name,omitempty"`
 }
 
-// SucccessSchema defines model for succcess-schema.
-type SucccessSchema struct {
-	Message string `json:"message"`
-}
-
 // AppResponse defines model for app-response.
 type AppResponse AppSchema
 
@@ -57,8 +51,8 @@ type AppsResponse struct {
 	Pagination PaginationSchema `json:"pagination"`
 }
 
-// ErrorResponse defines model for error-response.
-type ErrorResponse ErrorSchema
+// MessageResponse defines model for message-response.
+type MessageResponse MessageSchema
 
 // PaginationResponse defines model for pagination-response.
 type PaginationResponse PaginationSchema
@@ -71,9 +65,6 @@ type PlayersResponse struct {
 	Pagination PaginationSchema `json:"pagination"`
 	Players    []PlayerSchema   `json:"players"`
 }
-
-// SuccessResponse defines model for success-response.
-type SuccessResponse SucccessSchema
 
 // GetAppsParams defines parameters for GetApps.
 type GetAppsParams struct {
@@ -122,11 +113,11 @@ func GetAppsCtx(next http.Handler) http.Handler {
 
 		var err error
 
-		ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
-
 		ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
 
 		ctx = context.WithValue(ctx, "key-cookie.Scopes", []string{""})
+
+		ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
 
 		// Parameter object where we will unmarshal all parameters from the context
 		var params GetAppsParams
@@ -199,11 +190,11 @@ func GetAppsIdCtx(next http.Handler) http.Handler {
 
 		ctx = context.WithValue(ctx, "id", id)
 
+		ctx = context.WithValue(ctx, "key-cookie.Scopes", []string{""})
+
 		ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
 
 		ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
-
-		ctx = context.WithValue(ctx, "key-cookie.Scopes", []string{""})
 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
@@ -221,11 +212,11 @@ func GetPlayersCtx(next http.Handler) http.Handler {
 
 		var err error
 
-		ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
-
 		ctx = context.WithValue(ctx, "key-cookie.Scopes", []string{""})
 
 		ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
+
+		ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
 
 		// Parameter object where we will unmarshal all parameters from the context
 		var params GetPlayersParams
@@ -338,22 +329,21 @@ func HandlerFromMux(si ServerInterface, r *chi.Mux) http.Handler {
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/+xXS2/cNhD+K8K0R8ZaO0XR6lS3BQq3AWrU7cnYAyvNapmIj5CU64Wh/14MqaclrdfJ",
-	"5pZLshSH37y+jxw/Qa6l0QqVd5A9gUVntHIYFtyYN90HWudaeVS+3apEzr3QKn3vtKJvLt+j5PTrW4s7",
-	"yOCbdABP465LCbS1bJqGQYEut8IQEmRwrRJuDDSMPLhP8z5FfCecT/SOYB1L/hN+nxheChVOAwNjtUHr",
-	"RZ9y+F94lO41qTDwB4OQAbeWH2g98vICzmA5VIaBxY+1sFhAdg+TiEOM24XijVOlCNBabc/fwQh7tIfB",
-	"ZFqE88exVLZZMLe8xESonbYy1o+CqvgBv0BhWtwjlUmiyRDEJ1J8StrPYlofycm0f5bmc+Yfo27n6hh7",
-	"O5uGgavzHJ07f6cIOCCv9+ou+g75tMe6O3GtD6Kgf9tqCOWxjK1WXOJox3krVDkrlCigNd322l3zlOsC",
-	"l31JdI6XJ7gLEIP9dirWNceVkCLUPgoq+v7+O2ALoejdzuGpxoaX6H6prW17u2Lxt/a8Wt733daL3p5V",
-	"oo2Ttcl1SBOPzwLcDrfIucjQ0n3Myhnmyc0dukqwmNdW+MMdoUagD3h4k2v9QQQsQXxvl12AZDKUjhvx",
-	"B4ZXjU7ukRdo+5Pt8pSTH2u0h/5gXB0/RwnQ9d1Jn+eBHii5qCCD90IiLyv8qaQPF7mWA97vVdgCBrUl",
-	"2733xmVpWnKJxb8XWlVCYdqBEoOEr+jgnUcuk19/Tq5vb4DBA1oX74TLQGuDihsBGby92FxsAjX8PpQ1",
-	"7caHMvKeehf0dFNABr+hv6Z9OmC5RB8u3fvlYoiCDAcijEkdqMRA8sebeF9fbjbzW3gZ1/PyVcBLuNOL",
-	"8s9OPkvuem2Nx7MdrysP2YaBFErIWobfc5XOR7mozyVHnXYX/FASkj9GR6FUvdvLBbdbNp2Crzabteek",
-	"t0un02oUs5ScyB4ftjiTNSxyJH0SRfMSUW6KFaoQ38ZMgbH4va1xrb9vr+ALJb+W+1/orcAHjFM9pT+a",
-	"NtaSv21NThIK6VdQRJPmS/74DlXp95BdsflluQZVKx8+vALoqxhmfJiNtgt66Ke8ESd6VRjtFphxq11H",
-	"jfNLIwwKi83+zGLMZthpMf4xBfeY8P4vg/GLHfIav9X32+kL3K3bd/V+SzE6tA9dUYaXL0vTSue82mvn",
-	"sx83P1ym9Ig12+b/AAAA//8Wb5k3AxAAAA==",
+	"H4sIAAAAAAAC/+xXS2/cNhD+K8K0R8VaO0UR6FS3BQq3AWrU7cnQgZVmtUzER0jK9cLQfy+GFPWwJD+S",
+	"zS2XZCnOfPP6ZoZ+gFIJrSRKZyF/AINWK2nRH5jWb+IHOpdKOpSuv2p4yRxXMvtglaRvtjygYPTre4N7",
+	"yOG7bATPwq3NCLSX7LouhQptabgmJMjhUiZMa+hSsmA/z/oc8T23LlF7grVp8h93h0SzmkuvDSloozQa",
+	"x4eQ/f/cobCvCSUFd9QIOTBj2JHOEyvP4IySY2ZSMPip5QYryG9h5rH3sVhJ3jRU8kCgtazG09cwAm/X",
+	"8aYtS7R2nofTO7KWuYUv16zGhMu9MiKkkJxq2BHNV3Ao4D5B8CSIjE58JsvnvP0isg2evJj5j8J8TP6n",
+	"2BtNPUXgKEMSvck4j7YSwCv6t3eDS4d1yLFkAic31hku64WHvIJetJj0zZat/v552ChYzNtgC7fhgvvK",
+	"B6qGQH78AdKVuNR+b/GlwprVaH9pjemZtSHxt3KsWb938epZa49S0PuZ9sFFpJnFRw4WY3+eqtqeSFi2",
+	"hrvjDWEGmI94fFMq9ZF7JU4U7I8RikTGIJnmf6Af7qR5QFahGTT740s0P7VojoNiOD2tRwHQCIsjgpW+",
+	"kCgYbyCHD1wgqxv8qaYPZ6USI97vjb+CFFpDsgfntM2zrGYCq3/PlGy4xCyCUq25a0jxxiETya8/J5fX",
+	"V5DCHRob2vTcE1CjZJpDDm/Pdmc7X0R38GnN4hatA0Opcp75VxXk8Bu6S7onBcMEOj94bteTwSsSHGkw",
+	"pZ8vegqC3V+FmXW+2y0n0TquY/WrgNdw57Prz0j0NXNDF0xfKXvWNg7yXQqCSy5a4X8v+2n5ogmdtGYo",
+	"dtmKHQpCsPtgyKdqMHu+YrZI54/Bi91uaysMctn80ea7rhWCEdnDcA9Pky4NHMkeeNU9R5SraoMqxLcp",
+	"U2A6eZxpcau+by/gKwW/Fftf6AzHOwyPWwp/snG3gr/uRV7UKNS/nDyaFV+w+/coa3eA/CJdLqstqFY6",
+	"/+EVQN+aYcGHxfNupR+mL52oMHSFVnaFGdfKRmqcvjX8Sl8t9hcmY/G3yDwZ/+iKOUzY8Dqebmwf13RX",
+	"3xbzDRzP/V69LchHi+YuJmXcfHmWNapkzUFZl7/bvTvPaIl1Rfd/AAAA//+KM5gdCg8AAA==",
 }
 
 // GetSwagger returns the Swagger specification corresponding to the generated code

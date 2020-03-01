@@ -1,26 +1,30 @@
 package api
 
 import (
+	"errors"
 	"net/http"
 
-	"github.com/gamedb/gamedb/cmd/webserver/pages/api/generated"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/queue"
 )
 
 func (s Server) PostPlayersId(w http.ResponseWriter, r *http.Request) {
 
-	if id, ok := r.Context().Value("id").(int64); ok {
+	s.call(w, r, func(w http.ResponseWriter, r *http.Request) (code int, response interface{}) {
 
-		err := queue.ProducePlayer(queue.PlayerMessage{ID: id, SkipGroups: true})
-		// todo, handle different errors properly
-		if err != nil {
-			log.Err(err)
-			s.ReturnError(w, 500, err.Error())
-			return
+		if id, ok := r.Context().Value("id").(int64); ok {
+
+			err := queue.ProducePlayer(queue.PlayerMessage{ID: id, SkipGroups: true})
+
+			// todo, handle different errors properly
+			if err != nil {
+				log.Err(err)
+				return 500, err
+			}
+
+			return 200, "Player queued"
 		}
 
-		payload := generated.SucccessSchema{Message: "Player queued"}
-		s.Return200(w, payload)
-	}
+		return 400, errors.New("invalid app ID")
+	})
 }

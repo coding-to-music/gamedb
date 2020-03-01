@@ -7,5 +7,11 @@ import (
 )
 
 func (s Server) GetPlayers(w http.ResponseWriter, r *http.Request) {
-	log.Info("players")
+
+	s.call(w, r, func(w http.ResponseWriter, r *http.Request) (code int, response interface{}) {
+
+		log.Info("players coming soon")
+
+		return 200, "players"
+	})
 }

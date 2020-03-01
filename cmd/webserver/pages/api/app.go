@@ -1,32 +1,39 @@
 package api
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/gamedb/gamedb/cmd/webserver/pages/api/generated"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 )
 
 func (s Server) GetAppsId(w http.ResponseWriter, r *http.Request) {
 
-	if id, ok := r.Context().Value("id").(int); ok {
+	s.call(w, r, func(w http.ResponseWriter, r *http.Request) (code int, response interface{}) {
 
-		app, err := mongo.GetApp(id)
-		if err == mongo.ErrNoDocuments {
+		if id, ok := r.Context().Value("id").(int); ok {
 
-			s.ReturnError(w, 404, "App not found")
+			app, err := mongo.GetApp(id)
+			if err == mongo.ErrNoDocuments {
 
-		} else if err != nil {
+				return 404, errors.New("app not found")
 
-			s.ReturnError(w, 500, err.Error())
+			} else if err != nil {
 
-		} else {
+				log.Err(err)
+				return 500, err
 
-			ret := generated.AppResponse{}
-			ret.Id = app.ID
-			ret.Name = app.GetName()
+			} else {
 
-			s.Return200(w, ret)
+				ret := generated.AppResponse{}
+				ret.Id = app.ID
+				ret.Name = app.GetName()
+				return 200, ret
+			}
 		}
-	}
+
+		return 400, errors.New("invalid app ID")
+	})
 }

@@ -11,49 +11,51 @@ import (
 
 func (s Server) GetApps(w http.ResponseWriter, r *http.Request) {
 
-	params := generated.ParamsForGetApps(r.Context())
+	s.call(w, r, func(w http.ResponseWriter, r *http.Request) (code int, response interface{}) {
 
-	var limit int64 = 10
-	if params.Limit != nil {
-		limit = int64(*params.Limit)
-	}
+		params := generated.ParamsForGetApps(r.Context())
 
-	var offset int64 = 0
-	if params.Offset != nil {
-		offset = int64(*params.Offset)
-	}
+		var limit int64 = 10
+		if params.Limit != nil {
+			limit = int64(*params.Limit)
+		}
 
-	filter := bson.D{{}}
+		var offset int64 = 0
+		if params.Offset != nil {
+			offset = int64(*params.Offset)
+		}
 
-	if params.Ids != nil {
+		filter := bson.D{{}}
 
-	}
+		if params.Ids != nil {
 
-	if params.Tags != nil {
+		}
 
-	}
+		if params.Tags != nil {
 
-	apps, err := mongo.GetApps(offset, limit, nil, filter, nil, nil)
-	if err != nil {
-		s.ReturnError(w, 500, err.Error())
-		return
-	}
+		}
 
-	total, err := mongo.CountDocuments(mongo.CollectionApps, filter, 0)
-	if err != nil {
-		log.Err(err, r)
-	}
+		apps, err := mongo.GetApps(offset, limit, nil, filter, nil, nil)
+		if err != nil {
+			return 500, err
+		}
 
-	result := generated.AppsResponse{}
-	result.Pagination.Fill(offset, limit, total)
+		total, err := mongo.CountDocuments(mongo.CollectionApps, filter, 0)
+		if err != nil {
+			log.Err(err, r)
+		}
 
-	for _, app := range apps {
+		result := generated.AppsResponse{}
+		result.Pagination.Fill(offset, limit, total)
 
-		result.Apps = append(result.Apps, generated.AppSchema{
-			Id:   app.ID,
-			Name: app.GetName(),
-		})
-	}
+		for _, app := range apps {
 
-	s.Return200(w, result)
+			result.Apps = append(result.Apps, generated.AppSchema{
+				Id:   app.ID,
+				Name: app.GetName(),
+			})
+		}
+
+		return 200, result
+	})
 }

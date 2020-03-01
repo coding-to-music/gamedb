@@ -20,8 +20,10 @@ func APIRouter() http.Handler {
 	r.Get("/", apiHandler)
 	r.Get("/openapi.json", openAPIJSONHandler)
 
-	server := api.Server{}
-	return generated.HandlerFromMux(server, r)
+	// Add generated handlers
+	generated.HandlerFromMux(api.Server{}, r)
+
+	return r
 }
 
 func apiHandler(w http.ResponseWriter, r *http.Request) {

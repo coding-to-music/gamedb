@@ -118,16 +118,7 @@ var Swagger = &openapi3.Swagger{
 					},
 				},
 			},
-			"error-schema": {
-				Value: &openapi3.Schema{
-					Required: []string{"code", "message"},
-					Properties: map[string]*openapi3.SchemaRef{
-						"code":    {Value: openapi3.NewIntegerSchema()},
-						"message": {Value: openapi3.NewStringSchema()},
-					},
-				},
-			},
-			"succcess-schema": {
+			"message-schema": {
 				Value: &openapi3.Schema{
 					Required: []string{"message"},
 					Properties: map[string]*openapi3.SchemaRef{
@@ -137,20 +128,12 @@ var Swagger = &openapi3.Swagger{
 			},
 		},
 		Responses: map[string]*openapi3.ResponseRef{
-			"success-response": {
+			"message-response": {
 				Value: &openapi3.Response{
 					ExtensionProps: openapi3.ExtensionProps{},
 					Description:    "Success",
 					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-						Ref: "#/components/schemas/succcess-schema",
-					}),
-				},
-			},
-			"error-response": {
-				Value: &openapi3.Response{
-					Description: "An error",
-					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-						Ref: "#/components/schemas/error-schema",
+						Ref: "#/components/schemas/message-schema",
 					}),
 				},
 			},
@@ -311,7 +294,7 @@ var Swagger = &openapi3.Swagger{
 				},
 				Responses: map[string]*openapi3.ResponseRef{
 					"200": {
-						Ref: "#/components/responses/success-response",
+						Ref: "#/components/responses/message-response",
 					},
 				},
 			},
