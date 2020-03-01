@@ -68,8 +68,8 @@ type PlayersResponse struct {
 
 // GetAppsParams defines parameters for GetApps.
 type GetAppsParams struct {
-	Ids  *[]interface{} `json:"ids,omitempty"`
-	Tags *[]interface{} `json:"tags,omitempty"`
+	Ids  *[]int `json:"ids,omitempty"`
+	Tags *[]int `json:"tags,omitempty"`
 
 	// Offset
 	Offset *int `json:"offset,omitempty"`
@@ -113,11 +113,11 @@ func GetAppsCtx(next http.Handler) http.Handler {
 
 		var err error
 
-		ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
-
 		ctx = context.WithValue(ctx, "key-cookie.Scopes", []string{""})
 
 		ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
+
+		ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
 
 		// Parameter object where we will unmarshal all parameters from the context
 		var params GetAppsParams
@@ -190,11 +190,11 @@ func GetAppsIdCtx(next http.Handler) http.Handler {
 
 		ctx = context.WithValue(ctx, "id", id)
 
+		ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
+
 		ctx = context.WithValue(ctx, "key-cookie.Scopes", []string{""})
 
 		ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
-
-		ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
@@ -212,11 +212,11 @@ func GetPlayersCtx(next http.Handler) http.Handler {
 
 		var err error
 
+		ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
+
 		ctx = context.WithValue(ctx, "key-cookie.Scopes", []string{""})
 
 		ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
-
-		ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
 
 		// Parameter object where we will unmarshal all parameters from the context
 		var params GetPlayersParams
@@ -289,11 +289,11 @@ func PostPlayersIdCtx(next http.Handler) http.Handler {
 
 		ctx = context.WithValue(ctx, "id", id)
 
-		ctx = context.WithValue(ctx, "key-cookie.Scopes", []string{""})
-
 		ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
 
 		ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
+
+		ctx = context.WithValue(ctx, "key-cookie.Scopes", []string{""})
 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
@@ -329,21 +329,21 @@ func HandlerFromMux(si ServerInterface, r *chi.Mux) http.Handler {
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
+	"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",
 }
 
 // GetSwagger returns the Swagger specification corresponding to the generated code

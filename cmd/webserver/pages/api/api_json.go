@@ -215,14 +215,14 @@ var Swagger = &openapi3.Swagger{
 						Value: &openapi3.Parameter{
 							In:     openapi3.ParameterInQuery,
 							Name:   "ids",
-							Schema: openapi3.NewArraySchema().WithFormat("integer").WithMaxItems(100).NewRef(),
+							Schema: openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema()).WithMaxItems(100).NewRef(),
 						},
 					},
 					{
 						Value: &openapi3.Parameter{
 							In:     openapi3.ParameterInQuery,
 							Name:   "tags",
-							Schema: openapi3.NewArraySchema().WithFormat("integer").WithMaxItems(10).NewRef(),
+							Schema: openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema()).WithMaxItems(10).NewRef(),
 						},
 					},
 				}, pagination...),
