@@ -117,7 +117,7 @@ func (group Group) GetIcon() string {
 }
 
 func (group Group) ShouldUpdate() bool {
-	return group.UpdatedAt.Before(time.Now().Add(time.Hour * -1))
+	return group.UpdatedAt.Before(time.Now().Add(time.Hour * -6))
 }
 
 func GetGroup(id string) (group Group, err error) {
