@@ -68,8 +68,13 @@ type PlayersResponse struct {
 
 // GetAppsParams defines parameters for GetApps.
 type GetAppsParams struct {
-	Ids  *[]int `json:"ids,omitempty"`
-	Tags *[]int `json:"tags,omitempty"`
+	Ids        *[]int    `json:"ids,omitempty"`
+	Tags       *[]int    `json:"tags,omitempty"`
+	Genres     *[]int    `json:"genres,omitempty"`
+	Categories *[]int    `json:"categories,omitempty"`
+	Developers *[]int    `json:"developers,omitempty"`
+	Publishers *[]int    `json:"publishers,omitempty"`
+	Platforms  *[]string `json:"platforms,omitempty"`
 
 	// Offset
 	Offset *int `json:"offset,omitempty"`
@@ -144,6 +149,61 @@ func GetAppsCtx(next http.Handler) http.Handler {
 			return
 		}
 
+		// ------------- Optional query parameter "genres" -------------
+		if paramValue := r.URL.Query().Get("genres"); paramValue != "" {
+
+		}
+
+		err = runtime.BindQueryParameter("form", true, false, "genres", r.URL.Query(), &params.Genres)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Invalid format for parameter genres: %s", err), http.StatusBadRequest)
+			return
+		}
+
+		// ------------- Optional query parameter "categories" -------------
+		if paramValue := r.URL.Query().Get("categories"); paramValue != "" {
+
+		}
+
+		err = runtime.BindQueryParameter("form", true, false, "categories", r.URL.Query(), &params.Categories)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Invalid format for parameter categories: %s", err), http.StatusBadRequest)
+			return
+		}
+
+		// ------------- Optional query parameter "developers" -------------
+		if paramValue := r.URL.Query().Get("developers"); paramValue != "" {
+
+		}
+
+		err = runtime.BindQueryParameter("form", true, false, "developers", r.URL.Query(), &params.Developers)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Invalid format for parameter developers: %s", err), http.StatusBadRequest)
+			return
+		}
+
+		// ------------- Optional query parameter "publishers" -------------
+		if paramValue := r.URL.Query().Get("publishers"); paramValue != "" {
+
+		}
+
+		err = runtime.BindQueryParameter("form", true, false, "publishers", r.URL.Query(), &params.Publishers)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Invalid format for parameter publishers: %s", err), http.StatusBadRequest)
+			return
+		}
+
+		// ------------- Optional query parameter "platforms" -------------
+		if paramValue := r.URL.Query().Get("platforms"); paramValue != "" {
+
+		}
+
+		err = runtime.BindQueryParameter("form", true, false, "platforms", r.URL.Query(), &params.Platforms)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Invalid format for parameter platforms: %s", err), http.StatusBadRequest)
+			return
+		}
+
 		// ------------- Optional query parameter "offset" -------------
 		if paramValue := r.URL.Query().Get("offset"); paramValue != "" {
 
@@ -212,11 +272,11 @@ func GetPlayersCtx(next http.Handler) http.Handler {
 
 		var err error
 
-		ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
-
 		ctx = context.WithValue(ctx, "key-cookie.Scopes", []string{""})
 
 		ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
+
+		ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
 
 		// Parameter object where we will unmarshal all parameters from the context
 		var params GetPlayersParams
@@ -289,11 +349,11 @@ func PostPlayersIdCtx(next http.Handler) http.Handler {
 
 		ctx = context.WithValue(ctx, "id", id)
 
-		ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
-
 		ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
 
 		ctx = context.WithValue(ctx, "key-cookie.Scopes", []string{""})
+
+		ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
@@ -329,21 +389,22 @@ func HandlerFromMux(si ServerInterface, r *chi.Mux) http.Handler {
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
+	"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",
 }
 
 // GetSwagger returns the Swagger specification corresponding to the generated code

@@ -28,11 +28,31 @@ func (s Server) GetApps(w http.ResponseWriter, r *http.Request) {
 		filter := bson.D{{}}
 
 		if params.Ids != nil {
-
+			filter = append(filter, bson.E{Key: "_id", Value: bson.M{"$in": *params.Ids}})
 		}
 
 		if params.Tags != nil {
+			filter = append(filter, bson.E{Key: "tags", Value: bson.M{"$in": *params.Tags}})
+		}
 
+		if params.Genres != nil {
+			filter = append(filter, bson.E{Key: "genres", Value: bson.M{"$in": *params.Genres}})
+		}
+
+		if params.Categories != nil {
+			filter = append(filter, bson.E{Key: "categories", Value: bson.M{"$in": *params.Categories}})
+		}
+
+		if params.Developers != nil {
+			filter = append(filter, bson.E{Key: "developers", Value: bson.M{"$in": *params.Developers}})
+		}
+
+		if params.Publishers != nil {
+			filter = append(filter, bson.E{Key: "publishers", Value: bson.M{"$in": *params.Publishers}})
+		}
+
+		if params.Platforms != nil {
+			filter = append(filter, bson.E{Key: "platforms", Value: bson.M{"$in": *params.Platforms}})
 		}
 
 		apps, err := mongo.GetApps(offset, limit, nil, filter, nil, nil)
