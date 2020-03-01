@@ -38,8 +38,8 @@ type PaginationSchema struct {
 
 // PlayerSchema defines model for player-schema.
 type PlayerSchema struct {
-	Id   *int    `json:"id,omitempty"`
-	Name *string `json:"name,omitempty"`
+	Id   int64  `json:"id"`
+	Name string `json:"name"`
 }
 
 // AppResponse defines model for app-response.
@@ -80,8 +80,8 @@ type GetAppsParams struct {
 
 // GetPlayersParams defines parameters for GetPlayers.
 type GetPlayersParams struct {
-	Continent *string `json:"continent,omitempty"`
-	Country   *string `json:"country,omitempty"`
+	Continent *[]string `json:"continent,omitempty"`
+	Country   *[]string `json:"country,omitempty"`
 
 	// Offset
 	Offset *int `json:"offset,omitempty"`

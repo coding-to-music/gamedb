@@ -112,8 +112,9 @@ var Swagger = &openapi3.Swagger{
 			},
 			"player-schema": {
 				Value: &openapi3.Schema{
+					Required: []string{"id", "name"},
 					Properties: map[string]*openapi3.SchemaRef{
-						"id":   {Value: openapi3.NewIntegerSchema()},
+						"id":   {Value: openapi3.NewInt64Schema()},
 						"name": {Value: openapi3.NewStringSchema()},
 					},
 				},
@@ -225,6 +226,41 @@ var Swagger = &openapi3.Swagger{
 							Schema: openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema()).WithMaxItems(10).NewRef(),
 						},
 					},
+					{
+						Value: &openapi3.Parameter{
+							In:     openapi3.ParameterInQuery,
+							Name:   "genres",
+							Schema: openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema()).WithMaxItems(10).NewRef(),
+						},
+					},
+					{
+						Value: &openapi3.Parameter{
+							In:     openapi3.ParameterInQuery,
+							Name:   "categories",
+							Schema: openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema()).WithMaxItems(10).NewRef(),
+						},
+					},
+					{
+						Value: &openapi3.Parameter{
+							In:     openapi3.ParameterInQuery,
+							Name:   "developers",
+							Schema: openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema()).WithMaxItems(10).NewRef(),
+						},
+					},
+					{
+						Value: &openapi3.Parameter{
+							In:     openapi3.ParameterInQuery,
+							Name:   "publishers",
+							Schema: openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema()).WithMaxItems(10).NewRef(),
+						},
+					},
+					{
+						Value: &openapi3.Parameter{
+							In:     openapi3.ParameterInQuery,
+							Name:   "platforms",
+							Schema: openapi3.NewArraySchema().WithItems(openapi3.NewStringSchema()).WithMaxItems(3).NewRef(),
+						},
+					},
 				}, pagination...),
 				Responses: map[string]*openapi3.ResponseRef{
 					"200": {
@@ -261,14 +297,14 @@ var Swagger = &openapi3.Swagger{
 						Value: &openapi3.Parameter{
 							In:     openapi3.ParameterInQuery,
 							Name:   "continent",
-							Schema: openapi3.NewStringSchema().WithMaxLength(2).NewRef(),
+							Schema: openapi3.NewArraySchema().WithItems(openapi3.NewStringSchema().WithMaxLength(2)).WithMaxItems(3).NewRef(),
 						},
 					},
 					{
 						Value: &openapi3.Parameter{
 							In:     openapi3.ParameterInQuery,
 							Name:   "country",
-							Schema: openapi3.NewStringSchema().WithMaxLength(2).NewRef(),
+							Schema: openapi3.NewArraySchema().WithItems(openapi3.NewStringSchema().WithMaxLength(2)).WithMaxItems(3).NewRef(),
 						},
 					},
 				}, pagination...),
