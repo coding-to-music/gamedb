@@ -48,7 +48,7 @@
                         <div class="card mt-3" id="{{ slug .Summary }}">
                             <div class="card-body">
 
-                                <form action="/api" target="_blank" method="{{ $verb }}">
+                                <form action="{{ $.Base }}{{ $pathKey }}" target="_blank" method="{{ $verb }}">
 
                                     <div class="card">
                                         <h4 class="card-header"><a href="#{{ slug .Summary }}">{{ .Summary }}</a></h4>
