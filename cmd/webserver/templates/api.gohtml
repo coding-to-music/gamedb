@@ -26,7 +26,7 @@
                                 <ul class="list-group">
                                     {{ range $pathKey, $path := .Swagger.Paths }}
                                         {{ range $verb, $endpoint := $path.Operations }}
-                                            <a href="#" class="list-group-item list-group-item-action text-truncate" title="{{ .Summary }}">
+                                            <a href="#{{ slug .Summary }}" class="list-group-item list-group-item-action text-truncate" title="{{ .Summary }}">
                                                 {{ .Summary }}
                                             </a>
                                         {{ end }}
@@ -45,13 +45,13 @@
                 {{ range $pathKey, $path := .Swagger.Paths }}
                     {{ range $verb, $endpoint := $path.Operations }}
 
-                        <div class="card mt-3">
+                        <div class="card mt-3" id="{{ slug .Summary }}">
                             <div class="card-body">
 
                                 <form action="/api" target="_blank" method="{{ $verb }}">
 
                                     <div class="card">
-                                        <h4 class="card-header">{{ .Summary }}</h4>
+                                        <h4 class="card-header"><a href="#{{ slug .Summary }}">{{ .Summary }}</a></h4>
                                         <div class="card-body">
 
                                             <div class="input-group mb-2">
