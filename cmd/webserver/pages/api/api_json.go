@@ -15,44 +15,9 @@ func init() {
 }
 
 var (
-	float0   float64 = 0
-	float1   float64 = 1
-	float100 float64 = 100
-
-	// This is here because oapi-codegen wont generate params using $ref
-	pagination = []*openapi3.ParameterRef{
-		{
-			Value: &openapi3.Parameter{
-				In:          openapi3.ParameterInQuery,
-				Name:        "offset",
-				Required:    false,
-				Description: "Offset",
-				Schema: &openapi3.SchemaRef{
-					Value: &openapi3.Schema{
-						Type:    "integer",
-						Default: 0,
-						Min:     &float0,
-					},
-				},
-			},
-		},
-		{
-			Value: &openapi3.Parameter{
-				In:          openapi3.ParameterInQuery,
-				Name:        "limit",
-				Required:    false,
-				Description: "Limit",
-				Schema: &openapi3.SchemaRef{
-					Value: &openapi3.Schema{
-						Type:    "integer",
-						Default: 10,
-						Min:     &float1,
-						Max:     &float100,
-					},
-				},
-			},
-		},
-	}
+	// This is here because oapi-codegen will not generate params using $ref
+	offsetParam = openapi3.NewQueryParameter("offset").WithSchema(openapi3.NewIntegerSchema().WithDefault(0).WithMin(0))
+	limitParam  = openapi3.NewQueryParameter("limit").WithSchema(openapi3.NewIntegerSchema().WithDefault(10).WithMin(1).WithMax(100))
 )
 
 var Swagger = &openapi3.Swagger{
@@ -60,7 +25,7 @@ var Swagger = &openapi3.Swagger{
 	Servers: []*openapi3.Server{
 		{URL: config.Config.GameDBDomain.Get() + "/api"},
 	},
-	Info: openapi3.Info{
+	Info: &openapi3.Info{
 		Title:   "Steam DB API",
 		Version: "1",
 		Contact: &openapi3.Contact{
@@ -78,15 +43,9 @@ var Swagger = &openapi3.Swagger{
 	},
 	Components: openapi3.Components{
 		SecuritySchemes: map[string]*openapi3.SecuritySchemeRef{
-			"key-header": {
-				Value: openapi3.NewSecurityScheme().WithName("key").WithType("apiKey").WithIn("header"),
-			},
-			"key-query": {
-				Value: openapi3.NewSecurityScheme().WithName("key").WithType("apiKey").WithIn("query"),
-			},
-			"key-cookie": {
-				Value: openapi3.NewSecurityScheme().WithName("key").WithType("apiKey").WithIn("cookie"),
-			},
+			"key-header": {Value: openapi3.NewSecurityScheme().WithName("key").WithType("apiKey").WithIn("header")},
+			"key-query":  {Value: openapi3.NewSecurityScheme().WithName("key").WithType("apiKey").WithIn("query")},
+			"key-cookie": {Value: openapi3.NewSecurityScheme().WithName("key").WithType("apiKey").WithIn("cookie")},
 		},
 		Schemas: map[string]*openapi3.SchemaRef{
 			"pagination-schema": {
@@ -210,58 +169,18 @@ var Swagger = &openapi3.Swagger{
 	Paths: openapi3.Paths{
 		"/apps": &openapi3.PathItem{
 			Get: &openapi3.Operation{
-				Summary: "List apps",
-				Parameters: append(openapi3.Parameters{
-					{
-						Value: &openapi3.Parameter{
-							In:     openapi3.ParameterInQuery,
-							Name:   "ids",
-							Schema: openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema()).WithMaxItems(100).NewRef(),
-						},
-					},
-					{
-						Value: &openapi3.Parameter{
-							In:     openapi3.ParameterInQuery,
-							Name:   "tags",
-							Schema: openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema()).WithMaxItems(10).NewRef(),
-						},
-					},
-					{
-						Value: &openapi3.Parameter{
-							In:     openapi3.ParameterInQuery,
-							Name:   "genres",
-							Schema: openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema()).WithMaxItems(10).NewRef(),
-						},
-					},
-					{
-						Value: &openapi3.Parameter{
-							In:     openapi3.ParameterInQuery,
-							Name:   "categories",
-							Schema: openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema()).WithMaxItems(10).NewRef(),
-						},
-					},
-					{
-						Value: &openapi3.Parameter{
-							In:     openapi3.ParameterInQuery,
-							Name:   "developers",
-							Schema: openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema()).WithMaxItems(10).NewRef(),
-						},
-					},
-					{
-						Value: &openapi3.Parameter{
-							In:     openapi3.ParameterInQuery,
-							Name:   "publishers",
-							Schema: openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema()).WithMaxItems(10).NewRef(),
-						},
-					},
-					{
-						Value: &openapi3.Parameter{
-							In:     openapi3.ParameterInQuery,
-							Name:   "platforms",
-							Schema: openapi3.NewArraySchema().WithItems(openapi3.NewStringSchema()).WithMaxItems(3).NewRef(),
-						},
-					},
-				}, pagination...),
+				Summary: "List Apps",
+				Parameters: openapi3.Parameters{
+					{Value: offsetParam},
+					{Value: limitParam},
+					{Value: openapi3.NewQueryParameter("ids").WithSchema(openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema()).WithMaxItems(100))},
+					{Value: openapi3.NewQueryParameter("tags").WithSchema(openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema()).WithMaxItems(10))},
+					{Value: openapi3.NewQueryParameter("genres").WithSchema(openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema()).WithMaxItems(10))},
+					{Value: openapi3.NewQueryParameter("categories").WithSchema(openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema()).WithMaxItems(10))},
+					{Value: openapi3.NewQueryParameter("developers").WithSchema(openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema()).WithMaxItems(10))},
+					{Value: openapi3.NewQueryParameter("publishers").WithSchema(openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema()).WithMaxItems(10))},
+					{Value: openapi3.NewQueryParameter("platforms").WithSchema(openapi3.NewArraySchema().WithItems(openapi3.NewStringSchema()).WithMaxItems(3))},
+				},
 				Responses: map[string]*openapi3.ResponseRef{
 					"200": {
 						Ref: "#/components/responses/apps-response",
@@ -271,15 +190,10 @@ var Swagger = &openapi3.Swagger{
 		},
 		"/apps/{id}": &openapi3.PathItem{
 			Get: &openapi3.Operation{
-				Summary: "Retrieve app",
+				Summary: "Retrieve App",
 				Parameters: openapi3.Parameters{
 					{
-						Value: &openapi3.Parameter{
-							Required: true,
-							In:       openapi3.ParameterInPath,
-							Name:     "id",
-							Schema:   openapi3.NewInt32Schema().WithMin(1).NewRef(),
-						},
+						Value: openapi3.NewPathParameter("id").WithRequired(true).WithSchema(openapi3.NewInt32Schema().WithMin(1)),
 					},
 				},
 				Responses: map[string]*openapi3.ResponseRef{
@@ -291,23 +205,13 @@ var Swagger = &openapi3.Swagger{
 		},
 		"/players": &openapi3.PathItem{
 			Get: &openapi3.Operation{
-				Summary: "List players",
-				Parameters: append(openapi3.Parameters{
-					{
-						Value: &openapi3.Parameter{
-							In:     openapi3.ParameterInQuery,
-							Name:   "continent",
-							Schema: openapi3.NewArraySchema().WithItems(openapi3.NewStringSchema().WithMaxLength(2)).WithMaxItems(3).NewRef(),
-						},
-					},
-					{
-						Value: &openapi3.Parameter{
-							In:     openapi3.ParameterInQuery,
-							Name:   "country",
-							Schema: openapi3.NewArraySchema().WithItems(openapi3.NewStringSchema().WithMaxLength(2)).WithMaxItems(3).NewRef(),
-						},
-					},
-				}, pagination...),
+				Summary: "List Players",
+				Parameters: openapi3.Parameters{
+					{Value: offsetParam},
+					{Value: limitParam},
+					{Value: openapi3.NewQueryParameter("continent").WithSchema(openapi3.NewArraySchema().WithMaxItems(3).WithItems(openapi3.NewStringSchema().WithMaxLength(2)))},
+					{Value: openapi3.NewQueryParameter("country").WithSchema(openapi3.NewArraySchema().WithMaxItems(3).WithItems(openapi3.NewStringSchema().WithMaxLength(2)))},
+				},
 				Responses: map[string]*openapi3.ResponseRef{
 					"200": {
 						Ref: "#/components/responses/players-response",
@@ -317,15 +221,10 @@ var Swagger = &openapi3.Swagger{
 		},
 		"/players/{id}": &openapi3.PathItem{
 			Post: &openapi3.Operation{
-				Summary: "Update a player",
+				Summary: "Update Player",
 				Parameters: openapi3.Parameters{
 					{
-						Value: &openapi3.Parameter{
-							Required: true,
-							In:       openapi3.ParameterInPath,
-							Name:     "id",
-							Schema:   openapi3.NewInt64Schema().WithMaxLength(2).NewRef(),
-						},
+						Value: openapi3.NewPathParameter("id").WithRequired(true).WithSchema(openapi3.NewInt64Schema().WithMaxLength(2)),
 					},
 				},
 				Responses: map[string]*openapi3.ResponseRef{
