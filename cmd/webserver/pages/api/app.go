@@ -13,9 +13,9 @@ func (s Server) GetAppsId(w http.ResponseWriter, r *http.Request) {
 
 	s.call(w, r, func(w http.ResponseWriter, r *http.Request) (code int, response interface{}) {
 
-		if id, ok := r.Context().Value("id").(int); ok {
+		if id, ok := r.Context().Value("id").(int32); ok {
 
-			app, err := mongo.GetApp(id)
+			app, err := mongo.GetApp(int(id))
 			if err == mongo.ErrNoDocuments {
 
 				return 404, errors.New("app not found")
@@ -30,6 +30,7 @@ func (s Server) GetAppsId(w http.ResponseWriter, r *http.Request) {
 				ret := generated.AppResponse{}
 				ret.Id = app.ID
 				ret.Name = app.GetName()
+
 				return 200, ret
 			}
 		}
