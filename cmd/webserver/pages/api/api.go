@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"regexp"
 	"strconv"
 	"time"
 
@@ -23,7 +24,9 @@ const (
 )
 
 var (
-	// Limiters
+	apiKeyRegexp = regexp.MustCompile("^[A-Z0-9]{20}$")
+
+	// Limiter
 	ops = limiter.ExpirableOptions{DefaultExpirationTTL: time.Second}
 	lmt = limiter.New(&ops).SetMax(1).SetBurst(2)
 )
@@ -49,9 +52,28 @@ func (s Server) returnErrorResponse(w http.ResponseWriter, code int, err error) 
 
 func (s Server) call(w http.ResponseWriter, r *http.Request, callback func(w http.ResponseWriter, r *http.Request) (code int, response interface{})) {
 
-	key, err := s.geKey(r)
-	if err != nil {
-		s.returnErrorResponse(w, http.StatusUnauthorized, err)
+	var err error
+
+	// Check API key
+	key := r.URL.Query().Get(keyField)
+	if key == "" {
+		key = r.Header.Get(keyField)
+		if key == "" {
+			key, err = session.Get(r, helpers.SessionUserAPIKey)
+			if err != nil {
+				s.returnErrorResponse(w, http.StatusUnauthorized, err)
+				return
+			}
+		}
+	}
+
+	if key == "" {
+		s.returnErrorResponse(w, http.StatusBadRequest, errors.New("no key"))
+		return
+	}
+
+	if !apiKeyRegexp.MatchString(key) {
+		s.returnErrorResponse(w, http.StatusBadRequest, errors.New("invalid key"))
 		return
 	}
 
@@ -92,30 +114,6 @@ func (s Server) call(w http.ResponseWriter, r *http.Request, callback func(w htt
 	}(r, code, key, user)
 
 	s.returnResponse(w, 200, response)
-}
-
-func (s Server) geKey(r *http.Request) (key string, err error) {
-
-	key = r.URL.Query().Get(keyField)
-	if key == "" {
-		key = r.Header.Get(keyField)
-		if key == "" {
-			key, err = session.Get(r, helpers.SessionUserAPIKey)
-			if err != nil {
-				return key, err
-			}
-		}
-	}
-
-	if key == "" {
-		return key, errors.New("no key")
-	}
-
-	if len(key) != 20 {
-		return key, errors.New("invalid key")
-	}
-
-	return key, err
 }
 
 func (s Server) saveToInflux(r *http.Request, code int, key string, user sql.User) (err error) {

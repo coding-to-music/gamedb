@@ -83,6 +83,7 @@ func (user User) GetSteamID() (ret int64) {
 }
 
 func (user *User) SetAPIKey() {
+	// Must match api validation regex
 	user.APIKey = helpers.RandString(20, helpers.Numbers+helpers.LettersCaps)
 }
 
