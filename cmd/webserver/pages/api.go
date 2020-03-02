@@ -60,14 +60,14 @@ func (t apiTemplate) InputType(typex string, f string) string {
 	}
 }
 
-func (t apiTemplate) PathToSchema(path string) string {
+func (t apiTemplate) PathToSchema(path string, verb string) string {
 
 	schema := &openapi3.SchemaRef{}
 	x := api.Swagger.Paths[path]
 
-	if x.Get != nil {
+	if verb == "GET" {
 		schema = x.Get.Responses["200"].Value.Content["application/json"].Schema
-	} else if x.Post != nil {
+	} else if verb == "POST" {
 		schema = x.Post.Responses["200"].Value.Content["application/json"].Schema
 	} else {
 		return ""
