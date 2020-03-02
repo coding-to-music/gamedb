@@ -16,8 +16,22 @@ func init() {
 
 var (
 	// This is here because oapi-codegen will not generate params using $ref
-	offsetParam = openapi3.NewQueryParameter("offset").WithSchema(openapi3.NewIntegerSchema().WithDefault(0).WithMin(0))
-	limitParam  = openapi3.NewQueryParameter("limit").WithSchema(openapi3.NewIntegerSchema().WithDefault(10).WithMin(1).WithMax(100))
+	offsetParam         = openapi3.NewQueryParameter("offset").WithSchema(openapi3.NewIntegerSchema().WithDefault(0).WithMin(0))
+	limitParam          = openapi3.NewQueryParameter("limit").WithSchema(openapi3.NewIntegerSchema().WithDefault(10).WithMin(1).WithMax(100))
+	orderDirectionParam = openapi3.NewQueryParameter("orderDirection").WithSchema(openapi3.NewStringSchema())
+	orderFieldParam     = openapi3.NewQueryParameter("orderField").WithSchema(openapi3.NewStringSchema())
+
+	// Schemas
+	priceSchema = &openapi3.Schema{
+		Required: []string{"currency", "initial", "final", "discountPercent", "individual"},
+		Properties: map[string]*openapi3.SchemaRef{
+			"currency":        {Value: openapi3.NewStringSchema()},
+			"initial":         {Value: openapi3.NewInt32Schema()},
+			"final":           {Value: openapi3.NewInt32Schema()},
+			"discountPercent": {Value: openapi3.NewInt32Schema()},
+			"individual":      {Value: openapi3.NewInt32Schema()},
+		},
+	}
 )
 
 var Swagger = &openapi3.Swagger{
@@ -62,15 +76,24 @@ var Swagger = &openapi3.Swagger{
 			},
 			"app-schema": {
 				Value: &openapi3.Schema{
-					Required: []string{"id", "name", "tags", "genres", "categories", "developers", "publishers"},
+					Required: []string{"id", "name", "tags", "genres", "categories", "developers", "publishers", "prices", "players_max", "players_week_max", "players_week_Avg", "release_date", "reviews_positive", "reviews_negative", "reviews_score", "metacritic_score"},
 					Properties: map[string]*openapi3.SchemaRef{
-						"id":         {Value: openapi3.NewIntegerSchema()},
-						"name":       {Value: openapi3.NewStringSchema()},
-						"tags":       {Value: openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema())},
-						"genres":     {Value: openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema())},
-						"categories": {Value: openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema())},
-						"developers": {Value: openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema())},
-						"publishers": {Value: openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema())},
+						"id":               {Value: openapi3.NewIntegerSchema()},
+						"name":             {Value: openapi3.NewStringSchema()},
+						"tags":             {Value: openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema())},
+						"genres":           {Value: openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema())},
+						"categories":       {Value: openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema())},
+						"developers":       {Value: openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema())},
+						"publishers":       {Value: openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema())},
+						"prices":           {Value: openapi3.NewArraySchema().WithItems(priceSchema)},
+						"players_max":      {Value: openapi3.NewIntegerSchema()},
+						"players_week_max": {Value: openapi3.NewIntegerSchema()},
+						"players_week_Avg": {Value: openapi3.NewFloat64Schema().WithFormat("double")},
+						"release_date":     {Value: openapi3.NewInt64Schema()},
+						"reviews_positive": {Value: openapi3.NewIntegerSchema()},
+						"reviews_negative": {Value: openapi3.NewIntegerSchema()},
+						"reviews_score":    {Value: openapi3.NewFloat64Schema().WithFormat("double")},
+						"metacritic_score": {Value: openapi3.NewInt32Schema()},
 					},
 				},
 			},
@@ -91,12 +114,15 @@ var Swagger = &openapi3.Swagger{
 					},
 				},
 			},
+			"price-schema": {
+				Value: priceSchema,
+			},
 		},
 		Responses: map[string]*openapi3.ResponseRef{
 			"message-response": {
 				Value: &openapi3.Response{
 					ExtensionProps: openapi3.ExtensionProps{},
-					Description:    "Success",
+					Description:    "Message",
 					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
 						Ref: "#/components/schemas/message-schema",
 					}),

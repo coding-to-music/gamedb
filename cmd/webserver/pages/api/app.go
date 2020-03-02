@@ -30,11 +30,38 @@ func (s Server) GetAppsId(w http.ResponseWriter, r *http.Request) {
 				ret := generated.AppResponse{}
 				ret.Id = app.ID
 				ret.Name = app.GetName()
+				ret.ReleaseDate = app.ReleaseDateUnix
+
 				ret.Genres = app.Genres
 				ret.Tags = app.Tags
 				ret.Categories = app.Categories
 				ret.Publishers = app.Publishers
 				ret.Developers = app.Developers
+
+				ret.PlayersMax = app.PlayerPeakAllTime
+				ret.PlayersWeekMax = app.PlayerPeakWeek
+				ret.PlayersWeekAvg = app.PlayerAverageWeek
+
+				ret.ReviewsNegative = app.Reviews.Positive
+				ret.ReviewsPositive = app.Reviews.Negative
+				ret.ReviewsScore = app.ReviewsScore
+				ret.MetacriticScore = int32(app.MetacriticScore)
+
+				for _, v := range app.Prices {
+					ret.Prices = append(ret.Prices, struct {
+						Currency        string `json:"currency"`
+						DiscountPercent int32  `json:"discountPercent"`
+						Final           int32  `json:"final"`
+						Individual      int32  `json:"individual"`
+						Initial         int32  `json:"initial"`
+					}{
+						Currency:        string(v.Currency),
+						DiscountPercent: int32(v.DiscountPercent),
+						Final:           int32(v.Final),
+						Individual:      int32(v.Individual),
+						Initial:         int32(v.Initial),
+					})
+				}
 
 				return 200, ret
 			}
