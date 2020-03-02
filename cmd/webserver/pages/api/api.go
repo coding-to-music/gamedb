@@ -28,7 +28,7 @@ var (
 
 	// Limiter
 	ops = limiter.ExpirableOptions{DefaultExpirationTTL: time.Second}
-	lmt = limiter.New(&ops).SetMax(1).SetBurst(2)
+	lmt = limiter.New(&ops).SetMax(1).SetBurst(10)
 )
 
 // Shared between all requests
