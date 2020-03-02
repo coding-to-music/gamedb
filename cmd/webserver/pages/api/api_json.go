@@ -220,6 +220,19 @@ var Swagger = &openapi3.Swagger{
 			},
 		},
 		"/players/{id}": &openapi3.PathItem{
+			Get: &openapi3.Operation{
+				Summary: "Retrieve Player",
+				Parameters: openapi3.Parameters{
+					{
+						Value: openapi3.NewPathParameter("id").WithRequired(true).WithSchema(openapi3.NewInt64Schema().WithMin(1)),
+					},
+				},
+				Responses: map[string]*openapi3.ResponseRef{
+					"200": {
+						Ref: "#/components/responses/player-response",
+					},
+				},
+			},
 			Post: &openapi3.Operation{
 				Summary: "Update Player",
 				Parameters: openapi3.Parameters{
