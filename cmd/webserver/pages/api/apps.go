@@ -55,7 +55,23 @@ func (s Server) GetApps(w http.ResponseWriter, r *http.Request) {
 			filter = append(filter, bson.E{Key: "platforms", Value: bson.M{"$in": *params.Platforms}})
 		}
 
-		apps, err := mongo.GetApps(offset, limit, nil, filter, nil, nil)
+		var projection = bson.M{
+			"id":                  1,
+			"name":                1,
+			"tags":                1,
+			"genres":              1,
+			"developers":          1,
+			"categories":          1,
+			"prices":              1,
+			"player_peak_alltime": 1,
+			"player_peak_week":    1,
+			"player_avg_week":     1,
+			"release_date_unix":   1,
+			"reviews":             1,
+			"reviews_score":       1,
+		}
+
+		apps, err := mongo.GetApps(offset, limit, nil, filter, projection, nil)
 		if err != nil {
 			return 500, err
 		}
