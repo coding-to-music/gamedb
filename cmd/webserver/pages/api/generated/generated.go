@@ -18,8 +18,13 @@ import (
 
 // AppSchema defines model for app-schema.
 type AppSchema struct {
-	Id   int    `json:"id"`
-	Name string `json:"name"`
+	Categories []int  `json:"categories"`
+	Developers []int  `json:"developers"`
+	Genres     []int  `json:"genres"`
+	Id         int    `json:"id"`
+	Name       string `json:"name"`
+	Publishers []int  `json:"publishers"`
+	Tags       []int  `json:"tags"`
 }
 
 // MessageSchema defines model for message-schema.
@@ -266,11 +271,11 @@ func GetPlayersCtx(next http.Handler) http.Handler {
 
 		var err error
 
-		ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
-
 		ctx = context.WithValue(ctx, "key-cookie.Scopes", []string{""})
 
 		ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
+
+		ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
 
 		// Parameter object where we will unmarshal all parameters from the context
 		var params GetPlayersParams
@@ -371,11 +376,11 @@ func PostPlayersIdCtx(next http.Handler) http.Handler {
 
 		ctx = context.WithValue(ctx, "id", id)
 
-		ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
-
 		ctx = context.WithValue(ctx, "key-cookie.Scopes", []string{""})
 
 		ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
+
+		ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
@@ -415,22 +420,23 @@ func HandlerFromMux(si ServerInterface, r *chi.Mux) http.Handler {
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/9xXTW/jRgz9Kwbbozayk6JodWraAkXaPRhNewp8mJVombuaj50ZpTEC//eCI8mSbMl2",
-	"HPuyl8Sj4bxHch4p6hVSLY1WqLyD5BUsOqOVw7AQxnxoHvA61cqj8vVWQanwpFX82WnFz1y6Qin41/cW",
-	"l5DAd3ELHle7LmbQ2nKz2USQoUstGUaCBO7VRBgDm4gZ3HnsfcSP5PxELxnWRZP/yK8mRuSkwmmIwFht",
-	"0Hrahhz+k0fp3hJKBH5tEBIQ1oo1rzssR3BayzYzEVj8WpLFDJIn6HkcfFwMJK8bKnsg0TmR4+XvsAEe",
-	"v8fHMk3RuX4eLu/IUOb2fJmLHCekltrKKoXsVCHWaK/gUIV7QOCTyqR14kyV93X7LrFtPTlZ+Tth7or/",
-	"kHobqkMCbmzYoqZs+tFYAijjv7UbpDzmVY6VkNjZcd6Syvc8pAxq00Wnbsa46v3jsI3hol8GY7gFSQo3",
-	"X0m1CuTHHyAaiEsvlw5PNTYiR/dbaW2trBGLf7QXxfC+b7aOsu2koPYzqoNrkHqMOw4u2vo8fNsnRP72",
-	"62fJYVpa8utHZq8Iv+D6Q6r1FwpoxGKtlw0Hm7QuCEN/YXgN8MkVigzt9mS9POXk1xLtenuwWh0+xwFw",
-	"s2uaiUjDlaMUVEACn0miyAv8JecHN6mWLd6fRdiCCErLtivvjUviOBcSs083WhWkMG5AWRXkCz746FHI",
-	"ye+/Tu7nDxDBM1pXFfQsSNWgEoYggbub6c00XLdfhbTGzfs2r7TMdxxq5CGDBP5Af8/7fMAKiT60qKfh",
-	"ZGyF1h0ElqIsPCTTCCQpkqUMv/clOwzZSHYAccaQ4qWCnE27BLPTCShzPfht790XshQvD9VuYNvtt8P4",
-	"XuRnEZyKn6OyeFWGVHjMtaXrsmT4jAVr76ospvxUkFtdm6UQnhvjYZKmEXY57vYoFlH/g+B2Oh2bDLZ2",
-	"cX9wD/20lFJwG6te8KGm+XkwjV8p2xxrAQ/ZSBPgTtKtJ+g2dm9L7Cah+764u4UjNXtu8GOx/43eEj4j",
-	"x1+F35m6xoKf1ybfbAvktwlxFoflKsXLR1S5X0FyG71NvKOEpfLhwWXpzpLL3hfAQLnMO8Nwc+Bo0dSH",
-	"Ll83Yc66fN3sfo+NlM68/XbSbiDyuXbXDn1IIe8Mfu87vR/9vyYTvo29O6GGqLqz6dOiP3E263qOfFqw",
-	"hw7tc5OSdtJL4rjQqShW2vnk5+lPs5iHts1i838AAAD//wzF3BMkEgAA",
+	"H4sIAAAAAAAC/9xYS3PjNgz+Kx60R21kJ51Oq1PTdqaTdg+epj1lfOBKsMxd8bEklcaT8X/vgKKelvxI",
+	"7MueYooAPgD8AIJ5hVQJrSRKZyF5BYNWK2nRL5jWH+oPtE6VdChd2Cp4yhxXMv5slaRvNt2gYPTre4Nr",
+	"SOC7uDUeV7s2JqNBcrfbRZChTQ3XZAkSuJczpjXsIkKwb0PvW/zIrZupNZm10ew/7jYzzXIuvTZEoI3S",
+	"aBxvQvZ/uUNhzwklArfVCAkwY9iW1h2UI3ZayTYzERj8WnKDGSRP0PPY+7gaSV43VPJAoLUsx8ufYW14",
+	"+hwfyzRFa/t5uLwjY5nb82XJcpxxuVZGVCkkpwq2RXMFhyq7Bwg+q0RaJ97I8j5v30W2xpOTmT8Ic0j+",
+	"Q+ytoQ4RuJYhiQBZ96OpBKTMYa5MWDVBBL+4dJhXSR+WaYbPWJClcxVzlOZsNJ6Ny0kmsLNjneEy9ydT",
+	"fiq43ZzvnmP5eSqDQ+MZBLeCrSbiqJvsXgJ77q46HWjq1ML+SOQDb2rBVb+hTNktuOC+hqqir8L+8QeI",
+	"RrKg1muLpwprlqP9rTQm1OiExD/KsWIi6fXWUbRBCoKfUQiuttRDHDi4ajvdVKYqQp4Q+QRDJ1mz8sWL",
+	"aWm42z4SegX4BbcfUqW+cG+NU9mHZY1BIq0LTPO/0DOaNDfIMjSNZlieovm1RLNtFKvVYT0KgK6Nui2z",
+	"1B85CsYLSOAzF8jyAn/J6cNNqkRr78/Cb0EEpSHZjXPaJnGcM4HZpxslCy4xro0SK7grSPHRIROz33+d",
+	"3S8fIIJnNLZqjQtPVY2SaQ4J3N3Mb+b+uN3GpzWuJ5e84jKdsa+RhwwS+APdPe2TgmECne8nT+PJaIjW",
+	"HanWrCwcJPMIBJdclML/3qfsuMmasiMWF2SSvVQmF/MuwOJ0AJ7ZnvkDXU+wl4dq16MNm+C4/dABzwY4",
+	"1X7TWq+G0OvZV0PpXQZXQ+ncMtdEKZijxngYpL2qW4y7PYhV1H9a3c7nUzNWIxf3n0C+n5ZCMGpj1ajk",
+	"a5q+e9H4lWe7Yy3gIZtoAtRJuvUE3cbuTIndJHTvi7tbOFKzbw1+Kva/0RmOz0jxV+F35tep4JdB5Jtt",
+	"gXSbcMriOF0Fe/mIMncbSG6j88g7CVhK5z9cFu5NdNl7S42Uy7LzrKgVjhZNULp83fg56/J1M3zZTpTO",
+	"sn2FKjsS+VLZa4c+xpB3Br/3H49+9P/qjLk29u6E6qPqzqZPq/7EWa/DHPm0Ig8tmuc6Je2kl8RxoVJW",
+	"bJR1yc/znxYxDW271e7/AAAA//9xNwAebhMAAA==",
 }
 
 // GetSwagger returns the Swagger specification corresponding to the generated code

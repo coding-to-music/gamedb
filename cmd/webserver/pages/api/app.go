@@ -30,6 +30,11 @@ func (s Server) GetAppsId(w http.ResponseWriter, r *http.Request) {
 				ret := generated.AppResponse{}
 				ret.Id = app.ID
 				ret.Name = app.GetName()
+				ret.Genres = app.Genres
+				ret.Tags = app.Tags
+				ret.Categories = app.Categories
+				ret.Publishers = app.Publishers
+				ret.Developers = app.Developers
 
 				return 200, ret
 			}

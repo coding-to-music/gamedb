@@ -62,10 +62,15 @@ var Swagger = &openapi3.Swagger{
 			},
 			"app-schema": {
 				Value: &openapi3.Schema{
-					Required: []string{"id", "name"},
+					Required: []string{"id", "name", "tags", "genres", "categories", "developers", "publishers"},
 					Properties: map[string]*openapi3.SchemaRef{
-						"id":   {Value: openapi3.NewIntegerSchema()},
-						"name": {Value: openapi3.NewStringSchema()},
+						"id":         {Value: openapi3.NewIntegerSchema()},
+						"name":       {Value: openapi3.NewStringSchema()},
+						"tags":       {Value: openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema())},
+						"genres":     {Value: openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema())},
+						"categories": {Value: openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema())},
+						"developers": {Value: openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema())},
+						"publishers": {Value: openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema())},
 					},
 				},
 			},
