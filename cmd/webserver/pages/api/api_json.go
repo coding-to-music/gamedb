@@ -77,7 +77,7 @@ var Swagger = &openapi3.Swagger{
 			},
 			"app-schema": {
 				Value: &openapi3.Schema{
-					Required: []string{"id", "name", "tags", "genres", "categories", "developers", "publishers", "prices", "players_max", "players_week_max", "players_week_Avg", "release_date", "reviews_positive", "reviews_negative", "reviews_score", "metacritic_score"},
+					Required: []string{"id", "name", "tags", "genres", "categories", "developers", "publishers", "prices", "players_max", "players_week_max", "players_week_avg", "release_date", "reviews_positive", "reviews_negative", "reviews_score", "metacritic_score"},
 					Properties: map[string]*openapi3.SchemaRef{
 						"id":               {Value: openapi3.NewIntegerSchema()},
 						"name":             {Value: openapi3.NewStringSchema()},
@@ -89,7 +89,7 @@ var Swagger = &openapi3.Swagger{
 						"prices":           {Value: openapi3.NewArraySchema().WithItems(priceSchema)},
 						"players_max":      {Value: openapi3.NewIntegerSchema()},
 						"players_week_max": {Value: openapi3.NewIntegerSchema()},
-						"players_week_Avg": {Value: openapi3.NewFloat64Schema().WithFormat("double")},
+						"players_week_avg": {Value: openapi3.NewFloat64Schema().WithFormat("double")},
 						"release_date":     {Value: openapi3.NewInt64Schema()},
 						"reviews_positive": {Value: openapi3.NewIntegerSchema()},
 						"reviews_negative": {Value: openapi3.NewIntegerSchema()},
@@ -100,10 +100,22 @@ var Swagger = &openapi3.Swagger{
 			},
 			"player-schema": {
 				Value: &openapi3.Schema{
-					Required: []string{"id", "name"},
+					Required: []string{"id", "name", "avatar", "badges", "comments", "friends", "games", "groups", "level", "playtime", "country", "continent", "state", "vanity_url"},
 					Properties: map[string]*openapi3.SchemaRef{
-						"id":   {Value: openapi3.NewInt64Schema()},
-						"name": {Value: openapi3.NewStringSchema()},
+						"id":         {Value: openapi3.NewStringSchema()}, // Too big for int in JS
+						"name":       {Value: openapi3.NewStringSchema()},
+						"avatar":     {Value: openapi3.NewStringSchema()},
+						"badges":     {Value: openapi3.NewIntegerSchema()},
+						"comments":   {Value: openapi3.NewIntegerSchema()},
+						"friends":    {Value: openapi3.NewIntegerSchema()},
+						"games":      {Value: openapi3.NewIntegerSchema()},
+						"groups":     {Value: openapi3.NewIntegerSchema()},
+						"level":      {Value: openapi3.NewIntegerSchema()},
+						"playtime":   {Value: openapi3.NewIntegerSchema()},
+						"country":    {Value: openapi3.NewStringSchema()},
+						"continent":  {Value: openapi3.NewStringSchema()},
+						"state":      {Value: openapi3.NewStringSchema()},
+						"vanity_url": {Value: openapi3.NewStringSchema()},
 					},
 				},
 			},
@@ -206,6 +218,8 @@ var Swagger = &openapi3.Swagger{
 					{Value: keyParam},
 					{Value: offsetParam},
 					{Value: limitParam},
+					{Value: orderSortParam},
+					{Value: orderOrderParam},
 					{Value: openapi3.NewQueryParameter("ids").WithSchema(openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema()).WithMaxItems(100))},
 					{Value: openapi3.NewQueryParameter("tags").WithSchema(openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema()).WithMaxItems(10))},
 					{Value: openapi3.NewQueryParameter("genres").WithSchema(openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema()).WithMaxItems(10))},
@@ -242,6 +256,8 @@ var Swagger = &openapi3.Swagger{
 					{Value: keyParam},
 					{Value: offsetParam},
 					{Value: limitParam},
+					{Value: orderSortParam},
+					{Value: orderOrderParam},
 					{Value: openapi3.NewQueryParameter("continent").WithSchema(openapi3.NewArraySchema().WithMaxItems(3).WithItems(openapi3.NewStringSchema().WithMaxLength(2)))},
 					{Value: openapi3.NewQueryParameter("country").WithSchema(openapi3.NewArraySchema().WithMaxItems(3).WithItems(openapi3.NewStringSchema().WithMaxLength(2)))},
 				},

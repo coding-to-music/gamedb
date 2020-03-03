@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gamedb/gamedb/cmd/webserver/pages/api/generated"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -51,8 +52,21 @@ func (s Server) GetPlayers(w http.ResponseWriter, r *http.Request) {
 		for _, player := range players {
 
 			result.Players = append(result.Players, generated.PlayerSchema{
-				Id:   player.ID,
-				Name: player.GetName(),
+				Id:     strconv.FormatInt(player.ID, 10),
+				Name:   player.PersonaName,
+				Avatar: player.Avatar,
+
+				Continent: player.ContinentCode,
+				Country:   player.CountryCode,
+				State:     player.StateCode,
+
+				Badges:   player.BadgesCount,
+				Comments: player.CommentsCount,
+				Friends:  player.FriendsCount,
+				Games:    player.GamesCount,
+				Level:    player.Level,
+				Playtime: player.PlayTime,
+				Groups:   player.GroupsCount,
 			})
 		}
 

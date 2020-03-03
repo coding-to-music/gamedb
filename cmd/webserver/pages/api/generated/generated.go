@@ -25,7 +25,7 @@ type AppSchema struct {
 	MetacriticScore int32   `json:"metacritic_score"`
 	Name            string  `json:"name"`
 	PlayersMax      int     `json:"players_max"`
-	PlayersWeekAvg  float64 `json:"players_week_Avg"`
+	PlayersWeekAvg  float64 `json:"players_week_avg"`
 	PlayersWeekMax  int     `json:"players_week_max"`
 	Prices          []struct {
 		Currency        string `json:"currency"`
@@ -58,8 +58,20 @@ type PaginationSchema struct {
 
 // PlayerSchema defines model for player-schema.
 type PlayerSchema struct {
-	Id   int64  `json:"id"`
-	Name string `json:"name"`
+	Avatar    string `json:"avatar"`
+	Badges    int    `json:"badges"`
+	Comments  int    `json:"comments"`
+	Continent string `json:"continent"`
+	Country   string `json:"country"`
+	Friends   int    `json:"friends"`
+	Games     int    `json:"games"`
+	Groups    int    `json:"groups"`
+	Id        string `json:"id"`
+	Level     int    `json:"level"`
+	Name      string `json:"name"`
+	Playtime  int    `json:"playtime"`
+	State     string `json:"state"`
+	VanityUrl string `json:"vanity_url"`
 }
 
 // PriceSchema defines model for price-schema.
@@ -100,6 +112,8 @@ type GetAppsParams struct {
 	Key        string    `json:"key"`
 	Offset     *int      `json:"offset,omitempty"`
 	Limit      *int      `json:"limit,omitempty"`
+	Sort       *string   `json:"sort,omitempty"`
+	Order      *string   `json:"order,omitempty"`
 	Ids        *[]int    `json:"ids,omitempty"`
 	Tags       *[]int    `json:"tags,omitempty"`
 	Genres     *[]int    `json:"genres,omitempty"`
@@ -109,13 +123,30 @@ type GetAppsParams struct {
 	Platforms  *[]string `json:"platforms,omitempty"`
 }
 
+// GetAppsIdParams defines parameters for GetAppsId.
+type GetAppsIdParams struct {
+	Key string `json:"key"`
+}
+
 // GetPlayersParams defines parameters for GetPlayers.
 type GetPlayersParams struct {
 	Key       string    `json:"key"`
 	Offset    *int      `json:"offset,omitempty"`
 	Limit     *int      `json:"limit,omitempty"`
+	Sort      *string   `json:"sort,omitempty"`
+	Order     *string   `json:"order,omitempty"`
 	Continent *[]string `json:"continent,omitempty"`
 	Country   *[]string `json:"country,omitempty"`
+}
+
+// GetPlayersIdParams defines parameters for GetPlayersId.
+type GetPlayersIdParams struct {
+	Key string `json:"key"`
+}
+
+// PostPlayersIdParams defines parameters for PostPlayersId.
+type PostPlayersIdParams struct {
+	Key string `json:"key"`
 }
 
 type ServerInterface interface {
@@ -143,14 +174,28 @@ func GetAppsCtx(next http.Handler) http.Handler {
 
 		var err error
 
-		ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
-
 		ctx = context.WithValue(ctx, "key-cookie.Scopes", []string{""})
 
 		ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
 
+		ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
+
 		// Parameter object where we will unmarshal all parameters from the context
 		var params GetAppsParams
+
+		// ------------- Required query parameter "key" -------------
+		if paramValue := r.URL.Query().Get("key"); paramValue != "" {
+
+		} else {
+			http.Error(w, "Query argument key is required, but not found", http.StatusBadRequest)
+			return
+		}
+
+		err = runtime.BindQueryParameter("form", true, true, "key", r.URL.Query(), &params.Key)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Invalid format for parameter key: %s", err), http.StatusBadRequest)
+			return
+		}
 
 		// ------------- Optional query parameter "offset" -------------
 		if paramValue := r.URL.Query().Get("offset"); paramValue != "" {
@@ -171,6 +216,28 @@ func GetAppsCtx(next http.Handler) http.Handler {
 		err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Invalid format for parameter limit: %s", err), http.StatusBadRequest)
+			return
+		}
+
+		// ------------- Optional query parameter "sort" -------------
+		if paramValue := r.URL.Query().Get("sort"); paramValue != "" {
+
+		}
+
+		err = runtime.BindQueryParameter("form", true, false, "sort", r.URL.Query(), &params.Sort)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Invalid format for parameter sort: %s", err), http.StatusBadRequest)
+			return
+		}
+
+		// ------------- Optional query parameter "order" -------------
+		if paramValue := r.URL.Query().Get("order"); paramValue != "" {
+
+		}
+
+		err = runtime.BindQueryParameter("form", true, false, "order", r.URL.Query(), &params.Order)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Invalid format for parameter order: %s", err), http.StatusBadRequest)
 			return
 		}
 
@@ -257,6 +324,11 @@ func GetAppsCtx(next http.Handler) http.Handler {
 	})
 }
 
+// ParamsForGetAppsId operation parameters from context
+func ParamsForGetAppsId(ctx context.Context) *GetAppsIdParams {
+	return ctx.Value("GetAppsIdParams").(*GetAppsIdParams)
+}
+
 // GetAppsId operation middleware
 func GetAppsIdCtx(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -275,11 +347,30 @@ func GetAppsIdCtx(next http.Handler) http.Handler {
 
 		ctx = context.WithValue(ctx, "id", id)
 
-		ctx = context.WithValue(ctx, "key-cookie.Scopes", []string{""})
-
 		ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
 
 		ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
+
+		ctx = context.WithValue(ctx, "key-cookie.Scopes", []string{""})
+
+		// Parameter object where we will unmarshal all parameters from the context
+		var params GetAppsIdParams
+
+		// ------------- Required query parameter "key" -------------
+		if paramValue := r.URL.Query().Get("key"); paramValue != "" {
+
+		} else {
+			http.Error(w, "Query argument key is required, but not found", http.StatusBadRequest)
+			return
+		}
+
+		err = runtime.BindQueryParameter("form", true, true, "key", r.URL.Query(), &params.Key)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Invalid format for parameter key: %s", err), http.StatusBadRequest)
+			return
+		}
+
+		ctx = context.WithValue(ctx, "GetAppsIdParams", &params)
 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
@@ -306,6 +397,20 @@ func GetPlayersCtx(next http.Handler) http.Handler {
 		// Parameter object where we will unmarshal all parameters from the context
 		var params GetPlayersParams
 
+		// ------------- Required query parameter "key" -------------
+		if paramValue := r.URL.Query().Get("key"); paramValue != "" {
+
+		} else {
+			http.Error(w, "Query argument key is required, but not found", http.StatusBadRequest)
+			return
+		}
+
+		err = runtime.BindQueryParameter("form", true, true, "key", r.URL.Query(), &params.Key)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Invalid format for parameter key: %s", err), http.StatusBadRequest)
+			return
+		}
+
 		// ------------- Optional query parameter "offset" -------------
 		if paramValue := r.URL.Query().Get("offset"); paramValue != "" {
 
@@ -325,6 +430,28 @@ func GetPlayersCtx(next http.Handler) http.Handler {
 		err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Invalid format for parameter limit: %s", err), http.StatusBadRequest)
+			return
+		}
+
+		// ------------- Optional query parameter "sort" -------------
+		if paramValue := r.URL.Query().Get("sort"); paramValue != "" {
+
+		}
+
+		err = runtime.BindQueryParameter("form", true, false, "sort", r.URL.Query(), &params.Sort)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Invalid format for parameter sort: %s", err), http.StatusBadRequest)
+			return
+		}
+
+		// ------------- Optional query parameter "order" -------------
+		if paramValue := r.URL.Query().Get("order"); paramValue != "" {
+
+		}
+
+		err = runtime.BindQueryParameter("form", true, false, "order", r.URL.Query(), &params.Order)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Invalid format for parameter order: %s", err), http.StatusBadRequest)
 			return
 		}
 
@@ -356,6 +483,11 @@ func GetPlayersCtx(next http.Handler) http.Handler {
 	})
 }
 
+// ParamsForGetPlayersId operation parameters from context
+func ParamsForGetPlayersId(ctx context.Context) *GetPlayersIdParams {
+	return ctx.Value("GetPlayersIdParams").(*GetPlayersIdParams)
+}
+
 // GetPlayersId operation middleware
 func GetPlayersIdCtx(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -380,8 +512,32 @@ func GetPlayersIdCtx(next http.Handler) http.Handler {
 
 		ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
 
+		// Parameter object where we will unmarshal all parameters from the context
+		var params GetPlayersIdParams
+
+		// ------------- Required query parameter "key" -------------
+		if paramValue := r.URL.Query().Get("key"); paramValue != "" {
+
+		} else {
+			http.Error(w, "Query argument key is required, but not found", http.StatusBadRequest)
+			return
+		}
+
+		err = runtime.BindQueryParameter("form", true, true, "key", r.URL.Query(), &params.Key)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Invalid format for parameter key: %s", err), http.StatusBadRequest)
+			return
+		}
+
+		ctx = context.WithValue(ctx, "GetPlayersIdParams", &params)
+
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
+}
+
+// ParamsForPostPlayersId operation parameters from context
+func ParamsForPostPlayersId(ctx context.Context) *PostPlayersIdParams {
+	return ctx.Value("PostPlayersIdParams").(*PostPlayersIdParams)
 }
 
 // PostPlayersId operation middleware
@@ -407,6 +563,25 @@ func PostPlayersIdCtx(next http.Handler) http.Handler {
 		ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
 
 		ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
+
+		// Parameter object where we will unmarshal all parameters from the context
+		var params PostPlayersIdParams
+
+		// ------------- Required query parameter "key" -------------
+		if paramValue := r.URL.Query().Get("key"); paramValue != "" {
+
+		} else {
+			http.Error(w, "Query argument key is required, but not found", http.StatusBadRequest)
+			return
+		}
+
+		err = runtime.BindQueryParameter("form", true, true, "key", r.URL.Query(), &params.Key)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Invalid format for parameter key: %s", err), http.StatusBadRequest)
+			return
+		}
+
+		ctx = context.WithValue(ctx, "PostPlayersIdParams", &params)
 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
@@ -446,26 +621,29 @@ func HandlerFromMux(si ServerInterface, r *chi.Mux) http.Handler {
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/+xYy27jNhd+FYP/v9RETlIUrVZNW6BIOwujaVeBEDDUsXwmIqkhKSdG4HcvSIm6mXLk",
-	"TLwpurIpnju/cyFfCZO8lAKE0SR5JQp0KYUGt6Bl+cl/sGsmhQFhmq0CGTUoRfxFS2G/abYBTu2//ytY",
-	"k4T8L+6Ex/Wujq3QhnK/30ckA80UllYSSciNWNCyJPvIatDv0z6U+Bm1Wci1FaujxTOazaKkOQrHTSJS",
-	"KlmCMti67H7RANenuBIRsyuBJIQqRXd23dPyhpyOsotMRBR8rVBBRpJ7MrDY2ZgGgtd31VrAQWuaw8ef",
-	"oRc8fY53FWOg9TAOH29IKHIHtqxoDgsUa6l4HUJrVEF3oM5gUC33CMAXNUlnxDtRPsTtN4GttWQ28kdu",
-	"jsF/DL1e1TEAexpL0aj09WgqAIwayKVqVq0TjV0oDOR10MdpmsEWCivpVMYchDpZG2ZhOg6GMoUG2YNm",
-	"Ujko1ICt6a6vSBRgE5RDT6A2CkXeO9AHTl/CCj3BM8DTw802HyjMZPVYQKdRVPwxwDYtXCEbhWZ0WpVS",
-	"INguaHuGmslKmBUo1qTCjFCsUdBiJi2KDLeYVScwoMGZ1CPwt652Uryxh64OTEtDTaV6LFBvTkerggKo",
-	"hoeMmgNwff9d0GkFW4Rn/SAgpwa3EFbkqUqp8W2qQ3BPY83Q/DQvR5HHjDQZ0shqczbql4tBCRhEuAXy",
-	"MJ8CWRDIp1HIA4EKRHgcqEBhSHuNfaoYNvuB7BqFyBOmwz49JbdAjmYmeuR6rWEucUlz0L+4TDETJcVS",
-	"/CVNnYQBJPitN7WNQtDYGTXOeUkDjSMD026AmIpUXedneD5RwSehnPryOt0J/6utc2qrHS2AVQrN7s5G",
-	"sg7eE+w+MSmf0B0K2qGkWfqjsiSdZbTEP8AVWMu5AZqBajmb5RzOrxWoXctYr47z7V3o1tIPjZS50wRO",
-	"sSAJ+YIcaF7AT7n9cMEk7+T9XrgtEpFKWdqNMaVO4jinHLLHCykKFBB7oTa50BSW8c4A5Ytff17crG5J",
-	"RLagdD24XbqML0HQEklCri+WF0uXNWbjwhr7e1VelwSLV1dqbjOSkN/A3Nh9y6AoB+Pa2304GG2+9i98",
-	"a1oVhiTLiHAUyCvu/h+iJyzSZ35A4qUVSV9qkZfLvoLL+Qow0wPxRzoapy+39a7TNm5wYflNdztZwVz5",
-	"bds8m4ZBPz6blkGjP5uWwQRxPi0FNbZeHlfSVf5Ox/WBijQaPvxcLZdTN8CWLh4+0Lh6WnFObRmrL3Iu",
-	"p+13Rxq/YrZ/qwTcZhNFwFaSfj6RfiMwqoJ+EA7ayNGcfa/zU77/CUYhbMH6X7vfu11POb9qSP61JdB2",
-	"ExR1Hw7AldOXzyBysyHJVXQaeCcVVsK4Dx+r7l1wOXjpCaTLqvfo4RneTJqG6ePzxo2rH58343e3idRZ",
-	"dW9kUgc8X0l9btdDCPlG5w/eY4fe/13am2Lre39CdV71Z9P7dDhx+nUzR96n1kINautD0k16SRwXktFi",
-	"I7VJflz+cBnboW2f7v8JAAD//9DJEsIMGAAA",
+	"H4sIAAAAAAAC/+xZXW/bNhf+KwbfXiqRk74YVl0t24AhWwcY63YzQzMY6Vg+jUiqJOXECPzfB1KivkzZ",
+	"cppgCNCrRub54sPnfJB9IolgheDAtSLRE5GgCsEV2A9aFBfuB/OdCK6B63opx4RqFDz8rAQ3v6lkA4ya",
+	"v95JWJOI/C9sjYfVqgqN0Vpyv98HJAWVSCyMJRKRGz6jRUH2gfGgnue9b/EjKj0Ta2NWBbMH1JtZQTPk",
+	"VpsEpJCiAKmx2bL9FzUwdc5WAqJ3BZCIUCnpznx3vJyw00q2yAREwpcSJaQkWpJexDbG2ANed6smAgZK",
+	"0Qxe/gyd4fFz/L2S6OPw8oH4kDuIZUEzmCFfC8kqCE1QOd2BfIWAKrtHCD6rRNognsnyPm+/imxNJJOZ",
+	"P9jmkPzH2OtcHSOwkzEStUtXj8YASKiGTMj6q9lEHRdyDVkF+jBNU9hCbiydq5gBl2d7w9Qvx0DTRKLG",
+	"ZKUSIS0VKsJWcu+vSeBR45RBx6DSEnnWOdAVo49+h07gAeB+RbdZz2EqyrscWo+8ZHcetXHjEpMBNIPT",
+	"KqUEnuy8saeoElFyvQCZ1KkwAYo1cppPlEWe4hbT8gwF1DhRekD+ZqutFRfs4VZ7ocW+plLe5ag257NV",
+	"Qg5UwSql+oBc3/3fu2kJW4QHteKQUY1b8DtyUoVQeFrqkNzjXNM0O2+XA+QxJXWG1LaanA265aJXAnoI",
+	"N0Tu55MnCzz5NIDcA5QH4SFQnsIQdxr7WDGs1z3ZNYDICcb9Pj1mN0eGeiJ7xHqtYKpwQTNQP9lM0SMl",
+	"xUj8KXSVhB4muKWT3gYQ1HEG9eacpZ7HQYBxO0CMIUW3VFPpLW93NM1ghM+JYMyN4r5VrpH3IWrt2kIi",
+	"/SV1LRF4OmI2o2wsnkyKshhZ67Wy1lVuksmvcbRbaWQjtUPpumYd6G0pR71blTI/TfVuNahPpzmLDvAt",
+	"Vg6YBgW3t068Lerd03Eh9wKMXV8cH2G+NcUpTdEwApJSot59MkhW4N3D7iIR4h4tU9BMk/Wn450RaSOj",
+	"Bf4GtjMazQ3QFGSjWX9O0fxSQpVzVrH6Oq63t9CthZv2aWJPExjFnETkMzKgWQ4/ZOaHy0Sw1t6vuV0i",
+	"AbGUJxutCxWFoSFqencpeI4cQmfUVEXUuVH8pIGy2c8/zm4Wt4aWIFU1cV/ZUl0ApwWSiLy/nF/ObbnT",
+	"Gwtr6C7EWVXLDV9tj7hNSUR+AX1T2MwoqKQMtJ1LlsfAaFmgZQlB90JDtQZpFP9Zzi8+3Fz8HT9dz/fv",
+	"WgTbzPZ7aEp59y1gTctck2geEIYcWcns34f89Jt0TcFj8cqYpI+Vyat518HVdAdKyL79qXuVFUNbReDG",
+	"9XJJqEpIdbMicTwZPLQlrzV3ZOpi9PG2WrXbHg5hfvv1BHa2g6n2m9Hu1Tz0ZsZX89IbRl/NS2/KfT0v",
+	"OdWmNRx30ja51sf7Axdx0H+cvJ7Px14pGrmw/4hoW0fJGDUVu3pssOXL/G5FwydM96eq3W36n9U7U5a7",
+	"GXvU/kFPPlqengvvGLp/gJYIWzAIVwB33pjG4F3UIt/6ydvvJ71x+DD3GX38CDzTGxJdB+dVglGHbhJ/",
+	"WXfPyoyDp11P7Vl0XjmdwskKVCu9xSJkb+MvX4SGT/kjdWjRPrsL5cF2IdTbB9fH8q+E9+A/kfr4/lWk",
+	"VLfodm9nFrfuvWwZ929b7ru+Qy1jE6ECuXWgt7ecKAxzkdB8I5SOPsy/vwrNhWUf7/8NAAD//+r2dnbB",
+	"HAAA",
 }
 
 // GetSwagger returns the Swagger specification corresponding to the generated code
