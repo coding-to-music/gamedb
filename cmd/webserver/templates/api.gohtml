@@ -47,62 +47,63 @@
                     {{ range $verb, $endpoint := $path.Operations }}
 
                         <div class="card mt-3" id="{{ slug .Summary }}">
+                            <h4 class="card-header"><a href="#{{ slug .Summary }}">{{ .Summary }}</a></h4>
                             <div class="card-body">
 
                                 <form action="{{ $.Base }}{{ $pathKey }}" target="_blank" method="{{ $verb }}">
 
-                                    <div class="card">
-                                        <h4 class="card-header"><a href="#{{ slug .Summary }}">{{ .Summary }}</a></h4>
-                                        <div class="card-body">
-
-                                            <div class="input-group mb-2">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">{{ $verb }}</span>
-                                                </div>
-                                                <!--suppress HtmlFormInputWithoutLabel -->
-                                                <input type="text" class="form-control endpoint" value="{{ $.Base }}{{ $pathKey }}">
-                                                <div class="input-group-append">
-                                                    <button class="btn btn-success" type="submit">Go</button>
-                                                </div>
-                                            </div>
-
-
-                                            <div class="table-responsive mb-2">
-                                                <table class="table table-borderless table-hover table-sm mb-0">
-                                                    <thead>
-                                                    <tr>
-                                                        <th scope="col" class="font-weight-bold" style="width: 30%"></th>
-                                                        <th scope="col" class="font-weight-bold">Name</th>
-                                                        <th scope="col" class="font-weight-bold">Type</th>
-                                                        <th scope="col" class="font-weight-bold">Location</th>
-                                                        <th scope="col" class="font-weight-bold">Required</th>
-                                                    </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                    {{ range $key, $value := .Parameters }}
-                                                        <tr>
-                                                            <td>
-                                                                <input class="api-field" type="{{ $.InputType .Value.Schema.Value.Type .Value.Schema.Value.Format }}" name="{{ .Value.Name }}" {{ if eq .Value.Name "key" }}value="{{ $.Key }}"{{ end }}>
-                                                            </td>
-                                                            <td>{{ .Value.Name }}</td>
-                                                            <td>{{ .Value.Schema.Value.Type }}{{ if ne .Value.Schema.Value.Format "" }} ({{ .Value.Schema.Value.Format }}){{ end }}</td>
-                                                            <td>{{ .Value.In }}</td>
-                                                            <td>{{ if .Value.Required }}<i class="fas fa-check"></i>{{ else }}<i class="fas fa-times"></i>{{end}}</td>
-                                                        </tr>
-                                                    {{ end }}
-                                                    </tbody>
-                                                </table>
-                                            </div>
-
-                                            <h5 class="mb-0">Response</h5>
-                                            <div class="json">
-                                                {{ $.PathToSchema $pathKey $verb }}
-                                            </div>
-
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">{{ $verb }}</span>
+                                        </div>
+                                        <!--suppress HtmlFormInputWithoutLabel -->
+                                        <input type="text" class="form-control endpoint" value="{{ $.Base }}{{ $pathKey }}">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-success" type="submit">Go</button>
                                         </div>
                                     </div>
 
+
+                                    <div class="table-responsive mb-2">
+                                        <table class="table table-borderless table-hover table-sm mb-0">
+                                            <thead>
+                                            <tr>
+                                                <th scope="col" class="font-weight-bold" style="width: 30%"></th>
+                                                <th scope="col" class="font-weight-bold">Name</th>
+                                                <th scope="col" class="font-weight-bold">Type</th>
+                                                <th scope="col" class="font-weight-bold">Location</th>
+                                                <th scope="col" class="font-weight-bold">Required</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {{ range $key, $value := .Parameters }}
+                                                <tr>
+                                                    <td>
+                                                        <input class="form-control form-control-sm api-field"
+                                                               {{ if .Value.Required }}required="required"{{end}}
+                                                                {{/*{{ if .Value.Pattern }}pattern="{{ .Value.Pattern }}"{{end}}*/}}
+                                                               data-location="{{ .Value.In }}"
+                                                               data-name="{{ .Value.Name }}"
+                                                               type="{{ $.InputType .Value.Schema.Value.Type .Value.Schema.Value.Format }}"
+                                                               name="{{ .Value.Name }}"
+                                                                {{ if and (eq .Value.Name "key") (ne $.Key "") }}value="{{ $.Key }}" readonly="readonly"{{ end }}>
+                                                    </td>
+                                                    <td>{{ .Value.Name }}</td>
+                                                    <td>{{ .Value.Schema.Value.Type }}{{ if ne .Value.Schema.Value.Format "" }} ({{ .Value.Schema.Value.Format }}){{ end }}</td>
+                                                    <td>{{ .Value.In }}</td>
+                                                    <td>{{ if .Value.Required }}<i class="fas fa-check"></i>{{ else }}<i class="fas fa-times"></i>{{end}}</td>
+                                                </tr>
+                                            {{ end }}
+                                            </tbody>
+                                        </table>
+                                    </div>
+
                                 </form>
+
+                                <h5 class="mb-0">Response</h5>
+                                <div class="json">
+                                    {{ $.PathToSchema $pathKey $verb }}
+                                </div>
 
                             </div>
                         </div>
