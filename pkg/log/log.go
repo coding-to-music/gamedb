@@ -290,6 +290,12 @@ func log(interfaces ...interface{}) {
 				}
 			}
 
+			if entry.error != nil &&
+				(strings.Contains(entry.error.Error(), "securecookie: expired timestamp") ||
+					strings.Contains(entry.error.Error(), "securecookie: base64 decode failed")) {
+				sendToRollbar = false
+			}
+
 			if sendToRollbar && entry.severity >= SeverityError {
 
 				// Rollbar
@@ -310,16 +316,6 @@ func Critical(interfaces ...interface{}) {
 }
 
 func Err(interfaces ...interface{}) {
-
-	for _, v := range interfaces {
-		if val, ok := v.(string); ok {
-			if strings.Contains(val, "securecookie: expired timestamp") ||
-				strings.Contains(val, "securecookie: base64 decode failed") {
-				return
-			}
-		}
-	}
-
 	log(append(interfaces, SeverityError)...)
 }
 
