@@ -174,11 +174,11 @@ func GetAppsCtx(next http.Handler) http.Handler {
 
 		var err error
 
-		ctx = context.WithValue(ctx, "key-cookie.Scopes", []string{""})
-
 		ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
 
 		ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
+
+		ctx = context.WithValue(ctx, "key-cookie.Scopes", []string{""})
 
 		// Parameter object where we will unmarshal all parameters from the context
 		var params GetAppsParams
@@ -347,11 +347,11 @@ func GetAppsIdCtx(next http.Handler) http.Handler {
 
 		ctx = context.WithValue(ctx, "id", id)
 
+		ctx = context.WithValue(ctx, "key-cookie.Scopes", []string{""})
+
 		ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
 
 		ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
-
-		ctx = context.WithValue(ctx, "key-cookie.Scopes", []string{""})
 
 		// Parameter object where we will unmarshal all parameters from the context
 		var params GetAppsIdParams
@@ -567,17 +567,27 @@ func PostPlayersIdCtx(next http.Handler) http.Handler {
 		// Parameter object where we will unmarshal all parameters from the context
 		var params PostPlayersIdParams
 
-		// ------------- Required query parameter "key" -------------
-		if paramValue := r.URL.Query().Get("key"); paramValue != "" {
+		headers := r.Header
+
+		// ------------- Required header parameter "key" -------------
+		if valueList, found := headers[http.CanonicalHeaderKey("key")]; found {
+			var Key string
+			n := len(valueList)
+			if n != 1 {
+				http.Error(w, fmt.Sprintf("Expected one value for key, got %d", n), http.StatusBadRequest)
+				return
+			}
+
+			err = runtime.BindStyledParameter("simple", false, "key", valueList[0], &Key)
+			if err != nil {
+				http.Error(w, fmt.Sprintf("Invalid format for parameter key: %s", err), http.StatusBadRequest)
+				return
+			}
+
+			params.Key = Key
 
 		} else {
-			http.Error(w, "Query argument key is required, but not found", http.StatusBadRequest)
-			return
-		}
-
-		err = runtime.BindQueryParameter("form", true, true, "key", r.URL.Query(), &params.Key)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Invalid format for parameter key: %s", err), http.StatusBadRequest)
+			http.Error(w, fmt.Sprintf("Header parameter key is required, but not found", err), http.StatusBadRequest)
 			return
 		}
 
@@ -621,29 +631,29 @@ func HandlerFromMux(si ServerInterface, r *chi.Mux) http.Handler {
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/+xZXW/bNhf+KwbfXiqRk74YVl0t24AhWwcY63YzQzMY6Vg+jUiqJOXECPzfB1KivkzZ",
-	"cppgCNCrRub54sPnfJB9IolgheDAtSLRE5GgCsEV2A9aFBfuB/OdCK6B63opx4RqFDz8rAQ3v6lkA4ya",
-	"v95JWJOI/C9sjYfVqgqN0Vpyv98HJAWVSCyMJRKRGz6jRUH2gfGgnue9b/EjKj0Ta2NWBbMH1JtZQTPk",
-	"VpsEpJCiAKmx2bL9FzUwdc5WAqJ3BZCIUCnpznx3vJyw00q2yAREwpcSJaQkWpJexDbG2ANed6smAgZK",
-	"0Qxe/gyd4fFz/L2S6OPw8oH4kDuIZUEzmCFfC8kqCE1QOd2BfIWAKrtHCD6rRNognsnyPm+/imxNJJOZ",
-	"P9jmkPzH2OtcHSOwkzEStUtXj8YASKiGTMj6q9lEHRdyDVkF+jBNU9hCbiydq5gBl2d7w9Qvx0DTRKLG",
-	"ZKUSIS0VKsJWcu+vSeBR45RBx6DSEnnWOdAVo49+h07gAeB+RbdZz2EqyrscWo+8ZHcetXHjEpMBNIPT",
-	"KqUEnuy8saeoElFyvQCZ1KkwAYo1cppPlEWe4hbT8gwF1DhRekD+ZqutFRfs4VZ7ocW+plLe5ag257NV",
-	"Qg5UwSql+oBc3/3fu2kJW4QHteKQUY1b8DtyUoVQeFrqkNzjXNM0O2+XA+QxJXWG1LaanA265aJXAnoI",
-	"N0Tu55MnCzz5NIDcA5QH4SFQnsIQdxr7WDGs1z3ZNYDICcb9Pj1mN0eGeiJ7xHqtYKpwQTNQP9lM0SMl",
-	"xUj8KXSVhB4muKWT3gYQ1HEG9eacpZ7HQYBxO0CMIUW3VFPpLW93NM1ghM+JYMyN4r5VrpH3IWrt2kIi",
-	"/SV1LRF4OmI2o2wsnkyKshhZ67Wy1lVuksmvcbRbaWQjtUPpumYd6G0pR71blTI/TfVuNahPpzmLDvAt",
-	"Vg6YBgW3t068Lerd03Eh9wKMXV8cH2G+NcUpTdEwApJSot59MkhW4N3D7iIR4h4tU9BMk/Wn450RaSOj",
-	"Bf4GtjMazQ3QFGSjWX9O0fxSQpVzVrH6Oq63t9CthZv2aWJPExjFnETkMzKgWQ4/ZOaHy0Sw1t6vuV0i",
-	"AbGUJxutCxWFoSFqencpeI4cQmfUVEXUuVH8pIGy2c8/zm4Wt4aWIFU1cV/ZUl0ApwWSiLy/nF/ObbnT",
-	"Gwtr6C7EWVXLDV9tj7hNSUR+AX1T2MwoqKQMtJ1LlsfAaFmgZQlB90JDtQZpFP9Zzi8+3Fz8HT9dz/fv",
-	"WgTbzPZ7aEp59y1gTctck2geEIYcWcns34f89Jt0TcFj8cqYpI+Vyat518HVdAdKyL79qXuVFUNbReDG",
-	"9XJJqEpIdbMicTwZPLQlrzV3ZOpi9PG2WrXbHg5hfvv1BHa2g6n2m9Hu1Tz0ZsZX89IbRl/NS2/KfT0v",
-	"OdWmNRx30ja51sf7Axdx0H+cvJ7Px14pGrmw/4hoW0fJGDUVu3pssOXL/G5FwydM96eq3W36n9U7U5a7",
-	"GXvU/kFPPlqengvvGLp/gJYIWzAIVwB33pjG4F3UIt/6ydvvJ71x+DD3GX38CDzTGxJdB+dVglGHbhJ/",
-	"WXfPyoyDp11P7Vl0XjmdwskKVCu9xSJkb+MvX4SGT/kjdWjRPrsL5cF2IdTbB9fH8q+E9+A/kfr4/lWk",
-	"VLfodm9nFrfuvWwZ929b7ru+Qy1jE6ECuXWgt7ecKAxzkdB8I5SOPsy/vwrNhWUf7/8NAAD//+r2dnbB",
-	"HAAA",
+	"H4sIAAAAAAAC/+xZ32/bNhD+Vwyuj0rkpMPQ6WnZBgzZOsBYt5cZmsFIZ/kakVRJyokR+H8fSImWKFP+",
+	"kSbYCvSpkXm8O3787uORfSKZYJXgwLUiyRORoCrBFdgPWlUX7gfznQmuget2qMSMahQ8/qgEN7+pbAWM",
+	"mr/eSFiShHwTd87jZlTFxmlrud1uI5KDyiRWxhNJyA2f0Koi28hEUM+L7nt8j0pPxNK4VdHkAfVqUtEC",
+	"uZ1NIlJJUYHUuFuy/Rc1MHXOUiKiNxWQhFAp6cZ896Ic8dNZdshERMKnGiXkJJkTL2ObYxoAr79UkwED",
+	"pWgBL7+HzvH4Pv7eWPg4vHwiIeT2cpnRAibIl0KyBkKTVEk3IF8hocbvAYJPGpMuiWey3OftZ5Ftl8nJ",
+	"zB8sc0j+Q+x1oQ4R2NkYizak06MxADKqoRCy/dotos0LuYaiAX1YpjmsoTSezp1YAJdnR8M8bMdA00yi",
+	"xmyhMiEtFRrCNnZvr0kUmMYpg55DpSXyorehC0YfwwGdwQPA/YKuCy9gLuq7ErqIvGZ3gWnjziVmA2gG",
+	"u1VLCTzbBHPPUWWi5noGMmtL4QQolshpeaIt8hzXmNdnTECNJ1oPyL9baufFJbu/VC+1NHSo1HclqtX5",
+	"bJVQAlWwyKneI9d33wYXLWGN8KAWHAqqcQ3hQM6qEgqPW+2Te5xrmhbnrXKAPOakrZDW165mo75ceBLg",
+	"Ibwjsl9PgSoI1NMA8gBQAYSHQAWEIe0d7GNi2I4HqmsAkTNM/XN6zG+JDPWJ7BHLpYJTjStagPrJVooe",
+	"kRRj8afQTREGmOCGjkYbQNDmGbWLc568iIME066BGEOKrqmmMihvdzQvYITPmWDMteKhUa6R+xB1fq2Q",
+	"yLCkLiUCz0fcFpSN5VNIUVcjY95R1oUqTTGFZxw8rTSyEe1QutWsvXlrylFvFrUsj1O9rwbt7uz2ogd8",
+	"h5UDZoeCW1sv3w71/u64lL0EU3cujrcwXw/FUw5FwwjIaol688Eg2YB3D5uLFdAcbNGh6SbbT8c7Y9Jl",
+	"Riv8DezJaGZ+qqGpHDux+To8b2sBWArXs9PM7gkwiiVJyEdkQIsSfijMD5eZYJ2/X0s7RCJiiUtWWlcq",
+	"iWNDt/zuUvASOcTOqdE21KWZ+EEDZZOff5zczG4NuUCqpm++soJbAacVkoS8vZxeTq1o6ZUFJ3bX2qJR",
+	"ZMM6q/S3OUnIL6BvKsvvikrKQNvuYn4IjG4vtawh6l9LqNYgzcR/5tOL728u/k6frqfbNx2CXX2GI+wE",
+	"uX+jX9K61CSZRoQhR1Yz+/c+y8IunbQHPF4Zl/SxcXk17Qe4Oj2AEtL3f+paZcPQbiJwE3o+J1RlpLkf",
+	"kTQ9GTy0wtW5O9A7Mfp424zaZQ9bqbD/to86O8Cp/ncN2qtF8Dq/V4vitZSvFsXrVV8vSkm1EfjDQbqj",
+	"qovxdi9EGvlPjNfT6dhbw84u9p8C7QFQM0aNYjdPBla+zO/WNH7CfHtM7W7z/0zvjCz3K/ag/72T9aA8",
+	"PRfeMXT/AC0R1mAQbgDuvRSNwTtrTb6eJ1/+eeI1tfu1z+jje+CFXpHkOjpPCUYDun76ZcM9qzL2HmgD",
+	"2jPrvVW6CUcVqJ30JYqQvVO/vAgNH+RHdGjWPZ4LFcB2JtRRcMP3gv8TuiGafya+e/8X5AP8V5VT3cHb",
+	"v2RZ4MwlKRPiHoEk8zTyrlvuu71EzVOToQK5dqh315wkjkuR0XIllE7eTd9dxebGsk23/wYAAP//hy7r",
+	"GYgcAAA=",
 }
 
 // GetSwagger returns the Swagger specification corresponding to the generated code

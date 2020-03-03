@@ -344,11 +344,6 @@
       }
     },
     "securitySchemes": {
-      "key-cookie": {
-        "in": "cookie",
-        "name": "key",
-        "type": "apiKey"
-      },
       "key-header": {
         "in": "header",
         "name": "key",
@@ -657,7 +652,7 @@
       "post": {
         "parameters": [
           {
-            "in": "query",
+            "in": "header",
             "name": "key",
             "required": true,
             "schema": {
@@ -694,7 +689,7 @@
   ],
   "servers": [
     {
-      "url": "http://localhost:9081/api"
+      "url": "http://localhost:8081/api"
     }
   ]
 }
