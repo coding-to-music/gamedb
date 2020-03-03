@@ -1,6 +1,7 @@
 package pages
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/Jleagle/session-go/session"
@@ -104,7 +105,7 @@ func (t apiTemplate) renderSchema(schema *openapi3.SchemaRef) (s string) {
 
 func openAPIJSONHandler(w http.ResponseWriter, r *http.Request) {
 
-	b, err := api.Swagger.MarshalJSON()
+	b, err := json.MarshalIndent(api.Swagger, "", "  ")
 	if err != nil {
 		log.Err(err)
 		return
