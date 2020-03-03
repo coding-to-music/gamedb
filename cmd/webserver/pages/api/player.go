@@ -16,6 +16,11 @@ func (s Server) GetPlayersId(w http.ResponseWriter, r *http.Request) {
 
 		if id, ok := r.Context().Value("id").(int64); ok {
 
+			id, err := helpers.IsValidPlayerID(id)
+			if err != nil {
+				return 404, err
+			}
+
 			player, err := mongo.GetPlayer(id)
 			if err == mongo.ErrNoDocuments {
 
