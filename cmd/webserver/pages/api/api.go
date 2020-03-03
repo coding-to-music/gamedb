@@ -112,16 +112,18 @@ func (s Server) call(w http.ResponseWriter, r *http.Request, callback func(w htt
 
 	}(r, code, key, user)
 
-	if val, ok := response.(string); ok && code != 200 {
-		response = errors.New(val)
+	switch v := response.(type) {
+	case string:
+		if code == 200 {
+			s.returnResponse(w, code, v)
+		} else {
+			s.returnErrorResponse(w, code, errors.New(v))
+		}
+	case error:
+		s.returnErrorResponse(w, code, v)
+	default:
+		s.returnResponse(w, 200, v)
 	}
-
-	if val, ok := response.(error); ok && code != 200 {
-		s.returnErrorResponse(w, code, val)
-		return
-	}
-
-	s.returnResponse(w, 200, response)
 }
 
 func (s Server) saveToInflux(r *http.Request, code int, key string, user sql.User) (err error) {
