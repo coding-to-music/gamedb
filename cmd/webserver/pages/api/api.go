@@ -99,7 +99,6 @@ func (s Server) call(w http.ResponseWriter, r *http.Request, callback func(w htt
 
 		s.returnErrorResponse(w, http.StatusUnauthorized, errors.New("invalid user level"))
 		return
-
 	}
 
 	code, response := callback(w, r)
@@ -112,6 +111,15 @@ func (s Server) call(w http.ResponseWriter, r *http.Request, callback func(w htt
 		}
 
 	}(r, code, key, user)
+
+	if val, ok := response.(string); ok && code != 200 {
+		response = errors.New(val)
+	}
+
+	if val, ok := response.(error); ok && code != 200 {
+		s.returnErrorResponse(w, code, val)
+		return
+	}
 
 	s.returnResponse(w, 200, response)
 }
