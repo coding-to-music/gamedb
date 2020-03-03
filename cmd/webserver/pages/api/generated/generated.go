@@ -97,6 +97,7 @@ type PlayersResponse struct {
 
 // GetAppsParams defines parameters for GetApps.
 type GetAppsParams struct {
+	Key        string    `json:"key"`
 	Offset     *int      `json:"offset,omitempty"`
 	Limit      *int      `json:"limit,omitempty"`
 	Ids        *[]int    `json:"ids,omitempty"`
@@ -110,6 +111,7 @@ type GetAppsParams struct {
 
 // GetPlayersParams defines parameters for GetPlayers.
 type GetPlayersParams struct {
+	Key       string    `json:"key"`
 	Offset    *int      `json:"offset,omitempty"`
 	Limit     *int      `json:"limit,omitempty"`
 	Continent *[]string `json:"continent,omitempty"`

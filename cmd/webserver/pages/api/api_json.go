@@ -16,10 +16,11 @@ func init() {
 
 var (
 	// This is here because oapi-codegen will not generate params using $ref
-	offsetParam         = openapi3.NewQueryParameter("offset").WithSchema(openapi3.NewIntegerSchema().WithDefault(0).WithMin(0))
-	limitParam          = openapi3.NewQueryParameter("limit").WithSchema(openapi3.NewIntegerSchema().WithDefault(10).WithMin(1).WithMax(100))
-	orderDirectionParam = openapi3.NewQueryParameter("orderDirection").WithSchema(openapi3.NewStringSchema())
-	orderFieldParam     = openapi3.NewQueryParameter("orderField").WithSchema(openapi3.NewStringSchema())
+	keyParam        = openapi3.NewQueryParameter("key").WithSchema(openapi3.NewStringSchema().WithPattern("^[0-9A-Z]{20}$")).WithRequired(true)
+	offsetParam     = openapi3.NewQueryParameter("offset").WithSchema(openapi3.NewIntegerSchema().WithDefault(0).WithMin(0))
+	limitParam      = openapi3.NewQueryParameter("limit").WithSchema(openapi3.NewIntegerSchema().WithDefault(10).WithMin(1).WithMax(100))
+	orderSortParam  = openapi3.NewQueryParameter("sort").WithSchema(openapi3.NewStringSchema())
+	orderOrderParam = openapi3.NewQueryParameter("order").WithSchema(openapi3.NewStringSchema().WithEnum([]string{"asc", "desc"}))
 
 	// Schemas
 	priceSchema = &openapi3.Schema{
@@ -202,6 +203,7 @@ var Swagger = &openapi3.Swagger{
 			Get: &openapi3.Operation{
 				Summary: "List Apps",
 				Parameters: openapi3.Parameters{
+					{Value: keyParam},
 					{Value: offsetParam},
 					{Value: limitParam},
 					{Value: openapi3.NewQueryParameter("ids").WithSchema(openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema()).WithMaxItems(100))},
@@ -223,9 +225,8 @@ var Swagger = &openapi3.Swagger{
 			Get: &openapi3.Operation{
 				Summary: "Retrieve App",
 				Parameters: openapi3.Parameters{
-					{
-						Value: openapi3.NewPathParameter("id").WithRequired(true).WithSchema(openapi3.NewInt32Schema().WithMin(1)),
-					},
+					{Value: keyParam},
+					{Value: openapi3.NewPathParameter("id").WithRequired(true).WithSchema(openapi3.NewInt32Schema().WithMin(1))},
 				},
 				Responses: map[string]*openapi3.ResponseRef{
 					"200": {
@@ -238,6 +239,7 @@ var Swagger = &openapi3.Swagger{
 			Get: &openapi3.Operation{
 				Summary: "List Players",
 				Parameters: openapi3.Parameters{
+					{Value: keyParam},
 					{Value: offsetParam},
 					{Value: limitParam},
 					{Value: openapi3.NewQueryParameter("continent").WithSchema(openapi3.NewArraySchema().WithMaxItems(3).WithItems(openapi3.NewStringSchema().WithMaxLength(2)))},
@@ -254,9 +256,8 @@ var Swagger = &openapi3.Swagger{
 			Get: &openapi3.Operation{
 				Summary: "Retrieve Player",
 				Parameters: openapi3.Parameters{
-					{
-						Value: openapi3.NewPathParameter("id").WithRequired(true).WithSchema(openapi3.NewInt64Schema().WithMin(1)),
-					},
+					{Value: keyParam},
+					{Value: openapi3.NewPathParameter("id").WithRequired(true).WithSchema(openapi3.NewInt64Schema().WithMin(1))},
 				},
 				Responses: map[string]*openapi3.ResponseRef{
 					"200": {
@@ -267,9 +268,8 @@ var Swagger = &openapi3.Swagger{
 			Post: &openapi3.Operation{
 				Summary: "Update Player",
 				Parameters: openapi3.Parameters{
-					{
-						Value: openapi3.NewPathParameter("id").WithRequired(true).WithSchema(openapi3.NewInt64Schema().WithMaxLength(2)),
-					},
+					{Value: keyParam},
+					{Value: openapi3.NewPathParameter("id").WithRequired(true).WithSchema(openapi3.NewInt64Schema().WithMaxLength(2))},
 				},
 				Responses: map[string]*openapi3.ResponseRef{
 					"200": {
