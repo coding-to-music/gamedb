@@ -56,9 +56,9 @@ func (s Server) PostPlayersId(w http.ResponseWriter, r *http.Request) {
 		if id, ok := r.Context().Value("id").(int64); ok {
 
 			err := queue.ProducePlayer(queue.PlayerMessage{ID: id, SkipGroups: true})
-
-			// todo, handle different errors properly
-			if err != nil {
+			if err == memcache.ErrInQueue {
+				return 200, err
+			} else if err != nil {
 				log.Err(err)
 				return 500, err
 			}
