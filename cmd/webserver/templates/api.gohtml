@@ -84,12 +84,12 @@
                                                                 {{/*{{ if .Value.Pattern }}pattern="{{ .Value.Pattern }}"{{end}}*/}}
                                                                data-location="{{ .Value.In }}"
                                                                data-name="{{ .Value.Name }}"
-                                                               type="{{ $.InputType .Value.Schema.Value.Type .Value.Schema.Value.Format }}"
+                                                               type="{{ $.InputType .Value.Schema.Value }}"
                                                                name="{{ .Value.Name }}"
                                                                 {{ if and (eq .Value.Name "key") (ne $.Key "") }}value="{{ $.Key }}" readonly="readonly"{{ end }}>
                                                     </td>
                                                     <td>{{ .Value.Name }}</td>
-                                                    <td>{{ .Value.Schema.Value.Type }}{{ if ne .Value.Schema.Value.Format "" }} ({{ .Value.Schema.Value.Format }}){{ end }}</td>
+                                                    <td>{{ $.ParamType .Value.Schema.Value }}</td>
                                                     <td>{{ .Value.In }}</td>
                                                     <td>{{ if .Value.Required }}<i class="fas fa-check"></i>{{ else }}<i class="fas fa-times"></i>{{end}}</td>
                                                 </tr>

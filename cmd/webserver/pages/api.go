@@ -45,19 +45,34 @@ type apiTemplate struct {
 	Base    string
 }
 
-func (t apiTemplate) InputType(typex string, f string) string {
+func (t apiTemplate) InputType(schema *openapi3.Schema) string {
 
-	if typex == "array" {
-		return t.InputType(f, f)
+	if schema.Type == "array" {
+		return t.InputType(schema.Items.Value)
 	}
 
-	switch f {
+	switch schema.Type {
 	case "integer", "int32", "int64":
 		return "number"
 	case "boolean":
 		return "checkbox"
 	default:
 		return "text"
+	}
+}
+
+func (t apiTemplate) ParamType(schema *openapi3.Schema) string {
+
+	switch schema.Type {
+	case "integer":
+		if schema.Format != "" {
+			return schema.Format
+		}
+		return schema.Type
+	case "array":
+		return "" + t.ParamType(schema.Items.Value) + " (array)"
+	default:
+		return schema.Type
 	}
 }
 
@@ -75,29 +90,29 @@ func (t apiTemplate) PathToSchema(path string, verb string) string {
 	}
 
 	// return t.renderSchema(schema)
-	return string(pretty.Pretty([]byte(t.renderSchema(schema))))
+	return string(pretty.Pretty([]byte(t.renderSchema(schema.Value))))
 }
 
-func (t apiTemplate) renderSchema(schema *openapi3.SchemaRef) (s string) {
+func (t apiTemplate) renderSchema(schema *openapi3.Schema) (s string) {
 
-	if len(schema.Value.Properties) > 0 {
+	if len(schema.Properties) > 0 {
 
 		// Object
 		s += "{"
-		for k, v := range schema.Value.Properties {
-			s += "\"" + k + "\":  " + t.renderSchema(v) + ", "
+		for k, v := range schema.Properties {
+			s += "\"" + k + "\":  " + t.renderSchema(v.Value) + ", "
 		}
 		s += "}"
 
-	} else if schema.Value.Items != nil && schema.Value.Type == "array" {
+	} else if schema.Items != nil && schema.Type == "array" {
 
 		// Array
-		s += "[" + t.renderSchema(schema.Value.Items) + "]"
+		s += "[" + t.renderSchema(schema.Items.Value) + "]"
 
 	} else {
 
 		// Property
-		s += "\"" + schema.Value.Type + "\""
+		s += "\"" + schema.Type + "\""
 	}
 
 	return s
