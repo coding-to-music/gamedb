@@ -694,9 +694,12 @@
   },
   "security": [
     {
-      "key-cookie": [],
-      "key-header": [],
-      "key-query": []
+      "key-header": [
+        ""
+      ]
+    },
+    {
+      "key-query": null
     }
   ],
   "servers": [
