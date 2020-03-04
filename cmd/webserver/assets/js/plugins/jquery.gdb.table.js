@@ -19,14 +19,14 @@
                     "next": '<i class="fas fa-chevron-right"></i>',
                     "previous": '<i class="fas fa-chevron-left"></i>',
                 },
-                "info": "_TOTAL_ rows",
-                "infoFiltered": " (_MAX_ total)"
+                "info": "_TOTAL_ rows (_PAGES_ pages)",
+                "infoFiltered": " of _MAX_",
             },
             "lengthChange": false,
             "ordering": true,
             "pageLength": 100,
             "paging": true,
-            "pagingType": 'simple_numbers',
+            "pagingType": 'gamedb',
             "searching": true,
             "stateSave": false,
             "search": {
