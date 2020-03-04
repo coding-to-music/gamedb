@@ -272,6 +272,8 @@
                                         {{ end }}
 
                                         {{ if gt (len .App.TagCounts) 0 }}
+
+                                            {{/* OLD */}}
                                             <tr>
                                                 <th scope="row" nowrap="nowrap" class="thin">Tags</th>
                                                 <td>
@@ -284,6 +286,7 @@
                                             </tr>
                                         {{ else }}
 
+                                            {{/* NEW */}}
                                             {{ if gt (len .Tags) 0 }}
                                                 <tr>
                                                     <th scope="row" nowrap="nowrap" class="thin">Tags</th>
