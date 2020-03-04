@@ -16,11 +16,22 @@
         }
 
         #tags {
-            a {
-                text-align: left;
-                display: block;
-                overflow: hidden;
-                margin-bottom: 2px;
+            div {
+                a {
+                    margin-bottom: 2px;
+                    position: relative;
+
+                    span.left {
+                        position: absolute;
+                        left: 4px;
+                        background-color: inherit;
+                    }
+
+                    span.right {
+                        position: absolute;
+                        right: 4px;
+                    }
+                }
             }
         }
     }
