@@ -1,5 +1,17 @@
 {
   "components": {
+    "parameters": {
+      "limit-param": {
+        "in": "query",
+        "name": "limit",
+        "schema": {
+          "default": 10,
+          "maximum": 100,
+          "minimum": 1,
+          "type": "integer"
+        }
+      }
+    },
     "responses": {
       "app-response": {
         "content": {
@@ -689,7 +701,7 @@
   ],
   "servers": [
     {
-      "url": "http://localhost:8081/api"
+      "url": "http://localhost:9081/api"
     }
   ]
 }

@@ -16,11 +16,13 @@ func init() {
 
 var (
 	// This is here because oapi-codegen will not generate params using $ref
-	apiKeySchema    = openapi3.NewStringSchema().WithPattern("^[0-9A-Z]{20}$")
+	apiKeySchema = openapi3.NewStringSchema().WithPattern("^[0-9A-Z]{20}$")
+	limitSchema  = openapi3.NewIntegerSchema().WithDefault(10).WithMin(1).WithMax(100)
+
 	keyGetParam     = openapi3.NewQueryParameter("key").WithSchema(apiKeySchema).WithRequired(true)
 	keyPostParam    = openapi3.NewHeaderParameter("key").WithSchema(apiKeySchema).WithRequired(true)
 	offsetParam     = openapi3.NewQueryParameter("offset").WithSchema(openapi3.NewIntegerSchema().WithDefault(0).WithMin(0))
-	limitParam      = openapi3.NewQueryParameter("limit").WithSchema(openapi3.NewIntegerSchema().WithDefault(10).WithMin(1).WithMax(100))
+	limitParam      = openapi3.NewQueryParameter("limit").WithSchema(limitSchema)
 	orderSortParam  = openapi3.NewQueryParameter("sort").WithSchema(openapi3.NewStringSchema())
 	orderOrderParam = openapi3.NewQueryParameter("order").WithSchema(openapi3.NewStringSchema().WithEnum([]string{"asc", "desc"}))
 
@@ -62,6 +64,11 @@ var Swagger = &openapi3.Swagger{
 		SecuritySchemes: map[string]*openapi3.SecuritySchemeRef{
 			"key-header": {Value: openapi3.NewSecurityScheme().WithName("key").WithType("apiKey").WithIn("header")},
 			"key-query":  {Value: openapi3.NewSecurityScheme().WithName("key").WithType("apiKey").WithIn("query")},
+		},
+		Parameters: map[string]*openapi3.ParameterRef{
+			"limit-param": {
+				Value: openapi3.NewQueryParameter("limit").WithSchema(openapi3.NewIntegerSchema().WithDefault(10).WithMin(1).WithMax(100)),
+			},
 		},
 		Schemas: map[string]*openapi3.SchemaRef{
 			"pagination-schema": {
@@ -219,6 +226,7 @@ var Swagger = &openapi3.Swagger{
 					{Value: keyGetParam},
 					{Value: offsetParam},
 					{Value: limitParam},
+					// {Ref: "#/components/parameters/limit-param"},
 					{Value: orderSortParam},
 					{Value: orderOrderParam},
 					{Value: openapi3.NewQueryParameter("ids").WithSchema(openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema()).WithMaxItems(100))},
