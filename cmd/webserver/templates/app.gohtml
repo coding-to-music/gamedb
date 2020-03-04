@@ -139,11 +139,11 @@
                                         {{ end }}
 
                                         <tr>
-                                            <th scope="row" nowrap="nowrap" class="thin" style="width: 130px;">Price</th>
+                                            <th scope="row" nowrap="nowrap" class="thin">Price</th>
                                             <td>{{ .Price.GetFinal }}</td>
                                         </tr>
                                         <tr>
-                                            <th scope="row" nowrap="nowrap" class="thin" style="width: 130px;">Players</th>
+                                            <th scope="row" nowrap="nowrap" class="thin">Players</th>
                                             <td>{{ comma64 .App.GetPlayersInGame }} <small>now</small>, {{ comma .App.PlayerPeakWeek }} <small>week peak</small></td>
                                         </tr>
 
@@ -273,7 +273,7 @@
 
                                         {{ if gt (len .App.TagCounts) 0 }}
 
-                                            {{/* OLD */}}
+                                            {{/* NEW */}}
                                             <tr>
                                                 <th scope="row" nowrap="nowrap" class="thin">Tags</th>
                                                 <td>
@@ -286,7 +286,7 @@
                                             </tr>
                                         {{ else }}
 
-                                            {{/* NEW */}}
+                                            {{/* OLD */}}
                                             {{ if gt (len .Tags) 0 }}
                                                 <tr>
                                                     <th scope="row" nowrap="nowrap" class="thin">Tags</th>
