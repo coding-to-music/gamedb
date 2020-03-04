@@ -1101,7 +1101,11 @@ func updateAppSteamSpy(app *mongo.App) error {
 	return nil
 }
 
-var appStorePage = regexp.MustCompile(`store\.steampowered\.com/app/[0-9]+$`)
+var
+(
+	appStorePage     = regexp.MustCompile(`store\.steampowered\.com/app/[0-9]+$`)
+	appStorePageTags = regexp.MustCompile(`\{"tagid":([0-9]+),"name":"([a-zA-Z- ]+)","count":([0-9]+),"browseable":[a-z]{4,5}}`)
+)
 
 func scrapeApp(app *mongo.App) (sales []mongo.Sale, err error) {
 
@@ -1116,6 +1120,7 @@ func scrapeApp(app *mongo.App) (sales []mongo.Sale, err error) {
 	}
 
 	var bundleIDs []string
+	var tagCounts []mongo.AppTagCount
 
 	// Retry call
 	operation := func() (err error) {
@@ -1127,6 +1132,29 @@ func scrapeApp(app *mongo.App) (sales []mongo.Sale, err error) {
 			steamHelper.WithAgeCheckCookie,
 			colly.AllowURLRevisit(),
 		)
+
+		// Tags
+		c.OnHTML("script", func(e *colly.HTMLElement) {
+			matches := appStorePageTags.FindAllStringSubmatch(e.Text, -1)
+			if len(matches) > 0 {
+				for _, match := range matches {
+					if len(match) == 4 {
+
+						tagID, err := strconv.Atoi(match[1])
+						if err != nil {
+							continue
+						}
+
+						count, err := strconv.Atoi(match[3])
+						if err != nil {
+							continue
+						}
+
+						tagCounts = append(tagCounts, mongo.AppTagCount{ID: tagID, Name: match[2], Count: count})
+					}
+				}
+			}
+		})
 
 		// Bundles
 		c.OnHTML("div.game_area_purchase_game_wrapper input[name=bundleid]", func(e *colly.HTMLElement) {
@@ -1307,8 +1335,13 @@ func scrapeApp(app *mongo.App) (sales []mongo.Sale, err error) {
 		}
 	}
 
-	app.Bundles = bundleIntIDs
+	// Save tag counts
+	sort.Slice(tagCounts, func(i, j int) bool {
+		return tagCounts[i].Count > tagCounts[j].Count
+	})
+	app.TagCounts = tagCounts
 
+	//
 	return sales, nil
 }
 

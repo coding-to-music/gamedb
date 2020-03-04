@@ -99,6 +99,7 @@ type App struct {
 	SteamSpy                      helpers.AppSteamSpy            `bson:"steam_spy"`
 	SystemRequirements            map[string]interface{}         `bson:"system_requirements"`
 	Tags                          []int                          `bson:"tags"`
+	TagCounts                     []AppTagCount                  `bson:"tag_counts"`
 	TwitchID                      int                            `bson:"twitch_id"`
 	TwitchURL                     string                         `bson:"twitch_url"`
 	Type                          string                         `bson:"type"`
@@ -182,6 +183,7 @@ func (app App) BSON() bson.D {
 		{"steam_spy", app.SteamSpy},
 		{"system_requirements", app.SystemRequirements},
 		{"tags", app.Tags},
+		{"tag_counts", app.TagCounts},
 		{"twitch_id", app.TwitchID},
 		{"twitch_url", app.TwitchURL},
 		{"type", app.Type},
@@ -191,6 +193,12 @@ func (app App) BSON() bson.D {
 		{"wishlist_avg_position", app.WishlistAvgPosition},
 		{"wishlist_count", app.WishlistCount},
 	}
+}
+
+type AppTagCount struct {
+	ID    int    `json:"id"`
+	Name  string `json:"name"`
+	Count int    `json:"count"`
 }
 
 func (app App) GetID() int {

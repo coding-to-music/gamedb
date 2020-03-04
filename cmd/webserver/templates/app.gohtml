@@ -260,17 +260,6 @@
                                             </tr>
                                         {{ end }}
 
-                                        {{ if gt (len .Tags) 0 }}
-                                            <tr>
-                                                <th scope="row" nowrap="nowrap" class="thin">Tags</th>
-                                                <td>
-                                                    {{ range $key, $value := .Tags }}
-                                                        <a class="badge badge-success" href="/apps?tags={{ .ID }}">{{ .GetName }}</a>
-                                                    {{ end }}
-                                                </td>
-                                            </tr>
-                                        {{ end }}
-
                                         {{ if gt (len .App.Categories) 0 }}
                                             <tr>
                                                 <th scope="row" nowrap="nowrap" class="thin">Categories</th>
@@ -280,6 +269,32 @@
                                                     {{ end }}
                                                 </td>
                                             </tr>
+                                        {{ end }}
+
+                                        {{ if gt (len .App.TagCounts) 0 }}
+                                            <tr>
+                                                <th scope="row" nowrap="nowrap" class="thin">Tags</th>
+                                                <td>
+                                                    <div id="tags">
+                                                        {{ range $key, $value := .App.TagCounts }}
+                                                            <a class="badge badge-success" style="width: {{ percent .Count $.TagsMax }}%;" href="/apps?tags={{ .ID }}">{{ .Name }}</a>
+                                                        {{ end }}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {{ else }}
+
+                                            {{ if gt (len .Tags) 0 }}
+                                                <tr>
+                                                    <th scope="row" nowrap="nowrap" class="thin">Tags</th>
+                                                    <td>
+                                                        {{ range $key, $value := .Tags }}
+                                                            <a class="badge badge-success" href="/apps?tags={{ .ID }}">{{ .GetName }}</a>
+                                                        {{ end }}
+                                                    </td>
+                                                </tr>
+                                            {{ end }}
+
                                         {{ end }}
 
                                     </table>

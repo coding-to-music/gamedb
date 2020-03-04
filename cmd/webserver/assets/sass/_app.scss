@@ -14,6 +14,15 @@
         video {
             max-width: 100%;
         }
+
+        #tags {
+            a {
+                text-align: left;
+                display: block;
+                overflow: hidden;
+                margin-bottom: 2px;
+            }
+        }
     }
 
     #players {

@@ -286,6 +286,14 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		return app.Reviews.Reviews[i].VotesGood > app.Reviews.Reviews[j].VotesGood
 	})
 
+	// Get max tag count
+	t.TagsMax = 1
+	for _, v := range app.TagCounts {
+		if v.Count > t.TagsMax {
+			t.TagsMax = v.Count
+		}
+	}
+
 	// Make banners
 	var banners = map[string][]string{
 		"primary": {},
@@ -325,6 +333,7 @@ type appTemplate struct {
 	Price       helpers.ProductPrice
 	Publishers  []sql.Publisher
 	Tags        []sql.Tag
+	TagsMax     int
 	UFS         []pics.KeyValue
 }
 
