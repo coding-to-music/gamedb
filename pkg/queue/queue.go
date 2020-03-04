@@ -327,14 +327,14 @@ var ErrIsBot = errors.New("bots can't update players")
 
 func ProducePlayer(payload PlayerMessage) (err error) {
 
+	if payload.UserAgent != nil && helpers.IsBot(*payload.UserAgent) {
+		return ErrIsBot
+	}
+
 	payload.ID, err = helpers.IsValidPlayerID(payload.ID)
 	if err != nil {
 		return helpers.ErrInvalidPlayerID
 	}
-
-	// if payload.UserAgent != nil && helpers.IsBot(*payload.UserAgent) {
-	// 	return ErrIsBot
-	// }
 
 	mc := memcache.GetClient()
 
