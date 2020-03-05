@@ -595,7 +595,7 @@ if ($appPage.length > 0) {
 
         const options = {
             "pageLength": 100,
-            "order": [[2, 'desc']],
+            "order": [[1, 'desc']],
             "columnDefs": [
                 // Name
                 {
@@ -610,6 +610,8 @@ if ($appPage.length > 0) {
                             name += '<span class="badge badge-danger float-right">Hidden</span>';
                         }
 
+                        name += '<br><small>' + row[1] + '</small>';
+
                         return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[2] + '" alt="" data-lazy-alt="' + row[0] + '"></div><div class="name">' + name + '</div></div>'
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
@@ -618,16 +620,16 @@ if ($appPage.length > 0) {
                     "orderable": false,
                 },
                 // Description
-                {
-                    "targets": 1,
-                    "render": function (data, type, row) {
-                        return row[1];
-                    },
-                    "orderable": false,
-                },
+                // {
+                //     "targets": 1,
+                //     "render": function (data, type, row) {
+                //         return row[1];
+                //     },
+                //     "orderable": false,
+                // },
                 // Complete %
                 {
-                    "targets": 2,
+                    "targets": 1,
                     "render": function (data, type, row) {
                         return row[3] + '%';
                     },
@@ -636,7 +638,9 @@ if ($appPage.length > 0) {
             ]
         };
 
-        $('#achievements-table').gdbTable({tableOptions: options});
+        $('#achievements-table').gdbTable({
+            tableOptions: options,
+        });
     }
 
     function loadDevLocalization() {

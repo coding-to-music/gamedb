@@ -626,11 +626,11 @@
                         {{if gt .App.AchievementsCount 0}}
 
                             <div class="table-responsive">
-                                <table class="table table-hover table-striped table-counts mb-0" data-path="/apps/{{ .App.ID }}/achievements.json" id="achievements-table" data-order='[[2, "desc"]]'>
+                                <table class="table table-hover table-striped table-counts mb-0" data-path="/apps/{{ .App.ID }}/achievements.json" id="achievements-table">
                                     <thead class="thead-light">
                                     <tr>
                                         <th scope="col">Name</th>
-                                        <th scope="col">Description</th>
+                                        {{/*<th scope="col">Description</th>*/}}
                                         <th scope="col">Completed</th>
                                     </tr>
                                     </thead>
@@ -786,7 +786,6 @@
                             <table class="table table-hover table-striped">
                                 <thead class="thead-light">
                                 <th>Game</th>
-                                <th>Matching Tags</th>
                                 </thead>
                                 <tbody>
                                 {{ range $key, $value := .Related }}
@@ -796,10 +795,12 @@
                                                 <div class="icon">
                                                     <img data-lazy="{{ .GetIcon }}" alt="" data-lazy-alt="{{ .GetName }}">
                                                 </div>
-                                                <div class="name">{{ .GetName }}</div>
+                                                <div class="name">
+                                                    {{ .GetName }}<br>
+                                                    <small>{{ $.GetRelatedTags $value }}</small>
+                                                </div>
                                             </div>
                                         </td>
-                                        <td>{{ $.GetRelatedTags $value }}</td>
                                     </tr>
                                 {{ end }}
                                 </tbody>
