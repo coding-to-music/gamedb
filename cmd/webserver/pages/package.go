@@ -44,7 +44,9 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		err = helpers.IgnoreErrors(err, mongo.ErrInvalidPackageID)
 		log.Err(r, err)
+
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the package."})
 		return
 	}

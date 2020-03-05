@@ -76,7 +76,9 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		err = helpers.IgnoreErrors(err, mongo.ErrInvalidAppID)
 		log.Err(err, r)
+
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the app."})
 		return
 	}
