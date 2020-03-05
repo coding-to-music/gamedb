@@ -1104,7 +1104,7 @@ func updateAppSteamSpy(app *mongo.App) error {
 var
 (
 	appStorePage     = regexp.MustCompile(`store\.steampowered\.com/app/[0-9]+$`)
-	appStorePageTags = regexp.MustCompile(`\{"tagid":([0-9]+),"name":"([a-zA-Z- ]+)","count":([0-9]+),"browseable":[a-z]{4,5}}`)
+	appStorePageTags = regexp.MustCompile(`\{"tagid":([0-9]+),"name":"([a-zA-Z0-9-&'. ]+)","count":([0-9]+),"browseable":[a-z]{4,5}}`)
 )
 
 func scrapeApp(app *mongo.App) (sales []mongo.Sale, err error) {
