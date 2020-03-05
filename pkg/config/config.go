@@ -337,10 +337,6 @@ func MongoDSN() string {
 	return "mongodb://" + Config.MongoHost.Get() + ":" + Config.MongoPort.Get()
 }
 
-// func RabbitAPI(values url.Values) string {
-// 	return "http://" + Config.RabbitHost.Get() + ":" + Config.RabbitManagmentPort.Get() + "/api/overview?" + values.Encode()
-// }
-
 func ListenOn() string {
 	return "0.0.0.0:" + Config.WebserverPort.Get()
 }
