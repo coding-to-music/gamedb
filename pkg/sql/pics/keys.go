@@ -414,7 +414,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 						if eula.Name == "" {
 							eula.Name = "EULA"
 						}
-						items = append(items, `<li><a target="_blank" href="`+eula.URL+`">`+eula.Name+`</a></li>`)
+						items = append(items, `<li><a target="_blank" href="`+eula.URL+`">`+string(eula.Name)+`</a></li>`)
 					}
 
 					return template.HTML("<ul class='mb-0 pl-3'>" + strings.Join(items, "") + "</ul>")

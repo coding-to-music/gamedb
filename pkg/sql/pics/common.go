@@ -11,9 +11,9 @@ type Associations map[string]struct {
 }
 
 type EULAs map[string]struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
-	URL  string `json:"url"`
+	ID   string        `json:"id"`
+	Name ctypes.String `json:"name"`
+	URL  string        `json:"url"`
 }
 
 type LibraryAssets struct {
