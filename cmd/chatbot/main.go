@@ -1,7 +1,6 @@
 package main
 
 import (
-	"reflect"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -208,18 +207,18 @@ func saveToMongo(m *discordgo.MessageCreate, message string) {
 
 func discordError(err error) {
 
+	var allowed = map[int]string{
+		50001: "Missing Access",
+		50013: "Missing Permissions",
+	}
+
 	if err != nil {
-
 		if val, ok := err.(*discordgo.RESTError); ok {
-
-			if val.Message.Code == 10008 || val.Message.Code == 50001 {
-
+			if _, ok2 := allowed[val.Message.Code]; ok2 {
 				log.Info(err)
 				return
 			}
 		}
-
-		log.Warning(reflect.TypeOf(err).String())
 
 		log.Err(err)
 	}
