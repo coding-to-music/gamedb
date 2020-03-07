@@ -415,7 +415,7 @@ func updatePackageFromStore(pack *mongo.Package) (err error) {
 	for _, cc := range helpers.GetProdCCs(true) {
 
 		// Get package details
-		response, b, err := steamHelper.GetSteam().GetPackageDetails(pack.ID, cc.ProductCode, steamapi.LanguageEnglish)
+		response, b, err := steamHelper.GetSteam().GetPackageDetails(uint(pack.ID), cc.ProductCode, steamapi.LanguageEnglish)
 		err = steamHelper.AllowSteamCodes(err, b, nil)
 		if err == steamapi.ErrPackageNotFound {
 			continue
