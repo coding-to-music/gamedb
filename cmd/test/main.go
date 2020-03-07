@@ -1,23 +1,100 @@
 package main
 
 import (
+	"bufio"
+	"os"
+	"strconv"
+	"sync"
+	"time"
+
+	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/queue"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func main() {
 
 	config.SetVersion("test")
 	log.Initialise([]log.LogName{log.LogNameTest})
+	queue.Init(queue.QueueSteamDefinitions, false)
 
-	// Get API key
-	err := sql.GetAPIKey("test")
+	file, err := os.Open("ids.txt")
 	if err != nil {
-		log.Critical(err)
+		log.Err(err)
 		return
 	}
+	defer func() {
+		err = file.Close()
+		log.Err(err)
+	}()
 
-	helpers.KeepAlive()
+	var (
+		wg     sync.WaitGroup
+		locked bool
+	)
+
+	go func() {
+		for {
+			time.Sleep(time.Second * 5)
+
+			c, err := queue.Channels[rabbit.Producer][queue.QueuePackages].Inspect()
+			if err != nil {
+				log.Err(err)
+				continue
+			}
+
+			if c.Messages >= 10 && locked == false {
+				locked = true
+				wg.Add(1)
+				log.Info("locked")
+			} else if c.Messages < 10 && locked == true {
+				locked = false
+				wg.Done()
+				log.Info("unlocked")
+			}
+		}
+	}()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+
+		wg.Wait()
+
+		packageID, err := strconv.Atoi(scanner.Text())
+		if err != nil {
+			log.Err(err)
+			continue
+		}
+
+		if packageID < 60000 {
+			continue
+		}
+
+		log.Info(packageID)
+
+		pack := mongo.Package{}
+
+		err = mongo.FindOne(mongo.CollectionPackages, bson.D{{"_id", packageID}}, nil, bson.M{"_id": 1}, &pack)
+		if err != nil && err != mongo.ErrNoDocuments {
+			log.Err(err)
+			continue
+		}
+
+		if pack.ID == 0 || err == mongo.ErrNoDocuments {
+			err = queue.ProduceSteam(queue.SteamMessage{PackageIDs: []int{packageID}})
+			if err != nil {
+				log.Err(err)
+			} else {
+				// Success
+				time.Sleep(time.Second)
+			}
+		}
+	}
+
+	if scanner.Err() != nil {
+		log.Err(scanner.Err())
+	}
 }
