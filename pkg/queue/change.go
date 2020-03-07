@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/Jleagle/rabbit-go"
-	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	pubsubHelpers "github.com/gamedb/gamedb/pkg/helpers/pubsub"
@@ -15,12 +14,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"go.mongodb.org/mongo-driver/bson"
 )
-
-var discordClient *discordgo.Session
-
-func SetDiscordClient(c *discordgo.Session) {
-	discordClient = c
-}
 
 type ChangesMessage struct {
 	AppIDs     map[uint32]uint32 `json:"app_ids"`

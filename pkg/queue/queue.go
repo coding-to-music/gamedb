@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/rabbit-go"
+	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
@@ -98,6 +99,12 @@ var (
 		{name: QueuePlayers, consumer: nil},
 	}
 )
+
+var discordClient *discordgo.Session
+
+func SetDiscordClient(c *discordgo.Session) {
+	discordClient = c
+}
 
 type queueDef struct {
 	name         rabbit.QueueName
