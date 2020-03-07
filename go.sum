@@ -164,6 +164,8 @@ github.com/getkin/kin-openapi v0.2.0 h1:PbHHtYZpjKwZtGlIyELgA2DploRrsaXztoNNx9Hj
 github.com/getkin/kin-openapi v0.2.0/go.mod h1:V1z9xl9oF5Wt7v32ne4FmiF1alpS4dM6mNzoywPOXlk=
 github.com/getkin/kin-openapi v0.2.1-0.20200302100353-e7e26782ae6a h1:GBcYiM4/tHN+OBQYKcjgN9TOeLeDPLZqltQIKh2rRhU=
 github.com/getkin/kin-openapi v0.2.1-0.20200302100353-e7e26782ae6a/go.mod h1:W8dhxZgpE84ciM+VIItFqkmZ4eHtuomrdIHtASQIqi0=
+github.com/getkin/kin-openapi v0.2.1-0.20200306125844-9ae9769e5f4e h1:kYOPKH/NH1vRb+5z24UXY3ImdS6cU3+CpYSR6bOg2us=
+github.com/getkin/kin-openapi v0.2.1-0.20200306125844-9ae9769e5f4e/go.mod h1:W8dhxZgpE84ciM+VIItFqkmZ4eHtuomrdIHtASQIqi0=
 github.com/getsentry/sentry-go v0.5.1 h1:MIPe7ScHADsrK2vznqmhksIUFxq7m0JfTh+ZIMkI+VQ=
 github.com/getsentry/sentry-go v0.5.1/go.mod h1:B8H7x8TYDPkeWPRzGpIiFO97LZP6rL8A3hEt8lUItMw=
 github.com/ghodss/yaml v1.0.0 h1:wQHKEahhL6wmXdzwWG11gIVCkOv05bNOh+Rxn0yngAk=

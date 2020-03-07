@@ -38,7 +38,7 @@ require (
 	github.com/dustin/go-humanize v1.0.0
 	github.com/fatih/color v1.9.0 // indirect
 	github.com/frustra/bbcode v0.0.0-20180807171629-48be21ce690c
-	github.com/getkin/kin-openapi v0.2.1-0.20200302100353-e7e26782ae6a
+	github.com/getkin/kin-openapi v0.2.1-0.20200306125844-9ae9769e5f4e
 	github.com/getsentry/sentry-go v0.5.1
 	github.com/go-chi/chi v4.0.3+incompatible
 	github.com/go-chi/cors v1.0.0

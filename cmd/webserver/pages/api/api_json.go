@@ -54,7 +54,7 @@ var Swagger = &openapi3.Swagger{
 		},
 	},
 	Security: openapi3.SecurityRequirements{
-		openapi3.NewSecurityRequirement().Authenticate("key-header", ""),
+		openapi3.NewSecurityRequirement().Authenticate("key-header"),
 		openapi3.NewSecurityRequirement().Authenticate("key-query"),
 	},
 	Components: openapi3.Components{
