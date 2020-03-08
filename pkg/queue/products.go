@@ -222,7 +222,7 @@ func setAppLaunchItem(kv steamvdf.KeyValue, launchItem *pics.PICSAppConfigLaunch
 	}
 }
 
-func savePackagesPricesToMongo(before helpers.ProductInterface, after helpers.ProductInterface) (err error) {
+func saveProductPricesToMongo(before helpers.ProductInterface, after helpers.ProductInterface) (err error) {
 
 	var prices helpers.ProductPrices
 	var price helpers.ProductPrice

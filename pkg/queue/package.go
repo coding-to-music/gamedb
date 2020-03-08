@@ -153,7 +153,7 @@ func packageHandler(messages []*rabbit.Message) {
 
 			var err error
 
-			err = savePackagesPricesToMongo(packageBeforeUpdate, pack)
+			err = saveProductPricesToMongo(packageBeforeUpdate, pack)
 			if err != nil {
 				log.Err(err, payload.ID)
 				sendToRetryQueue(message)

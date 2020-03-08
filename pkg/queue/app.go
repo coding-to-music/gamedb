@@ -255,7 +255,7 @@ func appHandler(messages []*rabbit.Message) {
 
 			var err error
 
-			err = savePackagesPricesToMongo(appBeforeUpdate, app)
+			err = saveProductPricesToMongo(appBeforeUpdate, app)
 			if err != nil {
 				log.Err(err, payload.ID)
 				sendToRetryQueue(message)
