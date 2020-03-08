@@ -17,15 +17,12 @@ import (
 const (
 	QueueApps            rabbit.QueueName = "GDB_Apps"
 	QueueAppsDaily       rabbit.QueueName = "GDB_Apps_Daily"
-	QueueAppsRegular     rabbit.QueueName = "GDB_Apps_Regular"
 	QueueAppPlayers      rabbit.QueueName = "GDB_App_Players"
 	QueueBundles         rabbit.QueueName = "GDB_Bundles"
 	QueueChanges         rabbit.QueueName = "GDB_Changes"
 	QueueGroups          rabbit.QueueName = "GDB_Groups"
 	QueuePackages        rabbit.QueueName = "GDB_Packages"
-	QueuePackagesRegular rabbit.QueueName = "GDB_Packages_Regular"
 	QueuePlayers         rabbit.QueueName = "GDB_Players"
-	QueuePlayersRegular  rabbit.QueueName = "GDB_Players_Regular"
 	QueuePlayerRanks     rabbit.QueueName = "GDB_Player_Ranks"
 	QueueSteam           rabbit.QueueName = "GDB_Steam"
 
@@ -58,15 +55,12 @@ var (
 	AllDefinitions = []queueDef{
 		{name: QueueApps, consumer: appHandler},
 		{name: QueueAppsDaily, consumer: appDailyHandler, batchSize: 10, prefetchSize: 100},
-		{name: QueueAppsRegular},
 		{name: QueueAppPlayers, consumer: appPlayersHandler},
 		{name: QueueBundles, consumer: bundleHandler},
 		{name: QueueChanges, consumer: changesHandler},
 		{name: QueueGroups, consumer: groupsHandler},
 		{name: QueuePackages, consumer: packageHandler},
-		{name: QueuePackagesRegular},
 		{name: QueuePlayers, consumer: playerHandler},
-		{name: QueuePlayersRegular},
 		{name: QueuePlayerRanks, consumer: playerRanksHandler},
 		{name: QueueDelay, consumer: delayHandler, skipHeaders: true},
 		{name: QueueSteam, consumer: nil},
@@ -233,13 +227,7 @@ func ProduceApp(payload AppMessage) (err error) {
 }
 
 func ProduceAppsDaily(id int, name string) (err error) {
-
 	return produce(QueueAppsDaily, AppDailyMessage{ID: id, Name: name})
-}
-
-func ProduceAppRegular(payload AppMessage) (err error) {
-
-	return produce(QueueAppsRegular, payload)
 }
 
 func ProduceAppPlayers(payload AppPlayerMessage) (err error) {
@@ -325,11 +313,6 @@ func ProducePackage(payload PackageMessage) (err error) {
 	return err
 }
 
-func ProducePackageRegular(payload PackageMessage) (err error) {
-
-	return produce(QueuePackagesRegular, payload)
-}
-
 var ErrIsBot = errors.New("bots can't update players")
 
 func ProducePlayer(payload PlayerMessage) (err error) {
@@ -357,11 +340,6 @@ func ProducePlayer(payload PlayerMessage) (err error) {
 	}
 
 	return err
-}
-
-func ProducePlayerRegular(id int64) (err error) {
-
-	return produce(QueuePlayersRegular, PlayerMessage{ID: id})
 }
 
 func ProducePlayerRank(payload PlayerRanksMessage) (err error) {
