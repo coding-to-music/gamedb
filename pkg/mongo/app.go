@@ -517,7 +517,7 @@ func (app App) GetUpdatedNice() string {
 
 func (app App) Save() (err error) {
 
-	if app.ID == 0 {
+	if !helpers.IsValidAppID(app.ID) {
 		return errors.New("invalid app id")
 	}
 
@@ -616,10 +616,6 @@ func GetApp(id int, full ...bool) (app App, err error) {
 		return app, ErrInvalidAppID
 	}
 
-	if id == 0 {
-		id = 753
-	}
-
 	if len(full) > 0 && full[0] == true {
 
 		// Load from Mongo
@@ -640,10 +636,6 @@ func GetApp(id int, full ...bool) (app App, err error) {
 
 	if err != nil {
 		return app, err
-	}
-
-	if app.ID == 0 {
-		return app, ErrNoDocuments
 	}
 
 	return app, err

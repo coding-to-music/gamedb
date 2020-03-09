@@ -560,7 +560,7 @@ func updateAppDetails(app *mongo.App) (err error) {
 			filter = []string{"price_overview"}
 		}
 
-		response, b, err := steamHelper.GetSteam().GetAppDetails(app.ID, code.ProductCode, steamapi.LanguageEnglish, filter)
+		response, b, err := steamHelper.GetSteam().GetAppDetails(uint(app.ID), code.ProductCode, steamapi.LanguageEnglish, filter)
 		err = steamHelper.AllowSteamCodes(err, b, nil)
 		if err == steamapi.ErrAppNotFound {
 			continue
