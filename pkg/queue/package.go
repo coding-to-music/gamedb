@@ -72,6 +72,32 @@ func packageHandler(messages []*rabbit.Message) {
 			}
 		}
 
+		// Produce price changes
+		if config.IsLocal() {
+			for _, v := range helpers.GetProdCCs(true) {
+
+				payload2 := PackagePriceMessage{
+					PackageID:   uint(pack.ID),
+					PackageName: pack.Name,
+					PackageIcon: pack.Icon,
+					ProductCC:   v.ProductCode,
+					Time:        message.FirstSeen(),
+					BeforePrice: nil,
+				}
+
+				price := pack.GetPrices().Get(v.ProductCode)
+				if price.Exists {
+					payload2.BeforePrice = &price.Final
+				}
+
+				err = producePackagePrice(payload2)
+				if err != nil {
+					log.Err(err)
+				}
+			}
+		}
+
+		//
 		var packageBeforeUpdate = pack
 
 		// Update from PICS

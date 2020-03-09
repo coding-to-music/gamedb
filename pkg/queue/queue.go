@@ -15,16 +15,17 @@ import (
 )
 
 const (
-	QueueApps        rabbit.QueueName = "GDB_Apps"
-	QueueAppsDaily   rabbit.QueueName = "GDB_Apps_Daily"
-	QueueAppPlayers  rabbit.QueueName = "GDB_App_Players"
-	QueueBundles     rabbit.QueueName = "GDB_Bundles"
-	QueueChanges     rabbit.QueueName = "GDB_Changes"
-	QueueGroups      rabbit.QueueName = "GDB_Groups"
-	QueuePackages    rabbit.QueueName = "GDB_Packages"
-	QueuePlayers     rabbit.QueueName = "GDB_Players"
-	QueuePlayerRanks rabbit.QueueName = "GDB_Player_Ranks"
-	QueueSteam       rabbit.QueueName = "GDB_Steam"
+	QueueApps           rabbit.QueueName = "GDB_Apps"
+	QueueAppsDaily      rabbit.QueueName = "GDB_Apps_Daily"
+	QueueAppPlayers     rabbit.QueueName = "GDB_App_Players"
+	QueueBundles        rabbit.QueueName = "GDB_Bundles"
+	QueueChanges        rabbit.QueueName = "GDB_Changes"
+	QueueGroups         rabbit.QueueName = "GDB_Groups"
+	QueuePackages       rabbit.QueueName = "GDB_Packages"
+	QueuePackagesPrices rabbit.QueueName = "GDB_Packages.Prices"
+	QueuePlayers        rabbit.QueueName = "GDB_Players"
+	QueuePlayerRanks    rabbit.QueueName = "GDB_Player_Ranks"
+	QueueSteam          rabbit.QueueName = "GDB_Steam"
 
 	QueueDelay  rabbit.QueueName = "GDB_Delay"
 	QueueFailed rabbit.QueueName = "GDB_Failed"
@@ -60,6 +61,7 @@ var (
 		{name: QueueChanges, consumer: changesHandler},
 		{name: QueueGroups, consumer: groupsHandler},
 		{name: QueuePackages, consumer: packageHandler},
+		{name: QueuePackagesPrices, consumer: packagePriceHandler},
 		{name: QueuePlayers, consumer: playerHandler},
 		{name: QueuePlayerRanks, consumer: playerRanksHandler},
 		{name: QueueDelay, consumer: delayHandler, skipHeaders: true},
@@ -315,6 +317,10 @@ func ProducePackage(payload PackageMessage) (err error) {
 	}
 
 	return err
+}
+
+func producePackagePrice(payload PackagePriceMessage) (err error) {
+	return produce(QueuePackagesPrices, payload)
 }
 
 var ErrIsBot = errors.New("bots can't update players")
