@@ -342,15 +342,18 @@ func appHandler(messages []*rabbit.Message) {
 
 			defer wg.Done()
 
-			var err error
+			if payload.ChangeNumber > 0 {
 
-			wsPayload := websockets.IntPayload{}
-			wsPayload.ID = id
-			wsPayload.Pages = []websockets.WebsocketPage{websockets.PageApp}
+				var err error
 
-			_, err = pubsubHelpers.Publish(pubsubHelpers.PubSubTopicWebsockets, wsPayload)
-			if err != nil {
-				log.Err(err, id)
+				wsPayload := websockets.IntPayload{}
+				wsPayload.ID = id
+				wsPayload.Pages = []websockets.WebsocketPage{websockets.PageApp}
+
+				_, err = pubsubHelpers.Publish(pubsubHelpers.PubSubTopicWebsockets, wsPayload)
+				if err != nil {
+					log.Err(err, id)
+				}
 			}
 		}()
 

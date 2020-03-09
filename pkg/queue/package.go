@@ -189,7 +189,7 @@ func packageHandler(messages []*rabbit.Message) {
 
 			defer wg.Done()
 
-			if len(payload.VDF) > 0 {
+			if payload.ChangeNumber > 0 {
 
 				var err error
 
@@ -198,7 +198,9 @@ func packageHandler(messages []*rabbit.Message) {
 				wsPayload.Pages = []websockets.WebsocketPage{websockets.PagePackage, websockets.PagePackages}
 
 				_, err = pubsubHelpers.Publish(pubsubHelpers.PubSubTopicWebsockets, wsPayload)
-				log.Err(err)
+				if err != nil {
+					log.Err(err, id)
+				}
 			}
 		}()
 
