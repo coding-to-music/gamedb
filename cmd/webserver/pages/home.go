@@ -31,6 +31,7 @@ func HomeRouter() http.Handler {
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := homeTemplate{}
+	t.setRandomBackground(true, true)
 	t.fill(w, r, "Home", "Stats and information on the Steam Catalogue.")
 	t.addAssetJSON2HTML()
 

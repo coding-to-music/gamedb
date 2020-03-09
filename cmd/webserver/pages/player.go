@@ -289,7 +289,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	})
 
 	// Template
-	t.setBackground(backgroundApp, true, false)
+	t.setBackground(backgroundApp, true, true)
 	t.fill(w, r, player.PersonaName, "")
 	t.addAssetHighCharts()
 	t.IncludeSocialJS = true

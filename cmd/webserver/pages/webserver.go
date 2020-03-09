@@ -363,7 +363,7 @@ func (t *GlobalTemplate) setRandomBackground(title bool, link bool) {
 		return
 	}
 
-	if strings.HasPrefix(t.request.URL.Path, "/admin") {
+	if t.request != nil && strings.HasPrefix(t.request.URL.Path, "/admin") {
 		return
 	}
 
