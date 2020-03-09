@@ -135,12 +135,7 @@ func (pack Package) GetType() string {
 }
 
 func (pack Package) GetName() (name string) {
-
-	if (pack.Name == "") || (pack.Name == strconv.Itoa(pack.ID)) {
-		return "Package " + strconv.Itoa(pack.ID)
-	}
-
-	return pack.Name
+	return helpers.GetPackageName(pack.ID, pack.Name)
 }
 
 func (pack Package) GetPath() string {

@@ -18,3 +18,12 @@ func GetPackagePath(id int, name string) string {
 	}
 	return path + "/" + slug.Make(name)
 }
+
+func GetPackageName(id int, name string) string {
+
+	if (name == "") || (name == strconv.Itoa(id)) {
+		return "Package " + strconv.Itoa(id)
+	}
+
+	return name
+}
