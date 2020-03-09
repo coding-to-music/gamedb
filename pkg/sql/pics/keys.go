@@ -531,7 +531,16 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 						return items[i] < items[j]
 					})
 
-					return helpers.JoinInts(items, ", ")
+					var itemStrings []string
+					if item.Link != "" {
+						for _, v := range items {
+							id := strconv.Itoa(v)
+							link := strings.ReplaceAll(item.Link, "$val$", id)
+							itemStrings = append(itemStrings, "<a href=\""+link+"\" rel=\"nofollow\">"+id+"</a>")
+						}
+					}
+
+					return template.HTML(strings.Join(itemStrings, ", "))
 				}
 
 			case "languages":
