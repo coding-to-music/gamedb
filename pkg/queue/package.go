@@ -189,14 +189,17 @@ func packageHandler(messages []*rabbit.Message) {
 
 			defer wg.Done()
 
-			var err error
+			if len(payload.VDF) > 0 {
 
-			wsPayload := websockets.IntPayload{}
-			wsPayload.ID = pack.ID
-			wsPayload.Pages = []websockets.WebsocketPage{websockets.PagePackage, websockets.PagePackages}
+				var err error
 
-			_, err = pubsubHelpers.Publish(pubsubHelpers.PubSubTopicWebsockets, wsPayload)
-			log.Err(err)
+				wsPayload := websockets.IntPayload{}
+				wsPayload.ID = pack.ID
+				wsPayload.Pages = []websockets.WebsocketPage{websockets.PagePackage, websockets.PagePackages}
+
+				_, err = pubsubHelpers.Publish(pubsubHelpers.PubSubTopicWebsockets, wsPayload)
+				log.Err(err)
+			}
 		}()
 
 		// Clear caches
