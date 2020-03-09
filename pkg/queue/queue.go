@@ -244,9 +244,11 @@ func ProduceBundle(id int) (err error) {
 	mc := memcache.GetClient()
 	item := memcache.MemcacheBundleInQueue(id)
 
-	_, err = mc.Get(item.Key)
-	if err == nil {
-		return memcache.ErrInQueue
+	if !config.IsLocal() {
+		_, err = mc.Get(item.Key)
+		if err == nil {
+			return memcache.ErrInQueue
+		}
 	}
 
 	err = produce(QueueBundles, BundleMessage{ID: id})
