@@ -10,20 +10,7 @@
         {{ template "_flashes" . }}
 
         <div class="card">
-            {{/*            <div class="card-header">*/}}
-
-            {{/*                <ul class="nav nav-tabs card-header-tabs" role="tablist">*/}}
-            {{/*                    <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#info" role="tab">Info</a></li>*/}}
-            {{/*                    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#links" role="tab">Links</a></li>*/}}
-            {{/*                    */}}{{/*<li class="nav-item"><a class="nav-link" data-toggle="tab" href="#terms" role="tab">Terms</a></li>*/}}
-            {{/*                </ul>*/}}
-
-            {{/*            </div>*/}}
             <div class="card-body">
-
-                {{/*                <div class="tab-content">*/}}
-
-                {{/*                    <div class="tab-pane show active" id="info" role="tabpanel">*/}}
 
                 <h5>Game DB</h5>
                 <ul>
@@ -78,48 +65,10 @@
                 </ul>
 
                 <!--
-                <h5>Where else can I find Game DB?</h5>
-                <div class="clearfix mb-2">
-                    <div class="social-link mr-2" data-toggle="tooltip" data-placement="top" title="Steam">
-                        <a target="_blank" rel="noopener" href="https://steamcommunity.com/groups/gamedb"><i class="fab fa-steam-square"></i></a>
-                    </div>
-                    <div class="social-link mr-2" data-toggle="tooltip" data-placement="top" title="Discord">
-                        <a target="_blank" rel="noopener" href="https://discord.gg/c5zrcus"><i class="fab fa-discord"></i></a>
-                    </div>
-                    <div class="social-link mr-2" data-toggle="tooltip" data-placement="top" title="Reddit">
-                        <a target="_blank" rel="noopener" href="https://www.reddit.com/r/gamedb/"><i class="fab fa-reddit-square"></i></a>
-                    </div>
-                    <div class="social-link mr-2" data-toggle="tooltip" data-placement="top" title="Facebook">
-                        <a target="_blank" rel="noopener" href="https://www.facebook.com/gamedb.online/"><i class="fab fa-facebook-square"></i></a>
-                    </div>
-                    <div class="social-link mr-2" data-toggle="tooltip" data-placement="top" title="Twitter">
-                        <a target="_blank" rel="noopener" href="https://twitter.com/gamedbonline"><i class="fab fa-twitter-square"></i></a>
-                    </div>
-                    <div class="social-link mr-2" data-toggle="tooltip" data-placement="top" title="Github">
-                        <a target="_blank" rel="noopener" href="https://github.com/gamedb"><i class="fab fa-github-square"></i></a>
-                    </div>
-                    <div class="social-link mr-2" data-toggle="tooltip" data-placement="top" title="Instagram">
-                        <a target="_blank" rel="noopener" href="https://www.instagram.com/gamedb.online/"><i class="fab fa-instagram"></i></a>
-                    </div>
-                </div>
-
                 <h5>Why did I make Game DB?</h5>
                 <p>Game DB was created as a way to learn certain technologies involved in making websites and goes back to 2015. Originally it was to track players and rank them.
                     Then I started to track other bits of information that the <a href="/steam-api">Steam APIs</a> gave.
                     Then started to track as much as I could, all to display in a friendly manner for gamers.</p>
-
-                <h5>How can I contact you?</h5>
-                <p>Game DB is not affiliated with Steam, please contact them <a href="https://help.steampowered.com/en/" target="_blank" rel="noopener">here</a>.
-                    <br>Otherwise, use our <a href="/chat">chat</a> or <a href="/contact">contact</a> pages.</p>
-
-                <h5>Can I contribute to Game DB?</h5>
-                <p>
-                    Yes! As Game DB gets more visitors, it's hardware constantly needs upgrading and workng on. Please consider <a href="/donate">donating</a> to help out.
-                    <br/>Or help directly with the website on <a href="https://github.com/gamedb" target="_blank" rel="noopener">GitHub</a>.
-                </p>
-
-                <h5>Why are some pages a dark green theme?</h5>
-                <p>This is what the Steam client used to look like!</p>
 
                 <h5 id="trend-score">How is the app trend value calculated</h5>
                 <p>The algorithm is taken from <a href="https://stackoverflow.com/a/49604913/472084" target="_blank" rel="noopener">this post</a> and is likely to change.</p>
@@ -133,119 +82,12 @@
                     You can allow access by updating your <a target="_blank" rel="noopener" href="https://steamcommunity.com/my/edit/settings">privacy settings</a>.
                 </p>
 
-                <h5>Why do some updates not show in the queues?</h5>
-                <p>If an update goes directly the the front of the queue, it will not show on the queue charts.</p>
-
                 <h5>How are Twitch streamers calculated</h5>
                 <p>Only the viewers from the top 100 streamers are included in the counts on Game DB.</p>
 
-                <h5>Where do we get the data from?</h5>
-                <p>Either from a <a href="/steam-api">Steam API</a> or by pretending to be a Steam client using <a href="https://github.com/SteamRE/SteamKit" target="_blank" rel="noopener">SteamKit</a>.</p>
-
                 <h5 id="app-scores">How are app scores calculated?</h5>
                 <p>Using <a href="https://en.wikipedia.org/wiki/Additive_smoothing" target="_blank" rel="noopener">Additive Smoothing</a></p>
-
-                <h5>Can I see the Game DB source code</h5>
-                <p>Game DB is fully open sourced on <a target="_blank" rel="noopener" href="https://github.com/gamedb">GitHub</a> to see exactly what's going on under the hood.</p>
                 -->
-
-                {{/*                    </div>*/}}
-
-                {{/*                    <div class="tab-pane" id="links" role="tabpanel">*/}}
-
-                {{/*                        <div class="row">*/}}
-                {{/*                            <div class="col-sm-12 col-lg-6">*/}}
-
-                {{/*                                <h5>For Players</h5>*/}}
-                {{/*                                <ul>*/}}
-                {{/*                                    <li>*/}}
-                {{/*                                        <img src="https://astats.astats.nl/astats/favicon.ico" alt="">*/}}
-                {{/*                                        <a target="_blank" rel="noopener" href="https://astats.astats.nl">astats.astats.nl</a>*/}}
-                {{/*                                    </li>*/}}
-                {{/*                                    <li>*/}}
-                {{/*                                        <img src="https://api.faviconkit.com/levels.gg/16" alt="">*/}}
-                {{/*                                        <a target="_blank" rel="noopener" href="https://levels.gg/">levels.gg</a>*/}}
-                {{/*                                    </li>*/}}
-                {{/*                                    <li>*/}}
-                {{/*                                        <img src="https://www.lorenzostanco.com/lab/steam/favicon-16x16.png" alt="">*/}}
-                {{/*                                        <a target="_blank" rel="noopener" href="https://lorenzostanco.com/lab/steam/">lorenzostanco.com</a>*/}}
-                {{/*                                    </li>*/}}
-                {{/*                                    <li>*/}}
-                {{/*                                        <img src="https://api.faviconkit.com/steam.madjoki.com/16" alt="">*/}}
-                {{/*                                        <a target="_blank" rel="noopener" href="https://steam.madjoki.com/">steam.madjoki.com</a>*/}}
-                {{/*                                    </li>*/}}
-                {{/*                                    <li>*/}}
-                {{/*                                        <img src="https://steamcharts.com/assets/favicon.ico" alt="">*/}}
-                {{/*                                        <a target="_blank" rel="noopener" href="https://steamcharts.com/">steamcharts.com</a>*/}}
-                {{/*                                    </li>*/}}
-                {{/*                                    <li>*/}}
-                {{/*                                        <img src="https://steamcompanion.com/favicon.ico" alt="">*/}}
-                {{/*                                        <a target="_blank" rel="noopener" href="https://steamcompanion.com/">steamcompanion.com</a>*/}}
-                {{/*                                    </li>*/}}
-                {{/*                                    <li>*/}}
-                {{/*                                        <img src="https://steamdb.info/static/logos/favicon-16x16.png" alt="">*/}}
-                {{/*                                        <a target="_blank" rel="noopener" href="https://steamdb.info/">steamdb.info</a>*/}}
-                {{/*                                    </li>*/}}
-                {{/*                                    <li>*/}}
-                {{/*                                        <img src="https://steamladder.com/static/img/new_logo.png" alt="">*/}}
-                {{/*                                        <a target="_blank" rel="noopener" href="https://steamladder.com/">steamladder.com</a>*/}}
-                {{/*                                    </li>*/}}
-                {{/*                                    <li>*/}}
-                {{/*                                        <img src="https://pbs.twimg.com/profile_images/598791990084575232/KonQ1bk8_400x400.png" alt="">*/}}
-                {{/*                                        <a target="_blank" rel="noopener" href="https://steamprices.com/">steamprices.com</a>*/}}
-                {{/*                                    </li>*/}}
-                {{/*                                    <li>*/}}
-                {{/*                                        <img src="https://pbs.twimg.com/profile_images/624266818891423744/opyF6mM5_400x400.png" alt="">*/}}
-                {{/*                                        <a target="_blank" rel="noopener" href="https://steamspy.com/">steamspy.com</a>*/}}
-                {{/*                                    </li>*/}}
-                {{/*                                    <li>*/}}
-                {{/*                                        <img src="https://steamstat.us/favicon.ico" alt="">*/}}
-                {{/*                                        <a target="_blank" rel="noopener" href="https://steamstat.us/">steamstat.us</a>*/}}
-                {{/*                                    </li>*/}}
-                {{/*                                </ul>*/}}
-                {{/*                            </div>*/}}
-                {{/*                            <div class="col-sm-12 col-lg-6">*/}}
-
-                {{/*                                <h5>For Traders</h5>*/}}
-                {{/*                                <ul>*/}}
-                {{/*                                    <li>*/}}
-                {{/*                                        <img src="https://bartervg.com/imgs/ico/barter/favicon-16x16.png" alt="">*/}}
-                {{/*                                        <a target="_blank" rel="noopener" href="https://barter.vg/">barter.vg</a>*/}}
-                {{/*                                    </li>*/}}
-                {{/*                                    <li>*/}}
-                {{/*                                        <img src="https://scrap.tf/favicon-16x16.png" alt="">*/}}
-                {{/*                                        <a target="_blank" rel="noopener" href="https://scrap.tf/">scrap.tf</a>*/}}
-                {{/*                                    </li>*/}}
-                {{/*                                    <li>*/}}
-                {{/*                                        <img src="https://www.steamcardexchange.net/include/design/img/favicon_blue_small.png" alt="">*/}}
-                {{/*                                        <a target="_blank" rel="noopener" href="https://steamcardexchange.net/">steamcardexchange.net</a>*/}}
-                {{/*                                    </li>*/}}
-                {{/*                                    <li>*/}}
-                {{/*                                        <img src="https://backpack.tf/favicon_440.ico" alt="">*/}}
-                {{/*                                        <a target="_blank" rel="noopener" href="https://backpack.tf/">backpack.tf</a>*/}}
-                {{/*                                    </li>*/}}
-                {{/*                                </ul>*/}}
-                {{/*                            </div>*/}}
-                {{/*                        </div>*/}}
-
-                {{/*                    </div>*/}}
-
-                {{/*                    <div class="tab-pane" id="terms" role="tabpanel">*/}}
-
-                {{/*                        <h5>NO WARRANTY</h5>*/}}
-                {{/*                        <p>VALVE PROVIDES THE STEAM WEB API, STEAM DATA, AND VALVE BRAND & LINKS "AS IS," "WITH ALL FAULTS" AND "AS AVAILABLE," AND THE ENTIRE RISK AS TO SATISFACTORY QUALITY, PERFORMANCE, ACCURACY, AND EFFORT IS WITH YOU. TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, VALVE , STEAM GAME PUBLISHERS AND DEVELOPERS, AND THEIR SUPPLIERS MAKE NO REPRESENTATIONS, WARRANTIES OR CONDITIONS, EXPRESS OR IMPLIED. VALVE, STEAM GAME PUBLISHERS AND DEVELOPERS, AND THEIR SUPPLIERS EXPRESSLY DISCLAIM*/}}
-                {{/*                            ANY*/}}
-                {{/*                            AND ALL WARRANTIES OR CONDITIONS, EXPRESS, STATUTORY AND IMPLIED, INCLUDING WITHOUT LIMITATION (A) WARRANTIES OR CONDITIONS OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, WORKMANLIKE EFFORT, ACCURACY, TITLE, QUIET ENJOYMENT, NO ENCUMBRANCES, NO LIENS AND NON-INFRINGEMENT, (B) WARRANTIES OR CONDITIONS ARISING THROUGH COURSE OF DEALING OR USAGE OF TRADE, AND (C) WARRANTIES OR CONDITIONS OF UNINTERRUPTED OR ERROR-FREE ACCESS OR USE.</p>*/}}
-                {{/*                        <h5>LIABILITY LIMITATION; EXCLUSIVE REMEDY</h5>*/}}
-                {{/*                        <p>IN NO EVENT WILL VALVE OR ANY SUPPLIER BE LIABLE FOR ANY DAMAGES, INCLUDING WITHOUT LIMITATION ANY INDIRECT, CONSEQUENTIAL, SPECIAL, INCIDENTAL, OR PUNITIVE DAMAGES ARISING OUT OF, BASED ON, OR RESULTING FROM THESE API TERMS OF USE OR YOUR USE OF STEAM WEB API, STEAM DATA, OR VALVE BRAND & LINKS, EVEN IF SUCH PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES. THE EXCLUSION OF DAMAGES UNDER THIS PARAGRAPH IS INDEPENDENT OF YOUR EXCLUSIVE REMEDY AND SURVIVES IN THE EVENT*/}}
-                {{/*                            SUCH*/}}
-                {{/*                            REMEDY FAILS OF ITS ESSENTIAL PURPOSE OR IS OTHERWISE DEEMED UNENFORCEABLE. THESE LIMITATIONS AND EXCLUSIONS APPLY WITHOUT REGARD TO WHETHER THE DAMAGES ARISE FROM (A) BREACH OF CONTRACT, (B) BREACH OF WARRANTY, (C) NEGLIGENCE, OR (D) ANY OTHER CAUSE OF ACTION, TO THE EXTENT SUCH EXCLUSION AND LIMITATIONS ARE NOT PROHIBITED BY APPLICABLE LAW. IF YOU DO NOT AGREE WITH ANY PART OF THESE API TERMS OF USE, OR YOU HAVE ANY DISPUTE OR CLAIM AGAINST VALVE OR ITS SUPPLIERS WITH RESPECT*/}}
-                {{/*                            TO*/}}
-                {{/*                            THESE TERMS OF USE OR THE SERVICES, THEN YOUR SOLE AND EXCLUSIVE REMEDY IS TO DISCONTINUE USING THE STEAM WEB API, STEAM DATA, AND VALVE BRAND & LINKS.</p>*/}}
-
-                {{/*                    </div>*/}}
-
-                {{/*                </div>*/}}
 
             </div>
         </div>
