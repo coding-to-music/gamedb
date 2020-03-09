@@ -470,7 +470,7 @@ func saveGroup(group mongo.Group) (err error) {
 
 	// This uses a bunch of cpu
 	update := bson.D{
-		{"group_name", group.Name},
+		{"group_name", helpers.TruncateString(group.Name, 1000, "")}, // Truncated as caused mongo driver issue
 		{"group_icon", group.Icon},
 		{"group_members", group.Members},
 		{"group_url", group.URL},
