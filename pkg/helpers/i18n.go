@@ -35,7 +35,6 @@ func (pcc ProductCountryCode) GetFlag() string {
 	case steamapi.ProductCCPK:
 		return "sasia"
 	default:
-		log.Warning("missing flag " + pcc.ProductCode)
 		return strings.ToLower(pcc.CountryCodes[0])
 	}
 }
