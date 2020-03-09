@@ -12,6 +12,7 @@ import (
 
 	"github.com/Jleagle/influxql"
 	"github.com/Jleagle/rabbit-go"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
@@ -72,7 +73,7 @@ func groupsHandler(messages []*rabbit.Message) {
 		}
 
 		// Skip if updated recently
-		if !group.ShouldUpdate() {
+		if !group.ShouldUpdate() && !config.IsLocal() {
 			message.Ack(false)
 			continue
 		}
