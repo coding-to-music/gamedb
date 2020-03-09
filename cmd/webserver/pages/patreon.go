@@ -82,7 +82,7 @@ func saveWebhookEvent(r *http.Request, event mongo.EventEnum, pwr patreon.Webhoo
 
 	player := mongo.Player{}
 	err = mongo.FindOne(mongo.CollectionPlayers, bson.D{{Key: "email", Value: email}}, nil, bson.M{"_id": 1}, &player)
-	if err == mongo.ErrNoDocuments || (err == nil && player.ID == 0) {
+	if err == mongo.ErrNoDocuments {
 		return nil
 	}
 	if err != nil {

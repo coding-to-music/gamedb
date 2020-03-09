@@ -83,7 +83,7 @@ func main() {
 			continue
 		}
 
-		if pack.ID == 0 || err == mongo.ErrNoDocuments {
+		if err == mongo.ErrNoDocuments {
 			err = queue.ProduceSteam(queue.SteamMessage{PackageIDs: []int{packageID}})
 			if err != nil {
 				log.Err(err)

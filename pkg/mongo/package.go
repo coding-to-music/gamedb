@@ -324,9 +324,6 @@ func GetPackage(id int) (pack Package, err error) {
 		if err != nil {
 			return pack, err
 		}
-		if pack.ID == 0 {
-			return pack, ErrNoDocuments
-		}
 
 		return pack, err
 	})
