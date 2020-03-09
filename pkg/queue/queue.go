@@ -15,16 +15,16 @@ import (
 )
 
 const (
-	QueueApps            rabbit.QueueName = "GDB_Apps"
-	QueueAppsDaily       rabbit.QueueName = "GDB_Apps_Daily"
-	QueueAppPlayers      rabbit.QueueName = "GDB_App_Players"
-	QueueBundles         rabbit.QueueName = "GDB_Bundles"
-	QueueChanges         rabbit.QueueName = "GDB_Changes"
-	QueueGroups          rabbit.QueueName = "GDB_Groups"
-	QueuePackages        rabbit.QueueName = "GDB_Packages"
-	QueuePlayers         rabbit.QueueName = "GDB_Players"
-	QueuePlayerRanks     rabbit.QueueName = "GDB_Player_Ranks"
-	QueueSteam           rabbit.QueueName = "GDB_Steam"
+	QueueApps        rabbit.QueueName = "GDB_Apps"
+	QueueAppsDaily   rabbit.QueueName = "GDB_Apps_Daily"
+	QueueAppPlayers  rabbit.QueueName = "GDB_App_Players"
+	QueueBundles     rabbit.QueueName = "GDB_Bundles"
+	QueueChanges     rabbit.QueueName = "GDB_Changes"
+	QueueGroups      rabbit.QueueName = "GDB_Groups"
+	QueuePackages    rabbit.QueueName = "GDB_Packages"
+	QueuePlayers     rabbit.QueueName = "GDB_Players"
+	QueuePlayerRanks rabbit.QueueName = "GDB_Player_Ranks"
+	QueueSteam       rabbit.QueueName = "GDB_Steam"
 
 	QueueDelay  rabbit.QueueName = "GDB_Delay"
 	QueueFailed rabbit.QueueName = "GDB_Failed"
@@ -211,7 +211,7 @@ func ProduceApp(payload AppMessage) (err error) {
 	mc := memcache.GetClient()
 	item := memcache.MemcacheAppInQueue(payload.ID)
 
-	if payload.ChangeNumber == 0 {
+	if payload.ChangeNumber == 0 && !config.IsLocal() {
 		_, err = mc.Get(item.Key)
 		if err == nil {
 			return memcache.ErrInQueue
@@ -242,8 +242,8 @@ func ProduceAppPlayers(payload AppPlayerMessage) (err error) {
 func ProduceBundle(id int) (err error) {
 
 	mc := memcache.GetClient()
-
 	item := memcache.MemcacheBundleInQueue(id)
+
 	_, err = mc.Get(item.Key)
 	if err == nil {
 		return memcache.ErrInQueue
@@ -276,9 +276,11 @@ func ProduceGroup(payload GroupMessage) (err error) {
 	mc := memcache.GetClient()
 	item := memcache.MemcacheGroupInQueue(payload.ID)
 
-	_, err = mc.Get(item.Key)
-	if err == nil {
-		return memcache.ErrInQueue
+	if !config.IsLocal() {
+		_, err = mc.Get(item.Key)
+		if err == nil {
+			return memcache.ErrInQueue
+		}
 	}
 
 	err = produce(QueueGroups, payload)
@@ -298,7 +300,7 @@ func ProducePackage(payload PackageMessage) (err error) {
 	mc := memcache.GetClient()
 	item := memcache.MemcachePackageInQueue(payload.ID)
 
-	if payload.ChangeNumber == 0 {
+	if payload.ChangeNumber == 0 && !config.IsLocal() {
 		_, err = mc.Get(item.Key)
 		if err == nil {
 			return memcache.ErrInQueue
@@ -327,11 +329,13 @@ func ProducePlayer(payload PlayerMessage) (err error) {
 	}
 
 	mc := memcache.GetClient()
-
 	item := memcache.MemcachePlayerInQueue(payload.ID)
-	_, err = mc.Get(item.Key)
-	if err == nil {
-		return memcache.ErrInQueue
+
+	if !config.IsLocal() {
+		_, err = mc.Get(item.Key)
+		if err == nil {
+			return memcache.ErrInQueue
+		}
 	}
 
 	err = produce(QueuePlayers, payload)
