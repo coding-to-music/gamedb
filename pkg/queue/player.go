@@ -343,32 +343,33 @@ func updatePlayerBadges(player *mongo.Player) error {
 	var appIDSlice []int
 	var specialBadgeIDSlice []int
 
-	for _, v := range response.Badges {
-		appIDSlice = append(appIDSlice, v.AppID)
+	for _, badge := range response.Badges {
+
+		appIDSlice = append(appIDSlice, badge.AppID)
 		playerBadgeSlice = append(playerBadgeSlice, mongo.PlayerBadge{
-			AppID:               v.AppID,
-			BadgeCompletionTime: time.Unix(v.CompletionTime, 0),
-			BadgeFoil:           bool(v.BorderColor),
-			BadgeID:             v.BadgeID,
-			BadgeItemID:         int64(v.CommunityItemID),
-			BadgeLevel:          v.Level,
-			BadgeScarcity:       v.Scarcity,
-			BadgeXP:             v.XP,
+			AppID:               badge.AppID,
+			BadgeCompletionTime: time.Unix(badge.CompletionTime, 0),
+			BadgeFoil:           bool(badge.BorderColor),
+			BadgeID:             badge.BadgeID,
+			BadgeItemID:         int64(badge.CommunityItemID),
+			BadgeLevel:          badge.Level,
+			BadgeScarcity:       badge.Scarcity,
+			BadgeXP:             badge.XP,
 			PlayerID:            player.ID,
 			PlayerIcon:          player.Avatar,
 			PlayerName:          player.PersonaName,
 		})
 
 		// Add significant badges to profile
-		if v.AppID == 0 {
-			_, ok := mongo.GlobalBadges[v.BadgeID]
+		if badge.AppID == 0 {
+			_, ok := mongo.GlobalBadges[badge.BadgeID]
 			if ok {
-				specialBadgeIDSlice = append(specialBadgeIDSlice, v.BadgeID)
+				specialBadgeIDSlice = append(specialBadgeIDSlice, badge.BadgeID)
 			}
 		} else {
-			_, ok := mongo.GlobalBadges[v.AppID]
+			_, ok := mongo.GlobalBadges[badge.AppID]
 			if ok {
-				specialBadgeIDSlice = append(specialBadgeIDSlice, v.AppID)
+				specialBadgeIDSlice = append(specialBadgeIDSlice, badge.AppID)
 			}
 		}
 	}
