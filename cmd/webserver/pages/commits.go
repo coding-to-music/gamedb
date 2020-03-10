@@ -109,9 +109,9 @@ func getTotalCommits() (total int) {
 		}
 
 		policy := backoff.NewExponentialBackOff()
-		policy.InitialInterval = time.Second / 2
+		policy.InitialInterval = time.Second
 
-		err := backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 4), func(err error, t time.Duration) { log.Info(err) })
+		err := backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 5), func(err error, t time.Duration) { log.Info(err) })
 		return total, err
 	})
 	log.Err(err)
