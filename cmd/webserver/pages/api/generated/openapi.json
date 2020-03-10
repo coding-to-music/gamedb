@@ -421,6 +421,7 @@
             "in": "query",
             "name": "order",
             "schema": {
+              "default": "asc",
               "enum": [
                 [
                   "asc",
@@ -582,6 +583,16 @@
             "in": "query",
             "name": "sort",
             "schema": {
+              "default": "id",
+              "enum": [
+                "id",
+                "level",
+                "badges",
+                "games",
+                "time",
+                "friends",
+                "comments"
+              ],
               "type": "string"
             }
           },
@@ -589,6 +600,7 @@
             "in": "query",
             "name": "order",
             "schema": {
+              "default": "desc",
               "enum": [
                 [
                   "asc",
@@ -694,12 +706,10 @@
   },
   "security": [
     {
-      "key-header": [
-        ""
-      ]
+      "key-header": []
     },
     {
-      "key-query": null
+      "key-query": []
     }
   ],
   "servers": [

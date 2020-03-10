@@ -19,12 +19,10 @@ var (
 	apiKeySchema = openapi3.NewStringSchema().WithPattern("^[0-9A-Z]{20}$")
 	limitSchema  = openapi3.NewIntegerSchema().WithDefault(10).WithMin(1).WithMax(100)
 
-	keyGetParam     = openapi3.NewQueryParameter("key").WithSchema(apiKeySchema).WithRequired(true)
-	keyPostParam    = openapi3.NewHeaderParameter("key").WithSchema(apiKeySchema).WithRequired(true)
-	offsetParam     = openapi3.NewQueryParameter("offset").WithSchema(openapi3.NewIntegerSchema().WithDefault(0).WithMin(0))
-	limitParam      = openapi3.NewQueryParameter("limit").WithSchema(limitSchema)
-	orderSortParam  = openapi3.NewQueryParameter("sort").WithSchema(openapi3.NewStringSchema())
-	orderOrderParam = openapi3.NewQueryParameter("order").WithSchema(openapi3.NewStringSchema().WithEnum([]string{"asc", "desc"}))
+	keyGetParam  = openapi3.NewQueryParameter("key").WithSchema(apiKeySchema).WithRequired(true)
+	keyPostParam = openapi3.NewHeaderParameter("key").WithSchema(apiKeySchema).WithRequired(true)
+	offsetParam  = openapi3.NewQueryParameter("offset").WithSchema(openapi3.NewIntegerSchema().WithDefault(0).WithMin(0))
+	limitParam   = openapi3.NewQueryParameter("limit").WithSchema(limitSchema)
 
 	// Schemas
 	priceSchema = &openapi3.Schema{
@@ -224,8 +222,8 @@ var Swagger = &openapi3.Swagger{
 					{Value: offsetParam},
 					{Value: limitParam},
 					// {Ref: "#/components/parameters/limit-param"},
-					{Value: orderSortParam},
-					{Value: orderOrderParam},
+					{Value: openapi3.NewQueryParameter("sort").WithSchema(openapi3.NewStringSchema())},
+					{Value: openapi3.NewQueryParameter("order").WithSchema(openapi3.NewStringSchema().WithEnum([]string{"asc", "desc"}).WithDefault("asc"))},
 					{Value: openapi3.NewQueryParameter("ids").WithSchema(openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema()).WithMaxItems(100))},
 					{Value: openapi3.NewQueryParameter("tags").WithSchema(openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema()).WithMaxItems(10))},
 					{Value: openapi3.NewQueryParameter("genres").WithSchema(openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema()).WithMaxItems(10))},
@@ -262,8 +260,9 @@ var Swagger = &openapi3.Swagger{
 					{Value: keyGetParam},
 					{Value: offsetParam},
 					{Value: limitParam},
-					{Value: orderSortParam},
-					{Value: orderOrderParam},
+					// {Ref: "#/components/parameters/limit-param"},
+					{Value: openapi3.NewQueryParameter("sort").WithSchema(openapi3.NewStringSchema().WithEnum("id", "level", "badges", "games", "time", "friends", "comments").WithDefault("id"))},
+					{Value: openapi3.NewQueryParameter("order").WithSchema(openapi3.NewStringSchema().WithEnum([]string{"asc", "desc"}).WithDefault("desc"))},
 					{Value: openapi3.NewQueryParameter("continent").WithSchema(openapi3.NewArraySchema().WithMaxItems(3).WithItems(openapi3.NewStringSchema().WithMaxLength(2)))},
 					{Value: openapi3.NewQueryParameter("country").WithSchema(openapi3.NewArraySchema().WithMaxItems(3).WithItems(openapi3.NewStringSchema().WithMaxLength(2)))},
 				},

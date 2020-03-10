@@ -26,6 +26,40 @@ func (s Server) GetPlayers(w http.ResponseWriter, r *http.Request) {
 			offset = int64(*params.Offset)
 		}
 
+		var sort string
+		if params.Sort != nil {
+			switch *params.Sort {
+			case "id":
+				sort = "_id"
+			case "level":
+				sort = "level"
+			case "badges":
+				sort = "badges_count"
+			case "games":
+				sort = "games_count"
+			case "time":
+				sort = "play_time"
+			case "friends":
+				sort = "friends_count"
+			case "comments":
+				sort = "comments_count"
+			default:
+				sort = "_id"
+			}
+		}
+
+		var order int
+		if params.Order != nil {
+			switch *params.Sort {
+			case "1", "asc", "ascending":
+				order = 1
+			case "0", "-1", "desc", "descending":
+				order = -1
+			default:
+				order = -1
+			}
+		}
+
 		filter := bson.D{{}}
 
 		if params.Continent != nil {
@@ -36,7 +70,7 @@ func (s Server) GetPlayers(w http.ResponseWriter, r *http.Request) {
 			filter = append(filter, bson.E{Key: "country_code", Value: *params.Country})
 		}
 
-		players, err := mongo.GetPlayers(offset, limit, nil, filter, nil)
+		players, err := mongo.GetPlayers(offset, limit, bson.D{{sort, order}}, filter, bson.M{"_id": 1, "persona_name": 1, "avatar": 1, "continent_code": 1, "country_code": 1, "status_code": 1, "badges_count": 1, "comments_count": 1, "friends_count": 1, "games_count": 1, "groups_count": 1, "level": 1, "play_time": 1})
 		if err != nil {
 			return 500, err
 		}

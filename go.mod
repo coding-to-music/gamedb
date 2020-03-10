@@ -28,7 +28,7 @@ require (
 	github.com/bwmarrin/discordgo v0.20.2
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/cenkalti/backoff/v4 v4.0.0
-	github.com/deepmap/oapi-codegen v1.3.5
+	github.com/deepmap/oapi-codegen v1.3.7-0.20200306152314-a80789f547c1
 	github.com/derekstavis/go-qs v0.0.0-20180720192143-9eef69e6c4e7
 	github.com/dghubble/go-twitter v0.0.0-20190719072343-39e5462e111f
 	github.com/dghubble/oauth1 v0.6.0
