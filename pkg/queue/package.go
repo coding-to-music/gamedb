@@ -249,19 +249,20 @@ func packageHandler(messages []*rabbit.Message) {
 		}()
 
 		// Queue apps
-		// Commented out because queued too many apps
-		// Uncommented out to help with finding sales
 		wg.Add(1)
 		go func() {
 
 			defer wg.Done()
 
-			var err error
+			if payload.ChangeNumber > 0 {
 
-			for _, appID := range pack.Apps {
-				err = ProducePackage(PackageMessage{ID: appID})
-				err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
-				log.Err(err)
+				var err error
+
+				for _, appID := range pack.Apps {
+					err = ProducePackage(PackageMessage{ID: appID})
+					err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
+					log.Err(err)
+				}
 			}
 		}()
 
