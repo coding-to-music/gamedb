@@ -49,11 +49,11 @@ func main() {
 			if c.Messages >= 10 && locked == false {
 				locked = true
 				wg.Add(1)
-				log.Info("locked")
+				log.Info(time.Now().String(), "locked")
 			} else if c.Messages < 10 && locked == true {
 				locked = false
 				wg.Done()
-				log.Info("unlocked")
+				log.Info(time.Now().String(), "unlocked")
 			}
 		}
 	}()
@@ -73,7 +73,7 @@ func main() {
 			continue
 		}
 
-		log.Info(packageID)
+		log.Info(time.Now().String(), packageID)
 
 		pack := mongo.Package{}
 
