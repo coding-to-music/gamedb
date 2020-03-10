@@ -167,7 +167,7 @@ func main() {
 
 	// Root files
 	r.Get("/browserconfig.xml", rootFileHandler(filesBox, ""))
-	r.Get("/robots.txt", rootFileHandler(filesBox, "xxx"))
+	r.Get("/robots.txt", rootFileHandler(filesBox, ""))
 	r.Get("/site.webmanifest", rootFileHandler(filesBox, ""))
 	// r.Get("/ads.txt", rootFileHandler)
 
