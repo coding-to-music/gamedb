@@ -47,7 +47,9 @@ func (c AppPlayers) work() (err error) {
 
 	var ids []int
 	for _, v := range apps {
-		ids = append(ids, v.ID)
+		if v.ID > 0 { // This is just here to stop storing things on app 0, which we use to store steam stats on
+			ids = append(ids, v.ID)
+		}
 	}
 
 	log.Info("Found " + strconv.Itoa(len(ids)) + " apps")
