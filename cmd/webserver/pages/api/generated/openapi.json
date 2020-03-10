@@ -10,6 +10,15 @@
           "minimum": 1,
           "type": "integer"
         }
+      },
+      "offset-param": {
+        "in": "query",
+        "name": "offset",
+        "schema": {
+          "default": 0,
+          "minimum": 0,
+          "type": "integer"
+        }
       }
     },
     "responses": {
@@ -392,23 +401,10 @@
             }
           },
           {
-            "in": "query",
-            "name": "offset",
-            "schema": {
-              "default": 0,
-              "minimum": 0,
-              "type": "integer"
-            }
+            "$ref": "#/components/parameters/offset-param"
           },
           {
-            "in": "query",
-            "name": "limit",
-            "schema": {
-              "default": 10,
-              "maximum": 100,
-              "minimum": 1,
-              "type": "integer"
-            }
+            "$ref": "#/components/parameters/limit-param"
           },
           {
             "in": "query",
@@ -561,23 +557,10 @@
             }
           },
           {
-            "in": "query",
-            "name": "offset",
-            "schema": {
-              "default": 0,
-              "minimum": 0,
-              "type": "integer"
-            }
+            "$ref": "#/components/parameters/offset-param"
           },
           {
-            "in": "query",
-            "name": "limit",
-            "schema": {
-              "default": 10,
-              "maximum": 100,
-              "minimum": 1,
-              "type": "integer"
-            }
+            "$ref": "#/components/parameters/limit-param"
           },
           {
             "in": "query",

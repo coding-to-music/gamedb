@@ -86,6 +86,9 @@ type PriceSchema struct {
 // LimitParam defines model for limit-param.
 type LimitParam int
 
+// OffsetParam defines model for offset-param.
+type OffsetParam int
+
 // AppResponse defines model for app-response.
 type AppResponse AppSchema
 
@@ -112,18 +115,18 @@ type PlayersResponse struct {
 
 // GetAppsParams defines parameters for GetApps.
 type GetAppsParams struct {
-	Key        string    `json:"key"`
-	Offset     *int      `json:"offset,omitempty"`
-	Limit      *int      `json:"limit,omitempty"`
-	Sort       *string   `json:"sort,omitempty"`
-	Order      *string   `json:"order,omitempty"`
-	Ids        *[]int    `json:"ids,omitempty"`
-	Tags       *[]int    `json:"tags,omitempty"`
-	Genres     *[]int    `json:"genres,omitempty"`
-	Categories *[]int    `json:"categories,omitempty"`
-	Developers *[]int    `json:"developers,omitempty"`
-	Publishers *[]int    `json:"publishers,omitempty"`
-	Platforms  *[]string `json:"platforms,omitempty"`
+	Key        string       `json:"key"`
+	Offset     *OffsetParam `json:"offset,omitempty"`
+	Limit      *LimitParam  `json:"limit,omitempty"`
+	Sort       *string      `json:"sort,omitempty"`
+	Order      *string      `json:"order,omitempty"`
+	Ids        *[]int       `json:"ids,omitempty"`
+	Tags       *[]int       `json:"tags,omitempty"`
+	Genres     *[]int       `json:"genres,omitempty"`
+	Categories *[]int       `json:"categories,omitempty"`
+	Developers *[]int       `json:"developers,omitempty"`
+	Publishers *[]int       `json:"publishers,omitempty"`
+	Platforms  *[]string    `json:"platforms,omitempty"`
 }
 
 // GetAppsIdParams defines parameters for GetAppsId.
@@ -133,13 +136,13 @@ type GetAppsIdParams struct {
 
 // GetPlayersParams defines parameters for GetPlayers.
 type GetPlayersParams struct {
-	Key       string    `json:"key"`
-	Offset    *int      `json:"offset,omitempty"`
-	Limit     *int      `json:"limit,omitempty"`
-	Sort      *string   `json:"sort,omitempty"`
-	Order     *string   `json:"order,omitempty"`
-	Continent *[]string `json:"continent,omitempty"`
-	Country   *[]string `json:"country,omitempty"`
+	Key       string       `json:"key"`
+	Offset    *OffsetParam `json:"offset,omitempty"`
+	Limit     *LimitParam  `json:"limit,omitempty"`
+	Sort      *string      `json:"sort,omitempty"`
+	Order     *string      `json:"order,omitempty"`
+	Continent *[]string    `json:"continent,omitempty"`
+	Country   *[]string    `json:"country,omitempty"`
 }
 
 // GetPlayersIdParams defines parameters for GetPlayersId.
@@ -596,7 +599,7 @@ func Handler(si ServerInterface) http.Handler {
 }
 
 // HandlerFromMux creates http.Handler with routing matching OpenAPI spec based on the provided mux.
-func HandlerFromMux(si ServerInterface, r *chi.Mux) http.Handler {
+func HandlerFromMux(si ServerInterface, r chi.Router) http.Handler {
 	r.Group(func(r chi.Router) {
 		r.Use(GetAppsCtx)
 		r.Get("/apps", si.GetApps)
@@ -624,29 +627,30 @@ func HandlerFromMux(si ServerInterface, r *chi.Mux) http.Handler {
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
+	"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",
+	"7NP9nwEAAP//hRZaniMdAAA=",
 }
 
 // GetSwagger returns the Swagger specification corresponding to the generated code

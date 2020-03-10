@@ -15,14 +15,10 @@ func init() {
 }
 
 var (
-	// This is here because oapi-codegen will not generate params using $ref
 	apiKeySchema = openapi3.NewStringSchema().WithPattern("^[0-9A-Z]{20}$")
-	limitSchema  = openapi3.NewIntegerSchema().WithDefault(10).WithMin(1).WithMax(100)
 
 	keyGetParam  = openapi3.NewQueryParameter("key").WithSchema(apiKeySchema).WithRequired(true)
 	keyPostParam = openapi3.NewHeaderParameter("key").WithSchema(apiKeySchema).WithRequired(true)
-	offsetParam  = openapi3.NewQueryParameter("offset").WithSchema(openapi3.NewIntegerSchema().WithDefault(0).WithMin(0))
-	limitParam   = openapi3.NewQueryParameter("limit").WithSchema(limitSchema)
 
 	// Schemas
 	priceSchema = &openapi3.Schema{
@@ -63,6 +59,9 @@ var Swagger = &openapi3.Swagger{
 		Parameters: map[string]*openapi3.ParameterRef{
 			"limit-param": {
 				Value: openapi3.NewQueryParameter("limit").WithSchema(openapi3.NewIntegerSchema().WithDefault(10).WithMin(1).WithMax(100)),
+			},
+			"offset-param": {
+				Value: openapi3.NewQueryParameter("offset").WithSchema(openapi3.NewIntegerSchema().WithDefault(0).WithMin(0)),
 			},
 		},
 		Schemas: map[string]*openapi3.SchemaRef{
@@ -219,9 +218,8 @@ var Swagger = &openapi3.Swagger{
 				Summary: "List Apps",
 				Parameters: openapi3.Parameters{
 					{Value: keyGetParam},
-					{Value: offsetParam},
-					{Value: limitParam},
-					// {Ref: "#/components/parameters/limit-param"},
+					{Ref: "#/components/parameters/offset-param"},
+					{Ref: "#/components/parameters/limit-param"},
 					{Value: openapi3.NewQueryParameter("sort").WithSchema(openapi3.NewStringSchema())},
 					{Value: openapi3.NewQueryParameter("order").WithSchema(openapi3.NewStringSchema().WithEnum([]string{"asc", "desc"}).WithDefault("asc"))},
 					{Value: openapi3.NewQueryParameter("ids").WithSchema(openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema()).WithMaxItems(100))},
@@ -258,9 +256,8 @@ var Swagger = &openapi3.Swagger{
 				Summary: "List Players",
 				Parameters: openapi3.Parameters{
 					{Value: keyGetParam},
-					{Value: offsetParam},
-					{Value: limitParam},
-					// {Ref: "#/components/parameters/limit-param"},
+					{Ref: "#/components/parameters/offset-param"},
+					{Ref: "#/components/parameters/limit-param"},
 					{Value: openapi3.NewQueryParameter("sort").WithSchema(openapi3.NewStringSchema().WithEnum("id", "level", "badges", "games", "time", "friends", "comments").WithDefault("id"))},
 					{Value: openapi3.NewQueryParameter("order").WithSchema(openapi3.NewStringSchema().WithEnum([]string{"asc", "desc"}).WithDefault("desc"))},
 					{Value: openapi3.NewQueryParameter("continent").WithSchema(openapi3.NewArraySchema().WithMaxItems(3).WithItems(openapi3.NewStringSchema().WithMaxLength(2)))},
