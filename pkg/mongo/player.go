@@ -669,6 +669,7 @@ func SearchPlayer(search string, projection bson.M) (player Player, queue bool, 
 	//
 	var ops = options.FindOne()
 
+	// Set to case insensitive
 	ops.SetCollation(&options.Collation{
 		Locale:   "en",
 		Strength: 2,
