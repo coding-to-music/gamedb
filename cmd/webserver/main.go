@@ -5,7 +5,9 @@ import (
 	_ "net/http/pprof"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/Jleagle/recaptcha-go"
 	"github.com/gamedb/gamedb/cmd/webserver/middleware"
@@ -221,13 +223,21 @@ func rootFileHandler(box *packr.Box, path string) func(w http.ResponseWriter, r 
 			return
 		}
 
-		// Fix headers, packr seems to break them
 		types := map[string]string{
 			".js":  "text/javascript",
 			".css": "text/css",
+			".png": "image/png",
+			".jpg": "image/jpeg",
 		}
 
 		if val, ok := types[filepath.Ext(r.URL.Path)]; ok {
+
+			// Cache for ages
+			duration := time.Hour * 1000
+			w.Header().Set("Cache-Control", "max-age="+strconv.Itoa(int(duration.Seconds())))
+			w.Header().Set("Expires", time.Now().Add(duration).Format(time.RFC1123))
+
+			// Fix headers, packr seems to break them
 			w.Header().Add("Content-Type", val)
 		}
 
