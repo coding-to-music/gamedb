@@ -276,6 +276,12 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
+	//
+	t.PlayersInGame, err = t.App.GetPlayersInGame()
+	if err != nil {
+		log.Err(err, r)
+	}
+
 	// Functions that get called multiple times in the template
 	t.Price = app.Prices.Get(helpers.GetProductCC(r))
 	t.Common = app.Common.Formatted(app.ID, pics.CommonKeys)
@@ -318,25 +324,26 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 
 type appTemplate struct {
 	GlobalTemplate
-	App         mongo.App
-	Banners     map[string][]string
-	Bundles     []sql.Bundle
-	Categories  []sql.Category
-	Common      []pics.KeyValue
-	Config      []pics.KeyValue
-	Demos       []mongo.App
-	Related     []mongo.App
-	RelatedTags map[int]sql.Tag
-	Developers  []sql.Developer
-	DLCs        []mongo.App
-	Extended    []pics.KeyValue
-	Genres      []sql.Genre
-	Packages    []mongo.Package
-	Price       helpers.ProductPrice
-	Publishers  []sql.Publisher
-	Tags        []sql.Tag
-	TagsMax     int
-	UFS         []pics.KeyValue
+	App           mongo.App
+	Banners       map[string][]string
+	Bundles       []sql.Bundle
+	Categories    []sql.Category
+	Common        []pics.KeyValue
+	Config        []pics.KeyValue
+	Demos         []mongo.App
+	Related       []mongo.App
+	RelatedTags   map[int]sql.Tag
+	Developers    []sql.Developer
+	DLCs          []mongo.App
+	Extended      []pics.KeyValue
+	Genres        []sql.Genre
+	Packages      []mongo.Package
+	Price         helpers.ProductPrice
+	Publishers    []sql.Publisher
+	Tags          []sql.Tag
+	TagsMax       int
+	UFS           []pics.KeyValue
+	PlayersInGame int64
 }
 
 func (t appTemplate) GetRelatedTags(relatedApp mongo.App) template.HTML {

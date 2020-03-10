@@ -144,7 +144,7 @@
                                         </tr>
                                         <tr>
                                             <th scope="row" nowrap="nowrap" class="thin">Players</th>
-                                            <td>{{ comma64 .App.GetPlayersInGame }} <small>now</small>, {{ comma .App.PlayerPeakWeek }} <small>week peak</small></td>
+                                            <td>{{ comma64 .PlayersInGame }} <small>now</small>, {{ comma .App.PlayerPeakWeek }} <small>week peak</small></td>
                                         </tr>
 
                                         <tr>
@@ -414,7 +414,7 @@
                                     </tr>
                                     <tr>
                                         <td>Peak Last 10 minutes</td>
-                                        <td>{{ comma64 .App.GetPlayersInGame }}</td>
+                                        <td>{{ comma64 .PlayersInGame }}</td>
                                     </tr>
                                     <tr>
                                         <td>Average Last Week</td>
