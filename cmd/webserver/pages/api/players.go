@@ -70,7 +70,19 @@ func (s Server) GetPlayers(w http.ResponseWriter, r *http.Request) {
 			filter = append(filter, bson.E{Key: "country_code", Value: *params.Country})
 		}
 
-		players, err := mongo.GetPlayers(offset, limit, bson.D{{sort, order}}, filter, bson.M{"_id": 1, "persona_name": 1, "avatar": 1, "continent_code": 1, "country_code": 1, "status_code": 1, "badges_count": 1, "comments_count": 1, "friends_count": 1, "games_count": 1, "groups_count": 1, "level": 1, "play_time": 1})
+		players, err := mongo.GetPlayers(offset, limit, bson.D{{sort, order}}, filter, bson.M{"_id": 1,
+			"persona_name":   1,
+			"avatar":         1,
+			"continent_code": 1,
+			"country_code":   1,
+			"status_code":    1,
+			"badges_count":   1,
+			"comments_count": 1,
+			"friends_count":  1,
+			"games_count":    1,
+			"groups_count":   1,
+			"level":          1,
+			"play_time":      1})
 		if err != nil {
 			return 500, err
 		}
