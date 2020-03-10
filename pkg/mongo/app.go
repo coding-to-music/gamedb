@@ -593,9 +593,6 @@ func CreateAppIndexes() {
 
 	// Achievements page
 	indexModels = append(indexModels, mongo.IndexModel{
-		Keys: bson.D{{"achievements_count", 1}},
-	})
-	indexModels = append(indexModels, mongo.IndexModel{
 		Keys: bson.D{{"achievements_count", -1}, {"achievements_average_completion", -1}},
 	})
 
