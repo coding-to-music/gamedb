@@ -106,22 +106,10 @@ func IsValidPlayerID(id int64) (int64, error) {
 	return int64(steamID), nil
 }
 
-// todo, is it 5 per level now?
 func GetPlayerMaxFriends(level int) (ret int) {
-
-	ret = 750
-
-	if level > 100 {
-		ret = 1250
+	ret = 250 + (level * 5)
+	if ret > 2000 {
+		return 2000
 	}
-
-	if level > 200 {
-		ret = 1750
-	}
-
-	if level > 300 {
-		ret = 2000
-	}
-
 	return ret
 }
