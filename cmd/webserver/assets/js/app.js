@@ -123,7 +123,7 @@ if ($appPage.length > 0) {
     function loadNews() {
 
         const options = {
-            "order": [[2, 'desc']],
+            "order": [[1, 'desc']],
             "createdRow": function (row, data, dataIndex) {
                 $(row).attr('data-id', data[0]);
                 $(row).addClass('cursor-pointer');
@@ -133,26 +133,19 @@ if ($appPage.length > 0) {
                 {
                     "targets": 0,
                     "render": function (data, type, row) {
-                        return '<div><i class="fas fa-newspaper"></i> ' + row[1] + '</div><div class="d-none">' + row[5] + '</div>';
+
+                        let name = row[1] + '<br /><small>' + row[2] + '</small>';
+
+                        return '<div><i class="fas fa-newspaper"></i> ' + name + '</div><div class="d-none">' + row[5] + '</div>';
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).attr('style', 'min-width: 300px;')
                     },
                     "orderable": false
                 },
-                // Author
-                {
-                    "targets": 1,
-                    "render": function (data, type, row) {
-                        return row[2];
-                    },
-                    "createdCell": function (td, cellData, rowData, row, col) {
-                    },
-                    "orderable": false
-                },
                 // Date
                 {
-                    "targets": 2,
+                    "targets": 1,
                     "render": function (data, type, row) {
                         return '<span data-toggle="tooltip" data-placement="left" title="' + row[4] + '" data-livestamp="' + row[3] + '"></span>';
                     },
