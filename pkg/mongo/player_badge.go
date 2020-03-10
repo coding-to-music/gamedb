@@ -196,7 +196,7 @@ func getPlayerBadges(offset int64, limit int64, filter bson.D, sort bson.D, proj
 }
 
 var GlobalBadges = map[int]PlayerBadge{
-	1:       {BadgeID: 1, BadgeIcon: "02_years/steamyears1002_80.png", BadgeName: "Years of Service"},
+	1:       {BadgeID: 1, BadgeIcon: "02_years/steamyears1_80.png", BadgeName: "Years of Service"},
 	2:       {BadgeID: 2, BadgeIcon: "01_community/community03_80.png", BadgeName: "Community Ambassador"},
 	3:       {BadgeID: 3, BadgeIcon: "03_potato/potato03_80.png", BadgeName: "The Potato Sack"},
 	4:       {BadgeID: 4, BadgeIcon: "04_treasurehunt/treasurehunt03_80.png", BadgeName: "The Great Steam Treasure Hunt"},
