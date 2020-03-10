@@ -53,23 +53,6 @@ func setHeaders(w http.ResponseWriter, contentType string) {
 	w.Header().Set("Server", "")
 }
 
-func SetCacheHeaders(w http.ResponseWriter, duration time.Duration) {
-
-	if w.Header().Get("Cache-Control") == "" || w.Header().Get("Expires") == "" {
-
-		if duration == 0 || config.IsLocal() {
-
-			w.Header().Set("Cache-Control", "max-age=0")
-			w.Header().Set("Expires", time.Now().AddDate(0, 0, -2).Format(time.RFC1123))
-
-		} else {
-
-			w.Header().Set("Cache-Control", "max-age="+strconv.Itoa(int(duration.Seconds())))
-			w.Header().Set("Expires", time.Now().Add(duration).Format(time.RFC1123))
-		}
-	}
-}
-
 func returnJSON(w http.ResponseWriter, r *http.Request, i interface{}) {
 
 	setHeaders(w, "application/json")
