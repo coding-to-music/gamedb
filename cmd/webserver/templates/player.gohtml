@@ -307,67 +307,9 @@
                             </tbody>
                         </table>
 
-                        {{/* Noteworthy Icons */}}
-                        <div class="row">
-                            <div class="col-12 col-lg-6">
-
-                                <div class="table-responsive mb-4">
-                                    <table class="table table-hover table-striped table-datatablex" data-ordering="false">
-                                        <thead class="thead-light">
-                                        <tr>
-                                            <th scope="col">Special Badges</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {{ range $key, $value := .Badges }}
-                                            {{ if eq .AppID 0 }}
-                                                <tr data-link="{{ .GetPath }}">
-                                                    <td class="img">
-                                                        <div class="icon-name">
-                                                            <div class="icon"><img src="{{ .GetBadgeIcon }}" alt="" class="img"></div>
-                                                            <div class="name">{{ .GetName }}</div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            {{ end }}
-                                        {{ end }}
-                                        </tbody>
-                                    </table>
-                                </div>
-
-                            </div>
-                            <div class="col-12 col-lg-6">
-
-                                <div class="table-responsive mb-4">
-                                    <table class="table table-hover table-striped table-datatablex" data-ordering="false">
-                                        <thead class="thead-light">
-                                        <tr>
-                                            <th scope="col">Event Badges</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {{ range $key, $value := .Badges }}
-                                            {{ if ne .AppID 0 }}
-                                                <tr data-link="{{ .GetPath }}">
-                                                    <td class="img">
-                                                        <div class="icon-name">
-                                                            <div class="icon"><img src="{{ .GetBadgeIcon }}" alt="" class="img"></div>
-                                                            <div class="name">{{ .GetName }}</div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            {{ end }}
-                                        {{ end }}
-                                        </tbody>
-                                    </table>
-                                </div>
-
-                            </div>
-                        </div>
-
                         {{/* App Badges Table */}}
                         <div class="table-responsive">
-                            <table class="table table-hover table-striped table-counts mb-0" id="badges-table" data-ordering="false" data-path="/players/{{ .Player.ID }}/badges.json">
+                            <table class="table table-hover table-striped table-counts mb-0" id="badges-table" data-path="/players/{{ .Player.ID }}/badges.json">
                                 <thead class="thead-light">
                                 <tr>
                                     <th scope="col">App</th>

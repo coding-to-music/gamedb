@@ -374,7 +374,7 @@ if ($playerPage.length > 0) {
     function loadPlayerBadges() {
 
         const options = {
-            "order": [[2, 'desc']],
+            "order": [[3, 'desc']],
             "createdRow": function (row, data, dataIndex) {
                 if (data[0]) {
                     $(row).attr('data-app-id', data[0]);
@@ -386,7 +386,16 @@ if ($playerPage.length > 0) {
                 {
                     "targets": 0,
                     "render": function (data, type, row) {
-                        return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[5] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></div>'
+
+                        let name = row[1];
+                        if (row[9]) {
+                            name += '<span class="badge badge-success float-right">Special</span>';
+                        }
+                        if (row[10]) {
+                            name += '<span class="badge badge-success float-right">Event</span>';
+                        }
+
+                        return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[5] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + name + '</div></div>'
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');

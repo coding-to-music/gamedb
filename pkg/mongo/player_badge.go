@@ -74,6 +74,14 @@ func (badge PlayerBadge) IsSpecial() bool {
 	return badge.AppID == 0
 }
 
+func (badge PlayerBadge) IsEvent() bool {
+	val, ok := GlobalBadges[badge.AppID]
+	if ok {
+		return val.BadgeID == 1
+	}
+	return false
+}
+
 func (badge PlayerBadge) GetUniqueID() int {
 	if badge.IsSpecial() {
 		return badge.BadgeID
@@ -174,7 +182,7 @@ func UpdatePlayerBadges(badges []PlayerBadge) (err error) {
 	return err
 }
 
-func GetPlayerEventBadges(offset int64, filter bson.D) (badges []PlayerBadge, err error) {
+func GetPlayerBadges(offset int64, filter bson.D) (badges []PlayerBadge, err error) {
 	return getPlayerBadges(offset, 100, filter, bson.D{{"badge_completion_time", -1}}, nil)
 }
 

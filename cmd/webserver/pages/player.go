@@ -294,7 +294,6 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	t.addAssetHighCharts()
 	t.IncludeSocialJS = true
 
-	t.Badges = player.GetSpecialBadges()
 	t.Banners = banners
 	t.Canonical = player.GetPath()
 	t.CSRF = nosurf.Token(r)
@@ -308,7 +307,6 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 type playerTemplate struct {
 	GlobalTemplate
-	Badges        []mongo.PlayerBadge
 	Banners       map[string][]string
 	CSRF          string
 	DefaultAvatar string
@@ -669,7 +667,6 @@ func playerBadgesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Make filter
 	var filter = bson.D{
-		{Key: "app_id", Value: bson.M{"$gt": 0}},
 		{Key: "player_id", Value: idx},
 	}
 
@@ -677,14 +674,14 @@ func playerBadgesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Get badges
-	var badges []mongo.PlayerBadge
+	var badges []mongo.PlayerBadge //
 	wg.Add(1)
 	go func(r *http.Request) {
 
 		defer wg.Done()
 
 		var err error
-		badges, err = mongo.GetPlayerEventBadges(query.GetOffset64(), filter)
+		badges, err = mongo.GetPlayerBadges(query.GetOffset64(), filter)
 		if err != nil {
 			log.Err(err, r)
 		}
@@ -708,16 +705,21 @@ func playerBadgesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var response = datatable.NewDataTablesResponse(r, query, total, total)
 	for _, badge := range badges {
+
+		var completionTime = badge.BadgeCompletionTime.Format("2006-01-02 15:04:05")
+
 		response.AddRow([]interface{}{
-			badge.AppID,        // 0
-			badge.AppName,      // 1
-			badge.GetAppPath(), // 2
-			badge.BadgeCompletionTime.Format("2006-01-02 15:04:05"), // 3
-			badge.BadgeFoil,     // 4
-			badge.BadgeIcon,     // 5
-			badge.BadgeLevel,    // 6
-			badge.BadgeScarcity, // 7
-			badge.BadgeXP,       // 8
+			badge.AppID,          // 0
+			badge.GetName(),      // 1
+			badge.GetPath(),      // 2
+			completionTime,       // 3
+			badge.BadgeFoil,      // 4
+			badge.GetBadgeIcon(), // 5
+			badge.BadgeLevel,     // 6
+			badge.BadgeScarcity,  // 7
+			badge.BadgeXP,        // 8
+			badge.IsSpecial(),    // 9
+			badge.IsEvent(),      // 10
 		})
 	}
 

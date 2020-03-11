@@ -224,26 +224,6 @@ func (player Player) GetTimeLong() (ret string) {
 }
 
 //
-func (player Player) GetSpecialBadges() (badges []PlayerBadge) {
-
-	if player.BadgeIDs == nil || len(player.BadgeIDs) == 0 {
-		return
-	}
-
-	for _, v := range player.BadgeIDs {
-
-		if val, ok := GlobalBadges[v]; ok {
-			badges = append(badges, val)
-		}
-	}
-
-	sort.Slice(badges, func(i, j int) bool {
-		return badges[i].GetUniqueID() > badges[j].GetUniqueID()
-	})
-
-	return badges
-}
-
 func (player *Player) SetOwnedGames(saveRows bool) error {
 
 	// Grab games from Steam
