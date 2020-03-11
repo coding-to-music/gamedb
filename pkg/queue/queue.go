@@ -70,7 +70,7 @@ var (
 		{name: QueueSteam, consumer: nil},
 		{name: QueueFailed, consumer: nil},
 		{name: QueueTest, consumer: testHandler},
-		// {name: QueueWebsockets, consumer: nil},
+		{name: QueueWebsockets, consumer: nil},
 	}
 
 	WebserverDefinitions = []queueDef{
@@ -88,7 +88,7 @@ var (
 		{name: QueueSteam, consumer: nil},
 		{name: QueueFailed, consumer: nil},
 		{name: QueueTest, consumer: nil},
-		// {name: QueueWebsockets, consumer: websocketHandler},
+		{name: QueueWebsockets, consumer: websocketHandler},
 	}
 
 	QueueSteamDefinitions = []queueDef{
@@ -114,7 +114,7 @@ var (
 
 	ChatbotDefinitions = []queueDef{
 		{name: QueuePlayers, consumer: nil},
-		// {name: QueueWebsockets, consumer: nil},
+		{name: QueueWebsockets, consumer: nil},
 	}
 )
 
