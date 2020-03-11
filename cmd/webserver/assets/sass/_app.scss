@@ -17,18 +17,16 @@
 
         #tags {
             div {
+                position: relative;
+
                 a {
                     margin-bottom: 2px;
-                    position: relative;
+                    text-align: left;
 
-                    span.left {
+                    small {
+                        color: #212529;
                         position: absolute;
-                        left: 4px;
-                        background-color: inherit;
-                    }
-
-                    span.right {
-                        position: absolute;
+                        top: 4px;
                         right: 4px;
                     }
                 }
