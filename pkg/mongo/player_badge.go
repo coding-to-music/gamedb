@@ -82,14 +82,19 @@ func (badge PlayerBadge) GetUniqueID() int {
 }
 
 func (badge PlayerBadge) GetName() string {
-	return badge.BadgeName
+
+	if val, ok := GlobalBadges[badge.GetUniqueID()]; ok {
+		return val.BadgeName
+	}
+	return badge.GetAppName()
 }
 
 func (badge PlayerBadge) GetPath() string {
-	if badge.IsSpecial() {
-		return "/badges/" + strconv.Itoa(badge.BadgeID) + "/" + slug.Make(badge.BadgeName)
+
+	if val, ok := GlobalBadges[badge.GetUniqueID()]; ok {
+		return "/badges/" + strconv.Itoa(val.GetUniqueID()) + "/" + slug.Make(val.BadgeName)
 	}
-	return "/badges/" + strconv.Itoa(badge.AppID) + "/" + slug.Make(badge.BadgeName)
+	return badge.GetAppPath()
 }
 
 func (badge PlayerBadge) GetPlayerPath() string {
@@ -113,14 +118,22 @@ func (badge PlayerBadge) GetAppName() string {
 
 func (badge PlayerBadge) GetBadgeIcon() string {
 
+	// If special or event
+	if val, ok := GlobalBadges[badge.GetUniqueID()]; ok {
+		return "https://steamcommunity-a.akamaihd.net/public/images/badges/" + val.BadgeIcon
+	}
+
+	// Default
 	if badge.BadgeIcon == "" {
 		return helpers.DefaultAppIcon
 	}
 
+	// URL
 	if strings.HasPrefix(badge.BadgeIcon, "http") {
 		return badge.BadgeIcon
 	}
 
+	// App icon
 	if badge.AppID > 0 {
 		return eventImageBase + "/" + strconv.Itoa(badge.AppID) + "/" + badge.BadgeIcon + ".png"
 	}
