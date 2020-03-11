@@ -27,7 +27,6 @@ const (
 	QueuePlayerRanks    rabbit.QueueName = "GDB_Player_Ranks"
 	QueueSteam          rabbit.QueueName = "GDB_Steam"
 
-	QueueMemcache   rabbit.QueueName = "GDB_Memcache"
 	QueueWebsockets rabbit.QueueName = "GDB_Websockets"
 
 	QueueDelay  rabbit.QueueName = "GDB_Delay"
@@ -71,7 +70,6 @@ var (
 		{name: QueueSteam, consumer: nil},
 		{name: QueueFailed, consumer: nil},
 		{name: QueueTest, consumer: testHandler},
-		// {name: QueueMemcache, consumer: nil},
 		// {name: QueueWebsockets, consumer: nil},
 	}
 
@@ -90,7 +88,6 @@ var (
 		{name: QueueSteam, consumer: nil},
 		{name: QueueFailed, consumer: nil},
 		{name: QueueTest, consumer: nil},
-		// {name: QueueMemcache, consumer: memcacheHandler},
 		// {name: QueueWebsockets, consumer: websocketHandler},
 	}
 
