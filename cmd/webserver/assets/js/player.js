@@ -374,7 +374,7 @@ if ($playerPage.length > 0) {
     function loadPlayerBadges() {
 
         const options = {
-            "order": [[3, 'desc']],
+            "order": [[1, 'desc']],
             "createdRow": function (row, data, dataIndex) {
                 if (data[0]) {
                     $(row).attr('data-app-id', data[0]);
@@ -389,10 +389,13 @@ if ($playerPage.length > 0) {
 
                         let name = row[1];
                         if (row[9]) {
-                            name += '<span class="badge badge-success float-right">Special</span>';
+                            name += '<span class="badge badge-primary float-right ml-1">Special</span>';
                         }
                         if (row[10]) {
-                            name += '<span class="badge badge-success float-right">Event</span>';
+                            name += '<span class="badge badge-warning float-right ml-1">Event</span>';
+                        }
+                        if (row[4]) {
+                            name += '<span class="badge badge-success float-right ml-1">Foil</span>';
                         }
 
                         return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[5] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + name + '</div></div>'
@@ -400,6 +403,7 @@ if ($playerPage.length > 0) {
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
                     },
+                    "orderable": false,
                 },
                 // Level / XP
                 {
@@ -409,7 +413,8 @@ if ($playerPage.length > 0) {
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).attr('nowrap', 'nowrap');
-                    }
+                    },
+                    "orderSequence": ['desc', 'asc'],
                 },
                 // Scarcity
                 {
@@ -417,6 +422,7 @@ if ($playerPage.length > 0) {
                     "render": function (data, type, row) {
                         return row[7].toLocaleString();
                     },
+                    "orderSequence": ['asc', 'desc'],
                 },
                 // Completion Time
                 {
@@ -426,7 +432,8 @@ if ($playerPage.length > 0) {
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).attr('nowrap', 'nowrap');
-                    }
+                    },
+                    "orderSequence": ['desc', 'asc'],
                 },
             ]
         };

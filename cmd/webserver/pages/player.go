@@ -681,7 +681,13 @@ func playerBadgesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		badges, err = mongo.GetPlayerBadges(query.GetOffset64(), filter)
+		var sortCols = map[string]string{
+			"1": "badge_level",
+			"2": "badge_scarcity",
+			"3": "badge_completion_time",
+		}
+
+		badges, err = mongo.GetPlayerBadges(query.GetOffset64(), filter, query.GetOrderMongo(sortCols))
 		if err != nil {
 			log.Err(err, r)
 		}
@@ -709,17 +715,17 @@ func playerBadgesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var completionTime = badge.BadgeCompletionTime.Format("2006-01-02 15:04:05")
 
 		response.AddRow([]interface{}{
-			badge.AppID,          // 0
-			badge.GetName(),      // 1
-			badge.GetPath(),      // 2
-			completionTime,       // 3
-			badge.BadgeFoil,      // 4
-			badge.GetBadgeIcon(), // 5
-			badge.BadgeLevel,     // 6
-			badge.BadgeScarcity,  // 7
-			badge.BadgeXP,        // 8
-			badge.IsSpecial(),    // 9
-			badge.IsEvent(),      // 10
+			badge.AppID,         // 0
+			badge.GetName(),     // 1
+			badge.GetPath(),     // 2
+			completionTime,      // 3
+			badge.BadgeFoil,     // 4
+			badge.GetIcon(),     // 5
+			badge.BadgeLevel,    // 6
+			badge.BadgeScarcity, // 7
+			badge.BadgeXP,       // 8
+			badge.IsSpecial(),   // 9
+			badge.IsEvent(),     // 10
 		})
 	}
 

@@ -191,8 +191,8 @@ func UpdatePlayerBadges(badges []PlayerBadge) (err error) {
 	return err
 }
 
-func GetPlayerBadges(offset int64, filter bson.D) (badges []PlayerBadge, err error) {
-	return getPlayerBadges(offset, 100, filter, bson.D{{"badge_completion_time", -1}}, nil)
+func GetPlayerBadges(offset int64, filter bson.D, sort bson.D) (badges []PlayerBadge, err error) {
+	return getPlayerBadges(offset, 100, filter, sort, nil)
 }
 
 func GetBadgePlayers(offset int64, filter bson.D) (badges []PlayerBadge, err error) {
