@@ -75,17 +75,21 @@ func (badge PlayerBadge) IsSpecial() bool {
 }
 
 func (badge PlayerBadge) IsEvent() bool {
+
 	val, ok := GlobalBadges[badge.AppID]
 	if ok {
-		return val.BadgeID == 1
+		return val.BadgeID > 0
 	}
+
 	return false
 }
 
 func (badge PlayerBadge) GetUniqueID() int {
+
 	if badge.IsSpecial() {
 		return badge.BadgeID
 	}
+
 	return badge.AppID
 }
 
@@ -94,7 +98,8 @@ func (badge PlayerBadge) GetName() string {
 	if val, ok := GlobalBadges[badge.GetUniqueID()]; ok {
 		return val.BadgeName
 	}
-	return badge.GetAppName()
+
+	return helpers.GetAppName(badge.AppID, badge.AppName)
 }
 
 func (badge PlayerBadge) GetPath() string {
@@ -123,36 +128,34 @@ func (badge PlayerBadge) GetAppPath() string {
 	return helpers.GetAppPath(badge.AppID, badge.AppName)
 }
 
-func (badge PlayerBadge) GetAppName() string {
-	if badge.AppID == 0 {
-		return "Special Badge"
-	}
-	return helpers.GetAppName(badge.AppID, badge.AppName)
-}
+func (badge PlayerBadge) GetIcon() string {
 
-func (badge PlayerBadge) GetBadgeIcon() string {
-
-	// If special or event
-	if val, ok := GlobalBadges[badge.GetUniqueID()]; ok {
-		return "https://steamcommunity-a.akamaihd.net/public/images/badges/" + val.BadgeIcon
+	// Special
+	if val, ok := GlobalBadges[badge.BadgeID]; ok {
+		if badge.AppID == 0 {
+			return specialImageBase + val.BadgeIcon
+		}
 	}
 
-	// Default
-	if badge.BadgeIcon == "" {
-		return helpers.DefaultAppIcon
+	// Event
+	if val, ok := GlobalBadges[badge.AppID]; ok {
+		if badge.BadgeID > 0 {
+			return eventImageBase + strconv.Itoa(val.AppID) + "/" + val.BadgeIcon + ".png"
+		}
 	}
 
 	// URL
-	if strings.HasPrefix(badge.BadgeIcon, "http") {
+	if strings.HasPrefix(badge.BadgeIcon, "http") || strings.HasPrefix(badge.BadgeIcon, "/") {
 		return badge.BadgeIcon
 	}
 
 	// App icon
-	if badge.AppID > 0 {
-		return eventImageBase + "/" + strconv.Itoa(badge.AppID) + "/" + badge.BadgeIcon + ".png"
+	if badge.AppID > 0 && badge.BadgeIcon != "" {
+		return eventImageBase + strconv.Itoa(badge.AppID) + "/" + badge.BadgeIcon + ".png"
 	}
 
-	return specialImageBase + badge.BadgeIcon
+	//
+	return helpers.DefaultAppIcon
 }
 
 func (badge PlayerBadge) GetPlayerIcon() string {
