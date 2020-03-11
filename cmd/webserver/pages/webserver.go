@@ -360,9 +360,7 @@ func (t *GlobalTemplate) setRandomBackground(title bool, link bool) {
 		4000,   // Garry's Mod
 		236850, // Europa Universalis IV
 		242760, // The Forest
-		289070, // Civilization VI
 		431960, // Wallpaper Engine
-		582010, // Monster Hunter
 	}
 
 	var filteredApps []mongo.App
