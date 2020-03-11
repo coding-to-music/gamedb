@@ -271,40 +271,21 @@
                                             </tr>
                                         {{ end }}
 
-                                        {{ if gt (len .App.TagCounts) 0 }}
-
-                                            {{/* NEW */}}
-                                            <tr>
-                                                <th scope="row" nowrap="nowrap" class="thin">Tags</th>
-                                                <td>
-                                                    <div id="tags">
-                                                        {{ range $key, $value := .App.TagCounts }}
-                                                            <div>
-                                                                <a class="badge badge-success d-block" style="width: {{ percent .Count $.TagsMax }}%;" href="/apps?tags={{ .ID }}">
-                                                                    <span class="right">{{ comma .Count }} <i class="fas fa-thumbs-up"></i></span>
-                                                                    <span class="left">{{ .Name }}</span>
-                                                                    &nbsp;
-                                                                </a>
-                                                            </div>
-                                                        {{ end }}
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        {{ else }}
-
-                                            {{/* OLD */}}
-                                            {{ if gt (len .Tags) 0 }}
-                                                <tr>
-                                                    <th scope="row" nowrap="nowrap" class="thin">Tags</th>
-                                                    <td>
-                                                        {{ range $key, $value := .Tags }}
-                                                            <a class="badge badge-success" href="/apps?tags={{ .ID }}">{{ .GetName }}</a>
-                                                        {{ end }}
-                                                    </td>
-                                                </tr>
-                                            {{ end }}
-
-                                        {{ end }}
+                                        <tr>
+                                            <th scope="row" nowrap="nowrap" class="thin">Tags</th>
+                                            <td>
+                                                <div id="tags">
+                                                    {{ range $key, $value := .App.TagCounts }}
+                                                        <div>
+                                                            <a class="badge badge-success" style="min-width: {{ percent .Count $.TagsMax }}%;" href="/apps?tags={{ .ID }}">
+                                                                <div>{{ .Name }}</div>
+                                                                <small>{{ comma .Count }} <i class="fas fa-thumbs-up"></i></small>
+                                                            </a>
+                                                        </div>
+                                                    {{ end }}
+                                                </div>
+                                            </td>
+                                        </tr>
 
                                     </table>
                                 </div>
