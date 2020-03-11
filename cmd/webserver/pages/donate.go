@@ -18,11 +18,11 @@ func donateHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := donateTemplate{}
 	t.fill(w, r, "Donate", "Databases take up a tonne of resources. Help pay for the server costs or just buy me a beer.")
-	t.Pages = []int{
-		sql.UserLevelLimit0,
-		sql.UserLevelLimit1,
-		sql.UserLevelLimit2,
-		sql.UserLevelLimit3,
+	t.Pages = map[int]int{
+		sql.UserLevel0: sql.UserLevelLimit0,
+		sql.UserLevel1: sql.UserLevelLimit1,
+		sql.UserLevel2: sql.UserLevelLimit2,
+		sql.UserLevel3: sql.UserLevelLimit3,
 	}
 
 	returnTemplate(w, r, "donate", t)
@@ -30,5 +30,5 @@ func donateHandler(w http.ResponseWriter, r *http.Request) {
 
 type donateTemplate struct {
 	GlobalTemplate
-	Pages []int
+	Pages map[int]int
 }
