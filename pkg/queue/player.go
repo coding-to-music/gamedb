@@ -492,7 +492,7 @@ func updatePlayerGroups(player *mongo.Player, payload PlayerMessage) error {
 			PlayerName:   player.PersonaName,
 			PlayerAvatar: player.Avatar,
 			GroupID:      group.ID,
-			GroupName:    group.Name,
+			GroupName:    helpers.TruncateString(group.Name, 1000, ""), // Truncated as caused mongo driver issue
 			GroupIcon:    group.Icon,
 			GroupMembers: group.Members,
 			GroupType:    group.Type,
