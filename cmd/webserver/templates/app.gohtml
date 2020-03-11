@@ -276,12 +276,9 @@
                                             <td>
                                                 <div id="tags">
                                                     {{ range $key, $value := .App.TagCounts }}
-                                                        <div>
-                                                            <a class="badge badge-success" style="min-width: {{ percent .Count $.TagsMax }}%;" href="/apps?tags={{ .ID }}">
-                                                                <div>{{ .Name }}</div>
-                                                                <small>{{ comma .Count }} <i class="fas fa-thumbs-up"></i></small>
-                                                            </a>
-                                                        </div>
+                                                        <div style="width: {{ percent .Count $.TagsMax }}%;"></div>
+                                                        <a class="badge badge-success float-left" href="/apps?tags={{ .ID }}">{{ .Name }}</a>
+                                                        <small class="float-right">{{ comma .Count }} <i class="fas fa-thumbs-up"></i></small>
                                                     {{ end }}
                                                 </div>
                                             </td>
@@ -926,7 +923,7 @@
                                             <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
                                                 <thead class="thead-light">
                                                 <tr>
-                                                    <th scope="col">Key</th>
+                                                    <th scope="col" class="thin">Key</th>
                                                     <th scope="col" class="thin">Section</th>
                                                     <th scope="col">Value</th>
                                                     <th scope="col" class="thin">Raw</th>
