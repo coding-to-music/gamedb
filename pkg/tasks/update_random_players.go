@@ -55,7 +55,7 @@ func (c UpdateRandomPlayers) work() (err error) {
 			return nil
 		}
 
-		if q == queue.QueuePackages {
+		if q == queue.QueuePlayers {
 			consumers = c.Consumers
 		}
 	}
