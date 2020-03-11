@@ -18,10 +18,12 @@
         #tags {
             div {
                 position: relative;
+                display: flex;
 
                 a {
                     margin-bottom: 2px;
                     text-align: left;
+                    width: auto;
 
                     small {
                         color: #212529;

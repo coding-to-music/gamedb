@@ -86,7 +86,7 @@ func badgeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	if badge.IsSpecial() {
 		filter = append(filter, bson.E{Key: "app_id", Value: 0})
 		filter = append(filter, bson.E{Key: "badge_id", Value: idx})
-	} else {
+	} else if badge.IsEvent() {
 		filter = append(filter, bson.E{Key: "app_id", Value: idx})
 		filter = append(filter, bson.E{Key: "badge_id", Value: bson.M{"$gt": 0}})
 		filter = append(filter, bson.E{Key: "badge_foil", Value: r.URL.Query().Get("foil") == "1"})
