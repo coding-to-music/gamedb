@@ -63,7 +63,7 @@ func main() {
 
 	// Start queue producers to send to.
 	// In a go routine so if Rabbit is not working, the webserver still starts
-	go queue.Init(queue.AllDefinitions, false)
+	go queue.Init(queue.WebserverDefinitions, true)
 
 	go websockets.ListenToPubSub()
 	go memcache.ListenToPubSubMemcache()

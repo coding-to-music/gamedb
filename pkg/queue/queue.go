@@ -27,6 +27,9 @@ const (
 	QueuePlayerRanks    rabbit.QueueName = "GDB_Player_Ranks"
 	QueueSteam          rabbit.QueueName = "GDB_Steam"
 
+	QueueMemcache   rabbit.QueueName = "GDB_Memcache"
+	QueueWebsockets rabbit.QueueName = "GDB_Websockets"
+
 	QueueDelay  rabbit.QueueName = "GDB_Delay"
 	QueueFailed rabbit.QueueName = "GDB_Failed"
 	QueueTest   rabbit.QueueName = "GDB_Test"
@@ -53,7 +56,7 @@ var (
 		rabbit.Producer: {},
 	}
 
-	AllDefinitions = []queueDef{
+	ConsumersDefinitions = []queueDef{
 		{name: QueueApps, consumer: appHandler},
 		{name: QueueAppsDaily, consumer: appDailyHandler, batchSize: 10, prefetchSize: 100},
 		{name: QueueAppPlayers, consumer: appPlayersHandler},
@@ -68,6 +71,27 @@ var (
 		{name: QueueSteam, consumer: nil},
 		{name: QueueFailed, consumer: nil},
 		{name: QueueTest, consumer: testHandler},
+		// {name: QueueMemcache, consumer: nil},
+		// {name: QueueWebsockets, consumer: nil},
+	}
+
+	WebserverDefinitions = []queueDef{
+		{name: QueueApps, consumer: nil},
+		{name: QueueAppsDaily, consumer: nil},
+		{name: QueueAppPlayers, consumer: nil},
+		{name: QueueBundles, consumer: nil},
+		{name: QueueChanges, consumer: nil},
+		{name: QueueGroups, consumer: nil},
+		{name: QueuePackages, consumer: nil},
+		{name: QueuePackagesPrices, consumer: nil},
+		{name: QueuePlayers, consumer: nil},
+		{name: QueuePlayerRanks, consumer: nil},
+		{name: QueueDelay, consumer: nil, skipHeaders: true},
+		{name: QueueSteam, consumer: nil},
+		{name: QueueFailed, consumer: nil},
+		{name: QueueTest, consumer: nil},
+		// {name: QueueMemcache, consumer: memcacheHandler},
+		// {name: QueueWebsockets, consumer: websocketHandler},
 	}
 
 	QueueSteamDefinitions = []queueDef{
@@ -93,6 +117,7 @@ var (
 
 	ChatbotDefinitions = []queueDef{
 		{name: QueuePlayers, consumer: nil},
+		// {name: QueueWebsockets, consumer: nil},
 	}
 )
 
