@@ -207,7 +207,9 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	var wg sync.WaitGroup
 	var code = helpers.GetProductCC(r)
-	var filter = bson.D{}
+	var filter = bson.D{
+		{"_id", bson.M{"$gt": 0}}, // Temp
+	}
 	var countLock sync.Mutex
 
 	// Types
