@@ -391,8 +391,8 @@ func updatePlayerBadges(player *mongo.Player) error {
 	// Finish badges slice
 	for k, v := range playerBadgeSlice {
 		if app, ok := appRowsMap[v.AppID]; ok {
-			playerBadgeSlice[k].AppName = app.GetName()
-			playerBadgeSlice[k].BadgeIcon = app.GetIcon()
+			playerBadgeSlice[k].AppName = app.Name
+			playerBadgeSlice[k].BadgeIcon = app.Icon
 		}
 	}
 

@@ -113,7 +113,7 @@ func (badge PlayerBadge) GetPath() string {
 		return "/badges/" + strconv.Itoa(val.GetUniqueID()) + "/" + slug.Make(val.BadgeName) + foil
 	}
 
-	return helpers.GetAppPath(badge.AppID, badge.AppName)
+	return helpers.GetAppPath(badge.AppID, helpers.GetAppName(badge.AppID, badge.AppName))
 }
 
 func (badge PlayerBadge) GetPlayerPath() string {
@@ -125,7 +125,7 @@ func (badge PlayerBadge) GetTimeFormatted() string {
 }
 
 func (badge PlayerBadge) GetAppPath() string {
-	return helpers.GetAppPath(badge.AppID, badge.AppName)
+	return helpers.GetAppPath(badge.AppID, helpers.GetAppName(badge.AppID, badge.AppName))
 }
 
 func (badge PlayerBadge) GetIcon() string {
