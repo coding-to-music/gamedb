@@ -120,10 +120,6 @@ func (badge PlayerBadge) GetPlayerPath() string {
 	return helpers.GetPlayerPath(badge.PlayerID, badge.PlayerName) + "#badges"
 }
 
-func (badge PlayerBadge) GetTimeFormatted() string {
-	return badge.BadgeCompletionTime.Format(helpers.DateYearTime)
-}
-
 func (badge PlayerBadge) GetAppPath() string {
 	return helpers.GetAppPath(badge.AppID, helpers.GetAppName(badge.AppID, badge.AppName))
 }
