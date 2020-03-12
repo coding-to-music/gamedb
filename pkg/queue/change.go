@@ -8,7 +8,6 @@ import (
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	pubsubHelpers "github.com/gamedb/gamedb/pkg/helpers/pubsub"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/websockets"
@@ -162,12 +161,8 @@ func sendChangesWebsocket(changes []*mongo.Change, appMap map[int]string, packag
 		ws = append(ws, v.OutputForJSON(appMap, packageMap))
 	}
 
-	wsPaload := ChangesPayload{}
-	wsPaload.Data = ws
-	wsPaload.Pages = []websockets.WebsocketPage{websockets.PageChanges}
-
-	_, err = pubsubHelpers.Publish(pubsubHelpers.PubSubTopicWebsockets, wsPaload)
-	return err
+	wsPayload := ChangesPayload{Data: ws}
+	return ProduceWebsocket(wsPayload, websockets.PageChanges)
 }
 
 // todo, add packages to return

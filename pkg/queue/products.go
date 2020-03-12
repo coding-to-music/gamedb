@@ -8,7 +8,6 @@ import (
 
 	"github.com/Jleagle/steam-go/steamvdf"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	pubsubHelpers "github.com/gamedb/gamedb/pkg/helpers/pubsub"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql/pics"
@@ -331,11 +330,8 @@ func saveProductPricesToMongo(before helpers.ProductInterface, after helpers.Pro
 
 		if len(priceIDs) > 0 {
 
-			wsPayload := StringsPayload{}
-			wsPayload.IDs = priceIDs
-			wsPayload.Pages = []websockets.WebsocketPage{websockets.PagePrices}
-
-			_, err2 := pubsubHelpers.Publish(pubsubHelpers.PubSubTopicWebsockets, wsPayload)
+			wsPayload := StringsPayload{IDs: priceIDs}
+			err2 := ProduceWebsocket(wsPayload, websockets.PagePrices)
 			if err2 != nil {
 				log.Err(err2)
 			}

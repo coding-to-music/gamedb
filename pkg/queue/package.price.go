@@ -8,7 +8,6 @@ import (
 	"github.com/Jleagle/rabbit-go"
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	pubsubHelpers "github.com/gamedb/gamedb/pkg/helpers/pubsub"
 	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -117,11 +116,8 @@ func packagePriceHandler(messages []*rabbit.Message) {
 				if result != nil {
 					if insertedID, ok := result.InsertedID.(primitive.ObjectID); ok {
 
-						wsPayload := StringsPayload{}
-						wsPayload.IDs = []string{insertedID.Hex()}
-						wsPayload.Pages = []websockets.WebsocketPage{websockets.PagePrices}
-
-						_, err2 := pubsubHelpers.Publish(pubsubHelpers.PubSubTopicWebsockets, wsPayload)
+						wsPayload := StringsPayload{IDs: []string{insertedID.Hex()}}
+						err2 := ProduceWebsocket(wsPayload, websockets.PagePrices)
 						if err2 != nil {
 							log.Err(err2)
 						}

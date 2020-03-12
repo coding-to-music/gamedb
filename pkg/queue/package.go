@@ -14,7 +14,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
-	pubsubHelpers "github.com/gamedb/gamedb/pkg/helpers/pubsub"
 	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -219,11 +218,8 @@ func packageHandler(messages []*rabbit.Message) {
 
 				var err error
 
-				wsPayload := IntPayload{}
-				wsPayload.ID = pack.ID
-				wsPayload.Pages = []websockets.WebsocketPage{websockets.PagePackage, websockets.PagePackages}
-
-				_, err = pubsubHelpers.Publish(pubsubHelpers.PubSubTopicWebsockets, wsPayload)
+				wsPayload := IntPayload{ID: id}
+				err = ProduceWebsocket(wsPayload, websockets.PagePackage, websockets.PagePackages)
 				if err != nil {
 					log.Err(err, id)
 				}

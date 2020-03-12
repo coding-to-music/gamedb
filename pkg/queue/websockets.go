@@ -12,7 +12,7 @@ import (
 
 type WebsocketMessage struct {
 	Pages   []websockets.WebsocketPage `json:"pages"`
-	Message string                     `json:"message"`
+	Message []byte                     `json:"message"`
 }
 
 func websocketHandler(messages []*rabbit.Message) {
@@ -39,14 +39,12 @@ func websocketHandler(messages []*rabbit.Message) {
 				continue
 			}
 
-			var data = []byte(payload.Message)
-
 			switch page {
 			case websockets.PageApp, websockets.PageBundle, websockets.PagePackage:
 
 				idPayload := IntPayload{}
 
-				err = helpers.Unmarshal(data, &idPayload)
+				err = helpers.Unmarshal(payload.Message, &idPayload)
 				log.Err(err)
 
 				wsPage.Send(idPayload.ID)
@@ -55,7 +53,7 @@ func websocketHandler(messages []*rabbit.Message) {
 
 				idPayload := StringPayload{}
 
-				err = helpers.Unmarshal(data, &idPayload)
+				err = helpers.Unmarshal(payload.Message, &idPayload)
 				log.Err(err)
 
 				wsPage.Send(idPayload.String)
@@ -64,7 +62,7 @@ func websocketHandler(messages []*rabbit.Message) {
 
 				cbPayload := ChatBotPayload{}
 
-				err = helpers.Unmarshal(data, &cbPayload)
+				err = helpers.Unmarshal(payload.Message, &cbPayload)
 				log.Err(err)
 
 				wsPage.Send(cbPayload)
@@ -73,7 +71,7 @@ func websocketHandler(messages []*rabbit.Message) {
 
 				adminPayload := AdminPayload{}
 
-				err = helpers.Unmarshal(data, &adminPayload)
+				err = helpers.Unmarshal(payload.Message, &adminPayload)
 				log.Err(err)
 
 				wsPage.Send(adminPayload)
@@ -82,7 +80,7 @@ func websocketHandler(messages []*rabbit.Message) {
 
 				changePayload := ChangesPayload{}
 
-				err = helpers.Unmarshal(data, &changePayload)
+				err = helpers.Unmarshal(payload.Message, &changePayload)
 				log.Err(err)
 
 				wsPage.Send(changePayload.Data)
@@ -91,7 +89,7 @@ func websocketHandler(messages []*rabbit.Message) {
 
 				idPayload := IntPayload{}
 
-				err = helpers.Unmarshal(data, &idPayload)
+				err = helpers.Unmarshal(payload.Message, &idPayload)
 				log.Err(err)
 
 				pack, err := mongo.GetPackage(idPayload.ID)
@@ -106,7 +104,7 @@ func websocketHandler(messages []*rabbit.Message) {
 
 				idPayload := IntPayload{}
 
-				err = helpers.Unmarshal(data, &idPayload)
+				err = helpers.Unmarshal(payload.Message, &idPayload)
 				log.Err(err)
 
 				bundle, err := sql.GetBundle(idPayload.ID, nil)
@@ -119,7 +117,7 @@ func websocketHandler(messages []*rabbit.Message) {
 
 				idsPayload := StringsPayload{}
 
-				err = helpers.Unmarshal(data, &idsPayload)
+				err = helpers.Unmarshal(payload.Message, &idsPayload)
 				log.Err(err)
 
 				prices, err := mongo.GetPricesByID(idsPayload.IDs)
@@ -140,39 +138,29 @@ func websocketHandler(messages []*rabbit.Message) {
 	}
 }
 
-type PubSubBasePayload struct {
-	Pages []websockets.WebsocketPage `json:"p"`
-}
-
 type IntPayload struct {
-	PubSubBasePayload
 	ID int `json:"id"`
 }
 
 type StringPayload struct {
-	PubSubBasePayload
 	String string `json:"id"`
 }
 
 type StringsPayload struct {
-	PubSubBasePayload
 	IDs []string `json:"id"`
 }
 
 type ChangesPayload struct {
-	PubSubBasePayload
 	Data [][]interface{} `json:"d"`
 }
 
 type AdminPayload struct {
-	PubSubBasePayload
 	TaskID string `json:"task_id"`
 	Action string `json:"action"`
 	Time   int64  `json:"time"`
 }
 
 type ChatBotPayload struct {
-	PubSubBasePayload
 	AuthorID     string `json:"author_id"`
 	AuthorName   string `json:"author_name"`
 	AuthorAvatar string `json:"author_avatar"`
@@ -180,7 +168,6 @@ type ChatBotPayload struct {
 }
 
 type ChatPayload struct {
-	PubSubBasePayload
 	I            float32 `json:"i"`
 	AuthorID     string  `json:"author_id"`
 	AuthorUser   string  `json:"author_user"`

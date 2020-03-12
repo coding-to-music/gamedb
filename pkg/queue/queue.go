@@ -1,6 +1,7 @@
 package queue
 
 import (
+	"encoding/json"
 	"errors"
 	"time"
 
@@ -11,6 +12,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/streadway/amqp"
 )
 
@@ -393,6 +395,19 @@ func ProduceSteam(payload SteamMessage) (err error) {
 func ProduceTest(id int) (err error) {
 
 	return produce(QueueTest, TestMessage{ID: id})
+}
+
+func ProduceWebsocket(payload interface{}, pages ...websockets.WebsocketPage) (err error) {
+
+	b, err := json.Marshal(payload)
+	if err != nil {
+		return err
+	}
+
+	return produce(QueueWebsockets, WebsocketMessage{
+		Pages:   pages,
+		Message: b,
+	})
 }
 
 func produce(q rabbit.QueueName, payload interface{}) error {

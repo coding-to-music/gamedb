@@ -10,7 +10,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
-	pubsubHelpers "github.com/gamedb/gamedb/pkg/helpers/pubsub"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
@@ -196,9 +195,8 @@ func saveToMongo(m *discordgo.MessageCreate, message string) {
 	wsPayload.AuthorName = m.Author.Username
 	wsPayload.AuthorAvatar = m.Author.Avatar
 	wsPayload.Message = message
-	wsPayload.Pages = []websockets.WebsocketPage{websockets.PageChatBot}
 
-	_, err = pubsubHelpers.Publish(pubsubHelpers.PubSubTopicWebsockets, wsPayload)
+	err = queue.ProduceWebsocket(wsPayload, websockets.PageChatBot)
 	if err != nil {
 		log.Err(err)
 		return

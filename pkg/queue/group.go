@@ -16,7 +16,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
-	pubsubHelpers "github.com/gamedb/gamedb/pkg/helpers/pubsub"
 	"github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -530,12 +529,8 @@ func saveGroupToInflux(group mongo.Group) (err error) {
 
 func sendGroupWebsocket(id string) (err error) {
 
-	wsPayload := StringPayload{} // String as int64 too large for js
-	wsPayload.String = id
-	wsPayload.Pages = []websockets.WebsocketPage{websockets.PageGroup}
-
-	_, err = pubsubHelpers.Publish(pubsubHelpers.PubSubTopicWebsockets, wsPayload)
-	return err
+	wsPayload := StringPayload{String: id}
+	return ProduceWebsocket(wsPayload, websockets.PageGroup)
 }
 
 func getGroupType(id string) (groupType string, groupURL string, err error) {

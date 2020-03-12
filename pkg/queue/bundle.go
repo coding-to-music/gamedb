@@ -12,7 +12,6 @@ import (
 	"github.com/cenkalti/backoff/v4"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
-	pubsubHelpers "github.com/gamedb/gamedb/pkg/helpers/pubsub"
 	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -103,11 +102,8 @@ func bundleHandler(messages []*rabbit.Message) {
 		}
 
 		// Send websocket
-		wsPaload := IntPayload{}
-		wsPaload.ID = payload.ID
-		wsPaload.Pages = []websockets.WebsocketPage{websockets.PageBundle, websockets.PageBundles}
-
-		_, err = pubsubHelpers.Publish(pubsubHelpers.PubSubTopicWebsockets, wsPaload)
+		wsPayload := IntPayload{ID: payload.ID}
+		err = ProduceWebsocket(wsPayload, websockets.PageBundle, websockets.PageBundles)
 		if err != nil {
 			log.Err(err, payload.ID)
 		}

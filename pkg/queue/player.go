@@ -10,7 +10,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
-	pubsubHelpers "github.com/gamedb/gamedb/pkg/helpers/pubsub"
 	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -230,11 +229,8 @@ func playerHandler(messages []*rabbit.Message) {
 
 			defer wg.Done()
 
-			wsPayload := StringPayload{} // String, as int64 too large for js
-			wsPayload.String = strconv.FormatInt(player.ID, 10)
-			wsPayload.Pages = []websockets.WebsocketPage{websockets.PagePlayer}
-
-			_, err = pubsubHelpers.Publish(pubsubHelpers.PubSubTopicWebsockets, wsPayload)
+			wsPayload := StringPayload{String: strconv.FormatInt(player.ID, 10)}
+			err = ProduceWebsocket(wsPayload, websockets.PagePlayer)
 			if err != nil {
 				log.Err(err, payload.ID)
 			}

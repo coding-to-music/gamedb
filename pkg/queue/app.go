@@ -20,7 +20,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
-	pubsubHelpers "github.com/gamedb/gamedb/pkg/helpers/pubsub"
 	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/helpers/twitch"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -346,11 +345,8 @@ func appHandler(messages []*rabbit.Message) {
 
 				var err error
 
-				wsPayload := IntPayload{}
-				wsPayload.ID = id
-				wsPayload.Pages = []websockets.WebsocketPage{websockets.PageApp}
-
-				_, err = pubsubHelpers.Publish(pubsubHelpers.PubSubTopicWebsockets, wsPayload)
+				wsPayload := IntPayload{ID: id}
+				err = ProduceWebsocket(wsPayload, websockets.PageApp)
 				if err != nil {
 					log.Err(err, id)
 				}
