@@ -392,6 +392,10 @@ func updatePackageFromPICS(pack *mongo.Package, message *rabbit.Message, payload
 
 			pack.Extended = child.GetChildrenAsMap()
 
+		case "extendedz":
+
+			log.Info("extendedz", child.GetChildrenAsMap())
+
 		case "":
 
 			// Some packages (46028) have blank children
