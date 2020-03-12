@@ -78,7 +78,7 @@ func main() {
 	r.Use(middleware.MiddlewareCors())
 	r.Use(chiMiddleware.RedirectSlashes)
 	r.Use(middleware.MiddlewareRealIP)
-	r.Use(chiMiddleware.DefaultCompress)
+	r.Use(chiMiddleware.NewCompressor(flate.BestSpeed, "text/html", "text/css", "text/javascript", "application/json", "application/javascript").Handler())
 
 	// Pages
 	r.Get("/", pages.HomeHandler)
