@@ -103,7 +103,7 @@ func bundleHandler(messages []*rabbit.Message) {
 		}
 
 		// Send websocket
-		wsPaload := websockets.IntPayload{}
+		wsPaload := IntPayload{}
 		wsPaload.ID = payload.ID
 		wsPaload.Pages = []websockets.WebsocketPage{websockets.PageBundle, websockets.PageBundles}
 

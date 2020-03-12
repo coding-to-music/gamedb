@@ -191,7 +191,7 @@ func saveToMongo(m *discordgo.MessageCreate, message string) {
 		return
 	}
 
-	wsPayload := websockets.ChatBotPayload{}
+	wsPayload := queue.ChatBotPayload{}
 	wsPayload.AuthorID = m.Author.ID
 	wsPayload.AuthorName = m.Author.Username
 	wsPayload.AuthorAvatar = m.Author.Avatar

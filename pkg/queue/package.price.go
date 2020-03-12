@@ -117,7 +117,7 @@ func packagePriceHandler(messages []*rabbit.Message) {
 				if result != nil {
 					if insertedID, ok := result.InsertedID.(primitive.ObjectID); ok {
 
-						wsPayload := websockets.StringsPayload{}
+						wsPayload := StringsPayload{}
 						wsPayload.IDs = []string{insertedID.Hex()}
 						wsPayload.Pages = []websockets.WebsocketPage{websockets.PagePrices}
 

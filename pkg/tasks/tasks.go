@@ -7,8 +7,8 @@ import (
 	"github.com/cenkalti/backoff/v4"
 	pubsubHelpers "github.com/gamedb/gamedb/pkg/helpers/pubsub"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
-	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/robfig/cron/v3"
 )
 
@@ -118,7 +118,7 @@ func Run(task TaskInterface) {
 	log.Info("Cron started: " + task.Name())
 
 	// Send start websocket
-	_, err := pubsubHelpers.Publish(pubsubHelpers.PubSubTopicWebsockets, websockets.AdminPayload{TaskID: task.ID(), Action: "started"})
+	_, err := pubsubHelpers.Publish(pubsubHelpers.PubSubTopicWebsockets, queue.AdminPayload{TaskID: task.ID(), Action: "started"})
 	log.Err(err)
 
 	// Do work
@@ -134,7 +134,7 @@ func Run(task TaskInterface) {
 		log.Err(err)
 
 		// Send end websocket
-		_, err = pubsubHelpers.Publish(pubsubHelpers.PubSubTopicWebsockets, websockets.AdminPayload{TaskID: task.ID(), Action: "finished", Time: Next(task).Unix()})
+		_, err = pubsubHelpers.Publish(pubsubHelpers.PubSubTopicWebsockets, queue.AdminPayload{TaskID: task.ID(), Action: "finished", Time: Next(task).Unix()})
 		log.Err(err)
 	}
 

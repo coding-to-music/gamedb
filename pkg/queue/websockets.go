@@ -44,7 +44,7 @@ func websocketHandler(messages []*rabbit.Message) {
 			switch page {
 			case websockets.PageApp, websockets.PageBundle, websockets.PagePackage:
 
-				idPayload := websockets.IntPayload{}
+				idPayload := IntPayload{}
 
 				err = helpers.Unmarshal(data, &idPayload)
 				log.Err(err)
@@ -53,7 +53,7 @@ func websocketHandler(messages []*rabbit.Message) {
 
 			case websockets.PageGroup, websockets.PagePlayer:
 
-				idPayload := websockets.StringPayload{}
+				idPayload := StringPayload{}
 
 				err = helpers.Unmarshal(data, &idPayload)
 				log.Err(err)
@@ -62,7 +62,7 @@ func websocketHandler(messages []*rabbit.Message) {
 
 			case websockets.PageChatBot:
 
-				cbPayload := websockets.ChatBotPayload{}
+				cbPayload := ChatBotPayload{}
 
 				err = helpers.Unmarshal(data, &cbPayload)
 				log.Err(err)
@@ -71,7 +71,7 @@ func websocketHandler(messages []*rabbit.Message) {
 
 			case websockets.PageAdmin:
 
-				adminPayload := websockets.AdminPayload{}
+				adminPayload := AdminPayload{}
 
 				err = helpers.Unmarshal(data, &adminPayload)
 				log.Err(err)
@@ -80,7 +80,7 @@ func websocketHandler(messages []*rabbit.Message) {
 
 			case websockets.PageChanges:
 
-				changePayload := websockets.ChangesPayload{}
+				changePayload := ChangesPayload{}
 
 				err = helpers.Unmarshal(data, &changePayload)
 				log.Err(err)
@@ -89,7 +89,7 @@ func websocketHandler(messages []*rabbit.Message) {
 
 			case websockets.PagePackages:
 
-				idPayload := websockets.IntPayload{}
+				idPayload := IntPayload{}
 
 				err = helpers.Unmarshal(data, &idPayload)
 				log.Err(err)
@@ -104,7 +104,7 @@ func websocketHandler(messages []*rabbit.Message) {
 
 			case websockets.PageBundles:
 
-				idPayload := websockets.IntPayload{}
+				idPayload := IntPayload{}
 
 				err = helpers.Unmarshal(data, &idPayload)
 				log.Err(err)
@@ -117,7 +117,7 @@ func websocketHandler(messages []*rabbit.Message) {
 
 			case websockets.PagePrices:
 
-				idsPayload := websockets.StringsPayload{}
+				idsPayload := StringsPayload{}
 
 				err = helpers.Unmarshal(data, &idsPayload)
 				log.Err(err)
@@ -138,4 +138,55 @@ func websocketHandler(messages []*rabbit.Message) {
 		//
 		message.Ack(false)
 	}
+}
+
+type PubSubBasePayload struct {
+	Pages []websockets.WebsocketPage `json:"p"`
+}
+
+type IntPayload struct {
+	PubSubBasePayload
+	ID int `json:"id"`
+}
+
+type StringPayload struct {
+	PubSubBasePayload
+	String string `json:"id"`
+}
+
+type StringsPayload struct {
+	PubSubBasePayload
+	IDs []string `json:"id"`
+}
+
+type ChangesPayload struct {
+	PubSubBasePayload
+	Data [][]interface{} `json:"d"`
+}
+
+type AdminPayload struct {
+	PubSubBasePayload
+	TaskID string `json:"task_id"`
+	Action string `json:"action"`
+	Time   int64  `json:"time"`
+}
+
+type ChatBotPayload struct {
+	PubSubBasePayload
+	AuthorID     string `json:"author_id"`
+	AuthorName   string `json:"author_name"`
+	AuthorAvatar string `json:"author_avatar"`
+	Message      string `json:"message"`
+}
+
+type ChatPayload struct {
+	PubSubBasePayload
+	I            float32 `json:"i"`
+	AuthorID     string  `json:"author_id"`
+	AuthorUser   string  `json:"author_user"`
+	AuthorAvatar string  `json:"author_avatar"`
+	Content      string  `json:"content"`
+	Channel      string  `json:"channel"`
+	Time         string  `json:"timestamp"`
+	Embeds       bool    `json:"embeds"`
 }

@@ -346,7 +346,7 @@ func appHandler(messages []*rabbit.Message) {
 
 				var err error
 
-				wsPayload := websockets.IntPayload{}
+				wsPayload := IntPayload{}
 				wsPayload.ID = id
 				wsPayload.Pages = []websockets.WebsocketPage{websockets.PageApp}
 

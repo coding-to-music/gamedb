@@ -11,7 +11,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/websockets"
+	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/go-chi/chi"
 )
 
@@ -131,7 +131,7 @@ func chatBotCommandsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var last string
-	var messages []websockets.ChatBotPayload
+	var messages []queue.ChatBotPayload
 	for _, v := range commands {
 
 		// Show all command prefixes as a full stop
@@ -141,7 +141,7 @@ func chatBotCommandsHandler(w http.ResponseWriter, r *http.Request) {
 
 		if last != v.AuthorID+v.Message { // Stop dupes
 
-			messages = append(messages, websockets.ChatBotPayload{
+			messages = append(messages, queue.ChatBotPayload{
 				AuthorID:     v.AuthorID,
 				AuthorName:   v.AuthorName,
 				AuthorAvatar: v.AuthorAvatar,

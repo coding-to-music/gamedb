@@ -331,7 +331,7 @@ func saveProductPricesToMongo(before helpers.ProductInterface, after helpers.Pro
 
 		if len(priceIDs) > 0 {
 
-			wsPayload := websockets.StringsPayload{}
+			wsPayload := StringsPayload{}
 			wsPayload.IDs = priceIDs
 			wsPayload.Pages = []websockets.WebsocketPage{websockets.PagePrices}
 

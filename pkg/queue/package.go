@@ -219,7 +219,7 @@ func packageHandler(messages []*rabbit.Message) {
 
 				var err error
 
-				wsPayload := websockets.IntPayload{}
+				wsPayload := IntPayload{}
 				wsPayload.ID = pack.ID
 				wsPayload.Pages = []websockets.WebsocketPage{websockets.PagePackage, websockets.PagePackages}
 

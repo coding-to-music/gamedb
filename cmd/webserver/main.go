@@ -1,6 +1,7 @@
 package main
 
 import (
+	"compress/flate"
 	"net/http"
 	_ "net/http/pprof"
 	"os"
@@ -19,7 +20,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
-	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/go-chi/chi"
 	chiMiddleware "github.com/go-chi/chi/middleware"
 	"github.com/gobuffalo/packr/v2"
@@ -65,7 +65,6 @@ func main() {
 	// In a go routine so if Rabbit is not working, the webserver still starts
 	go queue.Init(queue.WebserverDefinitions, true)
 
-	go websockets.ListenToPubSub()
 	go memcache.ListenToPubSubMemcache()
 
 	// Setup Recaptcha
