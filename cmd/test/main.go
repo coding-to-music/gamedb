@@ -9,6 +9,7 @@ import (
 
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
@@ -49,11 +50,11 @@ func main() {
 			if c.Messages >= 10 && locked == false {
 				locked = true
 				wg.Add(1)
-				log.Info(time.Now().String(), "locked")
+				log.Info(time.Now().Format(helpers.DateSQL), "locked")
 			} else if c.Messages < 10 && locked == true {
 				locked = false
 				wg.Done()
-				log.Info(time.Now().String(), "unlocked")
+				log.Info(time.Now().Format(helpers.DateSQL), "unlocked")
 			}
 		}
 	}()
@@ -73,7 +74,7 @@ func main() {
 			continue
 		}
 
-		log.Info(time.Now().String(), packageID)
+		log.Info(time.Now().Format(helpers.DateSQL), packageID)
 
 		pack := mongo.Package{}
 
