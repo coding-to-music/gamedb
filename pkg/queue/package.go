@@ -402,7 +402,7 @@ func updatePackageFromPICS(pack *mongo.Package, message *rabbit.Message, payload
 			// Some packages (46028) have blank children
 
 		default:
-			err = errors.New(child.Key + " field in package PICS ignored (Package: " + strconv.Itoa(pack.ID) + ")")
+			log.Warning(child.Key + " field in package PICS ignored (Package: " + strconv.Itoa(pack.ID) + ")")
 		}
 
 		if err != nil {
