@@ -1,7 +1,6 @@
 package queue
 
 import (
-	"errors"
 	"regexp"
 	"strconv"
 	"strings"
@@ -396,6 +395,14 @@ func updatePackageFromPICS(pack *mongo.Package, message *rabbit.Message, payload
 			} else {
 				log.Warning("extendedz", pack.ID, child)
 			}
+
+		case "extendedasdf":
+
+			log.Info(child) // todo, bool
+
+		case "is_available":
+
+			log.Info(child)
 
 		case "":
 
