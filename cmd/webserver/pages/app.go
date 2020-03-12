@@ -380,7 +380,7 @@ func appLocalizationHandler(w http.ResponseWriter, r *http.Request) {
 	err = mongo.FindOne(mongo.CollectionApps, bson.D{{"_id", idx}}, nil, bson.M{"localization": 1}, &app)
 	if err != nil {
 		err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
-		log.Err(err)
+		log.Err(err, r)
 		return
 	}
 	t.App = app
@@ -415,7 +415,7 @@ func appReviewsHandler(w http.ResponseWriter, r *http.Request) {
 	err = mongo.FindOne(mongo.CollectionApps, bson.D{{"_id", idx}}, nil, bson.M{"reviews": 1}, &app)
 	if err != nil {
 		err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
-		log.Err(err)
+		log.Err(err, r)
 		return
 	}
 	t.App = app
