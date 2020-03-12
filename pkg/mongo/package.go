@@ -300,6 +300,12 @@ func (pack Package) OutputForJSON(code steamapi.ProductCC) (output []interface{}
 
 func (pack Package) Save() (err error) {
 
+	if pack.CreatedAt.Unix() < 1 {
+		pack.CreatedAt = time.Now()
+	}
+
+	pack.UpdatedAt = time.Now()
+
 	_, err = ReplaceOne(CollectionPackages, bson.D{{"_id", pack.ID}}, pack)
 	return err
 }
