@@ -712,7 +712,7 @@ func playerBadgesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var response = datatable.NewDataTablesResponse(r, query, total, total)
 	for _, badge := range badges {
 
-		var completionTime = badge.BadgeCompletionTime.Format("2006-01-02 15:04:05")
+		var completionTime = badge.BadgeCompletionTime.Format(helpers.DateSQL)
 
 		response.AddRow([]interface{}{
 			badge.AppID,         // 0
