@@ -13,12 +13,10 @@ func delayHandler(messages []*rabbit.Message) {
 
 		time.Sleep(time.Second / 10)
 
-		var min = time.Second * 2
-		var max = time.Hour
+		var max = time.Hour * 6
 
 		var seconds float64
 		seconds = math.Pow(2.5, float64(message.Attempt()))
-		seconds = math.Max(seconds, min.Seconds())
 		seconds = math.Min(seconds, max.Seconds())
 
 		// Requeue
