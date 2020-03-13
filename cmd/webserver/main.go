@@ -51,14 +51,15 @@ func main() {
 		return
 	}
 
-	if config.IsLocal() {
-		log.Info("Start index check")
-		mongo.CreateAppIndexes()
-		mongo.CreatePackageIndexes()
-		mongo.CreatePlayerIndexes()
-		mongo.CreateGroupIndexes()
-		mongo.CreateSaleIndexes()
-		log.Info("Index check finished")
+	if config.IsLocal() && false {
+		go func() {
+			mongo.CreateAppIndexes()
+			mongo.CreatePackageIndexes()
+			mongo.CreatePlayerIndexes()
+			mongo.CreateGroupIndexes()
+			mongo.CreateSaleIndexes()
+			log.Info("Ensure indexes finished")
+		}()
 	}
 
 	// Start queue producers to send to.
