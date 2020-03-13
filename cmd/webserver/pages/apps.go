@@ -207,9 +207,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	var wg sync.WaitGroup
 	var code = helpers.GetProductCC(r)
-	var filter = bson.D{
-		{"_id", bson.M{"$gt": 0}}, // Temp
-	}
+	var filter = bson.D{}
 	var countLock sync.Mutex
 
 	// Types
@@ -359,6 +357,9 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		filter = append(filter, bson.E{Key: "$text", Value: bson.M{"$search": search}})
 	}
+
+	// Temp
+	filter = append(filter, bson.E{Key: "_id", Value: bson.M{"$gt": 0}})
 
 	// Get apps
 	var apps []mongo.App
