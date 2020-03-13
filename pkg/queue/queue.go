@@ -112,6 +112,7 @@ var (
 		{name: QueuePlayerRanks, consumer: nil},
 		{name: QueueSteam, consumer: nil},
 		{name: QueueDelay, consumer: nil, skipHeaders: true},
+		{name: QueueWebsockets, consumer: nil},
 	}
 
 	ChatbotDefinitions = []queueDef{
