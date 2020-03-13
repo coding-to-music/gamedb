@@ -311,6 +311,11 @@ func (pack Package) Save() (err error) {
 	return err
 }
 
+func (pack Package) ShouldUpdate() bool {
+
+	return pack.UpdatedAt.Before(time.Now().Add(time.Hour * 24 * -1))
+}
+
 func (pack *Package) SetName(name string, force bool) {
 	if (pack.Name == "" || force) && name != "" {
 		pack.Name = name

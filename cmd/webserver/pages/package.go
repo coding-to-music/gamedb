@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"strconv"
 	"sync"
-	"time"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
@@ -138,7 +137,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if pack.UpdatedAt.Unix() > time.Now().Add(time.Hour*-24).Unix() {
+		if !pack.ShouldUpdate() {
 			return
 		}
 
