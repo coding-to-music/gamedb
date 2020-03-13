@@ -73,14 +73,11 @@ func appHandler(messages []*rabbit.Message) {
 		}
 
 		// Skip if updated in last day, unless its from PICS
-		if !config.IsLocal() {
-			if app.UpdatedAt.After(time.Now().Add(time.Hour * 24 * -1)) {
-				if app.ChangeNumber >= payload.ChangeNumber {
-					log.Info("Skipping app, updated in last day")
-					message.Ack(false)
-					continue
-				}
-			}
+		if !config.IsLocal() && !app.ShouldUpdate() && app.ChangeNumber >= payload.ChangeNumber {
+
+			log.Info("Skipping app, updated " + time.Now().Sub(app.UpdatedAt).String() + " ago")
+			message.Ack(false)
+			continue
 		}
 
 		//

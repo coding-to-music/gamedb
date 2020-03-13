@@ -516,6 +516,11 @@ func (app App) GetUpdatedNice() string {
 	return app.UpdatedAt.Format(helpers.DateYearTime)
 }
 
+func (app App) ShouldUpdate() bool {
+
+	return app.UpdatedAt.Before(time.Now().Add(time.Hour * 24 * -1))
+}
+
 func (app App) Save() (err error) {
 
 	if !helpers.IsValidAppID(app.ID) {

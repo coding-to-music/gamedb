@@ -9,7 +9,6 @@ import (
 	"strconv"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/Jleagle/influxql"
 	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
@@ -109,7 +108,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if app.UpdatedAt.After(time.Now().Add(time.Hour * -24)) {
+		if !app.ShouldUpdate() {
 			return
 		}
 
