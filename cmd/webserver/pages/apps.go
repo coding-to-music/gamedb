@@ -424,18 +424,20 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var response = datatable.NewDataTablesResponse(r, query, count, recordsFiltered)
 	for k, app := range apps {
 
+		var formattedReviewScore = helpers.RoundFloatTo2DP(app.ReviewsScore)
+
 		response.AddRow([]interface{}{
-			app.ID,        // 0
-			app.GetName(), // 1
-			app.GetIcon(), // 2
-			app.GetPath(), // 3
-			app.GetType(), // 4
-			helpers.RoundFloatTo2DP(app.ReviewsScore), // 5
-			app.Prices.Get(code).GetFinal(),           // 6
-			app.PlayerPeakWeek,                        // 7
-			app.GetStoreLink(),                        // 8
-			query.GetOffset() + k + 1,                 // 9
-			app.GroupFollowers,                        // 10
+			app.ID,                          // 0
+			app.GetName(),                   // 1
+			app.GetIcon(),                   // 2
+			app.GetPath(),                   // 3
+			app.GetType(),                   // 4
+			formattedReviewScore,            // 5
+			app.Prices.Get(code).GetFinal(), // 6
+			app.PlayerPeakWeek,              // 7
+			app.GetStoreLink(),              // 8
+			query.GetOffset() + k + 1,       // 9
+			app.GroupFollowers,              // 10
 		})
 	}
 
