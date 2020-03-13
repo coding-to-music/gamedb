@@ -387,22 +387,21 @@ func updatePackageFromPICS(pack *mongo.Package, message *rabbit.Message, payload
 
 			pack.Extended = child.GetChildrenAsMap()
 
-		case "extendedz":
+		case "extendedz": // For package 439999
 
-			// For package 439999
 			if len(pack.Extended) == 0 {
 				pack.Extended = child.GetChildrenAsMap()
 			} else {
 				log.Warning("extendedz", pack.ID, child)
 			}
 
-		case "extendedasdf":
+		case "extendedasdf": // For package 439981
+
+			log.Info(child) // todo
+
+		case "is_available": // For package 439981
 
 			log.Info(child) // todo, bool
-
-		case "is_available":
-
-			log.Info(child)
 
 		case "":
 
