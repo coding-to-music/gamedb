@@ -17,7 +17,7 @@ func delayHandler(messages []*rabbit.Message) {
 		var max = time.Hour
 
 		var seconds float64
-		seconds = math.Pow(1.5, float64(message.Attempt()))
+		seconds = math.Pow(2.5, float64(message.Attempt()))
 		seconds = math.Max(seconds, min.Seconds())
 		seconds = math.Min(seconds, max.Seconds())
 
