@@ -30,7 +30,7 @@ func GetMySQLClient() (conn *gorm.DB, err error) {
 		// Retrying as this call can fail
 		operation := func() (err error) {
 
-			log.Info("Connecting to MySQL")
+			// log.Info("Connecting to MySQL")
 
 			options := url.Values{}
 			options.Set("parseTime", "true")
