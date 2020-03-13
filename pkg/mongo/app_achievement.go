@@ -4,13 +4,12 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
-
-const achievementBase = "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/"
 
 type AppAchievement struct {
 	AppID       int     `bson:"app_id" json:"-"`
@@ -44,7 +43,7 @@ func (achievement AppAchievement) getKey() string {
 func (achievement AppAchievement) GetIcon() string {
 
 	if !strings.HasPrefix(achievement.Icon, "/") && !strings.HasPrefix(achievement.Icon, "http") {
-		achievement.Icon = achievementBase + strconv.Itoa(achievement.AppID) + "/" + achievement.Icon
+		achievement.Icon = helpers.AppIconBase + strconv.Itoa(achievement.AppID) + "/" + achievement.Icon
 	}
 	if !strings.HasSuffix(achievement.Icon, ".jpg") {
 		achievement.Icon = achievement.Icon + ".jpg"
@@ -55,7 +54,7 @@ func (achievement AppAchievement) GetIcon() string {
 
 func (achievement *AppAchievement) SetIcon(url string) {
 
-	url = strings.TrimPrefix(url, achievementBase+strconv.Itoa(achievement.AppID)+"/")
+	url = strings.TrimPrefix(url, helpers.AppIconBase+strconv.Itoa(achievement.AppID)+"/")
 	url = strings.TrimSuffix(url, ".jpg")
 	achievement.Icon = url
 }

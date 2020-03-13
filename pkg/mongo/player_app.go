@@ -58,9 +58,9 @@ func (app PlayerApp) GetPath() string {
 func (app PlayerApp) GetIcon() string {
 
 	if app.AppIcon == "" {
-		return "/assets/img/no-player-image.jpg"
+		return helpers.DefaultPlayerAvatar
 	}
-	return "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/" + strconv.Itoa(app.AppID) + "/" + app.AppIcon + ".jpg"
+	return helpers.AppIconBase + strconv.Itoa(app.AppID) + "/" + app.AppIcon + ".jpg"
 }
 
 func (app PlayerApp) GetTimeNice() string {

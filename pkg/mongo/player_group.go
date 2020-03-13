@@ -77,7 +77,7 @@ func (group PlayerGroup) GetName() string {
 func (group PlayerGroup) GetIcon() string {
 
 	if group.GroupIcon == "" {
-		return "/assets/img/no-player-image.jpg"
+		return helpers.DefaultPlayerAvatar
 	}
 	return helpers.AvatarBase + group.GroupIcon
 }

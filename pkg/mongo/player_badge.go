@@ -147,7 +147,7 @@ func (badge PlayerBadge) GetIcon() string {
 
 	// App icon
 	if badge.AppID > 0 && badge.BadgeIcon != "" {
-		return eventImageBase + strconv.Itoa(badge.AppID) + "/" + badge.BadgeIcon + ".png"
+		return helpers.AppIconBase + strconv.Itoa(badge.AppID) + "/" + badge.BadgeIcon + ".jpg"
 	}
 
 	//

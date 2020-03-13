@@ -17,6 +17,7 @@ const (
 	ProductTypeApp     ProductType = "product"
 	ProductTypePackage ProductType = "package"
 
+	AppIconBase    = "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/"
 	DefaultAppIcon = "/assets/img/no-app-image-square.jpg"
 )
 
@@ -54,7 +55,7 @@ func GetAppIcon(id int, icon string) string {
 	} else if strings.HasPrefix(icon, "/") || strings.HasPrefix(icon, "http") {
 		return icon
 	}
-	return "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/" + strconv.Itoa(id) + "/" + icon + ".jpg"
+	return AppIconBase + strconv.Itoa(id) + "/" + icon + ".jpg"
 }
 
 func GetAppReleaseState(state string) (ret string) {
