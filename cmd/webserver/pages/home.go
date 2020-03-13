@@ -12,6 +12,7 @@ import (
 
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/i18n"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -149,13 +150,13 @@ func homePricesHandler(w http.ResponseWriter, r *http.Request) {
 	for _, price := range priceChanges {
 
 		prices = append(prices, homePrice{
-			Name:     price.Name,                                            // 0
-			ID:       price.AppID,                                           // 1
-			Link:     price.GetPath(),                                       // 2
-			After:    helpers.FormatPrice(price.Currency, price.PriceAfter), // 3
-			Discount: math.Round(price.DifferencePercent),                   // 4
-			Time:     price.CreatedAt.Unix(),                                // 5
-			Avatar:   price.GetIcon(),                                       // 6
+			Name:     price.Name,                                         // 0
+			ID:       price.AppID,                                        // 1
+			Link:     price.GetPath(),                                    // 2
+			After:    i18n.FormatPrice(price.Currency, price.PriceAfter), // 3
+			Discount: math.Round(price.DifferencePercent),                // 4
+			Time:     price.CreatedAt.Unix(),                             // 5
+			Avatar:   price.GetIcon(),                                    // 6
 		})
 	}
 

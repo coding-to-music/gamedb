@@ -6,7 +6,7 @@ import (
 	"sync"
 
 	"github.com/Jleagle/steam-go/steamapi"
-	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/i18n"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -88,7 +88,7 @@ func (c Publishers) work() (err error) {
 				}
 			}
 
-			for _, code := range helpers.GetProdCCs(true) {
+			for _, code := range i18n.GetProdCCs(true) {
 				price := app.Prices.Get(code.ProductCode)
 				if price.Exists {
 					newPublishers[appPublisherID].totalPrice[code.ProductCode] += price.Final

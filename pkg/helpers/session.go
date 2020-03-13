@@ -12,6 +12,7 @@ import (
 	"github.com/Jleagle/session-go/session"
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/helpers/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gorilla/sessions"
 	"github.com/oschwald/maxminddb-golang"
@@ -146,7 +147,7 @@ func GetProductCC(r *http.Request) steamapi.ProductCC {
 				return steamapi.ProductCCUS
 			}
 
-			for _, cc := range GetProdCCs(true) {
+			for _, cc := range i18n.GetProdCCs(true) {
 				for _, code := range cc.CountryCodes {
 					if record.Country.ISOCode == code {
 						return cc.ProductCode

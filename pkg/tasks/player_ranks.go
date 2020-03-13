@@ -1,7 +1,7 @@
 package tasks
 
 import (
-	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
@@ -35,7 +35,7 @@ func (c PlayerRanks) work() (err error) {
 	}
 
 	// Continents
-	for _, continent := range helpers.Continents {
+	for _, continent := range i18n.Continents {
 		for read, write := range mongo.PlayerRankFields {
 			err = queue.ProducePlayerRank(queue.PlayerRanksMessage{
 				SortColumn: read,

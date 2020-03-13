@@ -6,6 +6,7 @@ import (
 	"github.com/Jleagle/session-go/session"
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/go-chi/chi"
 )
@@ -19,7 +20,7 @@ func CurrencyHandler(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
-	if helpers.IsValidProdCC(steamapi.ProductCC(id)) {
+	if i18n.IsValidProdCC(steamapi.ProductCC(id)) {
 
 		// Set to session
 		err = session.Set(r, helpers.SessionUserProdCC, id)

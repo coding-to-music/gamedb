@@ -12,6 +12,7 @@ import (
 	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
 	"github.com/gamedb/gamedb/cmd/webserver/middleware"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/i18n"
 	"github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -801,7 +802,7 @@ func playerWishlistAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var priceFormatted string
 
 		if price, ok := app.AppPrices[code]; ok {
-			priceFormatted = helpers.FormatPrice(helpers.GetProdCC(code).CurrencyCode, price)
+			priceFormatted = i18n.FormatPrice(i18n.GetProdCC(code).CurrencyCode, price)
 		} else {
 			priceFormatted = "-"
 		}

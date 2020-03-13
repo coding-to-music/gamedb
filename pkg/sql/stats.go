@@ -5,6 +5,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/i18n"
 )
 
 func GetMeanPrice(code steamapi.ProductCC, prices string) (string, error) {
@@ -14,7 +15,7 @@ func GetMeanPrice(code steamapi.ProductCC, prices string) (string, error) {
 	err := helpers.Unmarshal([]byte(prices), &means)
 	if err == nil {
 		if val, ok := means[code]; ok {
-			return helpers.FormatPrice(helpers.GetProdCC(code).CurrencyCode, int(math.Round(val))), err
+			return i18n.FormatPrice(i18n.GetProdCC(code).CurrencyCode, int(math.Round(val))), err
 		}
 	}
 

@@ -8,6 +8,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/i18n"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql/pics"
@@ -97,7 +98,7 @@ func CreatePackageIndexes() {
 	}
 
 	// Price fields
-	for _, v := range helpers.GetProdCCs(true) {
+	for _, v := range i18n.GetProdCCs(true) {
 		cols = append(cols, "prices."+string(v.ProductCode)+".final")
 		cols = append(cols, "prices."+string(v.ProductCode)+".discount_percent")
 	}

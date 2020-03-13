@@ -8,6 +8,7 @@ import (
 	"github.com/Jleagle/rabbit-go"
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/i18n"
 	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -39,7 +40,7 @@ func packagePriceHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		var productCC = helpers.GetProdCC(payload.ProductCC)
+		var productCC = i18n.GetProdCC(payload.ProductCC)
 
 		// Get package details
 		response, b, err := steamHelper.GetSteam().GetPackageDetails(payload.PackageID, productCC.ProductCode, steamapi.LanguageEnglish)

@@ -8,6 +8,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -81,16 +82,16 @@ func (price ProductPrice) OutputForJSON() (output []interface{}) {
 		price.Name,      // 3
 		price.GetIcon(), // 4
 		price.GetPath(), // 5
-		helpers.FormatPrice(price.Currency, price.PriceBefore), // 6
-		helpers.FormatPrice(price.Currency, price.PriceAfter),  // 7
-		helpers.FormatPrice(price.Currency, price.Difference),  // 8
-		price.GetPercentChange(),                               // 9
-		price.CreatedAt.Format(helpers.DateTime),               // 10
-		price.CreatedAt.Unix(),                                 // 11
-		price.Difference,                                       // 12 Raw difference
-		price.ProdCC,                                           // 13
-		price.DifferencePercent,                                // 14
-		math.Round(price.DifferencePercent),                    // 15
+		i18n.FormatPrice(price.Currency, price.PriceBefore), // 6
+		i18n.FormatPrice(price.Currency, price.PriceAfter),  // 7
+		i18n.FormatPrice(price.Currency, price.Difference),  // 8
+		price.GetPercentChange(),                            // 9
+		price.CreatedAt.Format(helpers.DateTime),            // 10
+		price.CreatedAt.Unix(),                              // 11
+		price.Difference,                                    // 12 Raw difference
+		price.ProdCC,                                        // 13
+		price.DifferencePercent,                             // 14
+		math.Round(price.DifferencePercent),                 // 15
 	}
 }
 

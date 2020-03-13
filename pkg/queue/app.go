@@ -18,6 +18,7 @@ import (
 	"github.com/cenkalti/backoff/v4"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/i18n"
 	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
@@ -549,7 +550,7 @@ func updateAppDetails(app *mongo.App) (err error) {
 
 	prices := helpers.ProductPrices{}
 
-	for _, code := range helpers.GetProdCCs(true) {
+	for _, code := range i18n.GetProdCCs(true) {
 
 		var filter []string
 		if code.ProductCode != steamapi.ProductCCUS {

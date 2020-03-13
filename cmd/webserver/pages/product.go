@@ -8,6 +8,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
@@ -43,7 +44,7 @@ func productPricesAjaxHandler(w http.ResponseWriter, r *http.Request, productTyp
 
 	// Get code
 	code := steamapi.ProductCC(r.URL.Query().Get("code"))
-	if code == "" || !helpers.IsValidProdCC(code) {
+	if code == "" || !i18n.IsValidProdCC(code) {
 		code = helpers.GetProductCC(r)
 	}
 
@@ -56,7 +57,7 @@ func productPricesAjaxHandler(w http.ResponseWriter, r *http.Request, productTyp
 
 	// Make JSON response
 	var response productPricesAjaxResponse
-	response.Symbol = helpers.GetProdCC(code).Symbol
+	response.Symbol = i18n.GetProdCC(code).Symbol
 
 	for _, v := range pricesResp {
 		response.Prices = append(response.Prices, []float64{float64(v.CreatedAt.Unix() * 1000), float64(v.PriceAfter) / 100})

@@ -9,6 +9,7 @@ import (
 	"github.com/Jleagle/influxql"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/i18n"
 	"github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -169,7 +170,7 @@ func statsAppTypesHandler(w http.ResponseWriter, r *http.Request) {
 		for k := range rows {
 			rows[k].TypeFormatted = helpers.GetAppType(rows[k].Type)
 			rows[k].CountFormatted = humanize.Comma(rows[k].Count)
-			rows[k].TotalFormatted = helpers.FormatPrice(helpers.GetProdCC(code).CurrencyCode, int(math.Round(rows[k].Total)), true)
+			rows[k].TotalFormatted = i18n.FormatPrice(i18n.GetProdCC(code).CurrencyCode, int(math.Round(rows[k].Total)), true)
 		}
 
 		// Get total
@@ -180,7 +181,7 @@ func statsAppTypesHandler(w http.ResponseWriter, r *http.Request) {
 
 		ret = statsAppTypes{
 			Rows:  rows,
-			Total: helpers.FormatPrice(helpers.GetProdCC(code).CurrencyCode, int(total)),
+			Total: i18n.FormatPrice(i18n.GetProdCC(code).CurrencyCode, int(total)),
 		}
 
 		return ret, nil

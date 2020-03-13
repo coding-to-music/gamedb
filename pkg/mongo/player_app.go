@@ -6,6 +6,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -71,7 +72,7 @@ func (app PlayerApp) GetPriceFormatted(code steamapi.ProductCC) string {
 
 	val, ok := app.AppPrices[string(code)]
 	if ok {
-		return helpers.FormatPrice(helpers.GetProdCC(code).CurrencyCode, val)
+		return i18n.FormatPrice(i18n.GetProdCC(code).CurrencyCode, val)
 	} else {
 		return "-"
 	}
@@ -84,7 +85,7 @@ func (app PlayerApp) GetPriceHourFormatted(code steamapi.ProductCC) string {
 		if val < 0 {
 			return "∞"
 		}
-		return helpers.FormatPrice(helpers.GetProdCC(code).CurrencyCode, int(math.Round(float64(val))))
+		return i18n.FormatPrice(i18n.GetProdCC(code).CurrencyCode, int(math.Round(float64(val))))
 	} else {
 		return "-"
 	}

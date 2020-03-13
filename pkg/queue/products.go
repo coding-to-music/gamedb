@@ -8,6 +8,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steamvdf"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql/pics"
@@ -227,7 +228,7 @@ func saveProductPricesToMongo(before helpers.ProductInterface, after helpers.Pro
 	var price helpers.ProductPrice
 	var documents []mongo.Document
 
-	for _, productCC := range helpers.GetProdCCs(true) {
+	for _, productCC := range i18n.GetProdCCs(true) {
 
 		var oldPrice, newPrice int
 

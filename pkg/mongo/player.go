@@ -12,6 +12,7 @@ import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/Jleagle/steam-go/steamid"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/i18n"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -188,7 +189,7 @@ func (player Player) GetStateName() string {
 		return ""
 	}
 
-	if val, ok := helpers.States[player.CountryCode][player.StateCode]; ok {
+	if val, ok := i18n.States[player.CountryCode][player.StateCode]; ok {
 		return val
 	}
 
@@ -208,7 +209,7 @@ func (player Player) GetFlag() string {
 }
 
 func (player Player) GetCountry() string {
-	return helpers.CountryCodeToName(player.CountryCode)
+	return i18n.CountryCodeToName(player.CountryCode)
 }
 
 func (player Player) GetAvatar2() string {
@@ -361,7 +362,7 @@ func (player *Player) SetPlayerSummary() error {
 	}
 
 	player.CountryCode = summary.CountryCode
-	player.ContinentCode = helpers.CountryCodeToContinent(summary.CountryCode)
+	player.ContinentCode = i18n.CountryCodeToContinent(summary.CountryCode)
 	player.StateCode = summary.StateCode
 	player.PersonaName = summary.PersonaName
 	player.TimeCreated = time.Unix(summary.TimeCreated, 0)
@@ -857,7 +858,7 @@ func GetUniquePlayerStates(country string) (codes []helpers.Tuple, err error) {
 			if stateCode, ok := v.(string); stateCode != "" && ok {
 
 				name := stateCode
-				if val, ok := helpers.States[country][stateCode]; ok {
+				if val, ok := i18n.States[country][stateCode]; ok {
 					name = val
 				}
 
@@ -988,7 +989,7 @@ func (p *playerAppStatsInnerTemplate) AddApp(appTime int, prices map[string]int,
 		p.PriceHour = map[steamapi.ProductCC]float64{}
 	}
 
-	for _, code := range helpers.GetProdCCs(true) {
+	for _, code := range i18n.GetProdCCs(true) {
 
 		// Sometimes priceHour can be -1, meaning infinite
 		var priceHour = priceHours[string(code.ProductCode)]
@@ -1008,7 +1009,7 @@ func (p playerAppStatsInnerTemplate) GetAveragePrice() string {
 		return "-"
 	}
 
-	return helpers.FormatPrice(helpers.GetProdCC(p.ProductCC).CurrencyCode, int(math.Round(float64(p.Price[p.ProductCC])/float64(p.Count))), true)
+	return i18n.FormatPrice(i18n.GetProdCC(p.ProductCC).CurrencyCode, int(math.Round(float64(p.Price[p.ProductCC])/float64(p.Count))), true)
 }
 
 func (p playerAppStatsInnerTemplate) GetTotalPrice() string {
@@ -1017,7 +1018,7 @@ func (p playerAppStatsInnerTemplate) GetTotalPrice() string {
 		return "-"
 	}
 
-	return helpers.FormatPrice(helpers.GetProdCC(p.ProductCC).CurrencyCode, p.Price[p.ProductCC], true)
+	return i18n.FormatPrice(i18n.GetProdCC(p.ProductCC).CurrencyCode, p.Price[p.ProductCC], true)
 }
 
 func (p playerAppStatsInnerTemplate) GetAveragePriceHour() string {
@@ -1026,7 +1027,7 @@ func (p playerAppStatsInnerTemplate) GetAveragePriceHour() string {
 		return "-"
 	}
 
-	return helpers.FormatPrice(helpers.GetProdCC(p.ProductCC).CurrencyCode, int(p.PriceHour[p.ProductCC]/float64(p.Count)), true)
+	return i18n.FormatPrice(i18n.GetProdCC(p.ProductCC).CurrencyCode, int(p.PriceHour[p.ProductCC]/float64(p.Count)), true)
 }
 
 func (p playerAppStatsInnerTemplate) GetAverageTime() string {

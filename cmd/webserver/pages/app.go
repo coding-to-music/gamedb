@@ -14,6 +14,7 @@ import (
 	"github.com/Jleagle/influxql"
 	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/i18n"
 	"github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -824,7 +825,7 @@ func appTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			helpers.OrdinalComma(v.Rank),         // 4
 			helpers.GetPlayerAvatar(v.Avatar),    // 5
 			helpers.GetPlayerPath(v.ID, v.Name),  // 6
-			helpers.CountryCodeToName(v.Country), // 7
+			i18n.CountryCodeToName(v.Country),    // 7
 		})
 	}
 

@@ -12,6 +12,7 @@ import (
 	"github.com/Jleagle/steam-go/steamvdf"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/i18n"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -72,7 +73,7 @@ func packageHandler(messages []*rabbit.Message) {
 
 		// Produce price changes
 		if config.IsLocal() {
-			for _, v := range helpers.GetProdCCs(true) {
+			for _, v := range i18n.GetProdCCs(true) {
 
 				payload2 := PackagePriceMessage{
 					PackageID:   uint(pack.ID),
@@ -455,7 +456,7 @@ func updatePackageFromStore(pack *mongo.Package) (err error) {
 
 	prices := helpers.ProductPrices{}
 
-	for _, cc := range helpers.GetProdCCs(true) {
+	for _, cc := range i18n.GetProdCCs(true) {
 
 		// Get package details
 		response, b, err := steamHelper.GetSteam().GetPackageDetails(uint(pack.ID), cc.ProductCode, steamapi.LanguageEnglish)

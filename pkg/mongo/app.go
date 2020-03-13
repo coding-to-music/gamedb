@@ -14,6 +14,7 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/i18n"
 	"github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -567,7 +568,7 @@ func CreateAppIndexes() {
 	}
 
 	// Price fields
-	for _, v := range helpers.GetProdCCs(true) {
+	for _, v := range i18n.GetProdCCs(true) {
 		cols = append(cols, "prices."+string(v.ProductCode)+".final")
 	}
 

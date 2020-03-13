@@ -14,6 +14,7 @@ import (
 	"github.com/gamedb/gamedb/cmd/webserver/oauth"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
@@ -50,7 +51,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, "Settings", "Game DB settings")
 	t.addAssetPasswordStrength()
 	t.Domain = config.Config.GameDBDomain.Get()
-	t.ProdCCs = helpers.GetProdCCs(true)
+	t.ProdCCs = i18n.GetProdCCs(true)
 
 	// Get user
 	t.User, err = getUserFromSession(r)
@@ -148,7 +149,7 @@ type settingsTemplate struct {
 	User    sql.User
 	Player  mongo.Player
 	Games   string
-	ProdCCs []helpers.ProductCountryCode
+	ProdCCs []i18n.ProductCountryCode
 	Domain  string
 	Groups  string
 }
@@ -259,7 +260,7 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Country code
-		if helpers.IsValidProdCC(prodCC) {
+		if i18n.IsValidProdCC(prodCC) {
 			user.ProductCC = prodCC
 		} else {
 			user.ProductCC = steamapi.ProductCCUS

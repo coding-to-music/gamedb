@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/Jleagle/steam-go/steamapi"
+	"github.com/gamedb/gamedb/pkg/helpers/i18n"
 )
 
 type ProductInterface interface {
@@ -22,7 +23,7 @@ type ProductPrices map[steamapi.ProductCC]ProductPrice
 func (p *ProductPrices) AddPriceFromPackage(code steamapi.ProductCC, prices steamapi.PackageDetailsBody) {
 
 	if prices.Data.Price.Currency == "" {
-		prices.Data.Price.Currency = GetProdCC(code).CurrencyCode
+		prices.Data.Price.Currency = i18n.GetProdCC(code).CurrencyCode
 	}
 
 	(*p)[code] = ProductPrice{
@@ -37,7 +38,7 @@ func (p *ProductPrices) AddPriceFromPackage(code steamapi.ProductCC, prices stea
 func (p *ProductPrices) AddPriceFromApp(code steamapi.ProductCC, prices steamapi.AppDetailsBody) {
 
 	if prices.Data.PriceOverview.Currency == "" {
-		prices.Data.PriceOverview.Currency = GetProdCC(code).CurrencyCode
+		prices.Data.PriceOverview.Currency = i18n.GetProdCC(code).CurrencyCode
 	}
 
 	(*p)[code] = ProductPrice{
@@ -84,11 +85,11 @@ func (p ProductPrice) GetDiscountPercent() string {
 }
 
 func (p ProductPrice) GetCountryName(code steamapi.ProductCC) string {
-	return GetProdCC(code).Name
+	return i18n.GetProdCC(code).Name
 }
 
 func (p ProductPrice) GetFlag(code steamapi.ProductCC) string {
-	return "/assets/img/flags/" + GetProdCC(code).GetFlag() + ".png"
+	return "/assets/img/flags/" + i18n.GetProdCC(code).GetFlag() + ".png"
 }
 
 func (p ProductPrice) GetInitial() string {
@@ -107,5 +108,5 @@ func (p ProductPrice) format(value int) string {
 	if p.Currency == "" || !p.Exists {
 		return "-"
 	}
-	return FormatPrice(p.Currency, value)
+	return i18n.FormatPrice(p.Currency, value)
 }

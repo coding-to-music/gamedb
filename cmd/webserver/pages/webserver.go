@@ -19,6 +19,7 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/i18n"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -227,8 +228,8 @@ type GlobalTemplate struct {
 	JSFiles         []Asset
 	IncludeSocialJS bool
 	Canonical       string
-	ProductCCs      []helpers.ProductCountryCode
-	Continents      []helpers.Tuple
+	ProductCCs      []i18n.ProductCountryCode
+	Continents      []i18n.Continent
 	CurrentCC       string
 
 	Background      string
@@ -241,7 +242,7 @@ type GlobalTemplate struct {
 
 	UserID        int
 	UserName      string
-	UserProductCC helpers.ProductCountryCode
+	UserProductCC i18n.ProductCountryCode
 	userLevel     int // Donation level
 
 	PlayerID   int64
@@ -266,8 +267,8 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	t.Description = description
 	t.Env = config.Config.Environment.Get()
 	t.Path = r.URL.Path
-	t.ProductCCs = helpers.GetProdCCs(true)
-	t.Continents = helpers.Continents
+	t.ProductCCs = i18n.GetProdCCs(true)
+	t.Continents = i18n.Continents
 
 	val, err := session.Get(r, helpers.SessionUserID)
 	if err != nil {
@@ -311,7 +312,7 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 		log.Err(err, r)
 	}
 
-	t.UserProductCC = helpers.GetProdCC(helpers.GetProductCC(r))
+	t.UserProductCC = i18n.GetProdCC(helpers.GetProductCC(r))
 	t.CurrentCC = helpers.GetCountryCode(r)
 
 	//

@@ -8,6 +8,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/i18n"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
@@ -79,7 +80,7 @@ func CreateSaleIndexes() {
 	}
 
 	// Price fields
-	for _, v := range helpers.GetProdCCs(true) {
+	for _, v := range i18n.GetProdCCs(true) {
 		cols = append(cols, "app_prices."+string(v.ProductCode))
 		cols = append(cols, "app_lowest_price."+string(v.ProductCode))
 	}
@@ -136,8 +137,8 @@ func (sale Sale) GetPriceString(code steamapi.ProductCC) string {
 
 	priceInt, ok := sale.AppPrices[code]
 	if ok {
-		cc := helpers.GetProdCC(code)
-		return helpers.FormatPrice(cc.CurrencyCode, priceInt)
+		cc := i18n.GetProdCC(code)
+		return i18n.FormatPrice(cc.CurrencyCode, priceInt)
 	} else {
 		return "-"
 	}

@@ -9,6 +9,7 @@ import (
 
 	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
@@ -79,7 +80,7 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 
 			countries = append(countries, playersCountriesTemplate{
 				CC:   cc,
-				Name: helpers.CountryCodeToName(cc) + star,
+				Name: i18n.CountryCodeToName(cc) + star,
 			})
 		}
 
@@ -160,7 +161,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var isContinent bool
 
 	// Continent
-	for _, v := range helpers.Continents {
+	for _, v := range i18n.Continents {
 		if "c-"+v.Key == country {
 			isContinent = true
 			filter = append(filter, bson.E{Key: "continent_code", Value: v.Key})

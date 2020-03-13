@@ -6,7 +6,7 @@ import (
 	"sync"
 
 	"github.com/Jleagle/steam-go/steamapi"
-	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/i18n"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -80,7 +80,7 @@ func (c Tags) work() (err error) {
 				}
 			}
 
-			for _, code := range helpers.GetProdCCs(true) {
+			for _, code := range i18n.GetProdCCs(true) {
 				price := app.Prices.Get(code.ProductCode)
 				if price.Exists {
 					newTags[tagID].totalPrice[code.ProductCode] += price.Final
