@@ -39,7 +39,7 @@ const (
 func init() {
 	rabbit.SetLogInfo(func(i ...interface{}) {
 		i = append(i, log.LogNameRabbit)
-		log.Info(i...)
+		// log.Info(i...)
 	})
 	rabbit.SetLogWarning(func(i ...interface{}) {
 		i = append(i, log.LogNameRabbit)
