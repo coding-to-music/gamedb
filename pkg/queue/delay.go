@@ -22,7 +22,7 @@ func delayHandler(messages []*rabbit.Message) {
 		seconds = math.Min(seconds, max.Seconds())
 
 		// Requeue
-		if message.FirstSeen().Add(time.Second * time.Duration(int64(seconds))).Before(time.Now()) {
+		if message.LastSeen().Add(time.Second * time.Duration(int64(seconds))).Before(time.Now()) {
 			sendToRetryQueue(message)
 		} else {
 			sendToLastQueue(message)
