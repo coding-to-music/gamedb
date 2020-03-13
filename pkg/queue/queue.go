@@ -57,7 +57,7 @@ var (
 		rabbit.Producer: {},
 	}
 
-	ConsumersDefinitions = []queueDef{
+	ConsumersDefinitions = []QueueDefinition{
 		{name: QueueApps, consumer: appHandler},
 		{name: QueueAppsDaily, consumer: appDailyHandler, batchSize: 10, prefetchSize: 100},
 		{name: QueueAppPlayers, consumer: appPlayersHandler},
@@ -75,7 +75,7 @@ var (
 		{name: QueueWebsockets, consumer: nil},
 	}
 
-	WebserverDefinitions = []queueDef{
+	WebserverDefinitions = []QueueDefinition{
 		{name: QueueApps, consumer: nil},
 		{name: QueueAppsDaily, consumer: nil},
 		{name: QueueAppPlayers, consumer: nil},
@@ -93,7 +93,7 @@ var (
 		{name: QueueWebsockets, consumer: websocketHandler},
 	}
 
-	QueueSteamDefinitions = []queueDef{
+	QueueSteamDefinitions = []QueueDefinition{
 		{name: QueueSteam, consumer: steamHandler},
 		{name: QueueApps, consumer: nil},
 		{name: QueuePackages, consumer: nil},
@@ -102,7 +102,7 @@ var (
 		{name: QueueDelay, consumer: nil, skipHeaders: true},
 	}
 
-	QueueCronsDefinitions = []queueDef{
+	QueueCronsDefinitions = []QueueDefinition{
 		{name: QueueApps, consumer: nil},
 		{name: QueueAppsDaily, consumer: nil},
 		{name: QueueAppPlayers, consumer: nil},
@@ -115,7 +115,7 @@ var (
 		{name: QueueWebsockets, consumer: nil},
 	}
 
-	ChatbotDefinitions = []queueDef{
+	ChatbotDefinitions = []QueueDefinition{
 		{name: QueuePlayers, consumer: nil},
 		{name: QueueWebsockets, consumer: nil},
 	}
@@ -127,7 +127,7 @@ func SetDiscordClient(c *discordgo.Session) {
 	discordClient = c
 }
 
-type queueDef struct {
+type QueueDefinition struct {
 	name         rabbit.QueueName
 	consumer     rabbit.Handler
 	skipHeaders  bool
@@ -135,7 +135,7 @@ type queueDef struct {
 	prefetchSize int
 }
 
-func Init(definitions []queueDef, consume bool) {
+func Init(definitions []QueueDefinition, consume bool) {
 
 	heartbeat := time.Minute
 	if config.IsLocal() {
