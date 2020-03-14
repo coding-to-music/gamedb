@@ -43,13 +43,19 @@ func (c SteamClientPlayers) work() (err error) {
 	}
 
 	if strings.TrimSpace(string(b)) == "[]" {
-		return errors.New("www.valvesoftware.com/en/about/stats returned empty array")
+		return TaskError{
+			Err:  errors.New("www.valvesoftware.com/en/about/stats returned empty array"),
+			Okay: true,
+		}
 	}
 
 	sp := steamPlayersStruct{}
 	err = helpers.Unmarshal(b, &sp)
 	if err != nil {
-		return errors.New("www.valvesoftware.com/en/about/stats down: " + string(b))
+		return TaskError{
+			Err:  errors.New("www.valvesoftware.com/en/about/stats down: " + string(b)),
+			Okay: true,
+		}
 	}
 
 	fields := map[string]interface{}{

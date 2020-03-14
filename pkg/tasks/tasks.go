@@ -128,7 +128,11 @@ func Run(task TaskInterface) {
 
 	err = backoff.RetryNotify(task.work, backoff.WithMaxRetries(policy, 10), func(err error, t time.Duration) { log.Info(err, task.ID(), err) })
 	if err != nil {
-		log.Critical(task.ID(), err)
+		if val, ok := err.(TaskError); ok && val.Okay {
+			log.Info(task.ID(), err)
+		} else {
+			log.Critical(task.ID(), err)
+		}
 	} else {
 
 		// Save config row
@@ -152,4 +156,13 @@ func GetTaskConfig(task TaskInterface) (config sql.Config, err error) {
 //
 func statsLogger(tableName string, count int, total int, rowName string) {
 	log.Info("Updating " + tableName + " - " + strconv.Itoa(count) + " / " + strconv.Itoa(total) + ": " + rowName)
+}
+
+type TaskError struct {
+	Err  error
+	Okay bool
+}
+
+func (te TaskError) Error() string {
+	return te.Err.Error()
 }
