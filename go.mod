@@ -3,9 +3,8 @@ module github.com/gamedb/gamedb
 go 1.13
 
 require (
-	cloud.google.com/go v0.53.0 // indirect
 	cloud.google.com/go/logging v1.0.0
-	cloud.google.com/go/pubsub v1.2.0
+	cloud.google.com/go/pubsub v1.3.1
 	github.com/Jleagle/go-durationfmt v0.0.0-20190307132420-e57bfad84057
 	github.com/Jleagle/influxql v0.0.0-20190502115937-4ac053a1ed8e
 	github.com/Jleagle/memcache-go v0.0.0-20191228144235-986fe282434d
@@ -46,10 +45,10 @@ require (
 	github.com/gobuffalo/envy v1.9.0 // indirect
 	github.com/gobuffalo/logger v1.0.3 // indirect
 	github.com/gobuffalo/packd v1.0.0 // indirect
-	github.com/gobuffalo/packr/v2 v2.7.1
+	github.com/gobuffalo/packr/v2 v2.8.0
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/gocolly/colly v1.2.0
-	github.com/golang/protobuf v1.3.4
+	github.com/golang/protobuf v1.3.5
 	github.com/google/go-github/v28 v28.1.1
 	github.com/google/martian v2.1.0+incompatible
 	github.com/gorilla/sessions v1.2.0
@@ -61,8 +60,8 @@ require (
 	github.com/justinas/nosurf v1.1.0
 	github.com/jzelinskie/geddit v0.0.0-20190913104144-95ef6806b073
 	github.com/kennygrant/sanitize v1.2.4 // indirect
-	github.com/klauspost/compress v1.10.1 // indirect
-	github.com/labstack/echo/v4 v4.1.14 // indirect
+	github.com/klauspost/compress v1.10.3 // indirect
+	github.com/labstack/echo/v4 v4.1.15 // indirect
 	github.com/logrusorgru/aurora v0.0.0-20200102142835-e9ef32dff381
 	github.com/mattn/go-isatty v0.0.12 // indirect
 	github.com/mattn/go-runewidth v0.0.8 // indirect
@@ -85,24 +84,22 @@ require (
 	github.com/sendgrid/sendgrid-go v3.5.0+incompatible
 	github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf // indirect
 	github.com/streadway/amqp v0.0.0-20200108173154-1c71cc93ed71
-	github.com/tdewolff/minify/v2 v2.7.2
+	github.com/tdewolff/minify/v2 v2.7.3
 	github.com/temoto/robotstxt v1.1.1 // indirect
 	github.com/tidwall/pretty v1.0.1
 	github.com/uber-go/atomic v1.4.0 // indirect
 	github.com/xdg/stringprep v1.0.0 // indirect
 	github.com/yohcop/openid-go v1.0.0
-	go.mongodb.org/mongo-driver v1.3.0
+	go.mongodb.org/mongo-driver v1.3.1
 	go.uber.org/atomic v1.4.0 // indirect
-	golang.org/x/crypto v0.0.0-20200221231518-2aa609cf4a9d
-	golang.org/x/exp v0.0.0-20200224162631-6cc2880d07d6 // indirect
-	golang.org/x/net v0.0.0-20200226121028-0de0cce0169b // indirect
+	golang.org/x/crypto v0.0.0-20200311171314-f7b00557c8c4
+	golang.org/x/exp v0.0.0-20200228211341-fcea875c7e85 // indirect
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
-	golang.org/x/sys v0.0.0-20200223170610-d5e6a3e2c0ae // indirect
 	golang.org/x/text v0.3.2
-	golang.org/x/tools v0.0.0-20200226180945-26f6a1b6802d // indirect
-	google.golang.org/api v0.19.0
-	google.golang.org/genproto v0.0.0-20200225123651-fc8f55426688 // indirect
-	google.golang.org/grpc v1.27.1
+	golang.org/x/tools v0.0.0-20200313205530-4303120df7d8 // indirect
+	google.golang.org/api v0.20.0
+	google.golang.org/genproto v0.0.0-20200313141609-30c55424f95d // indirect
+	google.golang.org/grpc v1.28.0
 	gopkg.in/djherbis/atime.v1 v1.0.0 // indirect
 	gopkg.in/djherbis/stream.v1 v1.3.0 // indirect
 	gopkg.in/yaml.v2 v2.2.8 // indirect
