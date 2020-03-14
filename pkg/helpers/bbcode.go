@@ -16,6 +16,21 @@ func init() {
 		out.Name = "h1"
 		return out, true
 	})
+	BBCodeCompiler.SetTag("h2", func(node *bbcode.BBCodeNode) (*bbcode.HTMLTag, bool) {
+		out := bbcode.NewHTMLTag("")
+		out.Name = "h2"
+		return out, true
+	})
+	BBCodeCompiler.SetTag("h3", func(node *bbcode.BBCodeNode) (*bbcode.HTMLTag, bool) {
+		out := bbcode.NewHTMLTag("")
+		out.Name = "h3"
+		return out, true
+	})
+	BBCodeCompiler.SetTag("b", func(node *bbcode.BBCodeNode) (*bbcode.HTMLTag, bool) {
+		out := bbcode.NewHTMLTag("")
+		out.Name = "strong"
+		return out, true
+	})
 	BBCodeCompiler.SetTag("strike", func(node *bbcode.BBCodeNode) (*bbcode.HTMLTag, bool) {
 		out := bbcode.NewHTMLTag("")
 		out.Name = "span"
@@ -43,6 +58,11 @@ func init() {
 		out.Name = "tr"
 		return out, true
 	})
+	BBCodeCompiler.SetTag("th", func(node *bbcode.BBCodeNode) (*bbcode.HTMLTag, bool) {
+		out := bbcode.NewHTMLTag("")
+		out.Name = "th"
+		return out, true
+	})
 	BBCodeCompiler.SetTag("td", func(node *bbcode.BBCodeNode) (*bbcode.HTMLTag, bool) {
 		out := bbcode.NewHTMLTag("")
 		out.Name = "td"
@@ -53,5 +73,4 @@ func init() {
 func RenderHTMLAndBBCode(in string) template.HTML {
 
 	return template.HTML(html.UnescapeString(BBCodeCompiler.Compile(in)))
-
 }
