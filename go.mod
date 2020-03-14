@@ -17,7 +17,6 @@ require (
 	github.com/Jleagle/unmarshal-go v0.0.0-20200217225147-fd7db71d9ac0
 	github.com/Philipp15b/go-steam v1.0.1-0.20190816133340-b04c5a83c1c0
 	github.com/PuerkitoBio/goquery v1.5.1 // indirect
-	github.com/TylerBrock/colorjson v0.0.0-20180527164720-95ec53f28296 // indirect
 	github.com/ahmdrz/goinsta/v2 v2.4.5
 	github.com/antchfx/htmlquery v1.2.2 // indirect
 	github.com/antchfx/xmlquery v1.2.3 // indirect
@@ -35,22 +34,17 @@ require (
 	github.com/didip/tollbooth/v5 v5.1.0
 	github.com/djherbis/fscache v0.10.0
 	github.com/dustin/go-humanize v1.0.0
-	github.com/fatih/color v1.9.0 // indirect
 	github.com/frustra/bbcode v0.0.0-20180807171629-48be21ce690c
 	github.com/getkin/kin-openapi v0.2.1-0.20200306125844-9ae9769e5f4e
 	github.com/getsentry/sentry-go v0.5.1
 	github.com/go-chi/chi v4.0.3+incompatible
 	github.com/go-chi/cors v1.0.0
 	github.com/go-sql-driver/mysql v1.5.0
-	github.com/gobuffalo/envy v1.9.0 // indirect
-	github.com/gobuffalo/logger v1.0.3 // indirect
-	github.com/gobuffalo/packd v1.0.0 // indirect
 	github.com/gobuffalo/packr/v2 v2.8.0
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/gocolly/colly v1.2.0
 	github.com/golang/protobuf v1.3.5
 	github.com/google/go-github/v28 v28.1.1
-	github.com/google/martian v2.1.0+incompatible
 	github.com/gorilla/sessions v1.2.0
 	github.com/gorilla/websocket v1.4.1
 	github.com/gosimple/slug v1.9.0
@@ -63,7 +57,6 @@ require (
 	github.com/klauspost/compress v1.10.3 // indirect
 	github.com/labstack/echo/v4 v4.1.15 // indirect
 	github.com/logrusorgru/aurora v0.0.0-20200102142835-e9ef32dff381
-	github.com/mattn/go-isatty v0.0.12 // indirect
 	github.com/mattn/go-runewidth v0.0.8 // indirect
 	github.com/microcosm-cc/bluemonday v1.0.2
 	github.com/mxpv/patreon-go v0.0.0-20190917022727-646111f1d983
@@ -75,7 +68,6 @@ require (
 	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
 	github.com/powerslacker/ratelimit v0.0.0-20190505003410-df2fcffc8e0d
 	github.com/robfig/cron/v3 v3.0.1
-	github.com/rogpeppe/go-internal v1.5.2 // indirect
 	github.com/rollbar/rollbar-go v1.2.0
 	github.com/russross/blackfriday v2.0.0+incompatible
 	github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca // indirect
@@ -91,9 +83,7 @@ require (
 	github.com/xdg/stringprep v1.0.0 // indirect
 	github.com/yohcop/openid-go v1.0.0
 	go.mongodb.org/mongo-driver v1.3.1
-	go.uber.org/atomic v1.4.0 // indirect
 	golang.org/x/crypto v0.0.0-20200311171314-f7b00557c8c4
-	golang.org/x/exp v0.0.0-20200228211341-fcea875c7e85 // indirect
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/text v0.3.2
 	golang.org/x/tools v0.0.0-20200313205530-4303120df7d8 // indirect
@@ -102,7 +92,5 @@ require (
 	google.golang.org/grpc v1.28.0
 	gopkg.in/djherbis/atime.v1 v1.0.0 // indirect
 	gopkg.in/djherbis/stream.v1 v1.3.0 // indirect
-	gopkg.in/yaml.v2 v2.2.8 // indirect
-	honnef.co/go/tools v0.0.1-2020.1.3 // indirect
 	jaytaylor.com/html2text v0.0.0-20200220170450-61d9dc4d7195
 )
