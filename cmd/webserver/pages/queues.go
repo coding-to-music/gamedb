@@ -45,7 +45,7 @@ func queuesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			`"queue"='GDB_Groups'`,
 			`"queue"='GDB_Packages'`,
 			`"queue"='GDB_Players'`,
-			`"queue"='GDB_Steam'`,
+			// `"queue"='GDB_Steam'`,
 		}
 
 		builder := influxql.NewBuilder()
