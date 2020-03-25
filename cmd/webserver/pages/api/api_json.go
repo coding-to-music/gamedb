@@ -1,7 +1,6 @@
 package api
 
 import (
-	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/getkin/kin-openapi/openapi3"
 )
@@ -36,7 +35,7 @@ var (
 var Swagger = &openapi3.Swagger{
 	OpenAPI: "3.0.0",
 	Servers: []*openapi3.Server{
-		{URL: config.Config.GameDBDomain.Get() + "/api"},
+		{URL: "https://gamedb.online/api"}, // Hardcoded to not get local domain
 	},
 	Info: &openapi3.Info{
 		Title:   "Steam DB API",
