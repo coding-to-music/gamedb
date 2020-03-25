@@ -60,6 +60,18 @@ $('.stop-prop').on('click', function (e) {
     e.stopPropagation();
 });
 
+// Console
+const consoleText = `
+ _____                       ____________ 
+|  __ \\                      |  _  \\ ___ \\
+| |  \\/ __ _ _ __ ___   ___  | | | | |_/ /
+| | __ / _\` | '_ \` _ \\ / _ \\ | | | | ___ \\
+| |_\\ \\ (_| | | | | | |  __/ | |/ /| |_/ /
+ \\____/\\__,_|_| |_| |_|\\___| |___/ \\____/ 
+`;
+
+console.log(consoleText);
+
 // Auto dropdowns
 $('.navbar .dropdown').on('mouseenter', function (e) {
     $(this).addClass("show").find('.dropdown-menu').addClass("show")
