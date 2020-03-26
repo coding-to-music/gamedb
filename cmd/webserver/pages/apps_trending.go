@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"github.com/Jleagle/influxql"
+	webserverHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers"
 	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/influx"
@@ -110,7 +111,7 @@ func trendingAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
-	var code = helpers.GetProductCC(r)
+	var code = webserverHelpers.GetProductCC(r)
 	var response = datatable.NewDataTablesResponse(r, query, count, filtered)
 	for _, app := range apps {
 

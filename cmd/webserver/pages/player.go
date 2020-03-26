@@ -9,6 +9,7 @@ import (
 	"github.com/Jleagle/influxql"
 	"github.com/Jleagle/session-go/session"
 	"github.com/dustin/go-humanize"
+	webserverHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers"
 	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
 	"github.com/gamedb/gamedb/cmd/webserver/middleware"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -94,7 +95,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var code = helpers.GetProductCC(r)
+	var code = webserverHelpers.GetProductCC(r)
 	player.GameStats.All.ProductCC = code
 	player.GameStats.Played.ProductCC = code
 
@@ -383,7 +384,7 @@ func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !helpers.IsAdmin(r) {
+	if !webserverHelpers.IsAdmin(r) {
 
 		user, err := getUserFromSession(r)
 		if err != nil {
@@ -391,13 +392,13 @@ func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if user.SteamID.String != id {
-			err = session.SetFlash(r, helpers.SessionBad, "Invalid user")
+			err = session.SetFlash(r, webserverHelpers.SessionBad, "Invalid user")
 			log.Err(err)
 			return
 		}
 
 		if user.PatreonLevel < 2 {
-			err = session.SetFlash(r, helpers.SessionBad, "Invalid user level")
+			err = session.SetFlash(r, webserverHelpers.SessionBad, "Invalid user level")
 			log.Err(err)
 			return
 		}
@@ -435,7 +436,7 @@ func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	err = session.SetFlash(r, helpers.SessionGood, strconv.Itoa(len(friendIDsMap))+" friends queued")
+	err = session.SetFlash(r, webserverHelpers.SessionGood, strconv.Itoa(len(friendIDsMap))+" friends queued")
 	log.Err(err)
 }
 
@@ -451,7 +452,7 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := datatable.NewDataTableQuery(r, true)
 
-	code := helpers.GetProductCC(r)
+	code := webserverHelpers.GetProductCC(r)
 
 	//
 	var wg sync.WaitGroup
@@ -760,7 +761,7 @@ func playerWishlistAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		code := helpers.GetProductCC(r)
+		code := webserverHelpers.GetProductCC(r)
 
 		columns := map[string]string{
 			"0": "order",
@@ -795,7 +796,7 @@ func playerWishlistAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
-	var code = helpers.GetProductCC(r)
+	var code = webserverHelpers.GetProductCC(r)
 	var response = datatable.NewDataTablesResponse(r, query, total, total)
 	for _, app := range wishlistApps {
 
@@ -940,7 +941,7 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		updateType := mongo.PlayerUpdateManual
-		if helpers.IsAdmin(r) {
+		if webserverHelpers.IsAdmin(r) {
 			message = "Admin update!"
 			updateType = mongo.PlayerUpdateAdmin
 		}

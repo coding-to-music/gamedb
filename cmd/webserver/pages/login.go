@@ -8,6 +8,7 @@ import (
 	"github.com/Jleagle/recaptcha-go"
 	"github.com/Jleagle/session-go/session"
 	"github.com/badoux/checkmail"
+	webserverHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers"
 	"github.com/gamedb/gamedb/cmd/webserver/oauth"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -37,7 +38,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	_, err := getUserFromSession(r)
 	if err == nil {
 
-		err = session.SetFlash(r, helpers.SessionGood, "Login successful")
+		err = session.SetFlash(r, webserverHelpers.SessionGood, "Login successful")
 		log.Err(err, r)
 
 		http.Redirect(w, r, "/settings", http.StatusFound)
@@ -125,14 +126,14 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	if success {
 
-		err := session.SetFlash(r, helpers.SessionGood, message)
+		err := session.SetFlash(r, webserverHelpers.SessionGood, message)
 		log.Err(err, r)
 
 		err = session.Save(w, r)
 		log.Err(err, r)
 
 		// Get last page
-		val, err := session.Get(r, helpers.SessionLastPage)
+		val, err := session.Get(r, webserverHelpers.SessionLastPage)
 		if err != nil {
 			log.Err(err, r)
 		}
@@ -146,7 +147,7 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	} else {
 
-		err := session.SetFlash(r, helpers.SessionBad, message)
+		err := session.SetFlash(r, webserverHelpers.SessionBad, message)
 		log.Err(err, r)
 
 		err = session.Save(w, r)
@@ -164,21 +165,21 @@ func login(r *http.Request, user sql.User) (string, bool) {
 
 	// Log user in
 	sessionData := map[string]string{
-		helpers.SessionUserID:         strconv.Itoa(user.ID),
-		helpers.SessionUserEmail:      user.Email,
-		helpers.SessionUserProdCC:     string(user.ProductCC),
-		helpers.SessionUserAPIKey:     user.APIKey,
-		helpers.SessionUserShowAlerts: strconv.FormatBool(user.ShowAlerts),
-		helpers.SessionUserLevel:      strconv.Itoa(int(user.PatreonLevel)),
+		webserverHelpers.SessionUserID:         strconv.Itoa(user.ID),
+		webserverHelpers.SessionUserEmail:      user.Email,
+		webserverHelpers.SessionUserProdCC:     string(user.ProductCC),
+		webserverHelpers.SessionUserAPIKey:     user.APIKey,
+		webserverHelpers.SessionUserShowAlerts: strconv.FormatBool(user.ShowAlerts),
+		webserverHelpers.SessionUserLevel:      strconv.Itoa(int(user.PatreonLevel)),
 	}
 
 	steamID := user.GetSteamID()
 	if steamID > 0 {
 		player, err := mongo.GetPlayer(steamID)
 		if err == nil {
-			sessionData[helpers.SessionPlayerID] = strconv.FormatInt(player.ID, 10)
-			sessionData[helpers.SessionPlayerName] = player.PersonaName
-			sessionData[helpers.SessionPlayerLevel] = strconv.Itoa(player.Level)
+			sessionData[webserverHelpers.SessionPlayerID] = strconv.FormatInt(player.ID, 10)
+			sessionData[webserverHelpers.SessionPlayerName] = player.PersonaName
+			sessionData[webserverHelpers.SessionPlayerLevel] = strconv.Itoa(player.Level)
 		} else {
 			err = helpers.IgnoreErrors(err, helpers.ErrInvalidPlayerID, mongo.ErrNoDocuments)
 			log.Err(err, r)

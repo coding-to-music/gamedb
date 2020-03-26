@@ -3,7 +3,7 @@ package datatable
 import (
 	"net/http"
 
-	"github.com/gamedb/gamedb/pkg/helpers"
+	webserverHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers"
 	"github.com/gamedb/gamedb/pkg/sql"
 )
 
@@ -17,7 +17,7 @@ func NewDataTablesResponse(r *http.Request, query DataTablesQuery, count int64, 
 
 	if query.limited {
 
-		level := sql.UserLevel(helpers.GetUserLevel(r))
+		level := sql.UserLevel(webserverHelpers.GetUserLevel(r))
 		max := level.MaxResults(100)
 
 		if max > 0 && max < ret.RecordsFiltered {

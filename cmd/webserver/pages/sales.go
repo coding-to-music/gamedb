@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+	webserverHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers"
 	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -155,7 +156,7 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := datatable.NewDataTableQuery(r, false)
 
-	var code = helpers.GetProductCC(r)
+	var code = webserverHelpers.GetProductCC(r)
 	var countLock sync.Mutex
 	var baseFilter = bson.D{
 		{Key: "offer_end", Value: bson.M{"$gt": time.Now()}},

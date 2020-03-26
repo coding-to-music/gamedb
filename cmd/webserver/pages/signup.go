@@ -35,7 +35,7 @@ func signupHandler(w http.ResponseWriter, r *http.Request) {
 	_, err := getUserFromSession(r)
 	if err == nil {
 
-		err = session.SetFlash(r, helpers.SessionGood, "Login successful")
+		err = session.SetFlash(r, webserverHelpers.SessionGood, "Login successful")
 		log.Err(err, r)
 
 		http.Redirect(w, r, "/settings", http.StatusFound)
@@ -140,7 +140,7 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 			Email:         email,
 			EmailVerified: false,
 			Password:      string(passwordBytes),
-			ProductCC:     helpers.GetProductCC(r),
+			ProductCC:     webserverHelpers.GetProductCC(r),
 		}
 
 		user.SetAPIKey()
@@ -192,7 +192,7 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	if success {
 
-		err := session.SetFlash(r, helpers.SessionGood, message)
+		err := session.SetFlash(r, webserverHelpers.SessionGood, message)
 		log.Err(err, r)
 
 		err = session.Save(w, r)
@@ -202,7 +202,7 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	} else {
 
-		err := session.SetFlash(r, helpers.SessionBad, message)
+		err := session.SetFlash(r, webserverHelpers.SessionBad, message)
 		log.Err(err, r)
 
 		err = session.Save(w, r)
@@ -251,7 +251,7 @@ func verifyHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	if success {
 
-		err := session.SetFlash(r, helpers.SessionGood, message)
+		err := session.SetFlash(r, webserverHelpers.SessionGood, message)
 		log.Err(err)
 
 		err = session.Save(w, r)
@@ -261,7 +261,7 @@ func verifyHandler(w http.ResponseWriter, r *http.Request) {
 
 	} else {
 
-		err := session.SetFlash(r, helpers.SessionBad, message)
+		err := session.SetFlash(r, webserverHelpers.SessionBad, message)
 		log.Err(err, r)
 
 		err = session.Save(w, r)

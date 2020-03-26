@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"sync"
 
+	webserverHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -151,7 +152,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	// Functions that get called multiple times in the template
-	t.Price = pack.Prices.Get(helpers.GetProductCC(r))
+	t.Price = pack.Prices.Get(webserverHelpers.GetProductCC(r))
 	t.Controller = pack.Controller
 	t.Extended = t.Package.Extended.Formatted(pack.ID, pics.ExtendedKeys)
 

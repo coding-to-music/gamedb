@@ -124,7 +124,7 @@ func forgotPostHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	if success {
 
-		err := session.SetFlash(r, helpers.SessionGood, message)
+		err := session.SetFlash(r, webserverHelpers.SessionGood, message)
 		log.Err(err, r)
 
 		err = session.Save(w, r)
@@ -134,7 +134,7 @@ func forgotPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	} else {
 
-		err := session.SetFlash(r, helpers.SessionBad, message)
+		err := session.SetFlash(r, webserverHelpers.SessionBad, message)
 		log.Err(err, r)
 
 		err = session.Save(w, r)
@@ -213,7 +213,7 @@ func forgotResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	if success {
 
-		err := session.SetFlash(r, helpers.SessionGood, message)
+		err := session.SetFlash(r, webserverHelpers.SessionGood, message)
 		log.Err(err)
 
 		err = session.Save(w, r)
@@ -223,7 +223,7 @@ func forgotResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 
 	} else {
 
-		err := session.SetFlash(r, helpers.SessionBad, message)
+		err := session.SetFlash(r, webserverHelpers.SessionBad, message)
 		log.Err(err, r)
 
 		err = session.Save(w, r)

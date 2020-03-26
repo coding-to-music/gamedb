@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/session-go/session"
+	webserverHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers"
 	"github.com/gamedb/gamedb/cmd/webserver/middleware"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -56,7 +57,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 	// Redirect away after action
 	if option != "" {
 
-		err := session.SetFlash(r, helpers.SessionGood, option+" run")
+		err := session.SetFlash(r, webserverHelpers.SessionGood, option+" run")
 		log.Err(err, r)
 
 		http.Redirect(w, r, "/admin?"+option, http.StatusFound)

@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/dustin/go-humanize"
+	webserverHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/i18n"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
@@ -136,7 +137,7 @@ type homeSpotlight struct {
 func homePricesHandler(w http.ResponseWriter, r *http.Request) {
 
 	var filter = bson.D{
-		{Key: "prod_cc", Value: string(helpers.GetProductCC(r))},
+		{Key: "prod_cc", Value: string(webserverHelpers.GetProductCC(r))},
 		{Key: "app_id", Value: bson.M{"$gt": 0}},
 		{Key: "difference", Value: bson.M{"$lt": 0}},
 	}
@@ -205,7 +206,7 @@ func homeSalesHandler(w http.ResponseWriter, r *http.Request) {
 		log.Err(err)
 	}
 
-	var code = helpers.GetProductCC(r)
+	var code = webserverHelpers.GetProductCC(r)
 
 	var homeSales []homeSale
 	for _, v := range sales {

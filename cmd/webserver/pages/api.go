@@ -5,10 +5,10 @@ import (
 	"net/http"
 
 	"github.com/Jleagle/session-go/session"
+	webserverHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/api"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/api/generated"
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/go-chi/chi"
@@ -31,7 +31,7 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := apiTemplate{}
 	t.fill(w, r, "API", "A list of API endpoints to access Steam data & Game DB data")
-	t.Key, _ = session.Get(r, helpers.SessionUserAPIKey)
+	t.Key, _ = session.Get(r, webserverHelpers.SessionUserAPIKey)
 	t.Swagger = api.Swagger
 	t.Base = config.Config.GameDBDomain.Get() + "/api"
 

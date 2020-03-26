@@ -3,6 +3,7 @@ package pages
 import (
 	"net/http"
 
+	webserverHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
@@ -33,7 +34,7 @@ func publishersHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	code := helpers.GetProductCC(r)
+	code := webserverHelpers.GetProductCC(r)
 	prices := map[int]string{}
 	for _, v := range publishers {
 		price, err := v.GetMeanPrice(code)

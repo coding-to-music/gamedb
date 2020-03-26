@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/Jleagle/session-go/session"
+	webserverHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -63,7 +64,7 @@ func experienceHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	level, err := session.Get(r, helpers.SessionPlayerLevel)
+	level, err := session.Get(r, webserverHelpers.SessionPlayerLevel)
 	if err != nil {
 		log.Err(err, r)
 	}

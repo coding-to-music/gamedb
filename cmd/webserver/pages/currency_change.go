@@ -5,7 +5,7 @@ import (
 
 	"github.com/Jleagle/session-go/session"
 	"github.com/Jleagle/steam-go/steamapi"
-	"github.com/gamedb/gamedb/pkg/helpers"
+	webserverHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/go-chi/chi"
@@ -23,7 +23,7 @@ func CurrencyHandler(w http.ResponseWriter, r *http.Request) {
 	if i18n.IsValidProdCC(steamapi.ProductCC(id)) {
 
 		// Set to session
-		err = session.Set(r, helpers.SessionUserProdCC, id)
+		err = session.Set(r, webserverHelpers.SessionUserProdCC, id)
 
 		// Set to user row
 		user, err := getUserFromSession(r)
@@ -34,7 +34,7 @@ func CurrencyHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 	} else {
-		err = session.SetFlash(r, helpers.SessionGood, "Invalid currency")
+		err = session.SetFlash(r, webserverHelpers.SessionGood, "Invalid currency")
 	}
 
 	if err != nil {
@@ -48,7 +48,7 @@ func CurrencyHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Redirect
-	lastPage, err := session.Get(r, helpers.SessionLastPage)
+	lastPage, err := session.Get(r, webserverHelpers.SessionLastPage)
 	if err != nil {
 		log.Err(err, r)
 	}

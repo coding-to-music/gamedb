@@ -47,6 +47,7 @@ require (
 	github.com/gocolly/colly v1.2.0
 	github.com/golang/protobuf v1.3.5
 	github.com/google/go-github/v28 v28.1.1
+	github.com/gorilla/securecookie v1.1.1
 	github.com/gorilla/sessions v1.2.0
 	github.com/gorilla/websocket v1.4.2
 	github.com/gosimple/slug v1.9.0

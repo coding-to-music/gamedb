@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/Jleagle/session-go/session"
+	webserverHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers"
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/go-chi/cors"
 	"github.com/justinas/nosurf"
@@ -60,7 +60,7 @@ func MiddlewareAuthCheck() func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-			loggedIn, err := helpers.IsLoggedIn(r)
+			loggedIn, err := webserverHelpers.IsLoggedIn(r)
 			log.Err(err, r)
 
 			if loggedIn && err == nil {
@@ -68,7 +68,7 @@ func MiddlewareAuthCheck() func(http.Handler) http.Handler {
 				return
 			}
 
-			err = session.SetFlash(r, helpers.SessionBad, "Please login")
+			err = session.SetFlash(r, webserverHelpers.SessionBad, "Please login")
 			log.Err(err, r)
 
 			http.Redirect(w, r, "/login", http.StatusFound)
@@ -80,7 +80,7 @@ func MiddlewareAdminCheck(handler http.HandlerFunc) func(http.Handler) http.Hand
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-			if helpers.IsAdmin(r) {
+			if webserverHelpers.IsAdmin(r) {
 				next.ServeHTTP(w, r)
 				return
 			}

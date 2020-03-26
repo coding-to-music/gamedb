@@ -6,6 +6,7 @@ import (
 	"sync"
 	"time"
 
+	webserverHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers"
 	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -45,7 +46,7 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var count int64
 	var filtered int64
 	var apps []mongo.App
-	var code = helpers.GetProductCC(r)
+	var code = webserverHelpers.GetProductCC(r)
 	var filter = bson.D{
 		{"release_date_unix", bson.M{"$lt": time.Now().Unix()}},
 		{"release_date_unix", bson.M{"$gt": time.Now().AddDate(0, 0, -config.Config.NewReleaseDays.GetInt()).Unix()}},

@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"sync"
 
+	webserverHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers"
 	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -50,7 +51,7 @@ func wishlistAppsHandler(w http.ResponseWriter, r *http.Request) {
 
 	var wg sync.WaitGroup
 	var countLock sync.Mutex
-	var code = helpers.GetProductCC(r)
+	var code = webserverHelpers.GetProductCC(r)
 
 	// Count
 	var apps []mongo.App

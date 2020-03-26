@@ -10,9 +10,9 @@ import (
 
 	"github.com/Jleagle/session-go/session"
 	"github.com/didip/tollbooth/limiter"
+	webserverHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/api/generated"
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
@@ -59,7 +59,7 @@ func (s Server) call(w http.ResponseWriter, r *http.Request, callback func(w htt
 	if key == "" {
 		key = r.Header.Get(keyField)
 		if key == "" {
-			key, err = session.Get(r, helpers.SessionUserAPIKey)
+			key, err = session.Get(r, webserverHelpers.SessionUserAPIKey)
 			if err != nil {
 				s.returnErrorResponse(w, http.StatusUnauthorized, err)
 				return

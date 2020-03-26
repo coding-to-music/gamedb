@@ -6,8 +6,8 @@ import (
 	"strings"
 	"sync"
 
+	webserverHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers"
 	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
-	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
@@ -43,7 +43,7 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Get ranks
-	var code = helpers.GetProductCC(r)
+	var code = webserverHelpers.GetProductCC(r)
 
 	var filter = bson.D{
 		{Key: "prod_cc", Value: string(code)},

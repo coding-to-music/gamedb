@@ -8,7 +8,6 @@ import (
 	"github.com/Jleagle/session-go/session"
 	webserverHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers"
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/go-chi/chi"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
@@ -43,7 +42,7 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 	log.Err(err)
 
 	if t.SessionEmail == "" {
-		t.SessionEmail, err = session.Get(r, helpers.SessionUserEmail)
+		t.SessionEmail, err = session.Get(r, webserverHelpers.SessionUserEmail)
 		log.Err(err)
 	}
 
@@ -134,9 +133,9 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Redirect
 	if err != nil {
-		err = session.SetFlash(r, helpers.SessionBad, err.Error())
+		err = session.SetFlash(r, webserverHelpers.SessionBad, err.Error())
 	} else {
-		err = session.SetFlash(r, helpers.SessionGood, "Message sent!")
+		err = session.SetFlash(r, webserverHelpers.SessionGood, "Message sent!")
 	}
 	log.Err(err)
 
