@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"sync"
 
-	webserverHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers"
 	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
+	"github.com/gamedb/gamedb/cmd/webserver/helpers/session"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
@@ -39,7 +39,7 @@ func packagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	query := datatable.NewDataTableQuery(r, false)
 
 	//
-	var code = webserverHelpers.GetProductCC(r)
+	var code = session.GetProductCC(r)
 	var wg sync.WaitGroup
 	var countLock sync.Mutex
 	var filter = bson.D{}

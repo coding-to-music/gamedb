@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/Jleagle/session-go/session"
-	webserverHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers"
+	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers/session"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
@@ -20,20 +20,14 @@ func LogoutRouter() http.Handler {
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Make event
-	userID, err := webserverHelpers.GetUserIDFromSesion(r)
-	if err != nil {
-		log.Err(err, r)
-	} else {
+	userID, err := sessionHelpers.GetUserIDFromSesion(r)
+	if err == nil {
 		err = mongo.CreateUserEvent(r, userID, mongo.EventLogout)
 		log.Err(err, r)
 	}
 
 	// Get last page
-	lastPage, err := session.Get(r, webserverHelpers.SessionLastPage)
-	if err != nil {
-		log.Err(err, r)
-	}
-
+	lastPage := sessionHelpers.Get(r, sessionHelpers.SessionLastPage)
 	if lastPage == "" {
 		lastPage = "/"
 	}
@@ -42,7 +36,7 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	err = session.DeleteAll(r)
 	log.Err(err, r)
 
-	err = session.SetFlash(r, webserverHelpers.SessionGood, "You have been logged out")
+	err = session.SetFlash(r, sessionHelpers.SessionGood, "You have been logged out")
 	log.Err(err, r)
 
 	err = session.Save(w, r)

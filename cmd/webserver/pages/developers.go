@@ -3,7 +3,7 @@ package pages
 import (
 	"net/http"
 
-	webserverHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers"
+	"github.com/gamedb/gamedb/cmd/webserver/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
@@ -37,7 +37,7 @@ func developersHandler(w http.ResponseWriter, r *http.Request) {
 
 	prices := map[int]string{}
 	for _, v := range developers {
-		price, err := v.GetMeanPrice(webserverHelpers.GetProductCC(r))
+		price, err := v.GetMeanPrice(session.GetProductCC(r))
 		log.Err(err, r)
 		prices[v.ID] = price
 	}

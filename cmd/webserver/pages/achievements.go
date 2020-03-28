@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"sync"
 
-	webserverHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers"
 	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
+	"github.com/gamedb/gamedb/cmd/webserver/helpers/session"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
@@ -97,7 +97,7 @@ func achievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	//
-	var code = webserverHelpers.GetProductCC(r)
+	var code = session.GetProductCC(r)
 	var response = datatable.NewDataTablesResponse(r, query, count, filtered)
 	for _, app := range apps {
 

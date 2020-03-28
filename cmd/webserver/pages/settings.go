@@ -9,8 +9,8 @@ import (
 	"github.com/Jleagle/session-go/session"
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/badoux/checkmail"
-	webserverHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers"
 	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
+	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers/session"
 	"github.com/gamedb/gamedb/cmd/webserver/middleware"
 	"github.com/gamedb/gamedb/cmd/webserver/oauth"
 	"github.com/gamedb/gamedb/pkg/config"
@@ -71,7 +71,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Set Steam player name to session if missing, can happen after linking
-		err = session.Set(r, webserverHelpers.SessionPlayerName, t.Player.PersonaName)
+		err = session.Set(r, sessionHelpers.SessionPlayerName, t.Player.PersonaName)
 		if err != nil {
 			log.Err(err, r)
 		}
@@ -170,6 +170,7 @@ func deletePostHandler(w http.ResponseWriter, r *http.Request) {
 
 		user, err := getUserFromSession(r)
 		if err != nil {
+			log.Err(err, r)
 			return "/settings", "", "There was an eror saving your information."
 		}
 
@@ -185,13 +186,13 @@ func deletePostHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	if good != "" {
-		err = session.SetFlash(r, webserverHelpers.SessionGood, good)
+		err = session.SetFlash(r, sessionHelpers.SessionGood, good)
 		if err != nil {
 			log.Err(err, r)
 		}
 	}
 	if bad != "" {
-		err = session.SetFlash(r, webserverHelpers.SessionBad, bad)
+		err = session.SetFlash(r, sessionHelpers.SessionBad, bad)
 		if err != nil {
 			log.Err(err, r)
 		}
@@ -305,9 +306,9 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Update session
 		err = session.SetMany(r, map[string]string{
-			webserverHelpers.SessionUserProdCC:     string(user.ProductCC),
-			webserverHelpers.SessionUserEmail:      user.Email,
-			webserverHelpers.SessionUserShowAlerts: strconv.FormatBool(user.ShowAlerts),
+			sessionHelpers.SessionUserProdCC:     string(user.ProductCC),
+			sessionHelpers.SessionUserEmail:      user.Email,
+			sessionHelpers.SessionUserShowAlerts: strconv.FormatBool(user.ShowAlerts),
 		})
 		if err != nil {
 			log.Err(err, r)
@@ -318,13 +319,13 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	if good != "" {
-		err = session.SetFlash(r, webserverHelpers.SessionGood, good)
+		err = session.SetFlash(r, sessionHelpers.SessionGood, good)
 		if err != nil {
 			log.Err(err, r)
 		}
 	}
 	if bad != "" {
-		err = session.SetFlash(r, webserverHelpers.SessionBad, bad)
+		err = session.SetFlash(r, sessionHelpers.SessionBad, bad)
 		if err != nil {
 			log.Err(err, r)
 		}
@@ -368,7 +369,7 @@ func settingsNewKeyHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Update session
 		err = session.SetMany(r, map[string]string{
-			webserverHelpers.SessionUserAPIKey: user.APIKey,
+			sessionHelpers.SessionUserAPIKey: user.APIKey,
 		})
 		if err != nil {
 			log.Err(err, r)
@@ -379,13 +380,13 @@ func settingsNewKeyHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	if good != "" {
-		err = session.SetFlash(r, webserverHelpers.SessionGood, good)
+		err = session.SetFlash(r, sessionHelpers.SessionGood, good)
 		if err != nil {
 			log.Err(err, r)
 		}
 	}
 	if bad != "" {
-		err = session.SetFlash(r, webserverHelpers.SessionBad, bad)
+		err = session.SetFlash(r, sessionHelpers.SessionBad, bad)
 		if err != nil {
 			log.Err(err, r)
 		}

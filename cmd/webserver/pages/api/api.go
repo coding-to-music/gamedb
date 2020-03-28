@@ -8,12 +8,11 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/Jleagle/session-go/session"
 	"github.com/didip/tollbooth/limiter"
-	webserverHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers"
+	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers/session"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/api/generated"
 	"github.com/gamedb/gamedb/pkg/config"
-	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
+	influxHelpers "github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
 	influx "github.com/influxdata/influxdb1-client"
@@ -59,11 +58,7 @@ func (s Server) call(w http.ResponseWriter, r *http.Request, callback func(w htt
 	if key == "" {
 		key = r.Header.Get(keyField)
 		if key == "" {
-			key, err = session.Get(r, webserverHelpers.SessionUserAPIKey)
-			if err != nil {
-				s.returnErrorResponse(w, http.StatusUnauthorized, err)
-				return
-			}
+			key = sessionHelpers.Get(r, sessionHelpers.SessionUserAPIKey)
 		}
 	}
 
@@ -132,8 +127,8 @@ func (s Server) saveToInflux(r *http.Request, code int, key string, user sql.Use
 		return nil
 	}
 
-	_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, influx.Point{
-		Measurement: string(influxHelper.InfluxMeasurementAPICalls),
+	_, err = influxHelpers.InfluxWrite(influxHelpers.InfluxRetentionPolicyAllTime, influx.Point{
+		Measurement: string(influxHelpers.InfluxMeasurementAPICalls),
 		Tags: map[string]string{
 			"path":       r.URL.Path,
 			"key":        key,

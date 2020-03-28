@@ -8,8 +8,8 @@ import (
 	"strings"
 	"sync"
 
-	webserverHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers"
 	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
+	"github.com/gamedb/gamedb/cmd/webserver/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -207,7 +207,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	//
 	var wg sync.WaitGroup
-	var code = webserverHelpers.GetProductCC(r)
+	var code = session.GetProductCC(r)
 	var filter = bson.D{}
 	var countLock sync.Mutex
 

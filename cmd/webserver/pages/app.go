@@ -11,8 +11,8 @@ import (
 	"sync"
 
 	"github.com/Jleagle/influxql"
-	webserverHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers"
 	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
+	"github.com/gamedb/gamedb/cmd/webserver/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/i18n"
 	"github.com/gamedb/gamedb/pkg/helpers/influx"
@@ -284,7 +284,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Functions that get called multiple times in the template
-	t.Price = app.Prices.Get(webserverHelpers.GetProductCC(r))
+	t.Price = app.Prices.Get(session.GetProductCC(r))
 	t.Common = app.Common.Formatted(app.ID, pics.CommonKeys)
 	t.Extended = app.Extended.Formatted(app.ID, pics.ExtendedKeys)
 	t.Config = app.Config.Formatted(app.ID, pics.ConfigKeys)

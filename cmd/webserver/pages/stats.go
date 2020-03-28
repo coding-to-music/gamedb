@@ -8,7 +8,7 @@ import (
 
 	"github.com/Jleagle/influxql"
 	"github.com/dustin/go-humanize"
-	webserverHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers"
+	"github.com/gamedb/gamedb/cmd/webserver/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/i18n"
 	"github.com/gamedb/gamedb/pkg/helpers/influx"
@@ -145,12 +145,12 @@ func playerLevelsHandler(w http.ResponseWriter, r *http.Request) {
 func statsAppTypesHandler(w http.ResponseWriter, r *http.Request) {
 
 	var ret statsAppTypes
-	var code = webserverHelpers.GetProductCC(r)
+	var code = session.GetProductCC(r)
 	var item = memcache.MemcacheStatsAppTypes(code)
 
 	err := memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &ret, func() (interface{}, error) {
 
-		var code = webserverHelpers.GetProductCC(r)
+		var code = session.GetProductCC(r)
 		var rows []statsAppTypesRow
 
 		gorm, err := sql.GetMySQLClient()

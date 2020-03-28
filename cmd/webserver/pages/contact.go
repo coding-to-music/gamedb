@@ -7,6 +7,7 @@ import (
 	"github.com/Jleagle/recaptcha-go"
 	"github.com/Jleagle/session-go/session"
 	webserverHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers"
+	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/go-chi/chi"
@@ -33,21 +34,13 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, "Contact", "Get in touch with Game DB.")
 	t.RecaptchaPublic = config.Config.RecaptchaPublic.Get()
 
-	var err error
-
-	t.SessionName, err = session.Get(r, contactSessionName)
-	log.Err(err)
-
-	t.SessionEmail, err = session.Get(r, contactSessionEmail)
-	log.Err(err)
+	t.SessionName = sessionHelpers.Get(r, contactSessionName)
+	t.SessionEmail = sessionHelpers.Get(r, contactSessionEmail)
+	t.SessionMessage = sessionHelpers.Get(r, contactSessionMessage)
 
 	if t.SessionEmail == "" {
-		t.SessionEmail, err = session.Get(r, webserverHelpers.SessionUserEmail)
-		log.Err(err)
+		t.SessionEmail = sessionHelpers.Get(r, sessionHelpers.SessionUserEmail)
 	}
-
-	t.SessionMessage, err = session.Get(r, contactSessionMessage)
-	log.Err(err)
 
 	returnTemplate(w, r, "contact", t)
 }
@@ -133,9 +126,9 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Redirect
 	if err != nil {
-		err = session.SetFlash(r, webserverHelpers.SessionBad, err.Error())
+		err = session.SetFlash(r, sessionHelpers.SessionBad, err.Error())
 	} else {
-		err = session.SetFlash(r, webserverHelpers.SessionGood, "Message sent!")
+		err = session.SetFlash(r, sessionHelpers.SessionGood, "Message sent!")
 	}
 	log.Err(err)
 

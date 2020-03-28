@@ -1,4 +1,4 @@
-package helpers
+package session
 
 import (
 	"errors"
@@ -7,13 +7,13 @@ import (
 	"strconv"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/Jleagle/session-go/session"
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
 	"github.com/oschwald/maxminddb-golang"
 )
@@ -62,26 +62,38 @@ func InitSession() {
 	session.Initialise(sessionInit)
 }
 
-// Expires the session cookie if it's corrupt
-func HandleSessionError(w http.ResponseWriter, r *http.Request, err error) {
+func Get(r *http.Request, key string) (value string) {
 
-	if err != nil && strings.Contains(err.Error(), "base64 decode failed") {
+	val, err := session.Get(r, key)
+	logSessionError(err)
+	return val
+}
 
-		cook, _ := r.Cookie(SessionCookieName)
-		cook.Expires = time.Now().Add(-time.Second)
-		cook.Value = ""
+func Set(r *http.Request, name string, value string) {
 
-		http.SetCookie(w, cook)
+	err := session.Set(r, name, value)
+	logSessionError(err)
+}
+
+func logSessionError(err error) {
+
+	if err != nil {
+
+		if val, ok := err.(securecookie.Error); ok {
+			if val.IsUsage() || val.IsDecode() {
+				log.Info(val.Error())
+				return
+			}
+		}
+
+		log.Err(err)
 	}
 }
 
 //
 func GetUserIDFromSesion(r *http.Request) (id int, err error) {
 
-	idx, err := session.Get(r, SessionUserID)
-	if err != nil {
-		return id, err
-	}
+	idx := Get(r, SessionUserID)
 
 	if idx == "" {
 		return id, errors.New("no user id set")
@@ -109,9 +121,8 @@ func GetProductCC(r *http.Request) steamapi.ProductCC {
 		}
 
 		// Get from session
-		val, err := session.Get(r, SessionUserProdCC)
-		log.Err(err)
-		if err == nil && steamapi.IsProductCC(val) {
+		val := Get(r, SessionUserProdCC)
+		if val != "" && steamapi.IsProductCC(val) {
 			return steamapi.ProductCC(val)
 		}
 
@@ -119,6 +130,8 @@ func GetProductCC(r *http.Request) steamapi.ProductCC {
 		if strings.Contains(r.RemoteAddr, "[::1]:") {
 			return steamapi.ProductCCUK
 		}
+
+		var err error
 
 		// Get from Maxmind
 		if maxMindDB == nil {
@@ -159,8 +172,7 @@ func GetProductCC(r *http.Request) steamapi.ProductCC {
 		return steamapi.ProductCCUS
 	}()
 
-	err := session.Set(r, SessionUserProdCC, string(cc))
-	log.Err(err)
+	Set(r, SessionUserProdCC, string(cc))
 
 	return cc
 }
@@ -173,9 +185,8 @@ func GetCountryCode(r *http.Request) string {
 	cc := func() string {
 
 		// Get from session
-		val, err := session.Get(r, SessionCountryCode)
-		log.Err(err)
-		if err == nil && val != "" {
+		val := Get(r, SessionCountryCode)
+		if val != "" {
 			return val
 		}
 
@@ -183,6 +194,8 @@ func GetCountryCode(r *http.Request) string {
 		if strings.Contains(r.RemoteAddr, "[::1]:") {
 			return "GB"
 		}
+
+		var err error
 
 		// Get from Maxmind
 		if maxMindDB == nil {
@@ -217,16 +230,15 @@ func GetCountryCode(r *http.Request) string {
 		return "US"
 	}()
 
-	err := session.Set(r, SessionCountryCode, cc)
-	log.Err(err)
+	Set(r, SessionCountryCode, cc)
 
 	return cc
 }
 
 func GetUserLevel(r *http.Request) int {
 
-	val, err := session.Get(r, SessionUserLevel)
-	if err != nil {
+	val := Get(r, SessionUserLevel)
+	if val == "" {
 		return 0
 	}
 
@@ -240,14 +252,11 @@ func GetUserLevel(r *http.Request) int {
 
 func IsAdmin(r *http.Request) bool {
 
-	id, err := session.Get(r, SessionUserID)
-	log.Err(err)
-
-	return id == "1"
+	return Get(r, SessionUserID) == "1"
 }
 
-func IsLoggedIn(r *http.Request) (val bool, err error) {
+func IsLoggedIn(r *http.Request) (val bool) {
 
-	read, err := session.Get(r, SessionUserEmail)
-	return read != "", err
+	read := Get(r, SessionUserEmail)
+	return read != ""
 }

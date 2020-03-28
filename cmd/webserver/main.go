@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/recaptcha-go"
-	webserverHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers"
+	"github.com/gamedb/gamedb/cmd/webserver/helpers/session"
 	"github.com/gamedb/gamedb/cmd/webserver/middleware"
 	"github.com/gamedb/gamedb/cmd/webserver/pages"
 	"github.com/gamedb/gamedb/pkg/config"
@@ -71,7 +71,7 @@ func main() {
 	// Setup Recaptcha
 	recaptcha.SetSecret(config.Config.RecaptchaPrivate.Get())
 
-	webserverHelpers.InitSession()
+	session.InitSession()
 
 	// Routes
 	r := chi.NewRouter()

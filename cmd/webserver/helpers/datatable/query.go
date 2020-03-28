@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/derekstavis/go-qs"
-	webserverHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers"
+	"github.com/gamedb/gamedb/cmd/webserver/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
@@ -35,7 +35,7 @@ func NewDataTableQuery(r *http.Request, limit bool) (query DataTablesQuery) {
 
 		query.limited = true
 
-		level := sql.UserLevel(webserverHelpers.GetUserLevel(r))
+		level := sql.UserLevel(session.GetUserLevel(r))
 		max := level.MaxOffset(100)
 
 		start, _ := strconv.Atoi(query.Start)

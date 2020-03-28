@@ -8,7 +8,7 @@ import (
 	"github.com/Jleagle/recaptcha-go"
 	"github.com/Jleagle/session-go/session"
 	"github.com/badoux/checkmail"
-	webserverHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers"
+	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers/session"
 	"github.com/gamedb/gamedb/cmd/webserver/oauth"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -38,7 +38,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	_, err := getUserFromSession(r)
 	if err == nil {
 
-		err = session.SetFlash(r, webserverHelpers.SessionGood, "Login successful")
+		err = session.SetFlash(r, sessionHelpers.SessionGood, "Login successful")
 		log.Err(err, r)
 
 		http.Redirect(w, r, "/settings", http.StatusFound)
@@ -49,9 +49,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, "Login", "Login to Game DB")
 	t.hideAds = true
 	t.RecaptchaPublic = config.Config.RecaptchaPublic.Get()
-
-	t.LoginEmail, err = session.Get(r, loginSessionEmail)
-	log.Err(err, r)
+	t.LoginEmail = sessionHelpers.Get(r, loginSessionEmail)
 
 	returnTemplate(w, r, "login", t)
 }
@@ -126,18 +124,14 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	if success {
 
-		err := session.SetFlash(r, webserverHelpers.SessionGood, message)
+		err := session.SetFlash(r, sessionHelpers.SessionGood, message)
 		log.Err(err, r)
 
 		err = session.Save(w, r)
 		log.Err(err, r)
 
 		// Get last page
-		val, err := session.Get(r, webserverHelpers.SessionLastPage)
-		if err != nil {
-			log.Err(err, r)
-		}
-
+		val := sessionHelpers.Get(r, sessionHelpers.SessionLastPage)
 		if val == "" {
 			val = "/settings"
 		}
@@ -147,7 +141,7 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	} else {
 
-		err := session.SetFlash(r, webserverHelpers.SessionBad, message)
+		err := session.SetFlash(r, sessionHelpers.SessionBad, message)
 		log.Err(err, r)
 
 		err = session.Save(w, r)
@@ -165,21 +159,21 @@ func login(r *http.Request, user sql.User) (string, bool) {
 
 	// Log user in
 	sessionData := map[string]string{
-		webserverHelpers.SessionUserID:         strconv.Itoa(user.ID),
-		webserverHelpers.SessionUserEmail:      user.Email,
-		webserverHelpers.SessionUserProdCC:     string(user.ProductCC),
-		webserverHelpers.SessionUserAPIKey:     user.APIKey,
-		webserverHelpers.SessionUserShowAlerts: strconv.FormatBool(user.ShowAlerts),
-		webserverHelpers.SessionUserLevel:      strconv.Itoa(int(user.PatreonLevel)),
+		sessionHelpers.SessionUserID:         strconv.Itoa(user.ID),
+		sessionHelpers.SessionUserEmail:      user.Email,
+		sessionHelpers.SessionUserProdCC:     string(user.ProductCC),
+		sessionHelpers.SessionUserAPIKey:     user.APIKey,
+		sessionHelpers.SessionUserShowAlerts: strconv.FormatBool(user.ShowAlerts),
+		sessionHelpers.SessionUserLevel:      strconv.Itoa(int(user.PatreonLevel)),
 	}
 
 	steamID := user.GetSteamID()
 	if steamID > 0 {
 		player, err := mongo.GetPlayer(steamID)
 		if err == nil {
-			sessionData[webserverHelpers.SessionPlayerID] = strconv.FormatInt(player.ID, 10)
-			sessionData[webserverHelpers.SessionPlayerName] = player.PersonaName
-			sessionData[webserverHelpers.SessionPlayerLevel] = strconv.Itoa(player.Level)
+			sessionData[sessionHelpers.SessionPlayerID] = strconv.FormatInt(player.ID, 10)
+			sessionData[sessionHelpers.SessionPlayerName] = player.PersonaName
+			sessionData[sessionHelpers.SessionPlayerLevel] = strconv.Itoa(player.Level)
 		} else {
 			err = helpers.IgnoreErrors(err, helpers.ErrInvalidPlayerID, mongo.ErrNoDocuments)
 			log.Err(err, r)

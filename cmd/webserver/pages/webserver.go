@@ -17,7 +17,7 @@ import (
 
 	"github.com/Jleagle/session-go/session"
 	"github.com/dustin/go-humanize"
-	webserverHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers"
+	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/i18n"
@@ -80,7 +80,7 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 	// Set the last page
 	if r.Method == "GET" && page != "error" && page != "login" {
 
-		err = session.Set(r, webserverHelpers.SessionLastPage, r.URL.Path)
+		err = session.Set(r, sessionHelpers.SessionLastPage, r.URL.Path)
 		if err != nil {
 			log.Err(err, r)
 		}
@@ -271,50 +271,30 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	t.ProductCCs = i18n.GetProdCCs(true)
 	t.Continents = i18n.Continents
 
-	val, err := session.Get(r, webserverHelpers.SessionUserID)
-	if err != nil {
+	userIDString := sessionHelpers.Get(r, sessionHelpers.SessionUserID)
+	if userIDString != "" {
+		t.UserID, err = strconv.Atoi(userIDString)
 		log.Err(err, r)
 	}
 
-	if val != "" {
-		t.UserID, err = strconv.Atoi(val)
+	playerIDString := sessionHelpers.Get(r, sessionHelpers.SessionPlayerID)
+	if playerIDString != "" {
+		t.PlayerID, err = strconv.ParseInt(playerIDString, 10, 64)
 		log.Err(err, r)
 	}
 
-	val, err = session.Get(r, webserverHelpers.SessionPlayerID)
-	if err != nil {
-		log.Err(err, r)
-	}
-
-	if val != "" {
-		t.PlayerID, err = strconv.ParseInt(val, 10, 64)
-		log.Err(err, r)
-	}
-
-	val, err = session.Get(r, webserverHelpers.SessionUserLevel)
-	if err != nil {
-		log.Err(err, r)
-	}
-
-	if val != "" {
-		t.userLevel, err = strconv.Atoi(val)
+	userLevel := sessionHelpers.Get(r, sessionHelpers.SessionUserLevel)
+	if userLevel != "" {
+		t.userLevel, err = strconv.Atoi(userLevel)
 		if err != nil {
 			log.Err(err, r)
 		}
 	}
 
-	t.PlayerName, err = session.Get(r, webserverHelpers.SessionPlayerName)
-	if err != nil {
-		log.Err(err, r)
-	}
-
-	t.UserName, err = session.Get(r, webserverHelpers.SessionPlayerName)
-	if err != nil {
-		log.Err(err, r)
-	}
-
-	t.UserProductCC = i18n.GetProdCC(webserverHelpers.GetProductCC(r))
-	t.CurrentCC = webserverHelpers.GetCountryCode(r)
+	t.PlayerName = sessionHelpers.Get(r, sessionHelpers.SessionPlayerName)
+	t.UserName = sessionHelpers.Get(r, sessionHelpers.SessionPlayerName)
+	t.UserProductCC = i18n.GetProdCC(sessionHelpers.GetProductCC(r))
+	t.CurrentCC = sessionHelpers.GetCountryCode(r)
 
 	//
 	t.setRandomBackground(true, false)
@@ -382,12 +362,12 @@ func (t *GlobalTemplate) setFlashes() {
 	var r = t.request
 	var err error
 
-	t.FlashesGood, err = session.GetFlashes(r, webserverHelpers.SessionGood)
+	t.FlashesGood, err = session.GetFlashes(r, sessionHelpers.SessionGood)
 	if err != nil {
 		log.Err(err, r)
 	}
 
-	t.FlashesBad, err = session.GetFlashes(r, webserverHelpers.SessionBad)
+	t.FlashesBad, err = session.GetFlashes(r, sessionHelpers.SessionBad)
 	if err != nil {
 		log.Err(err, r)
 	}
@@ -539,7 +519,7 @@ func (t GlobalTemplate) IsLoggedIn() bool {
 }
 
 func (t GlobalTemplate) IsAdmin() bool {
-	return webserverHelpers.IsAdmin(t.request)
+	return sessionHelpers.IsAdmin(t.request)
 }
 
 func (t GlobalTemplate) ShowAds() bool {
@@ -604,7 +584,7 @@ type Toast struct {
 
 func getUserFromSession(r *http.Request) (user sql.User, err error) {
 
-	userID, err := webserverHelpers.GetUserIDFromSesion(r)
+	userID, err := sessionHelpers.GetUserIDFromSesion(r)
 	if err != nil {
 		return user, err
 	}

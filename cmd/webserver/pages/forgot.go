@@ -8,6 +8,7 @@ import (
 	"github.com/Jleagle/session-go/session"
 	"github.com/badoux/checkmail"
 	webserverHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers"
+	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -30,15 +31,11 @@ func ForgotRouter() http.Handler {
 
 func forgotHandler(w http.ResponseWriter, r *http.Request) {
 
-	var err error
-
 	t := forgotTemplate{}
 	t.fill(w, r, "Forgot Password", "")
 	t.hideAds = true
 	t.RecaptchaPublic = config.Config.RecaptchaPublic.Get()
-
-	t.LoginEmail, err = session.Get(r, "login-email")
-	log.Err(err, r)
+	t.LoginEmail = sessionHelpers.Get(r, "login-email")
 
 	returnTemplate(w, r, "forgot", t)
 }
@@ -124,7 +121,7 @@ func forgotPostHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	if success {
 
-		err := session.SetFlash(r, webserverHelpers.SessionGood, message)
+		err := session.SetFlash(r, sessionHelpers.SessionGood, message)
 		log.Err(err, r)
 
 		err = session.Save(w, r)
@@ -134,7 +131,7 @@ func forgotPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	} else {
 
-		err := session.SetFlash(r, webserverHelpers.SessionBad, message)
+		err := session.SetFlash(r, sessionHelpers.SessionBad, message)
 		log.Err(err, r)
 
 		err = session.Save(w, r)
@@ -213,7 +210,7 @@ func forgotResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	if success {
 
-		err := session.SetFlash(r, webserverHelpers.SessionGood, message)
+		err := session.SetFlash(r, sessionHelpers.SessionGood, message)
 		log.Err(err)
 
 		err = session.Save(w, r)
@@ -223,7 +220,7 @@ func forgotResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 
 	} else {
 
-		err := session.SetFlash(r, webserverHelpers.SessionBad, message)
+		err := session.SetFlash(r, sessionHelpers.SessionBad, message)
 		log.Err(err, r)
 
 		err = session.Save(w, r)
