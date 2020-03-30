@@ -1083,7 +1083,7 @@
                                                     </thead>
                                                     {{ range $key, $value := .App.Depots.Branches }}
                                                         <tr>
-                                                            <td>{{ .Name }}</td>
+                                                            <td nowrap="nowrap">{{ .Name }}</td>
                                                             <td nowrap="nowrap">{{ .Description }}</td>
                                                             <td>{{ .BuildID }}</td>
                                                             <td>{{ .TimeUpdated }}</td>
