@@ -8,7 +8,7 @@ if ($('#upcoming-page').length > 0) {
 
     // Table
     const options = {
-        "order": [[1, 'desc']],
+        "order": [[3, 'asc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-app-id', data[0]);
             $(row).attr('data-link', data[3]);
