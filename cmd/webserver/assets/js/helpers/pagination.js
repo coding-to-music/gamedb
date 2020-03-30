@@ -7,7 +7,6 @@ function _numbers(page, pages) {
     let numbers;
     const buttons = 7;
     const half = Math.floor(buttons / 2);
-    const i = 1;
 
     if (pages <= buttons) {
         numbers = _range(0, pages);
