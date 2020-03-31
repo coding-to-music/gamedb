@@ -64,7 +64,7 @@ func packageHandler(messages []*rabbit.Message) {
 		// Skip if updated in last day, unless its from PICS
 		if !config.IsLocal() && !pack.ShouldUpdate() && pack.ChangeNumber >= payload.ChangeNumber {
 
-			s, err := durationfmt.Format(time.Now().Sub(pack.UpdatedAt), "%dd %hh %mm")
+			s, err := durationfmt.Format(time.Now().Sub(pack.UpdatedAt), "%hh %mm")
 			log.Err(err)
 
 			log.Info("Skipping package, updated " + s + " ago")
