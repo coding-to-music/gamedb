@@ -277,8 +277,8 @@
                                                 <div id="tags">
                                                     {{ range $key, $value := .App.TagCounts }}
                                                         <div style="width: {{ percent .Count $.TagsMax }}%;"></div>
-                                                        <a class="badge badge-success float-left" href="/apps?tags={{ .ID }}">{{ .Name }}</a>
-                                                        <small class="float-right">{{ comma .Count }} <i class="fas fa-thumbs-up"></i></small>
+                                                        <a class="float-left" href="/apps?tags={{ .ID }}">{{ .Name }}</a>
+                                                        <span class="float-right">{{ comma .Count }} <i class="fas fa-thumbs-up"></i></span>
                                                     {{ end }}
                                                 </div>
                                             </td>

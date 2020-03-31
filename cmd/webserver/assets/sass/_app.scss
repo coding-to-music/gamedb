@@ -20,23 +20,19 @@
             div {
                 height: 1px;
                 clear: both;
-                background-color: #28a74542;
+                background-color: #28a745;
 
                 position: relative;
                 z-index: 100;
             }
 
-            a {
-                border-top-left-radius: 0;
-                border-top-right-radius: 0;
-                //margin-top: -2px;
-                margin-bottom: 2px;
+            .float-left {
+                font-size: 0.9rem;
             }
 
-            small {
-                font-size: 70%;
-                padding: .25em 0;
-                line-height: 1;
+            .float-right {
+                font-size: 0.7rem;
+                padding-top: 2px;
             }
         }
     }
