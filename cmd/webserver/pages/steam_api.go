@@ -11,8 +11,8 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steamapi"
+	githubHelper "github.com/gamedb/gamedb/cmd/webserver/helpers/github"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	githubHelper "github.com/gamedb/gamedb/pkg/helpers/github"
 	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/getkin/kin-openapi/openapi3"

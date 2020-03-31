@@ -7,9 +7,9 @@ import (
 
 	"github.com/cenkalti/backoff/v4"
 	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
+	githubHelper "github.com/gamedb/gamedb/cmd/webserver/helpers/github"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	githubHelper "github.com/gamedb/gamedb/pkg/helpers/github"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/go-chi/chi"
