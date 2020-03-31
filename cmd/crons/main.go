@@ -17,7 +17,7 @@ func main() {
 	log.Initialise([]log.LogName{log.LogNameCrons})
 
 	// Load queue producers
-	queue.Init(queue.QueueCronsDefinitions, false)
+	queue.Init(queue.QueueCronsDefinitions)
 
 	// Get API key
 	err := sql.GetAPIKey("crons")

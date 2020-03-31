@@ -48,7 +48,7 @@ func main() {
 	}
 
 	// Load consumers
-	queue.Init(queue.ChatbotDefinitions, true)
+	queue.Init(queue.ChatbotDefinitions)
 
 	// Load discord
 	ops := limiter.ExpirableOptions{DefaultExpirationTTL: time.Second}

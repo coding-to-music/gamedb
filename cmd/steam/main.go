@@ -76,7 +76,7 @@ func main() {
 
 				// Load consumer
 				log.Info("Starting Steam consumers")
-				queue.Init(queue.QueueSteamDefinitions, true)
+				queue.Init(queue.QueueSteamDefinitions)
 
 			case *steam.LoggedOffEvent:
 

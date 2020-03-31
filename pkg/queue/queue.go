@@ -135,7 +135,7 @@ type QueueDefinition struct {
 	prefetchSize int
 }
 
-func Init(definitions []QueueDefinition, consume bool) {
+func Init(definitions []QueueDefinition) {
 
 	heartbeat := time.Minute
 	if config.IsLocal() {
@@ -151,7 +151,13 @@ func Init(definitions []QueueDefinition, consume bool) {
 		return
 	}
 
+	var consume bool
+
 	for _, queue := range definitions {
+
+		if queue.consumer != nil {
+			consume = true
+		}
 
 		consumerName := "producer-" + string(queue.name)
 
