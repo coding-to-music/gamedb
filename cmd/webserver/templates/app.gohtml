@@ -14,17 +14,17 @@
             {{ end }}
 
             <small>
-                <a href="{{ .App.GetStoreLink }}" target="_blank" class="mr-2">
+                <a href="{{ .App.GetStoreLink }}" target="_blank" rel="noopener" class="mr-2">
                     <i class="fas fa-shopping-cart"></i> Store Page
                 </a>
-                <a href="{{ .App.GetCommunityLink }}" target="_blank" class="mr-2">
+                <a href="{{ .App.GetCommunityLink }}" target="_blank" rel="noopener" class="mr-2">
                     <i class="fas fa-users"></i> Community Hub
                 </a>
-                <a href="https://steamcommunity.com/market/search?appid={{ .App.ID }}" target="_blank" class="mr-2">
+                <a href="https://steamcommunity.com/market/search?appid={{ .App.ID }}" target="_blank" rel="noopener" class="mr-2">
                     <i class="fas fa-exchange-alt"></i> Market
                 </a>
                 {{if ne .App.Homepage ""}}
-                    <a href="{{ .App.Homepage }}" target="_blank" class="mr-2">
+                    <a href="{{ .App.Homepage }}" target="_blank" rel="noopener" class="mr-2">
                         <i class="fas fa-home"></i> Homepage
                     </a>
                 {{end}}
@@ -214,16 +214,16 @@
                                             <th scope="row">Links</th>
                                             <td>
                                                 {{ if ne .App.TwitchURL "" }}
-                                                    <h6><a href="https://twitch.tv/directory/game/{{ pathEscape .App.TwitchURL }}" target="_blank">View {{ .App.GetTypeLower }} on Twitch</a></h6>
+                                                    <h6><a href="https://twitch.tv/directory/game/{{ pathEscape .App.TwitchURL }}" target="_blank" rel="noopener">View {{ .App.GetTypeLower }} on Twitch</a></h6>
                                                 {{ end }}
 
                                                 {{ if ne .App.GetSteamPricesURL "" }}
-                                                    <h6><a href="https://steamprices.com/{{ .App.GetSteamPricesURL }}/{{ .App.ID }}/{{ slug .App.GetName }}" target="_blank">View {{ .App.GetTypeLower }} on Steam Prices</a></h6>
+                                                    <h6><a href="https://steamprices.com/{{ .App.GetSteamPricesURL }}/{{ .App.ID }}/{{ slug .App.GetName }}" target="_blank" rel="noopener">View {{ .App.GetTypeLower }} on Steam Prices</a></h6>
                                                 {{ end }}
 
-                                                <h6><a href="https://www.achievementstats.com/index.php?action=games&gameId={{ .App.ID }}" target="_blank">View {{ .App.GetTypeLower }} on Achievement Stats</a></h6>
+                                                <h6><a href="https://www.achievementstats.com/index.php?action=games&gameId={{ .App.ID }}" target="_blank" rel="noopener">View {{ .App.GetTypeLower }} on Achievement Stats</a></h6>
 
-                                                {{/*<h6><a href="https://steamhunters.com/stats/{{ .App.ID }}/achievements" target="_blank">View {{ .App.GetTypeLower }} on Steam Hunters</a></h6>*/}}
+                                                {{/*<h6><a href="https://steamhunters.com/stats/{{ .App.ID }}/achievements" target="_blank" rel="noopener">View {{ .App.GetTypeLower }} on Steam Hunters</a></h6>*/}}
 
                                             </td>
                                         </tr>
@@ -349,7 +349,7 @@
 
                                 <h5>
                                     Owner Estimations
-                                    <small><a target="_blank" href="https://steamspy.com/app/{{ .App.ID }}">By Steam Spy</a></small>
+                                    <small><a target="_blank" rel="noopener" href="https://steamspy.com/app/{{ .App.ID }}">By Steam Spy</a></small>
                                 </h5>
                                 <table class="table">
                                     <tbody>
@@ -803,7 +803,7 @@
                                 {{ if ne .App.MetacriticURL "" }}
                                     <tr>
                                         <th scope="row" style="width: 20%;">Meta Score</th>
-                                        <td><a href="{{ .App.MetacriticURL }}" target="_blank">{{ .App.MetacriticScore }}%</a></td>
+                                        <td><a href="{{ .App.MetacriticURL }}" target="_blank" rel="noopener">{{ .App.MetacriticScore }}%</a></td>
                                     </tr>
                                 {{ end }}
                                 </tbody>

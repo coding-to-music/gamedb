@@ -253,7 +253,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 
 			var blank string
 			if !strings.HasPrefix(item.Link, "/") {
-				blank = " rel=\"nofollow\" target=\"_blank\""
+				blank = " target=\"_blank\" rel=\"noopener\""
 			}
 
 			return template.HTML("<a href=\"" + item.Link + "\"" + blank + " rel=\"nofollow\">" + val + "</a>")
@@ -267,7 +267,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 			item.Link = strings.ReplaceAll(item.Link, "$val$", val)
 			item.Link = strings.ReplaceAll(item.Link, "$app$", strconv.Itoa(appID))
 
-			return template.HTML("<a href=\"" + item.Link + "\" rel=\"nofollow\" target=\"_blank\"><img class=\"wide\" data-lazy=\"" + item.Link + "\" alt=\"\" data-lazy-alt=\"" + key + "\" /></a>")
+			return template.HTML("<a href=\"" + item.Link + "\" target=\"_blank\" rel=\"noopener\"><img class=\"wide\" data-lazy=\"" + item.Link + "\" alt=\"\" data-lazy-alt=\"" + key + "\" /></a>")
 
 		case picsTypeTimestamp:
 
@@ -475,7 +475,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 						if eula.Name == "" {
 							eula.Name = "EULA"
 						}
-						items = append(items, `<li><a target="_blank" href="`+eula.URL+`">`+string(eula.Name)+`</a></li>`)
+						items = append(items, `<li><a target="_blank" rel="noopener" href="`+eula.URL+`">`+string(eula.Name)+`</a></li>`)
 					}
 
 					return template.HTML("<ul class='mb-0 pl-3'>" + strings.Join(items, "") + "</ul>")

@@ -12,7 +12,7 @@
             <h1 class="text-truncate"><i class="fas fa-user"></i> {{ .Player.PersonaName }}</h1>
 
             <small>
-                <a target="_blank" href="{{ .Player.CommunityLink }}"><i class="fab fa-steam-square"></i> Steam Community Profile</a>
+                <a target="_blank" rel="noopener" href="{{ .Player.CommunityLink }}"><i class="fab fa-steam-square"></i> Steam Community Profile</a>
             </small>
 
         </div>
@@ -189,9 +189,9 @@
                                     <div class="card-header">Links</div>
                                     <div class="card-body pb-2">
 
-                                        <h6><a href="https://www.achievementstats.com/index.php?action=profile&playerId={{ .Player.ID }}" target="_blank">View profile on Achievement Stats</a></h6>
+                                        <h6><a href="https://www.achievementstats.com/index.php?action=profile&playerId={{ .Player.ID }}" target="_blank" rel="noopener">View profile on Achievement Stats</a></h6>
 
-                                        {{/*<h6><a href="https://steamhunters.com/profiles/{{ .Player.ID }}/games" target="_blank">View profile on Steam Hunters</a></h6>*/}}
+                                        {{/*<h6><a href="https://steamhunters.com/profiles/{{ .Player.ID }}/games" target="_blank" rel="noopener">View profile on Steam Hunters</a></h6>*/}}
 
                                     </div>
                                 </div>
@@ -271,7 +271,7 @@
 
                         {{ else }}
 
-                            This player either has no friends or has them hidden to the public. Go <a target="_blank" href="https://steamcommunity.com/my/edit/settings">here</a> to change your privacy settings.
+                            This player either has no friends or has them hidden to the public. Go <a target="_blank" rel="noopener" href="https://steamcommunity.com/my/edit/settings">here</a> to change your privacy settings.
 
                         {{ end }}
 
@@ -489,7 +489,7 @@
 
                             <div class="jumbotron bottom">
                                 <h1><i class="fas fa-info"></i></h1>
-                                <div>This player either has no games or has them hidden to the public. Go <a target="_blank" href="https://steamcommunity.com/my/edit/settings">here</a> to change your privacy settings.</div>
+                                <div>This player either has no games or has them hidden to the public. Go <a target="_blank" rel="noopener" href="https://steamcommunity.com/my/edit/settings">here</a> to change your privacy settings.</div>
                             </div>
 
                         {{ end }}
@@ -519,7 +519,7 @@
                             <h1><i class="fas fa-info"></i></h1>
                             <div>
                                 {{/*Visit the <a href="/apps#wishlists">apps</a> page to see what apps are the most wished for.<br/>*/}}
-                                Reorder your wishlist on the <a href="https://store.steampowered.com/wishlist" target="_blank">Steam Commity Page</a>.<br/>
+                                Reorder your wishlist on the <a href="https://store.steampowered.com/wishlist" target="_blank" rel="noopener">Steam Commity Page</a>.<br/>
                                 Ranks with a dash are newly added and unranked.
                             </div>
                         </div>

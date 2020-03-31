@@ -9,7 +9,7 @@
             <p class="lead">{{ .Description }}</p>
             <small>
                 For the Game DB API, see <a href="/api">here</a>.
-                Thanks to <a target="_blank" href="https://github.com/SteamDatabase/SteamTracking/tree/master/API">SteamTracking</a> for the private ones.
+                Thanks to <a target="_blank" rel="noopener" href="https://github.com/SteamDatabase/SteamTracking/tree/master/API">SteamTracking</a> for the private ones.
             </small>
         </div>
 
@@ -76,7 +76,7 @@
                                 {{ range $version, $httpMethods := .Versions }}
                                     {{ range $httpMethod, $params := $httpMethods }}
 
-                                        <form action="https://api.steampowered.com/{{ $interfaceName }}/{{ $methodName }}/v{{ $version }}" target="_blank" method="{{ $httpMethod }}">
+                                        <form action="https://api.steampowered.com/{{ $interfaceName }}/{{ $methodName }}/v{{ $version }}" target="_blank" rel="noopener" method="{{ $httpMethod }}">
 
                                             <div class="card mb-4" id="{{ lower $interfaceName }}-{{ lower $methodName }}-v{{ $version }}">
                                                 <div class="card-header">
