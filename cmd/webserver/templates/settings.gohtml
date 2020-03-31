@@ -82,7 +82,7 @@
                                                     {{/*                                                    <label class="form-check-label" for="browser-alerts">Show browser alerts on page updates</label>*/}}
                                                     {{/*                                                </div>*/}}
 
-                                                    <button type="submit" class="btn btn-success">Save</button>
+                                                    <button type="submit" class="btn btn-success" aria-label="Save">Save</button>
 
                                                 </div>
                                             </div>
@@ -109,7 +109,7 @@
                                                 <input type="hidden" name="openid.realm" value="{{ .Domain }}/">
                                                 <input type="hidden" name="openid.return_to" value="{{ .Domain }}/settings/oauth-callback/steam">
                                                 <p>
-                                                    <button type="submit" class="btn btn-success btn-sm">
+                                                    <button type="submit" class="btn btn-success btn-sm" aria-label="Link Steam Account">
                                                         <i class="fab fa-steam"></i> Link Steam Account
                                                     </button>
                                                 </p>
@@ -246,7 +246,7 @@
                                 <input type="email" class="form-control" id="userid" placeholder="User ID" name="userid" autofocus required>
                             </div>
 
-                            <button type="submit" class="btn btn-success">Delete Account</button>
+                            <button type="submit" class="btn btn-success" aria-label="Delete Account">Delete Account</button>
                         </form>
 
                     </div>

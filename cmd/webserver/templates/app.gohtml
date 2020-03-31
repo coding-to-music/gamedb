@@ -842,7 +842,7 @@
                                 <td style="width: 20px;">{{ comma (len .App.Movies) }}</td>
                                 <td>
                                     {{ if and (gt (len .App.Movies) 0) (gt (len .App.Screenshots) 0) }}
-                                        <button id="scroll-to-videos" type="button" class="btn btn-success btn-sm">
+                                        <button id="scroll-to-videos" type="button" class="btn btn-success btn-sm" aria-label="Go">
                                             <i class="fas fa-level-down-alt"></i>
                                         </button>
                                     {{ end }}
