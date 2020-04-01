@@ -62,6 +62,7 @@ require (
 	github.com/labstack/echo/v4 v4.1.15 // indirect
 	github.com/logrusorgru/aurora v0.0.0-20200102142835-e9ef32dff381
 	github.com/mattn/go-runewidth v0.0.9 // indirect
+	github.com/memcachier/mc v2.0.1+incompatible // indirect
 	github.com/microcosm-cc/bluemonday v1.0.2
 	github.com/mxpv/patreon-go v0.0.0-20190917022727-646111f1d983
 	github.com/nicklaw5/helix v0.5.8
