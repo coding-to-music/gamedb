@@ -79,6 +79,8 @@
                                             {{ range $key, $value := .Parameters }}
                                                 <tr>
                                                     <td>
+                                                        <label for="{{ .Value.Name }}" class="d-none">Search</label>
+                                                        <!--suppress HtmlFormInputWithoutLabel -->
                                                         <input class="form-control form-control-sm api-field"
                                                                {{ if .Value.Required }}required="required"{{end}}
                                                                 {{/*{{ if .Value.Pattern }}pattern="{{ .Value.Pattern }}"{{end}}*/}}
