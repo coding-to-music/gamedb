@@ -27,7 +27,7 @@ func productKeysHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := productKeysTemplate{}
-	t.fill(w, r, "Product Keys", "Search extended and common product keys")
+	t.fill(w, r, "PICS Keys", "Search PICS keys")
 	t.Type = q.Get("type")
 	t.Key = q.Get("key")
 	t.Value = q.Get("value")
