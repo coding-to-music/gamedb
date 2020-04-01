@@ -55,6 +55,11 @@ type BaseConfig struct {
 	InstagramPassword ConfigItem
 	InstagramUsername ConfigItem
 
+	// Memcache
+	MemcacheDSN      ConfigItem
+	MemcacheUsername ConfigItem
+	MemcachePassword ConfigItem
+
 	// Mongo
 	MongoHost     ConfigItem
 	MongoPort     ConfigItem
@@ -122,7 +127,6 @@ type BaseConfig struct {
 	Environment        ConfigItem
 	GameDBDomain       ConfigItem
 	GameDBShortName    ConfigItem
-	MemcacheDSN        ConfigItem
 	SendGridAPIKey     ConfigItem
 	WebserverPort      ConfigItem
 	CommitHash         ConfigItem
@@ -170,6 +174,11 @@ func init() {
 	// Instagram
 	Config.InstagramUsername.Set("INSTAGRAM_USERNAME")
 	Config.InstagramPassword.Set("INSTAGRAM_PASSWORD")
+
+	// Memcache
+	Config.MemcacheDSN.Set("MEMCACHE_URL")
+	Config.MemcacheUsername.Set("MEMCACHE_USERNAME")
+	Config.MemcachePassword.Set("MEMCACHE_PASSWORD")
 
 	// Mongo
 	Config.MongoHost.Set("MONGO_HOST")
@@ -245,24 +254,6 @@ func init() {
 	Config.GameDBShortName.SetDefault("GameDB")
 	Config.NewReleaseDays.SetDefault("14")
 	Config.SteamAPIKey.SetDefault("unset")
-
-	switch Config.Environment.Get() {
-	case EnvProd:
-
-		Config.MemcacheDSN.SetDefault("memcache:11211")
-
-	case EnvLocal:
-
-		Config.MemcacheDSN.SetDefault("localhost:11211")
-
-	case EnvConsumer:
-
-		Config.MemcacheDSN.SetDefault("memcache:11211")
-
-	default:
-		fmt.Println("config: unknown environment: " + Config.Environment.Get())
-		os.Exit(1)
-	}
 }
 
 // ConfigItem
