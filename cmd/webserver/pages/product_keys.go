@@ -32,10 +32,10 @@ func productKeysHandler(w http.ResponseWriter, r *http.Request) {
 	t.Key = q.Get("key")
 	t.Value = q.Get("value")
 
-	if t.Type != "app" && t.Type != "package" {
-		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid Type."})
-		return
-	}
+	// if t.Type != "app" && t.Type != "package" {
+	// 	returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid Type."})
+	// 	return
+	// }
 
 	returnTemplate(w, r, "product_keys", t)
 }
