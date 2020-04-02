@@ -8,7 +8,6 @@ require (
 	cloud.google.com/go/pubsub v1.3.1
 	github.com/Jleagle/go-durationfmt v0.0.0-20190307132420-e57bfad84057
 	github.com/Jleagle/influxql v0.0.0-20190502115937-4ac053a1ed8e
-	github.com/Jleagle/memcache-go v0.0.0-20191228144235-986fe282434d
 	github.com/Jleagle/patreon-go v0.0.0-20200117215733-2b8b00d4eab0
 	github.com/Jleagle/rabbit-go v0.0.0-20200313125543-a2de27528286
 	github.com/Jleagle/recaptcha-go v0.0.0-20200117124940-d00b2c62c076
@@ -24,7 +23,6 @@ require (
 	github.com/antchfx/xpath v1.1.4 // indirect
 	github.com/badoux/checkmail v0.0.0-20181210160741-9661bd69e9ad
 	github.com/beefsack/go-rate v0.0.0-20180408011153-efa7637bb9b6 // indirect
-	github.com/bradfitz/gomemcache v0.0.0-20190913173617-a41fca850d0b
 	github.com/buger/jsonparser v0.0.0-20200322175846-f7e751efca13 // indirect
 	github.com/bwmarrin/discordgo v0.20.2
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
