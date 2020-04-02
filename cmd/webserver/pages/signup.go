@@ -194,8 +194,7 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 		err := session.SetFlash(r, sessionHelpers.SessionGood, message)
 		log.Err(err, r)
 
-		err = session.Save(w, r)
-		log.Err(err, r)
+		sessionHelpers.Save(w, r)
 
 		http.Redirect(w, r, "/login", http.StatusFound)
 
@@ -204,8 +203,7 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 		err := session.SetFlash(r, sessionHelpers.SessionBad, message)
 		log.Err(err, r)
 
-		err = session.Save(w, r)
-		log.Err(err, r)
+		sessionHelpers.Save(w, r)
 
 		http.Redirect(w, r, "/signup", http.StatusFound)
 	}
@@ -253,8 +251,7 @@ func verifyHandler(w http.ResponseWriter, r *http.Request) {
 		err := session.SetFlash(r, sessionHelpers.SessionGood, message)
 		log.Err(err)
 
-		err = session.Save(w, r)
-		log.Err(err, r)
+		sessionHelpers.Save(w, r)
 
 		http.Redirect(w, r, "/login", http.StatusFound)
 
@@ -263,8 +260,7 @@ func verifyHandler(w http.ResponseWriter, r *http.Request) {
 		err := session.SetFlash(r, sessionHelpers.SessionBad, message)
 		log.Err(err, r)
 
-		err = session.Save(w, r)
-		log.Err(err, r)
+		sessionHelpers.Save(w, r)
 
 		http.Redirect(w, r, "/signup", http.StatusFound)
 	}

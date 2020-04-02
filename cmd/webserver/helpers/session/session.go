@@ -75,6 +75,12 @@ func Set(r *http.Request, name string, value string) {
 	logSessionError(err)
 }
 
+func Save(w http.ResponseWriter, r *http.Request) {
+
+	err := session.Save(w, r)
+	logSessionError(err)
+}
+
 func logSessionError(err error) {
 
 	if err != nil {

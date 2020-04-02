@@ -132,8 +132,7 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Err(err)
 
-	err = session.Save(w, r)
-	log.Err(err)
+	sessionHelpers.Save(w, r)
 
 	log.Err(err, r)
 	http.Redirect(w, r, "/contact", http.StatusFound)

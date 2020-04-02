@@ -96,8 +96,7 @@ func (bc baseConnection) linkOAuth(w http.ResponseWriter, r *http.Request, c Con
 	err := session.Set(r, strings.ToLower(c.getName())+"-oauth-state", state)
 	log.Err(err, r)
 
-	err = session.Save(w, r)
-	log.Err(err, r)
+	sessionHelpers.Save(w, r)
 
 	conf := c.getConfig(login)
 	url := conf.AuthCodeURL(state)
@@ -107,9 +106,7 @@ func (bc baseConnection) linkOAuth(w http.ResponseWriter, r *http.Request, c Con
 func (bc baseConnection) unlink(w http.ResponseWriter, r *http.Request, c ConnectionInterface, event mongo.EventEnum) {
 
 	defer func() {
-		err := session.Save(w, r)
-		log.Err(err, r)
-
+		sessionHelpers.Save(w, r)
 		http.Redirect(w, r, "/settings", http.StatusFound)
 	}()
 

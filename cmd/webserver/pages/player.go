@@ -372,10 +372,7 @@ func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
 	defer func() {
-
-		err := session.Save(w, r)
-		log.Err(err)
-
+		sessionHelpers.Save(w, r)
 		http.Redirect(w, r, "/players/"+id+"#friends", http.StatusFound)
 	}()
 

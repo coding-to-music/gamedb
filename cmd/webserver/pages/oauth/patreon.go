@@ -4,9 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/Jleagle/session-go/session"
+	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/mxpv/patreon-go"
 	"golang.org/x/oauth2"
@@ -77,8 +76,7 @@ func (c patreonConnection) LinkCallbackHandler(w http.ResponseWriter, r *http.Re
 
 	c.callbackOAuth(r, c, mongo.EventUnlinkPatreon, false)
 
-	err := session.Save(w, r)
-	log.Err(err)
+	sessionHelpers.Save(w, r)
 
 	http.Redirect(w, r, "/settings", http.StatusFound)
 }

@@ -127,8 +127,7 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		err := session.SetFlash(r, sessionHelpers.SessionGood, message)
 		log.Err(err, r)
 
-		err = session.Save(w, r)
-		log.Err(err, r)
+		sessionHelpers.Save(w, r)
 
 		// Get last page
 		val := sessionHelpers.Get(r, sessionHelpers.SessionLastPage)
@@ -144,8 +143,7 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		err := session.SetFlash(r, sessionHelpers.SessionBad, message)
 		log.Err(err, r)
 
-		err = session.Save(w, r)
-		log.Err(err, r)
+		sessionHelpers.Save(w, r)
 
 		http.Redirect(w, r, "/login", http.StatusFound)
 	}

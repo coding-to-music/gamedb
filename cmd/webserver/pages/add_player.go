@@ -78,9 +78,8 @@ func playerAddHandler(w http.ResponseWriter, r *http.Request) {
 			err := session.SetFlash(r, sessionHelpers.SessionBad, message)
 			log.Err(err)
 
-			err = session.Save(w, r)
-			log.Err(err)
-
+			sessionHelpers.Save(w, r)
+			
 			http.Redirect(w, r, "/players/add", http.StatusFound)
 			return
 		}

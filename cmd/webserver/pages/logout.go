@@ -39,8 +39,7 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	err = session.SetFlash(r, sessionHelpers.SessionGood, "You have been logged out")
 	log.Err(err, r)
 
-	err = session.Save(w, r)
-	log.Err(err, r)
+	sessionHelpers.Save(w, r)
 
 	//
 	http.Redirect(w, r, lastPage, http.StatusFound)

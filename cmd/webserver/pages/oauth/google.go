@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/Jleagle/session-go/session"
+	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -91,8 +91,7 @@ func (c googleConnection) LinkCallbackHandler(w http.ResponseWriter, r *http.Req
 
 	c.callbackOAuth(r, c, mongo.EventLinkGoogle, false)
 
-	err := session.Save(w, r)
-	log.Err(err)
+	sessionHelpers.Save(w, r)
 
 	http.Redirect(w, r, "/settings", http.StatusFound)
 }

@@ -2,7 +2,6 @@ package pages
 
 import (
 	"bytes"
-	"encoding/base64"
 	"encoding/json"
 	"html"
 	"html/template"
@@ -87,12 +86,7 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 	}
 
 	// Save the session
-	err = session.Save(w, r)
-	if _, ok := err.(base64.CorruptInputError); ok {
-		log.Info(err)
-	} else if err != nil {
-		log.Err(err, r)
-	}
+	sessionHelpers.Save(w, r)
 
 	//
 	setHeaders(w, "text/html")

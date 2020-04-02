@@ -39,10 +39,7 @@ func CurrencyHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Save session
-	err = session.Save(w, r)
-	if err != nil {
-		log.Err(err, r)
-	}
+	sessionHelpers.Save(w, r)
 
 	// Redirect
 	lastPage := sessionHelpers.Get(r, sessionHelpers.SessionLastPage)

@@ -198,10 +198,7 @@ func deletePostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	err = session.Save(w, r)
-	if err != nil {
-		log.Err(err, r)
-	}
+	sessionHelpers.Save(w, r)
 
 	http.Redirect(w, r, redirect, http.StatusFound)
 }
@@ -331,10 +328,7 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	err = session.Save(w, r)
-	if err != nil {
-		log.Err(err, r)
-	}
+	sessionHelpers.Save(w, r)
 
 	http.Redirect(w, r, redirect, http.StatusFound)
 }
@@ -392,10 +386,7 @@ func settingsNewKeyHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	err = session.Save(w, r)
-	if err != nil {
-		log.Err(err, r)
-	}
+	sessionHelpers.Save(w, r)
 
 	http.Redirect(w, r, "/settings", http.StatusFound)
 }
