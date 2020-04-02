@@ -9,7 +9,7 @@ import (
 	"github.com/Jleagle/session-go/session"
 	"github.com/badoux/checkmail"
 	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers/session"
-	"github.com/gamedb/gamedb/cmd/webserver/oauth"
+	"github.com/gamedb/gamedb/cmd/webserver/pages/oauth"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"

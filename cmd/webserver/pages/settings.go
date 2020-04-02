@@ -12,7 +12,7 @@ import (
 	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
 	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers/session"
 	"github.com/gamedb/gamedb/cmd/webserver/middleware"
-	"github.com/gamedb/gamedb/cmd/webserver/oauth"
+	"github.com/gamedb/gamedb/cmd/webserver/pages/oauth"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/i18n"
