@@ -160,7 +160,7 @@ func GetUserFromKeyCache(key string) (user User, err error) {
 
 	var item = memcache.MemcacheUserByAPIKey(key)
 
-	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &user, func() (interface{}, error) {
+	err = memcache.GetSetInterface(item.Key, item.Expiration, &user, func() (interface{}, error) {
 
 		return GetUserByKey("api_key", key, 0)
 	})

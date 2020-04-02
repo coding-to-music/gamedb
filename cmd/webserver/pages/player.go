@@ -210,7 +210,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		item := memcache.MemcachePlayerInQueue(player.ID)
-		_, err = memcache.GetClient().Get(item.Key)
+		_, err = memcache.Get(item.Key)
 
 		inQueue = err == nil
 	}()

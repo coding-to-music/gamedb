@@ -245,11 +245,10 @@ func ProduceApp(payload AppMessage) (err error) {
 		return mongo.ErrInvalidAppID
 	}
 
-	mc := memcache.GetClient()
 	item := memcache.MemcacheAppInQueue(payload.ID)
 
 	if payload.ChangeNumber == 0 && !config.IsLocal() {
-		_, err = mc.Get(item.Key)
+		_, err = memcache.Get(item.Key)
 		if err == nil {
 			return memcache.ErrInQueue
 		}
@@ -257,7 +256,7 @@ func ProduceApp(payload AppMessage) (err error) {
 
 	err = produce(QueueApps, payload)
 	if err == nil {
-		err = mc.Set(&item)
+		err = memcache.Set(item.Key, item.Value, item.Expiration)
 	}
 
 	return err
@@ -278,11 +277,10 @@ func ProduceAppPlayers(payload AppPlayerMessage) (err error) {
 
 func ProduceBundle(id int) (err error) {
 
-	mc := memcache.GetClient()
 	item := memcache.MemcacheBundleInQueue(id)
 
 	if !config.IsLocal() {
-		_, err = mc.Get(item.Key)
+		_, err = memcache.Get(item.Key)
 		if err == nil {
 			return memcache.ErrInQueue
 		}
@@ -290,7 +288,7 @@ func ProduceBundle(id int) (err error) {
 
 	err = produce(QueueBundles, BundleMessage{ID: id})
 	if err == nil {
-		err = mc.Set(&item)
+		err = memcache.Set(item.Key, item.Value, item.Expiration)
 	}
 
 	return err
@@ -312,11 +310,10 @@ func ProduceGroup(payload GroupMessage) (err error) {
 		return err
 	}
 
-	mc := memcache.GetClient()
 	item := memcache.MemcacheGroupInQueue(payload.ID)
 
 	if !config.IsLocal() {
-		_, err = mc.Get(item.Key)
+		_, err = memcache.Get(item.Key)
 		if err == nil {
 			return memcache.ErrInQueue
 		}
@@ -324,7 +321,7 @@ func ProduceGroup(payload GroupMessage) (err error) {
 
 	err = produce(QueueGroups, payload)
 	if err == nil {
-		err = mc.Set(&item)
+		err = memcache.Set(item.Key, item.Value, item.Expiration)
 	}
 
 	return err
@@ -336,11 +333,10 @@ func ProducePackage(payload PackageMessage) (err error) {
 		return mongo.ErrInvalidPackageID
 	}
 
-	mc := memcache.GetClient()
 	item := memcache.MemcachePackageInQueue(payload.ID)
 
 	if payload.ChangeNumber == 0 && !config.IsLocal() {
-		_, err = mc.Get(item.Key)
+		_, err = memcache.Get(item.Key)
 		if err == nil {
 			return memcache.ErrInQueue
 		}
@@ -348,7 +344,7 @@ func ProducePackage(payload PackageMessage) (err error) {
 
 	err = produce(QueuePackages, payload)
 	if err == nil {
-		err = mc.Set(&item)
+		err = memcache.Set(item.Key, item.Value, item.Expiration)
 	}
 
 	return err
@@ -371,11 +367,10 @@ func ProducePlayer(payload PlayerMessage) (err error) {
 		return helpers.ErrInvalidPlayerID
 	}
 
-	mc := memcache.GetClient()
 	item := memcache.MemcachePlayerInQueue(payload.ID)
 
 	if !config.IsLocal() {
-		_, err = mc.Get(item.Key)
+		_, err = memcache.Get(item.Key)
 		if err == nil {
 			return memcache.ErrInQueue
 		}
@@ -383,7 +378,7 @@ func ProducePlayer(payload PlayerMessage) (err error) {
 
 	err = produce(QueuePlayers, payload)
 	if err == nil {
-		err = mc.Set(&item)
+		err = memcache.Set(item.Key, item.Value, item.Expiration)
 	}
 
 	return err

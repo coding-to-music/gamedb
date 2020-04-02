@@ -22,5 +22,5 @@ func (c MemcacheClear) Cron() string {
 
 func (c MemcacheClear) work() (err error) {
 
-	return memcache.GetClient().DeleteAll()
+	return memcache.DeleteAll()
 }

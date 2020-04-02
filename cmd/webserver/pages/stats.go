@@ -148,7 +148,7 @@ func statsAppTypesHandler(w http.ResponseWriter, r *http.Request) {
 	var code = session.GetProductCC(r)
 	var item = memcache.MemcacheStatsAppTypes(code)
 
-	err := memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &ret, func() (interface{}, error) {
+	err := memcache.GetSetInterface(item.Key, item.Expiration, &ret, func() (interface{}, error) {
 
 		var code = session.GetProductCC(r)
 		var rows []statsAppTypesRow

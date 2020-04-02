@@ -603,7 +603,7 @@ func GetAppTags(app mongo.App) (tags []sql.Tag, err error) {
 
 	var item = memcache.MemcacheAppTags(app.ID)
 
-	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &tags, func() (interface{}, error) {
+	err = memcache.GetSetInterface(item.Key, item.Expiration, &tags, func() (interface{}, error) {
 		return sql.GetTagsByID(app.Tags, []string{"id", "name"})
 	})
 
@@ -620,7 +620,7 @@ func GetAppGenres(app mongo.App) (genres []sql.Genre, err error) {
 
 	var item = memcache.MemcacheAppGenres(app.ID)
 
-	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &genres, func() (interface{}, error) {
+	err = memcache.GetSetInterface(item.Key, item.Expiration, &genres, func() (interface{}, error) {
 		return sql.GetGenresByID(app.Genres, []string{"id", "name"})
 	})
 
@@ -637,7 +637,7 @@ func GetDevelopers(app mongo.App) (developers []sql.Developer, err error) {
 
 	var item = memcache.MemcacheAppDevelopers(app.ID)
 
-	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &developers, func() (interface{}, error) {
+	err = memcache.GetSetInterface(item.Key, item.Expiration, &developers, func() (interface{}, error) {
 		return sql.GetDevelopersByID(app.Developers, []string{"id", "name"})
 	})
 
@@ -654,7 +654,7 @@ func GetPublishers(app mongo.App) (publishers []sql.Publisher, err error) {
 
 	var item = memcache.MemcacheAppPublishers(app.ID)
 
-	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &publishers, func() (interface{}, error) {
+	err = memcache.GetSetInterface(item.Key, item.Expiration, &publishers, func() (interface{}, error) {
 		return sql.GetPublishersByID(app.Publishers, []string{"id", "name"})
 	})
 
@@ -671,7 +671,7 @@ func GetAppCategories(app mongo.App) (categories []sql.Category, err error) {
 
 	var item = memcache.MemcacheAppCategories(app.ID)
 
-	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &categories, func() (interface{}, error) {
+	err = memcache.GetSetInterface(item.Key, item.Expiration, &categories, func() (interface{}, error) {
 
 		return sql.GetCategoriesByID(app.Categories, []string{"id", "name"})
 	})
@@ -689,7 +689,7 @@ func GetAppBundles(app mongo.App) (bundles []sql.Bundle, err error) {
 
 	var item = memcache.MemcacheAppBundles(app.ID)
 
-	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &bundles, func() (interface{}, error) {
+	err = memcache.GetSetInterface(item.Key, item.Expiration, &bundles, func() (interface{}, error) {
 		return sql.GetBundlesByID(app.Bundles, []string{})
 	})
 
@@ -707,7 +707,7 @@ func GetPackageBundles(pack mongo.Package) (bundles []sql.Bundle, err error) {
 
 	var item = memcache.MemcachePackageBundles(pack.ID)
 
-	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &bundles, func() (interface{}, error) {
+	err = memcache.GetSetInterface(item.Key, item.Expiration, &bundles, func() (interface{}, error) {
 		return sql.GetBundlesByID(pack.Bundles, []string{})
 	})
 

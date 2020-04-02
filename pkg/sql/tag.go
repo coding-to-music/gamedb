@@ -62,7 +62,7 @@ func GetTagsForSelect() (tags []Tag, err error) {
 
 	var item = memcache.MemcacheTagKeyNames
 
-	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &tags, func() (interface{}, error) {
+	err = memcache.GetSetInterface(item.Key, item.Expiration, &tags, func() (interface{}, error) {
 
 		var tags []Tag
 

@@ -49,7 +49,7 @@ func GetConfig(id ConfigID) (config Config, err error) {
 
 	var item = memcache.MemcacheConfigItem(id.String())
 
-	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &config, func() (interface{}, error) {
+	err = memcache.GetSetInterface(item.Key, item.Expiration, &config, func() (interface{}, error) {
 
 		var config Config
 

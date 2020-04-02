@@ -591,7 +591,7 @@ func GetPlayer(id int64) (player Player, err error) {
 
 	var item = memcache.MemcachePlayer(id)
 
-	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &player, func() (interface{}, error) {
+	err = memcache.GetSetInterface(item.Key, item.Expiration, &player, func() (interface{}, error) {
 
 		id, err := helpers.IsValidPlayerID(id)
 		if err != nil {
@@ -810,7 +810,7 @@ func GetUniquePlayerCountries() (codes []string, err error) {
 
 	var item = memcache.MemcacheUniquePlayerCountryCodes
 
-	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &codes, func() (interface{}, error) {
+	err = memcache.GetSetInterface(item.Key, item.Expiration, &codes, func() (interface{}, error) {
 
 		client, ctx, err := getMongo()
 		if err != nil {
@@ -840,7 +840,7 @@ func GetUniquePlayerStates(country string) (codes []helpers.Tuple, err error) {
 
 	var item = memcache.MemcacheUniquePlayerStateCodes(country)
 
-	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &codes, func() (interface{}, error) {
+	err = memcache.GetSetInterface(item.Key, item.Expiration, &codes, func() (interface{}, error) {
 
 		client, ctx, err := getMongo()
 		if err != nil {
@@ -880,7 +880,7 @@ func GetPlayerLevels() (counts []count, err error) {
 
 	var item = memcache.MemcachePlayerLevels
 
-	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &counts, func() (interface{}, error) {
+	err = memcache.GetSetInterface(item.Key, item.Expiration, &counts, func() (interface{}, error) {
 
 		client, ctx, err := getMongo()
 		if err != nil {

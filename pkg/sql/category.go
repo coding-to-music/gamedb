@@ -84,7 +84,7 @@ func GetCategoriesForSelect() (tags []Category, err error) {
 
 	var item = memcache.MemcacheCategoryKeyNames
 
-	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &tags, func() (interface{}, error) {
+	err = memcache.GetSetInterface(item.Key, item.Expiration, &tags, func() (interface{}, error) {
 
 		var cats []Category
 

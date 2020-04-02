@@ -267,14 +267,14 @@ func InsertMany(collection collection, documents []Document) (resp *mongo.Insert
 	return resp, err
 }
 
-func CountDocuments(collection collection, filter bson.D, ttl int32) (count int64, err error) {
+func CountDocuments(collection collection, filter bson.D, ttl uint32) (count int64, err error) {
 
 	item := memcache.MemcacheMongoCount(collection.String() + "-" + memcache.FilterToString(filter))
 	if ttl > 0 {
 		item.Expiration = ttl
 	}
 
-	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
+	err = memcache.GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
 
 		client, ctx, err := getMongo()
 		if err != nil {

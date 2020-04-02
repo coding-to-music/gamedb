@@ -91,7 +91,7 @@ func getTotalCommits() (total int) {
 
 	var item = memcache.MemcacheTotalCommits
 
-	err := memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &total, func() (interface{}, error) {
+	err := memcache.GetSetInterface(item.Key, item.Expiration, &total, func() (interface{}, error) {
 
 		operation := func() (err error) {
 

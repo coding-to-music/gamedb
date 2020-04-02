@@ -126,7 +126,7 @@ func GetPublishersForSelect() (pubs []Publisher, err error) {
 
 	var item = memcache.MemcachePublisherKeyNames
 
-	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &pubs, func() (interface{}, error) {
+	err = memcache.GetSetInterface(item.Key, item.Expiration, &pubs, func() (interface{}, error) {
 
 		var pubs []Publisher
 

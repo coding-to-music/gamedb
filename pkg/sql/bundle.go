@@ -186,7 +186,7 @@ func CountBundles() (count int, err error) {
 
 	var item = memcache.MemcacheBundlesCount
 
-	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
+	err = memcache.GetSetInterface(item.Key, item.Expiration, &count, func() (interface{}, error) {
 
 		var count int
 

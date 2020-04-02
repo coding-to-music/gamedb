@@ -308,7 +308,7 @@ func getPlayersForHome(sort string) (players []mongo.Player, err error) {
 
 	var item = memcache.MemcacheHomePlayers(sort)
 
-	err = memcache.GetClient().GetSetInterface(item.Key, item.Expiration, &players, func() (interface{}, error) {
+	err = memcache.GetSetInterface(item.Key, item.Expiration, &players, func() (interface{}, error) {
 
 		projection := bson.M{
 			"_id":            1,

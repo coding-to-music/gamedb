@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"cloud.google.com/go/pubsub"
-	"github.com/Jleagle/memcache-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	pubsubHelpers "github.com/gamedb/gamedb/pkg/helpers/pubsub"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -20,8 +19,6 @@ var ErrInQueue = errors.New("already in queue")
 
 func ListenToPubSubMemcache() {
 
-	mc := GetClient()
-
 	err := pubsubHelpers.PubSubSubscribe(pubsubHelpers.PubSubMemcache, func(m *pubsub.Message) {
 
 		var ids []string
@@ -30,8 +27,8 @@ func ListenToPubSubMemcache() {
 		log.Err(err)
 
 		for _, id := range ids {
-			err = mc.Delete(id)
-			err = helpers.IgnoreErrors(err, memcache.ErrCacheMiss)
+			err = Delete(id)
+			err = helpers.IgnoreErrors(err, ErrNotFound)
 			log.Err(err)
 		}
 	})
