@@ -27,6 +27,10 @@ func Set(key string, val string, exp uint32) (err error) {
 func GetInterface(key string, i interface{}) (err error) {
 
 	val, _, _, err := client.Get(key)
+	if err != nil {
+		return err
+	}
+
 	return json.Unmarshal([]byte(val), i)
 }
 
