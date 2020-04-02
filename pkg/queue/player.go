@@ -214,7 +214,7 @@ func playerHandler(messages []*rabbit.Message) {
 
 			defer wg.Done()
 
-			err = memcache.RemoveKeyFromMemCacheViaPubSub(
+			err = memcache.Delete(
 				memcache.MemcachePlayer(player.ID).Key,
 				memcache.MemcachePlayerInQueue(player.ID).Key,
 			)

@@ -40,7 +40,7 @@ func SetConfig(id ConfigID, value string) (err error) {
 	}
 
 	// Clear cache
-	return memcache.RemoveKeyFromMemCacheViaPubSub(
+	return memcache.Delete(
 		memcache.MemcacheConfigItem(id.String()).Key,
 	)
 }

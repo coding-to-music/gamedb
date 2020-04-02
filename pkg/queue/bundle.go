@@ -109,7 +109,7 @@ func bundleHandler(messages []*rabbit.Message) {
 		}
 
 		// Clear caches
-		err = memcache.RemoveKeyFromMemCacheViaPubSub(
+		err = memcache.Delete(
 			memcache.MemcacheBundleInQueue(bundle.ID).Key,
 		)
 		log.Err(err)

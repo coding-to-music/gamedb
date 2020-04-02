@@ -10,22 +10,7 @@ import (
 	"github.com/memcachier/mc"
 )
 
-var (
-	client = mc.NewMC(config.Config.MemcacheDSN.Get(), config.Config.MemcacheUsername.Get(), config.Config.MemcachePassword.Get())
-
-	ErrNotPointer = errors.New("value must be a pointer")
-	ErrNotFound   = mc.ErrNotFound
-)
-
-func Delete(key string) (err error) {
-
-	return client.Del(key)
-}
-
-func DeleteAll() error {
-
-	return client.Flush(0)
-}
+var client = mc.NewMC(config.Config.MemcacheDSN.Get(), config.Config.MemcacheUsername.Get(), config.Config.MemcachePassword.Get())
 
 func Get(key string) (val string, err error) {
 
@@ -56,6 +41,8 @@ func SetInterface(key string, val interface{}, exp uint32) (err error) {
 	return err
 }
 
+var ErrNotPointer = errors.New("value must be a pointer")
+
 func GetSetInterface(key string, exp uint32, value interface{}, callback func() (interface{}, error)) (err error) {
 
 	if config.IsLocal() && reflect.TypeOf(value).Kind() != reflect.Ptr {
@@ -85,4 +72,21 @@ func GetSetInterface(key string, exp uint32, value interface{}, callback func() 
 	}
 
 	return err
+}
+
+func Delete(keys ...string) (err error) {
+
+	for _, key := range keys {
+		err = client.Del(key)
+		if err != nil {
+			return err
+		}
+	}
+
+	return err
+}
+
+func DeleteAll() error {
+
+	return client.Flush(0)
 }

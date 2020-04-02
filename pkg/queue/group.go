@@ -192,7 +192,7 @@ func groupsHandler(messages []*rabbit.Message) {
 		}
 
 		// Clear memcache
-		err = memcache.RemoveKeyFromMemCacheViaPubSub(
+		err = memcache.Delete(
 			memcache.MemcacheGroup(payload.ID).Key,
 			memcache.MemcacheGroupInQueue(payload.ID).Key,
 		)

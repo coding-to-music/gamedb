@@ -8,39 +8,11 @@ import (
 	"sort"
 	"strings"
 
-	"cloud.google.com/go/pubsub"
-	"github.com/gamedb/gamedb/pkg/helpers"
-	pubsubHelpers "github.com/gamedb/gamedb/pkg/helpers/pubsub"
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
 var ErrInQueue = errors.New("already in queue")
-
-func ListenToPubSubMemcache() {
-
-	err := pubsubHelpers.PubSubSubscribe(pubsubHelpers.PubSubMemcache, func(m *pubsub.Message) {
-
-		var ids []string
-
-		err := json.Unmarshal(m.Data, &ids)
-		log.Err(err)
-
-		for _, id := range ids {
-			err = Delete(id)
-			err = helpers.IgnoreErrors(err, ErrNotFound)
-			log.Err(err)
-		}
-	})
-	log.Err(err)
-}
-
-//
-func RemoveKeyFromMemCacheViaPubSub(keys ...string) (err error) {
-
-	_, err = pubsubHelpers.Publish(pubsubHelpers.PubSubTopicMemcache, keys)
-	return err
-}
 
 //
 func ProjectionToString(m bson.M) string {

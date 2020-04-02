@@ -167,5 +167,7 @@ func (c Publishers) work() (err error) {
 	wg.Wait()
 
 	// Clear cache
-	return memcache.RemoveKeyFromMemCacheViaPubSub(memcache.MemcachePublisherKeyNames.Key)
+	return memcache.Delete(
+		memcache.MemcachePublisherKeyNames.Key,
+	)
 }

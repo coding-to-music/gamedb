@@ -15,7 +15,6 @@ import (
 	"github.com/gamedb/gamedb/cmd/webserver/middleware"
 	"github.com/gamedb/gamedb/cmd/webserver/pages"
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
@@ -65,8 +64,6 @@ func main() {
 	// Start queue producers to send to.
 	// In a go routine so if Rabbit is not working, the webserver still starts
 	go queue.Init(queue.WebserverDefinitions)
-
-	go memcache.ListenToPubSubMemcache()
 
 	// Setup Recaptcha
 	recaptcha.SetSecret(config.Config.RecaptchaPrivate.Get())

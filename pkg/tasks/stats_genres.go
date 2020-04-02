@@ -166,5 +166,7 @@ func (c Genres) work() (err error) {
 	wg.Wait()
 
 	// Clear cache
-	return memcache.RemoveKeyFromMemCacheViaPubSub(memcache.MemcacheGenreKeyNames.Key)
+	return memcache.Delete(
+		memcache.MemcacheGenreKeyNames.Key,
+	)
 }

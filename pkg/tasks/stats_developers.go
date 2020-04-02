@@ -165,5 +165,7 @@ func (c Developers) work() (err error) {
 	wg.Wait()
 
 	// Clear cache
-	return memcache.RemoveKeyFromMemCacheViaPubSub(memcache.MemcacheDeveloperKeyNames.Key)
+	return memcache.Delete(
+		memcache.MemcacheDeveloperKeyNames.Key,
+	)
 }

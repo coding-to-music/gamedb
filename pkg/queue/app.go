@@ -315,7 +315,7 @@ func appHandler(messages []*rabbit.Message) {
 
 			var countItem = memcache.FilterToString(bson.D{{"app_id", app.ID}})
 
-			err := memcache.RemoveKeyFromMemCacheViaPubSub(
+			err := memcache.Delete(
 				memcache.MemcacheApp(app.ID).Key,
 				memcache.MemcacheAppInQueue(app.ID).Key,
 				memcache.MemcacheAppTags(app.ID).Key,

@@ -158,5 +158,7 @@ func (c Tags) work() (err error) {
 	wg.Wait()
 
 	// Clear cache
-	return memcache.RemoveKeyFromMemCacheViaPubSub(memcache.MemcacheTagKeyNames.Key)
+	return memcache.Delete(
+		memcache.MemcacheTagKeyNames.Key,
+	)
 }

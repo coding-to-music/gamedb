@@ -234,14 +234,11 @@ func packageHandler(messages []*rabbit.Message) {
 			defer wg.Done()
 
 			var err error
-
-			var keys = []string{
+			err = memcache.Delete(
 				memcache.MemcachePackage(pack.ID).Key,
 				memcache.MemcachePackageInQueue(pack.ID).Key,
 				memcache.MemcachePackageBundles(pack.ID).Key,
-			}
-
-			err = memcache.RemoveKeyFromMemCacheViaPubSub(keys...)
+			)
 			log.Err(err)
 		}()
 

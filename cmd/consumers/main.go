@@ -7,7 +7,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
@@ -26,10 +25,6 @@ func main() {
 		log.Critical(err)
 		return
 	}
-
-	// Load pubsub
-	log.Info("Listening to PubSub for memcache")
-	go memcache.ListenToPubSubMemcache()
 
 	// Load Discord
 	discord, err := discordgo.New("Bot " + config.Config.DiscordChangesBotToken.Get())
