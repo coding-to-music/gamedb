@@ -597,10 +597,13 @@ if ($appPage.length > 0) {
 
                         let name = row[0];
                         if (!row[4]) {
-                            name += '<span class="badge badge-danger float-right">Inactive</span>';
+                            name += '<span class="badge badge-danger float-right ml-1">Inactive</span>';
                         }
                         if (row[5]) {
-                            name += '<span class="badge badge-danger float-right">Hidden</span>';
+                            name += '<span class="badge badge-danger float-right ml-1">Hidden</span>';
+                        }
+                        if (row[6]) {
+                            name += '<span class="badge badge-danger float-right ml-1">Deleted</span>';
                         }
 
                         name += '<br><small>' + row[1] + '</small>';

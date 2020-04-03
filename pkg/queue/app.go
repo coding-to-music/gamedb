@@ -777,7 +777,7 @@ func updateAppAchievements(app *mongo.App, schema steamapi.SchemaForGame) error 
 	// 	return nil
 	// }
 
-	// Build map
+	// Build map of all global achievements
 	var achievements = map[string]mongo.AppAchievement{}
 
 	for _, achievement := range resp.GlobalAchievementPercentage {
@@ -786,9 +786,11 @@ func updateAppAchievements(app *mongo.App, schema steamapi.SchemaForGame) error 
 			AppID:     app.ID,
 			Key:       achievement.Name,
 			Completed: achievement.Percent,
+			Deleted:   false,
 		}
 	}
 
+	// Add in data for achievements in schema
 	var percentTotal float64
 	var percentCount int
 
@@ -818,7 +820,7 @@ func updateAppAchievements(app *mongo.App, schema steamapi.SchemaForGame) error 
 		achievementsSlice = append(achievementsSlice, achievement)
 	}
 
-	// Sort by key
+	// Sort by key to store the first 5
 	sort.Slice(achievementsSlice, func(i, j int) bool {
 		return achievementsSlice[i].Completed > achievementsSlice[j].Completed
 	})
@@ -850,7 +852,18 @@ func updateAppAchievements(app *mongo.App, schema steamapi.SchemaForGame) error 
 		}
 	}
 
-	return nil
+	// Mark apps in data but not in global as deleted
+	var keys []string
+	for k := range achievements {
+		keys = append(keys, k)
+	}
+
+	var filter = bson.D{{"app_id", app.ID}, {"key", bson.M{"$nin": keys}}}
+	var update = bson.D{{"deleted", true}}
+
+	_, err = mongo.UpdateManySet(mongo.CollectionAppAchievements, filter, update)
+
+	return err
 }
 
 func updateAppSchema(app *mongo.App) (schema steamapi.SchemaForGame, err error) {

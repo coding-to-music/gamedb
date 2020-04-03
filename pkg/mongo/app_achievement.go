@@ -14,12 +14,13 @@ import (
 type AppAchievement struct {
 	AppID       int     `bson:"app_id" json:"-"`
 	Key         string  `bson:"key" json:"-"`
-	Name        string  `bson:"name" json:"name"`
+	Name        string  `bson:"name" json:"name"` // Only property JSON needs
 	Description string  `bson:"description" json:"-"`
 	Icon        string  `bson:"icon" json:"icon"`
 	Completed   float64 `bson:"completed" json:"-"`
 	Hidden      bool    `bson:"hidden" json:"-"`
 	Active      bool    `bson:"active" json:"-"` // If it's part of the schema response
+	Deleted     bool    `bson:"deleted" json:"-"`
 }
 
 func (achievement AppAchievement) BSON() bson.D {
@@ -33,6 +34,7 @@ func (achievement AppAchievement) BSON() bson.D {
 		{"completed", achievement.Completed},
 		{"hidden", achievement.Hidden},
 		{"active", achievement.Active},
+		{"deleted", achievement.Deleted},
 	}
 }
 

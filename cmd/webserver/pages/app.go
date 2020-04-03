@@ -561,6 +561,7 @@ func appAchievementsHandler(w http.ResponseWriter, r *http.Request) {
 			helpers.RoundFloatTo2DP(achievement.Completed), // 3
 			achievement.Active,                             // 4
 			achievement.Hidden,                             // 5
+			achievement.Deleted,                            // 6
 		})
 	}
 
