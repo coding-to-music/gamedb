@@ -82,6 +82,7 @@ func Delete(keys ...string) (err error) {
 
 	for _, key := range keys {
 		err = client.Del(key)
+		err = helpers.IgnoreErrors(err, mc.ErrNotFound)
 		if err != nil {
 			return err
 		}
