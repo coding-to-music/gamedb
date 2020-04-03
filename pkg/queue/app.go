@@ -852,13 +852,16 @@ func updateAppAchievements(app *mongo.App, schema steamapi.SchemaForGame) error 
 		}
 	}
 
-	// Mark apps in data but not in global as deleted
-	var keys []string
-	for k := range achievements {
-		keys = append(keys, k)
+	// Mark apps in Mongo but not in global response as deleted
+	var filter = bson.D{{"app_id", app.ID}}
+	if len(achievements) > 0 {
+		var keys []string
+		for k := range achievements {
+			keys = append(keys, k)
+		}
+		filter = append(filter, bson.E{Key: "key", Value: bson.M{"$nin": keys}})
 	}
 
-	var filter = bson.D{{"app_id", app.ID}, {"key", bson.M{"$nin": keys}}}
 	var update = bson.D{{"deleted", true}}
 
 	_, err = mongo.UpdateManySet(mongo.CollectionAppAchievements, filter, update)
