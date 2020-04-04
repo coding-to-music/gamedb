@@ -69,12 +69,11 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Backup
-		err = session.SetMany(r, map[string]string{
+		sessionHelpers.SetMany(r, map[string]string{
 			contactSessionName:    r.PostForm.Get("name"),
 			contactSessionEmail:   r.PostForm.Get("email"),
 			contactSessionMessage: r.PostForm.Get("message"),
 		})
-		log.Err(err, r)
 
 		// Form validation
 		if r.PostForm.Get("name") == "" {
@@ -114,12 +113,11 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Remove backup
-		err = session.SetMany(r, map[string]string{
+		sessionHelpers.SetMany(r, map[string]string{
 			contactSessionName:    "",
 			contactSessionEmail:   "",
 			contactSessionMessage: "",
 		})
-		log.Err(err, r)
 
 		return nil
 	}()

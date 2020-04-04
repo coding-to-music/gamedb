@@ -178,14 +178,10 @@ func login(r *http.Request, user sql.User) (string, bool) {
 		}
 	}
 
-	err := session.SetMany(r, sessionData)
-	if err != nil {
-		log.Err(err, r)
-		return "An error occurred", false
-	}
+	sessionHelpers.SetMany(r, sessionData)
 
 	// Create login event
-	err = mongo.CreateUserEvent(r, user.ID, mongo.EventLogin)
+	err := mongo.CreateUserEvent(r, user.ID, mongo.EventLogin)
 	if err != nil {
 		log.Err(err, r)
 	}

@@ -75,6 +75,12 @@ func Set(r *http.Request, name string, value string) {
 	logSessionError(err)
 }
 
+func SetMany(r *http.Request, values map[string]string) {
+
+	err := session.SetMany(r, values)
+	logSessionError(err)
+}
+
 func GetFlashes(r *http.Request, group session.FlashGroup) (flashes []string) {
 
 	flashes, err := session.GetFlashes(r, group)

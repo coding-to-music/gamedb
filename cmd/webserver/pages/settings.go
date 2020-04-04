@@ -302,15 +302,11 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Update session
-		err = session.SetMany(r, map[string]string{
+		sessionHelpers.SetMany(r, map[string]string{
 			sessionHelpers.SessionUserProdCC:     string(user.ProductCC),
 			sessionHelpers.SessionUserEmail:      user.Email,
 			sessionHelpers.SessionUserShowAlerts: strconv.FormatBool(user.ShowAlerts),
 		})
-		if err != nil {
-			log.Err(err, r)
-			return "/settings", "", "Something went wrong saving your settings"
-		}
 
 		return "/settings", "Settings saved", ""
 	}()
@@ -362,13 +358,9 @@ func settingsNewKeyHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Update session
-		err = session.SetMany(r, map[string]string{
+		sessionHelpers.SetMany(r, map[string]string{
 			sessionHelpers.SessionUserAPIKey: user.APIKey,
 		})
-		if err != nil {
-			log.Err(err, r)
-			return "", "We had trouble saving your settings (1003)"
-		}
 
 		return "New API key generated", ""
 	}()
