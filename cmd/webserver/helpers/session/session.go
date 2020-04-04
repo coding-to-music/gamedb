@@ -75,6 +75,14 @@ func Set(r *http.Request, name string, value string) {
 	logSessionError(err)
 }
 
+func GetFlashes(r *http.Request, group session.FlashGroup) (flashes []string) {
+
+	flashes, err := session.GetFlashes(r, group)
+	logSessionError(err)
+
+	return flashes
+}
+
 func Save(w http.ResponseWriter, r *http.Request) {
 
 	err := session.Save(w, r)

@@ -353,18 +353,8 @@ func (t *GlobalTemplate) setRandomBackground(title bool, link bool) {
 
 func (t *GlobalTemplate) setFlashes() {
 
-	var r = t.request
-	var err error
-
-	t.FlashesGood, err = session.GetFlashes(r, sessionHelpers.SessionGood)
-	if err != nil {
-		log.Err(err, r)
-	}
-
-	t.FlashesBad, err = session.GetFlashes(r, sessionHelpers.SessionBad)
-	if err != nil {
-		log.Err(err, r)
-	}
+	t.FlashesGood = sessionHelpers.GetFlashes(t.request, sessionHelpers.SessionGood)
+	t.FlashesBad = sessionHelpers.GetFlashes(t.request, sessionHelpers.SessionBad)
 }
 
 func (t GlobalTemplate) GetUserJSON() string {
