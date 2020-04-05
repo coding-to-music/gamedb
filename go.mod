@@ -3,7 +3,7 @@ module github.com/gamedb/gamedb
 go 1.13
 
 require (
-	cloud.google.com/go v0.55.0 // indirect
+	cloud.google.com/go v0.56.0 // indirect
 	cloud.google.com/go/logging v1.0.0
 	cloud.google.com/go/pubsub v1.3.1
 	github.com/Jleagle/go-durationfmt v0.0.0-20190307132420-e57bfad84057
@@ -26,7 +26,7 @@ require (
 	github.com/buger/jsonparser v0.0.0-20200322175846-f7e751efca13 // indirect
 	github.com/bwmarrin/discordgo v0.20.2
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
-	github.com/cenkalti/backoff/v4 v4.0.0
+	github.com/cenkalti/backoff/v4 v4.0.2
 	github.com/deepmap/oapi-codegen v1.3.7-0.20200306152314-a80789f547c1
 	github.com/derekstavis/go-qs v0.0.0-20180720192143-9eef69e6c4e7
 	github.com/dghubble/go-twitter v0.0.0-20190719072343-39e5462e111f
@@ -36,9 +36,9 @@ require (
 	github.com/djherbis/fscache v0.10.0
 	github.com/dustin/go-humanize v1.0.0
 	github.com/frustra/bbcode v0.0.0-20180807171629-48be21ce690c
-	github.com/getkin/kin-openapi v0.3.0
+	github.com/getkin/kin-openapi v0.3.1
 	github.com/getsentry/sentry-go v0.5.1
-	github.com/go-chi/chi v4.0.4+incompatible
+	github.com/go-chi/chi v4.1.0+incompatible
 	github.com/go-chi/cors v1.0.1
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/gobuffalo/packr/v2 v2.8.0
@@ -58,7 +58,7 @@ require (
 	github.com/karrick/godirwalk v1.15.5 // indirect
 	github.com/kennygrant/sanitize v1.2.4 // indirect
 	github.com/klauspost/compress v1.10.3 // indirect
-	github.com/labstack/echo/v4 v4.1.15 // indirect
+	github.com/labstack/echo/v4 v4.1.16 // indirect
 	github.com/logrusorgru/aurora v0.0.0-20200102142835-e9ef32dff381
 	github.com/mattn/go-runewidth v0.0.9 // indirect
 	github.com/memcachier/mc v2.0.1+incompatible
@@ -88,13 +88,12 @@ require (
 	github.com/xdg/stringprep v1.0.0 // indirect
 	github.com/yohcop/openid-go v1.0.0
 	go.mongodb.org/mongo-driver v1.3.1
-	golang.org/x/crypto v0.0.0-20200323165209-0ec3e9974c59
+	golang.org/x/crypto v0.0.0-20200403201458-baeed622b8d8
 	golang.org/x/net v0.0.0-20200324143707-d3edc9973b7e // indirect
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/text v0.3.2
-	golang.org/x/tools v0.0.0-20200325010219-a49f79bcc224 // indirect
-	google.golang.org/api v0.20.0
-	google.golang.org/genproto v0.0.0-20200325114520-5b2d0af7952b // indirect
+	google.golang.org/api v0.21.0
+	google.golang.org/genproto v0.0.0-20200403120447-c50568487044 // indirect
 	google.golang.org/grpc v1.28.0
 	gopkg.in/djherbis/atime.v1 v1.0.0 // indirect
 	gopkg.in/djherbis/stream.v1 v1.3.0 // indirect
