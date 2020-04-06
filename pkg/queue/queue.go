@@ -159,14 +159,12 @@ func Init(definitions []QueueDefinition) {
 			consume = true
 		}
 
-		consumerName := "producer-" + string(queue.name)
-
 		prefetchSize := 10
 		if queue.prefetchSize > 0 {
 			prefetchSize = queue.prefetchSize
 		}
 
-		q, err := rabbit.NewChannel(producerConnection, queue.name, consumerName, prefetchSize, queue.batchSize, queue.consumer, !queue.skipHeaders)
+		q, err := rabbit.NewChannel(producerConnection, queue.name, config.Config.Environment.Get(), prefetchSize, queue.batchSize, queue.consumer, !queue.skipHeaders)
 		if err != nil {
 			log.Critical(string(queue.name), err)
 		} else {
@@ -188,14 +186,12 @@ func Init(definitions []QueueDefinition) {
 		for _, queue := range definitions {
 			if queue.consumer != nil {
 
-				consumerName := "consumer-" + string(queue.name)
-
 				prefetchSize := 10
 				if queue.prefetchSize > 0 {
 					prefetchSize = queue.prefetchSize
 				}
 
-				q, err := rabbit.NewChannel(consumerConnection, queue.name, consumerName, prefetchSize, queue.batchSize, queue.consumer, !queue.skipHeaders)
+				q, err := rabbit.NewChannel(consumerConnection, queue.name, config.Config.Environment.Get(), prefetchSize, queue.batchSize, queue.consumer, !queue.skipHeaders)
 				if err != nil {
 					log.Critical(string(queue.name), err)
 					continue
