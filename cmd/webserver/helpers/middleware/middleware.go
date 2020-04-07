@@ -3,6 +3,7 @@ package middleware
 import (
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/Jleagle/session-go/session"
@@ -33,6 +34,22 @@ func MiddlewareRealIP(h http.Handler) http.Handler {
 			r.RemoteAddr = rip
 		}
 		h.ServeHTTP(w, r)
+	}
+
+	return http.HandlerFunc(fn)
+}
+
+var DownMessage string
+
+func MiddlewareDownMessage(h http.Handler) http.Handler {
+	fn := func(w http.ResponseWriter, r *http.Request) {
+
+		if DownMessage == "" || strings.HasPrefix(r.URL.Path, "/admin") {
+			h.ServeHTTP(w, r)
+		} else {
+			_, err := w.Write([]byte(DownMessage))
+			log.Err(err)
+		}
 	}
 
 	return http.HandlerFunc(fn)

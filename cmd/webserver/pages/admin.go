@@ -39,6 +39,11 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 
 	option := chi.URLParam(r, "option")
 
+	err := r.ParseForm()
+	if err != nil {
+		log.Err(err, r)
+	}
+
 	switch option {
 	case "run-cron":
 		go adminRunCron(r)
@@ -47,11 +52,9 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 	case "disable-consumers":
 		go adminDisableConsumers()
 	case "queues":
-		err := r.ParseForm()
-		if err != nil {
-			log.Err(err, r)
-		}
 		go adminQueues(r)
+	case "settings":
+		go adminSettings(r)
 	}
 
 	// Redirect away after action
@@ -293,4 +296,9 @@ func adminDeleteBinLogs(r *http.Request) {
 
 		gorm.Exec("PURGE BINARY LOGS TO '" + name + "'")
 	}
+}
+
+func adminSettings(r *http.Request) {
+
+	middleware.DownMessage = r.PostFormValue("down-message")
 }

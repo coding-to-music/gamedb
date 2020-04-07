@@ -72,6 +72,7 @@ func main() {
 
 	// Routes
 	r := chi.NewRouter()
+	r.Use(middleware.MiddlewareDownMessage)
 	r.Use(middleware.MiddlewareCors())
 	r.Use(chiMiddleware.RedirectSlashes)
 	r.Use(middleware.MiddlewareRealIP)

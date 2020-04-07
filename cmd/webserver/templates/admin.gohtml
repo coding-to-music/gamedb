@@ -32,6 +32,9 @@
                     <li class="nav-item">
                         <a class="nav-link" data-toggle="tab" href="#websockets" role="tab">Websockets</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#settings" role="tab">Settings</a>
+                    </li>
                 </ul>
 
             </div>
@@ -205,6 +208,14 @@
                                 </tbody>
                             </table>
                         </div>
+
+                    </div>
+                    <div class="tab-pane" id="settings" role="tabpanel">
+
+                        <form action="/admin/settings" method="post">
+                            <input type="text" name="down-message">
+                            <input type="submit">
+                        </form>
 
                     </div>
 
