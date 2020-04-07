@@ -115,11 +115,8 @@ func Bad(task TaskInterface) (b bool) {
 //
 func Run(task TaskInterface) {
 
-	log.Info("Cron started: " + task.Name())
-
 	// Send start websocket
 	wsPayload := queue.AdminPayload{TaskID: task.ID(), Action: "started"}
-
 	err := queue.ProduceWebsocket(wsPayload, websockets.PageAdmin)
 	log.Err(err)
 
@@ -128,6 +125,7 @@ func Run(task TaskInterface) {
 
 	err = backoff.RetryNotify(task.work, backoff.WithMaxRetries(policy, 10), func(err error, t time.Duration) { log.Info(err, task.ID(), err) })
 	if err != nil {
+
 		if val, ok := err.(TaskError); ok && val.Okay {
 			log.Info(task.ID(), err)
 		} else {
@@ -144,9 +142,6 @@ func Run(task TaskInterface) {
 		err = queue.ProduceWebsocket(wsPayload, websockets.PageAdmin)
 		log.Err(err)
 	}
-
-	//
-	log.Info("Cron complete: " + task.Name())
 }
 
 func GetTaskConfig(task TaskInterface) (config sql.Config, err error) {
