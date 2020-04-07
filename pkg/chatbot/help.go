@@ -27,7 +27,7 @@ func (CommandHelp) Type() CommandType {
 
 func (CommandHelp) Output(msg *discordgo.MessageCreate) (message discordgo.MessageSend, err error) {
 
-	message.Content = "See https://gamedb.online/chat-bot"
+	message.Content = "See https://gamedb.online/discord-bot"
 
 	return message, nil
 }
