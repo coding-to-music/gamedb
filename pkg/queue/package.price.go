@@ -55,9 +55,6 @@ func packagePriceHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		var oldPrice = *payload.BeforePrice
-		var newPrice = response.Data.Price.Final
-
 		var wg sync.WaitGroup
 
 		// Update package price
@@ -85,65 +82,72 @@ func packagePriceHandler(messages []*rabbit.Message) {
 			}
 		}()
 
-		// Save price change
-		wg.Add(1)
-		go func() {
+		if payload.BeforePrice != nil {
 
-			defer wg.Done()
+			// Save price change
+			var oldPrice = *payload.BeforePrice
+			var newPrice = response.Data.Price.Final
 
-			if payload.BeforePrice != nil {
+			wg.Add(1)
+			go func() {
 
-				price := mongo.ProductPrice{}
-				price.PackageID = int(payload.PackageID)
-				price.Name = payload.PackageName
-				price.Icon = payload.PackageIcon
-				price.CreatedAt = time.Now()
-				price.Currency = productCC.CurrencyCode
-				price.ProdCC = productCC.ProductCode
-				price.PriceBefore = oldPrice
-				price.PriceAfter = newPrice
-				price.Difference = newPrice - oldPrice
-				if oldPrice > 0 {
-					price.DifferencePercent = (float64(newPrice-oldPrice) / float64(oldPrice)) * 100
-				}
+				defer wg.Done()
 
-				result, err := mongo.InsertOne(mongo.CollectionProductPrices, price)
-				if err != nil {
-					log.Err(err)
-					return
-				}
+				if payload.BeforePrice != nil {
 
-				// Send websockets to prices page
-				if result != nil {
-					if insertedID, ok := result.InsertedID.(primitive.ObjectID); ok {
+					price := mongo.ProductPrice{}
+					price.PackageID = int(payload.PackageID)
+					price.Name = payload.PackageName
+					price.Icon = payload.PackageIcon
+					price.CreatedAt = time.Now()
+					price.Currency = productCC.CurrencyCode
+					price.ProdCC = productCC.ProductCode
+					price.PriceBefore = oldPrice
+					price.PriceAfter = newPrice
+					price.Difference = newPrice - oldPrice
+					if oldPrice > 0 {
+						price.DifferencePercent = (float64(newPrice-oldPrice) / float64(oldPrice)) * 100
+					}
 
-						wsPayload := StringsPayload{IDs: []string{insertedID.Hex()}}
-						err2 := ProduceWebsocket(wsPayload, websockets.PagePrices)
-						if err2 != nil {
-							log.Err(err2)
+					result, err := mongo.InsertOne(mongo.CollectionProductPrices, price)
+					if err != nil {
+						log.Err(err)
+						return
+					}
+
+					// Send websockets to prices page
+					if result != nil {
+						if insertedID, ok := result.InsertedID.(primitive.ObjectID); ok {
+
+							wsPayload := StringsPayload{IDs: []string{insertedID.Hex()}}
+							err2 := ProduceWebsocket(wsPayload, websockets.PagePrices)
+							if err2 != nil {
+								log.Err(err2)
+							}
 						}
 					}
 				}
-			}
-		}()
+			}()
 
-		// Post to Discord
-		wg.Add(1)
-		go func() {
+			// Post to Discord
+			wg.Add(1)
+			go func() {
 
-			defer wg.Done()
+				defer wg.Done()
 
-			if productCC.ProductCode == steamapi.ProductCCUS &&
-				oldPrice > newPrice && // Incase it goes from -90% to -80%
-				newPrice > 0 { // Free games are usually just removed from the store
+				if productCC.ProductCode == steamapi.ProductCCUS &&
+					oldPrice > newPrice && // Incase it goes from -90% to -80%
+					newPrice > 0 { // Free games are usually just removed from the store
 
-				var msg = "Package " + strconv.FormatUint(uint64(payload.PackageID), 10) + ": " + helpers.GetPackageName(int(payload.PackageID), payload.PackageName)
-				_, err := discordClient.ChannelMessageSend("685246060930924544", msg)
-				if err != nil {
-					log.Err(err)
+					var msg = "Package " + strconv.FormatUint(uint64(payload.PackageID), 10) + ": " + helpers.GetPackageName(int(payload.PackageID), payload.PackageName)
+					_, err := discordClient.ChannelMessageSend("685246060930924544", msg)
+					if err != nil {
+						log.Err(err)
+					}
 				}
-			}
-		}()
+			}()
+
+		}
 
 		wg.Wait()
 

@@ -74,6 +74,7 @@ func packageHandler(messages []*rabbit.Message) {
 
 		// Produce price changes
 		if config.IsLocal() {
+
 			for _, v := range i18n.GetProdCCs(true) {
 
 				payload2 := PackagePriceMessage{
@@ -87,12 +88,13 @@ func packageHandler(messages []*rabbit.Message) {
 
 				price := pack.GetPrices().Get(v.ProductCode)
 				if price.Exists {
-					payload2.BeforePrice = &price.Final
-				}
 
-				err = producePackagePrice(payload2)
-				if err != nil {
-					log.Err(err)
+					payload2.BeforePrice = &price.Final
+
+					err = producePackagePrice(payload2)
+					if err != nil {
+						log.Err(err)
+					}
 				}
 			}
 		}
