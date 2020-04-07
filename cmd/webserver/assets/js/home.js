@@ -12,6 +12,16 @@ if ($homePage.length > 0) {
         loadPlayers($(this).attr('data-sort'));
     });
 
+    // Panels
+    let maxPanelHeight = 0;
+    $panels = $('#panels .card');
+    $panels.each(function () {
+        if ($(this).height() > maxPanelHeight) {
+            maxPanelHeight = $(this).height();
+        }
+    });
+    $panels.height(maxPanelHeight);
+
     loadSales('top-rated');
     loadPlayers('level');
 

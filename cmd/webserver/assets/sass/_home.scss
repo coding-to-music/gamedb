@@ -16,6 +16,16 @@
         }
     }
 
+    #panels {
+        > a {
+            color: #212529;
+
+            .card {
+                //background-color: #28a745;
+            }
+        }
+    }
+
     #players {
         #column {
             text-transform: capitalize;
