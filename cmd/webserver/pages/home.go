@@ -3,7 +3,6 @@ package pages
 import (
 	"html/template"
 	"math"
-	"math/rand"
 	"net/http"
 	"strconv"
 	"strings"
@@ -97,15 +96,15 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
-	var spotlights = []homeSpotlight{
-		{"Discord Bot", "If you run a Discord chat server, we offer a bot to get player and game information!", "/discord-bot"},
-		{"Experience Table", "Trying to level up and need to know how much XP you need?", "/experience"},
-		{"Coop Game Finder", "Find all the games you and your friends have in common and which ones are coop!", "/coop"},
-		{"Game DB API", "Have a website and want to pull in information from Steam/Game DB?", "/api"},
-		{"Bans Ladder", "Curious who has been banned the most on all of Steam?", "/players?order=desc&sort=7#bans"},
-	}
-
-	t.Spotlight = spotlights[rand.Intn(len(spotlights))]
+	// var spotlights = []homeSpotlight{
+	// 	{"Discord Bot", "If you run a Discord chat server, we offer a bot to get player and game information!", "/discord-bot"},
+	// 	{"Experience Table", "Trying to level up and need to know how much XP you need?", "/experience"},
+	// 	{"Coop Game Finder", "Find all the games you and your friends have in common and which ones are coop!", "/coop"},
+	// 	{"Game DB API", "Have a website and want to pull in information from Steam/Game DB?", "/api"},
+	// 	{"Bans Ladder", "Curious who has been banned the most on all of Steam?", "/players?order=desc&sort=7#bans"},
+	// }
+	//
+	// t.Spotlight = spotlights[rand.Intn(len(spotlights))]
 
 	//
 	returnTemplate(w, r, "home", t)
