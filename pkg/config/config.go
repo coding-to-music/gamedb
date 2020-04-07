@@ -8,11 +8,12 @@ import (
 	"strings"
 )
 
-const EnvProd = "production"
-const EnvLocal = "local"
-const EnvConsumer = "consumer"
-
-const prefix = "STEAM_"
+//noinspection GoUnusedConst
+const (
+	EnvProd     = "production"
+	EnvLocal    = "local"
+	EnvConsumer = "consumer"
+)
 
 var Config BaseConfig
 
@@ -263,7 +264,7 @@ type ConfigItem struct {
 }
 
 func (ci *ConfigItem) Set(environment string) {
-	ci.value = os.Getenv(prefix + environment)
+	ci.value = os.Getenv("STEAM_" + environment)
 }
 
 func (ci *ConfigItem) SetDefault(defaultValue string) {
