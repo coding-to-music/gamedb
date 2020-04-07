@@ -27,7 +27,7 @@
 
                 <div class="card mb-4" id="players">
                     <div class="card-header">
-                        Top Players
+                        <h5 class="d-inline">Top Players</h5>
                         <h5 class="float-right mb-0">
                             <span class="badge cursor-pointer badge-success" data-sort="level">Level</span>
                             <span class="badge cursor-pointer" data-sort="games">Games</span>
@@ -61,7 +61,7 @@
 
                 <div class="card mb-4" id="sales">
                     <div class="card-header">
-                        Game Sales
+                        <h5 class="d-inline">Game Sales</h5>
                         <h5 class="float-right mb-0">
                             <span class="badge cursor-pointer badge-success" data-sort="top-rated">Top Rated</span>
                             <span class="badge cursor-pointer" data-sort="ending-soon">Ending Soon</span>
@@ -95,7 +95,7 @@
 
                 <div class="card mb-4" id="prices">
                     <div class="card-header">
-                        Price Drops
+                        <h5 class="d-inline">Price Drops</h5>
                         <h5 class="float-right mb-0">
                             <span class="badge badge-secondary" id="live-badge">Live</span>
                         </h5>
@@ -125,7 +125,9 @@
                 </div>
 
                 <div class="card mb-4 mb-lg-0" id="news">
-                    <div class="card-header">Popular Game News</div>
+                    <div class="card-header">
+                        <h5>Popular Game News</h5>
+                    </div>
                     <div class="card-body">
                         <ul class="list-unstyled">
 
@@ -171,7 +173,9 @@
                 </div>
 
                 <div class="card border-0" id="new-releases">
-                    <div class="card-header">Popular New Releases</div>
+                    <div class="card-header">
+                        <h5>Popular New Releases</h5>
+                    </div>
                     <div class="card-body p-0">
                         <div class="row">
                             {{ range $key, $value := .Games }}
