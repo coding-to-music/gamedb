@@ -121,9 +121,10 @@ func appHandler(messages []*rabbit.Message) {
 				return
 			}
 
-			err = updateAppNews(&app)
+			err = produce(QueueAppNews, AppNewsMessage{ID: app.ID})
+			// err = updateAppNews(&app)
 			if err != nil {
-				steamHelper.LogSteamError(err, payload.ID)
+				log.Err(err)
 				sendToRetryQueue(message)
 				return
 			}
@@ -166,9 +167,10 @@ func appHandler(messages []*rabbit.Message) {
 				return
 			}
 
-			err = scrapeSimilar(&app)
+			err = produce(QueueAppMorelike, AppNewsMessage{ID: app.ID})
+			// err = scrapeSimilar(&app)
 			if err != nil {
-				steamHelper.LogSteamError(err, payload.ID)
+				log.Err(err)
 				sendToRetryQueue(message)
 				return
 			}
@@ -913,53 +915,53 @@ func updateAppItems(app *mongo.App) (archive []steamapi.ItemDefArchive, err erro
 	return archive, nil
 }
 
-func updateAppNews(app *mongo.App) error {
-
-	resp, b, err := steamHelper.GetSteam().GetNews(app.ID, 10000)
-	err = steamHelper.AllowSteamCodes(err, b, []int{403})
-	if err != nil {
-		return err
-	}
-
-	var documents []mongo.Document
-	for _, v := range resp.Items {
-
-		if strings.TrimSpace(v.Contents) == "" {
-			continue
-		}
-
-		if helpers.SliceHasInt64(app.NewsIDs, int64(v.GID)) {
-			continue
-		}
-
-		news := mongo.Article{}
-		news.ID = int64(v.GID)
-		news.Title = v.Title
-		news.URL = v.URL
-		news.IsExternal = v.IsExternalURL
-		news.Author = v.Author
-		news.Contents = v.Contents
-		news.FeedLabel = v.Feedlabel
-		news.Date = time.Unix(v.Date, 0)
-		news.FeedName = v.Feedname
-		news.FeedType = int8(v.FeedType)
-
-		news.AppID = v.AppID
-		news.AppName = app.GetName()
-		news.AppIcon = app.GetIcon()
-
-		documents = append(documents, news)
-		app.NewsIDs = append(app.NewsIDs, int64(v.GID))
-	}
-
-	_, err = mongo.InsertMany(mongo.CollectionAppArticles, documents)
-	if err != nil {
-		return err
-	}
-
-	app.NewsIDs = helpers.UniqueInt64(app.NewsIDs)
-	return nil
-}
+// func updateAppNews(app *mongo.App) error {
+//
+// 	resp, b, err := steamHelper.GetSteam().GetNews(app.ID, 10000)
+// 	err = steamHelper.AllowSteamCodes(err, b, []int{403})
+// 	if err != nil {
+// 		return err
+// 	}
+//
+// 	var documents []mongo.Document
+// 	for _, v := range resp.Items {
+//
+// 		if strings.TrimSpace(v.Contents) == "" {
+// 			continue
+// 		}
+//
+// 		if helpers.SliceHasInt64(app.NewsIDs, int64(v.GID)) {
+// 			continue
+// 		}
+//
+// 		news := mongo.Article{}
+// 		news.ID = int64(v.GID)
+// 		news.Title = v.Title
+// 		news.URL = v.URL
+// 		news.IsExternal = v.IsExternalURL
+// 		news.Author = v.Author
+// 		news.Contents = v.Contents
+// 		news.FeedLabel = v.Feedlabel
+// 		news.Date = time.Unix(v.Date, 0)
+// 		news.FeedName = v.Feedname
+// 		news.FeedType = int8(v.FeedType)
+//
+// 		news.AppID = v.AppID
+// 		news.AppName = app.GetName()
+// 		news.AppIcon = app.GetIcon()
+//
+// 		documents = append(documents, news)
+// 		app.NewsIDs = append(app.NewsIDs, int64(v.GID))
+// 	}
+//
+// 	_, err = mongo.InsertMany(mongo.CollectionAppArticles, documents)
+// 	if err != nil {
+// 		return err
+// 	}
+//
+// 	app.NewsIDs = helpers.UniqueInt64(app.NewsIDs)
+// 	return nil
+// }
 
 func updateAppReviews(app *mongo.App) error {
 
@@ -1362,56 +1364,56 @@ func scrapeApp(app *mongo.App) (sales []mongo.Sale, err error) {
 	return sales, nil
 }
 
-var appStoreSimilarPage = regexp.MustCompile(`store\.steampowered\.com/recommended/morelike/app/[0-9]+$`)
-
-func scrapeSimilar(app *mongo.App) (err error) {
-
-	var relatedAppIDs []int
-
-	// Retry call
-	operation := func() (err error) {
-
-		c := colly.NewCollector(
-			colly.URLFilters(appStoreSimilarPage),
-			steamHelper.WithAgeCheckCookie,
-			colly.AllowURLRevisit(),
-		)
-
-		c.OnHTML(".similar_grid_capsule", func(e *colly.HTMLElement) {
-			i, err := strconv.Atoi(e.Attr("data-ds-appid"))
-			if err == nil {
-				relatedAppIDs = append(relatedAppIDs, i)
-			}
-		})
-
-		//
-		c.OnError(func(r *colly.Response, err error) {
-			steamHelper.LogSteamError(err)
-		})
-
-		err = c.Visit("https://store.steampowered.com/recommended/morelike/app/" + strconv.Itoa(app.ID))
-		if err != nil {
-			if strings.Contains(err.Error(), "because its not in AllowedDomains") {
-				log.Info(err)
-				return nil
-			}
-		}
-
-		return err
-	}
-
-	policy := backoff.NewExponentialBackOff()
-	policy.InitialInterval = time.Second
-
-	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err, app.ID) })
-	if err != nil {
-		return err
-	}
-
-	app.RelatedAppIDs = relatedAppIDs
-
-	return nil
-}
+// var appStoreSimilarPage = regexp.MustCompile(`store\.steampowered\.com/recommended/morelike/app/[0-9]+$`)
+//
+// func scrapeSimilar(app *mongo.App) (err error) {
+//
+// 	var relatedAppIDs []int
+//
+// 	// Retry call
+// 	operation := func() (err error) {
+//
+// 		c := colly.NewCollector(
+// 			colly.URLFilters(appStoreSimilarPage),
+// 			steamHelper.WithAgeCheckCookie,
+// 			colly.AllowURLRevisit(),
+// 		)
+//
+// 		c.OnHTML(".similar_grid_capsule", func(e *colly.HTMLElement) {
+// 			i, err := strconv.Atoi(e.Attr("data-ds-appid"))
+// 			if err == nil {
+// 				relatedAppIDs = append(relatedAppIDs, i)
+// 			}
+// 		})
+//
+// 		//
+// 		c.OnError(func(r *colly.Response, err error) {
+// 			steamHelper.LogSteamError(err)
+// 		})
+//
+// 		err = c.Visit("https://store.steampowered.com/recommended/morelike/app/" + strconv.Itoa(app.ID))
+// 		if err != nil {
+// 			if strings.Contains(err.Error(), "because its not in AllowedDomains") {
+// 				log.Info(err)
+// 				return nil
+// 			}
+// 		}
+//
+// 		return err
+// 	}
+//
+// 	policy := backoff.NewExponentialBackOff()
+// 	policy.InitialInterval = time.Second
+//
+// 	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err, app.ID) })
+// 	if err != nil {
+// 		return err
+// 	}
+//
+// 	app.RelatedAppIDs = relatedAppIDs
+//
+// 	return nil
+// }
 
 func saveAppToInflux(app mongo.App) (err error) {
 

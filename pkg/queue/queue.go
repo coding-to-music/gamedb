@@ -19,6 +19,8 @@ import (
 const (
 	QueueApps           rabbit.QueueName = "GDB_Apps"
 	QueueAppsDaily      rabbit.QueueName = "GDB_Apps_Daily"
+	QueueAppNews        rabbit.QueueName = "GDB_App_News"
+	QueueAppMorelike    rabbit.QueueName = "GDB_App_Morelike"
 	QueueAppPlayers     rabbit.QueueName = "GDB_App_Players"
 	QueueBundles        rabbit.QueueName = "GDB_Bundles"
 	QueueChanges        rabbit.QueueName = "GDB_Changes"
@@ -61,6 +63,8 @@ var (
 		{name: QueueApps, consumer: appHandler},
 		{name: QueueAppsDaily, consumer: appDailyHandler, batchSize: 10, prefetchSize: 100},
 		{name: QueueAppPlayers, consumer: appPlayersHandler},
+		{name: QueueAppNews, consumer: appNewsHandler},
+		{name: QueueAppMorelike, consumer: appMorelikeHandler},
 		{name: QueueBundles, consumer: bundleHandler},
 		{name: QueueChanges, consumer: changesHandler},
 		{name: QueueGroups, consumer: groupsHandler},
