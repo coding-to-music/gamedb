@@ -12,7 +12,7 @@
             {{ template "_social" .Group }}
 
             <h1 class="text-truncate" title="{{ .Group.Name }}">
-                <i class="fas fa-user-friends"></i> {{ .Group.GetName }}
+                <i class="fas fa-users"></i> {{ .Group.GetName }}
                 {{ if ne .Group.Abbr "" }}
                     <small>({{ .Group.Abbr }})</small>
                 {{ end }}
