@@ -9,7 +9,7 @@ if ($playerPage.length > 0) {
 
         const $link = $(this);
 
-        $('i', $link).addClass('fa-spin');
+        $('i, svg', $link).addClass('fa-spin');
 
         $.ajax({
             url: '/players/' + $playerPage.attr('data-id') + '/update.json',
