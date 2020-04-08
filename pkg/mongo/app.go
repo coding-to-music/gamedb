@@ -637,10 +637,6 @@ func GetApp(id int, full ...bool) (app App, err error) {
 		})
 	}
 
-	if err != nil {
-		return app, err
-	}
-
 	return app, err
 }
 
