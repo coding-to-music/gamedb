@@ -1118,8 +1118,8 @@ func updateAppSteamSpy(app *mongo.App) error {
 	return nil
 }
 
-var
-(
+//noinspection RegExpRedundantEscape
+var (
 	appStorePage     = regexp.MustCompile(`store\.steampowered\.com/app/[0-9]+$`)
 	appStorePageTags = regexp.MustCompile(`\{"tagid":([0-9]+),"name":"([a-zA-Z0-9-&'. ]+)","count":([0-9]+),"browseable":[a-z]{4,5}}`)
 )
