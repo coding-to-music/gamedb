@@ -1,10 +1,6 @@
 package queue
 
 import (
-	"errors"
-	"io/ioutil"
-	"net/http"
-	"net/url"
 	"regexp"
 	"sort"
 	"strconv"
@@ -184,7 +180,8 @@ func appHandler(messages []*rabbit.Message) {
 
 			var err error
 
-			err = updateAppSteamSpy(&app)
+			err = produce(QueueAppSteamspy, AppSteamspyMessage{ID: app.ID})
+			// err = updateAppSteamSpy(&app)
 			if err != nil {
 				log.Info(err, id)
 			}
@@ -1045,80 +1042,80 @@ func updateAppReviews(app *mongo.App) error {
 	return nil
 }
 
-func updateAppSteamSpy(app *mongo.App) error {
-
-	query := url.Values{}
-	query.Set("request", "appdetails")
-	query.Set("appid", strconv.Itoa(app.ID))
-
-	// Create request
-	client := &http.Client{}
-	client.Timeout = time.Second * 5
-
-	ssURL := "https://steamspy.com/api.php?" + query.Encode()
-	req, err := http.NewRequest("GET", ssURL, nil)
-	if err != nil {
-		return err
-	}
-
-	var response *http.Response
-
-	// Retrying as this call can fail
-	operation := func() (err error) {
-
-		response, err = client.Do(req)
-		return err
-	}
-
-	policy := backoff.NewExponentialBackOff()
-	policy.InitialInterval = time.Second * 1
-	policy.MaxElapsedTime = time.Second * 10
-
-	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err) })
-	if err != nil {
-		return err
-	}
-
-	if response.StatusCode != 200 {
-		return errors.New("steamspy is down: " + ssURL)
-	}
-
-	bytes, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return err
-	}
-
-	err = response.Body.Close()
-	log.Err(err)
-
-	if strings.Contains(string(bytes), "Connection failed") {
-		return errors.New("steamspy is down: " + ssURL)
-	}
-
-	// Unmarshal JSON
-	resp := mongo.SteamSpyAppResponse{}
-	err = helpers.Unmarshal(bytes, &resp)
-	if err != nil {
-		return errors.New("steamspy is down: " + ssURL)
-	}
-
-	ss := helpers.AppSteamSpy{
-		SSAveragePlaytimeTwoWeeks: resp.Average2Weeks,
-		SSAveragePlaytimeForever:  resp.AverageForever,
-		SSMedianPlaytimeTwoWeeks:  resp.Median2Weeks,
-		SSMedianPlaytimeForever:   resp.MedianForever,
-	}
-
-	owners := resp.GetOwners()
-	if len(owners) == 2 {
-		ss.SSOwnersLow = owners[0]
-		ss.SSOwnersHigh = owners[1]
-	}
-
-	app.SteamSpy = ss
-
-	return nil
-}
+// func updateAppSteamSpy(app *mongo.App) error {
+//
+// 	query := url.Values{}
+// 	query.Set("request", "appdetails")
+// 	query.Set("appid", strconv.Itoa(app.ID))
+//
+// 	// Create request
+// 	client := &http.Client{}
+// 	client.Timeout = time.Second * 5
+//
+// 	ssURL := "https://steamspy.com/api.php?" + query.Encode()
+// 	req, err := http.NewRequest("GET", ssURL, nil)
+// 	if err != nil {
+// 		return err
+// 	}
+//
+// 	var response *http.Response
+//
+// 	// Retrying as this call can fail
+// 	operation := func() (err error) {
+//
+// 		response, err = client.Do(req)
+// 		return err
+// 	}
+//
+// 	policy := backoff.NewExponentialBackOff()
+// 	policy.InitialInterval = time.Second * 1
+// 	policy.MaxElapsedTime = time.Second * 10
+//
+// 	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err) })
+// 	if err != nil {
+// 		return err
+// 	}
+//
+// 	if response.StatusCode != 200 {
+// 		return errors.New("steamspy is down: " + ssURL)
+// 	}
+//
+// 	bytes, err := ioutil.ReadAll(response.Body)
+// 	if err != nil {
+// 		return err
+// 	}
+//
+// 	err = response.Body.Close()
+// 	log.Err(err)
+//
+// 	if strings.Contains(string(bytes), "Connection failed") {
+// 		return errors.New("steamspy is down: " + ssURL)
+// 	}
+//
+// 	// Unmarshal JSON
+// 	resp := mongo.SteamSpyAppResponse{}
+// 	err = helpers.Unmarshal(bytes, &resp)
+// 	if err != nil {
+// 		return errors.New("steamspy is down: " + ssURL)
+// 	}
+//
+// 	ss := helpers.AppSteamSpy{
+// 		SSAveragePlaytimeTwoWeeks: resp.Average2Weeks,
+// 		SSAveragePlaytimeForever:  resp.AverageForever,
+// 		SSMedianPlaytimeTwoWeeks:  resp.Median2Weeks,
+// 		SSMedianPlaytimeForever:   resp.MedianForever,
+// 	}
+//
+// 	owners := resp.GetOwners()
+// 	if len(owners) == 2 {
+// 		ss.SSOwnersLow = owners[0]
+// 		ss.SSOwnersHigh = owners[1]
+// 	}
+//
+// 	app.SteamSpy = ss
+//
+// 	return nil
+// }
 
 //noinspection RegExpRedundantEscape
 var (

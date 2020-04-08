@@ -21,6 +21,7 @@ const (
 	QueueAppsDaily      rabbit.QueueName = "GDB_Apps_Daily"
 	QueueAppNews        rabbit.QueueName = "GDB_App_News"
 	QueueAppMorelike    rabbit.QueueName = "GDB_App_Morelike"
+	QueueAppSteamspy    rabbit.QueueName = "GDB_App_Steamspy"
 	QueueAppPlayers     rabbit.QueueName = "GDB_App_Players"
 	QueueBundles        rabbit.QueueName = "GDB_Bundles"
 	QueueChanges        rabbit.QueueName = "GDB_Changes"
