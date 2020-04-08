@@ -199,7 +199,7 @@ func homeSalesHandler(w http.ResponseWriter, r *http.Request) {
 		{Key: "offer_end", Value: bson.M{"$gt": time.Now()}},
 	}
 
-	sales, err := mongo.GetAllSales(0, 10, filter, bson.D{{Key: sort, Value: order}})
+	sales, err := mongo.GetAllSales(0, 15, filter, bson.D{{Key: sort, Value: order}})
 	if err != nil {
 		log.Err(err)
 	}
