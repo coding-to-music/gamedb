@@ -68,29 +68,9 @@
 
     #new-releases {
         .row {
-
             img {
                 width: 100%;
                 border-bottom: solid #fff 1px;
-            }
-
-            // Fix padding for multi column
-            > div:nth-child(2n) {
-                @include media-breakpoint-up(sm) {
-                    padding-left: 0;
-                }
-                @include media-breakpoint-up(lg) {
-                    padding-left: 15px;
-                }
-            }
-
-            > div:nth-child(2n+1) {
-                @include media-breakpoint-up(sm) {
-                    padding-right: 0;
-                }
-                @include media-breakpoint-up(lg) {
-                    padding-right: 15px;
-                }
             }
         }
     }
