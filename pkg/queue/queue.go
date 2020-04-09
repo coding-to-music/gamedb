@@ -66,6 +66,7 @@ var (
 		{name: QueueAppPlayers, consumer: appPlayersHandler},
 		{name: QueueAppNews, consumer: appNewsHandler},
 		{name: QueueAppMorelike, consumer: appMorelikeHandler},
+		{name: QueueAppSteamspy, consumer: appSteamspyHandler},
 		{name: QueueBundles, consumer: bundleHandler},
 		{name: QueueChanges, consumer: changesHandler},
 		{name: QueueGroups, consumer: groupsHandler},
