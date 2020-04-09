@@ -30,14 +30,7 @@ func appNewsHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		app, err := mongo.GetApp(payload.ID, false)
-		if err != nil {
-			log.Err(err)
-			sendToRetryQueue(message)
-			continue
-		}
-
-		resp, b, err := steamHelper.GetSteam().GetNews(app.ID, 10000)
+		resp, b, err := steamHelper.GetSteam().GetNews(payload.ID, 10000)
 		err = steamHelper.AllowSteamCodes(err, b, []int{403})
 		if err != nil {
 			steamHelper.LogSteamError(err)
@@ -47,6 +40,13 @@ func appNewsHandler(messages []*rabbit.Message) {
 
 		if len(resp.Items) == 0 {
 			message.Ack(false)
+			continue
+		}
+
+		app, err := mongo.GetApp(payload.ID, false)
+		if err != nil {
+			log.Err(err)
+			sendToRetryQueue(message)
 			continue
 		}
 
