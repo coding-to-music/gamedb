@@ -37,6 +37,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 	t := statsTemplate{}
 	t.fill(w, r, "Stats", "Some interesting Steam Store stats.")
 	t.addAssetHighCharts()
+	t.addAssetJSON2HTML()
 
 	var wg sync.WaitGroup
 

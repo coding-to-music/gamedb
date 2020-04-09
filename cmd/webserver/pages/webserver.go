@@ -527,8 +527,8 @@ func (t *GlobalTemplate) addAssetCountdown() {
 }
 
 func (t *GlobalTemplate) addAssetJSON2HTML() {
-	// This is included in webpack now
-	// t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/json2html/1.3.0/json2html.min.js", Integrity: "sha256-99iKvXmXDqqj9wm3jtTv5Iwn7MTPw4npjQhIY3gY2rw="})
+	t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/json2html/1.4.0/json2html.min.js", Integrity: "sha256-RT9SxnFV5ytnUbDmrQUHa91s2whKmmy6bPooiHWkX/k="})
+	t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/jquery.json2html/1.2.0/jquery.json2html.min.js", Integrity: "sha256-NVPR5gsJCl/e6xUJ3Wv2+4Tui2vhZY6KBhx0RY0DNcs="})
 }
 
 func (t *GlobalTemplate) addAssetHighCharts() {

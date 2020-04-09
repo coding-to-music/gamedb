@@ -33,6 +33,7 @@ func chatBotHandler(w http.ResponseWriter, r *http.Request) {
 	// Template
 	t := chatBotTemplate{}
 	t.fill(w, r, "Steam Bot", "Steam Discord Chat Bot")
+	t.addAssetJSON2HTML()
 
 	returnTemplate(w, r, "chat_bot", t)
 }
