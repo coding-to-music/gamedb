@@ -21,3 +21,4 @@
 # Other
 /cmd/steam/change.txt
 /cmd/steam/sentry.txt
+sqlboiler.toml
