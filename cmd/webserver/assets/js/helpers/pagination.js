@@ -5,7 +5,7 @@ $.fn.dataTableExt.oPagination.gamedb = function (page, pages) {
 function _numbers(page, pages) {
 
     let numbers;
-    const buttons = 7;
+    const buttons = 9;
     const half = Math.floor(buttons / 2);
 
     if (pages <= buttons) {
