@@ -45,14 +45,14 @@ func appSteamspyHandler(messages []*rabbit.Message) {
 		ssURL := "https://steamspy.com/api.php?" + query.Encode()
 		req, err := http.NewRequest("GET", ssURL, nil)
 		if err != nil {
-			log.Err(err)
+			log.Err(err, payload.ID)
 			sendToRetryQueue(message)
 			continue
 		}
 
 		response, err := client.Do(req)
 		if err != nil {
-			log.Err(err)
+			log.Err(err, payload.ID)
 			sendToRetryQueue(message)
 			continue
 		}
@@ -60,24 +60,24 @@ func appSteamspyHandler(messages []*rabbit.Message) {
 		//noinspection GoDeferInLoop
 		defer func() {
 			err = response.Body.Close()
-			log.Err(err)
+			log.Err(err, payload.ID)
 		}()
 
 		if response.StatusCode != 200 {
-			log.Err(errors.New("steamspy is down (1): " + ssURL))
+			log.Err(errors.New("steamspy is down (1): "+ssURL), payload.ID)
 			sendToRetryQueue(message)
 			continue
 		}
 
 		bytes, err := ioutil.ReadAll(response.Body)
 		if err != nil {
-			log.Err(err)
+			log.Err(err, payload.ID)
 			sendToRetryQueue(message)
 			continue
 		}
 
 		if strings.Contains(string(bytes), "Connection failed") {
-			log.Err(errors.New("steamspy is down (2): " + ssURL))
+			log.Err(errors.New("steamspy is down (2): "+ssURL), payload.ID)
 			sendToRetryQueue(message)
 			continue
 		}
@@ -86,7 +86,7 @@ func appSteamspyHandler(messages []*rabbit.Message) {
 		resp := mongo.SteamSpyAppResponse{}
 		err = helpers.Unmarshal(bytes, &resp)
 		if err != nil {
-			log.Err(errors.New("steamspy is down (3): " + ssURL))
+			log.Err(errors.New("steamspy is down (3): "+ssURL), payload.ID)
 			sendToRetryQueue(message)
 			continue
 		}
@@ -105,14 +105,14 @@ func appSteamspyHandler(messages []*rabbit.Message) {
 
 		_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", payload.ID}}, bson.D{{"steam_spy", ss}})
 		if err != nil {
-			log.Err(err)
+			log.Err(err, payload.ID)
 			sendToRetryQueue(message)
 			continue
 		}
 
 		err = memcache.Delete(memcache.MemcacheApp(payload.ID).Key)
 		if err != nil {
-			log.Err(err)
+			log.Err(err, payload.ID)
 			sendToRetryQueue(message)
 			continue
 		}

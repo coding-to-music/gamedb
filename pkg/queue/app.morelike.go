@@ -60,14 +60,14 @@ func appMorelikeHandler(messages []*rabbit.Message) {
 
 		_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", payload.ID}}, bson.D{{"related_app_ids", relatedAppIDs}})
 		if err != nil {
-			log.Err(err)
+			log.Err(err, payload.ID)
 			sendToRetryQueue(message)
 			continue
 		}
 
 		err = memcache.Delete(memcache.MemcacheApp(payload.ID).Key)
 		if err != nil {
-			log.Err(err)
+			log.Err(err, payload.ID)
 			sendToRetryQueue(message)
 			continue
 		}

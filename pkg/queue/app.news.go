@@ -45,7 +45,7 @@ func appNewsHandler(messages []*rabbit.Message) {
 
 		app, err := mongo.GetApp(payload.ID, false)
 		if err != nil {
-			log.Err(err)
+			log.Err(err, payload.ID)
 			sendToRetryQueue(message)
 			continue
 		}
@@ -85,7 +85,7 @@ func appNewsHandler(messages []*rabbit.Message) {
 
 		_, err = mongo.InsertMany(mongo.CollectionAppArticles, documents)
 		if err != nil {
-			log.Err(err)
+			log.Err(err, payload.ID)
 			sendToRetryQueue(message)
 			continue
 		}
@@ -94,14 +94,14 @@ func appNewsHandler(messages []*rabbit.Message) {
 
 		_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", app.ID}}, bson.D{{"news_ids", newsIDs}})
 		if err != nil {
-			log.Err(err)
+			log.Err(err, payload.ID)
 			sendToRetryQueue(message)
 			continue
 		}
 
 		err = memcache.Delete(memcache.MemcacheApp(app.ID).Key)
 		if err != nil {
-			log.Err(err)
+			log.Err(err, payload.ID)
 			sendToRetryQueue(message)
 			continue
 		}
