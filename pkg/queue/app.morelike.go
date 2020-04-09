@@ -31,13 +31,6 @@ func appMorelikeHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		app, err := mongo.GetApp(payload.ID, false)
-		if err != nil {
-			log.Err(err)
-			sendToRetryQueue(message)
-			continue
-		}
-
 		var relatedAppIDs []int
 
 		c := colly.NewCollector(
@@ -52,21 +45,27 @@ func appMorelikeHandler(messages []*rabbit.Message) {
 			}
 		})
 
-		err = c.Visit("https://store.steampowered.com/recommended/morelike/app/" + strconv.Itoa(app.ID))
+		err = c.Visit("https://store.steampowered.com/recommended/morelike/app/" + strconv.Itoa(payload.ID))
 		if err != nil {
 			steamHelper.LogSteamError(err)
 			sendToRetryQueue(message)
 			continue
 		}
 
-		_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", app.ID}}, bson.D{{"related_app_ids", relatedAppIDs}})
+		if len(relatedAppIDs) == 0 {
+			log.Warning("no similar apps", payload.ID)
+			message.Ack(false)
+			continue
+		}
+
+		_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", payload.ID}}, bson.D{{"related_app_ids", relatedAppIDs}})
 		if err != nil {
 			log.Err(err)
 			sendToRetryQueue(message)
 			continue
 		}
 
-		err = memcache.Delete(memcache.MemcacheApp(app.ID).Key)
+		err = memcache.Delete(memcache.MemcacheApp(payload.ID).Key)
 		if err != nil {
 			log.Err(err)
 			sendToRetryQueue(message)
