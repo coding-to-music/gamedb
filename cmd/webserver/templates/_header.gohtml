@@ -163,6 +163,10 @@
                         </div>
                     </li>
 
+                    <li class="nav-item {{if startsWith .Path "/groups" }}active{{end}}">
+                        <a class="nav-link" href="/groups">Groups</a>
+                    </li>
+
                     <li class="nav-item dropdown {{if .IsBadgesPage }}active{{end}}">
                         <a class="nav-link dropdown-toggle d-lg-none" href="#" data-toggle="dropdown">Badges</a>
                         <a class="nav-link dropdown-toggle d-none d-lg-block" href="/badges" data-toggle="dropdown">Badges</a>
@@ -183,10 +187,6 @@
                             {{ end }}
 
                         </div>
-                    </li>
-
-                    <li class="nav-item {{if startsWith .Path "/groups" }}active{{end}}">
-                        <a class="nav-link" href="/groups">Groups</a>
                     </li>
 
                     <li class="nav-item {{if startsWith .Path "/news" }}active{{end}}">
