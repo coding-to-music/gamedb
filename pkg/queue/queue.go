@@ -18,11 +18,11 @@ import (
 
 const (
 	QueueApps           rabbit.QueueName = "GDB_Apps"
-	QueueAppsDaily      rabbit.QueueName = "GDB_Apps_Daily"
-	QueueAppNews        rabbit.QueueName = "GDB_App_News"
-	QueueAppMorelike    rabbit.QueueName = "GDB_App_Morelike"
-	QueueAppSteamspy    rabbit.QueueName = "GDB_App_Steamspy"
-	QueueAppPlayers     rabbit.QueueName = "GDB_App_Players"
+	QueueAppsDaily      rabbit.QueueName = "GDB_Apps.Daily"
+	QueueAppsNews       rabbit.QueueName = "GDB_Apps.News"
+	QueueAppsMorelike   rabbit.QueueName = "GDB_Apps.Morelike"
+	QueueAppsSteamspy   rabbit.QueueName = "GDB_Apps.Steamspy"
+	QueueAppsPlayers    rabbit.QueueName = "GDB_Apps.Players"
 	QueueBundles        rabbit.QueueName = "GDB_Bundles"
 	QueueChanges        rabbit.QueueName = "GDB_Changes"
 	QueueGroups         rabbit.QueueName = "GDB_Groups"
@@ -63,10 +63,10 @@ var (
 	ConsumersDefinitions = []QueueDefinition{
 		{name: QueueApps, consumer: appHandler},
 		{name: QueueAppsDaily, consumer: appDailyHandler, batchSize: 10, prefetchSize: 100},
-		{name: QueueAppPlayers, consumer: appPlayersHandler},
-		{name: QueueAppNews, consumer: appNewsHandler},
-		{name: QueueAppMorelike, consumer: appMorelikeHandler},
-		{name: QueueAppSteamspy, consumer: appSteamspyHandler},
+		{name: QueueAppsPlayers, consumer: appPlayersHandler},
+		{name: QueueAppsNews, consumer: appNewsHandler},
+		{name: QueueAppsMorelike, consumer: appMorelikeHandler},
+		{name: QueueAppsSteamspy, consumer: appSteamspyHandler},
 		{name: QueueBundles, consumer: bundleHandler},
 		{name: QueueChanges, consumer: changesHandler},
 		{name: QueueGroups, consumer: groupsHandler},
@@ -84,7 +84,7 @@ var (
 	WebserverDefinitions = []QueueDefinition{
 		{name: QueueApps, consumer: nil},
 		{name: QueueAppsDaily, consumer: nil},
-		{name: QueueAppPlayers, consumer: nil},
+		{name: QueueAppsPlayers, consumer: nil},
 		{name: QueueBundles, consumer: nil},
 		{name: QueueChanges, consumer: nil},
 		{name: QueueGroups, consumer: nil},
@@ -111,7 +111,7 @@ var (
 	QueueCronsDefinitions = []QueueDefinition{
 		{name: QueueApps, consumer: nil},
 		{name: QueueAppsDaily, consumer: nil},
-		{name: QueueAppPlayers, consumer: nil},
+		{name: QueueAppsPlayers, consumer: nil},
 		{name: QueueGroups, consumer: nil},
 		{name: QueuePackages, consumer: nil},
 		{name: QueuePlayers, consumer: nil},
@@ -274,7 +274,7 @@ func ProduceAppPlayers(payload AppPlayerMessage) (err error) {
 		return nil
 	}
 
-	return produce(QueueAppPlayers, payload)
+	return produce(QueueAppsPlayers, payload)
 }
 
 func ProduceBundle(id int) (err error) {

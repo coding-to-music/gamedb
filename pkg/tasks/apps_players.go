@@ -30,7 +30,7 @@ func (c AppPlayers) Cron() string {
 func (c AppPlayers) work() (err error) {
 
 	// Check queue size
-	q, err := queue.Channels[rabbit.Producer][queue.QueueAppPlayers].Inspect()
+	q, err := queue.Channels[rabbit.Producer][queue.QueueAppsPlayers].Inspect()
 	if err != nil {
 		return err
 	}

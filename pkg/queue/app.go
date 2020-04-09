@@ -117,7 +117,7 @@ func appHandler(messages []*rabbit.Message) {
 				return
 			}
 
-			err = produce(QueueAppNews, AppNewsMessage{ID: app.ID})
+			err = produce(QueueAppsNews, AppNewsMessage{ID: app.ID})
 			// err = updateAppNews(&app)
 			if err != nil {
 				log.Err(err)
@@ -163,7 +163,7 @@ func appHandler(messages []*rabbit.Message) {
 				return
 			}
 
-			err = produce(QueueAppMorelike, AppNewsMessage{ID: app.ID})
+			err = produce(QueueAppsMorelike, AppNewsMessage{ID: app.ID})
 			// err = scrapeSimilar(&app)
 			if err != nil {
 				log.Err(err)
@@ -180,7 +180,7 @@ func appHandler(messages []*rabbit.Message) {
 
 			var err error
 
-			err = produce(QueueAppSteamspy, AppSteamspyMessage{ID: app.ID})
+			err = produce(QueueAppsSteamspy, AppSteamspyMessage{ID: app.ID})
 			// err = updateAppSteamSpy(&app)
 			if err != nil {
 				log.Info(err, id)
