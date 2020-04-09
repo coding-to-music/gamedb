@@ -68,9 +68,22 @@
 
     #new-releases {
         .row {
+
             img {
+                border-bottom: solid #fff;
+                border-width: 1px;
                 width: 100%;
-                border-bottom: solid #fff 1px;
+            }
+
+            @include media-breakpoint-up(sm) {
+                img {
+                    border-width: 0;
+                }
+            }
+            @include media-breakpoint-up(lg) {
+                img {
+                    border-width: 1px;
+                }
             }
         }
     }
