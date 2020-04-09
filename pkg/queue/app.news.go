@@ -45,6 +45,11 @@ func appNewsHandler(messages []*rabbit.Message) {
 			continue
 		}
 
+		if len(resp.Items) == 0 {
+			message.Ack(false)
+			continue
+		}
+
 		var documents []mongo.Document
 		var newsIDs []int64
 
