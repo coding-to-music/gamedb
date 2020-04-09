@@ -29,7 +29,7 @@ func changesHandler(messages []*rabbit.Message) {
 		if err != nil {
 			log.Err(err, message.Message.Body)
 			sendToFailQueue(message)
-			return
+			continue
 		}
 
 		// Group products by change ID
@@ -74,7 +74,7 @@ func changesHandler(messages []*rabbit.Message) {
 		if err != nil && !strings.Contains(err.Error(), "duplicate key error collection") {
 			log.Err(err)
 			sendToRetryQueue(message)
-			return
+			continue
 		}
 
 		// Get apps and packages for all changes in message
@@ -82,7 +82,7 @@ func changesHandler(messages []*rabbit.Message) {
 		if err != nil {
 			log.Err(err)
 			sendToRetryQueue(message)
-			return
+			continue
 		}
 
 		// Send websocket

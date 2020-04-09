@@ -244,7 +244,7 @@ func appHandler(messages []*rabbit.Message) {
 		wg.Wait()
 
 		if message.ActionTaken {
-			return
+			continue
 		}
 
 		// Save prices to Mongo
@@ -303,7 +303,7 @@ func appHandler(messages []*rabbit.Message) {
 		wg.Wait()
 
 		if message.ActionTaken {
-			return
+			continue
 		}
 
 		// Clear caches

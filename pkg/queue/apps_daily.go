@@ -31,7 +31,7 @@ func appDailyHandler(messages []*rabbit.Message) {
 		if err != nil {
 			log.Err(err, message.Message.Body)
 			sendToFailQueue(message)
-			return
+			continue
 		}
 
 		name := strings.TrimSpace(payload.Name)
@@ -47,7 +47,7 @@ func appDailyHandler(messages []*rabbit.Message) {
 
 				log.Err(err, payload.ID)
 				sendToRetryQueue(messages...)
-				return
+				continue
 			}
 
 			if views > 0 || comments > 0 {

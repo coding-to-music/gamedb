@@ -32,7 +32,7 @@ func steamHandler(messages []*rabbit.Message) {
 		if steamClient == nil || !steamClient.Connected() {
 			log.Err(errors.New("steamClient not connected"))
 			sendToRetryQueue(message)
-			return
+			continue
 		}
 
 		payload := SteamMessage{}
@@ -41,7 +41,7 @@ func steamHandler(messages []*rabbit.Message) {
 		if err != nil {
 			log.Err(err, message.Message.Body)
 			sendToRetryQueue(message)
-			return
+			continue
 		}
 
 		// Apps

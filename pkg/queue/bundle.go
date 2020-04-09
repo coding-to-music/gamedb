@@ -35,7 +35,7 @@ func bundleHandler(messages []*rabbit.Message) {
 		if err != nil {
 			log.Err(err, message.Message.Body)
 			sendToFailQueue(message)
-			return
+			continue
 		}
 
 		// Load current bundle
@@ -43,7 +43,7 @@ func bundleHandler(messages []*rabbit.Message) {
 		if err != nil {
 			log.Err(err)
 			sendToRetryQueue(message)
-			return
+			continue
 		}
 
 		bundle := sql.Bundle{}
@@ -51,7 +51,7 @@ func bundleHandler(messages []*rabbit.Message) {
 		if gorm.Error != nil {
 			log.Err(gorm.Error, payload.ID)
 			sendToRetryQueue(message)
-			return
+			continue
 		}
 
 		oldBundle := bundle
@@ -60,7 +60,7 @@ func bundleHandler(messages []*rabbit.Message) {
 		if err != nil && err != steamapi.ErrAppNotFound {
 			steamHelper.LogSteamError(err, payload.ID)
 			sendToRetryQueue(message)
-			return
+			continue
 		}
 
 		var wg sync.WaitGroup
@@ -98,7 +98,7 @@ func bundleHandler(messages []*rabbit.Message) {
 		wg.Wait()
 
 		if message.ActionTaken {
-			return
+			continue
 		}
 
 		// Send websocket

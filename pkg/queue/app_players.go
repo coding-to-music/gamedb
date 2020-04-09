@@ -34,7 +34,7 @@ func appPlayersHandler(messages []*rabbit.Message) {
 		if err != nil {
 			log.Err(err, message.Message.Body)
 			sendToFailQueue(message)
-			return
+			continue
 		}
 
 		// Get apps
@@ -42,7 +42,7 @@ func appPlayersHandler(messages []*rabbit.Message) {
 		if err != nil {
 			log.Err(err, payload.IDs)
 			sendToRetryQueue(message)
-			return
+			continue
 		}
 
 		for _, app := range apps {

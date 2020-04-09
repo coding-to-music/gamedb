@@ -39,7 +39,7 @@ func packageHandler(messages []*rabbit.Message) {
 		if err != nil {
 			log.Err(err, message.Message.Body)
 			sendToFailQueue(message)
-			return
+			continue
 		}
 
 		var id = payload.ID
@@ -47,7 +47,7 @@ func packageHandler(messages []*rabbit.Message) {
 		if !helpers.IsValidPackageID(id) {
 			log.Err(err, payload.ID)
 			sendToFailQueue(message)
-			return
+			continue
 		}
 
 		// Load current package
@@ -69,7 +69,7 @@ func packageHandler(messages []*rabbit.Message) {
 
 			log.Info("Skipping package, updated " + s + " ago")
 			message.Ack(false)
-			return
+			continue
 		}
 
 		// Produce price changes
@@ -107,7 +107,7 @@ func packageHandler(messages []*rabbit.Message) {
 		if err != nil {
 			log.Err(err, payload.ID)
 			sendToRetryQueue(message)
-			return
+			continue
 		}
 
 		var wg sync.WaitGroup
@@ -170,7 +170,7 @@ func packageHandler(messages []*rabbit.Message) {
 		wg.Wait()
 
 		if message.ActionTaken {
-			return
+			continue
 		}
 
 		// Save price changes
@@ -208,7 +208,7 @@ func packageHandler(messages []*rabbit.Message) {
 		wg.Wait()
 
 		if message.ActionTaken {
-			return
+			continue
 		}
 
 		// Send websocket
@@ -265,7 +265,7 @@ func packageHandler(messages []*rabbit.Message) {
 		wg.Wait()
 
 		if message.ActionTaken {
-			return
+			continue
 		}
 
 		//
