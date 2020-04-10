@@ -127,12 +127,12 @@ func appAchievementsHandler(messages []*rabbit.Message) {
 		}
 
 		var updateApp = []bson.E{
-			{"stats", stats},
 			{"version", schemaResponse.Version},
 			{"achievements_count", len(schemaResponse.AvailableGameStats.Achievements)},
 			{"achievements_count_total", len(globalResponse.GlobalAchievementPercentage)},
 			{"achievements_5", achievementsCol},
 			{"achievements_average_completion", average},
+			{"stats", stats},
 		}
 
 		_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", payload.ID}}, updateApp)
