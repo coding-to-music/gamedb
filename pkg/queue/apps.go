@@ -19,7 +19,6 @@ import (
 	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
-	"github.com/gamedb/gamedb/pkg/helpers/twitch"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
@@ -27,7 +26,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/gocolly/colly"
 	influx "github.com/influxdata/influxdb1-client"
-	"github.com/nicklaw5/helix"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -151,22 +149,6 @@ func appHandler(messages []*rabbit.Message) {
 			sales, err = scrapeApp(&app)
 			if err != nil {
 				steamHelper.LogSteamError(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-		}()
-
-		// Calls to Twitch
-		wg.Add(1)
-		go func() {
-
-			defer wg.Done()
-
-			var err error
-
-			err = updateAppTwitch(&app)
-			if err != nil {
-				log.Err(err, payload.ID)
 				sendToRetryQueue(message)
 				return
 			}
@@ -342,23 +324,21 @@ func appHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		err = produce(QueueAppsNews, AppNewsMessage{ID: app.ID})
-		if err != nil {
-			log.Err(err)
-			sendToRetryQueue(message)
-			return
+		// Produce to sub queues
+		var produces = map[rabbit.QueueName]interface{}{
+			QueueAppsMorelike: AppMorelikeMessage{ID: app.ID},
+			QueueAppsNews:     AppNewsMessage{ID: app.ID},
+			QueueAppsSteamspy: AppSteamspyMessage{ID: app.ID},
+			QueueAppsTwitch:   AppTwitchMessage{ID: app.ID},
 		}
 
-		err = produce(QueueAppsMorelike, AppNewsMessage{ID: app.ID})
-		if err != nil {
-			log.Err(err)
-			sendToRetryQueue(message)
-			return
-		}
-
-		err = produce(QueueAppsSteamspy, AppSteamspyMessage{ID: app.ID})
-		if err != nil {
-			log.Info(err, id)
+		for k, v := range produces {
+			err = produce(k, v)
+			if err != nil {
+				log.Err(err)
+				sendToRetryQueue(message)
+				continue
+			}
 		}
 
 		//
@@ -1426,49 +1406,49 @@ func saveAppToInflux(app mongo.App) (err error) {
 	return err
 }
 
-func updateAppTwitch(app *mongo.App) error {
-
-	if app.Type != "game" {
-		return nil
-	}
-
-	client, err := twitch.GetTwitch()
-	if err != nil {
-		return err
-	}
-
-	if (app.TwitchID == 0 || app.TwitchURL == "") && app.Name != "" {
-
-		var resp *helix.GamesResponse
-
-		// Retrying as this call can fail
-		operation := func() (err error) {
-
-			resp, err = client.GetGames(&helix.GamesParams{Names: []string{app.Name}})
-			return err
-		}
-
-		policy := backoff.NewExponentialBackOff()
-
-		err = backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 3), func(err error, t time.Duration) { log.Info(err) })
-		if err != nil {
-			return err
-		}
-
-		if len(resp.Data.Games) > 0 {
-
-			i, err := strconv.Atoi(resp.Data.Games[0].ID)
-			if err != nil {
-				return err
-			}
-
-			app.TwitchID = i
-			app.TwitchURL = resp.Data.Games[0].Name
-		}
-	}
-
-	return nil
-}
+// func updateAppTwitch(app *mongo.App) error {
+//
+// 	if app.Type != "game" {
+// 		return nil
+// 	}
+//
+// 	client, err := twitch.GetTwitch()
+// 	if err != nil {
+// 		return err
+// 	}
+//
+// 	if (app.TwitchID == 0 || app.TwitchURL == "") && app.Name != "" {
+//
+// 		var resp *helix.GamesResponse
+//
+// 		// Retrying as this call can fail
+// 		operation := func() (err error) {
+//
+// 			resp, err = client.GetGames(&helix.GamesParams{Names: []string{app.Name}})
+// 			return err
+// 		}
+//
+// 		policy := backoff.NewExponentialBackOff()
+//
+// 		err = backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 3), func(err error, t time.Duration) { log.Info(err) })
+// 		if err != nil {
+// 			return err
+// 		}
+//
+// 		if len(resp.Data.Games) > 0 {
+//
+// 			i, err := strconv.Atoi(resp.Data.Games[0].ID)
+// 			if err != nil {
+// 				return err
+// 			}
+//
+// 			app.TwitchID = i
+// 			app.TwitchURL = resp.Data.Games[0].Name
+// 		}
+// 	}
+//
+// 	return nil
+// }
 
 func getCurrentAppItems(appID int) (items []int, err error) {
 
