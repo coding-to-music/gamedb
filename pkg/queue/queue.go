@@ -303,6 +303,10 @@ func ProduceChanges(payload ChangesMessage) (err error) {
 
 func ProduceGroup(payload GroupMessage) (err error) {
 
+	if payload.ID == "" {
+		return nil
+	}
+
 	if payload.UserAgent != nil && helpers.IsBot(*payload.UserAgent) {
 		return ErrIsBot
 	}

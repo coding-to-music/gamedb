@@ -331,11 +331,9 @@ func appHandler(messages []*rabbit.Message) {
 
 			var err error
 
-			if app.GroupID != "" {
-				err = ProduceGroup(GroupMessage{ID: app.GroupID})
-				err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
-				log.Err(err)
-			}
+			err = ProduceGroup(GroupMessage{ID: app.GroupID})
+			err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
+			log.Err(err)
 		}()
 
 		wg.Wait()
