@@ -117,14 +117,6 @@ func appHandler(messages []*rabbit.Message) {
 				return
 			}
 
-			err = produce(QueueAppsNews, AppNewsMessage{ID: app.ID})
-			// err = updateAppNews(&app)
-			if err != nil {
-				log.Err(err)
-				sendToRetryQueue(message)
-				return
-			}
-
 			newItems, err = updateAppItems(&app)
 			if err != nil {
 				steamHelper.LogSteamError(err, payload.ID)
@@ -161,29 +153,6 @@ func appHandler(messages []*rabbit.Message) {
 				steamHelper.LogSteamError(err, payload.ID)
 				sendToRetryQueue(message)
 				return
-			}
-
-			err = produce(QueueAppsMorelike, AppNewsMessage{ID: app.ID})
-			// err = scrapeSimilar(&app)
-			if err != nil {
-				log.Err(err)
-				sendToRetryQueue(message)
-				return
-			}
-		}()
-
-		// Calls to steamspy.com
-		wg.Add(1)
-		go func() {
-
-			defer wg.Done()
-
-			var err error
-
-			err = produce(QueueAppsSteamspy, AppSteamspyMessage{ID: app.ID})
-			// err = updateAppSteamSpy(&app)
-			if err != nil {
-				log.Info(err, id)
 			}
 		}()
 
@@ -373,6 +342,25 @@ func appHandler(messages []*rabbit.Message) {
 
 		if message.ActionTaken {
 			continue
+		}
+
+		err = produce(QueueAppsNews, AppNewsMessage{ID: app.ID})
+		if err != nil {
+			log.Err(err)
+			sendToRetryQueue(message)
+			return
+		}
+
+		err = produce(QueueAppsMorelike, AppNewsMessage{ID: app.ID})
+		if err != nil {
+			log.Err(err)
+			sendToRetryQueue(message)
+			return
+		}
+
+		err = produce(QueueAppsSteamspy, AppSteamspyMessage{ID: app.ID})
+		if err != nil {
+			log.Info(err, id)
 		}
 
 		//
