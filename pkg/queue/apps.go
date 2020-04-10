@@ -184,7 +184,7 @@ func appHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		// Save prices to Mongo
+		// Save to Mongo
 		wg.Add(1)
 		go func() {
 
