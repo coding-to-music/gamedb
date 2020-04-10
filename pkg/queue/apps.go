@@ -101,20 +101,6 @@ func appHandler(messages []*rabbit.Message) {
 
 			var err error
 
-			schema, err := updateAppSchema(&app)
-			if err != nil {
-				steamHelper.LogSteamError(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-
-			err = updateAppAchievements(&app, schema)
-			if err != nil {
-				steamHelper.LogSteamError(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-
 			newItems, err = updateAppItems(&app)
 			if err != nil {
 				steamHelper.LogSteamError(err, payload.ID)
@@ -326,10 +312,11 @@ func appHandler(messages []*rabbit.Message) {
 
 		// Produce to sub queues
 		var produces = map[rabbit.QueueName]interface{}{
-			QueueAppsMorelike: AppMorelikeMessage{ID: app.ID},
-			QueueAppsNews:     AppNewsMessage{ID: app.ID},
-			QueueAppsSteamspy: AppSteamspyMessage{ID: app.ID},
-			QueueAppsTwitch:   AppTwitchMessage{ID: app.ID},
+			QueueAppsAchievements: AppAchievementsMessage{ID: app.ID},
+			QueueAppsMorelike:     AppMorelikeMessage{ID: app.ID},
+			QueueAppsNews:         AppNewsMessage{ID: app.ID},
+			QueueAppsSteamspy:     AppSteamspyMessage{ID: app.ID},
+			QueueAppsTwitch:       AppTwitchMessage{ID: app.ID},
 		}
 
 		for k, v := range produces {
@@ -729,133 +716,133 @@ func updateAppDetails(app *mongo.App) (err error) {
 	return nil
 }
 
-func updateAppAchievements(app *mongo.App, schema steamapi.SchemaForGame) error {
+// func updateAppAchievements(app *mongo.App, schema steamapi.SchemaForGame) error {
+//
+// 	resp, b, err := steamHelper.GetSteam().GetGlobalAchievementPercentagesForApp(app.ID)
+// 	err = steamHelper.AllowSteamCodes(err, b, []int{403, 500})
+// 	if err != nil {
+// 		return err
+// 	}
+//
+// 	// Still need to update percents
+// 	// if app.AchievementsCountTotal == len(resp.GlobalAchievementPercentage) {
+// 	// 	return nil
+// 	// }
+//
+// 	// Build map of all global achievements
+// 	var achievements = map[string]mongo.AppAchievement{}
+//
+// 	for _, achievement := range resp.GlobalAchievementPercentage {
+//
+// 		achievements[achievement.Name] = mongo.AppAchievement{
+// 			AppID:     app.ID,
+// 			Key:       achievement.Name,
+// 			Completed: achievement.Percent,
+// 			Deleted:   false,
+// 		}
+// 	}
+//
+// 	// Add in data for achievements in schema
+// 	var percentTotal float64
+// 	var percentCount int
+//
+// 	for _, achievement := range schema.AvailableGameStats.Achievements {
+//
+// 		if val, ok := achievements[achievement.Name]; ok {
+//
+// 			percentTotal += val.Completed
+// 			percentCount++
+//
+// 			val.Name = achievement.DisplayName
+// 			val.SetIcon(achievement.Icon)
+// 			val.Description = achievement.Description
+// 			val.Hidden = bool(achievement.Hidden)
+// 			val.Active = true
+//
+// 			achievements[achievement.Name] = val
+//
+// 		} else {
+// 			log.Info("Achevement in schema but not global", app.ID, achievement.Name)
+// 		}
+// 	}
+//
+// 	// Convert to slice
+// 	var achievementsSlice []mongo.AppAchievement
+// 	for _, achievement := range achievements {
+// 		achievementsSlice = append(achievementsSlice, achievement)
+// 	}
+//
+// 	// Sort by key to store the first 5
+// 	sort.Slice(achievementsSlice, func(i, j int) bool {
+// 		return achievementsSlice[i].Completed > achievementsSlice[j].Completed
+// 	})
+//
+// 	// Save to Mongo
+// 	err = mongo.SaveAppAchievements(achievementsSlice)
+// 	if err != nil {
+// 		return err
+// 	}
+//
+// 	// Update app row
+// 	if percentCount == 0 {
+// 		app.AchievementsAverageCompletion = 0
+// 	} else {
+// 		app.AchievementsAverageCompletion = percentTotal / float64(percentCount)
+// 	}
+//
+// 	app.AchievementsCount = len(schema.AvailableGameStats.Achievements)
+// 	app.AchievementsCountTotal = len(resp.GlobalAchievementPercentage)
+//
+// 	app.Achievements = []mongo.AppAchievement{}
+// 	for _, achievement := range achievementsSlice {
+// 		if achievement.Active && achievement.Icon != "" {
+// 			if len(app.Achievements) < 5 {
+// 				app.Achievements = append(app.Achievements, achievement)
+// 			} else {
+// 				break
+// 			}
+// 		}
+// 	}
+//
+// 	// Mark apps in Mongo but not in global response as deleted
+// 	var filter = bson.D{{"app_id", app.ID}}
+// 	if len(achievements) > 0 {
+// 		var keys []string
+// 		for k := range achievements {
+// 			keys = append(keys, k)
+// 		}
+// 		filter = append(filter, bson.E{Key: "key", Value: bson.M{"$nin": keys}})
+// 	}
+//
+// 	var update = bson.D{{"deleted", true}}
+//
+// 	_, err = mongo.UpdateManySet(mongo.CollectionAppAchievements, filter, update)
+//
+// 	return err
+// }
 
-	resp, b, err := steamHelper.GetSteam().GetGlobalAchievementPercentagesForApp(app.ID)
-	err = steamHelper.AllowSteamCodes(err, b, []int{403, 500})
-	if err != nil {
-		return err
-	}
-
-	// Still need to update percents
-	// if app.AchievementsCountTotal == len(resp.GlobalAchievementPercentage) {
-	// 	return nil
-	// }
-
-	// Build map of all global achievements
-	var achievements = map[string]mongo.AppAchievement{}
-
-	for _, achievement := range resp.GlobalAchievementPercentage {
-
-		achievements[achievement.Name] = mongo.AppAchievement{
-			AppID:     app.ID,
-			Key:       achievement.Name,
-			Completed: achievement.Percent,
-			Deleted:   false,
-		}
-	}
-
-	// Add in data for achievements in schema
-	var percentTotal float64
-	var percentCount int
-
-	for _, achievement := range schema.AvailableGameStats.Achievements {
-
-		if val, ok := achievements[achievement.Name]; ok {
-
-			percentTotal += val.Completed
-			percentCount++
-
-			val.Name = achievement.DisplayName
-			val.SetIcon(achievement.Icon)
-			val.Description = achievement.Description
-			val.Hidden = bool(achievement.Hidden)
-			val.Active = true
-
-			achievements[achievement.Name] = val
-
-		} else {
-			log.Info("Achevement in schema but not global", app.ID, achievement.Name)
-		}
-	}
-
-	// Convert to slice
-	var achievementsSlice []mongo.AppAchievement
-	for _, achievement := range achievements {
-		achievementsSlice = append(achievementsSlice, achievement)
-	}
-
-	// Sort by key to store the first 5
-	sort.Slice(achievementsSlice, func(i, j int) bool {
-		return achievementsSlice[i].Completed > achievementsSlice[j].Completed
-	})
-
-	// Save to Mongo
-	err = mongo.SaveAppAchievements(achievementsSlice)
-	if err != nil {
-		return err
-	}
-
-	// Update app row
-	if percentCount == 0 {
-		app.AchievementsAverageCompletion = 0
-	} else {
-		app.AchievementsAverageCompletion = percentTotal / float64(percentCount)
-	}
-
-	app.AchievementsCount = len(schema.AvailableGameStats.Achievements)
-	app.AchievementsCountTotal = len(resp.GlobalAchievementPercentage)
-
-	app.Achievements = []mongo.AppAchievement{}
-	for _, achievement := range achievementsSlice {
-		if achievement.Active && achievement.Icon != "" {
-			if len(app.Achievements) < 5 {
-				app.Achievements = append(app.Achievements, achievement)
-			} else {
-				break
-			}
-		}
-	}
-
-	// Mark apps in Mongo but not in global response as deleted
-	var filter = bson.D{{"app_id", app.ID}}
-	if len(achievements) > 0 {
-		var keys []string
-		for k := range achievements {
-			keys = append(keys, k)
-		}
-		filter = append(filter, bson.E{Key: "key", Value: bson.M{"$nin": keys}})
-	}
-
-	var update = bson.D{{"deleted", true}}
-
-	_, err = mongo.UpdateManySet(mongo.CollectionAppAchievements, filter, update)
-
-	return err
-}
-
-func updateAppSchema(app *mongo.App) (schema steamapi.SchemaForGame, err error) {
-
-	resp, b, err := steamHelper.GetSteam().GetSchemaForGame(app.ID)
-	err = steamHelper.AllowSteamCodes(err, b, []int{400, 403})
-	if err != nil {
-		return schema, err
-	}
-
-	var stats []helpers.AppStat
-	for _, v := range resp.AvailableGameStats.Stats {
-		stats = append(stats, helpers.AppStat{
-			Name:        v.Name,
-			Default:     v.DefaultValue,
-			DisplayName: v.DisplayName,
-		})
-	}
-
-	app.Stats = stats
-	app.Version = resp.Version
-
-	return resp, nil
-}
+// func updateAppSchema(app *mongo.App) (schema steamapi.SchemaForGame, err error) {
+//
+// 	resp, b, err := steamHelper.GetSteam().GetSchemaForGame(app.ID)
+// 	err = steamHelper.AllowSteamCodes(err, b, []int{400, 403})
+// 	if err != nil {
+// 		return schema, err
+// 	}
+//
+// 	var stats []helpers.AppStat
+// 	for _, v := range resp.AvailableGameStats.Stats {
+// 		stats = append(stats, helpers.AppStat{
+// 			Name:        v.Name,
+// 			Default:     v.DefaultValue,
+// 			DisplayName: v.DisplayName,
+// 		})
+// 	}
+//
+// 	app.Stats = stats
+// 	app.Version = resp.Version
+//
+// 	return resp, nil
+// }
 
 func updateAppItems(app *mongo.App) (archive []steamapi.ItemDefArchive, err error) {
 

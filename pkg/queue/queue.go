@@ -17,21 +17,22 @@ import (
 )
 
 const (
-	QueueApps           rabbit.QueueName = "GDB_Apps"
-	QueueAppsDaily      rabbit.QueueName = "GDB_Apps.Daily"
-	QueueAppsNews       rabbit.QueueName = "GDB_Apps.News"
-	QueueAppsTwitch     rabbit.QueueName = "GDB_Apps.Twitch"
-	QueueAppsMorelike   rabbit.QueueName = "GDB_Apps.Morelike"
-	QueueAppsSteamspy   rabbit.QueueName = "GDB_Apps.Steamspy"
-	QueueAppsPlayers    rabbit.QueueName = "GDB_Apps.Players"
-	QueueBundles        rabbit.QueueName = "GDB_Bundles"
-	QueueChanges        rabbit.QueueName = "GDB_Changes"
-	QueueGroups         rabbit.QueueName = "GDB_Groups"
-	QueuePackages       rabbit.QueueName = "GDB_Packages"
-	QueuePackagesPrices rabbit.QueueName = "GDB_Packages.Prices"
-	QueuePlayers        rabbit.QueueName = "GDB_Players"
-	QueuePlayerRanks    rabbit.QueueName = "GDB_Player_Ranks"
-	QueueSteam          rabbit.QueueName = "GDB_Steam"
+	QueueApps             rabbit.QueueName = "GDB_Apps"
+	QueueAppsAchievements rabbit.QueueName = "GDB_Apps.Achievements"
+	QueueAppsDaily        rabbit.QueueName = "GDB_Apps.Daily"
+	QueueAppsNews         rabbit.QueueName = "GDB_Apps.News"
+	QueueAppsTwitch       rabbit.QueueName = "GDB_Apps.Twitch"
+	QueueAppsMorelike     rabbit.QueueName = "GDB_Apps.Morelike"
+	QueueAppsSteamspy     rabbit.QueueName = "GDB_Apps.Steamspy"
+	QueueAppsPlayers      rabbit.QueueName = "GDB_Apps.Players"
+	QueueBundles          rabbit.QueueName = "GDB_Bundles"
+	QueueChanges          rabbit.QueueName = "GDB_Changes"
+	QueueGroups           rabbit.QueueName = "GDB_Groups"
+	QueuePackages         rabbit.QueueName = "GDB_Packages"
+	QueuePackagesPrices   rabbit.QueueName = "GDB_Packages.Prices"
+	QueuePlayers          rabbit.QueueName = "GDB_Players"
+	QueuePlayerRanks      rabbit.QueueName = "GDB_Player_Ranks"
+	QueueSteam            rabbit.QueueName = "GDB_Steam"
 
 	QueueWebsockets rabbit.QueueName = "GDB_Websockets"
 
@@ -66,6 +67,7 @@ var (
 		{name: QueueAppsDaily, consumer: appDailyHandler, batchSize: 10, prefetchSize: 100},
 		{name: QueueAppsPlayers, consumer: appPlayersHandler},
 		{name: QueueAppsNews, consumer: appNewsHandler},
+		{name: QueueAppsAchievements, consumer: appAchievementsHandler},
 		{name: QueueAppsMorelike, consumer: appMorelikeHandler},
 		{name: QueueAppsTwitch, consumer: appTwitchHandler},
 		{name: QueueAppsSteamspy, consumer: appSteamspyHandler},
