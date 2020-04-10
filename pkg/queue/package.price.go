@@ -50,7 +50,7 @@ func packagePriceHandler(messages []*rabbit.Message) {
 			continue
 		}
 		if err != nil {
-			log.Err(err)
+			steamHelper.LogSteamError(err)
 			sendToRetryQueue(message)
 			continue
 		}
