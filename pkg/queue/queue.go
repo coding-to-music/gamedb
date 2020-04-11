@@ -22,6 +22,7 @@ const (
 	QueueAppsDaily        rabbit.QueueName = "GDB_Apps.Daily"
 	QueueAppsSameowners   rabbit.QueueName = "GDB_Apps.Sameowners"
 	QueueAppsNews         rabbit.QueueName = "GDB_Apps.News"
+	QueueAppsReviews      rabbit.QueueName = "GDB_Apps.Reviews"
 	QueueAppsTwitch       rabbit.QueueName = "GDB_Apps.Twitch"
 	QueueAppsMorelike     rabbit.QueueName = "GDB_Apps.Morelike"
 	QueueAppsSteamspy     rabbit.QueueName = "GDB_Apps.Steamspy"
@@ -70,6 +71,7 @@ var (
 		{name: QueueAppsNews, consumer: appNewsHandler},
 		{name: QueueAppsAchievements, consumer: appAchievementsHandler},
 		{name: QueueAppsSameowners, consumer: appSameownersHandler},
+		{name: QueueAppsReviews, consumer: appReviewsHandler},
 		{name: QueueAppsMorelike, consumer: appMorelikeHandler},
 		{name: QueueAppsTwitch, consumer: appTwitchHandler},
 		{name: QueueAppsSteamspy, consumer: appSteamspyHandler},

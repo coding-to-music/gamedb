@@ -16,7 +16,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/i18n"
-	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -25,7 +24,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/sql/pics"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/gocolly/colly"
-	influx "github.com/influxdata/influxdb1-client"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -125,13 +123,6 @@ func appHandler(messages []*rabbit.Message) {
 				return
 			}
 
-			err = updateAppReviews(&app)
-			if err != nil {
-				steamHelper.LogSteamError(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-
 			sales, err = scrapeApp(&app)
 			if err != nil {
 				steamHelper.LogSteamError(err, payload.ID)
@@ -207,22 +198,6 @@ func appHandler(messages []*rabbit.Message) {
 			}
 
 			err = app.Save()
-			if err != nil {
-				log.Err(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-		}()
-
-		// Save app score etc to Influx
-		wg.Add(1)
-		go func() {
-
-			defer wg.Done()
-
-			var err error
-
-			err = saveAppToInflux(app)
 			if err != nil {
 				log.Err(err, payload.ID)
 				sendToRetryQueue(message)
@@ -311,6 +286,7 @@ func appHandler(messages []*rabbit.Message) {
 			QueueAppsSameowners:   AppSameownersMessage{ID: app.ID},
 			QueueAppsSteamspy:     AppSteamspyMessage{ID: app.ID},
 			QueueAppsTwitch:       AppTwitchMessage{ID: app.ID},
+			QueueAppsReviews:      AppReviewsMessage{ID: app.ID},
 		}
 
 		for k, v := range produces {
@@ -907,87 +883,87 @@ func updateAppItems(app *mongo.App) (archive []steamapi.ItemDefArchive, err erro
 // 	return nil
 // }
 
-func updateAppReviews(app *mongo.App) error {
-
-	resp, b, err := steamHelper.GetSteam().GetReviews(app.ID)
-	err = steamHelper.AllowSteamCodes(err, b, nil)
-	if err != nil {
-		return err
-	}
-
-	//
-	reviews := helpers.AppReviewSummary{}
-	reviews.Positive = resp.QuerySummary.TotalPositive
-	reviews.Negative = resp.QuerySummary.TotalNegative
-
-	// Make slice of playerIDs
-	var playersSlice []int64
-	for _, v := range resp.Reviews {
-		playersSlice = append(playersSlice, int64(v.Author.SteamID))
-	}
-
-	// Get players
-	players, err := mongo.GetPlayersByID(playersSlice, bson.M{"_id": 1, "persona_name": 1})
-	if err != nil {
-		return err
-	}
-
-	// Make map of players
-	var playersMap = map[int64]mongo.Player{}
-	for _, player := range players {
-		playersMap[player.ID] = player
-	}
-
-	// Make template slice
-	for _, v := range resp.Reviews {
-
-		var player mongo.Player
-		if val, ok := playersMap[int64(v.Author.SteamID)]; ok {
-			player = val
-		} else {
-			player = mongo.Player{}
-			player.ID = int64(v.Author.SteamID)
-			player.PersonaName = "Unknown"
-		}
-
-		// Remove extra new lines
-		regex := regexp.MustCompile("[\n]{3,}") // After comma
-		v.Review = regex.ReplaceAllString(v.Review, "\n\n")
-
-		reviews.Reviews = append(reviews.Reviews, helpers.AppReview{
-			Review:     helpers.BBCodeCompiler.Compile(v.Review),
-			PlayerPath: player.GetPath(),
-			PlayerName: player.PersonaName,
-			Created:    time.Unix(v.TimestampCreated, 0).Format(helpers.DateYear),
-			VotesGood:  v.VotesUp,
-			VotesFunny: v.VotesFunny,
-			Vote:       v.VotedUp,
-		})
-	}
-
-	// Set score
-	if reviews.Positive == 0 && reviews.Negative == 0 {
-
-		app.ReviewsScore = 0
-
-	} else {
-
-		// https://planspace.org/2014/08/17/how-to-sort-by-average-rating/
-		var a = 1
-		var b = 2
-		app.ReviewsScore = (float64(reviews.Positive+a) / float64(reviews.Positive+reviews.Negative+b)) * 100
-	}
-
-	// Sort by upvotes
-	sort.Slice(reviews.Reviews, func(i, j int) bool {
-		return reviews.Reviews[i].VotesGood > reviews.Reviews[j].VotesGood
-	})
-
-	app.Reviews = reviews
-	app.ReviewsCount = reviews.GetTotal()
-
-	return nil
-}
+// func updateAppReviews(app *mongo.App) error {
+//
+// 	resp, b, err := steamHelper.GetSteam().GetReviews(app.ID)
+// 	err = steamHelper.AllowSteamCodes(err, b, nil)
+// 	if err != nil {
+// 		return err
+// 	}
+//
+// 	//
+// 	reviews := helpers.AppReviewSummary{}
+// 	reviews.Positive = resp.QuerySummary.TotalPositive
+// 	reviews.Negative = resp.QuerySummary.TotalNegative
+//
+// 	// Make slice of playerIDs
+// 	var playersSlice []int64
+// 	for _, v := range resp.Reviews {
+// 		playersSlice = append(playersSlice, int64(v.Author.SteamID))
+// 	}
+//
+// 	// Get players
+// 	players, err := mongo.GetPlayersByID(playersSlice, bson.M{"_id": 1, "persona_name": 1})
+// 	if err != nil {
+// 		return err
+// 	}
+//
+// 	// Make map of players
+// 	var playersMap = map[int64]mongo.Player{}
+// 	for _, player := range players {
+// 		playersMap[player.ID] = player
+// 	}
+//
+// 	// Make template slice
+// 	for _, v := range resp.Reviews {
+//
+// 		var player mongo.Player
+// 		if val, ok := playersMap[int64(v.Author.SteamID)]; ok {
+// 			player = val
+// 		} else {
+// 			player = mongo.Player{}
+// 			player.ID = int64(v.Author.SteamID)
+// 			player.PersonaName = "Unknown"
+// 		}
+//
+// 		// Remove extra new lines
+// 		regex := regexp.MustCompile("[\n]{3,}") // After comma
+// 		v.Review = regex.ReplaceAllString(v.Review, "\n\n")
+//
+// 		reviews.Reviews = append(reviews.Reviews, helpers.AppReview{
+// 			Review:     helpers.BBCodeCompiler.Compile(v.Review),
+// 			PlayerPath: player.GetPath(),
+// 			PlayerName: player.PersonaName,
+// 			Created:    time.Unix(v.TimestampCreated, 0).Format(helpers.DateYear),
+// 			VotesGood:  v.VotesUp,
+// 			VotesFunny: v.VotesFunny,
+// 			Vote:       v.VotedUp,
+// 		})
+// 	}
+//
+// 	// Set score
+// 	if reviews.Positive == 0 && reviews.Negative == 0 {
+//
+// 		app.ReviewsScore = 0
+//
+// 	} else {
+//
+// 		// https://planspace.org/2014/08/17/how-to-sort-by-average-rating/
+// 		var a = 1
+// 		var b = 2
+// 		app.ReviewsScore = (float64(reviews.Positive+a) / float64(reviews.Positive+reviews.Negative+b)) * 100
+// 	}
+//
+// 	// Sort by upvotes
+// 	sort.Slice(reviews.Reviews, func(i, j int) bool {
+// 		return reviews.Reviews[i].VotesGood > reviews.Reviews[j].VotesGood
+// 	})
+//
+// 	app.Reviews = reviews
+// 	app.ReviewsCount = reviews.GetTotal()
+//
+// 	return nil
+// }
 
 // func updateAppSteamSpy(app *mongo.App) error {
 //
@@ -1359,33 +1335,33 @@ func scrapeApp(app *mongo.App) (sales []mongo.Sale, err error) {
 // 	return nil
 // }
 
-func saveAppToInflux(app mongo.App) (err error) {
-
-	fields := map[string]interface{}{
-		"reviews_score":    app.ReviewsScore,
-		"reviews_positive": app.Reviews.Positive,
-		"reviews_negative": app.Reviews.Negative,
-	}
-
-	price := app.Prices.Get(steamapi.ProductCCUS)
-	if price.Exists {
-		fields["price_us_initial"] = price.Initial
-		fields["price_us_final"] = price.Final
-		fields["price_us_discount"] = price.DiscountPercent
-	}
-
-	_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, influx.Point{
-		Measurement: string(influxHelper.InfluxMeasurementApps),
-		Tags: map[string]string{
-			"app_id": strconv.Itoa(app.ID),
-		},
-		Fields:    fields,
-		Time:      time.Now(),
-		Precision: "m",
-	})
-
-	return err
-}
+// func saveAppToInflux(app mongo.App) (err error) {
+//
+// 	fields := map[string]interface{}{
+// 		"reviews_score":    app.ReviewsScore,
+// 		"reviews_positive": app.Reviews.Positive,
+// 		"reviews_negative": app.Reviews.Negative,
+// 	}
+//
+// 	price := app.Prices.Get(steamapi.ProductCCUS)
+// 	if price.Exists {
+// 		fields["price_us_initial"] = price.Initial
+// 		fields["price_us_final"] = price.Final
+// 		fields["price_us_discount"] = price.DiscountPercent
+// 	}
+//
+// 	_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, influx.Point{
+// 		Measurement: string(influxHelper.InfluxMeasurementApps),
+// 		Tags: map[string]string{
+// 			"app_id": strconv.Itoa(app.ID),
+// 		},
+// 		Fields:    fields,
+// 		Time:      time.Now(),
+// 		Precision: "m",
+// 	})
+//
+// 	return err
+// }
 
 // func updateAppTwitch(app *mongo.App) error {
 //
