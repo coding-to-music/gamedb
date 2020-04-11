@@ -26,7 +26,7 @@ const (
 	QueueAppsTwitch       rabbit.QueueName = "GDB_Apps.Twitch"
 	QueueAppsMorelike     rabbit.QueueName = "GDB_Apps.Morelike"
 	QueueAppsSteamspy     rabbit.QueueName = "GDB_Apps.Steamspy"
-	QueueAppPlayers       rabbit.QueueName = "GDB_Apps.Players"
+	QueueAppPlayers       rabbit.QueueName = "GDB_App_Players"
 	QueueBundles          rabbit.QueueName = "GDB_Bundles"
 	QueueChanges          rabbit.QueueName = "GDB_Changes"
 	QueueGroups           rabbit.QueueName = "GDB_Groups"
