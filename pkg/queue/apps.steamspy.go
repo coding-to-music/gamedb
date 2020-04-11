@@ -61,7 +61,9 @@ func appSteamspyHandler(messages []*rabbit.Message) {
 		//noinspection GoDeferInLoop
 		defer func() {
 			err = response.Body.Close()
-			log.Err(err, payload.ID)
+			if err != nil {
+				log.Err(err, payload.ID)
+			}
 		}()
 
 		if response.StatusCode != 200 {
