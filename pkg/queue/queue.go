@@ -25,7 +25,7 @@ const (
 	QueueAppsTwitch       rabbit.QueueName = "GDB_Apps.Twitch"
 	QueueAppsMorelike     rabbit.QueueName = "GDB_Apps.Morelike"
 	QueueAppsSteamspy     rabbit.QueueName = "GDB_Apps.Steamspy"
-	QueueAppsPlayers      rabbit.QueueName = "GDB_Apps.Players"
+	QueueAppPlayers       rabbit.QueueName = "GDB_Apps.Players"
 	QueueBundles          rabbit.QueueName = "GDB_Bundles"
 	QueueChanges          rabbit.QueueName = "GDB_Changes"
 	QueueGroups           rabbit.QueueName = "GDB_Groups"
@@ -64,9 +64,9 @@ var (
 	}
 
 	ConsumersDefinitions = []QueueDefinition{
+		{name: QueueAppPlayers, consumer: appPlayersHandler},
 		{name: QueueApps, consumer: appHandler},
 		{name: QueueAppsDaily, consumer: appDailyHandler, batchSize: 10, prefetchSize: 100},
-		{name: QueueAppsPlayers, consumer: appPlayersHandler},
 		{name: QueueAppsNews, consumer: appNewsHandler},
 		{name: QueueAppsAchievements, consumer: appAchievementsHandler},
 		{name: QueueAppsSameowners, consumer: appSameownersHandler},
@@ -90,7 +90,7 @@ var (
 	WebserverDefinitions = []QueueDefinition{
 		{name: QueueApps, consumer: nil},
 		{name: QueueAppsDaily, consumer: nil},
-		{name: QueueAppsPlayers, consumer: nil},
+		{name: QueueAppPlayers, consumer: nil},
 		{name: QueueBundles, consumer: nil},
 		{name: QueueChanges, consumer: nil},
 		{name: QueueGroups, consumer: nil},
@@ -117,7 +117,7 @@ var (
 	QueueCronsDefinitions = []QueueDefinition{
 		{name: QueueApps, consumer: nil},
 		{name: QueueAppsDaily, consumer: nil},
-		{name: QueueAppsPlayers, consumer: nil},
+		{name: QueueAppPlayers, consumer: nil},
 		{name: QueueGroups, consumer: nil},
 		{name: QueuePackages, consumer: nil},
 		{name: QueuePlayers, consumer: nil},
@@ -280,7 +280,7 @@ func ProduceAppPlayers(payload AppPlayerMessage) (err error) {
 		return nil
 	}
 
-	return produce(QueueAppsPlayers, payload)
+	return produce(QueueAppPlayers, payload)
 }
 
 func ProduceBundle(id int) (err error) {
