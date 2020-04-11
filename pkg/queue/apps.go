@@ -169,13 +169,6 @@ func appHandler(messages []*rabbit.Message) {
 				sendToRetryQueue(message)
 				return
 			}
-
-			// err = getSimilarOwners(&app)
-			// if err != nil {
-			// 	log.Err(err, payload.ID)
-			// 	sendToRetryQueue(message)
-			// 	return
-			// }
 		}()
 
 		wg.Wait()
@@ -315,6 +308,7 @@ func appHandler(messages []*rabbit.Message) {
 			QueueAppsAchievements: AppAchievementsMessage{ID: app.ID},
 			QueueAppsMorelike:     AppMorelikeMessage{ID: app.ID},
 			QueueAppsNews:         AppNewsMessage{ID: app.ID},
+			QueueAppsSameowners:   AppSameownersMessage{ID: app.ID},
 			QueueAppsSteamspy:     AppSteamspyMessage{ID: app.ID},
 			QueueAppsTwitch:       AppTwitchMessage{ID: app.ID},
 		}
@@ -1499,52 +1493,52 @@ func getWishlistCount(app *mongo.App) (err error) {
 	return nil
 }
 
-func getSimilarOwners(app *mongo.App) (err error) {
-
-	ownerRows, err := mongo.GetAppOwners(app.ID)
-	if err != nil {
-		return err
-	}
-	if len(ownerRows) == 0 {
-		return nil
-	}
-
-	var playerIDs []int64
-	for _, v := range ownerRows {
-		playerIDs = append(playerIDs, v.PlayerID)
-	}
-
-	apps, err := mongo.GetPlayersApps(playerIDs, bson.M{"_id": -1, "app_id": 1})
-	if err != nil {
-		return err
-	}
-
-	var countMap = map[int]int{}
-	for _, v := range apps {
-		if _, ok := countMap[v.AppID]; ok {
-			countMap[v.AppID]++
-		} else {
-			countMap[v.AppID] = 1
-		}
-	}
-
-	var countSlice []helpers.TupleInt
-	for k, v := range countMap {
-		countSlice = append(countSlice, helpers.TupleInt{Key: k, Value: v})
-	}
-
-	sort.Slice(countSlice, func(i, j int) bool {
-		return countSlice[i].Value > countSlice[j].Value
-	})
-
-	if len(countSlice) > 100 {
-		countSlice = countSlice[0:100]
-	}
-
-	app.RelatedOwnersAppIDs = countSlice
-
-	return nil
-}
+// func getSimilarOwners(app *mongo.App) (err error) {
+//
+// 	ownerRows, err := mongo.GetAppOwners(app.ID)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	if len(ownerRows) == 0 {
+// 		return nil
+// 	}
+//
+// 	var playerIDs []int64
+// 	for _, v := range ownerRows {
+// 		playerIDs = append(playerIDs, v.PlayerID)
+// 	}
+//
+// 	apps, err := mongo.GetPlayersApps(playerIDs, bson.M{"_id": -1, "app_id": 1})
+// 	if err != nil {
+// 		return err
+// 	}
+//
+// 	var countMap = map[int]int{}
+// 	for _, v := range apps {
+// 		if _, ok := countMap[v.AppID]; ok {
+// 			countMap[v.AppID]++
+// 		} else {
+// 			countMap[v.AppID] = 1
+// 		}
+// 	}
+//
+// 	var countSlice []helpers.TupleInt
+// 	for k, v := range countMap {
+// 		countSlice = append(countSlice, helpers.TupleInt{Key: k, Value: v})
+// 	}
+//
+// 	sort.Slice(countSlice, func(i, j int) bool {
+// 		return countSlice[i].Value > countSlice[j].Value
+// 	})
+//
+// 	if len(countSlice) > 100 {
+// 		countSlice = countSlice[0:100]
+// 	}
+//
+// 	app.RelatedOwnersAppIDs = countSlice
+//
+// 	return nil
+// }
 
 func saveSales(app mongo.App, newSales []mongo.Sale) (err error) {
 
