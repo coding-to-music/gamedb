@@ -20,14 +20,14 @@ require (
 	github.com/ahmdrz/goinsta/v2 v2.4.5
 	github.com/antchfx/htmlquery v1.2.2 // indirect
 	github.com/antchfx/xmlquery v1.2.3 // indirect
-	github.com/antchfx/xpath v1.1.4 // indirect
+	github.com/antchfx/xpath v1.1.5 // indirect
 	github.com/badoux/checkmail v0.0.0-20181210160741-9661bd69e9ad
 	github.com/beefsack/go-rate v0.0.0-20180408011153-efa7637bb9b6 // indirect
 	github.com/buger/jsonparser v0.0.0-20200322175846-f7e751efca13 // indirect
 	github.com/bwmarrin/discordgo v0.20.2
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/cenkalti/backoff/v4 v4.0.2
-	github.com/deepmap/oapi-codegen v1.3.7-0.20200306152314-a80789f547c1
+	github.com/deepmap/oapi-codegen v1.3.7
 	github.com/derekstavis/go-qs v0.0.0-20180720192143-9eef69e6c4e7
 	github.com/dghubble/go-twitter v0.0.0-20190719072343-39e5462e111f
 	github.com/dghubble/oauth1 v0.6.0
@@ -55,9 +55,9 @@ require (
 	github.com/jinzhu/now v1.1.1
 	github.com/justinas/nosurf v1.1.0
 	github.com/jzelinskie/geddit v0.0.0-20190913104144-95ef6806b073
-	github.com/karrick/godirwalk v1.15.5 // indirect
+	github.com/karrick/godirwalk v1.15.6 // indirect
 	github.com/kennygrant/sanitize v1.2.4 // indirect
-	github.com/klauspost/compress v1.10.3 // indirect
+	github.com/klauspost/compress v1.10.4 // indirect
 	github.com/labstack/echo/v4 v4.1.16 // indirect
 	github.com/logrusorgru/aurora v0.0.0-20200102142835-e9ef32dff381
 	github.com/mattn/go-runewidth v0.0.9 // indirect
@@ -87,14 +87,15 @@ require (
 	github.com/uber-go/atomic v1.4.0 // indirect
 	github.com/xdg/stringprep v1.0.0 // indirect
 	github.com/yohcop/openid-go v1.0.0
-	go.mongodb.org/mongo-driver v1.3.1
-	golang.org/x/crypto v0.0.0-20200403201458-baeed622b8d8
+	go.mongodb.org/mongo-driver v1.3.2
+	golang.org/x/crypto v0.0.0-20200406173513-056763e48d71
 	golang.org/x/net v0.0.0-20200324143707-d3edc9973b7e // indirect
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
+	golang.org/x/sys v0.0.0-20200409092240-59c9f1ba88fa // indirect
 	golang.org/x/text v0.3.2
 	google.golang.org/api v0.21.0
-	google.golang.org/genproto v0.0.0-20200403120447-c50568487044 // indirect
-	google.golang.org/grpc v1.28.0
+	google.golang.org/genproto v0.0.0-20200410110633-0848e9f44c36 // indirect
+	google.golang.org/grpc v1.28.1
 	gopkg.in/djherbis/atime.v1 v1.0.0 // indirect
 	gopkg.in/djherbis/stream.v1 v1.3.0 // indirect
 	jaytaylor.com/html2text v0.0.0-20200220170450-61d9dc4d7195
