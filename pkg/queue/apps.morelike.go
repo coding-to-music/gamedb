@@ -53,7 +53,6 @@ func appMorelikeHandler(messages []*rabbit.Message) {
 		}
 
 		if len(relatedAppIDs) == 0 {
-			log.Warning("no similar apps", payload.ID)
 			message.Ack(false)
 			continue
 		}
