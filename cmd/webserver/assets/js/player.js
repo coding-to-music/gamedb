@@ -228,7 +228,7 @@ if ($playerPage.length > 0) {
                     "targets": 4,
                     "render": function (data, type, row) {
                         if (row[8]) {
-                            return '<a href="' + row[8] + '" target="_blank" rel="nofollow"><i class="fas fa-link"></i></a>';
+                            return '<a href="' + row[8] + '" target="_blank" rel="noopener"><i class="fas fa-link"></i></a>';
                         }
                         return '';
                     },
@@ -287,7 +287,7 @@ if ($playerPage.length > 0) {
                     "targets": 3,
                     "render": function (data, type, row) {
                         if (row[8]) {
-                            return '<a href="' + row[8] + '" target="_blank" rel="nofollow"><i class="fas fa-link"></i></a>';
+                            return '<a href="' + row[8] + '" target="_blank" rel="noopener"><i class="fas fa-link"></i></a>';
                         }
                         return '';
                     },

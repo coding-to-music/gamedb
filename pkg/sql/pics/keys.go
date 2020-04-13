@@ -256,7 +256,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 				blank = " target=\"_blank\" rel=\"noopener\""
 			}
 
-			return template.HTML("<a href=\"" + item.Link + "\"" + blank + " rel=\"nofollow\">" + val + "</a>")
+			return template.HTML("<a href=\"" + item.Link + "\"" + blank + " rel=\"noopener\">" + val + "</a>")
 
 		case picsTypeImage:
 
@@ -328,7 +328,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 
 			if item.Link != "" {
 				for k, id := range idSlice {
-					idSlice[k] = "<a href=\"" + strings.ReplaceAll(item.Link, "$val$", id) + "\" rel=\"nofollow\">" + id + "</a>"
+					idSlice[k] = "<a href=\"" + strings.ReplaceAll(item.Link, "$val$", id) + "\" rel=\"noopener\">" + id + "</a>"
 				}
 			}
 
@@ -361,7 +361,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 
 			if item.Link != "" {
 				for k, id := range idSlice {
-					idSlice[k] = "<a href=\"" + strings.ReplaceAll(item.Link, "$val$", id) + "\" rel=\"nofollow\">" + id + "</a>"
+					idSlice[k] = "<a href=\"" + strings.ReplaceAll(item.Link, "$val$", id) + "\" rel=\"noopener\">" + id + "</a>"
 				}
 			}
 
@@ -404,7 +404,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 
 			if item.Link != "" {
 				for k, id := range idSlice {
-					idSlice[k] = "<a href=\"" + strings.ReplaceAll(item.Link, "$val$", id) + "\" rel=\"nofollow\">" + id + "</a>"
+					idSlice[k] = "<a href=\"" + strings.ReplaceAll(item.Link, "$val$", id) + "\" rel=\"noopener\">" + id + "</a>"
 				}
 			}
 
@@ -426,7 +426,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 
 			if item.Link != "" {
 				for k, id := range idSlice {
-					idSlice[k] = "<a href=\"" + strings.ReplaceAll(item.Link, "$val$", id) + "\" rel=\"nofollow\">" + id + "</a>"
+					idSlice[k] = "<a href=\"" + strings.ReplaceAll(item.Link, "$val$", id) + "\" rel=\"noopener\">" + id + "</a>"
 				}
 			}
 
@@ -552,7 +552,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 						for _, v := range items {
 							id := strconv.Itoa(v)
 							link := strings.ReplaceAll(item.Link, "$val$", id)
-							itemStrings = append(itemStrings, "<a href=\""+link+"\" rel=\"nofollow\">"+id+"</a>")
+							itemStrings = append(itemStrings, "<a href=\""+link+"\" rel=\"noopener\">"+id+"</a>")
 						}
 					}
 

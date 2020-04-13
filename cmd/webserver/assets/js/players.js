@@ -180,7 +180,7 @@ if ($('#players-page').length > 0) {
                 "targets": 12,
                 "render": function (data, type, row) {
                     if (row[14]) {
-                        return '<a href="' + row[14] + '" target="_blank" rel="nofollow"><i class="fas fa-link"></i></a>';
+                        return '<a href="' + row[14] + '" target="_blank" rel="noopener"><i class="fas fa-link"></i></a>';
                     }
                     return '';
                 },

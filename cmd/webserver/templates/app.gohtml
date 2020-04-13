@@ -1052,8 +1052,8 @@
                                                             <div class="json-hover">{{ .EncryptedManifests }}</div>
                                                         </td>
                                                         <td>{{ bytes .MaxSize }}</td>
-                                                        <td>{{ if ne .App 0 }}<a rel="nofollow" href="/apps/{{ .App }}">{{ .App }}</a>{{ end }}</td>
-                                                        <td>{{ if ne .DLCApp 0 }}<a rel="nofollow" href="/apps/{{ .DLCApp }}">{{ .DLCApp }}</a>{{ end }}</td>
+                                                        <td>{{ if ne .App 0 }}<a href="/apps/{{ .App }}">{{ .App }}</a>{{ end }}</td>
+                                                        <td>{{ if ne .DLCApp 0 }}<a href="/apps/{{ .DLCApp }}">{{ .DLCApp }}</a>{{ end }}</td>
                                                         <td>{{ if .SystemDefined }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
                                                         <td>{{ if .Optional }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
                                                         <td>{{ if .SharedInstall }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>

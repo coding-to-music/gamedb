@@ -235,7 +235,7 @@ if ($appPage.length > 0) {
                     "targets": 3,
                     "render": function (data, type, row) {
                         if (row[28]) {
-                            return '<a href="' + row[28] + '" data-src="/assets/img/no-app-image-square.jpg" target="_blank" rel="nofollow" class="stop-prop"><i class="fas fa-link"></i></a>';
+                            return '<a href="' + row[28] + '" data-src="/assets/img/no-app-image-square.jpg" target="_blank" rel="noopener" class="stop-prop"><i class="fas fa-link"></i></a>';
                         }
                         return '';
                     },

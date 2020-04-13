@@ -83,7 +83,7 @@ if ($homePage.length > 0) {
                                 {
                                     '<>': 'td', 'html': [
                                         {
-                                            '<>': 'a', 'href': '${store_link}', 'target': '_blank', 'rel': 'nofollow', 'html': [
+                                            '<>': 'a', 'href': '${store_link}', 'target': '_blank', 'rel': 'noopener', 'html': [
                                                 {
                                                     '<>': 'i', 'class': 'fas fa-link',
                                                 }
