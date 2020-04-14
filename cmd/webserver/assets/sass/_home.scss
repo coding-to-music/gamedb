@@ -1,3 +1,13 @@
+body.dark {
+    #home-page {
+        #panels {
+            > a {
+                color: #e9ecef;
+            }
+        }
+    }
+}
+
 #home-page {
 
     #hero {
@@ -19,10 +29,6 @@
     #panels {
         > a {
             color: #212529;
-
-            .card {
-                //background-color: #28a745;
-            }
         }
     }
 
