@@ -64,6 +64,31 @@ var (
 		rabbit.Producer: {},
 	}
 
+	AllProducerDefinitions = []QueueDefinition{
+		{name: QueueAppPlayers},
+		{name: QueueApps},
+		{name: QueueAppsDaily},
+		{name: QueueAppsNews},
+		{name: QueueAppsAchievements},
+		{name: QueueAppsSameowners},
+		{name: QueueAppsReviews},
+		{name: QueueAppsMorelike},
+		{name: QueueAppsTwitch},
+		{name: QueueAppsSteamspy},
+		{name: QueueBundles},
+		{name: QueueChanges},
+		{name: QueueGroups},
+		{name: QueuePackages},
+		{name: QueuePackagesPrices},
+		{name: QueuePlayers},
+		{name: QueuePlayerRanks},
+		{name: QueueDelay},
+		{name: QueueSteam},
+		{name: QueueFailed},
+		{name: QueueTest},
+		{name: QueueWebsockets},
+	}
+
 	ConsumersDefinitions = []QueueDefinition{
 		{name: QueueAppPlayers, consumer: appPlayersHandler},
 		{name: QueueApps, consumer: appHandler},

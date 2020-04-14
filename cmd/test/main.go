@@ -10,6 +10,6 @@ func main() {
 
 	config.SetVersion("test")
 	log.Initialise([]log.LogName{log.LogNameTest})
-	queue.Init(queue.QueueSteamDefinitions)
+	queue.Init(queue.AllProducerDefinitions)
 
 }
