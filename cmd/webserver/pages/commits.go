@@ -7,7 +7,6 @@ import (
 
 	"github.com/cenkalti/backoff/v4"
 	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
-	githubHelper "github.com/gamedb/gamedb/cmd/webserver/helpers/github"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
@@ -44,7 +43,7 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := datatable.NewDataTableQuery(r, true)
 
-	client, ctx := githubHelper.GetGithub()
+	client, ctx := helpers.GetGithub()
 
 	commits, _, err := client.Repositories.ListCommits(ctx, "gamedb", "website", &github.CommitsListOptions{
 		ListOptions: github.ListOptions{
@@ -87,7 +86,7 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 func getTotalCommits() (total int) {
 
-	client, ctx := githubHelper.GetGithub()
+	client, ctx := helpers.GetGithub()
 
 	var item = memcache.MemcacheTotalCommits
 
