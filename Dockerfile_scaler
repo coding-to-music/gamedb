@@ -1,0 +1,23 @@
+# Build image
+FROM golang:1.13-alpine AS build-env
+WORKDIR /root/
+
+# Download mods here to be cached
+COPY go.mod ./
+COPY go.sum ./
+RUN go mod download
+
+COPY ./ ./
+RUN apk update && apk add git
+RUN cd ./cmd/scaler && go mod tidy && CGO_ENABLED=0 GOOS=linux go build -a -ldflags "-X main.version=`git rev-parse --verify HEAD`"
+
+# Runtime image
+FROM alpine:3.11 AS runtime-env
+WORKDIR /root/
+COPY --from=build-env /root/autoscaler ./
+COPY ./list.gohtml ./list.gohtml
+COPY ./cmd/webserver/health-check.sh ./health-check.sh
+RUN ["chmod", "+x", "health-check.sh"]
+RUN apk update && apk add ca-certificates curl bash
+CMD ["./autoscaler"]
+HEALTHCHECK --interval=60s --timeout=10s --start-period=30s --retries=2 CMD ./health-check.sh

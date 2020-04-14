@@ -27,6 +27,8 @@ const (
 	LogNameSteam     LogName = "binary-steam"
 	LogNameWebserver LogName = "binary-webserver"
 	LogNameTest      LogName = "binary-test"
+	LogNameScaler    LogName = "binary-scaler"
+
 	//
 	LogNameMongo         LogName = "mongo"
 	LogNameRabbit        LogName = "rabbit"

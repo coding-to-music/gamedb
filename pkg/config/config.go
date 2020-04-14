@@ -23,6 +23,12 @@ type BaseConfig struct {
 	AdminEmail   ConfigItem
 	AdminSteamID ConfigItem
 
+	// Digital Ocean (Auto Scaler)
+	DigitalOceanAccessToken    ConfigItem
+	DigitalOceanProjectID      ConfigItem
+	DigitalOceanKeyID          ConfigItem
+	DigitalOceanKeyFingerprint ConfigItem
+
 	// Discord
 	DiscordClientID      ConfigItem
 	DiscordClientSescret ConfigItem
@@ -46,6 +52,11 @@ type BaseConfig struct {
 
 	GoogleOauthClientID     ConfigItem
 	GoogleOauthClientSecret ConfigItem
+
+	// Hetzner (Auto Scaler)
+	HetznerSSHKeyID  ConfigItem
+	HetznerNetworkID ConfigItem
+	HetznerAPIToken  ConfigItem
 
 	// Influx
 	InfluxURL      ConfigItem
@@ -143,6 +154,12 @@ func init() {
 	Config.AdminEmail.Set("ADMIN_EMAIL")
 	Config.AdminSteamID.Set("ADMIN_STEAM_ID")
 
+	// Digital Ocean (Auto Scaler)
+	Config.DigitalOceanAccessToken.Set("DO_ACCESS_TOKEN")
+	Config.DigitalOceanProjectID.Set("DO_PROJECT_ID")
+	Config.DigitalOceanKeyID.Set("DO_KEY_ID")
+	Config.DigitalOceanKeyFingerprint.Set("DO_KEY_FINGERPRINT")
+
 	// Discord
 	Config.DiscordClientID.Set("DISCORD_CLIENT_ID")
 	Config.DiscordClientSescret.Set("DISCORD_SECRET")
@@ -166,6 +183,11 @@ func init() {
 
 	Config.GoogleOauthClientID.Set("GOOGLE_OAUTH_CLIENT_ID")
 	Config.GoogleOauthClientSecret.Set("GOOGLE_OAUTH_CLIENT_SECRET")
+
+	// Hetzner
+	Config.HetznerSSHKeyID.Set("HETZNER_SSH_KEY_ID")
+	Config.HetznerNetworkID.Set("HETZNER_NETWORK_ID")
+	Config.HetznerAPIToken.Set("HETZNER_API_TOKEN")
 
 	// Influx
 	Config.InfluxURL.Set("INFLUX_URL")

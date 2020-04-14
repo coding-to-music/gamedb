@@ -1,0 +1,19 @@
+schema:
+  - name: Scaler
+    path: .
+    commands:
+      install:
+        status: true
+      run:
+        status: true
+      build:
+        status: false
+    watcher:
+      paths:
+        - ../../
+      extensions:
+        - go
+      ignored_paths:
+        - ../../.git
+        - ../../node_modules
+        - ../../vendor
