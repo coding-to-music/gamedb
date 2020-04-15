@@ -69,7 +69,6 @@ func (h Hetzner) CreateConsumer() (c Consumer, err error) {
 		ServerType: &hcloud.ServerType{Name: "cx11"},
 		Image:      &hcloud.Image{Name: "debian-10"},
 		SSHKeys:    []*hcloud.SSHKey{{ID: config.Config.HetznerSSHKeyID.GetInt()}},
-		Location:   &hcloud.Location{Name: "nbg1"},
 		Datacenter: &hcloud.Datacenter{Name: "nbg1-dc3"},
 		UserData:   string(b),
 		Labels:     map[string]string{ConsumerTag: ""},
