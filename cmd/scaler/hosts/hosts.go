@@ -15,7 +15,7 @@ const (
 	hostVU      = "vultr"
 	hostHetzner = "hetzner"
 
-	ConsumerTag = "gamedb-consumer"
+	ConsumerTag = "consumer"
 )
 
 type Host interface {
