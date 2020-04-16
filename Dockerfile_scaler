@@ -15,8 +15,8 @@ RUN cd ./cmd/scaler && go mod tidy && CGO_ENABLED=0 GOOS=linux go build -a -ldfl
 FROM alpine:3.11 AS runtime-env
 WORKDIR /root/
 COPY --from=build-env /root/cmd/scaler/scaler ./
-COPY ./list.gohtml ./list.gohtml
-COPY ./cmd/webserver/health-check.sh ./health-check.sh
+COPY ./cmd/scaler/list.gohtml ./list.gohtml
+COPY ./cmd/scaler/health-check.sh ./health-check.sh
 RUN ["chmod", "+x", "health-check.sh"]
 RUN apk update && apk add ca-certificates curl bash
 CMD ["./scaler"]
