@@ -339,12 +339,18 @@ func (t *GlobalTemplate) setRandomBackground(title bool, link bool) {
 		431960, // Wallpaper Engine
 	}
 
+	whitelist := []mongo.App{
+		{ID: 257420, Name: "Serious Sam 4", Background: "https://steamcdn-a.akamaihd.net/steam/apps/257420/library_hero.jpg"},
+	}
+
 	var filteredApps []mongo.App
 	for _, app := range popularApps {
 		if app.Background != "" && !helpers.SliceHasInt(blacklist, app.ID) {
 			filteredApps = append(filteredApps, app)
 		}
 	}
+
+	filteredApps = append(filteredApps, whitelist...)
 
 	if len(filteredApps) > 0 {
 		t.setBackground(filteredApps[rand.Intn(len(filteredApps))], title, link)
