@@ -58,6 +58,9 @@ if ($('#packages-page').length > 0) {
                 "render": function (data, type, row) {
                     return row[11];
                 },
+                "createdCell": function (td, cellData, rowData, row, col) {
+                    $(td).attr('nowrap', 'nowrap');
+                },
                 "orderable": false,
             },
             // Updated Time
