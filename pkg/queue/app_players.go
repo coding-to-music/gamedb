@@ -221,30 +221,7 @@ func getAppTwitchStreamers(twitchID int) (viewers int, err error) {
 
 func getAppOnlinePlayers(appID int) (count int, err error) {
 
-	// var regexIntsOnly = regexp.MustCompile("[^0-9]+")
-	//
-	// c := colly.NewCollector(
-	//   colly.AllowURLRevisit()
-	// )
-	// c.SetRequestTimeout(time.Second * 5)
-	//
-	// // ID
-	// c.OnHTML(".apphub_NumInApp", func(e *colly.HTMLElement) {
-	// 	e.Text = regexIntsOnly.ReplaceAllString(e.Text, "")
-	// 	log.Info(e.Text)
-	// })
-	//
-	// //
-	// c.OnError(func(r *colly.Response, err error) {
-	// 	helpers.LogSteamError(err)
-	// })
-	//
-	// err2 := c.Visit("https://steamcommunity.com/app/440")
-	// log.Err(err2)
-
-	client := steam.GetSteamUnlimited()
-
-	count, b, err := client.GetNumberOfCurrentPlayers(appID)
+	count, b, err := steam.GetSteamUnlimited().GetNumberOfCurrentPlayers(appID)
 	err = steam.AllowSteamCodes(err, b, []int{404})
 	return count, err
 }
