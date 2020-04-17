@@ -172,6 +172,8 @@ func (ph packetHandler) HandlePacket(packet *protocol.Packet) {
 		ph.handleProfileInfo(packet)
 	case steamlang.EMsg_ClientMarketingMessageUpdate2:
 		// log.Debug(packet.String())
+	case steamlang.EMsg_ClientRequestFreeLicenseResponse:
+		log.Debug(packet.String())
 	default:
 		// log.Info(packet.String())
 	}
