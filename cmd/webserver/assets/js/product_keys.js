@@ -31,7 +31,7 @@ if ($('#product-keys-page').length > 0) {
     const searchFields = [
         $('#key'),
         $('#value'),
-        $('input[name=type]:checked'),
+        $('input[name=type]'),
     ];
 
     $('table.table').gdbTable({tableOptions: options, searchFields: searchFields});
