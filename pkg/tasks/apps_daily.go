@@ -25,15 +25,27 @@ func (c AppsDaily) Cron() string {
 
 func (c AppsDaily) work() (err error) {
 
-	// apps, err := mongo.GetApps(0, 0, bson.D{{"_id", 1}}, nil, bson.M{"_id": 1, "name": 1}, nil)
-	apps, err := mongo.GetApps(0, 50, bson.D{{"player_peak_week", -1}}, nil, bson.M{"_id": 1, "name": 1}, nil)
+	topApps, err := mongo.GetApps(0, 50, bson.D{{"player_peak_week", -1}}, nil, bson.M{"_id": 1, "name": 1}, nil)
+	if err != nil {
+		return err
+	}
+
+	apps, err := mongo.GetApps(0, 0, bson.D{{"_id", 1}}, nil, bson.M{"_id": 1, "name": 1}, nil)
 	if err != nil {
 		return err
 	}
 
 	for _, app := range apps {
 
-		err = queue.ProduceAppsDaily(app.ID, app.Name)
+		var isTopApp = false
+		for _, topApp := range topApps {
+			if app.ID == topApp.ID {
+				isTopApp = true
+				break
+			}
+		}
+
+		err = queue.ProduceAppsDaily(app.ID, app.Name, isTopApp)
 		log.Err(err)
 	}
 
