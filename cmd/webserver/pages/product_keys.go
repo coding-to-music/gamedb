@@ -25,10 +25,15 @@ func productKeysHandler(w http.ResponseWriter, r *http.Request) {
 
 	q := r.URL.Query()
 
+	productType := q.Get("type")
+	if productType != "packages" {
+		productType = "apps"
+	}
+
 	// Template
 	t := productKeysTemplate{}
 	t.fill(w, r, "PICS Keys", "Search PICS keys")
-	t.Type = q.Get("type")
+	t.Type = productType
 	t.Key = q.Get("key")
 	t.Value = q.Get("value")
 
