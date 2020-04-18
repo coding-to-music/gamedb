@@ -2,6 +2,8 @@ package hosts
 
 import (
 	"math"
+	"sort"
+	"strings"
 	"time"
 
 	"github.com/Jleagle/go-durationfmt"
@@ -41,6 +43,11 @@ type Consumer struct {
 	Tags      []string
 	CreatedAt int64
 	Locked    bool
+}
+
+func (c Consumer) GetTags() string {
+	sort.Strings(c.Tags)
+	return strings.Join(c.Tags, ", ")
 }
 
 func (c Consumer) CanDelete() bool {

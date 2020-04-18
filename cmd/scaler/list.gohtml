@@ -39,7 +39,7 @@
                     {{/*                    <td scope="row">{{.Region.Name}}</td>*/}}
                     <td>{{ .IP }}</td>
                     <td>{{ .LeftOfHour }}</td>
-                    <td>{{ join .Tags }}</td>
+                    <td>{{ .GetTags }}</td>
                     <td>
                         {{ if .CanDelete }}
                             <a class="btn btn-danger btn-sm" href="/delete/{{ .ID }}" role="button">X</a>
