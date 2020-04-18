@@ -15,7 +15,7 @@ const (
 	hostVU      = "vultr"
 	hostHetzner = "hetzner"
 
-	ConsumerTag = "consumer"
+	ConsumerTag = "scaler"
 )
 
 type Host interface {

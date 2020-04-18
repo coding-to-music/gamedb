@@ -71,7 +71,7 @@ func (h Hetzner) CreateConsumer() (c Consumer, err error) {
 		SSHKeys:    []*hcloud.SSHKey{{ID: config.Config.HetznerSSHKeyID.GetInt()}},
 		Datacenter: &hcloud.Datacenter{Name: "nbg1-dc3"},
 		UserData:   string(b),
-		Labels:     map[string]string{ConsumerTag: ""},
+		Labels:     map[string]string{"consumer": "", ConsumerTag: ""},
 		Networks:   []*hcloud.Network{{ID: config.Config.HetznerNetworkID.GetInt()}},
 	})
 
