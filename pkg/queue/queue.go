@@ -92,7 +92,7 @@ var (
 	ConsumersDefinitions = []QueueDefinition{
 		{name: QueueAppPlayers, consumer: appPlayersHandler},
 		{name: QueueApps, consumer: appHandler},
-		{name: QueueAppsDaily, consumer: appDailyHandler, batchSize: 10, prefetchSize: 100},
+		{name: QueueAppsDaily, consumer: appDailyHandler},
 		{name: QueueAppsNews, consumer: appNewsHandler},
 		{name: QueueAppsAchievements, consumer: appAchievementsHandler},
 		{name: QueueAppsSameowners, consumer: appSameownersHandler},
@@ -297,8 +297,8 @@ func ProduceApp(payload AppMessage) (err error) {
 	return err
 }
 
-func ProduceAppsDaily(id int, name string) (err error) {
-	return produce(QueueAppsDaily, AppDailyMessage{ID: id, Name: name})
+func ProduceAppsDaily(id int, name string, topApp bool) (err error) {
+	return produce(QueueAppsDaily, AppDailyMessage{ID: id, Name: name, TopApp: topApp})
 }
 
 func ProduceAppPlayers(payload AppPlayerMessage) (err error) {
