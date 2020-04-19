@@ -37,7 +37,7 @@
                             <th scope="col">Avg Score</th>
                         </tr>
                         </thead>
-                        <tbody class="tags-list">
+                        <tbody>
                         {{ range $key, $value := .Tags }}
                             <tr data-link="{{.GetPath}}">
                                 <td><i class="fas fa-tag"></i> {{ .GetName }}</td>

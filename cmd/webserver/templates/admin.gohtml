@@ -142,7 +142,7 @@
                                     <th scope="col">Delete All Before</th>
                                 </tr>
                                 </thead>
-                                <tbody class="tags-list">
+                                <tbody>
                                 {{ range $key, $value := .BinLogs }}
                                     <tr>
                                         <td>{{ .Name }}</td>
@@ -171,7 +171,7 @@
                                     <th scope="col">Info</th>
                                 </tr>
                                 </thead>
-                                <tbody class="tags-list">
+                                <tbody>
                                 {{ range $key, $value := .Queries }}
                                     <tr>
                                         <td>{{ .ID }}</td>
@@ -198,7 +198,7 @@
                                     <th scope="col">Count</th>
                                 </tr>
                                 </thead>
-                                <tbody class="tags-list">
+                                <tbody>
                                 {{ range $key, $value := .Websockets }}
                                     <tr>
                                         <td>{{ .GetName }}</td>
