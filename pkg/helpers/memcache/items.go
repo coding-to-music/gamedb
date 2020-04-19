@@ -15,7 +15,7 @@ type Item struct {
 }
 
 var (
-	// SQL Counts
+	// Counts
 	MemcacheBundlesCount = Item{Key: "bundles-count", Expiration: 86400}
 	MemcacheMongoCount   = func(key string) Item { return Item{Key: "mongo-count-" + key, Expiration: 60 * 60} }
 
