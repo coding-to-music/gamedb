@@ -9,7 +9,7 @@ require (
 	github.com/Jleagle/go-durationfmt v0.0.0-20190307132420-e57bfad84057
 	github.com/Jleagle/influxql v0.0.0-20190502115937-4ac053a1ed8e
 	github.com/Jleagle/patreon-go v0.0.0-20200117215733-2b8b00d4eab0
-	github.com/Jleagle/rabbit-go v0.0.0-20200407121717-afc22ea34605
+	github.com/Jleagle/rabbit-go v0.0.0-20200417213422-893718dcda98
 	github.com/Jleagle/recaptcha-go v0.0.0-20200117124940-d00b2c62c076
 	github.com/Jleagle/session-go v0.0.0-20190515070633-3c8712426233
 	github.com/Jleagle/sitemap-go v0.0.0-20190405195207-2bdddbb3bd50
@@ -24,7 +24,7 @@ require (
 	github.com/badoux/checkmail v0.0.0-20181210160741-9661bd69e9ad
 	github.com/beefsack/go-rate v0.0.0-20180408011153-efa7637bb9b6 // indirect
 	github.com/buger/jsonparser v0.0.0-20200322175846-f7e751efca13 // indirect
-	github.com/bwmarrin/discordgo v0.20.2
+	github.com/bwmarrin/discordgo v0.20.3
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/cenkalti/backoff/v4 v4.0.2
 	github.com/deepmap/oapi-codegen v1.3.7
@@ -34,20 +34,20 @@ require (
 	github.com/didip/tollbooth v4.0.2+incompatible
 	github.com/didip/tollbooth/v5 v5.1.0
 	github.com/digitalocean/godo v1.34.0
-	github.com/djherbis/fscache v0.10.0
+	github.com/djherbis/fscache v0.10.1
 	github.com/dustin/go-humanize v1.0.0
 	github.com/friendsofgo/errors v0.9.2 // indirect
 	github.com/frustra/bbcode v0.0.0-20180807171629-48be21ce690c
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/getkin/kin-openapi v0.3.1
-	github.com/getsentry/sentry-go v0.5.1
-	github.com/go-chi/chi v4.1.0+incompatible
-	github.com/go-chi/cors v1.0.1
+	github.com/getsentry/sentry-go v0.6.0
+	github.com/go-chi/chi v4.1.1+incompatible
+	github.com/go-chi/cors v1.1.1
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/gobuffalo/packr/v2 v2.8.0
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/gocolly/colly v1.2.0
-	github.com/golang/protobuf v1.3.5
+	github.com/golang/protobuf v1.4.0
 	github.com/google/go-github/v28 v28.1.1
 	github.com/gorilla/securecookie v1.1.1
 	github.com/gorilla/sessions v1.2.0
@@ -103,16 +103,17 @@ require (
 	github.com/xdg/stringprep v1.0.0 // indirect
 	github.com/yohcop/openid-go v1.0.0
 	go.mongodb.org/mongo-driver v1.3.2
-	golang.org/x/crypto v0.0.0-20200406173513-056763e48d71
+	golang.org/x/crypto v0.0.0-20200414173820-0848c9571904
 	golang.org/x/net v0.0.0-20200324143707-d3edc9973b7e // indirect
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
-	golang.org/x/sys v0.0.0-20200409092240-59c9f1ba88fa // indirect
+	golang.org/x/sys v0.0.0-20200413165638-669c56c373c4 // indirect
 	golang.org/x/text v0.3.2
+	golang.org/x/time v0.0.0-20200416051211-89c76fbcd5d1 // indirect
 	google.golang.org/api v0.21.0
-	google.golang.org/genproto v0.0.0-20200410110633-0848e9f44c36 // indirect
+	google.golang.org/genproto v0.0.0-20200417142217-fb6d0575620b // indirect
 	google.golang.org/grpc v1.28.1
 	gopkg.in/djherbis/atime.v1 v1.0.0 // indirect
-	gopkg.in/djherbis/stream.v1 v1.3.0 // indirect
+	gopkg.in/djherbis/stream.v1 v1.3.1 // indirect
 	gopkg.in/ini.v1 v1.55.0 // indirect
-	jaytaylor.com/html2text v0.0.0-20200220170450-61d9dc4d7195
+	jaytaylor.com/html2text v0.0.0-20200412013138-3577fbdbcff7
 )
