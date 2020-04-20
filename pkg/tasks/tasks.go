@@ -23,6 +23,7 @@ const ( //                        min hour
 	CronTimeQueuePlayerGroups   = "0 0"
 	CronTimeClearUpcomingCache  = "0 0"
 	CronTimePlayerRanks         = "0 0"
+	CronTimeScanProductQueues   = "0 1"
 	CronTimeGenres              = "0 3"
 	CronTimeTags                = "0 4"
 	CronTimePublishers          = "0 5"
@@ -49,6 +50,7 @@ var (
 		Publishers{},
 		QueueAppGroups{},
 		QueuePlayerGroups{},
+		ScanProductKeys{},
 		SetBadgeCache{},
 		SteamClientPlayers{},
 		Tags{},
