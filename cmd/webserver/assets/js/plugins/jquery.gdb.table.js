@@ -305,7 +305,12 @@
 
                         $field.on('change search', function (e) {
 
-                            const value = $field.val();
+                            let value;
+                            if ($field.attr('type') === 'radio') {
+                                value = $field.filter(':checked').val();
+                            } else {
+                                value = $field.val();
+                            }
 
                             if (name) {
 
@@ -331,7 +336,12 @@
 
                     $field.on('keyup', function (e) {
 
-                        const value = $field.val();
+                        let value;
+                        if ($field.attr('type') === 'radio') {
+                            value = $field.filter(':checked').val();
+                        } else {
+                            value = $field.val();
+                        }
 
                         if (name) {
 
@@ -373,6 +383,10 @@
 
             return $field[0].noUiSlider.get();
 
+        } else if ($field.attr('type') === 'radio') {
+
+            return $field.filter(':checked').val();
+
         } else {
 
             return $field.val();
@@ -384,6 +398,10 @@
         if ($field.hasClass('noUi-target')) {
 
             $field[0].noUiSlider.set(value);
+
+        } else if ($field.attr('type') === 'radio') {
+
+            $field.filter('[value' + value + ']').prop('checked', true);
 
         } else {
 
