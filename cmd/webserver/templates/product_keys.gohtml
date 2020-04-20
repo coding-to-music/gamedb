@@ -4,74 +4,171 @@
     <div class="container" id="product-keys-page">
 
         <div class="jumbotron">
-            <h1><i class="fas fa-key"></i> Product Keys</h1>
-            <p class="lead">{{ .Description }}</p>
+            <div class="row">
+                <div class="col-sm-12 col-lg-6">
+                    <h1><i class="fas fa-key"></i> Product Keys</h1>
+                    <p class="lead">{{ .Description }}</p>
+                </div>
+                <div class="col-sm-12 col-lg-6">
+
+                    <div class="input-group input-group-lg mt-1 mb-2">
+                        <label for="table-search" class="d-none"></label>
+                        <input class="form-control" type="search" placeholder="Search for a Key" id="table-search" name="table-search" autofocus>
+                        <div class="input-group-append">
+                            <input type="submit" value="Search" class="input-group-text">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
         </div>
 
         {{ template "_flashes" . }}
 
         <div class="card">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#apps" role="tab">Apps</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#packages" role="tab">Packages</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#search" role="tab">Search</a>
+                    </li>
+                </ul>
+            </div>
             <div class="card-body">
 
-                <form method="get" action="/product-keys">
+                <div class="tab-content">
+                    <div class="tab-pane show active" id="apps" role="tabpanel">
 
-                    <fieldset class="form-group">
-                        <div class="row">
-                            <label class="col-form-label col-sm-2 pt-0">Product Type</label>
-                            <div class="col-sm-10">
-                                <div class="form-check">
-                                    <label class="form-check-label">
-                                        <input class="form-check-input" type="radio" name="type" value="apps" {{ if eq .Type "apps" }}checked{{ end }}>
-                                        App
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <label class="form-check-label">
-                                        <input class="form-check-input" type="radio" name="type" value="packages" {{ if eq .Type "packages" }}checked{{ end }}>
-                                        Package
-                                    </label>
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped table-counts mb-0" data-order='[[2, "desc"]]' id="apps-table" data-limit="1000">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th scope="col">Field</th>
+                                    <th scope="col">Tag</th>
+                                    <th scope="col">Apps</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {{ range $key, $value := .Keys }}
+                                    {{if eq .Type "app" }}
+                                        <tr class="cursor-pointer" data-key="{{ .Key }}" data-type="app">
+                                            <td>{{ title .Field }}</td>
+                                            <td>{{ .Key }}</td>
+                                            <td>{{ comma .Count }}</td>
+                                        </tr>
+                                    {{ end }}
+                                {{ end }}
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                    <div class="tab-pane" id="packages" role="tabpanel">
+
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped table-counts mb-0" data-order='[[2, "desc"]]' id="packages-table" data-limit="1000">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th scope="col">Field</th>
+                                    <th scope="col">Key</th>
+                                    <th scope="col">Packages</th>
+                                </tr>
+                                </thead>
+                                <tbody class="tags-list">
+                                {{ range .Keys }}
+                                    {{if eq .Type "package" }}
+                                        <tr class="cursor-pointer" data-key="{{ .Key }}" data-type="package">
+                                            <td>{{ title .Field }}</td>
+                                            <td>{{ .Key }}</td>
+                                            <td>{{ comma .Count }}</td>
+                                        </tr>
+                                    {{ end }}
+                                {{ end }}
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                    <div class="tab-pane" id="search" role="tabpanel">
+
+                        <fieldset class="form-group">
+                            <div class="row">
+                                <label class="col-form-label col-sm-2 pt-0">Product Type</label>
+                                <div class="col-sm-10">
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input class="form-check-input" type="radio" name="type" value="apps" {{ if eq .Type "apps" }}checked{{ end }}>
+                                            App
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input class="form-check-input" type="radio" name="type" value="packages" {{ if eq .Type "packages" }}checked{{ end }}>
+                                            Package
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
+                        </fieldset>
+
+                        <div class="form-group row">
+                            <label for="key" class="col-sm-2 col-form-label">Key</label>
+                            <div class="col-sm-10">
+
+                                <select class="form-control" id="key" name="key">
+                                    <option></option>
+                                    <optgroup label="Common">
+                                        {{ range .Keys }}
+                                            {{if eq .Field "common" }}
+                                                <option value="{{ .Key }}">{{ .Key }}</option>
+                                            {{ end }}
+                                        {{ end }}
+                                    </optgroup>
+                                    <optgroup label="Extended">
+                                        {{ range .Keys }}
+                                            {{if eq .Field "extended" }}
+                                                <option value="{{ .Key }}">{{ .Key }}</option>
+                                            {{ end }}
+                                        {{ end }}
+                                    </optgroup>
+                                </select>
+
+                            </div>
                         </div>
-                    </fieldset>
 
-                    <div class="form-group row">
-                        <label for="key" class="col-sm-2 col-form-label">Key</label>
-                        <div class="col-sm-10">
-
-                            <select class="form-control" id="key" name="key">
-                                <option value="{{ .Key }}">{{ .Key }}</option>
-                            </select>
-
+                        <div class="form-group row">
+                            <label for="value" class="col-sm-2 col-form-label">Value</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="value" id="value" value="{{ .Value }}">
+                            </div>
                         </div>
+
+                        <div class="form-group row">
+                            <div class="col-sm-10">
+                                <button type="submit" class="btn btn-primary" aria-label="Search">Search</button>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped table-counts mb-0" data-path="/product-keys/product-keys.json" id="search-table">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th scope="col" nowrap="nowrap">Game</th>
+                                    <th scope="col" nowrap="nowrap">Value</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+
+                                </tbody>
+                            </table>
+                        </div>
+
                     </div>
-
-                    <div class="form-group row">
-                        <label for="value" class="col-sm-2 col-form-label">Value</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" name="value" id="value" value="{{ .Value }}">
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
-                        <div class="col-sm-10">
-                            <button type="submit" class="btn btn-primary" aria-label="Search">Search</button>
-                        </div>
-                    </div>
-                </form>
-
-                <div class="table-responsive">
-                    <table class="table table-hover table-striped table-counts mb-0" data-path="/product-keys/product-keys.json">
-                        <thead class="thead-light">
-                        <tr>
-                            <th scope="col" nowrap="nowrap">Game</th>
-                            <th scope="col" nowrap="nowrap">Value</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-
-                        </tbody>
-                    </table>
                 </div>
 
             </div>

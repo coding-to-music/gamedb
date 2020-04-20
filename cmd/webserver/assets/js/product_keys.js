@@ -1,6 +1,6 @@
 if ($('#product-keys-page').length > 0) {
 
-    const options = {
+    const searchOptions = {
         "order": [[0, 'asc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-app-id', data[0]);
@@ -28,11 +28,45 @@ if ($('#product-keys-page').length > 0) {
         ]
     };
 
-    const searchFields = [
-        $('#key'),
-        $('#value'),
-        $('input[name=type]'),
-    ];
+    const dt = $('#search-table').gdbTable({
+        tableOptions: searchOptions,
+        searchFields: [
+            $('#key'),
+            $('#value'),
+            $('input[name=type]'),
+        ],
+    });
 
-    $('table.table').gdbTable({tableOptions: options, searchFields: searchFields});
+    $('#search button').on('click', function (e) {
+        dt.draw();
+    })
+
+    const $tableSearch = $('#table-search');
+
+    $('#apps-table').gdbTable({
+        searchFields: [
+            $tableSearch,
+        ]
+    });
+
+    $('#packages-table').gdbTable({
+        searchFields: [
+            $tableSearch,
+        ]
+    });
+
+    //
+    $('#apps-table tbody tr').on('click', function (e) {
+
+        $('#key').val($(this).attr('data-key'));
+        $('input[name=type][value=apps]').prop("checked", true);
+        $('a.nav-link[href="#search"]').tab('show');
+    })
+
+    $('#packages-table tbody tr').on('click', function (e) {
+
+        $('#key').val($(this).attr('data-key'));
+        $('input[name=type][value=packages]').prop("checked", true);
+        $('a.nav-link[href="#search"]').tab('show');
+    })
 }

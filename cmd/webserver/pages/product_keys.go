@@ -11,6 +11,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func ProductKeysRouter() http.Handler {
@@ -30,17 +31,16 @@ func productKeysHandler(w http.ResponseWriter, r *http.Request) {
 		productType = "apps"
 	}
 
+	keys, err := sql.GetProductKeys()
+	log.Err(err)
+
 	// Template
 	t := productKeysTemplate{}
 	t.fill(w, r, "PICS Keys", "Search PICS keys")
 	t.Type = productType
 	t.Key = q.Get("key")
 	t.Value = q.Get("value")
-
-	// if t.Type != "app" && t.Type != "package" {
-	// 	returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid Type."})
-	// 	return
-	// }
+	t.Keys = keys
 
 	returnTemplate(w, r, "product_keys", t)
 }
@@ -50,70 +50,91 @@ type productKeysTemplate struct {
 	Key   string
 	Value string
 	Type  string
+	Keys  []sql.ProductKey
 }
 
-var keyRegex = regexp.MustCompile("[0-9a-z_]+") // To stop SQL injection
+var keyRegex = regexp.MustCompile("[0-9a-z_]+") // To stop injection
 
 func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := datatable.NewDataTableQuery(r, false)
 
 	//
-	var wg sync.WaitGroup
 	var productType = query.GetSearchString("type")
+	var value = query.GetSearchString("value")
+	var key = query.GetSearchString("key")
+	if key == "" || !keyRegex.MatchString(key) {
+		return
+	}
 
-	// Get products
-	var products []extendedRow
-	var recordsFiltered int64
+	var filter = bson.D{
+		{"extended." + key, bson.M{"$exists": true}},
+		{"extended." + key, value},
+	}
+
+	var wg sync.WaitGroup
+
+	var products []productKeyResult
 	wg.Add(1)
 	go func() {
 
 		defer wg.Done()
 
-		gorm, err := sql.GetMySQLClient()
+		var projection = bson.M{"_id": 1, "name": 1, "icon": 1, "extended." + key: 1}
+
+		if productType == "packages" {
+
+			packages, err := mongo.GetPackages(query.GetOffset64(), 100, bson.D{{"_id", 1}}, filter, projection, nil)
+			if err != nil {
+				log.Err(err)
+				return
+			}
+
+			for _, v := range packages {
+				products = append(products, productKeyResult{
+					ID:    v.ID,
+					Name:  v.GetName(),
+					Icon:  v.GetIcon(),
+					Value: "",
+				})
+			}
+
+		} else {
+
+			apps, err := mongo.GetApps(query.GetOffset64(), 100, bson.D{{"_id", 1}}, filter, projection, nil)
+			if err != nil {
+				log.Err(err)
+				return
+			}
+
+			for _, v := range apps {
+				products = append(products, productKeyResult{
+					ID:    v.ID,
+					Name:  v.GetName(),
+					Icon:  v.GetIcon(),
+					Value: "",
+				})
+			}
+		}
+	}()
+
+	var filteredCount int64
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+
+		if productType != "packages" {
+			filteredCount, err = mongo.CountDocuments(mongo.CollectionApps, filter, 0)
+		} else {
+			filteredCount, err = mongo.CountDocuments(mongo.CollectionApps, filter, 0)
+		}
+
 		if err != nil {
-			log.Err(err, r)
+			log.Err(err)
 			return
-		}
-
-		if productType == "app" {
-			gorm = gorm.Table("apps")
-		} else if productType == "package" {
-			gorm = gorm.Table("packages")
-		} else {
-			return
-		}
-
-		// Search
-		key := query.GetSearchString("key")
-		if key == "" || !keyRegex.MatchString(key) {
-			return
-		}
-		value := query.GetSearchString("value")
-
-		gorm = gorm.Select([]string{"id", "name", "icon", "extended->>'$." + key + "' as value"})
-
-		if value == "" {
-			gorm = gorm.Where("extended->>'$." + key + "' != ''")
-		} else {
-			gorm = gorm.Where("extended->>'$."+key+"' = ?", value)
-		}
-
-		// Count
-		gorm = gorm.Count(&recordsFiltered)
-		if gorm.Error != nil {
-			log.Err(gorm.Error, r)
-		}
-
-		// Order, offset, limit
-		gorm = gorm.Limit(100)
-		gorm = query.SetOrderOffsetGorm(gorm, nil, "")
-		gorm = gorm.Order("change_number_date desc")
-
-		// Get rows
-		gorm = gorm.Find(&products)
-		if gorm.Error != nil {
-			log.Err(gorm.Error, r)
 		}
 	}()
 
@@ -134,7 +155,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	var response = datatable.NewDataTablesResponse(r, query, count, recordsFiltered)
+	var response = datatable.NewDataTablesResponse(r, query, count, filteredCount)
 	for _, v := range products {
 		response.AddRow([]interface{}{
 			v.ID,
@@ -148,18 +169,18 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	returnJSON(w, r, response)
 }
 
-type extendedRow struct {
+type productKeyResult struct {
 	ID    int
 	Name  string
 	Icon  string
 	Value string
 }
 
-func (e extendedRow) GetIcon() string {
+func (e productKeyResult) GetIcon() string {
 	return helpers.GetAppIcon(e.ID, e.Icon)
 }
 
-func (e extendedRow) GetPath(productType string) string {
+func (e productKeyResult) GetPath(productType string) string {
 	if productType == "app" {
 		return helpers.GetAppPath(e.ID, e.Name)
 	}
