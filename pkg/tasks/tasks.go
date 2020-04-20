@@ -161,10 +161,6 @@ func GetTaskConfig(task TaskInterface) (config sql.Config, err error) {
 }
 
 //
-func statsLogger(tableName string, count int, total int, rowName string) {
-	log.Info("Updating " + tableName + " - " + strconv.Itoa(count) + " / " + strconv.Itoa(total) + ": " + rowName)
-}
-
 type TaskError struct {
 	Err  error
 	Okay bool

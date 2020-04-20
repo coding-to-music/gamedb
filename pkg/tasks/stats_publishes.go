@@ -134,8 +134,6 @@ func (c Publishers) work() (err error) {
 			wg.Wait()
 		}
 
-		statsLogger("publisher", count, len(newPublishers), v.name)
-
 		limit++
 		wg.Add(1)
 		go func(publisherID int, v *statsRow) {

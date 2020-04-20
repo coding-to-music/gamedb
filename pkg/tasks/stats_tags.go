@@ -126,8 +126,6 @@ func (c Tags) work() (err error) {
 			wg.Wait()
 		}
 
-		statsLogger("tag", count, len(newTags), v.name)
-
 		limit++
 		wg.Add(1)
 		go func(tagID int, v *statsRow) {

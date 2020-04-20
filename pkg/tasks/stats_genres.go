@@ -134,8 +134,6 @@ func (c Genres) work() (err error) {
 			wg.Wait()
 		}
 
-		statsLogger("genre", count, len(newGenres), v.name)
-
 		limit++
 		wg.Add(1)
 		go func(genreID int, v *statsRow) {

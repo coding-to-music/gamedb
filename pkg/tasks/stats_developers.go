@@ -133,8 +133,6 @@ func (c Developers) work() (err error) {
 			wg.Wait()
 		}
 
-		statsLogger("developer", count, len(newDevelopers), v.name)
-
 		limit++
 		wg.Add(1)
 		go func(developerInt int, v *statsRow) {
