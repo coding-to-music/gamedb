@@ -65,7 +65,7 @@ func addPackages() {
 			continue
 		}
 
-		if packageID < 191_459 {
+		if packageID < 236_400 {
 			continue
 		}
 
