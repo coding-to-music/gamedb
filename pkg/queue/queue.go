@@ -19,7 +19,8 @@ import (
 const (
 	QueueApps             rabbit.QueueName = "GDB_Apps"
 	QueueAppsAchievements rabbit.QueueName = "GDB_Apps.Achievements"
-	QueueAppsDaily        rabbit.QueueName = "GDB_Apps.Daily"
+	QueueAppsYoutube      rabbit.QueueName = "GDB_Apps.Youtube"
+	QueueAppsInflux       rabbit.QueueName = "GDB_Apps.Influx"
 	QueueAppsSameowners   rabbit.QueueName = "GDB_Apps.Sameowners"
 	QueueAppsNews         rabbit.QueueName = "GDB_Apps.News"
 	QueueAppsReviews      rabbit.QueueName = "GDB_Apps.Reviews"
@@ -67,7 +68,8 @@ var (
 	AllProducerDefinitions = []QueueDefinition{
 		{name: QueueAppPlayers},
 		{name: QueueApps},
-		{name: QueueAppsDaily},
+		{name: QueueAppsYoutube},
+		{name: QueueAppsInflux},
 		{name: QueueAppsNews},
 		{name: QueueAppsAchievements},
 		{name: QueueAppsSameowners},
@@ -92,7 +94,8 @@ var (
 	ConsumersDefinitions = []QueueDefinition{
 		{name: QueueAppPlayers, consumer: appPlayersHandler},
 		{name: QueueApps, consumer: appHandler},
-		{name: QueueAppsDaily, consumer: appDailyHandler},
+		{name: QueueAppsInflux, consumer: appInfluxHandler},
+		{name: QueueAppsYoutube, consumer: appYoutubeHandler},
 		{name: QueueAppsNews, consumer: appNewsHandler},
 		{name: QueueAppsAchievements, consumer: appAchievementsHandler},
 		{name: QueueAppsSameowners, consumer: appSameownersHandler},
@@ -116,7 +119,8 @@ var (
 
 	WebserverDefinitions = []QueueDefinition{
 		{name: QueueApps, consumer: nil},
-		{name: QueueAppsDaily, consumer: nil},
+		{name: QueueAppsYoutube, consumer: nil},
+		{name: QueueAppsInflux, consumer: nil},
 		{name: QueueAppPlayers, consumer: nil},
 		{name: QueueBundles, consumer: nil},
 		{name: QueueChanges, consumer: nil},
@@ -143,7 +147,8 @@ var (
 
 	QueueCronsDefinitions = []QueueDefinition{
 		{name: QueueApps, consumer: nil},
-		{name: QueueAppsDaily, consumer: nil},
+		{name: QueueAppsYoutube, consumer: nil},
+		{name: QueueAppsInflux, consumer: nil},
 		{name: QueueAppPlayers, consumer: nil},
 		{name: QueueGroups, consumer: nil},
 		{name: QueuePackages, consumer: nil},
@@ -297,8 +302,12 @@ func ProduceApp(payload AppMessage) (err error) {
 	return err
 }
 
-func ProduceAppsDaily(id int, name string, topApp bool) (err error) {
-	return produce(QueueAppsDaily, AppDailyMessage{ID: id, Name: name, TopApp: topApp})
+func ProduceAppsInflux(id int) (err error) {
+	return produce(QueueAppsInflux, AppInfluxMessage{ID: id})
+}
+
+func ProduceAppsYoutube(id int, name string) (err error) {
+	return produce(QueueAppsYoutube, AppYoutubeMessage{ID: id, Name: name})
 }
 
 func ProduceAppPlayers(payload AppPlayerMessage) (err error) {

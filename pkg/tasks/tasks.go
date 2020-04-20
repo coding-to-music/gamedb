@@ -18,7 +18,8 @@ const ( //                        min hour
 	CronTimeSteamClientPlayers  = "*/10 *"
 	CronTimeAppPlayers          = "*/10 *"
 	CronTimeAutoPlayerRefreshes = "0 */6"
-	CronTimeAppsDaily           = "0 0"
+	CronTimeAppsInflux          = "0 0"
+	CronTimeAppsYoutube         = "0 0"
 	CronTimeQueueAppGroups      = "0 0"
 	CronTimeQueuePlayerGroups   = "0 0"
 	CronTimeClearUpcomingCache  = "0 0"
@@ -37,12 +38,14 @@ var (
 	TaskRegister = map[string]TaskInterface{}
 	tasks        = []TaskInterface{
 		AppPlayers{},
-		AppsDaily{},
+		AppsYoutube{},
+		AppsInflux{},
 		AppQueueAll{},
 		AutoPlayerRefreshes{},
 		DevCodeRun{},
 		Developers{},
 		Genres{},
+		// Instagram{},
 		MemcacheClear{},
 		PackagesQueueAll{},
 		PlayerRanks{},
@@ -55,7 +58,6 @@ var (
 		SteamClientPlayers{},
 		Tags{},
 		UpdateRandomPlayers{},
-		// Instagram{},
 	}
 )
 
