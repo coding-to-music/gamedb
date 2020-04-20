@@ -109,6 +109,11 @@
                     ],
                 }
             });
+
+            const limit = $(element).attr('data-limit');
+            if (limit) {
+                options.tableOptions.pageLength = parseInt(limit);
+            }
         }
 
         // Update initialValues from search field
