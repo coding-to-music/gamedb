@@ -278,11 +278,12 @@
 
                                 parent.currentValues[name] = value;
 
-                                if (JSON.stringify(parent.initialValues[name]) === JSON.stringify(value)) {
-                                    deleteUrlParam(name);
-                                } else {
-                                    setUrlParam(name, value);
-                                }
+                                setUrlParam(name, value);
+                                // if (JSON.stringify(parent.initialValues[name]) === JSON.stringify(value)) {
+                                //     deleteUrlParam(name);
+                                // } else {
+                                //     setUrlParam(name, value);
+                                // }
                             }
 
                             if (typeof window.updateLabels == 'function') {
@@ -316,11 +317,12 @@
 
                                 parent.currentValues[name] = value;
 
-                                if (JSON.stringify(parent.initialValues[name]) === JSON.stringify(value)) {
-                                    deleteUrlParam(name);
-                                } else {
-                                    setUrlParam(name, value);
-                                }
+                                setUrlParam(name, value);
+                                // if (JSON.stringify(parent.initialValues[name]) === JSON.stringify(value)) {
+                                //     deleteUrlParam(name);
+                                // } else {
+                                //     setUrlParam(name, value);
+                                // }
                             }
 
                             dt.draw();
@@ -347,11 +349,12 @@
 
                             parent.currentValues[name] = value;
 
-                            if (JSON.stringify(parent.initialValues[name]) === JSON.stringify(value)) {
-                                deleteUrlParam(name);
-                            } else {
-                                setUrlParam(name, value);
-                            }
+                            setUrlParam(name, value);
+                            // if (JSON.stringify(parent.initialValues[name]) === JSON.stringify(value)) {
+                            //     deleteUrlParam(name);
+                            // } else {
+                            //     setUrlParam(name, value);
+                            // }
                         }
 
                         dt.search($(this).val());
