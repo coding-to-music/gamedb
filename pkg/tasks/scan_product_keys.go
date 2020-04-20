@@ -1,6 +1,8 @@
 package tasks
 
 import (
+	"strconv"
+
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -175,6 +177,7 @@ func (c ScanProductKeys) work() (err error) {
 		return err
 	}
 
+	var deleted int
 	for _, v := range all {
 
 		key := v.Type + "-" + v.Field + "-" + v.Key
@@ -190,9 +193,15 @@ func (c ScanProductKeys) work() (err error) {
 		if !found {
 			v.Count = 0
 			err = v.Save()
-			log.Err(err)
+			if err != nil {
+				log.Err(err)
+			} else {
+				deleted++
+			}
 		}
 	}
+
+	log.Info("Removing " + strconv.Itoa(deleted) + " keys")
 
 	return nil
 }
