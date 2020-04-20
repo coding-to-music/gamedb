@@ -48,7 +48,7 @@ func (h Hetzner) ListConsumers() (consumers []Consumer, err error) {
 func (h Hetzner) CreateConsumer() (c Consumer, err error) {
 
 	gh, ctx := helpers.GetGithub()
-	ghResponse, _, _, err := gh.Repositories.GetContents(ctx, "Jleagle", "infrastructure-gamedb", "scaler/cloud-config.yaml", nil)
+	ghResponse, _, _, err := gh.Repositories.GetContents(ctx, "gamedb", "infrastructure", "scaler/cloud-config.yaml", nil)
 	if err != nil {
 		return c, err
 	}
