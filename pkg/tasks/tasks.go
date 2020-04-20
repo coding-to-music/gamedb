@@ -119,6 +119,8 @@ func Bad(task TaskInterface) (b bool) {
 //
 func Run(task TaskInterface) {
 
+	log.Info("Cron started: " + task.ID())
+
 	// Send start websocket
 	wsPayload := queue.AdminPayload{TaskID: task.ID(), Action: "started"}
 	err := queue.ProduceWebsocket(wsPayload, websockets.PageAdmin)
@@ -139,12 +141,18 @@ func Run(task TaskInterface) {
 
 		// Save config row
 		err = sql.SetConfig(sql.ConfigID("task-"+task.ID()), strconv.FormatInt(time.Now().Unix(), 10))
-		log.Err(err)
+		if err != nil {
+			log.Err(err)
+		}
 
 		// Send end websocket
 		wsPayload = queue.AdminPayload{TaskID: task.ID(), Action: "finished", Time: Next(task).Unix()}
 		err = queue.ProduceWebsocket(wsPayload, websockets.PageAdmin)
-		log.Err(err)
+		if err != nil {
+			log.Err(err)
+		}
+
+		log.Info("Cron finished: " + task.ID())
 	}
 }
 
