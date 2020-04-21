@@ -338,9 +338,7 @@ func GetRandomRows(collection collection, count int, filter bson.D, projection b
 		return cur, ctx, err
 	}
 
-	pipeline := mongo.Pipeline{
-		{{Key: "$sample", Value: bson.D{{Key: "size", Value: count}}}},
-	}
+	pipeline := mongo.Pipeline{}
 
 	if len(filter) > 0 {
 		pipeline = append(pipeline, bson.D{{"$match", filter}})
@@ -350,6 +348,10 @@ func GetRandomRows(collection collection, count int, filter bson.D, projection b
 		pipeline = append(pipeline, bson.D{{"$project", projection}})
 	}
 
+	// Must be last
+	pipeline = append(pipeline, bson.D{{"$sample", bson.D{{Key: "size", Value: count}}}})
+
+	//
 	c, err := client.Database(MongoDatabase, options.Database()).Collection(collection.String()).Aggregate(ctx, pipeline, options.Aggregate())
 	return c, ctx, err
 }
