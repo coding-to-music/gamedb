@@ -8,16 +8,22 @@ COPY go.sum ./
 RUN go mod download
 
 COPY ./ ./
-RUN apk update && apk add git
-RUN cd ./cmd/steam && go mod tidy && CGO_ENABLED=0 GOOS=linux go build -a -ldflags "-X main.version=`git rev-parse --verify HEAD`"
+RUN apk update \
+  && apk add git \
+  && cd ./cmd/steam \
+  && go mod tidy \
+  && CGO_ENABLED=0 GOOS=linux go build -a -ldflags "-X main.version=`git rev-parse --verify HEAD`"
 
 # Runtime image
 FROM alpine:3.11 AS runtime-env
 WORKDIR /root/
 COPY --from=build-env /root/cmd/steam/steam ./
 COPY ./cmd/steam/health-check.sh ./health-check.sh
-RUN ["chmod", "+x", "health-check.sh"]
-RUN touch ./google-auth.json && touch ./change.txt && touch ./sentry.txt
-RUN apk update && apk add ca-certificates curl bash
+RUN chmod +x health-check.sh \
+  && touch ./google-auth.json \
+  && touch ./change.txt \
+  && touch ./sentry.txt \
+  && apk update \
+  && apk add ca-certificates curl bash
 CMD ["./steam"]
 HEALTHCHECK --interval=1m --timeout=5s --start-period=30s --retries=2 CMD ./health-check.sh
