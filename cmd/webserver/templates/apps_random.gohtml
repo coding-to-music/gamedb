@@ -1,0 +1,134 @@
+{{define "apps_random"}}
+    {{ template "_header" . }}
+
+    <div class="container" id="apps-random-page" data-bg="{{ (index .Apps 0).ID }}">
+
+        <div class="jumbotron">
+            <h1 class="mb-4"><i class="fas fa-gamepad"></i> Find a game to play</h1>
+            <div class="btn btn-success cursor-pointer" id="find-another">Find Another</div>
+        </div>
+
+        {{ template "_flashes" . }}
+
+        <div class="card mb-3">
+            <div class="card-body">
+
+                <div class="row">
+                    <div class="col-sm-6 col-md-4">
+                        <div class="form-group">
+                            <label for="tag">Tag</label>
+                            <select data-placeholder="Choose Tags" class="form-control form-control-chosen" id="tag" name="tag">
+                                <option value="">All Tags</option>
+                                {{ range $key, $value := .Tags }}
+                                    <option value="{{ .ID }}">{{ .GetName }}</option>
+                                {{ end }}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4">
+                        <div class="form-group">
+                            <label for="achievements">Achievements</label>
+                            <select class="form-control form-control-chosen" id="achievements" name="achievements">
+                                <option value="">All games</option>
+                                <option value="">Games with achievements only</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4">
+                        <div class="form-group">
+                            <label for="played">Played</label>
+                            <select class="form-control form-control-chosen" id="played" name="played">
+                                <option value="all">All games</option>
+                                <option value="played">Games you have played before</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4">
+                        <div class="form-group">
+                            <label for="popular">Popular</label>
+                            <select class="form-control form-control-chosen" id="popular" name="popular">
+                                <option value="all">All games</option>
+                                <option value="popular">Popular games only</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4">
+                        <div class="form-group">
+                            <label for="popular">Review Score</label>
+                            <select class="form-control form-control-chosen" id="popular" name="popular">
+                                <option value="all">All games</option>
+                                <option value="90">90% and above</option>
+                                <option value="80">80% and above</option>
+                                <option value="70">70% and above</option>
+                                <option value="60">60% and above</option>
+                                <option value="50">50% and above</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4">
+                        <div class="form-group">
+                            <label for="popular">Release Date</label>
+                            <select class="form-control form-control-chosen" id="popular" name="popular">
+                                <option value="all">All games</option>
+                                <option value="popular">Popular games only</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        {{ range $key, $value := .Apps }}
+            <div class="card">
+                <h5 class="card-header">
+                    {{ .GetName }}
+                    <a class="btn btn-success btn-sm float-right" href="{{ .GetPath }}">More Info</a>
+                </h5>
+                <div class="card-body">
+
+                    <div class="row">
+                        <div class="col-6" id="media">
+
+                            {{ if ne .GetMicroTrailer "" }}
+                                <video controls autoplay loop muted preload="metadata">
+                                    <source src="{{ https .GetMicroTrailer }}" type="video/webm">
+                                    Sorry, your browser doesn't support embedded videos.
+                                </video>
+                            {{ end }}
+
+                            {{ range $key, $value := .Movies }}
+                                <video controls preload="metadata">
+                                    <source src="{{ https .PathFull }}" type="video/webm">
+                                    Sorry, your browser doesn't support embedded videos.
+                                </video>
+                            {{ end }}
+
+                            {{ range $key, $value := .Screenshots }}
+                                <img src='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080"%3E%3C/svg%3E' data-lazy="{{ .PathFull }}" alt="Media {{ $key }}">
+                            {{ end }}
+
+                        </div>
+                        <div class="col-6">
+
+                            <h5>Tags:</h5>
+                            {{ range $.AppTags }}
+                                <div class="badge badge-pill badge-success">{{ .Name }}</div>
+                            {{ end }}
+
+                            <h5 class="mt-4">Achievements:</h5>
+                            {{ comma .AchievementsCount }}
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        {{ end }}
+
+    </div>
+
+    {{ template "_footer" . }}
+{{end}}
