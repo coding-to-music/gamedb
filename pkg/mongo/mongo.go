@@ -346,7 +346,7 @@ func GetRandomRows(collection collection, count int, filter bson.D, projection b
 		pipeline = append(pipeline, bson.D{{"$match", filter}})
 	}
 
-	if len(filter) > 0 {
+	if len(projection) > 0 {
 		pipeline = append(pipeline, bson.D{{"$project", projection}})
 	}
 
