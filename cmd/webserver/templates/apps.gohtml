@@ -92,30 +92,34 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-sm-6 col-md-4">
-                        <div class="form-group">
-                            <label for="developers">Developer
-                                <small>(<a href="/developers" class="stop-prop">Developers</a>)</small>
-                            </label>
-                            <select multiple data-placeholder="Choose Developers" class="form-control form-control-chosen" id="developers" name="developers">
-                                {{ range $key, $value := .Developers }}
-                                    <option value="{{ .ID }}">{{ .GetName }}</option>
-                                {{ end }}
-                            </select>
+                    {{ if (gt (len .Developers) 0)}}
+                        <div class="col-sm-6 col-md-4">
+                            <div class="form-group">
+                                <label for="developers">Developer
+                                    <small>(<a href="/developers" class="stop-prop">Developers</a>)</small>
+                                </label>
+                                <select multiple data-placeholder="Choose Developers" class="form-control form-control-chosen" id="developers" name="developers">
+                                    {{ range $key, $value := .Developers }}
+                                        <option value="{{ .ID }}">{{ .GetName }}</option>
+                                    {{ end }}
+                                </select>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-sm-6 col-md-4">
-                        <div class="form-group">
-                            <label for="publishers">Publisher
-                                <small>(<a href="/publishers" class="stop-prop">Publishers</a>)</small>
-                            </label>
-                            <select multiple data-placeholder="Choose Publishers" class="form-control form-control-chosen" id="publishers" name="publishers">
-                                {{ range $key, $value := .Publishers }}
-                                    <option value="{{ .ID }}">{{ .GetName }}</option>
-                                {{ end }}
-                            </select>
+                    {{ end }}
+                    {{ if (gt (len .Publishers) 0)}}
+                        <div class="col-sm-6 col-md-4">
+                            <div class="form-group">
+                                <label for="publishers">Publisher
+                                    <small>(<a href="/publishers" class="stop-prop">Publishers</a>)</small>
+                                </label>
+                                <select multiple data-placeholder="Choose Publishers" class="form-control form-control-chosen" id="publishers" name="publishers">
+                                    {{ range $key, $value := .Publishers }}
+                                        <option value="{{ .ID }}">{{ .GetName }}</option>
+                                    {{ end }}
+                                </select>
+                            </div>
                         </div>
-                    </div>
+                    {{ end }}
                     <div class="col-sm-6 col-md-4">
                         <div class="form-group">
                             <label for="platforms">Operating System</label>

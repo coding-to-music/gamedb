@@ -91,12 +91,11 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		var err error
-		t.Publishers, err = sql.GetPublishersForSelect()
-		log.Err(err, r)
-
-		// Check if we need to fetch any more to add to the list
 		if val, ok := r.URL.Query()["publishers"]; ok {
+
+			var err error
+			t.Publishers, err = sql.GetPublishersForSelect()
+			log.Err(err, r)
 
 			var publishersToLoad []int
 			for _, v := range val { // Loop IDs in URL
@@ -140,12 +139,11 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		var err error
-		t.Developers, err = sql.GetDevelopersForSelect()
-		log.Err(err, r)
-
-		// Check if we need to fetch any more to add to the list
 		if val, ok := r.URL.Query()["developers"]; ok {
+
+			var err error
+			t.Developers, err = sql.GetDevelopersForSelect()
+			log.Err(err, r)
 
 			var developersToLoad []int
 			for _, v := range val { // Loop IDs in URL
