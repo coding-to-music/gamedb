@@ -125,7 +125,7 @@ if ($('#sales-page').length > 0) {
                             field = field + ' <span class="badge badge-success float-right">Low Confidence</span>';
                         }
 
-                        return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[2] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + field + '</div></div>'
+                        return '<div class="icon-name"><div class="icon"><img class="tall" data-lazy="' + row[2] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + field + '</div></div>'
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
