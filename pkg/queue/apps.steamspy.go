@@ -52,7 +52,13 @@ func appSteamspyHandler(messages []*rabbit.Message) {
 
 		response, err := client.Do(req)
 		if err != nil {
-			log.Err(err, payload.ID)
+
+			if strings.Contains(err.Error(), "Client.Timeout exceeded while awaiting headers") {
+				log.Info(err, payload.ID)
+			} else {
+				log.Err(err, payload.ID)
+			}
+
 			time.Sleep(time.Second * 5)
 			sendToRetryQueue(message)
 			continue
