@@ -2,6 +2,7 @@ package pages
 
 import (
 	"net/http"
+	"strconv"
 	"sync"
 	"time"
 
@@ -22,7 +23,42 @@ func appsRandomHandler(w http.ResponseWriter, r *http.Request) {
 	var filter = bson.D{
 		{"type", "game"},
 		{"name", bson.M{"$ne": ""}},
-		{"type", "game"},
+	}
+
+	var tag = r.URL.Query().Get("tag")
+	if tag != "" {
+		i, err := strconv.Atoi(tag)
+		if err == nil && i > 0 {
+			filter = append(filter, bson.E{Key: "tags", Value: i})
+		}
+	}
+
+	var achievements = r.URL.Query().Get("achievements")
+	if achievements != "" {
+		filter = append(filter, bson.E{Key: "achievements_count", Value: bson.M{"$gt": 0}})
+	}
+
+	var popular = r.URL.Query().Get("popular")
+	if popular != "" {
+		filter = append(filter, bson.E{Key: "player_peak_alltime", Value: bson.M{"$gte": 10}})
+	}
+
+	var score = r.URL.Query().Get("score")
+	if score != "" {
+		i, err := strconv.Atoi(score)
+		if err == nil && i > 0 {
+			filter = append(filter, bson.E{Key: "reviews_score", Value: bson.M{"$gte": i}})
+		}
+	}
+
+	var year = r.URL.Query().Get("year")
+	if year != "" {
+		now := time.Now()
+		i, err := strconv.Atoi(year)
+		if err == nil && i >= 1995 && i <= now.Year() {
+			t := time.Date(i, 1, 1, 0, 0, 0, 0, now.Location())
+			filter = append(filter, bson.E{Key: "release_date_unix", Value: bson.M{"$gte": t.Unix()}})
+		}
 	}
 
 	if session.IsLoggedIn(r) {
@@ -53,8 +89,11 @@ func appsRandomHandler(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
+			var played = r.URL.Query().Get("played")
 			for _, v := range playerApps {
-				ids = append(ids, v.AppID)
+				if played == "" || (played != "" && v.AppTime > 0) {
+					ids = append(ids, v.AppID)
+				}
 			}
 
 			filter = append(filter, bson.E{Key: "_id", Value: bson.M{"$in": ids}})
