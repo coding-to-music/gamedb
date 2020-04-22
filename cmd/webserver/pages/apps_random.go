@@ -66,6 +66,8 @@ func appsRandomHandler(w http.ResponseWriter, r *http.Request) {
 		"screenshots":        1,
 		"achievements_count": 1,
 		"tags":               1,
+		"reviews_score":      1,
+		"reviews_count":      1,
 	}
 
 	apps, err := mongo.GetRandomApps(1, filter, projection)

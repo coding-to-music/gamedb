@@ -117,7 +117,15 @@
                                 <div class="badge badge-pill badge-success">{{ .Name }}</div>
                             {{ end }}
 
-                            <h5 class="mt-4">Achievements:</h5>
+                            <h5 class="mt-2 mb-0">Rating:</h5>
+                            <div>{{ comma .ReviewsCount }} reviews</div>
+                            {{ if gt .ReviewsCount 0 }}
+                                <div class="progress">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: {{.ReviewsScore}}%" aria-valuenow="{{.ReviewsScore}}" aria-valuemin="0" aria-valuemax="100">{{.GetReviewScore}} review score</div>
+                                </div>
+                            {{ end }}
+
+                            <h5 class="mt-2 mb-0">Achievements:</h5>
                             {{ comma .AchievementsCount }}
 
                         </div>
