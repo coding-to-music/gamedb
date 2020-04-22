@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"github.com/gamedb/gamedb/cmd/webserver/helpers/session"
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
@@ -68,6 +69,7 @@ func appsRandomHandler(w http.ResponseWriter, r *http.Request) {
 		"tags":               1,
 		"reviews_score":      1,
 		"reviews_count":      1,
+		"prices":             1,
 	}
 
 	apps, err := mongo.GetRandomApps(1, filter, projection)
@@ -87,6 +89,10 @@ func appsRandomHandler(w http.ResponseWriter, r *http.Request) {
 
 	t.Apps = apps
 	t.Player = player
+
+	if len(apps) > 0 {
+		t.Price = apps[0].Prices.Get(session.GetProductCC(r))
+	}
 
 	var wg sync.WaitGroup
 
@@ -126,4 +132,5 @@ type appsRandomTemplate struct {
 	Player  mongo.Player
 	Tags    []sql.Tag
 	AppTags []sql.Tag
+	Price   helpers.ProductPrice
 }
