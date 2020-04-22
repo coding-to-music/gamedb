@@ -66,10 +66,12 @@
                     </div>
                     <div class="col-sm-6 col-md-4">
                         <div class="form-group">
-                            <label for="popular">Release Date</label>
-                            <select class="form-control form-control-chosen" id="popular" name="popular">
-                                <option value="all">All games</option>
-                                <option value="popular">Popular games only</option>
+                            <label for="popular">Release Year</label>
+                            <select class="form-control form-control-chosen" id="popular" name="year">
+                                <option value="">All Games</option>
+                                {{ range $key, $value := .Years }}
+                                    <option value="{{ . }}">{{ . }} or later</option>
+                                {{ end }}
                             </select>
                         </div>
                     </div>

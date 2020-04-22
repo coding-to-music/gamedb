@@ -94,6 +94,10 @@ func appsRandomHandler(w http.ResponseWriter, r *http.Request) {
 		t.Price = apps[0].Prices.Get(session.GetProductCC(r))
 	}
 
+	for i := time.Now().Year(); i >= 1995; i-- {
+		t.Years = append(t.Years, i)
+	}
+
 	var wg sync.WaitGroup
 
 	wg.Add(1)
@@ -133,4 +137,5 @@ type appsRandomTemplate struct {
 	Tags    []sql.Tag
 	AppTags []sql.Tag
 	Price   helpers.ProductPrice
+	Years   []int
 }
