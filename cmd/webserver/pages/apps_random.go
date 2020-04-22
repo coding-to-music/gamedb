@@ -82,7 +82,6 @@ func appsRandomHandler(w http.ResponseWriter, r *http.Request) {
 	t.setBackground(apps[0], false, false)
 	t.fill(w, r, "Random Steam Game", "Find a random Steam game")
 	t.addAssetChosen()
-	t.addAssetSlider()
 
 	t.Apps = apps
 	t.Player = player
