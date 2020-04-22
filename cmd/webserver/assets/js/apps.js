@@ -55,7 +55,7 @@ if ($('#apps-page').length > 0) {
 
         window.updateLabels = updateLabels;
 
-        $(document).ready(updateLabels);
+        $(updateLabels);
 
         // Setup datatable
         const options = {

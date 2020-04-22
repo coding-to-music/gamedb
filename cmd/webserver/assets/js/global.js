@@ -103,7 +103,7 @@ $('.json').each(function (i, value) {
 (function ($, window) {
     'use strict';
 
-    $(document).ready(function (e) {
+    $(function (e) {
 
         // Choose tab from URL
         const hash = window.location.hash;
@@ -156,7 +156,7 @@ if (isIterable(user.toasts)) {
 }
 
 // Fix URLs
-$(document).ready(function (e) {
+$(function (e) {
     const path = $('#app-page, #package-page, #player-page, #bundle-page, #group-page').attr('data-path');
     if (path && path !== window.location.pathname) {
         history.replaceState(null, null, path + window.location.hash);
