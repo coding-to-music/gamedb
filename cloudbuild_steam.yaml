@@ -1,0 +1,20 @@
+---
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - "build"
+      - "-f"
+      - "Dockerfile_steam"
+      - "-t"
+      - "gcr.io/$PROJECT_ID/steam:$SHORT_SHA"
+      - "-t"
+      - "gcr.io/$PROJECT_ID/steam:$TAG_NAME"
+      - "-t"
+      - "gcr.io/$PROJECT_ID/steam:latest"
+      - "."
+tags:
+  - "$SHORT_SHA"
+  - "$TAG_NAME"
+  - "latest"
+images:
+  - "gcr.io/$PROJECT_ID/steam"

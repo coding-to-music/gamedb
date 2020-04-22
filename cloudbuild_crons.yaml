@@ -1,0 +1,20 @@
+---
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - "build"
+      - "-f"
+      - "Dockerfile_crons"
+      - "-t"
+      - "gcr.io/$PROJECT_ID/crons:$SHORT_SHA"
+      - "-t"
+      - "gcr.io/$PROJECT_ID/crons:$TAG_NAME"
+      - "-t"
+      - "gcr.io/$PROJECT_ID/crons:latest"
+      - "."
+tags:
+  - "$SHORT_SHA"
+  - "$TAG_NAME"
+  - "latest"
+images:
+  - "gcr.io/$PROJECT_ID/crons"

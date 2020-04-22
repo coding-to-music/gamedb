@@ -1,0 +1,20 @@
+---
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - "build"
+      - "-f"
+      - "Dockerfile_webserver"
+      - "-t"
+      - "gcr.io/$PROJECT_ID/webserver:$SHORT_SHA"
+      - "-t"
+      - "gcr.io/$PROJECT_ID/webserver:$TAG_NAME"
+      - "-t"
+      - "gcr.io/$PROJECT_ID/webserver:latest"
+      - "."
+tags:
+  - "$SHORT_SHA"
+  - "$TAG_NAME"
+  - "latest"
+images:
+  - "gcr.io/$PROJECT_ID/webserver"
