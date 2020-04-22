@@ -2,17 +2,6 @@ const $appPage = $('#app-page');
 
 if ($appPage.length > 0) {
 
-    // Play / Pause videos
-    $('#media video').on('click', function (e) {
-        const video = $(this)[0];
-        if (video.paused) {
-            pauseAllVideos();
-            video.play()
-        } else {
-            video.pause()
-        }
-    });
-
     $('#details video').on('click', function (e) {
         const video = $(this)[0];
         if (video.paused) {
@@ -102,13 +91,6 @@ if ($appPage.length > 0) {
             pauseAllVideos();
         }
     });
-
-    function pauseAllVideos() {
-        $('video').each(function (index) {
-            $(this)[0].pause();
-            // $(this)[0].currentTime = 0;
-        });
-    }
 
     // Websockets
     websocketListener('app', function (e) {

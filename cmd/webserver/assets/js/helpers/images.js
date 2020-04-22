@@ -1,3 +1,25 @@
+function pauseAllVideos() {
+
+    $('video').each(function (index) {
+        $(this)[0].pause();
+        // $(this)[0].currentTime = 0;
+    });
+}
+
+function handleVideos() {
+
+    // Play / Pause videos
+    $('#media video').on('click', function (e) {
+        const video = $(this)[0];
+        if (video.paused) {
+            pauseAllVideos();
+            video.play()
+        } else {
+            video.pause()
+        }
+    });
+}
+
 function observeLazyImages($target) {
 
     // https://www.sitepoint.com/five-techniques-lazy-load-images-website-performance/
@@ -73,4 +95,5 @@ function fixBrokenImages() {
     });
 }
 
-$(document).ready(fixBrokenImages);
+$(fixBrokenImages);
+$(handleVideos);
