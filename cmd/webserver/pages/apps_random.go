@@ -3,6 +3,7 @@ package pages
 import (
 	"net/http"
 	"sync"
+	"time"
 
 	"github.com/gamedb/gamedb/cmd/webserver/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
