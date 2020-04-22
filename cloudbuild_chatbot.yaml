@@ -1,6 +1,22 @@
+---
 steps:
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-f', 'Dockerfile_chatbot', '.']
-
-tags: ['$TAG_NAME', 'latest']
-images: ['gcr.io/$PROJECT_ID/chatbot']
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - "build"
+      - "-f"
+      - "Dockerfile_chatbot"
+      - "-t"
+      - "gcr.io/$PROJECT_ID/chatbot:$SHORT_SHA"
+      - "-t"
+      - "gcr.io/$PROJECT_ID/chatbot:$TAG_NAME"
+      - "-t"
+      - "gcr.io/$PROJECT_ID/chatbot:latest"
+      - "."
+#tags:
+#  - "$SHORT_SHA"
+#  - "$TAG_NAME"
+#  - "latest"
+images:
+  - "gcr.io/$PROJECT_ID/chatbot:$SHORT_SHA"
+  - "gcr.io/$PROJECT_ID/chatbot:$TAG_NAME"
+  - "gcr.io/$PROJECT_ID/chatbot:$latest"
