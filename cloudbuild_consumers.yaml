@@ -1,0 +1,20 @@
+---
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - "build"
+      - "-f"
+      - "Dockerfile_consumers"
+      - "-t"
+      - "gcr.io/$PROJECT_ID/consumers:$SHORT_SHA"
+      - "-t"
+      - "gcr.io/$PROJECT_ID/consumers:$TAG_NAME"
+      - "-t"
+      - "gcr.io/$PROJECT_ID/consumers:latest"
+      - "."
+tags:
+  - "$SHORT_SHA"
+  - "$TAG_NAME"
+  - "latest"
+images:
+  - "gcr.io/$PROJECT_ID/consumers"
