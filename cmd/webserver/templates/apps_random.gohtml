@@ -17,7 +17,7 @@
                         <div class="form-group">
                             <label for="tag">Tag</label>
                             <select data-placeholder="Choose Tags" class="form-control form-control-chosen" id="tag" name="tag">
-                                <option value="">All Tags</option>
+                                <option value="">All Games</option>
                                 {{ range $key, $value := .Tags }}
                                     <option value="{{ .ID }}">{{ .GetName }}</option>
                                 {{ end }}
@@ -28,8 +28,8 @@
                         <div class="form-group">
                             <label for="achievements">Achievements</label>
                             <select class="form-control form-control-chosen" id="achievements" name="achievements">
-                                <option value="">All games</option>
-                                <option value="">Games with achievements only</option>
+                                <option value="">All Games</option>
+                                <option value="1">Games with achievements only</option>
                             </select>
                         </div>
                     </div>
@@ -37,8 +37,8 @@
                         <div class="form-group">
                             <label for="played">Played</label>
                             <select class="form-control form-control-chosen" id="played" name="played">
-                                <option value="all">All games</option>
-                                <option value="played">Games you have played before</option>
+                                <option value="">All Games</option>
+                                <option value="1">Games you have played before</option>
                             </select>
                         </div>
                     </div>
@@ -46,8 +46,8 @@
                         <div class="form-group">
                             <label for="popular">Popular</label>
                             <select class="form-control form-control-chosen" id="popular" name="popular">
-                                <option value="all">All games</option>
-                                <option value="popular">Popular games only</option>
+                                <option value="">All Games</option>
+                                <option value="1">Popular games only</option>
                             </select>
                         </div>
                     </div>
@@ -55,7 +55,7 @@
                         <div class="form-group">
                             <label for="popular">Review Score</label>
                             <select class="form-control form-control-chosen" id="popular" name="popular">
-                                <option value="all">All games</option>
+                                <option value="">All Games</option>
                                 <option value="90">90% and above</option>
                                 <option value="80">80% and above</option>
                                 <option value="70">70% and above</option>
