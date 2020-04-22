@@ -19,6 +19,7 @@ func appsRandomHandler(w http.ResponseWriter, r *http.Request) {
 	var player mongo.Player
 
 	var filter = bson.D{
+		{"type", "game"},
 		{"name", bson.M{"$ne": ""}},
 		{"type", "game"},
 	}
