@@ -83,8 +83,9 @@
             <div class="card" id="results-card">
                 <h3 class="card-header">
                     {{ .GetName }}
-                    <a class="btn btn-success btn-sm float-right ml-1" href="{{ .GetPath }}">More Info</a>
-                    <div class="btn btn-danger btn-sm float-right cursor-pointer ml-1" id="find-another">Find Another</div>
+                    <a class="btn btn-success btn-sm float-right ml-1" href="{{ .GetInstallLink }}"><i class="fas fa-sign-in-alt"></i> Install</a>
+                    <a class="btn btn-warning btn-sm float-right ml-1" href="{{ .GetPath }}"><i class="fas fa-info"></i> More Info</a>
+                    <div class="btn btn-danger btn-sm float-right cursor-pointer ml-1" id="find-another"><i class="fas fa-retweet"></i> Find Another</div>
                 </h3>
                 <div class="card-body">
 
