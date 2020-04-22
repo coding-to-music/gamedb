@@ -35,7 +35,7 @@ func (c CommandAppPlayers) Output(msg *discordgo.MessageCreate) (message discord
 	app, err := mongo.SearchApps(matches[2], nil)
 	if err == mongo.ErrNoDocuments || err == mongo.ErrInvalidAppID {
 
-		message.Content = "App **" + matches[1] + "** not found"
+		message.Content = "App **" + matches[2] + "** not found"
 		return message, nil
 
 	} else if err != nil {
