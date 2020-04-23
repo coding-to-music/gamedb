@@ -32,7 +32,7 @@
                             <thead class="thead-light">
                             <tr>
                                 <th scope="col">Example</th>
-                                <th scope="col">Regex</th>
+                                {{/*<th scope="col">Regex</th>*/}}
                                 <th scope="col">Description</th>
                             </tr>
                             </thead>
@@ -40,7 +40,7 @@
                             {{ range $value }}
                                 <tr>
                                     <td class="nowrap" style="width: 25%;">{{ .Example }}</td>
-                                    <td class="nowrap" style="width: 25%;">{{ .Regex }}</td>
+                                    {{/*<td class="nowrap" style="width: 25%;">{{ .Regex }}</td>*/}}
                                     <td class="nowrap">{{ .Description }}</td>
                                 </tr>
                             {{ end }}
