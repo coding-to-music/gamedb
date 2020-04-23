@@ -13,9 +13,19 @@ func delayHandler(messages []*rabbit.Message) {
 
 		time.Sleep(time.Second / 10)
 
-		var max = time.Hour * 6
+		// Delay
+		if val, ok := message.Message.Headers["delay-until"]; ok {
+			if val2, ok2 := val.(int64); ok2 {
+				if val2 > time.Now().Unix() {
+					sendToRetryQueue(message)
+					continue
+				}
+			}
+		}
 
 		var seconds float64
+		var max = time.Hour * 6
+
 		seconds = math.Pow(2.5, float64(message.Attempt()))
 		seconds = math.Min(seconds, max.Seconds())
 

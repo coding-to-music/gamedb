@@ -466,10 +466,25 @@ func ProduceWebsocket(payload interface{}, pages ...websockets.WebsocketPage) (e
 
 func produce(q rabbit.QueueName, payload interface{}) error {
 
-	time.Sleep(time.Second / 100)
+	return produceWithDelay(q, payload, 0)
+}
+
+func produceWithDelay(q rabbit.QueueName, payload interface{}, delay time.Duration) error {
 
 	if val, ok := Channels[rabbit.Producer][q]; ok {
-		return val.Produce(payload, nil)
+
+		time.Sleep(time.Second / 100)
+
+		var mutator func(amqp.Publishing) amqp.Publishing
+
+		if delay > 0 {
+			mutator = func(p amqp.Publishing) amqp.Publishing {
+				p.Headers["delay-until"] = time.Now().Add(delay).Unix()
+				return p
+			}
+		}
+
+		return val.Produce(payload, mutator)
 	}
 
 	return errors.New("channel does not exist")
