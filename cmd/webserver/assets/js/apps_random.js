@@ -16,7 +16,11 @@ if ($('#apps-random-page').length > 0) {
     // Redirect on form change
     $('#search-card select').on('change', function (e) {
         const params = new URLSearchParams(location.search);
-        params.set($(this).attr('name'), $(this).val());
+        if ($(this).val()) {
+            params.set($(this).attr('name'), $(this).val());
+        } else {
+            params.delete($(this).attr('name'));
+        }
         window.location.href = window.location.pathname + '?' + params.toString();
     })
 
