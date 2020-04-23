@@ -21,7 +21,7 @@ func (CommandPlayerRecent) Regex() *regexp.Regexp {
 }
 
 func (CommandPlayerRecent) Example() string {
-	return ".recent {player_name}"
+	return ".recent PlayerName"
 }
 
 func (CommandPlayerRecent) Description() string {

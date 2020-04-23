@@ -17,7 +17,7 @@ func (CommandApp) Regex() *regexp.Regexp {
 }
 
 func (CommandApp) Example() string {
-	return ".game {game_name}"
+	return ".game GameName"
 }
 
 func (CommandApp) Description() string {

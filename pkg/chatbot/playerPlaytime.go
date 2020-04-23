@@ -20,7 +20,7 @@ func (CommandPlayerPlaytime) Regex() *regexp.Regexp {
 }
 
 func (CommandPlayerPlaytime) Example() string {
-	return ".playtime {player_name}"
+	return ".playtime PlayerName"
 }
 
 func (CommandPlayerPlaytime) Description() string {

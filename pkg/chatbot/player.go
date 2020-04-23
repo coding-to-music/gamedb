@@ -22,7 +22,7 @@ func (CommandPlayer) Regex() *regexp.Regexp {
 }
 
 func (CommandPlayer) Example() string {
-	return ".player {player_name}"
+	return ".player PlayerName"
 }
 
 func (CommandPlayer) Description() string {

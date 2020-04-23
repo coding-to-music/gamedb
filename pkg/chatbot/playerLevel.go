@@ -21,7 +21,7 @@ func (CommandPlayerLevel) Regex() *regexp.Regexp {
 }
 
 func (CommandPlayerLevel) Example() string {
-	return ".level {player_name}"
+	return ".level PlayerName"
 }
 
 func (CommandPlayerLevel) Description() string {

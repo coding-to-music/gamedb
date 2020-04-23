@@ -17,7 +17,7 @@ func (CommandGroup) Regex() *regexp.Regexp {
 }
 
 func (CommandGroup) Example() string {
-	return ".group {group_name}"
+	return ".group GroupName"
 }
 
 func (CommandGroup) Description() string {
