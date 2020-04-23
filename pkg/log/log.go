@@ -277,8 +277,8 @@ func log(interfaces ...interface{}) {
 					Labels: map[string]string{
 						"env":     config.Config.Environment.Get(),
 						"hash":    config.Config.CommitHash.Get(),
-						"key":     config.GetSteamKeyTag(),
-						"version": config.GetShortCommitHash(),
+						"key":     config.Config.SteamAPIKey.Get(),
+						"version": config.Config.CommitHash.Get(),
 					},
 				})
 			}
