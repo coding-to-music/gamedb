@@ -216,7 +216,9 @@
                                                 </table>
                                             </div>
                                         {{ else }}
-                                            <p class="mb-0">{{ .Player.PersonaName }} has not been ranked yet, this will start at midnight UTC.</p>
+                                            <p>{{ .Player.PersonaName }} has not been ranked yet, this will start at midnight UTC</p>
+                                            <p class="mb-0">Your profile must be set to public to gather information,
+                                                go <a href="https://steamcommunity.com/my/edit/settings" target="_blank" rel="noopener">here</a> to change your privacy settings.</p>
                                         {{ end }}
 
                                     </div>
