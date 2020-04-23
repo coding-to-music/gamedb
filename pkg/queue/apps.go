@@ -721,7 +721,7 @@ func scrapeApp(app *mongo.App) (sales []mongo.Sale, err error) {
 	}
 
 	// Skip these app types
-	if helpers.SliceHasString([]string{"media", "movie"}, app.Type) {
+	if helpers.SliceHasString(app.Type, []string{"media", "movie"}) {
 		return sales, nil
 	}
 

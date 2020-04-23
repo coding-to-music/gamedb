@@ -39,7 +39,7 @@ func appsRandomHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var platform = r.URL.Query().Get("os")
-	if helpers.SliceHasString([]string{"windows", "macos", "linux"}, platform) {
+	if helpers.SliceHasString(platform, []string{"windows", "macos", "linux"}) {
 		filter = append(filter, bson.E{Key: "platforms", Value: platform})
 	}
 

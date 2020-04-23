@@ -81,7 +81,7 @@ func main() {
 
 			if command.Regex().MatchString(msg) {
 
-				if m.Author.ID != debugAuthorID && !helpers.SliceHasString(ignoreGuildIDs, m.GuildID) {
+				if m.Author.ID != debugAuthorID && !helpers.SliceHasString(m.GuildID, ignoreGuildIDs) {
 					go saveToInflux(m, command)
 					go saveToMongo(m, msg)
 				}

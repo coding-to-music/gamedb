@@ -69,7 +69,7 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 
 			// Add a star next to countries with states
 			var star = ""
-			if helpers.SliceHasString(mongo.CountriesWithStates, cc) {
+			if helpers.SliceHasString(cc, mongo.CountriesWithStates) {
 				star = " *"
 			}
 

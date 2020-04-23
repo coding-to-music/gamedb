@@ -112,7 +112,7 @@ func cycleHandler(w http.ResponseWriter, r *http.Request) {
 
 	for _, v := range consumers {
 
-		if helpers.SliceHasString(v.Tags, hosts.ConsumerTag) {
+		if helpers.SliceHasString(hosts.ConsumerTag, v.Tags) {
 
 			err = host.DeleteConsumer(v.ID)
 			if err != nil {

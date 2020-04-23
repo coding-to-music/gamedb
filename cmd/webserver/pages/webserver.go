@@ -467,11 +467,11 @@ func (t GlobalTemplate) IsAppsPage() bool {
 	if strings.HasPrefix(t.Path, "/apps") {
 		return true
 	}
-	return helpers.SliceHasString([]string{"new-releases", "upcoming", "achievements", "wishlists", "packages", "bundles", "price-changes", "changes", "coop", "sales"}, strings.TrimPrefix(t.Path, "/"))
+	return helpers.SliceHasString(strings.TrimPrefix(t.Path, "/"), []string{"new-releases", "upcoming", "achievements", "wishlists", "packages", "bundles", "price-changes", "changes", "coop", "sales"})
 }
 
 func (t GlobalTemplate) IsStatsPage() bool {
-	return helpers.SliceHasString([]string{"stats", "tags", "genres", "publishers", "developers"}, strings.TrimPrefix(t.Path, "/"))
+	return helpers.SliceHasString(strings.TrimPrefix(t.Path, "/"), []string{"stats", "tags", "genres", "publishers", "developers"})
 }
 
 func (t GlobalTemplate) IsBadgesPage() bool {
@@ -489,7 +489,7 @@ func (t GlobalTemplate) IsSettingsPage() bool {
 	if strings.HasPrefix(t.Path, "/signup") {
 		return true
 	}
-	return helpers.SliceHasString([]string{"login", "logout", "forgot", "settings", "admin"}, strings.TrimPrefix(t.Path, "/"))
+	return helpers.SliceHasString(strings.TrimPrefix(t.Path, "/"), []string{"login", "logout", "forgot", "settings", "admin"})
 }
 
 func (t GlobalTemplate) IsMorePage() bool {
@@ -497,11 +497,11 @@ func (t GlobalTemplate) IsMorePage() bool {
 	if strings.HasPrefix(t.Path, "/chat") || strings.HasPrefix(t.Path, "/experience") {
 		return true
 	}
-	return helpers.SliceHasString([]string{"chat-bot", "contact", "info", "queues", "info", "steam-api", "api"}, strings.TrimPrefix(t.Path, "/"))
+	return helpers.SliceHasString(strings.TrimPrefix(t.Path, "/"), []string{"chat-bot", "contact", "info", "queues", "info", "steam-api", "api"})
 }
 
 func (t GlobalTemplate) IsSidebarPage() bool {
-	return helpers.SliceHasString([]string{"api", "steam-api"}, strings.TrimPrefix(t.Path, "/"))
+	return helpers.SliceHasString(strings.TrimPrefix(t.Path, "/"), []string{"api", "steam-api"})
 }
 
 func (t GlobalTemplate) IsLoggedIn() bool {

@@ -51,7 +51,7 @@ func (c Consumer) GetTags() string {
 }
 
 func (c Consumer) CanDelete() bool {
-	return helpers.SliceHasString(c.Tags, ConsumerTag) && !c.Locked
+	return helpers.SliceHasString(ConsumerTag, c.Tags) && !c.Locked
 }
 
 func (c Consumer) LeftOfHour() (string, error) {
