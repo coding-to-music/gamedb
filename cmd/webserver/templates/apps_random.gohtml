@@ -120,9 +120,13 @@
                             </div>
                             <div class="col-12 col-lg-6 order-1 order-lg-2 mb-4">
 
-                                <h5>Tags:</h5>
-                                {{ range $.AppTags }}
-                                    <div class="badge badge-pill badge-success">{{ .Name }}</div>
+                                <h5 class="mb-0">Tags:</h5>
+                                {{ if gt (len $.AppTags) 0 }}
+                                    {{ range $.AppTags }}
+                                        <a class="badge badge-pill badge-success" href="{{ .GetPath }}" target="_blank">{{ .Name }}</a>
+                                    {{ end }}
+                                {{ else }}
+                                    No tags
                                 {{ end }}
 
                                 <h5 class="mt-2 mb-0">Rating:</h5>
