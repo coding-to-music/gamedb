@@ -18,8 +18,19 @@
                 <div class="row">
                     <div class="col-sm-6 col-md-4">
                         <div class="form-group">
+                            <label for="os">OS</label>
+                            <select class="form-control form-control-chosen" id="os" name="os">
+                                <option value="">All Games</option>
+                                <option value="windows">Windows</option>
+                                <option value="macos">OSX</option>
+                                <option value="linux">Linux</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4">
+                        <div class="form-group">
                             <label for="tag">Tag</label>
-                            <select data-placeholder="Choose Tags" class="form-control form-control-chosen" id="tag" name="tag">
+                            <select class="form-control form-control-chosen" id="tag" name="tag">
                                 <option value="">All Games</option>
                                 {{ range $key, $value := .Tags }}
                                     <option value="{{ .ID }}">{{ .GetName }}</option>

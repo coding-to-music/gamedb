@@ -38,6 +38,11 @@ func appsRandomHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	var platform = r.URL.Query().Get("os")
+	if helpers.SliceHasString([]string{"windows", "macos", "linux"}, platform) {
+		filter = append(filter, bson.E{Key: "platforms", Value: platform})
+	}
+
 	var achievements = r.URL.Query().Get("achievements")
 	if achievements != "" {
 		filter = append(filter, bson.E{Key: "achievements_count", Value: bson.M{"$gt": 0}})
