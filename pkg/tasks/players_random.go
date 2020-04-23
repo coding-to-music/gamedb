@@ -36,9 +36,8 @@ func (c UpdateRandomPlayers) work() (err error) {
 
 	// Skip if queues have activity
 	queues := map[rabbit.QueueName]int{
-		queue.QueueApps:     50,
-		queue.QueueGroups:   50,
-		queue.QueuePackages: 50,
+		queue.QueueApps:     10,
+		queue.QueuePackages: 10,
 		queue.QueuePlayers:  10,
 		queue.QueueDelay:    0,
 	}
