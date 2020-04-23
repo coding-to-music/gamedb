@@ -13,4 +13,19 @@ if ($('#apps-random-page').length > 0) {
         max_selected_options: 1
     });
 
+    // Redirect on form change
+    $('#search-card select').on('change', function (e) {
+        const params = new URLSearchParams(location.search);
+        params.set($(this).attr('name'), $(this).val());
+        window.location.href = window.location.pathname + '?' + params.toString();
+    })
+
+    // Fill form on page load
+    $(function () {
+        const $selects = $('#search-card select');
+        if (window.location.search) {
+            $selects.deserialize(window.location.search.replace('?', ''));
+        }
+        $selects.trigger("chosen:updated");
+    })
 }
