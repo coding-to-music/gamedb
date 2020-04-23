@@ -525,8 +525,12 @@ func appAchievementsHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
+		var sortOrder = query.GetOrderMongo(map[string]string{
+			"1": "completed",
+		})
+
 		var err error
-		achievements, err = mongo.GetAppAchievements(idx, query.GetOffset64())
+		achievements, err = mongo.GetAppAchievements(idx, query.GetOffset64(), sortOrder)
 		if err != nil {
 			log.Err(err, r)
 			return

@@ -611,7 +611,7 @@ if ($appPage.length > 0) {
                     "render": function (data, type, row) {
                         return row[3] + '%';
                     },
-                    "orderable": false,
+                    "orderSequence": ['desc', 'asc'],
                 },
             ]
         };

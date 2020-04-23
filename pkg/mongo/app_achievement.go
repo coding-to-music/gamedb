@@ -61,13 +61,13 @@ func (achievement *AppAchievement) SetIcon(url string) {
 	achievement.Icon = url
 }
 
-func GetAppAchievements(appID int, offset int64) (achievements []AppAchievement, err error) {
+func GetAppAchievements(appID int, offset int64, sort bson.D) (achievements []AppAchievement, err error) {
 
 	var filter = bson.D{{
 		"app_id", appID,
 	}}
 
-	cur, ctx, err := Find(CollectionAppAchievements, offset, 100, bson.D{{"completed", -1}}, filter, nil, nil)
+	cur, ctx, err := Find(CollectionAppAchievements, offset, 100, sort, filter, nil, nil)
 	if err != nil {
 		return achievements, err
 	}
