@@ -93,7 +93,7 @@
                 <div class="card-body">
 
                     <div class="row">
-                        <div class="col-6" id="media">
+                        <div class="col-12 col-lg-6 order-2 order-lg-1" id="media">
 
                             {{ if ne .GetMicroTrailer "" }}
                                 <video controls autoplay loop muted preload="metadata">
@@ -114,7 +114,7 @@
                             {{ end }}
 
                         </div>
-                        <div class="col-6">
+                        <div class="col-12 col-lg-6 order-1 order-lg-2 mb-4">
 
                             <h5>Tags:</h5>
                             {{ range $.AppTags }}
