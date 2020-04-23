@@ -466,6 +466,8 @@ func ProduceWebsocket(payload interface{}, pages ...websockets.WebsocketPage) (e
 
 func produce(q rabbit.QueueName, payload interface{}) error {
 
+	time.Sleep(time.Second / 100)
+
 	if val, ok := Channels[rabbit.Producer][q]; ok {
 		return val.Produce(payload)
 	}
