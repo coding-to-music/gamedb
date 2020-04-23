@@ -16,12 +16,13 @@ import (
 
 func appsRandomHandler(w http.ResponseWriter, r *http.Request) {
 
-	var t = appsRandomTemplate{}
-
 	var player mongo.Player
 
 	var filter = bson.D{
-		{"type", "game"},
+		{"$or", bson.A{
+			bson.M{"type": "game"},
+			bson.M{"type": ""},
+		}},
 		{"name", bson.M{"$ne": ""}},
 	}
 
@@ -61,13 +62,15 @@ func appsRandomHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	var t = appsRandomTemplate{}
+
 	if session.IsLoggedIn(r) {
 
 		ids := bson.A{}
 
 		user, err := getUserFromSession(r)
 		if err != nil {
-			log.Err(err)
+			log.Err(err, r)
 			returnErrorTemplate(w, r, errorTemplate{Code: 500})
 			return
 		}
@@ -77,26 +80,31 @@ func appsRandomHandler(w http.ResponseWriter, r *http.Request) {
 
 			player, err = mongo.GetPlayer(steamID)
 			if err != nil {
-				log.Err(err)
+				log.Err(err, r)
 				returnErrorTemplate(w, r, errorTemplate{Code: 500})
 				return
 			}
 
-			playerApps, err := mongo.GetPlayerApps(steamID, 0, 0, nil)
-			if err != nil {
-				log.Err(err)
-				returnErrorTemplate(w, r, errorTemplate{Code: 500})
-				return
-			}
+			t.Player = player
 
 			var played = r.URL.Query().Get("played")
-			for _, v := range playerApps {
-				if played == "" || (played != "" && v.AppTime > 0) {
-					ids = append(ids, v.AppID)
-				}
-			}
+			if played != "" {
 
-			filter = append(filter, bson.E{Key: "_id", Value: bson.M{"$in": ids}})
+				playerApps, err := mongo.GetPlayerApps(steamID, 0, 0, nil)
+				if err != nil {
+					log.Err(err, r)
+					returnErrorTemplate(w, r, errorTemplate{Code: 500})
+					return
+				}
+
+				for _, v := range playerApps {
+					if played == "owned" || (played == "played" && v.AppTime > 0) {
+						ids = append(ids, v.AppID)
+					}
+				}
+
+				filter = append(filter, bson.E{Key: "_id", Value: bson.M{"$in": ids}})
+			}
 		}
 	}
 
@@ -113,33 +121,36 @@ func appsRandomHandler(w http.ResponseWriter, r *http.Request) {
 		"prices":             1,
 	}
 
-	apps, err := mongo.GetRandomApps(1, filter, projection)
-	if err != nil {
-		log.Err(err)
-		returnErrorTemplate(w, r, errorTemplate{Code: 500})
-		return
-	}
-	if len(apps) == 0 {
-		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Couldn't find a game"})
-		return
-	}
-
-	t.setBackground(apps[0], false, false)
-	t.fill(w, r, "Random Steam Game", "Find a random Steam game")
-	t.addAssetChosen()
-
-	t.Apps = apps
-	t.Player = player
-
-	if len(apps) > 0 {
-		t.Price = apps[0].Prices.Get(session.GetProductCC(r))
-	}
-
-	for i := time.Now().Year(); i >= 1995; i-- {
-		t.Years = append(t.Years, i)
-	}
-
 	var wg sync.WaitGroup
+
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		t.Apps, err = mongo.GetRandomApps(1, filter, projection)
+		if err != nil {
+			log.Err(err, r)
+		}
+
+		if len(t.Apps) > 0 {
+			t.setBackground(t.Apps[0], false, false)
+			t.Price = t.Apps[0].Prices.Get(session.GetProductCC(r))
+		}
+	}()
+
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		t.AppCount, err = mongo.CountDocuments(mongo.CollectionApps, filter, 0)
+		if err != nil {
+			log.Err(err, r)
+		}
+	}()
 
 	wg.Add(1)
 	go func() {
@@ -151,20 +162,29 @@ func appsRandomHandler(w http.ResponseWriter, r *http.Request) {
 		log.Err(err, r)
 	}()
 
-	wg.Add(1)
-	go func() {
+	wg.Wait()
 
-		defer wg.Done()
+	t.fill(w, r, "Random Steam Game", "Find a random Steam game")
+	t.addAssetChosen()
 
-		if len(apps) > 0 {
+	for i := time.Now().Year(); i >= 1995; i-- {
+		t.Years = append(t.Years, i)
+	}
+
+	if len(t.Apps) > 0 {
+
+		wg.Add(1)
+		go func() {
+
+			defer wg.Done()
 
 			var err error
-			t.AppTags, err = GetAppTags(apps[0])
+			t.AppTags, err = GetAppTags(t.Apps[0])
 			if err != nil {
 				log.Err(err, r)
 			}
-		}
-	}()
+		}()
+	}
 
 	wg.Wait()
 
@@ -173,10 +193,11 @@ func appsRandomHandler(w http.ResponseWriter, r *http.Request) {
 
 type appsRandomTemplate struct {
 	GlobalTemplate
-	Apps    []mongo.App
-	Player  mongo.Player
-	Tags    []sql.Tag
-	AppTags []sql.Tag
-	Price   helpers.ProductPrice
-	Years   []int
+	Apps     []mongo.App
+	AppCount int64
+	Player   mongo.Player
+	Tags     []sql.Tag
+	AppTags  []sql.Tag
+	Price    helpers.ProductPrice
+	Years    []int
 }
