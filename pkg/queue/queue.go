@@ -253,7 +253,7 @@ func Init(definitions []QueueDefinition) {
 func sendToFailQueue(messages ...*rabbit.Message) {
 
 	for _, message := range messages {
-		err := message.SendToQueue(Channels[rabbit.Producer][QueueFailed])
+		err := message.SendToQueueAndAck(Channels[rabbit.Producer][QueueFailed])
 		log.Err(err)
 	}
 }
@@ -261,7 +261,7 @@ func sendToFailQueue(messages ...*rabbit.Message) {
 func sendToRetryQueue(messages ...*rabbit.Message) {
 
 	for _, message := range messages {
-		err := message.SendToQueue(Channels[rabbit.Producer][QueueDelay])
+		err := message.SendToQueueAndAck(Channels[rabbit.Producer][QueueDelay])
 		log.Err(err)
 	}
 }
@@ -274,7 +274,7 @@ func sendToLastQueue(message *rabbit.Message) {
 		queue = QueueFailed
 	}
 
-	err := message.SendToQueue(Channels[rabbit.Producer][queue])
+	err := message.SendToQueueAndAck(Channels[rabbit.Producer][queue])
 	log.Err(err)
 }
 
@@ -469,7 +469,7 @@ func produce(q rabbit.QueueName, payload interface{}) error {
 	time.Sleep(time.Second / 100)
 
 	if val, ok := Channels[rabbit.Producer][q]; ok {
-		return val.Produce(payload)
+		return val.Produce(payload, nil)
 	}
 
 	return errors.New("channel does not exist")
