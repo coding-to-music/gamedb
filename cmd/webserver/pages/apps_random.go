@@ -23,6 +23,10 @@ func appsRandomHandler(w http.ResponseWriter, r *http.Request) {
 			bson.M{"type": "game"},
 			bson.M{"type": ""},
 		}},
+		{"$or", bson.A{
+			bson.M{"movies": bson.M{"$exists": true, "$ne": bson.A{}}},
+			bson.M{"screenshots": bson.M{"$exists": true, "$ne": bson.A{}}},
+		}},
 		{"name", bson.M{"$ne": ""}},
 	}
 
