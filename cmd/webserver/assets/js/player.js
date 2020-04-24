@@ -123,7 +123,12 @@ if ($playerPage.length > 0) {
             ]
         };
 
-        $('#games #all-games').gdbTable({tableOptions: options});
+        $('#games #all-games').gdbTable({
+            tableOptions: options,
+            searchFields: [
+                $('#player-games-search'),
+            ],
+        });
 
         //
         const recentOptions = {

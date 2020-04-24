@@ -2,6 +2,7 @@ package pages
 
 import (
 	"net/http"
+	"regexp"
 	"sort"
 	"strconv"
 	"sync"
@@ -448,9 +449,18 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	query := datatable.NewDataTableQuery(r, true)
+	var query = datatable.NewDataTableQuery(r, true)
+	var code = sessionHelpers.GetProductCC(r)
 
-	code := sessionHelpers.GetProductCC(r)
+	// Make filter
+	var filter = bson.D{{"player_id", playerIDInt}}
+	var filter2 = filter
+
+	var search = query.GetSearchString("player-games-search")
+	if search != "" {
+		quoted := regexp.QuoteMeta(search)
+		filter2 = append(filter2, bson.E{Key: "app_name", Value: bson.M{"$regex": quoted, "$options": "i"}})
+	}
 
 	//
 	var wg sync.WaitGroup
@@ -470,31 +480,46 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		var err error
-		playerApps, err = mongo.GetPlayerApps(playerIDInt, query.GetOffset64(), 100, query.GetOrderMongo(columns))
-		log.Err(err)
+		playerApps, err = mongo.GetPlayerApps(query.GetOffset64(), 100, filter2, query.GetOrderMongo(columns))
+		if err != nil {
+			log.Err(err)
+		}
 	}()
 
-	// Get total
-	var total int
+	// Get filtered
+	var totalFiltered int64
 	wg.Add(1)
 	go func() {
 
 		defer wg.Done()
 
-		player, err := mongo.GetPlayer(playerIDInt)
+		var err error
+		totalFiltered, err = mongo.CountDocuments(mongo.CollectionPlayerApps, filter2, 0)
 		if err != nil {
 			log.Err(err, r)
 			return
 		}
+	}()
 
-		total = player.GamesCount
+	// Get total
+	var total int64
+	wg.Add(1)
+	go func() {
 
+		defer wg.Done()
+
+		var err error
+		total, err = mongo.CountDocuments(mongo.CollectionPlayerApps, filter, 0)
+		if err != nil {
+			log.Err(err, r)
+			return
+		}
 	}()
 
 	// Wait
 	wg.Wait()
 
-	var response = datatable.NewDataTablesResponse(r, query, int64(total), int64(total))
+	var response = datatable.NewDataTablesResponse(r, query, total, totalFiltered)
 	for _, pa := range playerApps {
 		response.AddRow([]interface{}{
 			pa.AppID,

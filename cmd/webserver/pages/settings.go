@@ -90,7 +90,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		playerApps, err := mongo.GetPlayerApps(t.Player.ID, 0, 0, bson.D{})
+		playerApps, err := mongo.GetPlayerApps(0, 0, bson.D{{"player_id", t.Player.ID}}, bson.D{})
 		if err != nil {
 			log.Err(err, r)
 			return

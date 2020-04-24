@@ -96,9 +96,9 @@ func GetPlayerAppsByApp(offset int64, filter bson.D) (apps []PlayerApp, err erro
 	return getPlayerApps(offset, 100, filter, bson.D{{"app_time", -1}}, bson.M{"_id": -1, "player_id": 1, "app_time": 1})
 }
 
-func GetPlayerApps(playerID int64, offset int64, limit int64, sort bson.D) (apps []PlayerApp, err error) {
+func GetPlayerApps(offset int64, limit int64, filter bson.D, sort bson.D) (apps []PlayerApp, err error) {
 
-	return getPlayerApps(offset, limit, bson.D{{"player_id", playerID}}, sort, nil)
+	return getPlayerApps(offset, limit, filter, sort, nil)
 }
 
 func GetPlayersApps(playerIDs []int64, projection bson.M) (apps []PlayerApp, err error) {
