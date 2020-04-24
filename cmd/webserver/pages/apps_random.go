@@ -107,7 +107,7 @@ func appsRandomHandler(w http.ResponseWriter, r *http.Request) {
 				}
 
 				for _, v := range playerApps {
-					if played == "owned" || (played == "played" && v.AppTime > 0) {
+					if played == "owned" || (played == "played" && v.AppTime > 0) || (played == "notplayed" && v.AppTime == 0) {
 						ids = append(ids, v.AppID)
 					}
 				}
