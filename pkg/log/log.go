@@ -275,10 +275,9 @@ func log(interfaces ...interface{}) {
 					Timestamp: entry.timestamp,
 					Payload:   text,
 					Labels: map[string]string{
-						"env":     config.Config.Environment.Get(),
-						"hash":    config.Config.CommitHash.Get(),
-						"key":     config.Config.SteamAPIKey.Get(),
-						"version": config.Config.CommitHash.Get(),
+						"env":    config.Config.Environment.Get(),
+						"commit": config.Config.CommitHash.Get(),
+						"key":    config.Config.SteamAPIKey.Get(),
 					},
 				})
 			}
