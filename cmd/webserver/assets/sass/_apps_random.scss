@@ -4,11 +4,39 @@
         z-index: 100;
     }
 
+    #results-card {
+        z-index: 50;
+    }
+
     #media {
         video, img {
             width: 100%;
             margin-bottom: 2px;
             float: left; // To remove white space
+        }
+    }
+
+    #controls {
+
+        margin-bottom: 0;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        text-align: center;
+        background: #1b2738;
+        padding: 10px;
+
+        @include media-breakpoint-up(md) {
+
+            margin-bottom: 20px;
+            position: relative;
+            bottom: auto;
+            left: auto;
+            right: auto;
+            text-align: left;
+            background: none;
+            padding: 0;
         }
     }
 }

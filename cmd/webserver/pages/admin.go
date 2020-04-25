@@ -11,6 +11,7 @@ import (
 	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/crons"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -78,11 +79,11 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 	t.Configs = configs
 	t.Websockets = websockets.Pages
 
-	for _, v := range tasks.TaskRegister {
+	for _, v := range crons.TaskRegister {
 		t.Tasks = append(t.Tasks, adminTaskTemplate{
 			Task: v,
 			Bad:  tasks.Bad(v),
-			Next: tasks.Next(v),
+			Next: crons.Next(v),
 			Prev: tasks.Prev(v),
 		})
 	}
@@ -120,7 +121,7 @@ type adminTemplate struct {
 }
 
 type adminTaskTemplate struct {
-	Task tasks.TaskInterface
+	Task crons.TaskInterface
 	Bad  bool
 	Next time.Time
 	Prev time.Time
@@ -156,7 +157,8 @@ func adminRunCron(r *http.Request) {
 
 	c := r.URL.Query().Get("cron")
 
-	tasks.Run(tasks.TaskRegister[c])
+	err := queue.ProduceCron(c)
+	log.Err(err)
 }
 
 func adminQueues(r *http.Request) {

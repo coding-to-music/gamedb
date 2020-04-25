@@ -239,7 +239,7 @@ div#loading, div#top {
     right: 20px;
     opacity: 0;
     display: inline-block;
-    z-index: 10;
+    z-index: 1000;
 }
 
 div#loading.show, div#top.show {
