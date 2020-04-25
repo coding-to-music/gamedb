@@ -4,8 +4,8 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/didip/tollbooth/limiter"
 	"github.com/didip/tollbooth/v5"
+	"github.com/didip/tollbooth/v5/limiter"
 	"github.com/gamedb/gamedb/pkg/chatbot"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"

@@ -18,28 +18,27 @@ require (
 	github.com/Philipp15b/go-steam v1.0.1-0.20190816133340-b04c5a83c1c0
 	github.com/PuerkitoBio/goquery v1.5.1 // indirect
 	github.com/ahmdrz/goinsta/v2 v2.4.5
-	github.com/antchfx/htmlquery v1.2.2 // indirect
-	github.com/antchfx/xmlquery v1.2.3 // indirect
-	github.com/antchfx/xpath v1.1.5 // indirect
+	github.com/antchfx/htmlquery v1.2.3 // indirect
+	github.com/antchfx/xmlquery v1.2.4 // indirect
 	github.com/badoux/checkmail v0.0.0-20181210160741-9661bd69e9ad
 	github.com/beefsack/go-rate v0.0.0-20180408011153-efa7637bb9b6 // indirect
 	github.com/buger/jsonparser v0.0.0-20200322175846-f7e751efca13 // indirect
 	github.com/bwmarrin/discordgo v0.20.3
-	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
+	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/cenkalti/backoff/v4 v4.0.2
 	github.com/deepmap/oapi-codegen v1.3.7
 	github.com/derekstavis/go-qs v0.0.0-20180720192143-9eef69e6c4e7
 	github.com/dghubble/go-twitter v0.0.0-20190719072343-39e5462e111f
 	github.com/dghubble/oauth1 v0.6.0
 	github.com/didip/tollbooth v4.0.2+incompatible
-	github.com/didip/tollbooth/v5 v5.1.0
-	github.com/digitalocean/godo v1.34.0
+	github.com/didip/tollbooth/v5 v5.1.1
+	github.com/digitalocean/godo v1.35.1
 	github.com/djherbis/fscache v0.10.1
 	github.com/dustin/go-humanize v1.0.0
 	github.com/friendsofgo/errors v0.9.2 // indirect
 	github.com/frustra/bbcode v0.0.0-20180807171629-48be21ce690c
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
-	github.com/getkin/kin-openapi v0.3.1
+	github.com/getkin/kin-openapi v0.8.0
 	github.com/getsentry/sentry-go v0.6.0
 	github.com/go-chi/chi v4.1.1+incompatible
 	github.com/go-chi/cors v1.1.1
@@ -61,7 +60,7 @@ require (
 	github.com/jzelinskie/geddit v0.0.0-20190913104144-95ef6806b073
 	github.com/karrick/godirwalk v1.15.6 // indirect
 	github.com/kennygrant/sanitize v1.2.4 // indirect
-	github.com/klauspost/compress v1.10.4 // indirect
+	github.com/klauspost/compress v1.10.5 // indirect
 	github.com/kyleconroy/sqlc v1.2.0 // indirect
 	github.com/labstack/echo/v4 v4.1.16 // indirect
 	github.com/logrusorgru/aurora v0.0.0-20200102142835-e9ef32dff381
@@ -94,7 +93,7 @@ require (
 	github.com/spf13/viper v1.6.2 // indirect
 	github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf // indirect
 	github.com/streadway/amqp v0.0.0-20200108173154-1c71cc93ed71
-	github.com/tdewolff/minify/v2 v2.7.3
+	github.com/tdewolff/minify/v2 v2.7.4
 	github.com/temoto/robotstxt v1.1.1 // indirect
 	github.com/tidwall/pretty v1.0.1
 	github.com/uber-go/atomic v1.4.0 // indirect
@@ -103,15 +102,15 @@ require (
 	github.com/xdg/stringprep v1.0.0 // indirect
 	github.com/yohcop/openid-go v1.0.0
 	go.mongodb.org/mongo-driver v1.3.2
-	golang.org/x/crypto v0.0.0-20200414173820-0848c9571904
-	golang.org/x/net v0.0.0-20200324143707-d3edc9973b7e // indirect
+	golang.org/x/crypto v0.0.0-20200423211502-4bdfaf469ed5
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
-	golang.org/x/sys v0.0.0-20200413165638-669c56c373c4 // indirect
+	golang.org/x/sys v0.0.0-20200420163511-1957bb5e6d1f // indirect
 	golang.org/x/text v0.3.2
 	golang.org/x/time v0.0.0-20200416051211-89c76fbcd5d1 // indirect
-	google.golang.org/api v0.21.0
-	google.golang.org/genproto v0.0.0-20200417142217-fb6d0575620b // indirect
-	google.golang.org/grpc v1.28.1
+	google.golang.org/api v0.22.0
+	google.golang.org/appengine v1.6.6 // indirect
+	google.golang.org/genproto v0.0.0-20200424135956-bca184e23272 // indirect
+	google.golang.org/grpc v1.29.1
 	gopkg.in/djherbis/atime.v1 v1.0.0 // indirect
 	gopkg.in/djherbis/stream.v1 v1.3.1 // indirect
 	gopkg.in/ini.v1 v1.55.0 // indirect

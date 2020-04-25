@@ -13,6 +13,10 @@ func init() {
 	}
 }
 
+func stringPointer(s string) *string {
+	return &s
+}
+
 var (
 	apiKeySchema = openapi3.NewStringSchema().WithPattern("^[0-9A-Z]{20}$")
 
@@ -136,7 +140,7 @@ var Swagger = &openapi3.Swagger{
 			"message-response": {
 				Value: &openapi3.Response{
 					ExtensionProps: openapi3.ExtensionProps{},
-					Description:    "Message",
+					Description:    stringPointer("Message"),
 					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
 						Ref: "#/components/schemas/message-schema",
 					}),
@@ -144,7 +148,7 @@ var Swagger = &openapi3.Swagger{
 			},
 			"pagination-response": {
 				Value: &openapi3.Response{
-					Description: "Page information",
+					Description: stringPointer("Page information"),
 					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
 						Ref: "#/components/schemas/pagination-schema",
 					}),
@@ -152,7 +156,7 @@ var Swagger = &openapi3.Swagger{
 			},
 			"app-response": {
 				Value: &openapi3.Response{
-					Description: "An app",
+					Description: stringPointer("An app"),
 					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
 						Ref: "#/components/schemas/app-schema",
 					}),
@@ -160,7 +164,7 @@ var Swagger = &openapi3.Swagger{
 			},
 			"apps-response": {
 				Value: &openapi3.Response{
-					Description: "List of apps",
+					Description: stringPointer("List of apps"),
 					Content: openapi3.NewContentWithJSONSchema(&openapi3.Schema{
 						Description: "List of apps, with pagination",
 						Required:    []string{"pagination", "apps"},
@@ -182,7 +186,7 @@ var Swagger = &openapi3.Swagger{
 			},
 			"player-response": {
 				Value: &openapi3.Response{
-					Description: "A player",
+					Description: stringPointer("A player"),
 					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
 						Ref: "#/components/schemas/player-schema",
 					}),
@@ -190,7 +194,7 @@ var Swagger = &openapi3.Swagger{
 			},
 			"players-response": {
 				Value: &openapi3.Response{
-					Description: "List of players",
+					Description: stringPointer("List of players"),
 					Content: openapi3.NewContentWithJSONSchema(&openapi3.Schema{
 						Required: []string{"pagination", "players"},
 						Properties: map[string]*openapi3.SchemaRef{
