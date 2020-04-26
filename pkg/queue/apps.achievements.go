@@ -2,6 +2,7 @@ package queue
 
 import (
 	"sort"
+	"time"
 
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -61,6 +62,7 @@ func appAchievementsHandler(messages []*rabbit.Message) {
 		// Add in data for achievements in schema
 		var percentTotal float64
 		var percentCount int
+		var wait bool
 
 		for _, achievement := range schemaResponse.AvailableGameStats.Achievements {
 
@@ -78,8 +80,16 @@ func appAchievementsHandler(messages []*rabbit.Message) {
 				achievementsMap[achievement.Name] = val
 
 			} else {
-				log.Info("Achevement in schema but not global", payload.ID, achievement.Name)
+				log.Debug("Achevement in schema but not global", payload.ID, achievement.Name)
+				wait = true
+				break
 			}
+		}
+
+		// Wait for both API endpoints to sync up
+		if wait {
+			sendToRetryQueueWithDelay(message, 1*time.Minute)
+			continue
 		}
 
 		// Save achievements to Mongo
