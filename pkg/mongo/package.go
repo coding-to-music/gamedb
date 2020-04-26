@@ -333,10 +333,6 @@ func GetPackage(id int) (pack Package, err error) {
 	err = memcache.GetSetInterface(item.Key, item.Expiration, &pack, func() (interface{}, error) {
 
 		err := FindOne(CollectionPackages, bson.D{{"_id", id}}, nil, nil, &pack)
-		if err != nil {
-			return pack, err
-		}
-
 		return pack, err
 	})
 
