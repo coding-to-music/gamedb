@@ -122,6 +122,17 @@ func GetUserIDFromSesion(r *http.Request) (id int, err error) {
 	return strconv.Atoi(idx)
 }
 
+func GetPlayerIDFromSesion(r *http.Request) (id int64, err error) {
+
+	idx := Get(r, SessionPlayerID)
+
+	if idx == "" {
+		return id, errors.New("no player id set")
+	}
+
+	return strconv.ParseInt(idx, 10, 64)
+}
+
 var (
 	ccLock    sync.Mutex
 	maxMindDB *maxminddb.Reader
