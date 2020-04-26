@@ -144,6 +144,11 @@ func FindOne(collection collection, filter bson.D, sort bson.D, projection bson.
 
 	ql.End()
 
+	err = result.Err()
+	if err != nil {
+		return err
+	}
+
 	return result.Decode(document)
 }
 

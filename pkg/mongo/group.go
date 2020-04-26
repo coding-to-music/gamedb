@@ -135,9 +135,6 @@ func GetGroup(id string) (group Group, err error) {
 		if err != nil {
 			return group, err
 		}
-		if group.ID == "" {
-			return group, ErrNoDocuments
-		}
 
 		return group, err
 	})
@@ -205,10 +202,6 @@ func SearchGroups(s string) (group Group, err error) {
 	}
 
 	err = FindOne(CollectionGroups, filter, bson.D{{"members", -1}}, nil, &group)
-	if group.ID == "" {
-		return group, ErrNoDocuments
-	}
-
 	return group, err
 }
 

@@ -599,13 +599,6 @@ func GetPlayer(id int64) (player Player, err error) {
 		}
 
 		err = FindOne(CollectionPlayers, bson.D{{"_id", id}}, nil, nil, &player)
-		if err != nil {
-			return player, err
-		}
-		if player.ID == 0 {
-			return player, ErrNoDocuments
-		}
-
 		return player, err
 	})
 
