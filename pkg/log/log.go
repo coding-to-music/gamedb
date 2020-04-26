@@ -108,13 +108,12 @@ func (s Severity) string() string {
 }
 
 type entry struct {
-	request   *http.Request
-	texts     []string
-	error     error
-	logNames  []LogName
-	severity  Severity
-	timestamp time.Time
-	noStack   bool
+	request  *http.Request
+	texts    []string
+	error    error
+	logNames []LogName
+	severity Severity
+	noStack  bool
 }
 
 func (e entry) toText(severity Severity) string {
@@ -200,9 +199,8 @@ func Initialise(logs []LogName) {
 func log(interfaces ...interface{}) {
 
 	var entry = entry{
-		logNames:  defaultLogs,
-		severity:  SeverityError,
-		timestamp: time.Now(),
+		logNames: defaultLogs,
+		severity: SeverityError,
 	}
 	var loggingServices []Service
 
@@ -223,7 +221,7 @@ func log(interfaces ...interface{}) {
 		case []string:
 			entry.texts = append(entry.texts, strings.Join(val, ","))
 		case time.Time:
-			entry.timestamp = val
+			entry.texts = append(entry.texts, val.String())
 		case time.Duration:
 			entry.texts = append(entry.texts, val.String())
 		case net.IP:
@@ -271,9 +269,8 @@ func log(interfaces ...interface{}) {
 			for _, logName := range entry.logNames {
 
 				googleClient.Logger(string(logName)).Log(logging.Entry{
-					Severity:  entry.severity.toGoole(),
-					Timestamp: entry.timestamp,
-					Payload:   text,
+					Severity: entry.severity.toGoole(),
+					Payload:  text,
 					Labels: map[string]string{
 						"env":    config.Config.Environment.Get(),
 						"commit": config.Config.CommitHash.Get(),
