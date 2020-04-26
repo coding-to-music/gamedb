@@ -250,20 +250,29 @@ func Init(definitions []QueueDefinition) {
 }
 
 // Message helpers
-func sendToFailQueue(messages ...*rabbit.Message) {
+func sendToFailQueue(message *rabbit.Message) {
 
-	for _, message := range messages {
-		err := message.SendToQueueAndAck(Channels[rabbit.Producer][QueueFailed])
-		log.Err(err)
-	}
+	err := message.SendToQueueAndAck(Channels[rabbit.Producer][QueueFailed], nil)
+	log.Err(err)
 }
 
-func sendToRetryQueue(messages ...*rabbit.Message) {
+func sendToRetryQueue(message *rabbit.Message) {
 
-	for _, message := range messages {
-		err := message.SendToQueueAndAck(Channels[rabbit.Producer][QueueDelay])
-		log.Err(err)
+	sendToRetryQueueWithDelay(message, 0)
+}
+
+func sendToRetryQueueWithDelay(message *rabbit.Message, delay time.Duration) {
+
+	var po rabbit.ProduceOptions
+	if delay > 0 {
+		po = func(p amqp.Publishing) amqp.Publishing {
+			p.Headers["delay-until"] = time.Now().Add(delay).Unix()
+			return p
+		}
 	}
+
+	err := message.SendToQueueAndAck(Channels[rabbit.Producer][QueueDelay], po)
+	log.Err(err)
 }
 
 func sendToLastQueue(message *rabbit.Message) {
@@ -274,7 +283,7 @@ func sendToLastQueue(message *rabbit.Message) {
 		queue = QueueFailed
 	}
 
-	err := message.SendToQueueAndAck(Channels[rabbit.Producer][queue])
+	err := message.SendToQueueAndAck(Channels[rabbit.Producer][queue], nil)
 	log.Err(err)
 }
 
@@ -466,25 +475,10 @@ func ProduceWebsocket(payload interface{}, pages ...websockets.WebsocketPage) (e
 
 func produce(q rabbit.QueueName, payload interface{}) error {
 
-	return produceWithDelay(q, payload, 0)
-}
-
-func produceWithDelay(q rabbit.QueueName, payload interface{}, delay time.Duration) error {
+	time.Sleep(time.Second / 100)
 
 	if val, ok := Channels[rabbit.Producer][q]; ok {
-
-		time.Sleep(time.Second / 100)
-
-		var mutator func(amqp.Publishing) amqp.Publishing
-
-		if delay > 0 {
-			mutator = func(p amqp.Publishing) amqp.Publishing {
-				p.Headers["delay-until"] = time.Now().Add(delay).Unix()
-				return p
-			}
-		}
-
-		return val.Produce(payload, mutator)
+		return val.Produce(payload, nil)
 	}
 
 	return errors.New("channel does not exist")

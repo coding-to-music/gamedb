@@ -74,6 +74,8 @@ github.com/Jleagle/rabbit-go v0.0.0-20200417213422-893718dcda98 h1:/19leTP5nGRje
 github.com/Jleagle/rabbit-go v0.0.0-20200417213422-893718dcda98/go.mod h1:J0f6SqQkqJajxRVuKrvve45Gh1QX0eiUJG6+IbFPZAc=
 github.com/Jleagle/rabbit-go v0.0.0-20200423115244-504ad2994195 h1:a5UzaaK3Xs15lHrWVttRubrtaz2M6RBnODmvTEUoCek=
 github.com/Jleagle/rabbit-go v0.0.0-20200423115244-504ad2994195/go.mod h1:J0f6SqQkqJajxRVuKrvve45Gh1QX0eiUJG6+IbFPZAc=
+github.com/Jleagle/rabbit-go v0.0.0-20200426185217-d89e0626dc07 h1:nAL1YhzOhKK2Dw6jBTUzIVRB1PTtM0zOZQhZuVOl2Ck=
+github.com/Jleagle/rabbit-go v0.0.0-20200426185217-d89e0626dc07/go.mod h1:J0f6SqQkqJajxRVuKrvve45Gh1QX0eiUJG6+IbFPZAc=
 github.com/Jleagle/recaptcha-go v0.0.0-20200117124940-d00b2c62c076 h1:1iC2sM36BG8CDjy7bzFocvYKmFbOed35eyYqnCElaJU=
 github.com/Jleagle/recaptcha-go v0.0.0-20200117124940-d00b2c62c076/go.mod h1:gxfS6EOoVF09RpWZnrzOZy4SMh7WwVpEfc28CBrrizI=
 github.com/Jleagle/session-go v0.0.0-20190515070633-3c8712426233 h1:a51IBJjhY/73izx+ieGdWZtC2XWjQ3HnTUKoEV3Y844=
