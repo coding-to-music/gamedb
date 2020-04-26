@@ -38,7 +38,7 @@ type PlayerBadge struct {
 func (badge PlayerBadge) BSON() bson.D {
 
 	return bson.D{
-		{"_id", badge.getKey()},
+		{"_id", badge.GetKey()},
 		{"app_id", badge.AppID},
 		{"app_name", badge.AppName},
 		{"badge_completion_time", badge.BadgeCompletionTime},
@@ -54,7 +54,7 @@ func (badge PlayerBadge) BSON() bson.D {
 	}
 }
 
-func (badge PlayerBadge) getKey() string {
+func (badge PlayerBadge) GetKey() string {
 	return strconv.FormatInt(badge.PlayerID, 10) + "-" + strconv.Itoa(badge.AppID) + "-" + strconv.Itoa(badge.BadgeID) + "-" + strconv.FormatBool(badge.BadgeFoil)
 }
 
@@ -173,7 +173,7 @@ func UpdatePlayerBadges(badges []PlayerBadge) (err error) {
 	for _, badge := range badges {
 
 		write := mongo.NewReplaceOneModel()
-		write.SetFilter(bson.M{"_id": badge.getKey()})
+		write.SetFilter(bson.M{"_id": badge.GetKey()})
 		write.SetReplacement(badge.BSON())
 		write.SetUpsert(true)
 
@@ -212,7 +212,7 @@ func getPlayerBadges(offset int64, limit int64, filter bson.D, sort bson.D, proj
 		var badge PlayerBadge
 		err := cur.Decode(&badge)
 		if err != nil {
-			log.Err(err, badge.getKey())
+			log.Err(err, badge.GetKey())
 		} else {
 			badges = append(badges, badge)
 		}
