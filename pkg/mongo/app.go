@@ -835,28 +835,6 @@ func TrendingApps() (apps []App, err error) {
 	return apps, err
 }
 
-// func WishlistedApps() (appsMap map[int]bool, err error) {
-//
-// 	apps, err:= GetApps(0)
-//
-// 	db, err := GetMySQLClient()
-// 	if err != nil {
-// 		return appsMap, err
-// 	}
-//
-// 	var apps []App
-// 	db = db.Select([]string{"id"})
-// 	db = db.Where("wishlist_count > ?", 0)
-// 	db = db.Find(&apps)
-//
-// 	appsMap = map[int]bool{}
-// 	for _, app := range apps {
-// 		appsMap[app.ID] = true
-// 	}
-//
-// 	return appsMap, err
-// }
-
 func GetAppTypes() (counts []AppTypeCount, err error) {
 
 	var item = memcache.MemcacheAppTypeCounts
