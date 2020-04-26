@@ -17,13 +17,36 @@
 
         {{ template "_flashes" . }}
 
+        <div class="card mb-3">
+            <div class="card-body">
+
+                {{ if .LoggedIn }}
+
+                    {{ if gt .Badge.PlayerID 0 }}
+
+                        {{ if gt .PlayerLevel 0}}
+                            Your achieved level <strong>{{ comma .PlayerLevel }}</strong> on <strong>{{ .PlayerTime }}</strong> and are ranked <strong>{{ .PlayerRank }}</strong>!
+                        {{ else }}
+                            You have not achieved this badge yet.
+                        {{ end }}
+
+                    {{ else }}
+                        Link your Steam profile in <a href="/settings">settings</a> to see your badge rank.
+                    {{ end }}
+
+                {{ else }}
+                    <a href="/login">Login</a> to see your rank.
+                {{ end }}
+            </div>
+        </div>
+
         <div class="card">
             <div class="card-body">
 
                 {{ if gt .Badge.AppID 0 }}
                     <p>
                         <a href="{{ .Badge.GetAppPath }}" class="btn btn-success">Go to App page</a>
-                        {{ if eq .Foil "1" }}
+                        {{ if .Badge.BadgeFoil }}
                             <a href="{{ .Badge.GetPath }}" class="btn btn-success">Go to non-foil badge</a>
                         {{ else }}
                             <a href="{{ .Badge.GetPath }}?foil=1" class="btn btn-success">Go to foil badge</a>
@@ -32,7 +55,7 @@
                 {{ end }}
 
                 <div class="table-responsive">
-                    <table class="table table-hover table-striped table-counts mb-0" data-ordering="false" data-path="/badges/{{ .Badge.GetUniqueID }}/players.json?foil={{ .Foil }}">
+                    <table class="table table-hover table-striped table-counts mb-0" data-ordering="false" data-path="/badges/{{ .Badge.GetUniqueID }}/players.json{{ if .Badge.BadgeFoil }}?foil=1{{ end }}">
                         <thead class="thead-light">
                         <tr>
                             <th scope="col" class="thin">Rank</th>

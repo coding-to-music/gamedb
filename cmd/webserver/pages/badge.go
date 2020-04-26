@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
+	"github.com/gamedb/gamedb/cmd/webserver/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -36,25 +37,87 @@ func badgeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	val, ok := mongo.GlobalBadges[idx]
+	badge, ok := mongo.GlobalBadges[idx]
 	if !ok {
 		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid badge ID"})
 		return
 	}
 
+	badge.BadgeFoil = r.URL.Query().Get("foil") == "1"
+
+	var playerLevel int
+	var playerTime string
+	var playerRank string
+
+	if session.IsLoggedIn(r) {
+
+		badge.PlayerID, err = session.GetPlayerIDFromSesion(r)
+		if err != nil {
+			log.Err(err, r)
+			returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: err.Error()})
+			return
+		}
+
+		var row = mongo.PlayerBadge{}
+		err = mongo.FindOne(mongo.CollectionPlayerBadges, bson.D{{"_id", badge.GetKey()}}, nil, nil, &row)
+		if err != nil && err != mongo.ErrNoDocuments {
+			log.Err(err, r)
+			returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: err.Error()})
+			return
+		}
+
+		if err == nil {
+
+			playerLevel = row.BadgeLevel
+			playerTime = row.BadgeCompletionTime.Format(helpers.DateYearTime)
+
+			var filter = bson.D{}
+
+			if badge.IsSpecial() {
+				filter = append(filter, bson.E{Key: "app_id", Value: 0})
+				filter = append(filter, bson.E{Key: "badge_id", Value: idx})
+			} else if badge.IsEvent() {
+				filter = append(filter, bson.E{Key: "app_id", Value: idx})
+				filter = append(filter, bson.E{Key: "badge_id", Value: bson.M{"$gt": 0}})
+				filter = append(filter, bson.E{Key: "badge_foil", Value: r.URL.Query().Get("foil") == "1"})
+			}
+
+			filter = append(filter,
+				bson.E{Key: "badge_level", Value: bson.M{"$gte": row.BadgeLevel}},
+				bson.E{Key: "badge_completion_time", Value: bson.M{"$lt": row.BadgeCompletionTime}},
+			)
+
+			count, err := mongo.CountDocuments(mongo.CollectionPlayerBadges, filter, 60*60*24*14)
+			if err != nil {
+				log.Err(err, r)
+				returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: err.Error()})
+				return
+			}
+
+			playerRank = helpers.OrdinalComma(int(count + 1))
+		}
+	}
+
 	t := badgeTemplate{}
-	t.fill(w, r, val.BadgeName, "Steam Badge Leaderboard")
-	t.Badge = val
-	t.Foil = r.URL.Query().Get("foil")
+	t.fill(w, r, badge.BadgeName, "Steam Badge Leaderboard")
 	t.IncludeSocialJS = true
+
+	t.LoggedIn = session.IsLoggedIn(r)
+	t.Badge = badge
+	t.PlayerLevel = playerLevel
+	t.PlayerTime = playerTime
+	t.PlayerRank = playerRank
 
 	returnTemplate(w, r, "badge", t)
 }
 
 type badgeTemplate struct {
 	GlobalTemplate
-	Badge mongo.PlayerBadge
-	Foil  string
+	Badge       mongo.PlayerBadge
+	PlayerLevel int
+	PlayerRank  string
+	PlayerTime  string
+	LoggedIn    bool
 }
 
 func badgeAjaxHandler(w http.ResponseWriter, r *http.Request) {
@@ -100,7 +163,9 @@ func badgeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		badges, err = mongo.GetBadgePlayers(query.GetOffset64(), filter)
-		log.Err(err, r)
+		if err != nil {
+			log.Err(err, r)
+		}
 	}()
 
 	var count int64
@@ -111,7 +176,9 @@ func badgeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		count, err = mongo.CountDocuments(mongo.CollectionPlayerBadges, filter, 0)
-		log.Err(err, r)
+		if err != nil {
+			log.Err(err, r)
+		}
 	}()
 
 	wg.Wait()
