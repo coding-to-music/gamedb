@@ -80,7 +80,7 @@ func appAchievementsHandler(messages []*rabbit.Message) {
 				achievementsMap[achievement.Name] = val
 
 			} else {
-				log.Debug("Achevement in schema but not global", payload.ID, achievement.Name)
+				log.Info("Achevement in schema but not global", payload.ID, achievement.Name)
 				wait = true
 				break
 			}
