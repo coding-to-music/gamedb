@@ -36,6 +36,7 @@ func appRouter() http.Handler {
 	r.Get("/news.json", appNewsAjaxHandler)
 	r.Get("/prices.json", appPricesAjaxHandler)
 	r.Get("/players.json", appPlayersAjaxHandler)
+	r.Get("/players2.json", appPlayers2AjaxHandler)
 	r.Get("/items.json", appItemsAjaxHandler)
 	r.Get("/reviews.json", appReviewsAjaxHandler)
 	r.Get("/time.json", appTimeAjaxHandler)
@@ -703,10 +704,48 @@ func appPlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	builder := influxql.NewBuilder()
 	builder.AddSelect("max(player_count)", "max_player_count")
 	builder.AddSelect("max(twitch_viewers)", "max_twitch_viewers")
+	builder.AddSelect("max(youtube_views)", "max_youtube_views")
+	builder.AddSelect("max(youtube_comments)", "max_youtube_comments")
 	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
 	builder.AddWhere("time", ">", "NOW()-7d")
 	builder.AddWhere("app_id", "=", id)
 	builder.AddGroupByTime("10m")
+	builder.SetFillNone()
+
+	resp, err := influx.InfluxQuery(builder.String())
+	if err != nil {
+		log.Err(err, r, builder.String())
+		return
+	}
+
+	var hc influx.HighChartsJSON
+
+	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
+
+		hc = influx.InfluxResponseToHighCharts(resp.Results[0].Series[0], false)
+	}
+
+	returnJSON(w, r, hc)
+}
+
+// Player counts chart - 1 year
+func appPlayers2AjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		log.Err("invalid id", r)
+		return
+	}
+
+	builder := influxql.NewBuilder()
+	builder.AddSelect("max(player_count)", "max_player_count")
+	builder.AddSelect("max(twitch_viewers)", "max_twitch_viewers")
+	builder.AddSelect("max(youtube_views)", "max_youtube_views")
+	builder.AddSelect("max(youtube_comments)", "max_youtube_comments")
+	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
+	builder.AddWhere("time", ">", "NOW()-1825d")
+	builder.AddWhere("app_id", "=", id)
+	builder.AddGroupByTime("1d")
 	builder.SetFillNone()
 
 	resp, err := influx.InfluxQuery(builder.String())
