@@ -138,6 +138,36 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 		t.Groups = string(b)
 	}()
 
+	// Get badges
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		if t.Player.ID == 0 {
+			return
+		}
+
+		var badgeIDs []int
+		var filter = bson.D{{Key: "player_id", Value: t.Player.ID}}
+
+		badges, err := mongo.GetPlayerBadges(0, filter, nil)
+		if err != nil {
+			log.Err(err)
+			return
+		}
+		for _, v := range badges {
+			badgeIDs = append(badgeIDs, v.GetUniqueID())
+		}
+
+		b, err := json.Marshal(badgeIDs)
+		if err != nil {
+			log.Err(err, r)
+		}
+
+		t.Badges = string(b)
+	}()
+
 	// Wait
 	wg.Wait()
 
@@ -153,6 +183,7 @@ type settingsTemplate struct {
 	ProdCCs []i18n.ProductCountryCode
 	Domain  string
 	Groups  string
+	Badges  string
 }
 
 func deletePostHandler(w http.ResponseWriter, r *http.Request) {

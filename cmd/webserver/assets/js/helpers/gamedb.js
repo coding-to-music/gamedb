@@ -31,5 +31,18 @@ function highLightOwnedGames($element) {
                 });
             }
         }
+
+        let badges = localStorage.getItem('gamedb-badges');
+        if (badges != null) {
+            badges = JSON.parse(badges);
+            if (badges != null) {
+                $element.find('[data-badge-id]').each(function () {
+                    const id = $(this).attr('data-badge-id');
+                    if (badges.indexOf(parseInt(id)) !== -1) {
+                        $(this).addClass('font-weight-bold')
+                    }
+                });
+            }
+        }
     }
 }

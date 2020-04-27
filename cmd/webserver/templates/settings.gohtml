@@ -259,15 +259,18 @@
     </div>
 
     <script>
+        localStorage.removeItem("games");
+        localStorage.removeItem("groups");
+
         {{ if ne .Games "" }}
         localStorage.setItem("gamedb-games", '{{ .Games }}');
         {{ end }}
         {{ if ne .Groups "" }}
         localStorage.setItem("gamedb-groups", '{{ .Groups }}');
         {{ end }}
-
-        localStorage.removeItem("games");
-        localStorage.removeItem("groups");
+        {{ if ne .Badges "" }}
+        localStorage.setItem("gamedb-badges", '{{ .Badges }}');
+        {{ end }}
     </script>
 
     {{ template "_footer" . }}

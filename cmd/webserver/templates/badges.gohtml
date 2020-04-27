@@ -41,7 +41,7 @@
                                 <tbody>
                                 {{ range $key, $value := .Badges }}
                                     {{ if eq .Badge.AppID 0 }}
-                                        <tr data-link="{{ .Badge.GetPath }}">
+                                        <tr data-link="{{ .Badge.GetPath }}" data-badge-id="{{ .Badge.GetUniqueID }}">
                                             <td class="img" nowrap="nowrap" data-sort="{{ .Badge.BadgeID }}">
                                                 <div class="icon-name">
                                                     <div class="icon"><img src="{{ .Badge.GetIcon }}" alt="{{ .Badge.BadgeName }}"></div>
@@ -77,7 +77,7 @@
                                 <tbody>
                                 {{ range $key, $value := .Badges }}
                                     {{ if ne .Badge.AppID 0 }}
-                                        <tr data-link="{{ .Badge.GetPath }}">
+                                        <tr data-link="{{ .Badge.GetPath }}" data-badge-id="{{ .Badge.GetUniqueID }}">
                                             <td class="img" nowrap="nowrap" data-sort="{{ .Badge.AppID }}">
                                                 <div class="icon-name">
                                                     <div class="icon"><img src="{{ .Badge.GetIcon }}" alt="{{ .Badge.BadgeName }}"></div>
