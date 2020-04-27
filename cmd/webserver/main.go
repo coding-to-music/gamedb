@@ -107,7 +107,6 @@ func main() {
 	r.Mount("/info", pages.InfoRouter())
 	r.Mount("/login", pages.LoginRouter())
 	r.Mount("/logout", pages.LogoutRouter())
-	r.Mount("/lp", pages.LandingPagesRouter())
 	r.Mount("/new-releases", pages.NewReleasesRouter())
 	r.Mount("/news", pages.NewsRouter())
 	r.Mount("/packages", pages.PackagesRouter())
