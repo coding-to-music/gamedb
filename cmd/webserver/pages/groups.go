@@ -67,8 +67,8 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		columns := map[string]string{
-			"1": "members",
-			"2": "trending",
+			"2": "members",
+			"3": "trending",
 		}
 
 		var err error
@@ -105,7 +105,7 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	var response = datatable.NewDataTablesResponse(r, query, total, totalFiltered)
-	for _, group := range groups {
+	for k, group := range groups {
 		response.AddRow([]interface{}{
 			group.ID,                           // 0
 			group.GetName(),                    // 1
@@ -118,6 +118,7 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			group.GetURL(),                     // 8
 			group.Error != "",                  // 9
 			helpers.TrendValue(group.Trending), // 10
+			query.GetOffset() + k + 1,          // 11
 		})
 	}
 

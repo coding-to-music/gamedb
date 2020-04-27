@@ -7,9 +7,17 @@ if ($('#groups-page').length > 0) {
             $(row).attr('data-link', data[2]);
         },
         "columnDefs": [
-            // Icon / Name
+            // Rank
             {
                 "targets": 0,
+                "render": function (data, type, row) {
+                    return row[11].toLocaleString();
+                },
+                "orderable": false,
+            },
+            // Icon / Name
+            {
+                "targets": 1,
                 "render": function (data, type, row) {
 
                     let name = row[1];
@@ -26,7 +34,7 @@ if ($('#groups-page').length > 0) {
             },
             // Members
             {
-                "targets": 1,
+                "targets": 2,
                 "render": function (data, type, row) {
                     return row[5].toLocaleString();
                 },
@@ -34,7 +42,7 @@ if ($('#groups-page').length > 0) {
             },
             // Trend Value
             {
-                "targets": 2,
+                "targets": 3,
                 "render": function (data, type, row) {
                     return row[10].toLocaleString();
                 },
@@ -42,7 +50,7 @@ if ($('#groups-page').length > 0) {
             },
             // Link
             {
-                "targets": 3,
+                "targets": 4,
                 "render": function (data, type, row) {
                     if (row[8]) {
                         return '<a href="' + row[8] + '" target="_blank" rel="noopener"><i class="fas fa-link"></i></a>';
