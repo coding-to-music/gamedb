@@ -24,6 +24,7 @@ func AppsRouter() http.Handler {
 	r.Get("/", appsHandler)
 	r.Get("/apps.json", appsAjaxHandler)
 	r.Get("/random", appsRandomHandler)
+	r.Mount("/achievements", AchievementsRouter())
 	r.Mount("/trending", trendingRouter())
 	r.Mount("/{id}", appRouter())
 	return r
