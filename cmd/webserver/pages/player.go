@@ -186,13 +186,15 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Type counts
-	var typeCounts = map[string]int{}
+	var typeCounts = map[string]int64{}
 	wg.Add(1)
 	go func() {
 
 		defer wg.Done()
 
-		counts, err := mongo.GetAppTypes()
+		var code = sessionHelpers.GetProductCC(r)
+
+		counts, err := mongo.GetAppsGroupedByType(code)
 		if err != nil {
 			log.Err(err, r)
 			return
@@ -315,7 +317,7 @@ type playerTemplate struct {
 	DefaultAvatar string
 	Player        mongo.Player
 	Ranks         []playerRankTemplate
-	Types         map[string]int
+	Types         map[string]int64
 	InQueue       bool
 }
 

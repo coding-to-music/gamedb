@@ -53,8 +53,10 @@ func salesHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
+		var code = session.GetProductCC(r)
+
 		var err error
-		t.AppTypes, err = mongo.GetAppTypes()
+		t.AppTypes, err = mongo.GetAppsGroupedByType(code)
 		log.Err(err, r)
 	}()
 

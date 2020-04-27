@@ -46,8 +46,10 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
+		var code = session.GetProductCC(r)
+
 		var err error
-		t.Types, err = mongo.GetAppTypes()
+		t.Types, err = mongo.GetAppsGroupedByType(code)
 		if err != nil {
 			log.Err(err, r)
 		}

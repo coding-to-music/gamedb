@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/influxql"
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -835,9 +836,9 @@ func TrendingApps() (apps []App, err error) {
 	return apps, err
 }
 
-func GetAppTypes() (counts []AppTypeCount, err error) {
+func GetAppsGroupedByType(code steamapi.ProductCC) (counts []AppTypeCount, err error) {
 
-	var item = memcache.MemcacheAppTypeCounts
+	var item = memcache.MemcacheAppTypeCounts(code)
 
 	err = memcache.GetSetInterface(item.Key, item.Expiration, &counts, func() (interface{}, error) {
 
@@ -847,7 +848,11 @@ func GetAppTypes() (counts []AppTypeCount, err error) {
 		}
 
 		pipeline := mongo.Pipeline{
-			{{Key: "$group", Value: bson.M{"_id": "$type", "count": bson.M{"$sum": 1}}}},
+			{{Key: "$group", Value: bson.M{
+				"_id":   "$type",
+				"count": bson.M{"$sum": 1},
+				"value": bson.M{"$sum": "$prices." + code + ".final"},
+			}}},
 		}
 
 		cur, err := client.Database(MongoDatabase, options.Database()).Collection(CollectionApps.String()).Aggregate(ctx, pipeline, options.Aggregate())
@@ -860,7 +865,7 @@ func GetAppTypes() (counts []AppTypeCount, err error) {
 			log.Err(err)
 		}()
 
-		var unknown int
+		var unknown int64
 		var counts []AppTypeCount
 		for cur.Next(ctx) {
 
@@ -891,13 +896,123 @@ func GetAppTypes() (counts []AppTypeCount, err error) {
 
 type AppTypeCount struct {
 	Type  string `json:"type" bson:"_id"`
-	Count int    `json:"count"`
+	Count int64  `json:"count" bson:"count"`
+	Value int64  `json:"value" bson:"value"`
 }
 
+// Used in templates
 func (atc AppTypeCount) Format() string {
 	return helpers.GetAppType(atc.Type)
 }
 
+func GetAppsGroupedByReleaseDate() (counts []AppReleaseDateCount, err error) {
+
+	var item = memcache.MemcacheAppReleaseDateCounts
+
+	err = memcache.GetSetInterface(item.Key, item.Expiration, &counts, func() (interface{}, error) {
+
+		client, ctx, err := getMongo()
+		if err != nil {
+			return counts, err
+		}
+
+		pipeline := mongo.Pipeline{
+			bson.D{{Key: "$match", Value: bson.M{"release_date_unix": bson.M{"$gte": time.Now().AddDate(-1, 0, 0).Unix()}}}},
+			bson.D{{Key: "$match", Value: bson.M{"release_date_unix": bson.M{"$lte": time.Now().AddDate(0, 0, 1).Unix()}}}},
+			bson.D{{Key: "$group", Value: bson.M{"_id": "$release_date_unix", "count": bson.M{"$sum": 1}}}},
+		}
+
+		cur, err := client.Database(MongoDatabase, options.Database()).Collection(CollectionApps.String()).Aggregate(ctx, pipeline, options.Aggregate())
+		if err != nil {
+			return counts, err
+		}
+
+		defer func() {
+			err = cur.Close(ctx)
+			log.Err(err)
+		}()
+
+		var counts []AppReleaseDateCount
+		for cur.Next(ctx) {
+
+			var row AppReleaseDateCount
+			err := cur.Decode(&row)
+			if err != nil {
+				log.Err(err, row.Date)
+			}
+
+			counts = append(counts, row)
+		}
+
+		sort.Slice(counts, func(i, j int) bool {
+			return counts[i].Date < counts[j].Date
+		})
+
+		return counts, cur.Err()
+	})
+
+	return counts, err
+}
+
+type AppReleaseDateCount struct {
+	Date  int64 `json:"date" bson:"_id"`
+	Count int64 `json:"count" bson:"count"`
+}
+
+func GetAppsGroupedByReviewScore() (counts []AppReviewScoreCount, err error) {
+
+	var item = memcache.MemcacheAppReviewScoreCounts
+
+	err = memcache.GetSetInterface(item.Key, item.Expiration, &counts, func() (interface{}, error) {
+
+		client, ctx, err := getMongo()
+		if err != nil {
+			return counts, err
+		}
+
+		pipeline := mongo.Pipeline{
+			bson.D{{Key: "$match", Value: bson.M{"reviews_score": bson.M{"$gt": 0}}}},
+			bson.D{{Key: "$group", Value: bson.M{"_id": bson.M{"$floor": "$reviews_score"}, "count": bson.M{"$sum": 1}}}},
+		}
+
+		cur, err := client.Database(MongoDatabase, options.Database()).Collection(CollectionApps.String()).Aggregate(ctx, pipeline, options.Aggregate())
+		if err != nil {
+			return counts, err
+		}
+
+		defer func() {
+			err = cur.Close(ctx)
+			log.Err(err)
+		}()
+
+		var counts []AppReviewScoreCount
+		for cur.Next(ctx) {
+
+			var row AppReviewScoreCount
+			err := cur.Decode(&row)
+			if err != nil {
+				log.Err(err, row.Score)
+			}
+
+			counts = append(counts, row)
+		}
+
+		sort.Slice(counts, func(i, j int) bool {
+			return counts[i].Score < counts[j].Score
+		})
+
+		return counts, cur.Err()
+	})
+
+	return counts, err
+}
+
+type AppReviewScoreCount struct {
+	Score int64 `json:"score" bson:"_id"`
+	Count int64 `json:"count" bson:"count"`
+}
+
+//
 type SteamSpyAppResponse struct {
 	Appid     int    `json:"appid"`
 	Name      string `json:"name"`

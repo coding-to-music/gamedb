@@ -20,12 +20,14 @@ var (
 	MemcacheMongoCount   = func(key string) Item { return Item{Key: "mongo-count-" + key, Expiration: 60 * 60} }
 
 	// Apps Page Dropdowns
-	MemcacheTagKeyNames       = Item{Key: "tag-key-names", Expiration: 86400 * 7}
-	MemcacheCategoryKeyNames  = Item{Key: "category-key-names", Expiration: 86400 * 7}
-	MemcacheGenreKeyNames     = Item{Key: "genre-key-names", Expiration: 86400 * 7}
-	MemcachePublisherKeyNames = Item{Key: "publisher-key-names", Expiration: 86400 * 7}
-	MemcacheDeveloperKeyNames = Item{Key: "developer-key-names", Expiration: 86400 * 7}
-	MemcacheAppTypeCounts     = Item{Key: "app-type-counts", Expiration: 86400 * 7}
+	MemcacheTagKeyNames          = Item{Key: "tag-key-names", Expiration: 86400 * 7}
+	MemcacheCategoryKeyNames     = Item{Key: "category-key-names", Expiration: 86400 * 7}
+	MemcacheGenreKeyNames        = Item{Key: "genre-key-names", Expiration: 86400 * 7}
+	MemcachePublisherKeyNames    = Item{Key: "publisher-key-names", Expiration: 86400 * 7}
+	MemcacheDeveloperKeyNames    = Item{Key: "developer-key-names", Expiration: 86400 * 7}
+	MemcacheAppTypeCounts        = func(cc steamapi.ProductCC) Item { return Item{Key: "app-type-counts-" + string(cc), Expiration: 86400 * 7} }
+	MemcacheAppReleaseDateCounts = Item{Key: "app-release-date-counts", Expiration: 60 * 60 * 24}
+	MemcacheAppReviewScoreCounts = Item{Key: "app-review-score-counts", Expiration: 60 * 60 * 24 * 2}
 
 	// Single Rows
 	MemcacheApp        = func(id int) Item { return Item{Key: "app-" + strconv.Itoa(id), Expiration: 0} }
@@ -80,7 +82,6 @@ var (
 
 	// Other
 	MemcacheTotalCommits             = Item{Key: "total-commits", Expiration: 60 * 60 * 24 * 7}
-	MemcacheStatsAppTypes            = func(code steamapi.ProductCC) Item { return Item{Key: "stats-app-types-" + string(code), Expiration: 60 * 60 * 25} }
 	MemcacheUserByAPIKey             = func(key string) Item { return Item{Key: "user-level-by-key-" + key, Expiration: 10 * 60} }
 	MemcacheUniquePlayerCountryCodes = Item{Key: "unique-player-country-codes", Expiration: 60 * 60 * 24 * 7}
 	MemcacheUniquePlayerStateCodes   = func(countryCode string) Item { return Item{Key: "unique-player-state-codes-" + countryCode, Expiration: 60 * 60 * 24 * 7} }
