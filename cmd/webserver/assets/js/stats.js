@@ -84,18 +84,6 @@ if ($('#stats-page').length > 0) {
                             }
                         },
                     },
-                    plotOptions: {
-                        series: {
-                            cursor: 'pointer',
-                            point: {
-                                events: {
-                                    click: function () {
-                                        window.location.href = '/apps?score-low=' + this.x + '&score-high=' + (this.x + 1);
-                                    }
-                                }
-                            }
-                        }
-                    },
                     series: [
                         {
                             name: 'ingame',
