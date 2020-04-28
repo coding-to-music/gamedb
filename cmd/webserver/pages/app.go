@@ -490,14 +490,8 @@ func appPricesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 func appAchievementsHandler(w http.ResponseWriter, r *http.Request) {
 
-	id := chi.URLParam(r, "id")
-	if id == "" {
-		return
-	}
-
-	idx, err := strconv.Atoi(id)
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
-		log.Err(err, r)
 		return
 	}
 
@@ -518,7 +512,7 @@ func appAchievementsHandler(w http.ResponseWriter, r *http.Request) {
 		})
 
 		var err error
-		achievements, err = mongo.GetAppAchievements(idx, query.GetOffset64(), sortOrder)
+		achievements, err = mongo.GetAppAchievements(id, query.GetOffset64(), sortOrder)
 		if err != nil {
 			log.Err(err, r)
 			return
@@ -533,7 +527,7 @@ func appAchievementsHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		total, err = mongo.CountDocuments(mongo.CollectionAppAchievements, bson.D{{"app_id", idx}}, 60*60*24*28)
+		total, err = mongo.CountDocuments(mongo.CollectionAppAchievements, bson.D{{"app_id", id}}, 60*60*24*28)
 		if err != nil {
 			log.Err(err, r)
 			return
