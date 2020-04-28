@@ -60,8 +60,7 @@ func appSteamspyHandler(messages []*rabbit.Message) {
 				log.Err(err, payload.ID)
 			}
 
-			time.Sleep(time.Second * 5)
-			sendToRetryQueue(message)
+			sendToRetryQueueWithDelay(message, time.Second*10)
 			continue
 		}
 
@@ -74,8 +73,9 @@ func appSteamspyHandler(messages []*rabbit.Message) {
 		}()
 
 		if response.StatusCode != 200 {
-			log.Err(errors.New("steamspy is down"), ssURL, payload.ID)
-			sendToRetryQueue(message)
+
+			log.Info(errors.New("steamspy is down"), ssURL, payload.ID)
+			sendToRetryQueueWithDelay(message, time.Minute*10)
 			continue
 		}
 
@@ -87,6 +87,7 @@ func appSteamspyHandler(messages []*rabbit.Message) {
 		}
 
 		if strings.Contains(string(bytes), "Connection failed") {
+
 			log.Info(errors.New("steamspy is down"), ssURL, payload.ID, bytes)
 			sendToRetryQueueWithDelay(message, time.Minute*10)
 			continue
