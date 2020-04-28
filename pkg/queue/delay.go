@@ -13,7 +13,7 @@ func delayHandler(messages []*rabbit.Message) {
 
 		time.Sleep(time.Second / 10)
 
-		// Delay
+		// If time.Now() is before "delay-until", keep delaying
 		if val, ok := message.Message.Headers["delay-until"]; ok {
 			if val2, ok2 := val.(int64); ok2 {
 				if val2 > time.Now().Unix() {
@@ -23,6 +23,7 @@ func delayHandler(messages []*rabbit.Message) {
 			}
 		}
 
+		// If first seen time is before incremental backoff
 		var seconds float64
 		var max = time.Hour * 6
 
