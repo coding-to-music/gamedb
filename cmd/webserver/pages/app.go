@@ -41,6 +41,7 @@ func appRouter() http.Handler {
 	r.Get("/reviews.json", appReviewsAjaxHandler)
 	r.Get("/time.json", appTimeAjaxHandler)
 	r.Get("/achievements.json", appAchievementsHandler)
+	r.Get("/dlc.json", appDLCHandler)
 
 	r.Get("/{slug}", appHandler)
 	return r
@@ -236,19 +237,6 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	// Get DLC
-	wg.Add(1)
-	go func() {
-
-		defer wg.Done()
-
-		var err error
-		t.DLCs, err = app.GetDLCs()
-		if err != nil {
-			log.Err(err, r)
-		}
-	}()
-
 	// Get Developers
 	wg.Add(1)
 	go func() {
@@ -336,7 +324,6 @@ type appTemplate struct {
 	Related       []mongo.App
 	RelatedTags   map[int]sql.Tag
 	Developers    []sql.Developer
-	DLCs          []mongo.App
 	Extended      []pics.KeyValue
 	Genres        []sql.Genre
 	Packages      []mongo.Package
@@ -567,6 +554,71 @@ func appAchievementsHandler(w http.ResponseWriter, r *http.Request) {
 			achievement.Active,                             // 4
 			achievement.Hidden,                             // 5
 			achievement.Deleted,                            // 6
+		})
+	}
+
+	returnJSON(w, r, response)
+}
+
+func appDLCHandler(w http.ResponseWriter, r *http.Request) {
+
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		return
+	}
+
+	query := datatable.NewDataTableQuery(r, false)
+
+	//
+	var wg sync.WaitGroup
+
+	// Get DLCs
+	var DLCs []mongo.AppDLC
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var sortOrder = query.GetOrderMongo(map[string]string{
+			"1": "completed",
+		})
+
+		var err error
+		DLCs, err = mongo.GetDLCForApp(id, query.GetOffset64(), 100, sortOrder)
+		if err != nil {
+			log.Err(err, r)
+			return
+		}
+	}()
+
+	// Get total
+	var total int64
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		total, err = mongo.CountDocuments(mongo.CollectionAppDLC, bson.D{{"app_id", id}}, 60*60*24)
+		if err != nil {
+			log.Err(err, r)
+			return
+		}
+	}()
+
+	// Wait
+	wg.Wait()
+
+	response := datatable.NewDataTablesResponse(r, query, total, total)
+	for _, dlc := range DLCs {
+
+		response.AddRow([]interface{}{
+			dlc.DLCID,           // 0
+			dlc.GetName(),       // 1
+			dlc.GetIcon(),       // 2
+			dlc.ReleaseDateUnix, // 3
+			dlc.ReleaseDateNice, // 4
+			dlc.GetPath(),       // 5
 		})
 	}
 

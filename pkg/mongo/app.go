@@ -52,7 +52,6 @@ type App struct {
 	Demos                         []int                          `bson:"demo_ids"`
 	Depots                        pics.Depots                    `bson:"depots"`
 	Developers                    []int                          `bson:"developers"`
-	DLC                           []int                          `bson:"dlc"`
 	DLCCount                      int                            `bson:"dlc_count"`
 	Extended                      pics.PICSKeyValues             `bson:"extended"`
 	GameID                        int                            `bson:"game_id"`
@@ -137,7 +136,6 @@ func (app App) BSON() bson.D {
 		{"demo_ids", app.Demos},
 		{"depots", app.Depots},
 		{"developers", app.Developers},
-		{"dlc", app.DLC},
 		{"dlc_count", app.DLCCount},
 		{"extended", app.Extended},
 		{"game_id", app.GameID},
@@ -383,24 +381,6 @@ func (app App) GetDemos() (demos []App, err error) {
 	})
 
 	return demos, err
-}
-
-func (app App) GetDLCs() (apps []App, err error) {
-
-	apps = []App{} // Needed for marshalling into type
-
-	if len(app.DLC) == 0 {
-		return apps, nil
-	}
-
-	var item = memcache.MemcacheAppDLC(app.ID)
-
-	err = memcache.GetSetInterface(item.Key, item.Expiration, &apps, func() (interface{}, error) {
-
-		return GetAppsByID(app.DLC, bson.M{"_id": 1, "name": 1, "icon": 1, "release_date": 1, "release_date_unix": 1})
-	})
-
-	return apps, err
 }
 
 func (app App) ReadPICS(m map[string]string) (config pics.PICSKeyValues) {

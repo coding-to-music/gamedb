@@ -21,6 +21,7 @@ const (
 	QueueAppsAchievements rabbit.QueueName = "GDB_Apps.Achievements"
 	QueueAppsYoutube      rabbit.QueueName = "GDB_Apps.Youtube"
 	QueueAppsInflux       rabbit.QueueName = "GDB_Apps.Influx"
+	QueueAppsDLC          rabbit.QueueName = "GDB_Apps.DLC"
 	QueueAppsSameowners   rabbit.QueueName = "GDB_Apps.Sameowners"
 	QueueAppsNews         rabbit.QueueName = "GDB_Apps.News"
 	QueueAppsReviews      rabbit.QueueName = "GDB_Apps.Reviews"
@@ -68,6 +69,7 @@ var (
 	AllProducerDefinitions = []QueueDefinition{
 		{name: QueueAppPlayers},
 		{name: QueueApps},
+		{name: QueueAppsDLC},
 		{name: QueueAppsYoutube},
 		{name: QueueAppsInflux},
 		{name: QueueAppsNews},
@@ -95,6 +97,7 @@ var (
 		{name: QueueAppPlayers, consumer: appPlayersHandler},
 		{name: QueueApps, consumer: appHandler},
 		{name: QueueAppsInflux, consumer: appInfluxHandler},
+		{name: QueueAppsDLC, consumer: appDLCHandler},
 		{name: QueueAppsYoutube, consumer: appYoutubeHandler},
 		{name: QueueAppsNews, consumer: appNewsHandler},
 		{name: QueueAppsAchievements, consumer: appAchievementsHandler},
@@ -350,6 +353,11 @@ func ProduceBundle(id int) (err error) {
 func ProduceChanges(payload ChangesMessage) (err error) {
 
 	return produce(QueueChanges, payload)
+}
+
+func ProduceDLC(appID int, DLCIDs []int) (err error) {
+
+	return produce(QueueAppsDLC, DLCMessage{AppID: appID, DLCIDs: DLCIDs})
 }
 
 func ProduceGroup(payload GroupMessage) (err error) {

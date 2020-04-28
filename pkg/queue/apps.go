@@ -227,7 +227,6 @@ func appHandler(messages []*rabbit.Message) {
 				memcache.MemcacheAppGenres(app.ID).Key,
 				memcache.MemcacheAppDemos(app.ID).Key,
 				memcache.MemcacheAppRelated(app.ID).Key,
-				memcache.MemcacheAppDLC(app.ID).Key,
 				memcache.MemcacheAppDevelopers(app.ID).Key,
 				memcache.MemcacheAppPublishers(app.ID).Key,
 				memcache.MemcacheAppBundles(app.ID).Key,
@@ -526,8 +525,10 @@ func updateAppDetails(app *mongo.App) (err error) {
 			app.Movies = videos
 
 			// DLC
-			app.DLC = response.Data.DLC
 			app.DLCCount = len(response.Data.DLC)
+
+			err = ProduceDLC(app.ID, response.Data.DLC)
+			log.Err(err)
 
 			// Packages
 			app.Packages = response.Data.Packages

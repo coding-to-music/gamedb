@@ -50,7 +50,6 @@ var (
 	MemcacheAppGenres     = func(appID int) Item { return Item{Key: "app-genres-" + strconv.Itoa(appID), Expiration: 0} }
 	MemcacheAppDemos      = func(appID int) Item { return Item{Key: "app-demos-" + strconv.Itoa(appID), Expiration: 0} }
 	MemcacheAppRelated    = func(appID int) Item { return Item{Key: "app-related-" + strconv.Itoa(appID), Expiration: 0} }
-	MemcacheAppDLC        = func(appID int) Item { return Item{Key: "app-dlcs-" + strconv.Itoa(appID), Expiration: 0} }
 	MemcacheAppPublishers = func(appID int) Item { return Item{Key: "app-publishers-" + strconv.Itoa(appID), Expiration: 0} }
 	MemcacheAppDevelopers = func(appID int) Item { return Item{Key: "app-developers-" + strconv.Itoa(appID), Expiration: 0} }
 	MemcacheAppBundles    = func(appID int) Item { return Item{Key: "app-bundles-" + strconv.Itoa(appID), Expiration: 0} }

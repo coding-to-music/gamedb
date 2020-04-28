@@ -71,9 +71,9 @@
                             <a class="nav-link nav-link-small" data-toggle="tab" href="#achievements" role="tab">Achievements ({{ comma .App.AchievementsCount }})</a>
                         </li>
                     {{ end }}
-                    {{ if gt (len .DLCs) 0 }}
+                    {{ if gt .App.DLCCount 0 }}
                         <li class="nav-item">
-                            <a class="nav-link nav-link-small" data-toggle="tab" href="#dlc" role="tab">DLC ({{ comma (len .DLCs) }})</a>
+                            <a class="nav-link nav-link-small" data-toggle="tab" href="#dlc" role="tab">DLC ({{ comma .App.DLCCount }})</a>
                         </li>
                     {{ end }}
                     {{ if gt (len .Packages) 0 }}
@@ -441,35 +441,29 @@
                     {{/* DLC */}}
                     <div class="tab-pane" id="dlc" role="tabpanel">
 
-                        {{if gt (len .DLCs) 0}}
-
-                            <div class="table-responsive">
-                                <table class="table table-hover table-striped table-counts table-datatable mb-0" data-order='[[ 1, "desc" ]]'>
-                                    <thead class="thead-light">
-                                    <tr>
-                                        <th scope="col">Name</th>
-                                        <th scope="col">Release</th>
-                                    </tr>
-                                    </thead>
-                                    {{ range $key, $value := .DLCs }}
-                                        <tr data-link="{{.GetPath}}">
-                                            <td class="img">
-                                                <div class="icon-name">
-                                                    <div class="icon"><img src="{{ .GetIcon }}" alt="{{.GetName}}"></div>
-                                                    <div class="name">{{.GetName}}</div>
-                                                </div>
-                                            </td>
-                                            <td data-sort="{{ .ReleaseDateUnix }}" nowrap="nowrap">{{.GetReleaseDateNice}}</td>
-                                        </tr>
-                                    {{ end }}
-                                </table>
-                            </div>
-
-                        {{ else }}
-
-                            <p>This app has no DLC.</p>
-
-                        {{ end }}
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped table-counts mb-0" data-path="/apps/{{ .App.ID }}/dlc.json" id="dlc-table">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Release</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {{/*                                    {{ range $key, $value := .DLCs }}*/}}
+                                {{/*                                        <tr data-link="{{.GetPath}}">*/}}
+                                {{/*                                            <td class="img">*/}}
+                                {{/*                                                <div class="icon-name">*/}}
+                                {{/*                                                    <div class="icon"><img src="{{ .GetIcon }}" alt="{{.GetName}}"></div>*/}}
+                                {{/*                                                    <div class="name">{{.GetName}}</div>*/}}
+                                {{/*                                                </div>*/}}
+                                {{/*                                            </td>*/}}
+                                {{/*                                            <td data-sort="{{ .ReleaseDateUnix }}" nowrap="nowrap">{{.GetReleaseDateNice}}</td>*/}}
+                                {{/*                                        </tr>*/}}
+                                {{/*                                    {{ end }}*/}}
+                                </tbody>
+                            </table>
+                        </div>
 
                     </div>
 

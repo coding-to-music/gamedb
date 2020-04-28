@@ -81,6 +81,9 @@ if ($appPage.length > 0) {
                 case '#achievements':
                     loadAchievements();
                     break;
+                case '#dlc':
+                    loadDLC();
+                    break;
                 case '#dev-localization':
                     loadDevLocalization();
                     break;
@@ -769,6 +772,44 @@ if ($appPage.length > 0) {
         };
 
         $('#achievements-table').gdbTable({
+            tableOptions: options,
+        });
+    }
+
+    function loadDLC() {
+
+        const options = {
+            "order": [[1, 'desc']],
+            "createdRow": function (row, data, dataIndex) {
+                $(row).attr('data-link', data[5]);
+            },
+            "columnDefs": [
+                // Name
+                {
+                    "targets": 0,
+                    "render": function (data, type, row) {
+                        return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[2] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></div>'
+                    },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        $(td).addClass('img');
+                    },
+                    "orderSequence": ['asc', 'desc'],
+                },
+                // Release Date
+                {
+                    "targets": 1,
+                    "render": function (data, type, row) {
+                        return '<span data-toggle="tooltip" data-placement="left" title="' + row[4] + '" data-livestamp="' + row[3] + '"></span>';
+                    },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        $(td).attr('nowrap', 'nowrap');
+                    },
+                    "orderSequence": ['desc', 'asc'],
+                },
+            ]
+        };
+
+        $('#dlc-table').gdbTable({
             tableOptions: options,
         });
     }
