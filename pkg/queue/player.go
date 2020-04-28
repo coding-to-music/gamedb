@@ -254,7 +254,19 @@ func updatePlayerSummary(player *mongo.Player) error {
 
 func updatePlayerGames(player *mongo.Player) error {
 
-	return player.SetOwnedGames(true)
+	resp, err := player.SetOwnedGames(true)
+	if err != nil {
+		return err
+	}
+
+	for _, v := range resp.Games {
+		if v.PlaytimeForever > 0 {
+			err = ProducePlayerAchievements(player.ID, v.AppID)
+			log.Err(err)
+		}
+	}
+
+	return err
 }
 
 func updatePlayerRecentGames(player *mongo.Player) error {

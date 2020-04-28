@@ -225,13 +225,13 @@ func (player Player) GetTimeLong() (ret string) {
 }
 
 //
-func (player *Player) SetOwnedGames(saveRows bool) error {
+func (player *Player) SetOwnedGames(saveRows bool) (steamapi.OwnedGames, error) {
 
 	// Grab games from Steam
 	resp, b, err := steamHelper.GetSteam().GetOwnedGames(player.ID)
 	err = steamHelper.AllowSteamCodes(err, b, nil)
 	if err != nil {
-		return err
+		return resp, err
 	}
 
 	// Save count
@@ -262,13 +262,13 @@ func (player *Player) SetOwnedGames(saveRows bool) error {
 
 	//
 	if !saveRows {
-		return nil
+		return resp, nil
 	}
 
 	// Getting missing price info from MySQL
 	gameRows, err := GetAppsByID(appIDs, bson.M{"_id": 1, "prices": 1, "type": 1})
 	if err != nil {
-		return err
+		return resp, err
 	}
 
 	player.GamesByType = map[string]int{}
@@ -309,7 +309,7 @@ func (player *Player) SetOwnedGames(saveRows bool) error {
 	// Save playerApps to Datastore
 	err = UpdatePlayerApps(playerApps)
 	if err != nil {
-		return err
+		return resp, err
 	}
 
 	// Get top game for background
@@ -338,7 +338,7 @@ func (player *Player) SetOwnedGames(saveRows bool) error {
 
 	player.GameStats = gameStats
 
-	return nil
+	return resp, nil
 }
 
 func (player *Player) SetPlayerSummary() error {
@@ -731,7 +731,7 @@ func SearchPlayer(search string, projection bson.M) (player Player, queue bool, 
 						defer wg.Done()
 						gamesLock.Lock()
 						if player.PlayTime > 0 {
-							err = player.SetOwnedGames(false)
+							_, err = player.SetOwnedGames(false)
 							log.Err(err)
 						}
 						gamesLock.Unlock()

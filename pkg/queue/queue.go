@@ -17,6 +17,7 @@ import (
 )
 
 const (
+	// Apps
 	QueueApps             rabbit.QueueName = "GDB_Apps"
 	QueueAppsAchievements rabbit.QueueName = "GDB_Apps.Achievements"
 	QueueAppsYoutube      rabbit.QueueName = "GDB_Apps.Youtube"
@@ -28,21 +29,26 @@ const (
 	QueueAppsTwitch       rabbit.QueueName = "GDB_Apps.Twitch"
 	QueueAppsMorelike     rabbit.QueueName = "GDB_Apps.Morelike"
 	QueueAppsSteamspy     rabbit.QueueName = "GDB_Apps.Steamspy"
-	QueueAppPlayers       rabbit.QueueName = "GDB_App_Players"
-	QueueBundles          rabbit.QueueName = "GDB_Bundles"
-	QueueChanges          rabbit.QueueName = "GDB_Changes"
-	QueueGroups           rabbit.QueueName = "GDB_Groups"
-	QueuePackages         rabbit.QueueName = "GDB_Packages"
-	QueuePackagesPrices   rabbit.QueueName = "GDB_Packages.Prices"
-	QueuePlayers          rabbit.QueueName = "GDB_Players"
-	QueuePlayerRanks      rabbit.QueueName = "GDB_Player_Ranks"
-	QueueSteam            rabbit.QueueName = "GDB_Steam"
 
-	QueueWebsockets rabbit.QueueName = "GDB_Websockets"
+	// Packages
+	QueuePackages       rabbit.QueueName = "GDB_Packages"
+	QueuePackagesPrices rabbit.QueueName = "GDB_Packages.Prices"
 
-	QueueDelay  rabbit.QueueName = "GDB_Delay"
-	QueueFailed rabbit.QueueName = "GDB_Failed"
-	QueueTest   rabbit.QueueName = "GDB_Test"
+	// Players
+	QueuePlayers             rabbit.QueueName = "GDB_Players"
+	QueuePlayersAchievements rabbit.QueueName = "GDB_Players.Achievements"
+
+	// Other
+	QueueAppPlayers  rabbit.QueueName = "GDB_App_Players"
+	QueueBundles     rabbit.QueueName = "GDB_Bundles"
+	QueueChanges     rabbit.QueueName = "GDB_Changes"
+	QueueDelay       rabbit.QueueName = "GDB_Delay"
+	QueueFailed      rabbit.QueueName = "GDB_Failed"
+	QueueGroups      rabbit.QueueName = "GDB_Groups"
+	QueuePlayerRanks rabbit.QueueName = "GDB_Player_Ranks"
+	QueueSteam       rabbit.QueueName = "GDB_Steam"
+	QueueTest        rabbit.QueueName = "GDB_Test"
+	QueueWebsockets  rabbit.QueueName = "GDB_Websockets"
 )
 
 func init() {
@@ -86,6 +92,7 @@ var (
 		{name: QueuePackagesPrices},
 		{name: QueuePlayers},
 		{name: QueuePlayerRanks},
+		{name: QueuePlayersAchievements},
 		{name: QueueDelay},
 		{name: QueueSteam},
 		{name: QueueFailed},
@@ -113,6 +120,7 @@ var (
 		{name: QueuePackagesPrices, consumer: packagePriceHandler},
 		{name: QueuePlayers, consumer: playerHandler},
 		{name: QueuePlayerRanks, consumer: playerRanksHandler},
+		{name: QueuePlayersAchievements, consumer: playerAchievementsHandler},
 		{name: QueueDelay, consumer: delayHandler, skipHeaders: true},
 		{name: QueueSteam},
 		{name: QueueFailed},
@@ -358,6 +366,11 @@ func ProduceChanges(payload ChangesMessage) (err error) {
 func ProduceDLC(appID int, DLCIDs []int) (err error) {
 
 	return produce(QueueAppsDLC, DLCMessage{AppID: appID, DLCIDs: DLCIDs})
+}
+
+func ProducePlayerAchievements(playerID int64, appID int) (err error) {
+
+	return produce(QueuePlayersAchievements, PlayerAchievementsMessage{PlayerID: playerID, AppID: appID})
 }
 
 func ProduceGroup(payload GroupMessage) (err error) {
