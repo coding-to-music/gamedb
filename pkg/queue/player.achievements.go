@@ -3,6 +3,7 @@ package queue
 import (
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
 )
 
@@ -24,7 +25,23 @@ func playerAchievementsHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		//resp, _, err := steamHelper.GetSteamUnlimited()
+		resp, _, err := steamHelper.GetSteamUnlimited().GetPlayerAchievements(uint64(payload.PlayerID), uint32(payload.AppID))
+		if err != nil {
+			log.Err(err, message.Message.Body)
+			sendToRetryQueue(message)
+			continue
+		}
+
+		if !resp.Success {
+			log.Debug("achievements unsuccessful")
+			message.Ack(false)
+			continue
+		}
+
+		// var count int
+		// for _, v := range resp.Achievements {
+		// 	if v.
+		// }
 
 		message.Ack(false)
 	}
