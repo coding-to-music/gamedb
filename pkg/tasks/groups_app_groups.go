@@ -46,5 +46,7 @@ func (c QueueAppGroups) work() (err error) {
 	//
 	log.Info(strconv.Itoa(len(apps)) + " groups queued")
 
+	apps = nil // Memory
+
 	return nil
 }

@@ -36,5 +36,7 @@ func (c AppsInflux) work() (err error) {
 		log.Err(err)
 	}
 
+	apps = nil // Memory
+
 	return nil
 }
