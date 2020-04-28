@@ -519,7 +519,7 @@ func appAchievementsHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	var wg sync.WaitGroup
 
-	// Get total
+	// Get achievements
 	var achievements []mongo.AppAchievement
 	wg.Add(1)
 	go func() {
