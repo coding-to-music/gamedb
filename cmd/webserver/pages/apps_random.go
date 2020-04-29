@@ -23,9 +23,9 @@ func appsRandomHandler(w http.ResponseWriter, r *http.Request) {
 			bson.M{"type": "game"},
 			bson.M{"type": ""},
 		}},
-		{"$or", bson.A{
-			bson.M{"movies": bson.M{"$exists": true, "$ne": bson.A{}}},
-			bson.M{"screenshots": bson.M{"$exists": true, "$ne": bson.A{}}},
+		{Key: "$or", Value: bson.A{
+			bson.M{"movies": bson.D{{Key: "$exists", Value: true}, {Key: "$ne", Value: bson.A{}}, {Key: "$ne", Value: nil}}},
+			bson.M{"screenshots": bson.D{{Key: "$exists", Value: true}, {Key: "$ne", Value: bson.A{}}, {Key: "$ne", Value: nil}}},
 		}},
 		{"name", bson.M{"$ne": ""}},
 	}
