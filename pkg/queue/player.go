@@ -260,7 +260,7 @@ func updatePlayerGames(player *mongo.Player) error {
 		return err
 	}
 
-	if config.IsLocal() {
+	if config.IsLocal() && player.UpdatedAt.Before(time.Now().Add(time.Hour*24*13*-1)) { // Just under 2 weeks
 		for _, v := range resp.Games {
 			if v.PlaytimeForever > 0 {
 				err = ProducePlayerAchievements(player.ID, v.AppID)
@@ -324,6 +324,14 @@ func updatePlayerRecentGames(player *mongo.Player) error {
 	err = mongo.UpdateRecentApps(appsToAdd)
 	if err != nil {
 		return err
+	}
+
+	//
+	if config.IsLocal() && player.UpdatedAt.After(time.Now().Add(time.Hour*24*13*-1)) { // Just under 2 weeks
+		for _, v := range newAppsSlice {
+			err = ProducePlayerAchievements(player.ID, v.AppID)
+			log.Err(err)
+		}
 	}
 
 	return nil

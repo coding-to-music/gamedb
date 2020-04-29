@@ -48,6 +48,7 @@ const (
 	CollectionPlayerApps          collection = "player_apps"
 	CollectionPlayerAppsRecent    collection = "player_apps_recent"
 	CollectionPlayerBadges        collection = "player_badges"
+	CollectionPlayerAchievements  collection = "player_achievements"
 	CollectionPlayerBadgesSummary collection = "player_badges_summary"
 	CollectionPlayerFriends       collection = "player_friends"
 	CollectionPlayerGroups        collection = "player_groups"
