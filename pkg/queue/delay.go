@@ -24,11 +24,13 @@ func delayHandler(messages []*rabbit.Message) {
 		}
 
 		// If first seen time is before incremental backoff
-		var seconds float64
+		var min = time.Second * 10
 		var max = time.Hour * 6
 
+		var seconds float64
 		seconds = math.Pow(2, float64(message.Attempt()))
 		seconds = math.Min(seconds, max.Seconds())
+		seconds = math.Max(seconds, min.Seconds())
 
 		// Requeue
 		if message.FirstSeen().Add(time.Second * time.Duration(int64(seconds))).Before(time.Now()) {
