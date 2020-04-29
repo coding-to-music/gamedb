@@ -151,7 +151,7 @@
                                         </td>
                                         <td>{{ .GetType }}</td>
                                         <td class="platforms">{{ .GetPlatformImages }}</td>
-                                        <td>{{ comma (len .DLC) }}</td>
+                                        <td>{{ comma .DLCCount }}</td>
                                     </tr>
                                 {{ end }}
                             </table>
