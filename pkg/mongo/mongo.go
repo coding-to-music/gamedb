@@ -118,7 +118,6 @@ func getMongo() (client *mongo.Client, ctx context.Context, err error) {
 	return mongoClient, mongoCtx, err
 }
 
-// Does not return error on nothing returned
 func FindOne(collection collection, filter bson.D, sort bson.D, projection bson.M, document Document) (err error) {
 
 	if filter == nil {
