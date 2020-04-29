@@ -98,7 +98,7 @@ func appSteamspyHandler(messages []*rabbit.Message) {
 		err = helpers.Unmarshal(bytes, &resp)
 		if err != nil {
 
-			log.Info(errors.New("steamspy is down"), ssURL, payload.ID, bytes)
+			log.Info(err, ssURL, payload.ID, bytes)
 			sendToRetryQueueWithDelay(message, time.Minute*30)
 			continue
 		}
