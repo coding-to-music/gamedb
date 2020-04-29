@@ -597,7 +597,8 @@ func appDLCHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var sortOrder = query.GetOrderMongo(map[string]string{
-			"1": "completed",
+			"0": "name",
+			"1": "release_date_unix",
 		})
 
 		var err error
