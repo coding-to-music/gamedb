@@ -25,7 +25,8 @@ func playerAchievementsHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		resp, _, err := steamHelper.GetSteamUnlimited().GetPlayerAchievements(uint64(payload.PlayerID), uint32(payload.AppID))
+		resp, b, err := steamHelper.GetSteamUnlimited().GetPlayerAchievements(uint64(payload.PlayerID), uint32(payload.AppID))
+		err = steamHelper.AllowSteamCodes(err, b, []int{400})
 		if err != nil {
 			log.Err(err, message.Message.Body)
 			sendToRetryQueue(message)
