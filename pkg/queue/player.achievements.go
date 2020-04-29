@@ -12,6 +12,8 @@ type PlayerAchievementsMessage struct {
 	AppID    int   `json:"app_id"`
 }
 
+var appsWithNoStats = map[int]bool{}
+
 func playerAchievementsHandler(messages []*rabbit.Message) {
 
 	for _, message := range messages {
@@ -25,6 +27,11 @@ func playerAchievementsHandler(messages []*rabbit.Message) {
 			continue
 		}
 
+		if _, ok := appsWithNoStats[payload.AppID]; ok {
+			message.Ack(false)
+			continue
+		}
+
 		resp, b, err := steamHelper.GetSteamUnlimited().GetPlayerAchievements(uint64(payload.PlayerID), uint32(payload.AppID))
 		err = steamHelper.AllowSteamCodes(err, b, []int{400})
 		if err != nil {
@@ -34,7 +41,11 @@ func playerAchievementsHandler(messages []*rabbit.Message) {
 		}
 
 		if !resp.Success {
-			log.Debug("achievements unsuccessful")
+
+			if resp.Error == "Requested app has no stats" {
+				appsWithNoStats[payload.AppID] = true
+			}
+
 			message.Ack(false)
 			continue
 		}
