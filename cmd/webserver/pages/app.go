@@ -502,6 +502,7 @@ func appAchievementsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get achievements
 	var achievements []mongo.AppAchievement
+	var achievedMap = map[string]bool{}
 	wg.Add(1)
 	go func() {
 
@@ -516,6 +517,25 @@ func appAchievementsHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Err(err, r)
 			return
+		}
+
+		playerID, err := session.GetPlayerIDFromSesion(r)
+		if err == nil && playerID > 0 {
+
+			var a = bson.A{}
+			for _, v := range achievements {
+				a = append(a, v.Key)
+			}
+
+			playerAchievements, err := mongo.GetPlayerAchievementsForApp(playerID, id, a, 0)
+			if err != nil {
+				log.Err(err, r)
+				return
+			}
+
+			for _, v := range playerAchievements {
+				achievedMap[v.AchievementID] = true
+			}
 		}
 	}()
 
@@ -540,6 +560,8 @@ func appAchievementsHandler(w http.ResponseWriter, r *http.Request) {
 	response := datatable.NewDataTablesResponse(r, query, total, total)
 	for _, achievement := range achievements {
 
+		_, achieved := achievedMap[achievement.Key]
+
 		response.AddRow([]interface{}{
 			achievement.Name,                               // 0
 			achievement.Description,                        // 1
@@ -548,6 +570,7 @@ func appAchievementsHandler(w http.ResponseWriter, r *http.Request) {
 			achievement.Active,                             // 4
 			achievement.Hidden,                             // 5
 			achievement.Deleted,                            // 6
+			achieved,                                       // 7
 		})
 	}
 

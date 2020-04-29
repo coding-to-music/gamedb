@@ -450,7 +450,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                </tbody>¬
+                                </tbody>
                             </table>
                         </div>
 
@@ -589,24 +589,23 @@
                             </tbody>
                         </table>
 
-                        {{if gt .App.AchievementsCount 0}}
-
-                            <div class="table-responsive">
-                                <table class="table table-hover table-striped table-counts mb-0" data-path="/apps/{{ .App.ID }}/achievements.json" id="achievements-table">
-                                    <thead class="thead-light">
-                                    <tr>
-                                        <th scope="col">Name</th>
-                                        {{/*<th scope="col">Description</th>*/}}
-                                        <th scope="col">Completed</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    </tbody>
-                                </table>
-
-                            </div>
-
+                        {{ if not .IsLoggedIn }}
+                            <div class="alert alert-primary" role="alert"><a href="/login">Login</a> to highlight your achievements for this game.</div>
                         {{ end }}
+
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped table-counts mb-0" data-path="/apps/{{ .App.ID }}/achievements.json" id="achievements-table">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Completed</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+
+                        </div>
 
                     </div>
 

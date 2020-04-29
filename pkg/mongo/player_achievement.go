@@ -49,9 +49,22 @@ func FindLatestPlayerAchievement(playerID int64, appID int) (int64, error) {
 
 }
 
-func GetPlayerAchievements(appID int, offset int64, limit int64, sort bson.D) (achievements []PlayerAchievement, err error) {
+func GetPlayerAchievementsForApp(playerID int64, appID int, achievementKeys bson.A, limit int64) (achievements []PlayerAchievement, err error) {
 
-	var filter = bson.D{{"app_id", appID}}
+	if len(achievementKeys) < 1 {
+		return achievements, err
+	}
+
+	var filter = bson.D{
+		{"player_id", playerID},
+		{"app_id", appID},
+		{"achievement_id", bson.M{"$in": achievementKeys}},
+	}
+
+	return getPlayerAchievements(0, limit, filter, nil)
+}
+
+func getPlayerAchievements(offset int64, limit int64, filter bson.D, sort bson.D) (achievements []PlayerAchievement, err error) {
 
 	cur, ctx, err := Find(CollectionPlayerAchievements, offset, limit, sort, filter, nil, nil)
 	if err != nil {

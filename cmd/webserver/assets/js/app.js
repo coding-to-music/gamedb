@@ -726,6 +726,11 @@ if ($appPage.length > 0) {
         const options = {
             "pageLength": 100,
             "order": [[1, 'desc']],
+            "createdRow": function (row, data, dataIndex) {
+                if (data[7]) {
+                    $(row).addClass('font-weight-bold');
+                }
+            },
             "columnDefs": [
                 // Name
                 {
