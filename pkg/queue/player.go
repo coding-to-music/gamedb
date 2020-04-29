@@ -7,6 +7,7 @@ import (
 
 	"github.com/Jleagle/rabbit-go"
 	"github.com/Jleagle/steam-go/steamapi"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
@@ -259,10 +260,12 @@ func updatePlayerGames(player *mongo.Player) error {
 		return err
 	}
 
-	for _, v := range resp.Games {
-		if v.PlaytimeForever > 0 {
-			err = ProducePlayerAchievements(player.ID, v.AppID)
-			log.Err(err)
+	if config.IsLocal() {
+		for _, v := range resp.Games {
+			if v.PlaytimeForever > 0 {
+				err = ProducePlayerAchievements(player.ID, v.AppID)
+				log.Err(err)
+			}
 		}
 	}
 
