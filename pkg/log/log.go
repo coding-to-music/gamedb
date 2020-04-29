@@ -297,7 +297,7 @@ func log(interfaces ...interface{}) {
 			if sendToRollbar && entry.severity >= SeverityError {
 
 				// Rollbar
-				rollbar.Log(entry.severity.toRollbar(), text)
+				// rollbar.Log(entry.severity.toRollbar(), text)
 
 				// Sentry
 				if entry.error != nil {
