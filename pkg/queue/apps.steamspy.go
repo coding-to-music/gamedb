@@ -14,12 +14,16 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/powerslacker/ratelimit"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
 type AppSteamspyMessage struct {
 	ID int `json:"id"`
 }
+
+// https://steamspy.com/api.php
+var steamspyLimiter = ratelimit.New(4, ratelimit.WithoutSlack)
 
 func appSteamspyHandler(messages []*rabbit.Message) {
 
@@ -49,6 +53,8 @@ func appSteamspyHandler(messages []*rabbit.Message) {
 			sendToRetryQueue(message)
 			continue
 		}
+
+		steamspyLimiter.Take()
 
 		response, err := client.Do(req)
 		if err != nil {
