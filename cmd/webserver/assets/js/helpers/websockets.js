@@ -28,7 +28,7 @@ function websocketListener(page, onMessage, attempt = 1) {
         $badge.removeClass('badge-secondary badge-danger');
 
         if (attempt > 1) {
-            toast(true, 'Some events may have been missed', 'Live functionality is back');
+            // toast(true, 'Some events may have been missed', 'Live functionality is back');
         }
 
         attempt = 1;
@@ -87,7 +87,7 @@ function websocketListener(page, onMessage, attempt = 1) {
         if (type === 'onclose' || type === 'manual') {
 
             if (attempt === 1) {
-                toast(false, 'Live functionality has stopped');
+                // toast(false, 'Live functionality has stopped');
             }
 
             if (e.code !== 1000) {
