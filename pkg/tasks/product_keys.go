@@ -88,8 +88,6 @@ func (c ScanProductKeys) work() (err error) {
 		}
 	}
 
-	apps = nil // Memory
-
 	for k, v := range productKeysMap {
 		for kk, vv := range v {
 			log.Info(k, kk)
@@ -154,8 +152,6 @@ func (c ScanProductKeys) work() (err error) {
 			}
 		}
 	}
-
-	packages = nil // Memory
 
 	for k, v := range productKeysMap {
 		for kk, vv := range v {

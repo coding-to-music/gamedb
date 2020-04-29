@@ -36,7 +36,5 @@ func (c AppsYoutube) work() (err error) {
 		log.Err(err)
 	}
 
-	apps = nil // Memory
-
 	return nil
 }

@@ -52,8 +52,6 @@ func (c AppPlayers) work() (err error) {
 		}
 	}
 
-	apps = nil // Memory
-
 	log.Info("Found " + strconv.Itoa(len(ids)) + " apps")
 
 	idChunks := helpers.ChunkInts(ids, 10)
