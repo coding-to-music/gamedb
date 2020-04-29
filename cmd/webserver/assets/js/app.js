@@ -804,7 +804,11 @@ if ($appPage.length > 0) {
                 {
                     "targets": 1,
                     "render": function (data, type, row) {
-                        return '<span data-toggle="tooltip" data-placement="left" title="' + row[4] + '" data-livestamp="' + row[3] + '"></span>';
+                        if (row[3]) {
+                            return '<span data-toggle="tooltip" data-placement="left" title="' + row[4] + '" data-livestamp="' + row[3] + '"></span>';
+                        } else {
+                            return row[4];
+                        }
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).attr('nowrap', 'nowrap');
