@@ -168,7 +168,7 @@ if ($('#stats-page').length > 0) {
                     },
                     tooltip: {
                         formatter: function () {
-                            return this.y.toLocaleString() + ' people are level ' + this.x;
+                            return this.y.toLocaleString() + ' players are level ' + this.x + '-' + (this.x + 9);
                         },
                     },
                     series: [{

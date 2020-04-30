@@ -130,7 +130,7 @@ type statsTemplate struct {
 
 func playerLevelsHandler(w http.ResponseWriter, r *http.Request) {
 
-	levels, err := mongo.GetPlayerLevels()
+	levels, err := mongo.GetPlayerLevelsRounded()
 	if err != nil {
 		log.Err(err)
 		return

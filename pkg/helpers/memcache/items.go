@@ -85,4 +85,5 @@ var (
 	MemcacheUniquePlayerCountryCodes = Item{Key: "unique-player-country-codes", Expiration: 60 * 60 * 24 * 7}
 	MemcacheUniquePlayerStateCodes   = func(countryCode string) Item { return Item{Key: "unique-player-state-codes-" + countryCode, Expiration: 60 * 60 * 24 * 7} }
 	MemcachePlayerLevels             = Item{Key: "player-levels", Expiration: 60 * 60 * 24}
+	MemcachePlayerLevelsRounded      = Item{Key: "player-levels-rounded", Expiration: 60 * 60 * 24}
 )

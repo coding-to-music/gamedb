@@ -881,8 +881,53 @@ func GetPlayerLevels() (counts []count, err error) {
 		}
 
 		pipeline := mongo.Pipeline{
-			// {{Key: "$match", Value: bson.M{"level": bson.M{"$gt": 0}}}},
 			{{Key: "$group", Value: bson.M{"_id": "$level", "count": bson.M{"$sum": 1}}}},
+		}
+
+		cur, err := client.Database(MongoDatabase, options.Database()).Collection(CollectionPlayers.String()).Aggregate(ctx, pipeline, options.Aggregate())
+		if err != nil {
+			return counts, err
+		}
+
+		defer func() {
+			err = cur.Close(ctx)
+			log.Err(err)
+		}()
+
+		var counts []count
+		for cur.Next(ctx) {
+
+			var level count
+			err := cur.Decode(&level)
+			if err != nil {
+				log.Err(err, level.ID)
+			}
+			counts = append(counts, level)
+		}
+
+		sort.Slice(counts, func(i, j int) bool {
+			return counts[i].ID < counts[j].ID
+		})
+
+		return counts, cur.Err()
+	})
+
+	return counts, err
+}
+
+func GetPlayerLevelsRounded() (counts []count, err error) {
+
+	var item = memcache.MemcachePlayerLevelsRounded
+
+	err = memcache.GetSetInterface(item.Key, item.Expiration, &counts, func() (interface{}, error) {
+
+		client, ctx, err := getMongo()
+		if err != nil {
+			return counts, err
+		}
+
+		pipeline := mongo.Pipeline{
+			{{Key: "$group", Value: bson.M{"_id": bson.M{"$trunc": bson.A{"$level", -1}}, "count": bson.M{"$sum": 1}}}},
 		}
 
 		cur, err := client.Database(MongoDatabase, options.Database()).Collection(CollectionPlayers.String()).Aggregate(ctx, pipeline, options.Aggregate())
