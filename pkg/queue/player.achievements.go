@@ -141,15 +141,22 @@ func playerAchievementsHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		// Update player-app row
+		// Update player_apps row
 		playerApp := mongo.PlayerApp{}
 		playerApp.PlayerID = payload.PlayerID
 		playerApp.AppID = payload.AppID
 
+		var have int
+		for _, v := range resp.Achievements {
+			if v.Achieved {
+				have++
+			}
+		}
+
 		_, err = mongo.UpdateOne(mongo.CollectionPlayerApps, bson.D{{"_id", playerApp.GetKey()}}, bson.D{
 			{"app_achievements_total", app.AchievementsCount},
-			{"app_achievements_have", len(resp.Achievements)},
-			{"app_achievements_percent", float64(len(resp.Achievements)) / float64(app.AchievementsCount) * 100},
+			{"app_achievements_have", have},
+			{"app_achievements_percent", float64(have) / float64(app.AchievementsCount) * 100},
 		})
 		if err != nil {
 			log.Err(err)
