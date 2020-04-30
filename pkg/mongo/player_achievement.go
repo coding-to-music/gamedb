@@ -46,6 +46,10 @@ func (a PlayerAchievement) getKey() string {
 	return strconv.FormatInt(a.PlayerID, 10) + "-" + strconv.Itoa(a.AppID) + "-" + a.AchievementID
 }
 
+func (a PlayerAchievement) GetAchievementIcon() string {
+	return helpers.GetAchievementIcon(a.AppID, a.AchievementIcon)
+}
+
 func FindLatestPlayerAchievement(playerID int64, appID int) (int64, error) {
 
 	var filter = bson.D{{"player_id", playerID}, {"app_id", appID}}
@@ -57,6 +61,14 @@ func FindLatestPlayerAchievement(playerID int64, appID int) (int64, error) {
 
 	return playerAchievement.AchievementDate, err
 
+}
+
+func GetPlayerAchievements(playerID int64, offset int64) (achievements []PlayerAchievement, err error) {
+
+	var filter = bson.D{{"player_id", playerID}}
+	var sort = bson.D{{"achievement_date", -1}}
+
+	return getPlayerAchievements(offset, 100, filter, sort)
 }
 
 func GetPlayerAchievementsForApp(playerID int64, appID int, achievementKeys bson.A, limit int64) (achievements []PlayerAchievement, err error) {

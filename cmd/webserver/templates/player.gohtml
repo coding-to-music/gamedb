@@ -37,6 +37,9 @@
                             <a class="nav-link nav-link-small" data-toggle="tab" href="#wishlist" role="tab">Wishlist ({{ comma .Player.WishlistAppsCount }})</a>
                         </li>
                     {{ end }}
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-small" data-toggle="tab" href="#achievements" role="tab">Achievements</a>
+                    </li>
                     {{if gt .Player.FriendsCount 0}}
                         <li class="nav-item">
                             <a class="nav-link nav-link-small" data-toggle="tab" href="#friends" role="tab">Friends ({{ comma .Player.FriendsCount }})</a>
@@ -527,6 +530,25 @@
                                 Reorder your wishlist on the <a href="https://store.steampowered.com/wishlist" target="_blank" rel="noopener">Steam Commity Page</a>.<br/>
                                 Ranks with a dash are newly added and unranked.
                             </div>
+                        </div>
+
+                    </div>
+
+                    {{/* Achievements */}}
+                    <div class="tab-pane" id="achievements" role="tabpanel">
+
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped table-counts mb-0" data-path="/players/{{ .Player.ID }}/achievements.json" id="achievements-table">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th scope="col">App</th>
+                                    <th scope="col">Achievement</th>
+                                    <th scope="col">Date</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
                         </div>
 
                     </div>

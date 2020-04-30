@@ -43,15 +43,7 @@ func (achievement AppAchievement) getKey() string {
 }
 
 func (achievement AppAchievement) GetIcon() string {
-
-	if !strings.HasPrefix(achievement.Icon, "/") && !strings.HasPrefix(achievement.Icon, "http") {
-		achievement.Icon = helpers.AppIconBase + strconv.Itoa(achievement.AppID) + "/" + achievement.Icon
-	}
-	if !strings.HasSuffix(achievement.Icon, ".jpg") {
-		achievement.Icon = achievement.Icon + ".jpg"
-	}
-
-	return achievement.Icon
+	return helpers.GetAchievementIcon(achievement.AppID, achievement.Icon)
 }
 
 func (achievement *AppAchievement) SetIcon(url string) {

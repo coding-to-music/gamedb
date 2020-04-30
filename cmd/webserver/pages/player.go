@@ -39,6 +39,8 @@ func PlayerRouter() http.Handler {
 	r.Get("/add-friends", playerAddFriendsHandler)
 	r.Get("/badges.json", playerBadgesAjaxHandler)
 	r.Get("/friends.json", playerFriendsAjaxHandler)
+	r.Get("/achievements.json", playerAchievementsAjaxHandler)
+	r.Get("/achievements-summary.json", playerAchievementsSummaryAjaxHandler)
 	r.Get("/games.json", playerGamesAjaxHandler)
 	r.Get("/groups.json", playerGroupsAjaxHandler)
 	r.Get("/history.json", playersHistoryAjaxHandler)
@@ -605,6 +607,69 @@ func playerRecentAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	returnJSON(w, r, response)
+}
+
+func playerAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	playerID, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+	if err != nil {
+		log.Err(err, r)
+		return
+	}
+
+	query := datatable.NewDataTableQuery(r, true)
+
+	//
+	var wg sync.WaitGroup
+
+	// Get apps
+	var playerAchievements []mongo.PlayerAchievement
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		playerAchievements, err = mongo.GetPlayerAchievements(playerID, query.GetOffset64())
+		log.Err(err)
+	}()
+
+	// Get total
+	var count int64
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		count, err = mongo.CountDocuments(mongo.CollectionPlayerAchievements, bson.D{{"player_id", playerID}}, 0)
+		if err != nil {
+			log.Err(err, r)
+			return
+		}
+	}()
+
+	// Wait
+	wg.Wait()
+
+	var response = datatable.NewDataTablesResponse(r, query, count, count)
+	for _, pa := range playerAchievements {
+		response.AddRow([]interface{}{
+			helpers.GetAppPath(pa.AppID, pa.AppName), // 0
+			helpers.GetAppName(pa.AppID, pa.AppName), // 1
+			helpers.GetAppIcon(pa.AppID, pa.AppIcon), // 2
+			pa.AchievementName,                       // 3
+			pa.GetAchievementIcon(),                  // 4
+			pa.AchievementDescription,                // 5
+			pa.AchievementDate,                       // 6
+		})
+	}
+
+	returnJSON(w, r, response)
+}
+
+func playerAchievementsSummaryAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
 }
 
 func playerFriendsAjaxHandler(w http.ResponseWriter, r *http.Request) {
