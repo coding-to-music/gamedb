@@ -259,11 +259,19 @@ func updatePlayerGames(player *mongo.Player) error {
 		return err
 	}
 
-	if player.UpdatedAt.Unix() < 1588244400 || player.UpdatedAt.Before(time.Now().Add(time.Hour*24*13*-1)) { // Just under 2 weeks
-		for _, v := range resp.Games {
-			if v.PlaytimeForever > 0 {
-				err = ProducePlayerAchievements(player.ID, v.AppID)
-				log.Err(err)
+	user, err := sql.GetUserByKey("steam_id", player.ID, 0)
+	err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
+	if err != nil {
+		return err
+	}
+
+	if user.PatreonLevel > 0 {
+		if player.UpdatedAt.Unix() < 1588244400 || player.UpdatedAt.Before(time.Now().Add(time.Hour*24*13*-1)) { // Just under 2 weeks
+			for _, v := range resp.Games {
+				if v.PlaytimeForever > 0 {
+					err = ProducePlayerAchievements(player.ID, v.AppID)
+					log.Err(err)
+				}
 			}
 		}
 	}
@@ -326,10 +334,18 @@ func updatePlayerRecentGames(player *mongo.Player) error {
 	}
 
 	//
-	if player.UpdatedAt.After(time.Now().Add(time.Hour * 24 * 13 * -1)) { // Just under 2 weeks
-		for _, v := range newAppsSlice {
-			err = ProducePlayerAchievements(player.ID, v.AppID)
-			log.Err(err)
+	user, err := sql.GetUserByKey("steam_id", player.ID, 0)
+	err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
+	if err != nil {
+		return err
+	}
+
+	if user.PatreonLevel > 0 {
+		if player.UpdatedAt.After(time.Now().Add(time.Hour * 24 * 13 * -1)) { // Just under 2 weeks
+			for _, v := range newAppsSlice {
+				err = ProducePlayerAchievements(player.ID, v.AppID)
+				log.Err(err)
+			}
 		}
 	}
 
