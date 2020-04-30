@@ -231,13 +231,9 @@ if ($('#stats-page').length > 0) {
                 $container.json2html(
                     data.rows,
                     {
-                        '<>': 'tr', 'html': [
+                        '<>': 'tr', 'data-link': '/apps?types=${type}', 'html': [
                             {
-                                '<>': 'td', 'html': [
-                                    {
-                                        '<>': 'a', 'href': '/apps?types=${type}', 'html': '${typef}'
-                                    }
-                                ],
+                                '<>': 'td', 'html': '${typef}',
                             },
                             {
                                 '<>': 'td', 'html': '${countf}'
