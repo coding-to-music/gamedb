@@ -6,6 +6,7 @@ import (
 	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type PlayerAchievementsMessage struct {
@@ -33,6 +34,7 @@ func playerAchievementsHandler(messages []*rabbit.Message) {
 			continue
 		}
 
+		// Get app
 		app, err := mongo.GetApp(payload.AppID, false)
 		if err != nil {
 			log.Err(err, message.Message.Body)
@@ -44,10 +46,19 @@ func playerAchievementsHandler(messages []*rabbit.Message) {
 			appsWithNoStats[payload.AppID] = true
 		}
 
+		// Get player
+		player, err := mongo.GetPlayer(payload.PlayerID)
+		if err != nil {
+			log.Err(err, message.Message.Body)
+			sendToRetryQueue(message)
+			continue
+		}
+
+		// Do API call
 		resp, b, err := steamHelper.GetSteamUnlimited().GetPlayerAchievements(uint64(payload.PlayerID), uint32(payload.AppID))
 		err = steamHelper.AllowSteamCodes(err, b, []int{400})
 		if err != nil {
-			log.Err(err, message.Message.Body)
+			steamHelper.LogSteamError(err, message.Message.Body)
 			sendToRetryQueue(message)
 			continue
 		}
@@ -62,6 +73,7 @@ func playerAchievementsHandler(messages []*rabbit.Message) {
 			continue
 		}
 
+		// Get the last saved achievement
 		timestamp, err := mongo.FindLatestPlayerAchievement(payload.PlayerID, payload.AppID)
 		if err != nil {
 			log.Err(err)
@@ -69,24 +81,76 @@ func playerAchievementsHandler(messages []*rabbit.Message) {
 			continue
 		}
 
+		// Get achievements for icons
+		var a bson.A
+		for _, v := range resp.Achievements {
+			if v.Achieved && v.UnlockTime >= timestamp {
+				a = append(a, v.APIName)
+			}
+		}
+
+		var appAchievementsMap = map[string]mongo.AppAchievement{}
+
+		if len(a) > 0 {
+
+			var filter = bson.D{
+				{"app_id", payload.AppID},
+				{"key", bson.M{"$in": a}},
+			}
+
+			appAchievements, err := mongo.GetAppAchievements(0, 0, filter, nil)
+			if err != nil {
+				log.Err(err)
+				sendToRetryQueue(message)
+				continue
+			}
+
+			for _, appAchievement := range appAchievements {
+				appAchievementsMap[appAchievement.Key] = appAchievement
+			}
+		}
+
+		// Save new player achievements
 		var rows []mongo.PlayerAchievement
 
 		for _, v := range resp.Achievements {
-			if v.Achieved {
-				if v.UnlockTime >= timestamp {
-					rows = append(rows, mongo.PlayerAchievement{
-						PlayerID:               payload.PlayerID,
-						AppID:                  payload.AppID,
-						AchievementID:          v.APIName,
-						AchievementName:        v.Name,
-						AchievementDescription: v.Description,
-						AchievementDate:        v.UnlockTime,
-					})
-				}
+			if v.Achieved && v.UnlockTime >= timestamp {
+
+				appAchievement, _ := appAchievementsMap[v.APIName]
+
+				rows = append(rows, mongo.PlayerAchievement{
+					PlayerID:               payload.PlayerID,
+					PlayerName:             player.PersonaName,
+					PlayerIcon:             player.Avatar,
+					AppID:                  app.ID,
+					AppName:                app.Name,
+					AppIcon:                app.Icon,
+					AchievementID:          v.APIName,
+					AchievementName:        v.Name,
+					AchievementIcon:        appAchievement.Icon,
+					AchievementDescription: v.Description,
+					AchievementDate:        v.UnlockTime,
+				})
 			}
 		}
 
 		err = mongo.UpdatePlayerAchievements(rows)
+		if err != nil {
+			log.Err(err)
+			sendToRetryQueue(message)
+			continue
+		}
+
+		// Update player-app row
+		playerApp := mongo.PlayerApp{}
+		playerApp.PlayerID = payload.PlayerID
+		playerApp.AppID = payload.AppID
+
+		_, err = mongo.UpdateOne(mongo.CollectionPlayerApps, bson.D{{"_id", playerApp.GetKey()}}, bson.D{
+			{"app_achievements_total", app.AchievementsCount},
+			{"app_achievements_have", len(resp.Achievements)},
+			{"app_achievements_percent", float64(len(resp.Achievements)) / float64(app.AchievementsCount) * 100},
+		})
 		if err != nil {
 			log.Err(err)
 			sendToRetryQueue(message)

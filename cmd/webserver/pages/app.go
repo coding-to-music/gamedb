@@ -495,7 +495,8 @@ func appAchievementsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	query := datatable.NewDataTableQuery(r, false)
+	var query = datatable.NewDataTableQuery(r, false)
+	var filter = bson.D{{"app_id", id}}
 
 	//
 	var wg sync.WaitGroup
@@ -513,7 +514,7 @@ func appAchievementsHandler(w http.ResponseWriter, r *http.Request) {
 		})
 
 		var err error
-		achievements, err = mongo.GetAppAchievements(id, query.GetOffset64(), sortOrder)
+		achievements, err = mongo.GetAppAchievements(query.GetOffset64(), 100, filter, sortOrder)
 		if err != nil {
 			log.Err(err, r)
 			return
@@ -547,7 +548,7 @@ func appAchievementsHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		total, err = mongo.CountDocuments(mongo.CollectionAppAchievements, bson.D{{"app_id", id}}, 60*60*24*28)
+		total, err = mongo.CountDocuments(mongo.CollectionAppAchievements, filter, 60*60*24*28)
 		if err != nil {
 			log.Err(err, r)
 			return

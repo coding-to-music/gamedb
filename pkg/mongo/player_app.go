@@ -36,7 +36,7 @@ func (app PlayerApp) BSON() bson.D {
 	}
 
 	return bson.D{
-		{"_id", app.getKey()},
+		{"_id", app.GetKey()},
 		{"player_id", app.PlayerID},
 		{"app_id", app.AppID},
 		{"app_name", app.AppName},
@@ -47,7 +47,7 @@ func (app PlayerApp) BSON() bson.D {
 	}
 }
 
-func (app PlayerApp) getKey() string {
+func (app PlayerApp) GetKey() string {
 	return strconv.FormatInt(app.PlayerID, 10) + "-" + strconv.Itoa(app.AppID)
 }
 
@@ -142,7 +142,7 @@ func getPlayerApps(offset int64, limit int64, filter bson.D, sort bson.D, projec
 		var playerApp PlayerApp
 		err := cur.Decode(&playerApp)
 		if err != nil {
-			log.Err(err, playerApp.getKey())
+			log.Err(err, playerApp.GetKey())
 		} else {
 			apps = append(apps, playerApp)
 		}
@@ -166,7 +166,7 @@ func UpdatePlayerApps(apps map[int]*PlayerApp) (err error) {
 	for _, v := range apps {
 
 		write := mongo.NewReplaceOneModel()
-		write.SetFilter(bson.M{"_id": v.getKey()})
+		write.SetFilter(bson.M{"_id": v.GetKey()})
 		write.SetReplacement(v.BSON())
 		write.SetUpsert(true)
 

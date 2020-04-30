@@ -12,9 +12,14 @@ import (
 
 type PlayerAchievement struct {
 	PlayerID               int64  `bson:"player_id"`
+	PlayerName             string `bson:"player_name"`
+	PlayerIcon             string `bson:"player_icon"`
 	AppID                  int    `bson:"app_id"`
+	AppName                string `bson:"app_name"`
+	AppIcon                string `bson:"app_icon"`
 	AchievementID          string `bson:"achievement_id"`
 	AchievementName        string `bson:"achievement_name"`
+	AchievementIcon        string `bson:"achievement_icon"`
 	AchievementDescription string `bson:"achievement_description"`
 	AchievementDate        int64  `bson:"achievement_date"`
 }
@@ -24,9 +29,14 @@ func (a PlayerAchievement) BSON() bson.D {
 	return bson.D{
 		{"_id", a.getKey()},
 		{"player_id", a.PlayerID},
+		{"player_name", a.PlayerName},
+		{"player_icon", a.PlayerIcon},
 		{"app_id", a.AppID},
+		{"app_name", a.AppID},
+		{"app_icon", a.AppID},
 		{"achievement_id", a.AchievementID},
 		{"achievement_name", a.AchievementName},
+		{"achievement_icon", a.AchievementIcon},
 		{"achievement_description", a.AchievementDescription},
 		{"achievement_date", a.AchievementDate},
 	}
