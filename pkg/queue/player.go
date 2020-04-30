@@ -326,7 +326,7 @@ func updatePlayerRecentGames(player *mongo.Player) error {
 	}
 
 	//
-	if player.UpdatedAt.Unix() < 1588244400 || player.UpdatedAt.After(time.Now().Add(time.Hour*24*13*-1)) { // Just under 2 weeks
+	if player.UpdatedAt.After(time.Now().Add(time.Hour * 24 * 13 * -1)) { // Just under 2 weeks
 		for _, v := range newAppsSlice {
 			err = ProducePlayerAchievements(player.ID, v.AppID)
 			log.Err(err)
