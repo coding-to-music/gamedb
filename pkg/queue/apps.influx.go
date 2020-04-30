@@ -8,6 +8,7 @@ import (
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"go.mongodb.org/mongo-driver/bson"
@@ -99,25 +100,27 @@ func appInfluxHandler(messages []*rabbit.Message) {
 		}
 
 		// Save to Mongo
-		wg.Add(1)
-		go func() {
-
-			defer wg.Done()
-
-			err = appsInfluxSave(payload.ID, appTrend, appPlayersWeek, appPlayersAlltime, appPlayersWeekAverage)
-			if err != nil {
-				log.Err(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-		}()
-
-		wg.Wait()
-
-		if message.ActionTaken {
+		_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", payload.ID}}, bson.D{
+			{"player_trend", appTrend},
+			{"player_peak_week", appPlayersWeek},
+			{"player_peak_alltime", appPlayersAlltime},
+			{"player_avg_week", appPlayersWeekAverage},
+		})
+		if err != nil {
+			log.Err(err, payload.ID)
+			sendToRetryQueue(message)
 			continue
 		}
 
+		// Clear app cache
+		err = memcache.Delete(memcache.MemcacheApp(payload.ID).Key)
+		if err != nil {
+			log.Err(err, payload.ID)
+			sendToRetryQueue(message)
+			continue
+		}
+
+		//
 		message.Ack(false)
 	}
 }
@@ -207,15 +210,4 @@ func getAppTrendValue(appID int) (trend int64, err error) {
 	}
 
 	return trendTotal, nil
-}
-
-func appsInfluxSave(appID int, trend int64, week int64, alltime int64, average float64) (err error) {
-
-	_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", appID}}, bson.D{
-		{"player_trend", trend},
-		{"player_peak_week", week},
-		{"player_peak_alltime", alltime},
-		{"player_avg_week", average},
-	})
-	return err
 }
