@@ -146,7 +146,7 @@ func GetGroupPlayers(groupID string, offset int64) (players []PlayerGroup, err e
 
 	var filter = bson.D{{"group_id", groupID}}
 
-	return getPlayerGroups(offset, 100, filter, nil)
+	return getPlayerGroups(offset, 100, filter, bson.D{{"player_name", 1}})
 }
 
 func getPlayerGroups(offset int64, limit int64, filter bson.D, sort bson.D) (players []PlayerGroup, err error) {

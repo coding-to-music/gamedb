@@ -40,11 +40,21 @@
                     <div class="alert alert-danger" role="alert">{{ .Group.Error }}</div>
                 {{ end }}
 
-                <div id="group-chart"></div>
+                <div id="group-chart" class="mb-4"></div>
 
-                <div>{{ .Summary }}</div>
+                <div class="mb-4">{{ .Summary }}</div>
 
-                <div id="players"></div>
+                <h5>Game DB players in {{ .Group.Abbr }}</h5>
+                <table class="table table-hover table-striped table-counts mb-0" data-path="/groups/{{ .Group.ID }}/table.json" id="players" data-ordering="false">
+                    <thead>
+                    <tr>
+                        <th>Player</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
 
             </div>
         </div>

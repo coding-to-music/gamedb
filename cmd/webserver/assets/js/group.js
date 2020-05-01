@@ -17,16 +17,40 @@ if ($groupPage.length > 0) {
 
 function loadGroupPlayers() {
 
-    // $.ajax({
-    //     type: "GET",
-    //     url: '/groups/' + $groupPage.attr('data-group-id') + '/table.json',
-    //     dataType: 'json',
-    //     success: function (data, textStatus, jqXHR) {
-    //
-    //
-    //
-    //     },
-    // });
+    $.ajax({
+        type: "GET",
+        url: '/groups/' + $groupPage.attr('data-group-id') + '/table.json',
+        dataType: 'json',
+        success: function (data, textStatus, jqXHR) {
+
+            const options = {
+                "order": [[0, 'asc']],
+                "createdRow": function (row, data, dataIndex) {
+                    $(row).attr('data-link', data[2]);
+                    $(row).attr('data-player-id', data[0]);
+                },
+                "columnDefs": [
+                    // Icon / Name
+                    {
+                        "targets": 0,
+                        "render": function (data, type, row) {
+                            return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[3] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></div>'
+                        },
+                        "createdCell": function (td, cellData, rowData, row, col) {
+                            $(td).addClass('img');
+                        },
+                        "orderable": false,
+                    },
+                ]
+            };
+
+            const searchFields = [
+                $('#items-search'),
+            ];
+
+            $('#players').gdbTable({tableOptions: options, searchFields: searchFields});
+        },
+    });
 }
 
 function loadGroupChart($page = null) {
