@@ -2,10 +2,10 @@ package mongo
 
 import (
 	"net/url"
+	"regexp"
 	"strconv"
 	"strings"
 
-	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -119,8 +119,10 @@ func (item *AppItem) Link() string {
 	return "https://steamcommunity.com/market/listings/" + strconv.Itoa(item.AppID) + "/" + url.PathEscape(item.Name)
 }
 
+var bbcodeRegex = regexp.MustCompile(`\[.{1,}?\]`)
+
 func (item AppItem) ShortDescription() string {
-	return helpers.TruncateString(item.Description, 150, "...")
+	return bbcodeRegex.ReplaceAllString(item.Description, "")
 }
 
 func (item *AppItem) Image(size int, crop bool) string {

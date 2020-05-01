@@ -198,27 +198,16 @@ if ($appPage.length > 0) {
                 {
                     "targets": 1,
                     "render": function (data, type, row) {
-                        return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[25] + '" alt="" data-lazy-alt="' + row[16] + '"></div><div class="name">' + row[16] + '</div></div>'
+                        return '<div class="icon-name"><div class="icon"><img class="tall" data-lazy="' + row[25] + '" alt="" data-lazy-alt="' + row[16] + '"></div><div class="name">' + row[16] + '<br><small title="' + row[4] + '">' + row[29] + '</small></div></div>'
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
-                        $(td).attr('nowrap', 'nowrap');
                     },
                     "orderable": false,
                 },
-                // Description
-                {
-                    "targets": 2,
-                    "render": function (data, type, row) {
-                        return row[29];
-                    },
-                    "createdCell": function (td, cellData, rowData, row, col) {
-                    },
-                    "orderable": false
-                },
                 // Link
                 {
-                    "targets": 3,
+                    "targets": 2,
                     "render": function (data, type, row) {
                         if (row[28]) {
                             return '<a href="' + row[28] + '" data-src="/assets/img/no-app-image-square.jpg" target="_blank" rel="noopener" class="stop-prop"><i class="fas fa-link"></i></a>';
