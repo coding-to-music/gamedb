@@ -639,38 +639,30 @@
                     {{/* Items */}}
                     <div class="tab-pane" id="items" role="tabpanel">
 
-                        {{ if gt .App.Items 0 }}
-
-                            <div class="row">
-                                <div class="col-sm-6 col-md-4">
-                                    <div class="form-group">
-                                        <label for="items-search">Search</label>
-                                        <input name="search" type="search" class="form-control gdb-search" id="items-search">
-                                    </div>
+                        <div class="row">
+                            <div class="col-sm-6 col-md-4">
+                                <div class="form-group">
+                                    <label for="items-search">Search</label>
+                                    <input name="search" type="search" class="form-control gdb-search" id="items-search">
                                 </div>
                             </div>
+                        </div>
 
-                            <div class="table-responsive">
-                                <table class="table table-hover table-striped mb-0" data-path="/apps/{{ .App.ID }}/items.json" id="items-table">
-                                    <thead class="thead-light">
-                                    <tr>
-                                        <th scope="col" class="thin">ID</th>
-                                        <th scope="col">Name</th>
-                                        <th scope="col">Description</th>
-                                        <th scope="col"></th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped table-counts mb-0" data-path="/apps/{{ .App.ID }}/items.json" id="items-table">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th scope="col" class="thin">ID</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Description</th>
+                                    <th scope="col"></th>
+                                </tr>
+                                </thead>
+                                <tbody>
 
-                                    </tbody>
-                                </table>
-                            </div>
-
-                        {{ else }}
-
-                            <p>This app has no items.</p>
-
-                        {{ end }}
+                                </tbody>
+                            </table>
+                        </div>
 
                     </div>
 
