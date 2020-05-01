@@ -93,7 +93,7 @@ var (
 		{name: QueuePlayers},
 		{name: QueuePlayerRanks},
 		{name: QueuePlayersAchievements},
-		{name: QueueDelay},
+		{name: QueueDelay, skipHeaders: true},
 		{name: QueueSteam},
 		{name: QueueFailed},
 		{name: QueueTest},
