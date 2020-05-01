@@ -26,7 +26,7 @@ func appDLCHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		currentDLCs, err := mongo.GetDLCForApp(payload.AppID, 0, 0, nil)
+		currentDLCs, err := mongo.GetDLCForApp(0, 0, bson.D{{"app_id", payload.AppID}}, nil)
 
 		var currentIDs = map[int]bool{}
 		for _, v := range currentDLCs {

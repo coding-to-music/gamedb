@@ -807,8 +807,13 @@ if ($appPage.length > 0) {
             ]
         };
 
+        const searchFields = [
+            $('#dlc-search'),
+        ];
+
         $('#dlc-table').gdbTable({
             tableOptions: options,
+            searchFields: searchFields
         });
     }
 

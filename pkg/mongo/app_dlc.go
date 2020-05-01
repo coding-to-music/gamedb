@@ -48,9 +48,7 @@ func (dlc AppDLC) GetPath() string {
 	return helpers.GetAppPath(dlc.DLCID, dlc.Name)
 }
 
-func GetDLCForApp(appID int, offset int64, limit int64, sort bson.D) (dlcs []AppDLC, err error) {
-
-	var filter = bson.D{{"app_id", appID}}
+func GetDLCForApp(offset int64, limit int64, filter bson.D, sort bson.D) (dlcs []AppDLC, err error) {
 
 	cur, ctx, err := Find(CollectionAppDLC, offset, limit, sort, filter, nil, nil)
 	if err != nil {

@@ -40,8 +40,8 @@ func appRouter() http.Handler {
 	r.Get("/items.json", appItemsAjaxHandler)
 	r.Get("/reviews.json", appReviewsAjaxHandler)
 	r.Get("/time.json", appTimeAjaxHandler)
-	r.Get("/achievements.json", appAchievementsHandler)
-	r.Get("/dlc.json", appDLCHandler)
+	r.Get("/achievements.json", appAchievementsAjaxHandler)
+	r.Get("/dlc.json", appDLCAjaxHandler)
 
 	r.Get("/{slug}", appHandler)
 	return r
@@ -488,7 +488,7 @@ func appPricesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	productPricesAjaxHandler(w, r, helpers.ProductTypeApp)
 }
 
-func appAchievementsHandler(w http.ResponseWriter, r *http.Request) {
+func appAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
@@ -578,20 +578,31 @@ func appAchievementsHandler(w http.ResponseWriter, r *http.Request) {
 	returnJSON(w, r, response)
 }
 
-func appDLCHandler(w http.ResponseWriter, r *http.Request) {
+func appDLCAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		return
 	}
 
-	query := datatable.NewDataTableQuery(r, false)
+	var query = datatable.NewDataTableQuery(r, false)
+	var search = query.GetSearchString("search")
+
+	var filter = bson.D{{"app_id", id}}
+	var filter2 = filter
+
+	if len(search) > 1 {
+
+		quoted := regexp.QuoteMeta(search)
+
+		filter2 = append(filter, bson.E{Key: "name", Value: bson.M{"$regex": quoted, "$options": "i"}})
+	}
 
 	//
 	var wg sync.WaitGroup
 
 	// Get DLCs
-	var DLCs []mongo.AppDLC
+	var dlcs []mongo.AppDLC
 	wg.Add(1)
 	go func() {
 
@@ -603,22 +614,31 @@ func appDLCHandler(w http.ResponseWriter, r *http.Request) {
 		})
 
 		var err error
-		DLCs, err = mongo.GetDLCForApp(id, query.GetOffset64(), 100, sortOrder)
+		dlcs, err = mongo.GetDLCForApp(query.GetOffset64(), 100, filter2, sortOrder)
 		if err != nil {
 			log.Err(err, r)
 			return
 		}
 	}()
 
-	// Get total
+	// Get totals
 	var total int64
+	var filtered int64
+
 	wg.Add(1)
 	go func() {
 
 		defer wg.Done()
 
 		var err error
-		total, err = mongo.CountDocuments(mongo.CollectionAppDLC, bson.D{{"app_id", id}}, 60*60*24)
+
+		total, err = mongo.CountDocuments(mongo.CollectionAppDLC, filter, 60*60*24)
+		if err != nil {
+			log.Err(err, r)
+			return
+		}
+
+		filtered, err = mongo.CountDocuments(mongo.CollectionAppDLC, filter2, 60*60*24)
 		if err != nil {
 			log.Err(err, r)
 			return
@@ -628,8 +648,8 @@ func appDLCHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	response := datatable.NewDataTablesResponse(r, query, total, total)
-	for _, dlc := range DLCs {
+	response := datatable.NewDataTablesResponse(r, query, total, filtered)
+	for _, dlc := range dlcs {
 
 		response.AddRow([]interface{}{
 			dlc.DLCID,           // 0
@@ -658,20 +678,16 @@ func appItemsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	query := datatable.NewDataTableQuery(r, true)
-
-	// Make filter
+	var query = datatable.NewDataTableQuery(r, true)
 	var search = query.GetSearchString("search")
-
-	filter := bson.D{
-		{Key: "app_id", Value: idx},
-	}
+	var filter = bson.D{{Key: "app_id", Value: idx}}
+	var filter2 = filter
 
 	if len(search) > 1 {
 
 		quoted := regexp.QuoteMeta(search)
 
-		filter = append(filter, bson.E{Key: "$or", Value: bson.A{
+		filter2 = append(filter2, bson.E{Key: "$or", Value: bson.A{
 			bson.M{"name": bson.M{"$regex": quoted, "$options": "i"}},
 			bson.M{"description": bson.M{"$regex": quoted, "$options": "i"}},
 		}})
@@ -688,7 +704,7 @@ func appItemsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		items, err = mongo.GetAppItems(query.GetOffset64(), 100, filter, nil)
+		items, err = mongo.GetAppItems(query.GetOffset64(), 100, filter2, nil)
 		if err != nil {
 			log.Err(err, r)
 			return
@@ -696,28 +712,26 @@ func appItemsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	}()
 
-	// Get total
+	// Get totals
 	var total int64
-	wg.Add(1)
-	go func() {
-
-		defer wg.Done()
-
-		var err error
-		total, err = mongo.CountDocuments(mongo.CollectionAppItems, bson.D{{Key: "app_id", Value: idx}}, 0)
-		log.Err(err, r)
-	}()
-
-	// Get filtered count
 	var filtered int64
+
 	wg.Add(1)
 	go func() {
 
 		defer wg.Done()
 
 		var err error
-		filtered, err = mongo.CountDocuments(mongo.CollectionAppItems, filter, 0)
-		log.Err(err, r)
+
+		total, err = mongo.CountDocuments(mongo.CollectionAppItems, filter, 0)
+		if err != nil {
+			log.Err(err, r)
+		}
+
+		filtered, err = mongo.CountDocuments(mongo.CollectionAppItems, filter2, 0)
+		if err != nil {
+			log.Err(err, r)
+		}
 	}()
 
 	// Wait

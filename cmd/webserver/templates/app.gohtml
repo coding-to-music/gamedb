@@ -441,6 +441,15 @@
                     {{/* DLC */}}
                     <div class="tab-pane" id="dlc" role="tabpanel">
 
+                        <div class="row">
+                            <div class="col-sm-8 col-md-6 col-md-4">
+                                <div class="form-group">
+                                    <label for="dlc-search">Search</label>
+                                    <input name="search" type="search" class="form-control gdb-search" id="dlc-search">
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="table-responsive">
                             <table class="table table-hover table-striped table-counts mb-0" data-path="/apps/{{ .App.ID }}/dlc.json" id="dlc-table">
                                 <thead class="thead-light">
@@ -640,7 +649,7 @@
                     <div class="tab-pane" id="items" role="tabpanel">
 
                         <div class="row">
-                            <div class="col-sm-6 col-md-4">
+                            <div class="col-sm-8 col-md-6 col-md-4">
                                 <div class="form-group">
                                     <label for="items-search">Search</label>
                                     <input name="search" type="search" class="form-control gdb-search" id="items-search">
