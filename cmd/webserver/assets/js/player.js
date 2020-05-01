@@ -382,27 +382,16 @@ if ($playerPage.length > 0) {
     function loadPlayerAchievements() {
 
         const options = {
-            "order": [[2, 'desc']],
+            "order": [[1, 'desc']],
             "createdRow": function (row, data, dataIndex) {
                 $(row).attr('data-link', data[0] + '#achievements');
             },
             "columnDefs": [
-                // App
+                // App / Achievement
                 {
                     "targets": 0,
                     "render": function (data, type, row) {
-                        return '<div class="icon-name"><div class="icon"><img data-toggle="tooltip" data-placement="bottom" title="' + row[1] + '" class="tall" data-lazy="' + row[2] + '" data-src="/assets/img/no-player-image.jpg" alt="" data-lazy-alt="' + row[1] + '"></div></div>'
-                    },
-                    "createdCell": function (td, cellData, rowData, row, col) {
-                        $(td).addClass('img');
-                    },
-                    "orderable": false,
-                },
-                // Achievement
-                {
-                    "targets": 1,
-                    "render": function (data, type, row) {
-                        return '<div class="icon-name"><div class="icon"><img class="tall" data-lazy="' + row[4] + '" alt="" data-lazy-alt="' + row[3] + '"></div><div class="name">' + row[3] + '<br><small>' + row[5] + '</small></div></div>'
+                        return '<div class="icon-name"><div class="icon"><img class="tall" data-lazy="' + row[4] + '" alt="" data-lazy-alt="' + row[3] + '"></div><div class="name">' + row[1] + ': ' + row[3] + '<br><small>' + row[5] + '</small></div></div>'
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
@@ -411,7 +400,7 @@ if ($playerPage.length > 0) {
                 },
                 // Release Date
                 {
-                    "targets": 2,
+                    "targets": 1,
                     "render": function (data, type, row) {
                         if (row[6]) {
                             return '<span data-livestamp="' + row[6] + '"></span>';
