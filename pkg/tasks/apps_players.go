@@ -35,31 +35,42 @@ func (c AppPlayers) work() (err error) {
 		return err
 	}
 
-	if q.Messages > 1000 {
+	if q.Messages > 100_000 {
 		return nil
 	}
 
 	// Add apps to queue
-	apps, err := mongo.GetApps(0, 0, bson.D{{"_id", 1}}, nil, bson.M{"_id": 1}, nil)
-	if err != nil {
-		return err
-	}
+	var offset int64 = 0
+	var limit int64 = 10_000
 
-	var ids []int
-	for _, v := range apps {
-		if v.ID > 0 { // This is just here to stop storing things on app 0, which we use to store steam stats on
-			ids = append(ids, v.ID)
+	for {
+
+		apps, err := mongo.GetApps(offset, limit, bson.D{{"_id", 1}}, nil, bson.M{"_id": 1}, nil)
+		if err != nil {
+			return err
 		}
-	}
 
-	log.Info("Found " + strconv.Itoa(len(ids)) + " apps")
+		log.Info("Found " + strconv.Itoa(len(apps)) + " apps")
 
-	idChunks := helpers.ChunkInts(ids, 10)
+		var ids []int
+		for _, v := range apps {
+			if v.ID > 0 { // This is just here to stop storing things on app 0, which we use to store steam stats on
+				ids = append(ids, v.ID)
+			}
+		}
 
-	for _, idChunk := range idChunks {
+		var chunks = helpers.ChunkInts(ids, 50)
 
-		err = queue.ProduceAppPlayers(queue.AppPlayerMessage{IDs: idChunk})
-		log.Err(err)
+		for _, chunk := range chunks {
+			err = queue.ProduceAppPlayers(queue.AppPlayerMessage{IDs: chunk})
+			log.Err(err)
+		}
+
+		if int64(len(apps)) != limit {
+			break
+		}
+
+		offset += limit
 	}
 
 	return nil
