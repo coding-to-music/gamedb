@@ -90,9 +90,10 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	t := appTemplate{}
 	t.setBackground(app, false, false)
 	t.fill(w, r, app.GetName(), template.HTML(app.ShortDescription))
-	t.metaImage = app.GetMetaImage()
 	t.addAssetCarousel()
 	t.addAssetHighCharts()
+	t.addAssetJSON2HTML()
+	t.metaImage = app.GetMetaImage()
 	t.IncludeSocialJS = true
 	t.App = app
 	t.Description = template.HTML(app.ShortDescription)
