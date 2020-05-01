@@ -716,7 +716,7 @@ func appItemsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		total, err = mongo.CountDocuments(mongo.CollectionAppItems, filter, 0)
+		filtered, err = mongo.CountDocuments(mongo.CollectionAppItems, filter, 0)
 		log.Err(err, r)
 	}()
 
