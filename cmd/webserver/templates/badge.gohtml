@@ -9,9 +9,15 @@
 
             {{ template "_social" .Badge }}
 
-            <h1 class="text-truncate" title="{{ .Badge.GetName }}">
-                <i class="fas fa-ribbon"></i> {{ .Badge.GetName }}
-            </h1>
+            <h1 class="text-truncate mb-4" title="{{ .Badge.GetName }}"><i class="fas fa-ribbon"></i> {{ .Badge.GetName }}</h1>
+
+            {{ if gt .Badge.AppID 0 }}
+                {{ if .Badge.BadgeFoil }}
+                    <p class="mb-0"><a href="{{ .Badge.GetPath }}" class="btn btn-success">Go to non foil badge</a></p>
+                {{ else }}
+                    <p class="mb-0"><a href="{{ .Badge.GetPath }}?foil=1" class="btn btn-success">Go to foil badge</a></p>
+                {{ end }}
+            {{ end }}
 
         </div>
 
@@ -43,17 +49,6 @@
         <div class="card">
             <div class="card-body">
 
-                {{ if gt .Badge.AppID 0 }}
-                    <p>
-                        <a href="{{ .Badge.GetAppPath }}" class="btn btn-success">Go to App page</a>
-                        {{ if .Badge.BadgeFoil }}
-                            <a href="{{ .Badge.GetPath }}" class="btn btn-success">Go to non-foil badge</a>
-                        {{ else }}
-                            <a href="{{ .Badge.GetPath }}?foil=1" class="btn btn-success">Go to foil badge</a>
-                        {{ end }}
-                    </p>
-                {{ end }}
-
                 <div class="table-responsive">
                     <table class="table table-hover table-striped table-counts mb-0" data-ordering="false" data-path="/badges/{{ .Badge.GetUniqueID }}/players.json{{ if .Badge.BadgeFoil }}?foil=1{{ end }}">
                         <thead class="thead-light">
@@ -66,7 +61,6 @@
                         </tr>
                         </thead>
                         <tbody>
-
                         </tbody>
                     </table>
                 </div>
