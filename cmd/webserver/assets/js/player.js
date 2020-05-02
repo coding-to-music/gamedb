@@ -416,7 +416,50 @@ if ($playerPage.length > 0) {
             ]
         };
 
-        $('#achievements-table').gdbTable({tableOptions: options});
+        $('#achievements-table').gdbTable({
+            tableOptions: options,
+        });
+
+        const summaryOptions = {
+            "order": [[2, 'desc']],
+            "createdRow": function (row, data, dataIndex) {
+                $(row).attr('data-link', data[0] + '#achievements');
+                $(row).attr('data-app-id', data[3]);
+            },
+            "columnDefs": [
+                // App / Achievement
+                {
+                    "targets": 0,
+                    "render": function (data, type, row) {
+                        return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[2] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></div>'
+                    },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        $(td).addClass('img');
+                    },
+                    "orderSequence": ['asc', 'desc'],
+                },
+                // Have
+                {
+                    "targets": 1,
+                    "render": function (data, type, row) {
+                        return row[4].toLocaleString() + '<small>/' + row[5].toLocaleString() + '</small>';
+                    },
+                    "orderSequence": ['desc', 'asc'],
+                },
+                // Percent
+                {
+                    "targets": 2,
+                    "render": function (data, type, row) {
+                        return row[6] + '%';
+                    },
+                    "orderSequence": ['desc', 'asc'],
+                },
+            ]
+        };
+
+        $('#achievements-summary-table').gdbTable({
+            tableOptions: summaryOptions,
+        });
     }
 
     function loadPlayerBadges() {

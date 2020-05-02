@@ -670,6 +670,74 @@ func playerAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 func playerAchievementsSummaryAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
+	playerID, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+	if err != nil {
+		log.Err(err, r)
+		return
+	}
+
+	query := datatable.NewDataTableQuery(r, true)
+
+	filter := bson.D{
+		{"player_id", playerID},
+		{"app_achievements_have", bson.M{"$exists": true, "$gt": 0}},
+	}
+
+	//
+	var wg sync.WaitGroup
+
+	// Get apps
+	var playerApps []mongo.PlayerApp
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+
+		var columns = map[string]string{
+			"0": "app_name",
+			"1": "app_achievements_have",
+			"2": "app_achievements_percent",
+		}
+
+		playerApps, err = mongo.GetPlayerApps(query.GetOffset64(), 100, filter, query.GetOrderMongo(columns))
+		if err != nil {
+			log.Err(err, r)
+		}
+	}()
+
+	// Get total
+	var count int64
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		count, err = mongo.CountDocuments(mongo.CollectionPlayerApps, filter, 0)
+		if err != nil {
+			log.Err(err, r)
+		}
+	}()
+
+	// Wait
+	wg.Wait()
+
+	var response = datatable.NewDataTablesResponse(r, query, count, count)
+	for _, pa := range playerApps {
+		response.AddRow([]interface{}{
+			helpers.GetAppPath(pa.AppID, pa.AppName), // 0
+			helpers.GetAppName(pa.AppID, pa.AppName), // 1
+			helpers.GetAppIcon(pa.AppID, pa.AppIcon), // 2
+			pa.AppID,                                 // 3
+			pa.AppAchievementsHave,                   // 4
+			pa.AppAchievementsTotal,                  // 5
+			pa.GetPercent(),                          // 6
+		})
+	}
+
+	returnJSON(w, r, response)
 }
 
 func playerFriendsAjaxHandler(w http.ResponseWriter, r *http.Request) {

@@ -99,6 +99,10 @@ func (app PlayerApp) GetPriceHourFormatted(code steamapi.ProductCC) string {
 	}
 }
 
+func (app PlayerApp) GetPercent() float64 {
+	return math.Round(app.AppAchievementsPercent)
+}
+
 func GetPlayerAppsByApp(offset int64, filter bson.D) (apps []PlayerApp, err error) {
 
 	return getPlayerApps(offset, 100, filter, bson.D{{"app_time", -1}}, bson.M{"_id": -1, "player_id": 1, "app_time": 1})
