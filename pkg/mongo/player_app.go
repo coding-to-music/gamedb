@@ -22,9 +22,9 @@ type PlayerApp struct {
 	AppPrices    map[string]int     `bson:"app_prices"`
 	AppPriceHour map[string]float64 `bson:"app_prices_hour"`
 
-	AppAchievementsTotal   int     `json:"app_achievements_total"`
-	AppAchievementsHave    int     `json:"app_achievements_have"`
-	AppAchievementsPercent float64 `json:"app_achievements_percent"`
+	AppAchievementsTotal   int     `bson:"app_achievements_total"`
+	AppAchievementsHave    int     `bson:"app_achievements_have"`
+	AppAchievementsPercent float64 `bson:"app_achievements_percent"`
 }
 
 func (app PlayerApp) BSON() bson.D {
