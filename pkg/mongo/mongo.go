@@ -358,7 +358,13 @@ func GetRandomRows(collection collection, count int, filter bson.D, projection b
 	}
 
 	//
+	ql := helpers.QueryLogger{}
+	ql.Start("Random Aggregate", collection.String(), pipeline, nil)
+
 	c, err := client.Database(MongoDatabase, options.Database()).Collection(collection.String()).Aggregate(ctx, pipeline, options.Aggregate())
+
+	ql.End()
+
 	return c, ctx, err
 }
 
