@@ -14,11 +14,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-var wishlistFilter = bson.D{
-	{"wishlist_count", bson.M{"$gt": 0}},
-	{"wishlist_avg_position", bson.M{"$gt": 0}},
-}
-
 func WishlistsRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", wishlistsHandler)
@@ -43,7 +38,12 @@ func wishlistAppsHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := datatable.NewDataTableQuery(r, true)
 
-	filter2 := wishlistFilter
+	var filter = bson.D{
+		{"wishlist_count", bson.M{"$gt": 0}},
+		{"wishlist_avg_position", bson.M{"$gt": 0}},
+	}
+
+	filter2 := filter
 	search := query.GetSearchString("search")
 	if search != "" {
 		filter2 = append(filter2, bson.E{Key: "$text", Value: bson.M{"$search": search}})
@@ -105,7 +105,7 @@ func wishlistAppsHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		countLock.Lock()
-		count, err = mongo.CountDocuments(mongo.CollectionApps, wishlistFilter, 86400)
+		count, err = mongo.CountDocuments(mongo.CollectionApps, filter, 86400)
 		countLock.Unlock()
 		if err != nil {
 			log.Err(err, r)
