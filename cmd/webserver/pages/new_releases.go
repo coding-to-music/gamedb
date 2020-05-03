@@ -110,6 +110,8 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var response = datatable.NewDataTablesResponse(r, query, count, filtered)
 	for _, app := range apps {
 
+		var release = helpers.GetAppReleaseDateNice(app.ReleaseDateOriginal, app.ReleaseDateUnix, app.ReleaseDate)
+
 		response.AddRow([]interface{}{
 			app.ID,                          // 0
 			app.GetName(),                   // 1
@@ -117,9 +119,9 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			app.GetPath(),                   // 3
 			app.GetType(),                   // 4
 			app.Prices.Get(code).GetFinal(), // 5
-			helpers.GetAppReleaseDateNice(app.ReleaseDateUnix, app.ReleaseDate), // 6
-			helpers.RoundFloatTo2DP(app.ReviewsScore),                           // 7
-			app.PlayerPeakWeek, // 8
+			release,                         // 6
+			helpers.RoundFloatTo2DP(app.ReviewsScore), // 7
+			app.PlayerPeakWeek,                        // 8
 		})
 	}
 

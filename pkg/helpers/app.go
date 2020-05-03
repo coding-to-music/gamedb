@@ -76,16 +76,17 @@ func GetAppReleaseState(state string) (ret string) {
 	}
 }
 
-func GetAppReleaseDateNice(releaseDateUnix int64, releaseDate string) string {
+func GetAppReleaseDateNice(releaseDateOriginal int64, releaseDateSteam int64, releaseDate string) string {
 
-	if releaseDateUnix == 0 {
-		if releaseDate == "" {
-			releaseDate = "-" // Can't return empty, for Discord
-		}
+	if releaseDateOriginal > 0 {
+		return time.Unix(releaseDateOriginal, 0).Format(DateYear)
+	} else if releaseDateSteam > 0 {
+		return time.Unix(releaseDateSteam, 0).Format(DateYear)
+	} else if releaseDate != "" {
 		return releaseDate
+	} else {
+		return "-" // Can't return empty, for Discord
 	}
-
-	return time.Unix(releaseDateUnix, 0).Format(DateYear)
 }
 
 func GetAppStoreLink(appID int) string {

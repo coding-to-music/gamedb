@@ -88,8 +88,9 @@ type App struct {
 	Publishers                    []int                          `bson:"publishers"`
 	RelatedAppIDs                 []int                          `bson:"related_app_ids"`
 	RelatedOwnersAppIDs           []helpers.TupleInt             `bson:"related_owners_app_ids"`
-	ReleaseDate                   string                         `bson:"release_date"`
-	ReleaseDateUnix               int64                          `bson:"release_date_unix"`
+	ReleaseDate                   string                         `bson:"release_date"`          // Steam release
+	ReleaseDateUnix               int64                          `bson:"release_date_unix"`     // Steam release
+	ReleaseDateOriginal           int64                          `bson:"release_date_original"` // Game release
 	ReleaseState                  string                         `bson:"release_state"`
 	Reviews                       helpers.AppReviewSummary       `bson:"reviews"`
 	ReviewsScore                  float64                        `bson:"reviews_score"`
@@ -395,7 +396,7 @@ func (app App) ReadPICS(m map[string]string) (config pics.PICSKeyValues) {
 }
 
 func (app App) GetReleaseDateNice() string {
-	return helpers.GetAppReleaseDateNice(app.ReleaseDateUnix, app.ReleaseDate)
+	return helpers.GetAppReleaseDateNice(app.ReleaseDateOriginal, app.ReleaseDateUnix, app.ReleaseDate)
 }
 
 func (app App) GetSteamPricesURL() string {

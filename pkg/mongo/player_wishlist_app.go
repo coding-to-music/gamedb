@@ -61,7 +61,7 @@ func (app PlayerWishlistApp) GetReleaseState() (ret string) {
 }
 
 func (app PlayerWishlistApp) GetReleaseDateNice() string {
-	return helpers.GetAppReleaseDateNice(app.AppReleaseDate.Unix(), app.AppReleaseDateNice)
+	return helpers.GetAppReleaseDateNice(0, app.AppReleaseDate.Unix(), app.AppReleaseDateNice)
 }
 
 func InsertPlayerWishlistApps(apps []PlayerWishlistApp) (err error) {

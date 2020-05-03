@@ -356,16 +356,32 @@ func updateAppPICS(app *mongo.App, message *rabbit.Message, payload AppMessage) 
 					stringTags := vv.GetChildrenAsSlice()
 					tags = helpers.StringSliceToIntSlice(stringTags)
 				}
+
 				if vv.Key == "name" {
 					name := strings.TrimSpace(vv.Value)
 					if name != "" {
 						app.Name = name
 					}
 				}
+
 				if vv.Key == "type" {
 					name := strings.TrimSpace(vv.Value)
 					if name != "" {
 						app.Type = strings.ToLower(name) // Has priority over store API
+					}
+				}
+
+				if vv.Key == "steam_release_date" {
+					i, err := strconv.ParseInt(vv.Value, 10, 64)
+					if err == nil && i > 0 {
+						app.ReleaseDateUnix = i
+					}
+				}
+
+				if vv.Key == "original_release_date" {
+					i, err := strconv.ParseInt(vv.Value, 10, 64)
+					if err == nil && i > 0 {
+						app.ReleaseDateOriginal = i
 					}
 				}
 
@@ -673,12 +689,22 @@ func updateAppDetails(app *mongo.App) (err error) {
 			app.MetacriticURL = response.Data.Metacritic.URL
 			app.GameID = int(response.Data.Fullgame.AppID)
 			app.GameName = response.Data.Fullgame.Name
-			app.ReleaseDate = strings.ToValidUTF8(response.Data.ReleaseDate.Date, "")
-			if len(app.ReleaseDate) > 255 {
-				app.ReleaseDate = app.ReleaseDate[0:255] // SQL limit
-			}
-			app.ReleaseDateUnix = helpers.GetReleaseDateUnix(response.Data.ReleaseDate.Date)
 			app.ComingSoon = response.Data.ReleaseDate.ComingSoon
+
+			// Release dates
+			releaseDate := strings.ToValidUTF8(response.Data.ReleaseDate.Date, "")
+
+			if len(releaseDate) > 255 {
+				releaseDate = releaseDate[0:255] // Column limit
+			}
+
+			if app.ReleaseDate == "" {
+				app.ReleaseDate = releaseDate
+			}
+
+			if app.ReleaseDateUnix == 0 {
+				app.ReleaseDateUnix = helpers.GetReleaseDateUnix(releaseDate)
+			}
 		}
 	}
 
