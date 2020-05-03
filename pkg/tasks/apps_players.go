@@ -59,7 +59,7 @@ func (c AppPlayers) work() (err error) {
 			}
 		}
 
-		var chunks = helpers.ChunkInts(ids, 50)
+		var chunks = helpers.ChunkInts(ids, 20)
 
 		for _, chunk := range chunks {
 			err = queue.ProduceAppPlayers(queue.AppPlayerMessage{IDs: chunk})
