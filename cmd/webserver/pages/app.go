@@ -263,6 +263,34 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
+	// Get played time
+	wg.Add(1)
+	var playedMessage string
+	go func() {
+
+		defer wg.Done()
+
+		if session.IsLoggedIn(r) {
+
+			playerID, err := session.GetPlayerIDFromSesion(r)
+			if err == nil && playerID > 0 {
+
+				playerApp, err := mongo.GetPlayerAppByKey(playerID, app.ID)
+				if err != nil {
+					err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
+					log.Err(err)
+					return
+				}
+
+				if playerApp.AppTime > 0 {
+					playedMessage = "You own this game and have played for " + playerApp.GetTimeNice()
+				} else {
+					playedMessage = "You own this game, but have never played"
+				}
+			}
+		}
+	}()
+
 	// Wait
 	wg.Wait()
 
@@ -300,6 +328,9 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 
 	if app.ID == 753 {
 		banners["primary"] = append(banners["primary"], "This app record is for the Steam client")
+	}
+	if playedMessage != "" {
+		banners["primary"] = append(banners["primary"], playedMessage)
 	}
 
 	if app.ReadPICS(app.Common).GetValue("app_retired_publisher_request") == "1" {

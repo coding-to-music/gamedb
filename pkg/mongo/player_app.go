@@ -108,6 +108,16 @@ func GetPlayerAppsByApp(offset int64, filter bson.D) (apps []PlayerApp, err erro
 	return getPlayerApps(offset, 100, filter, bson.D{{"app_time", -1}}, bson.M{"_id": -1, "player_id": 1, "app_time": 1})
 }
 
+func GetPlayerAppByKey(playerID int64, appID int) (playerApp PlayerApp, err error) {
+
+	playerApp.PlayerID = playerID
+	playerApp.AppID = appID
+
+	err = FindOne(CollectionPlayerApps, bson.D{{"_id", playerApp.GetKey()}}, nil, nil, &playerApp)
+
+	return playerApp, err
+}
+
 func GetPlayerApps(offset int64, limit int64, filter bson.D, sort bson.D) (apps []PlayerApp, err error) {
 
 	return getPlayerApps(offset, limit, filter, sort, nil)
