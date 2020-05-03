@@ -462,7 +462,7 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	query := datatable.NewDataTableQuery(r, true)
+	query := datatable.NewDataTableQuery(r, false)
 
 	//
 	var wg sync.WaitGroup
@@ -709,7 +709,7 @@ func appItemsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var query = datatable.NewDataTableQuery(r, true)
+	var query = datatable.NewDataTableQuery(r, false)
 	var search = query.GetSearchString("search")
 	var filter = bson.D{{Key: "app_id", Value: idx}}
 	var filter2 = filter

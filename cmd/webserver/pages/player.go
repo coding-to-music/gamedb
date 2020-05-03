@@ -453,7 +453,7 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var query = datatable.NewDataTableQuery(r, true)
+	var query = datatable.NewDataTableQuery(r, false)
 	var code = sessionHelpers.GetProductCC(r)
 
 	// Make filter
@@ -551,7 +551,7 @@ func playerRecentAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	query := datatable.NewDataTableQuery(r, true)
+	query := datatable.NewDataTableQuery(r, false)
 
 	//
 	var wg sync.WaitGroup
