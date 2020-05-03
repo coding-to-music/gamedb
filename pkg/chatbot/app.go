@@ -32,7 +32,9 @@ func (c CommandApp) Output(msg *discordgo.MessageCreate) (message discordgo.Mess
 
 	matches := c.Regex().FindStringSubmatch(msg.Message.Content)
 
-	app, err := mongo.SearchApps(matches[2], bson.M{"_id": 1, "name": 1, "prices": 1, "release_date": 1, "release_date_unix": 1, "reviews_score": 1, "group_followers": 1})
+	var projection = bson.M{"_id": 1, "name": 1, "prices": 1, "release_date": 1, "release_date_unix": 1, "reviews_score": 1, "group_id": 1, "group_followers": 1}
+
+	app, err := mongo.SearchApps(matches[2], projection)
 	if err == mongo.ErrNoDocuments || err == mongo.ErrInvalidAppID {
 
 		message.Content = "App **" + matches[2] + "** not found"
