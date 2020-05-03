@@ -20,6 +20,7 @@ type APIKey struct {
 	Use     bool      `gorm:"not null;column:use;"`
 	Expires time.Time `gorm:"not null;column:expires;type:datetime"`
 	Owner   string    `gorm:"not null;column:owner"`
+	IP      string    `gorm:"not null;column:ip"`
 	Notes   string    `gorm:"-"`
 }
 
@@ -65,6 +66,7 @@ func GetAPIKey(tag string) (err error) {
 			"owner":       tag,
 			"environment": config.Config.Environment.Get(),
 			"version":     config.GetShortCommitHash(),
+			"ip":          config.Config.IP.Get(),
 		})
 		if db.Error != nil {
 			db.Rollback()
