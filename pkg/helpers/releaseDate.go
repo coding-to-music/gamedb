@@ -1,7 +1,6 @@
 package helpers
 
 import (
-	"errors"
 	"math"
 	"time"
 
@@ -18,11 +17,7 @@ var releaseDateFormats = []string{
 	"2006",
 }
 
-func getReleaseDate(date string) (t time.Time, err error) {
-
-	if date == "" {
-		return t, errors.New("blank")
-	}
+func GetReleaseDateUnix(date string) int64 {
 
 	// for k, v := range map[string]string{"Q1 ": "January ", "Q2 ": "April ", "Q3 ": "July ", "Q4 ": "October "} {
 	// 	if strings.HasPrefix(date, k) {
@@ -30,24 +25,16 @@ func getReleaseDate(date string) (t time.Time, err error) {
 	// 	}
 	// }
 
-	for _, v := range releaseDateFormats {
-		t, err = time.Parse(v, date)
-		if err == nil {
-			break
+	if date != "" {
+		for _, v := range releaseDateFormats {
+			t, err := time.Parse(v, date)
+			if err == nil {
+				return t.Unix()
+			}
 		}
 	}
 
-	return t, err
-}
-
-func GetReleaseDateUnix(date string) int64 {
-
-	t, err := getReleaseDate(date)
-	if err != nil {
-		return 0
-	}
-
-	return t.Unix()
+	return 0
 }
 
 func GetDaysToRelease(unix int64) string {
