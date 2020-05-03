@@ -27,7 +27,7 @@ func NewReleasesRouter() http.Handler {
 func newReleasesHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := newReleasesTemplate{}
-	t.fill(w, r, "New Releases", "Games released in the last "+template.HTML(config.Config.NewReleaseDays.Get())+" days")
+	t.fill(w, r, "New Releases", template.HTML("Games released in the last "+config.Config.NewReleaseDays.Get()+" days"))
 	t.addAssetHighCharts()
 
 	//
