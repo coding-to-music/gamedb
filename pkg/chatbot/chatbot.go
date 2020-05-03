@@ -28,6 +28,7 @@ var CommandRegister = []Command{
 	CommandApp{},
 	CommandAppPlayers{},
 	CommandAppPlayersSteam{},
+	CommandAppRandom{},
 	CommandAppsNew{},
 	CommandAppsPopular{},
 	CommandAppsTrending{},
