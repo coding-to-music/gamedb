@@ -16,7 +16,7 @@ var version string
 
 func main() {
 
-	config.SetVersion(version)
+	config.Init(version, helpers.GetIP())
 	log.Initialise([]log.LogName{log.LogNameConsumers})
 
 	// Get API key

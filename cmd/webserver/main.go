@@ -15,6 +15,7 @@ import (
 	"github.com/gamedb/gamedb/cmd/webserver/helpers/session"
 	"github.com/gamedb/gamedb/cmd/webserver/pages"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
@@ -40,7 +41,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	config.SetVersion(version)
+	config.Init(version, helpers.GetIP())
 	log.Initialise([]log.LogName{log.LogNameWebserver})
 
 	// Get API key

@@ -275,6 +275,7 @@ func log(interfaces ...interface{}) {
 						"env":    config.Config.Environment.Get(),
 						"commit": config.Config.CommitHash.Get(),
 						"key":    config.Config.SteamAPIKey.Get(),
+						"ip":     config.Config.IP.Get(),
 					},
 				})
 			}

@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
@@ -13,7 +14,7 @@ var version string
 
 func main() {
 
-	config.SetVersion(version)
+	config.Init(version, helpers.GetIP())
 	log.Initialise([]log.LogName{log.LogNameCrons})
 
 	// Load queue producers

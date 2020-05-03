@@ -142,6 +142,7 @@ type BaseConfig struct {
 	SendGridAPIKey     ConfigItem
 	WebserverPort      ConfigItem
 	CommitHash         ConfigItem
+	IP                 ConfigItem
 	NewReleaseDays     ConfigItem
 	SlackGameDBWebhook ConfigItem
 	SlackSocialWebhook ConfigItem
@@ -279,6 +280,16 @@ func init() {
 	Config.SteamAPIKey.SetDefault("unset")
 }
 
+func Init(version string, ip string) {
+
+	if IsLocal() && version == "" {
+		version = "local"
+	}
+	Config.CommitHash.SetDefault(version)
+
+	Config.IP.SetDefault(ip)
+}
+
 // ConfigItem
 type ConfigItem struct {
 	value        string
@@ -371,14 +382,6 @@ func GetSteamKeyTag() string {
 	}
 
 	return strings.ToUpper(key)
-}
-
-func SetVersion(v string) {
-
-	if IsLocal() && v == "" {
-		v = "local"
-	}
-	Config.CommitHash.SetDefault(v)
 }
 
 func GetShortCommitHash() string {
