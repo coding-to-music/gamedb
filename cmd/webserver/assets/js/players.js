@@ -114,10 +114,12 @@ if ($('#players-page').length > 0) {
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
 
-                    $(td).attr('nowrap', 'nowrap');
-
-                    if (rowData[8] !== '0m') {
-                        $(td).attr('data-toggle', 'tooltip').attr('data-placement', 'left').attr('title', rowData[9]);
+                    if (rowData[8] !== '-') {
+                        const $td = $(td);
+                        $td.attr('nowrap', 'nowrap');
+                        $td.attr('data-toggle', 'tooltip');
+                        $td.attr('data-placement', 'left');
+                        $td.attr('title', rowData[9]);
                     }
                 },
                 "orderSequence": ["desc"],
