@@ -201,7 +201,7 @@ func homeSalesHandler(w http.ResponseWriter, r *http.Request) {
 
 	sales, err := mongo.GetAllSales(0, 15, filter, bson.D{{Key: sort, Value: order}})
 	if err != nil {
-		log.Err(err)
+		log.Err(err, r)
 	}
 
 	var code = session.GetProductCC(r)
@@ -258,7 +258,7 @@ func homePlayersHandler(w http.ResponseWriter, r *http.Request) {
 
 	players, err := getPlayersForHome(sort)
 	if err != nil {
-		log.Err(err)
+		log.Err(err, r)
 		return
 	}
 

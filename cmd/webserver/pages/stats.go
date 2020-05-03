@@ -132,7 +132,7 @@ func playerLevelsHandler(w http.ResponseWriter, r *http.Request) {
 
 	levels, err := mongo.GetPlayerLevelsRounded()
 	if err != nil {
-		log.Err(err)
+		log.Err(err, r)
 		return
 	}
 

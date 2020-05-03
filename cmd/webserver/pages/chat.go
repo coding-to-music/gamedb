@@ -50,7 +50,7 @@ func init() {
 	// // Open connection
 	// err = discordRelayBotSession.Open()
 	// if err != nil {
-	// 	log.Err(err)
+	// 	log.Err(err, r)
 	// }
 }
 

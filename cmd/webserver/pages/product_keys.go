@@ -32,7 +32,7 @@ func productKeysHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	keys, err := sql.GetProductKeys()
-	log.Err(err)
+	log.Err(err, r)
 
 	// Template
 	t := productKeysTemplate{}
@@ -86,7 +86,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 			packages, err := mongo.GetPackages(query.GetOffset64(), 100, bson.D{{"_id", 1}}, filter, projection, nil)
 			if err != nil {
-				log.Err(err)
+				log.Err(err, r)
 				return
 			}
 
@@ -103,7 +103,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 			apps, err := mongo.GetApps(query.GetOffset64(), 100, bson.D{{"_id", 1}}, filter, projection, nil)
 			if err != nil {
-				log.Err(err)
+				log.Err(err, r)
 				return
 			}
 
@@ -133,7 +133,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if err != nil {
-			log.Err(err)
+			log.Err(err, r)
 			return
 		}
 	}()

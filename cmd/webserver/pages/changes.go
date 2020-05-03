@@ -61,7 +61,7 @@ func changesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		// App map
 		apps, err := mongo.GetAppsByID(appIDs, bson.M{"_id": 1, "name": 1})
 		if err != nil {
-			log.Err(err)
+			log.Err(err, r)
 		}
 
 		for _, app := range apps {
@@ -85,7 +85,7 @@ func changesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		// Package map
 		packages, err := mongo.GetPackagesByID(packageIDs, bson.M{"_id": 1, "name": 1})
 		if err != nil {
-			log.Err(err)
+			log.Err(err, r)
 		}
 
 		for _, v := range packages {

@@ -22,7 +22,7 @@ func (s Server) GetAppsId(w http.ResponseWriter, r *http.Request) {
 
 			} else if err != nil {
 
-				log.Err(err)
+				log.Err(err, r)
 				return 500, err
 
 			} else {

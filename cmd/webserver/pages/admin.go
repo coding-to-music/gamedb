@@ -90,7 +90,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	gorm, err := sql.GetMySQLClient()
 	if err != nil {
-		log.Err(r, err)
+		log.Err(err, r)
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Can't connect to mysql"})
 		return
 	}

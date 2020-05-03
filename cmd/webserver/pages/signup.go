@@ -249,7 +249,7 @@ func verifyHandler(w http.ResponseWriter, r *http.Request) {
 	if success {
 
 		err := session.SetFlash(r, sessionHelpers.SessionGood, message)
-		log.Err(err)
+		log.Err(err, r)
 
 		sessionHelpers.Save(w, r)
 

@@ -102,7 +102,7 @@ func (s Server) call(w http.ResponseWriter, r *http.Request, callback func(w htt
 
 		err = s.saveToInflux(r, code, key, user)
 		if err != nil {
-			log.Err(err)
+			log.Err(err, r)
 		}
 
 	}(r, code, key, user)

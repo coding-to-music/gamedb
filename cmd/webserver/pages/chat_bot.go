@@ -127,7 +127,7 @@ func chatBotCommandsHandler(w http.ResponseWriter, r *http.Request) {
 
 	commands, err := mongo.GetChatBotCommands()
 	if err != nil {
-		log.Err(err)
+		log.Err(err, r)
 		return
 	}
 
