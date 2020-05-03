@@ -293,6 +293,10 @@ func (app App) GetInstallLink() template.URL {
 	return template.URL("steam://install/" + strconv.Itoa(app.ID))
 }
 
+func (app App) GetPlayLink() template.URL {
+	return template.URL("steam://run/" + strconv.Itoa(app.ID))
+}
+
 func (app App) GetReviewScore() string {
 	return helpers.FloatToString(app.ReviewsScore, 2) + "%"
 }
