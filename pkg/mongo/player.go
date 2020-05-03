@@ -940,7 +940,9 @@ func GetPlayerLevelsRounded() (counts []count, err error) {
 			log.Err(err)
 		}()
 
-		var counts []count
+		var maxCount int
+		var countsMap = map[int]count{}
+
 		for cur.Next(ctx) {
 
 			var level count
@@ -948,12 +950,22 @@ func GetPlayerLevelsRounded() (counts []count, err error) {
 			if err != nil {
 				log.Err(err, level.ID)
 			}
-			counts = append(counts, level)
+
+			countsMap[level.ID] = level
+
+			if level.ID > maxCount {
+				maxCount = level.ID
+			}
 		}
 
-		sort.Slice(counts, func(i, j int) bool {
-			return counts[i].ID < counts[j].ID
-		})
+		var counts []count
+		for i := 0; i <= maxCount; i = i + 10 {
+			if val, ok := countsMap[i]; ok {
+				counts = append(counts, val)
+			} else {
+				counts = append(counts, count{ID: i, Count: 0})
+			}
+		}
 
 		return counts, cur.Err()
 	})
