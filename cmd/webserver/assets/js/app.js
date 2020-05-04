@@ -71,7 +71,6 @@ if ($appPage.length > 0) {
                     break;
                 case '#players':
                     loadAppPlayersChart();
-                    loadAppPlayers2Chart();
                     loadAppPlayerTimes();
                     loadGroupChart($appPage);
                     break;
@@ -283,26 +282,6 @@ if ($appPage.length > 0) {
         );
     }
 
-    const defaultAppChartOptions = {
-        chart: {
-            backgroundColor: 'rgba(0,0,0,0)',
-        },
-        title: {
-            text: ''
-        },
-        subtitle: {
-            text: ''
-        },
-        credits: {
-            enabled: false
-        },
-        plotOptions: {},
-        xAxis: {
-            title: {text: ''},
-            type: 'datetime'
-        },
-    };
-
     function loadAppReviewsChart() {
 
         $.ajax({
@@ -318,6 +297,27 @@ if ($appPage.length > 0) {
                 $('#reviews-ajax').html(data);
             },
         });
+
+        const defaultAppChartOptions = {
+            chart: {
+                type: 'spline',
+                backgroundColor: 'rgba(0,0,0,0)',
+            },
+            title: {
+                text: ''
+            },
+            subtitle: {
+                text: ''
+            },
+            credits: {
+                enabled: false
+            },
+            plotOptions: {},
+            xAxis: {
+                title: {text: ''},
+                type: 'datetime'
+            },
+        };
 
         $.ajax({
             type: "GET",
@@ -406,6 +406,7 @@ if ($appPage.length > 0) {
 
         const defaultAppChartOptions = {
             chart: {
+                type: 'spline',
                 backgroundColor: 'rgba(0,0,0,0)',
             },
             title: {
@@ -417,9 +418,43 @@ if ($appPage.length > 0) {
             credits: {
                 enabled: false
             },
+            legend: {
+                enabled: true
+            },
             xAxis: {
                 title: {text: ''},
                 type: 'datetime'
+            },
+            yAxis: {
+                allowDecimals: false,
+                title: {text: ''},
+                min: 0,
+                opposite: false,
+                labels: {
+                    formatter: function () {
+                        return this.value.toLocaleString();
+                    },
+                },
+                visible: true,
+            },
+            plotOptions: {
+                series: {
+                    marker: {
+                        enabled: false
+                    }
+                }
+            },
+            tooltip: {
+                formatter: function () {
+                    switch (this.series.name) {
+                        case 'Players Online':
+                            return this.y.toLocaleString() + ' players on ' + moment(this.key).format("DD MMM YYYY @ HH:mm");
+                        case 'Twitch Viewers':
+                            return this.y.toLocaleString() + ' Twitch viewers on ' + moment(this.key).format("DD MMM YYYY @ HH:mm");
+                        case 'Youtube Views':
+                            return this.y.toLocaleString() + ' Youtube views on ' + moment(this.key).format("DD MMM YYYY");
+                    }
+                },
             },
         };
 
@@ -439,66 +474,12 @@ if ($appPage.length > 0) {
                 }
 
                 Highcharts.chart('players-chart', $.extend(true, {}, defaultAppChartOptions, {
-                    chart: {
-                        type: 'line'
-                    },
-                    yAxis: [
-                        {
-                            allowDecimals: false,
-                            title: {text: ''},
-                            min: 0,
-                            labels: {
-                                formatter: function () {
-                                    return this.value.toLocaleString();
-                                },
-                            },
-                        },
-                        {
-                            // allowDecimals: false,
-                            title: {text: ''},
-                            min: 0,
-                            // opposite: true,
-                            labels: {
-                                formatter: function () {
-                                    return this.value.toLocaleString();
-                                },
-                            },
-                            visible: false,
-                        },
-                        {
-                            // allowDecimals: false,
-                            title: {text: ''},
-                            min: 0,
-                            // opposite: true,
-                            labels: {
-                                formatter: function () {
-                                    return this.value.toLocaleString();
-                                },
-                            },
-                            visible: false,
-                        },
-                    ],
-                    legend: {
-                        enabled: true,
-                    },
-                    tooltip: {
-                        formatter: function () {
-                            switch (this.series.name) {
-                                case 'Players Online':
-                                    return this.y.toLocaleString() + ' players on ' + moment(this.key).format("DD MMM YYYY @ HH:mm");
-                                case 'Twitch Viewers':
-                                    return this.y.toLocaleString() + ' Twitch viewers on ' + moment(this.key).format("DD MMM YYYY @ HH:mm");
-                                case 'Youtube Views':
-                                    return this.y.toLocaleString() + ' Youtube views on ' + moment(this.key).format("DD MMM YYYY");
-                            }
-                        },
-                    },
                     series: [
                         {
                             name: 'Youtube Views',
-                            color: '#FF000077', // Youtube red
+                            color: '#FF0000', // Youtube red
                             data: data['max_youtube_views'],
-                            yAxis: 2,
+                            yAxis: 0,
                             type: 'line',
                             connectNulls: true,
                             step: 'right',
@@ -506,9 +487,9 @@ if ($appPage.length > 0) {
                         },
                         {
                             name: 'Twitch Viewers',
-                            color: '#6441A477', // Twitch purple
+                            color: '#6441A4', // Twitch purple
                             data: data['max_twitch_viewers'],
-                            yAxis: 1,
+                            yAxis: 0,
                             type: 'line',
                             connectNulls: true,
                         },
@@ -524,28 +505,6 @@ if ($appPage.length > 0) {
 
             },
         });
-    }
-
-    function loadAppPlayers2Chart() {
-
-        const defaultAppChartOptions = {
-            chart: {
-                backgroundColor: 'rgba(0,0,0,0)',
-            },
-            title: {
-                text: ''
-            },
-            subtitle: {
-                text: ''
-            },
-            credits: {
-                enabled: false
-            },
-            xAxis: {
-                title: {text: ''},
-                type: 'datetime'
-            },
-        };
 
         $.ajax({
             type: "GET",
@@ -563,66 +522,12 @@ if ($appPage.length > 0) {
                 }
 
                 Highcharts.chart('players-chart2', $.extend(true, {}, defaultAppChartOptions, {
-                    chart: {
-                        type: 'line'
-                    },
-                    yAxis: [
-                        {
-                            allowDecimals: false,
-                            title: {text: ''},
-                            min: 0,
-                            labels: {
-                                formatter: function () {
-                                    return this.value.toLocaleString();
-                                },
-                            },
-                        },
-                        {
-                            allowDecimals: false,
-                            title: {text: ''},
-                            min: 0,
-                            opposite: true,
-                            labels: {
-                                formatter: function () {
-                                    return this.value.toLocaleString();
-                                },
-                            },
-                            visible: false,
-                        },
-                        {
-                            allowDecimals: false,
-                            title: {text: ''},
-                            min: 0,
-                            opposite: true,
-                            labels: {
-                                formatter: function () {
-                                    return this.value.toLocaleString();
-                                },
-                            },
-                            visible: false,
-                        },
-                    ],
-                    legend: {
-                        enabled: true
-                    },
-                    tooltip: {
-                        formatter: function () {
-                            switch (this.series.name) {
-                                case 'Players Online':
-                                    return this.y.toLocaleString() + ' players on ' + moment(this.key).format("DD MMM YYYY @ HH:mm");
-                                case 'Twitch Viewers':
-                                    return this.y.toLocaleString() + ' Twitch viewers on ' + moment(this.key).format("DD MMM YYYY @ HH:mm");
-                                case 'Youtube Views':
-                                    return this.y.toLocaleString() + ' Youtube views on ' + moment(this.key).format("DD MMM YYYY");
-                            }
-                        },
-                    },
                     series: [
                         {
                             name: 'Youtube Views',
-                            color: '#FF000077', // Youtube red
+                            color: '#FF0000', // Youtube red
                             data: data['max_youtube_views'],
-                            yAxis: 2,
+                            yAxis: 0,
                             type: 'line',
                             connectNulls: true,
                             step: 'right',
@@ -630,9 +535,9 @@ if ($appPage.length > 0) {
                         },
                         {
                             name: 'Twitch Viewers',
-                            color: '#6441A477', // Twitch purple
+                            color: '#6441A4', // Twitch purple
                             data: data['max_twitch_viewers'],
-                            yAxis: 1,
+                            yAxis: 0,
                             type: 'line',
                             connectNulls: true,
                         },

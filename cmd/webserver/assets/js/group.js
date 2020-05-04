@@ -86,7 +86,7 @@ function loadGroupChart($page = null) {
 
             Highcharts.chart('group-chart', {
                 chart: {
-                    type: 'line',
+                    type: 'spline',
                     backgroundColor: 'rgba(0,0,0,0)',
                 },
                 title: {
