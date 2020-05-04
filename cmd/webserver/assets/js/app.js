@@ -440,7 +440,7 @@ if ($appPage.length > 0) {
 
                 Highcharts.chart('players-chart', $.extend(true, {}, defaultAppChartOptions, {
                     chart: {
-                        type: 'area'
+                        type: 'line'
                     },
                     yAxis: [
                         {
@@ -454,10 +454,10 @@ if ($appPage.length > 0) {
                             },
                         },
                         {
-                            allowDecimals: false,
+                            // allowDecimals: false,
                             title: {text: ''},
                             min: 0,
-                            opposite: true,
+                            // opposite: true,
                             labels: {
                                 formatter: function () {
                                     return this.value.toLocaleString();
@@ -466,10 +466,10 @@ if ($appPage.length > 0) {
                             visible: false,
                         },
                         {
-                            allowDecimals: false,
+                            // allowDecimals: false,
                             title: {text: ''},
                             min: 0,
-                            opposite: true,
+                            // opposite: true,
                             labels: {
                                 formatter: function () {
                                     return this.value.toLocaleString();
@@ -479,7 +479,7 @@ if ($appPage.length > 0) {
                         },
                     ],
                     legend: {
-                        enabled: false
+                        enabled: true,
                     },
                     tooltip: {
                         formatter: function () {
@@ -495,28 +495,29 @@ if ($appPage.length > 0) {
                     },
                     series: [
                         {
-                            name: 'Players Online',
-                            color: '#28a745',
-                            data: data['max_player_count'],
-                            yAxis: 0,
+                            name: 'Youtube Views',
+                            color: '#FF000077', // Youtube red
+                            data: data['max_youtube_views'],
+                            yAxis: 2,
+                            type: 'line',
                             connectNulls: true,
+                            step: 'right',
+                            visible: false,
                         },
                         {
                             name: 'Twitch Viewers',
-                            color: '#6441A4', // Twitch purple
+                            color: '#6441A477', // Twitch purple
                             data: data['max_twitch_viewers'],
                             yAxis: 1,
                             type: 'line',
                             connectNulls: true,
                         },
                         {
-                            name: 'Youtube Views',
-                            color: '#FF0000', // Youtube red
-                            data: data['max_youtube_views'],
-                            yAxis: 2,
-                            type: 'line',
-                            connectNulls: false,
-                            step: 'center',
+                            name: 'Players Online',
+                            color: '#28a745',
+                            data: data['max_player_count'],
+                            yAxis: 0,
+                            connectNulls: true,
                         },
                     ],
                 }));
@@ -563,7 +564,7 @@ if ($appPage.length > 0) {
 
                 Highcharts.chart('players-chart2', $.extend(true, {}, defaultAppChartOptions, {
                     chart: {
-                        type: 'area'
+                        type: 'line'
                     },
                     yAxis: [
                         {
@@ -602,7 +603,7 @@ if ($appPage.length > 0) {
                         },
                     ],
                     legend: {
-                        enabled: false
+                        enabled: true
                     },
                     tooltip: {
                         formatter: function () {
@@ -618,28 +619,29 @@ if ($appPage.length > 0) {
                     },
                     series: [
                         {
-                            name: 'Players Online',
-                            color: '#28a745',
-                            data: data['max_player_count'],
-                            yAxis: 0,
+                            name: 'Youtube Views',
+                            color: '#FF000077', // Youtube red
+                            data: data['max_youtube_views'],
+                            yAxis: 2,
+                            type: 'line',
                             connectNulls: true,
+                            step: 'right',
+                            visible: false,
                         },
                         {
                             name: 'Twitch Viewers',
-                            color: '#6441A4', // Twitch purple
+                            color: '#6441A477', // Twitch purple
                             data: data['max_twitch_viewers'],
                             yAxis: 1,
                             type: 'line',
                             connectNulls: true,
                         },
                         {
-                            name: 'Youtube Views',
-                            color: '#FF0000', // Youtube red
-                            data: data['max_youtube_views'],
-                            yAxis: 2,
-                            type: 'line',
-                            connectNulls: false,
-                            step: 'center',
+                            name: 'Players Online',
+                            color: '#28a745',
+                            data: data['max_player_count'],
+                            yAxis: 0,
+                            connectNulls: true,
                         },
                     ],
                 }));
