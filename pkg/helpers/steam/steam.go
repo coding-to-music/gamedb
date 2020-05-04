@@ -22,10 +22,9 @@ func GetSteam() *steamapi.Steam {
 
 		clientNormal = &steamapi.Steam{}
 		clientNormal.SetKey(config.Config.SteamAPIKey.Get())
-		clientNormal.SetUserAgent("gamedb.online")
+		clientNormal.SetLogger(steamLogger{})
 		clientNormal.SetAPIRateLimit(time.Millisecond*950, 10)
 		clientNormal.SetStoreRateLimit(time.Millisecond*1750, 10)
-		clientNormal.SetLogger(steamLogger{})
 	}
 
 	return clientNormal
@@ -45,7 +44,6 @@ func GetSteamUnlimited() *steamapi.Steam {
 
 		clientUnlimited = &steamapi.Steam{}
 		clientUnlimited.SetKey(config.Config.SteamAPIKey.Get())
-		clientUnlimited.SetUserAgent("gamedb.online")
 		clientUnlimited.SetLogger(steamLogger{})
 	}
 
