@@ -126,8 +126,8 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 
-		if productType != "packages" {
-			filteredCount, err = mongo.CountDocuments(mongo.CollectionApps, filter, 0)
+		if productType == "packages" {
+			filteredCount, err = mongo.CountDocuments(mongo.CollectionPackages, filter, 0)
 		} else {
 			filteredCount, err = mongo.CountDocuments(mongo.CollectionApps, filter, 0)
 		}

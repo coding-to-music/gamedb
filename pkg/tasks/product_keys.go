@@ -96,7 +96,7 @@ func (c ScanProductKeys) work() (err error) {
 				if err != nil {
 					log.Err(err, k, kk, kkk)
 				} else {
-					addedKeys = append(addedKeys, k+"-"+kk+"-"+kk+"-")
+					addedKeys = append(addedKeys, k+"-"+kk+"-"+kkk)
 				}
 			}
 		}
@@ -161,7 +161,7 @@ func (c ScanProductKeys) work() (err error) {
 				if err != nil {
 					log.Err(err, k, kk, kkk)
 				} else {
-					addedKeys = append(addedKeys, k+"-"+kk+"-"+kk+"-")
+					addedKeys = append(addedKeys, k+"-"+kk+"-"+kkk)
 				}
 			}
 		}

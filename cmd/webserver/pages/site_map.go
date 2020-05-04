@@ -61,6 +61,7 @@ func SiteMapPagesHandler(w http.ResponseWriter, r *http.Request) {
 		"/packages",
 		"/players",
 		"/price-changes",
+		"/product-keys",
 		"/publishers",
 		"/stats",
 		"/steam-api",
