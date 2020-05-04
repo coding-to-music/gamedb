@@ -90,7 +90,7 @@ func (s Server) call(w http.ResponseWriter, r *http.Request, callback func(w htt
 		s.returnErrorResponse(w, http.StatusInternalServerError, err)
 		return
 
-	} else if user.PatreonLevel < 3 {
+	} else if user.PatreonLevel <= sql.UserLevel3 {
 
 		s.returnErrorResponse(w, http.StatusUnauthorized, errors.New("invalid user level"))
 		return

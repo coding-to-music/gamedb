@@ -206,7 +206,9 @@
                 // Add donate button
                 if (parent.limited) {
                     const bold = $('li.paginate_button.page-item.next.disabled').length > 0 ? 'font-weight-bold' : '';
-                    const donate = $('<li class="donate"><small><a href="/donate"><i class="fas fa-heart text-danger"></i> <span class="' + bold + '">See more!</span></a></small></li>');
+                    const donate = parent.limited === 2
+                        ? $('<li class="donate"><small><a href="/login"><i class="fas fa-unlock"></i> <span class="' + bold + '">Login for more!</span></a></small></li>')
+                        : $('<li class="donate"><small><a href="/donate"><i class="fas fa-heart text-danger"></i> <span class="' + bold + '">Donate for more!</span></a></small></li>');
                     $(parent.element).parent().find('.dt-pagination ul.pagination').append(donate);
                 }
 

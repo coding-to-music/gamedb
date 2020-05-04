@@ -23,6 +23,7 @@ func donateHandler(w http.ResponseWriter, r *http.Request) {
 		sql.UserLevel1: sql.UserLevelLimit1,
 		sql.UserLevel2: sql.UserLevelLimit2,
 		sql.UserLevel3: sql.UserLevelLimit3,
+		sql.UserLevel4: sql.UserLevelLimit4,
 	}
 
 	returnTemplate(w, r, "donate", t)

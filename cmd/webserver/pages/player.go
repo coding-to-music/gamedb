@@ -20,6 +20,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
+	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
 	"github.com/justinas/nosurf"
 	"go.mongodb.org/mongo-driver/bson"
@@ -400,7 +401,7 @@ func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if user.PatreonLevel < 2 {
+		if user.PatreonLevel <= sql.UserLevel2 {
 			err = session.SetFlash(r, sessionHelpers.SessionBad, "Invalid user level")
 			log.Err(err)
 			return

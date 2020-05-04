@@ -13,16 +13,18 @@ import (
 )
 
 const (
-	UserLevel0 = 0 // Free
-	UserLevel1 = 1
-	UserLevel2 = 2
-	UserLevel3 = 3
+	UserLevel0 = 0 // Guest
+	UserLevel1 = 1 // Free
+	UserLevel2 = 2 // Level 1
+	UserLevel3 = 3 // Level 2
+	UserLevel4 = 4 // Level 3
 
 	// Pages
-	UserLevelLimit0 = 10 // Free
-	UserLevelLimit1 = 20
-	UserLevelLimit2 = 100
-	UserLevelLimit3 = 0
+	UserLevelLimit0 = 5   // Guest
+	UserLevelLimit1 = 10  // Free
+	UserLevelLimit2 = 20  // Level 1
+	UserLevelLimit3 = 100 // Level 2
+	UserLevelLimit4 = 0   // Level 3
 )
 
 type UserLevel int
@@ -37,7 +39,9 @@ func (ul UserLevel) MaxResults(limit int64) int64 {
 	case UserLevel2:
 		return UserLevelLimit2 * limit
 	case UserLevel3:
-		return UserLevelLimit3
+		return UserLevelLimit3 * limit
+	case UserLevel4:
+		return UserLevelLimit4
 	}
 }
 

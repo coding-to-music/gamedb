@@ -21,8 +21,13 @@ func NewDataTablesResponse(r *http.Request, query DataTablesQuery, count int64, 
 		max := level.MaxResults(100)
 
 		if max > 0 && max < ret.RecordsFiltered {
+
 			ret.RecordsFiltered = max
-			ret.LevelLimited = true
+			if session.IsLoggedIn(r) {
+				ret.LevelLimited = 1
+			} else {
+				ret.LevelLimited = 2
+			}
 		}
 	}
 
@@ -34,7 +39,7 @@ type DataTablesResponse struct {
 	Draw            string          `json:"draw"`
 	RecordsTotal    int64           `json:"recordsTotal,string"`
 	RecordsFiltered int64           `json:"recordsFiltered,string"`
-	LevelLimited    bool            `json:"limited"`
+	LevelLimited    int             `json:"limited"` // 0 - Not limited, 1 - logged in, 2 - guest
 	Data            [][]interface{} `json:"data"`
 }
 
