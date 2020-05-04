@@ -195,7 +195,7 @@ func main() {
 	// 404
 	r.NotFound(pages.Error404Handler)
 
-	log.Info("Starting Webserver")
+	log.Info("Starting Webserver on " + config.ListenOn())
 	err = http.ListenAndServe(config.ListenOn(), r)
 	log.Critical(err)
 }
