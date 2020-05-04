@@ -29,7 +29,7 @@ func (c UpdateRandomPlayers) Cron() string {
 
 const (
 	cronInterval = time.Minute
-	playerCount  = 5 // Per consumer
+	playerCount  = 10 // Per consumer
 )
 
 func (c UpdateRandomPlayers) work() (err error) {
