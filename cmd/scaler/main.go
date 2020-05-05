@@ -18,8 +18,6 @@ func main() {
 
 	log.Initialise([]log.LogName{log.LogNameScaler})
 
-	fmt.Println("Starting scaler")
-
 	// Web server
 	r := chi.NewRouter()
 	r.Get("/", listHandler)
@@ -27,6 +25,8 @@ func main() {
 	r.Get("/cycle", cycleHandler)
 	r.Get("/delete/{id}", deleteHandler)
 	r.Get("/health-check", healthCheckHandler)
+
+	fmt.Println("Starting scaler on :4000")
 
 	err := http.ListenAndServe(":4000", r)
 	if err != nil {
