@@ -1,9 +1,12 @@
 #player-page {
 
-    .jumbotron {
+    #jumbotron {
+
+        height: 144px;
+
         img {
             float: right;
-            height: 120px;
+            height: 144px;
             margin: -2rem -2rem -2rem 2rem;
         }
     }
