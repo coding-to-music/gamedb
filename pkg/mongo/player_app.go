@@ -93,7 +93,7 @@ func (app PlayerApp) GetPriceHourFormatted(code steamapi.ProductCC) string {
 		if val < 0 {
 			return "∞"
 		}
-		return i18n.FormatPrice(i18n.GetProdCC(code).CurrencyCode, int(math.Round(float64(val))))
+		return i18n.FormatPrice(i18n.GetProdCC(code).CurrencyCode, int(math.Round(val)))
 	} else {
 		return "-"
 	}
