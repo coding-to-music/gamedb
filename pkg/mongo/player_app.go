@@ -215,7 +215,7 @@ func UpdatePlayerApps(apps map[int]*PlayerApp) (err error) {
 		// Must be UpdateOneModel, otherwise it will overwrite achievement data
 		write := mongo.NewUpdateOneModel()
 		write.SetFilter(bson.M{"_id": v.GetKey()})
-		write.SetUpdate(v.BSONUpdate())
+		write.SetUpdate(bson.M{"$set": v.BSONUpdate()})
 		write.SetUpsert(true)
 
 		writes = append(writes, write)
