@@ -217,6 +217,10 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 		item := memcache.MemcachePlayerInQueue(player.ID)
 		_, err = memcache.Get(item.Key)
+		if err != nil {
+			err = helpers.IgnoreErrors(err, mc.ErrNotFound)
+			log.Err(err, r)
+		}
 
 		inQueue = err == nil
 	}()
