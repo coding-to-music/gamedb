@@ -190,7 +190,7 @@ if ($('#stats-page').length > 0) {
 
                 Highcharts.chart('release-dates', $.extend(true, {}, defaultStatsChartOptions, {
                     chart: {
-                        type: 'area',
+                        type: 'column',
                     },
                     xAxis: {
                         type: 'datetime'
