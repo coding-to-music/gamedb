@@ -2,9 +2,11 @@ package queue
 
 import (
 	"math"
+	"os"
 	"time"
 
 	"github.com/Jleagle/rabbit-go"
+	"github.com/gamedb/gamedb/pkg/log"
 )
 
 func delayHandler(messages []*rabbit.Message) {
@@ -12,6 +14,8 @@ func delayHandler(messages []*rabbit.Message) {
 	for _, message := range messages {
 
 		time.Sleep(time.Second / 10)
+
+		// writeToFile(message)
 
 		// If time.Now() is before "delay-until", keep delaying
 		if val, ok := message.Message.Headers["delay-until"]; ok {
@@ -38,5 +42,28 @@ func delayHandler(messages []*rabbit.Message) {
 		} else {
 			sendToRetryQueue(message)
 		}
+	}
+}
+
+func writeToFile(message *rabbit.Message) {
+
+	queue := message.Message.Headers["first-queue"]
+
+	f, err := os.OpenFile("delay.txt", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+	if err != nil {
+		panic(err)
+	}
+
+	defer func() {
+		err := f.Close()
+		log.Err(err)
+	}()
+
+	if queue == nil {
+		queue = "None"
+	}
+
+	if _, err = f.WriteString(queue.(string) + " - " + string(message.Message.Body) + "\n"); err != nil {
+		panic(err)
 	}
 }
