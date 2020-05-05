@@ -37,11 +37,9 @@
                             <a class="nav-link nav-link-small" data-toggle="tab" href="#wishlist" role="tab">Wishlist ({{ comma .Player.WishlistAppsCount }})</a>
                         </li>
                     {{ end }}
-                    {{ if eq .Env "local" }}
-                        <li class="nav-item">
-                            <a class="nav-link nav-link-small" data-toggle="tab" href="#achievements" role="tab">Achievements</a>
-                        </li>
-                    {{ end }}
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-small" data-toggle="tab" href="#achievements" role="tab">Achievements</a>
+                    </li>
                     {{if gt .Player.FriendsCount 0}}
                         <li class="nav-item">
                             <a class="nav-link nav-link-small" data-toggle="tab" href="#friends" role="tab">Friends ({{ comma .Player.FriendsCount }})</a>
@@ -540,6 +538,12 @@
 
                     {{/* Achievements */}}
                     <div class="tab-pane" id="achievements" role="tabpanel">
+
+                        {{ if eq .User.PatreonLevel 0 }}
+                            <div class="alert alert-primary" role="alert">
+                                Sign up and link your Steam account to scan achievements.
+                            </div>
+                        {{ end }}
 
                         <div class="table-responsive">
                             <table class="table table-hover table-striped table-counts mb-0" data-path="/players/{{ .Player.ID }}/achievements-summary.json" id="achievements-summary-table">

@@ -23,6 +23,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
 	"github.com/justinas/nosurf"
+	"github.com/memcachier/mc"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -225,6 +226,22 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		inQueue = err == nil
 	}()
 
+	// Get user
+	var user sql.User
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		user, err = sql.GetUserByKey("steam_id", player.ID, 0)
+		err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
+		if err != nil {
+			log.Err(err, r)
+			return
+		}
+	}()
+
 	// Wait
 	wg.Wait()
 
@@ -313,6 +330,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	t.Player = player
 	t.Types = typeCounts
 	t.InQueue = inQueue
+	t.User = user
 
 	returnTemplate(w, r, "player", t)
 }
@@ -326,6 +344,7 @@ type playerTemplate struct {
 	Ranks         []playerRankTemplate
 	Types         map[string]int64
 	InQueue       bool
+	User          sql.User
 }
 
 func (pt playerTemplate) TypePercent(typex string) string {
