@@ -55,6 +55,31 @@ func (app PlayerApp) BSON() bson.D {
 	}
 }
 
+// Missing achievement columns so when we update a row we dont overwrite achievements
+func (app PlayerApp) BSONUpdate() bson.D {
+
+	var prices = bson.M{}
+	for k, v := range app.AppPrices {
+		prices[k] = v
+	}
+
+	var pricesHour = bson.M{}
+	for k, v := range app.AppPriceHour {
+		pricesHour[k] = v
+	}
+
+	return bson.D{
+		{"_id", app.GetKey()},
+		{"player_id", app.PlayerID},
+		{"app_id", app.AppID},
+		{"app_name", app.AppName},
+		{"app_icon", app.AppIcon},
+		{"app_time", app.AppTime},
+		{"app_prices", prices},
+		{"app_prices_hour", pricesHour},
+	}
+}
+
 func (app PlayerApp) GetKey() string {
 	return strconv.FormatInt(app.PlayerID, 10) + "-" + strconv.Itoa(app.AppID)
 }
@@ -187,9 +212,10 @@ func UpdatePlayerApps(apps map[int]*PlayerApp) (err error) {
 	var writes []mongo.WriteModel
 	for _, v := range apps {
 
-		write := mongo.NewReplaceOneModel()
+		// Must be UpdateOneModel, otherwise it will overwrite achievement data
+		write := mongo.NewUpdateOneModel()
 		write.SetFilter(bson.M{"_id": v.GetKey()})
-		write.SetReplacement(v.BSON())
+		write.SetUpdate(v.BSONUpdate())
 		write.SetUpsert(true)
 
 		writes = append(writes, write)
