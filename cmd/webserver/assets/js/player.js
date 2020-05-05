@@ -381,45 +381,6 @@ if ($playerPage.length > 0) {
 
     function loadPlayerAchievements() {
 
-        const options = {
-            "order": [[1, 'desc']],
-            "createdRow": function (row, data, dataIndex) {
-                $(row).attr('data-link', data[0] + '#achievements');
-            },
-            "columnDefs": [
-                // App / Achievement
-                {
-                    "targets": 0,
-                    "render": function (data, type, row) {
-                        return '<div class="icon-name"><div class="icon"><img class="tall" data-lazy="' + row[4] + '" alt="" data-lazy-alt="' + row[3] + '"></div><div class="name">' + row[1] + ': ' + row[3] + '<br><small>' + row[5] + '</small></div></div>'
-                    },
-                    "createdCell": function (td, cellData, rowData, row, col) {
-                        $(td).addClass('img');
-                    },
-                    "orderable": false,
-                },
-                // Release Date
-                {
-                    "targets": 1,
-                    "render": function (data, type, row) {
-                        if (row[6]) {
-                            return '<span data-livestamp="' + row[6] + '"></span>';
-                        } else {
-                            return 'Unknown';
-                        }
-                    },
-                    "createdCell": function (td, cellData, rowData, row, col) {
-                        $(td).attr('nowrap', 'nowrap');
-                    },
-                    "orderable": false,
-                },
-            ]
-        };
-
-        $('#achievements-table').gdbTable({
-            tableOptions: options,
-        });
-
         const summaryOptions = {
             "order": [[2, 'desc']],
             "createdRow": function (row, data, dataIndex) {
@@ -459,6 +420,46 @@ if ($playerPage.length > 0) {
 
         $('#achievements-summary-table').gdbTable({
             tableOptions: summaryOptions,
+        });
+
+        //
+        const options = {
+            "order": [[1, 'desc']],
+            "createdRow": function (row, data, dataIndex) {
+                $(row).attr('data-link', data[0] + '#achievements');
+            },
+            "columnDefs": [
+                // App / Achievement
+                {
+                    "targets": 0,
+                    "render": function (data, type, row) {
+                        return '<div class="icon-name"><div class="icon"><img class="tall" data-lazy="' + row[4] + '" alt="" data-lazy-alt="' + row[3] + '"></div><div class="name">' + row[1] + ': ' + row[3] + '<br><small>' + row[5] + '</small></div></div>'
+                    },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        $(td).addClass('img');
+                    },
+                    "orderable": false,
+                },
+                // Release Date
+                {
+                    "targets": 1,
+                    "render": function (data, type, row) {
+                        if (row[6]) {
+                            return '<span data-livestamp="' + row[6] + '"></span>';
+                        } else {
+                            return 'Unknown';
+                        }
+                    },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        $(td).attr('nowrap', 'nowrap');
+                    },
+                    "orderable": false,
+                },
+            ]
+        };
+
+        $('#achievements-table').gdbTable({
+            tableOptions: options,
         });
     }
 
