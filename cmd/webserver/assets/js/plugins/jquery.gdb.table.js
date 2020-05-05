@@ -213,11 +213,16 @@
                 }
 
                 // Hide empty pagination
-                if (!$(parent.element).hasClass('table-counts')) {
-                    const $pagination = $(parent.element).parent().find('.dt-pagination');
-                    (dt.page.info().pages <= 1)
-                        ? $pagination.hide()
-                        : $pagination.show();
+                const $paginationHeader = $(parent.element).parent().find('.dt-header .dt-pagination');
+                const $paginationFooter = $(parent.element).parent().find('.dt-footer .dt-pagination');
+                if (dt.page.info().pages <= 1) {
+                    $paginationFooter.hide();
+                    if (!$(parent.element).hasClass('table-counts')) {
+                        $paginationHeader.hide();
+                    }
+                } else {
+                    $paginationFooter.show();
+                    $paginationHeader.show();
                 }
 
                 // Update URL
