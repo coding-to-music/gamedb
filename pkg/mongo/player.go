@@ -306,7 +306,7 @@ func (player *Player) SetOwnedGames(saveRows bool) (steamapi.OwnedGames, error) 
 		log.Err(err)
 	}
 
-	// Save playerApps to Datastore
+	// Save playerApps to Mongo
 	err = UpdatePlayerApps(playerApps)
 	if err != nil {
 		return resp, err
