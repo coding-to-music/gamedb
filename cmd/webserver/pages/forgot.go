@@ -31,6 +31,12 @@ func ForgotRouter() http.Handler {
 
 func forgotHandler(w http.ResponseWriter, r *http.Request) {
 
+	if sessionHelpers.IsLoggedIn(r) {
+
+		http.Redirect(w, r, "/settings", http.StatusFound)
+		return
+	}
+
 	t := forgotTemplate{}
 	t.fill(w, r, "Forgot Password", "")
 	t.hideAds = true
