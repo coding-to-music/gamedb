@@ -18,10 +18,23 @@ func GetTwitch() (*helix.Client, error) {
 	var err error
 
 	if client == nil {
-		client, err = helix.NewClient(&helix.Options{
+
+		ops := &helix.Options{
 			ClientID:     config.Config.TwitchClientID.Get(),
 			ClientSecret: config.Config.TwitchClientSecret.Get(),
-		})
+		}
+
+		client, err = helix.NewClient(ops)
+		if err != nil {
+			return nil, err
+		}
+
+		token, err := client.GetAppAccessToken()
+		if err != nil {
+			return nil, err
+		}
+
+		client.SetAppAccessToken(token.Data.AccessToken)
 	}
 
 	return client, err
