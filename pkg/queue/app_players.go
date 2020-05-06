@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/Jleagle/rabbit-go"
-	"github.com/cenkalti/backoff/v4"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/helpers/steam"
@@ -119,18 +118,7 @@ func getAppTwitchStreamers(twitchID int) (viewers int, err error) {
 			return 0, err
 		}
 
-		var resp *helix.StreamsResponse
-
-		// Retrying as this call can fail
-		operation := func() (err error) {
-
-			resp, err = client.GetStreams(&helix.StreamsParams{First: 100, GameIDs: []string{strconv.Itoa(twitchID)}, Language: []string{"en"}})
-			return err
-		}
-
-		policy := backoff.NewExponentialBackOff()
-
-		err = backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 3), func(err error, t time.Duration) { log.Info(err) })
+		resp, err := client.GetStreams(&helix.StreamsParams{First: 100, GameIDs: []string{strconv.Itoa(twitchID)}, Language: []string{"en"}})
 		if err != nil {
 			return 0, err
 		}
