@@ -45,7 +45,7 @@
                     </li>
                     {{ if or (gt (len .App.Screenshots) 0) (gt (len .App.Movies) 0) }}
                         <li class="nav-item">
-                            <a class="nav-link nav-link-small" data-toggle="tab" href="#media" role="tab">Media ({{ comma (sum (len .App.Screenshots) (len .App.Movies) )}})</a>
+                            <a class="nav-link nav-link-small" data-toggle="tab" href="#media" role="tab">Media</a>
                         </li>
                     {{ end }}
                     <li class="nav-item">
@@ -78,7 +78,7 @@
                     {{ end }}
                     {{ if or (gt (len .Packages) 0) (gt (len .Bundles) 0) }}
                         <li class="nav-item">
-                            <a class="nav-link nav-link-small" data-toggle="tab" href="#packages" role="tab">Packages ({{ comma (add (len .Packages) (len .Bundles)) }})</a>
+                            <a class="nav-link nav-link-small" data-toggle="tab" href="#packages" role="tab">Packages ({{ comma (sum (len .Packages) (len .Bundles)) }})</a>
                         </li>
                     {{ end }}
                     {{ if gt (len .App.NewsIDs) 0 }}
