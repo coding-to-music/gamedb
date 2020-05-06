@@ -658,6 +658,10 @@ func GetApps(offset int64, limit int64, sort bson.D, filter bson.D, projection b
 
 func GetAppsByID(ids []int, projection bson.M) (apps []App, err error) {
 
+	if len(ids) < 1 {
+		return apps, nil
+	}
+
 	a := bson.A{}
 	for _, v := range ids {
 		a = append(a, v)
