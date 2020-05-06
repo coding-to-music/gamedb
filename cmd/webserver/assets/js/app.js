@@ -30,11 +30,10 @@ if ($appPage.length > 0) {
     });
 
     // Show dev raw row
-    $('#dev table.table tbody').on('click', 'td i, td svg', function () {
+    $('#dev-info').on('click', 'tr', function () {
 
-        const table = $(this).closest('table').DataTable();
-        const $tr = $(this).closest('tr');
-        const row = table.row($tr);
+        const $tr = $(this);
+        const row = $(this).closest('table').DataTable().row($tr);
 
         if (row.child.isShown()) {
 
@@ -44,7 +43,7 @@ if ($appPage.length > 0) {
         } else {
 
             row.child(function () {
-                return '<div class="wbba">' + $tr.data('raw') + '</div>';
+                return '<code class="wbba">' + $tr.data('raw') + '</code>';
             }).show();
             $tr.addClass('shown');
         }
