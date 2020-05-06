@@ -426,7 +426,6 @@ if ($appPage.length > 0) {
             xAxis: {
                 title: {text: ''},
                 type: 'datetime',
-                min: d.getTime(),
             },
             yAxis: {
                 allowDecimals: false,
@@ -479,6 +478,9 @@ if ($appPage.length > 0) {
                 }
 
                 Highcharts.chart('players-chart', $.extend(true, {}, defaultAppChartOptions, {
+                    xAxis: {
+                        min: d.getTime(),
+                    },
                     series: [
                         {
                             name: 'Youtube Views',
