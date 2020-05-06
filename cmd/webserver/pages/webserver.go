@@ -182,6 +182,7 @@ type errorTemplate struct {
 
 func getTemplateFuncMap() map[string]interface{} {
 	return template.FuncMap{
+		"add":          func(a int, b int) int { return a + b },
 		"bytes":        func(a uint64) string { return humanize.Bytes(a) },
 		"comma":        func(a int) string { return humanize.Comma(int64(a)) },
 		"comma64":      func(a int64) string { return humanize.Comma(a) },
