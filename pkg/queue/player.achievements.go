@@ -1,6 +1,8 @@
 package queue
 
 import (
+	"time"
+
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
@@ -49,8 +51,12 @@ func playerAchievementsHandler(messages []*rabbit.Message) {
 		// Get player
 		player, err := mongo.GetPlayer(payload.PlayerID)
 		if err != nil {
+
+			// ErrNoDocuments can be returned on new signups as the player hasnt been created yet
+			err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
 			log.Err(err, message.Message.Body)
-			sendToRetryQueue(message)
+
+			sendToRetryQueueWithDelay(message, time.Second*10)
 			continue
 		}
 
