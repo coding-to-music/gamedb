@@ -161,7 +161,8 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Send email
 		body := "Please click the below link to verify your email address<br />" +
-			config.Config.GameDBDomain.Get() + "/signup/verify?code=" + code.Code
+			config.Config.GameDBDomain.Get() + "/signup/verify?code=" + code.Code +
+			"<br><br>Thanks, James."
 
 		_, err = webserverHelpers.SendEmail(
 			mail.NewEmail(email, email),
