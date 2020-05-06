@@ -61,6 +61,7 @@ func LogSteamError(err error, interfaces ...interface{}) {
 			"net/http: TLS handshake timeout",
 			"unexpected end of JSON input",
 			"unexpected EOF",
+			"i/o timeout",
 		}
 
 		for _, v := range steamErrors {
