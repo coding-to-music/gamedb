@@ -22,8 +22,8 @@ const (
 	// Pages
 	UserLevelLimit0 = 5   // Guest
 	UserLevelLimit1 = 10  // Free
-	UserLevelLimit2 = 20  // Level 1
-	UserLevelLimit3 = 100 // Level 2
+	UserLevelLimit2 = 50  // Level 1
+	UserLevelLimit3 = 200 // Level 2
 	UserLevelLimit4 = 0   // Level 3
 )
 
