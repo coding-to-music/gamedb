@@ -77,7 +77,7 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 	var err error
 
 	// Set the last page
-	if r.Method == "GET" && page != "error" && page != "login" {
+	if r.Method == "GET" && page != "error" && page != "login" && page != "forgot" {
 
 		err = session.Set(r, sessionHelpers.SessionLastPage, r.URL.Path)
 		if err != nil {
