@@ -403,6 +403,9 @@ if ($appPage.length > 0) {
 
     function loadAppPlayersChart() {
 
+        const d = new Date();
+        d.setDate(d.getDate() - 7);
+
         const defaultAppChartOptions = {
             chart: {
                 type: 'spline',
@@ -422,7 +425,8 @@ if ($appPage.length > 0) {
             },
             xAxis: {
                 title: {text: ''},
-                type: 'datetime'
+                type: 'datetime',
+                min: d.getTime(),
             },
             yAxis: {
                 allowDecimals: false,
@@ -448,6 +452,8 @@ if ($appPage.length > 0) {
                     switch (this.series.name) {
                         case 'Players Online':
                             return this.y.toLocaleString() + ' players on ' + moment(this.key).format("DD MMM YYYY @ HH:mm");
+                        case 'Players Online (Average)':
+                            return this.y.toLocaleString() + ' average players on ' + moment(this.key).format("DD MMM YYYY @ HH:mm");
                         case 'Twitch Viewers':
                             return this.y.toLocaleString() + ' Twitch viewers on ' + moment(this.key).format("DD MMM YYYY @ HH:mm");
                         case 'Youtube Views':
@@ -478,9 +484,8 @@ if ($appPage.length > 0) {
                             name: 'Youtube Views',
                             color: '#FF0000', // Youtube red
                             data: data['max_youtube_views'],
-                            yAxis: 0,
-                            type: 'line',
                             connectNulls: true,
+                            type: 'line',
                             step: 'right',
                             visible: false,
                         },
@@ -488,15 +493,18 @@ if ($appPage.length > 0) {
                             name: 'Twitch Viewers',
                             color: '#6441A4', // Twitch purple
                             data: data['max_twitch_viewers'],
-                            yAxis: 0,
-                            type: 'line',
+                            connectNulls: true,
+                        },
+                        {
+                            name: 'Players Online (Average)',
+                            color: '#28a74544',
+                            data: data['max_moving_average'],
                             connectNulls: true,
                         },
                         {
                             name: 'Players Online',
                             color: '#28a745',
                             data: data['max_player_count'],
-                            yAxis: 0,
                             connectNulls: true,
                         },
                     ],
@@ -526,9 +534,8 @@ if ($appPage.length > 0) {
                             name: 'Youtube Views',
                             color: '#FF0000', // Youtube red
                             data: data['max_youtube_views'],
-                            yAxis: 0,
-                            type: 'line',
                             connectNulls: true,
+                            type: 'line',
                             step: 'right',
                             visible: false,
                         },
@@ -536,15 +543,18 @@ if ($appPage.length > 0) {
                             name: 'Twitch Viewers',
                             color: '#6441A4', // Twitch purple
                             data: data['max_twitch_viewers'],
-                            yAxis: 0,
-                            type: 'line',
+                            connectNulls: true,
+                        },
+                        {
+                            name: 'Players Online (Average)',
+                            color: '#28a74544',
+                            data: data['max_moving_average'],
                             connectNulls: true,
                         },
                         {
                             name: 'Players Online',
                             color: '#28a745',
                             data: data['max_player_count'],
-                            yAxis: 0,
                             connectNulls: true,
                         },
                     ],
