@@ -20,10 +20,10 @@ const (
 	UserLevel4 = 4 // Level 3
 
 	// Pages
-	UserLevelLimit0 = 5   // Guest
+	UserLevelLimit0 = 10  // Guest
 	UserLevelLimit1 = 10  // Free
-	UserLevelLimit2 = 50  // Level 1
-	UserLevelLimit3 = 200 // Level 2
+	UserLevelLimit2 = 10  // Level 1
+	UserLevelLimit3 = 100 // Level 2
 	UserLevelLimit4 = 0   // Level 3
 )
 
