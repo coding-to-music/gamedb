@@ -202,7 +202,7 @@ func groupAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementGroups.String())
 	builder.AddWhere("group_id", "=", id)
 	// builder.AddWhere("time", ">", "now()-365d")
-	builder.AddGroupByTime("1h")
+	builder.AddGroupByTime("1d")
 	builder.SetFillNone()
 
 	resp, err := influx.InfluxQuery(builder.String())

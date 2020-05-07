@@ -9,14 +9,6 @@
     }
 
     #group-chart {
-        height: 300px;
-        pointer-events: none;
-    }
-
-    @include media-breakpoint-up(md) {
-        #group-chart {
-            height: 300px;
-            pointer-events: auto;
-        }
+        height: 400px;
     }
 }
