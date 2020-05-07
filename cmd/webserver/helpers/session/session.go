@@ -162,6 +162,15 @@ func GetProductCC(r *http.Request) steamapi.ProductCC {
 			return steamapi.ProductCCUK
 		}
 
+		// Get from cloudflare
+		q = strings.ToLower(r.Header.Get("cf-ipcountry"))
+		if q == "gb" {
+			q = "uk"
+		}
+		if q != "" && steamapi.IsProductCC(q) {
+			return steamapi.ProductCC(q)
+		}
+
 		var err error
 
 		// Get from Maxmind
