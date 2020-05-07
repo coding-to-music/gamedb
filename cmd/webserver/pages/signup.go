@@ -140,7 +140,7 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 			EmailVerified: false,
 			Password:      string(passwordBytes),
 			ProductCC:     sessionHelpers.GetProductCC(r),
-			PatreonLevel:  sql.UserLevel1,
+			Level:         sql.UserLevel1,
 		}
 
 		user.SetAPIKey()

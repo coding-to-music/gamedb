@@ -424,7 +424,7 @@ func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if user.PatreonLevel <= sql.UserLevel2 {
+		if user.Level <= sql.UserLevel2 {
 			err = session.SetFlash(r, sessionHelpers.SessionBad, "Invalid user level")
 			log.Err(err)
 			return

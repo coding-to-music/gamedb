@@ -66,7 +66,7 @@ type User struct {
 	GoogleID      sql.NullString     `gorm:"not null;column:google_id"`
 	DiscordID     sql.NullString     `gorm:"not null;column:discord_id"`
 	GitHubID      sql.NullString     `gorm:"not null;column:github_id"`
-	PatreonLevel  int8               `gorm:"not null;column:patreon_level"`
+	Level         int8               `gorm:"not null;column:level"` // Patreon
 	HideProfile   bool               `gorm:"not null;column:hide_profile"`
 	ShowAlerts    bool               `gorm:"not null;column:show_alerts"`
 	ProductCC     steamapi.ProductCC `gorm:"not null;column:country_code"`

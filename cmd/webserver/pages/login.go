@@ -162,7 +162,7 @@ func login(r *http.Request, user sql.User) (string, bool) {
 		sessionHelpers.SessionUserProdCC:     string(user.ProductCC),
 		sessionHelpers.SessionUserAPIKey:     user.APIKey,
 		sessionHelpers.SessionUserShowAlerts: strconv.FormatBool(user.ShowAlerts),
-		sessionHelpers.SessionUserLevel:      strconv.Itoa(int(user.PatreonLevel)),
+		sessionHelpers.SessionUserLevel:      strconv.Itoa(int(user.Level)),
 	}
 
 	steamID := user.GetSteamID()
