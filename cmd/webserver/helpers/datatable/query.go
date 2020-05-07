@@ -35,12 +35,11 @@ func NewDataTableQuery(r *http.Request, limit bool) (query DataTablesQuery) {
 
 		query.limited = true
 
-		level := sql.UserLevel(session.GetUserLevel(r))
-		max := level.MaxOffset(100)
-
+		maxStart := sql.UserLevel(session.GetUserLevel(r)).MaxOffset(100)
 		start, _ := strconv.Atoi(query.Start)
 
-		if max > 0 && int64(start) > max {
+		if maxStart > 0 && int64(start) > maxStart {
+
 			query.Start = strconv.FormatInt(int64(start), 10)
 		}
 	}

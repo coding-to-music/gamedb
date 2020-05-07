@@ -23,6 +23,7 @@ func NewDataTablesResponse(r *http.Request, query DataTablesQuery, count int64, 
 		if max > 0 && max < ret.RecordsFiltered {
 
 			ret.RecordsFiltered = max
+
 			if session.IsLoggedIn(r) {
 				ret.LevelLimited = 1
 			} else {
