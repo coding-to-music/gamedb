@@ -73,17 +73,6 @@ function loadGroupChart($page = null) {
                 data = [];
             }
 
-            const yAxisGroup = {
-                allowDecimals: false,
-                title: {
-                    text: ''
-                },
-                labels: {
-                    // enabled: false
-                },
-                // min: 0,
-            };
-
             Highcharts.chart('group-chart', {
                 chart: {
                     type: 'spline',
@@ -96,12 +85,11 @@ function loadGroupChart($page = null) {
                     text: ''
                 },
                 credits: {
-                    enabled: false
+                    enabled: false,
                 },
                 legend: {
-                    enabled: false
+                    enabled: true,
                 },
-                plotOptions: {},
                 xAxis: {
                     title: {
                         text: ''
@@ -109,46 +97,59 @@ function loadGroupChart($page = null) {
                     type: 'datetime'
 
                 },
-                yAxis: [
-                    Object.assign({}, yAxisGroup),
-                    Object.assign({}, yAxisGroup),
-                    Object.assign({}, yAxisGroup),
-                    Object.assign({}, yAxisGroup),
-                ],
+                yAxis: {
+                    allowDecimals: false,
+                    title: {
+                        text: ''
+                    },
+                    labels: {
+                        formatter: function () {
+                            return this.value.toLocaleString();
+                        },
+                    },
+                },
                 tooltip: {
                     formatter: function () {
-                        return this.y.toLocaleString() + ' members on ' + moment(this.key).format("dddd DD MMM YYYY @ HH:mm");
+                        switch (this.series.name) {
+                            case 'In Chat':
+                                return this.y.toLocaleString() + ' members in chat on ' + moment(this.key).format("dddd DD MMM YYYY @ HH:mm");
+                            case 'In Game':
+                                return this.y.toLocaleString() + ' members in game on ' + moment(this.key).format("dddd DD MMM YYYY @ HH:mm");
+                            case 'Online':
+                                return this.y.toLocaleString() + ' members online ' + moment(this.key).format("dddd DD MMM YYYY @ HH:mm");
+                            case 'Members':
+                                return this.y.toLocaleString() + ' members on ' + moment(this.key).format("dddd DD MMM YYYY @ HH:mm");
+                        }
                     },
                 },
                 series: [
                     {
-                        name: 'Members',
-                        color: '#28a745',
-                        data: data['max_members_count'],
+                        name: 'In Chat',
+                        color: '#007bff',
+                        data: data['max_members_in_chat'],
                         marker: {symbol: 'circle'},
-                        yAxis: 0,
+                        visible: false,
                     },
-                    // {
-                    //     name: 'In Chat',
-                    //     color: '#007bff',
-                    //     data: data['max_members_in_chat'],
-                    //     marker: {symbol: 'circle'},
-                    //     yAxis: 1,
-                    // },
-                    // {
-                    //     name: 'In Game',
-                    //     color: '#e83e8c',
-                    //     data: data['max_members_in_game'],
-                    //     marker: {symbol: 'circle'},
-                    //     yAxis: 2,
-                    // },
+                    {
+                        name: 'In Game',
+                        color: '#e83e8c',
+                        data: data['max_members_in_game'],
+                        marker: {symbol: 'circle'},
+                        visible: false,
+                    },
                     // {
                     //     name: 'Online',
                     //     color: '#ffc107',
                     //     data: data['max_members_online'],
                     //     marker: {symbol: 'circle'},
-                    //     yAxis: 3,
+                    //     visible: false,
                     // },
+                    {
+                        name: 'Members',
+                        color: '#28a745',
+                        data: data['max_members_count'],
+                        marker: {symbol: 'circle'},
+                    },
                 ],
             });
         },
