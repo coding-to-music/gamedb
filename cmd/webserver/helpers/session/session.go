@@ -13,6 +13,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
 	"github.com/oschwald/maxminddb-golang"
@@ -279,12 +280,12 @@ func GetUserLevel(r *http.Request) int {
 
 	val := Get(r, SessionUserLevel)
 	if val == "" {
-		return 0
+		return sql.UserLevel0
 	}
 
 	i, err := strconv.Atoi(val)
 	if err != nil {
-		return 0
+		return sql.UserLevel0
 	}
 
 	return i
