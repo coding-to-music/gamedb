@@ -146,7 +146,7 @@ func GetProductCC(r *http.Request) steamapi.ProductCC {
 	cc := func() steamapi.ProductCC {
 
 		// Get from URL
-		q := strings.ToUpper(r.URL.Query().Get("cc"))
+		q := strings.ToLower(r.URL.Query().Get("cc"))
 		if q != "" && steamapi.IsProductCC(q) {
 			return steamapi.ProductCC(q)
 		}
