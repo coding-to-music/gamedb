@@ -3,7 +3,7 @@ package datatable
 import (
 	"net/http"
 
-	"github.com/gamedb/gamedb/cmd/webserver/helpers/session"
+	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/sql"
 )
 

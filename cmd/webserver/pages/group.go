@@ -7,7 +7,7 @@ import (
 	"sync"
 
 	"github.com/Jleagle/influxql"
-	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
+	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"

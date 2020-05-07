@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gamedb/gamedb/cmd/webserver/helpers/session"
+	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"

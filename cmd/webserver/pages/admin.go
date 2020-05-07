@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/Jleagle/session-go/session"
-	"github.com/gamedb/gamedb/cmd/webserver/helpers/middleware"
-	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers/session"
+	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/middleware"
+	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"

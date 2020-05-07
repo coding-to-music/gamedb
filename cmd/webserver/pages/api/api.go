@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/didip/tollbooth/limiter"
-	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers/session"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/api/generated"
+	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	influxHelpers "github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/log"

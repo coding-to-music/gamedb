@@ -16,7 +16,7 @@ import (
 
 	"github.com/Jleagle/session-go/session"
 	"github.com/dustin/go-humanize"
-	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers/session"
+	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/i18n"

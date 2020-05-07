@@ -11,8 +11,8 @@ import (
 	"sync"
 
 	"github.com/Jleagle/influxql"
-	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
-	"github.com/gamedb/gamedb/cmd/webserver/helpers/session"
+	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
+	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/i18n"
 	"github.com/gamedb/gamedb/pkg/helpers/influx"

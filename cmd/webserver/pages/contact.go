@@ -6,8 +6,8 @@ import (
 
 	"github.com/Jleagle/recaptcha-go"
 	"github.com/Jleagle/session-go/session"
-	webserverHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers"
-	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers/session"
+	webserverHelpers "github.com/gamedb/gamedb/cmd/webserver/pages/helpers"
+	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/go-chi/chi"

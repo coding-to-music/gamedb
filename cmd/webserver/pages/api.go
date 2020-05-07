@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"net/http"
 
-	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers/session"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/api"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/api/generated"
+	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/getkin/kin-openapi/openapi3"

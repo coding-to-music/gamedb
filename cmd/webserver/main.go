@@ -11,9 +11,9 @@ import (
 	"time"
 
 	"github.com/Jleagle/recaptcha-go"
-	"github.com/gamedb/gamedb/cmd/webserver/helpers/middleware"
-	"github.com/gamedb/gamedb/cmd/webserver/helpers/session"
 	"github.com/gamedb/gamedb/cmd/webserver/pages"
+	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/middleware"
+	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"

@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/bwmarrin/discordgo"
-	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/helpers/session"
+	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"golang.org/x/oauth2"

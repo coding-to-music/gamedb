@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
+	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"

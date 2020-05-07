@@ -6,8 +6,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/gamedb/gamedb/cmd/webserver/helpers/datatable"
-	"github.com/gamedb/gamedb/cmd/webserver/helpers/session"
+	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
+	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
