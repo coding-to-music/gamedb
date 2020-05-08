@@ -32,15 +32,9 @@ body.dark {
         }
     }
 
-    #players {
-        #column {
-            text-transform: capitalize;
-        }
-    }
-
-    #prices {
-        .text-truncate {
-            width: 300px;
+    .games {
+        img {
+            width: 100%;
         }
     }
 
@@ -67,28 +61,6 @@ body.dark {
                     width: 150px;
                     min-width: 150px;
                     height: 70px;
-                }
-            }
-        }
-    }
-
-    #new-releases {
-        .row {
-
-            img {
-                border-bottom: solid #fff;
-                border-width: 1px;
-                width: 100%;
-            }
-
-            @include media-breakpoint-up(sm) {
-                img {
-                    border-width: 0;
-                }
-            }
-            @include media-breakpoint-up(lg) {
-                img {
-                    border-width: 1px;
                 }
             }
         }

@@ -38,16 +38,33 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 	var wg sync.WaitGroup
 
-	// Popular NEW games
+	// New games
 	wg.Add(1)
 	go func() {
 
 		defer wg.Done()
 
 		var err error
-		t.Games, err = mongo.PopularNewApps()
+		t.NewGames, err = mongo.PopularNewApps()
 		if err != nil {
 			log.Err(err, r)
+		}
+	}()
+
+	// Top games
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		t.TopGames, err = mongo.PopularApps()
+		if err != nil {
+			log.Err(err, r)
+		}
+
+		if len(t.TopGames) > 14 {
+			t.TopGames = t.TopGames[0:14]
 		}
 	}()
 
@@ -96,27 +113,17 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
-	// var spotlights = []homeSpotlight{
-	// 	{"Discord Bot", "If you run a Discord chat server, we offer a bot to get player and game information!", "/discord-bot"},
-	// 	{"Experience Table", "Trying to level up and need to know how much XP you need?", "/experience"},
-	// 	{"Coop Game Finder", "Find all the games you and your friends have in common and which ones are coop!", "/coop"},
-	// 	{"Game DB API", "Have a website and want to pull in information from Steam/Game DB?", "/api"},
-	// 	{"Bans Ladder", "Curious who has been banned the most on all of Steam?", "/players?order=desc&sort=7#bans"},
-	// }
-	//
-	// t.Spotlight = spotlights[rand.Intn(len(spotlights))]
-
 	//
 	returnTemplate(w, r, "home", t)
 }
 
 type homeTemplate struct {
 	GlobalTemplate
-	Games     []mongo.App
-	News      []homeNews
-	NewsID    int64
-	Players   []mongo.Player
-	Spotlight homeSpotlight
+	TopGames []mongo.App
+	NewGames []mongo.App
+	News     []homeNews
+	NewsID   int64
+	Players  []mongo.Player
 }
 
 type homeNews struct {
@@ -199,7 +206,7 @@ func homeSalesHandler(w http.ResponseWriter, r *http.Request) {
 		{Key: "offer_end", Value: bson.M{"$gt": time.Now()}},
 	}
 
-	sales, err := mongo.GetAllSales(0, 15, filter, bson.D{{Key: sort, Value: order}})
+	sales, err := mongo.GetAllSales(0, 10, filter, bson.D{{Key: sort, Value: order}})
 	if err != nil {
 		log.Err(err, r)
 	}

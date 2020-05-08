@@ -12,15 +12,31 @@ if ($homePage.length > 0) {
         loadPlayers($(this).attr('data-sort'));
     });
 
-    // Panels
+    // Fix top panel heights
     let maxPanelHeight = 0;
-    $panels = $('#panels .card');
+    const $panels = $('#panels .card');
     $panels.each(function () {
         if ($(this).height() > maxPanelHeight) {
             maxPanelHeight = $(this).height();
         }
     });
-    $panels.height(maxPanelHeight);
+    $panels.css('min-height', maxPanelHeight + 'px');
+
+    // Fix table heights
+    const observer = new MutationObserver(function syncHomeHeights() {
+
+        let maxPanelHeight = 0;
+        const $panels = $('#players, #sales');
+        $panels.each(function () {
+            if ($(this).height() > maxPanelHeight) {
+                maxPanelHeight = $(this).outerHeight();
+            }
+        });
+
+        $panels.css('min-height', maxPanelHeight + 'px');
+    });
+    observer.observe(document.getElementById('players'), {attributes: true, subtree: true, childList: false, characterData: false});
+    observer.observe(document.getElementById('sales'), {attributes: true, subtree: true, childList: false, characterData: false});
 
     loadSales('top-rated');
     loadPlayers('level');
@@ -208,87 +224,4 @@ if ($homePage.length > 0) {
             },
         });
     }
-
-    // // Prices
-    // $.ajax({
-    //     url: '/home/prices.json',
-    //     dataType: 'json',
-    //     cache: false,
-    //     success: function (data, textStatus, jqXHR) {
-    //
-    //         $('#prices .fa-spin').remove();
-    //         $('#prices table').removeClass('d-none');
-    //
-    //         addPriceRow(data, false);
-    //     },
-    // });
-    //
-    // websocketListener('prices', function (e) {
-    //
-    //     const data = JSON.parse(e.data);
-    //
-    //     if (data.Data[13] === user.prodCC) { // CC
-    //         if (data.Data[12] < 0) { // Drops
-    //             if (data.Data[0] > 0) { // Apps
-    //                 addPriceRow([{
-    //                     "name": data.Data[3],
-    //                     "id": data.Data[0],
-    //                     "link": data.Data[5],
-    //                     "after": data.Data[7],
-    //                     "discount": data.Data[15],
-    //                     "time": data.Data[11],
-    //                     "avatar": data.Data[4],
-    //                 }], true);
-    //             }
-    //         }
-    //     }
-    // });
-    //
-    // function addPriceRow(data, addToTop) {
-    //
-    //     const $container = $('#prices tbody');
-    //
-    //     $container.json2html(
-    //         data,
-    //         {
-    //             '<>': 'tr', 'data-app-id': '${id}', 'data-link': '${link}', 'html': [
-    //                 {
-    //                     '<>': 'td', 'class': 'img', 'html': [
-    //                         {
-    //                             '<>': 'div', 'class': 'icon-name', 'html': [
-    //                                 {
-    //                                     '<>': 'div', 'class': 'icon', 'html': [{'<>': 'img', 'data-lazy': '${avatar}', 'alt': '', 'data-lazy-alt': '${name}'}]
-    //                                 },
-    //                                 {
-    //                                     '<>': 'div', 'class': 'name', 'html': '${name}'
-    //                                 }
-    //                             ],
-    //                         },
-    //                     ]
-    //                 },
-    //                 {
-    //                     '<>': 'td', 'html': '${after}', 'nowrap': 'nowrap'
-    //                 },
-    //                 {
-    //                     '<>': 'td', 'html': '${discount}%', 'nowrap': 'nowrap'
-    //                 },
-    //                 {
-    //                     '<>': 'td', 'nowrap': 'nowrap', 'html': [
-    //                         {
-    //                             '<>': 'span', 'data-toggle': 'tooltip', 'data-placement': 'left', 'data-livestamp': '${time}',
-    //                         }
-    //                     ],
-    //                 },
-    //             ]
-    //         },
-    //         {
-    //             prepend: addToTop,
-    //         }
-    //     );
-    //
-    //     $container.find('tr').slice(15).remove();
-    //
-    //     observeLazyImages($container.find('img[data-lazy]'));
-    //     highLightOwnedGames($('#prices'));
-    // }
 }
