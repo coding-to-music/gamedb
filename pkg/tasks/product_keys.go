@@ -30,8 +30,10 @@ func (c ScanProductKeys) Cron() string {
 func (c ScanProductKeys) work() (err error) {
 
 	var addedKeys []string
+	var limit int64 = 10_000
 
 	// APPS
+	var offset int64 = 0
 	var projection = bson.M{"common": 1, "extended": 1, "config": 1, "ufs": 1}
 	var filter = bson.D{
 		{"$or", bson.A{
@@ -44,53 +46,62 @@ func (c ScanProductKeys) work() (err error) {
 
 	var productKeysMap = map[string]map[string]map[string]*sql.ProductKey{}
 
-	apps, err := mongo.GetApps(0, 0, nil, filter, projection, nil)
-	if err != nil {
-		return err
-	}
+	for {
 
-	for _, app := range apps {
-
-		fields := map[string]pics.PICSKeyValues{
-			sql.ProductKeyFieldExtended: app.Extended,
-			sql.ProductKeyFieldCommon:   app.Common,
-			sql.ProductKeyFieldUFS:      app.UFS,
-			sql.ProductKeyFieldConfig:   app.Config,
+		apps, err := mongo.GetApps(offset, limit, nil, filter, projection, nil)
+		if err != nil {
+			return err
 		}
 
-		for field, data := range fields {
+		for _, app := range apps {
 
-			for key := range data {
+			fields := map[string]pics.PICSKeyValues{
+				sql.ProductKeyFieldExtended: app.Extended,
+				sql.ProductKeyFieldCommon:   app.Common,
+				sql.ProductKeyFieldUFS:      app.UFS,
+				sql.ProductKeyFieldConfig:   app.Config,
+			}
 
-				key = helpers.TruncateString(key, 256, "...")
+			for field, data := range fields {
 
-				if _, ok := productKeysMap[sql.ProductKeyTypeApp]; !ok {
-					productKeysMap[sql.ProductKeyTypeApp] = map[string]map[string]*sql.ProductKey{}
-				}
-				if _, ok := productKeysMap[sql.ProductKeyTypeApp][field]; !ok {
-					productKeysMap[sql.ProductKeyTypeApp][field] = map[string]*sql.ProductKey{}
-				}
+				for key := range data {
 
-				if _, ok := productKeysMap[sql.ProductKeyTypeApp][field][key]; ok {
+					key = helpers.TruncateString(key, 256, "...")
 
-					productKeysMap[sql.ProductKeyTypeApp][field][key].Count++
+					if _, ok := productKeysMap[sql.ProductKeyTypeApp]; !ok {
+						productKeysMap[sql.ProductKeyTypeApp] = map[string]map[string]*sql.ProductKey{}
+					}
+					if _, ok := productKeysMap[sql.ProductKeyTypeApp][field]; !ok {
+						productKeysMap[sql.ProductKeyTypeApp][field] = map[string]*sql.ProductKey{}
+					}
 
-				} else {
+					if _, ok := productKeysMap[sql.ProductKeyTypeApp][field][key]; ok {
 
-					productKeysMap[sql.ProductKeyTypeApp][field][key] = &sql.ProductKey{
-						Type:  sql.ProductKeyTypeApp,
-						Field: field,
-						Key:   key,
-						Count: 1,
+						productKeysMap[sql.ProductKeyTypeApp][field][key].Count++
+
+					} else {
+
+						productKeysMap[sql.ProductKeyTypeApp][field][key] = &sql.ProductKey{
+							Type:  sql.ProductKeyTypeApp,
+							Field: field,
+							Key:   key,
+							Count: 1,
+						}
 					}
 				}
 			}
 		}
+
+		if int64(len(apps)) != limit {
+			break
+		}
+
+		offset += limit
 	}
 
 	for k, v := range productKeysMap {
 		for kk, vv := range v {
-			log.Info(k, kk)
+			// log.Info(k, kk)
 			for kkk, vvv := range vv {
 				err := vvv.Save()
 				if err != nil {
@@ -103,6 +114,7 @@ func (c ScanProductKeys) work() (err error) {
 	}
 
 	// PACKAGES
+	offset = 0
 	projection = bson.M{"extended": 1}
 	filter = bson.D{
 		{"$or", bson.A{
@@ -112,50 +124,59 @@ func (c ScanProductKeys) work() (err error) {
 
 	productKeysMap = map[string]map[string]map[string]*sql.ProductKey{}
 
-	packages, err := mongo.GetPackages(0, 0, nil, filter, projection, nil)
-	if err != nil {
-		return err
-	}
+	for {
 
-	for _, pack := range packages {
-
-		fields := map[string]pics.PICSKeyValues{
-			sql.ProductKeyFieldExtended: pack.Extended,
+		packages, err := mongo.GetPackages(offset, limit, nil, filter, projection, nil)
+		if err != nil {
+			return err
 		}
 
-		for field, data := range fields {
+		for _, pack := range packages {
 
-			for key := range data {
+			fields := map[string]pics.PICSKeyValues{
+				sql.ProductKeyFieldExtended: pack.Extended,
+			}
 
-				key = helpers.TruncateString(key, 256, "...")
+			for field, data := range fields {
 
-				if _, ok := productKeysMap[sql.ProductKeyTypePackage]; !ok {
-					productKeysMap[sql.ProductKeyTypePackage] = map[string]map[string]*sql.ProductKey{}
-				}
-				if _, ok := productKeysMap[sql.ProductKeyTypePackage][field]; !ok {
-					productKeysMap[sql.ProductKeyTypePackage][field] = map[string]*sql.ProductKey{}
-				}
+				for key := range data {
 
-				if _, ok := productKeysMap[sql.ProductKeyTypePackage][field][key]; ok {
+					key = helpers.TruncateString(key, 256, "...")
 
-					productKeysMap[sql.ProductKeyTypePackage][field][key].Count++
+					if _, ok := productKeysMap[sql.ProductKeyTypePackage]; !ok {
+						productKeysMap[sql.ProductKeyTypePackage] = map[string]map[string]*sql.ProductKey{}
+					}
+					if _, ok := productKeysMap[sql.ProductKeyTypePackage][field]; !ok {
+						productKeysMap[sql.ProductKeyTypePackage][field] = map[string]*sql.ProductKey{}
+					}
 
-				} else {
+					if _, ok := productKeysMap[sql.ProductKeyTypePackage][field][key]; ok {
 
-					productKeysMap[sql.ProductKeyTypePackage][field][key] = &sql.ProductKey{
-						Type:  sql.ProductKeyTypePackage,
-						Field: field,
-						Key:   key,
-						Count: 1,
+						productKeysMap[sql.ProductKeyTypePackage][field][key].Count++
+
+					} else {
+
+						productKeysMap[sql.ProductKeyTypePackage][field][key] = &sql.ProductKey{
+							Type:  sql.ProductKeyTypePackage,
+							Field: field,
+							Key:   key,
+							Count: 1,
+						}
 					}
 				}
 			}
 		}
+
+		if int64(len(packages)) != limit {
+			break
+		}
+
+		offset += limit
 	}
 
 	for k, v := range productKeysMap {
 		for kk, vv := range v {
-			log.Info(k, kk)
+			// log.Info(k, kk)
 			for kkk, vvv := range vv {
 				err := vvv.Save()
 				if err != nil {

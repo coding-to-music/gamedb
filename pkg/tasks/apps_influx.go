@@ -16,7 +16,7 @@ func (c AppsInflux) ID() string {
 }
 
 func (c AppsInflux) Name() string {
-	return "Update app peaks and averages"
+	return "Update app peaks and averages (influx)"
 }
 
 func (c AppsInflux) Cron() string {
@@ -25,15 +25,29 @@ func (c AppsInflux) Cron() string {
 
 func (c AppsInflux) work() (err error) {
 
-	apps, err := mongo.GetApps(0, 0, bson.D{{"_id", 1}}, nil, bson.M{"_id": 1}, nil)
-	if err != nil {
-		return err
-	}
+	var offset int64 = 0
+	var limit int64 = 10_000
 
-	for _, app := range apps {
+	for {
 
-		err = queue.ProduceAppsInflux(app.ID)
-		log.Err(err)
+		apps, err := mongo.GetApps(offset, limit, bson.D{{"_id", 1}}, nil, bson.M{"_id": 1}, nil)
+		if err != nil {
+			return err
+		}
+
+		// log.Info(strconv.Itoa(len(apps)) + " apps")
+
+		for _, app := range apps {
+
+			err = queue.ProduceAppsInflux(app.ID)
+			log.Err(err)
+		}
+
+		if int64(len(apps)) != limit {
+			break
+		}
+
+		offset += limit
 	}
 
 	return nil
