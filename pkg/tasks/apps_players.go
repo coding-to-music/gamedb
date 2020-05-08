@@ -50,7 +50,7 @@ func (c AppPlayers) work() (err error) {
 			return err
 		}
 
-		log.Info("Found " + strconv.Itoa(len(apps)) + " apps")
+		// log.Info("Found " + strconv.Itoa(len(apps)) + " apps")
 
 		var ids []int
 		for _, v := range apps {
