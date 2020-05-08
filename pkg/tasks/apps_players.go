@@ -1,8 +1,6 @@
 package tasks
 
 import (
-	"strconv"
-
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
