@@ -101,8 +101,8 @@ func changesHandler(messages []*rabbit.Message) {
 		log.Err(err)
 
 		// Send to Discord
-		// err = sendChangeToDiscord(changeSlice, appMap, packageMap)
-		// log.Err(err)
+		err = sendChangeToDiscord(changeSlice, appMap, packageMap)
+		log.Err(err)
 
 		message.Ack(false)
 	}
@@ -176,24 +176,54 @@ func sendChangesWebsocket(changes []*mongo.Change, appMap map[int]string, packag
 	return ProduceWebsocket(wsPayload, websockets.PageChanges)
 }
 
-// todo, add packages to return
 func sendChangeToDiscord(changes []*mongo.Change, appMap map[int]string, packageMap map[int]string) (err error) {
 
-	if config.IsProd() {
+	var messageLimit = 2000 - 100
+
+	if !config.IsLocal() {
 
 		for _, change := range changes {
 
-			var apps []string
+			var messages []string
+			var message []string
+			var messageLen int
 
+			// Apps
 			for _, v := range change.Apps {
-				if val, ok := appMap[v]; ok {
-					apps = append(apps, val)
+
+				if messageLen > messageLimit {
+					messages = append(messages, strings.Join(message, ", "))
+					message = []string{}
+					messageLen = 0
 				}
+
+				m := "a-" + strconv.Itoa(v)
+				message = append(message, m)
+				messageLen += len(m)
 			}
 
-			if len(apps) > 0 {
+			// Packages
+			for _, v := range change.Packages {
 
-				var msg = "Change " + strconv.Itoa(change.ID) + ": " + strings.Join(apps, ", ")
+				if messageLen > messageLimit {
+					messages = append(messages, strings.Join(message, ", "))
+					message = []string{}
+					messageLen = 0
+				}
+
+				m := "p-" + strconv.Itoa(v)
+				message = append(message, m)
+				messageLen += len(m)
+			}
+
+			// Leftovers
+			if len(message) > 0 {
+				messages = append(messages, strings.Join(message, ", "))
+			}
+
+			// Send them
+			for _, message := range messages {
+				var msg = "Change " + strconv.Itoa(change.ID) + ": " + message
 				_, err := discordClient.ChannelMessageSend("574563721045606431", msg)
 				log.Err(err)
 			}
