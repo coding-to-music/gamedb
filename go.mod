@@ -35,6 +35,7 @@ require (
 	github.com/digitalocean/godo v1.35.1
 	github.com/djherbis/fscache v0.10.1
 	github.com/dustin/go-humanize v1.0.0
+	github.com/elastic/go-elasticsearch/v7 v7.6.0
 	github.com/friendsofgo/errors v0.9.2 // indirect
 	github.com/frustra/bbcode v0.0.0-20180807171629-48be21ce690c
 	github.com/fsnotify/fsnotify v1.4.9 // indirect

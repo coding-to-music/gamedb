@@ -242,6 +242,13 @@ func playerHandler(messages []*rabbit.Message) {
 			continue
 		}
 
+		err = ProduceSearch(searchMessage{
+			ID:   strconv.FormatInt(player.ID, 10),
+			Name: player.GetName(),
+			Type: searchTypePlayer,
+		})
+		log.Err(err)
+
 		//
 		message.Ack(false)
 	}

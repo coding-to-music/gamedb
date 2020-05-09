@@ -37,6 +37,11 @@ type BaseConfig struct {
 	DiscordChatBotToken    ConfigItem
 	DiscordChangesBotToken ConfigItem
 
+	// Elastic Seach
+	ElasticAddress  ConfigItem
+	ElasticUsername ConfigItem
+	ElasticPassword ConfigItem
+
 	// Facebook
 	FacebookAppID     ConfigItem
 	FacebookAppSecret ConfigItem
@@ -168,6 +173,11 @@ func init() {
 	Config.DiscordChatBotToken.Set("DISCORD_BOT_TOKEN")
 	Config.DiscordRelayBotToken.Set("DISCORD_RELAY_TOKEN")
 	Config.DiscordChangesBotToken.Set("DISCORD_CHANGES_BOT_TOKEN")
+
+	// Elastic Search
+	Config.ElasticAddress.Set("ELASTIC_SEARCH_ADDRESS")
+	Config.ElasticUsername.Set("ELASTIC_SEARCH_USERNAME")
+	Config.ElasticPassword.Set("ELASTIC_SEARCH_PASSWORD")
 
 	// Facebook
 	Config.FacebookAppID.Set("FACEBOOK_APP_ID")
