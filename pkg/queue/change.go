@@ -4,13 +4,16 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/websockets"
+	influx "github.com/influxdata/influxdb1-client"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -72,6 +75,14 @@ func changesHandler(messages []*rabbit.Message) {
 		// Save to Mongo
 		err = saveChangesToMongo(changeSlice)
 		if err != nil && !strings.Contains(err.Error(), "duplicate key error collection") {
+			log.Err(err)
+			sendToRetryQueue(message)
+			continue
+		}
+
+		// Save to influx
+		err = saveChangeToInflux(payload)
+		if err != nil {
 			log.Err(err)
 			sendToRetryQueue(message)
 			continue
@@ -190,4 +201,20 @@ func sendChangeToDiscord(changes []*mongo.Change, appMap map[int]string, package
 	}
 
 	return nil
+}
+
+func saveChangeToInflux(payload ChangesMessage) (err error) {
+
+	_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, influx.Point{
+		Measurement: string(influxHelper.InfluxMeasurementChanges),
+		Fields: map[string]interface{}{
+			"change":   1,
+			"apps":     len(payload.AppIDs),
+			"packages": len(payload.PackageIDs),
+		},
+		Time:      time.Now(),
+		Precision: "s",
+	})
+
+	return err
 }
