@@ -63,8 +63,8 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 			log.Err(err, r)
 		}
 
-		if len(t.TopGames) > 14 {
-			t.TopGames = t.TopGames[0:14]
+		if len(t.TopGames) > 12 {
+			t.TopGames = t.TopGames[0:12]
 		}
 	}()
 

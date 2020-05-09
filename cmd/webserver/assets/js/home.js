@@ -22,22 +22,6 @@ if ($homePage.length > 0) {
     });
     $panels.css('min-height', maxPanelHeight + 'px');
 
-    // Fix table heights
-    const observer = new MutationObserver(function syncHomeHeights() {
-
-        let maxPanelHeight = 0;
-        const $panels = $('#players, #sales');
-        $panels.each(function () {
-            if ($(this).height() > maxPanelHeight) {
-                maxPanelHeight = $(this).outerHeight();
-            }
-        });
-
-        $panels.css('min-height', maxPanelHeight + 'px');
-    });
-    observer.observe(document.getElementById('players'), {attributes: true, subtree: true, childList: false, characterData: false});
-    observer.observe(document.getElementById('sales'), {attributes: true, subtree: true, childList: false, characterData: false});
-
     loadSales('top-rated');
     loadPlayers('level');
 
