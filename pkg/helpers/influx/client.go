@@ -9,8 +9,8 @@ import (
 )
 
 var (
-	globalClient *influx.Client
-	lock         sync.Mutex
+	client *influx.Client
+	lock   sync.Mutex
 )
 
 func getInfluxClient() (*influx.Client, error) {
@@ -19,22 +19,21 @@ func getInfluxClient() (*influx.Client, error) {
 	defer lock.Unlock()
 
 	var err error
+	var host *url.URL
 
-	if globalClient == nil {
+	if client == nil {
 
-		host, err := url.Parse(config.Config.InfluxURL.Get())
+		host, err = url.Parse(config.Config.InfluxURL.Get())
 		if err != nil {
 			return nil, err
 		}
 
-		conf := influx.Config{
+		client, err = influx.NewClient(influx.Config{
 			URL:      *host,
 			Username: config.Config.InfluxUsername.Get(),
 			Password: config.Config.InfluxPassword.Get(),
-		}
-
-		globalClient, err = influx.NewClient(conf)
+		})
 	}
 
-	return globalClient, err
+	return client, err
 }
