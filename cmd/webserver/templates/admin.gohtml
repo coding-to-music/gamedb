@@ -213,8 +213,22 @@
                     <div class="tab-pane" id="settings" role="tabpanel">
 
                         <form action="/admin/settings" method="post">
-                            <input type="text" name="down-message">
-                            <input type="submit">
+
+                            <div class="form-group row">
+                                <label for="down-message" class="col-sm-3 col-form-label">Down message</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="down-message" name="down-message">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="del-mc-item" class="col-sm-3 col-form-label">Delete Memcache Item</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="del-mc-item" name="del-mc-item">
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Submit</button>
                         </form>
 
                     </div>

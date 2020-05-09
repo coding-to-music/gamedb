@@ -301,4 +301,10 @@ func adminDeleteBinLogs(r *http.Request) {
 func adminSettings(r *http.Request) {
 
 	middleware.DownMessage = r.PostFormValue("down-message")
+
+	mcItem := r.PostFormValue("del-mc-item")
+	if mcItem != "" {
+		err := memcache.Delete(mcItem)
+		log.Err(err)
+	}
 }
