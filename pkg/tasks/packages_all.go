@@ -1,9 +1,6 @@
 package tasks
 
 import (
-	"strconv"
-
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
@@ -27,31 +24,42 @@ func (c PackagesQueueAll) Cron() string {
 
 func (c PackagesQueueAll) work() (err error) {
 
-	apps, err := mongo.GetNonEmptyArrays("packages", bson.M{"packages": 1})
-	if err != nil {
-		return err
-	}
+	var offset int64 = 0
+	var limit int64 = 10_000
 
-	packageMap := map[int]bool{}
-	for _, app := range apps {
-		for _, packageID := range app.Packages {
-			packageMap[packageID] = true
+	for {
+
+		apps, err := mongo.GetNonEmptyArrays(offset, limit, "packages", bson.M{"packages": 1})
+		if err != nil {
+			return err
 		}
-	}
 
-	// Make into slice again
-	var packageSlice []int
-	for k := range packageMap {
-		packageSlice = append(packageSlice, k)
-	}
+		packageMap := map[int]bool{}
+		for _, app := range apps {
+			for _, packageID := range app.Packages {
+				packageMap[packageID] = true
+			}
+		}
 
-	err = queue.ProduceSteam(queue.SteamMessage{PackageIDs: packageSlice})
-	if err != nil {
-		return err
-	}
+		// Make into slice again
+		var packageSlice []int
+		for k := range packageMap {
+			packageSlice = append(packageSlice, k)
+		}
 
-	//
-	log.Info(strconv.Itoa(len(packageMap)) + " packages added to rabbit")
+		err = queue.ProduceSteam(queue.SteamMessage{PackageIDs: packageSlice})
+		if err != nil {
+			return err
+		}
+
+		// log.Info(strconv.Itoa(len(packageMap)) + " packages added to rabbit")
+
+		if int64(len(apps)) != limit {
+			break
+		}
+
+		offset += limit
+	}
 
 	return nil
 }

@@ -53,7 +53,7 @@ func (c Tags) work() (err error) {
 
 	steamTagMap := tagsResp.GetMap()
 
-	appsWithTags, err := mongo.GetNonEmptyArrays("tags", bson.M{"tags": 1, "prices": 1, "reviews_score": 1})
+	appsWithTags, err := mongo.GetNonEmptyArrays(0, 0, "tags", bson.M{"tags": 1, "prices": 1, "reviews_score": 1})
 	if err != nil {
 		return err
 	}

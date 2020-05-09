@@ -49,7 +49,7 @@ func (c Genres) work() (err error) {
 	}
 
 	// Get apps from mysql
-	appsWithGenres, err := mongo.GetNonEmptyArrays("genres", bson.M{"genres": 1, "prices": 1, "reviews_score": 1})
+	appsWithGenres, err := mongo.GetNonEmptyArrays(0, 0, "genres", bson.M{"genres": 1, "prices": 1, "reviews_score": 1})
 	if err != nil {
 		return err
 	}

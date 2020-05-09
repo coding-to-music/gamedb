@@ -49,7 +49,7 @@ func (c Publishers) work() (err error) {
 	}
 
 	// Get apps from mysql
-	appsWithPublishers, err := mongo.GetNonEmptyArrays("publishers", bson.M{"publishers": 1, "prices": 1, "reviews_score": 1})
+	appsWithPublishers, err := mongo.GetNonEmptyArrays(0, 0, "publishers", bson.M{"publishers": 1, "prices": 1, "reviews_score": 1})
 	if err != nil {
 		return err
 	}

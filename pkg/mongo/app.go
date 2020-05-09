@@ -736,12 +736,15 @@ func SearchApps(search string, projection bson.M) (app App, err error) {
 	return apps[0], nil
 }
 
-func GetNonEmptyArrays(column string, projection bson.M) (apps []App, err error) {
+func GetNonEmptyArrays(offset int64, limit int64, column string, projection bson.M) (apps []App, err error) {
 
-	var filter = bson.D{{column + ".0", bson.M{"$exists": true}}}
+	var filter = bson.D{
+		{column, bson.M{"$exists": true}},
+		{column, bson.M{"$ne": bson.A{}}},
+	}
 	var order = bson.D{{"_id", 1}}
 
-	return GetApps(0, 0, order, filter, projection, nil)
+	return GetApps(offset, limit, order, filter, projection, nil)
 }
 
 func GetRandomApps(count int, filter bson.D, projection bson.M) (apps []App, err error) {
