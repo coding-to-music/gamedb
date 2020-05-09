@@ -243,7 +243,7 @@ func playerHandler(messages []*rabbit.Message) {
 		}
 
 		err = ProduceSearch(searchMessage{
-			ID:   strconv.FormatInt(player.ID, 10),
+			ID:   uint64(player.ID),
 			Name: player.GetName(),
 			Type: searchTypePlayer,
 		})
