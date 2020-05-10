@@ -250,6 +250,20 @@ func playerHandler(messages []*rabbit.Message) {
 		})
 		log.Err(err)
 
+		// Produce to sub queues
+		var produces = map[rabbit.QueueName]interface{}{
+			QueuePlayersSearch: AppsSearchMessage{ID: uint64(app.ID), Name: app.GetName(), Type: search.SearchTypeApp},
+		}
+
+		for k, v := range produces {
+			err = produce(k, v)
+			if err != nil {
+				log.Err(err)
+				sendToRetryQueue(message)
+				continue
+			}
+		}
+
 		//
 		message.Ack(false)
 	}

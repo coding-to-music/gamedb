@@ -7,24 +7,28 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 )
 
-type SearchMessage struct {
+type AppsSearchMessage struct {
 	ID      uint64   `json:"id"`
 	Name    string   `json:"name"`
 	Aliases []string `json:"aliases"`
-	Type    string   `json:"type"`
 	Icon    string   `json:"icon"`
 }
 
-func searchHandler(messages []*rabbit.Message) {
+func appsSearchHandler(messages []*rabbit.Message) {
 
 	for _, message := range messages {
 
-		payload := SearchMessage{}
+		payload := AppsSearchMessage{}
 
 		err := helpers.Unmarshal(message.Message.Body, &payload)
 		if err != nil {
 			log.Err(err, message.Message.Body)
 			sendToFailQueue(message)
+			continue
+		}
+
+		if payload.Name == "" || payload.ID == 0 || payload.Type == "" {
+			message.Ack(false)
 			continue
 		}
 

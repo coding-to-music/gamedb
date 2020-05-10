@@ -287,7 +287,7 @@ func appHandler(messages []*rabbit.Message) {
 			QueueAppsSteamspy:     AppSteamspyMessage{ID: app.ID},
 			QueueAppsTwitch:       AppTwitchMessage{ID: app.ID},
 			QueueAppsReviews:      AppReviewsMessage{ID: app.ID},
-			QueueSearch:           SearchMessage{ID: uint64(app.ID), Name: app.GetName(), Type: search.SearchTypeApp},
+			QueueAppsSearch:       AppsSearchMessage{ID: uint64(app.ID), Name: app.GetName(), Type: search.SearchTypeApp},
 		}
 
 		for k, v := range produces {

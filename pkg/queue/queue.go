@@ -29,6 +29,7 @@ const (
 	QueueAppsTwitch       rabbit.QueueName = "GDB_Apps.Twitch"
 	QueueAppsMorelike     rabbit.QueueName = "GDB_Apps.Morelike"
 	QueueAppsSteamspy     rabbit.QueueName = "GDB_Apps.Steamspy"
+	QueueAppsSearch       rabbit.QueueName = "GDB_Apps.Search"
 
 	// Packages
 	QueuePackages       rabbit.QueueName = "GDB_Packages"
@@ -37,6 +38,7 @@ const (
 	// Players
 	QueuePlayers             rabbit.QueueName = "GDB_Players"
 	QueuePlayersAchievements rabbit.QueueName = "GDB_Players.Achievements"
+	QueuePlayersSearch       rabbit.QueueName = "GDB_Players.Search"
 
 	// Other
 	QueueAppPlayers  rabbit.QueueName = "GDB_App_Players"
@@ -49,7 +51,6 @@ const (
 	QueueSteam       rabbit.QueueName = "GDB_Steam"
 	QueueTest        rabbit.QueueName = "GDB_Test"
 	QueueWebsockets  rabbit.QueueName = "GDB_Websockets"
-	QueueSearch      rabbit.QueueName = "GDB_Search"
 )
 
 func init() {
@@ -95,7 +96,8 @@ var (
 		{name: QueuePlayerRanks},
 		{name: QueuePlayersAchievements},
 		{name: QueueDelay, skipHeaders: true},
-		{name: QueueSearch},
+		{name: QueueAppsSearch},
+		{name: QueuePlayersSearch},
 		{name: QueueSteam},
 		{name: QueueFailed},
 		{name: QueueTest},
@@ -124,7 +126,8 @@ var (
 		{name: QueuePlayerRanks, consumer: playerRanksHandler},
 		{name: QueuePlayersAchievements, consumer: playerAchievementsHandler},
 		{name: QueueDelay, consumer: delayHandler, skipHeaders: true},
-		{name: QueueSearch, consumer: searchHandler},
+		{name: QueueAppsSearch, consumer: appsSearchHandler},
+		{name: QueuePlayersSearch, consumer: appsPlayersHandler},
 		{name: QueueSteam},
 		{name: QueueFailed},
 		{name: QueueTest, consumer: testHandler},
@@ -468,11 +471,6 @@ func ProducePlayer(payload PlayerMessage) (err error) {
 func ProducePlayerRank(payload PlayerRanksMessage) (err error) {
 
 	return produce(QueuePlayerRanks, payload)
-}
-
-func ProduceSearch(payload SearchMessage) (err error) {
-
-	return produce(QueueSearch, payload)
 }
 
 func ProduceSteam(payload SteamMessage) (err error) {

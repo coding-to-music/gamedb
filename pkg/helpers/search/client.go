@@ -9,10 +9,8 @@ import (
 )
 
 const (
-	IndexName = "gdb-search"
-
-	SearchTypeApp    = "app"
-	SearchTypePlayer = "player"
+	IndexApps    = "apps"
+	IndexPlayers = "players"
 )
 
 var (
