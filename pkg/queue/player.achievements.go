@@ -54,7 +54,9 @@ func playerAchievementsHandler(messages []*rabbit.Message) {
 
 			// ErrNoDocuments can be returned on new signups as the player hasnt been created yet
 			err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
-			log.Err(err, message.Message.Body)
+			if err != nil {
+				log.Err(err, message.Message.Body)
+			}
 
 			sendToRetryQueueWithDelay(message, time.Second*10)
 			continue
