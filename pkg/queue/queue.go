@@ -472,7 +472,7 @@ func ProducePlayerRank(payload PlayerRanksMessage) (err error) {
 
 func ProduceSearch(payload SearchMessage) (err error) {
 
-	return produce(QueueSteam, payload)
+	return produce(QueueSearch, payload)
 }
 
 func ProduceSteam(payload SteamMessage) (err error) {
