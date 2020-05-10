@@ -470,7 +470,7 @@ func ProducePlayerRank(payload PlayerRanksMessage) (err error) {
 	return produce(QueuePlayerRanks, payload)
 }
 
-func ProduceSearch(payload searchMessage) (err error) {
+func ProduceSearch(payload SearchMessage) (err error) {
 
 	return produce(QueueSteam, payload)
 }

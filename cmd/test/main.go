@@ -13,4 +13,11 @@ func main() {
 	log.Initialise([]log.LogName{log.LogNameTest})
 	queue.Init(queue.AllProducerDefinitions)
 
+	err := queue.ProduceSearch(queue.SearchMessage{
+		ID:   0,
+		Name: "",
+		Type: "",
+	})
+
+	log.Err(err)
 }

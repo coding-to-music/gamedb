@@ -75,6 +75,7 @@ require (
 	github.com/nicklaw5/helix v0.5.8
 	github.com/nlopes/slack v0.6.0
 	github.com/olekukonko/tablewriter v0.0.4 // indirect
+	github.com/olivere/elastic/v7 v7.0.15
 	github.com/oschwald/maxminddb-golang v1.6.0
 	github.com/pariz/gountries v0.0.0-20200430155801-1c6a393df9c7
 	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
