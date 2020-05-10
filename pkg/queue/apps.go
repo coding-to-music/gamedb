@@ -17,6 +17,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/i18n"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
+	"github.com/gamedb/gamedb/pkg/helpers/search"
 	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -286,7 +287,7 @@ func appHandler(messages []*rabbit.Message) {
 			QueueAppsSteamspy:     AppSteamspyMessage{ID: app.ID},
 			QueueAppsTwitch:       AppTwitchMessage{ID: app.ID},
 			QueueAppsReviews:      AppReviewsMessage{ID: app.ID},
-			QueueSearch:           SearchMessage{ID: uint64(app.ID), Name: app.GetName(), Type: searchTypeApp},
+			QueueSearch:           SearchMessage{ID: uint64(app.ID), Name: app.GetName(), Type: search.SearchTypeApp},
 		}
 
 		for k, v := range produces {

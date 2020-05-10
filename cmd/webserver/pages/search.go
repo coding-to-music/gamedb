@@ -24,6 +24,8 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 	t := searchTemplate{}
 	t.fill(w, r, "Search", "Search all of Game DB")
 
+	t.Search = r.URL.Query().Get("search")
+
 	var wg sync.WaitGroup
 
 	wg.Add(1)
@@ -49,15 +51,12 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Search with a term query
-		termQuery := elastic.NewTermQuery("jam", "olivere")
 		searchResult, err := client.Search().
-			Index("gdb-search").
-			Query(termQuery).
-			// Sort("user", true).
+			Index(search.IndexName).
+			Query(elastic.NewMatchQuery("Name", t.Search)).
+			// Sort("ID", true).
 			From(0).
-			Size(10).
-			// Pretty(true).
-			Human(true).
+			Size(100).
 			Do(ctx)
 
 		if err != nil {
@@ -66,6 +65,8 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		for _, hit := range searchResult.Hits.Hits {
+
+			// log.Info(string(hit.Source))
 
 			// Deserialize hit.Source into a Tweet (could also be just a map[string]interface{}).
 			var result search.SearchResult
@@ -87,4 +88,5 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 type searchTemplate struct {
 	GlobalTemplate
 	Results []search.SearchResult
+	Search  string
 }

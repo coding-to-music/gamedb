@@ -10,6 +10,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
+	"github.com/gamedb/gamedb/pkg/helpers/search"
 	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -245,7 +246,7 @@ func playerHandler(messages []*rabbit.Message) {
 		err = ProduceSearch(SearchMessage{
 			ID:   uint64(player.ID),
 			Name: player.GetName(),
-			Type: searchTypePlayer,
+			Type: search.SearchTypePlayer,
 		})
 		log.Err(err)
 

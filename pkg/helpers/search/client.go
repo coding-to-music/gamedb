@@ -8,18 +8,18 @@ import (
 	"github.com/olivere/elastic/v7"
 )
 
+const (
+	IndexName = "gdb-search"
+
+	SearchTypeApp    = "app"
+	SearchTypePlayer = "player"
+)
+
 var (
 	client *elastic.Client
 	ctx    context.Context
 	lock   sync.Mutex
 )
-
-type SearchResult struct {
-	Keywords []string
-	Name     string
-	ID       uint64
-	Icon     string
-}
 
 func GetElastic() (*elastic.Client, context.Context, error) {
 

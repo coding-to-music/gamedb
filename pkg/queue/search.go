@@ -1,23 +1,18 @@
 package queue
 
 import (
-	"strconv"
-
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/search"
 	"github.com/gamedb/gamedb/pkg/log"
 )
 
-const (
-	searchTypeApp    = "app"
-	searchTypePlayer = "player"
-)
-
 type SearchMessage struct {
-	ID   uint64 `json:"id"`
-	Name string `json:"name"`
-	Type string `json:"type"`
+	ID      uint64   `json:"id"`
+	Name    string   `json:"name"`
+	Aliases []string `json:"aliases"`
+	Type    string   `json:"type"`
+	Icon    string   `json:"icon"`
 }
 
 func searchHandler(messages []*rabbit.Message) {
@@ -40,17 +35,19 @@ func searchHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		tweet1 := search.SearchResult{
-			Keywords: []string{"james", "eagle"},
-			Name:     "Jleagle",
-			ID:       440,
-			Icon:     "/test.png",
-		}
+		insert := search.SearchResult{}
+		insert.ID = payload.ID
+		insert.Name = payload.Name
+		insert.Keywords = payload.Aliases
+		insert.Type = payload.Type
+		insert.Icon = insert.GetIcon()
+
+		// log.Info("inserting: " + insert.GetKey())
 
 		_, err = client.Index().
-			Index("gdb-search").
-			Id("app-" + strconv.FormatUint(440, 10)).
-			BodyJson(tweet1).
+			Index(search.IndexName).
+			Id(insert.GetKey()).
+			BodyJson(insert).
 			Do(ctx)
 
 		if err != nil {
