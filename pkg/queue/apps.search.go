@@ -34,7 +34,7 @@ func appsSearchHandler(messages []*rabbit.Message) {
 
 		client, ctx, err := elastic.GetElastic()
 		if err != nil {
-			log.Err(err, message.Message.Body)
+			log.Err(err)
 			sendToRetryQueue(message)
 			continue
 		}
@@ -46,7 +46,7 @@ func appsSearchHandler(messages []*rabbit.Message) {
 			Do(ctx)
 
 		if err != nil {
-			log.Err(err, message.Message.Body)
+			log.Err(err)
 			sendToRetryQueue(message)
 			continue
 		}
