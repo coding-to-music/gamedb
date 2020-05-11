@@ -53,6 +53,7 @@ func LogSteamError(err error, interfaces ...interface{}) {
 			"connect: connection timed out",
 			"Gateway Timeout",
 			"html response",
+			"i/o timeout",
 			"Internal Server Error",
 			"invalid character '<' looking for beginning of value",
 			"net/http: request canceled (Client.Timeout exceeded while reading body)",
@@ -61,7 +62,7 @@ func LogSteamError(err error, interfaces ...interface{}) {
 			"net/http: TLS handshake timeout",
 			"unexpected end of JSON input",
 			"unexpected EOF",
-			"i/o timeout",
+			"write: connection reset by peer",
 		}
 
 		for _, v := range steamErrors {
