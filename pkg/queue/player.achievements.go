@@ -161,10 +161,15 @@ func playerAchievementsHandler(messages []*rabbit.Message) {
 			}
 		}
 
+		var percent float64
+		if have > 0 && app.AchievementsCount > 0 {
+			percent = float64(have) / float64(app.AchievementsCount) * 100
+		}
+
 		_, err = mongo.UpdateOne(mongo.CollectionPlayerApps, bson.D{{"_id", playerApp.GetKey()}}, bson.D{
 			{"app_achievements_total", app.AchievementsCount},
 			{"app_achievements_have", have},
-			{"app_achievements_percent", float64(have) / float64(app.AchievementsCount) * 100},
+			{"app_achievements_percent", percent},
 		})
 		if err != nil {
 			log.Err(err)
