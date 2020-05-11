@@ -32,11 +32,11 @@ const (
 	//
 	LogNameMongo         LogName = "mongo"
 	LogNameRabbit        LogName = "rabbit"
-	LogNameInflux        LogName = "influx"
 	LogNameRequests      LogName = "requests"
 	LogNameSQL           LogName = "sql"
 	LogNameTriggerUpdate LogName = "trigger-update"
 	LogNameSteamErrors   LogName = "steam-errors"
+	// LogNameInflux        LogName = "influx"
 
 	// Severities
 	SeverityDebug    Severity = 1
