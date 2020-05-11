@@ -40,7 +40,7 @@ func GetElastic() (*elastic.Client, context.Context, error) {
 			elastic.SetBasicAuth(config.Config.ElasticUsername.Get(), config.Config.ElasticPassword.Get()),
 		}
 
-		if config.IsLocal() {
+		if config.IsLocal() || true {
 			ops = append(ops, elastic.SetHealthcheck(false))
 		}
 
