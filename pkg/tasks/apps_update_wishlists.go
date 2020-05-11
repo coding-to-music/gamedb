@@ -11,7 +11,7 @@ package tasks
 //  . "go.mongodb.org/mongo-driver/bson"
 // )
 //
-// type Wishlists struct {
+// type AppsUpdateWishlists struct {
 // 	BaseTask
 // }
 //

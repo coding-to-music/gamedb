@@ -6,23 +6,23 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-type PackagesQueueAll struct {
+type AppsQueuePackages struct {
 	BaseTask
 }
 
-func (c PackagesQueueAll) ID() string {
+func (c AppsQueuePackages) ID() string {
 	return "queue-all-packages"
 }
 
-func (c PackagesQueueAll) Name() string {
+func (c AppsQueuePackages) Name() string {
 	return "Queue all packages"
 }
 
-func (c PackagesQueueAll) Cron() string {
+func (c AppsQueuePackages) Cron() string {
 	return ""
 }
 
-func (c PackagesQueueAll) work() (err error) {
+func (c AppsQueuePackages) work() (err error) {
 
 	var offset int64 = 0
 	var limit int64 = 10_000

@@ -39,7 +39,7 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		config, err := tasks.GetTaskConfig(tasks.PlayerRanks{})
+		config, err := tasks.GetTaskConfig(tasks.PlayersUpdateRanks{})
 		if err != nil {
 			err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
 			if err != nil {

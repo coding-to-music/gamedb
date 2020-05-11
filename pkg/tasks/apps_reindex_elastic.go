@@ -7,23 +7,23 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-type AppElastic struct {
+type AppsReindexElastic struct {
 	BaseTask
 }
 
-func (c AppElastic) ID() string {
+func (c AppsReindexElastic) ID() string {
 	return "apps-reindex-elastic"
 }
 
-func (c AppElastic) Name() string {
+func (c AppsReindexElastic) Name() string {
 	return "Reindex all apps in Elastic"
 }
 
-func (c AppElastic) Cron() string {
+func (c AppsReindexElastic) Cron() string {
 	return ""
 }
 
-func (c AppElastic) work() (err error) {
+func (c AppsReindexElastic) work() (err error) {
 
 	var offset int64 = 0
 	var limit int64 = 10_000

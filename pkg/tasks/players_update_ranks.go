@@ -7,23 +7,23 @@ import (
 	"github.com/gamedb/gamedb/pkg/queue"
 )
 
-type PlayerRanks struct {
+type PlayersUpdateRanks struct {
 	BaseTask
 }
 
-func (c PlayerRanks) ID() string {
+func (c PlayersUpdateRanks) ID() string {
 	return "update-player-ranks"
 }
 
-func (c PlayerRanks) Name() string {
+func (c PlayersUpdateRanks) Name() string {
 	return "Update player ranks"
 }
 
-func (c PlayerRanks) Cron() string {
+func (c PlayersUpdateRanks) Cron() string {
 	return CronTimePlayerRanks
 }
 
-func (c PlayerRanks) work() (err error) {
+func (c PlayersUpdateRanks) work() (err error) {
 
 	// Global
 	for read, write := range mongo.PlayerRankFields {

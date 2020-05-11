@@ -11,23 +11,23 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-type Instagram struct {
+type InstagramPost struct {
 	BaseTask
 }
 
-func (c Instagram) ID() string {
+func (c InstagramPost) ID() string {
 	return "post-to-instagram"
 }
 
-func (c Instagram) Name() string {
+func (c InstagramPost) Name() string {
 	return "Post an Instagram picture"
 }
 
-func (c Instagram) Cron() string {
+func (c InstagramPost) Cron() string {
 	return CronTimeInstagram
 }
 
-func (c Instagram) work() (err error) {
+func (c InstagramPost) work() (err error) {
 
 	filter := bson.D{
 		{"type", "game"},

@@ -9,23 +9,23 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-type AppPlayers struct {
+type AppsPlayerCheck struct {
 	BaseTask
 }
 
-func (c AppPlayers) ID() string {
+func (c AppsPlayerCheck) ID() string {
 	return "app-players"
 }
 
-func (c AppPlayers) Name() string {
+func (c AppsPlayerCheck) Name() string {
 	return "Check apps for players"
 }
 
-func (c AppPlayers) Cron() string {
+func (c AppsPlayerCheck) Cron() string {
 	return CronTimeAppPlayers
 }
 
-func (c AppPlayers) work() (err error) {
+func (c AppsPlayerCheck) work() (err error) {
 
 	// Check queue size
 	q, err := queue.Channels[rabbit.Producer][queue.QueueAppPlayers].Inspect()

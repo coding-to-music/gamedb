@@ -7,23 +7,23 @@ import (
 	"github.com/gamedb/gamedb/pkg/mongo"
 )
 
-type SetBadgeCache struct {
+type BadgesUpdateRandom struct {
 	BaseTask
 }
 
-func (c SetBadgeCache) ID() string {
-	return "update-random-badge"
+func (c BadgesUpdateRandom) ID() string {
+	return "badges-update-random"
 }
 
-func (c SetBadgeCache) Name() string {
+func (c BadgesUpdateRandom) Name() string {
 	return "Set a random badge cache"
 }
 
-func (c SetBadgeCache) Cron() string {
+func (c BadgesUpdateRandom) Cron() string {
 	return CronTimeSetBadgeCache
 }
 
-func (c SetBadgeCache) work() (err error) {
+func (c BadgesUpdateRandom) work() (err error) {
 
 	// Get random map key
 	keys := reflect.ValueOf(mongo.GlobalBadges).MapKeys()

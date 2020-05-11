@@ -11,23 +11,23 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-type ScanProductKeys struct {
+type ProductsUpdateKeys struct {
 	BaseTask
 }
 
-func (c ScanProductKeys) ID() string {
+func (c ProductsUpdateKeys) ID() string {
 	return "scan-product-keys"
 }
 
-func (c ScanProductKeys) Name() string {
+func (c ProductsUpdateKeys) Name() string {
 	return "Scan Product Keys"
 }
 
-func (c ScanProductKeys) Cron() string {
+func (c ProductsUpdateKeys) Cron() string {
 	return CronTimeScanProductQueues
 }
 
-func (c ScanProductKeys) work() (err error) {
+func (c ProductsUpdateKeys) work() (err error) {
 
 	var addedKeys []string
 	var limit int64 = 10_000

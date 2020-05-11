@@ -11,23 +11,23 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-type QueuePlayerGroups struct {
+type GroupsUpdateTop struct {
 	BaseTask
 }
 
-func (c QueuePlayerGroups) ID() string {
+func (c GroupsUpdateTop) ID() string {
 	return "queue-player-groups"
 }
 
-func (c QueuePlayerGroups) Name() string {
+func (c GroupsUpdateTop) Name() string {
 	return "Queue player groups"
 }
 
-func (c QueuePlayerGroups) Cron() string {
+func (c GroupsUpdateTop) Cron() string {
 	return CronTimeQueuePlayerGroups
 }
 
-func (c QueuePlayerGroups) work() (err error) {
+func (c GroupsUpdateTop) work() (err error) {
 
 	var filter = bson.D{
 		{Key: "type", Value: helpers.GroupTypeGroup},

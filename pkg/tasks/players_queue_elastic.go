@@ -7,23 +7,23 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-type PlayersElastic struct {
+type PlayersQueueElastic struct {
 	BaseTask
 }
 
-func (c PlayersElastic) ID() string {
+func (c PlayersQueueElastic) ID() string {
 	return "players-reindex-elastic"
 }
 
-func (c PlayersElastic) Name() string {
+func (c PlayersQueueElastic) Name() string {
 	return "Reindex all players in Elastic"
 }
 
-func (c PlayersElastic) Cron() string {
+func (c PlayersQueueElastic) Cron() string {
 	return ""
 }
 
-func (c PlayersElastic) work() (err error) {
+func (c PlayersQueueElastic) work() (err error) {
 
 	var offset int64 = 0
 	var limit int64 = 10_000

@@ -11,19 +11,19 @@ import (
 	"github.com/gamedb/gamedb/pkg/queue"
 )
 
-type UpdateRandomPlayers struct {
+type PlayersQueueRandom struct {
 	BaseTask
 }
 
-func (c UpdateRandomPlayers) ID() string {
+func (c PlayersQueueRandom) ID() string {
 	return "update-random-players"
 }
 
-func (c UpdateRandomPlayers) Name() string {
+func (c PlayersQueueRandom) Name() string {
 	return "Update random players"
 }
 
-func (c UpdateRandomPlayers) Cron() string {
+func (c PlayersQueueRandom) Cron() string {
 	return CronTimeUpdateRandomPlayers
 }
 
@@ -32,7 +32,7 @@ const (
 	playerCount  = 8 // Per consumer
 )
 
-func (c UpdateRandomPlayers) work() (err error) {
+func (c PlayersQueueRandom) work() (err error) {
 
 	// Skip if queues have activity
 	queues := map[rabbit.QueueName]int{

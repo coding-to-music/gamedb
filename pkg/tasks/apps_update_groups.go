@@ -11,23 +11,23 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-type QueueAppGroups struct {
+type AppsUpdateGroups struct {
 	BaseTask
 }
 
-func (c QueueAppGroups) ID() string {
+func (c AppsUpdateGroups) ID() string {
 	return "queue-app-groups"
 }
 
-func (c QueueAppGroups) Name() string {
+func (c AppsUpdateGroups) Name() string {
 	return "Queue app groups"
 }
 
-func (c QueueAppGroups) Cron() string {
+func (c AppsUpdateGroups) Cron() string {
 	return CronTimeQueueAppGroups
 }
 
-func (c QueueAppGroups) work() (err error) {
+func (c AppsUpdateGroups) work() (err error) {
 
 	apps, err := mongo.GetApps(0, 0, nil, bson.D{{"group_id", bson.M{"$ne": ""}}}, bson.M{"group_id": 1}, nil)
 	if err != nil {

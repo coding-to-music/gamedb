@@ -8,23 +8,23 @@ import (
 	"github.com/gamedb/gamedb/pkg/queue"
 )
 
-type AppQueueAll struct {
+type AppsQueueAll struct {
 	BaseTask
 }
 
-func (c AppQueueAll) ID() string {
+func (c AppsQueueAll) ID() string {
 	return "queue-all-apps"
 }
 
-func (c AppQueueAll) Name() string {
+func (c AppsQueueAll) Name() string {
 	return "Queue all apps"
 }
 
-func (c AppQueueAll) Cron() string {
+func (c AppsQueueAll) Cron() string {
 	return ""
 }
 
-func (c AppQueueAll) work() (err error) {
+func (c AppsQueueAll) work() (err error) {
 
 	var last = 0
 	var keepGoing = true

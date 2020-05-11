@@ -7,23 +7,23 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-type AppsYoutube struct {
+type AppsUpdateYoutube struct {
 	BaseTask
 }
 
-func (c AppsYoutube) ID() string {
-	return "apps-youtube"
+func (c AppsUpdateYoutube) ID() string {
+	return "apps-update-youtube"
 }
 
-func (c AppsYoutube) Name() string {
+func (c AppsUpdateYoutube) Name() string {
 	return "Queue top apps for youtube stats"
 }
 
-func (c AppsYoutube) Cron() string {
+func (c AppsUpdateYoutube) Cron() string {
 	return CronTimeAppsYoutube
 }
 
-func (c AppsYoutube) work() (err error) {
+func (c AppsUpdateYoutube) work() (err error) {
 
 	apps, err := mongo.GetApps(0, 90, bson.D{{"player_peak_week", -1}}, nil, bson.M{"_id": 1, "name": 1}, nil)
 	if err != nil {
