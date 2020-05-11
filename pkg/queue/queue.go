@@ -489,6 +489,16 @@ func ProduceTest(id int) (err error) {
 	return produce(QueueTest, TestMessage{ID: id})
 }
 
+func ProduceAppSearch(payload AppsSearchMessage) (err error) {
+
+	return produce(QueueAppsSearch, payload)
+}
+
+func ProducePlayerSearch(payload PlayersSearchMessage) (err error) {
+
+	return produce(QueuePlayersSearch, payload)
+}
+
 func ProduceWebsocket(payload interface{}, pages ...websockets.WebsocketPage) (err error) {
 
 	b, err := json.Marshal(payload)

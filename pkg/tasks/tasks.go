@@ -39,6 +39,8 @@ var (
 	tasks        = []TaskInterface{
 		AppPlayers{},
 		AppsYoutube{},
+		AppElastic{},
+		PlayersElastic{},
 		AppsInflux{},
 		AppQueueAll{},
 		AutoPlayerRefreshes{},
