@@ -323,7 +323,7 @@ func Find(collection collection, offset int64, limit int64, sort bson.D, filter 
 	if sort != nil {
 		ops.SetSort(sort)
 	}
-	if projection != nil {
+	if projection != nil && len(projection) > 0 {
 		ops.SetProjection(projection)
 	}
 
