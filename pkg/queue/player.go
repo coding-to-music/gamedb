@@ -10,7 +10,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
-	"github.com/gamedb/gamedb/pkg/helpers/search"
 	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -243,16 +242,9 @@ func playerHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		err = ProduceSearch(SearchMessage{
-			ID:   uint64(player.ID),
-			Name: player.GetName(),
-			Type: search.SearchTypePlayer,
-		})
-		log.Err(err)
-
 		// Produce to sub queues
 		var produces = map[rabbit.QueueName]interface{}{
-			QueuePlayersSearch: AppsSearchMessage{ID: uint64(app.ID), Name: app.GetName(), Type: search.SearchTypeApp},
+			QueuePlayersSearch: PlayersSearchMessage{ID: player.ID, Name: player.PersonaName, Icon: player.Avatar},
 		}
 
 		for k, v := range produces {
@@ -260,8 +252,12 @@ func playerHandler(messages []*rabbit.Message) {
 			if err != nil {
 				log.Err(err)
 				sendToRetryQueue(message)
-				continue
+				break
 			}
+		}
+
+		if message.ActionTaken {
+			continue
 		}
 
 		//

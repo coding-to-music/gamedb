@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 
 	"github.com/gamedb/gamedb/pkg/config"
+	elasticHelper "github.com/gamedb/gamedb/pkg/elastic"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/helpers/search"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/olivere/elastic/v7"
@@ -15,30 +15,29 @@ func main() {
 
 	config.Init("test", helpers.GetIP())
 	log.Initialise([]log.LogName{log.LogNameTest})
-	queue.Init(queue.AllProducerDefinitions)
+	// queue.Init(queue.AllProducerDefinitions)
 
-	err := queue.ProduceSearch(queue.SearchMessage{
-		ID:      578080,
-		Name:    "PLAYERUNKNOWN'S BATTLEGROUNDS",
-		Aliases: []string{"pubg"},
-		Type:    search.SearchTypeApp,
-	})
-
-	log.Err(err)
-
-	client, ctx, err := search.GetElastic()
+	client, ctx, err := elasticHelper.GetElastic()
 	if err != nil {
 		log.Err(err)
 		return
 	}
 
+	var filters = []elastic.Query{
+
+	}
+
+	var musts = []elastic.Query{
+		elastic.NewMatchQuery("name", "main depot"),
+	}
+
 	// Search with a term query
 	searchResult, err := client.Search().
-		Index(search.IndexName).
-		Query(elastic.NewMatchQuery("Name", "Dota 2")).
-		// Sort("ID", true).
+		Index(elasticHelper.IndexApps).
+		Query(elastic.NewBoolQuery().Must(musts...).Filter(filters...)).
+		// Sort("id", true).
 		From(0).
-		Size(100).
+		Size(10).
 		Do(ctx)
 
 	if err != nil {
@@ -46,23 +45,20 @@ func main() {
 		return
 	}
 
-	var results []search.SearchResult
-
-	log.Info(searchResult)
-
 	for _, hit := range searchResult.Hits.Hits {
 
-		// log.Info(string(hit.Source))
-
-		// Deserialize hit.Source into a Tweet (could also be just a map[string]interface{}).
-		var result search.SearchResult
+		var result queue.AppsSearchMessage
 		err := json.Unmarshal(hit.Source, &result)
 		if err != nil {
 			log.Err(err)
 		}
 
-		results = append(results, result)
-	}
+		var i []interface{}
+		if hit.Score != nil {
+			i = append(i, *hit.Score)
+		}
+		i = append(i, result.Name)
 
-	log.Info("Queued")
+		log.Info(i...)
+	}
 }

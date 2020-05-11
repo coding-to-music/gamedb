@@ -15,6 +15,7 @@ import (
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/middleware"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/elastic"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -51,14 +52,21 @@ func main() {
 		return
 	}
 
-	if config.IsLocal() && false {
+	if false {
 		go func() {
 			mongo.CreateAppIndexes()
 			mongo.CreatePackageIndexes()
 			mongo.CreatePlayerIndexes()
 			mongo.CreateGroupIndexes()
 			mongo.CreateSaleIndexes()
-			log.Info("Ensure indexes finished")
+			log.Info("Mongo indexes finished")
+		}()
+	}
+
+	if false {
+		go func() {
+			elastic.DeleteAndRebuildAppsIndex()
+			log.Info("Elastic indexes finished")
 		}()
 	}
 
@@ -116,7 +124,6 @@ func main() {
 	r.Mount("/publishers", pages.PublishersRouter())
 	r.Mount("/queues", pages.QueuesRouter())
 	r.Mount("/sales", pages.SalesRouter())
-	r.Mount("/search", pages.SearchRouter())
 	r.Mount("/settings", pages.SettingsRouter())
 	r.Mount("/signup", pages.SignupRouter())
 	r.Mount("/stats", pages.StatsRouter())
