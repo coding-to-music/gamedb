@@ -44,7 +44,7 @@ func playerAchievementsHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		if app.AchievementsCountTotal == 0 {
+		if app.AchievementsCount == 0 {
 			appsWithNoStats[payload.AppID] = true
 		}
 
