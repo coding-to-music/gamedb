@@ -39,7 +39,7 @@ var (
 	tasks        = []TaskInterface{
 		AppsPlayerCheck{},
 		AppsUpdateYoutube{},
-		AppsReindexElastic{},
+		AppsQueueElastic{},
 		PlayersQueueElastic{},
 		AppsInflux{},
 		AppsQueueAll{},
