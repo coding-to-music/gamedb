@@ -557,9 +557,6 @@ func CreateAppIndexes() {
 		"type",
 		"wishlist_avg_position",
 		"wishlist_count",
-		"movies",      // For random game filter
-		"screenshots", // For random game filter
-		// "prices",
 	}
 
 	// Price fields
