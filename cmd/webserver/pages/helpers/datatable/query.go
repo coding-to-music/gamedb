@@ -154,6 +154,34 @@ func (q DataTablesQuery) GetOrderMongo(columns map[string]string) bson.D {
 	return bson.D{}
 }
 
+func (q DataTablesQuery) GetOrderElastic(columns map[string]string) (string, bool) {
+
+	for _, v := range q.Order {
+
+		if col, ok := v["column"].(string); ok {
+			if ok {
+
+				if dir, ok := v["dir"].(string); ok {
+					if ok {
+
+						if col, ok := columns[col]; ok {
+							if ok {
+
+								if dir == "desc" {
+									return col, false
+								}
+								return col, true
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return "_score", false
+}
+
 func (q DataTablesQuery) GetOrderString(columns map[string]string) (col string) {
 
 	for _, v := range q.Order {
