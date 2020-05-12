@@ -38,13 +38,9 @@ func (c PlayersQueueElastic) work() (err error) {
 			return err
 		}
 
-		for _, app := range players {
+		for _, player := range players {
 
-			err = queue.ProducePlayerSearch(queue.PlayersSearchMessage{
-				ID:   app.ID,
-				Name: app.PersonaName,
-				Icon: app.Avatar,
-			})
+			err = queue.ProducePlayerSearch(player)
 			log.Err(err)
 		}
 

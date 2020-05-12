@@ -489,14 +489,14 @@ func ProduceTest(id int) (err error) {
 	return produce(QueueTest, TestMessage{ID: id})
 }
 
-func ProduceAppSearch(payload AppsSearchMessage) (err error) {
+func ProduceAppSearch(app mongo.App) (err error) {
 
-	return produce(QueueAppsSearch, payload)
+	return produce(QueueAppsSearch, AppsSearchMessage{App: app})
 }
 
-func ProducePlayerSearch(payload PlayersSearchMessage) (err error) {
+func ProducePlayerSearch(player mongo.Player) (err error) {
 
-	return produce(QueuePlayersSearch, payload)
+	return produce(QueuePlayersSearch, PlayersSearchMessage{Player: player})
 }
 
 func ProduceWebsocket(payload interface{}, pages ...websockets.WebsocketPage) (err error) {
