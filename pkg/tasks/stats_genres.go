@@ -14,23 +14,23 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-type Genres struct {
+type TasksGenres struct {
 	BaseTask
 }
 
-func (c Genres) ID() string {
+func (c TasksGenres) ID() string {
 	return "update-genre-stats"
 }
 
-func (c Genres) Name() string {
+func (c TasksGenres) Name() string {
 	return "Update genres"
 }
 
-func (c Genres) Cron() string {
+func (c TasksGenres) Cron() string {
 	return CronTimeGenres
 }
 
-func (c Genres) work() (err error) {
+func (c TasksGenres) work() (err error) {
 
 	// Get current genres, to delete old ones
 	currentGenres, err := sql.GetAllGenres(true)

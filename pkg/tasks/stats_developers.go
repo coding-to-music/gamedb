@@ -14,23 +14,23 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-type Developers struct {
+type StatsDevelopers struct {
 	BaseTask
 }
 
-func (c Developers) ID() string {
+func (c StatsDevelopers) ID() string {
 	return "update-developer-stats"
 }
 
-func (c Developers) Name() string {
+func (c StatsDevelopers) Name() string {
 	return "Update developers"
 }
 
-func (c Developers) Cron() string {
+func (c StatsDevelopers) Cron() string {
 	return CronTimeDevelopers
 }
 
-func (c Developers) work() (err error) {
+func (c StatsDevelopers) work() (err error) {
 
 	// Get current developers, to delete old ones
 	allDevelopers, err := sql.GetAllDevelopers([]string{"id", "name"})

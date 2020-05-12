@@ -15,23 +15,23 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-type Tags struct {
+type StatsTags struct {
 	BaseTask
 }
 
-func (c Tags) ID() string {
+func (c StatsTags) ID() string {
 	return "update-tags-stats"
 }
 
-func (c Tags) Name() string {
+func (c StatsTags) Name() string {
 	return "Update tags"
 }
 
-func (c Tags) Cron() string {
+func (c StatsTags) Cron() string {
 	return CronTimeTags
 }
 
-func (c Tags) work() (err error) {
+func (c StatsTags) work() (err error) {
 
 	// Get current tags, to delete old ones
 	tags, err := sql.GetAllTags()

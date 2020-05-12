@@ -14,23 +14,23 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-type Publishers struct {
+type TasksPublishers struct {
 	BaseTask
 }
 
-func (c Publishers) ID() string {
+func (c TasksPublishers) ID() string {
 	return "update-publisher-stats"
 }
 
-func (c Publishers) Name() string {
+func (c TasksPublishers) Name() string {
 	return "Update publishers"
 }
 
-func (c Publishers) Cron() string {
+func (c TasksPublishers) Cron() string {
 	return CronTimePublishers
 }
 
-func (c Publishers) work() (err error) {
+func (c TasksPublishers) work() (err error) {
 
 	// Get current publishers, to delete old ones
 	allPublishers, err := sql.GetAllPublishers()

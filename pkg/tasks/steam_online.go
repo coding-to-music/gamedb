@@ -14,23 +14,23 @@ import (
 	influx "github.com/influxdata/influxdb1-client"
 )
 
-type SteamClientPlayers struct {
+type SteamOnline struct {
 	BaseTask
 }
 
-func (c SteamClientPlayers) ID() string {
+func (c SteamOnline) ID() string {
 	return "update-steam-client-players"
 }
 
-func (c SteamClientPlayers) Name() string {
+func (c SteamOnline) Name() string {
 	return "Update Steam client players"
 }
 
-func (c SteamClientPlayers) Cron() string {
+func (c SteamOnline) Cron() string {
 	return CronTimeSteamClientPlayers
 }
 
-func (c SteamClientPlayers) work() (err error) {
+func (c SteamOnline) work() (err error) {
 
 	resp, err := http.Get("https://www.valvesoftware.com/en/about/stats")
 	if err != nil {
