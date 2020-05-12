@@ -2,6 +2,7 @@ package sql
 
 import (
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/config"
@@ -55,8 +56,11 @@ func (bundle Bundle) GetPath() string {
 }
 
 func (bundle Bundle) GetName() string {
-	if bundle.Name != "" {
-		return bundle.Name
+
+	var name = strings.TrimSpace(bundle.Name)
+
+	if name != "" {
+		return name
 	}
 	return "Bundle " + strconv.Itoa(bundle.ID)
 }

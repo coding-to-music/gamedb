@@ -128,7 +128,7 @@ func updateBundle(bundle *sql.Bundle) (err error) {
 
 	// Title
 	c.OnHTML("h2.pageheader", func(e *colly.HTMLElement) {
-		bundle.Name = e.Text
+		bundle.Name = strings.TrimSpace(e.Text)
 	})
 
 	// Image
