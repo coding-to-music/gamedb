@@ -91,6 +91,78 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
+		t.AchievementsCount, err = mongo.CountDocuments(mongo.CollectionAppAchievements, nil, 0)
+		if err != nil {
+			log.Err(err, r)
+		}
+	}()
+
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		t.ArticlesCount, err = mongo.CountDocuments(mongo.CollectionAppArticles, nil, 0)
+		if err != nil {
+			log.Err(err, r)
+		}
+	}()
+
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		t.PlayerAppsCount, err = mongo.CountDocuments(mongo.CollectionPlayerApps, nil, 0)
+		if err != nil {
+			log.Err(err, r)
+		}
+	}()
+
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		t.PlayerFriendsCount, err = mongo.CountDocuments(mongo.CollectionPlayerFriends, nil, 0)
+		if err != nil {
+			log.Err(err, r)
+		}
+	}()
+
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		t.PlayerBadgesCount, err = mongo.CountDocuments(mongo.CollectionPlayerBadges, nil, 0)
+		if err != nil {
+			log.Err(err, r)
+		}
+	}()
+
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		t.PlayerGroupsCount, err = mongo.CountDocuments(mongo.CollectionPlayerGroups, nil, 0)
+		if err != nil {
+			log.Err(err, r)
+		}
+	}()
+
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
 
 		a := mongo.App{}
 		t.SteamPlayersInGame, err = a.GetPlayersInGame()
@@ -123,6 +195,12 @@ type statsTemplate struct {
 	AppsCount          int64
 	BundlesCount       int
 	PackagesCount      int64
+	AchievementsCount  int64
+	ArticlesCount      int64
+	PlayerAppsCount    int64
+	PlayerFriendsCount int64
+	PlayerBadgesCount  int64
+	PlayerGroupsCount  int64
 	PlayersCount       int64
 	SteamPlayersOnline int64
 	SteamPlayersInGame int64

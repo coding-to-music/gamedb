@@ -13,6 +13,7 @@
             {{ template "_stats_header" . }}
             <div class="card-body">
 
+                <h5>Steam Numbers</h5>
                 <div class="row">
                     <div class="col-12 col-sm-6 col-lg-4 col-xl mb-4">
                         <a href="/apps" role="button" class="btn btn-success btn-block mb-0">Total Apps<br/>{{ comma64 .AppsCount}}</a>
@@ -24,7 +25,29 @@
                         <a href="/bundles" role="button" class="btn btn-success btn-block mb-0">Total Bundles<br/>{{ comma .BundlesCount}}</a>
                     </div>
                     <div class="col-12 col-sm-6 col-lg-4 col-xl mb-4">
+                        <a href="/bundles" role="button" class="btn btn-success btn-block mb-0">Total Achievements<br/>{{ comma64 .AchievementsCount}}</a>
+                    </div>
+                    <div class="col-12 col-sm-6 col-lg-4 col-xl mb-4">
+                        <a href="/bundles" role="button" class="btn btn-success btn-block mb-0">Total Articles<br/>{{ comma64 .ArticlesCount}}</a>
+                    </div>
+                </div>
+
+                <h5>Game DB Numbers</h5>
+                <div class="row">
+                    <div class="col-12 col-sm-6 col-lg-4 col-xl mb-4">
                         <a href="/players" role="button" class="btn btn-success btn-block mb-0">Total Players<br/>{{ comma64 .PlayersCount}}</a>
+                    </div>
+                    <div class="col-12 col-sm-6 col-lg-4 col-xl mb-4">
+                        <a href="/players" role="button" class="btn btn-success btn-block mb-0">Player's Games<br/>{{ comma64 .PlayerAppsCount}}</a>
+                    </div>
+                    <div class="col-12 col-sm-6 col-lg-4 col-xl mb-4">
+                        <a href="/players" role="button" class="btn btn-success btn-block mb-0">Player's Friends<br/>{{ comma64 .PlayerFriendsCount}}</a>
+                    </div>
+                    <div class="col-12 col-sm-6 col-lg-4 col-xl mb-4">
+                        <a href="/players" role="button" class="btn btn-success btn-block mb-0">Player's Badges<br/>{{ comma64 .PlayerBadgesCount}}</a>
+                    </div>
+                    <div class="col-12 col-sm-6 col-lg-4 col-xl mb-4">
+                        <a href="/players" role="button" class="btn btn-success btn-block mb-0">Player's Groups<br/>{{ comma64 .PlayerGroupsCount}}</a>
                     </div>
                 </div>
 
