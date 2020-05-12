@@ -204,6 +204,9 @@ if ($('#stats-page').length > 0) {
                         data: data
                     }],
                     plotOptions: {
+                        series: {
+                            pointWidth: 2,
+                        },
                         area: {
                             lineWidth: 1,
                             states: {
