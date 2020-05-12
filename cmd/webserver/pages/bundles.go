@@ -63,7 +63,7 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			"3": "JSON_LENGTH(package_ids)",
 			"4": "updated_at",
 		}
-		gorm = query.SetOrderOffsetGorm(gorm, sortCols, "4")
+		gorm = query.SetOrderOffsetGorm(gorm, sortCols)
 
 		gorm = gorm.Find(&bundles)
 

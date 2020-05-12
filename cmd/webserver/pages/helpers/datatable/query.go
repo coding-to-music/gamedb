@@ -3,7 +3,6 @@ package datatable
 import (
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/derekstavis/go-qs"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
@@ -92,70 +91,41 @@ func (q DataTablesQuery) GetSearchSlice(k string) (search []string) {
 	return search
 }
 
-func (q DataTablesQuery) GetOrderSQL(columns map[string]string, defaultCol string) (order string) {
+func (q DataTablesQuery) GetOrderSQL(columns map[string]string) (order string) {
 
-	var ret []string
-
-	for _, v := range q.Order {
-
-		col, ok := v["column"].(string)
-		if !ok || col == "" {
-			col = defaultCol
-		}
-
-		if dir, ok := v["dir"].(string); ok {
-			if ok {
-
-				if columns != nil {
-					col, ok := columns[col]
-					if ok {
-						if dir == "asc" || dir == "desc" {
-							if strings.Contains(col, "$dir") {
-								ret = append(ret, strings.Replace(col, "$dir", dir, 1))
-							} else {
-								ret = append(ret, col+" "+dir)
-							}
-						}
-					}
-				}
-			}
-		}
+	col, ord := q.getOrder(columns)
+	if col == "" {
+		return "id ASC"
+	} else if ord {
+		return col + " ASC"
+	} else {
+		return col + " DESC"
 	}
-
-	return strings.Join(ret, ", ")
 }
 
 func (q DataTablesQuery) GetOrderMongo(columns map[string]string) bson.D {
 
-	for _, v := range q.Order {
-
-		if col, ok := v["column"].(string); ok {
-			if ok {
-
-				if dir, ok := v["dir"].(string); ok {
-					if ok {
-
-						if col, ok := columns[col]; ok {
-							if ok {
-
-								if dir == "desc" {
-									return bson.D{{Key: col, Value: -1}}
-								}
-
-								return bson.D{{Key: col, Value: 1}}
-							}
-						}
-					}
-				}
-			}
-		}
+	col, ord := q.getOrder(columns)
+	if col == "" {
+		return bson.D{}
+	} else if ord {
+		return bson.D{{Key: col, Value: 1}}
+	} else {
+		return bson.D{{Key: col, Value: -1}}
 	}
-
-	return bson.D{}
 }
 
 func (q DataTablesQuery) GetOrderElastic(columns map[string]string) (string, bool) {
 
+	col, asc := q.getOrder(columns)
+	if col == "" {
+		col = "_score"
+	}
+	return col, asc
+}
+
+func (q DataTablesQuery) getOrder(columns map[string]string) (col string, asc bool) {
+
 	for _, v := range q.Order {
 
 		if col, ok := v["column"].(string); ok {
@@ -166,11 +136,7 @@ func (q DataTablesQuery) GetOrderElastic(columns map[string]string) (string, boo
 
 						if col, ok := columns[col]; ok {
 							if ok {
-
-								if dir == "desc" {
-									return col, false
-								}
-								return col, true
+								return col, dir != "desc"
 							}
 						}
 					}
@@ -179,30 +145,12 @@ func (q DataTablesQuery) GetOrderElastic(columns map[string]string) (string, boo
 		}
 	}
 
-	return "_score", false
+	return "", false
 }
 
-func (q DataTablesQuery) GetOrderString(columns map[string]string) (col string) {
+func (q DataTablesQuery) SetOrderOffsetGorm(db *gorm.DB, columns map[string]string) *gorm.DB {
 
-	for _, v := range q.Order {
-
-		if col, ok := v["column"].(string); ok {
-			if ok {
-				if col, ok := columns[col]; ok {
-					if ok {
-						return col
-					}
-				}
-			}
-		}
-	}
-
-	return col
-}
-
-func (q DataTablesQuery) SetOrderOffsetGorm(db *gorm.DB, columns map[string]string, defaultCol string) *gorm.DB {
-
-	db = db.Order(q.GetOrderSQL(columns, defaultCol))
+	db = db.Order(q.GetOrderSQL(columns))
 	db = db.Offset(q.Start)
 
 	return db
