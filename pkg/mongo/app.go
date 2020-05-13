@@ -3,6 +3,7 @@ package mongo
 import (
 	"errors"
 	"html/template"
+	"math"
 	"regexp"
 	"sort"
 	"strconv"
@@ -353,6 +354,12 @@ func (app App) GetMicroTrailer() string {
 		return ""
 	}
 	return app.Movies[0].Micro()
+}
+
+func (app App) GetPlaytimeAverage() string {
+
+	x := int(math.Round(app.PlaytimeAverage))
+	return helpers.GetTimeLong(x, 3)
 }
 
 func (app App) GetAppRelatedApps() (apps []App, err error) {

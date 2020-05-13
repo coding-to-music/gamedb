@@ -160,6 +160,11 @@
                                             </tr>
                                         {{ end }}
 
+                                        <tr>
+                                            <th scope="row" nowrap="nowrap" class="thin">Average Playtime</th>
+                                            <td>{{ .App.GetPlaytimeAverage }}</td>
+                                        </tr>
+
                                         {{ if gt (len .App.Platforms) 0 }}
                                             <tr>
                                                 <th scope="row" nowrap="nowrap" class="thin">Platforms</th>
