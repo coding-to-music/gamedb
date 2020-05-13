@@ -66,6 +66,7 @@ func main() {
 		go func() {
 			// elastic.DeleteAndRebuildAppsIndex()
 			// elastic.DeleteAndRebuildAchievementsIndex()
+			// elastic.DeleteAndRebuildPlayersIndex()
 			log.Info("Elastic indexes finished")
 		}()
 	}

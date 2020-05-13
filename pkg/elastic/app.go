@@ -150,7 +150,7 @@ func DeleteAndRebuildAppsIndex() {
 		return
 	}
 
-	_, err = client.DeleteIndex("apps").Do(ctx)
+	_, err = client.DeleteIndex(IndexApps).Do(ctx)
 	if err != nil {
 		log.Err(err)
 		return
