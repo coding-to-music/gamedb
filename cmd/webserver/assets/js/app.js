@@ -360,19 +360,19 @@ if ($appPage.length > 0) {
 
                             const time = moment(this.key).format("DD MMM YYYY @ HH:mm");
 
-                            if (this.series.name === 'score') {
-                                return this.y.toLocaleString() + '% score on ' + time;
-                            } else if (this.series.name === 'positive') {
-                                return this.y.toLocaleString() + ' positive reviews on ' + time;
-                            } else if (this.series.name === 'negative') {
-                                return this.y.toLocaleString() + ' negative reviews on ' + time;
+                            if (this.series.name === 'Score') {
+                                return this.y.toLocaleString() + '% Review score on ' + time;
+                            } else if (this.series.name === 'Positive Reviews') {
+                                return this.y.toLocaleString() + ' Positive reviews on ' + time;
+                            } else if (this.series.name === 'Negative Reviews') {
+                                return this.y.toLocaleString() + ' Negative reviews on ' + time;
                             }
                         },
                     },
                     series: [
                         {
                             type: 'line',
-                            name: 'score',
+                            name: 'Score',
                             color: '#007bff',
                             data: data['mean_reviews_score'],
                             yAxis: 0,
@@ -380,7 +380,7 @@ if ($appPage.length > 0) {
                         },
                         {
                             type: 'area',
-                            name: 'positive',
+                            name: 'Positive Reviews',
                             color: '#28a745',
                             data: data['mean_reviews_positive'],
                             yAxis: 1,
@@ -388,7 +388,7 @@ if ($appPage.length > 0) {
                         },
                         {
                             type: 'area',
-                            name: 'negative',
+                            name: 'Negative Reviews',
                             color: '#e83e8c',
                             data: data['mean_reviews_negative'],
                             yAxis: 1,
