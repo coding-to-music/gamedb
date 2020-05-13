@@ -55,7 +55,32 @@ function observeLazyImages($target) {
     });
 }
 
-observeLazyImages('img[data-lazy]');
+function observeLazyVideos() {
+
+    // https://www.sitepoint.com/five-techniques-lazy-load-images-website-performance/
+
+    const callback = function (entries, self) {
+
+        // iterate over each entry
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                $(entry.target).attr('preload', 'metadata');
+                self.unobserve(entry.target);
+            }
+        });
+    };
+
+    const config = {
+        rootMargin: '0px 0px 50px 0px',
+        threshold: 0
+    };
+
+    let observer = new IntersectionObserver(callback, config);
+
+    $('video').each(function (index) {
+        observer.observe(this);
+    });
+}
 
 function loadImage($target) {
 
@@ -100,3 +125,6 @@ function fixBrokenImages() {
 
 $(fixBrokenImages);
 $(handleVideos);
+
+$(observeLazyImages('img[data-lazy]'));
+$(observeLazyVideos());

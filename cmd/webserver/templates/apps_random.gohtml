@@ -107,14 +107,14 @@
                             <div class="col-12 col-lg-6 order-2 order-lg-1" id="media">
 
                                 {{ if ne .GetMicroTrailer "" }}
-                                    <video controls autoplay loop muted preload="metadata">
+                                    <video controls preload="none" autoplay loop muted>
                                         <source src="{{ https .GetMicroTrailer }}" type="video/webm">
                                         Sorry, your browser doesn't support embedded videos.
                                     </video>
                                 {{ end }}
 
                                 {{ range $key, $value := .Movies }}
-                                    <video controls preload="metadata">
+                                    <video controls preload="none">
                                         <source src="{{ https .PathFull }}" type="video/webm">
                                         Sorry, your browser doesn't support embedded videos.
                                     </video>
