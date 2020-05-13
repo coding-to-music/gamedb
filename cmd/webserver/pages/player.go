@@ -721,8 +721,8 @@ func playerAchievementsSummaryAjaxHandler(w http.ResponseWriter, r *http.Request
 
 		var columns = map[string]string{
 			"0": "app_name",
-			"1": "app_achievements_have",
-			"2": "app_achievements_percent",
+			"1": "app_achievements_have, app_achievements_percent desc",
+			"2": "app_achievements_percent, app_achievements_have desc",
 		}
 
 		playerApps, err = mongo.GetPlayerApps(query.GetOffset64(), 100, filter, query.GetOrderMongo(columns))
