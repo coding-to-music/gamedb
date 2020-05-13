@@ -33,11 +33,8 @@ func GetElastic() (*elastic.Client, context.Context, error) {
 		ops := []elastic.ClientOptionFunc{
 			elastic.SetURL(config.Config.ElasticAddress.Get()),
 			elastic.SetSniff(false),
+			elastic.SetHealthcheck(true),
 			elastic.SetBasicAuth(config.Config.ElasticUsername.Get(), config.Config.ElasticPassword.Get()),
-		}
-
-		if config.IsLocal() || true {
-			ops = append(ops, elastic.SetHealthcheck(false))
 		}
 
 		client, err = elastic.NewClient(ops...)
@@ -45,5 +42,3 @@ func GetElastic() (*elastic.Client, context.Context, error) {
 
 	return client, ctx, err
 }
-
-
