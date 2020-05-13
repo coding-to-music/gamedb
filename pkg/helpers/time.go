@@ -34,7 +34,10 @@ func formatTime(minutes int, pieces int, format string) string {
 	}
 
 	t, err := durationfmt.Format(time.Minute*time.Duration(minutes), format)
-	log.Err(err)
+	if err != nil {
+		log.Err(err)
+		return "-"
+	}
 
 	var ret []string
 	for _, v := range getTimeRegex.FindAllString(t, -1) {
@@ -47,7 +50,7 @@ func formatTime(minutes int, pieces int, format string) string {
 			continue
 		}
 
-		if string(v[0]) == "1" {
+		if RegexNonInts.ReplaceAllString(v, "") == "1" {
 			v = strings.TrimSuffix(v, "s")
 		}
 
