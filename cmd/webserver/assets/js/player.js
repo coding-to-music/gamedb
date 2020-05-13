@@ -62,10 +62,7 @@ if ($playerPage.length > 0) {
                     loadPlayerWishlist();
                     break;
                 case '#achievements':
-                    // Stop loading summary when going to #achievements-latest etc
-                    if (window.location.hash === '#achievements') {
-                        $('a.nav-link[href="#achievements-summary"]').tab('show');
-                    }
+                    $('a.nav-link[href="#achievements-summary"]').tab('show');
                     break;
                 case '#achievements-summary':
                     loadPlayerAchievementsSummary();
