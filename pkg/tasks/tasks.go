@@ -37,13 +37,13 @@ var (
 	Parser       = cron.NewParser(cron.Minute | cron.Hour)
 	TaskRegister = map[string]TaskInterface{}
 	tasks        = []TaskInterface{
-		AppsInflux{},
+		AppsQueueInflux{},
 		AppsPlayerCheck{},
 		AppsQueueAll{},
 		AppsQueueElastic{},
 		AppsQueuePackages{},
-		AppsUpdateGroups{},
-		AppsUpdateYoutube{},
+		AppsQueueGroups{},
+		AppsQueueYoutube{},
 		AutoPlayerRefreshes{},
 		BadgesUpdateRandom{},
 		DevCodeRun{},

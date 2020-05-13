@@ -7,23 +7,23 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-type AppsInflux struct {
+type AppsQueueInflux struct {
 	BaseTask
 }
 
-func (c AppsInflux) ID() string {
-	return "apps-influx"
+func (c AppsQueueInflux) ID() string {
+	return "apps-queue-influx"
 }
 
-func (c AppsInflux) Name() string {
+func (c AppsQueueInflux) Name() string {
 	return "Update app peaks and averages (influx)"
 }
 
-func (c AppsInflux) Cron() string {
+func (c AppsQueueInflux) Cron() string {
 	return CronTimeAppsInflux
 }
 
-func (c AppsInflux) work() (err error) {
+func (c AppsQueueInflux) work() (err error) {
 
 	var offset int64 = 0
 	var limit int64 = 10_000
