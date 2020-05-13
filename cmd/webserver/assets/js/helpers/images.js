@@ -59,17 +59,20 @@ observeLazyImages('img[data-lazy]');
 
 function loadImage($target) {
 
-    const $alt = $target.attr('data-lazy-alt');
-    if ($alt) {
-        $target.attr('alt', $alt)
+    const alt = $target.attr('data-lazy-alt');
+    if (alt) {
+        $target.attr('alt', alt);
     }
 
-    const $title = $target.attr('data-lazy-title');
-    if ($title) {
-        $target.attr('title', $title)
+    const title = $target.attr('data-lazy-title');
+    if (title) {
+        $target.attr('title', title);
     }
 
-    $target.attr('src', $target.attr('data-lazy'));
+    const src = $target.attr('data-lazy');
+    if (src) {
+        $target.attr('src', src);
+    }
 
     //
     $target.removeAttr("data-lazy-alt");
