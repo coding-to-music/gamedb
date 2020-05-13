@@ -62,7 +62,16 @@ if ($playerPage.length > 0) {
                     loadPlayerWishlist();
                     break;
                 case '#achievements':
-                    loadPlayerAchievements();
+                    // Stop loading summary when going to #achievements-latest etc
+                    if (window.location.hash === '#achievements') {
+                        $('a.nav-link[href="#achievements-summary"]').tab('show');
+                    }
+                    break;
+                case '#achievements-summary':
+                    loadPlayerAchievementsSummary();
+                    break;
+                case '#achievements-latest':
+                    loadPlayerAchievementsLatest();
                     break;
             }
         }
@@ -379,9 +388,9 @@ if ($playerPage.length > 0) {
         $('#wishlist-table').gdbTable({tableOptions: options});
     }
 
-    function loadPlayerAchievements() {
+    function loadPlayerAchievementsSummary() {
 
-        const summaryOptions = {
+        const options = {
             "order": [[2, 'desc']],
             "createdRow": function (row, data, dataIndex) {
                 $(row).attr('data-link', data[0] + '#achievements');
@@ -419,10 +428,12 @@ if ($playerPage.length > 0) {
         };
 
         $('#achievements-summary-table').gdbTable({
-            tableOptions: summaryOptions,
+            tableOptions: options,
         });
+    }
 
-        //
+    function loadPlayerAchievementsLatest() {
+
         const options = {
             "order": [[1, 'desc']],
             "createdRow": function (row, data, dataIndex) {
