@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-response=$(curl --silent http://localhost:8081/health-check || exit 1)
+response=$(curl --silent http://localhost:"${STEAM_PORT}"/health-check || exit 1)
 
 if [[ "${response}" == "OK" ]]; then
   exit 0
