@@ -3,6 +3,7 @@ package queue
 import (
 	"encoding/json"
 	"sync"
+	"time"
 
 	"github.com/Jleagle/influxql"
 	"github.com/Jleagle/rabbit-go"
@@ -21,6 +22,9 @@ type AppInfluxMessage struct {
 func appInfluxHandler(messages []*rabbit.Message) {
 
 	for _, message := range messages {
+
+		// Sleep to not cause influx memory to spike too much
+		time.Sleep(time.Second / 5)
 
 		payload := AppInfluxMessage{}
 
