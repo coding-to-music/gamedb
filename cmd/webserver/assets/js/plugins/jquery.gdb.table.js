@@ -155,13 +155,13 @@
         //     options.tableOptions.displayStart = (page - 1) * options.tableOptions.pageLength;
         //     currentValues['p'] = page;
         // }
-        if (urlParams.has('s') && urlParams.has('o')) {
-            const sort = urlParams.get('s');
-            const order = urlParams.get('o');
-            options.tableOptions.order = [[parseInt(sort), order]];
-            currentValues['s'] = sort;
-            currentValues['o'] = order;
-        }
+        // if (urlParams.has('s') && urlParams.has('o')) {
+        //     const sort = urlParams.get('s');
+        //     const order = urlParams.get('o');
+        //     options.tableOptions.order = [[parseInt(sort), order]];
+        //     currentValues['s'] = sort;
+        //     currentValues['o'] = order;
+        // }
 
         //
         this.options = options;
@@ -226,14 +226,14 @@
                 }
 
                 // Update URL
-                if ($(parent.element).is(":visible:not([data-ordering=false])")) {
-
-                    const order = dt.order();
-                    if (order && order[0]) {
-                        setUrlParam('o', order[0][1]);
-                        setUrlParam('s', order[0][0]);
-                    }
-                }
+                // if ($(parent.element).is(":visible:not([data-ordering=false])")) {
+                //
+                //     const order = dt.order();
+                //     if (order && order[0]) {
+                //         setUrlParam('o', order[0][1]);
+                //         setUrlParam('s', order[0][0]);
+                //     }
+                // }
 
                 // Bold rows
                 highLightOwnedGames($(parent.element));
