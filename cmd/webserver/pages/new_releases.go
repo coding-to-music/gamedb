@@ -38,6 +38,11 @@ type newReleasesTemplate struct {
 	GlobalTemplate
 }
 
+var newReleasesFilter = bson.D{
+	{"release_date_unix", bson.M{"$lt": time.Now().Unix()}},
+	{"release_date_unix", bson.M{"$gt": time.Now().AddDate(0, 0, -config.Config.NewReleaseDays.GetInt()).Unix()}},
+}
+
 func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := datatable.NewDataTableQuery(r, false)
@@ -47,10 +52,6 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var filtered int64
 	var apps []mongo.App
 	var code = session.GetProductCC(r)
-	var filter = bson.D{
-		{"release_date_unix", bson.M{"$lt": time.Now().Unix()}},
-		{"release_date_unix", bson.M{"$gt": time.Now().AddDate(0, 0, -config.Config.NewReleaseDays.GetInt()).Unix()}},
-	}
 	var countLock sync.Mutex
 
 	wg.Add(1)
@@ -58,7 +59,7 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		var filter2 = filter
+		var filter2 = newReleasesFilter
 
 		var search = query.GetSearchString("search")
 		if search != "" {
@@ -97,7 +98,7 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		countLock.Lock()
-		count, err = mongo.CountDocuments(mongo.CollectionApps, filter, 60*60*24)
+		count, err = mongo.CountDocuments(mongo.CollectionApps, newReleasesFilter, 60*60*24)
 		countLock.Unlock()
 		if err != nil {
 			log.Err(err, r)

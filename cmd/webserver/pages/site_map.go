@@ -13,12 +13,15 @@ import (
 
 const urlBase = "https://gamedb.online"
 
+//noinspection GoUnusedParameter
 func SiteMapIndexHandler(w http.ResponseWriter, r *http.Request) {
 
 	var sitemaps = []string{
 		"/sitemap-pages.xml",
 		"/sitemap-games-by-score.xml",
 		"/sitemap-games-by-players.xml",
+		"/sitemap-games-new.xml",
+		"/sitemap-games-upcoming.xml",
 		"/sitemap-players-by-level.xml",
 		"/sitemap-players-by-games.xml",
 		"/sitemap-groups.xml",
@@ -79,9 +82,9 @@ func SiteMapPagesHandler(w http.ResponseWriter, r *http.Request) {
 	log.Err(err)
 }
 
-func SiteMapGamesByScoreHandler(w http.ResponseWriter, r *http.Request) {
+func SiteMapGamesByPlayersHandler(w http.ResponseWriter, r *http.Request) {
 
-	apps, err := mongo.GetApps(0, 1000, bson.D{{"reviews_score", -1}}, bson.D{}, bson.M{"_id": 1, "name": 1, "updated_at": 1}, nil)
+	apps, err := mongo.GetApps(0, 500, bson.D{{"player_peak_week", -1}}, bson.D{}, bson.M{"_id": 1, "name": 1, "updated_at": 1}, nil)
 	if err != nil {
 		log.Err(err, r)
 		return
@@ -98,9 +101,47 @@ func SiteMapGamesByScoreHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func SiteMapGamesByPlayersHandler(w http.ResponseWriter, r *http.Request) {
+func SiteMapGamesByScoreHandler(w http.ResponseWriter, r *http.Request) {
 
-	apps, err := mongo.GetApps(0, 1000, bson.D{{"player_peak_week", -1}}, bson.D{}, bson.M{"_id": 1, "name": 1, "updated_at": 1}, nil)
+	apps, err := mongo.GetApps(0, 500, bson.D{{"reviews_score", -1}}, bson.D{}, bson.M{"_id": 1, "name": 1, "updated_at": 1}, nil)
+	if err != nil {
+		log.Err(err, r)
+		return
+	}
+
+	sm := sitemap.NewSitemap()
+	for _, app := range apps {
+		sm.AddLocation(urlBase+app.GetPath(), app.UpdatedAt, sitemap.FrequencyWeekly, 0.9)
+	}
+
+	_, err = sm.Write(w)
+	if err != nil {
+		log.Err(err, r)
+	}
+}
+
+func SiteMapGamesUpcomingHandler(w http.ResponseWriter, r *http.Request) {
+
+	apps, err := mongo.GetApps(0, 500, bson.D{{"release_date_unix", 1}}, upcomingFilter, bson.M{"_id": 1, "name": 1, "updated_at": 1}, nil)
+	if err != nil {
+		log.Err(err, r)
+		return
+	}
+
+	sm := sitemap.NewSitemap()
+	for _, app := range apps {
+		sm.AddLocation(urlBase+app.GetPath(), app.UpdatedAt, sitemap.FrequencyWeekly, 0.9)
+	}
+
+	_, err = sm.Write(w)
+	if err != nil {
+		log.Err(err, r)
+	}
+}
+
+func SiteMapGamesNewHandler(w http.ResponseWriter, r *http.Request) {
+
+	apps, err := mongo.GetApps(0, 500, bson.D{{"release_date_unix", -1}}, newReleasesFilter, bson.M{"_id": 1, "name": 1, "updated_at": 1}, nil)
 	if err != nil {
 		log.Err(err, r)
 		return
@@ -122,7 +163,22 @@ func SiteMapPlayersByLevel(w http.ResponseWriter, r *http.Request) {
 
 	sm := sitemap.NewSitemap()
 
-	players, err := mongo.GetPlayers(0, 1000, bson.D{{Key: "level", Value: -1}}, nil, bson.M{"_id": 1, "persona_name": 1, "updated_at": 1})
+	players, err := mongo.GetPlayers(0, 500, bson.D{{Key: "level", Value: -1}}, nil, bson.M{"_id": 1, "persona_name": 1, "updated_at": 1})
+	log.Err(err)
+	for _, player := range players {
+		sm.AddLocation(urlBase+player.GetPath(), player.UpdatedAt, sitemap.FrequencyWeekly, 0.9)
+	}
+
+	_, err = sm.Write(w)
+	log.Err(err)
+}
+
+//noinspection GoUnusedParameter
+func SiteMapPlayersByGamesCount(w http.ResponseWriter, r *http.Request) {
+
+	sm := sitemap.NewSitemap()
+
+	players, err := mongo.GetPlayers(0, 500, bson.D{{Key: "games_count", Value: -1}}, nil, bson.M{"_id": 1, "persona_name": 1, "updated_at": 1})
 	log.Err(err)
 	for _, player := range players {
 		sm.AddLocation(urlBase+player.GetPath(), player.UpdatedAt, sitemap.FrequencyWeekly, 0.9)
@@ -137,7 +193,7 @@ func SiteMapGroups(w http.ResponseWriter, r *http.Request) {
 
 	sm := sitemap.NewSitemap()
 
-	groups, err := mongo.GetGroups(1000, 0, bson.D{{Key: "members", Value: -1}}, bson.D{{Key: "type", Value: helpers.GroupTypeGroup}}, bson.M{"_id": 1, "name": 1, "updated_at": 1})
+	groups, err := mongo.GetGroups(500, 0, bson.D{{Key: "members", Value: -1}}, bson.D{{Key: "type", Value: helpers.GroupTypeGroup}}, bson.M{"_id": 1, "name": 1, "updated_at": 1})
 	log.Err(err)
 	for _, v := range groups {
 		sm.AddLocation(urlBase+v.GetPath(), v.UpdatedAt, sitemap.FrequencyWeekly, 0.9)
@@ -156,20 +212,5 @@ func SiteMapBadges(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, err := sm.Write(w)
-	log.Err(err)
-}
-
-//noinspection GoUnusedParameter
-func SiteMapPlayersByGamesCount(w http.ResponseWriter, r *http.Request) {
-
-	sm := sitemap.NewSitemap()
-
-	players, err := mongo.GetPlayers(0, 1000, bson.D{{Key: "games_count", Value: -1}}, nil, bson.M{"_id": 1, "persona_name": 1, "updated_at": 1})
-	log.Err(err)
-	for _, player := range players {
-		sm.AddLocation(urlBase+player.GetPath(), player.UpdatedAt, sitemap.FrequencyWeekly, 0.9)
-	}
-
-	_, err = sm.Write(w)
 	log.Err(err)
 }

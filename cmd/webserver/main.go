@@ -140,6 +140,8 @@ func main() {
 	r.Get("/sitemap-pages.xml", pages.SiteMapPagesHandler)
 	r.Get("/sitemap-games-by-score.xml", pages.SiteMapGamesByScoreHandler)
 	r.Get("/sitemap-games-by-players.xml", pages.SiteMapGamesByPlayersHandler)
+	r.Get("/sitemap-games-new.xml", pages.SiteMapGamesNewHandler)
+	r.Get("/sitemap-games-upcoming.xml", pages.SiteMapGamesUpcomingHandler)
 	r.Get("/sitemap-players-by-level.xml", pages.SiteMapPlayersByLevel)
 	r.Get("/sitemap-players-by-games.xml", pages.SiteMapPlayersByGamesCount)
 	r.Get("/sitemap-groups.xml", pages.SiteMapGroups)
