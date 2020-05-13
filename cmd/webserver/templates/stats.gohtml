@@ -51,12 +51,17 @@
                     </div>
                 </div>
 
-                <h5 class="">Players Online ({{ round64 .SteamPlayersOnline }}, {{ round64 .SteamPlayersInGame }} in game)</h5>
+                <h5>Players Online <small>({{ round64 .SteamPlayersOnline }}, {{ round64 .SteamPlayersInGame }} in game)</small></h5>
                 <div class="chart mb-4" id="client-players">
                     <i class="fas fa-spinner fa-spin"></i>
                 </div>
 
-                <h5 class="">Game DB Player Levels <small>(For levels below 2,000)</small></h5>
+                <h5>Players Online <small>(5 years)</small></h5>
+                <div class="chart mb-4" id="client-players2">
+                    <i class="fas fa-spinner fa-spin"></i>
+                </div>
+
+                <h5>Game DB Player Levels <small>(For levels below 2,000)</small></h5>
                 <div class="chart mb-4" id="player-levels">
                     <i class="fas fa-spinner fa-spin"></i>
                 </div>

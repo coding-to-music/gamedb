@@ -72,12 +72,15 @@ if ($('#stats-page').length > 0) {
                         type: 'datetime',
                         // tickInterval: 5,
                     },
+                    legend: {
+                        enabled: true,
+                    },
                     tooltip: {
                         formatter: function () {
 
                             const time = moment(this.key).format("dddd DD MMM YYYY @ HH:mm");
 
-                            if (this.series.name === 'ingame') {
+                            if (this.series.name === 'Ingame') {
                                 return this.y.toLocaleString() + ' people in a game on ' + time;
                             } else {
                                 return this.y.toLocaleString() + ' people online on ' + time;
@@ -86,12 +89,63 @@ if ($('#stats-page').length > 0) {
                     },
                     series: [
                         {
-                            name: 'ingame',
+                            name: 'In Game',
                             marker: {symbol: 'circle'},
                             data: data['max_player_count'],
                         },
                         {
-                            name: 'online',
+                            name: 'Online',
+                            marker: {symbol: 'circle'},
+                            color: '#007bff',
+                            data: data['max_player_online'],
+                            type: 'line',
+                        },
+                    ]
+                }));
+            },
+        });
+
+        $.ajax({
+            type: "GET",
+            url: '/stats/client-players2.json',
+            dataType: 'json',
+            success: function (data, textStatus, jqXHR) {
+
+                if (data === null) {
+                    data = [];
+                }
+
+                Highcharts.chart('client-players2', $.extend(true, {}, defaultStatsChartOptions, {
+                    chart: {
+                        type: 'area',
+                    },
+                    xAxis: {
+                        type: 'datetime',
+                        // tickInterval: 5,
+                    },
+                    legend: {
+                        enabled: true,
+                    },
+                    tooltip: {
+                        formatter: function () {
+
+                            const time = moment(this.key).format("dddd DD MMM YYYY @ HH:mm");
+
+                            if (this.series.name === 'In Game') {
+                                return this.y.toLocaleString() + ' people in a game on ' + time;
+                            } else {
+                                return this.y.toLocaleString() + ' people online on ' + time;
+                            }
+                        },
+                    },
+                    series: [
+                        {
+                            name: 'In Game',
+                            marker: {symbol: 'circle'},
+                            data: data['max_player_count'],
+                        },
+                        {
+                            name: 'Online',
                             marker: {symbol: 'circle'},
                             color: '#007bff',
                             data: data['max_player_online'],

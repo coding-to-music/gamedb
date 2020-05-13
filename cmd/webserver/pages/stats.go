@@ -20,6 +20,7 @@ func StatsRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", statsHandler)
 	r.Get("/client-players.json", statsClientPlayersHandler)
+	r.Get("/client-players2.json", statsClientPlayers2Handler)
 	r.Get("/release-dates.json", statsDatesHandler)
 	r.Get("/app-scores.json", statsScoresHandler)
 	r.Get("/app-types.json", statsAppTypesHandler)
@@ -275,6 +276,32 @@ func statsClientPlayersHandler(w http.ResponseWriter, r *http.Request) {
 	builder.AddWhere("time", ">", "NOW() - 7d")
 	builder.AddWhere("app_id", "=", "0")
 	builder.AddGroupByTime("30m")
+	builder.SetFillNone()
+	resp, err := influx.InfluxQuery(builder.String())
+	if err != nil {
+		log.Err(err, r, builder.String())
+		return
+	}
+
+	var hc influx.HighChartsJSON
+
+	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
+
+		hc = influx.InfluxResponseToHighCharts(resp.Results[0].Series[0], true)
+	}
+
+	returnJSON(w, r, hc)
+}
+
+func statsClientPlayers2Handler(w http.ResponseWriter, r *http.Request) {
+
+	builder := influxql.NewBuilder()
+	builder.AddSelect("max(player_count)", "max_player_count")
+	builder.AddSelect("max(player_online)", "max_player_online")
+	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
+	builder.AddWhere("time", ">", "NOW()-1825d")
+	builder.AddWhere("app_id", "=", "0")
+	builder.AddGroupByTime("1d")
 	builder.SetFillNone()
 	resp, err := influx.InfluxQuery(builder.String())
 	if err != nil {
