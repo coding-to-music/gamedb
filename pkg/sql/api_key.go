@@ -66,7 +66,7 @@ func GetAPIKey(tag string) (err error) {
 			"owner":       tag,
 			"environment": config.Config.Environment.Get(),
 			"version":     config.GetShortCommitHash(),
-			"ip":          config.Config.IP.Get(),
+			"ip":          config.GetIP(),
 		})
 		if db.Error != nil {
 			db.Rollback()

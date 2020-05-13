@@ -402,3 +402,12 @@ func GetShortCommitHash() string {
 	}
 	return key
 }
+
+func GetIP() string {
+
+	if IsLocal() {
+		return "local"
+	}
+
+	return Config.IP.Get()
+}
