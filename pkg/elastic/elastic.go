@@ -9,8 +9,9 @@ import (
 )
 
 const (
-	IndexApps    = "apps"
-	IndexPlayers = "players"
+	IndexAchievements = "achievements"
+	IndexApps         = "apps"
+	IndexPlayers      = "players"
 )
 
 var (
