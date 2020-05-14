@@ -37,16 +37,18 @@ var (
 	Parser       = cron.NewParser(cron.Minute | cron.Hour)
 	TaskRegister = map[string]TaskInterface{}
 	tasks        = []TaskInterface{
-		AppsQueueInflux{},
+		AchievementsQueueElastic{},
 		AppsPlayerCheck{},
 		AppsQueueAll{},
 		AppsQueueElastic{},
-		AppsQueuePackages{},
 		AppsQueueGroups{},
+		AppsQueueInflux{},
+		AppsQueuePackages{},
 		AppsQueueYoutube{},
 		AutoPlayerRefreshes{},
 		BadgesUpdateRandom{},
 		DevCodeRun{},
+		GroupsQueueElastic{},
 		GroupsUpdateTop{},
 		MemcacheClearAll{},
 		PlayersQueueAll{},
@@ -54,12 +56,14 @@ var (
 		PlayersQueueRandom{},
 		PlayersUpdateRanks{},
 		ProductsUpdateKeys{},
+		StatsCategories{},
 		StatsDevelopers{},
 		StatsTags{},
 		SteamOnline{},
 		TasksGenres{},
 		TasksPublishers{},
-		// Instagram{},
+		// InstagramPost{},
+		// Wishlists{},
 	}
 )
 
