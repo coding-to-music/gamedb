@@ -18,9 +18,9 @@ type AppAchievement struct {
 	Description string  `bson:"description" json:"-"`
 	Icon        string  `bson:"icon" json:"icon"`
 	Completed   float64 `bson:"completed" json:"-"`
-	Hidden      bool    `bson:"hidden" json:"-"`
-	Active      bool    `bson:"active" json:"-"` // If it's part of the schema response
-	Deleted     bool    `bson:"deleted" json:"-"`
+	Hidden      bool    `bson:"hidden" json:"-"`  // Just no description
+	Active      bool    `bson:"active" json:"-"`  // If it's part of the schema response
+	Deleted     bool    `bson:"deleted" json:"-"` // Not in global resp anymore
 }
 
 func (achievement AppAchievement) BSON() bson.D {
