@@ -7,7 +7,6 @@ import (
 
 	"github.com/Jleagle/rabbit-go"
 	"github.com/Jleagle/steam-go/steamapi"
-	elasticHelpers "github.com/gamedb/gamedb/pkg/elastic"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
@@ -173,19 +172,6 @@ func playerHandler(messages []*rabbit.Message) {
 			defer wg.Done()
 
 			err = savePlayerToInflux(player)
-			if err != nil {
-				log.Err(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-		}()
-
-		wg.Add(1)
-		go func() {
-
-			defer wg.Done()
-
-			err = savePlayerToElastic(player)
 			if err != nil {
 				log.Err(err, payload.ID)
 				sendToRetryQueue(message)
@@ -700,16 +686,6 @@ func savePlayerMongo(player mongo.Player) error {
 
 	_, err := mongo.ReplaceOne(mongo.CollectionPlayers, bson.D{{"_id", player.ID}}, player)
 	return err
-}
-
-func savePlayerToElastic(player mongo.Player) (err error) {
-
-	return elasticHelpers.IndexPlayer(elasticHelpers.Player{
-		ID:          player.ID,
-		PersonaName: player.PersonaName,
-		VanityURL:   player.VanintyURL,
-		Flag:        player.CountryCode,
-	})
 }
 
 func savePlayerToInflux(player mongo.Player) (err error) {
