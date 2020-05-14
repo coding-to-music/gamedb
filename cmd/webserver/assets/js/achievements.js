@@ -16,7 +16,7 @@ if ($achievementsPage.length > 0) {
 
                     let name = row[5] + ': ' + row[0] + '<br><small>' + row[2] + '</small>';
 
-                    if (row[5]) {
+                    if (row[8]) {
                         name += '<span class="badge badge-danger float-right ml-1">Hidden</span>';
                     }
 

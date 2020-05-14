@@ -83,6 +83,7 @@ func achievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			appName,                 // 5
 			achievement.Score,       // 6
 			path,                    // 7
+			achievement.Hidden,      // 8
 		})
 	}
 
