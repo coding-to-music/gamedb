@@ -12,11 +12,11 @@ type PlayersQueueElastic struct {
 }
 
 func (c PlayersQueueElastic) ID() string {
-	return "players-reindex-elastic"
+	return "players-queue-elastic"
 }
 
 func (c PlayersQueueElastic) Name() string {
-	return "Reindex all players in Elastic"
+	return "Queue all players to Elastic"
 }
 
 func (c PlayersQueueElastic) Cron() string {

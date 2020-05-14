@@ -12,11 +12,11 @@ type AppsQueueElastic struct {
 }
 
 func (c AppsQueueElastic) ID() string {
-	return "apps-reindex-elastic"
+	return "apps-queue-elastic"
 }
 
 func (c AppsQueueElastic) Name() string {
-	return "Reindex all apps in Elastic"
+	return "Queue all apps to Elastic"
 }
 
 func (c AppsQueueElastic) Cron() string {
