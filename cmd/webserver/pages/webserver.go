@@ -467,7 +467,7 @@ func (t GlobalTemplate) IsAppsPage() bool {
 	if strings.HasPrefix(t.Path, "/apps") {
 		return true
 	}
-	return helpers.SliceHasString(strings.TrimPrefix(t.Path, "/"), []string{"new-releases", "upcoming", "achievements", "wishlists", "packages", "bundles", "price-changes", "changes", "coop", "sales"})
+	return helpers.SliceHasString(strings.TrimPrefix(t.Path, "/"), []string{"new-releases", "upcoming", "wishlists", "packages", "bundles", "price-changes", "changes", "coop", "sales"})
 }
 
 func (t GlobalTemplate) IsStatsPage() bool {
@@ -497,7 +497,7 @@ func (t GlobalTemplate) IsMorePage() bool {
 	if strings.HasPrefix(t.Path, "/chat") || strings.HasPrefix(t.Path, "/experience") {
 		return true
 	}
-	return helpers.SliceHasString(strings.TrimPrefix(t.Path, "/"), []string{"chat-bot", "contact", "info", "queues", "info", "steam-api", "api"})
+	return helpers.SliceHasString(strings.TrimPrefix(t.Path, "/"), []string{"achievements", "chat-bot", "contact", "info", "queues", "info", "steam-api", "api"})
 }
 
 func (t GlobalTemplate) IsSidebarPage() bool {

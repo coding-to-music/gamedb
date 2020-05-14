@@ -2,29 +2,24 @@ package elastic
 
 import (
 	"encoding/json"
-	"errors"
-	"time"
 
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/olivere/elastic/v7"
 )
 
 type Achievement struct {
-	ID          int    `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
+	ID          string  `json:"id"` // Achievement key
+	Name        string  `json:"name"`
+	Icon        string  `json:"icon"`
+	Description string  `json:"description"`
+	Hidden      bool    `json:"hidden"`
+	Completed   float64 `json:"completed"`
+	AppID       int     `json:"app_id"`
+	AppName     string  `json:"app_name"`
+	Score       float64 `json:"score"`
 }
 
-func SearchAchievements(limit int, query string) (achievements []Achievement, err error) {
-
-	var filters []elastic.Query
-	var musts []elastic.Query
-
-	musts = append(musts, elastic.NewMatchQuery("name", query))
-
-	// https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-function-score-query.html#function-field-value-factor
-	musts = append(musts, elastic.NewFunctionScoreQuery().AddScoreFunc(
-		elastic.NewFieldValueFactorFunction().Field("players").Modifier("log1p")))
+func SearchAchievements(limit int, offset int, search string) (achievements []Achievement, total int64, err error) {
 
 	client, ctx, err := GetElastic()
 	if err != nil {
@@ -32,13 +27,12 @@ func SearchAchievements(limit int, query string) (achievements []Achievement, er
 		return
 	}
 
-	searchResult, err := client.Search().
-		Index(IndexAchievements).
-		Query(elastic.NewBoolQuery().Must(musts...).Filter(filters...)).
-		From(0).
-		Size(limit).
-		Do(ctx)
+	var query elastic.Query
+	if search != "" {
+		query = elastic.NewMultiMatchQuery(search, "name^3", "description^2", "app_name^1").Type("best_fields")
+	}
 
+	searchResult, err := client.Search().Index(IndexAchievements).Query(query).From(offset).Size(limit).Do(ctx)
 	if err != nil {
 		log.Err(err)
 		return
@@ -52,12 +46,17 @@ func SearchAchievements(limit int, query string) (achievements []Achievement, er
 			log.Err(err)
 		}
 
+		if hit.Score != nil {
+			achievement.Score = *hit.Score
+		}
+
 		achievements = append(achievements, achievement)
 	}
 
-	return achievements, err
+	return achievements, searchResult.TotalHits(), err
 }
 
+//noinspection GoUnusedExportedFunction
 func DeleteAndRebuildAchievementsIndex() {
 
 	var mapping = map[string]interface{}{
@@ -67,40 +66,28 @@ func DeleteAndRebuildAchievementsIndex() {
 		},
 		"mappings": map[string]interface{}{
 			"properties": map[string]interface{}{
-				"id": map[string]interface{}{
-					"type": "integer",
-				},
 				"name": map[string]interface{}{
 					"type": "text",
 				},
+				"icon": map[string]interface{}{
+					"enabled": false,
+				},
 				"description": map[string]interface{}{
+					"type": "text",
+				},
+				"completed": map[string]interface{}{
+					"type": "half_float",
+				},
+				"app_id": map[string]interface{}{
+					"type": "integer",
+				},
+				"app_name": map[string]interface{}{
 					"type": "text",
 				},
 			},
 		},
 	}
 
-	client, ctx, err := GetElastic()
-	if err != nil {
-		log.Err(err)
-		return
-	}
-
-	_, err = client.DeleteIndex(IndexAchievements).Do(ctx)
-	if err != nil {
-		log.Err(err)
-		return
-	}
-
-	time.Sleep(time.Second)
-
-	createIndex, err := client.CreateIndex(IndexAchievements).BodyJson(mapping).Do(ctx)
-	if err != nil {
-		log.Err(err)
-		return
-	}
-
-	if !createIndex.Acknowledged {
-		log.Warning(errors.New("not acknowledged"))
-	}
+	err := rebuildIndex(IndexAchievements, mapping)
+	log.Err(err)
 }

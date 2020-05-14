@@ -3,64 +3,46 @@ const $achievementsPage = $('#achievements-page');
 if ($achievementsPage.length > 0) {
 
     const options = {
-        "order": [[1, 'desc']],
+        "pageLength": 100,
+        "order": [[2, 'desc']],
         "createdRow": function (row, data, dataIndex) {
-            $(row).attr('data-app-id', data[0]);
-            $(row).attr('data-link', data[3]);
+            $(row).attr('data-link', data[7]);
         },
         "columnDefs": [
-            // Icon / App name
+            // Name
             {
                 "targets": 0,
                 "render": function (data, type, row) {
-                    return '<div class="icon-name"><div class="icon"><img alt="" data-lazy="' + row[2] + '" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></div>'
+
+                    let name = row[5] + ': ' + row[0] + '<br><small>' + row[2] + '</small>';
+
+                    if (row[5]) {
+                        name += '<span class="badge badge-danger float-right ml-1">Hidden</span>';
+                    }
+
+                    return '<div class="icon-name"><div class="icon"><img class="tall" data-lazy="' + row[1] + '" alt="" data-lazy-alt="' + row[0] + '"></div><div class="name">' + name + '</div></div>'
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img');
                 },
                 "orderable": false,
             },
-            // Count
+            // Complete %
             {
                 "targets": 1,
                 "render": function (data, type, row) {
-                    return row[5].toLocaleString();
+                    return row[3] + '%';
                 },
-                "orderSequence": ["desc"],
+                "orderable": false,
             },
-            // Average
+            // Search Score
             {
                 "targets": 2,
                 "render": function (data, type, row) {
-                    return row[6].toLocaleString() + '%';
-                },
-                "orderSequence": ["desc"],
-            },
-            // Price
-            {
-                "targets": 3,
-                "render": function (data, type, row) {
-                    return row[4];
-                },
-                "createdCell": function (td, cellData, rowData, row, col) {
-                    $(td).attr('nowrap', 'nowrap');
+                    return row[6].toLocaleString();
                 },
                 "orderable": false,
-            },
-            // Icons
-            {
-                "targets": 4,
-                "render": function (data, type, row) {
-                    if (isIterable(row[7])) {
-                        return json2html.transform(row[7], {'<>': 'img', 'src': '', 'data-lazy': '${icon}', 'data-lazy-alt': '${name}', 'class': 'mr-1', 'data-toggle': 'tooltip', 'data-placement': 'top', 'data-lazy-title': '${name}'});
-                    }
-                    return '';
-                },
-                "createdCell": function (td, cellData, rowData, row, col) {
-                    $(td).addClass('img');
-                    $(td).attr('nowrap', 'nowrap');
-                },
-                "orderable": false,
+                "visible": false,
             },
         ]
     };

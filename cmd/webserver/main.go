@@ -91,6 +91,7 @@ func main() {
 	// Pages
 	r.Get("/", pages.HomeHandler)
 	r.Get("/currency/{id}", pages.CurrencyHandler)
+	r.Mount("/achievements", pages.AchievementsRouter())
 	r.Mount("/admin", pages.AdminRouter())
 	r.Mount("/api", pages.APIRouter())
 	r.Mount("/apps", pages.AppsRouter())

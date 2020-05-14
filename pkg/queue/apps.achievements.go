@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/rabbit-go"
+	elasticHelpers "github.com/gamedb/gamedb/pkg/elastic"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
@@ -110,6 +111,37 @@ func appAchievementsHandler(messages []*rabbit.Message) {
 			continue
 		}
 
+		// Update in Elastic
+		if len(achievementsMap) > 0 {
+
+			app, err := mongo.GetApp(payload.ID, false)
+			if err != nil {
+				log.Err(err)
+				sendToRetryQueue(message)
+				continue
+			}
+
+			var elasticMap = map[string]interface{}{}
+			for _, v := range achievementsMap {
+				elasticMap[v.GetKey()] = elasticHelpers.Achievement{
+					Name:        v.Name,
+					Icon:        v.Icon,
+					Description: v.Description,
+					Hidden:      v.Hidden,
+					Completed:   v.Completed,
+					AppID:       v.AppID,
+					AppName:     app.Name,
+				}
+			}
+
+			err = elasticHelpers.SaveToElasticBulk(elasticHelpers.IndexAchievements, elasticMap)
+			if err != nil {
+				log.Err(err)
+				sendToRetryQueue(message)
+				continue
+			}
+		}
+
 		// Update app row
 		var achievementsCol []mongo.AppAchievement
 		for _, achievement := range achievementsSlice {
@@ -162,14 +194,15 @@ func appAchievementsHandler(messages []*rabbit.Message) {
 			filter = append(filter, bson.E{Key: "key", Value: bson.M{"$nin": keys}})
 		}
 
-		var update = bson.D{{"deleted", true}}
-
-		_, err = mongo.UpdateManySet(mongo.CollectionAppAchievements, filter, update)
+		_, err = mongo.UpdateManySet(mongo.CollectionAppAchievements, filter, bson.D{{"deleted", true}})
 		if err != nil {
 			log.Err(err, payload.ID)
 			sendToRetryQueue(message)
 			continue
 		}
+
+		// And remove from Elastic too
+		// todo
 
 		//
 		err = memcache.Delete(memcache.MemcacheApp(payload.ID).Key)

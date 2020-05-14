@@ -38,7 +38,7 @@ func (achievement AppAchievement) BSON() bson.D {
 	}
 }
 
-func (achievement AppAchievement) getKey() string {
+func (achievement AppAchievement) GetKey() string {
 	return strconv.Itoa(achievement.AppID) + "-" + achievement.Key
 }
 
@@ -70,7 +70,7 @@ func GetAppAchievements(offset int64, limit int64, filter bson.D, sort bson.D) (
 		var appAcievement AppAchievement
 		err := cur.Decode(&appAcievement)
 		if err != nil {
-			log.Err(err, appAcievement.getKey())
+			log.Err(err, appAcievement.GetKey())
 		} else {
 			achievements = append(achievements, appAcievement)
 		}
@@ -94,7 +94,7 @@ func SaveAppAchievements(achievements []AppAchievement) (err error) {
 	for _, achievement := range achievements {
 
 		write := mongo.NewReplaceOneModel()
-		write.SetFilter(bson.M{"_id": achievement.getKey()})
+		write.SetFilter(bson.M{"_id": achievement.GetKey()})
 		write.SetReplacement(achievement.BSON())
 		write.SetUpsert(true)
 
