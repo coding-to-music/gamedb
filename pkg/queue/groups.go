@@ -50,6 +50,16 @@ func groupsHandler(messages []*rabbit.Message) {
 			continue
 		}
 
+		if payload.ID == "" {
+			message.Ack(false)
+			continue
+		}
+
+		if payload.UserAgent != nil && helpers.IsBot(*payload.UserAgent) {
+			message.Ack(false)
+			continue
+		}
+
 		payload.ID, err = helpers.IsValidGroupID(payload.ID)
 		if err != nil {
 			log.Err(err, message.Message.Body)
