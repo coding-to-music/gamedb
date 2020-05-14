@@ -13,7 +13,6 @@ import (
 	"github.com/Jleagle/influxql"
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/config"
-	elasticHelpers "github.com/gamedb/gamedb/pkg/elastic"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
@@ -83,7 +82,7 @@ func groupsHandler(messages []*rabbit.Message) {
 		}
 
 		// Skip if updated recently
-		if !group.ShouldUpdate() && !config.IsLocal() {
+		if !config.IsLocal() && !group.ShouldUpdate() {
 			message.Ack(false)
 			continue
 		}
@@ -196,22 +195,7 @@ func groupsHandler(messages []*rabbit.Message) {
 			}
 		}()
 
-		// Save to Elastic
-		wg.Add(1)
-		go func() {
-
-			defer wg.Done()
-
-			err = saveGroupToElastic(group)
-			if err != nil {
-				log.Err(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-		}()
-
 		wg.Wait()
-
 		if message.ActionTaken {
 			continue
 		}
@@ -226,6 +210,28 @@ func groupsHandler(messages []*rabbit.Message) {
 		// Send websocket
 		err = sendGroupWebsocket(payload.ID)
 		log.Err(err)
+
+		if message.ActionTaken {
+			continue
+		}
+
+		// Produce to sub queues
+		var produces = map[rabbit.QueueName]interface{}{
+			QueueGroupsSearch: GroupSearchMessage{Group: group},
+		}
+
+		for k, v := range produces {
+			err = produce(k, v)
+			if err != nil {
+				log.Err(err)
+				sendToRetryQueue(message)
+				break
+			}
+		}
+
+		if message.ActionTaken {
+			continue
+		}
 
 		//
 		message.Ack(false)
@@ -550,19 +556,6 @@ func saveGroupToInflux(group mongo.Group) (err error) {
 	})
 
 	return err
-}
-
-func saveGroupToElastic(group mongo.Group) (err error) {
-
-	return elasticHelpers.SaveToElastic(elasticHelpers.IndexGroups, group.ID, elasticHelpers.Group{
-		Name:         group.Name,
-		URL:          group.URL,
-		Abbreviation: group.Abbr,
-		Headline:     group.Headline,
-		Icon:         group.Icon,
-		Members:      group.Members,
-		Trend:        group.Trending,
-	})
 }
 
 func sendGroupWebsocket(id string) (err error) {

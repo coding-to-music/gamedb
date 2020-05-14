@@ -40,13 +40,16 @@ const (
 	QueuePlayersAchievements rabbit.QueueName = "GDB_Players.Achievements"
 	QueuePlayersSearch       rabbit.QueueName = "GDB_Players.Search"
 
+	// Group
+	QueueGroups       rabbit.QueueName = "GDB_Groups"
+	QueueGroupsSearch rabbit.QueueName = "GDB_Groups.Search"
+
 	// Other
 	QueueAppPlayers  rabbit.QueueName = "GDB_App_Players"
 	QueueBundles     rabbit.QueueName = "GDB_Bundles"
 	QueueChanges     rabbit.QueueName = "GDB_Changes"
 	QueueDelay       rabbit.QueueName = "GDB_Delay"
 	QueueFailed      rabbit.QueueName = "GDB_Failed"
-	QueueGroups      rabbit.QueueName = "GDB_Groups"
 	QueuePlayerRanks rabbit.QueueName = "GDB_Player_Ranks"
 	QueueSteam       rabbit.QueueName = "GDB_Steam"
 	QueueTest        rabbit.QueueName = "GDB_Test"
@@ -90,6 +93,7 @@ var (
 		{name: QueueBundles},
 		{name: QueueChanges},
 		{name: QueueGroups},
+		{name: QueueGroupsSearch},
 		{name: QueuePackages},
 		{name: QueuePackagesPrices},
 		{name: QueuePlayers},
@@ -120,6 +124,7 @@ var (
 		{name: QueueBundles, consumer: bundleHandler},
 		{name: QueueChanges, consumer: changesHandler},
 		{name: QueueGroups, consumer: groupsHandler},
+		{name: QueueGroupsSearch, consumer: groupsSearchHandler},
 		{name: QueuePackages, consumer: packageHandler},
 		{name: QueuePackagesPrices, consumer: packagePriceHandler},
 		{name: QueuePlayers, consumer: playerHandler},
@@ -143,6 +148,7 @@ var (
 		{name: QueueBundles},
 		{name: QueueChanges},
 		{name: QueueGroups},
+		{name: QueueGroupsSearch},
 		{name: QueuePackages},
 		{name: QueuePackagesPrices},
 		{name: QueuePlayers},
@@ -170,6 +176,7 @@ var (
 		{name: QueueAppsSearch},
 		{name: QueueAppPlayers},
 		{name: QueueGroups},
+		{name: QueueGroupsSearch},
 		{name: QueuePackages},
 		{name: QueuePlayers},
 		{name: QueuePlayerRanks},
@@ -460,6 +467,11 @@ func ProducePlayer(payload PlayerMessage) (err error) {
 func ProducePlayerRank(payload PlayerRanksMessage) (err error) {
 
 	return produce(QueuePlayerRanks, payload)
+}
+
+func ProduceGroupSearch(group mongo.Group) (err error) {
+
+	return produce(QueueGroupsSearch, GroupSearchMessage{Group: group})
 }
 
 func ProduceSteam(payload SteamMessage) (err error) {
