@@ -124,6 +124,7 @@ func appAchievementsHandler(messages []*rabbit.Message) {
 			var elasticMap = map[string]elasticHelpers.Achievement{}
 			for _, v := range achievementsMap {
 				elasticMap[v.GetKey()] = elasticHelpers.Achievement{
+					ID:          v.Key,
 					Name:        v.Name,
 					Icon:        v.Icon,
 					Description: v.Description,

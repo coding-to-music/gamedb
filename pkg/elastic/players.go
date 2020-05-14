@@ -9,10 +9,10 @@ import (
 )
 
 type Player struct {
-	ID          int64  `json:"id"`
-	PersonaName string `json:"name"`
-	VanityURL   string `json:"url"`
-	Flag        string `json:"flag"`
+	ID                int64    `json:"id"`
+	PersonaName       string   `json:"name"`
+	PersonaNameRecent []string `json:"recent"`
+	VanityURL         string   `json:"url"`
 }
 
 func IndexPlayer(player Player) error {
@@ -73,51 +73,17 @@ func DeleteAndRebuildPlayersIndex() {
 		"mappings": map[string]interface{}{
 			"properties": map[string]interface{}{
 				"id": map[string]interface{}{
-					"type": "integer",
+					"type": "long",
 				},
 				"name": map[string]interface{}{
 					"type": "text",
 				},
-				"aliases": map[string]interface{}{
+				"recent": map[string]interface{}{
 					"type": "text",
 				},
-				"players": map[string]interface{}{
-					"type": "integer",
+				"url": map[string]interface{}{
+					"type": "text",
 				},
-				// "icon": map[string]interface{}{
-				// 	"enabled": false,
-				// },
-				// "followers": map[string]interface{}{
-				// 	"type": "integer",
-				// },
-				// "score": map[string]interface{}{
-				// 	"type": "half_float",
-				// },
-				// "prices": map[string]interface{}{
-				// 	"type":       "object",
-				// 	"properties": priceProperties,
-				// },
-				// "tags": map[string]interface{}{
-				// 	"type": "integer",
-				// },
-				// "genres": map[string]interface{}{
-				// 	"type": "integer",
-				// },
-				// "categories": map[string]interface{}{
-				// 	"type": "integer",
-				// },
-				// "publishers": map[string]interface{}{
-				// 	"type": "integer",
-				// },
-				// "developers": map[string]interface{}{
-				// 	"type": "integer",
-				// },
-				// "type": map[string]interface{}{
-				// 	"type": "keyword",
-				// },
-				// "platforms": map[string]interface{}{
-				// 	"type": "keyword",
-				// },
 			},
 		},
 	}

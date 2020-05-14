@@ -16,7 +16,7 @@ type Achievement struct {
 	Completed   float64 `json:"completed"`
 	AppID       int     `json:"app_id"`
 	AppName     string  `json:"app_name"`
-	Score       float64 `json:"score"`
+	Score       float64 `json:"score"` // Not stored, just used on frontend
 }
 
 func IndexAchievementBulk(achievements map[string]Achievement) error {
@@ -76,6 +76,9 @@ func DeleteAndRebuildAchievementsIndex() {
 		},
 		"mappings": map[string]interface{}{
 			"properties": map[string]interface{}{
+				"id": map[string]interface{}{
+					"type": "keyword",
+				},
 				"name": map[string]interface{}{
 					"type": "text",
 				},
@@ -84,6 +87,9 @@ func DeleteAndRebuildAchievementsIndex() {
 				},
 				"description": map[string]interface{}{
 					"type": "text",
+				},
+				"hidden": map[string]interface{}{
+					"type": "boolean",
 				},
 				"completed": map[string]interface{}{
 					"type": "half_float",
