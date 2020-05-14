@@ -704,7 +704,7 @@ func savePlayerMongo(player mongo.Player) error {
 
 func savePlayerToElastic(player mongo.Player) (err error) {
 
-	return elasticHelpers.SaveToElastic(elasticHelpers.IndexPlayers, strconv.FormatInt(player.ID, 10), elasticHelpers.Player{
+	return elasticHelpers.IndexPlayer(elasticHelpers.Player{
 		ID:          player.ID,
 		PersonaName: player.PersonaName,
 		VanityURL:   player.VanintyURL,

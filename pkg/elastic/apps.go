@@ -2,6 +2,7 @@ package elastic
 
 import (
 	"encoding/json"
+	"strconv"
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -24,6 +25,10 @@ type App struct {
 	// Developers []int                 `json:"developers"`
 	// Type       string                `json:"type"`
 	// Platforms  []string              `json:"platforms"`
+}
+
+func IndexApp(app App) error {
+	return indexDocument(IndexApps, strconv.Itoa(app.ID), app)
 }
 
 func SearchApps(limit int, query string) (apps []App, err error) {

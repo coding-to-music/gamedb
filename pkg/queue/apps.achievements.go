@@ -121,7 +121,7 @@ func appAchievementsHandler(messages []*rabbit.Message) {
 				continue
 			}
 
-			var elasticMap = map[string]interface{}{}
+			var elasticMap = map[string]elasticHelpers.Achievement{}
 			for _, v := range achievementsMap {
 				elasticMap[v.GetKey()] = elasticHelpers.Achievement{
 					Name:        v.Name,
@@ -134,7 +134,7 @@ func appAchievementsHandler(messages []*rabbit.Message) {
 				}
 			}
 
-			err = elasticHelpers.SaveToElasticBulk(elasticHelpers.IndexAchievements, elasticMap)
+			err = elasticHelpers.IndexAchievementBulk(elasticMap)
 			if err != nil {
 				log.Err(err)
 				sendToRetryQueue(message)

@@ -8,6 +8,7 @@ import (
 )
 
 type Group struct {
+	ID           string `json:"id"`
 	Name         string `json:"name"`
 	URL          string `json:"url"`
 	Abbreviation string `json:"abbreviation"`
@@ -15,6 +16,10 @@ type Group struct {
 	Icon         string `json:"icon"`
 	Members      int    `json:"members"`
 	Trend        int64  `json:"trend"`
+}
+
+func IndexGroup(group Group) error {
+	return indexDocument(IndexGroups, group.ID, group)
 }
 
 func SearchGroups(limit int, offset int, search string, sorter elastic.Sorter) (groups []Group, total int64, err error) {
@@ -65,6 +70,9 @@ func DeleteAndRebuildGroupsIndex() {
 		},
 		"mappings": map[string]interface{}{
 			"properties": map[string]interface{}{
+				"id": map[string]interface{}{
+					"type": "keyword",
+				},
 				"name": map[string]interface{}{
 					"type": "text",
 				},

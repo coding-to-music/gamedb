@@ -25,7 +25,8 @@ func groupsSearchHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		err = elasticHelpers.SaveToElastic(elasticHelpers.IndexGroups, payload.Group.ID, elasticHelpers.Group{
+		err = elasticHelpers.IndexGroup(elasticHelpers.Group{
+			ID:           payload.Group.ID,
 			Name:         payload.Group.Name,
 			URL:          payload.Group.URL,
 			Abbreviation: payload.Group.Abbr,

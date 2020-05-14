@@ -1,8 +1,6 @@
 package queue
 
 import (
-	"strconv"
-
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/elastic"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -51,20 +49,20 @@ func appsSearchHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		row := elastic.App{}
-		row.ID = payload.App.ID
-		row.Name = payload.App.Name
-		row.Players = payload.App.PlayerPeakWeek
-		// row.Icon = payload.App.Icon
-		// row.Followers = payload.App.GroupFollowers
-		// row.Score = payload.App.Score
-		// row.Prices = payload.App.Prices
+		app := elastic.App{}
+		app.ID = payload.App.ID
+		app.Name = payload.App.Name
+		app.Players = payload.App.PlayerPeakWeek
+		// app.Icon = payload.App.Icon
+		// app.Followers = payload.App.GroupFollowers
+		// app.Score = payload.App.Score
+		// app.Prices = payload.App.Prices
 
 		if val, ok := aliases[payload.App.ID]; ok {
-			row.Aliases = val
+			app.Aliases = val
 		}
 
-		err = elastic.SaveToElastic(elastic.IndexApps, strconv.Itoa(payload.App.ID), row)
+		err = elastic.IndexApp(app)
 		if err != nil {
 			log.Err(err)
 			sendToRetryQueue(message)

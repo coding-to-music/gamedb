@@ -47,7 +47,7 @@ func GetElastic() (*elastic.Client, context.Context, error) {
 	return client, ctx, err
 }
 
-func SaveToElastic(index string, key string, doc interface{}) error {
+func indexDocument(index string, key string, doc interface{}) error {
 
 	client, ctx, err := GetElastic()
 	if err != nil {
@@ -58,7 +58,7 @@ func SaveToElastic(index string, key string, doc interface{}) error {
 	return err
 }
 
-func SaveToElasticBulk(index string, docs map[string]interface{}) error {
+func indexDocuments(index string, docs map[string]interface{}) error {
 
 	client, ctx, err := GetElastic()
 	if err != nil {

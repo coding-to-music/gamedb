@@ -2,6 +2,7 @@ package elastic
 
 import (
 	"encoding/json"
+	"strconv"
 
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/olivere/elastic/v7"
@@ -12,6 +13,10 @@ type Player struct {
 	PersonaName string `json:"name"`
 	VanityURL   string `json:"url"`
 	Flag        string `json:"flag"`
+}
+
+func IndexPlayer(player Player) error {
+	return indexDocument(IndexPlayers, strconv.FormatInt(player.ID, 10), player)
 }
 
 func SearchPlayers(limit int, query string) (players []Player, err error) {

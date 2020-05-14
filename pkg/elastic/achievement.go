@@ -19,6 +19,16 @@ type Achievement struct {
 	Score       float64 `json:"score"`
 }
 
+func IndexAchievementBulk(achievements map[string]Achievement) error {
+
+	i := map[string]interface{}{}
+	for k, v := range achievements {
+		i[k] = v
+	}
+
+	return indexDocuments(IndexAchievements, i)
+}
+
 func SearchAchievements(limit int, offset int, search string) (achievements []Achievement, total int64, err error) {
 
 	client, ctx, err := GetElastic()
