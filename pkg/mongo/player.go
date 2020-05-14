@@ -99,7 +99,7 @@ type Player struct {
 	StateCode         string                 `bson:"status_code"`
 	TimeCreated       time.Time              `bson:"time_created"` // Created on Steam
 	UpdatedAt         time.Time              `bson:"updated_at"`
-	VanintyURL        string                 `bson:"vanity_url"`
+	VanityURL         string                 `bson:"vanity_url"`
 	WishlistAppsCount int                    `bson:"wishlist_apps_count"`
 }
 
@@ -130,7 +130,7 @@ func (player Player) BSON() bson.D {
 		{"status_code", player.StateCode},
 		{"time_created", player.TimeCreated},
 		{"updated_at", time.Now()},
-		{"vanity_url", player.VanintyURL},
+		{"vanity_url", player.VanityURL},
 		{"wishlist_apps_count", player.WishlistAppsCount},
 		{"recent_apps_count", player.RecentAppsCount},
 		{"groups_count", player.GroupsCount},
@@ -176,8 +176,8 @@ func (player Player) GetUpdatedNice() string {
 
 func (player Player) CommunityLink() string {
 
-	if player.VanintyURL != "" && player.VanintyURL != strconv.FormatInt(player.ID, 10) {
-		return "https://steamcommunity.com/id/" + player.VanintyURL
+	if player.VanityURL != "" && player.VanityURL != strconv.FormatInt(player.ID, 10) {
+		return "https://steamcommunity.com/id/" + player.VanityURL
 	}
 
 	return "https://steamcommunity.com/profiles/" + strconv.FormatInt(player.ID, 10)
@@ -358,7 +358,7 @@ func (player *Player) SetPlayerSummary() error {
 
 	//
 	if strings.Contains(summary.ProfileURL, "profiles") {
-		player.VanintyURL = path.Base(summary.ProfileURL)
+		player.VanityURL = path.Base(summary.ProfileURL)
 	}
 
 	player.CountryCode = summary.CountryCode

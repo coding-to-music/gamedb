@@ -28,7 +28,7 @@ func appsPlayersHandler(messages []*rabbit.Message) {
 		player := elastic.Player{}
 		player.ID = payload.Player.ID
 		player.PersonaName = payload.Player.PersonaName
-		player.VanityURL = payload.Player.VanintyURL
+		player.VanityURL = payload.Player.VanityURL
 		player.Flag = payload.Player.CountryCode
 
 		err = elastic.IndexPlayer(player)
