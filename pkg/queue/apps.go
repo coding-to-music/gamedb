@@ -258,19 +258,6 @@ func appHandler(messages []*rabbit.Message) {
 			}
 		}()
 
-		// Queue group
-		wg.Add(1)
-		go func() {
-
-			defer wg.Done()
-
-			var err error
-
-			err = ProduceGroup(GroupMessage{ID: app.GroupID})
-			err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
-			log.Err(err)
-		}()
-
 		wg.Wait()
 
 		if message.ActionTaken {
@@ -286,6 +273,7 @@ func appHandler(messages []*rabbit.Message) {
 			QueueAppsSteamspy:     AppSteamspyMessage{ID: app.ID},
 			QueueAppsTwitch:       AppTwitchMessage{ID: app.ID},
 			QueueAppsReviews:      AppReviewsMessage{ID: app.ID},
+			QueueGroups:           GroupMessage{ID: app.GroupID},
 			QueueAppsSearch:       AppsSearchMessage{App: app},
 		}
 
