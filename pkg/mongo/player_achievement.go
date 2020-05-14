@@ -86,6 +86,16 @@ func GetPlayerAchievementsForApp(playerID int64, appID int, achievementKeys bson
 	return getPlayerAchievements(0, limit, filter, nil)
 }
 
+func GetPlayersWithAchievement(appID int, achievementID string, offset int64) (achievements []PlayerAchievement, err error) {
+
+	var filter = bson.D{
+		{"app_id", appID},
+		{"achievement_id", achievementID},
+	}
+
+	return getPlayerAchievements(offset, 100, filter, bson.D{{"achievement_date", -1}})
+}
+
 func getPlayerAchievements(offset int64, limit int64, filter bson.D, sort bson.D) (achievements []PlayerAchievement, err error) {
 
 	cur, ctx, err := Find(CollectionPlayerAchievements, offset, limit, sort, filter, nil, nil)
