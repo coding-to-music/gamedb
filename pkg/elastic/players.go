@@ -2,8 +2,6 @@ package elastic
 
 import (
 	"encoding/json"
-	"errors"
-	"time"
 
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/olivere/elastic/v7"
@@ -59,6 +57,7 @@ func SearchPlayers(limit int, query string) (players []Player, err error) {
 	return players, err
 }
 
+//noinspection GoUnusedExportedFunction
 func DeleteAndRebuildPlayersIndex() {
 
 	var mapping = map[string]interface{}{
@@ -118,27 +117,6 @@ func DeleteAndRebuildPlayersIndex() {
 		},
 	}
 
-	client, ctx, err := GetElastic()
-	if err != nil {
-		log.Err(err)
-		return
-	}
-
-	_, err = client.DeleteIndex(IndexPlayers).Do(ctx)
-	if err != nil {
-		log.Err(err)
-		return
-	}
-
-	time.Sleep(time.Second)
-
-	createIndex, err := client.CreateIndex(IndexPlayers).BodyJson(mapping).Do(ctx)
-	if err != nil {
-		log.Err(err)
-		return
-	}
-
-	if !createIndex.Acknowledged {
-		log.Warning(errors.New("not acknowledged"))
-	}
+	err := rebuildIndex(IndexPlayers, mapping)
+	log.Err(err)
 }

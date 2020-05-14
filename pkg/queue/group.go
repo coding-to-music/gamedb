@@ -13,6 +13,7 @@ import (
 	"github.com/Jleagle/influxql"
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/config"
+	elasticHelpers "github.com/gamedb/gamedb/pkg/elastic"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
@@ -178,6 +179,20 @@ func groupsHandler(messages []*rabbit.Message) {
 			defer wg.Done()
 
 			err = saveGroupToInflux(group)
+			if err != nil {
+				log.Err(err, payload.ID)
+				sendToRetryQueue(message)
+				return
+			}
+		}()
+
+		// Save to Elastic
+		wg.Add(1)
+		go func() {
+
+			defer wg.Done()
+
+			err = saveGroupToElastic(group)
 			if err != nil {
 				log.Err(err, payload.ID)
 				sendToRetryQueue(message)
@@ -525,6 +540,19 @@ func saveGroupToInflux(group mongo.Group) (err error) {
 	})
 
 	return err
+}
+
+func saveGroupToElastic(group mongo.Group) (err error) {
+
+	return elasticHelpers.SaveToElastic(elasticHelpers.IndexGroups, group.ID, elasticHelpers.Group{
+		Name:         group.Name,
+		URL:          group.URL,
+		Abbreviation: group.Abbr,
+		Headline:     group.Headline,
+		Icon:         group.Icon,
+		Members:      group.Members,
+		Trend:        group.Trending,
+	})
 }
 
 func sendGroupWebsocket(id string) (err error) {

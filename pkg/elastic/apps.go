@@ -2,8 +2,6 @@ package elastic
 
 import (
 	"encoding/json"
-	"errors"
-	"time"
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -71,6 +69,7 @@ func SearchApps(limit int, query string) (apps []App, err error) {
 	return apps, err
 }
 
+//noinspection GoUnusedExportedFunction
 func DeleteAndRebuildAppsIndex() {
 
 	var priceProperties = map[string]interface{}{}
@@ -144,27 +143,6 @@ func DeleteAndRebuildAppsIndex() {
 		},
 	}
 
-	client, ctx, err := GetElastic()
-	if err != nil {
-		log.Err(err)
-		return
-	}
-
-	_, err = client.DeleteIndex(IndexApps).Do(ctx)
-	if err != nil {
-		log.Err(err)
-		return
-	}
-
-	time.Sleep(time.Second)
-
-	createIndex, err := client.CreateIndex(IndexApps).BodyJson(mapping).Do(ctx)
-	if err != nil {
-		log.Err(err)
-		return
-	}
-
-	if !createIndex.Acknowledged {
-		log.Warning(errors.New("not acknowledged"))
-	}
+	err := rebuildIndex(IndexApps, mapping)
+	log.Err(err)
 }

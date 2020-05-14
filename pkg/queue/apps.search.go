@@ -51,13 +51,6 @@ func appsSearchHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		client, ctx, err := elastic.GetElastic()
-		if err != nil {
-			log.Err(err)
-			sendToRetryQueue(message)
-			continue
-		}
-
 		row := elastic.App{}
 		row.ID = payload.App.ID
 		row.Name = payload.App.Name
@@ -71,12 +64,7 @@ func appsSearchHandler(messages []*rabbit.Message) {
 			row.Aliases = val
 		}
 
-		_, err = client.Index().
-			Index(elastic.IndexApps).
-			Id(strconv.Itoa(payload.App.ID)).
-			BodyJson(row).
-			Do(ctx)
-
+		err = elastic.SaveToElastic(elastic.IndexApps, strconv.Itoa(payload.App.ID), row)
 		if err != nil {
 			log.Err(err)
 			sendToRetryQueue(message)
