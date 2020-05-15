@@ -11,50 +11,52 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func GenresRouter() http.Handler {
+func TagsRouter() http.Handler {
 
 	r := chi.NewRouter()
-	r.Get("/", genresHandler)
+	r.Get("/", statsTagsHandler)
 	return r
 }
 
-func genresHandler(w http.ResponseWriter, r *http.Request) {
+func statsTagsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get config
-	config, err := tasks.GetTaskConfig(tasks.TasksGenres{})
+	config, err := tasks.GetTaskConfig(tasks.StatsTags{})
 	if err != nil {
 		err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
 		log.Err(err, r)
 	}
 
-	// Get genres
-	genres, err := sql.GetAllGenres(false)
+	// Get tags
+	tags, err := sql.GetAllTags()
 	if err != nil {
 		log.Err(err, r)
-		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the genres."})
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the tags."})
 		return
 	}
 
+	code := session.GetProductCC(r)
 	prices := map[int]string{}
-	for _, v := range genres {
-		price, err := v.GetMeanPrice(session.GetProductCC(r))
+	for _, v := range tags {
+		price, err := v.GetMeanPrice(code)
 		log.Err(err, r)
 		prices[v.ID] = price
 	}
 
 	// Template
-	t := statsGenresTemplate{}
-	t.fill(w, r, "Genres", "All Steam genres")
-	t.Genres = genres
+	t := statsTagsTemplate{}
+	t.fill(w, r, "Tags", "Top Steam tags")
+	t.addAssetMark()
+	t.Tags = tags
 	t.Date = config.Value
 	t.Prices = prices
 
-	returnTemplate(w, r, "genres", t)
+	returnTemplate(w, r, "stats_tags", t)
 }
 
-type statsGenresTemplate struct {
+type statsTagsTemplate struct {
 	GlobalTemplate
-	Genres []sql.Genre
+	Tags   []sql.Tag
 	Date   string
 	Prices map[int]string
 }

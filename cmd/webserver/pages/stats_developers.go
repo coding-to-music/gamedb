@@ -45,11 +45,12 @@ func developersHandler(w http.ResponseWriter, r *http.Request) {
 	// Template
 	t := statsDevelopersTemplate{}
 	t.fill(w, r, "Developers", "All the software developers that create Steam content.")
+	t.addAssetMark()
 	t.Developers = developers
 	t.Date = config.Value
 	t.Prices = prices
 
-	returnTemplate(w, r, "developers", t)
+	returnTemplate(w, r, "stats_developers", t)
 }
 
 type statsDevelopersTemplate struct {

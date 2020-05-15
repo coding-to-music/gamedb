@@ -1,20 +1,20 @@
-{{define "tags"}}
+{{define "stats_developers"}}
     {{ template "_header" . }}
 
-    <div class="container" id="tags-page">
+    <div class="container" id="developers-page">
 
         <div class="jumbotron">
             <div class="row">
                 <div class="col-sm-12 col-lg-6">
 
-                    <h1><i class="fas fa-tag"></i> Tags</h1>
+                    <h1><i class="fas fa-star"></i> Developers</h1>
 
                 </div>
                 <div class="col-sm-12 col-lg-6">
 
                     <div class="input-group input-group-lg mt-1">
-                        <label for="search" class="sr-only sr-only-focusable">Search for a Tag</label>
-                        <input class="form-control" id="search" type="search" name="search" placeholder="Search for a Tag" required="required" autocomplete="off" autofocus>
+                        <label for="search" class="sr-only sr-only-focusable">Search for a Developer</label>
+                        <input class="form-control" id="search" type="search" name="search" placeholder="Search for a Developer" required="required" autocomplete="off" autofocus data-hightlight="1">
                     </div>
 
                 </div>
@@ -31,16 +31,16 @@
                     <table class="table table-hover table-striped table-counts mb-0" data-order='[[1, "desc"]]'>
                         <thead class="thead-light">
                         <tr>
-                            <th scope="col">Tag</th>
+                            <th scope="col">Developer</th>
                             <th scope="col">Games</th>
                             <th scope="col">Avg Price</th>
                             <th scope="col">Avg Score</th>
                         </tr>
                         </thead>
-                        <tbody>
-                        {{ range $key, $value := .Tags }}
+                        <tbody class="developers-list">
+                        {{ range $key, $value := .Developers }}
                             <tr data-link="{{.GetPath}}">
-                                <td><i class="fas fa-tag"></i> {{ .GetName }}</td>
+                                <td class="markable"><i class="fas fa-star"></i> {{ .Name }}</td>
                                 <td>{{ comma .Apps }}</td>
                                 <td>{{ index $.Prices .ID }}</td>
                                 <td>{{ .GetMeanScore }}</td>

@@ -1,20 +1,20 @@
-{{define "publishers"}}
+{{define "stats_genres"}}
     {{ template "_header" . }}
 
-    <div class="container" id="publishers-page">
+    <div class="container" id="genres-page">
 
         <div class="jumbotron">
             <div class="row">
                 <div class="col-sm-12 col-lg-6">
 
-                    <h1><i class="fas fa-star"></i> Publishers</h1>
+                    <h1><i class="fas fa-film"></i> Genres</h1>
 
                 </div>
                 <div class="col-sm-12 col-lg-6">
 
                     <div class="input-group input-group-lg mt-1">
-                        <label for="search" class="sr-only sr-only-focusable">Search for a Publisher</label>
-                        <input class="form-control" id="search" type="search" name="search" placeholder="Search for a Publisher" required="required" autocomplete="off" autofocus>
+                        <label for="search" class="sr-only sr-only-focusable">Search for a Genre</label>
+                        <input class="form-control" id="search" type="search" name="search" placeholder="Search for a Genre" required="required" autocomplete="off" autofocus data-hightlight="1">
                     </div>
 
                 </div>
@@ -31,16 +31,16 @@
                     <table class="table table-hover table-striped table-counts mb-0" data-order='[[1, "desc"]]'>
                         <thead class="thead-light">
                         <tr>
-                            <th scope="col">Publisher</th>
+                            <th scope="col">Genre</th>
                             <th scope="col">Games</th>
                             <th scope="col">Avg Price</th>
                             <th scope="col">Avg Score</th>
                         </tr>
                         </thead>
-                        <tbody class="publishers-list">
-                        {{ range $key, $value := .Publishers }}
+                        <tbody>
+                        {{ range $key, $value := .Genres }}
                             <tr data-link="{{.GetPath}}">
-                                <td><i class="fas fa-star"></i> {{ .Name }}</td>
+                                <td class="markable"><i class="fas fa-film"></i> {{ .Name }}</td>
                                 <td>{{ comma .Apps }}</td>
                                 <td>{{ index $.Prices .ID }}</td>
                                 <td>{{ .GetMeanScore }}</td>

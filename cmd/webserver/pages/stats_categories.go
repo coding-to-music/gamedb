@@ -46,11 +46,12 @@ func statsCategoriesHandler(w http.ResponseWriter, r *http.Request) {
 	// Template
 	t := statsCategoriesTemplate{}
 	t.fill(w, r, "Categories", "Top Steam Categories")
+	t.addAssetMark()
 	t.Categories = categories
 	t.Date = config.Value
 	t.Prices = prices
 
-	returnTemplate(w, r, "categories", t)
+	returnTemplate(w, r, "stats_categories", t)
 }
 
 type statsCategoriesTemplate struct {

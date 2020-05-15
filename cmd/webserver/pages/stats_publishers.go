@@ -45,11 +45,12 @@ func publishersHandler(w http.ResponseWriter, r *http.Request) {
 	// Template
 	t := statsPublishersTemplate{}
 	t.fill(w, r, "Publishers", "Publishers handle marketing and advertising.")
+	t.addAssetMark()
 	t.Publishers = publishers
 	t.Date = config.Value
 	t.Prices = prices
 
-	returnTemplate(w, r, "publishers", t)
+	returnTemplate(w, r, "stats_publishers", t)
 }
 
 type statsPublishersTemplate struct {
