@@ -361,7 +361,7 @@
 
                     const name = $field.attr('name');
 
-                    $field.on('keyup', function (e) {
+                    $field.on('keyup search', function (e) {
 
                         const colToSortBy = $field.attr('data-col-sort');
                         if (colToSortBy) {
