@@ -37,6 +37,28 @@ body.dark {
             width: 100%;
             border-bottom: solid 1px white;
         }
+
+        // Fix border right
+        .row > div:nth-child(2n+1) img {
+            border-right: solid 1px white;
+            @include media-breakpoint-up(sm) {
+                border-right: none;
+            }
+        }
+
+        // Fix border bottom
+        .row > div:nth-last-child(-n+2) img {
+            border-bottom: none;
+        }
+
+        @include media-breakpoint-up(sm) {
+            .row > div:nth-last-child(-n+2) img {
+                border-bottom: solid 1px white;
+            }
+            .row > div:last-child img {
+                border-bottom: none;
+            }
+        }
     }
 
     #news {
