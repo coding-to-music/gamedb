@@ -17,11 +17,15 @@ func groupsSearchHandler(messages []*rabbit.Message) {
 	for _, message := range messages {
 
 		payload := GroupSearchMessage{}
-
 		err := helpers.Unmarshal(message.Message.Body, &payload)
 		if err != nil {
 			log.Err(err, message.Message.Body)
 			sendToFailQueue(message)
+			continue
+		}
+
+		if payload.Group.Type != helpers.GroupTypeGroup {
+			message.Ack(false)
 			continue
 		}
 
