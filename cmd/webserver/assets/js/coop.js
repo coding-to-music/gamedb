@@ -8,13 +8,13 @@ if ($('#coop-page').length > 0) {
 
         const val = $('input#id').val();
 
-        if (document.location.href.indexOf("?") >= 0) {
-            url = document.location.href + "&p=" + val;
+        if (window.location.href.indexOf("?") >= 0) {
+            url = window.location.href + "&p=" + val;
         } else {
-            url = document.location.href + "?p=" + val;
+            url = window.location.href + "?p=" + val;
         }
 
-        document.location = url;
+        window.location = url;
     });
 
     $('#addme input').on('click', function (e) {
