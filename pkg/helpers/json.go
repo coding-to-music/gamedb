@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"reflect"
 
 	"github.com/gamedb/gamedb/pkg/log"
 )
@@ -19,10 +18,6 @@ func IsJSON(str string) bool {
 // Wraps json.Unmarshal and adds logging
 func Unmarshal(data []byte, v interface{}) (err error) {
 
-	if reflect.ValueOf(v).Kind() != reflect.Ptr {
-		return ErrUnMarshalNonPointer
-	}
-
 	if len(data) == 0 {
 		return nil
 	}
@@ -34,7 +29,7 @@ func Unmarshal(data []byte, v interface{}) (err error) {
 		if len(data) > 1000 {
 			data = data[0:1000]
 		}
-		log.Info(err.Error() + ": " + string(data) + "...")
+		log.Err(err.Error(), string(data))
 	default:
 		log.Err(err)
 	}
