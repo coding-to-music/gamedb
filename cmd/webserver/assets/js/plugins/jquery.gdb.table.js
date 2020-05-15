@@ -182,14 +182,14 @@
             $(this.element).on('preXhr.dt', function (e, settings, data) {
 
                 // Fade
-                $(parent.element).fadeTo(200, 0.3);
+                $(parent.element).stop(true, true).fadeTo(200, 0.3);
             });
 
             // After AJAX
             $(this.element).on('xhr.dt', function (e, settings, json, xhr) {
 
                 // Fade
-                $(parent.element).fadeTo(200, 1);
+                $(parent.element).stop(true, true).fadeTo(200, 1);
 
                 // Add donate button
                 parent.limited = json.limited;
