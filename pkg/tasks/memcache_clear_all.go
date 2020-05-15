@@ -13,7 +13,7 @@ func (c MemcacheClearAll) ID() string {
 }
 
 func (c MemcacheClearAll) Name() string {
-	return "Clear Memcache (Prod!)"
+	return "Clear Memcache"
 }
 
 func (c MemcacheClearAll) Cron() string {
