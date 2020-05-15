@@ -101,8 +101,8 @@ func changesHandler(messages []*rabbit.Message) {
 		log.Err(err)
 
 		// Send to Discord
-		err = sendChangeToDiscord(changeSlice, appMap, packageMap)
-		log.Err(err)
+		// err = sendChangeToDiscord(changeSlice, appMap, packageMap)
+		// log.Err(err)
 
 		message.Ack(false)
 	}
