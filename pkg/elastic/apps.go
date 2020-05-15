@@ -31,33 +31,40 @@ func IndexApp(app App) error {
 	return indexDocument(IndexApps, strconv.Itoa(app.ID), app)
 }
 
-func SearchApps(limit int, query string) (apps []App, err error) {
-
-	var filters []elastic.Query
-	var musts []elastic.Query
-
-	musts = append(musts, elastic.NewMatchQuery("name", query))
-
-	// https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-function-score-query.html#function-field-value-factor
-	musts = append(musts, elastic.NewFunctionScoreQuery().AddScoreFunc(
-		elastic.NewFieldValueFactorFunction().Field("players").Modifier("log1p")))
+func SearchApps(limit int, offset int, search string, sorters []elastic.Sorter) (apps []App, total int64, err error) {
 
 	client, ctx, err := GetElastic()
 	if err != nil {
-		log.Err(err)
-		return
+		return apps, 0, err
 	}
 
-	searchResult, err := client.Search().
+	searchService := client.Search().
 		Index(IndexApps).
-		Query(elastic.NewBoolQuery().Must(musts...).Filter(filters...)).
-		From(0).
+		From(offset).
 		Size(limit).
-		Do(ctx)
+		TrackTotalHits(true)
 
+	if search != "" {
+
+		var filters []elastic.Query
+		var musts []elastic.Query
+
+		musts = append(musts, elastic.NewMatchQuery("name", search))
+
+		// https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-function-score-query.html#function-field-value-factor
+		musts = append(musts, elastic.NewFunctionScoreQuery().AddScoreFunc(
+			elastic.NewFieldValueFactorFunction().Field("players").Modifier("log1p")))
+
+		searchService.Query(elastic.NewBoolQuery().Must(musts...).Filter(filters...))
+	}
+
+	if sorters != nil && len(sorters) > 0 {
+		searchService.SortBy(sorters...)
+	}
+
+	searchResult, err := searchService.Do(ctx)
 	if err != nil {
-		log.Err(err)
-		return
+		return apps, 0, err
 	}
 
 	for _, hit := range searchResult.Hits.Hits {
@@ -71,7 +78,7 @@ func SearchApps(limit int, query string) (apps []App, err error) {
 		apps = append(apps, app)
 	}
 
-	return apps, err
+	return apps, searchResult.TotalHits(), err
 }
 
 //noinspection GoUnusedExportedFunction

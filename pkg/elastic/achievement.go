@@ -29,23 +29,30 @@ func IndexAchievementBulk(achievements map[string]Achievement) error {
 	return indexDocuments(IndexAchievements, i)
 }
 
-func SearchAchievements(limit int, offset int, search string) (achievements []Achievement, total int64, err error) {
+func SearchAchievements(limit int, offset int, search string, sorters []elastic.Sorter) (achievements []Achievement, total int64, err error) {
 
 	client, ctx, err := GetElastic()
 	if err != nil {
-		log.Err(err)
-		return
+		return achievements, 0, err
 	}
 
-	var query elastic.Query
+	searchService := client.Search().
+		Index(IndexAchievements).
+		From(offset).
+		Size(limit).
+		TrackTotalHits(true)
+
 	if search != "" {
-		query = elastic.NewMultiMatchQuery(search, "name^3", "description^2", "app_name^1").Type("best_fields")
+		searchService.Query(elastic.NewMultiMatchQuery(search, "name^3", "description^2", "app_name^1").Type("best_fields"))
 	}
 
-	searchResult, err := client.Search().Index(IndexAchievements).Query(query).From(offset).Size(limit).Do(ctx)
+	if sorters != nil && len(sorters) > 0 {
+		searchService.SortBy(sorters...)
+	}
+
+	searchResult, err := searchService.Do(ctx)
 	if err != nil {
-		log.Err(err)
-		return
+		return achievements, 0, err
 	}
 
 	for _, hit := range searchResult.Hits.Hits {

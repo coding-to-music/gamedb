@@ -16,34 +16,37 @@ type Group struct {
 	Icon         string `json:"icon"`
 	Members      int    `json:"members"`
 	Trend        int64  `json:"trend"`
+	Error        bool   `json:"error"`
 }
 
 func IndexGroup(group Group) error {
 	return indexDocument(IndexGroups, group.ID, group)
 }
 
-func SearchGroups(limit int, offset int, search string, sorter elastic.Sorter) (groups []Group, total int64, err error) {
+func SearchGroups(limit int, offset int, search string, sorters []elastic.Sorter) (groups []Group, total int64, err error) {
 
 	client, ctx, err := GetElastic()
 	if err != nil {
-		log.Err(err)
-		return
+		return groups, 0, err
 	}
 
-	searchService := client.Search().Index(IndexGroups)
+	searchService := client.Search().
+		Index(IndexGroups).
+		From(offset).
+		Size(limit).
+		TrackTotalHits(true)
 
 	if search != "" {
 		searchService.Query(elastic.NewMultiMatchQuery(search, "name^3", "url^2", "abbreviation^2", "headline^1").Type("best_fields"))
 	}
 
-	if sorter != nil {
-		searchService.SortBy(sorter)
+	if sorters != nil && len(sorters) > 0 {
+		searchService.SortBy(sorters...)
 	}
 
-	searchResult, err := client.Search().Index(IndexGroups).From(offset).Size(limit).Do(ctx)
+	searchResult, err := searchService.Do(ctx)
 	if err != nil {
-		log.Err(err)
-		return
+		return groups, 0, err
 	}
 
 	for _, hit := range searchResult.Hits.Hits {
@@ -93,6 +96,9 @@ func DeleteAndRebuildGroupsIndex() {
 				},
 				"trend": map[string]interface{}{
 					"type": "integer",
+				},
+				"error": map[string]interface{}{
+					"type": "boolean",
 				},
 			},
 		},
