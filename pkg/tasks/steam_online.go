@@ -3,7 +3,6 @@ package tasks
 import (
 	"errors"
 	"io/ioutil"
-	"net/http"
 	"strconv"
 	"strings"
 	"time"
@@ -32,7 +31,7 @@ func (c SteamOnline) Cron() string {
 
 func (c SteamOnline) work() (err error) {
 
-	resp, err := http.Get("https://www.valvesoftware.com/en/about/stats")
+	resp, err := helpers.GetWithTimeout("https://www.valvesoftware.com/en/about/stats", 0)
 	if err != nil {
 		return err
 	}

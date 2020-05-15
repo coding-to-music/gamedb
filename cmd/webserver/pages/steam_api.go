@@ -184,7 +184,7 @@ func (interfaces *Interfaces) addUndocumented() (err error) {
 				return
 			}
 
-			resp, err := http.Get(*dir.DownloadURL)
+			resp, err := helpers.GetWithTimeout(*dir.DownloadURL, 0)
 			if err != nil {
 				log.Err(err)
 				return

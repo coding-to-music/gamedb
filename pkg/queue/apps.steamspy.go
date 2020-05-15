@@ -3,7 +3,6 @@ package queue
 import (
 	"errors"
 	"io/ioutil"
-	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
@@ -38,25 +37,13 @@ func appSteamspyHandler(messages []*rabbit.Message) {
 			continue
 		}
 
+		// Create request
 		query := url.Values{}
 		query.Set("request", "appdetails")
 		query.Set("appid", strconv.Itoa(payload.ID))
 
-		// Create request
-		client := &http.Client{}
-		client.Timeout = time.Second * 5
-
-		ssURL := "https://steamspy.com/api.php?" + query.Encode()
-		req, err := http.NewRequest("GET", ssURL, nil)
-		if err != nil {
-			log.Err(err, payload.ID)
-			sendToRetryQueue(message)
-			continue
-		}
-
 		steamspyLimiter.Take()
-
-		response, err := client.Do(req)
+		response, err := helpers.GetWithTimeout("https://steamspy.com/api.php?"+query.Encode(), 0)
 		if err != nil {
 
 			if strings.Contains(err.Error(), "Client.Timeout exceeded while awaiting headers") ||
@@ -80,7 +67,7 @@ func appSteamspyHandler(messages []*rabbit.Message) {
 
 		if response.StatusCode != 200 {
 
-			log.Info(errors.New("steamspy is down"), ssURL, payload.ID)
+			log.Info(errors.New("steamspy is down"), payload.ID)
 			sendToRetryQueueWithDelay(message, time.Minute*30)
 			continue
 		}
@@ -94,7 +81,7 @@ func appSteamspyHandler(messages []*rabbit.Message) {
 
 		if strings.Contains(string(bytes), "Connection failed") {
 
-			log.Info(errors.New("steamspy is down"), ssURL, payload.ID, bytes)
+			log.Info(errors.New("steamspy is down"), payload.ID, bytes)
 			sendToRetryQueueWithDelay(message, time.Minute*30)
 			continue
 		}
@@ -104,7 +91,7 @@ func appSteamspyHandler(messages []*rabbit.Message) {
 		err = helpers.Unmarshal(bytes, &resp)
 		if err != nil {
 
-			log.Info(err, ssURL, payload.ID, bytes)
+			log.Info(err, payload.ID, bytes)
 			sendToRetryQueueWithDelay(message, time.Minute*30)
 			continue
 		}

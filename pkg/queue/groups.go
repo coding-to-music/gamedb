@@ -569,6 +569,7 @@ func getGroupType(id string) (groupType string, groupURL string, err error) {
 	groupScrapeRateLimit.Take()
 
 	client := &http.Client{
+		Timeout: 10 * time.Second,
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
 			return http.ErrUseLastResponse
 		},

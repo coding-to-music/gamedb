@@ -3,7 +3,6 @@ package hosts
 import (
 	"context"
 	"io/ioutil"
-	"net/http"
 
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -53,7 +52,7 @@ func (h Hetzner) CreateConsumer() (c Consumer, err error) {
 		return c, err
 	}
 
-	fileResponse, err := http.Get(ghResponse.GetDownloadURL())
+	fileResponse, err := helpers.GetWithTimeout(ghResponse.GetDownloadURL(), 0)
 	if err != nil {
 		return c, err
 	}
