@@ -42,19 +42,22 @@ func packageHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		var id = payload.ID
+		if payload.ID == 0 {
+			message.Ack(false)
+			continue
+		}
 
-		if !helpers.IsValidPackageID(id) {
+		if !helpers.IsValidPackageID(payload.ID) {
 			log.Err(err, payload.ID)
 			sendToFailQueue(message)
 			continue
 		}
 
 		// Load current package
-		pack, err := mongo.GetPackage(id)
+		pack, err := mongo.GetPackage(payload.ID)
 		if err == mongo.ErrNoDocuments {
 			pack = mongo.Package{}
-			pack.ID = id
+			pack.ID = payload.ID
 		} else if err != nil {
 			log.Err(err, payload.ID)
 			sendToRetryQueue(message)
@@ -125,9 +128,9 @@ func packageHandler(messages []*rabbit.Message) {
 			if err != nil {
 
 				if err == steamapi.ErrHTMLResponse {
-					log.Info(err, id)
+					log.Info(err, payload.ID)
 				} else {
-					steamHelper.LogSteamError(err, id)
+					steamHelper.LogSteamError(err, payload.ID)
 				}
 
 				sendToRetryQueue(message)
@@ -221,10 +224,10 @@ func packageHandler(messages []*rabbit.Message) {
 
 				var err error
 
-				wsPayload := IntPayload{ID: id}
+				wsPayload := IntPayload{ID: payload.ID}
 				err = ProduceWebsocket(wsPayload, websockets.PagePackage, websockets.PagePackages)
 				if err != nil {
-					log.Err(err, id)
+					log.Err(err, payload.ID)
 				}
 			}
 		}()

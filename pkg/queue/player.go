@@ -38,6 +38,23 @@ func playerHandler(messages []*rabbit.Message) {
 			continue
 		}
 
+		if payload.ID == 0 {
+			message.Ack(false)
+			continue
+		}
+
+		if payload.UserAgent != nil && helpers.IsBot(*payload.UserAgent) {
+			message.Ack(false)
+			continue
+		}
+
+		payload.ID, err = helpers.IsValidPlayerID(payload.ID)
+		if err != nil {
+			log.Err(err, message.Message.Body)
+			sendToFailQueue(message)
+			continue
+		}
+
 		// Update player
 		player, err := mongo.GetPlayer(payload.ID)
 		err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
