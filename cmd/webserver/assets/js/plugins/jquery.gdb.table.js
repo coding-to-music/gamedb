@@ -238,14 +238,17 @@
                 // }
 
                 // Highlight
-                const $markables = $('.markable');
+                if ($.fn.mark) {
 
-                $markables.unmark();
+                    const $markables = $('.markable');
 
-                if (parent.highlight) {
-                    $markables.mark(parent.highlight, {
-                        separateWordSearch: false,
-                    });
+                    $markables.unmark();
+
+                    if (parent.highlight) {
+                        $markables.mark(parent.highlight, {
+                            separateWordSearch: false,
+                        });
+                    }
                 }
 
                 // Bold rows
