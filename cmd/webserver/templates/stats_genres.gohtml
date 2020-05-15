@@ -40,7 +40,7 @@
                         <tbody>
                         {{ range $key, $value := .Genres }}
                             <tr data-link="{{.GetPath}}">
-                                <td class="markable"><i class="fas fa-film"></i> {{ .Name }}</td>
+                                <td><i class="fas fa-film"></i> <span class="markable">{{ .GetName }}</span></td>
                                 <td>{{ comma .Apps }}</td>
                                 <td>{{ index $.Prices .ID }}</td>
                                 <td>{{ .GetMeanScore }}</td>

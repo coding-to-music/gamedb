@@ -238,8 +238,14 @@
                 // }
 
                 // Highlight
+                const $markables = $('.markable');
+
+                $markables.unmark();
+
                 if (parent.highlight) {
-                    $('.markable').mark(parent.highlight);
+                    $markables.mark(parent.highlight, {
+                        separateWordSearch: false,
+                    });
                 }
 
                 // Bold rows
