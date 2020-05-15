@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
-	"github.com/gamedb/gamedb/pkg/elastic"
+	elasticHelpers "github.com/gamedb/gamedb/pkg/elastic"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -24,19 +24,20 @@ func achievementsHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := GlobalTemplate{}
 	t.fill(w, r, "Achievements", "Search all Steam achievements")
+	t.addAssetMark()
 
 	returnTemplate(w, r, "achievements", t)
 }
 
 func achievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	query := datatable.NewDataTableQuery(r, false)
+	var query = datatable.NewDataTableQuery(r, true)
+	var search = query.GetSearchString("search")
 
 	var wg sync.WaitGroup
 
-	var achievements []elastic.Achievement
+	var achievements []elasticHelpers.Achievement
 	var filtered int64
-
 	wg.Add(1)
 	go func() {
 
@@ -44,7 +45,12 @@ func achievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 
-		achievements, filtered, err = elastic.SearchAchievements(100, query.GetOffset(), query.GetSearchString("search"))
+		var sorters = query.GetOrderElastic(map[string]string{
+			"1": "completed",
+			"2": "_score",
+		})
+
+		achievements, filtered, err = elasticHelpers.SearchAchievements(100, query.GetOffset(), search, sorters)
 		if err != nil {
 			log.Err(err, r)
 		}

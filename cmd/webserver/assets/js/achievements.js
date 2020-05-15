@@ -3,8 +3,7 @@ const $achievementsPage = $('#achievements-page');
 if ($achievementsPage.length > 0) {
 
     const options = {
-        "pageLength": 100,
-        "order": [[2, 'desc']],
+        "order": [[1, 'asc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-link', data[7]);
         },
@@ -20,7 +19,7 @@ if ($achievementsPage.length > 0) {
                         name += '<span class="badge badge-danger float-right ml-1">Hidden</span>';
                     }
 
-                    return '<div class="icon-name"><div class="icon"><img class="tall" data-lazy="' + row[1] + '" alt="" data-lazy-alt="' + row[0] + '"></div><div class="name">' + name + '</div></div>'
+                    return '<div class="icon-name"><div class="icon"><img class="tall" data-lazy="' + row[1] + '" alt="" data-lazy-alt="' + row[0] + '"></div><div class="name markable">' + name + '</div></div>'
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img');
@@ -33,7 +32,7 @@ if ($achievementsPage.length > 0) {
                 "render": function (data, type, row) {
                     return row[3] + '%';
                 },
-                "orderable": false,
+                "orderSequence": ['desc', 'asc'],
             },
             // Search Score
             {

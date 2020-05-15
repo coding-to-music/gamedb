@@ -145,6 +145,10 @@
 
                 setFieldValue($field, value);
                 currentValues[name] = value;
+
+                if ($field.attr('data-hightlight')) {
+                    this.highlight = value;
+                }
             }
         }
 
@@ -181,15 +185,13 @@
             // Before AJAX
             $(this.element).on('preXhr.dt', function (e, settings, data) {
 
-                // Fade
-                $(parent.element).stop(true, true).fadeTo(200, 0.3);
+                $(parent.element).stop(true, true).fadeTo(200, 0.3); // Fade
             });
 
             // After AJAX
             $(this.element).on('xhr.dt', function (e, settings, json, xhr) {
 
-                // Fade
-                $(parent.element).stop(true, true).fadeTo(200, 1);
+                $(parent.element).stop(true, true).fadeTo(200, 1); // Unfade
 
                 // Add donate button
                 parent.limited = json.limited;
@@ -234,6 +236,11 @@
                 //         setUrlParam('s', order[0][0]);
                 //     }
                 // }
+
+                // Highlight
+                if (parent.highlight) {
+                    $('.markable').mark(parent.highlight);
+                }
 
                 // Bold rows
                 highLightOwnedGames($(parent.element));
@@ -315,11 +322,20 @@
 
                         $field.on('change search', function (e) {
 
+                            const colToSortBy = $field.attr('data-col-sort');
+                            if (colToSortBy) {
+                                dt.order([parseInt(colToSortBy), 'desc']);
+                            }
+
                             let value;
                             if ($field.attr('type') === 'radio') {
                                 value = $field.filter(':checked').val();
                             } else {
                                 value = $field.val();
+                            }
+
+                            if ($field.attr('data-hightlight')) {
+                                parent.highlight = value;
                             }
 
                             if (name) {
@@ -347,11 +363,20 @@
 
                     $field.on('keyup', function (e) {
 
+                        const colToSortBy = $field.attr('data-col-sort');
+                        if (colToSortBy) {
+                            dt.order([parseInt(colToSortBy), 'desc']);
+                        }
+
                         let value;
                         if ($field.attr('type') === 'radio') {
                             value = $field.filter(':checked').val();
                         } else {
                             value = $field.val();
+                        }
+
+                        if ($field.attr('data-hightlight')) {
+                            parent.highlight = value;
                         }
 
                         if (name) {

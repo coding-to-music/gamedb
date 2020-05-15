@@ -11,6 +11,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/jinzhu/gorm"
+	"github.com/olivere/elastic/v7"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -127,13 +128,21 @@ func (q DataTablesQuery) GetOrderMongo(columns map[string]string) (cols bson.D) 
 	return cols
 }
 
-func (q DataTablesQuery) GetOrderElastic(columns map[string]string) (string, bool) {
+func (q DataTablesQuery) GetOrderElastic(columns map[string]string) (sorters []elastic.Sorter) {
 
 	for _, v := range q.getOrder(columns) {
-		return v.col, v.asc
+
+		sorter := elastic.NewFieldSort(v.col)
+		if v.asc {
+			sorter.Asc()
+		} else {
+			sorter.Desc()
+		}
+
+		sorters = append(sorters, sorter)
 	}
 
-	return "_score", false
+	return sorters
 }
 
 func (q DataTablesQuery) getOrder(colsMap map[string]string) (colsRet []sortCol) {
