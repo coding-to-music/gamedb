@@ -25,25 +25,26 @@ func BadgeRouter() http.Handler {
 
 func badgeHandler(w http.ResponseWriter, r *http.Request) {
 
-	id := chi.URLParam(r, "id")
-	if id == "" {
-		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid badge ID"})
-		return
-	}
-
-	idx, err := strconv.Atoi(id)
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid badge ID"})
 		return
 	}
 
-	badge, ok := mongo.GlobalBadges[idx]
-	if !ok {
-		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid badge ID"})
-		return
-	}
-
+	badge, ok := mongo.GlobalBadges[id]
 	badge.BadgeFoil = r.URL.Query().Get("foil") == "1"
+	if !ok {
+
+		badge, err = mongo.GetAppBadge(id)
+		if err != nil {
+
+			err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
+			log.Err(err)
+
+			returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid badge ID"})
+			return
+		}
+	}
 
 	var playerLevel int
 	var playerTime string
@@ -71,21 +72,23 @@ func badgeHandler(w http.ResponseWriter, r *http.Request) {
 			playerLevel = row.BadgeLevel
 			playerTime = row.BadgeCompletionTime.Format(helpers.DateYearTime)
 
-			var filter = bson.D{}
-
-			if badge.IsSpecial() {
-				filter = append(filter, bson.E{Key: "app_id", Value: 0})
-				filter = append(filter, bson.E{Key: "badge_id", Value: idx})
-			} else if badge.IsEvent() {
-				filter = append(filter, bson.E{Key: "app_id", Value: idx})
-				filter = append(filter, bson.E{Key: "badge_id", Value: bson.M{"$gt": 0}})
-				filter = append(filter, bson.E{Key: "badge_foil", Value: r.URL.Query().Get("foil") == "1"})
+			var filter = bson.D{
+				{Key: "badge_level", Value: bson.M{"$gte": row.BadgeLevel}},
+				{Key: "badge_completion_time", Value: bson.M{"$lt": row.BadgeCompletionTime}},
 			}
 
-			filter = append(filter,
-				bson.E{Key: "badge_level", Value: bson.M{"$gte": row.BadgeLevel}},
-				bson.E{Key: "badge_completion_time", Value: bson.M{"$lt": row.BadgeCompletionTime}},
-			)
+			if badge.IsSpecial() {
+				filter = append(filter,
+					bson.E{Key: "app_id", Value: 0},
+					bson.E{Key: "badge_id", Value: id},
+				)
+			} else {
+				filter = append(filter,
+					bson.E{Key: "app_id", Value: id},
+					bson.E{Key: "badge_id", Value: bson.M{"$gt": 0}},
+					bson.E{Key: "badge_foil", Value: r.URL.Query().Get("foil") == "1"},
+				)
+			}
 
 			count, err := mongo.CountDocuments(mongo.CollectionPlayerBadges, filter, 60*60*24*14)
 			if err != nil {
@@ -122,22 +125,24 @@ type badgeTemplate struct {
 
 func badgeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	id := chi.URLParam(r, "id")
-	if id == "" {
-		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid badge ID"})
-		return
-	}
-
-	idx, err := strconv.Atoi(id)
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid badge ID"})
 		return
 	}
 
-	badge, ok := mongo.GlobalBadges[idx]
+	badge, ok := mongo.GlobalBadges[id]
 	if !ok {
-		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid badge ID"})
-		return
+
+		badge, err = mongo.GetAppBadge(id)
+		if err != nil {
+
+			err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
+			log.Err(err)
+
+			returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid badge ID"})
+			return
+		}
 	}
 
 	query := datatable.NewDataTableQuery(r, true)
@@ -147,12 +152,16 @@ func badgeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var filter = bson.D{}
 
 	if badge.IsSpecial() {
-		filter = append(filter, bson.E{Key: "app_id", Value: 0})
-		filter = append(filter, bson.E{Key: "badge_id", Value: idx})
-	} else if badge.IsEvent() {
-		filter = append(filter, bson.E{Key: "app_id", Value: idx})
-		filter = append(filter, bson.E{Key: "badge_id", Value: bson.M{"$gt": 0}})
-		filter = append(filter, bson.E{Key: "badge_foil", Value: r.URL.Query().Get("foil") == "1"})
+		filter = append(filter,
+			bson.E{Key: "app_id", Value: 0},
+			bson.E{Key: "badge_id", Value: id},
+		)
+	} else {
+		filter = append(filter,
+			bson.E{Key: "app_id", Value: id},
+			bson.E{Key: "badge_id", Value: bson.M{"$gt": 0}},
+			bson.E{Key: "badge_foil", Value: r.URL.Query().Get("foil") == "1"},
+		)
 	}
 
 	var badges []mongo.PlayerBadge

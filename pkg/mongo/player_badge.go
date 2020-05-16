@@ -191,6 +191,20 @@ func GetPlayerBadges(offset int64, filter bson.D, sort bson.D) (badges []PlayerB
 	return getPlayerBadges(offset, 100, filter, sort, nil)
 }
 
+func GetAppBadge(appID int) (badges PlayerBadge, err error) {
+
+	playerBadges, err := getPlayerBadges(0, 1, bson.D{{"app_id", appID}}, nil, nil)
+	if err != nil {
+		return badges, err
+	}
+
+	if len(playerBadges) == 0 {
+		return badges, ErrNoDocuments
+	}
+
+	return playerBadges[0], nil
+}
+
 func GetBadgePlayers(offset int64, filter bson.D) (badges []PlayerBadge, err error) {
 	return getPlayerBadges(offset, 100, filter, bson.D{{"badge_level", -1}, {"badge_completion_time", 1}}, nil)
 }
