@@ -7,6 +7,7 @@ import (
 
 	"github.com/Jleagle/recaptcha-go"
 	"github.com/Jleagle/session-go/session"
+	"github.com/Jleagle/steam-go/steamid"
 	"github.com/badoux/checkmail"
 	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/oauth"
@@ -173,7 +174,7 @@ func login(r *http.Request, user sql.User) (string, bool) {
 			sessionData[sessionHelpers.SessionPlayerName] = player.PersonaName
 			sessionData[sessionHelpers.SessionPlayerLevel] = strconv.Itoa(player.Level)
 		} else {
-			err = helpers.IgnoreErrors(err, helpers.ErrInvalidPlayerID, mongo.ErrNoDocuments)
+			err = helpers.IgnoreErrors(err, steamid.ErrInvalidPlayerID, mongo.ErrNoDocuments)
 			log.Err(err, r)
 		}
 	}

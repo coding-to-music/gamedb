@@ -7,6 +7,7 @@ import (
 
 	"github.com/Jleagle/rabbit-go"
 	"github.com/Jleagle/steam-go/steamapi"
+	"github.com/Jleagle/steam-go/steamid"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
@@ -61,7 +62,7 @@ func playerHandler(messages []*rabbit.Message) {
 		if err != nil {
 
 			log.Err(err, payload.ID)
-			if err == helpers.ErrInvalidPlayerID {
+			if err == steamid.ErrInvalidPlayerID {
 				sendToFailQueue(message)
 			} else {
 				sendToRetryQueue(message)

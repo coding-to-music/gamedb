@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/rabbit-go"
+	"github.com/Jleagle/steam-go/steamid"
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -446,7 +447,7 @@ func ProducePlayer(payload PlayerMessage) (err error) {
 
 	payload.ID, err = helpers.IsValidPlayerID(payload.ID)
 	if err != nil {
-		return helpers.ErrInvalidPlayerID
+		return steamid.ErrInvalidPlayerID
 	}
 
 	item := memcache.MemcachePlayerInQueue(payload.ID)

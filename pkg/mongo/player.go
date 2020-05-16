@@ -595,7 +595,7 @@ func GetPlayer(id int64) (player Player, err error) {
 
 		id, err := helpers.IsValidPlayerID(id)
 		if err != nil {
-			return player, helpers.ErrInvalidPlayerID
+			return player, steamid.ErrInvalidPlayerID
 		}
 
 		err = FindOne(CollectionPlayers, bson.D{{"_id", id}}, nil, nil, &player)
@@ -637,7 +637,7 @@ func SearchPlayer(search string, projection bson.M) (player Player, queue bool, 
 	search = strings.TrimSpace(search)
 
 	if search == "" {
-		return player, false, helpers.ErrInvalidPlayerID
+		return player, false, steamid.ErrInvalidPlayerID
 	}
 
 	//

@@ -1,7 +1,6 @@
 package helpers
 
 import (
-	"errors"
 	"math"
 	"strconv"
 	"strings"
@@ -12,10 +11,6 @@ import (
 
 const (
 	DefaultPlayerAvatar = "/assets/img/no-player-image.jpg"
-)
-
-var (
-	ErrInvalidPlayerID = errors.New("invalid player id")
 )
 
 func GetPlayerAvatar(avatar string) string {
@@ -85,7 +80,7 @@ func GetPlayerName(id int64, name string) string {
 func IsValidPlayerID(id int64) (int64, error) {
 
 	if id == 0 {
-		return id, ErrInvalidPlayerID
+		return id, steamid.ErrInvalidPlayerID
 	}
 
 	s := strconv.FormatInt(id, 10)
