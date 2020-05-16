@@ -38,6 +38,7 @@ func groupsSearchHandler(messages []*rabbit.Message) {
 			Icon:         payload.Group.Icon,
 			Members:      payload.Group.Members,
 			Trend:        payload.Group.Trending,
+			Error:        payload.Group.Error != "",
 		})
 		if err != nil {
 			log.Err(err, message.Message.Body)
