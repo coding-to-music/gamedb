@@ -1,6 +1,7 @@
 package tasks
 
 import (
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
@@ -31,8 +32,9 @@ func (c GroupsQueueElastic) work() (err error) {
 	for {
 
 		var projection = bson.M{}
+		var filter = bson.D{{"type", helpers.GroupTypeGroup}}
 
-		groups, err := mongo.GetGroups(limit, offset, bson.D{{"_id", 1}}, nil, projection)
+		groups, err := mongo.GetGroups(limit, offset, bson.D{{"_id", 1}}, filter, projection)
 		if err != nil {
 			return err
 		}
