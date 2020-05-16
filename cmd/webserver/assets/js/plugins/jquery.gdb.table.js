@@ -245,9 +245,7 @@
                     $markables.unmark();
 
                     if (parent.highlight) {
-                        $markables.mark(parent.highlight, {
-                            separateWordSearch: false,
-                        });
+                        $markables.mark(parent.highlight);
                     }
                 }
 
