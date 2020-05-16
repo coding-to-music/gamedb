@@ -37,7 +37,10 @@ func SearchGroups(limit int, offset int, search string, sorters []elastic.Sorter
 		TrackTotalHits(true)
 
 	if search != "" {
-		searchService.Query(elastic.NewMultiMatchQuery(search, "name^3", "url^2", "abbreviation^2", "headline^1").Type("best_fields"))
+		searchService.Query(elastic.NewBoolQuery().Must(
+			elastic.NewMultiMatchQuery(search, "name^2", "abbreviation^2", "url^1.5", "headline^1").Type("best_fields"),
+			elastic.NewFunctionScoreQuery().AddScoreFunc(elastic.NewFieldValueFactorFunction().Field("members").Factor(0.001)),
+		))
 	}
 
 	if sorters != nil && len(sorters) > 0 {
