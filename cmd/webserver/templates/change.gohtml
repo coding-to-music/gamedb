@@ -10,75 +10,52 @@
         {{ template "_flashes" . }}
 
         <div class="card">
-            {{ if and (eq (len .Apps) 0) (eq (len .Packages) 0) }}
-                <div class="card-body">No apps or packages were updated on this change. ¯\_(ツ)_/¯</div>
-            {{else}}
-                <div class="card-header">
+            <div class="card-body">
 
-                    <ul class="nav nav-tabs card-header-tabs" role="tablist">
-                        <li class="nav-item">
-                            <a class="nav-link active" data-toggle="tab" href="#apps">Apps ({{ len .Apps }})</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" data-toggle="tab" href="#packages">Packages ({{ len .Packages }})</a>
-                        </li>
-                    </ul>
+                <h5>Packages</h5>
 
+                <div class="table-responsive mb-4">
+                    <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
+                        <thead class="thead-light">
+                        <tr>
+                            <th scope="col">Name</th>
+                            <th scope="col">Apps #</th>
+                        </tr>
+                        </thead>
+                        {{ range $key, $value := .Packages }}
+                            <tr data-link="{{.GetPath}}">
+                                <td>{{.GetName}}</td>
+                                <td>{{ .AppsCount }}</td>
+                            </tr>
+                        {{ end }}
+                    </table>
                 </div>
-                <div class="card-body">
 
-                    <div class="tab-content">
-                        <div class="tab-pane show active" id="apps" role="tabpanel">
+                <h5>Apps</h5>
 
-                            {{/* Apps */}}
-                            <div class="table-responsive">
-                                <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
-                                    <thead class="thead-light">
-                                    <tr>
-                                        <th scope="col">App</th>
-                                        <th scope="col">Type</th>
-                                    </tr>
-                                    </thead>
-                                    {{ range $key, $value := .Apps }}
-                                        <tr data-link="{{.GetPath}}">
-                                            <td class="img">
-                                                <div class="icon-name">
-                                                    <div class="icon"><img alt="{{.GetName}}" src="{{ .GetIcon }}"></div>
-                                                    <div class="name">{{ .GetName }}</div>
-                                                </div>
-                                            </td>
-                                            <td>{{ .GetType }}</td>
-                                        </tr>
-                                    {{ end }}
-                                </table>
-                            </div>
-
-                        </div>
-                        <div class="tab-pane" id="packages" role="tabpanel">
-
-                            {{/* Packages */}}
-                            <div class="table-responsive">
-                                <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
-                                    <thead class="thead-light">
-                                    <tr>
-                                        <th scope="col">Package</th>
-                                        <th scope="col">Apps #</th>
-                                    </tr>
-                                    </thead>
-                                    {{ range $key, $value := .Packages }}
-                                        <tr data-link="{{.GetPath}}">
-                                            <td>{{.GetName}}</td>
-                                            <td>{{ .AppsCount }}</td>
-                                        </tr>
-                                    {{ end }}
-                                </table>
-                            </div>
-
-                        </div>
-                    </div>
-
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
+                        <thead class="thead-light">
+                        <tr>
+                            <th scope="col">Name</th>
+                            <th scope="col">Type</th>
+                        </tr>
+                        </thead>
+                        {{ range $key, $value := .Apps }}
+                            <tr data-link="{{.GetPath}}">
+                                <td class="img">
+                                    <div class="icon-name">
+                                        <div class="icon"><img alt="{{.GetName}}" src="{{ .GetIcon }}"></div>
+                                        <div class="name">{{ .GetName }}</div>
+                                    </div>
+                                </td>
+                                <td>{{ .GetType }}</td>
+                            </tr>
+                        {{ end }}
+                    </table>
                 </div>
-            {{ end }}
+
+            </div>
         </div>
 
     </div>
