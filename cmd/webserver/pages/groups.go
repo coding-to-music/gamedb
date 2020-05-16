@@ -2,9 +2,11 @@ package pages
 
 import (
 	"net/http"
+	"regexp"
 	"sync"
 
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
+	elasticHelpers "github.com/gamedb/gamedb/pkg/elastic"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -25,6 +27,7 @@ func groupsHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := groupsTemplate{}
 	t.fill(w, r, "Groups", "All the groups on Steam")
+	t.addAssetMark()
 
 	returnTemplate(w, r, "groups", t)
 }
@@ -35,32 +38,13 @@ type groupsTemplate struct {
 
 func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	query := datatable.NewDataTableQuery(r, true)
+	var query = datatable.NewDataTableQuery(r, true)
 
-	// Filter
-	var filter = bson.D{
-		{Key: "type", Value: helpers.GroupTypeGroup},
-	}
-	var unfiltered = filter
-
-	search := helpers.RegexNonAlphaNumericSpace.ReplaceAllString(query.GetSearchString("search"), "")
-	if len(search) > 0 {
-
-		filter = append(filter, bson.E{Key: "$text", Value: bson.M{"$search": search}})
-
-		// quoted := regexp.QuoteMeta(search)
-		// filter = append(filter, bson.E{Key: "$or", Value: bson.A{
-		// 	bson.M{"name": bson.M{"$regex": quoted, "$options": "i"}},
-		// 	bson.M{"abbreviation": bson.M{"$regex": quoted, "$options": "i"}},
-		// 	bson.M{"url": bson.M{"$regex": quoted, "$options": "i"}},
-		// }})
-	}
-
-	//
 	var wg sync.WaitGroup
 
 	// Get groups
-	var groups []mongo.Group
+	var groups []elasticHelpers.Group
+	var filtered int64
 	wg.Add(1)
 	go func() {
 
@@ -68,11 +52,14 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		columns := map[string]string{
 			"2": "members",
-			"3": "trending",
+			"3": "trend",
 		}
 
 		var err error
-		groups, err = mongo.GetGroups(100, query.GetOffset64(), query.GetOrderMongo(columns), filter, nil)
+		var sorters = query.GetOrderElastic(columns)
+		var search = query.GetSearchString("search")
+
+		groups, filtered, err = elasticHelpers.SearchGroups(100, query.GetOffset(), search, sorters)
 		if err != nil {
 			log.Err(err, r)
 			return
@@ -82,43 +69,38 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Get total
 	var total int64
 	wg.Add(1)
-	go func(r *http.Request) {
+	go func() {
 
 		defer wg.Done()
 
 		var err error
-		total, err = mongo.CountDocuments(mongo.CollectionGroups, unfiltered, 60*60*6)
+		total, err = mongo.CountDocuments(mongo.CollectionGroups, bson.D{{Key: "type", Value: helpers.GroupTypeGroup}}, 60*60*6)
 		log.Err(err, r)
-	}(r)
-
-	var totalFiltered int64
-	wg.Add(1)
-	go func(r *http.Request) {
-
-		defer wg.Done()
-
-		var err error
-		totalFiltered, err = mongo.CountDocuments(mongo.CollectionGroups, filter, 60*60)
-		log.Err(err, r)
-	}(r)
+	}()
 
 	wg.Wait()
 
-	var response = datatable.NewDataTablesResponse(r, query, total, totalFiltered)
+	var removeWhiteSpace = regexp.MustCompile(`[\s\p{Braille}]{2,}`)
+
+	var response = datatable.NewDataTablesResponse(r, query, total, filtered)
 	for k, group := range groups {
+
+		var path = helpers.GetGroupPath(group.ID, group.Name)
+		var link = helpers.GetGroupLink(helpers.GroupTypeGroup, group.URL)
+		var headline = removeWhiteSpace.ReplaceAllString(group.Headline, " ")
+
 		response.AddRow([]interface{}{
-			group.ID,                           // 0
-			group.GetName(),                    // 1
-			group.GetPath(),                    // 2
-			group.GetIcon(),                    // 3
-			group.Headline,                     // 4
-			group.Members,                      // 5
-			group.URL,                          // 6
-			group.Type,                         // 7
-			group.GetURL(),                     // 8
-			group.Error != "",                  // 9
-			helpers.TrendValue(group.Trending), // 10
-			query.GetOffset() + k + 1,          // 11
+			group.ID,                         // 0
+			group.Name,                       // 1
+			link,                             // 2
+			group.Abbreviation,               // 3
+			headline,                         // 4
+			helpers.GetGroupIcon(group.Icon), // 5
+			group.Members,                    // 6
+			helpers.TrendValue(group.Trend),  // 7
+			group.Error,                      // 8
+			query.GetOffset() + k + 1,        // 9
+			path,                             // 10
 		})
 	}
 

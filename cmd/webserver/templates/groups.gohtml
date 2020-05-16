@@ -15,12 +15,15 @@
 
                     <div class="input-group input-group-lg mt-1 mb-2">
                         <!--suppress HtmlFormInputWithoutLabel -->
-                        <input class="form-control" type="search" placeholder="Search for a Group" id="search" autofocus name="search">
+                        <input class="form-control" type="search" placeholder="Search for a Group" id="search" autofocus name="search" data-col-sort="4" data-hightlight="1">
                         <div class="input-group-append">
                             <input type="submit" value="Search" class="input-group-text">
                         </div>
                     </div>
 
+                </div>
+                <div class="col-12">
+                    <p class="lead">{{ .Description }}</p>
                 </div>
             </div>
 
@@ -39,11 +42,11 @@
                             <th scope="col">Name</th>
                             <th scope="col">Members</th>
                             <th scope="col">Trend</th>
-                            <th scope="col"></th>
+                            <th scope="col" class="thin" data-toggle="tooltip" data-placement="top" title="Search Score">#</th>
+                            <th scope="col" class="thin"></th>
                         </tr>
                         </thead>
                         <tbody>
-
                         </tbody>
                     </table>
                 </div>
