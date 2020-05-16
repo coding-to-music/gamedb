@@ -9,8 +9,8 @@
 
             {{ template "_social" .Badge }}
 
-            <h1 class="text-truncate mb-4" title="{{ .Badge.GetName }}"><i class="fas fa-ribbon"></i> {{ .Badge.GetName }}</h1>
-
+            <h1 class="text-truncate mb-4"><i class="fas fa-ribbon"></i> {{ .Badge.GetName }} Badge</h1>
+            
             {{ if gt .Badge.AppID 0 }}
                 {{ if .Badge.BadgeFoil }}
                     <p class="mb-0"><a href="{{ .Badge.GetPath }}" class="btn btn-success">Go to non foil badge</a></p>

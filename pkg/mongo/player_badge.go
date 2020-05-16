@@ -95,6 +95,10 @@ func (badge PlayerBadge) GetUniqueID() int {
 
 func (badge PlayerBadge) GetName() string {
 
+	if badge.BadgeName != "" {
+		return badge.BadgeName
+	}
+
 	if val, ok := GlobalBadges[badge.GetUniqueID()]; ok {
 		return val.BadgeName
 	}

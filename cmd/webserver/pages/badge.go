@@ -102,7 +102,7 @@ func badgeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	t := badgeTemplate{}
-	t.fill(w, r, badge.BadgeName, "Steam Badge Leaderboard")
+	t.fill(w, r, badge.GetName()+" Badge", "Steam Badge Ladder / Leaderboard")
 	t.IncludeSocialJS = true
 
 	t.LoggedIn = session.IsLoggedIn(r)
