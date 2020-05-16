@@ -21,10 +21,10 @@ require (
 	github.com/andybalholm/cascadia v1.2.0 // indirect
 	github.com/antchfx/htmlquery v1.2.3 // indirect
 	github.com/antchfx/xmlquery v1.2.4 // indirect
-	github.com/antchfx/xpath v1.1.7 // indirect
+	github.com/antchfx/xpath v1.1.8 // indirect
 	github.com/badoux/checkmail v0.0.0-20181210160741-9661bd69e9ad
 	github.com/beefsack/go-rate v0.0.0-20180408011153-efa7637bb9b6 // indirect
-	github.com/buger/jsonparser v0.0.0-20200507200006-c912c6b9a0a4 // indirect
+	github.com/buger/jsonparser v1.0.0 // indirect
 	github.com/bwmarrin/discordgo v0.20.3
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/cenkalti/backoff/v4 v4.0.2
@@ -34,7 +34,7 @@ require (
 	github.com/dghubble/oauth1 v0.6.0
 	github.com/didip/tollbooth v4.0.2+incompatible
 	github.com/didip/tollbooth/v5 v5.1.1
-	github.com/digitalocean/godo v1.35.1
+	github.com/digitalocean/godo v1.36.0
 	github.com/djherbis/fscache v0.10.1
 	github.com/dustin/go-humanize v1.0.0
 	github.com/elastic/go-elasticsearch/v7 v7.6.0
@@ -42,21 +42,22 @@ require (
 	github.com/frustra/bbcode v0.0.0-20180807171629-48be21ce690c
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/getkin/kin-openapi v0.8.0
-	github.com/getsentry/sentry-go v0.6.0
+	github.com/getsentry/sentry-go v0.6.1
 	github.com/go-chi/chi v4.1.1+incompatible
 	github.com/go-chi/cors v1.1.1
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/gobuffalo/packr/v2 v2.8.0
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/gocolly/colly v1.2.0
-	github.com/golang/protobuf v1.4.1
+	github.com/golang/protobuf v1.4.2
+	github.com/google/go-cmp v0.4.1 // indirect
 	github.com/google/go-github/v28 v28.1.1
 	github.com/gorilla/securecookie v1.1.1
 	github.com/gorilla/sessions v1.2.0
 	github.com/gorilla/websocket v1.4.2
 	github.com/gosimple/slug v1.9.0
 	github.com/hetznercloud/hcloud-go v1.17.0
-	github.com/influxdata/influxdb1-client v0.0.0-20191209144304-8bf82d3c094d
+	github.com/influxdata/influxdb1-client v0.0.0-20200515024757-02f0bf5dbca3
 	github.com/jinzhu/gorm v1.9.12
 	github.com/jinzhu/now v1.1.1
 	github.com/justinas/nosurf v1.1.0
@@ -72,7 +73,7 @@ require (
 	github.com/microcosm-cc/bluemonday v1.0.2
 	github.com/mitchellh/mapstructure v1.2.2 // indirect
 	github.com/mxpv/patreon-go v0.0.0-20190917022727-646111f1d983
-	github.com/nicklaw5/helix v0.5.8
+	github.com/nicklaw5/helix v0.5.9
 	github.com/nlopes/slack v0.6.0
 	github.com/olekukonko/tablewriter v0.0.4 // indirect
 	github.com/olivere/elastic/v7 v7.0.15
@@ -106,18 +107,19 @@ require (
 	github.com/xdg/stringprep v1.0.0 // indirect
 	github.com/yohcop/openid-go v1.0.0
 	go.mongodb.org/mongo-driver v1.3.3
-	golang.org/x/crypto v0.0.0-20200429183012-4b2356b1ed79
-	golang.org/x/net v0.0.0-20200506145744-7e3656a0809f // indirect
+	golang.org/x/crypto v0.0.0-20200510223506-06a226fb4e37
+	golang.org/x/net v0.0.0-20200513185701-a91f0712d120 // indirect
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
-	golang.org/x/sys v0.0.0-20200509044756-6aff5f38e54f // indirect
+	golang.org/x/sys v0.0.0-20200515095857-1151b9dac4a9 // indirect
 	golang.org/x/text v0.3.2
 	golang.org/x/time v0.0.0-20200416051211-89c76fbcd5d1 // indirect
-	google.golang.org/api v0.23.0
+	google.golang.org/api v0.24.0
 	google.golang.org/appengine v1.6.6 // indirect
-	google.golang.org/genproto v0.0.0-20200507105951-43844f6eee31 // indirect
+	google.golang.org/genproto v0.0.0-20200515170657-fc4c6c6a6587 // indirect
 	google.golang.org/grpc v1.29.1
 	gopkg.in/djherbis/atime.v1 v1.0.0 // indirect
 	gopkg.in/djherbis/stream.v1 v1.3.1 // indirect
 	gopkg.in/ini.v1 v1.55.0 // indirect
+	gopkg.in/yaml.v2 v2.3.0 // indirect
 	jaytaylor.com/html2text v0.0.0-20200412013138-3577fbdbcff7
 )
