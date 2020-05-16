@@ -139,17 +139,17 @@ func GetPlayerGroups(playerID int64, offset int64, limit int64, sort bson.D) (gr
 
 	var filter = bson.D{{"player_id", playerID}}
 
-	return getPlayerGroups(offset, limit, filter, sort)
+	return getPlayerGroups(offset, limit, filter, sort, nil)
 }
 
 func GetGroupPlayers(groupID string, offset int64) (players []PlayerGroup, err error) {
 
 	var filter = bson.D{{"group_id", groupID}}
 
-	return getPlayerGroups(offset, 100, filter, bson.D{{"player_name", 1}})
+	return getPlayerGroups(offset, 50, filter, bson.D{{"player_name", 1}}, bson.M{"_id": 1})
 }
 
-func getPlayerGroups(offset int64, limit int64, filter bson.D, sort bson.D) (players []PlayerGroup, err error) {
+func getPlayerGroups(offset int64, limit int64, filter bson.D, sort bson.D, projection bson.M) (players []PlayerGroup, err error) {
 
 	cur, ctx, err := Find(CollectionPlayerGroups, offset, limit, sort, filter, nil, nil)
 	if err != nil {

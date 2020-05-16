@@ -134,17 +134,36 @@ func groupTableAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Get players
-	var playerGroups []mongo.PlayerGroup
+	var players []mongo.Player
 	wg.Add(1)
 	go func(r *http.Request) {
 
 		defer wg.Done()
 
 		var err error
-		playerGroups, err = mongo.GetGroupPlayers(id, query.GetOffset64())
+		playerGroups, err := mongo.GetGroupPlayers(id, query.GetOffset64())
 		if err != nil {
 			log.Err(err, r)
 			return
+		}
+
+		// Get players
+		var playerIDs []int64
+		for _, v := range playerGroups {
+			playerIDs = append(playerIDs, v.PlayerID)
+		}
+
+		var playersMap = map[int64]mongo.Player{}
+		playersResp, err := mongo.GetPlayersByID(playerIDs, bson.M{"_id": 1, "persona_name": 1, "vanity_url": 1, "avatar": 1, "level": 1, "country_code": 1})
+		for _, v := range playersResp {
+			playersMap[v.ID] = v
+		}
+
+		// Build response in correct order
+		for _, v := range playerGroups {
+			if val, ok := playersMap[v.PlayerID]; ok {
+				players = append(players, val)
+			}
 		}
 	}(r)
 
@@ -163,12 +182,16 @@ func groupTableAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	var response = datatable.NewDataTablesResponse(r, query, total, total)
-	for _, playerGroup := range playerGroups {
+	for _, player := range players {
 		response.AddRow([]interface{}{
-			playerGroup.PlayerID,          // 0
-			playerGroup.GetPlayerName(),   // 1
-			playerGroup.GetPlayerLink(),   // 2
-			playerGroup.GetPlayerAvatar(), // 3
+			player.ID,              // 0
+			player.GetName(),       // 1
+			player.CommunityLink(), // 2
+			player.GetAvatar(),     // 3
+			player.GetFlag(),       // 4
+			player.Level,           // 5
+			player.CountryCode,     // 6
+			player.GetAvatar2(),    // 7
 		})
 	}
 
