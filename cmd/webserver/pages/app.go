@@ -49,25 +49,19 @@ func appRouter() http.Handler {
 
 func appHandler(w http.ResponseWriter, r *http.Request) {
 
-	id := chi.URLParam(r, "id")
-	if id == "" {
-		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid App ID."})
-		return
-	}
-
-	idx, err := strconv.Atoi(id)
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
-		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid App ID: " + id})
+		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid App ID"})
 		return
 	}
 
-	if !helpers.IsValidAppID(idx) {
-		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid App ID: " + id})
+	if !helpers.IsValidAppID(id) {
+		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid App ID"})
 		return
 	}
 
 	// Get app
-	app, err := mongo.GetApp(idx)
+	app, err := mongo.GetApp(id)
 	if err != nil && strings.HasPrefix(err.Error(), "memcache: unexpected response line from \"set\":") {
 		log.Warning(err)
 		err = nil
@@ -380,29 +374,24 @@ func (t appTemplate) GetRelatedTags(relatedApp mongo.App) template.HTML {
 
 func appLocalizationHandler(w http.ResponseWriter, r *http.Request) {
 
-	t := appLocalizationTemplate{}
-
-	id := chi.URLParam(r, "id")
-	if id == "" {
-		return
-	}
-
-	idx, err := strconv.Atoi(id)
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		return
 	}
 
-	if !helpers.IsValidAppID(idx) {
+	if !helpers.IsValidAppID(id) {
 		return
 	}
 
 	app := mongo.App{}
-	err = mongo.FindOne(mongo.CollectionApps, bson.D{{"_id", idx}}, nil, bson.M{"localization": 1}, &app)
+	err = mongo.FindOne(mongo.CollectionApps, bson.D{{"_id", id}}, nil, bson.M{"localization": 1}, &app)
 	if err != nil {
 		err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
 		log.Err(err, r)
 		return
 	}
+
+	t := appLocalizationTemplate{}
 	t.App = app
 
 	returnTemplate(w, r, "app_localization", t)
@@ -415,29 +404,24 @@ type appLocalizationTemplate struct {
 
 func appReviewsHandler(w http.ResponseWriter, r *http.Request) {
 
-	t := appReviewsTemplate{}
-
-	id := chi.URLParam(r, "id")
-	if id == "" {
-		return
-	}
-
-	idx, err := strconv.Atoi(id)
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		return
 	}
 
-	if !helpers.IsValidAppID(idx) {
+	if !helpers.IsValidAppID(id) {
 		return
 	}
 
 	app := mongo.App{}
-	err = mongo.FindOne(mongo.CollectionApps, bson.D{{"_id", idx}}, nil, bson.M{"reviews": 1}, &app)
+	err = mongo.FindOne(mongo.CollectionApps, bson.D{{"_id", id}}, nil, bson.M{"reviews": 1}, &app)
 	if err != nil {
 		err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
 		log.Err(err, r)
 		return
 	}
+
+	t := appReviewsTemplate{}
 	t.App = app
 
 	returnTemplate(w, r, "app_reviews", t)
@@ -450,15 +434,9 @@ type appReviewsTemplate struct {
 
 func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	id := chi.URLParam(r, "id")
-	if id == "" {
-		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid App ID."})
-		return
-	}
-
-	idx, err := strconv.Atoi(id)
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
-		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid App ID: " + id})
+		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid App ID"})
 		return
 	}
 
@@ -475,9 +453,9 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		articles, err = mongo.GetArticlesByApp(idx, query.GetOffset64())
+		articles, err = mongo.GetArticlesByApp(id, query.GetOffset64())
 		if err != nil {
-			log.Err(err, r, idx)
+			log.Err(err, r, id)
 			return
 		}
 
@@ -494,9 +472,9 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		app, err := mongo.GetApp(idx)
+		app, err := mongo.GetApp(id)
 		if err != nil {
-			log.Err(err, r, idx)
+			log.Err(err, r, id)
 			return
 		}
 
@@ -697,13 +675,7 @@ func appDLCAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 func appItemsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	id := chi.URLParam(r, "id")
-	if id == "" {
-		log.Err("invalid id", r)
-		return
-	}
-
-	idx, err := strconv.Atoi(id)
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		log.Err(err, r)
 		return
@@ -711,7 +683,7 @@ func appItemsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var query = datatable.NewDataTableQuery(r, false)
 	var search = query.GetSearchString("search")
-	var filter = bson.D{{Key: "app_id", Value: idx}}
+	var filter = bson.D{{Key: "app_id", Value: id}}
 	var filter2 = filter
 
 	if len(search) > 1 {
@@ -885,13 +857,7 @@ func appPlayers2AjaxHandler(w http.ResponseWriter, r *http.Request) {
 // Player ranks table
 func appTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	id := chi.URLParam(r, "id")
-	if id == "" {
-		log.Err("invalid id", r)
-		return
-	}
-
-	idx, err := strconv.Atoi(id)
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		log.Err(err, r)
 		return
@@ -900,7 +866,7 @@ func appTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	query := datatable.NewDataTableQuery(r, true)
 
 	playerAppFilter := bson.D{
-		{Key: "app_id", Value: idx},
+		{Key: "app_id", Value: id},
 		{Key: "app_time", Value: bson.M{"$gt": 0}},
 	}
 

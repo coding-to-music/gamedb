@@ -18,15 +18,8 @@ import (
 // Get prices ajax
 func productPricesAjaxHandler(w http.ResponseWriter, r *http.Request, productType helpers.ProductType) {
 
-	id := chi.URLParam(r, "id")
-	if id == "" {
-		log.Err("invalid id", r)
-		return
-	}
-
-	idx, err := strconv.Atoi(id)
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
-		log.Err("invalid id", r)
 		return
 	}
 
@@ -34,9 +27,9 @@ func productPricesAjaxHandler(w http.ResponseWriter, r *http.Request, productTyp
 	var product helpers.ProductInterface
 
 	if productType == helpers.ProductTypeApp {
-		product, err = mongo.GetApp(idx)
+		product, err = mongo.GetApp(id)
 	} else {
-		product, err = mongo.GetPackage(idx)
+		product, err = mongo.GetPackage(id)
 	}
 	if err != nil {
 		log.Err(err, r)

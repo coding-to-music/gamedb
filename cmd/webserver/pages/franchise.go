@@ -24,21 +24,15 @@ func franchisesHandler(w http.ResponseWriter, r *http.Request) {
 func franchiseHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get publisher
-	id := chi.URLParam(r, "id")
-	if id == "" {
-		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid App ID."})
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid App ID"})
 		return
 	}
 
-	idx, err := strconv.Atoi(id)
+	publisher, err := sql.GetPublisher(id)
 	if err != nil {
-		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid App ID: " + id})
-		return
-	}
-
-	publisher, err := sql.GetPublisher(idx)
-	if err != nil {
-		returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Invalid App ID: " + id})
+		returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Invalid App ID"})
 		return
 	}
 

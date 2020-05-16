@@ -28,15 +28,9 @@ func BundleRouter() http.Handler {
 
 func bundleHandler(w http.ResponseWriter, r *http.Request) {
 
-	id := chi.URLParam(r, "id")
-	if id == "" {
-		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid bundle ID."})
-		return
-	}
-
-	idx, err := strconv.Atoi(id)
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
-		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid bundle ID: " + id})
+		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid bundle ID"})
 		return
 	}
 
@@ -47,7 +41,7 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 	// }
 
 	// Get bundle
-	bundle, err := sql.GetBundle(idx, []string{})
+	bundle, err := sql.GetBundle(id, nil)
 	if err != nil {
 
 		if err == sql.ErrRecordNotFound {
@@ -147,20 +141,14 @@ type bundleTemplate struct {
 
 func bundlePricesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	id := chi.URLParam(r, "id")
-	if id == "" {
-		log.Err("invalid id", r)
-		return
-	}
-
-	idx, err := strconv.Atoi(id)
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		log.Err("invalid id", r)
 		return
 	}
 
 	// Get prices
-	pricesResp, err := mongo.GetBundlePrices(idx)
+	pricesResp, err := mongo.GetBundlePrices(id)
 	if err != nil {
 		log.Err(err, r)
 		return
@@ -174,7 +162,7 @@ func bundlePricesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Add current price
-	price, err := sql.GetBundle(idx, []string{"discount"})
+	price, err := sql.GetBundle(id, []string{"discount"})
 	if err != nil {
 		log.Err(err)
 	} else {

@@ -27,16 +27,14 @@ func PackageRouter() http.Handler {
 
 func packageHandler(w http.ResponseWriter, r *http.Request) {
 
-	id := chi.URLParam(r, "id")
-
-	idx, err := strconv.Atoi(id)
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
-		returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Invalid package ID: " + id})
+		returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Invalid package ID"})
 		return
 	}
 
 	// Get package
-	pack, err := mongo.GetPackage(idx)
+	pack, err := mongo.GetPackage(id)
 	if err != nil {
 
 		if err == mongo.ErrNoDocuments {

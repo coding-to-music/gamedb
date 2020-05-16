@@ -31,15 +31,9 @@ type depotsTemplate struct {
 
 func depotHandler(w http.ResponseWriter, r *http.Request) {
 
-	id := chi.URLParam(r, "id")
-	if id == "" {
-		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid Depot ID."})
-		return
-	}
-
-	idx, err := strconv.Atoi(id)
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
-		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid Depot ID: " + id})
+		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid Depot ID"})
 		return
 	}
 
@@ -47,7 +41,7 @@ func depotHandler(w http.ResponseWriter, r *http.Request) {
 	t := depotTemplate{}
 	t.fill(w, r, "Depot", "Steam depot")
 	t.Depot = sql.Depot{}
-	t.Depot.ID = idx
+	t.Depot.ID = id
 
 	returnTemplate(w, r, "depot", t)
 }

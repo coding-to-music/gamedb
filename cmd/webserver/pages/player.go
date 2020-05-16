@@ -53,27 +53,25 @@ func PlayerRouter() http.Handler {
 
 func playerHandler(w http.ResponseWriter, r *http.Request) {
 
-	id := chi.URLParam(r, "id")
-
-	idx, err := strconv.ParseInt(id, 10, 64)
+	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
 		log.Err(err, r)
-		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid Player ID: " + id})
+		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid Player ID"})
 		return
 	}
 
-	idx, err = helpers.IsValidPlayerID(idx)
+	id, err = helpers.IsValidPlayerID(id)
 	if err != nil {
-		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid Player ID: " + id})
+		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid Player ID"})
 		return
 	}
 
 	// Find the player row
-	player, err := mongo.GetPlayer(idx)
+	player, err := mongo.GetPlayer(id)
 	if err == mongo.ErrNoDocuments {
 
 		ua := r.UserAgent()
-		err = queue.ProducePlayer(queue.PlayerMessage{ID: idx, UserAgent: &ua})
+		err = queue.ProducePlayer(queue.PlayerMessage{ID: id, UserAgent: &ua})
 		if err == nil {
 			log.Info(log.LogNameTriggerUpdate, r, "new", ua)
 		}
@@ -469,9 +467,7 @@ func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
 
 func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	playerID := chi.URLParam(r, "id")
-
-	playerIDInt, err := strconv.ParseInt(playerID, 10, 64)
+	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
 		log.Err(err, r)
 		return
@@ -481,7 +477,7 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var code = sessionHelpers.GetProductCC(r)
 
 	// Make filter
-	var filter = bson.D{{"player_id", playerIDInt}}
+	var filter = bson.D{{"player_id", id}}
 	var filter2 = filter
 
 	var search = query.GetSearchString("player-games-search")
@@ -567,11 +563,8 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 func playerRecentAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	playerID := chi.URLParam(r, "id")
-
-	playerIDInt, err := strconv.ParseInt(playerID, 10, 64)
+	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
-		log.Err(err, r)
 		return
 	}
 
@@ -594,7 +587,7 @@ func playerRecentAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		var err error
-		apps, err = mongo.GetRecentApps(playerIDInt, query.GetOffset64(), 100, query.GetOrderMongo(columns))
+		apps, err = mongo.GetRecentApps(id, query.GetOffset64(), 100, query.GetOrderMongo(columns))
 		log.Err(err)
 	}()
 
@@ -606,7 +599,7 @@ func playerRecentAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		player, err := mongo.GetPlayer(playerIDInt)
+		player, err := mongo.GetPlayer(id)
 		if err != nil {
 			log.Err(err, r)
 			return
@@ -835,15 +828,8 @@ func playerFriendsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 func playerBadgesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	id := chi.URLParam(r, "id")
-	if id == "" {
-		log.Err("invalid id: "+id, r)
-		return
-	}
-
-	idx, err := strconv.ParseInt(id, 10, 64)
+	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
-		log.Err(err, r)
 		return
 	}
 
@@ -851,7 +837,7 @@ func playerBadgesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Make filter
 	var filter = bson.D{
-		{Key: "player_id", Value: idx},
+		{Key: "player_id", Value: id},
 	}
 
 	//
@@ -918,15 +904,8 @@ func playerBadgesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 func playerWishlistAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	id := chi.URLParam(r, "id")
-	if id == "" {
-		log.Err("invalid id: "+id, r)
-		return
-	}
-
-	idx, err := strconv.ParseInt(id, 10, 64)
+	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
-		log.Err(err, r)
 		return
 	}
 
@@ -953,7 +932,7 @@ func playerWishlistAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		var err error
-		wishlistApps, err = mongo.GetPlayerWishlistAppsByPlayer(idx, query.GetOffset64(), 0, query.GetOrderMongo(columns))
+		wishlistApps, err = mongo.GetPlayerWishlistAppsByPlayer(id, query.GetOffset64(), 0, query.GetOrderMongo(columns))
 		if err != nil {
 			log.Err(err, r)
 			return
@@ -968,7 +947,7 @@ func playerWishlistAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		player, err := mongo.GetPlayer(idx)
+		player, err := mongo.GetPlayer(id)
 		if err != nil {
 			log.Err(err, r)
 		}
@@ -1007,24 +986,12 @@ func playerWishlistAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 func playerGroupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	id := chi.URLParam(r, "id")
-	if id == "" {
-		log.Err("invalid id: "+id, r)
-		return
-	}
-
-	idx, err := strconv.ParseInt(id, 10, 64)
-	if err != nil {
-		log.Err(err, r)
-		return
-	}
-
-	idx, err = helpers.IsValidPlayerID(idx)
+	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
 		return
 	}
 
-	player, err := mongo.GetPlayer(idx)
+	player, err := mongo.GetPlayer(id)
 	if err != nil {
 		log.Err(err, r)
 		return
@@ -1048,7 +1015,7 @@ func playerGroupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		var err error
-		groups, err = mongo.GetPlayerGroups(idx, query.GetOffset64(), 100, query.GetOrderMongo(columns))
+		groups, err = mongo.GetPlayerGroups(id, query.GetOffset64(), 100, query.GetOrderMongo(columns))
 		if err != nil {
 			log.Err(err, r)
 		}
@@ -1063,7 +1030,7 @@ func playerGroupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		player, err := mongo.GetPlayer(idx)
+		player, err := mongo.GetPlayer(id)
 		if err != nil {
 			log.Err(err, r)
 		}

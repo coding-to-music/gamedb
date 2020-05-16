@@ -206,11 +206,6 @@ func groupAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(id) != 18 {
-		log.Info("invalid id: "+id, r)
-		return
-	}
-
 	id, err := helpers.IsValidGroupID(id)
 	if err != nil {
 		log.Info("invalid id: "+id, r)
