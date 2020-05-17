@@ -5,7 +5,9 @@
 
         <div class="jumbotron">
 
-            <img src="{{ .Badge.GetIcon }}" alt="{{ .Badge.GetName }}">
+            {{ if ne .Badge.GetIcon "" }}
+                <img src="{{ .Badge.GetIcon }}" alt="{{ .Badge.GetName }}">
+            {{ end }}
 
             {{ template "_social" .Badge }}
 

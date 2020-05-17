@@ -884,13 +884,18 @@ func playerBadgesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var completionTime = badge.BadgeCompletionTime.Format(helpers.DateSQL)
 
+		var icon = badge.GetIcon()
+		if icon == "" {
+			icon = helpers.DefaultAppIcon
+		}
+
 		response.AddRow([]interface{}{
 			badge.AppID,         // 0
 			badge.GetName(),     // 1
 			badge.GetPath(),     // 2
 			completionTime,      // 3
 			badge.BadgeFoil,     // 4
-			badge.GetIcon(),     // 5
+			icon,                // 5
 			badge.BadgeLevel,    // 6
 			badge.BadgeScarcity, // 7
 			badge.BadgeXP,       // 8

@@ -144,23 +144,23 @@ func (badge PlayerBadge) GetAppPath() string {
 
 func (badge PlayerBadge) GetIcon() string {
 
+	// URL
+	if strings.HasPrefix(badge.BadgeIcon, "http") || strings.HasPrefix(badge.BadgeIcon, "/") {
+		return badge.BadgeIcon
+	}
+
 	// Special
-	if val, ok := GlobalBadges[badge.BadgeID]; ok {
-		if badge.AppID == 0 {
+	if badge.IsSpecial() {
+		if val, ok := GlobalBadges[badge.BadgeID]; ok {
 			return specialImageBase + val.BadgeIcon
 		}
 	}
 
 	// Event
-	if val, ok := GlobalBadges[badge.AppID]; ok {
-		if badge.BadgeID > 0 {
+	if badge.IsEvent() {
+		if val, ok := GlobalBadges[badge.AppID]; ok {
 			return eventImageBase + strconv.Itoa(val.AppID) + "/" + val.BadgeIcon + ".png"
 		}
-	}
-
-	// URL
-	if strings.HasPrefix(badge.BadgeIcon, "http") || strings.HasPrefix(badge.BadgeIcon, "/") {
-		return badge.BadgeIcon
 	}
 
 	// App icon
@@ -168,8 +168,8 @@ func (badge PlayerBadge) GetIcon() string {
 		return helpers.AppIconBase + strconv.Itoa(badge.AppID) + "/" + badge.BadgeIcon + ".jpg"
 	}
 
-	//
-	return helpers.DefaultAppIcon
+	// Return blank for badge html
+	return ""
 }
 
 func (badge PlayerBadge) GetPlayerIcon() string {
