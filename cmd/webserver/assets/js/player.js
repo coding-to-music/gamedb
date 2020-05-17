@@ -538,7 +538,12 @@ if ($playerPage.length > 0) {
             ]
         };
 
-        $('#badges-table').gdbTable({tableOptions: options});
+        $('#badges-table').gdbTable({
+            tableOptions: options,
+            searchFields: [
+                $('#player-badge-search'),
+            ],
+        });
     }
 
     function loadPlayerCharts() {

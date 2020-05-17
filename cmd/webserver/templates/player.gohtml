@@ -313,6 +313,15 @@
                         </table>
 
                         {{/* App Badges Table */}}
+                        <div class="form-row">
+                            <div class="col-12 col-md-6 col-lg-5 col-xl-4 mb-2">
+                                <div class="form-group">
+                                    <label for="player-badge-search">Badge Search</label>
+                                    <input type="text" id="player-badge-search" name="player-badge-search" class="form-control" placeholder="App Name">
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="table-responsive">
                             <table class="table table-hover table-striped table-counts mb-0" id="badges-table" data-path="/players/{{ .Player.ID }}/badges.json">
                                 <thead class="thead-light">

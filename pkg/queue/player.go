@@ -411,7 +411,6 @@ func updatePlayerBadges(player *mongo.Player) error {
 	// Save badges
 	var playerBadgeSlice []mongo.PlayerBadge
 	var appIDSlice []int
-	var specialBadgeIDSlice []int
 
 	for _, badge := range response.Badges {
 
@@ -429,23 +428,8 @@ func updatePlayerBadges(player *mongo.Player) error {
 			PlayerIcon:          player.Avatar,
 			PlayerName:          player.PersonaName,
 		})
-
-		// Add significant badges to profile
-		if badge.AppID == 0 {
-			_, ok := mongo.GlobalBadges[badge.BadgeID]
-			if ok {
-				specialBadgeIDSlice = append(specialBadgeIDSlice, badge.BadgeID)
-			}
-		} else {
-			_, ok := mongo.GlobalBadges[badge.AppID]
-			if ok {
-				specialBadgeIDSlice = append(specialBadgeIDSlice, badge.AppID)
-			}
-		}
 	}
 	appIDSlice = helpers.UniqueInt(appIDSlice)
-
-	player.BadgeIDs = helpers.UniqueInt(specialBadgeIDSlice)
 
 	// Make map of app rows
 	var appRowsMap = map[int]mongo.App{}
@@ -460,9 +444,16 @@ func updatePlayerBadges(player *mongo.Player) error {
 
 	// Finish badges slice
 	for k, v := range playerBadgeSlice {
-		if app, ok := appRowsMap[v.AppID]; ok {
-			playerBadgeSlice[k].AppName = app.Name
-			playerBadgeSlice[k].BadgeIcon = app.Icon
+
+		if v.IsSpecial() {
+			if badge, ok := mongo.GlobalBadges[v.BadgeID]; ok {
+				playerBadgeSlice[k].AppName = badge.BadgeName
+			}
+		} else {
+			if app, ok := appRowsMap[v.AppID]; ok {
+				playerBadgeSlice[k].AppName = app.Name
+				playerBadgeSlice[k].BadgeIcon = app.Icon
+			}
 		}
 	}
 

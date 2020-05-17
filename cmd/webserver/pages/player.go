@@ -833,11 +833,17 @@ func playerBadgesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	query := datatable.NewDataTableQuery(r, false)
+	var query = datatable.NewDataTableQuery(r, false)
+	var lock sync.Mutex
 
 	// Make filter
-	var filter = bson.D{
-		{Key: "player_id", Value: id},
+	var filter = bson.D{{Key: "player_id", Value: id}}
+	filter2 := filter
+
+	var search = query.GetSearchString("player-badge-search")
+	if search != "" {
+		quoted := regexp.QuoteMeta(search)
+		filter2 = append(filter2, bson.E{Key: "app_name", Value: bson.M{"$regex": quoted, "$options": "i"}})
 	}
 
 	//
@@ -846,7 +852,7 @@ func playerBadgesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Get badges
 	var badges []mongo.PlayerBadge //
 	wg.Add(1)
-	go func(r *http.Request) {
+	go func() {
 
 		defer wg.Done()
 
@@ -857,29 +863,49 @@ func playerBadgesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			"3": "badge_completion_time",
 		}
 
-		badges, err = mongo.GetPlayerBadges(query.GetOffset64(), filter, query.GetOrderMongo(sortCols))
+		badges, err = mongo.GetPlayerBadges(query.GetOffset64(), filter2, query.GetOrderMongo(sortCols))
 		if err != nil {
 			log.Err(err, r)
 		}
-	}(r)
+	}()
 
 	// Get total
 	var total int64
 	wg.Add(1)
-	go func(r *http.Request) {
+	go func() {
 
 		defer wg.Done()
 
 		var err error
+
+		lock.Lock()
 		total, err = mongo.CountDocuments(mongo.CollectionPlayerBadges, filter, 0)
+		lock.Unlock()
 		if err != nil {
 			log.Err(err, r)
 		}
-	}(r)
+	}()
+
+	// Get filtered
+	var filtered int64
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+
+		lock.Lock()
+		filtered, err = mongo.CountDocuments(mongo.CollectionPlayerBadges, filter2, 0)
+		lock.Unlock()
+		if err != nil {
+			log.Err(err, r)
+		}
+	}()
 
 	wg.Wait()
 
-	var response = datatable.NewDataTablesResponse(r, query, total, total)
+	var response = datatable.NewDataTablesResponse(r, query, total, filtered)
 	for _, badge := range badges {
 
 		var completionTime = badge.BadgeCompletionTime.Format(helpers.DateSQL)
