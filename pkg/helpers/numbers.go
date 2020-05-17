@@ -20,6 +20,7 @@ func RoundFloatTo2DP(f float64) float64 {
 	return math.Round(f*100) / 100
 }
 
+// keeps extra zeros
 func FloatToString(f float64, decimals int) string {
 	return strconv.FormatFloat(f, 'f', decimals, 64)
 }

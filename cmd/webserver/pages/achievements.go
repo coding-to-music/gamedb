@@ -76,7 +76,7 @@ func achievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	for _, achievement := range achievements {
 
 		path := helpers.GetAppPath(achievement.AppID, achievement.AppName) + "#achievements"
-		score := helpers.FloatToString(achievement.Completed, 2)
+		completed := helpers.FloatToString(achievement.Completed, 1)
 		icon := helpers.GetAchievementIcon(achievement.AppID, achievement.Icon)
 		appName := helpers.GetAppName(achievement.AppID, achievement.AppName)
 
@@ -84,7 +84,7 @@ func achievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			achievement.Name,        // 0
 			icon,                    // 1
 			achievement.Description, // 2
-			score,                   // 3
+			completed,               // 3
 			achievement.AppID,       // 4
 			appName,                 // 5
 			achievement.Score,       // 6
