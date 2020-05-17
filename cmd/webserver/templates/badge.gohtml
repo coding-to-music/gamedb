@@ -33,23 +33,32 @@
         <div class="card mb-3">
             <div class="card-body">
 
-                {{ if .LoggedIn }}
+                <p class="mb-0">
+                    {{ if .LoggedIn }}
 
-                    {{ if gt .Badge.PlayerID 0 }}
+                        {{ if gt .Badge.PlayerID 0 }}
 
-                        {{ if gt .PlayerLevel 0}}
-                            Your achieved level <strong>{{ comma .PlayerLevel }}</strong> on <strong>{{ .PlayerTime }}</strong> and are ranked <strong>{{ .PlayerRank }}</strong>!
+                            {{ if gt .PlayerLevel 0}}
+                                Your achieved level <strong>{{ comma .PlayerLevel }}</strong> on <strong>{{ .PlayerTime }}</strong> and are ranked <strong>{{ .PlayerRank }}</strong> on Game DB!
+                            {{ else }}
+                                You have not achieved this badge.
+                            {{ end }}
+
                         {{ else }}
-                            You have not achieved this badge.
+                            Link your Steam profile in <a href="/settings">settings</a> to see your badge rank.
                         {{ end }}
 
                     {{ else }}
-                        Link your Steam profile in <a href="/settings">settings</a> to see your badge rank.
+                        <a href="/login">Login</a> to see your rank.
                     {{ end }}
+                </p>
 
-                {{ else }}
-                    <a href="/login">Login</a> to see your rank.
-                {{ end }}
+                <p class="mb-0">
+                    {{ if gt .Badge.BadgeScarcity 0 }}
+                        In total <strong>{{ comma .Badge.BadgeScarcity }}</strong> have this badge on Steam
+                    {{ end }}
+                </p>
+
             </div>
         </div>
 
