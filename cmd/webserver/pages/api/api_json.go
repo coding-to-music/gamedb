@@ -42,7 +42,7 @@ var Swagger = &openapi3.Swagger{
 		{URL: "https://gamedb.online/api"}, // Hardcoded to not get local domain
 	},
 	Info: &openapi3.Info{
-		Title:   "Steam DB API",
+		Title:   "Game DB API",
 		Version: "1",
 		Contact: &openapi3.Contact{
 			Name:  "Jleagle",
