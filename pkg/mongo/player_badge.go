@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gosimple/slug"
 	"go.mongodb.org/mongo-driver/bson"
@@ -209,18 +210,26 @@ func GetPlayerBadges(offset int64, filter bson.D, sort bson.D) (badges []PlayerB
 	return getPlayerBadges(offset, 100, filter, sort, nil)
 }
 
-func GetAppBadge(appID int) (badges PlayerBadge, err error) {
+// Get the first PlayerBadge for an app ID
+func GetAppBadge(appID int) (badge PlayerBadge, err error) {
 
-	playerBadges, err := getPlayerBadges(0, 1, bson.D{{"app_id", appID}}, nil, nil)
-	if err != nil {
-		return badges, err
-	}
+	var item = memcache.MemcacheFirstAppBadge(appID)
 
-	if len(playerBadges) == 0 {
-		return badges, ErrNoDocuments
-	}
+	err = memcache.GetSetInterface(item.Key, item.Expiration, &badge, func() (interface{}, error) {
 
-	return playerBadges[0], nil
+		badges, err := getPlayerBadges(0, 1, bson.D{{"app_id", appID}}, nil, nil)
+		if err != nil {
+			return nil, err
+		}
+
+		if len(badges) == 0 {
+			return nil, ErrNoDocuments
+		}
+
+		return badges[0], nil
+	})
+
+	return badge, err
 }
 
 func GetBadgePlayers(offset int64, filter bson.D) (badges []PlayerBadge, err error) {
