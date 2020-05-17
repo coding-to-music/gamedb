@@ -262,7 +262,8 @@ func playerHandler(messages []*rabbit.Message) {
 
 		// Produce to sub queues
 		var produces = map[rabbit.QueueName]interface{}{
-			QueuePlayersSearch: PlayersSearchMessage{Player: player},
+			QueuePlayersSearch:  PlayersSearchMessage{Player: player},
+			QueuePlayersAliases: PlayersAliasesMessage{PlayerID: player.ID},
 		}
 
 		for k, v := range produces {

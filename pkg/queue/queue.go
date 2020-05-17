@@ -40,6 +40,7 @@ const (
 	QueuePlayers             rabbit.QueueName = "GDB_Players"
 	QueuePlayersAchievements rabbit.QueueName = "GDB_Players.Achievements"
 	QueuePlayersSearch       rabbit.QueueName = "GDB_Players.Search"
+	QueuePlayersAliases      rabbit.QueueName = "GDB_Players.Aliases"
 
 	// Group
 	QueueGroups       rabbit.QueueName = "GDB_Groups"
@@ -103,6 +104,7 @@ var (
 		{name: QueueDelay, skipHeaders: true},
 		{name: QueueAppsSearch, prefetchSize: 1000},
 		{name: QueuePlayersSearch, prefetchSize: 1000},
+		{name: QueuePlayersAliases},
 		{name: QueueSteam},
 		{name: QueueFailed},
 		{name: QueueTest},
@@ -129,6 +131,7 @@ var (
 		{name: QueuePackages, consumer: packageHandler},
 		{name: QueuePackagesPrices, consumer: packagePriceHandler},
 		{name: QueuePlayers, consumer: playerHandler},
+		{name: QueuePlayersAliases, consumer: playerAliasesHandler},
 		{name: QueuePlayerRanks, consumer: playerRanksHandler},
 		{name: QueuePlayersAchievements, consumer: playerAchievementsHandler},
 		{name: QueueDelay, consumer: delayHandler, skipHeaders: true},
