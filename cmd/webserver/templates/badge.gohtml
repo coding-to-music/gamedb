@@ -9,14 +9,16 @@
 
             {{ template "_social" .Badge }}
 
-            <h1 class="text-truncate mb-4"><i class="fas fa-ribbon"></i> {{ .Badge.GetName }} Badge</h1>
-            
+            <h1 class="text-truncate mb-4"><i class="fas fa-ribbon"></i> {{ .Badge.GetName }} {{ if .Badge.BadgeFoil }}Foil {{ end }}Badge</h1>
+
+            <p class="lead mb-3">{{ .Badge.GetType }} Badge</p>
+
             {{ if gt .Badge.AppID 0 }}
-                {{ if .Badge.BadgeFoil }}
-                    <p class="mb-0"><a href="{{ .Badge.GetPath }}" class="btn btn-success">Go to non foil badge</a></p>
-                {{ else }}
-                    <p class="mb-0"><a href="{{ .Badge.GetPath }}?foil=1" class="btn btn-success">Go to foil badge</a></p>
-                {{ end }}
+                <p class="mb-0">
+                    <a href="{{ .Badge.GetPathToggle }}" class="btn btn-success">
+                        {{ if .Badge.BadgeFoil }}Go to non foil badge{{ else }}Go to foil badge{{ end }}
+                    </a>
+                </p>
             {{ end }}
 
         </div>

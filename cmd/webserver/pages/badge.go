@@ -32,7 +32,6 @@ func badgeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	badge, ok := mongo.GlobalBadges[id]
-	badge.BadgeFoil = r.URL.Query().Get("foil") == "1"
 	if !ok {
 
 		badge, err = mongo.GetAppBadge(id)
@@ -45,6 +44,8 @@ func badgeHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+
+	badge.BadgeFoil = r.URL.Query().Get("foil") == "1"
 
 	var playerLevel int
 	var playerTime string
@@ -86,7 +87,7 @@ func badgeHandler(w http.ResponseWriter, r *http.Request) {
 				filter = append(filter,
 					bson.E{Key: "app_id", Value: id},
 					bson.E{Key: "badge_id", Value: bson.M{"$gt": 0}},
-					bson.E{Key: "badge_foil", Value: r.URL.Query().Get("foil") == "1"},
+					bson.E{Key: "badge_foil", Value: badge.BadgeFoil},
 				)
 			}
 
@@ -133,22 +134,12 @@ func badgeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	badge, ok := mongo.GlobalBadges[id]
 	if !ok {
-
-		badge, err = mongo.GetAppBadge(id)
-		if err != nil {
-
-			err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
-			log.Err(err)
-
-			returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid badge ID"})
-			return
-		}
+		badge = mongo.PlayerBadge{AppID: id, BadgeID: 1}
 	}
 
-	query := datatable.NewDataTableQuery(r, true)
+	badge.BadgeFoil = r.URL.Query().Get("foil") == "1"
 
-	var wg sync.WaitGroup
-
+	var query = datatable.NewDataTableQuery(r, true)
 	var filter = bson.D{}
 
 	if badge.IsSpecial() {
@@ -160,9 +151,11 @@ func badgeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		filter = append(filter,
 			bson.E{Key: "app_id", Value: id},
 			bson.E{Key: "badge_id", Value: bson.M{"$gt": 0}},
-			bson.E{Key: "badge_foil", Value: r.URL.Query().Get("foil") == "1"},
+			bson.E{Key: "badge_foil", Value: badge.BadgeFoil},
 		)
 	}
+
+	var wg sync.WaitGroup
 
 	var badges []mongo.PlayerBadge
 	wg.Add(1)

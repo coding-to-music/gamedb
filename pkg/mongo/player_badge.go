@@ -113,15 +113,29 @@ func (badge PlayerBadge) GetPath() string {
 		foil = "?foil=1"
 	}
 
-	if val, ok := GlobalBadges[badge.GetUniqueID()]; ok {
-		return "/badges/" + strconv.Itoa(val.GetUniqueID()) + "/" + slug.Make(val.BadgeName) + foil
-	}
+	return "/badges/" + strconv.Itoa(badge.GetUniqueID()) + "/" + slug.Make(badge.GetName()) + foil
+}
 
-	return helpers.GetAppPath(badge.AppID, helpers.GetAppName(badge.AppID, badge.AppName))
+func (badge PlayerBadge) GetPathToggle() string {
+
+	badge.BadgeFoil = !badge.BadgeFoil
+	return badge.GetPath()
 }
 
 func (badge PlayerBadge) GetPlayerPath() string {
 	return helpers.GetPlayerPath(badge.PlayerID, badge.PlayerName) + "#badges"
+}
+
+func (badge PlayerBadge) GetType() string {
+
+	switch {
+	case badge.IsSpecial():
+		return "Special"
+	case badge.IsEvent():
+		return "Event"
+	default:
+		return "Game"
+	}
 }
 
 func (badge PlayerBadge) GetAppPath() string {
