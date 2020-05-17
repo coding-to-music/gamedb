@@ -358,7 +358,7 @@ if ($appPage.length > 0) {
                     tooltip: {
                         formatter: function () {
 
-                            const time = moment(this.key).format("DD MMM YYYY @ HH:mm");
+                            const time = moment(this.key).format("dddd DD MMM YYYY @ HH:mm");
 
                             if (this.series.name === 'Score') {
                                 return this.y.toLocaleString() + '% Review score on ' + time;
@@ -450,13 +450,13 @@ if ($appPage.length > 0) {
                 formatter: function () {
                     switch (this.series.name) {
                         case 'Players Online':
-                            return this.y.toLocaleString() + ' players on ' + moment(this.key).format("DD MMM YYYY @ HH:mm");
+                            return this.y.toLocaleString() + ' players on ' + moment(this.key).format("dddd DD MMM YYYY @ HH:mm");
                         case 'Players Online (Average)':
-                            return this.y.toLocaleString() + ' average players on ' + moment(this.key).format("DD MMM YYYY @ HH:mm");
+                            return this.y.toLocaleString() + ' average players on ' + moment(this.key).format("dddd DD MMM YYYY @ HH:mm");
                         case 'Twitch Viewers':
-                            return this.y.toLocaleString() + ' Twitch viewers on ' + moment(this.key).format("DD MMM YYYY @ HH:mm");
+                            return this.y.toLocaleString() + ' Twitch viewers on ' + moment(this.key).format("dddd DD MMM YYYY @ HH:mm");
                         case 'Youtube Views':
-                            return this.y.toLocaleString() + ' Youtube views on ' + moment(this.key).format("DD MMM YYYY");
+                            return this.y.toLocaleString() + ' Youtube views on ' + moment(this.key).format("dddd DD MMM YYYY");
                     }
                 },
             },

@@ -143,7 +143,7 @@ if ($trendingAppsPage.length > 0 || $('#new-releases-page').length > 0) {
                             outside: true,
                             shared: true,
                             formatter: function () {
-                                return this.y.toLocaleString() + ' players on ' + moment(this.x).format("DD MMM YYYY @ HH:mm");
+                                return this.y.toLocaleString() + ' players on ' + moment(this.x).format("dddd DD MMM YYYY @ HH:mm");
                             },
                             style: {
                                 'width': '500px',
