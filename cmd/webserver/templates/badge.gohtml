@@ -16,7 +16,10 @@
             {{ if gt .Badge.AppID 0 }}
                 <p class="mb-0">
                     <a href="{{ .Badge.GetPathToggle }}" class="btn btn-success">
-                        {{ if .Badge.BadgeFoil }}Go to non foil badge{{ else }}Go to foil badge{{ end }}
+                        {{ if .Badge.BadgeFoil }}Go to non foil badge{{ else }}Foil Badge{{ end }}
+                    </a>
+                    <a href="{{ .Badge.GetAppPath }}" class="btn btn-success">
+                        {{ if .Badge.IsSpecial }}App{{ else }}Game{{ end }}
                     </a>
                 </p>
             {{ end }}
