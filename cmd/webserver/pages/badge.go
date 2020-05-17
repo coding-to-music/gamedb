@@ -31,17 +31,36 @@ func badgeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	app := mongo.App{}
 	badge, ok := mongo.GlobalBadges[id]
 	if !ok {
 
-		badge, err = mongo.GetAppBadge(id)
+		app, err = mongo.GetApp(id)
 		if err != nil {
+			if err == mongo.ErrNoDocuments {
+				returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Invalid badge ID"})
+			} else {
+				log.Err(err)
+				returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Something went wrong"})
+			}
+			return
+		}
 
+		// Get what we can from the app
+		badge = mongo.PlayerBadge{
+			AppID:     app.ID,
+			AppName:   app.GetName(),
+			BadgeID:   1,
+			BadgeName: app.GetName(),
+		}
+
+		// Look for full badge row, may not exist if nobody has the badge
+		appBadge, err := mongo.GetAppBadge(id)
+		if err != nil {
 			err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
 			log.Err(err)
-
-			returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid badge ID"})
-			return
+		} else {
+			badge = appBadge
 		}
 	}
 
@@ -103,6 +122,7 @@ func badgeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	t := badgeTemplate{}
+	t.setBackground(app, false, false)
 	t.fill(w, r, badge.GetName()+" Badge", "Steam Badge Ladder / Leaderboard")
 	t.IncludeSocialJS = true
 
@@ -140,19 +160,20 @@ func badgeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	badge.BadgeFoil = r.URL.Query().Get("foil") == "1"
 
 	var query = datatable.NewDataTableQuery(r, true)
-	var filter = bson.D{}
 
+	//
+	var filter bson.D
 	if badge.IsSpecial() {
-		filter = append(filter,
+		filter = bson.D{
 			bson.E{Key: "app_id", Value: 0},
 			bson.E{Key: "badge_id", Value: id},
-		)
+		}
 	} else {
-		filter = append(filter,
+		filter = bson.D{
 			bson.E{Key: "app_id", Value: id},
 			bson.E{Key: "badge_id", Value: bson.M{"$gt": 0}},
 			bson.E{Key: "badge_foil", Value: badge.BadgeFoil},
-		)
+		}
 	}
 
 	var wg sync.WaitGroup
