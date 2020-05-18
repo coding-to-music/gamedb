@@ -13,7 +13,7 @@
             {{ template "_stats_header" . }}
             <div class="card-body">
 
-                <h5>Steam Numbers</h5>
+                <h5>Steam Stats</h5>
                 <div class="row">
                     <div class="col-12 col-sm-6 col-lg-4 col-xl mb-4">
                         <a href="/apps" role="button" class="btn btn-success btn-block mb-0">Total Apps<br/>{{ comma64 .AppsCount}}</a>
@@ -32,7 +32,7 @@
                     </div>
                 </div>
 
-                <h5>Game DB Numbers</h5>
+                <h5>Game DB Player Stats</h5>
                 <div class="row">
                     <div class="col-12 col-sm-6 col-lg-4 col-xl mb-4">
                         <a href="/players" role="button" class="btn btn-success btn-block mb-0">Total Players<br/>{{ comma64 .PlayersCount}}</a>
