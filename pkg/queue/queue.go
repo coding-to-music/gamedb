@@ -19,18 +19,19 @@ import (
 
 const (
 	// Apps
-	QueueApps             rabbit.QueueName = "GDB_Apps"
-	QueueAppsAchievements rabbit.QueueName = "GDB_Apps.Achievements"
-	QueueAppsYoutube      rabbit.QueueName = "GDB_Apps.Youtube"
-	QueueAppsInflux       rabbit.QueueName = "GDB_Apps.Influx"
-	QueueAppsDLC          rabbit.QueueName = "GDB_Apps.DLC"
-	QueueAppsSameowners   rabbit.QueueName = "GDB_Apps.Sameowners"
-	QueueAppsNews         rabbit.QueueName = "GDB_Apps.News"
-	QueueAppsReviews      rabbit.QueueName = "GDB_Apps.Reviews"
-	QueueAppsTwitch       rabbit.QueueName = "GDB_Apps.Twitch"
-	QueueAppsMorelike     rabbit.QueueName = "GDB_Apps.Morelike"
-	QueueAppsSteamspy     rabbit.QueueName = "GDB_Apps.Steamspy"
-	QueueAppsSearch       rabbit.QueueName = "GDB_Apps.Search"
+	QueueApps                   rabbit.QueueName = "GDB_Apps"
+	QueueAppsAchievements       rabbit.QueueName = "GDB_Apps.Achievements"
+	QueueAppsAchievementsSearch rabbit.QueueName = "GDB_Apps.Achievements.Search"
+	QueueAppsYoutube            rabbit.QueueName = "GDB_Apps.Youtube"
+	QueueAppsInflux             rabbit.QueueName = "GDB_Apps.Influx"
+	QueueAppsDLC                rabbit.QueueName = "GDB_Apps.DLC"
+	QueueAppsSameowners         rabbit.QueueName = "GDB_Apps.Sameowners"
+	QueueAppsNews               rabbit.QueueName = "GDB_Apps.News"
+	QueueAppsReviews            rabbit.QueueName = "GDB_Apps.Reviews"
+	QueueAppsTwitch             rabbit.QueueName = "GDB_Apps.Twitch"
+	QueueAppsMorelike           rabbit.QueueName = "GDB_Apps.Morelike"
+	QueueAppsSteamspy           rabbit.QueueName = "GDB_Apps.Steamspy"
+	QueueAppsSearch             rabbit.QueueName = "GDB_Apps.Search"
 
 	// Packages
 	QueuePackages       rabbit.QueueName = "GDB_Packages"
@@ -87,6 +88,7 @@ var (
 		{name: QueueAppsInflux},
 		{name: QueueAppsNews},
 		{name: QueueAppsAchievements},
+		{name: QueueAppsAchievementsSearch},
 		{name: QueueAppsSameowners},
 		{name: QueueAppsReviews},
 		{name: QueueAppsMorelike},
@@ -119,6 +121,7 @@ var (
 		{name: QueueAppsYoutube, consumer: appYoutubeHandler},
 		{name: QueueAppsNews, consumer: appNewsHandler},
 		{name: QueueAppsAchievements, consumer: appAchievementsHandler},
+		{name: QueueAppsAchievementsSearch, consumer: appsAchievementsSearchHandler},
 		{name: QueueAppsSameowners, consumer: appSameownersHandler},
 		{name: QueueAppsReviews, consumer: appReviewsHandler},
 		{name: QueueAppsMorelike, consumer: appMorelikeHandler},
@@ -145,6 +148,8 @@ var (
 
 	WebserverDefinitions = []QueueDefinition{
 		{name: QueueApps},
+		{name: QueueAppsAchievements},
+		{name: QueueAppsAchievementsSearch},
 		{name: QueueAppsYoutube},
 		{name: QueueAppsInflux},
 		{name: QueueAppPlayers},
@@ -176,9 +181,11 @@ var (
 
 	QueueCronsDefinitions = []QueueDefinition{
 		{name: QueueApps},
-		{name: QueueAppsYoutube},
+		{name: QueueAppsAchievements},
+		{name: QueueAppsAchievementsSearch},
 		{name: QueueAppsInflux},
 		{name: QueueAppsSearch, prefetchSize: 1000},
+		{name: QueueAppsYoutube},
 		{name: QueueAppPlayers},
 		{name: QueueGroups},
 		{name: QueueGroupsSearch, prefetchSize: 1000},
@@ -478,6 +485,16 @@ func ProducePlayerRank(payload PlayerRanksMessage) (err error) {
 func ProduceGroupSearch(group mongo.Group) (err error) {
 
 	return produce(QueueGroupsSearch, GroupSearchMessage{Group: group})
+}
+
+func ProduceAchievementSearch(achievement mongo.AppAchievement, app mongo.App) (err error) {
+
+	return produce(QueueAppsAchievementsSearch, AppsAchievementsSearchMessage{AppAchievement: achievement, AppName: app.Name})
+}
+
+func ProduceAppAchievement(appID int) (err error) {
+
+	return produce(QueueAppsAchievements, AppAchievementsMessage{ID: appID})
 }
 
 func ProduceSteam(payload SteamMessage) (err error) {

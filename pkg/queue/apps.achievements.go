@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/Jleagle/rabbit-go"
-	elasticHelpers "github.com/gamedb/gamedb/pkg/elastic"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
@@ -112,7 +111,7 @@ func appAchievementsHandler(messages []*rabbit.Message) {
 		}
 
 		// Update in Elastic
-		if len(achievementsMap) > 0 {
+		if len(achievementsSlice) > 0 {
 
 			app, err := mongo.GetApp(payload.ID, false)
 			if err != nil {
@@ -121,25 +120,9 @@ func appAchievementsHandler(messages []*rabbit.Message) {
 				continue
 			}
 
-			var elasticMap = map[string]elasticHelpers.Achievement{}
-			for _, v := range achievementsMap {
-				elasticMap[v.GetKey()] = elasticHelpers.Achievement{
-					ID:          v.Key,
-					Name:        v.Name,
-					Icon:        v.Icon,
-					Description: v.Description,
-					Hidden:      v.Hidden,
-					Completed:   v.Completed,
-					AppID:       v.AppID,
-					AppName:     app.Name,
-				}
-			}
-
-			err = elasticHelpers.IndexAchievementBulk(elasticMap)
-			if err != nil {
+			for _, v := range achievementsSlice {
+				err = ProduceAchievementSearch(v, app)
 				log.Err(err)
-				sendToRetryQueue(message)
-				continue
 			}
 		}
 

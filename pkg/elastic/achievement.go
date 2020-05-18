@@ -2,6 +2,7 @@ package elastic
 
 import (
 	"encoding/json"
+	"strconv"
 
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/olivere/elastic/v7"
@@ -17,6 +18,14 @@ type Achievement struct {
 	AppID       int     `json:"app_id"`
 	AppName     string  `json:"app_name"`
 	Score       float64 `json:"score"` // Not stored, just used on frontend
+}
+
+func (achievement Achievement) GetKey() string {
+	return strconv.Itoa(achievement.AppID) + "-" + achievement.ID
+}
+
+func IndexAchievement(achievement Achievement) error {
+	return indexDocument(IndexAchievements, achievement.GetKey(), achievement)
 }
 
 func IndexAchievementBulk(achievements map[string]Achievement) error {
