@@ -70,39 +70,18 @@ func SearchGroups(limit int, offset int, search string, sorters []elastic.Sorter
 func DeleteAndRebuildGroupsIndex() {
 
 	var mapping = map[string]interface{}{
-		"settings": map[string]interface{}{
-			"number_of_shards":   1,
-			"number_of_replicas": 0,
-		},
+		"settings": settings,
 		"mappings": map[string]interface{}{
 			"properties": map[string]interface{}{
-				"id": map[string]interface{}{
-					"type": "keyword",
-				},
-				"name": map[string]interface{}{
-					"type": "text",
-				},
-				"url": map[string]interface{}{
-					"type": "text",
-				},
-				"abbreviation": map[string]interface{}{
-					"type": "text",
-				},
-				"headline": map[string]interface{}{
-					"type": "text",
-				},
-				"icon": map[string]interface{}{
-					"enabled": false,
-				},
-				"members": map[string]interface{}{
-					"type": "integer",
-				},
-				"trend": map[string]interface{}{
-					"type": "integer",
-				},
-				"error": map[string]interface{}{
-					"type": "boolean",
-				},
+				"id":           fieldTypeKeyword,
+				"name":         fieldTypeText,
+				"url":          fieldTypeText,
+				"abbreviation": fieldTypeText,
+				"headline":     fieldTypeText,
+				"icon":         fieldTypeDisabled,
+				"members":      fieldTypeInteger,
+				"trend":        fieldTypeInteger,
+				"error":        fieldTypeBool,
 			},
 		},
 	}

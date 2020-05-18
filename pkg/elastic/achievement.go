@@ -86,36 +86,17 @@ func SearchAchievements(limit int, offset int, search string, sorters []elastic.
 func DeleteAndRebuildAchievementsIndex() {
 
 	var mapping = map[string]interface{}{
-		"settings": map[string]interface{}{
-			"number_of_shards":   1,
-			"number_of_replicas": 0,
-		},
+		"settings": settings,
 		"mappings": map[string]interface{}{
 			"properties": map[string]interface{}{
-				"id": map[string]interface{}{
-					"type": "keyword",
-				},
-				"name": map[string]interface{}{
-					"type": "text",
-				},
-				"icon": map[string]interface{}{
-					"enabled": false,
-				},
-				"description": map[string]interface{}{
-					"type": "text",
-				},
-				"hidden": map[string]interface{}{
-					"type": "boolean",
-				},
-				"completed": map[string]interface{}{
-					"type": "half_float",
-				},
-				"app_id": map[string]interface{}{
-					"type": "integer",
-				},
-				"app_name": map[string]interface{}{
-					"type": "text",
-				},
+				"id":          fieldTypeKeyword,
+				"name":        fieldTypeText,
+				"icon":        fieldTypeDisabled,
+				"description": fieldTypeText,
+				"hidden":      fieldTypeBool,
+				"completed":   fieldTypeHalfFloat,
+				"app_id":      fieldTypeInteger,
+				"app_name":    fieldTypeText,
 			},
 		},
 	}

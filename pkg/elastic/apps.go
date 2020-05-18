@@ -99,24 +99,13 @@ func DeleteAndRebuildAppsIndex() {
 	}
 
 	var mapping = map[string]interface{}{
-		"settings": map[string]interface{}{
-			"number_of_shards":   1,
-			"number_of_replicas": 0,
-		},
+		"settings": settings,
 		"mappings": map[string]interface{}{
 			"properties": map[string]interface{}{
-				"id": map[string]interface{}{
-					"type": "integer",
-				},
-				"name": map[string]interface{}{
-					"type": "text",
-				},
-				"aliases": map[string]interface{}{
-					"type": "text",
-				},
-				"players": map[string]interface{}{
-					"type": "integer",
-				},
+				"id":      fieldTypeInteger,
+				"name":    fieldTypeText,
+				"aliases": fieldTypeText,
+				"players": fieldTypeInteger,
 				// "icon": map[string]interface{}{
 				// 	"enabled": false,
 				// },

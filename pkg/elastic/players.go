@@ -73,24 +73,13 @@ func SearchPlayers(limit int, offset int, search string, sorters []elastic.Sorte
 func DeleteAndRebuildPlayersIndex() {
 
 	var mapping = map[string]interface{}{
-		"settings": map[string]interface{}{
-			"number_of_shards":   1,
-			"number_of_replicas": 0,
-		},
+		"settings": settings,
 		"mappings": map[string]interface{}{
 			"properties": map[string]interface{}{
-				"id": map[string]interface{}{
-					"type": "long",
-				},
-				"name": map[string]interface{}{
-					"type": "text",
-				},
-				"recent": map[string]interface{}{
-					"type": "text",
-				},
-				"url": map[string]interface{}{
-					"type": "text",
-				},
+				"id":     fieldTypeLong,
+				"name":   fieldTypeText,
+				"recent": fieldTypeText,
+				"url":    fieldTypeText,
 			},
 		},
 	}

@@ -18,6 +18,18 @@ const (
 )
 
 var (
+	settings                = map[string]interface{}{"number_of_shards": 1, "number_of_replicas": 0}
+	fieldTypeInteger        = map[string]interface{}{"type": "integer"}
+	fieldTypeHalfFloat      = map[string]interface{}{"type": "half_float"}
+	fieldTypeLong           = map[string]interface{}{"type": "long"}
+	fieldTypeBool           = map[string]interface{}{"type": "boolean"}
+	fieldTypeKeyword        = map[string]interface{}{"type": "keyword"}
+	fieldTypeTextWithPrefix = map[string]interface{}{"type": "text", "index_prefixes": map[string]interface{}{"min_chars": 1, "max_chars": 10}}
+	fieldTypeText           = map[string]interface{}{"type": "text"}
+	fieldTypeDisabled       = map[string]interface{}{"enabled": false}
+)
+
+var (
 	client *elastic.Client
 	ctx    context.Context
 	lock   sync.Mutex
