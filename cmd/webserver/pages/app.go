@@ -272,7 +272,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 				playerApp, err := mongo.GetPlayerAppByKey(playerID, app.ID)
 				if err != nil {
 					err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
-					log.Err(err)
+					log.Err(err, r)
 					return
 				}
 

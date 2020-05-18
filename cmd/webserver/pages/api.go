@@ -121,10 +121,10 @@ func openAPIJSONHandler(w http.ResponseWriter, r *http.Request) {
 
 	b, err := json.MarshalIndent(api.Swagger, "", "  ")
 	if err != nil {
-		log.Err(err)
+		log.Err(err, r)
 		return
 	}
 
 	_, err = w.Write(b)
-	log.Err(err)
+	log.Err(err, r)
 }

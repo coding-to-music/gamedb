@@ -54,7 +54,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	t.Players, err = mongo.GetPlayersByID(playerIDs, bson.M{"_id": 1, "persona_name": 1, "avatar": 1})
 	if err != nil {
-		log.Err(r, err)
+		log.Err(err, r)
 		returnErrorTemplate(w, r, errorTemplate{Code: 500})
 		return
 	}
@@ -75,7 +75,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 			}
 			err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
 			if err != nil {
-				log.Err(err)
+				log.Err(err, r)
 			} else {
 				t.addToast(Toast{Title: "Update", Message: "Player has been queued for an update"})
 			}
@@ -87,7 +87,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 	var allAppsByPlayer = map[int64][]int{}
 
 	playerApps, err := mongo.GetPlayersApps(foundPlayerIDs, bson.M{"_id": -1, "player_id": 1, "app_id": 1})
-	log.Err(err)
+	log.Err(err, r)
 	for _, playerApp := range playerApps {
 
 		allApps[playerApp.AppID] = true

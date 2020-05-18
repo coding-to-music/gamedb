@@ -40,7 +40,7 @@ func badgeHandler(w http.ResponseWriter, r *http.Request) {
 			if err == mongo.ErrNoDocuments {
 				returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Invalid badge ID"})
 			} else {
-				log.Err(err)
+				log.Err(err, r)
 				returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Something went wrong"})
 			}
 			return
@@ -58,7 +58,7 @@ func badgeHandler(w http.ResponseWriter, r *http.Request) {
 		appBadge, err := mongo.GetAppBadge(id)
 		if err != nil {
 			err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
-			log.Err(err)
+			log.Err(err, r)
 		} else {
 			badge = appBadge
 		}

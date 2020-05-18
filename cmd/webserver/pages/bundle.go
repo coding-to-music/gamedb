@@ -49,7 +49,7 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		log.Err(r, err)
+		log.Err(err, r)
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the bundle."})
 		return
 	}
@@ -164,7 +164,7 @@ func bundlePricesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Add current price
 	price, err := sql.GetBundle(id, []string{"discount"})
 	if err != nil {
-		log.Err(err)
+		log.Err(err, r)
 	} else {
 		prices = append(prices, []int64{time.Now().Unix() * 1000, int64(price.Discount)})
 	}

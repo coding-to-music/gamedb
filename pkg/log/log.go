@@ -132,7 +132,7 @@ func log(interfaces ...interface{}) {
 		}
 	}
 
-	if len(entry.texts) > 0 || entry.error != nil || entry.request != nil {
+	if len(entry.texts) > 0 || entry.error != nil {
 
 		var text = entry.string(entry.severity)
 

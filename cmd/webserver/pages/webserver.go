@@ -66,7 +66,7 @@ func returnJSON(w http.ResponseWriter, r *http.Request, i interface{}) {
 
 	_, err = w.Write(b)
 	if err != nil && !strings.Contains(err.Error(), "write: broken pipe") {
-		log.Critical(err)
+		log.Critical(err, r)
 	}
 }
 
@@ -151,7 +151,9 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 
 	} else {
 		_, err = buf.WriteTo(w)
-		log.Critical(err, r)
+		if err != nil {
+			log.Critical(err, r)
+		}
 	}
 }
 
