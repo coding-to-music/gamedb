@@ -649,5 +649,8 @@ div.json-hover {
 
 //
 .mark, mark {
-    background: #28a74544;
+    background: inherit;
+    color: inherit;
+    text-decoration: underline;
+    padding: 0;
 }
