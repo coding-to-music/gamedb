@@ -16,7 +16,7 @@ func TruncateString(str string, size int, tail string) string {
 		if size > len(tail) {
 			size -= len(tail)
 		}
-		ret = str[0:size] + tail
+		ret = strings.TrimSpace(str[0:size]) + tail
 	}
 	return ret
 }
