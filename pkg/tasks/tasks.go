@@ -37,7 +37,8 @@ var (
 	Parser       = cron.NewParser(cron.Minute | cron.Hour)
 	TaskRegister = map[string]TaskInterface{}
 	tasks        = []TaskInterface{
-		AchievementsQueueElastic{},
+		AppsAchievementsQueueAll{},
+		AppsAchievementsQueueElastic{},
 		AppsPlayerCheck{},
 		AppsQueueAll{},
 		AppsQueueElastic{},
