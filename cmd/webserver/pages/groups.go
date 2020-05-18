@@ -88,6 +88,7 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var path = helpers.GetGroupPath(group.ID, group.Name)
 		var link = helpers.GetGroupLink(helpers.GroupTypeGroup, group.URL)
 		var headline = removeWhiteSpace.ReplaceAllString(group.Headline, " ")
+		headline = helpers.TruncateString(headline, 100, "…")
 
 		response.AddRow([]interface{}{
 			group.ID,                         // 0
