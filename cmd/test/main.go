@@ -10,7 +10,7 @@ import (
 func main() {
 
 	config.Init("test", helpers.GetIP())
-	log.Initialise([]log.LogName{log.LogNameTest})
+	log.Initialise(log.LogNameTest)
 	queue.Init(queue.AllProducerDefinitions)
 
 }

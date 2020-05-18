@@ -16,7 +16,7 @@ import (
 
 func main() {
 
-	log.Initialise([]log.LogName{log.LogNameScaler})
+	log.Initialise(log.LogNameScaler)
 
 	// Web server
 	r := chi.NewRouter()

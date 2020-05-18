@@ -36,7 +36,7 @@ var (
 func main() {
 
 	config.Init(version, helpers.GetIP())
-	log.Initialise([]log.LogName{log.LogNameSteam})
+	log.Initialise(log.LogNameSteam)
 
 	var err error
 

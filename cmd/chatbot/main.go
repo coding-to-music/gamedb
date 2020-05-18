@@ -31,7 +31,7 @@ var (
 func main() {
 
 	config.Init(version, helpers.GetIP())
-	log.Initialise([]log.LogName{log.LogNameChatbot})
+	log.Initialise(log.LogNameChatbot)
 
 	log.Info("Starting chatbot")
 

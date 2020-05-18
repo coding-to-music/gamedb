@@ -42,7 +42,7 @@ func main() {
 	}
 
 	config.Init(version, helpers.GetIP())
-	log.Initialise([]log.LogName{log.LogNameWebserver})
+	log.Initialise(log.LogNameWebserver)
 
 	// Get API key
 	err := sql.GetAPIKey("webserver")

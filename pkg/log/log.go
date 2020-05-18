@@ -14,10 +14,10 @@ import (
 
 	"cloud.google.com/go/logging"
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/getsentry/sentry-go"
 	"github.com/logrusorgru/aurora"
-	"github.com/rollbar/rollbar-go"
 )
+
+type LogName string
 
 const (
 	// Binaries
@@ -29,7 +29,7 @@ const (
 	LogNameTest      LogName = "binary-test"
 	LogNameScaler    LogName = "binary-scaler"
 
-	//
+	// Others
 	LogNameMongo         LogName = "mongo"
 	LogNameRabbit        LogName = "rabbit"
 	LogNameRequests      LogName = "requests"
@@ -37,116 +37,37 @@ const (
 	LogNameTriggerUpdate LogName = "trigger-update"
 	LogNameSteamErrors   LogName = "steam-errors"
 	// LogNameInflux        LogName = "influx"
-
-	// Severities
-	SeverityDebug    Severity = 1
-	SeverityInfo     Severity = 2
-	SeverityWarning  Severity = 3
-	SeverityError    Severity = 4
-	SeverityCritical Severity = 5
-
-	OptionNoStack Option = iota
 )
-
-type LogName string
-type Service string
-type Option int
-type Severity int
-
-func (s Severity) toGoole() (severity logging.Severity) {
-
-	switch s {
-	case SeverityDebug:
-		return logging.Debug
-	case SeverityInfo:
-		return logging.Info
-	case SeverityWarning:
-		return logging.Warning
-	case SeverityError:
-		return logging.Error
-	case SeverityCritical:
-		return logging.Critical
-	default:
-		return logging.Error
-	}
-}
-
-func (s Severity) toRollbar() string {
-
-	switch s {
-	case SeverityDebug:
-		return rollbar.DEBUG
-	case SeverityInfo:
-		return rollbar.INFO
-	case SeverityWarning:
-		return rollbar.WARN
-	case SeverityError:
-		return rollbar.ERR
-	case SeverityCritical:
-		return rollbar.CRIT
-	default:
-		return rollbar.ERR
-	}
-}
-
-func (s Severity) string() string {
-
-	switch s {
-	case SeverityDebug:
-		return "Debug"
-	case SeverityInfo:
-		return "Info"
-	case SeverityWarning:
-		return "Warning"
-	case SeverityError:
-		return "Error"
-	case SeverityCritical:
-		return "Critical"
-	default:
-		return "Error"
-	}
-}
 
 type entry struct {
 	request  *http.Request
 	texts    []string
 	error    error
-	logNames []LogName
-	severity Severity
-	noStack  bool
+	severity logging.Severity
 }
 
-func (e entry) toText(severity Severity) string {
+func (e entry) string(severity logging.Severity) string {
 
 	var ret []string
-
-	// // Severity
-	// ret = append(ret, e.severity.string())
-	//
-	// // Environment
-	// if !config.IsLocal() {
-	// 	ret = append(ret, config.Config.Environment.Get())
-	// 	ret = append(ret, path.Base(os.Args[0]))
-	// }
 
 	// Request
 	if e.request != nil {
 		ret = append(ret, e.request.Method+" "+e.request.URL.Path)
 	}
 
-	// Texts
-	ret = append(ret, e.texts...)
-
 	// Error
 	if e.error != nil {
 		ret = append(ret, e.error.Error())
 	}
 
+	// Texts
+	ret = append(ret, e.texts...)
+
 	// Join
 	str := strings.Join(ret, " - ")
 
 	// Stack
-	if severity > SeverityInfo && !e.noStack {
+	if severity > logging.Info {
 		str += "\n" + string(debug.Stack())
 	}
 
@@ -155,13 +76,13 @@ func (e entry) toText(severity Severity) string {
 
 var (
 	googleClient *logging.Client
+	googleLog    LogName
 	logger       *l.Logger
-	defaultLogs  []LogName
 )
 
-func Initialise(logs []LogName) {
+func Initialise(log LogName) {
 
-	defaultLogs = logs
+	googleLog = log
 
 	if config.IsLocal() {
 		logger = l.New(os.Stderr, "", 0)
@@ -169,28 +90,9 @@ func Initialise(logs []LogName) {
 		logger = l.New(os.Stderr, "", l.LstdFlags)
 	}
 
-	var err error
-
 	// Google
+	var err error
 	googleClient, err = logging.NewClient(context.Background(), config.Config.GoogleProject.Get())
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	// Rollbar
-	rollbar.SetToken(config.Config.RollbarSecret.Get())
-	rollbar.SetEnvironment(config.Config.Environment.Get())
-	rollbar.SetServerHost("gamedb.online")
-	rollbar.SetServerRoot("github.com/gamedb/gamedb")
-	rollbar.SetCodeVersion(config.GetShortCommitHash())
-
-	// Sentry
-	err = sentry.Init(sentry.ClientOptions{
-		Dsn:              config.Config.SentryDSN.Get(),
-		AttachStacktrace: true,
-		Environment:      config.Config.Environment.Get(),
-		Release:          config.GetShortCommitHash(),
-	})
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -198,13 +100,8 @@ func Initialise(logs []LogName) {
 
 func log(interfaces ...interface{}) {
 
-	var entry = entry{
-		logNames: defaultLogs,
-		severity: SeverityError,
-	}
-	var loggingServices []Service
+	var entry = entry{severity: logging.Error}
 
-	// Create entry
 	for _, v := range interfaces {
 
 		switch val := v.(type) {
@@ -228,104 +125,65 @@ func log(interfaces ...interface{}) {
 			entry.texts = append(entry.texts, val.String())
 		case *http.Request:
 			entry.request = val
-		case LogName:
-			entry.logNames = append(entry.logNames, val)
-		case Severity:
+		case logging.Severity:
 			entry.severity = val
-		case Service:
-			loggingServices = append(loggingServices, val)
-		case Option:
-			if val == OptionNoStack {
-				entry.noStack = true
-			}
 		default:
 			entry.texts = append(entry.texts, fmt.Sprint(val))
 		}
 	}
 
-	if len(entry.texts) > 0 || entry.error != nil {
+	if len(entry.texts) > 0 || entry.error != nil || entry.request != nil {
 
-		var text = entry.toText(entry.severity)
+		var text = entry.string(entry.severity)
 
 		// Local
 		switch entry.severity {
-		case SeverityCritical:
-			logger.Println(aurora.Red(aurora.Bold(text)))
-		case SeverityError:
-			logger.Println(aurora.Red(text))
-		case SeverityWarning:
-			logger.Println(aurora.Yellow(text))
-		case SeverityInfo:
-			logger.Println(text)
-		case SeverityDebug:
+		case logging.Debug:
 			logger.Println(aurora.Green(text))
+		case logging.Info:
+			logger.Println(text)
+		case logging.Warning:
+			logger.Println(aurora.Yellow(text))
+		case logging.Error:
+			logger.Println(aurora.Red(text))
+		case logging.Critical:
+			logger.Println(aurora.Red(aurora.Bold(text)))
 		default:
 			logger.Println(text)
 		}
 
+		// Google
 		if !config.IsLocal() {
-
-			// Google
-			for _, logName := range entry.logNames {
-
-				googleClient.Logger(string(logName)).Log(logging.Entry{
-					Severity: entry.severity.toGoole(),
-					Payload:  text,
-					Labels: map[string]string{
-						"env":    config.Config.Environment.Get(),
-						"commit": config.Config.CommitHash.Get(),
-						"key":    config.Config.SteamAPIKey.Get(),
-						"ip":     config.Config.IP.Get(),
-					},
-				})
-			}
-
-			// Others
-			var sendToRollbar = true
-			for _, v := range entry.logNames {
-				if v == LogNameRabbit {
-					sendToRollbar = false
-					break
-				}
-			}
-
-			if entry.error != nil &&
-				(strings.Contains(entry.error.Error(), "securecookie: expired timestamp") ||
-					strings.Contains(entry.error.Error(), "securecookie: base64 decode failed")) {
-				sendToRollbar = false
-			}
-
-			if sendToRollbar && entry.severity >= SeverityError {
-
-				// Rollbar
-				// rollbar.Log(entry.severity.toRollbar(), text)
-
-				// Sentry
-				if entry.error != nil {
-					sentry.CaptureException(entry.error)
-					sentry.Flush(time.Second * 5)
-				}
-			}
+			googleClient.Logger(string(googleLog)).Log(logging.Entry{
+				Severity: entry.severity,
+				Payload:  text,
+				Labels: map[string]string{
+					"env":    config.Config.Environment.Get(),
+					"commit": config.Config.CommitHash.Get(),
+					"key":    config.Config.SteamAPIKey.Get(),
+					"ip":     config.Config.IP.Get(),
+				},
+			})
 		}
 	}
 }
 
-func Critical(interfaces ...interface{}) {
-	log(append(interfaces, SeverityCritical)...)
-}
-
-func Err(interfaces ...interface{}) {
-	log(append(interfaces, SeverityError)...)
-}
-
-func Warning(interfaces ...interface{}) {
-	log(append(interfaces, SeverityWarning)...)
+func Debug(interfaces ...interface{}) {
+	log(append(interfaces, logging.Debug)...)
 }
 
 func Info(interfaces ...interface{}) {
-	log(append(interfaces, SeverityInfo)...)
+	log(append(interfaces, logging.Info)...)
 }
 
-func Debug(interfaces ...interface{}) {
-	log(append(interfaces, SeverityDebug)...)
+func Warning(interfaces ...interface{}) {
+	log(append(interfaces, logging.Warning)...)
+}
+
+func Err(interfaces ...interface{}) {
+	log(append(interfaces, logging.Error)...)
+}
+
+func Critical(interfaces ...interface{}) {
+	log(append(interfaces, logging.Critical)...)
 }

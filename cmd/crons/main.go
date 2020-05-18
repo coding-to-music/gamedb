@@ -15,7 +15,7 @@ var version string
 func main() {
 
 	config.Init(version, helpers.GetIP())
-	log.Initialise([]log.LogName{log.LogNameCrons})
+	log.Initialise(log.LogNameCrons)
 
 	// Load queue producers
 	queue.Init(queue.QueueCronsDefinitions)
