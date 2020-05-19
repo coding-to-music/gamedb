@@ -38,10 +38,16 @@ func playerAliasesHandler(messages []*rabbit.Message) {
 
 		for _, v := range aliases {
 
-			t, err := time.Parse("2 Jan, 2006 @ 3:04pm", v.Time)
+			var t time.Time
+
+			t, err = time.Parse("2 Jan @ 3:04pm", v.Time)
 			if err != nil {
-				log.Err(err, v.Time, payload.PlayerID)
-				continue
+
+				t, err = time.Parse("2 Jan, 2006 @ 3:04pm", v.Time)
+				if err != nil {
+					log.Err(err, v.Time, payload.PlayerID)
+					continue
+				}
 			}
 
 			playerAliases = append(playerAliases, mongo.PlayerAlias{
