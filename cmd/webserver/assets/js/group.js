@@ -27,7 +27,7 @@ function loadGroupPlayers() {
                 "pageLength": 50,
                 "order": [[0, 'asc']],
                 "createdRow": function (row, data, dataIndex) {
-                    $(row).attr('data-link', data[2]);
+                    $(row).attr('data-link', data[8]);
                     $(row).attr('data-player-id', data[0]);
                 },
                 "columnDefs": [

@@ -192,6 +192,7 @@ func groupTableAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			player.Level,           // 5
 			player.CountryCode,     // 6
 			player.GetAvatar2(),    // 7
+			player.GetPath(),       // 8
 		})
 	}
 
