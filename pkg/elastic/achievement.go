@@ -49,13 +49,14 @@ func SearchAchievements(limit int, offset int, search string, sorters []elastic.
 		Index(IndexAchievements).
 		From(offset).
 		Size(limit).
-		TrackTotalHits(true)
+		TrackTotalHits(true).
+		Highlight(elastic.NewHighlight().Field("name").Field("description").Field("app_name").PreTags("<mark>").PostTags("</mark>"))
 
 	if search != "" {
 		searchService.Query(elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
-			elastic.NewMatchQuery("name", search).Boost(3),
-			elastic.NewMatchQuery("description", search).Boost(2),
-			elastic.NewMatchQuery("app_name", search).Boost(1),
+			elastic.NewMatchQuery("name", search).Fuzziness("1").Boost(3),
+			elastic.NewMatchQuery("description", search).Fuzziness("1").Boost(2),
+			elastic.NewMatchQuery("app_name", search).Fuzziness("1").Boost(1),
 		))
 	}
 
@@ -74,10 +75,17 @@ func SearchAchievements(limit int, offset int, search string, sorters []elastic.
 		err := json.Unmarshal(hit.Source, &achievement)
 		if err != nil {
 			log.Err(err)
+			continue
 		}
 
 		if hit.Score != nil {
 			achievement.Score = *hit.Score
+		}
+
+		if val, ok := hit.Highlight["name"]; ok {
+			if len(val) > 0 {
+				achievement.Name = val[0]
+			}
 		}
 
 		achievements = append(achievements, achievement)

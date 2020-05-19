@@ -24,7 +24,6 @@ func achievementsHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := GlobalTemplate{}
 	t.fill(w, r, "Achievements", "Search all Steam achievements")
-	t.addAssetMark()
 
 	returnTemplate(w, r, "achievements", t)
 }

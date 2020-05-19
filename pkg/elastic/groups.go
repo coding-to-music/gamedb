@@ -34,14 +34,14 @@ func SearchGroups(limit int, offset int, search string, sorters []elastic.Sorter
 		Index(IndexGroups).
 		From(offset).
 		Size(limit).
-		TrackTotalHits(true)
+		TrackTotalHits(true).
+		Highlight(elastic.NewHighlight().Field("name").PreTags("<mark>").PostTags("</mark>"))
 
 	if search != "" {
 		searchService.Query(elastic.NewBoolQuery().MinimumNumberShouldMatch(2).Should(
-			elastic.NewMatchQuery("name", search).Boost(4),
-			elastic.NewMatchQuery("abbreviation", search).Boost(3),
-			elastic.NewMatchQuery("url", search).Boost(3),
-			elastic.NewMatchQuery("headline", search).Boost(2),
+			elastic.NewMatchQuery("name", search).Fuzziness("1").Boost(3),
+			elastic.NewMatchQuery("abbreviation", search).Fuzziness("1").Boost(2),
+			elastic.NewMatchQuery("url", search).Fuzziness("1").Boost(2),
 			elastic.NewFunctionScoreQuery().AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("members").Factor(0.001)),
 		))
 	}
@@ -61,12 +61,19 @@ func SearchGroups(limit int, offset int, search string, sorters []elastic.Sorter
 		err := json.Unmarshal(hit.Source, &group)
 		if err != nil {
 			log.Err(err)
+			continue
+		}
+
+		if val, ok := hit.Highlight["name"]; ok {
+			if len(val) > 0 {
+				group.Name = val[0]
+			}
 		}
 
 		groups = append(groups, group)
 	}
 
-	return groups, searchResult.TotalHits(), err
+	return groups, searchResult.TotalHits(), nil
 }
 
 //noinspection GoUnusedExportedFunction

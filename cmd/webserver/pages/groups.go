@@ -27,7 +27,6 @@ func groupsHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := groupsTemplate{}
 	t.fill(w, r, "Groups", "All the groups on Steam")
-	t.addAssetMark()
 
 	returnTemplate(w, r, "groups", t)
 }
