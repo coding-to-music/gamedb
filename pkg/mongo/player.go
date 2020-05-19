@@ -385,9 +385,10 @@ func (player *Player) SetLevel() error {
 func (player *Player) SetFriends(saveRows bool) error {
 
 	// If it's a 401, it returns no results, we dont want to change remove the players friends.
-	newFriendsSlice, _, err := steamHelper.GetSteam().GetFriendList(player.ID)
-	if err2, ok := err.(steamapi.Error); ok && err2.Code == 401 {
-		return nil
+	newFriendsSlice, b, err := steamHelper.GetSteam().GetFriendList(player.ID)
+	err = steamHelper.AllowSteamCodes(err, b, []int{401})
+	if err != nil {
+		return err
 	}
 
 	//

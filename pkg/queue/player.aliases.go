@@ -27,9 +27,10 @@ func playerAliasesHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		aliases, _, err := steam.GetSteam().GetAliases(payload.PlayerID)
+		aliases, b, err := steam.GetSteam().GetAliases(payload.PlayerID)
+		err = steam.AllowSteamCodes(err, b, nil)
 		if err != nil {
-			log.Err(err)
+			steam.LogSteamError(err, payload.PlayerID)
 			sendToRetryQueue(message)
 			continue
 		}
@@ -59,7 +60,7 @@ func playerAliasesHandler(messages []*rabbit.Message) {
 
 		err = mongo.UpdatePlayerAliases(playerAliases)
 		if err != nil {
-			log.Err(err)
+			log.Err(err, payload.PlayerID)
 			sendToRetryQueue(message)
 			continue
 		}
