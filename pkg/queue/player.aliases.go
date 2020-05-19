@@ -40,7 +40,7 @@ func playerAliasesHandler(messages []*rabbit.Message) {
 
 			t, err := time.Parse("2 Jan, 2006 @ 3:04pm", v.Time)
 			if err != nil {
-				log.Err(err, v.Time)
+				log.Err(err, v.Time, payload.PlayerID)
 				continue
 			}
 
