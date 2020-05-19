@@ -90,23 +90,6 @@ func appHandler(messages []*rabbit.Message) {
 		//
 		var wg sync.WaitGroup
 
-		// Calls to api.steampowered.com
-		var newItems []steamapi.ItemDefArchive
-		wg.Add(1)
-		go func() {
-
-			defer wg.Done()
-
-			var err error
-
-			newItems, err = updateAppItems(&app)
-			if err != nil {
-				steamHelper.LogSteamError(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-		}()
-
 		// Calls to store.steampowered.com
 		var sales []mongo.Sale
 		wg.Add(1)
@@ -132,7 +115,6 @@ func appHandler(messages []*rabbit.Message) {
 		}()
 
 		// Read from Mongo
-		var currentAppItems []int
 		wg.Add(1)
 		go func() {
 
@@ -141,13 +123,6 @@ func appHandler(messages []*rabbit.Message) {
 			var err error
 
 			err = updateAppPlaytimeStats(&app)
-			if err != nil {
-				log.Err(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-
-			currentAppItems, err = getCurrentAppItems(app.ID)
 			if err != nil {
 				log.Err(err, payload.ID)
 				sendToRetryQueue(message)
@@ -177,13 +152,6 @@ func appHandler(messages []*rabbit.Message) {
 			var err error
 
 			err = saveProductPricesToMongo(appBeforeUpdate, app)
-			if err != nil {
-				log.Err(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-
-			err = saveAppItems(app.ID, newItems, currentAppItems)
 			if err != nil {
 				log.Err(err, payload.ID)
 				sendToRetryQueue(message)
@@ -231,8 +199,6 @@ func appHandler(messages []*rabbit.Message) {
 				memcache.MemcacheAppPublishers(app.ID).Key,
 				memcache.MemcacheAppBundles(app.ID).Key,
 				memcache.MemcacheAppPackages(app.ID).Key,
-				memcache.MemcacheMongoCount(mongo.CollectionAppAchievements.String()+"-"+countItem).Key,
-				memcache.MemcacheMongoCount(mongo.CollectionAppItems.String()+"-"+countItem).Key,
 				memcache.MemcacheMongoCount(mongo.CollectionAppSales.String()+"-"+countItem).Key,
 			)
 			if err != nil {
@@ -275,6 +241,7 @@ func appHandler(messages []*rabbit.Message) {
 			QueueAppsReviews:      AppReviewsMessage{ID: app.ID},
 			QueueGroups:           GroupMessage{ID: app.GroupID},
 			QueueAppsSearch:       AppsSearchMessage{App: app},
+			QueueAppsItems:        AppItemsMessage{AppID: app.ID, OldDigect: app.ItemsDigest},
 		}
 
 		for k, v := range produces {
@@ -706,27 +673,6 @@ func updateAppDetails(app *mongo.App) (err error) {
 	return nil
 }
 
-func updateAppItems(app *mongo.App) (archive []steamapi.ItemDefArchive, err error) {
-
-	meta, _, err := steamHelper.GetSteam().GetItemDefMeta(app.ID)
-	if err != nil {
-		return archive, err
-	}
-
-	if meta.Response.Digest != "" && meta.Response.Digest != app.ItemsDigest {
-
-		archive, _, err = steamHelper.GetSteam().GetItemDefArchive(app.ID, meta.Response.Digest)
-		if err != nil {
-			return archive, err
-		}
-
-		app.Items = len(archive)
-		app.ItemsDigest = meta.Response.Digest
-	}
-
-	return archive, nil
-}
-
 //noinspection RegExpRedundantEscape
 var (
 	appStorePage     = regexp.MustCompile(`store\.steampowered\.com/app/[0-9]+$`)
@@ -971,16 +917,6 @@ func scrapeApp(app *mongo.App) (sales []mongo.Sale, err error) {
 	return sales, nil
 }
 
-func getCurrentAppItems(appID int) (items []int, err error) {
-
-	resp, err := mongo.GetAppItems(0, 0, bson.D{{"app_id", appID}}, bson.M{"item_def_id": 1})
-	for _, v := range resp {
-		items = append(items, v.ItemDefID)
-	}
-
-	return items, err
-}
-
 func updateAppPlaytimeStats(app *mongo.App) (err error) {
 
 	// Playtime
@@ -1070,77 +1006,4 @@ func saveSales(app mongo.App, newSales []mongo.Sale) (err error) {
 	}
 
 	return mongo.UpdateSales(newSales)
-}
-
-func saveAppItems(appID int, newItems []steamapi.ItemDefArchive, currentItemIDs []int) (err error) {
-
-	if len(newItems) == 0 {
-		return
-	}
-
-	// Make current items map
-	var currentItemIDsMap = map[int]bool{}
-	for _, v := range currentItemIDs {
-		currentItemIDsMap[v] = true
-	}
-
-	// Make new items map
-	var newItemsMap = map[int]bool{}
-	for _, v := range newItems {
-		newItemsMap[int(v.ItemDefID)] = true
-	}
-
-	// Find new items
-	var newDocuments []mongo.AppItem
-	for _, v := range newItems {
-		_, ok := currentItemIDsMap[int(v.ItemDefID)]
-		if !ok {
-			appItem := mongo.AppItem{
-				AppID:            int(v.AppID),
-				Bundle:           v.Bundle,
-				Commodity:        bool(v.Commodity),
-				DateCreated:      v.DateCreated,
-				Description:      v.Description,
-				DisplayType:      v.DisplayType,
-				DropInterval:     int(v.DropInterval),
-				DropMaxPerWindow: int(v.DropMaxPerWindow),
-				Hash:             v.Hash,
-				IconURL:          v.IconURL,
-				IconURLLarge:     v.IconURLLarge,
-				ItemDefID:        int(v.ItemDefID),
-				ItemQuality:      string(v.ItemQuality),
-				Marketable:       bool(v.Marketable),
-				Modified:         v.Modified,
-				Name:             v.Name,
-				Price:            v.Price,
-				Promo:            v.Promo,
-				Quantity:         int(v.Quantity),
-				Timestamp:        v.Timestamp,
-				Tradable:         bool(v.Tradable),
-				Type:             v.Type,
-				WorkshopID:       int64(v.WorkshopID),
-				// Exchange:         v.Exchange,
-				// Tags:             v.Tags,
-			}
-			appItem.SetExchange(v.Exchange)
-			appItem.SetTags(v.Tags)
-
-			newDocuments = append(newDocuments, appItem)
-		}
-	}
-	err = mongo.UpdateAppItems(newDocuments)
-	if err != nil {
-		return err
-	}
-
-	// Find removed items
-	var oldDocumentIDs []int
-	for _, v := range currentItemIDs {
-		_, ok := newItemsMap[v]
-		if !ok {
-			oldDocumentIDs = append(oldDocumentIDs, v)
-		}
-	}
-
-	return mongo.DeleteAppItems(appID, oldDocumentIDs)
 }

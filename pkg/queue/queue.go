@@ -21,6 +21,7 @@ const (
 	// Apps
 	QueueApps                   rabbit.QueueName = "GDB_Apps"
 	QueueAppsAchievements       rabbit.QueueName = "GDB_Apps.Achievements"
+	QueueAppsItems              rabbit.QueueName = "GDB_Apps.Items"
 	QueueAppsAchievementsSearch rabbit.QueueName = "GDB_Apps.Achievements.Search"
 	QueueAppsYoutube            rabbit.QueueName = "GDB_Apps.Youtube"
 	QueueAppsInflux             rabbit.QueueName = "GDB_Apps.Influx"
@@ -87,6 +88,7 @@ var (
 		{name: QueueAppsYoutube},
 		{name: QueueAppsInflux},
 		{name: QueueAppsNews},
+		{name: QueueAppsItems},
 		{name: QueueAppsAchievements},
 		{name: QueueAppsAchievementsSearch},
 		{name: QueueAppsSameowners},
@@ -122,6 +124,7 @@ var (
 		{name: QueueAppsNews, consumer: appNewsHandler},
 		{name: QueueAppsAchievements, consumer: appAchievementsHandler},
 		{name: QueueAppsAchievementsSearch, consumer: appsAchievementsSearchHandler},
+		{name: QueueAppsItems, consumer: appItemsHandler},
 		{name: QueueAppsSameowners, consumer: appSameownersHandler},
 		{name: QueueAppsReviews, consumer: appReviewsHandler},
 		{name: QueueAppsMorelike, consumer: appMorelikeHandler},
