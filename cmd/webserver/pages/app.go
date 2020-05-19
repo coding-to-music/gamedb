@@ -745,6 +745,9 @@ func appItemsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var response = datatable.NewDataTablesResponse(r, query, total, filtered)
 	for _, item := range items {
 
+		var image1 = item.Image(54, true)
+		var image2 = item.Image(256, false)
+
 		response.AddRow([]interface{}{
 			item.AppID,              // 0
 			item.Bundle,             // 1
@@ -771,8 +774,8 @@ func appItemsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			item.Tradable,           // 22
 			item.Type,               // 23
 			item.WorkshopID,         // 24
-			item.Image(36, true),    // 25
-			item.Image(256, false),  // 26
+			image1,                  // 25
+			image2,                  // 26
 			item.GetType(),          // 27
 			item.Link(),             // 28
 			item.ShortDescription(), // 29

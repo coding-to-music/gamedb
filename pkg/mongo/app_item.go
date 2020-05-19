@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -128,7 +129,7 @@ func (item AppItem) ShortDescription() string {
 func (item *AppItem) Image(size int, crop bool) string {
 
 	if item.IconURL == "" {
-		return ""
+		return helpers.DefaultAppIcon
 	}
 
 	params := url.Values{}
