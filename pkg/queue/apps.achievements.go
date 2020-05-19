@@ -185,11 +185,15 @@ func appAchievementsHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		// And remove from Elastic too
-		// todo
-
 		//
-		err = memcache.Delete(memcache.MemcacheApp(payload.ID).Key)
+		var countItem = memcache.FilterToString(bson.D{{"app_id", payload.ID}})
+
+		var items = []string{
+			memcache.MemcacheApp(payload.ID).Key,
+			memcache.MemcacheMongoCount(mongo.CollectionAppAchievements.String() + "-" + countItem).Key,
+		}
+
+		err = memcache.Delete(items...)
 		if err != nil {
 			log.Err(err, payload.ID)
 			sendToRetryQueue(message)
