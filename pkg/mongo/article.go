@@ -86,6 +86,7 @@ func (article Article) OutputForJSON() (output []interface{}) {
 		article.AppName,                       // 7
 		article.GetIcon(),                     // 8
 		path + "#news," + id,                  // 9
+		helpers.DefaultAppIcon,                // 10
 	}
 }
 
