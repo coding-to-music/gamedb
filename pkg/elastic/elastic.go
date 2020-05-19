@@ -95,6 +95,17 @@ func indexDocuments(index string, docs map[string]interface{}) error {
 	return nil
 }
 
+func DeleteDocument(index string, key string) error {
+
+	client, ctx, err := GetElastic()
+	if err != nil {
+		return err
+	}
+
+	_, err = client.Delete().Index(index).Id(key).Do(ctx)
+	return err
+}
+
 func rebuildIndex(index string, mapping map[string]interface{}) error {
 
 	client, ctx, err := GetElastic()

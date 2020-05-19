@@ -28,20 +28,24 @@ func appsAchievementsSearchHandler(messages []*rabbit.Message) {
 
 		achievement := elastic.Achievement{}
 		achievement.ID = payload.AppAchievement.Key
+		achievement.AppID = payload.AppAchievement.AppID
 		achievement.Name = payload.AppAchievement.Name
 		achievement.Icon = payload.AppAchievement.Icon
 		achievement.Description = payload.AppAchievement.Description
 		achievement.Hidden = payload.AppAchievement.Hidden
 		achievement.Completed = payload.AppAchievement.Completed
-		achievement.AppID = payload.AppAchievement.AppID
 		achievement.AppName = payload.AppName
 
-		if achievement.ID == "" || achievement.Name == "" || achievement.AppID == 0 {
+		if achievement.ID == "" || achievement.AppID == 0 {
 			sendToFailQueue(message)
 			continue
 		}
 
-		err = elastic.IndexAchievement(achievement)
+		if payload.AppAchievement.Deleted {
+			err = elastic.DeleteDocument(elastic.IndexAchievements, achievement.GetKey())
+		} else {
+			err = elastic.IndexAchievement(achievement)
+		}
 		if err != nil {
 			log.Err(err)
 			sendToRetryQueue(message)
