@@ -37,8 +37,8 @@ func appItemsHandler(messages []*rabbit.Message) {
 		}
 
 		if meta.Response.Digest == "" || meta.Response.Digest == payload.OldDigect {
-			// message.Ack(false)
-			// continue
+			message.Ack(false)
+			continue
 		}
 
 		archive, _, err := steamHelper.GetSteam().GetItemDefArchive(payload.AppID, meta.Response.Digest)
