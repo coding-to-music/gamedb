@@ -52,7 +52,11 @@ func SearchAchievements(limit int, offset int, search string, sorters []elastic.
 		TrackTotalHits(true)
 
 	if search != "" {
-		searchService.Query(elastic.NewMultiMatchQuery(search, "name^3", "description^2", "app_name^1").Type("best_fields"))
+		searchService.Query(elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
+			elastic.NewMatchQuery("name", search).Boost(3),
+			elastic.NewMatchQuery("description", search).Boost(2),
+			elastic.NewMatchQuery("app_name", search).Boost(1),
+		))
 	}
 
 	if sorters != nil && len(sorters) > 0 {
