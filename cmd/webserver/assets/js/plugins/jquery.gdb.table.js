@@ -149,6 +149,11 @@
                 if ($field.attr('data-hightlight')) {
                     this.highlight = value;
                 }
+
+                const colToSortBy = $field.attr('data-col-sort');
+                if (colToSortBy && value) {
+                    options.tableOptions.order = [[parseInt(colToSortBy), 'desc']];
+                }
             }
         }
 
