@@ -226,8 +226,8 @@ func (player Player) GetTimeLong() (ret string) {
 func (player *Player) SetOwnedGames(saveRows bool) (steamapi.OwnedGames, error) {
 
 	// Grab games from Steam
-	resp, b, err := steamHelper.GetSteam().GetOwnedGames(player.ID)
-	err = steamHelper.AllowSteamCodes(err, b, nil)
+	resp, _, err := steamHelper.GetSteam().GetOwnedGames(player.ID)
+	err = steamHelper.AllowSteamCodes(err)
 	if err != nil {
 		return resp, err
 	}
@@ -341,8 +341,8 @@ func (player *Player) SetOwnedGames(saveRows bool) (steamapi.OwnedGames, error) 
 
 func (player *Player) SetPlayerSummary() error {
 
-	summary, b, err := steamHelper.GetSteam().GetPlayer(player.ID)
-	err = steamHelper.AllowSteamCodes(err, b, nil)
+	summary, _, err := steamHelper.GetSteam().GetPlayer(player.ID)
+	err = steamHelper.AllowSteamCodes(err)
 	if err != nil {
 		return err
 	}
@@ -371,8 +371,8 @@ func (player *Player) SetPlayerSummary() error {
 
 func (player *Player) SetLevel() error {
 
-	level, b, err := steamHelper.GetSteam().GetSteamLevel(player.ID)
-	err = steamHelper.AllowSteamCodes(err, b, nil)
+	level, _, err := steamHelper.GetSteam().GetSteamLevel(player.ID)
+	err = steamHelper.AllowSteamCodes(err)
 	if err != nil {
 		return err
 	}
@@ -385,8 +385,8 @@ func (player *Player) SetLevel() error {
 func (player *Player) SetFriends(saveRows bool) error {
 
 	// If it's a 401, it returns no results, we dont want to change remove the players friends.
-	newFriendsSlice, b, err := steamHelper.GetSteam().GetFriendList(player.ID)
-	err = steamHelper.AllowSteamCodes(err, b, []int{401})
+	newFriendsSlice, _, err := steamHelper.GetSteam().GetFriendList(player.ID)
+	err = steamHelper.AllowSteamCodes(err, 401)
 	if err != nil {
 		return err
 	}

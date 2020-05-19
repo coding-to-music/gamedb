@@ -63,8 +63,8 @@ func playerAchievementsHandler(messages []*rabbit.Message) {
 		}
 
 		// Do API call
-		resp, b, err := steamHelper.GetSteamUnlimited().GetPlayerAchievements(uint64(payload.PlayerID), uint32(payload.AppID))
-		err = steamHelper.AllowSteamCodes(err, b, []int{400})
+		resp, _, err := steamHelper.GetSteamUnlimited().GetPlayerAchievements(uint64(payload.PlayerID), uint32(payload.AppID))
+		err = steamHelper.AllowSteamCodes(err, 400)
 		if err != nil {
 			steamHelper.LogSteamError(err, message.Message.Body)
 			sendToRetryQueue(message)

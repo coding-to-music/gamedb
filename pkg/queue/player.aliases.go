@@ -27,8 +27,8 @@ func playerAliasesHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		aliases, b, err := steam.GetSteam().GetAliases(payload.PlayerID)
-		err = steam.AllowSteamCodes(err, b, nil)
+		aliases, _, err := steam.GetSteam().GetAliases(payload.PlayerID)
+		err = steam.AllowSteamCodes(err)
 		if err != nil {
 			steam.LogSteamError(err, payload.PlayerID)
 			sendToRetryQueue(message)

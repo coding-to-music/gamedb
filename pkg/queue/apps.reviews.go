@@ -38,8 +38,8 @@ func appReviewsHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		resp, b, err := steamHelper.GetSteam().GetReviews(payload.ID)
-		err = steamHelper.AllowSteamCodes(err, b, nil)
+		resp, _, err := steamHelper.GetSteam().GetReviews(payload.ID)
+		err = steamHelper.AllowSteamCodes(err)
 		if err != nil {
 			steamHelper.LogSteamError(err)
 			sendToRetryQueue(message)

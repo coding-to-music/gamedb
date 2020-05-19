@@ -150,8 +150,8 @@ func (interfaces *Interfaces) addInterface(in steamapi.APIInterface, documented 
 
 func (interfaces *Interfaces) addDocumented(w http.ResponseWriter, r *http.Request) (err error) {
 
-	steamResp, b, err := steamHelper.GetSteam().GetSupportedAPIList()
-	err = steamHelper.AllowSteamCodes(err, b, nil)
+	steamResp, _, err := steamHelper.GetSteam().GetSupportedAPIList()
+	err = steamHelper.AllowSteamCodes(err)
 	if err != nil {
 		return err
 	}

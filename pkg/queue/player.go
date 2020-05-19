@@ -324,8 +324,8 @@ func updatePlayerRecentGames(player *mongo.Player) error {
 		return err
 	}
 
-	newAppsSlice, b, err := steamHelper.GetSteam().GetRecentlyPlayedGames(player.ID)
-	err = steamHelper.AllowSteamCodes(err, b, nil)
+	newAppsSlice, _, err := steamHelper.GetSteam().GetRecentlyPlayedGames(player.ID)
+	err = steamHelper.AllowSteamCodes(err)
 	if err != nil {
 		return err
 	}
@@ -391,8 +391,8 @@ func updatePlayerRecentGames(player *mongo.Player) error {
 
 func updatePlayerBadges(player *mongo.Player) error {
 
-	response, b, err := steamHelper.GetSteam().GetBadges(player.ID)
-	err = steamHelper.AllowSteamCodes(err, b, nil)
+	response, _, err := steamHelper.GetSteam().GetBadges(player.ID)
+	err = steamHelper.AllowSteamCodes(err)
 	if err != nil {
 		return err
 	}
@@ -474,8 +474,8 @@ func updatePlayerLevel(player *mongo.Player) error {
 
 func updatePlayerBans(player *mongo.Player) error {
 
-	response, b, err := steamHelper.GetSteam().GetPlayerBans(player.ID)
-	err = steamHelper.AllowSteamCodes(err, b, nil)
+	response, _, err := steamHelper.GetSteam().GetPlayerBans(player.ID)
+	err = steamHelper.AllowSteamCodes(err)
 	if err == steamapi.ErrNoUserFound {
 		return nil
 	}
@@ -519,8 +519,8 @@ func updatePlayerGroups(player *mongo.Player, payload PlayerMessage) error {
 	}
 
 	// Current groups response
-	currentSlice, b, err := steamHelper.GetSteam().GetUserGroupList(player.ID)
-	err = steamHelper.AllowSteamCodes(err, b, []int{403})
+	currentSlice, _, err := steamHelper.GetSteam().GetUserGroupList(player.ID)
+	err = steamHelper.AllowSteamCodes(err, 403)
 	if err != nil {
 		return err
 	}
@@ -597,8 +597,8 @@ func updatePlayerGroups(player *mongo.Player, payload PlayerMessage) error {
 func updatePlayerWishlistApps(player *mongo.Player) error {
 
 	// New
-	resp, b, err := steamHelper.GetSteam().GetWishlist(player.ID)
-	err = steamHelper.AllowSteamCodes(err, b, []int{500})
+	resp, _, err := steamHelper.GetSteam().GetWishlist(player.ID)
+	err = steamHelper.AllowSteamCodes(err, 500)
 	if err == steamapi.ErrWishlistNotFound {
 		return nil
 	} else if err != nil {

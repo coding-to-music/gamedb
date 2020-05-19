@@ -45,8 +45,8 @@ func (c StatsTags) work() (err error) {
 	}
 
 	// Get tags from Steam
-	tagsResp, b, err := steamHelper.GetSteam().GetTags()
-	err = steamHelper.AllowSteamCodes(err, b, nil)
+	tagsResp, _, err := steamHelper.GetSteam().GetTags()
+	err = steamHelper.AllowSteamCodes(err)
 	if err != nil {
 		return err
 	}

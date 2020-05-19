@@ -187,8 +187,8 @@ func adminQueues(r *http.Request) {
 		ts, err := strconv.ParseInt(val, 10, 64)
 		if err == nil {
 
-			apps, b, err := steam.GetSteam().GetAppList(100000, 0, ts, "")
-			err = steam.AllowSteamCodes(err, b, nil)
+			apps, _, err := steam.GetSteam().GetAppList(100000, 0, ts, "")
+			err = steam.AllowSteamCodes(err)
 			log.Err(err, r)
 			if err == nil {
 

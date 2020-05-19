@@ -32,8 +32,8 @@ func (c AppsQueueAll) work() (err error) {
 
 	for keepGoing {
 
-		apps, b, err := steam.GetSteam().GetAppList(1000, last, 0, "")
-		err = steam.AllowSteamCodes(err, b, nil)
+		apps, _, err := steam.GetSteam().GetAppList(1000, last, 0, "")
+		err = steam.AllowSteamCodes(err)
 		if err != nil {
 			return err
 		}

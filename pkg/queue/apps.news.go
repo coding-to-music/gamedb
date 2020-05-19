@@ -30,8 +30,8 @@ func appNewsHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		resp, b, err := steamHelper.GetSteam().GetNews(payload.ID, 10000)
-		err = steamHelper.AllowSteamCodes(err, b, []int{403})
+		resp, _, err := steamHelper.GetSteam().GetNews(payload.ID, 10000)
+		err = steamHelper.AllowSteamCodes(err, 403)
 		if err != nil {
 			steamHelper.LogSteamError(err)
 			sendToRetryQueue(message)

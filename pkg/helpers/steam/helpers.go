@@ -13,7 +13,7 @@ import (
 	"github.com/gocolly/colly"
 )
 
-func AllowSteamCodes(err error, bytes []byte, allowedCodes []int) error {
+func AllowSteamCodes(err error, allowedCodes ...int) error {
 
 	// if err == steam.ErrHTMLResponse {
 	// 	log.Err(err, string(bytes))
