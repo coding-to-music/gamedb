@@ -12,15 +12,15 @@ import (
 )
 
 type AppAchievement struct {
-	AppID       int     `bson:"app_id" json:"-"`
-	Key         string  `bson:"key" json:"-"`
-	Name        string  `bson:"name" json:"name"` // Only property JSON needs
-	Description string  `bson:"description" json:"-"`
+	AppID       int     `bson:"app_id" json:"app_id"`
+	Key         string  `bson:"key" json:"key"`
+	Name        string  `bson:"name" json:"name"`
+	Description string  `bson:"description" json:"description"`
 	Icon        string  `bson:"icon" json:"icon"`
-	Completed   float64 `bson:"completed" json:"-"`
-	Hidden      bool    `bson:"hidden" json:"-"`  // Just no description
-	Active      bool    `bson:"active" json:"-"`  // If it's part of the schema response
-	Deleted     bool    `bson:"deleted" json:"-"` // Not in global resp anymore
+	Completed   float64 `bson:"completed" json:"completed"`
+	Hidden      bool    `bson:"hidden" json:"hidden"`   // Just no description
+	Active      bool    `bson:"active" json:"active"`   // If it's part of the schema response
+	Deleted     bool    `bson:"deleted" json:"deleted"` // Not in global resp anymore
 }
 
 func (achievement AppAchievement) BSON() bson.D {
