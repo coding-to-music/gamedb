@@ -2,7 +2,6 @@ package pages
 
 import (
 	"html/template"
-	"math"
 	"net/http"
 	"strconv"
 	"strings"
@@ -12,7 +11,6 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/helpers/i18n"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -23,7 +21,6 @@ import (
 
 func HomeRouter() http.Handler {
 	r := chi.NewRouter()
-	r.Get("/prices.json", homePricesHandler)
 	r.Get("/sales/{sort}.json", homeSalesHandler)
 	r.Get("/players/{sort}.json", homePlayersHandler)
 	return r
@@ -131,52 +128,6 @@ type homeNews struct {
 	Contents template.HTML
 	Link     string
 	Image    template.HTMLAttr
-}
-
-type homeSpotlight struct {
-	Title string
-	Text  template.HTML
-	Link  string
-}
-
-func homePricesHandler(w http.ResponseWriter, r *http.Request) {
-
-	var filter = bson.D{
-		{Key: "prod_cc", Value: string(session.GetProductCC(r))},
-		{Key: "app_id", Value: bson.M{"$gt": 0}},
-		{Key: "difference", Value: bson.M{"$lt": 0}},
-	}
-
-	priceChanges, err := mongo.GetPrices(0, 10, filter)
-	if err != nil {
-		log.Err(err, r)
-	}
-
-	var prices []homePrice
-	for _, price := range priceChanges {
-
-		prices = append(prices, homePrice{
-			Name:     price.Name,                                         // 0
-			ID:       price.AppID,                                        // 1
-			Link:     price.GetPath(),                                    // 2
-			After:    i18n.FormatPrice(price.Currency, price.PriceAfter), // 3
-			Discount: math.Round(price.DifferencePercent),                // 4
-			Time:     price.CreatedAt.Unix(),                             // 5
-			Avatar:   price.GetIcon(),                                    // 6
-		})
-	}
-
-	returnJSON(w, r, prices)
-}
-
-type homePrice struct {
-	Name     string  `json:"name"`
-	ID       int     `json:"id"`
-	Link     string  `json:"link"`
-	After    string  `json:"after"`
-	Discount float64 `json:"discount"`
-	Time     int64   `json:"time"`
-	Avatar   string  `json:"avatar"`
 }
 
 func homeSalesHandler(w http.ResponseWriter, r *http.Request) {
