@@ -2,6 +2,7 @@ package queue
 
 import (
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -56,7 +57,13 @@ func appPlayersHandler(messages []*rabbit.Message) {
 				var err error
 				viewers, err = getAppTwitchStreamers(app.TwitchID)
 				if err != nil {
-					log.Err(err, payload.IDs)
+
+					if strings.Contains(err.Error(), "read: connection reset by peer") {
+						log.Info(err, payload.IDs)
+					} else {
+						log.Err(err, payload.IDs)
+					}
+
 					sendToRetryQueue(message)
 					return
 				}
