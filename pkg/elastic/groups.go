@@ -23,7 +23,7 @@ func IndexGroup(group Group) error {
 	return indexDocument(IndexGroups, group.ID, group)
 }
 
-func SearchGroups(limit int, offset int, search string, sorters []elastic.Sorter) (groups []Group, total int64, err error) {
+func SearchGroups(limit int, offset int, query elastic.Query, sorters []elastic.Sorter) (groups []Group, total int64, err error) {
 
 	client, ctx, err := GetElastic()
 	if err != nil {
@@ -37,16 +37,11 @@ func SearchGroups(limit int, offset int, search string, sorters []elastic.Sorter
 		TrackTotalHits(true).
 		Highlight(elastic.NewHighlight().Field("name").PreTags("<mark>").PostTags("</mark>"))
 
-	if search != "" {
-		searchService.Query(elastic.NewBoolQuery().MinimumNumberShouldMatch(2).Should(
-			elastic.NewMatchQuery("name", search).Fuzziness("1").Boost(3),
-			elastic.NewMatchQuery("abbreviation", search).Fuzziness("1").Boost(2),
-			elastic.NewMatchQuery("url", search).Fuzziness("1").Boost(2),
-			elastic.NewFunctionScoreQuery().AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("members").Factor(0.001)),
-		))
+	if query != nil {
+		searchService.Query(query)
 	}
 
-	if sorters != nil && len(sorters) > 0 {
+	if len(sorters) > 0 {
 		searchService.SortBy(sorters...)
 	}
 

@@ -5,27 +5,8 @@
 
         <div class="jumbotron">
 
-            <div class="row">
-                <div class="col-sm-12 col-lg-6">
-
-                    <h1><i class="fas fa-user-friends"></i> Groups</h1>
-
-                </div>
-                <div class="col-sm-12 col-lg-6">
-
-                    <div class="input-group input-group-lg mt-1 mb-2">
-                        <!--suppress HtmlFormInputWithoutLabel -->
-                        <input class="form-control" type="search" placeholder="Search for a Group" id="search" autofocus name="search" data-col-sort="4" data-hightlight="1">
-                        <div class="input-group-append">
-                            <input type="submit" value="Search" class="input-group-text">
-                        </div>
-                    </div>
-
-                </div>
-                <div class="col-12">
-                    <p class="lead">{{ .Description }}</p>
-                </div>
-            </div>
+            <h1><i class="fas fa-user-friends"></i> Groups</h1>
+            <p class="lead">{{ .Description }}</p>
 
         </div>
 
@@ -33,6 +14,30 @@
 
         <div class="card">
             <div class="card-body">
+
+                <div class="row">
+                    <div class="d-none">
+                        {{/* This div is so Chrome auto-fills this one and not the rest! */}}
+                        <label for="hidden">Hidden</label>
+                        <select multiple data-placeholder="Hidden" class="form-control form-control-chosen" id="hidden" name="hidden">
+                        </select>
+                    </div>
+                    <div class="col-sm-6 col-md-4">
+                        <div class="form-group">
+                            <label for="filter">Filter Removed</label>
+                            <select class="form-control form-control-chosen" id="filter" name="filter">
+                                <option value="0">All Groups</option>
+                                <option value="1">Active Groups</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4">
+                        <div class="form-group">
+                            <label for="search">Search</label>
+                            <input class="form-control" type="search" placeholder="Search" id="search" name="search" data-col-sort="4">
+                        </div>
+                    </div>
+                </div>
 
                 <div class="table-responsive">
                     <table class="table table-hover table-striped table-counts" data-path="/groups/groups.json">

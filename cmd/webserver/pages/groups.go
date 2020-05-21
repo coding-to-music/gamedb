@@ -11,6 +11,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
+	"github.com/olivere/elastic/v7"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -27,6 +28,7 @@ func groupsHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := groupsTemplate{}
 	t.fill(w, r, "Groups", "All the groups on Steam")
+	t.addAssetChosen()
 
 	returnTemplate(w, r, "groups", t)
 }
@@ -49,16 +51,39 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		columns := map[string]string{
+		var err error
+
+		var sorters = query.GetOrderElastic(map[string]string{
 			"2": "members",
 			"3": "trend",
+		})
+
+		var musts []elastic.Query
+		var filters []elastic.Query
+
+		var search = query.GetSearchString("search")
+		if search != "" {
+			musts = append(musts,
+				// Min should match is 2 as score query always matches, plus one other
+				elastic.NewBoolQuery().MinimumNumberShouldMatch(2).Should(
+					elastic.NewMatchQuery("name", search).Fuzziness("1").Boost(3),
+					elastic.NewMatchQuery("abbreviation", search).Fuzziness("1").Boost(2),
+					elastic.NewMatchQuery("url", search).Fuzziness("1").Boost(2),
+					elastic.NewFunctionScoreQuery().AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("members").Factor(0.003)),
+				),
+			)
 		}
 
-		var err error
-		var sorters = query.GetOrderElastic(columns)
-		var search = query.GetSearchString("search")
+		var hideerrored = query.GetSearchString("filter")
+		if hideerrored == "1" {
+			filters = append(filters, elastic.NewTermQuery("error", false))
+		}
 
-		groups, filtered, err = elasticHelpers.SearchGroups(100, query.GetOffset(), search, sorters)
+		var elasticQuery = elastic.NewBoolQuery().
+			Must(musts...).
+			Filter(filters...)
+
+		groups, filtered, err = elasticHelpers.SearchGroups(100, query.GetOffset(), elasticQuery, sorters)
 		if err != nil {
 			log.Err(err, r)
 			return

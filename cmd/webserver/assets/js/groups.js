@@ -1,5 +1,14 @@
 if ($('#groups-page').length > 0) {
 
+    // Setup drop downs
+    $('select.form-control-chosen').chosen({
+        disable_search_threshold: 10,
+        allow_single_deselect: true,
+        rtl: false,
+        max_selected_options: 1
+    });
+
+    //
     const options = {
         "order": [[2, 'desc']],
         "createdRow": function (row, data, dataIndex) {
@@ -76,8 +85,7 @@ if ($('#groups-page').length > 0) {
         tableOptions: options,
         searchFields: [
             $('#search'),
-            // $('#type'),
-            // $('#errors'),
+            $('#filter'),
         ],
     });
 }
