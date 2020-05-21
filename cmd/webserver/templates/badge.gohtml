@@ -11,17 +11,17 @@
 
             {{ template "_social" .Badge }}
 
-            <h1 class="text-truncate mb-4"><i class="fas fa-ribbon"></i> {{ .Badge.GetName }} {{ if .Badge.BadgeFoil }}Foil {{ end }}Badge</h1>
+            <h1 class="text-truncate mb-4"><i class="fas fa-ribbon"></i> {{ .Badge.GetName }}</h1>
 
-            <p class="lead mb-3">{{ .Badge.GetType }} Badge</p>
+            <p class="lead mb-3">{{ .Badge.GetType }} Badge{{ if .Badge.BadgeFoil }} (Foil){{ end }}</p>
 
             {{ if gt .Badge.AppID 0 }}
                 <p class="mb-0">
                     <a href="{{ .Badge.GetPathToggle }}" class="btn btn-success">
-                        {{ if .Badge.BadgeFoil }}Go to non foil badge{{ else }}Foil Badge{{ end }}
+                        {{ if .Badge.BadgeFoil }}Go to non foil badge{{ else }}Go to Foil Badge{{ end }}
                     </a>
                     <a href="{{ .Badge.GetAppPath }}" class="btn btn-success">
-                        {{ if .Badge.IsSpecial }}App{{ else }}Game{{ end }}
+                        {{ if .Badge.IsSpecial }}View App{{ else }}View Game{{ end }}
                     </a>
                 </p>
             {{ end }}
@@ -66,7 +66,7 @@
             <div class="card-body">
 
                 <div class="table-responsive">
-                    <table class="table table-hover table-striped table-counts mb-0" data-ordering="false" data-path="/badges/{{ .Badge.GetUniqueID }}/players.json{{ if .Badge.BadgeFoil }}?foil=1{{ end }}">
+                    <table class="table table-hover table-striped table-counts mb-0" data-ordering="false" data-path="/badges/{{ .Badge.ID }}/players.json{{ if .Badge.BadgeFoil }}?foil=1{{ end }}">
                         <thead class="thead-light">
                         <tr>
                             <th scope="col" class="thin">Rank</th>

@@ -177,14 +177,14 @@
 
                             <div class="dropdown-divider"></div>
 
-                            {{ range $key, $value:= .GetEventBadges }}
-                                <a class="dropdown-item" href="/badges/{{ .GetUniqueID }}">{{ .BadgeName }}</a>
+                            {{ range $key, $value:= .GetSpecialBadges }}
+                                <a class="dropdown-item" href="{{ .GetPath false }}">{{ .GetName }}</a>
                             {{ end }}
 
                             <div class="dropdown-divider"></div>
 
                             {{ range $key, $value:= .GetAppBadges }}
-                                <a class="dropdown-item" href="/badges/{{ .GetUniqueID }}">{{ .BadgeName }}</a>
+                                <a class="dropdown-item" href="{{ .GetPath false }}">{{ .GetName }}</a>
                             {{ end }}
 
                         </div>

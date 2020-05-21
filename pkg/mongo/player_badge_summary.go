@@ -1,8 +1,6 @@
 package mongo
 
 import (
-	"errors"
-	"fmt"
 	"html/template"
 	"strconv"
 
@@ -12,19 +10,25 @@ import (
 )
 
 type PlayerBadgeSummary struct {
-	ID           int               `bson:"_id"` // App/Badge ID
+	AppID        int               `bson:"app_id"`
+	BadgeID      int               `bson:"badge_id"`
+	AppName      string            `bson:"app_name"`
+	AppIcon      string            `bson:"app_icon"`
 	PlayersCount int64             `bson:"players"`
 	MaxLevel     int               `bson:"max_level"`
 	MaxLevelFoil int               `bson:"max_level_foil"`
 	Leaders      map[string]string `bson:"leaders"`      // Must use string for playerID as it's a JSON key
 	LeadersFoil  map[string]string `bson:"leaders_foil"` // Must use string for playerID as it's a JSON key
-	Badge        PlayerBadge       `bson:"-"`
 }
 
 func (badge PlayerBadgeSummary) BSON() bson.D {
 
 	return bson.D{
-		{"_id", badge.ID},
+		{"_id", badge.getKey()},
+		{"app_id", badge.AppID},
+		{"badge_id", badge.BadgeID},
+		{"app_name", badge.AppName},
+		{"app_icon", badge.AppIcon},
 		{"players", badge.PlayersCount},
 		{"max_level", badge.MaxLevel},
 		{"max_level_foil", badge.MaxLevelFoil},
@@ -33,10 +37,42 @@ func (badge PlayerBadgeSummary) BSON() bson.D {
 	}
 }
 
+func (badge PlayerBadgeSummary) getKey() string {
+	return strconv.Itoa(badge.AppID) + "-" + strconv.Itoa(badge.BadgeID)
+}
+
+func (badge PlayerBadgeSummary) IsSpecial() bool {
+	return helpers.IsBadgeSpecial(badge.AppID)
+}
+
+func (badge PlayerBadgeSummary) IsEvent() bool {
+	return helpers.IsBadgeEvent(badge.AppID)
+}
+
+func (badge PlayerBadgeSummary) IsGame() bool {
+	return helpers.IsBadgeGame(badge.AppID)
+}
+
+func (badge PlayerBadgeSummary) GetPath(foil bool) string {
+	return helpers.GetBadgePath(badge.AppName, badge.AppID, badge.BadgeID, foil)
+}
+
+func (badge PlayerBadgeSummary) GetName() string {
+	return helpers.GetBadgeName(badge.AppName, helpers.GetBadgeUniqueID(badge.AppID, badge.BadgeID))
+}
+
+func (badge PlayerBadgeSummary) ID() int {
+	return helpers.GetBadgeUniqueID(badge.AppID, badge.BadgeID)
+}
+
+func (badge PlayerBadgeSummary) GetIcon() string {
+	return helpers.GetBadgeIcon(badge.AppIcon, badge.AppID, badge.BadgeID)
+}
+
 func (badge PlayerBadgeSummary) GetSpecialLeaders() (ret template.HTML) {
 
 	if len(badge.Leaders) > 1 {
-		return template.HTML(strconv.Itoa(len(badge.Leaders))) + " joint firsts"
+		return template.HTML(strconv.Itoa(len(badge.Leaders)) + " joint firsts")
 	}
 
 	for playerID, playerName := range badge.Leaders {
@@ -89,11 +125,11 @@ func GetBadgeSummaries() (badges []PlayerBadgeSummary, err error) {
 		var badge PlayerBadgeSummary
 		err := cur.Decode(&badge)
 		if err != nil {
-			log.Err(err, fmt.Sprint(badge))
-		} else {
-			badge.Badge = GlobalBadges[badge.ID]
-			badges = append(badges, badge)
+			log.Err(err, badge)
+			continue
 		}
+
+		badges = append(badges, badge)
 	}
 
 	return badges, cur.Err()
@@ -104,21 +140,42 @@ func UpdateBadgeSummary(id int) (err error) {
 	var summary PlayerBadgeSummary
 	var topPlayerBadge PlayerBadge
 
-	badge, ok := GlobalBadges[id]
-	if !ok {
-		return errors.New("invalid badge key")
+	//
+	badge, ok := helpers.BuiltInSpecialBadges[id]
+	if ok {
+		summary.AppName = badge.GetName()
+		summary.AppIcon = badge.GetIcon()
+	} else {
+		badge, ok = helpers.BuiltInEventBadges[id]
+		if ok {
+			summary.AppName = badge.GetName()
+			summary.AppIcon = badge.GetIcon()
+		} else {
+
+			app, err := GetApp(id)
+			if err != nil {
+				return err
+			}
+
+			summary.AppName = app.GetName()
+			summary.AppIcon = app.GetIcon()
+
+			badge.BadgeID = 1
+			badge.AppID = id
+		}
 	}
 
-	if badge.IsSpecial() {
+	summary.AppID = badge.AppID
+	summary.BadgeID = badge.BadgeID
 
-		summary.ID = badge.BadgeID
+	if badge.IsSpecial() {
 
 		// Get the top player badge
 		err = FindOne(
 			CollectionPlayerBadges,
 			bson.D{{"app_id", 0}, {"badge_id", badge.BadgeID}},
 			bson.D{{"badge_level", -1}, {"badge_completion_time", 1}},
-			bson.M{"badge_level": 1, "badge_completion_time": 1},
+			nil,
 			&topPlayerBadge,
 		)
 
@@ -132,7 +189,7 @@ func UpdateBadgeSummary(id int) (err error) {
 			0,
 			bson.D{{"app_id", 0}, {"badge_id", badge.BadgeID}, {"badge_level", topPlayerBadge.BadgeLevel}, {"badge_completion_time", topPlayerBadge.BadgeCompletionTime}},
 			bson.D{{"badge_completion_time", -1}},
-			bson.M{"badge_level": 1, "_id": -1, "player_id": 1, "player_name": 1},
+			nil,
 		)
 
 		if err != nil {
@@ -153,14 +210,12 @@ func UpdateBadgeSummary(id int) (err error) {
 
 	} else {
 
-		summary.ID = badge.AppID
-
 		// Get the top player badge, foil=false
 		err = FindOne(
 			CollectionPlayerBadges,
 			bson.D{{"app_id", badge.AppID}, {"badge_id", bson.M{"$gt": 0}}, {"badge_foil", false}},
 			bson.D{{"badge_level", -1}, {"badge_completion_time", 1}},
-			bson.M{"badge_level": 1, "_id": -1, "player_id": 1, "player_name": 1},
+			nil,
 			&topPlayerBadge,
 		)
 
@@ -176,7 +231,7 @@ func UpdateBadgeSummary(id int) (err error) {
 			CollectionPlayerBadges,
 			bson.D{{"app_id", badge.AppID}, {"badge_id", bson.M{"$gt": 0}}, {"badge_foil", true}},
 			bson.D{{"badge_level", -1}, {"badge_completion_time", 1}},
-			bson.M{"badge_level": 1, "_id": -1, "player_id": 1, "player_name": 1},
+			nil,
 			&topPlayerBadge,
 		)
 
@@ -194,6 +249,6 @@ func UpdateBadgeSummary(id int) (err error) {
 		}
 	}
 
-	_, err = ReplaceOne(CollectionPlayerBadgesSummary, bson.D{{"_id", summary.ID}}, summary)
+	_, err = ReplaceOne(CollectionPlayerBadgesSummary, bson.D{{"_id", summary.getKey()}}, summary)
 	return err
 }

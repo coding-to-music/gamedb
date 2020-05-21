@@ -31,40 +31,57 @@ func badgeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	app := mongo.App{}
-	badge, ok := mongo.GlobalBadges[id]
-	if !ok {
+	var app = mongo.App{}
+	var playerBadge mongo.PlayerBadge
 
-		app, err = mongo.GetApp(id)
-		if err != nil {
-			if err == mongo.ErrNoDocuments {
-				returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Invalid badge ID"})
-			} else {
-				log.Err(err, r)
-				returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Something went wrong"})
-			}
-			return
-		}
+	// Get a player badge from an ID
+	builtInBadge, ok := helpers.BuiltInSpecialBadges[id]
+	if ok {
+		playerBadge.AppID = builtInBadge.AppID
+		playerBadge.BadgeID = builtInBadge.BadgeID
+		playerBadge.BadgeIcon = builtInBadge.Icon
+		playerBadge.AppName = builtInBadge.Name
+	} else {
 
-		// Get what we can from the app
-		badge = mongo.PlayerBadge{
-			AppID:     app.ID,
-			AppName:   app.GetName(),
-			BadgeID:   1,
-			BadgeName: app.GetName(),
-		}
-
-		// Look for full badge row, may not exist if nobody has the badge
-		appBadge, err := mongo.GetAppBadge(id)
-		if err != nil {
-			err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
-			log.Err(err, r)
+		builtInBadge, ok = helpers.BuiltInEventBadges[id]
+		if ok {
+			playerBadge.AppID = builtInBadge.AppID
+			playerBadge.BadgeID = builtInBadge.BadgeID
+			playerBadge.BadgeIcon = builtInBadge.Icon
+			playerBadge.AppName = builtInBadge.Name
 		} else {
-			badge = appBadge
+
+			app, err = mongo.GetApp(id)
+			if err != nil {
+				if err == mongo.ErrNoDocuments || err == mongo.ErrInvalidAppID {
+					returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Invalid badge ID"})
+				} else {
+					log.Err(err, r)
+					returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Something went wrong"})
+				}
+				return
+			}
+
+			// Get what we can from the app
+			builtInBadge = helpers.BuiltInbadge{
+				AppID:   app.ID,
+				BadgeID: 1,
+				Name:    app.GetName(),
+				Icon:    app.GetIcon(),
+			}
+
+			// Look for full badge row, may not exist if nobody has the badge
+			appBadge, err := mongo.GetAppBadge(id)
+			if err != nil {
+				err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
+				log.Err(err, r)
+			} else {
+				playerBadge = appBadge
+			}
 		}
 	}
 
-	badge.BadgeFoil = r.URL.Query().Get("foil") == "1"
+	playerBadge.BadgeFoil = r.URL.Query().Get("foil") == "1"
 
 	var playerLevel int
 	var playerTime string
@@ -72,7 +89,7 @@ func badgeHandler(w http.ResponseWriter, r *http.Request) {
 
 	if session.IsLoggedIn(r) {
 
-		badge.PlayerID, err = session.GetPlayerIDFromSesion(r)
+		playerBadge.PlayerID, err = session.GetPlayerIDFromSesion(r)
 		if err != nil {
 			log.Err(err, r)
 			returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: err.Error()})
@@ -80,7 +97,7 @@ func badgeHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		var row = mongo.PlayerBadge{}
-		err = mongo.FindOne(mongo.CollectionPlayerBadges, bson.D{{"_id", badge.GetKey()}}, nil, nil, &row)
+		err = mongo.FindOne(mongo.CollectionPlayerBadges, bson.D{{"_id", playerBadge.GetKey()}}, nil, nil, &row)
 		if err != nil && err != mongo.ErrNoDocuments {
 			log.Err(err, r)
 			returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: err.Error()})
@@ -97,7 +114,7 @@ func badgeHandler(w http.ResponseWriter, r *http.Request) {
 				{Key: "badge_completion_time", Value: bson.M{"$lt": row.BadgeCompletionTime}},
 			}
 
-			if badge.IsSpecial() {
+			if playerBadge.IsSpecial() {
 				filter = append(filter,
 					bson.E{Key: "app_id", Value: 0},
 					bson.E{Key: "badge_id", Value: id},
@@ -106,7 +123,7 @@ func badgeHandler(w http.ResponseWriter, r *http.Request) {
 				filter = append(filter,
 					bson.E{Key: "app_id", Value: id},
 					bson.E{Key: "badge_id", Value: bson.M{"$gt": 0}},
-					bson.E{Key: "badge_foil", Value: badge.BadgeFoil},
+					bson.E{Key: "badge_foil", Value: playerBadge.BadgeFoil},
 				)
 			}
 
@@ -123,11 +140,11 @@ func badgeHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := badgeTemplate{}
 	t.setBackground(app, false, false)
-	t.fill(w, r, badge.GetName()+" Badge", "Steam Badge Ladder / Leaderboard")
+	t.fill(w, r, playerBadge.GetName()+" Badge", "Steam Badge Ladder / Leaderboard")
 	t.IncludeSocialJS = true
 
 	t.LoggedIn = session.IsLoggedIn(r)
-	t.Badge = badge
+	t.Badge = playerBadge
 	t.PlayerLevel = playerLevel
 	t.PlayerTime = playerTime
 	t.PlayerRank = playerRank
@@ -152,14 +169,18 @@ func badgeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	badge, ok := mongo.GlobalBadges[id]
-	if !ok {
-		badge = mongo.PlayerBadge{AppID: id, BadgeID: 1}
-	}
-
-	badge.BadgeFoil = r.URL.Query().Get("foil") == "1"
-
 	var query = datatable.NewDataTableQuery(r, true)
+
+	badge, ok := helpers.BuiltInSpecialBadges[id]
+	if !ok {
+		badge, ok = helpers.BuiltInEventBadges[id]
+		if !ok {
+			badge = helpers.BuiltInbadge{
+				AppID:   id,
+				BadgeID: 1,
+			}
+		}
+	}
 
 	//
 	var filter bson.D
@@ -172,7 +193,7 @@ func badgeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		filter = bson.D{
 			bson.E{Key: "app_id", Value: id},
 			bson.E{Key: "badge_id", Value: bson.M{"$gt": 0}},
-			bson.E{Key: "badge_foil", Value: badge.BadgeFoil},
+			bson.E{Key: "badge_foil", Value: r.URL.Query().Get("foil") == "1"},
 		}
 	}
 

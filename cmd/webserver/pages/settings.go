@@ -157,7 +157,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		for _, v := range badges {
-			badgeIDs = append(badgeIDs, v.GetUniqueID())
+			badgeIDs = append(badgeIDs, v.ID())
 		}
 
 		b, err := json.Marshal(badgeIDs)

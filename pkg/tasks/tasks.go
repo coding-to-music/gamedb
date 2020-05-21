@@ -12,25 +12,25 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
-const ( //                        min hour
-	CronTimeUpdateRandomPlayers = "* *"
-	CronTimeSetBadgeCache       = "*/10 *"
+const ( //                         min hour
+	CronTimeUpdateRandomPlayers = "*   *"
 	CronTimeSteamClientPlayers  = "*/10 *"
 	CronTimeAppPlayers          = "*/10 *"
-	CronTimeAutoPlayerRefreshes = "0 */6"
-	CronTimeClearUpcomingCache  = "0 0"
-	CronTimeAppsInflux          = "10 0"
-	CronTimeAppsYoutube         = "20 0"
-	CronTimeQueueAppGroups      = "30 0"
-	CronTimeQueuePlayerGroups   = "40 0"
-	CronTimePlayerRanks         = "50 0"
-	CronTimeScanProductQueues   = "0 1"
-	CronTimeGenres              = "0 3"
-	CronTimeTags                = "0 4"
-	CronTimePublishers          = "0 5"
-	CronTimeDevelopers          = "0 6"
-	CronTimeCategories          = "0 7"
-	CronTimeInstagram           = "0 12"
+	CronTimeAutoPlayerRefreshes = "0   */6"
+	CronTimeClearUpcomingCache  = "0   0"
+	CronTimeAppsInflux          = "10  0"
+	CronTimeAppsYoutube         = "20  0"
+	CronTimeQueueAppGroups      = "30  0"
+	CronTimeQueuePlayerGroups   = "40  0"
+	CronTimePlayerRanks         = "50  0"
+	CronTimeScanProductQueues   = "0   1"
+	CronTimeSetBadgeCache       = "10  1"
+	CronTimeGenres              = "0   3"
+	CronTimeTags                = "0   4"
+	CronTimePublishers          = "0   5"
+	CronTimeDevelopers          = "0   6"
+	CronTimeCategories          = "0   7"
+	CronTimeInstagram           = "0   12"
 )
 
 var (

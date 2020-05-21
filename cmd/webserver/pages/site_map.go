@@ -207,8 +207,11 @@ func SiteMapBadges(w http.ResponseWriter, r *http.Request) {
 
 	sm := sitemap.NewSitemap()
 
-	for _, badge := range mongo.GlobalBadges {
-		sm.AddLocation(urlBase+badge.GetPath(), time.Time{}, sitemap.FrequencyWeekly, 0.9)
+	for _, badge := range helpers.BuiltInSpecialBadges {
+		sm.AddLocation(urlBase+badge.GetPath(false), time.Time{}, sitemap.FrequencyWeekly, 0.9)
+	}
+	for _, badge := range helpers.BuiltInEventBadges {
+		sm.AddLocation(urlBase+badge.GetPath(false), time.Time{}, sitemap.FrequencyWeekly, 0.9)
 	}
 
 	_, err := sm.Write(w)

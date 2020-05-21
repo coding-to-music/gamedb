@@ -391,31 +391,27 @@ func (t GlobalTemplate) GetMetaImage() (text string) {
 	return t.metaImage
 }
 
-func (t GlobalTemplate) GetEventBadges() (badges []mongo.PlayerBadge) {
+func (t GlobalTemplate) GetSpecialBadges() (badges []helpers.BuiltInbadge) {
 
-	for _, v := range mongo.GlobalBadges {
-		if v.AppID == 0 {
-			badges = append(badges, v)
-		}
+	for _, v := range helpers.BuiltInSpecialBadges {
+		badges = append(badges, v)
 	}
 
 	sort.Slice(badges, func(i, j int) bool {
-		return badges[i].GetUniqueID() > badges[j].GetUniqueID()
+		return badges[i].BadgeID > badges[j].BadgeID
 	})
 
 	return badges[0:3]
 }
 
-func (t GlobalTemplate) GetAppBadges() (badges []mongo.PlayerBadge) {
+func (t GlobalTemplate) GetAppBadges() (badges []helpers.BuiltInbadge) {
 
-	for _, v := range mongo.GlobalBadges {
-		if v.AppID > 0 {
-			badges = append(badges, v)
-		}
+	for _, v := range helpers.BuiltInEventBadges {
+		badges = append(badges, v)
 	}
 
 	sort.Slice(badges, func(i, j int) bool {
-		return badges[i].GetUniqueID() > badges[j].GetUniqueID()
+		return badges[i].AppID > badges[j].AppID
 	})
 
 	return badges[0:3]

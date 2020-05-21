@@ -447,8 +447,8 @@ func updatePlayerBadges(player *mongo.Player) error {
 	for k, v := range playerBadgeSlice {
 
 		if v.IsSpecial() {
-			if badge, ok := mongo.GlobalBadges[v.BadgeID]; ok {
-				playerBadgeSlice[k].AppName = badge.BadgeName
+			if badge, ok := helpers.BuiltInSpecialBadges[v.BadgeID]; ok {
+				playerBadgeSlice[k].AppName = badge.Name
 			}
 		} else {
 			if app, ok := appRowsMap[v.AppID]; ok {
