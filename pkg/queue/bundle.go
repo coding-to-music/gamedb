@@ -85,9 +85,7 @@ func bundleHandler(messages []*rabbit.Message) {
 
 			defer wg.Done()
 
-			var err error
-
-			err = saveBundlePriceToMongo(bundle, oldBundle)
+			var err = saveBundlePriceToMongo(bundle, oldBundle)
 			if err != nil {
 				log.Err(err, payload.ID)
 				sendToRetryQueue(message)

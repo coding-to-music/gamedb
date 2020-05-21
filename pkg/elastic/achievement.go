@@ -60,7 +60,7 @@ func SearchAchievements(limit int, offset int, search string, sorters []elastic.
 		))
 	}
 
-	if sorters != nil && len(sorters) > 0 {
+	if len(sorters) > 0 {
 		searchService.SortBy(sorters...)
 	}
 

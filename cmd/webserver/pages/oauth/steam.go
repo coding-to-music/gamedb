@@ -39,7 +39,6 @@ func (c steamConnection) getConfig(login bool) oauth2.Config {
 }
 
 func (c steamConnection) LinkHandler(w http.ResponseWriter, r *http.Request) {
-	return
 }
 
 func (c steamConnection) UnlinkHandler(w http.ResponseWriter, r *http.Request) {

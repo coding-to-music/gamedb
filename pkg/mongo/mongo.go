@@ -383,6 +383,7 @@ func ChunkWriteModels(models []mongo.WriteModel, size int) (chunks [][]mongo.Wri
 	return chunks
 }
 
+//noinspection GoUnusedType
 type index struct {
 	V          int            `json:"v"`
 	Key        map[string]int `json:"key"`

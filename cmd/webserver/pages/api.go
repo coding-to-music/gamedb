@@ -77,8 +77,8 @@ func (t apiTemplate) ParamType(schema *openapi3.Schema) string {
 
 func (t apiTemplate) PathToSchema(path string, verb string) string {
 
-	schema := &openapi3.SchemaRef{}
-	x := api.Swagger.Paths[path]
+	var schema *openapi3.SchemaRef
+	var x = api.Swagger.Paths[path]
 
 	if verb == "GET" {
 		schema = x.Get.Responses["200"].Value.Content["application/json"].Schema

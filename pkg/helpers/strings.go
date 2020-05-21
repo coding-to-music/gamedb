@@ -26,22 +26,22 @@ func GetHashTag(string string) (ret string) {
 }
 
 func InterfaceToString(i interface{}) string {
-	switch i.(type) {
+	switch i := i.(type) {
 	case time.Duration:
-		return i.(time.Duration).String()
+		return i.String()
 	case time.Time:
-		return i.(time.Time).String()
+		return i.String()
 	case bool:
-		return strconv.FormatBool(i.(bool))
+		return strconv.FormatBool(i)
 	case int:
-		return strconv.Itoa(i.(int))
+		return strconv.Itoa(i)
 	case int64:
-		return strconv.FormatInt(i.(int64), 10)
+		return strconv.FormatInt(i, 10)
 	case string:
-		return i.(string)
+		return i
 	case []interface{}:
 		var sli []string
-		for _, v := range i.([]interface{}) {
+		for _, v := range i {
 			sli = append(sli, InterfaceToString(v))
 		}
 		return "(" + strings.Join(sli, ",") + ")"

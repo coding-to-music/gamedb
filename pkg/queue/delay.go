@@ -45,6 +45,7 @@ func delayHandler(messages []*rabbit.Message) {
 	}
 }
 
+//noinspection GoUnusedFunction
 func writeToFile(message *rabbit.Message) {
 
 	queue := message.Message.Headers["first-queue"]

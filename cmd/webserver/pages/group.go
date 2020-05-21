@@ -153,8 +153,13 @@ func groupTableAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			playerIDs = append(playerIDs, v.PlayerID)
 		}
 
-		var playersMap = map[int64]mongo.Player{}
 		playersResp, err := mongo.GetPlayersByID(playerIDs, bson.M{"_id": 1, "persona_name": 1, "vanity_url": 1, "avatar": 1, "level": 1, "country_code": 1})
+		if err != nil {
+			log.Err(err, r)
+			return
+		}
+
+		var playersMap = map[int64]mongo.Player{}
 		for _, v := range playersResp {
 			playersMap[v.ID] = v
 		}

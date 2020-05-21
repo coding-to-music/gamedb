@@ -67,7 +67,7 @@ func packageHandler(messages []*rabbit.Message) {
 		// Skip if updated in last day, unless its from PICS
 		if !config.IsLocal() && !pack.ShouldUpdate() && pack.ChangeNumber >= payload.ChangeNumber {
 
-			s, err := durationfmt.Format(time.Now().Sub(pack.UpdatedAt), "%hh %mm")
+			s, err := durationfmt.Format(time.Since(pack.UpdatedAt), "%hh %mm")
 			log.Err(err)
 
 			log.Info("Skipping package, updated " + s + " ago")
@@ -144,9 +144,7 @@ func packageHandler(messages []*rabbit.Message) {
 
 			defer wg.Done()
 
-			var err error
-
-			err = scrapePackage(&pack)
+			var err = scrapePackage(&pack)
 			if err != nil {
 				steamHelper.LogSteamError(err, payload.ID)
 				sendToRetryQueue(message)
@@ -160,9 +158,7 @@ func packageHandler(messages []*rabbit.Message) {
 
 			defer wg.Done()
 
-			var err error
-
-			err = updatePackageNameFromApp(&pack)
+			var err = updatePackageNameFromApp(&pack)
 			if err != nil {
 				log.Err(err, payload.ID)
 				sendToRetryQueue(message)
@@ -182,9 +178,7 @@ func packageHandler(messages []*rabbit.Message) {
 
 			defer wg.Done()
 
-			var err error
-
-			err = saveProductPricesToMongo(packageBeforeUpdate, pack)
+			var err = saveProductPricesToMongo(packageBeforeUpdate, pack)
 			if err != nil {
 				log.Err(err, payload.ID)
 				sendToRetryQueue(message)
@@ -198,9 +192,7 @@ func packageHandler(messages []*rabbit.Message) {
 
 			defer wg.Done()
 
-			var err error
-
-			err = pack.Save()
+			var err = pack.Save()
 			if err != nil {
 				log.Err(err, payload.ID)
 				sendToRetryQueue(message)
@@ -238,8 +230,7 @@ func packageHandler(messages []*rabbit.Message) {
 
 			defer wg.Done()
 
-			var err error
-			err = memcache.Delete(
+			var err = memcache.Delete(
 				memcache.MemcachePackage(pack.ID).Key,
 				memcache.MemcachePackageInQueue(pack.ID).Key,
 				memcache.MemcachePackageBundles(pack.ID).Key,

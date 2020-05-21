@@ -27,6 +27,11 @@ func appDLCHandler(messages []*rabbit.Message) {
 		}
 
 		currentDLCs, err := mongo.GetDLCForApp(0, 0, bson.D{{"app_id", payload.AppID}}, nil)
+		if err != nil {
+			log.Err(err)
+			sendToRetryQueue(message)
+			continue
+		}
 
 		var currentIDs = map[int]bool{}
 		for _, v := range currentDLCs {

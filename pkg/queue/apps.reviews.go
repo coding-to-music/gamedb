@@ -144,6 +144,11 @@ func appReviewsHandler(messages []*rabbit.Message) {
 			Time:      time.Now(),
 			Precision: "m",
 		})
+		if err != nil {
+			log.Err(err, payload.ID)
+			sendToRetryQueue(message)
+			continue
+		}
 
 		message.Ack(false)
 	}

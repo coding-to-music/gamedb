@@ -118,5 +118,6 @@ require (
 	gopkg.in/djherbis/stream.v1 v1.3.1 // indirect
 	gopkg.in/ini.v1 v1.55.0 // indirect
 	gopkg.in/yaml.v2 v2.3.0 // indirect
+	honnef.co/go/tools v0.0.1-2020.1.4 // indirect
 	jaytaylor.com/html2text v0.0.0-20200412013138-3577fbdbcff7
 )

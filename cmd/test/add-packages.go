@@ -15,6 +15,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
+//noinspection GoUnusedFunction
 func addPackages() {
 
 	file, err := os.Open("ids.txt")
@@ -42,11 +43,11 @@ func addPackages() {
 				continue
 			}
 
-			if c.Messages >= 10 && locked == false {
+			if c.Messages >= 10 && !locked {
 				locked = true
 				wg.Add(1)
 				log.Info(time.Now().Format(helpers.DateSQL), "locked")
-			} else if c.Messages < 10 && locked == true {
+			} else if c.Messages < 10 && locked {
 				locked = false
 				wg.Done()
 				log.Info(time.Now().Format(helpers.DateSQL), "unlocked")

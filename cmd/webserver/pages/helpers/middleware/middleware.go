@@ -29,7 +29,7 @@ func MiddlewareCors() func(next http.Handler) http.Handler {
 func MiddlewareRealIP(h http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 
-		rip := r.Header.Get(http.CanonicalHeaderKey("X-Real-IP"))
+		rip := r.Header.Get("X-Real-IP")
 		if rip != "" {
 			r.RemoteAddr = rip
 		}

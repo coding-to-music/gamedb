@@ -39,6 +39,9 @@ func (c InstagramPost) work() (err error) {
 	projection := bson.M{"id": 1, "name": 1, "screenshots": 1, "reviews_score": 1}
 
 	apps, err := mongo.GetRandomApps(1, filter, projection)
+	if err != nil {
+		return err
+	}
 
 	if len(apps) == 0 {
 		return errors.New("no apps found for instagram")

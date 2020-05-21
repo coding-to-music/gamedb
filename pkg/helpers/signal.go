@@ -8,10 +8,14 @@ import (
 
 func KeepAlive() {
 
-	signals := make(chan os.Signal)
-	signal.Notify(signals, syscall.SIGTERM, os.Interrupt)
-
-	select {
-	case <-signals:
+	var signals = []os.Signal{
+		syscall.SIGTERM,
+		os.Interrupt,
 	}
+
+	signalsChan := make(chan os.Signal, len(signals))
+	signal.Notify(signalsChan, signals...)
+
+	// Block
+	<-signalsChan
 }

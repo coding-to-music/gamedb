@@ -58,7 +58,7 @@ func SearchApps(limit int, offset int, search string, sorters []elastic.Sorter) 
 		searchService.Query(elastic.NewBoolQuery().Must(musts...).Filter(filters...))
 	}
 
-	if sorters != nil && len(sorters) > 0 {
+	if len(sorters) > 0 {
 		searchService.SortBy(sorters...)
 	}
 

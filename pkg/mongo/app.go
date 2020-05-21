@@ -613,7 +613,7 @@ func GetApp(id int, full ...bool) (app App, err error) {
 		return app, ErrInvalidAppID
 	}
 
-	if len(full) > 0 && full[0] == true {
+	if len(full) > 0 && full[0] {
 
 		// Load from Mongo
 		err = FindOne(CollectionApps, bson.D{{"_id", id}}, nil, nil, &app)
