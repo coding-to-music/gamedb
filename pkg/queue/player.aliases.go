@@ -5,9 +5,11 @@ import (
 
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type PlayersAliasesMessage struct {
@@ -36,6 +38,7 @@ func playerAliasesHandler(messages []*rabbit.Message) {
 		}
 
 		var playerAliases []mongo.PlayerAlias
+		var playerAliasStrings []string
 
 		for _, v := range aliases {
 
@@ -56,9 +59,29 @@ func playerAliasesHandler(messages []*rabbit.Message) {
 				PlayerName: v.Alias,
 				Time:       t.Unix(),
 			})
+
+			playerAliasStrings = append(playerAliasStrings, v.Alias)
 		}
 
 		err = mongo.UpdatePlayerAliases(playerAliases)
+		if err != nil {
+			log.Err(err, payload.PlayerID)
+			sendToRetryQueue(message)
+			continue
+		}
+
+		// Update player row
+		_, err = mongo.UpdateOne(mongo.CollectionPlayers, bson.D{{"_id", payload.PlayerID}}, bson.D{
+			{"aliases", playerAliasStrings},
+		})
+		if err != nil {
+			log.Err(err, payload.PlayerID)
+			sendToRetryQueue(message)
+			continue
+		}
+
+		// Clear player cache
+		err = memcache.Delete(memcache.MemcachePlayer(payload.PlayerID).Key)
 		if err != nil {
 			log.Err(err, payload.PlayerID)
 			sendToRetryQueue(message)
