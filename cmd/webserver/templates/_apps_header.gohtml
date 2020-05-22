@@ -21,21 +21,21 @@
                 {{if endsWith .Path "/upcoming" }}
                     <span class="nav-link active" role="tab"><i class="fas fa-gamepad"></i> Upcoming</span>
                 {{else}}
-                    <a class="nav-link" href="/upcoming" role="tab"><i class="fas fa-gamepad"></i> Upcoming</a>
+                    <a class="nav-link" href="/games/upcoming" role="tab"><i class="fas fa-gamepad"></i> Upcoming</a>
                 {{end}}
             </li>
             <li class="nav-item">
                 {{if endsWith .Path "/sales" }}
                     <span class="nav-link active" role="tab"><i class="fas fa-gamepad"></i> Sales</span>
                 {{else}}
-                    <a class="nav-link" href="/sales" role="tab"><i class="fas fa-gamepad"></i> Sales</a>
+                    <a class="nav-link" href="/games/sales" role="tab"><i class="fas fa-gamepad"></i> Sales</a>
                 {{end}}
             </li>
             <li class="nav-item">
                 {{if endsWith .Path "/new-releases" }}
                     <span class="nav-link active" role="tab"><i class="fas fa-gamepad"></i> New Releases</span>
                 {{else}}
-                    <a class="nav-link" href="/new-releases" role="tab"><i class="fas fa-gamepad"></i> New Releases</a>
+                    <a class="nav-link" href="/games/new-releases" role="tab"><i class="fas fa-gamepad"></i> New Releases</a>
                 {{end}}
             </li>
             {{/*            <li class="nav-item">*/}}
@@ -53,10 +53,10 @@
                 {{end}}
             </li>
             <li class="nav-item">
-                {{if endsWith .Path "/wishlists" }}
+                {{if endsWith .Path "/games/wishlists" }}
                     <span class="nav-link active" role="tab"><i class="fas fa-gamepad"></i> Wishlists</span>
                 {{else}}
-                    <a class="nav-link" href="/wishlists" role="tab"><i class="fas fa-gamepad"></i> Wishlists</a>
+                    <a class="nav-link" href="/games/wishlists" role="tab"><i class="fas fa-gamepad"></i> Wishlists</a>
                 {{end}}
             </li>
 

@@ -24,8 +24,12 @@ func GamesRouter() http.Handler {
 	r.Get("/", appsHandler)
 	r.Get("/games.json", appsAjaxHandler)
 	r.Get("/random", appsRandomHandler)
+	r.Mount("/upcoming", upcomingRouter())
 	r.Mount("/achievements", appsAchievementsRouter())
+	r.Mount("/new-releases", newReleasesRouter())
+	r.Mount("/sales", salesRouter())
 	r.Mount("/trending", trendingRouter())
+	r.Mount("/wishlists", wishlistsRouter())
 	r.Mount("/{id}", appRouter())
 	return r
 }

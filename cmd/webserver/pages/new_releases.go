@@ -16,7 +16,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func NewReleasesRouter() http.Handler {
+func newReleasesRouter() http.Handler {
 
 	r := chi.NewRouter()
 	r.Get("/", newReleasesHandler)

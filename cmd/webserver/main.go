@@ -95,7 +95,6 @@ func main() {
 	r.Mount("/achievements", pages.AchievementsRouter())
 	r.Mount("/admin", pages.AdminRouter())
 	r.Mount("/api", pages.APIRouter())
-	r.Mount("/games", pages.GamesRouter())
 	r.Mount("/badges", pages.BadgesRouter())
 	r.Mount("/bundles", pages.BundlesRouter())
 	r.Mount("/categories", pages.CategoriesRouter())
@@ -111,6 +110,7 @@ func main() {
 	r.Mount("/experience", pages.ExperienceRouter())
 	r.Mount("/forgot", pages.ForgotRouter())
 	r.Mount("/franchise", pages.FranchiseRouter())
+	r.Mount("/games", pages.GamesRouter())
 	r.Mount("/genres", pages.GenresRouter())
 	r.Mount("/groups", pages.GroupsRouter())
 	r.Mount("/health-check", pages.HealthCheckRouter())
@@ -118,7 +118,6 @@ func main() {
 	r.Mount("/info", pages.InfoRouter())
 	r.Mount("/login", pages.LoginRouter())
 	r.Mount("/logout", pages.LogoutRouter())
-	r.Mount("/new-releases", pages.NewReleasesRouter())
 	r.Mount("/news", pages.NewsRouter())
 	r.Mount("/packages", pages.PackagesRouter())
 	r.Mount("/players", pages.PlayersRouter())
@@ -126,42 +125,31 @@ func main() {
 	r.Mount("/product-keys", pages.ProductKeysRouter())
 	r.Mount("/publishers", pages.PublishersRouter())
 	r.Mount("/queues", pages.QueuesRouter())
-	r.Mount("/sales", pages.SalesRouter())
 	r.Mount("/settings", pages.SettingsRouter())
 	r.Mount("/signup", pages.SignupRouter())
 	r.Mount("/stats", pages.StatsRouter())
 	r.Mount("/steam-api", pages.SteamAPIRouter())
 	r.Mount("/tags", pages.TagsRouter())
-	r.Mount("/upcoming", pages.UpcomingRouter())
 	r.Mount("/webhooks", pages.WebhooksRouter())
 	r.Mount("/websocket", pages.WebsocketsRouter())
-	r.Mount("/wishlists", pages.WishlistsRouter())
 
 	// Sitemaps, Google doesnt like having a sitemap in a sub directory
-	r.Get("/sitemap.xml", pages.SiteMapIndexHandler)
-	r.Get("/sitemap-pages.xml", pages.SiteMapPagesHandler)
-	r.Get("/sitemap-games-by-score.xml", pages.SiteMapGamesByScoreHandler)
+	r.Get("/sitemap-badges.xml", pages.SiteMapBadges)
 	r.Get("/sitemap-games-by-players.xml", pages.SiteMapGamesByPlayersHandler)
+	r.Get("/sitemap-games-by-score.xml", pages.SiteMapGamesByScoreHandler)
 	r.Get("/sitemap-games-new.xml", pages.SiteMapGamesNewHandler)
 	r.Get("/sitemap-games-upcoming.xml", pages.SiteMapGamesUpcomingHandler)
-	r.Get("/sitemap-players-by-level.xml", pages.SiteMapPlayersByLevel)
-	r.Get("/sitemap-players-by-games.xml", pages.SiteMapPlayersByGamesCount)
 	r.Get("/sitemap-groups.xml", pages.SiteMapGroups)
-	r.Get("/sitemap-badges.xml", pages.SiteMapBadges)
+	r.Get("/sitemap-pages.xml", pages.SiteMapPagesHandler)
+	r.Get("/sitemap-players-by-games.xml", pages.SiteMapPlayersByGamesCount)
+	r.Get("/sitemap-players-by-level.xml", pages.SiteMapPlayersByLevel)
+	r.Get("/sitemap.xml", pages.SiteMapIndexHandler)
 
 	// Shortcuts
-	r.Get("/[ag]{id:[0-9]+}", func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, "/games/"+chi.URLParam(r, "id"), http.StatusFound)
-	})
-	r.Get("/s{id:[0-9]+}", func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, "/packages/"+chi.URLParam(r, "id"), http.StatusFound)
-	})
-	r.Get("/p{id:[0-9]+}", func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, "/players/"+chi.URLParam(r, "id"), http.StatusFound)
-	})
-	r.Get("/b{id:[0-9]+}", func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, "/bundles/"+chi.URLParam(r, "id"), http.StatusFound)
-	})
+	r.Get("/[ag]{id:[0-9]+}", func(w http.ResponseWriter, r *http.Request) { redirectHandler("/games/" + chi.URLParam(r, "id")) })
+	r.Get("/s{id:[0-9]+}", func(w http.ResponseWriter, r *http.Request) { redirectHandler("/packages/" + chi.URLParam(r, "id")) })
+	r.Get("/p{id:[0-9]+}", func(w http.ResponseWriter, r *http.Request) { redirectHandler("/players/" + chi.URLParam(r, "id")) })
+	r.Get("/b{id:[0-9]+}", func(w http.ResponseWriter, r *http.Request) { redirectHandler("/bundles/" + chi.URLParam(r, "id")) })
 
 	// Profiling
 	r.Route("/debug", func(r chi.Router) {
@@ -184,14 +172,22 @@ func main() {
 	// r.Get("/ads.txt", rootFileHandler)
 
 	// Redirects
-	r.Get("/sitemap/index.xml", redirectHandler("/sitemap.xml"))
-	r.Get("/trending", redirectHandler("/games/trending"))
-	r.Get("/chat-bot", redirectHandler("/discord-bot"))
-	r.Get("/chat", redirectHandler("/discord-server"))
-	r.Get("/chat/{id}", redirectHandler("/discord-server"))
-	r.Get("/apps", redirectHandler("/games"))
 	r.Get("/app/{id:[0-9]+}", func(w http.ResponseWriter, r *http.Request) { redirectHandler("/games/" + chi.URLParam(r, "id")) })
 	r.Get("/app/{id:[0-9]+}/{slug}", func(w http.ResponseWriter, r *http.Request) { redirectHandler("/games/" + chi.URLParam(r, "id") + "/" + chi.URLParam(r, "slug")) })
+	r.Get("/apps", redirectHandler("/games"))
+	r.Get("/chat", redirectHandler("/discord-server"))
+	r.Get("/chat-bot", redirectHandler("/discord-bot"))
+	r.Get("/chat/{id}", redirectHandler("/discord-server"))
+	r.Get("/sitemap/index.xml", redirectHandler("/sitemap.xml"))
+
+	// Game Redirects
+	r.Get("/achievements", redirectHandler("/games/achievements"))
+	r.Get("/new-releases", redirectHandler("/games/new-releases"))
+	r.Get("/random", redirectHandler("/games/random"))
+	r.Get("/sales", redirectHandler("/games/sales"))
+	r.Get("/trending", redirectHandler("/games/trending"))
+	r.Get("/upcoming", redirectHandler("/games/upcoming"))
+	r.Get("/wishlists", redirectHandler("/games/wishlists"))
 
 	// 404
 	r.NotFound(pages.Error404Handler)

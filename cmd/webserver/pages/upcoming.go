@@ -15,7 +15,7 @@ import (
 
 var upcomingFilter = bson.D{{"release_date_unix", bson.M{"$gte": time.Now().AddDate(0, 0, -1).Unix()}}}
 
-func UpcomingRouter() http.Handler {
+func upcomingRouter() http.Handler {
 
 	r := chi.NewRouter()
 	r.Get("/", upcomingHandler)

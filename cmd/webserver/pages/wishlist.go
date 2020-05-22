@@ -14,7 +14,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func WishlistsRouter() http.Handler {
+func wishlistsRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", wishlistsHandler)
 	r.Get("/games.json", wishlistAppsHandler)

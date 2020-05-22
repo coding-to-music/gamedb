@@ -44,8 +44,6 @@ func SiteMapPagesHandler(w http.ResponseWriter, r *http.Request) {
 	var pages = []string{
 		"/",
 		"/api",
-		"/games/achievements",
-		"/games/random",
 		"/badges",
 		"/changes",
 		"/chat",
@@ -56,6 +54,13 @@ func SiteMapPagesHandler(w http.ResponseWriter, r *http.Request) {
 		"/donate",
 		"/experience",
 		"/games",
+		"/games/achievements",
+		"/games/new-releases",
+		"/games/random",
+		"/games/sales",
+		"/games/trending",
+		"/games/upcoming",
+		"/games/wishlist",
 		"/genres",
 		"/groups",
 		"/info",
@@ -69,7 +74,6 @@ func SiteMapPagesHandler(w http.ResponseWriter, r *http.Request) {
 		"/stats",
 		"/steam-api",
 		"/tags",
-		"/upcoming",
 	}
 
 	sm := sitemap.NewSitemap()
