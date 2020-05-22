@@ -150,7 +150,7 @@ func main() {
 	r.Get("/sitemap-badges.xml", pages.SiteMapBadges)
 
 	// Shortcuts
-	r.Get("/a{id:[0-9]+}", func(w http.ResponseWriter, r *http.Request) {
+	r.Get("/[ag]{id:[0-9]+}", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/games/"+chi.URLParam(r, "id"), http.StatusFound)
 	})
 	r.Get("/s{id:[0-9]+}", func(w http.ResponseWriter, r *http.Request) {
@@ -186,24 +186,12 @@ func main() {
 	// Redirects
 	r.Get("/sitemap/index.xml", redirectHandler("/sitemap.xml"))
 	r.Get("/trending", redirectHandler("/games/trending"))
-	r.Get("/apps", func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, "/games"+"?"+r.URL.RawQuery, http.StatusFound)
-	})
-	r.Get("/apps/{id:[0-9]+}", func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, "/games/"+chi.URLParam(r, "id"), http.StatusFound)
-	})
-	r.Get("/apps/{id:[0-9]+}/{slug}", func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, "/games/"+chi.URLParam(r, "id")+"/"+chi.URLParam(r, "id"), http.StatusFound)
-	})
-	r.Get("/chat-bot", func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, "/discord-bot", http.StatusFound)
-	})
-	r.Get("/chat", func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, "/discord-server", http.StatusFound)
-	})
-	r.Get("/chat/{id}", func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, "/discord-server", http.StatusFound)
-	})
+	r.Get("/chat-bot", redirectHandler("/discord-bot"))
+	r.Get("/chat", redirectHandler("/discord-server"))
+	r.Get("/chat/{id}", redirectHandler("/discord-server"))
+	r.Get("/apps", redirectHandler("/games"))
+	r.Get("/app/{id:[0-9]+}", func(w http.ResponseWriter, r *http.Request) { redirectHandler("/games/" + chi.URLParam(r, "id")) })
+	r.Get("/app/{id:[0-9]+}/{slug}", func(w http.ResponseWriter, r *http.Request) { redirectHandler("/games/" + chi.URLParam(r, "id") + "/" + chi.URLParam(r, "slug")) })
 
 	// 404
 	r.NotFound(pages.Error404Handler)
@@ -215,6 +203,9 @@ func main() {
 
 func redirectHandler(url string) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.RawQuery != "" {
+			url += "?" + r.URL.RawQuery
+		}
 		http.Redirect(w, r, url, http.StatusFound)
 	}
 }
