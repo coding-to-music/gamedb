@@ -184,6 +184,8 @@ func adminQueues(r *http.Request) {
 
 		log.Info("Queueing apps")
 
+		val = strings.TrimSpace(val)
+
 		ts, err := strconv.ParseInt(val, 10, 64)
 		if err == nil {
 
@@ -272,9 +274,40 @@ func adminQueues(r *http.Request) {
 
 		for _, val := range vals {
 
+			val = strings.TrimSpace(val)
+
 			err := queue.ProduceGroup(queue.GroupMessage{ID: val, UserAgent: &ua})
 			err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
 			log.Err(err, r)
+		}
+	}
+
+	if val := r.PostForm.Get("group-members"); val != "" {
+
+		vals := strings.Split(val, ",")
+		for _, val := range vals {
+
+			val = strings.TrimSpace(val)
+
+			page := 1
+			for {
+				resp, _, err := steam.GetSteam().GetGroup(val, "", page)
+				err = steam.AllowSteamCodes(err)
+
+				for _, playerID := range resp.Members.SteamID64 {
+
+					err = queue.ProducePlayer(queue.PlayerMessage{ID: int64(playerID)})
+					err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
+					log.Err(err, r)
+
+				}
+
+				if resp.NextPageLink == "" {
+					break
+				}
+
+				page++
+			}
 		}
 	}
 
