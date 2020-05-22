@@ -5,7 +5,7 @@ if ($appPage.length > 0) {
     $('#details video').on('click', function (e) {
         const video = $(this)[0];
         if (video.paused) {
-            video.play()
+            video.play();
         } else {
             $('a.nav-link[href="#media"]').tab('show');
             $("#scroll-to-videos").trigger('click');
@@ -363,7 +363,7 @@ if ($appPage.length > 0) {
                             } else if (this.series.name === 'Positive Reviews') {
                                 return this.y.toLocaleString() + ' Positive reviews on ' + time;
                             } else if (this.series.name === 'Negative Reviews') {
-                                return this.y.toLocaleString() + ' Negative reviews on ' + time;
+                                return Math.abs(this.y).toLocaleString() + ' Negative reviews on ' + time;
                             }
                         },
                     },
