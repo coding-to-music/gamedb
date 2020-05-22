@@ -238,7 +238,7 @@ func appHandler(messages []*rabbit.Message) {
 			QueueAppsSameowners:   AppSameownersMessage{ID: app.ID},
 			QueueAppsSteamspy:     AppSteamspyMessage{ID: app.ID},
 			QueueAppsTwitch:       AppTwitchMessage{ID: app.ID},
-			QueueAppsReviews:      AppReviewsMessage{ID: app.ID},
+			QueueAppsReviews:      AppReviewsMessage{AppID: app.ID},
 			QueueGroups:           GroupMessage{ID: app.GroupID},
 			QueueAppsSearch:       AppsSearchMessage{App: app},
 			QueueAppsItems:        AppItemsMessage{AppID: app.ID, OldDigect: app.ItemsDigest},

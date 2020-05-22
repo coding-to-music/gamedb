@@ -357,6 +357,10 @@ func ProduceAppsInflux(id int) (err error) {
 	return produce(QueueAppsInflux, AppInfluxMessage{ID: id})
 }
 
+func ProduceAppsReviews(id int) (err error) {
+	return produce(QueueAppsReviews, AppReviewsMessage{AppID: id})
+}
+
 func ProduceAppsYoutube(id int, name string) (err error) {
 	return produce(QueueAppsYoutube, AppYoutubeMessage{ID: id, Name: name})
 }

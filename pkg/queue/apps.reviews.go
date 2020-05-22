@@ -18,7 +18,7 @@ import (
 )
 
 type AppReviewsMessage struct {
-	ID int `json:"id"`
+	AppID int `json:"id"`
 }
 
 var (
@@ -38,7 +38,7 @@ func appReviewsHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		resp, _, err := steamHelper.GetSteam().GetReviews(payload.ID)
+		resp, _, err := steamHelper.GetSteam().GetReviews(payload.AppID)
 		err = steamHelper.AllowSteamCodes(err)
 		if err != nil {
 			steamHelper.LogSteamError(err)
@@ -78,9 +78,7 @@ func appReviewsHandler(messages []*rabbit.Message) {
 			if val, ok := playersMap[int64(v.Author.SteamID)]; ok {
 				player = val
 			} else {
-				player = mongo.Player{}
 				player.ID = int64(v.Author.SteamID)
-				player.PersonaName = "Unknown"
 			}
 
 			// Remove extra new lines
@@ -89,7 +87,7 @@ func appReviewsHandler(messages []*rabbit.Message) {
 			reviews.Reviews = append(reviews.Reviews, helpers.AppReview{
 				Review:     helpers.BBCodeCompiler.Compile(v.Review),
 				PlayerPath: player.GetPath(),
-				PlayerName: player.PersonaName,
+				PlayerName: player.GetName(),
 				Created:    time.Unix(v.TimestampCreated, 0).Format(helpers.DateYear),
 				VotesGood:  v.VotesUp,
 				VotesFunny: v.VotesFunny,
@@ -117,16 +115,16 @@ func appReviewsHandler(messages []*rabbit.Message) {
 			{"reviews_count", reviews.GetTotal()},
 		}
 
-		_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", payload.ID}}, update)
+		_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", payload.AppID}}, update)
 		if err != nil {
-			log.Err(err, payload.ID)
+			log.Err(err, payload.AppID)
 			sendToRetryQueue(message)
 			continue
 		}
 
-		err = memcache.Delete(memcache.MemcacheApp(payload.ID).Key)
+		err = memcache.Delete(memcache.MemcacheApp(payload.AppID).Key)
 		if err != nil {
-			log.Err(err, payload.ID)
+			log.Err(err, payload.AppID)
 			sendToRetryQueue(message)
 			continue
 		}
@@ -134,7 +132,7 @@ func appReviewsHandler(messages []*rabbit.Message) {
 		_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, influx.Point{
 			Measurement: string(influxHelper.InfluxMeasurementApps),
 			Tags: map[string]string{
-				"app_id": strconv.Itoa(payload.ID),
+				"app_id": strconv.Itoa(payload.AppID),
 			},
 			Fields: map[string]interface{}{
 				"reviews_score":    score,
@@ -145,7 +143,7 @@ func appReviewsHandler(messages []*rabbit.Message) {
 			Precision: "m",
 		})
 		if err != nil {
-			log.Err(err, payload.ID)
+			log.Err(err, payload.AppID)
 			sendToRetryQueue(message)
 			continue
 		}
