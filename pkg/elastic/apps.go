@@ -13,7 +13,7 @@ type App struct {
 	ID      int      `json:"id"`
 	Name    string   `json:"name"`
 	Players int      `json:"players"`
-	Aliases []string `json:"aliases"`
+	Aliases []string `json:"aliases"` // Hardcoded
 	// Icon       string                `json:"icon"`
 	// Followers  int                   `json:"followers"`
 	// Score      float64               `json:"score"`
@@ -42,7 +42,8 @@ func SearchApps(limit int, offset int, search string, sorters []elastic.Sorter) 
 		Index(IndexApps).
 		From(offset).
 		Size(limit).
-		TrackTotalHits(true)
+		TrackTotalHits(true).
+		Aggregation("type", elastic.NewTermsAggregation().Field("type").Size(10).OrderByCountDesc())
 
 	if search != "" {
 
