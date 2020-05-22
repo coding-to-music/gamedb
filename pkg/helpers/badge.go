@@ -156,6 +156,7 @@ var BuiltInSpecialBadges = map[int]BuiltInbadge{
 	44: {BadgeID: 44, Icon: "44_winter2019/level15_80.png", Name: "Winter Sale 2019"},
 	45: {BadgeID: 45, Icon: "45_steamville2019/key_to_city_80.png", Name: "Steamville 2019"},
 	46: {BadgeID: 46, Icon: "46_lny2020/10_80.png", Name: "Lunar New Year 2020"},
+	47: {BadgeID: 47, Icon: "47_springcleaning2020/dewey_badge_3.0_80x80.png", Name: "Spring Cleaning Event 2020"},
 }
 
 var BuiltInEventBadges = map[int]BuiltInbadge{
