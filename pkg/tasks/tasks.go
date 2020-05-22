@@ -51,6 +51,7 @@ var (
 		DevCodeRun{},
 		GroupsQueueElastic{},
 		GroupsUpdateTop{},
+		InstagramPost{},
 		MemcacheClearAll{},
 		PlayersQueueAll{},
 		PlayersQueueElastic{},
@@ -63,8 +64,6 @@ var (
 		SteamOnline{},
 		TasksGenres{},
 		TasksPublishers{},
-		// InstagramPost{},
-		// Wishlists{},
 	}
 )
 
