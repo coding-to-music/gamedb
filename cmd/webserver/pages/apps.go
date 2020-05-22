@@ -365,9 +365,6 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		filter = append(filter, bson.E{Key: "$text", Value: bson.M{"$search": search}})
 	}
 
-	// Temp
-	filter = append(filter, bson.E{Key: "_id", Value: bson.M{"$gt": 0}})
-
 	// Get apps
 	var apps []mongo.App
 	wg.Add(1)
