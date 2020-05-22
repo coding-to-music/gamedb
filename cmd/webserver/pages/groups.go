@@ -64,12 +64,11 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var search = query.GetSearchString("search")
 		if search != "" {
 			musts = append(musts,
-				// Min should match is 2 as score query always matches, plus one other
-				elastic.NewBoolQuery().MinimumNumberShouldMatch(2).Should(
+				elastic.NewFunctionScoreQuery().AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("members").Factor(0.003)),
+				elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
 					elastic.NewMatchQuery("name", search).Fuzziness("1").Boost(3),
 					elastic.NewMatchQuery("abbreviation", search).Fuzziness("1").Boost(2),
 					elastic.NewMatchQuery("url", search).Fuzziness("1").Boost(2),
-					elastic.NewFunctionScoreQuery().AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("members").Factor(0.003)),
 				),
 			)
 		}
@@ -77,11 +76,11 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var hideerrored = query.GetSearchString("filter")
 		if hideerrored == "1" {
 			filters = append(filters, elastic.NewTermQuery("error", false))
+		} else if hideerrored == "0" {
+			filters = append(filters, elastic.NewTermQuery("error", true))
 		}
 
-		var elasticQuery = elastic.NewBoolQuery().
-			Must(musts...).
-			Filter(filters...)
+		var elasticQuery = elastic.NewBoolQuery().Must(musts...).Filter(filters...)
 
 		groups, filtered, err = elasticHelpers.SearchGroups(100, query.GetOffset(), elasticQuery, sorters)
 		if err != nil {
