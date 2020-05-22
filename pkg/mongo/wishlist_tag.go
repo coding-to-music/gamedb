@@ -25,7 +25,7 @@ package mongo
 // }
 //
 // func (wl WishlistTag) GetTagPath() string {
-// 	return "/apps?tags=" + strconv.Itoa(wl.TagID)
+// 	return "/games?tags=" + strconv.Itoa(wl.TagID)
 // }
 //
 // func GetWishlistTags() (tags []WishlistTag, err error) {

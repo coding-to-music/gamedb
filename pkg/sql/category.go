@@ -22,7 +22,7 @@ type Category struct {
 }
 
 func (category Category) GetPath() string {
-	return "/apps?categories=" + strconv.Itoa(category.ID)
+	return "/games?categories=" + strconv.Itoa(category.ID)
 }
 
 func (category Category) GetName() (name string) {

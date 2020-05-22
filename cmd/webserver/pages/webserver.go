@@ -462,7 +462,7 @@ func (t GlobalTemplate) GetVersionHash() string {
 
 func (t GlobalTemplate) IsAppsPage() bool {
 
-	if strings.HasPrefix(t.Path, "/apps") {
+	if strings.HasPrefix(t.Path, "/games") {
 		return true
 	}
 	return helpers.SliceHasString(strings.TrimPrefix(t.Path, "/"), []string{"new-releases", "upcoming", "wishlists", "packages", "bundles", "price-changes", "changes", "coop", "sales"})

@@ -129,7 +129,7 @@
                                         {{ if ne .App.GameName "" }}
                                             <tr>
                                                 <th scope="row" nowrap="nowrap" class="thin">For Game</th>
-                                                <td><a href="/apps/{{ .App.GameID }}">{{ .App.GameName }}</a></td>
+                                                <td><a href="/games/{{ .App.GameID }}">{{ .App.GameName }}</a></td>
                                             </tr>
                                         {{ end }}
 
@@ -193,7 +193,7 @@
                                                 <th scope="row" nowrap="nowrap" class="thin">Developers</th>
                                                 <td>
                                                     {{ range $key, $value := .Developers }}
-                                                        <a class="badge badge-success" href="/apps?developers={{ .ID }}">{{ .GetName }}</a>
+                                                        <a class="badge badge-success" href="/games?developers={{ .ID }}">{{ .GetName }}</a>
                                                     {{ end }}
                                                 </td>
                                             </tr>
@@ -204,7 +204,7 @@
                                                 <th scope="row" nowrap="nowrap" class="thin">Publishers</th>
                                                 <td>
                                                     {{ range $key, $value := .Publishers }}
-                                                        <a class="badge badge-success" href="/apps?publishers={{ .ID }}">{{ .GetName }}</a>
+                                                        <a class="badge badge-success" href="/games?publishers={{ .ID }}">{{ .GetName }}</a>
                                                     {{ end }}
                                                 </td>
                                             </tr>
@@ -254,7 +254,7 @@
                                                 <th scope="row" nowrap="nowrap" class="thin">Genres</th>
                                                 <td>
                                                     {{ range $key, $value := .Genres }}
-                                                        <a class="badge badge-success" href="/apps?genres={{ .ID }}">{{ .GetName }}</a>
+                                                        <a class="badge badge-success" href="/games?genres={{ .ID }}">{{ .GetName }}</a>
                                                     {{ end }}
                                                 </td>
                                             </tr>
@@ -265,7 +265,7 @@
                                                 <th scope="row" nowrap="nowrap" class="thin">Categories</th>
                                                 <td>
                                                     {{ range $key, $value := .Categories }}
-                                                        <a class="badge badge-success" href="/apps?categories={{ .ID }}">{{ .GetName }}</a>
+                                                        <a class="badge badge-success" href="/games?categories={{ .ID }}">{{ .GetName }}</a>
                                                     {{ end }}
                                                 </td>
                                             </tr>
@@ -277,7 +277,7 @@
                                                 <div id="tags">
                                                     {{ range $key, $value := .App.TagCounts }}
                                                         <div style="width: {{ percent .Count $.TagsMax }}%;"></div>
-                                                        <a class="float-left" href="/apps?tags={{ .ID }}">{{ .Name }}</a>
+                                                        <a class="float-left" href="/games?tags={{ .ID }}">{{ .Name }}</a>
                                                         <span class="float-right">{{ comma .Count }} <i class="fas fa-thumbs-up"></i></span>
                                                     {{ end }}
                                                 </div>
@@ -295,7 +295,7 @@
                     {{/* Prices */}}
                     <div class="tab-pane" id="prices" role="tabpanel">
 
-                        <div id="prices-chart" data-ajax="/apps/{{ .App.ID }}/prices.json">
+                        <div id="prices-chart" data-ajax="/games/{{ .App.ID }}/prices.json">
                             <i class="fas fa-spinner fa-spin"></i>
                         </div>
 
@@ -421,7 +421,7 @@
                         {{/* Top players table */}}
                         <h5>Top Players</h5>
                         <div class="table-responsive">
-                            <table class="table table-hover table-striped table-counts mb-0" data-path="/apps/{{ .App.ID }}/time.json" id="top-players-table">
+                            <table class="table table-hover table-striped table-counts mb-0" data-path="/games/{{ .App.ID }}/time.json" id="top-players-table">
                                 <thead class="thead-light">
                                 <tr>
                                     <th scope="col" class="thin">Rank</th>
@@ -451,7 +451,7 @@
                         </div>
 
                         <div class="table-responsive">
-                            <table class="table table-hover table-striped table-counts mb-0" data-path="/apps/{{ .App.ID }}/dlc.json" id="dlc-table">
+                            <table class="table table-hover table-striped table-counts mb-0" data-path="/games/{{ .App.ID }}/dlc.json" id="dlc-table">
                                 <thead class="thead-light">
                                 <tr>
                                     <th scope="col">Name</th>
@@ -603,7 +603,7 @@
                         {{ end }}
 
                         <div class="table-responsive">
-                            <table class="table table-hover table-striped table-counts mb-0" data-path="/apps/{{ .App.ID }}/achievements.json" id="achievements-table">
+                            <table class="table table-hover table-striped table-counts mb-0" data-path="/games/{{ .App.ID }}/achievements.json" id="achievements-table">
                                 <thead class="thead-light">
                                 <tr>
                                     <th scope="col">Name</th>
@@ -624,7 +624,7 @@
                         {{if gt (len .App.NewsIDs) 0}}
 
                             <div class="table-responsive">
-                                <table class="table table-hover table-striped mb-0" data-path="/apps/{{ .App.ID }}/news.json" id="news-table">
+                                <table class="table table-hover table-striped mb-0" data-path="/games/{{ .App.ID }}/news.json" id="news-table">
                                     <thead class="thead-light">
                                     <tr>
                                         <th scope="col">Title</th>
@@ -658,7 +658,7 @@
                         </div>
 
                         <div class="table-responsive">
-                            <table class="table table-hover table-striped mb-0" data-path="/apps/{{ .App.ID }}/items.json" id="items-table">
+                            <table class="table table-hover table-striped mb-0" data-path="/games/{{ .App.ID }}/items.json" id="items-table">
                                 <thead class="thead-light">
                                 <tr>
                                     <th scope="col" class="thin">ID</th>
@@ -1018,8 +1018,8 @@
                                                             <div class="json-hover">{{ .EncryptedManifests }}</div>
                                                         </td>
                                                         <td>{{ bytes .MaxSize }}</td>
-                                                        <td>{{ if ne .App 0 }}<a href="/apps/{{ .App }}">{{ .App }}</a>{{ end }}</td>
-                                                        <td>{{ if ne .DLCApp 0 }}<a href="/apps/{{ .DLCApp }}">{{ .DLCApp }}</a>{{ end }}</td>
+                                                        <td>{{ if ne .App 0 }}<a href="/games/{{ .App }}">{{ .App }}</a>{{ end }}</td>
+                                                        <td>{{ if ne .DLCApp 0 }}<a href="/games/{{ .DLCApp }}">{{ .DLCApp }}</a>{{ end }}</td>
                                                         <td>{{ if .SystemDefined }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
                                                         <td>{{ if .Optional }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
                                                         <td>{{ if .SharedInstall }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>

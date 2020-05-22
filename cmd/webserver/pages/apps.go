@@ -18,11 +18,11 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func AppsRouter() http.Handler {
+func GamesRouter() http.Handler {
 
 	r := chi.NewRouter()
 	r.Get("/", appsHandler)
-	r.Get("/apps.json", appsAjaxHandler)
+	r.Get("/games.json", appsAjaxHandler)
 	r.Get("/random", appsRandomHandler)
 	r.Mount("/achievements", appsAchievementsRouter())
 	r.Mount("/trending", trendingRouter())

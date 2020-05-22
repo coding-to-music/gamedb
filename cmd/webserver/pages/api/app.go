@@ -9,7 +9,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/mongo"
 )
 
-func (s Server) GetAppsId(w http.ResponseWriter, r *http.Request) {
+func (s Server) GetGamesId(w http.ResponseWriter, r *http.Request) {
 
 	s.call(w, r, func(w http.ResponseWriter, r *http.Request) (code int, response interface{}) {
 

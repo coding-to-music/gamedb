@@ -34,14 +34,14 @@ const (
 )
 
 var (
-	appIDLinkType = PicsKey{FormatType: picsTypeLink, Link: "/apps/$val$"}
+	appIDLinkType = PicsKey{FormatType: picsTypeLink, Link: "/games/$val$"}
 )
 
 var CommonKeys = map[string]PicsKey{
 	"allowpurchasefromrestrictedcountries": {FormatType: picsTypeBool},
 	"app_retired_publisher_request":        {FormatType: picsTypeBool},
 	"associations":                         {FormatType: picsTypeCustom},
-	"category":                             {FormatType: picsTypeCustom, Link: "/apps?categories=$val$"},
+	"category":                             {FormatType: picsTypeCustom, Link: "/games?categories=$val$"},
 	"clienticns":                           {FormatType: picsTypeLink, Link: helpers.AppIconBase + "$app$/$val$.icns"},
 	"clienticon":                           {FormatType: picsTypeImage, Link: helpers.AppIconBase + "$app$/$val$.ico"},
 	"clienttga":                            {FormatType: picsTypeLink, Link: helpers.AppIconBase + "$app$/$val$.tga"},
@@ -54,7 +54,7 @@ var CommonKeys = map[string]PicsKey{
 	"exfgls":                               {FormatType: picsTypeBool, Description: "Exclude from game library sharing"},
 	"freeondemand":                         {FormatType: picsTypeBool},
 	"gameid":                               appIDLinkType,
-	"genres":                               {FormatType: picsTypeNumberListJSON, Link: "/apps?genres=$val$"},
+	"genres":                               {FormatType: picsTypeNumberListJSON, Link: "/games?genres=$val$"},
 	"has_adult_content":                    {FormatType: picsTypeBool},
 	"header_image":                         {FormatType: picsTypeMap},
 	"icon":                                 {FormatType: picsTypeImage, Link: helpers.AppIconBase + "$app$/$val$.jpg"},
@@ -72,12 +72,12 @@ var CommonKeys = map[string]PicsKey{
 	"openvr_controller_bindings":           {FormatType: picsTypeJSON},
 	"openvrsupport":                        {FormatType: picsTypeBool},
 	"original_release_date":                {FormatType: picsTypeTimestamp},
-	"oslist":                               {FormatType: picsTypeTextListString, Link: "/apps?platforms=$val$"},
+	"oslist":                               {FormatType: picsTypeTextListString, Link: "/games?platforms=$val$"},
 	"osvrsupport":                          {FormatType: picsTypeBool},
 	"parent":                               appIDLinkType,
 	"parentappid":                          appIDLinkType,
 	"playareavr":                           {FormatType: picsTypeJSON},
-	"primary_genre":                        {FormatType: picsTypeLink, Link: "/apps?genres=$val$"},
+	"primary_genre":                        {FormatType: picsTypeLink, Link: "/games?genres=$val$"},
 	"releasestate":                         {FormatType: picsTypeTitle},
 	"releasestateoverrideinverse":          {FormatType: picsTypeBool},
 	"requireskbmouse":                      {FormatType: picsTypeBool},
@@ -87,7 +87,7 @@ var CommonKeys = map[string]PicsKey{
 	"steam_release_date":                   {FormatType: picsTypeTimestamp},
 	"steamchinaapproved":                   {FormatType: picsTypeBool},
 	"store_asset_mtime":                    {FormatType: picsTypeTimestamp},
-	"store_tags":                           {FormatType: picsTypeNumberListJSON, Link: "/apps?tags=$val$"},
+	"store_tags":                           {FormatType: picsTypeNumberListJSON, Link: "/games?tags=$val$"},
 	"supported_languages":                  {FormatType: picsTypeCustom},
 	"systemprofile":                        {FormatType: picsTypeBool},
 	"type":                                 {FormatType: picsTypeTitle},
@@ -142,7 +142,7 @@ var ExtendedKeys = map[string]PicsKey{
 	"languages_macos":                      {FormatType: picsTypeTextListString},
 	"launchredirect":                       appIDLinkType,
 	"legacykeylinkedexternally":            {FormatType: picsTypeBool},
-	"listofdlc":                            {FormatType: picsTypeNumberListString, Link: "/apps/$val$"},
+	"listofdlc":                            {FormatType: picsTypeNumberListString, Link: "/games/$val$"},
 	"loadallbeforelaunch":                  {FormatType: picsTypeBool},
 	"manage_steamguard_useweb":             {FormatType: picsTypeBool},
 	"musicalbumavailableonstore":           {FormatType: picsTypeBool},
@@ -170,7 +170,7 @@ var ExtendedKeys = map[string]PicsKey{
 	"thirdpartycdkey":                      {FormatType: picsTypeBool},
 	"vacmacmodulecache":                    appIDLinkType,
 	"vacmodulecache":                       appIDLinkType,
-	"validoslist":                          {FormatType: picsTypeTextListString, Link: "/apps?platforms=$val$"},
+	"validoslist":                          {FormatType: picsTypeTextListString, Link: "/games?platforms=$val$"},
 	"visibleonlywheninstalled":             {FormatType: picsTypeBool},
 	"visibleonlywhensubscribed":            {FormatType: picsTypeBool},
 	"vrheadsetstreaming":                   {FormatType: picsTypeBool},

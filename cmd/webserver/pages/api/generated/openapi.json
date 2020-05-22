@@ -388,7 +388,7 @@
   },
   "openapi": "3.0.0",
   "paths": {
-    "/apps": {
+    "/games": {
       "get": {
         "parameters": [
           {
@@ -513,7 +513,7 @@
         "summary": "List Apps"
       }
     },
-    "/apps/{id}": {
+    "/games/{id}": {
       "get": {
         "parameters": [
           {

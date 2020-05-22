@@ -25,7 +25,7 @@
                 <a href="{{ .Group.GetURL }}" target="_blank" rel="noopener"><i class="fas fa-link"></i> Steam Group Page</a>
 
                 {{ if eq .Group.Type "game" }}
-                    <a href="/apps/{{ .Group.AppID }}"><i class="fas fa-gamepad"></i> App Page</a>
+                    <a href="/games/{{ .Group.AppID }}"><i class="fas fa-gamepad"></i> App Page</a>
                 {{ end }}
             </small>
 

@@ -23,7 +23,7 @@ type Developer struct {
 }
 
 func (d Developer) GetPath() string {
-	return "/apps?developers=" + strconv.Itoa(d.ID)
+	return "/games?developers=" + strconv.Itoa(d.ID)
 }
 
 func (d Developer) GetName() (name string) {

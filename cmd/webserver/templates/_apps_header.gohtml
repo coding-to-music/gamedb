@@ -11,10 +11,10 @@
         <ul class="nav nav-tabs card-header-tabs nav-fill-mobile" role="tablist">
 
             <li class="nav-item">
-                {{if endsWith .Path "/apps" }}
+                {{if endsWith .Path "/games" }}
                     <span class="nav-link active" role="tab"><i class="fas fa-gamepad"></i> Games</span>
                 {{else}}
-                    <a class="nav-link" href="/apps" role="tab"><i class="fas fa-gamepad"></i> Games</a>
+                    <a class="nav-link" href="/games" role="tab"><i class="fas fa-gamepad"></i> Games</a>
                 {{end}}
             </li>
             <li class="nav-item">
@@ -39,17 +39,17 @@
                 {{end}}
             </li>
             {{/*            <li class="nav-item">*/}}
-            {{/*                {{if endsWith .Path "/apps/trending" }}*/}}
+            {{/*                {{if endsWith .Path "/games/trending" }}*/}}
             {{/*                    <span class="nav-link active" role="tab"><i class="fas fa-gamepad"></i> Trending</span>*/}}
             {{/*                {{else}}*/}}
-            {{/*                    <a class="nav-link" href="/apps/trending" role="tab"><i class="fas fa-gamepad"></i> Trending</a>*/}}
+            {{/*                    <a class="nav-link" href="/games/trending" role="tab"><i class="fas fa-gamepad"></i> Trending</a>*/}}
             {{/*                {{end}}*/}}
             {{/*            </li>*/}}
             <li class="nav-item">
-                {{if endsWith .Path "/apps/achievements" }}
+                {{if endsWith .Path "/games/achievements" }}
                     <span class="nav-link active" role="tab"><i class="fas fa-gamepad"></i> Achievements</span>
                 {{else}}
-                    <a class="nav-link" href="/apps/achievements" role="tab"><i class="fas fa-gamepad"></i> Achievements</a>
+                    <a class="nav-link" href="/games/achievements" role="tab"><i class="fas fa-gamepad"></i> Achievements</a>
                 {{end}}
             </li>
             <li class="nav-item">

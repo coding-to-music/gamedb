@@ -40,7 +40,7 @@ func (p *Publisher) Before(scope *gorm.Scope) error {
 }
 
 func (p Publisher) GetPath() string {
-	return "/apps?publishers=" + strconv.Itoa(p.ID)
+	return "/games?publishers=" + strconv.Itoa(p.ID)
 }
 
 func (p Publisher) GetName() (name string) {

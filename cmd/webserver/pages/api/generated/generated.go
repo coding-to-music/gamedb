@@ -113,8 +113,8 @@ type PlayersResponse struct {
 	Players    []PlayerSchema   `json:"players"`
 }
 
-// GetAppsParams defines parameters for GetApps.
-type GetAppsParams struct {
+// GetGamesParams defines parameters for GetGames.
+type GetGamesParams struct {
 	Key        string       `json:"key"`
 	Offset     *OffsetParam `json:"offset,omitempty"`
 	Limit      *LimitParam  `json:"limit,omitempty"`
@@ -129,8 +129,8 @@ type GetAppsParams struct {
 	Platforms  *[]string    `json:"platforms,omitempty"`
 }
 
-// GetAppsIdParams defines parameters for GetAppsId.
-type GetAppsIdParams struct {
+// GetGamesIdParams defines parameters for GetGamesId.
+type GetGamesIdParams struct {
 	Key string `json:"key"`
 }
 
@@ -156,10 +156,10 @@ type PostPlayersIdParams struct {
 }
 
 type ServerInterface interface {
-	// List Apps (GET /apps)
-	GetApps(w http.ResponseWriter, r *http.Request)
-	// Retrieve App (GET /apps/{id})
-	GetAppsId(w http.ResponseWriter, r *http.Request)
+	// List Apps (GET /games)
+	GetGames(w http.ResponseWriter, r *http.Request)
+	// Retrieve App (GET /games/{id})
+	GetGamesId(w http.ResponseWriter, r *http.Request)
 	// List Players (GET /players)
 	GetPlayers(w http.ResponseWriter, r *http.Request)
 	// Retrieve Player (GET /players/{id})
@@ -168,13 +168,13 @@ type ServerInterface interface {
 	PostPlayersId(w http.ResponseWriter, r *http.Request)
 }
 
-// ParamsForGetApps operation parameters from context
-func ParamsForGetApps(ctx context.Context) *GetAppsParams {
-	return ctx.Value("GetAppsParams").(*GetAppsParams)
+// ParamsForGetGames operation parameters from context
+func ParamsForGetGames(ctx context.Context) *GetGamesParams {
+	return ctx.Value("GetGamesParams").(*GetGamesParams)
 }
 
-// GetApps operation middleware
-func GetAppsCtx(next http.Handler) http.Handler {
+// GetGames operation middleware
+func GetGamesCtx(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
@@ -185,7 +185,7 @@ func GetAppsCtx(next http.Handler) http.Handler {
 		ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
 
 		// Parameter object where we will unmarshal all parameters from the context
-		var params GetAppsParams
+		var params GetGamesParams
 
 		// ------------- Required query parameter "key" -------------
 		if paramValue := r.URL.Query().Get("key"); paramValue != "" {
@@ -322,19 +322,19 @@ func GetAppsCtx(next http.Handler) http.Handler {
 			return
 		}
 
-		ctx = context.WithValue(ctx, "GetAppsParams", &params)
+		ctx = context.WithValue(ctx, "GetGamesParams", &params)
 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
 
-// ParamsForGetAppsId operation parameters from context
-func ParamsForGetAppsId(ctx context.Context) *GetAppsIdParams {
-	return ctx.Value("GetAppsIdParams").(*GetAppsIdParams)
+// ParamsForGetGamesId operation parameters from context
+func ParamsForGetGamesId(ctx context.Context) *GetGamesIdParams {
+	return ctx.Value("GetGamesIdParams").(*GetGamesIdParams)
 }
 
-// GetAppsId operation middleware
-func GetAppsIdCtx(next http.Handler) http.Handler {
+// GetGamesId operation middleware
+func GetGamesIdCtx(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
@@ -356,7 +356,7 @@ func GetAppsIdCtx(next http.Handler) http.Handler {
 		ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
 
 		// Parameter object where we will unmarshal all parameters from the context
-		var params GetAppsIdParams
+		var params GetGamesIdParams
 
 		// ------------- Required query parameter "key" -------------
 		if paramValue := r.URL.Query().Get("key"); paramValue != "" {
@@ -372,7 +372,7 @@ func GetAppsIdCtx(next http.Handler) http.Handler {
 			return
 		}
 
-		ctx = context.WithValue(ctx, "GetAppsIdParams", &params)
+		ctx = context.WithValue(ctx, "GetGamesIdParams", &params)
 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
@@ -601,12 +601,12 @@ func Handler(si ServerInterface) http.Handler {
 // HandlerFromMux creates http.Handler with routing matching OpenAPI spec based on the provided mux.
 func HandlerFromMux(si ServerInterface, r chi.Router) http.Handler {
 	r.Group(func(r chi.Router) {
-		r.Use(GetAppsCtx)
-		r.Get("/apps", si.GetApps)
+		r.Use(GetGamesCtx)
+		r.Get("/games", si.GetGames)
 	})
 	r.Group(func(r chi.Router) {
-		r.Use(GetAppsIdCtx)
-		r.Get("/apps/{id}", si.GetAppsId)
+		r.Use(GetGamesIdCtx)
+		r.Get("/games/{id}", si.GetGamesId)
 	})
 	r.Group(func(r chi.Router) {
 		r.Use(GetPlayersCtx)
@@ -627,29 +627,29 @@ func HandlerFromMux(si ServerInterface, r chi.Router) http.Handler {
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
+	"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",
 }
 
 // GetSwagger returns the Swagger specification corresponding to the generated code

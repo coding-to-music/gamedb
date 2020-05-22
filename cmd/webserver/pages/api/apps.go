@@ -9,11 +9,11 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func (s Server) GetApps(w http.ResponseWriter, r *http.Request) {
+func (s Server) GetGames(w http.ResponseWriter, r *http.Request) {
 
 	s.call(w, r, func(w http.ResponseWriter, r *http.Request) (code int, response interface{}) {
 
-		params := generated.ParamsForGetApps(r.Context())
+		params := generated.ParamsForGetGames(r.Context())
 
 		var limit int64 = 10
 		if params.Limit != nil {

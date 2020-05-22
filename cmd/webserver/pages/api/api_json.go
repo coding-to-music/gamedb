@@ -216,7 +216,7 @@ var Swagger = &openapi3.Swagger{
 		},
 	},
 	Paths: openapi3.Paths{
-		"/apps": &openapi3.PathItem{
+		"/games": &openapi3.PathItem{
 			Get: &openapi3.Operation{
 				Summary: "List Apps",
 				Parameters: openapi3.Parameters{
@@ -240,7 +240,7 @@ var Swagger = &openapi3.Swagger{
 				},
 			},
 		},
-		"/apps/{id}": &openapi3.PathItem{
+		"/games/{id}": &openapi3.PathItem{
 			Get: &openapi3.Operation{
 				Summary: "Retrieve App",
 				Parameters: openapi3.Parameters{

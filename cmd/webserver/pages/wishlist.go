@@ -17,7 +17,7 @@ import (
 func WishlistsRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", wishlistsHandler)
-	r.Get("/apps.json", wishlistAppsHandler)
+	r.Get("/games.json", wishlistAppsHandler)
 	// r.Get("/tags.json", wishlistTagsHandler)
 	return r
 }

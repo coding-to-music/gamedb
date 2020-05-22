@@ -181,7 +181,7 @@ if ($('#stats-page').length > 0) {
                             point: {
                                 events: {
                                     click: function () {
-                                        window.location.href = '/apps?score=' + this.x + '&score=' + (this.x + 1);
+                                        window.location.href = '/games?score=' + this.x + '&score=' + (this.x + 1);
                                     }
                                 }
                             }
@@ -288,7 +288,7 @@ if ($('#stats-page').length > 0) {
                 $container.json2html(
                     data.rows,
                     {
-                        '<>': 'tr', 'data-link': '/apps?types=${type}', 'html': [
+                        '<>': 'tr', 'data-link': '/games?types=${type}', 'html': [
                             {
                                 '<>': 'td', 'html': '${typef}',
                             },

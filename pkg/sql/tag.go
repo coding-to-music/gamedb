@@ -23,7 +23,7 @@ type Tag struct {
 }
 
 func (tag Tag) GetPath() string {
-	return "/apps?tags=" + strconv.Itoa(tag.ID)
+	return "/games?tags=" + strconv.Itoa(tag.ID)
 }
 
 func (tag Tag) GetName() (name string) {

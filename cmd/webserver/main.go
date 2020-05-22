@@ -95,7 +95,7 @@ func main() {
 	r.Mount("/achievements", pages.AchievementsRouter())
 	r.Mount("/admin", pages.AdminRouter())
 	r.Mount("/api", pages.APIRouter())
-	r.Mount("/apps", pages.AppsRouter())
+	r.Mount("/games", pages.GamesRouter())
 	r.Mount("/badges", pages.BadgesRouter())
 	r.Mount("/bundles", pages.BundlesRouter())
 	r.Mount("/categories", pages.CategoriesRouter())
@@ -151,7 +151,7 @@ func main() {
 
 	// Shortcuts
 	r.Get("/a{id:[0-9]+}", func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, "/apps/"+chi.URLParam(r, "id"), http.StatusFound)
+		http.Redirect(w, r, "/games/"+chi.URLParam(r, "id"), http.StatusFound)
 	})
 	r.Get("/s{id:[0-9]+}", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/packages/"+chi.URLParam(r, "id"), http.StatusFound)
@@ -185,15 +185,15 @@ func main() {
 
 	// Redirects
 	r.Get("/sitemap/index.xml", redirectHandler("/sitemap.xml"))
-	r.Get("/trending", redirectHandler("/apps/trending"))
-	r.Get("/games", func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, "/apps"+"?"+r.URL.RawQuery, http.StatusFound)
+	r.Get("/trending", redirectHandler("/games/trending"))
+	r.Get("/apps", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/games"+"?"+r.URL.RawQuery, http.StatusFound)
 	})
-	r.Get("/games/{id:[0-9]+}", func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, "/apps/"+chi.URLParam(r, "id"), http.StatusFound)
+	r.Get("/apps/{id:[0-9]+}", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/games/"+chi.URLParam(r, "id"), http.StatusFound)
 	})
-	r.Get("/games/{id:[0-9]+}/{slug}", func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, "/apps/"+chi.URLParam(r, "id")+"/"+chi.URLParam(r, "id"), http.StatusFound)
+	r.Get("/apps/{id:[0-9]+}/{slug}", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/games/"+chi.URLParam(r, "id")+"/"+chi.URLParam(r, "id"), http.StatusFound)
 	})
 	r.Get("/chat-bot", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/discord-bot", http.StatusFound)

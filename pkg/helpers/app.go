@@ -28,7 +28,7 @@ func IsValidAppID(id int) bool {
 
 func GetAppPath(id int, name string) string {
 
-	p := "/apps/" + strconv.Itoa(id)
+	p := "/games/" + strconv.Itoa(id)
 
 	if name != "" {
 		p = p + "/" + slug.Make(name)

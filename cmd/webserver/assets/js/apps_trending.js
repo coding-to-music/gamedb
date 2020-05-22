@@ -82,7 +82,7 @@ if ($trendingAppsPage.length > 0 || $('#new-releases-page').length > 0) {
 
         $.ajax({
             type: "GET",
-            url: '/apps/trending/charts.json?ids=' + vals,
+            url: '/games/trending/charts.json?ids=' + vals,
             dataType: 'json',
             success: function (datas, textStatus, jqXHR) {
 
