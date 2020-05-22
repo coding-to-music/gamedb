@@ -39,7 +39,6 @@ func (c PlayersQueueRandom) work() (err error) {
 		queue.QueueApps:     10,
 		queue.QueuePackages: 10,
 		queue.QueuePlayers:  10,
-		queue.QueueDelay:    0,
 	}
 
 	var consumers = 1
