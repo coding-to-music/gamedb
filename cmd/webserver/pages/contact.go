@@ -1,7 +1,6 @@
 package pages
 
 import (
-	"errors"
 	"net/http"
 
 	"github.com/Jleagle/recaptcha-go"
@@ -57,15 +56,13 @@ type contactTemplate struct {
 
 func postContactHandler(w http.ResponseWriter, r *http.Request) {
 
-	err := func() (err error) {
-
-		var ErrSomething = errors.New("something went wrong")
+	flashGroup, message := func() (session.FlashGroup, string) {
 
 		// Parse form
-		err = r.ParseForm()
+		err := r.ParseForm()
 		if err != nil {
 			log.Err(err, r)
-			return err
+			return sessionHelpers.SessionBad, "Something has gone wrong (1001)"
 		}
 
 		// Backup
@@ -77,26 +74,27 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Form validation
 		if r.PostForm.Get("name") == "" {
-			return errors.New("Please fill in your name")
+			return sessionHelpers.SessionBad, "Please fill in your name"
 		}
 		if r.PostForm.Get("email") == "" {
-			return errors.New("Please fill in your email")
+			return sessionHelpers.SessionBad, "Please fill in your email"
 		}
 		if r.PostForm.Get("message") == "" {
-			return errors.New("Please fill in a message")
+			return sessionHelpers.SessionBad, "Please fill in a message"
 		}
 
 		// Recaptcha
-		if config.IsProd() {
+		if !config.IsLocal() || true{
+
 			err = recaptcha.CheckFromRequest(r)
 			if err != nil {
 
 				if err == recaptcha.ErrNotChecked {
-					return errors.New("please check the captcha")
+					return sessionHelpers.SessionBad, "Please check the captcha"
 				}
 
 				log.Err(err, r)
-				return ErrSomething
+				return sessionHelpers.SessionBad, "Something has gone wrong (1002)"
 			}
 		}
 
@@ -109,7 +107,7 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 		)
 		if err != nil {
 			log.Err(err, r)
-			return ErrSomething
+			return sessionHelpers.SessionBad, "Something has gone wrong (1003)"
 		}
 
 		// Remove backup
@@ -119,19 +117,16 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 			contactSessionMessage: "",
 		})
 
-		return nil
+		return sessionHelpers.SessionGood, "Message sent!"
 	}()
 
 	// Redirect
+	err := session.SetFlash(r, flashGroup, message)
 	if err != nil {
-		err = session.SetFlash(r, sessionHelpers.SessionBad, err.Error())
-	} else {
-		err = session.SetFlash(r, sessionHelpers.SessionGood, "Message sent!")
+		log.Err(err)
 	}
-	log.Err(err)
 
 	sessionHelpers.Save(w, r)
 
-	log.Err(err, r)
 	http.Redirect(w, r, "/contact", http.StatusFound)
 }
