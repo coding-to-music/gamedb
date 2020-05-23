@@ -28,7 +28,7 @@ func (c BadgesUpdateRandom) work() (err error) {
 
 		err = mongo.UpdateBadgeSummary(k)
 		if err != nil {
-			log.Err(err)
+			log.Err(err, k)
 			continue
 		}
 	}
@@ -37,7 +37,7 @@ func (c BadgesUpdateRandom) work() (err error) {
 
 		err = mongo.UpdateBadgeSummary(k)
 		if err != nil {
-			log.Err(err)
+			log.Err(err, k)
 			continue
 		}
 	}
@@ -51,7 +51,7 @@ func (c BadgesUpdateRandom) work() (err error) {
 
 		err = mongo.UpdateBadgeSummary(v.ID)
 		if err != nil {
-			log.Err(err)
+			log.Err(err, v.ID)
 			continue
 		}
 	}

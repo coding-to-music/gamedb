@@ -179,33 +179,34 @@ func UpdateBadgeSummary(id int) (err error) {
 			&topPlayerBadge,
 		)
 
-		if err != nil {
+		if err != nil && err != ErrNoDocuments {
 			return err
-		}
+		} else if err == nil {
 
-		// Get all players with equal top player badge
-		winningBadges, err := getPlayerBadges(
-			0,
-			0,
-			bson.D{{"app_id", 0}, {"badge_id", badge.BadgeID}, {"badge_level", topPlayerBadge.BadgeLevel}, {"badge_completion_time", topPlayerBadge.BadgeCompletionTime}},
-			bson.D{{"badge_completion_time", -1}},
-			nil,
-		)
+			// Get all players with equal top player badge
+			winningBadges, err := getPlayerBadges(
+				0,
+				0,
+				bson.D{{"app_id", 0}, {"badge_id", badge.BadgeID}, {"badge_level", topPlayerBadge.BadgeLevel}, {"badge_completion_time", topPlayerBadge.BadgeCompletionTime}},
+				bson.D{{"badge_completion_time", -1}},
+				nil,
+			)
 
-		if err != nil {
-			return err
-		}
+			if err != nil {
+				return err
+			}
 
-		summary.Leaders = map[string]string{}
-		for _, v := range winningBadges {
-			s := strconv.FormatInt(v.PlayerID, 10)
-			summary.Leaders[s] = v.PlayerName
-		}
+			summary.Leaders = map[string]string{}
+			for _, v := range winningBadges {
+				s := strconv.FormatInt(v.PlayerID, 10)
+				summary.Leaders[s] = v.PlayerName
+			}
 
-		// Get number of players with badge
-		summary.PlayersCount, err = CountDocuments(CollectionPlayerBadges, bson.D{{"app_id", 0}, {"badge_id", badge.BadgeID}}, 0)
-		if err != nil {
-			return err
+			// Get number of players with badge
+			summary.PlayersCount, err = CountDocuments(CollectionPlayerBadges, bson.D{{"app_id", 0}, {"badge_id", badge.BadgeID}}, 0)
+			if err != nil {
+				return err
+			}
 		}
 
 	} else {
@@ -219,12 +220,12 @@ func UpdateBadgeSummary(id int) (err error) {
 			&topPlayerBadge,
 		)
 
-		if err != nil {
+		if err != nil && err != ErrNoDocuments {
 			return err
+		} else if err == nil {
+			summary.Leaders = map[string]string{strconv.FormatInt(topPlayerBadge.PlayerID, 10): topPlayerBadge.PlayerName}
+			summary.MaxLevel = topPlayerBadge.BadgeLevel
 		}
-
-		summary.Leaders = map[string]string{strconv.FormatInt(topPlayerBadge.PlayerID, 10): topPlayerBadge.PlayerName}
-		summary.MaxLevel = topPlayerBadge.BadgeLevel
 
 		// Get the top player badge, foil=true
 		err = FindOne(
@@ -235,12 +236,12 @@ func UpdateBadgeSummary(id int) (err error) {
 			&topPlayerBadge,
 		)
 
-		if err != nil {
+		if err != nil && err != ErrNoDocuments {
 			return err
+		} else if err == nil {
+			summary.LeadersFoil = map[string]string{strconv.FormatInt(topPlayerBadge.PlayerID, 10): topPlayerBadge.PlayerName}
+			summary.MaxLevelFoil = topPlayerBadge.BadgeLevel
 		}
-
-		summary.LeadersFoil = map[string]string{strconv.FormatInt(topPlayerBadge.PlayerID, 10): topPlayerBadge.PlayerName}
-		summary.MaxLevelFoil = topPlayerBadge.BadgeLevel
 
 		// Get number of players with badge
 		summary.PlayersCount, err = CountDocuments(CollectionPlayerBadges, bson.D{{"app_id", badge.AppID}, {"badge_id", bson.M{"$gt": 0}}}, 0)
