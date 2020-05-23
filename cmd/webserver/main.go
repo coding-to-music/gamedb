@@ -146,10 +146,11 @@ func main() {
 	r.Get("/sitemap.xml", pages.SiteMapIndexHandler)
 
 	// Shortcuts
-	r.Get("/[ag]{id:[0-9]+}", func(w http.ResponseWriter, r *http.Request) { redirectHandler("/games/" + chi.URLParam(r, "id")) })
-	r.Get("/s{id:[0-9]+}", func(w http.ResponseWriter, r *http.Request) { redirectHandler("/packages/" + chi.URLParam(r, "id")) })
-	r.Get("/p{id:[0-9]+}", func(w http.ResponseWriter, r *http.Request) { redirectHandler("/players/" + chi.URLParam(r, "id")) })
-	r.Get("/b{id:[0-9]+}", func(w http.ResponseWriter, r *http.Request) { redirectHandler("/bundles/" + chi.URLParam(r, "id")) })
+	r.Get("/a{id:[0-9]+}", redirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/games/" + chi.URLParam(r, "id") }))
+	r.Get("/g{id:[0-9]+}", redirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/games/" + chi.URLParam(r, "id") }))
+	r.Get("/s{id:[0-9]+}", redirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/packages/" + chi.URLParam(r, "id") }))
+	r.Get("/p{id:[0-9]+}", redirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/players/" + chi.URLParam(r, "id") }))
+	r.Get("/b{id:[0-9]+}", redirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/bundles/" + chi.URLParam(r, "id") }))
 
 	// Profiling
 	r.Route("/debug", func(r chi.Router) {
@@ -172,8 +173,8 @@ func main() {
 	// r.Get("/ads.txt", rootFileHandler)
 
 	// Redirects
-	r.Get("/app/{id:[0-9]+}", func(w http.ResponseWriter, r *http.Request) { redirectHandler("/games/" + chi.URLParam(r, "id")) })
-	r.Get("/app/{id:[0-9]+}/{slug}", func(w http.ResponseWriter, r *http.Request) { redirectHandler("/games/" + chi.URLParam(r, "id") + "/" + chi.URLParam(r, "slug")) })
+	r.Get("/app/{id:[0-9]+}", redirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/games/" + chi.URLParam(r, "id") }))
+	r.Get("/app/{id:[0-9]+}/{slug}", redirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/games/" + chi.URLParam(r, "id") + "/" + chi.URLParam(r, "slug") }))
 	r.Get("/apps", redirectHandler("/games"))
 	r.Get("/chat", redirectHandler("/discord-server"))
 	r.Get("/chat-bot", redirectHandler("/discord-bot"))
@@ -199,6 +200,16 @@ func main() {
 
 func redirectHandler(url string) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.RawQuery != "" {
+			url += "?" + r.URL.RawQuery
+		}
+		http.Redirect(w, r, url, http.StatusFound)
+	}
+}
+
+func redirectHandlerFunc(f func(w http.ResponseWriter, r *http.Request) string) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		url := f(w, r)
 		if r.URL.RawQuery != "" {
 			url += "?" + r.URL.RawQuery
 		}
