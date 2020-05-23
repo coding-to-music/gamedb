@@ -173,9 +173,9 @@ func main() {
 	// r.Get("/ads.txt", rootFileHandler)
 
 	// Redirects
-	r.Get("/app/{id:[0-9]+}", redirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/games/" + chi.URLParam(r, "id") }))
-	r.Get("/app/{id:[0-9]+}/{slug}", redirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/games/" + chi.URLParam(r, "id") + "/" + chi.URLParam(r, "slug") }))
 	r.Get("/apps", redirectHandler("/games"))
+	r.Get("/apps/{id:[0-9]+}", redirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/games/" + chi.URLParam(r, "id") }))
+	r.Get("/apps/{id:[0-9]+}/{slug}", redirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/games/" + chi.URLParam(r, "id") + "/" + chi.URLParam(r, "slug") }))
 	r.Get("/chat", redirectHandler("/discord-server"))
 	r.Get("/chat-bot", redirectHandler("/discord-bot"))
 	r.Get("/chat/{id}", redirectHandler("/discord-server"))
