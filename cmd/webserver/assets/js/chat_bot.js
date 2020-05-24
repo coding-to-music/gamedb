@@ -32,14 +32,14 @@ if ($('#chat-bot-page').length > 0) {
             {
                 '<>': 'tr', 'html': [
                     {
-                        '<>': 'td', 'class': 'img nowrap thin', '': '', 'html': [
+                        '<>': 'td', 'class': 'img thin', 'html': [
                             {
                                 '<>': 'div', 'class': 'icon-name', 'html': [
                                     {
                                         '<>': 'div', 'class': 'icon', 'html': [{'<>': 'img', 'data-lazy': 'https://cdn.discordapp.com/avatars/${author_id}/${author_avatar}.png?size=64', 'alt': '', 'data-lazy-alt': '${author_name}'}],
                                     },
                                     {
-                                        '<>': 'div', 'class': 'name', 'html': '${author_name}'
+                                        '<>': 'div', 'class': 'name nowrap', 'html': '${author_name}',
                                     }
                                 ]
                             }
