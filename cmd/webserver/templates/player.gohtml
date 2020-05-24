@@ -30,11 +30,11 @@
                         <a class="nav-link nav-link-small" data-toggle="tab" href="#charts" role="tab">History</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link nav-link-small" data-toggle="tab" href="#games" role="tab">Games ({{ comma .Player.GamesCount }})</a>
+                        <a class="nav-link nav-link-small" data-toggle="tab" href="#games" role="tab">Games</a>
                     </li>
                     {{if gt .Player.WishlistAppsCount 0}}
                         <li class="nav-item">
-                            <a class="nav-link nav-link-small" data-toggle="tab" href="#wishlist" role="tab">Wishlist ({{ comma .Player.WishlistAppsCount }})</a>
+                            <a class="nav-link nav-link-small" data-toggle="tab" href="#wishlist" role="tab">Wishlist</a>
                         </li>
                     {{ end }}
                     <li class="nav-item">
@@ -42,15 +42,15 @@
                     </li>
                     {{if gt .Player.FriendsCount 0}}
                         <li class="nav-item">
-                            <a class="nav-link nav-link-small" data-toggle="tab" href="#friends" role="tab">Friends ({{ comma .Player.FriendsCount }})</a>
+                            <a class="nav-link nav-link-small" data-toggle="tab" href="#friends" role="tab">Friends</a>
                         </li>
                     {{ end }}
                     <li class="nav-item">
-                        <a class="nav-link nav-link-small" data-toggle="tab" href="#badges" role="tab">Badges ({{ comma .Player.BadgesCount }})</a>
+                        <a class="nav-link nav-link-small" data-toggle="tab" href="#badges" role="tab">Badges</a>
                     </li>
                     {{if gt .Player.GroupsCount 0}}
                         <li class="nav-item">
-                            <a class="nav-link nav-link-small" data-toggle="tab" href="#groups" role="tab">Groups ({{ comma .Player.GroupsCount }})</a>
+                            <a class="nav-link nav-link-small" data-toggle="tab" href="#groups" role="tab">Groups</a>
                         </li>
                     {{ end }}
 
@@ -99,6 +99,22 @@
                                                 <tr>
                                                     <th scope="col" nowrap="nowrap">Level</th>
                                                     <td><a href="/experience/{{ .Player.Level }}">{{ comma .Player.Level }}</a></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="col" nowrap="nowrap">Games</th>
+                                                    <td>{{ comma .Player.GamesCount }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="col" nowrap="nowrap">Friends</th>
+                                                    <td>{{ comma .Player.FriendsCount }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="col" nowrap="nowrap">Badges</th>
+                                                    <td>{{ comma .Player.BadgesCount }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="col" nowrap="nowrap">Groups</th>
+                                                    <td>{{ comma .Player.GroupsCount }}</td>
                                                 </tr>
                                                 <tr>
                                                     <th scope="col" nowrap="nowrap">On Steam</th>

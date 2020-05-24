@@ -63,22 +63,22 @@
                     {{ end }}
                     {{ if gt (len .App.AlbumMetaData.Tracks) 0 }}
                         <li class="nav-item">
-                            <a class="nav-link nav-link-small" data-toggle="tab" href="#tracks" role="tab">Tracks ({{ comma (len .App.AlbumMetaData.Tracks) }})</a>
+                            <a class="nav-link nav-link-small" data-toggle="tab" href="#tracks" role="tab">Tracks</a>
                         </li>
                     {{ end }}
                     {{ if gt .App.AchievementsCount 0 }}
                         <li class="nav-item">
-                            <a class="nav-link nav-link-small" data-toggle="tab" href="#achievements" role="tab">Achievements ({{ comma .App.AchievementsCount }})</a>
+                            <a class="nav-link nav-link-small" data-toggle="tab" href="#achievements" role="tab">Achievements</a>
                         </li>
                     {{ end }}
                     {{ if gt .App.DLCCount 0 }}
                         <li class="nav-item">
-                            <a class="nav-link nav-link-small" data-toggle="tab" href="#dlc" role="tab">DLC ({{ comma .App.DLCCount }})</a>
+                            <a class="nav-link nav-link-small" data-toggle="tab" href="#dlc" role="tab">DLC</a>
                         </li>
                     {{ end }}
                     {{ if or (gt (len .Packages) 0) (gt (len .Bundles) 0) }}
                         <li class="nav-item">
-                            <a class="nav-link nav-link-small" data-toggle="tab" href="#packages" role="tab">Packages ({{ comma (sum (len .Packages) (len .Bundles)) }})</a>
+                            <a class="nav-link nav-link-small" data-toggle="tab" href="#packages" role="tab">Packages</a>
                         </li>
                     {{ end }}
                     {{ if gt (len .App.NewsIDs) 0 }}
@@ -93,7 +93,7 @@
                     {{ end }}
                     {{ if gt .App.Items 0 }}
                         <li class="nav-item">
-                            <a class="nav-link nav-link-small" data-toggle="tab" href="#items" role="tab">Items ({{ comma .App.Items }})</a>
+                            <a class="nav-link nav-link-small" data-toggle="tab" href="#items" role="tab">Items</a>
                         </li>
                     {{ end }}
                     <li class="nav-item">
@@ -157,6 +157,35 @@
                                             <tr>
                                                 <th scope="row" nowrap="nowrap" class="thin">Followers</th>
                                                 <td><a href="#players" class="followers-link">{{ .App.GetFollowers }}</a></td>
+                                            </tr>
+                                        {{ end }}
+
+                                        {{ if gt (len .App.AlbumMetaData.Tracks) 0 }}
+                                            <tr>
+                                                <th scope="row" nowrap="nowrap" class="thin">Tracks</th>
+                                                <td>{{ comma (len .App.AlbumMetaData.Tracks) }}</td>
+                                            </tr>
+                                        {{ end }}
+
+                                        <tr>
+                                            <th scope="row" nowrap="nowrap" class="thin">Achievements</th>
+                                            <td>{{ comma .App.AchievementsCount }}</td>
+                                        </tr>
+
+                                        <tr>
+                                            <th scope="row" nowrap="nowrap" class="thin">DLC</th>
+                                            <td>{{ comma .App.DLCCount }}</td>
+                                        </tr>
+
+                                        <tr>
+                                            <th scope="row" nowrap="nowrap" class="thin">Bundles & Packages</th>
+                                            <td>{{ comma (sum (len .Packages) (len .Bundles)) }}</td>
+                                        </tr>
+
+                                        {{ if gt .App.Items 0 }}
+                                            <tr>
+                                                <th scope="row" nowrap="nowrap" class="thin">Items</th>
+                                                <td>{{ comma .App.Items }}</td>
                                             </tr>
                                         {{ end }}
 
