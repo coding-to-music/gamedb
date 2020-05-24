@@ -731,10 +731,8 @@ func SearchPlayer(search string, projection bson.M) (player Player, queue bool, 
 					go func() {
 						defer wg.Done()
 						gamesLock.Lock()
-						if player.PlayTime > 0 {
-							_, err = player.SetOwnedGames(false)
-							log.Err(err)
-						}
+						_, err = player.SetOwnedGames(false)
+						log.Err(err)
 						gamesLock.Unlock()
 					}()
 
@@ -746,7 +744,6 @@ func SearchPlayer(search string, projection bson.M) (player Player, queue bool, 
 						err = player.SetFriends(false)
 						log.Err(err)
 					}()
-
 				}
 			}
 			wg.Wait()
