@@ -171,7 +171,7 @@ func login(r *http.Request, user sql.User) (string, bool) {
 		player, err := mongo.GetPlayer(steamID)
 		if err == nil {
 			sessionData[sessionHelpers.SessionPlayerID] = strconv.FormatInt(player.ID, 10)
-			sessionData[sessionHelpers.SessionPlayerName] = player.PersonaName
+			sessionData[sessionHelpers.SessionPlayerName] = player.GetName()
 			sessionData[sessionHelpers.SessionPlayerLevel] = strconv.Itoa(player.Level)
 		} else {
 			err = helpers.IgnoreErrors(err, steamid.ErrInvalidPlayerID, mongo.ErrNoDocuments)

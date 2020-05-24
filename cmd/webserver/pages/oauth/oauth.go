@@ -269,7 +269,7 @@ func (bc baseConnection) callback(r *http.Request, c ConnectionInterface, event 
 
 			} else {
 
-				err = session.Set(r, sessionHelpers.SessionPlayerName, player.PersonaName)
+				err = session.Set(r, sessionHelpers.SessionPlayerName, player.GetName())
 				log.Err(err, r)
 			}
 

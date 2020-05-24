@@ -276,7 +276,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		response.AddRow([]interface{}{
 			query.GetOffset() + k + 1,          // 0
 			strconv.FormatInt(v.ID, 10),        // 1
-			v.PersonaName,                      // 2
+			v.GetName(),                      // 2
 			v.GetAvatar(),                      // 3
 			v.GetAvatar2(),                     // 4
 			v.Level,                            // 5

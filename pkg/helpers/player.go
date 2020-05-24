@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"math"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -66,12 +67,16 @@ func GetPlayerPath(id int64, name string) string {
 	return p
 }
 
+var regexTrimName = regexp.MustCompile(`[\s\p{Cf}\p{Co}\p{Cs}\p{Cc}]`)
+
 func GetPlayerName(id int64, name string) string {
-	name = strings.TrimSpace(name)
+
+	name = regexTrimName.ReplaceAllString(name, "")
+
 	if name != "" {
 		return name
 	} else if id > 0 {
-		return "Player " + strconv.FormatInt(id, 10)
+		return "Player"
 	} else {
 		return "Unknown Player"
 	}

@@ -53,7 +53,7 @@
                                 <img data-toggle="tooltip" data-placement="top" title="Unknown Player" alt="Unknown Player" src="{{.GetDefaultAvatar}}" class="rounded avatar">
                             {{ else }}
                                 <a href="{{.GetPath}}">
-                                    <img data-toggle="tooltip" data-placement="top" title="{{ .PersonaName }}" alt="{{ .PersonaName }}" src="{{ .GetAvatar }}" class="rounded avatar" data-src="{{ $.DefaultAvatar }}">
+                                    <img data-toggle="tooltip" data-placement="top" title="{{ .GetName }}" alt="{{ .GetName }}" src="{{ .GetAvatar }}" class="rounded avatar" data-src="{{ $.DefaultAvatar }}">
                                 </a>
                             {{ end }}
                         {{ end }}

@@ -916,7 +916,7 @@ func appTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 			playersAppRows = append(playersAppRows, appTimeAjax{
 				ID:      player.ID,
-				Name:    player.PersonaName,
+				Name:    player.GetName(),
 				Avatar:  player.Avatar,
 				Time:    playerIDsMap[player.ID],
 				Country: player.CountryCode,

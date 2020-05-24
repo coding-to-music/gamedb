@@ -5,11 +5,11 @@
 
         <div class="jumbotron" id="jumbotron">
 
-            <img class="rounded" src="{{ .Player.GetAvatar }}" alt="{{ .Player.PersonaName }}">
+            <img class="rounded" src="{{ .Player.GetAvatar }}" alt="{{ .Player.GetName }}">
 
             {{ template "_social" .Player }}
 
-            <h1 class="text-truncate"><i class="fas fa-user"></i> {{ .Player.PersonaName }}</h1>
+            <h1 class="text-truncate"><i class="fas fa-user"></i> {{ .Player.GetName }}</h1>
 
             <small>
                 <a target="_blank" rel="noopener" href="{{ .Player.CommunityLink }}"><i class="fab fa-steam-square"></i> Steam Community Profile</a>
@@ -235,7 +235,7 @@
                                                 </table>
                                             </div>
                                         {{ else }}
-                                            <p>{{ .Player.PersonaName }} has not been ranked yet, this will start at midnight UTC</p>
+                                            <p>{{ .Player.GetName }} has not been ranked yet, this will start at midnight UTC</p>
                                             <p class="mb-0">Your profile must be set to public to gather information,
                                                 go <a href="https://steamcommunity.com/my/edit/settings" target="_blank" rel="noopener">here</a> to change your privacy settings.</p>
                                         {{ end }}

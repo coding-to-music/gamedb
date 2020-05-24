@@ -71,7 +71,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Set Steam player name to session if missing, can happen after linking
-		err = session.Set(r, sessionHelpers.SessionPlayerName, t.Player.PersonaName)
+		err = session.Set(r, sessionHelpers.SessionPlayerName, t.Player.GetName())
 		if err != nil {
 			log.Err(err, r)
 		}
