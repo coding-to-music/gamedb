@@ -357,7 +357,7 @@ func (player *Player) SetPlayerSummary() error {
 	}
 
 	//
-	if strings.Contains(summary.ProfileURL, "profiles") {
+	if strings.Contains(summary.ProfileURL, "/id/") {
 		player.VanityURL = path.Base(summary.ProfileURL)
 	}
 
