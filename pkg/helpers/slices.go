@@ -53,10 +53,10 @@ func SliceHasString(i string, slice []string) bool {
 // todo, keep order by doing https://codereview.stackexchange.com/questions/191238/return-unique-items-in-a-go-slice
 func UniqueInt(arg []int) []int {
 
-	tempMap := make(map[int]uint8)
+	tempMap := make(map[int]bool)
 
 	for idx := range arg {
-		tempMap[arg[idx]] = 0
+		tempMap[arg[idx]] = true
 	}
 
 	tempSlice := make([]int, 0)
@@ -68,13 +68,28 @@ func UniqueInt(arg []int) []int {
 
 func UniqueInt64(arg []int64) []int64 {
 
-	tempMap := make(map[int64]uint8)
+	tempMap := make(map[int64]bool)
 
 	for idx := range arg {
-		tempMap[arg[idx]] = 0
+		tempMap[arg[idx]] = true
 	}
 
 	tempSlice := make([]int64, 0)
+	for key := range tempMap {
+		tempSlice = append(tempSlice, key)
+	}
+	return tempSlice
+}
+
+func UniqueString(arg []string) []string {
+
+	tempMap := make(map[string]bool)
+
+	for idx := range arg {
+		tempMap[arg[idx]] = true
+	}
+
+	tempSlice := make([]string, 0)
 	for key := range tempMap {
 		tempSlice = append(tempSlice, key)
 	}
