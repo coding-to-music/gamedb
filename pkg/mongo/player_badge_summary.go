@@ -3,6 +3,7 @@ package mongo
 import (
 	"html/template"
 	"strconv"
+	"time"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -19,6 +20,7 @@ type PlayerBadgeSummary struct {
 	MaxLevelFoil int               `bson:"max_level_foil"`
 	Leaders      map[string]string `bson:"leaders"`      // Must use string for playerID as it's a JSON key
 	LeadersFoil  map[string]string `bson:"leaders_foil"` // Must use string for playerID as it's a JSON key
+	UpdatedAt    int64             `bson:"updated_at"`
 }
 
 func (badge PlayerBadgeSummary) BSON() bson.D {
@@ -34,6 +36,7 @@ func (badge PlayerBadgeSummary) BSON() bson.D {
 		{"max_level_foil", badge.MaxLevelFoil},
 		{"leaders", badge.Leaders},
 		{"leaders_foil", badge.LeadersFoil},
+		{"updated_at", time.Now().Unix()},
 	}
 }
 
@@ -110,7 +113,10 @@ func (badge PlayerBadgeSummary) GetAppLeader(foil bool) (ret template.HTML) {
 
 func GetBadgeSummaries() (badges []PlayerBadgeSummary, err error) {
 
-	cur, ctx, err := Find(CollectionPlayerBadgesSummary, 0, 0, nil, nil, nil, nil)
+	// Filter to remove game badges that are no longer popular
+	filter := bson.D{{"updated_at", bson.M{"$gte": time.Now().Add(time.Hour * 24 * 7 * -1)}}}
+
+	cur, ctx, err := Find(CollectionPlayerBadgesSummary, 0, 0, nil, filter, nil, nil)
 	if err != nil {
 		return badges, err
 	}
