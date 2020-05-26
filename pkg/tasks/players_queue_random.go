@@ -6,7 +6,6 @@ import (
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 )
@@ -68,7 +67,7 @@ func (c PlayersQueueRandom) work() (err error) {
 		err = queue.ProducePlayer(queue.PlayerMessage{ID: v.ID, SkipGroups: true})
 		err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 		if err != nil {
-			log.Err(err)
+			return err
 		}
 
 		time.Sleep(cronInterval / playerCount * time.Duration(consumers))

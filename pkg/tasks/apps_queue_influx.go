@@ -1,7 +1,6 @@
 package tasks
 
 import (
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
@@ -35,12 +34,12 @@ func (c AppsQueueInflux) work() (err error) {
 			return err
 		}
 
-		// log.Info(strconv.Itoa(len(apps)) + " apps")
-
 		for _, app := range apps {
 
 			err = queue.ProduceAppsInflux(app.ID)
-			log.Err(err)
+			if err != nil {
+				return err
+			}
 		}
 
 		if int64(len(apps)) != limit {

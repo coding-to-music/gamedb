@@ -3,7 +3,6 @@ package tasks
 import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/sql"
@@ -55,7 +54,9 @@ func (c AutoPlayerRefreshes) work() (err error) {
 
 			err = queue.ProducePlayer(queue.PlayerMessage{ID: playerID})
 			err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
-			log.Err(err)
+			if err != nil {
+				return err
+			}
 		}
 	}
 

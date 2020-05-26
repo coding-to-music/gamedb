@@ -134,9 +134,9 @@ func Run(task TaskInterface) {
 	log.Err(err)
 
 	// Do work
-	policy := backoff.NewConstantBackOff(time.Minute)
+	policy := backoff.NewConstantBackOff(time.Second * 30)
 
-	err = backoff.RetryNotify(task.work, backoff.WithMaxRetries(policy, 10), func(err error, t time.Duration) { log.Info(err, task.ID(), err) })
+	err = backoff.RetryNotify(task.work, backoff.WithMaxRetries(policy, 10), func(err error, t time.Duration) { log.Err(err, task.ID()) })
 	if err != nil {
 
 		if val, ok := err.(TaskError); ok && val.Okay {

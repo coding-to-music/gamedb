@@ -36,7 +36,7 @@ func (c PlayersQueueAll) work() (err error) {
 
 		err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID})
 		if err != nil {
-			log.Err(err)
+			return err
 		}
 	}
 

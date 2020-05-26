@@ -52,8 +52,6 @@ func (c AppsQueuePackages) work() (err error) {
 			return err
 		}
 
-		// log.Info(strconv.Itoa(len(packageMap)) + " packages added to rabbit")
-
 		if int64(len(apps)) != limit {
 			break
 		}

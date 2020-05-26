@@ -52,7 +52,9 @@ func (c AppsAchievementsQueueElastic) work() (err error) {
 			}
 
 			err = queue.ProduceAchievementSearch(appAchievement, app)
-			log.Err(err)
+			if err != nil {
+				return err
+			}
 		}
 
 		if int64(len(appAchievements)) != limit {

@@ -2,7 +2,6 @@ package tasks
 
 import (
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
@@ -42,7 +41,9 @@ func (c GroupsQueueElastic) work() (err error) {
 		for _, group := range groups {
 
 			err = queue.ProduceGroupSearch(group)
-			log.Err(err)
+			if err != nil {
+				return err
+			}
 		}
 
 		if int64(len(groups)) != limit {

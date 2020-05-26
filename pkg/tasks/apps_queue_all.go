@@ -44,8 +44,7 @@ func (c AppsQueueAll) work() (err error) {
 
 			err = queue.ProduceApp(queue.AppMessage{ID: v.AppID})
 			if err != nil {
-				log.Err(err, strconv.Itoa(v.AppID))
-				continue
+				return err
 			}
 			last = v.AppID
 		}

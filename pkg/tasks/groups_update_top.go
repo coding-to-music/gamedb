@@ -58,7 +58,7 @@ func (c GroupsUpdateTop) work() (err error) {
 		err = queue.ProduceGroup(queue.GroupMessage{ID: groupID})
 		err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 		if err != nil {
-			log.Err(err)
+			return err
 		}
 	}
 

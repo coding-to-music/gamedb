@@ -39,7 +39,7 @@ func (c AppsQueueGroups) work() (err error) {
 		err = queue.ProduceGroup(queue.GroupMessage{ID: app.GroupID})
 		err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 		if err != nil {
-			log.Err(err)
+			return err
 		}
 	}
 

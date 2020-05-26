@@ -1,7 +1,6 @@
 package tasks
 
 import (
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
@@ -38,7 +37,9 @@ func (c AppsAchievementsQueueAll) work() (err error) {
 		for _, app := range apps {
 
 			err = queue.ProduceAppAchievement(app.ID)
-			log.Err(err)
+			if err != nil {
+				return err
+			}
 		}
 
 		if int64(len(apps)) != limit {

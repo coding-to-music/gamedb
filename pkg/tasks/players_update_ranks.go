@@ -31,7 +31,9 @@ func (c PlayersUpdateRanks) work() (err error) {
 			SortColumn: read,
 			ObjectKey:  string(write),
 		})
-		log.Err(err)
+		if err != nil {
+			return err
+		}
 	}
 
 	// Continents
@@ -42,7 +44,9 @@ func (c PlayersUpdateRanks) work() (err error) {
 				ObjectKey:  string(write) + "_continent-" + continent.Key,
 				Continent:  &continent.Key,
 			})
-			log.Err(err)
+			if err != nil {
+				return err
+			}
 		}
 	}
 
@@ -59,7 +63,9 @@ func (c PlayersUpdateRanks) work() (err error) {
 				ObjectKey:  string(write) + "_country-" + cc,
 				Country:    &cc,
 			})
-			log.Err(err)
+			if err != nil {
+				return err
+			}
 		}
 	}
 
@@ -80,7 +86,9 @@ func (c PlayersUpdateRanks) work() (err error) {
 					Country:    &cc,
 					State:      &state.Key,
 				})
-				log.Err(err)
+				if err != nil {
+					return err
+				}
 			}
 		}
 	}

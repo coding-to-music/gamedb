@@ -3,7 +3,6 @@ package tasks
 import (
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
@@ -61,7 +60,9 @@ func (c AppsPlayerCheck) work() (err error) {
 
 		for _, chunk := range chunks {
 			err = queue.ProduceAppPlayers(queue.AppPlayerMessage{IDs: chunk})
-			log.Err(err)
+			if err != nil {
+				return err
+			}
 		}
 
 		if int64(len(apps)) != limit {
