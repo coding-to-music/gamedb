@@ -115,8 +115,6 @@ func log(interfaces ...interface{}) {
 			entry.texts = append(entry.texts, strconv.FormatFloat(val, 'f', -1, 64))
 		case []byte:
 			entry.texts = append(entry.texts, string(val))
-		case []string:
-			entry.texts = append(entry.texts, strings.Join(val, ","))
 		case time.Time:
 			entry.texts = append(entry.texts, val.String())
 		case time.Duration:
