@@ -99,7 +99,13 @@ func InfluxQuery(query string) (resp *influx.Response, err error) {
 	return resp, err
 }
 
-type HighChartsJSON map[string][][]interface{}
+type (
+	HighChartsJSON      map[string][][]interface{}
+	HighChartsJSONMulti struct {
+		Key   string         `json:"key"`
+		Value HighChartsJSON `json:"value"`
+	}
+)
 
 func InfluxResponseToHighCharts(series influxModels.Row, removeZeros bool) HighChartsJSON {
 

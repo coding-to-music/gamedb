@@ -1,0 +1,45 @@
+{{define "apps_compare"}}
+    {{ template "_header" . }}
+
+    <div class="container" id="apps-compare-page" data-id="{{ .IDs }}" data-group-id="{{ .GroupIDs }}">
+
+        <div class="jumbotron">
+            <h1 class="text-truncate"><i class="fas fa-gamepad"></i> Compare Games</h1>
+        </div>
+
+        {{ template "_flashes" . }}
+
+        <div class="card">
+            <div class="card-body">
+
+                <h5>Player Count - 1 Week</h5>
+                <div class="mb-4" id="players-chart">
+                    <i class="fas fa-spinner fa-spin"></i>
+                </div>
+
+                <h5>Player Count - 5 Years</h5>
+                <div class="mb-4" id="players-chart2">
+                    <i class="fas fa-spinner fa-spin"></i>
+                </div>
+
+                <h5 id="followers">Followers</h5>
+                <div class="mb-4" id="group-chart">
+                    <i class="fas fa-spinner fa-spin"></i>
+                </div>
+
+                <h5>Google Searches</h5>
+                <script type="text/javascript" src="https://ssl.gstatic.com/trends_nrtr/2213_RC01/embed_loader.js"></script>
+                <script type="text/javascript">trends.embed.renderExploreWidget("TIMESERIES", {{ .GoogleJSON }});</script>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const appNames = {{ .AppNames }};
+        const groupNames = {{ .GroupNames }};
+    </script>
+
+    {{ template "_footer" . }}
+{{end}}

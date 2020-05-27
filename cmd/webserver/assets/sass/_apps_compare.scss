@@ -1,0 +1,10 @@
+#apps-compare-page {
+    #group-chart, #players-chart, #players-chart2 {
+        height: 300px;
+    }
+
+    iframe {
+        border-radius: 0 !important;
+        box-shadow: none !important;
+    }
+}

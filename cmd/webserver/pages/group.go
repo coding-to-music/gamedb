@@ -212,6 +212,11 @@ func groupAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if strings.Contains(id, ",") {
+		appsCompareGroupsHandler(w, r)
+		return
+	}
+
 	id, err := helpers.IsValidGroupID(id)
 	if err != nil {
 		log.Info("invalid id: "+id, r)

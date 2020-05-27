@@ -49,7 +49,13 @@ func appRouter() http.Handler {
 
 func appHandler(w http.ResponseWriter, r *http.Request) {
 
-	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	param := chi.URLParam(r, "id")
+	if strings.Contains(param, ",") {
+		appsCompareHandler(w, r)
+		return
+	}
+
+	id, err := strconv.Atoi(param)
 	if err != nil {
 		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid App ID"})
 		return
@@ -789,6 +795,11 @@ func appItemsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 func appPlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "id")
+	if strings.Contains(id, ",") {
+		appsComparePlayersAjaxHandler(w, r)
+		return
+	}
+
 	if id == "" {
 		log.Err("invalid id", r)
 		return
@@ -826,6 +837,11 @@ func appPlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 func appPlayers2AjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "id")
+	if strings.Contains(id, ",") {
+		appsComparePlayer2sAjaxHandler(w, r)
+		return
+	}
+
 	if id == "" {
 		log.Err("invalid id", r)
 		return
