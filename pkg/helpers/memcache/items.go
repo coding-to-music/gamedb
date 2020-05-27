@@ -70,6 +70,10 @@ var (
 	// Sales page
 	MemcacheUniqueSaleTypes = Item{Key: "unique-sale-types", Expiration: 60 * 60 * 1}
 
+	// Commits page
+	MemcacheCommitsTotal = Item{Key: "commits-total", Expiration: 60 * 60}
+	MemcacheCommitsPage  = func(page int) Item { return Item{Key: "commits-page-" + strconv.Itoa(page), Expiration: 60 * 60} }
+
 	// Players online
 	MemcacheAppPlayersRow       = func(appID int) Item { return Item{Key: "app-players-" + strconv.Itoa(appID), Expiration: 10 * 60} }
 	MemcacheAppPlayersInGameRow = Item{Key: "app-players-in-game-0", Expiration: 10 * 60}
@@ -80,7 +84,6 @@ var (
 	MemcacheTrendingApps   = Item{Key: "trending-apps", Expiration: 60 * 10}
 
 	// Other
-	MemcacheTotalCommits             = Item{Key: "total-commits", Expiration: 60 * 60 * 24 * 7}
 	MemcacheUserByAPIKey             = func(key string) Item { return Item{Key: "user-level-by-key-" + key, Expiration: 10 * 60} }
 	MemcacheUniquePlayerCountryCodes = Item{Key: "unique-player-country-codes", Expiration: 60 * 60 * 24 * 7}
 	MemcacheUniquePlayerStateCodes   = func(countryCode string) Item { return Item{Key: "unique-player-state-codes-" + countryCode, Expiration: 60 * 60 * 24 * 7} }

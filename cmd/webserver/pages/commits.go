@@ -3,6 +3,7 @@ package pages
 import (
 	"errors"
 	"net/http"
+	"sync"
 	"time"
 
 	"github.com/cenkalti/backoff/v4"
@@ -13,10 +14,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/go-chi/chi"
 	"github.com/google/go-github/v28/github"
-)
-
-const (
-	commitsLimit = 100
 )
 
 func CommitsRouter() http.Handler {
@@ -39,27 +36,83 @@ type commitsTemplate struct {
 	GlobalTemplate
 }
 
+const commitsLimit = 100
+
 func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := datatable.NewDataTableQuery(r, true)
 
 	client, ctx := helpers.GetGithub()
 
-	commits, _, err := client.Repositories.ListCommits(ctx, "gamedb", "website", &github.CommitsListOptions{
-		ListOptions: github.ListOptions{
-			Page:    query.GetPage(commitsLimit),
-			PerPage: commitsLimit,
-		},
-	})
+	var wg sync.WaitGroup
 
-	if err != nil {
+	var commits []*github.RepositoryCommit
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		var item = memcache.MemcacheCommitsPage(query.GetPage(commitsLimit))
+
+		err = memcache.GetSetInterface(item.Key, item.Expiration, &commits, func() (interface{}, error) {
+
+			operation := func() (err error) {
+
+				commits, _, err = client.Repositories.ListCommits(ctx, "gamedb", "website", &github.CommitsListOptions{
+					ListOptions: github.ListOptions{
+						Page:    query.GetPage(commitsLimit),
+						PerPage: commitsLimit,
+					},
+				})
+				return err
+			}
+
+			policy := backoff.NewExponentialBackOff()
+			policy.InitialInterval = time.Second
+
+			err := backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 5), func(err error, t time.Duration) { log.Info(err) })
+			return commits, err
+		})
 		log.Err(err, r)
-		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the commits."})
-		return
-	}
+	}()
 
-	// Get total
-	total := getTotalCommits()
+	var total int
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		var item = memcache.MemcacheCommitsTotal
+
+		err = memcache.GetSetInterface(item.Key, item.Expiration, &total, func() (interface{}, error) {
+
+			operation := func() (err error) {
+
+				contributors, _, err := client.Repositories.ListContributorsStats(ctx, "gamedb", "gamedb")
+				if err != nil { // github.AcceptedError
+					return err
+				}
+				for _, v := range contributors {
+					total += v.GetTotal()
+				}
+				if total == 0 {
+					return errors.New("no commits found")
+				}
+				return nil
+			}
+
+			policy := backoff.NewExponentialBackOff()
+			policy.InitialInterval = time.Second
+
+			err := backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 5), func(err error, t time.Duration) { log.Info(err) })
+			return total, err
+		})
+		log.Err(err, r)
+	}()
+
+	wg.Wait()
 
 	//
 	var deployed bool
@@ -82,38 +135,4 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	returnJSON(w, r, response)
-}
-
-func getTotalCommits() (total int) {
-
-	client, ctx := helpers.GetGithub()
-
-	var item = memcache.MemcacheTotalCommits
-
-	err := memcache.GetSetInterface(item.Key, item.Expiration, &total, func() (interface{}, error) {
-
-		operation := func() (err error) {
-
-			contributors, _, err := client.Repositories.ListContributorsStats(ctx, "gamedb", "gamedb")
-			if err != nil { // github.AcceptedError
-				return err
-			}
-			for _, v := range contributors {
-				total += v.GetTotal()
-			}
-			if total == 0 {
-				return errors.New("no commits found")
-			}
-			return nil
-		}
-
-		policy := backoff.NewExponentialBackOff()
-		policy.InitialInterval = time.Second
-
-		err := backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 5), func(err error, t time.Duration) { log.Info(err) })
-		return total, err
-	})
-	log.Err(err)
-
-	return total
 }
