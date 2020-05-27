@@ -182,7 +182,6 @@ func main() {
 	r.Get("/sitemap/index.xml", redirectHandler("/sitemap.xml"))
 
 	// Game Redirects
-	r.Get("/achievements", redirectHandler("/games/achievements"))
 	r.Get("/new-releases", redirectHandler("/games/new-releases"))
 	r.Get("/random", redirectHandler("/games/random"))
 	r.Get("/sales", redirectHandler("/games/sales"))
