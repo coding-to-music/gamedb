@@ -1,9 +1,9 @@
 package queue
 
 import (
-	"regexp"
 	"sort"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/Jleagle/rabbit-go"
@@ -100,47 +100,72 @@ func appReviewsHandler(messages []*rabbit.Message) {
 			score = (float64(reviews.Positive+a) / float64(reviews.GetTotal()+b)) * 100
 		}
 
-		// Sort by upvotes
-		sort.Slice(reviews.Reviews, func(i, j int) bool {
-			return reviews.Reviews[i].VotesGood > reviews.Reviews[j].VotesGood
-		})
+		var wg sync.WaitGroup
 
-		var update = bson.D{
-			{"reviews_score", score},
-			{"reviews", reviews},
-			{"reviews_count", reviews.GetTotal()},
-		}
+		wg.Add(1)
+		go func() {
 
-		_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", payload.AppID}}, update)
-		if err != nil {
-			log.Err(err, payload.AppID)
-			sendToRetryQueue(message)
-			continue
-		}
+			defer wg.Done()
 
-		err = memcache.Delete(memcache.MemcacheApp(payload.AppID).Key)
-		if err != nil {
-			log.Err(err, payload.AppID)
-			sendToRetryQueue(message)
-			continue
-		}
+			// Sort by upvotes
+			sort.Slice(reviews.Reviews, func(i, j int) bool {
+				return reviews.Reviews[i].VotesGood > reviews.Reviews[j].VotesGood
+			})
 
-		_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, influx.Point{
-			Measurement: string(influxHelper.InfluxMeasurementApps),
-			Tags: map[string]string{
-				"app_id": strconv.Itoa(payload.AppID),
-			},
-			Fields: map[string]interface{}{
-				"reviews_score":    score,
-				"reviews_positive": reviews.Positive,
-				"reviews_negative": reviews.Negative,
-			},
-			Time:      time.Now(),
-			Precision: "m",
-		})
-		if err != nil {
-			log.Err(err, payload.AppID)
-			sendToRetryQueue(message)
+			var update = bson.D{
+				{"reviews_score", score},
+				{"reviews", reviews},
+				{"reviews_count", reviews.GetTotal()},
+			}
+
+			_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", payload.AppID}}, update)
+			if err != nil {
+				log.Err(err, payload.AppID)
+				sendToRetryQueue(message)
+				return
+			}
+		}()
+
+		wg.Add(1)
+		go func() {
+
+			defer wg.Done()
+
+			err = memcache.Delete(memcache.MemcacheApp(payload.AppID).Key)
+			if err != nil {
+				log.Err(err, payload.AppID)
+				sendToRetryQueue(message)
+				return
+			}
+		}()
+
+		wg.Add(1)
+		go func() {
+
+			defer wg.Done()
+
+			_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, influx.Point{
+				Measurement: string(influxHelper.InfluxMeasurementApps),
+				Tags: map[string]string{
+					"app_id": strconv.Itoa(payload.AppID),
+				},
+				Fields: map[string]interface{}{
+					"reviews_score":    score,
+					"reviews_positive": reviews.Positive,
+					"reviews_negative": reviews.Negative,
+				},
+				Time:      time.Now(),
+				Precision: "m",
+			})
+			if err != nil {
+				log.Err(err, payload.AppID)
+				sendToRetryQueue(message)
+				return
+			}
+		}()
+
+		wg.Wait()
+		if message.ActionTaken {
 			continue
 		}
 
