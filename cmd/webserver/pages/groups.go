@@ -131,6 +131,7 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			group.Error,                      // 8
 			query.GetOffset() + k + 1,        // 9
 			path,                             // 10
+			group.Score,                      // 11
 		})
 	}
 

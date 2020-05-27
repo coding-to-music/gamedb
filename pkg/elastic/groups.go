@@ -8,15 +8,16 @@ import (
 )
 
 type Group struct {
-	ID           string `json:"id"`
-	Name         string `json:"name"`
-	URL          string `json:"url"`
-	Abbreviation string `json:"abbreviation"`
-	Headline     string `json:"headline"`
-	Icon         string `json:"icon"`
-	Members      int    `json:"members"`
-	Trend        int64  `json:"trend"`
-	Error        bool   `json:"error"`
+	ID           string  `json:"id"`
+	Name         string  `json:"name"`
+	URL          string  `json:"url"`
+	Abbreviation string  `json:"abbreviation"`
+	Headline     string  `json:"headline"`
+	Icon         string  `json:"icon"`
+	Members      int     `json:"members"`
+	Trend        int64   `json:"trend"`
+	Error        bool    `json:"error"`
+	Score        float64 `json:"-"`
 }
 
 func IndexGroup(group Group) error {
@@ -57,6 +58,10 @@ func SearchGroups(limit int, offset int, query elastic.Query, sorters []elastic.
 		if err != nil {
 			log.Err(err)
 			continue
+		}
+
+		if hit.Score != nil {
+			group.Score = *hit.Score
 		}
 
 		if val, ok := hit.Highlight["name"]; ok {

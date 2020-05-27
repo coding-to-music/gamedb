@@ -62,7 +62,7 @@ if ($('#groups-page').length > 0) {
             {
                 "targets": 4,
                 "render": function (data, type, row) {
-                    return '';
+                    return row[11].toLocaleString();
                 },
                 "orderable": false,
                 "visible": false,
