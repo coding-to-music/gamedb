@@ -682,7 +682,7 @@ func SearchApps(search string, projection bson.M) (app App, err error) {
 
 	var apps []App
 
-	if helpers.RegexNumbers.MatchString(search) {
+	if helpers.RegexInts.MatchString(search) {
 
 		id, err := strconv.Atoi(search)
 		if err != nil {

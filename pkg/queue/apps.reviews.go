@@ -21,10 +21,6 @@ type AppReviewsMessage struct {
 	AppID int `json:"id"`
 }
 
-var (
-	multipleNewLines = regexp.MustCompile("[\n]{3,}")
-)
-
 func appReviewsHandler(messages []*rabbit.Message) {
 
 	for _, message := range messages {
@@ -82,7 +78,7 @@ func appReviewsHandler(messages []*rabbit.Message) {
 			}
 
 			// Remove extra new lines
-			v.Review = multipleNewLines.ReplaceAllString(v.Review, "\n\n")
+			v.Review = helpers.RegexMultipleNewLines.ReplaceAllString(v.Review, "\n\n")
 
 			reviews.Reviews = append(reviews.Reviews, helpers.AppReview{
 				Review:     helpers.BBCodeCompiler.Compile(v.Review),
