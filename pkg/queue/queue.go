@@ -156,6 +156,7 @@ var (
 		{name: QueueAppsYoutube},
 		{name: QueueAppsInflux},
 		{name: QueueAppPlayers},
+		{name: QueueAppsReviews},
 		{name: QueueAppsSearch, prefetchSize: 1000},
 		{name: QueueBundles},
 		{name: QueueChanges},
@@ -189,6 +190,7 @@ var (
 		{name: QueueAppsInflux},
 		{name: QueueAppsSearch, prefetchSize: 1000},
 		{name: QueueAppsYoutube},
+		{name: QueueAppsReviews},
 		{name: QueueAppPlayers},
 		{name: QueueGroups},
 		{name: QueueGroupsSearch, prefetchSize: 1000},
@@ -551,5 +553,5 @@ func produce(q rabbit.QueueName, payload interface{}) error {
 		return val.Produce(payload, nil)
 	}
 
-	return errors.New("channel does not exist")
+	return errors.New("channel not in register")
 }
