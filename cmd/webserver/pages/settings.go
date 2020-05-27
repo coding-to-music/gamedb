@@ -107,7 +107,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 			log.Err(err, r)
 		}
 
-		t.Games = template.JSStr(b)
+		t.Games = template.JS(b)
 	}()
 
 	// Get groups
@@ -136,7 +136,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 			log.Err(err, r)
 		}
 
-		t.Groups = template.JSStr(b)
+		t.Groups = template.JS(b)
 	}()
 
 	// Get badges
@@ -166,7 +166,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 			log.Err(err, r)
 		}
 
-		t.Badges = template.JSStr(b)
+		t.Badges = template.JS(b)
 	}()
 
 	// Wait
@@ -182,9 +182,9 @@ type settingsTemplate struct {
 	Player  mongo.Player
 	ProdCCs []i18n.ProductCountryCode
 	Domain  string
-	Groups  template.JSStr
-	Badges  template.JSStr
-	Games   template.JSStr
+	Groups  template.JS
+	Badges  template.JS
+	Games   template.JS
 }
 
 func deletePostHandler(w http.ResponseWriter, r *http.Request) {
