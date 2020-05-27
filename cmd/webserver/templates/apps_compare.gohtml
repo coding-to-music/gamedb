@@ -12,6 +12,13 @@
         <div class="card">
             <div class="card-body">
 
+                <h5>{{ len .Apps }} Games</h5>
+                <p>
+                    {{ range .Apps }}
+                        <a href="{{ .App.GetPath }}">{{ .App.GetName }}</a><br>
+                    {{ end }}
+                </p>
+
                 <h5>Player Count - 1 Week</h5>
                 <div class="mb-4" id="players-chart">
                     <i class="fas fa-spinner fa-spin"></i>
