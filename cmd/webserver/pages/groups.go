@@ -75,7 +75,7 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 				// Boost if more group members
 				elastic.NewFunctionScoreQuery().AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("members").Factor(0.003)),
 				// Boost if exact match
-				elastic.NewTermQuery("name", search).Boost(1),
+				elastic.NewMatchPhraseQuery("name", search).Boost(5),
 			)
 		}
 
