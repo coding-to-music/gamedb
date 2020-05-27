@@ -2,6 +2,7 @@ package pages
 
 import (
 	"encoding/json"
+	"html/template"
 	"net/http"
 	"strconv"
 	"sync"
@@ -106,7 +107,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 			log.Err(err, r)
 		}
 
-		t.Games = string(b)
+		t.Games = template.JSStr(b)
 	}()
 
 	// Get groups
@@ -135,7 +136,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 			log.Err(err, r)
 		}
 
-		t.Groups = string(b)
+		t.Groups = template.JSStr(b)
 	}()
 
 	// Get badges
@@ -165,7 +166,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 			log.Err(err, r)
 		}
 
-		t.Badges = string(b)
+		t.Badges = template.JSStr(b)
 	}()
 
 	// Wait
@@ -179,11 +180,11 @@ type settingsTemplate struct {
 	GlobalTemplate
 	User    sql.User
 	Player  mongo.Player
-	Games   string
 	ProdCCs []i18n.ProductCountryCode
 	Domain  string
-	Groups  string
-	Badges  string
+	Groups  template.JSStr
+	Badges  template.JSStr
+	Games   template.JSStr
 }
 
 func deletePostHandler(w http.ResponseWriter, r *http.Request) {
