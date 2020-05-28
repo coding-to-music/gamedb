@@ -34,7 +34,7 @@ func appReviewsHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		resp, _, err := steamHelper.GetSteam().GetReviews(payload.AppID)
+		resp, _, err := steamHelper.GetSteamUnlimited().GetReviews(payload.AppID)
 		err = steamHelper.AllowSteamCodes(err)
 		if err != nil {
 			steamHelper.LogSteamError(err)
