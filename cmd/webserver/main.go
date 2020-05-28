@@ -4,6 +4,7 @@ import (
 	"compress/flate"
 	"net/http"
 	_ "net/http/pprof"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -197,22 +198,35 @@ func main() {
 	log.Critical(err)
 }
 
-func redirectHandler(url string) func(w http.ResponseWriter, r *http.Request) {
+func redirectHandler(path string) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.RawQuery != "" {
-			url += "?" + r.URL.RawQuery
+
+		u, _ := url.Parse(path)
+		q := u.Query()
+
+		for k := range r.URL.Query() {
+			q.Set(k, r.URL.Query().Get(k))
 		}
-		http.Redirect(w, r, url, http.StatusFound)
+
+		u.RawQuery = q.Encode()
+
+		http.Redirect(w, r, u.String(), http.StatusFound)
 	}
 }
 
 func redirectHandlerFunc(f func(w http.ResponseWriter, r *http.Request) string) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		url := f(w, r)
-		if r.URL.RawQuery != "" {
-			url += "?" + r.URL.RawQuery
+
+		u, _ := url.Parse(f(w, r))
+		q := u.Query()
+
+		for k := range r.URL.Query() {
+			q.Set(k, r.URL.Query().Get(k))
 		}
-		http.Redirect(w, r, url, http.StatusFound)
+
+		u.RawQuery = q.Encode()
+
+		http.Redirect(w, r, u.String(), http.StatusFound)
 	}
 }
 
