@@ -33,7 +33,7 @@
                     {{/* Steam */}}
                     <div class="tab-pane show active" id="popular" role="tabpanel">
 
-                        <div class="alert alert-primary" role="alert">The last 7 days of articles from the 30 most played games.</div>
+                        <div class="alert alert-primary" role="alert">The last 7 days of articles from the {{ len .Apps }} most played games.</div>
 
                         {{ range $key, $value := .Articles }}
 

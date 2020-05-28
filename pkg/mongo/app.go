@@ -784,7 +784,7 @@ func PopularApps() (apps []App, err error) {
 
 		return GetApps(
 			0,
-			30,
+			50,
 			bson.D{{"player_peak_week", -1}},
 			bson.D{{"type", "game"}},
 			bson.M{"_id": 1, "name": 1, "player_peak_week": 1, "background": 1},
