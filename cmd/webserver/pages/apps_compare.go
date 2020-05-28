@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/Jleagle/influxql"
@@ -45,75 +44,75 @@ func appsCompareHandler(w http.ResponseWriter, r *http.Request) {
 
 			app := appsCompareAppTemplate{App: a}
 
-			var wg sync.WaitGroup
-
-			// Tags
-			wg.Add(1)
-			go func() {
-
-				defer wg.Done()
-
-				var err error
-				app.Tags, err = GetAppTags(app.App)
-				if err != nil {
-					log.Err(err, r)
-				}
-			}()
-
-			// Categories
-			wg.Add(1)
-			go func() {
-
-				defer wg.Done()
-
-				var err error
-				app.Categories, err = GetAppCategories(app.App)
-				if err != nil {
-					log.Err(err, r)
-				}
-			}()
-
-			// Genres
-			wg.Add(1)
-			go func() {
-
-				defer wg.Done()
-
-				var err error
-				app.Genres, err = GetAppGenres(app.App)
-				if err != nil {
-					log.Err(err, r)
-				}
-			}()
-
-			// Get Developers
-			wg.Add(1)
-			go func() {
-
-				defer wg.Done()
-
-				var err error
-				app.Developers, err = GetDevelopers(app.App)
-				if err != nil {
-					log.Err(err, r)
-				}
-			}()
-
-			// Get Publishers
-			wg.Add(1)
-			go func() {
-
-				defer wg.Done()
-
-				var err error
-				app.Publishers, err = GetPublishers(app.App)
-				if err != nil {
-					log.Err(err, r)
-				}
-			}()
-
-			// Wait
-			wg.Wait()
+			// var wg sync.WaitGroup
+			//
+			// // Tags
+			// wg.Add(1)
+			// go func() {
+			//
+			// 	defer wg.Done()
+			//
+			// 	var err error
+			// 	app.Tags, err = GetAppTags(app.App)
+			// 	if err != nil {
+			// 		log.Err(err, r)
+			// 	}
+			// }()
+			//
+			// // Categories
+			// wg.Add(1)
+			// go func() {
+			//
+			// 	defer wg.Done()
+			//
+			// 	var err error
+			// 	app.Categories, err = GetAppCategories(app.App)
+			// 	if err != nil {
+			// 		log.Err(err, r)
+			// 	}
+			// }()
+			//
+			// // Genres
+			// wg.Add(1)
+			// go func() {
+			//
+			// 	defer wg.Done()
+			//
+			// 	var err error
+			// 	app.Genres, err = GetAppGenres(app.App)
+			// 	if err != nil {
+			// 		log.Err(err, r)
+			// 	}
+			// }()
+			//
+			// // Get Developers
+			// wg.Add(1)
+			// go func() {
+			//
+			// 	defer wg.Done()
+			//
+			// 	var err error
+			// 	app.Developers, err = GetDevelopers(app.App)
+			// 	if err != nil {
+			// 		log.Err(err, r)
+			// 	}
+			// }()
+			//
+			// // Get Publishers
+			// wg.Add(1)
+			// go func() {
+			//
+			// 	defer wg.Done()
+			//
+			// 	var err error
+			// 	app.Publishers, err = GetPublishers(app.App)
+			// 	if err != nil {
+			// 		log.Err(err, r)
+			// 	}
+			// }()
+			//
+			// // Wait
+			// wg.Wait()
 
 			apps = append(apps, app)
 			names = append(names, app.App.GetName())
