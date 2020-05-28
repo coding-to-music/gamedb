@@ -31,109 +31,99 @@ func appsCompareHandler(w http.ResponseWriter, r *http.Request) {
 	var groupIDs []string
 	var groupNamesMap = map[string]string{}
 
-	var wg sync.WaitGroup
-
 	for _, appID := range idStrings {
 
-		wg.Add(1)
-		go func(appID string) {
+		id, err := strconv.Atoi(appID)
+		if err == nil && helpers.IsValidAppID(id) {
 
-			defer wg.Done()
-
-			id, err := strconv.Atoi(appID)
-			if err == nil && helpers.IsValidAppID(id) {
-
-				a, err := mongo.GetApp(id)
-				if err != nil {
-					err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
-					log.Err(err)
-					return
-				}
-
-				app := appsCompareAppTemplate{App: a}
-
-				var wg2 sync.WaitGroup
-
-				// Tags
-				wg2.Add(1)
-				go func() {
-
-					defer wg2.Done()
-
-					var err error
-					app.Tags, err = GetAppTags(app.App)
-					if err != nil {
-						log.Err(err, r)
-					}
-				}()
-
-				// Categories
-				wg2.Add(1)
-				go func() {
-
-					defer wg2.Done()
-
-					var err error
-					app.Categories, err = GetAppCategories(app.App)
-					if err != nil {
-						log.Err(err, r)
-					}
-				}()
-
-				// Genres
-				wg2.Add(1)
-				go func() {
-
-					defer wg2.Done()
-
-					var err error
-					app.Genres, err = GetAppGenres(app.App)
-					if err != nil {
-						log.Err(err, r)
-					}
-				}()
-
-				// Get Developers
-				wg2.Add(1)
-				go func() {
-
-					defer wg2.Done()
-
-					var err error
-					app.Developers, err = GetDevelopers(app.App)
-					if err != nil {
-						log.Err(err, r)
-					}
-				}()
-
-				// Get Publishers
-				wg2.Add(1)
-				go func() {
-
-					defer wg2.Done()
-
-					var err error
-					app.Publishers, err = GetPublishers(app.App)
-					if err != nil {
-						log.Err(err, r)
-					}
-				}()
-
-				// Wait
-				wg2.Wait()
-
-				apps = append(apps, app)
-				names = append(names, app.App.GetName())
-				namesMap[appID] = app.App.GetName()
-				ids = append(ids, appID)
-
-				groupIDs = append(groupIDs, a.GroupID)
-				groupNamesMap[a.GroupID] = app.App.GetName()
+			a, err := mongo.GetApp(id)
+			if err != nil {
+				err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
+				log.Err(err)
+				return
 			}
-		}(appID)
-	}
 
-	wg.Wait()
+			app := appsCompareAppTemplate{App: a}
+
+			var wg sync.WaitGroup
+
+			// Tags
+			wg.Add(1)
+			go func() {
+
+				defer wg.Done()
+
+				var err error
+				app.Tags, err = GetAppTags(app.App)
+				if err != nil {
+					log.Err(err, r)
+				}
+			}()
+
+			// Categories
+			wg.Add(1)
+			go func() {
+
+				defer wg.Done()
+
+				var err error
+				app.Categories, err = GetAppCategories(app.App)
+				if err != nil {
+					log.Err(err, r)
+				}
+			}()
+
+			// Genres
+			wg.Add(1)
+			go func() {
+
+				defer wg.Done()
+
+				var err error
+				app.Genres, err = GetAppGenres(app.App)
+				if err != nil {
+					log.Err(err, r)
+				}
+			}()
+
+			// Get Developers
+			wg.Add(1)
+			go func() {
+
+				defer wg.Done()
+
+				var err error
+				app.Developers, err = GetDevelopers(app.App)
+				if err != nil {
+					log.Err(err, r)
+				}
+			}()
+
+			// Get Publishers
+			wg.Add(1)
+			go func() {
+
+				defer wg.Done()
+
+				var err error
+				app.Publishers, err = GetPublishers(app.App)
+				if err != nil {
+					log.Err(err, r)
+				}
+			}()
+
+			// Wait
+			wg.Wait()
+
+			apps = append(apps, app)
+			names = append(names, app.App.GetName())
+			namesMap[appID] = app.App.GetName()
+			ids = append(ids, appID)
+
+			groupIDs = append(groupIDs, a.GroupID)
+			groupNamesMap[a.GroupID] = app.App.GetName()
+		}
+	}
 
 	if len(apps) < 2 {
 		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Not enough valid app IDs"})

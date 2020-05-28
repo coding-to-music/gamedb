@@ -81,19 +81,19 @@ func UniqueInt64(arg []int64) []int64 {
 	return tempSlice
 }
 
-func UniqueString(arg []string) []string {
+func UniqueString(strings []string) []string {
 
-	tempMap := make(map[string]bool)
+	var keys = make(map[string]bool, len(strings))
+	var list []string
 
-	for idx := range arg {
-		tempMap[arg[idx]] = true
+	for _, v := range strings {
+		if _, value := keys[v]; !value {
+			keys[v] = true
+			list = append(list, v)
+		}
 	}
 
-	tempSlice := make([]string, 0)
-	for key := range tempMap {
-		tempSlice = append(tempSlice, key)
-	}
-	return tempSlice
+	return list
 }
 
 func FirstInts(slice []int, x int) []int {
