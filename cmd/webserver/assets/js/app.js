@@ -647,7 +647,7 @@ if ($appPage.length > 0) {
                             name += '<span class="badge badge-danger float-right ml-1">Inactive</span>';
                         }
                         if (row[5]) {
-                            name += '<span class="badge badge-danger float-right ml-1">Hidden</span>';
+                            row[1] = '<em>&lt;Hidden&gt;</em> ' + row[1];
                         }
                         if (row[6]) {
                             name += '<span class="badge badge-danger float-right ml-1">Deleted</span>';
