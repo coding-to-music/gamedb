@@ -117,7 +117,7 @@
                             <table class="table table-hover table-striped table-datatable" data-order='[[1, "desc"]]'>
                                 <thead class="thead-light">
                                 <tr>
-                                    <th scope="row">Badge (in date order)</th>
+                                    <th scope="row">Game</th>
                                     <th scope="row">Players</th>
                                     <th scope="row">Leader</th>
                                     <th scope="row">Foil Leader</th>
@@ -125,7 +125,7 @@
                                 </thead>
                                 <tbody>
                                 {{ range $key, $value := .Badges }}
-                                    {{ if .IsGame }}
+                                    {{ if and .IsGame (gt .PlayersCount 0) }}
                                         <tr data-link="{{ .GetPath false }}" data-badge-id="{{ .ID }}">
                                             <td class="img" nowrap="nowrap" data-sort="{{ .ID }}">
                                                 <div class="icon-name">
