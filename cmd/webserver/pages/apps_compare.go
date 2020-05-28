@@ -169,7 +169,7 @@ func appsCompareHandler(w http.ResponseWriter, r *http.Request) {
 	var j = appsCompareGoogleTemplate{}
 	var d int64
 	for _, v := range apps {
-		if v.App.ReleaseDateUnix < d {
+		if v.App.ReleaseDateUnix < d || d == 0 {
 			d = v.App.ReleaseDateUnix
 		}
 	}
@@ -179,7 +179,7 @@ func appsCompareHandler(w http.ResponseWriter, r *http.Request) {
 	for _, v := range apps {
 		j.ComparisonItem = append(j.ComparisonItem, appsCompareGoogleItemTemplate{
 			Keyword: v.App.GetName(),
-			Time:    time.Unix(d, 0).Format(helpers.DateSQLDay) + " " + time.Now().Format(helpers.DateSQLDay),
+			Time:    time.Unix(d, 0).AddDate(-1, 0, 0).Format(helpers.DateSQLDay) + " " + time.Now().Format(helpers.DateSQLDay),
 		})
 	}
 
