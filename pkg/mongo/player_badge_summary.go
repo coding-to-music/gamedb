@@ -114,7 +114,7 @@ func (badge PlayerBadgeSummary) GetAppLeader(foil bool) (ret template.HTML) {
 func GetBadgeSummaries() (badges []PlayerBadgeSummary, err error) {
 
 	// Filter to remove game badges that are no longer popular
-	filter := bson.D{{"updated_at", bson.M{"$gte": time.Now().Add(time.Hour * 24 * 7 * -1)}}}
+	filter := bson.D{{"updated_at", bson.M{"$gte": time.Now().Add(time.Hour * 24 * 7 * -1).Unix()}}}
 
 	cur, ctx, err := Find(CollectionPlayerBadgesSummary, 0, 0, nil, filter, nil, nil)
 	if err != nil {
