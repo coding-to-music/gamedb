@@ -111,7 +111,6 @@ type App struct {
 	Version                       string                         `bson:"version"`
 	WishlistAvgPosition           float64                        `bson:"wishlist_avg_position"`
 	WishlistCount                 int                            `bson:"wishlist_count"`
-	Score                         float64                        `bson:"score,omitempty"` //  Just used for search
 }
 
 func (app App) BSON() bson.D {
