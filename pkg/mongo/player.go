@@ -1,6 +1,7 @@
 package mongo
 
 import (
+	"html/template"
 	"math"
 	"path"
 	"sort"
@@ -172,6 +173,14 @@ func (player Player) GetUpdatedUnix() int64 {
 
 func (player Player) GetUpdatedNice() string {
 	return player.UpdatedAt.Format(helpers.DateTime)
+}
+
+func (player Player) GetFriendLink() template.URL {
+	return template.URL("steam://friends/add/" + strconv.FormatInt(player.ID, 10))
+}
+
+func (player Player) GetMessageLink() template.URL {
+	return template.URL("steam://friends/message/" + strconv.FormatInt(player.ID, 10))
 }
 
 func (player Player) CommunityLink() string {
