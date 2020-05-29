@@ -22,8 +22,28 @@ if ($homePage.length > 0) {
     });
     $panels.css('min-height', maxPanelHeight + 'px');
 
-    loadSales('top-rated');
-    loadPlayers('level');
+    // Last load tables
+    const config = {rootMargin: '50px 0px 50px 0px', threshold: 0};
+
+    const levelsCallback = function (entries, self) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                loadPlayers('level');
+                self.unobserve(entry.target);
+            }
+        });
+    };
+    new IntersectionObserver(levelsCallback, config).observe(document.getElementById("players"));
+
+    const salesCallback = function (entries, self) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                loadSales('top-rated');
+                self.unobserve(entry.target);
+            }
+        });
+    };
+    new IntersectionObserver(salesCallback, config).observe(document.getElementById("sales"));
 
     //
     function loadSales(sort) {
