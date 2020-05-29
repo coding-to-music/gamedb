@@ -3,6 +3,7 @@ package pages
 import (
 	"errors"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
@@ -28,6 +29,13 @@ func commitsHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := commitsTemplate{}
 	t.fill(w, r, "Commits", "All the open source commits for Game DB")
+
+	if strings.Contains(r.URL.RawQuery, "refresh") {
+		err := memcache.Delete(memcache.MemcacheCommitsPage(1).Key)
+		log.Err(err)
+		http.Redirect(w, r, "/commits", http.StatusFound)
+		return
+	}
 
 	returnTemplate(w, r, "commits", t)
 }
