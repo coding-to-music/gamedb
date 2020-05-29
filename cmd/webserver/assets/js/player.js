@@ -62,13 +62,8 @@ if ($playerPage.length > 0) {
                     loadPlayerWishlist();
                     break;
                 case '#achievements':
+                    loadPlayerAchievements();
                     $('a.nav-link[href="#achievements-summary"]').tab('show');
-                    break;
-                case '#achievements-summary':
-                    loadPlayerAchievementsSummary();
-                    break;
-                case '#achievements-latest':
-                    loadPlayerAchievementsLatest();
                     break;
             }
         }
@@ -132,14 +127,6 @@ if ($playerPage.length > 0) {
             ]
         };
 
-        $('#games #all-games').gdbTable({
-            tableOptions: options,
-            searchFields: [
-                $('#player-games-search'),
-            ],
-        });
-
-        //
         const recentOptions = {
             "order": [[1, 'desc']],
             "createdRow": function (row, data, dataIndex) {
@@ -177,7 +164,28 @@ if ($playerPage.length > 0) {
             ]
         };
 
-        $('#games #recent-games').gdbTable({tableOptions: recentOptions});
+        //
+        const config = {rootMargin: '50px 0px 50px 0px', threshold: 0};
+
+        const recentCallback = function (entries, self) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    $('#games #recent-games').gdbTable({tableOptions: recentOptions});
+                    self.unobserve(entry.target);
+                }
+            });
+        };
+        new IntersectionObserver(recentCallback, config).observe(document.getElementById("recent-games"));
+
+        const allGamesCallback = function (entries, self) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    $('#games #all-games').gdbTable({tableOptions: options, searchFields: [$('#player-games-search')]});
+                    self.unobserve(entry.target);
+                }
+            });
+        };
+        new IntersectionObserver(allGamesCallback, config).observe(document.getElementById("all-games"));
     }
 
     function loadPlayerFriends() {
@@ -385,9 +393,9 @@ if ($playerPage.length > 0) {
         $('#wishlist-table').gdbTable({tableOptions: options});
     }
 
-    function loadPlayerAchievementsSummary() {
+    function loadPlayerAchievements() {
 
-        const options = {
+        const summaryOptions = {
             "order": [[2, 'desc']],
             "createdRow": function (row, data, dataIndex) {
                 $(row).attr('data-link', data[0] + '#achievements');
@@ -424,14 +432,7 @@ if ($playerPage.length > 0) {
             ]
         };
 
-        $('#achievements-summary-table').gdbTable({
-            tableOptions: options,
-        });
-    }
-
-    function loadPlayerAchievementsLatest() {
-
-        const options = {
+        const recentOptions = {
             "order": [[1, 'desc']],
             "createdRow": function (row, data, dataIndex) {
                 $(row).attr('data-link', data[0] + '#achievements');
@@ -466,9 +467,28 @@ if ($playerPage.length > 0) {
             ]
         };
 
-        $('#achievements-table').gdbTable({
-            tableOptions: options,
-        });
+        //
+        const config = {rootMargin: '50px 0px 50px 0px', threshold: 0};
+
+        const summaryCallback = function (entries, self) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    $('#achievements-summary-table').gdbTable({tableOptions: summaryOptions});
+                    self.unobserve(entry.target);
+                }
+            });
+        };
+        new IntersectionObserver(summaryCallback, config).observe(document.getElementById("achievements-summary-table"));
+
+        const recentCallback = function (entries, self) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    $('#achievements-table').gdbTable({tableOptions: recentOptions});
+                    self.unobserve(entry.target);
+                }
+            });
+        };
+        new IntersectionObserver(recentCallback, config).observe(document.getElementById("achievements-table"));
     }
 
     function loadPlayerBadges() {

@@ -69,9 +69,7 @@ if ($appPage.length > 0) {
                     loadPriceChart();
                     break;
                 case '#players':
-                    loadAppPlayersChart();
-                    loadAppPlayerTimes();
-                    loadGroupChart($appPage);
+                    loadPlayersTab();
                     break;
                 case '#reviews':
                     loadAppReviewsChart();
@@ -397,6 +395,41 @@ if ($appPage.length > 0) {
 
             },
         });
+    }
+
+    function loadPlayersTab() {
+
+        const config = {rootMargin: '50px 0px 50px 0px', threshold: 0};
+
+        const playersCallback = function (entries, self) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    loadAppPlayersChart();
+                    self.unobserve(entry.target);
+                }
+            });
+        };
+        new IntersectionObserver(playersCallback, config).observe(document.getElementById("players-chart"));
+
+        const groupCallback = function (entries, self) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    loadGroupChart($appPage);
+                    self.unobserve(entry.target);
+                }
+            });
+        };
+        new IntersectionObserver(groupCallback, config).observe(document.getElementById("group-chart"));
+
+        const timesCallback = function (entries, self) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    loadAppPlayerTimes();
+                    self.unobserve(entry.target);
+                }
+            });
+        };
+        new IntersectionObserver(timesCallback, config).observe(document.getElementById("top-players-table"));
     }
 
     function loadAppPlayersChart() {

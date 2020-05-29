@@ -12,7 +12,18 @@ if ($groupPage.length > 0) {
     });
 
     loadGroupChart();
-    loadGroupPlayers();
+
+    const config = {rootMargin: '50px 0px 50px 0px', threshold: 0};
+
+    const tableCallback = function (entries, self) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                loadGroupPlayers();
+                self.unobserve(entry.target);
+            }
+        });
+    };
+    new IntersectionObserver(tableCallback, config).observe(document.getElementById("players"));
 }
 
 function loadGroupPlayers() {
