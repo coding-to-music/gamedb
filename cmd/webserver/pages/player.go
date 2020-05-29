@@ -814,7 +814,7 @@ func playerFriendsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		response.AddRow([]interface{}{
 			strconv.FormatInt(friend.PlayerID, 10), // 0
 			friend.GetPath(),                       // 1
-			friend.Avatar,                          // 2
+			friend.GetAvatar(),                     // 2
 			friend.GetName(),                       // 3
 			friend.GetLevel(),                      // 4
 			friend.Scanned(),                       // 5

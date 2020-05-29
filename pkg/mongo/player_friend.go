@@ -49,6 +49,10 @@ func (friend PlayerFriend) GetPath() string {
 	return helpers.GetPlayerPath(friend.FriendID, friend.Name)
 }
 
+func (friend PlayerFriend) GetAvatar() string {
+	return helpers.GetPlayerAvatar(friend.Avatar)
+}
+
 func (friend PlayerFriend) GetFriendSince() string {
 	return friend.FriendSince.Format(helpers.DateYearTime)
 }
