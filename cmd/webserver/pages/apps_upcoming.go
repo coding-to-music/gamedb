@@ -13,7 +13,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-var upcomingFilter = bson.D{{"release_date_unix", bson.M{"$gte": time.Now().AddDate(0, 0, -1).Unix()}}}
+var upcomingFilter = bson.D{{"release_date_unix", bson.M{"$gte": time.Now().Add(time.Hour * 12 * -1).Unix()}}}
 
 func upcomingRouter() http.Handler {
 
@@ -59,7 +59,7 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		columns := map[string]string{
 			"1": "group_followers",
-			"3": "release_date_unix",
+			"3": "release_date_unix, group_followers desc",
 		}
 
 		projection := bson.M{"_id": 1, "name": 1, "icon": 1, "type": 1, "release_date_unix": 1, "group_id": 1, "group_followers": 1}
