@@ -204,8 +204,10 @@ func redirectHandler(path string) func(w http.ResponseWriter, r *http.Request) {
 		u, _ := url.Parse(path)
 		q := u.Query()
 
-		for k := range r.URL.Query() {
-			q.Set(k, r.URL.Query().Get(k))
+		for k, v := range r.URL.Query() {
+			for _, vv := range v {
+				q.Add(k, vv)
+			}
 		}
 
 		u.RawQuery = q.Encode()
@@ -220,8 +222,10 @@ func redirectHandlerFunc(f func(w http.ResponseWriter, r *http.Request) string) 
 		u, _ := url.Parse(f(w, r))
 		q := u.Query()
 
-		for k := range r.URL.Query() {
-			q.Set(k, r.URL.Query().Get(k))
+		for k, v := range r.URL.Query() {
+			for _, vv := range v {
+				q.Add(k, vv)
+			}
 		}
 
 		u.RawQuery = q.Encode()
