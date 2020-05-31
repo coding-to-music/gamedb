@@ -134,13 +134,6 @@ func playerHandler(messages []*rabbit.Message) {
 				sendToRetryQueue(message)
 				return
 			}
-
-			err = updatePlayerGroups(&player, payload)
-			if err != nil {
-				steamHelper.LogSteamError(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
 		}()
 
 		// Calls to store.steampowered.com
@@ -264,6 +257,13 @@ func playerHandler(messages []*rabbit.Message) {
 		var produces = map[rabbit.QueueName]interface{}{
 			QueuePlayersSearch:  PlayersSearchMessage{Player: player},
 			QueuePlayersAliases: PlayersAliasesMessage{PlayerID: player.ID},
+			QueuePlayersGroups: PlayersGroupsMessage{
+				PlayerID:          player.ID,
+				PlayerPersonaName: player.PersonaName,
+				PlayerAvatar:      player.Avatar,
+				SkipGroups:        payload.SkipGroups,
+				UserAgent:         payload.UserAgent,
+			},
 		}
 
 		for k, v := range produces {
@@ -500,95 +500,6 @@ func updatePlayerBans(player *mongo.Player) error {
 		DaysSinceLastBan: response.DaysSinceLastBan,
 		NumberOfGameBans: response.NumberOfGameBans,
 		EconomyBan:       response.EconomyBan,
-	}
-
-	return nil
-}
-
-func updatePlayerGroups(player *mongo.Player, payload PlayerMessage) error {
-
-	// Old groups
-	oldGroupsSlice, err := mongo.GetPlayerGroups(player.ID, 0, 0, nil)
-	if err != nil {
-		return err
-	}
-
-	oldGroupsMap := map[string]mongo.PlayerGroup{}
-	for _, v := range oldGroupsSlice {
-		oldGroupsMap[v.GroupID] = v
-	}
-
-	// Current groups response
-	currentSlice, _, err := steamHelper.GetSteam().GetUserGroupList(player.ID)
-	err = steamHelper.AllowSteamCodes(err, 403)
-	if err != nil {
-		return err
-	}
-
-	player.GroupsCount = len(currentSlice.GetIDs())
-
-	currentMap := map[string]string{}
-	for _, v := range currentSlice.GetIDs() {
-		currentMap[v] = v
-	}
-
-	// Make list of groups to add
-	var newGroupIDs []string
-	for _, v := range currentSlice.GetIDs() {
-		if _, ok := oldGroupsMap[v]; !ok {
-			newGroupIDs = append(newGroupIDs, v)
-		}
-	}
-
-	// Find new groups
-	newGroupsSlice, err := mongo.GetGroupsByID(newGroupIDs, nil)
-	if err != nil {
-		return err
-	}
-
-	// Add
-	var newPlayerGroupSlice []mongo.PlayerGroup
-	for _, group := range newGroupsSlice {
-		newPlayerGroupSlice = append(newPlayerGroupSlice, mongo.PlayerGroup{
-			PlayerID:     player.ID,
-			PlayerName:   player.PersonaName,
-			PlayerAvatar: player.Avatar,
-			GroupID:      group.ID,
-			GroupName:    helpers.TruncateString(group.Name, 1000, ""), // Truncated as caused mongo driver issue
-			GroupIcon:    group.Icon,
-			GroupMembers: group.Members,
-			GroupType:    group.Type,
-			GroupURL:     group.URL,
-		})
-	}
-
-	err = mongo.InsertPlayerGroups(newPlayerGroupSlice)
-	if err != nil {
-		return err
-	}
-
-	// Delete
-	var toDelete []string
-	for _, v := range oldGroupsSlice {
-		if _, ok := currentMap[v.GroupID]; !ok {
-			toDelete = append(toDelete, v.GroupID)
-		}
-	}
-
-	err = mongo.DeletePlayerGroups(player.ID, toDelete)
-	if err != nil {
-		return err
-	}
-
-	// Queue groups for update
-	if !payload.SkipGroups {
-		for _, id := range currentSlice.GetIDs() {
-			err = ProduceGroup(GroupMessage{ID: id, UserAgent: payload.UserAgent})
-			err = helpers.IgnoreErrors(err, memcache.ErrInQueue, ErrIsBot)
-			if err != nil {
-				log.Err(err)
-			}
-		}
 	}
 
 	return nil
