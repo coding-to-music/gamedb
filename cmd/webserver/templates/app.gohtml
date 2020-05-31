@@ -156,7 +156,7 @@
                                         {{ if ne .App.GroupID "" }}
                                             <tr>
                                                 <th scope="row" nowrap="nowrap" class="thin">Followers</th>
-                                                <td><a href="#players" class="followers-link">{{ .App.GetFollowers }}</a></td>
+                                                <td><a href="#players" class="followers-link">{{ .App.GetFollowers }}</a> <small>(<a href="{{ .GroupPath }}">Group</a>)</small></td>
                                             </tr>
                                         {{ end }}
 

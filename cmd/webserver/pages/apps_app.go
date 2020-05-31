@@ -98,6 +98,8 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	t.Description = template.HTML(app.ShortDescription)
 	t.Canonical = app.GetPath()
 
+	t.GroupPath = helpers.GetGroupPath(app.GroupID, app.Name)
+
 	//
 	var wg sync.WaitGroup
 
@@ -364,6 +366,7 @@ type appTemplate struct {
 	TagsMax       int
 	UFS           []pics.KeyValue
 	PlayersInGame int64
+	GroupPath     string
 }
 
 func (t appTemplate) GetRelatedTags(relatedApp mongo.App) template.HTML {
