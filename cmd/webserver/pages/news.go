@@ -68,8 +68,7 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		var search = query.GetSearchString("search")
 		var sorters = query.GetOrderElastic(map[string]string{
-			"2": "members",
-			"3": "trend",
+			"1": "time",
 		})
 
 		var q elastic.Query
