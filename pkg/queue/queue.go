@@ -532,6 +532,15 @@ func ProduceTest(id int) (err error) {
 	return produce(QueueTest, TestMessage{ID: id})
 }
 
+func ProducePlayerGroup(playerID int64, playerPersonaName string, playerAvatar string) (err error) {
+
+	return produce(QueuePlayersGroups, PlayersGroupsMessage{
+		PlayerID:          playerID,
+		PlayerPersonaName: playerPersonaName,
+		PlayerAvatar:      playerAvatar,
+	})
+}
+
 func ProduceAppSearch(app mongo.App) (err error) {
 
 	return produce(QueueAppsSearch, AppsSearchMessage{App: app})
