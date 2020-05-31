@@ -78,7 +78,7 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var sort = query.GetOrderMongo(columns)
 
 		var err error
-		apps, err = mongo.GetApps(query.GetOffset64(), 100, sort, filter2, projection, nil)
+		apps, err = mongo.GetApps(query.GetOffset64(), 100, sort, filter2, projection)
 		if err != nil {
 			log.Err(err, r)
 		}

@@ -67,7 +67,7 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		order = append(order, bson.E{Key: "group_followers", Value: -1}, bson.E{Key: "name", Value: 1})
 		offset := query.GetOffset64()
 
-		apps, err = mongo.GetApps(offset, 100, order, filter2, projection, nil)
+		apps, err = mongo.GetApps(offset, 100, order, filter2, projection)
 		if err != nil {
 			log.Err(err, r)
 		}

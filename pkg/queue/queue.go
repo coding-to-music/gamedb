@@ -22,6 +22,7 @@ const (
 	QueueApps                   rabbit.QueueName = "GDB_Apps"
 	QueueAppsAchievements       rabbit.QueueName = "GDB_Apps.Achievements"
 	QueueAppsItems              rabbit.QueueName = "GDB_Apps.Items"
+	QueueAppsArticlesSearch     rabbit.QueueName = "GDB_Apps.Articles.Search"
 	QueueAppsAchievementsSearch rabbit.QueueName = "GDB_Apps.Achievements.Search"
 	QueueAppsYoutube            rabbit.QueueName = "GDB_Apps.Youtube"
 	QueueAppsInflux             rabbit.QueueName = "GDB_Apps.Influx"
@@ -91,6 +92,7 @@ var (
 		{name: QueueAppsItems},
 		{name: QueueAppsAchievements},
 		{name: QueueAppsAchievementsSearch},
+		{name: QueueAppsArticlesSearch},
 		{name: QueueAppsSameowners},
 		{name: QueueAppsReviews},
 		{name: QueueAppsMorelike},
@@ -124,6 +126,7 @@ var (
 		{name: QueueAppsNews, consumer: appNewsHandler},
 		{name: QueueAppsAchievements, consumer: appAchievementsHandler},
 		{name: QueueAppsAchievementsSearch, consumer: appsAchievementsSearchHandler},
+		{name: QueueAppsArticlesSearch, consumer: appsArticlesSearchHandler},
 		{name: QueueAppsItems, consumer: appItemsHandler},
 		{name: QueueAppsSameowners, consumer: appSameownersHandler},
 		{name: QueueAppsReviews, consumer: appReviewsHandler},
@@ -153,6 +156,7 @@ var (
 		{name: QueueApps},
 		{name: QueueAppsAchievements},
 		{name: QueueAppsAchievementsSearch},
+		{name: QueueAppsArticlesSearch},
 		{name: QueueAppsYoutube},
 		{name: QueueAppsInflux},
 		{name: QueueAppPlayers},
@@ -499,6 +503,11 @@ func ProduceGroupSearch(group mongo.Group) (err error) {
 func ProduceAchievementSearch(achievement mongo.AppAchievement, app mongo.App) (err error) {
 
 	return produce(QueueAppsAchievementsSearch, AppsAchievementsSearchMessage{AppAchievement: achievement, AppName: app.Name})
+}
+
+func ProduceArticlesSearch(payload AppsArticlesSearchMessage) (err error) {
+
+	return produce(QueueAppsArticlesSearch, payload)
 }
 
 func ProduceAppAchievement(appID int) (err error) {

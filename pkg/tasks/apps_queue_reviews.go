@@ -31,7 +31,7 @@ func (c AppsQueueReviews) work() (err error) {
 
 		var filter = bson.D{{"reviews_count", bson.M{"$gt": 0}}}
 
-		apps, err := mongo.GetApps(offset, limit, bson.D{{"_id", 1}}, filter, bson.M{"_id": 1}, nil)
+		apps, err := mongo.GetApps(offset, limit, bson.D{{"_id", 1}}, filter, bson.M{"_id": 1})
 		if err != nil {
 			return err
 		}

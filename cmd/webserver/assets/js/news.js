@@ -10,7 +10,7 @@ if ($('#news-page').length > 0) {
         if (!to.attr('loaded')) {
             to.attr('loaded', 1);
             switch (to.attr('href')) {
-                case '#apps':
+                case '#all':
                     loadNewsAjax();
                     break;
             }
@@ -25,62 +25,58 @@ if ($('#news-page').length > 0) {
     function loadNewsAjax() {
 
         const options = {
-            "order": [[2, 'desc']],
+            "order": [[1, 'desc']],
             "createdRow": function (row, data, dataIndex) {
-                $(row).attr('data-app-id', data[6]);
+                $(row).attr('data-app-id', data[3]);
+                $(row).addClass('cursor-pointer');
             },
             "columnDefs": [
-                // Game
+                // Article
                 {
                     "targets": 0,
                     "render": function (data, type, row) {
-
-                        // Icon URL
-                        if (row[8] === '') {
-                            row[8] = '/assets/img/no-app-image-square.jpg';
-                        } else if (!row[8].startsWith("/") && !row[8].startsWith("http")) {
-                            row[8] = 'https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/' + row[6] + '/' + row[8] + '.jpg';
-                        }
-
-                        return '<div class="icon-name"><div class="icon"><img src="' + row[8] + '" alt="' + row[7] + '"></div><div class="name">' + row[7] + '</div></div>'
+                        const name = row[1] + '<br><small><a href="' + row[9] + '">' + row[7] + '</a></small>';
+                        return '<div class="icon-name"><div class="icon"><img class="tall" alt="" src="" data-lazy="' + row[8] + '" data-lazy-alt="' + row[7] + '"></div><div class="name">' + name + '</div></div><div class="d-none">' + row[5] + '</div>'
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
-                        $(td).attr('data-link', rowData[9]);
-                    },
-                    "orderable": false
-                },
-                // Title
-                {
-                    "targets": 1,
-                    "render": function (data, type, row) {
-                        return '<span>' + row[1] + '</span><div class="d-none">' + row[5] + '</div>';
-                    },
-                    "createdCell": function (td, cellData, rowData, row, col) {
-                        $(td).addClass('article-title');
                     },
                     "orderable": false
                 },
                 // Date
                 {
-                    "targets": 2,
+                    "targets": 1,
                     "render": function (data, type, row) {
-                        return '<span data-toggle="tooltip" data-placement="left" title="' + row[4] + '" data-livestamp="' + row[3] + '"></span>';
+                        return '<span data-toggle="tooltip" data-placement="left" title="' + row[10] + '" data-livestamp="' + row[5] + '"></span>';
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).attr('nowrap', 'nowrap');
                     },
-                    "orderable": false
+                    "orderSequence": ['desc', 'asc'],
+                },
+                // Search Score
+                {
+                    "targets": 2,
+                    "render": function (data, type, row) {
+                        return row[6].toLocaleString();
+                    },
+                    "orderable": false,
+                    "visible": false,
                 },
             ]
         };
 
         const $table = $('#news-table');
-        const table = $table.gdbTable({tableOptions: options});
+        const table = $table.gdbTable({
+            tableOptions: options,
+            searchFields: [
+                $('#search'),
+            ],
+        });
 
-        $table.on('click', 'tr[role=row] td.article-title', function () {
+        $table.on('click', 'tr[role=row]', function () {
 
-            const $tr = $(this).closest('tr');
+            const $tr = $(this);
             const row = table.row($tr);
 
             if (row.child.isShown()) {
@@ -90,7 +86,7 @@ if ($('#news-page').length > 0) {
 
             } else {
 
-                row.child($("<div/>").html(row.data()[5]).text()).show();
+                row.child($("<div/>").html(row.data()[2]).text()).show();
                 $tr.addClass('shown');
             }
         });

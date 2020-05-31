@@ -88,7 +88,7 @@ func SiteMapPagesHandler(w http.ResponseWriter, r *http.Request) {
 
 func SiteMapGamesByPlayersHandler(w http.ResponseWriter, r *http.Request) {
 
-	apps, err := mongo.GetApps(0, 500, bson.D{{"player_peak_week", -1}}, bson.D{}, bson.M{"_id": 1, "name": 1, "updated_at": 1}, nil)
+	apps, err := mongo.GetApps(0, 500, bson.D{{"player_peak_week", -1}}, bson.D{}, bson.M{"_id": 1, "name": 1, "updated_at": 1})
 	if err != nil {
 		log.Err(err, r)
 		return
@@ -107,7 +107,7 @@ func SiteMapGamesByPlayersHandler(w http.ResponseWriter, r *http.Request) {
 
 func SiteMapGamesByScoreHandler(w http.ResponseWriter, r *http.Request) {
 
-	apps, err := mongo.GetApps(0, 500, bson.D{{"reviews_score", -1}}, bson.D{}, bson.M{"_id": 1, "name": 1, "updated_at": 1}, nil)
+	apps, err := mongo.GetApps(0, 500, bson.D{{"reviews_score", -1}}, bson.D{}, bson.M{"_id": 1, "name": 1, "updated_at": 1})
 	if err != nil {
 		log.Err(err, r)
 		return
@@ -126,7 +126,7 @@ func SiteMapGamesByScoreHandler(w http.ResponseWriter, r *http.Request) {
 
 func SiteMapGamesUpcomingHandler(w http.ResponseWriter, r *http.Request) {
 
-	apps, err := mongo.GetApps(0, 500, bson.D{{"release_date_unix", 1}}, upcomingFilter, bson.M{"_id": 1, "name": 1, "updated_at": 1}, nil)
+	apps, err := mongo.GetApps(0, 500, bson.D{{"release_date_unix", 1}}, upcomingFilter, bson.M{"_id": 1, "name": 1, "updated_at": 1})
 	if err != nil {
 		log.Err(err, r)
 		return
@@ -145,7 +145,7 @@ func SiteMapGamesUpcomingHandler(w http.ResponseWriter, r *http.Request) {
 
 func SiteMapGamesNewHandler(w http.ResponseWriter, r *http.Request) {
 
-	apps, err := mongo.GetApps(0, 500, bson.D{{"release_date_unix", -1}}, newReleasesFilter, bson.M{"_id": 1, "name": 1, "updated_at": 1}, nil)
+	apps, err := mongo.GetApps(0, 500, bson.D{{"release_date_unix", -1}}, newReleasesFilter, bson.M{"_id": 1, "name": 1, "updated_at": 1})
 	if err != nil {
 		log.Err(err, r)
 		return

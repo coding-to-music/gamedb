@@ -48,7 +48,7 @@ func (c ProductsUpdateKeys) work() (err error) {
 
 	for {
 
-		apps, err := mongo.GetApps(offset, limit, nil, filter, projection, nil)
+		apps, err := mongo.GetApps(offset, limit, nil, filter, projection)
 		if err != nil {
 			return err
 		}

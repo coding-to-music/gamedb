@@ -101,7 +101,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		} else {
 
-			apps, err := mongo.GetApps(query.GetOffset64(), 100, bson.D{{"_id", 1}}, filter, projection, nil)
+			apps, err := mongo.GetApps(query.GetOffset64(), 100, bson.D{{"_id", 1}}, filter, projection)
 			if err != nil {
 				log.Err(err, r)
 				return

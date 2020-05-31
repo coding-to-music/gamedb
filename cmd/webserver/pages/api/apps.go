@@ -71,7 +71,7 @@ func (s Server) GetGames(w http.ResponseWriter, r *http.Request) {
 			"reviews_score":       1,
 		}
 
-		apps, err := mongo.GetApps(offset, limit, bson.D{{"_id", 1}}, filter, projection, nil)
+		apps, err := mongo.GetApps(offset, limit, bson.D{{"_id", 1}}, filter, projection)
 		if err != nil {
 			return 500, err
 		}

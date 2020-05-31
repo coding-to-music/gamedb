@@ -81,6 +81,17 @@ func appNewsHandler(messages []*rabbit.Message) {
 
 			documents = append(documents, news)
 			newsIDs = append(newsIDs, int64(v.GID))
+
+			err = ProduceArticlesSearch(AppsArticlesSearchMessage{
+				ID:      int64(v.GID),
+				Title:   v.Title,
+				Body:    v.Contents,
+				Time:    v.Date,
+				AppID:   app.ID,
+				AppName: app.Name,
+				AppIcon: app.Icon,
+			})
+			log.Err(err)
 		}
 
 		_, err = mongo.InsertMany(mongo.CollectionAppArticles, documents)

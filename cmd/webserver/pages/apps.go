@@ -384,7 +384,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		offset := query.GetOffset64()
 
 		var err error
-		apps, err = mongo.GetApps(offset, 100, order, filter, projection, nil)
+		apps, err = mongo.GetApps(offset, 100, order, filter, projection)
 		if err != nil {
 			log.Err(err, r)
 		}

@@ -492,7 +492,23 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	var response = datatable.NewDataTablesResponse(r, query, int64(total), int64(total))
 	for _, article := range articles {
-		response.AddRow(article.OutputForJSON())
+
+		var id = strconv.FormatInt(article.ID, 10)
+		var path = helpers.GetAppPath(article.AppID, article.AppName)
+
+		response.AddRow([]interface{}{
+			id,                                    // 0
+			article.Title,                         // 1
+			article.Author,                        // 2
+			article.Date.Unix(),                   // 3
+			article.Date.Format(helpers.DateYear), // 4
+			article.GetBody(),                     // 5
+			article.AppID,                         // 6
+			article.AppName,                       // 7
+			article.GetIcon(),                     // 8
+			path + "#news," + id,                  // 9
+			helpers.DefaultAppIcon,                // 10
+		})
 	}
 
 	returnJSON(w, r, response)

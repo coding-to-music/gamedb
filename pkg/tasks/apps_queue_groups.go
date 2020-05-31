@@ -29,7 +29,7 @@ func (c AppsQueueGroups) Cron() string {
 
 func (c AppsQueueGroups) work() (err error) {
 
-	apps, err := mongo.GetApps(0, 0, nil, bson.D{{"group_id", bson.M{"$ne": ""}}}, bson.M{"group_id": 1}, nil)
+	apps, err := mongo.GetApps(0, 0, nil, bson.D{{"group_id", bson.M{"$ne": ""}}}, bson.M{"group_id": 1})
 	if err != nil {
 		return err
 	}

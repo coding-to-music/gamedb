@@ -83,7 +83,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 			appIDmap[app.ID] = app
 		}
 
-		news, err := mongo.GetArticlesByApps(appIDs, 20, time.Time{})
+		news, err := mongo.GetArticlesByAppIDs(appIDs, 20, time.Time{})
 		if err != nil {
 			log.Err(err, r)
 		}

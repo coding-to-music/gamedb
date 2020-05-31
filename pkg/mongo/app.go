@@ -633,7 +633,7 @@ func GetApp(id int, full ...bool) (app App, err error) {
 	return app, err
 }
 
-func GetApps(offset int64, limit int64, sort bson.D, filter bson.D, projection bson.M, ops *options.FindOptions) (apps []App, err error) {
+func GetApps(offset int64, limit int64, sort bson.D, filter bson.D, projection bson.M) (apps []App, err error) {
 
 	cur, ctx, err := Find(CollectionApps, offset, limit, sort, filter, projection, nil)
 	if err != nil {
@@ -670,7 +670,7 @@ func GetAppsByID(ids []int, projection bson.M) (apps []App, err error) {
 		a = append(a, v)
 	}
 
-	return GetApps(0, 0, nil, bson.D{{"_id", bson.M{"$in": a}}}, projection, nil)
+	return GetApps(0, 0, nil, bson.D{{"_id", bson.M{"$in": a}}}, projection)
 }
 
 func SearchApps(search string, projection bson.M) (app App, err error) {
@@ -689,7 +689,7 @@ func SearchApps(search string, projection bson.M) (app App, err error) {
 		}
 
 		if helpers.IsValidAppID(id) {
-			apps, err = GetApps(0, 1, nil, bson.D{{"_id", id}}, projection, nil)
+			apps, err = GetApps(0, 1, nil, bson.D{{"_id", id}}, projection)
 			if err != nil {
 				return app, err
 			}
@@ -725,7 +725,7 @@ func SearchApps(search string, projection bson.M) (app App, err error) {
 		}
 
 		filter := bson.D{{"$text", bson.M{"$search": search}}}
-		apps, err := GetApps(0, 1, bson.D{{"player_peak_week", -1}}, filter, projection, nil)
+		apps, err := GetApps(0, 1, bson.D{{"player_peak_week", -1}}, filter, projection)
 		if err != nil {
 			return app, err
 		}
@@ -747,7 +747,7 @@ func GetNonEmptyArrays(offset int64, limit int64, column string, projection bson
 	}
 	var order = bson.D{{"_id", 1}}
 
-	return GetApps(offset, limit, order, filter, projection, nil)
+	return GetApps(offset, limit, order, filter, projection)
 }
 
 func GetRandomApps(count int, filter bson.D, projection bson.M) (apps []App, err error) {
@@ -787,7 +787,7 @@ func PopularApps() (apps []App, err error) {
 			bson.D{{"player_peak_week", -1}},
 			bson.D{{"type", "game"}},
 			bson.M{"_id": 1, "name": 1, "player_peak_week": 1, "background": 1},
-			nil)
+		)
 	})
 
 	return apps, err
@@ -810,7 +810,6 @@ func PopularNewApps() (apps []App, err error) {
 				{Key: "type", Value: "game"},
 			},
 			bson.M{"_id": 1, "name": 1, "player_peak_week": 1},
-			nil,
 		)
 	})
 
@@ -828,7 +827,6 @@ func TrendingApps() (apps []App, err error) {
 			bson.D{{"player_trend", -1}},
 			nil,
 			bson.M{"_id": 1, "name": 1, "player_trend": 1},
-			nil,
 		)
 	})
 

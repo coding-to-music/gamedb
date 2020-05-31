@@ -69,6 +69,7 @@ func main() {
 			// elastic.DeleteAndRebuildAchievementsIndex()
 			// elastic.DeleteAndRebuildGroupsIndex()
 			// elastic.DeleteAndRebuildPlayersIndex()
+			// elastic.DeleteAndRebuildArticlesIndex()
 			log.Info("Elastic indexes finished")
 		}()
 	}

@@ -40,7 +40,7 @@ func (c AppsQueueElastic) work() (err error) {
 			"ufs":          -1,
 		}
 
-		apps, err := mongo.GetApps(offset, limit, bson.D{{"_id", 1}}, nil, projection, nil)
+		apps, err := mongo.GetApps(offset, limit, bson.D{{"_id", 1}}, nil, projection)
 		if err != nil {
 			return err
 		}

@@ -43,6 +43,7 @@ var (
 		AppsQueueAll{},
 		AppsQueueElastic{},
 		AppsQueueGroups{},
+		AppsArticlesQueueElastic{},
 		AppsQueueInflux{},
 		AppsQueuePackages{},
 		AppsQueueYoutube{},

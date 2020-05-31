@@ -47,7 +47,7 @@ func (article Article) BSON() bson.D {
 }
 
 func (article Article) GetBody() string {
-	return helpers.BBCodeCompiler.Compile(article.Contents)
+	return helpers.GetArticleBody(article.Contents)
 }
 
 func (article Article) GetDate() string {
@@ -70,27 +70,7 @@ func (article Article) GetAppPath() string {
 	return helpers.GetAppPath(article.AppID, article.AppName)
 }
 
-func (article Article) OutputForJSON() (output []interface{}) {
-
-	var id = strconv.FormatInt(article.ID, 10)
-	var path = helpers.GetAppPath(article.AppID, article.AppName)
-
-	return []interface{}{
-		id,                                    // 0
-		article.Title,                         // 1
-		article.Author,                        // 2
-		article.Date.Unix(),                   // 3
-		article.Date.Format(helpers.DateYear), // 4
-		article.GetBody(),                     // 5
-		article.AppID,                         // 6
-		article.AppName,                       // 7
-		article.GetIcon(),                     // 8
-		path + "#news," + id,                  // 9
-		helpers.DefaultAppIcon,                // 10
-	}
-}
-
-func GetArticlesByApps(appIDs []int, limit int64, afterDate time.Time) (news []Article, err error) {
+func GetArticlesByAppIDs(appIDs []int, limit int64, afterDate time.Time) (news []Article, err error) {
 
 	if len(appIDs) < 1 {
 		return news, nil
@@ -109,24 +89,22 @@ func GetArticlesByApps(appIDs []int, limit int64, afterDate time.Time) (news []A
 		filter = append(filter, bson.E{Key: "date", Value: bson.M{"$gte": afterDate}})
 	}
 
-	return getArticles(0, limit, filter)
+	return getArticles(0, limit, filter, bson.D{{"date", -1}}, nil)
 }
 
 func GetArticlesByApp(appID int, offset int64) (news []Article, err error) {
 
-	return getArticles(offset, 100, bson.D{{"app_id", appID}})
+	return getArticles(offset, 100, bson.D{{"app_id", appID}}, bson.D{{"date", -1}}, nil)
 }
 
-func GetArticles(offset int64) (news []Article, err error) {
+func GetArticles(offset int64, limit int64, order bson.D) (news []Article, err error) {
 
-	return getArticles(offset, 100, nil)
+	return getArticles(offset, limit, nil, order, nil)
 }
 
-func getArticles(offset int64, limit int64, filter bson.D) (news []Article, err error) {
+func getArticles(offset int64, limit int64, filter bson.D, order bson.D, projection bson.M) (news []Article, err error) {
 
-	var sort = bson.D{{"date", -1}}
-
-	cur, ctx, err := Find(CollectionAppArticles, offset, limit, sort, filter, nil, nil)
+	cur, ctx, err := Find(CollectionAppArticles, offset, limit, order, filter, projection, nil)
 	if err != nil {
 		return news, err
 	}

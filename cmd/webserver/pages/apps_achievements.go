@@ -59,7 +59,7 @@ func appsAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		sort = append(sort, bson.E{Key: "achievements_average_completion", Value: -1})
 
 		var err error
-		apps, err = mongo.GetApps(query.GetOffset64(), 100, sort, filter2, projection, nil)
+		apps, err = mongo.GetApps(query.GetOffset64(), 100, sort, filter2, projection)
 		if err != nil {
 			log.Err(err, r)
 		}

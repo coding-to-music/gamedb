@@ -24,7 +24,7 @@ func (c AppsQueueYoutube) Cron() string {
 
 func (c AppsQueueYoutube) work() (err error) {
 
-	apps, err := mongo.GetApps(0, 90, bson.D{{"player_peak_week", -1}}, nil, bson.M{"_id": 1, "name": 1}, nil)
+	apps, err := mongo.GetApps(0, 90, bson.D{{"player_peak_week", -1}}, nil, bson.M{"_id": 1, "name": 1})
 	if err != nil {
 		return err
 	}

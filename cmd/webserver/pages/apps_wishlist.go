@@ -74,7 +74,7 @@ func wishlistAppsHandler(w http.ResponseWriter, r *http.Request) {
 		order := query.GetOrderMongo(columns)
 		offset := query.GetOffset64()
 
-		apps, err = mongo.GetApps(offset, 100, order, filter2, projection, nil)
+		apps, err = mongo.GetApps(offset, 100, order, filter2, projection)
 		if err != nil {
 			log.Err(err, r)
 		}

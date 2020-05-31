@@ -1,0 +1,51 @@
+package queue
+
+import (
+	"github.com/Jleagle/rabbit-go"
+	"github.com/gamedb/gamedb/pkg/elastic"
+	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
+)
+
+type AppsArticlesSearchMessage struct {
+	ID      int64  `json:"id"`
+	Title   string `json:"title"`
+	Body    string `json:"body"`
+	Time    int64  `json:"time"`
+	AppID   int    `json:"app_id"`
+	AppName string `json:"app_name"`
+	AppIcon string `json:"app_icon"`
+}
+
+func appsArticlesSearchHandler(messages []*rabbit.Message) {
+
+	for _, message := range messages {
+
+		payload := AppsArticlesSearchMessage{}
+
+		err := helpers.Unmarshal(message.Message.Body, &payload)
+		if err != nil {
+			log.Err(err, message.Message.Body)
+			sendToFailQueue(message)
+			continue
+		}
+
+		article := elastic.Article{}
+		article.ID = payload.ID
+		article.Title = payload.Title
+		article.Body = payload.Body
+		article.Time = payload.Time
+		article.AppID = payload.AppID
+		article.AppName = payload.AppName
+		article.AppIcon = payload.AppIcon
+
+		err = elastic.IndexArticle(article)
+		if err != nil {
+			log.Err(err)
+			sendToRetryQueue(message)
+			continue
+		}
+
+		message.Ack(false)
+	}
+}

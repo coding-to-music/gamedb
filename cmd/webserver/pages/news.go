@@ -6,10 +6,12 @@ import (
 	"time"
 
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
+	elasticHelpers "github.com/gamedb/gamedb/pkg/elastic"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
+	"github.com/olivere/elastic/v7"
 )
 
 func NewsRouter() http.Handler {
@@ -36,7 +38,7 @@ func newsHandler(w http.ResponseWriter, r *http.Request) {
 		appIDs = append(appIDs, app.ID)
 	}
 
-	t.Articles, err = mongo.GetArticlesByApps(appIDs, 0, time.Now().AddDate(0, 0, -7))
+	t.Articles, err = mongo.GetArticlesByAppIDs(appIDs, 0, time.Now().AddDate(0, 0, -7))
 	if err != nil {
 		log.Err(err, r)
 	}
@@ -56,18 +58,28 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var wg sync.WaitGroup
 
-	var articles []mongo.Article
+	var articles []elasticHelpers.Article
+	var filtered int64
 	wg.Add(1)
 	go func() {
 
 		defer wg.Done()
 
 		var err error
-		articles, err = mongo.GetArticles(query.GetOffset64())
-		log.Err(err, r)
+		var search = query.GetSearchString("search")
+		var sorters = query.GetOrderElastic(map[string]string{
+			"2": "members",
+			"3": "trend",
+		})
 
-		for k, v := range articles {
-			articles[k].Contents = helpers.BBCodeCompiler.Compile(v.Contents)
+		var q elastic.Query
+		if search != "" {
+			q = elastic.NewMatchQuery("title", search)
+		}
+
+		articles, filtered, err = elasticHelpers.SearchArticles(100, query.GetOffset(), q, sorters)
+		if err != nil {
+			log.Err(err, r)
 		}
 	}()
 
@@ -79,14 +91,34 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		count, err = mongo.CountDocuments(mongo.CollectionAppArticles, nil, 0)
-		log.Err(err, r)
+		if err != nil {
+			log.Err(err, r)
+		}
 	}()
 
 	wg.Wait()
 
-	var response = datatable.NewDataTablesResponse(r, query, count, count)
+	var response = datatable.NewDataTablesResponse(r, query, count, filtered)
 	for _, v := range articles {
-		response.AddRow(v.OutputForJSON())
+
+		var appIcon = helpers.GetAppIcon(v.AppID, v.AppIcon)
+		var appPath = helpers.GetAppPath(v.AppID, v.AppName) + "#news"
+		var appName = helpers.GetAppName(v.AppID, v.AppName)
+		var date = time.Unix(v.Time, 0).Format(helpers.DateYearTime)
+
+		response.AddRow([]interface{}{
+			v.ID,        // 0
+			v.Title,     // 1
+			v.GetBody(), // 2
+			v.AppID,     // 3
+			v.AppIcon,   // 4
+			v.Time,      // 5
+			v.Score,     // 6
+			appName,     // 7
+			appIcon,     // 8
+			appPath,     // 9
+			date,        // 10
+		})
 	}
 
 	returnJSON(w, r, response)

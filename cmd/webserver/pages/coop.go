@@ -135,7 +135,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 
 		projection := bson.M{"id": 1, "name": 1, "icon": 1, "platforms": 1, "achievements": 1, "tags": 1}
 
-		apps, err := mongo.GetApps(0, 500, bson.D{{"reviews_score", 1}}, filter, projection, nil)
+		apps, err := mongo.GetApps(0, 500, bson.D{{"reviews_score", 1}}, filter, projection)
 		if err != nil {
 			log.Err(err, r)
 		}
