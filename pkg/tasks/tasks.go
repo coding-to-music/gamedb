@@ -24,7 +24,7 @@ const ( //                         min hour
 	CronTimePlayerRanks         = "50  0"
 	CronTimeScanProductQueues   = "0   1"
 	CronTimeSetBadgeCache       = "10  1"
-	CronTimeAppsInflux          = "20  1"
+	CronTimeAppsInflux          = "20  1,13"
 	CronTimeGenres              = "0   2"
 	CronTimeTags                = "0   3"
 	CronTimePublishers          = "0   4"
