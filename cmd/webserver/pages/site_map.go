@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/sitemap-go/sitemap"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -145,7 +146,12 @@ func SiteMapGamesUpcomingHandler(w http.ResponseWriter, r *http.Request) {
 
 func SiteMapGamesNewHandler(w http.ResponseWriter, r *http.Request) {
 
-	apps, err := mongo.GetApps(0, 500, bson.D{{"release_date_unix", -1}}, newReleasesFilter, bson.M{"_id": 1, "name": 1, "updated_at": 1})
+	var filter = bson.D{
+		{"release_date_unix", bson.M{"$lt": time.Now().Unix()}},
+		{"release_date_unix", bson.M{"$gt": time.Now().AddDate(0, 0, -config.Config.NewReleaseDays.GetInt()).Unix()}},
+	}
+
+	apps, err := mongo.GetApps(0, 500, bson.D{{"release_date_unix", -1}}, filter, bson.M{"_id": 1, "name": 1, "updated_at": 1})
 	if err != nil {
 		log.Err(err, r)
 		return

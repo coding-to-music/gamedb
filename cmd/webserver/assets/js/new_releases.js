@@ -77,12 +77,11 @@ if ($('#new-releases-page').length > 0) {
     };
 
     // Init table
-    const searchFields = [
-        $('#search'),
-    ];
-
     $('table.table').gdbTable({
         tableOptions: options,
-        searchFields: searchFields
+        searchFields: [
+            $('#search'),
+            $('#days'),
+        ]
     });
 }
