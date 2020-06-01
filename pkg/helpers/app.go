@@ -99,6 +99,10 @@ func GetAppType(appType string) (ret string) {
 	switch appType {
 	case "dlc":
 		return "DLC"
+	case "advertising":
+		return "Advertisement"
+	case "music":
+		return "Soundtrack"
 	case "":
 		return "Unknown"
 	default:

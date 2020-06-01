@@ -237,6 +237,10 @@ func (app App) GetTypeLower() (ret string) {
 	switch app.Type {
 	case "dlc":
 		return "DLC"
+	case "advertising":
+		return "advertisement"
+	case "music":
+		return "soundstracks"
 	case "":
 		return "app"
 	default:
