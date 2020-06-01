@@ -17,6 +17,7 @@ import (
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
@@ -82,6 +83,15 @@ func main() {
 	recaptcha.SetSecret(config.Config.RecaptchaPrivate.Get())
 
 	session.InitSession()
+
+	// Clear caches on process restart
+	if config.IsProd() {
+		keys := []string{
+			memcache.MemcacheCommitsPage(1).Key,
+		}
+		err = memcache.Delete(keys...)
+		log.Err(err)
+	}
 
 	// Routes
 	r := chi.NewRouter()
