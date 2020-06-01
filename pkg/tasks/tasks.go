@@ -58,6 +58,7 @@ var (
 		PlayersQueueAll{},
 		PlayersQueueElastic{},
 		PlayersQueueRandom{},
+		PlayersQueueGroups{},
 		PlayersUpdateRanks{},
 		ProductsUpdateKeys{},
 		StatsCategories{},
