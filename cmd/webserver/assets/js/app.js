@@ -709,6 +709,9 @@ if ($appPage.length > 0) {
                     "render": function (data, type, row) {
                         return row[3] + '%';
                     },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        $(td).css('background', 'linear-gradient(to right, rgba(0,0,0,.15) ' + rowData[3] + '%, transparent ' + rowData[3] + '%)');
+                    },
                     "orderSequence": ['desc', 'asc'],
                 },
             ]
