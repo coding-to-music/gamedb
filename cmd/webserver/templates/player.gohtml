@@ -276,7 +276,7 @@
                             {{ end }}
 
                             <div class="table-responsive">
-                                <table class="table table-hover table-striped table-counts mb-0" data-path="/players/{{ .Player.ID }}/friends.json">
+                                <table class="table table-hover table-striped table-counts mb-0" data-row-type="friends" data-path="/players/{{ .Player.ID }}/friends.json">
                                     <thead class="thead-light">
                                     <tr>
                                         <th scope="col">Player</th>
@@ -340,7 +340,7 @@
                         </div>
 
                         <div class="table-responsive">
-                            <table class="table table-hover table-striped table-counts mb-0" id="badges-table" data-path="/players/{{ .Player.ID }}/badges.json">
+                            <table class="table table-hover table-striped table-counts mb-0" data-row-type="badges" id="badges-table" data-path="/players/{{ .Player.ID }}/badges.json">
                                 <thead class="thead-light">
                                 <tr>
                                     <th scope="col">Badge</th>
@@ -359,7 +359,7 @@
 
                         {{/* Groups */}}
                         <div class="table-responsive">
-                            <table class="table table-hover table-striped table-counts mb-0" data-path="/players/{{ .Player.ID }}/groups.json" id="groups-table">
+                            <table class="table table-hover table-striped table-counts mb-0" data-row-type="groups" data-path="/players/{{ .Player.ID }}/groups.json" id="groups-table">
                                 <thead class="thead-light">
                                 <tr>
                                     <th scope="col">Group</th>
@@ -478,7 +478,7 @@
 
                             {{/* Recent Games */}}
                             <div class="table-responsive mb-4">
-                                <table class="table table-hover table-striped table-counts mb-4" data-path="/players/{{ .Player.ID }}/recent.json" id="recent-games">
+                                <table class="table table-hover table-striped table-counts mb-4" data-row-type="games" data-path="/players/{{ .Player.ID }}/recent.json" id="recent-games">
                                     <thead class="thead-light">
                                     <tr>
                                         <th scope="col">Recent Games</th>
@@ -502,7 +502,7 @@
                             </div>
 
                             <div class="table-responsive">
-                                <table class="table table-hover table-striped table-counts mb-0" data-path="/players/{{ .Player.ID }}/games.json" id="all-games">
+                                <table class="table table-hover table-striped table-counts mb-0" data-row-type="games" data-path="/players/{{ .Player.ID }}/games.json" id="all-games">
                                     <thead class="thead-light">
                                     <tr>
                                         <th scope="col">All Games</th>
@@ -531,7 +531,7 @@
                     <div class="tab-pane" id="wishlist" role="tabpanel">
 
                         <div class="table-responsive">
-                            <table class="table table-hover table-striped table-counts mb-0" data-path="/players/{{ .Player.ID }}/wishlist.json" data-order='[[0, "asc"]]' id="wishlist-table">
+                            <table class="table table-hover table-striped table-counts mb-0" data-row-type="games" data-path="/players/{{ .Player.ID }}/wishlist.json" data-order='[[0, "asc"]]' id="wishlist-table">
                                 <thead class="thead-light">
                                 <tr>
                                     <th scope="col" class="thin">#</th>
@@ -585,7 +585,7 @@
                                     <div class="tab-pane show active" id="achievements-summary" role="tabpanel">
 
                                         <div class="table-responsive">
-                                            <table class="table table-hover table-striped table-counts mb-0" data-path="/players/{{ .Player.ID }}/achievements-summary.json" id="achievements-summary-table">
+                                            <table class="table table-hover table-striped table-counts mb-0" data-row-type="games" data-path="/players/{{ .Player.ID }}/achievements-summary.json" id="achievements-summary-table">
                                                 <thead class="thead-light">
                                                 <tr>
                                                     <th scope="col">Game</th>
@@ -602,7 +602,7 @@
                                     <div class="tab-pane" id="achievements-latest" role="tabpanel">
 
                                         <div class="table-responsive">
-                                            <table class="table table-hover table-striped table-counts mb-0" data-path="/players/{{ .Player.ID }}/achievements.json" id="achievements-table" data-ordering="false">
+                                            <table class="table table-hover table-striped table-counts mb-0" data-row-type="achievements" data-path="/players/{{ .Player.ID }}/achievements.json" id="achievements-table" data-ordering="false">
                                                 <thead class="thead-light">
                                                 <tr>
                                                     <th scope="col">Achievement</th>

@@ -38,17 +38,24 @@
     // The actual plugin constructor
     function Plugin(element, options) {
 
+        const $element = $(element);
+
         options = $.extend(true, {}, defaults, options);
 
         // Remove info text unless we want it
-        if (!$(element).hasClass('table-counts')) {
+        if (!$element.hasClass('table-counts')) {
             options.tableOptions.dom = options.tableOptions.dom.replace("<\"dt-info\"i>", "");
         }
 
         // Add helper
         options.isAjax = function () {
-            return $(element).attr('data-path') != null;
+            return $element.attr('data-path') != null;
         };
+
+        const rowType = $element.attr('data-row-type');
+        if (rowType) {
+            options.tableOptions.language.info = "_TOTAL_ " + rowType + " (_PAGES_ pages)";
+        }
 
         let initialValues = {};
         let currentValues = {};
@@ -66,7 +73,7 @@
                     dataType: 'json',
                     cache: options.cache,
                     url: function () {
-                        return $(element).attr('data-path');
+                        return $element.attr('data-path');
                     }(),
                     success: callback,
                     error: function (jqXHR, textStatus, errorThrown) {
@@ -95,7 +102,7 @@
 
         } else {
 
-            const disabled = $(element).find('thead tr th[data-disabled]').map(function () {
+            const disabled = $element.find('thead tr th[data-disabled]').map(function () {
                 return $(this).index();
             }).get();
 
@@ -110,7 +117,7 @@
                 }
             });
 
-            const limit = $(element).attr('data-limit');
+            const limit = $element.attr('data-limit');
             if (limit) {
                 options.tableOptions.pageLength = parseInt(limit);
             }

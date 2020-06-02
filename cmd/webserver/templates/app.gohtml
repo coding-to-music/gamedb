@@ -440,7 +440,7 @@
                         {{/* Top players table */}}
                         <h5>Top Players</h5>
                         <div class="table-responsive">
-                            <table class="table table-hover table-striped table-counts mb-0" data-path="/games/{{ .App.ID }}/time.json" id="top-players-table">
+                            <table class="table table-hover table-striped table-counts mb-0" data-path="/games/{{ .App.ID }}/time.json" data-row-type="players" id="top-players-table">
                                 <thead class="thead-light">
                                 <tr>
                                     <th scope="col" class="thin">Rank</th>
@@ -470,7 +470,7 @@
                         </div>
 
                         <div class="table-responsive">
-                            <table class="table table-hover table-striped table-counts mb-0" data-path="/games/{{ .App.ID }}/dlc.json" id="dlc-table">
+                            <table class="table table-hover table-striped table-counts mb-0" data-path="/games/{{ .App.ID }}/dlc.json" data-row-type="DLCs" id="dlc-table">
                                 <thead class="thead-light">
                                 <tr>
                                     <th scope="col">Name</th>
@@ -622,7 +622,7 @@
                         {{ end }}
 
                         <div class="table-responsive">
-                            <table class="table table-hover table-striped table-counts mb-0" data-path="/games/{{ .App.ID }}/achievements.json" id="achievements-table">
+                            <table class="table table-hover table-striped table-counts mb-0" data-path="/games/{{ .App.ID }}/achievements.json" data-row-type="players" id="achievements-table">
                                 <thead class="thead-light">
                                 <tr>
                                     <th scope="col">Name</th>
@@ -698,7 +698,7 @@
 
                         <h5>Bundles</h5>
                         <div class="table-responsive mb-4">
-                            <table class="table table-hover table-striped table-datatable table-counts mb-0" data-order='[[0, "asc"]]'>
+                            <table class="table table-hover table-striped table-datatable table-counts mb-0" data-row-type="bundles" data-order='[[0, "asc"]]'>
                                 <thead class="thead-light">
                                 <tr>
                                     <th scope="col">Name</th>
@@ -727,7 +727,7 @@
 
                         <h5>Packages</h5>
                         <div class="table-responsive">
-                            <table class="table table-hover table-striped table-datatable table-counts mb-0" data-order='[[0, "asc"]]'>
+                            <table class="table table-hover table-striped table-datatable table-counts mb-0" data-row-type="packages" data-order='[[0, "asc"]]'>
                                 <thead class="thead-light">
                                 <tr>
                                     <th scope="col">Name</th>

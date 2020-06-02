@@ -66,7 +66,7 @@
             <div class="card-body">
 
                 <div class="table-responsive">
-                    <table class="table table-hover table-striped table-counts mb-0" data-ordering="false" data-path="/badges/{{ .Badge.ID }}/players.json{{ if .Badge.BadgeFoil }}?foil=1{{ end }}">
+                    <table class="table table-hover table-striped table-counts mb-0" data-ordering="false" data-row-type="players" data-path="/badges/{{ .Badge.ID }}/players.json{{ if .Badge.BadgeFoil }}?foil=1{{ end }}">
                         <thead class="thead-light">
                         <tr>
                             <th scope="col" class="thin">Rank</th>
