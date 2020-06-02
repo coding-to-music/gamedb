@@ -53,11 +53,18 @@ func SearchAchievements(limit int, offset int, search string, sorters []elastic.
 		Highlight(elastic.NewHighlight().Field("name").Field("description").Field("app_name").PreTags("<mark>").PostTags("</mark>"))
 
 	if search != "" {
-		searchService.Query(elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
-			elastic.NewMatchQuery("name", search).Fuzziness("1").Boost(3),
-			elastic.NewMatchQuery("description", search).Fuzziness("1").Boost(2),
-			elastic.NewMatchQuery("app_name", search).Fuzziness("1").Boost(1),
-		))
+		searchService.Query(elastic.NewBoolQuery().
+			Must(
+				elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
+					elastic.NewMatchQuery("name", search).Fuzziness("1").Boost(3),
+					elastic.NewMatchQuery("description", search).Fuzziness("1").Boost(2),
+					elastic.NewMatchQuery("app_name", search).Fuzziness("1").Boost(1),
+				),
+			).
+			Should(
+				elastic.NewMatchPhraseQuery("name", search).Boost(1), // Exact match
+			),
+		)
 	}
 
 	if len(sorters) > 0 {
