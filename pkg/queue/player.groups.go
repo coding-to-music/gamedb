@@ -53,7 +53,7 @@ func playersGroupsHandler(messages []*rabbit.Message) {
 		newGroupsResponse, _, err := steamHelper.GetSteam().GetUserGroupList(payload.PlayerID)
 		err = steamHelper.AllowSteamCodes(err, 403)
 		if err != nil {
-			log.Err(err, message.Message.Body)
+			steamHelper.LogSteamError(err, message.Message.Body)
 			sendToRetryQueue(message)
 			continue
 		}
