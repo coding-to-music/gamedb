@@ -74,8 +74,15 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var q elastic.Query
 		if search != "" {
 			q = elastic.NewBoolQuery().
-				Must(elastic.NewMatchQuery("title", search)).
-				Should(elastic.NewTermQuery("title", search).Boost(5))
+				Must(
+					elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
+						elastic.NewMatchQuery("title", search).Fuzziness("1").Boost(2),
+						elastic.NewMatchQuery("app_name", search).Fuzziness("1").Boost(1),
+					),
+				).
+				Should(
+					elastic.NewTermQuery("title", search).Boost(2), // Exact match
+				)
 		}
 
 		articles, filtered, err = elasticHelpers.SearchArticles(100, query.GetOffset(), q, sorters)
