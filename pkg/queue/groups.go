@@ -306,7 +306,7 @@ func updateGameGroup(id string, group *mongo.Group) (foundNumbers bool, err erro
 		if err == nil && i > 0 {
 			app, err := mongo.GetApp(i)
 			if err == mongo.ErrNoDocuments {
-				log.Warning(err, group.URL)
+				log.Warning(err, group.URL, "missing app has been queued")
 				err = ProduceSteam(SteamMessage{AppIDs: []int{i}})
 				log.Err(err)
 			} else if err != nil {
