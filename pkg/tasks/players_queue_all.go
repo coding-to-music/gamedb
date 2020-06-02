@@ -1,9 +1,6 @@
 package tasks
 
 import (
-	"strconv"
-
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
@@ -27,21 +24,30 @@ func (c PlayersQueueAll) Cron() string {
 
 func (c PlayersQueueAll) work() (err error) {
 
-	players, err := mongo.GetPlayers(0, 0, bson.D{{"_id", 1}}, nil, bson.M{"_id": 1})
-	if err != nil {
-		return err
-	}
+	var offset int64 = 0
+	var limit int64 = 10_000
 
-	for _, player := range players {
+	for {
 
-		err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID})
+		players, err := mongo.GetPlayers(offset, limit, bson.D{{"_id", 1}}, nil, bson.M{"_id": 1})
 		if err != nil {
 			return err
 		}
-	}
 
-	//
-	log.Info(strconv.Itoa(len(players)) + " players added to rabbit")
+		for _, player := range players {
+
+			err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID})
+			if err != nil {
+				return err
+			}
+		}
+
+		if int64(len(players)) != limit {
+			break
+		}
+
+		offset += limit
+	}
 
 	return nil
 }

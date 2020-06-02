@@ -1,11 +1,8 @@
 package tasks
 
 import (
-	"strconv"
-
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
@@ -29,22 +26,31 @@ func (c AppsQueueGroups) Cron() string {
 
 func (c AppsQueueGroups) work() (err error) {
 
-	apps, err := mongo.GetApps(0, 0, nil, bson.D{{"group_id", bson.M{"$ne": ""}}}, bson.M{"group_id": 1})
-	if err != nil {
-		return err
-	}
+	var offset int64 = 0
+	var limit int64 = 10_000
 
-	for _, app := range apps {
+	for {
 
-		err = queue.ProduceGroup(queue.GroupMessage{ID: app.GroupID})
-		err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
+		apps, err := mongo.GetApps(offset, limit, nil, bson.D{{"group_id", bson.M{"$ne": ""}}}, bson.M{"group_id": 1})
 		if err != nil {
 			return err
 		}
-	}
 
-	//
-	log.Info(strconv.Itoa(len(apps)) + " groups queued")
+		for _, app := range apps {
+
+			err = queue.ProduceGroup(queue.GroupMessage{ID: app.GroupID})
+			err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
+			if err != nil {
+				return err
+			}
+		}
+
+		if int64(len(apps)) != limit {
+			break
+		}
+
+		offset += limit
+	}
 
 	return nil
 }
