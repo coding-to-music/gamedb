@@ -305,8 +305,12 @@ func updateGameGroup(id string, group *mongo.Group) (foundNumbers bool, err erro
 		i, err := strconv.Atoi(group.URL)
 		if err == nil && i > 0 {
 			app, err := mongo.GetApp(i)
-			if err != nil {
-				log.Err(group.URL, err)
+			if err == mongo.ErrNoDocuments {
+				log.Warning(err, group.URL)
+				err = ProduceSteam(SteamMessage{AppIDs: []int{i}})
+				log.Err(err)
+			} else if err != nil {
+				log.Err(err, group.URL)
 			} else {
 				group.Icon = app.Icon
 			}
