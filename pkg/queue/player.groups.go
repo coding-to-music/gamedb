@@ -124,13 +124,11 @@ func playersGroupsHandler(messages []*rabbit.Message) {
 		}
 
 		// Queue groups for update
-		if !payload.SkipGroups {
-			for id := range newGroupsMap {
-				err = ProduceGroup(GroupMessage{ID: id, UserAgent: payload.UserAgent})
-				err = helpers.IgnoreErrors(err, memcache.ErrInQueue, ErrIsBot)
-				if err != nil {
-					log.Err(err)
-				}
+		for id := range newGroupsMap {
+			err = ProduceGroup(GroupMessage{ID: id, UserAgent: payload.UserAgent})
+			err = helpers.IgnoreErrors(err, memcache.ErrInQueue, ErrIsBot)
+			if err != nil {
+				log.Err(err)
 			}
 		}
 
