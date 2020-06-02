@@ -411,15 +411,18 @@ if ($appPage.length > 0) {
         };
         new IntersectionObserver(playersCallback, config).observe(document.getElementById("players-chart"));
 
-        const groupCallback = function (entries, self) {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    loadGroupChart($appPage);
-                    self.unobserve(entry.target);
-                }
-            });
-        };
-        new IntersectionObserver(groupCallback, config).observe(document.getElementById("group-chart"));
+        const groupChart = document.getElementById("group-chart");
+        if (groupChart) {
+            const groupCallback = function (entries, self) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        loadGroupChart($appPage);
+                        self.unobserve(entry.target);
+                    }
+                });
+            };
+            new IntersectionObserver(groupCallback, config).observe(groupChart);
+        }
 
         const timesCallback = function (entries, self) {
             entries.forEach(entry => {
