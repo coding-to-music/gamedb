@@ -50,7 +50,7 @@ func SearchArticles(limit int, offset int, query elastic.Query, sorters []elasti
 		From(offset).
 		Size(limit).
 		TrackTotalHits(true).
-		Highlight(elastic.NewHighlight().Field("title").PreTags("<mark>").PostTags("</mark>"))
+		Highlight(elastic.NewHighlight().Field("title").Field("app_name").PreTags("<mark>").PostTags("</mark>"))
 
 	if query != nil {
 		searchService.Query(query)
@@ -84,6 +84,12 @@ func SearchArticles(limit int, offset int, query elastic.Query, sorters []elasti
 			}
 		}
 
+		if val, ok := hit.Highlight["app_name"]; ok {
+			if len(val) > 0 {
+				article.AppName = val[0]
+			}
+		}
+
 		articles = append(articles, article)
 	}
 
@@ -101,7 +107,7 @@ func DeleteAndRebuildArticlesIndex() {
 				"title":    fieldTypeText,
 				"body":     fieldTypeDisabled,
 				"app_id":   fieldTypeDisabled,
-				"app_name": fieldTypeDisabled,
+				"app_name": fieldTypeText,
 				"app_icon": fieldTypeDisabled,
 				"time":     fieldTypeLong,
 			},
