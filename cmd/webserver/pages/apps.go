@@ -24,6 +24,7 @@ func GamesRouter() http.Handler {
 	r.Get("/", appsHandler)
 	r.Get("/games.json", appsAjaxHandler)
 	r.Get("/random", appsRandomHandler)
+	r.Mount("/coop", coopRouter())
 	r.Mount("/compare", gamesCompareRouter())
 	r.Mount("/upcoming", upcomingRouter())
 	r.Mount("/achievements", appsAchievementsRouter())
