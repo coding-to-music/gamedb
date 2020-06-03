@@ -261,6 +261,10 @@ if ($appsComparePage.length > 0) {
 
     function loadCompareScoreChart() {
 
+        if ($.isEmptyObject(appNames)) {
+            return;
+        }
+
         const defaultAppChartOptions = {
             chart: {
                 type: 'spline',
