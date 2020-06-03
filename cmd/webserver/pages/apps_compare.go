@@ -16,7 +16,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -39,7 +38,7 @@ func appsCompareHandler(w http.ResponseWriter, r *http.Request) {
 	var idStrings = strings.Split(chi.URLParam(r, "id"), ",")
 	idStrings = helpers.UniqueString(idStrings)
 
-	var apps []appsCompareAppTemplate
+	var apps []mongo.App
 	var names []string
 	var namesMap = map[string]string{}
 	var ids []string
@@ -52,92 +51,20 @@ func appsCompareHandler(w http.ResponseWriter, r *http.Request) {
 		id, err := strconv.Atoi(appID)
 		if err == nil && helpers.IsValidAppID(id) {
 
-			a, err := mongo.GetApp(id)
+			app, err := mongo.GetApp(id)
 			if err != nil {
 				err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
 				log.Err(err)
 				return
 			}
 
-			app := appsCompareAppTemplate{App: a}
-
-			// var wg sync.WaitGroup
-			//
-			// // Tags
-			// wg.Add(1)
-			// go func() {
-			//
-			// 	defer wg.Done()
-			//
-			// 	var err error
-			// 	app.Tags, err = GetAppTags(app.App)
-			// 	if err != nil {
-			// 		log.Err(err, r)
-			// 	}
-			// }()
-			//
-			// // Categories
-			// wg.Add(1)
-			// go func() {
-			//
-			// 	defer wg.Done()
-			//
-			// 	var err error
-			// 	app.Categories, err = GetAppCategories(app.App)
-			// 	if err != nil {
-			// 		log.Err(err, r)
-			// 	}
-			// }()
-			//
-			// // Genres
-			// wg.Add(1)
-			// go func() {
-			//
-			// 	defer wg.Done()
-			//
-			// 	var err error
-			// 	app.Genres, err = GetAppGenres(app.App)
-			// 	if err != nil {
-			// 		log.Err(err, r)
-			// 	}
-			// }()
-			//
-			// // Get Developers
-			// wg.Add(1)
-			// go func() {
-			//
-			// 	defer wg.Done()
-			//
-			// 	var err error
-			// 	app.Developers, err = GetDevelopers(app.App)
-			// 	if err != nil {
-			// 		log.Err(err, r)
-			// 	}
-			// }()
-			//
-			// // Get Publishers
-			// wg.Add(1)
-			// go func() {
-			//
-			// 	defer wg.Done()
-			//
-			// 	var err error
-			// 	app.Publishers, err = GetPublishers(app.App)
-			// 	if err != nil {
-			// 		log.Err(err, r)
-			// 	}
-			// }()
-			//
-			// // Wait
-			// wg.Wait()
-
 			apps = append(apps, app)
-			names = append(names, app.App.GetName())
-			namesMap[appID] = app.App.GetName()
+			names = append(names, app.GetName())
+			namesMap[appID] = app.GetName()
 			ids = append(ids, appID)
 
-			groupIDs = append(groupIDs, a.GroupID)
-			groupNamesMap[a.GroupID] = app.App.GetName()
+			groupIDs = append(groupIDs, app.GroupID)
+			groupNamesMap[app.GroupID] = app.GetName()
 		}
 	}
 
@@ -170,8 +97,8 @@ func appsCompareHandler(w http.ResponseWriter, r *http.Request) {
 	var j = appsCompareGoogleTemplate{}
 	var d int64
 	for _, v := range apps {
-		if v.App.ReleaseDateUnix < d || d == 0 {
-			d = v.App.ReleaseDateUnix
+		if v.ReleaseDateUnix < d || d == 0 {
+			d = v.ReleaseDateUnix
 		}
 	}
 	if d == 0 {
@@ -179,7 +106,7 @@ func appsCompareHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	for _, v := range apps {
 		j.ComparisonItem = append(j.ComparisonItem, appsCompareGoogleItemTemplate{
-			Keyword: v.App.GetName(),
+			Keyword: v.GetName(),
 			Time:    time.Unix(d, 0).AddDate(-1, 0, 0).Format(helpers.DateSQLDay) + " " + time.Now().Format(helpers.DateSQLDay),
 		})
 	}
@@ -196,21 +123,12 @@ func appsCompareHandler(w http.ResponseWriter, r *http.Request) {
 
 type appsCompareTemplate struct {
 	GlobalTemplate
-	Apps       []appsCompareAppTemplate
+	Apps       []mongo.App
 	IDs        string
 	GroupIDs   string
 	AppNames   template.JS
 	GroupNames template.JS
 	GoogleJSON template.JS
-}
-
-type appsCompareAppTemplate struct {
-	App        mongo.App
-	Tags       []sql.Tag
-	Categories []sql.Category
-	Developers []sql.Developer
-	Genres     []sql.Genre
-	Publishers []sql.Publisher
 }
 
 type appsCompareGoogleTemplate struct {
