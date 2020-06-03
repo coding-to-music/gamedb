@@ -20,6 +20,10 @@ var ErrInvalidGroupID = errors.New("invalid group id")
 
 func IsValidGroupID(id string) (string, error) {
 
+	if id == "" {
+		return id, ErrInvalidGroupID
+	}
+
 	steamID, err := steamid.ParseGroupID(id)
 	if err != nil {
 		return id, ErrInvalidGroupID
