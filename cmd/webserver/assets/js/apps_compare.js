@@ -137,7 +137,8 @@ if ($appsComparePage.length > 0) {
             colors: ['#007bff', '#28a745', '#e83e8c', '#ffc107', '#343a40'],
             tooltip: {
                 formatter: function () {
-                    return this.y.toLocaleString() + ' players on ' + moment(this.key).format("dddd DD MMM YYYY @ HH:mm");
+                    return this.series.name + ' had ' + this.y.toLocaleString() + ' players on '
+                        + moment(this.key).format("dddd DD MMM YYYY @ HH:mm");
                 },
             },
         };
@@ -250,7 +251,8 @@ if ($appsComparePage.length > 0) {
                     colors: ['#007bff', '#28a745', '#e83e8c', '#ffc107', '#343a40'],
                     tooltip: {
                         formatter: function () {
-                            return this.y.toLocaleString() + ' members on ' + moment(this.key).format("dddd DD MMM YYYY @ HH:mm");
+                            return this.series.name + ' had members on '
+                                + moment(this.key).format("dddd DD MMM YYYY @ HH:mm");
                         },
                     },
                     series: series,
@@ -321,8 +323,8 @@ if ($appsComparePage.length > 0) {
                     },
                     tooltip: {
                         formatter: function () {
-                            const time = moment(this.key).format("dddd DD MMM YYYY @ HH:mm");
-                            return this.y.toLocaleString() + '% Review score on ' + time;
+                            return this.series.name + ' had a review score of ' + this.y.toLocaleString() + '% on '
+                                + moment(this.key).format("dddd DD MMM YYYY @ HH:mm");
                         },
                     },
                     series: series,
