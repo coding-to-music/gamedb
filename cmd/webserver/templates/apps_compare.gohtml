@@ -77,7 +77,10 @@
 
                     <h5 class="mt-4">Google Searches</h5>
                     <script type="text/javascript" src="https://ssl.gstatic.com/trends_nrtr/2213_RC01/embed_loader.js"></script>
-                    <script type="text/javascript">trends.embed.renderExploreWidget("TIMESERIES", {{ .GoogleJSON }});</script>
+
+                    {{ range .GoogleJSON }}
+                    <script type="text/javascript">trends.embed.renderExploreWidget("TIMESERIES", {{ . }});</script>
+                    {{ end }}
 
                 {{ end }}
             </div>

@@ -104,19 +104,25 @@ func appsCompareHandler(w http.ResponseWriter, r *http.Request) {
 	if d == 0 {
 		d = time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC).Unix()
 	}
-	for _, v := range apps {
-		j.ComparisonItem = append(j.ComparisonItem, appsCompareGoogleItemTemplate{
-			Keyword: v.GetName(),
-			Time:    time.Unix(d, 0).AddDate(-1, 0, 0).Format(helpers.DateSQLDay) + " " + time.Now().Format(helpers.DateSQLDay),
-		})
-	}
+	appsChunks := mongo.ChunkApps(apps, 5)
+	for _, appChunk := range appsChunks {
 
-	b, err = json.Marshal(j)
-	if err != nil {
-		log.Err(err, r)
-	}
+		j.ComparisonItem = []appsCompareGoogleItemTemplate{}
 
-	t.GoogleJSON = template.JS(b)
+		for _, v := range appChunk {
+			j.ComparisonItem = append(j.ComparisonItem, appsCompareGoogleItemTemplate{
+				Keyword: v.GetName(),
+				Time:    time.Unix(d, 0).AddDate(-1, 0, 0).Format(helpers.DateSQLDay) + " " + time.Now().Format(helpers.DateSQLDay),
+			})
+		}
+
+		b, err = json.Marshal(j)
+		if err != nil {
+			log.Err(err, r)
+		}
+
+		t.GoogleJSON = append(t.GoogleJSON, template.JS(b))
+	}
 
 	returnTemplate(w, r, "apps_compare", t)
 }
@@ -128,7 +134,7 @@ type appsCompareTemplate struct {
 	GroupIDs   string
 	AppNames   template.JS
 	GroupNames template.JS
-	GoogleJSON template.JS
+	GoogleJSON []template.JS
 }
 
 type appsCompareGoogleTemplate struct {

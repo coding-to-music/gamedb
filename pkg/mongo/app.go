@@ -545,6 +545,20 @@ func (app App) GetAppPackages() (packages []Package, err error) {
 	return packages, err
 }
 
+func ChunkApps(strings []App, n int) (chunks [][]App) {
+
+	for i := 0; i < len(strings); i += n {
+		end := i + n
+
+		if end > len(strings) {
+			end = len(strings)
+		}
+
+		chunks = append(chunks, strings[i:end])
+	}
+	return chunks
+}
+
 func CreateAppIndexes() {
 
 	var indexModels []mongo.IndexModel
