@@ -5,26 +5,44 @@ import (
 	"strconv"
 
 	"github.com/Jleagle/steam-go/steamapi"
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/olivere/elastic/v7"
 )
 
 type App struct {
-	ID      int      `json:"id"`
-	Name    string   `json:"name"`
-	Players int      `json:"players"`
-	Aliases []string `json:"aliases"` // Hardcoded
-	// Icon       string                `json:"icon"`
-	// Followers  int                   `json:"followers"`
-	// Score      float64               `json:"score"`
-	// Prices     helpers.ProductPrices `json:"prices"`
-	// Tags       []int                 `json:"tags"`
-	// Genres     []int                 `json:"genres"`
-	// Categories []int                 `json:"categories"`
-	// Publishers []int                 `json:"publishers"`
-	// Developers []int                 `json:"developers"`
-	// Type       string                `json:"type"`
-	// Platforms  []string              `json:"platforms"`
+	ID          int                   `json:"id"`
+	Name        string                `json:"name"`
+	Players     int                   `json:"players"`
+	Aliases     []string              `json:"aliases"`
+	Icon        string                `json:"icon"`
+	Followers   int                   `json:"followers"`
+	ReviewScore float64               `json:"score"`
+	Prices      helpers.ProductPrices `json:"prices"`
+	Tags        []int                 `json:"tags"`
+	Genres      []int                 `json:"genres"`
+	Categories  []int                 `json:"categories"`
+	Publishers  []int                 `json:"publishers"`
+	Developers  []int                 `json:"developers"`
+	Type        string                `json:"type"`
+	Platforms   []string              `json:"platforms"`
+	Score       float64               `json:"-"`
+}
+
+func (app App) GetName() string {
+	return helpers.GetAppName(app.ID, app.Name)
+}
+
+func (app App) GetIcon() string {
+	return helpers.GetAppIcon(app.ID, app.Icon)
+}
+
+func (app App) GetPath() string {
+	return helpers.GetAppPath(app.ID, app.Name)
+}
+
+func (app App) GetCommunityLink() string {
+	return helpers.GetAppCommunityLink(app.ID)
 }
 
 func IndexApp(app App) error {
@@ -74,6 +92,16 @@ func SearchApps(limit int, offset int, search string, sorters []elastic.Sorter) 
 		err := json.Unmarshal(hit.Source, &app)
 		if err != nil {
 			log.Err(err)
+		}
+
+		if hit.Score != nil {
+			app.Score = *hit.Score
+		}
+
+		if val, ok := hit.Highlight["name"]; ok {
+			if len(val) > 0 {
+				app.Name = val[0]
+			}
 		}
 
 		apps = append(apps, app)

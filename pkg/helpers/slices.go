@@ -23,6 +23,14 @@ func StringSliceToIntSlice(in []string) (ret []int) {
 	return ret
 }
 
+func IntSliceToStringSlice(in []int) (ret []string) {
+
+	for _, v := range in {
+		ret = append(ret, strconv.Itoa(v))
+	}
+	return ret
+}
+
 func SliceHasInt(slice []int, i int) bool {
 	for _, v := range slice {
 		if v == i {

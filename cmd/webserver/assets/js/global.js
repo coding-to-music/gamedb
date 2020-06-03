@@ -51,7 +51,7 @@ $(document).on('mouseup', '[data-link]', function (e) {
     return true;
 });
 
-$(document).on('mouseup', '[data-link] a', function (e) {
+$(document).on('mouseup', '[data-link] a, [data-link] .select-checkbox', function (e) {
     e.stopPropagation();
     return true;
 });
@@ -73,19 +73,21 @@ const consoleText = `
 console.log(consoleText);
 
 // Auto dropdowns
-$('.navbar .dropdown').on('mouseenter', function (e) {
+const $dropdowns = $('.navbar .dropdown');
+
+$dropdowns.on('mouseenter', function (e) {
     $(this).addClass("show").find('.dropdown-menu').addClass("show")
 });
-$('.navbar .dropdown').on('mouseleave', function (e) {
+$dropdowns.on('mouseleave', function (e) {
     $(this).removeClass("show").find('.dropdown-menu').removeClass("show");
 });
-$('.navbar .dropdown').on('click', function (e) {
+$dropdowns.on('click', function (e) {
     e.stopPropagation();
 });
 
 // Tooptips
 $body.tooltip({
-    selector: '[data-toggle="tooltip"]'
+    selector: '[data-toggle="tooltip"]',
 });
 
 //

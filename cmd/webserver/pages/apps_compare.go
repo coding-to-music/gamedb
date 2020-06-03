@@ -9,13 +9,30 @@ import (
 	"time"
 
 	"github.com/Jleagle/influxql"
+	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
+	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
+	"github.com/gamedb/gamedb/pkg/elastic"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
+	"go.mongodb.org/mongo-driver/bson"
 )
+
+func gamesCompareRouter() http.Handler {
+
+	r := chi.NewRouter()
+	r.Get("/", appsCompareHandler)
+	r.Get("/compare.json", appsCompareAjaxHandler)
+	r.Get("/{id}", appsCompareHandler)
+	r.Get("/{id}/players.json", appsComparePlayersAjaxHandler)
+	r.Get("/{id}/players2.json", appsComparePlayers2AjaxHandler)
+	r.Get("/{id}/members.json", appsCompareGroupsHandler)
+	r.Get("/{id}/reviews.json", appsCompareScoresHandler)
+	return r
+}
 
 func appsCompareHandler(w http.ResponseWriter, r *http.Request) {
 
@@ -124,12 +141,7 @@ func appsCompareHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if len(apps) < 2 {
-		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Not enough valid app IDs"})
-		return
-	}
-
-	if len(apps) > 5 {
+	if len(apps) > 10 {
 		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Too many apps"})
 		return
 	}
@@ -213,11 +225,113 @@ type appsCompareGoogleItemTemplate struct {
 	Time    string `json:"time"`
 }
 
+func appsCompareAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	var query = datatable.NewDataTableQuery(r, true)
+
+	var search = query.GetSearchString("search")
+
+	idsString := query.GetSearchString("ids")
+	var idStrings []string
+	if len(idsString) > 0 {
+		idStrings = strings.Split(idsString, ",")
+	}
+	ids := helpers.StringSliceToIntSlice(idStrings)
+
+	var code = session.GetProductCC(r)
+
+	var response *datatable.DataTablesResponse
+
+	if search == "" {
+
+		appMap := map[int][]interface{}{}
+
+		apps, err := mongo.GetAppsByID(ids, bson.M{"_id": 1, "name": 1, "icon": 1, "prices": 1})
+		if err != nil {
+			log.Err(err, r)
+		}
+
+		response = datatable.NewDataTablesResponse(r, query, int64(len(apps)), int64(len(apps)))
+		for k, app := range apps {
+
+			var price = app.GetPrices().Get(code).GetFinal()
+			var linkBool = helpers.SliceHasString(strconv.Itoa(app.ID), idStrings)
+			var link = makeCompareActionLink(idStrings, strconv.Itoa(app.ID), linkBool)
+
+			appMap[app.ID] = []interface{}{
+				query.GetOffset() + k + 1, // 0
+				app.ID,                    // 1
+				app.GetName(),             // 2
+				app.GetIcon(),             // 3
+				app.GetPath(),             // 4
+				app.GetCommunityLink(),    // 5
+				price,                     // 6
+				link,                      // 7
+				linkBool,                  // 8
+				0,                         // 9 - Search Score
+			}
+		}
+
+		for _, v := range ids {
+			if val, ok := appMap[v]; ok {
+				response.AddRow(val)
+			}
+		}
+
+	} else {
+
+		apps, total, err := elastic.SearchApps(10, 0, search, nil)
+		log.Err(err)
+
+		response = datatable.NewDataTablesResponse(r, query, total, total)
+		for k, app := range apps {
+
+			var offset = query.GetOffset() + k + 1
+			var price = app.Prices.Get(code).GetFinal()
+			var linkBool = helpers.SliceHasString(strconv.Itoa(app.ID), idStrings)
+			var link = makeCompareActionLink(idStrings, strconv.Itoa(app.ID), linkBool)
+
+			response.AddRow([]interface{}{
+				offset,                 // 0
+				app.ID,                 // 1
+				app.GetName(),          // 2
+				app.GetIcon(),          // 3
+				app.GetPath(),          // 4
+				app.GetCommunityLink(), // 5
+				price,                  // 6,
+				link,                   // 7
+				linkBool,               // 8
+				app.Score,              // 9 - Search Score
+			})
+		}
+	}
+
+	returnJSON(w, r, response)
+}
+
+func makeCompareActionLink(ids []string, id string, linkBool bool) string {
+
+	var newIDs []string
+
+	if linkBool {
+		for _, v := range ids {
+			if v != id {
+				newIDs = append(newIDs, v)
+			}
+		}
+	} else {
+		newIDs = ids
+		newIDs = append(newIDs, id)
+	}
+
+	return "/games/compare/" + strings.Join(newIDs, ",")
+}
+
 func appsComparePlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	ids := strings.Split(chi.URLParam(r, "id"), ",")
 
-	if len(ids) < 1 || len(ids) > 5 {
+	if len(ids) < 1 || len(ids) > 10 {
 		return
 	}
 
@@ -253,11 +367,11 @@ func appsComparePlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	returnJSON(w, r, ret)
 }
 
-func appsComparePlayer2sAjaxHandler(w http.ResponseWriter, r *http.Request) {
+func appsComparePlayers2AjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	ids := strings.Split(chi.URLParam(r, "id"), ",")
 
-	if len(ids) < 1 || len(ids) > 5 {
+	if len(ids) < 1 || len(ids) > 10 {
 		return
 	}
 
@@ -265,6 +379,46 @@ func appsComparePlayer2sAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	builder.AddSelect("max(player_count)", "max_player_count")
 	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
 	builder.AddWhere("time", ">", "NOW()-1825d")
+	builder.AddWhereRaw(`"app_id" =~ /^(` + strings.Join(ids, "|") + `)$/`)
+	builder.AddGroupByTime("1d")
+	builder.AddGroupBy("app_id")
+	builder.SetFillNone()
+
+	resp, err := influx.InfluxQuery(builder.String())
+	if err != nil {
+		log.Err(err, r, builder.String())
+		return
+	}
+
+	var ret []influx.HighChartsJSONMulti
+	if len(resp.Results) > 0 {
+		for _, id := range ids {
+			for _, v := range resp.Results[0].Series {
+				if id == v.Tags["app_id"] {
+					ret = append(ret, influx.HighChartsJSONMulti{
+						Key:   v.Tags["app_id"],
+						Value: influx.InfluxResponseToHighCharts(v, false),
+					})
+				}
+			}
+		}
+	}
+
+	returnJSON(w, r, ret)
+}
+
+func appsCompareScoresHandler(w http.ResponseWriter, r *http.Request) {
+
+	ids := strings.Split(chi.URLParam(r, "id"), ",")
+
+	if len(ids) < 1 || len(ids) > 10 {
+		return
+	}
+
+	builder := influxql.NewBuilder()
+	builder.AddSelect("mean(reviews_score)", "mean_reviews_score")
+	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
+	builder.AddWhere("time", ">", "NOW()-365d")
 	builder.AddWhereRaw(`"app_id" =~ /^(` + strings.Join(ids, "|") + `)$/`)
 	builder.AddGroupByTime("1d")
 	builder.AddGroupBy("app_id")
@@ -308,7 +462,7 @@ func appsCompareGroupsHandler(w http.ResponseWriter, r *http.Request) {
 		ids = append(ids, v)
 	}
 
-	if len(ids) < 1 || len(ids) > 5 {
+	if len(ids) < 1 || len(ids) > 10 {
 		return
 	}
 

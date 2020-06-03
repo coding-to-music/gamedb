@@ -27,12 +27,11 @@ import (
 )
 
 func appRouter() http.Handler {
+
 	r := chi.NewRouter()
 	r.Get("/", appHandler)
-
 	r.Get("/localization.html", appLocalizationHandler)
 	r.Get("/reviews.html", appReviewsHandler)
-
 	r.Get("/news.json", appNewsAjaxHandler)
 	r.Get("/prices.json", appPricesAjaxHandler)
 	r.Get("/players.json", appPlayersAjaxHandler)
@@ -814,13 +813,7 @@ func appItemsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 func appPlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "id")
-	if strings.Contains(id, ",") {
-		appsComparePlayersAjaxHandler(w, r)
-		return
-	}
-
 	if id == "" {
-		log.Err("invalid id", r)
 		return
 	}
 
@@ -856,13 +849,7 @@ func appPlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 func appPlayers2AjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "id")
-	if strings.Contains(id, ",") {
-		appsComparePlayer2sAjaxHandler(w, r)
-		return
-	}
-
 	if id == "" {
-		log.Err("invalid id", r)
 		return
 	}
 
@@ -1014,7 +1001,6 @@ func appReviewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "id")
 	if id == "" {
-		log.Err("invalid id", r)
 		return
 	}
 

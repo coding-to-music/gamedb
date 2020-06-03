@@ -4,7 +4,29 @@
     <div class="container" id="apps-compare-page" data-id="{{ .IDs }}" data-group-id="{{ .GroupIDs }}">
 
         <div class="jumbotron">
-            <h1 class="text-truncate"><i class="fas fa-gamepad"></i> Compare Games</h1>
+            <div class="row">
+                <div class="col-sm-12 col-lg-6">
+
+                    <h1 class="text-truncate"><i class="fas fa-gamepad"></i> Compare Games</h1>
+
+                </div>
+                <div class="col-sm-12 col-lg-6">
+
+                    <div class="input-group input-group-lg mt-1 mb-2">
+                        <!--suppress HtmlFormInputWithoutLabel -->
+                        <input class="form-control" type="search" placeholder="Search for a Game" id="search" name="search" autofocus>
+                        <div class="input-group-append">
+                            <input type="submit" value="Search" class="input-group-text">
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-12">
+
+                    <p class="lead">{{ .Description }}</p>
+
+                </div>
+            </div>
         </div>
 
         {{ template "_flashes" . }}
@@ -12,32 +34,52 @@
         <div class="card">
             <div class="card-body">
 
-                <h5>{{ len .Apps }} Games</h5>
-                <p>
-                    {{ range .Apps }}
-                        <a href="{{ .App.GetPath }}">{{ .App.GetName }}</a><br>
-                    {{ end }}
-                </p>
+                <input type="hidden" value="{{ .IDs }}" name="ids" id="ids"/>
 
-                <h5>Player Count - 1 Week</h5>
-                <div class="mb-4" id="players-chart">
-                    <i class="fas fa-spinner fa-spin"></i>
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped" data-ordering="false" data-row-type="games" data-path="/games/compare/compare.json">
+                        <thead class="thead-light">
+                        <tr>
+                            <th scope="col" nowrap="nowrap">Game</th>
+                            <th scope="col" nowrap="nowrap">Price</th>
+                            <th scope="col" nowrap="nowrap">Action</th>
+                            <th scope="col" nowrap="nowrap" class="thin">#</th>
+                            <th scope="col"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
                 </div>
 
-                <h5>Player Count - 5 Years</h5>
-                <div class="mb-4" id="players-chart2">
-                    <i class="fas fa-spinner fa-spin"></i>
-                </div>
+                {{ if gt (len .Apps) 0 }}
 
-                <h5 id="followers">Followers</h5>
-                <div class="mb-4" id="group-chart">
-                    <i class="fas fa-spinner fa-spin"></i>
-                </div>
+                    <h5 class="mt-4">Player Count - 1 Week</h5>
+                    <div id="players-chart">
+                        <i class="fas fa-spinner fa-spin"></i>
+                    </div>
 
-                <h5>Google Searches</h5>
-                <script type="text/javascript" src="https://ssl.gstatic.com/trends_nrtr/2213_RC01/embed_loader.js"></script>
-                <script type="text/javascript">trends.embed.renderExploreWidget("TIMESERIES", {{ .GoogleJSON }});</script>
+                    <h5 class="mt-4">Player Count - 5 Years</h5>
+                    <div id="players-chart2">
+                        <i class="fas fa-spinner fa-spin"></i>
+                    </div>
 
+                    <h5 class="mt-4">Followers</h5>
+                    <div id="group-chart">
+                        <i class="fas fa-spinner fa-spin"></i>
+                    </div>
+
+                    <h5 class="mt-4">Review Score</h5>
+                    <div id="score-chart">
+                        <i class="fas fa-spinner fa-spin"></i>
+                    </div>
+
+                    <h5 class="mt-4">Google Searches</h5>
+                    <script type="text/javascript" src="https://ssl.gstatic.com/trends_nrtr/2213_RC01/embed_loader.js"></script>
+                    <script type="text/javascript">trends.embed.renderExploreWidget("TIMESERIES", {{ .GoogleJSON }});</script>
+
+                {{ end }}
             </div>
         </div>
 

@@ -206,20 +206,8 @@ func groupTableAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 func groupAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	id := chi.URLParam(r, "id")
-	if id == "" {
-		log.Info("invalid id: "+id, r)
-		return
-	}
-
-	if strings.Contains(id, ",") {
-		appsCompareGroupsHandler(w, r)
-		return
-	}
-
-	id, err := helpers.IsValidGroupID(id)
+	id, err := helpers.IsValidGroupID(chi.URLParam(r, "id"))
 	if err != nil {
-		log.Info("invalid id: "+id, r)
 		return
 	}
 

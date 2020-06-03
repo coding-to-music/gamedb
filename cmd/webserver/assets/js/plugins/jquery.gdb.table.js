@@ -63,40 +63,38 @@
         //
         if (options.isAjax()) {
 
-            const ajax = function (data, callback, settings) {
-
-                delete data.columns;
-                data.search = currentValues;
-
-                $.ajax({
-                    data: data,
-                    dataType: 'json',
-                    cache: options.cache,
-                    url: function () {
-                        return $element.attr('data-path');
-                    }(),
-                    success: callback,
-                    error: function (jqXHR, textStatus, errorThrown) {
-
-                        data = {
-                            "draw": "1",
-                            "recordsTotal": "0",
-                            "recordsFiltered": "0",
-                            "data": [],
-                            "limited": false
-                        };
-
-                        callback(data, textStatus, null);
-                    },
-                });
-            };
-
             options = $.extend(true, {}, options, {
                 tableOptions: {
                     processing: false,
                     serverSide: true,
                     orderMulti: false,
-                    "ajax": ajax,
+                    ajax: function (data, callback, settings) {
+
+                        delete data.columns;
+                        data.search = currentValues;
+
+                        $.ajax({
+                            data: data,
+                            dataType: 'json',
+                            cache: options.cache,
+                            url: function () {
+                                return $element.attr('data-path');
+                            }(),
+                            success: callback,
+                            error: function (jqXHR, textStatus, errorThrown) {
+
+                                data = {
+                                    "draw": "1",
+                                    "recordsTotal": "0",
+                                    "recordsFiltered": "0",
+                                    "data": [],
+                                    "limited": false
+                                };
+
+                                callback(data, textStatus, null);
+                            },
+                        });
+                    },
                 }
             });
 
@@ -128,6 +126,10 @@
 
             const name = getFieldName($field);
             const value = getFieldValue($field);
+
+            if (name === undefined) {
+                console.log('Search field missing name field');
+            }
 
             if (name && value && value.length > 0) {
                 initialValues[name] = value;

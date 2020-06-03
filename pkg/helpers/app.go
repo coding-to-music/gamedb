@@ -37,6 +37,11 @@ func GetAppPath(id int, name string) string {
 	return p
 }
 
+func GetAppCommunityLink(appID int) string {
+	name := config.Config.GameDBShortName.Get()
+	return "https://steamcommunity.com/app/" + strconv.Itoa(appID) + "?utm_source=" + name + "&utm_medium=link&curator_clanid=" // todo curator_clanid
+}
+
 func GetAppName(id int, name string) string {
 
 	name = strings.TrimSpace(name)

@@ -291,8 +291,7 @@ func (app App) GetCoopTags() (string, error) {
 // }
 
 func (app App) GetCommunityLink() string {
-	name := config.Config.GameDBShortName.Get()
-	return "https://steamcommunity.com/app/" + strconv.Itoa(app.ID) + "?utm_source=" + name + "&utm_medium=link&curator_clanid=" // todo curator_clanid
+	return helpers.GetAppCommunityLink(app.ID)
 }
 
 func (app App) GetInstallLink() template.URL {
