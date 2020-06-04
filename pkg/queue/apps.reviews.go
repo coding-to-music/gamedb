@@ -75,6 +75,9 @@ func appReviewsHandler(messages []*rabbit.Message) {
 				player = val
 			} else {
 				player.ID = int64(v.Author.SteamID)
+
+				err = ProducePlayer(PlayerMessage{ID: int64(v.Author.SteamID)})
+				log.Err(err)
 			}
 
 			// Remove extra new lines
