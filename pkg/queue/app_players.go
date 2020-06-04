@@ -58,7 +58,8 @@ func appPlayersHandler(messages []*rabbit.Message) {
 				viewers, err = getAppTwitchStreamers(app.TwitchID)
 				if err != nil {
 
-					if strings.Contains(err.Error(), "read: connection reset by peer") {
+					if strings.Contains(err.Error(), "read: connection reset by peer") ||
+						strings.Contains(err.Error(), "unexpected EOF") {
 						log.Info(err, payload.IDs)
 					} else {
 						log.Err(err, payload.IDs)
