@@ -24,7 +24,7 @@ func (CommandAppPlayersSteam) Description() string {
 }
 
 func (CommandAppPlayersSteam) Type() CommandType {
-	return TypeGame
+	return TypeOther
 }
 
 func (c CommandAppPlayersSteam) Output(msg *discordgo.MessageCreate) (message discordgo.MessageSend, err error) {

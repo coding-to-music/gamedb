@@ -22,7 +22,7 @@ func (CommandAppsNew) Example() string {
 }
 
 func (CommandAppsNew) Description() string {
-	return "Returns the most popular newly released apps"
+	return "Returns the most popular newly released games"
 }
 
 func (CommandAppsNew) Type() CommandType {

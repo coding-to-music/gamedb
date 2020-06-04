@@ -22,7 +22,7 @@ func (CommandAppsTrending) Example() string {
 }
 
 func (CommandAppsTrending) Description() string {
-	return "Returns the most positively trending apps"
+	return "Returns the most trending games"
 }
 
 func (CommandAppsTrending) Type() CommandType {

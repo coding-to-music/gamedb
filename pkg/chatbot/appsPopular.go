@@ -22,7 +22,7 @@ func (CommandAppsPopular) Example() string {
 }
 
 func (CommandAppsPopular) Description() string {
-	return "Returns the most popular apps in order of players over the last week"
+	return "Returns the most popular games in order of players over the last week"
 }
 
 func (CommandAppsPopular) Type() CommandType {
