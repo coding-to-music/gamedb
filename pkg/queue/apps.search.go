@@ -54,11 +54,17 @@ func appsSearchHandler(messages []*rabbit.Message) {
 		app.ID = payload.App.ID
 		app.Name = payload.App.Name
 		app.Players = payload.App.PlayerPeakWeek
+		app.Icon = payload.App.Icon
+		app.Followers = payload.App.GroupFollowers
+		app.ReviewScore = payload.App.ReviewsScore
+		app.Prices = payload.App.Prices
+		app.Tags = payload.App.Tags
+		app.Genres = payload.App.Genres
+		app.Categories = payload.App.Categories
+		app.Publishers = payload.App.Publishers
+		app.Developers = payload.App.Developers
 		app.Type = payload.App.Type
-		// app.Icon = payload.App.Icon
-		// app.Followers = payload.App.GroupFollowers
-		// app.Score = payload.App.Score
-		// app.Prices = payload.App.Prices
+		app.Platforms = payload.App.Platforms
 
 		if val, ok := aliases[payload.App.ID]; ok {
 			app.Aliases = val
