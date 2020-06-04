@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/olivere/elastic/v7"
 )
 
@@ -19,16 +20,15 @@ const (
 )
 
 var (
-	settings                 = map[string]interface{}{"number_of_shards": 1, "number_of_replicas": 0}
-	fieldTypeInteger         = map[string]interface{}{"type": "integer"}                   // int32
-	fieldTypeIntegerDisabled = map[string]interface{}{"type": "integer", "enabled": false} // int32
-	fieldTypeHalfFloat       = map[string]interface{}{"type": "half_float"}                //
-	fieldTypeLong            = map[string]interface{}{"type": "long"}                      // int64
-	fieldTypeBool            = map[string]interface{}{"type": "boolean"}                   // bool
-	fieldTypeKeyword         = map[string]interface{}{"type": "keyword"}
-	fieldTypeTextWithPrefix  = map[string]interface{}{"type": "text", "index_prefixes": map[string]interface{}{"min_chars": 1, "max_chars": 10}}
-	fieldTypeText            = map[string]interface{}{"type": "text"}
-	fieldTypeDisabled        = map[string]interface{}{"enabled": false}
+	settings                = map[string]interface{}{"number_of_shards": 1, "number_of_replicas": 0}
+	fieldTypeInteger        = map[string]interface{}{"type": "integer"}    // int32
+	fieldTypeHalfFloat      = map[string]interface{}{"type": "half_float"} // float16
+	fieldTypeLong           = map[string]interface{}{"type": "long"}       // int64
+	fieldTypeBool           = map[string]interface{}{"type": "boolean"}    // bool
+	fieldTypeKeyword        = map[string]interface{}{"type": "keyword"}    // Exact matches
+	fieldTypeText           = map[string]interface{}{"type": "text"}       // To search
+	fieldTypeDisabled       = map[string]interface{}{"enabled": false}     // No indexing
+	fieldTypeTextWithPrefix = map[string]interface{}{"type": "text", "index_prefixes": map[string]interface{}{"min_chars": 1, "max_chars": 10}}
 )
 
 var (
@@ -115,7 +115,8 @@ func rebuildIndex(index string, mapping map[string]interface{}) error {
 		return err
 	}
 
-	_, _ = client.DeleteIndex(index).Do(ctx)
+	_, err = client.DeleteIndex(index).Do(ctx)
+	log.Err(err)
 
 	time.Sleep(time.Second)
 

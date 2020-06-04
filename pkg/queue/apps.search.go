@@ -54,6 +54,7 @@ func appsSearchHandler(messages []*rabbit.Message) {
 		app.ID = payload.App.ID
 		app.Name = payload.App.Name
 		app.Players = payload.App.PlayerPeakWeek
+		app.Type = payload.App.Type
 		// app.Icon = payload.App.Icon
 		// app.Followers = payload.App.GroupFollowers
 		// app.Score = payload.App.Score

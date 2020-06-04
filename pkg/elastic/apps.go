@@ -60,8 +60,8 @@ func SearchApps(limit int, offset int, search string, sorters []elastic.Sorter) 
 		Index(IndexApps).
 		From(offset).
 		Size(limit).
-		TrackTotalHits(true).
-		Aggregation("type", elastic.NewTermsAggregation().Field("type").Size(10).OrderByCountDesc())
+		TrackTotalHits(true)
+		// Aggregation("type", elastic.NewTermsAggregation().Field("type").Size(10).OrderByCountDesc())
 
 	if search != "" {
 
@@ -118,11 +118,11 @@ func DeleteAndRebuildAppsIndex() {
 		priceProperties[string(v)] = map[string]interface{}{
 			"type": "object",
 			"properties": map[string]interface{}{
-				"currency":         map[string]interface{}{"type": "keyword"},
-				"discount_percent": map[string]interface{}{"type": "integer"},
-				"final":            map[string]interface{}{"type": "integer"},
-				"individual":       map[string]interface{}{"type": "integer"},
-				"initial":          map[string]interface{}{"type": "integer"},
+				"currency":         fieldTypeKeyword,
+				"discount_percent": fieldTypeInteger,
+				"final":            fieldTypeInteger,
+				"individual":       fieldTypeInteger,
+				"initial":          fieldTypeInteger,
 			},
 		}
 	}
@@ -131,44 +131,21 @@ func DeleteAndRebuildAppsIndex() {
 		"settings": settings,
 		"mappings": map[string]interface{}{
 			"properties": map[string]interface{}{
-				"id":      fieldTypeInteger,
-				"name":    fieldTypeText,
-				"aliases": fieldTypeText,
-				"players": fieldTypeInteger,
-				// "icon": map[string]interface{}{
-				// 	"enabled": false,
-				// },
-				// "followers": map[string]interface{}{
-				// 	"type": "integer",
-				// },
-				// "score": map[string]interface{}{
-				// 	"type": "half_float",
-				// },
-				// "prices": map[string]interface{}{
-				// 	"type":       "object",
-				// 	"properties": priceProperties,
-				// },
-				// "tags": map[string]interface{}{
-				// 	"type": "integer",
-				// },
-				// "genres": map[string]interface{}{
-				// 	"type": "integer",
-				// },
-				// "categories": map[string]interface{}{
-				// 	"type": "integer",
-				// },
-				// "publishers": map[string]interface{}{
-				// 	"type": "integer",
-				// },
-				// "developers": map[string]interface{}{
-				// 	"type": "integer",
-				// },
-				// "type": map[string]interface{}{
-				// 	"type": "keyword",
-				// },
-				// "platforms": map[string]interface{}{
-				// 	"type": "keyword",
-				// },
+				"id":         fieldTypeInteger,
+				"name":       fieldTypeText,
+				"aliases":    fieldTypeText,
+				"players":    fieldTypeInteger,
+				"icon":       fieldTypeDisabled,
+				"followers":  fieldTypeInteger,
+				"score":      fieldTypeHalfFloat,
+				"prices":     map[string]interface{}{"type": "object", "properties": priceProperties},
+				"tags":       fieldTypeInteger,
+				"genres":     fieldTypeInteger,
+				"categories": fieldTypeInteger,
+				"publishers": fieldTypeInteger,
+				"developers": fieldTypeInteger,
+				"type":       fieldTypeKeyword,
+				"platforms":  fieldTypeKeyword,
 			},
 		},
 	}
