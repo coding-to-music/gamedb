@@ -45,11 +45,31 @@ func (app App) GetCommunityLink() string {
 	return helpers.GetAppCommunityLink(app.ID)
 }
 
+func (app *App) fill(hit *elastic.SearchHit) error {
+
+	err := json.Unmarshal(hit.Source, &app)
+	if err != nil {
+		return err
+	}
+
+	if hit.Score != nil {
+		app.Score = *hit.Score
+	}
+
+	if val, ok := hit.Highlight["name"]; ok {
+		if len(val) > 0 {
+			app.Name = val[0]
+		}
+	}
+
+	return nil
+}
+
 func IndexApp(app App) error {
 	return indexDocument(IndexApps, strconv.Itoa(app.ID), app)
 }
 
-func SearchApps(limit int, offset int, search string, sorters []elastic.Sorter) (apps []App, total int64, err error) {
+func SearchApps(limit int, offset int, search string, sorters []elastic.Sorter, aggregation bool) (apps []App, total int64, err error) {
 
 	client, ctx, err := GetElastic()
 	if err != nil {
@@ -61,20 +81,24 @@ func SearchApps(limit int, offset int, search string, sorters []elastic.Sorter) 
 		From(offset).
 		Size(limit).
 		TrackTotalHits(true)
-		// Aggregation("type", elastic.NewTermsAggregation().Field("type").Size(10).OrderByCountDesc())
+
+	if aggregation {
+		searchService.Aggregation("type", elastic.NewTermsAggregation().Field("type").Size(10).OrderByCountDesc())
+	}
 
 	if search != "" {
 
-		var filters []elastic.Query
-		var musts []elastic.Query
-
-		musts = append(musts, elastic.NewMatchQuery("name", search))
-
-		// https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-function-score-query.html#function-field-value-factor
-		musts = append(musts, elastic.NewFunctionScoreQuery().AddScoreFunc(
-			elastic.NewFieldValueFactorFunction().Field("players").Modifier("log1p")))
-
-		searchService.Query(elastic.NewBoolQuery().Must(musts...).Filter(filters...))
+		searchService.Query(elastic.NewBoolQuery().
+			Must(
+				elastic.NewMatchQuery("name", search).Fuzziness("1"),
+			).
+			Should(
+				// Boost if exact match
+				elastic.NewTermQuery("name", search).Boost(10),
+				// Boost if more players
+				elastic.NewFunctionScoreQuery().AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("players").Factor(0.0001)),
+			),
+		)
 	}
 
 	if len(sorters) > 0 {
@@ -88,20 +112,57 @@ func SearchApps(limit int, offset int, search string, sorters []elastic.Sorter) 
 
 	for _, hit := range searchResult.Hits.Hits {
 
-		var app App
-		err := json.Unmarshal(hit.Source, &app)
+		var app = App{}
+		err = app.fill(hit)
 		if err != nil {
 			log.Err(err)
+			continue
 		}
 
-		if hit.Score != nil {
-			app.Score = *hit.Score
-		}
+		apps = append(apps, app)
+	}
 
-		if val, ok := hit.Highlight["name"]; ok {
-			if len(val) > 0 {
-				app.Name = val[0]
-			}
+	return apps, searchResult.TotalHits(), err
+}
+
+func SearchAppsMini(limit int, search string) (apps []App, total int64, err error) {
+
+	client, ctx, err := GetElastic()
+	if err != nil {
+		return apps, 0, err
+	}
+
+	searchService := client.Search().
+		Index(IndexApps).
+		Size(limit)
+
+	if search != "" {
+
+		searchService.Query(elastic.NewBoolQuery().
+			Must(
+				elastic.NewMatchQuery("name", search).Fuzziness("1"),
+			).
+			Should(
+				// Boost if exact match
+				elastic.NewTermQuery("name", search).Boost(10),
+				// Boost if more players
+				elastic.NewFunctionScoreQuery().AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("players").Factor(0.0008)),
+			),
+		)
+	}
+
+	searchResult, err := searchService.Do(ctx)
+	if err != nil {
+		return apps, 0, err
+	}
+
+	for _, hit := range searchResult.Hits.Hits {
+
+		var app = App{}
+		err = app.fill(hit)
+		if err != nil {
+			log.Err(err)
+			continue
 		}
 
 		apps = append(apps, app)
