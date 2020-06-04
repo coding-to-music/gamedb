@@ -30,14 +30,14 @@ func (c AppsQueueElastic) work() (err error) {
 	for {
 
 		var projection = bson.M{
-			"common":       -1,
-			"config":       -1,
-			"extended":     -1,
-			"install":      -1,
-			"launch":       -1,
-			"localization": -1,
-			"reviews":      -1,
-			"ufs":          -1,
+			"common":       0,
+			"config":       0,
+			"extended":     0,
+			"install":      0,
+			"launch":       0,
+			"localization": 0,
+			"reviews":      0,
+			"ufs":          0,
 		}
 
 		apps, err := mongo.GetApps(offset, limit, bson.D{{"_id", 1}}, nil, projection)

@@ -130,7 +130,7 @@ func (app PlayerApp) GetPercent() float64 {
 
 func GetPlayerAppsByApp(offset int64, filter bson.D) (apps []PlayerApp, err error) {
 
-	return getPlayerApps(offset, 100, filter, bson.D{{"app_time", -1}}, bson.M{"_id": -1, "player_id": 1, "app_time": 1})
+	return getPlayerApps(offset, 100, filter, bson.D{{"app_time", -1}}, bson.M{"_id": 0, "player_id": 1, "app_time": 1})
 }
 
 func GetPlayerAppByKey(playerID int64, appID int) (playerApp PlayerApp, err error) {
@@ -164,12 +164,12 @@ func GetPlayersApps(playerIDs []int64, projection bson.M) (apps []PlayerApp, err
 
 func GetAppPlayTimes(appID int) ([]PlayerApp, error) {
 
-	return getPlayerApps(0, 0, bson.D{{"app_id", appID}}, nil, bson.M{"_id": -1, "app_time": 1})
+	return getPlayerApps(0, 0, bson.D{{"app_id", appID}}, nil, bson.M{"_id": 0, "app_time": 1})
 }
 
 func GetAppOwners(appID int) ([]PlayerApp, error) {
 
-	return getPlayerApps(0, 0, bson.D{{"app_id", appID}}, nil, bson.M{"_id": -1, "player_id": 1})
+	return getPlayerApps(0, 0, bson.D{{"app_id", appID}}, nil, bson.M{"_id": 0, "player_id": 1})
 }
 
 func getPlayerApps(offset int64, limit int64, filter bson.D, sort bson.D, projection bson.M) (apps []PlayerApp, err error) {
