@@ -11,7 +11,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
-	"github.com/olivere/elastic/v7"
 )
 
 func NewsRouter() http.Handler {
@@ -64,26 +63,13 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		var search = query.GetSearchString("search")
 		var sorters = query.GetOrderElastic(map[string]string{
 			"1": "time",
 		})
 
-		var q elastic.Query
-		if search != "" {
-			q = elastic.NewBoolQuery().
-				Must(
-					elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
-						elastic.NewMatchQuery("title", search).Fuzziness("1").Boost(2),
-						elastic.NewMatchQuery("app_name", search).Fuzziness("1").Boost(1),
-					),
-				).
-				Should(
-					elastic.NewTermQuery("title", search).Boost(2), // Exact match
-				)
-		}
+		var search = query.GetSearchString("search")
 
-		articles, filtered, err = elasticHelpers.SearchArticles(100, query.GetOffset(), q, sorters)
+		articles, filtered, err = elasticHelpers.SearchArticles(query.GetOffset(), sorters, search)
 		if err != nil {
 			log.Err(err, r)
 		}

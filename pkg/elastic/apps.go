@@ -87,18 +87,7 @@ func SearchApps(limit int, offset int, search string, sorters []elastic.Sorter, 
 	}
 
 	if search != "" {
-
-		searchService.Query(elastic.NewBoolQuery().
-			Must(
-				elastic.NewMatchQuery("name", search).Fuzziness("1"),
-			).
-			Should(
-				// Boost if exact match
-				elastic.NewTermQuery("name", search).Boost(10),
-				// Boost if more players
-				elastic.NewFunctionScoreQuery().AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("players").Factor(0.0001)),
-			),
-		)
+		searchService.Query(appsSearchQuery(search))
 	}
 
 	if len(sorters) > 0 {
@@ -137,18 +126,7 @@ func SearchAppsMini(limit int, search string) (apps []App, total int64, err erro
 		Size(limit)
 
 	if search != "" {
-
-		searchService.Query(elastic.NewBoolQuery().
-			Must(
-				elastic.NewMatchQuery("name", search).Fuzziness("1"),
-			).
-			Should(
-				// Boost if exact match
-				elastic.NewTermQuery("name", search).Boost(10),
-				// Boost if more players
-				elastic.NewFunctionScoreQuery().AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("players").Factor(0.0008)),
-			),
-		)
+		searchService.Query(appsSearchQuery(search))
 	}
 
 	searchResult, err := searchService.Do(ctx)
@@ -169,6 +147,18 @@ func SearchAppsMini(limit int, search string) (apps []App, total int64, err erro
 	}
 
 	return apps, searchResult.TotalHits(), err
+}
+
+func appsSearchQuery(search string) *elastic.BoolQuery {
+
+	return elastic.NewBoolQuery().
+		Must(
+			elastic.NewMatchQuery("name", search).Fuzziness("1"),
+		).
+		Should(
+			elastic.NewTermQuery("name", search).Boost(10), // Boost if exact match
+			elastic.NewFunctionScoreQuery().AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("players").Factor(0.0008)),
+		)
 }
 
 //noinspection GoUnusedExportedFunction

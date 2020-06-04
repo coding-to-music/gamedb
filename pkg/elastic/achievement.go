@@ -38,7 +38,7 @@ func IndexAchievementBulk(achievements map[string]Achievement) error {
 	return indexDocuments(IndexAchievements, i)
 }
 
-func SearchAchievements(limit int, offset int, search string, sorters []elastic.Sorter) (achievements []Achievement, total int64, err error) {
+func SearchAppAchievements(offset int, search string, sorters []elastic.Sorter) (achievements []Achievement, total int64, err error) {
 
 	client, ctx, err := GetElastic()
 	if err != nil {
@@ -48,9 +48,10 @@ func SearchAchievements(limit int, offset int, search string, sorters []elastic.
 	searchService := client.Search().
 		Index(IndexAchievements).
 		From(offset).
-		Size(limit).
+		Size(100).
 		TrackTotalHits(true).
-		Highlight(elastic.NewHighlight().Field("name").Field("description").Field("app_name").PreTags("<mark>").PostTags("</mark>"))
+		Highlight(elastic.NewHighlight().Field("name").Field("description").Field("app_name").PreTags("<mark>").PostTags("</mark>")).
+		SortBy(sorters...)
 
 	if search != "" {
 		searchService.Query(elastic.NewBoolQuery().
@@ -65,10 +66,6 @@ func SearchAchievements(limit int, offset int, search string, sorters []elastic.
 				elastic.NewMatchPhraseQuery("name", search).Boost(1), // Exact match
 			),
 		)
-	}
-
-	if len(sorters) > 0 {
-		searchService.SortBy(sorters...)
 	}
 
 	searchResult, err := searchService.Do(ctx)

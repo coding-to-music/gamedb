@@ -24,27 +24,40 @@ func IndexGroup(group Group) error {
 	return indexDocument(IndexGroups, group.ID, group)
 }
 
-func SearchGroups(limit int, offset int, query elastic.Query, sorters []elastic.Sorter) (groups []Group, total int64, err error) {
+func SearchGroups(offset int, sorters []elastic.Sorter, search string, errors string) (groups []Group, total int64, err error) {
 
 	client, ctx, err := GetElastic()
 	if err != nil {
 		return groups, 0, err
 	}
 
+	var query = elastic.NewBoolQuery()
+	if search != "" {
+
+		query.Must(elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
+			elastic.NewMatchQuery("name", search).Fuzziness("1").Boost(3),
+			elastic.NewMatchQuery("abbreviation", search).Fuzziness("1").Boost(2),
+			elastic.NewMatchQuery("url", search).Fuzziness("1").Boost(2),
+		))
+
+		query.Should(
+			elastic.NewFunctionScoreQuery().AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("members").Factor(0.003)),
+			elastic.NewMatchPhraseQuery("name", search).Boost(5), // Boost if exact match
+		)
+	}
+
+	if errors == "0" || errors == "1" {
+		query.Filter(elastic.NewTermQuery("error", errors == "0"))
+	}
+
 	searchService := client.Search().
 		Index(IndexGroups).
 		From(offset).
-		Size(limit).
+		Size(100).
 		TrackTotalHits(true).
-		Highlight(elastic.NewHighlight().Field("name").PreTags("<mark>").PostTags("</mark>"))
-
-	if query != nil {
-		searchService.Query(query)
-	}
-
-	if len(sorters) > 0 {
-		searchService.SortBy(sorters...)
-	}
+		Highlight(elastic.NewHighlight().Field("name").PreTags("<mark>").PostTags("</mark>")).
+		SortBy(sorters...).
+		Query(query)
 
 	searchResult, err := searchService.Do(ctx)
 	if err != nil {

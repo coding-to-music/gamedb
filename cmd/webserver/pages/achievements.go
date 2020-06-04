@@ -43,13 +43,12 @@ func achievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-
 		var sorters = query.GetOrderElastic(map[string]string{
 			"1": "completed",
 			"2": "_score",
 		})
 
-		achievements, filtered, err = elasticHelpers.SearchAchievements(100, query.GetOffset(), search, sorters)
+		achievements, filtered, err = elasticHelpers.SearchAppAchievements(query.GetOffset(), search, sorters)
 		if err != nil {
 			log.Err(err, r)
 		}

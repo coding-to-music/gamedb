@@ -38,7 +38,7 @@ func IndexArticlesBulk(articles map[string]Article) error {
 	return indexDocuments(IndexArticles, i)
 }
 
-func SearchArticles(limit int, offset int, query elastic.Query, sorters []elastic.Sorter) (articles []Article, total int64, err error) {
+func SearchArticles(offset int, sorters []elastic.Sorter, search string) (articles []Article, total int64, err error) {
 
 	client, ctx, err := GetElastic()
 	if err != nil {
@@ -48,16 +48,23 @@ func SearchArticles(limit int, offset int, query elastic.Query, sorters []elasti
 	searchService := client.Search().
 		Index(IndexArticles).
 		From(offset).
-		Size(limit).
+		Size(100).
 		TrackTotalHits(true).
-		Highlight(elastic.NewHighlight().Field("title").Field("app_name").PreTags("<mark>").PostTags("</mark>"))
+		Highlight(elastic.NewHighlight().Field("title").Field("app_name").PreTags("<mark>").PostTags("</mark>")).
+		SortBy(sorters...)
 
-	if query != nil {
-		searchService.Query(query)
-	}
-
-	if len(sorters) > 0 {
-		searchService.SortBy(sorters...)
+	if search != "" {
+		searchService.Query(elastic.NewBoolQuery().
+			Must(
+				elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
+					elastic.NewMatchQuery("title", search).Fuzziness("1").Boost(2),
+					elastic.NewMatchQuery("app_name", search).Fuzziness("1").Boost(1),
+				),
+			).
+			Should(
+				elastic.NewTermQuery("title", search).Boost(2), // Exact match
+			),
+		)
 	}
 
 	searchResult, err := searchService.Do(ctx)

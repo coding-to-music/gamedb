@@ -11,7 +11,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
-	"github.com/olivere/elastic/v7"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -52,43 +51,15 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-
 		var sorters = query.GetOrderElastic(map[string]string{
 			"2": "members",
 			"3": "trend",
 		})
 
-		var musts []elastic.Query
-		var filters []elastic.Query
-		var shoulds []elastic.Query
-
 		var search = query.GetSearchString("search")
-		if search != "" {
+		var errors = query.GetSearchString("filter")
 
-			musts = append(musts, elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
-				elastic.NewMatchQuery("name", search).Fuzziness("1").Boost(3),
-				elastic.NewMatchQuery("abbreviation", search).Fuzziness("1").Boost(2),
-				elastic.NewMatchQuery("url", search).Fuzziness("1").Boost(2),
-			))
-
-			shoulds = append(shoulds,
-				// Boost if more group members
-				elastic.NewFunctionScoreQuery().AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("members").Factor(0.003)),
-				// Boost if exact match
-				elastic.NewMatchPhraseQuery("name", search).Boost(5),
-			)
-		}
-
-		var hideerrored = query.GetSearchString("filter")
-		if hideerrored == "1" {
-			filters = append(filters, elastic.NewTermQuery("error", false))
-		} else if hideerrored == "0" {
-			filters = append(filters, elastic.NewTermQuery("error", true))
-		}
-
-		var elasticQuery = elastic.NewBoolQuery().Must(musts...).Filter(filters...).Should(shoulds...)
-
-		groups, filtered, err = elasticHelpers.SearchGroups(100, query.GetOffset(), elasticQuery, sorters)
+		groups, filtered, err = elasticHelpers.SearchGroups(query.GetOffset(), sorters, search, errors)
 		if err != nil {
 			log.Err(err, r)
 			return
