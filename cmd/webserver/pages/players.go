@@ -273,28 +273,32 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var response = datatable.NewDataTablesResponse(r, query, total, filtered)
 	for k, v := range players {
 
+		var index = query.GetOffset() + k + 1
+		var id = strconv.FormatInt(v.ID, 10)
+		var lastBan = v.LastBan.Format(helpers.DateYear)
+
 		response.AddRow([]interface{}{
-			query.GetOffset() + k + 1,          // 0
-			strconv.FormatInt(v.ID, 10),        // 1
-			v.GetName(),                      // 2
-			v.GetAvatar(),                      // 3
-			v.GetAvatar2(),                     // 4
-			v.Level,                            // 5
-			v.GamesCount,                       // 6
-			v.BadgesCount,                      // 7
-			v.GetTimeShort(),                   // 8
-			v.GetTimeLong(),                    // 9
-			v.FriendsCount,                     // 10
-			v.GetFlag(),                        // 11
-			v.GetCountry(),                     // 12
-			v.GetPath(),                        // 13
-			v.CommunityLink(),                  // 14
-			v.NumberOfGameBans,                 // 15
-			v.NumberOfVACBans,                  // 16
-			v.LastBan.Unix(),                   // 17
-			v.LastBan.Format(helpers.DateYear), // 18
-			v.CountryCode,                      // 19
-			v.CommentsCount,                    // 20
+			index,              // 0
+			id,                 // 1
+			v.GetName(),        // 2
+			v.GetAvatar(),      // 3
+			v.GetAvatar2(),     // 4
+			v.Level,            // 5
+			v.GamesCount,       // 6
+			v.BadgesCount,      // 7
+			v.GetTimeShort(),   // 8
+			v.GetTimeLong(),    // 9
+			v.FriendsCount,     // 10
+			v.GetFlag(),        // 11
+			v.GetCountry(),     // 12
+			v.GetPath(),        // 13
+			v.CommunityLink(),  // 14
+			v.NumberOfGameBans, // 15
+			v.NumberOfVACBans,  // 16
+			v.LastBan.Unix(),   // 17
+			lastBan,            // 18
+			v.CountryCode,      // 19
+			v.CommentsCount,    // 20
 		})
 	}
 

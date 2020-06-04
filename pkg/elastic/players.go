@@ -11,8 +11,20 @@ import (
 type Player struct {
 	ID                int64    `json:"id"`
 	PersonaName       string   `json:"name"`
-	PersonaNameRecent []string `json:"recent"`
+	PersonaNameRecent []string `json:"name_recent"`
 	VanityURL         string   `json:"url"`
+	Avatar            string   `json:"avatar"`
+	CountryCode       string   `json:"country_code"`
+	StateCode         string   `json:"state_code"`
+	LastBan           int64    `json:"last_ban"`
+	GameBans          int      `json:"game_bans"`
+	VACBans           int      `json:"vac_bans"`
+	Level             int      `json:"level"`
+	PlayTime          int      `json:"play_time"`
+	Badges            int      `json:"badges"`
+	Games             int      `json:"games"`
+	Friends           int      `json:"friends"`
+	Comments          int      `json:"comments"`
 }
 
 func IndexPlayer(player Player) error {
@@ -76,10 +88,22 @@ func DeleteAndRebuildPlayersIndex() {
 		"settings": settings,
 		"mappings": map[string]interface{}{
 			"properties": map[string]interface{}{
-				"id":     fieldTypeLong,
-				"name":   fieldTypeText,
-				"recent": fieldTypeText,
-				"url":    fieldTypeText,
+				"id":           fieldTypeLong,
+				"name":         fieldTypeText,
+				"name_recent":  fieldTypeText,
+				"url":          fieldTypeText,
+				"avatar":       fieldTypeDisabled,
+				"country_code": fieldTypeKeyword,
+				"state_code":   fieldTypeKeyword,
+				"last_ban":     fieldTypeLong,
+				"game_bans":    fieldTypeInteger,
+				"vac_bans":     fieldTypeInteger,
+				"level":        fieldTypeInteger,
+				"play_time":    fieldTypeInteger,
+				"badges":       fieldTypeInteger,
+				"games":        fieldTypeInteger,
+				"friends":      fieldTypeInteger,
+				"comments":     fieldTypeInteger,
 			},
 		},
 	}

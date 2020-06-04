@@ -30,6 +30,18 @@ func appsPlayersHandler(messages []*rabbit.Message) {
 		player.PersonaName = payload.Player.PersonaName
 		player.PersonaNameRecent = []string{} // todo
 		player.VanityURL = payload.Player.VanityURL
+		player.Avatar = payload.Player.Avatar
+		player.CountryCode = payload.Player.CountryCode
+		player.StateCode = payload.Player.StateCode
+		player.LastBan = payload.Player.LastBan.Unix()
+		player.GameBans = payload.Player.NumberOfGameBans
+		player.VACBans = payload.Player.NumberOfVACBans
+		player.Level = payload.Player.Level
+		player.PlayTime = payload.Player.PlayTime
+		player.Badges = payload.Player.BadgesCount
+		player.Games = payload.Player.GamesCount
+		player.Friends = payload.Player.FriendsCount
+		player.Comments = payload.Player.CommentsCount
 
 		err = elastic.IndexPlayer(player)
 		if err != nil {
