@@ -331,14 +331,14 @@
                                 {{ range $key, $value := .App.Prices }}
                                     {{ $price := $.App.Prices.Get $key }}
                                     <tr data-code="{{ $key }}">
-                                        <td class="img">
+                                        <td class="img" nowrap="nowrap">
                                             <div class="icon-name">
                                                 <div class="icon"><img src="{{ .GetFlag $key }}" class="wide" alt="{{ .GetCountryName $key }}"></div>
                                                 <div class="name">{{ .GetCountryName $key }}</div>
                                             </div>
                                         </td>
-                                        <td>{{ $price.GetFinal }}</td>
-                                        <td>
+                                        <td nowrap="nowrap">{{ $price.GetFinal }}</td>
+                                        <td nowrap="nowrap">
                                             {{ if ne $price.GetFinal $price.GetInitial }}
                                                 {{ $price.GetInitial }}
                                             {{ end }}
