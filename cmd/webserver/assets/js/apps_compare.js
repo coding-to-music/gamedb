@@ -81,12 +81,14 @@ if ($appsComparePage.length > 0) {
             tableOptions: options,
             searchFields: [
                 $('#search'),
-                $('#ids'),
             ],
         });
 
         $('#apps-table').gdbTable({
             tableOptions: options,
+            searchFields: [
+                $('#ids'),
+            ],
         });
     }
 
