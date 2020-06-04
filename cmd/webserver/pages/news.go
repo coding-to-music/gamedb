@@ -31,7 +31,6 @@ func newsHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Err(err, r)
 	}
-	t.Apps = apps
 
 	var appIDs []int
 	for _, app := range apps {
@@ -49,7 +48,6 @@ func newsHandler(w http.ResponseWriter, r *http.Request) {
 type newsTemplate struct {
 	GlobalTemplate
 	Articles []mongo.Article
-	Apps     []mongo.App
 }
 
 func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {

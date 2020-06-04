@@ -30,10 +30,8 @@
 
                 <div class="tab-content">
 
-                    {{/* Steam */}}
+                    {{/* Popular App News */}}
                     <div class="tab-pane show active" id="popular" role="tabpanel">
-
-                        <div class="alert alert-primary" role="alert">The last 7 days of articles from the {{ len .Apps }} most played games.</div>
 
                         {{ range $key, $value := .Articles }}
 
@@ -59,7 +57,7 @@
 
                     </div>
 
-                    {{/* All news */}}
+                    {{/* All App News */}}
                     <div class="tab-pane" id="all" role="tabpanel">
 
                         <div class="row">
@@ -94,7 +92,7 @@
 
                     </div>
 
-                    {{/* Steam */}}
+                    {{/* Steam Blogs */}}
                     <div class="tab-pane" id="steam" role="tabpanel">
 
                     </div>
