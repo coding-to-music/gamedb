@@ -335,6 +335,7 @@ func (t *GlobalTemplate) setRandomBackground(title bool, link bool) {
 	}
 
 	blacklist := []int{
+		10,     // Counter-Strike
 		4000,   // Garry's Mod
 		236850, // Europa Universalis IV
 		242760, // The Forest
