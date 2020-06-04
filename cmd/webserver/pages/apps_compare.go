@@ -24,7 +24,8 @@ func gamesCompareRouter() http.Handler {
 
 	r := chi.NewRouter()
 	r.Get("/", appsCompareHandler)
-	r.Get("/compare.json", appsCompareAjaxHandler)
+	r.Get("/search.json", compareSearchAjaxHandler)
+	r.Get("/apps.json", compareAppsAjaxHandler)
 	r.Get("/{id}", appsCompareHandler)
 	r.Get("/{id}/players.json", appsComparePlayersAjaxHandler)
 	r.Get("/{id}/players2.json", appsComparePlayers2AjaxHandler)
@@ -54,7 +55,7 @@ func appsCompareHandler(w http.ResponseWriter, r *http.Request) {
 			app, err := mongo.GetApp(id)
 			if err != nil {
 				err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
-				log.Err(err)
+				log.Err(err, r)
 				return
 			}
 
@@ -149,71 +150,30 @@ type appsCompareGoogleItemTemplate struct {
 	Time    string `json:"time"`
 }
 
-func appsCompareAjaxHandler(w http.ResponseWriter, r *http.Request) {
+func compareSearchAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	var query = datatable.NewDataTableQuery(r, true)
+	var limit = 5
 
-	var search = query.GetSearchString("search")
+	query := datatable.NewDataTableQuery(r, true)
+	search := query.GetSearchString("search")
+	code := session.GetProductCC(r)
+	ids := helpers.StringToSlice(query.GetSearchString("ids"), ",")
+	response := datatable.NewDataTablesResponse(r, query, int64(limit), int64(limit))
 
-	idsString := query.GetSearchString("ids")
-	var idStrings []string
-	if len(idsString) > 0 {
-		idStrings = strings.Split(idsString, ",")
-	}
-	ids := helpers.StringSliceToIntSlice(idStrings)
+	if search != "" {
 
-	var code = session.GetProductCC(r)
-
-	var response *datatable.DataTablesResponse
-
-	if search == "" {
-
-		appMap := map[int][]interface{}{}
-
-		apps, err := mongo.GetAppsByID(ids, bson.M{"_id": 1, "name": 1, "icon": 1, "prices": 1})
+		apps, _, err := elastic.SearchApps(limit, 0, search, nil)
 		if err != nil {
 			log.Err(err, r)
+			return
 		}
 
-		response = datatable.NewDataTablesResponse(r, query, int64(len(apps)), int64(len(apps)))
-		for k, app := range apps {
-
-			var price = app.GetPrices().Get(code).GetFinal()
-			var linkBool = helpers.SliceHasString(strconv.Itoa(app.ID), idStrings)
-			var link = makeCompareActionLink(idStrings, strconv.Itoa(app.ID), linkBool)
-
-			appMap[app.ID] = []interface{}{
-				query.GetOffset() + k + 1, // 0
-				app.ID,                    // 1
-				app.GetName(),             // 2
-				app.GetIcon(),             // 3
-				app.GetPath(),             // 4
-				app.GetCommunityLink(),    // 5
-				price,                     // 6
-				link,                      // 7
-				linkBool,                  // 8
-				0,                         // 9 - Search Score
-			}
-		}
-
-		for _, v := range ids {
-			if val, ok := appMap[v]; ok {
-				response.AddRow(val)
-			}
-		}
-
-	} else {
-
-		apps, total, err := elastic.SearchApps(10, 0, search, nil)
-		log.Err(err)
-
-		response = datatable.NewDataTablesResponse(r, query, total, total)
 		for k, app := range apps {
 
 			var offset = query.GetOffset() + k + 1
 			var price = app.Prices.Get(code).GetFinal()
-			var linkBool = helpers.SliceHasString(strconv.Itoa(app.ID), idStrings)
-			var link = makeCompareActionLink(idStrings, strconv.Itoa(app.ID), linkBool)
+			var linkBool = helpers.SliceHasString(strconv.Itoa(app.ID), ids)
+			var link = makeCompareActionLink(ids, strconv.Itoa(app.ID), linkBool)
 
 			response.AddRow([]interface{}{
 				offset,                 // 0
@@ -227,6 +187,51 @@ func appsCompareAjaxHandler(w http.ResponseWriter, r *http.Request) {
 				linkBool,               // 8
 				app.Score,              // 9 - Search Score
 			})
+		}
+	}
+
+	returnJSON(w, r, response)
+}
+
+func compareAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	query := datatable.NewDataTableQuery(r, true)
+	code := session.GetProductCC(r)
+	ids := helpers.StringToSlice(query.GetSearchString("ids"), ",")
+	ids2 := helpers.StringSliceToIntSlice(ids)
+
+	apps, err := mongo.GetAppsByID(ids2, bson.M{"_id": 1, "name": 1, "icon": 1, "prices": 1})
+	if err != nil {
+		log.Err(err, r)
+		return
+	}
+
+	var appMap = map[int][]interface{}{}
+
+	var response = datatable.NewDataTablesResponse(r, query, int64(len(apps)), int64(len(apps)))
+	for k, app := range apps {
+
+		var price = app.GetPrices().Get(code).GetFinal()
+		var linkBool = helpers.SliceHasString(strconv.Itoa(app.ID), ids)
+		var link = makeCompareActionLink(ids, strconv.Itoa(app.ID), linkBool)
+
+		appMap[app.ID] = []interface{}{
+			query.GetOffset() + k + 1, // 0
+			app.ID,                    // 1
+			app.GetName(),             // 2
+			app.GetIcon(),             // 3
+			app.GetPath(),             // 4
+			app.GetCommunityLink(),    // 5
+			price,                     // 6
+			link,                      // 7
+			linkBool,                  // 8
+			0,                         // 9 - Search Score
+		}
+	}
+
+	for _, v := range ids2 {
+		if val, ok := appMap[v]; ok {
+			response.AddRow(val)
 		}
 	}
 

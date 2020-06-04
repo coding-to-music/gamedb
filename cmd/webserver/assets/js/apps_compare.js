@@ -77,7 +77,7 @@ if ($appsComparePage.length > 0) {
             ]
         };
 
-        const dt = $('table.table').gdbTable({
+        $('#search-table').gdbTable({
             tableOptions: options,
             searchFields: [
                 $('#search'),
@@ -85,7 +85,9 @@ if ($appsComparePage.length > 0) {
             ],
         });
 
-
+        $('#apps-table').gdbTable({
+            tableOptions: options,
+        });
     }
 
     function loadComparePlayersChart() {

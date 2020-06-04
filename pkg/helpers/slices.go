@@ -8,6 +8,14 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 )
 
+func StringToSlice(s string, glue string) (ret []string) {
+
+	if len(s) > 0 {
+		ret = strings.Split(s, glue)
+	}
+	return ret
+}
+
 func StringSliceToIntSlice(in []string) (ret []int) {
 
 	for _, v := range in {
