@@ -83,6 +83,9 @@ if ($appPage.length > 0) {
                 case '#dev-localization':
                     loadDevLocalization();
                     break;
+                case '#media':
+                    loadAppMediaTab();
+                    break;
             }
         }
 
@@ -166,6 +169,17 @@ if ($appPage.length > 0) {
                 $(this).attr('href', 'http://' + href);
             }
         });
+    }
+
+    function loadAppMediaTab() {
+
+        $('#media #images img').each(function () {
+            loadImage($(this));
+        })
+
+        $('#media #videos video').each(function () {
+            loadVideo($(this));
+        })
     }
 
     // News items

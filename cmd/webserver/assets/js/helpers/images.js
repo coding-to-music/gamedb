@@ -64,7 +64,7 @@ function observeLazyVideos() {
         // iterate over each entry
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                $(entry.target).attr('preload', 'metadata');
+                loadVideo($(entry.target));
                 self.unobserve(entry.target);
             }
         });
@@ -80,6 +80,11 @@ function observeLazyVideos() {
     $('video').each(function (index) {
         observer.observe(this);
     });
+}
+
+function loadVideo($target){
+
+    $target.attr('preload', 'metadata');
 }
 
 function loadImage($target) {
