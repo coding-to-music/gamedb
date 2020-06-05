@@ -63,9 +63,11 @@ func appsCompareHandler(w http.ResponseWriter, r *http.Request) {
 			names = append(names, app.GetName())
 			namesMap[appID] = app.GetName()
 			ids = append(ids, appID)
-
-			groupIDs = append(groupIDs, app.GroupID)
 			groupNamesMap[app.GroupID] = app.GetName()
+
+			if app.GroupID != "" {
+				groupIDs = append(groupIDs, app.GroupID)
+			}
 		}
 	}
 
