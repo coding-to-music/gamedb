@@ -206,6 +206,5 @@ func DeleteAndRebuildAppsIndex() {
 		},
 	}
 
-	err := rebuildIndex(IndexApps, mapping)
-	log.Err(err)
+	rebuildIndex(IndexApps, mapping)
 }

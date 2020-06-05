@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"sync"
-	"time"
 
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -108,26 +107,36 @@ func DeleteDocument(index string, key string) error {
 	return err
 }
 
-func rebuildIndex(index string, mapping map[string]interface{}) error {
+func rebuildIndex(index string, mapping map[string]interface{}) {
 
 	client, ctx, err := GetElastic()
 	if err != nil {
-		return err
+		log.Info(err)
+		return
 	}
 
-	_, err = client.DeleteIndex(index).Do(ctx)
-	log.Err(err)
+	log.Info("Deteing " + index)
+	resp, err := client.DeleteIndex(index).Do(ctx)
+	if err != nil {
+		log.Info(err)
+		return
+	}
+	if !resp.Acknowledged {
+		log.Info("delete not acknowledged")
+		return
+	}
 
-	time.Sleep(time.Second)
+	// time.Sleep(time.Second)
 
+	log.Info("Creating " + index)
 	createIndexResp, err := client.CreateIndex(index).BodyJson(mapping).Do(ctx)
 	if err != nil {
-		return err
+		log.Info(err)
+		return
 	}
 
 	if !createIndexResp.Acknowledged {
-		return errors.New("not acknowledged")
+		log.Info("create not acknowledged")
+		return
 	}
-
-	return nil
 }

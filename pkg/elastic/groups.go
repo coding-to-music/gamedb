@@ -111,6 +111,5 @@ func DeleteAndRebuildGroupsIndex() {
 		},
 	}
 
-	err := rebuildIndex(IndexGroups, mapping)
-	log.Err(err)
+	rebuildIndex(IndexGroups, mapping)
 }

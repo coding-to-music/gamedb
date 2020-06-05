@@ -121,6 +121,5 @@ func DeleteAndRebuildArticlesIndex() {
 		},
 	}
 
-	err := rebuildIndex(IndexArticles, mapping)
-	log.Err(err)
+	rebuildIndex(IndexArticles, mapping)
 }

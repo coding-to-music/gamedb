@@ -117,6 +117,5 @@ func DeleteAndRebuildAchievementsIndex() {
 		},
 	}
 
-	err := rebuildIndex(IndexAchievements, mapping)
-	log.Err(err)
+	rebuildIndex(IndexAchievements, mapping)
 }

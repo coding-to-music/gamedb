@@ -109,6 +109,5 @@ func DeleteAndRebuildPlayersIndex() {
 		},
 	}
 
-	err := rebuildIndex(IndexPlayers, mapping)
-	log.Err(err)
+	rebuildIndex(IndexPlayers, mapping)
 }
