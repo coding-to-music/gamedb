@@ -40,7 +40,7 @@ func (c GroupsUpdateTop) work() (err error) {
 
 	for _, sort := range sorts {
 
-		groups, err := mongo.GetGroups(1000, 0, sort, filter, bson.M{"_id": 1})
+		groups, err := mongo.GetGroups(10000, 0, sort, filter, bson.M{"_id": 1})
 		if err != nil {
 			return err
 		}
