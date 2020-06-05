@@ -43,7 +43,7 @@ func (c PlayersQueueRandom) work() (err error) {
 	var consumers = 1
 	for q, limit := range queues {
 
-		c, err := queue.Channels[rabbit.Producer][q].Inspect()
+		c, err := queue.ProducerChannels[q].Inspect()
 		if err != nil {
 			return err
 		}

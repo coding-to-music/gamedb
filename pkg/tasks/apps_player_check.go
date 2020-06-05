@@ -1,7 +1,6 @@
 package tasks
 
 import (
-	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
@@ -27,7 +26,7 @@ func (c AppsPlayerCheck) Cron() string {
 func (c AppsPlayerCheck) work() (err error) {
 
 	// Check queue size
-	q, err := queue.Channels[rabbit.Producer][queue.QueueAppPlayers].Inspect()
+	q, err := queue.ProducerChannels[queue.QueueAppPlayers].Inspect()
 	if err != nil {
 		return err
 	}

@@ -7,7 +7,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -37,7 +36,7 @@ func addPackages() {
 		for {
 			time.Sleep(time.Second * 5)
 
-			c, err := queue.Channels[rabbit.Producer][queue.QueuePackages].Inspect()
+			c, err := queue.ProducerChannels[queue.QueuePackages].Inspect()
 			if err != nil {
 				log.Err(err)
 				continue

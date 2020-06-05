@@ -3,6 +3,7 @@ package queue
 import (
 	"encoding/json"
 	"errors"
+	"strconv"
 	"time"
 
 	"github.com/Jleagle/rabbit-go"
@@ -78,10 +79,7 @@ func init() {
 }
 
 var (
-	Channels = map[rabbit.ConnType]map[rabbit.QueueName]*rabbit.Channel{
-		rabbit.Consumer: {},
-		rabbit.Producer: {},
-	}
+	ProducerChannels = map[rabbit.QueueName]*rabbit.Channel{}
 
 	AllProducerDefinitions = []QueueDefinition{
 		{name: QueueAppPlayers},
@@ -265,7 +263,7 @@ func Init(definitions []QueueDefinition) {
 		if err != nil {
 			log.Critical(string(queue.name), err)
 		} else {
-			Channels[rabbit.Producer][queue.name] = q
+			ProducerChannels[queue.name] = q
 		}
 	}
 
@@ -288,15 +286,17 @@ func Init(definitions []QueueDefinition) {
 					prefetchSize = queue.prefetchSize
 				}
 
-				q, err := rabbit.NewChannel(consumerConnection, queue.name, config.Config.Environment.Get(), prefetchSize, queue.batchSize, queue.consumer, !queue.skipHeaders)
-				if err != nil {
-					log.Critical(string(queue.name), err)
-					continue
+				s := make([]int, 2) // todo
+				for k := range s {
+
+					q, err := rabbit.NewChannel(consumerConnection, queue.name, config.Config.Environment.Get()+"-"+strconv.Itoa(k), prefetchSize, queue.batchSize, queue.consumer, !queue.skipHeaders)
+					if err != nil {
+						log.Critical(string(queue.name), err)
+						continue
+					}
+
+					go q.Consume()
 				}
-
-				Channels[rabbit.Consumer][queue.name] = q
-
-				go q.Consume()
 			}
 		}
 	}
@@ -305,7 +305,7 @@ func Init(definitions []QueueDefinition) {
 // Message helpers
 func sendToFailQueue(message *rabbit.Message) {
 
-	err := message.SendToQueueAndAck(Channels[rabbit.Producer][QueueFailed], nil)
+	err := message.SendToQueueAndAck(ProducerChannels[QueueFailed], nil)
 	log.Err(err)
 }
 
@@ -324,7 +324,7 @@ func sendToRetryQueueWithDelay(message *rabbit.Message, delay time.Duration) {
 		}
 	}
 
-	err := message.SendToQueueAndAck(Channels[rabbit.Producer][QueueDelay], po)
+	err := message.SendToQueueAndAck(ProducerChannels[QueueDelay], po)
 	log.Err(err)
 }
 
@@ -336,7 +336,7 @@ func sendToLastQueue(message *rabbit.Message) {
 		queue = QueueFailed
 	}
 
-	err := message.SendToQueueAndAck(Channels[rabbit.Producer][queue], nil)
+	err := message.SendToQueueAndAck(ProducerChannels[queue], nil)
 	log.Err(err)
 }
 
@@ -574,7 +574,7 @@ func produce(q rabbit.QueueName, payload interface{}) error {
 		time.Sleep(time.Second / 1000)
 	}
 
-	if val, ok := Channels[rabbit.Producer][q]; ok {
+	if val, ok := ProducerChannels[q]; ok {
 		return val.Produce(payload, nil)
 	}
 
