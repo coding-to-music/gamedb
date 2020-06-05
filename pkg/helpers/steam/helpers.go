@@ -57,6 +57,7 @@ func LogSteamError(err error, interfaces ...interface{}) {
 			"Internal Server Error",
 			"invalid character '<' looking for beginning of value",
 			"net/http: request canceled (Client.Timeout exceeded while reading body)",
+			"remote error: tls: internal error",
 			"Service Unavailable",
 			"something went wrong",
 			"net/http: TLS handshake timeout",
