@@ -47,7 +47,7 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 
 		if err == mongo.ErrNoDocuments {
-			returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Sorry but we can not find this group"})
+			returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Sorry but we can not find this group"})
 			return
 		}
 
