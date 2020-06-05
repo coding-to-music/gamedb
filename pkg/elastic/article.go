@@ -2,6 +2,7 @@ package elastic
 
 import (
 	"encoding/json"
+	"html/template"
 	"strconv"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -20,7 +21,7 @@ type Article struct {
 	Score   float64 `json:"-"`
 }
 
-func (article Article) GetBody() string {
+func (article Article) GetBody() template.HTML {
 	return helpers.GetArticleBody(article.Body)
 }
 

@@ -1,6 +1,7 @@
 package mongo
 
 import (
+	"html/template"
 	"strconv"
 	"strings"
 	"time"
@@ -46,7 +47,7 @@ func (article Article) BSON() bson.D {
 	}
 }
 
-func (article Article) GetBody() string {
+func (article Article) GetBody() template.HTML {
 	return helpers.GetArticleBody(article.Contents)
 }
 

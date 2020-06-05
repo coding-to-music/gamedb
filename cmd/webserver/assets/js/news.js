@@ -85,8 +85,7 @@ if ($('#news-page').length > 0) {
                 $tr.removeClass('shown');
 
             } else {
-
-                row.child($("<div/>").html(row.data()[2]).text()).show();
+                row.child($("<div/>").html(row.data()[2])).show();
                 $tr.addClass('shown');
             }
         });

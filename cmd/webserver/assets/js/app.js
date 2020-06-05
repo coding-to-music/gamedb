@@ -156,7 +156,7 @@ if ($appPage.length > 0) {
 
             } else {
 
-                row.child($("<div/>").html(row.data()[5]).text()).show();
+                row.child($("<div/>").html(row.data()[5])).show();
                 $(this).addClass('shown');
             }
         });

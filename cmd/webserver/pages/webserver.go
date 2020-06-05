@@ -189,7 +189,6 @@ func getTemplateFuncMap() map[string]interface{} {
 		"comma64":      func(a int64) string { return humanize.Comma(a) },
 		"commaf":       func(a float64) string { return humanize.FormatFloat("#,###.##", a) },
 		"endsWith":     func(a string, b string) bool { return strings.HasSuffix(a, b) },
-		"html":         func(html string) template.HTML { return helpers.RenderHTMLAndBBCode(html) },
 		"htmlEscape":   func(text string) string { return html.EscapeString(text) },
 		"https":        func(link string) string { return strings.Replace(link, "http://", "https://", 1) },
 		"inc":          func(i int) int { return i + 1 },

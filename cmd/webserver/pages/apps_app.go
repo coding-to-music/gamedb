@@ -466,10 +466,6 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			log.Err(err, r, id)
 			return
 		}
-
-		for k, v := range articles {
-			articles[k].Contents = helpers.BBCodeCompiler.Compile(v.Contents)
-		}
 	}()
 
 	// Get total
