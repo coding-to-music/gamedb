@@ -42,7 +42,8 @@ func SearchPlayers(limit int, offset int, search string, sorters []elastic.Sorte
 		Index(IndexPlayers).
 		From(offset).
 		Size(limit).
-		TrackTotalHits(true)
+		TrackTotalHits(true).
+		Highlight(elastic.NewHighlight().Field("name").PreTags("<mark>").PostTags("</mark>"))
 
 	if search != "" {
 
@@ -88,7 +89,7 @@ func DeleteAndRebuildPlayersIndex() {
 		"settings": settings,
 		"mappings": map[string]interface{}{
 			"properties": map[string]interface{}{
-				"id":           fieldTypeLong,
+				"id":           fieldTypeKeyword,
 				"name":         fieldTypeText,
 				"name_recent":  fieldTypeText,
 				"url":          fieldTypeText,

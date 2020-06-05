@@ -80,7 +80,8 @@ func SearchApps(limit int, offset int, search string, sorters []elastic.Sorter, 
 		Index(IndexApps).
 		From(offset).
 		Size(limit).
-		TrackTotalHits(true)
+		TrackTotalHits(true).
+		Highlight(elastic.NewHighlight().Field("name").PreTags("<mark>").PostTags("</mark>"))
 
 	if aggregation {
 		searchService.Aggregation("type", elastic.NewTermsAggregation().Field("type").Size(10).OrderByCountDesc())
@@ -153,10 +154,14 @@ func appsSearchQuery(search string) *elastic.BoolQuery {
 
 	return elastic.NewBoolQuery().
 		Must(
-			elastic.NewMatchQuery("name", search).Fuzziness("1"),
+			elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
+				elastic.NewTermQuery("id", search).Boost(10),
+				elastic.NewMatchQuery("name", search).Fuzziness("1"),
+				elastic.NewMatchQuery("aliases", search).Fuzziness("1"),
+			),
 		).
 		Should(
-			elastic.NewTermQuery("name", search).Boost(10), // Boost if exact match
+			elastic.NewTermQuery("name", search).Boost(10),
 			elastic.NewFunctionScoreQuery().AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("players").Factor(0.0008)),
 		)
 }
@@ -182,7 +187,7 @@ func DeleteAndRebuildAppsIndex() {
 		"settings": settings,
 		"mappings": map[string]interface{}{
 			"properties": map[string]interface{}{
-				"id":         fieldTypeInteger,
+				"id":         fieldTypeKeyword,
 				"name":       fieldTypeText,
 				"aliases":    fieldTypeText,
 				"players":    fieldTypeInteger,
@@ -190,11 +195,11 @@ func DeleteAndRebuildAppsIndex() {
 				"followers":  fieldTypeInteger,
 				"score":      fieldTypeHalfFloat,
 				"prices":     map[string]interface{}{"type": "object", "properties": priceProperties},
-				"tags":       fieldTypeInteger,
-				"genres":     fieldTypeInteger,
-				"categories": fieldTypeInteger,
-				"publishers": fieldTypeInteger,
-				"developers": fieldTypeInteger,
+				"tags":       fieldTypeKeyword,
+				"genres":     fieldTypeKeyword,
+				"categories": fieldTypeKeyword,
+				"publishers": fieldTypeKeyword,
+				"developers": fieldTypeKeyword,
 				"type":       fieldTypeKeyword,
 				"platforms":  fieldTypeKeyword,
 			},

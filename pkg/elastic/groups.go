@@ -35,14 +35,15 @@ func SearchGroups(offset int, sorters []elastic.Sorter, search string, errors st
 	if search != "" {
 
 		query.Must(elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
+			elastic.NewTermQuery("id", search).Boost(3),
 			elastic.NewMatchQuery("name", search).Fuzziness("1").Boost(3),
 			elastic.NewMatchQuery("abbreviation", search).Fuzziness("1").Boost(2),
 			elastic.NewMatchQuery("url", search).Fuzziness("1").Boost(2),
 		))
 
 		query.Should(
+			elastic.NewTermQuery("name", search).Boost(10),
 			elastic.NewFunctionScoreQuery().AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("members").Factor(0.003)),
-			elastic.NewMatchPhraseQuery("name", search).Boost(5), // Boost if exact match
 		)
 	}
 
@@ -57,7 +58,8 @@ func SearchGroups(offset int, sorters []elastic.Sorter, search string, errors st
 		TrackTotalHits(true).
 		Highlight(elastic.NewHighlight().Field("name").PreTags("<mark>").PostTags("</mark>")).
 		SortBy(sorters...).
-		Query(query)
+		Query(query).
+		SearchType("dfs_query_then_fetch") // Improves acuracy with multiple shards
 
 	searchResult, err := searchService.Do(ctx)
 	if err != nil {
