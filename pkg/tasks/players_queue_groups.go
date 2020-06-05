@@ -42,7 +42,7 @@ func (c PlayersQueueGroups) work() (err error) {
 
 		for _, player := range players {
 
-			err = queue.ProducePlayerGroup(player.ID, player.PersonaName, player.Avatar)
+			err = queue.ProducePlayerGroup(player.ID, player.PersonaName, player.Avatar, true)
 			if err != nil {
 				return err
 			}

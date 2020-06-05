@@ -21,9 +21,9 @@ import (
 )
 
 type PlayerMessage struct {
-	ID         int64   `json:"id"`
-	SkipGroups bool    `json:"dont_queue_groups"`
-	UserAgent  *string `json:"user_agent"`
+	ID               int64   `json:"id"`
+	SkipPlayerGroups bool    `json:"dont_queue_groups"`
+	UserAgent        *string `json:"user_agent"`
 }
 
 func playerHandler(messages []*rabbit.Message) {
@@ -261,7 +261,7 @@ func playerHandler(messages []*rabbit.Message) {
 				PlayerID:          player.ID,
 				PlayerPersonaName: player.PersonaName,
 				PlayerAvatar:      player.Avatar,
-				SkipGroups:        payload.SkipGroups,
+				SkipPlayerGroups:  payload.SkipPlayerGroups,
 				UserAgent:         payload.UserAgent,
 			},
 		}

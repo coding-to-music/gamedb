@@ -14,7 +14,8 @@ type PlayersGroupsMessage struct {
 	PlayerID          int64   `json:"player_id"`
 	PlayerPersonaName string  `json:"player_persona_name"`
 	PlayerAvatar      string  `json:"player_avatar"`
-	SkipGroups        bool    `json:"skip_groups"`
+	SkipPlayerGroups  bool    `json:"skip_groups"`
+	SkipGroupUpdate   bool    `json:"skip_group"`
 	UserAgent         *string `json:"user_agent"`
 }
 
@@ -31,7 +32,7 @@ func playersGroupsHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		if payload.SkipGroups {
+		if payload.SkipPlayerGroups {
 			message.Ack(false)
 			continue
 		}
@@ -124,11 +125,13 @@ func playersGroupsHandler(messages []*rabbit.Message) {
 		}
 
 		// Queue groups for update
-		for id := range newGroupsMap {
-			err = ProduceGroup(GroupMessage{ID: id, UserAgent: payload.UserAgent})
-			err = helpers.IgnoreErrors(err, memcache.ErrInQueue, ErrIsBot)
-			if err != nil {
-				log.Err(err)
+		if !payload.SkipGroupUpdate {
+			for id := range newGroupsMap {
+				err = ProduceGroup(GroupMessage{ID: id, UserAgent: payload.UserAgent})
+				err = helpers.IgnoreErrors(err, memcache.ErrInQueue, ErrIsBot)
+				if err != nil {
+					log.Err(err)
+				}
 			}
 		}
 

@@ -534,12 +534,14 @@ func ProduceTest(id int) (err error) {
 	return produce(QueueTest, TestMessage{ID: id})
 }
 
-func ProducePlayerGroup(playerID int64, playerPersonaName string, playerAvatar string) (err error) {
+func ProducePlayerGroup(playerID int64, playerPersonaName string, playerAvatar string, skipGroupUpdate bool) (err error) {
 
 	return produce(QueuePlayersGroups, PlayersGroupsMessage{
 		PlayerID:          playerID,
 		PlayerPersonaName: playerPersonaName,
 		PlayerAvatar:      playerAvatar,
+		SkipGroupUpdate:   skipGroupUpdate,
+		SkipPlayerGroups:  false,
 	})
 }
 
