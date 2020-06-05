@@ -3,6 +3,7 @@ package elastic
 import (
 	"encoding/json"
 
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/olivere/elastic/v7"
 )
@@ -18,6 +19,10 @@ type Group struct {
 	Trend        int64   `json:"trend"`
 	Error        bool    `json:"error"`
 	Score        float64 `json:"-"`
+}
+
+func (group Group) GetAbbr() string {
+	return helpers.GetGroupAbbreviation(group.Abbreviation)
 }
 
 func IndexGroup(group Group) error {

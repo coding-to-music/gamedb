@@ -55,9 +55,21 @@ func GetGroupLink(typex string, url string, ) string {
 }
 
 func GetGroupName(name string, id string) string {
+
+	name = RegexFilterEmptyCharacters.ReplaceAllString(name, "")
+	name = strings.TrimSpace(name)
+
 	if name == "" {
 		return "Group " + id
 	}
+	return name
+}
+
+func GetGroupAbbreviation(name string) string {
+
+	name = RegexFilterEmptyCharacters.ReplaceAllString(name, "")
+	name = strings.TrimSpace(name)
+
 	return name
 }
 

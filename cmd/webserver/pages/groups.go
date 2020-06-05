@@ -95,7 +95,7 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			group.ID,                         // 0
 			group.Name,                       // 1
 			link,                             // 2
-			group.Abbreviation,               // 3
+			group.GetAbbr(),                  // 3
 			headline,                         // 4
 			helpers.GetGroupIcon(group.Icon), // 5
 			group.Members,                    // 6

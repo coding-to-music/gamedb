@@ -13,8 +13,8 @@
 
             <h1 class="text-truncate" title="{{ .Group.Name }}">
                 <i class="fas fa-users"></i> {{ .Group.GetName }}
-                {{ if ne .Group.Abbr "" }}
-                    <small>({{ .Group.Abbr }})</small>
+                {{ if ne .Group.GetAbbr "" }}
+                    <small>({{ .Group.GetAbbr }})</small>
                 {{ end }}
             </h1>
 
@@ -44,7 +44,7 @@
 
                 <div class="mb-4">{{ .Summary }}</div>
 
-                <h5>Game DB players in {{ .Group.Abbr }}</h5>
+                <h5>Game DB players in {{ .Group.GetAbbr }}</h5>
                 <table class="table table-hover table-striped table-counts mb-0" data-path="/groups/{{ .Group.ID }}/table.json" id="players" data-row-type="players" data-ordering="false">
                     <thead class="thead-light">
                     <tr>

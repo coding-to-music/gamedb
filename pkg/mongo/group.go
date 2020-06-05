@@ -112,6 +112,10 @@ func (group Group) GetName() string {
 	return helpers.GetGroupName(group.Name, group.ID)
 }
 
+func (group Group) GetAbbr() string {
+	return helpers.GetGroupAbbreviation(group.Abbr)
+}
+
 func (group Group) GetIcon() string {
 	return helpers.GetGroupIcon(group.Icon)
 }
