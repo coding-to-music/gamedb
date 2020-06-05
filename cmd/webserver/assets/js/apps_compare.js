@@ -77,18 +77,17 @@ if ($appsComparePage.length > 0) {
             ]
         };
 
+        const $ids = $('#ids');
+        const $search = $('#search');
+
         $('#search-table').gdbTable({
             tableOptions: options,
-            searchFields: [
-                $('#search'),
-            ],
+            searchFields: [$ids, $search],
         });
 
         $('#apps-table').gdbTable({
             tableOptions: options,
-            searchFields: [
-                $('#ids'),
-            ],
+            searchFields: [$ids],
         });
     }
 
