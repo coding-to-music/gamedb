@@ -61,7 +61,7 @@ func LogSteamError(err error, interfaces ...interface{}) {
 			"something went wrong",
 			"net/http: TLS handshake timeout",
 			"unexpected end of JSON input",
-			"unexpected EOF",
+			"EOF",
 			"write: connection reset by peer",
 		}
 
