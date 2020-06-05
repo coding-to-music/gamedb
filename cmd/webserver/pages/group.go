@@ -47,6 +47,11 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 
 		if err == mongo.ErrNoDocuments {
+
+			ua := r.UserAgent()
+			err = queue.ProduceGroup(queue.GroupMessage{ID: id, UserAgent: &ua})
+			log.Err(err)
+
 			returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Sorry but we can not find this group"})
 			return
 		}
