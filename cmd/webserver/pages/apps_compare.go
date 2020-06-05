@@ -288,7 +288,7 @@ func appsComparePlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 				if id == v.Tags["app_id"] {
 					ret = append(ret, influx.HighChartsJSONMulti{
 						Key:   v.Tags["app_id"],
-						Value: influx.InfluxResponseToHighCharts(v, false),
+						Value: influx.InfluxResponseToHighCharts(v),
 					})
 				}
 			}
@@ -328,7 +328,7 @@ func appsComparePlayers2AjaxHandler(w http.ResponseWriter, r *http.Request) {
 				if id == v.Tags["app_id"] {
 					ret = append(ret, influx.HighChartsJSONMulti{
 						Key:   v.Tags["app_id"],
-						Value: influx.InfluxResponseToHighCharts(v, false),
+						Value: influx.InfluxResponseToHighCharts(v),
 					})
 				}
 			}
@@ -368,7 +368,7 @@ func appsCompareScoresHandler(w http.ResponseWriter, r *http.Request) {
 				if id == v.Tags["app_id"] {
 					ret = append(ret, influx.HighChartsJSONMulti{
 						Key:   v.Tags["app_id"],
-						Value: influx.InfluxResponseToHighCharts(v, false),
+						Value: influx.InfluxResponseToHighCharts(v),
 					})
 				}
 			}
@@ -418,7 +418,7 @@ func appsCompareGroupsHandler(w http.ResponseWriter, r *http.Request) {
 				if id == v.Tags["group_id"] {
 					ret = append(ret, influx.HighChartsJSONMulti{
 						Key:   v.Tags["group_id"],
-						Value: influx.InfluxResponseToHighCharts(v, false),
+						Value: influx.InfluxResponseToHighCharts(v),
 					})
 				}
 			}

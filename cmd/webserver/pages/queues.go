@@ -66,7 +66,7 @@ func queuesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		ret := map[string]influx.HighChartsJSON{}
 		if len(resp.Results) > 0 {
 			for _, v := range resp.Results[0].Series {
-				ret[strings.Replace(v.Tags["queue"], "GameDB_Go_", "", 1)] = influx.InfluxResponseToHighCharts(v, false)
+				ret[strings.Replace(v.Tags["queue"], "GameDB_Go_", "", 1)] = influx.InfluxResponseToHighCharts(v)
 			}
 		}
 

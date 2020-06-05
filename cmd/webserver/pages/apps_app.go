@@ -835,7 +835,7 @@ func appPlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
 
-		hc = influx.InfluxResponseToHighCharts(resp.Results[0].Series[0], false)
+		hc = influx.InfluxResponseToHighCharts(resp.Results[0].Series[0])
 	}
 
 	returnJSON(w, r, hc)
@@ -871,7 +871,7 @@ func appPlayers2AjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
 
-		hc = influx.InfluxResponseToHighCharts(resp.Results[0].Series[0], false)
+		hc = influx.InfluxResponseToHighCharts(resp.Results[0].Series[0])
 	}
 
 	returnJSON(w, r, hc)
@@ -1040,7 +1040,7 @@ func appReviewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		hc = influx.InfluxResponseToHighCharts(resp.Results[0].Series[0], true)
+		hc = influx.InfluxResponseToHighCharts(resp.Results[0].Series[0])
 	}
 
 	returnJSON(w, r, hc)
