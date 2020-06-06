@@ -76,7 +76,7 @@ func appReviewsHandler(messages []*rabbit.Message) {
 			} else {
 				player.ID = int64(v.Author.SteamID)
 
-				err = ProducePlayer(PlayerMessage{ID: int64(v.Author.SteamID)})
+				err = ProducePlayer(PlayerMessage{ID: int64(v.Author.SteamID), SkipGroupUpdate: true})
 				err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 				log.Err(err)
 			}
