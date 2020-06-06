@@ -30,6 +30,7 @@ const (
 	QueueAppsDLC                rabbit.QueueName = "GDB_Apps.DLC"
 	QueueAppsSameowners         rabbit.QueueName = "GDB_Apps.Sameowners"
 	QueueAppsNews               rabbit.QueueName = "GDB_Apps.News"
+	QueueAppsFindGroup          rabbit.QueueName = "GDB_Apps.FindGroup"
 	QueueAppsReviews            rabbit.QueueName = "GDB_Apps.Reviews"
 	QueueAppsTwitch             rabbit.QueueName = "GDB_Apps.Twitch"
 	QueueAppsMorelike           rabbit.QueueName = "GDB_Apps.Morelike"
@@ -88,6 +89,7 @@ var (
 		{name: QueueAppsYoutube},
 		{name: QueueAppsInflux},
 		{name: QueueAppsNews},
+		{name: QueueAppsFindGroup},
 		{name: QueueAppsItems},
 		{name: QueueAppsAchievements},
 		{name: QueueAppsAchievementsSearch},
@@ -124,6 +126,7 @@ var (
 		{name: QueueAppsDLC, consumer: appDLCHandler},
 		{name: QueueAppsYoutube, consumer: appYoutubeHandler},
 		{name: QueueAppsNews, consumer: appNewsHandler},
+		{name: QueueAppsFindGroup, consumer: appsFindGroupHandler},
 		{name: QueueAppsAchievements, consumer: appAchievementsHandler},
 		{name: QueueAppsAchievementsSearch, consumer: appsAchievementsSearchHandler},
 		{name: QueueAppsArticlesSearch, consumer: appsArticlesSearchHandler},
