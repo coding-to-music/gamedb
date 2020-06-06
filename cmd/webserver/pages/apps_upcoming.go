@@ -108,7 +108,7 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	//
-	var response = datatable.NewDataTablesResponse(r, query, count, filtered)
+	var response = datatable.NewDataTablesResponse(r, query, count, filtered, nil)
 	for _, app := range apps {
 
 		response.AddRow([]interface{}{

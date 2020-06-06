@@ -381,7 +381,7 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	var response = datatable.NewDataTablesResponse(r, query, count, filtered)
+	var response = datatable.NewDataTablesResponse(r, query, count, filtered, nil)
 	for _, offer := range offers {
 
 		response.AddRow([]interface{}{

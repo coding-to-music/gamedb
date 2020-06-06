@@ -270,7 +270,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	var response = datatable.NewDataTablesResponse(r, query, total, filtered)
+	var response = datatable.NewDataTablesResponse(r, query, total, filtered, nil)
 	for k, v := range players {
 
 		var index = query.GetOffset() + k + 1

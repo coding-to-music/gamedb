@@ -70,7 +70,7 @@ func achievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	//
-	var response = datatable.NewDataTablesResponse(r, query, count, filtered)
+	var response = datatable.NewDataTablesResponse(r, query, count, filtered, nil)
 	for _, achievement := range achievements {
 
 		path := helpers.GetAppPath(achievement.AppID, achievement.AppName) + "#achievements"

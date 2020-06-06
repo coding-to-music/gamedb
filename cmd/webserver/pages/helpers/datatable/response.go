@@ -7,13 +7,14 @@ import (
 	"github.com/gamedb/gamedb/pkg/sql"
 )
 
-func NewDataTablesResponse(r *http.Request, query DataTablesQuery, count int64, countFiltered int64) (ret *DataTablesResponse) {
+func NewDataTablesResponse(r *http.Request, query DataTablesQuery, count int64, countFiltered int64, aggregations map[string]map[string]int64) (ret *DataTablesResponse) {
 
 	ret = &DataTablesResponse{}
 	ret.Draw = query.Draw
 	ret.Data = make([][]interface{}, 0)
 	ret.RecordsTotal = count
 	ret.RecordsFiltered = countFiltered
+	ret.Aggregations = aggregations
 
 	if query.limited {
 
@@ -37,11 +38,12 @@ func NewDataTablesResponse(r *http.Request, query DataTablesQuery, count int64, 
 
 // DataTablesResponse
 type DataTablesResponse struct {
-	Draw            string          `json:"draw"`
-	RecordsTotal    int64           `json:"recordsTotal,string"`
-	RecordsFiltered int64           `json:"recordsFiltered,string"`
-	LevelLimited    int             `json:"limited"` // 0 - Not limited, 1 - logged in, 2 - guest
-	Data            [][]interface{} `json:"data"`
+	Draw            string                      `json:"draw"`
+	RecordsTotal    int64                       `json:"recordsTotal,string"`
+	RecordsFiltered int64                       `json:"recordsFiltered,string"`
+	LevelLimited    int                         `json:"limited"` // 0 - Not limited, 1 - logged in, 2 - guest
+	Data            [][]interface{}             `json:"data"`
+	Aggregations    map[string]map[string]int64 `json:"aggregations"`
 }
 
 func (t *DataTablesResponse) AddRow(row []interface{}) {

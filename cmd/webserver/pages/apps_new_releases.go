@@ -121,7 +121,7 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	//
-	var response = datatable.NewDataTablesResponse(r, query, count, filtered)
+	var response = datatable.NewDataTablesResponse(r, query, count, filtered, nil)
 	for _, app := range apps {
 
 		var release = helpers.GetAppReleaseDateNice(app.ReleaseDateOriginal, app.ReleaseDateUnix, app.ReleaseDate)

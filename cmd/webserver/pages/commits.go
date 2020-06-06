@@ -116,7 +116,7 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	//
 	var deployed bool
-	var response = datatable.NewDataTablesResponse(r, query, int64(total), int64(total))
+	var response = datatable.NewDataTablesResponse(r, query, int64(total), int64(total), nil)
 	for _, commit := range commits {
 
 		if commit.GetSHA() == config.Config.CommitHash.Get() {

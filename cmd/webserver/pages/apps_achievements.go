@@ -99,7 +99,7 @@ func appsAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	//
 	var code = session.GetProductCC(r)
-	var response = datatable.NewDataTablesResponse(r, query, count, filtered)
+	var response = datatable.NewDataTablesResponse(r, query, count, filtered, nil)
 	for _, app := range apps {
 
 		for k, v := range app.Achievements {

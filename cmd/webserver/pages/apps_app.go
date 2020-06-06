@@ -488,7 +488,7 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	//
-	var response = datatable.NewDataTablesResponse(r, query, int64(total), int64(total))
+	var response = datatable.NewDataTablesResponse(r, query, int64(total), int64(total), nil)
 	for _, article := range articles {
 
 		var id = strconv.FormatInt(article.ID, 10)
@@ -587,7 +587,7 @@ func appAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	response := datatable.NewDataTablesResponse(r, query, total, total)
+	response := datatable.NewDataTablesResponse(r, query, total, total, nil)
 	for _, achievement := range achievements {
 
 		_, achieved := achievedMap[achievement.Key]
@@ -679,7 +679,7 @@ func appDLCAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	response := datatable.NewDataTablesResponse(r, query, total, filtered)
+	response := datatable.NewDataTablesResponse(r, query, total, filtered, nil)
 	for _, dlc := range dlcs {
 
 		response.AddRow([]interface{}{
@@ -762,7 +762,7 @@ func appItemsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	var response = datatable.NewDataTablesResponse(r, query, total, filtered)
+	var response = datatable.NewDataTablesResponse(r, query, total, filtered, nil)
 	for _, item := range items {
 
 		var image1 = item.Image(54, true)
@@ -965,7 +965,7 @@ func appTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	response := datatable.NewDataTablesResponse(r, query, total, total)
+	response := datatable.NewDataTablesResponse(r, query, total, total, nil)
 	for _, v := range playersAppRows {
 
 		response.AddRow([]interface{}{

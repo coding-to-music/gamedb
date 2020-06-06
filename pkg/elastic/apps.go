@@ -3,6 +3,7 @@ package elastic
 import (
 	"encoding/json"
 	"strconv"
+	"strings"
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -69,7 +70,7 @@ func IndexApp(app App) error {
 	return indexDocument(IndexApps, strconv.Itoa(app.ID), app)
 }
 
-func SearchApps(limit int, offset int, search string, sorters []elastic.Sorter, aggregation bool) (apps []App, total int64, err error) {
+func SearchApps(limit int, offset int, search string, sorters []elastic.Sorter) (apps []App, total int64, err error) {
 
 	client, ctx, err := GetElastic()
 	if err != nil {
@@ -81,19 +82,10 @@ func SearchApps(limit int, offset int, search string, sorters []elastic.Sorter, 
 		From(offset).
 		Size(limit).
 		TrackTotalHits(true).
-		Highlight(elastic.NewHighlight().Field("name").PreTags("<mark>").PostTags("</mark>"))
-
-	if aggregation {
-		searchService.Aggregation("type", elastic.NewTermsAggregation().Field("type").Size(10).OrderByCountDesc())
-	}
-
-	if search != "" {
-		searchService.Query(appsSearchQuery(search))
-	}
-
-	if len(sorters) > 0 {
-		searchService.SortBy(sorters...)
-	}
+		Highlight(elastic.NewHighlight().Field("name").PreTags("<mark>").PostTags("</mark>")).
+		Aggregation("type", elastic.NewTermsAggregation().Field("type").Size(10).OrderByCountDesc()).
+		SortBy(sorters...).
+		Query(appsSearchQuery(search))
 
 	searchResult, err := searchService.Do(ctx)
 	if err != nil {
@@ -150,7 +142,11 @@ func SearchAppsMini(limit int, search string) (apps []App, total int64, err erro
 	return apps, searchResult.TotalHits(), err
 }
 
-func appsSearchQuery(search string) *elastic.BoolQuery {
+func appsSearchQuery(search string) (ret *elastic.BoolQuery) {
+
+	if strings.TrimSpace(search) == "" {
+		return ret
+	}
 
 	return elastic.NewBoolQuery().
 		Must(

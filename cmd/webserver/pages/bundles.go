@@ -86,7 +86,7 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	var response = datatable.NewDataTablesResponse(r, query, int64(count), int64(count))
+	var response = datatable.NewDataTablesResponse(r, query, int64(count), int64(count), nil)
 	for _, v := range bundles {
 		response.AddRow(v.OutputForJSON())
 	}

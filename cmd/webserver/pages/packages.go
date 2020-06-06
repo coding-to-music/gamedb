@@ -158,7 +158,7 @@ func packagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	var response = datatable.NewDataTablesResponse(r, query, count, filtered)
+	var response = datatable.NewDataTablesResponse(r, query, count, filtered, nil)
 	for _, v := range packages {
 		response.AddRow(v.OutputForJSON(code))
 	}

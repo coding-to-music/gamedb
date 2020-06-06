@@ -427,7 +427,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	var response = datatable.NewDataTablesResponse(r, query, count, recordsFiltered)
+	var response = datatable.NewDataTablesResponse(r, query, count, recordsFiltered, nil)
 	for k, app := range apps {
 
 		var formattedReviewScore = helpers.RoundFloatTo2DP(app.ReviewsScore)

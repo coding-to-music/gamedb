@@ -544,7 +544,7 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	var response = datatable.NewDataTablesResponse(r, query, total, totalFiltered)
+	var response = datatable.NewDataTablesResponse(r, query, total, totalFiltered, nil)
 	for _, pa := range playerApps {
 		response.AddRow([]interface{}{
 			pa.AppID,
@@ -612,7 +612,7 @@ func playerRecentAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	var response = datatable.NewDataTablesResponse(r, query, total, total)
+	var response = datatable.NewDataTablesResponse(r, query, total, total, nil)
 	for _, app := range apps {
 		response.AddRow([]interface{}{
 			app.AppID,                               // 0
@@ -670,7 +670,7 @@ func playerAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	var response = datatable.NewDataTablesResponse(r, query, count, count)
+	var response = datatable.NewDataTablesResponse(r, query, count, count, nil)
 	for _, pa := range playerAchievements {
 		response.AddRow([]interface{}{
 			helpers.GetAppPath(pa.AppID, pa.AppName), // 0
@@ -742,7 +742,7 @@ func playerAchievementsSummaryAjaxHandler(w http.ResponseWriter, r *http.Request
 	// Wait
 	wg.Wait()
 
-	var response = datatable.NewDataTablesResponse(r, query, count, count)
+	var response = datatable.NewDataTablesResponse(r, query, count, count, nil)
 	for _, pa := range playerApps {
 		response.AddRow([]interface{}{
 			helpers.GetAppPath(pa.AppID, pa.AppName), // 0
@@ -809,7 +809,7 @@ func playerFriendsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	var response = datatable.NewDataTablesResponse(r, query, count, count)
+	var response = datatable.NewDataTablesResponse(r, query, count, count, nil)
 	for _, friend := range friends {
 		response.AddRow([]interface{}{
 			strconv.FormatInt(friend.PlayerID, 10), // 0
@@ -906,7 +906,7 @@ func playerBadgesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
-	var response = datatable.NewDataTablesResponse(r, query, total, filtered)
+	var response = datatable.NewDataTablesResponse(r, query, total, filtered, nil)
 	for _, badge := range badges {
 
 		var completionTime = badge.BadgeCompletionTime.Format(helpers.DateSQL)
@@ -990,7 +990,7 @@ func playerWishlistAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	var code = sessionHelpers.GetProductCC(r)
-	var response = datatable.NewDataTablesResponse(r, query, total, total)
+	var response = datatable.NewDataTablesResponse(r, query, total, total, nil)
 	for _, app := range wishlistApps {
 
 		var priceFormatted string
@@ -1072,7 +1072,7 @@ func playerGroupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
-	var response = datatable.NewDataTablesResponse(r, query, total, total)
+	var response = datatable.NewDataTablesResponse(r, query, total, total, nil)
 	for _, group := range groups {
 		response.AddRow([]interface{}{
 			group.GroupID,                          // 0

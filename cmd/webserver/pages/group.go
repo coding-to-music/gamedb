@@ -191,7 +191,7 @@ func groupTableAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
-	var response = datatable.NewDataTablesResponse(r, query, total, total)
+	var response = datatable.NewDataTablesResponse(r, query, total, total, nil)
 	for _, player := range players {
 		response.AddRow([]interface{}{
 			player.ID,              // 0

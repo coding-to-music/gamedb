@@ -108,7 +108,7 @@ func changesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
-	var response = datatable.NewDataTablesResponse(r, query, count, count)
+	var response = datatable.NewDataTablesResponse(r, query, count, count, nil)
 	for _, v := range changes {
 		response.AddRow(v.OutputForJSON(appMap, packageMap))
 	}

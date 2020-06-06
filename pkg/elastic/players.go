@@ -31,11 +31,11 @@ func IndexPlayer(player Player) error {
 	return indexDocument(IndexPlayers, strconv.FormatInt(player.ID, 10), player)
 }
 
-func SearchPlayers(limit int, offset int, search string, sorters []elastic.Sorter) (players []Player, total int64, err error) {
+func SearchPlayers(limit int, offset int, search string, sorters []elastic.Sorter) (players []Player, aggregations map[string]map[string]int64, total int64, err error) {
 
 	client, ctx, err := GetElastic()
 	if err != nil {
-		return players, 0, err
+		return players, aggregations, 0, err
 	}
 
 	searchService := client.Search().
@@ -43,7 +43,10 @@ func SearchPlayers(limit int, offset int, search string, sorters []elastic.Sorte
 		From(offset).
 		Size(limit).
 		TrackTotalHits(true).
-		Highlight(elastic.NewHighlight().Field("name").PreTags("<mark>").PostTags("</mark>"))
+		Highlight(elastic.NewHighlight().Field("name").PreTags("<mark>").PostTags("</mark>")).
+		Aggregation("country", elastic.NewTermsAggregation().Field("type").Size(10).OrderByCountDesc().
+			SubAggregation("state", elastic.NewTermsAggregation().Field("state_code").Size(10).OrderByCountDesc()),
+		)
 
 	if search != "" {
 
@@ -65,7 +68,18 @@ func SearchPlayers(limit int, offset int, search string, sorters []elastic.Sorte
 
 	searchResult, err := searchService.Do(ctx)
 	if err != nil {
-		return players, 0, err
+		return players, aggregations, 0, err
+	}
+
+	aggregations = make(map[string]map[string]int64, len(searchResult.Aggregations))
+	for k := range searchResult.Aggregations {
+		a, ok := searchResult.Aggregations.Terms(k)
+		if ok {
+			aggregations[k] = make(map[string]int64, len(a.Buckets))
+			for _, v := range a.Buckets {
+				aggregations[k][*v.KeyAsString] = v.DocCount
+			}
+		}
 	}
 
 	for _, hit := range searchResult.Hits.Hits {
@@ -79,7 +93,7 @@ func SearchPlayers(limit int, offset int, search string, sorters []elastic.Sorte
 		players = append(players, player)
 	}
 
-	return players, searchResult.TotalHits(), err
+	return players, aggregations, searchResult.TotalHits(), err
 }
 
 //noinspection GoUnusedExportedFunction

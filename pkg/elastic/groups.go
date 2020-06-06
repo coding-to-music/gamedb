@@ -29,11 +29,11 @@ func IndexGroup(group Group) error {
 	return indexDocument(IndexGroups, group.ID, group)
 }
 
-func SearchGroups(offset int, sorters []elastic.Sorter, search string, errors string) (groups []Group, total int64, err error) {
+func SearchGroups(offset int, sorters []elastic.Sorter, search string, errors string) (groups []Group, aggregations map[string]map[string]int64, total int64, err error) {
 
 	client, ctx, err := GetElastic()
 	if err != nil {
-		return groups, 0, err
+		return groups, aggregations, 0, err
 	}
 
 	var query = elastic.NewBoolQuery()
@@ -64,11 +64,23 @@ func SearchGroups(offset int, sorters []elastic.Sorter, search string, errors st
 		Highlight(elastic.NewHighlight().Field("name").PreTags("<mark>").PostTags("</mark>")).
 		SortBy(sorters...).
 		Query(query).
-		SearchType("dfs_query_then_fetch") // Improves acuracy with multiple shards
+		SearchType("dfs_query_then_fetch"). // Improves acuracy with multiple shards
+		Aggregation("error", elastic.NewTermsAggregation().Field("error").Size(10).OrderByCountDesc())
 
 	searchResult, err := searchService.Do(ctx)
 	if err != nil {
-		return groups, 0, err
+		return groups, aggregations, 0, err
+	}
+
+	aggregations = make(map[string]map[string]int64, len(searchResult.Aggregations))
+	for k := range searchResult.Aggregations {
+		a, ok := searchResult.Aggregations.Terms(k)
+		if ok {
+			aggregations[k] = make(map[string]int64, len(a.Buckets))
+			for _, v := range a.Buckets {
+				aggregations[k][*v.KeyAsString] = v.DocCount
+			}
+		}
 	}
 
 	for _, hit := range searchResult.Hits.Hits {
@@ -93,7 +105,7 @@ func SearchGroups(offset int, sorters []elastic.Sorter, search string, errors st
 		groups = append(groups, group)
 	}
 
-	return groups, searchResult.TotalHits(), nil
+	return groups, aggregations, searchResult.TotalHits(), nil
 }
 
 //noinspection GoUnusedExportedFunction

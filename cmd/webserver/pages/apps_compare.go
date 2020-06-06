@@ -160,7 +160,7 @@ func compareSearchAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	search := query.GetSearchString("search")
 	code := session.GetProductCC(r)
 	ids := helpers.StringToSlice(query.GetSearchString("ids"), ",")
-	response := datatable.NewDataTablesResponse(r, query, int64(limit), int64(limit))
+	response := datatable.NewDataTablesResponse(r, query, int64(limit), int64(limit), nil)
 
 	if search != "" {
 
@@ -210,7 +210,7 @@ func compareAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var appMap = map[int][]interface{}{}
 
-	var response = datatable.NewDataTablesResponse(r, query, int64(len(apps)), int64(len(apps)))
+	var response = datatable.NewDataTablesResponse(r, query, int64(len(apps)), int64(len(apps)), nil)
 	for k, app := range apps {
 
 		var price = app.GetPrices().Get(code).GetFinal()

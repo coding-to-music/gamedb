@@ -45,6 +45,7 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Get groups
 	var groups []elasticHelpers.Group
 	var filtered int64
+	var aggregations map[string]map[string]int64
 	wg.Add(1)
 	go func() {
 
@@ -59,7 +60,7 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var search = query.GetSearchString("search")
 		var errors = query.GetSearchString("filter")
 
-		groups, filtered, err = elasticHelpers.SearchGroups(query.GetOffset(), sorters, search, errors)
+		groups, aggregations, filtered, err = elasticHelpers.SearchGroups(query.GetOffset(), sorters, search, errors)
 		if err != nil {
 			log.Err(err, r)
 			return
@@ -82,7 +83,7 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var removeWhiteSpace = regexp.MustCompile(`[\s\p{Braille}]{2,}`)
 
-	var response = datatable.NewDataTablesResponse(r, query, total, filtered)
+	var response = datatable.NewDataTablesResponse(r, query, total, filtered, aggregations)
 	for k, group := range groups {
 
 		var path = helpers.GetGroupPath(group.ID, group.Name)

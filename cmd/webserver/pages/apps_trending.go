@@ -112,7 +112,7 @@ func trendingAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	var code = session.GetProductCC(r)
-	var response = datatable.NewDataTablesResponse(r, query, count, filtered)
+	var response = datatable.NewDataTablesResponse(r, query, count, filtered, nil)
 	for _, app := range apps {
 
 		response.AddRow([]interface{}{
