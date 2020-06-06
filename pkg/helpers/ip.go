@@ -3,6 +3,8 @@ package helpers
 import (
 	"io/ioutil"
 	"strings"
+
+	"github.com/gamedb/gamedb/pkg/log"
 )
 
 func GetIP() string {
@@ -12,6 +14,12 @@ func GetIP() string {
 		if err != nil {
 			continue
 		}
+		//noinspection GoDeferInLoop
+		defer func() {
+			err := resp.Body.Close()
+			log.Err(err)
+		}()
+
 		bytes, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
 			continue

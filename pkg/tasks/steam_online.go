@@ -35,6 +35,10 @@ func (c SteamOnline) work() (err error) {
 	if err != nil {
 		return err
 	}
+	defer func() {
+		err := resp.Body.Close()
+		log.Err(err)
+	}()
 
 	b, err := ioutil.ReadAll(resp.Body)
 	if err != nil {

@@ -6,6 +6,7 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/hetznercloud/hcloud-go/hcloud"
 )
 
@@ -56,7 +57,10 @@ func (h Hetzner) CreateConsumer() (c Consumer, err error) {
 	if err != nil {
 		return c, err
 	}
-	defer fileResponse.Body.Close()
+	defer func() {
+		err := fileResponse.Body.Close()
+		log.Err(err)
+	}()
 
 	b, err := ioutil.ReadAll(fileResponse.Body)
 	if err != nil {

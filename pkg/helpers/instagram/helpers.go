@@ -2,6 +2,7 @@ package instagram
 
 import (
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 )
 
 func UploadInstagram(imageURL string, message string) (err error) {
@@ -15,9 +16,10 @@ func UploadInstagram(imageURL string, message string) (err error) {
 	if err != nil {
 		return err
 	}
-
-	//noinspection GoUnhandledErrorResult
-	defer resp.Body.Close()
+	defer func() {
+		err := resp.Body.Close()
+		log.Err(err)
+	}()
 
 	_, err = ig.UploadPhoto(resp.Body, message, 0, 0)
 	return err

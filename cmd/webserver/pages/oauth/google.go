@@ -24,7 +24,6 @@ func (c googleConnection) getID(r *http.Request, token *oauth2.Token) (string, e
 	if err != nil {
 		return "", oauthError{err, "Invalid token"}
 	}
-
 	defer func() {
 		err := response.Body.Close()
 		log.Err(err, r)

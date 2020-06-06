@@ -189,6 +189,10 @@ func (interfaces *Interfaces) addUndocumented() (err error) {
 				log.Err(err)
 				return
 			}
+			defer func() {
+				err := resp.Body.Close()
+				log.Err(err)
+			}()
 
 			b, err := ioutil.ReadAll(resp.Body)
 			if err != nil {
