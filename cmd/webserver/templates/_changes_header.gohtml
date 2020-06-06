@@ -1,0 +1,29 @@
+{{define "_changes_header"}}
+
+    <div class="card-header">
+
+        <h5 class="float-right mb-0">
+            <span class="badge badge-secondary" id="live-badge">Live</span>
+        </h5>
+
+        <ul class="nav nav-tabs card-header-tabs nav-fill-mobile" role="tablist">
+
+            <li class="nav-item">
+                {{if startsWith .Path "/changes" }}
+                    <span class="nav-link active" role="tab"><i class="fas fa-exchange-alt"></i> Library Changes</span>
+                {{else}}
+                    <a class="nav-link" href="/changes" role="tab"><i class="fas fa-exchange-alt"></i> Library Changes</a>
+                {{end}}
+            </li>
+            <li class="nav-item">
+                {{if startsWith .Path "/price-changes" }}
+                    <span class="nav-link active" role="tab"><i class="fas fa-dollar-sign"></i> Price Changes</span>
+                {{else}}
+                    <a class="nav-link" href="/price-changes" role="tab"><i class="fas fa-dollar-sign"></i> Price Changes</a>
+                {{end}}
+            </li>
+
+        </ul>
+    </div>
+
+{{end}}

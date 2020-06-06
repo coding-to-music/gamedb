@@ -102,6 +102,8 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 		"_header.gohtml",
 		"_footer.gohtml",
 		"_apps_header.gohtml",
+		"_packages_header.gohtml",
+		"_changes_header.gohtml",
 		"_login_header.gohtml",
 		"_flashes.gohtml",
 		"_stats_header.gohtml",

@@ -10,19 +10,7 @@
         {{ template "_flashes" . }}
 
         <div class="card">
-            <div class="card-header">
-
-                <h5 class="float-right mb-0">
-                    <span class="badge badge-secondary" id="live-badge">Live</span>
-                </h5>
-
-                <ul class="nav nav-tabs card-header-tabs" role="tablist">
-                    <li class="nav-item">
-                        <span class="nav-link active" role="tab">Packages</span>
-                    </li>
-                </ul>
-
-            </div>
+            {{ template "_packages_header" . }}
             <div class="card-body">
 
                 <div class="row">
