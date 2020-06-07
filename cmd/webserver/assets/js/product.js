@@ -78,13 +78,19 @@ if ($priceChart.length > 0 && prices) {
                 },
                 type: 'linear',
                 min: 0,
-                allowDecimals: true
+                allowDecimals: true,
             },
             legend: {
-                enabled: false
+                enabled: false,
+                itemStyle: {
+                    color: '#28a745',
+                },
+                itemHiddenStyle: {
+                    color: '#666666',
+                },
             },
             credits: {
-                enabled: false
+                enabled: false,
             },
             series: [
                 {

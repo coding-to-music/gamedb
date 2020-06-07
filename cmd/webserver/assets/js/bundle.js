@@ -51,7 +51,13 @@ if ($bundlePage.length > 0) {
                     reversed: true,
                 },
                 legend: {
-                    enabled: false
+                    enabled: false,
+                    itemStyle: {
+                        color: '#28a745',
+                    },
+                    itemHiddenStyle: {
+                        color: '#666666',
+                    },
                 },
                 credits: {
                     enabled: false

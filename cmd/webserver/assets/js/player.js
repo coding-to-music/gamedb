@@ -580,10 +580,16 @@ if ($playerPage.length > 0) {
                 text: ''
             },
             credits: {
-                enabled: false
+                enabled: false,
             },
             legend: {
-                enabled: true
+                enabled: true,
+                itemStyle: {
+                    color: '#28a745',
+                },
+                itemHiddenStyle: {
+                    color: '#666666',
+                },
             },
             plotOptions: {},
             xAxis: {

@@ -109,10 +109,16 @@ if ($appsComparePage.length > 0) {
                 text: ''
             },
             credits: {
-                enabled: false
+                enabled: false,
             },
             legend: {
-                enabled: true
+                enabled: true,
+                itemStyle: {
+                    color: '#28a745',
+                },
+                itemHiddenStyle: {
+                    color: '#666666',
+                },
             },
             xAxis: {
                 title: {text: ''},
@@ -231,6 +237,12 @@ if ($appsComparePage.length > 0) {
                     },
                     legend: {
                         enabled: true,
+                        itemStyle: {
+                            color: '#28a745',
+                        },
+                        itemHiddenStyle: {
+                            color: '#666666',
+                        },
                     },
                     xAxis: {
                         title: {
@@ -322,7 +334,13 @@ if ($appsComparePage.length > 0) {
                         }
                     },
                     legend: {
-                        enabled: true
+                        enabled: true,
+                        itemStyle: {
+                            color: '#28a745',
+                        },
+                        itemHiddenStyle: {
+                            color: '#666666',
+                        },
                     },
                     tooltip: {
                         formatter: function () {

@@ -138,6 +138,12 @@ function loadGroupChart($page = null) {
                 },
                 legend: {
                     enabled: true,
+                    itemStyle: {
+                        color: '#28a745',
+                    },
+                    itemHiddenStyle: {
+                        color: '#666666',
+                    },
                 },
                 xAxis: {
                     title: {

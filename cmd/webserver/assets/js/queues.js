@@ -60,10 +60,16 @@ if ($('#queues-page').length > 0 || $('#player-missing-page').length > 0) {
                 text: ''
             },
             credits: {
-                enabled: false
+                enabled: false,
             },
             legend: {
-                enabled: false
+                enabled: false,
+                itemStyle: {
+                    color: '#28a745',
+                },
+                itemHiddenStyle: {
+                    color: '#666666',
+                },
             },
             xAxis: {
                 title: {
