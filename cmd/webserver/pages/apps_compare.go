@@ -55,8 +55,10 @@ func appsCompareHandler(w http.ResponseWriter, r *http.Request) {
 			app, err := mongo.GetApp(id)
 			if err != nil {
 				err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
-				log.Err(err, r)
-				return
+				if err != nil {
+					log.Err(err, r)
+				}
+				continue
 			}
 
 			apps = append(apps, app)
