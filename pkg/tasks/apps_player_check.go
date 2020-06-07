@@ -31,7 +31,7 @@ func (c AppsPlayerCheck) work() (err error) {
 		return err
 	}
 
-	if q.Messages > 500 {
+	if q.Messages > 1000 {
 		return nil
 	}
 
