@@ -2,12 +2,12 @@ const $appsComparePage = $('#apps-compare-page');
 
 if ($appsComparePage.length > 0) {
 
-    loadCompareTable()
+    loadCompareSearchTable()
     loadComparePlayersChart();
     loadCompareFollowersChart();
     loadCompareScoreChart();
 
-    function loadCompareTable() {
+    function loadCompareSearchTable() {
 
         const options = {
             "order": [[0, 'asc']],
