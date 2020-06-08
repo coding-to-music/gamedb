@@ -54,6 +54,9 @@ func (friend PlayerFriend) GetAvatar() string {
 }
 
 func (friend PlayerFriend) GetFriendSince() string {
+	if friend.FriendSince.Unix() == 0 {
+		return "-"
+	}
 	return friend.FriendSince.Format(helpers.DateYearTime)
 }
 
