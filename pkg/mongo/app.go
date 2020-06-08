@@ -315,10 +315,10 @@ func (app App) GetFollowers() (ret string) {
 	return humanize.Comma(int64(app.GroupFollowers))
 }
 
-func (app App) GetPlatformImages() (ret template.HTML, err error) {
+func (app App) GetPlatformImages() (ret template.HTML) {
 
 	if len(app.Platforms) == 0 {
-		return "", nil
+		return ""
 	}
 
 	if helpers.SliceHasString(platformWindows, app.Platforms) {
@@ -339,7 +339,7 @@ func (app App) GetPlatformImages() (ret template.HTML, err error) {
 		ret = ret + `<span class="space"></span>`
 	}
 
-	return ret, nil
+	return ret
 }
 
 func (app App) GetMetaImage() string {

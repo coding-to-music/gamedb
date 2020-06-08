@@ -811,16 +811,19 @@ func playerFriendsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var response = datatable.NewDataTablesResponse(r, query, count, count, nil)
 	for _, friend := range friends {
+
+		var id = strconv.FormatInt(friend.FriendID, 10)
+
 		response.AddRow([]interface{}{
-			strconv.FormatInt(friend.PlayerID, 10), // 0
-			friend.GetPath(),                       // 1
-			friend.GetAvatar(),                     // 2
-			friend.GetName(),                       // 3
-			friend.GetLevel(),                      // 4
-			friend.Scanned(),                       // 5
-			friend.Games,                           // 6
-			friend.GetFriendSince(),                // 7
-			friend.CommunityLink(),                 // 8
+			id,                      // 0
+			friend.GetPath(),        // 1
+			friend.GetAvatar(),      // 2
+			friend.GetName(),        // 3
+			friend.GetLevel(),       // 4
+			friend.Scanned(),        // 5
+			friend.Games,            // 6
+			friend.GetFriendSince(), // 7
+			friend.CommunityLink(),  // 8
 		})
 	}
 

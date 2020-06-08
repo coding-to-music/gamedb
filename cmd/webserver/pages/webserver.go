@@ -194,7 +194,7 @@ func getTemplateFuncMap() map[string]interface{} {
 		"htmlEscape":   func(text string) string { return html.EscapeString(text) },
 		"https":        func(link string) string { return strings.Replace(link, "http://", "https://", 1) },
 		"inc":          func(i int) int { return i + 1 },
-		"join":         func(a []string) string { return strings.Join(a, ", ") },
+		"join":         func(a []string, glue string) string { return strings.Join(a, glue) },
 		"json":         func(v interface{}) (string, error) { b, err := json.Marshal(v); log.Err(err); return string(b), err },
 		"lower":        func(a string) string { return strings.ToLower(a) },
 		"max":          func(a int, b int) float64 { return math.Max(float64(a), float64(b)) },

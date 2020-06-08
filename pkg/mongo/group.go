@@ -93,7 +93,7 @@ func CreateGroupIndexes() {
 }
 
 func (group Group) GetPath() string {
-	return helpers.GetGroupPath(group.ID, group.Name)
+	return helpers.GetGroupPath(group.ID, group.GetName())
 }
 
 func (group Group) GetType() string {

@@ -97,7 +97,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	t.Description = template.HTML(app.ShortDescription)
 	t.Canonical = app.GetPath()
 
-	t.GroupPath = helpers.GetGroupPath(app.GroupID, app.Name)
+	t.GroupPath = helpers.GetGroupPath(app.GroupID, app.GetName())
 
 	//
 	var wg sync.WaitGroup

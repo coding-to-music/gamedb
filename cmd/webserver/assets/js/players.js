@@ -25,7 +25,7 @@ if ($('#players-page').length > 0) {
     const options = {
         "language": {
             "zeroRecords": function () {
-                return 'Players can be searched for using their username or vanity URL. <a href="/players/add?search=' + $search.val() + '">If a player is missing, add them here</a>.';
+                return 'Players can be searched for using their username or vanity URL. If a player is missing, <a href="/players/add?search=' + $search.val() + '">add them here</a>.';
             },
         },
         "order": [[3, 'desc']],

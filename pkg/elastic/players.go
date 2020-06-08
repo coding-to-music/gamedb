@@ -25,6 +25,7 @@ type Player struct {
 	Games             int      `json:"games"`
 	Friends           int      `json:"friends"`
 	Comments          int      `json:"comments"`
+	Score             float64  `json:"-"`
 }
 
 func IndexPlayer(player Player) error {
@@ -50,16 +51,21 @@ func SearchPlayers(limit int, offset int, search string, sorters []elastic.Sorte
 
 	if search != "" {
 
-		var filters []elastic.Query
-		var musts []elastic.Query
-
-		musts = append(musts, elastic.NewMatchQuery("name", search))
-
-		// https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-function-score-query.html#function-field-value-factor
-		musts = append(musts, elastic.NewFunctionScoreQuery().AddScoreFunc(
-			elastic.NewFieldValueFactorFunction().Field("players").Modifier("log1p")))
-
-		searchService.Query(elastic.NewBoolQuery().Must(musts...).Filter(filters...))
+		searchService.Query(elastic.NewBoolQuery().
+			Must(
+				elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
+					elastic.NewTermQuery("id", search).Boost(10),
+					elastic.NewMatchQuery("name", search).Boost(2),
+					elastic.NewMatchQuery("name_recent", search).Boost(1),
+					elastic.NewMatchQuery("url", search).Boost(1),
+				),
+			).
+			Should(
+				elastic.NewTermQuery("name", search).Boost(10),
+				elastic.NewFunctionScoreQuery().AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("level").Factor(0.01)),
+				elastic.NewFunctionScoreQuery().AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("games").Factor(0.001)),
+			),
+		)
 	}
 
 	if len(sorters) > 0 {
@@ -73,8 +79,7 @@ func SearchPlayers(limit int, offset int, search string, sorters []elastic.Sorte
 
 	aggregations = make(map[string]map[string]int64, len(searchResult.Aggregations))
 	for k := range searchResult.Aggregations {
-		a, ok := searchResult.Aggregations.Terms(k)
-		if ok {
+		if a, ok := searchResult.Aggregations.Terms(k); ok {
 			aggregations[k] = make(map[string]int64, len(a.Buckets))
 			for _, v := range a.Buckets {
 				aggregations[k][*v.KeyAsString] = v.DocCount
@@ -88,6 +93,16 @@ func SearchPlayers(limit int, offset int, search string, sorters []elastic.Sorte
 		err := json.Unmarshal(hit.Source, &player)
 		if err != nil {
 			log.Err(err)
+		}
+
+		if hit.Score != nil {
+			player.Score = *hit.Score
+		}
+
+		if val, ok := hit.Highlight["name"]; ok {
+			if len(val) > 0 {
+				player.PersonaName = val[0]
+			}
 		}
 
 		players = append(players, player)

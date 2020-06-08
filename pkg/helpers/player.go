@@ -13,6 +13,15 @@ const (
 	DefaultPlayerAvatar = "/assets/img/no-player-image.jpg"
 )
 
+func GetPlayerCommunityLink(playerID int64, vanityURL string) string {
+
+	if vanityURL != "" && vanityURL != strconv.FormatInt(playerID, 10) {
+		return "https://steamcommunity.com/id/" + vanityURL
+	}
+
+	return "https://steamcommunity.com/profiles/" + strconv.FormatInt(playerID, 10)
+}
+
 func GetPlayerAvatar(avatar string) string {
 
 	if strings.HasPrefix(avatar, "http") || strings.HasPrefix(avatar, "/") {
@@ -74,7 +83,7 @@ func GetPlayerName(id int64, name string) string {
 	if name != "" {
 		return name
 	} else if id > 0 {
-		return "Player"
+		return "&lt;no name&gt;"
 	} else {
 		return "Unknown Player"
 	}

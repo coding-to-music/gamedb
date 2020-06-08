@@ -4,8 +4,6 @@ import (
 	"math"
 	"strconv"
 	"strings"
-
-	"github.com/gamedb/gamedb/pkg/log"
 )
 
 func StringToSlice(s string, glue string) (ret []string) {
@@ -20,12 +18,21 @@ func StringSliceToIntSlice(in []string) (ret []int) {
 
 	for _, v := range in {
 		v = strings.TrimSpace(v)
-		if v != "" {
-			i, err := strconv.Atoi(v)
-			log.Err(err)
-			if err == nil {
-				ret = append(ret, i)
-			}
+		i, err := strconv.Atoi(v)
+		if err == nil {
+			ret = append(ret, i)
+		}
+	}
+	return ret
+}
+
+func StringSliceToInt64Slice(in []string) (ret []int64) {
+
+	for _, v := range in {
+		v = strings.TrimSpace(v)
+		i, err := strconv.ParseInt(v, 10, 64)
+		if err == nil {
+			ret = append(ret, i)
 		}
 	}
 	return ret

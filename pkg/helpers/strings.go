@@ -62,6 +62,17 @@ func JoinInts(i []int, sep string) string {
 	return strings.Join(stringSlice, sep)
 }
 
+func JoinInt64s(i []int64, sep string) string {
+
+	var stringSlice []string
+
+	for _, v := range i {
+		stringSlice = append(stringSlice, strconv.FormatInt(v, 10))
+	}
+
+	return strings.Join(stringSlice, sep)
+}
+
 const Letters = "abcdefghijklmnopqrstuvwxyz"
 const LettersCaps = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 const Numbers = "0123456789"

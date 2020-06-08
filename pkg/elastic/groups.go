@@ -25,6 +25,10 @@ func (group Group) GetAbbr() string {
 	return helpers.GetGroupAbbreviation(group.Abbreviation)
 }
 
+func (group Group) GetName() string {
+	return helpers.GetGroupName(group.Name, group.ID)
+}
+
 func IndexGroup(group Group) error {
 	return indexDocument(IndexGroups, group.ID, group)
 }

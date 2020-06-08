@@ -136,6 +136,16 @@ func SearchAppsMini(limit int, search string) (apps []App, total int64, err erro
 			continue
 		}
 
+		if hit.Score != nil {
+			app.Score = *hit.Score
+		}
+
+		if val, ok := hit.Highlight["name"]; ok {
+			if len(val) > 0 {
+				app.Name = val[0]
+			}
+		}
+
 		apps = append(apps, app)
 	}
 
@@ -151,14 +161,14 @@ func appsSearchQuery(search string) (ret *elastic.BoolQuery) {
 	return elastic.NewBoolQuery().
 		Must(
 			elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
-				elastic.NewTermQuery("id", search).Boost(10),
-				elastic.NewMatchQuery("name", search).Fuzziness("1"),
-				elastic.NewMatchQuery("aliases", search).Fuzziness("1"),
+				elastic.NewTermQuery("id", search).Boost(3),
+				elastic.NewMatchQuery("name", search).Fuzziness("1").Boost(3),
+				elastic.NewMatchQuery("aliases", search).Fuzziness("1").Boost(1),
 			),
 		).
 		Should(
 			elastic.NewTermQuery("name", search).Boost(10),
-			elastic.NewFunctionScoreQuery().AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("players").Factor(0.0008)),
+			elastic.NewFunctionScoreQuery().AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("players").Factor(0.05)),
 		)
 }
 

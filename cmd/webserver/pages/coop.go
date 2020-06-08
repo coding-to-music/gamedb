@@ -3,7 +3,10 @@ package pages
 import (
 	"net/http"
 	"strconv"
+	"strings"
 
+	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
+	"github.com/gamedb/gamedb/pkg/elastic"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -21,18 +24,152 @@ func coopRouter() http.Handler {
 
 	r := chi.NewRouter()
 	r.Get("/", coopHandler)
+	r.Get("/search.json", coopSearchAjaxHandler)
+	r.Get("/players.json", coopPlayersAjaxHandler)
+	r.Get("/games.json", coopGames)
+	r.Get("/{id}", coopHandler)
 	return r
 }
 
 func coopHandler(w http.ResponseWriter, r *http.Request) {
 
+	idStrings := helpers.StringToSlice(chi.URLParam(r, "id"), ",")
+	idStrings = helpers.UniqueString(idStrings)
+
+	if len(idStrings) > maxPlayers {
+		returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "You can only compare games from up to " + strconv.Itoa(maxPlayers) + " people."})
+		return
+	}
+
 	t := coopTemplate{}
 	t.fill(w, r, "Co-op", "Find a game to play with friends.")
-	t.DefaultAvatar = helpers.DefaultAppIcon
+	t.IDs = idStrings
 
-	// Get player ints
+	returnTemplate(w, r, "coop", t)
+}
+
+type coopTemplate struct {
+	GlobalTemplate
+	IDs []string
+}
+
+func coopSearchAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	query := datatable.NewDataTableQuery(r, true)
+	search := strings.TrimSpace(query.GetSearchString("search"))
+	ids := helpers.StringToSlice(query.GetSearchString("ids"), ",")
+
+	response := datatable.NewDataTablesResponse(r, query, 0, 0, nil)
+
+	if search != "" {
+
+		players, _, _, err := elastic.SearchPlayers(5, 0, search, nil)
+		if err != nil {
+			log.Err(err, r)
+			return
+		}
+
+		for _, player := range players {
+
+			var name = helpers.GetPlayerName(player.ID, player.PersonaName)
+			var path = helpers.GetPlayerPath(player.ID, player.PersonaName)
+			var icon = helpers.GetPlayerAvatar(player.Avatar)
+			var communityLink = helpers.GetPlayerCommunityLink(player.ID, player.VanityURL)
+
+			var linkBool = helpers.SliceHasString(strconv.FormatInt(player.ID, 10), ids)
+			var link = makeCoopActionLink(ids, strconv.FormatInt(player.ID, 10), linkBool)
+
+			response.AddRow([]interface{}{
+				player.Games,  // 0
+				player.ID,     // 1
+				name,          // 2
+				path,          // 3
+				icon,          // 4
+				communityLink, // 5
+				player.Level,  // 6
+				link,          // 7
+				linkBool,      // 8
+				player.Score,  // 9
+			})
+		}
+	}
+
+	returnJSON(w, r, response)
+}
+
+func coopPlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	query := datatable.NewDataTableQuery(r, true)
+	ids := helpers.StringToSlice(query.GetSearchString("ids"), ",")
+	ids2 := helpers.StringSliceToInt64Slice(ids)
+
+	players, err := mongo.GetPlayersByID(ids2, bson.M{"_id": 1, "persona_name": 1, "avatar": 1, "level": 1, "games_count": 1})
+	if err != nil {
+		log.Err(err, r)
+		return
+	}
+
+	var appMap = map[int64][]interface{}{}
+	var response = datatable.NewDataTablesResponse(r, query, 0, 0, nil)
+	for _, player := range players {
+
+		var name = helpers.GetPlayerName(player.ID, player.PersonaName)
+		var path = helpers.GetPlayerPath(player.ID, player.PersonaName)
+		var icon = helpers.GetPlayerAvatar(player.Avatar)
+		var communityLink = helpers.GetPlayerCommunityLink(player.ID, player.VanityURL)
+
+		var linkBool = helpers.SliceHasString(strconv.FormatInt(player.ID, 10), ids)
+		var link = makeCoopActionLink(ids, strconv.FormatInt(player.ID, 10), linkBool)
+
+		appMap[player.ID] = []interface{}{
+			player.GamesCount, // 0
+			player.ID,         // 1
+			name,              // 2
+			path,              // 3
+			icon,              // 4
+			communityLink,     // 5
+			player.Level,      // 6
+			link,              // 7
+			linkBool,          // 8
+			0,                 // 9
+		}
+	}
+
+	// Looping here keeps the order the same as the URL IDs
+	for _, v := range ids2 {
+		if val, ok := appMap[v]; ok {
+			response.AddRow(val)
+		}
+	}
+
+	returnJSON(w, r, response)
+}
+
+func makeCoopActionLink(ids []string, id string, linkBool bool) string {
+
+	var newIDs []string
+
+	if linkBool {
+		for _, v := range ids {
+			if v != id {
+				newIDs = append(newIDs, v)
+			}
+		}
+	} else {
+		newIDs = ids
+		newIDs = append(newIDs, id)
+	}
+
+	return "/games/coop/" + strings.Join(newIDs, ",")
+}
+
+func coopGames(w http.ResponseWriter, r *http.Request) {
+
+	query := datatable.NewDataTableQuery(r, true)
+	ids := helpers.StringToSlice(query.GetSearchString("ids"), ",")
+
 	var playerIDs []int64
-	for _, v := range r.URL.Query()["p"] {
+	for _, v := range ids {
 		i, err := strconv.ParseInt(v, 10, 64)
 		if err == nil {
 			i, err = helpers.IsValidPlayerID(i)
@@ -44,15 +181,8 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 
 	playerIDs = helpers.UniqueInt64(playerIDs)
 
-	// Check for max number of players
-	if len(playerIDs) > maxPlayers {
-		returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "You can only compare games from up to " + strconv.Itoa(maxPlayers) + " people."})
-		return
-	}
-
 	// Get players
-	var err error
-	t.Players, err = mongo.GetPlayersByID(playerIDs, bson.M{"_id": 1, "persona_name": 1, "avatar": 1})
+	players, err := mongo.GetPlayersByID(playerIDs, bson.M{"_id": 1, "persona_name": 1, "avatar": 1})
 	if err != nil {
 		log.Err(err, r)
 		returnErrorTemplate(w, r, errorTemplate{Code: 500})
@@ -60,7 +190,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var foundPlayerIDs []int64
-	for _, player := range t.Players {
+	for _, player := range players {
 		foundPlayerIDs = append(foundPlayerIDs, player.ID)
 	}
 
@@ -76,8 +206,6 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 			err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
 			if err != nil {
 				log.Err(err, r)
-			} else {
-				t.addToast(Toast{Title: "Update", Message: "Player has been queued for an update"})
 			}
 		}
 	}
@@ -87,7 +215,11 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 	var allAppsByPlayer = map[int64][]int{}
 
 	playerApps, err := mongo.GetPlayersApps(foundPlayerIDs, bson.M{"_id": 0, "player_id": 1, "app_id": 1})
-	log.Err(err, r)
+	if err != nil {
+		log.Err(err, r)
+		return
+	}
+
 	for _, playerApp := range playerApps {
 
 		allApps[playerApp.AppID] = true
@@ -119,6 +251,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	var games []coopGameTemplate
 	if len(allApps) > 0 {
 
 		// Convert to slice
@@ -133,9 +266,9 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 			{"_id", bson.M{"$in": appsSlice}},
 		}
 
-		projection := bson.M{"id": 1, "name": 1, "icon": 1, "platforms": 1, "achievements": 1, "tags": 1}
+		projection := bson.M{"id": 1, "name": 1, "icon": 1, "platforms": 1, "achievements_count": 1, "tags": 1}
 
-		apps, err := mongo.GetApps(0, 500, bson.D{{"reviews_score", 1}}, filter, projection)
+		apps, err := mongo.GetApps(0, 1000, bson.D{{"reviews_score", -1}}, filter, projection)
 		if err != nil {
 			log.Err(err, r)
 		}
@@ -146,21 +279,30 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 			coopTags, err := app.GetCoopTags()
 			log.Err(err, r)
 
-			t.Games = append(t.Games, coopGameTemplate{
+			games = append(games, coopGameTemplate{
 				Game: app,
 				Tags: coopTags,
 			})
 		}
 	}
 
-	returnTemplate(w, r, "coop", t)
-}
+	response := datatable.NewDataTablesResponse(r, query, int64(len(games)), int64(len(games)), nil)
 
-type coopTemplate struct {
-	GlobalTemplate
-	Players       []mongo.Player
-	Games         []coopGameTemplate
-	DefaultAvatar string
+	for _, app := range games {
+
+		response.AddRow([]interface{}{
+			app.Game.ID,                  // 0
+			app.Game.GetName(),           // 1
+			app.Game.GetIcon(),           // 2
+			app.Game.GetPlatformImages(), // 3
+			app.Game.AchievementsCount,   // 4
+			app.Tags,                     // 5
+			app.Game.GetStoreLink(),      // 6
+			app.Game.GetPath(),           // 7
+		})
+	}
+
+	returnJSON(w, r, response)
 }
 
 type coopGameTemplate struct {

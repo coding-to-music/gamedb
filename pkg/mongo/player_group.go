@@ -43,7 +43,7 @@ func (group PlayerGroup) getKey() string {
 }
 
 func (group PlayerGroup) GetPath() string {
-	return helpers.GetGroupPath(group.GroupID, group.GroupName)
+	return helpers.GetGroupPath(group.GroupID, group.GetName())
 }
 
 func (group PlayerGroup) GetType() string {

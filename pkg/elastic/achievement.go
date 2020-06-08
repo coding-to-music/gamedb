@@ -17,7 +17,7 @@ type Achievement struct {
 	Completed   float64 `json:"completed"`
 	AppID       int     `json:"app_id"`
 	AppName     string  `json:"app_name"`
-	Score       float64 `json:"score"` // Not stored, just used on frontend
+	Score       float64 `json:"-"` // Not stored, just used on frontend
 }
 
 func (achievement Achievement) GetKey() string {
@@ -89,6 +89,18 @@ func SearchAppAchievements(offset int, search string, sorters []elastic.Sorter) 
 		if val, ok := hit.Highlight["name"]; ok {
 			if len(val) > 0 {
 				achievement.Name = val[0]
+			}
+		}
+
+		if val, ok := hit.Highlight["description"]; ok {
+			if len(val) > 0 {
+				achievement.Description = val[0]
+			}
+		}
+
+		if val, ok := hit.Highlight["app_name"]; ok {
+			if len(val) > 0 {
+				achievement.AppName = val[0]
 			}
 		}
 

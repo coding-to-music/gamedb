@@ -234,9 +234,20 @@ if ($playerPage.length > 0) {
                     },
                     'orderSequence': ['desc', 'asc'],
                 },
-                // Friend Since
+                // Co-op
                 {
                     "targets": 3,
+                    "render": function (data, type, row) {
+                        if (row[6] > 0) {
+                            return '<a href="/games/coop/' + $playerPage.attr('data-id') + ',' + row[0] + '">Co-op</a>';
+                        }
+                        return '';
+                    },
+                    'orderSequence': ['desc', 'asc'],
+                },
+                // Friend Since
+                {
+                    "targets": 4,
                     "render": function (data, type, row) {
                         return row[7];
                     },
@@ -247,7 +258,7 @@ if ($playerPage.length > 0) {
                 },
                 // Link
                 {
-                    "targets": 4,
+                    "targets": 5,
                     "render": function (data, type, row) {
                         if (row[8]) {
                             return '<a href="' + row[8] + '" target="_blank" rel="noopener"><i class="fas fa-link"></i></a>';

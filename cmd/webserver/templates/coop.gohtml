@@ -13,21 +13,13 @@
                 </div>
                 <div class="col-sm-12 col-lg-6">
 
-                    <form id="add">
-                        <div class="input-group input-group-lg mt-1">
-
-                            <label for="id" class="sr-only sr-only-focusable">Add Player ID</label>
-                            <input class="form-control" type="number" placeholder="Add Player ID" autocomplete="off" autofocus id="id" required="required">
-                            <div class="input-group-append">
-                                <input type="submit" value="Add" class="input-group-text btn btn-success">
-                            </div>
-                            {{ if .PlayerID }}
-                                <div class="input-group-append" id="addme">
-                                    <input type="button" value="Add Me" class="input-group-text btn btn-success" data-id="{{ .PlayerID }}">
-                                </div>
-                            {{ end }}
+                    <div class="input-group input-group-lg mt-1 mb-2">
+                        <!--suppress HtmlFormInputWithoutLabel -->
+                        <input class="form-control" type="search" placeholder="Search for a Player" id="search" name="search" autofocus>
+                        <div class="input-group-append">
+                            <input type="submit" value="Search" class="input-group-text">
                         </div>
-                    </form>
+                    </div>
 
                 </div>
             </div>
@@ -38,61 +30,61 @@
         <div class="card">
             <div class="card-body">
 
-                {{ if ge (len .Games) 500 }}
-                    <div class="alert alert-warning" role="alert">
-                        <div>We are only able to show the first 500 games. The games with the lowest review score are hidden.</div>
-                    </div>
-                {{ end }}
+                <h5>Search Results</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped" data-ordering="false" data-row-type="players" data-path="/games/coop/search.json" id="search-table">
+                        <thead class="thead-light">
+                        <tr>
+                            <th scope="col" nowrap="nowrap">Player</th>
+                            <th scope="col" nowrap="nowrap">Games</th>
+                            <th scope="col" nowrap="nowrap">Level</th>
+                            <th scope="col" nowrap="nowrap">Action</th>
+                            <th scope="col" nowrap="nowrap" class="thin">#</th>
+                            <th scope="col"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
 
-                {{if gt (len .Players) 0 }}
+                        </tbody>
+                    </table>
+                </div>
 
-                    <h5>Players</h5>
-                    <div class="players clearfix mb-4">
-                        {{ range $key, $value := .Players }}
-                            {{ if eq .ID 0 }}
-                                <img data-toggle="tooltip" data-placement="top" title="Unknown Player" alt="Unknown Player" src="{{.GetDefaultAvatar}}" class="rounded avatar">
-                            {{ else }}
-                                <a href="{{.GetPath}}">
-                                    <img data-toggle="tooltip" data-placement="top" title="{{ .GetName }}" alt="{{ .GetName }}" src="{{ .GetAvatar }}" class="rounded avatar" data-src="{{ $.DefaultAvatar }}">
-                                </a>
-                            {{ end }}
-                        {{ end }}
-                    </div>
+                <input type="hidden" value="{{ join .IDs "," }}" name="ids" id="ids"/>
+                <h5 class="mt-4">Selected Players <small>({{ len .IDs }}/10)</small></h5>
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped" data-ordering="false" data-row-type="players" data-path="/games/coop/players.json" id="players-table">
+                        <thead class="thead-light">
+                        <tr>
+                            <th scope="col" nowrap="nowrap">Player</th>
+                            <th scope="col" nowrap="nowrap">Games</th>
+                            <th scope="col" nowrap="nowrap">Level</th>
+                            <th scope="col" nowrap="nowrap">Action</th>
+                            <th scope="col" nowrap="nowrap" class="thin">#</th>
+                            <th scope="col"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
 
-                {{ end }}
+                        </tbody>
+                    </table>
+                </div>
 
-                {{if gt (len .Players) 1 }}
-
-                    <div class="table-responsive">
-                        <table class="table table-hover table-striped table-datatable table-counts mb-0" data-row-type="games" data-order='[[0, "asc"]]'>
-                            <thead class="thead-light">
-                            <tr>
-                                <th scope="col">Game</th>
-                                <th scope="col" data-disabled>Platforms</th>
-                                <th scope="col">Achievements</th>
-                                <th scope="col" data-disabled>Co-op Tags</th>
-                            </tr>
-                            </thead>
-                            {{ range $key, $value := .Games }}
-                                <tr data-link="/games/{{ .Game.ID }}">
-                                    <td class="img" data-app-id="{{ .Game.ID }}">
-                                        <div class="icon-name">
-                                            <div class="icon"><img src="{{.Game.GetIcon}}" alt="{{ .Game.GetName }}"></div>
-                                            <div class="name">{{ .Game.GetName }}</div>
-                                        </div>
-                                    </td>
-                                    <td class="platforms">{{ .Game.GetPlatformImages }}</td>
-                                    <td>{{ comma .Game.AchievementsCount }}</td>
-                                    <td>{{.Tags}}</td>
-                                </tr>
-                            {{ end }}
-                        </table>
-                    </div>
-
-                {{else}}
-                    <p class="mb-0">Add at least 2 player IDs</p>
-                {{end}}
-
+                <h5 class="mt-4">Co-op Games</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped table-counts mb-0" data-ordering="false" data-row-type="games" data-order='[[0, "asc"]]' data-path="/games/coop/games.json" id="games-table">
+                        <thead class="thead-light">
+                        <tr>
+                            <th scope="col">Game</th>
+                            <th scope="col" data-disabled>Platforms</th>
+                            <th scope="col">Achievements</th>
+                            <th scope="col" data-disabled>Co-op Tags</th>
+                            <th scope="col" data-disabled>#</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
 
             </div>
         </div>

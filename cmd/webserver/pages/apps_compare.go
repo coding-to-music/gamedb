@@ -213,23 +213,23 @@ func compareAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var appMap = map[int][]interface{}{}
 
 	var response = datatable.NewDataTablesResponse(r, query, int64(len(apps)), int64(len(apps)), nil)
-	for k, app := range apps {
+	for _, app := range apps {
 
 		var price = app.GetPrices().Get(code).GetFinal()
 		var linkBool = helpers.SliceHasString(strconv.Itoa(app.ID), ids)
 		var link = makeCompareActionLink(ids, strconv.Itoa(app.ID), linkBool)
 
 		appMap[app.ID] = []interface{}{
-			query.GetOffset() + k + 1, // 0
-			app.ID,                    // 1
-			app.GetName(),             // 2
-			app.GetIcon(),             // 3
-			app.GetPath(),             // 4
-			app.GetCommunityLink(),    // 5
-			price,                     // 6
-			link,                      // 7
-			linkBool,                  // 8
-			0,                         // 9 - Search Score
+			nil,                    // 0
+			app.ID,                 // 1
+			app.GetName(),          // 2
+			app.GetIcon(),          // 3
+			app.GetPath(),          // 4
+			app.GetCommunityLink(), // 5
+			price,                  // 6
+			link,                   // 7
+			linkBool,               // 8
+			0,                      // 9 - Search Score
 		}
 	}
 
