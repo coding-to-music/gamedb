@@ -143,12 +143,10 @@ func appItemsHandler(messages []*rabbit.Message) {
 		// Clear caches
 		var countItem = memcache.FilterToString(bson.D{{"app_id", payload.AppID}})
 
-		var items = []string{
+		err = memcache.Delete(
 			memcache.MemcacheApp(payload.AppID).Key,
-			memcache.MemcacheMongoCount(mongo.CollectionAppItems.String() + "-" + countItem).Key,
-		}
-
-		err = memcache.Delete(items...)
+			memcache.MemcacheMongoCount(mongo.CollectionAppItems.String()+"-"+countItem).Key,
+		)
 		if err != nil {
 			log.Err(err, message.Message.Body)
 			sendToRetryQueue(message)

@@ -232,6 +232,8 @@ func playerHandler(messages []*rabbit.Message) {
 			)
 			if err != nil {
 				log.Err(err, payload.ID)
+				sendToRetryQueue(message)
+				return
 			}
 		}()
 

@@ -104,13 +104,17 @@ func bundleHandler(messages []*rabbit.Message) {
 		err = ProduceWebsocket(wsPayload, websockets.PageBundle, websockets.PageBundles)
 		if err != nil {
 			log.Err(err, payload.ID)
+			sendToRetryQueue(message)
+			continue
 		}
 
 		// Clear caches
-		err = memcache.Delete(
-			memcache.MemcacheBundleInQueue(bundle.ID).Key,
-		)
-		log.Err(err)
+		err = memcache.Delete(memcache.MemcacheBundleInQueue(bundle.ID).Key)
+		if err != nil {
+			log.Err(err, payload.ID)
+			sendToRetryQueue(message)
+			continue
+		}
 
 		message.Ack(false)
 	}

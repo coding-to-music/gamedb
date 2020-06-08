@@ -205,11 +205,19 @@ func groupsHandler(messages []*rabbit.Message) {
 			memcache.MemcacheGroup(payload.ID).Key,
 			memcache.MemcacheGroupInQueue(payload.ID).Key,
 		)
-		log.Err(err)
+		if err != nil {
+			log.Err(err, payload.ID)
+			sendToRetryQueue(message)
+			continue
+		}
 
 		// Send websocket
 		err = sendGroupWebsocket(payload.ID)
-		log.Err(err)
+		if err != nil {
+			log.Err(err, payload.ID)
+			sendToRetryQueue(message)
+			continue
+		}
 
 		if message.ActionTaken {
 			continue

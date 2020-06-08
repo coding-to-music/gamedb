@@ -235,7 +235,11 @@ func packageHandler(messages []*rabbit.Message) {
 				memcache.MemcachePackageInQueue(pack.ID).Key,
 				memcache.MemcachePackageBundles(pack.ID).Key,
 			)
-			log.Err(err)
+			if err != nil {
+				log.Err(err, payload.ID)
+				sendToRetryQueue(message)
+				return
+			}
 		}()
 
 		// Queue apps

@@ -202,7 +202,9 @@ func appHandler(messages []*rabbit.Message) {
 				memcache.MemcacheMongoCount(mongo.CollectionAppSales.String()+"-"+countItem).Key,
 			)
 			if err != nil {
-				log.Err(err, id)
+				log.Err(err, payload.ID)
+				sendToRetryQueue(message)
+				return
 			}
 		}()
 
