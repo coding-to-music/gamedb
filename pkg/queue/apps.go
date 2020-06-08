@@ -951,24 +951,26 @@ func updateAppPlaytimeStats(app *mongo.App) (err error) {
 
 func getWishlistCount(app *mongo.App) (err error) {
 
-	apps, err := mongo.GetPlayerWishlistAppsByApp(app.ID)
+	players, err := mongo.GetPlayerWishlistAppsByApp(app.ID)
 	if err != nil {
 		return err
 	}
 
-	var count = len(apps)
+	var playerCount = len(players)
 
-	app.WishlistCount = count
+	app.WishlistCount = playerCount
 
 	var total int
-	for _, v := range apps {
-		total += v.Order
+	for _, v := range players {
+		if v.Order > 0 {
+			total += v.Order
+		}
 	}
 
-	if count == 0 {
+	if playerCount == 0 {
 		app.WishlistAvgPosition = 0
 	} else {
-		app.WishlistAvgPosition = float64(total) / float64(count)
+		app.WishlistAvgPosition = float64(total) / float64(playerCount)
 	}
 
 	return nil
