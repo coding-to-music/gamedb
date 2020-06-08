@@ -86,25 +86,22 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var response = datatable.NewDataTablesResponse(r, query, total, filtered, aggregations)
 	for k, group := range groups {
 
-		var path = helpers.GetGroupPath(group.ID, group.GetName())
-		var link = helpers.GetGroupLink(helpers.GroupTypeGroup, group.URL)
-
 		var headline = removeWhiteSpace.ReplaceAllString(group.Headline, " ")
 		headline = helpers.TruncateString(headline, 100, "…")
 
 		response.AddRow([]interface{}{
-			group.ID,                         // 0
-			group.GetName(),                  // 1
-			link,                             // 2
-			group.GetAbbr(),                  // 3
-			headline,                         // 4
-			helpers.GetGroupIcon(group.Icon), // 5
-			group.Members,                    // 6
-			helpers.TrendValue(group.Trend),  // 7
-			group.Error,                      // 8
-			query.GetOffset() + k + 1,        // 9
-			path,                             // 10
-			group.Score,                      // 11
+			group.ID,                  // 0
+			group.GetName(),           // 1
+			group.GetGroupLink(),      // 2
+			group.GetAbbr(),           // 3
+			headline,                  // 4
+			group.GetIcon(),           // 5
+			group.Members,             // 6
+			group.GetTrend(),          // 7
+			group.Error,               // 8
+			query.GetOffset() + k + 1, // 9
+			group.GetPath(),           // 10
+			group.Score,               // 11
 		})
 	}
 

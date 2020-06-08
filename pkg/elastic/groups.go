@@ -29,6 +29,26 @@ func (group Group) GetName() string {
 	return helpers.GetGroupName(group.Name, group.ID)
 }
 
+func (group Group) GetPath() string {
+	return helpers.GetGroupPath(group.ID, group.GetName())
+}
+
+func (group Group) GetIcon() string {
+	return helpers.GetGroupIcon(group.Icon)
+}
+
+func (group Group) GetTrend() string {
+	return helpers.TrendValue(group.Trend)
+}
+
+func (group Group) GetGroupLink() string {
+	return helpers.GetGroupLink(helpers.GroupTypeGroup, group.URL)
+}
+
+func (group Group) GetGameLink() string {
+	return helpers.GetGroupLink(helpers.GroupTypeGame, group.URL)
+}
+
 func IndexGroup(group Group) error {
 	return indexDocument(IndexGroups, group.ID, group)
 }
