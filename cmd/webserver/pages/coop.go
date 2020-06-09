@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/elastic"
@@ -235,23 +236,19 @@ func coopGames(w http.ResponseWriter, r *http.Request) {
 	// Remove apps that are not in a users apps
 	for appID := range allApps {
 
-		var remove = false
-
 		// Loop each user
 		for _, gamesSlice := range allAppsByPlayer {
 
 			if !helpers.SliceHasInt(gamesSlice, appID) {
-				remove = true
+				delete(allApps, appID)
 				break
 			}
 		}
-
-		if remove {
-			delete(allApps, appID)
-		}
 	}
 
+	var count int64
 	var games []coopGameTemplate
+
 	if len(allApps) > 0 {
 
 		// Convert to slice
@@ -261,32 +258,57 @@ func coopGames(w http.ResponseWriter, r *http.Request) {
 		}
 
 		filter := bson.D{
-			{"type", "game"},
+			// {"type", "game"},
 			{"tags", bson.M{"$in": bson.A{128, 1685, 3843, 3841, 4508, 3859, 7368, 17770}}},
 			{"_id", bson.M{"$in": appsSlice}},
 		}
 
 		projection := bson.M{"id": 1, "name": 1, "icon": 1, "platforms": 1, "achievements_count": 1, "tags": 1}
 
-		apps, err := mongo.GetApps(0, 1000, bson.D{{"reviews_score", -1}}, filter, projection)
-		if err != nil {
-			log.Err(err, r)
-		}
+		var wg sync.WaitGroup
 
-		// Make visible tags
-		for _, app := range apps {
+		wg.Add(1)
+		go func() {
 
-			coopTags, err := app.GetCoopTags()
-			log.Err(err, r)
+			defer wg.Done()
 
-			games = append(games, coopGameTemplate{
-				Game: app,
-				Tags: coopTags,
-			})
-		}
+			apps, err := mongo.GetApps(query.GetOffset64(), 100, bson.D{{"reviews_score", -1}}, filter, projection)
+			if err != nil {
+				log.Err(err, r)
+			}
+
+			// Make visible tags
+			for _, app := range apps {
+
+				coopTags, err := app.GetCoopTags()
+				if err != nil {
+					log.Err(err, r)
+					continue
+				}
+
+				games = append(games, coopGameTemplate{
+					Game: app,
+					Tags: coopTags,
+				})
+			}
+		}()
+
+		wg.Add(1)
+		go func() {
+
+			defer wg.Done()
+
+			var err error
+			count, err = mongo.CountDocuments(mongo.CollectionApps, filter, 60*60)
+			if err != nil {
+				log.Err(err)
+			}
+		}()
+
+		wg.Wait()
 	}
 
-	response := datatable.NewDataTablesResponse(r, query, int64(len(games)), int64(len(games)), nil)
+	response := datatable.NewDataTablesResponse(r, query, count, count, nil)
 
 	for _, app := range games {
 
