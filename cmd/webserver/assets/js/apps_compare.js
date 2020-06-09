@@ -80,9 +80,17 @@ if ($appsComparePage.length > 0) {
         const $ids = $('#ids');
         const $search = $('#search');
 
-        $('#search-table').gdbTable({
+        const dt = $('#search-table').gdbTable({
             tableOptions: options,
             searchFields: [$ids, $search],
+        });
+
+        dt.on('draw.dt', function (e, settings) {
+            if ($search.val()) {
+                $('#search-results').show();
+            } else {
+                $('#search-results').hide();
+            }
         });
 
         $('#apps-table').gdbTable({

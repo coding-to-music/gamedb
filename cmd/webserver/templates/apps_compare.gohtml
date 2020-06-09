@@ -34,26 +34,28 @@
         <div class="card">
             <div class="card-body">
 
-                <h5>Search Results</h5>
-                <div class="table-responsive">
-                    <table class="table table-hover table-striped" data-ordering="false" data-row-type="games" data-path="/games/compare/search.json" id="search-table">
-                        <thead class="thead-light">
-                        <tr>
-                            <th scope="col" nowrap="nowrap">Game</th>
-                            <th scope="col" nowrap="nowrap">Price</th>
-                            <th scope="col" nowrap="nowrap">Action</th>
-                            <th scope="col" nowrap="nowrap" class="thin">#</th>
-                            <th scope="col"></th>
-                        </tr>
-                        </thead>
-                        <tbody>
+                <div id="search-results">
+                    <h5>Search Results</h5>
+                    <div class="table-responsive mb-4">
+                        <table class="table table-hover table-striped" data-ordering="false" data-row-type="games" data-path="/games/compare/search.json" id="search-table">
+                            <thead class="thead-light">
+                            <tr>
+                                <th scope="col" nowrap="nowrap">Game</th>
+                                <th scope="col" nowrap="nowrap">Price</th>
+                                <th scope="col" nowrap="nowrap">Action</th>
+                                <th scope="col" nowrap="nowrap" class="thin">#</th>
+                                <th scope="col"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
 
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
                 <input type="hidden" value="{{ .IDs }}" name="ids" id="ids"/>
-                <h5 class="mt-4">Selected Games <small>({{ len .Apps }}/10)</small></h5>
+                <h5>Selected Games <small>({{ len .Apps }}/10)</small></h5>
                 <div class="table-responsive">
                     <table class="table table-hover table-striped" data-ordering="false" data-row-type="games" data-path="/games/compare/apps.json" id="apps-table">
                         <thead class="thead-light">

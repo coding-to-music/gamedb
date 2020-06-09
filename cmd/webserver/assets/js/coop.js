@@ -86,9 +86,17 @@ if ($('#coop-page').length > 0) {
             ]
         };
 
-        $('#search-table').gdbTable({
+        const dt = $('#search-table').gdbTable({
             tableOptions: options,
             searchFields: [$ids, $search],
+        });
+
+        dt.on('draw.dt', function (e, settings) {
+            if ($search.val()) {
+                $('#search-results').show();
+            } else {
+                $('#search-results').hide();
+            }
         });
 
         $('#players-table').gdbTable({

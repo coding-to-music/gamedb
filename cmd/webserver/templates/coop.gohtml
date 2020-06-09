@@ -30,28 +30,30 @@
         <div class="card">
             <div class="card-body">
 
-                <h5>Search Results</h5>
-                <div class="table-responsive">
-                    <table class="table table-hover table-striped" data-ordering="false" data-row-type="players" data-path="/games/coop/search.json" id="search-table">
-                        <thead class="thead-light">
-                        <tr>
-                            <th scope="col" nowrap="nowrap">Player</th>
-                            <th scope="col" nowrap="nowrap">Games</th>
-                            <th scope="col" nowrap="nowrap">Level</th>
-                            <th scope="col" nowrap="nowrap">Action</th>
-                            <th scope="col" nowrap="nowrap" class="thin">#</th>
-                            <th scope="col"></th>
-                        </tr>
-                        </thead>
-                        <tbody>
+                <div id="search-results">
+                    <h5>Search Results</h5>
+                    <div class="table-responsive mb-4">
+                        <table class="table table-hover table-striped" data-ordering="false" data-row-type="players" data-path="/games/coop/search.json" id="search-table">
+                            <thead class="thead-light">
+                            <tr>
+                                <th scope="col" nowrap="nowrap">Player</th>
+                                <th scope="col" nowrap="nowrap">Games</th>
+                                <th scope="col" nowrap="nowrap">Level</th>
+                                <th scope="col" nowrap="nowrap">Action</th>
+                                <th scope="col" nowrap="nowrap" class="thin">#</th>
+                                <th scope="col"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
 
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
                 <input type="hidden" value="{{ join .IDs "," }}" name="ids" id="ids"/>
-                <h5 class="mt-4">Selected Players <small>({{ len .IDs }}/10)</small></h5>
-                <div class="table-responsive">
+                <h5>Selected Players <small>({{ len .IDs }}/10)</small></h5>
+                <div class="table-responsive mb-4">
                     <table class="table table-hover table-striped" data-ordering="false" data-row-type="players" data-path="/games/coop/players.json" id="players-table">
                         <thead class="thead-light">
                         <tr>
@@ -69,7 +71,7 @@
                     </table>
                 </div>
 
-                <h5 class="mt-4">Co-op Games</h5>
+                <h5>Co-op Games</h5>
                 <div class="table-responsive">
                     <table class="table table-hover table-striped table-counts mb-0" data-ordering="false" data-row-type="games" data-order='[[0, "asc"]]' data-path="/games/coop/games.json" id="games-table">
                         <thead class="thead-light">
