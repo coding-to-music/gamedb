@@ -963,16 +963,18 @@ func getWishlistCount(app *mongo.App) (err error) {
 	app.WishlistCount = playerCount
 
 	var total int
+	var count int
 	for _, v := range players {
 		if v.Order > 0 {
 			total += v.Order
+			count++
 		}
 	}
 
 	if playerCount == 0 {
 		app.WishlistAvgPosition = 0
 	} else {
-		app.WishlistAvgPosition = float64(total) / float64(playerCount)
+		app.WishlistAvgPosition = float64(total) / float64(count)
 	}
 
 	return nil
