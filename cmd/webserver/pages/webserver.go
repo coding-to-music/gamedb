@@ -199,7 +199,6 @@ func getTemplateFuncMap() map[string]interface{} {
 		"lower":        func(a string) string { return strings.ToLower(a) },
 		"max":          func(a int, b int) float64 { return math.Max(float64(a), float64(b)) },
 		"ordinalComma": func(i int) string { return helpers.OrdinalComma(i) },
-		"pathEscape":   func(text string) string { return url.PathEscape(text) },
 		"percent":      func(small, big int) float64 { return float64(small) / float64(big) * 100 },
 		"round":        func(i int) string { return helpers.ShortHandNumber(int64(i)) },
 		"round64":      func(i int64) string { return helpers.ShortHandNumber(i) },

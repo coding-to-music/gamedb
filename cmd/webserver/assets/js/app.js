@@ -2,7 +2,30 @@ const $appPage = $('#app-page');
 
 if ($appPage.length > 0) {
 
-    $('#details video').on('click', function (e) {
+    // Tab links
+    $(document).on('mouseup', '[data-link-tab]', function () {
+        const tab = $(this).attr('data-link-tab');
+        $('a.nav-link[href="#' + tab + '"]').tab('show');
+        if (tab === 'players') {
+            const st = $("#followers").offset().top;
+            $('html, body').animate({scrollTop: st - 15}, 500);
+        }
+        return false;
+    });
+
+    // Scroll to videos link
+    $("#scroll-to-videos").on('mouseup', function (e) {
+        const $videosDiv = $("#videos");
+        $('html, body').animate({scrollTop: $videosDiv.offset().top - 15}, 500);
+
+        const $videos = $videosDiv.find('video')
+        if ($videos[0].paused) {
+            $videos.first().trigger('click');
+        }
+    });
+
+    // Micro video link
+    $('#details video').on('mouseup', function (e) {
         const video = $(this)[0];
         if (video.paused) {
             video.play();
@@ -12,25 +35,8 @@ if ($appPage.length > 0) {
         }
     });
 
-    // Followers link
-    $('.followers-link').on('click', function (e) {
-
-        $('a.nav-link[href="#players"]').tab('show');
-
-        const st = $("#followers").offset().top;
-        $('html, body').animate({scrollTop: st - 15}, 500);
-
-        return false;
-    });
-
-    // Videos link
-    $("#scroll-to-videos").on('click', function (e) {
-        const st = $("#videos").offset().top;
-        $('html, body').animate({scrollTop: st - 15}, 500);
-    });
-
     // Show dev raw row
-    $('#dev-info').on('click', 'tr', function () {
+    $('#dev-info').on('mouseup', 'tr', function () {
 
         const $tr = $(this);
         const row = $(this).closest('table').DataTable().row($tr);

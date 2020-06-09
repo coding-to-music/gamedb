@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"html/template"
 	"net/http"
+	"net/url"
 	"regexp"
 	"sort"
 	"strconv"
@@ -23,6 +24,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/sql/pics"
 	"github.com/go-chi/chi"
+	"github.com/gosimple/slug"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -340,6 +342,42 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 
 	t.Banners = banners
 
+	// Links
+	t.Links = []appLinkTemplate{
+		{
+			Text: "View " + app.GetTypeLower() + " on Twitch",
+			Link: "https://twitch.tv/directory/game/" + url.PathEscape(app.TwitchURL),
+			Icon: "https://static.twitchcdn.net/assets/favicon-32-d6025c14e900565d6177.png",
+			Hide: app.TwitchURL == "",
+		},
+		{
+			Text: "View " + app.GetTypeLower() + " on Steam Prices",
+			Link: "https://steamprices.com/" + app.GetSteamPricesURL() + "/" + strconv.Itoa(app.ID) + "/" + slug.Make(app.GetName()),
+			Icon: "https://pbs.twimg.com/profile_images/598791990084575232/KonQ1bk8_400x400.png",
+			Hide: app.GetSteamPricesURL() == "",
+		},
+		{
+			Text: "View " + app.GetTypeLower() + " on Achievement Stats",
+			Link: "https://www.achievementstats.com/index.php?action=games&gameId=" + strconv.Itoa(app.ID),
+			Icon: "https://www.achievementstats.com/templates/classic/images/favicon.ico",
+		},
+		{
+			Text: "View " + app.GetTypeLower() + " on Steam Hunters",
+			Link: "https://steamhunters.com/stats/" + strconv.Itoa(app.ID) + "/achievements",
+			Icon: "https://steamhunters.com/favicon-32x32.png?v=201705192248",
+		},
+		{
+			Text: "View " + app.GetTypeLower() + " on IsThereAnyDeal",
+			Link: "https://isthereanydeal.com/steam/app/" + strconv.Itoa(app.ID),
+			Icon: "https://d2uym1p5obf9p8.cloudfront.net/images/favicon.png",
+		},
+		{
+			Text: "Find similar " + app.GetTypeLower() + "s on SteamPeek",
+			Link: "https://steampeek.hu/?appid=" + strconv.Itoa(app.ID),
+			Icon: "https://steampeek.hu/favicon-32x32-spg.png",
+		},
+	}
+
 	//
 	returnTemplate(w, r, "app", t)
 }
@@ -358,6 +396,7 @@ type appTemplate struct {
 	Developers    []sql.Developer
 	Extended      []pics.KeyValue
 	Genres        []sql.Genre
+	Links         []appLinkTemplate
 	Packages      []mongo.Package
 	Price         helpers.ProductPrice
 	Publishers    []sql.Publisher
@@ -366,6 +405,13 @@ type appTemplate struct {
 	UFS           []pics.KeyValue
 	PlayersInGame int64
 	GroupPath     string
+}
+
+type appLinkTemplate struct {
+	Text string
+	Link string
+	Icon string
+	Hide bool
 }
 
 func (t appTemplate) GetRelatedTags(relatedApp mongo.App) template.HTML {

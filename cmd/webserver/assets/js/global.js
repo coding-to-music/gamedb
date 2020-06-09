@@ -1,6 +1,15 @@
 const $document = $(document);
 const $body = $("body");
 
+$(document).on('mouseup', '[data-link] a, [data-link] .select-checkbox, [data-link-tab] a', function (e) {
+    e.stopPropagation();
+    return false;
+});
+
+$('.stop-prop').on('click', function (e) {
+    e.stopPropagation();
+});
+
 // Data links
 let dataLinkDrag = false;
 let dataLinkX = 0;
@@ -49,15 +58,6 @@ $(document).on('mouseup', '[data-link]', function (e) {
 
     window.location.href = link;
     return true;
-});
-
-$(document).on('mouseup', '[data-link] a, [data-link] .select-checkbox', function (e) {
-    e.stopPropagation();
-    return true;
-});
-
-$('.stop-prop').on('click', function (e) {
-    e.stopPropagation();
 });
 
 // Console

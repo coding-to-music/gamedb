@@ -117,10 +117,13 @@
                         {{/*<img class="rounded{{if or (gt (len .App.Screenshots) 0) (gt (len .App.Movies) 0)}} cursor-pointer{{ end }}" src="{{ .App.GetHeaderImage }}" alt="{{ .App.GetName }}">*/}}
 
                         <div class="row">
+                            <div class="col-12">
+                                <div class="mb-3">{{ .Description }}</div>
+                            </div>
                             <div class="col-12 col-lg-7">
 
                                 <div class="table-responsive">
-                                    <table class="table mb-0">
+                                    <table class="table table-hover table-striped mb-0">
 
                                         {{ if ne .App.GameName "" }}
                                             <tr>
@@ -129,16 +132,16 @@
                                             </tr>
                                         {{ end }}
 
-                                        <tr>
-                                            <th scope="row" nowrap="nowrap" class="thin">Price</th>
+                                        <tr data-link-tab="prices">
+                                            <th scope="row" class="thin">Price</th>
                                             <td>{{ .Price.GetFinal }}</td>
                                         </tr>
                                         <tr>
-                                            <th scope="row" nowrap="nowrap" class="thin">Players</th>
+                                            <th scope="row" class="thin" data-link-tab="players">Players</th>
                                             <td>{{ comma64 .PlayersInGame }} <small>now</small>, {{ comma .App.PlayerPeakWeek }} <small>week peak</small></td>
                                         </tr>
 
-                                        <tr>
+                                        <tr {{ if gt .App.Reviews.GetTotal 0 }}data-link-tab="reviews"{{end}}>
                                             <th scope="row" nowrap="nowrap" class="thin">Review Score</th>
                                             <td>
                                                 {{ .App.GetReviewScore }}
@@ -150,49 +153,44 @@
                                         </tr>
 
                                         {{ if ne .App.GroupID "" }}
-                                            <tr>
-                                                <th scope="row" nowrap="nowrap" class="thin">Followers</th>
-                                                <td><a href="#players" class="followers-link">{{ .App.GetFollowers }}</a> <small>(<a href="{{ .GroupPath }}">Group</a>)</small></td>
+                                            <tr data-link-tab="players">
+                                                <th scope="row" class="thin">Followers</th>
+                                                <td>{{ .App.GetFollowers }} <small>(<a href="{{ .GroupPath }}">Group</a>)</small></td>
                                             </tr>
                                         {{ end }}
 
                                         {{ if gt (len .App.AlbumMetaData.Tracks) 0 }}
                                             <tr>
-                                                <th scope="row" nowrap="nowrap" class="thin">Tracks</th>
+                                                <th scope="row" class="thin">Tracks</th>
                                                 <td>{{ comma (len .App.AlbumMetaData.Tracks) }}</td>
                                             </tr>
                                         {{ end }}
 
-                                        <tr>
-                                            <th scope="row" nowrap="nowrap" class="thin">Achievements</th>
+                                        <tr {{ if gt .App.AchievementsCount 0 }}data-link-tab="achievements"{{ end }}>
+                                            <th scope="row" class="thin">Achievements</th>
                                             <td>{{ comma .App.AchievementsCount }}</td>
                                         </tr>
 
-                                        <tr>
-                                            <th scope="row" nowrap="nowrap" class="thin">DLC</th>
+                                        <tr {{ if gt .App.DLCCount 0 }}data-link-tab="dlc"{{ end }}>
+                                            <th scope="row" class="thin">DLC</th>
                                             <td>{{ comma .App.DLCCount }}</td>
                                         </tr>
 
-                                        <tr>
-                                            <th scope="row" nowrap="nowrap" class="thin">Bundles & Packages</th>
-                                            <td>{{ comma (sum (len .Packages) (len .Bundles)) }}</td>
+                                        <tr {{ if or (gt (len .Packages) 0) (gt (len .Bundles) 0) }}data-link-tab="packages"{{end}}>
+                                            <th scope="row" nowrap="nowrap" class="thin">Packages</th>
+                                            <td>{{ comma (len .Bundles) }} bundles, {{ comma (len .Packages) }} packages</td>
                                         </tr>
 
                                         {{ if gt .App.Items 0 }}
                                             <tr>
-                                                <th scope="row" nowrap="nowrap" class="thin">Items</th>
+                                                <th scope="row" class="thin">Items</th>
                                                 <td>{{ comma .App.Items }}</td>
                                             </tr>
                                         {{ end }}
 
-                                        <tr>
-                                            <th scope="row" nowrap="nowrap" class="thin">Average Playtime</th>
-                                            <td>{{ .App.GetPlaytimeAverage }}</td>
-                                        </tr>
-
                                         {{ if gt (len .App.Platforms) 0 }}
                                             <tr>
-                                                <th scope="row" nowrap="nowrap" class="thin">Platforms</th>
+                                                <th scope="row" class="thin">Platforms</th>
                                                 <td class="platforms">{{ .App.GetPlatformImages }}</td>
                                             </tr>
                                         {{ end }}
@@ -204,7 +202,7 @@
 
                                         {{ if gt (len .Demos) 0 }}
                                             <tr>
-                                                <th scope="row" nowrap="nowrap" class="thin">Demos</th>
+                                                <th scope="row" class="thin">Demos</th>
                                                 <td>
                                                     {{ range $key, $value := .Demos }}
                                                         <a class="badge badge-success" href="{{ .GetPath }}">{{ .GetName }}</a>
@@ -213,9 +211,31 @@
                                             </tr>
                                         {{ end }}
 
+                                        {{ if gt (len .Genres) 0 }}
+                                            <tr>
+                                                <th scope="row" class="thin">Genres</th>
+                                                <td>
+                                                    {{ range $key, $value := .Genres }}
+                                                        <a class="badge badge-success" href="/games?genres={{ .ID }}">{{ .GetName }}</a>
+                                                    {{ end }}
+                                                </td>
+                                            </tr>
+                                        {{ end }}
+
+                                        {{ if gt (len .App.Categories) 0 }}
+                                            <tr>
+                                                <th scope="row" class="thin">Categories</th>
+                                                <td>
+                                                    {{ range $key, $value := .Categories }}
+                                                        <a class="badge badge-success" href="/games?categories={{ .ID }}">{{ .GetName }}</a>
+                                                    {{ end }}
+                                                </td>
+                                            </tr>
+                                        {{ end }}
+
                                         {{ if gt (len .Developers) 0 }}
                                             <tr>
-                                                <th scope="row" nowrap="nowrap" class="thin">Developers</th>
+                                                <th scope="row" class="thin">Developers</th>
                                                 <td>
                                                     {{ range $key, $value := .Developers }}
                                                         <a class="badge badge-success" href="/games?developers={{ .ID }}">{{ .GetName }}</a>
@@ -226,7 +246,7 @@
 
                                         {{ if gt (len .Publishers) 0 }}
                                             <tr>
-                                                <th scope="row" nowrap="nowrap" class="thin">Publishers</th>
+                                                <th scope="row" class="thin">Publishers</th>
                                                 <td>
                                                     {{ range $key, $value := .Publishers }}
                                                         <a class="badge badge-success" href="/games?publishers={{ .ID }}">{{ .GetName }}</a>
@@ -247,64 +267,31 @@
                                             </tr>
                                         {{ end }}
 
-                                        <tr>
-                                            <th scope="row">Description</th>
-                                            <td><small>{{ .Description }}</small></td>
-                                        </tr>
-
                                     </table>
                                 </div>
 
                             </div>
                             <div class="col-12 col-lg-5">
 
-                                <div class="table-responsive">
-                                    <table class="table mb-0">
-
-                                        {{ if gt (len .Genres) 0 }}
-                                            <h6 class="mb-0">Genres</h6>
-                                            <div class="mb-3">
-                                                {{ range $key, $value := .Genres }}
-                                                    <a class="badge badge-success" href="/games?genres={{ .ID }}">{{ .GetName }}</a>
-                                                {{ end }}
+                                <h6 class="mb-1">Links</h6>
+                                <div id="links" class="mb-3">
+                                    {{ range .Links }}
+                                        {{ if not .Hide }}
+                                            <div>
+                                                <img src="{{ .Icon }}" alt="{{ .Text }}" data-src="/assets/img/no-app-image-square.jpg">
+                                                <a href="{{ .Link }}" target="_blank" rel="noopener">{{ .Text }}</a>
                                             </div>
                                         {{ end }}
+                                    {{ end }}
+                                </div>
 
-                                        {{ if gt (len .App.Categories) 0 }}
-                                            <h6 class="mb-0">Categories</h6>
-                                            <div class="mb-3">
-                                                {{ range $key, $value := .Categories }}
-                                                    <a class="badge badge-success" href="/games?categories={{ .ID }}">{{ .GetName }}</a>
-                                                {{ end }}
-                                            </div>
-                                        {{ end }}
-
-                                        <h6 class="mb-1">Tags</h6>
-                                        <div id="tags" class="mb-3 clearfix">
-                                            {{ range $key, $value := .App.TagCounts }}
-                                                <div style="width: {{ percent .Count $.TagsMax }}%;"></div>
-                                                <a class="float-left" href="/games?tags={{ .ID }}">{{ .Name }}</a>
-                                                <span class="float-right">{{ comma .Count }} <i class="fas fa-thumbs-up"></i></span>
-                                            {{ end }}
-                                        </div>
-
-
-                                        <h6 class="mb-1">Links</h6>
-                                        <div id="links" class="mb-3">
-
-                                            {{ if ne .App.TwitchURL "" }}
-                                                <h6><a href="https://twitch.tv/directory/game/{{ pathEscape .App.TwitchURL }}" target="_blank" rel="noopener">View {{ .App.GetTypeLower }} on Twitch</a></h6>
-                                            {{ end }}
-                                            {{ if ne .App.GetSteamPricesURL "" }}
-                                                <h6><a href="https://steamprices.com/{{ .App.GetSteamPricesURL }}/{{ .App.ID }}/{{ slug .App.GetName }}" target="_blank" rel="noopener">View {{ .App.GetTypeLower }} on Steam Prices</a></h6>
-                                            {{ end }}
-                                            <h6><a href="https://www.achievementstats.com/index.php?action=games&gameId={{ .App.ID }}" target="_blank" rel="noopener">View {{ .App.GetTypeLower }} on Achievement Stats</a></h6>
-                                            <h6><a href="https://steampeek.hu/?appid={{ .App.ID }}" target="_blank" rel="noopener">Check similar {{ .App.GetTypeLower }}s on SteamPeek</a></h6>
-                                            <h6><a href="https://steamhunters.com/stats/{{ .App.ID }}/achievements" target="_blank" rel="noopener">View {{ .App.GetTypeLower }} on Steam Hunters</a></h6>
-                                            <h6><a href="https://isthereanydeal.com/steam/app/{{ .App.ID }}" target="_blank" rel="noopener">View {{ .App.GetTypeLower }} on IsThereAnyDeal</a></h6>
-                                        </div>
-
-                                    </table>
+                                <h6 class="mb-1">Tags</h6>
+                                <div id="tags" class="mb-3 clearfix">
+                                    {{ range $key, $value := .App.TagCounts }}
+                                        <div style="width: {{ percent .Count $.TagsMax }}%;"></div>
+                                        <a class="float-left" href="/games?tags={{ .ID }}">{{ .Name }}</a>
+                                        <span class="float-right">{{ comma .Count }} <i class="fas fa-thumbs-up"></i></span>
+                                    {{ end }}
                                 </div>
 
                             </div>
@@ -380,6 +367,10 @@
                                     <tr>
                                         <td>Average Last Week</td>
                                         <td>{{ commaf .App.PlayerAverageWeek }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Average Playtime <small>(On Game DB)</small></td>
+                                        <td>{{ .App.GetPlaytimeAverage }}</td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -794,7 +785,7 @@
                                 <tbody>
                                 <tr>
                                     <th scope="row" style="width: 20%;">Score</th>
-                                    <td>{{ .App.GetReviewScore }} <a href="/info#app-scores"><i class="fas fa-question"></i></a></td>
+                                    <td>{{ .App.GetReviewScore }} <a href="/info"><i class="fas fa-question"></i></a></td>
                                 </tr>
                                 {{ if ne .App.MetacriticURL "" }}
                                     <tr>

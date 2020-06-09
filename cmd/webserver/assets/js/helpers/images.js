@@ -22,8 +22,6 @@ function handleVideos() {
 
 function observeLazyImages($target) {
 
-    // https://www.sitepoint.com/five-techniques-lazy-load-images-website-performance/
-
     if (!$target) {
         return;
     }
