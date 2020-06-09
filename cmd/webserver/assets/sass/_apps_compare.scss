@@ -8,3 +8,11 @@
         box-shadow: none !important;
     }
 }
+
+body.dark {
+    #apps-compare-page {
+        iframe {
+            filter: invert(86%);
+        }
+    }
+}
