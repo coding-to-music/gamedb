@@ -55,9 +55,9 @@ func SearchPlayers(limit int, offset int, search string, sorters []elastic.Sorte
 			Must(
 				elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
 					elastic.NewTermQuery("id", search).Boost(10),
-					elastic.NewMatchQuery("name", search).Boost(2),
-					elastic.NewMatchQuery("name_recent", search).Boost(1),
-					elastic.NewMatchQuery("url", search).Boost(1),
+					elastic.NewMatchQuery("name", search).Boost(2).Fuzziness("1"),
+					elastic.NewMatchQuery("name_recent", search).Boost(1).Fuzziness("1"),
+					elastic.NewMatchQuery("url", search).Boost(1).Fuzziness("1"),
 				),
 			).
 			Should(
