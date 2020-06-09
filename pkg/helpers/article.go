@@ -17,6 +17,7 @@ var trimArticles = regexp.MustCompile(`(?s)^(<br>)+|(<br>)+$`)
 func GetArticleBody(body string) template.HTML {
 
 	body = strings.ReplaceAll(body, "{STEAM_CLAN_IMAGE}", articleImageBase)
+	body = strings.ReplaceAll(body, "{STEAM_CLAN_LOC_IMAGE}", articleImageBase)
 
 	doc, err := html.Parse(strings.NewReader(body))
 	if err == nil {
