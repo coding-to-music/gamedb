@@ -30,7 +30,7 @@ func (c PlayersQueueRandom) work() (err error) {
 	queues := map[rabbit.QueueName]int{
 		queue.QueueApps:     10,
 		queue.QueuePackages: 10,
-		queue.QueuePlayers:  10,
+		queue.QueuePlayers:  5,
 	}
 
 	var consumers = 1
