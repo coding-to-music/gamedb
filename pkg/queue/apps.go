@@ -971,7 +971,7 @@ func getWishlistCount(app *mongo.App) (err error) {
 		}
 	}
 
-	if playerCount == 0 {
+	if count == 0 {
 		app.WishlistAvgPosition = 0
 	} else {
 		app.WishlistAvgPosition = float64(total) / float64(count)
