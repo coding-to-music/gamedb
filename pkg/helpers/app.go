@@ -18,7 +18,7 @@ const (
 	ProductTypeApp     ProductType = "product"
 	ProductTypePackage ProductType = "package"
 
-	AppIconBase    = "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/"
+	AppIconBase    = "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/" // Also the base for achievements
 	DefaultAppIcon = "/assets/img/no-app-image-square.jpg"
 )
 
