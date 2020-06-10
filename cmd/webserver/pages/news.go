@@ -7,7 +7,6 @@ import (
 
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
 	elasticHelpers "github.com/gamedb/gamedb/pkg/elastic"
-	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
@@ -91,25 +90,21 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	var response = datatable.NewDataTablesResponse(r, query, count, filtered, nil)
-	for _, v := range articles {
-
-		var appIcon = helpers.GetAppIcon(v.AppID, v.AppIcon)
-		var appPath = helpers.GetAppPath(v.AppID, v.AppName) + "#news"
-		var appName = helpers.GetAppName(v.AppID, v.AppName)
-		var date = time.Unix(v.Time, 0).Format(helpers.DateYearTime)
+	for _, article := range articles {
 
 		response.AddRow([]interface{}{
-			v.ID,        // 0
-			v.Title,     // 1
-			v.GetBody(), // 2
-			v.AppID,     // 3
-			v.AppIcon,   // 4
-			v.Time,      // 5
-			v.Score,     // 6
-			appName,     // 7
-			appIcon,     // 8
-			appPath,     // 9
-			date,        // 10
+			article.ID,           // 0
+			article.Title,        // 1
+			article.GetBody(),    // 2
+			article.AppID,        // 3
+			article.AppIcon,      // 4
+			article.Time,         // 5
+			article.Score,        // 6
+			article.GetAppName(), // 7
+			article.GetAppIcon(), // 8
+			article.GetAppPath(), // 9
+			article.GetDate(),    // 10
+			article.TitleMarked,  // 11
 		})
 	}
 

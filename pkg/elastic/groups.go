@@ -2,6 +2,7 @@ package elastic
 
 import (
 	"encoding/json"
+	"regexp"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -11,6 +12,7 @@ import (
 type Group struct {
 	ID           string  `json:"id"`
 	Name         string  `json:"name"`
+	NameMarked   string  `json:"name_marked"`
 	URL          string  `json:"url"`
 	Abbreviation string  `json:"abbreviation"`
 	Headline     string  `json:"headline"`
@@ -25,8 +27,20 @@ func (group Group) GetAbbr() string {
 	return helpers.GetGroupAbbreviation(group.Abbreviation)
 }
 
+var removeWhiteSpace = regexp.MustCompile(`[\s\p{Braille}]{2,}`)
+
+func (group Group) GetHeadline() string {
+	group.Headline = removeWhiteSpace.ReplaceAllString(group.Headline, " ")
+	group.Headline = helpers.TruncateString(group.Headline, 100, "…")
+	return group.Headline
+}
+
 func (group Group) GetName() string {
 	return helpers.GetGroupName(group.Name, group.ID)
+}
+
+func (group Group) GetNameMarked() string {
+	return helpers.GetGroupName(group.NameMarked, group.ID)
 }
 
 func (group Group) GetPath() string {
@@ -120,9 +134,10 @@ func SearchGroups(offset int, sorters []elastic.Sorter, search string, errors st
 			group.Score = *hit.Score
 		}
 
+		group.NameMarked = group.Name
 		if val, ok := hit.Highlight["name"]; ok {
 			if len(val) > 0 {
-				group.Name = val[0]
+				group.NameMarked = val[0]
 			}
 		}
 

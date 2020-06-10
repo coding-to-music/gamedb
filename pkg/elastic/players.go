@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"strconv"
 
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/olivere/elastic/v7"
 )
@@ -11,6 +12,7 @@ import (
 type Player struct {
 	ID                int64    `json:"id"`
 	PersonaName       string   `json:"name"`
+	PersonaNameMarked string   `json:"name_marked"`
 	PersonaNameRecent []string `json:"name_recent"`
 	VanityURL         string   `json:"url"`
 	Avatar            string   `json:"avatar"`
@@ -26,6 +28,26 @@ type Player struct {
 	Friends           int      `json:"friends"`
 	Comments          int      `json:"comments"`
 	Score             float64  `json:"-"`
+}
+
+func (player Player) GetName() string {
+	return helpers.GetPlayerName(player.ID, player.PersonaName)
+}
+
+func (player Player) GetNameMarked() string {
+	return helpers.GetPlayerName(player.ID, player.PersonaNameMarked)
+}
+
+func (player Player) GetPath() string {
+	return helpers.GetPlayerPath(player.ID, player.PersonaName)
+}
+
+func (player Player) GetAvatar() string {
+	return helpers.GetPlayerAvatar(player.Avatar)
+}
+
+func (player Player) GetCommunityLink() string {
+	return helpers.GetPlayerCommunityLink(player.ID, player.VanityURL)
 }
 
 func IndexPlayer(player Player) error {
@@ -99,9 +121,10 @@ func SearchPlayers(limit int, offset int, search string, sorters []elastic.Sorte
 			player.Score = *hit.Score
 		}
 
+		player.PersonaNameMarked = player.PersonaName
 		if val, ok := hit.Highlight["name"]; ok {
 			if len(val) > 0 {
-				player.PersonaName = val[0]
+				player.PersonaNameMarked = val[0]
 			}
 		}
 

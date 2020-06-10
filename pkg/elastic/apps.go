@@ -13,6 +13,7 @@ import (
 type App struct {
 	ID          int                   `json:"id"`
 	Name        string                `json:"name"`
+	NameMarked  string                `json:"name_marked"`
 	Players     int                   `json:"players"`
 	Aliases     []string              `json:"aliases"`
 	Icon        string                `json:"icon"`
@@ -128,9 +129,11 @@ func SearchApps(limit int, offset int, search string, sorters []elastic.Sorter, 
 		}
 
 		if highlights {
+
+			app.NameMarked = app.Name
 			if val, ok := hit.Highlight["name"]; ok {
 				if len(val) > 0 {
-					app.Name = val[0]
+					app.NameMarked = val[0]
 				}
 			}
 		}

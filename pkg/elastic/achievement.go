@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"strconv"
 
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/olivere/elastic/v7"
 )
@@ -11,6 +12,7 @@ import (
 type Achievement struct {
 	ID          string  `json:"id"` // Achievement key
 	Name        string  `json:"name"`
+	NameMarked  string  `json:"name_marked"`
 	Icon        string  `json:"icon"`
 	Description string  `json:"description"`
 	Hidden      bool    `json:"hidden"`
@@ -22,6 +24,22 @@ type Achievement struct {
 
 func (achievement Achievement) GetKey() string {
 	return strconv.Itoa(achievement.AppID) + "-" + achievement.ID
+}
+
+func (achievement Achievement) GetAppName() string {
+	return helpers.GetAppName(achievement.AppID, achievement.AppName)
+}
+
+func (achievement Achievement) GetIcon() string {
+	return helpers.GetAchievementIcon(achievement.AppID, achievement.Icon)
+}
+
+func (achievement Achievement) GetCompleed() string {
+	return helpers.FloatToString(achievement.Completed, 1)
+}
+
+func (achievement Achievement) GetAppPath() string {
+	return helpers.GetAppPath(achievement.AppID, achievement.AppName) + "#achievements"
 }
 
 func IndexAchievement(achievement Achievement) error {
@@ -83,9 +101,10 @@ func SearchAppAchievements(offset int, search string, sorters []elastic.Sorter) 
 			achievement.Score = *hit.Score
 		}
 
+		achievement.NameMarked = achievement.Name
 		if val, ok := hit.Highlight["name"]; ok {
 			if len(val) > 0 {
-				achievement.Name = val[0]
+				achievement.NameMarked = val[0]
 			}
 		}
 

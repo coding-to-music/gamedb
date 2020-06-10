@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"html/template"
 	"strconv"
+	"time"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -11,18 +12,35 @@ import (
 )
 
 type Article struct {
-	ID      int64   `json:"id"`
-	Title   string  `json:"title"`
-	Body    string  `json:"body"`
-	AppID   int     `json:"app_id"`
-	AppName string  `json:"app_name"`
-	AppIcon string  `json:"app_icon"`
-	Time    int64   `json:"time"`
-	Score   float64 `json:"-"`
+	ID          int64   `json:"id"`
+	Title       string  `json:"title"`
+	TitleMarked string  `json:"title_marked"`
+	Body        string  `json:"body"`
+	AppID       int     `json:"app_id"`
+	AppName     string  `json:"app_name"`
+	AppIcon     string  `json:"app_icon"`
+	Time        int64   `json:"time"`
+	Score       float64 `json:"-"`
 }
 
 func (article Article) GetBody() template.HTML {
 	return helpers.GetArticleBody(article.Body)
+}
+
+func (article Article) GetAppIcon() string {
+	return helpers.GetAppIcon(article.AppID, article.AppIcon)
+}
+
+func (article Article) GetAppPath() string {
+	return helpers.GetAppPath(article.AppID, article.AppName) + "#news"
+}
+
+func (article Article) GetAppName() string {
+	return helpers.GetAppName(article.AppID, article.AppName)
+}
+
+func (article Article) GetDate() string {
+	return time.Unix(article.Time, 0).Format(helpers.DateYearTime)
 }
 
 func IndexArticle(article Article) error {
@@ -83,9 +101,10 @@ func SearchArticles(offset int, sorters []elastic.Sorter, search string) (articl
 			article.Score = *hit.Score
 		}
 
+		article.TitleMarked = article.Title
 		if val, ok := hit.Highlight["title"]; ok {
 			if len(val) > 0 {
-				article.Title = val[0]
+				article.TitleMarked = val[0]
 			}
 		}
 

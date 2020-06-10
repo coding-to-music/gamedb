@@ -6,7 +6,6 @@ import (
 
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
 	elasticHelpers "github.com/gamedb/gamedb/pkg/elastic"
-	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
@@ -73,21 +72,17 @@ func achievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var response = datatable.NewDataTablesResponse(r, query, count, filtered, nil)
 	for _, achievement := range achievements {
 
-		path := helpers.GetAppPath(achievement.AppID, achievement.AppName) + "#achievements"
-		completed := helpers.FloatToString(achievement.Completed, 1)
-		icon := helpers.GetAchievementIcon(achievement.AppID, achievement.Icon)
-		appName := helpers.GetAppName(achievement.AppID, achievement.AppName)
-
 		response.AddRow([]interface{}{
-			achievement.Name,        // 0
-			icon,                    // 1
-			achievement.Description, // 2
-			completed,               // 3
-			achievement.AppID,       // 4
-			appName,                 // 5
-			achievement.Score,       // 6
-			path,                    // 7
-			achievement.Hidden,      // 8
+			achievement.Name,          // 0
+			achievement.GetIcon(),     // 1
+			achievement.Description,   // 2
+			achievement.GetCompleed(), // 3
+			achievement.AppID,         // 4
+			achievement.GetAppName(),  // 5
+			achievement.Score,         // 6
+			achievement.GetAppPath(),  // 7
+			achievement.Hidden,        // 8
+			achievement.NameMarked,    // 9
 		})
 	}
 

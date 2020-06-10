@@ -2,7 +2,6 @@ package pages
 
 import (
 	"net/http"
-	"regexp"
 	"sync"
 
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
@@ -81,20 +80,15 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
-	var removeWhiteSpace = regexp.MustCompile(`[\s\p{Braille}]{2,}`)
-
 	var response = datatable.NewDataTablesResponse(r, query, total, filtered, aggregations)
 	for k, group := range groups {
-
-		var headline = removeWhiteSpace.ReplaceAllString(group.Headline, " ")
-		headline = helpers.TruncateString(headline, 100, "…")
 
 		response.AddRow([]interface{}{
 			group.ID,                  // 0
 			group.GetName(),           // 1
 			group.GetGroupLink(),      // 2
 			group.GetAbbr(),           // 3
-			headline,                  // 4
+			group.GetHeadline(),       // 4
 			group.GetIcon(),           // 5
 			group.Members,             // 6
 			group.GetTrend(),          // 7
@@ -102,6 +96,7 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			query.GetOffset() + k + 1, // 9
 			group.GetPath(),           // 10
 			group.Score,               // 11
+			group.GetNameMarked(),     // 12
 		})
 	}
 

@@ -29,7 +29,7 @@ if ($('#groups-page').length > 0) {
                 "targets": 1,
                 "render": function (data, type, row) {
 
-                    let name = row[1] + '<br><small>' + row[4] + '</small>';
+                    let name = row[12] + '<br><small>' + row[4] + '</small>';
 
                     if (row[8]) {
                         name += '<span class="badge badge-danger float-right">Removed</span>';

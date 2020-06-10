@@ -72,25 +72,21 @@ func coopSearchAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		for _, player := range players {
 
-			var name = helpers.GetPlayerName(player.ID, player.PersonaName)
-			var path = helpers.GetPlayerPath(player.ID, player.PersonaName)
-			var icon = helpers.GetPlayerAvatar(player.Avatar)
-			var communityLink = helpers.GetPlayerCommunityLink(player.ID, player.VanityURL)
-
 			var linkBool = helpers.SliceHasString(strconv.FormatInt(player.ID, 10), ids)
 			var link = makeCoopActionLink(ids, strconv.FormatInt(player.ID, 10), linkBool)
 
 			response.AddRow([]interface{}{
-				player.Games,  // 0
-				player.ID,     // 1
-				name,          // 2
-				path,          // 3
-				icon,          // 4
-				communityLink, // 5
-				player.Level,  // 6
-				link,          // 7
-				linkBool,      // 8
-				player.Score,  // 9
+				player.Games,              // 0
+				player.ID,                 // 1
+				player.GetName(),          // 2
+				player.GetPath(),          // 3
+				player.GetAvatar(),        // 4
+				player.GetCommunityLink(), // 5
+				player.Level,              // 6
+				link,                      // 7
+				linkBool,                  // 8
+				player.Score,              // 9
+				player.GetNameMarked(),    // 10
 			})
 		}
 	}

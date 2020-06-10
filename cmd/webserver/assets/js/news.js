@@ -35,13 +35,13 @@ if ($('#news-page').length > 0) {
                 {
                     "targets": 0,
                     "render": function (data, type, row) {
-                        const name = row[1] + '<br><small><a href="' + row[9] + '">' + row[7] + '</a></small>';
-                        return '<div class="icon-name"><div class="icon"><img class="tall" alt="" src="" data-lazy="' + row[8] + '" data-lazy-alt="' + row[7] + '"></div><div class="name">' + name + '</div></div><div class="d-none">' + row[5] + '</div>'
+                        const name = row[11] + '<br><small><a href="' + row[9] + '">' + row[7] + '</a></small>';
+                        return '<div class="icon-name"><div class="icon"><img class="tall" alt="" src="" data-lazy="' + row[8] + '" data-lazy-alt="' + row[1] + '"></div><div class="name">' + name + '</div></div><div class="d-none">' + row[5] + '</div>'
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
                     },
-                    "orderable": false
+                    "orderable": false,
                 },
                 // Date
                 {

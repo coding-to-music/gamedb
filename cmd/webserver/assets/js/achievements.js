@@ -17,7 +17,7 @@ if ($achievementsPage.length > 0) {
                         row[2] = '<em>&lt;Hidden&gt;</em> ' + row[2];
                     }
 
-                    let name = row[5] + ': ' + row[0] + '<br><small>' + row[2] + '</small>';
+                    let name = row[5] + ': ' + row[9] + '<br><small>' + row[2] + '</small>';
 
                     return '<div class="icon-name"><div class="icon"><img class="tall" data-lazy="' + row[1] + '" alt="" data-lazy-alt="' + row[0] + '"></div><div class="name markable">' + name + '</div></div>'
                 },
