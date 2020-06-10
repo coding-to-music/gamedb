@@ -9,6 +9,7 @@ import (
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
+	"github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"go.mongodb.org/mongo-driver/bson"
@@ -36,7 +37,7 @@ func appsFindGroupHandler(messages []*rabbit.Message) {
 
 		resp, err := helpers.GetWithTimeout("https://steamcommunity.com/app/"+strconv.Itoa(payload.AppID), 0)
 		if err != nil {
-			log.Err(err, message.Message.Body)
+			steam.LogSteamError(err, message.Message.Body)
 			sendToRetryQueue(message)
 			continue
 		}
