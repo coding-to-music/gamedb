@@ -291,7 +291,7 @@
 
                 // Fixes hidden fixed header tables
                 $.each(window.gdbTables, function (index, value) {
-                    value.fixedHeader.adjust();
+                    $(value).DataTable().fixedHeader.adjust();
                 });
 
                 //
@@ -431,7 +431,7 @@
 
             // Keep track of tables, so we can recalculate fixed headers on tab changes etc
             window.gdbTables = window.gdbTables || [];
-            window.gdbTables.push();
+            window.gdbTables.push(this.element);
         },
     });
 
