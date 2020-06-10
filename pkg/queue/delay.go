@@ -9,11 +9,18 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 )
 
+var FlushDelayQueue bool
+
 func delayHandler(messages []*rabbit.Message) {
 
 	for _, message := range messages {
 
 		time.Sleep(time.Second / 10)
+
+		if FlushDelayQueue {
+			sendToLastQueue(message)
+			continue
+		}
 
 		// writeToFile(message)
 
