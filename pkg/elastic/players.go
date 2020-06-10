@@ -54,16 +54,16 @@ func SearchPlayers(limit int, offset int, search string, sorters []elastic.Sorte
 		searchService.Query(elastic.NewBoolQuery().
 			Must(
 				elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
-					elastic.NewTermQuery("id", search).Boost(10),
-					elastic.NewMatchQuery("name", search).Boost(2).Fuzziness("1"),
-					elastic.NewMatchQuery("name_recent", search).Boost(1).Fuzziness("1"),
-					elastic.NewMatchQuery("url", search).Boost(1).Fuzziness("1"),
+					elastic.NewTermQuery("id", search).Boost(2),
+					elastic.NewMatchQuery("name", search).Boost(2),
+					elastic.NewMatchQuery("name_recent", search).Boost(1),
+					elastic.NewMatchQuery("url", search).Boost(1),
 				),
 			).
 			Should(
-				elastic.NewTermQuery("name", search).Boost(10),
-				elastic.NewFunctionScoreQuery().AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("level").Factor(0.01)),
-				elastic.NewFunctionScoreQuery().AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("games").Factor(0.001)),
+				elastic.NewFunctionScoreQuery().
+					AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("level").Factor(0.01)).
+					AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("games").Factor(0.001)),
 			),
 		)
 	}

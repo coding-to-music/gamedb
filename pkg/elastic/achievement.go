@@ -57,13 +57,10 @@ func SearchAppAchievements(offset int, search string, sorters []elastic.Sorter) 
 		searchService.Query(elastic.NewBoolQuery().
 			Must(
 				elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
-					elastic.NewMatchQuery("name", search).Fuzziness("1").Boost(3),
-					elastic.NewMatchQuery("description", search).Fuzziness("1").Boost(2),
-					elastic.NewMatchQuery("app_name", search).Fuzziness("1").Boost(1),
+					elastic.NewMatchQuery("name", search).Boost(3),
+					elastic.NewMatchQuery("description", search).Boost(2),
+					elastic.NewMatchQuery("app_name", search).Boost(1),
 				),
-			).
-			Should(
-				elastic.NewMatchPhraseQuery("name", search).Boost(1), // Exact match
 			),
 		)
 	}
