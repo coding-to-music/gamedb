@@ -44,6 +44,7 @@ if ($playerPage.length > 0) {
                     break;
                 case '#games':
                     loadPlayerGames();
+                    $('a.nav-link[href="#games-stats"]').tab('show');
                     break;
                 case '#badges':
                     loadPlayerBadges();

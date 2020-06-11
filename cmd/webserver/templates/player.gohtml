@@ -382,149 +382,171 @@
                     </div>
                     <div class="tab-pane" id="games" role="tabpanel">
 
-                        {{ if gt .Player.GamesCount 0 }}
-
-                            {{/* Game Stats */}}
-                            <div class="row">
-                                <div class="col-12 col-md-6 mb-3">
-
-                                    <div class="card mb-4">
-                                        <div class="card-header">Library Stats</div>
-                                        <div class="card-body">
-
-                                            <div class="table-responsive mb-4">
-                                                <table class="table">
-                                                    <thead>
-                                                    <tr>
-                                                        <th scope="col" style="width: 40%"></th>
-                                                        <th scope="col" style="width: 30%">All</th>
-                                                        <th scope="col" style="width: 30%">Played</th>
-                                                    </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                    <tr>
-                                                        <th scope="col" nowrap="nowrap">Average Price</th>
-                                                        <td nowrap="nowrap">{{ .Player.GameStats.All.GetAveragePrice }}</td>
-                                                        <td nowrap="nowrap">{{ .Player.GameStats.Played.GetAveragePrice }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th scope="col" nowrap="nowrap">Average Price / Hour</th>
-                                                        <td>{{ .Player.GameStats.All.GetAveragePriceHour }}</td>
-                                                        <td>{{ .Player.GameStats.Played.GetAveragePriceHour }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th scope="col" nowrap="nowrap">Total Price</th>
-                                                        <td nowrap="nowrap">{{ .Player.GameStats.All.GetTotalPrice }}</td>
-                                                        <td nowrap="nowrap">{{ .Player.GameStats.Played.GetTotalPrice }}</td>
-                                                    </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-
-                                            <table class="table">
-                                                <thead>
-                                                <tr>
-                                                    <th scope="col" style="width: 40%"></th>
-                                                    <th scope="col" style="width: 30%">All</th>
-                                                    <th scope="col" style="width: 30%">Played</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                <tr>
-                                                    <th scope="col" nowrap="nowrap">Average Time</th>
-                                                    <td nowrap="nowrap">{{ .Player.GameStats.All.GetAverageTime }}</td>
-                                                    <td nowrap="nowrap">{{ .Player.GameStats.Played.GetAverageTime }}</td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="col" nowrap="nowrap">Total Time</th>
-                                                    <td nowrap="nowrap">{{ .Player.GameStats.All.GetTotalTime }}</td>
-                                                    <td nowrap="nowrap">{{ .Player.GameStats.Played.GetTotalTime }}</td>
-                                                </tr>
-                                                </tbody>
-                                            </table>
-
-                                        </div>
-                                    </div>
-
-                                </div>
-                                <div class="col-12 col-md-6 mb-3">
-
-                                    <div class="card mb-4">
-                                        <div class="card-header">App Types</div>
-                                        <div class="card-body">
-
-                                            <table class="table table-datatable" data-order='[[1, "desc"]]'>
-                                                <thead>
-                                                <tr>
-                                                    <th>Type</th>
-                                                    <th>Count</th>
-                                                    <th data-toggle="tooltip" data-placement="top" title="Percent of Steam catalogue">%</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                {{ range $key, $value := .Player.GamesByType }}
-                                                    <tr>
-                                                        <td>{{ $key }}</td>
-                                                        <td>{{ comma $value }}</td>
-                                                        <td><small>{{ $.TypePercent $key }}</small></td>
-                                                    </tr>
-                                                {{ end }}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-
-                                </div>
+                        {{ if eq .Player.GamesCount 0 }}
+                            <div class="alert alert-primary" role="alert">
+                                This player's profile is set to private. Go <a target="_blank" rel="noopener" href="https://steamcommunity.com/my/edit/settings">here</a> to change your privacy settings.
                             </div>
-
-                            {{/* Recent Games */}}
-                            <div class="table-responsive mb-4">
-                                <table class="table table-hover table-striped table-counts mb-4" data-row-type="games" data-path="/players/{{ .Player.ID }}/recent.json" id="recent-games">
-                                    <thead class="thead-light">
-                                    <tr>
-                                        <th scope="col">Recent Games</th>
-                                        <th scope="col">2 Weeks</th>
-                                        <th scope="col">All Time</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            {{/* Games List */}}
-                            <div class="form-row">
-                                <div class="col-12 col-md-6 col-lg-5 col-xl-4 mb-2">
-                                    <div class="form-group">
-                                        <label for="player-games-search" class="sr-only sr-only-focusable">Game Search</label>
-                                        <input type="text" id="player-games-search" name="player-games-search" class="form-control" placeholder="Game Search">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="table-responsive">
-                                <table class="table table-hover table-striped table-counts mb-0" data-row-type="games" data-path="/players/{{ .Player.ID }}/games.json" id="all-games">
-                                    <thead class="thead-light">
-                                    <tr>
-                                        <th scope="col">All Games</th>
-                                        <th scope="col">Price</th>
-                                        <th scope="col">Time</th>
-                                        <th scope="col">Price/Hour</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    </tbody>
-                                </table>
-                            </div>
-
-                        {{ else }}
-
-                            <div class="jumbotron bottom">
-                                <h1><i class="fas fa-info"></i></h1>
-                                <div>This player either has no games or has them hidden to the public. Go <a target="_blank" rel="noopener" href="https://steamcommunity.com/my/edit/settings">here</a> to change your privacy settings.</div>
-                            </div>
-
                         {{ end }}
+
+                        <div class="card">
+                            <div class="card-header">
+
+                                <ul class="nav nav-tabs card-header-tabs nav-fill-mobile" role="tablist">
+                                    <li class="nav-item active">
+                                        <a class="nav-link nav-link-small" data-toggle="tab" href="#games-stats" role="tab">Stats</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link nav-link-small" data-toggle="tab" href="#games-library" role="tab">Library</a>
+                                    </li>
+                                </ul>
+
+                            </div>
+                            <div class="card-body">
+                                <div class="tab-content">
+                                    <div class="tab-pane show active" id="games-stats" role="tabpanel">
+
+                                        {{/* Game Stats */}}
+                                        <div class="row">
+                                            <div class="col-12 col-md-6 mb-3">
+
+                                                <div class="card">
+                                                    <div class="card-header">Library Stats</div>
+                                                    <div class="card-body">
+
+                                                        <div class="table-responsive mb-4">
+                                                            <table class="table">
+                                                                <thead>
+                                                                <tr>
+                                                                    <th scope="col" style="width: 40%"></th>
+                                                                    <th scope="col" style="width: 30%">All</th>
+                                                                    <th scope="col" style="width: 30%">Played</th>
+                                                                </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                <tr>
+                                                                    <th scope="col" nowrap="nowrap">Average Price</th>
+                                                                    <td nowrap="nowrap">{{ .Player.GameStats.All.GetAveragePrice }}</td>
+                                                                    <td nowrap="nowrap">{{ .Player.GameStats.Played.GetAveragePrice }}</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <th scope="col" nowrap="nowrap">Average Price / Hour</th>
+                                                                    <td>{{ .Player.GameStats.All.GetAveragePriceHour }}</td>
+                                                                    <td>{{ .Player.GameStats.Played.GetAveragePriceHour }}</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <th scope="col" nowrap="nowrap">Total Price</th>
+                                                                    <td nowrap="nowrap">{{ .Player.GameStats.All.GetTotalPrice }}</td>
+                                                                    <td nowrap="nowrap">{{ .Player.GameStats.Played.GetTotalPrice }}</td>
+                                                                </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+
+                                                        <table class="table">
+                                                            <thead>
+                                                            <tr>
+                                                                <th scope="col" style="width: 40%"></th>
+                                                                <th scope="col" style="width: 30%">All</th>
+                                                                <th scope="col" style="width: 30%">Played</th>
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            <tr>
+                                                                <th scope="col" nowrap="nowrap">Average Time</th>
+                                                                <td nowrap="nowrap">{{ .Player.GameStats.All.GetAverageTime }}</td>
+                                                                <td nowrap="nowrap">{{ .Player.GameStats.Played.GetAverageTime }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="col" nowrap="nowrap">Total Time</th>
+                                                                <td nowrap="nowrap">{{ .Player.GameStats.All.GetTotalTime }}</td>
+                                                                <td nowrap="nowrap">{{ .Player.GameStats.Played.GetTotalTime }}</td>
+                                                            </tr>
+                                                            </tbody>
+                                                        </table>
+
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            <div class="col-12 col-md-6 mb-3">
+
+                                                <div class="card">
+                                                    <div class="card-header">App Types</div>
+                                                    <div class="card-body">
+
+                                                        <table class="table table-datatable" data-order='[[1, "desc"]]'>
+                                                            <thead>
+                                                            <tr>
+                                                                <th>Type</th>
+                                                                <th>Count</th>
+                                                                <th data-toggle="tooltip" data-placement="top" title="Percent of Steam catalogue">%</th>
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            {{ range $key, $value := .Player.GamesByType }}
+                                                                <tr>
+                                                                    <td>{{ $key }}</td>
+                                                                    <td>{{ comma $value }}</td>
+                                                                    <td><small>{{ $.TypePercent $key }}</small></td>
+                                                                </tr>
+                                                            {{ end }}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                        {{/* Recent Games */}}
+                                        <h5>Games played in the lats 2 weeks</h5>
+                                        <div class="table-responsive">
+                                            <table class="table table-hover table-striped table-counts mb-4" data-row-type="games" data-path="/players/{{ .Player.ID }}/recent.json" id="recent-games">
+                                                <thead class="thead-light">
+                                                <tr>
+                                                    <th scope="col">Game</th>
+                                                    <th scope="col">2 Weeks</th>
+                                                    <th scope="col">All Time</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                    </div>
+                                    <div class="tab-pane" id="games-library" role="tabpanel">
+
+                                        {{/* Games List */}}
+                                        <div class="form-row">
+                                            <div class="col-12 col-md-6 col-lg-5 col-xl-4 mb-2">
+                                                <div class="form-group">
+                                                    <label for="player-games-search" class="sr-only sr-only-focusable">Game Search</label>
+                                                    <input type="text" id="player-games-search" name="player-games-search" class="form-control" placeholder="Game Search">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="table-responsive">
+                                            <table class="table table-hover table-striped table-counts mb-0" data-row-type="games" data-path="/players/{{ .Player.ID }}/games.json" id="all-games">
+                                                <thead class="thead-light">
+                                                <tr>
+                                                    <th scope="col">Game</th>
+                                                    <th scope="col">Price</th>
+                                                    <th scope="col">Time</th>
+                                                    <th scope="col">Price/Hour</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
 
                     </div>
 
