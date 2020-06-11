@@ -67,7 +67,7 @@ func (e entry) string(severity logging.Severity) string {
 	str := strings.Join(ret, " - ")
 
 	// Stack
-	if severity > logging.Info {
+	if (!config.IsLocal() && severity > logging.Info) || severity > logging.Warning {
 		str += "\n" + string(debug.Stack())
 	}
 
