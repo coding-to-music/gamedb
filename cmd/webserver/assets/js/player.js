@@ -25,10 +25,6 @@ if ($playerPage.length > 0) {
                 $('i', $link).removeClass('fa-spin');
 
                 $link.contents().last()[0].textContent = ' In Queue';
-
-                if (data.log) {
-                    console.log(data.log);
-                }
             },
         });
     });

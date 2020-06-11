@@ -1,6 +1,7 @@
 package pages
 
 import (
+	"html/template"
 	"net/http"
 	"regexp"
 	"sort"
@@ -87,6 +88,11 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		tm.addToast(Toast{Title: "Update", Message: "Player has been queued for an update"})
 		tm.Player = player
 		tm.DefaultAvatar = helpers.DefaultPlayerAvatar
+
+		q, err := queue.ProducerChannels[queue.QueuePlayers].Inspect()
+		if err == nil {
+			tm.Queue = template.JS(strconv.Itoa(q.Messages))
+		}
 
 		returnTemplate(w, r, "player_missing", tm)
 		return
@@ -365,6 +371,7 @@ type playerMissingTemplate struct {
 	GlobalTemplate
 	Player        mongo.Player
 	DefaultAvatar string
+	Queue         template.JS
 }
 
 type playerRankTemplate struct {

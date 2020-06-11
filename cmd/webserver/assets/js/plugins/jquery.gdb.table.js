@@ -128,7 +128,7 @@
             const value = getFieldValue($field);
 
             if (name === undefined) {
-                console.log('Search field missing name field');
+                logLocal('Search field missing name field');
             }
 
             if (name && value && value.length > 0) {

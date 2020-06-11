@@ -27,8 +27,8 @@ function toast(success = true, body, title = '', timeout = 0, link = '') {
     }
 
     if (success) {
-        toastr.success(body, title, options);
+        return toastr.success(body, title, options);
     } else {
-        toastr.error(body, title, options);
+        return toastr.error(body, title, options);
     }
 }

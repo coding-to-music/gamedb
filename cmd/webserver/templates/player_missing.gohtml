@@ -26,11 +26,20 @@
                         <div id="profiles"><i class="fas fa-spinner fa-spin fa-fw"></i></div>
                     </div>
 
+                    <div class="progress" style="height: 20px;">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar"></div>
+                    </div>
+
                 </div>
             </div>
         </div>
 
     </div>
+
+    <script>
+        const queue_start = {{ .Queue }};
+        let queue_current = {{ .Queue }};
+    </script>
 
     {{ template "_footer" . }}
 {{end}}
