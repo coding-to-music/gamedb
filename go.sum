@@ -78,6 +78,8 @@ github.com/Jleagle/rabbit-go v0.0.0-20200423115244-504ad2994195 h1:a5UzaaK3Xs15l
 github.com/Jleagle/rabbit-go v0.0.0-20200423115244-504ad2994195/go.mod h1:J0f6SqQkqJajxRVuKrvve45Gh1QX0eiUJG6+IbFPZAc=
 github.com/Jleagle/rabbit-go v0.0.0-20200426185217-d89e0626dc07 h1:nAL1YhzOhKK2Dw6jBTUzIVRB1PTtM0zOZQhZuVOl2Ck=
 github.com/Jleagle/rabbit-go v0.0.0-20200426185217-d89e0626dc07/go.mod h1:J0f6SqQkqJajxRVuKrvve45Gh1QX0eiUJG6+IbFPZAc=
+github.com/Jleagle/rabbit-go v0.0.0-20200611114754-9172d7a27c75 h1:4TMcefWnlaaw4+35cZh8Zz4XxB67pxGTJf0MhiPnKo8=
+github.com/Jleagle/rabbit-go v0.0.0-20200611114754-9172d7a27c75/go.mod h1:J0f6SqQkqJajxRVuKrvve45Gh1QX0eiUJG6+IbFPZAc=
 github.com/Jleagle/recaptcha-go v0.0.0-20200117124940-d00b2c62c076 h1:1iC2sM36BG8CDjy7bzFocvYKmFbOed35eyYqnCElaJU=
 github.com/Jleagle/recaptcha-go v0.0.0-20200117124940-d00b2c62c076/go.mod h1:gxfS6EOoVF09RpWZnrzOZy4SMh7WwVpEfc28CBrrizI=
 github.com/Jleagle/session-go v0.0.0-20190515070633-3c8712426233 h1:a51IBJjhY/73izx+ieGdWZtC2XWjQ3HnTUKoEV3Y844=
@@ -997,6 +999,8 @@ github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf h1:pvbZ0lM0XWPBqUKqFU8cma
 github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf/go.mod h1:RJID2RhlZKId02nZ62WenDCkgHFerpIOmW0iT7GKmXM=
 github.com/streadway/amqp v0.0.0-20200108173154-1c71cc93ed71 h1:2MR0pKUzlP3SGgj5NYJe/zRYDwOu9ku6YHy+Iw7l5DM=
 github.com/streadway/amqp v0.0.0-20200108173154-1c71cc93ed71/go.mod h1:AZpEONHx3DKn8O/DFsRAY58/XVQiIPMTMB1SddzLXVw=
+github.com/streadway/amqp v1.0.0 h1:kuuDrUJFZL1QYL9hUNuCxNObNzB0bV/ZG5jV3RWAQgo=
+github.com/streadway/amqp v1.0.0/go.mod h1:AZpEONHx3DKn8O/DFsRAY58/XVQiIPMTMB1SddzLXVw=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/objx v0.1.1/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/objx v0.2.0/go.mod h1:qt09Ya8vawLte6SNmTgCsAVtYtaKzEcn8ATUoHMkEqE=

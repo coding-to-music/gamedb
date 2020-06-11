@@ -1,7 +1,6 @@
 package pages
 
 import (
-	"html/template"
 	"net/http"
 	"regexp"
 	"sort"
@@ -9,11 +8,13 @@ import (
 	"sync"
 
 	"github.com/Jleagle/influxql"
+	"github.com/Jleagle/rabbit-go"
 	"github.com/Jleagle/session-go/session"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/middleware"
 	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/i18n"
 	"github.com/gamedb/gamedb/pkg/helpers/influx"
@@ -89,9 +90,15 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		tm.Player = player
 		tm.DefaultAvatar = helpers.DefaultPlayerAvatar
 
-		q, err := queue.ProducerChannels[queue.QueuePlayers].Inspect()
-		if err == nil {
-			tm.Queue = template.JS(strconv.Itoa(q.Messages))
+		rabbitClient := rabbit.Rabbit{Host: config.Config.RabbitHost.Get(), Port: config.Config.RabbitManagmentPort.Get(), Username: config.Config.RabbitUsername.Get(), Password: config.Config.RabbitPassword.Get()}
+		p := rabbit.Payload{}
+		p.Preset("1m")
+
+		q, err := rabbitClient.GetQueue(queue.QueuePlayers, p)
+		if err != nil {
+			log.Err(err, r)
+		} else {
+			tm.Queue = q.Messages
 		}
 
 		returnTemplate(w, r, "player_missing", tm)
@@ -371,7 +378,7 @@ type playerMissingTemplate struct {
 	GlobalTemplate
 	Player        mongo.Player
 	DefaultAvatar string
-	Queue         template.JS
+	Queue         int
 }
 
 type playerRankTemplate struct {
