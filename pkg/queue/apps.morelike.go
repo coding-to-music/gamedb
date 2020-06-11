@@ -18,6 +18,11 @@ type AppMorelikeMessage struct {
 	ID int `json:"id"`
 }
 
+var appsMoreLikeCollector = colly.NewCollector(
+	colly.URLFilters(regexp.MustCompile(`store\.steampowered\.com/recommended/morelike/app/[0-9]+$`)),
+	steamHelper.WithAgeCheckCookie,
+)
+
 func appMorelikeHandler(messages []*rabbit.Message) {
 
 	for _, message := range messages {
@@ -33,19 +38,14 @@ func appMorelikeHandler(messages []*rabbit.Message) {
 
 		var relatedAppIDs []int
 
-		c := colly.NewCollector(
-			colly.URLFilters(regexp.MustCompile(`store\.steampowered\.com/recommended/morelike/app/[0-9]+$`)),
-			steamHelper.WithAgeCheckCookie,
-		)
-
-		c.OnHTML(".similar_grid_capsule", func(e *colly.HTMLElement) {
+		appsMoreLikeCollector.OnHTML(".similar_grid_capsule", func(e *colly.HTMLElement) {
 			i, err := strconv.Atoi(e.Attr("data-ds-appid"))
 			if err == nil {
 				relatedAppIDs = append(relatedAppIDs, i)
 			}
 		})
 
-		err = c.Visit("https://store.steampowered.com/recommended/morelike/app/" + strconv.Itoa(payload.ID))
+		err = appsMoreLikeCollector.Visit("https://store.steampowered.com/recommended/morelike/app/" + strconv.Itoa(payload.ID))
 		if err != nil {
 			steamHelper.LogSteamError(err)
 			sendToRetryQueue(message)
