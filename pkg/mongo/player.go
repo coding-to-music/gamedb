@@ -184,12 +184,7 @@ func (player Player) GetMessageLink() template.URL {
 }
 
 func (player Player) CommunityLink() string {
-
-	if player.VanityURL != "" && player.VanityURL != strconv.FormatInt(player.ID, 10) {
-		return "https://steamcommunity.com/id/" + player.VanityURL
-	}
-
-	return "https://steamcommunity.com/profiles/" + strconv.FormatInt(player.ID, 10)
+	return helpers.GetPlayerCommunityLink(player.ID, player.VanityURL)
 }
 
 func (player Player) GetStateName() string {
