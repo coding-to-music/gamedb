@@ -20,9 +20,12 @@ if ($playerMissingPage.length > 0) {
 
     function updateLoadingBar() {
 
-        let p = queue_start > 0 ? (queue_current / queue_start * 100) : 0;
-        p = Math.min(Math.max(p, 0), 100);
-        p = 100 - p;
+        let p = 0;
+        if (queue_start > 0) {
+            p = queue_current / queue_start * 100;
+            p = Math.min(Math.max(p, 0), 100);
+            p = 100 - p;
+        }
         p = p.toString() + '%';
 
         logLocal('total:', queue_start, 'on:', queue_current);
