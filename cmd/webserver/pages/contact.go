@@ -123,7 +123,7 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 	// Redirect
 	err := session.SetFlash(r, flashGroup, message)
 	if err != nil {
-		log.Err(err)
+		log.Err(err, r)
 	}
 
 	sessionHelpers.Save(w, r)

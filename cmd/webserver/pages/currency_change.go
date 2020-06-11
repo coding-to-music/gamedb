@@ -24,7 +24,7 @@ func CurrencyHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Set to session
 		err = session.Set(r, sessionHelpers.SessionUserProdCC, id)
-		log.Err(err) // todo, handle better?
+		log.Err(err, r) // todo, handle better?
 
 		// Set to user row
 		user, err := getUserFromSession(r)

@@ -36,7 +36,7 @@ func SiteMapIndexHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, err := sm.Write(w)
-	log.Err(err)
+	log.Err(err, r)
 }
 
 //noinspection GoUnusedParameter
@@ -85,7 +85,7 @@ func SiteMapPagesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, err := sm.Write(w)
-	log.Err(err)
+	log.Err(err, r)
 }
 
 func SiteMapGamesByPlayersHandler(w http.ResponseWriter, r *http.Request) {
@@ -175,13 +175,13 @@ func SiteMapPlayersByLevel(w http.ResponseWriter, r *http.Request) {
 	sm := sitemap.NewSitemap()
 
 	players, err := mongo.GetPlayers(0, 500, bson.D{{Key: "level", Value: -1}}, nil, bson.M{"_id": 1, "persona_name": 1, "updated_at": 1})
-	log.Err(err)
+	log.Err(err, r)
 	for _, player := range players {
 		sm.AddLocation(urlBase+player.GetPath(), player.UpdatedAt, sitemap.FrequencyWeekly, 0.9)
 	}
 
 	_, err = sm.Write(w)
-	log.Err(err)
+	log.Err(err, r)
 }
 
 //noinspection GoUnusedParameter
@@ -190,13 +190,13 @@ func SiteMapPlayersByGamesCount(w http.ResponseWriter, r *http.Request) {
 	sm := sitemap.NewSitemap()
 
 	players, err := mongo.GetPlayers(0, 500, bson.D{{Key: "games_count", Value: -1}}, nil, bson.M{"_id": 1, "persona_name": 1, "updated_at": 1})
-	log.Err(err)
+	log.Err(err, r)
 	for _, player := range players {
 		sm.AddLocation(urlBase+player.GetPath(), player.UpdatedAt, sitemap.FrequencyWeekly, 0.9)
 	}
 
 	_, err = sm.Write(w)
-	log.Err(err)
+	log.Err(err, r)
 }
 
 //noinspection GoUnusedParameter
@@ -205,13 +205,13 @@ func SiteMapGroups(w http.ResponseWriter, r *http.Request) {
 	sm := sitemap.NewSitemap()
 
 	groups, err := mongo.GetGroups(500, 0, bson.D{{Key: "members", Value: -1}}, bson.D{{Key: "type", Value: helpers.GroupTypeGroup}}, bson.M{"_id": 1, "name": 1, "updated_at": 1})
-	log.Err(err)
+	log.Err(err, r)
 	for _, v := range groups {
 		sm.AddLocation(urlBase+v.GetPath(), v.UpdatedAt, sitemap.FrequencyWeekly, 0.9)
 	}
 
 	_, err = sm.Write(w)
-	log.Err(err)
+	log.Err(err, r)
 }
 
 func SiteMapBadges(w http.ResponseWriter, r *http.Request) {
@@ -226,5 +226,5 @@ func SiteMapBadges(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, err := sm.Write(w)
-	log.Err(err)
+	log.Err(err, r)
 }

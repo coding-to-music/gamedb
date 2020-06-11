@@ -115,7 +115,7 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 		if err != nil {
 			err = helpers.IgnoreErrors(err, bcrypt.ErrMismatchedHashAndPassword)
-			log.Err(err)
+			log.Err(err, r)
 			return "Incorrect credentials", false
 		}
 
