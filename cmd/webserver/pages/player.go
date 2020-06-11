@@ -14,7 +14,6 @@ import (
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/middleware"
 	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
-	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/i18n"
 	"github.com/gamedb/gamedb/pkg/helpers/influx"
@@ -90,11 +89,10 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		tm.Player = player
 		tm.DefaultAvatar = helpers.DefaultPlayerAvatar
 
-		rabbitClient := rabbit.Rabbit{Host: config.Config.RabbitHost.Get(), Port: config.Config.RabbitManagmentPort.Get(), Username: config.Config.RabbitUsername.Get(), Password: config.Config.RabbitPassword.Get()}
 		p := rabbit.Payload{}
-		p.Preset("1m")
+		p.Preset(rabbit.RangeOneMinute)
 
-		q, err := rabbitClient.GetQueue(queue.QueuePlayers, p)
+		q, err := helpers.RabbitClient.GetQueue(queue.QueuePlayers, p)
 		if err != nil {
 			log.Err(err, r)
 		} else {

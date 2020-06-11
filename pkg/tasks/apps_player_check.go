@@ -1,6 +1,7 @@
 package tasks
 
 import (
+	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
@@ -25,14 +26,20 @@ func (c AppsPlayerCheck) Cron() string {
 
 func (c AppsPlayerCheck) work() (err error) {
 
-	// Check queue size
-	q, err := queue.ProducerChannels[queue.QueueAppPlayers].Inspect()
+	// Skip if queues have activity
+	limits := map[rabbit.QueueName]int{
+		queue.QueueAppPlayers: 1000,
+	}
+
+	queues, err := helpers.RabbitClient.GetQueues()
 	if err != nil {
 		return err
 	}
 
-	if q.Messages > 1000 {
-		return nil
+	for _, q := range queues {
+		if val, ok := limits[rabbit.QueueName(q.Name)]; ok && q.Messages > val {
+			return nil
+		}
 	}
 
 	// Add apps to queue

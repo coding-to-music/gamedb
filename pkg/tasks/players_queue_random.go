@@ -27,31 +27,29 @@ func (c PlayersQueueRandom) Cron() string {
 func (c PlayersQueueRandom) work() (err error) {
 
 	// Skip if queues have activity
-	queues := map[rabbit.QueueName]int{
-		queue.QueueApps:     10,
-		queue.QueuePackages: 10,
-		queue.QueuePlayers:  5,
+	limits := map[rabbit.QueueName]int{
+		queue.QueueApps:     50,
+		queue.QueuePackages: 50,
+		queue.QueuePlayers:  50,
 	}
 
-	var consumers = 1
-	for q, limit := range queues {
+	queues, err := helpers.RabbitClient.GetQueues()
+	if err != nil {
+		return err
+	}
 
-		c, err := queue.ProducerChannels[q].Inspect()
-		if err != nil {
-			return err
-		}
-
-		if c.Messages > limit {
+	var consumers int
+	for _, q := range queues {
+		if val, ok := limits[rabbit.QueueName(q.Name)]; ok && q.Messages > val {
 			return nil
 		}
-
-		if q == queue.QueuePlayers {
-			consumers = c.Consumers
+		if q.Name == string(queue.QueuePlayers) {
+			consumers = q.Consumers
 		}
 	}
 
 	// Queue players
-	players, err := mongo.GetRandomPlayers(5 * consumers)
+	players, err := mongo.GetRandomPlayers(10 * consumers)
 	if err != nil {
 		return err
 	}
