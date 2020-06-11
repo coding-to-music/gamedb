@@ -83,8 +83,6 @@
                             success: callback,
                             error: function (jqXHR, textStatus, errorThrown) {
 
-                                toast(false, '', 'Failed to load table');
-
                                 data = {
                                     "draw": "1",
                                     "recordsTotal": "0",
