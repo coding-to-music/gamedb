@@ -50,13 +50,7 @@ func appRouter() http.Handler {
 
 func appHandler(w http.ResponseWriter, r *http.Request) {
 
-	param := chi.URLParam(r, "id")
-	if strings.Contains(param, ",") {
-		appsCompareHandler(w, r)
-		return
-	}
-
-	id, err := strconv.Atoi(param)
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid App ID"})
 		return
