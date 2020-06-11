@@ -20,6 +20,7 @@ type AppMorelikeMessage struct {
 
 var appsMoreLikeCollector = colly.NewCollector(
 	colly.URLFilters(regexp.MustCompile(`store\.steampowered\.com/recommended/morelike/app/[0-9]+$`)),
+	colly.AllowURLRevisit(),
 	steamHelper.WithAgeCheckCookie,
 )
 
