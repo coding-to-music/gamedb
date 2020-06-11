@@ -35,7 +35,12 @@ if ($('#coop-page').length > 0) {
                 {
                     "targets": 1,
                     "render": function (data, type, row) {
-                        return row[0].toLocaleString();
+
+                        if (row[0]) {
+                            return row[0].toLocaleString();
+                        } else {
+                            return $lockIcon;
+                        }
                     },
                     "orderable": false,
                 },
