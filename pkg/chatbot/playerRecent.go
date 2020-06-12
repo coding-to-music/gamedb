@@ -1,7 +1,6 @@
 package chatbot
 
 import (
-	"regexp"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
@@ -16,8 +15,12 @@ import (
 type CommandPlayerRecent struct {
 }
 
-func (CommandPlayerRecent) Regex() *regexp.Regexp {
-	return regexp.MustCompile(`^[.|!]recent (.{2,32})$`)
+func (CommandPlayerRecent) Regex() string {
+	return `^[.|!]recent (.{2,32})$`
+}
+
+func (CommandPlayerRecent) DisableCache() bool {
+	return false
 }
 
 func (CommandPlayerRecent) Example() string {
@@ -34,7 +37,7 @@ func (CommandPlayerRecent) Type() CommandType {
 
 func (c CommandPlayerRecent) Output(msg *discordgo.MessageCreate) (message discordgo.MessageSend, err error) {
 
-	matches := c.Regex().FindStringSubmatch(msg.Message.Content)
+	matches := RegexCache[c.Regex()].FindStringSubmatch(msg.Message.Content)
 
 	player, q, err := mongo.SearchPlayer(matches[1], nil)
 	if err == mongo.ErrNoDocuments {

@@ -1,7 +1,6 @@
 package chatbot
 
 import (
-	"regexp"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
@@ -13,8 +12,12 @@ import (
 type CommandAppsPopular struct {
 }
 
-func (CommandAppsPopular) Regex() *regexp.Regexp {
-	return regexp.MustCompile(`^[.|!]popular$`)
+func (CommandAppsPopular) Regex() string {
+	return `^[.|!]popular$`
+}
+
+func (CommandAppsPopular) DisableCache() bool {
+	return false
 }
 
 func (CommandAppsPopular) Example() string {

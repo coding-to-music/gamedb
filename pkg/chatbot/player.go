@@ -1,7 +1,6 @@
 package chatbot
 
 import (
-	"regexp"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
@@ -17,8 +16,12 @@ import (
 type CommandPlayer struct {
 }
 
-func (CommandPlayer) Regex() *regexp.Regexp {
-	return regexp.MustCompile(`^[.|!](player|user) (.{2,32})$`)
+func (CommandPlayer) Regex() string {
+	return `^[.|!](player|user) (.{2,32})$`
+}
+
+func (CommandPlayer) DisableCache() bool {
+	return false
 }
 
 func (CommandPlayer) Example() string {
@@ -35,7 +38,7 @@ func (CommandPlayer) Type() CommandType {
 
 func (c CommandPlayer) Output(msg *discordgo.MessageCreate) (message discordgo.MessageSend, err error) {
 
-	matches := c.Regex().FindStringSubmatch(msg.Message.Content)
+	matches := RegexCache[c.Regex()].FindStringSubmatch(msg.Message.Content)
 
 	player, q, err := mongo.SearchPlayer(matches[2], bson.M{"_id": 1, "persona_name": 1, "avatar": 1, "level": 1, "games_count": 1, "play_time": 1, "friends_count": 1})
 	if err == mongo.ErrNoDocuments {

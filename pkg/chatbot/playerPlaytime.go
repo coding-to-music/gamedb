@@ -1,8 +1,6 @@
 package chatbot
 
 import (
-	"regexp"
-
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
@@ -15,8 +13,12 @@ import (
 type CommandPlayerPlaytime struct {
 }
 
-func (CommandPlayerPlaytime) Regex() *regexp.Regexp {
-	return regexp.MustCompile(`^[.|!]playtime (.{2,32})$`)
+func (CommandPlayerPlaytime) Regex() string {
+	return `^[.|!]playtime (.{2,32})$`
+}
+
+func (CommandPlayerPlaytime) DisableCache() bool {
+	return false
 }
 
 func (CommandPlayerPlaytime) Example() string {
@@ -33,7 +35,7 @@ func (CommandPlayerPlaytime) Type() CommandType {
 
 func (c CommandPlayerPlaytime) Output(msg *discordgo.MessageCreate) (message discordgo.MessageSend, err error) {
 
-	matches := c.Regex().FindStringSubmatch(msg.Message.Content)
+	matches := RegexCache[c.Regex()].FindStringSubmatch(msg.Message.Content)
 
 	player, q, err := mongo.SearchPlayer(matches[1], bson.M{"_id": 1, "persona_name": 1, "play_time": 1})
 	if err == mongo.ErrNoDocuments {

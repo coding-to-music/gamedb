@@ -1,16 +1,18 @@
 package chatbot
 
 import (
-	"regexp"
-
 	"github.com/bwmarrin/discordgo"
 )
 
 type CommandHelp struct {
 }
 
-func (CommandHelp) Regex() *regexp.Regexp {
-	return regexp.MustCompile(`^[.|!]help$`)
+func (CommandHelp) Regex() string {
+	return `^[.|!]help$`
+}
+
+func (CommandHelp) DisableCache() bool {
+	return true
 }
 
 func (CommandHelp) Example() string {

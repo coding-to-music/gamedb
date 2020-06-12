@@ -1,8 +1,6 @@
 package chatbot
 
 import (
-	"regexp"
-
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -12,8 +10,12 @@ import (
 type CommandGroup struct {
 }
 
-func (CommandGroup) Regex() *regexp.Regexp {
-	return regexp.MustCompile(`^[.|!](group|clan) (.*)`)
+func (CommandGroup) Regex() string {
+	return `^[.|!](group|clan) (.*)`
+}
+
+func (CommandGroup) DisableCache() bool {
+	return false
 }
 
 func (CommandGroup) Example() string {
@@ -30,7 +32,7 @@ func (CommandGroup) Type() CommandType {
 
 func (c CommandGroup) Output(msg *discordgo.MessageCreate) (message discordgo.MessageSend, err error) {
 
-	matches := c.Regex().FindStringSubmatch(msg.Message.Content)
+	matches := RegexCache[c.Regex()].FindStringSubmatch(msg.Message.Content)
 
 	group, err := mongo.SearchGroups(matches[2])
 	if err == mongo.ErrNoDocuments {

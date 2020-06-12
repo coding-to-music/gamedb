@@ -14,10 +14,13 @@ var (
 	TypePlayer CommandType = "Player"
 	TypeGroup  CommandType = "Group"
 	TypeOther  CommandType = "Miscellaneous"
+
+	RegexCache = make(map[string]*regexp.Regexp, len(CommandRegister))
 )
 
 type Command interface {
-	Regex() *regexp.Regexp
+	Regex() string
+	DisableCache() bool
 	Output(*discordgo.MessageCreate) (discordgo.MessageSend, error)
 	Example() string
 	Description() string

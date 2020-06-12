@@ -1,8 +1,6 @@
 package chatbot
 
 import (
-	"regexp"
-
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/elastic"
@@ -12,9 +10,13 @@ import (
 type CommandAppPlayers struct {
 }
 
-func (CommandAppPlayers) Regex() *regexp.Regexp {
+func (CommandAppPlayers) Regex() string {
 	// ^.(players|online) ?([a-zA-Z0-9]+)?
-	return regexp.MustCompile(`^[.|!](players|online) ([a-zA-Z0-9]+)`)
+	return `^[.|!](players|online) ([a-zA-Z0-9]+)`
+}
+
+func (CommandAppPlayers) DisableCache() bool {
+	return false
 }
 
 func (CommandAppPlayers) Example() string {

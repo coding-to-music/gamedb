@@ -1,13 +1,12 @@
 package memcache
 
 import (
-	"crypto/md5"
-	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"sort"
 	"strings"
 
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -45,7 +44,5 @@ func FilterToString(d bson.D) string {
 		return "[]"
 	}
 
-	h := md5.Sum(b)
-
-	return hex.EncodeToString(h[:])
+	return helpers.MD5(b)
 }

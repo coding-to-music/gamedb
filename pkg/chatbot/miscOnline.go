@@ -1,8 +1,6 @@
 package chatbot
 
 import (
-	"regexp"
-
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -11,8 +9,12 @@ import (
 type CommandAppPlayersSteam struct {
 }
 
-func (CommandAppPlayersSteam) Regex() *regexp.Regexp {
-	return regexp.MustCompile(`^[.|!](players|online)$`)
+func (CommandAppPlayersSteam) Regex() string {
+	return `^[.|!](players|online)$`
+}
+
+func (CommandAppPlayersSteam) DisableCache() bool {
+	return false
 }
 
 func (CommandAppPlayersSteam) Example() string {

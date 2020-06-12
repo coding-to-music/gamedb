@@ -1,8 +1,6 @@
 package chatbot
 
 import (
-	"regexp"
-
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -12,8 +10,12 @@ import (
 type CommandAppRandom struct {
 }
 
-func (CommandAppRandom) Regex() *regexp.Regexp {
-	return regexp.MustCompile(`^[.|!]random$`)
+func (CommandAppRandom) Regex() string {
+	return `^[.|!]random$`
+}
+
+func (CommandAppRandom) DisableCache() bool {
+	return true
 }
 
 func (CommandAppRandom) Example() string {

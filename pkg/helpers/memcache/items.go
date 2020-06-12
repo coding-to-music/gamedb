@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/Jleagle/steam-go/steamapi"
+	"github.com/gamedb/gamedb/pkg/helpers"
 )
 
 type Item struct {
@@ -90,4 +91,5 @@ var (
 	MemcachePlayerLevels             = Item{Key: "player-levels", Expiration: 60 * 60 * 24}
 	MemcachePlayerLevelsRounded      = Item{Key: "player-levels-rounded", Expiration: 60 * 60 * 24}
 	MemcacheFirstAppBadge            = func(appID int) Item { return Item{Key: "first-app-badge-" + strconv.Itoa(appID), Expiration: 0} }
+	MemcacheChatBotRequest           = func(request string) Item { return Item{Key: "chat-bot-request-" + helpers.MD5([]byte(request)), Expiration: 60 * 10} }
 )

@@ -1,7 +1,6 @@
 package chatbot
 
 import (
-	"regexp"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
@@ -13,8 +12,12 @@ import (
 type CommandAppsTrending struct {
 }
 
-func (CommandAppsTrending) Regex() *regexp.Regexp {
-	return regexp.MustCompile(`^[.|!]trending$`)
+func (CommandAppsTrending) Regex() string {
+	return `^[.|!]trending$`
+}
+
+func (CommandAppsTrending) DisableCache() bool {
+	return false
 }
 
 func (CommandAppsTrending) Example() string {

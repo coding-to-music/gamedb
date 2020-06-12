@@ -1,8 +1,6 @@
 package chatbot
 
 import (
-	"regexp"
-
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/elastic"
@@ -12,8 +10,12 @@ import (
 type CommandApp struct {
 }
 
-func (CommandApp) Regex() *regexp.Regexp {
-	return regexp.MustCompile(`^[.|!](app|game) (.*)`)
+func (CommandApp) Regex() string {
+	return `^[.|!](app|game) (.*)`
+}
+
+func (CommandApp) DisableCache() bool {
+	return false
 }
 
 func (CommandApp) Example() string {

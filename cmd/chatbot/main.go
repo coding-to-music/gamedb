@@ -1,6 +1,10 @@
 package main
 
 import (
+	"net/http"
+	_ "net/http/pprof"
+	"regexp"
+	"strings"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -10,6 +14,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
@@ -24,7 +29,7 @@ var (
 	version string
 
 	ignoreGuildIDs = []string{
-		"110373943822540800", // Discord Bots
+		// "110373943822540800", // Discord Bots
 	}
 )
 
@@ -59,11 +64,16 @@ func main() {
 	// Load consumers
 	queue.Init(queue.ChatbotDefinitions)
 
-	// Load discord
+	// Cache regexes
+	for _, v := range chatbot.CommandRegister {
+		chatbot.RegexCache[v.Regex()] = regexp.MustCompile(v.Regex())
+	}
+
+	// Set limiter
 	ops := limiter.ExpirableOptions{DefaultExpirationTTL: time.Second}
 	lmt := limiter.New(&ops).SetMax(1).SetBurst(5)
 
-	//
+	// Start discord
 	discordSession, err := discordgo.New("Bot " + config.Config.DiscordChatBotToken.Get())
 	if err != nil {
 		panic("Can't create Discord session")
@@ -76,56 +86,65 @@ func main() {
 			return
 		}
 
-		// Rate limit
-		httpErr := tollbooth.LimitByKeys(lmt, []string{m.Author.ID})
-		if httpErr != nil {
-			log.Warning(m.Author.ID + " over rate limit")
+		// Stop users getting two responses
+		if config.IsLocal() && m.Author.ID != debugAuthorID {
 			return
 		}
 
 		// Scan commands
 		for _, command := range chatbot.CommandRegister {
 
-			msg := m.Message.Content
+			msg := strings.TrimSpace(m.Message.Content)
 
-			if command.Regex().MatchString(msg) {
+			if chatbot.RegexCache[command.Regex()].MatchString(msg) {
 
-				if m.Author.ID != debugAuthorID && !helpers.SliceHasString(m.GuildID, ignoreGuildIDs) {
-					go saveToInflux(m, command)
-					go saveToMongo(m, msg)
+				cacheItem := memcache.MemcacheChatBotRequest(msg)
+
+				// Disable PMs
+				private, err := isPrivateChannel(s, m)
+				if err != nil {
+					discordError(err)
+					return
+				}
+				if private && m.Author.ID != debugAuthorID {
+					return
 				}
 
-				go func() {
-					err := discordSession.ChannelTyping(m.ChannelID)
-					discordError(err)
-				}()
+				// Save stats
+				if m.Author.ID != debugAuthorID && !helpers.SliceHasString(m.GuildID, ignoreGuildIDs) {
+					//noinspection GoDeferInLoop
+					defer func() {
+						go saveToInflux(m, command)
+						go saveToMongo(m, msg)
+					}()
+				}
 
+				// Typing notification
+				err = discordSession.ChannelTyping(m.ChannelID)
+				discordError(err)
+
+				// React to request message
 				// go func() {
 				// 	err = discordSession.MessageReactionAdd(m.ChannelID, m.Message.ID, "👍")
 				// 	discordError(err)
 				// }()
 
-				chanID := m.ChannelID
-
-				// Allow private messaging for admins
-				if m.Author.ID == debugAuthorID {
-
-					private, err := isPrivateChannel(s, m)
-					if err != nil {
+				// Check in cache first
+				if !command.DisableCache() {
+					var message discordgo.MessageSend
+					err = memcache.GetInterface(cacheItem.Key, &message)
+					if err == nil {
+						_, err = s.ChannelMessageSendComplex(m.ChannelID, &message)
 						discordError(err)
 						return
 					}
+				}
 
-					if private {
-
-						st, err := s.UserChannelCreate(m.Author.ID)
-						if err != nil {
-							discordError(err)
-							return
-						}
-
-						chanID = st.ID
-					}
+				// Rate limit
+				httpErr := tollbooth.LimitByKeys(lmt, []string{m.Author.ID})
+				if httpErr != nil {
+					log.Warning(m.Author.ID + " over chatbot rate limit")
+					return
 				}
 
 				message, err := command.Output(m)
@@ -134,10 +153,16 @@ func main() {
 					return
 				}
 
-				_, err = s.ChannelMessageSendComplex(chanID, &message)
+				_, err = s.ChannelMessageSendComplex(m.ChannelID, &message)
 				if err != nil {
 					discordError(err)
 					return
+				}
+
+				// Save to cache
+				err = memcache.SetInterface(cacheItem.Key, message, cacheItem.Expiration)
+				if err != nil {
+					log.Err(err, msg)
 				}
 
 				return
@@ -176,7 +201,7 @@ func saveToInflux(m *discordgo.MessageCreate, command chatbot.Command) {
 			"guild_id":   m.GuildID,
 			"channel_id": m.ChannelID,
 			"author_id":  m.Author.ID,
-			"command":    command.Regex().String(),
+			"command":    command.Regex(),
 		},
 		Fields: map[string]interface{}{
 			"request": 1,
