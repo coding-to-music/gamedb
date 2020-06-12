@@ -2,7 +2,6 @@ package elastic
 
 import (
 	"encoding/json"
-	"regexp"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -27,10 +26,8 @@ func (group Group) GetAbbr() string {
 	return helpers.GetGroupAbbreviation(group.Abbreviation)
 }
 
-var removeWhiteSpace = regexp.MustCompile(`[\s\p{Braille}]{2,}`)
-
 func (group Group) GetHeadline() string {
-	group.Headline = removeWhiteSpace.ReplaceAllString(group.Headline, " ")
+	group.Headline = helpers.RegexFilterEmptyCharacters.ReplaceAllString(group.Headline, " ")
 	group.Headline = helpers.TruncateString(group.Headline, 100, "…")
 	return group.Headline
 }
@@ -67,7 +64,7 @@ func IndexGroup(group Group) error {
 	return indexDocument(IndexGroups, group.ID, group)
 }
 
-func SearchGroups(offset int, sorters []elastic.Sorter, search string, errors string) (groups []Group, aggregations map[string]map[string]int64, total int64, err error) {
+func SearchGroups(offset int, limit int, sorters []elastic.Sorter, search string, errors string) (groups []Group, aggregations map[string]map[string]int64, total int64, err error) {
 
 	client, ctx, err := GetElastic()
 	if err != nil {
@@ -97,7 +94,7 @@ func SearchGroups(offset int, sorters []elastic.Sorter, search string, errors st
 	searchService := client.Search().
 		Index(IndexGroups).
 		From(offset).
-		Size(100).
+		Size(limit).
 		TrackTotalHits(true).
 		Highlight(elastic.NewHighlight().Field("name").PreTags("<mark>").PostTags("</mark>")).
 		SortBy(sorters...).

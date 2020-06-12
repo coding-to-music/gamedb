@@ -59,7 +59,7 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var search = query.GetSearchString("search")
 		var errors = query.GetSearchString("filter")
 
-		groups, aggregations, filtered, err = elasticHelpers.SearchGroups(query.GetOffset(), sorters, search, errors)
+		groups, aggregations, filtered, err = elasticHelpers.SearchGroups(query.GetOffset(), 100, sorters, search, errors)
 		if err != nil {
 			log.Err(err, r)
 			return

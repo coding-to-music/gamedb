@@ -178,31 +178,6 @@ func GetGroups(limit int64, offset int64, sort bson.D, filter bson.D, projection
 	return getGroups(offset, limit, sort, filter, projection)
 }
 
-func SearchGroups(s string) (group Group, err error) {
-
-	filter := bson.D{}
-
-	s2, err := helpers.IsValidGroupID(s)
-	if err == nil {
-
-		filter = bson.D{{"_id", s2}}
-
-	} else {
-
-		filter = append(filter, bson.E{Key: "$text", Value: bson.M{"$search": s}})
-
-		// quoted := regexp.QuoteMeta(s)
-		// filter = bson.D{{Key: "$or", Value: bson.A{
-		// 	bson.M{"name": bson.M{"$regex": "^" + quoted + "$", "$options": "i"}},
-		// 	bson.M{"abbreviation": bson.M{"$regex": "^" + quoted + "$", "$options": "i"}},
-		// 	bson.M{"url": bson.M{"$regex": "^" + quoted + "$", "$options": "i"}},
-		// }}}
-	}
-
-	err = FindOne(CollectionGroups, filter, bson.D{{"members", -1}}, nil, &group)
-	return group, err
-}
-
 func getGroups(offset int64, limit int64, sort bson.D, filter bson.D, projection bson.M) (groups []Group, err error) {
 
 	cur, ctx, err := Find(CollectionGroups, offset, limit, sort, filter, projection, nil)

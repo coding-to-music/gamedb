@@ -3,8 +3,7 @@ package chatbot
 import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
-	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/elastic"
 )
 
 type CommandGroup struct {
@@ -34,22 +33,23 @@ func (c CommandGroup) Output(msg *discordgo.MessageCreate) (message discordgo.Me
 
 	matches := RegexCache[c.Regex()].FindStringSubmatch(msg.Message.Content)
 
-	group, err := mongo.SearchGroups(matches[2])
-	if err == mongo.ErrNoDocuments {
-
+	groups, _, _, err := elastic.SearchGroups(0, 1, nil, matches[2], "")
+	if err != nil {
+		return message, err
+	} else if len(groups) == 0 {
 		message.Content = "Group **" + matches[2] + "** not found"
 		return message, nil
-
-	} else if err != nil {
-		return message, err
 	}
 
-	if group.Abbr == "" {
-		group.Abbr = "-"
-	}
+	group := groups[0]
 
-	if group.Headline == "" {
-		group.Headline = "-"
+	var abbr = group.GetAbbr()
+	if abbr == "" {
+		abbr = "-"
+	}
+	var headline = group.GetHeadline()
+	if headline == "" {
+		headline = "-"
 	}
 
 	message.Content = "<@" + msg.Author.ID + ">"
@@ -63,11 +63,11 @@ func (c CommandGroup) Output(msg *discordgo.MessageCreate) (message discordgo.Me
 		Fields: []*discordgo.MessageEmbedField{
 			{
 				Name:  "Headline",
-				Value: group.Headline,
+				Value: headline,
 			},
 			{
 				Name:  "Short Name",
-				Value: group.Abbr,
+				Value: abbr,
 			},
 			{
 				Name:  "Members",
@@ -75,7 +75,7 @@ func (c CommandGroup) Output(msg *discordgo.MessageCreate) (message discordgo.Me
 			},
 			{
 				Name:  "Trend",
-				Value: helpers.TrendValue(group.Trending),
+				Value: group.GetTrend(),
 			},
 		},
 	}

@@ -13,5 +13,5 @@ var (
 	RegexNonAlphaNumericSpace  = regexp.MustCompile("[^a-zA-Z0-9 ]+")
 	RegexMultipleNewLines      = regexp.MustCompile("[\n]{3,}")
 	RegexNewLine               = regexp.MustCompile("[\n\r]")
-	RegexFilterEmptyCharacters = regexp.MustCompile(`[\p{Cf}\p{Co}\p{Cs}\p{Cc}\p{C}]`)
+	RegexFilterEmptyCharacters = regexp.MustCompile(`[\p{Cf}\p{Co}\p{Cs}\p{Cc}\p{C}\p{Braille}]`)
 )
