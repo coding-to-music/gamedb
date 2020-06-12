@@ -7,11 +7,11 @@ if ($('#new-releases-page').length > 0) {
             $(row).attr('data-link', data[3]);
         },
         "columnDefs": [
-            // Icon / Name
+            // Icon / App Name
             {
                 "targets": 0,
                 "render": function (data, type, row) {
-                    return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[2] + '" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></div>'
+                    return '<div class="icon-name"><div class="icon"><img alt="" data-lazy="' + row[2] + '" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></div>'
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img');
@@ -45,9 +45,6 @@ if ($('#new-releases-page').length > 0) {
                 "targets": 3,
                 "render": function (data, type, row) {
                     return row[8].toLocaleString();
-                },
-                "createdCell": function (td, cellData, rowData, row, col) {
-                    $(td).attr('nowrap', 'nowrap');
                 },
                 "orderSequence": ["desc", "asc"],
             },

@@ -24,18 +24,18 @@ if ($('#groups-page').length > 0) {
                 },
                 "orderable": false,
             },
-            // Icon / Name
+            // Icon / Group Name
             {
                 "targets": 1,
                 "render": function (data, type, row) {
 
-                    let name = row[12] + '<br><small>' + row[4] + '</small>';
+                    let name = encodeHTML(row[12]) + '<br><small>' + row[4] + '</small>';
 
                     if (row[8]) {
                         name += '<span class="badge badge-danger float-right">Removed</span>';
                     }
 
-                    return '<div class="icon-name"><div class="icon"><img class="tall" data-src="/assets/img/no-app-image-square.jpg" data-lazy="' + row[5] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name markable">' + name + '</div></div>'
+                    return '<div class="icon-name"><div class="icon"><img class="tall" data-src="/assets/img/no-app-image-square.jpg" data-lazy="' + row[5] + '" alt="" data-lazy-alt="' + encodeHTML(row[1]) + '"></div><div class="name">' + name + '</div></div>'
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img');

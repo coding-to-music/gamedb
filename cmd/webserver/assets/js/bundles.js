@@ -10,7 +10,7 @@ if ($('#bundles-page').length > 0) {
             // }
         },
         "columnDefs": [
-            // Icon / Name
+            // Icon / Bundle Name
             {
                 "targets": 0,
                 "render": function (data, type, row) {

@@ -228,15 +228,16 @@ func badgeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	var response = datatable.NewDataTablesResponse(r, query, count, count, nil)
-	for k, player := range badges {
+	for k, playerBadge := range badges {
+
 		response.AddRow([]interface{}{
-			query.GetOffset() + k + 1,                                 // 0
-			helpers.GetPlayerName(player.PlayerID, player.PlayerName), // 1
-			player.GetPlayerIcon(),                                    // 2
-			player.BadgeLevel,                                         // 3
-			player.BadgeCompletionTime.Format(helpers.DateSQL),        // 4
-			player.GetPlayerPath(),                                    // 5
-			player.GetPlayerCommunityLink(),                           // 6
+			query.GetOffset() + k + 1,                               // 0
+			playerBadge.GetPlayerName(),                             // 1
+			playerBadge.GetPlayerIcon(),                             // 2
+			playerBadge.BadgeLevel,                                  // 3
+			playerBadge.BadgeCompletionTime.Format(helpers.DateSQL), // 4
+			playerBadge.GetPlayerPath(),                             // 5
+			playerBadge.GetPlayerCommunityLink(),                    // 6
 		})
 	}
 

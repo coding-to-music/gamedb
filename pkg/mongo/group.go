@@ -70,15 +70,9 @@ func CreateGroupIndexes() {
 			Keys:    bson.D{{"name", "text"}, {"abbreviation", "text"}, {"url", "text"}},
 			Options: options.Index().SetName("text").SetWeights(bson.D{{"name", 3}, {"abbreviation", 2}, {"url", 1}}),
 		},
-		{
-			Keys: bson.D{{"type", 1}, {"members", -1}},
-		},
-		{
-			Keys: bson.D{{"type", 1}, {"trending", 1}},
-		},
-		{
-			Keys: bson.D{{"type", 1}, {"trending", -1}},
-		},
+		{Keys: bson.D{{"type", 1}, {"members", -1}}},
+		{Keys: bson.D{{"type", 1}, {"trending", 1}}},
+		{Keys: bson.D{{"type", 1}, {"trending", -1}}},
 	}
 
 	//
@@ -109,7 +103,7 @@ func (group Group) GetURL() string {
 }
 
 func (group Group) GetName() string {
-	return helpers.GetGroupName(group.Name, group.ID)
+	return helpers.GetGroupName(group.ID, group.Name)
 }
 
 func (group Group) GetAbbr() string {

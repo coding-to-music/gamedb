@@ -36,11 +36,11 @@ func (group Group) GetHeadline() string {
 }
 
 func (group Group) GetName() string {
-	return helpers.GetGroupName(group.Name, group.ID)
+	return helpers.GetGroupName(group.ID, group.Name)
 }
 
 func (group Group) GetNameMarked() string {
-	return helpers.GetGroupName(group.NameMarked, group.ID)
+	return helpers.GetGroupName(group.ID, group.NameMarked)
 }
 
 func (group Group) GetPath() string {

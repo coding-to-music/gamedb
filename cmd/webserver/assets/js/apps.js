@@ -73,7 +73,7 @@ if ($('#apps-page').length > 0) {
                     },
                     "orderable": false,
                 },
-                // Icon / Name
+                // Icon / App Name
                 {
                     "targets": 1,
                     "render": function (data, type, row) {

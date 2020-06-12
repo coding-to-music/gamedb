@@ -305,3 +305,10 @@ function getOS() {
 
     return os;
 }
+
+// Encode HTML
+function encodeHTML(html) {
+    const p = document.createElement("p");
+    p.textContent = html;
+    return p.innerHTML;
+}

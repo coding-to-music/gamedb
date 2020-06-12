@@ -71,7 +71,7 @@ func (group PlayerGroup) GetURL() string {
 }
 
 func (group PlayerGroup) GetName() string {
-	return helpers.GetGroupName(group.GroupName, group.GroupID)
+	return helpers.GetGroupName(group.GroupID, group.GroupName)
 }
 
 func (group PlayerGroup) GetIcon() string {

@@ -54,13 +54,13 @@ func GetGroupLink(typex string, url string, ) string {
 	return "https://steamcommunity.com/" + typex + "s/" + url + "?utm_source=" + config.Config.GameDBShortName.Get()
 }
 
-func GetGroupName(name string, id string) string {
+func GetGroupName(id string, name string) string {
 
 	name = RegexFilterEmptyCharacters.ReplaceAllString(name, "")
 	name = strings.TrimSpace(name)
 
 	if name == "" {
-		return "&lt;no name&gt;"
+		return "<no name>"
 	}
 	return name
 }

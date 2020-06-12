@@ -84,7 +84,7 @@ if ($playerPage.length > 0) {
                 $(row).attr('data-link', data[7]);
             },
             "columnDefs": [
-                // Icon / Name
+                // Icon / App Name
                 {
                     "targets": 0,
                     "render": function (data, type, row) {
@@ -131,7 +131,7 @@ if ($playerPage.length > 0) {
                 $(row).attr('data-link', data[5]);
             },
             "columnDefs": [
-                // Icon / Name
+                // Icon / App Name
                 {
                     "targets": 0,
                     "render": function (data, type, row) {
@@ -197,7 +197,7 @@ if ($playerPage.length > 0) {
                 {
                     "targets": 0,
                     "render": function (data, type, row) {
-                        return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[2] + '" data-src="/assets/img/no-player-image.jpg" alt="" data-lazy-alt="' + row[3] + '"></div><div class="name">' + row[3] + '</div></div>'
+                        return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[2] + '" data-src="/assets/img/no-player-image.jpg" alt="" data-lazy-alt="' + encodeHTML(row[3]) + '"></div><div class="name">' + encodeHTML(row[3]) + '</div></div>'
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
@@ -289,7 +289,7 @@ if ($playerPage.length > 0) {
                             badge = '<span class="badge badge-success float-right">Primary</span>';
                         }
 
-                        return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[4] + '" data-src="/assets/img/no-player-image.jpg" alt="" data-lazy-alt="' + row[2] + '"></div><div class="name">' + row[2] + badge + '</div></div>'
+                        return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[4] + '" data-src="/assets/img/no-player-image.jpg" alt="" data-lazy-alt="' + encodeHTML(row[2]) + '"></div><div class="name">' + encodeHTML(row[2]) + badge + '</div></div>'
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');

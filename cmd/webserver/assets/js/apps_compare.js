@@ -16,7 +16,7 @@ if ($appsComparePage.length > 0) {
                 $(row).attr('data-link', data[4]);
             },
             "columnDefs": [
-                // Icon / Name
+                // Icon / App Name
                 {
                     "targets": 0,
                     "render": function (data, type, row) {

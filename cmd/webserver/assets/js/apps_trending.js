@@ -10,7 +10,7 @@ if ($trendingAppsPage.length > 0) {
             $(row).attr('data-link', data[3]);
         },
         "columnDefs": [
-            // Icon / Name
+            // Icon / App Name
             {
                 "targets": 0,
                 "render": function (data, type, row) {

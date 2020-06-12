@@ -1089,6 +1089,7 @@ func playerGroupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var response = datatable.NewDataTablesResponse(r, query, total, total, nil)
 	for _, group := range groups {
+
 		response.AddRow([]interface{}{
 			group.GroupID,                          // 0
 			"",                                     // 1

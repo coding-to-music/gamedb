@@ -107,7 +107,7 @@ if ($('#sales-page').length > 0) {
                 $(row).attr('data-app-id', data[0]);
             },
             "columnDefs": [
-                // Icon / Name
+                // Icon / App Name
                 {
                     "targets": 0,
                     "render": function (data, type, row) {

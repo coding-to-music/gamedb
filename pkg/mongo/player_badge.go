@@ -87,6 +87,10 @@ func (badge PlayerBadge) GetPlayerIcon() string {
 	return helpers.GetPlayerAvatar(badge.PlayerIcon)
 }
 
+func (badge PlayerBadge) GetPlayerName() string {
+	return helpers.GetPlayerName(badge.PlayerID, badge.PlayerName)
+}
+
 func (badge PlayerBadge) GetAppPath() string {
 	return helpers.GetAppPath(badge.AppID, helpers.GetAppName(badge.AppID, badge.AppName))
 }
