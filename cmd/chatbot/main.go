@@ -35,6 +35,15 @@ func main() {
 
 	log.Info("Starting chatbot")
 
+	// Load PPROF
+	if config.IsLocal() {
+		log.Info("Starting chatbot profiling")
+		go func() {
+			err := http.ListenAndServe("localhost:6062", nil)
+			log.Critical(err)
+		}()
+	}
+
 	// Get API key
 	err := sql.GetAPIKey("chatbot")
 	if err != nil {
