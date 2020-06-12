@@ -5,8 +5,8 @@ import (
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
+	"github.com/gamedb/gamedb/pkg/elastic"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 type CommandApp struct {
@@ -30,17 +30,18 @@ func (CommandApp) Type() CommandType {
 
 func (c CommandApp) Output(msg *discordgo.MessageCreate) (message discordgo.MessageSend, err error) {
 
-	matches := c.Regex().FindStringSubmatch(msg.Message.Content)
+	matches := RegexCache[c.Regex()].FindStringSubmatch(msg.Message.Content)
 
-	var projection = bson.M{"_id": 1, "name": 1, "prices": 1, "release_date": 1, "release_date_unix": 1, "reviews_score": 1, "group_id": 1, "group_followers": 1}
-
-	app, err := mongo.SearchApps(matches[2], projection)
-	if err == mongo.ErrNoDocuments || err == mongo.ErrInvalidAppID {
-
+	apps, _, err := elastic.SearchApps(1, 0, matches[2], nil, false, false, false)
+	if err != nil {
+		return message, err
+	} else if len(apps) == 0 {
 		message.Content = "App **" + matches[2] + "** not found"
 		return message, nil
+	}
 
-	} else if err != nil {
+	app, err := mongo.GetApp(apps[0].ID)
+	if err != nil {
 		return message, err
 	}
 

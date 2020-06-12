@@ -4,7 +4,6 @@ import (
 	"errors"
 	"html/template"
 	"math"
-	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -688,72 +687,6 @@ func GetAppsByID(ids []int, projection bson.M) (apps []App, err error) {
 	}
 
 	return GetApps(0, 0, nil, bson.D{{"_id", bson.M{"$in": a}}}, projection)
-}
-
-func SearchApps(search string, projection bson.M) (app App, err error) {
-
-	if projection == nil {
-		projection = bson.M{}
-	}
-
-	var apps []App
-
-	if helpers.RegexInts.MatchString(search) {
-
-		id, err := strconv.Atoi(search)
-		if err != nil {
-			return app, err
-		}
-
-		if helpers.IsValidAppID(id) {
-			apps, err = GetApps(0, 1, nil, bson.D{{"_id", id}}, projection)
-			if err != nil {
-				return app, err
-			}
-		} else {
-			return app, ErrInvalidAppID
-		}
-
-	} else {
-		// filter := bson.D{{"$text", bson.M{"$search": search}}}
-		// projection["score"] = bson.M{"$meta": "textScore"}
-		// order := bson.D{{"score", bson.M{"$meta": "textScore"}}}
-		// apps, err = GetApps(0, 20, order, filter, projection, nil)
-		// if err != nil {
-		// 	return app, err
-		// }
-		//
-		// if len(apps) == 0 {
-		// 	return app, ErrNoDocuments
-		// }
-		//
-		// var names []string
-		// for _, v := range apps {
-		// 	names = append(names, helpers.RegexNonAlphaNumeric.ReplaceAllString(v.GetName(), ""))
-		// }
-		// search = helpers.RegexNonAlphaNumeric.ReplaceAllString(search, "")
-		// matches := fuzzy.Find(search, names)
-		// if len(matches) > 0 {
-		// 	return apps[matches[0].Index], nil
-		// }
-
-		if !strings.Contains(search, `"`) {
-			search = regexp.MustCompile(`([^\s]+)`).ReplaceAllString(search, `"$1"`) // Add quotes to all words
-		}
-
-		filter := bson.D{{"$text", bson.M{"$search": search}}}
-		apps, err := GetApps(0, 1, bson.D{{"player_peak_week", -1}}, filter, projection)
-		if err != nil {
-			return app, err
-		}
-		if len(apps) == 0 {
-			return app, ErrNoDocuments
-		}
-
-		return apps[0], nil
-	}
-
-	return apps[0], nil
 }
 
 func GetNonEmptyArrays(offset int64, limit int64, column string, projection bson.M) (apps []App, err error) {
