@@ -130,7 +130,7 @@ func main() {
 				// }()
 
 				// Check in cache first
-				if !command.DisableCache() {
+				if !command.DisableCache() && !config.IsLocal() {
 					var message discordgo.MessageSend
 					err = memcache.GetInterface(cacheItem.Key, &message)
 					if err == nil {
