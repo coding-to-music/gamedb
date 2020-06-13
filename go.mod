@@ -3,9 +3,10 @@ module github.com/gamedb/gamedb
 go 1.13
 
 require (
-	cloud.google.com/go v0.57.0 // indirect
+	cloud.google.com/go v0.58.0 // indirect
 	cloud.google.com/go/logging v1.0.0
 	cloud.google.com/go/pubsub v1.3.1 // indirect
+	cloud.google.com/go/storage v1.9.0
 	github.com/Jleagle/go-durationfmt v0.0.0-20190307132420-e57bfad84057
 	github.com/Jleagle/influxql v0.0.0-20190502115937-4ac053a1ed8e
 	github.com/Jleagle/patreon-go v0.0.0-20200117215733-2b8b00d4eab0
@@ -13,7 +14,7 @@ require (
 	github.com/Jleagle/recaptcha-go v0.0.0-20200117124940-d00b2c62c076
 	github.com/Jleagle/session-go v0.0.0-20190515070633-3c8712426233
 	github.com/Jleagle/sitemap-go v0.0.0-20190405195207-2bdddbb3bd50
-	github.com/Jleagle/steam-go v0.0.0-20200529182558-357c90d50fb3
+	github.com/Jleagle/steam-go v0.0.0-20200606213655-e4717cdb203e
 	github.com/Jleagle/unmarshal-go v0.0.0-20200217225147-fd7db71d9ac0
 	github.com/Philipp15b/go-steam v1.0.1-0.20190816133340-b04c5a83c1c0
 	github.com/PuerkitoBio/goquery v1.5.1 // indirect
@@ -47,6 +48,7 @@ require (
 	github.com/gobuffalo/packr/v2 v2.8.0
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/gocolly/colly v1.2.0
+	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/golang/protobuf v1.4.2
 	github.com/google/go-cmp v0.4.1 // indirect
 	github.com/google/go-github/v28 v28.1.1
@@ -68,13 +70,13 @@ require (
 	github.com/logrusorgru/aurora v0.0.0-20200102142835-e9ef32dff381
 	github.com/mattn/go-runewidth v0.0.9 // indirect
 	github.com/memcachier/mc v2.0.1+incompatible
-	github.com/microcosm-cc/bluemonday v1.0.2
+	github.com/microcosm-cc/bluemonday v1.0.3
 	github.com/mitchellh/mapstructure v1.2.2 // indirect
 	github.com/mxpv/patreon-go v0.0.0-20190917022727-646111f1d983
 	github.com/nicklaw5/helix v0.5.9
 	github.com/nlopes/slack v0.6.0
 	github.com/olekukonko/tablewriter v0.0.4 // indirect
-	github.com/olivere/elastic/v7 v7.0.16
+	github.com/olivere/elastic/v7 v7.0.17
 	github.com/oschwald/maxminddb-golang v1.6.0
 	github.com/pariz/gountries v0.0.0-20200430155801-1c6a393df9c7
 	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
@@ -84,8 +86,8 @@ require (
 	github.com/russross/blackfriday v2.0.0+incompatible
 	github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca // indirect
 	github.com/satori/go.uuid v1.2.0
-	github.com/sendgrid/rest v2.4.1+incompatible
-	github.com/sendgrid/sendgrid-go v3.5.0+incompatible
+	github.com/sendgrid/rest v2.6.0+incompatible
+	github.com/sendgrid/sendgrid-go v3.6.0+incompatible
 	github.com/sirupsen/logrus v1.6.0 // indirect
 	github.com/spf13/afero v1.2.2 // indirect
 	github.com/spf13/cast v1.3.1 // indirect
@@ -95,24 +97,27 @@ require (
 	github.com/spf13/viper v1.6.2 // indirect
 	github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf // indirect
 	github.com/streadway/amqp v1.0.0
-	github.com/tdewolff/minify/v2 v2.7.4
+	github.com/tdewolff/minify/v2 v2.7.6
 	github.com/temoto/robotstxt v1.1.1 // indirect
 	github.com/tidwall/pretty v1.0.1
 	github.com/uber-go/atomic v1.4.0 // indirect
 	github.com/volatiletech/inflect v0.0.0-20170731032912-e7201282ae8d // indirect
 	github.com/volatiletech/sqlboiler v3.7.0+incompatible // indirect
+	github.com/wcharczuk/go-chart v2.0.1+incompatible
 	github.com/xdg/stringprep v1.0.0 // indirect
 	github.com/yohcop/openid-go v1.0.0
 	go.mongodb.org/mongo-driver v1.3.4
 	golang.org/x/crypto v0.0.0-20200604202706-70a84ac30bf9
+	golang.org/x/image v0.0.0-20200609002522-3f4726a040e8 // indirect
 	golang.org/x/net v0.0.0-20200602114024-627f9648deb9
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
-	golang.org/x/sys v0.0.0-20200602225109-6fdc65e7d980 // indirect
+	golang.org/x/sys v0.0.0-20200610111108-226ff32320da // indirect
 	golang.org/x/text v0.3.2
 	golang.org/x/time v0.0.0-20200416051211-89c76fbcd5d1 // indirect
+	golang.org/x/tools v0.0.0-20200612220849-54c614fe050c // indirect
 	google.golang.org/api v0.26.0
 	google.golang.org/appengine v1.6.6 // indirect
-	google.golang.org/genproto v0.0.0-20200605102947-12044bf5ea91 // indirect
+	google.golang.org/genproto v0.0.0-20200612171551-7676ae05be11 // indirect
 	google.golang.org/grpc v1.29.1
 	gopkg.in/djherbis/atime.v1 v1.0.0 // indirect
 	gopkg.in/djherbis/stream.v1 v1.3.1 // indirect
