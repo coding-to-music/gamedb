@@ -9,6 +9,7 @@ import (
 	"cloud.google.com/go/storage"
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
+	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -134,6 +135,10 @@ func getAppEmbed(app mongo.App) *discordgo.MessageEmbed {
 		},
 		Footer: getFooter(),
 		Fields: []*discordgo.MessageEmbedField{
+			{
+				Name:  "Max Weekly Players",
+				Value: humanize.Comma(int64(app.PlayerPeakWeek)),
+			},
 			{
 				Name:  "Release Date",
 				Value: app.GetReleaseDateNice(),
