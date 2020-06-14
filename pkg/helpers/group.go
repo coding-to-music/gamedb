@@ -60,7 +60,7 @@ func GetGroupName(id string, name string) string {
 	name = strings.TrimSpace(name)
 
 	if name == "" {
-		return "<no name>"
+		return "-no name-"
 	}
 	return name
 }
