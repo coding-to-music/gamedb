@@ -1,7 +1,6 @@
 package chatbot
 
 import (
-	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"go.mongodb.org/mongo-driver/bson"
@@ -52,33 +51,7 @@ func (c CommandAppRandom) Output(msg *discordgo.MessageCreate) (message discordg
 		var app = apps[0]
 
 		message.Content = "<@" + msg.Author.ID + ">"
-		message.Embed = &discordgo.MessageEmbed{
-			Title: app.GetName(),
-			URL:   "https://gamedb.online" + app.GetPath(),
-			Thumbnail: &discordgo.MessageEmbedThumbnail{
-				URL: app.GetHeaderImage(),
-			},
-			Footer: getFooter(),
-			Fields: []*discordgo.MessageEmbedField{
-				{
-					Name:  "Release Date",
-					Value: app.GetReleaseDateNice(),
-				},
-				{
-					Name:  "Price",
-					Value: app.Prices.Get(steamapi.ProductCCUS).GetFinal(),
-				},
-				{
-					Name:  "Review Score",
-					Value: app.GetReviewScore(),
-				},
-				{
-					Name:  "Followers",
-					Value: app.GetFollowers(),
-				},
-			},
-		}
-
+		message.Embed = getAppEmbed(app)
 	}
 
 	return message, nil

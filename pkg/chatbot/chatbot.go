@@ -7,10 +7,12 @@ import (
 	"regexp"
 
 	"cloud.google.com/go/storage"
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/mongo"
 )
 
 type CommandType string
@@ -120,4 +122,34 @@ func saveChartToGoogle(b []byte, filename string) (string, error) {
 	}
 
 	return storage.SignedURL(helpers.BucketChatBot, filename, opts)
+}
+
+func getAppEmbed(app mongo.App) *discordgo.MessageEmbed {
+
+	return &discordgo.MessageEmbed{
+		Title: app.GetName(),
+		URL:   "https://gamedb.online" + app.GetPath(),
+		Thumbnail: &discordgo.MessageEmbedThumbnail{
+			URL: app.GetHeaderImage(),
+		},
+		Footer: getFooter(),
+		Fields: []*discordgo.MessageEmbedField{
+			{
+				Name:  "Release Date",
+				Value: app.GetReleaseDateNice(),
+			},
+			{
+				Name:  "Price",
+				Value: app.Prices.Get(steamapi.ProductCCUS).GetFinal(),
+			},
+			{
+				Name:  "Review Score",
+				Value: app.GetReviewScore(),
+			},
+			{
+				Name:  "Followers",
+				Value: app.GetFollowers(),
+			},
+		},
+	}
 }
