@@ -61,6 +61,20 @@ func (c CommandPlayer) Output(msg *discordgo.MessageCreate) (message discordgo.M
 		avatar = "https://gamedb.online" + avatar
 	}
 
+	var games string
+	if player.GamesCount == 0 {
+		games = "<private profile>"
+	} else {
+		games = humanize.Comma(int64(player.GamesCount))
+	}
+
+	var playtime string
+	if player.PlayTime == 0 {
+		playtime = "<private profile>"
+	} else {
+		playtime = helpers.GetTimeLong(player.PlayTime, 3)
+	}
+
 	message.Content = "<@" + msg.Author.ID + ">"
 	message.Embed = &discordgo.MessageEmbed{
 		Title: player.GetName(),
@@ -76,11 +90,11 @@ func (c CommandPlayer) Output(msg *discordgo.MessageCreate) (message discordgo.M
 			},
 			{
 				Name:  "Games",
-				Value: humanize.Comma(int64(player.GamesCount)),
+				Value: games,
 			},
 			{
 				Name:  "Playtime",
-				Value: helpers.GetTimeLong(player.PlayTime, 3),
+				Value: playtime,
 			},
 			{
 				Name:  "Friends",
