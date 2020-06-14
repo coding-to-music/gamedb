@@ -173,6 +173,23 @@ func GetGroupsByID(ids []string, projection bson.M) (groups []Group, err error) 
 	return groups, err
 }
 
+func TrendingGroups() (groups []Group, err error) {
+
+	var item = memcache.MemcacheTrendingGroups
+
+	err = memcache.GetSetInterface(item.Key, item.Expiration, &groups, func() (interface{}, error) {
+		return getGroups(
+			0,
+			10,
+			bson.D{{"trending", -1}},
+			bson.D{{"type", helpers.GroupTypeGroup}},
+			bson.M{"_id": 1, "name": 1, "icon": 1, "trending": 1},
+		)
+	})
+
+	return groups, err
+}
+
 func GetGroups(limit int64, offset int64, sort bson.D, filter bson.D, projection bson.M) (groups []Group, err error) {
 
 	return getGroups(offset, limit, sort, filter, projection)

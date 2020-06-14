@@ -56,6 +56,9 @@ var (
 	MemcacheAppBundles    = func(appID int) Item { return Item{Key: "app-bundles-" + strconv.Itoa(appID), Expiration: 0} }
 	MemcacheAppPackages   = func(appID int) Item { return Item{Key: "app-packages-" + strconv.Itoa(appID), Expiration: 0} }
 
+	// Groups
+	MemcacheTrendingGroups = Item{Key: "trending-apps", Expiration: 60 * 10}
+
 	// Package Bits
 	MemcachePackageBundles = func(packageID int) Item { return Item{Key: "package-bundles-" + strconv.Itoa(packageID), Expiration: 0} }
 

@@ -25,7 +25,7 @@ func (CommandAppsTrending) Example() string {
 }
 
 func (CommandAppsTrending) Description() string {
-	return "Returns the most trending games"
+	return "Returns the top trending games"
 }
 
 func (CommandAppsTrending) Type() CommandType {
@@ -76,5 +76,4 @@ func (CommandAppsTrending) Output(msg *discordgo.MessageCreate) (message discord
 	message.Embed.Description = "```" + strings.Join(code, "\n") + "```"
 
 	return message, nil
-
 }
