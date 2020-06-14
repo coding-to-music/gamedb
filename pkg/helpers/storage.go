@@ -44,7 +44,12 @@ func GetSignedURLOptions() (*storage.SignedURLOptions, error) {
 
 	if signedOptions == nil {
 
-		jsonKey, err := ioutil.ReadFile(config.Config.InfraPath.Get() + "/google-auth.json")
+		var path = "/root/"
+		if config.IsLocal() {
+			path = config.Config.InfraPath.Get() + "/"
+		}
+
+		jsonKey, err := ioutil.ReadFile(path + "google-auth.json")
 		if err != nil {
 			return nil, err
 		}
