@@ -1,6 +1,8 @@
 package tasks
 
 import (
+	"time"
+
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
@@ -24,13 +26,16 @@ func (c PlayersQueueRandom) Cron() string {
 	return CronTimeUpdateRandomPlayers
 }
 
+const toQueue = 10
+const cronTime = time.Minute
+
 func (c PlayersQueueRandom) work() (err error) {
 
 	// Skip if queues have activity
 	limits := map[rabbit.QueueName]int{
 		queue.QueueApps:     50,
 		queue.QueuePackages: 50,
-		queue.QueuePlayers:  50,
+		queue.QueuePlayers:  0,
 	}
 
 	queues, err := helpers.RabbitClient.GetQueues()
@@ -49,7 +54,7 @@ func (c PlayersQueueRandom) work() (err error) {
 	}
 
 	// Queue players
-	players, err := mongo.GetRandomPlayers(10 * consumers)
+	players, err := mongo.GetRandomPlayers(toQueue * consumers)
 	if err != nil {
 		return err
 	}
@@ -61,6 +66,8 @@ func (c PlayersQueueRandom) work() (err error) {
 		if err != nil {
 			return err
 		}
+
+		time.Sleep(cronTime / time.Duration(toQueue*consumers))
 	}
 
 	return err
