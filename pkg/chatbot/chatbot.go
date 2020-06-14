@@ -1,10 +1,16 @@
 package chatbot
 
 import (
+	"bytes"
+	"io"
+	"os"
 	"regexp"
 
+	"cloud.google.com/go/storage"
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 )
 
 type CommandType string
@@ -71,4 +77,46 @@ func getFooter() *discordgo.MessageEmbedFooter {
 	}
 
 	return footer
+}
+
+func saveChartToFile(b []byte, filename string) error {
+
+	f, err := os.OpenFile(filename, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0600)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		err := f.Close()
+		log.Err(err)
+	}()
+
+	_, err = f.Write(b)
+	return err
+}
+
+func saveChartToGoogle(b []byte, filename string) (string, error) {
+
+	client, ctx, err := helpers.GetStorageClient()
+	if err != nil {
+		return "", err
+	}
+
+	w := client.Bucket(helpers.BucketChatBot).Object(filename).NewWriter(ctx)
+
+	_, err = io.Copy(w, bytes.NewBuffer(b))
+	if err != nil {
+		return "", err
+	}
+	err = w.Close()
+	if err != nil {
+		return "", err
+	}
+
+	opts, err := helpers.GetSignedURLOptions()
+	if err != nil {
+		return "", err
+	}
+
+	return storage.SignedURL(helpers.BucketChatBot, filename, opts)
 }

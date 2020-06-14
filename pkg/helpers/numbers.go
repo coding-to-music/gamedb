@@ -86,3 +86,25 @@ func ChunkInts(ints []int, n int) (chunks [][]int) {
 	}
 	return chunks
 }
+
+func Min(vars ...float64) float64 {
+
+	min := vars[0]
+	for _, i := range vars {
+		if min > i {
+			min = i
+		}
+	}
+	return min
+}
+
+func Max(vars ...float64) float64 {
+
+	max := vars[0]
+	for _, i := range vars {
+		if max < i {
+			max = i
+		}
+	}
+	return max
+}

@@ -151,6 +151,7 @@ type BaseConfig struct {
 	NewReleaseDays     ConfigItem
 	SlackGameDBWebhook ConfigItem
 	SlackSocialWebhook ConfigItem
+	InfraPath          ConfigItem
 }
 
 func init() {
@@ -283,6 +284,7 @@ func init() {
 	Config.WebserverPort.Set("PORT")
 	Config.SlackGameDBWebhook.Set("SLACK_GAMEDB_WEBHOOK")
 	Config.SlackSocialWebhook.Set("SLACK_SOCIAL_WEBHOOK")
+	Config.InfraPath.Set("INFRASTRUCTURE_PATH")
 
 	// Defaults
 	Config.GameDBShortName.SetDefault("GameDB")

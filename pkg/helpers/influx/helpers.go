@@ -158,6 +158,33 @@ func InfluxResponseToHighCharts(series influxModels.Row) HighChartsJSON {
 	return resp
 }
 
+func InfluxResponseToImageChartData(series influxModels.Row) (x []time.Time, y []float64) {
+
+	for k := range series.Columns {
+		if k > 0 {
+			for _, vv := range series.Values {
+
+				t, err := time.Parse(time.RFC3339, vv[0].(string))
+				if err != nil {
+					log.Err(err)
+					continue
+				}
+
+				val, ok := vv[k].(json.Number)
+				if ok {
+					i, err := val.Float64()
+					if err == nil {
+						x = append(x, t)
+						y = append(y, i)
+					}
+				}
+			}
+		}
+	}
+
+	return x, y
+}
+
 func GetFirstInfluxInt(resp *influx.Response) int64 {
 
 	if resp != nil &&
