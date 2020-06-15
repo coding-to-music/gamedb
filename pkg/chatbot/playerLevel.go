@@ -15,6 +15,10 @@ import (
 type CommandPlayerLevel struct {
 }
 
+func (c CommandPlayerLevel) ID() string {
+	return CPlayerLevel
+}
+
 func (CommandPlayerLevel) Regex() string {
 	return `^[.|!]level (.{2,32})$`
 }

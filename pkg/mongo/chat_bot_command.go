@@ -3,7 +3,6 @@ package mongo
 import (
 	"time"
 
-	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -14,6 +13,7 @@ type ChatBotCommand struct {
 	AuthorID     string    `bson:"author_id"`
 	AuthorName   string    `bson:"author_name"`
 	AuthorAvatar string    `bson:"author_avatar"`
+	CommandID    string    `bson:"command_id"`
 	Message      string    `bson:"message"`
 	Time         time.Time `bson:"time"`
 }
@@ -31,27 +31,11 @@ func (command ChatBotCommand) BSON() bson.D {
 	}
 }
 
-func CreateChatBotCommand(m discordgo.MessageCreate, message string) error {
+func GetChatBotCommandsRecent() (commands []ChatBotCommand, err error) {
 
-	t, _ := m.Timestamp.Parse()
+	filter := bson.D{{"message", bson.M{"$not": bson.M{"$regex": "help"}}}}
 
-	var command = ChatBotCommand{
-		GuildID:      m.GuildID,
-		ChannelID:    m.ChannelID,
-		AuthorID:     m.Author.ID,
-		AuthorName:   m.Author.Username,
-		AuthorAvatar: m.Author.Avatar,
-		Message:      message,
-		Time:         t,
-	}
-
-	_, err := InsertOne(CollectionChatBotCommands, command)
-	return err
-}
-
-func GetChatBotCommands() (commands []ChatBotCommand, err error) {
-
-	cur, ctx, err := Find(CollectionChatBotCommands, 0, 100, bson.D{{"_id", -1}}, nil, nil, nil)
+	cur, ctx, err := Find(CollectionChatBotCommands, 0, 100, bson.D{{"_id", -1}}, filter, nil, nil)
 	if err != nil {
 		return commands, err
 	}

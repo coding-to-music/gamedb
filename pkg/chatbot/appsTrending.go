@@ -12,6 +12,10 @@ import (
 type CommandAppsTrending struct {
 }
 
+func (c CommandAppsTrending) ID() string {
+	return CAppsTrending
+}
+
 func (CommandAppsTrending) Regex() string {
 	return `^[.|!]trending$`
 }

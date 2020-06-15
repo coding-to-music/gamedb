@@ -13,6 +13,10 @@ import (
 type CommandPlayerPlaytime struct {
 }
 
+func (c CommandPlayerPlaytime) ID() string {
+	return CPlayerPlaytime
+}
+
 func (CommandPlayerPlaytime) Regex() string {
 	return `^[.|!]playtime (.{2,32})$`
 }

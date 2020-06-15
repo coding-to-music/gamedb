@@ -12,6 +12,10 @@ import (
 type CommandAppsNew struct {
 }
 
+func (c CommandAppsNew) ID() string {
+	return CAppsNew
+}
+
 func (CommandAppsNew) Regex() string {
 	return `^[.|!]new$`
 }

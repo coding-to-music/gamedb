@@ -16,6 +16,10 @@ import (
 type CommandPlayer struct {
 }
 
+func (c CommandPlayer) ID() string {
+	return CPlayer
+}
+
 func (CommandPlayer) Regex() string {
 	return `^[.|!](player|user) (.{2,32})$`
 }

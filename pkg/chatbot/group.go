@@ -11,6 +11,10 @@ import (
 type CommandGroup struct {
 }
 
+func (c CommandGroup) ID() string {
+	return CGroup
+}
+
 func (CommandGroup) Regex() string {
 	return `^[.|!](group|clan) (.*)`
 }

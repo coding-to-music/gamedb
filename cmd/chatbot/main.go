@@ -3,7 +3,6 @@ package main
 import (
 	"net/http"
 	_ "net/http/pprof"
-	"regexp"
 	"strings"
 	"time"
 
@@ -25,8 +24,7 @@ import (
 
 const debugAuthorID = "145456943912189952"
 
-var (
-	version string
+var version string
 
 	ignoreGuildIDs = []string{
 		// "110373943822540800", // Discord Bots
@@ -202,6 +200,7 @@ func saveToInflux(m *discordgo.MessageCreate, command chatbot.Command) {
 			"channel_id": m.ChannelID,
 			"author_id":  m.Author.ID,
 			"command":    command.Regex(),
+			"command_id": command.ID(),
 		},
 		Fields: map[string]interface{}{
 			"request": 1,
@@ -212,13 +211,26 @@ func saveToInflux(m *discordgo.MessageCreate, command chatbot.Command) {
 	log.Err(err)
 }
 
-func saveToMongo(m *discordgo.MessageCreate, message string) {
+func saveToMongo(m *discordgo.MessageCreate, command chatbot.Command, message string) {
 
 	if config.IsLocal() {
 		return
 	}
 
-	err := mongo.CreateChatBotCommand(*m, message)
+	t, _ := m.Timestamp.Parse()
+
+	var row = mongo.ChatBotCommand{
+		GuildID:      m.GuildID,
+		ChannelID:    m.ChannelID,
+		AuthorID:     m.Author.ID,
+		AuthorName:   m.Author.Username,
+		AuthorAvatar: m.Author.Avatar,
+		CommandID:    command.ID(),
+		Message:      message,
+		Time:         t,
+	}
+
+	_, err := mongo.InsertOne(mongo.CollectionChatBotCommands, row)
 	if err != nil {
 		log.Err(err)
 		return

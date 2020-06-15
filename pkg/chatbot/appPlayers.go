@@ -10,6 +10,10 @@ import (
 type CommandAppPlayers struct {
 }
 
+func (c CommandAppPlayers) ID() string {
+	return CAppPlayers
+}
+
 func (CommandAppPlayers) Regex() string {
 	// ^.(players|online) ?([a-zA-Z0-9]+)?
 	return `^[.|!](players|online) ([a-zA-Z0-9]+)`

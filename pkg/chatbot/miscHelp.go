@@ -7,6 +7,10 @@ import (
 type CommandHelp struct {
 }
 
+func (c CommandHelp) ID() string {
+	return CHelp
+}
+
 func (CommandHelp) Regex() string {
 	return `^[.|!]help$`
 }

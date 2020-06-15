@@ -24,6 +24,7 @@ var (
 )
 
 type Command interface {
+	ID() string
 	Regex() string
 	DisableCache() bool
 	Output(*discordgo.MessageCreate) (discordgo.MessageSend, error)
@@ -32,10 +33,28 @@ type Command interface {
 	Type() CommandType
 }
 
+const (
+	CApp            = "app"
+	CAppPlayers     = "app-players"
+	CAppRandom      = "app-random"
+	CAppsNew        = "apps-new"
+	CAppsPopular    = "apps-popular"
+	CAppsTrending   = "apps-trending"
+	CGroup          = "group"
+	CGroupsTrending = "groups-trending"
+	CPlayer         = "player"
+	CPlayerApps     = "player-apps"
+	CPlayerLevel    = "player-level"
+	CPlayerPlaytime = "player-playtime"
+	CPlayerRecent   = "player-recent"
+	CHelp           = "help"
+	CSteamOnline    = "steam-online"
+)
+
 var CommandRegister = []Command{
 	CommandApp{},
 	CommandAppPlayers{},
-	CommandAppPlayersSteam{},
+	CommandSteamOnline{},
 	CommandAppRandom{},
 	CommandAppsNew{},
 	CommandAppsPopular{},

@@ -6,30 +6,34 @@ import (
 	"github.com/gamedb/gamedb/pkg/mongo"
 )
 
-type CommandAppPlayersSteam struct {
+type CommandSteamOnline struct {
 }
 
-func (CommandAppPlayersSteam) Regex() string {
+func (c CommandSteamOnline) ID() string {
+	return CSteamOnline
+}
+
+func (CommandSteamOnline) Regex() string {
 	return `^[.|!](players|online)$`
 }
 
-func (CommandAppPlayersSteam) DisableCache() bool {
+func (CommandSteamOnline) DisableCache() bool {
 	return false
 }
 
-func (CommandAppPlayersSteam) Example() string {
+func (CommandSteamOnline) Example() string {
 	return ".players"
 }
 
-func (CommandAppPlayersSteam) Description() string {
+func (CommandSteamOnline) Description() string {
 	return "Gets the number of people on Steam."
 }
 
-func (CommandAppPlayersSteam) Type() CommandType {
+func (CommandSteamOnline) Type() CommandType {
 	return TypeOther
 }
 
-func (c CommandAppPlayersSteam) Output(msg *discordgo.MessageCreate) (message discordgo.MessageSend, err error) {
+func (c CommandSteamOnline) Output(msg *discordgo.MessageCreate) (message discordgo.MessageSend, err error) {
 
 	var app = mongo.App{}
 

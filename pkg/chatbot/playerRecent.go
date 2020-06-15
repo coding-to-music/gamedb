@@ -15,6 +15,10 @@ import (
 type CommandPlayerRecent struct {
 }
 
+func (c CommandPlayerRecent) ID() string {
+	return CPlayerRecent
+}
+
 func (CommandPlayerRecent) Regex() string {
 	return `^[.|!]recent (.{2,32})$`
 }

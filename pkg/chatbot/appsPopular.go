@@ -12,6 +12,10 @@ import (
 type CommandAppsPopular struct {
 }
 
+func (c CommandAppsPopular) ID() string {
+	return CAppsPopular
+}
+
 func (CommandAppsPopular) Regex() string {
 	return `^[.|!]popular$`
 }

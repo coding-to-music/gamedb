@@ -9,6 +9,10 @@ import (
 type CommandAppRandom struct {
 }
 
+func (c CommandAppRandom) ID() string {
+	return CAppRandom
+}
+
 func (CommandAppRandom) Regex() string {
 	return `^[.|!]random$`
 }

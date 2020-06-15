@@ -9,6 +9,10 @@ import (
 type CommandApp struct {
 }
 
+func (c CommandApp) ID() string {
+	return CApp
+}
+
 func (CommandApp) Regex() string {
 	return `^[.|!](app|game) (.*)`
 }

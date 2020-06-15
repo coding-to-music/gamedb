@@ -15,6 +15,10 @@ import (
 type CommandPlayerApps struct {
 }
 
+func (c CommandPlayerApps) ID() string {
+	return CPlayerApps
+}
+
 func (CommandPlayerApps) Regex() string {
 	return `^[.|!](games|apps) (.{2,32})$`
 }

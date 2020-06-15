@@ -12,6 +12,10 @@ import (
 type CommandGroupsTrending struct {
 }
 
+func (c CommandGroupsTrending) ID() string {
+	return CGroupsTrending
+}
+
 func (CommandGroupsTrending) Regex() string {
 	return `^[.|!]trendinggroups$`
 }
