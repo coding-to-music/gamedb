@@ -340,6 +340,7 @@ func (t *GlobalTemplate) setRandomBackground(title bool, link bool) {
 		236850, // Europa Universalis IV
 		242760, // The Forest
 		431960, // Wallpaper Engine
+		394360, // Hearts of Iron IV
 	}
 
 	whitelist := []mongo.App{
