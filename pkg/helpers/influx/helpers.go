@@ -170,6 +170,11 @@ func InfluxResponseToImageChartData(series influxModels.Row) (x []time.Time, y [
 					continue
 				}
 
+				// Hide some incorrect data in Influx
+				if t.Year() < 2000 {
+					continue
+				}
+
 				val, ok := vv[k].(json.Number)
 				if ok {
 					i, err := val.Float64()
