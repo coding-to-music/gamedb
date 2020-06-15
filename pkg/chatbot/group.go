@@ -28,7 +28,7 @@ func (CommandGroup) DisableCache() bool {
 }
 
 func (CommandGroup) Example() string {
-	return ".group GroupName"
+	return ".group {game}"
 }
 
 func (CommandGroup) Description() string {

@@ -24,7 +24,7 @@ func (CommandPlayerApps) DisableCache() bool {
 }
 
 func (CommandPlayerApps) Example() string {
-	return ".games PlayerName"
+	return ".games {player}"
 }
 
 func (CommandPlayerApps) Description() string {

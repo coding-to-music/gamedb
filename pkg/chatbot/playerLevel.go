@@ -24,7 +24,7 @@ func (CommandPlayerLevel) DisableCache() bool {
 }
 
 func (CommandPlayerLevel) Example() string {
-	return ".level PlayerName"
+	return ".level {player}"
 }
 
 func (CommandPlayerLevel) Description() string {

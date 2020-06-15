@@ -24,7 +24,7 @@ func (CommandPlayerRecent) DisableCache() bool {
 }
 
 func (CommandPlayerRecent) Example() string {
-	return ".recent PlayerName"
+	return ".recent {player}"
 }
 
 func (CommandPlayerRecent) Description() string {

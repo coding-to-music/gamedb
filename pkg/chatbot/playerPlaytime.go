@@ -22,7 +22,7 @@ func (CommandPlayerPlaytime) DisableCache() bool {
 }
 
 func (CommandPlayerPlaytime) Example() string {
-	return ".playtime PlayerName"
+	return ".playtime {player}"
 }
 
 func (CommandPlayerPlaytime) Description() string {
