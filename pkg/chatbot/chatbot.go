@@ -47,6 +47,7 @@ const (
 	CPlayerLevel    = "player-level"
 	CPlayerPlaytime = "player-playtime"
 	CPlayerRecent   = "player-recent"
+	CPlayerWishlist = "player-wishlist"
 	CHelp           = "help"
 	CSteamOnline    = "steam-online"
 )
@@ -66,6 +67,7 @@ var CommandRegister = []Command{
 	CommandPlayerLevel{},
 	CommandPlayerPlaytime{},
 	CommandPlayerRecent{},
+	CommandPlayerWishlist{},
 	CommandHelp{},
 }
 
