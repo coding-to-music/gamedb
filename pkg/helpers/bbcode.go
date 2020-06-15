@@ -68,6 +68,11 @@ func init() {
 		out.Name = "td"
 		return out, true
 	})
+	BBCodeCompiler.SetTag("hr", func(node *bbcode.BBCodeNode) (*bbcode.HTMLTag, bool) {
+		out := bbcode.NewHTMLTag("")
+		out.Name = "hr"
+		return out, true
+	})
 }
 
 func RenderHTMLAndBBCode(in string) template.HTML {
