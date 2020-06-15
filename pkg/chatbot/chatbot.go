@@ -69,6 +69,12 @@ var CommandRegister = []Command{
 	CommandHelp{},
 }
 
+func init() {
+	for _, v := range CommandRegister {
+		RegexCache[v.Regex()] = regexp.MustCompile(v.Regex())
+	}
+}
+
 func getAuthor(guildID string) *discordgo.MessageEmbedAuthor {
 
 	author := &discordgo.MessageEmbedAuthor{

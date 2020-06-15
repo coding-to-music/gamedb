@@ -62,11 +62,6 @@ func main() {
 	// Load consumers
 	queue.Init(queue.ChatbotDefinitions)
 
-	// Cache regexes
-	for _, v := range chatbot.CommandRegister {
-		chatbot.RegexCache[v.Regex()] = regexp.MustCompile(v.Regex())
-	}
-
 	// Set limiter
 	ops := limiter.ExpirableOptions{DefaultExpirationTTL: time.Second}
 	lmt := limiter.New(&ops).SetMax(1).SetBurst(5)
