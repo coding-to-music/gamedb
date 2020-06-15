@@ -1,7 +1,6 @@
 package queue
 
 import (
-	"strconv"
 	"sync"
 	"time"
 
@@ -130,22 +129,22 @@ func packagePriceHandler(messages []*rabbit.Message) {
 			}()
 
 			// Post to Discord
-			wg.Add(1)
-			go func() {
-
-				defer wg.Done()
-
-				if productCC.ProductCode == steamapi.ProductCCUS &&
-					oldPrice > newPrice && // Incase it goes from -90% to -80%
-					newPrice > 0 { // Free games are usually just removed from the store
-
-					var msg = "Package " + strconv.FormatUint(uint64(payload.PackageID), 10) + ": " + helpers.GetPackageName(int(payload.PackageID), payload.PackageName)
-					_, err := discordClient.ChannelMessageSend("685246060930924544", msg)
-					if err != nil {
-						log.Err(err)
-					}
-				}
-			}()
+			// wg.Add(1)
+			// go func() {
+			//
+			// 	defer wg.Done()
+			//
+			// 	if productCC.ProductCode == steamapi.ProductCCUS &&
+			// 		oldPrice > newPrice && // Incase it goes from -90% to -80%
+			// 		newPrice > 0 { // Free games are usually just removed from the store
+			//
+			// 		var msg = "Package " + strconv.FormatUint(uint64(payload.PackageID), 10) + ": " + helpers.GetPackageName(int(payload.PackageID), payload.PackageName)
+			// 		_, err := discordClient.ChannelMessageSend("685246060930924544", msg)
+			// 		if err != nil {
+			// 			log.Err(err)
+			// 		}
+			// 	}
+			// }()
 
 		}
 
