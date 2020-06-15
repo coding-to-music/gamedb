@@ -59,6 +59,11 @@ var (
 	// Groups
 	MemcacheTrendingGroups = Item{Key: "trending-apps", Expiration: 60 * 10}
 
+	// Chat Bot
+	MemcacheChatBotGuildsCount = Item{Key: "chat-bot-guilds", Expiration: 60 * 60 * 24}
+	MemcacheChatBotGuilds      = Item{Key: "chat-bot-grouped-guilds", Expiration: 60 * 10}
+	MemcacheChatBotCommands    = Item{Key: "chat-bot-grouped-commands", Expiration: 60 * 10}
+
 	// Package Bits
 	MemcachePackageBundles = func(packageID int) Item { return Item{Key: "package-bundles-" + strconv.Itoa(packageID), Expiration: 0} }
 
@@ -67,9 +72,6 @@ var (
 
 	// Queues page
 	MemcacheQueues = Item{Key: "queues", Expiration: 10}
-
-	// Chat page
-	MemcacheChatBotGuilds = Item{Key: "chat-bot-guilds", Expiration: 60 * 60 * 24}
 
 	// Sales page
 	MemcacheUniqueSaleTypes = Item{Key: "unique-sale-types", Expiration: 60 * 60 * 1}

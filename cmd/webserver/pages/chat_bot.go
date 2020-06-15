@@ -23,8 +23,7 @@ func ChatBotRouter() http.Handler {
 
 	r := chi.NewRouter()
 	r.Get("/", chatBotHandler)
-	r.Get("/chart.json", chatBotChartHandler)
-	r.Get("/commands.json", chatBotCommandsHandler)
+	r.Get("/commands.json", chatBotRecentHandler)
 	return r
 }
 
@@ -80,7 +79,7 @@ func (cbt chatBotTemplate) Commands() (ret [][]chatbot.Command) {
 
 func (cbt chatBotTemplate) Guilds() (guilds int) {
 
-	var item = memcache.MemcacheChatBotGuilds
+	var item = memcache.MemcacheChatBotGuildsCount
 
 	err := memcache.GetSetInterface(item.Key, item.Expiration, &guilds, func() (i interface{}, err error) {
 
@@ -119,13 +118,9 @@ func (cbt chatBotTemplate) Guilds() (guilds int) {
 	return guilds
 }
 
-func chatBotChartHandler(w http.ResponseWriter, r *http.Request) {
+func chatBotRecentHandler(w http.ResponseWriter, r *http.Request) {
 
-}
-
-func chatBotCommandsHandler(w http.ResponseWriter, r *http.Request) {
-
-	commands, err := mongo.GetChatBotCommands()
+	commands, err := mongo.GetChatBotCommandsRecent()
 	if err != nil {
 		log.Err(err, r)
 		return
