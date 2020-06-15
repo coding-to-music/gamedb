@@ -75,7 +75,7 @@ func SearchGroups(offset int, limit int, sorters []elastic.Sorter, search string
 	if search != "" {
 
 		query.Must(elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
-			elastic.NewTermQuery("id", search).Boost(2),
+			elastic.NewTermQuery("id", search).Boost(5),
 			elastic.NewMatchQuery("name", search).Boost(2),
 			elastic.NewMatchQuery("abbreviation", search).Boost(2),
 			elastic.NewMatchQuery("url", search).Boost(1),

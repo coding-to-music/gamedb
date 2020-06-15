@@ -82,14 +82,14 @@ func SearchApps(limit int, offset int, search string, sorters []elastic.Sorter, 
 		searchService.Query(elastic.NewBoolQuery().
 			Must(
 				elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
-					elastic.NewTermQuery("id", search),
-					elastic.NewTermQuery("aliases", search),
+					elastic.NewTermQuery("id", search).Boost(5),
+					elastic.NewTermQuery("aliases", search).Boost(5),
 					elastic.NewMatchQuery("name", search),
 				),
 			).
 			Should(
 				elastic.NewFunctionScoreQuery().
-					AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("players").Factor(0.05)),
+					AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("players").Factor(0.001)),
 			),
 		)
 	}
