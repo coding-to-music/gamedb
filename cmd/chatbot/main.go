@@ -26,11 +26,7 @@ const debugAuthorID = "145456943912189952"
 
 var version string
 
-	ignoreGuildIDs = []string{
-		// "110373943822540800", // Discord Bots
-	}
-)
-
+//noinspection GoDeferInLoop
 func main() {
 
 	config.Init(version, helpers.GetIP())
@@ -104,12 +100,9 @@ func main() {
 				}
 
 				// Save stats
-				if m.Author.ID != debugAuthorID && !helpers.SliceHasString(m.GuildID, ignoreGuildIDs) {
-					//noinspection GoDeferInLoop
-					defer func() {
-						go saveToInflux(m, command)
-						go saveToMongo(m, msg)
-					}()
+				if m.Author.ID != debugAuthorID {
+					defer saveToInflux(m, command)
+					defer saveToMongo(m, command, msg)
 				}
 
 				// Typing notification
