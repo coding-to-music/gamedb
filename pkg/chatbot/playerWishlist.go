@@ -96,7 +96,14 @@ func (c CommandPlayerWishlist) Output(msg *discordgo.MessageCreate) (message dis
 				space = " "
 			}
 
-			code = append(code, strconv.Itoa(app.Order)+": "+space+app.GetName())
+			var rank string
+			if app.Order > 0 {
+				rank = strconv.Itoa(app.Order)
+			} else {
+				rank = "*"
+			}
+
+			code = append(code, rank+": "+space+app.GetName())
 		}
 
 		message.Embed.Description = "```" + strings.Join(code, "\n") + "```"
