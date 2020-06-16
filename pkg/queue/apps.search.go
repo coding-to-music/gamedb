@@ -89,6 +89,10 @@ func makeAppAliases(app elastic.App) (aliases []string) {
 			var alias []string
 			for _, v := range helpers.RegexNonAlphaNumeric.Split(app.Name, -1) {
 
+				if v == "" {
+					continue
+				}
+
 				if convertRoman && helpers.RegexSmallRomanOnly.MatchString(v) {
 					v = strconv.Itoa(roman.Arabic(v))
 				}
