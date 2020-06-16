@@ -37,6 +37,7 @@ const (
 	CApp            = "app"
 	CAppPlayers     = "app-players"
 	CAppRandom      = "app-random"
+	CAppPrice       = "app-price"
 	CAppsNew        = "apps-new"
 	CAppsPopular    = "apps-popular"
 	CAppsTrending   = "apps-trending"
@@ -58,6 +59,7 @@ var CommandRegister = []Command{
 	CommandSteamOnline{},
 	CommandAppRandom{},
 	CommandAppsNew{},
+	CommandAppPrice{},
 	CommandAppsPopular{},
 	CommandAppsTrending{},
 	CommandGroup{},
