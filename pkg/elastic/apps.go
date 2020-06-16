@@ -79,11 +79,14 @@ func SearchApps(limit int, offset int, search string, sorters []elastic.Sorter, 
 		Size(limit)
 
 	if search != "" {
+
+		var search2 = helpers.RegexNonAlphaNumeric.ReplaceAllString(search, "")
+
 		searchService.Query(elastic.NewBoolQuery().
 			Must(
 				elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
 					elastic.NewTermQuery("id", search).Boost(5),
-					elastic.NewTermQuery("aliases", search).Boost(5),
+					elastic.NewTermQuery("aliases", search2).Boost(1),
 					elastic.NewMatchQuery("name", search),
 				),
 			).

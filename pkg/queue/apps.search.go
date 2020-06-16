@@ -1,7 +1,11 @@
 package queue
 
 import (
+	"strconv"
+	"strings"
+
 	"github.com/Jleagle/rabbit-go"
+	roman "github.com/StefanSchroeder/Golang-Roman"
 	"github.com/gamedb/gamedb/pkg/elastic"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -10,44 +14,6 @@ import (
 
 type AppsSearchMessage struct {
 	App mongo.App `json:"app"`
-}
-
-var aliases = map[int][]string{
-	813780:  {"aoe", "aoe2"},         // Age of Empires II: Definitive Edition
-	221380:  {"aoe", "aoe2"},         // Age of Empires II (2013)
-	105450:  {"aoe", "aoe3"},         // Age of Empires® III: Complete Collection
-	1017900: {"aoe"},                 // Age of Empires: Definitive Edition
-	105430:  {"aoe"},                 // Age of Empires Online
-	346110:  {"ark"},                 // ARK: Survival Evolved
-	49520:   {"bl", "bl2"},           // Borderlands 2
-	397540:  {"bl", "bl3"},           // Borderlands 3
-	8980:    {"bl"},                  // Borderlands GOTY
-	10:      {"cs"},                  // Counter-Strike
-	730:     {"cs", "csgo", "cs:go"}, // Counter-Strike: Global Offensive
-	240:     {"css"},                 // Counter-Strike: Source
-	570:     {"dota", "dota2"},       // Dota 2
-	8500:    {"eve"},                 // EVE Online
-	4000:    {"gm"},                  // Garry's Mod
-	12100:   {"gta", "gta3"},         // Grand Theft Auto III
-	12210:   {"gta", "gta4"},         // Grand Theft Auto IV: The Complete Edition
-	271590:  {"gta5"},                // Grand Theft Auto V
-	12120:   {"gta", "gtasa"},        // Grand Theft Auto: San Andreas
-	12110:   {"gta", "gtavc"},        // Grand Theft Auto: Vice City
-	70:      {"hl"},                  // Half-Life
-	546560:  {"hla"},                 // Half-Life: Alyx
-	220:     {"hl2"},                 // Half-Life 2
-	500:     {"l4d"},                 // Left 4 Dead
-	550:     {"l4d2"},                // Left 4 Dead 2
-	238960:  {"poe"},                 // Path of Exile
-	218620:  {"pd2"},                 // PAYDAY 2
-	252950:  {"rl"},                  // Rocket League
-	1172620: {"sot"},                 // Sea of Thieves
-	3900:    {"civ", "civ4"},         // Sid Meier's Civilization IV
-	8930:    {"civ", "civ5"},         // Sid Meier's Civilization V
-	289070:  {"civ", "civ6"},         // Sid Meier's Civilization VI
-	985890:  {"sor", "sor4"},         // Streets of Rage 4
-	440:     {"tf2"},                 // Team Fortress 2
-	359550:  {"r6"},                  // Tom Clancy's Rainbow Six Siege
 }
 
 func appsSearchHandler(messages []*rabbit.Message) {
@@ -78,10 +44,7 @@ func appsSearchHandler(messages []*rabbit.Message) {
 		app.Developers = payload.App.Developers
 		app.Type = payload.App.Type
 		app.Platforms = payload.App.Platforms
-
-		if val, ok := aliases[payload.App.ID]; ok {
-			app.Aliases = val
-		}
+		app.Aliases = makeAppAliases(app)
 
 		err = elastic.IndexApp(app)
 		if err != nil {
@@ -92,4 +55,55 @@ func appsSearchHandler(messages []*rabbit.Message) {
 
 		message.Ack(false)
 	}
+}
+
+var aliasMap = map[int][]string{
+	813780:  {"aoe", "aoe2"},   // Age of Empires II: Definitive Edition
+	221380:  {"aoe", "aoe2"},   // Age of Empires II (2013)
+	105450:  {"aoe", "aoe3"},   // Age of Empires® III: Complete Collection
+	1017900: {"aoe"},           // Age of Empires: Definitive Edition
+	105430:  {"aoe"},           // Age of Empires Online
+	346110:  {"ark"},           // ARK: Survival Evolved
+	49520:   {"bl", "bl2"},     // Borderlands 2
+	397540:  {"bl", "bl3"},     // Borderlands 3
+	8980:    {"bl"},            // Borderlands GOTY
+	570:     {"dota", "dota2"}, // Dota 2
+	8500:    {"eve"},           // EVE Online
+	24240:   {"pd", "pdth"},    // PAYDAY: The Heist
+	218620:  {"pd", "pd2"},     // PAYDAY 2
+	3900:    {"civ", "civ4"},   // Sid Meier's Civilization IV
+	8930:    {"civ", "civ5"},   // Sid Meier's Civilization V
+	289070:  {"civ", "civ6"},   // Sid Meier's Civilization VI
+	359550:  {"r6"},            // Tom Clancy's Rainbow Six Siege
+}
+
+func makeAppAliases(app elastic.App) (aliases []string) {
+
+	if val, ok := aliasMap[app.ID]; ok {
+		aliases = val
+	}
+
+	for _, convertRoman := range []bool{true, false} {
+		for _, trimSmall := range []bool{true, false} {
+
+			var alias []string
+			for _, v := range helpers.RegexNonAlphaNumeric.Split(app.Name, -1) {
+
+				if convertRoman && helpers.RegexSmallRomanOnly.MatchString(v) {
+					v = strconv.Itoa(roman.Arabic(v))
+				}
+
+				if helpers.RegexIntsOnly.MatchString(v) {
+					alias = append(alias, v)
+				} else if !trimSmall || len(v) > 1 {
+					alias = append(alias, strings.ToLower(v[0:1]))
+				}
+			}
+			if len(alias) > 1 {
+				aliases = append(aliases, strings.Join(alias, ""))
+			}
+		}
+	}
+
+	return helpers.UniqueString(aliases)
 }
