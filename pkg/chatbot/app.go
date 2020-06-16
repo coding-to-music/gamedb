@@ -41,7 +41,7 @@ func (c CommandApp) Output(msg *discordgo.MessageCreate) (message discordgo.Mess
 	if err != nil {
 		return message, err
 	} else if len(apps) == 0 {
-		message.Content = "App **" + matches[2] + "** not found"
+		message.Content = "Game **" + matches[2] + "** not found"
 		return message, nil
 	}
 

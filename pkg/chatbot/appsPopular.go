@@ -40,7 +40,7 @@ func (CommandAppsPopular) Output(msg *discordgo.MessageCreate) (message discordg
 
 	message.Content = "<@" + msg.Author.ID + ">"
 	message.Embed = &discordgo.MessageEmbed{
-		Title:  "Popular Apps",
+		Title:  "Popular Games",
 		Author: getAuthor(msg.Author.ID),
 	}
 
