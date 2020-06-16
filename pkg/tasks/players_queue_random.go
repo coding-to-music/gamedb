@@ -67,7 +67,7 @@ func (c PlayersQueueRandom) work() (err error) {
 			return err
 		}
 
-		time.Sleep(cronTime / time.Duration(toQueue*consumers))
+		time.Sleep((cronTime / time.Duration(toQueue)) * time.Duration(consumers))
 	}
 
 	return err
