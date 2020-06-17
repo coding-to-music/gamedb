@@ -2,8 +2,6 @@ package mongo
 
 import (
 	"html/template"
-	"strconv"
-	"strings"
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -12,19 +10,20 @@ import (
 )
 
 type Article struct {
-	ID         int64     `bson:"_id"`
-	Title      string    `bson:"title"`
-	URL        string    `bson:"url"`
-	IsExternal bool      `bson:"is_external"`
-	Author     string    `bson:"author"`
-	Contents   string    `bson:"contents"`
-	Date       time.Time `bson:"date"`
-	FeedLabel  string    `bson:"feed_label"`
-	FeedName   string    `bson:"feed_name"`
-	FeedType   int8      `bson:"feed_type"`
-	AppID      int       `bson:"app_id"`
-	AppName    string    `bson:"app_name"`
-	AppIcon    string    `bson:"app_icon"`
+	ID          int64     `bson:"_id"`
+	Title       string    `bson:"title"`
+	URL         string    `bson:"url"`
+	IsExternal  bool      `bson:"is_external"`
+	Author      string    `bson:"author"`
+	Contents    string    `bson:"contents"`
+	Date        time.Time `bson:"date"`
+	FeedLabel   string    `bson:"feed_label"`
+	FeedName    string    `bson:"feed_name"`
+	FeedType    int8      `bson:"feed_type"`
+	AppID       int       `bson:"app_id"`
+	AppName     string    `bson:"app_name"`
+	AppIcon     string    `bson:"app_icon"`
+	ArticleIcon string    `bson:"icon"`
 }
 
 func (article Article) BSON() bson.D {
@@ -40,6 +39,7 @@ func (article Article) BSON() bson.D {
 		{"feed_label", article.FeedLabel},
 		{"feed_name", article.FeedName},
 		{"feed_type", article.FeedType},
+		{"icon", article.ArticleIcon},
 
 		{"app_id", article.AppID},
 		{"app_name", article.AppName},

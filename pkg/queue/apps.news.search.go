@@ -8,13 +8,14 @@ import (
 )
 
 type AppsArticlesSearchMessage struct {
-	ID      int64  `json:"id"`
-	Title   string `json:"title"`
-	Body    string `json:"body"`
-	Time    int64  `json:"time"`
-	AppID   int    `json:"app_id"`
-	AppName string `json:"app_name"`
-	AppIcon string `json:"app_icon"`
+	ID          int64  `json:"id"`
+	Title       string `json:"title"`
+	Body        string `json:"body"`
+	Time        int64  `json:"time"`
+	AppID       int    `json:"app_id"`
+	AppName     string `json:"app_name"`
+	AppIcon     string `json:"app_icon"`
+	ArticleIcon string `json:"icon"`
 }
 
 func appsArticlesSearchHandler(messages []*rabbit.Message) {
@@ -38,6 +39,7 @@ func appsArticlesSearchHandler(messages []*rabbit.Message) {
 		article.AppID = payload.AppID
 		article.AppName = payload.AppName
 		article.AppIcon = payload.AppIcon
+		article.ArticleIcon = payload.ArticleIcon
 
 		err = elastic.IndexArticle(article)
 		if err != nil {

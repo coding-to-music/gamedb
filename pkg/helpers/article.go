@@ -91,3 +91,42 @@ func removeAttribute(n *html.Node, attribute string) {
 		}
 	}
 }
+
+func GetArticleImage(body string) string {
+
+	body = strings.ReplaceAll(body, "{STEAM_CLAN_IMAGE}", articleImageBase)
+	body = strings.ReplaceAll(body, "{STEAM_CLAN_LOC_IMAGE}", articleImageBase)
+
+	doc, err := html.Parse(strings.NewReader(body))
+	if err == nil {
+		src := getArticleImage(doc)
+		if src != "" {
+			return src
+		}
+	}
+
+	return ""
+}
+
+func getArticleImage(n *html.Node) string {
+
+	// Recurse
+	for c := n.FirstChild; c != nil; c = c.NextSibling {
+		src := getArticleImage(c)
+		if src != "" {
+			return src
+		}
+	}
+
+	// Get image src
+	if n.Type == html.ElementNode && n.Data == "img" {
+
+		for _, attr := range n.Attr {
+			if attr.Key == "src" {
+				return attr.Val
+			}
+		}
+	}
+
+	return ""
+}

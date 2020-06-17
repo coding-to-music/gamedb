@@ -20,6 +20,7 @@ type Article struct {
 	AppName     string  `json:"app_name"`
 	AppIcon     string  `json:"app_icon"`
 	Time        int64   `json:"time"`
+	ArticleIcon string  `json:"icon"`
 	Score       float64 `json:"-"`
 }
 
@@ -133,6 +134,7 @@ func DeleteAndRebuildArticlesIndex() {
 				"app_id":   fieldTypeDisabled,
 				"app_name": fieldTypeText,
 				"app_icon": fieldTypeDisabled,
+				"icon":     fieldTypeDisabled,
 				"time":     fieldTypeLong,
 			},
 		},
