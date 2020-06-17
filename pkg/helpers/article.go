@@ -55,16 +55,22 @@ func updateArticleDom(n *html.Node) {
 	// Set target on links
 	if n.Type == html.ElementNode && n.Data == "a" {
 
-		var set bool
+		var isBlank bool
+		var isImage bool
+
 		for k, v := range n.Attr {
-			if v.Key == "target" {
+			if v.Key == "href" && strings.HasSuffix(v.Val, ".jpg") {
+				isImage = true
+			} else if v.Key == "target" {
 				n.Attr[k].Val = "_blank"
-				set = true
-				break
+				isBlank = true
 			}
 		}
 
-		if !set {
+		if isImage {
+			removeAttribute(n, "href")
+			removeAttribute(n, "target")
+		} else if !isBlank {
 			n.Attr = append(n.Attr, html.Attribute{Namespace: "", Key: "target", Val: "_blank"})
 			n.Attr = append(n.Attr, html.Attribute{Namespace: "", Key: "rel", Val: "noopener"})
 		}
@@ -73,5 +79,15 @@ func updateArticleDom(n *html.Node) {
 	// Recurse
 	for c := n.FirstChild; c != nil; c = c.NextSibling {
 		updateArticleDom(c)
+	}
+}
+
+func removeAttribute(n *html.Node, attribute string) {
+
+	for k, v := range n.Attr {
+		if v.Key == attribute {
+			n.Attr = append(n.Attr[:k], n.Attr[k+1:]...)
+			return
+		}
 	}
 }
