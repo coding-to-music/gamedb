@@ -76,14 +76,15 @@ func SearchGroups(offset int, limit int, sorters []elastic.Sorter, search string
 
 		query.Must(elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
 			elastic.NewTermQuery("id", search).Boost(5),
-			elastic.NewMatchQuery("name", search).Boost(2),
-			elastic.NewMatchQuery("abbreviation", search).Boost(2),
-			elastic.NewMatchQuery("url", search).Boost(1),
+			elastic.NewMatchQuery("name", search).Boost(1),
+			// elastic.NewMatchQuery("headline", search),
+			// elastic.NewMatchQuery("abbreviation", search).Boost(2),
+			// elastic.NewMatchQuery("url", search).Boost(1),
 		))
 
 		query.Should(
 			elastic.NewFunctionScoreQuery().
-				AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("members").Factor(0.003)),
+				AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("members").Factor(0.001)),
 		)
 	}
 
