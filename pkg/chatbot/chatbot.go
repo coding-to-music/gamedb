@@ -36,6 +36,7 @@ type Command interface {
 
 const (
 	CApp            = "app"
+	CSettings       = "settings"
 	CAppPlayers     = "app-players"
 	CAppRandom      = "app-random"
 	CAppPrice       = "app-price"
@@ -72,6 +73,7 @@ var CommandRegister = []Command{
 	CommandPlayerRecent{},
 	CommandPlayerWishlist{},
 	CommandHelp{},
+	CommandSettings{},
 }
 
 func init() {

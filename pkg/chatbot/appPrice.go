@@ -7,6 +7,8 @@ import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/elastic"
+	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/sql"
 )
 
 type CommandAppPrice struct {
@@ -59,7 +61,17 @@ func (c CommandAppPrice) Output(msg *discordgo.MessageCreate) (message discordgo
 
 	var code = steamapi.ProductCCUS
 
-	if matches[1] != "" {
+	if matches[1] == "" {
+
+		settings, err := sql.GetChatBotSettings(msg.Author.ID)
+		if err != nil {
+			log.Err(err)
+			return message, err
+		}
+
+		code = settings.ProductCode
+
+	} else {
 		matches[1] = strings.ToLower(matches[1])
 		if steamapi.IsProductCC(matches[1]) {
 			code = steamapi.ProductCC(matches[1])
