@@ -26,15 +26,16 @@
 
             > div {
 
-                max-height: 200px;
+                max-height: 250px;
                 overflow-y: scroll;
 
                 h1, h2, h3 {
                     font-size: 1rem;
                 }
 
-                img, br, iframe, table {
-                    display: none;
+                img {
+                    height: 50px;
+                    width: auto;
                 }
             }
         }
