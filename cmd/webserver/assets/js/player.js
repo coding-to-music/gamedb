@@ -472,6 +472,18 @@ if ($playerPage.length > 0) {
                     },
                     "orderable": false,
                 },
+                // Completed
+                {
+                    "targets": 2,
+                    "render": function (data, type, row) {
+                        return row[7] + '%';
+                    },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        $(td).css('background', 'linear-gradient(to right, rgba(0,0,0,.15) ' + rowData[7] + '%, transparent ' + rowData[7] + '%)');
+                        $(td).addClass('thin');
+                    },
+                    "orderSequence": ['desc', 'asc'],
+                },
             ]
         };
 

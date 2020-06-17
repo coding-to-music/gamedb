@@ -26,7 +26,7 @@ if ($achievementsPage.length > 0) {
                 },
                 "orderable": false,
             },
-            // Complete %
+            // Completed
             {
                 "targets": 1,
                 "render": function (data, type, row) {

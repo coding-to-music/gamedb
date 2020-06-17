@@ -74,6 +74,7 @@ func appNewsHandler(messages []*rabbit.Message) {
 			news.Date = time.Unix(v.Date, 0)
 			news.FeedName = v.Feedname
 			news.FeedType = int8(v.FeedType)
+			news.ArticleIcon = helpers.GetArticleImage(v.Contents)
 
 			news.AppID = v.AppID
 			news.AppName = app.GetName()
@@ -83,13 +84,14 @@ func appNewsHandler(messages []*rabbit.Message) {
 			newsIDs = append(newsIDs, int64(v.GID))
 
 			err = ProduceArticlesSearch(AppsArticlesSearchMessage{
-				ID:      int64(v.GID),
-				Title:   v.Title,
-				Body:    v.Contents,
-				Time:    v.Date,
-				AppID:   app.ID,
-				AppName: app.Name,
-				AppIcon: app.Icon,
+				ID:          int64(v.GID),
+				Title:       v.Title,
+				Body:        v.Contents,
+				Time:        v.Date,
+				AppID:       app.ID,
+				AppName:     app.Name,
+				AppIcon:     app.Icon,
+				ArticleIcon: news.ArticleIcon,
 			})
 			log.Err(err)
 		}

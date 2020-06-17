@@ -135,9 +135,10 @@ func playerAchievementsHandler(messages []*rabbit.Message) {
 					AppIcon:                app.Icon,
 					AchievementID:          v.APIName,
 					AchievementName:        v.Name,
-					AchievementIcon:        appAchievement.Icon,
 					AchievementDescription: v.Description,
 					AchievementDate:        v.UnlockTime,
+					AchievementIcon:        appAchievement.Icon,
+					AchievementComplete:    appAchievement.Completed,
 				})
 			}
 		}
