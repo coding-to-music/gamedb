@@ -29,6 +29,7 @@ const (
 	InfluxMeasurementPlayers     InfluxMeasurement = "players"
 	InfluxMeasurementRabbitQueue InfluxMeasurement = "rabbitmq_queue"
 	InfluxMeasurementStats       InfluxMeasurement = "stats"
+	InfluxMeasurementSignups     InfluxMeasurement = "signups"
 	InfluxMeasurementTags        InfluxMeasurement = "tags"
 )
 
