@@ -497,7 +497,7 @@ func (t GlobalTemplate) IsMorePage() bool {
 	if strings.HasPrefix(t.Path, "/chat") || strings.HasPrefix(t.Path, "/experience") {
 		return true
 	}
-	return helpers.SliceHasString(strings.TrimPrefix(t.Path, "/"), []string{"achievements", "chat-bot", "contact", "info", "queues", "info", "steam-api", "api"})
+	return helpers.SliceHasString(strings.TrimPrefix(t.Path, "/"), []string{"achievements", "discord-bot", "contact", "info", "queues", "info", "steam-api", "api"})
 }
 
 func (t GlobalTemplate) IsSidebarPage() bool {
