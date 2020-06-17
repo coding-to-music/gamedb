@@ -11,10 +11,12 @@ import (
 	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
+	influx "github.com/influxdata/influxdb1-client"
 	"github.com/nlopes/slack"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 	"golang.org/x/crypto/bcrypt"
@@ -184,6 +186,17 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 		// Slack message
 		err = slack.PostWebhook(config.Config.SlackGameDBWebhook.Get(), &slack.WebhookMessage{
 			Text: "New signup: " + email,
+		})
+		log.Err(err, r)
+
+		// Influx
+		_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, influx.Point{
+			Measurement: string(influxHelper.InfluxMeasurementSignups),
+			Fields: map[string]interface{}{
+				"signup": 1,
+			},
+			Time:      time.Now(),
+			Precision: "u",
 		})
 		log.Err(err, r)
 
