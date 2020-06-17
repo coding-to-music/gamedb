@@ -25,7 +25,7 @@ func (CommandAppPrice) DisableCache() bool {
 }
 
 func (CommandAppPrice) Example() string {
-	return ".price {game} {region}?"
+	return ".price {region}? {game}"
 }
 
 func (CommandAppPrice) Description() template.HTML {
