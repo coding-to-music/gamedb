@@ -591,27 +591,26 @@
                     <div class="tab-pane" id="achievements" role="tabpanel">
 
                         {{ if gt .App.AchievementsCount 5000 }}
-                            <div class="alert alert-primary" role="alert">
-                                <div>Apps are now limited to 5000 achievements. This app was created before the limit was put in place.</div>
-                            </div>
+                            <div class="alert alert-primary" role="alert">Apps are now limited to 5000 achievements. This app was created before the limit was put in place.</div>
                         {{ end }}
-
-                        <table class="table">
-                            <tbody>
-                            <tr>
-                                <th scope="row" style="width: 15%;">Achievements</th>
-                                <td>{{ comma .App.AchievementsCount }}</td>
-                            </tr>
-                            <tr>
-                                <th scope="row" nowrap="nowrap">Average Completion</th>
-                                <td>{{ commaf .App.AchievementsAverageCompletion }}%</td>
-                            </tr>
-                            </tbody>
-                        </table>
 
                         {{ if not .IsLoggedIn }}
                             <div class="alert alert-primary" role="alert"><a href="/login">Login</a> to highlight your achievements for this game.</div>
                         {{ end }}
+
+                        <div class="row mb-3">
+                            <div class="col-6 col-md-4 col-lg-3">
+                                <div role="button" class="btn btn-success btn-block mb-0">
+                                    Achievements<br/><strong>{{ comma .App.AchievementsCount }}</strong>
+                                </div>
+                            </div>
+
+                            <div class="col-6 col-md-4 col-lg-3">
+                                <div role="button" class="btn btn-success btn-block mb-0">
+                                    Average Completion<br/><strong>{{ commaf .App.AchievementsAverageCompletion }}%</strong>
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="table-responsive">
                             <table class="table table-hover table-striped table-counts mb-0" data-path="/games/{{ .App.ID }}/achievements.json" data-row-type="players" id="achievements-table">
@@ -779,64 +778,50 @@
                     {{/* Reviews */}}
                     <div class="tab-pane" id="reviews" role="tabpanel">
 
-                        {{if gt .App.Reviews.GetTotal 0}}
+                        <div class="row mb-3">
+                            <div class="col-6 col-md-4 col-lg-3">
+                                <div role="button" class="btn btn-success btn-block mb-0">Game DB Score<br/>{{ .App.GetReviewScore }}</div>
+                            </div>
 
-                            <table class="table mb-0">
-                                <tbody>
-                                <tr>
-                                    <th scope="row" style="width: 20%;">Score</th>
-                                    <td>{{ .App.GetReviewScore }} <a href="/info"><i class="fas fa-question"></i></a></td>
-                                </tr>
-                                {{ if ne .App.MetacriticURL "" }}
-                                    <tr>
-                                        <th scope="row" style="width: 20%;">Meta Score</th>
-                                        <td><a href="{{ .App.MetacriticURL }}" target="_blank" rel="noopener">{{ .App.MetacriticScore }}%</a></td>
-                                    </tr>
+                            <div class="col-6 col-md-4 col-lg-3">
+                                {{ if eq .App.MetacriticURL "" }}
+                                    <div role="button" class="btn btn-success btn-block mb-0">Metacritic Score<br/><strong>-</strong></div>
+                                {{ else }}
+                                    <strong><a href="{{ .App.MetacriticURL }}" target="_blank" rel="noopener" role="button" class="btn btn-success btn-block mb-0">Metacritic Score<br/>{{ .App.MetacriticScore }}%</a></strong>
                                 {{ end }}
-                                </tbody>
-                            </table>
-
-                            <div id="reviews-chart" class="mb-2">
-                                <i class="fas fa-spinner fa-spin"></i>
                             </div>
+                        </div>
 
-                            <h5>A selection of the {{ comma .App.Reviews.GetTotal }} reviews</h5>
+                        <div id="reviews-chart" class="mb-2">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
 
-                            <div id="reviews-ajax">
-                                <i class="fas fa-spinner fa-spin"></i>
-                            </div>
+                        <h5>A selection of the {{ comma .App.Reviews.GetTotal }} reviews</h5>
 
-                        {{ else }}
-
-                            <p>This app has no reviews.</p>
-
-                        {{ end }}
+                        <div id="reviews-ajax">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
 
                     </div>
 
                     {{/* Media */}}
                     <div class="tab-pane" id="media" role="tabpanel">
 
-                        <table class="table">
-                            <tbody>
-                            <tr>
-                                <th style="width: 130px;" scope="row">Screenshots</th>
-                                <td style="width: 20px;">{{ comma (len .App.Screenshots) }}</td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <th style="width: 130px;" scope="row" nowrap="nowrap">Movies</th>
-                                <td style="width: 20px;">{{ comma (len .App.Movies) }}</td>
-                                <td>
-                                    {{ if and (gt (len .App.Movies) 0) (gt (len .App.Screenshots) 0) }}
-                                        <button id="scroll-to-videos" type="button" class="btn btn-success btn-sm" aria-label="Go">
-                                            <i class="fas fa-level-down-alt"></i>
-                                        </button>
-                                    {{ end }}
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
+                        <div class="row mb-3">
+                            <div class="col-6 col-md-4 col-lg-3">
+                                <div role="button" class="btn btn-success btn-block mb-0">Screenshots<br/><strong>{{ comma (len .App.Screenshots) }}</strong></div>
+                            </div>
+                            <div class="col-6 col-md-4 col-lg-3">
+                                <div role="button"
+                                     {{ if and (gt (len .App.Movies) 0) (gt (len .App.Screenshots) 0) }}
+                                         id="scroll-to-videos"
+                                         class="btn btn-success btn-block mb-0 cursor-pointer"
+                                     {{ else }}
+                                         class="btn btn-success btn-block mb-0"
+                                     {{ end }}
+                                     >Movies<br/><strong>{{ comma (len .App.Movies) }}</strong></div>
+                            </div>
+                        </div>
 
                         <div id="images">
                             {{ range $key, $value := .App.Screenshots }}
