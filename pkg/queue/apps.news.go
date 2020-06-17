@@ -50,6 +50,11 @@ func appNewsHandler(messages []*rabbit.Message) {
 			continue
 		}
 
+		var newsIDsMap = map[int64]bool{}
+		for _, v := range app.NewsIDs {
+			newsIDsMap[v] = true
+		}
+
 		var documents []mongo.Document
 		var newsIDs []int64
 
@@ -59,7 +64,7 @@ func appNewsHandler(messages []*rabbit.Message) {
 				continue
 			}
 
-			if helpers.SliceHasInt64(app.NewsIDs, int64(v.GID)) {
+			if _, ok := newsIDsMap[int64(v.GID)]; ok {
 				continue
 			}
 
