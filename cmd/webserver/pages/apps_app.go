@@ -543,7 +543,7 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			article.GetBody(),                     // 5
 			article.AppID,                         // 6
 			article.AppName,                       // 7
-			article.GetIcon(),                     // 8
+			article.GetAppIcon(),                  // 8
 			path + "#news," + id,                  // 9
 			helpers.DefaultAppIcon,                // 10
 		})

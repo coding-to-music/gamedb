@@ -55,15 +55,8 @@ func (article Article) GetDate() string {
 	return article.Date.Format(helpers.Date)
 }
 
-func (article Article) GetIcon() string {
-
-	if strings.HasPrefix(article.AppIcon, "http") || strings.HasPrefix(article.AppIcon, "/") {
-		return strings.TrimPrefix(article.AppIcon, "https://gamedb.online")
-	} else if article.AppIcon != "" {
-		return helpers.AppIconBase + strconv.Itoa(article.AppID) + "/" + article.AppIcon + ".jpg"
-	} else {
-		return helpers.DefaultAppIcon
-	}
+func (article Article) GetAppIcon() string {
+	return helpers.GetAppIcon(article.AppID, article.AppIcon)
 }
 
 func (article Article) GetAppPath() string {
