@@ -1,6 +1,7 @@
 package chatbot
 
 import (
+	"html/template"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
@@ -32,7 +33,7 @@ func (CommandPlayer) Example() string {
 	return ".player {player}"
 }
 
-func (CommandPlayer) Description() string {
+func (CommandPlayer) Description() template.HTML {
 	return "Get info on a player"
 }
 

@@ -1,6 +1,7 @@
 package chatbot
 
 import (
+	"html/template"
 	"strconv"
 
 	"github.com/bwmarrin/discordgo"
@@ -31,7 +32,7 @@ func (CommandPlayerLevel) Example() string {
 	return ".level {player}"
 }
 
-func (CommandPlayerLevel) Description() string {
+func (CommandPlayerLevel) Description() template.HTML {
 	return "Get the level of a player"
 }
 

@@ -1,6 +1,8 @@
 package chatbot
 
 import (
+	"html/template"
+
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/elastic"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -25,7 +27,7 @@ func (CommandApp) Example() string {
 	return ".game {game}"
 }
 
-func (CommandApp) Description() string {
+func (CommandApp) Description() template.HTML {
 	return "Get info on a game"
 }
 

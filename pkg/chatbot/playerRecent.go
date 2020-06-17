@@ -1,6 +1,7 @@
 package chatbot
 
 import (
+	"html/template"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
@@ -31,7 +32,7 @@ func (CommandPlayerRecent) Example() string {
 	return ".recent {player}"
 }
 
-func (CommandPlayerRecent) Description() string {
+func (CommandPlayerRecent) Description() template.HTML {
 	return "Returns the last 10 games played by user"
 }
 

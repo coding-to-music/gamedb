@@ -1,6 +1,7 @@
 package chatbot
 
 import (
+	"html/template"
 	"regexp"
 
 	"github.com/Jleagle/steam-go/steamapi"
@@ -29,7 +30,7 @@ type Command interface {
 	DisableCache() bool
 	Output(*discordgo.MessageCreate) (discordgo.MessageSend, error)
 	Example() string
-	Description() string
+	Description() template.HTML
 	Type() CommandType
 }
 

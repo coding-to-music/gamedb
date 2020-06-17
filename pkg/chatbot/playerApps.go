@@ -1,6 +1,7 @@
 package chatbot
 
 import (
+	"html/template"
 	"strconv"
 
 	"github.com/bwmarrin/discordgo"
@@ -31,7 +32,7 @@ func (CommandPlayerApps) Example() string {
 	return ".games {player}"
 }
 
-func (CommandPlayerApps) Description() string {
+func (CommandPlayerApps) Description() template.HTML {
 	return "Get the amount of games a player has in their library"
 }
 

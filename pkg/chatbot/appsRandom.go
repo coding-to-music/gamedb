@@ -1,6 +1,8 @@
 package chatbot
 
 import (
+	"html/template"
+
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"go.mongodb.org/mongo-driver/bson"
@@ -25,7 +27,7 @@ func (CommandAppRandom) Example() string {
 	return ".random"
 }
 
-func (CommandAppRandom) Description() string {
+func (CommandAppRandom) Description() template.HTML {
 	return "Get a random game"
 }
 

@@ -1,6 +1,7 @@
 package chatbot
 
 import (
+	"html/template"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
@@ -28,7 +29,7 @@ func (CommandAppsNew) Example() string {
 	return ".new"
 }
 
-func (CommandAppsNew) Description() string {
+func (CommandAppsNew) Description() template.HTML {
 	return "Returns the most popular newly released games"
 }
 

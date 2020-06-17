@@ -1,6 +1,8 @@
 package chatbot
 
 import (
+	"html/template"
+
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/chatbot/charts"
@@ -27,7 +29,7 @@ func (CommandGroup) Example() string {
 	return ".group {game}"
 }
 
-func (CommandGroup) Description() string {
+func (CommandGroup) Description() template.HTML {
 	return "Get info on a group"
 }
 

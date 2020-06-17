@@ -1,6 +1,8 @@
 package chatbot
 
 import (
+	"html/template"
+
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/elastic"
@@ -27,7 +29,7 @@ func (CommandAppPlayers) Example() string {
 	return ".players {game}"
 }
 
-func (CommandAppPlayers) Description() string {
+func (CommandAppPlayers) Description() template.HTML {
 	return "Gets the number of people playing a game."
 }
 

@@ -1,6 +1,7 @@
 package chatbot
 
 import (
+	"html/template"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
@@ -28,7 +29,7 @@ func (CommandAppsPopular) Example() string {
 	return ".popular"
 }
 
-func (CommandAppsPopular) Description() string {
+func (CommandAppsPopular) Description() template.HTML {
 	return "Returns the most popular games in order of players over the last week"
 }
 

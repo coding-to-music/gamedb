@@ -1,6 +1,7 @@
 package chatbot
 
 import (
+	"html/template"
 	"strings"
 
 	"github.com/Jleagle/steam-go/steamapi"
@@ -24,11 +25,18 @@ func (CommandAppPrice) DisableCache() bool {
 }
 
 func (CommandAppPrice) Example() string {
-	return ".price {game}"
+	return ".price {game} {region}?"
 }
 
-func (CommandAppPrice) Description() string {
-	return "Get the price of a game"
+func (CommandAppPrice) Description() template.HTML {
+
+	var ccs []string
+	for _, v := range steamapi.ProductCCs {
+		ccs = append(ccs, string(v))
+	}
+
+	//noinspection GoRedundantConversion
+	return "Get the price of a game <small>(Allowed regions: " + template.HTML(strings.Join(ccs, ", ")) + ")</small>"
 }
 
 func (CommandAppPrice) Type() CommandType {

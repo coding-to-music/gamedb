@@ -1,6 +1,7 @@
 package chatbot
 
 import (
+	"html/template"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
@@ -28,7 +29,7 @@ func (CommandGroupsTrending) Example() string {
 	return ".trending groups"
 }
 
-func (CommandGroupsTrending) Description() string {
+func (CommandGroupsTrending) Description() template.HTML {
 	return "Returns the top trending groups"
 }
 

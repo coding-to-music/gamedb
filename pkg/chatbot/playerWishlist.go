@@ -1,6 +1,7 @@
 package chatbot
 
 import (
+	"html/template"
 	"strconv"
 	"strings"
 
@@ -32,7 +33,7 @@ func (CommandPlayerWishlist) Example() string {
 	return ".wishlist {player}"
 }
 
-func (CommandPlayerWishlist) Description() string {
+func (CommandPlayerWishlist) Description() template.HTML {
 	return "Lists a player's wishlist"
 }
 

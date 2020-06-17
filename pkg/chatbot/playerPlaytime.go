@@ -1,6 +1,8 @@
 package chatbot
 
 import (
+	"html/template"
+
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
@@ -29,7 +31,7 @@ func (CommandPlayerPlaytime) Example() string {
 	return ".playtime {player}"
 }
 
-func (CommandPlayerPlaytime) Description() string {
+func (CommandPlayerPlaytime) Description() template.HTML {
 	return "Get the playtime of a player"
 }
 

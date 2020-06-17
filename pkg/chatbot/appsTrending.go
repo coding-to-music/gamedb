@@ -1,6 +1,7 @@
 package chatbot
 
 import (
+	"html/template"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
@@ -28,7 +29,7 @@ func (CommandAppsTrending) Example() string {
 	return ".trending"
 }
 
-func (CommandAppsTrending) Description() string {
+func (CommandAppsTrending) Description() template.HTML {
 	return "Returns the top trending games"
 }
 

@@ -1,6 +1,8 @@
 package chatbot
 
 import (
+	"html/template"
+
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -25,7 +27,7 @@ func (CommandSteamOnline) Example() string {
 	return ".players"
 }
 
-func (CommandSteamOnline) Description() string {
+func (CommandSteamOnline) Description() template.HTML {
 	return "Gets the number of people on Steam."
 }
 

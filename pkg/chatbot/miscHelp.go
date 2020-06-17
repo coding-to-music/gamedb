@@ -1,6 +1,8 @@
 package chatbot
 
 import (
+	"html/template"
+
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -23,7 +25,7 @@ func (CommandHelp) Example() string {
 	return ".help"
 }
 
-func (CommandHelp) Description() string {
+func (CommandHelp) Description() template.HTML {
 	return "Links to this list of commands"
 }
 
