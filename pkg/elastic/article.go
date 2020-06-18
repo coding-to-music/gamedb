@@ -79,6 +79,8 @@ func SearchArticles(offset int, sorters []elastic.Sorter, search string) (articl
 				elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
 					elastic.NewMatchQuery("title", search).Boost(2),
 					elastic.NewMatchQuery("app_name", search).Boost(1),
+					elastic.NewPrefixQuery("title", search).Boost(0.2),
+					elastic.NewPrefixQuery("app_name", search).Boost(0.1),
 				),
 			),
 		)

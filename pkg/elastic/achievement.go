@@ -78,6 +78,9 @@ func SearchAppAchievements(offset int, search string, sorters []elastic.Sorter) 
 					elastic.NewMatchQuery("name", search).Boost(3),
 					elastic.NewMatchQuery("description", search).Boost(2),
 					elastic.NewMatchQuery("app_name", search).Boost(1),
+					elastic.NewPrefixQuery("name", search).Boost(0.3),
+					elastic.NewPrefixQuery("description", search).Boost(0.2),
+					elastic.NewPrefixQuery("app_name", search).Boost(0.1),
 				),
 			),
 		)
