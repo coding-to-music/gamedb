@@ -17,7 +17,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
 	influx "github.com/influxdata/influxdb1-client"
-	"github.com/nlopes/slack"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -182,12 +181,6 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Err(err, r)
 		}
-
-		// Slack message
-		err = slack.PostWebhook(config.Config.SlackGameDBWebhook.Get(), &slack.WebhookMessage{
-			Text: "New signup: " + email,
-		})
-		log.Err(err, r)
 
 		// Influx
 		_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, influx.Point{
