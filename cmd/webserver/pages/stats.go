@@ -3,6 +3,7 @@ package pages
 import (
 	"net/http"
 	"sync"
+	"time"
 
 	"github.com/Jleagle/influxql"
 	"github.com/dustin/go-humanize"
@@ -330,7 +331,8 @@ func statsDatesHandler(w http.ResponseWriter, r *http.Request) {
 
 	var ret [][]int64
 	for _, v := range releaseDates {
-		ret = append(ret, []int64{v.Date * 1000, v.Count})
+		ts, _ := time.Parse("2006-01-02", v.Date)
+		ret = append(ret, []int64{ts.Unix() * 1000, v.Count})
 	}
 
 	returnJSON(w, r, ret)

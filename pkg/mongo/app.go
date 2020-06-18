@@ -864,9 +864,10 @@ func GetAppsGroupedByReleaseDate() (counts []AppReleaseDateCount, err error) {
 		}
 
 		pipeline := mongo.Pipeline{
-			bson.D{{Key: "$match", Value: bson.M{"release_date_unix": bson.M{"$gte": time.Now().AddDate(-1, 0, 0).Unix()}}}},
+			bson.D{{Key: "$match", Value: bson.M{"release_date_unix": bson.M{"$gte": time.Now().AddDate(-2, 0, 0).Unix()}}}},
 			bson.D{{Key: "$match", Value: bson.M{"release_date_unix": bson.M{"$lte": time.Now().AddDate(0, 0, 1).Unix()}}}},
-			bson.D{{Key: "$group", Value: bson.M{"_id": "$release_date_unix", "count": bson.M{"$sum": 1}}}},
+			bson.D{{Key: "$project", Value: bson.M{"release_date": bson.M{"$toDate": bson.M{"$multiply": bson.A{"$release_date_unix", 1000}}}}}},
+			bson.D{{Key: "$group", Value: bson.M{"_id": bson.M{"$dateToString": bson.M{"format": "%Y-%m-%d", "date": "$release_date"}}, "count": bson.M{"$sum": 1}}}},
 		}
 
 		cur, err := client.Database(MongoDatabase, options.Database()).Collection(CollectionApps.String()).Aggregate(ctx, pipeline, options.Aggregate())
@@ -902,8 +903,8 @@ func GetAppsGroupedByReleaseDate() (counts []AppReleaseDateCount, err error) {
 }
 
 type AppReleaseDateCount struct {
-	Date  int64 `json:"date" bson:"_id"`
-	Count int64 `json:"count" bson:"count"`
+	Date  string `json:"date" bson:"_id"`
+	Count int64  `json:"count" bson:"count"`
 }
 
 func GetAppsGroupedByReviewScore() (counts []AppReviewScoreCount, err error) {
