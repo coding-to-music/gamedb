@@ -114,8 +114,6 @@
                             {{ end }}
                         {{ end }}
 
-                        {{/*<img class="rounded{{if or (gt (len .App.Screenshots) 0) (gt (len .App.Movies) 0)}} cursor-pointer{{ end }}" src="{{ .App.GetHeaderImage }}" alt="{{ .App.GetName }}">*/}}
-
                         <div class="row">
                             <div class="col-12">
                                 <div class="mb-3">{{ .Description }}</div>
@@ -598,14 +596,14 @@
                             <div class="alert alert-primary" role="alert"><a href="/login">Login</a> to highlight your achievements for this game.</div>
                         {{ end }}
 
-                        <div class="row mb-3">
-                            <div class="col-6 col-md-4 col-lg-3">
+                        <div class="row">
+                            <div class="col-6 col-md-4 col-lg-3 mb-3">
                                 <div role="button" class="btn btn-success btn-block mb-0">
                                     Achievements<br/><strong>{{ comma .App.AchievementsCount }}</strong>
                                 </div>
                             </div>
 
-                            <div class="col-6 col-md-4 col-lg-3">
+                            <div class="col-6 col-md-4 col-lg-3 mb-3">
                                 <div role="button" class="btn btn-success btn-block mb-0">
                                     Average Completion<br/><strong>{{ commaf .App.AchievementsAverageCompletion }}%</strong>
                                 </div>
@@ -778,12 +776,12 @@
                     {{/* Reviews */}}
                     <div class="tab-pane" id="reviews" role="tabpanel">
 
-                        <div class="row mb-3">
-                            <div class="col-6 col-md-4 col-lg-3">
+                        <div class="row">
+                            <div class="col-6 col-md-4 col-lg-3 mb-3">
                                 <div role="button" class="btn btn-success btn-block mb-0">Game DB Score<br/>{{ .App.GetReviewScore }}</div>
                             </div>
 
-                            <div class="col-6 col-md-4 col-lg-3">
+                            <div class="col-6 col-md-4 col-lg-3 mb-3">
                                 {{ if eq .App.MetacriticURL "" }}
                                     <div role="button" class="btn btn-success btn-block mb-0">Metacritic Score<br/><strong>-</strong></div>
                                 {{ else }}
@@ -807,11 +805,11 @@
                     {{/* Media */}}
                     <div class="tab-pane" id="media" role="tabpanel">
 
-                        <div class="row mb-3">
-                            <div class="col-6 col-md-4 col-lg-3">
+                        <div class="row">
+                            <div class="col-6 col-md-4 col-lg-3 mb-3">
                                 <div role="button" class="btn btn-success btn-block mb-0">Screenshots<br/><strong>{{ comma (len .App.Screenshots) }}</strong></div>
                             </div>
-                            <div class="col-6 col-md-4 col-lg-3">
+                            <div class="col-6 col-md-4 col-lg-3 mb-3">
                                 <div role="button"
                                      {{ if and (gt (len .App.Movies) 0) (gt (len .App.Screenshots) 0) }}
                                          id="scroll-to-videos"
