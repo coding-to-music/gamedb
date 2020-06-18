@@ -212,13 +212,13 @@ function addDataTablesRow(options, data, limit, $table) {
             const xhr = originalXhr();
             if (xhr) {
 
-                const $loadingBar = $('#loading');
+                const $loading = $('#loading');
 
                 xhr.addEventListener('loadstart', function (e) {
-                    $loadingBar.fadeTo(100, 1);
+                    $loading.fadeTo(100, 1);
                 });
                 xhr.addEventListener('loadend', function (e) {
-                    $loadingBar.fadeTo(100, 0);
+                    $loading.fadeTo(100, 0);
                 });
                 xhr.addEventListener('error', function (e) {
                     logLocal('XHR Error', e)
@@ -305,3 +305,10 @@ function getOS() {
 
     return os;
 }
+
+// Tab links
+$('[data-link-tab]').on('mouseup', function () {
+    const tab = $(this).attr('data-link-tab');
+    $('a.nav-link[href="#' + tab + '"]').tab('show');
+    return false;
+});

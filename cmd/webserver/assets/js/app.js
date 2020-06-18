@@ -2,17 +2,6 @@ const $appPage = $('#app-page');
 
 if ($appPage.length > 0) {
 
-    // Tab links
-    $(document).on('mouseup', '[data-link-tab]', function () {
-        const tab = $(this).attr('data-link-tab');
-        $('a.nav-link[href="#' + tab + '"]').tab('show');
-        if (tab === 'players') {
-            const st = $("#followers").offset().top;
-            $('html, body').animate({scrollTop: st - 15}, 500);
-        }
-        return false;
-    });
-
     // Scroll to videos link
     $("#scroll-to-videos").on('mouseup', function (e) {
         const $videosDiv = $("#videos");

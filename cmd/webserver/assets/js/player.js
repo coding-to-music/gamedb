@@ -39,12 +39,14 @@ if ($playerPage.length > 0) {
         if (!to.attr('loaded')) {
             to.attr('loaded', 1);
             switch (to.attr('href')) {
-                case '#charts':
+                case '#history':
                     loadPlayerCharts();
                     break;
                 case '#games':
                     loadPlayerGames();
-                    $('a.nav-link[href="#games-stats"]').tab('show');
+                    break;
+                case '#stats':
+                    loadPlayerGameStats();
                     break;
                 case '#badges':
                     loadPlayerBadges();
@@ -58,9 +60,11 @@ if ($playerPage.length > 0) {
                 case '#wishlist':
                     loadPlayerWishlist();
                     break;
+                case '#achievement-stats':
+                    loadPlayerAchievementStats();
+                    break;
                 case '#achievements':
                     loadPlayerAchievements();
-                    $('a.nav-link[href="#achievements-summary"]').tab('show');
                     break;
             }
         }
@@ -124,6 +128,21 @@ if ($playerPage.length > 0) {
             ]
         };
 
+        const config = {rootMargin: '50px 0px 50px 0px', threshold: 0};
+
+        const allGamesCallback = function (entries, self) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    $('#all-games').gdbTable({tableOptions: options, searchFields: [$('#player-games-search')]});
+                    self.unobserve(entry.target);
+                }
+            });
+        };
+        new IntersectionObserver(allGamesCallback, config).observe(document.getElementById("all-games"));
+    }
+
+    function loadPlayerGameStats() {
+
         const recentOptions = {
             "order": [[1, 'desc']],
             "createdRow": function (row, data, dataIndex) {
@@ -161,28 +180,18 @@ if ($playerPage.length > 0) {
             ]
         };
 
-        //
         const config = {rootMargin: '50px 0px 50px 0px', threshold: 0};
-
+console.log(1);
         const recentCallback = function (entries, self) {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    $('#games #recent-games').gdbTable({tableOptions: recentOptions});
+                    console.log(2);
+                    $('#recent-games').gdbTable({tableOptions: recentOptions});
                     self.unobserve(entry.target);
                 }
             });
         };
         new IntersectionObserver(recentCallback, config).observe(document.getElementById("recent-games"));
-
-        const allGamesCallback = function (entries, self) {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    $('#games #all-games').gdbTable({tableOptions: options, searchFields: [$('#player-games-search')]});
-                    self.unobserve(entry.target);
-                }
-            });
-        };
-        new IntersectionObserver(allGamesCallback, config).observe(document.getElementById("all-games"));
     }
 
     function loadPlayerFriends() {
@@ -401,7 +410,7 @@ if ($playerPage.length > 0) {
         $('#wishlist-table').gdbTable({tableOptions: options});
     }
 
-    function loadPlayerAchievements() {
+    function loadPlayerAchievementStats() {
 
         const summaryOptions = {
             "order": [[2, 'desc']],
@@ -439,6 +448,21 @@ if ($playerPage.length > 0) {
                 },
             ]
         };
+
+        const config = {rootMargin: '50px 0px 50px 0px', threshold: 0};
+
+        const summaryCallback = function (entries, self) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    $('#achievements-summary-table').gdbTable({tableOptions: summaryOptions});
+                    self.unobserve(entry.target);
+                }
+            });
+        };
+        new IntersectionObserver(summaryCallback, config).observe(document.getElementById("achievements-summary-table"));
+    }
+
+    function loadPlayerAchievements() {
 
         const recentOptions = {
             "order": [[1, 'desc']],
@@ -489,16 +513,6 @@ if ($playerPage.length > 0) {
 
         //
         const config = {rootMargin: '50px 0px 50px 0px', threshold: 0};
-
-        const summaryCallback = function (entries, self) {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    $('#achievements-summary-table').gdbTable({tableOptions: summaryOptions});
-                    self.unobserve(entry.target);
-                }
-            });
-        };
-        new IntersectionObserver(summaryCallback, config).observe(document.getElementById("achievements-summary-table"));
 
         const recentCallback = function (entries, self) {
             entries.forEach(entry => {
