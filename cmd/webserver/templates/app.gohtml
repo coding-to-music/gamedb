@@ -126,7 +126,7 @@
                                     <table class="table table-hover table-striped mb-0">
 
                                         {{ if ne .App.GameName "" }}
-                                            <tr>
+                                            <tr data-link="/games/{{ .App.GameID }}">
                                                 <th scope="row" nowrap="nowrap" class="thin">For Game</th>
                                                 <td><a href="/games/{{ .App.GameID }}">{{ .App.GameName }}</a></td>
                                             </tr>
@@ -136,8 +136,8 @@
                                             <th scope="row" class="thin">Price</th>
                                             <td>{{ .Price.GetFinal }}</td>
                                         </tr>
-                                        <tr>
-                                            <th scope="row" class="thin" data-link-tab="players">Players</th>
+                                        <tr data-link-tab="players">
+                                            <th scope="row" class="thin">Players</th>
                                             <td>{{ comma64 .PlayersInGame }} <small>now</small>, {{ comma .App.PlayerPeakWeek }} <small>week peak</small></td>
                                         </tr>
 
