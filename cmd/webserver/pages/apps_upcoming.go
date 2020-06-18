@@ -58,16 +58,13 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 
 		columns := map[string]string{
-			"1": "group_followers",
-			"3": "release_date_unix, group_followers desc",
+			"1": "group_followers, name asc",
+			"3": "release_date_unix, group_followers desc, name asc",
 		}
 
 		projection := bson.M{"_id": 1, "name": 1, "icon": 1, "type": 1, "release_date_unix": 1, "group_id": 1, "group_followers": 1}
-		order := query.GetOrderMongo(columns)
-		order = append(order, bson.E{Key: "group_followers", Value: -1}, bson.E{Key: "name", Value: 1})
-		offset := query.GetOffset64()
 
-		apps, err = mongo.GetApps(offset, 100, order, filter2, projection)
+		apps, err = mongo.GetApps(query.GetOffset64(), 100, query.GetOrderMongo(columns), filter2, projection)
 		if err != nil {
 			log.Err(err, r)
 		}
