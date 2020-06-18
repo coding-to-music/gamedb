@@ -7,6 +7,7 @@ import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/elastic"
+	"github.com/gamedb/gamedb/pkg/helpers/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/sql"
 )
@@ -33,8 +34,8 @@ func (CommandAppPrice) Example() string {
 func (CommandAppPrice) Description() template.HTML {
 
 	var ccs []string
-	for _, v := range steamapi.ProductCCs {
-		ccs = append(ccs, string(v))
+	for _, v := range i18n.GetProdCCs(true) {
+		ccs = append(ccs, string(v.ProductCode))
 	}
 
 	//noinspection GoRedundantConversion
