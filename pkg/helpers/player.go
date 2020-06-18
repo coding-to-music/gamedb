@@ -83,9 +83,9 @@ func GetPlayerName(id int64, name string) string {
 	if name != "" {
 		return name
 	} else if id > 0 {
-		return "-no name-"
+		return "-no name-" // No name
 	} else {
-		return "Unknown Player"
+		return "Unknown Player" // Name name/ID
 	}
 }
 
