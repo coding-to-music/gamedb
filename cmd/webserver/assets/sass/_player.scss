@@ -9,11 +9,17 @@
             height: 144px;
             margin: -2rem -2rem -2rem 2rem;
         }
+
+        small {
+            a {
+                @extend .mr-2;
+            }
+        }
     }
 
     #history {
         #history-chart, #ranks-chart {
-            height: 250px; 
+            height: 250px;
         }
     }
 

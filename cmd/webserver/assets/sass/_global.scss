@@ -658,6 +658,13 @@ div.json-hover {
 }
 
 //
+.nav-pills {
+    .nav-link.active {
+        background-color: #28a745;
+    }
+}
+
+//
 .mark, mark {
     background: inherit;
     color: inherit;
