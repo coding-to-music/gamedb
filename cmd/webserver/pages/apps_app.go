@@ -347,7 +347,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		{
 			Text: "View " + app.GetTypeLower() + " on Steam Prices",
 			Link: "https://steamprices.com/" + app.GetSteamPricesURL() + "/" + strconv.Itoa(app.ID) + "/" + slug.Make(app.GetName()),
-			Icon: "https://pbs.twimg.com/profile_images/598791990084575232/KonQ1bk8_400x400.png",
+			Icon: "https://www.steamprices.com/assets/images/favicons/favicon-32x32.png",
 			Hide: app.GetSteamPricesURL() == "",
 		},
 		{
