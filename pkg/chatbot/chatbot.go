@@ -99,13 +99,13 @@ func getAuthor(guildID string) *discordgo.MessageEmbedAuthor {
 func getFooter() *discordgo.MessageEmbedFooter {
 
 	footer := &discordgo.MessageEmbedFooter{
-		Text:         "gamedb.online",
+		Text:         "Powered by gamedb.online",
 		IconURL:      "https://gamedb.online/assets/img/sa-bg-32x32.png",
 		ProxyIconURL: "",
 	}
 
 	if config.IsLocal() {
-		footer.Text = "localhost:" + config.Config.WebserverPort.Get()
+		footer.Text = "LOCAL"
 	}
 
 	return footer
