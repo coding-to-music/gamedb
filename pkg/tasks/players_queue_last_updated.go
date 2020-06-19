@@ -8,34 +8,35 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
-type PlayersQueueRandom struct {
+type PlayersQueueLastUpdated struct {
 	BaseTask
 }
 
-func (c PlayersQueueRandom) ID() string {
-	return "update-random-players"
+func (c PlayersQueueLastUpdated) ID() string {
+	return "update-last-updated-players"
 }
 
-func (c PlayersQueueRandom) Name() string {
-	return "Update random players"
+func (c PlayersQueueLastUpdated) Name() string {
+	return "Update last updated players"
 }
 
-func (c PlayersQueueRandom) Cron() string {
-	return CronTimeUpdateRandomPlayers
+func (c PlayersQueueLastUpdated) Cron() string {
+	return CronTimeUpdateLastUpdatedPlayers
 }
 
 const toQueue = 10
 const cronTime = time.Minute
 
-func (c PlayersQueueRandom) work() (err error) {
+func (c PlayersQueueLastUpdated) work() (err error) {
 
 	// Skip if queues have activity
 	limits := map[rabbit.QueueName]int{
 		queue.QueueApps:     50,
 		queue.QueuePackages: 50,
-		queue.QueuePlayers:  0,
+		queue.QueuePlayers:  5,
 	}
 
 	queues, err := helpers.RabbitClient.GetQueues()
@@ -53,15 +54,19 @@ func (c PlayersQueueRandom) work() (err error) {
 		}
 	}
 
-	// Queue players
-	players, err := mongo.GetRandomPlayers(toQueue * consumers)
+	if consumers == 0 {
+		return nil
+	}
+
+	// Queue last updated players
+	players, err := mongo.GetPlayers(0, int64(toQueue*consumers), bson.D{{"updated_at", 1}}, nil, bson.M{"_id": 1})
 	if err != nil {
 		return err
 	}
 
-	for _, v := range players {
+	for _, player := range players {
 
-		err = queue.ProducePlayer(queue.PlayerMessage{ID: v.ID, SkipPlayerGroups: true, SkipAchievements: true})
+		err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID, SkipPlayerGroups: true, SkipAchievements: true})
 		err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 		if err != nil {
 			return err

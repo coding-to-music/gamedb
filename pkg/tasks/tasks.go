@@ -14,24 +14,24 @@ import (
 )
 
 const ( //                         min hour
-	CronTimeUpdateRandomPlayers = "*   *"
-	CronTimeSteamClientPlayers  = "*/10 *"
-	CronTimeAppPlayers          = "*/10 *"
-	CronTimeAutoPlayerRefreshes = "0   */6"
-	CronTimeAppsReviews         = "10  0"
-	CronTimeAppsYoutube         = "20  0"
-	CronTimeQueueAppGroups      = "30  0"
-	CronTimeQueuePlayerGroups   = "40  0"
-	CronTimePlayerRanks         = "50  0"
-	CronTimeScanProductQueues   = "0   1"
-	CronTimeSetBadgeCache       = "10  1"
-	CronTimeAppsInflux          = "20  1,13"
-	CronTimeGenres              = "0   2"
-	CronTimeTags                = "0   3"
-	CronTimePublishers          = "0   4"
-	CronTimeDevelopers          = "0   5"
-	CronTimeCategories          = "0   6"
-	CronTimeInstagram           = ""
+	CronTimeUpdateLastUpdatedPlayers = "*   *"
+	CronTimeSteamClientPlayers       = "*/10 *"
+	CronTimeAppPlayers               = "*/10 *"
+	CronTimeAutoPlayerRefreshes      = "0   */6"
+	CronTimeAppsReviews              = "10  0"
+	CronTimeAppsYoutube              = "20  0"
+	CronTimeQueueAppGroups           = "30  0"
+	CronTimeQueuePlayerGroups        = "40  0"
+	CronTimePlayerRanks              = "50  0"
+	CronTimeScanProductQueues        = "0   1"
+	CronTimeSetBadgeCache            = "10  1"
+	CronTimeAppsInflux               = "20  1,13"
+	CronTimeGenres                   = "0   2"
+	CronTimeTags                     = "0   3"
+	CronTimePublishers               = "0   4"
+	CronTimeDevelopers               = "0   5"
+	CronTimeCategories               = "0   6"
+	CronTimeInstagram                = ""
 )
 
 var (
@@ -58,7 +58,7 @@ var (
 		MemcacheClearAll{},
 		PlayersQueueAll{},
 		PlayersQueueElastic{},
-		PlayersQueueRandom{},
+		PlayersQueueLastUpdated{},
 		PlayersQueueGroups{},
 		PlayersUpdateRanks{},
 		ProductsUpdateKeys{},
