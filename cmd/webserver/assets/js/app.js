@@ -20,7 +20,7 @@ if ($appPage.length > 0) {
             video.play();
         } else {
             $('a.nav-link[href="#media"]').tab('show');
-            $("#scroll-to-videos").trigger('click');
+            $("#scroll-to-videos").trigger('mouseup');
         }
     });
 
