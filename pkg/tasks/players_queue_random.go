@@ -61,7 +61,7 @@ func (c PlayersQueueRandom) work() (err error) {
 
 	for _, v := range players {
 
-		err = queue.ProducePlayer(queue.PlayerMessage{ID: v.ID, SkipPlayerGroups: true})
+		err = queue.ProducePlayer(queue.PlayerMessage{ID: v.ID, SkipPlayerGroups: true, SkipAchievements: true})
 		err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 		if err != nil {
 			return err

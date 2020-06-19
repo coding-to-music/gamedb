@@ -24,6 +24,7 @@ type PlayerMessage struct {
 	ID               int64   `json:"id"`
 	SkipPlayerGroups bool    `json:"dont_queue_groups"`
 	SkipGroupUpdate  bool    `json:"dont_queue_group"`
+	SkipAchievements bool    `json:"skip_achievements"`
 	UserAgent        *string `json:"user_agent"`
 }
 
@@ -94,14 +95,14 @@ func playerHandler(messages []*rabbit.Message) {
 				return
 			}
 
-			err = updatePlayerGames(&player)
+			err = updatePlayerGames(&player, payload)
 			if err != nil {
 				steamHelper.LogSteamError(err, payload.ID)
 				sendToRetryQueue(message)
 				return
 			}
 
-			err = updatePlayerRecentGames(&player)
+			err = updatePlayerRecentGames(&player, payload)
 			if err != nil {
 				steamHelper.LogSteamError(err, payload.ID)
 				sendToRetryQueue(message)
@@ -293,20 +294,14 @@ func updatePlayerSummary(player *mongo.Player) error {
 	return player.SetPlayerSummary()
 }
 
-func updatePlayerGames(player *mongo.Player) error {
+func updatePlayerGames(player *mongo.Player, payload PlayerMessage) error {
 
 	resp, err := player.SetOwnedGames(true)
 	if err != nil {
 		return err
 	}
 
-	user, err := sql.GetUserByKey("steam_id", player.ID, 0)
-	err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
-	if err != nil {
-		return err
-	}
-
-	if user.Level >= sql.UserLevel1 {
+	if !payload.SkipAchievements {
 		if player.UpdatedAt.Unix() < 1588244400 || player.UpdatedAt.Before(time.Now().Add(time.Hour*24*13*-1)) { // Just under 2 weeks
 			for _, v := range resp.Games {
 				if v.PlaytimeForever > 0 {
@@ -320,7 +315,7 @@ func updatePlayerGames(player *mongo.Player) error {
 	return err
 }
 
-func updatePlayerRecentGames(player *mongo.Player) error {
+func updatePlayerRecentGames(player *mongo.Player, payload PlayerMessage) error {
 
 	// Get data
 	oldAppsSlice, err := mongo.GetRecentApps(player.ID, 0, 0, nil)
@@ -375,13 +370,7 @@ func updatePlayerRecentGames(player *mongo.Player) error {
 	}
 
 	//
-	user, err := sql.GetUserByKey("steam_id", player.ID, 0)
-	err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
-	if err != nil {
-		return err
-	}
-
-	if user.Level >= sql.UserLevel1 {
+	if !payload.SkipAchievements {
 		if player.UpdatedAt.After(time.Now().Add(time.Hour * 24 * 13 * -1)) { // Just under 2 weeks
 			for _, v := range newAppsSlice {
 				err = ProducePlayerAchievements(player.ID, v.AppID)
