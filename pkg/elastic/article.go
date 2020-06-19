@@ -74,6 +74,7 @@ func SearchArticles(offset int, sorters []elastic.Sorter, search string) (articl
 		SortBy(sorters...)
 
 	if search != "" {
+
 		searchService.Query(elastic.NewBoolQuery().
 			Must(
 				elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
@@ -82,6 +83,14 @@ func SearchArticles(offset int, sorters []elastic.Sorter, search string) (articl
 					elastic.NewPrefixQuery("title", search).Boost(0.2),
 					elastic.NewPrefixQuery("app_name", search).Boost(0.1),
 				),
+			).
+			Should(
+				elastic.NewFunctionScoreQuery().
+					AddScoreFunc(elastic.NewGaussDecayFunction().FieldName("time").
+						Origin(time.Now().Unix()). // Max
+						Scale(1213743600). // Min - First news article - 2008-06-18
+						Decay(0.1),
+					),
 			),
 		)
 	}
