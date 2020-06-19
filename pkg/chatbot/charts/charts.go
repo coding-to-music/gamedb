@@ -27,7 +27,7 @@ func GetGroupChart(id string) (url string, width int, height int, err error) {
 	builder.AddGroupByTime("1d")
 	builder.SetFillNone()
 
-	return getChart(builder, id)
+	return getChart(builder, id, "Group Members")
 }
 
 func GetAppChart(id int) (url string, width int, height int, err error) {
@@ -39,10 +39,10 @@ func GetAppChart(id int) (url string, width int, height int, err error) {
 	builder.AddGroupByTime("1d")
 	builder.SetFillNone()
 
-	return getChart(builder, strconv.Itoa(id))
+	return getChart(builder, strconv.Itoa(id), "Players In Game")
 }
 
-func getChart(builder *influxql.Builder, id string) (url string, width int, height int, err error) {
+func getChart(builder *influxql.Builder, id string, title string) (url string, width int, height int, err error) {
 
 	resp, err := influx.InfluxQuery(builder.String())
 	if err != nil {
@@ -70,6 +70,11 @@ func getChart(builder *influxql.Builder, id string) (url string, width int, heig
 	)
 
 	graph := chart.Chart{
+		Title: title,
+		TitleStyle: chart.Style{
+			Show:      true,
+			FontColor: colourLight,
+		},
 		Background: chart.Style{
 			FillColor: colourDark,
 		},
