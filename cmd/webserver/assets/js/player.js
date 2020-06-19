@@ -60,9 +60,9 @@ if ($playerPage.length > 0) {
                 case '#wishlist':
                     loadPlayerWishlist();
                     break;
-                case '#achievement-stats':
-                    loadPlayerAchievementStats();
-                    break;
+                // case '#achievement-stats':
+                //     loadPlayerAchievementStats();
+                //     break;
                 case '#achievements':
                     loadPlayerAchievements();
                     break;
@@ -124,7 +124,19 @@ if ($playerPage.length > 0) {
                         return row[6];
                     },
                     'orderSequence': ['desc', 'asc'],
-                }
+                },
+                // Achievements
+                {
+                    "targets": 4,
+                    "render": function (data, type, row) {
+                        return row[8].toLocaleString() + ' / ' + row[9].toLocaleString();
+                    },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        $(td).css('background', 'linear-gradient(to right, rgba(0,0,0,.15) ' + rowData[10] + '%, transparent ' + rowData[10] + '%)');
+                        $(td).addClass('thin');
+                    },
+                    "orderSequence": ['desc', 'asc'],
+                },
             ]
         };
 
@@ -181,7 +193,7 @@ if ($playerPage.length > 0) {
         };
 
         const config = {rootMargin: '50px 0px 50px 0px', threshold: 0};
-console.log(1);
+
         const recentCallback = function (entries, self) {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {

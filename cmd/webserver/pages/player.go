@@ -43,7 +43,7 @@ func PlayerRouter() http.Handler {
 	r.Get("/badges.json", playerBadgesAjaxHandler)
 	r.Get("/friends.json", playerFriendsAjaxHandler)
 	r.Get("/achievements.json", playerAchievementsAjaxHandler)
-	r.Get("/achievements-summary.json", playerAchievementsSummaryAjaxHandler)
+	// r.Get("/achievements-summary.json", playerAchievementsSummaryAjaxHandler)
 	r.Get("/games.json", playerGamesAjaxHandler)
 	r.Get("/groups.json", playerGroupsAjaxHandler)
 	r.Get("/history.json", playersHistoryAjaxHandler)
@@ -514,6 +514,7 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			"1": "app_prices" + "." + string(code),
 			"2": "app_time",
 			"3": "app_prices_hour" + "." + string(code),
+			"4": "app_achievements_percent, app_achievements_have desc",
 		}
 
 		var err error
@@ -559,19 +560,21 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var response = datatable.NewDataTablesResponse(r, query, total, totalFiltered, nil)
 	for _, pa := range playerApps {
 		response.AddRow([]interface{}{
-			pa.AppID,
-			pa.AppName,
-			pa.GetIcon(),
-			pa.AppTime,
-			pa.GetTimeNice(),
-			pa.GetPriceFormatted(code),
-			pa.GetPriceHourFormatted(code),
-			pa.GetPath(),
+			pa.AppID,                       // 0
+			pa.AppName,                     // 1
+			pa.GetIcon(),                   // 2
+			pa.AppTime,                     // 3
+			pa.GetTimeNice(),               // 4
+			pa.GetPriceFormatted(code),     // 5
+			pa.GetPriceHourFormatted(code), // 6
+			pa.GetPath(),                   // 7
+			pa.AppAchievementsHave,         // 8
+			pa.AppAchievementsTotal,        // 9
+			pa.GetAchievementPercent(),     // 10
 		})
 	}
 
 	returnJSON(w, r, response)
-
 }
 
 func playerRecentAjaxHandler(w http.ResponseWriter, r *http.Request) {
@@ -764,7 +767,7 @@ func playerAchievementsSummaryAjaxHandler(w http.ResponseWriter, r *http.Request
 			pa.AppID,                                 // 3
 			pa.AppAchievementsHave,                   // 4
 			pa.AppAchievementsTotal,                  // 5
-			pa.GetPercent(),                          // 6
+			pa.GetAchievementPercent(),               // 6
 		})
 	}
 
