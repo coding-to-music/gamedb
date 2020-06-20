@@ -26,6 +26,7 @@ const ( //                         min hour
 	CronTimeScanProductQueues        = "0   1"
 	CronTimeSetBadgeCache            = "10  1"
 	CronTimeAppsInflux               = "20  1,13"
+	CronTimeAppsWishlists            = "30  1"
 	CronTimeGenres                   = "0   2"
 	CronTimeTags                     = "0   3"
 	CronTimePublishers               = "0   4"
@@ -43,6 +44,7 @@ var (
 		AppsPlayerCheck{},
 		AppsQueueAll{},
 		AppsQueueElastic{},
+		AppsWishlistsYoutube{},
 		AppsQueueGroups{},
 		AppsArticlesQueueElastic{},
 		AppsQueueInflux{},

@@ -26,6 +26,7 @@ const (
 	QueueAppsArticlesSearch     rabbit.QueueName = "GDB_Apps.Articles.Search"
 	QueueAppsAchievementsSearch rabbit.QueueName = "GDB_Apps.Achievements.Search"
 	QueueAppsYoutube            rabbit.QueueName = "GDB_Apps.Youtube"
+	QueueAppsWishlists          rabbit.QueueName = "GDB_Apps.Wishlists"
 	QueueAppsInflux             rabbit.QueueName = "GDB_Apps.Influx"
 	QueueAppsDLC                rabbit.QueueName = "GDB_Apps.DLC"
 	QueueAppsSameowners         rabbit.QueueName = "GDB_Apps.Sameowners"
@@ -90,6 +91,7 @@ var (
 		{name: QueueAppsInflux},
 		{name: QueueAppsNews},
 		{name: QueueAppsFindGroup},
+		{name: QueueAppsWishlists},
 		{name: QueueAppsItems},
 		{name: QueueAppsAchievements},
 		{name: QueueAppsAchievementsSearch},
@@ -126,6 +128,7 @@ var (
 		{name: QueueAppsDLC, consumer: appDLCHandler},
 		{name: QueueAppsYoutube, consumer: appYoutubeHandler},
 		{name: QueueAppsNews, consumer: appNewsHandler},
+		{name: QueueAppsWishlists, consumer: appWishlistsHandler},
 		{name: QueueAppsFindGroup, consumer: appsFindGroupHandler},
 		{name: QueueAppsAchievements, consumer: appAchievementsHandler},
 		{name: QueueAppsAchievementsSearch, consumer: appsAchievementsSearchHandler},
@@ -163,6 +166,7 @@ var (
 		{name: QueueAppsArticlesSearch},
 		{name: QueueAppsYoutube},
 		{name: QueueAppsInflux},
+		{name: QueueAppsWishlists},
 		{name: QueueAppPlayers},
 		{name: QueueAppsReviews},
 		{name: QueueAppsSearch, prefetchSize: 1000},
@@ -197,6 +201,7 @@ var (
 		{name: QueueAppsAchievements},
 		{name: QueueAppsAchievementsSearch},
 		{name: QueueAppsInflux},
+		{name: QueueAppsWishlists},
 		{name: QueueAppsSearch, prefetchSize: 1000},
 		{name: QueueAppsYoutube},
 		{name: QueueAppsReviews},
@@ -377,6 +382,10 @@ func ProduceAppsReviews(id int) (err error) {
 
 func ProduceAppsYoutube(id int, name string) (err error) {
 	return produce(QueueAppsYoutube, AppYoutubeMessage{ID: id, Name: name})
+}
+
+func ProduceAppsWishlists(id int) (err error) {
+	return produce(QueueAppsWishlists, AppWishlistsMessage{ID: id})
 }
 
 func ProduceAppPlayers(payload AppPlayerMessage) (err error) {

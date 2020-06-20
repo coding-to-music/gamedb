@@ -16,7 +16,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/i18n"
-	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -25,7 +24,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/sql/pics"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/gocolly/colly"
-	influx "github.com/influxdata/influxdb1-client"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -125,13 +123,6 @@ func appHandler(messages []*rabbit.Message) {
 			var err error
 
 			err = updateAppPlaytimeStats(&app)
-			if err != nil {
-				log.Err(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-
-			err = getWishlistCount(&app)
 			if err != nil {
 				log.Err(err, payload.ID)
 				sendToRetryQueue(message)
@@ -951,46 +942,6 @@ func updateAppPlaytimeStats(app *mongo.App) (err error) {
 	}
 
 	return nil
-}
-
-func getWishlistCount(app *mongo.App) (err error) {
-
-	players, err := mongo.GetPlayerWishlistAppsByApp(app.ID)
-	if err != nil {
-		return err
-	}
-
-	app.WishlistCount = len(players)
-
-	var total int
-	var count int
-	for _, v := range players {
-		if v.Order > 0 {
-			total += v.Order
-			count++
-		}
-	}
-
-	if count == 0 {
-		app.WishlistAvgPosition = 0
-	} else {
-		app.WishlistAvgPosition = float64(total) / float64(count)
-	}
-
-	_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, influx.Point{
-		Measurement: string(influxHelper.InfluxMeasurementApps),
-		Tags: map[string]string{
-			"app_id": strconv.Itoa(app.ID),
-		},
-		Fields: map[string]interface{}{
-			"wishlist_avg_position": app.WishlistAvgPosition,
-			"wishlist_count":        app.WishlistCount,
-		},
-		Time:      time.Now(),
-		Precision: "m",
-	})
-
-	return err
 }
 
 func saveSales(app mongo.App, newSales []mongo.Sale) (err error) {
