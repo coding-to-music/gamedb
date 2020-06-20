@@ -198,7 +198,6 @@ if ($playerPage.length > 0) {
         const recentCallback = function (entries, self) {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    console.log(2);
                     $('#recent-games').gdbTable({tableOptions: recentOptions});
                     self.unobserve(entry.target);
                 }
