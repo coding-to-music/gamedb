@@ -9,6 +9,10 @@ import (
 
 func NewDataTablesResponse(r *http.Request, query DataTablesQuery, count int64, countFiltered int64, aggregations map[string]map[string]int64) (ret *DataTablesResponse) {
 
+	if count < countFiltered {
+		count = countFiltered
+	}
+
 	ret = &DataTablesResponse{}
 	ret.Draw = query.Draw
 	ret.Data = make([][]interface{}, 0)
