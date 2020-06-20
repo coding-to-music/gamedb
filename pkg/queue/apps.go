@@ -960,9 +960,7 @@ func getWishlistCount(app *mongo.App) (err error) {
 		return err
 	}
 
-	var playerCount = len(players)
-
-	app.WishlistCount = playerCount
+	app.WishlistCount = len(players)
 
 	var total int
 	var count int
