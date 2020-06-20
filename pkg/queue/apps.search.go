@@ -71,6 +71,7 @@ var aliasMap = map[int][]string{
 	8500:    {"eve"},           // EVE Online
 	24240:   {"pd", "pdth"},    // PAYDAY: The Heist
 	218620:  {"pd", "pd2"},     // PAYDAY 2
+	578080:  {"pubg"},          // PLAYERUNKNOWN'S BATTLEGROUNDS
 	3900:    {"civ", "civ4"},   // Sid Meier's Civilization IV
 	8930:    {"civ", "civ5"},   // Sid Meier's Civilization V
 	289070:  {"civ", "civ6"},   // Sid Meier's Civilization VI
