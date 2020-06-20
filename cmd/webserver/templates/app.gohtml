@@ -10,23 +10,14 @@
             <h1 class="text-truncate"><i class="fas fa-gamepad"></i> {{ .App.GetName }}</h1>
 
             <small>
-                <a href="{{ .App.GetStoreLink }}" target="_blank" rel="noopener" class="mr-2">
-                    <i class="fas fa-shopping-cart"></i> Store Page
-                </a>
-                <a href="{{ .App.GetCommunityLink }}" target="_blank" rel="noopener" class="mr-2">
-                    <i class="fas fa-users"></i> Community Hub
-                </a>
-                <a href="https://steamcommunity.com/market/search?appid={{ .App.ID }}" target="_blank" rel="noopener" class="mr-2">
-                    <i class="fas fa-exchange-alt"></i> Market
-                </a>
+                <a href="{{ .App.GetStoreLink }}" target="_blank" rel="noopener" class="mr-2"><i class="fas fa-shopping-cart"></i> Store Page</a>
+                <a href="{{ .App.GetCommunityLink }}" target="_blank" rel="noopener" class="mr-2"><i class="fas fa-users"></i> Community Hub</a>
+                <a href="https://steamcommunity.com/market/search?appid={{ .App.ID }}" target="_blank" rel="noopener" class="mr-2"><i class="fas fa-exchange-alt"></i> Market</a>
                 {{if ne .App.Homepage ""}}
-                    <a href="{{ .App.Homepage }}" target="_blank" rel="noopener" class="mr-2">
-                        <i class="fas fa-home"></i> Homepage
-                    </a>
+                    <a href="{{ .App.Homepage }}" target="_blank" rel="noopener" class="mr-2"><i class="fas fa-home"></i> Homepage</a>
                 {{end}}
-                <a href="{{ .App.GetPlayLink }}" class="mr-2">
-                    <i class="fas fa-sign-in-alt"></i> Play
-                </a>
+                <a href="{{ .App.GetPlayLink }}" class="mr-2"><i class="fas fa-sign-in-alt"></i> Play</a>
+                <a href="/games/compare/{{ .App.ID }}" class="mr-2"><i class="fas fa-sign-in-alt"></i> Compare</a>
             </small>
         </div>
 
