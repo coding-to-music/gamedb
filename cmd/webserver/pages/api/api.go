@@ -138,7 +138,7 @@ func (s Server) saveToInflux(r *http.Request, code int, key string, user sql.Use
 			strconv.Itoa(code): 1,
 		},
 		Time:      time.Now(),
-		Precision: "u",
+		Precision: "ms",
 	})
 
 	return err

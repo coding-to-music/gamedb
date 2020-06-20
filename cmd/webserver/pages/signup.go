@@ -189,7 +189,7 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 				"signup": 1,
 			},
 			Time:      time.Now(),
-			Precision: "u",
+			Precision: "ms",
 		})
 		log.Err(err, r)
 

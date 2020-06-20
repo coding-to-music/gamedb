@@ -194,7 +194,7 @@ func saveToInflux(m *discordgo.MessageCreate, command chatbot.Command) {
 			"request": 1,
 		},
 		Time:      time.Now(),
-		Precision: "u",
+		Precision: "ms",
 	})
 	log.Err(err)
 }

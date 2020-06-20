@@ -111,7 +111,7 @@ func playerRanksHandler(messages []*rabbit.Message) {
 										val: offset + int64(position) + 1,
 									},
 									Time:      time.Now(),
-									Precision: "m",
+									Precision: "h",
 								})
 							}
 						}
