@@ -132,6 +132,7 @@ if ($playerPage.length > 0) {
                         return row[8].toLocaleString() + ' / ' + row[9].toLocaleString();
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
+                        rowData[10] = Math.ceil(rowData[10]);
                         $(td).css('background', 'linear-gradient(to right, rgba(0,0,0,.15) ' + rowData[10] + '%, transparent ' + rowData[10] + '%)');
                         $(td).addClass('thin');
                     },
@@ -515,6 +516,7 @@ if ($playerPage.length > 0) {
                         return row[7] + '%';
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
+                        rowData[7] = Math.ceil(rowData[7]);
                         $(td).css('background', 'linear-gradient(to right, rgba(0,0,0,.15) ' + rowData[7] + '%, transparent ' + rowData[7] + '%)');
                         $(td).addClass('thin');
                     },

@@ -734,6 +734,7 @@ if ($appPage.length > 0) {
                         return row[3] + '%';
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
+                        rowData[3] = Math.ceil(rowData[3]);
                         $(td).css('background', 'linear-gradient(to right, rgba(0,0,0,.15) ' + rowData[3] + '%, transparent ' + rowData[3] + '%)');
                         $(td).addClass('thin');
                     },

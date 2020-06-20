@@ -53,6 +53,10 @@ func (achievement *AppAchievement) SetIcon(url string) {
 	achievement.Icon = url
 }
 
+func (achievement AppAchievement) GetCompleted() string {
+	return helpers.GetAchievementCompleted(achievement.Completed)
+}
+
 func GetAppAchievements(offset int64, limit int64, filter bson.D, sort bson.D) (achievements []AppAchievement, err error) {
 
 	cur, ctx, err := Find(CollectionAppAchievements, offset, limit, sort, filter, nil, nil)

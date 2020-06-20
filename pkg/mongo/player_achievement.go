@@ -52,6 +52,10 @@ func (a PlayerAchievement) GetAchievementIcon() string {
 	return helpers.GetAchievementIcon(a.AppID, a.AchievementIcon)
 }
 
+func (a PlayerAchievement) GetComplete() string {
+	return helpers.GetAchievementCompleted(a.AchievementComplete)
+}
+
 func FindLatestPlayerAchievement(playerID int64, appID int) (int64, error) {
 
 	var filter = bson.D{{"player_id", playerID}, {"app_id", appID}}

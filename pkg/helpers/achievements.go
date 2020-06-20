@@ -18,3 +18,7 @@ func GetAchievementIcon(appID int, icon string) string {
 	// Return app
 	return AppIconBase + strconv.Itoa(appID) + "/" + icon
 }
+
+func GetAchievementCompleted(f float64) string {
+	return FloatToString(f, 1)
+}

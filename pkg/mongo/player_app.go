@@ -124,8 +124,8 @@ func (app PlayerApp) GetPriceHourFormatted(code steamapi.ProductCC) string {
 	}
 }
 
-func (app PlayerApp) GetAchievementPercent() float64 {
-	return math.Round(app.AppAchievementsPercent)
+func (app PlayerApp) GetAchievementPercent() string {
+	return helpers.GetAchievementCompleted(app.AppAchievementsPercent)
 }
 
 func GetPlayerAppsByApp(offset int64, filter bson.D) (apps []PlayerApp, err error) {

@@ -632,17 +632,15 @@ func appAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		_, achieved := achievedMap[achievement.Key]
 
-		completed := helpers.FloatToString(achievement.Completed, 1)
-
 		response.AddRow([]interface{}{
-			achievement.Name,        // 0
-			achievement.Description, // 1
-			achievement.GetIcon(),   // 2
-			completed,               // 3
-			achievement.Active,      // 4
-			achievement.Hidden,      // 5
-			achievement.Deleted,     // 6
-			achieved,                // 7
+			achievement.Name,           // 0
+			achievement.Description,    // 1
+			achievement.GetIcon(),      // 2
+			achievement.GetCompleted(), // 3
+			achievement.Active,         // 4
+			achievement.Hidden,         // 5
+			achievement.Deleted,        // 6
+			achieved,                   // 7
 		})
 	}
 

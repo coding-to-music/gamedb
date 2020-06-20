@@ -695,7 +695,7 @@ func playerAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			pa.GetAchievementIcon(),                  // 4
 			pa.AchievementDescription,                // 5
 			pa.AchievementDate,                       // 6
-			pa.AchievementComplete,                   // 7
+			pa.GetComplete(),                         // 7
 		})
 	}
 
