@@ -13,14 +13,14 @@ import (
 )
 
 type PlayerFriend struct {
-	PlayerID     int64     `bson:"player_id"`
-	FriendID     int64     `bson:"friend_id"`
-	FriendSince  time.Time `bson:"since"`
-	Avatar       string    `bson:"avatar"`
-	Name         string    `bson:"name"`
-	Games        int       `bson:"games"`
-	Level        int       `bson:"level"`
-	Relationship string    `bson:"relationship"`
+	PlayerID     int64     `bson:"player_id"`    // From Steam API
+	FriendID     int64     `bson:"friend_id"`    // From Steam API
+	FriendSince  time.Time `bson:"since"`        // From Steam API
+	Avatar       string    `bson:"avatar"`       //
+	Name         string    `bson:"name"`         //
+	Games        int       `bson:"games"`        //
+	Level        int       `bson:"level"`        //
+	Relationship string    `bson:"relationship"` // From Steam API
 }
 
 func (friend PlayerFriend) BSON() bson.D {

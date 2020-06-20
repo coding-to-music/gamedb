@@ -262,7 +262,7 @@ if ($playerPage.length > 0) {
                         }
                         return '';
                     },
-                    'orderSequence': ['desc', 'asc'],
+                    "orderable": false,
                 },
                 // Friend Since
                 {
