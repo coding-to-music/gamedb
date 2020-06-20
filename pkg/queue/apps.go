@@ -16,6 +16,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/helpers/i18n"
+	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
 	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -24,6 +25,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/sql/pics"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/gocolly/colly"
+	influx "github.com/influxdata/influxdb1-client"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -977,7 +979,20 @@ func getWishlistCount(app *mongo.App) (err error) {
 		app.WishlistAvgPosition = float64(total) / float64(count)
 	}
 
-	return nil
+	_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, influx.Point{
+		Measurement: string(influxHelper.InfluxMeasurementApps),
+		Tags: map[string]string{
+			"app_id": strconv.Itoa(app.ID),
+		},
+		Fields: map[string]interface{}{
+			"wishlist_avg_position": app.WishlistAvgPosition,
+			"wishlist_count":        app.WishlistCount,
+		},
+		Time:      time.Now(),
+		Precision: "m",
+	})
+
+	return err
 }
 
 func saveSales(app mongo.App, newSales []mongo.Sale) (err error) {
