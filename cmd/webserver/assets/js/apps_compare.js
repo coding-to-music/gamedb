@@ -2,10 +2,57 @@ const $appsComparePage = $('#apps-compare-page');
 
 if ($appsComparePage.length > 0) {
 
-    loadCompareSearchTable()
-    loadComparePlayersChart();
-    loadCompareFollowersChart();
-    loadCompareScoreChart();
+    const config = {rootMargin: '50px 0px 50px 0px', threshold: 0};
+
+    const callback1 = function (entries, self) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                loadCompareSearchTable();
+                self.unobserve(entry.target);
+            }
+        });
+    };
+    new IntersectionObserver(callback1, config).observe(document.getElementById('apps-table'));
+
+    const callback2 = function (entries, self) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                loadComparePlayersChart();
+                self.unobserve(entry.target);
+            }
+        });
+    };
+    new IntersectionObserver(callback2, config).observe(document.getElementById('players-chart'));
+
+    const callback3 = function (entries, self) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                loadCompareFollowersChart();
+                self.unobserve(entry.target);
+            }
+        });
+    };
+    new IntersectionObserver(callback3, config).observe(document.getElementById('group-chart'));
+
+    const callback4 = function (entries, self) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                loadCompareScoreChart();
+                self.unobserve(entry.target);
+            }
+        });
+    };
+    new IntersectionObserver(callback4, config).observe(document.getElementById('score-chart'));
+
+    const callback5 = function (entries, self) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                loadCompareWishlistChart();
+                self.unobserve(entry.target);
+            }
+        });
+    };
+    new IntersectionObserver(callback5, config).observe(document.getElementById('wishlists-chart'));
 
     function loadCompareSearchTable() {
 
@@ -354,6 +401,77 @@ if ($appsComparePage.length > 0) {
                         formatter: function () {
                             return this.series.name + ' had a review score of ' + this.y.toLocaleString() + '% on '
                                 + moment(this.key).format("dddd DD MMM YYYY @ HH:mm");
+                        },
+                    },
+                    series: series,
+                }));
+
+            },
+        });
+    }
+
+    function loadCompareWishlistChart() {
+
+        if ($.isEmptyObject(appNames)) {
+            return;
+        }
+
+        const defaultAppChartOptions = {
+            chart: {
+                type: 'spline',
+                backgroundColor: 'rgba(0,0,0,0)',
+            },
+            title: {
+                text: ''
+            },
+            subtitle: {
+                text: ''
+            },
+            credits: {
+                enabled: false
+            },
+            plotOptions: {},
+            xAxis: {
+                title: {text: ''},
+                type: 'datetime'
+            },
+            colors: ['#007bff', '#28a745', '#e83e8c', '#ffc107', '#343a40'],
+        };
+
+        $.ajax({
+            type: "GET",
+            url: '/games/compare/' + $appsComparePage.attr('data-id') + '/wishlists.json',
+            dataType: 'json',
+            success: function (data, textStatus, jqXHR) {
+
+                let series = [];
+
+                for (const datum of data) {
+                    series.push({
+                        name: appNames[datum.key],
+                        data: datum['value']['mean_wishlist_count'],
+                        connectNulls: true,
+                    });
+                }
+
+                Highcharts.chart('wishlists-chart', $.extend(true, {}, defaultAppChartOptions, {
+                    yAxis: {
+                        allowDecimals: false,
+                        title: {text: ''},
+                    },
+                    legend: {
+                        enabled: true,
+                        itemStyle: {
+                            color: '#28a745',
+                        },
+                        itemHiddenStyle: {
+                            color: '#666666',
+                        },
+                    },
+                    tooltip: {
+                        formatter: function () {
+                            return this.series.name + ' is in ' + this.y.toLocaleString() + ' wishlists on '
+                                + moment(this.key).format("dddd DD MMM YYYY");
                         },
                     },
                     series: series,
