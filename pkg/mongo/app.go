@@ -577,6 +577,7 @@ func CreateAppIndexes() {
 		"reviews_score",
 		"tags",
 		"type",
+		"updated_at",
 		"wishlist_avg_position",
 		"wishlist_count",
 	}
@@ -586,25 +587,13 @@ func CreateAppIndexes() {
 		cols = append(cols, "prices."+string(v.ProductCode)+".final")
 	}
 
-	//
+	// Asc & Desc
 	for _, v := range cols {
-		indexModels = append(indexModels, mongo.IndexModel{
-			Keys: bson.D{{v, 1}},
-		}, mongo.IndexModel{
-			Keys: bson.D{{v, -1}},
-		})
+		indexModels = append(indexModels,
+			mongo.IndexModel{Keys: bson.D{{v, 1}}},
+			mongo.IndexModel{Keys: bson.D{{v, -1}}},
+		)
 	}
-
-	// Text index
-	indexModels = append(indexModels, mongo.IndexModel{
-		Keys:    bson.D{{"name", "text"}},
-		Options: options.Index().SetName("text"),
-	})
-
-	// Search
-	indexModels = append(indexModels, mongo.IndexModel{
-		Keys: bson.D{{"extended.aliases", 1}},
-	})
 
 	// Achievements page
 	indexModels = append(indexModels, mongo.IndexModel{
