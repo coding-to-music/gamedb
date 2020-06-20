@@ -111,7 +111,7 @@ func playerRanksHandler(messages []*rabbit.Message) {
 										val: offset + int64(position) + 1,
 									},
 									Time:      time.Now(),
-									Precision: "s",
+									Precision: "m",
 								})
 							}
 						}
@@ -122,7 +122,7 @@ func playerRanksHandler(messages []*rabbit.Message) {
 					Points:          points,
 					Database:        influxHelper.InfluxGameDB,
 					RetentionPolicy: influxHelper.InfluxRetentionPolicyAllTime.String(),
-					Precision:       "s",
+					Precision:       "m",
 				})
 
 				return err

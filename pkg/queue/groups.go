@@ -564,7 +564,7 @@ func saveGroupToInflux(group mongo.Group) (err error) {
 		},
 		Fields:    fields,
 		Time:      time.Now(),
-		Precision: "h",
+		Precision: "m",
 	})
 
 	return err
