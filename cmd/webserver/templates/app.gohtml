@@ -427,6 +427,11 @@
 
                         {{ end }}
 
+                        <h5>Wishlists <small>(Out of {{ comma64 .PlayersCount }} players)</small></h5>
+                        <div class="mb-4" id="wishlists-chart">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+
                         {{/* Top players table */}}
                         <h5>Top Players</h5>
                         <div class="table-responsive">
@@ -811,13 +816,13 @@
                             </div>
                             <div class="col-6 col-md-4 col-lg-3 mb-3">
                                 <div role="button"
-                                     {{ if and (gt (len .App.Movies) 0) (gt (len .App.Screenshots) 0) }}
-                                         id="scroll-to-videos"
-                                         class="btn btn-success btn-block mb-0 cursor-pointer"
-                                     {{ else }}
-                                         class="btn btn-success btn-block mb-0"
-                                     {{ end }}
-                                     >Movies<br/><strong>{{ comma (len .App.Movies) }}</strong></div>
+                                        {{ if and (gt (len .App.Movies) 0) (gt (len .App.Screenshots) 0) }}
+                                            id="scroll-to-videos"
+                                            class="btn btn-success btn-block mb-0 cursor-pointer"
+                                        {{ else }}
+                                            class="btn btn-success btn-block mb-0"
+                                        {{ end }}
+                                >Movies<br/><strong>{{ comma (len .App.Movies) }}</strong></div>
                             </div>
                         </div>
 

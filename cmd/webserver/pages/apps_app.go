@@ -43,6 +43,7 @@ func appRouter() http.Handler {
 	r.Get("/time.json", appTimeAjaxHandler)
 	r.Get("/achievements.json", appAchievementsAjaxHandler)
 	r.Get("/dlc.json", appDLCAjaxHandler)
+	r.Get("/wishlist.json", appWishlistAjaxHandler)
 
 	r.Get("/{slug}", appHandler)
 	return r
@@ -260,6 +261,19 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
+	// Get players count
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		t.PlayersCount, err = mongo.CountDocuments(mongo.CollectionPlayers, nil, 0)
+		if err != nil {
+			log.Err(err, r)
+		}
+	}()
+
 	// Get played time
 	wg.Add(1)
 	var playedMessage string
@@ -379,6 +393,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 type appTemplate struct {
 	GlobalTemplate
 	App           mongo.App
+	PlayersCount  int64
 	Banners       map[string][]string
 	Bundles       []sql.Bundle
 	Categories    []sql.Category
@@ -841,6 +856,37 @@ func appItemsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	returnJSON(w, r, response)
+}
+
+func appWishlistAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		return
+	}
+
+	builder := influxql.NewBuilder()
+	builder.AddSelect("MEAN(wishlist_avg_position)", "mean_wishlist_avg_position")
+	builder.AddSelect("MEAN(wishlist_count)", "mean_wishlist_count")
+	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
+	builder.AddWhere("app_id", "=", id)
+	builder.AddGroupByTime("1d")
+	builder.SetFillNone()
+
+	resp, err := influx.InfluxQuery(builder.String())
+	if err != nil {
+		log.Err(err, r, builder.String())
+		return
+	}
+
+	var hc influx.HighChartsJSON
+
+	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
+
+		hc = influx.InfluxResponseToHighCharts(resp.Results[0].Series[0])
+	}
+
+	returnJSON(w, r, hc)
 }
 
 // Player counts chart

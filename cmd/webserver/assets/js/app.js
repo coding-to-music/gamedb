@@ -448,6 +448,16 @@ if ($appPage.length > 0) {
             });
         };
         new IntersectionObserver(timesCallback, config).observe(document.getElementById("top-players-table"));
+
+        const wishlistCallback = function (entries, self) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    loadAppWishlist();
+                    self.unobserve(entry.target);
+                }
+            });
+        };
+        new IntersectionObserver(wishlistCallback, config).observe(document.getElementById("wishlists-chart"));
     }
 
     function loadAppPlayersChart() {
@@ -617,6 +627,103 @@ if ($appPage.length > 0) {
                     ],
                 }));
 
+            },
+        });
+    }
+
+    function loadAppWishlist() {
+
+        $.ajax({
+            type: "GET",
+            url: '/games/' + $appPage.attr('data-id') + '/wishlist.json',
+            dataType: 'json',
+            success: function (data, textStatus, jqXHR) {
+
+                if (data === null) {
+                    data = {};
+                }
+
+                Highcharts.chart('wishlists-chart', {
+                    chart: {
+                        type: 'spline',
+                        backgroundColor: 'rgba(0,0,0,0)',
+                    },
+                    title: {
+                        text: ''
+                    },
+                    subtitle: {
+                        text: ''
+                    },
+                    credits: {
+                        enabled: false,
+                    },
+                    legend: {
+                        enabled: true,
+                        itemStyle: {
+                            color: '#28a745',
+                        },
+                        itemHiddenStyle: {
+                            color: '#666666',
+                        },
+                    },
+                    xAxis: {
+                        title: {
+                            text: ''
+                        },
+                        type: 'datetime'
+
+                    },
+                    yAxis: [
+                        {
+                            allowDecimals: false,
+                            title: {
+                                text: ''
+                            },
+                            labels: {
+                                formatter: function () {
+                                    return this.value.toLocaleString();
+                                },
+                            },
+                        },
+                        {
+                            opposite: true,
+                            title: {
+                                text: ''
+                            },
+                            labels: {
+                                formatter: function () {
+                                    return this.value.toLocaleString();
+                                },
+                            },
+                        }
+                    ],
+                    tooltip: {
+                        formatter: function () {
+                            switch (this.series.name) {
+                                case 'Wishlists':
+                                    return 'In ' + this.y.toLocaleString() + ' wishlists on ' + moment(this.key).format("dddd DD MMM YYYY");
+                                case 'Average Position':
+                                    return 'Average position of ' + this.y.toFixed(2).toLocaleString() + ' on ' + moment(this.key).format("dddd DD MMM YYYY");
+                            }
+                        },
+                    },
+                    series: [
+                        {
+                            name: 'Wishlists',
+                            color: '#007bff',
+                            data: data['mean_wishlist_count'],
+                            marker: {symbol: 'circle'},
+                            yAxis: 0,
+                        },
+                        {
+                            name: 'Average Position',
+                            color: '#28a745',
+                            data: data['mean_wishlist_avg_position'],
+                            marker: {symbol: 'circle'},
+                            yAxis: 1,
+                        },
+                    ],
+                });
             },
         });
     }
