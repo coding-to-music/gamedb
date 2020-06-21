@@ -208,7 +208,15 @@ func main() {
 	r.NotFound(pages.Error404Handler)
 
 	log.Info("Starting Webserver on " + config.ListenOn())
-	err = http.ListenAndServe(config.ListenOn(), r)
+
+	s := &http.Server{
+		Addr:              config.ListenOn(),
+		Handler:           r,
+		ReadTimeout:       2 * time.Second,
+		ReadHeaderTimeout: 2 * time.Second,
+	}
+
+	err = s.ListenAndServe()
 	log.Critical(err)
 }
 
