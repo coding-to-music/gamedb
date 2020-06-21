@@ -37,8 +37,7 @@ func gamesCompareRouter() http.Handler {
 
 func appsCompareHandler(w http.ResponseWriter, r *http.Request) {
 
-	var idStrings = strings.Split(chi.URLParam(r, "id"), ",")
-	idStrings = helpers.UniqueString(idStrings)
+	var idStrings = helpers.UniqueString(helpers.RegexInts.FindAllString(chi.URLParam(r, "id"), -1))
 
 	var apps []mongo.App
 	var names []string
@@ -263,7 +262,7 @@ func makeCompareActionLink(ids []string, id string, linkBool bool) string {
 
 func appsComparePlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	ids := strings.Split(chi.URLParam(r, "id"), ",")
+	var ids = helpers.UniqueString(helpers.RegexInts.FindAllString(chi.URLParam(r, "id"), -1))
 
 	if len(ids) < 1 || len(ids) > 10 {
 		return
@@ -303,7 +302,7 @@ func appsComparePlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 func appsComparePlayers2AjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	ids := strings.Split(chi.URLParam(r, "id"), ",")
+	var ids = helpers.UniqueString(helpers.RegexInts.FindAllString(chi.URLParam(r, "id"), -1))
 
 	if len(ids) < 1 || len(ids) > 10 {
 		return
@@ -343,7 +342,7 @@ func appsComparePlayers2AjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 func appsCompareWishlistHandler(w http.ResponseWriter, r *http.Request) {
 
-	ids := strings.Split(chi.URLParam(r, "id"), ",")
+	var ids = helpers.UniqueString(helpers.RegexInts.FindAllString(chi.URLParam(r, "id"), -1))
 
 	if len(ids) < 1 || len(ids) > 10 {
 		return
@@ -383,7 +382,7 @@ func appsCompareWishlistHandler(w http.ResponseWriter, r *http.Request) {
 
 func appsCompareScoresHandler(w http.ResponseWriter, r *http.Request) {
 
-	ids := strings.Split(chi.URLParam(r, "id"), ",")
+	var ids = helpers.UniqueString(helpers.RegexInts.FindAllString(chi.URLParam(r, "id"), -1))
 
 	if len(ids) < 1 || len(ids) > 10 {
 		return
@@ -426,9 +425,9 @@ func appsCompareGroupsHandler(w http.ResponseWriter, r *http.Request) {
 	var ids []string
 	var err error
 
-	for _, v := range strings.Split(chi.URLParam(r, "id"), ",") {
+	for _, v := range helpers.UniqueString(helpers.RegexInts.FindAllString(chi.URLParam(r, "id"), -1)) {
 
-		v, err = helpers.IsValidGroupID(v)
+		v, err = helpers.IsValidGroupID(v) // Upgrade group IDs
 		if err != nil {
 			continue
 		}
