@@ -21,11 +21,12 @@ import (
 )
 
 type PlayerMessage struct {
-	ID               int64   `json:"id"`
-	SkipPlayerGroups bool    `json:"dont_queue_groups"`
-	SkipGroupUpdate  bool    `json:"dont_queue_group"`
-	SkipAchievements bool    `json:"skip_achievements"`
-	UserAgent        *string `json:"user_agent"`
+	ID                 int64   `json:"id"`
+	SkipPlayerGroups   bool    `json:"dont_queue_groups"`
+	SkipGroupUpdate    bool    `json:"dont_queue_group"`
+	SkipAchievements   bool    `json:"skip_achievements"`
+	SkipExistingPlayer bool    `json:"skip_existing_player"`
+	UserAgent          *string `json:"user_agent"`
 }
 
 func playerHandler(messages []*rabbit.Message) {
@@ -60,6 +61,10 @@ func playerHandler(messages []*rabbit.Message) {
 
 		// Update player
 		player, err := mongo.GetPlayer(payload.ID)
+		if err == nil && payload.SkipExistingPlayer {
+			message.Ack(false)
+			continue
+		}
 		err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
 		if err != nil {
 
