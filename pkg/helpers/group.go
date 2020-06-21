@@ -75,8 +75,13 @@ func GetGroupAbbreviation(name string) string {
 
 func GetGroupIcon(icon string) string {
 
-	if icon == "" {
-		return "/assets/img/no-app-image-square.jpg"
+	if strings.HasPrefix(icon, "/") || strings.HasPrefix(icon, "http") {
+		return icon
 	}
+
+	if icon == "" {
+		return DefaultPlayerAvatar
+	}
+
 	return AvatarBase + icon
 }

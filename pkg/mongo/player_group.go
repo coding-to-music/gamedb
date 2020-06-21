@@ -75,11 +75,7 @@ func (group PlayerGroup) GetName() string {
 }
 
 func (group PlayerGroup) GetIcon() string {
-
-	if group.GroupIcon == "" {
-		return helpers.DefaultPlayerAvatar
-	}
-	return helpers.AvatarBase + group.GroupIcon
+	return helpers.GetGroupIcon(group.GroupIcon)
 }
 
 func InsertPlayerGroups(groups []PlayerGroup) (err error) {
