@@ -40,6 +40,7 @@ func appWishlistsHandler(messages []*rabbit.Message) {
 
 		var wishlistCount = len(playerWishlists)
 		var wishlistAverage float64
+		var wishlistPercent float64
 
 		//
 		var total int
@@ -57,6 +58,20 @@ func appWishlistsHandler(messages []*rabbit.Message) {
 			wishlistAverage = float64(total) / float64(count)
 		}
 
+		// Get percent of players
+		wishlistPlayers, err := mongo.CountDocuments(mongo.CollectionPlayers, nil, 60*60)
+		if err != nil {
+			log.Err(err, message.Message.Body)
+			sendToRetryQueue(message)
+			continue
+		}
+
+		if wishlistPlayers == 0 {
+			wishlistPercent = 0
+		} else {
+			wishlistPercent = float64(wishlistCount) / float64(wishlistPlayers)
+		}
+
 		// Save to influx
 		var point = influx.Point{
 			Measurement: string(influxHelper.InfluxMeasurementApps),
@@ -66,6 +81,7 @@ func appWishlistsHandler(messages []*rabbit.Message) {
 			Fields: map[string]interface{}{
 				"wishlist_count":        wishlistCount,
 				"wishlist_avg_position": wishlistAverage,
+				"wishlist_percent":      wishlistPercent,
 			},
 			Time:      time.Now(),
 			Precision: "m",
@@ -82,6 +98,7 @@ func appWishlistsHandler(messages []*rabbit.Message) {
 		var update = bson.D{
 			{"wishlist_count", wishlistCount},
 			{"wishlist_avg_position", wishlistAverage},
+			{"wishlist_percent", wishlistPercent},
 		}
 
 		_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", payload.ID}}, update)
