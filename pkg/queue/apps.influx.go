@@ -153,6 +153,7 @@ func getAppAveragePlayersWeek(appID int) (val float64, err error) {
 	builder.SetFrom(influxHelper.InfluxGameDB, influxHelper.InfluxRetentionPolicyAllTime.String(), influxHelper.InfluxMeasurementApps.String())
 	builder.AddWhere("time", ">", "NOW() - 7d")
 	builder.AddWhere("app_id", "=", appID)
+	builder.SetFillNone()
 
 	resp, err := influxHelper.InfluxQuery(builder.String())
 	if err != nil {
