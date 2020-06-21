@@ -6,23 +6,23 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-type AppsWishlistsYoutube struct {
+type AppsQueueWishlists struct {
 	BaseTask
 }
 
-func (c AppsWishlistsYoutube) ID() string {
+func (c AppsQueueWishlists) ID() string {
 	return "apps-queue-wishlists"
 }
 
-func (c AppsWishlistsYoutube) Name() string {
+func (c AppsQueueWishlists) Name() string {
 	return "Update wishlist stats for all apps"
 }
 
-func (c AppsWishlistsYoutube) Cron() string {
+func (c AppsQueueWishlists) Cron() string {
 	return CronTimeAppsWishlists
 }
 
-func (c AppsWishlistsYoutube) work() (err error) {
+func (c AppsQueueWishlists) work() (err error) {
 
 	var offset int64 = 0
 	var limit int64 = 10_000

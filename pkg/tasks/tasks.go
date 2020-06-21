@@ -44,7 +44,7 @@ var (
 		AppsPlayerCheck{},
 		AppsQueueAll{},
 		AppsQueueElastic{},
-		AppsWishlistsYoutube{},
+		AppsQueueWishlists{},
 		AppsQueueGroups{},
 		AppsArticlesQueueElastic{},
 		AppsQueueInflux{},
