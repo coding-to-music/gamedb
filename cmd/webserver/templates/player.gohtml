@@ -203,10 +203,16 @@
 
                                 <div class="card mb-4">
                                     <h5 class="card-header">Links</h5>
-                                    <div class="card-body pb-2">
+                                    <div class="card-body pb-2" id="links">
 
-                                        <h6><a href="https://www.achievementstats.com/index.php?action=profile&playerId={{ .Player.ID }}" target="_blank" rel="noopener">View profile on Achievement Stats</a></h6>
-                                        <h6><a href="https://steamhunters.com/profiles/{{ .Player.ID }}/games" target="_blank" rel="noopener">View profile on Steam Hunters</a></h6>
+                                        <h6>
+                                            <img src="/assets/img/links/achievement-stats.ico" alt="Achievement Stats">
+                                            <a href="https://www.achievementstats.com/index.php?action=profile&playerId={{ .Player.ID }}" target="_blank" rel="noopener">View profile on Achievement Stats</a>
+                                        </h6>
+                                        <h6>
+                                            <img src="/assets/img/links/steam-hunters.png" alt="Steam Hunters">
+                                            <a href="https://steamhunters.com/profiles/{{ .Player.ID }}/games" target="_blank" rel="noopener">View profile on Steam Hunters</a>
+                                        </h6>
 
                                     </div>
                                 </div>

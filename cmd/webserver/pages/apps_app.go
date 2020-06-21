@@ -355,34 +355,34 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		{
 			Text: "View " + app.GetTypeLower() + " on Twitch",
 			Link: "https://twitch.tv/directory/game/" + url.PathEscape(app.TwitchURL),
-			Icon: "https://static.twitchcdn.net/assets/favicon-32-d6025c14e900565d6177.png",
+			Icon: "/assets/img/links/twitch.png",
 			Hide: app.TwitchURL == "",
 		},
 		{
 			Text: "View " + app.GetTypeLower() + " on Steam Prices",
 			Link: "https://steamprices.com/" + app.GetSteamPricesURL() + "/" + strconv.Itoa(app.ID) + "/" + slug.Make(app.GetName()),
-			Icon: "https://www.steamprices.com/assets/images/favicons/favicon-32x32.png",
+			Icon: "/assets/img/links/steam-prices.png",
 			Hide: app.GetSteamPricesURL() == "",
 		},
 		{
 			Text: "View " + app.GetTypeLower() + " on Achievement Stats",
 			Link: "https://www.achievementstats.com/index.php?action=games&gameId=" + strconv.Itoa(app.ID),
-			Icon: "https://www.achievementstats.com/templates/classic/images/favicon.ico",
+			Icon: "/assets/img/links/achievement-stats.ico",
 		},
 		{
 			Text: "View " + app.GetTypeLower() + " on Steam Hunters",
 			Link: "https://steamhunters.com/stats/" + strconv.Itoa(app.ID) + "/achievements",
-			Icon: "https://steamhunters.com/favicon-32x32.png?v=201705192248",
+			Icon: "/assets/img/links/steam-hunters.png",
 		},
 		{
 			Text: "View " + app.GetTypeLower() + " on IsThereAnyDeal",
 			Link: "https://isthereanydeal.com/steam/app/" + strconv.Itoa(app.ID),
-			Icon: "https://d2uym1p5obf9p8.cloudfront.net/images/favicon.png",
+			Icon: "/assets/img/links/is-there-any-deal.png",
 		},
 		{
 			Text: "Find similar " + app.GetTypeLower() + "s on SteamPeek",
 			Link: "https://steampeek.hu/?appid=" + strconv.Itoa(app.ID),
-			Icon: "https://steampeek.hu/favicon-32x32-spg.png",
+			Icon: "/assets/img/links/steam-peek.png",
 		},
 	}
 
