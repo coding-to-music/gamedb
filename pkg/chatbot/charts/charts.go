@@ -55,7 +55,7 @@ func getChart(builder *influxql.Builder, id string, title string) (url string, w
 
 	x, y := influx.InfluxResponseToImageChartData(resp.Results[0].Series[0])
 
-	min := helpers.Min(y...) - 1
+	min := helpers.Max(helpers.Min(y...)-1, 0)
 	max := helpers.Max(y...) + 1
 
 	if len(x) == 1 {
