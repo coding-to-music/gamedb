@@ -60,7 +60,6 @@ func (article Article) GetAppIcon() string {
 }
 
 func (article Article) GetAppPath() string {
-
 	return helpers.GetAppPath(article.AppID, article.AppName)
 }
 

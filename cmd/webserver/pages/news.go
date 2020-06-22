@@ -93,18 +93,18 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	for _, article := range articles {
 
 		response.AddRow([]interface{}{
-			article.ID,           // 0
-			article.Title,        // 1
-			article.GetBody(),    // 2
-			article.AppID,        // 3
-			article.AppIcon,      // 4
-			article.Time,         // 5
-			article.Score,        // 6
-			article.GetAppName(), // 7
-			article.GetAppIcon(), // 8
-			article.GetAppPath(), // 9
-			article.GetDate(),    // 10
-			article.TitleMarked,  // 11
+			article.ID,               // 0
+			article.Title,            // 1
+			article.GetBody(),        // 2
+			article.AppID,            // 3
+			article.GetArticleIcon(), // 4
+			article.Time,             // 5
+			article.Score,            // 6
+			article.GetAppName(),     // 7
+			article.GetAppIcon(),     // 8
+			article.GetAppPath(),     // 9
+			article.GetDate(),        // 10
+			article.TitleMarked,      // 11
 		})
 	}
 
