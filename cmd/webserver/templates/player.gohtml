@@ -432,8 +432,8 @@
                                     <h5 class="card-header">Library Stats</h5>
                                     <div class="card-body">
 
-                                        <div class="table-responsive mb-4">
-                                            <table class="table">
+                                        <div class="table-responsive">
+                                            <table class="table mb-0">
                                                 <thead>
                                                 <tr>
                                                     <th scope="col" style="width: 40%"></th>
@@ -442,6 +442,16 @@
                                                 </tr>
                                                 </thead>
                                                 <tbody>
+                                                <tr>
+                                                    <th scope="col" nowrap="nowrap">Average Time</th>
+                                                    <td nowrap="nowrap">{{ .Player.GameStats.All.GetAverageTime }}</td>
+                                                    <td nowrap="nowrap">{{ .Player.GameStats.Played.GetAverageTime }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="col" nowrap="nowrap">Total Time</th>
+                                                    <td nowrap="nowrap">{{ .Player.GameStats.All.GetTotalTime }}</td>
+                                                    <td nowrap="nowrap">{{ .Player.GameStats.Played.GetTotalTime }}</td>
+                                                </tr>
                                                 <tr>
                                                     <th scope="col" nowrap="nowrap">Average Price</th>
                                                     <td nowrap="nowrap">{{ .Player.GameStats.All.GetAveragePrice }}</td>
@@ -460,28 +470,6 @@
                                                 </tbody>
                                             </table>
                                         </div>
-
-                                        <table class="table">
-                                            <thead>
-                                            <tr>
-                                                <th scope="col" style="width: 40%"></th>
-                                                <th scope="col" style="width: 30%">All</th>
-                                                <th scope="col" style="width: 30%">Played</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            <tr>
-                                                <th scope="col" nowrap="nowrap">Average Time</th>
-                                                <td nowrap="nowrap">{{ .Player.GameStats.All.GetAverageTime }}</td>
-                                                <td nowrap="nowrap">{{ .Player.GameStats.Played.GetAverageTime }}</td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="col" nowrap="nowrap">Total Time</th>
-                                                <td nowrap="nowrap">{{ .Player.GameStats.All.GetTotalTime }}</td>
-                                                <td nowrap="nowrap">{{ .Player.GameStats.Played.GetTotalTime }}</td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
 
                                     </div>
                                 </div>
