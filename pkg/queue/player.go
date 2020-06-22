@@ -21,12 +21,13 @@ import (
 )
 
 type PlayerMessage struct {
-	ID                 int64   `json:"id"`
-	SkipPlayerGroups   bool    `json:"dont_queue_groups"`
-	SkipGroupUpdate    bool    `json:"dont_queue_group"`
-	SkipAchievements   bool    `json:"skip_achievements"`
-	SkipExistingPlayer bool    `json:"skip_existing_player"`
-	UserAgent          *string `json:"user_agent"`
+	ID                       int64   `json:"id"`
+	SkipPlayerGroups         bool    `json:"dont_queue_groups"`
+	SkipGroupUpdate          bool    `json:"dont_queue_group"`
+	SkipAchievements         bool    `json:"skip_achievements"`
+	SkipExistingPlayer       bool    `json:"skip_existing_player"`
+	ForceAchievementsRefresh bool    `json:"force_achievements_refresh"`
+	UserAgent                *string `json:"user_agent"`
 }
 
 func playerHandler(messages []*rabbit.Message) {
@@ -306,11 +307,11 @@ func updatePlayerGames(player *mongo.Player, payload PlayerMessage) error {
 		return err
 	}
 
-	if !payload.SkipAchievements {
-		if player.UpdatedAt.Unix() < 1593558000 || player.UpdatedAt.Before(time.Now().Add(time.Hour*24*13*-1)) { // Just under 2 weeks
+	if !payload.SkipAchievements || payload.ForceAchievementsRefresh {
+		if player.UpdatedAt.Before(time.Now().Add(time.Hour * 24 * 13 * -1)) { // Just under 2 weeks
 			for _, v := range resp.Games {
 				if v.PlaytimeForever > 0 {
-					err = ProducePlayerAchievements(player.ID, v.AppID)
+					err = ProducePlayerAchievements(player.ID, v.AppID, payload.ForceAchievementsRefresh)
 					log.Err(err)
 				}
 			}
@@ -375,10 +376,10 @@ func updatePlayerRecentGames(player *mongo.Player, payload PlayerMessage) error 
 	}
 
 	//
-	if !payload.SkipAchievements {
+	if !payload.SkipAchievements && !payload.ForceAchievementsRefresh {
 		if player.UpdatedAt.After(time.Now().Add(time.Hour * 24 * 13 * -1)) { // Just under 2 weeks
 			for _, v := range newAppsSlice {
-				err = ProducePlayerAchievements(player.ID, v.AppID)
+				err = ProducePlayerAchievements(player.ID, v.AppID, false)
 				log.Err(err)
 			}
 		}

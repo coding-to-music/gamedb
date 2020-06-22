@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/rabbit-go"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -14,6 +15,7 @@ import (
 type PlayerAchievementsMessage struct {
 	PlayerID int64 `json:"player_id"`
 	AppID    int   `json:"app_id"`
+	Force    bool  `json:"force"`
 }
 
 var appsWithNoStats = map[int]bool{}
@@ -82,11 +84,14 @@ func playerAchievementsHandler(messages []*rabbit.Message) {
 		}
 
 		// Get the last saved achievement
-		timestamp, err := mongo.FindLatestPlayerAchievement(payload.PlayerID, payload.AppID)
-		if err != nil {
-			log.Err(err)
-			sendToRetryQueue(message)
-			continue
+		var timestamp int64
+		if !config.IsLocal() && !payload.Force {
+			timestamp, err = mongo.FindLatestPlayerAchievement(payload.PlayerID, payload.AppID)
+			if err != nil {
+				log.Err(err)
+				sendToRetryQueue(message)
+				continue
+			}
 		}
 
 		// Get achievements for icons

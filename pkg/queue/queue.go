@@ -426,9 +426,9 @@ func ProduceDLC(appID int, DLCIDs []int) (err error) {
 	return produce(QueueAppsDLC, DLCMessage{AppID: appID, DLCIDs: DLCIDs})
 }
 
-func ProducePlayerAchievements(playerID int64, appID int) (err error) {
+func ProducePlayerAchievements(playerID int64, appID int, force bool) (err error) {
 
-	return produce(QueuePlayersAchievements, PlayerAchievementsMessage{PlayerID: playerID, AppID: appID})
+	return produce(QueuePlayersAchievements, PlayerAchievementsMessage{PlayerID: playerID, AppID: appID, Force: force})
 }
 
 func ProduceGroup(payload GroupMessage) (err error) {
