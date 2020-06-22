@@ -14,6 +14,10 @@ if ($('#groups-page').length > 0) {
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-group-id', data[0]);
             $(row).attr('data-link', data[10]);
+
+            if (data[8]) {
+                $(row).addClass('table-danger');
+            }
         },
         "columnDefs": [
             // Rank
