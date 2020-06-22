@@ -514,7 +514,7 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			"1": "app_prices" + "." + string(code),
 			"2": "app_time",
 			"3": "app_prices_hour" + "." + string(code),
-			"4": "app_achievements_percent, app_achievements_have desc",
+			"4": "app_achievements_percent, app_achievements_have x, app_achievements_total x",
 		}
 
 		var err error

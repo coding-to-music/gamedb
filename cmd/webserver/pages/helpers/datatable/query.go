@@ -168,7 +168,18 @@ func (q DataTablesQuery) getOrder(colsMap map[string]string) (colsRet []sortCol)
 									} else if len(colParts) == 1 {
 										colsRet = append(colsRet, sortCol{col: col, asc: true})
 									} else if len(colParts) == 2 {
-										colsRet = append(colsRet, sortCol{col: colParts[0], asc: colParts[1] != "desc"})
+
+										var asc bool
+										switch colParts[1] {
+										case "asc":
+											asc = true
+										case "desc":
+											asc = false
+										default:
+											asc = dir != "desc"
+										}
+
+										colsRet = append(colsRet, sortCol{col: colParts[0], asc: asc})
 									} else {
 										log.Warning("weird column map")
 									}
