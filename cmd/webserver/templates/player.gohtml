@@ -218,7 +218,7 @@
                                 </div>
 
                                 <div class="card mb-0">
-                                    <h5 class="card-header">Ranks <small>(Updated daily)</small></h5>
+                                    <h5 class="card-header">Ranks</h5>
                                     <div class="card-body">
 
                                         {{ if gt (len .Ranks) 0 }}
@@ -250,20 +250,21 @@
                     {{/* Charts */}}
                     <div class="tab-pane" id="history" role="tabpanel">
 
-                        <div class="card">
-                            <h5 class="card-header">History</h5>
-                            <div class="card-body">
-
-                                <h5>Stats</h5>
+                        <div class="card mb-4">
+                            <h5 class="card-header">Stats</h5>
+                            <div class="card-body pb-0">
                                 <div id="history-chart">
                                     <i class="fas fa-spinner fa-spin"></i>
                                 </div>
+                            </div>
+                        </div>
 
-                                <h5>Ranks</h5>
+                        <div class="card">
+                            <h5 class="card-header">Ranks</h5>
+                            <div class="card-body pb-0">
                                 <div id="ranks-chart">
                                     <i class="fas fa-spinner fa-spin"></i>
                                 </div>
-
                             </div>
                         </div>
 
