@@ -129,7 +129,10 @@ if ($playerPage.length > 0) {
                 {
                     "targets": 4,
                     "render": function (data, type, row) {
-                        return row[8].toLocaleString() + ' / ' + row[9].toLocaleString();
+                        if (row[9] > 0) {
+                            return row[8].toLocaleString() + ' / ' + row[9].toLocaleString();
+                        }
+                        return '-';
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         rowData[10] = Math.ceil(rowData[10]);
