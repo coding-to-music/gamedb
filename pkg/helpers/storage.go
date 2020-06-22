@@ -64,7 +64,7 @@ func GetSignedURLOptions() (*storage.SignedURLOptions, error) {
 			Method:         "GET",
 			GoogleAccessID: conf.Email,
 			PrivateKey:     conf.PrivateKey,
-			Expires:        time.Now().Add(time.Minute * 60),
+			Expires:        time.Now().Add(time.Hour * 24),
 		}
 	}
 
