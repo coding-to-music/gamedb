@@ -105,7 +105,10 @@ func getChart(builder *influxql.Builder, id string, title string) (url string, w
 				Max: max,
 			},
 			ValueFormatter: func(v interface{}) string {
-				return humanize.Commaf(v.(float64))
+				if (max - min) > 10 {
+					return humanize.Comma(int64(v.(float64)))
+				}
+				return humanize.Commaf(helpers.RoundFloatTo2DP(v.(float64)))
 			},
 		},
 		Series: []chart.Series{
