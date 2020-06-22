@@ -868,6 +868,7 @@ func appWishlistAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	builder := influxql.NewBuilder()
 	builder.AddSelect("MEAN(wishlist_avg_position)", "mean_wishlist_avg_position")
 	builder.AddSelect("MEAN(wishlist_count)", "mean_wishlist_count")
+	builder.AddSelect("MEAN(wishlist_percent)", "mean_wishlist_percent")
 	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
 	builder.AddWhere("app_id", "=", id)
 	builder.AddGroupByTime("1d")

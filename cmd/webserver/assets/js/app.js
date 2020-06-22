@@ -675,7 +675,6 @@ if ($appPage.length > 0) {
                     },
                     yAxis: [
                         {
-                            allowDecimals: false,
                             title: {
                                 text: ''
                             },
@@ -686,7 +685,18 @@ if ($appPage.length > 0) {
                             },
                         },
                         {
+                            title: {
+                                text: ''
+                            },
+                            labels: {
+                                formatter: function () {
+                                    return this.value.toFixed(8) + '%';
+                                },
+                            },
+                        },
+                        {
                             opposite: true,
+                            reversed: true,
                             title: {
                                 text: ''
                             },
@@ -702,6 +712,8 @@ if ($appPage.length > 0) {
                             switch (this.series.name) {
                                 case 'Wishlists':
                                     return 'In ' + this.y.toLocaleString() + ' wishlists on ' + moment(this.key).format("dddd DD MMM YYYY");
+                                case 'Wishlists %':
+                                    return 'In ' + this.y.toFixed(8) + '% of wishlists on ' + moment(this.key).format("dddd DD MMM YYYY");
                                 case 'Average Position':
                                     return 'Average position of ' + this.y.toFixed(2).toLocaleString() + ' on ' + moment(this.key).format("dddd DD MMM YYYY");
                             }
@@ -716,11 +728,18 @@ if ($appPage.length > 0) {
                             yAxis: 0,
                         },
                         {
-                            name: 'Average Position',
+                            name: 'Wishlists %',
                             color: '#28a745',
-                            data: data['mean_wishlist_avg_position'],
+                            data: data['mean_wishlist_percent'],
                             marker: {symbol: 'circle'},
                             yAxis: 1,
+                        },
+                        {
+                            name: 'Average Position',
+                            color: '#e83e8c',
+                            data: data['mean_wishlist_avg_position'],
+                            marker: {symbol: 'circle'},
+                            yAxis: 2,
                         },
                     ],
                 });
