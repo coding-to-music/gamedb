@@ -288,8 +288,12 @@
                     {{/* Prices */}}
                     <div class="tab-pane" id="prices" role="tabpanel">
 
-                        <div id="prices-chart" data-ajax="/games/{{ .App.ID }}/prices.json">
-                            <i class="fas fa-spinner fa-spin"></i>
+                        <div class="card mb-4">
+                            <div class="card-body pb-0">
+                                <div id="prices-chart" data-ajax="/games/{{ .App.ID }}/prices.json">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="table-responsive">
@@ -335,89 +339,112 @@
                         <div class="row mb-4">
                             <div class="col-12 col-lg-4 col-xl-6 mb-4 mb-lg-0">
 
-                                <h5>Peaks</h5>
-                                <table class="table mb-0">
-                                    <tbody>
-                                    <tr>
-                                        <td>Peak All Time</td>
-                                        <td>{{ comma .App.PlayerPeakAllTime }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Peak Last Week</td>
-                                        <td>{{ comma .App.PlayerPeakWeek }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Peak Last 10 minutes</td>
-                                        <td>{{ comma64 .PlayersInGame }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Average Last Week</td>
-                                        <td>{{ commaf .App.PlayerAverageWeek }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Average Playtime <small>(On Game DB)</small></td>
-                                        <td>{{ .App.GetPlaytimeAverage }}</td>
-                                    </tr>
-                                    </tbody>
-                                </table>
+                                <div class="card">
+                                    <h5 class="card-header">Stats</h5>
+                                    <div class="card-body p-0">
+                                        <table class="table no-border mb-0">
+                                            <tbody>
+                                            <tr>
+                                                <td>Peak All Time</td>
+                                                <td>{{ comma .App.PlayerPeakAllTime }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Peak Last Week</td>
+                                                <td>{{ comma .App.PlayerPeakWeek }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Peak Last 10 minutes</td>
+                                                <td>{{ comma64 .PlayersInGame }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Average Last Week</td>
+                                                <td>{{ commaf .App.PlayerAverageWeek }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Average Playtime <small>(On Game DB)</small></td>
+                                                <td>{{ .App.GetPlaytimeAverage }}</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
 
                             </div>
                             <div class="col-12 col-lg-8 col-xl-6">
 
-                                <h5>
-                                    Owner Estimations
-                                    <small><a target="_blank" rel="noopener" href="https://steamspy.com/app/{{ .App.ID }}">By Steam Spy</a></small>
-                                </h5>
-                                <table class="table mb-0">
-                                    <tbody>
-                                    <tr>
-                                        <td>Owners</td>
-                                        <td>{{ comma .App.SteamSpy.SSOwnersLow }} - {{ comma .App.SteamSpy.SSOwnersHigh }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Average Playtime (Two Weeks)</td>
-                                        <td>{{ .App.SteamSpy.GetSSAveragePlaytimeTwoWeeks }} hours</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Average Playtime (Forever)</td>
-                                        <td>{{ .App.SteamSpy.GetSSAveragePlaytimeForever }} hours</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Median Playtime (Two Weeks)</td>
-                                        <td>{{ .App.SteamSpy.GetSSMedianPlaytimeTwoWeeks }} hours</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Median Playtime (Forever)</td>
-                                        <td>{{ .App.SteamSpy.GetSSMedianPlaytimeForever }} hours</td>
-                                    </tr>
-                                    </tbody>
-                                </table>
+
+                                <div class="card">
+                                    <h5 class="card-header">Owners <small class="float-right"><a target="_blank" rel="noopener" href="https://steamspy.com/app/{{ .App.ID }}">By Steam Spy</a></small></h5>
+                                    <div class="card-body p-0">
+                                        <table class="table no-border mb-0">
+                                        <tbody>
+                                        <tr>
+                                            <td>Owners</td>
+                                            <td>{{ comma .App.SteamSpy.SSOwnersLow }} - {{ comma .App.SteamSpy.SSOwnersHigh }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Average Playtime (Two Weeks)</td>
+                                            <td>{{ .App.SteamSpy.GetSSAveragePlaytimeTwoWeeks }} hours</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Average Playtime (Forever)</td>
+                                            <td>{{ .App.SteamSpy.GetSSAveragePlaytimeForever }} hours</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Median Playtime (Two Weeks)</td>
+                                            <td>{{ .App.SteamSpy.GetSSMedianPlaytimeTwoWeeks }} hours</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Median Playtime (Forever)</td>
+                                            <td>{{ .App.SteamSpy.GetSSMedianPlaytimeForever }} hours</td>
+                                        </tr>
+                                        </tbody>
+                                        </table>
+                                    </div>
+                                </div>
 
                             </div>
                         </div>
 
-                        <h5>Player Count - 1 Week</h5>
-                        <div class="mb-4" id="players-chart">
-                            <i class="fas fa-spinner fa-spin"></i>
+                        <div class="card mb-4">
+                            <h5 class="card-header">Player Count - 1 Week</h5>
+                            <div class="card-body pb-0">
+                                <div id="players-chart">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                </div>
+                            </div>
                         </div>
 
-                        <h5>Player Count - 5 Years</h5>
-                        <div class="mb-4" id="players-chart2">
-                            <i class="fas fa-spinner fa-spin"></i>
+                        <div class="card mb-4">
+                            <h5 class="card-header">Player Count</h5>
+                            <div class="card-body pb-0">
+                                <div id="players-chart2">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                </div>
+                            </div>
                         </div>
 
                         {{ if ne .App.GroupID "" }}
 
-                            <h5 id="followers">Followers</h5>
-                            <div class="mb-4" id="group-chart">
-                                <i class="fas fa-spinner fa-spin"></i>
+                            <div class="card mb-4">
+                                <h5 class="card-header" id="followers">Followers</h5>
+                                <div class="card-body pb-0">
+                                    <div id="group-chart">
+                                        <i class="fas fa-spinner fa-spin"></i>
+                                    </div>
+                                </div>
                             </div>
 
                         {{ end }}
 
-                        <h5>Wishlists <small>(Out of {{ comma64 .PlayersCount }} players)</small></h5>
-                        <div class="mb-4" id="wishlists-chart">
-                            <i class="fas fa-spinner fa-spin"></i>
+                        <div class="card mb-4">
+                            <h5 class="card-header">Wishlists</h5>
+                            <div class="card-body pb-0">
+                                <div id="wishlists-chart">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                </div>
+                            </div>
+                            <small class="card-footer">From {{ comma64 .PlayersCount }} players. Not live.</small>
                         </div>
 
                         {{/* Top players table */}}
@@ -783,8 +810,12 @@
                             </div>
                         </div>
 
-                        <div id="reviews-chart" class="mb-2">
-                            <i class="fas fa-spinner fa-spin"></i>
+                        <div class="card mb-4">
+                            <div class="card-body pb-0">
+                                <div id="reviews-chart" class="mb-2">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                </div>
+                            </div>
                         </div>
 
                         <h5>A selection of the {{ comma .App.Reviews.GetTotal }} reviews</h5>

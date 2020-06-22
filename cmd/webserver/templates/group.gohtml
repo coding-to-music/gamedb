@@ -40,7 +40,11 @@
                     <div class="alert alert-danger" role="alert">{{ .Group.Error }}</div>
                 {{ end }}
 
-                <div id="group-chart" class="mb-4"></div>
+                <div class="card mb-4">
+                    <div class="card-body pb-0">
+                        <div id="group-chart"></div>
+                    </div>
+                </div>
 
                 <div class="mb-4">{{ .Summary }}</div>
 

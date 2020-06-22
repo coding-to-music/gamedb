@@ -86,10 +86,9 @@
 
                                 <div class="card mb-4">
                                     <h5 class="card-header">Details</h5>
-                                    <div class="card-body">
-
+                                    <div class="card-body p-0">
                                         <div class="table-responsive">
-                                            <table class="table mb-0">
+                                            <table class="table no-border mb-0">
                                                 <tr>
                                                     <th scope="col" nowrap="nowrap">Level</th>
                                                     <td><a href="/experience/{{ .Player.Level }}">{{ comma .Player.Level }}</a></td>
@@ -147,8 +146,8 @@
                                                 {{ end }}
                                             </table>
                                         </div>
-
                                     </div>
+
                                 </div>
 
                                 <div class="card mb-4">
@@ -158,10 +157,10 @@
                                             : None <i class="fas fa-check text-success"></i>
                                         {{ end }}
                                     </h5>
-                                    <div class="card-body collapse {{ if .Player.Bans.History }}show{{ end }}" id="bans-collapse">
+                                    <div class="card-body collapse p-0 {{ if .Player.Bans.History }}show{{ end }}" id="bans-collapse">
 
                                         <div class="table-responsive">
-                                            <table class="table mb-0">
+                                            <table class="table no-border mb-0">
                                                 <tr>
                                                     <th scope="col">Community Banned</th>
                                                     <td>{{ if .Player.Bans.CommunityBanned }}<i class="fas fa-check text-danger"></i>{{ else }}<i class="fas fa-times text-success"></i>{{ end }}</td>
@@ -198,10 +197,7 @@
                                     </div>
                                 </div>
 
-                            </div>
-                            <div class="col-sm-12 col-lg-6">
-
-                                <div class="card mb-4">
+                                <div class="card">
                                     <h5 class="card-header">Links</h5>
                                     <div class="card-body pb-2" id="links">
 
@@ -217,13 +213,15 @@
                                     </div>
                                 </div>
 
+                            </div>
+                            <div class="col-sm-12 col-lg-6">
+
                                 <div class="card mb-0">
                                     <h5 class="card-header">Ranks</h5>
-                                    <div class="card-body">
-
+                                    <div class="card-body p-0">
                                         {{ if gt (len .Ranks) 0 }}
                                             <div class="table-responsive">
-                                                <table class="table table-sm mb-0">
+                                                <table class="table table-sm no-border mb-0">
                                                     {{ range $key, $value := .Ranks }}
                                                         <tr>
                                                             <td>{{ .Metric.String }}</td>
@@ -238,7 +236,6 @@
                                             <p class="mb-0">Your profile must be set to public to gather information,
                                                 go <a href="https://steamcommunity.com/my/edit/settings" target="_blank" rel="noopener">here</a> to change your privacy settings.</p>
                                         {{ end }}
-
                                     </div>
                                 </div>
 
@@ -430,11 +427,10 @@
                             <div class="col-12 col-md-6 mb-3">
 
                                 <div class="card">
-                                    <h5 class="card-header">Library Stats</h5>
-                                    <div class="card-body">
-
+                                    <h5 class="card-header">Stats</h5>
+                                    <div class="card-body p-0">
                                         <div class="table-responsive">
-                                            <table class="table mb-0">
+                                            <table class="table no-border mb-0">
                                                 <thead>
                                                 <tr>
                                                     <th scope="col" style="width: 40%"></th>
@@ -471,8 +467,8 @@
                                                 </tbody>
                                             </table>
                                         </div>
-
                                     </div>
+
                                 </div>
 
                             </div>
@@ -480,26 +476,28 @@
 
                                 <div class="card">
                                     <h5 class="card-header">App Types</h5>
-                                    <div class="card-body">
+                                    <div class="card-body p-0">
 
-                                        <table class="table table-datatable" data-order='[[1, "desc"]]'>
-                                            <thead>
-                                            <tr>
-                                                <th>Type</th>
-                                                <th>Count</th>
-                                                <th data-toggle="tooltip" data-placement="top" title="Percent of Steam catalogue">%</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            {{ range $key, $value := .Player.GamesByType }}
+                                        <div class="table-responsive">
+                                            <table class="table no-border table-datatable" data-order='[[1, "desc"]]'>
+                                                <thead>
                                                 <tr>
-                                                    <td>{{ $key }}</td>
-                                                    <td>{{ comma $value }}</td>
-                                                    <td><small>{{ $.TypePercent $key }}</small></td>
+                                                    <th>Type</th>
+                                                    <th>Count</th>
+                                                    <th data-toggle="tooltip" data-placement="top" title="Percent of Steam catalogue">%</th>
                                                 </tr>
-                                            {{ end }}
-                                            </tbody>
-                                        </table>
+                                                </thead>
+                                                <tbody>
+                                                {{ range $key, $value := .Player.GamesByType }}
+                                                    <tr>
+                                                        <td>{{ $key }}</td>
+                                                        <td>{{ comma $value }}</td>
+                                                        <td><small>{{ $.TypePercent $key }}</small></td>
+                                                    </tr>
+                                                {{ end }}
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                 </div>
 
