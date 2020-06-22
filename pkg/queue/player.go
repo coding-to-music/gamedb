@@ -307,7 +307,7 @@ func updatePlayerGames(player *mongo.Player, payload PlayerMessage) error {
 	}
 
 	if !payload.SkipAchievements {
-		if player.UpdatedAt.Unix() < 1588244400 || player.UpdatedAt.Before(time.Now().Add(time.Hour*24*13*-1)) { // Just under 2 weeks
+		if player.UpdatedAt.Unix() < 1593558000 || player.UpdatedAt.Before(time.Now().Add(time.Hour*24*13*-1)) { // Just under 2 weeks
 			for _, v := range resp.Games {
 				if v.PlaytimeForever > 0 {
 					err = ProducePlayerAchievements(player.ID, v.AppID)
