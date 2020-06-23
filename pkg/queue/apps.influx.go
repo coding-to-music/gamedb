@@ -200,18 +200,20 @@ func getAppTrendValue(appID int) (trend int64, err error) {
 	var ys []float64
 
 	var i = 1
-	for _, v := range resp.Results[0].Series[0].Values {
+	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
+		for _, v := range resp.Results[0].Series[0].Values {
 
-		trendTotal, err := v[1].(json.Number).Int64()
-		if err != nil {
-			log.Err(err)
-			continue
+			trendTotal, err := v[1].(json.Number).Int64()
+			if err != nil {
+				log.Err(err)
+				continue
+			}
+
+			xs = append(xs, 1)
+			ys = append(ys, math.Sqrt(float64(trendTotal)))
+
+			i++
 		}
-
-		xs = append(xs, 1)
-		ys = append(ys, math.Sqrt(float64(trendTotal)))
-
-		i++
 	}
 
 	_, slope := stat.LinearRegression(xs, ys, nil, false)
