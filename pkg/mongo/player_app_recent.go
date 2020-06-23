@@ -3,6 +3,7 @@ package mongo
 import (
 	"strconv"
 
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -36,6 +37,10 @@ func (app PlayerRecentApp) BSON() bson.D {
 func (app PlayerRecentApp) getKey() (ret interface{}) {
 
 	return strconv.FormatInt(app.PlayerID, 10) + "-" + strconv.Itoa(app.AppID)
+}
+
+func (app PlayerRecentApp) GetIcon() string {
+	return helpers.GetAppIcon(app.AppID, app.Icon)
 }
 
 func DeleteRecentApps(playerID int64, apps []int) (err error) {

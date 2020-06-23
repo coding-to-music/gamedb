@@ -89,11 +89,7 @@ func (app PlayerApp) GetPath() string {
 }
 
 func (app PlayerApp) GetIcon() string {
-
-	if app.AppIcon == "" {
-		return helpers.DefaultPlayerAvatar
-	}
-	return helpers.AppIconBase + strconv.Itoa(app.AppID) + "/" + app.AppIcon + ".jpg"
+	return helpers.GetAppIcon(app.AppID, app.AppIcon)
 }
 
 func (app PlayerApp) GetTimeNice() string {
@@ -131,6 +127,13 @@ func (app PlayerApp) GetAchievementPercent() string {
 func GetPlayerAppsByApp(offset int64, filter bson.D) (apps []PlayerApp, err error) {
 
 	return getPlayerApps(offset, 100, filter, bson.D{{"app_time", -1}}, bson.M{"_id": 0, "player_id": 1, "app_time": 1})
+}
+
+func GetPlayerAppsByPlayer(playerID int64, offset int64, limit int64, sort bson.D) (apps []PlayerApp, err error) {
+
+	var filter = bson.D{{"player_id", playerID}}
+
+	return getPlayerApps(offset, limit, filter, sort, bson.M{"app_name": 1, "app_time": 1})
 }
 
 func GetPlayerAppByKey(playerID int64, appID int) (playerApp PlayerApp, err error) {
