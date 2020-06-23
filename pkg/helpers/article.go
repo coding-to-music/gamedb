@@ -3,6 +3,7 @@ package helpers
 import (
 	"bytes"
 	"html/template"
+	"net/url"
 	"regexp"
 	"strings"
 
@@ -33,6 +34,23 @@ func GetArticleBody(body string) template.HTML {
 	body = trimArticles.ReplaceAllString(body, "")
 
 	return template.HTML(body)
+}
+
+func GetArticleIcon(articleIcon string, appID int, appIcon string) string {
+
+	if strings.HasPrefix(articleIcon, "http") {
+
+		params := url.Values{}
+		params.Set("url", articleIcon)
+		params.Set("w", "32")
+		params.Set("h", "32")
+		params.Set("output", "webp")
+		params.Set("t", "square")
+
+		return "https://images.weserv.nl?" + params.Encode()
+	}
+
+	return GetAppIcon(appID, appIcon)
 }
 
 func updateArticleDom(n *html.Node) {
@@ -92,14 +110,14 @@ func removeAttribute(n *html.Node, attribute string) {
 	}
 }
 
-func GetArticleImage(body string) string {
+func FindArticleImage(body string) string {
 
 	body = strings.ReplaceAll(body, "{STEAM_CLAN_IMAGE}", articleImageBase)
 	body = strings.ReplaceAll(body, "{STEAM_CLAN_LOC_IMAGE}", articleImageBase)
 
 	doc, err := html.Parse(strings.NewReader(body))
 	if err == nil {
-		src := getArticleImage(doc)
+		src := findArticleImage(doc)
 		if src != "" {
 			return src
 		}
@@ -108,11 +126,11 @@ func GetArticleImage(body string) string {
 	return ""
 }
 
-func getArticleImage(n *html.Node) string {
+func findArticleImage(n *html.Node) string {
 
 	// Recurse
 	for c := n.FirstChild; c != nil; c = c.NextSibling {
-		src := getArticleImage(c)
+		src := findArticleImage(c)
 		if src != "" {
 			return src
 		}

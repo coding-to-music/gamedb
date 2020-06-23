@@ -3,9 +3,7 @@ package elastic
 import (
 	"encoding/json"
 	"html/template"
-	"net/url"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -31,20 +29,7 @@ func (article Article) GetBody() template.HTML {
 }
 
 func (article Article) GetArticleIcon() string {
-
-	if strings.HasPrefix(article.ArticleIcon, "http") {
-
-		params := url.Values{}
-		params.Set("url", article.ArticleIcon)
-		params.Set("w", "32")
-		params.Set("h", "32")
-		params.Set("output", "webp")
-		params.Set("t", "square")
-
-		return "https://images.weserv.nl?" + params.Encode()
-	}
-
-	return helpers.GetAppIcon(article.AppID, article.AppIcon)
+	return helpers.GetArticleIcon(article.ArticleIcon, article.AppID, article.AppIcon)
 }
 
 func (article Article) GetAppIcon() string {

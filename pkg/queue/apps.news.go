@@ -79,7 +79,7 @@ func appNewsHandler(messages []*rabbit.Message) {
 			news.Date = time.Unix(v.Date, 0)
 			news.FeedName = v.Feedname
 			news.FeedType = int8(v.FeedType)
-			news.ArticleIcon = helpers.GetArticleImage(v.Contents)
+			news.ArticleIcon = helpers.FindArticleImage(v.Contents)
 
 			news.AppID = v.AppID
 			news.AppName = app.GetName()
