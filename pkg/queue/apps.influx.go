@@ -199,31 +199,27 @@ func getAppTrendValue(appID int) (trend int64, err error) {
 	var xs []float64
 	var ys []float64
 
-	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 && len(resp.Results[0].Series[0].Values) > 0 {
-		for _, v := range resp.Results[0].Series[0].Values {
+	var i = 1
+	for _, v := range resp.Results[0].Series[0].Values {
 
-			trendTotal, err := v[1].(json.Number).Int64()
-			if err != nil {
-				log.Err(err)
-				continue
-			}
-
-			t, err := time.Parse(time.RFC3339, v[0].(string))
-			if err != nil {
-				log.Err(err)
-				continue
-			}
-
-			xs = append(xs, float64(t.Unix()/60/60)) // Divide to get hours, not seconds
-			ys = append(ys, float64(trendTotal))
+		trendTotal, err := v[1].(json.Number).Int64()
+		if err != nil {
+			log.Err(err)
+			continue
 		}
-	} else {
-		return 0, nil
+
+		xs = append(xs, 1)
+		ys = append(ys, math.Sqrt(float64(trendTotal)))
+
+		i++
 	}
 
 	_, slope := stat.LinearRegression(xs, ys, nil, false)
-	deg := math.Atan(slope) * (180.0 / math.Pi)
-	trend = int64(math.Round(deg * 1000))
+	if math.IsNaN(slope) {
+		trend = 0
+	} else {
+		trend = int64(math.Round(slope * 100))
+	}
 
 	return trend, nil
 }
