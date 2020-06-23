@@ -2,6 +2,7 @@ package queue
 
 import (
 	"encoding/json"
+	"math"
 	"sync"
 	"time"
 
@@ -13,6 +14,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"go.mongodb.org/mongo-driver/bson"
+	"gonum.org/v1/gonum/stat"
 )
 
 type AppInfluxMessage struct {
@@ -181,38 +183,47 @@ func getAppTopPlayersAlltime(appID int) (val int64, err error) {
 
 func getAppTrendValue(appID int) (trend int64, err error) {
 
-	// Trend value - https://stackoverflow.com/questions/41361734/get-difference-since-30-days-ago-in-influxql-influxdb
-	subBuilder := influxql.NewBuilder()
-	subBuilder.AddSelect("difference(last(player_count))", "")
-	subBuilder.SetFrom(influxHelper.InfluxGameDB, influxHelper.InfluxRetentionPolicyAllTime.String(), influxHelper.InfluxMeasurementApps.String())
-	subBuilder.AddWhere("app_id", "=", appID)
-	subBuilder.AddWhere("time", ">=", "NOW() - 7d")
-	subBuilder.AddGroupByTime("1h")
-
 	builder := influxql.NewBuilder()
-	builder.AddSelect("cumulative_sum(difference)", "")
-	builder.SetFromSubQuery(subBuilder)
+	builder.AddSelect("max(player_count)", "max_player_count")
+	builder.SetFrom(influxHelper.InfluxGameDB, influxHelper.InfluxRetentionPolicyAllTime.String(), influxHelper.InfluxMeasurementApps.String())
+	builder.AddWhere("time", ">", "NOW() - 7d")
+	builder.AddWhere("app_id", "=", appID)
+	builder.AddGroupByTime("1h")
+	builder.SetFillNone()
 
 	resp, err := influxHelper.InfluxQuery(builder.String())
 	if err != nil {
 		return 0, err
 	}
 
-	var trendTotal int64
+	var xs []float64
+	var ys []float64
 
-	// Get the last value, todo, put into influx helper, like the ones below
-	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
-		values := resp.Results[0].Series[0].Values
-		if len(values) > 0 {
+	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 && len(resp.Results[0].Series[0].Values) > 0 {
+		for _, v := range resp.Results[0].Series[0].Values {
 
-			last := values[len(values)-1]
-
-			trendTotal, err = last[1].(json.Number).Int64()
+			trendTotal, err := v[1].(json.Number).Int64()
 			if err != nil {
-				return 0, err
+				log.Err(err)
+				continue
 			}
+
+			t, err := time.Parse(time.RFC3339, v[0].(string))
+			if err != nil {
+				log.Err(err)
+				continue
+			}
+
+			xs = append(xs, float64(t.Unix()/60/60)) // Divide to get hours, not seconds
+			ys = append(ys, float64(trendTotal))
 		}
+	} else {
+		return 0, nil
 	}
 
-	return trendTotal, nil
+	_, slope := stat.LinearRegression(xs, ys, nil, false)
+	deg := math.Atan(slope) * (180.0 / math.Pi)
+	trend = int64(math.Round(deg * 1000))
+
+	return trend, nil
 }

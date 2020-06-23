@@ -73,6 +73,7 @@ require (
 	github.com/memcachier/mc v2.0.1+incompatible
 	github.com/microcosm-cc/bluemonday v1.0.3
 	github.com/mitchellh/mapstructure v1.2.2 // indirect
+	github.com/montanaflynn/stats v0.0.0-20180911141734-db72e6cae808
 	github.com/mxpv/patreon-go v0.0.0-20190917022727-646111f1d983
 	github.com/nicklaw5/helix v0.5.9
 	github.com/nlopes/slack v0.6.0
@@ -116,6 +117,7 @@ require (
 	golang.org/x/text v0.3.2
 	golang.org/x/time v0.0.0-20200416051211-89c76fbcd5d1 // indirect
 	golang.org/x/tools v0.0.0-20200612220849-54c614fe050c // indirect
+	gonum.org/v1/gonum v0.7.0
 	google.golang.org/api v0.26.0
 	google.golang.org/appengine v1.6.6 // indirect
 	google.golang.org/genproto v0.0.0-20200612171551-7676ae05be11 // indirect
