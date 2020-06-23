@@ -1,12 +1,12 @@
 package chatbot
 
 import (
+	"fmt"
 	"html/template"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
-	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/mongo"
 )
 
@@ -59,23 +59,11 @@ func (CommandAppsTrending) Output(msg *discordgo.MessageCreate) (message discord
 
 	for k, app := range apps {
 
-		avatar := app.GetHeaderImage()
-		if strings.HasPrefix(avatar, "/") {
-			avatar = "https://gamedb.online" + avatar
-		}
-
 		if k == 0 {
-			message.Embed.Thumbnail = &discordgo.MessageEmbedThumbnail{
-				URL: avatar,
-			}
+			message.Embed.Thumbnail = &discordgo.MessageEmbedThumbnail{URL: app.GetHeaderImage()}
 		}
 
-		space := ""
-		if k < 9 {
-			space = " "
-		}
-
-		code = append(code, helpers.OrdinalComma(k+1)+". "+space+app.GetName()+" - "+humanize.Comma(app.PlayerTrend)+" trend value")
+		code = append(code, fmt.Sprintf("%2d", k+1)+": "+app.GetName()+" - "+humanize.Comma(app.PlayerTrend)+" trend value")
 	}
 
 	message.Embed.Description = "```" + strings.Join(code, "\n") + "```"

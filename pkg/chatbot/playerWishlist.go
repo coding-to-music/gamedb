@@ -1,6 +1,7 @@
 package chatbot
 
 import (
+	"fmt"
 	"html/template"
 	"strconv"
 	"strings"
@@ -83,18 +84,14 @@ func (c CommandPlayerWishlist) Output(msg *discordgo.MessageCreate) (message dis
 
 		for k, app := range wishlistApps {
 
-			avatar := app.GetIcon()
-			if strings.HasPrefix(avatar, "/") {
-				avatar = "https://gamedb.online" + avatar
-			}
-
 			if k == 0 {
-				message.Embed.Thumbnail = &discordgo.MessageEmbedThumbnail{URL: avatar}
-			}
 
-			space := ""
-			if k < 9 && len(wishlistApps) > 9 {
-				space = " "
+				avatar := app.GetIcon()
+				if strings.HasPrefix(avatar, "/") {
+					avatar = "https://gamedb.online" + avatar
+				}
+
+				message.Embed.Thumbnail = &discordgo.MessageEmbedThumbnail{URL: avatar}
 			}
 
 			var rank string
@@ -104,7 +101,7 @@ func (c CommandPlayerWishlist) Output(msg *discordgo.MessageCreate) (message dis
 				rank = "*"
 			}
 
-			code = append(code, rank+": "+space+app.GetName())
+			code = append(code, fmt.Sprintf("%2s", rank)+": "+app.GetName())
 		}
 
 		message.Embed.Description = "```" + strings.Join(code, "\n") + "```"

@@ -51,6 +51,7 @@ const (
 	CPlayerPlaytime = "player-playtime"
 	CPlayerRecent   = "player-recent"
 	CPlayerWishlist = "player-wishlist"
+	CPlayerLibrary  = "player-library"
 	CHelp           = "help"
 	CSteamOnline    = "steam-online"
 )
@@ -71,6 +72,7 @@ var CommandRegister = []Command{
 	CommandPlayerLevel{},
 	CommandPlayerPlaytime{},
 	CommandPlayerRecent{},
+	CommandPlayerLibrary{},
 	CommandPlayerWishlist{},
 	CommandHelp{},
 	CommandSettings{},
@@ -118,21 +120,15 @@ func getAppEmbed(app mongo.App) *discordgo.MessageEmbed {
 	if err != nil {
 		log.Err(err)
 	} else if url != "" {
-		image = &discordgo.MessageEmbedImage{
-			URL:    url,
-			Width:  width,
-			Height: height,
-		}
+		image = &discordgo.MessageEmbedImage{URL: url, Width: width, Height: height}
 	}
 
 	return &discordgo.MessageEmbed{
-		Title: app.GetName(),
-		URL:   "https://gamedb.online" + app.GetPath(),
-		Thumbnail: &discordgo.MessageEmbedThumbnail{
-			URL: app.GetHeaderImage(),
-		},
-		Footer: getFooter(),
-		Image:  image,
+		Title:     app.GetName(),
+		URL:       "https://gamedb.online" + app.GetPath(),
+		Thumbnail: &discordgo.MessageEmbedThumbnail{URL: app.GetHeaderImage()},
+		Footer:    getFooter(),
+		Image:     image,
 		Fields: []*discordgo.MessageEmbedField{
 			{
 				Name:  "Max Weekly Players",

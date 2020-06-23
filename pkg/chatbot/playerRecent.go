@@ -1,6 +1,7 @@
 package chatbot
 
 import (
+	"fmt"
 	"html/template"
 	"strings"
 
@@ -82,23 +83,17 @@ func (c CommandPlayerRecent) Output(msg *discordgo.MessageCreate) (message disco
 
 		for k, app := range recent {
 
-			avatar := helpers.GetAppIcon(app.AppID, app.Icon)
-			if strings.HasPrefix(avatar, "/") {
-				avatar = "https://gamedb.online" + avatar
-			}
-
 			if k == 0 {
-				message.Embed.Thumbnail = &discordgo.MessageEmbedThumbnail{
-					URL: avatar,
+
+				avatar := app.GetIcon()
+				if strings.HasPrefix(avatar, "/") {
+					avatar = "https://gamedb.online" + avatar
 				}
+
+				message.Embed.Thumbnail = &discordgo.MessageEmbedThumbnail{URL: avatar}
 			}
 
-			space := ""
-			if k < 9 && len(recent) > 9 {
-				space = " "
-			}
-
-			code = append(code, "- "+space+app.AppName+" - "+helpers.GetTimeShort(app.PlayTime2Weeks, 2))
+			code = append(code, fmt.Sprintf("%2d", k+1)+": "+app.AppName+" - "+helpers.GetTimeShort(app.PlayTime2Weeks, 2))
 		}
 
 		message.Embed.Description = "```" + strings.Join(code, "\n") + "```"

@@ -1,12 +1,12 @@
 package chatbot
 
 import (
+	"fmt"
 	"html/template"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
-	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/mongo"
 )
 
@@ -42,6 +42,7 @@ func (CommandAppsPopular) Output(msg *discordgo.MessageCreate) (message discordg
 	message.Content = "<@" + msg.Author.ID + ">"
 	message.Embed = &discordgo.MessageEmbed{
 		Title:  "Popular Games",
+		URL:    "https://gamedb.online/games",
 		Author: getAuthor(msg.Author.ID),
 	}
 
@@ -59,17 +60,10 @@ func (CommandAppsPopular) Output(msg *discordgo.MessageCreate) (message discordg
 	for k, v := range apps {
 
 		if k == 0 {
-			message.Embed.Thumbnail = &discordgo.MessageEmbedThumbnail{
-				URL: v.GetHeaderImage(),
-			}
+			message.Embed.Thumbnail = &discordgo.MessageEmbedThumbnail{URL: v.GetHeaderImage()}
 		}
 
-		space := ""
-		if k < 9 {
-			space = " "
-		}
-
-		code = append(code, helpers.OrdinalComma(k+1)+". "+space+v.GetName()+" - "+humanize.Comma(int64(v.PlayerPeakWeek))+" players")
+		code = append(code, fmt.Sprintf("%2d", k+1)+": "+v.GetName()+" - "+humanize.Comma(int64(v.PlayerPeakWeek))+" players")
 	}
 
 	message.Embed.Description = "```" + strings.Join(code, "\n") + "```"

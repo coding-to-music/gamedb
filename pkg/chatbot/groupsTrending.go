@@ -1,12 +1,12 @@
 package chatbot
 
 import (
+	"fmt"
 	"html/template"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
-	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/mongo"
 )
 
@@ -69,12 +69,7 @@ func (CommandGroupsTrending) Output(msg *discordgo.MessageCreate) (message disco
 			message.Embed.Thumbnail = &discordgo.MessageEmbedThumbnail{URL: avatar}
 		}
 
-		space := ""
-		if k < 9 {
-			space = " "
-		}
-
-		code = append(code, helpers.OrdinalComma(k+1)+". "+space+group.GetName()+" - "+humanize.Comma(group.Trending)+" trend value")
+		code = append(code, fmt.Sprintf("%2d", k+1)+": "+group.GetName()+" - "+humanize.Comma(group.Trending)+" trend value")
 	}
 
 	message.Embed.Description = "```" + strings.Join(code, "\n") + "```"

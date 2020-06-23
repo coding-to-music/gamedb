@@ -17,7 +17,6 @@ func (c CommandAppPlayers) ID() string {
 }
 
 func (CommandAppPlayers) Regex() string {
-	// ^.(players|online) ?([a-zA-Z0-9]+)?
 	return `^[.|!](players|online) (.*)`
 }
 
