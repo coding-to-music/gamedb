@@ -199,7 +199,7 @@ func getAppTrendValue(appID int) (trend int64, err error) {
 	var xs []float64
 	var ys []float64
 
-	var i = 1
+	var i float64 = 1
 	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
 		for _, v := range resp.Results[0].Series[0].Values {
 
@@ -209,18 +209,16 @@ func getAppTrendValue(appID int) (trend int64, err error) {
 				continue
 			}
 
-			xs = append(xs, 1)
+			xs = append(xs, i)
 			ys = append(ys, math.Sqrt(float64(trendTotal)))
 
 			i++
 		}
-	}
 
-	_, slope := stat.LinearRegression(xs, ys, nil, false)
-	if math.IsNaN(slope) {
-		trend = 0
-	} else {
-		trend = int64(math.Round(slope * 100))
+		_, slope := stat.LinearRegression(xs, ys, nil, false)
+		if !math.IsNaN(slope) {
+			trend = int64(math.Round(slope * 100))
+		}
 	}
 
 	return trend, nil
