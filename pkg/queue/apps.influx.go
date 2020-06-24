@@ -217,7 +217,7 @@ func getAppTrendValue(appID int) (trend int64, err error) {
 
 		_, slope := stat.LinearRegression(xs, ys, nil, false)
 		if !math.IsNaN(slope) {
-			trend = int64(math.Round(slope * 100))
+			trend = int64(math.Round(slope * 1000))
 		}
 	}
 
