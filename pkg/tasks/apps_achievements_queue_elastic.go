@@ -28,7 +28,7 @@ func (c AppsAchievementsQueueElastic) work() (err error) {
 	var offset int64 = 0
 	var limit int64 = 10_000
 
-	var apps = map[int]mongo.App{} // Memory cache
+	var apps = map[int]string{} // Memory cache
 
 	for {
 
@@ -39,19 +39,20 @@ func (c AppsAchievementsQueueElastic) work() (err error) {
 
 		for _, appAchievement := range appAchievements {
 
-			var app mongo.App
+			var appName string
 			if val, ok := apps[appAchievement.AppID]; ok {
-				app = val
+				appName = val
 			} else {
-				app, err = mongo.GetApp(appAchievement.AppID)
+				app, err := mongo.GetApp(appAchievement.AppID)
 				if err != nil {
 					log.Err(err)
 					continue
 				}
-				apps[appAchievement.AppID] = app
+				appName = app.Name
+				apps[appAchievement.AppID] = app.Name
 			}
 
-			err = queue.ProduceAchievementSearch(appAchievement, app)
+			err = queue.ProduceAchievementSearch(appAchievement, appName)
 			if err != nil {
 				return err
 			}

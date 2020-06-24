@@ -14,7 +14,8 @@ import (
 )
 
 type AppAchievementsMessage struct {
-	ID int `json:"id"`
+	AppID   int    `json:"id"`
+	AppName string `json:"app-name"`
 }
 
 func appAchievementsHandler(messages []*rabbit.Message) {
@@ -30,7 +31,16 @@ func appAchievementsHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		schemaResponse, _, err := steamHelper.GetSteam().GetSchemaForGame(payload.ID)
+		// Get owners
+		owners, err := mongo.CountDocuments(mongo.CollectionPlayerApps, bson.D{{"app_id", payload.AppID}}, 0)
+		if err != nil {
+			log.Err(err)
+			sendToRetryQueue(message)
+			continue
+		}
+
+		//
+		schemaResponse, _, err := steamHelper.GetSteam().GetSchemaForGame(payload.AppID)
 		err = steamHelper.AllowSteamCodes(err, 400, 403)
 		if err != nil {
 			steamHelper.LogSteamError(err)
@@ -38,7 +48,7 @@ func appAchievementsHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		globalResponse, _, err := steamHelper.GetSteam().GetGlobalAchievementPercentagesForApp(payload.ID)
+		globalResponse, _, err := steamHelper.GetSteam().GetGlobalAchievementPercentagesForApp(payload.AppID)
 		err = steamHelper.AllowSteamCodes(err, 403, 500)
 		if err != nil {
 			steamHelper.LogSteamError(err)
@@ -52,7 +62,7 @@ func appAchievementsHandler(messages []*rabbit.Message) {
 		for _, achievement := range globalResponse.GlobalAchievementPercentage {
 
 			achievementsMap[achievement.Name] = mongo.AppAchievement{
-				AppID:     payload.ID,
+				AppID:     payload.AppID,
 				Key:       achievement.Name,
 				Completed: achievement.Percent,
 				Deleted:   false,
@@ -76,11 +86,12 @@ func appAchievementsHandler(messages []*rabbit.Message) {
 				val.Description = achievement.Description
 				val.Hidden = bool(achievement.Hidden)
 				val.Active = true
+				val.AppOwners = owners
 
 				achievementsMap[achievement.Name] = val
 
 			} else {
-				log.Info("Achevement in schema but not global", payload.ID, achievement.Name)
+				log.Info("Achevement in schema but not global", payload.AppID, achievement.Name)
 				wait = true
 				break
 			}
@@ -105,25 +116,15 @@ func appAchievementsHandler(messages []*rabbit.Message) {
 
 		err = mongo.SaveAppAchievements(achievementsSlice)
 		if err != nil {
-			log.Err(err, payload.ID)
+			log.Err(err, payload.AppID)
 			sendToRetryQueue(message)
 			continue
 		}
 
 		// Update in Elastic
-		if len(achievementsSlice) > 0 {
-
-			app, err := mongo.GetApp(payload.ID, false)
-			if err != nil {
-				log.Err(err)
-				sendToRetryQueue(message)
-				continue
-			}
-
-			for _, v := range achievementsSlice {
-				err = ProduceAchievementSearch(v, app)
-				log.Err(err)
-			}
+		for _, v := range achievementsSlice {
+			err = ProduceAchievementSearch(v, payload.AppName)
+			log.Err(err)
 		}
 
 		// Update app row
@@ -161,15 +162,15 @@ func appAchievementsHandler(messages []*rabbit.Message) {
 			{"stats", stats},
 		}
 
-		_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", payload.ID}}, updateApp)
+		_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", payload.AppID}}, updateApp)
 		if err != nil {
-			log.Err(err, payload.ID)
+			log.Err(err, payload.AppID)
 			sendToRetryQueue(message)
 			continue
 		}
 
 		// Mark apps in Mongo but not in global response as deleted
-		var filter = bson.D{{"app_id", payload.ID}}
+		var filter = bson.D{{"app_id", payload.AppID}}
 		if len(achievementsMap) > 0 {
 			var keys []string
 			for k := range achievementsMap {
@@ -180,22 +181,20 @@ func appAchievementsHandler(messages []*rabbit.Message) {
 
 		_, err = mongo.UpdateManySet(mongo.CollectionAppAchievements, filter, bson.D{{"deleted", true}})
 		if err != nil {
-			log.Err(err, payload.ID)
+			log.Err(err, payload.AppID)
 			sendToRetryQueue(message)
 			continue
 		}
 
 		//
-		var countItem = memcache.FilterToString(bson.D{{"app_id", payload.ID}})
-
 		var items = []string{
-			memcache.MemcacheApp(payload.ID).Key,
-			memcache.MemcacheMongoCount(mongo.CollectionAppAchievements.String() + "-" + countItem).Key,
+			memcache.MemcacheApp(payload.AppID).Key,
+			memcache.MemcacheMongoCount(mongo.CollectionAppAchievements.String(), bson.D{{"app_id", payload.AppID}}).Key,
 		}
 
 		err = memcache.Delete(items...)
 		if err != nil {
-			log.Err(err, payload.ID)
+			log.Err(err, payload.AppID)
 			sendToRetryQueue(message)
 			continue
 		}

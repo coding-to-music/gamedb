@@ -227,7 +227,7 @@ func appHandler(messages []*rabbit.Message) {
 
 		// Produce to sub queues
 		var produces = map[rabbit.QueueName]interface{}{
-			QueueAppsAchievements: AppAchievementsMessage{AppID: app.ID},
+			QueueAppsAchievements: AppAchievementsMessage{AppID: app.ID, AppName: app.Name},
 			QueueAppsMorelike:     AppMorelikeMessage{ID: app.ID},
 			QueueAppsNews:         AppNewsMessage{ID: app.ID},
 			QueueAppsSameowners:   AppSameownersMessage{ID: app.ID},
