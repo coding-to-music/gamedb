@@ -233,10 +233,12 @@ func playerHandler(messages []*rabbit.Message) {
 
 			defer wg.Done()
 
-			err = memcache.Delete(
+			var items = []string{
 				memcache.MemcachePlayer(player.ID).Key,
 				memcache.MemcachePlayerInQueue(player.ID).Key,
-			)
+			}
+
+			err = memcache.Delete(items...)
 			if err != nil {
 				log.Err(err, payload.ID)
 				sendToRetryQueue(message)

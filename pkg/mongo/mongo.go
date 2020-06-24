@@ -279,7 +279,7 @@ func InsertMany(collection collection, documents []Document) (resp *mongo.Insert
 
 func CountDocuments(collection collection, filter bson.D, ttl uint32) (count int64, err error) {
 
-	item := memcache.MemcacheMongoCount(collection.String() + "-" + memcache.FilterToString(filter))
+	item := memcache.MemcacheMongoCount(collection.String(), filter)
 	if ttl > 0 {
 		item.Expiration = ttl
 	}
@@ -370,29 +370,6 @@ func GetRandomRows(collection collection, count int, filter bson.D, projection b
 	ql.End()
 
 	return c, ctx, err
-}
-
-func ChunkWriteModels(models []mongo.WriteModel, size int) (chunks [][]mongo.WriteModel) {
-
-	for i := 0; i < len(models); i += size {
-		end := i + size
-
-		if end > len(models) {
-			end = len(models)
-		}
-
-		chunks = append(chunks, models[i:end])
-	}
-	return chunks
-}
-
-//noinspection GoUnusedType
-type index struct {
-	V          int            `json:"v"`
-	Key        map[string]int `json:"key"`
-	Name       string         `json:"name"`
-	NS         string         `json:"ns"`
-	Background bool           `json:"background"`
 }
 
 type count struct {

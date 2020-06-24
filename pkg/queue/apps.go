@@ -178,9 +178,7 @@ func appHandler(messages []*rabbit.Message) {
 
 			defer wg.Done()
 
-			var countItem = memcache.FilterToString(bson.D{{"app_id", app.ID}})
-
-			err := memcache.Delete(
+			var items = []string{
 				memcache.MemcacheApp(app.ID).Key,
 				memcache.MemcacheAppInQueue(app.ID).Key,
 				memcache.MemcacheAppTags(app.ID).Key,
@@ -192,8 +190,10 @@ func appHandler(messages []*rabbit.Message) {
 				memcache.MemcacheAppPublishers(app.ID).Key,
 				memcache.MemcacheAppBundles(app.ID).Key,
 				memcache.MemcacheAppPackages(app.ID).Key,
-				memcache.MemcacheMongoCount(mongo.CollectionAppSales.String()+"-"+countItem).Key,
-			)
+				memcache.MemcacheMongoCount(mongo.CollectionAppSales.String(), bson.D{{"app_id", app.ID}}).Key,
+			}
+
+			err := memcache.Delete(items...)
 			if err != nil {
 				log.Err(err, payload.ID)
 				sendToRetryQueue(message)
@@ -227,7 +227,7 @@ func appHandler(messages []*rabbit.Message) {
 
 		// Produce to sub queues
 		var produces = map[rabbit.QueueName]interface{}{
-			QueueAppsAchievements: AppAchievementsMessage{ID: app.ID},
+			QueueAppsAchievements: AppAchievementsMessage{AppID: app.ID},
 			QueueAppsMorelike:     AppMorelikeMessage{ID: app.ID},
 			QueueAppsNews:         AppNewsMessage{ID: app.ID},
 			QueueAppsSameowners:   AppSameownersMessage{ID: app.ID},

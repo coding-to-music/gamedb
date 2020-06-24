@@ -6,6 +6,7 @@ import (
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -172,11 +173,27 @@ func playerAchievementsHandler(messages []*rabbit.Message) {
 			percent = float64(have) / float64(app.AchievementsCount) * 100
 		}
 
-		_, err = mongo.UpdateOne(mongo.CollectionPlayerApps, bson.D{{"_id", playerApp.GetKey()}}, bson.D{
+		var update = bson.D{
 			{"app_achievements_total", app.AchievementsCount},
 			{"app_achievements_have", have},
 			{"app_achievements_percent", percent},
-		})
+		}
+
+		_, err = mongo.UpdateOne(mongo.CollectionPlayerApps, bson.D{{"_id", playerApp.GetKey()}}, update)
+		if err != nil {
+			log.Err(err)
+			sendToRetryQueue(message)
+			continue
+		}
+
+		// Clear caches
+		var items = []string{
+			memcache.MemcachePlayer(payload.PlayerID).Key,
+			memcache.MemcacheMongoCount(mongo.CollectionPlayerAchievements.String(), bson.D{{"player_id", payload.PlayerID}}).Key,
+			memcache.MemcacheMongoCount(mongo.CollectionPlayerApps.String(), bson.D{{"player_id", payload.PlayerID}}).Key,
+		}
+
+		err = memcache.Delete(items...)
 		if err != nil {
 			log.Err(err)
 			sendToRetryQueue(message)

@@ -5,6 +5,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type Item struct {
@@ -18,7 +19,7 @@ type Item struct {
 var (
 	// Counts
 	MemcacheBundlesCount = Item{Key: "bundles-count", Expiration: 86400}
-	MemcacheMongoCount   = func(key string) Item { return Item{Key: "mongo-count-" + key, Expiration: 60 * 60} }
+	MemcacheMongoCount   = func(key string, filter bson.D) Item { return Item{Key: "mongo-count-" + key + "-" + FilterToString(filter), Expiration: 60 * 60} }
 
 	// Apps Page Dropdowns
 	MemcacheTagKeyNames          = Item{Key: "tag-key-names", Expiration: 86400 * 7}

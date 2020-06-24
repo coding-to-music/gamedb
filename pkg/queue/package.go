@@ -230,11 +230,13 @@ func packageHandler(messages []*rabbit.Message) {
 
 			defer wg.Done()
 
-			var err = memcache.Delete(
+			var items = []string{
 				memcache.MemcachePackage(pack.ID).Key,
 				memcache.MemcachePackageInQueue(pack.ID).Key,
 				memcache.MemcachePackageBundles(pack.ID).Key,
-			)
+			}
+
+			err := memcache.Delete(items...)
 			if err != nil {
 				log.Err(err, payload.ID)
 				sendToRetryQueue(message)
