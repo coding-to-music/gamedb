@@ -377,28 +377,28 @@
                                     <h5 class="card-header">Owners <small class="float-right"><a target="_blank" rel="noopener" href="https://steamspy.com/app/{{ .App.ID }}">By Steam Spy</a></small></h5>
                                     <div class="card-body p-0">
                                         <table class="table no-border mb-0">
-                                        <tbody>
-                                        <tr>
-                                            <td>Owners</td>
-                                            <td>{{ comma .App.SteamSpy.SSOwnersLow }} - {{ comma .App.SteamSpy.SSOwnersHigh }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Average Playtime (Two Weeks)</td>
-                                            <td>{{ .App.SteamSpy.GetSSAveragePlaytimeTwoWeeks }} hours</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Average Playtime (Forever)</td>
-                                            <td>{{ .App.SteamSpy.GetSSAveragePlaytimeForever }} hours</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Median Playtime (Two Weeks)</td>
-                                            <td>{{ .App.SteamSpy.GetSSMedianPlaytimeTwoWeeks }} hours</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Median Playtime (Forever)</td>
-                                            <td>{{ .App.SteamSpy.GetSSMedianPlaytimeForever }} hours</td>
-                                        </tr>
-                                        </tbody>
+                                            <tbody>
+                                            <tr>
+                                                <td>Owners</td>
+                                                <td>{{ comma .App.SteamSpy.SSOwnersLow }} - {{ comma .App.SteamSpy.SSOwnersHigh }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Average Playtime (Two Weeks)</td>
+                                                <td>{{ .App.SteamSpy.GetSSAveragePlaytimeTwoWeeks }} hours</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Average Playtime (Forever)</td>
+                                                <td>{{ .App.SteamSpy.GetSSAveragePlaytimeForever }} hours</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Median Playtime (Two Weeks)</td>
+                                                <td>{{ .App.SteamSpy.GetSSMedianPlaytimeTwoWeeks }} hours</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Median Playtime (Forever)</td>
+                                                <td>{{ .App.SteamSpy.GetSSMedianPlaytimeForever }} hours</td>
+                                            </tr>
+                                            </tbody>
                                         </table>
                                     </div>
                                 </div>
@@ -649,27 +649,28 @@
                     {{/* News */}}
                     <div class="tab-pane" id="news" role="tabpanel">
 
-                        {{if gt (len .App.NewsIDs) 0}}
-
-                            <div class="table-responsive">
-                                <table class="table table-hover table-striped mb-0" data-path="/games/{{ .App.ID }}/news.json" id="news-table">
-                                    <thead class="thead-light">
-                                    <tr>
-                                        <th scope="col">Title</th>
-                                        <th scope="col">Date</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-
-                                    </tbody>
-                                </table>
+                        <div class="form-row">
+                            <div class="col-12 col-md-6 col-lg-5 col-xl-4 mb-2">
+                                <div class="form-group">
+                                    <label for="article-search">Search</label>
+                                    <input name="search" type="search" class="form-control" id="article-search">
+                                </div>
                             </div>
+                        </div>
 
-                        {{ else }}
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped mb-0" data-path="/games/{{ .App.ID }}/news.json" id="news-table">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th scope="col">Title</th>
+                                    <th scope="col">Date</th>
+                                </tr>
+                                </thead>
+                                <tbody>
 
-                            <p>This app has no news.</p>
-
-                        {{ end }}
+                                </tbody>
+                            </table>
+                        </div>
 
                     </div>
 

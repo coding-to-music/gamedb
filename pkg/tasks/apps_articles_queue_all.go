@@ -29,7 +29,7 @@ func (c AppsArticlesQueueElastic) work() (err error) {
 
 	for {
 
-		articles, err := mongo.GetArticles(offset, limit, bson.D{{"_id", 1}})
+		articles, err := mongo.GetArticles(offset, limit, bson.D{{"_id", 1}}, nil)
 		if err != nil {
 			return err
 		}

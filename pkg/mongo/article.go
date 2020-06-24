@@ -85,14 +85,9 @@ func GetArticlesByAppIDs(appIDs []int, limit int64, afterDate time.Time) (news [
 	return getArticles(0, limit, filter, bson.D{{"date", -1}}, nil)
 }
 
-func GetArticlesByApp(appID int, offset int64) (news []Article, err error) {
+func GetArticles(offset int64, limit int64, order bson.D, filter bson.D) (news []Article, err error) {
 
-	return getArticles(offset, 100, bson.D{{"app_id", appID}}, bson.D{{"date", -1}}, nil)
-}
-
-func GetArticles(offset int64, limit int64, order bson.D) (news []Article, err error) {
-
-	return getArticles(offset, limit, nil, order, nil)
+	return getArticles(offset, limit, filter, order, nil)
 }
 
 func getArticles(offset int64, limit int64, filter bson.D, order bson.D, projection bson.M) (news []Article, err error) {

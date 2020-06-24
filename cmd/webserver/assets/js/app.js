@@ -136,8 +136,11 @@ if ($appPage.length > 0) {
         };
 
         const $newsTable = $('#news-table');
+        const searchFields = [
+            $('#article-search'),
+        ];
 
-        const table = $newsTable.gdbTable({tableOptions: options});
+        const table = $newsTable.gdbTable({tableOptions: options, searchFields: searchFields});
 
         $newsTable.on('click', 'tr[role=row]', function () {
 
@@ -279,7 +282,7 @@ if ($appPage.length > 0) {
                         ]
                     });
 
-                    row.child('<img src="' + rowx[26] + '" alt="" class="float-right" />' + html).show();
+                    row.child('<img src="' + rowx[26] + '" alt="" class="float-right rounded" />' + html).show();
                     $(this).addClass('shown');
                 }
             }

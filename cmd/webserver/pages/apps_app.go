@@ -503,7 +503,19 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	query := datatable.NewDataTableQuery(r, false)
+	var query = datatable.NewDataTableQuery(r, false)
+	var search = query.GetSearchString("search")
+
+	var filter = bson.D{{"app_id", id}}
+	var filter2 = filter
+
+	if len(search) > 1 {
+		quoted := regexp.QuoteMeta(search)
+		filter2 = append(filter2, bson.E{Key: "$or", Value: bson.A{
+			bson.M{"_id": search},
+			bson.M{"title": bson.M{"$regex": quoted, "$options": "i"}},
+		}})
+	}
 
 	//
 	var wg sync.WaitGroup
@@ -516,34 +528,40 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		articles, err = mongo.GetArticlesByApp(id, query.GetOffset64())
+		articles, err = mongo.GetArticles(query.GetOffset64(), 100, bson.D{{"date", -1}}, filter2)
 		if err != nil {
 			log.Err(err, r, id)
 			return
 		}
 	}()
 
-	// Get total
-	var total int
+	// Get totals
+	var total int64
+	var filtered int64
 	wg.Add(1)
 	go func() {
 
 		defer wg.Done()
 
 		var err error
-		app, err := mongo.GetApp(id)
+
+		total, err = mongo.CountDocuments(mongo.CollectionAppArticles, filter, 60*60*24)
 		if err != nil {
-			log.Err(err, r, id)
+			log.Err(err, r)
 			return
 		}
 
-		total = len(app.NewsIDs)
+		filtered, err = mongo.CountDocuments(mongo.CollectionAppArticles, filter2, 60*60*24)
+		if err != nil {
+			log.Err(err, r)
+			return
+		}
 	}()
 
 	wg.Wait()
 
 	//
-	var response = datatable.NewDataTablesResponse(r, query, int64(total), int64(total), nil)
+	var response = datatable.NewDataTablesResponse(r, query, total, filtered, nil)
 	for _, article := range articles {
 
 		var id = strconv.FormatInt(article.ID, 10)
@@ -662,6 +680,7 @@ func appAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	returnJSON(w, r, response)
 }
 
+//
 func appDLCAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
@@ -679,7 +698,7 @@ func appDLCAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		quoted := regexp.QuoteMeta(search)
 
-		filter2 = append(filter, bson.E{Key: "name", Value: bson.M{"$regex": quoted, "$options": "i"}})
+		filter2 = append(filter2, bson.E{Key: "name", Value: bson.M{"$regex": quoted, "$options": "i"}})
 	}
 
 	//
