@@ -72,6 +72,7 @@ var PlayerRankFieldsInflux = map[RankMetric]string{
 }
 
 type Player struct {
+	AchievementCount  int                    `bson:"achievement_count"`
 	Aliases           []string               `bson:"aliases"`
 	Avatar            string                 `bson:"avatar"`
 	BackgroundAppID   int                    `bson:"background_app_id"`
@@ -113,6 +114,7 @@ func (player Player) BSON() bson.D {
 
 	return bson.D{
 		{"_id", player.ID},
+		{"achievement_count", player.AchievementCount},
 		{"aliases", player.Aliases},
 		{"avatar", player.Avatar},
 		{"background_app_id", player.BackgroundAppID},
