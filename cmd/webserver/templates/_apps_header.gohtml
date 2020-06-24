@@ -38,13 +38,13 @@
                     <a class="nav-link" href="/games/new-releases" role="tab"><i class="fas fa-gamepad"></i> New Releases</a>
                 {{end}}
             </li>
-            {{/*            <li class="nav-item">*/}}
-            {{/*                {{if endsWith .Path "/games/trending" }}*/}}
-            {{/*                    <span class="nav-link active" role="tab"><i class="fas fa-gamepad"></i> Trending</span>*/}}
-            {{/*                {{else}}*/}}
-            {{/*                    <a class="nav-link" href="/games/trending" role="tab"><i class="fas fa-gamepad"></i> Trending</a>*/}}
-            {{/*                {{end}}*/}}
-            {{/*            </li>*/}}
+            <li class="nav-item">
+                {{if endsWith .Path "/games/trending" }}
+                    <span class="nav-link active" role="tab"><i class="fas fa-gamepad"></i> Trending</span>
+                {{else}}
+                    <a class="nav-link" href="/games/trending" role="tab"><i class="fas fa-gamepad"></i> Trending</a>
+                {{end}}
+            </li>
             <li class="nav-item">
                 {{if endsWith .Path "/games/achievements" }}
                     <span class="nav-link active" role="tab"><i class="fas fa-gamepad"></i> Achievements</span>
