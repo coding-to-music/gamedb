@@ -501,7 +501,7 @@ func (player Player) NeedsUpdate(updateType UpdateType) bool {
 		return true
 	case PlayerUpdateAuto:
 		// On page requests
-		if player.UpdatedAt.Add(time.Hour * 24).Before(time.Now()) {
+		if player.UpdatedAt.Add(time.Hour * 6).Before(time.Now()) {
 			return true
 		}
 	case PlayerUpdateManual:
