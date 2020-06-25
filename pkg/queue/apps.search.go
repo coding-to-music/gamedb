@@ -6,7 +6,7 @@ import (
 
 	"github.com/Jleagle/rabbit-go"
 	roman "github.com/StefanSchroeder/Golang-Roman"
-	"github.com/gamedb/gamedb/pkg/elastic"
+	"github.com/gamedb/gamedb/pkg/elastic-search"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -29,7 +29,7 @@ func appsSearchHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		app := elastic.App{}
+		app := elastic_search.App{}
 		app.ID = payload.App.ID
 		app.Name = payload.App.Name
 		app.Players = payload.App.PlayerPeakWeek
@@ -46,7 +46,7 @@ func appsSearchHandler(messages []*rabbit.Message) {
 		app.Platforms = payload.App.Platforms
 		app.Aliases = makeAppAliases(app)
 
-		err = elastic.IndexApp(app)
+		err = elastic_search.IndexApp(app)
 		if err != nil {
 			log.Err(err)
 			sendToRetryQueue(message)
@@ -78,7 +78,7 @@ var aliasMap = map[int][]string{
 	359550:  {"r6"},            // Tom Clancy's Rainbow Six Siege
 }
 
-func makeAppAliases(app elastic.App) (aliases []string) {
+func makeAppAliases(app elastic_search.App) (aliases []string) {
 
 	if val, ok := aliasMap[app.ID]; ok {
 		aliases = val

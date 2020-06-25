@@ -1,4 +1,4 @@
-package elastic
+package elastic_search
 
 import (
 	"encoding/json"

@@ -4,7 +4,7 @@ import (
 	"html/template"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/gamedb/gamedb/pkg/elastic"
+	"github.com/gamedb/gamedb/pkg/elastic-search"
 	"github.com/gamedb/gamedb/pkg/mongo"
 )
 
@@ -39,7 +39,7 @@ func (c CommandApp) Output(msg *discordgo.MessageCreate) (message discordgo.Mess
 
 	matches := RegexCache[c.Regex()].FindStringSubmatch(msg.Message.Content)
 
-	apps, _, err := elastic.SearchApps(1, 0, matches[2], nil, false, false, false)
+	apps, _, err := elastic_search.SearchApps(1, 0, matches[2], nil, false, false, false)
 	if err != nil {
 		return message, err
 	} else if len(apps) == 0 {

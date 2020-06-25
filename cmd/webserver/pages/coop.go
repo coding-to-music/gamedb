@@ -7,7 +7,7 @@ import (
 	"sync"
 
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
-	"github.com/gamedb/gamedb/pkg/elastic"
+	"github.com/gamedb/gamedb/pkg/elastic-search"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
@@ -64,7 +64,7 @@ func coopSearchAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	if search != "" {
 
-		players, _, _, err := elastic.SearchPlayers(5, 0, search, nil)
+		players, _, _, err := elastic_search.SearchPlayers(5, 0, search, nil)
 		if err != nil {
 			log.Err(err, r)
 			return

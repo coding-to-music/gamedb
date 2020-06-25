@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
-	elasticHelpers "github.com/gamedb/gamedb/pkg/elastic"
+	elasticHelpers "github.com/gamedb/gamedb/pkg/elastic-search"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
@@ -43,7 +43,7 @@ func achievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		var sorters = query.GetOrderElastic(map[string]string{
-			"1": "completed", // todo, app_owners desc
+			"1": "completed, app_owners x",
 		})
 
 		achievements, filtered, err = elasticHelpers.SearchAppAchievements(query.GetOffset(), search, sorters)

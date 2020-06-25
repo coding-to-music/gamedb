@@ -2,7 +2,7 @@ package queue
 
 import (
 	"github.com/Jleagle/rabbit-go"
-	"github.com/gamedb/gamedb/pkg/elastic"
+	"github.com/gamedb/gamedb/pkg/elastic-search"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -25,7 +25,7 @@ func appsPlayersHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		player := elastic.Player{}
+		player := elastic_search.Player{}
 		player.ID = payload.Player.ID
 		player.PersonaName = payload.Player.PersonaName
 		player.PersonaNameRecent = []string{} // todo
@@ -43,7 +43,7 @@ func appsPlayersHandler(messages []*rabbit.Message) {
 		player.Friends = payload.Player.FriendsCount
 		player.Comments = payload.Player.CommentsCount
 
-		err = elastic.IndexPlayer(player)
+		err = elastic_search.IndexPlayer(player)
 		if err != nil {
 			log.Err(err)
 			sendToRetryQueue(message)

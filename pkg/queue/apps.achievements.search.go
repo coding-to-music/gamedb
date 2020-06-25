@@ -2,7 +2,7 @@ package queue
 
 import (
 	"github.com/Jleagle/rabbit-go"
-	"github.com/gamedb/gamedb/pkg/elastic"
+	"github.com/gamedb/gamedb/pkg/elastic-search"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -27,7 +27,7 @@ func appsAchievementsSearchHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		achievement := elastic.Achievement{}
+		achievement := elastic_search.Achievement{}
 		achievement.ID = payload.AppAchievement.Key
 		achievement.AppID = payload.AppAchievement.AppID
 		achievement.Name = payload.AppAchievement.Name
@@ -44,9 +44,9 @@ func appsAchievementsSearchHandler(messages []*rabbit.Message) {
 		}
 
 		if payload.AppAchievement.Deleted {
-			err = elastic.DeleteDocument(elastic.IndexAchievements, achievement.GetKey())
+			err = elastic_search.DeleteDocument(elastic_search.IndexAchievements, achievement.GetKey())
 		} else {
-			err = elastic.IndexAchievement(achievement)
+			err = elastic_search.IndexAchievement(achievement)
 		}
 		if err != nil {
 			log.Err(err)
