@@ -3,7 +3,6 @@ package elastic
 import (
 	"encoding/json"
 	"strconv"
-	"time"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
