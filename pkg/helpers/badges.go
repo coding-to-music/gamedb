@@ -173,5 +173,6 @@ var BuiltInEventBadges = map[int]BuiltInbadge{
 	876740:  {BadgeID: 1, AppID: 876740, Icon: "9c677484f7f148045189a9dabe7efdf733e9e1f1", Name: "2018: Intergalactic Summer"},
 	991980:  {BadgeID: 1, AppID: 991980, Icon: "3c96df81a7f82f23b68356c51733793cdece8f63", Name: "2018: Winter Sale"},
 	1195670: {BadgeID: 1, AppID: 1195670, Icon: "581a14e34100d7f4955ceff9365a7e40a89b57c8", Name: "2019: Winter Sale"},
+	1263950: {BadgeID: 1, AppID: 1263950, Icon: "24a62a6fa825d6b0a174675fb97a01e9df81d030", Name: "2020: The Points Badge"},
 	1343890: {BadgeID: 1, AppID: 1343890, Icon: "4bffb745101822b38fd136cf5cdfbd319b38e99c", Name: "2020: Summer Road Trip"},
 }
