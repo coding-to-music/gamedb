@@ -128,6 +128,13 @@ func appHandler(messages []*rabbit.Message) {
 				sendToRetryQueue(message)
 				return
 			}
+
+			err = updateAppOwners(&app)
+			if err != nil {
+				log.Err(err, payload.ID)
+				sendToRetryQueue(message)
+				return
+			}
 		}()
 
 		wg.Wait()
@@ -227,7 +234,7 @@ func appHandler(messages []*rabbit.Message) {
 
 		// Produce to sub queues
 		var produces = map[rabbit.QueueName]interface{}{
-			QueueAppsAchievements: AppAchievementsMessage{AppID: app.ID, AppName: app.Name},
+			QueueAppsAchievements: AppAchievementsMessage{AppID: app.ID, AppName: app.Name, AppOwners: app.Owners},
 			QueueAppsMorelike:     AppMorelikeMessage{ID: app.ID},
 			QueueAppsNews:         AppNewsMessage{ID: app.ID},
 			QueueAppsSameowners:   AppSameownersMessage{ID: app.ID},
@@ -942,6 +949,12 @@ func updateAppPlaytimeStats(app *mongo.App) (err error) {
 	}
 
 	return nil
+}
+
+func updateAppOwners(app *mongo.App) (err error) {
+
+	app.Owners, err = mongo.CountDocuments(mongo.CollectionPlayerApps, bson.D{{"app_id", app.ID}}, 0)
+	return err
 }
 
 func saveSales(app mongo.App, newSales []mongo.Sale) (err error) {

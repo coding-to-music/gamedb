@@ -75,6 +75,7 @@ type App struct {
 	Movies                        []helpers.AppVideo             `bson:"movies"`
 	Name                          string                         `bson:"name"`
 	NewsIDs                       []int64                        `bson:"news_ids"`
+	Owners                        int64                          `bson:"owners"`
 	Packages                      []int                          `bson:"packages"`
 	Platforms                     []string                       `bson:"platforms"`
 	PlayerAverageWeek             float64                        `bson:"player_avg_week"`
@@ -160,6 +161,7 @@ func (app App) BSON() bson.D {
 		{"movies", app.Movies},
 		{"name", app.Name},
 		{"news_ids", app.NewsIDs},
+		{"owners", app.Owners},
 		{"packages", app.Packages},
 		{"platforms", app.Platforms},
 		{"player_avg_week", app.PlayerAverageWeek},

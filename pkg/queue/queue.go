@@ -527,9 +527,9 @@ func ProduceArticlesSearch(payload AppsArticlesSearchMessage) (err error) {
 	return produce(QueueAppsArticlesSearch, payload)
 }
 
-func ProduceAppAchievement(appID int, appName string) (err error) {
+func ProduceAppAchievement(appID int, appName string, appOwners int64) (err error) {
 
-	return produce(QueueAppsAchievements, AppAchievementsMessage{AppID: appID, AppName: appName})
+	return produce(QueueAppsAchievements, AppAchievementsMessage{AppID: appID, AppName: appName, AppOwners: appOwners})
 }
 
 func ProduceSteam(payload SteamMessage) (err error) {

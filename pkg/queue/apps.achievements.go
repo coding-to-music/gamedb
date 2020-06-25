@@ -14,8 +14,9 @@ import (
 )
 
 type AppAchievementsMessage struct {
-	AppID   int    `json:"id"`
-	AppName string `json:"app-name"`
+	AppID     int    `json:"id"`
+	AppName   string `json:"app-name"`
+	AppOwners int64  `json:"app_owners"`
 }
 
 func appAchievementsHandler(messages []*rabbit.Message) {
@@ -28,14 +29,6 @@ func appAchievementsHandler(messages []*rabbit.Message) {
 		if err != nil {
 			log.Err(err, message.Message.Body)
 			sendToFailQueue(message)
-			continue
-		}
-
-		// Get owners
-		owners, err := mongo.CountDocuments(mongo.CollectionPlayerApps, bson.D{{"app_id", payload.AppID}}, 0)
-		if err != nil {
-			log.Err(err)
-			sendToRetryQueue(message)
 			continue
 		}
 
@@ -86,7 +79,7 @@ func appAchievementsHandler(messages []*rabbit.Message) {
 				val.Description = achievement.Description
 				val.Hidden = bool(achievement.Hidden)
 				val.Active = true
-				val.AppOwners = owners
+				val.AppOwners = payload.AppOwners
 
 				achievementsMap[achievement.Name] = val
 

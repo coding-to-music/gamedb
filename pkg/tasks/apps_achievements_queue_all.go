@@ -29,14 +29,16 @@ func (c AppsAchievementsQueueAll) work() (err error) {
 
 	for {
 
-		apps, err := mongo.GetApps(offset, limit, bson.D{{"_id", 1}}, nil, bson.M{"_id": 1, "name": 1})
+		var projection = bson.M{"_id": 1, "name": 1, "owners": 1}
+
+		apps, err := mongo.GetApps(offset, limit, bson.D{{"_id", 1}}, nil, projection)
 		if err != nil {
 			return err
 		}
 
 		for _, app := range apps {
 
-			err = queue.ProduceAppAchievement(app.ID, app.Name)
+			err = queue.ProduceAppAchievement(app.ID, app.Name, app.Owners)
 			if err != nil {
 				return err
 			}
