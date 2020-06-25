@@ -64,6 +64,7 @@ func LogSteamError(err error, interfaces ...interface{}) {
 			"unexpected end of JSON input",
 			"EOF",
 			"write: connection reset by peer",
+			"steam: store: null response",
 		}
 
 		for _, v := range steamErrors {
