@@ -11,6 +11,7 @@ import (
 type AppsAchievementsSearchMessage struct {
 	AppAchievement mongo.AppAchievement `json:"app_achievement"`
 	AppName        string               `json:"app_name"`
+	AppOwners      int64                `json:"app_owners"`
 }
 
 func appsAchievementsSearchHandler(messages []*rabbit.Message) {
@@ -35,6 +36,7 @@ func appsAchievementsSearchHandler(messages []*rabbit.Message) {
 		achievement.Hidden = payload.AppAchievement.Hidden
 		achievement.Completed = payload.AppAchievement.Completed
 		achievement.AppName = payload.AppName
+		achievement.AppOwners = payload.AppOwners
 
 		if achievement.ID == "" || achievement.AppID == 0 {
 			sendToFailQueue(message)

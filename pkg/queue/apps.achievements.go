@@ -79,7 +79,6 @@ func appAchievementsHandler(messages []*rabbit.Message) {
 				val.Description = achievement.Description
 				val.Hidden = bool(achievement.Hidden)
 				val.Active = true
-				val.AppOwners = payload.AppOwners
 
 				achievementsMap[achievement.Name] = val
 
@@ -116,7 +115,7 @@ func appAchievementsHandler(messages []*rabbit.Message) {
 
 		// Update in Elastic
 		for _, v := range achievementsSlice {
-			err = ProduceAchievementSearch(v, payload.AppName)
+			err = ProduceAchievementSearch(v, payload.AppName, payload.AppOwners)
 			log.Err(err)
 		}
 

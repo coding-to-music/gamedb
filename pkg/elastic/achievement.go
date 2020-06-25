@@ -3,6 +3,7 @@ package elastic
 import (
 	"encoding/json"
 	"strconv"
+	"time"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -19,6 +20,7 @@ type Achievement struct {
 	Completed   float64 `json:"completed"`
 	AppID       int     `json:"app_id"`
 	AppName     string  `json:"app_name"`
+	AppOwners   int64   `json:"app_owners"`
 	Score       float64 `json:"-"` // Not stored, just used on frontend
 }
 
@@ -144,6 +146,7 @@ func DeleteAndRebuildAchievementsIndex() {
 				"completed":   fieldTypeHalfFloat,
 				"app_id":      fieldTypeInteger,
 				"app_name":    fieldTypeText,
+				"app_owners":  fieldTypeLong,
 			},
 		},
 	}

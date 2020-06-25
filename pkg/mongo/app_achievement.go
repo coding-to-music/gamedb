@@ -13,7 +13,6 @@ import (
 
 type AppAchievement struct {
 	AppID       int     `bson:"app_id" json:"app_id"`
-	AppOwners   int64   `json:"app_owners"`
 	Key         string  `bson:"key" json:"key"`
 	Name        string  `bson:"name" json:"name"`
 	Description string  `bson:"description" json:"description"`
@@ -28,7 +27,6 @@ func (achievement AppAchievement) BSON() bson.D {
 
 	return bson.D{
 		{"app_id", achievement.AppID},
-		{"app_owners", achievement.AppOwners},
 		{"key", achievement.Key},
 		{"name", achievement.Name},
 		{"description", achievement.Description},

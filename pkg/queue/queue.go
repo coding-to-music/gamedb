@@ -517,9 +517,13 @@ func ProduceGroupSearch(group mongo.Group) (err error) {
 	return produce(QueueGroupsSearch, GroupSearchMessage{Group: group})
 }
 
-func ProduceAchievementSearch(achievement mongo.AppAchievement, appName string) (err error) {
+func ProduceAchievementSearch(achievement mongo.AppAchievement, appName string, appOwners int64) (err error) {
 
-	return produce(QueueAppsAchievementsSearch, AppsAchievementsSearchMessage{AppAchievement: achievement, AppName: appName})
+	return produce(QueueAppsAchievementsSearch, AppsAchievementsSearchMessage{
+		AppAchievement: achievement,
+		AppName:        appName,
+		AppOwners:      appOwners,
+	})
 }
 
 func ProduceArticlesSearch(payload AppsArticlesSearchMessage) (err error) {
