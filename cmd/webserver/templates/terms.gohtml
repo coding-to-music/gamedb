@@ -1,0 +1,31 @@
+{{define "terms"}}
+    {{ template "_header" . }}
+
+    <div class="container" id="info-page">
+
+        <div class="jumbotron">
+            <h1><i class="fas fa-info-circle"></i> Terms of Service</h1>
+        </div>
+
+        {{ template "_flashes" . }}
+
+        <div class="card">
+            <div class="card-body">
+
+                <div class="card mb-3">
+                    <h5 class="card-header">Terms of Service</h5>
+                    <div class="card-body pl-0">
+                        <ul class="mb-0">
+                            <li><a target="_blank" rel="noopener" href="https://www.youtube.com/t/terms">​YouTube Terms of Service</a></li>
+                            <li><a target="_blank" rel="noopener" href="https://policies.google.com/privacy">G​oogle Privacy Policy​</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    {{ template "_footer" . }}
+{{end}}

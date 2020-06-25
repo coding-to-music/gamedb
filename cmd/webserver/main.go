@@ -142,6 +142,7 @@ func main() {
 	r.Mount("/steam-api", pages.SteamAPIRouter())
 	r.Mount("/tags", pages.TagsRouter())
 	r.Mount("/webhooks", pages.WebhooksRouter())
+	r.Mount("/terms", pages.TermsRouter())
 	r.Mount("/websocket", pages.WebsocketsRouter())
 
 	// Sitemaps, Google doesnt like having a sitemap in a sub directory
