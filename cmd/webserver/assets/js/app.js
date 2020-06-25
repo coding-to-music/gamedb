@@ -429,6 +429,16 @@ if ($appPage.length > 0) {
         };
         new IntersectionObserver(playersCallback, config).observe(document.getElementById("players-chart"));
 
+        const youtubeCallback = function (entries, self) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    loadAppYoutubeChart();
+                    self.unobserve(entry.target);
+                }
+            });
+        };
+        new IntersectionObserver(youtubeCallback, config).observe(document.getElementById("youtube-chart"));
+
         const groupChart = document.getElementById("group-chart");
         if (groupChart) {
             const groupCallback = function (entries, self) {
@@ -523,8 +533,6 @@ if ($appPage.length > 0) {
                             return this.y.toLocaleString() + ' average players on ' + moment(this.key).format("dddd DD MMM YYYY @ HH:mm");
                         case 'Twitch Viewers':
                             return this.y.toLocaleString() + ' Twitch viewers on ' + moment(this.key).format("dddd DD MMM YYYY @ HH:mm");
-                        case 'Youtube Views':
-                            return this.y.toLocaleString() + ' Youtube views on ' + moment(this.key).format("dddd DD MMM YYYY");
                     }
                 },
             },
@@ -550,15 +558,6 @@ if ($appPage.length > 0) {
                         min: d.getTime(),
                     },
                     series: [
-                        {
-                            name: 'Youtube Views',
-                            color: '#FF0000', // Youtube red
-                            data: data['max_youtube_views'],
-                            connectNulls: true,
-                            type: 'line',
-                            step: 'right',
-                            visible: false,
-                        },
                         {
                             name: 'Twitch Viewers',
                             color: '#6441A4', // Twitch purple
@@ -592,23 +591,14 @@ if ($appPage.length > 0) {
                 if (data === null) {
                     const now = Date.now();
                     data = {
-                        "max_player_count": [[now, 0]],
                         "max_twitch_viewers": [[now, 0]],
-                        "max_youtube_views": [[now, 0]],
+                        "max_moving_average": [[now, 0]],
+                        "max_player_count": [[now, 0]],
                     };
                 }
 
                 Highcharts.chart('players-chart2', $.extend(true, {}, defaultAppChartOptions, {
                     series: [
-                        {
-                            name: 'Youtube Views',
-                            color: '#FF0000', // Youtube red
-                            data: data['max_youtube_views'],
-                            connectNulls: true,
-                            type: 'line',
-                            step: 'right',
-                            visible: false,
-                        },
                         {
                             name: 'Twitch Viewers',
                             color: '#6441A4', // Twitch purple
@@ -626,6 +616,127 @@ if ($appPage.length > 0) {
                             color: '#28a745',
                             data: data['max_player_count'],
                             connectNulls: true,
+                        },
+                    ],
+                }));
+
+            },
+        });
+    }
+
+    function loadAppYoutubeChart() {
+
+        const d = new Date();
+        d.setDate(d.getDate() - 7);
+
+        const defaultAppChartOptions = {
+            chart: {
+                type: 'spline',
+                backgroundColor: 'rgba(0,0,0,0)',
+            },
+            title: {
+                text: ''
+            },
+            subtitle: {
+                text: ''
+            },
+            credits: {
+                enabled: false,
+            },
+            legend: {
+                enabled: true,
+                itemStyle: {
+                    color: '#28a745',
+                },
+                itemHiddenStyle: {
+                    color: '#666666',
+                },
+            },
+            xAxis: {
+                title: {text: ''},
+                type: 'datetime',
+            },
+            yAxis: [
+                {
+                    allowDecimals: false,
+                    title: {text: 'Views'},
+                    min: 0,
+                    opposite: false,
+                    labels: {
+                        formatter: function () {
+                            return this.value.toLocaleString();
+                        },
+                    },
+                    visible: true,
+                },
+                {
+                    allowDecimals: false,
+                    title: {text: 'Comments'},
+                    min: 0,
+                    opposite: true,
+                    labels: {
+                        formatter: function () {
+                            return this.value.toLocaleString();
+                        },
+                    },
+                    visible: true,
+                },
+            ],
+            plotOptions: {
+                series: {
+                    marker: {
+                        enabled: false
+                    }
+                }
+            },
+            tooltip: {
+                formatter: function () {
+                    switch (this.series.name) {
+                        case 'Youtube Views':
+                            return this.y.toLocaleString() + ' Youtube views on ' + moment(this.key).format("dddd DD MMM YYYY");
+                        case 'Youtube Comments':
+                            return this.y.toLocaleString() + ' Youtube comments on ' + moment(this.key).format("dddd DD MMM YYYY");
+                    }
+                },
+            },
+        };
+
+        $.ajax({
+            type: "GET",
+            url: '/games/' + $appPage.attr('data-id') + '/youtube.json',
+            dataType: 'json',
+            success: function (data, textStatus, jqXHR) {
+
+                if (data === null) {
+                    const now = Date.now();
+                    data = {
+                        "max_youtube_views": [[now, 0]],
+                        "max_youtube_comments": [[now, 0]],
+                    };
+                }
+
+                Highcharts.chart('youtube-chart', $.extend(true, {}, defaultAppChartOptions, {
+                    xAxis: {
+                        min: d.getTime(),
+                    },
+                    series: [
+                        {
+                            name: 'Youtube Comments',
+                            color: '#007bff',
+                            data: data['max_youtube_comments'],
+                            connectNulls: true,
+                            type: 'line',
+                            step: 'right',
+                            yAxis: 1,
+                        },
+                        {
+                            name: 'Youtube Views',
+                            color: '#28a745',
+                            data: data['max_youtube_views'],
+                            connectNulls: true,
+                            type: 'line',
+                            step: 'right',
+                            yAxis: 0,
                         },
                     ],
                 }));
@@ -689,11 +800,11 @@ if ($appPage.length > 0) {
                         },
                         {
                             title: {
-                                text: ''
+                                text: 'Wishlists'
                             },
                             labels: {
                                 formatter: function () {
-                                    return this.value.toFixed(8) + '%';
+                                    return this.value.toFixed(7) + '%';
                                 },
                             },
                         },
@@ -701,7 +812,7 @@ if ($appPage.length > 0) {
                             opposite: true,
                             reversed: true,
                             title: {
-                                text: ''
+                                text: 'Average Position'
                             },
                             labels: {
                                 formatter: function () {
@@ -716,7 +827,7 @@ if ($appPage.length > 0) {
                                 case 'Wishlists':
                                     return 'In ' + this.y.toLocaleString() + ' wishlists on ' + moment(this.key).format("dddd DD MMM YYYY");
                                 case 'Wishlists %':
-                                    return 'In ' + this.y.toFixed(8) + '% of wishlists on ' + moment(this.key).format("dddd DD MMM YYYY");
+                                    return 'In ' + this.y.toFixed(7) + '% of wishlists on ' + moment(this.key).format("dddd DD MMM YYYY");
                                 case 'Average Position':
                                     return 'Average position of ' + this.y.toFixed(2).toLocaleString() + ' on ' + moment(this.key).format("dddd DD MMM YYYY");
                             }
