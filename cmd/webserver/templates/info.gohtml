@@ -24,7 +24,7 @@
                 </div>
 
                 <div class="card mb-3">
-                    <h5 class="card-header">Players</h5>
+                    <h5 class="card-header">Player Pages</h5>
                     <div class="card-body pl-0">
                         <ul class="mb-0">
                             <li>Players are updated when they are looked at, or automatically for donators.</li>
@@ -35,20 +35,20 @@
                 </div>
 
                 <div class="card mb-3">
-                    <h5 class="card-header">Games</h5>
+                    <h5 class="card-header">Game Pages</h5>
                     <div class="card-body pl-0">
                         <ul class="mb-0">
                             <li>Apps are updated instantly when the developer makes a change.</li>
                             <li>App review scores are calculated using <a href="https://en.wikipedia.org/wiki/Additive_smoothing" target="_blank" rel="noopener">Additive Smoothing</a>.</li>
                             <li>App twitch counts only include the top 100 streamers for that app.</li>
-                            <li>App trends are currently calculated use the algorithm taken from <a href="https://stackoverflow.com/a/49604913/472084" target="_blank" rel="noopener">this post</a>.</li>
                             <li>App wishlist counts are updated daily.</li>
+                            <li>App trend value, see <a href="#trending">Trend Values</a>.</li>
                         </ul>
                     </div>
                 </div>
 
                 <div class="card mb-3">
-                    <h5 class="card-header">Groups</h5>
+                    <h5 class="card-header">Group Pages</h5>
                     <div class="card-body pl-0">
                         <ul class="mb-0">
                             <li>Groups are updated when a player in the group is updated, or when the group page is looked at. Limited to once per six hours.</li>
@@ -57,7 +57,7 @@
                 </div>
 
                 <div class="card mb-3">
-                    <h5 class="card-header">Badges</h5>
+                    <h5 class="card-header">Badge Pages</h5>
                     <div class="card-body pl-0">
                         <ul class="mb-0">
                             <li>Player badges are updated when the player is updated.</li>
@@ -67,7 +67,7 @@
                 </div>
 
                 <div class="card mb-3">
-                    <h5 class="card-header">Packages</h5>
+                    <h5 class="card-header">Package Pages</h5>
                     <div class="card-body pl-0">
                         <ul class="mb-0">
                             <li>Packages are updated instantly when the developer makes a change.</li>
@@ -76,7 +76,7 @@
                 </div>
 
                 <div class="card mb-3">
-                    <h5 class="card-header">Bundles</h5>
+                    <h5 class="card-header">Bundle Pages</h5>
                     <div class="card-body pl-0">
                         <ul class="mb-0">
                             <li>Bundles are updated when an app in the bundle is updated.</li>
@@ -85,7 +85,7 @@
                 </div>
 
                 <div class="card mb-3">
-                    <h5 class="card-header">Sale</h5>
+                    <h5 class="card-header">Sales Page</h5>
                     <div class="card-body pl-0">
                         <ul class="mb-0">
                             <li>Sales are updated when the app on sale is updated.</li>
@@ -94,7 +94,7 @@
                 </div>
 
                 <div class="card mb-3">
-                    <h5 class="card-header">Changes</h5>
+                    <h5 class="card-header">Change Pages</h5>
                     <div class="card-body pl-0">
                         <ul class="mb-0">
                             <li>Changes are updated instantly when the developer makes a change.</li>
@@ -103,7 +103,7 @@
                 </div>
 
                 <div class="card mb-3">
-                    <h5 class="card-header">News Articles</h5>
+                    <h5 class="card-header">News Pages</h5>
                     <div class="card-body pl-0">
                         <ul class="mb-0">
                             <li>News articles are added when the app is updated.</li>
@@ -111,12 +111,19 @@
                     </div>
                 </div>
 
-                <div class="card mb-0">
-                    <h5 class="card-header">Stats</h5>
+                <div class="card mb-3">
+                    <h5 class="card-header">Stats Pages</h5>
                     <div class="card-body pl-0">
                         <ul class="mb-0">
                             <li>Tag, Genre, Category, Publisher & Developer pages are all updated at midnight.</li>
                         </ul>
+                    </div>
+                </div>
+
+                <div class="card mb-0" id="trending">
+                    <h5 class="card-header">Trend Values</h5>
+                    <div class="card-body pb-0">
+                        <p>Trend values are calculated using the angle of <a href="">Linear regression</a>. The value is the angle in radians x 1,000. Data is taken from the last 7 days.</p>
                     </div>
                 </div>
 
