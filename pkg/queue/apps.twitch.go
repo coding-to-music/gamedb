@@ -8,7 +8,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	twitch2 "github.com/gamedb/gamedb/pkg/twitch"
+	"github.com/gamedb/gamedb/pkg/twitch"
 	"github.com/nicklaw5/helix"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -39,7 +39,7 @@ func appTwitchHandler(messages []*rabbit.Message) {
 
 		if app.Name != "" && app.Type != "game" && (app.TwitchID == 0 || app.TwitchURL == "") {
 
-			client, err := twitch2.GetTwitch()
+			client, err := twitch.GetTwitch()
 			if err != nil {
 				log.Err(err, payload.ID)
 				sendToRetryQueue(message)

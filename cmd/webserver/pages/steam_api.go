@@ -12,7 +12,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/file-cache"
-	github2 "github.com/gamedb/gamedb/pkg/github"
+	githubHelper "github.com/gamedb/gamedb/pkg/github"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	steamHelper "github.com/gamedb/gamedb/pkg/steam"
@@ -168,7 +168,7 @@ func (interfaces *Interfaces) addDocumented(w http.ResponseWriter, r *http.Reque
 
 func (interfaces *Interfaces) addUndocumented() (err error) {
 
-	client, ctx := github2.GetGithub()
+	client, ctx := githubHelper.GetGithub()
 	_, dirs, _, err := client.Repositories.GetContents(ctx, "SteamDatabase", "SteamTracking", "API", nil)
 	if err != nil {
 		return err

@@ -12,7 +12,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/steam"
-	twitch2 "github.com/gamedb/gamedb/pkg/twitch"
+	"github.com/gamedb/gamedb/pkg/twitch"
 	influx "github.com/influxdata/influxdb1-client"
 	"github.com/nicklaw5/helix"
 	"go.mongodb.org/mongo-driver/bson"
@@ -121,7 +121,7 @@ func getAppTwitchStreamers(twitchID int) (viewers int, err error) {
 
 	if twitchID > 0 {
 
-		client, err := twitch2.GetTwitch()
+		client, err := twitch.GetTwitch()
 		if err != nil {
 			return 0, err
 		}
