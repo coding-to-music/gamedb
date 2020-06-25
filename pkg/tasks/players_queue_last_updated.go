@@ -1,10 +1,12 @@
 package tasks
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
@@ -48,6 +50,7 @@ func (c PlayersQueueLastUpdated) work() (err error) {
 	var consumers int
 	for _, q := range queues {
 		if val, ok := limits[rabbit.QueueName(q.Name)]; ok && q.Messages > val {
+			log.Info("skipping " + c.ID() + " as " + q.Name + " has more than " + strconv.Itoa(val) + " messages")
 			return nil
 		}
 		if q.Name == string(queue.QueuePlayers) {
@@ -56,6 +59,7 @@ func (c PlayersQueueLastUpdated) work() (err error) {
 	}
 
 	if consumers == 0 {
+		log.Warning("no consumers")
 		return nil
 	}
 
