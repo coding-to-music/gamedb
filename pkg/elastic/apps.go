@@ -93,7 +93,7 @@ func SearchApps(limit int, offset int, search string, sorters []elastic.Sorter, 
 			).
 			Should(
 				elastic.NewFunctionScoreQuery().
-					AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("players").Factor(0.001)),
+					AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("players").Factor(0.005)),
 			),
 		)
 	}
