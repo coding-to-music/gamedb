@@ -1,7 +1,7 @@
 package tasks
 
 import (
-	"github.com/gamedb/gamedb/pkg/helpers/memcache"
+	"github.com/gamedb/gamedb/pkg/memcache"
 )
 
 type MemcacheClearAll struct {

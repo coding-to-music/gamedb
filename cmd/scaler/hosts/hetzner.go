@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/github"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/hetznercloud/hcloud-go/hcloud"
@@ -47,7 +48,7 @@ func (h Hetzner) ListConsumers() (consumers []Consumer, err error) {
 
 func (h Hetzner) CreateConsumer() (c Consumer, err error) {
 
-	gh, ctx := helpers.GetGithub()
+	gh, ctx := github.GetGithub()
 	ghResponse, _, _, err := gh.Repositories.GetContents(ctx, "gamedb", "infrastructure", "scaler/cloud-config.yaml", nil)
 	if err != nil {
 		return c, err

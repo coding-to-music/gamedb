@@ -59,5 +59,4 @@ func formatTime(minutes int, pieces int, format string) string {
 	}
 
 	return strings.Join(ret, ", ")
-
 }

@@ -13,7 +13,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/go-chi/chi"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 	"golang.org/x/crypto/bcrypt"
@@ -85,8 +85,8 @@ func forgotPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Find user
-		user, err := sql.GetUserByKey("email", email, 0)
-		if err == sql.ErrRecordNotFound {
+		user, err := mysql.GetUserByKey("email", email, 0)
+		if err == mysql.ErrRecordNotFound {
 			return "Email sent", true
 		} else if err != nil {
 			log.Err(err, r)
@@ -94,7 +94,7 @@ func forgotPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Create verification code
-		code, err := sql.CreateUserVerification(user.ID)
+		code, err := mysql.CreateUserVerification(user.ID)
 		if err != nil {
 			log.Err(err, r)
 			return "An error occurred", false
@@ -161,9 +161,9 @@ func forgotResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Find email from code
-		userID, err := sql.GetUserVerification(code)
+		userID, err := mysql.GetUserVerification(code)
 		if err != nil {
-			err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
+			err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
 			log.Err(err, r)
 			return "Invalid code (1002)", false
 		}
@@ -173,9 +173,9 @@ func forgotResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 		// }
 
 		// Get user
-		user, err := sql.GetUserByID(userID)
+		user, err := mysql.GetUserByID(userID)
 		if err != nil {
-			err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
+			err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
 			log.Err(err, r)
 			return "An error occurred (1001)", false
 		}
@@ -203,7 +203,7 @@ func forgotResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Set password
-		err = sql.UpdateUserCol(userID, "password", string(passwordBytes))
+		err = mysql.UpdateUserCol(userID, "password", string(passwordBytes))
 		if err != nil {
 			log.Err(err, r)
 			return "An error occurred (1003)", false

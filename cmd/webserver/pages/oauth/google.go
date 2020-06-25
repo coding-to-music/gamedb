@@ -20,7 +20,7 @@ type googleConnection struct {
 
 func (c googleConnection) getID(r *http.Request, token *oauth2.Token) (string, error) {
 
-	response, err := helpers.GetWithTimeout("https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + token.AccessToken, 0)
+	response, err := helpers.GetWithTimeout("https://www.googleapis.com/oauth2/v2/userinfo?access_token="+token.AccessToken, 0)
 	if err != nil {
 		return "", oauthError{err, "Invalid token"}
 	}

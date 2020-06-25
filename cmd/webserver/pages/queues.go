@@ -5,9 +5,9 @@ import (
 	"strings"
 
 	"github.com/Jleagle/influxql"
-	"github.com/gamedb/gamedb/pkg/helpers/influx"
-	"github.com/gamedb/gamedb/pkg/helpers/memcache"
+	"github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/go-chi/chi"
 )
 

@@ -80,7 +80,7 @@ function observeLazyVideos() {
     });
 }
 
-function loadVideo($target){
+function loadVideo($target) {
 
     $target.attr('preload', 'metadata');
 }

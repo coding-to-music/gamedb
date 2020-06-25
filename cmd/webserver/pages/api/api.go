@@ -12,9 +12,9 @@ import (
 	"github.com/gamedb/gamedb/cmd/webserver/pages/api/generated"
 	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
-	influxHelpers "github.com/gamedb/gamedb/pkg/helpers/influx"
+	influxHelpers "github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/mysql"
 	influx "github.com/influxdata/influxdb1-client"
 )
 
@@ -79,8 +79,8 @@ func (s Server) call(w http.ResponseWriter, r *http.Request, callback func(w htt
 	}
 
 	// Check user has access to api
-	user, err := sql.GetUserFromKeyCache(key)
-	if err == sql.ErrRecordNotFound {
+	user, err := mysql.GetUserFromKeyCache(key)
+	if err == mysql.ErrRecordNotFound {
 
 		s.returnErrorResponse(w, http.StatusUnauthorized, errors.New("invalid key: "+key))
 		return
@@ -90,7 +90,7 @@ func (s Server) call(w http.ResponseWriter, r *http.Request, callback func(w htt
 		s.returnErrorResponse(w, http.StatusInternalServerError, err)
 		return
 
-	} else if user.Level <= sql.UserLevel3 {
+	} else if user.Level <= mysql.UserLevel3 {
 
 		s.returnErrorResponse(w, http.StatusUnauthorized, errors.New("invalid user level"))
 		return
@@ -98,7 +98,7 @@ func (s Server) call(w http.ResponseWriter, r *http.Request, callback func(w htt
 
 	code, response := callback(w, r)
 
-	go func(r *http.Request, code int, key string, user sql.User) {
+	go func(r *http.Request, code int, key string, user mysql.User) {
 
 		err = s.saveToInflux(r, code, key, user)
 		if err != nil {
@@ -121,7 +121,7 @@ func (s Server) call(w http.ResponseWriter, r *http.Request, callback func(w htt
 	}
 }
 
-func (s Server) saveToInflux(r *http.Request, code int, key string, user sql.User) (err error) {
+func (s Server) saveToInflux(r *http.Request, code int, key string, user mysql.User) (err error) {
 
 	if config.IsLocal() {
 		return nil

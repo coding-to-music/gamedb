@@ -15,14 +15,14 @@ import (
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/helpers/i18n"
-	"github.com/gamedb/gamedb/pkg/helpers/influx"
-	"github.com/gamedb/gamedb/pkg/helpers/memcache"
+	"github.com/gamedb/gamedb/pkg/i18n"
+	"github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/mysql"
+	"github.com/gamedb/gamedb/pkg/mysql/pics"
 	"github.com/gamedb/gamedb/pkg/queue"
-	"github.com/gamedb/gamedb/pkg/sql"
-	"github.com/gamedb/gamedb/pkg/sql/pics"
 	"github.com/go-chi/chi"
 	"github.com/gosimple/slug"
 	"go.mongodb.org/mongo-driver/bson"
@@ -211,13 +211,13 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		tags, err := sql.GetTagsByID(tagIDs, []string{"id", "name"})
+		tags, err := mysql.GetTagsByID(tagIDs, []string{"id", "name"})
 		if err != nil {
 			log.Err(err, r)
 			return
 		}
 
-		t.RelatedTags = map[int]sql.Tag{}
+		t.RelatedTags = map[int]mysql.Tag{}
 		for _, v := range tags {
 			t.RelatedTags[v.ID] = v
 		}
@@ -396,21 +396,21 @@ type appTemplate struct {
 	App           mongo.App
 	PlayersCount  int64
 	Banners       map[string][]string
-	Bundles       []sql.Bundle
-	Categories    []sql.Category
+	Bundles       []mysql.Bundle
+	Categories    []mysql.Category
 	Common        []pics.KeyValue
 	Config        []pics.KeyValue
 	Demos         []mongo.App
 	Related       []mongo.App
-	RelatedTags   map[int]sql.Tag
-	Developers    []sql.Developer
+	RelatedTags   map[int]mysql.Tag
+	Developers    []mysql.Developer
 	Extended      []pics.KeyValue
-	Genres        []sql.Genre
+	Genres        []mysql.Genre
 	Links         []appLinkTemplate
 	Packages      []mongo.Package
 	Price         helpers.ProductPrice
-	Publishers    []sql.Publisher
-	Tags          []sql.Tag
+	Publishers    []mysql.Publisher
+	Tags          []mysql.Tag
 	TagsMax       int
 	UFS           []pics.KeyValue
 	PlayersInGame int64

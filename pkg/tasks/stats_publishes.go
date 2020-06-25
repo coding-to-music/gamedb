@@ -6,11 +6,11 @@ import (
 	"sync"
 
 	"github.com/Jleagle/steam-go/steamapi"
-	"github.com/gamedb/gamedb/pkg/helpers/i18n"
-	"github.com/gamedb/gamedb/pkg/helpers/memcache"
+	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/mysql"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -33,7 +33,7 @@ func (c TasksPublishers) Cron() string {
 func (c TasksPublishers) work() (err error) {
 
 	// Get current publishers, to delete old ones
-	allPublishers, err := sql.GetAllPublishers()
+	allPublishers, err := mysql.GetAllPublishers()
 	if err != nil {
 		return err
 	}
@@ -115,13 +115,13 @@ func (c TasksPublishers) work() (err error) {
 			pubsToDeleteSlice = append(pubsToDeleteSlice, publisherID)
 		}
 
-		err := sql.DeletePublishers(pubsToDeleteSlice)
+		err := mysql.DeletePublishers(pubsToDeleteSlice)
 		log.Err(err)
 	}()
 
 	wg.Wait()
 
-	gorm, err := sql.GetMySQLClient()
+	gorm, err := mysql.GetMySQLClient()
 	if err != nil {
 		return err
 	}
@@ -143,9 +143,9 @@ func (c TasksPublishers) work() (err error) {
 				wg.Done()
 			}()
 
-			var publisher sql.Publisher
+			var publisher mysql.Publisher
 
-			gorm = gorm.Unscoped().FirstOrInit(&publisher, sql.Publisher{ID: publisherID})
+			gorm = gorm.Unscoped().FirstOrInit(&publisher, mysql.Publisher{ID: publisherID})
 			log.Err(gorm.Error)
 
 			publisher.Name = v.name

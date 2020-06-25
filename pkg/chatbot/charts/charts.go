@@ -11,8 +11,9 @@ import (
 	"github.com/Jleagle/influxql"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/config"
+	storage2 "github.com/gamedb/gamedb/pkg/google-storage"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/helpers/influx"
+	"github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/wcharczuk/go-chart"
 	"github.com/wcharczuk/go-chart/drawing"
@@ -165,12 +166,12 @@ func saveChartToFile(b []byte, filename string) error {
 
 func saveChartToGoogle(b []byte, filename string) (string, error) {
 
-	client, ctx, err := helpers.GetStorageClient()
+	client, ctx, err := storage2.GetStorageClient()
 	if err != nil {
 		return "", err
 	}
 
-	w := client.Bucket(helpers.BucketChatBot).Object(filename).NewWriter(ctx)
+	w := client.Bucket(storage2.BucketChatBot).Object(filename).NewWriter(ctx)
 
 	_, err = io.Copy(w, bytes.NewBuffer(b))
 	if err != nil {
@@ -181,10 +182,10 @@ func saveChartToGoogle(b []byte, filename string) (string, error) {
 		return "", err
 	}
 
-	opts, err := helpers.GetSignedURLOptions()
+	opts, err := storage2.GetSignedURLOptions()
 	if err != nil {
 		return "", err
 	}
 
-	return storage.SignedURL(helpers.BucketChatBot, filename, opts)
+	return storage.SignedURL(storage2.BucketChatBot, filename, opts)
 }

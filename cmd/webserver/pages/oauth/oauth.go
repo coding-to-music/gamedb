@@ -9,11 +9,11 @@ import (
 	"github.com/Jleagle/session-go/session"
 	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/queue"
-	"github.com/gamedb/gamedb/pkg/sql"
 	"golang.org/x/oauth2"
 )
 
@@ -119,7 +119,7 @@ func (bc baseConnection) unlink(w http.ResponseWriter, r *http.Request, c Connec
 	}
 
 	// Update user
-	err = sql.UpdateUserCol(userID, strings.ToLower(c.getName())+"_id", nil)
+	err = mysql.UpdateUserCol(userID, strings.ToLower(c.getName())+"_id", nil)
 	if err != nil {
 		log.Err(err, r)
 		err = session.SetFlash(r, sessionHelpers.SessionBad, "An error occurred (1002)")
@@ -221,12 +221,12 @@ func (bc baseConnection) callback(r *http.Request, c ConnectionInterface, event 
 	} else {
 
 		// Check ID is not already in use
-		_, err = sql.GetUserByKey(strings.ToLower(c.getName())+"_id", id, userID)
+		_, err = mysql.GetUserByKey(strings.ToLower(c.getName())+"_id", id, userID)
 		if err == nil {
 			err = session.SetFlash(r, sessionHelpers.SessionBad, "This "+c.getName()+" account is already linked to another Game DB account")
 			log.Err(err, r)
 			return
-		} else if err != sql.ErrRecordNotFound {
+		} else if err != mysql.ErrRecordNotFound {
 			log.Err(err, r)
 			err = session.SetFlash(r, sessionHelpers.SessionBad, "An error occurred (1002)")
 			log.Err(err, r)
@@ -234,7 +234,7 @@ func (bc baseConnection) callback(r *http.Request, c ConnectionInterface, event 
 		}
 
 		// Update user
-		err = sql.UpdateUserCol(userID, strings.ToLower(c.getName())+"_id", id)
+		err = mysql.UpdateUserCol(userID, strings.ToLower(c.getName())+"_id", id)
 		if err != nil {
 			log.Err(err, r)
 			err = session.SetFlash(r, sessionHelpers.SessionBad, "An error occurred (1003)")

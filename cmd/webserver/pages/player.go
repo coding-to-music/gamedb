@@ -15,13 +15,14 @@ import (
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/middleware"
 	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/helpers/i18n"
-	"github.com/gamedb/gamedb/pkg/helpers/influx"
-	"github.com/gamedb/gamedb/pkg/helpers/memcache"
+	"github.com/gamedb/gamedb/pkg/i18n"
+	"github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/queue"
-	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/rabbit-web"
 	"github.com/go-chi/chi"
 	"github.com/justinas/nosurf"
 	"github.com/memcachier/mc"
@@ -92,7 +93,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		p := rabbit.Payload{}
 		p.Preset(rabbit.RangeOneMinute)
 
-		q, err := helpers.RabbitClient.GetQueue(queue.QueuePlayers, p)
+		q, err := rabbit_web.RabbitClient.GetQueue(queue.QueuePlayers, p)
 		if err != nil {
 			log.Err(err, r)
 		} else {
@@ -237,15 +238,15 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	// Get user
-	var user sql.User
+	var user mysql.User
 	wg.Add(1)
 	go func() {
 
 		defer wg.Done()
 
 		var err error
-		user, err = sql.GetUserByKey("steam_id", player.ID, 0)
-		err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
+		user, err = mysql.GetUserByKey("steam_id", player.ID, 0)
+		err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
 		if err != nil {
 			log.Err(err, r)
 			return
@@ -354,7 +355,7 @@ type playerTemplate struct {
 	Ranks         []playerRankTemplate
 	Types         map[string]int64
 	InQueue       bool
-	User          sql.User
+	User          mysql.User
 }
 
 func (pt playerTemplate) TypePercent(typex string) string {
@@ -435,7 +436,7 @@ func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if user.Level <= sql.UserLevel2 {
+		if user.Level <= mysql.UserLevel2 {
 			err = session.SetFlash(r, sessionHelpers.SessionBad, "Invalid user level")
 			log.Err(err)
 			return

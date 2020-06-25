@@ -6,11 +6,11 @@ import (
 	"sync"
 
 	"github.com/Jleagle/steam-go/steamapi"
-	"github.com/gamedb/gamedb/pkg/helpers/i18n"
-	"github.com/gamedb/gamedb/pkg/helpers/memcache"
+	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/mysql"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -33,7 +33,7 @@ func (c TasksGenres) Cron() string {
 func (c TasksGenres) work() (err error) {
 
 	// Get current genres, to delete old ones
-	currentGenres, err := sql.GetAllGenres(true)
+	currentGenres, err := mysql.GetAllGenres(true)
 	if err != nil {
 		return err
 	}
@@ -115,13 +115,13 @@ func (c TasksGenres) work() (err error) {
 			genresToDeleteSlice = append(genresToDeleteSlice, genreID)
 		}
 
-		err := sql.DeleteGenres(genresToDeleteSlice)
+		err := mysql.DeleteGenres(genresToDeleteSlice)
 		log.Err(err)
 	}()
 
 	wg.Wait()
 
-	gorm, err := sql.GetMySQLClient()
+	gorm, err := mysql.GetMySQLClient()
 	if err != nil {
 		return err
 	}
@@ -143,9 +143,9 @@ func (c TasksGenres) work() (err error) {
 				wg.Done()
 			}()
 
-			var genre sql.Genre
+			var genre mysql.Genre
 
-			gorm = gorm.Unscoped().FirstOrInit(&genre, sql.Genre{ID: genreID})
+			gorm = gorm.Unscoped().FirstOrInit(&genre, mysql.Genre{ID: genreID})
 			log.Err(gorm.Error)
 
 			genre.Name = v.name

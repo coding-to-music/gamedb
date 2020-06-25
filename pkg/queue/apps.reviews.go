@@ -8,11 +8,11 @@ import (
 
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
-	"github.com/gamedb/gamedb/pkg/helpers/memcache"
-	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
+	influxHelper "github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	steamHelper "github.com/gamedb/gamedb/pkg/steam"
 	influx "github.com/influxdata/influxdb1-client"
 	"go.mongodb.org/mongo-driver/bson"
 )

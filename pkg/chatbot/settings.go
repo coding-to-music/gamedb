@@ -6,9 +6,9 @@ import (
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
-	"github.com/gamedb/gamedb/pkg/helpers/i18n"
+	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/mysql"
 )
 
 type CommandSettings struct {
@@ -57,7 +57,7 @@ func (c CommandSettings) Output(msg *discordgo.MessageCreate) (message discordgo
 	case "region":
 		if steamapi.IsProductCC(value) {
 
-			err = sql.SetChatBotSettings(msg.Author.ID, func(s *sql.ChatBotSetting) { s.ProductCode = steamapi.ProductCC(value) })
+			err = mysql.SetChatBotSettings(msg.Author.ID, func(s *mysql.ChatBotSetting) { s.ProductCode = steamapi.ProductCC(value) })
 			if err != nil {
 				log.Err(err)
 				return

@@ -3,9 +3,9 @@ package tasks
 import (
 	"strconv"
 
-	"github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/queue"
+	"github.com/gamedb/gamedb/pkg/steam"
 )
 
 type AppsQueueAll struct {

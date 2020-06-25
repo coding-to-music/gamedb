@@ -16,10 +16,10 @@ import (
 	"github.com/gamedb/gamedb/cmd/webserver/pages/oauth"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/helpers/i18n"
+	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
 	"golang.org/x/crypto/bcrypt"
@@ -178,7 +178,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 type settingsTemplate struct {
 	GlobalTemplate
-	User    sql.User
+	User    mysql.User
 	Player  mongo.Player
 	ProdCCs []i18n.ProductCountryCode
 	Domain  string
@@ -312,7 +312,7 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Save user
-		db, err := sql.GetMySQLClient()
+		db, err := mysql.GetMySQLClient()
 		if err != nil {
 			log.Err(err, r)
 			return "/settings", "", "We had trouble saving your settings"
@@ -377,7 +377,7 @@ func settingsNewKeyHandler(w http.ResponseWriter, r *http.Request) {
 		user.SetAPIKey()
 
 		// Save user
-		db, err := sql.GetMySQLClient()
+		db, err := mysql.GetMySQLClient()
 		log.Err(err)
 		if err != nil {
 			return "", "We had trouble saving your settings (1001)"

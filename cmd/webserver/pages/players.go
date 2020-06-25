@@ -9,10 +9,10 @@ import (
 
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/helpers/i18n"
+	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/tasks"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
@@ -41,7 +41,7 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 
 		config, err := tasks.GetTaskConfig(tasks.PlayersUpdateRanks{})
 		if err != nil {
-			err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
+			err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
 			if err != nil {
 				log.Err(err, r)
 			}

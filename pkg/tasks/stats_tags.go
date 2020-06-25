@@ -6,12 +6,12 @@ import (
 	"sync"
 
 	"github.com/Jleagle/steam-go/steamapi"
-	"github.com/gamedb/gamedb/pkg/helpers/i18n"
-	"github.com/gamedb/gamedb/pkg/helpers/memcache"
-	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
+	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/mysql"
+	steamHelper "github.com/gamedb/gamedb/pkg/steam"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -34,7 +34,7 @@ func (c StatsTags) Cron() string {
 func (c StatsTags) work() (err error) {
 
 	// Get current tags, to delete old ones
-	tags, err := sql.GetAllTags()
+	tags, err := mysql.GetAllTags()
 	if err != nil {
 		return err
 	}
@@ -107,13 +107,13 @@ func (c StatsTags) work() (err error) {
 			tagsToDeleteSlice = append(tagsToDeleteSlice, v)
 		}
 
-		err := sql.DeleteTags(tagsToDeleteSlice)
+		err := mysql.DeleteTags(tagsToDeleteSlice)
 		log.Err(err)
 	}()
 
 	wg.Wait()
 
-	gorm, err := sql.GetMySQLClient()
+	gorm, err := mysql.GetMySQLClient()
 	if err != nil {
 		return err
 	}
@@ -135,9 +135,9 @@ func (c StatsTags) work() (err error) {
 				wg.Done()
 			}()
 
-			var tag sql.Tag
+			var tag mysql.Tag
 
-			gorm = gorm.Unscoped().FirstOrInit(&tag, sql.Tag{ID: tagID})
+			gorm = gorm.Unscoped().FirstOrInit(&tag, mysql.Tag{ID: tagID})
 			log.Err(gorm.Error)
 
 			tag.Name = v.name

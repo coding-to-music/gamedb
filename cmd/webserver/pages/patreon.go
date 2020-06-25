@@ -9,7 +9,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -89,8 +89,8 @@ func saveWebhookEvent(r *http.Request, event mongo.EventEnum, pwr patreon.Webhoo
 		return err
 	}
 
-	user, err := sql.GetUserByKey("steam_id", player.ID, 0)
-	if err == sql.ErrRecordNotFound {
+	user, err := mysql.GetUserByKey("steam_id", player.ID, 0)
+	if err == mysql.ErrRecordNotFound {
 		return nil
 	}
 	if err != nil {

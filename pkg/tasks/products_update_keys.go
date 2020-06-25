@@ -6,8 +6,8 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/sql"
-	"github.com/gamedb/gamedb/pkg/sql/pics"
+	"github.com/gamedb/gamedb/pkg/mysql"
+	"github.com/gamedb/gamedb/pkg/mysql/pics"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -44,7 +44,7 @@ func (c ProductsUpdateKeys) work() (err error) {
 		}},
 	}
 
-	var productKeysMap = map[string]map[string]map[string]*sql.ProductKey{}
+	var productKeysMap = map[string]map[string]map[string]*mysql.ProductKey{}
 
 	for {
 
@@ -56,10 +56,10 @@ func (c ProductsUpdateKeys) work() (err error) {
 		for _, app := range apps {
 
 			fields := map[string]pics.PICSKeyValues{
-				sql.ProductKeyFieldExtended: app.Extended,
-				sql.ProductKeyFieldCommon:   app.Common,
-				sql.ProductKeyFieldUFS:      app.UFS,
-				sql.ProductKeyFieldConfig:   app.Config,
+				mysql.ProductKeyFieldExtended: app.Extended,
+				mysql.ProductKeyFieldCommon:   app.Common,
+				mysql.ProductKeyFieldUFS:      app.UFS,
+				mysql.ProductKeyFieldConfig:   app.Config,
 			}
 
 			for field, data := range fields {
@@ -68,21 +68,21 @@ func (c ProductsUpdateKeys) work() (err error) {
 
 					key = helpers.TruncateString(key, 256, "...")
 
-					if _, ok := productKeysMap[sql.ProductKeyTypeApp]; !ok {
-						productKeysMap[sql.ProductKeyTypeApp] = map[string]map[string]*sql.ProductKey{}
+					if _, ok := productKeysMap[mysql.ProductKeyTypeApp]; !ok {
+						productKeysMap[mysql.ProductKeyTypeApp] = map[string]map[string]*mysql.ProductKey{}
 					}
-					if _, ok := productKeysMap[sql.ProductKeyTypeApp][field]; !ok {
-						productKeysMap[sql.ProductKeyTypeApp][field] = map[string]*sql.ProductKey{}
+					if _, ok := productKeysMap[mysql.ProductKeyTypeApp][field]; !ok {
+						productKeysMap[mysql.ProductKeyTypeApp][field] = map[string]*mysql.ProductKey{}
 					}
 
-					if _, ok := productKeysMap[sql.ProductKeyTypeApp][field][key]; ok {
+					if _, ok := productKeysMap[mysql.ProductKeyTypeApp][field][key]; ok {
 
-						productKeysMap[sql.ProductKeyTypeApp][field][key].Count++
+						productKeysMap[mysql.ProductKeyTypeApp][field][key].Count++
 
 					} else {
 
-						productKeysMap[sql.ProductKeyTypeApp][field][key] = &sql.ProductKey{
-							Type:  sql.ProductKeyTypeApp,
+						productKeysMap[mysql.ProductKeyTypeApp][field][key] = &mysql.ProductKey{
+							Type:  mysql.ProductKeyTypeApp,
 							Field: field,
 							Key:   key,
 							Count: 1,
@@ -122,7 +122,7 @@ func (c ProductsUpdateKeys) work() (err error) {
 		}},
 	}
 
-	productKeysMap = map[string]map[string]map[string]*sql.ProductKey{}
+	productKeysMap = map[string]map[string]map[string]*mysql.ProductKey{}
 
 	for {
 
@@ -134,7 +134,7 @@ func (c ProductsUpdateKeys) work() (err error) {
 		for _, pack := range packages {
 
 			fields := map[string]pics.PICSKeyValues{
-				sql.ProductKeyFieldExtended: pack.Extended,
+				mysql.ProductKeyFieldExtended: pack.Extended,
 			}
 
 			for field, data := range fields {
@@ -143,21 +143,21 @@ func (c ProductsUpdateKeys) work() (err error) {
 
 					key = helpers.TruncateString(key, 256, "...")
 
-					if _, ok := productKeysMap[sql.ProductKeyTypePackage]; !ok {
-						productKeysMap[sql.ProductKeyTypePackage] = map[string]map[string]*sql.ProductKey{}
+					if _, ok := productKeysMap[mysql.ProductKeyTypePackage]; !ok {
+						productKeysMap[mysql.ProductKeyTypePackage] = map[string]map[string]*mysql.ProductKey{}
 					}
-					if _, ok := productKeysMap[sql.ProductKeyTypePackage][field]; !ok {
-						productKeysMap[sql.ProductKeyTypePackage][field] = map[string]*sql.ProductKey{}
+					if _, ok := productKeysMap[mysql.ProductKeyTypePackage][field]; !ok {
+						productKeysMap[mysql.ProductKeyTypePackage][field] = map[string]*mysql.ProductKey{}
 					}
 
-					if _, ok := productKeysMap[sql.ProductKeyTypePackage][field][key]; ok {
+					if _, ok := productKeysMap[mysql.ProductKeyTypePackage][field][key]; ok {
 
-						productKeysMap[sql.ProductKeyTypePackage][field][key].Count++
+						productKeysMap[mysql.ProductKeyTypePackage][field][key].Count++
 
 					} else {
 
-						productKeysMap[sql.ProductKeyTypePackage][field][key] = &sql.ProductKey{
-							Type:  sql.ProductKeyTypePackage,
+						productKeysMap[mysql.ProductKeyTypePackage][field][key] = &mysql.ProductKey{
+							Type:  mysql.ProductKeyTypePackage,
 							Field: field,
 							Key:   key,
 							Count: 1,
@@ -189,7 +189,7 @@ func (c ProductsUpdateKeys) work() (err error) {
 	}
 
 	// Mark removed keys
-	all, err := sql.GetProductKeys()
+	all, err := mysql.GetProductKeys()
 	if err != nil {
 		return err
 	}

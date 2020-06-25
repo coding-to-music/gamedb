@@ -12,12 +12,12 @@ import (
 	"github.com/gamedb/gamedb/pkg/chatbot"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
-	"github.com/gamedb/gamedb/pkg/helpers/memcache"
+	influxHelper "github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/queue"
-	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	influx "github.com/influxdata/influxdb1-client"
 )
@@ -44,7 +44,7 @@ func main() {
 	}
 
 	// Get API key
-	err := sql.GetAPIKey("chatbot")
+	err := mysql.GetAPIKey("chatbot")
 	if err != nil {
 		log.Critical(err)
 		return

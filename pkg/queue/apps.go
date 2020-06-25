@@ -15,13 +15,13 @@ import (
 	"github.com/cenkalti/backoff/v4"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/helpers/i18n"
-	"github.com/gamedb/gamedb/pkg/helpers/memcache"
-	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
+	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/sql"
-	"github.com/gamedb/gamedb/pkg/sql/pics"
+	"github.com/gamedb/gamedb/pkg/mysql"
+	"github.com/gamedb/gamedb/pkg/mysql/pics"
+	steamHelper "github.com/gamedb/gamedb/pkg/steam"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/gocolly/colly"
 	"go.mongodb.org/mongo-driver/bson"
@@ -517,15 +517,15 @@ func updateAppDetails(app *mongo.App) (err error) {
 			app.Packages = response.Data.Packages
 
 			// Publishers
-			gorm, err := sql.GetMySQLClient()
+			gorm, err := mysql.GetMySQLClient()
 			if err != nil {
 				return err
 			}
 
 			var publisherIDs []int
 			for _, v := range response.Data.Publishers {
-				var publisher sql.Publisher
-				gorm = gorm.Unscoped().FirstOrCreate(&publisher, sql.Publisher{Name: sql.TrimPublisherName(v)})
+				var publisher mysql.Publisher
+				gorm = gorm.Unscoped().FirstOrCreate(&publisher, mysql.Publisher{Name: mysql.TrimPublisherName(v)})
 				if gorm.Error != nil {
 					return gorm.Error
 				}
@@ -535,15 +535,15 @@ func updateAppDetails(app *mongo.App) (err error) {
 			app.Publishers = publisherIDs
 
 			// Developers
-			gorm, err = sql.GetMySQLClient()
+			gorm, err = mysql.GetMySQLClient()
 			if err != nil {
 				return err
 			}
 
 			var developerIDs []int
 			for _, v := range response.Data.Developers {
-				var developer sql.Developer
-				gorm = gorm.Unscoped().FirstOrCreate(&developer, sql.Developer{Name: strings.TrimSpace(v)})
+				var developer mysql.Developer
+				gorm = gorm.Unscoped().FirstOrCreate(&developer, mysql.Developer{Name: strings.TrimSpace(v)})
 				if gorm.Error != nil {
 					return gorm.Error
 				}
@@ -561,15 +561,15 @@ func updateAppDetails(app *mongo.App) (err error) {
 			app.Categories = categories
 
 			// Genres
-			gorm, err = sql.GetMySQLClient()
+			gorm, err = mysql.GetMySQLClient()
 			if err != nil {
 				return err
 			}
 
 			var genreIDs []int
 			for _, v := range response.Data.Genres {
-				var genre sql.Genre
-				gorm = gorm.Unscoped().Assign(sql.Genre{Name: strings.TrimSpace(v.Description)}).FirstOrCreate(&genre, sql.Genre{ID: int(v.ID)})
+				var genre mysql.Genre
+				gorm = gorm.Unscoped().Assign(mysql.Genre{Name: strings.TrimSpace(v.Description)}).FirstOrCreate(&genre, mysql.Genre{ID: int(v.ID)})
 				if gorm.Error != nil {
 					return gorm.Error
 				}

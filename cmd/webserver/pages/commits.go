@@ -9,9 +9,10 @@ import (
 	"github.com/cenkalti/backoff/v4"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/config"
+	github2 "github.com/gamedb/gamedb/pkg/github"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/go-chi/chi"
 	"github.com/google/go-github/v28/github"
 )
@@ -42,7 +43,7 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := datatable.NewDataTableQuery(r, true)
 
-	client, ctx := helpers.GetGithub()
+	client, ctx := github2.GetGithub()
 
 	var wg sync.WaitGroup
 

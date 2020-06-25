@@ -17,11 +17,11 @@ import (
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/queue"
-	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
 	chiMiddleware "github.com/go-chi/chi/middleware"
 	"github.com/gobuffalo/packr/v2"
@@ -47,7 +47,7 @@ func main() {
 	log.Initialise(log.LogNameWebserver)
 
 	// Get API key
-	err := sql.GetAPIKey("webserver")
+	err := mysql.GetAPIKey("webserver")
 	if err != nil {
 		log.Critical(err)
 		return

@@ -7,9 +7,9 @@ import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/elastic"
-	"github.com/gamedb/gamedb/pkg/helpers/i18n"
+	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/mysql"
 )
 
 type CommandAppPrice struct {
@@ -64,7 +64,7 @@ func (c CommandAppPrice) Output(msg *discordgo.MessageCreate) (message discordgo
 
 	if matches[1] == "" {
 
-		settings, err := sql.GetChatBotSettings(msg.Author.ID)
+		settings, err := mysql.GetChatBotSettings(msg.Author.ID)
 		if err != nil {
 			log.Err(err)
 			return message, err

@@ -9,7 +9,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -31,7 +31,7 @@ func productKeysHandler(w http.ResponseWriter, r *http.Request) {
 		productType = "apps"
 	}
 
-	keys, err := sql.GetProductKeys()
+	keys, err := mysql.GetProductKeys()
 	log.Err(err, r)
 
 	// Template
@@ -50,7 +50,7 @@ type productKeysTemplate struct {
 	Key   string
 	Value string
 	Type  string
-	Keys  []sql.ProductKey
+	Keys  []mysql.ProductKey
 }
 
 var keyRegex = regexp.MustCompile("[0-9a-z_]+") // To stop injection

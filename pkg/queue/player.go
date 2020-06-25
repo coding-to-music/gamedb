@@ -9,12 +9,12 @@ import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/Jleagle/steam-go/steamid"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
-	"github.com/gamedb/gamedb/pkg/helpers/memcache"
-	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
+	influxHelper "github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/mysql"
+	steamHelper "github.com/gamedb/gamedb/pkg/steam"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	influx "github.com/influxdata/influxdb1-client"
 	"go.mongodb.org/mongo-driver/bson"
@@ -225,8 +225,8 @@ func playerHandler(messages []*rabbit.Message) {
 
 			defer wg.Done()
 
-			user, err := sql.GetUserByKey("steam_id", player.ID, 0)
-			if err == sql.ErrRecordNotFound {
+			user, err := mysql.GetUserByKey("steam_id", player.ID, 0)
+			if err == mysql.ErrRecordNotFound {
 				return
 			}
 			if err != nil {

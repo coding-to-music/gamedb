@@ -11,9 +11,11 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steamapi"
+	"github.com/gamedb/gamedb/pkg/file-cache"
+	github2 "github.com/gamedb/gamedb/pkg/github"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
+	steamHelper "github.com/gamedb/gamedb/pkg/steam"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/go-chi/chi"
 	"github.com/google/go-github/v28/github"
@@ -63,7 +65,7 @@ func steamAPIHandler(w http.ResponseWriter, r *http.Request) {
 		return interfaces, nil
 	}
 
-	err = helpers.GetSetCache("steam-api", time.Hour*24, retrieve, &interfaces)
+	err = file_cache.GetSetCache("steam-api", time.Hour*24, retrieve, &interfaces)
 	if err != nil {
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "An error occurred"})
 		return
@@ -166,7 +168,7 @@ func (interfaces *Interfaces) addDocumented(w http.ResponseWriter, r *http.Reque
 
 func (interfaces *Interfaces) addUndocumented() (err error) {
 
-	client, ctx := helpers.GetGithub()
+	client, ctx := github2.GetGithub()
 	_, dirs, _, err := client.Repositories.GetContents(ctx, "SteamDatabase", "SteamTracking", "API", nil)
 	if err != nil {
 		return err

@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/go-chi/chi"
 )
 
@@ -30,7 +30,7 @@ func franchiseHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	publisher, err := sql.GetPublisher(id)
+	publisher, err := mysql.GetPublisher(id)
 	if err != nil {
 		returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Invalid App ID"})
 		return

@@ -6,7 +6,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/websockets"
 )
 
@@ -107,7 +107,7 @@ func websocketHandler(messages []*rabbit.Message) {
 				err = helpers.Unmarshal(payload.Message, &idPayload)
 				log.Err(err)
 
-				bundle, err := sql.GetBundle(idPayload.ID, nil)
+				bundle, err := mysql.GetBundle(idPayload.ID, nil)
 				log.Err(err)
 				if err == nil {
 					wsPage.Send(bundle.OutputForJSON())

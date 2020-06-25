@@ -15,7 +15,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/go-chi/chi"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -105,9 +105,9 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Find user
-		user, err := sql.GetUserByKey("email", email, 0)
+		user, err := mysql.GetUserByKey("email", email, 0)
 		if err != nil {
-			err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
+			err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
 			log.Err(err, r)
 			return "Incorrect credentials", false
 		}
@@ -150,7 +150,7 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func login(r *http.Request, user sql.User) (string, bool) {
+func login(r *http.Request, user mysql.User) (string, bool) {
 
 	if !user.EmailVerified {
 		return "Please verify your email address first", false

@@ -6,7 +6,7 @@ import (
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/tasks"
 	"github.com/go-chi/chi"
 )
@@ -23,12 +23,12 @@ func developersHandler(w http.ResponseWriter, r *http.Request) {
 	// Get config
 	config, err := tasks.GetTaskConfig(tasks.StatsDevelopers{})
 	if err != nil {
-		err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
+		err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
 		log.Err(err, r)
 	}
 
 	// Get developers
-	developers, err := sql.GetAllDevelopers([]string{})
+	developers, err := mysql.GetAllDevelopers([]string{})
 	if err != nil {
 		log.Err(err, r)
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the developers."})
@@ -55,7 +55,7 @@ func developersHandler(w http.ResponseWriter, r *http.Request) {
 
 type statsDevelopersTemplate struct {
 	GlobalTemplate
-	Developers []sql.Developer
+	Developers []mysql.Developer
 	Date       string
 	Prices     map[int]string
 }

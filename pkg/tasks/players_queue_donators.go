@@ -2,10 +2,10 @@ package tasks
 
 import (
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/helpers/memcache"
+	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/queue"
-	"github.com/gamedb/gamedb/pkg/sql"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -28,14 +28,14 @@ func (c AutoPlayerRefreshes) Cron() string {
 func (c AutoPlayerRefreshes) work() (err error) {
 
 	// Get users
-	db, err := sql.GetMySQLClient()
+	db, err := mysql.GetMySQLClient()
 	if err != nil {
 		return err
 	}
 
-	var users []sql.User
+	var users []mysql.User
 	db = db.Select([]string{"steam_id", "steam_id"})
-	db = db.Where("level >= ?", sql.UserLevel3)
+	db = db.Where("level >= ?", mysql.UserLevel3)
 	db = db.Where("steam_id > ?", 0)
 	db = db.Find(&users)
 	if db.Error != nil {

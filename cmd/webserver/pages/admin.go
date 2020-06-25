@@ -11,11 +11,11 @@ import (
 	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/helpers/memcache"
-	"github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/memcache"
+	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/queue"
-	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/steam"
 	"github.com/gamedb/gamedb/pkg/tasks"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/go-chi/chi"
@@ -68,7 +68,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get configs for times
-	configs, err := sql.GetAllConfigs()
+	configs, err := mysql.GetAllConfigs()
 	log.Err(err, r)
 
 	// Template
@@ -88,7 +88,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//
-	gorm, err := sql.GetMySQLClient()
+	gorm, err := mysql.GetMySQLClient()
 	if err != nil {
 		log.Err(err, r)
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Can't connect to mysql"})
@@ -112,7 +112,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 type adminTemplate struct {
 	GlobalTemplate
 	Errors     []string
-	Configs    map[string]sql.Config
+	Configs    map[string]mysql.Config
 	Queries    []adminQuery
 	BinLogs    []adminBinLog
 	Websockets map[websockets.WebsocketPage]*websockets.Page
@@ -321,7 +321,7 @@ func adminDeleteBinLogs(r *http.Request) {
 	name := r.URL.Query().Get("name")
 	if name != "" {
 
-		gorm, err := sql.GetMySQLClient()
+		gorm, err := mysql.GetMySQLClient()
 		if err != nil {
 			log.Err(err, r)
 			return

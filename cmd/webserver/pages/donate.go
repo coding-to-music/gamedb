@@ -6,7 +6,7 @@ import (
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -25,11 +25,11 @@ func donateHandler(w http.ResponseWriter, r *http.Request) {
 	t := donateTemplate{}
 	t.fill(w, r, "Donate", "Databases take up a tonne of resources. Help pay for the server costs or just buy me a beer.")
 	t.Pages = map[int]int{
-		sql.UserLevel0: sql.UserLevelLimit0,
-		sql.UserLevel1: sql.UserLevelLimit1,
-		sql.UserLevel2: sql.UserLevelLimit2,
-		sql.UserLevel3: sql.UserLevelLimit3,
-		sql.UserLevel4: sql.UserLevelLimit4,
+		mysql.UserLevel0: mysql.UserLevelLimit0,
+		mysql.UserLevel1: mysql.UserLevelLimit1,
+		mysql.UserLevel2: mysql.UserLevelLimit2,
+		mysql.UserLevel3: mysql.UserLevelLimit3,
+		mysql.UserLevel4: mysql.UserLevelLimit4,
 	}
 
 	returnTemplate(w, r, "donate", t)
@@ -43,7 +43,7 @@ type donateTemplate struct {
 func topDonateHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get donators
-	donators, err := sql.TopDonators()
+	donators, err := mysql.TopDonators()
 	if err != nil {
 		log.Err(err)
 		return
@@ -97,7 +97,7 @@ func topDonateHandler(w http.ResponseWriter, r *http.Request) {
 func latestDonateHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get donations
-	donations, err := sql.LatestDonations()
+	donations, err := mysql.LatestDonations()
 	if err != nil {
 		log.Err(err)
 		return

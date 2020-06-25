@@ -19,11 +19,11 @@ import (
 	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/helpers/i18n"
-	"github.com/gamedb/gamedb/pkg/helpers/memcache"
+	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gobuffalo/packr/v2"
 	"github.com/gosimple/slug"
 	"github.com/tdewolff/minify/v2"
@@ -569,20 +569,20 @@ type Toast struct {
 	Timeout int    `json:"timeout"`
 }
 
-func getUserFromSession(r *http.Request) (user sql.User, err error) {
+func getUserFromSession(r *http.Request) (user mysql.User, err error) {
 
 	userID, err := sessionHelpers.GetUserIDFromSesion(r)
 	if err != nil {
 		return user, err
 	}
 
-	return sql.GetUserByID(userID)
+	return mysql.GetUserByID(userID)
 }
 
 // App bits
-func GetAppTags(app mongo.App) (tags []sql.Tag, err error) {
+func GetAppTags(app mongo.App) (tags []mysql.Tag, err error) {
 
-	tags = []sql.Tag{} // Needed for marshalling into type
+	tags = []mysql.Tag{} // Needed for marshalling into type
 
 	if len(app.Tags) == 0 {
 		return tags, nil
@@ -591,15 +591,15 @@ func GetAppTags(app mongo.App) (tags []sql.Tag, err error) {
 	var item = memcache.MemcacheAppTags(app.ID)
 
 	err = memcache.GetSetInterface(item.Key, item.Expiration, &tags, func() (interface{}, error) {
-		return sql.GetTagsByID(app.Tags, []string{"id", "name"})
+		return mysql.GetTagsByID(app.Tags, []string{"id", "name"})
 	})
 
 	return tags, err
 }
 
-func GetAppGenres(app mongo.App) (genres []sql.Genre, err error) {
+func GetAppGenres(app mongo.App) (genres []mysql.Genre, err error) {
 
-	genres = []sql.Genre{} // Needed for marshalling into type
+	genres = []mysql.Genre{} // Needed for marshalling into type
 
 	if len(app.Genres) == 0 {
 		return genres, nil
@@ -608,15 +608,15 @@ func GetAppGenres(app mongo.App) (genres []sql.Genre, err error) {
 	var item = memcache.MemcacheAppGenres(app.ID)
 
 	err = memcache.GetSetInterface(item.Key, item.Expiration, &genres, func() (interface{}, error) {
-		return sql.GetGenresByID(app.Genres, []string{"id", "name"})
+		return mysql.GetGenresByID(app.Genres, []string{"id", "name"})
 	})
 
 	return genres, err
 }
 
-func GetDevelopers(app mongo.App) (developers []sql.Developer, err error) {
+func GetDevelopers(app mongo.App) (developers []mysql.Developer, err error) {
 
-	developers = []sql.Developer{} // Needed for marshalling into type
+	developers = []mysql.Developer{} // Needed for marshalling into type
 
 	if len(app.Developers) == 0 {
 		return developers, nil
@@ -625,15 +625,15 @@ func GetDevelopers(app mongo.App) (developers []sql.Developer, err error) {
 	var item = memcache.MemcacheAppDevelopers(app.ID)
 
 	err = memcache.GetSetInterface(item.Key, item.Expiration, &developers, func() (interface{}, error) {
-		return sql.GetDevelopersByID(app.Developers, []string{"id", "name"})
+		return mysql.GetDevelopersByID(app.Developers, []string{"id", "name"})
 	})
 
 	return developers, err
 }
 
-func GetPublishers(app mongo.App) (publishers []sql.Publisher, err error) {
+func GetPublishers(app mongo.App) (publishers []mysql.Publisher, err error) {
 
-	publishers = []sql.Publisher{} // Needed for marshalling into type
+	publishers = []mysql.Publisher{} // Needed for marshalling into type
 
 	if len(app.Publishers) == 0 {
 		return publishers, nil
@@ -642,15 +642,15 @@ func GetPublishers(app mongo.App) (publishers []sql.Publisher, err error) {
 	var item = memcache.MemcacheAppPublishers(app.ID)
 
 	err = memcache.GetSetInterface(item.Key, item.Expiration, &publishers, func() (interface{}, error) {
-		return sql.GetPublishersByID(app.Publishers, []string{"id", "name"})
+		return mysql.GetPublishersByID(app.Publishers, []string{"id", "name"})
 	})
 
 	return publishers, err
 }
 
-func GetAppCategories(app mongo.App) (categories []sql.Category, err error) {
+func GetAppCategories(app mongo.App) (categories []mysql.Category, err error) {
 
-	categories = []sql.Category{} // Needed for marshalling into type
+	categories = []mysql.Category{} // Needed for marshalling into type
 
 	if len(app.Categories) == 0 {
 		return categories, nil
@@ -660,15 +660,15 @@ func GetAppCategories(app mongo.App) (categories []sql.Category, err error) {
 
 	err = memcache.GetSetInterface(item.Key, item.Expiration, &categories, func() (interface{}, error) {
 
-		return sql.GetCategoriesByID(app.Categories, []string{"id", "name"})
+		return mysql.GetCategoriesByID(app.Categories, []string{"id", "name"})
 	})
 
 	return categories, err
 }
 
-func GetAppBundles(app mongo.App) (bundles []sql.Bundle, err error) {
+func GetAppBundles(app mongo.App) (bundles []mysql.Bundle, err error) {
 
-	bundles = []sql.Bundle{} // Needed for marshalling into type
+	bundles = []mysql.Bundle{} // Needed for marshalling into type
 
 	if len(app.Bundles) == 0 {
 		return bundles, nil
@@ -677,16 +677,16 @@ func GetAppBundles(app mongo.App) (bundles []sql.Bundle, err error) {
 	var item = memcache.MemcacheAppBundles(app.ID)
 
 	err = memcache.GetSetInterface(item.Key, item.Expiration, &bundles, func() (interface{}, error) {
-		return sql.GetBundlesByID(app.Bundles, []string{})
+		return mysql.GetBundlesByID(app.Bundles, []string{})
 	})
 
 	return bundles, err
 }
 
 // Package bits
-func GetPackageBundles(pack mongo.Package) (bundles []sql.Bundle, err error) {
+func GetPackageBundles(pack mongo.Package) (bundles []mysql.Bundle, err error) {
 
-	bundles = []sql.Bundle{} // Needed for marshalling into type
+	bundles = []mysql.Bundle{} // Needed for marshalling into type
 
 	if len(pack.Bundles) == 0 {
 		return bundles, nil
@@ -695,7 +695,7 @@ func GetPackageBundles(pack mongo.Package) (bundles []sql.Bundle, err error) {
 	var item = memcache.MemcachePackageBundles(pack.ID)
 
 	err = memcache.GetSetInterface(item.Key, item.Expiration, &bundles, func() (interface{}, error) {
-		return sql.GetBundlesByID(pack.Bundles, []string{})
+		return mysql.GetBundlesByID(pack.Bundles, []string{})
 	})
 
 	return bundles, err

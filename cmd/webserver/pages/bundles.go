@@ -6,7 +6,7 @@ import (
 
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/go-chi/chi"
 )
 
@@ -39,21 +39,21 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Get apps
-	var bundles []sql.Bundle
+	var bundles []mysql.Bundle
 
 	wg.Add(1)
 	go func(r *http.Request) {
 
 		defer wg.Done()
 
-		gorm, err := sql.GetMySQLClient()
+		gorm, err := mysql.GetMySQLClient()
 		if err != nil {
 
 			log.Err(err, r)
 			return
 		}
 
-		gorm = gorm.Model(&sql.Bundle{})
+		gorm = gorm.Model(&mysql.Bundle{})
 		gorm = gorm.Select([]string{"id", "name", "updated_at", "discount", "highest_discount", "app_ids", "package_ids"})
 		gorm = gorm.Limit(100)
 
@@ -78,7 +78,7 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		count, err = sql.CountBundles()
+		count, err = mysql.CountBundles()
 		log.Err(err, r)
 
 	}()

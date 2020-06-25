@@ -6,7 +6,7 @@ import (
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/tasks"
 	"github.com/go-chi/chi"
 )
@@ -23,12 +23,12 @@ func statsTagsHandler(w http.ResponseWriter, r *http.Request) {
 	// Get config
 	config, err := tasks.GetTaskConfig(tasks.StatsTags{})
 	if err != nil {
-		err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
+		err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
 		log.Err(err, r)
 	}
 
 	// Get tags
-	tags, err := sql.GetAllTags()
+	tags, err := mysql.GetAllTags()
 	if err != nil {
 		log.Err(err, r)
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the tags."})
@@ -56,7 +56,7 @@ func statsTagsHandler(w http.ResponseWriter, r *http.Request) {
 
 type statsTagsTemplate struct {
 	GlobalTemplate
-	Tags   []sql.Tag
+	Tags   []mysql.Tag
 	Date   string
 	Prices map[int]string
 }

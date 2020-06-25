@@ -79,7 +79,7 @@ func playerAddHandler(w http.ResponseWriter, r *http.Request) {
 			log.Err(err, r)
 
 			sessionHelpers.Save(w, r)
-			
+
 			http.Redirect(w, r, "/players/add", http.StatusFound)
 			return
 		}

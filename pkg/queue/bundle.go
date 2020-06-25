@@ -11,11 +11,11 @@ import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/cenkalti/backoff/v4"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/helpers/memcache"
-	steamHelper "github.com/gamedb/gamedb/pkg/helpers/steam"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/mysql"
+	steamHelper "github.com/gamedb/gamedb/pkg/steam"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/gocolly/colly"
 	"go.mongodb.org/mongo-driver/bson"
@@ -39,15 +39,15 @@ func bundleHandler(messages []*rabbit.Message) {
 		}
 
 		// Load current bundle
-		gorm, err := sql.GetMySQLClient()
+		gorm, err := mysql.GetMySQLClient()
 		if err != nil {
 			log.Err(err)
 			sendToRetryQueue(message)
 			continue
 		}
 
-		bundle := sql.Bundle{}
-		gorm = gorm.FirstOrInit(&bundle, sql.Bundle{ID: payload.ID})
+		bundle := mysql.Bundle{}
+		gorm = gorm.FirstOrInit(&bundle, mysql.Bundle{ID: payload.ID})
 		if gorm.Error != nil {
 			log.Err(gorm.Error, payload.ID)
 			sendToRetryQueue(message)
@@ -120,7 +120,7 @@ func bundleHandler(messages []*rabbit.Message) {
 	}
 }
 
-func updateBundle(bundle *sql.Bundle) (err error) {
+func updateBundle(bundle *mysql.Bundle) (err error) {
 
 	c := colly.NewCollector(
 		colly.AllowedDomains("store.steampowered.com"),
@@ -202,7 +202,7 @@ func updateBundle(bundle *sql.Bundle) (err error) {
 
 var bundlePriceLock sync.Mutex
 
-func saveBundlePriceToMongo(bundle sql.Bundle, oldBundle sql.Bundle) (err error) {
+func saveBundlePriceToMongo(bundle mysql.Bundle, oldBundle mysql.Bundle) (err error) {
 
 	bundlePriceLock.Lock()
 	defer bundlePriceLock.Unlock()

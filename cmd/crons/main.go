@@ -4,8 +4,8 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/queue"
-	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/tasks"
 	"github.com/robfig/cron/v3"
 )
@@ -21,7 +21,7 @@ func main() {
 	queue.Init(queue.QueueCronsDefinitions)
 
 	// Get API key
-	err := sql.GetAPIKey("crons")
+	err := mysql.GetAPIKey("crons")
 	if err != nil {
 		log.Critical(err)
 		return

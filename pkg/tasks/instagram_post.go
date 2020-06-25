@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/helpers/instagram"
+	"github.com/gamedb/gamedb/pkg/instagram"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 )

@@ -14,12 +14,12 @@ import (
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
-	"github.com/gamedb/gamedb/pkg/helpers/memcache"
-	"github.com/gamedb/gamedb/pkg/helpers/steam"
+	influxHelper "github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/mysql"
+	"github.com/gamedb/gamedb/pkg/steam"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/gocolly/colly"
 	influx "github.com/influxdata/influxdb1-client"
@@ -145,7 +145,7 @@ func groupsHandler(messages []*rabbit.Message) {
 			var err error
 
 			app, err = getAppFromGroup(group)
-			err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
+			err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
 			if err != nil {
 				log.Err(err, payload.ID)
 				sendToRetryQueue(message)

@@ -6,11 +6,11 @@ import (
 	"sync"
 
 	"github.com/Jleagle/steam-go/steamapi"
-	"github.com/gamedb/gamedb/pkg/helpers/i18n"
-	"github.com/gamedb/gamedb/pkg/helpers/memcache"
+	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/mysql"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -33,7 +33,7 @@ func (c StatsDevelopers) Cron() string {
 func (c StatsDevelopers) work() (err error) {
 
 	// Get current developers, to delete old ones
-	allDevelopers, err := sql.GetAllDevelopers([]string{"id", "name"})
+	allDevelopers, err := mysql.GetAllDevelopers([]string{"id", "name"})
 	if err != nil {
 		return err
 	}
@@ -114,13 +114,13 @@ func (c StatsDevelopers) work() (err error) {
 			devsToDeleteSlice = append(devsToDeleteSlice, k)
 		}
 
-		err := sql.DeleteDevelopers(devsToDeleteSlice)
+		err := mysql.DeleteDevelopers(devsToDeleteSlice)
 		log.Err(err)
 	}()
 
 	wg.Wait()
 
-	gorm, err := sql.GetMySQLClient()
+	gorm, err := mysql.GetMySQLClient()
 	if err != nil {
 		return err
 	}
@@ -142,9 +142,9 @@ func (c StatsDevelopers) work() (err error) {
 				wg.Done()
 			}()
 
-			var developer sql.Developer
+			var developer mysql.Developer
 
-			gorm = gorm.Unscoped().FirstOrInit(&developer, sql.Developer{ID: developerInt})
+			gorm = gorm.Unscoped().FirstOrInit(&developer, mysql.Developer{ID: developerInt})
 			log.Err(gorm.Error)
 
 			developer.Name = v.name

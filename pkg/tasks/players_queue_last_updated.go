@@ -5,9 +5,10 @@ import (
 
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/helpers/memcache"
+	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
+	"github.com/gamedb/gamedb/pkg/rabbit-web"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -39,7 +40,7 @@ func (c PlayersQueueLastUpdated) work() (err error) {
 		queue.QueuePlayers:  5,
 	}
 
-	queues, err := helpers.RabbitClient.GetQueues()
+	queues, err := rabbit_web.RabbitClient.GetQueues()
 	if err != nil {
 		return err
 	}

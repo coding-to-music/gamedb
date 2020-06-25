@@ -13,7 +13,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -69,7 +69,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.Tags, err = sql.GetTagsForSelect()
+		t.Tags, err = mysql.GetTagsForSelect()
 		log.Err(err, r)
 	}()
 
@@ -80,7 +80,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.Genres, err = sql.GetGenresForSelect()
+		t.Genres, err = mysql.GetGenresForSelect()
 		log.Err(err, r)
 	}()
 
@@ -91,7 +91,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.Categories, err = sql.GetCategoriesForSelect()
+		t.Categories, err = mysql.GetCategoriesForSelect()
 		log.Err(err, r)
 	}()
 
@@ -104,7 +104,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 		if val, ok := r.URL.Query()["publishers"]; ok {
 
 			var err error
-			t.Publishers, err = sql.GetPublishersForSelect()
+			t.Publishers, err = mysql.GetPublishersForSelect()
 			log.Err(err, r)
 
 			var publishersToLoad []int
@@ -131,7 +131,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 
-			publishers, err := sql.GetPublishersByID(publishersToLoad, []string{"id", "name"})
+			publishers, err := mysql.GetPublishersByID(publishersToLoad, []string{"id", "name"})
 			log.Err(err, r)
 			if err == nil {
 				t.Publishers = append(t.Publishers, publishers...)
@@ -152,7 +152,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 		if val, ok := r.URL.Query()["developers"]; ok {
 
 			var err error
-			t.Developers, err = sql.GetDevelopersForSelect()
+			t.Developers, err = mysql.GetDevelopersForSelect()
 			log.Err(err, r)
 
 			var developersToLoad []int
@@ -179,7 +179,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 
-			developers, err := sql.GetDevelopersByID(developersToLoad, []string{"id", "name"})
+			developers, err := mysql.GetDevelopersByID(developersToLoad, []string{"id", "name"})
 			log.Err(err, r)
 			if err == nil {
 				t.Developers = append(t.Developers, developers...)
@@ -202,11 +202,11 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 type appsTemplate struct {
 	GlobalTemplate
 	Types      []mongo.AppTypeCount
-	Tags       []sql.Tag
-	Genres     []sql.Genre
-	Categories []sql.Category
-	Publishers []sql.Publisher
-	Developers []sql.Developer
+	Tags       []mysql.Tag
+	Genres     []mysql.Genre
+	Categories []mysql.Category
+	Publishers []mysql.Publisher
+	Developers []mysql.Developer
 }
 
 func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {

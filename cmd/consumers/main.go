@@ -8,8 +8,8 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/queue"
-	"github.com/gamedb/gamedb/pkg/sql"
 )
 
 var version string
@@ -20,7 +20,7 @@ func main() {
 	log.Initialise(log.LogNameConsumers)
 
 	// Get API key
-	err := sql.GetAPIKey("consumer")
+	err := mysql.GetAPIKey("consumer")
 	if err != nil {
 		log.Critical(err)
 		return

@@ -8,11 +8,11 @@ import (
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/queue"
-	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -41,10 +41,10 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 	// }
 
 	// Get bundle
-	bundle, err := sql.GetBundle(id, nil)
+	bundle, err := mysql.GetBundle(id, nil)
 	if err != nil {
 
-		if err == sql.ErrRecordNotFound {
+		if err == mysql.ErrRecordNotFound {
 			returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Sorry but we can not find this bundle."})
 			return
 		}
@@ -134,7 +134,7 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 
 type bundleTemplate struct {
 	GlobalTemplate
-	Bundle   sql.Bundle
+	Bundle   mysql.Bundle
 	Apps     []mongo.App
 	Packages []mongo.Package
 }
@@ -162,7 +162,7 @@ func bundlePricesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Add current price
-	price, err := sql.GetBundle(id, []string{"discount"})
+	price, err := mysql.GetBundle(id, []string{"discount"})
 	if err != nil {
 		log.Err(err, r)
 	} else {

@@ -11,9 +11,9 @@ import (
 	"github.com/Jleagle/session-go/session"
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/helpers/i18n"
+	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
 	"github.com/oschwald/maxminddb-golang"
@@ -280,12 +280,12 @@ func GetUserLevel(r *http.Request) int {
 
 	val := Get(r, SessionUserLevel)
 	if val == "" {
-		return sql.UserLevel0
+		return mysql.UserLevel0
 	}
 
 	i, err := strconv.Atoi(val)
 	if err != nil {
-		return sql.UserLevel0
+		return mysql.UserLevel0
 	}
 
 	return i

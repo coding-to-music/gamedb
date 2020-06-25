@@ -7,12 +7,12 @@ import (
 
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/helpers/memcache"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/mysql"
+	"github.com/gamedb/gamedb/pkg/mysql/pics"
 	"github.com/gamedb/gamedb/pkg/queue"
-	"github.com/gamedb/gamedb/pkg/sql"
-	"github.com/gamedb/gamedb/pkg/sql/pics"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -87,7 +87,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 		log.Err(err, r)
 	}()
 
-	var bundles []sql.Bundle
+	var bundles []mysql.Bundle
 	wg.Add(1)
 	go func() {
 
@@ -161,7 +161,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 type packageTemplate struct {
 	GlobalTemplate
 	Apps       map[int]mongo.App
-	Bundles    []sql.Bundle
+	Bundles    []mysql.Bundle
 	Banners    map[string][]string
 	Controller pics.PICSController
 	Extended   []pics.KeyValue

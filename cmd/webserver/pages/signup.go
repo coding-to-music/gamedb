@@ -11,10 +11,10 @@ import (
 	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
+	influxHelper "github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/go-chi/chi"
 	influx "github.com/influxdata/influxdb1-client"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
@@ -114,16 +114,16 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Check user doesnt exist
-		_, err = sql.GetUserByKey("email", email, 0)
+		_, err = mysql.GetUserByKey("email", email, 0)
 		if err == nil {
 			return "An account with this email already exists", true
 		}
 
-		err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
+		err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
 		log.Err(err, r)
 
 		// Create user
-		db, err := sql.GetMySQLClient()
+		db, err := mysql.GetMySQLClient()
 		if err != nil {
 			log.Err(err, r)
 			return "An error occurred", false
@@ -136,12 +136,12 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 			return "An error occurred", false
 		}
 
-		user := sql.User{
+		user := mysql.User{
 			Email:         email,
 			EmailVerified: false,
 			Password:      string(passwordBytes),
 			ProductCC:     sessionHelpers.GetProductCC(r),
-			Level:         sql.UserLevel1,
+			Level:         mysql.UserLevel1,
 		}
 
 		user.SetAPIKey()
@@ -154,7 +154,7 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Create verification code
-		code, err := sql.CreateUserVerification(user.ID)
+		code, err := mysql.CreateUserVerification(user.ID)
 		if err != nil {
 			log.Err(err, r)
 			return "An error occurred", false
@@ -231,9 +231,9 @@ func verifyHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Find email from code
-		userID, err := sql.GetUserVerification(code)
+		userID, err := mysql.GetUserVerification(code)
 		if err != nil {
-			err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
+			err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
 			log.Err(err, r)
 			return "Invalid code (1002)", false
 		}
@@ -243,7 +243,7 @@ func verifyHandler(w http.ResponseWriter, r *http.Request) {
 		// }
 
 		// Enable user
-		err = sql.UpdateUserCol(userID, "email_verified", true)
+		err = mysql.UpdateUserCol(userID, "email_verified", true)
 		if err != nil {
 			log.Err(err, r)
 			return "Invalid code (1003)", false

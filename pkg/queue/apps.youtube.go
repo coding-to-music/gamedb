@@ -8,8 +8,9 @@ import (
 
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	influxHelper "github.com/gamedb/gamedb/pkg/helpers/influx"
+	influxHelper "github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/youtube"
 	influx "github.com/influxdata/influxdb1-client"
 	"google.golang.org/api/googleapi"
 )
@@ -91,8 +92,8 @@ func appsYoutubeFetch(payload AppYoutubeMessage) (uint64, uint64, error) {
 	// id, snippet, contentDetails, fileDetails, player, processingDetails, recordingDetails, statistics, status, suggestions, topicDetails
 
 	// Get video IDs from search
-	searchResponse, err := helpers.YoutubeService.Search.List("id").
-		Context(helpers.YoutubeContext).
+	searchResponse, err := youtube.YoutubeService.Search.List("id").
+		Context(youtube.YoutubeContext).
 		MaxResults(50).
 		SafeSearch("none").
 		Type("video").
@@ -111,7 +112,7 @@ func appsYoutubeFetch(payload AppYoutubeMessage) (uint64, uint64, error) {
 	}
 
 	// Get video statistics from IDs
-	listResponse, err := helpers.YoutubeService.Videos.
+	listResponse, err := youtube.YoutubeService.Videos.
 		List("statistics").
 		Id(strings.Join(ids, ",")).
 		Do()

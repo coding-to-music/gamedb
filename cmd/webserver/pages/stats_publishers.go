@@ -6,7 +6,7 @@ import (
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/sql"
+	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/tasks"
 	"github.com/go-chi/chi"
 )
@@ -22,12 +22,12 @@ func publishersHandler(w http.ResponseWriter, r *http.Request) {
 	// Get config
 	config, err := tasks.GetTaskConfig(tasks.TasksPublishers{})
 	if err != nil {
-		err = helpers.IgnoreErrors(err, sql.ErrRecordNotFound)
+		err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
 		log.Err(err, r)
 	}
 
 	// Get publishers
-	publishers, err := sql.GetAllPublishers()
+	publishers, err := mysql.GetAllPublishers()
 	if err != nil {
 		log.Err(err, r)
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the publishers."})
@@ -55,7 +55,7 @@ func publishersHandler(w http.ResponseWriter, r *http.Request) {
 
 type statsPublishersTemplate struct {
 	GlobalTemplate
-	Publishers []sql.Publisher
+	Publishers []mysql.Publisher
 	Date       string
 	Prices     map[int]string
 }

@@ -7,8 +7,8 @@ import (
 
 	"github.com/cenkalti/backoff/v4"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/queue"
-	"github.com/gamedb/gamedb/pkg/sql"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/robfig/cron/v3"
 )
@@ -152,7 +152,7 @@ func Run(task TaskInterface) {
 	} else {
 
 		// Save config row
-		err = sql.SetConfig(sql.ConfigID("task-"+task.ID()), strconv.FormatInt(time.Now().Unix(), 10))
+		err = mysql.SetConfig(mysql.ConfigID("task-"+task.ID()), strconv.FormatInt(time.Now().Unix(), 10))
 		if err != nil {
 			log.Err(err)
 		}
@@ -170,8 +170,8 @@ func Run(task TaskInterface) {
 	runtime.GC()
 }
 
-func GetTaskConfig(task TaskInterface) (config sql.Config, err error) {
-	return sql.GetConfig(sql.ConfigID("task-" + task.ID()))
+func GetTaskConfig(task TaskInterface) (config mysql.Config, err error) {
+	return mysql.GetConfig(mysql.ConfigID("task-" + task.ID()))
 }
 
 //
