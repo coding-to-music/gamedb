@@ -19,6 +19,10 @@ type PlayersGroupsMessage struct {
 	UserAgent         *string `json:"user_agent"`
 }
 
+func (m PlayersGroupsMessage) Queue() rabbit.QueueName {
+	return QueuePlayersGroups
+}
+
 func playersGroupsHandler(messages []*rabbit.Message) {
 
 	for _, message := range messages {

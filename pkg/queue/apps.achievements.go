@@ -19,6 +19,10 @@ type AppAchievementsMessage struct {
 	AppOwners int64  `json:"app_owners"`
 }
 
+func (m AppAchievementsMessage) Queue() rabbit.QueueName {
+	return QueueAppsAchievements
+}
+
 func appAchievementsHandler(messages []*rabbit.Message) {
 
 	for _, message := range messages {

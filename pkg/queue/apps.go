@@ -233,26 +233,26 @@ func appHandler(messages []*rabbit.Message) {
 		}
 
 		// Produce to sub queues
-		var produces = map[rabbit.QueueName]interface{}{
-			QueueAppsAchievements: AppAchievementsMessage{AppID: app.ID, AppName: app.Name, AppOwners: app.Owners},
-			QueueAppsMorelike:     AppMorelikeMessage{ID: app.ID},
-			QueueAppsNews:         AppNewsMessage{ID: app.ID},
-			QueueAppsSameowners:   AppSameownersMessage{ID: app.ID},
-			QueueAppsSteamspy:     AppSteamspyMessage{ID: app.ID},
-			QueueAppsTwitch:       AppTwitchMessage{ID: app.ID},
-			QueueAppsReviews:      AppReviewsMessage{AppID: app.ID},
-			QueueAppsSearch:       AppsSearchMessage{App: app},
-			QueueAppsItems:        AppItemsMessage{AppID: app.ID, OldDigect: app.ItemsDigest},
+		var produces = []QueueMessageInterface{
+			AppAchievementsMessage{AppID: app.ID, AppName: app.Name, AppOwners: app.Owners},
+			AppMorelikeMessage{ID: app.ID},
+			AppNewsMessage{ID: app.ID},
+			AppSameownersMessage{ID: app.ID},
+			AppSteamspyMessage{ID: app.ID},
+			AppTwitchMessage{ID: app.ID},
+			AppReviewsMessage{AppID: app.ID},
+			AppsSearchMessage{App: app},
+			AppItemsMessage{AppID: app.ID, OldDigect: app.ItemsDigest},
 		}
 
 		if app.GroupID == "" {
-			produces[QueueAppsFindGroup] = FindGroupMessage{AppID: app.ID}
+			produces = append(produces, FindGroupMessage{AppID: app.ID})
 		} else {
-			produces[QueueGroups] = GroupMessage{ID: app.GroupID}
+			produces = append(produces, GroupMessage{ID: app.GroupID})
 		}
 
-		for k, v := range produces {
-			err = produce(k, v)
+		for _, v := range produces {
+			err = produce(v.Queue(), v)
 			if err != nil {
 				log.Err(err)
 				sendToRetryQueue(message)

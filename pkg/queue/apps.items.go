@@ -15,6 +15,10 @@ type AppItemsMessage struct {
 	OldDigect string `json:"old_digect"`
 }
 
+func (m AppItemsMessage) Queue() rabbit.QueueName {
+	return QueueAppsItems
+}
+
 func appItemsHandler(messages []*rabbit.Message) {
 
 	for _, message := range messages {

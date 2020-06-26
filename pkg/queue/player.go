@@ -288,10 +288,10 @@ func playerHandler(messages []*rabbit.Message) {
 		}
 
 		// Produce to sub queues
-		var produces = map[rabbit.QueueName]interface{}{
-			QueuePlayersSearch:  PlayersSearchMessage{Player: player},
-			QueuePlayersAliases: PlayersAliasesMessage{PlayerID: player.ID},
-			QueuePlayersGroups: PlayersGroupsMessage{
+		var produces = []QueueMessageInterface{
+			PlayersSearchMessage{Player: player},
+			PlayersAliasesMessage{PlayerID: player.ID},
+			PlayersGroupsMessage{
 				PlayerID:          player.ID,
 				PlayerPersonaName: player.PersonaName,
 				PlayerAvatar:      player.Avatar,
@@ -301,8 +301,8 @@ func playerHandler(messages []*rabbit.Message) {
 			},
 		}
 
-		for k, v := range produces {
-			err = produce(k, v)
+		for _, v := range produces {
+			err = produce(v.Queue(), v)
 			if err != nil {
 				log.Err(err)
 				sendToRetryQueue(message)

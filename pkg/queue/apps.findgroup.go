@@ -19,6 +19,10 @@ type FindGroupMessage struct {
 	AppID int `json:"app_id"`
 }
 
+func (m FindGroupMessage) Queue() rabbit.QueueName {
+	return QueueAppsFindGroup
+}
+
 //noinspection RegExpRedundantEscape
 var regexpGroupID = regexp.MustCompile(`\(\s?\'(\d{18})\'\s?\)`)
 

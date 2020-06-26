@@ -21,6 +21,10 @@ type AppReviewsMessage struct {
 	AppID int `json:"id"`
 }
 
+func (m AppReviewsMessage) Queue() rabbit.QueueName {
+	return QueueAppsReviews
+}
+
 func appReviewsHandler(messages []*rabbit.Message) {
 
 	for _, message := range messages {

@@ -18,6 +18,10 @@ type AppMorelikeMessage struct {
 	ID int `json:"id"`
 }
 
+func (m AppMorelikeMessage) Queue() rabbit.QueueName {
+	return QueueAppsMorelike
+}
+
 var appsMoreLikeCollector = colly.NewCollector(
 	colly.URLFilters(regexp.MustCompile(`store\.steampowered\.com/recommended/morelike/app/[0-9]+$`)),
 	colly.AllowURLRevisit(),

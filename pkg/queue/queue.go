@@ -18,6 +18,10 @@ import (
 	"github.com/streadway/amqp"
 )
 
+type QueueMessageInterface interface {
+	Queue() rabbit.QueueName
+}
+
 const (
 	// Apps
 	QueueApps                   rabbit.QueueName = "GDB_Apps"

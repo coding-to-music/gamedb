@@ -17,6 +17,10 @@ type AppNewsMessage struct {
 	ID int `json:"id"`
 }
 
+func (m AppNewsMessage) Queue() rabbit.QueueName {
+	return QueueAppsNews
+}
+
 func appNewsHandler(messages []*rabbit.Message) {
 
 	for _, message := range messages {

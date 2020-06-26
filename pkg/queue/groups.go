@@ -36,6 +36,10 @@ type GroupMessage struct {
 	UserAgent *string `json:"user_agent"`
 }
 
+func (m GroupMessage) Queue() rabbit.QueueName {
+	return QueueGroups
+}
+
 func groupsHandler(messages []*rabbit.Message) {
 
 	for _, message := range messages {
@@ -226,12 +230,12 @@ func groupsHandler(messages []*rabbit.Message) {
 		}
 
 		// Produce to sub queues
-		var produces = map[rabbit.QueueName]interface{}{
-			QueueGroupsSearch: GroupSearchMessage{Group: group},
+		var produces = []QueueMessageInterface{
+			GroupSearchMessage{Group: group},
 		}
 
-		for k, v := range produces {
-			err = produce(k, v)
+		for _, v := range produces {
+			err = produce(v.Queue(), v)
 			if err != nil {
 				log.Err(err)
 				sendToRetryQueue(message)

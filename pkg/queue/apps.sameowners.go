@@ -15,6 +15,10 @@ type AppSameownersMessage struct {
 	ID int `json:"id"`
 }
 
+func (m AppSameownersMessage) Queue() rabbit.QueueName {
+	return QueueAppsSameowners
+}
+
 func appSameownersHandler(messages []*rabbit.Message) {
 
 	for _, message := range messages {

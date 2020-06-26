@@ -16,6 +16,10 @@ type AppsSearchMessage struct {
 	App mongo.App `json:"app"`
 }
 
+func (m AppsSearchMessage) Queue() rabbit.QueueName {
+	return QueueAppsSearch
+}
+
 func appsSearchHandler(messages []*rabbit.Message) {
 
 	for _, message := range messages {

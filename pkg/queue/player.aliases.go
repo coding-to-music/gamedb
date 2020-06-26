@@ -16,6 +16,10 @@ type PlayersAliasesMessage struct {
 	PlayerID int64 `json:"player_id"`
 }
 
+func (m PlayersAliasesMessage) Queue() rabbit.QueueName {
+	return QueuePlayersAliases
+}
+
 func playerAliasesHandler(messages []*rabbit.Message) {
 
 	for _, message := range messages {

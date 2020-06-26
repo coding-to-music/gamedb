@@ -17,6 +17,10 @@ type AppTwitchMessage struct {
 	ID int `json:"id"`
 }
 
+func (m AppTwitchMessage) Queue() rabbit.QueueName {
+	return QueueAppsTwitch
+}
+
 func appTwitchHandler(messages []*rabbit.Message) {
 
 	for _, message := range messages {

@@ -21,6 +21,10 @@ type AppSteamspyMessage struct {
 	ID int `json:"id"`
 }
 
+func (m AppSteamspyMessage) Queue() rabbit.QueueName {
+	return QueueAppsSteamspy
+}
+
 // https://steamspy.com/api.php
 var steamspyLimiter = ratelimit.New(4, ratelimit.WithoutSlack)
 

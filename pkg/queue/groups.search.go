@@ -12,6 +12,10 @@ type GroupSearchMessage struct {
 	Group mongo.Group `json:"group"`
 }
 
+func (m GroupSearchMessage) Queue() rabbit.QueueName {
+	return QueueGroupsSearch
+}
+
 func groupsSearchHandler(messages []*rabbit.Message) {
 
 	for _, message := range messages {

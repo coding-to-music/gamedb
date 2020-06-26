@@ -12,6 +12,10 @@ type PlayersSearchMessage struct {
 	Player mongo.Player `json:"player"`
 }
 
+func (m PlayersSearchMessage) Queue() rabbit.QueueName {
+	return QueuePlayersSearch
+}
+
 func appsPlayersHandler(messages []*rabbit.Message) {
 
 	for _, message := range messages {
