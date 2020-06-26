@@ -92,7 +92,7 @@ func appsYoutubeFetch(payload AppYoutubeMessage) (uint64, uint64, error) {
 	// id, snippet, contentDetails, fileDetails, player, processingDetails, recordingDetails, statistics, status, suggestions, topicDetails
 
 	// Get video IDs from search
-	searchResponse, err := youtube.YoutubeService.Search.List("id").
+	searchResponse, err := youtube.YoutubeService.Search.List([]string{"id"}).
 		Context(youtube.YoutubeContext).
 		MaxResults(50).
 		SafeSearch("none").
@@ -113,7 +113,7 @@ func appsYoutubeFetch(payload AppYoutubeMessage) (uint64, uint64, error) {
 
 	// Get video statistics from IDs
 	listResponse, err := youtube.YoutubeService.Videos.
-		List("statistics").
+		List([]string{"statistics"}).
 		Id(strings.Join(ids, ",")).
 		Do()
 
