@@ -266,7 +266,7 @@ func Init(definitions []QueueDefinition) {
 			consume = true
 		}
 
-		prefetchSize := 10
+		prefetchSize := 50
 		if queue.prefetchSize > 0 {
 			prefetchSize = queue.prefetchSize
 		}
@@ -293,7 +293,7 @@ func Init(definitions []QueueDefinition) {
 		for _, queue := range definitions {
 			if queue.consumer != nil {
 
-				prefetchSize := 10
+				prefetchSize := 50
 				if queue.prefetchSize > 0 {
 					prefetchSize = queue.prefetchSize
 				}
