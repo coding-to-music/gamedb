@@ -45,6 +45,11 @@ func delayHandler(messages []*rabbit.Message) {
 
 		// Requeue
 		if message.FirstSeen().Add(time.Second * time.Duration(int64(seconds))).Before(time.Now()) {
+
+			if seconds >= max.Seconds() {
+				log.Warning("Max delay: " + string(message.Message.Body))
+			}
+
 			sendToLastQueue(message)
 		} else {
 			sendToRetryQueue(message)
