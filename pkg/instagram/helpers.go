@@ -1,8 +1,9 @@
 package instagram
 
 import (
+	"bytes"
+
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 )
 
 func UploadInstagram(imageURL string, message string) (err error) {
@@ -12,16 +13,12 @@ func UploadInstagram(imageURL string, message string) (err error) {
 		return err
 	}
 
-	resp, err := helpers.GetWithTimeout(imageURL, 0)
+	body, _, err := helpers.GetWithTimeout(imageURL, 0)
 	if err != nil {
 		return err
 	}
-	defer func() {
-		err := resp.Body.Close()
-		log.Err(err)
-	}()
 
-	_, err = ig.UploadPhoto(resp.Body, message, 0, 0)
+	_, err = ig.UploadPhoto(bytes.NewReader(body), message, 0, 0)
 	return err
 }
 

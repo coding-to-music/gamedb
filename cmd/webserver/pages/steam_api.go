@@ -3,7 +3,6 @@ package pages
 import (
 	"encoding/gob"
 	"html/template"
-	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
@@ -186,24 +185,14 @@ func (interfaces *Interfaces) addUndocumented() (err error) {
 				return
 			}
 
-			resp, err := helpers.GetWithTimeout(*dir.DownloadURL, 0)
-			if err != nil {
-				log.Err(err)
-				return
-			}
-			defer func() {
-				err := resp.Body.Close()
-				log.Err(err)
-			}()
-
-			b, err := ioutil.ReadAll(resp.Body)
+			body, _, err := helpers.GetWithTimeout(*dir.DownloadURL, 0)
 			if err != nil {
 				log.Err(err)
 				return
 			}
 
 			i := steamapi.APIInterface{}
-			err = helpers.Unmarshal(b, &i)
+			err = helpers.Unmarshal(body, &i)
 			if err != nil {
 				log.Err(err)
 				return

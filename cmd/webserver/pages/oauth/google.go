@@ -2,13 +2,11 @@ package oauth
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"net/http"
 
 	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
@@ -20,18 +18,9 @@ type googleConnection struct {
 
 func (c googleConnection) getID(r *http.Request, token *oauth2.Token) (string, error) {
 
-	response, err := helpers.GetWithTimeout("https://www.googleapis.com/oauth2/v2/userinfo?access_token="+token.AccessToken, 0)
+	body, _, err := helpers.GetWithTimeout("https://www.googleapis.com/oauth2/v2/userinfo?access_token="+token.AccessToken, 0)
 	if err != nil {
 		return "", oauthError{err, "Invalid token"}
-	}
-	defer func() {
-		err := response.Body.Close()
-		log.Err(err, r)
-	}()
-
-	b, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return "", oauthError{err, "An error occurred (1004)"}
 	}
 
 	userInfo := struct {
@@ -43,7 +32,7 @@ func (c googleConnection) getID(r *http.Request, token *oauth2.Token) (string, e
 		Locale     string `json:"locale"`
 	}{}
 
-	err = json.Unmarshal(b, &userInfo)
+	err = json.Unmarshal(body, &userInfo)
 	if err != nil {
 		return "", oauthError{err, "An error occurred (1005)"}
 	}

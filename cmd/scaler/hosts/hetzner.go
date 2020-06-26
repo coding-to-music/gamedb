@@ -2,12 +2,10 @@ package hosts
 
 import (
 	"context"
-	"io/ioutil"
 
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/github"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/hetznercloud/hcloud-go/hcloud"
 )
 
@@ -54,16 +52,7 @@ func (h Hetzner) CreateConsumer() (c Consumer, err error) {
 		return c, err
 	}
 
-	fileResponse, err := helpers.GetWithTimeout(ghResponse.GetDownloadURL(), 0)
-	if err != nil {
-		return c, err
-	}
-	defer func() {
-		err := fileResponse.Body.Close()
-		log.Err(err)
-	}()
-
-	b, err := ioutil.ReadAll(fileResponse.Body)
+	body, _, err := helpers.GetWithTimeout(ghResponse.GetDownloadURL(), 0)
 	if err != nil {
 		return c, err
 	}
@@ -74,7 +63,7 @@ func (h Hetzner) CreateConsumer() (c Consumer, err error) {
 		Image:      &hcloud.Image{Name: "debian-10"},
 		SSHKeys:    []*hcloud.SSHKey{{ID: config.Config.HetznerSSHKeyID.GetInt()}},
 		Datacenter: &hcloud.Datacenter{Name: "nbg1-dc3"},
-		UserData:   string(b),
+		UserData:   string(body),
 		Labels:     map[string]string{"consumers": "", ConsumerTag: ""},
 		Networks:   []*hcloud.Network{{ID: config.Config.HetznerNetworkID.GetInt()}},
 	})

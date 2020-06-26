@@ -2,7 +2,6 @@ package queue
 
 import (
 	"errors"
-	"io/ioutil"
 	"net/url"
 	"strconv"
 	"strings"
@@ -47,7 +46,7 @@ func appSteamspyHandler(messages []*rabbit.Message) {
 		query.Set("appid", strconv.Itoa(payload.ID))
 
 		steamspyLimiter.Take()
-		response, err := helpers.GetWithTimeout("https://steamspy.com/api.php?"+query.Encode(), 0)
+		body, statusCode, err := helpers.GetWithTimeout("https://steamspy.com/api.php?"+query.Encode(), 0)
 		if err != nil {
 
 			if strings.Contains(err.Error(), "Client.Timeout exceeded while awaiting headers") ||
@@ -61,41 +60,26 @@ func appSteamspyHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		//noinspection GoDeferInLoop
-		defer func() {
-			err = response.Body.Close()
-			if err != nil {
-				log.Err(err, payload.ID)
-			}
-		}()
-
-		if response.StatusCode != 200 {
+		if statusCode != 200 {
 
 			log.Info(errors.New("steamspy is down"), payload.ID)
 			sendToRetryQueueWithDelay(message, time.Minute*30)
 			continue
 		}
 
-		bytes, err := ioutil.ReadAll(response.Body)
-		if err != nil {
-			log.Err(err, payload.ID)
-			sendToRetryQueue(message)
-			continue
-		}
+		if strings.Contains(string(body), "Connection failed") {
 
-		if strings.Contains(string(bytes), "Connection failed") {
-
-			log.Info(errors.New("steamspy is down"), payload.ID, bytes)
+			log.Info(errors.New("steamspy is down"), payload.ID, body)
 			sendToRetryQueueWithDelay(message, time.Minute*30)
 			continue
 		}
 
 		// Unmarshal JSON
 		resp := mongo.SteamSpyAppResponse{}
-		err = helpers.Unmarshal(bytes, &resp)
+		err = helpers.Unmarshal(body, &resp)
 		if err != nil {
 
-			log.Info(err, payload.ID, bytes)
+			log.Info(err, payload.ID, body)
 			sendToRetryQueueWithDelay(message, time.Minute*30)
 			continue
 		}

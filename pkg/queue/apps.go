@@ -629,7 +629,7 @@ func updateAppDetails(app *mongo.App) (err error) {
 						}
 
 						for _, u := range urls {
-							if helpers.GetResponseCode(u) == 200 {
+							if helpers.HeadWithTimeout(u, 0) == 200 {
 								app.Background = u
 								break
 							}

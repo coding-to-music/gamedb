@@ -2,7 +2,6 @@ package tasks
 
 import (
 	"errors"
-	"io/ioutil"
 	"strconv"
 	"strings"
 	"time"
@@ -31,21 +30,12 @@ func (c SteamOnline) Cron() string {
 
 func (c SteamOnline) work() (err error) {
 
-	resp, err := helpers.GetWithTimeout("https://www.valvesoftware.com/en/about/stats", 0)
-	if err != nil {
-		return err
-	}
-	defer func() {
-		err := resp.Body.Close()
-		log.Err(err)
-	}()
-
-	b, err := ioutil.ReadAll(resp.Body)
+	body, _, err := helpers.GetWithTimeout("https://www.valvesoftware.com/en/about/stats", 0)
 	if err != nil {
 		return err
 	}
 
-	if strings.TrimSpace(string(b)) == "[]" {
+	if strings.TrimSpace(string(body)) == "[]" {
 		return TaskError{
 			Err:  errors.New("www.valvesoftware.com/en/about/stats returned empty array"),
 			Okay: true,
@@ -53,10 +43,10 @@ func (c SteamOnline) work() (err error) {
 	}
 
 	sp := steamPlayersStruct{}
-	err = helpers.Unmarshal(b, &sp)
+	err = helpers.Unmarshal(body, &sp)
 	if err != nil {
 		return TaskError{
-			Err:  errors.New("www.valvesoftware.com/en/about/stats down: " + string(b)),
+			Err:  errors.New("www.valvesoftware.com/en/about/stats down: " + string(body)),
 			Okay: true,
 		}
 	}

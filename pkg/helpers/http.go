@@ -22,67 +22,74 @@ func IsBot(userAgent string) bool {
 	return botRegex.MatchString(userAgent)
 }
 
-func GetWithTimeout(url string, timeout time.Duration) (*http.Response, error) {
+func GetWithTimeout(link string, timeout time.Duration) (b []byte, code int, err error) {
+	return requestWithTimeout("GET", link, timeout)
+}
+
+func HeadWithTimeout(link string, timeout time.Duration) (code int) {
+	_, code, err := requestWithTimeout("HEAD", link, timeout)
+	if err != nil {
+		log.Err(err)
+		return 0
+	}
+	return code
+}
+
+func requestWithTimeout(method string, link string, timeout time.Duration) (body []byte, code int, err error) {
+
+	if link == "" {
+		return nil, 0, err
+	}
+
+	u, err := url.Parse(link)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	if !u.IsAbs() {
+		return nil, 0, err
+	}
 
 	if timeout == 0 {
 		timeout = time.Second * 10
 	}
 
-	req, err := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequest(method, u.String(), nil)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	clientWithTimeout := &http.Client{
 		Timeout: timeout,
 	}
 
-	return clientWithTimeout.Do(req)
-}
-
-// Returns 0 on fail
-func GetResponseCode(link string) (code int) {
-
-	if link == "" {
-		return 0
-	}
-
-	u, err := url.Parse(link)
+	resp, err := clientWithTimeout.Do(req)
 	if err != nil {
-		return 0
+		return nil, 0, err
 	}
 
-	if !u.IsAbs() {
-		return 0
-	}
+	defer func() {
+		err := resp.Body.Close()
+		log.Err(err)
+	}()
 
-	resp, err := http.Head(u.String())
+	body, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return 0
+		return nil, 0, err
 	}
 
-	return resp.StatusCode
+	return body, resp.StatusCode, err
 }
 
 func GetIP() string {
 	for _, v := range []string{"http://ipinfo.io/ip", "http://myexternalip.com/raw", "https://ifconfig.co/ip"} {
 
-		resp, err := GetWithTimeout(v, 0)
-		if err != nil {
-			continue
-		}
-		//noinspection GoDeferInLoop
-		defer func() {
-			err := resp.Body.Close()
-			log.Err(err)
-		}()
-
-		bytes, err := ioutil.ReadAll(resp.Body)
+		body, _, err := GetWithTimeout(v, 0)
 		if err != nil {
 			continue
 		}
 
-		return strings.TrimSpace(string(bytes))
+		return strings.TrimSpace(string(body))
 	}
 
 	return ""

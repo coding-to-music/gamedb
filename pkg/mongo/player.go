@@ -356,7 +356,7 @@ func (player *Player) SetPlayerSummary() error {
 	}
 
 	// Avatar
-	if summary.AvatarFull != "" && helpers.GetResponseCode(helpers.AvatarBase+summary.AvatarFull) == 200 {
+	if summary.AvatarFull != "" && helpers.HeadWithTimeout(helpers.AvatarBase+summary.AvatarFull, 0) == 200 {
 		player.Avatar = summary.AvatarFull
 	} else {
 		player.Avatar = ""

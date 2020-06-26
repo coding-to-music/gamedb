@@ -1,7 +1,6 @@
 package queue
 
 import (
-	"io/ioutil"
 	"regexp"
 	"strconv"
 	"strings"
@@ -39,27 +38,15 @@ func appsFindGroupHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		resp, err := helpers.GetWithTimeout("https://steamcommunity.com/app/"+strconv.Itoa(payload.AppID), 0)
+		body, _, err := helpers.GetWithTimeout("https://steamcommunity.com/app/"+strconv.Itoa(payload.AppID), 0)
 		if err != nil {
 			steam.LogSteamError(err, message.Message.Body)
 			sendToRetryQueue(message)
 			continue
 		}
-		//noinspection GoDeferInLoop
-		defer func() {
-			err := resp.Body.Close()
-			log.Err(err)
-		}()
-
-		b, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			log.Err(err, message.Message.Body)
-			sendToRetryQueue(message)
-			continue
-		}
 
 		var groupID string
-		ret := regexpGroupID.FindAllStringSubmatch(string(b), -1)
+		ret := regexpGroupID.FindAllStringSubmatch(string(body), -1)
 		for _, v := range ret {
 			if len(v) == 2 && strings.HasPrefix(v[1], "103") {
 				groupID = v[1]
