@@ -55,42 +55,32 @@ func GetArticleIcon(articleIcon string, appID int, appIcon string) string {
 
 func updateArticleDom(n *html.Node) {
 
-	// Remove image heights to make responsive
+	var src = getAttribute(n, "src")
+
+	// Images
 	if n.Type == html.ElementNode && n.Data == "img" {
 
-		i := -1
-		for index, attr := range n.Attr {
-			if attr.Key == "height" {
-				i = index
-				break
-			}
-		}
-		if i != -1 {
-			n.Attr = append(n.Attr[:i], n.Attr[i+1:]...)
+		// Remove image heights to make responsive
+		removeAttribute(n, "height")
+
+		// Lazy load
+		if src != "" {
+			setAttribute(n, "src", "")
+			setAttribute(n, "data-lazy", src)
 		}
 	}
 
-	// Set target on links
+	// Links
 	if n.Type == html.ElementNode && n.Data == "a" {
 
-		var isBlank bool
-		var isImage bool
-
-		for k, v := range n.Attr {
-			if v.Key == "href" && strings.HasSuffix(v.Val, ".jpg") {
-				isImage = true
-			} else if v.Key == "target" {
-				n.Attr[k].Val = "_blank"
-				isBlank = true
-			}
-		}
-
-		if isImage {
+		if strings.HasSuffix(src, ".jpg") {
+			// Remove links to images
 			removeAttribute(n, "href")
 			removeAttribute(n, "target")
-		} else if !isBlank {
-			n.Attr = append(n.Attr, html.Attribute{Namespace: "", Key: "target", Val: "_blank"})
-			n.Attr = append(n.Attr, html.Attribute{Namespace: "", Key: "rel", Val: "noopener"})
+		} else {
+			// Open links in new tab
+			setAttribute(n, "target", "_blank")
+			setAttribute(n, "rel", "noopener")
 		}
 	}
 
@@ -107,6 +97,33 @@ func removeAttribute(n *html.Node, attribute string) {
 			n.Attr = append(n.Attr[:k], n.Attr[k+1:]...)
 			return
 		}
+	}
+}
+
+func getAttribute(n *html.Node, attribute string) string {
+
+	for _, v := range n.Attr {
+		if v.Key == attribute {
+			return v.Val
+		}
+	}
+
+	return ""
+}
+
+func setAttribute(n *html.Node, attribute string, value string) {
+
+	i := -1
+	for index, attr := range n.Attr {
+		if attr.Key == attribute {
+			i = index
+			break
+		}
+	}
+	if i == -1 {
+		n.Attr = append(n.Attr, html.Attribute{Key: attribute, Val: value})
+	} else {
+		n.Attr = append(n.Attr[:i], n.Attr[i+1:]...)
 	}
 }
 
