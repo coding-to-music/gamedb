@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/rabbit-go"
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
@@ -34,6 +35,10 @@ func playerAliasesHandler(messages []*rabbit.Message) {
 		}
 
 		aliases, _, err := steam.GetSteam().GetAliases(payload.PlayerID)
+		if err == steamapi.ErrNoUserFound {
+			message.Ack(false)
+			continue
+		}
 		err = steam.AllowSteamCodes(err)
 		if err != nil {
 			steam.LogSteamError(err, payload.PlayerID)
