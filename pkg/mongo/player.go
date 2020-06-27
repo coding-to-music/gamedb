@@ -98,6 +98,7 @@ type Player struct {
 	PrimaryGroupID    string                 `bson:"primary_clan_id_string"`
 	Ranks             map[string]int         `bson:"ranks"`
 	RecentAppsCount   int                    `bson:"recent_apps_count"`
+	Removed           bool                   `bson:"removed"` // Removed from Steam
 	StateCode         string                 `bson:"status_code"`
 	TimeCreated       time.Time              `bson:"time_created"` // Created on Steam
 	UpdatedAt         time.Time              `bson:"updated_at"`
@@ -136,6 +137,7 @@ func (player Player) BSON() bson.D {
 		{"vanity_url", player.VanityURL},
 		{"wishlist_apps_count", player.WishlistAppsCount},
 		{"recent_apps_count", player.RecentAppsCount},
+		{"removed", player.Removed},
 		{"groups_count", player.GroupsCount},
 		{"ranks", player.Ranks},
 
@@ -350,6 +352,12 @@ func (player *Player) SetOwnedGames(saveRows bool) (steamapi.OwnedGames, error) 
 func (player *Player) SetPlayerSummary() error {
 
 	summary, _, err := steamHelper.GetSteam().GetPlayer(player.ID)
+	if err == steamapi.ErrNoUserFound {
+		player.Removed = true
+		return nil
+	}
+	player.Removed = false
+
 	err = steamHelper.AllowSteamCodes(err)
 	if err != nil {
 		return err
@@ -392,9 +400,8 @@ func (player *Player) SetLevel() error {
 
 func (player *Player) SetFriends(saveRows bool) error {
 
-	// If it's a 401, it returns no results, we dont want to change remove the players friends.
 	newFriendsSlice, _, err := steamHelper.GetSteam().GetFriendList(player.ID)
-	err = steamHelper.AllowSteamCodes(err, 401)
+	err = steamHelper.AllowSteamCodes(err, 401, 404)
 	if err != nil {
 		return err
 	}

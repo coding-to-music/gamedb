@@ -264,6 +264,10 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		primary = append(primary, "This profile belongs to Gabe Newell, the Co-founder of Valve")
 	}
 
+	if player.Removed {
+		primary = append(primary, "This profile has been removed from Steam")
+	}
+
 	if len(primary) > 0 {
 		banners["primary"] = primary
 	}
