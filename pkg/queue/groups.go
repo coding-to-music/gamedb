@@ -1,7 +1,6 @@
 package queue
 
 import (
-	"encoding/json"
 	"net/http"
 	"path"
 	"regexp"
@@ -471,42 +470,16 @@ func updateRegularGroup(id string, group *mongo.Group) (foundMembers bool, err e
 
 func setGroupTrending(group *mongo.Group) (err error) {
 
-	// Trend value - https://stackoverflow.com/questions/41361734/get-difference-since-30-days-ago-in-influxql-influxdb
-
-	subBuilder := influxql.NewBuilder()
-	subBuilder.AddSelect("difference(last(members_count))", "")
-	subBuilder.SetFrom(influxHelper.InfluxGameDB, influxHelper.InfluxRetentionPolicyAllTime.String(), influxHelper.InfluxMeasurementGroups.String())
-	subBuilder.AddWhere("group_id", "=", group.ID)
-	subBuilder.AddWhere("time", ">=", "NOW() - 21d")
-	subBuilder.AddGroupByTime("1h")
-
 	builder := influxql.NewBuilder()
-	builder.AddSelect("cumulative_sum(difference)", "")
-	builder.SetFromSubQuery(subBuilder)
+	builder.AddSelect("max(members_count)", "max_members_count")
+	builder.SetFrom(influxHelper.InfluxGameDB, influxHelper.InfluxRetentionPolicyAllTime.String(), influxHelper.InfluxMeasurementGroups.String())
+	builder.AddWhere("time", ">", "NOW() - 28d")
+	builder.AddWhere("group_id", "=", group.ID)
+	builder.AddGroupByTime("6h")
+	builder.SetFillNone()
 
-	resp, err := influxHelper.InfluxQuery(builder.String())
-	if err != nil {
-		return err
-	}
-
-	var trendTotal int64
-
-	// Get the last value, todo, put into influx helper, like the ones below
-	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
-		values := resp.Results[0].Series[0].Values
-		if len(values) > 0 {
-
-			last := values[len(values)-1]
-
-			trendTotal, err = last[1].(json.Number).Int64()
-			if err != nil {
-				return err
-			}
-		}
-	}
-
-	group.Trending = trendTotal
-	return nil
+	group.Trending, err = influxHelper.GetInfluxTrend(builder)
+	return err
 }
 
 func saveGroup(group mongo.Group) (err error) {

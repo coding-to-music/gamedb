@@ -2,14 +2,17 @@ package influx
 
 import (
 	"encoding/json"
+	"math"
 	"reflect"
 	"sort"
 	"time"
 
+	"github.com/Jleagle/influxql"
 	"github.com/cenkalti/backoff/v4"
 	"github.com/gamedb/gamedb/pkg/log"
 	influx "github.com/influxdata/influxdb1-client"
 	influxModels "github.com/influxdata/influxdb1-client/models"
+	"gonum.org/v1/gonum/stat"
 )
 
 const (
@@ -237,4 +240,39 @@ func GetFirstInfluxFloat(resp *influx.Response) float64 {
 	}
 
 	return 0
+}
+
+func GetInfluxTrend(builder *influxql.Builder) (trend int64, err error) {
+
+	resp, err := InfluxQuery(builder.String())
+	if err != nil {
+		return 0, err
+	}
+
+	var xs []float64
+	var ys []float64
+
+	var i float64 = 1
+	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
+		for _, v := range resp.Results[0].Series[0].Values {
+
+			trendTotal, err := v[1].(json.Number).Int64()
+			if err != nil {
+				log.Err(err)
+				continue
+			}
+
+			xs = append(xs, i)
+			ys = append(ys, math.Sqrt(float64(trendTotal)))
+
+			i++
+		}
+
+		_, slope := stat.LinearRegression(xs, ys, nil, false)
+		if !math.IsNaN(slope) {
+			trend = int64(math.Round(slope * 1000))
+		}
+	}
+
+	return trend, nil
 }

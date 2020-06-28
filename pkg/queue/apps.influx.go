@@ -1,8 +1,6 @@
 package queue
 
 import (
-	"encoding/json"
-	"math"
 	"sync"
 	"time"
 
@@ -14,7 +12,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"go.mongodb.org/mongo-driver/bson"
-	"gonum.org/v1/gonum/stat"
 )
 
 type AppInfluxMessage struct {
@@ -191,35 +188,5 @@ func getAppTrendValue(appID int) (trend int64, err error) {
 	builder.AddGroupByTime("1h")
 	builder.SetFillNone()
 
-	resp, err := influxHelper.InfluxQuery(builder.String())
-	if err != nil {
-		return 0, err
-	}
-
-	var xs []float64
-	var ys []float64
-
-	var i float64 = 1
-	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
-		for _, v := range resp.Results[0].Series[0].Values {
-
-			trendTotal, err := v[1].(json.Number).Int64()
-			if err != nil {
-				log.Err(err)
-				continue
-			}
-
-			xs = append(xs, i)
-			ys = append(ys, math.Sqrt(float64(trendTotal)))
-
-			i++
-		}
-
-		_, slope := stat.LinearRegression(xs, ys, nil, false)
-		if !math.IsNaN(slope) {
-			trend = int64(math.Round(slope * 1000))
-		}
-	}
-
-	return trend, nil
+	return influxHelper.GetInfluxTrend(builder)
 }
