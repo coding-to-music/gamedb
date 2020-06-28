@@ -42,8 +42,8 @@ func GetArticleIcon(articleIcon string, appID int, appIcon string) string {
 
 		params := url.Values{}
 		params.Set("url", articleIcon)
-		params.Set("w", "32")
-		params.Set("h", "32")
+		params.Set("w", "64")
+		params.Set("h", "64")
 		params.Set("output", "webp")
 		params.Set("t", "square")
 
@@ -132,6 +132,8 @@ func FindArticleImage(body string) string {
 	body = strings.ReplaceAll(body, "{STEAM_CLAN_IMAGE}", articleImageBase)
 	body = strings.ReplaceAll(body, "{STEAM_CLAN_LOC_IMAGE}", articleImageBase)
 
+	body = BBCodeCompiler.Compile(body)
+
 	doc, err := html.Parse(strings.NewReader(body))
 	if err == nil {
 		src := findArticleImage(doc)
@@ -157,7 +159,14 @@ func findArticleImage(n *html.Node) string {
 	if n.Type == html.ElementNode && n.Data == "img" {
 
 		for _, attr := range n.Attr {
-			if attr.Key == "src" {
+			// Find image that images.weserv.nl supports
+			if attr.Key == "src" &&
+				(strings.HasSuffix(attr.Val, "png") ||
+					strings.HasSuffix(attr.Val, "jpg") ||
+					strings.HasSuffix(attr.Val, "jpeg") ||
+					strings.HasSuffix(attr.Val, "bmp") ||
+					strings.HasSuffix(attr.Val, "webp") ||
+					strings.HasSuffix(attr.Val, "svg")) {
 				return attr.Val
 			}
 		}

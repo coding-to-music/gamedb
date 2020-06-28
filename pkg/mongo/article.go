@@ -7,6 +7,8 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type Article struct {
@@ -57,6 +59,10 @@ func (article Article) GetDate() string {
 
 func (article Article) GetAppIcon() string {
 	return helpers.GetAppIcon(article.AppID, article.AppIcon)
+}
+
+func (article Article) GetArticleIcon() string {
+	return helpers.GetArticleIcon(article.ArticleIcon, article.AppID, article.AppIcon)
 }
 
 func (article Article) GetAppPath() string {
@@ -114,4 +120,33 @@ func getArticles(offset int64, limit int64, filter bson.D, order bson.D, project
 	}
 
 	return news, cur.Err()
+}
+
+func SaveArticles(articles []Article) (err error) {
+
+	if len(articles) == 0 {
+		return nil
+	}
+
+	client, ctx, err := getMongo()
+	if err != nil {
+		return err
+	}
+
+	var writes []mongo.WriteModel
+	for _, article := range articles {
+
+		write := mongo.NewReplaceOneModel()
+		write.SetFilter(bson.M{"_id": article.ID})
+		write.SetReplacement(bson.M{"$set": article.BSON()})
+		write.SetUpsert(true)
+
+		writes = append(writes, write)
+	}
+
+	c := client.Database(MongoDatabase).Collection(CollectionAppArticles.String())
+
+	_, err = c.BulkWrite(ctx, writes, options.BulkWrite())
+
+	return err
 }

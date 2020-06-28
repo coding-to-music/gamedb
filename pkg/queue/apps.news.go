@@ -14,7 +14,7 @@ import (
 )
 
 type AppNewsMessage struct {
-	ID int `json:"id"`
+	AppID int `json:"id"`
 }
 
 func (m AppNewsMessage) Queue() rabbit.QueueName {
@@ -34,7 +34,7 @@ func appNewsHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		resp, _, err := steamHelper.GetSteam().GetNews(payload.ID, 10000)
+		resp, _, err := steamHelper.GetSteam().GetNews(payload.AppID, 10000)
 		err = steamHelper.AllowSteamCodes(err, 403)
 		if err != nil {
 			steamHelper.LogSteamError(err)
@@ -47,9 +47,9 @@ func appNewsHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		app, err := mongo.GetApp(payload.ID, false)
+		app, err := mongo.GetApp(payload.AppID, false)
 		if err != nil {
-			log.Err(err, payload.ID)
+			log.Err(err, payload.AppID)
 			sendToRetryQueue(message)
 			continue
 		}
@@ -59,7 +59,7 @@ func appNewsHandler(messages []*rabbit.Message) {
 			newsIDsMap[v] = true
 		}
 
-		var documents []mongo.Document
+		var articles []mongo.Article
 		var newsIDs []int64
 
 		for _, v := range resp.Items {
@@ -86,10 +86,10 @@ func appNewsHandler(messages []*rabbit.Message) {
 			news.ArticleIcon = helpers.FindArticleImage(v.Contents)
 
 			news.AppID = v.AppID
-			news.AppName = app.GetName()
-			news.AppIcon = app.GetIcon()
+			news.AppName = app.Name
+			news.AppIcon = app.Icon
 
-			documents = append(documents, news)
+			articles = append(articles, news)
 			newsIDs = append(newsIDs, int64(v.GID))
 
 			err = ProduceArticlesSearch(AppsArticlesSearchMessage{
@@ -105,9 +105,9 @@ func appNewsHandler(messages []*rabbit.Message) {
 			log.Err(err)
 		}
 
-		_, err = mongo.InsertMany(mongo.CollectionAppArticles, documents)
+		err = mongo.SaveArticles(articles)
 		if err != nil {
-			log.Err(err, payload.ID)
+			log.Err(err, payload.AppID)
 			sendToRetryQueue(message)
 			continue
 		}
@@ -116,14 +116,14 @@ func appNewsHandler(messages []*rabbit.Message) {
 
 		_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", app.ID}}, bson.D{{"news_ids", newsIDs}})
 		if err != nil {
-			log.Err(err, payload.ID)
+			log.Err(err, payload.AppID)
 			sendToRetryQueue(message)
 			continue
 		}
 
 		err = memcache.Delete(memcache.MemcacheApp(app.ID).Key)
 		if err != nil {
-			log.Err(err, payload.ID)
+			log.Err(err, payload.AppID)
 			sendToRetryQueue(message)
 			continue
 		}

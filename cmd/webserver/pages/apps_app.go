@@ -579,7 +579,7 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			article.AppName,                       // 7
 			article.GetAppIcon(),                  // 8
 			path + "#news," + id,                  // 9
-			helpers.DefaultAppIcon,                // 10
+			article.GetArticleIcon(),              // 10
 		})
 	}
 
