@@ -158,15 +158,6 @@ if ($appPage.length > 0) {
                 $(this).addClass('shown');
             }
         });
-
-        // Fix links
-        $('#news a').each(function () {
-
-            const href = $(this).attr('href');
-            if (href && !(href.startsWith('http'))) {
-                $(this).attr('href', 'http://' + href);
-            }
-        });
     }
 
     function loadAppMediaTab() {
