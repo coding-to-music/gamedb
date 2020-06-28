@@ -72,7 +72,7 @@ func (friend PlayerFriend) GetLevel() string {
 }
 
 func (friend PlayerFriend) CommunityLink() string {
-	return "https://steamcommunity.com/profiles/" + strconv.FormatInt(friend.FriendID, 10)
+	return helpers.GetPlayerCommunityLink(friend.FriendID, "")
 }
 
 func CountFriends(playerID int64) (count int64, err error) {
