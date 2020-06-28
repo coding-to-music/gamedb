@@ -262,7 +262,9 @@ func InsertMany(collection collection, documents []Document) (resp *mongo.Insert
 		many = append(many, v.BSON())
 	}
 
-	resp, err = client.Database(MongoDatabase).Collection(collection.String()).InsertMany(ctx, many, options.InsertMany().SetOrdered(false))
+	resp, err = client.Database(MongoDatabase).
+		Collection(collection.String()).
+		InsertMany(ctx, many, options.InsertMany().SetOrdered(false))
 
 	bulkErr, ok := err.(mongo.BulkWriteException)
 	if ok {

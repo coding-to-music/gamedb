@@ -42,9 +42,9 @@ func UpdatePlayerAliases(aliases []PlayerAlias) (err error) {
 	var writes []mongo.WriteModel
 	for _, v := range aliases {
 
-		write := mongo.NewUpdateOneModel()
+		write := mongo.NewReplaceOneModel()
 		write.SetFilter(bson.M{"_id": v.getKey()})
-		write.SetUpdate(bson.M{"$set": v.BSON()})
+		write.SetReplacement(bson.M{"$set": v.BSON()})
 		write.SetUpsert(true)
 
 		writes = append(writes, write)
