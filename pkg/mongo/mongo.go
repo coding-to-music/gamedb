@@ -207,6 +207,10 @@ func DeleteOne(collection collection, filter bson.D) (resp *mongo.DeleteResult, 
 
 func UpdateManySet(collection collection, filter bson.D, update bson.D) (resp *mongo.UpdateResult, err error) {
 
+	if filter == nil {
+		filter = bson.D{}
+	}
+
 	client, ctx, err := getMongo()
 	if err != nil {
 		return resp, nil
