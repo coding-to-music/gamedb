@@ -384,6 +384,11 @@ func ProduceAppsReviews(id int) (err error) {
 	return produce(QueueAppsReviews, AppReviewsMessage{AppID: id})
 }
 
+func ProduceAppsNews(id int) (err error) {
+	m := AppNewsMessage{AppID: id}
+	return produce(m.Queue(), m)
+}
+
 func ProduceAppsYoutube(id int, name string) (err error) {
 	return produce(QueueAppsYoutube, AppYoutubeMessage{ID: id, Name: name})
 }
