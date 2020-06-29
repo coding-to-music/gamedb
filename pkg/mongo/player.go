@@ -364,17 +364,11 @@ func (player *Player) SetPlayerSummary() error {
 	}
 
 	// Avatar
-	if summary.AvatarFull != "" && helpers.HeadWithTimeout(helpers.AvatarBase+summary.AvatarFull, 0) == 200 {
-		player.Avatar = summary.AvatarFull
-	} else {
-		player.Avatar = ""
-	}
-
-	//
 	if strings.Contains(summary.ProfileURL, "/id/") {
 		player.VanityURL = path.Base(summary.ProfileURL)
 	}
 
+	player.Avatar = summary.AvatarHash
 	player.CountryCode = summary.CountryCode
 	player.ContinentCode = i18n.CountryCodeToContinent(summary.CountryCode)
 	player.StateCode = summary.StateCode

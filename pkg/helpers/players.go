@@ -27,8 +27,8 @@ func GetPlayerAvatar(avatar string) string {
 
 	if strings.HasPrefix(avatar, "http") || strings.HasPrefix(avatar, "/") {
 		return avatar
-	} else if avatar != "" {
-		return AvatarBase + avatar
+	} else if RegexSha1Only.MatchString(avatar) {
+		return AvatarBase + avatar[0:2] + "/" + avatar + "_full.jpg"
 	} else {
 		return DefaultPlayerAvatar
 	}
