@@ -17,6 +17,7 @@ const ( //                         min hour
 	CronTimeUpdateLastUpdatedPlayers = "*   *"
 	CronTimeSteamClientPlayers       = "*/10 *"
 	CronTimeAppPlayers               = "*/10 *"
+	CronTimeAppPlayersTop            = "*/10 *"
 	CronTimeAutoPlayerRefreshes      = "0   */6"
 	CronTimeAppsReviews              = "10  0"
 	CronTimeAppsYoutube              = "20  0"
@@ -42,6 +43,7 @@ var (
 		AppsAchievementsQueueAll{},
 		AppsAchievementsQueueElastic{},
 		AppsPlayerCheck{},
+		AppsPlayerCheckTop{},
 		AppsQueueAll{},
 		AppsQueueElastic{},
 		AppsQueueWishlists{},

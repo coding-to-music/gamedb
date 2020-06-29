@@ -57,8 +57,11 @@ const (
 	QueueGroups       rabbit.QueueName = "GDB_Groups"
 	QueueGroupsSearch rabbit.QueueName = "GDB_Groups.Search"
 
+	// App players
+	QueueAppPlayers    rabbit.QueueName = "GDB_App_Players"
+	QueueAppPlayersTop rabbit.QueueName = "GDB_App_Players_Top"
+
 	// Other
-	QueueAppPlayers  rabbit.QueueName = "GDB_App_Players"
 	QueueBundles     rabbit.QueueName = "GDB_Bundles"
 	QueueChanges     rabbit.QueueName = "GDB_Changes"
 	QueueDelay       rabbit.QueueName = "GDB_Delay"
@@ -89,6 +92,7 @@ var (
 
 	AllProducerDefinitions = []QueueDefinition{
 		{name: QueueAppPlayers},
+		{name: QueueAppPlayersTop},
 		{name: QueueApps},
 		{name: QueueAppsDLC},
 		{name: QueueAppsYoutube},
@@ -127,6 +131,7 @@ var (
 
 	ConsumersDefinitions = []QueueDefinition{
 		{name: QueueAppPlayers, consumer: appPlayersHandler},
+		{name: QueueAppPlayersTop, consumer: appPlayersHandler},
 		{name: QueueApps, consumer: appHandler},
 		{name: QueueAppsInflux, consumer: appInfluxHandler},
 		{name: QueueAppsDLC, consumer: appDLCHandler},
@@ -172,6 +177,7 @@ var (
 		{name: QueueAppsInflux},
 		{name: QueueAppsWishlists, prefetchSize: 1000},
 		{name: QueueAppPlayers},
+		{name: QueueAppPlayersTop},
 		{name: QueueAppsReviews},
 		{name: QueueAppsSearch, prefetchSize: 1000},
 		{name: QueueBundles},
@@ -210,6 +216,7 @@ var (
 		{name: QueueAppsYoutube},
 		{name: QueueAppsReviews},
 		{name: QueueAppPlayers},
+		{name: QueueAppPlayersTop},
 		{name: QueueGroups},
 		{name: QueueGroupsSearch, prefetchSize: 1000},
 		{name: QueuePackages},
@@ -404,6 +411,15 @@ func ProduceAppPlayers(payload AppPlayerMessage) (err error) {
 	}
 
 	return produce(QueueAppPlayers, payload)
+}
+
+func ProduceAppPlayersTop(payload AppPlayerMessage) (err error) {
+
+	if len(payload.IDs) == 0 {
+		return nil
+	}
+
+	return produce(QueueAppPlayersTop, payload)
 }
 
 func ProduceBundle(id int) (err error) {

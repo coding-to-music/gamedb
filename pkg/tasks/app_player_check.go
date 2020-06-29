@@ -18,7 +18,7 @@ func (c AppsPlayerCheck) ID() string {
 }
 
 func (c AppsPlayerCheck) Name() string {
-	return "Check apps for players"
+	return "Check apps for players (Bottom)"
 }
 
 func (c AppsPlayerCheck) Cron() string {
@@ -46,10 +46,11 @@ func (c AppsPlayerCheck) work() (err error) {
 	// Add apps to queue
 	var offset int64 = 0
 	var limit int64 = 10_000
+	var filter = bson.D{{"player_peak_week", bson.M{"$lt": topAppPlayers}}}
 
 	for {
 
-		apps, err := mongo.GetApps(offset, limit, bson.D{{"_id", 1}}, nil, bson.M{"_id": 1})
+		apps, err := mongo.GetApps(offset, limit, bson.D{{"_id", 1}}, filter, bson.M{"_id": 1})
 		if err != nil {
 			return err
 		}
