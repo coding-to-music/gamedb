@@ -38,6 +38,10 @@ func GetArticleBody(body string) template.HTML {
 
 func GetArticleIcon(articleIcon string, appID int, appIcon string) string {
 
+	if appIcon != "" {
+		return GetAppIcon(appID, appIcon)
+	}
+
 	if strings.HasPrefix(articleIcon, "http") {
 
 		params := url.Values{}
@@ -50,7 +54,7 @@ func GetArticleIcon(articleIcon string, appID int, appIcon string) string {
 		return "https://images.weserv.nl?" + params.Encode()
 	}
 
-	return GetAppIcon(appID, appIcon)
+	return DefaultAppIcon
 }
 
 func updateArticleDom(n *html.Node) {
