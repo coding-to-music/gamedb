@@ -2,6 +2,7 @@ package queue
 
 import (
 	"github.com/Jleagle/rabbit-go"
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
@@ -56,6 +57,10 @@ func playersGroupsHandler(messages []*rabbit.Message) {
 
 		// Get new groups
 		newGroupsResponse, _, err := steamHelper.GetSteam().GetUserGroupList(payload.PlayerID)
+		if err == steamapi.ErrNoUserFound {
+			message.Ack(false)
+			continue
+		}
 		err = steamHelper.AllowSteamCodes(err, 403)
 		if err != nil {
 			steamHelper.LogSteamError(err, message.Message.Body)

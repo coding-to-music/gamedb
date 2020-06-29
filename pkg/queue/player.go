@@ -290,15 +290,13 @@ func playerHandler(messages []*rabbit.Message) {
 		// Produce to sub queues
 		var produces = []QueueMessageInterface{
 			PlayersSearchMessage{Player: player},
-			PlayersAliasesMessage{PlayerID: player.ID},
-			PlayersGroupsMessage{
-				PlayerID:          player.ID,
-				PlayerPersonaName: player.PersonaName,
-				PlayerAvatar:      player.Avatar,
-				SkipPlayerGroups:  payload.SkipPlayerGroups,
-				SkipGroupUpdate:   payload.SkipGroupUpdate,
-				UserAgent:         payload.UserAgent,
-			},
+		}
+
+		if !player.Removed {
+			produces = append(produces,
+				PlayersAliasesMessage{PlayerID: player.ID},
+				PlayersGroupsMessage{PlayerID: player.ID, PlayerPersonaName: player.PersonaName, PlayerAvatar: player.Avatar, SkipPlayerGroups: payload.SkipPlayerGroups, SkipGroupUpdate: payload.SkipGroupUpdate, UserAgent: payload.UserAgent},
+			)
 		}
 
 		for _, v := range produces {
