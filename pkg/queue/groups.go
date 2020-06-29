@@ -128,7 +128,7 @@ func groupsHandler(messages []*rabbit.Message) {
 		}
 
 		// Read from Influx
-		err = setGroupTrending(&group)
+		group.Trending, err = getGroupTrending(group)
 		if err != nil {
 			log.Err(err, payload.ID)
 			sendToRetryQueue(message)
@@ -468,7 +468,7 @@ func updateRegularGroup(id string, group *mongo.Group) (foundMembers bool, err e
 	return foundMembers, c.Visit("https://steamcommunity.com/gid/" + id)
 }
 
-func setGroupTrending(group *mongo.Group) (err error) {
+func getGroupTrending(group mongo.Group) (trend int64, err error) {
 
 	builder := influxql.NewBuilder()
 	builder.AddSelect("max(members_count)", "max_members_count")
@@ -478,8 +478,7 @@ func setGroupTrending(group *mongo.Group) (err error) {
 	builder.AddGroupByTime("6h")
 	builder.SetFillNone()
 
-	group.Trending, err = influxHelper.GetInfluxTrend(builder)
-	return err
+	return influxHelper.GetInfluxTrend(builder)
 }
 
 func saveGroup(group mongo.Group) (err error) {
