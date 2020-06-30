@@ -15,10 +15,7 @@ import (
 	mongodb "go.mongodb.org/mongo-driver/mongo"
 )
 
-const (
-	batchSize   = 20000
-	addToInflux = 1000
-)
+const batchSize = 10000
 
 type PlayerRanksMessage struct {
 	ObjectKey  string  `json:"object_key"`
