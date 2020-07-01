@@ -420,16 +420,6 @@ if ($appPage.length > 0) {
         };
         new IntersectionObserver(playersCallback, config).observe(document.getElementById("players-chart"));
 
-        const youtubeCallback = function (entries, self) {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    loadAppYoutubeChart();
-                    self.unobserve(entry.target);
-                }
-            });
-        };
-        new IntersectionObserver(youtubeCallback, config).observe(document.getElementById("youtube-chart"));
-
         const groupChart = document.getElementById("group-chart");
         if (groupChart) {
             const groupCallback = function (entries, self) {
@@ -524,9 +514,70 @@ if ($appPage.length > 0) {
                             return this.y.toLocaleString() + ' average players on ' + moment(this.key).format("dddd DD MMM YYYY @ HH:mm");
                         case 'Twitch Viewers':
                             return this.y.toLocaleString() + ' Twitch viewers on ' + moment(this.key).format("dddd DD MMM YYYY @ HH:mm");
+                        case 'Youtube Views':
+                            return this.y.toLocaleString() + ' Youtube views on ' + moment(this.key).format("dddd DD MMM YYYY");
+                        case 'Youtube Comments':
+                            return this.y.toLocaleString() + ' Youtube comments on ' + moment(this.key).format("dddd DD MMM YYYY");
                     }
                 },
             },
+        };
+
+        const series = function (data) {
+
+            if (data === null) {
+                const now = Date.now();
+                data = {
+                    "max_player_count": [[now, 0]],
+                    "max_moving_average": [[now, 0]],
+                    "max_twitch_viewers": [[now, 0]],
+                    "max_youtube_views": [[now, 0]],
+                    "max_youtube_comments": [[now, 0]],
+                };
+            }
+
+            const series = [
+                {
+                    name: 'Twitch Viewers',
+                    color: '#6441A4', // Twitch purple
+                    data: data['max_twitch_viewers'],
+                    connectNulls: true,
+                },
+                {
+                    name: 'Players Online (Average)',
+                    color: '#28a74544',
+                    data: data['max_moving_average'],
+                    connectNulls: true,
+                },
+                {
+                    name: 'Players Online',
+                    color: '#28a745',
+                    data: data['max_player_count'],
+                    connectNulls: true,
+                },
+            ];
+
+            if (user.isLoggedIn) {
+                series.unshift({
+                    name: 'Youtube Views',
+                    color: '#FF0000', // Youtube red
+                    data: data['max_youtube_views'],
+                    connectNulls: true,
+                    type: 'line',
+                    step: 'right',
+                    visible: false,
+                }, {
+                    name: 'Youtube Comments',
+                    color: '#FF0000', // Youtube red
+                    data: data['max_youtube_comments'],
+                    connectNulls: true,
+                    type: 'line',
+                    step: 'right',
+                    visible: false,
+                });
+            }
+
+            return series;
         };
 
         $.ajax({
@@ -535,41 +586,12 @@ if ($appPage.length > 0) {
             dataType: 'json',
             success: function (data, textStatus, jqXHR) {
 
-                if (data === null) {
-                    const now = Date.now();
-                    data = {
-                        "max_player_count": [[now, 0]],
-                        "max_twitch_viewers": [[now, 0]],
-                        "max_youtube_views": [[now, 0]],
-                    };
-                }
-
                 Highcharts.chart('players-chart', $.extend(true, {}, defaultAppChartOptions, {
                     xAxis: {
                         min: d.getTime(),
                     },
-                    series: [
-                        {
-                            name: 'Twitch Viewers',
-                            color: '#6441A4', // Twitch purple
-                            data: data['max_twitch_viewers'],
-                            connectNulls: true,
-                        },
-                        {
-                            name: 'Players Online (Average)',
-                            color: '#28a74544',
-                            data: data['max_moving_average'],
-                            connectNulls: true,
-                        },
-                        {
-                            name: 'Players Online',
-                            color: '#28a745',
-                            data: data['max_player_count'],
-                            connectNulls: true,
-                        },
-                    ],
+                    series: series(data),
                 }));
-
             },
         });
 
@@ -579,38 +601,9 @@ if ($appPage.length > 0) {
             dataType: 'json',
             success: function (data, textStatus, jqXHR) {
 
-                if (data === null) {
-                    const now = Date.now();
-                    data = {
-                        "max_twitch_viewers": [[now, 0]],
-                        "max_moving_average": [[now, 0]],
-                        "max_player_count": [[now, 0]],
-                    };
-                }
-
                 Highcharts.chart('players-chart2', $.extend(true, {}, defaultAppChartOptions, {
-                    series: [
-                        {
-                            name: 'Twitch Viewers',
-                            color: '#6441A4', // Twitch purple
-                            data: data['max_twitch_viewers'],
-                            connectNulls: true,
-                        },
-                        {
-                            name: 'Players Online (Average)',
-                            color: '#28a74544',
-                            data: data['max_moving_average'],
-                            connectNulls: true,
-                        },
-                        {
-                            name: 'Players Online',
-                            color: '#28a745',
-                            data: data['max_player_count'],
-                            connectNulls: true,
-                        },
-                    ],
+                    series: series(data),
                 }));
-
             },
         });
     }
@@ -683,10 +676,7 @@ if ($appPage.length > 0) {
             tooltip: {
                 formatter: function () {
                     switch (this.series.name) {
-                        case 'Youtube Views':
-                            return this.y.toLocaleString() + ' Youtube views on ' + moment(this.key).format("dddd DD MMM YYYY");
-                        case 'Youtube Comments':
-                            return this.y.toLocaleString() + ' Youtube comments on ' + moment(this.key).format("dddd DD MMM YYYY");
+
                     }
                 },
             },
@@ -700,10 +690,7 @@ if ($appPage.length > 0) {
 
                 if (data === null) {
                     const now = Date.now();
-                    data = {
-                        "max_youtube_views": [[now, 0]],
-                        "max_youtube_comments": [[now, 0]],
-                    };
+                    data = {};
                 }
 
                 Highcharts.chart('youtube-chart', $.extend(true, {}, defaultAppChartOptions, {

@@ -36,9 +36,8 @@ func appRouter() http.Handler {
 	r.Get("/reviews.html", appReviewsHandler)
 	r.Get("/news.json", appNewsAjaxHandler)
 	r.Get("/prices.json", appPricesAjaxHandler)
-	r.Get("/players.json", appPlayersAjaxHandler)
-	r.Get("/players2.json", appPlayers2AjaxHandler)
-	r.Get("/youtube.json", appPlayersYoutubeHandler)
+	r.Get("/players.json", appPlayersAjaxHandler(true))
+	r.Get("/players2.json", appPlayersAjaxHandler(false))
 	r.Get("/items.json", appItemsAjaxHandler)
 	r.Get("/reviews.json", appReviewsAjaxHandler)
 	r.Get("/time.json", appTimeAjaxHandler)
@@ -910,107 +909,62 @@ func appWishlistAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	returnJSON(w, r, hc)
 }
 
-// Player counts chart
-func appPlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
+func appPlayersAjaxHandler(limit bool) func(http.ResponseWriter, *http.Request) {
 
-	id := chi.URLParam(r, "id")
-	if id == "" {
-		return
+	var group string
+	var days string
+	var rolling string
+
+	if limit {
+		group = "10m"
+		days = "7d"
+		rolling = "144"
+	} else {
+		group = "1d"
+		days = "1825d"
+		rolling = "7"
 	}
 
-	builder := influxql.NewBuilder()
-	builder.AddSelect("max(player_count)", "max_player_count")
-	builder.AddSelect("max(twitch_viewers)", "max_twitch_viewers")
-	builder.AddSelect("max(youtube_views)", "max_youtube_views")
-	builder.AddSelect("max(youtube_comments)", "max_youtube_comments")
-	builder.AddSelect("MOVING_AVERAGE(max(\"player_count\"), 20)", "max_moving_average")
-	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
-	builder.AddWhere("time", ">", "NOW()-14d")
-	builder.AddWhere("app_id", "=", id)
-	builder.AddGroupByTime("10m")
-	builder.SetFillNone()
+	return func(w http.ResponseWriter, r *http.Request) {
 
-	resp, err := influx.InfluxQuery(builder.String())
-	if err != nil {
-		log.Err(err, r, builder.String())
-		return
+		id := chi.URLParam(r, "id")
+		if id == "" {
+			return
+		}
+
+		if !helpers.RegexIntsOnly.MatchString(id) {
+			return
+		}
+
+		builder := influxql.NewBuilder()
+		builder.AddSelect("max(player_count)", "max_player_count")
+		builder.AddSelect("max(twitch_viewers)", "max_twitch_viewers")
+		if session.IsLoggedIn(r) {
+			builder.AddSelect("max(youtube_views)", "max_youtube_views")
+			builder.AddSelect("max(youtube_comments)", "max_youtube_comments")
+		}
+		builder.AddSelect("MOVING_AVERAGE(max(\"player_count\"), "+rolling+")", "max_moving_average")
+		builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
+		builder.AddWhere("time", ">", "NOW()-"+days)
+		builder.AddWhere("app_id", "=", id)
+		builder.AddGroupByTime(group)
+		builder.SetFillNone()
+
+		resp, err := influx.InfluxQuery(builder.String())
+		if err != nil {
+			log.Err(err, r, builder.String())
+			return
+		}
+
+		var hc influx.HighChartsJSON
+
+		if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
+
+			hc = influx.InfluxResponseToHighCharts(resp.Results[0].Series[0])
+		}
+
+		returnJSON(w, r, hc)
 	}
-
-	var hc influx.HighChartsJSON
-
-	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
-
-		hc = influx.InfluxResponseToHighCharts(resp.Results[0].Series[0])
-	}
-
-	returnJSON(w, r, hc)
-}
-
-// Player counts chart - 1 year
-func appPlayers2AjaxHandler(w http.ResponseWriter, r *http.Request) {
-
-	id := chi.URLParam(r, "id")
-	if id == "" {
-		return
-	}
-
-	builder := influxql.NewBuilder()
-	builder.AddSelect("max(player_count)", "max_player_count")
-	builder.AddSelect("max(twitch_viewers)", "max_twitch_viewers")
-	builder.AddSelect("MOVING_AVERAGE(max(\"player_count\"), 20)", "max_moving_average")
-	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
-	builder.AddWhere("time", ">", "NOW()-1825d")
-	builder.AddWhere("app_id", "=", id)
-	builder.AddGroupByTime("1d")
-	builder.SetFillNone()
-
-	resp, err := influx.InfluxQuery(builder.String())
-	if err != nil {
-		log.Err(err, r, builder.String())
-		return
-	}
-
-	var hc influx.HighChartsJSON
-
-	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
-
-		hc = influx.InfluxResponseToHighCharts(resp.Results[0].Series[0])
-	}
-
-	returnJSON(w, r, hc)
-}
-
-// Player counts chart - 1 year
-func appPlayersYoutubeHandler(w http.ResponseWriter, r *http.Request) {
-
-	id := chi.URLParam(r, "id")
-	if id == "" {
-		return
-	}
-
-	builder := influxql.NewBuilder()
-	builder.AddSelect("max(youtube_views)", "max_youtube_views")
-	builder.AddSelect("max(youtube_comments)", "max_youtube_comments")
-	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
-	builder.AddWhere("time", ">", "NOW()-1825d")
-	builder.AddWhere("app_id", "=", id)
-	builder.AddGroupByTime("1d")
-	builder.SetFillNone()
-
-	resp, err := influx.InfluxQuery(builder.String())
-	if err != nil {
-		log.Err(err, r, builder.String())
-		return
-	}
-
-	var hc influx.HighChartsJSON
-
-	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
-
-		hc = influx.InfluxResponseToHighCharts(resp.Results[0].Series[0])
-	}
-
-	returnJSON(w, r, hc)
 }
 
 // Player ranks table
