@@ -145,8 +145,9 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		"3": "level",
 		"4": "badges_count",
 
-		"5": "games_count",
-		"6": "play_time",
+		"5":  "games_count",
+		"6":  "play_time",
+		"13": "achievement_count",
 
 		"7": "bans_game",
 		"8": "bans_cav",
@@ -222,8 +223,9 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			"level":        1,
 			"badges_count": 1,
 			//
-			"games_count": 1,
-			"play_time":   1,
+			"games_count":       1,
+			"play_time":         1,
+			"achievement_count": 1,
 			//
 			"bans_game": 1,
 			"bans_cav":  1,
@@ -299,6 +301,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			lastBan,            // 18
 			v.CountryCode,      // 19
 			v.CommentsCount,    // 20
+			v.AchievementCount, // 21
 		})
 	}
 

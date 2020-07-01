@@ -548,15 +548,16 @@ func CreatePlayerIndexes() {
 
 	// For sorting main players table
 	cols := []string{
-		"level",
+		"achievement_count",
 		"badges_count",
-		"games_count",
-		"play_time",
-		"bans_game",
 		"bans_cav",
+		"bans_game",
 		"bans_last",
-		"friends_count",
 		"comments_count",
+		"friends_count",
+		"games_count",
+		"level",
+		"play_time",
 	}
 
 	for _, col := range cols {

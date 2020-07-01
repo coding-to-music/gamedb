@@ -188,6 +188,14 @@ if ($('#players-page').length > 0) {
                 },
                 "orderable": false,
             },
+            // Achievements
+            {
+                "targets": 13,
+                "render": function (data, type, row) {
+                    return row[21].toLocaleString();
+                },
+                "orderSequence": ["desc"],
+            },
         ]
     };
 
@@ -219,14 +227,14 @@ if ($('#players-page').length > 0) {
             case '#level':
 
                 show = [3, 4];
-                hide = [5, 6, 7, 8, 9, 10, 11];
+                hide = [5, 6, 7, 8, 9, 10, 11, 13];
 
                 dt.order([3, 'desc']);
                 break;
 
             case '#games':
 
-                show = [5, 6];
+                show = [5, 6, 13];
                 hide = [3, 4, 7, 8, 9, 10, 11];
 
                 dt.order([5, 'desc']);
@@ -235,7 +243,7 @@ if ($('#players-page').length > 0) {
             case '#bans':
 
                 show = [7, 8, 9];
-                hide = [3, 4, 5, 6, 7, 8, 9, 10, 11];
+                hide = [3, 4, 5, 6, 7, 8, 9, 10, 11, 13];
 
                 dt.order([7, 'desc']);
                 break;
@@ -243,7 +251,7 @@ if ($('#players-page').length > 0) {
             case '#profile':
 
                 show = [10, 11];
-                hide = [3, 4, 5, 6, 7, 8, 9, 10, 11];
+                hide = [3, 4, 5, 6, 7, 8, 9, 10, 11, 13];
 
                 dt.order([10, 'desc']);
                 break;
