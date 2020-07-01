@@ -320,12 +320,12 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Have to save as a map because gorm does not save empty values otherwise
 		db = db.Model(&user).Updates(map[string]interface{}{
-			"email":        user.Email,
-			"verified":     user.EmailVerified,
-			"password":     user.Password,
-			"hide_profile": user.HideProfile,
-			"show_alerts":  user.ShowAlerts,
-			"country_code": user.ProductCC,
+			"email":          user.Email,
+			"email_verified": user.EmailVerified,
+			"password":       user.Password,
+			"hide_profile":   user.HideProfile,
+			"show_alerts":    user.ShowAlerts,
+			"country_code":   user.ProductCC,
 		})
 
 		if db.Error != nil {
