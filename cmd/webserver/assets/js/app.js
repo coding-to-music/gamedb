@@ -558,6 +558,7 @@ if ($appPage.length > 0) {
             ];
 
             if (user.isLoggedIn) {
+
                 series.unshift({
                     name: 'Youtube Views',
                     color: '#FF0000', // Youtube red
@@ -586,6 +587,27 @@ if ($appPage.length > 0) {
             dataType: 'json',
             success: function (data, textStatus, jqXHR) {
 
+                const start = d.getTime();
+
+                //
+                let max = 0;
+                data['max_youtube_views'].forEach(function myFunction(value, index, array) {
+                    if (value[0] > start && value[1] != null && value[1] > max) {
+                        max = value[1];
+                    }
+                });
+                $('#youtube-max-views').html(max.toLocaleString());
+
+                //
+                max = 0;
+                data['max_youtube_comments'].forEach(function myFunction(value, index, array) {
+                    if (value[0] > start && value[1] != null && value[1] > max) {
+                        max = value[1];
+                    }
+                });
+                $('#youtube-max-comments').html(max.toLocaleString());
+
+                //
                 Highcharts.chart('players-chart', $.extend(true, {}, defaultAppChartOptions, {
                     xAxis: {
                         min: d.getTime(),
@@ -604,121 +626,6 @@ if ($appPage.length > 0) {
                 Highcharts.chart('players-chart2', $.extend(true, {}, defaultAppChartOptions, {
                     series: series(data),
                 }));
-            },
-        });
-    }
-
-    function loadAppYoutubeChart() {
-
-        const d = new Date();
-        d.setDate(d.getDate() - 7);
-
-        const defaultAppChartOptions = {
-            chart: {
-                type: 'spline',
-                backgroundColor: 'rgba(0,0,0,0)',
-            },
-            title: {
-                text: ''
-            },
-            subtitle: {
-                text: ''
-            },
-            credits: {
-                enabled: false,
-            },
-            legend: {
-                enabled: true,
-                itemStyle: {
-                    color: '#28a745',
-                },
-                itemHiddenStyle: {
-                    color: '#666666',
-                },
-            },
-            xAxis: {
-                title: {text: ''},
-                type: 'datetime',
-            },
-            yAxis: [
-                {
-                    allowDecimals: false,
-                    title: {text: 'Views'},
-                    min: 0,
-                    opposite: false,
-                    labels: {
-                        formatter: function () {
-                            return this.value.toLocaleString();
-                        },
-                    },
-                    visible: true,
-                },
-                {
-                    allowDecimals: false,
-                    title: {text: 'Comments'},
-                    min: 0,
-                    opposite: true,
-                    labels: {
-                        formatter: function () {
-                            return this.value.toLocaleString();
-                        },
-                    },
-                    visible: true,
-                },
-            ],
-            plotOptions: {
-                series: {
-                    marker: {
-                        enabled: false
-                    }
-                }
-            },
-            tooltip: {
-                formatter: function () {
-                    switch (this.series.name) {
-
-                    }
-                },
-            },
-        };
-
-        $.ajax({
-            type: "GET",
-            url: '/games/' + $appPage.attr('data-id') + '/youtube.json',
-            dataType: 'json',
-            success: function (data, textStatus, jqXHR) {
-
-                if (data === null) {
-                    const now = Date.now();
-                    data = {};
-                }
-
-                Highcharts.chart('youtube-chart', $.extend(true, {}, defaultAppChartOptions, {
-                    xAxis: {
-                        min: d.getTime(),
-                    },
-                    series: [
-                        {
-                            name: 'Youtube Comments',
-                            color: '#007bff',
-                            data: data['max_youtube_comments'],
-                            connectNulls: true,
-                            type: 'line',
-                            step: 'right',
-                            yAxis: 1,
-                        },
-                        {
-                            name: 'Youtube Views',
-                            color: '#28a745',
-                            data: data['max_youtube_views'],
-                            connectNulls: true,
-                            type: 'line',
-                            step: 'right',
-                            yAxis: 0,
-                        },
-                    ],
-                }));
-
             },
         });
     }
