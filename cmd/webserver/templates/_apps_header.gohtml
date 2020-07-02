@@ -24,13 +24,13 @@
                     <a class="nav-link" href="/games/upcoming" role="tab"><i class="fas fa-gamepad"></i> Upcoming</a>
                 {{end}}
             </li>
-            <li class="nav-item">
-                {{if endsWith .Path "/sales" }}
-                    <span class="nav-link active" role="tab"><i class="fas fa-gamepad"></i> Sales</span>
-                {{else}}
-                    <a class="nav-link" href="/games/sales" role="tab"><i class="fas fa-gamepad"></i> Sales</a>
-                {{end}}
-            </li>
+            {{/*            <li class="nav-item">*/}}
+            {{/*                {{if endsWith .Path "/sales" }}*/}}
+            {{/*                    <span class="nav-link active" role="tab"><i class="fas fa-gamepad"></i> Sales</span>*/}}
+            {{/*                {{else}}*/}}
+            {{/*                    <a class="nav-link" href="/games/sales" role="tab"><i class="fas fa-gamepad"></i> Sales</a>*/}}
+            {{/*                {{end}}*/}}
+            {{/*            </li>*/}}
             <li class="nav-item">
                 {{if endsWith .Path "/new-releases" }}
                     <span class="nav-link active" role="tab"><i class="fas fa-gamepad"></i> New Releases</span>
