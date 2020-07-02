@@ -99,3 +99,7 @@ func WithAgeCheckCookie(c *colly.Collector) {
 
 	c.SetCookieJar(jar)
 }
+
+func WithTimeout(c *colly.Collector) {
+	c.SetRequestTimeout(time.Second * 10)
+}

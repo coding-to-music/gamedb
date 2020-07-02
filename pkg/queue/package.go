@@ -429,8 +429,8 @@ func scrapePackage(pack *mongo.Package) (err error) {
 	c := colly.NewCollector(
 		colly.URLFilters(packageRegex),
 		colly.AllowURLRevisit(),
+		steamHelper.WithTimeout,
 	)
-	c.SetRequestTimeout(time.Second * 60)
 
 	// ID
 	c.OnHTML("h2.pageheader", func(e *colly.HTMLElement) {

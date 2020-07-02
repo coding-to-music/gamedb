@@ -708,8 +708,9 @@ func scrapeApp(app *mongo.App) (sales []mongo.Sale, err error) {
 
 		c := colly.NewCollector(
 			colly.URLFilters(appStorePage),
-			steamHelper.WithAgeCheckCookie,
 			colly.AllowURLRevisit(),
+			steamHelper.WithAgeCheckCookie,
+			steamHelper.WithTimeout,
 		)
 
 		// Tags

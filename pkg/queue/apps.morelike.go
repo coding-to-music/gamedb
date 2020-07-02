@@ -22,12 +22,6 @@ func (m AppMorelikeMessage) Queue() rabbit.QueueName {
 	return QueueAppsMorelike
 }
 
-var appsMoreLikeCollector = colly.NewCollector(
-	colly.URLFilters(regexp.MustCompile(`store\.steampowered\.com/recommended/morelike/app/[0-9]+$`)),
-	colly.AllowURLRevisit(),
-	steamHelper.WithAgeCheckCookie,
-)
-
 func appMorelikeHandler(messages []*rabbit.Message) {
 
 	for _, message := range messages {
@@ -41,16 +35,22 @@ func appMorelikeHandler(messages []*rabbit.Message) {
 			continue
 		}
 
+		c := colly.NewCollector(
+			colly.URLFilters(regexp.MustCompile(`store\.steampowered\.com/recommended/morelike/app/[0-9]+$`)),
+			steamHelper.WithAgeCheckCookie,
+			steamHelper.WithTimeout,
+		)
+
 		var relatedAppIDs []int
 
-		appsMoreLikeCollector.OnHTML(".similar_grid_capsule", func(e *colly.HTMLElement) {
+		c.OnHTML(".similar_grid_capsule", func(e *colly.HTMLElement) {
 			i, err := strconv.Atoi(e.Attr("data-ds-appid"))
 			if err == nil {
 				relatedAppIDs = append(relatedAppIDs, i)
 			}
 		})
 
-		err = appsMoreLikeCollector.Visit("https://store.steampowered.com/recommended/morelike/app/" + strconv.Itoa(payload.ID))
+		err = c.Visit("https://store.steampowered.com/recommended/morelike/app/" + strconv.Itoa(payload.AppID))
 		if err != nil {
 			steamHelper.LogSteamError(err)
 			sendToRetryQueue(message)
