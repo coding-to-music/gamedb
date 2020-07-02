@@ -235,7 +235,7 @@ func appHandler(messages []*rabbit.Message) {
 		// Produce to sub queues
 		var produces = []QueueMessageInterface{
 			AppAchievementsMessage{AppID: app.ID, AppName: app.Name, AppOwners: app.Owners},
-			AppMorelikeMessage{ID: app.ID},
+			AppMorelikeMessage{AppID: app.ID},
 			AppNewsMessage{AppID: app.ID},
 			AppSameownersMessage{ID: app.ID},
 			AppSteamspyMessage{ID: app.ID},

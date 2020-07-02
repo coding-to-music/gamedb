@@ -7,7 +7,7 @@ import (
 	"strconv"
 
 	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
-	"github.com/gamedb/gamedb/pkg/file-cache"
+	"github.com/gamedb/gamedb/pkg/cache"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -44,7 +44,7 @@ func experienceHandler(w http.ResponseWriter, r *http.Request) {
 		return chunks, nil
 	}
 
-	err := file_cache.GetSetCache("experience", 0, retrieve, &chunks)
+	err := cache.GetSetCache("experience", 0, retrieve, &chunks)
 	if err != nil {
 		log.Err(err, r)
 		returnErrorTemplate(w, r, errorTemplate{Code: 500})

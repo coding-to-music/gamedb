@@ -15,7 +15,7 @@ import (
 )
 
 type AppMorelikeMessage struct {
-	ID int `json:"id"`
+	AppID int `json:"id"`
 }
 
 func (m AppMorelikeMessage) Queue() rabbit.QueueName {
@@ -62,16 +62,16 @@ func appMorelikeHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", payload.ID}}, bson.D{{"related_app_ids", relatedAppIDs}})
+		_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", payload.AppID}}, bson.D{{"related_app_ids", relatedAppIDs}})
 		if err != nil {
-			log.Err(err, payload.ID)
+			log.Err(err, payload.AppID)
 			sendToRetryQueue(message)
 			continue
 		}
 
-		err = memcache.Delete(memcache.MemcacheApp(payload.ID).Key)
+		err = memcache.Delete(memcache.MemcacheApp(payload.AppID).Key)
 		if err != nil {
-			log.Err(err, payload.ID)
+			log.Err(err, payload.AppID)
 			sendToRetryQueue(message)
 			continue
 		}

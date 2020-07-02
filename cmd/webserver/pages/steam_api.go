@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steamapi"
-	"github.com/gamedb/gamedb/pkg/file-cache"
+	"github.com/gamedb/gamedb/pkg/cache"
 	githubHelper "github.com/gamedb/gamedb/pkg/github"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -64,7 +64,7 @@ func steamAPIHandler(w http.ResponseWriter, r *http.Request) {
 		return interfaces, nil
 	}
 
-	err = file_cache.GetSetCache("steam-api", time.Hour*24, retrieve, &interfaces)
+	err = cache.GetSetCache("steam-api", time.Hour*24, retrieve, &interfaces)
 	if err != nil {
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "An error occurred"})
 		return
