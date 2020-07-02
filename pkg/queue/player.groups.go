@@ -57,7 +57,7 @@ func playersGroupsHandler(messages []*rabbit.Message) {
 
 		// Get new groups
 		newGroupsResponse, _, err := steamHelper.GetSteam().GetUserGroupList(payload.PlayerID)
-		if err == steamapi.ErrNoUserFound {
+		if err2, ok := err.(steamapi.Error); ok && err2.Code == 500 {
 			message.Ack(false)
 			continue
 		}
