@@ -19,8 +19,6 @@ type PlayerAchievementsMessage struct {
 	Force    bool  `json:"force"`
 }
 
-var appsWithNoStats = map[int]bool{}
-
 func playerAchievementsHandler(messages []*rabbit.Message) {
 
 	for _, message := range messages {
@@ -34,7 +32,10 @@ func playerAchievementsHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		if _, ok := appsWithNoStats[payload.AppID]; ok {
+		item := memcache.MemcachePlayerAchievementsNone(payload.AppID)
+
+		_, err = memcache.Get(item.Key)
+		if err == nil {
 			message.Ack(false)
 			continue
 		}
@@ -48,7 +49,8 @@ func playerAchievementsHandler(messages []*rabbit.Message) {
 		}
 
 		if app.AchievementsCount == 0 {
-			appsWithNoStats[payload.AppID] = true
+			err = memcache.Set(item.Key, item.Value, item.Expiration)
+			log.Err(err)
 		}
 
 		// Get player
@@ -77,7 +79,8 @@ func playerAchievementsHandler(messages []*rabbit.Message) {
 		if !resp.Success {
 
 			if resp.Error == "Requested app has no stats" {
-				appsWithNoStats[payload.AppID] = true
+				err = memcache.Set(item.Key, item.Value, item.Expiration)
+				log.Err(err)
 			}
 
 			message.Ack(false)

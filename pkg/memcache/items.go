@@ -99,4 +99,5 @@ var (
 	MemcachePlayerLevelsRounded      = Item{Key: "player-levels-rounded", Expiration: 60 * 60 * 24}
 	MemcacheFirstAppBadge            = func(appID int) Item { return Item{Key: "first-app-badge-" + strconv.Itoa(appID), Expiration: 0} }
 	MemcacheChatBotRequest           = func(request string) Item { return Item{Key: "chat-bot-request-" + helpers.MD5([]byte(request)), Expiration: 60 * 10} }
+	MemcachePlayerAchievementsNone   = func(appID int) Item { return Item{Key: "no-stats-" + strconv.Itoa(appID), Expiration: 60 * 60, Value: "1"} }
 )
