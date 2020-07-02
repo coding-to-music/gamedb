@@ -386,6 +386,10 @@ func IsProd() bool {
 	return Config.Environment.Get() == EnvProd
 }
 
+func IsConsumer() bool {
+	return Config.Environment.Get() == EnvConsumer
+}
+
 func GetSteamKeyTag() string {
 
 	key := Config.SteamAPIKey.Get()

@@ -41,7 +41,7 @@ func main() {
 	queue.SetDiscordClient(discord)
 
 	// Load PPROF
-	if config.IsLocal() {
+	if !config.IsConsumer() {
 		log.Info("Starting consumers profiling")
 		go func() {
 			err := http.ListenAndServe("localhost:6061", nil)
