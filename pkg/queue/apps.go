@@ -135,6 +135,13 @@ func appHandler(messages []*rabbit.Message) {
 				sendToRetryQueue(message)
 				return
 			}
+
+			err = updateAppBadgeOwners(&app)
+			if err != nil {
+				log.Err(err, payload.ID)
+				sendToRetryQueue(message)
+				return
+			}
 		}()
 
 		wg.Wait()
@@ -955,6 +962,18 @@ func updateAppPlaytimeStats(app *mongo.App) (err error) {
 func updateAppOwners(app *mongo.App) (err error) {
 
 	app.Owners, err = mongo.CountDocuments(mongo.CollectionPlayerApps, bson.D{{"app_id", app.ID}}, 0)
+	return err
+}
+
+func updateAppBadgeOwners(app *mongo.App) (err error) {
+
+	filter := bson.D{
+		{"app_id", app.ID},
+		{"badge_id", 0},
+		{"badge_foil", false},
+	}
+
+	app.BadgeOwners, err = mongo.CountDocuments(mongo.CollectionPlayerBadges, filter, 0)
 	return err
 }
 

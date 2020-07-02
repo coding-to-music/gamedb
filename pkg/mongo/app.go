@@ -40,6 +40,7 @@ type App struct {
 	AchievementsCountTotal        int                            `bson:"achievements_count_total"` // Including inactive ones
 	AlbumMetaData                 pics.AlbumMetaData             `bson:"albummetadata"`
 	Background                    string                         `bson:"background"`
+	BadgeOwners                   int64                          `bson:"badge_owners"`
 	Bundles                       []int                          `bson:"bundle_ids"`
 	Categories                    []int                          `bson:"categories"`
 	ChangeNumber                  int                            `bson:"change_number"`
@@ -126,6 +127,7 @@ func (app App) BSON() bson.D {
 		{"achievements_count_total", app.AchievementsCountTotal},
 		{"albummetadata", app.AlbumMetaData},
 		{"background", app.Background},
+		{"badge_owners", app.BadgeOwners},
 		{"bundle_ids", app.Bundles},
 		{"categories", app.Categories},
 		{"change_number", app.ChangeNumber},
