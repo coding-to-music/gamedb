@@ -16,7 +16,7 @@ import (
 type PlayerAchievementsMessage struct {
 	PlayerID int64 `json:"player_id"`
 	AppID    int   `json:"app_id"`
-	Force    bool  `json:"force"`
+	Force    bool  `json:"force"` // Re-add previous achievements
 }
 
 func playerAchievementsHandler(messages []*rabbit.Message) {
