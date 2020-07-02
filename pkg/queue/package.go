@@ -252,13 +252,8 @@ func packageHandler(messages []*rabbit.Message) {
 
 			if payload.ChangeNumber > 0 {
 
-				var err error
-
-				for _, appID := range pack.Apps {
-					err = ProducePackage(PackageMessage{ID: appID})
-					err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
-					log.Err(err)
-				}
+				err := ProduceSteam(SteamMessage{AppIDs: pack.Apps})
+				log.Err(err)
 			}
 		}()
 
