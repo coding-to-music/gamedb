@@ -88,7 +88,7 @@
                                     <h5 class="card-header">Details</h5>
                                     <div class="card-body p-0">
                                         <div class="table-responsive">
-                                            <table class="table no-border mb-0">
+                                            <table class="table table-no-border mb-0">
                                                 <tr>
                                                     <th scope="col" nowrap="nowrap">Level</th>
                                                     <td><a href="/experience/{{ .Player.Level }}">{{ comma .Player.Level }}</a></td>
@@ -160,7 +160,7 @@
                                     <div class="card-body collapse p-0 {{ if .Player.Bans.History }}show{{ end }}" id="bans-collapse">
 
                                         <div class="table-responsive">
-                                            <table class="table no-border mb-0">
+                                            <table class="table table-no-border mb-0">
                                                 <tr>
                                                     <th scope="col">Community Banned</th>
                                                     <td>{{ if .Player.Bans.CommunityBanned }}<i class="fas fa-check text-danger"></i>{{ else }}<i class="fas fa-times text-success"></i>{{ end }}</td>
@@ -221,7 +221,7 @@
                                     <div class="card-body p-0">
                                         {{ if gt (len .Ranks) 0 }}
                                             <div class="table-responsive">
-                                                <table class="table table-sm no-border mb-0">
+                                                <table class="table table-sm table-no-border mb-0">
                                                     {{ range $key, $value := .Ranks }}
                                                         <tr>
                                                             <td>{{ .Metric.String }}</td>
@@ -432,7 +432,7 @@
                                     <h5 class="card-header">Stats</h5>
                                     <div class="card-body p-0">
                                         <div class="table-responsive">
-                                            <table class="table no-border mb-0">
+                                            <table class="table table-no-border mb-0">
                                                 <thead>
                                                 <tr>
                                                     <th scope="col" style="width: 40%"></th>
@@ -481,7 +481,7 @@
                                     <div class="card-body p-0">
 
                                         <div class="table-responsive">
-                                            <table class="table no-border table-datatable" data-order='[[1, "desc"]]'>
+                                            <table class="table table-no-border table-datatable" data-order='[[1, "desc"]]'>
                                                 <thead>
                                                 <tr>
                                                     <th>Type</th>
