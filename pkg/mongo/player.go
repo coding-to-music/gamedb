@@ -444,12 +444,11 @@ func (player *Player) SetFriends(saveRows bool) error {
 
 	// Fill in missing map the map
 	friendRows, err := GetPlayersByID(friendIDsToAdd, bson.M{
-		"_id":             1,
-		"avatar":          1,
-		"games_count":     1,
-		"persona_name":    1,
-		"level":           1,
-		"time_logged_off": 1,
+		"_id":          1,
+		"avatar":       1,
+		"games_count":  1,
+		"persona_name": 1,
+		"level":        1,
 	})
 	if err != nil {
 		return err
