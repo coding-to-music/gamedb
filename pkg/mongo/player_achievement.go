@@ -56,9 +56,54 @@ func (a PlayerAchievement) GetComplete() string {
 	return helpers.GetAchievementCompleted(a.AchievementComplete)
 }
 
+func CreatePlayerAchievementIndexes() {
+
+	var indexModels = []mongo.IndexModel{
+		// GetPlayerAchievements
+		{Keys: bson.D{
+			{"player_id", 1},
+			{"achievement_date", -1},
+		}},
+		// GetPlayerAchievements
+		{Keys: bson.D{
+			{"player_id", 1},
+			{"achievement_complete", 1},
+		}},
+		// FindLatestPlayerAchievement
+		{Keys: bson.D{
+			{"player_id", 1},
+			{"app_id", 1},
+			{"achievement_date", -1}},
+		},
+		// GetPlayerAchievementsForApp
+		{Keys: bson.D{
+			{"player_id", 1},
+			{"app_id", 1},
+			{"achievement_id", 1}},
+		},
+	}
+
+	//
+	client, ctx, err := getMongo()
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	_, err = client.Database(MongoDatabase).
+		Collection(CollectionPlayerAchievements.String()).
+		Indexes().
+		CreateMany(ctx, indexModels)
+
+	log.Err(err)
+}
+
 func FindLatestPlayerAchievement(playerID int64, appID int) (int64, error) {
 
-	var filter = bson.D{{"player_id", playerID}, {"app_id", appID}}
+	var filter = bson.D{
+		{"player_id", playerID},
+		{"app_id", appID},
+	}
 
 	var playerAchievement PlayerAchievement
 
@@ -69,10 +114,9 @@ func FindLatestPlayerAchievement(playerID int64, appID int) (int64, error) {
 
 }
 
-func GetPlayerAchievements(playerID int64, offset int64) (achievements []PlayerAchievement, err error) {
+func GetPlayerAchievements(playerID int64, offset int64, sort bson.D) (achievements []PlayerAchievement, err error) {
 
 	var filter = bson.D{{"player_id", playerID}}
-	var sort = bson.D{{"achievement_date", -1}}
 
 	return getPlayerAchievements(offset, 100, filter, sort)
 }

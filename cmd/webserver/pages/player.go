@@ -659,7 +659,7 @@ func playerAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	var wg sync.WaitGroup
 
-	// Get apps
+	// Get achievements
 	var playerAchievements []mongo.PlayerAchievement
 	wg.Add(1)
 	go func() {
@@ -667,7 +667,12 @@ func playerAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		playerAchievements, err = mongo.GetPlayerAchievements(playerID, query.GetOffset64())
+		var columns = map[string]string{
+			"1": "achievement_date",
+			"2": "achievement_complete, achievement_date asc",
+		}
+
+		playerAchievements, err = mongo.GetPlayerAchievements(playerID, query.GetOffset64(), query.GetOrderMongo(columns))
 		log.Err(err)
 	}()
 

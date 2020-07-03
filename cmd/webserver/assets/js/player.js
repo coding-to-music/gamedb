@@ -496,7 +496,7 @@ if ($playerPage.length > 0) {
                     },
                     "orderable": false,
                 },
-                // Release Date
+                // Date
                 {
                     "targets": 1,
                     "render": function (data, type, row) {
@@ -509,7 +509,7 @@ if ($playerPage.length > 0) {
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).attr('nowrap', 'nowrap');
                     },
-                    "orderable": false,
+                    "orderSequence": ['desc'],
                 },
                 // Completed
                 {
@@ -522,7 +522,7 @@ if ($playerPage.length > 0) {
                         $(td).css('background', 'linear-gradient(to right, rgba(0,0,0,.15) ' + rowData[7] + '%, transparent ' + rowData[7] + '%)');
                         $(td).addClass('thin');
                     },
-                    "orderSequence": ['desc', 'asc'],
+                    "orderSequence": ['asc'],
                 },
             ]
         };
