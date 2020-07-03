@@ -7,7 +7,7 @@ import (
 )
 
 func IsValidPackageID(id int) bool {
-	return id >= 0 // Zero is valid
+	return id > 0
 }
 
 func GetPackagePath(id int, name string) string {

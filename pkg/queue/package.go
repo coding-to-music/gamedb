@@ -42,14 +42,8 @@ func packageHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		if payload.ID == 0 {
-			message.Ack(false)
-			continue
-		}
-
 		if !helpers.IsValidPackageID(payload.ID) {
-			log.Err(err, payload.ID)
-			sendToFailQueue(message)
+			message.Ack(false)
 			continue
 		}
 
