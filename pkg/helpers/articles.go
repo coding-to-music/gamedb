@@ -13,13 +13,17 @@ import (
 
 const articleImageBase = "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/clans/"
 
-var trimArticles = regexp.MustCompile(`(?s)^(<br>)+|(<br>)+$`)
+var fixBBCodeSpaces = regexp.MustCompile(`\](\s+)\[`)
 
 func GetArticleBody(body string) template.HTML {
 
 	body = strings.ReplaceAll(body, "{STEAM_CLAN_IMAGE}", articleImageBase)
 	body = strings.ReplaceAll(body, "{STEAM_CLAN_LOC_IMAGE}", articleImageBase)
 
+	body = fixBBCodeSpaces.ReplaceAllString(body, "][") // Remove new lines and spaces inbetween bbcodes
+	body = BBCodeCompiler.Compile(body)
+
+	// Fix up HTML
 	doc, err := html.Parse(strings.NewReader(body))
 	if err == nil {
 		updateArticleDom(doc)
@@ -29,9 +33,7 @@ func GetArticleBody(body string) template.HTML {
 		body = buf.String()
 	}
 
-	body = BBCodeCompiler.Compile(body)
 	body = html.UnescapeString(body)
-	body = trimArticles.ReplaceAllString(body, "")
 
 	return template.HTML(body)
 }
@@ -59,8 +61,6 @@ func GetArticleIcon(articleIcon string, appID int, appIcon string) string {
 
 func updateArticleDom(n *html.Node) {
 
-	var src = getAttribute(n, "src")
-
 	// Images
 	if n.Type == html.ElementNode && n.Data == "img" {
 
@@ -68,6 +68,7 @@ func updateArticleDom(n *html.Node) {
 		removeAttribute(n, "height")
 
 		// Lazy load
+		var src = getAttribute(n, "src")
 		if src != "" {
 			setAttribute(n, "src", "")
 			setAttribute(n, "data-lazy", src)
@@ -77,7 +78,8 @@ func updateArticleDom(n *html.Node) {
 	// Links
 	if n.Type == html.ElementNode && n.Data == "a" {
 
-		if strings.HasSuffix(src, ".jpg") {
+		var href = getAttribute(n, "href")
+		if strings.HasSuffix(href, ".jpg") {
 			// Remove links to images
 			removeAttribute(n, "href")
 			removeAttribute(n, "target")

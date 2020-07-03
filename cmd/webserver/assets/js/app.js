@@ -156,6 +156,8 @@ if ($appPage.length > 0) {
 
                 row.child($("<div/>").html(row.data()[5])).show();
                 $(this).addClass('shown');
+
+                observeLazyImages($(this).next().find('img[data-lazy]'));
             }
         });
     }

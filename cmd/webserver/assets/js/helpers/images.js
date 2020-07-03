@@ -106,6 +106,8 @@ function loadImage($target) {
     $target.removeAttr("data-lazy-alt");
     $target.removeAttr("data-lazy-title");
     $target.removeAttr("data-lazy");
+
+    $target.attr('data-observed', 1);
 }
 
 function fixBrokenImages() {
