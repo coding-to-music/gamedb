@@ -15,6 +15,27 @@ const articleImageBase = "https://steamcdn-a.akamaihd.net/steamcommunity/public/
 
 var fixBBCodeSpaces = regexp.MustCompile(`\](\s+)\[`)
 
+func GetArticleIcon(articleIcon string, appID int, appIcon string) string {
+
+	if appIcon != "" {
+		return GetAppIcon(appID, appIcon)
+	}
+
+	if strings.HasPrefix(articleIcon, "http") {
+
+		params := url.Values{}
+		params.Set("url", articleIcon)
+		params.Set("w", "64")
+		params.Set("h", "64")
+		params.Set("output", "webp")
+		params.Set("t", "square")
+
+		return "https://images.weserv.nl?" + params.Encode()
+	}
+
+	return DefaultAppIcon
+}
+
 func GetArticleBody(body string) template.HTML {
 
 	body = strings.ReplaceAll(body, "{STEAM_CLAN_IMAGE}", articleImageBase)
@@ -36,27 +57,6 @@ func GetArticleBody(body string) template.HTML {
 	body = html.UnescapeString(body)
 
 	return template.HTML(body)
-}
-
-func GetArticleIcon(articleIcon string, appID int, appIcon string) string {
-
-	if appIcon != "" {
-		return GetAppIcon(appID, appIcon)
-	}
-
-	if strings.HasPrefix(articleIcon, "http") {
-
-		params := url.Values{}
-		params.Set("url", articleIcon)
-		params.Set("w", "64")
-		params.Set("h", "64")
-		params.Set("output", "webp")
-		params.Set("t", "square")
-
-		return "https://images.weserv.nl?" + params.Encode()
-	}
-
-	return DefaultAppIcon
 }
 
 func updateArticleDom(n *html.Node) {
@@ -93,43 +93,6 @@ func updateArticleDom(n *html.Node) {
 	// Recurse
 	for c := n.FirstChild; c != nil; c = c.NextSibling {
 		updateArticleDom(c)
-	}
-}
-
-func removeAttribute(n *html.Node, attribute string) {
-
-	for k, v := range n.Attr {
-		if v.Key == attribute {
-			n.Attr = append(n.Attr[:k], n.Attr[k+1:]...)
-			return
-		}
-	}
-}
-
-func getAttribute(n *html.Node, attribute string) string {
-
-	for _, v := range n.Attr {
-		if v.Key == attribute {
-			return v.Val
-		}
-	}
-
-	return ""
-}
-
-func setAttribute(n *html.Node, attribute string, value string) {
-
-	i := -1
-	for index, attr := range n.Attr {
-		if attr.Key == attribute {
-			i = index
-			break
-		}
-	}
-	if i == -1 {
-		n.Attr = append(n.Attr, html.Attribute{Key: attribute, Val: value})
-	} else {
-		n.Attr = append(n.Attr[:i], n.Attr[i+1:]...)
 	}
 }
 
