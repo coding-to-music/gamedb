@@ -142,7 +142,7 @@ if ($appPage.length > 0) {
 
         const table = $newsTable.gdbTable({tableOptions: options, searchFields: searchFields});
 
-        $newsTable.on('click', 'tr[role=row]', function () {
+        $newsTable.on('click', 'tbody tr[role=row]', function () {
 
             const row = table.row($(this));
 
@@ -224,7 +224,7 @@ if ($appPage.length > 0) {
 
         const table = $itemsTable.gdbTable({tableOptions: options, searchFields: searchFields});
 
-        $itemsTable.on('click', 'tr[role=row]', function () {
+        $itemsTable.on('click', 'tbody tr[role=row]', function () {
 
                 const row = table.row($(this));
 
