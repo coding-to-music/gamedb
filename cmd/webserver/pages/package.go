@@ -141,11 +141,13 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		err = queue.ProduceSteam(queue.SteamMessage{PackageIDs: []int{pack.ID}})
-		if err != nil {
-			err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
-			log.Err(err, r)
-		} else {
+		if err == nil {
 			t.addToast(Toast{Title: "Update", Message: "Package has been queued for an update"})
+			log.Info(log.LogNameTriggerUpdate, r, r.UserAgent())
+		}
+		err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
+		if err != nil {
+			log.Err(err, r)
 		}
 	}()
 
