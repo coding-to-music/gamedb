@@ -50,7 +50,7 @@ func init() {
 	BBCodeCompiler.SetTag("table", func(node *bbcode.BBCodeNode) (*bbcode.HTMLTag, bool) {
 		out := bbcode.NewHTMLTag("")
 		out.Name = "table"
-		out.Attrs["class"] = "table table-hover table-striped mb-4"
+		out.Attrs["class"] = "table table-hover table-striped table-sm table-nonfluid mb-0"
 		return out, true
 	})
 	BBCodeCompiler.SetTag("tr", func(node *bbcode.BBCodeNode) (*bbcode.HTMLTag, bool) {

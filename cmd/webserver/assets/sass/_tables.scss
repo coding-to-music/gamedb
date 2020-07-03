@@ -32,6 +32,10 @@ table.table:not(.table-no-border) {
     }
 }
 
+.table-nonfluid {
+    width: auto !important;
+}
+
 //
 table.table {
 
