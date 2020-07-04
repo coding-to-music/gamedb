@@ -106,7 +106,7 @@
                         {{ end }}
 
                         <div class="row">
-                            <div class="col-12 col-lg-7">
+                            <div class="col-12 col-lg-8">
 
                                 <div class="table-responsive">
                                     <table class="table table-hover table-striped mb-0">
@@ -257,7 +257,7 @@
                                 </div>
 
                             </div>
-                            <div class="col-12 col-lg-5">
+                            <div class="col-12 col-lg-4">
 
                                 <h6 class="mb-1 mt-3 d-lg-none">Links</h6>
                                 <div id="links" class="mb-3">
@@ -272,11 +272,12 @@
                                 </div>
 
                                 <h6 class="mb-1">Tags</h6>
-                                <div id="tags" class="mb-3 clearfix">
+                                <div id="tags" class="mb-3">
                                     {{ range $key, $value := .App.TagCounts }}
-                                        <div style="width: {{ percent .Count $.TagsMax }}%;"></div>
-                                        <a class="float-left" href="/games?tags={{ .ID }}">{{ .Name }}</a>
-                                        <span class="float-right">{{ comma .Count }} <i class="fas fa-thumbs-up"></i></span>
+                                        <div class="clearfix" style="background: linear-gradient(to right, #28a74522 {{ percent .Count $.TagsMax }}%, transparent {{ percent .Count $.TagsMax }}%)">
+                                            <a class="float-left" href="/games?tags={{ .ID }}">{{ .Name }}</a>
+                                            <span class="float-right">{{ comma .Count }} <i class="fas fa-thumbs-up"></i></span>
+                                        </div>
                                     {{ end }}
                                 </div>
 

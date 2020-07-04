@@ -9,16 +9,12 @@
         #tags {
 
             div {
-                height: 1px;
-                clear: both;
-                background-color: #28a745;
-
-                position: relative;
-                z-index: 100;
+                margin-bottom: 1px;
+                padding-left: 4px;
             }
 
             .float-left {
-                font-size: 0.9rem;
+                font-size: 0.85rem;
             }
 
             .float-right {
