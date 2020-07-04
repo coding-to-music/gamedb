@@ -259,8 +259,18 @@
                             </div>
                             <div class="col-12 col-lg-4">
 
-                                <h6 class="mb-1 mt-3 d-lg-none">Links</h6>
-                                <div id="links" class="mb-3">
+                                <h6 class="mb-1 mt-3 mt-lg-0">Tags</h6>
+                                <div id="tags" class="mb-3">
+                                    {{ range $key, $value := .App.TagCounts }}
+                                        <div class="clearfix" style="background: linear-gradient(to right, #28a74522 {{ percent .Count $.TagsMax }}%, transparent {{ percent .Count $.TagsMax }}%)">
+                                            <a class="float-left" href="/games?tags={{ .ID }}">{{ .Name }}</a>
+                                            <span class="float-right">{{ comma .Count }} <i class="fas fa-thumbs-up"></i></span>
+                                        </div>
+                                    {{ end }}
+                                </div>
+
+                                <h6 class="mb-1 mt-3">Links</h6>
+                                <div id="links">
                                     {{ range .Links }}
                                         {{ if not .Hide }}
                                             <div>
@@ -268,16 +278,6 @@
                                                 <a href="{{ .Link }}" target="_blank" rel="noopener">{{ .Text }}</a>
                                             </div>
                                         {{ end }}
-                                    {{ end }}
-                                </div>
-
-                                <h6 class="mb-1">Tags</h6>
-                                <div id="tags" class="mb-3">
-                                    {{ range $key, $value := .App.TagCounts }}
-                                        <div class="clearfix" style="background: linear-gradient(to right, #28a74522 {{ percent .Count $.TagsMax }}%, transparent {{ percent .Count $.TagsMax }}%)">
-                                            <a class="float-left" href="/games?tags={{ .ID }}">{{ .Name }}</a>
-                                            <span class="float-right">{{ comma .Count }} <i class="fas fa-thumbs-up"></i></span>
-                                        </div>
                                     {{ end }}
                                 </div>
 
