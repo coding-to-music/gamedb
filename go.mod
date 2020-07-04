@@ -3,7 +3,7 @@ module github.com/gamedb/gamedb
 go 1.13
 
 require (
-	cloud.google.com/go v0.59.0 // indirect
+	cloud.google.com/go v0.60.0 // indirect
 	cloud.google.com/go/logging v1.0.0
 	cloud.google.com/go/storage v1.10.0
 	github.com/Jleagle/go-durationfmt v0.0.0-20190307132420-e57bfad84057
@@ -63,7 +63,7 @@ require (
 	github.com/kennygrant/sanitize v1.2.4 // indirect
 	github.com/klauspost/compress v1.10.10 // indirect
 	github.com/lib/pq v1.3.0 // indirect
-	github.com/logrusorgru/aurora v0.0.0-20200102142835-e9ef32dff381
+	github.com/logrusorgru/aurora v2.0.2+incompatible
 	github.com/mattn/go-runewidth v0.0.9 // indirect
 	github.com/mattn/go-sqlite3 v2.0.1+incompatible // indirect
 	github.com/memcachier/mc v2.0.1+incompatible
@@ -102,11 +102,11 @@ require (
 	golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208 // indirect
 	golang.org/x/sys v0.0.0-20200625212154-ddb9806d33ae // indirect
 	golang.org/x/text v0.3.3
-	golang.org/x/time v0.0.0-20200416051211-89c76fbcd5d1 // indirect
-	golang.org/x/tools v0.0.0-20200626171337-aa94e735be7f // indirect
+	golang.org/x/time v0.0.0-20200630173020-3af7569d3a1e // indirect
+	golang.org/x/tools v0.0.0-20200702044944-0cc1aa72b347 // indirect
 	gonum.org/v1/gonum v0.7.0
 	google.golang.org/api v0.28.0
-	google.golang.org/genproto v0.0.0-20200626011028-ee7919e894b5 // indirect
+	google.golang.org/genproto v0.0.0-20200702021140-07506425bd67 // indirect
 	google.golang.org/grpc v1.30.0
 	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/djherbis/atime.v1 v1.0.0 // indirect
