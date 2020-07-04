@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/rabbit-go"
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -69,6 +70,13 @@ func playerAchievementsHandler(messages []*rabbit.Message) {
 
 		// Do API call
 		resp, _, err := steamHelper.GetSteamUnlimited().GetPlayerAchievements(uint64(payload.PlayerID), uint32(payload.AppID))
+
+		// Skip private profiles
+		if val, ok := err.(steamapi.Error); ok && val.Code == 403 {
+			message.Ack(false)
+			continue
+		}
+
 		err = steamHelper.AllowSteamCodes(err, 400)
 		if err != nil {
 			steamHelper.LogSteamError(err, message.Message.Body)
