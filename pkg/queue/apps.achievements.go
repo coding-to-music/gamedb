@@ -2,7 +2,6 @@ package queue
 
 import (
 	"sort"
-	"time"
 
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -69,7 +68,6 @@ func appAchievementsHandler(messages []*rabbit.Message) {
 		// Add in data for achievements in schema
 		var percentTotal float64
 		var percentCount int
-		var wait bool
 
 		for _, achievement := range schemaResponse.AvailableGameStats.Achievements {
 
@@ -78,25 +76,18 @@ func appAchievementsHandler(messages []*rabbit.Message) {
 				percentTotal += val.Completed
 				percentCount++
 
-				val.Name = achievement.DisplayName
-				val.SetIcon(achievement.Icon)
-				val.Description = achievement.Description
-				val.Hidden = bool(achievement.Hidden)
+				val.Fill(payload.AppID, achievement)
 				val.Active = true
 
 				achievementsMap[achievement.Name] = val
 
 			} else {
-				log.Info("Achevement in schema but not global", payload.AppID, achievement.Name)
-				wait = true
-				break
-			}
-		}
 
-		// Wait for both API endpoints to sync up
-		if wait {
-			sendToRetryQueueWithDelay(message, 1*time.Minute)
-			continue
+				val := mongo.AppAchievement{}
+				val.Fill(payload.AppID, achievement)
+
+				achievementsMap[achievement.Name] = val
+			}
 		}
 
 		// Save achievements to Mongo

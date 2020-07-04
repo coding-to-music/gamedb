@@ -9,6 +9,7 @@ var (
 	RegexInts                  = regexp.MustCompile(`[0-9]+`)
 	RegexIntsOnly              = regexp.MustCompile(`^[0-9]+$`)
 	RegexMD5Only               = regexp.MustCompile(`^[a-f0-9]{32}$`)
+	RegexSha1                  = regexp.MustCompile(`[a-f0-9]{40}`)
 	RegexSha1Only              = regexp.MustCompile(`^[a-f0-9]{40}$`)
 	RegexTimestamps            = regexp.MustCompile(`1[0-9]{9}`)
 	RegexNonInts               = regexp.MustCompile(`[^0-9]+`)

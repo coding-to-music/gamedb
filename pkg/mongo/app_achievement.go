@@ -2,8 +2,8 @@ package mongo
 
 import (
 	"strconv"
-	"strings"
 
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
@@ -46,15 +46,18 @@ func (achievement AppAchievement) GetIcon() string {
 	return helpers.GetAchievementIcon(achievement.AppID, achievement.Icon)
 }
 
-func (achievement *AppAchievement) SetIcon(url string) {
-
-	url = strings.TrimPrefix(url, helpers.AppIconBase+strconv.Itoa(achievement.AppID)+"/")
-	url = strings.TrimSuffix(url, ".jpg")
-	achievement.Icon = url
-}
-
 func (achievement AppAchievement) GetCompleted() string {
 	return helpers.GetAchievementCompleted(achievement.Completed)
+}
+
+func (achievement *AppAchievement) Fill(appID int, response steamapi.SchemaForGameAchievement) {
+
+	achievement.AppID = appID
+	achievement.Key = response.Name
+	achievement.Name = response.DisplayName
+	achievement.Icon = helpers.RegexSha1.FindString(response.Icon)
+	achievement.Description = response.Description
+	achievement.Hidden = bool(response.Hidden)
 }
 
 func GetAppAchievements(offset int64, limit int64, filter bson.D, sort bson.D) (achievements []AppAchievement, err error) {
