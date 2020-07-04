@@ -493,6 +493,10 @@ const (
 
 func (player Player) NeedsUpdate(updateType UpdateType) bool {
 
+	if player.Removed {
+		return false
+	}
+
 	var err error
 	player.ID, err = helpers.IsValidPlayerID(player.ID)
 	if err != nil {

@@ -80,6 +80,11 @@ func playerHandler(messages []*rabbit.Message) {
 
 		player.ID = payload.ID
 
+		if player.Removed {
+			message.Ack(false)
+			continue
+		}
+
 		//
 		var wg sync.WaitGroup
 
