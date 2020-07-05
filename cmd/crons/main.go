@@ -1,6 +1,9 @@
 package main
 
 import (
+	"net/http"
+	_ "net/http/pprof"
+
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -19,6 +22,12 @@ func main() {
 
 	// Load queue producers
 	queue.Init(queue.QueueCronsDefinitions)
+
+	// Profiling
+	go func() {
+		err := http.ListenAndServe("localhost:6060", nil)
+		log.Critical(err)
+	}()
 
 	// Get API key
 	err := mysql.GetAPIKey("crons")

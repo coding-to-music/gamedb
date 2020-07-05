@@ -34,11 +34,11 @@ func main() {
 
 	log.Info("Starting chatbot")
 
-	// Load PPROF
-	if config.IsLocal() {
+	// Profiling
+	if !config.IsConsumer() {
 		log.Info("Starting chatbot profiling")
 		go func() {
-			err := http.ListenAndServe("localhost:6062", nil)
+			err := http.ListenAndServe("localhost:6060", nil)
 			log.Critical(err)
 		}()
 	}
