@@ -516,29 +516,17 @@ if ($appPage.length > 0) {
                             return this.y.toLocaleString() + ' average players on ' + moment(this.key).format("dddd DD MMM YYYY @ HH:mm");
                         case 'Twitch Viewers':
                             return this.y.toLocaleString() + ' Twitch viewers on ' + moment(this.key).format("dddd DD MMM YYYY @ HH:mm");
-                        case 'Youtube Views':
-                            return this.y.toLocaleString() + ' Youtube views on ' + moment(this.key).format("dddd DD MMM YYYY");
-                        case 'Youtube Comments':
-                            return this.y.toLocaleString() + ' Youtube comments on ' + moment(this.key).format("dddd DD MMM YYYY");
+                        case 'YouTube Views':
+                            return this.y.toLocaleString() + ' YouTube views on ' + moment(this.key).format("dddd DD MMM YYYY");
+                        case 'YouTube Comments':
+                            return this.y.toLocaleString() + ' YouTube comments on ' + moment(this.key).format("dddd DD MMM YYYY");
                     }
                 },
             },
         };
 
         const series = function (data) {
-
-            if (data === null) {
-                const now = Date.now();
-                data = {
-                    "max_player_count": [[now, 0]],
-                    "max_moving_average": [[now, 0]],
-                    "max_twitch_viewers": [[now, 0]],
-                    "max_youtube_views": [[now, 0]],
-                    "max_youtube_comments": [[now, 0]],
-                };
-            }
-
-            const series = [
+            return [
                 {
                     name: 'Twitch Viewers',
                     color: '#6441A4', // Twitch purple
@@ -558,29 +546,6 @@ if ($appPage.length > 0) {
                     connectNulls: true,
                 },
             ];
-
-            if (user.isLoggedIn) {
-
-                series.unshift({
-                    name: 'Youtube Views',
-                    color: '#FF0000', // Youtube red
-                    data: data['max_youtube_views'],
-                    connectNulls: true,
-                    type: 'line',
-                    step: 'right',
-                    visible: false,
-                }, {
-                    name: 'Youtube Comments',
-                    color: '#FF0000', // Youtube red
-                    data: data['max_youtube_comments'],
-                    connectNulls: true,
-                    type: 'line',
-                    step: 'right',
-                    visible: false,
-                });
-            }
-
-            return series;
         };
 
         $.ajax({
@@ -589,27 +554,15 @@ if ($appPage.length > 0) {
             dataType: 'json',
             success: function (data, textStatus, jqXHR) {
 
-                const start = d.getTime();
+                if (data === null) {
+                    const now = Date.now();
+                    data = {
+                        "max_player_count": [[now, 0]],
+                        "max_moving_average": [[now, 0]],
+                        "max_twitch_viewers": [[now, 0]],
+                    };
+                }
 
-                //
-                let max = 0;
-                data['max_youtube_views'].forEach(function myFunction(value, index, array) {
-                    if (value[0] > start && value[1] != null && value[1] > max) {
-                        max = value[1];
-                    }
-                });
-                $('#youtube-max-views').html(max.toLocaleString());
-
-                //
-                max = 0;
-                data['max_youtube_comments'].forEach(function myFunction(value, index, array) {
-                    if (value[0] > start && value[1] != null && value[1] > max) {
-                        max = value[1];
-                    }
-                });
-                $('#youtube-max-comments').html(max.toLocaleString());
-
-                //
                 Highcharts.chart('players-chart', $.extend(true, {}, defaultAppChartOptions, {
                     xAxis: {
                         min: d.getTime(),
@@ -625,8 +578,63 @@ if ($appPage.length > 0) {
             dataType: 'json',
             success: function (data, textStatus, jqXHR) {
 
+                if (data === null) {
+                    const now = Date.now();
+                    data = {
+                        "max_player_count": [[now, 0]],
+                        "max_moving_average": [[now, 0]],
+                        "max_twitch_viewers": [[now, 0]],
+                        "max_youtube_views": [[now, 0]],
+                        "max_youtube_comments": [[now, 0]],
+                    };
+                }
+
                 Highcharts.chart('players-chart2', $.extend(true, {}, defaultAppChartOptions, {
                     series: series(data),
+                }));
+
+                Highcharts.chart('youtube-comments-chart', $.extend(true, {}, defaultAppChartOptions, {
+                    series: [
+                        {
+                            name: 'YouTube Comments',
+                            color: '#28a745',
+                            data: data['max_youtube_comments'],
+                            connectNulls: true,
+                            type: 'line',
+                            step: 'right',
+                        }
+                    ],
+                    plotOptions: {
+                        series: {
+                            events: {
+                                legendItemClick: function () {
+                                    return false;
+                                }
+                            }
+                        }
+                    },
+                }));
+
+                Highcharts.chart('youtube-views-chart', $.extend(true, {}, defaultAppChartOptions, {
+                    series: [
+                        {
+                            name: 'YouTube Views',
+                            color: '#28a745',
+                            data: data['max_youtube_views'],
+                            connectNulls: true,
+                            type: 'line',
+                            step: 'right',
+                        },
+                    ],
+                    plotOptions: {
+                        series: {
+                            events: {
+                                legendItemClick: function () {
+                                    return false;
+                                }
+                            }
+                        }
+                    },
                 }));
             },
         });
