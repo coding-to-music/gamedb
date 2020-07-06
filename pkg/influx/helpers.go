@@ -252,7 +252,6 @@ func GetInfluxTrend(builder *influxql.Builder) (trend int64, err error) {
 	var xs []float64
 	var ys []float64
 
-	var i float64 = 1
 	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
 		for _, v := range resp.Results[0].Series[0].Values {
 
@@ -262,10 +261,14 @@ func GetInfluxTrend(builder *influxql.Builder) (trend int64, err error) {
 				continue
 			}
 
-			xs = append(xs, i)
-			ys = append(ys, math.Sqrt(float64(trendTotal)))
+			t, err := time.Parse(time.RFC3339, v[0].(string))
+			if err != nil {
+				log.Err(err)
+				continue
+			}
 
-			i++
+			xs = append(xs, float64(t.Unix()/60/60))
+			ys = append(ys, math.Sqrt(float64(trendTotal)))
 		}
 
 		_, slope := stat.LinearRegression(xs, ys, nil, false)
