@@ -23,7 +23,7 @@ func (c AppsPlayerCheckTop) Cron() string {
 	return CronTimeAppPlayersTop
 }
 
-const topAppPlayers = 100
+const topAppPlayers = 50 // And up are top apps
 
 func (c AppsPlayerCheckTop) work() (err error) {
 
