@@ -90,6 +90,23 @@ func appAchievementsHandler(messages []*rabbit.Message) {
 			}
 		}
 
+		// Update player achievements
+		for _, achievement := range achievementsMap {
+
+			var filter = bson.D{
+				{"app_id", achievement.AppID},
+				{"achievement_id", achievement.Key},
+				{"achievement_complete", bson.M{"$ne": achievement.Completed}},
+			}
+
+			var update = bson.D{
+				{"achievement_complete", achievement.Completed},
+			}
+
+			_, err = mongo.UpdateManySet(mongo.CollectionPlayerAchievements, filter, update)
+			log.Err(err, payload.AppID)
+		}
+
 		// Save achievements to Mongo
 		var achievementsSlice []mongo.AppAchievement
 		for _, achievement := range achievementsMap {
