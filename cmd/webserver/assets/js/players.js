@@ -1,9 +1,9 @@
 if ($('#players-page').length > 0) {
 
-    const countriesWithStates = ['AU', 'CA', 'FR', 'GB', 'NZ', 'PH', 'SI', 'US'];
-
-    const $country = $('#country');
     const $search = $('#search');
+    const $country = $('#country');
+    const $state = $('#state');
+    const $stateContainer = $('#state-container');
 
     $country.on('change', function (e) {
         toggleStateDropDown();
@@ -12,14 +12,34 @@ if ($('#players-page').length > 0) {
     function toggleStateDropDown() {
 
         const countryVal = $country.val();
+        const isContient = countryVal.startsWith("c-");
 
-        for (const cc of countriesWithStates) {
-            if (cc === countryVal) {
-                $('.state-dd[data-cc="' + cc + '"]').removeClass('d-none');
-            } else {
-                $('.state-dd[data-cc="' + cc + '"]').addClass('d-none');
-            }
+        if (isContient) {
+            $stateContainer.hide();
+            return;
+        } else {
+            $stateContainer.show();
         }
+
+        $.ajax({
+            type: "GET",
+            url: '/players/states.json?cc=' + countryVal,
+            dataType: 'json',
+            success: function (data, textStatus, jqXHR) {
+
+                $state.empty();
+                $state.append($('<option/>', {value: '', text: 'Any'}));
+
+                $.each(data, function (index, value) {
+                    $state.append($('<option/>', {
+                        value: value['k'],
+                        text: value['v']
+                    }));
+                });
+            },
+        });
+
+        $state.val('');
     }
 
     const options = {
@@ -202,11 +222,8 @@ if ($('#players-page').length > 0) {
     let searchFields = [
         $country,
         $search,
+        $state,
     ];
-
-    for (const cc of countriesWithStates) {
-        searchFields.push($('#' + cc + '-state'));
-    }
 
     const dt = $('table.table').gdbTable({tableOptions: options, searchFields: searchFields});
 

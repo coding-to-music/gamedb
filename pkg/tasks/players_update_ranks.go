@@ -70,7 +70,12 @@ func (c PlayersUpdateRanks) work() (err error) {
 	}
 
 	// Rank by State
-	for _, cc := range mongo.CountriesWithStates {
+	ccs, err := mongo.GetUniquePlayerCountries()
+	if err != nil {
+		return err
+	}
+
+	for _, cc := range ccs {
 
 		stateCodes, err := mongo.GetUniquePlayerStates(cc)
 		if err != nil {

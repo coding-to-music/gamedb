@@ -23,6 +23,7 @@ func PlayersRouter() http.Handler {
 	r.Get("/", playersHandler)
 	r.Get("/add", playerAddHandler)
 	r.Post("/add", playerAddHandler)
+	r.Get("/states.json", statesAjaxHandler)
 	r.Get("/players.json", playersAjaxHandler)
 	r.Mount("/{id:[0-9]+}", PlayerRouter())
 	return r
@@ -67,20 +68,13 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 
 		for _, cc := range codes {
 
-			// Add a star next to countries with states
-			var star = ""
-			if helpers.SliceHasString(cc, mongo.CountriesWithStates) {
-				star = " *"
-			}
-
-			// Change value for empty country
 			if cc == "" {
 				cc = "_"
 			}
 
 			countries = append(countries, playersCountriesTemplate{
 				CC:   cc,
-				Name: i18n.CountryCodeToName(cc) + star,
+				Name: i18n.CountryCodeToName(cc),
 			})
 		}
 
@@ -89,23 +83,6 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}()
 
-	// Get states
-	states := map[string][]helpers.Tuple{}
-	statesLock := sync.Mutex{}
-	for _, cc := range mongo.CountriesWithStates {
-		wg.Add(1)
-		go func(cc string) {
-			defer wg.Done()
-			var err error
-			statesLock.Lock()
-			states[cc], err = mongo.GetUniquePlayerStates(cc)
-			statesLock.Unlock()
-			if err != nil {
-				log.Err(err, r)
-			}
-		}(cc)
-	}
-
 	// Wait
 	wg.Wait()
 
@@ -113,7 +90,6 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, "Players", "See where you come against the rest of the world")
 	t.Date = date
 	t.Countries = countries
-	t.States = states
 
 	returnTemplate(w, r, "players", t)
 }
@@ -122,12 +98,31 @@ type playersTemplate struct {
 	GlobalTemplate
 	Date      string
 	Countries []playersCountriesTemplate
-	States    map[string][]helpers.Tuple
 }
 
 type playersCountriesTemplate struct {
 	CC   string
 	Name string
+}
+
+func statesAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	cc := r.URL.Query().Get("cc")
+
+	var states []helpers.Tuple
+
+	if val, ok := i18n.States[cc]; ok {
+
+		for k, v := range val {
+			states = append(states, helpers.Tuple{Key: k, Value: v})
+		}
+
+		sort.Slice(states, func(i, j int) bool {
+			return states[i].Value < states[j].Value
+		})
+	}
+
+	returnJSON(w, r, states)
 }
 
 func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
@@ -176,15 +171,12 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		if country == "_" { // No country set
 			country = ""
 		}
+
 		filter = append(filter, bson.E{Key: "country_code", Value: country})
 
-		for _, cc := range mongo.CountriesWithStates {
-			if cc == country {
-				state := query.GetSearchString(cc + "-state")
-				if state != "" && len(state) <= 3 {
-					filter = append(filter, bson.E{Key: "status_code", Value: state})
-				}
-			}
+		state := query.GetSearchString("state")
+		if state != "" && len(state) <= 3 {
+			filter = append(filter, bson.E{Key: "status_code", Value: state})
 		}
 	}
 

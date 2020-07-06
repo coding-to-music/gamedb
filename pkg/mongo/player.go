@@ -22,8 +22,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-var CountriesWithStates = []string{"AT", "AU", "CA", "FR", "GB", "NZ", "PH", "SI", "US"}
-
 type RankMetric string
 
 func (rk RankMetric) String() string {

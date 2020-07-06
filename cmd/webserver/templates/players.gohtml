@@ -53,19 +53,12 @@
                         </div>
                     </div>
 
-                    {{ range $cc, $states := .States }}
-                        <div class="col-sm-6 col-md-4 d-none state-dd" data-cc="{{ $cc }}">
-                            <div class="form-group">
-                                <label for="{{ $cc }}-state">State</label>
-                                <select class="form-control form-control-chosen" id="{{ $cc }}-state" name="{{ $cc }}-state">
-                                    <option value="">Any</option>
-                                    {{ range $states }}
-                                        <option value="{{ .Key }}">{{ .Value }}</option>
-                                    {{ end }}
-                                </select>
-                            </div>
+                    <div class="col-sm-6 col-md-4" id="state-container">
+                        <div class="form-group">
+                            <label for="state">State</label>
+                            <select class="form-control form-control-chosen" id="state" name="state"></select>
                         </div>
-                    {{ end }}
+                    </div>
 
                 </div>
 
