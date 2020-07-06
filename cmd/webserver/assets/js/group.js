@@ -167,13 +167,13 @@ function loadGroupChart($page = null) {
                     formatter: function () {
                         switch (this.series.name) {
                             case 'In Chat':
-                                return this.y.toLocaleString() + ' members in chat on ' + moment(this.key).format("dddd DD MMM YYYY @ HH:mm");
+                                return this.y.toLocaleString() + ' members in chat on ' + moment(this.key).format("dddd DD MMM YYYY");
                             case 'In Game':
-                                return this.y.toLocaleString() + ' members in game on ' + moment(this.key).format("dddd DD MMM YYYY @ HH:mm");
+                                return this.y.toLocaleString() + ' members in game on ' + moment(this.key).format("dddd DD MMM YYYY");
                             case 'Online':
-                                return this.y.toLocaleString() + ' members online ' + moment(this.key).format("dddd DD MMM YYYY @ HH:mm");
+                                return this.y.toLocaleString() + ' members online ' + moment(this.key).format("dddd DD MMM YYYY");
                             case 'Members':
-                                return this.y.toLocaleString() + ' members on ' + moment(this.key).format("dddd DD MMM YYYY @ HH:mm");
+                                return this.y.toLocaleString() + ' members on ' + moment(this.key).format("dddd DD MMM YYYY");
                         }
                     },
                 },
