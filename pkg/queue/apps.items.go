@@ -33,7 +33,7 @@ func appItemsHandler(messages []*rabbit.Message) {
 		}
 
 		// Get new items
-		meta, _, err := steamHelper.GetSteam().GetItemDefMeta(payload.AppID)
+		meta, err := steamHelper.GetSteam().GetItemDefMeta(payload.AppID)
 		if err != nil {
 			steamHelper.LogSteamError(err, message.Message.Body)
 			sendToRetryQueue(message)
@@ -45,7 +45,7 @@ func appItemsHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		archive, _, err := steamHelper.GetSteam().GetItemDefArchive(payload.AppID, meta.Response.Digest)
+		archive, err := steamHelper.GetSteam().GetItemDefArchive(payload.AppID, meta.Response.Digest)
 		if err != nil {
 			steamHelper.LogSteamError(err, message.Message.Body)
 			sendToRetryQueue(message)

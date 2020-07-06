@@ -189,7 +189,7 @@ func adminQueues(r *http.Request) {
 		ts, err := strconv.ParseInt(val, 10, 64)
 		if err == nil {
 
-			apps, _, err := steam.GetSteam().GetAppList(100000, 0, ts, "")
+			apps, err := steam.GetSteam().GetAppList(100000, 0, ts, "")
 			err = steam.AllowSteamCodes(err)
 			log.Err(err, r)
 			if err == nil {
@@ -291,7 +291,7 @@ func adminQueues(r *http.Request) {
 
 			page := 1
 			for {
-				resp, _, err := steam.GetSteam().GetGroup(val, "", page)
+				resp, err := steam.GetSteam().GetGroup(val, "", page)
 				err = steam.AllowSteamCodes(err)
 
 				for _, playerID := range resp.Members.SteamID64 {

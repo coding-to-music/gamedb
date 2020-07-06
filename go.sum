@@ -90,6 +90,14 @@ github.com/Jleagle/steam-go v0.0.0-20200629080449-1e506ba9680a h1:1T5k6BLrALtPZG
 github.com/Jleagle/steam-go v0.0.0-20200629080449-1e506ba9680a/go.mod h1:u2NS0l9MOJZ7dYDxv4OWfVFmevvtx+ZqUGMh0j6QrcA=
 github.com/Jleagle/steam-go v0.0.0-20200629110830-a0f1889462b9 h1:iVlbaL4vkPLuahVB79ePjI+gGc8JOv7EUj9+o+Ym8Ps=
 github.com/Jleagle/steam-go v0.0.0-20200629110830-a0f1889462b9/go.mod h1:u2NS0l9MOJZ7dYDxv4OWfVFmevvtx+ZqUGMh0j6QrcA=
+github.com/Jleagle/steam-go v0.0.0-20200706075400-bb1e1baa56b1 h1:pEMUOWhnUJ4LR6mgw2434Bbp/APHooH381pWgDe6Ibo=
+github.com/Jleagle/steam-go v0.0.0-20200706075400-bb1e1baa56b1/go.mod h1:u2NS0l9MOJZ7dYDxv4OWfVFmevvtx+ZqUGMh0j6QrcA=
+github.com/Jleagle/steam-go v0.0.0-20200706120803-53d4712d6ac5 h1:+D+ohg5PevlyViXJp3xCxLIfUIfAqoH1LJGPmHLpRuE=
+github.com/Jleagle/steam-go v0.0.0-20200706120803-53d4712d6ac5/go.mod h1:u2NS0l9MOJZ7dYDxv4OWfVFmevvtx+ZqUGMh0j6QrcA=
+github.com/Jleagle/steam-go v0.0.0-20200706172125-f630a7b58700 h1:kdB8qot7CyH2v3oqw1hMEHlztNhCD51dhuhE6RTv2DA=
+github.com/Jleagle/steam-go v0.0.0-20200706172125-f630a7b58700/go.mod h1:u2NS0l9MOJZ7dYDxv4OWfVFmevvtx+ZqUGMh0j6QrcA=
+github.com/Jleagle/steam-go v0.0.0-20200706174235-ec5637055966 h1:yLlKukK/tU+W/Zcytj08MtTRv5o7D+k5U8mi79NmhjM=
+github.com/Jleagle/steam-go v0.0.0-20200706174235-ec5637055966/go.mod h1:u2NS0l9MOJZ7dYDxv4OWfVFmevvtx+ZqUGMh0j6QrcA=
 github.com/Jleagle/unmarshal-go v0.0.0-20200116184726-b8d622103706 h1:IW5C+VzXhGNSVCkRVbkfmnjV/7CoVn87rVRe4rlmOVo=
 github.com/Jleagle/unmarshal-go v0.0.0-20200116184726-b8d622103706/go.mod h1:ilcgtR3U6eAPVcoKJOG/01kzZH7gaQw1gXM62hUAGHE=
 github.com/Jleagle/unmarshal-go v0.0.0-20200217225147-fd7db71d9ac0 h1:DYxBI3XK1rB2S6HcBN37F6UpuoM1s7PXniT5rVwn2WU=

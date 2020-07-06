@@ -69,7 +69,7 @@ func playerAchievementsHandler(messages []*rabbit.Message) {
 		}
 
 		// Do API call
-		resp, _, err := steamHelper.GetSteamUnlimited().GetPlayerAchievements(uint64(payload.PlayerID), uint32(payload.AppID))
+		resp, err := steamHelper.GetSteamUnlimited().GetPlayerAchievements(uint64(payload.PlayerID), uint32(payload.AppID))
 
 		// Skip private profiles
 		if val, ok := err.(steamapi.Error); ok && val.Code == 403 {

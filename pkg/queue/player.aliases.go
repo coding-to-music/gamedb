@@ -34,8 +34,8 @@ func playerAliasesHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		aliases, _, err := steam.GetSteam().GetAliases(payload.PlayerID)
-		if err == steamapi.ErrNoUserFound {
+		aliases, err := steam.GetSteam().GetAliases(payload.PlayerID)
+		if err == steamapi.ErrProfileMissing {
 			message.Ack(false)
 			continue
 		}

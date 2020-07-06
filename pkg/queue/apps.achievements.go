@@ -36,7 +36,7 @@ func appAchievementsHandler(messages []*rabbit.Message) {
 		}
 
 		//
-		schemaResponse, _, err := steamHelper.GetSteam().GetSchemaForGame(payload.AppID)
+		schemaResponse, err := steamHelper.GetSteam().GetSchemaForGame(payload.AppID)
 		err = steamHelper.AllowSteamCodes(err, 400, 403)
 		if err != nil {
 			steamHelper.LogSteamError(err)
@@ -44,7 +44,7 @@ func appAchievementsHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		globalResponse, _, err := steamHelper.GetSteam().GetGlobalAchievementPercentagesForApp(payload.AppID)
+		globalResponse, err := steamHelper.GetSteam().GetGlobalAchievementPercentagesForApp(payload.AppID)
 		err = steamHelper.AllowSteamCodes(err, 403, 500)
 		if err != nil {
 			steamHelper.LogSteamError(err)

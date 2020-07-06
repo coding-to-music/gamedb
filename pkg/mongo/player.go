@@ -238,7 +238,7 @@ func (player Player) GetTimeLong() (ret string) {
 func (player *Player) SetOwnedGames(saveRows bool) (steamapi.OwnedGames, error) {
 
 	// Grab games from Steam
-	resp, _, err := steamHelper.GetSteam().GetOwnedGames(player.ID)
+	resp, err := steamHelper.GetSteam().GetOwnedGames(player.ID)
 	err = steamHelper.AllowSteamCodes(err)
 	if err != nil {
 		return resp, err
@@ -353,8 +353,8 @@ func (player *Player) SetOwnedGames(saveRows bool) (steamapi.OwnedGames, error) 
 
 func (player *Player) SetPlayerSummary() error {
 
-	summary, _, err := steamHelper.GetSteam().GetPlayer(player.ID)
-	if err == steamapi.ErrNoUserFound {
+	summary, err := steamHelper.GetSteam().GetPlayer(player.ID)
+	if err == steamapi.ErrProfileMissing {
 		player.Removed = true
 		return nil
 	}
@@ -384,7 +384,7 @@ func (player *Player) SetPlayerSummary() error {
 
 func (player *Player) SetLevel() error {
 
-	level, _, err := steamHelper.GetSteam().GetSteamLevel(player.ID)
+	level, err := steamHelper.GetSteam().GetSteamLevel(player.ID)
 	err = steamHelper.AllowSteamCodes(err)
 	if err != nil {
 		return err
@@ -397,7 +397,7 @@ func (player *Player) SetLevel() error {
 
 func (player *Player) SetFriends(saveRows bool) error {
 
-	newFriendsSlice, _, err := steamHelper.GetSteam().GetFriendList(player.ID)
+	newFriendsSlice, err := steamHelper.GetSteam().GetFriendList(player.ID)
 	err = steamHelper.AllowSteamCodes(err, 401, 404)
 	if err != nil {
 		return err
@@ -706,7 +706,7 @@ func SearchPlayer(search string, projection bson.M) (player Player, queue bool, 
 
 	if player.ID == 0 {
 
-		resp, _, err := steamHelper.GetSteam().ResolveVanityURL(search, steamapi.VanityURLProfile)
+		resp, err := steamHelper.GetSteam().ResolveVanityURL(search, steamapi.VanityURLProfile)
 		if err == nil && resp.Success > 0 {
 
 			player.ID = int64(resp.SteamID)

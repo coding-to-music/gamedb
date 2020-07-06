@@ -34,7 +34,7 @@ func appNewsHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		resp, _, err := steamHelper.GetSteam().GetNews(payload.AppID, 10000)
+		resp, err := steamHelper.GetSteam().GetNews(payload.AppID, 10000)
 		err = steamHelper.AllowSteamCodes(err, 403)
 		if err != nil {
 			steamHelper.LogSteamError(err)

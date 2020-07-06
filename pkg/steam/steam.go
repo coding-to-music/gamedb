@@ -9,18 +9,18 @@ import (
 )
 
 var (
-	clientNormal     *steamapi.Steam
+	clientNormal     *steamapi.Client
 	clientNormalLock sync.Mutex
 )
 
-func GetSteam() *steamapi.Steam {
+func GetSteam() *steamapi.Client {
 
 	clientNormalLock.Lock()
 	defer clientNormalLock.Unlock()
 
 	if clientNormal == nil {
 
-		clientNormal = &steamapi.Steam{}
+		clientNormal = steamapi.NewClient()
 		clientNormal.SetKey(config.Config.SteamAPIKey.Get())
 		clientNormal.SetLogger(steamLogger{})
 		clientNormal.SetAPIRateLimit(time.Millisecond*950, 10)
@@ -31,18 +31,18 @@ func GetSteam() *steamapi.Steam {
 }
 
 var (
-	clientUnlimited     *steamapi.Steam
+	clientUnlimited     *steamapi.Client
 	clientUnlimitedLock sync.Mutex
 )
 
-func GetSteamUnlimited() *steamapi.Steam {
+func GetSteamUnlimited() *steamapi.Client {
 
 	clientUnlimitedLock.Lock()
 	defer clientUnlimitedLock.Unlock()
 
 	if clientUnlimited == nil {
 
-		clientUnlimited = &steamapi.Steam{}
+		clientUnlimited = steamapi.NewClient()
 		clientUnlimited.SetKey(config.Config.SteamAPIKey.Get())
 		clientUnlimited.SetLogger(steamLogger{})
 	}

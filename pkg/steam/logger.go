@@ -1,15 +1,19 @@
 package steam
 
 import (
-	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/log"
 )
 
 type steamLogger struct {
 }
 
-func (l steamLogger) Write(i steamapi.Log) {
+func (l steamLogger) Info(s string) {
 	if config.IsLocal() {
-		// log.Info(i.String(), log.LogNameSteam)
+		// log.Info(s, log.LogNameSteam)
 	}
+}
+
+func (l steamLogger) Err(e error) {
+	log.Err(e)
 }

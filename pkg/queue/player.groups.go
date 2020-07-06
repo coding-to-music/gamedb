@@ -56,19 +56,13 @@ func playersGroupsHandler(messages []*rabbit.Message) {
 		}
 
 		// Get new groups
-		newGroupsResponse, _, err := steamHelper.GetSteam().GetUserGroupList(payload.PlayerID)
+		newGroupsResponse, err := steamHelper.GetSteam().GetUserGroupList(payload.PlayerID)
 
-		// Player removed from Steam
-		if err2, ok := err.(steamapi.Error); ok && err2.Code == 500 {
-			message.Ack(false)
-			continue
-		}
-		if err == steamapi.ErrNoUserFound {
+		if err == steamapi.ErrProfileMissing || err == steamapi.ErrProfilePrivate {
 			message.Ack(false)
 			continue
 		}
 
-		//
 		err = steamHelper.AllowSteamCodes(err)
 		if err != nil {
 			steamHelper.LogSteamError(err, message.Message.Body)

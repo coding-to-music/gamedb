@@ -469,7 +469,7 @@ func updateAppDetails(app *mongo.App) (err error) {
 			filter = []string{"price_overview"}
 		}
 
-		response, b, err := steamHelper.GetSteam().GetAppDetails(uint(app.ID), code.ProductCode, steamapi.LanguageEnglish, filter)
+		response, err := steamHelper.GetSteam().GetAppDetails(uint(app.ID), code.ProductCode, steamapi.LanguageEnglish, filter)
 		err = steamHelper.AllowSteamCodes(err)
 		if err == steamapi.ErrAppNotFound {
 			continue
@@ -477,14 +477,6 @@ func updateAppDetails(app *mongo.App) (err error) {
 		if err != nil {
 			return err
 		}
-
-		// Check for missing fields
-		go func() {
-			err2 := helpers.UnmarshalStrict(b, &map[string]steamapi.AppDetailsBody{})
-			if err != nil {
-				log.Warning(err2, app.ID)
-			}
-		}()
 
 		//
 		prices.AddPriceFromApp(code.ProductCode, response)

@@ -97,7 +97,7 @@ func playerHandler(messages []*rabbit.Message) {
 			err = updatePlayerSummary(&player)
 			if err != nil {
 
-				if err == steamapi.ErrNoUserFound {
+				if err == steamapi.ErrProfileMissing {
 					message.Ack(false)
 				} else {
 					steamHelper.LogSteamError(err, payload.ID)
@@ -356,7 +356,7 @@ func updatePlayerRecentGames(player *mongo.Player, payload PlayerMessage) error 
 		return err
 	}
 
-	newAppsSlice, _, err := steamHelper.GetSteam().GetRecentlyPlayedGames(player.ID)
+	newAppsSlice, err := steamHelper.GetSteam().GetRecentlyPlayedGames(player.ID)
 	err = steamHelper.AllowSteamCodes(err)
 	if err != nil {
 		return err
@@ -417,7 +417,7 @@ func updatePlayerRecentGames(player *mongo.Player, payload PlayerMessage) error 
 
 func updatePlayerBadges(player *mongo.Player) error {
 
-	response, _, err := steamHelper.GetSteam().GetBadges(player.ID)
+	response, err := steamHelper.GetSteam().GetBadges(player.ID)
 	err = steamHelper.AllowSteamCodes(err)
 	if err != nil {
 		return err
@@ -500,9 +500,9 @@ func updatePlayerLevel(player *mongo.Player) error {
 
 func updatePlayerBans(player *mongo.Player) error {
 
-	response, _, err := steamHelper.GetSteam().GetPlayerBans(player.ID)
+	response, err := steamHelper.GetSteam().GetPlayerBans(player.ID)
 	err = steamHelper.AllowSteamCodes(err)
-	if err == steamapi.ErrNoUserFound {
+	if err == steamapi.ErrProfileMissing {
 		return nil
 	}
 	if err != nil {
@@ -534,7 +534,7 @@ func updatePlayerBans(player *mongo.Player) error {
 func updatePlayerWishlistApps(player *mongo.Player) error {
 
 	// New
-	resp, _, err := steamHelper.GetSteam().GetWishlist(player.ID)
+	resp, err := steamHelper.GetSteam().GetWishlist(player.ID)
 	err = steamHelper.AllowSteamCodes(err, 500)
 	if err == steamapi.ErrWishlistNotFound {
 		return nil
@@ -619,7 +619,7 @@ func updatePlayerWishlistApps(player *mongo.Player) error {
 
 func updatePlayerComments(player *mongo.Player) error {
 
-	resp, _, err := steamHelper.GetSteam().GetComments(player.ID, 1, 0)
+	resp, err := steamHelper.GetSteam().GetComments(player.ID, 1, 0)
 	if err != nil {
 		return err
 	}

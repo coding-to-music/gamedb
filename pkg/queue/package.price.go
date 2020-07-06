@@ -42,7 +42,7 @@ func packagePriceHandler(messages []*rabbit.Message) {
 		var productCC = i18n.GetProdCC(payload.ProductCC)
 
 		// Get package details
-		response, _, err := steamHelper.GetSteam().GetPackageDetails(payload.PackageID, productCC.ProductCode, steamapi.LanguageEnglish)
+		response, err := steamHelper.GetSteam().GetPackageDetails(payload.PackageID, productCC.ProductCode, steamapi.LanguageEnglish)
 		err = steamHelper.AllowSteamCodes(err)
 		if err == steamapi.ErrPackageNotFound {
 			message.Ack(false)
