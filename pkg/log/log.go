@@ -44,6 +44,7 @@ type entry struct {
 	texts    []string
 	error    error
 	severity logging.Severity
+	log      LogName
 }
 
 func (e entry) string(severity logging.Severity) string {
@@ -100,7 +101,10 @@ func Initialise(log LogName) {
 
 func log(interfaces ...interface{}) {
 
-	var entry = entry{severity: logging.Error}
+	var entry = entry{
+		severity: logging.Error,
+		log:      googleLog,
+	}
 
 	for _, v := range interfaces {
 
@@ -125,6 +129,8 @@ func log(interfaces ...interface{}) {
 			entry.request = val
 		case logging.Severity:
 			entry.severity = val
+		case LogName:
+			entry.log = val
 		default:
 			entry.texts = append(entry.texts, fmt.Sprint(val))
 		}
@@ -152,7 +158,7 @@ func log(interfaces ...interface{}) {
 
 		// Google
 		if !config.IsLocal() {
-			googleClient.Logger(string(googleLog)).Log(logging.Entry{
+			googleClient.Logger(string(entry.log)).Log(logging.Entry{
 				Severity: entry.severity,
 				Payload:  text,
 				Labels: map[string]string{
