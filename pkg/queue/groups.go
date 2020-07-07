@@ -480,10 +480,10 @@ func getGroupTrending(group mongo.Group) (trend int64, err error) {
 	builder.SetFrom(influxHelper.InfluxGameDB, influxHelper.InfluxRetentionPolicyAllTime.String(), influxHelper.InfluxMeasurementGroups.String())
 	builder.AddWhere("time", ">", "NOW() - 28d")
 	builder.AddWhere("group_id", "=", group.ID)
-	builder.AddGroupByTime("6h")
+	builder.AddGroupByTime("1d")
 	builder.SetFillNone()
 
-	return influxHelper.GetInfluxTrend(builder)
+	return influxHelper.GetInfluxTrend(builder, 28)
 }
 
 func saveGroup(group mongo.Group) (err error) {

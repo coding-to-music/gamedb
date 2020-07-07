@@ -188,5 +188,5 @@ func getAppTrendValue(appID int) (trend int64, err error) {
 	builder.AddGroupByTime("1h")
 	builder.SetFillNone()
 
-	return influxHelper.GetInfluxTrend(builder)
+	return influxHelper.GetInfluxTrend(builder, 0)
 }

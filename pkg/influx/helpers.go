@@ -242,7 +242,7 @@ func GetFirstInfluxFloat(resp *influx.Response) float64 {
 	return 0
 }
 
-func GetInfluxTrend(builder *influxql.Builder) (trend int64, err error) {
+func GetInfluxTrend(builder *influxql.Builder, pad int) (trend int64, err error) {
 
 	resp, err := InfluxQuery(builder.String())
 	if err != nil {
@@ -252,7 +252,8 @@ func GetInfluxTrend(builder *influxql.Builder) (trend int64, err error) {
 	var xs []float64
 	var ys []float64
 
-	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
+	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 && len(resp.Results[0].Series[0].Values) > 0 {
+
 		for k, v := range resp.Results[0].Series[0].Values {
 
 			trendTotal, err := v[1].(json.Number).Int64()
@@ -265,9 +266,20 @@ func GetInfluxTrend(builder *influxql.Builder) (trend int64, err error) {
 			ys = append(ys, float64(trendTotal))
 		}
 
-		_, slope := stat.LinearRegression(xs, ys, nil, false)
-		if !math.IsNaN(slope) {
-			trend = int64(math.Round(slope * 1000))
+		// Padding
+		if len(ys) > 0 {
+			if pad > 0 && len(xs) < pad {
+				diff := pad - len(xs)
+				for i := 1; i <= diff; i++ {
+					xs = append(xs, float64(len(xs)))    // Append
+					ys = append([]float64{ys[0]}, ys...) // Prepend
+				}
+			}
+
+			_, slope := stat.LinearRegression(xs, ys, nil, false)
+			if !math.IsNaN(slope) {
+				trend = int64(math.Round(slope * 1000))
+			}
 		}
 	}
 
