@@ -183,7 +183,7 @@ func getAppTrendValue(appID int) (trend int64, err error) {
 	builder := influxql.NewBuilder()
 	builder.AddSelect("max(player_count)", "max_player_count")
 	builder.SetFrom(influxHelper.InfluxGameDB, influxHelper.InfluxRetentionPolicyAllTime.String(), influxHelper.InfluxMeasurementApps.String())
-	builder.AddWhere("time", ">", "NOW() - 7d")
+	builder.AddWhere("time", ">", "NOW() - 7d - 1h")
 	builder.AddWhere("app_id", "=", appID)
 	builder.AddGroupByTime("1h")
 	builder.SetFillNone()
