@@ -55,8 +55,7 @@ func playerHandler(messages []*rabbit.Message) {
 
 		payload.ID, err = helpers.IsValidPlayerID(payload.ID)
 		if err != nil {
-			log.Err(err, message.Message.Body)
-			sendToFailQueue(message)
+			message.Ack(false)
 			continue
 		}
 
