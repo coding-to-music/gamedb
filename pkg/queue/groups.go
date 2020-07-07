@@ -376,6 +376,11 @@ var (
 
 func updateRegularGroup(id string, group *mongo.Group) (foundMembers bool, err error) {
 
+	// This ID never seems to work
+	if id == "103582791467372878" {
+		return true, nil
+	}
+
 	groupScrapeRateLimit.Take()
 
 	group.AppID = 0
