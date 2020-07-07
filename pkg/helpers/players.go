@@ -98,6 +98,10 @@ func IsValidPlayerID(id int64) (int64, error) {
 
 	s := strconv.FormatInt(id, 10)
 
+	if !strings.HasPrefix(s, "765") {
+		return id, steamid.ErrInvalidPlayerID
+	}
+
 	steamID, err := steamid.ParsePlayerID(s)
 	if err != nil {
 		return id, ErrInvalidGroupID
