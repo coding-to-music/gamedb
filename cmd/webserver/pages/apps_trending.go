@@ -131,30 +131,21 @@ func trendingAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 func trendingChartsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	idsString := r.URL.Query().Get("ids")
-	idsSlice := strings.Split(idsString, ",")
+	var ids = helpers.UniqueString(helpers.RegexInts.FindAllString(r.URL.Query().Get("ids"), -1))
 
-	if len(idsSlice) == 0 {
+	if len(ids) == 0 {
 		return
 	}
 
-	if len(idsSlice) > 100 {
-		idsSlice = idsSlice[0:100]
-	}
-
-	var or []string
-	for _, v := range idsSlice {
-		v = strings.TrimSpace(v)
-		if v != "" {
-			or = append(or, `"app_id" = '`+v+`'`)
-		}
+	if len(ids) > 100 {
+		ids = ids[0:100]
 	}
 
 	builder := influxql.NewBuilder()
 	builder.AddSelect("max(player_count)", "max_player_count")
 	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
 	builder.AddWhere("time", ">", "NOW()-7d")
-	builder.AddWhereRaw("(" + strings.Join(or, " OR ") + ")")
+	builder.AddWhereRaw(`"app_id" =~ /^(` + strings.Join(ids, "|") + `)$/`)
 	builder.AddGroupByTime("1h")
 	builder.AddGroupBy("app_id")
 	builder.SetFillNone()
