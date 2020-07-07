@@ -104,7 +104,9 @@ func appAchievementsHandler(messages []*rabbit.Message) {
 			}
 
 			_, err = mongo.UpdateManySet(mongo.CollectionPlayerAchievements, filter, update)
-			log.Err(err, payload.AppID)
+			if err != nil {
+				log.Err(err, message.Message.Body)
+			}
 		}
 
 		// Save achievements to Mongo
