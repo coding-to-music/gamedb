@@ -124,7 +124,7 @@ var (
 		{name: QueuePlayersAliases},
 		{name: QueuePlayersGroups},
 		{name: QueueSteam},
-		{name: QueueFailed},
+		{name: QueueFailed, skipHeaders: true},
 		{name: QueueTest},
 		{name: QueueWebsockets},
 	}
@@ -163,7 +163,7 @@ var (
 		{name: QueueAppsSearch, consumer: appsSearchHandler, prefetchSize: 1000},
 		{name: QueuePlayersSearch, consumer: appsPlayersHandler, prefetchSize: 1000},
 		{name: QueueSteam},
-		{name: QueueFailed},
+		{name: QueueFailed, skipHeaders: true},
 		{name: QueueTest, consumer: testHandler},
 		{name: QueueWebsockets},
 	}
@@ -192,7 +192,7 @@ var (
 		{name: QueuePlayerRanks},
 		{name: QueueDelay, skipHeaders: true},
 		{name: QueueSteam},
-		{name: QueueFailed},
+		{name: QueueFailed, skipHeaders: true},
 		{name: QueueTest},
 		{name: QueueWebsockets, consumer: websocketHandler},
 	}
