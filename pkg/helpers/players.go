@@ -104,7 +104,7 @@ func IsValidPlayerID(id int64) (int64, error) {
 
 	steamID, err := steamid.ParsePlayerID(s)
 	if err != nil {
-		return id, ErrInvalidGroupID
+		return id, steamid.ErrInvalidPlayerID
 	}
 
 	return int64(steamID), nil
