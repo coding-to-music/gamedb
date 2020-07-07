@@ -723,26 +723,15 @@ if ($playerPage.length > 0) {
                     ],
                 }));
 
-                const yAxisRanks = {
-                    allowDecimals: false,
-                    title: {
-                        text: ''
-                    },
-                    reversed: true,
-                    min: 1,
-                    labels: {
-                        enabled: false
-                    },
-                };
-
                 Highcharts.chart('ranks-chart', $.extend(true, {}, defaultPlayerChartOptions, {
-                    yAxis: [
-                        yAxisRanks,
-                        yAxisRanks,
-                        yAxisRanks,
-                        yAxisRanks,
-                        yAxisRanks,
-                    ],
+                    yAxis: {
+                        allowDecimals: false,
+                        title: {
+                            text: ''
+                        },
+                        reversed: true,
+                        min: 1,
+                    },
                     tooltip: {
                         formatter: function () {
                             return this.series.name + ' rank ' + this.y.toLocaleString() + ' on ' + moment(this.key).format("dddd DD MMM YYYY");
@@ -754,35 +743,30 @@ if ($playerPage.length > 0) {
                             color: '#28a745',
                             data: data['mean_level_rank'],
                             marker: {symbol: 'circle'},
-                            yAxis: 0,
                         },
                         {
                             name: 'Games',
                             color: '#007bff',
                             data: data['mean_games_rank'],
                             marker: {symbol: 'circle'},
-                            yAxis: 1,
                         },
                         {
                             name: 'Badges',
                             color: '#e83e8c',
                             data: data['mean_badges_rank'],
                             marker: {symbol: 'circle'},
-                            yAxis: 2,
                         },
                         {
                             name: 'Playtime',
                             color: '#ffc107',
                             data: data['mean_playtime_rank'],
                             marker: {symbol: 'circle'},
-                            yAxis: 3,
                         },
                         {
                             name: 'Friends',
                             color: '#343a40',
                             data: data['mean_friends_rank'],
                             marker: {symbol: 'circle'},
-                            yAxis: 4,
                         }
                     ],
                 }));
