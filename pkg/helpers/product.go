@@ -67,7 +67,9 @@ func (p ProductPrices) Map() (prices map[steamapi.ProductCC]int) {
 	prices = map[steamapi.ProductCC]int{}
 
 	for k, v := range p {
-		prices[k] = v.Final
+		if v.Exists {
+			prices[k] = v.Final
+		}
 	}
 
 	return prices
