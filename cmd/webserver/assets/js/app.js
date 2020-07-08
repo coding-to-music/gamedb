@@ -298,27 +298,6 @@ if ($appPage.length > 0) {
             },
         });
 
-        const defaultAppChartOptions = {
-            chart: {
-                type: 'spline',
-                backgroundColor: 'rgba(0,0,0,0)',
-            },
-            title: {
-                text: ''
-            },
-            subtitle: {
-                text: ''
-            },
-            credits: {
-                enabled: false
-            },
-            plotOptions: {},
-            xAxis: {
-                title: {text: ''},
-                type: 'datetime'
-            },
-        };
-
         $.ajax({
             type: "GET",
             url: '/games/' + $appPage.attr('data-id') + '/reviews.json',
@@ -329,7 +308,7 @@ if ($appPage.length > 0) {
                     data = [];
                 }
 
-                Highcharts.chart('reviews-chart', $.extend(true, {}, defaultAppChartOptions, {
+                Highcharts.chart('reviews-chart', $.extend(true, {}, defaultChartOptions, {
                     yAxis: [
                         {
                             allowDecimals: false,
@@ -350,18 +329,6 @@ if ($appPage.length > 0) {
                             // min: 0,
                         }
                     ],
-                    // xAxis: {
-                    //     gridLineWidth: 1,
-                    // },
-                    legend: {
-                        enabled: true,
-                        itemStyle: {
-                            color: '#28a745',
-                        },
-                        itemHiddenStyle: {
-                            color: '#666666',
-                        },
-                    },
                     tooltip: {
                         formatter: function () {
 
@@ -461,33 +428,7 @@ if ($appPage.length > 0) {
         const d = new Date();
         d.setDate(d.getDate() - 7);
 
-        const defaultAppChartOptions = {
-            chart: {
-                type: 'spline',
-                backgroundColor: 'rgba(0,0,0,0)',
-            },
-            title: {
-                text: ''
-            },
-            subtitle: {
-                text: ''
-            },
-            credits: {
-                enabled: false,
-            },
-            legend: {
-                enabled: true,
-                itemStyle: {
-                    color: '#28a745',
-                },
-                itemHiddenStyle: {
-                    color: '#666666',
-                },
-            },
-            xAxis: {
-                title: {text: ''},
-                type: 'datetime',
-            },
+        const chartOptions = $.extend(true, {}, defaultChartOptions, {
             yAxis: {
                 allowDecimals: false,
                 title: {text: ''},
@@ -523,7 +464,7 @@ if ($appPage.length > 0) {
                     }
                 },
             },
-        };
+        });
 
         const series = function (data) {
             return [
@@ -563,7 +504,7 @@ if ($appPage.length > 0) {
                     };
                 }
 
-                Highcharts.chart('players-chart', $.extend(true, {}, defaultAppChartOptions, {
+                Highcharts.chart('players-chart', $.extend(true, {}, chartOptions, {
                     xAxis: {
                         min: d.getTime(),
                     },
@@ -589,11 +530,11 @@ if ($appPage.length > 0) {
                     };
                 }
 
-                Highcharts.chart('players-chart2', $.extend(true, {}, defaultAppChartOptions, {
+                Highcharts.chart('players-chart2', $.extend(true, {}, chartOptions, {
                     series: series(data),
                 }));
 
-                Highcharts.chart('youtube-comments-chart', $.extend(true, {}, defaultAppChartOptions, {
+                Highcharts.chart('youtube-comments-chart', $.extend(true, {}, chartOptions, {
                     series: [
                         {
                             name: 'YouTube Comments',
@@ -615,7 +556,7 @@ if ($appPage.length > 0) {
                     },
                 }));
 
-                Highcharts.chart('youtube-views-chart', $.extend(true, {}, defaultAppChartOptions, {
+                Highcharts.chart('youtube-views-chart', $.extend(true, {}, chartOptions, {
                     series: [
                         {
                             name: 'YouTube Views',
@@ -652,36 +593,7 @@ if ($appPage.length > 0) {
                     data = {};
                 }
 
-                Highcharts.chart('wishlists-chart', {
-                    chart: {
-                        type: 'spline',
-                        backgroundColor: 'rgba(0,0,0,0)',
-                    },
-                    title: {
-                        text: ''
-                    },
-                    subtitle: {
-                        text: ''
-                    },
-                    credits: {
-                        enabled: false,
-                    },
-                    legend: {
-                        enabled: true,
-                        itemStyle: {
-                            color: '#28a745',
-                        },
-                        itemHiddenStyle: {
-                            color: '#666666',
-                        },
-                    },
-                    xAxis: {
-                        title: {
-                            text: ''
-                        },
-                        type: 'datetime'
-
-                    },
+                Highcharts.chart('wishlists-chart', $.extend(true, {}, defaultChartOptions, {
                     yAxis: [
                         {
                             title: {
@@ -751,7 +663,7 @@ if ($appPage.length > 0) {
                             yAxis: 2,
                         },
                     ],
-                });
+                }));
             },
         });
     }

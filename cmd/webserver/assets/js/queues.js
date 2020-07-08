@@ -48,50 +48,28 @@ if ($('#queues-page').length > 0 || $('#player-missing-page').length > 0) {
 
     function loadChart(id) {
 
-        return Highcharts.chart(id, {
+        return Highcharts.chart(id, $.extend(true, {}, defaultChartOptions, {
             chart: {
                 animation: false,
-                backgroundColor: 'rgba(0,0,0,0)',
-            },
-            title: {
-                text: ''
-            },
-            subtitle: {
-                text: ''
-            },
-            credits: {
-                enabled: false,
             },
             legend: {
                 enabled: false,
-                itemStyle: {
-                    color: '#28a745',
-                },
-                itemHiddenStyle: {
-                    color: '#666666',
-                },
             },
             xAxis: {
-                title: {
-                    text: ''
-                },
                 labels: {
                     step: 1,
                     formatter: function () {
                         return moment(this.value).format("h:mm");
                     },
                 },
-                type: 'datetime',
             },
-            yAxis: [
-                {
-                    title: {
-                        text: ''
-                    },
-                    allowDecimals: false,
-                    min: 0,
-                }
-            ],
+            yAxis: {
+                title: {
+                    text: ''
+                },
+                allowDecimals: false,
+                min: 0,
+            },
             plotOptions: {
                 series: {
                     marker: {
@@ -113,6 +91,6 @@ if ($('#queues-page').length > 0 || $('#player-missing-page').length > 0) {
                     return this.y.toLocaleString() + ' items in the queue at ' + moment(this.key).format("h:mm") + ' UTC';
                 },
             }
-        });
+        }));
     }
 }

@@ -12,16 +12,9 @@ if ($bundlePage.length > 0) {
                 data = [];
             }
 
-            Highcharts.chart('prices-chart', {
-                chart: {
-                    zoomType: 'x',
-                    backgroundColor: 'rgba(0,0,0,0)',
-                },
-                title: {
-                    text: ''
-                },
-                subtitle: {
-                    text: ''
+            Highcharts.chart('prices-chart', $.extend(true, {}, defaultChartOptions, {
+                legend: {
+                    enabled: false,
                 },
                 tooltip: {
                     formatter: function () {
@@ -29,10 +22,6 @@ if ($bundlePage.length > 0) {
                     }
                 },
                 xAxis: {
-                    title: {
-                        text: 'Date'
-                    },
-                    type: 'datetime',
                     labels: {
                         step: 1,
                         formatter: function () {
@@ -50,18 +39,6 @@ if ($bundlePage.length > 0) {
                     allowDecimals: false,
                     reversed: true,
                 },
-                legend: {
-                    enabled: false,
-                    itemStyle: {
-                        color: '#28a745',
-                    },
-                    itemHiddenStyle: {
-                        color: '#666666',
-                    },
-                },
-                credits: {
-                    enabled: false
-                },
                 series: [
                     {
                         type: 'line',
@@ -71,7 +48,7 @@ if ($bundlePage.length > 0) {
                         data: data,
                     }
                 ],
-            });
+            }));
         },
     });
 }

@@ -101,36 +101,18 @@ if ($trendingAppsPage.length > 0 || $('#new-releases-page').length > 0) {
                         data = [];
                     }
 
-                    Highcharts.chart(this, {
+                    Highcharts.chart(this, $.extend(true, {}, defaultChartOptions, {
                         chart: {
                             type: 'area',
                             margin: [0, 0, 0, 0],
                             skipClone: true,
                             height: 32,
-                            backgroundColor: 'rgba(0,0,0,0)',
-                        },
-                        title: {
-                            text: ''
-                        },
-                        subtitle: {
-                            text: ''
-                        },
-                        credits: {
-                            enabled: false
                         },
                         legend: {
                             enabled: false,
-                            itemStyle: {
-                                color: '#28a745',
-                            },
-                            itemHiddenStyle: {
-                                color: '#666666',
-                            },
                         },
                         xAxis: {
-                            title: {text: null},
                             labels: {enabled: false},
-                            type: 'datetime',
                         },
                         yAxis: {
                             title: {text: null},
@@ -161,7 +143,7 @@ if ($trendingAppsPage.length > 0 || $('#new-releases-page').length > 0) {
                                 data: data,
                             },
                         ],
-                    });
+                    }));
                 });
             },
         });

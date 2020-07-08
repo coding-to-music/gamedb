@@ -122,36 +122,7 @@ function loadGroupChart($page = null) {
                 data = [];
             }
 
-            Highcharts.chart('group-chart', {
-                chart: {
-                    type: 'spline',
-                    backgroundColor: 'rgba(0,0,0,0)',
-                },
-                title: {
-                    text: ''
-                },
-                subtitle: {
-                    text: ''
-                },
-                credits: {
-                    enabled: false,
-                },
-                legend: {
-                    enabled: true,
-                    itemStyle: {
-                        color: '#28a745',
-                    },
-                    itemHiddenStyle: {
-                        color: '#666666',
-                    },
-                },
-                xAxis: {
-                    title: {
-                        text: ''
-                    },
-                    type: 'datetime'
-
-                },
+            Highcharts.chart('group-chart', $.extend(true, {}, defaultChartOptions, {
                 yAxis: {
                     allowDecimals: false,
                     title: {
@@ -206,7 +177,7 @@ function loadGroupChart($page = null) {
                         marker: {symbol: 'circle'},
                     },
                 ],
-            });
+            }));
         },
     });
 }

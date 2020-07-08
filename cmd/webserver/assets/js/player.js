@@ -40,7 +40,7 @@ if ($playerPage.length > 0) {
             to.attr('loaded', 1);
             switch (to.attr('href')) {
                 case '#history':
-                    loadPlayerCharts();
+                    loadPlayerHistoryTab();
                     break;
                 case '#games':
                     loadPlayerGames();
@@ -616,39 +616,7 @@ if ($playerPage.length > 0) {
         });
     }
 
-    function loadPlayerCharts() {
-
-        const defaultPlayerChartOptions = {
-            chart: {
-                type: 'line',
-                backgroundColor: 'rgba(0,0,0,0)',
-            },
-            title: {
-                text: ''
-            },
-            subtitle: {
-                text: ''
-            },
-            credits: {
-                enabled: false,
-            },
-            legend: {
-                enabled: true,
-                itemStyle: {
-                    color: '#28a745',
-                },
-                itemHiddenStyle: {
-                    color: '#666666',
-                },
-            },
-            plotOptions: {},
-            xAxis: {
-                title: {
-                    text: ''
-                },
-                type: 'datetime'
-            },
-        };
+    function loadPlayerHistoryTab() {
 
         $.ajax({
             type: "GET",
@@ -660,7 +628,7 @@ if ($playerPage.length > 0) {
                     data = [];
                 }
 
-                const yAxisHistory = {
+                const yAxis = {
                     allowDecimals: false,
                     title: {
                         text: ''
@@ -670,14 +638,13 @@ if ($playerPage.length > 0) {
                     },
                 };
 
-                Highcharts.chart('history-chart', $.extend(true, {}, defaultPlayerChartOptions, {
-
+                Highcharts.chart('history-chart', $.extend(true, {}, defaultChartOptions, {
                     yAxis: [
-                        yAxisHistory,
-                        yAxisHistory,
-                        yAxisHistory,
-                        yAxisHistory,
-                        yAxisHistory,
+                        yAxis,
+                        yAxis,
+                        yAxis,
+                        yAxis,
+                        yAxis,
                     ],
                     tooltip: {
                         formatter: function () {
@@ -723,7 +690,7 @@ if ($playerPage.length > 0) {
                     ],
                 }));
 
-                Highcharts.chart('ranks-chart', $.extend(true, {}, defaultPlayerChartOptions, {
+                Highcharts.chart('ranks-chart', $.extend(true, {}, defaultChartOptions, {
                     yAxis: {
                         allowDecimals: false,
                         title: {
@@ -770,9 +737,7 @@ if ($playerPage.length > 0) {
                         }
                     ],
                 }));
-
             },
         });
-
     }
 }

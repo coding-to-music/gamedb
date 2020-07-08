@@ -14,52 +14,6 @@ if ($('#stats-page').length > 0) {
     (function ($, window) {
         'use strict';
 
-        const defaultStatsChartOptions = {
-            chart: {
-                type: 'column',
-                backgroundColor: 'rgba(0,0,0,0)',
-            },
-            title: {
-                text: ''
-            },
-            subtitle: {
-                text: ''
-            },
-            credits: {
-                enabled: false,
-            },
-            legend: {
-                enabled: false,
-                itemStyle: {
-                    color: '#28a745',
-                },
-                itemHiddenStyle: {
-                    color: '#666666',
-                },
-            },
-            xAxis: {
-                title: {
-                    text: ''
-                },
-                // type: 'category'
-            },
-            yAxis: {
-                allowDecimals: false,
-                title: {
-                    text: ''
-                }
-            },
-            series: [{
-                color: '#28a745',
-            }],
-            plotOptions: {
-                series: {
-                    pointPadding: 0,
-                    groupPadding: 0,
-                }
-            }
-        };
-
         const config = {rootMargin: '50px 0px 50px 0px', threshold: 0};
 
         const callback1 = function (entries, self) {
@@ -135,22 +89,12 @@ if ($('#stats-page').length > 0) {
                         data = [];
                     }
 
-                    Highcharts.chart('client-players', $.extend(true, {}, defaultStatsChartOptions, {
-                        chart: {
-                            type: 'area',
-                        },
-                        xAxis: {
-                            type: 'datetime',
-                            // tickInterval: 5,
-                        },
-                        legend: {
-                            enabled: true,
-                            itemStyle: {
-                                color: '#28a745',
-                            },
-                            itemHiddenStyle: {
-                                color: '#666666',
-                            },
+                    Highcharts.chart('client-players', $.extend(true, {}, defaultChartOptions, {
+                        yAxis: {
+                            allowDecimals: false,
+                            title: {
+                                text: ''
+                            }
                         },
                         tooltip: {
                             formatter: function () {
@@ -169,11 +113,11 @@ if ($('#stats-page').length > 0) {
                                 name: 'In Game',
                                 marker: {symbol: 'circle'},
                                 data: data['max_player_count'],
+                                type: 'area',
                             },
                             {
                                 name: 'Online',
                                 marker: {symbol: 'circle'},
-                                color: '#007bff',
                                 data: data['max_player_online'],
                                 type: 'line',
                             },
@@ -195,23 +139,15 @@ if ($('#stats-page').length > 0) {
                         data = [];
                     }
 
-                    Highcharts.chart('client-players2', $.extend(true, {}, defaultStatsChartOptions, {
+                    Highcharts.chart('client-players2', $.extend(true, {}, defaultChartOptions, {
                         chart: {
-                            type: 'area',
                             zoomType: 'x',
                         },
-                        xAxis: {
-                            type: 'datetime',
-                            // tickInterval: 5,
-                        },
-                        legend: {
-                            enabled: true,
-                            itemStyle: {
-                                color: '#28a745',
-                            },
-                            itemHiddenStyle: {
-                                color: '#666666',
-                            },
+                        yAxis: {
+                            allowDecimals: false,
+                            title: {
+                                text: ''
+                            }
                         },
                         tooltip: {
                             formatter: function () {
@@ -230,11 +166,11 @@ if ($('#stats-page').length > 0) {
                                 name: 'In Game',
                                 marker: {symbol: 'circle'},
                                 data: data['max_player_count'],
+                                type: 'area',
                             },
                             {
                                 name: 'Online',
                                 marker: {symbol: 'circle'},
-                                color: '#007bff',
                                 data: data['max_player_online'],
                                 type: 'line',
                             },
@@ -296,13 +232,18 @@ if ($('#stats-page').length > 0) {
                         data = [];
                     }
 
-                    Highcharts.chart('release-dates', $.extend(true, {}, defaultStatsChartOptions, {
+                    Highcharts.chart('release-dates', $.extend(true, {}, defaultChartOptions, {
                         chart: {
-                            type: 'spline',
                             zoomType: 'x',
                         },
-                        xAxis: {
-                            type: 'datetime',
+                        legend: {
+                            enabled: false,
+                        },
+                        yAxis: {
+                            allowDecimals: false,
+                            title: {
+                                text: ''
+                            }
                         },
                         tooltip: {
                             formatter: function () {
@@ -337,18 +278,35 @@ if ($('#stats-page').length > 0) {
                         dataArray.push(value['count']);
                     });
 
-                    Highcharts.chart('player-levels', $.extend(true, {}, defaultStatsChartOptions, {
+                    Highcharts.chart('player-levels', $.extend(true, {}, defaultChartOptions, {
+                        chart: {
+                            type: 'column',
+                        },
+                        legend: {
+                            enabled: false,
+                        },
                         xAxis: {
+                            type: 'category',
                             tickInterval: 5,
                             categories: categories,
                         },
                         yAxis: {
                             type: 'logarithmic',
+                            allowDecimals: false,
+                            title: {
+                                text: ''
+                            },
                         },
                         tooltip: {
                             formatter: function () {
                                 return this.y.toLocaleString() + ' players are level ' + this.x + '-' + (this.x + 9);
                             },
+                        },
+                        plotOptions: {
+                            series: {
+                                pointPadding: 0,
+                                groupPadding: 0,
+                            }
                         },
                         series: [{
                             data: dataArray
@@ -370,9 +328,22 @@ if ($('#stats-page').length > 0) {
                         data = [];
                     }
 
-                    Highcharts.chart('scores', $.extend(true, {}, defaultStatsChartOptions, {
+                    Highcharts.chart('scores', $.extend(true, {}, defaultChartOptions, {
+                        chart: {
+                            type: 'column',
+                        },
+                        legend: {
+                            enabled: false,
+                        },
                         xAxis: {
+                            type: 'category',
                             tickInterval: 5,
+                        },
+                        yAxis: {
+                            allowDecimals: false,
+                            title: {
+                                text: ''
+                            }
                         },
                         tooltip: {
                             formatter: function () {
@@ -381,6 +352,8 @@ if ($('#stats-page').length > 0) {
                         },
                         plotOptions: {
                             series: {
+                                pointPadding: 0,
+                                groupPadding: 0,
                                 cursor: 'pointer',
                                 point: {
                                     events: {

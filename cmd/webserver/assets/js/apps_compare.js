@@ -14,45 +14,57 @@ if ($appsComparePage.length > 0) {
     };
     new IntersectionObserver(callback1, config).observe(document.getElementById('apps-table'));
 
-    const callback2 = function (entries, self) {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                loadComparePlayersChart();
-                self.unobserve(entry.target);
-            }
-        });
-    };
-    new IntersectionObserver(callback2, config).observe(document.getElementById('players-chart'));
+    const playersChart = document.getElementById('players-chart');
+    if (playersChart) {
+        const callback2 = function (entries, self) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    loadComparePlayersChart();
+                    self.unobserve(entry.target);
+                }
+            });
+        };
+        new IntersectionObserver(callback2, config).observe(playersChart);
+    }
 
-    const callback3 = function (entries, self) {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                loadCompareFollowersChart();
-                self.unobserve(entry.target);
-            }
-        });
-    };
-    new IntersectionObserver(callback3, config).observe(document.getElementById('group-chart'));
+    const groupsChart = document.getElementById('group-chart');
+    if (groupsChart) {
+        const callback3 = function (entries, self) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    loadCompareFollowersChart();
+                    self.unobserve(entry.target);
+                }
+            });
+        };
+        new IntersectionObserver(callback3, config).observe(groupsChart);
+    }
 
-    const callback4 = function (entries, self) {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                loadCompareScoreChart();
-                self.unobserve(entry.target);
-            }
-        });
-    };
-    new IntersectionObserver(callback4, config).observe(document.getElementById('score-chart'));
+    const scoreChart = document.getElementById('score-chart');
+    if (scoreChart) {
+        const callback4 = function (entries, self) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    loadCompareScoreChart();
+                    self.unobserve(entry.target);
+                }
+            });
+        };
+        new IntersectionObserver(callback4, config).observe(scoreChart);
+    }
 
-    const callback5 = function (entries, self) {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                loadCompareWishlistChart();
-                self.unobserve(entry.target);
-            }
-        });
-    };
-    new IntersectionObserver(callback5, config).observe(document.getElementById('wishlists-chart'));
+    const wishlistChart = document.getElementById('wishlists-chart');
+    if (wishlistChart) {
+        const callback5 = function (entries, self) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    loadCompareWishlistChart();
+                    self.unobserve(entry.target);
+                }
+            });
+        };
+        new IntersectionObserver(callback5, config).observe(wishlistChart);
+    }
 
     function loadCompareSearchTable() {
 
@@ -152,33 +164,7 @@ if ($appsComparePage.length > 0) {
             return;
         }
 
-        const defaultAppChartOptions = {
-            chart: {
-                type: 'spline',
-                backgroundColor: 'rgba(0,0,0,0)',
-            },
-            title: {
-                text: ''
-            },
-            subtitle: {
-                text: ''
-            },
-            credits: {
-                enabled: false,
-            },
-            legend: {
-                enabled: true,
-                itemStyle: {
-                    color: '#28a745',
-                },
-                itemHiddenStyle: {
-                    color: '#666666',
-                },
-            },
-            xAxis: {
-                title: {text: ''},
-                type: 'datetime',
-            },
+        const chartOptions = $.extend(true, {}, defaultChartOptions, {
             yAxis: {
                 allowDecimals: false,
                 title: {text: ''},
@@ -198,14 +184,13 @@ if ($appsComparePage.length > 0) {
                     },
                 }
             },
-            colors: ['#007bff', '#28a745', '#e83e8c', '#ffc107', '#343a40'],
             tooltip: {
                 formatter: function () {
                     return this.series.name + ' had ' + this.y.toLocaleString() + ' players on '
                         + moment(this.key).format("dddd DD MMM YYYY @ HH:mm");
                 },
             },
-        };
+        });
 
         $.ajax({
             type: "GET",
@@ -223,10 +208,9 @@ if ($appsComparePage.length > 0) {
                     });
                 }
 
-                Highcharts.chart('players-chart', $.extend(true, {}, defaultAppChartOptions, {
+                Highcharts.chart('players-chart', $.extend(true, {}, chartOptions, {
                     series: series,
                 }));
-
             },
         });
 
@@ -246,7 +230,7 @@ if ($appsComparePage.length > 0) {
                     });
                 }
 
-                Highcharts.chart('players-chart2', $.extend(true, {}, defaultAppChartOptions, {
+                Highcharts.chart('players-chart2', $.extend(true, {}, chartOptions, {
                     series: series,
                 }));
 
@@ -276,36 +260,7 @@ if ($appsComparePage.length > 0) {
                     });
                 }
 
-                Highcharts.chart('group-chart', {
-                    chart: {
-                        type: 'spline',
-                        backgroundColor: 'rgba(0,0,0,0)',
-                    },
-                    title: {
-                        text: ''
-                    },
-                    subtitle: {
-                        text: ''
-                    },
-                    credits: {
-                        enabled: false,
-                    },
-                    legend: {
-                        enabled: true,
-                        itemStyle: {
-                            color: '#28a745',
-                        },
-                        itemHiddenStyle: {
-                            color: '#666666',
-                        },
-                    },
-                    xAxis: {
-                        title: {
-                            text: ''
-                        },
-                        type: 'datetime'
-
-                    },
+                Highcharts.chart('group-chart', $.extend(true, {}, defaultChartOptions, {
                     yAxis: {
                         allowDecimals: false,
                         title: {
@@ -318,7 +273,6 @@ if ($appsComparePage.length > 0) {
                         },
                         min: 0,
                     },
-                    colors: ['#007bff', '#28a745', '#e83e8c', '#ffc107', '#343a40'],
                     tooltip: {
                         formatter: function () {
                             return this.series.name + ' had members on '
@@ -326,7 +280,7 @@ if ($appsComparePage.length > 0) {
                         },
                     },
                     series: series,
-                });
+                }));
             },
         });
     }
@@ -336,28 +290,6 @@ if ($appsComparePage.length > 0) {
         if ($.isEmptyObject(appNames)) {
             return;
         }
-
-        const defaultAppChartOptions = {
-            chart: {
-                type: 'spline',
-                backgroundColor: 'rgba(0,0,0,0)',
-            },
-            title: {
-                text: ''
-            },
-            subtitle: {
-                text: ''
-            },
-            credits: {
-                enabled: false
-            },
-            plotOptions: {},
-            xAxis: {
-                title: {text: ''},
-                type: 'datetime'
-            },
-            colors: ['#007bff', '#28a745', '#e83e8c', '#ffc107', '#343a40'],
-        };
 
         $.ajax({
             type: "GET",
@@ -375,7 +307,7 @@ if ($appsComparePage.length > 0) {
                     });
                 }
 
-                Highcharts.chart('score-chart', $.extend(true, {}, defaultAppChartOptions, {
+                Highcharts.chart('score-chart', $.extend(true, {}, defaultChartOptions, {
                     yAxis: {
                         allowDecimals: false,
                         title: {text: ''},
@@ -387,15 +319,6 @@ if ($appsComparePage.length > 0) {
                                 return this.value + '%';
                             }
                         }
-                    },
-                    legend: {
-                        enabled: true,
-                        itemStyle: {
-                            color: '#28a745',
-                        },
-                        itemHiddenStyle: {
-                            color: '#666666',
-                        },
                     },
                     tooltip: {
                         formatter: function () {
@@ -416,28 +339,6 @@ if ($appsComparePage.length > 0) {
             return;
         }
 
-        const defaultAppChartOptions = {
-            chart: {
-                type: 'spline',
-                backgroundColor: 'rgba(0,0,0,0)',
-            },
-            title: {
-                text: ''
-            },
-            subtitle: {
-                text: ''
-            },
-            credits: {
-                enabled: false
-            },
-            plotOptions: {},
-            xAxis: {
-                title: {text: ''},
-                type: 'datetime'
-            },
-            colors: ['#007bff', '#28a745', '#e83e8c', '#ffc107', '#343a40'],
-        };
-
         $.ajax({
             type: "GET",
             url: '/games/compare/' + $appsComparePage.attr('data-id') + '/wishlists.json',
@@ -454,19 +355,10 @@ if ($appsComparePage.length > 0) {
                     });
                 }
 
-                Highcharts.chart('wishlists-chart', $.extend(true, {}, defaultAppChartOptions, {
+                Highcharts.chart('wishlists-chart', $.extend(true, {}, defaultChartOptions, {
                     yAxis: {
                         allowDecimals: false,
                         title: {text: ''},
-                    },
-                    legend: {
-                        enabled: true,
-                        itemStyle: {
-                            color: '#28a745',
-                        },
-                        itemHiddenStyle: {
-                            color: '#666666',
-                        },
                     },
                     tooltip: {
                         formatter: function () {
@@ -476,7 +368,6 @@ if ($appsComparePage.length > 0) {
                     },
                     series: series,
                 }));
-
             },
         });
     }
