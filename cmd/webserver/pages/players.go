@@ -58,15 +58,7 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		var err error
-
-		codes, err := mongo.GetUniquePlayerCountries()
-		if err != nil {
-			log.Err(err, r)
-			return
-		}
-
-		for _, cc := range codes {
+		for cc := range i18n.States {
 
 			if cc == "" {
 				cc = "_"

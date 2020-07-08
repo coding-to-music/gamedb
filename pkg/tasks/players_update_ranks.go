@@ -2,7 +2,6 @@ package tasks
 
 import (
 	"github.com/gamedb/gamedb/pkg/i18n"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 )
@@ -51,12 +50,7 @@ func (c PlayersUpdateRanks) work() (err error) {
 	}
 
 	// Countries
-	countryCodes, err := mongo.GetUniquePlayerCountries()
-	if err != nil {
-		return err
-	}
-
-	for _, cc := range countryCodes {
+	for cc := range i18n.States {
 		for read, write := range mongo.PlayerRankFields {
 			err = queue.ProducePlayerRank(queue.PlayerRanksMessage{
 				SortColumn: read,
@@ -70,26 +64,14 @@ func (c PlayersUpdateRanks) work() (err error) {
 	}
 
 	// Rank by State
-	ccs, err := mongo.GetUniquePlayerCountries()
-	if err != nil {
-		return err
-	}
-
-	for _, cc := range ccs {
-
-		stateCodes, err := mongo.GetUniquePlayerStates(cc)
-		if err != nil {
-			log.Err(err)
-			continue
-		}
-
-		for _, state := range stateCodes {
+	for cc, states := range i18n.States {
+		for state := range states {
 			for read, write := range mongo.PlayerRankFields {
 				err = queue.ProducePlayerRank(queue.PlayerRanksMessage{
 					SortColumn: read,
-					ObjectKey:  string(write) + "_state-" + state.Key,
+					ObjectKey:  string(write) + "_state-" + state,
 					Country:    &cc,
-					State:      &state.Key,
+					State:      &state,
 				})
 				if err != nil {
 					return err

@@ -92,12 +92,10 @@ var (
 	MemcacheTrendingApps   = Item{Key: "trending-apps", Expiration: 60 * 10}
 
 	// Other
-	MemcacheUserByAPIKey             = func(key string) Item { return Item{Key: "user-level-by-key-" + key, Expiration: 10 * 60} }
-	MemcacheUniquePlayerCountryCodes = Item{Key: "unique-player-country-codes", Expiration: 60 * 60 * 24 * 7}
-	MemcacheUniquePlayerStateCodes   = func(countryCode string) Item { return Item{Key: "unique-player-state-codes-" + countryCode, Expiration: 60 * 60 * 24 * 7} }
-	MemcachePlayerLevels             = Item{Key: "player-levels", Expiration: 60 * 60 * 24}
-	MemcachePlayerLevelsRounded      = Item{Key: "player-levels-rounded", Expiration: 60 * 60 * 24}
-	MemcacheFirstAppBadge            = func(appID int) Item { return Item{Key: "first-app-badge-" + strconv.Itoa(appID), Expiration: 0} }
-	MemcacheChatBotRequest           = func(request string) Item { return Item{Key: "chat-bot-request-" + helpers.MD5([]byte(request)), Expiration: 60 * 10} }
-	MemcachePlayerAchievementsNone   = func(appID int) Item { return Item{Key: "no-stats-" + strconv.Itoa(appID), Expiration: 60 * 60, Value: "1"} }
+	MemcacheUserByAPIKey           = func(key string) Item { return Item{Key: "user-level-by-key-" + key, Expiration: 10 * 60} }
+	MemcachePlayerLevels           = Item{Key: "player-levels", Expiration: 60 * 60 * 24}
+	MemcachePlayerLevelsRounded    = Item{Key: "player-levels-rounded", Expiration: 60 * 60 * 24}
+	MemcacheFirstAppBadge          = func(appID int) Item { return Item{Key: "first-app-badge-" + strconv.Itoa(appID), Expiration: 0} }
+	MemcacheChatBotRequest         = func(request string) Item { return Item{Key: "chat-bot-request-" + helpers.MD5([]byte(request)), Expiration: 60 * 10} }
+	MemcachePlayerAchievementsNone = func(appID int) Item { return Item{Key: "no-stats-" + strconv.Itoa(appID), Expiration: 60 * 60, Value: "1"} }
 )
