@@ -75,7 +75,7 @@ func (p ProductPrices) Map() (prices map[steamapi.ProductCC]int) {
 
 //
 type ProductPrice struct {
-	Exists          bool                  `json:"-"`
+	Exists          bool                  `json:"-" bson:"-"`
 	Currency        steamapi.CurrencyCode `json:"currency"`
 	Initial         int                   `json:"initial"`
 	Final           int                   `json:"final"`
