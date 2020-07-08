@@ -125,7 +125,10 @@
                         <div class="dropdown-menu">
 
                             <a class="dropdown-item" href="/players">All Players</a>
-                            <a class="dropdown-item" href="/players?country={{ .CurrentCC }}">{{ .CurrentCC }} Players</a>
+
+                            {{ if ne .CurrentCC "" }}
+                                <a class="dropdown-item" href="/players?country={{ .CurrentCC }}">{{ .CurrentCC }} Players</a>
+                            {{ end }}
 
                             <div class="dropdown-divider"></div>
 

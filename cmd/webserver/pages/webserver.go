@@ -290,7 +290,11 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	t.PlayerName = sessionHelpers.Get(r, sessionHelpers.SessionPlayerName)
 	t.UserName = sessionHelpers.Get(r, sessionHelpers.SessionPlayerName)
 	t.UserProductCC = i18n.GetProdCC(sessionHelpers.GetProductCC(r))
-	t.CurrentCC = sessionHelpers.GetCountryCode(r)
+
+	cc := sessionHelpers.GetCountryCode(r)
+	if _, ok := i18n.States[cc]; ok {
+		t.CurrentCC = cc
+	}
 
 	//
 	t.setRandomBackground(true, false)
