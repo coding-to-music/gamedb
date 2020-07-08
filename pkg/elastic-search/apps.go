@@ -86,7 +86,7 @@ func SearchApps(limit int, offset int, search string, sorters []elastic.Sorter, 
 			Must(
 				elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
 					elastic.NewTermQuery("id", search).Boost(5),
-					elastic.NewMatchQuery("name", search).Boost(2),
+					elastic.NewMatchQuery("name", search).Boost(1),
 					elastic.NewTermQuery("aliases", search2).Boost(1),
 					elastic.NewPrefixQuery("name", search).Boost(0.2),
 				),
