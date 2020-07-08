@@ -19,7 +19,7 @@ type Item struct {
 var (
 	// Counts
 	MemcacheBundlesCount = Item{Key: "bundles-count", Expiration: 86400}
-	MemcacheMongoCount   = func(key string, filter bson.D) Item { return Item{Key: "mongo-count-" + key + "-" + FilterToString(filter), Expiration: 60 * 60} }
+	MemcacheMongoCount   = func(collection string, filter bson.D) Item { return Item{Key: "mongo-count-" + collection + "-" + FilterToString(filter), Expiration: 60 * 60} }
 
 	// Apps Page Dropdowns
 	MemcacheTagKeyNames          = Item{Key: "tag-key-names", Expiration: 86400 * 7}
