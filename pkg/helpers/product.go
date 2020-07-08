@@ -40,6 +40,10 @@ func (p *ProductPrices) AddPriceFromPackage(code steamapi.ProductCC, prices stea
 
 func (p *ProductPrices) AddPriceFromApp(code steamapi.ProductCC, prices steamapi.AppDetailsBody) {
 
+	if prices.Data.PriceOverview == nil {
+		return
+	}
+
 	if prices.Data.PriceOverview.Currency == "" {
 		prices.Data.PriceOverview.Currency = i18n.GetProdCC(code).CurrencyCode
 	}

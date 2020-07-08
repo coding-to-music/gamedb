@@ -471,7 +471,7 @@ func updateAppDetails(app *mongo.App) (err error) {
 
 		response, err := steamHelper.GetSteam().GetAppDetails(uint(app.ID), code.ProductCode, steamapi.LanguageEnglish, filter)
 		err = steamHelper.AllowSteamCodes(err)
-		if err == steamapi.ErrAppNotFound {
+		if err == steamapi.ErrAppNotFound || response.Data == nil {
 			continue
 		}
 		if err != nil {
