@@ -17,7 +17,7 @@ type Group struct {
 	Headline     string  `json:"headline"`
 	Icon         string  `json:"icon"`
 	Members      int     `json:"members"`
-	Trend        int64   `json:"trend"`
+	Trend        float64 `json:"trend"`
 	Error        bool    `json:"error"`
 	Score        float64 `json:"-"`
 }
@@ -49,7 +49,7 @@ func (group Group) GetIcon() string {
 }
 
 func (group Group) GetTrend() string {
-	return helpers.TrendValue(group.Trend)
+	return helpers.GetTrendValue(group.Trend)
 }
 
 func (group Group) GetGroupLink() string {

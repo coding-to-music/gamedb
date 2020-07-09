@@ -82,7 +82,7 @@ type App struct {
 	PlayerAverageWeek             float64                        `bson:"player_avg_week"`
 	PlayerPeakAllTime             int                            `bson:"player_peak_alltime"`
 	PlayerPeakWeek                int                            `bson:"player_peak_week"`
-	PlayerTrend                   int64                          `bson:"player_trend"`
+	PlayerTrend                   float64                        `bson:"player_trend"`
 	PlaytimeAverage               float64                        `bson:"playtime_average"` // Minutes
 	PlaytimeTotal                 int64                          `bson:"playtime_total"`   // Minutes
 	Prices                        helpers.ProductPrices          `bson:"prices"`
@@ -230,6 +230,10 @@ func (app App) GetIcon() (ret string) {
 
 func (app App) GetPath() string {
 	return helpers.GetAppPath(app.ID, app.Name)
+}
+
+func (app App) GetTrend() string {
+	return helpers.GetTrendValue(app.PlayerTrend)
 }
 
 func (app App) GetType() (ret string) {

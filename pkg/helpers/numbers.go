@@ -35,14 +35,16 @@ func OrdinalComma(i int) string {
 	return humanize.Comma(int64(i)) + ord
 }
 
-func TrendValue(i int64) string {
+func GetTrendValue(i float64) string {
+
+	i = RoundFloatTo2DP(i)
 
 	if i > 0 {
-		return "+" + humanize.Comma(i)
+		return "+" + humanize.Commaf(i)
 	} else if i == 0 {
 		return "-"
 	} else {
-		return humanize.Comma(i)
+		return humanize.Commaf(i)
 	}
 }
 

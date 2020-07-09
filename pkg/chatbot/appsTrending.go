@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/mongo"
 )
 
@@ -63,7 +62,7 @@ func (CommandAppsTrending) Output(msg *discordgo.MessageCreate) (message discord
 			message.Embed.Thumbnail = &discordgo.MessageEmbedThumbnail{URL: app.GetHeaderImage()}
 		}
 
-		code = append(code, fmt.Sprintf("%2d", k+1)+": "+app.GetName()+" ("+helpers.TrendValue(app.PlayerTrend)+")")
+		code = append(code, fmt.Sprintf("%2d", k+1)+": "+app.GetName()+" ("+app.GetTrend()+")")
 	}
 
 	message.Embed.Description = "```" + strings.Join(code, "\n") + "```"

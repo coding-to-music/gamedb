@@ -25,7 +25,7 @@ type Group struct {
 	Headline      string    `bson:"headline"`
 	Summary       string    `bson:"summary"`
 	Icon          string    `bson:"icon"`
-	Trending      int64     `bson:"trending"`
+	Trending      float64   `bson:"trending"`
 	Members       int       `bson:"members"`
 	MembersInChat int       `bson:"members_in_chat"`
 	MembersInGame int       `bson:"members_in_game"`
@@ -104,6 +104,10 @@ func (group Group) GetURL() string {
 
 func (group Group) GetName() string {
 	return helpers.GetGroupName(group.ID, group.Name)
+}
+
+func (group Group) GetTrend() string {
+	return helpers.GetTrendValue(group.Trending)
 }
 
 func (group Group) GetAbbr() string {

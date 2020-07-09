@@ -242,7 +242,7 @@ func GetFirstInfluxFloat(resp *influx.Response) float64 {
 	return 0
 }
 
-func GetInfluxTrend(builder *influxql.Builder, pad int) (trend int64, err error) {
+func GetInfluxTrend(builder *influxql.Builder, pad int) (trend float64, err error) {
 
 	resp, err := InfluxQuery(builder.String())
 	if err != nil {
@@ -278,7 +278,7 @@ func GetInfluxTrend(builder *influxql.Builder, pad int) (trend int64, err error)
 
 			_, slope := stat.LinearRegression(xs, ys, nil, false)
 			if !math.IsNaN(slope) {
-				trend = int64(math.Round(slope * 1000))
+				trend = math.Atan(slope) * (180.0 / math.Pi) // Angle in degrees
 			}
 		}
 	}

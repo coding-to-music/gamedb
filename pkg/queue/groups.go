@@ -473,7 +473,7 @@ func updateRegularGroup(id string, group *mongo.Group) (foundMembers bool, err e
 	return foundMembers, c.Visit("https://steamcommunity.com/gid/" + id)
 }
 
-func getGroupTrending(group mongo.Group) (trend int64, err error) {
+func getGroupTrending(group mongo.Group) (trend float64, err error) {
 
 	builder := influxql.NewBuilder()
 	builder.AddSelect("max(members_count)", "max_members_count")

@@ -82,7 +82,7 @@ func appInfluxHandler(messages []*rabbit.Message) {
 		}()
 
 		wg.Add(1)
-		var appTrend int64
+		var appTrend float64
 		go func() {
 
 			defer wg.Done()
@@ -178,7 +178,7 @@ func getAppTopPlayersAlltime(appID int) (val int64, err error) {
 	return influxHelper.GetFirstInfluxInt(resp), nil
 }
 
-func getAppTrendValue(appID int) (trend int64, err error) {
+func getAppTrendValue(appID int) (trend float64, err error) {
 
 	builder := influxql.NewBuilder()
 	builder.AddSelect("max(player_count)", "max_player_count")
