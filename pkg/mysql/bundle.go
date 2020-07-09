@@ -67,7 +67,7 @@ func (bundle Bundle) GetName() string {
 
 func (bundle Bundle) GetStoreLink() string {
 	name := config.Config.GameDBShortName.Get()
-	return "https://store.steampowered.com/bundle/" + strconv.Itoa(bundle.ID) + "?utm_source=" + name + "&utm_medium=link&utm_campaign=" + name
+	return "https://store.steampowered.com/bundle/" + strconv.Itoa(bundle.ID) + "?utm_source=" + name + "&utm_medium=referral&utm_campaign=app-store-link"
 }
 
 func (bundle Bundle) GetCreatedNice() string {
