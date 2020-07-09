@@ -56,12 +56,15 @@ func GetAppName(id int, name string) string {
 
 func GetAppIcon(id int, icon string) string {
 
-	if icon == "" {
-		return DefaultAppIcon
-	} else if strings.HasPrefix(icon, "/") || strings.HasPrefix(icon, "http") {
+	if strings.HasPrefix(icon, "/") || strings.HasPrefix(icon, "http") {
 		return icon
 	}
-	return AppIconBase + strconv.Itoa(id) + "/" + icon + ".jpg"
+
+	if IsValidAppID(id) && RegexSha1Only.MatchString(icon) {
+		return AppIconBase + strconv.Itoa(id) + "/" + icon + ".jpg"
+	}
+
+	return DefaultAppIcon
 }
 
 func GetAppReleaseState(state string) (ret string) {
