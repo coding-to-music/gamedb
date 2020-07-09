@@ -4,17 +4,17 @@ const defaultChartOptions = {
         backgroundColor: 'rgba(0,0,0,0)',
     },
     title: {
-        text: ''
+        text: '',
     },
     subtitle: {
-        text: ''
+        text: '',
     },
     credits: {
-        enabled: false
+        enabled: false,
     },
     xAxis: {
         title: {text: ''},
-        type: 'datetime'
+        type: 'datetime',
     },
     legend: {
         enabled: true,
@@ -24,6 +24,13 @@ const defaultChartOptions = {
         itemHiddenStyle: {
             color: '#666666',
         },
+    },
+    plotOptions: {
+        series: {
+            marker: {
+                enabled: false,
+            }
+        }
     },
     colors: ['#28a745', '#007bff', '#e83e8c', '#ffc107', '#343a40'],
 };
