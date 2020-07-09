@@ -345,6 +345,13 @@ func updateAppPICS(app *mongo.App, message *rabbit.Message, payload AppMessage) 
 					}
 				}
 
+				if vv.Key == "icon" {
+					icon := strings.TrimSpace(vv.Value)
+					if icon != "" {
+						app.Icon = icon
+					}
+				}
+
 				if vv.Key == "steam_release_date" {
 					i, err := strconv.ParseInt(vv.Value, 10, 64)
 					if err == nil && i > 0 {
