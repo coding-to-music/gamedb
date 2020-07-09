@@ -74,7 +74,7 @@ type App struct {
 	Movies                        []helpers.AppVideo             `bson:"movies"`
 	Name                          string                         `bson:"name"`
 	NewsIDs                       []int64                        `bson:"news_ids"`
-	Owners                        int64                          `bson:"owners"`
+	Owners                        int64                          `bson:"owners"` // On Game DB
 	Packages                      []int                          `bson:"packages"`
 	Platforms                     []string                       `bson:"platforms"`
 	PlayerAverageWeek             float64                        `bson:"player_avg_week"`
