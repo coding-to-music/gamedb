@@ -379,6 +379,7 @@ if ($appPage.length > 0) {
 
         const config = {rootMargin: '50px 0px 50px 0px', threshold: 0};
 
+        //
         const playersCallback = function (entries, self) {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -389,6 +390,7 @@ if ($appPage.length > 0) {
         };
         new IntersectionObserver(playersCallback, config).observe(document.getElementById("players-chart"));
 
+        //
         const groupChart = document.getElementById("group-chart");
         if (groupChart) {
             const groupCallback = function (entries, self) {
@@ -402,6 +404,7 @@ if ($appPage.length > 0) {
             new IntersectionObserver(groupCallback, config).observe(groupChart);
         }
 
+        //
         const timesCallback = function (entries, self) {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -412,6 +415,7 @@ if ($appPage.length > 0) {
         };
         new IntersectionObserver(timesCallback, config).observe(document.getElementById("top-players-table"));
 
+        //
         const wishlistCallback = function (entries, self) {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -467,7 +471,8 @@ if ($appPage.length > 0) {
         });
 
         const series = function (data) {
-            return [
+
+            let series = [
                 {
                     name: 'Twitch Viewers',
                     color: '#6441A4', // Twitch purple
@@ -487,6 +492,31 @@ if ($appPage.length > 0) {
                     connectNulls: true,
                 },
             ];
+
+            if (user.isLoggedIn) {
+                series.unshift(
+                    {
+                        name: 'YouTube Comments',
+                        color: '#ff0000',
+                        data: data['max_youtube_comments'],
+                        connectNulls: true,
+                        type: 'line',
+                        step: 'right',
+                        visible: false,
+                    },
+                    {
+                        name: 'YouTube Views',
+                        color: '#ff0000',
+                        data: data['max_youtube_views'],
+                        connectNulls: true,
+                        type: 'line',
+                        step: 'right',
+                        visible: false,
+                    },
+                )
+            }
+
+            return series;
         };
 
         $.ajax({
@@ -501,8 +531,29 @@ if ($appPage.length > 0) {
                         "max_player_count": [[now, 0]],
                         "max_moving_average": [[now, 0]],
                         "max_twitch_viewers": [[now, 0]],
+                        "max_youtube_views": [[now, 0]],
+                        "max_youtube_comments": [[now, 0]],
                     };
                 }
+
+                const start = d.getTime();
+
+                let max = 0;
+                data['max_youtube_views'].forEach(function myFunction(value, index, array) {
+                    if (value[0] > start && value[1] != null && value[1] > max) {
+                        max = value[1];
+                    }
+                });
+                $('#youtube-max-views').html(max.toLocaleString());
+
+                //
+                max = 0;
+                data['max_youtube_comments'].forEach(function myFunction(value, index, array) {
+                    if (value[0] > start && value[1] != null && value[1] > max) {
+                        max = value[1];
+                    }
+                });
+                $('#youtube-max-comments').html(max.toLocaleString());
 
                 Highcharts.chart('players-chart', $.extend(true, {}, chartOptions, {
                     xAxis: {
@@ -532,50 +583,6 @@ if ($appPage.length > 0) {
 
                 Highcharts.chart('players-chart2', $.extend(true, {}, chartOptions, {
                     series: series(data),
-                }));
-
-                Highcharts.chart('youtube-comments-chart', $.extend(true, {}, chartOptions, {
-                    series: [
-                        {
-                            name: 'YouTube Comments',
-                            color: '#28a745',
-                            data: data['max_youtube_comments'],
-                            connectNulls: true,
-                            type: 'line',
-                            step: 'right',
-                        }
-                    ],
-                    plotOptions: {
-                        series: {
-                            events: {
-                                legendItemClick: function () {
-                                    return false;
-                                }
-                            }
-                        }
-                    },
-                }));
-
-                Highcharts.chart('youtube-views-chart', $.extend(true, {}, chartOptions, {
-                    series: [
-                        {
-                            name: 'YouTube Views',
-                            color: '#28a745',
-                            data: data['max_youtube_views'],
-                            connectNulls: true,
-                            type: 'line',
-                            step: 'right',
-                        },
-                    ],
-                    plotOptions: {
-                        series: {
-                            events: {
-                                legendItemClick: function () {
-                                    return false;
-                                }
-                            }
-                        }
-                    },
                 }));
             },
         });

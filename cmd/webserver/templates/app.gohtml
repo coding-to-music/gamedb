@@ -365,6 +365,14 @@
                                                 <td>Average Playtime <small>(On Game DB)</small></td>
                                                 <td>{{ .App.GetPlaytimeAverage }}</td>
                                             </tr>
+                                            <tr>
+                                                <td>Max Weekly Youtube Views</td>
+                                                <td id="youtube-max-views"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Max Weekly Youtube Comments</td>
+                                                <td id="youtube-max-comments"></td>
+                                            </tr>
                                             </tbody>
                                         </table>
                                     </div>
@@ -420,23 +428,6 @@
                             <h5 class="card-header">Player Count</h5>
                             <div class="card-body pb-0">
                                 <div class="player-chart" id="players-chart2">
-                                    <i class="fas fa-spinner fa-spin"></i>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card mb-4">
-                            <h5 class="card-header cursor-pointer" data-toggle="collapse" data-target="#bans-collapse">
-                                <span>YouTube</span>
-                                <small class="float-right">Click to display</small>
-                            </h5>
-                            <div class="card-body collapse pb-0" id="bans-collapse">
-
-                                <div class="player-chart" id="youtube-comments-chart">
-                                    <i class="fas fa-spinner fa-spin"></i>
-                                </div>
-
-                                <div class="player-chart" id="youtube-views-chart">
                                     <i class="fas fa-spinner fa-spin"></i>
                                 </div>
                             </div>

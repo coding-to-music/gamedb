@@ -940,7 +940,7 @@ func appPlayersAjaxHandler(limit bool) func(http.ResponseWriter, *http.Request) 
 		builder := influxql.NewBuilder()
 		builder.AddSelect("max(player_count)", "max_player_count")
 		builder.AddSelect("max(twitch_viewers)", "max_twitch_viewers")
-		if !limit {
+		if limit || session.IsLoggedIn(r) {
 			builder.AddSelect("max(youtube_views)", "max_youtube_views")
 			builder.AddSelect("max(youtube_comments)", "max_youtube_comments")
 		}
