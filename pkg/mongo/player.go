@@ -622,31 +622,6 @@ func GetPlayer(id int64) (player Player, err error) {
 	return player, err
 }
 
-func GetRandomPlayers(count int) (players []Player, err error) {
-
-	cur, ctx, err := GetRandomRows(CollectionPlayers, count, nil, nil)
-	if err != nil {
-		return players, err
-	}
-
-	defer func() {
-		err = cur.Close(ctx)
-		log.Err(err)
-	}()
-
-	for cur.Next(ctx) {
-
-		var player Player
-		err := cur.Decode(&player)
-		if err != nil {
-			log.Err(err, player.ID)
-		}
-		players = append(players, player)
-	}
-
-	return players, cur.Err()
-}
-
 func SearchPlayer(search string, projection bson.M) (player Player, queue bool, err error) {
 
 	search = strings.TrimSpace(search)
