@@ -259,26 +259,30 @@
                             </div>
                             <div class="col-12 col-lg-4">
 
-                                <h6 class="mb-1 mt-3 mt-lg-0">Tags</h6>
-                                <div id="tags" class="mb-3">
-                                    {{ range $key, $value := .App.TagCounts }}
-                                        <div class="clearfix" style="background: linear-gradient(to right, #28a74522 {{ percent .Count $.TagsMax }}%, transparent {{ percent .Count $.TagsMax }}%)">
-                                            <a class="float-left" href="/games?tags={{ .ID }}">{{ .Name }}</a>
-                                            <span class="float-right">{{ comma .Count }} <i class="fas fa-thumbs-up"></i></span>
-                                        </div>
-                                    {{ end }}
-                                </div>
-
-                                <h6 class="mb-1 mt-3">Links</h6>
-                                <div id="links">
-                                    {{ range .Links }}
-                                        {{ if not .Hide }}
-                                            <div>
-                                                <img src="{{ .Icon }}" alt="{{ .Text }}" data-src="/assets/img/no-app-image-square.jpg">
-                                                <a href="{{ .Link }}" target="_blank" rel="noopener">{{ .Text }}</a>
+                                <div class="card mt-3 mt-lg-0">
+                                    <h5 class="card-header">Tags</h5>
+                                    <div class="card-body p-0 pr-1" id="tags">
+                                        {{ range $key, $value := .App.TagCounts }}
+                                            <div class="clearfix" style="background: linear-gradient(to right, #28a74522 {{ percent .Count $.TagsMax }}%, transparent {{ percent .Count $.TagsMax }}%)">
+                                                <a class="float-left" href="/games?tags={{ .ID }}">{{ .Name }}</a>
+                                                <span class="float-right">{{ comma .Count }} <i class="fas fa-thumbs-up"></i></span>
                                             </div>
                                         {{ end }}
-                                    {{ end }}
+                                    </div>
+                                </div>
+
+                                <div class="card mt-3">
+                                    <h5 class="card-header">Links</h5>
+                                    <div class="card-body p-2" id="links">
+                                        {{ range .Links }}
+                                            {{ if not .Hide }}
+                                                <div>
+                                                    <img src="{{ .Icon }}" alt="{{ .Text }}" data-src="/assets/img/no-app-image-square.jpg">
+                                                    <a href="{{ .Link }}" target="_blank" rel="noopener">{{ .Text }}</a>
+                                                </div>
+                                            {{ end }}
+                                        {{ end }}
+                                    </div>
                                 </div>
 
                             </div>
