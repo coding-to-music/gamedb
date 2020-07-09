@@ -17,7 +17,6 @@ type PlayerRecentApp struct {
 	PlayTime2Weeks  int    `bson:"playtime_2_weeks"` // Minutes
 	PlayTimeForever int    `bson:"playtime_forever"` // Minutes
 	Icon            string `bson:"icon"`
-	Logo            string `bson:"logo"`
 }
 
 func (app PlayerRecentApp) BSON() bson.D {
@@ -30,7 +29,6 @@ func (app PlayerRecentApp) BSON() bson.D {
 		{"playtime_2_weeks", app.PlayTime2Weeks},
 		{"playtime_forever", app.PlayTimeForever},
 		{"icon", app.Icon},
-		{"logo", app.Logo},
 	}
 }
 

@@ -45,7 +45,6 @@ type App struct {
 	Categories                    []int                          `bson:"categories"`
 	ChangeNumber                  int                            `bson:"change_number"`
 	ChangeNumberDate              time.Time                      `bson:"change_number_date"`
-	ClientIcon                    string                         `bson:"client_icon"`
 	ComingSoon                    bool                           `bson:"coming_soon"`
 	Common                        pics.PICSKeyValues             `bson:"common"`
 	Config                        pics.PICSKeyValues             `bson:"config"`
@@ -70,7 +69,6 @@ type App struct {
 	Launch                        []pics.PICSAppConfigLaunchItem `bson:"launch"`
 	Localization                  pics.Localisation              `bson:"localization"`
 	LocalizationCount             int                            `bson:"localization_count"`
-	Logo                          string                         `bson:"logo"`
 	MetacriticScore               int8                           `bson:"metacritic_score"`
 	MetacriticURL                 string                         `bson:"metacritic_url"`
 	Movies                        []helpers.AppVideo             `bson:"movies"`
@@ -132,7 +130,6 @@ func (app App) BSON() bson.D {
 		{"categories", app.Categories},
 		{"change_number", app.ChangeNumber},
 		{"change_number_date", app.ChangeNumberDate},
-		{"client_icon", app.ClientIcon},
 		{"coming_soon", app.ComingSoon},
 		{"common", app.Common},
 		{"config", app.Config},
@@ -157,7 +154,6 @@ func (app App) BSON() bson.D {
 		{"launch", app.Launch},
 		{"localization", app.Localization},
 		{"localization_count", app.LocalizationCount},
-		{"logo", app.Logo},
 		{"metacritic_score", app.MetacriticScore},
 		{"metacritic_url", app.MetacriticURL},
 		{"movies", app.Movies},
