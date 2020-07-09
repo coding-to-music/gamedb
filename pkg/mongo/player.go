@@ -96,6 +96,9 @@ type Player struct {
 	NumberOfVACBans          int                    `bson:"bans_cav"`
 	PersonaName              string                 `bson:"persona_name"`
 	PlayTime                 int                    `bson:"play_time"`
+	PlayTimeWindows          int                    `bson:"play_time_windows"`
+	PlayTimeMac              int                    `bson:"play_time_mac"`
+	PlayTimeLinux            int                    `bson:"play_time_linux"`
 	PrimaryGroupID           string                 `bson:"primary_clan_id_string"`
 	Ranks                    map[string]int         `bson:"ranks"`
 	RecentAppsCount          int                    `bson:"recent_apps_count"`
@@ -144,6 +147,9 @@ func (player Player) BSON() bson.D {
 		{"removed", player.Removed},
 		{"groups_count", player.GroupsCount},
 		{"ranks", player.Ranks},
+		{"play_time_windows", player.PlayTimeWindows},
+		{"play_time_mac", player.PlayTimeMac},
+		{"play_time_linux", player.PlayTimeLinux},
 
 		// Rank Metrics
 		{"badges_count", player.BadgesCount},
@@ -255,8 +261,17 @@ func (player *Player) SetOwnedGames(saveRows bool) (steamapi.OwnedGames, error) 
 	var appPriceHour = map[int]map[string]float64{}
 	var appIDs []int
 	var playtime = 0
+	var playtimeWindows = 0
+	var playtimeMac = 0
+	var playtimeLinux = 0
+
 	for _, v := range resp.Games {
-		playtime = playtime + v.PlaytimeForever
+
+		playtime += v.PlaytimeForever
+		playtimeWindows += v.PlaytimeWindows
+		playtimeMac += v.PlaytimeMac
+		playtimeLinux += v.PlaytimeLinux
+
 		appIDs = append(appIDs, v.AppID)
 		playerApps[v.AppID] = &PlayerApp{
 			PlayerID: player.ID,
@@ -271,6 +286,9 @@ func (player *Player) SetOwnedGames(saveRows bool) (steamapi.OwnedGames, error) 
 
 	// Save playtime
 	player.PlayTime = playtime
+	player.PlayTimeWindows = playtimeWindows
+	player.PlayTimeMac = playtimeMac
+	player.PlayTimeLinux = playtimeLinux
 
 	//
 	if !saveRows {
