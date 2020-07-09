@@ -251,8 +251,8 @@ if ($appPage.length > 0) {
                         {Name: "Drop Max Per Window", Value: rowx[7]},
                         {Name: "Exchange", Value: rowx[8]},
                         {Name: "Hash", Value: rowx[9]},
-                        {Name: "Icon URL", Value: rowx[10]},
-                        {Name: "Icon URL Large", Value: rowx[11]},
+                        {Name: "Icon URL", Value: '<a href="' + rowx[10] + '" target="_blank" rel="noopener">' + rowx[10] + '</a>'},
+                        {Name: "Icon URL Large", Value: '<a href="' + rowx[11] + '" target="_blank" rel="noopener">' + rowx[11] + '</a>'},
                         {Name: "Item Def ID", Value: rowx[12]},
                         {Name: "Item Quality", Value: rowx[13]},
                         {Name: "Marketable", Value: rowx[14]},
@@ -269,13 +269,13 @@ if ($appPage.length > 0) {
                     ];
 
                     const html = json2html.transform(fields, {
-                        '<>': 'div', 'class': 'detail-row', 'html': [
-                            {'<>': 'strong', 'html': '${Name}: '},
-                            {'<>': 'span', 'html': '${Value}'},
+                        '<>': 'tr', 'class': '', 'html': [
+                            {'<>': 'th', 'html': '${Name}', 'class': 'nowrap'},
+                            {'<>': 'td', 'html': '${Value}'},
                         ]
                     });
 
-                    row.child('<img src="' + rowx[26] + '" alt="" class="float-right rounded" />' + html).show();
+                    row.child('<table class="table table-hover table-striped table-sm mb-0">' + html + '</table>').show();
                     $(this).addClass('shown');
                 }
             }
