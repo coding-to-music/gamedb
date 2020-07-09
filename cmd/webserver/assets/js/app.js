@@ -478,6 +478,7 @@ if ($appPage.length > 0) {
                     color: '#6441A4', // Twitch purple
                     data: data['max_twitch_viewers'],
                     connectNulls: true,
+                    visible: false,
                 },
                 {
                     name: 'Players Online (Average)',
