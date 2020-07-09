@@ -238,6 +238,12 @@
                         <a class="nav-link" href="/donate"><i class="fas fa-heart text-danger"></i> Donate</a>
                     </li>
 
+                    {{ if .IsAdmin }}
+                        <li class="nav-item {{if startsWith .Path "/donate" }}active{{end}}">
+                            <a class="nav-link" href="/admin">Admin</a>
+                        </li>
+                    {{ end }}
+
                 </ul>
                 <ul class="navbar-nav">
 
@@ -260,10 +266,6 @@
 
                                 <a class="dropdown-item" href="/settings"><i class="fas fa-cog fa-fw"></i> Settings</a>
                                 <a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt fa-fw"></i> Logout</a>
-
-                                {{ if .IsAdmin }}
-                                    <a class="dropdown-item" href="/admin"><i class="fas fa-users-cog fa-fw"></i> Admin</a>
-                                {{ end }}
 
                             {{ else }}
 
