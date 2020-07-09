@@ -117,6 +117,8 @@ func (player Player) BSON() bson.D {
 	return bson.D{
 		{"_id", player.ID},
 		{"achievement_count", player.AchievementCount},
+		{"achievement_count_100", player.AchievementCount100},
+		{"achievement_count_apps", player.AchievementCountApps},
 		{"aliases", player.Aliases},
 		{"avatar", player.Avatar},
 		{"background_app_id", player.BackgroundAppID},
