@@ -903,11 +903,6 @@
                                             <a class="nav-link" data-toggle="tab" href="#dev-stats" role="tab">Stats</a>
                                         </li>
                                     {{ end }}
-                                    {{ if gt (len .App.SystemRequirements) 0 }}
-                                        <li class="nav-item">
-                                            <a class="nav-link" data-toggle="tab" href="#dev-system-requirements" role="tab">System Requirements</a>
-                                        </li>
-                                    {{ end }}
                                     {{ if or (gt (len .App.Depots.Depots) 0) (gt (len .App.Depots.Branches) 0) (gt (len .App.Depots.Extra) 0)}}
                                         <li class="nav-item">
                                             <a class="nav-link" data-toggle="tab" href="#dev-depots" role="tab">Depots</a>
@@ -937,6 +932,17 @@
                                                 </tr>
                                                 </thead>
                                                 <tbody class="cursor-pointer">
+                                                {{ if gt (len .App.SystemRequirements) 0 }}
+                                                    <tr data-raw="{{ htmlEscape (json .App.SystemRequirements) }}">
+                                                        <td>system_requirements</td>
+                                                        <td>Other</td>
+                                                        <td>
+                                                            {{ range .App.GetSystemRequirements }}
+                                                                <li>{{ .Key }}: <span class="font-weight-bold">{{ .Format }}</span></li>
+                                                            {{ end }}
+                                                        </td>
+                                                    </tr>
+                                                {{ end }}
                                                 <tr data-raw="{{ htmlEscape .App.Version }}">
                                                     <td>version</td>
                                                     <td>Other</td>
@@ -999,17 +1005,6 @@
                                                 </tbody>
                                             </table>
                                         </div>
-
-                                    </div>
-
-                                    {{/* System Requirements */}}
-                                    <div class="tab-pane" id="dev-system-requirements" role="tabpanel">
-
-                                        <ul class="mb-0 pl-3">
-                                            {{ range .App.GetSystemRequirements }}
-                                                <li>{{ .Key }}: <span class="font-weight-bold">{{ .Format }}</span></li>
-                                            {{ end }}
-                                        </ul>
 
                                     </div>
 
