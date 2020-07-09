@@ -575,6 +575,19 @@
                     {{/* Achievements */}}
                     <div class="tab-pane" id="achievements" role="tabpanel">
 
+                        <div class="row">
+                            <div class="col-6 col-md-4 col-lg-3 mb-3">
+                                <div role="button" class="btn btn-success btn-block mb-0">Games with achievements<br/>
+                                    <strong>{{ comma .Player.AchievementCountApps }}</strong>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-4 col-lg-3 mb-3">
+                                <div role="button" class="btn btn-success btn-block mb-0">Games with 100% achievements<br/>
+                                    <strong>{{ comma .Player.AchievementCount100 }}</strong>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="table-responsive">
                             <table class="table table-hover table-striped table-counts mb-0" data-row-type="achievements" data-path="/players/{{ .Player.ID }}/achievements.json" id="achievements-table">
                                 <thead class="thead-light">

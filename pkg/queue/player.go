@@ -191,6 +191,46 @@ func playerHandler(messages []*rabbit.Message) {
 			player.AchievementCount = int(c)
 		}()
 
+		wg.Add(1)
+		go func() {
+
+			defer wg.Done()
+
+			var filter = bson.D{
+				{"player_id", player.ID},
+				{"app_achievements_percent", 100},
+			}
+
+			c, err := mongo.CountDocuments(mongo.CollectionPlayerApps, filter, 0)
+			if err != nil {
+				log.Err(err, payload.ID)
+				sendToRetryQueue(message)
+				return
+			}
+
+			player.AchievementCount100 = int(c)
+		}()
+
+		wg.Add(1)
+		go func() {
+
+			defer wg.Done()
+
+			var filter = bson.D{
+				{"player_id", player.ID},
+				{"app_achievements_have", bson.M{"$gt": 0}},
+			}
+
+			c, err := mongo.CountDocuments(mongo.CollectionPlayerApps, filter, 0)
+			if err != nil {
+				log.Err(err, payload.ID)
+				sendToRetryQueue(message)
+				return
+			}
+
+			player.AchievementCountApps = int(c)
+		}()
+
 		wg.Wait()
 
 		if message.ActionTaken {

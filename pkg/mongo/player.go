@@ -70,7 +70,9 @@ var PlayerRankFieldsInflux = map[RankMetric]string{
 }
 
 type Player struct {
-	AchievementCount         int                    `bson:"achievement_count"`
+	AchievementCount         int                    `bson:"achievement_count"`      // Number of achievements
+	AchievementCount100      int                    `bson:"achievement_count_100"`  // Number of 100% games
+	AchievementCountApps     int                    `bson:"achievement_count_apps"` // Number of games with an achievement
 	Aliases                  []string               `bson:"aliases"`
 	Avatar                   string                 `bson:"avatar"`
 	BackgroundAppID          int                    `bson:"background_app_id"`
