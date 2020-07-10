@@ -368,7 +368,7 @@ func ProduceApp(payload AppMessage) (err error) {
 
 	item := memcache.MemcacheAppInQueue(payload.ID)
 
-	if payload.ChangeNumber == 0 && !config.IsLocal() {
+	if payload.ChangeNumber == 0 {
 		_, err = memcache.Get(item.Key)
 		if err == nil {
 			return memcache.ErrInQueue
@@ -426,11 +426,9 @@ func ProduceBundle(id int) (err error) {
 
 	item := memcache.MemcacheBundleInQueue(id)
 
-	if !config.IsLocal() {
-		_, err = memcache.Get(item.Key)
-		if err == nil {
-			return memcache.ErrInQueue
-		}
+	_, err = memcache.Get(item.Key)
+	if err == nil {
+		return memcache.ErrInQueue
 	}
 
 	err = produce(QueueBundles, BundleMessage{ID: id})
@@ -460,11 +458,9 @@ func ProduceGroup(payload GroupMessage) (err error) {
 
 	item := memcache.MemcacheGroupInQueue(payload.ID)
 
-	if !config.IsLocal() {
-		_, err = memcache.Get(item.Key)
-		if err == nil {
-			return memcache.ErrInQueue
-		}
+	_, err = memcache.Get(item.Key)
+	if err == nil {
+		return memcache.ErrInQueue
 	}
 
 	err = produce(QueueGroups, payload)
@@ -483,7 +479,7 @@ func ProducePackage(payload PackageMessage) (err error) {
 
 	item := memcache.MemcachePackageInQueue(payload.ID)
 
-	if payload.ChangeNumber == 0 && !config.IsLocal() {
+	if payload.ChangeNumber == 0 {
 		_, err = memcache.Get(item.Key)
 		if err == nil {
 			return memcache.ErrInQueue
@@ -517,11 +513,9 @@ func ProducePlayer(payload PlayerMessage) (err error) {
 
 	item := memcache.MemcachePlayerInQueue(payload.ID)
 
-	if !config.IsLocal() {
-		_, err = memcache.Get(item.Key)
-		if err == nil {
-			return memcache.ErrInQueue
-		}
+	_, err = memcache.Get(item.Key)
+	if err == nil {
+		return memcache.ErrInQueue
 	}
 
 	err = produce(QueuePlayers, payload)
