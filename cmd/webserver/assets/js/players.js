@@ -17,8 +17,6 @@ if ($('#players-page').length > 0) {
         if (isContient) {
             $stateContainer.hide();
             return;
-        } else {
-            $stateContainer.show();
         }
 
         $.ajax({
@@ -26,6 +24,11 @@ if ($('#players-page').length > 0) {
             url: '/players/states.json?cc=' + countryVal,
             dataType: 'json',
             success: function (data, textStatus, jqXHR) {
+
+                if (!data || data.length === 0) {
+                    $stateContainer.hide();
+                    return;
+                }
 
                 $state.empty();
                 $state.append($('<option/>', {value: '', text: 'Any'}));
@@ -36,10 +39,11 @@ if ($('#players-page').length > 0) {
                         text: value['v']
                     }));
                 });
+
+                $state.val('');
+                $stateContainer.show();
             },
         });
-
-        $state.val('');
     }
 
     const options = {
