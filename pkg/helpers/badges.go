@@ -57,7 +57,7 @@ func GetBadgePath(badgeName string, appID int, badgeID int, foil bool) string {
 
 const (
 	specialImageBase = "https://steamcommunity-a.akamaihd.net/public/images/badges/"
-	eventImageBase   = "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/items/"
+	eventImageBase   = "https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/items/"
 )
 
 func GetBadgeIcon(icon string, appID int, badgeID int) string {
