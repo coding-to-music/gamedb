@@ -117,7 +117,6 @@ func playerRanksHandler(messages []*rabbit.Message) {
 					Points:          points,
 					Database:        influxHelper.InfluxGameDB,
 					RetentionPolicy: influxHelper.InfluxRetentionPolicyAllTime.String(),
-					Precision:       "m",
 				})
 
 				return err
