@@ -264,28 +264,28 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var lastBan = v.LastBan.Format(helpers.DateYear)
 
 		response.AddRow([]interface{}{
-			index,              // 0
-			id,                 // 1
-			v.GetName(),        // 2
-			v.GetAvatar(),      // 3
-			v.GetAvatar2(),     // 4
-			v.Level,            // 5
-			v.GamesCount,       // 6
-			v.BadgesCount,      // 7
-			v.GetTimeShort(),   // 8
-			v.GetTimeLong(),    // 9
-			v.FriendsCount,     // 10
-			v.GetFlag(),        // 11
-			v.GetCountry(),     // 12
-			v.GetPath(),        // 13
-			v.CommunityLink(),  // 14
-			v.NumberOfGameBans, // 15
-			v.NumberOfVACBans,  // 16
-			v.LastBan.Unix(),   // 17
-			lastBan,            // 18
-			v.CountryCode,      // 19
-			v.CommentsCount,    // 20
-			v.AchievementCount, // 21
+			index,                 // 0
+			id,                    // 1
+			v.GetName(),           // 2
+			v.GetAvatar(),         // 3
+			v.GetAvatar2(),        // 4
+			v.Level,               // 5
+			v.GamesCount,          // 6
+			v.BadgesCount,         // 7
+			v.GetPlaytimeShort(2), // 8
+			v.GetPlaytimeShort(5), // 9
+			v.FriendsCount,        // 10
+			v.GetFlag(),           // 11
+			v.GetCountry(),        // 12
+			v.GetPath(),           // 13
+			v.CommunityLink(),     // 14
+			v.NumberOfGameBans,    // 15
+			v.NumberOfVACBans,     // 16
+			v.LastBan.Unix(),      // 17
+			lastBan,               // 18
+			v.CountryCode,         // 19
+			v.CommentsCount,       // 20
+			v.AchievementCount,    // 21
 		})
 	}
 

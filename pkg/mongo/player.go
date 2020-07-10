@@ -234,8 +234,8 @@ func (player Player) GetAvatar2() string {
 	return helpers.GetPlayerAvatar2(player.Level)
 }
 
-func (player Player) GetTimeShort() (ret string) {
-	return helpers.GetTimeShort(player.PlayTime, 2)
+func (player Player) GetPlaytimeShort(max int) (ret string) {
+	return helpers.GetTimeShort(player.PlayTime, max)
 }
 
 func (player Player) GetTimeLong() (ret string) {
