@@ -548,6 +548,7 @@ func (player Player) NeedsUpdate(updateType UpdateType) bool {
 	return false
 }
 
+//noinspection GoUnusedExportedFunction
 func CreatePlayerIndexes() {
 
 	var indexModels []mongo.IndexModel

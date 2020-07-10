@@ -67,6 +67,7 @@ func (sale Sale) BSON() bson.D {
 	}
 }
 
+//noinspection GoUnusedExportedFunction
 func CreateSaleIndexes() {
 
 	var indexModels []mongo.IndexModel

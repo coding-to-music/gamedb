@@ -563,6 +563,7 @@ func ChunkApps(strings []App, n int) (chunks [][]App) {
 	return chunks
 }
 
+//noinspection GoUnusedExportedFunction
 func CreateAppIndexes() {
 
 	var indexModels []mongo.IndexModel
