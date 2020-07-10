@@ -62,18 +62,23 @@ const (
 
 func GetBadgeIcon(icon string, appID int, badgeID int) string {
 
-	// URL
-	if strings.HasPrefix(icon, "http") || strings.HasPrefix(icon, "/") {
-		return icon
-	} else if IsBadgeEvent(appID) {
+	if IsBadgeEvent(appID) {
 		if val, ok := BuiltInEventBadges[appID]; ok {
 			return eventImageBase + strconv.Itoa(val.AppID) + "/" + val.Icon + ".png"
 		}
-	} else if IsBadgeSpecial(appID) {
+	}
+
+	if IsBadgeSpecial(appID) {
 		if val, ok := BuiltInSpecialBadges[badgeID]; ok {
 			return specialImageBase + val.Icon
 		}
-	} else if appID > 0 && icon != "" {
+	}
+
+	if strings.HasPrefix(icon, "http") || strings.HasPrefix(icon, "/") {
+		return icon
+	}
+
+	if appID > 0 && icon != "" {
 		return GetAppIcon(appID, icon)
 	}
 
