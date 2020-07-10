@@ -23,7 +23,7 @@ func appInfluxHandler(messages []*rabbit.Message) {
 	for _, message := range messages {
 
 		// Sleep to not cause influx memory to spike too much
-		time.Sleep(time.Second / 5)
+		time.Sleep(time.Millisecond * 400)
 
 		payload := AppInfluxMessage{}
 
