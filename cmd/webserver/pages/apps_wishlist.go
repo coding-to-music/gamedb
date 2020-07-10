@@ -64,7 +64,7 @@ func wishlistAppsHandler(w http.ResponseWriter, r *http.Request) {
 
 		columns := map[string]string{
 			"1": "wishlist_count",
-			"2": "wishlist_avg_position",
+			"2": "wishlist_avg_position, wishlist_count desc",
 			"3": "group_followers",
 			"4": "prices." + string(code) + ".final",
 			"5": "release_date_unix",
