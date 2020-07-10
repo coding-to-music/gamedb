@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/Jleagle/influxql"
-	"github.com/cenkalti/backoff/v4"
 	"github.com/gamedb/gamedb/pkg/log"
 	influx "github.com/influxdata/influxdb1-client"
 	influxModels "github.com/influxdata/influxdb1-client/models"
@@ -49,7 +48,6 @@ func (im InfluxMeasurement) String() string {
 }
 
 func InfluxWrite(retention InfluxRetentionPolicy, point influx.Point) (resp *influx.Response, err error) {
-
 	return InfluxWriteMany(retention, influx.BatchPoints{
 		Points: []influx.Point{point},
 	})
@@ -58,7 +56,7 @@ func InfluxWrite(retention InfluxRetentionPolicy, point influx.Point) (resp *inf
 func InfluxWriteMany(retention InfluxRetentionPolicy, batch influx.BatchPoints) (resp *influx.Response, err error) {
 
 	if len(batch.Points) == 0 {
-		return &influx.Response{}, nil
+		return nil, nil
 	}
 
 	batch.Database = InfluxGameDB
@@ -71,19 +69,10 @@ func InfluxWriteMany(retention InfluxRetentionPolicy, batch influx.BatchPoints) 
 
 	client, err := getInfluxClient()
 	if err != nil {
-		return resp, err
+		return nil, err
 	}
 
-	policy := backoff.NewExponentialBackOff()
-	policy.InitialInterval = time.Second
-
-	operation := func() (err error) {
-		resp, err = client.Write(batch)
-		return err
-	}
-
-	err = backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 5), func(err error, t time.Duration) { log.Info(err) })
-	return resp, err
+	return client.Write(batch)
 }
 
 func InfluxQuery(query string) (resp *influx.Response, err error) {
@@ -256,18 +245,19 @@ func GetInfluxTrend(builder *influxql.Builder, pad int) (trend float64, err erro
 
 		for k, v := range resp.Results[0].Series[0].Values {
 
-			trendTotal, err := v[1].(json.Number).Int64()
+			val, err := v[1].(json.Number).Int64()
 			if err != nil {
 				log.Err(err)
 				continue
 			}
 
 			xs = append(xs, float64(k))
-			ys = append(ys, float64(trendTotal))
+			ys = append(ys, float64(val))
 		}
 
-		// Padding
 		if len(ys) > 0 {
+
+			// Padding
 			if pad > 0 && len(xs) < pad {
 				diff := pad - len(xs)
 				for i := 1; i <= diff; i++ {
