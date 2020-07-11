@@ -716,7 +716,7 @@ func scrapeApp(app *mongo.App) (sales []mongo.Sale, err error) {
 			colly.URLFilters(appStorePage),
 			colly.AllowURLRevisit(),
 			steamHelper.WithAgeCheckCookie,
-			steamHelper.WithTimeout,
+			steamHelper.WithTimeout(0),
 		)
 
 		// Tags

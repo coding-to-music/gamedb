@@ -100,6 +100,13 @@ func WithAgeCheckCookie(c *colly.Collector) {
 	c.SetCookieJar(jar)
 }
 
-func WithTimeout(c *colly.Collector) {
-	c.SetRequestTimeout(time.Second * 10)
+var WithTimeout = func(seconds int) func(c *colly.Collector) {
+
+	if seconds == 0 {
+		seconds = 10
+	}
+
+	return func(c *colly.Collector) {
+		c.SetRequestTimeout(time.Duration(seconds) * time.Second)
+	}
 }

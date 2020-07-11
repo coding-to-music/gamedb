@@ -418,7 +418,7 @@ func scrapePackage(pack *mongo.Package) (err error) {
 	c := colly.NewCollector(
 		colly.URLFilters(packageRegex),
 		colly.AllowURLRevisit(),
-		steamHelper.WithTimeout,
+		steamHelper.WithTimeout(0),
 	)
 
 	// ID

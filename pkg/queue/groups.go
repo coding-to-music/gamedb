@@ -115,6 +115,12 @@ func groupsHandler(messages []*rabbit.Message) {
 			found, err = updateRegularGroup(payload.ID, &group)
 		}
 
+		if err != nil {
+			log.Err(err)
+			sendToRetryQueue(message)
+			continue
+		}
+
 		// Skip if we cant find numbers
 		if !found {
 			log.Info("Group counts not found", payload.ID)
@@ -259,7 +265,7 @@ func updateGameGroup(id string, group *mongo.Group) (foundNumbers bool, err erro
 
 	c := colly.NewCollector(
 		colly.AllowURLRevisit(),
-		steam.WithTimeout,
+		steam.WithTimeout(0),
 	)
 
 	// ID
@@ -387,7 +393,7 @@ func updateRegularGroup(id string, group *mongo.Group) (foundMembers bool, err e
 
 	c := colly.NewCollector(
 		colly.AllowURLRevisit(),
-		steam.WithTimeout,
+		steam.WithTimeout(20),
 	)
 
 	// ID

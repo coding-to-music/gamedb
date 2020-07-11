@@ -38,7 +38,7 @@ func appMorelikeHandler(messages []*rabbit.Message) {
 		c := colly.NewCollector(
 			colly.URLFilters(regexp.MustCompile(`store\.steampowered\.com/recommended/morelike/app/[0-9]+$`)),
 			steamHelper.WithAgeCheckCookie,
-			steamHelper.WithTimeout,
+			steamHelper.WithTimeout(0),
 		)
 
 		var relatedAppIDs []int
