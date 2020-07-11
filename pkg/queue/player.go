@@ -185,6 +185,30 @@ func playerHandler(messages []*rabbit.Message) {
 
 			defer wg.Done()
 
+			apps, err := mongo.GetPlayerWishlistAppsByPlayer(player.ID, 0, 0, nil, bson.M{"app_prices": 1})
+			if err != nil {
+				log.Err(err, payload.ID)
+				sendToRetryQueue(message)
+				return
+			}
+
+			var total = map[steamapi.ProductCC]int{}
+			for _, app := range apps {
+
+				for code, price := range app.AppPrices {
+					total[code] += price
+				}
+			}
+
+			player.WishlistTotalCost = total
+		}()
+
+		// Read from Mongo databases
+		wg.Add(1)
+		go func() {
+
+			defer wg.Done()
+
 			c, err := mongo.CountDocuments(mongo.CollectionPlayerAchievements, bson.D{{"player_id", player.ID}}, 0)
 			if err != nil {
 				log.Err(err, payload.ID)
@@ -815,7 +839,7 @@ func updatePlayerWishlistApps(player *mongo.Player) error {
 	}
 
 	// Old
-	oldAppsSlice, err := mongo.GetPlayerWishlistAppsByPlayer(player.ID, 0, 0, nil)
+	oldAppsSlice, err := mongo.GetPlayerWishlistAppsByPlayer(player.ID, 0, 0, nil, nil)
 	if err != nil {
 		return err
 	}

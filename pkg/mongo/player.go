@@ -69,44 +69,45 @@ var PlayerRankFieldsInflux = map[RankMetric]string{
 }
 
 type Player struct {
-	AchievementCount         int                    `bson:"achievement_count"`      // Number of achievements
-	AchievementCount100      int                    `bson:"achievement_count_100"`  // Number of 100% games
-	AchievementCountApps     int                    `bson:"achievement_count_apps"` // Number of games with an achievement
-	Aliases                  []string               `bson:"aliases"`
-	Avatar                   string                 `bson:"avatar"`
-	BackgroundAppID          int                    `bson:"background_app_id"`
-	BadgesCount              int                    `bson:"badges_count"`
-	BadgeStats               ProfileBadgeStats      `bson:"badge_stats"`
-	Bans                     PlayerBans             `bson:"bans"`
-	CommentsCount            int                    `bson:"comments_count"`
-	CommunityVisibilityState int                    `bson:"community_visibility_state"`
-	ContinentCode            string                 `bson:"continent_code"`
-	CountryCode              string                 `bson:"country_code"`
-	Donated                  int                    `bson:"donated"`
-	FriendsCount             int                    `bson:"friends_count"`
-	GamesByType              map[string]int         `bson:"games_by_type"`
-	GamesCount               int                    `bson:"games_count"`
-	GameStats                PlayerAppStatsTemplate `bson:"game_stats"`
-	GroupsCount              int                    `bson:"groups_count"`
-	ID                       int64                  `bson:"_id"`
-	LastBan                  time.Time              `bson:"bans_last"`
-	Level                    int                    `bson:"level"`
-	NumberOfGameBans         int                    `bson:"bans_game"`
-	NumberOfVACBans          int                    `bson:"bans_cav"`
-	PersonaName              string                 `bson:"persona_name"`
-	PlayTime                 int                    `bson:"play_time"`
-	PlayTimeWindows          int                    `bson:"play_time_windows"`
-	PlayTimeMac              int                    `bson:"play_time_mac"`
-	PlayTimeLinux            int                    `bson:"play_time_linux"`
-	PrimaryGroupID           string                 `bson:"primary_clan_id_string"`
-	Ranks                    map[string]int         `bson:"ranks"`
-	RecentAppsCount          int                    `bson:"recent_apps_count"`
-	Removed                  bool                   `bson:"removed"` // Removed from Steam
-	StateCode                string                 `bson:"status_code"`
-	TimeCreated              time.Time              `bson:"time_created"` // Created on Steam
-	UpdatedAt                time.Time              `bson:"updated_at"`
-	VanityURL                string                 `bson:"vanity_url"`
-	WishlistAppsCount        int                    `bson:"wishlist_apps_count"`
+	AchievementCount         int                        `bson:"achievement_count"`      // Number of achievements
+	AchievementCount100      int                        `bson:"achievement_count_100"`  // Number of 100% games
+	AchievementCountApps     int                        `bson:"achievement_count_apps"` // Number of games with an achievement
+	Aliases                  []string                   `bson:"aliases"`
+	Avatar                   string                     `bson:"avatar"`
+	BackgroundAppID          int                        `bson:"background_app_id"`
+	BadgesCount              int                        `bson:"badges_count"`
+	BadgeStats               ProfileBadgeStats          `bson:"badge_stats"`
+	Bans                     PlayerBans                 `bson:"bans"`
+	CommentsCount            int                        `bson:"comments_count"`
+	CommunityVisibilityState int                        `bson:"community_visibility_state"`
+	ContinentCode            string                     `bson:"continent_code"`
+	CountryCode              string                     `bson:"country_code"`
+	Donated                  int                        `bson:"donated"`
+	FriendsCount             int                        `bson:"friends_count"`
+	GamesByType              map[string]int             `bson:"games_by_type"`
+	GamesCount               int                        `bson:"games_count"`
+	GameStats                PlayerAppStatsTemplate     `bson:"game_stats"`
+	GroupsCount              int                        `bson:"groups_count"`
+	ID                       int64                      `bson:"_id"`
+	LastBan                  time.Time                  `bson:"bans_last"`
+	Level                    int                        `bson:"level"`
+	NumberOfGameBans         int                        `bson:"bans_game"`
+	NumberOfVACBans          int                        `bson:"bans_cav"`
+	PersonaName              string                     `bson:"persona_name"`
+	PlayTime                 int                        `bson:"play_time"`
+	PlayTimeWindows          int                        `bson:"play_time_windows"`
+	PlayTimeMac              int                        `bson:"play_time_mac"`
+	PlayTimeLinux            int                        `bson:"play_time_linux"`
+	PrimaryGroupID           string                     `bson:"primary_clan_id_string"`
+	Ranks                    map[string]int             `bson:"ranks"`
+	RecentAppsCount          int                        `bson:"recent_apps_count"`
+	Removed                  bool                       `bson:"removed"` // Removed from Steam
+	StateCode                string                     `bson:"status_code"`
+	TimeCreated              time.Time                  `bson:"time_created"` // Created on Steam
+	UpdatedAt                time.Time                  `bson:"updated_at"`
+	VanityURL                string                     `bson:"vanity_url"`
+	WishlistAppsCount        int                        `bson:"wishlist_apps_count"`
+	WishlistTotalCost        map[steamapi.ProductCC]int `bson:"wishlist_total_cost"`
 }
 
 func (player Player) BSON() bson.D {
@@ -142,6 +143,7 @@ func (player Player) BSON() bson.D {
 		{"updated_at", time.Now()},
 		{"vanity_url", player.VanityURL},
 		{"wishlist_apps_count", player.WishlistAppsCount},
+		{"wishlist_total_cost", player.WishlistTotalCost},
 		{"recent_apps_count", player.RecentAppsCount},
 		{"removed", player.Removed},
 		{"groups_count", player.GroupsCount},
@@ -235,6 +237,15 @@ func (player Player) GetAvatar2() string {
 
 func (player Player) GetPlaytimeShort(max int) (ret string) {
 	return helpers.GetTimeShort(player.PlayTime, max)
+}
+
+func (player Player) GetWishlistTotal(cc steamapi.ProductCC) string {
+
+	if val, ok := player.WishlistTotalCost[cc]; ok {
+		return i18n.FormatPrice(i18n.GetProdCC(cc).CurrencyCode, val)
+	}
+
+	return "-"
 }
 
 type UpdateType string

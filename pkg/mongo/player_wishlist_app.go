@@ -122,9 +122,9 @@ func GetPlayerWishlistAppsByApp(appID int) (apps []PlayerWishlistApp, err error)
 	return getPlayerWishlistApps(0, 0, bson.D{{"app_id", appID}}, nil, bson.M{"order": 1})
 }
 
-func GetPlayerWishlistAppsByPlayer(playerID int64, offset int64, limit int64, order bson.D) (apps []PlayerWishlistApp, err error) {
+func GetPlayerWishlistAppsByPlayer(playerID int64, offset int64, limit int64, order bson.D, projection bson.M) (apps []PlayerWishlistApp, err error) {
 
-	return getPlayerWishlistApps(offset, limit, bson.D{{"player_id", playerID}}, order, nil)
+	return getPlayerWishlistApps(offset, limit, bson.D{{"player_id", playerID}}, order, projection)
 }
 
 func getPlayerWishlistApps(offset int64, limit int64, filter bson.D, sort bson.D, projection bson.M) (apps []PlayerWishlistApp, err error) {

@@ -359,6 +359,7 @@ type playerTemplate struct {
 	Types         map[string]int64
 	InQueue       bool
 	User          mysql.User
+	WishListTotal string
 }
 
 func (pt playerTemplate) TypePercent(typex string) string {
@@ -920,7 +921,7 @@ func playerWishlistAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		var err error
-		wishlistApps, err = mongo.GetPlayerWishlistAppsByPlayer(id, query.GetOffset64(), 0, query.GetOrderMongo(columns))
+		wishlistApps, err = mongo.GetPlayerWishlistAppsByPlayer(id, query.GetOffset64(), 0, query.GetOrderMongo(columns), nil)
 		if err != nil {
 			log.Err(err, r)
 			return
