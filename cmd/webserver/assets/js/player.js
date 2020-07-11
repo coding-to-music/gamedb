@@ -22,7 +22,7 @@ if ($playerPage.length > 0) {
 
                 toast(data.success, data.toast);
 
-                $('i', $link).removeClass('fa-spin');
+                $('i, svg', $link).removeClass('fa-spin');
 
                 $link.contents().last()[0].textContent = ' In Queue';
             },
