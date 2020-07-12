@@ -116,12 +116,11 @@ func groupsHandler(messages []*rabbit.Message) {
 		}
 
 		if err != nil {
-			log.Err(err)
+			steam.LogSteamError(err)
 			sendToRetryQueue(message)
 			continue
 		}
 
-		// Skip if we cant find numbers
 		if !found {
 			log.Info("Group counts not found", payload.ID)
 			sendToRetryQueue(message)
