@@ -128,7 +128,7 @@ func GetPlayerIDFromSesion(r *http.Request) (id int64, err error) {
 	idx := Get(r, SessionPlayerID)
 
 	if idx == "" {
-		return id, errors.New("no player id set")
+		return 0, nil
 	}
 
 	return strconv.ParseInt(idx, 10, 64)

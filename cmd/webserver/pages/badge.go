@@ -90,51 +90,48 @@ func badgeHandler(w http.ResponseWriter, r *http.Request) {
 	if session.IsLoggedIn(r) {
 
 		playerBadge.PlayerID, err = session.GetPlayerIDFromSesion(r)
-		if err != nil {
-			log.Err(err, r)
-			returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: err.Error()})
-			return
-		}
+		if err == nil && playerBadge.PlayerID > 0 {
 
-		var row = mongo.PlayerBadge{}
-		err = mongo.FindOne(mongo.CollectionPlayerBadges, bson.D{{"_id", playerBadge.GetKey()}}, nil, nil, &row)
-		if err != nil && err != mongo.ErrNoDocuments {
-			log.Err(err, r)
-			returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: err.Error()})
-			return
-		}
-
-		if err == nil {
-
-			playerLevel = row.BadgeLevel
-			playerTime = row.BadgeCompletionTime.Format(helpers.DateYearTime)
-
-			var filter = bson.D{
-				{Key: "badge_level", Value: bson.M{"$gte": row.BadgeLevel}},
-				{Key: "badge_completion_time", Value: bson.M{"$lt": row.BadgeCompletionTime}},
-			}
-
-			if playerBadge.IsSpecial() {
-				filter = append(filter,
-					bson.E{Key: "app_id", Value: 0},
-					bson.E{Key: "badge_id", Value: id},
-				)
-			} else {
-				filter = append(filter,
-					bson.E{Key: "app_id", Value: id},
-					bson.E{Key: "badge_id", Value: bson.M{"$gt": 0}},
-					bson.E{Key: "badge_foil", Value: playerBadge.BadgeFoil},
-				)
-			}
-
-			count, err := mongo.CountDocuments(mongo.CollectionPlayerBadges, filter, 60*60*24*14)
-			if err != nil {
+			var row = mongo.PlayerBadge{}
+			err = mongo.FindOne(mongo.CollectionPlayerBadges, bson.D{{"_id", playerBadge.GetKey()}}, nil, nil, &row)
+			if err != nil && err != mongo.ErrNoDocuments {
 				log.Err(err, r)
 				returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: err.Error()})
 				return
 			}
 
-			playerRank = helpers.OrdinalComma(int(count + 1))
+			if err == nil {
+
+				playerLevel = row.BadgeLevel
+				playerTime = row.BadgeCompletionTime.Format(helpers.DateYearTime)
+
+				var filter = bson.D{
+					{Key: "badge_level", Value: bson.M{"$gte": row.BadgeLevel}},
+					{Key: "badge_completion_time", Value: bson.M{"$lt": row.BadgeCompletionTime}},
+				}
+
+				if playerBadge.IsSpecial() {
+					filter = append(filter,
+						bson.E{Key: "app_id", Value: 0},
+						bson.E{Key: "badge_id", Value: id},
+					)
+				} else {
+					filter = append(filter,
+						bson.E{Key: "app_id", Value: id},
+						bson.E{Key: "badge_id", Value: bson.M{"$gt": 0}},
+						bson.E{Key: "badge_foil", Value: playerBadge.BadgeFoil},
+					)
+				}
+
+				count, err := mongo.CountDocuments(mongo.CollectionPlayerBadges, filter, 60*60*24*14)
+				if err != nil {
+					log.Err(err, r)
+					returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: err.Error()})
+					return
+				}
+
+				playerRank = helpers.OrdinalComma(int(count + 1))
+			}
 		}
 	}
 
