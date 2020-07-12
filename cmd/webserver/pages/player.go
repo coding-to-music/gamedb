@@ -117,20 +117,20 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Number of players
-	var players int64
+	var playersCount int64
 	wg.Add(1)
 	go func() {
 
 		defer wg.Done()
 
 		var err error
-		players, err = mongo.CountDocuments(mongo.CollectionPlayers, nil, 0)
+		playersCount, err = mongo.CountDocuments(mongo.CollectionPlayers, nil, 0)
 		if err != nil {
 			log.Err(err, r)
 		}
 	}()
 
-	var playersContinent int64
+	var playersContinentCount int64
 	if player.ContinentCode != "" {
 
 		wg.Add(1)
@@ -139,14 +139,14 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 			defer wg.Done()
 
 			var err error
-			playersContinent, err = mongo.CountDocuments(mongo.CollectionPlayers, bson.D{{"continent_code", player.ContinentCode}}, 60*60*24*7)
+			playersContinentCount, err = mongo.CountDocuments(mongo.CollectionPlayers, bson.D{{"continent_code", player.ContinentCode}}, 60*60*24*7)
 			if err != nil {
 				log.Err(err, r)
 			}
 		}()
 	}
 
-	var playersCountry int64
+	var playersCountryCount int64
 	if player.CountryCode != "" {
 
 		wg.Add(1)
@@ -155,14 +155,14 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 			defer wg.Done()
 
 			var err error
-			playersCountry, err = mongo.CountDocuments(mongo.CollectionPlayers, bson.D{{"country_code", player.CountryCode}}, 60*60*24*7)
+			playersCountryCount, err = mongo.CountDocuments(mongo.CollectionPlayers, bson.D{{"country_code", player.CountryCode}}, 60*60*24*7)
 			if err != nil {
 				log.Err(err, r)
 			}
 		}()
 	}
 
-	var playersState int64
+	var playersStateCount int64
 	if player.StateCode != "" {
 
 		wg.Add(1)
@@ -171,7 +171,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 			defer wg.Done()
 
 			var err error
-			playersState, err = mongo.CountDocuments(mongo.CollectionPlayers, bson.D{{"country_code", player.CountryCode}, {"status_code", player.StateCode}}, 60*60*24*7)
+			playersStateCount, err = mongo.CountDocuments(mongo.CollectionPlayers, bson.D{{"country_code", player.CountryCode}, {"status_code", player.StateCode}}, 60*60*24*7)
 			if err != nil {
 				log.Err(err, r)
 			}
@@ -289,47 +289,57 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// Get ranks
-	ranks := []mongo.RankMetric{mongo.RankKeyLevel, mongo.RankKeyBadges, mongo.RankKeyFriends, mongo.RankKeyComments, mongo.RankKeyGames, mongo.RankKeyPlaytime}
+	var ranks = map[string]*playerRankListTemplate{
+		RankListGlobally:  {Players: playersCount},
+		RankListContinent: {Players: playersContinentCount},
+		RankListCountry:   {Players: playersCountryCount},
+		RankListState:     {Players: playersStateCount},
+	}
 
-	for _, v := range ranks {
+	for _, v := range []mongo.RankMetric{mongo.RankKeyLevel, mongo.RankKeyBadges, mongo.RankKeyFriends, mongo.RankKeyComments, mongo.RankKeyGames, mongo.RankKeyPlaytime} {
+
 		if position, ok := player.Ranks[string(v)]; ok {
-			t.Ranks = append(t.Ranks, playerRankTemplate{
-				Players:  players,
-				List:     "Globally",
+			ranks[RankListGlobally].Description = RankListGlobally
+			ranks[RankListGlobally].Ranks = append(ranks[RankListGlobally].Ranks, &playerRankTemplate{
 				Metric:   v,
 				Position: position,
 			})
 		}
 		if position, ok := player.Ranks[string(v)+"_continent-"+player.ContinentCode]; ok {
-			t.Ranks = append(t.Ranks, playerRankTemplate{
-				Players:  playersContinent,
-				List:     "In the continent",
+			ranks[RankListContinent].Description = RankListContinent
+			ranks[RankListContinent].Ranks = append(ranks[RankListContinent].Ranks, &playerRankTemplate{
 				Metric:   v,
 				Position: position,
 			})
 		}
 		if position, ok := player.Ranks[string(v)+"_country-"+player.CountryCode]; ok {
-			t.Ranks = append(t.Ranks, playerRankTemplate{
-				Players:  playersCountry,
-				List:     "In the country",
+			ranks[RankListCountry].Description = RankListCountry
+			ranks[RankListCountry].Ranks = append(ranks[RankListCountry].Ranks, &playerRankTemplate{
 				Metric:   v,
 				Position: position,
 			})
 		}
 		if position, ok := player.Ranks[string(v)+"_state-"+player.StateCode]; ok {
-			t.Ranks = append(t.Ranks, playerRankTemplate{
-				Players:  playersState,
-				List:     "In the state",
+			ranks[RankListState].Description = RankListState
+			ranks[RankListState].Ranks = append(ranks[RankListState].Ranks, &playerRankTemplate{
 				Metric:   v,
 				Position: position,
 			})
 		}
 	}
 
-	sort.Slice(t.Ranks, func(i, j int) bool {
-		return t.Ranks[i].Position < t.Ranks[j].Position
-	})
+	for _, v := range ranks {
+		sort.Slice(v.Ranks, func(i, j int) bool {
+			return v.Ranks[i].Position < v.Ranks[j].Position
+		})
+	}
+
+	t.Ranks = []*playerRankListTemplate{
+		ranks[RankListGlobally],
+		ranks[RankListContinent],
+		ranks[RankListCountry],
+		ranks[RankListState],
+	}
 
 	// Template
 	t.setBackground(backgroundApp, true, false)
@@ -355,7 +365,7 @@ type playerTemplate struct {
 	CSRF          string
 	DefaultAvatar string
 	Player        mongo.Player
-	Ranks         []playerRankTemplate
+	Ranks         []*playerRankListTemplate
 	Types         map[string]int64
 	InQueue       bool
 	User          mysql.User
@@ -384,24 +394,34 @@ type playerMissingTemplate struct {
 	Queue         int
 }
 
+const (
+	RankListGlobally  = "Global Ranks"
+	RankListContinent = "Continent Ranks"
+	RankListCountry   = "Country Ranks"
+	RankListState     = "State Ranks"
+)
+
+type playerRankListTemplate struct {
+	Players     int64
+	Description string
+	Ranks       []*playerRankTemplate
+}
 type playerRankTemplate struct {
-	List     string
 	Metric   mongo.RankMetric
 	Position int
-	Players  int64
 }
 
 func (pr playerRankTemplate) Rank() string {
 	return helpers.OrdinalComma(pr.Position)
 }
 
-func (pr playerRankTemplate) GetPlayers() string {
+func (pr playerRankListTemplate) GetPlayers() string {
 	return humanize.FormatFloat("#,###.", float64(pr.Players))
 }
 
-func (pr playerRankTemplate) Percentile() string {
+func (pr playerRankTemplate) Percentile(players int64) string {
 
-	p := float64(pr.Position) / float64(pr.Players) * 100
+	p := float64(pr.Position) / float64(players) * 100
 
 	if p < 1 {
 		return helpers.FloatToString(p, 2)

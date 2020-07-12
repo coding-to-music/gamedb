@@ -235,8 +235,34 @@ func (player Player) GetAvatar2() string {
 	return helpers.GetPlayerAvatar2(player.Level)
 }
 
-func (player Player) GetPlaytimeShort(max int) (ret string) {
-	return helpers.GetTimeShort(player.PlayTime, max)
+func (player Player) GetPlaytimeShort(platform string, max int) (ret string) {
+
+	switch platform {
+	case "windows":
+		return helpers.GetTimeShort(player.PlayTimeWindows, max)
+	case "mac":
+		return helpers.GetTimeShort(player.PlayTimeMac, max)
+	case "linux":
+		return helpers.GetTimeShort(player.PlayTimeLinux, max)
+	default:
+		return helpers.GetTimeShort(player.PlayTime, max)
+	}
+}
+
+func (player Player) GetPlaytimePercent(platform string) (ret float64) {
+
+	total := player.PlayTimeWindows + player.PlayTimeMac + player.PlayTimeLinux
+
+	switch platform {
+	case "windows":
+		ret = float64(player.PlayTimeWindows) / float64(total)
+	case "mac":
+		ret = float64(player.PlayTimeMac) / float64(total)
+	case "linux":
+		ret = float64(player.PlayTimeLinux) / float64(total)
+	}
+
+	return helpers.RoundFloatTo1DP(ret * 100)
 }
 
 func (player Player) GetWishlistTotal(cc steamapi.ProductCC) string {

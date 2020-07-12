@@ -18,42 +18,16 @@
     }
 
     #details {
+
         #links {
             img {
                 width: 20px;
                 height: 20px;
             }
         }
-    }
 
-    #history {
         #history-chart, #ranks-chart {
             height: 250px;
         }
     }
-
-    //.friend {
-    //    a, div {
-    //        color: $dark;
-    //        text-decoration: none;
-    //        @include text-truncate;
-    //
-    //        img {
-    //            height: 52px;
-    //            margin-right: 5px;
-    //        }
-    //
-    //        span {
-    //            margin-top: 15px;
-    //        }
-    //
-    //        span:hover {
-    //            text-decoration: underline;
-    //        }
-    //
-    //        span.badge {
-    //            text-decoration: none;
-    //        }
-    //    }
-    //}
 }

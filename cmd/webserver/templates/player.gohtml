@@ -36,10 +36,7 @@
 
                 <ul class="nav nav-tabs card-header-tabs nav-fill-mobile">
                     <li class="nav-item">
-                        <a class="nav-link active" data-toggle="tab" href="#details" role="tab">Details</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#history" role="tab">History</a>
+                        <a class="nav-link" data-toggle="tab" href="#details" role="tab">Details</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" data-toggle="tab" href="#games" role="tab">Library</a>
@@ -79,17 +76,17 @@
                 <div class="tab-content">
 
                     {{/* Info */}}
-                    <div class="tab-pane show active" id="details" role="tabpanel">
+                    <div class="tab-pane" id="details" role="tabpanel">
 
                         <div class="row">
-                            <div class="col-sm-12 col-lg-6">
+                            <div class="col-sm-12 col-md-6 col-lg-4">
 
-                                <div class="card mb-4">
-                                    <h5 class="card-header">Details</h5>
+                                <div class="card mb-3">
+                                    <h5 class="card-header">Stats</h5>
                                     <div class="card-body p-0">
                                         <div class="table-responsive">
                                             <table class="table table-no-border mb-0">
-                                                <tr>
+                                                <tr data-link-tab="badges">
                                                     <th scope="col" nowrap="nowrap">Level</th>
                                                     <td><a href="/experience/{{ .Player.Level }}">{{ comma .Player.Level }}</a></td>
                                                 </tr>
@@ -105,10 +102,28 @@
                                                     <th scope="col" nowrap="nowrap">Badges</th>
                                                     <td>{{ comma .Player.BadgesCount }}</td>
                                                 </tr>
-                                                <tr data-link-tab="groups">
-                                                    <th scope="col" nowrap="nowrap">Groups</th>
-                                                    <td>{{ comma .Player.GroupsCount }}</td>
+                                                <tr>
+                                                    <th scope="col" nowrap="nowrap">Comments</th>
+                                                    <td>{{ comma .Player.CommentsCount }}</td>
                                                 </tr>
+                                                <tr data-link-tab="stats">
+                                                    <th scope="col" nowrap="nowrap">Playtime</th>
+                                                    <td>{{ .Player.GetPlaytimeShort "" 3 }}</td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                            <div class="col-sm-12 col-md-6 col-lg-4">
+
+                                <div class="card mb-3">
+                                    <h5 class="card-header">Details</h5>
+                                    <div class="card-body p-0">
+                                        <div class="table-responsive">
+                                            <table class="table table-no-border mb-0">
                                                 <tr>
                                                     <th scope="col" nowrap="nowrap">On Steam</th>
                                                     <td>
@@ -118,10 +133,6 @@
                                                             <span data-toggle="tooltip" data-placement="top" title="{{ .Player.GetSteamTimeNice }}" data-livestamp="{{ .Player.GetSteamTimeUnix }}">{{ .Player.GetSteamTimeNice }}</span>
                                                         {{ end }}
                                                     </td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="col" nowrap="nowrap">Last Updated</th>
-                                                    <td><span data-toggle="tooltip" data-placement="top" title="{{ .Player.GetUpdatedNice }}" data-livestamp="{{ .Player.GetUpdatedUnix }}">{{ .Player.GetUpdatedNice }}</span></td>
                                                 </tr>
                                                 {{ if ne .Player.CountryCode "" }}
                                                     <tr>
@@ -140,13 +151,24 @@
                                                         <td>{{ .Player.GetStateName }}</td>
                                                     </tr>
                                                 {{ end }}
+                                                <tr>
+                                                    <th scope="col" nowrap="nowrap">Last Updated</th>
+                                                    <td><span data-toggle="tooltip" data-placement="top" title="{{ .Player.GetUpdatedNice }}" data-livestamp="{{ .Player.GetUpdatedUnix }}">{{ .Player.GetUpdatedNice }}</span></td>
+                                                </tr>
+                                                <tr data-link-tab="groups">
+                                                    <th scope="col" nowrap="nowrap">Groups</th>
+                                                    <td>{{ comma .Player.GroupsCount }}</td>
+                                                </tr>
                                             </table>
                                         </div>
                                     </div>
 
                                 </div>
 
-                                <div class="card mb-4">
+                            </div>
+                            <div class="col-sm-12 col-lg-4">
+
+                                <div class="card mb-3">
                                     <h5 class="card-header cursor-pointer" data-toggle="collapse" data-target="#bans-collapse">
                                         Bans
                                         {{ if not .Player.Bans.History }}
@@ -193,7 +215,7 @@
                                     </div>
                                 </div>
 
-                                <div class="card">
+                                <div class="card mb-3">
                                     <h5 class="card-header">Links</h5>
                                     <div class="card-body pb-2" id="links">
 
@@ -210,56 +232,78 @@
                                 </div>
 
                             </div>
-                            <div class="col-sm-12 col-lg-6">
+                        </div>
+                        <div class="row">
 
-                                <div class="card mb-0">
-                                    <h5 class="card-header">Ranks</h5>
-                                    <div class="card-body p-0">
-                                        {{ if gt (len .Ranks) 0 }}
-                                            <div class="table-responsive">
-                                                <table class="table table-sm table-no-border mb-0">
-                                                    {{ range $key, $value := .Ranks }}
-                                                        <tr>
-                                                            <td>{{ .Metric.String }}</td>
-                                                            <td data-toggle="tooltip" data-placement="top" title="Players: {{ .GetPlayers }} (Top {{ .Percentile }}%)">{{ .Rank }}</td>
-                                                            <td class="nowrap">{{ .List }}</td>
-                                                        </tr>
-                                                    {{ end }}
-                                                </table>
+                            {{ range $key, $value := .Ranks }}
+                                {{ if gt (len $value.Ranks) 0 }}
+
+                                    <div class="col">
+
+                                        <div class="card mb-3">
+                                            <h5 class="card-header">{{ $value.Description }}</h5>
+                                            <div class="card-body p-0">
+                                                {{ if gt (len $value.Ranks) 0 }}
+                                                    <div class="table-responsive">
+                                                        <table class="table table-no-border mb-0">
+                                                            {{ range $key2, $value2 := $value.Ranks }}
+                                                                <tr>
+                                                                    <td>{{ .Metric.String }}</td>
+                                                                    <td><strong>{{ .Rank }}</strong></td>
+                                                                    <td><small>Top {{ .Percentile $value.Players }}%</small></td>
+                                                                </tr>
+                                                            {{ end }}
+                                                        </table>
+                                                    </div>
+                                                {{ else }}
+                                                    <div class="p-3">
+                                                        <p>{{ $.Player.GetName }} has not been ranked yet, this will start at midnight UTC</p>
+                                                        <p class="mb-0">Your profile must be set to public to gather information,
+                                                            go <a href="https://steamcommunity.com/my/edit/settings" target="_blank" rel="noopener">here</a> to change your privacy settings.</p>
+                                                    </div>
+                                                {{ end }}
                                             </div>
-                                        {{ else }}
-                                            <div class="p-3">
-                                                <p>{{ .Player.GetName }} has not been ranked yet, this will start at midnight UTC</p>
-                                                <p class="mb-0">Your profile must be set to public to gather information,
-                                                    go <a href="https://steamcommunity.com/my/edit/settings" target="_blank" rel="noopener">here</a> to change your privacy settings.</p>
+                                            <small class="card-footer">Out of {{ .GetPlayers }} players</small>
+                                        </div>
+
+                                    </div>
+
+                                {{ end }}
+                            {{ end }}
+
+                        </div>
+                        <div class="row">
+                            <div class="col">
+
+                                <div class="card" id="details-charts">
+                                    <div class="card-header">
+                                        <div class="nav nav-tabs card-header-tabs" id="nav-tab" role="tablist">
+                                            <a class="nav-item nav-link active" id="nav-profile-tab" data-toggle="tab" href="#details-stats" role="tab">Stats</a>
+                                            <a class="nav-item nav-link" id="nav-home-tab" data-toggle="tab" href="#details-ranks" role="tab">Ranks</a>
+                                        </div>
+                                    </div>
+                                    <div class="card-body pb-0">
+
+                                        <div class="tab-content" id="nav-tabContent">
+                                            <div class="tab-pane active" id="details-stats" role="tabpanel">
+
+                                                <div id="history-chart">
+                                                    <i class="fas fa-spinner fa-spin"></i>
+                                                </div>
+
                                             </div>
-                                        {{ end }}
+                                            <div class="tab-pane" id="details-ranks" role="tabpanel">
+
+                                                <div id="ranks-chart">
+                                                    <i class="fas fa-spinner fa-spin"></i>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </div>
 
-                            </div>
-                        </div>
-
-                    </div>
-
-                    {{/* Charts */}}
-                    <div class="tab-pane" id="history" role="tabpanel">
-
-                        <div class="card mb-4">
-                            <h5 class="card-header">Ranks</h5>
-                            <div class="card-body pb-0">
-                                <div id="ranks-chart">
-                                    <i class="fas fa-spinner fa-spin"></i>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card">
-                            <h5 class="card-header">Stats</h5>
-                            <div class="card-body pb-0">
-                                <div id="history-chart">
-                                    <i class="fas fa-spinner fa-spin"></i>
-                                </div>
                             </div>
                         </div>
 
@@ -426,11 +470,11 @@
                         <div class="row">
                             <div class="col-12 col-md-6 mb-3">
 
-                                <div class="card">
+                                <div class="card mb-3">
                                     <h5 class="card-header">Stats</h5>
                                     <div class="card-body p-0">
                                         <div class="table-responsive">
-                                            <table class="table table-no-border mb-0">
+                                            <table class="table table-no-border mb-0 table-sm">
                                                 <thead>
                                                 <tr>
                                                     <th scope="col" style="width: 40%"></th>
@@ -471,6 +515,41 @@
 
                                 </div>
 
+                                <div class="card">
+                                    <h5 class="card-header">Platforms <small class="float-right">Since Sep 2019</small></h5>
+                                    <div class="card-body p-0">
+
+                                        <div class="table-responsive">
+                                            <table class="table table-no-border table-datatable table-sm" data-order='[[1, "desc"]]'>
+                                                <thead>
+                                                <tr>
+                                                    <th>Platform</th>
+                                                    <th>Time</th>
+                                                    <th>%</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr>
+                                                    <td>Windows</td>
+                                                    <td data-sort="{{ .Player.PlayTimeWindows }}">{{ .Player.GetPlaytimeShort "windows" 2 }}</td>
+                                                    <td><small>{{ .Player.GetPlaytimePercent "windows" }}%</small></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Mac</td>
+                                                    <td data-sort="{{ .Player.PlayTimeMac }}">{{ .Player.GetPlaytimeShort "mac" 2 }}</td>
+                                                    <td><small>{{ .Player.GetPlaytimePercent "mac" }}%</small></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Linux</td>
+                                                    <td data-sort="{{ .Player.PlayTimeLinux }}">{{ .Player.GetPlaytimeShort "linux" 2 }}</td>
+                                                    <td><small>{{ .Player.GetPlaytimePercent "linux" }}%</small></td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
                             <div class="col-12 col-md-6 mb-3">
 
@@ -479,7 +558,7 @@
                                     <div class="card-body p-0">
 
                                         <div class="table-responsive">
-                                            <table class="table table-no-border table-datatable" data-order='[[1, "desc"]]'>
+                                            <table class="table table-no-border table-datatable table-sm" data-order='[[1, "desc"]]'>
                                                 <thead>
                                                 <tr>
                                                     <th>Type</th>
