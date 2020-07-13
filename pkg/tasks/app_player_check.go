@@ -65,7 +65,7 @@ func (c AppsPlayerCheck) work() (err error) {
 		var chunks = helpers.ChunkInts(ids, 20)
 
 		for _, chunk := range chunks {
-			err = queue.ProduceAppPlayers(queue.AppPlayerMessage{IDs: chunk})
+			err = queue.ProduceAppPlayers(chunk)
 			if err != nil {
 				return err
 			}

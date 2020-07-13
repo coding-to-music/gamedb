@@ -48,7 +48,7 @@ func (c AppsPlayerCheckTop) work() (err error) {
 		var chunks = helpers.ChunkInts(ids, 20)
 
 		for _, chunk := range chunks {
-			err = queue.ProduceAppPlayersTop(queue.AppPlayerMessage{IDs: chunk})
+			err = queue.ProduceAppPlayersTop(chunk)
 			if err != nil {
 				return err
 			}

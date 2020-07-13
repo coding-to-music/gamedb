@@ -383,8 +383,9 @@ func ProduceApp(payload AppMessage) (err error) {
 	return err
 }
 
-func ProduceAppsInflux(id int) (err error) {
-	return produce(QueueAppsInflux, AppInfluxMessage{ID: id})
+func ProduceAppsInflux(appIDs []int) (err error) {
+	m := AppInfluxMessage{AppIDs: appIDs}
+	return produce(m.Queue(), m)
 }
 
 func ProduceAppsReviews(id int) (err error) {
@@ -400,22 +401,22 @@ func ProduceAppsWishlists(id int) (err error) {
 	return produce(QueueAppsWishlists, AppWishlistsMessage{ID: id})
 }
 
-func ProduceAppPlayers(payload AppPlayerMessage) (err error) {
+func ProduceAppPlayers(appIDs []int) (err error) {
 
-	if len(payload.IDs) == 0 {
+	if len(appIDs) == 0 {
 		return nil
 	}
 
-	return produce(QueueAppPlayers, payload)
+	return produce(QueueAppPlayers, AppPlayerMessage{IDs: appIDs})
 }
 
-func ProduceAppPlayersTop(payload AppPlayerMessage) (err error) {
+func ProduceAppPlayersTop(appIDs []int) (err error) {
 
-	if len(payload.IDs) == 0 {
+	if len(appIDs) == 0 {
 		return nil
 	}
 
-	return produce(QueueAppPlayersTop, payload)
+	return produce(QueueAppPlayersTop, AppPlayerMessage{IDs: appIDs})
 }
 
 func ProduceBundle(id int) (err error) {
