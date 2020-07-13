@@ -488,7 +488,7 @@ func getGroupTrending(group mongo.Group) (trend float64, err error) {
 	builder.AddGroupByTime("1d")
 	builder.SetFillNone()
 
-	return influxHelper.GetInfluxTrend(builder, 28)
+	return influxHelper.GetInfluxTrendFromResponse(builder, 28)
 }
 
 func saveGroup(group mongo.Group) (err error) {

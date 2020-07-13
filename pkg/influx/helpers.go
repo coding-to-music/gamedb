@@ -2,7 +2,6 @@ package influx
 
 import (
 	"encoding/json"
-	"math"
 	"reflect"
 	"sort"
 	"time"
@@ -10,6 +9,7 @@ import (
 	"github.com/Jleagle/influxql"
 	"github.com/gamedb/gamedb/pkg/log"
 	influx "github.com/influxdata/influxdb1-client"
+	"github.com/influxdata/influxdb1-client/models"
 	influxModels "github.com/influxdata/influxdb1-client/models"
 	"gonum.org/v1/gonum/stat"
 )
@@ -19,20 +19,20 @@ const (
 	InfluxTelegrafDB = "Telegraf-Web"
 
 	InfluxRetentionPolicyAllTime InfluxRetentionPolicy = "alltime"
-	InfluxRetentionPolicy7Day    InfluxRetentionPolicy = "7d"
 	InfluxRetentionPolicy14Day   InfluxRetentionPolicy = "14d"
+	// InfluxRetentionPolicy7Day    InfluxRetentionPolicy = "7d"
 
 	InfluxMeasurementAPICalls    InfluxMeasurement = "api_calls"
 	InfluxMeasurementApps        InfluxMeasurement = "apps"
 	InfluxMeasurementChanges     InfluxMeasurement = "changes"
 	InfluxMeasurementChatBot     InfluxMeasurement = "chat_bot"
 	InfluxMeasurementGroups      InfluxMeasurement = "groups"
-	InfluxMeasurementPackages    InfluxMeasurement = "packages"
 	InfluxMeasurementPlayers     InfluxMeasurement = "players"
 	InfluxMeasurementRabbitQueue InfluxMeasurement = "rabbitmq_queue"
-	InfluxMeasurementStats       InfluxMeasurement = "stats"
 	InfluxMeasurementSignups     InfluxMeasurement = "signups"
-	InfluxMeasurementTags        InfluxMeasurement = "tags"
+	// InfluxMeasurementPackages    InfluxMeasurement = "packages"
+	// InfluxMeasurementStats       InfluxMeasurement = "stats"
+	// InfluxMeasurementTags        InfluxMeasurement = "tags"
 )
 
 type InfluxRetentionPolicy string
@@ -231,47 +231,51 @@ func GetFirstInfluxFloat(resp *influx.Response) float64 {
 	return 0
 }
 
-func GetInfluxTrend(builder *influxql.Builder, pad int) (trend float64, err error) {
+func GetInfluxTrendFromResponse(builder *influxql.Builder, padding int) (trend float64, err error) {
 
 	resp, err := InfluxQuery(builder.String())
 	if err != nil {
 		return 0, err
 	}
 
-	var xs []float64
-	var ys []float64
-
 	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 && len(resp.Results[0].Series[0].Values) > 0 {
 
-		for k, v := range resp.Results[0].Series[0].Values {
-
-			val, err := v[1].(json.Number).Int64()
-			if err != nil {
-				log.Err(err)
-				continue
-			}
-
-			xs = append(xs, float64(k))
-			ys = append(ys, float64(val))
-		}
-
-		if len(ys) > 0 {
-
-			// Padding
-			if pad > 0 && len(xs) < pad {
-				diff := pad - len(xs)
-				for i := 1; i <= diff; i++ {
-					xs = append(xs, float64(len(xs)))    // Append
-					ys = append([]float64{ys[0]}, ys...) // Prepend
-				}
-			}
-
-			_, slope := stat.LinearRegression(xs, ys, nil, false)
-			if !math.IsNaN(slope) {
-				trend = math.Atan(slope) * (180.0 / math.Pi) // Angle in degrees
-			}
-		}
+		return GetInfluxTrendFromSeries(resp.Results[0].Series[0], padding), nil
 	}
 
 	return trend, nil
+}
+
+func GetInfluxTrendFromSeries(series models.Row, padding int) (trend float64) {
+
+	var xs []float64
+	var ys []float64
+
+	for k, v := range series.Values {
+
+		val, err := v[1].(json.Number).Int64()
+		if err != nil {
+			log.Err(err)
+			continue
+		}
+
+		xs = append(xs, float64(k))
+		ys = append(ys, float64(val))
+	}
+
+	if len(ys) > 0 {
+
+		// Padding
+		if padding > 0 && len(xs) < padding {
+			diff := padding - len(xs)
+			for i := 1; i <= diff; i++ {
+				xs = append(xs, float64(len(xs)))    // Append
+				ys = append([]float64{ys[0]}, ys...) // Prepend
+			}
+		}
+
+		_, trend = stat.LinearRegression(xs, ys, nil, false)
+	}
+
+	return trend
 }
