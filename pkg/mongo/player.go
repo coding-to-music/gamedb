@@ -249,20 +249,26 @@ func (player Player) GetPlaytimeShort(platform string, max int) (ret string) {
 	}
 }
 
-func (player Player) GetPlaytimePercent(platform string) (ret float64) {
+func (player Player) GetPlaytimePercent(platform string) (ret string) {
 
 	total := player.PlayTimeWindows + player.PlayTimeMac + player.PlayTimeLinux
 
-	switch platform {
-	case "windows":
-		ret = float64(player.PlayTimeWindows) / float64(total)
-	case "mac":
-		ret = float64(player.PlayTimeMac) / float64(total)
-	case "linux":
-		ret = float64(player.PlayTimeLinux) / float64(total)
+	if total == 0 {
+		return "-"
 	}
 
-	return helpers.RoundFloatTo1DP(ret * 100)
+	var percent float64
+
+	switch platform {
+	case "windows":
+		percent = float64(player.PlayTimeWindows) / float64(total)
+	case "mac":
+		percent = float64(player.PlayTimeMac) / float64(total)
+	case "linux":
+		percent = float64(player.PlayTimeLinux) / float64(total)
+	}
+
+	return helpers.FloatToString(percent*100, 2) + "%"
 }
 
 func (player Player) GetWishlistTotal(cc steamapi.ProductCC) string {
