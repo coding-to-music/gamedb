@@ -361,20 +361,20 @@
                                                 <td>Peak Last 10 minutes</td>
                                                 <td>{{ comma64 .PlayersInGame }}</td>
                                             </tr>
-                                            <tr>
-                                                <td>Average Last Week</td>
-                                                <td>{{ commaf .App.PlayerAverageWeek }}</td>
-                                            </tr>
+                                            {{/*<tr>*/}}
+                                            {{/*    <td>Average Last Week</td>*/}}
+                                            {{/*    <td>{{ commaf .App.PlayerAverageWeek }}</td>*/}}
+                                            {{/*</tr>*/}}
                                             <tr>
                                                 <td>Average Playtime <small>(On Game DB)</small></td>
                                                 <td>{{ .App.GetPlaytimeAverage }}</td>
                                             </tr>
                                             <tr>
-                                                <td>Max Weekly Youtube Views</td>
+                                                <td>Youtube Views</td>
                                                 <td id="youtube-max-views"></td>
                                             </tr>
                                             <tr>
-                                                <td>Max Weekly Youtube Comments</td>
+                                                <td>Youtube Comments</td>
                                                 <td id="youtube-max-comments"></td>
                                             </tr>
                                             </tbody>
