@@ -2,11 +2,6 @@ const $playerPage = $('#player-page');
 
 if ($playerPage.length > 0) {
 
-    // Default tab
-    if (!window.location.hash) {
-        $('.nav-link[href="#details"]').tab('show');
-    }
-
     // Update link
     $('#update-button').on('click', function (e) {
 
@@ -34,44 +29,6 @@ if ($playerPage.length > 0) {
         });
     });
 
-    // On tab change
-    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-
-        const to = $(e.target);
-        const from = $(e.relatedTarget);
-
-        // On entering tab
-        if (!to.attr('loaded')) {
-            to.attr('loaded', 1);
-            switch (to.attr('href')) {
-                case '#details':
-                    loadPlayerDetailsTab();
-                    break;
-                case '#games':
-                    loadPlayerLibraryTab();
-                    break;
-                case '#stats':
-                    loadPlayerLibraryStatsTab();
-                    break;
-                case '#badges':
-                    loadPlayerBadgesTab();
-                    break;
-                case '#friends':
-                    loadPlayerFriendsTab();
-                    break;
-                case '#groups':
-                    loadPlayerGroupsTab();
-                    break;
-                case '#wishlist':
-                    loadPlayerWishlistTab();
-                    break;
-                case '#achievements':
-                    loadPlayerAchievementsTab();
-                    break;
-            }
-        }
-    });
-
     // Websockets
     websocketListener('profile', function (e) {
 
@@ -81,6 +38,36 @@ if ($playerPage.length > 0) {
         }
     });
 
+    // Load AJAX
+    const map = {
+        "all-games": loadPlayerLibraryTab,
+        "recent-games": loadPlayerLibraryStatsTab,
+        "details-charts": loadPlayerDetailsTab,
+        "badges-table": loadPlayerBadgesTab,
+        "friends-table": loadPlayerFriendsTab,
+        "groups-table": loadPlayerGroupsTab,
+        "wishlist-table": loadPlayerWishlistTab,
+        "achievements-table": loadPlayerAchievementsTab,
+    }
+
+    for (const key in map) {
+
+        const callback = map[key];
+        const element = document.getElementById(key);
+        if (element) {
+            const f = function (entries, self) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        self.unobserve(entry.target);
+                        callback();
+                    }
+                });
+            };
+            new IntersectionObserver(f, {rootMargin: '50px 0px 50px 0px', threshold: 0}).observe(element);
+        }
+    }
+
+    //
     function loadPlayerLibraryTab() {
 
         const options = {
@@ -146,17 +133,12 @@ if ($playerPage.length > 0) {
             ]
         };
 
-        const config = {rootMargin: '50px 0px 50px 0px', threshold: 0};
-
-        const allGamesCallback = function (entries, self) {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    $('#all-games').gdbTable({tableOptions: options, searchFields: [$('#player-games-search')]});
-                    self.unobserve(entry.target);
-                }
-            });
-        };
-        new IntersectionObserver(allGamesCallback, config).observe(document.getElementById("all-games"));
+        $('#all-games').gdbTable({
+            tableOptions: options,
+            searchFields: [
+                $('#player-games-search'),
+            ]
+        });
     }
 
     function loadPlayerLibraryStatsTab() {
@@ -198,17 +180,215 @@ if ($playerPage.length > 0) {
             ]
         };
 
-        const config = {rootMargin: '50px 0px 50px 0px', threshold: 0};
+        $('#recent-games').gdbTable({
+            tableOptions: recentOptions,
+        });
+    }
 
-        const recentCallback = function (entries, self) {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    $('#recent-games').gdbTable({tableOptions: recentOptions});
-                    self.unobserve(entry.target);
+    function loadPlayerDetailsTab() {
+
+        $.ajax({
+            type: "GET",
+            url: '/players/' + $playerPage.attr('data-id') + '/history.json',
+            dataType: 'json',
+            success: function (data, textStatus, jqXHR) {
+
+                if (data === null) {
+                    data = [];
                 }
-            });
+
+                const yAxis = {
+                    allowDecimals: false,
+                    title: {
+                        text: ''
+                    },
+                    labels: {
+                        enabled: false
+                    },
+                };
+
+                Highcharts.chart('history-chart', $.extend(true, {}, defaultChartOptions, {
+                    yAxis: [
+                        yAxis,
+                        yAxis,
+                        yAxis,
+                        yAxis,
+                        yAxis,
+                    ],
+                    tooltip: {
+                        formatter: function () {
+
+                            switch (this.series.name) {
+                                case 'Playtime':
+                                    return this.y.toLocaleString() + ' minutes played on ' + moment(this.key).format("dddd DD MMM YYYY");
+                                default:
+                                    return this.y.toLocaleString() + ' ' + this.series.name.toLowerCase() + ' on ' + moment(this.key).format("dddd DD MMM YYYY");
+                            }
+                        },
+                    },
+                    series: [
+                        {
+                            name: 'Level',
+                            color: '#28a745',
+                            data: data['max_level'],
+                            marker: {symbol: 'circle'},
+                            yAxis: 0,
+                        },
+                        {
+                            name: 'Games',
+                            color: '#007bff',
+                            data: data['max_games'],
+                            marker: {symbol: 'circle'},
+                            yAxis: 1,
+                        },
+                        {
+                            name: 'Badges',
+                            color: '#e83e8c',
+                            data: data['max_badges'],
+                            marker: {symbol: 'circle'},
+                            yAxis: 2,
+                        },
+                        {
+                            name: 'Playtime',
+                            color: '#ffc107',
+                            data: data['max_playtime'],
+                            marker: {symbol: 'circle'},
+                            yAxis: 3,
+                        },
+                        {
+                            name: 'Friends',
+                            color: '#343a40',
+                            data: data['max_friends'],
+                            marker: {symbol: 'circle'},
+                            yAxis: 4,
+                        },
+                    ],
+                }));
+
+                Highcharts.chart('ranks-chart', $.extend(true, {}, defaultChartOptions, {
+                    yAxis: {
+                        allowDecimals: false,
+                        title: {
+                            text: ''
+                        },
+                        reversed: true,
+                        min: 1,
+                    },
+                    tooltip: {
+                        formatter: function () {
+                            return this.series.name + ' rank ' + this.y.toLocaleString() + ' on ' + moment(this.key).format("dddd DD MMM YYYY");
+                        },
+                    },
+                    series: [
+                        {
+                            name: 'Level',
+                            color: '#28a745',
+                            data: data['max_level_rank'],
+                            marker: {symbol: 'circle'},
+                        },
+                        {
+                            name: 'Games',
+                            color: '#007bff',
+                            data: data['max_games_rank'],
+                            marker: {symbol: 'circle'},
+                        },
+                        {
+                            name: 'Badges',
+                            color: '#e83e8c',
+                            data: data['max_badges_rank'],
+                            marker: {symbol: 'circle'},
+                        },
+                        {
+                            name: 'Playtime',
+                            color: '#ffc107',
+                            data: data['max_playtime_rank'],
+                            marker: {symbol: 'circle'},
+                        },
+                        {
+                            name: 'Friends',
+                            color: '#343a40',
+                            data: data['max_friends_rank'],
+                            marker: {symbol: 'circle'},
+                        }
+                    ],
+                }));
+            },
+        });
+    }
+
+    function loadPlayerBadgesTab() {
+
+        const options = {
+            "order": [[1, 'desc']],
+            "createdRow": function (row, data, dataIndex) {
+                if (data[0]) {
+                    $(row).attr('data-app-id', data[0]);
+                }
+                $(row).attr('data-link', data[2]);
+            },
+            "columnDefs": [
+                // Icon / App Name
+                {
+                    "targets": 0,
+                    "render": function (data, type, row) {
+
+                        let name = row[1];
+                        if (row[9]) {
+                            name += '<span class="badge badge-primary float-right ml-1">Special</span>';
+                        }
+                        if (row[10]) {
+                            name += '<span class="badge badge-warning float-right ml-1">Event</span>';
+                        }
+                        if (row[4]) {
+                            name += '<span class="badge badge-success float-right ml-1">Foil</span>';
+                        }
+
+                        return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[5] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + name + '</div></div>'
+                    },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        $(td).addClass('img');
+                    },
+                    "orderable": false,
+                },
+                // Level / XP
+                {
+                    "targets": 1,
+                    "render": function (data, type, row) {
+                        return row[6].toLocaleString() + ' (' + row[8].toLocaleString() + 'xp)';
+                    },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        $(td).attr('nowrap', 'nowrap');
+                    },
+                    "orderSequence": ['desc', 'asc'],
+                },
+                // Scarcity
+                {
+                    "targets": 2,
+                    "render": function (data, type, row) {
+                        return row[7].toLocaleString();
+                    },
+                    "orderSequence": ['asc', 'desc'],
+                },
+                // Completion Time
+                {
+                    "targets": 3,
+                    "render": function (data, type, row) {
+                        return row[3].toLocaleString();
+                    },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        $(td).attr('nowrap', 'nowrap');
+                    },
+                    "orderSequence": ['desc', 'asc'],
+                },
+            ]
         };
-        new IntersectionObserver(recentCallback, config).observe(document.getElementById("recent-games"));
+
+        $('#badges-table').gdbTable({
+            tableOptions: options,
+            searchFields: [
+                $('#player-badge-search'),
+            ],
+        });
     }
 
     function loadPlayerFriendsTab() {
@@ -293,7 +473,9 @@ if ($playerPage.length > 0) {
             ]
         };
 
-        $('#friends table.table').gdbTable({tableOptions: options});
+        $('#friends-table').gdbTable({
+            tableOptions: options,
+        });
     }
 
     function loadPlayerGroupsTab() {
@@ -352,7 +534,9 @@ if ($playerPage.length > 0) {
             ]
         };
 
-        $('#groups-table').gdbTable({tableOptions: options});
+        $('#groups-table').gdbTable({
+            tableOptions: options,
+        });
     }
 
     function loadPlayerWishlistTab() {
@@ -424,59 +608,9 @@ if ($playerPage.length > 0) {
             ]
         };
 
-        $('#wishlist-table').gdbTable({tableOptions: options});
-    }
-
-    function loadPlayerAchievementStats() {
-
-        const summaryOptions = {
-            "order": [[2, 'desc']],
-            "createdRow": function (row, data, dataIndex) {
-                $(row).attr('data-link', data[0] + '#achievements');
-                $(row).attr('data-app-id', data[3]);
-            },
-            "columnDefs": [
-                // App / Achievement
-                {
-                    "targets": 0,
-                    "render": function (data, type, row) {
-                        return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[2] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></div>'
-                    },
-                    "createdCell": function (td, cellData, rowData, row, col) {
-                        $(td).addClass('img');
-                    },
-                    "orderSequence": ['asc', 'desc'],
-                },
-                // Have
-                {
-                    "targets": 1,
-                    "render": function (data, type, row) {
-                        return row[4].toLocaleString() + '<small>/' + row[5].toLocaleString() + '</small>';
-                    },
-                    "orderSequence": ['desc', 'asc'],
-                },
-                // Percent
-                {
-                    "targets": 2,
-                    "render": function (data, type, row) {
-                        return row[6] + '%';
-                    },
-                    "orderSequence": ['desc', 'asc'],
-                },
-            ]
-        };
-
-        const config = {rootMargin: '50px 0px 50px 0px', threshold: 0};
-
-        const summaryCallback = function (entries, self) {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    $('#achievements-summary-table').gdbTable({tableOptions: summaryOptions});
-                    self.unobserve(entry.target);
-                }
-            });
-        };
-        new IntersectionObserver(summaryCallback, config).observe(document.getElementById("achievements-summary-table"));
+        $('#wishlist-table').gdbTable({
+            tableOptions: options,
+        });
     }
 
     function loadPlayerAchievementsTab() {
@@ -529,229 +663,8 @@ if ($playerPage.length > 0) {
             ]
         };
 
-        //
-        const config = {rootMargin: '50px 0px 50px 0px', threshold: 0};
-
-        const recentCallback = function (entries, self) {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    $('#achievements-table').gdbTable({tableOptions: recentOptions});
-                    self.unobserve(entry.target);
-                }
-            });
-        };
-        new IntersectionObserver(recentCallback, config).observe(document.getElementById("achievements-table"));
-    }
-
-    function loadPlayerBadgesTab() {
-
-        const options = {
-            "order": [[1, 'desc']],
-            "createdRow": function (row, data, dataIndex) {
-                if (data[0]) {
-                    $(row).attr('data-app-id', data[0]);
-                }
-                $(row).attr('data-link', data[2]);
-            },
-            "columnDefs": [
-                // Icon / App Name
-                {
-                    "targets": 0,
-                    "render": function (data, type, row) {
-
-                        let name = row[1];
-                        if (row[9]) {
-                            name += '<span class="badge badge-primary float-right ml-1">Special</span>';
-                        }
-                        if (row[10]) {
-                            name += '<span class="badge badge-warning float-right ml-1">Event</span>';
-                        }
-                        if (row[4]) {
-                            name += '<span class="badge badge-success float-right ml-1">Foil</span>';
-                        }
-
-                        return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[5] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + name + '</div></div>'
-                    },
-                    "createdCell": function (td, cellData, rowData, row, col) {
-                        $(td).addClass('img');
-                    },
-                    "orderable": false,
-                },
-                // Level / XP
-                {
-                    "targets": 1,
-                    "render": function (data, type, row) {
-                        return row[6].toLocaleString() + ' (' + row[8].toLocaleString() + 'xp)';
-                    },
-                    "createdCell": function (td, cellData, rowData, row, col) {
-                        $(td).attr('nowrap', 'nowrap');
-                    },
-                    "orderSequence": ['desc', 'asc'],
-                },
-                // Scarcity
-                {
-                    "targets": 2,
-                    "render": function (data, type, row) {
-                        return row[7].toLocaleString();
-                    },
-                    "orderSequence": ['asc', 'desc'],
-                },
-                // Completion Time
-                {
-                    "targets": 3,
-                    "render": function (data, type, row) {
-                        return row[3].toLocaleString();
-                    },
-                    "createdCell": function (td, cellData, rowData, row, col) {
-                        $(td).attr('nowrap', 'nowrap');
-                    },
-                    "orderSequence": ['desc', 'asc'],
-                },
-            ]
-        };
-
-        $('#badges-table').gdbTable({
-            tableOptions: options,
-            searchFields: [
-                $('#player-badge-search'),
-            ],
+        $('#achievements-table').gdbTable({
+            tableOptions: recentOptions,
         });
-    }
-
-    function loadPlayerDetailsTab() {
-
-        const config = {rootMargin: '50px 0px 50px 0px', threshold: 0};
-
-        const recentCallback = function (entries, self) {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-
-                    self.unobserve(entry.target);
-
-                    $.ajax({
-                        type: "GET",
-                        url: '/players/' + $playerPage.attr('data-id') + '/history.json',
-                        dataType: 'json',
-                        success: function (data, textStatus, jqXHR) {
-
-                            if (data === null) {
-                                data = [];
-                            }
-
-                            const yAxis = {
-                                allowDecimals: false,
-                                title: {
-                                    text: ''
-                                },
-                                labels: {
-                                    enabled: false
-                                },
-                            };
-
-                            Highcharts.chart('history-chart', $.extend(true, {}, defaultChartOptions, {
-                                yAxis: [
-                                    yAxis,
-                                    yAxis,
-                                    yAxis,
-                                    yAxis,
-                                    yAxis,
-                                ],
-                                tooltip: {
-                                    formatter: function () {
-                                        return this.y.toLocaleString() + ' ' + this.series.name.toLowerCase() + ' on ' + moment(this.key).format("dddd DD MMM YYYY");
-                                    },
-                                },
-                                series: [
-                                    {
-                                        name: 'Level',
-                                        color: '#28a745',
-                                        data: data['max_level'],
-                                        marker: {symbol: 'circle'},
-                                        yAxis: 0,
-                                    },
-                                    {
-                                        name: 'Games',
-                                        color: '#007bff',
-                                        data: data['max_games'],
-                                        marker: {symbol: 'circle'},
-                                        yAxis: 1,
-                                    },
-                                    {
-                                        name: 'Badges',
-                                        color: '#e83e8c',
-                                        data: data['max_badges'],
-                                        marker: {symbol: 'circle'},
-                                        yAxis: 2,
-                                    },
-                                    {
-                                        name: 'Playtime',
-                                        color: '#ffc107',
-                                        data: data['max_playtime'],
-                                        marker: {symbol: 'circle'},
-                                        yAxis: 3,
-                                    },
-                                    {
-                                        name: 'Friends',
-                                        color: '#343a40',
-                                        data: data['max_friends'],
-                                        marker: {symbol: 'circle'},
-                                        yAxis: 4,
-                                    },
-                                ],
-                            }));
-
-                            Highcharts.chart('ranks-chart', $.extend(true, {}, defaultChartOptions, {
-                                yAxis: {
-                                    allowDecimals: false,
-                                    title: {
-                                        text: ''
-                                    },
-                                    reversed: true,
-                                    min: 1,
-                                },
-                                tooltip: {
-                                    formatter: function () {
-                                        return this.series.name + ' rank ' + this.y.toLocaleString() + ' on ' + moment(this.key).format("dddd DD MMM YYYY");
-                                    },
-                                },
-                                series: [
-                                    {
-                                        name: 'Level',
-                                        color: '#28a745',
-                                        data: data['max_level_rank'],
-                                        marker: {symbol: 'circle'},
-                                    },
-                                    {
-                                        name: 'Games',
-                                        color: '#007bff',
-                                        data: data['max_games_rank'],
-                                        marker: {symbol: 'circle'},
-                                    },
-                                    {
-                                        name: 'Badges',
-                                        color: '#e83e8c',
-                                        data: data['max_badges_rank'],
-                                        marker: {symbol: 'circle'},
-                                    },
-                                    {
-                                        name: 'Playtime',
-                                        color: '#ffc107',
-                                        data: data['max_playtime_rank'],
-                                        marker: {symbol: 'circle'},
-                                    },
-                                    {
-                                        name: 'Friends',
-                                        color: '#343a40',
-                                        data: data['max_friends_rank'],
-                                        marker: {symbol: 'circle'},
-                                    }
-                                ],
-                            }));
-                        },
-                    });
-                }
-            });
-        };
-        new IntersectionObserver(recentCallback, config).observe(document.getElementById("details-charts"));
     }
 }

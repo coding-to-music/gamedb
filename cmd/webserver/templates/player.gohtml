@@ -76,7 +76,7 @@
                 <div class="tab-content">
 
                     {{/* Info */}}
-                    <div class="tab-pane" id="details" role="tabpanel">
+                    <div class="tab-pane active" id="details" role="tabpanel">
 
                         <div class="row">
                             <div class="col-sm-12 col-md-6 col-lg-4">
@@ -325,7 +325,7 @@
                         {{ end }}
 
                         <div class="table-responsive">
-                            <table class="table table-hover table-striped table-counts mb-0" data-row-type="friends" data-path="/players/{{ .Player.ID }}/friends.json">
+                            <table class="table table-hover table-striped table-counts mb-0" data-row-type="friends" data-path="/players/{{ .Player.ID }}/friends.json" id="friends-table">
                                 <thead class="thead-light">
                                 <tr>
                                     <th scope="col">Player</th>
