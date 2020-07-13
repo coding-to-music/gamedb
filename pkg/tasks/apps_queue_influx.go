@@ -1,6 +1,7 @@
 package tasks
 
 import (
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
@@ -34,9 +35,15 @@ func (c AppsQueueInflux) work() (err error) {
 			return err
 		}
 
-		for _, app := range apps {
+		var ids []int
+		for _, v := range apps {
+			ids = append(ids, v.ID)
+		}
 
-			err = queue.ProduceAppsInflux(app.ID)
+		var chunks = helpers.ChunkInts(ids, 20)
+
+		for _, chunk := range chunks {
+			err = queue.ProduceAppsInflux(chunk)
 			if err != nil {
 				return err
 			}

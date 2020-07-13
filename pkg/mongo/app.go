@@ -563,6 +563,23 @@ func ChunkApps(strings []App, n int) (chunks [][]App) {
 	return chunks
 }
 
+func UpdateAppsInflux(writes []mongo.WriteModel) (err error) {
+
+	if len(writes) == 0 {
+		return nil
+	}
+
+	client, ctx, err := getMongo()
+	if err != nil {
+		return err
+	}
+
+	c := client.Database(MongoDatabase).Collection(CollectionPlayerApps.String())
+	_, err = c.BulkWrite(ctx, writes, options.BulkWrite())
+
+	return err
+}
+
 //noinspection GoUnusedExportedFunction
 func CreateAppIndexes() {
 

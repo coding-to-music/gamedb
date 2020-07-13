@@ -1,6 +1,8 @@
 package queue
 
 import (
+	"encoding/json"
+	"strconv"
 	"sync"
 	"time"
 
@@ -10,12 +12,17 @@ import (
 	influxHelper "github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
-	"github.com/gamedb/gamedb/pkg/mongo"
+	mongoHelper "github.com/gamedb/gamedb/pkg/mongo"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type AppInfluxMessage struct {
-	ID int `json:"id"`
+	AppIDs []int `json:"app_ids"`
+}
+
+func (m AppInfluxMessage) Queue() rabbit.QueueName {
+	return QueueAppsInflux
 }
 
 func appInfluxHandler(messages []*rabbit.Message) {
@@ -23,7 +30,7 @@ func appInfluxHandler(messages []*rabbit.Message) {
 	for _, message := range messages {
 
 		// Sleep to not cause influx memory to spike too much
-		time.Sleep(time.Millisecond * 400)
+		time.Sleep(time.Second * 2)
 
 		payload := AppInfluxMessage{}
 
@@ -34,63 +41,68 @@ func appInfluxHandler(messages []*rabbit.Message) {
 			continue
 		}
 
+		if len(payload.AppIDs) == 0 {
+			message.Ack(false)
+			continue
+		}
+
 		var wg sync.WaitGroup
 
 		wg.Add(1)
-		var appPlayersWeek int64
+		var appPlayersWeek = map[int]int64{}
 		go func() {
 
 			defer wg.Done()
 
 			var err error
-			appPlayersWeek, err = getAppTopPlayersWeek(payload.ID)
+			appPlayersWeek, err = getAppTopPlayersWeek(payload.AppIDs)
 			if err != nil {
-				log.Err(err, payload.ID)
+				log.Err(err, message.Message.Body)
+				sendToRetryQueue(message)
+				return
+			}
+		}()
+
+		// wg.Add(1)
+		// var appPlayersWeekAverage map[int]float64
+		// go func() {
+		//
+		// 	defer wg.Done()
+		//
+		// 	var err error
+		// 	appPlayersWeekAverage, err = getAppAveragePlayersWeek(payload.AppIDs)
+		// 	if err != nil {
+		// 		log.Err(err, message.Message.Body)
+		// 		sendToRetryQueue(message)
+		// 		return
+		// 	}
+		// }()
+
+		wg.Add(1)
+		var appPlayersAlltime map[int]int64
+		go func() {
+
+			defer wg.Done()
+
+			var err error
+			appPlayersAlltime, err = getAppTopPlayersAlltime(payload.AppIDs)
+			if err != nil {
+				log.Err(err, message.Message.Body)
 				sendToRetryQueue(message)
 				return
 			}
 		}()
 
 		wg.Add(1)
-		var appPlayersWeekAverage float64
+		var appTrend map[int]float64
 		go func() {
 
 			defer wg.Done()
 
 			var err error
-			appPlayersWeekAverage, err = getAppAveragePlayersWeek(payload.ID)
+			appTrend, err = getAppTrendValue(payload.AppIDs)
 			if err != nil {
-				log.Err(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-		}()
-
-		wg.Add(1)
-		var appPlayersAlltime int64
-		go func() {
-
-			defer wg.Done()
-
-			var err error
-			appPlayersAlltime, err = getAppTopPlayersAlltime(payload.ID)
-			if err != nil {
-				log.Err(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-		}()
-
-		wg.Add(1)
-		var appTrend float64
-		go func() {
-
-			defer wg.Done()
-
-			var err error
-			appTrend, err = getAppTrendValue(payload.ID)
-			if err != nil {
-				log.Err(err, payload.ID)
+				log.Err(err, message.Message.Body)
 				sendToRetryQueue(message)
 				return
 			}
@@ -102,23 +114,57 @@ func appInfluxHandler(messages []*rabbit.Message) {
 			continue
 		}
 
+		if len(payload.AppIDs) == 0 {
+			message.Ack(false)
+			continue
+		}
+
 		// Save to Mongo
-		_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", payload.ID}}, bson.D{
-			{"player_trend", appTrend},
-			{"player_peak_week", appPlayersWeek},
-			{"player_peak_alltime", appPlayersAlltime},
-			{"player_avg_week", appPlayersWeekAverage},
-		})
+		var writes []mongo.WriteModel
+		for _, appID := range payload.AppIDs {
+
+			update := bson.M{}
+
+			if val, ok := appTrend[appID]; ok {
+				update["player_trend"] = val
+			}
+
+			if val, ok := appPlayersWeek[appID]; ok {
+				update["player_peak_week"] = val
+			}
+
+			if val, ok := appPlayersAlltime[appID]; ok {
+				update["player_peak_alltime"] = val
+			}
+
+			// if val, ok := appPlayersWeekAverage[appID]; ok {
+			// 	update["player_avg_week"] = val
+			// }
+
+			write := mongo.NewUpdateOneModel()
+			write.SetFilter(bson.M{"_id": appID})
+			write.SetUpdate(bson.M{"$set": update})
+			write.SetUpsert(false)
+
+			writes = append(writes, write)
+		}
+
+		err = mongoHelper.UpdateAppsInflux(writes)
 		if err != nil {
-			log.Err(err, payload.ID)
+			log.Err(err, message.Message.Body)
 			sendToRetryQueue(message)
 			continue
 		}
 
 		// Clear app cache
-		err = memcache.Delete(memcache.MemcacheApp(payload.ID).Key)
+		var items []string
+		for _, v := range payload.AppIDs {
+			items = append(items, memcache.MemcacheApp(v).Key)
+		}
+
+		err = memcache.Delete(items...)
 		if err != nil {
-			log.Err(err, payload.ID)
+			log.Err(err, message.Message.Body)
 			sendToRetryQueue(message)
 			continue
 		}
@@ -128,65 +174,143 @@ func appInfluxHandler(messages []*rabbit.Message) {
 	}
 }
 
-func getAppTopPlayersWeek(appID int) (val int64, err error) {
+func getAppTopPlayersWeek(appIDs []int) (vals map[int]int64, err error) {
 
 	builder := influxql.NewBuilder()
 	builder.AddSelect("max(player_count)", "max_player_count")
 	builder.SetFrom(influxHelper.InfluxGameDB, influxHelper.InfluxRetentionPolicyAllTime.String(), influxHelper.InfluxMeasurementApps.String())
 	builder.AddWhere("time", ">", "NOW() - 7d")
-	builder.AddWhere("app_id", "=", appID)
+	builder.AddWhereRaw(`"app_id" =~ /^(` + helpers.JoinInts(appIDs, "|") + `)$/`)
+	builder.AddGroupBy("app_id")
 	builder.SetFillNone()
 
 	resp, err := influxHelper.InfluxQuery(builder.String())
 	if err != nil {
-		return 0, err
+		return vals, err
 	}
 
-	return influxHelper.GetFirstInfluxInt(resp), nil
+	vals = map[int]int64{}
+	for _, v := range resp.Results[0].Series {
+
+		appId, err := strconv.Atoi(v.Tags["app_id"])
+		if err != nil {
+			log.Err(err)
+			continue
+		}
+
+		val, err := v.Values[0][1].(json.Number).Int64()
+		if err != nil {
+			log.Err(err)
+			continue
+		}
+
+		vals[appId] = val
+	}
+
+	return vals, err
 }
 
-func getAppAveragePlayersWeek(appID int) (val float64, err error) {
+func getAppAveragePlayersWeek(appIDs []int) (vals map[int]float64, err error) {
 
 	builder := influxql.NewBuilder()
 	builder.AddSelect("mean(player_count)", "mean_player_count")
 	builder.SetFrom(influxHelper.InfluxGameDB, influxHelper.InfluxRetentionPolicyAllTime.String(), influxHelper.InfluxMeasurementApps.String())
 	builder.AddWhere("time", ">", "NOW() - 7d")
-	builder.AddWhere("app_id", "=", appID)
+	builder.AddWhereRaw(`"app_id" =~ /^(` + helpers.JoinInts(appIDs, "|") + `)$/`)
+	builder.AddGroupBy("app_id")
 	builder.SetFillNone()
 
 	resp, err := influxHelper.InfluxQuery(builder.String())
 	if err != nil {
-		return 0, err
+		return vals, err
 	}
 
-	return influxHelper.GetFirstInfluxFloat(resp), nil
+	vals = map[int]float64{}
+	for _, v := range resp.Results[0].Series {
+
+		appId, err := strconv.Atoi(v.Tags["app_id"])
+		if err != nil {
+			log.Err(err)
+			continue
+		}
+
+		val, err := v.Values[0][1].(json.Number).Float64()
+		if err != nil {
+			log.Err(err)
+			continue
+		}
+
+		vals[appId] = val
+	}
+
+	return vals, err
 }
 
-func getAppTopPlayersAlltime(appID int) (val int64, err error) {
+func getAppTopPlayersAlltime(appIDs []int) (vals map[int]int64, err error) {
 
 	builder := influxql.NewBuilder()
 	builder.AddSelect("max(player_count)", "max_player_count")
 	builder.SetFrom(influxHelper.InfluxGameDB, influxHelper.InfluxRetentionPolicyAllTime.String(), influxHelper.InfluxMeasurementApps.String())
-	builder.AddWhere("app_id", "=", appID)
+	builder.AddWhereRaw(`"app_id" =~ /^(` + helpers.JoinInts(appIDs, "|") + `)$/`)
+	builder.AddGroupBy("app_id")
 	builder.SetFillNone()
 
 	resp, err := influxHelper.InfluxQuery(builder.String())
 	if err != nil {
-		return 0, err
+		return vals, err
 	}
 
-	return influxHelper.GetFirstInfluxInt(resp), nil
+	vals = map[int]int64{}
+	for _, v := range resp.Results[0].Series {
+
+		appId, err := strconv.Atoi(v.Tags["app_id"])
+		if err != nil {
+			log.Err(err)
+			continue
+		}
+
+		val, err := v.Values[0][1].(json.Number).Int64()
+		if err != nil {
+			log.Err(err)
+			continue
+		}
+
+		vals[appId] = val
+	}
+
+	return vals, err
 }
 
-func getAppTrendValue(appID int) (trend float64, err error) {
+func getAppTrendValue(appIDs []int) (vals map[int]float64, err error) {
 
 	builder := influxql.NewBuilder()
 	builder.AddSelect("max(player_count)", "max_player_count")
 	builder.SetFrom(influxHelper.InfluxGameDB, influxHelper.InfluxRetentionPolicyAllTime.String(), influxHelper.InfluxMeasurementApps.String())
 	builder.AddWhere("time", ">", "NOW() - 7d - 1h")
-	builder.AddWhere("app_id", "=", appID)
+	builder.AddWhereRaw(`"app_id" =~ /^(` + helpers.JoinInts(appIDs, "|") + `)$/`)
 	builder.AddGroupByTime("1h")
+	builder.AddGroupBy("app_id")
 	builder.SetFillNone()
 
-	return influxHelper.GetInfluxTrend(builder, 0)
+	resp, err := influxHelper.InfluxQuery(builder.String())
+	if err != nil {
+		return vals, err
+	}
+
+	vals = map[int]float64{}
+
+	if len(resp.Results) > 0 {
+		for _, v := range resp.Results[0].Series {
+
+			appId, err := strconv.Atoi(v.Tags["app_id"])
+			if err != nil {
+				log.Err(err)
+				continue
+			}
+
+			vals[appId] = influxHelper.GetInfluxTrendFromSeries(v, 0)
+		}
+	}
+
+	return vals, err
 }
