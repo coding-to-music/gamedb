@@ -87,6 +87,7 @@ func init() {
 	})
 }
 
+//noinspection GoUnusedGlobalVariable
 var (
 	ProducerChannels = map[rabbit.QueueName]*rabbit.Channel{}
 
