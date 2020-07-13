@@ -388,11 +388,7 @@ func ProduceAppsInflux(id int) (err error) {
 }
 
 func ProduceAppsReviews(id int) (err error) {
-	return produce(QueueAppsReviews, AppReviewsMessage{AppID: id})
-}
-
-func ProduceAppsNews(id int) (err error) {
-	m := AppNewsMessage{AppID: id}
+	m := AppReviewsMessage{AppID: id}
 	return produce(m.Queue(), m)
 }
 

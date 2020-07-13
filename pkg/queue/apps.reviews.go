@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/rabbit-go"
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -38,7 +39,15 @@ func appReviewsHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		resp, err := steamHelper.GetSteamUnlimited().GetReviews(payload.AppID)
+		respAll, err := steamHelper.GetSteamUnlimited().GetReviews(payload.AppID, "all")
+		err = steamHelper.AllowSteamCodes(err)
+		if err != nil {
+			steamHelper.LogSteamError(err)
+			sendToRetryQueue(message)
+			continue
+		}
+
+		respEnglish, err := steamHelper.GetSteamUnlimited().GetReviews(payload.AppID, steamapi.LanguageEnglish)
 		err = steamHelper.AllowSteamCodes(err)
 		if err != nil {
 			steamHelper.LogSteamError(err)
@@ -48,12 +57,12 @@ func appReviewsHandler(messages []*rabbit.Message) {
 
 		//
 		reviews := helpers.AppReviewSummary{}
-		reviews.Positive = resp.QuerySummary.TotalPositive
-		reviews.Negative = resp.QuerySummary.TotalNegative
+		reviews.Positive = respAll.QuerySummary.TotalPositive
+		reviews.Negative = respAll.QuerySummary.TotalNegative
 
 		// Make slice of playerIDs
 		var playersSlice []int64
-		for _, v := range resp.Reviews {
+		for _, v := range respAll.Reviews {
 			playersSlice = append(playersSlice, int64(v.Author.SteamID))
 		}
 
@@ -72,30 +81,30 @@ func appReviewsHandler(messages []*rabbit.Message) {
 		}
 
 		// Make template slice
-		for _, v := range resp.Reviews {
+		for _, review := range respEnglish.Reviews {
 
 			var player mongo.Player
-			if val, ok := playersMap[int64(v.Author.SteamID)]; ok {
+			if val, ok := playersMap[int64(review.Author.SteamID)]; ok {
 				player = val
 			} else {
-				player.ID = int64(v.Author.SteamID)
+				player.ID = int64(review.Author.SteamID)
 
-				err = ProducePlayer(PlayerMessage{ID: int64(v.Author.SteamID), SkipExistingPlayer: true})
+				err = ProducePlayer(PlayerMessage{ID: int64(review.Author.SteamID), SkipExistingPlayer: true})
 				err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 				log.Err(err)
 			}
 
 			// Remove extra new lines
-			v.Review = helpers.RegexMultipleNewLines.ReplaceAllString(v.Review, "\n\n")
+			review.Review = helpers.RegexMultipleNewLines.ReplaceAllString(review.Review, "\n\n")
 
 			reviews.Reviews = append(reviews.Reviews, helpers.AppReview{
-				Review:     helpers.BBCodeCompiler.Compile(v.Review),
+				Review:     helpers.BBCodeCompiler.Compile(review.Review),
 				PlayerPath: player.GetPath(),
 				PlayerName: player.GetName(),
-				Created:    time.Unix(v.TimestampCreated, 0).Format(helpers.DateYear),
-				VotesGood:  v.VotesUp,
-				VotesFunny: v.VotesFunny,
-				Vote:       v.VotedUp,
+				Created:    time.Unix(review.TimestampCreated, 0).Format(helpers.DateYear),
+				VotesGood:  review.VotesUp,
+				VotesFunny: review.VotesFunny,
+				Vote:       review.VotedUp,
 			})
 		}
 
