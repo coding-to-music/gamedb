@@ -180,6 +180,16 @@ table.table {
     }
 }
 
+body.dark {
+    table.table {
+        td {
+            .icon-name {
+                color: #e9ecef;
+            }
+        }
+    }
+}
+
 // This is to override the external style sheet
 table.dataTable {
     clear: both;
