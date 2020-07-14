@@ -12,7 +12,6 @@ if ($('#coop-page').length > 0) {
             "order": [[0, 'asc']],
             "createdRow": function (row, data, dataIndex) {
                 $(row).attr('data-player-id', data[1]);
-                $(row).attr('data-link', data[3]);
             },
             "language": {
                 "zeroRecords": function () {
@@ -24,7 +23,7 @@ if ($('#coop-page').length > 0) {
                 {
                     "targets": 0,
                     "render": function (data, type, row) {
-                        return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[4] + '" alt="" data-lazy-alt="' + row[2] + '"></div><div class="name">' + row[10] + '</div></div>';
+                        return '<a href="' + row[3] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[4] + '" alt="" data-lazy-alt="' + row[2] + '"></div><div class="name">' + row[10] + '</div></a>';
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
@@ -123,7 +122,7 @@ if ($('#coop-page').length > 0) {
                 {
                     "targets": 0,
                     "render": function (data, type, row) {
-                        return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[2] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></div>';
+                        return '<a href="' + row[7] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[2] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></a>';
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');

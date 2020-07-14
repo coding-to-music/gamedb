@@ -85,7 +85,7 @@ if ($('#price-changes-page').length > 0) {
             $(row).addClass('col-grad-' + Math.round(x));
         },
         "columnDefs": [
-            // App/Package Name
+            // App Name / Package Name
             {
                 "targets": 0,
                 "render": function (data, type, row) {
@@ -99,7 +99,7 @@ if ($('#price-changes-page').length > 0) {
                         }
                     }
 
-                    return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[4] + '" alt="" data-lazy-alt="' + row[3] + '"></div><div class="name">' + tagName + '</div></div>'
+                    return '<a href="' + row[5] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[4] + '" alt="" data-lazy-alt="' + row[3] + '"></div><div class="name">' + tagName + '</div></a>'
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img')

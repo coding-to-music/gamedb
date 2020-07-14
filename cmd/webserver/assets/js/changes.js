@@ -10,10 +10,11 @@ if ($('#changes-page').length > 0) {
             {
                 "targets": 0,
                 "render": function (data, type, row) {
-                    return row[6];
+                    return '<a href="' + row[5] + '" class="icon-name"><div class="icon"><img src="/assets/img/no-app-image-square.jpg" alt="' + row[1] + '"></div><div class="name">' + row[6] + '</div></a>'
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
+                    $(td).addClass('img');
                 },
                 "orderable": false
             },

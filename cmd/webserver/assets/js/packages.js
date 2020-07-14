@@ -18,7 +18,7 @@ if ($('#packages-page').length > 0) {
             {
                 "targets": 0,
                 "render": function (data, type, row) {
-                    return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[8] + '" data-lazy-alt="' + row[2] + '"></div><div class="name">' + row[2] + '</div></div>'
+                    return '<a href="' + row[1] + '" class="icon-name"><div class="icon"><img alt="" data-lazy="' + row[8] + '" data-lazy-alt="' + row[2] + '"></div><div class="name">' + row[2] + '</div></a>'
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img');

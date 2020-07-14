@@ -87,7 +87,7 @@ if ($('#players-page').length > 0) {
             {
                 "targets": 2,
                 "render": function (data, type, row) {
-                    return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[3] + '" alt="" data-lazy-alt="' + row[2] + '"></div><div class="name">' + row[2] + '</div></div>'
+                    return '<a href="' + row[13] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[3] + '" alt="" data-lazy-alt="' + row[2] + '"></div><div class="name">' + row[2] + '</div></a>'
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img')

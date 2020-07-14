@@ -14,7 +14,7 @@ if ($('#commits-page').length > 0) {
             {
                 "targets": 0,
                 "render": function (data, type, row) {
-                    return '<div class="icon-name"><div class="name">' + row[0] + '</div></div>'
+                    return '<a href="' + row[3] + '" target="_blank" class="icon-name"><div class="name">' + row[0] + '</div></a>'
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).attr('id', rowData[5]);

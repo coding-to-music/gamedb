@@ -39,7 +39,7 @@ if ($('#groups-page').length > 0) {
                         name += '<span class="badge badge-danger float-right">Removed</span>';
                     }
 
-                    return '<div class="icon-name"><div class="icon"><img class="tall" data-src="/assets/img/no-app-image-square.jpg" data-lazy="' + row[5] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + name + '</div></div>'
+                    return '<a href="' + row[10] + '" class="icon-name"><div class="icon"><img class="tall" data-src="/assets/img/no-app-image-square.jpg" data-lazy="' + row[5] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + name + '</div></a>'
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img');

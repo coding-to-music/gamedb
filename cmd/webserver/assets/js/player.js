@@ -81,7 +81,7 @@ if ($playerPage.length > 0) {
                 {
                     "targets": 0,
                     "render": function (data, type, row) {
-                        return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[2] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></div>'
+                        return '<a href="' + row[7] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[2] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></a>'
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
@@ -154,7 +154,7 @@ if ($playerPage.length > 0) {
                 {
                     "targets": 0,
                     "render": function (data, type, row) {
-                        return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[1] + '" alt="" data-lazy-alt="' + row[2] + '"></div><div class="name">' + row[2] + '</div></div>'
+                        return '<a href="' + row[5] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[1] + '" alt="" data-lazy-alt="' + row[2] + '"></div><div class="name">' + row[2] + '</div></a>'
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
@@ -343,7 +343,7 @@ if ($playerPage.length > 0) {
                             name += '<span class="badge badge-success float-right ml-1">Foil</span>';
                         }
 
-                        return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[5] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + name + '</div></div>'
+                        return '<a href="' + row[2] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[5] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + name + '</div></a>'
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
@@ -403,7 +403,7 @@ if ($playerPage.length > 0) {
                 {
                     "targets": 0,
                     "render": function (data, type, row) {
-                        return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[2] + '" data-src="/assets/img/no-player-image.jpg" alt="" data-lazy-alt="' + row[3] + '"></div><div class="name">' + row[3] + '</div></div>'
+                        return '<a href="' + row[1] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[2] + '" data-src="/assets/img/no-player-image.jpg" alt="" data-lazy-alt="' + row[3] + '"></div><div class="name">' + row[3] + '</div></a>'
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
@@ -497,7 +497,7 @@ if ($playerPage.length > 0) {
                             badge = '<span class="badge badge-success float-right">Primary</span>';
                         }
 
-                        return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[4] + '" data-src="/assets/img/no-player-image.jpg" alt="" data-lazy-alt="' + row[2] + '"></div><div class="name">' + row[2] + badge + '</div></div>'
+                        return '<a href="' + row[3] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[4] + '" data-src="/assets/img/no-player-image.jpg" alt="" data-lazy-alt="' + row[2] + '"></div><div class="name">' + row[2] + badge + '</div></a>'
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
@@ -561,11 +561,11 @@ if ($playerPage.length > 0) {
                     },
                     'orderSequence': ['asc'],
                 },
-                // App
+                // App Name
                 {
                     "targets": 1,
                     "render": function (data, type, row) {
-                        return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[3] + '" data-src="/assets/img/no-player-image.jpg" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></div>'
+                        return '<a href="' + row[2] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[3] + '" data-src="/assets/img/no-player-image.jpg" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></a>'
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
@@ -625,7 +625,7 @@ if ($playerPage.length > 0) {
                 {
                     "targets": 0,
                     "render": function (data, type, row) {
-                        return '<div class="icon-name"><div class="icon"><img class="tall" data-lazy="' + row[4] + '" alt="" data-lazy-alt="' + row[3] + '"></div><div class="name">' + row[1] + ': ' + row[3] + '<br><small>' + row[5] + '</small></div></div>'
+                        return '<a href="' + row[0] + '#achievements" class="icon-name"><div class="icon"><img class="tall" data-lazy="' + row[4] + '" alt="" data-lazy-alt="' + row[3] + '"></div><div class="name">' + row[1] + ': ' + row[3] + '<br><small>' + row[5] + '</small></div></a>'
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');

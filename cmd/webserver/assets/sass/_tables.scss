@@ -67,8 +67,9 @@ table.table {
             height: 24px;
         }
 
-        div.icon-name {
+        .icon-name { // Can be div or a
             display: table;
+            color: #212529;
 
             > div.icon {
                 display: table-cell;
@@ -133,7 +134,7 @@ table.table {
             height: 54px;
         }
 
-        div.icon-name {
+        .icon-name { // Can be div or a
             > div.name {
                 padding: .75rem 0;
             }

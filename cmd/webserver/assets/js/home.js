@@ -81,7 +81,11 @@ if ($homePage.length > 0) {
                                                     '<>': 'div', 'class': 'icon', 'html': [{'<>': 'img', 'data-lazy': '${icon}', 'alt': '', 'data-lazy-alt': '${name}'}],
                                                 },
                                                 {
-                                                    '<>': 'div', 'class': 'name', 'html': '${name}'
+                                                    '<>': 'div', 'class': 'name', 'html': [
+                                                        {
+                                                            '<>': 'a', 'href': '${link}', 'html': '${name}',
+                                                        }
+                                                    ]
                                                 }
                                             ]
                                         }
@@ -159,7 +163,11 @@ if ($homePage.length > 0) {
                                             '<>': 'div', 'class': 'icon', 'html': [{'<>': 'img', 'data-lazy': '${avatar}', 'alt': '', 'data-lazy-alt': '${name}'}],
                                         },
                                         {
-                                            '<>': 'div', 'class': 'name', 'html': '${name}'
+                                            '<>': 'div', 'class': 'name', 'html': [
+                                                {
+                                                    '<>': 'a', 'href': '${link}', 'html': '${name}',
+                                                }
+                                            ],
                                         }
                                     ]
                                 }

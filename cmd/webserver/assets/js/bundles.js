@@ -20,7 +20,7 @@ if ($('#bundles-page').length > 0) {
                         tagName = tagName + ' <span class="badge badge-success">Lowest</span>';
                     }
 
-                    return '<div class="icon-name"><div class="icon"><img src="/assets/img/no-app-image-square.jpg" alt="' + row[1] + '"></div><div class="name">' + tagName + '</div></div>'
+                    return '<a href="' + row[2] + '" class="icon-name"><div class="icon"><img src="/assets/img/no-app-image-square.jpg" alt="' + row[1] + '"></div><div class="name">' + tagName + '</div></a>'
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img');

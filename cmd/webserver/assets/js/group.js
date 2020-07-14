@@ -57,11 +57,11 @@ function loadGroupPlayers() {
                         },
                         "orderable": false,
                     },
-                    // Icon / Name
+                    // Icon / Player Name
                     {
                         "targets": 1,
                         "render": function (data, type, row) {
-                            return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[3] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></div>'
+                            return '<a href="' + row[8] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[3] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></a>'
                         },
                         "createdCell": function (td, cellData, rowData, row, col) {
                             $(td).addClass('img');

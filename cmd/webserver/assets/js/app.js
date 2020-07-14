@@ -714,7 +714,7 @@ if ($appPage.length > 0) {
                 {
                     "targets": 2,
                     "render": function (data, type, row) {
-                        return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[5] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></div>'
+                        return '<a href="' + row[6] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[5] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></a>'
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
@@ -815,7 +815,7 @@ if ($appPage.length > 0) {
                 {
                     "targets": 0,
                     "render": function (data, type, row) {
-                        return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[2] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></div>'
+                        return '<a href="' + row[5] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[2] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></a>'
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');

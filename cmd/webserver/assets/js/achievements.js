@@ -19,7 +19,7 @@ if ($achievementsPage.length > 0) {
 
                     let name = row[5] + ': ' + row[9] + '<br><small>' + row[2] + '</small>';
 
-                    return '<div class="icon-name"><div class="icon"><img class="tall" data-lazy="' + row[1] + '" alt="" data-lazy-alt="' + row[0] + '"></div><div class="name">' + name + '</div></div>'
+                    return '<a href="' + row[7] + '" class="icon-name"><div class="icon"><img class="tall" data-lazy="' + row[1] + '" alt="" data-lazy-alt="' + row[0] + '"></div><div class="name">' + name + '</div></a>'
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img');
