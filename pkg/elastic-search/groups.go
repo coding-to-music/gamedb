@@ -60,8 +60,12 @@ func (group Group) GetGameLink() string {
 	return helpers.GetGroupLink(helpers.GroupTypeGame, group.URL)
 }
 
-func IndexGroup(group Group) error {
-	return indexDocument(IndexGroups, group.ID, group)
+func IndexGroup(g Group) error {
+
+	err := IndexGlobalItem(Global{ID: g.ID, Name: g.Name, Icon: g.Icon, Type: GlobalTypeGroup})
+	log.Err(err)
+
+	return indexDocument(IndexGroups, g.ID, g)
 }
 
 func SearchGroups(offset int, limit int, sorters []elastic.Sorter, search string, errors string) (groups []Group, aggregations map[string]map[string]int64, total int64, err error) {

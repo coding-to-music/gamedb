@@ -50,8 +50,12 @@ func (player Player) GetCommunityLink() string {
 	return helpers.GetPlayerCommunityLink(player.ID, player.VanityURL)
 }
 
-func IndexPlayer(player Player) error {
-	return indexDocument(IndexPlayers, strconv.FormatInt(player.ID, 10), player)
+func IndexPlayer(p Player) error {
+
+	err := IndexGlobalItem(Global{ID: strconv.FormatInt(p.ID, 10), Name: p.PersonaName, Icon: p.Avatar, Type: GlobalTypePlayer})
+	log.Err(err)
+
+	return indexDocument(IndexPlayers, strconv.FormatInt(p.ID, 10), p)
 }
 
 func SearchPlayers(limit int, offset int, search string, sorters []elastic.Sorter) (players []Player, aggregations map[string]map[string]int64, total int64, err error) {

@@ -15,6 +15,7 @@ const (
 	IndexGroups       = "groups"
 	IndexArticles     = "articles"
 	IndexApps         = "apps"
+	IndexGlobal       = "global"
 	IndexPlayers      = "players"
 )
 

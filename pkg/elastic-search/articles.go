@@ -54,6 +54,7 @@ func IndexArticle(article Article) error {
 
 func IndexArticlesBulk(articles map[string]Article) error {
 
+	// todo, add to global
 	i := map[string]interface{}{}
 	for k, v := range articles {
 		i[k] = v

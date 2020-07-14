@@ -49,6 +49,7 @@ func IndexAchievement(achievement Achievement) error {
 
 func IndexAchievementBulk(achievements map[string]Achievement) error {
 
+	// todo, add to global
 	i := map[string]interface{}{}
 	for k, v := range achievements {
 		i[k] = v

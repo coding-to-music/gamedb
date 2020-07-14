@@ -46,31 +46,11 @@ func (app App) GetCommunityLink() string {
 	return helpers.GetAppCommunityLink(app.ID)
 }
 
-func (app *App) fill(hit *elastic.SearchHit) error {
-
-	err := json.Unmarshal(hit.Source, &app)
-	if err != nil {
-		return err
-	}
-
-	if hit.Score != nil {
-		app.Score = *hit.Score
-	}
-
-	if val, ok := hit.Highlight["name"]; ok {
-		if len(val) > 0 {
-			app.Name = val[0]
-		}
-	}
-
-	return nil
-}
-
-func SearchApps(limit int, offset int, search string, sorters []elastic.Sorter, totals bool, highlights bool, aggregation bool) (apps []App, total int64, err error) {
+func SearchApps(limit int, offset int, search string, totals bool, highlights bool, aggregation bool) (apps []App, aggregations map[string]map[string]int64, total int64, err error) {
 
 	client, ctx, err := GetElastic()
 	if err != nil {
-		return apps, 0, err
+		return apps, aggregations, 0, err
 	}
 
 	searchService := client.Search().
@@ -85,7 +65,7 @@ func SearchApps(limit int, offset int, search string, sorters []elastic.Sorter, 
 		searchService.Query(elastic.NewBoolQuery().
 			Must(
 				elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
-					elastic.NewTermQuery("id", search).Boost(5),
+					elastic.NewTermQuery("id", search2).Boost(5),
 					elastic.NewMatchQuery("name", search).Boost(1),
 					elastic.NewTermQuery("aliases", search2).Boost(1),
 					elastic.NewPrefixQuery("name", search).Boost(0.2),
@@ -112,17 +92,27 @@ func SearchApps(limit int, offset int, search string, sorters []elastic.Sorter, 
 
 	searchResult, err := searchService.Do(ctx)
 	if err != nil {
-		return apps, 0, err
+		return apps, aggregations, 0, err
 	}
 
-	if len(sorters) > 0 {
-		searchService.SortBy(sorters...)
+	if aggregation {
+		aggregations = make(map[string]map[string]int64, len(searchResult.Aggregations))
+		for k := range searchResult.Aggregations {
+			a, ok := searchResult.Aggregations.Terms(k)
+			if ok {
+				aggregations[k] = make(map[string]int64, len(a.Buckets))
+				for _, v := range a.Buckets {
+					aggregations[k][*v.KeyAsString] = v.DocCount
+				}
+			}
+		}
 	}
 
 	for _, hit := range searchResult.Hits.Hits {
 
 		var app = App{}
-		err = app.fill(hit)
+
+		err := json.Unmarshal(hit.Source, &app)
 		if err != nil {
 			log.Err(err)
 			continue
@@ -145,11 +135,15 @@ func SearchApps(limit int, offset int, search string, sorters []elastic.Sorter, 
 		apps = append(apps, app)
 	}
 
-	return apps, searchResult.TotalHits(), err
+	return apps, aggregations, searchResult.TotalHits(), err
 }
 
-func IndexApp(app App) error {
-	return indexDocument(IndexApps, strconv.Itoa(app.ID), app)
+func IndexApp(a App) error {
+
+	err := IndexGlobalItem(Global{ID: strconv.Itoa(a.ID), Name: a.Name, Icon: a.Icon, Type: GlobalTypeApp})
+	log.Err(err)
+
+	return indexDocument(IndexApps, strconv.Itoa(a.ID), a)
 }
 
 //noinspection GoUnusedExportedFunction
