@@ -4,8 +4,9 @@ if ($playerMissingPage.length > 0) {
 
     websocketListener('profile', function (e) {
 
-        // noinspection JSConstantReassignment
-        queue_current--;
+        if (queue_current > 0) {
+            queue_current--;
+        }
 
         updateLoadingBar();
 
@@ -20,17 +21,25 @@ if ($playerMissingPage.length > 0) {
 
     function updateLoadingBar() {
 
-        let p = 0;
+        //
+        let percent = 100;
         if (queue_start > 0) {
-            p = queue_current / queue_start * 100;
-            p = Math.min(Math.max(p, 0), 100);
-            p = 100 - p;
+            percent = queue_current / queue_start * 100;
+            percent = Math.min(Math.max(percent, 0), 100);
         }
-        p = p.toString() + '%';
+        percent = 100 - percent;
 
-        logLocal('total:', queue_start, 'on:', queue_current);
+        //
+        let text;
+        if (queue_current > 0) {
+            text = queue_current.toLocaleString() + ' / ' + queue_start.toLocaleString()
+            text = percent.toLocaleString() + '%';
+        } else {
+            text = 'Next!';
+        }
 
-        $('.progress .progress-bar').html(queue_current.toString() + ' / ' + queue_start.toString()).width(p);
+        //
+        $('.progress .progress-bar').html(text).width(text);
     }
 
     $(updateLoadingBar);
