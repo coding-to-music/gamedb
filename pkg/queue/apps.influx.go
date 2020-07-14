@@ -141,12 +141,15 @@ func appInfluxHandler(messages []*rabbit.Message) {
 			// 	update["player_avg_week"] = val
 			// }
 
-			write := mongo.NewUpdateOneModel()
-			write.SetFilter(bson.M{"_id": appID})
-			write.SetUpdate(bson.M{"$set": update})
-			write.SetUpsert(false)
+			if len(update) > 0 {
 
-			writes = append(writes, write)
+				write := mongo.NewUpdateOneModel()
+				write.SetFilter(bson.M{"_id": appID})
+				write.SetUpdate(bson.M{"$set": update})
+				write.SetUpsert(false)
+
+				writes = append(writes, write)
+			}
 		}
 
 		err = mongoHelper.UpdateAppsInflux(writes)
