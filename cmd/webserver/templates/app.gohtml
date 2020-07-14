@@ -245,7 +245,7 @@
                                             <tr>
                                                 <th scope="row">Micro Trailer</th>
                                                 <td>
-                                                    <video controls preload="none">
+                                                    <video controls preload="none" class="rounded">
                                                         <source src="{{ https (.App.GetMicroTrailer) }}" type="video/webm">
                                                         Sorry, your browser doesn't support embedded videos.
                                                     </video>
@@ -861,14 +861,14 @@
 
                         <div id="images">
                             {{ range $key, $value := .App.Screenshots }}
-                                <img src='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080"%3E%3C/svg%3E' data-lazy="{{ .PathFull }}" alt="Media {{ $key }}">
+                                <img src='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080"%3E%3C/svg%3E' data-lazy="{{ .PathFull }}" alt="Media {{ $key }}" class="rounded">
                             {{ end }}
                         </div>
 
                         {{if gt (len .App.Movies) 0 }}
                             <div id="videos">
                                 {{ range $key, $value := .App.Movies }}
-                                    <video controls preload="none">
+                                    <video controls preload="none" class="rounded">
                                         <source src="{{ https .PathFull }}" type="video/webm">
                                         Sorry, your browser doesn't support embedded videos.
                                     </video>
