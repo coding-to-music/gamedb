@@ -918,7 +918,7 @@ func appPlayersAjaxHandler(limit bool) func(http.ResponseWriter, *http.Request) 
 
 	if limit {
 		group = "10m"
-		days = "7d"
+		days = "8d" // Gets trimmed to 7 in JS
 		rolling = "144"
 	} else {
 		group = "1d"
