@@ -35,7 +35,7 @@ func (s Server) GetPlayersId(w http.ResponseWriter, r *http.Request) {
 
 			} else if err != nil {
 
-				log.Err(err)
+				log.Err(err, r)
 				return 500, err
 
 			} else {
@@ -75,7 +75,7 @@ func (s Server) PostPlayersId(w http.ResponseWriter, r *http.Request) {
 			if err == memcache.ErrInQueue {
 				return 200, err
 			} else if err != nil {
-				log.Err(err)
+				log.Err(err, r)
 				return 500, err
 			}
 

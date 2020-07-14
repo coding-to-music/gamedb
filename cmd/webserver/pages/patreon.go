@@ -26,28 +26,28 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	b, event, err := patreon.ValidateRequest(r, config.Config.PatreonSecret.Get())
 	if err != nil {
-		log.Err(err)
+		log.Err(err, r)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	pwr, err := patreon.UnmarshalBytes(b)
 	if err != nil {
-		log.Err(err)
+		log.Err(err, r)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	err = saveWebhookToMongo(event, pwr, b)
 	if err != nil {
-		log.Err(err)
+		log.Err(err, r)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	err = saveWebhookEvent(r, mongo.EventEnum(event), pwr)
 	if err != nil {
-		log.Err(err)
+		log.Err(err, r)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

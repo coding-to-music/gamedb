@@ -338,7 +338,7 @@ func adminSettings(r *http.Request) {
 	mcItem := r.PostFormValue("del-mc-item")
 	if mcItem != "" {
 		err := memcache.Delete(mcItem)
-		log.Err(err)
+		log.Err(err, r)
 	}
 
 	queue.FlushDelayQueue, _ = strconv.ParseBool(r.PostFormValue("flush-delay-queue"))

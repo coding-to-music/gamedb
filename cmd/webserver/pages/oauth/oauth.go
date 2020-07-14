@@ -198,7 +198,7 @@ func (bc baseConnection) callback(r *http.Request, c ConnectionInterface, event 
 
 	id, err := c.getID(r, token)
 	if err != nil {
-		log.Err(err)
+		log.Err(err, r)
 		if val, ok := err.(oauthError); ok {
 			err = session.SetFlash(r, sessionHelpers.SessionBad, val.flash)
 			log.Err(err, r)
