@@ -224,17 +224,19 @@
 
                             </div>
                         </div>
-                        <div class="row">
 
-                            {{ range $key, $value := .Ranks }}
-                                {{ if gt (len $value.Ranks) 0 }}
+                        {{ if .HasRanks }}
 
-                                    <div class="col">
+                            <div class="row">
 
-                                        <div class="card mb-3">
-                                            <h5 class="card-header">{{ $value.Description }}</h5>
-                                            <div class="card-body p-0">
-                                                {{ if gt (len $value.Ranks) 0 }}
+                                {{ range $key, $value := .Ranks }}
+                                    {{ if gt (len $value.Ranks) 0 }}
+
+                                        <div class="col">
+
+                                            <div class="card mb-3">
+                                                <h5 class="card-header">{{ $value.Description }}</h5>
+                                                <div class="card-body p-0">
                                                     <div class="table-responsive">
                                                         <table class="table table-no-border mb-0">
                                                             {{ range $key2, $value2 := $value.Ranks }}
@@ -246,57 +248,67 @@
                                                             {{ end }}
                                                         </table>
                                                     </div>
-                                                {{ else }}
-                                                    <div class="p-3">
-                                                        <p>{{ $.Player.GetName }} has not been ranked yet, this will start at midnight UTC</p>
-                                                        <p class="mb-0">Your profile must be set to public to gather information,
-                                                            go <a href="https://steamcommunity.com/my/edit/settings" target="_blank" rel="noopener">here</a> to change your privacy settings.</p>
-                                                    </div>
-                                                {{ end }}
+                                                </div>
+                                                <small class="card-footer">Out of {{ .GetPlayers }} players</small>
                                             </div>
-                                            <small class="card-footer">Out of {{ .GetPlayers }} players</small>
+
                                         </div>
 
-                                    </div>
-
+                                    {{ end }}
                                 {{ end }}
-                            {{ end }}
-
-                        </div>
-                        <div class="row">
-                            <div class="col">
-
-                                <div class="card" id="details-charts">
-                                    <div class="card-header">
-                                        <div class="nav nav-tabs card-header-tabs" id="nav-tab" role="tablist">
-                                            <a class="nav-item nav-link active" id="nav-profile-tab" data-toggle="tab" href="#details-stats" role="tab">Stats</a>
-                                            <a class="nav-item nav-link" id="nav-home-tab" data-toggle="tab" href="#details-ranks" role="tab">Ranks</a>
-                                        </div>
-                                    </div>
-                                    <div class="card-body pb-0">
-
-                                        <div class="tab-content" id="nav-tabContent">
-                                            <div class="tab-pane active" id="details-stats" role="tabpanel">
-
-                                                <div id="history-chart">
-                                                    <i class="fas fa-spinner fa-spin"></i>
-                                                </div>
-
-                                            </div>
-                                            <div class="tab-pane" id="details-ranks" role="tabpanel">
-
-                                                <div id="ranks-chart">
-                                                    <i class="fas fa-spinner fa-spin"></i>
-                                                </div>
-
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </div>
 
                             </div>
-                        </div>
+                            <div class="row">
+                                <div class="col">
+
+                                    <div class="card" id="details-charts">
+                                        <div class="card-header">
+                                            <div class="nav nav-tabs card-header-tabs" id="nav-tab" role="tablist">
+                                                <a class="nav-item nav-link active" id="nav-profile-tab" data-toggle="tab" href="#details-stats" role="tab">Stats</a>
+                                                <a class="nav-item nav-link" id="nav-home-tab" data-toggle="tab" href="#details-ranks" role="tab">Ranks</a>
+                                            </div>
+                                        </div>
+                                        <div class="card-body pb-0">
+
+                                            <div class="tab-content" id="nav-tabContent">
+                                                <div class="tab-pane active" id="details-stats" role="tabpanel">
+
+                                                    <div id="history-chart">
+                                                        <i class="fas fa-spinner fa-spin"></i>
+                                                    </div>
+
+                                                </div>
+                                                <div class="tab-pane" id="details-ranks" role="tabpanel">
+
+                                                    <div id="ranks-chart">
+                                                        <i class="fas fa-spinner fa-spin"></i>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        {{ else }}
+
+                            <div class="row">
+                                <div class="col">
+                                    <div class="card">
+                                        <h5 class="card-header">Ranks</h5>
+                                        <div class="card-body">
+                                            <p class="m-0">{{ .Player.GetName }} has not been ranked yet, check back tomorrow!</p>
+                                            {{/*<p class="mb-0">Your profile must be set to public to gather information,*/}}
+                                            {{/*    go <a href="https://steamcommunity.com/my/edit/settings" target="_blank" rel="noopener">here</a> to change your privacy settings.</p>*/}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        {{ end }}
 
                     </div>
 

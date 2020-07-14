@@ -387,6 +387,17 @@ func (pt playerTemplate) TypePercent(typex string) string {
 	return helpers.FloatToString(f, 2) + "%"
 }
 
+func (pt playerTemplate) HasRanks() bool {
+
+	for _, v := range pt.Ranks {
+		if len(v.Ranks) > 0 {
+			return true
+		}
+	}
+
+	return false
+}
+
 type playerMissingTemplate struct {
 	GlobalTemplate
 	Player        mongo.Player
