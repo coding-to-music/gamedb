@@ -19,98 +19,120 @@
             <a class="btn mb-1 mb-sm-0" role="button" href="https://paypal.me/jimeagle/15" target="_blank" rel="noopener" style="background-color: #003087; color: #fff">
                 <i class="fab fa-cc-paypal"></i> PayPal One Off
             </a>
-
-            <p class="mb-0 mt-2">GitHub is currently matching any donation made!</p>
         </div>
 
         {{ template "_flashes" . }}
 
-        {{/* Donators */}}
-        <div class="row">
-            <div class="col-12 col-lg-6">
+        <div class="card">
+            <div class="card-body">
 
-                {{/* Perks */}}
-                <div class="card mb-3">
-                    <div class="card-body">
+                <div class="row">
+
+                    {{/* Perks */}}
+                    <div class="col-12 col-lg-6">
 
                         <div class="card mb-3">
-                            <h5 class="card-header">Level 1<span class="float-right">$1 /m</span></h5>
+                            <h5 class="card-header">Level 1<span class="float-right">$1 <small>/m</small></span></h5>
                             <div class="card-body p-0">
-                                <div class="m-2"><i class="fas fa-star text-warning"></i> No ads</div>
-                                <div class="m-2"><i class="fas fa-star text-warning"></i> Donator flair</div>
-                                <div class="m-2"><i class="fas fa-star text-warning"></i> Your name in the hall of fame</div>
+                                <table class="table table-no-border m-0">
+                                    <tr>
+                                        <td><i class="fas fa-star text-warning"></i> No ads</td>
+                                    </tr>
+                                    <tr>
+                                        <td><i class="fas fa-star text-warning"></i> Donator flair</td>
+                                    </tr>
+                                    <tr>
+                                        <td><i class="fas fa-star text-warning"></i> Your name in the hall of fame</td>
+                                    </tr>
+                                </table>
                             </div>
-                            <div class="card-footer p-1 text-right"><a href="https://www.patreon.com/join/gamedb/checkout?rid=2431311" target="_blank" rel="noopener">Sign Up</a></div>
+                            <a class="card-footer" href="https://www.patreon.com/join/jleagle/checkout?rid=2431311" target="_blank" rel="noopener">Donate</a>
                         </div>
 
                         <div class="card mb-3">
-                            <h5 class="card-header">Level 2<span class="float-right">$3 /m</span></h5>
+                            <h5 class="card-header">Level 2<span class="float-right">$3 <small>/m</small></span></h5>
                             <div class="card-body p-0">
-                                <div class="m-2"><i class="fas fa-star text-warning"></i> All Above</div>
-                                <div class="m-2"><i class="fas fa-star text-warning"></i> Quicker profile updates</div>
-                                <div class="m-2"><i class="fas fa-star text-warning"></i> Quick add friends</div>
-                                <div class="m-2"><i class="fas fa-star text-warning"></i> Access to more data</div>
-                                <div class="m-2"><i class="fas fa-star text-warning"></i> Automatic profile updates, for you and your primary group</div>
+                                <table class="table table-no-border m-0">
+                                    <tr>
+                                        <td><i class="fas fa-star text-warning"></i> Unlimited Access</td>
+                                    </tr>
+                                    <tr>
+                                        <td><i class="fas fa-star text-warning"></i> Automatic profile/group updates</td>
+                                    </tr>
+                                    <tr>
+                                        <td><i class="fas fa-star text-warning"></i> Quicker manual profile updates</td>
+                                    </tr>
+                                    <tr>
+                                        <td><i class="fas fa-star text-warning"></i> Quick add friends</td>
+                                    </tr>
+                                </table>
                             </div>
-                            <div class="card-footer p-1 text-right"><a href="https://www.patreon.com/join/gamedb/checkout?rid=2431320" target="_blank" rel="noopener">Sign Up</a></div>
+                            <a class="card-footer" href="https://www.patreon.com/join/jleagle/checkout?rid=2431320" target="_blank" rel="noopener">Donate</a>
+                        </div>
+
+                        <div class="card mb-3 mb-lg-0">
+                            <h5 class="card-header">Level 3<span class="float-right">$15 <small>/m</small></span></h5>
+                            <div class="card-body p-0">
+                                <table class="table table-no-border m-0">
+                                    <tr>
+                                        <td><i class="fas fa-star text-warning"></i> <a href="/api">API</a> access</td>
+                                    </tr>
+                                    <tr>
+                                        <td><i class="fas fa-star text-warning"></i> App Change Webhooks</td>
+                                    </tr>
+                                    <tr>
+                                        <td><i class="fas fa-star text-warning"></i> Influence the Game DB roadmap</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <a class="card-footer" href="https://www.patreon.com/join/jleagle/checkout?rid=2431347" target="_blank" rel="noopener">Donate</a>
+                        </div>
+
+                    </div>
+
+                    {{/* Donators */}}
+                    <div class="col-12 col-lg-6">
+
+                        <div class="card mb-3">
+                            <div class="card-header">Top Donators</div>
+                            <div class="card-body p-0">
+
+                                <div class="table-responsive">
+                                    <table class="table table-no-border table-hover table-striped mb-0" data-ordering="false" id="top-donations" data-path="/donate/top.json">
+                                        <thead class="thead-light">
+                                        <tr>
+                                            <th scope="col">Player</th>
+                                            <th scope="col">Donation</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
                         </div>
 
                         <div class="card">
-                            <h5 class="card-header">Level 3<span class="float-right">$15 /m</span></h5>
+                            <div class="card-header">Recent Donations</div>
                             <div class="card-body p-0">
-                                <div class="m-2"><i class="fas fa-star text-warning"></i> All Above</div>
-                                <div class="m-2"><i class="fas fa-star text-warning"></i> Unlimited access to Game DB data</div>
-                                <div class="m-2"><i class="fas fa-star text-warning"></i> <a href="/api">API</a> access</div>
-                                <div class="m-2"><i class="fas fa-star text-warning"></i> Webhooks & emails on changes</div>
-                                <div class="m-2"><i class="fas fa-star text-warning"></i> Influence the Game DB roadmap</div>
+
+                                <div class="table-responsive">
+                                    <table class="table table-no-border table-hover table-striped mb-0" data-ordering="false" id="new-donations" data-path="/donate/latest.json">
+                                        <thead class="thead-light">
+                                        <tr>
+                                            <th scope="col">Player</th>
+                                            <th scope="col">Donation</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+
+                                        </tbody>
+                                    </table>
+                                </div>
+
                             </div>
-                            <div class="card-footer p-1 text-right"><a href="https://www.patreon.com/join/gamedb/checkout?rid=2431347" target="_blank" rel="noopener">Sign Up</a></div>
-                        </div>
-
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="col-12 col-lg-6">
-
-                <div class="card mb-3">
-                    <div class="card-header">Top Donators</div>
-                    <div class="card-body">
-
-                        <div class="table-responsive">
-                            <table class="table table-hover table-striped mb-0" data-ordering="false" id="top-donations" data-path="/donate/top.json">
-                                <thead class="thead-light">
-                                <tr>
-                                    <th scope="col">Player</th>
-                                    <th scope="col">Donation</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-
-                                </tbody>
-                            </table>
-                        </div>
-
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">Recent Donations</div>
-                    <div class="card-body">
-
-                        <div class="table-responsive">
-                            <table class="table table-hover table-striped mb-0" data-ordering="false" id="new-donations" data-path="/donate/latest.json">
-                                <thead class="thead-light">
-                                <tr>
-                                    <th scope="col">Player</th>
-                                    <th scope="col">Donation</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-
-                                </tbody>
-                            </table>
                         </div>
 
                     </div>
