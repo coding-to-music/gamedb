@@ -76,16 +76,12 @@ if ($homePage.length > 0) {
                                 {
                                     '<>': 'td', 'class': 'img', 'html': [
                                         {
-                                            '<>': 'div', 'class': 'icon-name', 'html': [
+                                            '<>': 'a', 'href': '${link}', 'class': 'icon-name', 'html': [
                                                 {
                                                     '<>': 'div', 'class': 'icon', 'html': [{'<>': 'img', 'data-lazy': '${icon}', 'alt': '', 'data-lazy-alt': '${name}'}],
                                                 },
                                                 {
-                                                    '<>': 'div', 'class': 'name', 'html': [
-                                                        {
-                                                            '<>': 'a', 'href': '${link}', 'html': '${name}',
-                                                        }
-                                                    ]
+                                                    '<>': 'div', 'class': 'name', 'html': '${name}'
                                                 }
                                             ]
                                         }
@@ -158,16 +154,12 @@ if ($homePage.length > 0) {
                         {
                             '<>': 'td', 'class': 'img', 'html': [
                                 {
-                                    '<>': 'div', 'class': 'icon-name', 'html': [
+                                    '<>': 'a', 'href': '${link}', 'class': 'icon-name', 'html': [
                                         {
                                             '<>': 'div', 'class': 'icon', 'html': [{'<>': 'img', 'data-lazy': '${avatar}', 'alt': '', 'data-lazy-alt': '${name}'}],
                                         },
                                         {
-                                            '<>': 'div', 'class': 'name', 'html': [
-                                                {
-                                                    '<>': 'a', 'href': '${link}', 'html': '${name}',
-                                                }
-                                            ],
+                                            '<>': 'div', 'class': 'name', 'html': '${name}',
                                         }
                                     ]
                                 }
