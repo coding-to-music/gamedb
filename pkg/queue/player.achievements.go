@@ -10,7 +10,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	steamHelper "github.com/gamedb/gamedb/pkg/steam"
+	"github.com/gamedb/gamedb/pkg/steam"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -69,7 +69,7 @@ func playerAchievementsHandler(messages []*rabbit.Message) {
 		}
 
 		// Do API call
-		resp, err := steamHelper.GetSteamUnlimited().GetPlayerAchievements(uint64(payload.PlayerID), uint32(payload.AppID))
+		resp, err := steam.GetSteamUnlimited().GetPlayerAchievements(uint64(payload.PlayerID), uint32(payload.AppID))
 
 		// Skip private profiles
 		if val, ok := err.(steamapi.Error); ok && val.Code == 403 {
@@ -77,9 +77,9 @@ func playerAchievementsHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		err = steamHelper.AllowSteamCodes(err, 400)
+		err = steam.AllowSteamCodes(err, 400)
 		if err != nil {
-			steamHelper.LogSteamError(err, message.Message.Body)
+			steam.LogSteamError(err, message.Message.Body)
 			sendToRetryQueue(message)
 			continue
 		}

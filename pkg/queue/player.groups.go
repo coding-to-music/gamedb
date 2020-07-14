@@ -7,7 +7,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	steamHelper "github.com/gamedb/gamedb/pkg/steam"
+	"github.com/gamedb/gamedb/pkg/steam"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -56,16 +56,16 @@ func playersGroupsHandler(messages []*rabbit.Message) {
 		}
 
 		// Get new groups
-		newGroupsResponse, err := steamHelper.GetSteam().GetUserGroupList(payload.PlayerID)
+		newGroupsResponse, err := steam.GetSteam().GetUserGroupList(payload.PlayerID)
 
 		if err == steamapi.ErrProfileMissing || err == steamapi.ErrProfilePrivate {
 			message.Ack(false)
 			continue
 		}
 
-		err = steamHelper.AllowSteamCodes(err)
+		err = steam.AllowSteamCodes(err)
 		if err != nil {
-			steamHelper.LogSteamError(err, message.Message.Body)
+			steam.LogSteamError(err, message.Message.Body)
 			sendToRetryQueue(message)
 			continue
 		}

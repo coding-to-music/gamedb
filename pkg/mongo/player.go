@@ -15,7 +15,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
-	steamHelper "github.com/gamedb/gamedb/pkg/steam"
+	"github.com/gamedb/gamedb/pkg/steam"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -479,7 +479,7 @@ func SearchPlayer(search string, projection bson.M) (player Player, queue bool, 
 
 	if player.ID == 0 {
 
-		resp, err := steamHelper.GetSteam().ResolveVanityURL(search, steamapi.VanityURLProfile)
+		resp, err := steam.GetSteam().ResolveVanityURL(search, steamapi.VanityURLProfile)
 		if err == nil && resp.Success > 0 {
 
 			player.ID = int64(resp.SteamID)
@@ -495,8 +495,8 @@ func SearchPlayer(search string, projection bson.M) (player Player, queue bool, 
 
 						defer wg.Done()
 
-						resp, err := steamHelper.GetSteam().GetSteamLevel(player.ID)
-						err = steamHelper.AllowSteamCodes(err)
+						resp, err := steam.GetSteam().GetSteamLevel(player.ID)
+						err = steam.AllowSteamCodes(err)
 						if err != nil {
 							log.Err(err)
 							return
@@ -514,11 +514,11 @@ func SearchPlayer(search string, projection bson.M) (player Player, queue bool, 
 
 						if player.PersonaName == "" {
 
-							summary, err := steamHelper.GetSteam().GetPlayer(player.ID)
+							summary, err := steam.GetSteam().GetPlayer(player.ID)
 							if err == steamapi.ErrProfileMissing {
 								return
 							}
-							if err = steamHelper.AllowSteamCodes(err); err != nil {
+							if err = steam.AllowSteamCodes(err); err != nil {
 								log.Err(err)
 								return
 							}
@@ -537,8 +537,8 @@ func SearchPlayer(search string, projection bson.M) (player Player, queue bool, 
 
 						if player.GamesCount == 0 {
 
-							resp, err := steamHelper.GetSteam().GetOwnedGames(player.ID)
-							err = steamHelper.AllowSteamCodes(err)
+							resp, err := steam.GetSteam().GetOwnedGames(player.ID)
+							err = steam.AllowSteamCodes(err)
 							if err != nil {
 								log.Err(err)
 								return
@@ -561,8 +561,8 @@ func SearchPlayer(search string, projection bson.M) (player Player, queue bool, 
 
 						defer wg.Done()
 
-						resp, err := steamHelper.GetSteam().GetFriendList(player.ID)
-						err = steamHelper.AllowSteamCodes(err, 401, 404)
+						resp, err := steam.GetSteam().GetFriendList(player.ID)
+						err = steam.AllowSteamCodes(err, 401, 404)
 						if err != nil {
 							log.Err(err)
 							return

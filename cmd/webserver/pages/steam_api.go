@@ -14,7 +14,7 @@ import (
 	githubHelper "github.com/gamedb/gamedb/pkg/github"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	steamHelper "github.com/gamedb/gamedb/pkg/steam"
+	"github.com/gamedb/gamedb/pkg/steam"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/go-chi/chi"
 	"github.com/google/go-github/v28/github"
@@ -151,8 +151,8 @@ func (interfaces *Interfaces) addInterface(in steamapi.APIInterface, documented 
 
 func (interfaces *Interfaces) addDocumented(w http.ResponseWriter, r *http.Request) (err error) {
 
-	steamResp, err := steamHelper.GetSteam().GetSupportedAPIList()
-	err = steamHelper.AllowSteamCodes(err)
+	steamResp, err := steam.GetSteam().GetSupportedAPIList()
+	err = steam.AllowSteamCodes(err)
 	if err != nil {
 		return err
 	}

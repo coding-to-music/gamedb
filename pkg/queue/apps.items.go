@@ -6,7 +6,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	steamHelper "github.com/gamedb/gamedb/pkg/steam"
+	"github.com/gamedb/gamedb/pkg/steam"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -33,9 +33,9 @@ func appItemsHandler(messages []*rabbit.Message) {
 		}
 
 		// Get new items
-		meta, err := steamHelper.GetSteam().GetItemDefMeta(payload.AppID)
+		meta, err := steam.GetSteam().GetItemDefMeta(payload.AppID)
 		if err != nil {
-			steamHelper.LogSteamError(err, message.Message.Body)
+			steam.LogSteamError(err, message.Message.Body)
 			sendToRetryQueue(message)
 			continue
 		}
@@ -45,9 +45,9 @@ func appItemsHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		archive, err := steamHelper.GetSteam().GetItemDefArchive(payload.AppID, meta.Response.Digest)
+		archive, err := steam.GetSteam().GetItemDefArchive(payload.AppID, meta.Response.Digest)
 		if err != nil {
-			steamHelper.LogSteamError(err, message.Message.Body)
+			steam.LogSteamError(err, message.Message.Body)
 			sendToRetryQueue(message)
 			continue
 		}

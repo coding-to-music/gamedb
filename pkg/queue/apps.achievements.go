@@ -8,7 +8,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	steamHelper "github.com/gamedb/gamedb/pkg/steam"
+	"github.com/gamedb/gamedb/pkg/steam"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -36,18 +36,18 @@ func appAchievementsHandler(messages []*rabbit.Message) {
 		}
 
 		//
-		schemaResponse, err := steamHelper.GetSteam().GetSchemaForGame(payload.AppID)
-		err = steamHelper.AllowSteamCodes(err, 400, 403)
+		schemaResponse, err := steam.GetSteam().GetSchemaForGame(payload.AppID)
+		err = steam.AllowSteamCodes(err, 400, 403)
 		if err != nil {
-			steamHelper.LogSteamError(err)
+			steam.LogSteamError(err)
 			sendToRetryQueue(message)
 			continue
 		}
 
-		globalResponse, err := steamHelper.GetSteam().GetGlobalAchievementPercentagesForApp(payload.AppID)
-		err = steamHelper.AllowSteamCodes(err, 403, 500)
+		globalResponse, err := steam.GetSteam().GetGlobalAchievementPercentagesForApp(payload.AppID)
+		err = steam.AllowSteamCodes(err, 403, 500)
 		if err != nil {
-			steamHelper.LogSteamError(err)
+			steam.LogSteamError(err)
 			sendToRetryQueue(message)
 			continue
 		}

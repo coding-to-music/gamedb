@@ -21,7 +21,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/mysql/pics"
-	steamHelper "github.com/gamedb/gamedb/pkg/steam"
+	"github.com/gamedb/gamedb/pkg/steam"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/gocolly/colly"
 	"go.mongodb.org/mongo-driver/bson"
@@ -101,14 +101,14 @@ func appHandler(messages []*rabbit.Message) {
 
 			err = updateAppDetails(&app)
 			if err != nil && err != steamapi.ErrAppNotFound {
-				steamHelper.LogSteamError(err, payload.ID)
+				steam.LogSteamError(err, payload.ID)
 				sendToRetryQueue(message)
 				return
 			}
 
 			sales, err = scrapeApp(&app)
 			if err != nil {
-				steamHelper.LogSteamError(err, payload.ID)
+				steam.LogSteamError(err, payload.ID)
 				sendToRetryQueue(message)
 				return
 			}
@@ -476,8 +476,8 @@ func updateAppDetails(app *mongo.App) (err error) {
 			filter = []string{"price_overview"}
 		}
 
-		response, err := steamHelper.GetSteam().GetAppDetails(uint(app.ID), code.ProductCode, steamapi.LanguageEnglish, filter)
-		err = steamHelper.AllowSteamCodes(err)
+		response, err := steam.GetSteam().GetAppDetails(uint(app.ID), code.ProductCode, steamapi.LanguageEnglish, filter)
+		err = steam.AllowSteamCodes(err)
 		if err == steamapi.ErrAppNotFound || response.Data == nil {
 			continue
 		}
@@ -715,8 +715,8 @@ func scrapeApp(app *mongo.App) (sales []mongo.Sale, err error) {
 		c := colly.NewCollector(
 			colly.URLFilters(appStorePage),
 			colly.AllowURLRevisit(),
-			steamHelper.WithAgeCheckCookie,
-			steamHelper.WithTimeout(0),
+			steam.WithAgeCheckCookie,
+			steam.WithTimeout(0),
 		)
 
 		// Tags
@@ -887,7 +887,7 @@ func scrapeApp(app *mongo.App) (sales []mongo.Sale, err error) {
 
 		//
 		c.OnError(func(r *colly.Response, err error) {
-			steamHelper.LogSteamError(err)
+			steam.LogSteamError(err)
 		})
 
 		err = c.Visit("https://store.steampowered.com/app/" + strconv.Itoa(app.ID))

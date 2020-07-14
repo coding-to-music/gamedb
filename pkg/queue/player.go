@@ -18,7 +18,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
-	steamHelper "github.com/gamedb/gamedb/pkg/steam"
+	"github.com/gamedb/gamedb/pkg/steam"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	influx "github.com/influxdata/influxdb1-client"
 	"go.mongodb.org/mongo-driver/bson"
@@ -103,7 +103,7 @@ func playerHandler(messages []*rabbit.Message) {
 				if err == steamapi.ErrProfileMissing {
 					message.Ack(false)
 				} else {
-					steamHelper.LogSteamError(err, payload.ID)
+					steam.LogSteamError(err, payload.ID)
 					sendToRetryQueue(message)
 				}
 				return
@@ -111,42 +111,42 @@ func playerHandler(messages []*rabbit.Message) {
 
 			err = updatePlayerGames(&player, payload)
 			if err != nil {
-				steamHelper.LogSteamError(err, payload.ID)
+				steam.LogSteamError(err, payload.ID)
 				sendToRetryQueue(message)
 				return
 			}
 
 			err = updatePlayerRecentGames(&player, payload)
 			if err != nil {
-				steamHelper.LogSteamError(err, payload.ID)
+				steam.LogSteamError(err, payload.ID)
 				sendToRetryQueue(message)
 				return
 			}
 
 			err = updatePlayerBadges(&player)
 			if err != nil {
-				steamHelper.LogSteamError(err, payload.ID)
+				steam.LogSteamError(err, payload.ID)
 				sendToRetryQueue(message)
 				return
 			}
 
 			err = updatePlayerFriends(&player)
 			if err != nil {
-				steamHelper.LogSteamError(err, payload.ID)
+				steam.LogSteamError(err, payload.ID)
 				sendToRetryQueue(message)
 				return
 			}
 
 			err = updatePlayerLevel(&player)
 			if err != nil {
-				steamHelper.LogSteamError(err, payload.ID)
+				steam.LogSteamError(err, payload.ID)
 				sendToRetryQueue(message)
 				return
 			}
 
 			err = updatePlayerBans(&player)
 			if err != nil {
-				steamHelper.LogSteamError(err, payload.ID)
+				steam.LogSteamError(err, payload.ID)
 				sendToRetryQueue(message)
 				return
 			}
@@ -160,14 +160,14 @@ func playerHandler(messages []*rabbit.Message) {
 
 			err = updatePlayerWishlistApps(&player)
 			if err != nil {
-				steamHelper.LogSteamError(err, payload.ID)
+				steam.LogSteamError(err, payload.ID)
 				sendToRetryQueue(message)
 				return
 			}
 
 			err = updatePlayerComments(&player)
 			if err != nil {
-				steamHelper.LogSteamError(err, payload.ID)
+				steam.LogSteamError(err, payload.ID)
 				sendToRetryQueue(message)
 				return
 			}
@@ -391,13 +391,13 @@ func playerHandler(messages []*rabbit.Message) {
 
 func updatePlayerSummary(player *mongo.Player) error {
 
-	summary, err := steamHelper.GetSteam().GetPlayer(player.ID)
+	summary, err := steam.GetSteam().GetPlayer(player.ID)
 	if err == steamapi.ErrProfileMissing {
 		player.Removed = true
 		return nil
 	}
 
-	err = steamHelper.AllowSteamCodes(err)
+	err = steam.AllowSteamCodes(err)
 	if err != nil {
 		return err
 	}
@@ -422,8 +422,8 @@ func updatePlayerSummary(player *mongo.Player) error {
 func updatePlayerGames(player *mongo.Player, payload PlayerMessage) error {
 
 	// Grab games from Steam
-	resp, err := steamHelper.GetSteam().GetOwnedGames(player.ID)
-	err = steamHelper.AllowSteamCodes(err)
+	resp, err := steam.GetSteam().GetOwnedGames(player.ID)
+	err = steam.AllowSteamCodes(err)
 	if err != nil {
 		return err
 	}
@@ -561,8 +561,8 @@ func updatePlayerRecentGames(player *mongo.Player, payload PlayerMessage) error 
 		return err
 	}
 
-	newAppsSlice, err := steamHelper.GetSteam().GetRecentlyPlayedGames(player.ID)
-	err = steamHelper.AllowSteamCodes(err)
+	newAppsSlice, err := steam.GetSteam().GetRecentlyPlayedGames(player.ID)
+	err = steam.AllowSteamCodes(err)
 	if err != nil {
 		return err
 	}
@@ -622,8 +622,8 @@ func updatePlayerRecentGames(player *mongo.Player, payload PlayerMessage) error 
 
 func updatePlayerBadges(player *mongo.Player) error {
 
-	response, err := steamHelper.GetSteam().GetBadges(player.ID)
-	err = steamHelper.AllowSteamCodes(err)
+	response, err := steam.GetSteam().GetBadges(player.ID)
+	err = steam.AllowSteamCodes(err)
 	if err != nil {
 		return err
 	}
@@ -695,8 +695,8 @@ func updatePlayerBadges(player *mongo.Player) error {
 
 func updatePlayerFriends(player *mongo.Player) error {
 
-	newFriendsSlice, err := steamHelper.GetSteam().GetFriendList(player.ID)
-	err = steamHelper.AllowSteamCodes(err, 401, 404)
+	newFriendsSlice, err := steam.GetSteam().GetFriendList(player.ID)
+	err = steam.AllowSteamCodes(err, 401, 404)
 	if err != nil {
 		return err
 	}
@@ -774,8 +774,8 @@ func updatePlayerFriends(player *mongo.Player) error {
 
 func updatePlayerLevel(player *mongo.Player) error {
 
-	level, err := steamHelper.GetSteam().GetSteamLevel(player.ID)
-	err = steamHelper.AllowSteamCodes(err)
+	level, err := steam.GetSteam().GetSteamLevel(player.ID)
+	err = steam.AllowSteamCodes(err)
 	if err != nil {
 		return err
 	}
@@ -787,8 +787,8 @@ func updatePlayerLevel(player *mongo.Player) error {
 
 func updatePlayerBans(player *mongo.Player) error {
 
-	response, err := steamHelper.GetSteam().GetPlayerBans(player.ID)
-	err = steamHelper.AllowSteamCodes(err)
+	response, err := steam.GetSteam().GetPlayerBans(player.ID)
+	err = steam.AllowSteamCodes(err)
 	if err == steamapi.ErrProfileMissing {
 		return nil
 	}
@@ -821,8 +821,8 @@ func updatePlayerBans(player *mongo.Player) error {
 func updatePlayerWishlistApps(player *mongo.Player) error {
 
 	// New
-	resp, err := steamHelper.GetSteam().GetWishlist(player.ID)
-	err = steamHelper.AllowSteamCodes(err, 500)
+	resp, err := steam.GetSteam().GetWishlist(player.ID)
+	err = steam.AllowSteamCodes(err, 500)
 	if err == steamapi.ErrWishlistNotFound {
 		return nil
 	} else if err != nil {
@@ -906,7 +906,7 @@ func updatePlayerWishlistApps(player *mongo.Player) error {
 
 func updatePlayerComments(player *mongo.Player) error {
 
-	resp, err := steamHelper.GetSteam().GetComments(player.ID, 1, 0)
+	resp, err := steam.GetSteam().GetComments(player.ID, 1, 0)
 	if err != nil {
 		return err
 	}

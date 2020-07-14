@@ -10,7 +10,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	steamHelper "github.com/gamedb/gamedb/pkg/steam"
+	"github.com/gamedb/gamedb/pkg/steam"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -42,14 +42,14 @@ func packagePriceHandler(messages []*rabbit.Message) {
 		var productCC = i18n.GetProdCC(payload.ProductCC)
 
 		// Get package details
-		response, err := steamHelper.GetSteam().GetPackageDetails(payload.PackageID, productCC.ProductCode, steamapi.LanguageEnglish)
-		err = steamHelper.AllowSteamCodes(err)
+		response, err := steam.GetSteam().GetPackageDetails(payload.PackageID, productCC.ProductCode, steamapi.LanguageEnglish)
+		err = steam.AllowSteamCodes(err)
 		if err == steamapi.ErrPackageNotFound {
 			message.Ack(false)
 			continue
 		}
 		if err != nil {
-			steamHelper.LogSteamError(err)
+			steam.LogSteamError(err)
 			sendToRetryQueue(message)
 			continue
 		}

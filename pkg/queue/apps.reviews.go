@@ -13,7 +13,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	steamHelper "github.com/gamedb/gamedb/pkg/steam"
+	"github.com/gamedb/gamedb/pkg/steam"
 	influx "github.com/influxdata/influxdb1-client"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -39,18 +39,18 @@ func appReviewsHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		respAll, err := steamHelper.GetSteamUnlimited().GetReviews(payload.AppID, "all")
-		err = steamHelper.AllowSteamCodes(err)
+		respAll, err := steam.GetSteamUnlimited().GetReviews(payload.AppID, "all")
+		err = steam.AllowSteamCodes(err)
 		if err != nil {
-			steamHelper.LogSteamError(err)
+			steam.LogSteamError(err)
 			sendToRetryQueue(message)
 			continue
 		}
 
-		respEnglish, err := steamHelper.GetSteamUnlimited().GetReviews(payload.AppID, steamapi.LanguageEnglish)
-		err = steamHelper.AllowSteamCodes(err)
+		respEnglish, err := steam.GetSteamUnlimited().GetReviews(payload.AppID, steamapi.LanguageEnglish)
+		err = steam.AllowSteamCodes(err)
 		if err != nil {
-			steamHelper.LogSteamError(err)
+			steam.LogSteamError(err)
 			sendToRetryQueue(message)
 			continue
 		}

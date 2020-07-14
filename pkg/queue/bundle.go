@@ -15,7 +15,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
-	steamHelper "github.com/gamedb/gamedb/pkg/steam"
+	"github.com/gamedb/gamedb/pkg/steam"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/gocolly/colly"
 	"go.mongodb.org/mongo-driver/bson"
@@ -58,7 +58,7 @@ func bundleHandler(messages []*rabbit.Message) {
 
 		err = updateBundle(&bundle)
 		if err != nil && err != steamapi.ErrAppNotFound {
-			steamHelper.LogSteamError(err, payload.ID)
+			steam.LogSteamError(err, payload.ID)
 			sendToRetryQueue(message)
 			continue
 		}
@@ -125,8 +125,8 @@ func updateBundle(bundle *mysql.Bundle) (err error) {
 	c := colly.NewCollector(
 		colly.AllowedDomains("store.steampowered.com"),
 		colly.AllowURLRevisit(),
-		steamHelper.WithAgeCheckCookie,
-		steamHelper.WithTimeout(0),
+		steam.WithAgeCheckCookie,
+		steam.WithTimeout(0),
 	)
 
 	// Title

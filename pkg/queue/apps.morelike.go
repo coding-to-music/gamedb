@@ -9,7 +9,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	steamHelper "github.com/gamedb/gamedb/pkg/steam"
+	"github.com/gamedb/gamedb/pkg/steam"
 	"github.com/gocolly/colly"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -37,8 +37,8 @@ func appMorelikeHandler(messages []*rabbit.Message) {
 
 		c := colly.NewCollector(
 			colly.URLFilters(regexp.MustCompile(`store\.steampowered\.com/recommended/morelike/app/[0-9]+$`)),
-			steamHelper.WithAgeCheckCookie,
-			steamHelper.WithTimeout(0),
+			steam.WithAgeCheckCookie,
+			steam.WithTimeout(0),
 		)
 
 		var relatedAppIDs []int
@@ -52,7 +52,7 @@ func appMorelikeHandler(messages []*rabbit.Message) {
 
 		err = c.Visit("https://store.steampowered.com/recommended/morelike/app/" + strconv.Itoa(payload.AppID))
 		if err != nil {
-			steamHelper.LogSteamError(err)
+			steam.LogSteamError(err)
 			sendToRetryQueue(message)
 			continue
 		}

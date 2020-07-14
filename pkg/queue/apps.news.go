@@ -9,7 +9,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	steamHelper "github.com/gamedb/gamedb/pkg/steam"
+	"github.com/gamedb/gamedb/pkg/steam"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -34,10 +34,10 @@ func appNewsHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		resp, err := steamHelper.GetSteam().GetNews(payload.AppID, 10000)
-		err = steamHelper.AllowSteamCodes(err, 403)
+		resp, err := steam.GetSteam().GetNews(payload.AppID, 10000)
+		err = steam.AllowSteamCodes(err, 403)
 		if err != nil {
-			steamHelper.LogSteamError(err)
+			steam.LogSteamError(err)
 			sendToRetryQueue(message)
 			continue
 		}

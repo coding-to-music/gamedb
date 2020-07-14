@@ -18,7 +18,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql/pics"
-	steamHelper "github.com/gamedb/gamedb/pkg/steam"
+	"github.com/gamedb/gamedb/pkg/steam"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/gocolly/colly"
 )
@@ -124,7 +124,7 @@ func packageHandler(messages []*rabbit.Message) {
 				if err == steamapi.ErrHTMLResponse {
 					log.Info(err, payload.ID)
 				} else {
-					steamHelper.LogSteamError(err, payload.ID)
+					steam.LogSteamError(err, payload.ID)
 				}
 
 				sendToRetryQueue(message)
@@ -140,7 +140,7 @@ func packageHandler(messages []*rabbit.Message) {
 
 			var err = scrapePackage(&pack)
 			if err != nil {
-				steamHelper.LogSteamError(err, payload.ID)
+				steam.LogSteamError(err, payload.ID)
 				sendToRetryQueue(message)
 				return
 			}
@@ -418,7 +418,7 @@ func scrapePackage(pack *mongo.Package) (err error) {
 	c := colly.NewCollector(
 		colly.URLFilters(packageRegex),
 		colly.AllowURLRevisit(),
-		steamHelper.WithTimeout(0),
+		steam.WithTimeout(0),
 	)
 
 	// ID
@@ -429,7 +429,7 @@ func scrapePackage(pack *mongo.Package) (err error) {
 
 	//
 	c.OnError(func(r *colly.Response, err error) {
-		steamHelper.LogSteamError(err)
+		steam.LogSteamError(err)
 	})
 
 	err = c.Visit("https://store.steampowered.com/sub/" + strconv.Itoa(pack.ID))
@@ -448,8 +448,8 @@ func updatePackageFromStore(pack *mongo.Package) (err error) {
 	for _, cc := range i18n.GetProdCCs(true) {
 
 		// Get package details
-		response, err := steamHelper.GetSteam().GetPackageDetails(uint(pack.ID), cc.ProductCode, steamapi.LanguageEnglish)
-		err = steamHelper.AllowSteamCodes(err)
+		response, err := steam.GetSteam().GetPackageDetails(uint(pack.ID), cc.ProductCode, steamapi.LanguageEnglish)
+		err = steam.AllowSteamCodes(err)
 		if err == steamapi.ErrPackageNotFound {
 			continue
 		}

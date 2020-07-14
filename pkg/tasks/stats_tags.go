@@ -11,7 +11,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
-	steamHelper "github.com/gamedb/gamedb/pkg/steam"
+	"github.com/gamedb/gamedb/pkg/steam"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -45,8 +45,8 @@ func (c StatsTags) work() (err error) {
 	}
 
 	// Get tags from Steam
-	tagsResp, err := steamHelper.GetSteam().GetTags()
-	err = steamHelper.AllowSteamCodes(err)
+	tagsResp, err := steam.GetSteam().GetTags()
+	err = steam.AllowSteamCodes(err)
 	if err != nil {
 		return err
 	}
