@@ -153,14 +153,11 @@
                                 </thead>
                                 <tbody>
                                 </tbody>
-                                <tfoot>
-                                <tr>
-                                    <td colspan="3"><a href="/players">More Players</a></td>
-                                </tr>
-                                </tfoot>
                             </table>
                         </div>
+
                     </div>
+                    <a class="card-footer" href="/players">More Players</a>
                 </div>
 
                 <div class="card mb-4" id="sales">
@@ -187,14 +184,11 @@
                                 </thead>
                                 <tbody>
                                 </tbody>
-                                <tfoot>
-                                <tr>
-                                    <td colspan="4"><a href="/games/sales">More Sales</a></td>
-                                </tr>
-                                </tfoot>
                             </table>
                         </div>
+
                     </div>
+                    <a class="card-footer" href="/games/sales">More Sales</a>
                 </div>
 
             </div>
@@ -206,19 +200,17 @@
                         <ul class="list-unstyled">
 
                             {{ range $key, $value := .News }}
-                                <li class="media mb-2" data-link="{{ .Link }}">
+                                <li class="media" data-link="{{ .Link }}">
                                     <img src="" data-lazy="https://images.weserv.nl/?url={{ .Image }}&output=webp" alt="" data-lazy-alt="{{ .Title }}" class="mr-3 mb-2 img rounded">
                                     <div class="media-body">
                                         <h5 class="mt-0 mb-1">{{ .Title }}</h5>
                                         {{ .Contents }}
                                     </div>
                                 </li>
-                                <hr>
                             {{ end }}
                         </ul>
-
-                        <a href="/news#{{ .NewsID }}">More Game News</a>
                     </div>
+                    <a href="/news#{{ .NewsID }}" class="card-footer">More Game News</a>
                 </div>
 
             </div>

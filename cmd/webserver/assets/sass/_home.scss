@@ -65,6 +65,9 @@ body.dark {
 
         .media {
             display: block;
+            border-bottom: 1px solid rgba(0, 0, 0, .1);
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
 
             img {
                 width: 100%;
@@ -74,6 +77,12 @@ body.dark {
             .media-body {
                 overflow: auto;
             }
+        }
+
+        .media:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+            margin-bottom: 0;
         }
 
         @include media-breakpoint-up(sm) {
