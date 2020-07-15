@@ -218,6 +218,20 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
+	// Player aliases
+	var aliases []mongo.PlayerAlias
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		aliases, err = mongo.GetPlayerAliases(player.ID)
+		if err != nil {
+			log.Err(err, r)
+		}
+	}()
+
 	// Check if in queue
 	var inQueue bool
 	wg.Add(1)
@@ -355,6 +369,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	t.Types = typeCounts
 	t.InQueue = inQueue
 	t.User = user
+	t.Aliases = aliases
 
 	returnTemplate(w, r, "player", t)
 }
@@ -370,6 +385,7 @@ type playerTemplate struct {
 	InQueue       bool
 	User          mysql.User
 	WishListTotal string
+	Aliases       []mongo.PlayerAlias
 }
 
 func (pt playerTemplate) TypePercent(typex string) string {

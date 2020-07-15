@@ -72,7 +72,6 @@ type Player struct {
 	AchievementCount         int                        `bson:"achievement_count"`      // Number of achievements
 	AchievementCount100      int                        `bson:"achievement_count_100"`  // Number of 100% games
 	AchievementCountApps     int                        `bson:"achievement_count_apps"` // Number of games with an achievement
-	Aliases                  []string                   `bson:"aliases"`
 	Avatar                   string                     `bson:"avatar"`
 	BackgroundAppID          int                        `bson:"background_app_id"`
 	BadgesCount              int                        `bson:"badges_count"`
@@ -122,7 +121,6 @@ func (player Player) BSON() bson.D {
 		{"achievement_count", player.AchievementCount},
 		{"achievement_count_100", player.AchievementCount100},
 		{"achievement_count_apps", player.AchievementCountApps},
-		{"aliases", player.Aliases},
 		{"avatar", player.Avatar},
 		{"background_app_id", player.BackgroundAppID},
 		{"badge_stats", player.BadgeStats},

@@ -2,7 +2,10 @@ package mongo
 
 import (
 	"strconv"
+	"time"
 
+	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -26,6 +29,10 @@ func (a PlayerAlias) BSON() bson.D {
 
 func (a PlayerAlias) getKey() string {
 	return strconv.FormatInt(a.PlayerID, 10) + "-" + strconv.FormatInt(a.Time, 10)
+}
+
+func (a PlayerAlias) GetTime() string {
+	return time.Unix(a.Time, 0).Format(helpers.DateYearTime)
 }
 
 func UpdatePlayerAliases(aliases []PlayerAlias) (err error) {
@@ -55,4 +62,32 @@ func UpdatePlayerAliases(aliases []PlayerAlias) (err error) {
 	_, err = c.BulkWrite(ctx, writes, options.BulkWrite())
 
 	return err
+}
+
+func GetPlayerAliases(playerID int64) (aliases []PlayerAlias, err error) {
+
+	filter := bson.D{{"player_id", playerID}}
+
+	cur, ctx, err := Find(CollectionPlayerAliases, 0, 0, bson.D{{"time", -1}}, filter, nil, nil)
+	if err != nil {
+		return aliases, err
+	}
+
+	defer func() {
+		err = cur.Close(ctx)
+		log.Err(err)
+	}()
+
+	for cur.Next(ctx) {
+
+		alias := PlayerAlias{}
+		err := cur.Decode(&alias)
+		if err != nil {
+			log.Err(err, alias.getKey())
+		} else {
+			aliases = append(aliases, alias)
+		}
+	}
+
+	return aliases, cur.Err()
 }
