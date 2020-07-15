@@ -250,7 +250,7 @@
                                 {{ range $key, $value := .Ranks }}
                                     {{ if gt (len $value.Ranks) 0 }}
 
-                                        <div class="col">
+                                        <div class="col col-md-6 col-xl-3">
 
                                             <div class="card mb-3">
                                                 <h5 class="card-header">{{ $value.Description }}</h5>
@@ -260,8 +260,13 @@
                                                             {{ range $key2, $value2 := $value.Ranks }}
                                                                 <tr>
                                                                     <td>{{ .Metric.String }}</td>
-                                                                    <td><strong>{{ .Rank }}</strong></td>
-                                                                    <td><small>Top {{ .Percentile $value.Players }}%</small></td>
+                                                                    <td>
+                                                                        <strong>{{ .Rank }}</strong>
+                                                                        <small class="nowrap d-none d-xl-block">Top {{ .Percentile $value.Players }}%</small>
+                                                                    </td>
+                                                                    <td>
+                                                                        <small class="nowrap d-block d-xl-none">Top {{ .Percentile $value.Players }}%</small>
+                                                                    </td>
                                                                 </tr>
                                                             {{ end }}
                                                         </table>

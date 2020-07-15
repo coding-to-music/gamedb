@@ -319,26 +319,32 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 				Position: position,
 			})
 		}
-		if position, ok := player.Ranks[string(v)+"_continent-"+player.ContinentCode]; ok {
-			ranks[RankListContinent].Description = RankListContinent
-			ranks[RankListContinent].Ranks = append(ranks[RankListContinent].Ranks, &playerRankTemplate{
-				Metric:   v,
-				Position: position,
-			})
+		if player.ContinentCode != "" {
+			if position, ok := player.Ranks[string(v)+"_continent-"+player.ContinentCode]; ok {
+				ranks[RankListContinent].Description = RankListContinent
+				ranks[RankListContinent].Ranks = append(ranks[RankListContinent].Ranks, &playerRankTemplate{
+					Metric:   v,
+					Position: position,
+				})
+			}
 		}
-		if position, ok := player.Ranks[string(v)+"_country-"+player.CountryCode]; ok {
-			ranks[RankListCountry].Description = RankListCountry
-			ranks[RankListCountry].Ranks = append(ranks[RankListCountry].Ranks, &playerRankTemplate{
-				Metric:   v,
-				Position: position,
-			})
+		if player.CountryCode != "" {
+			if position, ok := player.Ranks[string(v)+"_country-"+player.CountryCode]; ok {
+				ranks[RankListCountry].Description = RankListCountry
+				ranks[RankListCountry].Ranks = append(ranks[RankListCountry].Ranks, &playerRankTemplate{
+					Metric:   v,
+					Position: position,
+				})
+			}
 		}
-		if position, ok := player.Ranks[string(v)+"_state-"+player.StateCode]; ok {
-			ranks[RankListState].Description = RankListState
-			ranks[RankListState].Ranks = append(ranks[RankListState].Ranks, &playerRankTemplate{
-				Metric:   v,
-				Position: position,
-			})
+		if player.StateCode != "" {
+			if position, ok := player.Ranks[string(v)+"_state-"+player.StateCode]; ok {
+				ranks[RankListState].Description = RankListState
+				ranks[RankListState].Ranks = append(ranks[RankListState].Ranks, &playerRankTemplate{
+					Metric:   v,
+					Position: position,
+				})
+			}
 		}
 	}
 
