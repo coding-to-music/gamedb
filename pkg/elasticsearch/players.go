@@ -90,32 +90,34 @@ func SearchPlayers(limit int, offset int, search string, sorters []elastic.Sorte
 			SubAggregation("state", elastic.NewTermsAggregation().Field("state_code").Size(1000).OrderByCountDesc()),
 		)
 
+	var query = elastic.NewBoolQuery().Filter(filters...)
+
 	if search != "" {
 
 		search = path.Base(search) // Incase someone tries a profile URL
 
-		searchService.Query(elastic.NewBoolQuery().
-			Must(
-				elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
-					elastic.NewTermQuery("id", search).Boost(5),
-					elastic.NewMatchQuery("name", search).Boost(1),
-					elastic.NewPrefixQuery("name", search).Boost(0.9),
-					elastic.NewMatchQuery("url", search).Boost(0.8),
-					elastic.NewPrefixQuery("url", search).Boost(0.7),
-					elastic.NewMatchQuery("name_recent", search).Boost(0.6),
-					elastic.NewPrefixQuery("name_recent", search).Boost(0.5),
-				),
-			).
-			Should(
-				elastic.NewFunctionScoreQuery().
-					AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("level").Factor(0.01)).
-					AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("games").Factor(0.001)),
-			).
-			Filter(filters...),
+		query.Must(
+			elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
+				elastic.NewTermQuery("id", search).Boost(5),
+				elastic.NewMatchQuery("name", search).Boost(1),
+				elastic.NewPrefixQuery("name", search).Boost(0.9),
+				elastic.NewMatchQuery("url", search).Boost(0.8),
+				elastic.NewPrefixQuery("url", search).Boost(0.7),
+				elastic.NewMatchQuery("name_recent", search).Boost(0.6),
+				elastic.NewPrefixQuery("name_recent", search).Boost(0.5),
+			),
+		)
+
+		query.Should(
+			elastic.NewFunctionScoreQuery().
+				AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("level").Factor(0.01)).
+				AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("games").Factor(0.001)),
 		)
 
 		searchService.Highlight(elastic.NewHighlight().Field("name").PreTags("<mark>").PostTags("</mark>"))
 	}
+
+	searchService.Query(query)
 
 	if len(sorters) > 0 {
 		searchService.SortBy(sorters...)
