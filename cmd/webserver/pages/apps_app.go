@@ -392,7 +392,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type appTemplate struct {
-	GlobalTemplate
+	globalTemplate
 	App           mongo.App
 	PlayersCount  int64
 	Banners       map[string][]string
@@ -462,7 +462,7 @@ func appLocalizationHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type appLocalizationTemplate struct {
-	GlobalTemplate
+	globalTemplate
 	App mongo.App
 }
 
@@ -492,7 +492,7 @@ func appReviewsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type appReviewsTemplate struct {
-	GlobalTemplate
+	globalTemplate
 	App mongo.App
 }
 

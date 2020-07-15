@@ -116,7 +116,7 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type groupTemplate struct {
-	GlobalTemplate
+	globalTemplate
 	Group   mongo.Group
 	Summary template.HTML
 }

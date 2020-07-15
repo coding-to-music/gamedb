@@ -30,6 +30,6 @@ func badgesHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type badgesTemplate struct {
-	GlobalTemplate
+	globalTemplate
 	Badges []mongo.PlayerBadgeSummary
 }

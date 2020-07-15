@@ -32,7 +32,7 @@ func groupsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type groupsTemplate struct {
-	GlobalTemplate
+	globalTemplate
 }
 
 func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {

@@ -15,7 +15,7 @@ func TermsRouter() http.Handler {
 
 func termsHandler(w http.ResponseWriter, r *http.Request) {
 
-	t := GlobalTemplate{}
+	t := globalTemplate{}
 	t.fill(w, r, "Terms", "Terms of Service")
 
 	returnTemplate(w, r, "terms", t)

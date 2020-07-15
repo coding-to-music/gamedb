@@ -110,7 +110,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type adminTemplate struct {
-	GlobalTemplate
+	globalTemplate
 	Errors     []string
 	Configs    map[string]mysql.Config
 	Queries    []adminQuery

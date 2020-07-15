@@ -150,7 +150,7 @@ func badgeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type badgeTemplate struct {
-	GlobalTemplate
+	globalTemplate
 	Badge       mongo.PlayerBadge
 	PlayerLevel int
 	PlayerRank  string

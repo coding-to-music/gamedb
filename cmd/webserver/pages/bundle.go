@@ -133,7 +133,7 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type bundleTemplate struct {
-	GlobalTemplate
+	globalTemplate
 	Bundle   mysql.Bundle
 	Apps     []mongo.App
 	Packages []mongo.Package

@@ -38,7 +38,7 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type apiTemplate struct {
-	GlobalTemplate
+	globalTemplate
 	Key     string
 	Swagger *openapi3.Swagger
 	Base    string

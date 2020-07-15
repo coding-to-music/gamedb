@@ -177,7 +177,7 @@ func returnErrorTemplate(w http.ResponseWriter, r *http.Request, t errorTemplate
 }
 
 type errorTemplate struct {
-	GlobalTemplate
+	globalTemplate
 	Title   string
 	Message string
 	Code    int
@@ -215,8 +215,8 @@ func getTemplateFuncMap() map[string]interface{} {
 	}
 }
 
-// GlobalTemplate is added to every other template
-type GlobalTemplate struct {
+// globalTemplate is added to every other template
+type globalTemplate struct {
 	Title           string        // Page title
 	Description     template.HTML // Page description
 	Path            string        // URL path
@@ -253,7 +253,7 @@ type GlobalTemplate struct {
 	hideAds   bool
 }
 
-func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title string, description template.HTML) {
+func (t *globalTemplate) fill(w http.ResponseWriter, r *http.Request, title string, description template.HTML) {
 
 	var err error
 
@@ -301,7 +301,7 @@ func (t *GlobalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	t.setFlashes()
 }
 
-func (t *GlobalTemplate) setBackground(app mongo.App, title bool, link bool) {
+func (t *globalTemplate) setBackground(app mongo.App, title bool, link bool) {
 
 	t.backgroundSet = true
 
@@ -322,7 +322,7 @@ func (t *GlobalTemplate) setBackground(app mongo.App, title bool, link bool) {
 	}
 }
 
-func (t *GlobalTemplate) setRandomBackground(title bool, link bool) {
+func (t *globalTemplate) setRandomBackground(title bool, link bool) {
 
 	if t.backgroundSet {
 		return
@@ -367,13 +367,13 @@ func (t *GlobalTemplate) setRandomBackground(title bool, link bool) {
 	}
 }
 
-func (t *GlobalTemplate) setFlashes() {
+func (t *globalTemplate) setFlashes() {
 
 	t.FlashesGood = sessionHelpers.GetFlashes(t.request, sessionHelpers.SessionGood)
 	t.FlashesBad = sessionHelpers.GetFlashes(t.request, sessionHelpers.SessionBad)
 }
 
-func (t GlobalTemplate) GetUserJSON() string {
+func (t globalTemplate) GetUserJSON() string {
 
 	stringMap := map[string]interface{}{
 		"prodCC":             t.UserProductCC.ProductCode,
@@ -390,7 +390,7 @@ func (t GlobalTemplate) GetUserJSON() string {
 	return string(b)
 }
 
-func (t GlobalTemplate) GetMetaImage() (text string) {
+func (t globalTemplate) GetMetaImage() (text string) {
 
 	if t.metaImage == "" {
 		return "https://gamedb.online/assets/img/sa-bg-500x500.png"
@@ -399,7 +399,7 @@ func (t GlobalTemplate) GetMetaImage() (text string) {
 	return t.metaImage
 }
 
-func (t GlobalTemplate) GetSpecialBadges() (badges []helpers.BuiltInbadge) {
+func (t globalTemplate) GetSpecialBadges() (badges []helpers.BuiltInbadge) {
 
 	for _, v := range helpers.BuiltInSpecialBadges {
 		badges = append(badges, v)
@@ -412,7 +412,7 @@ func (t GlobalTemplate) GetSpecialBadges() (badges []helpers.BuiltInbadge) {
 	return badges[0:3]
 }
 
-func (t GlobalTemplate) GetAppBadges() (badges []helpers.BuiltInbadge) {
+func (t globalTemplate) GetAppBadges() (badges []helpers.BuiltInbadge) {
 
 	for _, v := range helpers.BuiltInEventBadges {
 		badges = append(badges, v)
@@ -425,7 +425,7 @@ func (t GlobalTemplate) GetAppBadges() (badges []helpers.BuiltInbadge) {
 	return badges[0:3]
 }
 
-func (t GlobalTemplate) GetCookieFlag(key string) interface{} {
+func (t globalTemplate) GetCookieFlag(key string) interface{} {
 
 	c, err := t.request.Cookie("gamedb-session-2")
 
@@ -456,7 +456,7 @@ func (t GlobalTemplate) GetCookieFlag(key string) interface{} {
 	return false
 }
 
-func (t GlobalTemplate) GetCanonical() (text string) {
+func (t globalTemplate) GetCanonical() (text string) {
 
 	if t.Canonical != "" {
 		return "https://gamedb.online" + t.Canonical
@@ -464,11 +464,11 @@ func (t GlobalTemplate) GetCanonical() (text string) {
 	return "https://gamedb.online" + t.request.URL.Path + strings.TrimRight("?"+t.request.URL.Query().Encode(), "?")
 }
 
-func (t GlobalTemplate) GetVersionHash() string {
+func (t globalTemplate) GetVersionHash() string {
 	return config.GetShortCommitHash()
 }
 
-func (t GlobalTemplate) IsAppsPage() bool {
+func (t globalTemplate) IsAppsPage() bool {
 
 	if strings.HasPrefix(t.Path, "/games") {
 		return true
@@ -476,21 +476,21 @@ func (t GlobalTemplate) IsAppsPage() bool {
 	return helpers.SliceHasString(strings.TrimPrefix(t.Path, "/"), []string{"new-releases", "upcoming", "wishlists", "packages", "bundles", "price-changes", "changes", "coop", "sales"})
 }
 
-func (t GlobalTemplate) IsStatsPage() bool {
+func (t globalTemplate) IsStatsPage() bool {
 	return helpers.SliceHasString(strings.TrimPrefix(t.Path, "/"), []string{"stats", "tags", "genres", "publishers", "developers"})
 }
 
-func (t GlobalTemplate) IsBadgesPage() bool {
+func (t globalTemplate) IsBadgesPage() bool {
 
 	return strings.HasPrefix(t.Path, "/badges")
 }
 
-func (t GlobalTemplate) IsPlayersPage() bool {
+func (t globalTemplate) IsPlayersPage() bool {
 
 	return strings.HasPrefix(t.Path, "/players")
 }
 
-func (t GlobalTemplate) IsSettingsPage() bool {
+func (t globalTemplate) IsSettingsPage() bool {
 
 	if strings.HasPrefix(t.Path, "/signup") {
 		return true
@@ -498,7 +498,7 @@ func (t GlobalTemplate) IsSettingsPage() bool {
 	return helpers.SliceHasString(strings.TrimPrefix(t.Path, "/"), []string{"login", "logout", "forgot", "settings", "admin"})
 }
 
-func (t GlobalTemplate) IsMorePage() bool {
+func (t globalTemplate) IsMorePage() bool {
 
 	if strings.HasPrefix(t.Path, "/chat") || strings.HasPrefix(t.Path, "/experience") {
 		return true
@@ -506,19 +506,19 @@ func (t GlobalTemplate) IsMorePage() bool {
 	return helpers.SliceHasString(strings.TrimPrefix(t.Path, "/"), []string{"achievements", "discord-bot", "contact", "info", "queues", "info", "steam-api", "api"})
 }
 
-func (t GlobalTemplate) IsSidebarPage() bool {
+func (t globalTemplate) IsSidebarPage() bool {
 	return helpers.SliceHasString(strings.TrimPrefix(t.Path, "/"), []string{"api", "steam-api"})
 }
 
-func (t GlobalTemplate) IsLoggedIn() bool {
+func (t globalTemplate) IsLoggedIn() bool {
 	return t.UserID > 0
 }
 
-func (t GlobalTemplate) IsAdmin() bool {
+func (t globalTemplate) IsAdmin() bool {
 	return sessionHelpers.IsAdmin(t.request)
 }
 
-func (t GlobalTemplate) ShowAds() bool {
+func (t globalTemplate) ShowAds() bool {
 
 	if config.IsLocal() || t.userLevel > 0 {
 		return false
@@ -526,37 +526,37 @@ func (t GlobalTemplate) ShowAds() bool {
 	return !t.hideAds
 }
 
-func (t *GlobalTemplate) addToast(toast Toast) {
+func (t *globalTemplate) addToast(toast Toast) {
 	t.toasts = append(t.toasts, toast)
 }
 
-func (t *GlobalTemplate) addAssetChosen() {
+func (t *globalTemplate) addAssetChosen() {
 	t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js", Integrity: "sha256-c4gVE6fn+JRKMRvqjoDp+tlG4laudNYrXI1GncbfAYY="})
 }
 
-func (t *GlobalTemplate) addAssetCountdown() {
+func (t *globalTemplate) addAssetCountdown() {
 	t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/jquery.countdown/2.2.0/jquery.countdown.min.js", Integrity: "sha256-Ikk5myJowmDQaYVCUD0Wr+vIDkN8hGI58SGWdE671A8="})
 }
 
-func (t *GlobalTemplate) addAssetJSON2HTML() {
+func (t *globalTemplate) addAssetJSON2HTML() {
 	t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/json2html/1.4.1/json2html.min.js", Integrity: "sha256-p1nDDwdo8QAOGc0Na5bpN1xNIXRxOZ6Pkm/7RkuGEK0="})
 }
 
-func (t *GlobalTemplate) addAssetHighCharts() {
+func (t *globalTemplate) addAssetHighCharts() {
 	t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/highcharts/8.1.2/highcharts.js", Integrity: "sha512-EGkUnujrfu0497MBWKtDPsmhcor1++/hT49wnF4Ji//vj3kfvwSM8nocX5hNRZgEZB5wEkGmXUc6mYXpNBynPg=="})
 	t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/highcharts/8.1.2/modules/data.src.min.js", Integrity: "sha512-z1smTbR5US2c8JfqaNrnC69+C0qkMQ7mn1Vi4TvtKuKt0+QHk0et5QifE9hjeeW7HL98LWHZ/zglHVDAglDpHw=="})
 }
 
-func (t *GlobalTemplate) addAssetSlider() {
+func (t *globalTemplate) addAssetSlider() {
 	t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.0/nouislider.min.js", Integrity: "sha512-Bqlq3MLgvOWTzDmCDFKjX+ajhLgi/D8/TQwlbJaNea1mUcX7T3e3OgrRkWtvgpbSDaHgUCC4BqRSLNvPJhOskw=="})
 	t.CSSFiles = append(t.CSSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.0/nouislider.min.css", Integrity: "sha512-6JqGSqQ++AEggYltdgSse8pKG90U/5U0bbkZoa94uSDG/BhI5YpYcy2LyWPWjXu40lUVEgEKHZ/2hCrwQvbODw=="})
 }
 
-func (t *GlobalTemplate) addAssetPasswordStrength() {
+func (t *globalTemplate) addAssetPasswordStrength() {
 	t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/pwstrength-bootstrap/3.0.9/pwstrength-bootstrap.min.js", Integrity: "sha512-HvxKicgd5m5yRIotHDzL9iFZ2PK/KzyrPqLDYPboT7WQrq3q3NuG+1eWeCZgPru4Pc7fhyPF+71qRQr7mUNWCg=="})
 }
 
-func (t *GlobalTemplate) addAssetMark() {
+func (t *globalTemplate) addAssetMark() {
 	t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js", Integrity: "sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U="})
 }
 

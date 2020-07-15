@@ -32,7 +32,7 @@ func priceChangesHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type priceChangesTemplate struct {
-	GlobalTemplate
+	globalTemplate
 }
 
 func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {

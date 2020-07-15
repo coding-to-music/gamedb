@@ -95,7 +95,7 @@ func playerAddHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type addPlayerTemplate struct {
-	GlobalTemplate
+	globalTemplate
 	RecaptchaPublic string
 	Default         string
 }

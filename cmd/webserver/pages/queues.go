@@ -28,7 +28,7 @@ func queuesHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type queuesTemplate struct {
-	GlobalTemplate
+	globalTemplate
 }
 
 func queuesAjaxHandler(w http.ResponseWriter, r *http.Request) {

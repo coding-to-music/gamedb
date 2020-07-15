@@ -34,7 +34,7 @@ func commitsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type commitsTemplate struct {
-	GlobalTemplate
+	globalTemplate
 }
 
 const commitsLimit = 100

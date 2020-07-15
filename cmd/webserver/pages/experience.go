@@ -138,7 +138,7 @@ func getExperienceRows() (chunked [][]level) {
 }
 
 type experienceTemplate struct {
-	GlobalTemplate
+	globalTemplate
 	Chunks        [][]level
 	Level         int // Low value in form
 	PlayerLevel   int

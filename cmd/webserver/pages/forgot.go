@@ -47,7 +47,7 @@ func forgotHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type forgotTemplate struct {
-	GlobalTemplate
+	globalTemplate
 	RecaptchaPublic string
 	LoginEmail      string
 }

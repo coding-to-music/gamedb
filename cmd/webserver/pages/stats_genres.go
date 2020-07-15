@@ -54,7 +54,7 @@ func genresHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type statsGenresTemplate struct {
-	GlobalTemplate
+	globalTemplate
 	Genres []mysql.Genre
 	Date   string
 	Prices map[int]string

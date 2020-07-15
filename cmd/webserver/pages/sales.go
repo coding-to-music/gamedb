@@ -114,7 +114,7 @@ func salesHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type salesTemplate struct {
-	GlobalTemplate
+	globalTemplate
 	Tags         []mysql.Tag
 	Categories   []mysql.Category
 	UpcomingSale upcomingSale

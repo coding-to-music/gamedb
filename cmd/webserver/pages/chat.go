@@ -159,7 +159,7 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // type chatTemplate struct {
-// 	GlobalTemplate
+// 	globalTemplate
 // 	ChannelID string
 // 	Channels  []*discordgo.Channel
 // 	Members   []*discordgo.Member

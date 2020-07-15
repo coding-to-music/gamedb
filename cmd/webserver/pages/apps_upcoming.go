@@ -32,7 +32,7 @@ func upcomingHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type upcomingTemplate struct {
-	GlobalTemplate
+	globalTemplate
 }
 
 func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {

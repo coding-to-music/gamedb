@@ -381,7 +381,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type playerTemplate struct {
-	GlobalTemplate
+	globalTemplate
 	Banners       map[string][]string
 	CSRF          string
 	DefaultAvatar string
@@ -421,7 +421,7 @@ func (pt playerTemplate) HasRanks() bool {
 }
 
 type playerMissingTemplate struct {
-	GlobalTemplate
+	globalTemplate
 	Player        mongo.Player
 	DefaultAvatar string
 	Queue         int

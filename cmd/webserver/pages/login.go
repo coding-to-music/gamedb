@@ -56,7 +56,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type loginTemplate struct {
-	GlobalTemplate
+	globalTemplate
 	RecaptchaPublic string
 	LoginEmail      string
 }

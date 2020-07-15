@@ -201,7 +201,7 @@ func appsRandomHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type appsRandomTemplate struct {
-	GlobalTemplate
+	globalTemplate
 	Apps     []mongo.App
 	AppCount int64
 	Player   mongo.Player

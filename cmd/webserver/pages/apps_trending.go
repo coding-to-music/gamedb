@@ -36,7 +36,7 @@ func trendingHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type trendingTemplate struct {
-	GlobalTemplate
+	globalTemplate
 }
 
 func trendingAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {

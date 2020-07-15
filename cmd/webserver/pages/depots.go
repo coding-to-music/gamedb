@@ -26,7 +26,7 @@ func depotsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type depotsTemplate struct {
-	GlobalTemplate
+	globalTemplate
 }
 
 func depotHandler(w http.ResponseWriter, r *http.Request) {
@@ -47,6 +47,6 @@ func depotHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type depotTemplate struct {
-	GlobalTemplate
+	globalTemplate
 	Depot mysql.Depot
 }

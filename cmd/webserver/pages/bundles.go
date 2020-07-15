@@ -28,7 +28,7 @@ func bundlesHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type bundlesTemplate struct {
-	GlobalTemplate
+	globalTemplate
 }
 
 func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {

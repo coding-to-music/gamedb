@@ -50,7 +50,7 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type coopTemplate struct {
-	GlobalTemplate
+	globalTemplate
 	IDs []string
 }
 

@@ -88,7 +88,7 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type playersTemplate struct {
-	GlobalTemplate
+	globalTemplate
 	Date      string
 	Countries []playersCountriesTemplate
 }

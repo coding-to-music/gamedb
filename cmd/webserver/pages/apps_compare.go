@@ -133,7 +133,7 @@ func appsCompareHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type appsCompareTemplate struct {
-	GlobalTemplate
+	globalTemplate
 	Apps       []mongo.App
 	IDs        string
 	GroupIDs   string

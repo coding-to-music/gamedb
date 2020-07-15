@@ -29,7 +29,7 @@ func changesHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type changesTemplate struct {
-	GlobalTemplate
+	globalTemplate
 }
 
 func changesAjaxHandler(w http.ResponseWriter, r *http.Request) {

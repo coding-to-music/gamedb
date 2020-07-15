@@ -161,7 +161,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type packageTemplate struct {
-	GlobalTemplate
+	globalTemplate
 	Apps       map[int]mongo.App
 	Bundles    []mysql.Bundle
 	Banners    map[string][]string

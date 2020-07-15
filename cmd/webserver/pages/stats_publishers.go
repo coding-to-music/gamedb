@@ -54,7 +54,7 @@ func publishersHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type statsPublishersTemplate struct {
-	GlobalTemplate
+	globalTemplate
 	Publishers []mysql.Publisher
 	Date       string
 	Prices     map[int]string

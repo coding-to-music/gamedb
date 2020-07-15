@@ -45,7 +45,7 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type contactTemplate struct {
-	GlobalTemplate
+	globalTemplate
 	RecaptchaPublic string
 	Messages        []string
 	Success         bool

@@ -31,7 +31,7 @@ func wishlistsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type wishlistsTemplate struct {
-	GlobalTemplate
+	globalTemplate
 }
 
 func wishlistAppsHandler(w http.ResponseWriter, r *http.Request) {

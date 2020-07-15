@@ -44,7 +44,7 @@ func newsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type newsTemplate struct {
-	GlobalTemplate
+	globalTemplate
 	Articles []mongo.Article
 }
 

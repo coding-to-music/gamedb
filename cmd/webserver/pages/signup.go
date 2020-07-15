@@ -55,7 +55,7 @@ func signupHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type signupTemplate struct {
-	GlobalTemplate
+	globalTemplate
 	RecaptchaPublic string
 	Domain          string
 	SignupEmail     string

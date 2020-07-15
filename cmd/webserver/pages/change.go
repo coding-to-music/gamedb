@@ -91,7 +91,7 @@ func changeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type changeTemplate struct {
-	GlobalTemplate
+	globalTemplate
 	Change   mongo.Change
 	Apps     map[int]mongo.App
 	Packages map[int]mongo.Package

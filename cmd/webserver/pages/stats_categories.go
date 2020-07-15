@@ -55,7 +55,7 @@ func statsCategoriesHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type statsCategoriesTemplate struct {
-	GlobalTemplate
+	globalTemplate
 	Categories []mysql.Category
 	Date       string
 	Prices     map[int]string

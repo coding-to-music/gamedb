@@ -200,7 +200,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type appsTemplate struct {
-	GlobalTemplate
+	globalTemplate
 	Types      []mongo.AppTypeCount
 	Tags       []mysql.Tag
 	Genres     []mysql.Genre

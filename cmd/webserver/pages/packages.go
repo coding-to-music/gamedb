@@ -31,7 +31,7 @@ func packagesHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type packagesTemplate struct {
-	GlobalTemplate
+	globalTemplate
 }
 
 func packagesAjaxHandler(w http.ResponseWriter, r *http.Request) {

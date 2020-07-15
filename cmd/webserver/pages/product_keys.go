@@ -46,7 +46,7 @@ func productKeysHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type productKeysTemplate struct {
-	GlobalTemplate
+	globalTemplate
 	Key   string
 	Value string
 	Type  string

@@ -21,7 +21,7 @@ func AchievementsRouter() http.Handler {
 
 func achievementsHandler(w http.ResponseWriter, r *http.Request) {
 
-	t := GlobalTemplate{}
+	t := globalTemplate{}
 	t.fill(w, r, "Achievements", "Search all Steam achievements")
 
 	returnTemplate(w, r, "achievements", t)

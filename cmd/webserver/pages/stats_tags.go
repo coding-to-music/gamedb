@@ -55,7 +55,7 @@ func statsTagsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type statsTagsTemplate struct {
-	GlobalTemplate
+	globalTemplate
 	Tags   []mysql.Tag
 	Date   string
 	Prices map[int]string

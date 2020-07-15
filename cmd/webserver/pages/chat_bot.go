@@ -38,7 +38,7 @@ func chatBotHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type chatBotTemplate struct {
-	GlobalTemplate
+	globalTemplate
 }
 
 func (cbt chatBotTemplate) Link() string {

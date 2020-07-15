@@ -54,7 +54,7 @@ func developersHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type statsDevelopersTemplate struct {
-	GlobalTemplate
+	globalTemplate
 	Developers []mysql.Developer
 	Date       string
 	Prices     map[int]string

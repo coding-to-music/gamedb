@@ -205,7 +205,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type statsTemplate struct {
-	GlobalTemplate
+	globalTemplate
 	AppsCount               int64
 	BundlesCount            int
 	PackagesCount           int64

@@ -77,7 +77,7 @@ func steamAPIHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type steamAPITemplate struct {
-	GlobalTemplate
+	globalTemplate
 	Interfaces Interfaces
 }
 

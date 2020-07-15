@@ -36,7 +36,7 @@ func donateHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type donateTemplate struct {
-	GlobalTemplate
+	globalTemplate
 	Pages map[int]int
 }
 

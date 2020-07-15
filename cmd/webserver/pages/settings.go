@@ -177,7 +177,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type settingsTemplate struct {
-	GlobalTemplate
+	globalTemplate
 	User    mysql.User
 	Player  mongo.Player
 	ProdCCs []i18n.ProductCountryCode

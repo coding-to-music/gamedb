@@ -22,7 +22,7 @@ func appsAchievementsRouter() http.Handler {
 
 func appsAchievementsHandler(w http.ResponseWriter, r *http.Request) {
 
-	t := GlobalTemplate{}
+	t := globalTemplate{}
 	t.fill(w, r, "Achievements", "Games with the most achievements")
 	t.addAssetJSON2HTML()
 

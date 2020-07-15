@@ -115,7 +115,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type homeTemplate struct {
-	GlobalTemplate
+	globalTemplate
 	TopGames []mongo.App
 	NewGames []mongo.App
 	News     []homeNews

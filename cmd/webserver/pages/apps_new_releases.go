@@ -39,7 +39,7 @@ func newReleasesHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type newReleasesTemplate struct {
-	GlobalTemplate
+	globalTemplate
 	Days string
 }
 
