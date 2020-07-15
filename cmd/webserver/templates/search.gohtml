@@ -23,9 +23,6 @@
                     </form>
 
                 </div>
-                <div class="col-12">
-                    <p class="lead">{{ .Description }}</p>
-                </div>
             </div>
 
         </div>
@@ -35,9 +32,19 @@
         <div class="card">
             <div class="card-body">
 
-                {{ range .Results }}
-                    <div>{{ .Name }}</div>
-                {{ end }}
+                <div class="row">
+                    <div class="col-3">
+                        <div class="nav flex-column nav-pills" role="tablist">
+                            <div class="nav-link " data-toggle="pill" role="tab">Home</div>
+                            <div class="nav-link" data-toggle="pill" role="tab">Profile</div>
+                            <div class="nav-link" data-toggle="pill" role="tab">Messages</div>
+                            <div class="nav-link" data-toggle="pill" role="tab">Settings</div>
+                        </div>
+                    </div>
+                    <div class="col-9">
+                        ...
+                    </div>
+                </div>
 
             </div>
         </div>
