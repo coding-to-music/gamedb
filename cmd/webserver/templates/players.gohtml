@@ -38,7 +38,8 @@
                         <div class="form-group">
                             <label for="country">Continent / Country</label>
                             <select class="form-control form-control-chosen" id="country" name="country">
-                                <option value="">Any</option>
+                                <option value="">All Countries</option>
+                                <option value="_">No Country</option>
                                 <optgroup label="Continents">
                                     {{ range .Continents }}
                                         <option value="c-{{ .Key }}">{{ .Value }}</option>
