@@ -329,7 +329,6 @@ func CreatePlayerIndexes() {
 	var indexModels []mongo.IndexModel
 
 	// These are for the ranking cron
-	// And for players table  filtering
 	for col := range PlayerRankFields {
 		indexModels = append(indexModels, mongo.IndexModel{
 			Keys: bson.D{{col, -1}},
@@ -364,12 +363,6 @@ func CreatePlayerIndexes() {
 			Keys: bson.D{{col, -1}},
 		})
 	}
-
-	// Text index
-	indexModels = append(indexModels, mongo.IndexModel{
-		Keys:    bson.D{{"persona_name", "text"}, {"vanity_url", "text"}},
-		Options: options.Index().SetName("text").SetWeights(bson.D{{"persona_name", 1}, {"vanity_url", 1}}),
-	})
 
 	// For player search in chatbot
 	indexModels = append(indexModels, mongo.IndexModel{
