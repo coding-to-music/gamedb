@@ -26,9 +26,9 @@ func (c patreonConnection) getID(r *http.Request, token *oauth2.Token) (string, 
 		return "", oauthError{err, "An error occurred (1003)"}
 	}
 
-	if !patreonUser.Data.Attributes.IsEmailVerified {
-		return "", oauthError{nil, "This Patreon account has not been verified"}
-	}
+	// if !patreonUser.Data.Attributes.IsEmailVerified {
+	// 	return "", oauthError{nil, "This Patreon account has not been verified"}
+	// }
 
 	return patreonUser.Data.ID, nil
 }
