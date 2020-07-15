@@ -16,6 +16,7 @@ type Player struct {
 	PersonaNameRecent []string `json:"name_recent"`
 	VanityURL         string   `json:"url"`
 	Avatar            string   `json:"avatar"`
+	Continent         string   `json:"continent"`
 	CountryCode       string   `json:"country_code"`
 	StateCode         string   `json:"state_code"`
 	LastBan           int64    `json:"last_ban"`
@@ -27,6 +28,7 @@ type Player struct {
 	Games             int      `json:"games"`
 	Friends           int      `json:"friends"`
 	Comments          int      `json:"comments"`
+	Achievements      int      `json:"achievements"`
 	Score             float64  `json:"-"`
 }
 
@@ -150,6 +152,7 @@ func DeleteAndRebuildPlayersIndex() {
 				"name_recent":  fieldTypeText,
 				"url":          fieldTypeText,
 				"avatar":       fieldTypeDisabled,
+				"continent":    fieldTypeKeyword,
 				"country_code": fieldTypeKeyword,
 				"state_code":   fieldTypeKeyword,
 				"last_ban":     fieldTypeLong,
@@ -161,6 +164,7 @@ func DeleteAndRebuildPlayersIndex() {
 				"games":        fieldTypeInteger,
 				"friends":      fieldTypeInteger,
 				"comments":     fieldTypeInteger,
+				"achievements": fieldTypeInteger,
 			},
 		},
 	}
