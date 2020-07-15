@@ -75,7 +75,6 @@ func SearchArticles(offset int, sorters []elastic.Sorter, search string) (articl
 		From(offset).
 		Size(100).
 		TrackTotalHits(true).
-		Highlight(elastic.NewHighlight().Field("title").Field("app_name").PreTags("<mark>").PostTags("</mark>")).
 		SortBy(sorters...)
 
 	if search != "" {
@@ -98,6 +97,8 @@ func SearchArticles(offset int, sorters []elastic.Sorter, search string) (articl
 					),
 			),
 		)
+
+		searchService.Highlight(elastic.NewHighlight().Field("title").Field("app_name").PreTags("<mark>").PostTags("</mark>"))
 	}
 
 	searchResult, err := searchService.Do(ctx)

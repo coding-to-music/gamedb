@@ -61,10 +61,6 @@ func (group Group) GetGameLink() string {
 }
 
 func IndexGroup(g Group) error {
-
-	err := IndexGlobalItem(Global{ID: g.ID, Name: g.Name, Icon: g.Icon, Type: GlobalTypeGroup})
-	log.Err(err)
-
 	return indexDocument(IndexGroups, g.ID, g)
 }
 
@@ -99,11 +95,14 @@ func SearchGroups(offset int, limit int, sorters []elastic.Sorter, search string
 		From(offset).
 		Size(limit).
 		TrackTotalHits(true).
-		Highlight(elastic.NewHighlight().Field("name").PreTags("<mark>").PostTags("</mark>")).
 		SortBy(sorters...).
 		Query(query).
 		SearchType("dfs_query_then_fetch"). // Improves acuracy with multiple shards
 		Aggregation("error", elastic.NewTermsAggregation().Field("error").Size(10).OrderByCountDesc())
+
+	if search != "" {
+		searchService.Highlight(elastic.NewHighlight().Field("name").PreTags("<mark>").PostTags("</mark>"))
+	}
 
 	searchResult, err := searchService.Do(ctx)
 	if err != nil {

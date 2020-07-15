@@ -76,6 +76,10 @@ func SearchApps(limit int, offset int, search string, totals bool, highlights bo
 					AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("players").Factor(0.005)),
 			),
 		)
+
+		if highlights {
+			searchService.Highlight(elastic.NewHighlight().Field("name").PreTags("<mark>").PostTags("</mark>"))
+		}
 	}
 
 	if aggregation {
@@ -84,10 +88,6 @@ func SearchApps(limit int, offset int, search string, totals bool, highlights bo
 
 	if totals {
 		searchService.TrackTotalHits(true)
-	}
-
-	if highlights {
-		searchService.Highlight(elastic.NewHighlight().Field("name").PreTags("<mark>").PostTags("</mark>"))
 	}
 
 	searchResult, err := searchService.Do(ctx)
@@ -139,10 +139,6 @@ func SearchApps(limit int, offset int, search string, totals bool, highlights bo
 }
 
 func IndexApp(a App) error {
-
-	err := IndexGlobalItem(Global{ID: strconv.Itoa(a.ID), Name: a.Name, Icon: a.Icon, Type: GlobalTypeApp})
-	log.Err(err)
-
 	return indexDocument(IndexApps, strconv.Itoa(a.ID), a)
 }
 

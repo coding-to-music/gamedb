@@ -70,10 +70,10 @@ func SearchAppAchievements(offset int, search string, sorters []elastic.Sorter) 
 		From(offset).
 		Size(100).
 		TrackTotalHits(true).
-		Highlight(elastic.NewHighlight().Field("name").Field("description").Field("app_name").PreTags("<mark>").PostTags("</mark>")).
 		SortBy(sorters...)
 
 	if search != "" {
+
 		searchService.Query(elastic.NewBoolQuery().
 			Must(
 				elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
@@ -86,6 +86,8 @@ func SearchAppAchievements(offset int, search string, sorters []elastic.Sorter) 
 				),
 			),
 		)
+
+		searchService.Highlight(elastic.NewHighlight().Field("name").Field("description").Field("app_name").PreTags("<mark>").PostTags("</mark>"))
 	}
 
 	searchResult, err := searchService.Do(ctx)
