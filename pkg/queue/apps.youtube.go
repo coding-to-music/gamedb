@@ -50,7 +50,7 @@ func appYoutubeHandler(messages []*rabbit.Message) {
 			Type("video").
 			Q(payload.Name).
 			Order("viewCount").
-			PublishedAfter(time.Now().Add(-time.Hour * 24).Format(time.RFC3339))
+			PublishedAfter(time.Now().Add(-time.Hour * 24 * 7).Format(time.RFC3339))
 
 		searchResponse, err := searchRequest.Do()
 		if err != nil {
