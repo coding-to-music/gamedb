@@ -25,8 +25,7 @@ func PlayersRouter() http.Handler {
 	r.Get("/add", playerAddHandler)
 	r.Post("/add", playerAddHandler)
 	r.Get("/states.json", statesAjaxHandler)
-	// r.Get("/players.json", playersAjaxHandler)
-	r.Get("/players.json", playersAjaxHandler2)
+	r.Get("/players.json", playersAjaxHandler)
 	r.Mount("/{id:[0-9]+}", PlayerRouter())
 	return r
 }
@@ -119,7 +118,7 @@ func statesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	returnJSON(w, r, states)
 }
 
-func playersAjaxHandler2(w http.ResponseWriter, r *http.Request) {
+func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := datatable.NewDataTableQuery(r, true)
 
