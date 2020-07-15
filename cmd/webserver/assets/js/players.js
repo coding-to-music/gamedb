@@ -31,7 +31,9 @@ if ($('#players-page').length > 0) {
                 }
 
                 $state.empty();
-                $state.append($('<option/>', {value: '', text: 'Any'}));
+                $state.append($('<option/>', {value: '', text: 'All States'}));
+                $state.append($('<option/>', {value: '_', text: 'No State'}));
+                $state.append($('<option disabled>---</option>', {value: '_', text: 'No State'}));
 
                 $.each(data, function (index, value) {
                     $state.append($('<option/>', {
