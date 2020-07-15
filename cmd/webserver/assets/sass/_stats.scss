@@ -13,6 +13,8 @@
     }
 
     #release-dates, #client-players2 {
-        cursor: ew-resize;
+        .highcharts-background {
+            cursor: ew-resize;
+        }
     }
 }
