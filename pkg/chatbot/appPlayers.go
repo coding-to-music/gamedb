@@ -5,7 +5,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
-	"github.com/gamedb/gamedb/pkg/elastic-search"
+	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/mongo"
 )
 
@@ -40,7 +40,7 @@ func (c CommandAppPlayers) Output(msg *discordgo.MessageCreate) (message discord
 
 	matches := RegexCache[c.Regex()].FindStringSubmatch(msg.Message.Content)
 
-	apps, _, _, err := elastic_search.SearchApps(1, 0, matches[2], false, false, false)
+	apps, _, _, err := elasticsearch.SearchApps(1, 0, matches[2], false, false, false)
 	if err != nil {
 		return message, err
 	} else if len(apps) == 0 {

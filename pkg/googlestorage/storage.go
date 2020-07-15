@@ -1,4 +1,4 @@
-package google_storage
+package googlestorage
 
 import (
 	"context"

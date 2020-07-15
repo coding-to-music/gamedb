@@ -11,7 +11,7 @@ import (
 	"github.com/Jleagle/influxql"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
-	"github.com/gamedb/gamedb/pkg/elastic-search"
+	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -166,7 +166,7 @@ func compareSearchAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	if search != "" {
 
-		apps, _, _, err := elastic_search.SearchApps(limit, 0, search, false, false, false)
+		apps, _, _, err := elasticsearch.SearchApps(limit, 0, search, false, false, false)
 		if err != nil {
 			log.Err(err, r)
 			return

@@ -6,7 +6,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/chatbot/charts"
-	"github.com/gamedb/gamedb/pkg/elastic-search"
+	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/log"
 )
 
@@ -41,7 +41,7 @@ func (c CommandGroup) Output(msg *discordgo.MessageCreate) (message discordgo.Me
 
 	matches := RegexCache[c.Regex()].FindStringSubmatch(msg.Message.Content)
 
-	groups, _, _, err := elastic_search.SearchGroups(0, 1, nil, matches[2], "")
+	groups, _, _, err := elasticsearch.SearchGroups(0, 1, nil, matches[2], "")
 	if err != nil {
 		return message, err
 	} else if len(groups) == 0 {

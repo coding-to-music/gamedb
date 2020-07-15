@@ -1,4 +1,4 @@
-package rabbit_web
+package rabbitweb
 
 import (
 	"github.com/Jleagle/rabbit-go"

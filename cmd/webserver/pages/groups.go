@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
-	elasticHelpers "github.com/gamedb/gamedb/pkg/elastic-search"
+	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -42,7 +42,7 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Get groups
-	var groups []elasticHelpers.Group
+	var groups []elasticsearch.Group
 	var filtered int64
 	var aggregations map[string]map[string]int64
 	wg.Add(1)
@@ -59,7 +59,7 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var search = query.GetSearchString("search")
 		var errors = query.GetSearchString("filter")
 
-		groups, aggregations, filtered, err = elasticHelpers.SearchGroups(query.GetOffset(), 100, sorters, search, errors)
+		groups, aggregations, filtered, err = elasticsearch.SearchGroups(query.GetOffset(), 100, sorters, search, errors)
 		if err != nil {
 			log.Err(err, r)
 			return

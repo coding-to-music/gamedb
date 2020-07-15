@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
-	elasticHelpers "github.com/gamedb/gamedb/pkg/elastic-search"
+	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
@@ -54,7 +54,7 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var wg sync.WaitGroup
 
-	var articles []elasticHelpers.Article
+	var articles []elasticsearch.Article
 	var filtered int64
 	wg.Add(1)
 	go func() {
@@ -68,7 +68,7 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var search = query.GetSearchString("search")
 
-		articles, filtered, err = elasticHelpers.SearchArticles(query.GetOffset(), sorters, search)
+		articles, filtered, err = elasticsearch.SearchArticles(query.GetOffset(), sorters, search)
 		if err != nil {
 			log.Err(err, r)
 		}

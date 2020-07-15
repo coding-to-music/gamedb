@@ -2,7 +2,7 @@ package queue
 
 import (
 	"github.com/Jleagle/rabbit-go"
-	elasticHelpers "github.com/gamedb/gamedb/pkg/elastic-search"
+	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -33,7 +33,7 @@ func groupsSearchHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		err = elasticHelpers.IndexGroup(elasticHelpers.Group{
+		err = elasticsearch.IndexGroup(elasticsearch.Group{
 			ID:           payload.Group.ID,
 			Name:         payload.Group.Name,
 			URL:          payload.Group.URL,

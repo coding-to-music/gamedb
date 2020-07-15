@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
-	elastic_search "github.com/gamedb/gamedb/pkg/elastic-search"
+	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -183,7 +183,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Get players
-	var players []elastic_search.Player
+	var players []elasticsearch.Player
 	var filtered int64
 	var aggregations = map[string]map[string]int64{}
 	wg.Add(1)
@@ -194,7 +194,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		var aggs elastic.Aggregations
 
-		players, aggs, filtered, err = elastic_search.SearchPlayers(100, query.GetOffset(), search, sorters, filters)
+		players, aggs, filtered, err = elasticsearch.SearchPlayers(100, query.GetOffset(), search, sorters, filters)
 		if err != nil {
 			log.Err(err, r)
 			return

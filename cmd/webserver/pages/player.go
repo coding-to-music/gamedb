@@ -22,7 +22,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/queue"
-	"github.com/gamedb/gamedb/pkg/rabbit-web"
+	"github.com/gamedb/gamedb/pkg/rabbitweb"
 	"github.com/go-chi/chi"
 	"github.com/justinas/nosurf"
 	"github.com/memcachier/mc"
@@ -92,7 +92,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		p := rabbit.Payload{}
 		p.Preset(rabbit.RangeOneMinute)
 
-		q, err := rabbit_web.RabbitClient.GetQueue(queue.QueuePlayers, p)
+		q, err := rabbitweb.RabbitClient.GetQueue(queue.QueuePlayers, p)
 		if err != nil {
 			log.Err(err, r)
 		} else {

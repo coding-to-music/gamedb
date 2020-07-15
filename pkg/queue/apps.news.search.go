@@ -2,7 +2,7 @@ package queue
 
 import (
 	"github.com/Jleagle/rabbit-go"
-	"github.com/gamedb/gamedb/pkg/elastic-search"
+	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 )
@@ -31,7 +31,7 @@ func appsArticlesSearchHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		article := elastic_search.Article{}
+		article := elasticsearch.Article{}
 		article.ID = payload.ID
 		article.Title = payload.Title
 		article.Body = payload.Body
@@ -41,7 +41,7 @@ func appsArticlesSearchHandler(messages []*rabbit.Message) {
 		article.AppIcon = payload.AppIcon
 		article.ArticleIcon = payload.ArticleIcon
 
-		err = elastic_search.IndexArticle(article)
+		err = elasticsearch.IndexArticle(article)
 		if err != nil {
 			log.Err(err)
 			sendToRetryQueue(message)

@@ -5,7 +5,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
-	"github.com/gamedb/gamedb/pkg/rabbit-web"
+	"github.com/gamedb/gamedb/pkg/rabbitweb"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -32,7 +32,7 @@ func (c AppsPlayerCheck) work() (err error) {
 		queue.QueueAppPlayers: 1000,
 	}
 
-	queues, err := rabbit_web.RabbitClient.GetQueues()
+	queues, err := rabbitweb.RabbitClient.GetQueues()
 	if err != nil {
 		return err
 	}

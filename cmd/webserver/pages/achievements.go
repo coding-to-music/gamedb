@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
-	elasticHelpers "github.com/gamedb/gamedb/pkg/elastic-search"
+	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
@@ -34,7 +34,7 @@ func achievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var wg sync.WaitGroup
 
-	var achievements []elasticHelpers.Achievement
+	var achievements []elasticsearch.Achievement
 	var filtered int64
 	wg.Add(1)
 	go func() {
@@ -46,7 +46,7 @@ func achievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			"1": "completed, app_owners desc",
 		})
 
-		achievements, filtered, err = elasticHelpers.SearchAppAchievements(query.GetOffset(), search, sorters)
+		achievements, filtered, err = elasticsearch.SearchAppAchievements(query.GetOffset(), search, sorters)
 		if err != nil {
 			log.Err(err, r)
 		}

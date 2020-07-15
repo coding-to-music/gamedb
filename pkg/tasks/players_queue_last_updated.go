@@ -10,7 +10,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
-	"github.com/gamedb/gamedb/pkg/rabbit-web"
+	"github.com/gamedb/gamedb/pkg/rabbitweb"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -42,7 +42,7 @@ func (c PlayersQueueLastUpdated) work() (err error) {
 		queue.QueuePlayers:  5,
 	}
 
-	queues, err := rabbit_web.RabbitClient.GetQueues()
+	queues, err := rabbitweb.RabbitClient.GetQueues()
 	if err != nil {
 		return err
 	}
