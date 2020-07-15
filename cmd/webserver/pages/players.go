@@ -2,12 +2,13 @@ package pages
 
 import (
 	"net/http"
-	"path"
 	"sort"
 	"strconv"
 	"sync"
+	"time"
 
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
+	elastic_search "github.com/gamedb/gamedb/pkg/elastic-search"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -15,7 +16,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/tasks"
 	"github.com/go-chi/chi"
-	"go.mongodb.org/mongo-driver/bson"
+	"github.com/olivere/elastic/v7"
 )
 
 func PlayersRouter() http.Handler {
@@ -24,7 +25,8 @@ func PlayersRouter() http.Handler {
 	r.Get("/add", playerAddHandler)
 	r.Post("/add", playerAddHandler)
 	r.Get("/states.json", statesAjaxHandler)
-	r.Get("/players.json", playersAjaxHandler)
+	// r.Get("/players.json", playersAjaxHandler)
+	r.Get("/players.json", playersAjaxHandler2)
 	r.Mount("/{id:[0-9]+}", PlayerRouter())
 	return r
 }
@@ -117,111 +119,101 @@ func statesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	returnJSON(w, r, states)
 }
 
-func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
+func playersAjaxHandler2(w http.ResponseWriter, r *http.Request) {
 
 	query := datatable.NewDataTableQuery(r, true)
 
 	country := query.GetSearchString("country")
-	if len(country) > 4 {
-		_, err := w.Write([]byte("invalid cc"))
-		log.Err(err, r)
-		return
-	}
+	state := query.GetSearchString("state")
+	search := query.GetSearchString("search")
 
-	var columns = map[string]string{
+	var sorters = query.GetOrderElastic(map[string]string{
 		"3": "level",
-		"4": "badges_count",
+		"4": "badges",
 
-		"5":  "games_count",
+		"5":  "games",
 		"6":  "play_time",
-		"13": "achievement_count",
+		"13": "achievements",
 
-		"7": "bans_game",
-		"8": "bans_cav",
-		"9": "bans_last",
+		"7": "game_bans",
+		"8": "vac_bans",
+		"9": "last_ban",
 
-		"10": "friends_count",
-		"11": "comments_count",
-	}
+		"10": "friends",
+		"11": "comments",
+	})
 
-	var sortOrder = query.GetOrderMongo(columns)
-	var filter = bson.D{}
 	var isContinent bool
 
-	// Continent
-	for _, v := range i18n.Continents {
-		if "c-"+v.Key == country {
-			isContinent = true
-			filter = append(filter, bson.E{Key: "continent_code", Value: v.Key})
-			break
-		}
-	}
+	var filters []elastic.Query
 
-	// Country
-	if !isContinent && country != "" {
+	if country != "" {
 
-		if country == "_" { // No country set
-			country = ""
+		for _, v := range i18n.Continents {
+			if "c-"+v.Key == country {
+
+				isContinent = true
+				filters = append(filters, elastic.NewTermQuery("continent", country))
+				break
+			}
 		}
 
-		filter = append(filter, bson.E{Key: "country_code", Value: country})
+		if !isContinent {
 
-		state := query.GetSearchString("state")
-		if state != "" && len(state) <= 3 {
-			filter = append(filter, bson.E{Key: "status_code", Value: state})
+			if _, ok := i18n.States[country]; ok || country == "_" {
+
+				if country == "_" {
+					country = ""
+				}
+
+				filters = append(filters, elastic.NewTermQuery("country_code", country))
+
+				if _, ok := i18n.States[country][state]; ok || state == "_" {
+
+					if state == "_" {
+						state = ""
+					}
+
+					filters = append(filters, elastic.NewTermQuery("state_code", state))
+				}
+			}
 		}
-	}
-
-	search := query.GetSearchString("search")
-	if len(search) >= 2 {
-
-		search = path.Base(search) // Incase someone tries a profile URL
-
-		filter = append(filter, bson.E{Key: "$text", Value: bson.M{"$search": search}})
-
-		// quoted := regexp.QuoteMeta(search)
-		// filter = append(filter, bson.E{Key: "$or", Value: bson.A{
-		// 	bson.M{"persona_name": bson.M{"$regex": quoted, "$options": "i"}},
-		// 	bson.M{"vanity_url": bson.M{"$regex": quoted, "$options": "i"}},
-		// }})
 	}
 
 	//
 	var wg sync.WaitGroup
 
 	// Get players
-	var players []mongo.Player
+	var players []elastic_search.Player
+	var filtered int64
+	var aggregations = map[string]map[string]int64{}
 	wg.Add(1)
 	go func() {
 
 		defer wg.Done()
 
 		var err error
+		var aggs elastic.Aggregations
 
-		var projection = bson.M{
-			"_id":          1,
-			"persona_name": 1,
-			"avatar":       1,
-			"country_code": 1,
-			//
-			"level":        1,
-			"badges_count": 1,
-			//
-			"games_count":       1,
-			"play_time":         1,
-			"achievement_count": 1,
-			//
-			"bans_game": 1,
-			"bans_cav":  1,
-			"bans_last": 1,
-			//
-			"friends_count":  1,
-			"comments_count": 1,
-		}
-
-		players, err = mongo.GetPlayers(query.GetOffset64(), 100, sortOrder, filter, projection)
+		players, aggs, filtered, err = elastic_search.SearchPlayers(100, query.GetOffset(), search, sorters, filters)
 		if err != nil {
 			log.Err(err, r)
+			return
+		}
+
+		if a, ok := aggs.Terms("country"); ok {
+			aggregations["country"] = map[string]int64{}
+			for _, v := range a.Buckets {
+				aggregations["country"][v.Key.(string)] = v.DocCount
+				if !isContinent && country != "" && country == v.Key.(string) {
+					if a, ok := v.Terms("state"); ok {
+						aggregations["state"] = map[string]int64{}
+						for _, v := range a.Buckets {
+							aggregations["state"][v.Key.(string)] = v.DocCount
+						}
+					}
+				}
+			}
 		}
 	}()
 
@@ -239,53 +231,42 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	// Get filtered total
-	var filtered int64
-	wg.Add(1)
-	go func() {
-
-		defer wg.Done()
-
-		var err error
-		filtered, err = mongo.CountDocuments(mongo.CollectionPlayers, filter, 0)
-		if err != nil {
-			log.Err(err, r)
-		}
-	}()
-
 	// Wait
 	wg.Wait()
 
-	var response = datatable.NewDataTablesResponse(r, query, total, filtered, nil)
+	var response = datatable.NewDataTablesResponse(r, query, total, filtered, aggregations)
 	for k, v := range players {
 
 		var index = query.GetOffset() + k + 1
 		var id = strconv.FormatInt(v.ID, 10)
-		var lastBan = v.LastBan.Format(helpers.DateYear)
+		var lastBan = time.Unix(v.LastBan, 0).Format(helpers.DateYear)
+
+		var playtimeShort = helpers.GetTimeShort(v.PlayTime, 2)
+		var playtimeLong = helpers.GetTimeShort(v.PlayTime, 5)
 
 		response.AddRow([]interface{}{
-			index,                     // 0
-			id,                        // 1
-			v.GetName(),               // 2
-			v.GetAvatar(),             // 3
-			v.GetAvatar2(),            // 4
-			v.Level,                   // 5
-			v.GamesCount,              // 6
-			v.BadgesCount,             // 7
-			v.GetPlaytimeShort("", 2), // 8
-			v.GetPlaytimeShort("", 5), // 9
-			v.FriendsCount,            // 10
-			v.GetFlag(),               // 11
-			v.GetCountry(),            // 12
-			v.GetPath(),               // 13
-			v.CommunityLink(),         // 14
-			v.NumberOfGameBans,        // 15
-			v.NumberOfVACBans,         // 16
-			v.LastBan.Unix(),          // 17
-			lastBan,                   // 18
-			v.CountryCode,             // 19
-			v.CommentsCount,           // 20
-			v.AchievementCount,        // 21
+			index,             // 0
+			id,                // 1
+			v.GetName(),       // 2
+			v.GetAvatar(),     // 3
+			v.GetAvatar2(),    // 4
+			v.Level,           // 5
+			v.Games,           // 6
+			v.Badges,          // 7
+			playtimeShort,     // 8
+			playtimeLong,      // 9
+			v.Friends,         // 10
+			v.GetFlag(),       // 11
+			v.GetCountry(),    // 12
+			v.GetPath(),       // 13
+			v.CommunityLink(), // 14
+			v.GameBans,        // 15
+			v.VACBans,         // 16
+			v.LastBan,         // 17
+			lastBan,           // 18
+			v.CountryCode,     // 19
+			v.Comments,        // 20
+			v.Achievements,    // 21
 		})
 	}
 

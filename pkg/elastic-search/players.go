@@ -2,9 +2,11 @@ package elastic_search
 
 import (
 	"encoding/json"
+	"path"
 	"strconv"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/olivere/elastic/v7"
 )
@@ -48,19 +50,31 @@ func (player Player) GetAvatar() string {
 	return helpers.GetPlayerAvatar(player.Avatar)
 }
 
+func (player Player) GetAvatar2() string {
+	return helpers.GetPlayerAvatar2(player.Level)
+}
+
+func (player Player) GetFlag() string {
+	return helpers.GetPlayerFlagPath(player.CountryCode)
+}
+
+func (player Player) GetCountry() string {
+	return i18n.CountryCodeToName(player.CountryCode)
+}
+
 func (player Player) GetCommunityLink() string {
 	return helpers.GetPlayerCommunityLink(player.ID, player.VanityURL)
 }
 
+func (player Player) CommunityLink() string {
+	return helpers.GetPlayerCommunityLink(player.ID, player.VanityURL)
+}
+
 func IndexPlayer(p Player) error {
-
-	err := IndexGlobalItem(Global{ID: strconv.FormatInt(p.ID, 10), Name: p.PersonaName, Icon: p.Avatar, Type: GlobalTypePlayer})
-	log.Err(err)
-
 	return indexDocument(IndexPlayers, strconv.FormatInt(p.ID, 10), p)
 }
 
-func SearchPlayers(limit int, offset int, search string, sorters []elastic.Sorter) (players []Player, aggregations map[string]map[string]int64, total int64, err error) {
+func SearchPlayers(limit int, offset int, search string, sorters []elastic.Sorter, filters []elastic.Query) (players []Player, aggregations elastic.Aggregations, total int64, err error) {
 
 	client, ctx, err := GetElastic()
 	if err != nil {
@@ -72,28 +86,35 @@ func SearchPlayers(limit int, offset int, search string, sorters []elastic.Sorte
 		From(offset).
 		Size(limit).
 		TrackTotalHits(true).
-		Highlight(elastic.NewHighlight().Field("name").PreTags("<mark>").PostTags("</mark>")).
-		Aggregation("country", elastic.NewTermsAggregation().Field("type").Size(10).OrderByCountDesc().
-			SubAggregation("state", elastic.NewTermsAggregation().Field("state_code").Size(10).OrderByCountDesc()),
+		Aggregation("country", elastic.NewTermsAggregation().Field("country_code").Size(1000).OrderByCountDesc().
+			SubAggregation("state", elastic.NewTermsAggregation().Field("state_code").Size(1000).OrderByCountDesc()),
 		)
 
 	if search != "" {
+
+		search = path.Base(search) // Incase someone tries a profile URL
 
 		searchService.Query(elastic.NewBoolQuery().
 			Must(
 				elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
 					elastic.NewTermQuery("id", search).Boost(5),
 					elastic.NewMatchQuery("name", search).Boost(1),
-					elastic.NewMatchQuery("name_recent", search).Boost(0.1),
-					elastic.NewPrefixQuery("name", search).Boost(0.1),
+					elastic.NewPrefixQuery("name", search).Boost(0.9),
+					elastic.NewMatchQuery("url", search).Boost(0.8),
+					elastic.NewPrefixQuery("url", search).Boost(0.7),
+					elastic.NewMatchQuery("name_recent", search).Boost(0.6),
+					elastic.NewPrefixQuery("name_recent", search).Boost(0.5),
 				),
 			).
 			Should(
 				elastic.NewFunctionScoreQuery().
 					AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("level").Factor(0.01)).
 					AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("games").Factor(0.001)),
-			),
+			).
+			Filter(filters...),
 		)
+
+		searchService.Highlight(elastic.NewHighlight().Field("name").PreTags("<mark>").PostTags("</mark>"))
 	}
 
 	if len(sorters) > 0 {
@@ -103,16 +124,6 @@ func SearchPlayers(limit int, offset int, search string, sorters []elastic.Sorte
 	searchResult, err := searchService.Do(ctx)
 	if err != nil {
 		return players, aggregations, 0, err
-	}
-
-	aggregations = make(map[string]map[string]int64, len(searchResult.Aggregations))
-	for k := range searchResult.Aggregations {
-		if a, ok := searchResult.Aggregations.Terms(k); ok {
-			aggregations[k] = make(map[string]int64, len(a.Buckets))
-			for _, v := range a.Buckets {
-				aggregations[k][*v.KeyAsString] = v.DocCount
-			}
-		}
 	}
 
 	for _, hit := range searchResult.Hits.Hits {
@@ -137,7 +148,7 @@ func SearchPlayers(limit int, offset int, search string, sorters []elastic.Sorte
 		players = append(players, player)
 	}
 
-	return players, aggregations, searchResult.TotalHits(), err
+	return players, searchResult.Aggregations, searchResult.TotalHits(), err
 }
 
 //noinspection GoUnusedExportedFunction
