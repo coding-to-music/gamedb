@@ -187,6 +187,11 @@ func login(r *http.Request, user mysql.User) (string, bool) {
 		log.Err(err, r)
 	}
 
+	err = mysql.UpdateUserCol(user.ID, "logged_in_at", time.Now())
+	if err != nil {
+		log.Err(err, r)
+	}
+
 	return "You have been logged in", true
 }
 
