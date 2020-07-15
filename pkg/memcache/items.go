@@ -47,15 +47,16 @@ var (
 	MemcacheGroupInQueue   = func(groupID string) Item { return Item{Key: "group-in-queue-" + groupID, Expiration: 60 * 60, Value: "1"} }
 
 	// App Bits
-	MemcacheAppTags       = func(appID int) Item { return Item{Key: "app-tags-" + strconv.Itoa(appID), Expiration: 0} }
-	MemcacheAppCategories = func(appID int) Item { return Item{Key: "app-categories-" + strconv.Itoa(appID), Expiration: 0} }
-	MemcacheAppGenres     = func(appID int) Item { return Item{Key: "app-genres-" + strconv.Itoa(appID), Expiration: 0} }
-	MemcacheAppDemos      = func(appID int) Item { return Item{Key: "app-demos-" + strconv.Itoa(appID), Expiration: 0} }
-	MemcacheAppRelated    = func(appID int) Item { return Item{Key: "app-related-" + strconv.Itoa(appID), Expiration: 0} }
-	MemcacheAppPublishers = func(appID int) Item { return Item{Key: "app-publishers-" + strconv.Itoa(appID), Expiration: 0} }
-	MemcacheAppDevelopers = func(appID int) Item { return Item{Key: "app-developers-" + strconv.Itoa(appID), Expiration: 0} }
-	MemcacheAppBundles    = func(appID int) Item { return Item{Key: "app-bundles-" + strconv.Itoa(appID), Expiration: 0} }
-	MemcacheAppPackages   = func(appID int) Item { return Item{Key: "app-packages-" + strconv.Itoa(appID), Expiration: 0} }
+	MemcacheAppTags           = func(appID int) Item { return Item{Key: "app-tags-" + strconv.Itoa(appID), Expiration: 0} }
+	MemcacheAppCategories     = func(appID int) Item { return Item{Key: "app-categories-" + strconv.Itoa(appID), Expiration: 0} }
+	MemcacheAppGenres         = func(appID int) Item { return Item{Key: "app-genres-" + strconv.Itoa(appID), Expiration: 0} }
+	MemcacheAppDemos          = func(appID int) Item { return Item{Key: "app-demos-" + strconv.Itoa(appID), Expiration: 0} }
+	MemcacheAppRelated        = func(appID int) Item { return Item{Key: "app-related-" + strconv.Itoa(appID), Expiration: 0} }
+	MemcacheAppPublishers     = func(appID int) Item { return Item{Key: "app-publishers-" + strconv.Itoa(appID), Expiration: 0} }
+	MemcacheAppDevelopers     = func(appID int) Item { return Item{Key: "app-developers-" + strconv.Itoa(appID), Expiration: 0} }
+	MemcacheAppBundles        = func(appID int) Item { return Item{Key: "app-bundles-" + strconv.Itoa(appID), Expiration: 0} }
+	MemcacheAppPackages       = func(appID int) Item { return Item{Key: "app-packages-" + strconv.Itoa(appID), Expiration: 0} }
+	MemcacheAppNoAchievements = func(appID int) Item { return Item{Key: "app-no-stats-" + strconv.Itoa(appID), Expiration: 60 * 60, Value: "1"} }
 
 	// Groups
 	MemcacheTrendingGroups = Item{Key: "trending-apps", Expiration: 60 * 10}
@@ -92,10 +93,9 @@ var (
 	MemcacheTrendingApps   = Item{Key: "trending-apps", Expiration: 60 * 10}
 
 	// Other
-	MemcacheUserByAPIKey           = func(key string) Item { return Item{Key: "user-level-by-key-" + key, Expiration: 10 * 60} }
-	MemcachePlayerLevels           = Item{Key: "player-levels", Expiration: 60 * 60 * 24}
-	MemcachePlayerLevelsRounded    = Item{Key: "player-levels-rounded", Expiration: 60 * 60 * 24}
-	MemcacheFirstAppBadge          = func(appID int) Item { return Item{Key: "first-app-badge-" + strconv.Itoa(appID), Expiration: 0} }
-	MemcacheChatBotRequest         = func(request string) Item { return Item{Key: "chat-bot-request-" + helpers.MD5([]byte(request)), Expiration: 60 * 10} }
-	MemcachePlayerAchievementsNone = func(appID int) Item { return Item{Key: "no-stats-" + strconv.Itoa(appID), Expiration: 60 * 60, Value: "1"} }
+	MemcacheUserByAPIKey        = func(key string) Item { return Item{Key: "user-level-by-key-" + key, Expiration: 10 * 60} }
+	MemcachePlayerLevels        = Item{Key: "player-levels", Expiration: 60 * 60 * 24}
+	MemcachePlayerLevelsRounded = Item{Key: "player-levels-rounded", Expiration: 60 * 60 * 24}
+	MemcacheFirstAppBadge       = func(appID int) Item { return Item{Key: "first-app-badge-" + strconv.Itoa(appID), Expiration: 0} }
+	MemcacheChatBotRequest      = func(request string) Item { return Item{Key: "chat-bot-request-" + helpers.MD5([]byte(request)), Expiration: 60 * 10} }
 )

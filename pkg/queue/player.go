@@ -203,21 +203,21 @@ func playerHandler(messages []*rabbit.Message) {
 			player.WishlistTotalCost = total
 		}()
 
-		// Read from Mongo databases
-		wg.Add(1)
-		go func() {
-
-			defer wg.Done()
-
-			c, err := mongo.CountDocuments(mongo.CollectionPlayerAchievements, bson.D{{"player_id", player.ID}}, 0)
-			if err != nil {
-				log.Err(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-
-			player.AchievementCount = int(c)
-		}()
+		// This now happens in a sub queue
+		// wg.Add(1)
+		// go func() {
+		//
+		// 	defer wg.Done()
+		//
+		// 	c, err := mongo.CountDocuments(mongo.CollectionPlayerAchievements, bson.D{{"player_id", player.ID}}, 0)
+		// 	if err != nil {
+		// 		log.Err(err, payload.ID)
+		// 		sendToRetryQueue(message)
+		// 		return
+		// 	}
+		//
+		// 	player.AchievementCount = int(c)
+		// }()
 
 		wg.Add(1)
 		go func() {
@@ -547,6 +547,8 @@ func updatePlayerGames(player *mongo.Player, payload PlayerMessage) error {
 					log.Err(err)
 				}
 			}
+			err = ProducePlayerAchievements(player.ID, 0, false)
+			log.Err(err)
 		}
 	}
 
@@ -614,6 +616,8 @@ func updatePlayerRecentGames(player *mongo.Player, payload PlayerMessage) error 
 				err = ProducePlayerAchievements(player.ID, v.AppID, false)
 				log.Err(err)
 			}
+			err = ProducePlayerAchievements(player.ID, 0, false)
+			log.Err(err)
 		}
 	}
 

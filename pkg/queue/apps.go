@@ -204,6 +204,7 @@ func appHandler(messages []*rabbit.Message) {
 				memcache.MemcacheAppPublishers(app.ID).Key,
 				memcache.MemcacheAppBundles(app.ID).Key,
 				memcache.MemcacheAppPackages(app.ID).Key,
+				memcache.MemcacheAppNoAchievements(app.ID).Key,
 				memcache.MemcacheMongoCount(mongo.CollectionAppSales.String(), bson.D{{"app_id", app.ID}}).Key,
 			}
 

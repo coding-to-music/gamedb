@@ -33,7 +33,40 @@ func playerAchievementsHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		item := memcache.MemcachePlayerAchievementsNone(payload.AppID)
+		if payload.AppID == 0 {
+
+			<-time.NewTimer(time.Second * 5).C // Sleep to make sure all other messages are consumed
+
+			count, err := mongo.CountDocuments(mongo.CollectionPlayerAchievements, bson.D{{"player_id", payload.PlayerID}}, 0)
+			if err != nil {
+				log.Err(err, message.Message.Body)
+				sendToRetryQueue(message)
+				continue
+			}
+
+			// Update player row
+			var update = bson.D{{"achievement_count", count}}
+
+			_, err = mongo.UpdateOne(mongo.CollectionPlayers, bson.D{{"_id", payload.PlayerID}}, update)
+			if err != nil {
+				log.Err(err, message.Message.Body)
+				sendToRetryQueue(message)
+				continue
+			}
+
+			// Clear caches
+			err = memcache.Delete(memcache.MemcachePlayer(payload.PlayerID).Key)
+			if err != nil {
+				log.Err(err, message.Message.Body)
+				sendToRetryQueue(message)
+				continue
+			}
+
+			message.Ack(false)
+			continue
+		}
+
+		item := memcache.MemcacheAppNoAchievements(payload.AppID) // Cache if this app has no achievements
 
 		_, err = memcache.Get(item.Key)
 		if err == nil {
