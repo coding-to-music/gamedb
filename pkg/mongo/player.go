@@ -344,18 +344,11 @@ func CreatePlayerIndexes() {
 		})
 	}
 
-	// For sorting main players table
+	// For sorting main players table, ranked columns are added above
 	cols := []string{
-		"achievement_count",
-		"badges_count",
 		"bans_cav",
 		"bans_game",
 		"bans_last",
-		"comments_count",
-		"friends_count",
-		"games_count",
-		"level",
-		"play_time",
 	}
 
 	for _, col := range cols {
