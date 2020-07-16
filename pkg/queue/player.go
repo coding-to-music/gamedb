@@ -69,6 +69,7 @@ func playerHandler(messages []*rabbit.Message) {
 			message.Ack(false)
 			continue
 		}
+		newPlayer := err == mongo.ErrNoDocuments
 		err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
 		if err != nil {
 
@@ -271,13 +272,28 @@ func playerHandler(messages []*rabbit.Message) {
 
 			defer wg.Done()
 
-			err = savePlayerMongo(player)
+			err = savePlayerRow(player)
 			if err != nil {
 				log.Err(err, payload.ID)
 				sendToRetryQueue(message)
 				return
 			}
 		}()
+
+		if newPlayer {
+			wg.Add(1)
+			go func() {
+
+				defer wg.Done()
+
+				err = updatePlayerFriendRows(player)
+				if err != nil {
+					log.Err(err, payload.ID)
+					sendToRetryQueue(message)
+					return
+				}
+			}()
+		}
 
 		wg.Add(1)
 		go func() {
@@ -920,9 +936,22 @@ func updatePlayerComments(player *mongo.Player) error {
 	return nil
 }
 
-func savePlayerMongo(player mongo.Player) error {
+func savePlayerRow(player mongo.Player) error {
 
 	_, err := mongo.ReplaceOne(mongo.CollectionPlayers, bson.D{{"_id", player.ID}}, player)
+	return err
+}
+
+func updatePlayerFriendRows(player mongo.Player) error {
+
+	update := bson.D{
+		{"avatar", player.Avatar},
+		{"name", player.PersonaName},
+		{"games", player.GamesCount},
+		{"level", player.Level},
+	}
+
+	_, err := mongo.UpdateManySet(mongo.CollectionPlayerFriends, bson.D{{"friend_id", player.ID}}, update)
 	return err
 }
 
