@@ -33,7 +33,7 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	pwr, err := patreon.UnmarshalBytes(b)
 	if err != nil {
-		log.Err(err, r)
+		log.Err(err, r, b)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
