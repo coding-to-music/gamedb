@@ -346,6 +346,7 @@ func CreatePlayerIndexes() {
 
 	// For sorting main players table, ranked columns are added above
 	cols := []string{
+		"achievement_count_100",
 		"bans_cav",
 		"bans_game",
 		"bans_last",
