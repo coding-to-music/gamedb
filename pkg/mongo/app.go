@@ -574,7 +574,7 @@ func UpdateAppsInflux(writes []mongo.WriteModel) (err error) {
 		return err
 	}
 
-	c := client.Database(MongoDatabase).Collection(CollectionPlayerApps.String())
+	c := client.Database(MongoDatabase).Collection(CollectionApps.String())
 	_, err = c.BulkWrite(ctx, writes, options.BulkWrite())
 
 	return err
