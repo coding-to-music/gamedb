@@ -1,0 +1,7 @@
+{{define "wallpaper"}}
+    <body style="margin: 0; overflow: hidden">
+        {{ range .Apps }}
+            <img style="float: left; width: 10%; border: none" src="https://cdn.cloudflare.steamstatic.com/steam/apps/{{ . }}/header.jpg" alt="">
+        {{ end }}
+    </body>
+{{end}}
