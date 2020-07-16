@@ -66,12 +66,12 @@ func main() {
 
 	if false {
 		go func() {
-			// elastic_search.DeleteAndRebuildAppsIndex()
-			// elastic_search.DeleteAndRebuildAchievementsIndex()
-			// elastic_search.DeleteAndRebuildGroupsIndex()
-			// elastic_search.DeleteAndRebuildPlayersIndex()
-			// elastic_search.DeleteAndRebuildArticlesIndex()
-			// elastic_search.DeleteAndRebuildGlobalIndex()
+			// elasticsearch.DeleteAndRebuildAppsIndex()
+			// elasticsearch.DeleteAndRebuildAchievementsIndex()
+			// elasticsearch.DeleteAndRebuildGroupsIndex()
+			// elasticsearch.DeleteAndRebuildPlayersIndex()
+			// elasticsearch.DeleteAndRebuildArticlesIndex()
+			// elasticsearch.DeleteAndRebuildGlobalIndex()
 			log.Info("Elastic indexes finished")
 		}()
 	}
