@@ -318,14 +318,14 @@ func updatePackageFromPICS(pack *mongo.Package, message *rabbit.Message, payload
 		case "billingtype":
 
 			var i64 int64
-			i64, err = strconv.ParseInt(child.Value, 10, 8)
-			pack.BillingType = int(i64)
+			i64, err = strconv.ParseInt(child.Value, 10, 32)
+			pack.BillingType = int32(i64)
 
 		case "licensetype":
 
 			var i64 int64
-			i64, err = strconv.ParseInt(child.Value, 10, 8)
-			pack.LicenseType = int8(i64)
+			i64, err = strconv.ParseInt(child.Value, 10, 32)
+			pack.LicenseType = int32(i64)
 
 		case "status":
 

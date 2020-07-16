@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steamapi"
+	"github.com/Philipp15b/go-steam/protocol/steamlang"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -26,7 +27,7 @@ type Package struct {
 	AppItems         map[int]int           `bson:"app_items"`
 	AppsCount        int                   `bson:"apps_count"`
 	Bundles          []int                 `bson:"bundle_ids"`
-	BillingType      int                   `bson:"billing_type"`
+	BillingType      int32                 `bson:"billing_type"`
 	ChangeNumber     int                   `bson:"change_id"`
 	ChangeNumberDate time.Time             `bson:"change_number_date"`
 	ComingSoon       bool                  `bson:"coming_soon"`
@@ -39,7 +40,7 @@ type Package struct {
 	ImageLogo        string                `bson:"image_logo"`
 	ImagePage        string                `bson:"image_page"`
 	InStore          bool                  `bson:"in_store"` // todo
-	LicenseType      int8                  `bson:"license_type"`
+	LicenseType      int32                 `bson:"license_type"`
 	Name             string                `bson:"name"`
 	Platforms        []string              `bson:"platforms"`
 	Prices           helpers.ProductPrices `bson:"prices"`
@@ -176,60 +177,68 @@ func (pack Package) GetComingSoon() string {
 
 func (pack Package) GetBillingType() string {
 
-	switch pack.BillingType {
-	case 0:
+	switch steamlang.EBillingType(pack.BillingType) {
+	case steamlang.EBillingType_NoCost:
 		return "No Cost"
-	case 1:
+	case steamlang.EBillingType_BillOnceOnly:
 		return "Store"
-	case 2:
+	case steamlang.EBillingType_BillMonthly:
 		return "Bill Monthly"
-	case 3:
+	case steamlang.EBillingType_ProofOfPrepurchaseOnly:
 		return "CD Key"
-	case 4:
+	case steamlang.EBillingType_GuestPass:
 		return "Guest Pass"
-	case 5:
+	case steamlang.EBillingType_HardwarePromo:
 		return "Hardware Promo"
-	case 6:
+	case steamlang.EBillingType_Gift:
 		return "Gift"
-	case 7:
+	case steamlang.EBillingType_AutoGrant:
 		return "Free Weekend"
-	case 8:
+	case steamlang.EBillingType_OEMTicket:
 		return "OEM Ticket"
-	case 9:
+	case steamlang.EBillingType_RecurringOption:
 		return "Recurring Option"
-	case 10:
+	case steamlang.EBillingType_BillOnceOrCDKey:
 		return "Store or CD Key"
-	case 11:
+	case steamlang.EBillingType_Repurchaseable:
 		return "Repurchaseable"
-	case 12:
+	case steamlang.EBillingType_FreeOnDemand:
 		return "Free on Demand"
-	case 13:
+	case steamlang.EBillingType_Rental:
 		return "Rental"
-	case 14:
+	case steamlang.EBillingType_CommercialLicense:
 		return "Commercial License"
-	case 15:
+	case steamlang.EBillingType_FreeCommercialLicense:
 		return "Free Commercial License"
+	case steamlang.EBillingType_NumBillingTypes:
+		return "Num"
 	default:
+		log.Warning("New billing type", pack.BillingType)
 		return "Unknown"
 	}
 }
 
 func (pack Package) GetLicenseType() string {
 
-	switch pack.LicenseType {
-	case 0:
+	switch steamlang.ELicenseType(pack.LicenseType) {
+	case steamlang.ELicenseType_NoLicense:
 		return "No License"
-	case 1:
+	case steamlang.ELicenseType_SinglePurchase:
 		return "Single Purchase"
-	case 2:
+	case steamlang.ELicenseType_SinglePurchaseLimitedUse:
 		return "Single Purchase (Limited Use)"
-	case 3:
+	case steamlang.ELicenseType_RecurringCharge:
 		return "Recurring Charge"
-	case 6:
+	case steamlang.ELicenseType_RecurringChargeLimitedUse:
+		return "Recurring Charge"
+	case steamlang.ELicenseType_RecurringChargeLimitedUseWithOverages:
+		return "Recurring Charge"
+	case steamlang.ELicenseType_RecurringOption:
 		return "Recurring"
-	case 7:
+	case steamlang.ELicenseType_LimitedUseDelayedActivation:
 		return "Limited Use Delayed Activation"
 	default:
+		log.Warning("New license type", pack.LicenseType)
 		return "Unknown"
 	}
 }
