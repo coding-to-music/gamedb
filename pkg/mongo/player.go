@@ -42,21 +42,23 @@ func (rk RankMetric) String() string {
 }
 
 const (
-	RankKeyLevel    RankMetric = "l"
-	RankKeyBadges   RankMetric = "b"
-	RankKeyFriends  RankMetric = "f"
-	RankKeyComments RankMetric = "c"
-	RankKeyGames    RankMetric = "g"
-	RankKeyPlaytime RankMetric = "p"
+	RankKeyLevel        RankMetric = "l"
+	RankKeyBadges       RankMetric = "b"
+	RankKeyFriends      RankMetric = "f"
+	RankKeyComments     RankMetric = "c"
+	RankKeyGames        RankMetric = "g"
+	RankKeyPlaytime     RankMetric = "p"
+	RankKeyAchievements RankMetric = "a"
 )
 
 var PlayerRankFields = map[string]RankMetric{
-	"level":          RankKeyLevel,
-	"games_count":    RankKeyGames,
-	"badges_count":   RankKeyBadges,
-	"play_time":      RankKeyPlaytime,
-	"friends_count":  RankKeyFriends,
-	"comments_count": RankKeyComments,
+	"level":             RankKeyLevel,
+	"games_count":       RankKeyGames,
+	"badges_count":      RankKeyBadges,
+	"play_time":         RankKeyPlaytime,
+	"friends_count":     RankKeyFriends,
+	"comments_count":    RankKeyComments,
+	"achievement_count": RankKeyAchievements,
 }
 
 var PlayerRankFieldsInflux = map[RankMetric]string{
