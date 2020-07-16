@@ -54,6 +54,12 @@
         .player-chart {
             height: 300px;
         }
+
+        #players-chart2 {
+            .highcharts-background {
+                cursor: ew-resize;
+            }
+        }
     }
 
     #reviews {

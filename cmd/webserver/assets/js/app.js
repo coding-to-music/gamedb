@@ -583,6 +583,9 @@ if ($appPage.length > 0) {
                 }
 
                 Highcharts.chart('players-chart2', $.extend(true, {}, chartOptions, {
+                    chart: {
+                        zoomType: 'x',
+                    },
                     series: series(data),
                 }));
             },
