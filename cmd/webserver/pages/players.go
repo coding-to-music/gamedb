@@ -152,7 +152,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			if "c-"+v.Key == country {
 
 				isContinent = true
-				filters = append(filters, elastic.NewTermQuery("continent", country))
+				filters = append(filters, elastic.NewTermQuery("continent", v.Key))
 				break
 			}
 		}
