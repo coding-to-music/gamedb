@@ -142,12 +142,12 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 			Password:      string(passwordBytes),
 			ProductCC:     sessionHelpers.GetProductCC(r),
 			Level:         mysql.UserLevel1,
+			LoggedInAt:    time.Unix(0, 0), // Fixes a gorm bug
 		}
 
 		user.SetAPIKey()
 
 		db = db.Create(&user)
-
 		if db.Error != nil {
 			log.Err(db.Error, r)
 			return "An error occurred", false
