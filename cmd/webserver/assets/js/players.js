@@ -203,9 +203,25 @@ if ($('#players-page').length > 0) {
                 "orderSequence": ["desc"],
                 "visible": false,
             },
-            // Link
+            // Achievements
             {
                 "targets": 12,
+                "render": function (data, type, row) {
+                    return row[21].toLocaleString();
+                },
+                "orderSequence": ["desc"],
+            },
+            // Achievements
+            {
+                "targets": 13,
+                "render": function (data, type, row) {
+                    return row[22].toLocaleString();
+                },
+                "orderSequence": ["desc"],
+            },
+            // Link
+            {
+                "targets": 14,
                 "render": function (data, type, row) {
                     if (row[14]) {
                         return '<a href="' + row[14] + '" target="_blank" rel="noopener"><i class="fas fa-link"></i></a>';
@@ -213,14 +229,6 @@ if ($('#players-page').length > 0) {
                     return '';
                 },
                 "orderable": false,
-            },
-            // Achievements
-            {
-                "targets": 13,
-                "render": function (data, type, row) {
-                    return row[21].toLocaleString();
-                },
-                "orderSequence": ["desc"],
             },
         ]
     };
@@ -250,15 +258,15 @@ if ($('#players-page').length > 0) {
             case '#level':
 
                 show = [3, 4];
-                hide = [5, 6, 7, 8, 9, 10, 11, 13];
+                hide = [5, 6, 7, 8, 9, 10, 11, 12, 13];
 
                 dt.order([3, 'desc']);
                 break;
 
             case '#games':
 
-                show = [5, 6, 13];
-                hide = [3, 4, 7, 8, 9, 10, 11];
+                show = [5, 6];
+                hide = [3, 4, 7, 8, 9, 10, 11, 12, 13];
 
                 dt.order([5, 'desc']);
                 break;
@@ -266,7 +274,7 @@ if ($('#players-page').length > 0) {
             case '#bans':
 
                 show = [7, 8, 9];
-                hide = [3, 4, 5, 6, 7, 8, 9, 10, 11, 13];
+                hide = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
 
                 dt.order([7, 'desc']);
                 break;
@@ -274,9 +282,17 @@ if ($('#players-page').length > 0) {
             case '#profile':
 
                 show = [10, 11];
-                hide = [3, 4, 5, 6, 7, 8, 9, 10, 11, 13];
+                hide = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
 
                 dt.order([10, 'desc']);
+                break;
+
+            case '#achievements':
+
+                show = [12, 13];
+                hide = [3, 4, 5, 6, 7, 8, 9, 10, 11];
+
+                dt.order([12, 'desc']);
                 break;
         }
 

@@ -31,6 +31,7 @@ type Player struct {
 	Friends           int      `json:"friends"`
 	Comments          int      `json:"comments"`
 	Achievements      int      `json:"achievements"`
+	Achievements100   int      `json:"achievements_100"`
 	Score             float64  `json:"-"`
 }
 
@@ -160,24 +161,25 @@ func DeleteAndRebuildPlayersIndex() {
 		"settings": settings,
 		"mappings": map[string]interface{}{
 			"properties": map[string]interface{}{
-				"id":           fieldTypeKeyword,
-				"name":         fieldTypeText,
-				"name_recent":  fieldTypeText,
-				"url":          fieldTypeText,
-				"avatar":       fieldTypeDisabled,
-				"continent":    fieldTypeKeyword,
-				"country_code": fieldTypeKeyword,
-				"state_code":   fieldTypeKeyword,
-				"last_ban":     fieldTypeLong,
-				"game_bans":    fieldTypeInteger,
-				"vac_bans":     fieldTypeInteger,
-				"level":        fieldTypeInteger,
-				"play_time":    fieldTypeInteger,
-				"badges":       fieldTypeInteger,
-				"games":        fieldTypeInteger,
-				"friends":      fieldTypeInteger,
-				"comments":     fieldTypeInteger,
-				"achievements": fieldTypeInteger,
+				"id":               fieldTypeKeyword,
+				"name":             fieldTypeText,
+				"name_recent":      fieldTypeText,
+				"url":              fieldTypeText,
+				"avatar":           fieldTypeDisabled,
+				"continent":        fieldTypeKeyword,
+				"country_code":     fieldTypeKeyword,
+				"state_code":       fieldTypeKeyword,
+				"last_ban":         fieldTypeLong,
+				"game_bans":        fieldTypeInteger,
+				"vac_bans":         fieldTypeInteger,
+				"level":            fieldTypeInteger,
+				"play_time":        fieldTypeInteger,
+				"badges":           fieldTypeInteger,
+				"games":            fieldTypeInteger,
+				"friends":          fieldTypeInteger,
+				"comments":         fieldTypeInteger,
+				"achievements":     fieldTypeInteger,
+				"achievements_100": fieldTypeInteger,
 			},
 		},
 	}

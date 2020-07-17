@@ -40,6 +40,7 @@ func appsPlayersHandler(messages []*rabbit.Message) {
 		player.LastBan = payload.Player.LastBan.Unix()
 		player.GameBans = payload.Player.NumberOfGameBans
 		player.Achievements = payload.Player.AchievementCount
+		player.Achievements100 = payload.Player.AchievementCount100
 		player.Continent = payload.Player.ContinentCode
 		player.VACBans = payload.Player.NumberOfVACBans
 		player.Level = payload.Player.Level

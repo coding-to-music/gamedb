@@ -62,12 +62,13 @@ var PlayerRankFields = map[string]RankMetric{
 }
 
 var PlayerRankFieldsInflux = map[RankMetric]string{
-	RankKeyLevel:    "level_rank",
-	RankKeyGames:    "games_rank",
-	RankKeyBadges:   "badges_rank",
-	RankKeyPlaytime: "playtime_rank",
-	RankKeyFriends:  "friends_rank",
-	RankKeyComments: "comments_rank",
+	RankKeyLevel:        "level_rank",
+	RankKeyGames:        "games_rank",
+	RankKeyBadges:       "badges_rank",
+	RankKeyPlaytime:     "playtime_rank",
+	RankKeyFriends:      "friends_rank",
+	RankKeyComments:     "comments_rank",
+	RankKeyAchievements: "achievements_rank",
 }
 
 type Player struct {

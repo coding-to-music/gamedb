@@ -130,9 +130,8 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		"3": "level",
 		"4": "badges",
 
-		"5":  "games",
-		"6":  "play_time",
-		"13": "achievements",
+		"5": "games",
+		"6": "play_time",
 
 		"7": "game_bans",
 		"8": "vac_bans",
@@ -140,6 +139,9 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		"10": "friends",
 		"11": "comments",
+
+		"12": "achievements",
+		"13": "achievement_count_100",
 	})
 
 	var isContinent bool
@@ -266,6 +268,8 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			v.CountryCode,     // 19
 			v.Comments,        // 20
 			v.Achievements,    // 21
+			v.Achievements100, // 22
+			v.GetNameMarked(), // 23
 		})
 	}
 
