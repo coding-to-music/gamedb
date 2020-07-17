@@ -17,7 +17,7 @@ func (c CommandGroupsTrending) ID() string {
 }
 
 func (CommandGroupsTrending) Regex() string {
-	return `^[.|!]trending[\s-]]groups$`
+	return `^[.|!]trending[\s-]?groups$`
 }
 
 func (CommandGroupsTrending) DisableCache() bool {
