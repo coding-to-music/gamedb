@@ -473,7 +473,11 @@ func SearchPlayer(search string, projection bson.M) (player Player, queue bool, 
 			player.ID = int64(resp.SteamID)
 
 			var wg sync.WaitGroup
-			for k := range projection {
+			for k, v := range projection {
+
+				if v.(int) < 1 {
+					continue
+				}
 
 				switch k {
 				case "level":
