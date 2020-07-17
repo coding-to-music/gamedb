@@ -113,12 +113,13 @@ func playerRanksHandler(messages []*rabbit.Message) {
 					}
 				}
 
-				_, err = influxHelper.InfluxWriteMany(influxHelper.InfluxRetentionPolicyAllTime, influx.BatchPoints{
+				batch := influx.BatchPoints{
 					Points:          points,
 					Database:        influxHelper.InfluxGameDB,
 					RetentionPolicy: influxHelper.InfluxRetentionPolicyAllTime.String(),
-				})
+				}
 
+				_, err = influxHelper.InfluxWriteMany(influxHelper.InfluxRetentionPolicyAllTime, batch)
 				return err
 			}()
 
