@@ -32,7 +32,7 @@
                     </li>
                     {{ if or (gt (len .App.Screenshots) 0) (gt (len .App.Movies) 0) }}
                         <li class="nav-item">
-                            <a class="nav-link" data-toggle="tab" href="#media" role="tab">Media</a>
+                            <a class="nav-link" data-toggle="tab" href="#media" role="tab">Media ({{ sum (len .App.Screenshots) (len .App.Movies) }})</a>
                         </li>
                     {{ end }}
                     <li class="nav-item">
@@ -50,27 +50,27 @@
                     {{ end }}
                     {{ if gt (len .App.AlbumMetaData.Tracks) 0 }}
                         <li class="nav-item">
-                            <a class="nav-link" data-toggle="tab" href="#tracks" role="tab">Tracks</a>
+                            <a class="nav-link" data-toggle="tab" href="#tracks" role="tab">Tracks ({{ comma (len .App.AlbumMetaData.Tracks) }})</a>
                         </li>
                     {{ end }}
                     {{ if gt .App.AchievementsCount 0 }}
                         <li class="nav-item">
-                            <a class="nav-link" data-toggle="tab" href="#achievements" role="tab">Achievements</a>
+                            <a class="nav-link" data-toggle="tab" href="#achievements" role="tab">Achievements ({{ comma .App.AchievementsCount }})</a>
                         </li>
                     {{ end }}
                     {{ if gt .App.DLCCount 0 }}
                         <li class="nav-item">
-                            <a class="nav-link" data-toggle="tab" href="#dlc" role="tab">DLC</a>
+                            <a class="nav-link" data-toggle="tab" href="#dlc" role="tab">DLC ({{ comma .App.DLCCount }})</a>
                         </li>
                     {{ end }}
                     {{ if or (gt (len .Packages) 0) (gt (len .Bundles) 0) }}
                         <li class="nav-item">
-                            <a class="nav-link" data-toggle="tab" href="#packages" role="tab">Packages</a>
+                            <a class="nav-link" data-toggle="tab" href="#packages" role="tab">Packages ({{ sum (len .Packages) (len .Bundles) }})</a>
                         </li>
                     {{ end }}
                     {{ if gt (len .App.NewsIDs) 0 }}
                         <li class="nav-item">
-                            <a class="nav-link" data-toggle="tab" href="#news" role="tab">News</a>
+                            <a class="nav-link" data-toggle="tab" href="#news" role="tab">News ({{ (len .App.NewsIDs) }})</a>
                         </li>
                     {{ end }}
                     {{ if gt (len .Related) 0 }}
@@ -80,7 +80,7 @@
                     {{ end }}
                     {{ if gt .App.Items 0 }}
                         <li class="nav-item">
-                            <a class="nav-link" data-toggle="tab" href="#items" role="tab">Items</a>
+                            <a class="nav-link" data-toggle="tab" href="#items" role="tab">Items ({{ .App.Items }})</a>
                         </li>
                     {{ end }}
                     <li class="nav-item">
@@ -122,10 +122,18 @@
                                             <th scope="row" class="thin">Price</th>
                                             <td>{{ .Price.GetFinal }}</td>
                                         </tr>
+
                                         <tr data-link-tab="players">
                                             <th scope="row" class="thin">Players</th>
                                             <td>{{ comma64 .PlayersInGame }} <small>now</small>, {{ comma .App.PlayerPeakWeek }} <small>week peak</small></td>
                                         </tr>
+
+                                        {{ if ne .App.GroupID "" }}
+                                            <tr data-link-tab="players">
+                                                <th scope="row" class="thin">Followers</th>
+                                                <td>{{ .App.GetFollowers }} <small>(<a href="{{ .GroupPath }}">Group</a>)</small></td>
+                                            </tr>
+                                        {{ end }}
 
                                         <tr {{ if gt .App.Reviews.GetTotal 0 }}data-link-tab="reviews"{{end}}>
                                             <th scope="row" nowrap="nowrap" class="thin">Review Score</th>
@@ -137,42 +145,6 @@
                                                 </small>
                                             </td>
                                         </tr>
-
-                                        {{ if ne .App.GroupID "" }}
-                                            <tr data-link-tab="players">
-                                                <th scope="row" class="thin">Followers</th>
-                                                <td>{{ .App.GetFollowers }} <small>(<a href="{{ .GroupPath }}">Group</a>)</small></td>
-                                            </tr>
-                                        {{ end }}
-
-                                        {{ if gt (len .App.AlbumMetaData.Tracks) 0 }}
-                                            <tr>
-                                                <th scope="row" class="thin">Tracks</th>
-                                                <td>{{ comma (len .App.AlbumMetaData.Tracks) }}</td>
-                                            </tr>
-                                        {{ end }}
-
-                                        <tr {{ if gt .App.AchievementsCount 0 }}data-link-tab="achievements"{{ end }}>
-                                            <th scope="row" class="thin">Achievements</th>
-                                            <td>{{ comma .App.AchievementsCount }}</td>
-                                        </tr>
-
-                                        <tr {{ if gt .App.DLCCount 0 }}data-link-tab="dlc"{{ end }}>
-                                            <th scope="row" class="thin">DLC</th>
-                                            <td>{{ comma .App.DLCCount }}</td>
-                                        </tr>
-
-                                        <tr {{ if or (gt (len .Packages) 0) (gt (len .Bundles) 0) }}data-link-tab="packages"{{end}}>
-                                            <th scope="row" nowrap="nowrap" class="thin">Packages</th>
-                                            <td>{{ comma (len .Bundles) }} bundles, {{ comma (len .Packages) }} packages</td>
-                                        </tr>
-
-                                        {{ if gt .App.Items 0 }}
-                                            <tr>
-                                                <th scope="row" class="thin">Items</th>
-                                                <td>{{ comma .App.Items }}</td>
-                                            </tr>
-                                        {{ end }}
 
                                         {{ if gt (len .App.Platforms) 0 }}
                                             <tr>
