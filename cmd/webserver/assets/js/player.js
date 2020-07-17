@@ -214,6 +214,7 @@ if ($playerPage.length > 0) {
                         yAxis,
                         yAxis,
                         yAxis,
+                        yAxis,
                     ],
                     tooltip: {
                         formatter: function () {
@@ -229,38 +230,39 @@ if ($playerPage.length > 0) {
                     series: [
                         {
                             name: 'Level',
-                            color: '#28a745',
                             data: data['max_level'],
                             marker: {symbol: 'circle'},
                             yAxis: 0,
                         },
                         {
                             name: 'Games',
-                            color: '#007bff',
                             data: data['max_games'],
                             marker: {symbol: 'circle'},
                             yAxis: 1,
                         },
                         {
                             name: 'Badges',
-                            color: '#e83e8c',
                             data: data['max_badges'],
                             marker: {symbol: 'circle'},
                             yAxis: 2,
                         },
                         {
                             name: 'Playtime',
-                            color: '#ffc107',
                             data: data['max_playtime'],
                             marker: {symbol: 'circle'},
                             yAxis: 3,
                         },
                         {
                             name: 'Friends',
-                            color: '#343a40',
                             data: data['max_friends'],
                             marker: {symbol: 'circle'},
                             yAxis: 4,
+                        },
+                        {
+                            name: 'Achievements',
+                            data: data['max_achievements'],
+                            marker: {symbol: 'circle'},
+                            yAxis: 5,
                         },
                     ],
                 }));
@@ -282,34 +284,34 @@ if ($playerPage.length > 0) {
                     series: [
                         {
                             name: 'Level',
-                            color: '#28a745',
                             data: data['max_level_rank'],
                             marker: {symbol: 'circle'},
                         },
                         {
                             name: 'Games',
-                            color: '#007bff',
                             data: data['max_games_rank'],
                             marker: {symbol: 'circle'},
                         },
                         {
                             name: 'Badges',
-                            color: '#e83e8c',
                             data: data['max_badges_rank'],
                             marker: {symbol: 'circle'},
                         },
                         {
                             name: 'Playtime',
-                            color: '#ffc107',
                             data: data['max_playtime_rank'],
                             marker: {symbol: 'circle'},
                         },
                         {
                             name: 'Friends',
-                            color: '#343a40',
                             data: data['max_friends_rank'],
                             marker: {symbol: 'circle'},
-                        }
+                        },
+                        {
+                            name: 'Achievements',
+                            data: data['max_achievements_rank'],
+                            marker: {symbol: 'circle'},
+                        },
                     ],
                 }));
             },
