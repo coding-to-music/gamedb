@@ -21,6 +21,8 @@ func Test(t *testing.T) {
 		"group {game}":      chatbot.CGroup,
 		"clan {game}":       chatbot.CGroup,
 		"trendinggroups":    chatbot.CGroupsTrending,
+		"trending-groups":   chatbot.CGroupsTrending,
+		"trending groups":   chatbot.CGroupsTrending,
 		"help":              chatbot.CHelp,
 		"players":           chatbot.CSteamOnline,
 		"games {player}":    chatbot.CPlayerApps,
@@ -28,6 +30,8 @@ func Test(t *testing.T) {
 		"player {player}":   chatbot.CPlayer,
 		"playtime {player}": chatbot.CPlayerPlaytime,
 		"recent {player}":   chatbot.CPlayerRecent,
+		"update":            chatbot.CPlayerUpdate,
+		"update {player}":   chatbot.CPlayerUpdate,
 	}
 
 	for _, start := range []string{".", "!"} {
