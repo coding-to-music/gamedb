@@ -23,7 +23,7 @@ func WebhooksRouter() http.Handler {
 
 func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 
-	b, event, err := patreon.ValidateRequest(r, config.Config.PatreonSecret.Get())
+	b, event, err := patreon.Validate(r, config.Config.PatreonSecret.Get())
 	if err != nil {
 		log.Err(err, r)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -39,7 +39,7 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 		log.Err(err, r)
 	}
 
-	pwr, err := patreon.UnmarshalBytes(b)
+	pwr, err := patreon.Unmarshal(b)
 	if err != nil {
 		log.Err(err, r, b)
 		w.WriteHeader(http.StatusInternalServerError)
