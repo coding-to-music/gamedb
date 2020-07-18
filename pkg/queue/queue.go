@@ -54,8 +54,9 @@ const (
 	QueuePlayersGroups       rabbit.QueueName = "GDB_Players.Groups"
 
 	// Group
-	QueueGroups       rabbit.QueueName = "GDB_Groups"
-	QueueGroupsSearch rabbit.QueueName = "GDB_Groups.Search"
+	QueueGroups          rabbit.QueueName = "GDB_Groups"
+	QueueGroupsSearch    rabbit.QueueName = "GDB_Groups.Search"
+	QueueGroupsPrimaries rabbit.QueueName = "GDB_Groups.Primaries"
 
 	// App players
 	QueueAppPlayers    rabbit.QueueName = "GDB_App_Players"
@@ -113,6 +114,7 @@ var (
 		{name: QueueBundles},
 		{name: QueueChanges},
 		{name: QueueGroups},
+		{name: QueueGroupsPrimaries, prefetchSize: 1000},
 		{name: QueueGroupsSearch, prefetchSize: 1000},
 		{name: QueuePackages},
 		{name: QueuePackagesPrices},
@@ -153,6 +155,7 @@ var (
 		{name: QueueChanges, consumer: changesHandler},
 		{name: QueueGroups, consumer: groupsHandler},
 		{name: QueueGroupsSearch, consumer: groupsSearchHandler, prefetchSize: 1000},
+		{name: QueueGroupsPrimaries, consumer: groupPrimariesHandler, prefetchSize: 1000},
 		{name: QueuePackages, consumer: packageHandler},
 		{name: QueuePackagesPrices, consumer: packagePriceHandler},
 		{name: QueuePlayers, consumer: playerHandler},
@@ -185,6 +188,7 @@ var (
 		{name: QueueChanges},
 		{name: QueueGroups},
 		{name: QueueGroupsSearch, prefetchSize: 1000},
+		{name: QueueGroupsPrimaries, prefetchSize: 1000},
 		{name: QueuePackages},
 		{name: QueuePackagesPrices},
 		{name: QueuePlayers},
@@ -220,6 +224,7 @@ var (
 		{name: QueueAppPlayersTop},
 		{name: QueueGroups},
 		{name: QueueGroupsSearch, prefetchSize: 1000},
+		{name: QueueGroupsPrimaries, prefetchSize: 1000},
 		{name: QueuePackages},
 		{name: QueuePlayers},
 		{name: QueuePlayersGroups},
@@ -532,6 +537,11 @@ func ProducePlayerRank(payload PlayerRanksMessage) (err error) {
 func ProduceGroupSearch(group mongo.Group) (err error) {
 
 	return produce(QueueGroupsSearch, GroupSearchMessage{Group: group})
+}
+
+func ProduceGroupPrimaries(groupID string) (err error) {
+	m := GroupPrimariesMessage{GroupID: groupID}
+	return produce(m.Queue(), m)
 }
 
 func ProduceAchievementSearch(achievement mongo.AppAchievement, appName string, appOwners int64) (err error) {
