@@ -348,17 +348,23 @@ func CreatePlayerIndexes() {
 	}
 
 	// For sorting main players table, ranked columns are added above
-	cols := []string{
+	descending := []string{
 		"achievement_count_100",
 		"bans_cav",
 		"bans_game",
 		"bans_last",
 	}
 
-	for _, col := range cols {
-		indexModels = append(indexModels, mongo.IndexModel{
-			Keys: bson.D{{col, -1}},
-		})
+	ascending := []string{
+		"primary_clan_id_string", // Groups queue
+	}
+
+	for _, col := range descending {
+		indexModels = append(indexModels, mongo.IndexModel{Keys: bson.D{{col, -1}}})
+	}
+
+	for _, col := range ascending {
+		indexModels = append(indexModels, mongo.IndexModel{Keys: bson.D{{col, 1}}})
 	}
 
 	// For player search in chatbot

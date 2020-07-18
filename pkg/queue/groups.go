@@ -161,6 +161,21 @@ func groupsHandler(messages []*rabbit.Message) {
 			}
 		}()
 
+		wg.Add(1)
+		go func() {
+
+			defer wg.Done()
+
+			prims, err := mongo.CountDocuments(mongo.CollectionPlayers, bson.D{{"primary_clan_id_string", group.ID}}, 0)
+			if err != nil {
+				log.Err(err, payload.ID)
+				sendToRetryQueue(message)
+				return
+			}
+
+			group.Primaries = int(prims)
+		}()
+
 		//
 		wg.Wait()
 

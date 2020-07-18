@@ -9,7 +9,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var ErrInvalidGroupID = errors.New("invalid group id")
@@ -32,6 +31,7 @@ type Group struct {
 	MembersOnline int       `bson:"members_online"`
 	Error         string    `bson:"error"`
 	Type          string    `bson:"type"`
+	Primaries     int       `bson:"primaries"`
 }
 
 func (group Group) BSON() bson.D {
@@ -60,6 +60,7 @@ func (group Group) BSON() bson.D {
 		{"members_online", group.MembersOnline},
 		{"error", group.Error},
 		{"type", group.Type},
+		{"primaries", group.Primaries},
 	}
 }
 
@@ -67,13 +68,11 @@ func (group Group) BSON() bson.D {
 func CreateGroupIndexes() {
 
 	var indexModels = []mongo.IndexModel{
-		{
-			Keys:    bson.D{{"name", "text"}, {"abbreviation", "text"}, {"url", "text"}},
-			Options: options.Index().SetName("text").SetWeights(bson.D{{"name", 3}, {"abbreviation", 2}, {"url", 1}}),
-		},
+		{Keys: bson.D{{"type", 1}, {"_id", 1}}},
 		{Keys: bson.D{{"type", 1}, {"members", -1}}},
 		{Keys: bson.D{{"type", 1}, {"trending", 1}}},
 		{Keys: bson.D{{"type", 1}, {"trending", -1}}},
+		{Keys: bson.D{{"type", 1}, {"primaries", -1}}},
 	}
 
 	//

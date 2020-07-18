@@ -19,6 +19,7 @@ type Group struct {
 	Members      int     `json:"members"`
 	Trend        float64 `json:"trend"`
 	Error        bool    `json:"error"`
+	Primaries    int     `json:"primaries"`
 	Score        float64 `json:"-"`
 }
 
@@ -162,6 +163,7 @@ func DeleteAndRebuildGroupsIndex() {
 				"members":      fieldTypeInteger,
 				"trend":        fieldTypeInteger,
 				"error":        fieldTypeBool,
+				"primaries":    fieldTypeInteger,
 			},
 		},
 	}

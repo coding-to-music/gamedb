@@ -33,7 +33,7 @@ func groupsSearchHandler(messages []*rabbit.Message) {
 			continue
 		}
 
-		err = elasticsearch.IndexGroup(elasticsearch.Group{
+		group := elasticsearch.Group{
 			ID:           payload.Group.ID,
 			Name:         payload.Group.Name,
 			URL:          payload.Group.URL,
@@ -43,7 +43,10 @@ func groupsSearchHandler(messages []*rabbit.Message) {
 			Members:      payload.Group.Members,
 			Trend:        payload.Group.Trending,
 			Error:        payload.Group.Error != "",
-		})
+			Primaries:    payload.Group.Primaries,
+		}
+
+		err = elasticsearch.IndexGroup(group)
 		if err != nil {
 			log.Err(err, message.Message.Body)
 			sendToRetryQueue(message)
