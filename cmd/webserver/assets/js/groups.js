@@ -46,9 +46,17 @@ if ($('#groups-page').length > 0) {
                 },
                 "orderable": false,
             },
-            // Members
+            // Primaries
             {
                 "targets": 2,
+                "render": function (data, type, row) {
+                    return row[13].toLocaleString();
+                },
+                "orderSequence": ["desc"],
+            },
+            // Members
+            {
+                "targets": 3,
                 "render": function (data, type, row) {
                     return row[6].toLocaleString();
                 },
@@ -56,7 +64,7 @@ if ($('#groups-page').length > 0) {
             },
             // Trend Value
             {
-                "targets": 3,
+                "targets": 4,
                 "render": function (data, type, row) {
                     return row[7];
                 },
@@ -64,7 +72,7 @@ if ($('#groups-page').length > 0) {
             },
             // Search Score
             {
-                "targets": 4,
+                "targets": 5,
                 "render": function (data, type, row) {
                     return row[11].toLocaleString();
                 },
@@ -73,7 +81,7 @@ if ($('#groups-page').length > 0) {
             },
             // Link
             {
-                "targets": 5,
+                "targets": 6,
                 "render": function (data, type, row) {
                     if (row[2]) {
                         return '<a href="' + row[2] + '" target="_blank" rel="noopener"><i class="fas fa-link"></i></a>';

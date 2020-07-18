@@ -97,6 +97,7 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			group.GetPath(),           // 10
 			group.Score,               // 11
 			group.GetNameMarked(),     // 12
+			group.Primaries,           // 13
 		})
 	}
 
