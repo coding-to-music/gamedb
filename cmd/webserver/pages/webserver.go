@@ -9,6 +9,7 @@ import (
 	"math/rand"
 	"net/http"
 	"net/url"
+	"path"
 	"sort"
 	"strconv"
 	"strings"
@@ -96,6 +97,7 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 	t = t.Funcs(getTemplateFuncMap())
 
 	templates := []string{
+		"admin/_admin_header.gohtml",
 		"_webpack_header.gohtml",
 		"_webpack_footer.gohtml",
 		"_players_header.gohtml",
@@ -128,7 +130,7 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 
 	// Write a respone
 	buf := &bytes.Buffer{}
-	err = t.ExecuteTemplate(buf, page, pageData)
+	err = t.ExecuteTemplate(buf, path.Base(page), pageData)
 	if err != nil {
 		log.Critical(err, r)
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Looks like I messed something up, will be fixed soon!"})

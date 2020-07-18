@@ -1,0 +1,37 @@
+{{define "settings"}}
+    {{ template "_header" . }}
+
+    <div class="container" id="admin-settings-page">
+
+        {{ template "_flashes" . }}
+
+        <div class="card">
+            {{ template "_admin_header" . }}
+            <div class="card-body">
+
+                <form action="/admin/settings" method="post">
+
+                    <div class="form-group row">
+                        <label for="down-message" class="col-sm-3 col-form-label">Down message</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="down-message" name="down-message" value="{{ .DownMessage }}">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="del-mc-item" class="col-sm-3 col-form-label">Delete Memcache Item</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="del-mc-item" name="del-mc-item">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+
+    {{ template "_footer" . }}
+{{end}}

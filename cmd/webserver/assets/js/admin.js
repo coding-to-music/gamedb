@@ -1,4 +1,4 @@
-if ($('#admin-page').length > 0) {
+if ($('#admin-tasks-page').length > 0) {
 
     $('#actions tbody tr').on('click', function () {
         if (confirm('Are you sure?')) {
@@ -9,25 +9,11 @@ if ($('#admin-page').length > 0) {
                 //     toast(true, 'Triggered');
                 // },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    toast(true, errorThrown);
+                    toast(false, errorThrown);
                 },
             });
         }
         return false;
-    });
-
-    const queuesForm = $('form#queues');
-    queuesForm.on("submit", function (e) {
-        e.preventDefault();
-        $.ajax({
-            type: 'post',
-            url: queuesForm.attr('action'),
-            data: $(this).serialize(),
-            success: function (data, textStatus, jqXHR) {
-                toast(true, 'Queued');
-                queuesForm.trigger("reset");
-            },
-        });
     });
 
     websocketListener('admin', function (e) {
@@ -52,5 +38,25 @@ if ($('#admin-page').length > 0) {
                 toast(true, taskID + ' finished', '', 0);
             }
         }
+    });
+}
+
+if ($('#admin-queues-page').length > 0) {
+
+    const queuesForm = $('form#queues');
+    queuesForm.on("submit", function (e) {
+        e.preventDefault();
+        $.ajax({
+            type: 'post',
+            url: queuesForm.attr('action'),
+            data: $(this).serialize(),
+            success: function (data, textStatus, jqXHR) {
+                toast(true, 'Queued');
+                queuesForm.trigger("reset");
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                toast(false, errorThrown);
+            },
+        });
     });
 }

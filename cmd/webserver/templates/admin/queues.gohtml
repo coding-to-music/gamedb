@@ -1,0 +1,70 @@
+{{define "queues"}}
+    {{ template "_header" . }}
+
+    <div class="container" id="admin-queues-page">
+
+        {{ template "_flashes" . }}
+
+        <div class="card">
+            {{ template "_admin_header" . }}
+            <div class="card-body">
+
+                <form action="/admin/queues" method="post" id="queues">
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label" for="app-id">App ID:</label>
+                        <div class="col-sm-3">
+                            <input type="text" name="app-id" id="app-id" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label" for="package-id">Package ID:</label>
+                        <div class="col-sm-3">
+                            <input type="text" name="package-id" id="package-id" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label" for="player-id">Player ID:</label>
+                        <div class="col-sm-3">
+                            <input type="text" name="player-id" id="player-id" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label" for="bundle-id">Bundle ID:</label>
+                        <div class="col-sm-3">
+                            <input type="text" name="bundle-id" id="bundle-id" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label" for="group-id">Group ID:</label>
+                        <div class="col-sm-3">
+                            <input type="text" name="group-id" id="group-id" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label" for="group-members">Group Members:</label>
+                        <div class="col-sm-3">
+                            <input type="text" name="group-members" id="group-members" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label" for="test-id">Test messages:</label>
+                        <div class="col-sm-3">
+                            <input type="text" name="test-id" id="test-id" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label" for="apps-ts">All apps since timestamp:</label>
+                        <div class="col-sm-3">
+                            <input type="number" name="apps-ts" id="apps-ts" class="form-control">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" aria-label="Add to Rabbit">Add to Rabbit</button>
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+
+    {{ template "_footer" . }}
+{{end}}

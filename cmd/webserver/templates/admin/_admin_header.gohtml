@@ -1,0 +1,49 @@
+{{define "_admin_header"}}
+
+    <div class="card-header">
+        <ul class="nav nav-tabs card-header-tabs nav-fill-mobile" role="tablist">
+
+            <li class="nav-item">
+                {{if endsWith .Path "/tasks" }}
+                    <span class="nav-link active" role="tab">Tasks</span>
+                {{else}}
+                    <a class="nav-link" href="/admin/tasks" role="tab">Tasks</a>
+                {{end}}
+            </li>
+
+            <li class="nav-item">
+                {{if endsWith .Path "/queues" }}
+                    <span class="nav-link active" role="tab">Queues</span>
+                {{else}}
+                    <a class="nav-link" href="/admin/queues" role="tab">Queues</a>
+                {{end}}
+            </li>
+
+            <li class="nav-item">
+                {{if endsWith .Path "/sql-bin-logs" }}
+                    <span class="nav-link active" role="tab">SQL Bin Logs</span>
+                {{else}}
+                    <a class="nav-link" href="/admin/sql-bin-logs" role="tab">SQL Bin Logs</a>
+                {{end}}
+            </li>
+
+            <li class="nav-item">
+                {{if endsWith .Path "/websockets" }}
+                    <span class="nav-link active" role="tab">Websockets</span>
+                {{else}}
+                    <a class="nav-link" href="/admin/websockets" role="tab">Websockets</a>
+                {{end}}
+            </li>
+
+            <li class="nav-item">
+                {{if endsWith .Path "/settings" }}
+                    <span class="nav-link active" role="tab">Settings</span>
+                {{else}}
+                    <a class="nav-link" href="/admin/settings" role="tab">Settings</a>
+                {{end}}
+            </li>
+
+        </ul>
+    </div>
+
+{{end}}

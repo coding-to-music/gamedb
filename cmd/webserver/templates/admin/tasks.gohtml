@@ -1,0 +1,55 @@
+{{define "tasks"}}
+    {{ template "_header" . }}
+
+    <div class="container" id="admin-tasks-page">
+
+        {{ template "_flashes" . }}
+
+        <div class="card">
+            {{ template "_admin_header" . }}
+            <div class="card-body">
+
+                {{ if eq .Env "local" }}
+                    {{/*<div class="alert alert-primary" role="alert">Showing local Memcache / Queues</div>*/}}
+                {{ end }}
+
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped table-datatable mb-0" data-order='[[3, "asc", 0, "desc"]]' id="actions">
+                        <thead class="thead-light">
+                        <tr>
+                            <th scope="col">Action</th>
+                            <th scope="col">Real</th>
+                            <th scope="col">Previous</th>
+                            <th scope="col">Next</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {{ range $key, $value := .Tasks }}
+
+                            {{ $realLast:= (index $.Configs (print "task-" .Task.ID)).Value }}
+
+                            <tr data-id="{{ .Task.ID }}" class="cursor-pointer {{ if .Bad }}table-danger{{ end }}" data-action="/admin/tasks?run={{ .Task.ID }}">
+                                <td>{{ .Task.Name }}</td>
+                                <td class="prev" data-sort="{{ $realLast }}">
+                                    <span data-livestamp="{{ $realLast }}"></span>
+                                </td>
+                                {{ if gt .Next.Unix 0 }}
+                                    <td data-sort="{{ .Prev }}"><span data-livestamp="{{ .Prev.Unix }}"></span></td>
+                                    <td class="next" data-sort="{{ .Next.Unix }}"><span data-livestamp="{{ .Next.Unix }}"></span></td>
+                                {{ else }}
+                                    <td data-sort="10000000000"></td>
+                                    <td data-sort="10000000000"></td>
+                                {{ end }}
+                            </tr>
+                        {{ end }}
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    {{ template "_footer" . }}
+{{end}}
