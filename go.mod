@@ -3,12 +3,12 @@ module github.com/gamedb/gamedb
 go 1.13
 
 require (
-	cloud.google.com/go v0.60.0 // indirect
+	cloud.google.com/go v0.61.0 // indirect
 	cloud.google.com/go/logging v1.0.0
 	cloud.google.com/go/storage v1.10.0
 	github.com/Jleagle/go-durationfmt v0.0.0-20190307132420-e57bfad84057
 	github.com/Jleagle/influxql v0.0.0-20190502115937-4ac053a1ed8e
-	github.com/Jleagle/patreon-go v0.0.0-20200117215733-2b8b00d4eab0
+	github.com/Jleagle/patreon-go v0.0.0-20200718083332-7a4c740e9bd3
 	github.com/Jleagle/rabbit-go v0.0.0-20200614114557-bd444a77d00f
 	github.com/Jleagle/recaptcha-go v0.0.0-20200117124940-d00b2c62c076
 	github.com/Jleagle/session-go v0.0.0-20190515070633-3c8712426233
@@ -22,7 +22,7 @@ require (
 	github.com/andybalholm/cascadia v1.2.0 // indirect
 	github.com/antchfx/htmlquery v1.2.3 // indirect
 	github.com/antchfx/xmlquery v1.2.4 // indirect
-	github.com/antchfx/xpath v1.1.9 // indirect
+	github.com/antchfx/xpath v1.1.10 // indirect
 	github.com/badoux/checkmail v0.0.0-20200623144435-f9f80cb795fa
 	github.com/beefsack/go-rate v0.0.0-20180408011153-efa7637bb9b6 // indirect
 	github.com/blend/go-sdk v1.1.1 // indirect
@@ -35,11 +35,11 @@ require (
 	github.com/dghubble/oauth1 v0.6.0
 	github.com/didip/tollbooth v4.0.2+incompatible
 	github.com/didip/tollbooth/v5 v5.2.0
-	github.com/digitalocean/godo v1.38.0
+	github.com/digitalocean/godo v1.41.0
 	github.com/djherbis/fscache v0.10.1
 	github.com/dustin/go-humanize v1.0.0
 	github.com/frustra/bbcode v0.0.0-20180807171629-48be21ce690c
-	github.com/getkin/kin-openapi v0.15.0
+	github.com/getkin/kin-openapi v0.19.0
 	github.com/ghodss/yaml v1.0.1-0.20190212211648-25d852aebe32 // indirect
 	github.com/go-chi/chi v4.1.2+incompatible
 	github.com/go-chi/cors v1.1.1
@@ -72,7 +72,7 @@ require (
 	github.com/mxpv/patreon-go v0.0.0-20190917022727-646111f1d983
 	github.com/nicklaw5/helix v0.5.9
 	github.com/olekukonko/tablewriter v0.0.4 // indirect
-	github.com/olivere/elastic/v7 v7.0.17
+	github.com/olivere/elastic/v7 v7.0.18
 	github.com/oschwald/maxminddb-golang v1.7.0
 	github.com/pariz/gountries v0.0.0-20200430155801-1c6a393df9c7
 	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
@@ -104,10 +104,10 @@ require (
 	golang.org/x/sys v0.0.0-20200625212154-ddb9806d33ae // indirect
 	golang.org/x/text v0.3.3
 	golang.org/x/time v0.0.0-20200630173020-3af7569d3a1e // indirect
-	golang.org/x/tools v0.0.0-20200710042808-f1c4188a97a1 // indirect
+	golang.org/x/tools v0.0.0-20200717024301-6ddee64345a6 // indirect
 	gonum.org/v1/gonum v0.7.0
 	google.golang.org/api v0.29.0
-	google.golang.org/genproto v0.0.0-20200711021454-869866162049 // indirect
+	google.golang.org/genproto v0.0.0-20200715011427-11fb19a81f2c // indirect
 	google.golang.org/grpc v1.30.0
 	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/djherbis/atime.v1 v1.0.0 // indirect
