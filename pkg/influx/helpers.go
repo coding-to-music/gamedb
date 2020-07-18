@@ -2,6 +2,7 @@ package influx
 
 import (
 	"encoding/json"
+	"math"
 	"reflect"
 	"sort"
 	"time"
@@ -276,8 +277,9 @@ func GetInfluxTrendFromSeries(series models.Row, padding int) (trend float64) {
 		}
 
 		_, slope := stat.LinearRegression(xs, ys, nil, false)
-
-		trend = slope / helpers.Max(ys...)
+		if !math.IsNaN(slope) {
+			trend = slope*helpers.Max(ys...) - helpers.Min(ys...)
+		}
 	}
 
 	return trend

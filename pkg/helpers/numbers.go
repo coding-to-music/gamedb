@@ -91,6 +91,10 @@ func ChunkInts(ints []int, n int) (chunks [][]int) {
 
 func Min(vars ...float64) float64 {
 
+	if len(vars) == 0 {
+		return 0
+	}
+
 	min := vars[0]
 	for _, i := range vars {
 		if min > i {
@@ -102,6 +106,10 @@ func Min(vars ...float64) float64 {
 
 func Max(vars ...float64) float64 {
 
+	if len(vars) == 0 {
+		return 0
+	}
+
 	max := vars[0]
 	for _, i := range vars {
 		if max < i {
@@ -109,4 +117,16 @@ func Max(vars ...float64) float64 {
 		}
 	}
 	return max
+}
+
+func Avg(vars ...float64) float64 {
+
+	var count float64
+	var sum float64
+
+	for _, i := range vars {
+		count += 1
+		sum += i
+	}
+	return sum / count
 }
