@@ -65,7 +65,6 @@ var (
 		AppsQueueReviews{},
 		AutoPlayerRefreshes{},
 		BadgesUpdateRandom{},
-		DevCodeRun{},
 		GroupsQueueElastic{},
 		GroupsUpdateTop{},
 		InstagramPost{},
