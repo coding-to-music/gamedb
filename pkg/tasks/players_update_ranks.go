@@ -18,6 +18,10 @@ func (c PlayersUpdateRanks) Name() string {
 	return "Update player ranks"
 }
 
+func (c PlayersUpdateRanks) Group() string {
+	return TaskGroupPlayers
+}
+
 func (c PlayersUpdateRanks) Cron() string {
 	return CronTimePlayerRanks
 }

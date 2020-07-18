@@ -23,6 +23,10 @@ func (c InstagramPost) Name() string {
 	return "Post an Instagram picture"
 }
 
+func (c InstagramPost) Group() string {
+	return ""
+}
+
 func (c InstagramPost) Cron() string {
 	return CronTimeInstagram
 }

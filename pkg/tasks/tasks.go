@@ -36,6 +36,16 @@ const ( //                         min hour
 	CronTimeInstagram                = ""
 )
 
+const (
+	TaskGroupApps     = "apps"
+	TaskGroupGroups   = "groups"
+	TaskGroupBadges   = "badges"
+	TaskGroupNews     = "news"
+	TaskGroupPlayers  = "players"
+	TaskGroupPackages = "packages"
+	TaskGroupElastic  = "elastic"
+)
+
 var (
 	Parser       = cron.NewParser(cron.Minute | cron.Hour)
 	TaskRegister = map[string]TaskInterface{}
@@ -84,6 +94,7 @@ func init() {
 type TaskInterface interface {
 	ID() string
 	Name() string
+	Group() string
 	Cron() string
 	work() error
 }

@@ -12,6 +12,10 @@ func (c StatsCategories) Name() string {
 	return "Update categories"
 }
 
+func (c StatsCategories) Group() string {
+	return ""
+}
+
 func (c StatsCategories) Cron() string {
 	return CronTimeCategories
 }

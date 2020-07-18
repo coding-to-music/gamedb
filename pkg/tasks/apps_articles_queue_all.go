@@ -18,6 +18,10 @@ func (c AppsArticlesQueueElastic) Name() string {
 	return "Queue all app articles to Elastic"
 }
 
+func (c AppsArticlesQueueElastic) Group() string {
+	return TaskGroupNews
+}
+
 func (c AppsArticlesQueueElastic) Cron() string {
 	return ""
 }

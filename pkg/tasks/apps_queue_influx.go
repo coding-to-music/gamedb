@@ -19,6 +19,10 @@ func (c AppsQueueInflux) Name() string {
 	return "Update app peaks and averages (influx)"
 }
 
+func (c AppsQueueInflux) Group() string {
+	return TaskGroupApps
+}
+
 func (c AppsQueueInflux) Cron() string {
 	return CronTimeAppsInflux
 }

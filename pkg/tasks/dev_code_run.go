@@ -12,6 +12,10 @@ func (c DevCodeRun) Name() string {
 	return "Run dev code"
 }
 
+func (c DevCodeRun) Group() string {
+	return ""
+}
+
 func (c DevCodeRun) Cron() string {
 	return ""
 }

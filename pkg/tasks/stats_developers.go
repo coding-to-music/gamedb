@@ -26,6 +26,10 @@ func (c StatsDevelopers) Name() string {
 	return "Update developers"
 }
 
+func (c StatsDevelopers) Group() string {
+	return ""
+}
+
 func (c StatsDevelopers) Cron() string {
 	return CronTimeDevelopers
 }

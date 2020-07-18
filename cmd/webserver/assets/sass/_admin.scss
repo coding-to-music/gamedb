@@ -1,5 +1,9 @@
-#admin-page {
-    #bin-logs {
-        //@extend .mb-4
+#admin-tasks-page {
+    .table-responsive {
+        @extend .mb-4
+    }
+
+    .table-responsive:last-child {
+        @extend .mb-0
     }
 }

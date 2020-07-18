@@ -65,13 +65,26 @@ func adminTasksHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, "Admin", "Admin")
 	t.hideAds = true
 
+	var grouped = map[string][]adminTaskTemplate{}
+
 	for _, v := range tasks.TaskRegister {
-		t.Tasks = append(t.Tasks, adminTaskTemplate{
+		grouped[v.Group()] = append(grouped[v.Group()], adminTaskTemplate{
 			Task: v,
 			Bad:  tasks.Bad(v),
 			Next: tasks.Next(v),
 			Prev: tasks.Prev(v),
 		})
+	}
+
+	t.Tasks = []adminTaskListTemplate{
+		{Tasks: grouped[tasks.TaskGroupApps], Title: "Apps"},
+		{Tasks: grouped[tasks.TaskGroupPackages], Title: "Packages"},
+		{Tasks: grouped[tasks.TaskGroupGroups], Title: "Groups"},
+		{Tasks: grouped[tasks.TaskGroupPlayers], Title: "Players"},
+		{Tasks: grouped[tasks.TaskGroupBadges], Title: "Badges"},
+		{Tasks: grouped[tasks.TaskGroupNews], Title: "News"},
+		{Tasks: grouped[tasks.TaskGroupElastic], Title: "Elastic"},
+		{Tasks: grouped[""], Title: "Other"},
 	}
 
 	// Get configs for times
@@ -85,8 +98,13 @@ func adminTasksHandler(w http.ResponseWriter, r *http.Request) {
 
 type adminTasksTemplate struct {
 	globalTemplate
-	Tasks   []adminTaskTemplate
+	Tasks   []adminTaskListTemplate
 	Configs map[string]mysql.Config
+}
+
+type adminTaskListTemplate struct {
+	Title string
+	Tasks []adminTaskTemplate
 }
 
 type adminTaskTemplate struct {

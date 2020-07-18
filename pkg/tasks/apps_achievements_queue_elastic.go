@@ -19,6 +19,10 @@ func (c AppsAchievementsQueueElastic) Name() string {
 	return "Queue all achievements to Elastic"
 }
 
+func (c AppsAchievementsQueueElastic) Group() string {
+	return TaskGroupElastic
+}
+
 func (c AppsAchievementsQueueElastic) Cron() string {
 	return ""
 }

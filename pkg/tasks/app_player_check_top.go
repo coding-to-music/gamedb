@@ -19,6 +19,10 @@ func (c AppsPlayerCheckTop) Name() string {
 	return "Check apps for players (Top)"
 }
 
+func (c AppsPlayerCheckTop) Group() string {
+	return TaskGroupApps
+}
+
 func (c AppsPlayerCheckTop) Cron() string {
 	return CronTimeAppPlayersTop
 }

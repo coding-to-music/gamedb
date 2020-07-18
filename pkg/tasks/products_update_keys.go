@@ -23,6 +23,10 @@ func (c ProductsUpdateKeys) Name() string {
 	return "Scan Product Keys"
 }
 
+func (c ProductsUpdateKeys) Group() string {
+	return ""
+}
+
 func (c ProductsUpdateKeys) Cron() string {
 	return CronTimeScanProductQueues
 }

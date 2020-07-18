@@ -16,6 +16,10 @@ func (c MemcacheClearAll) Name() string {
 	return "Clear Memcache"
 }
 
+func (c MemcacheClearAll) Group() string {
+	return ""
+}
+
 func (c MemcacheClearAll) Cron() string {
 	return ""
 }

@@ -20,6 +20,10 @@ func (c AppsQueueGroups) Name() string {
 	return "Queue app groups"
 }
 
+func (c AppsQueueGroups) Group() string {
+	return TaskGroupGroups
+}
+
 func (c AppsQueueGroups) Cron() string {
 	return CronTimeQueueAppGroups
 }

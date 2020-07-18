@@ -18,6 +18,10 @@ func (c AppsAchievementsQueueAll) Name() string {
 	return "Queue all app achievements"
 }
 
+func (c AppsAchievementsQueueAll) Group() string {
+	return TaskGroupApps
+}
+
 func (c AppsAchievementsQueueAll) Cron() string {
 	return ""
 }

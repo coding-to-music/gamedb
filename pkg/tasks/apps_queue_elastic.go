@@ -18,6 +18,10 @@ func (c AppsQueueElastic) Name() string {
 	return "Queue all apps to Elastic"
 }
 
+func (c AppsQueueElastic) Group() string {
+	return TaskGroupElastic
+}
+
 func (c AppsQueueElastic) Cron() string {
 	return ""
 }

@@ -27,6 +27,10 @@ func (c StatsTags) Name() string {
 	return "Update tags"
 }
 
+func (c StatsTags) Group() string {
+	return ""
+}
+
 func (c StatsTags) Cron() string {
 	return CronTimeTags
 }

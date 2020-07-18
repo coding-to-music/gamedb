@@ -18,6 +18,10 @@ func (c PlayersQueueElastic) Name() string {
 	return "Queue all players to Elastic"
 }
 
+func (c PlayersQueueElastic) Group() string {
+	return TaskGroupPlayers
+}
+
 func (c PlayersQueueElastic) Cron() string {
 	return ""
 }

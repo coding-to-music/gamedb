@@ -26,6 +26,10 @@ func (c TasksGenres) Name() string {
 	return "Update genres"
 }
 
+func (c TasksGenres) Group() string {
+	return ""
+}
+
 func (c TasksGenres) Cron() string {
 	return CronTimeGenres
 }

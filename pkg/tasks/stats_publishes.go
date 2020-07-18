@@ -26,6 +26,10 @@ func (c TasksPublishers) Name() string {
 	return "Update publishers"
 }
 
+func (c TasksPublishers) Group() string {
+	return ""
+}
+
 func (c TasksPublishers) Cron() string {
 	return CronTimePublishers
 }

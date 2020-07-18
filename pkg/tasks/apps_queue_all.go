@@ -20,6 +20,10 @@ func (c AppsQueueAll) Name() string {
 	return "Queue all apps"
 }
 
+func (c AppsQueueAll) Group() string {
+	return TaskGroupApps
+}
+
 func (c AppsQueueAll) Cron() string {
 	return ""
 }

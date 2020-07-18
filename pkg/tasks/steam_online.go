@@ -24,6 +24,10 @@ func (c SteamOnline) Name() string {
 	return "Update Steam client players"
 }
 
+func (c SteamOnline) Group() string {
+	return ""
+}
+
 func (c SteamOnline) Cron() string {
 	return CronTimeSteamClientPlayers
 }

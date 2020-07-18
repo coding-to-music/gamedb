@@ -18,6 +18,10 @@ func (c BadgesUpdateRandom) Name() string {
 	return "Update all badge summaries"
 }
 
+func (c BadgesUpdateRandom) Group() string {
+	return TaskGroupBadges
+}
+
 func (c BadgesUpdateRandom) Cron() string {
 	return CronTimeSetBadgeCache
 }
