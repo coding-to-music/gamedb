@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/Jleagle/patreon-go/patreon"
 	"github.com/Jleagle/session-go/session"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/middleware"
@@ -14,12 +15,14 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/steam"
 	"github.com/gamedb/gamedb/pkg/tasks"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/go-chi/chi"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func AdminRouter() http.Handler {
@@ -131,6 +134,71 @@ func adminUsersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	returnJSON(w, r, response)
+}
+
+func adminPatreonHandler(w http.ResponseWriter, r *http.Request) {
+
+	t := adminPatreonTemplate{}
+	t.fill(w, r, "Admin", "Admin")
+
+	returnTemplate(w, r, "admin/patreon", t)
+}
+
+func adminPatreonAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	query := datatable.NewDataTableQuery(r, false)
+
+	var wg sync.WaitGroup
+
+	// Get webhooks
+	var webhooks []mongo.PatreonWebhook
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		webhooks, err = mongo.GetPatreonWebhooks(query.GetOffset64(), 100, bson.D{{"created_at", -1}}, nil, nil)
+		if err != nil {
+			log.Err(err, r)
+		}
+	}()
+
+	// Get count
+	var count int64
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		count, err = mongo.CountDocuments(mongo.CollectionPatreonWebhooks, nil, 0)
+		if err != nil {
+			log.Err(err, r)
+		}
+	}()
+
+	// Wait
+	wg.Wait()
+
+	var response = datatable.NewDataTablesResponse(r, query, count, count, nil)
+	for _, app := range webhooks {
+
+		wh, err := patreon.Unmarshal([]byte(app.RequestBody))
+		log.Err(err, r)
+
+		response.AddRow([]interface{}{
+			app.CreatedAt.Format(helpers.DateSQL), // 0
+			app.Event,                             // 1
+			wh.User.ID,                            // 2
+		})
+	}
+
+	returnJSON(w, r, response)
+}
+
+type adminPatreonTemplate struct {
+	globalTemplate
 }
 
 func adminTasksHandler(w http.ResponseWriter, r *http.Request) {

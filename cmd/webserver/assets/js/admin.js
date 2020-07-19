@@ -119,26 +119,46 @@ if ($('#admin-users-page').length > 0) {
         ]
     };
 
-    const searchFields = [
-        $('#status'),
-        $('#platform'),
-        $('#license'),
-        $('#billing'),
-    ];
+    const $table = $('table.table');
+    const dt = $table.gdbTable({
+        tableOptions: options,
+    });
+}
+
+if ($('#admin-patreon-page').length > 0) {
+
+    const options = {
+        "order": [[0, 'desc']],
+        "columnDefs": [
+            // Date
+            {
+                'targets': 0,
+                'render': function (data, type, row) {
+                    return row[0];
+                },
+                'orderable': false,
+            },
+            // Event
+            {
+                'targets': 1,
+                'render': function (data, type, row) {
+                    return row[1];
+                },
+                'orderable': false,
+            },
+            // User
+            {
+                'targets': 2,
+                'render': function (data, type, row) {
+                    return row[2];
+                },
+                'orderable': false,
+            },
+        ]
+    };
 
     const $table = $('table.table');
     const dt = $table.gdbTable({
         tableOptions: options,
-        searchFields: searchFields
-    });
-
-    websocketListener('packages', function (e) {
-
-        const info = dt.page.info();
-        if (info.page === 0) { // Page 1
-
-            const data = JSON.parse(e.data);
-            addDataTablesRow(options, data.Data, info.length, $table);
-        }
     });
 }

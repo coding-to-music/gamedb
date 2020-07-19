@@ -1,0 +1,33 @@
+{{define "patreon"}}
+    {{ template "_header" . }}
+
+    <div class="container" id="admin-patreon-page">
+
+        {{ template "_flashes" . }}
+
+        <div class="card">
+            {{ template "_admin_header" . }}
+            <div class="card-body">
+
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped table-counts" data-row-type="users" data-path="/admin/patreon.json">
+                        <thead class="thead-light">
+                        <tr>
+                            <th scope="col">Date</th>
+                            <th scope="col">Event</th>
+                            <th scope="col">User</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    {{ template "_footer" . }}
+{{end}}
