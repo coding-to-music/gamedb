@@ -72,11 +72,11 @@ type Page struct {
 	sync.Mutex
 }
 
-func (p Page) GetName() WebsocketPage {
+func (p *Page) GetName() WebsocketPage {
 	return p.name
 }
 
-func (p Page) CountConnections() int {
+func (p *Page) CountConnections() int {
 
 	// p.Lock()
 	// defer p.Unlock()
