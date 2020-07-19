@@ -52,8 +52,9 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		var sorters = query.GetOrderElastic(map[string]string{
-			"2": "members",
-			"3": "trend",
+			"2": "primaries",
+			"3": "members",
+			"4": "trend",
 		})
 
 		var search = query.GetSearchString("search")
