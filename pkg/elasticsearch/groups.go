@@ -29,7 +29,7 @@ func (group Group) GetAbbr() string {
 
 func (group Group) GetHeadline() string {
 	group.Headline = helpers.RegexFilterEmptyCharacters.ReplaceAllString(group.Headline, " ")
-	group.Headline = helpers.TruncateString(group.Headline, 100, "…")
+	group.Headline = helpers.TruncateString(group.Headline, 90, "…")
 	return group.Headline
 }
 
