@@ -19,7 +19,7 @@ func (c PlayersQueueElastic) Name() string {
 }
 
 func (c PlayersQueueElastic) Group() string {
-	return TaskGroupPlayers
+	return TaskGroupElastic
 }
 
 func (c PlayersQueueElastic) Cron() string {

@@ -20,7 +20,7 @@ func (c GroupsQueueElastic) Name() string {
 }
 
 func (c GroupsQueueElastic) Group() string {
-	return TaskGroupGroups
+	return TaskGroupElastic
 }
 
 func (c GroupsQueueElastic) Cron() string {

@@ -19,7 +19,7 @@ func (c AppsArticlesQueueElastic) Name() string {
 }
 
 func (c AppsArticlesQueueElastic) Group() string {
-	return TaskGroupNews
+	return TaskGroupElastic
 }
 
 func (c AppsArticlesQueueElastic) Cron() string {
