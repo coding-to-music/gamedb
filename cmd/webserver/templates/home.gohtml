@@ -160,26 +160,16 @@
                     <a class="card-footer" href="/players">More Players</a>
                 </div>
 
-                <div class="card mb-4" id="sales">
-                    <div class="card-header">
-                        <h5 class="d-inline">Game Sales</h5>
-                        <h5 class="float-right mb-0">
-                            <span class="badge cursor-pointer badge-success" data-sort="top-rated">Top Rated</span>
-                            <span class="badge cursor-pointer" data-sort="ending-soon">Ending Soon</span>
-                            <span class="badge cursor-pointer" data-sort="latest-found">Latest Found</span>
-                        </h5>
-                    </div>
+                <div class="card mb-4" id="updated-players">
+                    <h5 class="card-header">Latest Updated</h5>
                     <div class="card-body p-0">
 
                         <div class="table-responsive">
-                            <table class="table table-no-border table-hover table-striped mb-0">
+                            <table class="table table-no-border table-hover table-striped mb-0" data-path="/home/updated-players.json">
                                 <thead class="thead-light">
                                 <tr>
-                                    <th scope="col">Sale</th>
-                                    <th scope="col">Price</th>
-                                    <th scope="col">Rating</th>
-                                    <th scope="col">Ends</th>
-                                    <th scope="col"></th>
+                                    <th scope="col">Player</th>
+                                    <th scope="col">Updated</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -188,7 +178,7 @@
                         </div>
 
                     </div>
-                    <a class="card-footer" href="/games/sales">More Sales</a>
+                    <a class="card-footer" href="/players">More Players</a>
                 </div>
 
             </div>

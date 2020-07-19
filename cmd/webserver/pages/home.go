@@ -14,6 +14,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/go-chi/chi"
 	"github.com/microcosm-cc/bluemonday"
 	"go.mongodb.org/mongo-driver/bson"
@@ -21,8 +22,9 @@ import (
 
 func HomeRouter() http.Handler {
 	r := chi.NewRouter()
-	r.Get("/sales/{sort}.json", homeSalesHandler)
+	// r.Get("/sales/{sort}.json", homeSalesHandler)
 	r.Get("/players/{sort}.json", homePlayersHandler)
+	r.Get("/updated-players.json", homeUpdatedPlayersHandler)
 	return r
 }
 
@@ -193,6 +195,35 @@ type homeSale struct {
 	Ends      time.Time `json:"ends"`
 	Link      string    `json:"link"`
 	StoreLink string    `json:"store_link"`
+}
+
+func homeUpdatedPlayersHandler(w http.ResponseWriter, r *http.Request) {
+
+	var projection = bson.M{
+		"_id":          1,
+		"persona_name": 1,
+		"avatar":       1,
+		"updated_at":   1,
+	}
+
+	players, err := mongo.GetPlayers(0, 10, bson.D{{"updated_at", -1}}, nil, projection)
+	if err != nil {
+		log.Err(err, r)
+		return
+	}
+
+	var resp []queue.PlayerPayload
+	for _, player := range players {
+		resp = append(resp, queue.PlayerPayload{
+			ID:        strconv.FormatInt(player.ID, 10),
+			Name:      player.GetName(),
+			Avatar:    player.GetAvatar(),
+			Link:      player.GetPath(),
+			UpdatedAt: player.UpdatedAt.Unix(),
+		})
+	}
+
+	returnJSON(w, r, resp)
 }
 
 func homePlayersHandler(w http.ResponseWriter, r *http.Request) {

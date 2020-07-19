@@ -362,7 +362,14 @@ func playerHandler(messages []*rabbit.Message) {
 
 			defer wg.Done()
 
-			wsPayload := StringPayload{String: strconv.FormatInt(player.ID, 10)}
+			wsPayload := PlayerPayload{
+				ID:        strconv.FormatInt(player.ID, 10),
+				Name:      player.GetName(),
+				Link:      player.GetPath(),
+				Avatar:    player.GetAvatar(),
+				UpdatedAt: player.UpdatedAt.Unix(),
+			}
+
 			err = ProduceWebsocket(wsPayload, websockets.PagePlayer)
 			if err != nil {
 				log.Err(err, payload.ID)

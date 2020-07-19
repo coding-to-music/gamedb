@@ -11,7 +11,7 @@ if ($playerMissingPage.length > 0) {
         updateLoadingBar();
 
         const data = JSON.parse(e.data);
-        if (data.Data.toString() === $playerMissingPage.attr('data-id')) {
+        if (data.Data['id'].toString() === $playerMissingPage.attr('data-id')) {
 
             toast(true, '', 'Player found!');
 

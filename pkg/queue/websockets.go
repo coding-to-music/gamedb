@@ -49,7 +49,7 @@ func websocketHandler(messages []*rabbit.Message) {
 
 				wsPage.Send(idPayload.ID)
 
-			case websockets.PageGroup, websockets.PagePlayer:
+			case websockets.PageGroup:
 
 				idPayload := StringPayload{}
 
@@ -57,6 +57,15 @@ func websocketHandler(messages []*rabbit.Message) {
 				log.Err(err)
 
 				wsPage.Send(idPayload.String)
+
+			case websockets.PagePlayer:
+
+				playerPayload := PlayerPayload{}
+
+				err = helpers.Unmarshal(payload.Message, &playerPayload)
+				log.Err(err)
+
+				wsPage.Send(playerPayload)
 
 			case websockets.PageChatBot:
 
@@ -176,4 +185,12 @@ type ChatPayload struct {
 	Channel      string  `json:"channel"`
 	Time         string  `json:"timestamp"`
 	Embeds       bool    `json:"embeds"`
+}
+
+type PlayerPayload struct {
+	ID        string `json:"id"` // string for js
+	Name      string `json:"name"`
+	Link      string `json:"link"`
+	Avatar    string `json:"avatar"`
+	UpdatedAt int64  `json:"updated_at"`
 }

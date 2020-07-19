@@ -33,7 +33,7 @@ if ($playerPage.length > 0) {
     websocketListener('profile', function (e) {
 
         const data = JSON.parse(e.data);
-        if (data.Data.toString() === $playerPage.attr('data-id')) {
+        if (data.Data['id'].toString() === $playerPage.attr('data-id')) {
             toast(true, 'Click to refresh', 'This player has been updated', 0, 'refresh');
         }
     });

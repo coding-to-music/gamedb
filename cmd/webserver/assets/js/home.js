@@ -22,28 +22,84 @@ if ($homePage.length > 0) {
     });
     $panels.css('min-height', maxPanelHeight + 'px');
 
-    // Last load tables
-    const config = {rootMargin: '50px 0px 50px 0px', threshold: 0};
+    // Load AJAX
+    const map = {
+        // "sales": function () {
+        //     loadSales('top-rated');
+        // },
+        "players": function () {
+            loadPlayers('level');
+        },
+        "updated-players": loadLatestUpdatedPlayers,
+    }
 
-    const levelsCallback = function (entries, self) {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                loadPlayers('level');
-                self.unobserve(entry.target);
-            }
-        });
-    };
-    new IntersectionObserver(levelsCallback, config).observe(document.getElementById("players"));
+    for (const key in map) {
 
-    const salesCallback = function (entries, self) {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                loadSales('top-rated');
-                self.unobserve(entry.target);
-            }
+        const callback = map[key];
+        const element = document.getElementById(key);
+        if (element) {
+            const f = function (entries, self) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        self.unobserve(entry.target);
+                        callback();
+                    }
+                });
+            };
+            new IntersectionObserver(f, {rootMargin: '50px 0px 50px 0px', threshold: 0}).observe(element);
+        }
+    }
+
+    function loadLatestUpdatedPlayers() {
+
+        const $table = $('#updated-players tbody');
+        const schema = {
+            '<>': 'tr', 'data-app-id': '${id}', 'data-link': '${link}', 'html': [
+                {
+                    '<>': 'td', 'class': 'img', 'html': [
+                        {
+                            '<>': 'a', 'href': '${link}', 'class': 'icon-name', 'html': [
+                                {
+                                    '<>': 'div', 'class': 'icon', 'html': [{'<>': 'img', 'data-lazy': '${avatar}', 'alt': '', 'data-lazy-alt': '${name}'}],
+                                },
+                                {
+                                    '<>': 'div', 'class': 'name', 'html': '${name}',
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    '<>': 'td', 'text': function () {
+                        return (Math.floor(Date.now() / 1000) - this.updated_at).toLocaleString() + ' seconds ago';
+                    },
+                },
+            ]
+        };
+
+        $.ajax({
+            url: '/home/updated-players.json',
+            dataType: 'json',
+            cache: true,
+            success: function (data, textStatus, jqXHR) {
+
+                if (isIterable(data)) {
+
+                    $table.json2html(data, schema, {prepend: false});
+
+                    observeLazyImages($table.find('img[data-lazy]'));
+                    highLightOwnedGames($table);
+                }
+            },
         });
-    };
-    new IntersectionObserver(salesCallback, config).observe(document.getElementById("sales"));
+
+        websocketListener('profile', function (e) {
+
+            const data = JSON.parse(e.data);
+            $table.json2html([data.Data], schema, {prepend: true});
+            $table.find('tbody tr').slice(10).remove();
+        });
+    }
 
     //
     function loadSales(sort) {
