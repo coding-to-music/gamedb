@@ -1,0 +1,35 @@
+{{define "users"}}
+    {{ template "_header" . }}
+
+    <div class="container" id="admin-users-page">
+
+        {{ template "_flashes" . }}
+
+        <div class="card">
+            {{ template "_admin_header" . }}
+            <div class="card-body">
+
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped table-counts" data-row-type="users" data-path="/admin/users.json">
+                        <thead class="thead-light">
+                        <tr>
+                            <th scope="col">Date</th>
+                            <th scope="col" class="thin"></th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Profile</th>
+                            <th scope="col">Level</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    {{ template "_footer" . }}
+{{end}}

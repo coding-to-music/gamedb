@@ -60,3 +60,85 @@ if ($('#admin-queues-page').length > 0) {
         });
     });
 }
+
+if ($('#admin-users-page').length > 0) {
+
+    const options = {
+        "order": [[0, 'desc']],
+        "columnDefs": [
+            // Date
+            {
+                'targets': 0,
+                'render': function (data, type, row) {
+                    return row[0];
+                },
+                'orderSequence': ['desc', 'asc'],
+            },
+            // Verified
+            {
+                'targets': 1,
+                'render': function (data, type, row) {
+                    if (row[2]) {
+                        return '<i class="fas fa-check"></i>';
+                    } else {
+                        return '<i class="fas fa-times"></i>';
+                    }
+                },
+                'orderable': false,
+            },
+            // Email
+            {
+                'targets': 2,
+                'render': function (data, type, row) {
+                    return row[1];
+                },
+                'orderable': false,
+            },
+            // Profile
+            {
+                'targets': 3,
+                'render': function (data, type, row) {
+                    if (row[3] > 0) {
+                        return '<a href="/players/' + row[3] + '">' + row[3] + '</a>';
+                    }
+                    return '';
+                },
+                'orderable': false,
+            },
+            // level
+            {
+                'targets': 4,
+                'render': function (data, type, row) {
+                    if (row[4] > 1) {
+                        return row[4];
+                    }
+                    return '';
+                },
+                'orderSequence': ['desc'],
+            },
+        ]
+    };
+
+    const searchFields = [
+        $('#status'),
+        $('#platform'),
+        $('#license'),
+        $('#billing'),
+    ];
+
+    const $table = $('table.table');
+    const dt = $table.gdbTable({
+        tableOptions: options,
+        searchFields: searchFields
+    });
+
+    websocketListener('packages', function (e) {
+
+        const info = dt.page.info();
+        if (info.page === 0) { // Page 1
+
+            const data = JSON.parse(e.data);
+            addDataTablesRow(options, data.Data, info.length, $table);
+        }
+    });
+}

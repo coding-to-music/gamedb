@@ -4,9 +4,11 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/Jleagle/session-go/session"
+	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/middleware"
 	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -29,6 +31,10 @@ func AdminRouter() http.Handler {
 
 	r.Get("/", adminHandler)
 	r.Get("/tasks", adminTasksHandler)
+	r.Get("/users", adminUsersHandler)
+	r.Get("/users.json", adminUsersAjaxHandler)
+	r.Get("/patreon", adminPatreonHandler)
+	r.Get("/patreon.json", adminPatreonAjaxHandler)
 	r.Get("/queues", adminQueuesHandler)
 	r.Post("/queues", adminQueuesHandler)
 	r.Get("/settings", adminSettingsHandler)
@@ -40,6 +46,91 @@ func AdminRouter() http.Handler {
 
 func adminHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/admin/tasks", http.StatusFound)
+}
+
+func adminUsersHandler(w http.ResponseWriter, r *http.Request) {
+
+	t := adminUsersTemplate{}
+	t.fill(w, r, "Admin", "Admin")
+
+	returnTemplate(w, r, "admin/users", t)
+}
+
+type adminUsersTemplate struct {
+	globalTemplate
+}
+
+func adminUsersAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	query := datatable.NewDataTableQuery(r, false)
+
+	//
+	var wg sync.WaitGroup
+
+	// Get packages
+	var users []mysql.User
+	wg.Add(1)
+	go func(r *http.Request) {
+
+		defer wg.Done()
+
+		db, err := mysql.GetMySQLClient()
+		if err != nil {
+			log.Err(err, r)
+			return
+		}
+
+		db = db.Model(&mysql.User{})
+		db = db.Select([]string{"created_at", "email", "email_verified", "steam_id", "level"})
+		db = db.Limit(100)
+		db = db.Offset(query.GetOffset())
+
+		sortCols := map[string]string{
+			"0": "created_at",
+			"4": "level",
+		}
+		db = query.SetOrderOffsetGorm(db, sortCols)
+
+		db = db.Find(&users)
+
+		log.Err(db.Error, r)
+	}(r)
+
+	// Get total
+	var count int64
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		db, err := mysql.GetMySQLClient()
+		if err != nil {
+			log.Err(err, r)
+			return
+		}
+
+		db = db.Table("users").Count(&count)
+		if db.Error != nil {
+			log.Err(db.Error, r)
+			return
+		}
+	}()
+
+	// Wait
+	wg.Wait()
+
+	var response = datatable.NewDataTablesResponse(r, query, count, count, nil)
+	for _, user := range users {
+		response.AddRow([]interface{}{
+			user.CreatedAt.Format(helpers.DateSQL), // 0
+			user.Email,                             // 1
+			user.EmailVerified,                     // 2
+			user.GetSteamID(),                      // 3
+			user.Level,                             // 4
+		})
+	}
+
+	returnJSON(w, r, response)
 }
 
 func adminTasksHandler(w http.ResponseWriter, r *http.Request) {
