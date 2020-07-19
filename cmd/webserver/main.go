@@ -52,28 +52,24 @@ func main() {
 		return
 	}
 
-	if false {
-		go func() {
-			// mongo.CreatePlayerAchievementIndexes()
-			// mongo.CreateAppIndexes()
-			// mongo.CreatePackageIndexes()
-			// mongo.CreatePlayerIndexes()
-			// mongo.CreateGroupIndexes()
-			// mongo.CreateSaleIndexes()
-			log.Info("Mongo indexes finished")
-		}()
+	if false && config.IsLocal() {
+		log.Info("Mongo indexes started")
+		// mongo.CreatePlayerAchievementIndexes()
+		// mongo.CreateAppIndexes()
+		// mongo.CreatePackageIndexes()
+		// mongo.CreatePlayerIndexes()
+		// mongo.CreateGroupIndexes()
+		// mongo.CreateSaleIndexes()
 	}
 
-	if false {
-		go func() {
-			// elasticsearch.DeleteAndRebuildAppsIndex()
-			// elasticsearch.DeleteAndRebuildAchievementsIndex()
-			// elasticsearch.DeleteAndRebuildGroupsIndex()
-			// elasticsearch.DeleteAndRebuildPlayersIndex()
-			// elasticsearch.DeleteAndRebuildArticlesIndex()
-			// elasticsearch.DeleteAndRebuildGlobalIndex()
-			log.Info("Elastic indexes finished")
-		}()
+	if false && config.IsLocal() {
+		log.Info("Elastic indexes started")
+		// elasticsearch.DeleteAndRebuildAppsIndex()
+		// elasticsearch.DeleteAndRebuildAchievementsIndex()
+		// elasticsearch.DeleteAndRebuildGroupsIndex()
+		// elasticsearch.DeleteAndRebuildPlayersIndex()
+		// elasticsearch.DeleteAndRebuildArticlesIndex()
+		// elasticsearch.DeleteAndRebuildGlobalIndex()
 	}
 
 	// Start queue producers to send to.
