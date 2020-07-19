@@ -6,27 +6,27 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-type PlayersQueuePrimaries struct {
+type GroupsQueuePrimaries struct {
 	BaseTask
 }
 
-func (c PlayersQueuePrimaries) ID() string {
+func (c GroupsQueuePrimaries) ID() string {
 	return "groups-queue-primaries"
 }
 
-func (c PlayersQueuePrimaries) Name() string {
-	return "Queue all group primaries"
+func (c GroupsQueuePrimaries) Name() string {
+	return "Queue all group primaries to be updated"
 }
 
-func (c PlayersQueuePrimaries) Group() string {
+func (c GroupsQueuePrimaries) Group() string {
 	return TaskGroupGroups
 }
 
-func (c PlayersQueuePrimaries) Cron() string {
+func (c GroupsQueuePrimaries) Cron() string {
 	return ""
 }
 
-func (c PlayersQueuePrimaries) work() (err error) {
+func (c GroupsQueuePrimaries) work() (err error) {
 
 	var offset int64 = 0
 	var limit int64 = 10_000

@@ -66,6 +66,7 @@ var (
 		AutoPlayerRefreshes{},
 		BadgesUpdateRandom{},
 		GroupsQueueElastic{},
+		GroupsQueuePrimaries{},
 		GroupsUpdateTop{},
 		InstagramPost{},
 		MemcacheClearAll{},
