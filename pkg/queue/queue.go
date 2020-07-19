@@ -539,8 +539,8 @@ func ProduceGroupSearch(group mongo.Group) (err error) {
 	return produce(QueueGroupsSearch, GroupSearchMessage{Group: group})
 }
 
-func ProduceGroupPrimaries(groupID string) (err error) {
-	m := GroupPrimariesMessage{GroupID: groupID}
+func ProduceGroupPrimaries(group mongo.Group) (err error) {
+	m := GroupPrimariesMessage{Group: group}
 	return produce(m.Queue(), m)
 }
 
