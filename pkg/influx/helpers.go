@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/Jleagle/influxql"
-	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	influx "github.com/influxdata/influxdb1-client"
 	"github.com/influxdata/influxdb1-client/models"
@@ -278,7 +277,7 @@ func GetInfluxTrendFromSeries(series models.Row, padding int) (trend float64) {
 
 		_, slope := stat.LinearRegression(xs, ys, nil, false)
 		if !math.IsNaN(slope) {
-			trend = slope*helpers.Max(ys...) - helpers.Min(ys...)
+			trend = slope
 		}
 	}
 
