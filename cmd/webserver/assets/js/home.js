@@ -70,9 +70,11 @@ if ($homePage.length > 0) {
                     ]
                 },
                 {
-                    '<>': 'td', 'text': function () {
-                        return (Math.floor(Date.now() / 1000) - this.updated_at).toLocaleString() + ' seconds ago';
-                    },
+                    '<>': 'td', 'html': [
+                        {
+                            '<>': 'span', 'data-livestamp': '${updated_at}',
+                        }
+                    ],
                 },
             ]
         };
