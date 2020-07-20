@@ -10,7 +10,7 @@ if ($('#groups-page').length > 0) {
 
     //
     const options = {
-        "order": [[2, 'desc']],
+        "order": [[3, 'desc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-group-id', data[0]);
             $(row).attr('data-link', data[10]);
