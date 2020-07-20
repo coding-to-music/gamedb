@@ -707,10 +707,10 @@
                                 {{ range $key, $value := .Bundles }}
                                     <tr data-link="{{.GetPath}}">
                                         <td data-app-id="{{ .ID }}" class="img">
-                                            <div class="icon-name">
+                                            <a class="icon-name" href="{{.GetPath}}">
                                                 <div class="icon"><img src="/assets/img/no-app-image-square.jpg" alt="{{.GetName}}"></div>
                                                 <div class="name">{{ .GetName }}</div>
-                                            </div>
+                                            </a>
                                         </td>
                                         <td>{{ .Discount }}%</td>
                                         <td>{{ .AppsCount }}</td>
@@ -735,7 +735,12 @@
                                 </thead>
                                 {{ range $key, $value := .Packages }}
                                     <tr data-link="{{ .GetPath }}">
-                                        <td>{{ .GetName }}</td>
+                                        <td data-app-id="{{ .ID }}" class="img">
+                                            <a class="icon-name" href="{{.GetPath}}">
+                                                <div class="icon"><img src="/assets/img/no-app-image-square.jpg" alt="{{.GetName}}"></div>
+                                                <div class="name">{{ .GetName }}</div>
+                                            </a>
+                                        </td>
                                         <td>{{ .GetBillingType }}</td>
                                         <td>{{ .GetLicenseType }}</td>
                                         <td>{{ .GetStatus }}</td>
