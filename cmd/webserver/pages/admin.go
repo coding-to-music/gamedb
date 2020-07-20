@@ -128,7 +128,7 @@ func adminUsersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			user.CreatedAt.Format(helpers.DateSQL), // 0
 			user.Email,                             // 1
 			user.EmailVerified,                     // 2
-			user.GetSteamID(),                      // 3
+			user.SteamID.String,                    // 3 - Must be string
 			user.Level,                             // 4
 		})
 	}
