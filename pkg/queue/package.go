@@ -491,7 +491,11 @@ func updatePackageFromStore(pack *mongo.Package) (err error) {
 
 				defer wg.Done()
 
-				code := helpers.HeadWithTimeout(response.Data.SmallLogo, 0)
+				code, err := helpers.HeadWithTimeout(response.Data.SmallLogo, 0)
+				if err != nil {
+					log.Err(err)
+					return
+				}
 				pack.ImageLogo = ""
 				if code == 200 {
 					pack.ImageLogo = response.Data.SmallLogo
@@ -503,7 +507,11 @@ func updatePackageFromStore(pack *mongo.Package) (err error) {
 
 				defer wg.Done()
 
-				code := helpers.HeadWithTimeout(response.Data.PageImage, 0)
+				code, err := helpers.HeadWithTimeout(response.Data.PageImage, 0)
+				if err != nil {
+					log.Err(err)
+					return
+				}
 				pack.ImagePage = ""
 				if code == 200 {
 					pack.ImagePage = response.Data.PageImage

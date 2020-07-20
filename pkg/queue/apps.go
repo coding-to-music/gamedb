@@ -636,7 +636,12 @@ func updateAppDetails(app *mongo.App) (err error) {
 						}
 
 						for _, u := range urls {
-							if helpers.HeadWithTimeout(u, 0) == 200 {
+							code, err := helpers.HeadWithTimeout(u, 0)
+							if err != nil {
+								log.Err(err)
+								continue
+							}
+							if code == 200 {
 								app.Background = u
 								break
 							}

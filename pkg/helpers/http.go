@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/cenkalti/backoff"
 	"github.com/gamedb/gamedb/pkg/log"
 )
 
@@ -26,13 +27,18 @@ func GetWithTimeout(link string, timeout time.Duration) (b []byte, code int, err
 	return requestWithTimeout("GET", link, timeout)
 }
 
-func HeadWithTimeout(link string, timeout time.Duration) (code int) {
-	_, code, err := requestWithTimeout("HEAD", link, timeout)
-	if err != nil {
-		log.Err(err)
-		return 0
+func HeadWithTimeout(link string, timeout time.Duration) (code int, err error) {
+
+	operation := func() (err error) {
+		_, code, err = requestWithTimeout("HEAD", link, timeout)
+		return err
 	}
-	return code
+
+	policy := backoff.NewExponentialBackOff()
+	policy.InitialInterval = time.Second
+
+	err = backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 5), func(err error, t time.Duration) { log.Info(err) })
+	return code, err
 }
 
 func requestWithTimeout(method string, link string, timeout time.Duration) (body []byte, code int, err error) {
