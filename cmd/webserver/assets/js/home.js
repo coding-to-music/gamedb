@@ -86,9 +86,7 @@ if ($homePage.length > 0) {
                 if (isIterable(data)) {
 
                     $table.json2html(data, schema, {prepend: false});
-
                     observeLazyImages($table.find('img[data-lazy]'));
-                    highLightOwnedGames($table);
                 }
             },
         });
@@ -98,6 +96,7 @@ if ($homePage.length > 0) {
             const data = JSON.parse(e.data);
             $table.json2html([data.Data], schema, {prepend: true});
             $table.find('tbody tr').slice(10).remove();
+            observeLazyImages($table.find('img[data-lazy]'));
         });
     }
 
