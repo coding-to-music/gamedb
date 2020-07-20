@@ -59,6 +59,7 @@ func appPlayersHandler(messages []*rabbit.Message) {
 				if err != nil {
 
 					if strings.Contains(err.Error(), "read: connection reset by peer") ||
+						strings.Contains(err.Error(), "i/o timeout") ||
 						strings.Contains(err.Error(), "unexpected EOF") {
 						log.Info(err, payload.IDs)
 					} else {
