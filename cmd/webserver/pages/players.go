@@ -14,8 +14,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/mysql"
-	"github.com/gamedb/gamedb/pkg/tasks"
 	"github.com/go-chi/chi"
 	"github.com/olivere/elastic/v7"
 )
@@ -36,20 +34,33 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Get config
-	var date string
+	// var date string
+	// wg.Add(1)
+	// go func() {
+	//
+	// 	defer wg.Done()
+	//
+	// 	config, err := tasks.GetTaskConfig(tasks.PlayersUpdateRanks{})
+	// 	if err != nil {
+	// 		err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
+	// 		if err != nil {
+	// 			log.Err(err, r)
+	// 		}
+	// 	} else {
+	// 		date = config.Value
+	// 	}
+	// }()
+
+	var total int64
 	wg.Add(1)
 	go func() {
 
 		defer wg.Done()
 
-		config, err := tasks.GetTaskConfig(tasks.PlayersUpdateRanks{})
+		var err error
+		total, err = mongo.CountDocuments(mongo.CollectionPlayers, nil, 0)
 		if err != nil {
-			err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
-			if err != nil {
-				log.Err(err, r)
-			}
-		} else {
-			date = config.Value
+			log.Err(err, r)
 		}
 	}()
 
@@ -83,11 +94,6 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 			return countries[i].Value < countries[j].Value
 		})
 
-		total, err := mongo.CountDocuments(mongo.CollectionPlayers, nil, 0)
-		if err != nil {
-			log.Err(err, r)
-		}
-
 		var noCountryAgg string
 		if val, ok := aggs[""]; ok {
 			noCountryAgg = " (" + humanize.Comma(val) + ")"
@@ -96,9 +102,9 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 		// Prepend
 		countries = append(
 			[]helpers.Tuple{
-				{Key: "", Value: "All Countries (" + humanize.Comma(total) + ")"},
+				// {Key: "", Value: "All Countries (" + humanize.Comma(total) + ")"},
 				{Key: "_", Value: "No Country" + noCountryAgg},
-				{Key: "", Value: "---"},
+				// {Key: "", Value: "---"},
 			},
 			countries...
 		)
@@ -118,18 +124,18 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := playersTemplate{}
 	t.fill(w, r, "Players", "See where you come against the rest of the world")
-	t.Date = date
 	t.Countries = countries
 	t.Continents2 = continents
+	t.Total = total
 
 	returnTemplate(w, r, "players", t)
 }
 
 type playersTemplate struct {
 	globalTemplate
-	Date        string
 	Countries   []helpers.Tuple
 	Continents2 []i18n.Continent
+	Total       int64
 }
 
 func statesAjaxHandler(w http.ResponseWriter, r *http.Request) {
