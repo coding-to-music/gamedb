@@ -72,7 +72,7 @@ if ($homePage.length > 0) {
                 {
                     '<>': 'td', 'html': [
                         {
-                            '<>': 'span', 'data-livestamp': '${updated_at}',
+                            '<>': 'span', 'data-livestamp': '${updated_at}', 'text': 'a few seconds ago',
                         }
                     ],
                 },
