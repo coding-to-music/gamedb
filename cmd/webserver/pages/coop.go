@@ -64,7 +64,7 @@ func coopSearchAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	if search != "" {
 
-		players, _, _, err := elasticsearch.SearchPlayers(5, 0, search, nil, nil)
+		players, _, err := elasticsearch.SearchPlayers(5, 0, search, nil, nil)
 		if err != nil {
 			log.Err(err, r)
 			return

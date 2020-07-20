@@ -9,6 +9,8 @@ func CountryCodeToName(code string) string {
 	switch code {
 	case "", "_":
 		return "No Country"
+	case "AX":
+		return "Aland Islands"
 	case "BQ":
 		return "Bonaire, Sint Eustatius and Saba"
 	case "SH":

@@ -8,6 +8,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/olivere/elastic/v7"
 )
 
@@ -75,21 +76,18 @@ func IndexPlayer(p Player) error {
 	return indexDocument(IndexPlayers, strconv.FormatInt(p.ID, 10), p)
 }
 
-func SearchPlayers(limit int, offset int, search string, sorters []elastic.Sorter, filters []elastic.Query) (players []Player, aggregations elastic.Aggregations, total int64, err error) {
+func SearchPlayers(limit int, offset int, search string, sorters []elastic.Sorter, filters []elastic.Query) (players []Player, total int64, err error) {
 
 	client, ctx, err := GetElastic()
 	if err != nil {
-		return players, aggregations, 0, err
+		return players, 0, err
 	}
 
 	searchService := client.Search().
 		Index(IndexPlayers).
 		From(offset).
 		Size(limit).
-		TrackTotalHits(true).
-		Aggregation("country", elastic.NewTermsAggregation().Field("country_code").Size(1000).OrderByCountDesc().
-			SubAggregation("state", elastic.NewTermsAggregation().Field("state_code").Size(1000).OrderByCountDesc()),
-		)
+		TrackTotalHits(true)
 
 	var query = elastic.NewBoolQuery().Filter(filters...)
 
@@ -126,7 +124,7 @@ func SearchPlayers(limit int, offset int, search string, sorters []elastic.Sorte
 
 	searchResult, err := searchService.Do(ctx)
 	if err != nil {
-		return players, aggregations, 0, err
+		return players, 0, err
 	}
 
 	for _, hit := range searchResult.Hits.Hits {
@@ -151,7 +149,55 @@ func SearchPlayers(limit int, offset int, search string, sorters []elastic.Sorte
 		players = append(players, player)
 	}
 
-	return players, searchResult.Aggregations, searchResult.TotalHits(), err
+	return players, searchResult.TotalHits(), err
+}
+
+func AggregatePlayers() (aggregations map[string]int64, err error) {
+
+	var item = memcache.MemcachePlayerLocationAggs
+
+	err = memcache.GetSetInterface(item.Key, item.Expiration, &aggregations, func() (interface{}, error) {
+
+		client, ctx, err := GetElastic()
+		if err != nil {
+			return aggregations, err
+		}
+
+		searchService := client.Search().
+			Index(IndexPlayers).
+			Aggregation("country", elastic.NewTermsAggregation().Field("country_code").Size(1000).
+				SubAggregation("state", elastic.NewTermsAggregation().Field("state_code").Size(1000)),
+			).
+			Aggregation("continent", elastic.NewTermsAggregation().Field("continent").Size(10))
+
+		searchResult, err := searchService.Do(ctx)
+		if err != nil {
+			return aggregations, err
+		}
+
+		aggregations = map[string]int64{}
+
+		if a, ok := searchResult.Aggregations.Terms("country"); ok {
+			for _, country := range a.Buckets {
+				aggregations[country.Key.(string)] = country.DocCount
+				if a, ok := country.Terms("state"); ok {
+					for _, state := range a.Buckets {
+						aggregations[country.Key.(string)+"-"+state.Key.(string)] = state.DocCount
+					}
+				}
+			}
+		}
+
+		if a, ok := searchResult.Aggregations.Terms("continent"); ok {
+			for _, country := range a.Buckets {
+				aggregations["c-"+country.Key.(string)] = country.DocCount
+			}
+		}
+
+		return aggregations, err
+	})
+
+	return aggregations, err
 }
 
 //noinspection GoUnusedExportedFunction

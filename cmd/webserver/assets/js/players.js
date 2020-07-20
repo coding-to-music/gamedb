@@ -25,21 +25,24 @@ if ($('#players-page').length > 0) {
             dataType: 'json',
             success: function (data, textStatus, jqXHR) {
 
-                if (!data || data.length === 0) {
+                if (!data || data.length <= 3) {
                     $stateContainer.hide();
                     return;
                 }
 
                 $state.empty();
-                $state.append($('<option/>', {value: '', text: 'All States'}));
-                $state.append($('<option/>', {value: '_', text: 'No State'}));
-                $state.append($('<option disabled>---</option>', {value: '_', text: 'No State'}));
-
                 $.each(data, function (index, value) {
-                    $state.append($('<option/>', {
+
+                    let ops = {
                         value: value['k'],
-                        text: value['v']
-                    }));
+                        text: value['v'],
+                    };
+
+                    if (value['v'] === '---') {
+                        ops['disabled'] = 'disabled';
+                    }
+
+                    $state.append($('<option/>', ops));
                 });
 
                 $state.val('');

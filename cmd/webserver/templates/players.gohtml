@@ -38,16 +38,16 @@
                         <div class="form-group">
                             <label for="country">Continent / Country</label>
                             <select class="form-control form-control-chosen" id="country" name="country">
-                                <option value="">All Countries</option>
-                                <option value="_">No Country</option>
                                 <optgroup label="Continents">
-                                    {{ range .Continents }}
+                                    {{ range .Continents2 }}
                                         <option value="c-{{ .Key }}">{{ .Value }}</option>
                                     {{ end }}
                                 </optgroup>
-                                <optgroup label="Countries">
+                                <optgroup label="Countries" id="countries-group">
                                     {{ range .Countries }}
-                                        <option value="{{ .CC }}">{{ .Name }}</option>
+                                        <option value="{{ .Key }}"{{ if eq .Value "---" }} disabled="disabled"{{ end }}>
+                                            {{ .Value }}
+                                        </option>
                                     {{ end }}
                                 </optgroup>
                             </select>

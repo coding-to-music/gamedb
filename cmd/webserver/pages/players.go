@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -53,27 +54,63 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	// Get countries list
-	var countries []playersCountriesTemplate
+	var countries []helpers.Tuple
+	var continents []i18n.Continent
 	wg.Add(1)
 	go func() {
 
 		defer wg.Done()
 
+		aggs, err := elasticsearch.AggregatePlayers()
+		if err != nil {
+			log.Err(err, r)
+		}
+
 		for cc := range i18n.States {
 
-			if cc == "" {
-				cc = "_"
+			var countryAgg string
+			if val, ok := aggs[cc]; ok {
+				countryAgg = " (" + humanize.Comma(val) + ")"
 			}
 
-			countries = append(countries, playersCountriesTemplate{
-				CC:   cc,
-				Name: i18n.CountryCodeToName(cc),
+			countries = append(countries, helpers.Tuple{
+				Key:   cc,
+				Value: i18n.CountryCodeToName(cc) + countryAgg,
 			})
 		}
 
 		sort.Slice(countries, func(i, j int) bool {
-			return countries[i].Name < countries[j].Name
+			return countries[i].Value < countries[j].Value
 		})
+
+		total, err := mongo.CountDocuments(mongo.CollectionPlayers, nil, 0)
+		if err != nil {
+			log.Err(err, r)
+		}
+
+		var noCountryAgg string
+		if val, ok := aggs[""]; ok {
+			noCountryAgg = " (" + humanize.Comma(val) + ")"
+		}
+
+		// Prepend
+		countries = append(
+			[]helpers.Tuple{
+				{Key: "", Value: "All Countries (" + humanize.Comma(total) + ")"},
+				{Key: "_", Value: "No Country" + noCountryAgg},
+				{Key: "", Value: "---"},
+			},
+			countries...
+		)
+
+		// Continents
+		continents = append(continents, i18n.Continents...) // Copy without reference
+
+		for k, v := range continents {
+			if val, ok := aggs["c-"+v.Key]; ok {
+				continents[k].Value += " (" + humanize.Comma(val) + ")"
+			}
+		}
 	}()
 
 	// Wait
@@ -83,36 +120,67 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, "Players", "See where you come against the rest of the world")
 	t.Date = date
 	t.Countries = countries
+	t.Continents2 = continents
 
 	returnTemplate(w, r, "players", t)
 }
 
 type playersTemplate struct {
 	globalTemplate
-	Date      string
-	Countries []playersCountriesTemplate
-}
-
-type playersCountriesTemplate struct {
-	CC   string
-	Name string
+	Date        string
+	Countries   []helpers.Tuple
+	Continents2 []i18n.Continent
 }
 
 func statesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
+	//noinspection GoPreferNilSlice
+	var states = []helpers.Tuple{}
+
 	cc := r.URL.Query().Get("cc")
+	if cc != "" {
 
-	var states []helpers.Tuple
-
-	if val, ok := i18n.States[cc]; ok {
-
-		for k, v := range val {
-			states = append(states, helpers.Tuple{Key: k, Value: v})
+		aggs, err := elasticsearch.AggregatePlayers()
+		if err != nil {
+			log.Err(err, r)
 		}
 
-		sort.Slice(states, func(i, j int) bool {
-			return states[i].Value < states[j].Value
-		})
+		if val, ok := i18n.States[cc]; ok {
+
+			for k, v := range val {
+
+				var stateAgg string
+				if val, ok := aggs[cc+"-"+k]; ok {
+					stateAgg = " (" + humanize.Comma(val) + ")"
+				}
+
+				states = append(states, helpers.Tuple{Key: k, Value: v + stateAgg})
+			}
+
+			sort.Slice(states, func(i, j int) bool {
+				return states[i].Value < states[j].Value
+			})
+
+			var countryAgg string
+			if val, ok := aggs[cc]; ok {
+				countryAgg = " (" + humanize.Comma(val) + ")"
+			}
+
+			var stateAgg2 string
+			if val, ok := aggs[cc+"-"]; ok {
+				stateAgg2 = " (" + humanize.Comma(val) + ")"
+			}
+
+			// Prepend
+			states = append(
+				[]helpers.Tuple{
+					{Key: "", Value: "All States" + countryAgg},
+					{Key: "_", Value: "No State" + stateAgg2},
+					{Key: "", Value: "---"},
+				},
+				states...
+			)
+		}
 	}
 
 	returnJSON(w, r, states)
@@ -187,34 +255,16 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Get players
 	var players []elasticsearch.Player
 	var filtered int64
-	var aggregations = map[string]map[string]int64{}
 	wg.Add(1)
 	go func() {
 
 		defer wg.Done()
 
 		var err error
-		var aggs elastic.Aggregations
 
-		players, aggs, filtered, err = elasticsearch.SearchPlayers(100, query.GetOffset(), search, sorters, filters)
+		players, filtered, err = elasticsearch.SearchPlayers(100, query.GetOffset(), search, sorters, filters)
 		if err != nil {
 			log.Err(err, r)
-			return
-		}
-
-		if a, ok := aggs.Terms("country"); ok {
-			aggregations["country"] = map[string]int64{}
-			for _, v := range a.Buckets {
-				aggregations["country"][v.Key.(string)] = v.DocCount
-				if !isContinent && country != "" && country == v.Key.(string) {
-					if a, ok := v.Terms("state"); ok {
-						aggregations["state"] = map[string]int64{}
-						for _, v := range a.Buckets {
-							aggregations["state"][v.Key.(string)] = v.DocCount
-						}
-					}
-				}
-			}
 		}
 	}()
 
@@ -235,7 +285,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	var response = datatable.NewDataTablesResponse(r, query, total, filtered, aggregations)
+	var response = datatable.NewDataTablesResponse(r, query, total, filtered, nil)
 	for k, v := range players {
 
 		var index = query.GetOffset() + k + 1

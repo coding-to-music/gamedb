@@ -28,7 +28,7 @@ var Continents = []Continent{
 	{Key: ContinentEurope, Value: "Europe"},
 	{Key: ContinentNorthAmerica, Value: "North America"},
 	{Key: ContinentSouthAmerica, Value: "South America"},
-	{Key: ContinentOceania, Value: "Oceania"},
+	// {Key: ContinentOceania, Value: "Oceania"},
 }
 
 //
