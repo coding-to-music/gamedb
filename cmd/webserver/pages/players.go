@@ -141,7 +141,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		"11": "comments",
 
 		"12": "achievements",
-		"13": "achievement_count_100",
+		"13": "achievements_100",
 	})
 
 	var isContinent bool
