@@ -472,16 +472,16 @@ func updateAppDetails(app *mongo.App) (err error) {
 
 	for _, code := range i18n.GetProdCCs(true) {
 
-		var filter []string
-		if code.ProductCode != steamapi.ProductCCUS {
-			filter = []string{"price_overview"}
-		}
-
-		response, err := steam.GetSteam().GetAppDetails(uint(app.ID), code.ProductCode, steamapi.LanguageEnglish, filter)
+		// No price_overview filter so we can get `is_free`
+		response, err := steam.GetSteam().GetAppDetails(uint(app.ID), code.ProductCode, steamapi.LanguageEnglish, nil)
 		err = steam.AllowSteamCodes(err)
+
+		// Not available in language
 		if err == steamapi.ErrAppNotFound || response.Data == nil {
 			continue
 		}
+
+		// Retry app
 		if err != nil {
 			return err
 		}

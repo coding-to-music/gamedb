@@ -40,20 +40,27 @@ func (p *ProductPrices) AddPriceFromPackage(code steamapi.ProductCC, prices stea
 
 func (p *ProductPrices) AddPriceFromApp(code steamapi.ProductCC, prices steamapi.AppDetailsBody) {
 
-	if prices.Data.PriceOverview == nil {
+	if prices.Data == nil {
 		return
 	}
 
-	if prices.Data.PriceOverview.Currency == "" {
-		prices.Data.PriceOverview.Currency = i18n.GetProdCC(code).CurrencyCode
+	pp := ProductPrice{
+		Free: prices.Data.IsFree,
 	}
 
-	(*p)[code] = ProductPrice{
-		Currency:        prices.Data.PriceOverview.Currency,
-		Initial:         prices.Data.PriceOverview.Initial,
-		Final:           prices.Data.PriceOverview.Final,
-		DiscountPercent: prices.Data.PriceOverview.DiscountPercent,
+	if prices.Data.PriceOverview != nil {
+
+		if prices.Data.PriceOverview.Currency == "" {
+			prices.Data.PriceOverview.Currency = i18n.GetProdCC(code).CurrencyCode
+		}
+
+		pp.Currency = prices.Data.PriceOverview.Currency
+		pp.Initial = prices.Data.PriceOverview.Initial
+		pp.Final = prices.Data.PriceOverview.Final
+		pp.DiscountPercent = prices.Data.PriceOverview.DiscountPercent
 	}
+
+	(*p)[code] = pp
 }
 
 func (p ProductPrices) Get(code steamapi.ProductCC) (price ProductPrice) {
@@ -87,6 +94,7 @@ type ProductPrice struct {
 	Final           int                   `json:"final"`
 	DiscountPercent int                   `json:"discount_percent"`
 	Individual      int                   `json:"individual"`
+	Free            bool                  `json:"free"`
 }
 
 func (p ProductPrice) GetDiscountPercent() string {
@@ -114,7 +122,10 @@ func (p ProductPrice) GetIndividual() string {
 }
 
 func (p ProductPrice) format(value int) string {
-	if p.Currency == "" || !p.Exists {
+	if p.Free && value == 0 {
+		return "Free"
+	}
+	if !p.Exists || p.Currency == "" {
 		return "-"
 	}
 	return i18n.FormatPrice(p.Currency, value)
