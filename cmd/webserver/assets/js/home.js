@@ -52,7 +52,7 @@ if ($homePage.length > 0) {
 
     function loadLatestUpdatedPlayers() {
 
-        const $table = $('#updated-players tbody');
+        const $tbody = $('#updated-players tbody');
         const schema = {
             '<>': 'tr', 'data-app-id': '${id}', 'data-link': '${link}', 'html': [
                 {
@@ -87,18 +87,22 @@ if ($homePage.length > 0) {
 
                 if (isIterable(data)) {
 
-                    $table.json2html(data, schema, {prepend: false});
-                    observeLazyImages($table.find('img[data-lazy]'));
+                    $tbody.json2html(data, schema, {prepend: false});
+                    observeLazyImages($tbody.find('img[data-lazy]'));
                 }
             },
         });
 
-        websocketListener('profile', function (e) {
+        let lastPlayerId = 0;
 
+        websocketListener('profile', function (e) {
             const data = JSON.parse(e.data);
-            $table.json2html([data.Data], schema, {prepend: true});
-            $table.find('tbody tr').slice(10).remove();
-            observeLazyImages($table.find('img[data-lazy]'));
+            if (lastPlayerId !== data.Data['id']) {
+                lastPlayerId = data.Data['id'];
+                $tbody.json2html([data.Data], schema, {prepend: true});
+                $tbody.find('tr').slice(10).remove();
+                observeLazyImages($tbody.find('img[data-lazy]'));
+            }
         });
     }
 
