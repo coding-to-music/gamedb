@@ -31,6 +31,7 @@ if ($homePage.length > 0) {
             loadPlayers('level');
         },
         "updated-players": loadLatestUpdatedPlayers,
+        "news": loadNewsSection,
     }
 
     for (const key in map) {
@@ -48,6 +49,26 @@ if ($homePage.length > 0) {
             };
             new IntersectionObserver(f, {rootMargin: '50px 0px 50px 0px', threshold: 0}).observe(element);
         }
+    }
+
+    function loadNewsSection() {
+
+        const $news = $('#news');
+
+        $.ajax({
+            type: "GET",
+            url: '/home/news.html',
+            dataType: 'html',
+            success: function (data, textStatus, jqXHR) {
+
+                if (data === null) {
+                    data = '';
+                }
+
+                $news.html(data);
+                observeLazyImages($news.find('img[data-lazy]'));
+            },
+        });
     }
 
     function loadLatestUpdatedPlayers() {

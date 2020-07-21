@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+	twitter2 "github.com/dghubble/go-twitter/twitter"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -15,6 +16,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
+	"github.com/gamedb/gamedb/pkg/twitter"
 	"github.com/go-chi/chi"
 	"github.com/microcosm-cc/bluemonday"
 	"go.mongodb.org/mongo-driver/bson"
@@ -25,6 +27,8 @@ func HomeRouter() http.Handler {
 	// r.Get("/sales/{sort}.json", homeSalesHandler)
 	r.Get("/players/{sort}.json", homePlayersHandler)
 	r.Get("/updated-players.json", homeUpdatedPlayersHandler)
+	r.Get("/tweets.json", homeTweetsHandler)
+	r.Get("/news.html", homeNewsHandler)
 	return r
 }
 
@@ -67,49 +71,6 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	// News
-	wg.Add(1)
-	go func() {
-
-		defer wg.Done()
-
-		apps, err := mongo.PopularApps()
-		if err != nil {
-			log.Err(err, r)
-		}
-
-		var appIDs []int
-		var appIDmap = map[int]mongo.App{}
-		for _, app := range apps {
-			appIDs = append(appIDs, app.ID)
-			appIDmap[app.ID] = app
-		}
-
-		news, err := mongo.GetArticlesByAppIDs(appIDs, 20, time.Time{})
-		if err != nil {
-			log.Err(err, r)
-		}
-
-		p := bluemonday.StrictPolicy() // Strip all tags
-
-		for _, v := range news {
-
-			contents := string(helpers.RenderHTMLAndBBCode(v.Contents))
-			contents = p.Sanitize(contents)
-			contents = helpers.TruncateString(contents, 300, "...")
-			contents = strings.TrimSpace(contents)
-
-			t.News = append(t.News, homeNews{
-				Title:    v.Title,
-				Contents: template.HTML(contents),
-				Link:     "/news#" + strconv.FormatInt(v.ID, 10),
-				Image:    template.HTMLAttr(appIDmap[v.AppID].GetHeaderImage()),
-			})
-
-			t.NewsID = v.ID
-		}
-	}()
-
 	wg.Wait()
 
 	//
@@ -120,16 +81,83 @@ type homeTemplate struct {
 	globalTemplate
 	TopGames []mongo.App
 	NewGames []mongo.App
-	News     []homeNews
-	NewsID   int64
 	Players  []mongo.Player
 }
 
-type homeNews struct {
+func homeNewsHandler(w http.ResponseWriter, r *http.Request) {
+
+	t := homeNewsTemplate{}
+	t.fill(w, r, "", "")
+
+	apps, err := mongo.PopularApps()
+	if err != nil {
+		log.Err(err, r)
+	}
+
+	var appIDs []int
+	var appIDmap = map[int]mongo.App{}
+	for _, app := range apps {
+		appIDs = append(appIDs, app.ID)
+		appIDmap[app.ID] = app
+	}
+
+	news, err := mongo.GetArticlesByAppIDs(appIDs, 20, time.Time{})
+	if err != nil {
+		log.Err(err, r)
+	}
+
+	p := bluemonday.StrictPolicy() // Strip all tags
+
+	for _, v := range news {
+
+		contents := string(v.GetBody())
+		contents = p.Sanitize(contents)
+		contents = helpers.TruncateString(contents, 300, "...")
+		contents = strings.TrimSpace(contents)
+
+		t.News = append(t.News, homeNewsItemTemplate{
+			Title:    v.Title,
+			Contents: template.HTML(contents),
+			Link:     "/news#" + strconv.FormatInt(v.ID, 10),
+			Image:    template.HTMLAttr(appIDmap[v.AppID].GetHeaderImage()),
+		})
+
+		t.NewsID = v.ID
+	}
+
+	returnTemplate(w, r, "home_news", t)
+}
+
+type homeNewsTemplate struct {
+	globalTemplate
+	News   []homeNewsItemTemplate
+	NewsID int64
+}
+
+type homeNewsItemTemplate struct {
 	Title    string
 	Contents template.HTML
 	Link     string
 	Image    template.HTMLAttr
+}
+
+func homeTweetsHandler(w http.ResponseWriter, r *http.Request) {
+
+	t := true
+	f := false
+
+	tweets, resp, err := twitter.GetTwitter().Timelines.UserTimeline(&twitter2.UserTimelineParams{
+		ScreenName:      "gamedbonline",
+		Count:           10,
+		ExcludeReplies:  &t,
+		IncludeRetweets: &f,
+	})
+
+	log.Err(err)
+	log.Err(resp.Body.Close())
+
+	log.Info(tweets)
+
 }
 
 func homeSalesHandler(w http.ResponseWriter, r *http.Request) {
