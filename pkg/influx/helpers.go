@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/influxql"
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	influx "github.com/influxdata/influxdb1-client"
 	"github.com/influxdata/influxdb1-client/models"
@@ -252,7 +253,7 @@ func GetInfluxTrendFromSeries(series models.Row, padding int) (trend float64) {
 	var xs []float64
 	var ys []float64
 
-	for k, v := range series.Values {
+	for _, v := range series.Values {
 
 		val, err := v[1].(json.Number).Int64()
 		if err != nil {
@@ -260,8 +261,13 @@ func GetInfluxTrendFromSeries(series models.Row, padding int) (trend float64) {
 			continue
 		}
 
-		xs = append(xs, float64(k))
 		ys = append(ys, float64(val))
+	}
+
+	maxY := helpers.Max(ys...)
+
+	for k := range series.Values {
+		xs = append(xs, float64(k)*maxY)
 	}
 
 	if len(ys) > 0 {

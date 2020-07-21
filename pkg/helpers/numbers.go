@@ -37,7 +37,7 @@ func OrdinalComma(i int) string {
 
 func GetTrendValue(i float64) string {
 
-	i = RoundFloatTo2DP(i)
+	i = RoundFloatTo2DP(i * 1000)
 
 	if i > 0 {
 		return "+" + humanize.Commaf(i)
