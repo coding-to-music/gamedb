@@ -37,6 +37,12 @@
                     height: 50px;
                     width: auto;
                 }
+
+                iframe {
+                    pointer-events: none;
+                    height: 50px;
+                    width: 88.88px;
+                }
             }
         }
     }

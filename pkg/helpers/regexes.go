@@ -21,4 +21,5 @@ var (
 	RegexSpaces                = regexp.MustCompile(`[\s]`)
 	RegexFilterEmptyCharacters = regexp.MustCompile(`[\p{Cf}\p{Co}\p{Cs}\p{Cc}\p{C}\p{Braille}]`)
 	RegexSmallRomanOnly        = regexp.MustCompile(`^[IVX]+$`)
+	RegexYouTubeID             = regexp.MustCompile(`[a-zA-Z0-9_\-]{11}`)
 )

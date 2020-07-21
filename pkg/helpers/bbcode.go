@@ -73,6 +73,17 @@ func init() {
 		out.Name = "hr"
 		return out, true
 	})
+	BBCodeCompiler.SetTag("previewyoutube", func(node *bbcode.BBCodeNode) (*bbcode.HTMLTag, bool) {
+		out := bbcode.NewHTMLTag("")
+		out.Name = "iframe"
+		out.Attrs["width"] = "560"
+		out.Attrs["height"] = "315"
+		out.Attrs["src"] = "https://www.youtube.com/embed/" + RegexYouTubeID.FindString(node.GetOpeningTag().Value)
+		out.Attrs["frameborder"] = "0"
+		out.Attrs["allow"] = "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+		out.Attrs["allowfullscreen"] = "allowfullscreen"
+		return out, true
+	})
 }
 
 func RenderHTMLAndBBCode(in string) template.HTML {
