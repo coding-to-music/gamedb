@@ -22,6 +22,7 @@ function toast(success = true, body, title = '', timeout = 0, link = '') {
 
     if (isMobile()) {
         options["positionClass"] = "toast-bottom-right";
+        options["newestOnTop"] = true;
     } else {
         options["positionClass"] = "toast-top-right";
     }
