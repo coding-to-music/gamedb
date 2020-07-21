@@ -219,7 +219,8 @@ func getTemplateFuncMap() map[string]interface{} {
 
 // globalTemplate is added to every other template
 type globalTemplate struct {
-	Title           string        // Page title
+	Title           string        // Page title for Chrome
+	TitleOnly       string        // Page title
 	Description     template.HTML // Page description
 	Path            string        // URL path
 	Env             string        // Environment
@@ -263,6 +264,7 @@ func (t *globalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	t.response = w
 
 	t.Title = title + " - Game DB"
+	t.TitleOnly = title
 	t.Description = description
 	t.Env = config.Config.Environment.Get()
 	t.Path = r.URL.Path
