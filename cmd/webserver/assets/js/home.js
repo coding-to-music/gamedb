@@ -23,7 +23,7 @@ if ($homePage.length > 0) {
     $panels.css('min-height', maxPanelHeight + 'px');
 
     // Load AJAX
-    const map = {
+    loadAjaxOnObserve({
         // "sales": function () {
         //     loadSales('top-rated');
         // },
@@ -32,24 +32,7 @@ if ($homePage.length > 0) {
         },
         "updated-players": loadLatestUpdatedPlayers,
         "news": loadNewsSection,
-    }
-
-    for (const key in map) {
-
-        const callback = map[key];
-        const element = document.getElementById(key);
-        if (element) {
-            const f = function (entries, self) {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        self.unobserve(entry.target);
-                        callback();
-                    }
-                });
-            };
-            new IntersectionObserver(f, {rootMargin: '50px 0px 50px 0px', threshold: 0}).observe(element);
-        }
-    }
+    });
 
     function loadNewsSection() {
 

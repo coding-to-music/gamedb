@@ -44,48 +44,28 @@ if ($appPage.length > 0) {
         }
     });
 
+    loadAjaxOnObserve({
+        'news': loadNews,
+        'items': loadItems,
+        'prices': loadPriceChart,
+        'reviews': loadAppReviewsChart,
+        'achievements': loadAchievements,
+        'dlc': loadDLC,
+        'dev-localization': loadDevLocalization,
+        'media': loadAppMediaTab,
+
+        // Players tab
+        'players-chart': loadAppPlayersChart,
+        'group-chart': function () {
+            loadGroupChart($appPage);
+        },
+        'top-players-table': loadAppPlayerTimes,
+        'wishlists-chart': loadAppWishlist,
+    });
+
     // On tab change
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-
-        const to = $(e.target);
-        const from = $(e.relatedTarget);
-
-        // On entering tab
-        if (!to.attr('loaded')) {
-            to.attr('loaded', 1);
-            switch (to.attr('href')) {
-                case '#news':
-                    loadNews();
-                    break;
-                case '#items':
-                    loadItems();
-                    break;
-                case '#prices':
-                    loadPriceChart();
-                    break;
-                case '#players':
-                    loadPlayersTab();
-                    break;
-                case '#reviews':
-                    loadAppReviewsChart();
-                    break;
-                case '#achievements':
-                    loadAchievements();
-                    break;
-                case '#dlc':
-                    loadDLC();
-                    break;
-                case '#dev-localization':
-                    loadDevLocalization();
-                    break;
-                case '#media':
-                    loadAppMediaTab();
-                    break;
-            }
-        }
-
-        // On leaving tab
-        if (from.attr('href') === '#media') {
+        if ($(e.relatedTarget).attr('href') === '#media') {
             pauseAllVideos();
         }
     });
@@ -373,58 +353,6 @@ if ($appPage.length > 0) {
 
             },
         });
-    }
-
-    function loadPlayersTab() {
-
-        const config = {rootMargin: '50px 0px 50px 0px', threshold: 0};
-
-        //
-        const playersCallback = function (entries, self) {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    loadAppPlayersChart();
-                    self.unobserve(entry.target);
-                }
-            });
-        };
-        new IntersectionObserver(playersCallback, config).observe(document.getElementById("players-chart"));
-
-        //
-        const groupChart = document.getElementById("group-chart");
-        if (groupChart) {
-            const groupCallback = function (entries, self) {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        loadGroupChart($appPage);
-                        self.unobserve(entry.target);
-                    }
-                });
-            };
-            new IntersectionObserver(groupCallback, config).observe(groupChart);
-        }
-
-        //
-        const timesCallback = function (entries, self) {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    loadAppPlayerTimes();
-                    self.unobserve(entry.target);
-                }
-            });
-        };
-        new IntersectionObserver(timesCallback, config).observe(document.getElementById("top-players-table"));
-
-        //
-        const wishlistCallback = function (entries, self) {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    loadAppWishlist();
-                    self.unobserve(entry.target);
-                }
-            });
-        };
-        new IntersectionObserver(wishlistCallback, config).observe(document.getElementById("wishlists-chart"));
     }
 
     function loadAppPlayersChart() {

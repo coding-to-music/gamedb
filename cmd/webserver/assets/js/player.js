@@ -38,8 +38,7 @@ if ($playerPage.length > 0) {
         }
     });
 
-    // Load AJAX
-    const map = {
+    loadAjaxOnObserve({
         "all-games": loadPlayerLibraryTab,
         "recent-games": loadPlayerLibraryStatsTab,
         "details-charts": loadPlayerDetailsTab,
@@ -48,24 +47,7 @@ if ($playerPage.length > 0) {
         "groups-table": loadPlayerGroupsTab,
         "wishlist-table": loadPlayerWishlistTab,
         "achievements-table": loadPlayerAchievementsTab,
-    }
-
-    for (const key in map) {
-
-        const callback = map[key];
-        const element = document.getElementById(key);
-        if (element) {
-            const f = function (entries, self) {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        self.unobserve(entry.target);
-                        callback();
-                    }
-                });
-            };
-            new IntersectionObserver(f, {rootMargin: '50px 0px 50px 0px', threshold: 0}).observe(element);
-        }
-    }
+    });
 
     //
     function loadPlayerLibraryTab() {
