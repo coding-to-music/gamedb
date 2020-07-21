@@ -52,6 +52,7 @@ if ($homePage.length > 0) {
 
     function loadLatestUpdatedPlayers() {
 
+        let lastPlayerId = 0;
         const $tbody = $('#updated-players tbody');
         const schema = {
             '<>': 'tr', 'data-app-id': '${id}', 'data-link': '${link}', 'html': [
@@ -86,14 +87,14 @@ if ($homePage.length > 0) {
             success: function (data, textStatus, jqXHR) {
 
                 if (isIterable(data)) {
-
+                    $tbody.find('tr').remove();
                     $tbody.json2html(data, schema, {prepend: false});
                     observeLazyImages($tbody.find('img[data-lazy]'));
                 }
+
+                lastPlayerId = data[0]['id'];
             },
         });
-
-        let lastPlayerId = 0;
 
         websocketListener('profile', function (e) {
             const data = JSON.parse(e.data);
