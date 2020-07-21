@@ -71,6 +71,7 @@ require (
 	github.com/microcosm-cc/bluemonday v1.0.3
 	github.com/mxpv/patreon-go v0.0.0-20190917022727-646111f1d983
 	github.com/nicklaw5/helix v0.5.9
+	github.com/nlopes/slack v0.6.0
 	github.com/olekukonko/tablewriter v0.0.4 // indirect
 	github.com/olivere/elastic/v7 v7.0.18
 	github.com/oschwald/maxminddb-golang v1.7.0

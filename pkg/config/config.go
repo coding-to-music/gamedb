@@ -141,17 +141,17 @@ type BaseConfig struct {
 	YoutubeAPIKey ConfigItem
 
 	// Other
-	Environment        ConfigItem
-	GameDBDomain       ConfigItem
-	GameDBShortName    ConfigItem
-	SendGridAPIKey     ConfigItem
-	WebserverPort      ConfigItem
-	CommitHash         ConfigItem
-	IP                 ConfigItem
-	NewReleaseDays     ConfigItem
-	SlackGameDBWebhook ConfigItem
-	SlackSocialWebhook ConfigItem
-	InfraPath          ConfigItem
+	Environment         ConfigItem
+	GameDBDomain        ConfigItem
+	GameDBShortName     ConfigItem
+	SendGridAPIKey      ConfigItem
+	WebserverPort       ConfigItem
+	CommitHash          ConfigItem
+	IP                  ConfigItem
+	NewReleaseDays      ConfigItem
+	SlackGameDBWebhook  ConfigItem
+	SlackPatreonWebhook ConfigItem
+	InfraPath           ConfigItem
 }
 
 func init() {
@@ -283,7 +283,7 @@ func init() {
 	Config.SendGridAPIKey.Set("SENDGRID")
 	Config.WebserverPort.Set("PORT")
 	Config.SlackGameDBWebhook.Set("SLACK_GAMEDB_WEBHOOK")
-	Config.SlackSocialWebhook.Set("SLACK_SOCIAL_WEBHOOK")
+	Config.SlackPatreonWebhook.Set("SLACK_SOCIAL_WEBHOOK")
 	Config.InfraPath.Set("INFRASTRUCTURE_PATH")
 
 	// Defaults

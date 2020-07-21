@@ -10,6 +10,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/go-chi/chi"
+	"github.com/nlopes/slack"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -52,6 +53,10 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+
+	// Slack message
+	err = slack.PostWebhook(config.Config.SlackPatreonWebhook.Get(), &slack.WebhookMessage{Text: event})
+	log.Err(err)
 }
 
 func saveWebhookEvent(r *http.Request, event mongo.EventEnum, pwr patreon.Webhook) (err error) {
