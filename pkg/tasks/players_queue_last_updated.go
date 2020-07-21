@@ -81,7 +81,7 @@ func (c PlayersQueueLastUpdated) work() (err error) {
 			return err
 		}
 
-		time.Sleep((cronTime / time.Duration(toQueue)) / time.Duration(consumers))
+		time.Sleep(cronTime / time.Duration(toQueue*consumers))
 	}
 
 	return err
