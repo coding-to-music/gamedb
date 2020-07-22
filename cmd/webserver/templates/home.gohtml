@@ -26,7 +26,7 @@
             <div class="col-12 col-lg-8">
 
                 <div class="row" id="panels">
-                    <a class="col-12 col-sm-6 col-xl-4" href="/players">
+                    <a class="col-12 col-sm-6" href="/players">
                         <div class="card mb-4">
                             <h5 class="card-header"><i class="fas fa-user-friends"></i> Player Ladders</h5>
                             <div class="card-body p-3">
@@ -34,7 +34,7 @@
                             </div>
                         </div>
                     </a>
-                    <a class="col-12 col-sm-6 col-xl-4" href="/games">
+                    <a class="col-12 col-sm-6" href="/games">
                         <div class="card mb-4">
                             <h5 class="card-header"><i class="fas fa-gamepad"></i> Game Ladders</h5>
                             <div class="card-body p-3">
@@ -42,7 +42,7 @@
                             </div>
                         </div>
                     </a>
-                    <a class="col-12 col-sm-6 col-xl-4" href="/groups">
+                    <a class="col-12 col-sm-6" href="/groups">
                         <div class="card mb-4">
                             <h5 class="card-header"><i class="fas fa-users"></i> Group Ladders</h5>
                             <div class="card-body p-3">
@@ -50,7 +50,7 @@
                             </div>
                         </div>
                     </a>
-                    <a class="col-12 col-sm-6 col-xl-4" href="/badges">
+                    <a class="col-12 col-sm-6" href="/badges">
                         <div class="card mb-4">
                             <h5 class="card-header"><i class="fas fa-ribbon"></i> Badge Ladders</h5>
                             <div class="card-body p-3">
@@ -58,7 +58,7 @@
                             </div>
                         </div>
                     </a>
-                    <a class="col-12 col-sm-6 col-xl-4" href="/games">
+                    <a class="col-12 col-sm-6" href="/games">
                         <div class="card mb-4">
                             <h5 class="card-header"><i class="fas fa-gamepad"></i> Games Database</h5>
                             <div class="card-body p-3">
@@ -66,16 +66,20 @@
                             </div>
                         </div>
                     </a>
-                    <div class="col-12 col-sm-6 col-xl-4">
+                    <div class="col-12 col-sm-6">
                         <div class="card mb-4">
                             <h5 class="card-header"><i class="fas fa-user"></i> Player Search</h5>
                             <div class="card-body">
                                 <form action="/players/add" method="post">
 
-                                    <label for="search" class="sr-only sr-only-focusable">Steam URL / ID</label>
-                                    <input type="search" class="form-control mb-1" id="search" name="search" placeholder="Steam URL / ID" required>
+                                    <div class="input-group">
+                                        <input type="search" class="form-control" id="search" name="search" placeholder="Steam URL / ID" required>
+                                        <label for="search" class="sr-only sr-only-focusable">Steam URL / ID</label>
 
-                                    <button type="submit" class="btn btn-success" aria-label="Search">Search</button>
+                                        <div class="input-group-append">
+                                            <button type="submit" class="btn btn-success" aria-label="Search">Search</button>
+                                        </div>
+                                    </div>
 
                                 </form>
                             </div>
