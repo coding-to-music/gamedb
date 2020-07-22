@@ -208,18 +208,20 @@ function loadAjaxOnObserve(map) {
 
     for (const key in map) {
 
-        const callback = map[key];
-        const element = document.getElementById(key);
-        if (element) {
-            const f = function (entries, self) {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        self.unobserve(entry.target);
-                        callback();
-                    }
-                });
-            };
-            new IntersectionObserver(f, {rootMargin: '50px 0px 50px 0px', threshold: 0}).observe(element);
+        if (map.hasOwnProperty(key)) {
+            const callback = map[key];
+            const element = document.getElementById(key);
+            if (element) {
+                const f = function (entries, self) {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            self.unobserve(entry.target);
+                            callback();
+                        }
+                    });
+                };
+                new IntersectionObserver(f, {rootMargin: '50px 0px 50px 0px', threshold: 0}).observe(element);
+            }
         }
     }
 }
