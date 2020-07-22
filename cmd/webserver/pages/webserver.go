@@ -45,13 +45,34 @@ func setHeaders(w http.ResponseWriter, contentType string) {
 		"img-src 'self' data: *", // * to hotlink news article images, info link images etc
 	}
 
+	fp := []string{
+		"accelerometer 'none'",
+		// "ambient-light-sensor 'none'",
+		// "battery 'none'",
+		"camera 'none'",
+		// "display-capture 'none'",
+		"encrypted-media 'none'",
+		"fullscreen 'none'",
+		"geolocation 'none'",
+		"gyroscope 'none'",
+		"magnetometer 'none'",
+		"microphone 'none'",
+		"midi 'none'",
+		"payment 'none'",
+		"screen-wake-lock 'none'",
+		"sync-xhr 'none'",
+		"usb 'none'",
+		// "wake-lock 'none'",
+		"xr-spatial-tracking 'none'",
+	}
+
 	w.Header().Set("Content-Type", contentType)
 	w.Header().Set("X-Content-Type-Options", "nosniff")                // MIME sniffing
 	w.Header().Set("X-XSS-Protection", "1; mode=block")                // XSS
 	w.Header().Set("X-Frame-Options", "SAMEORIGIN")                    // Clickjacking
 	w.Header().Set("Content-Security-Policy", strings.Join(csp, "; ")) // XSS
 	w.Header().Set("Referrer-Policy", "no-referrer-when-downgrade")
-	w.Header().Set("Feature-Policy", "geolocation 'none'; midi 'none'; sync-xhr 'none'; microphone 'none'; camera 'none'; magnetometer 'none'; gyroscope 'none'; speaker 'none'; fullscreen 'none'; payment 'none';")
+	w.Header().Set("Feature-Policy", strings.Join(fp, "; "))
 	w.Header().Set("Server", "")
 }
 
