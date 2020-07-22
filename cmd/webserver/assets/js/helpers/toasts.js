@@ -13,7 +13,7 @@ function toast(success = true, body, title = '', timeout = 0, link = '') {
 
     const options = {
         onclick: link ? redirect : null,
-        newestOnTop: true,
+        newestOnTop: false,
         preventDuplicates: false,
         progressBar: true,
         timeOut: timeout * 1000,
