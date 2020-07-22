@@ -15,6 +15,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/queue"
+	steamHelpers "github.com/gamedb/gamedb/pkg/steam"
 )
 
 const (
@@ -49,7 +50,7 @@ func main() {
 
 	err = steam.InitializeSteamDirectory()
 	if err != nil {
-		log.Err(err)
+		steamHelpers.LogSteamError(err)
 	}
 
 	steamClient = steam.NewClient()
