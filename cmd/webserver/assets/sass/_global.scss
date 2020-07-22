@@ -445,8 +445,22 @@ div.jumbotron.bottom {
 
 // Toasts
 body {
-    #toast-container > div {
-        box-shadow: none;
+    #toast-container {
+        > div {
+            box-shadow: none;
+            margin-bottom: 2px;
+            padding: 10px 10px 10px 50px;
+        }
+    }
+
+    #toast-container.toast-top-right {
+        top: 2px;
+        right: 2px;
+    }
+
+    #toast-container.toast-bottom-right {
+        bottom: 2px;
+        right: 2px;
     }
 }
 
@@ -513,6 +527,10 @@ footer {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.line-through {
+    text-decoration: line-through;
 }
 
 // New item fade

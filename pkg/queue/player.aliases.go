@@ -1,6 +1,7 @@
 package queue
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/Jleagle/rabbit-go"
@@ -10,6 +11,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/steam"
+	"github.com/gamedb/gamedb/pkg/websockets"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -93,6 +95,19 @@ func playerAliasesHandler(messages []*rabbit.Message) {
 		err = memcache.Delete(memcache.MemcachePlayer(payload.PlayerID).Key)
 		if err != nil {
 			log.Err(err, payload.PlayerID)
+			sendToRetryQueue(message)
+			continue
+		}
+
+		// Websocket
+		wsPayload := PlayerPayload{
+			ID:    strconv.FormatInt(payload.PlayerID, 10),
+			Queue: "alias",
+		}
+
+		err = ProduceWebsocket(wsPayload, websockets.PagePlayer)
+		if err != nil {
+			log.Err(err, message.Message.Body)
 			sendToRetryQueue(message)
 			continue
 		}

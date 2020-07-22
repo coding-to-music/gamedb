@@ -1,6 +1,7 @@
 package queue
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/Jleagle/rabbit-go"
@@ -11,6 +12,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/steam"
+	"github.com/gamedb/gamedb/pkg/websockets"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -33,6 +35,7 @@ func playerAchievementsHandler(messages []*rabbit.Message) {
 			continue
 		}
 
+		// Last item for this player
 		if payload.AppID == 0 {
 
 			<-time.NewTimer(time.Second * 5).C // Sleep to make sure all other messages are consumed
@@ -55,7 +58,25 @@ func playerAchievementsHandler(messages []*rabbit.Message) {
 			}
 
 			// Clear caches
-			err = memcache.Delete(memcache.MemcachePlayer(payload.PlayerID).Key)
+			var items = []string{
+				memcache.MemcachePlayer(payload.PlayerID).Key,
+				memcache.MemcacheMongoCount(mongo.CollectionPlayerAchievements.String(), bson.D{{"player_id", payload.PlayerID}}).Key,
+			}
+
+			err = memcache.Delete(items...)
+			if err != nil {
+				log.Err(err, message.Message.Body)
+				sendToRetryQueue(message)
+				continue
+			}
+
+			// Websocket
+			wsPayload := PlayerPayload{
+				ID:    strconv.FormatInt(payload.PlayerID, 10),
+				Queue: "achievement",
+			}
+
+			err = ProduceWebsocket(wsPayload, websockets.PagePlayer)
 			if err != nil {
 				log.Err(err, message.Message.Body)
 				sendToRetryQueue(message)
@@ -224,20 +245,6 @@ func playerAchievementsHandler(messages []*rabbit.Message) {
 		}
 
 		_, err = mongo.UpdateOne(mongo.CollectionPlayerApps, bson.D{{"_id", playerApp.GetKey()}}, update)
-		if err != nil {
-			log.Err(err)
-			sendToRetryQueue(message)
-			continue
-		}
-
-		// Clear caches
-		var items = []string{
-			memcache.MemcachePlayer(payload.PlayerID).Key,
-			memcache.MemcacheMongoCount(mongo.CollectionPlayerAchievements.String(), bson.D{{"player_id", payload.PlayerID}}).Key,
-			memcache.MemcacheMongoCount(mongo.CollectionPlayerApps.String(), bson.D{{"player_id", payload.PlayerID}}).Key,
-		}
-
-		err = memcache.Delete(items...)
 		if err != nil {
 			log.Err(err)
 			sendToRetryQueue(message)

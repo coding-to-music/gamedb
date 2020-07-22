@@ -193,4 +193,5 @@ type PlayerPayload struct {
 	Link      string `json:"link"`
 	Avatar    string `json:"avatar"`
 	UpdatedAt int64  `json:"updated_at"`
+	Queue     string `json:"queue"`
 }

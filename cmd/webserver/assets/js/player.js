@@ -2,14 +2,14 @@ const $playerPage = $('#player-page');
 
 if ($playerPage.length > 0) {
 
+    const $updateLink = $('#update-button');
+
     // Update link
-    $('#update-button').on('click', function (e) {
+    $updateLink.on('click', function (e) {
 
         e.preventDefault();
 
-        const $link = $(this);
-
-        $('i, svg', $link).addClass('fa-spin');
+        $('i, svg', $updateLink).addClass('fa-spin');
 
         $.ajax({
             url: '/players/' + $playerPage.attr('data-id') + '/update.json',
@@ -21,20 +21,46 @@ if ($playerPage.length > 0) {
             success: function (data, textStatus, jqXHR) {
 
                 toast(data.success, data.toast);
-
-                $('i, svg', $link).removeClass('fa-spin');
-
-                $link.contents().last()[0].textContent = ' In Queue';
+                $updateLink.contents().last()[0].textContent = ' In Queue';
             },
         });
     });
 
+    const delay = ms => new Promise(res => setTimeout(res, ms));
+
     // Websockets
-    websocketListener('profile', function (e) {
+    let t;
+    websocketListener('profile', async function (e) {
 
         const data = JSON.parse(e.data);
-        if (data.Data['id'].toString() === $playerPage.attr('data-id')) {
-            toast(true, 'Click to refresh', 'This player has been updated', 0, 'refresh');
+        if (data.Data['id'] === $playerPage.attr('data-id')) {
+
+            if (data.Data['queue'] === 'player') {
+
+                const ul = '<ul>' +
+                    '<li data-queue="player">Details</li>' +
+                    '<li data-queue="group">Groups</li>' +
+                    '<li data-queue="alias">Aliases</li>' +
+                    '<li data-queue="achievement">Achievements</li>' +
+                    '</ul>';
+
+                t = toast(true, ul, 'Player Updating', -1, 'refresh');
+            }
+
+            if (t) {
+                t.find('[data-queue="' + data.Data['queue'] + '"]').addClass('line-through');
+
+                if (t.find('li:not(.line-through)').length === 0) {
+                    t.find('.toast-message').html('Click to refresh!');
+                }
+            }
+
+            // toast(true, 'Click to refresh', 'This player has been updated', -1, 'refresh');
+
+            $('i, svg', $updateLink).removeClass('fa-spin', 'fa-sync-alt').addClass('fa-check');
+            $updateLink.contents().last()[0].textContent = ' Updated';
+            $updateLink.off();
+            $updateLink.removeAttr('href');
         }
     });
 

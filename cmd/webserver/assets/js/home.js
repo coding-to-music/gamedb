@@ -102,7 +102,7 @@ if ($homePage.length > 0) {
 
         websocketListener('profile', function (e) {
             const data = JSON.parse(e.data);
-            if (lastPlayerId !== data.Data['id']) {
+            if (data.Data['queue'] === 'player' && data.Data['id'] !== lastPlayerId) {
                 lastPlayerId = data.Data['id'];
                 $tbody.json2html([data.Data], schema, {prepend: true});
                 $tbody.find('tr').slice(10).remove();

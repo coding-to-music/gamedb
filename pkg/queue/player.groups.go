@@ -1,6 +1,8 @@
 package queue
 
 import (
+	"strconv"
+
 	"github.com/Jleagle/rabbit-go"
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -8,6 +10,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/steam"
+	"github.com/gamedb/gamedb/pkg/websockets"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -164,6 +167,19 @@ func playersGroupsHandler(messages []*rabbit.Message) {
 		}
 
 		err = memcache.Delete(items...)
+		if err != nil {
+			log.Err(err, message.Message.Body)
+			sendToRetryQueue(message)
+			continue
+		}
+
+		// Websocket
+		wsPayload := PlayerPayload{
+			ID:    strconv.FormatInt(payload.PlayerID, 10),
+			Queue: "group",
+		}
+
+		err = ProduceWebsocket(wsPayload, websockets.PagePlayer)
 		if err != nil {
 			log.Err(err, message.Message.Body)
 			sendToRetryQueue(message)

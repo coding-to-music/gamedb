@@ -368,6 +368,7 @@ func playerHandler(messages []*rabbit.Message) {
 				Link:      player.GetPath(),
 				Avatar:    player.GetAvatar(),
 				UpdatedAt: time.Now().Unix(),
+				Queue:     "player",
 			}
 
 			err = ProduceWebsocket(wsPayload, websockets.PagePlayer)

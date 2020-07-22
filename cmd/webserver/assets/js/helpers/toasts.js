@@ -9,6 +9,8 @@ function toast(success, body, title = '', timeout = 0, link = '') {
     // Default time
     if (timeout === 0) {
         timeout = 5;
+    } else if (timeout < 0) {
+        timeout = 0;
     }
 
     const options = {
