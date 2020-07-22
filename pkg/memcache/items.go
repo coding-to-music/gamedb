@@ -32,12 +32,12 @@ var (
 	MemcacheAppReviewScoreCounts = Item{Key: "app-review-score-counts", Expiration: 60 * 60 * 24 * 2}
 
 	// Single Rows
-	MemcacheApp        = func(id int) Item { return Item{Key: "app-" + strconv.Itoa(id), Expiration: 0} }
+	MemcacheApp        = func(changeID int) Item { return Item{Key: "app-" + strconv.Itoa(changeID), Expiration: 0} }
 	MemcacheChange     = func(changeID int64) Item { return Item{Key: "change-" + strconv.FormatInt(changeID, 10), Expiration: 0} }
-	MemcacheGroup      = func(id string) Item { return Item{Key: "group-" + id, Expiration: 0} }
-	MemcachePackage    = func(id int) Item { return Item{Key: "package-" + strconv.Itoa(id), Expiration: 0} }
-	MemcachePlayer     = func(id int64) Item { return Item{Key: "player-" + strconv.FormatInt(id, 10), Expiration: 0} }
-	MemcacheConfigItem = func(id string) Item { return Item{Key: "config-item-" + id, Expiration: 0} }
+	MemcacheGroup      = func(changeID string) Item { return Item{Key: "group-" + changeID, Expiration: 0} }
+	MemcachePackage    = func(changeID int) Item { return Item{Key: "package-" + strconv.Itoa(changeID), Expiration: 0} }
+	MemcachePlayer     = func(changeID int64) Item { return Item{Key: "player-" + strconv.FormatInt(changeID, 10), Expiration: 0} }
+	MemcacheConfigItem = func(changeID string) Item { return Item{Key: "config-item-" + changeID, Expiration: 0} }
 
 	// Queue checks - 1 Hour timeout
 	MemcacheAppInQueue     = func(appID int) Item { return Item{Key: "app-in-queue-" + strconv.Itoa(appID), Expiration: 60 * 60, Value: "1"} }
@@ -59,7 +59,8 @@ var (
 	MemcacheAppNoAchievements = func(appID int) Item { return Item{Key: "app-no-stats-" + strconv.Itoa(appID), Expiration: 60 * 60, Value: "1"} }
 
 	// Groups
-	MemcacheTrendingGroups = Item{Key: "trending-apps", Expiration: 60 * 10}
+	MemcacheTrendingGroups      = Item{Key: "trending-apps", Expiration: 60 * 10}
+	MemcacheGroupFollowersChart = func(groupID string) Item { return Item{Key: "group-followers-chart-" + groupID, Expiration: 10 * 60} }
 
 	// Chat Bot
 	MemcacheChatBotGuildsCount = Item{Key: "chat-bot-guilds", Expiration: 60 * 60 * 24}
@@ -85,6 +86,8 @@ var (
 
 	// Players online
 	MemcacheAppPlayersRow       = func(appID int) Item { return Item{Key: "app-players-" + strconv.Itoa(appID), Expiration: 10 * 60} }
+	MemcacheAppPlayersChart     = func(appID string, limited bool) Item { return Item{Key: "app-players-chart-" + appID + "-" + strconv.FormatBool(limited), Expiration: 10 * 60} }
+	MemcacheAppWishlistChart    = func(appID string) Item { return Item{Key: "app-wishlist-chart-" + appID, Expiration: 10 * 60} }
 	MemcacheAppPlayersInGameRow = Item{Key: "app-players-in-game-0", Expiration: 10 * 60}
 
 	// Queries

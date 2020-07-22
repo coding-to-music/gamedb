@@ -880,32 +880,42 @@ func appItemsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 func appWishlistAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	id := chi.URLParam(r, "id")
+	id := helpers.RegexIntsOnly.FindString(chi.URLParam(r, "id"))
 	if id == "" {
 		return
 	}
 
-	builder := influxql.NewBuilder()
-	builder.AddSelect("MEAN(wishlist_avg_position)", "mean_wishlist_avg_position")
-	builder.AddSelect("MEAN(wishlist_count)", "mean_wishlist_count")
-	builder.AddSelect("MEAN(wishlist_percent)", "mean_wishlist_percent")
-	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
-	builder.AddWhere("app_id", "=", id)
-	builder.AddGroupByTime("1d")
-	builder.SetFillNone()
-
-	resp, err := influx.InfluxQuery(builder.String())
-	if err != nil {
-		log.Err(err, r, builder.String())
-		return
-	}
-
+	var item = memcache.MemcacheAppWishlistChart(id)
 	var hc influx.HighChartsJSON
 
-	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
+	err := memcache.GetSetInterface(item.Key, item.Expiration, &hc, func() (interface{}, error) {
 
-		hc = influx.InfluxResponseToHighCharts(resp.Results[0].Series[0])
-	}
+		builder := influxql.NewBuilder()
+		builder.AddSelect("MEAN(wishlist_avg_position)", "mean_wishlist_avg_position")
+		builder.AddSelect("MEAN(wishlist_count)", "mean_wishlist_count")
+		builder.AddSelect("MEAN(wishlist_percent)", "mean_wishlist_percent")
+		builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
+		builder.AddWhere("app_id", "=", id)
+		builder.AddGroupByTime("1d")
+		builder.SetFillNone()
+
+		resp, err := influx.InfluxQuery(builder.String())
+		if err != nil {
+			log.Err(err, r, builder.String())
+			return hc, err
+		}
+
+		var hc influx.HighChartsJSON
+
+		if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
+
+			hc = influx.InfluxResponseToHighCharts(resp.Results[0].Series[0])
+		}
+
+		return hc, err
+	})
+
+	log.Err(err)
 
 	returnJSON(w, r, hc)
 }
@@ -928,41 +938,45 @@ func appPlayersAjaxHandler(limit bool) func(http.ResponseWriter, *http.Request) 
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		id := chi.URLParam(r, "id")
+		id := helpers.RegexIntsOnly.FindString(chi.URLParam(r, "id"))
 		if id == "" {
 			return
 		}
 
-		if !helpers.RegexIntsOnly.MatchString(id) {
-			return
-		}
-
-		builder := influxql.NewBuilder()
-		builder.AddSelect("max(player_count)", "max_player_count")
-		builder.AddSelect("max(twitch_viewers)", "max_twitch_viewers")
-		if limit || session.IsLoggedIn(r) {
-			builder.AddSelect("max(youtube_views)", "max_youtube_views")
-			builder.AddSelect("max(youtube_comments)", "max_youtube_comments")
-		}
-		builder.AddSelect("MOVING_AVERAGE(max(\"player_count\"), "+rolling+")", "max_moving_average")
-		builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
-		builder.AddWhere("time", ">", "NOW()-"+days)
-		builder.AddWhere("app_id", "=", id)
-		builder.AddGroupByTime(group)
-		builder.SetFillNone()
-
-		resp, err := influx.InfluxQuery(builder.String())
-		if err != nil {
-			log.Err(err, r, builder.String())
-			return
-		}
-
+		var item = memcache.MemcacheAppPlayersChart(id, limit)
 		var hc influx.HighChartsJSON
 
-		if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
+		err := memcache.GetSetInterface(item.Key, item.Expiration, &hc, func() (interface{}, error) {
 
-			hc = influx.InfluxResponseToHighCharts(resp.Results[0].Series[0])
-		}
+			builder := influxql.NewBuilder()
+			builder.AddSelect("max(player_count)", "max_player_count")
+			builder.AddSelect("max(twitch_viewers)", "max_twitch_viewers")
+			if limit || session.IsLoggedIn(r) {
+				builder.AddSelect("max(youtube_views)", "max_youtube_views")
+				builder.AddSelect("max(youtube_comments)", "max_youtube_comments")
+			}
+			builder.AddSelect("MOVING_AVERAGE(max(\"player_count\"), "+rolling+")", "max_moving_average")
+			builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
+			builder.AddWhere("time", ">", "NOW()-"+days)
+			builder.AddWhere("app_id", "=", id)
+			builder.AddGroupByTime(group)
+			builder.SetFillNone()
+
+			resp, err := influx.InfluxQuery(builder.String())
+			if err != nil {
+				log.Err(err, r, builder.String())
+				return hc, err
+			}
+
+			if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
+
+				hc = influx.InfluxResponseToHighCharts(resp.Results[0].Series[0])
+			}
+
+			return hc, err
+		})
+
+		log.Err(err)
 
 		returnJSON(w, r, hc)
 	}

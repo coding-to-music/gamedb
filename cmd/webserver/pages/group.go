@@ -217,29 +217,37 @@ func groupAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	builder := influxql.NewBuilder()
-	builder.AddSelect(`max("members_count")`, "max_members_count")
-	builder.AddSelect(`max("members_in_chat")`, "max_members_in_chat")
-	builder.AddSelect(`max("members_in_game")`, "max_members_in_game")
-	// builder.AddSelect(`max("members_online")`, "max_members_online")
-	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementGroups.String())
-	builder.AddWhere("group_id", "=", id)
-	// builder.AddWhere("time", ">", "now()-365d")
-	builder.AddGroupByTime("1d")
-	builder.SetFillNone()
-
-	resp, err := influx.InfluxQuery(builder.String())
-	if err != nil {
-		log.Err(err, r, builder.String())
-		return
-	}
-
+	var item = memcache.MemcacheGroupFollowersChart(id)
 	var hc influx.HighChartsJSON
 
-	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
+	err = memcache.GetSetInterface(item.Key, item.Expiration, &hc, func() (interface{}, error) {
 
-		hc = influx.InfluxResponseToHighCharts(resp.Results[0].Series[0])
-	}
+		builder := influxql.NewBuilder()
+		builder.AddSelect(`max("members_count")`, "max_members_count")
+		builder.AddSelect(`max("members_in_chat")`, "max_members_in_chat")
+		builder.AddSelect(`max("members_in_game")`, "max_members_in_game")
+		// builder.AddSelect(`max("members_online")`, "max_members_online")
+		builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementGroups.String())
+		builder.AddWhere("group_id", "=", id)
+		// builder.AddWhere("time", ">", "now()-365d")
+		builder.AddGroupByTime("1d")
+		builder.SetFillNone()
+
+		resp, err := influx.InfluxQuery(builder.String())
+		if err != nil {
+			log.Err(err, r, builder.String())
+			return hc, err
+		}
+
+		if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
+
+			hc = influx.InfluxResponseToHighCharts(resp.Results[0].Series[0])
+		}
+
+		return hc, err
+	})
+
+	log.Err(err)
 
 	returnJSON(w, r, hc)
 }
