@@ -85,7 +85,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		tm := playerMissingTemplate{}
 		tm.fill(w, r, "Looking for player!", "")
 		tm.addAssetHighCharts()
-		tm.addToast(Toast{Title: "Update", Message: "Player has been queued for an update"})
+		tm.addToast(Toast{Title: "Update", Message: "Player has been queued for an update", Success: true})
 		tm.Player = player
 		tm.DefaultAvatar = helpers.DefaultPlayerAvatar
 
@@ -295,7 +295,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID, UserAgent: &ua})
 		if err == nil {
 			log.Info(log.LogNameTriggerUpdate, r, ua)
-			t.addToast(Toast{Title: "Update", Message: "Player has been queued for an update"})
+			t.addToast(Toast{Title: "Update", Message: "Player has been queued for an update", Success: true})
 		}
 		err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
 		if err != nil {

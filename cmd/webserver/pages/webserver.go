@@ -598,6 +598,7 @@ type Toast struct {
 	Link    string `json:"link"`
 	Theme   string `json:"theme"`
 	Timeout int    `json:"timeout"`
+	Success bool   `json:"success"`
 }
 
 func getUserFromSession(r *http.Request) (user mysql.User, err error) {

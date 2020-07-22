@@ -1,4 +1,4 @@
-function toast(success = true, body, title = '', timeout = 0, link = '') {
+function toast(success, body, title = '', timeout = 0, link = '') {
 
     const redirect = function () {
         if (link === 'refresh') {
