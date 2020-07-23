@@ -59,6 +59,11 @@ func (c CommandPlayerPlaytime) Output(msg *discordgo.MessageCreate) (message dis
 		log.Err(err)
 	}
 
-	message.Content = "<@" + msg.Author.ID + ">, " + player.GetName() + " has played for **" + helpers.GetTimeLong(player.PlayTime, 0) + "**"
+	if player.PlayTime == 0 {
+		message.Content = "<@" + msg.Author.ID + ">, Game information set to private"
+	} else {
+		message.Content = "<@" + msg.Author.ID + ">, " + player.GetName() + " has played for **" + helpers.GetTimeLong(player.PlayTime, 0) + "**"
+	}
+
 	return message, nil
 }

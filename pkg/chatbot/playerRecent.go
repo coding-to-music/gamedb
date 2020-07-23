@@ -99,7 +99,7 @@ func (c CommandPlayerRecent) Output(msg *discordgo.MessageCreate) (message disco
 		message.Embed.Description = "```" + strings.Join(code, "\n") + "```"
 
 	} else {
-		message.Content = "None" // todo, dont do as content
+		message.Content = "None / Private" // todo, dont do as content
 	}
 
 	return message, nil
