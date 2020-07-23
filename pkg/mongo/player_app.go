@@ -14,13 +14,14 @@ import (
 )
 
 type PlayerApp struct {
-	PlayerID     int64              `bson:"player_id"`
-	AppID        int                `bson:"app_id"`
-	AppName      string             `bson:"app_name"`
-	AppIcon      string             `bson:"app_icon"`
-	AppTime      int                `bson:"app_time"`
-	AppPrices    map[string]int     `bson:"app_prices"`
-	AppPriceHour map[string]float64 `bson:"app_prices_hour"`
+	PlayerID      int64              `bson:"player_id"`
+	PlayerCountry string             `json:"player_country"`
+	AppID         int                `bson:"app_id"`
+	AppName       string             `bson:"app_name"`
+	AppIcon       string             `bson:"app_icon"`
+	AppTime       int                `bson:"app_time"`
+	AppPrices     map[string]int     `bson:"app_prices"`
+	AppPriceHour  map[string]float64 `bson:"app_prices_hour"`
 
 	AppAchievementsTotal   int     `bson:"app_achievements_total"`
 	AppAchievementsHave    int     `bson:"app_achievements_have"`
@@ -229,4 +230,46 @@ func UpdatePlayerApps(apps map[int]*PlayerApp) (err error) {
 	_, err = c.BulkWrite(ctx, writes, options.BulkWrite())
 
 	return err
+}
+
+func GetPlayerAppsByCountry(appID int) (items []PlayerAppsByCountry, err error) {
+
+	client, ctx, err := getMongo()
+	if err != nil {
+		return items, err
+	}
+
+	pipeline := mongo.Pipeline{
+		{{Key: "$match", Value: bson.M{"app_id": appID}}},
+		{{Key: "$sort", Value: bson.M{"player_country": 1}}}, // Just here to hit the index
+		{{Key: "$group", Value: bson.M{"_id": "$player_country", "count": bson.M{"$sum": 1}}}},
+	}
+
+	cur, err := client.Database(MongoDatabase, options.Database()).Collection(CollectionPlayerApps.String()).Aggregate(ctx, pipeline, options.Aggregate())
+	if err != nil {
+		return items, err
+	}
+
+	defer func() {
+		err = cur.Close(ctx)
+		log.Err(err)
+	}()
+
+	for cur.Next(ctx) {
+
+		var item PlayerAppsByCountry
+		err := cur.Decode(&item)
+		if err != nil {
+			log.Err(err, item)
+		}
+
+		items = append(items, item)
+	}
+
+	return items, cur.Err()
+}
+
+type PlayerAppsByCountry struct {
+	Country string `json:"type" bson:"_id"`
+	Count   int64  `json:"count" bson:"count"`
 }

@@ -474,11 +474,12 @@ func updatePlayerGames(player *mongo.Player, payload PlayerMessage) error {
 
 		appIDs = append(appIDs, v.AppID)
 		playerApps[v.AppID] = &mongo.PlayerApp{
-			PlayerID: player.ID,
-			AppID:    v.AppID,
-			AppName:  v.Name,
-			AppIcon:  v.ImgIconURL,
-			AppTime:  v.PlaytimeForever,
+			PlayerID:      player.ID,
+			PlayerCountry: player.CountryCode,
+			AppID:         v.AppID,
+			AppName:       v.Name,
+			AppIcon:       v.ImgIconURL,
+			AppTime:       v.PlaytimeForever,
 		}
 		appPrices[v.AppID] = map[string]int{}
 		appPriceHour[v.AppID] = map[string]float64{}
