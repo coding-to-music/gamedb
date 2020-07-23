@@ -553,8 +553,8 @@ if ($appPage.length > 0) {
                         formatter: function () {
                             const day = this.series.yAxis.categories[this.point.y];
                             const time = this.point.x;
-                            return day + 's ' + pad(time, 2) + ':00-' + pad(time, 2) + ':59 UTC - ~'
-                                + this.point.value.toLocaleString() + ' players';
+                            return day + 's ' + pad(time, 2) + ':00-' + pad(time, 2) + ':59 UTC: ~'
+                                + Math.round(this.point.value).toLocaleString() + ' players';
                         }
                     },
                     colorAxis: {
