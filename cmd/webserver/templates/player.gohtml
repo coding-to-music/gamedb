@@ -31,7 +31,7 @@
             </div>
         {{ end }}
 
-        {{ if ne .Player.CommunityVisibilityState 3 }}
+        {{ if eq .Player.CommunityVisibilityState 1 }}
             <div class="alert alert-primary" role="alert">
                 <i class="fas fa-exclamation-triangle text-danger"></i> Profile set to private. Update your <a target="_blank" rel="noopener" href="https://steamcommunity.com/my/edit/settings">privacy settings</a>.
             </div>
