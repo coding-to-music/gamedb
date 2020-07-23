@@ -569,7 +569,8 @@ func (t *globalTemplate) addAssetJSON2HTML() {
 
 func (t *globalTemplate) addAssetHighCharts() {
 	t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/highcharts/8.1.2/highcharts.js", Integrity: "sha512-EGkUnujrfu0497MBWKtDPsmhcor1++/hT49wnF4Ji//vj3kfvwSM8nocX5hNRZgEZB5wEkGmXUc6mYXpNBynPg=="})
-	t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/highcharts/8.1.2/modules/data.src.min.js", Integrity: "sha512-z1smTbR5US2c8JfqaNrnC69+C0qkMQ7mn1Vi4TvtKuKt0+QHk0et5QifE9hjeeW7HL98LWHZ/zglHVDAglDpHw=="})
+	t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/highcharts/8.1.2/modules/heatmap.src.min.js", Integrity: "sha512-6LYouPFmhQ9hCS76dIm1W+FrkqF4K7oHlPm7NNlo4qESqakFJzpL5esATFAkiM3jKpNgKrx2RxWHBYze0xSZ4A=="})
+	// t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/highcharts/8.1.2/modules/data.src.min.js", Integrity: "sha512-z1smTbR5US2c8JfqaNrnC69+C0qkMQ7mn1Vi4TvtKuKt0+QHk0et5QifE9hjeeW7HL98LWHZ/zglHVDAglDpHw=="})
 }
 
 func (t *globalTemplate) addAssetSlider() {

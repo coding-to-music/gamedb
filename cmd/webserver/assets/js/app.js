@@ -56,6 +56,7 @@ if ($appPage.length > 0) {
 
         // Players tab
         'players-chart': loadAppPlayersChart,
+        'players-heatmap-chart': loadAppPlayersHeatmapChart,
         'group-chart': function () {
             loadGroupChart($appPage);
         },
@@ -515,6 +516,59 @@ if ($appPage.length > 0) {
                         zoomType: 'x',
                     },
                     series: series(data),
+                }));
+            },
+        });
+    }
+
+    function loadAppPlayersHeatmapChart() {
+
+        $.ajax({
+            type: "GET",
+            url: '/games/' + $appPage.attr('data-id') + '/players-heatmap.json',
+            dataType: 'json',
+            success: function (data, textStatus, jqXHR) {
+
+                if (data === null) {
+                    data = {"max_player_count": []};
+                }
+
+                Highcharts.chart('players-heatmap-chart', $.extend(true, {}, defaultChartOptions, {
+                    chart: {
+                        type: 'heatmap',
+                    },
+                    legend: {
+                        enabled: false,
+                    },
+                    xAxis: {
+                        title: null,
+                        type: 'category',
+                    },
+                    yAxis: {
+                        categories: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+                        title: null,
+                        reversed: true,
+                    },
+                    tooltip: {
+                        formatter: function () {
+                            const day = this.series.yAxis.categories[this.point.y];
+                            const time = this.point.x;
+                            return day + 's ' + pad(time, 2) + ':00-' + pad(time, 2) + ':59 UTC - '
+                                + this.point.value.toLocaleString() + ' players';
+                        }
+                    },
+                    colorAxis: {
+                        minColor: '#FFFFFF',
+                        maxColor: defaultChartOptions.colors[0],
+                    },
+                    plotOptions: {
+                        series: {
+                            marker: {
+                                enabled: true,
+                            }
+                        }
+                    },
+                    series: [{data: data['max_player_count']}],
                 }));
             },
         });

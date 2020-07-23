@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/Jleagle/influxql"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
@@ -36,6 +37,7 @@ func appRouter() http.Handler {
 	r.Get("/reviews.html", appReviewsHandler)
 	r.Get("/news.json", appNewsAjaxHandler)
 	r.Get("/prices.json", appPricesAjaxHandler)
+	r.Get("/players-heatmap.json", appPlayersHeatmapAjaxHandler)
 	r.Get("/players.json", appPlayersAjaxHandler(true))
 	r.Get("/players2.json", appPlayersAjaxHandler(false))
 	r.Get("/items.json", appItemsAjaxHandler)
@@ -910,6 +912,77 @@ func appWishlistAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
 
 			hc = influx.InfluxResponseToHighCharts(resp.Results[0].Series[0])
+		}
+
+		return hc, err
+	})
+
+	log.Err(err)
+
+	returnJSON(w, r, hc)
+}
+
+func appPlayersHeatmapAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	id := helpers.RegexIntsOnly.FindString(chi.URLParam(r, "id"))
+	if id == "" {
+		return
+	}
+
+	var item = memcache.MemcacheAppPlayersHeatmapChart(id)
+	var hc = influx.HighChartsJSON{}
+	var data = map[time.Weekday]map[int][]float64{}
+
+	err := memcache.GetSetInterface(item.Key, item.Expiration, &hc, func() (interface{}, error) {
+
+		builder := influxql.NewBuilder()
+		builder.AddSelect("max(player_count)", "max_player_count")
+		builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
+		builder.AddWhere("time", ">", "NOW()-28d")
+		builder.AddWhere("app_id", "=", id)
+		builder.AddGroupByTime("1h")
+		builder.SetFillNone()
+
+		resp, err := influx.InfluxQuery(builder.String())
+		if err != nil {
+			log.Err(err, r, builder.String())
+			return hc, err
+		}
+
+		if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
+
+			var series = resp.Results[0].Series[0]
+
+			for k := range series.Columns {
+				if k > 0 {
+
+					for _, vv := range series.Values {
+
+						t, err := time.Parse(time.RFC3339, vv[0].(string))
+						if err != nil {
+							log.Err(err)
+							continue
+						}
+
+						val, err := vv[k].(json.Number).Float64()
+						if err != nil {
+							log.Err(err)
+							continue
+						}
+
+						if data[t.Weekday()] == nil {
+							data[t.Weekday()] = map[int][]float64{}
+						}
+
+						data[t.Weekday()][t.Hour()] = append(data[t.Weekday()][t.Hour()], val)
+					}
+				}
+			}
+		}
+		for day, hours := range data {
+			for hour, vals := range hours {
+				hc["max_player_count"] = append(hc["max_player_count"], []interface{}{hour, day, helpers.Avg(vals...)})
+			}
 		}
 
 		return hc, err
