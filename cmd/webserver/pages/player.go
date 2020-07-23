@@ -790,7 +790,7 @@ func playerFriendsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		columns := map[string]string{
 			"1": "level, avatar desc", // Avatar is to put unscanned players last
 			"2": "games, avatar desc",
-			"3": "since, avatar desc",
+			"4": "since, avatar desc",
 		}
 
 		var err error
@@ -1092,7 +1092,7 @@ func playerGroupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			group.GetPath(),                        // 3
 			group.GetIcon(),                        // 4
 			group.GroupMembers,                     // 5
-			group.GetType(),                        // 6
+			group.GroupType,                        // 6
 			group.GroupID == player.PrimaryGroupID, // 7
 			group.GetURL(),                         // 8
 		})
