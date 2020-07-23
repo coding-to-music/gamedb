@@ -807,6 +807,7 @@ func GetAppsGroupedByType(code steamapi.ProductCC) (counts []AppTypeCount, err e
 		}
 
 		pipeline := mongo.Pipeline{
+			{{Key: "$sort", Value: bson.M{"type": 1}}}, // Just here to hit the index
 			{{Key: "$group", Value: bson.M{
 				"_id":   "$type",
 				"count": bson.M{"$sum": 1},

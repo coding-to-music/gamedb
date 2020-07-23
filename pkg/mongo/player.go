@@ -638,6 +638,7 @@ func GetPlayerLevels() (counts []count, err error) {
 		}
 
 		pipeline := mongo.Pipeline{
+			{{Key: "$sort", Value: bson.M{"level": 1}}}, // Just here to hit the index
 			{{Key: "$group", Value: bson.M{"_id": "$level", "count": bson.M{"$sum": 1}}}},
 		}
 
