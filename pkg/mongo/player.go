@@ -347,6 +347,11 @@ func CreatePlayerIndexes() {
 		})
 	}
 
+	// For last updated task
+	indexModels = append(indexModels, mongo.IndexModel{
+		Keys: bson.D{{"community_visibility_state", 1}, {"updated_at", 1}},
+	})
+
 	// For sorting main players table, ranked columns are added above
 	ascending := []string{
 		"primary_clan_id_string", // Groups queue

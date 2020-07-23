@@ -68,7 +68,9 @@ func (c PlayersQueueLastUpdated) work() (err error) {
 	}
 
 	// Queue last updated players
-	players, err := mongo.GetPlayers(0, int64(toQueue*consumers), bson.D{{"updated_at", 1}}, nil, bson.M{"_id": 1})
+	var filter = bson.D{{"community_visibility_state", 3}}
+
+	players, err := mongo.GetPlayers(0, int64(toQueue*consumers), bson.D{{"updated_at", 1}}, filter, bson.M{"_id": 1})
 	if err != nil {
 		return err
 	}
