@@ -50,8 +50,10 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 
 			ua := r.UserAgent()
 			err = queue.ProduceGroup(queue.GroupMessage{ID: id, UserAgent: &ua})
-			err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
-			log.Err(err, r)
+			err = helpers.IgnoreErrors(err, memcache.ErrInQueue, queue.ErrIsBot)
+			if err != nil {
+				log.Err(err, r)
+			}
 
 			returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Sorry but we can not find this group"})
 			return

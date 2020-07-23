@@ -459,6 +459,10 @@ func ProducePlayerAchievements(playerID int64, appID int, force bool) (err error
 
 func ProduceGroup(payload GroupMessage) (err error) {
 
+	if payload.UserAgent != nil && helpers.IsBot(*payload.UserAgent) {
+		return ErrIsBot
+	}
+
 	item := memcache.MemcacheGroupInQueue(payload.ID)
 
 	_, err = memcache.Get(item.Key)
