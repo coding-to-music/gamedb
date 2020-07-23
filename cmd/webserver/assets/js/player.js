@@ -526,7 +526,12 @@ if ($playerPage.length > 0) {
                 {
                     "targets": 2,
                     "render": function (data, type, row) {
-                        return row[6];
+                        if (row[6] === 'game') {
+                            return 'Game <i class="fas fa-gamepad"></i>';
+                        } else if (row[6] === 'group') {
+                            return 'Group <i class="fas fa-user-friends"></i>';
+                        }
+                        return '';
                     },
                     "orderable": false,
                 },
