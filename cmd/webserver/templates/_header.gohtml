@@ -41,9 +41,7 @@
     <meta name="robots" content="index,follow"><!-- All Search Engines -->
     <meta name="googlebot" content="index,follow"><!-- Google Specific -->
 
-    <meta name="format-detection" content="telephone=no">
-
-    <link rel="me" href="mailto:jimeagle@gmail.com">
+    <meta name="format-detection" content="telephone=no"><!-- Disable clickable phone numbers on mobiles -->
 
     {{/* Schema.org */}}
     <meta itemprop="name" content="{{ .Title }}">
@@ -216,7 +214,7 @@
                         <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">More</a>
                         <div class="dropdown-menu">
 
-                            <a class="dropdown-item" href="/discord-server" target="_blank" rel="noopener">Discord Server</a>
+                            <a class="dropdown-item" href="/discord-server" target="_blank" rel="noopener">Discord Server <i class="fas fa-external-link-alt"></i></a>
                             <a class="dropdown-item" href="/discord-bot">Discord Bot</a>
 
                             <div class="dropdown-divider"></div>
@@ -225,6 +223,7 @@
                             <a class="dropdown-item" href="/achievements">Achievements Search</a>
                             <a class="dropdown-item" href="/contact">Contact</a>
                             <a class="dropdown-item" href="/info">Info</a>
+                            <a class="dropdown-item" href="https://twitter.com/gamedbonline" target="_blank" rel="noopener">Twitter <i class="fas fa-external-link-alt"></i></a>
 
                             <div class="dropdown-divider"></div>
 
@@ -240,7 +239,7 @@
 
                     {{ if .IsAdmin }}
                         <li class="nav-item {{if startsWith .Path "/admin" }}active{{end}}">
-                            <a class="nav-link" href="/admin">Admin</a>
+                            <a class="nav-link" href="/admin"><i class="fas fa-user-cog text-success"></i> Admin</a>
                         </li>
                     {{ end }}
 
