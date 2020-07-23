@@ -558,7 +558,7 @@ if ($appPage.length > 0) {
                         }
                     },
                     colorAxis: {
-                        minColor: '#FFFFFF',
+                        minColor: darkMode ? '#212529' : '#FFFFFF',
                         maxColor: defaultChartOptions.colors[0],
                     },
                     plotOptions: {
