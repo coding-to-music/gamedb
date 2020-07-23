@@ -49,13 +49,13 @@ func appPlayersHandler(messages []*rabbit.Message) {
 
 			// Reads
 			wg.Add(1)
-			var viewers int
+			var twitchViewers int
 			go func() {
 
 				defer wg.Done()
 
 				var err error
-				viewers, err = getAppTwitchStreamers(app.TwitchID)
+				twitchViewers, err = getAppTwitchStreamers(app.TwitchID)
 				if err != nil {
 
 					if strings.Contains(err.Error(), "read: connection reset by peer") ||
@@ -72,13 +72,13 @@ func appPlayersHandler(messages []*rabbit.Message) {
 			}()
 
 			wg.Add(1)
-			var appPlayersNow int
+			var inGame int
 			go func() {
 
 				defer wg.Done()
 
 				var err error
-				appPlayersNow, err = getAppOnlinePlayers(app.ID)
+				inGame, err = getAppOnlinePlayers(app.ID)
 				if err != nil {
 					steam.LogSteamError(err, payload.IDs)
 					sendToRetryQueue(message)
@@ -98,7 +98,7 @@ func appPlayersHandler(messages []*rabbit.Message) {
 
 				defer wg.Done()
 
-				err = saveAppPlayerToInflux(app.ID, viewers, appPlayersNow)
+				err = saveAppPlayerToInflux(app.ID, twitchViewers, inGame)
 				if err != nil {
 					log.Err(err, payload.IDs)
 					sendToRetryQueue(message)
@@ -147,7 +147,11 @@ func getAppOnlinePlayers(appID int) (count int, err error) {
 	return count, err
 }
 
-func saveAppPlayerToInflux(appID int, viewers int, players int) (err error) {
+func saveAppPlayerToInflux(appID int, twitchViewers int, playersInGame int) (err error) {
+
+	if twitchViewers == 0 && playersInGame == 0 {
+		return nil
+	}
 
 	_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, influx.Point{
 		Measurement: string(influxHelper.InfluxMeasurementApps),
@@ -155,8 +159,8 @@ func saveAppPlayerToInflux(appID int, viewers int, players int) (err error) {
 			"app_id": strconv.Itoa(appID),
 		},
 		Fields: map[string]interface{}{
-			"player_count":   players,
-			"twitch_viewers": viewers,
+			"player_count":   playersInGame,
+			"twitch_viewers": twitchViewers,
 		},
 		Time:      time.Now(),
 		Precision: "m",
