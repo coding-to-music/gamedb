@@ -152,7 +152,7 @@ func DeleteAndRebuildArticlesIndex() {
 				"app_name": fieldTypeText,
 				"app_icon": fieldTypeDisabled,
 				"icon":     fieldTypeDisabled,
-				"time":     fieldTypeLong,
+				"time":     fieldTypeInt64,
 			},
 		},
 	}

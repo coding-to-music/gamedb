@@ -145,10 +145,10 @@ func DeleteAndRebuildAchievementsIndex() {
 				"icon":        fieldTypeDisabled,
 				"description": fieldTypeText,
 				"hidden":      fieldTypeBool,
-				"completed":   fieldTypeHalfFloat,
-				"app_id":      fieldTypeInteger,
+				"completed":   fieldTypeFloat16,
+				"app_id":      fieldTypeInt32,
 				"app_name":    fieldTypeText,
-				"app_owners":  fieldTypeLong,
+				"app_owners":  fieldTypeInt64,
 			},
 		},
 	}

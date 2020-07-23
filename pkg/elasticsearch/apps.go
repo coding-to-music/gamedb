@@ -151,10 +151,10 @@ func DeleteAndRebuildAppsIndex() {
 			"type": "object",
 			"properties": map[string]interface{}{
 				"currency":         fieldTypeKeyword,
-				"discount_percent": fieldTypeInteger,
-				"final":            fieldTypeInteger,
-				"individual":       fieldTypeInteger,
-				"initial":          fieldTypeInteger,
+				"discount_percent": fieldTypeInt32,
+				"final":            fieldTypeInt32,
+				"individual":       fieldTypeInt32,
+				"initial":          fieldTypeInt32,
 			},
 		}
 	}
@@ -166,10 +166,10 @@ func DeleteAndRebuildAppsIndex() {
 				"id":         fieldTypeKeyword,
 				"name":       fieldTypeText,
 				"aliases":    fieldTypeText,
-				"players":    fieldTypeInteger,
+				"players":    fieldTypeInt32,
 				"icon":       fieldTypeDisabled,
-				"followers":  fieldTypeInteger,
-				"score":      fieldTypeHalfFloat,
+				"followers":  fieldTypeInt32,
+				"score":      fieldTypeFloat16,
 				"prices":     map[string]interface{}{"type": "object", "properties": priceProperties},
 				"tags":       fieldTypeKeyword,
 				"genres":     fieldTypeKeyword,

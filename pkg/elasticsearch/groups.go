@@ -160,10 +160,10 @@ func DeleteAndRebuildGroupsIndex() {
 				"abbreviation": fieldTypeText,
 				"headline":     fieldTypeText,
 				"icon":         fieldTypeDisabled,
-				"members":      fieldTypeInteger,
-				"trend":        fieldTypeInteger,
+				"members":      fieldTypeInt32,
+				"trend":        fieldTypeFloat32,
 				"error":        fieldTypeBool,
-				"primaries":    fieldTypeInteger,
+				"primaries":    fieldTypeInt32,
 			},
 		},
 	}
