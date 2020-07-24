@@ -911,7 +911,7 @@ func appWishlistAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
 
-			hc = influx.InfluxResponseToHighCharts(resp.Results[0].Series[0])
+			hc = influx.InfluxResponseToHighCharts(resp.Results[0].Series[0], true)
 		}
 
 		return hc, err
@@ -1043,7 +1043,7 @@ func appPlayersAjaxHandler(limit bool) func(http.ResponseWriter, *http.Request) 
 
 			if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
 
-				hc = influx.InfluxResponseToHighCharts(resp.Results[0].Series[0])
+				hc = influx.InfluxResponseToHighCharts(resp.Results[0].Series[0], !limit)
 			}
 
 			return hc, err
@@ -1218,7 +1218,7 @@ func appReviewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		hc = influx.InfluxResponseToHighCharts(resp.Results[0].Series[0])
+		hc = influx.InfluxResponseToHighCharts(resp.Results[0].Series[0], true)
 	}
 
 	returnJSON(w, r, hc)

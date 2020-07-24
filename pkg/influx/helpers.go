@@ -101,43 +101,40 @@ type (
 	}
 )
 
-func InfluxResponseToHighCharts(series influxModels.Row) HighChartsJSON {
+func InfluxResponseToHighCharts(series influxModels.Row, trimLeft bool) HighChartsJSON {
 
 	resp := HighChartsJSON{}
 
 	for k, v := range series.Columns {
 		if k > 0 {
 
-			// var hasValue bool
-
+			var hasValue bool
 			for _, vv := range series.Values {
 
-				// if !hasValue && trimLeft {
-				// 	func() {
-				// 		for k, vvv := range vv {
-				// 			if k > 0 {
-				// 				if val, ok := vvv.(json.Number); ok {
-				// 					i, err := val.Float64()
-				// 					if err == nil && math.Abs(i) > 0 {
-				// 						hasValue = true
-				// 						return
-				// 					}
-				// 				}
-				// 			}
-				// 		}
-				// 	}()
-				// }
-
-				// if hasValue || !trimLeft {
-
-				t, err := time.Parse(time.RFC3339, vv[0].(string))
-				if err != nil {
-					log.Err(err)
-					continue
+				if !hasValue && trimLeft {
+					for k, vvv := range vv {
+						if k > 0 {
+							if val, ok := vvv.(json.Number); ok {
+								i, err := val.Float64()
+								if err == nil && i != 0 {
+									hasValue = true
+									break
+								}
+							}
+						}
+					}
 				}
 
-				resp[v] = append(resp[v], []interface{}{t.Unix() * 1000, vv[k]})
-				// }
+				if hasValue || !trimLeft {
+
+					t, err := time.Parse(time.RFC3339, vv[0].(string))
+					if err != nil {
+						log.Err(err)
+						continue
+					}
+
+					resp[v] = append(resp[v], []interface{}{t.Unix() * 1000, vv[k]})
+				}
 			}
 		}
 	}
