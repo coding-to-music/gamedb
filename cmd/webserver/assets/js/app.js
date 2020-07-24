@@ -543,11 +543,13 @@ if ($appPage.length > 0) {
                     xAxis: {
                         title: null,
                         type: 'category',
+                        lineColor: 'rgba(0,0,0,0)',
                     },
                     yAxis: {
                         categories: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
                         title: null,
                         reversed: true,
+                        gridLineColor: 'rgba(0,0,0,0)',
                     },
                     tooltip: {
                         formatter: function () {
@@ -568,7 +570,7 @@ if ($appPage.length > 0) {
                             }
                         }
                     },
-                    series: [{data: data['max_player_count']}],
+                    series: [{data: data['max_player_count'], borderWidth: 0}],
                 }));
             },
         });
