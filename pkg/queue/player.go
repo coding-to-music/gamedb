@@ -382,7 +382,7 @@ func updatePlayerSummary(player *mongo.Player) error {
 	player.PersonaName = summary.PersonaName
 	player.TimeCreated = time.Unix(summary.TimeCreated, 0)
 	player.PrimaryGroupID = summary.PrimaryClanID
-	player.CommunityVisibilityState = summary.CommunityVisibilityState // 1 is private, 3 s public
+	player.CommunityVisibilityState = summary.CommunityVisibilityState
 
 	return err
 }

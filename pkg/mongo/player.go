@@ -81,7 +81,7 @@ type Player struct {
 	BadgeStats               ProfileBadgeStats          `bson:"badge_stats"`
 	Bans                     PlayerBans                 `bson:"bans"`
 	CommentsCount            int                        `bson:"comments_count"`
-	CommunityVisibilityState int                        `bson:"community_visibility_state"`
+	CommunityVisibilityState int                        `bson:"community_visibility_state"` // 1=private 3=public
 	ContinentCode            string                     `bson:"continent_code"`
 	CountryCode              string                     `bson:"country_code"`
 	Donated                  int                        `bson:"donated"`
@@ -119,6 +119,8 @@ func (player Player) BSON() bson.D {
 		player.Ranks = map[string]int{}
 	}
 
+	player.UpdatedAt = time.Now()
+
 	return bson.D{
 		{"_id", player.ID},
 		{"achievement_count", player.AchievementCount},
@@ -141,7 +143,7 @@ func (player Player) BSON() bson.D {
 		{"primary_clan_id_string", player.PrimaryGroupID},
 		{"status_code", player.StateCode},
 		{"time_created", player.TimeCreated},
-		{"updated_at", time.Now()},
+		{"updated_at", player.UpdatedAt},
 		{"vanity_url", player.VanityURL},
 		{"wishlist_apps_count", player.WishlistAppsCount},
 		{"wishlist_total_cost", player.WishlistTotalCost},
