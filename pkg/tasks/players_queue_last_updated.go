@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/rabbit-go"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
@@ -63,12 +64,16 @@ func (c PlayersQueueLastUpdated) work() (err error) {
 	}
 
 	if consumers == 0 {
-		log.Warning("no consumers")
-		return nil
+		if config.IsLocal() {
+			consumers = 2
+		} else {
+			log.Warning("no consumers")
+			return nil
+		}
 	}
 
 	// Queue last updated players
-	var filter = bson.D{{"community_visibility_state", 3}}
+	var filter = bson.D{{"community_visibility_state", bson.M{"$ne": 1}}} // Includes where community_visibility_state doesn't exist
 
 	players, err := mongo.GetPlayers(0, int64(toQueue*consumers), bson.D{{"updated_at", 1}}, filter, bson.M{"_id": 1})
 	if err != nil {
