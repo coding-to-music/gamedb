@@ -16,10 +16,10 @@
                         <table class="table table-hover table-striped table-datatable table-sm mb-0" data-order='[[3, "asc", 0, "desc"]]' id="actions">
                             <thead class="thead-light">
                             <tr>
-                                <th scope="col">Action</th>
-                                <th scope="col">Real</th>
-                                <th scope="col">Previous</th>
-                                <th scope="col">Next</th>
+                                <th scope="col" style="width: 40%;">Action</th>
+                                <th scope="col" style="width: 20%;">Real</th>
+                                <th scope="col" style="width: 20%;">Previous</th>
+                                <th scope="col" style="width: 20%;">Next</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -28,16 +28,16 @@
                                 {{ $realLast:= (index $.Configs (print "task-" .Task.ID)).Value }}
 
                                 <tr data-id="{{ .Task.ID }}" class="cursor-pointer {{ if .Bad }}table-danger{{ end }}" data-action="/admin/tasks?run={{ .Task.ID }}">
-                                    <td style="width: 40%;">{{ .Task.Name }}</td>
-                                    <td style="width: 20%;" class="prev" data-sort="{{ $realLast }}">
+                                    <td>{{ .Task.Name }}</td>
+                                    <td class="prev" data-sort="{{ $realLast }}">
                                         <span data-livestamp="{{ $realLast }}"></span>
                                     </td>
                                     {{ if gt .Next.Unix 0 }}
-                                        <td style="width: 20%;" data-sort="{{ .Prev }}"><span data-livestamp="{{ .Prev.Unix }}"></span></td>
-                                        <td style="width: 20%;" class="next" data-sort="{{ .Next.Unix }}"><span data-livestamp="{{ .Next.Unix }}"></span></td>
+                                        <td data-sort="{{ .Prev }}"><span data-livestamp="{{ .Prev.Unix }}"></span></td>
+                                        <td class="next" data-sort="{{ .Next.Unix }}"><span data-livestamp="{{ .Next.Unix }}"></span></td>
                                     {{ else }}
-                                        <td style="width: 20%;" data-sort="10000000000"></td>
-                                        <td style="width: 20%;" data-sort="10000000000"></td>
+                                        <td data-sort="10000000000"></td>
+                                        <td data-sort="10000000000"></td>
                                     {{ end }}
                                 </tr>
                             {{ end }}
