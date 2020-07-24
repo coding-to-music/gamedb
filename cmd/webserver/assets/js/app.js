@@ -533,6 +533,28 @@ if ($appPage.length > 0) {
                     data = {"max_player_count": []};
                 }
 
+                // Convert time local timezone
+                const diff = Math.floor(moment().utcOffset() / 60);
+                if (Math.abs(diff) > 0) {
+                    let data2 = data['max_player_count'];
+                    data2.forEach(function (hour, index) {
+                        data2[index][0] += diff;
+                        if (data2[index][0] > 23) {
+                            data2[index][0] -= 24;
+                            data2[index][1]++;
+                        } else if (data2[index][0] < 0) {
+                            data2[index][0] += 24;
+                            data2[index][1]--;
+                        }
+                        if (data2[index][1] > 6) {
+                            data2[index][1] -= 7;
+                        } else if (data2[index][1] < 0) {
+                            data2[index][1] += 7;
+                        }
+                    });
+                    data = {"max_player_count": data2};
+                }
+
                 Highcharts.chart('players-heatmap-chart', $.extend(true, {}, defaultChartOptions, {
                     chart: {
                         type: 'heatmap',
@@ -555,7 +577,7 @@ if ($appPage.length > 0) {
                         formatter: function () {
                             const day = this.series.yAxis.categories[this.point.y];
                             const time = this.point.x;
-                            return day + 's ' + pad(time, 2) + ':00-' + pad(time, 2) + ':59 UTC: ~'
+                            return 'Average of last 4 ' + day + 's @ ' + pad(time, 2) + ':00-' + pad(time, 2) + ':59 UTC: ~'
                                 + Math.round(this.point.value).toLocaleString() + ' players';
                         }
                     },
