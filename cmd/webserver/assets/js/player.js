@@ -93,7 +93,8 @@ if ($playerPage.length > 0) {
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
-                    }
+                    },
+                    'orderSequence': ['asc', 'desc'],
                 },
                 // Price
                 {
@@ -660,7 +661,7 @@ if ($playerPage.length > 0) {
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).attr('nowrap', 'nowrap');
                     },
-                    "orderSequence": ['desc'],
+                    "orderSequence": ['desc', 'asc'],
                 },
                 // Completed
                 {
@@ -673,7 +674,7 @@ if ($playerPage.length > 0) {
                         $(td).css('background', 'linear-gradient(to right, rgba(0,0,0,.15) ' + rowData[7] + '%, transparent ' + rowData[7] + '%)');
                         $(td).addClass('thin');
                     },
-                    "orderSequence": ['asc'],
+                    "orderSequence": ['asc', 'desc'],
                 },
             ]
         };

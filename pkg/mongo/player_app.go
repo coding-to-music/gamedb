@@ -127,14 +127,14 @@ func (app PlayerApp) GetAchievementPercent() string {
 
 func GetPlayerAppsByApp(offset int64, filter bson.D) (apps []PlayerApp, err error) {
 
-	return getPlayerApps(offset, 100, filter, bson.D{{"app_time", -1}}, bson.M{"_id": 0, "player_id": 1, "app_time": 1})
+	return getPlayerApps(offset, 100, filter, bson.D{{"app_time", -1}}, bson.M{"_id": 0, "player_id": 1, "app_time": 1}, nil)
 }
 
 func GetPlayerAppsByPlayer(playerID int64, offset int64, limit int64, sort bson.D) (apps []PlayerApp, err error) {
 
 	var filter = bson.D{{"player_id", playerID}}
 
-	return getPlayerApps(offset, limit, filter, sort, bson.M{"app_name": 1, "app_time": 1})
+	return getPlayerApps(offset, limit, filter, sort, bson.M{"app_name": 1, "app_time": 1}, nil)
 }
 
 func GetPlayerAppByKey(playerID int64, appID int) (playerApp PlayerApp, err error) {
@@ -149,7 +149,9 @@ func GetPlayerAppByKey(playerID int64, appID int) (playerApp PlayerApp, err erro
 
 func GetPlayerApps(offset int64, limit int64, filter bson.D, sort bson.D) (apps []PlayerApp, err error) {
 
-	return getPlayerApps(offset, limit, filter, sort, nil)
+	var ops = options.Find().SetHint("player_id_1")
+
+	return getPlayerApps(offset, limit, filter, sort, nil, ops)
 }
 
 func GetPlayersApps(playerIDs []int64, projection bson.M) (apps []PlayerApp, err error) {
@@ -163,22 +165,22 @@ func GetPlayersApps(playerIDs []int64, projection bson.M) (apps []PlayerApp, err
 		playersFilter = append(playersFilter, v)
 	}
 
-	return getPlayerApps(0, 0, bson.D{{"player_id", bson.M{"$in": playersFilter}}}, nil, projection)
+	return getPlayerApps(0, 0, bson.D{{"player_id", bson.M{"$in": playersFilter}}}, nil, projection, nil)
 }
 
 func GetAppPlayTimes(appID int) ([]PlayerApp, error) {
 
-	return getPlayerApps(0, 0, bson.D{{"app_id", appID}}, nil, bson.M{"_id": 0, "app_time": 1})
+	return getPlayerApps(0, 0, bson.D{{"app_id", appID}}, nil, bson.M{"_id": 0, "app_time": 1}, nil)
 }
 
 func GetAppOwners(appID int) ([]PlayerApp, error) {
 
-	return getPlayerApps(0, 0, bson.D{{"app_id", appID}}, nil, bson.M{"_id": 0, "player_id": 1})
+	return getPlayerApps(0, 0, bson.D{{"app_id", appID}}, nil, bson.M{"_id": 0, "player_id": 1}, nil)
 }
 
-func getPlayerApps(offset int64, limit int64, filter bson.D, sort bson.D, projection bson.M) (apps []PlayerApp, err error) {
+func getPlayerApps(offset int64, limit int64, filter bson.D, sort bson.D, projection bson.M, ops *options.FindOptions) (apps []PlayerApp, err error) {
 
-	cur, ctx, err := Find(CollectionPlayerApps, offset, limit, sort, filter, projection, nil)
+	cur, ctx, err := Find(CollectionPlayerApps, offset, limit, sort, filter, projection, ops)
 	if err != nil {
 		return apps, err
 	}

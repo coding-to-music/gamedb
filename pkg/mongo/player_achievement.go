@@ -117,9 +117,10 @@ func FindLatestPlayerAchievement(playerID int64, appID int) (int64, error) {
 
 func GetPlayerAchievements(playerID int64, offset int64, sort bson.D) (achievements []PlayerAchievement, err error) {
 
+	var ops = options.Find().SetHint("player_id_1")
 	var filter = bson.D{{"player_id", playerID}}
 
-	return getPlayerAchievements(offset, 100, filter, sort)
+	return getPlayerAchievements(offset, 100, filter, sort, ops)
 }
 
 func GetPlayerAchievementsForApp(playerID int64, appID int, achievementKeys bson.A, limit int64) (achievements []PlayerAchievement, err error) {
@@ -134,7 +135,7 @@ func GetPlayerAchievementsForApp(playerID int64, appID int, achievementKeys bson
 		{"achievement_id", bson.M{"$in": achievementKeys}},
 	}
 
-	return getPlayerAchievements(0, limit, filter, nil)
+	return getPlayerAchievements(0, limit, filter, nil, nil)
 }
 
 func GetPlayersWithAchievement(appID int, achievementID string, offset int64) (achievements []PlayerAchievement, err error) {
@@ -144,12 +145,12 @@ func GetPlayersWithAchievement(appID int, achievementID string, offset int64) (a
 		{"achievement_id", achievementID},
 	}
 
-	return getPlayerAchievements(offset, 100, filter, bson.D{{"achievement_date", -1}})
+	return getPlayerAchievements(offset, 100, filter, bson.D{{"achievement_date", -1}}, nil)
 }
 
-func getPlayerAchievements(offset int64, limit int64, filter bson.D, sort bson.D) (achievements []PlayerAchievement, err error) {
+func getPlayerAchievements(offset int64, limit int64, filter bson.D, sort bson.D, ops *options.FindOptions) (achievements []PlayerAchievement, err error) {
 
-	cur, ctx, err := Find(CollectionPlayerAchievements, offset, limit, sort, filter, nil, nil)
+	cur, ctx, err := Find(CollectionPlayerAchievements, offset, limit, sort, filter, nil, ops)
 	if err != nil {
 		return achievements, err
 	}
