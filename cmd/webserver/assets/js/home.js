@@ -75,7 +75,7 @@ if ($homePage.length > 0) {
                     ]
                 },
                 {
-                    '<>': 'td', 'html': [
+                    '<>': 'td', 'nowrap': 'nowrap', 'html': [
                         {
                             '<>': 'span', 'data-livestamp': '${updated_at}', 'text': 'a few seconds ago',
                         }
