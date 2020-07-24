@@ -61,7 +61,7 @@ func (c CommandGroup) Output(msg *discordgo.MessageCreate) (message discordgo.Me
 	}
 
 	var image *discordgo.MessageEmbedImage
-	url, width, height, err := charts.GetGroupChart(group.ID)
+	url, width, height, err := charts.GetGroupChart(group)
 	if err != nil {
 		log.Err(err)
 	} else if url != "" {

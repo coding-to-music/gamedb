@@ -118,7 +118,7 @@ func getFooter() *discordgo.MessageEmbedFooter {
 func getAppEmbed(app mongo.App) *discordgo.MessageEmbed {
 
 	var image *discordgo.MessageEmbedImage
-	url, width, height, err := charts.GetAppChart(app.ID)
+	url, width, height, err := charts.GetAppChart(app)
 	if err != nil {
 		log.Err(err)
 	} else if url != "" {

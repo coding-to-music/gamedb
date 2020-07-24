@@ -2,7 +2,10 @@ package charts
 
 import (
 	"bytes"
+	"encoding/json"
 	"io"
+	"net/http"
+	"net/url"
 	"os"
 	"strconv"
 	"time"
@@ -11,39 +14,41 @@ import (
 	"github.com/Jleagle/influxql"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/googlestorage"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/wcharczuk/go-chart"
 	"github.com/wcharczuk/go-chart/drawing"
 )
 
-func GetGroupChart(id string) (url string, width int, height int, err error) {
+func GetGroupChart(group elasticsearch.Group) (url string, width int, height int, err error) {
 
 	builder := influxql.NewBuilder()
 	builder.AddSelect(`max("members_count")`, "max_members_count")
 	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementGroups.String())
-	builder.AddWhere("group_id", "=", id)
+	builder.AddWhere("group_id", "=", group.ID)
 	builder.AddGroupByTime("1d")
 	builder.SetFillNone()
 
-	return getChart(builder, id, "Group Members")
+	return getChart(builder, group.ID, "Members", "https://gamedb.online"+group.GetPath())
 }
 
-func GetAppChart(id int) (url string, width int, height int, err error) {
+func GetAppChart(app mongo.App) (url string, width int, height int, err error) {
 
 	builder := influxql.NewBuilder()
 	builder.AddSelect("max(player_count)", "max_player_count")
 	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
-	builder.AddWhere("app_id", "=", id)
+	builder.AddWhere("app_id", "=", app.ID)
 	builder.AddGroupByTime("1d")
 	builder.SetFillNone()
 
-	return getChart(builder, strconv.Itoa(id), "Players In Game")
+	return getChart(builder, strconv.Itoa(app.ID), "In Game", "https://gamedb.online"+app.GetPath())
 }
 
-func getChart(builder *influxql.Builder, id string, title string) (url string, width int, height int, err error) {
+func getChart(builder *influxql.Builder, id string, title string, description string) (url string, width int, height int, err error) {
 
 	resp, err := influx.InfluxQuery(builder.String())
 	if err != nil {
@@ -144,7 +149,8 @@ func getChart(builder *influxql.Builder, id string, title string) (url string, w
 		}
 	}
 
-	u, err := saveChartToGoogle(b, file)
+	// u, err := saveChartToGoogle(b, file)
+	u, err := saveChartToImgur(b, title, description)
 	return u, graph.GetWidth(), graph.GetHeight(), err
 }
 
@@ -164,6 +170,7 @@ func saveChartToFile(b []byte, filename string) error {
 	return err
 }
 
+//noinspection GoUnusedFunction
 func saveChartToGoogle(b []byte, filename string) (string, error) {
 
 	client, ctx, err := googlestorage.GetStorageClient()
@@ -188,4 +195,35 @@ func saveChartToGoogle(b []byte, filename string) (string, error) {
 	}
 
 	return storage.SignedURL(googlestorage.BucketChatBot, filename, opts)
+}
+
+// todo, 1250/month limit
+func saveChartToImgur(b []byte, title, description string) (string, error) {
+
+	headers := http.Header{}
+	headers.Add("Authorization", "Client-ID "+config.Config.ImgurClientID.Get())
+	headers.Add("Content-Type", "application/x-www-form-urlencoded")
+
+	data := url.Values{}
+	data.Add("image", string(b))
+	data.Add("type", "file")
+	data.Add("title", title)
+	data.Add("description", description)
+
+	b, code, err := helpers.Post("https://api.imgur.com/3/image", data, headers)
+	if code != 200 || err != nil {
+		return "", err
+	}
+
+	resp := ImgurResponse{}
+	err = json.Unmarshal(b, &resp)
+	return resp.Data.Link, err
+}
+
+type ImgurResponse struct {
+	Data struct {
+		Link string `json:"link"`
+	} `json:"data"`
+	Success bool `json:"success"`
+	Status  int  `json:"status"`
 }

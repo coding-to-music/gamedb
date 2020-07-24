@@ -63,6 +63,9 @@ type BaseConfig struct {
 	HetznerNetworkID ConfigItem
 	HetznerAPIToken  ConfigItem
 
+	// Imgur
+	ImgurClientID ConfigItem
+
 	// Influx
 	InfluxURL      ConfigItem
 	InfluxPassword ConfigItem
@@ -200,6 +203,9 @@ func init() {
 	Config.HetznerSSHKeyID.Set("HETZNER_SSH_KEY_ID")
 	Config.HetznerNetworkID.Set("HETZNER_NETWORK_ID")
 	Config.HetznerAPIToken.Set("HETZNER_API_TOKEN")
+
+	// Imgur
+	Config.ImgurClientID.Set("IMGUR_CLIENT_ID")
 
 	// Influx
 	Config.InfluxURL.Set("INFLUX_URL")

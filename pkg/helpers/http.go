@@ -1,6 +1,8 @@
 package helpers
 
 import (
+	"bytes"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -24,13 +26,13 @@ func IsBot(userAgent string) bool {
 }
 
 func GetWithTimeout(link string, timeout time.Duration) (b []byte, code int, err error) {
-	return requestWithTimeout("GET", link, timeout)
+	return requestWithTimeout("GET", link, timeout, nil, nil)
 }
 
 func HeadWithTimeout(link string, timeout time.Duration) (code int, err error) {
 
 	operation := func() (err error) {
-		_, code, err = requestWithTimeout("HEAD", link, timeout)
+		_, code, err = requestWithTimeout("HEAD", link, timeout, nil, nil)
 		return err
 	}
 
@@ -41,7 +43,11 @@ func HeadWithTimeout(link string, timeout time.Duration) (code int, err error) {
 	return code, err
 }
 
-func requestWithTimeout(method string, link string, timeout time.Duration) (body []byte, code int, err error) {
+func Post(link string, data url.Values, headers http.Header) (b []byte, code int, err error) {
+	return requestWithTimeout("POST", link, 0, headers, data)
+}
+
+func requestWithTimeout(method string, link string, timeout time.Duration, headers http.Header, data url.Values) (body []byte, code int, err error) {
 
 	if link == "" {
 		return nil, 0, err
@@ -60,9 +66,18 @@ func requestWithTimeout(method string, link string, timeout time.Duration) (body
 		timeout = time.Second * 10
 	}
 
-	req, err := http.NewRequest(method, u.String(), nil)
+	var x io.Reader
+	if len(data) > 0 {
+		x = bytes.NewBufferString(data.Encode())
+	}
+
+	req, err := http.NewRequest(method, u.String(), x)
 	if err != nil {
 		return nil, 0, err
+	}
+
+	if len(headers) > 0 {
+		req.Header = headers
 	}
 
 	clientWithTimeout := &http.Client{
