@@ -95,7 +95,7 @@ func appReviewsHandler(messages []*rabbit.Message) {
 			}
 
 			// Remove extra new lines
-			review.Review = helpers.RegexMultipleNewLines.ReplaceAllString(review.Review, "\n\n")
+			review.Review = helpers.RegexNewLines.ReplaceAllString(review.Review, "\n\n")
 
 			reviews.Reviews = append(reviews.Reviews, helpers.AppReview{
 				Review:     helpers.BBCodeCompiler.Compile(review.Review),

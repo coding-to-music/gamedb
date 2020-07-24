@@ -87,7 +87,7 @@ type homeTemplate struct {
 
 var htmlPolicy = bluemonday.
 	NewPolicy().
-	AllowElements("br", "img").
+	AllowElements("br").
 	AllowAttrs("data-lazy").Globally()
 
 func homeNewsHandler(w http.ResponseWriter, r *http.Request) {
@@ -116,6 +116,7 @@ func homeNewsHandler(w http.ResponseWriter, r *http.Request) {
 
 		contents := string(v.GetBody())
 		contents = htmlPolicy.Sanitize(contents)
+		contents = helpers.RegexSpacesStartEnd.ReplaceAllString(contents, "")
 
 		b, err := truncatehtml.TruncateHtml([]byte(contents), 200, "...")
 		if err == nil {

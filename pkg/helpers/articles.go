@@ -41,7 +41,10 @@ func GetArticleBody(body string) template.HTML {
 	body = strings.ReplaceAll(body, "{STEAM_CLAN_IMAGE}", articleImageBase)
 	body = strings.ReplaceAll(body, "{STEAM_CLAN_LOC_IMAGE}", articleImageBase)
 
+	body = RegexSpacesStartEnd.ReplaceAllString(body, "")
 	body = fixBBCodeSpaces.ReplaceAllString(body, "][")
+
+	body = RegexNewLines.ReplaceAllString(body, "<br>")
 	body = RegexNewLine.ReplaceAllString(body, "<br>")
 
 	// Double as inner bbcode tags dont get compiled on first time round
