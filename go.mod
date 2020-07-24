@@ -67,6 +67,7 @@ require (
 	github.com/logrusorgru/aurora v2.0.3+incompatible
 	github.com/mattn/go-runewidth v0.0.9 // indirect
 	github.com/mattn/go-sqlite3 v2.0.1+incompatible // indirect
+	github.com/mborgerson/GoTruncateHtml v0.0.0-20150507032438-125d9154cd1e
 	github.com/memcachier/mc v2.0.1+incompatible
 	github.com/microcosm-cc/bluemonday v1.0.3
 	github.com/mxpv/patreon-go v0.0.0-20190917022727-646111f1d983

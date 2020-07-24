@@ -52,6 +52,8 @@ if ($homePage.length > 0) {
                 observeLazyImages($news.find('img[data-lazy]'));
             },
         });
+
+        observeLazyImages($news.find('img[data-lazy]'));
     }
 
     function loadLatestUpdatedPlayers() {

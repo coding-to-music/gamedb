@@ -18,6 +18,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/twitter"
 	"github.com/go-chi/chi"
+	"github.com/mborgerson/GoTruncateHtml/truncatehtml"
 	"github.com/microcosm-cc/bluemonday"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -84,6 +85,11 @@ type homeTemplate struct {
 	Players  []mongo.Player
 }
 
+var htmlPolicy = bluemonday.
+	NewPolicy().
+	AllowElements("br", "img").
+	AllowAttrs("data-lazy").Globally()
+
 func homeNewsHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := homeNewsTemplate{}
@@ -106,13 +112,16 @@ func homeNewsHandler(w http.ResponseWriter, r *http.Request) {
 		log.Err(err, r)
 	}
 
-	p := bluemonday.StrictPolicy() // Strip all tags
-
 	for _, v := range news {
 
 		contents := string(v.GetBody())
-		contents = p.Sanitize(contents)
-		contents = helpers.TruncateString(contents, 300, "...")
+		contents = htmlPolicy.Sanitize(contents)
+
+		b, err := truncatehtml.TruncateHtml([]byte(contents), 200, "...")
+		if err == nil {
+			contents = string(b)
+		}
+
 		contents = strings.TrimSpace(contents)
 
 		t.News = append(t.News, homeNewsItemTemplate{

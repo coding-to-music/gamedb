@@ -13,8 +13,6 @@ import (
 
 const articleImageBase = "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/clans/"
 
-var fixBBCodeSpaces = regexp.MustCompile(`\](\s+)\[`)
-
 func GetArticleIcon(articleIcon string, appID int, appIcon string) string {
 
 	if appIcon != "" {
@@ -36,13 +34,21 @@ func GetArticleIcon(articleIcon string, appID int, appIcon string) string {
 	return DefaultAppIcon
 }
 
+var fixBBCodeSpaces = regexp.MustCompile(`(table|tr|th|td)\](\s+)\[(table|tr|th|td)`)
+
 func GetArticleBody(body string) template.HTML {
 
 	body = strings.ReplaceAll(body, "{STEAM_CLAN_IMAGE}", articleImageBase)
 	body = strings.ReplaceAll(body, "{STEAM_CLAN_LOC_IMAGE}", articleImageBase)
 
-	body = fixBBCodeSpaces.ReplaceAllString(body, "][") // Remove new lines and spaces inbetween bbcodes
+	body = fixBBCodeSpaces.ReplaceAllString(body, "][")
+	body = RegexNewLine.ReplaceAllString(body, "<br>")
+
+	// Double as inner bbcode tags dont get compiled on first time round
 	body = BBCodeCompiler.Compile(body)
+	body = html.UnescapeString(body)
+	body = BBCodeCompiler.Compile(body)
+	body = html.UnescapeString(body)
 
 	// Fix up HTML
 	doc, err := html.Parse(strings.NewReader(body))
@@ -53,8 +59,6 @@ func GetArticleBody(body string) template.HTML {
 		log.Err(err)
 		body = buf.String()
 	}
-
-	body = html.UnescapeString(body)
 
 	return template.HTML(body)
 }
