@@ -40,6 +40,7 @@ func playerAchievementsHandler(messages []*rabbit.Message) {
 
 			<-time.NewTimer(time.Second * 5).C // Sleep to make sure all other messages are consumed
 
+			// Total achievements
 			count, err := mongo.CountDocuments(mongo.CollectionPlayerAchievements, bson.D{{"player_id", payload.PlayerID}}, 0)
 			if err != nil {
 				log.Err(err, message.Message.Body)
@@ -47,8 +48,26 @@ func playerAchievementsHandler(messages []*rabbit.Message) {
 				continue
 			}
 
+			count100, err := mongo.CountDocuments(mongo.CollectionPlayerAchievements, bson.D{{"player_id", payload.PlayerID}, {"app_achievements_percent", 100}}, 0)
+			if err != nil {
+				log.Err(err, message.Message.Body)
+				sendToRetryQueue(message)
+				continue
+			}
+
+			countApps, err := mongo.CountDocuments(mongo.CollectionPlayerAchievements, bson.D{{"player_id", payload.PlayerID}, {"app_achievements_have", bson.M{"$gt": 0}}}, 0)
+			if err != nil {
+				log.Err(err, message.Message.Body)
+				sendToRetryQueue(message)
+				continue
+			}
+
 			// Update player row
-			var update = bson.D{{"achievement_count", count}}
+			var update = bson.D{
+				{"achievement_count", int(count)},
+				{"achievement_count_100", int(count100)},
+				{"achievement_count_apps", int(countApps)},
+			}
 
 			_, err = mongo.UpdateOne(mongo.CollectionPlayers, bson.D{{"_id", payload.PlayerID}}, update)
 			if err != nil {
