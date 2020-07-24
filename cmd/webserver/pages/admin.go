@@ -453,7 +453,7 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 
 					for _, playerID := range resp.Members.SteamID64 {
 
-						err = queue.ProducePlayer(queue.PlayerMessage{ID: int64(playerID)})
+						err = queue.ProducePlayer(queue.PlayerMessage{ID: int64(playerID), SkipExistingPlayer: true})
 						err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 						log.Err(err, r)
 
