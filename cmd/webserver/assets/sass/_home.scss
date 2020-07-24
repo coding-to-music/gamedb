@@ -38,6 +38,10 @@ body.dark {
         }
     }
 
+    #players, #updated-players {
+        min-height: 500px;
+    }
+
     .games {
         img {
             width: 100%;
