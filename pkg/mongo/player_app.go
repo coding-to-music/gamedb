@@ -125,6 +125,25 @@ func (app PlayerApp) GetAchievementPercent() string {
 	return helpers.GetAchievementCompleted(app.AppAchievementsPercent)
 }
 
+//noinspection GoUnusedExportedFunction
+func CreatePlayerAppIndexes() {
+
+	var indexModels = []mongo.IndexModel{
+		{Keys: bson.D{{"app_id", 1}, {"app_time", -1}, {"player_country", 1}}},
+		{Keys: bson.D{{"player_id", 1}, {"app_achievements_have", 1}}},
+	}
+
+	//
+	client, ctx, err := getMongo()
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	_, err = client.Database(MongoDatabase).Collection(CollectionGroups.String()).Indexes().CreateMany(ctx, indexModels)
+	log.Err(err)
+}
+
 func GetPlayerAppsByApp(offset int64, filter bson.D) (apps []PlayerApp, err error) {
 
 	return getPlayerApps(offset, 100, filter, bson.D{{"app_time", -1}}, bson.M{"_id": 0, "player_id": 1, "app_time": 1}, nil)
@@ -149,7 +168,7 @@ func GetPlayerAppByKey(playerID int64, appID int) (playerApp PlayerApp, err erro
 
 func GetPlayerApps(offset int64, limit int64, filter bson.D, sort bson.D) (apps []PlayerApp, err error) {
 
-	var ops = options.Find().SetHint("player_id_1")
+	var ops = options.Find().SetHint("player_id_1_app_achievements_have_1")
 
 	return getPlayerApps(offset, limit, filter, sort, nil, ops)
 }
@@ -234,7 +253,7 @@ func UpdatePlayerApps(apps map[int]*PlayerApp) (err error) {
 	return err
 }
 
-func GetPlayerAppsByCountry(appID int) (items []PlayerAppsByCountry, err error) {
+func GetAppPlayersByCountry(appID int) (items []PlayerAppsByCountry, err error) {
 
 	client, ctx, err := getMongo()
 	if err != nil {
@@ -242,12 +261,11 @@ func GetPlayerAppsByCountry(appID int) (items []PlayerAppsByCountry, err error) 
 	}
 
 	pipeline := mongo.Pipeline{
-		{{Key: "$match", Value: bson.M{"app_id": appID}}},
-		{{Key: "$sort", Value: bson.M{"player_country": 1}}}, // Just here to hit the index
+		{{Key: "$match", Value: bson.M{"app_id": appID, "app_time": bson.M{"$ne": 0}}}},
 		{{Key: "$group", Value: bson.M{"_id": "$player_country", "count": bson.M{"$sum": 1}}}},
 	}
 
-	cur, err := client.Database(MongoDatabase, options.Database()).Collection(CollectionPlayerApps.String()).Aggregate(ctx, pipeline, options.Aggregate())
+	cur, err := client.Database(MongoDatabase, options.Database()).Collection(CollectionPlayerApps.String()).Aggregate(ctx, pipeline, nil)
 	if err != nil {
 		return items, err
 	}
