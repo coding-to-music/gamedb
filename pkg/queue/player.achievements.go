@@ -48,14 +48,14 @@ func playerAchievementsHandler(messages []*rabbit.Message) {
 				continue
 			}
 
-			count100, err := mongo.CountDocuments(mongo.CollectionPlayerAchievements, bson.D{{"player_id", payload.PlayerID}, {"app_achievements_percent", 100}}, 0)
+			count100, err := mongo.CountDocuments(mongo.CollectionPlayerApps, bson.D{{"player_id", payload.PlayerID}, {"app_achievements_percent", 100}}, 0)
 			if err != nil {
 				log.Err(err, message.Message.Body)
 				sendToRetryQueue(message)
 				continue
 			}
 
-			countApps, err := mongo.CountDocuments(mongo.CollectionPlayerAchievements, bson.D{{"player_id", payload.PlayerID}, {"app_achievements_have", bson.M{"$gt": 0}}}, 0)
+			countApps, err := mongo.CountDocuments(mongo.CollectionPlayerApps, bson.D{{"player_id", payload.PlayerID}, {"app_achievements_have", bson.M{"$gt": 0}}}, 0)
 			if err != nil {
 				log.Err(err, message.Message.Body)
 				sendToRetryQueue(message)

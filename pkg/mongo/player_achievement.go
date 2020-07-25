@@ -22,7 +22,7 @@ type PlayerAchievement struct {
 	AchievementIcon        string  `bson:"achievement_icon"`
 	AchievementDescription string  `bson:"achievement_description"`
 	AchievementDate        int64   `bson:"achievement_date"`
-	AchievementComplete    float64 `bson:"achievement_complete"`
+	AchievementComplete    float64 `bson:"achievement_complete"` // Percent
 }
 
 func (a PlayerAchievement) BSON() bson.D {
