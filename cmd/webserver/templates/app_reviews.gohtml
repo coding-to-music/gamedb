@@ -1,20 +1,16 @@
 {{define "app_reviews"}}
 
     {{ range $key, $value := .App.Reviews.Reviews }}
-        {{ if ne .HTML "" }}
-
-            <div class="card mt-3">
-                <div class="card-header" data-vote="{{ .Vote }}">
-                    <div class="float-right">
-                        {{ .VotesGood }} <i class="fas fa-thumbs-up" data-toggle="tooltip" data-placement="top" title="Good Review"></i>
-                        {{ .VotesFunny }} <i class="fas fa-grin-squint-tears" data-toggle="tooltip" data-placement="top" title="Funny Review"></i>
-                    </div>
-                    By <a href="{{.PlayerPath}}">{{.PlayerName}}</a> on {{ .Created }}
+        <div class="card mt-3">
+            <div class="card-header" data-vote="{{ .Vote }}">
+                <div class="float-right">
+                    {{ .VotesGood }} <i class="fas fa-thumbs-up" data-toggle="tooltip" data-placement="top" title="Good Review"></i>
+                    {{ .VotesFunny }} <i class="fas fa-grin-squint-tears" data-toggle="tooltip" data-placement="top" title="Funny Review"></i>
                 </div>
-                <div class="card-body">{{ .HTML }}</div>
+                By <a href="{{.PlayerPath}}">{{.PlayerName}}</a> on {{ .Created }}
             </div>
-
-        {{ end }}
+            <div class="card-body">{{ .GetReview }}</div>
+        </div>
     {{ end }}
 
 {{end}}

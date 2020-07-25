@@ -195,8 +195,8 @@ type AppReview struct {
 	PlayerName string `json:"n"`
 }
 
-func (ar AppReview) HTML() template.HTML {
-	return template.HTML(ar.Review)
+func (ar AppReview) GetReview() template.HTML {
+	return template.HTML(BBCodeCompiler.Compile(ar.Review))
 }
 
 type SystemRequirement struct {

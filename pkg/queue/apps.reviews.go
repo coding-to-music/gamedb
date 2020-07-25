@@ -98,7 +98,7 @@ func appReviewsHandler(messages []*rabbit.Message) {
 			review.Review = helpers.RegexNewLines.ReplaceAllString(review.Review, "\n\n")
 
 			reviews.Reviews = append(reviews.Reviews, helpers.AppReview{
-				Review:     helpers.BBCodeCompiler.Compile(review.Review),
+				Review:     review.Review,
 				PlayerPath: player.GetPath(),
 				PlayerName: player.GetName(),
 				Created:    time.Unix(review.TimestampCreated, 0).Format(helpers.DateYear),
