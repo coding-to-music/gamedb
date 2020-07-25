@@ -11,23 +11,30 @@ import (
 )
 
 type App struct {
-	ID          int                   `json:"id"`
-	Name        string                `json:"name"`
-	NameMarked  string                `json:"name_marked"`
-	Players     int                   `json:"players"`
-	Aliases     []string              `json:"aliases"`
-	Icon        string                `json:"icon"`
-	Followers   int                   `json:"followers"`
-	ReviewScore float64               `json:"score"`
-	Prices      helpers.ProductPrices `json:"prices"`
-	Tags        []int                 `json:"tags"`
-	Genres      []int                 `json:"genres"`
-	Categories  []int                 `json:"categories"`
-	Publishers  []int                 `json:"publishers"`
-	Developers  []int                 `json:"developers"`
-	Type        string                `json:"type"`
-	Platforms   []string              `json:"platforms"`
-	Score       float64               `json:"-"`
+	AchievementsCount int                   `json:"achievements_counts"`
+	AchievementsAvg   float64               `json:"achievements_avg"`
+	AchievementsIcons []helpers.Tuple       `json:"achievements_icons"`
+	Aliases           []string              `json:"aliases"`
+	Categories        []int                 `json:"categories"`
+	Developers        []int                 `json:"developers"`
+	FollowersCount    int                   `json:"followers"`
+	Genres            []int                 `json:"genres"`
+	Icon              string                `json:"icon"`
+	ID                int                   `json:"id"`
+	Name              string                `json:"name"`
+	NameMarked        string                `json:"name_marked"` // Not in DB
+	Platforms         []string              `json:"platforms"`
+	PlayersCount      int                   `json:"players"`
+	Prices            helpers.ProductPrices `json:"prices"`
+	Publishers        []int                 `json:"publishers"`
+	ReleaseDate       int64                 `json:"release_date"`
+	ReviewScore       float64               `json:"score"`
+	Score             float64               `json:"-"` // Not in DB - Search score
+	Tags              []int                 `json:"tags"`
+	Type              string                `json:"type"`
+	Trend             float64               `json:"trend"`
+	WishlistAvg       float64               `json:"wishlist_avg"`
+	WishlistCount     int                   `json:"wishlist_count"`
 }
 
 func (app App) GetName() string {
@@ -163,21 +170,28 @@ func DeleteAndRebuildAppsIndex() {
 		"settings": settings,
 		"mappings": map[string]interface{}{
 			"properties": map[string]interface{}{
-				"id":         fieldTypeKeyword,
-				"name":       fieldTypeText,
-				"aliases":    fieldTypeText,
-				"players":    fieldTypeInt32,
-				"icon":       fieldTypeDisabled,
-				"followers":  fieldTypeInt32,
-				"score":      fieldTypeFloat16,
-				"prices":     map[string]interface{}{"type": "object", "properties": priceProperties},
-				"tags":       fieldTypeKeyword,
-				"genres":     fieldTypeKeyword,
-				"categories": fieldTypeKeyword,
-				"publishers": fieldTypeKeyword,
-				"developers": fieldTypeKeyword,
-				"type":       fieldTypeKeyword,
-				"platforms":  fieldTypeKeyword,
+				"achievements_counts": fieldTypeInt32,
+				"achievements_avg":    fieldTypeFloat16,
+				"achievements_icons":  fieldTypeDisabled,
+				"aliases":             fieldTypeText,
+				"categories":          fieldTypeKeyword,
+				"developers":          fieldTypeKeyword,
+				"followers":           fieldTypeInt32,
+				"genres":              fieldTypeKeyword,
+				"icon":                fieldTypeDisabled,
+				"id":                  fieldTypeKeyword,
+				"name":                fieldTypeText,
+				"platforms":           fieldTypeKeyword,
+				"players":             fieldTypeInt32,
+				"prices":              map[string]interface{}{"type": "object", "properties": priceProperties},
+				"publishers":          fieldTypeKeyword,
+				"release_date":        fieldTypeInt64,
+				"score":               fieldTypeFloat16,
+				"tags":                fieldTypeKeyword,
+				"type":                fieldTypeFloat32,
+				"trend":               fieldTypeKeyword,
+				"wishlist_avg":        fieldTypeFloat32,
+				"wishlist_count":      fieldTypeInt32,
 			},
 		},
 	}

@@ -34,21 +34,28 @@ func appsSearchHandler(messages []*rabbit.Message) {
 		}
 
 		app := elasticsearch.App{}
+		app.AchievementsAvg = payload.App.AchievementsAverageCompletion
+		app.AchievementsCount = payload.App.AchievementsCount
+		app.AchievementsIcons = payload.App.Achievements
+		app.Aliases = makeAppAliases(app)
+		app.Categories = payload.App.Categories
+		app.Developers = payload.App.Developers
+		app.FollowersCount = payload.App.GroupFollowers
+		app.Genres = payload.App.Genres
+		app.Icon = payload.App.Icon
 		app.ID = payload.App.ID
 		app.Name = payload.App.Name
-		app.Players = payload.App.PlayerPeakWeek
-		app.Icon = payload.App.Icon
-		app.Followers = payload.App.GroupFollowers
-		app.ReviewScore = payload.App.ReviewsScore
-		app.Prices = payload.App.Prices
-		app.Tags = payload.App.Tags
-		app.Genres = payload.App.Genres
-		app.Categories = payload.App.Categories
-		app.Publishers = payload.App.Publishers
-		app.Developers = payload.App.Developers
-		app.Type = payload.App.Type
 		app.Platforms = payload.App.Platforms
-		app.Aliases = makeAppAliases(app)
+		app.PlayersCount = payload.App.PlayerPeakWeek
+		app.Prices = payload.App.Prices
+		app.Publishers = payload.App.Publishers
+		app.ReleaseDate = payload.App.ReleaseDateUnix
+		app.ReviewScore = payload.App.ReviewsScore
+		app.Tags = payload.App.Tags
+		app.Trend = payload.App.PlayerTrend
+		app.Type = payload.App.Type
+		app.WishlistAvg = payload.App.WishlistAvgPosition
+		app.WishlistCount = payload.App.WishlistCount
 
 		err = elasticsearch.IndexApp(app)
 		if err != nil {
