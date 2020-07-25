@@ -43,6 +43,7 @@ func (app PlayerApp) BSON() bson.D {
 	return bson.D{
 		{"_id", app.GetKey()},
 		{"player_id", app.PlayerID},
+		{"player_country", app.PlayerCountry},
 		{"app_id", app.AppID},
 		{"app_name", app.AppName},
 		{"app_icon", app.AppIcon},
