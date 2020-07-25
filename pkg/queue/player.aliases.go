@@ -82,9 +82,9 @@ func playerAliasesHandler(messages []*rabbit.Message) {
 		}
 
 		// Update player row
-		_, err = mongo.UpdateOne(mongo.CollectionPlayers, bson.D{{"_id", payload.PlayerID}}, bson.D{
-			{"aliases", playerAliasStrings},
-		})
+		update := bson.D{{"aliases", playerAliasStrings}}
+
+		_, err = mongo.UpdateOne(mongo.CollectionPlayers, bson.D{{"_id", payload.PlayerID}}, update)
 		if err != nil {
 			log.Err(err, payload.PlayerID)
 			sendToRetryQueue(message)

@@ -52,26 +52,6 @@ func main() {
 		return
 	}
 
-	if false && config.IsLocal() {
-		log.Info("Mongo indexes started")
-		// mongo.CreatePlayerAchievementIndexes()
-		// mongo.CreateAppIndexes()
-		// mongo.CreatePackageIndexes()
-		// mongo.CreatePlayerIndexes()
-		// mongo.CreateGroupIndexes()
-		// mongo.CreateSaleIndexes()
-	}
-
-	if false && config.IsLocal() {
-		log.Info("Elastic indexes started")
-		// elasticsearch.DeleteAndRebuildAppsIndex()
-		// elasticsearch.DeleteAndRebuildAchievementsIndex()
-		// elasticsearch.DeleteAndRebuildGroupsIndex()
-		// elasticsearch.DeleteAndRebuildPlayersIndex()
-		// elasticsearch.DeleteAndRebuildArticlesIndex()
-		// elasticsearch.DeleteAndRebuildGlobalIndex()
-	}
-
 	// Start queue producers to send to.
 	// In a go routine so if Rabbit is not working, the webserver still starts
 	go queue.Init(queue.WebserverDefinitions)
