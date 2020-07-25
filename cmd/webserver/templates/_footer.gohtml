@@ -34,21 +34,23 @@
     {{ template "_webpack_footer" . }}
 
     {{/* Google Analytics */}}
-    <script src="https://www.googletagmanager.com/gtag/js?id=UA-125104-31"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
+    {{ if eq .Env "production" }}
+        <script src="https://www.googletagmanager.com/gtag/js?id=UA-125104-31"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
 
-        function gtag() {
-            dataLayer.push(arguments);
-        }
+            function gtag() {
+                dataLayer.push(arguments);
+            }
 
-        gtag('js', new Date());
-        gtag('config', 'UA-125104-31');
-        {{ if .IsLoggedIn }}
-        gtag('set', {'user_cc': '{{ .UserProductCC.ProductCode }}'});
-        gtag('set', {'user_id': {{ .UserID }}});
-        {{ end }}
-    </script>
+            gtag('js', new Date());
+            gtag('config', 'UA-125104-31');
+            {{ if .IsLoggedIn }}
+            gtag('set', {'user_cc': '{{ .UserProductCC.ProductCode }}'});
+            gtag('set', {'user_id': {{ .UserID }}});
+            {{ end }}
+        </script>
+    {{ end }}
 
     {{ if .IncludeSocialJS }}
 
