@@ -134,11 +134,14 @@ func appAchievementsHandler(messages []*rabbit.Message) {
 		}
 
 		// Update app row
-		var achievementsCol []mongo.AppAchievement
+		var achievementsCol []helpers.Tuple
 		for _, achievement := range achievementsSlice {
 			if achievement.Active && achievement.Icon != "" {
 				if len(achievementsCol) < 5 {
-					achievementsCol = append(achievementsCol, achievement)
+					achievementsCol = append(achievementsCol, helpers.Tuple{
+						Key:   achievement.Icon,
+						Value: achievement.Name,
+					})
 				} else {
 					break
 				}

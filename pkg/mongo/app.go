@@ -34,7 +34,7 @@ const (
 var ErrInvalidAppID = errors.New("invalid app id")
 
 type App struct {
-	Achievements                  []AppAchievement               `bson:"achievements_5"` // The first 5 only
+	Achievements                  []helpers.Tuple                `bson:"achievements_5"` // Icon -> Title
 	AchievementsAverageCompletion float64                        `bson:"achievements_average_completion"`
 	AchievementsCount             int                            `bson:"achievements_count"`
 	AchievementsCountTotal        int                            `bson:"achievements_count_total"` // Including inactive ones
