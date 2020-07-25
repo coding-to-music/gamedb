@@ -314,9 +314,9 @@
                     <div class="tab-pane" id="players" role="tabpanel">
 
                         <div class="row mb-4">
-                            <div class="col-12 col-lg-4 col-xl-6 mb-4 mb-lg-0">
+                            <div class="col-12 col-lg-8 mb-4 mb-lg-0">
 
-                                <div class="card">
+                                <div class="card mb-4">
                                     <h5 class="card-header">Stats</h5>
                                     <div class="card-body p-0">
                                         <table class="table table-no-border mb-0">
@@ -355,10 +355,6 @@
                                     </div>
                                 </div>
 
-                            </div>
-                            <div class="col-12 col-lg-8 col-xl-6">
-
-
                                 <div class="card">
                                     <h5 class="card-header">Owners <small class="float-right"><a target="_blank" rel="noopener" href="https://steamspy.com/app/{{ .App.ID }}">By Steam Spy</a></small></h5>
                                     <div class="card-body p-0">
@@ -387,6 +383,31 @@
                                             </tbody>
                                         </table>
                                     </div>
+                                </div>
+
+                            </div>
+                            <div class="col-12 col-lg-4">
+
+                                <div class="card">
+                                    <h5 class="card-header">Player Countries</h5>
+                                    <div class="card-body p-0">
+                                        <table class="table table-no-border table-sm mb-0">
+                                            <tbody>
+                                            {{ range .Countries }}
+                                                <tr style="background: linear-gradient(to right, #28a74522 {{ .Percent }}%, transparent {{ .Percent }}%)">
+                                                    <td>{{ .Country }}</td>
+                                                    <td>{{ comma .Count }}</td>
+                                                </tr>
+                                            {{ end }}
+                                            {{ if eq (len .Countries) 0 }}
+                                                <tr>
+                                                    <td colspan="2">Coming Soon</td>
+                                                </tr>
+                                            {{ end }}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <small class="card-footer">From Game DB players</small>
                                 </div>
 
                             </div>

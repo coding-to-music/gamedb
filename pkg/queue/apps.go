@@ -142,6 +142,13 @@ func appHandler(messages []*rabbit.Message) {
 				sendToRetryQueue(message)
 				return
 			}
+
+			err = updateAppCountries(&app)
+			if err != nil {
+				log.Err(err, payload.ID)
+				sendToRetryQueue(message)
+				return
+			}
 		}()
 
 		wg.Wait()
@@ -980,6 +987,23 @@ func updateAppBadgeOwners(app *mongo.App) (err error) {
 
 	app.BadgeOwners, err = mongo.CountDocuments(mongo.CollectionPlayerBadges, filter, 0)
 	return err
+}
+
+func updateAppCountries(app *mongo.App) (err error) {
+
+	countries, err := mongo.GetAppPlayersByCountry(app.ID)
+	if err != nil {
+		return err
+	}
+
+	m := map[string]int{}
+	for _, v := range countries {
+		m[v.Country] = v.Count
+	}
+
+	app.Countries = m
+
+	return nil
 }
 
 func saveSales(app mongo.App, newSales []mongo.Sale) (err error) {

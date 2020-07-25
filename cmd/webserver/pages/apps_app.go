@@ -308,6 +308,26 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
+	// Countries
+	var countryTotal int
+	for k, v := range app.Countries {
+		countryTotal += v
+		t.Countries = append(t.Countries, AppCountry{
+			Country: i18n.CountryCodeToName(k),
+			Count:   v,
+		})
+	}
+	for k, v := range t.Countries {
+		t.Countries[k].Percent = float64(v.Count) / float64(countryTotal) * 100
+	}
+	sort.Slice(t.Countries, func(i, j int) bool {
+		return t.Countries[i].Count < t.Countries[j].Count
+	})
+	if len(t.Countries) > 10 {
+		t.Countries = t.Countries[0:10]
+	}
+	t.Countries = nil // Disable for now
+
 	//
 	t.PlayersInGame, err = t.App.GetPlayersInGame()
 	if err != nil {
@@ -417,6 +437,13 @@ type appTemplate struct {
 	UFS           []pics.KeyValue
 	PlayersInGame int64
 	GroupPath     string
+	Countries     []AppCountry
+}
+
+type AppCountry struct {
+	Country string
+	Count   int
+	Percent float64
 }
 
 type appLinkTemplate struct {

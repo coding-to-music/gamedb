@@ -292,5 +292,5 @@ func GetAppPlayersByCountry(appID int) (items []PlayerAppsByCountry, err error) 
 
 type PlayerAppsByCountry struct {
 	Country string `json:"type" bson:"_id"`
-	Count   int64  `json:"count" bson:"count"`
+	Count   int    `json:"count" bson:"count"`
 }

@@ -49,6 +49,7 @@ type App struct {
 	Common                        pics.PICSKeyValues             `bson:"common"`
 	Config                        pics.PICSKeyValues             `bson:"config"`
 	CreatedAt                     time.Time                      `bson:"created_at"`
+	Countries                     map[string]int                 `bson:"countries"`
 	Demos                         []int                          `bson:"demo_ids"`
 	Depots                        pics.Depots                    `bson:"depots"`
 	Developers                    []int                          `bson:"developers"`
@@ -134,6 +135,7 @@ func (app App) BSON() bson.D {
 		{"common", app.Common},
 		{"config", app.Config},
 		{"created_at", app.CreatedAt},
+		{"countries", app.Countries},
 		{"demo_ids", app.Demos},
 		{"depots", app.Depots},
 		{"developers", app.Developers},
