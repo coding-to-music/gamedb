@@ -141,4 +141,5 @@ func rebuildIndex(index string, mapping map[string]interface{}) {
 		log.Info("create not acknowledged")
 		return
 	}
+	log.Info("Indexes rebuilt")
 }
