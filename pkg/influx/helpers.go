@@ -267,7 +267,7 @@ func GetInfluxTrendFromSeries(series models.Row, padding int) (trend float64) {
 		xs = append(xs, float64(k)*avg)
 	}
 
-	if len(ys) > 0 && avg >= 10 {
+	if len(ys) > 0 {
 
 		// Padding
 		if padding > 0 && len(xs) < padding {
