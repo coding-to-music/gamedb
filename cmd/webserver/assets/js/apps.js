@@ -84,17 +84,6 @@ if ($('#apps-page').length > 0) {
                     },
                     "orderable": false,
                 },
-                // Type
-                // {
-                //     "targets": 1,
-                //     "render": function (data, type, row) {
-                //         return row[4];
-                //     },
-                //     "createdCell": function (td, cellData, rowData, row, col) {
-                //         $(td).addClass('d-none d-lg-table-cell');
-                //     },
-                //     "orderable": false,
-                // },
                 // Players
                 {
                     "targets": 2,
