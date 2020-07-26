@@ -393,7 +393,7 @@ func updateRegularGroup(id string, group *mongo.Group) (foundMembers bool, err e
 
 	c := colly.NewCollector(
 		colly.AllowURLRevisit(),
-		steam.WithTimeout(20),
+		steam.WithTimeout(40),
 	)
 
 	// ID
