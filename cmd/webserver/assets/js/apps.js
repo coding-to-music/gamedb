@@ -116,7 +116,6 @@ if ($('#apps-page').length > 0) {
                     },
                     "orderSequence": ["desc"],
                 },
-
                 // Link
                 {
                     "targets": 6,
@@ -127,6 +126,15 @@ if ($('#apps-page').length > 0) {
                         return '';
                     },
                     "orderable": false,
+                },
+                // Search Score
+                {
+                    "targets": 7,
+                    "render": function (data, type, row) {
+                        return row[11].toLocaleString();
+                    },
+                    "orderable": false,
+                    "visible": false,
                 },
             ]
         };
