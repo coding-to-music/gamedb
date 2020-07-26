@@ -162,6 +162,7 @@ func DeleteAndRebuildAppsIndex() {
 				"final":            fieldTypeInt32,
 				"individual":       fieldTypeInt32,
 				"initial":          fieldTypeInt32,
+				"free":             fieldTypeBool,
 			},
 		}
 	}
