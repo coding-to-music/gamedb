@@ -2,7 +2,6 @@ package pages
 
 import (
 	"net/http"
-	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -10,12 +9,13 @@ import (
 
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
+	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/go-chi/chi"
-	"go.mongodb.org/mongo-driver/bson"
+	"github.com/olivere/elastic/v7"
 )
 
 func GamesRouter() http.Handler {
@@ -217,193 +217,115 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	var wg sync.WaitGroup
 	var code = session.GetProductCC(r)
-	var filter = bson.D{}
-	var countLock sync.Mutex
+	var filters []elastic.Query
 
-	// Types
-	types := query.GetSearchSlice("types")
+	types := query.GetSearchSliceInterface("types")
 	if len(types) > 0 {
-
-		a := bson.A{}
-		for _, v := range types {
-			a = append(a, v)
-		}
-
-		filter = append(filter, bson.E{Key: "type", Value: bson.M{"$in": a}})
+		filters = append(filters, elastic.NewTermsQuery("type", types...))
 	}
 
-	// Tags
-	tags := query.GetSearchSlice("tags")
+	tags := query.GetSearchSliceInterface("tags")
 	if len(tags) > 0 {
-
-		a := bson.A{}
-		for _, v := range tags {
-			i, err := strconv.Atoi(v)
-			if err == nil {
-				a = append(a, i)
-			}
-		}
-
-		filter = append(filter, bson.E{Key: "tags", Value: bson.M{"$in": a}})
+		filters = append(filters, elastic.NewTermsQuery("tags", tags...))
 	}
 
-	// Genres
-	genres := query.GetSearchSlice("genres")
+	genres := query.GetSearchSliceInterface("genres")
 	if len(genres) > 0 {
-
-		a := bson.A{}
-		for _, v := range genres {
-			i, err := strconv.Atoi(v)
-			if err == nil {
-				a = append(a, i)
-			}
-		}
-
-		filter = append(filter, bson.E{Key: "genres", Value: bson.M{"$in": a}})
+		filters = append(filters, elastic.NewTermsQuery("genres", genres...))
 	}
 
-	// Developers
-	developers := query.GetSearchSlice("developers")
+	developers := query.GetSearchSliceInterface("developers")
 	if len(developers) > 0 {
-
-		a := bson.A{}
-		for _, v := range developers {
-			i, err := strconv.Atoi(v)
-			if err == nil {
-				a = append(a, i)
-			}
-		}
-
-		filter = append(filter, bson.E{Key: "developers", Value: bson.M{"$in": a}})
+		filters = append(filters, elastic.NewTermsQuery("developers", developers...))
 	}
 
-	// Publishers
-	publishers := query.GetSearchSlice("publishers")
+	publishers := query.GetSearchSliceInterface("publishers")
 	if len(publishers) > 0 {
-
-		a := bson.A{}
-		for _, v := range publishers {
-			i, err := strconv.Atoi(v)
-			if err == nil {
-				a = append(a, i)
-			}
-		}
-
-		filter = append(filter, bson.E{Key: "publishers", Value: bson.M{"$in": a}})
+		filters = append(filters, elastic.NewTermsQuery("publishers", publishers...))
 	}
 
-	// Categories
-	categories := query.GetSearchSlice("categories")
+	categories := query.GetSearchSliceInterface("categories")
 	if len(categories) > 0 {
-
-		a := bson.A{}
-		for _, v := range categories {
-			i, err := strconv.Atoi(v)
-			if err == nil {
-				a = append(a, i)
-			}
-		}
-
-		filter = append(filter, bson.E{Key: "categories", Value: bson.M{"$in": a}})
+		filters = append(filters, elastic.NewTermsQuery("categories", categories...))
 	}
 
-	// Platforms
-	platforms := query.GetSearchSlice("platforms")
+	platforms := query.GetSearchSliceInterface("platforms")
 	if len(platforms) > 0 {
-
-		a := bson.A{}
-		for _, v := range platforms {
-			a = append(a, v)
-		}
-
-		filter = append(filter, bson.E{Key: "platforms", Value: bson.M{"$in": a}})
+		filters = append(filters, elastic.NewTermsQuery("platforms", platforms...))
 	}
 
-	// Price range
 	prices := query.GetSearchSlice("price")
-	if len(prices) == 2 {
+	if len(prices) == 2 && false {
+
+		lowCheck, highCheck := false, false
+
+		q := elastic.NewRangeQuery("prices." + string(code) + ".final")
 
 		low, err := strconv.Atoi(strings.Replace(prices[0], ".", "", 1))
 		log.Err(err, r)
+		if err == nil && low > 0 {
+			lowCheck = true
+			q.From(low)
+		}
 
 		high, err := strconv.Atoi(strings.Replace(prices[1], ".", "", 1))
 		log.Err(err, r)
-
-		var column = "prices." + string(code) + ".final"
-
-		if low > 0 {
-			filter = append(filter, bson.E{Key: column, Value: bson.M{"$gte": low}})
+		if err == nil && high < 100*100 {
+			highCheck = true
+			q.To(high)
 		}
-		if high < 100*100 {
-			filter = append(filter, bson.E{Key: column, Value: bson.M{"$lte": high}})
+
+		if lowCheck || highCheck {
+			filters = append(filters, elastic.NewNestedQuery("prices."+string(code), q))
 		}
 	}
 
-	// Score range
 	scores := query.GetSearchSlice("score")
 	if len(scores) == 2 {
 
+		lowCheck, highCheck := false, false
+
+		q := elastic.NewRangeQuery("score")
+
 		low, err := strconv.Atoi(strings.TrimSuffix(scores[0], ".00"))
 		log.Err(err, r)
+		if err == nil && low > 0 {
+			lowCheck = true
+			q.From(low)
+		}
 
 		high, err := strconv.Atoi(strings.TrimSuffix(scores[1], ".00"))
 		log.Err(err, r)
-
-		if low > 0 {
-			filter = append(filter, bson.E{Key: "reviews_score", Value: bson.M{"$gte": low}})
-		}
-		if high < 100 {
-			filter = append(filter, bson.E{Key: "reviews_score", Value: bson.M{"$lte": high}})
-		}
-	}
-
-	// Search
-	search := query.GetSearchString("search")
-	if search != "" {
-
-		if !strings.Contains(search, `"`) {
-			search = regexp.MustCompile(`([^\s]+)`).ReplaceAllString(search, `"$1"`) // Add quotes to all words
+		if err == nil && high < 100 {
+			highCheck = true
+			q.To(high)
 		}
 
-		filter = append(filter, bson.E{Key: "$text", Value: bson.M{"$search": search}})
+		if lowCheck || highCheck {
+			filters = append(filters, q)
+		}
 	}
 
 	// Get apps
-	var apps []mongo.App
-	wg.Add(1)
-	go func() {
-
-		defer wg.Done()
-
-		cols := map[string]string{
-			"2": "player_peak_week",
-			"3": "group_followers",
-			"4": "reviews_score",
-			"5": "prices." + string(code) + ".final",
-		}
-
-		projection := bson.M{"_id": 1, "name": 1, "icon": 1, "reviews_score": 1, "prices": 1, "player_peak_week": 1, "group_followers": 1}
-		order := query.GetOrderMongo(cols)
-		offset := query.GetOffset64()
-
-		var err error
-		apps, err = mongo.GetApps(offset, 100, order, filter, projection)
-		if err != nil {
-			log.Err(err, r)
-		}
-	}()
-
-	// Get filtered count
+	var apps []elasticsearch.App
 	var recordsFiltered int64
 	wg.Add(1)
 	go func() {
 
 		defer wg.Done()
 
+		cols := map[string]string{
+			"2": "players",
+			"3": "followers",
+			"4": "score",
+			"5": "prices." + string(code) + ".final",
+		}
+
+		order := query.GetOrderElastic(cols)
+		search := query.GetSearchString("search")
+
 		var err error
-		countLock.Lock()
-		recordsFiltered, err = mongo.CountDocuments(mongo.CollectionApps, filter, 10)
-		countLock.Unlock()
+		apps, recordsFiltered, err = elasticsearch.SearchAppsAdvanced(query.GetOffset(), search, order, filters)
 		if err != nil {
 			log.Err(err, r)
 		}
@@ -417,9 +339,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		countLock.Lock()
 		count, err = mongo.CountDocuments(mongo.CollectionApps, nil, 0)
-		countLock.Unlock()
 		if err != nil {
 			log.Err(err, r)
 		}
@@ -431,20 +351,20 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var response = datatable.NewDataTablesResponse(r, query, count, recordsFiltered, nil)
 	for k, app := range apps {
 
-		var formattedReviewScore = helpers.RoundFloatTo2DP(app.ReviewsScore)
+		var formattedReviewScore = helpers.RoundFloatTo2DP(app.ReviewScore)
 
 		response.AddRow([]interface{}{
 			app.ID,                          // 0
 			app.GetName(),                   // 1
 			app.GetIcon(),                   // 2
 			app.GetPath(),                   // 3
-			app.GetType(),                   // 4
+			nil,                             // 4
 			formattedReviewScore,            // 5
 			app.Prices.Get(code).GetFinal(), // 6
-			app.PlayerPeakWeek,              // 7
+			app.PlayersCount,                // 7
 			app.GetStoreLink(),              // 8
 			query.GetOffset() + k + 1,       // 9
-			app.GroupFollowers,              // 10
+			app.FollowersCount,              // 10
 		})
 	}
 

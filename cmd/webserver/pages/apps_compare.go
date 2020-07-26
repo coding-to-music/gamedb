@@ -166,7 +166,7 @@ func compareSearchAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	if search != "" {
 
-		apps, _, _, err := elasticsearch.SearchApps(limit, 0, search, false, false, false)
+		apps, err := elasticsearch.SearchAppsSimple(limit, search)
 		if err != nil {
 			log.Err(err, r)
 			return

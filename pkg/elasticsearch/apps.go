@@ -53,35 +53,49 @@ func (app App) GetCommunityLink() string {
 	return helpers.GetAppCommunityLink(app.ID)
 }
 
-func SearchApps(limit int, offset int, search string, totals bool, highlights bool, aggregation bool) (apps []App, aggregations map[string]map[string]int64, total int64, err error) {
+func (app App) GetStoreLink() string {
+	return helpers.GetAppStoreLink(app.ID)
+}
+
+func SearchAppsSimple(limit int, search string) (apps []App, err error) {
+
+	apps, _, err = searchApps(limit, 0, search, false, false, nil, nil)
+	return apps, err
+}
+
+func SearchAppsAdvanced(offset int, search string, sorters []elastic.Sorter, filters []elastic.Query) (apps []App, total int64, err error) {
+
+	return searchApps(100, offset, search, true, true, sorters, filters)
+}
+
+func searchApps(limit int, offset int, search string, totals bool, highlights bool, sorters []elastic.Sorter, filters []elastic.Query) (apps []App, total int64, err error) {
 
 	client, ctx, err := GetElastic()
 	if err != nil {
-		return apps, aggregations, 0, err
+		return apps, 0, err
 	}
 
 	searchService := client.Search().
 		Index(IndexApps).
 		From(offset).
-		Size(limit)
+		Size(limit).SortBy(sorters...)
+
+	boolQuery := elastic.NewBoolQuery().Filter(filters...)
 
 	if search != "" {
 
 		var search2 = helpers.RegexNonAlphaNumeric.ReplaceAllString(search, "")
 
-		searchService.Query(elastic.NewBoolQuery().
-			Must(
-				elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
-					elastic.NewTermQuery("id", search2).Boost(5),
-					elastic.NewMatchQuery("name", search).Boost(1),
-					elastic.NewTermQuery("aliases", search2).Boost(1),
-					elastic.NewPrefixQuery("name", search).Boost(0.2),
-				),
-			).
-			Should(
-				elastic.NewFunctionScoreQuery().
-					AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("players").Factor(0.005)),
+		boolQuery.Must(
+			elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
+				elastic.NewTermQuery("id", search2).Boost(5),
+				elastic.NewMatchQuery("name", search).Boost(1),
+				elastic.NewTermQuery("aliases", search2).Boost(1),
+				elastic.NewPrefixQuery("name", search).Boost(0.2),
 			),
+		).Should(
+			elastic.NewFunctionScoreQuery().
+				AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("players").Factor(0.005)),
 		)
 
 		if highlights {
@@ -89,9 +103,7 @@ func SearchApps(limit int, offset int, search string, totals bool, highlights bo
 		}
 	}
 
-	if aggregation {
-		searchService.Aggregation("type", elastic.NewTermsAggregation().Field("type").Size(10).OrderByCountDesc())
-	}
+	searchService.Query(boolQuery)
 
 	if totals {
 		searchService.TrackTotalHits(true)
@@ -99,20 +111,7 @@ func SearchApps(limit int, offset int, search string, totals bool, highlights bo
 
 	searchResult, err := searchService.Do(ctx)
 	if err != nil {
-		return apps, aggregations, 0, err
-	}
-
-	if aggregation {
-		aggregations = make(map[string]map[string]int64, len(searchResult.Aggregations))
-		for k := range searchResult.Aggregations {
-			a, ok := searchResult.Aggregations.Terms(k)
-			if ok {
-				aggregations[k] = make(map[string]int64, len(a.Buckets))
-				for _, v := range a.Buckets {
-					aggregations[k][*v.KeyAsString] = v.DocCount
-				}
-			}
-		}
+		return apps, 0, err
 	}
 
 	for _, hit := range searchResult.Hits.Hits {
@@ -130,7 +129,6 @@ func SearchApps(limit int, offset int, search string, totals bool, highlights bo
 		}
 
 		if highlights {
-
 			app.NameMarked = app.Name
 			if val, ok := hit.Highlight["name"]; ok {
 				if len(val) > 0 {
@@ -142,7 +140,7 @@ func SearchApps(limit int, offset int, search string, totals bool, highlights bo
 		apps = append(apps, app)
 	}
 
-	return apps, aggregations, searchResult.TotalHits(), err
+	return apps, searchResult.TotalHits(), err
 }
 
 func IndexApp(a App) error {
@@ -189,7 +187,7 @@ func DeleteAndRebuildAppsIndex() {
 				"release_date":        fieldTypeInt64,
 				"score":               fieldTypeFloat16,
 				"tags":                fieldTypeKeyword,
-				"type":                fieldTypeFloat32,
+				"type":                fieldTypeKeyword,
 				"trend":               fieldTypeKeyword,
 				"wishlist_avg":        fieldTypeFloat32,
 				"wishlist_count":      fieldTypeInt32,

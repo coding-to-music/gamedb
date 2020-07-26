@@ -93,6 +93,23 @@ func (q DataTablesQuery) GetSearchSlice(k string) (search []string) {
 	return search
 }
 
+func (q DataTablesQuery) GetSearchSliceInterface(k string) (search []interface{}) {
+
+	if val, ok := q.Search[k]; ok {
+		if val != "" {
+
+			if val, ok := val.([]interface{}); ok {
+				search = val
+				if len(search) > 10 {
+					search = search[0:10]
+				}
+			}
+		}
+	}
+
+	return search
+}
+
 func (q DataTablesQuery) GetOrderSQL(columns map[string]string) (order string) {
 
 	var orders []string
