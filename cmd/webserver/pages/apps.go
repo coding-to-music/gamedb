@@ -255,7 +255,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	prices := query.GetSearchSlice("price")
-	if len(prices) == 2 && false {
+	if len(prices) == 2 {
 
 		lowCheck, highCheck := false, false
 
@@ -276,7 +276,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if lowCheck || highCheck {
-			filters = append(filters, elastic.NewNestedQuery("prices."+string(code), q))
+			filters = append(filters, q)
 		}
 	}
 
