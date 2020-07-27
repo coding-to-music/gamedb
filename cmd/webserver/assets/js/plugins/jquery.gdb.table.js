@@ -343,16 +343,18 @@
 
                         $field.on('change search', function (e) {
 
+                            let value = getFieldValue($field);
+
                             const colToSortBy = $field.attr('data-col-sort');
                             if (colToSortBy) {
-                                dt.order([parseInt(colToSortBy), 'desc']);
-                            }
-
-                            let value;
-                            if ($field.attr('type') === 'radio') {
-                                value = $field.filter(':checked').val();
-                            } else {
-                                value = $field.val();
+                                if (value) {
+                                    if (dt.order()[0][0] !== parseInt(colToSortBy)) {
+                                        parent.sortBeforeSearch = dt.order();
+                                    }
+                                    dt.order([parseInt(colToSortBy), 'desc']);
+                                } else {
+                                    dt.order(parent.sortBeforeSearch);
+                                }
                             }
 
                             if ($field.attr('data-hightlight')) {
@@ -384,16 +386,18 @@
 
                     $field.on('keyup search', function (e) {
 
+                        let value = getFieldValue($field);
+
                         const colToSortBy = $field.attr('data-col-sort');
                         if (colToSortBy) {
-                            dt.order([parseInt(colToSortBy), 'desc']);
-                        }
-
-                        let value;
-                        if ($field.attr('type') === 'radio') {
-                            value = $field.filter(':checked').val();
-                        } else {
-                            value = $field.val();
+                            if (value) {
+                                if (dt.order()[0][0] !== parseInt(colToSortBy)) {
+                                    parent.sortBeforeSearch = dt.order();
+                                }
+                                dt.order([parseInt(colToSortBy), 'desc']);
+                            } else {
+                                dt.order(parent.sortBeforeSearch);
+                            }
                         }
 
                         if ($field.attr('data-hightlight')) {
