@@ -39,6 +39,20 @@ func playersGroupsHandler(messages []*rabbit.Message) {
 			continue
 		}
 
+		// Websocket
+		defer func() {
+
+			wsPayload := PlayerPayload{
+				ID:    strconv.FormatInt(payload.PlayerID, 10),
+				Queue: "group",
+			}
+
+			err = ProduceWebsocket(wsPayload, websockets.PagePlayer)
+			if err != nil {
+				log.Err(err, message.Message.Body)
+			}
+		}()
+
 		// Old groups
 		oldGroupsSlice, err := mongo.GetPlayerGroups(payload.PlayerID, 0, 0, nil)
 		if err != nil {
@@ -161,19 +175,6 @@ func playersGroupsHandler(messages []*rabbit.Message) {
 		}
 
 		err = memcache.Delete(items...)
-		if err != nil {
-			log.Err(err, message.Message.Body)
-			sendToRetryQueue(message)
-			continue
-		}
-
-		// Websocket
-		wsPayload := PlayerPayload{
-			ID:    strconv.FormatInt(payload.PlayerID, 10),
-			Queue: "group",
-		}
-
-		err = ProduceWebsocket(wsPayload, websockets.PagePlayer)
 		if err != nil {
 			log.Err(err, message.Message.Body)
 			sendToRetryQueue(message)

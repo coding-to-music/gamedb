@@ -36,6 +36,20 @@ func playerAliasesHandler(messages []*rabbit.Message) {
 			continue
 		}
 
+		// Websocket
+		defer func() {
+
+			wsPayload := PlayerPayload{
+				ID:    strconv.FormatInt(payload.PlayerID, 10),
+				Queue: "alias",
+			}
+
+			err = ProduceWebsocket(wsPayload, websockets.PagePlayer)
+			if err != nil {
+				log.Err(err, message.Message.Body)
+			}
+		}()
+
 		aliases, err := steam.GetSteam().GetAliases(payload.PlayerID)
 		if err == steamapi.ErrProfileMissing {
 			message.Ack(false)
@@ -95,19 +109,6 @@ func playerAliasesHandler(messages []*rabbit.Message) {
 		err = memcache.Delete(memcache.MemcachePlayer(payload.PlayerID).Key)
 		if err != nil {
 			log.Err(err, payload.PlayerID)
-			sendToRetryQueue(message)
-			continue
-		}
-
-		// Websocket
-		wsPayload := PlayerPayload{
-			ID:    strconv.FormatInt(payload.PlayerID, 10),
-			Queue: "alias",
-		}
-
-		err = ProduceWebsocket(wsPayload, websockets.PagePlayer)
-		if err != nil {
-			log.Err(err, message.Message.Body)
 			sendToRetryQueue(message)
 			continue
 		}

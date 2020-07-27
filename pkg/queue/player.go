@@ -84,6 +84,25 @@ func playerHandler(messages []*rabbit.Message) {
 
 		player.ID = payload.ID
 
+		// Websocket
+		defer func() {
+
+			wsPayload := PlayerPayload{
+				ID:        strconv.FormatInt(player.ID, 10),
+				Name:      player.GetName(),
+				Link:      player.GetPath(),
+				Avatar:    player.GetAvatar(),
+				UpdatedAt: time.Now().Unix(),
+				Queue:     "player",
+			}
+
+			err = ProduceWebsocket(wsPayload, websockets.PagePlayer)
+			if err != nil {
+				log.Err(err, payload.ID)
+			}
+		}()
+
+		// Skip removed players
 		if player.Removed {
 			message.Ack(false)
 			continue
@@ -297,27 +316,6 @@ func playerHandler(messages []*rabbit.Message) {
 				log.Err(err, payload.ID)
 				sendToRetryQueue(message)
 				return
-			}
-		}()
-
-		// Websocket
-		wg.Add(1)
-		go func() {
-
-			defer wg.Done()
-
-			wsPayload := PlayerPayload{
-				ID:        strconv.FormatInt(player.ID, 10),
-				Name:      player.GetName(),
-				Link:      player.GetPath(),
-				Avatar:    player.GetAvatar(),
-				UpdatedAt: time.Now().Unix(),
-				Queue:     "player",
-			}
-
-			err = ProduceWebsocket(wsPayload, websockets.PagePlayer)
-			if err != nil {
-				log.Err(err, payload.ID)
 			}
 		}()
 

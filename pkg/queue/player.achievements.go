@@ -40,6 +40,20 @@ func playerAchievementsHandler(messages []*rabbit.Message) {
 
 			<-time.NewTimer(time.Second * 5).C // Sleep to make sure all other messages are consumed
 
+			// Websocket
+			defer func() {
+
+				wsPayload := PlayerPayload{
+					ID:    strconv.FormatInt(payload.PlayerID, 10),
+					Queue: "achievement",
+				}
+
+				err = ProduceWebsocket(wsPayload, websockets.PagePlayer)
+				if err != nil {
+					log.Err(err, message.Message.Body)
+				}
+			}()
+
 			// Total achievements
 			count, err := mongo.CountDocuments(mongo.CollectionPlayerAchievements, bson.D{{"player_id", payload.PlayerID}}, 0)
 			if err != nil {
@@ -83,19 +97,6 @@ func playerAchievementsHandler(messages []*rabbit.Message) {
 			}
 
 			err = memcache.Delete(items...)
-			if err != nil {
-				log.Err(err, message.Message.Body)
-				sendToRetryQueue(message)
-				continue
-			}
-
-			// Websocket
-			wsPayload := PlayerPayload{
-				ID:    strconv.FormatInt(payload.PlayerID, 10),
-				Queue: "achievement",
-			}
-
-			err = ProduceWebsocket(wsPayload, websockets.PagePlayer)
 			if err != nil {
 				log.Err(err, message.Message.Body)
 				sendToRetryQueue(message)
