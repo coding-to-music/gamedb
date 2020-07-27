@@ -52,7 +52,7 @@ if ($appsAchievementsPage.length > 0) {
                 "targets": 4,
                 "render": function (data, type, row) {
                     if (isIterable(row[7])) {
-                        return json2html.transform(row[7], {'<>': 'img', 'src': '', 'data-lazy': '${icon}', 'data-lazy-alt': '${name}', 'class': 'mr-1', 'data-toggle': 'tooltip', 'data-placement': 'top', 'data-lazy-title': '${name}'});
+                        return json2html.transform(row[7], {'<>': 'img', 'src': '', 'data-lazy': '${k}', 'data-lazy-alt': '${v}', 'class': 'mr-1', 'data-toggle': 'tooltip', 'data-placement': 'top', 'data-lazy-title': '${v}'});
                     }
                     return '';
                 },
