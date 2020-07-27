@@ -72,7 +72,6 @@ if ($appsComparePage.length > 0) {
             "order": [[0, 'asc']],
             "createdRow": function (row, data, dataIndex) {
                 $(row).attr('data-app-id', data[1]);
-                $(row).attr('data-link', data[4]);
             },
             "columnDefs": [
                 // Icon / App Name
