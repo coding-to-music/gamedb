@@ -636,6 +636,30 @@ func CreateAppIndexes() {
 	log.Err(err)
 }
 
+func BatchApps(filter bson.D, projection bson.M, callback func(apps []App)) (err error) {
+
+	var offset int64 = 0
+	var limit int64 = 10_000
+
+	for {
+
+		apps, err := GetApps(offset, limit, bson.D{{"_id", 1}}, filter, projection)
+		if err != nil {
+			return err
+		}
+
+		callback(apps)
+
+		if int64(len(apps)) != limit {
+			break
+		}
+
+		offset += limit
+	}
+
+	return nil
+}
+
 func GetApp(id int, full ...bool) (app App, err error) {
 
 	if !helpers.IsValidAppID(id) {

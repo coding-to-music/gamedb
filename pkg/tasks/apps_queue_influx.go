@@ -2,6 +2,7 @@ package tasks
 
 import (
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
@@ -29,15 +30,9 @@ func (c AppsQueueInflux) Cron() string {
 
 func (c AppsQueueInflux) work() (err error) {
 
-	var offset int64 = 0
-	var limit int64 = 10_000
+	var projection = bson.M{"_id": 1}
 
-	for {
-
-		apps, err := mongo.GetApps(offset, limit, bson.D{{"_id", 1}}, nil, bson.M{"_id": 1})
-		if err != nil {
-			return err
-		}
+	return mongo.BatchApps(nil, projection, func(apps []mongo.App) {
 
 		var ids []int
 		for _, v := range apps {
@@ -49,16 +44,9 @@ func (c AppsQueueInflux) work() (err error) {
 		for _, chunk := range chunks {
 			err = queue.ProduceAppsInflux(chunk)
 			if err != nil {
-				return err
+				log.Err(err)
+				return
 			}
 		}
-
-		if int64(len(apps)) != limit {
-			break
-		}
-
-		offset += limit
-	}
-
-	return nil
+	})
 }

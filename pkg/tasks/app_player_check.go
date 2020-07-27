@@ -3,6 +3,7 @@ package tasks
 import (
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/rabbitweb"
@@ -47,17 +48,10 @@ func (c AppsPlayerCheck) work() (err error) {
 		}
 	}
 
-	// Add apps to queue
-	var offset int64 = 0
-	var limit int64 = 10_000
 	var filter = bson.D{{"player_peak_week", bson.M{"$lt": topAppPlayers}}}
+	var projection = bson.M{"_id": 1}
 
-	for {
-
-		apps, err := mongo.GetApps(offset, limit, bson.D{{"_id", 1}}, filter, bson.M{"_id": 1})
-		if err != nil {
-			return err
-		}
+	return mongo.BatchApps(filter, projection, func(apps []mongo.App) {
 
 		var ids []int
 		for _, v := range apps {
@@ -71,16 +65,9 @@ func (c AppsPlayerCheck) work() (err error) {
 		for _, chunk := range chunks {
 			err = queue.ProduceAppPlayers(chunk)
 			if err != nil {
-				return err
+				log.Err(err)
+				return
 			}
 		}
-
-		if int64(len(apps)) != limit {
-			break
-		}
-
-		offset += limit
-	}
-
-	return nil
+	})
 }

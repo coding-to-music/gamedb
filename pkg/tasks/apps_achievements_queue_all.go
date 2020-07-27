@@ -1,6 +1,7 @@
 package tasks
 
 import (
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
@@ -28,32 +29,17 @@ func (c AppsAchievementsQueueAll) Cron() string {
 
 func (c AppsAchievementsQueueAll) work() (err error) {
 
-	var offset int64 = 0
-	var limit int64 = 10_000
+	var projection = bson.M{"_id": 1, "name": 1, "owners": 1}
 
-	for {
-
-		var projection = bson.M{"_id": 1, "name": 1, "owners": 1}
-
-		apps, err := mongo.GetApps(offset, limit, bson.D{{"_id", 1}}, nil, projection)
-		if err != nil {
-			return err
-		}
+	return mongo.BatchApps(nil, projection, func(apps []mongo.App) {
 
 		for _, app := range apps {
 
 			err = queue.ProduceAppAchievement(app.ID, app.Name, app.Owners)
 			if err != nil {
-				return err
+				log.Err(err)
+				return
 			}
 		}
-
-		if int64(len(apps)) != limit {
-			break
-		}
-
-		offset += limit
-	}
-
-	return nil
+	})
 }
