@@ -71,6 +71,15 @@ var PlayerRankFieldsInflux = map[RankMetric]string{
 	RankKeyAchievements: "achievements_rank",
 }
 
+const (
+	PrivacyState            helpers.Bits = 1 << iota // Friends list, badges, Steam Level, showcases, comments, and group membership.
+	PrivacyStateInventory                            // Items you've received in games that use Steam Trading. It also includes any Steam Trading Cards you've collected and extra copies or Steam Gifts.
+	PrivacyStateGifts                                // Always keep Steam Gifts private even if users can see my inventory.
+	PrivacyStateOwnedgames                           // The list of all games on your Steam account, games you’ve wishlisted, your achievements and your playtime.
+	PrivacyStatePlaytime                             // Always keep my total playtime private even if users can see my game details.
+	PrivacyStateFriendslist                          // This controls who can see your list of friends on your Steam Community profile.
+)
+
 type Player struct {
 	AchievementCount         int                        `bson:"achievement_count"`      // Number of achievements
 	AchievementCount100      int                        `bson:"achievement_count_100"`  // Number of 100% games
@@ -95,6 +104,7 @@ type Player struct {
 	Level                    int                        `bson:"level"`
 	NumberOfGameBans         int                        `bson:"bans_game"`
 	NumberOfVACBans          int                        `bson:"bans_cav"`
+	Permissions              helpers.Bits               `bson:"permissions"`
 	PersonaName              string                     `bson:"persona_name"`
 	PlayTime                 int                        `bson:"play_time"`
 	PlayTimeWindows          int                        `bson:"play_time_windows"`
