@@ -50,7 +50,8 @@ func appSteamspyHandler(messages []*rabbit.Message) {
 		if err != nil {
 
 			if strings.Contains(err.Error(), "Client.Timeout exceeded while awaiting headers") ||
-				strings.Contains(err.Error(), "read: connection reset by peer") {
+				strings.Contains(err.Error(), "read: connection reset by peer") ||
+				strings.Contains(err.Error(), "connect: cannot assign requested address") {
 				log.Info(err, payload.ID)
 			} else {
 				log.Err(err, payload.ID)
