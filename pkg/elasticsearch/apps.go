@@ -93,9 +93,9 @@ func searchApps(limit int, offset int, search string, totals bool, highlights bo
 		boolQuery.Must(
 			elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
 				elastic.NewTermQuery("id", search2).Boost(5),
-				elastic.NewMatchQuery("name", search).Boost(1),
 				elastic.NewTermQuery("aliases", search2).Boost(1.5),
-				elastic.NewPrefixQuery("name", search).Boost(0.2),
+				elastic.NewMatchQuery("name", search).Boost(1),
+				elastic.NewPrefixQuery("name", search).Boost(0.5),
 			),
 		).Should(
 			elastic.NewFunctionScoreQuery().
