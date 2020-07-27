@@ -77,7 +77,7 @@ if ($('#apps-page').length > 0) {
                 {
                     "targets": 1,
                     "render": function (data, type, row) {
-                        return '<a href="' + row[3] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[2] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></a>'
+                        return '<a href="' + row[3] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[2] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[12] + '</div></a>'
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');

@@ -366,6 +366,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			query.GetOffset() + k + 1,       // 9
 			app.FollowersCount,              // 10
 			app.Score,                       // 11
+			app.GetMarkedName(),             // 12
 		})
 	}
 

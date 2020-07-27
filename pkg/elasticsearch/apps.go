@@ -41,6 +41,10 @@ func (app App) GetName() string {
 	return helpers.GetAppName(app.ID, app.Name)
 }
 
+func (app App) GetMarkedName() string {
+	return helpers.GetAppName(app.ID, app.NameMarked)
+}
+
 func (app App) GetIcon() string {
 	return helpers.GetAppIcon(app.ID, app.Icon)
 }
