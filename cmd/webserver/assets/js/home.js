@@ -60,30 +60,32 @@ if ($homePage.length > 0) {
 
         let lastPlayerId = 0;
         const $tbody = $('#updated-players tbody');
-        const schema = {
-            '<>': 'tr', 'data-app-id': '${id}', 'data-link': '${link}', 'html': [
-                {
-                    '<>': 'td', 'class': 'img', 'html': [
-                        {
-                            '<>': 'a', 'href': '${link}', 'class': 'icon-name', 'html': [
-                                {
-                                    '<>': 'div', 'class': 'icon', 'html': [{'<>': 'img', 'data-lazy': '${avatar}', 'alt': '', 'data-lazy-alt': '${name}'}],
-                                },
-                                {
-                                    '<>': 'div', 'class': 'name', 'html': '${name}',
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    '<>': 'td', 'nowrap': 'nowrap', 'html': [
-                        {
-                            '<>': 'span', 'data-livestamp': '${updated_at}', 'text': 'a few seconds ago',
-                        }
-                    ],
-                },
-            ]
+        const schema = function (fade) {
+            return {
+                '<>': 'tr', 'class': (fade ? 'fade-green' : ''), 'data-app-id': '${id}', 'data-link': '${link}', 'html': [
+                    {
+                        '<>': 'td', 'class': 'img', 'html': [
+                            {
+                                '<>': 'a', 'href': '${link}', 'class': 'icon-name', 'html': [
+                                    {
+                                        '<>': 'div', 'class': 'icon', 'html': [{'<>': 'img', 'data-lazy': '${avatar}', 'alt': '', 'data-lazy-alt': '${name}'}],
+                                    },
+                                    {
+                                        '<>': 'div', 'class': 'name', 'html': '${name}',
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        '<>': 'td', 'nowrap': 'nowrap', 'html': [
+                            {
+                                '<>': 'span', 'data-livestamp': '${updated_at}', 'text': 'a few seconds ago',
+                            }
+                        ],
+                    },
+                ]
+            }
         };
 
         $.ajax({
@@ -94,7 +96,7 @@ if ($homePage.length > 0) {
 
                 if (isIterable(data)) {
                     $tbody.find('tr').remove();
-                    $tbody.json2html(data, schema, {prepend: false});
+                    $tbody.json2html(data, schema(false), {prepend: false});
                     observeLazyImages($tbody.find('img[data-lazy]'));
                 }
 
@@ -106,7 +108,7 @@ if ($homePage.length > 0) {
             const data = JSON.parse(e.data);
             if (data.Data['queue'] === 'player' && data.Data['id'] !== lastPlayerId) {
                 lastPlayerId = data.Data['id'];
-                $tbody.json2html([data.Data], schema, {prepend: true});
+                $tbody.json2html([data.Data], schema(true), {prepend: true});
                 $tbody.find('tr').slice(10).remove();
                 observeLazyImages($tbody.find('img[data-lazy]'));
             }
