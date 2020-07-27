@@ -333,10 +333,12 @@ func playerHandler(messages []*rabbit.Message) {
 		}
 
 		if !player.Removed {
-			produces = append(produces,
-				PlayersAliasesMessage{PlayerID: player.ID},
-				PlayersGroupsMessage{PlayerID: player.ID, PlayerPersonaName: player.PersonaName, PlayerAvatar: player.Avatar, SkipPlayerGroups: payload.SkipPlayerGroups, SkipGroupUpdate: payload.SkipGroupUpdate, UserAgent: payload.UserAgent},
-			)
+
+			produces = append(produces, PlayersAliasesMessage{PlayerID: player.ID})
+
+			if !payload.SkipGroupUpdate {
+				produces = append(produces, PlayersGroupsMessage{PlayerID: player.ID, PlayerPersonaName: player.PersonaName, PlayerAvatar: player.Avatar, SkipGroupUpdate: payload.SkipGroupUpdate, UserAgent: payload.UserAgent})
+			}
 		}
 
 		for _, v := range produces {

@@ -18,7 +18,6 @@ type PlayersGroupsMessage struct {
 	PlayerID          int64   `json:"player_id"`
 	PlayerPersonaName string  `json:"player_persona_name"`
 	PlayerAvatar      string  `json:"player_avatar"`
-	SkipPlayerGroups  bool    `json:"skip_groups"`
 	SkipGroupUpdate   bool    `json:"skip_group"`
 	UserAgent         *string `json:"user_agent"`
 }
@@ -37,11 +36,6 @@ func playersGroupsHandler(messages []*rabbit.Message) {
 		if err != nil {
 			log.Err(err, message.Message.Body)
 			sendToFailQueue(message)
-			continue
-		}
-
-		if payload.SkipPlayerGroups {
-			message.Ack(false)
 			continue
 		}
 

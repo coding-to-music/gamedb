@@ -588,7 +588,6 @@ func ProducePlayerGroup(playerID int64, playerPersonaName string, playerAvatar s
 		PlayerPersonaName: playerPersonaName,
 		PlayerAvatar:      playerAvatar,
 		SkipGroupUpdate:   skipGroupUpdate,
-		SkipPlayerGroups:  false,
 	})
 }
 
