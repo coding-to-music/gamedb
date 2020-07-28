@@ -290,7 +290,8 @@ func statsClientPlayersHandler(w http.ResponseWriter, r *http.Request) {
 	builder.AddWhere("time", ">", "NOW() - 7d")
 	builder.AddWhere("app_id", "=", "0")
 	builder.AddGroupByTime("30m")
-	builder.SetFillNone()
+	builder.SetFillNumber(0)
+
 	resp, err := influx.InfluxQuery(builder.String())
 	if err != nil {
 		log.Err(err, r, builder.String())
@@ -317,7 +318,8 @@ func statsClientPlayers2Handler(w http.ResponseWriter, r *http.Request) {
 	builder.AddWhere("time", ">", "2019-05-04") // Bad data befoe this
 	builder.AddWhere("app_id", "=", "0")
 	builder.AddGroupByTime("1d")
-	builder.SetFillNone()
+	builder.SetFillNumber(0)
+
 	resp, err := influx.InfluxQuery(builder.String())
 	if err != nil {
 		log.Err(err, r, builder.String())

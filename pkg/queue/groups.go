@@ -487,7 +487,7 @@ func getGroupTrending(group mongo.Group) (trend float64, err error) {
 	builder.AddWhere("time", ">", "NOW() - 28d")
 	builder.AddWhere("group_id", "=", group.ID)
 	builder.AddGroupByTime("1d")
-	builder.SetFillNone()
+	builder.SetFillNumber(0)
 
 	return influxHelper.GetInfluxTrendFromResponse(builder, 28)
 }

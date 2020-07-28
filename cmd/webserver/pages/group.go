@@ -233,7 +233,7 @@ func groupAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		builder.AddWhere("group_id", "=", id)
 		// builder.AddWhere("time", ">", "now()-365d")
 		builder.AddGroupByTime("1d")
-		builder.SetFillNone()
+		builder.SetFillNumber(0)
 
 		resp, err := influx.InfluxQuery(builder.String())
 		if err != nil {

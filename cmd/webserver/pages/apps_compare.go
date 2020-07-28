@@ -275,7 +275,7 @@ func appsComparePlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	builder.AddWhereRaw(`"app_id" =~ /^(` + strings.Join(ids, "|") + `)$/`)
 	builder.AddGroupByTime("10m")
 	builder.AddGroupBy("app_id")
-	builder.SetFillNone()
+	builder.SetFillNumber(0)
 
 	resp, err := influx.InfluxQuery(builder.String())
 	if err != nil {
@@ -315,7 +315,7 @@ func appsComparePlayers2AjaxHandler(w http.ResponseWriter, r *http.Request) {
 	builder.AddWhereRaw(`"app_id" =~ /^(` + strings.Join(ids, "|") + `)$/`)
 	builder.AddGroupByTime("1d")
 	builder.AddGroupBy("app_id")
-	builder.SetFillNone()
+	builder.SetFillNumber(0)
 
 	resp, err := influx.InfluxQuery(builder.String())
 	if err != nil {
@@ -355,7 +355,7 @@ func appsCompareWishlistHandler(w http.ResponseWriter, r *http.Request) {
 	builder.AddWhereRaw(`"app_id" =~ /^(` + strings.Join(ids, "|") + `)$/`)
 	builder.AddGroupByTime("1d")
 	builder.AddGroupBy("app_id")
-	builder.SetFillNone()
+	builder.SetFillNumber(0)
 
 	resp, err := influx.InfluxQuery(builder.String())
 	if err != nil {
@@ -395,7 +395,7 @@ func appsCompareScoresHandler(w http.ResponseWriter, r *http.Request) {
 	builder.AddWhereRaw(`"app_id" =~ /^(` + strings.Join(ids, "|") + `)$/`)
 	builder.AddGroupByTime("1d")
 	builder.AddGroupBy("app_id")
-	builder.SetFillNone()
+	builder.SetFillNumber(0)
 
 	resp, err := influx.InfluxQuery(builder.String())
 	if err != nil {
@@ -445,7 +445,7 @@ func appsCompareGroupsHandler(w http.ResponseWriter, r *http.Request) {
 	builder.AddWhereRaw(`"group_id" =~ /^(` + strings.Join(ids, "|") + `)$/`)
 	builder.AddGroupByTime("1d")
 	builder.AddGroupBy("group_id")
-	builder.SetFillNone()
+	builder.SetFillNumber(0)
 
 	resp, err := influx.InfluxQuery(builder.String())
 	if err != nil {
