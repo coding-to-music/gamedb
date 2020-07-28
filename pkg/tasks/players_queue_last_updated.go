@@ -82,7 +82,13 @@ func (c PlayersQueueLastUpdated) work() (err error) {
 
 	for _, player := range players {
 
-		err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID, SkipPlayerGroups: true, SkipAchievements: true})
+		m := queue.PlayerMessage{
+			ID:               player.ID,
+			SkipGroupUpdate:  true,
+			SkipAchievements: true,
+		}
+
+		err = queue.ProducePlayer(m)
 		err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 		if err != nil {
 			return err

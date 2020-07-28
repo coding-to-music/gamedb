@@ -26,7 +26,6 @@ import (
 
 type PlayerMessage struct {
 	ID                       int64   `json:"id"`
-	SkipPlayerGroups         bool    `json:"dont_queue_groups"`
 	SkipGroupUpdate          bool    `json:"dont_queue_group"`
 	SkipAchievements         bool    `json:"skip_achievements"`
 	SkipExistingPlayer       bool    `json:"skip_existing_player"`
