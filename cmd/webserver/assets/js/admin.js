@@ -74,29 +74,21 @@ if ($('#admin-users-page').length > 0) {
                 },
                 'orderSequence': ['desc', 'asc'],
             },
-            // Verified
+            // Email
             {
                 'targets': 1,
                 'render': function (data, type, row) {
                     if (row[2]) {
-                        return '<i class="fas fa-check"></i>';
+                        return '<i class="fas fa-check text-success fa-fw"></i> ' + row[1];
                     } else {
-                        return '<i class="fas fa-times"></i>';
+                        return '<i class="fas fa-times text-danger fa-fw"></i> ' + row[1];
                     }
-                },
-                'orderable': false,
-            },
-            // Email
-            {
-                'targets': 2,
-                'render': function (data, type, row) {
-                    return row[1];
                 },
                 'orderable': false,
             },
             // Profile
             {
-                'targets': 3,
+                'targets': 2,
                 'render': function (data, type, row) {
                     if (row[3] > 0) {
                         return '<a href="/players/' + row[3] + '">' + row[3] + '</a>';
@@ -107,7 +99,7 @@ if ($('#admin-users-page').length > 0) {
             },
             // level
             {
-                'targets': 4,
+                'targets': 3,
                 'render': function (data, type, row) {
                     if (row[4] > 1) {
                         return row[4];
