@@ -322,7 +322,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		t.Countries[k].Percent = float64(v.Count) / float64(countryTotal) * 100
 	}
 	sort.Slice(t.Countries, func(i, j int) bool {
-		return t.Countries[i].Count < t.Countries[j].Count
+		return t.Countries[i].Count > t.Countries[j].Count
 	})
 	if len(t.Countries) > 10 {
 		t.Countries = t.Countries[0:10]
