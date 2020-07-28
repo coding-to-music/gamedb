@@ -556,30 +556,57 @@ func (t *globalTemplate) addToast(toast Toast) {
 }
 
 func (t *globalTemplate) addAssetChosen() {
-	t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js", Integrity: "sha256-c4gVE6fn+JRKMRvqjoDp+tlG4laudNYrXI1GncbfAYY="})
+	t.JSFiles = append(t.JSFiles, Asset{
+		URL:       "https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js",
+		Integrity: "sha512-rMGGF4wg1R73ehtnxXBt5mbUfN9JUJwbk21KMlnLZDJh7BkPmeovBuddZCENJddHYYMkCh9hPFnPmS9sspki8g==",
+	})
 }
 
 func (t *globalTemplate) addAssetCountdown() {
-	t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/jquery.countdown/2.2.0/jquery.countdown.min.js", Integrity: "sha256-Ikk5myJowmDQaYVCUD0Wr+vIDkN8hGI58SGWdE671A8="})
+	t.JSFiles = append(t.JSFiles, Asset{
+		URL:       "https://cdnjs.cloudflare.com/ajax/libs/jquery.countdown/2.2.0/jquery.countdown.min.js",
+		Integrity: "sha512-lteuRD+aUENrZPTXWFRPTBcDDxIGWe5uu0apPEn+3ZKYDwDaEErIK9rvR0QzUGmUQ55KFE2RqGTVoZsKctGMVw==",
+	})
 }
 
 func (t *globalTemplate) addAssetJSON2HTML() {
-	t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/json2html/1.4.1/json2html.min.js", Integrity: "sha256-p1nDDwdo8QAOGc0Na5bpN1xNIXRxOZ6Pkm/7RkuGEK0="})
+	t.JSFiles = append(t.JSFiles, Asset{
+		URL:       "https://cdnjs.cloudflare.com/ajax/libs/json2html/1.4.1/json2html.min.js",
+		Integrity: "sha512-+BxFu6KT6xP5Qww4Nag8Aqan3Y1nQGw8/vV+L6s1HxvJrATT2CoW8Rkx6+PLrdFq4sXSofdSYbRZfDnUtmfG/Q==",
+	})
 }
 
 func (t *globalTemplate) addAssetHighCharts() {
-	t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/highcharts/8.1.2/highcharts.js", Integrity: "sha512-EGkUnujrfu0497MBWKtDPsmhcor1++/hT49wnF4Ji//vj3kfvwSM8nocX5hNRZgEZB5wEkGmXUc6mYXpNBynPg=="})
-	t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/highcharts/8.1.2/modules/heatmap.src.min.js", Integrity: "sha512-6LYouPFmhQ9hCS76dIm1W+FrkqF4K7oHlPm7NNlo4qESqakFJzpL5esATFAkiM3jKpNgKrx2RxWHBYze0xSZ4A=="})
-	// t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/highcharts/8.1.2/modules/data.src.min.js", Integrity: "sha512-z1smTbR5US2c8JfqaNrnC69+C0qkMQ7mn1Vi4TvtKuKt0+QHk0et5QifE9hjeeW7HL98LWHZ/zglHVDAglDpHw=="})
+	t.JSFiles = append(t.JSFiles, Asset{
+		URL:       "https://cdnjs.cloudflare.com/ajax/libs/highcharts/8.1.2/highcharts.js",
+		Integrity: "sha512-EGkUnujrfu0497MBWKtDPsmhcor1++/hT49wnF4Ji//vj3kfvwSM8nocX5hNRZgEZB5wEkGmXUc6mYXpNBynPg==",
+	})
+	t.JSFiles = append(t.JSFiles, Asset{
+		URL:       "https://cdnjs.cloudflare.com/ajax/libs/highcharts/8.1.2/modules/heatmap.src.min.js",
+		Integrity: "sha512-6LYouPFmhQ9hCS76dIm1W+FrkqF4K7oHlPm7NNlo4qESqakFJzpL5esATFAkiM3jKpNgKrx2RxWHBYze0xSZ4A==",
+	})
+	t.JSFiles = append(t.JSFiles, Asset{
+		URL:       "https://cdnjs.cloudflare.com/ajax/libs/highcharts/8.1.2/modules/data.src.min.js",
+		Integrity: "sha512-z1smTbR5US2c8JfqaNrnC69+C0qkMQ7mn1Vi4TvtKuKt0+QHk0et5QifE9hjeeW7HL98LWHZ/zglHVDAglDpHw==",
+	})
 }
 
 func (t *globalTemplate) addAssetSlider() {
-	t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.0/nouislider.min.js", Integrity: "sha512-Bqlq3MLgvOWTzDmCDFKjX+ajhLgi/D8/TQwlbJaNea1mUcX7T3e3OgrRkWtvgpbSDaHgUCC4BqRSLNvPJhOskw=="})
-	t.CSSFiles = append(t.CSSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.0/nouislider.min.css", Integrity: "sha512-6JqGSqQ++AEggYltdgSse8pKG90U/5U0bbkZoa94uSDG/BhI5YpYcy2LyWPWjXu40lUVEgEKHZ/2hCrwQvbODw=="})
+	t.JSFiles = append(t.JSFiles, Asset{
+		URL:       "https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.0/nouislider.min.js",
+		Integrity: "sha512-Bqlq3MLgvOWTzDmCDFKjX+ajhLgi/D8/TQwlbJaNea1mUcX7T3e3OgrRkWtvgpbSDaHgUCC4BqRSLNvPJhOskw==",
+	})
+	t.CSSFiles = append(t.CSSFiles, Asset{
+		URL:       "https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.0/nouislider.min.css",
+		Integrity: "sha512-6JqGSqQ++AEggYltdgSse8pKG90U/5U0bbkZoa94uSDG/BhI5YpYcy2LyWPWjXu40lUVEgEKHZ/2hCrwQvbODw==",
+	})
 }
 
 func (t *globalTemplate) addAssetPasswordStrength() {
-	t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/pwstrength-bootstrap/3.0.9/pwstrength-bootstrap.min.js", Integrity: "sha512-HvxKicgd5m5yRIotHDzL9iFZ2PK/KzyrPqLDYPboT7WQrq3q3NuG+1eWeCZgPru4Pc7fhyPF+71qRQr7mUNWCg=="})
+	t.JSFiles = append(t.JSFiles, Asset{
+		URL:       "https://cdnjs.cloudflare.com/ajax/libs/pwstrength-bootstrap/3.0.9/pwstrength-bootstrap.min.js",
+		Integrity: "sha512-HvxKicgd5m5yRIotHDzL9iFZ2PK/KzyrPqLDYPboT7WQrq3q3NuG+1eWeCZgPru4Pc7fhyPF+71qRQr7mUNWCg==",
+	})
 }
 
 func (t *globalTemplate) addAssetMark() {
