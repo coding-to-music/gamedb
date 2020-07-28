@@ -14,67 +14,14 @@ if ($('#stats-page').length > 0) {
     (function ($, window) {
         'use strict';
 
-        const config = {rootMargin: '50px 0px 50px 0px', threshold: 0};
-
-        const callback1 = function (entries, self) {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    statsAppTypes();
-                    self.unobserve(entry.target);
-                }
-            });
-        };
-        new IntersectionObserver(callback1, config).observe(document.getElementById("app-types"));
-
-        const callback2 = function (entries, self) {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    statsReleaseDates();
-                    self.unobserve(entry.target);
-                }
-            });
-        };
-        new IntersectionObserver(callback2, config).observe(document.getElementById("release-dates"));
-
-        const callback3 = function (entries, self) {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    statsPlayerLevels();
-                    self.unobserve(entry.target);
-                }
-            });
-        };
-        new IntersectionObserver(callback3, config).observe(document.getElementById("player-levels"));
-
-        const callback4 = function (entries, self) {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    statsAppScores();
-                    self.unobserve(entry.target);
-                }
-            });
-        };
-        new IntersectionObserver(callback4, config).observe(document.getElementById("scores"));
-
-        const callback5 = function (entries, self) {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    statsClientPlayers();
-                    self.unobserve(entry.target);
-                }
-            });
-        };
-        new IntersectionObserver(callback5, config).observe(document.getElementById("client-players"));
-
-        const callback6 = function (entries, self) {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    statsClientPlayers2();
-                    self.unobserve(entry.target);
-                }
-            });
-        };
-        new IntersectionObserver(callback6, config).observe(document.getElementById("client-players2"));
+        loadAjaxOnObserve({
+            "app-types": statsAppTypes,
+            "release-dates": statsReleaseDates,
+            "player-levels": statsPlayerLevels,
+            "scores": statsAppScores,
+            "client-players": statsClientPlayers,
+            "client-players2": statsClientPlayers2,
+        });
 
         //
         function statsClientPlayers() {

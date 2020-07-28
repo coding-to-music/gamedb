@@ -1,0 +1,52 @@
+{{define "stats-gamedb"}}
+    {{ template "_header" . }}
+
+    <div class="container" id="stats-page">
+
+        <div class="jumbotron">
+            <h1 class="mb-0"><i class="fas fa-chart-bar"></i> Stats</h1>
+        </div>
+
+        {{ template "_flashes" . }}
+
+        <div class="card">
+            {{ template "_stats_header" . }}
+            <div class="card-body">
+
+                <h5>Player Stats</h5>
+                <div class="row">
+                    <div class="col-12 col-sm-6 col-lg-4 col-xl-2 mb-4">
+                        <div role="button" class="btn btn-success btn-block mb-0">Total Players<br/>{{ comma64 .PlayersCount }}</div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-lg-4 col-xl-2 mb-4">
+                        <div role="button" class="btn btn-success btn-block mb-0">Player Games<br/>{{ comma64 .PlayerAppsCount }}</div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-lg-4 col-xl-2 mb-4">
+                        <div role="button" class="btn btn-success btn-block mb-0">Player Friends<br/>{{ comma64 .PlayerFriendsCount }}</div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-lg-4 col-xl-2 mb-4">
+                        <div role="button" class="btn btn-success btn-block mb-0">Player Badges<br/>{{ comma64 .PlayerBadgesCount }}</div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-lg-4 col-xl-2 mb-4">
+                        <div role="button" class="btn btn-success btn-block mb-0">Player Groups<br/>{{ comma64 .PlayerGroupsCount }}</div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-lg-4 col-xl-2 mb-4">
+                        <div role="button" class="btn btn-success btn-block mb-0">Player Achiev's<br/>{{ comma64 .PlayerAchievementsCount }}</div>
+                    </div>
+                </div>
+
+                <h5 class="clearfix">
+                    <span>Player Levels <small>(For levels below 2,000)</small></span>
+                    <small class="float-right">See <a href="/experience">Experience</a> for more!</small>
+                </h5>
+                <div class="chart" id="player-levels">
+                    <i class="fas fa-spinner fa-spin"></i>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    {{ template "_footer" . }}
+{{end}}

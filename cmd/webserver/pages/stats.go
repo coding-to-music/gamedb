@@ -20,6 +20,7 @@ func StatsRouter() http.Handler {
 
 	r := chi.NewRouter()
 	r.Get("/", statsHandler)
+	r.Get("/gamedb", gameDBStatsHandler)
 	r.Get("/client-players.json", statsClientPlayersHandler)
 	r.Get("/client-players2.json", statsClientPlayers2Handler)
 	r.Get("/release-dates.json", statsDatesHandler)
@@ -38,18 +39,6 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 	t.addAssetJSON2HTML()
 
 	var wg sync.WaitGroup
-
-	wg.Add(1)
-	go func() {
-
-		defer wg.Done()
-
-		var err error
-		t.PlayersCount, err = mongo.CountDocuments(mongo.CollectionPlayers, nil, 0)
-		if err != nil {
-			log.Err(err, r)
-		}
-	}()
 
 	wg.Add(1)
 	go func() {
@@ -117,6 +106,72 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
+
+		a := mongo.App{}
+		t.SteamPlayersInGame, err = a.GetPlayersInGame()
+		if err != nil {
+			log.Err(err, r)
+		}
+	}()
+
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+
+		a := mongo.App{}
+		t.SteamPlayersOnline, err = a.GetPlayersOnline()
+		if err != nil {
+			log.Err(err, r)
+		}
+	}()
+
+	wg.Wait()
+
+	returnTemplate(w, r, "stats", t)
+}
+
+type statsTemplate struct {
+	globalTemplate
+	AppsCount          int64
+	BundlesCount       int
+	PackagesCount      int64
+	AchievementsCount  int64
+	ArticlesCount      int64
+	SteamPlayersOnline int64
+	SteamPlayersInGame int64
+}
+
+func gameDBStatsHandler(w http.ResponseWriter, r *http.Request) {
+
+	// Template
+	t := gamedbStatsTemplate{}
+	t.fill(w, r, "Stats", "Some interesting Steam Store stats.")
+	t.addAssetHighCharts()
+	t.addAssetJSON2HTML()
+
+	var wg sync.WaitGroup
+
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		t.PlayersCount, err = mongo.CountDocuments(mongo.CollectionPlayers, nil, 0)
+		if err != nil {
+			log.Err(err, r)
+		}
+	}()
+
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
 		t.PlayerAppsCount, err = mongo.CountDocuments(mongo.CollectionPlayerApps, nil, 0)
 		if err != nil {
 			log.Err(err, r)
@@ -171,54 +226,19 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	wg.Add(1)
-	go func() {
-
-		defer wg.Done()
-
-		var err error
-
-		a := mongo.App{}
-		t.SteamPlayersInGame, err = a.GetPlayersInGame()
-		if err != nil {
-			log.Err(err, r)
-		}
-	}()
-
-	wg.Add(1)
-	go func() {
-
-		defer wg.Done()
-
-		var err error
-
-		a := mongo.App{}
-		t.SteamPlayersOnline, err = a.GetPlayersOnline()
-		if err != nil {
-			log.Err(err, r)
-		}
-	}()
-
 	wg.Wait()
 
-	returnTemplate(w, r, "stats", t)
+	returnTemplate(w, r, "stats-gamedb", t)
 }
 
-type statsTemplate struct {
+type gamedbStatsTemplate struct {
 	globalTemplate
-	AppsCount               int64
-	BundlesCount            int
-	PackagesCount           int64
-	AchievementsCount       int64
-	ArticlesCount           int64
 	PlayerAppsCount         int64
 	PlayerFriendsCount      int64
 	PlayerAchievementsCount int64
 	PlayerBadgesCount       int64
 	PlayerGroupsCount       int64
 	PlayersCount            int64
-	SteamPlayersOnline      int64
-	SteamPlayersInGame      int64
 }
 
 func playerLevelsHandler(w http.ResponseWriter, r *http.Request) {
