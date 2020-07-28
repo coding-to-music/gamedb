@@ -53,6 +53,10 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Err(err, r)
 		}
+
+		if len(t.NewGames) > 10 {
+			t.NewGames = t.NewGames[0:10]
+		}
 	}()
 
 	// Top games
@@ -67,8 +71,8 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 			log.Err(err, r)
 		}
 
-		if len(t.TopGames) > 12 {
-			t.TopGames = t.TopGames[0:12]
+		if len(t.TopGames) > 10 {
+			t.TopGames = t.TopGames[0:10]
 		}
 	}()
 
@@ -349,7 +353,7 @@ func getPlayersForHome(sort string) (players []mongo.Player, err error) {
 			"comments_count": 1,
 		}
 
-		return mongo.GetPlayers(0, 10, bson.D{{Key: sort, Value: -1}}, bson.D{{Key: sort, Value: bson.M{"$gt": 0}}}, projection)
+		return mongo.GetPlayers(0, 12, bson.D{{Key: sort, Value: -1}}, bson.D{{Key: sort, Value: bson.M{"$gt": 0}}}, projection)
 	})
 
 	return players, err
