@@ -537,10 +537,15 @@ func adminWebsocketsHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, "Admin", "Admin")
 	t.Websockets = websockets.Pages
 
+	for _, v := range websockets.Pages {
+		t.Total += v.CountConnections()
+	}
+
 	returnTemplate(w, r, "admin/websockets", t)
 }
 
 type adminWebsocketsTemplate struct {
 	globalTemplate
 	Websockets map[websockets.WebsocketPage]*websockets.Page
+	Total      int
 }

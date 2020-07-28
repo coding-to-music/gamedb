@@ -76,6 +76,10 @@ func (p *Page) GetName() WebsocketPage {
 	return p.name
 }
 
+func (p *Page) GetTitle() string {
+	return strings.Title(string(p.name))
+}
+
 func (p *Page) CountConnections() int {
 
 	// p.Lock()

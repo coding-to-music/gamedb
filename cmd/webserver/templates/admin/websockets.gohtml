@@ -10,21 +10,27 @@
             <div class="card-body">
 
                 <div class="table-responsive">
-                    <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
+                    <table class="table table-hover table-striped table-datatable table-sm mb-0" data-order='[[1, "desc"]]'>
                         <thead class="thead-light">
                         <tr>
-                            <th scope="col">Page</th>
+                            <th scope="col" style="width: 15%;">Page</th>
                             <th scope="col">Count</th>
                         </tr>
                         </thead>
                         <tbody>
                         {{ range $key, $value := .Websockets }}
                             <tr>
-                                <td>{{ .GetName }}</td>
-                                <td>{{ .CountConnections }}</td>
+                                <td>{{ .GetTitle }}</td>
+                                <td>{{ comma .CountConnections }}</td>
                             </tr>
                         {{ end }}
                         </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>Total:</th>
+                            <th>{{ .Total }}</th>
+                        </tr>
+                        </tfoot>
                     </table>
                 </div>
 
