@@ -396,12 +396,7 @@
                                             {{ range .Countries }}
                                                 <tr style="background: linear-gradient(to right, #28a74522 {{ .Percent }}%, transparent {{ .Percent }}%)">
                                                     <td>{{ .Country }}</td>
-                                                    <td>{{ comma .Count }}</td>
-                                                </tr>
-                                            {{ end }}
-                                            {{ if eq (len .Countries) 0 }}
-                                                <tr>
-                                                    <td colspan="2">Coming Soon</td>
+                                                    <td>{{ .GetPercent }}<small>%</small></td>
                                                 </tr>
                                             {{ end }}
                                             </tbody>

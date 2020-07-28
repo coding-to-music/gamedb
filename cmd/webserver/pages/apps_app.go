@@ -325,7 +325,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		return t.Countries[i].Count > t.Countries[j].Count
 	})
 	if len(t.Countries) > 10 {
-		t.Countries = t.Countries[0:10]
+		t.Countries = t.Countries[0:14]
 	}
 
 	//
@@ -444,6 +444,10 @@ type AppCountry struct {
 	Country string
 	Count   int
 	Percent float64
+}
+
+func (ac AppCountry) GetPercent() string {
+	return helpers.FloatToString(ac.Percent, 2)
 }
 
 type appLinkTemplate struct {
