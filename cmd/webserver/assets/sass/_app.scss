@@ -6,27 +6,6 @@
             max-width: 100%;
         }
 
-        #tags {
-
-            div {
-                margin-bottom: 1px;
-                padding-left: 4px;
-            }
-
-            div:last-child {
-                margin-bottom: 0;
-            }
-
-            .float-left {
-                font-size: 0.85rem;
-            }
-
-            .float-right {
-                font-size: 0.7rem;
-                padding-top: 2px;
-            }
-        }
-
         #links {
             div {
                 @include clearfix();
