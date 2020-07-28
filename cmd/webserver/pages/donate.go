@@ -23,7 +23,7 @@ func DonateRouter() http.Handler {
 func donateHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := donateTemplate{}
-	t.fill(w, r, "Support the Game DB open source project", "Databases take up a tonne of resources. Help pay for the server costs or just buy me a beer 🍻.")
+	t.fill(w, r, "Support the Game DB open source project", "Databases take up a tonne of resources. Help pay for the server costs or just buy me a beer 🍻")
 	t.Pages = map[int]int{
 		mysql.UserLevel0: mysql.UserLevelLimit0,
 		mysql.UserLevel1: mysql.UserLevelLimit1,
