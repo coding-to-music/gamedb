@@ -72,13 +72,15 @@ if ($appPage.length > 0) {
     });
 
     // Websockets
-    websocketListener('app', function (e) {
+    if (user.toasts && user.toasts.length > 0) { // Only wait for update if an update was queued
+        websocketListener('app', function (e) {
 
-        const data = JSON.parse(e.data);
-        if (data.Data.toString() === $appPage.attr('data-id')) {
-            toast(true, 'Click to refresh', 'This app has been updated', 0, 'refresh');
-        }
-    });
+            const data = JSON.parse(e.data);
+            if (data.Data.toString() === $appPage.attr('data-id')) {
+                toast(true, 'Click to refresh', 'This app has been updated', 0, 'refresh');
+            }
+        });
+    }
 
     // News data table
     function loadNews() {
