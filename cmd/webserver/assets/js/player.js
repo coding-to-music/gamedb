@@ -523,14 +523,14 @@ if ($playerPage.length > 0) {
                     },
                     'orderSequence': ['desc', 'asc'],
                 },
-                // Official
+                // Type
                 {
                     "targets": 2,
                     "render": function (data, type, row) {
                         if (row[6] === 'game') {
-                            return 'Game <i class="fas fa-gamepad"></i>';
+                            return '<i class="fas fa-gamepad text-primary"></i> Game';
                         } else if (row[6] === 'group') {
-                            return 'Group <i class="fas fa-user-friends"></i>';
+                            return '<i class="fas fa-user-friends text-success"></i> Group';
                         }
                         return '';
                     },
