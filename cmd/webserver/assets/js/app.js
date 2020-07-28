@@ -535,6 +535,8 @@ if ($appPage.length > 0) {
 
                 // Convert time local timezone
                 const diff = Math.floor(moment().utcOffset() / 60);
+                const zone = moment.tz(moment.tz.guess()).zoneAbbr();
+
                 if (Math.abs(diff) > 0) {
                     let data2 = data['max_player_count'];
                     data2.forEach(function (hour, index) {
@@ -577,7 +579,7 @@ if ($appPage.length > 0) {
                         formatter: function () {
                             const day = this.series.yAxis.categories[this.point.y];
                             const time = this.point.x;
-                            return 'Average of last 4 ' + day + 's @ ' + pad(time, 2) + ':00-' + pad(time, 2) + ':59 UTC: ~'
+                            return 'Average of last 4 ' + day + 's @ ' + pad(time, 2) + ':00-' + pad(time, 2) + ':59 ' + zone + ': ~'
                                 + Math.round(this.point.value).toLocaleString() + ' players';
                         }
                     },

@@ -90,6 +90,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, app.GetName(), template.HTML(app.ShortDescription))
 	t.addAssetHighCharts()
 	t.addAssetJSON2HTML()
+	t.addAssetMomentData()
 	t.metaImage = app.GetMetaImage()
 	t.IncludeSocialJS = true
 	t.App = app
@@ -326,7 +327,6 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	if len(t.Countries) > 10 {
 		t.Countries = t.Countries[0:10]
 	}
-	t.Countries = nil // Disable for now
 
 	//
 	t.PlayersInGame, err = t.App.GetPlayersInGame()

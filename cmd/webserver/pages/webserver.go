@@ -583,7 +583,17 @@ func (t *globalTemplate) addAssetPasswordStrength() {
 }
 
 func (t *globalTemplate) addAssetMark() {
-	t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js", Integrity: "sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U="})
+	t.JSFiles = append(t.JSFiles, Asset{
+		URL:       "https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js",
+		Integrity: "sha512-mhbv5DqBMgrWL+32MmsDOt/OAvqr/cHimk6B8y/bx/xS88MVkYGPiVv2ixKVrkywF2qHplNRUvFsAHUdxZ3Krg==",
+	})
+}
+
+func (t *globalTemplate) addAssetMomentData() {
+	t.JSFiles = append(t.JSFiles, Asset{
+		URL:       "https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.31/moment-timezone-with-data-2012-2022.js",
+		Integrity: "sha512-v6ox3Qn6udc+GWEnOS6euQx7U4q+pRdFs1xSffgBf2hjOTeC9CX04OEa1UqcjynGN121ERvz2wpsE8RpLAyWWg==",
+	})
 }
 
 //
