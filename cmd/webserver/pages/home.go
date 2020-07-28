@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	twitter2 "github.com/dghubble/go-twitter/twitter"
+	"github.com/dghubble/go-twitter/twitter"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -16,7 +16,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
-	"github.com/gamedb/gamedb/pkg/twitter"
+	twitterHelper "github.com/gamedb/gamedb/pkg/twitter"
 	"github.com/go-chi/chi"
 	"github.com/mborgerson/GoTruncateHtml/truncatehtml"
 	"github.com/microcosm-cc/bluemonday"
@@ -156,7 +156,7 @@ func homeTweetsHandler(w http.ResponseWriter, r *http.Request) {
 	t := true
 	f := false
 
-	tweets, resp, err := twitter.GetTwitter().Timelines.UserTimeline(&twitter2.UserTimelineParams{
+	tweets, resp, err := twitterHelper.GetTwitter().Timelines.UserTimeline(&twitter.UserTimelineParams{
 		ScreenName:      "gamedbonline",
 		Count:           10,
 		ExcludeReplies:  &t,

@@ -387,6 +387,7 @@ func updatePlayerSummary(player *mongo.Player) error {
 	return err
 }
 
+// Always updates player_app rows as the playtime will change
 func updatePlayerGames(player *mongo.Player, payload PlayerMessage) error {
 
 	// Grab games from Steam
@@ -486,11 +487,7 @@ func updatePlayerGames(player *mongo.Player, payload PlayerMessage) error {
 	if len(appIDs) > 0 {
 
 		sort.Slice(appIDs, func(i, j int) bool {
-
-			var appID1 = appIDs[i]
-			var appID2 = appIDs[j]
-
-			return playerApps[appID1].AppTime > playerApps[appID2].AppTime
+			return playerApps[appIDs[i]].AppTime > playerApps[appIDs[j]].AppTime
 		})
 
 		player.BackgroundAppID = appIDs[0]
