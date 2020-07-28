@@ -30,31 +30,11 @@ type PlayerApp struct {
 
 func (app PlayerApp) BSON() bson.D {
 
-	var prices = bson.M{}
-	for k, v := range app.AppPrices {
-		prices[k] = v
-	}
-
-	var pricesHour = bson.M{}
-	for k, v := range app.AppPriceHour {
-		pricesHour[k] = v
-	}
-
-	return bson.D{
-		{"_id", app.GetKey()},
-		{"player_id", app.PlayerID},
-		{"player_country", app.PlayerCountry},
-		{"app_id", app.AppID},
-		{"app_name", app.AppName},
-		{"app_icon", app.AppIcon},
-		{"app_time", app.AppTime},
-		{"app_prices", prices},
-		{"app_prices_hour", pricesHour},
-
-		{"app_achievements_total", app.AppAchievementsTotal},
-		{"app_achievements_have", app.AppAchievementsHave},
-		{"app_achievements_percent", app.AppAchievementsPercent},
-	}
+	return append(app.BSONUpdate(),
+		bson.E{Key: "app_achievements_total", Value: app.AppAchievementsTotal},
+		bson.E{Key: "app_achievements_have", Value: app.AppAchievementsHave},
+		bson.E{Key: "app_achievements_percent", Value: app.AppAchievementsPercent},
+	)
 }
 
 // Missing achievement columns so when we update a row we dont overwrite achievements
@@ -73,6 +53,7 @@ func (app PlayerApp) BSONUpdate() bson.D {
 	return bson.D{
 		{"_id", app.GetKey()},
 		{"player_id", app.PlayerID},
+		{"player_country", app.PlayerCountry},
 		{"app_id", app.AppID},
 		{"app_name", app.AppName},
 		{"app_icon", app.AppIcon},
