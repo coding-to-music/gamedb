@@ -31,7 +31,7 @@ func GetGroupChart(group elasticsearch.Group) (url string, width int, height int
 	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementGroups.String())
 	builder.AddWhere("group_id", "=", group.ID)
 	builder.AddGroupByTime("1d")
-	builder.SetFillNumber(0)
+	builder.SetFillNone()
 
 	return getChart(builder, group.ID, "Members", "https://gamedb.online"+group.GetPath())
 }
@@ -43,7 +43,7 @@ func GetAppChart(app mongo.App) (url string, width int, height int, err error) {
 	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
 	builder.AddWhere("app_id", "=", app.ID)
 	builder.AddGroupByTime("1d")
-	builder.SetFillNumber(0)
+	builder.SetFillNone()
 
 	return getChart(builder, strconv.Itoa(app.ID), "In Game", "https://gamedb.online"+app.GetPath())
 }

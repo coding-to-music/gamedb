@@ -55,7 +55,7 @@ func queuesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		builder.AddWhereRaw("(" + strings.Join(fields, " OR ") + ")")
 		builder.AddGroupByTime("10s")
 		builder.AddGroupBy("queue")
-		builder.SetFillNumber(0)
+		builder.SetFillNone()
 
 		resp, err := influx.InfluxQuery(builder.String())
 		if err != nil {

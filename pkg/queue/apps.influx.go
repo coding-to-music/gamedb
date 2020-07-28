@@ -185,7 +185,7 @@ func getAppTopPlayersWeek(appIDs []int) (vals map[int]int64, err error) {
 	builder.AddWhere("time", ">", "NOW() - 7d")
 	builder.AddWhereRaw(`"app_id" =~ /^(` + helpers.JoinInts(appIDs, "|") + `)$/`)
 	builder.AddGroupBy("app_id")
-	builder.SetFillNumber(0)
+	builder.SetFillNone()
 
 	resp, err := influxHelper.InfluxQuery(builder.String())
 	if err != nil {
@@ -221,7 +221,7 @@ func getAppAveragePlayersWeek(appIDs []int) (vals map[int]float64, err error) {
 	builder.AddWhere("time", ">", "NOW() - 7d")
 	builder.AddWhereRaw(`"app_id" =~ /^(` + helpers.JoinInts(appIDs, "|") + `)$/`)
 	builder.AddGroupBy("app_id")
-	builder.SetFillNumber(0)
+	builder.SetFillNone()
 
 	resp, err := influxHelper.InfluxQuery(builder.String())
 	if err != nil {
@@ -256,7 +256,7 @@ func getAppTopPlayersAlltime(appIDs []int) (vals map[int]int64, err error) {
 	builder.SetFrom(influxHelper.InfluxGameDB, influxHelper.InfluxRetentionPolicyAllTime.String(), influxHelper.InfluxMeasurementApps.String())
 	builder.AddWhereRaw(`"app_id" =~ /^(` + helpers.JoinInts(appIDs, "|") + `)$/`)
 	builder.AddGroupBy("app_id")
-	builder.SetFillNumber(0)
+	builder.SetFillNone()
 
 	resp, err := influxHelper.InfluxQuery(builder.String())
 	if err != nil {
@@ -293,7 +293,7 @@ func getAppTrendValue(appIDs []int) (vals map[int]float64, err error) {
 	builder.AddWhereRaw(`"app_id" =~ /^(` + helpers.JoinInts(appIDs, "|") + `)$/`)
 	builder.AddGroupByTime("1h")
 	builder.AddGroupBy("app_id")
-	builder.SetFillNumber(0)
+	builder.SetFillNone()
 
 	resp, err := influxHelper.InfluxQuery(builder.String())
 	if err != nil {
