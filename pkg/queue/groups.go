@@ -383,7 +383,7 @@ var (
 func updateRegularGroup(id string, group *mongo.Group) (foundMembers bool, err error) {
 
 	// This ID never seems to work
-	if id == "103582791467372878" {
+	if helpers.SliceHasString(id, []string{"103582791467372878", "103582791460689837"}) {
 		return true, nil
 	}
 
