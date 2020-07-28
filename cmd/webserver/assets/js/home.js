@@ -84,6 +84,15 @@ if ($homePage.length > 0) {
                             }
                         ],
                     },
+                    {
+                        '<>': 'td', 'html': [
+                            {
+                                '<>': 'a', 'href': '${community_link}', 'target': '_blank', 'rel': 'noopener', 'html': [
+                                    {'<>': 'i', 'class': 'fas fa-link'}
+                                ],
+                            }
+                        ],
+                    },
                 ]
             }
         };

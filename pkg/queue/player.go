@@ -87,12 +87,13 @@ func playerHandler(messages []*rabbit.Message) {
 		defer func() {
 
 			wsPayload := PlayerPayload{
-				ID:        strconv.FormatInt(player.ID, 10),
-				Name:      player.GetName(),
-				Link:      player.GetPath(),
-				Avatar:    player.GetAvatar(),
-				UpdatedAt: time.Now().Unix(),
-				Queue:     "player",
+				ID:            strconv.FormatInt(player.ID, 10),
+				Name:          player.GetName(),
+				Link:          player.GetPath(),
+				Avatar:        player.GetAvatar(),
+				CommunityLink: player.CommunityLink(),
+				UpdatedAt:     time.Now().Unix(),
+				Queue:         "player",
 			}
 
 			err = ProduceWebsocket(wsPayload, websockets.PagePlayer)

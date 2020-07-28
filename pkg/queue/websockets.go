@@ -188,10 +188,11 @@ type ChatPayload struct {
 }
 
 type PlayerPayload struct {
-	ID        string `json:"id"` // string for js
-	Name      string `json:"name"`
-	Link      string `json:"link"`
-	Avatar    string `json:"avatar"`
-	UpdatedAt int64  `json:"updated_at"`
-	Queue     string `json:"queue"`
+	ID            string `json:"id"` // string for js
+	Name          string `json:"name"`
+	Link          string `json:"link"`
+	Avatar        string `json:"avatar"`
+	UpdatedAt     int64  `json:"updated_at"`
+	Queue         string `json:"queue"`
+	CommunityLink string `json:"community_link"`
 }

@@ -257,11 +257,12 @@ func homeUpdatedPlayersHandler(w http.ResponseWriter, r *http.Request) {
 	var resp []queue.PlayerPayload
 	for _, player := range players {
 		resp = append(resp, queue.PlayerPayload{
-			ID:        strconv.FormatInt(player.ID, 10),
-			Name:      player.GetName(),
-			Avatar:    player.GetAvatar(),
-			Link:      player.GetPath(),
-			UpdatedAt: player.UpdatedAt.Unix(),
+			ID:            strconv.FormatInt(player.ID, 10),
+			Name:          player.GetName(),
+			Avatar:        player.GetAvatar(),
+			Link:          player.GetPath(),
+			CommunityLink: player.CommunityLink(),
+			UpdatedAt:     player.UpdatedAt.Unix(),
 		})
 	}
 
