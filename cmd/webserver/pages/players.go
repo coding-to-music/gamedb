@@ -326,6 +326,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			v.Achievements,    // 21
 			v.Achievements100, // 22
 			v.GetNameMarked(), // 23
+			v.Score,           // 24
 		})
 	}
 

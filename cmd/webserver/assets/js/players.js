@@ -233,6 +233,15 @@ if ($('#players-page').length > 0) {
                 },
                 "orderable": false,
             },
+            // Search Score
+            {
+                "targets": 15,
+                "render": function (data, type, row) {
+                    return row[24].toLocaleString();
+                },
+                "orderable": false,
+                "visible": false,
+            },
         ]
     };
 
