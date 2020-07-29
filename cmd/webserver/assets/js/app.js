@@ -48,6 +48,7 @@ if ($appPage.length > 0) {
         'news': loadNews,
         'items': loadItems,
         'prices': loadPriceChart,
+        'similar-wrapper': loadAppSimilar,
         'reviews': loadAppReviewsChart,
         'achievements': loadAchievements,
         'dlc': loadDLC,
@@ -263,6 +264,27 @@ if ($appPage.length > 0) {
                 }
             }
         );
+    }
+
+    function loadAppSimilar() {
+
+        const $wrapper = $('#similar-wrapper');
+
+        $.ajax({
+            type: "GET",
+            url: '/games/' + $appPage.attr('data-id') + '/similar.html',
+            dataType: 'html',
+            success: function (data, textStatus, jqXHR) {
+
+                if (data === null) {
+                    data = '';
+                }
+
+                $wrapper.html(data);
+
+                observeLazyImages($wrapper.find('img[data-lazy]'));
+            },
+        });
     }
 
     function loadAppReviewsChart() {

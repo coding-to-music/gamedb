@@ -1,0 +1,26 @@
+{{define "app_similar"}}
+
+    <table class="table table-hover table-striped mb-0">
+        <thead class="thead-light">
+        <th>Game</th>
+        </thead>
+        <tbody>
+        {{ range $key, $value := .Related }}
+            <tr data-app-id="{{ .ID }}" data-link="{{ .GetPath }}">
+                <td class="img">
+                    <div class="icon-name">
+                        <div class="icon">
+                            <img class="tall" src="" data-lazy="{{ .GetIcon }}" alt="" data-lazy-alt="{{ .GetName }}">
+                        </div>
+                        <div class="name">
+                            {{ .GetName }}<br>
+                            <small>{{ $.GetRelatedTags $value }}</small>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        {{ end }}
+        </tbody>
+    </table>
+
+{{end}}

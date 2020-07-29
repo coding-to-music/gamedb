@@ -35,6 +35,7 @@ func appRouter() http.Handler {
 	r.Get("/", appHandler)
 	r.Get("/localization.html", appLocalizationHandler)
 	r.Get("/reviews.html", appReviewsHandler)
+	r.Get("/similar.html", appSimilarHandler)
 	r.Get("/news.json", appNewsAjaxHandler)
 	r.Get("/prices.json", appPricesAjaxHandler)
 	r.Get("/players-heatmap.json", appPlayersHeatmapAjaxHandler)
@@ -189,40 +190,6 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		t.Packages, err = app.GetAppPackages()
 		if err != nil {
 			log.Err(err, r)
-		}
-	}()
-
-	// Get related apps
-	wg.Add(1)
-	go func() {
-
-		defer wg.Done()
-
-		var err error
-		t.Related, err = app.GetAppRelatedApps()
-		if err != nil {
-			log.Err(err, r)
-			return
-		}
-
-		var tagIDs []int
-		for _, v := range t.Related {
-			for _, vv := range v.Tags {
-				if helpers.SliceHasInt(app.Tags, vv) {
-					tagIDs = append(tagIDs, vv)
-				}
-			}
-		}
-
-		tags, err := mysql.GetTagsByID(tagIDs, []string{"id", "name"})
-		if err != nil {
-			log.Err(err, r)
-			return
-		}
-
-		t.RelatedTags = map[int]mysql.Tag{}
-		for _, v := range tags {
-			t.RelatedTags[v.ID] = v
 		}
 	}()
 
@@ -425,8 +392,6 @@ type appTemplate struct {
 	Common        []pics.KeyValue
 	Config        []pics.KeyValue
 	Demos         []mongo.App
-	Related       []mongo.App
-	RelatedTags   map[int]mysql.Tag
 	Developers    []mysql.Developer
 	Extended      []pics.KeyValue
 	Genres        []mysql.Genre
@@ -459,18 +424,6 @@ type appLinkTemplate struct {
 	Hide bool
 }
 
-func (t appTemplate) GetRelatedTags(relatedApp mongo.App) template.HTML {
-
-	var ret []string
-	for _, v := range relatedApp.Tags {
-		if val, ok := t.RelatedTags[v]; ok {
-			ret = append(ret, `<a href="`+val.GetPath()+`">`+val.GetName()+`</a>`)
-		}
-	}
-
-	return template.HTML(strings.Join(ret, ", "))
-}
-
 func appLocalizationHandler(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
@@ -499,6 +452,74 @@ func appLocalizationHandler(w http.ResponseWriter, r *http.Request) {
 type appLocalizationTemplate struct {
 	globalTemplate
 	App mongo.App
+}
+
+func appSimilarHandler(w http.ResponseWriter, r *http.Request) {
+
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		return
+	}
+
+	if !helpers.IsValidAppID(id) {
+		return
+	}
+
+	app, err := mongo.GetApp(id)
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	related, err := app.GetAppRelatedApps()
+	if err != nil {
+		log.Err(err, r)
+		return
+	}
+
+	var tagIDs []int
+	for _, v := range related {
+		for _, vv := range v.Tags {
+			if helpers.SliceHasInt(app.Tags, vv) {
+				tagIDs = append(tagIDs, vv)
+			}
+		}
+	}
+
+	tags, err := mysql.GetTagsByID(tagIDs, []string{"id", "name"})
+	if err != nil {
+		log.Err(err, r)
+		return
+	}
+
+	relatedTags := map[int]mysql.Tag{}
+	for _, v := range tags {
+		relatedTags[v.ID] = v
+	}
+
+	t := appSimilarTemplate{}
+	t.Related = related
+	t.RelatedTags = relatedTags
+
+	returnTemplate(w, r, "app_similar", t)
+}
+
+type appSimilarTemplate struct {
+	globalTemplate
+	RelatedTags map[int]mysql.Tag
+	Related     []mongo.App
+}
+
+func (t appSimilarTemplate) GetRelatedTags(relatedApp mongo.App) template.HTML {
+
+	var ret []string
+	for _, v := range relatedApp.Tags {
+		if val, ok := t.RelatedTags[v]; ok {
+			ret = append(ret, `<a href="`+val.GetPath()+`">`+val.GetName()+`</a>`)
+		}
+	}
+
+	return template.HTML(strings.Join(ret, ", "))
 }
 
 func appReviewsHandler(w http.ResponseWriter, r *http.Request) {

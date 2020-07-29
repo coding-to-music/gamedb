@@ -73,7 +73,7 @@
                             <a class="nav-link" data-toggle="tab" href="#news" role="tab">News ({{ (len .App.NewsIDs) }})</a>
                         </li>
                     {{ end }}
-                    {{ if gt (len .Related) 0 }}
+                    {{ if gt (len .App.RelatedAppIDs) 0 }}
                         <li class="nav-item">
                             <a class="nav-link" data-toggle="tab" href="#similar" role="tab">Similar</a>
                         </li>
@@ -782,35 +782,13 @@
                     </div>
                     <div class="tab-pane" id="similar" role="tabpanel">
 
-                        <h5>Similar by Tag</h5>
-
-                        <div class="table-responsive" style="height: auto;">
-                            <table class="table table-hover table-striped">
-                                <thead class="thead-light">
-                                <th>Game</th>
-                                </thead>
-                                <tbody>
-                                {{ range $key, $value := .Related }}
-                                    <tr data-app-id="{{ .ID }}" data-link="{{ .GetPath }}">
-                                        <td class="img">
-                                            <div class="icon-name">
-                                                <div class="icon">
-                                                    <img class="tall" src="" data-lazy="{{ .GetIcon }}" alt="" data-lazy-alt="{{ .GetName }}">
-                                                </div>
-                                                <div class="name">
-                                                    {{ .GetName }}<br>
-                                                    <small>{{ $.GetRelatedTags $value }}</small>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                {{ end }}
-                                </tbody>
-                            </table>
-                        </div>
-
                         <h5>People who own this game also own</h5>
-                        <p>Coming soon</p>
+                        <p class="mb-4">Coming soon</p>
+
+                        <h5>Similar by Tag</h5>
+                        <div class="table-responsive" id="similar-wrapper">
+
+                        </div>
 
                     </div>
 
