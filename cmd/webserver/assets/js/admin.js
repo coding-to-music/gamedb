@@ -1,3 +1,10 @@
+if ($('#admin-websockets-page').length > 0) {
+
+    setTimeout(function () {
+        window.location.reload(1);
+    }, 5000);
+}
+
 if ($('#admin-tasks-page').length > 0) {
 
     $('#actions tbody tr').on('click', function () {
