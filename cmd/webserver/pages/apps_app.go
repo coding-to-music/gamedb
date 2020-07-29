@@ -310,6 +310,8 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	// Countries
+	delete(app.Countries, "")
+
 	var countryTotal int
 	for k, v := range app.Countries {
 		countryTotal += v
