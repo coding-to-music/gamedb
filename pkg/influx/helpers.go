@@ -261,7 +261,7 @@ func GetInfluxTrendFromSeries(series models.Row, padding int) (trend float64) {
 		ys = append(ys, float64(val))
 	}
 
-	avg := helpers.Avg(ys...)
+	avg := helpers.Max(ys...)
 
 	for k := range series.Values {
 		xs = append(xs, float64(k)*avg)
