@@ -974,7 +974,7 @@ func appPlayersHeatmapAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		builder.AddWhere("time", ">", "NOW()-28d")
 		builder.AddWhere("app_id", "=", id)
 		builder.AddGroupByTime("1h")
-		builder.SetFillNone()
+		builder.SetFillNumber(0)
 
 		resp, err := influx.InfluxQuery(builder.String())
 		if err != nil {
@@ -1066,7 +1066,7 @@ func appPlayersAjaxHandler(limit bool) func(http.ResponseWriter, *http.Request) 
 			builder.AddWhere("time", ">", "NOW()-"+days)
 			builder.AddWhere("app_id", "=", id)
 			builder.AddGroupByTime(group)
-			builder.SetFillNone()
+			builder.SetFillNumber(0)
 
 			resp, err := influx.InfluxQuery(builder.String())
 			if err != nil {

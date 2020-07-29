@@ -43,7 +43,7 @@ func GetAppChart(app mongo.App) (url string, width int, height int, err error) {
 	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
 	builder.AddWhere("app_id", "=", app.ID)
 	builder.AddGroupByTime("1d")
-	builder.SetFillNone()
+	builder.SetFillNumber(0)
 
 	return getChart(builder, strconv.Itoa(app.ID), "In Game", "https://gamedb.online"+app.GetPath())
 }
