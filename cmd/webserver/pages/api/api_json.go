@@ -13,6 +13,11 @@ func init() {
 	}
 }
 
+const (
+	tagGame   = "game"
+	tagPlayer = "player"
+)
+
 func stringPointer(s string) *string {
 	return &s
 }
@@ -32,6 +37,7 @@ var (
 			"final":           {Value: openapi3.NewInt32Schema()},
 			"discountPercent": {Value: openapi3.NewInt32Schema()},
 			"individual":      {Value: openapi3.NewInt32Schema()},
+			"free":            {Value: openapi3.NewBoolSchema()},
 		},
 	}
 )
@@ -41,14 +47,24 @@ var Swagger = &openapi3.Swagger{
 	Servers: []*openapi3.Server{
 		{URL: "https://gamedb.online/api"}, // Hardcoded to not get local domain
 	},
+	ExternalDocs: &openapi3.ExternalDocs{
+		URL: "https://gamedb.online/api/game-db",
+	},
 	Info: &openapi3.Info{
-		Title:   "Game DB API",
-		Version: "1",
+		Title:          "Game DB API",
+		Version:        "1.0.0",
+		TermsOfService: "https://gamedb.online/terms",
 		Contact: &openapi3.Contact{
-			Name:  "Jleagle",
-			URL:   "https://gamedb.online/contact",
-			Email: "jimeagle@gmail.com",
+			Name: "Jleagle",
+			URL:  "https://gamedb.online/contact",
 		},
+		ExtensionProps: openapi3.ExtensionProps{Extensions: map[string]interface{}{
+			"x-logo": "https://gamedb.online/assets/img/sa-bg-192x192.png",
+		}},
+	},
+	Tags: openapi3.Tags{
+		&openapi3.Tag{Name: tagGame},
+		&openapi3.Tag{Name: tagPlayer},
 	},
 	Security: openapi3.SecurityRequirements{
 		openapi3.NewSecurityRequirement().Authenticate("key-header"),
@@ -218,6 +234,7 @@ var Swagger = &openapi3.Swagger{
 	Paths: openapi3.Paths{
 		"/games": &openapi3.PathItem{
 			Get: &openapi3.Operation{
+				Tags:    []string{tagGame},
 				Summary: "List Apps",
 				Parameters: openapi3.Parameters{
 					{Value: keyGetParam},
@@ -242,6 +259,7 @@ var Swagger = &openapi3.Swagger{
 		},
 		"/games/{id}": &openapi3.PathItem{
 			Get: &openapi3.Operation{
+				Tags:    []string{tagGame},
 				Summary: "Retrieve App",
 				Parameters: openapi3.Parameters{
 					{Value: keyGetParam},
@@ -256,6 +274,7 @@ var Swagger = &openapi3.Swagger{
 		},
 		"/players": &openapi3.PathItem{
 			Get: &openapi3.Operation{
+				Tags:    []string{tagPlayer},
 				Summary: "List Players",
 				Parameters: openapi3.Parameters{
 					{Value: keyGetParam},
@@ -275,6 +294,7 @@ var Swagger = &openapi3.Swagger{
 		},
 		"/players/{id}": &openapi3.PathItem{
 			Get: &openapi3.Operation{
+				Tags:    []string{tagPlayer},
 				Summary: "Retrieve Player",
 				Parameters: openapi3.Parameters{
 					{Value: keyGetParam},
