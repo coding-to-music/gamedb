@@ -27,8 +27,8 @@ func gamesCompareRouter() http.Handler {
 	r.Get("/search.json", compareSearchAjaxHandler)
 	r.Get("/apps.json", compareAppsAjaxHandler)
 	r.Get("/{id}", appsCompareHandler)
-	r.Get("/{id}/players.json", appsComparePlayersAjaxHandler)
-	r.Get("/{id}/players2.json", appsComparePlayers2AjaxHandler)
+	r.Get("/{id}/players.json", appsComparePlayersAjaxHandlerx(true))
+	r.Get("/{id}/players2.json", appsComparePlayersAjaxHandlerx(false))
 	r.Get("/{id}/members.json", appsCompareGroupsHandler)
 	r.Get("/{id}/reviews.json", appsCompareScoresHandler)
 	r.Get("/{id}/wishlists.json", appsCompareWishlistHandler)
@@ -260,84 +260,61 @@ func makeCompareActionLink(ids []string, id string, linkBool bool) string {
 	return "/games/compare/" + strings.Join(newIDs, ",")
 }
 
-func appsComparePlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
+func appsComparePlayersAjaxHandlerx(limited bool) func(w http.ResponseWriter, r *http.Request) {
 
-	var ids = helpers.UniqueString(helpers.RegexInts.FindAllString(chi.URLParam(r, "id"), -1))
+	var days string
+	var group string
+	var trim bool
 
-	if len(ids) < 1 || len(ids) > 10 {
-		return
+	if limited {
+		days = "7d"
+		group = "10m"
+		trim = false
+	} else {
+		days = "1825d"
+		group = "1d"
+		trim = true
 	}
 
-	builder := influxql.NewBuilder()
-	builder.AddSelect("max(player_count)", "max_player_count")
-	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
-	builder.AddWhere("time", ">", "NOW()-7d")
-	builder.AddWhereRaw(`"app_id" =~ /^(` + strings.Join(ids, "|") + `)$/`)
-	builder.AddGroupByTime("10m")
-	builder.AddGroupBy("app_id")
-	builder.SetFillNumber(0)
+	return func(w http.ResponseWriter, r *http.Request) {
 
-	resp, err := influx.InfluxQuery(builder.String())
-	if err != nil {
-		log.Err(err, r, builder.String())
-		return
-	}
+		var ids = helpers.UniqueString(helpers.RegexInts.FindAllString(chi.URLParam(r, "id"), -1))
 
-	var ret []influx.HighChartsJSONMulti
-	if len(resp.Results) > 0 {
-		for _, id := range ids {
-			for _, v := range resp.Results[0].Series {
-				if id == v.Tags["app_id"] {
-					ret = append(ret, influx.HighChartsJSONMulti{
-						Key:   v.Tags["app_id"],
-						Value: influx.InfluxResponseToHighCharts(v, false),
-					})
+		if len(ids) < 1 || len(ids) > 10 {
+			return
+		}
+
+		builder := influxql.NewBuilder()
+		builder.AddSelect("max(player_count)", "max_player_count")
+		builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
+		builder.AddWhere("time", ">", "NOW()-"+days)
+		builder.AddWhereRaw(`"app_id" =~ /^(` + strings.Join(ids, "|") + `)$/`)
+		builder.AddGroupByTime(group)
+		builder.AddGroupBy("app_id")
+		builder.SetFillNumber(0)
+
+		resp, err := influx.InfluxQuery(builder.String())
+		if err != nil {
+			log.Err(err, r, builder.String())
+			return
+		}
+
+		var ret []influx.HighChartsJSONMulti
+		if len(resp.Results) > 0 {
+			for _, id := range ids {
+				for _, v := range resp.Results[0].Series {
+					if id == v.Tags["app_id"] {
+						ret = append(ret, influx.HighChartsJSONMulti{
+							Key:   v.Tags["app_id"],
+							Value: influx.InfluxResponseToHighCharts(v, trim),
+						})
+					}
 				}
 			}
 		}
+
+		returnJSON(w, r, ret)
 	}
-
-	returnJSON(w, r, ret)
-}
-
-func appsComparePlayers2AjaxHandler(w http.ResponseWriter, r *http.Request) {
-
-	var ids = helpers.UniqueString(helpers.RegexInts.FindAllString(chi.URLParam(r, "id"), -1))
-
-	if len(ids) < 1 || len(ids) > 10 {
-		return
-	}
-
-	builder := influxql.NewBuilder()
-	builder.AddSelect("max(player_count)", "max_player_count")
-	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
-	builder.AddWhere("time", ">", "NOW()-1825d")
-	builder.AddWhereRaw(`"app_id" =~ /^(` + strings.Join(ids, "|") + `)$/`)
-	builder.AddGroupByTime("1d")
-	builder.AddGroupBy("app_id")
-	builder.SetFillNumber(0)
-
-	resp, err := influx.InfluxQuery(builder.String())
-	if err != nil {
-		log.Err(err, r, builder.String())
-		return
-	}
-
-	var ret []influx.HighChartsJSONMulti
-	if len(resp.Results) > 0 {
-		for _, id := range ids {
-			for _, v := range resp.Results[0].Series {
-				if id == v.Tags["app_id"] {
-					ret = append(ret, influx.HighChartsJSONMulti{
-						Key:   v.Tags["app_id"],
-						Value: influx.InfluxResponseToHighCharts(v, true),
-					})
-				}
-			}
-		}
-	}
-
-	returnJSON(w, r, ret)
 }
 
 func appsCompareWishlistHandler(w http.ResponseWriter, r *http.Request) {
