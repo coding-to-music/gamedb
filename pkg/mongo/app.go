@@ -26,9 +26,9 @@ import (
 )
 
 const (
-	platformWindows = "windows"
-	platformMac     = "macos"
-	platformLinux   = "linux"
+	PlatformWindows = "windows"
+	PlatformMac     = "macos"
+	PlatformLinux   = "linux"
 )
 
 var ErrInvalidAppID = errors.New("invalid app id")
@@ -327,19 +327,19 @@ func (app App) GetPlatformImages() (ret template.HTML) {
 		return ""
 	}
 
-	if helpers.SliceHasString(platformWindows, app.Platforms) {
+	if helpers.SliceHasString(PlatformWindows, app.Platforms) {
 		ret = ret + `<a href="/games?platforms=windows"><i class="fab fa-windows" data-toggle="tooltip" data-placement="top" title="Windows"></i></a>`
 	} else {
 		ret = ret + `<span class="space"></span>`
 	}
 
-	if helpers.SliceHasString(platformMac, app.Platforms) {
+	if helpers.SliceHasString(PlatformMac, app.Platforms) {
 		ret = ret + `<a href="/games?platforms=macos"><i class="fab fa-apple" data-toggle="tooltip" data-placement="top" title="Mac"></i></a>`
 	} else {
 		ret = ret + `<span class="space"></span>`
 	}
 
-	if helpers.SliceHasString(platformLinux, app.Platforms) {
+	if helpers.SliceHasString(PlatformLinux, app.Platforms) {
 		ret = ret + `<a href="/games?platforms=linux"><i class="fab fa-linux" data-toggle="tooltip" data-placement="top" title="Linux"></i></a>`
 	} else {
 		ret = ret + `<span class="space"></span>`

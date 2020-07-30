@@ -595,13 +595,13 @@ func updateAppDetails(app *mongo.App) (err error) {
 			// Platforms
 			var platforms []string
 			if response.Data.Platforms.Linux {
-				platforms = append(platforms, "linux")
+				platforms = append(platforms, mongo.PlatformLinux)
 			}
 			if response.Data.Platforms.Windows {
-				platforms = append(platforms, "windows")
+				platforms = append(platforms, mongo.PlatformWindows)
 			}
 			if response.Data.Platforms.Mac {
-				platforms = append(platforms, "macos")
+				platforms = append(platforms, mongo.PlatformMac)
 			}
 
 			// Platforms
