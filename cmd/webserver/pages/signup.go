@@ -219,8 +219,6 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 
 func verifyHandler(w http.ResponseWriter, r *http.Request) {
 
-	time.Sleep(time.Second)
-
 	message, success := func() (message string, success bool) {
 
 		// Validate code
@@ -275,6 +273,8 @@ func verifyHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/login", http.StatusFound)
 
 	} else {
+
+		time.Sleep(time.Second)
 
 		err := session.SetFlash(r, sessionHelpers.SessionBad, message)
 		log.Err(err, r)
