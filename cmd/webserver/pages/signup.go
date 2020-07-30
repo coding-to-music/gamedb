@@ -189,7 +189,7 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 				"signup": 1,
 			},
 			Time:      time.Now(),
-			Precision: "ms",
+			Precision: "s",
 		})
 		log.Err(err, r)
 
@@ -248,6 +248,17 @@ func verifyHandler(w http.ResponseWriter, r *http.Request) {
 			log.Err(err, r)
 			return "Invalid code (1003)", false
 		}
+
+		// Influx
+		_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, influx.Point{
+			Measurement: string(influxHelper.InfluxMeasurementSignups),
+			Fields: map[string]interface{}{
+				"validate": 1,
+			},
+			Time:      time.Now(),
+			Precision: "s",
+		})
+		log.Err(err, r)
 
 		//
 		return "Email has been verified", true
