@@ -71,19 +71,11 @@ if ($('#admin-queues-page').length > 0) {
 if ($('#admin-users-page').length > 0) {
 
     const options = {
-        "order": [[0, 'desc']],
+        "order": [[1, 'desc']],
         "columnDefs": [
-            // Date
-            {
-                'targets': 0,
-                'render': function (data, type, row) {
-                    return row[0];
-                },
-                'orderSequence': ['desc', 'asc'],
-            },
             // Email
             {
-                'targets': 1,
+                'targets': 0,
                 'render': function (data, type, row) {
                     if (row[2]) {
                         return '<i class="fas fa-check text-success fa-fw"></i> ' + row[1];
@@ -93,9 +85,28 @@ if ($('#admin-users-page').length > 0) {
                 },
                 'orderable': false,
             },
-            // Profile
+            // Signed Up
+            {
+                'targets': 1,
+                'render': function (data, type, row) {
+                    return row[0];
+                },
+                'orderSequence': ['desc', 'asc'],
+            },
+            // Logged In
             {
                 'targets': 2,
+                'render': function (data, type, row) {
+                    if (row[5] === '1970-01-01 00:00:00' || row[5] === '0001-01-01 00:00:00') {
+                        return '';
+                    }
+                    return row[5];
+                },
+                'orderSequence': ['desc', 'asc'],
+            },
+            // Profile
+            {
+                'targets': 3,
                 'render': function (data, type, row) {
                     if (row[3] > 0) {
                         return '<a href="/players/' + row[3] + '">' + row[3] + '</a>';
@@ -106,7 +117,7 @@ if ($('#admin-users-page').length > 0) {
             },
             // level
             {
-                'targets': 3,
+                'targets': 4,
                 'render': function (data, type, row) {
                     if (row[4] > 1) {
                         return row[4];

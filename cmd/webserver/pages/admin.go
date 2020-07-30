@@ -84,12 +84,13 @@ func adminUsersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		db = db.Model(&mysql.User{})
-		db = db.Select([]string{"created_at", "email", "email_verified", "steam_id", "level"})
+		db = db.Select([]string{"created_at", "email", "email_verified", "steam_id", "level", "logged_in_at"})
 		db = db.Limit(100)
 		db = db.Offset(query.GetOffset())
 
 		sortCols := map[string]string{
-			"0": "created_at",
+			"1": "created_at",
+			"2": "created_at",
 			"4": "level",
 		}
 		db = query.SetOrderOffsetGorm(db, sortCols)
@@ -125,11 +126,12 @@ func adminUsersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var response = datatable.NewDataTablesResponse(r, query, count, count, nil)
 	for _, user := range users {
 		response.AddRow([]interface{}{
-			user.CreatedAt.Format(helpers.DateSQL), // 0
-			user.Email,                             // 1
-			user.EmailVerified,                     // 2
-			user.SteamID.String,                    // 3 - Must be string
-			user.Level,                             // 4
+			user.CreatedAt.Format(helpers.DateSQL),  // 0
+			user.Email,                              // 1
+			user.EmailVerified,                      // 2
+			user.SteamID.String,                     // 3 - Must be string
+			user.Level,                              // 4
+			user.LoggedInAt.Format(helpers.DateSQL), // 5
 		})
 	}
 
