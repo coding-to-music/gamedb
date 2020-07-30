@@ -32,7 +32,6 @@ func appsPlayersHandler(messages []*rabbit.Message) {
 		player := elasticsearch.Player{}
 		player.ID = payload.Player.ID
 		player.PersonaName = payload.Player.PersonaName
-		player.PersonaNameRecent = []string{} // todo
 		player.VanityURL = payload.Player.VanityURL
 		player.Avatar = payload.Player.Avatar
 		player.CountryCode = payload.Player.CountryCode
@@ -50,6 +49,23 @@ func appsPlayersHandler(messages []*rabbit.Message) {
 		player.Friends = payload.Player.FriendsCount
 		player.Comments = payload.Player.CommentsCount
 
+		// Add aliases
+		aliases, err := mongo.GetPlayerAliases(payload.Player.ID)
+		if err != nil {
+			log.Err(err, message.Message.Body)
+			sendToFailQueue(message)
+			continue
+		}
+
+		if len(aliases) > 5 {
+			aliases = aliases[0:5]
+		}
+
+		for _, v := range aliases {
+			player.PersonaNameRecent = append(player.PersonaNameRecent, v.PlayerName)
+		}
+
+		// Send to Elastic
 		err = elasticsearch.IndexPlayer(player)
 		if err != nil {
 			log.Err(err)
