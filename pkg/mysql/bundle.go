@@ -21,8 +21,8 @@ type Bundle struct {
 	Discount        int       `gorm:"not null;column:discount"`
 	HighestDiscount int       `gorm:"not null;column:highest_discount"`
 	LowestDiscount  int       `gorm:"not null;column:lowest_discount"`
-	AppIDs          string    `gorm:"not null;column:app_ids"`
-	PackageIDs      string    `gorm:"not null;column:package_ids"`
+	AppIDs          string    `gorm:"not null;column:app_ids"`     // JSON
+	PackageIDs      string    `gorm:"not null;column:package_ids"` // JSON
 	Image           string    `gorm:"not null;column:image"`
 }
 

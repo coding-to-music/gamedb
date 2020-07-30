@@ -536,17 +536,14 @@ func updateAppDetails(app *mongo.App) (err error) {
 				return err
 			}
 
-			var publisherIDs []int
 			for _, v := range response.Data.Publishers {
 				var publisher mysql.Publisher
 				gorm = gorm.Unscoped().FirstOrCreate(&publisher, mysql.Publisher{Name: mysql.TrimPublisherName(v)})
 				if gorm.Error != nil {
 					return gorm.Error
 				}
-				publisherIDs = append(publisherIDs, publisher.ID)
+				app.Publishers = append(app.Publishers, publisher.ID)
 			}
-
-			app.Publishers = publisherIDs
 
 			// Developers
 			gorm, err = mysql.GetMySQLClient()
@@ -554,25 +551,14 @@ func updateAppDetails(app *mongo.App) (err error) {
 				return err
 			}
 
-			var developerIDs []int
 			for _, v := range response.Data.Developers {
 				var developer mysql.Developer
 				gorm = gorm.Unscoped().FirstOrCreate(&developer, mysql.Developer{Name: strings.TrimSpace(v)})
 				if gorm.Error != nil {
 					return gorm.Error
 				}
-				developerIDs = append(developerIDs, developer.ID)
+				app.Developers = append(app.Developers, developer.ID)
 			}
-
-			app.Developers = developerIDs
-
-			// Categories
-			var categories []int
-			for _, v := range response.Data.Categories {
-				categories = append(categories, int(v.ID))
-			}
-
-			app.Categories = categories
 
 			// Genres
 			gorm, err = mysql.GetMySQLClient()
@@ -580,17 +566,24 @@ func updateAppDetails(app *mongo.App) (err error) {
 				return err
 			}
 
-			var genreIDs []int
 			for _, v := range response.Data.Genres {
 				var genre mysql.Genre
 				gorm = gorm.Unscoped().Assign(mysql.Genre{Name: strings.TrimSpace(v.Description)}).FirstOrCreate(&genre, mysql.Genre{ID: int(v.ID)})
 				if gorm.Error != nil {
 					return gorm.Error
 				}
-				genreIDs = append(genreIDs, genre.ID)
+				app.Genres = append(app.Genres, genre.ID)
 			}
 
-			app.Genres = genreIDs
+			// Categories
+			for _, v := range response.Data.Categories {
+				app.Categories = append(app.Categories, int(v.ID))
+			}
+
+			// Demos
+			for _, v := range response.Data.Demos {
+				app.Demos = append(app.Demos, int(v.AppID))
+			}
 
 			// Platforms
 			var platforms []string
@@ -604,16 +597,7 @@ func updateAppDetails(app *mongo.App) (err error) {
 				platforms = append(platforms, mongo.PlatformMac)
 			}
 
-			// Platforms
 			app.Platforms = platforms
-
-			// Demos
-			var demos []int
-			for _, v := range response.Data.Demos {
-				demos = append(demos, int(v.AppID))
-			}
-
-			app.Demos = demos
 
 			// Images
 			var wg sync.WaitGroup
