@@ -1,11 +1,18 @@
 {{define "api"}}
     {{ template "_header" . }}
 
+    <script>
+        // Here so it's loaded before the JS in the iframe
+        function resizeIframe(iframe) {
+            iframe.height = iframe.contentWindow.document.body.scrollHeight + "px";
+        }
+    </script>
+
     <div class="container" id="api-page">
 
-        <div class="jumbotron mb-0">
+        <div class="jumbotron">
 
-            <h1><i class="fas fa-cloud-download-alt"></i> Game DB API</h1>
+            <h1><i class="fas fa-cloud-download-alt"></i> {{ .TitleOnly }}</h1>
             <p class="lead">The API is built with <a target="_blank" rel="noopener" href="/api/openapi.json">Open API</a> so you can generate api clients in your language.</p>
             <div>
                 <small>If you need anything that is not in the API yet, please <a href="/contact">contact</a> me.</small>
@@ -16,103 +23,28 @@
 
         {{ template "_flashes" . }}
 
-        <div class="row">
-            <div class="d-none d-xl-block col-3">
+        <div class="card">
+            <div class="card-header">
 
-                <div id="sidebar">
-                    <div class="sidebar__inner pt-3">
+                <ul class="nav nav-tabs card-header-tabs nav-fill-mobile">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#gamedb" role="tab">Game DB</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#steam" role="tab">Steam</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body p-0">
 
-                        <div class="card">
-                            <div class="card-body">
-
-                                <ul class="list-group">
-                                    {{ range $pathKey, $path := .Swagger.Paths }}
-                                        {{ range $verb, $endpoint := $path.Operations }}
-                                            <a href="#{{ slug .Summary }}" class="list-group-item list-group-item-action text-truncate" title="{{ .Summary }}">
-                                                {{ .Summary }}
-                                            </a>
-                                        {{ end }}
-                                    {{ end }}
-                                </ul>
-
-                            </div>
-                        </div>
-
+                <div class="tab-content">
+                    <div class="tab-pane active" id="gamedb" role="tabpanel">
+                        <iframe src="/api/gamedb"></iframe>
+                    </div>
+                    <div class="tab-pane" id="steam" role="tabpanel">
+                        <iframe src="/api/steam"></iframe>
                     </div>
                 </div>
-
-            </div>
-            <div class="col-12 col-xl-9">
-
-                {{ range $pathKey, $path := .Swagger.Paths }}
-                    {{ range $verb, $endpoint := $path.Operations }}
-
-                        <div class="card mt-3" id="{{ slug .Summary }}">
-                            <h4 class="card-header"><a href="#{{ slug .Summary }}">{{ .Summary }}</a></h4>
-                            <div class="card-body">
-
-                                <form action="{{ $.Base }}{{ $pathKey }}" target="_blank" rel="noopener" method="{{ $verb }}">
-
-                                    <div class="input-group mb-2">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text">{{ $verb }}</span>
-                                        </div>
-                                        <!--suppress HtmlFormInputWithoutLabel -->
-                                        <input type="text" class="form-control endpoint" value="{{ $.Base }}{{ $pathKey }}">
-                                        <div class="input-group-append">
-                                            <button class="btn btn-success" type="submit" aria-label="Go">Go</button>
-                                        </div>
-                                    </div>
-
-
-                                    <div class="table-responsive mb-2">
-                                        <table class="table table-borderless table-hover table-sm mb-0">
-                                            <thead>
-                                            <tr>
-                                                <th scope="col" class="font-weight-bold" style="width: 30%"></th>
-                                                <th scope="col" class="font-weight-bold">Name</th>
-                                                <th scope="col" class="font-weight-bold">Type</th>
-                                                <th scope="col" class="font-weight-bold">Location</th>
-                                                <th scope="col" class="font-weight-bold">Required</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            {{ range $key, $value := .Parameters }}
-                                                <tr>
-                                                    <td>
-                                                        <label for="{{ .Value.Name }}" class="sr-only sr-only-focusable">API Key</label>
-                                                        <!--suppress HtmlFormInputWithoutLabel -->
-                                                        <input class="form-control form-control-sm api-field"
-                                                               {{ if .Value.Required }}required="required"{{end}}
-                                                                {{/*{{ if .Value.Pattern }}pattern="{{ .Value.Pattern }}"{{end}}*/}}
-                                                               data-location="{{ .Value.In }}"
-                                                               data-name="{{ .Value.Name }}"
-                                                               type="{{ $.InputType .Value.Schema.Value }}"
-                                                               name="{{ .Value.Name }}"
-                                                                {{ if and (eq .Value.Name "key") (ne $.Key "") }}value="{{ $.Key }}" readonly="readonly"{{ end }}>
-                                                    </td>
-                                                    <td>{{ .Value.Name }}</td>
-                                                    <td>{{ $.ParamType .Value.Schema.Value }}</td>
-                                                    <td>{{ .Value.In }}</td>
-                                                    <td>{{ if .Value.Required }}<i class="fas fa-check"></i>{{ else }}<i class="fas fa-times"></i>{{end}}</td>
-                                                </tr>
-                                            {{ end }}
-                                            </tbody>
-                                        </table>
-                                    </div>
-
-                                </form>
-
-                                <h5 class="mb-0">Response</h5>
-                                <div class="json">
-                                    {{ $.PathToSchema $pathKey $verb }}
-                                </div>
-
-                            </div>
-                        </div>
-                    {{ end }}
-                {{ end }}
-
             </div>
         </div>
 

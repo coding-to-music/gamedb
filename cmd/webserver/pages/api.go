@@ -7,18 +7,18 @@ import (
 	"github.com/gamedb/gamedb/cmd/webserver/pages/api"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/api/generated"
 	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
-	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/go-chi/chi"
-	"github.com/tidwall/pretty"
 )
 
 func APIRouter() http.Handler {
 
 	r := chi.NewRouter()
 	r.Get("/", apiHandler)
-	r.Get("/openapi.json", openAPIJSONHandler)
+	r.Get("/gamedb", apiGamedbHandler)
+	r.Get("/gamedb.json", apiGamedbJSONHandler)
+	r.Get("/steam", apiSteamHandler)
+	r.Get("/steam.json", apiSteamJSONHandler)
 
 	// Add generated handlers
 	generated.HandlerFromMux(api.Server{}, r)
@@ -29,9 +29,7 @@ func APIRouter() http.Handler {
 func apiHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := apiTemplate{}
-	t.fill(w, r, "API", "A list of API endpoints to access Steam data & Game DB data")
-	t.Swagger = api.Swagger
-	t.Base = config.Config.GameDBDomain.Get() + "/api"
+	t.fill(w, r, "API Docs", "A list of API endpoints to access Steam data & Game DB data")
 	t.Key = sessionHelpers.Get(r, sessionHelpers.SessionUserAPIKey)
 
 	returnTemplate(w, r, "api", t)
@@ -39,87 +37,45 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 
 type apiTemplate struct {
 	globalTemplate
-	Key     string
-	Swagger *openapi3.Swagger
-	Base    string
+	Key string
 }
 
-func (t apiTemplate) InputType(schema *openapi3.Schema) string {
+func apiGamedbHandler(w http.ResponseWriter, r *http.Request) {
 
-	if schema.Type == "array" {
-		return t.InputType(schema.Items.Value)
-	}
+	t := apiFrameTemplate{}
+	t.JSON = "/api/gamedb.json"
 
-	switch schema.Type {
-	case "integer", "int32", "int64":
-		return "number"
-	case "boolean":
-		return "checkbox"
-	default:
-		return "text"
-	}
+	returnTemplate(w, r, "api_frame", t)
 }
 
-func (t apiTemplate) ParamType(schema *openapi3.Schema) string {
+func apiSteamHandler(w http.ResponseWriter, r *http.Request) {
 
-	switch schema.Type {
-	case "integer":
-		if schema.Format != "" {
-			return schema.Format
-		}
-		return schema.Type
-	case "array":
-		return "" + t.ParamType(schema.Items.Value) + " (array)"
-	default:
-		return schema.Type
-	}
+	t := apiFrameTemplate{}
+	t.JSON = "/api/steam.json"
+
+	returnTemplate(w, r, "api_frame", t)
 }
 
-func (t apiTemplate) PathToSchema(path string, verb string) string {
-
-	var schema *openapi3.SchemaRef
-	var x = api.Swagger.Paths[path]
-
-	if verb == "GET" {
-		schema = x.Get.Responses["200"].Value.Content["application/json"].Schema
-	} else if verb == "POST" {
-		schema = x.Post.Responses["200"].Value.Content["application/json"].Schema
-	} else {
-		return ""
-	}
-
-	// return t.renderSchema(schema)
-	return string(pretty.Pretty([]byte(t.renderSchema(schema.Value))))
+type apiFrameTemplate struct {
+	globalTemplate
+	JSON string
 }
 
-func (t apiTemplate) renderSchema(schema *openapi3.Schema) (s string) {
+func apiGamedbJSONHandler(w http.ResponseWriter, r *http.Request) {
 
-	if len(schema.Properties) > 0 {
-
-		// Object
-		s += "{"
-		for k, v := range schema.Properties {
-			s += "\"" + k + "\":  " + t.renderSchema(v.Value) + ", "
-		}
-		s += "}"
-
-	} else if schema.Items != nil && schema.Type == "array" {
-
-		// Array
-		s += "[" + t.renderSchema(schema.Items.Value) + "]"
-
-	} else {
-
-		// Property
-		s += "\"" + schema.Type + "\""
+	b, err := json.Marshal(api.SwaggerGameDB)
+	if err != nil {
+		log.Err(err, r)
+		return
 	}
 
-	return s
+	_, err = w.Write(b)
+	log.Err(err, r)
 }
 
-func openAPIJSONHandler(w http.ResponseWriter, r *http.Request) {
+func apiSteamJSONHandler(w http.ResponseWriter, r *http.Request) {
 
-	b, err := json.MarshalIndent(api.Swagger, "", "  ")
+	b, err := json.Marshal(api.SwaggerSteam)
 	if err != nil {
 		log.Err(err, r)
 		return

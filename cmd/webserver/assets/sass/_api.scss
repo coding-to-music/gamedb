@@ -1,25 +1,10 @@
 #api-page {
 
-    form {
-        table {
-            input {
-                width: 200px;
-            }
-        }
-    }
-
-    #sidebar {
-        font-size: 0.9rem;
-        will-change: min-height;
-
-        a {
-            padding: 5px;
-        }
-    }
-
-    .sidebar__inner {
-        transform: translate(0, 0); /* For browsers don't support translate3d. */
-        transform: translate3d(0, 0, 0);
-        will-change: position, transform;
+    iframe {
+        width: 100%;
+        min-height: 600px;
+        border: none;
+        background: transparent;
+        float: left;
     }
 }

@@ -35,14 +35,15 @@ func setHeaders(w http.ResponseWriter, contentType string) {
 
 	csp := []string{
 		"default-src 'none'",
-		"script-src 'self' 'unsafe-eval' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.datatables.net https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://platform.twitter.com https://www.google.com https://*.gstatic.com https://*.patreon.com",
+		"script-src 'self' 'unsafe-eval' 'unsafe-inline' blob: https://cdnjs.cloudflare.com https://cdn.datatables.net https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://platform.twitter.com https://www.google.com https://*.gstatic.com https://*.patreon.com https://cdn.jsdelivr.net",
 		"style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.datatables.net https://fonts.googleapis.com",
 		"media-src https://steamcdn-a.akamaihd.net",
 		"font-src https://fonts.gstatic.com https://cdnjs.cloudflare.com",
-		"frame-src https://platform.twitter.com https://*.facebook.com https://www.youtube.com https://*.google.com https://www.patreon.com",
+		"frame-src 'self' https://platform.twitter.com https://*.facebook.com https://www.youtube.com https://*.google.com https://www.patreon.com",
 		"connect-src 'self' ws: wss: https://*.infolinks.com https://in.hotjar.com https://vc.hotjar.io https://www.google-analytics.com https://stats.g.doubleclick.net",
 		"manifest-src 'self'",
 		"img-src 'self' data: *", // * to hotlink news article images, info link images etc
+		"worker-src 'self' blob:",
 	}
 
 	fp := []string{

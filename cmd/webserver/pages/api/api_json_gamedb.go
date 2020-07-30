@@ -1,17 +1,8 @@
 package api
 
 import (
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/getkin/kin-openapi/openapi3"
 )
-
-func init() {
-
-	err := openapi3.NewSwaggerLoader().ResolveRefsIn(Swagger, nil)
-	if err != nil {
-		log.Err(err)
-	}
-}
 
 const (
 	tagGame   = "game"
@@ -42,7 +33,7 @@ var (
 	}
 )
 
-var Swagger = &openapi3.Swagger{
+var SwaggerGameDB = &openapi3.Swagger{
 	OpenAPI: "3.0.0",
 	Servers: []*openapi3.Server{
 		{URL: "https://gamedb.online/api"}, // Hardcoded to not get local domain
