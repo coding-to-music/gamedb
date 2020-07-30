@@ -298,6 +298,7 @@ var SwaggerGameDB = &openapi3.Swagger{
 				},
 			},
 			Post: &openapi3.Operation{
+				Tags:    []string{tagPlayer},
 				Summary: "Update Player",
 				Parameters: openapi3.Parameters{
 					{Value: keyPostParam},
