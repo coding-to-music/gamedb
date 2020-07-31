@@ -599,6 +599,12 @@ if ($appPage.length > 0) {
                         reversed: true,
                         gridLineColor: 'rgba(0,0,0,0)',
                     },
+                    legend: {
+                        enabled: true,
+                        align: 'right',
+                        layout: 'vertical',
+                        verticalAlign: 'middle',
+                    },
                     tooltip: {
                         formatter: function () {
                             const day = this.series.yAxis.categories[this.point.y];
