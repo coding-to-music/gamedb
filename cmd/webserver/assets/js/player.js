@@ -39,8 +39,9 @@ if ($playerPage.length > 0) {
 
                 const ul = '<ul>' +
                     '<li data-queue="player">Details</li>' +
-                    '<li data-queue="group">Groups</li>' +
                     '<li data-queue="alias">Aliases</li>' +
+                    '<li data-queue="group">Groups</li>' +
+                    '<li data-queue="game">Games</li>' +
                     '<li data-queue="achievement">Achievements</li>' +
                     '</ul>';
 

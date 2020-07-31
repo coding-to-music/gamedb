@@ -2,7 +2,6 @@ package queue
 
 import (
 	"path"
-	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -126,13 +125,6 @@ func playerHandler(messages []*rabbit.Message) {
 					steam.LogSteamError(err, payload.ID)
 					sendToRetryQueue(message)
 				}
-				return
-			}
-
-			err = updatePlayerGames(&player, payload)
-			if err != nil {
-				steam.LogSteamError(err, payload.ID)
-				sendToRetryQueue(message)
 				return
 			}
 
@@ -328,6 +320,13 @@ func playerHandler(messages []*rabbit.Message) {
 		// Produce to sub queues
 		var produces = []QueueMessageInterface{
 			PlayersSearchMessage{Player: player},
+			PlayerGamesMessage{
+				PlayerID:                 player.ID,
+				PlayerCountry:            player.CountryCode,
+				PlayerUpdated:            player.UpdatedAt,
+				SkipAchievements:         payload.SkipAchievements,
+				ForceAchievementsRefresh: payload.ForceAchievementsRefresh,
+			},
 		}
 
 		if !player.Removed {
@@ -383,140 +382,6 @@ func updatePlayerSummary(player *mongo.Player) error {
 	player.TimeCreated = time.Unix(summary.TimeCreated, 0)
 	player.PrimaryGroupID = summary.PrimaryClanID
 	player.CommunityVisibilityState = summary.CommunityVisibilityState
-
-	return err
-}
-
-// Always updates player_app rows as the playtime will change
-func updatePlayerGames(player *mongo.Player, payload PlayerMessage) error {
-
-	// Grab games from Steam
-	resp, err := steam.GetSteam().GetOwnedGames(player.ID)
-	err = steam.AllowSteamCodes(err)
-	if err != nil {
-		return err
-	}
-
-	// Save count
-	player.GamesCount = len(resp.Games)
-
-	// Start creating PlayerApp's
-	var playerApps = map[int]*mongo.PlayerApp{}
-	var appPrices = map[int]map[string]int{}
-	var appPriceHour = map[int]map[string]float64{}
-	var appIDs []int
-	var playtime = 0
-	var playtimeWindows = 0
-	var playtimeMac = 0
-	var playtimeLinux = 0
-
-	for _, v := range resp.Games {
-
-		playtime += v.PlaytimeForever
-		playtimeWindows += v.PlaytimeWindows
-		playtimeMac += v.PlaytimeMac
-		playtimeLinux += v.PlaytimeLinux
-
-		appIDs = append(appIDs, v.AppID)
-		playerApps[v.AppID] = &mongo.PlayerApp{
-			PlayerID:      player.ID,
-			PlayerCountry: player.CountryCode,
-			AppID:         v.AppID,
-			AppName:       v.Name,
-			AppIcon:       v.ImgIconURL,
-			AppTime:       v.PlaytimeForever,
-		}
-		appPrices[v.AppID] = map[string]int{}
-		appPriceHour[v.AppID] = map[string]float64{}
-	}
-
-	// Save playtime
-	player.PlayTime = playtime
-	player.PlayTimeWindows = playtimeWindows
-	player.PlayTimeMac = playtimeMac
-	player.PlayTimeLinux = playtimeLinux
-
-	// Getting missing price info from MySQL
-	gameRows, err := mongo.GetAppsByID(appIDs, bson.M{"_id": 1, "prices": 1, "type": 1})
-	if err != nil {
-		return err
-	}
-
-	player.GamesByType = map[string]int{}
-
-	for _, gameRow := range gameRows {
-
-		// Set games by type
-		if _, ok := player.GamesByType[gameRow.GetType()]; ok {
-			player.GamesByType[gameRow.GetType()]++
-		} else {
-			player.GamesByType[gameRow.GetType()] = 1
-		}
-
-		//
-		for code, vv := range gameRow.Prices {
-
-			vv = gameRow.Prices.Get(code)
-
-			appPrices[gameRow.ID][string(code)] = vv.Final
-			if appPrices[gameRow.ID][string(code)] > 0 && playerApps[gameRow.ID].AppTime == 0 {
-				appPriceHour[gameRow.ID][string(code)] = -1 // Infinite
-			} else if appPrices[gameRow.ID][string(code)] > 0 && playerApps[gameRow.ID].AppTime > 0 {
-				appPriceHour[gameRow.ID][string(code)] = (float64(appPrices[gameRow.ID][string(code)]) / 100) / (float64(playerApps[gameRow.ID].AppTime) / 60) * 100
-			} else {
-				appPriceHour[gameRow.ID][string(code)] = 0 // Free
-			}
-		}
-
-		//
-		playerApps[gameRow.ID].AppPrices = appPrices[gameRow.ID]
-		log.Err(err)
-
-		//
-		playerApps[gameRow.ID].AppPriceHour = appPriceHour[gameRow.ID]
-		log.Err(err)
-	}
-
-	// Save playerApps to Mongo
-	err = mongo.UpdatePlayerApps(playerApps)
-	if err != nil {
-		return err
-	}
-
-	// Get top game for background
-	if len(appIDs) > 0 {
-
-		sort.Slice(appIDs, func(i, j int) bool {
-			return playerApps[appIDs[i]].AppTime > playerApps[appIDs[j]].AppTime
-		})
-
-		player.BackgroundAppID = appIDs[0]
-	}
-
-	// Save stats to player
-	var gameStats = mongo.PlayerAppStatsTemplate{}
-	for _, v := range playerApps {
-
-		gameStats.All.AddApp(v.AppTime, appPrices[v.AppID], appPriceHour[v.AppID])
-		if v.AppTime > 0 {
-			gameStats.Played.AddApp(v.AppTime, appPrices[v.AppID], appPriceHour[v.AppID])
-		}
-	}
-
-	player.GameStats = gameStats
-
-	if !payload.SkipAchievements || payload.ForceAchievementsRefresh {
-		if player.UpdatedAt.Before(time.Now().Add(time.Hour * 24 * 13 * -1)) { // Just under 2 weeks
-			for _, v := range resp.Games {
-				if v.PlaytimeForever > 0 {
-					err = ProducePlayerAchievements(player.ID, v.AppID, payload.ForceAchievementsRefresh)
-					log.Err(err)
-				}
-			}
-			err = ProducePlayerAchievements(player.ID, 0, false)
-			log.Err(err)
-		}
-	}
 
 	return err
 }
@@ -898,7 +763,7 @@ func updatePlayerFriendRows(player mongo.Player) error {
 	update := bson.D{
 		{"avatar", player.Avatar},
 		{"name", player.PersonaName},
-		{"games", player.GamesCount},
+		{"games", player.GamesCount}, // Not the latest value, updated in sub queue
 		{"level", player.Level},
 	}
 
@@ -910,11 +775,13 @@ func savePlayerToInflux(player mongo.Player) (err error) {
 
 	fields := map[string]interface{}{
 		"level":    player.Level,
-		"games":    player.GamesCount,
 		"badges":   player.BadgesCount,
-		"playtime": player.PlayTime,
 		"friends":  player.FriendsCount,
 		"comments": player.CommentsCount,
+
+		// Saved in sub queues
+		// "games":    player.GamesCount,
+		// "playtime": player.PlayTime,
 	}
 
 	// Add ranks to map
