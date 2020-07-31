@@ -200,12 +200,6 @@ func (app App) BSON() bson.D {
 	}
 }
 
-type AppTagCount struct {
-	ID    int    `json:"id"`
-	Name  string `json:"name"`
-	Count int    `json:"count"`
-}
-
 func (app App) GetID() int {
 	return app.ID
 }
@@ -549,6 +543,12 @@ func (app App) GetAppPackages() (packages []Package, err error) {
 	})
 
 	return packages, err
+}
+
+type AppTagCount struct {
+	ID    int    `json:"id"`
+	Name  string `json:"name"`
+	Count int    `json:"count"`
 }
 
 func ChunkApps(strings []App, n int) (chunks [][]App) {
