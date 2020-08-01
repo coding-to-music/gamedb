@@ -52,12 +52,14 @@ func (s Server) GetGamesId(w http.ResponseWriter, r *http.Request) {
 						Currency        string `json:"currency"`
 						DiscountPercent int32  `json:"discountPercent"`
 						Final           int32  `json:"final"`
+						Free            bool   `json:"free"`
 						Individual      int32  `json:"individual"`
 						Initial         int32  `json:"initial"`
 					}{
 						Currency:        string(v.Currency),
 						DiscountPercent: int32(v.DiscountPercent),
 						Final:           int32(v.Final),
+						Free:            v.Free,
 						Individual:      int32(v.Individual),
 						Initial:         int32(v.Initial),
 					})
