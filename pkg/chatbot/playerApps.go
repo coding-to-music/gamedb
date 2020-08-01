@@ -60,6 +60,11 @@ func (c CommandPlayerApps) Output(msg *discordgo.MessageCreate) (message discord
 		log.Err(err)
 	}
 
-	message.Content = "<@" + msg.Author.ID + ">, " + player.GetName() + " has **" + strconv.Itoa(player.GamesCount) + "** " + matches[1]
+	if player.GamesCount > 0 {
+		message.Content = "<@" + msg.Author.ID + ">, " + player.GetName() + " has **" + strconv.Itoa(player.GamesCount) + "** " + matches[1]
+	} else {
+		message.Content = "<@" + msg.Author.ID + ">, Profile set to private"
+	}
+
 	return message, nil
 }

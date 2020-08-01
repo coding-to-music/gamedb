@@ -107,7 +107,7 @@ func (c CommandPlayerWishlist) Output(msg *discordgo.MessageCreate) (message dis
 		message.Embed.Description = "```" + strings.Join(code, "\n") + "```"
 
 	} else {
-		message.Content = player.GetName() + " has no wishlist items" // todo, dont do as content
+		message.Content = player.GetName() + " has no wishlist items, or a profile set to private"
 	}
 
 	return message, nil
