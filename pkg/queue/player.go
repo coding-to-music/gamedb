@@ -32,330 +32,326 @@ type PlayerMessage struct {
 	UserAgent                *string `json:"user_agent"`
 }
 
-func playerHandler(messages []*rabbit.Message) {
-
-	for _, message := range messages {
-
-		payload := PlayerMessage{}
-
-		err := helpers.Unmarshal(message.Message.Body, &payload)
-		if err != nil {
-			log.Err(err, message.Message.Body)
-			sendToFailQueue(message)
-			continue
-		}
-
-		if payload.ID == 0 {
-			message.Ack(false)
-			continue
-		}
-
-		if payload.UserAgent != nil && helpers.IsBot(*payload.UserAgent) {
-			message.Ack(false)
-			continue
-		}
-
-		payload.ID, err = helpers.IsValidPlayerID(payload.ID)
-		if err != nil {
-			message.Ack(false)
-			continue
-		}
-
-		// Update player
-		player, err := mongo.GetPlayer(payload.ID)
-		if err == nil && payload.SkipExistingPlayer {
-			message.Ack(false)
-			continue
-		}
-		newPlayer := err == mongo.ErrNoDocuments
-		err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
-		if err != nil {
-
-			log.Err(err, payload.ID)
-			if err == steamid.ErrInvalidPlayerID {
-				sendToFailQueue(message)
-			} else {
-				sendToRetryQueue(message)
-			}
-			continue
-		}
-
-		player.ID = payload.ID
-
-		// Websocket
-		defer func() {
-
-			wsPayload := PlayerPayload{
-				ID:            strconv.FormatInt(player.ID, 10),
-				Name:          player.GetName(),
-				Link:          player.GetPath(),
-				Avatar:        player.GetAvatar(),
-				CommunityLink: player.CommunityLink(),
-				UpdatedAt:     time.Now().Unix(),
-				Queue:         "player",
-			}
-
-			err = ProduceWebsocket(wsPayload, websockets.PagePlayer)
-			if err != nil {
-				log.Err(err, payload.ID)
-			}
-		}()
-
-		// Skip removed players
-		if player.Removed {
-			message.Ack(false)
-			continue
-		}
-
-		//
-		var wg sync.WaitGroup
-
-		// Calls to api.steampowered.com
-		wg.Add(1)
-		go func() {
-
-			defer wg.Done()
-
-			err = updatePlayerSummary(&player)
-			if err != nil {
-
-				if err == steamapi.ErrProfileMissing {
-					message.Ack(false)
-				} else {
-					steam.LogSteamError(err, payload.ID)
-					sendToRetryQueue(message)
-				}
-				return
-			}
-
-			err = updatePlayerRecentGames(&player, payload)
-			if err != nil {
-				steam.LogSteamError(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-
-			err = updatePlayerBadges(&player)
-			if err != nil {
-				steam.LogSteamError(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-
-			err = updatePlayerFriends(&player)
-			if err != nil {
-				steam.LogSteamError(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-
-			err = updatePlayerLevel(&player)
-			if err != nil {
-				steam.LogSteamError(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-
-			err = updatePlayerBans(&player)
-			if err != nil {
-				steam.LogSteamError(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-		}()
-
-		// Calls to store.steampowered.com
-		wg.Add(1)
-		go func() {
-
-			defer wg.Done()
-
-			err = updatePlayerWishlistApps(&player)
-			if err != nil {
-				steam.LogSteamError(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-
-			err = updatePlayerComments(&player)
-			if err != nil {
-				steam.LogSteamError(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-		}()
-
-		wg.Wait()
-
-		if message.ActionTaken {
-			continue
-		}
-
-		// Read from Mongo databases
-		wg.Add(1)
-		go func() {
-
-			defer wg.Done()
-
-			apps, err := mongo.GetPlayerWishlistAppsByPlayer(player.ID, 0, 0, nil, bson.M{"app_prices": 1})
-			if err != nil {
-				log.Err(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-
-			var total = map[steamapi.ProductCC]int{}
-			for _, app := range apps {
-
-				for code, price := range app.AppPrices {
-					total[code] += price
-				}
-			}
-
-			player.WishlistTotalCost = total
-		}()
-
-		wg.Wait()
-
-		if message.ActionTaken {
-			continue
-		}
-
-		// Write to databases
-		wg.Add(1)
-		go func() {
-
-			defer wg.Done()
-
-			err = savePlayerRow(player)
-			if err != nil {
-				log.Err(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-		}()
-
-		if newPlayer {
-			wg.Add(1)
-			go func() {
-
-				defer wg.Done()
-
-				err = updatePlayerFriendRows(player)
-				if err != nil {
-					log.Err(err, payload.ID)
-					sendToRetryQueue(message)
-					return
-				}
-			}()
-		}
-
-		wg.Add(1)
-		go func() {
-
-			defer wg.Done()
-
-			err = savePlayerToInflux(player)
-			if err != nil {
-				log.Err(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-		}()
-
-		wg.Add(1)
-		go func() {
-
-			defer wg.Done()
-
-			user, err := mysql.GetUserByKey("steam_id", player.ID, 0)
-			if err == mysql.ErrRecordNotFound {
-				return
-			}
-			if err != nil {
-				log.Err(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-
-			err = mongo.CreateUserEvent(nil, user.ID, mongo.EventRefresh)
-			if err != nil {
-				log.Err(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-		}()
-
-		wg.Wait()
-
-		if message.ActionTaken {
-			continue
-		}
-
-		// Clear caches
-		wg.Add(1)
-		go func() {
-
-			defer wg.Done()
-
-			var items = []string{
-				memcache.MemcachePlayer(player.ID).Key,
-				memcache.MemcachePlayerInQueue(player.ID).Key,
-			}
-
-			err = memcache.Delete(items...)
-			if err != nil {
-				log.Err(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-		}()
-
-		wg.Wait()
-
-		if message.ActionTaken {
-			continue
-		}
-
-		// Produce to sub queues
-		var produces = []QueueMessageInterface{
-			PlayersSearchMessage{Player: player},
-			PlayerGamesMessage{
-				PlayerID:                 player.ID,
-				PlayerCountry:            player.CountryCode,
-				PlayerUpdated:            player.UpdatedAt,
-				SkipAchievements:         payload.SkipAchievements,
-				ForceAchievementsRefresh: payload.ForceAchievementsRefresh,
-			},
-		}
-
-		if !player.Removed {
-
-			produces = append(produces, PlayersAliasesMessage{PlayerID: player.ID})
-
-			if !payload.SkipGroupUpdate {
-				produces = append(produces, PlayersGroupsMessage{PlayerID: player.ID, PlayerPersonaName: player.PersonaName, PlayerAvatar: player.Avatar, SkipGroupUpdate: payload.SkipGroupUpdate, UserAgent: payload.UserAgent})
-			}
-		}
-
-		for _, v := range produces {
-			err = produce(v.Queue(), v)
-			if err != nil {
-				log.Err(err)
-				sendToRetryQueue(message)
-				break
-			}
-		}
-
-		if message.ActionTaken {
-			continue
-		}
-
-		//
-		message.Ack(false)
+func playerHandler(message *rabbit.Message) {
+
+	payload := PlayerMessage{}
+
+	err := helpers.Unmarshal(message.Message.Body, &payload)
+	if err != nil {
+		log.Err(err, message.Message.Body)
+		sendToFailQueue(message)
+		return
 	}
-}
 
+	if payload.ID == 0 {
+		message.Ack(false)
+		return
+	}
+
+	if payload.UserAgent != nil && helpers.IsBot(*payload.UserAgent) {
+		message.Ack(false)
+		return
+	}
+
+	payload.ID, err = helpers.IsValidPlayerID(payload.ID)
+	if err != nil {
+		message.Ack(false)
+		return
+	}
+
+	// Update player
+	player, err := mongo.GetPlayer(payload.ID)
+	if err == nil && payload.SkipExistingPlayer {
+		message.Ack(false)
+		return
+	}
+	newPlayer := err == mongo.ErrNoDocuments
+	err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
+	if err != nil {
+
+		log.Err(err, payload.ID)
+		if err == steamid.ErrInvalidPlayerID {
+			sendToFailQueue(message)
+		} else {
+			sendToRetryQueue(message)
+		}
+		return
+	}
+
+	player.ID = payload.ID
+
+	// Websocket
+	defer func() {
+
+		wsPayload := PlayerPayload{
+			ID:            strconv.FormatInt(player.ID, 10),
+			Name:          player.GetName(),
+			Link:          player.GetPath(),
+			Avatar:        player.GetAvatar(),
+			CommunityLink: player.CommunityLink(),
+			UpdatedAt:     time.Now().Unix(),
+			Queue:         "player",
+		}
+
+		err = ProduceWebsocket(wsPayload, websockets.PagePlayer)
+		if err != nil {
+			log.Err(err, payload.ID)
+		}
+	}()
+
+	// Skip removed players
+	if player.Removed {
+		message.Ack(false)
+		return
+	}
+
+	//
+	var wg sync.WaitGroup
+
+	// Calls to api.steampowered.com
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		err = updatePlayerSummary(&player)
+		if err != nil {
+
+			if err == steamapi.ErrProfileMissing {
+				message.Ack(false)
+			} else {
+				steam.LogSteamError(err, payload.ID)
+				sendToRetryQueue(message)
+			}
+			return
+		}
+
+		err = updatePlayerRecentGames(&player, payload)
+		if err != nil {
+			steam.LogSteamError(err, payload.ID)
+			sendToRetryQueue(message)
+			return
+		}
+
+		err = updatePlayerBadges(&player)
+		if err != nil {
+			steam.LogSteamError(err, payload.ID)
+			sendToRetryQueue(message)
+			return
+		}
+
+		err = updatePlayerFriends(&player)
+		if err != nil {
+			steam.LogSteamError(err, payload.ID)
+			sendToRetryQueue(message)
+			return
+		}
+
+		err = updatePlayerLevel(&player)
+		if err != nil {
+			steam.LogSteamError(err, payload.ID)
+			sendToRetryQueue(message)
+			return
+		}
+
+		err = updatePlayerBans(&player)
+		if err != nil {
+			steam.LogSteamError(err, payload.ID)
+			sendToRetryQueue(message)
+			return
+		}
+	}()
+
+	// Calls to store.steampowered.com
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		err = updatePlayerWishlistApps(&player)
+		if err != nil {
+			steam.LogSteamError(err, payload.ID)
+			sendToRetryQueue(message)
+			return
+		}
+
+		err = updatePlayerComments(&player)
+		if err != nil {
+			steam.LogSteamError(err, payload.ID)
+			sendToRetryQueue(message)
+			return
+		}
+	}()
+
+	wg.Wait()
+
+	if message.ActionTaken {
+		return
+	}
+
+	// Read from Mongo databases
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		apps, err := mongo.GetPlayerWishlistAppsByPlayer(player.ID, 0, 0, nil, bson.M{"app_prices": 1})
+		if err != nil {
+			log.Err(err, payload.ID)
+			sendToRetryQueue(message)
+			return
+		}
+
+		var total = map[steamapi.ProductCC]int{}
+		for _, app := range apps {
+
+			for code, price := range app.AppPrices {
+				total[code] += price
+			}
+		}
+
+		player.WishlistTotalCost = total
+	}()
+
+	wg.Wait()
+
+	if message.ActionTaken {
+		return
+	}
+
+	// Write to databases
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		err = savePlayerRow(player)
+		if err != nil {
+			log.Err(err, payload.ID)
+			sendToRetryQueue(message)
+			return
+		}
+	}()
+
+	if newPlayer {
+		wg.Add(1)
+		go func() {
+
+			defer wg.Done()
+
+			err = updatePlayerFriendRows(player)
+			if err != nil {
+				log.Err(err, payload.ID)
+				sendToRetryQueue(message)
+				return
+			}
+		}()
+	}
+
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		err = savePlayerToInflux(player)
+		if err != nil {
+			log.Err(err, payload.ID)
+			sendToRetryQueue(message)
+			return
+		}
+	}()
+
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		user, err := mysql.GetUserByKey("steam_id", player.ID, 0)
+		if err == mysql.ErrRecordNotFound {
+			return
+		}
+		if err != nil {
+			log.Err(err, payload.ID)
+			sendToRetryQueue(message)
+			return
+		}
+
+		err = mongo.CreateUserEvent(nil, user.ID, mongo.EventRefresh)
+		if err != nil {
+			log.Err(err, payload.ID)
+			sendToRetryQueue(message)
+			return
+		}
+	}()
+
+	wg.Wait()
+
+	if message.ActionTaken {
+		return
+	}
+
+	// Clear caches
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var items = []string{
+			memcache.MemcachePlayer(player.ID).Key,
+			memcache.MemcachePlayerInQueue(player.ID).Key,
+		}
+
+		err = memcache.Delete(items...)
+		if err != nil {
+			log.Err(err, payload.ID)
+			sendToRetryQueue(message)
+			return
+		}
+	}()
+
+	wg.Wait()
+
+	if message.ActionTaken {
+		return
+	}
+
+	// Produce to sub queues
+	var produces = []QueueMessageInterface{
+		PlayersSearchMessage{Player: player},
+		PlayerGamesMessage{
+			PlayerID:                 player.ID,
+			PlayerCountry:            player.CountryCode,
+			PlayerUpdated:            player.UpdatedAt,
+			SkipAchievements:         payload.SkipAchievements,
+			ForceAchievementsRefresh: payload.ForceAchievementsRefresh,
+		},
+	}
+
+	if !player.Removed {
+
+		produces = append(produces, PlayersAliasesMessage{PlayerID: player.ID})
+
+		if !payload.SkipGroupUpdate {
+			produces = append(produces, PlayersGroupsMessage{PlayerID: player.ID, PlayerPersonaName: player.PersonaName, PlayerAvatar: player.Avatar, SkipGroupUpdate: payload.SkipGroupUpdate, UserAgent: payload.UserAgent})
+		}
+	}
+
+	for _, v := range produces {
+		err = produce(v.Queue(), v)
+		if err != nil {
+			log.Err(err)
+			sendToRetryQueue(message)
+			break
+		}
+	}
+
+	if message.ActionTaken {
+		return
+	}
+
+	//
+	message.Ack(false)
+}
 func updatePlayerSummary(player *mongo.Player) error {
 
 	summary, err := steam.GetSteam().GetPlayer(player.ID)

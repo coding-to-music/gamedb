@@ -20,54 +20,50 @@ func (m AppsSearchMessage) Queue() rabbit.QueueName {
 	return QueueAppsSearch
 }
 
-func appsSearchHandler(messages []*rabbit.Message) {
+func appsSearchHandler(message *rabbit.Message) {
 
-	for _, message := range messages {
+	payload := AppsSearchMessage{}
 
-		payload := AppsSearchMessage{}
-
-		err := helpers.Unmarshal(message.Message.Body, &payload)
-		if err != nil {
-			log.Err(err, message.Message.Body)
-			sendToFailQueue(message)
-			continue
-		}
-
-		app := elasticsearch.App{}
-		app.AchievementsAvg = payload.App.AchievementsAverageCompletion
-		app.AchievementsCount = payload.App.AchievementsCount
-		app.AchievementsIcons = payload.App.Achievements
-		app.Aliases = makeAppAliases(app)
-		app.Categories = payload.App.Categories
-		app.Developers = payload.App.Developers
-		app.FollowersCount = payload.App.GroupFollowers
-		app.Genres = payload.App.Genres
-		app.Icon = payload.App.Icon
-		app.ID = payload.App.ID
-		app.Name = payload.App.Name
-		app.Platforms = payload.App.Platforms
-		app.PlayersCount = payload.App.PlayerPeakWeek
-		app.Prices = payload.App.Prices
-		app.Publishers = payload.App.Publishers
-		app.ReleaseDate = payload.App.ReleaseDateUnix
-		app.ReviewScore = payload.App.ReviewsScore
-		app.Tags = payload.App.Tags
-		app.Trend = payload.App.PlayerTrend
-		app.Type = payload.App.Type
-		app.WishlistAvg = payload.App.WishlistAvgPosition
-		app.WishlistCount = payload.App.WishlistCount
-
-		err = elasticsearch.IndexApp(app)
-		if err != nil {
-			log.Err(err)
-			sendToRetryQueue(message)
-			continue
-		}
-
-		message.Ack(false)
+	err := helpers.Unmarshal(message.Message.Body, &payload)
+	if err != nil {
+		log.Err(err, message.Message.Body)
+		sendToFailQueue(message)
+		return
 	}
-}
 
+	app := elasticsearch.App{}
+	app.AchievementsAvg = payload.App.AchievementsAverageCompletion
+	app.AchievementsCount = payload.App.AchievementsCount
+	app.AchievementsIcons = payload.App.Achievements
+	app.Aliases = makeAppAliases(app)
+	app.Categories = payload.App.Categories
+	app.Developers = payload.App.Developers
+	app.FollowersCount = payload.App.GroupFollowers
+	app.Genres = payload.App.Genres
+	app.Icon = payload.App.Icon
+	app.ID = payload.App.ID
+	app.Name = payload.App.Name
+	app.Platforms = payload.App.Platforms
+	app.PlayersCount = payload.App.PlayerPeakWeek
+	app.Prices = payload.App.Prices
+	app.Publishers = payload.App.Publishers
+	app.ReleaseDate = payload.App.ReleaseDateUnix
+	app.ReviewScore = payload.App.ReviewsScore
+	app.Tags = payload.App.Tags
+	app.Trend = payload.App.PlayerTrend
+	app.Type = payload.App.Type
+	app.WishlistAvg = payload.App.WishlistAvgPosition
+	app.WishlistCount = payload.App.WishlistCount
+
+	err = elasticsearch.IndexApp(app)
+	if err != nil {
+		log.Err(err)
+		sendToRetryQueue(message)
+		return
+	}
+
+	message.Ack(false)
+}
 var aliasMap = map[int][]string{
 	813780:  {"aoe", "aoe2"},   // Age of Empires II: Definitive Edition
 	221380:  {"aoe", "aoe2"},   // Age of Empires II (2013)

@@ -33,255 +33,252 @@ type AppMessage struct {
 	VDF          map[string]interface{} `json:"vdf"`
 }
 
-func appHandler(messages []*rabbit.Message) {
+func appHandler(message *rabbit.Message) {
 
-	for _, message := range messages {
+	payload := AppMessage{}
 
-		payload := AppMessage{}
-
-		err := helpers.Unmarshal(message.Message.Body, &payload)
-		if err != nil {
-			log.Err(err, message.Message.Body)
-			sendToFailQueue(message)
-			continue
-		}
-
-		var id = payload.ID
-
-		if !helpers.IsValidAppID(id) {
-			log.Err(err, payload.ID)
-			sendToFailQueue(message)
-			continue
-		}
-
-		// Load current app
-		app, err := mongo.GetApp(id, true)
-		if err == mongo.ErrNoDocuments {
-			app = mongo.App{}
-			app.ID = id
-		} else if err != nil {
-			log.Err(err, payload.ID)
-			sendToRetryQueue(message)
-			continue
-		}
-
-		// Skip if updated in last day, unless its from PICS
-		if !config.IsLocal() && !app.ShouldUpdate() && app.ChangeNumber >= payload.ChangeNumber {
-
-			s, err := durationfmt.Format(time.Since(app.UpdatedAt), "%hh %mm")
-			log.Err(err)
-
-			log.Info("Skipping app, updated " + s + " ago")
-			message.Ack(false)
-			continue
-		}
-
-		//
-		var appBeforeUpdate = app
-
-		//
-		err = updateAppPICS(&app, message, payload)
-		if err != nil {
-			log.Err(err, message.Message.Body)
-			sendToRetryQueue(message)
-			continue
-		}
-
-		//
-		var wg sync.WaitGroup
-
-		// Calls to store.steampowered.com
-		var sales []mongo.Sale
-		wg.Add(1)
-		go func() {
-
-			defer wg.Done()
-
-			var err error
-
-			err = updateAppDetails(&app)
-			if err != nil && err != steamapi.ErrAppNotFound {
-				steam.LogSteamError(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-
-			sales, err = scrapeApp(&app)
-			if err != nil {
-				steam.LogSteamError(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-		}()
-
-		// Read from Mongo
-		wg.Add(1)
-		go func() {
-
-			defer wg.Done()
-
-			var err error
-
-			err = updateAppPlaytimeStats(&app)
-			if err != nil {
-				log.Err(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-
-			err = updateAppOwners(&app)
-			if err != nil {
-				log.Err(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-
-			err = updateAppBadgeOwners(&app)
-			if err != nil {
-				log.Err(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-
-			err = updateAppCountries(&app)
-			if err != nil {
-				log.Err(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-		}()
-
-		wg.Wait()
-
-		if message.ActionTaken {
-			continue
-		}
-
-		// Save to Mongo
-		wg.Add(1)
-		go func() {
-
-			defer wg.Done()
-
-			var err error
-
-			err = saveProductPricesToMongo(appBeforeUpdate, app)
-			if err != nil {
-				log.Err(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-
-			err = saveSales(app, sales)
-			if err != nil {
-				log.Err(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-
-			err = app.Save()
-			if err != nil {
-				log.Err(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-		}()
-
-		wg.Wait()
-
-		if message.ActionTaken {
-			continue
-		}
-
-		// Clear caches
-		wg.Add(1)
-		go func() {
-
-			defer wg.Done()
-
-			var items = []string{
-				memcache.MemcacheApp(app.ID).Key,
-				memcache.MemcacheAppInQueue(app.ID).Key,
-				memcache.MemcacheAppTags(app.ID).Key,
-				memcache.MemcacheAppCategories(app.ID).Key,
-				memcache.MemcacheAppGenres(app.ID).Key,
-				memcache.MemcacheAppDemos(app.ID).Key,
-				memcache.MemcacheAppRelated(app.ID).Key,
-				memcache.MemcacheAppDevelopers(app.ID).Key,
-				memcache.MemcacheAppPublishers(app.ID).Key,
-				memcache.MemcacheAppBundles(app.ID).Key,
-				memcache.MemcacheAppPackages(app.ID).Key,
-				memcache.MemcacheAppNoAchievements(app.ID).Key,
-				memcache.MemcacheMongoCount(mongo.CollectionAppSales.String(), bson.D{{"app_id", app.ID}}).Key,
-			}
-
-			err := memcache.Delete(items...)
-			if err != nil {
-				log.Err(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-		}()
-
-		// Send websocket
-		wg.Add(1)
-		go func() {
-
-			defer wg.Done()
-
-			if payload.ChangeNumber > 0 {
-
-				var err error
-
-				wsPayload := IntPayload{ID: id}
-				err = ProduceWebsocket(wsPayload, websockets.PageApp)
-				if err != nil {
-					log.Err(err, id)
-				}
-			}
-		}()
-
-		wg.Wait()
-
-		if message.ActionTaken {
-			continue
-		}
-
-		// Produce to sub queues
-		var produces = []QueueMessageInterface{
-			AppAchievementsMessage{AppID: app.ID, AppName: app.Name, AppOwners: app.Owners},
-			AppMorelikeMessage{AppID: app.ID},
-			AppNewsMessage{AppID: app.ID},
-			AppSameownersMessage{ID: app.ID},
-			AppSteamspyMessage{ID: app.ID},
-			AppTwitchMessage{ID: app.ID},
-			AppReviewsMessage{AppID: app.ID},
-			AppsSearchMessage{App: app},
-			AppItemsMessage{AppID: app.ID, OldDigect: app.ItemsDigest},
-		}
-
-		if app.GroupID == "" {
-			produces = append(produces, FindGroupMessage{AppID: app.ID})
-		} else {
-			produces = append(produces, GroupMessage{ID: app.GroupID})
-		}
-
-		for _, v := range produces {
-			err = produce(v.Queue(), v)
-			if err != nil {
-				log.Err(err)
-				sendToRetryQueue(message)
-				break
-			}
-		}
-
-		if message.ActionTaken {
-			continue
-		}
-
-		//
-		message.Ack(false)
+	err := helpers.Unmarshal(message.Message.Body, &payload)
+	if err != nil {
+		log.Err(err, message.Message.Body)
+		sendToFailQueue(message)
+		return
 	}
+
+	var id = payload.ID
+
+	if !helpers.IsValidAppID(id) {
+		log.Err(err, payload.ID)
+		sendToFailQueue(message)
+		return
+	}
+
+	// Load current app
+	app, err := mongo.GetApp(id, true)
+	if err == mongo.ErrNoDocuments {
+		app = mongo.App{}
+		app.ID = id
+	} else if err != nil {
+		log.Err(err, payload.ID)
+		sendToRetryQueue(message)
+		return
+	}
+
+	// Skip if updated in last day, unless its from PICS
+	if !config.IsLocal() && !app.ShouldUpdate() && app.ChangeNumber >= payload.ChangeNumber {
+
+		s, err := durationfmt.Format(time.Since(app.UpdatedAt), "%hh %mm")
+		log.Err(err)
+
+		log.Info("Skipping app, updated " + s + " ago")
+		message.Ack(false)
+		return
+	}
+
+	//
+	var appBeforeUpdate = app
+
+	//
+	err = updateAppPICS(&app, message, payload)
+	if err != nil {
+		log.Err(err, message.Message.Body)
+		sendToRetryQueue(message)
+		return
+	}
+
+	//
+	var wg sync.WaitGroup
+
+	// Calls to store.steampowered.com
+	var sales []mongo.Sale
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+
+		err = updateAppDetails(&app)
+		if err != nil && err != steamapi.ErrAppNotFound {
+			steam.LogSteamError(err, payload.ID)
+			sendToRetryQueue(message)
+			return
+		}
+
+		sales, err = scrapeApp(&app)
+		if err != nil {
+			steam.LogSteamError(err, payload.ID)
+			sendToRetryQueue(message)
+			return
+		}
+	}()
+
+	// Read from Mongo
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+
+		err = updateAppPlaytimeStats(&app)
+		if err != nil {
+			log.Err(err, payload.ID)
+			sendToRetryQueue(message)
+			return
+		}
+
+		err = updateAppOwners(&app)
+		if err != nil {
+			log.Err(err, payload.ID)
+			sendToRetryQueue(message)
+			return
+		}
+
+		err = updateAppBadgeOwners(&app)
+		if err != nil {
+			log.Err(err, payload.ID)
+			sendToRetryQueue(message)
+			return
+		}
+
+		err = updateAppCountries(&app)
+		if err != nil {
+			log.Err(err, payload.ID)
+			sendToRetryQueue(message)
+			return
+		}
+	}()
+
+	wg.Wait()
+
+	if message.ActionTaken {
+		return
+	}
+
+	// Save to Mongo
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+
+		err = saveProductPricesToMongo(appBeforeUpdate, app)
+		if err != nil {
+			log.Err(err, payload.ID)
+			sendToRetryQueue(message)
+			return
+		}
+
+		err = saveSales(app, sales)
+		if err != nil {
+			log.Err(err, payload.ID)
+			sendToRetryQueue(message)
+			return
+		}
+
+		err = app.Save()
+		if err != nil {
+			log.Err(err, payload.ID)
+			sendToRetryQueue(message)
+			return
+		}
+	}()
+
+	wg.Wait()
+
+	if message.ActionTaken {
+		return
+	}
+
+	// Clear caches
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var items = []string{
+			memcache.MemcacheApp(app.ID).Key,
+			memcache.MemcacheAppInQueue(app.ID).Key,
+			memcache.MemcacheAppTags(app.ID).Key,
+			memcache.MemcacheAppCategories(app.ID).Key,
+			memcache.MemcacheAppGenres(app.ID).Key,
+			memcache.MemcacheAppDemos(app.ID).Key,
+			memcache.MemcacheAppRelated(app.ID).Key,
+			memcache.MemcacheAppDevelopers(app.ID).Key,
+			memcache.MemcacheAppPublishers(app.ID).Key,
+			memcache.MemcacheAppBundles(app.ID).Key,
+			memcache.MemcacheAppPackages(app.ID).Key,
+			memcache.MemcacheAppNoAchievements(app.ID).Key,
+			memcache.MemcacheMongoCount(mongo.CollectionAppSales.String(), bson.D{{"app_id", app.ID}}).Key,
+		}
+
+		err := memcache.Delete(items...)
+		if err != nil {
+			log.Err(err, payload.ID)
+			sendToRetryQueue(message)
+			return
+		}
+	}()
+
+	// Send websocket
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		if payload.ChangeNumber > 0 {
+
+			var err error
+
+			wsPayload := IntPayload{ID: id}
+			err = ProduceWebsocket(wsPayload, websockets.PageApp)
+			if err != nil {
+				log.Err(err, id)
+			}
+		}
+	}()
+
+	wg.Wait()
+
+	if message.ActionTaken {
+		return
+	}
+
+	// Produce to sub queues
+	var produces = []QueueMessageInterface{
+		AppAchievementsMessage{AppID: app.ID, AppName: app.Name, AppOwners: app.Owners},
+		AppMorelikeMessage{AppID: app.ID},
+		AppNewsMessage{AppID: app.ID},
+		AppSameownersMessage{ID: app.ID},
+		AppSteamspyMessage{ID: app.ID},
+		AppTwitchMessage{ID: app.ID},
+		AppReviewsMessage{AppID: app.ID},
+		AppsSearchMessage{App: app},
+		AppItemsMessage{AppID: app.ID, OldDigect: app.ItemsDigest},
+	}
+
+	if app.GroupID == "" {
+		produces = append(produces, FindGroupMessage{AppID: app.ID})
+	} else {
+		produces = append(produces, GroupMessage{ID: app.GroupID})
+	}
+
+	for _, v := range produces {
+		err = produce(v.Queue(), v)
+		if err != nil {
+			log.Err(err)
+			sendToRetryQueue(message)
+			break
+		}
+	}
+
+	if message.ActionTaken {
+		return
+	}
+
+	//
+	message.Ack(false)
 }
 
 func updateAppPICS(app *mongo.App, message *rabbit.Message, payload AppMessage) (err error) {

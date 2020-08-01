@@ -15,138 +15,134 @@ type WebsocketMessage struct {
 	Message []byte                     `json:"message"`
 }
 
-func websocketHandler(messages []*rabbit.Message) {
+func websocketHandler(message *rabbit.Message) {
 
-	for _, message := range messages {
+	payload := WebsocketMessage{}
 
-		payload := WebsocketMessage{}
+	err := helpers.Unmarshal(message.Message.Body, &payload)
+	if err != nil {
+		log.Err(err, message.Message.Body)
+		sendToFailQueue(message)
+		return
+	}
 
-		err := helpers.Unmarshal(message.Message.Body, &payload)
-		if err != nil {
-			log.Err(err, message.Message.Body)
-			sendToFailQueue(message)
+	for _, page := range payload.Pages {
+
+		wsPage := websockets.GetPage(page)
+		if wsPage == nil {
 			continue
 		}
 
-		for _, page := range payload.Pages {
-
-			wsPage := websockets.GetPage(page)
-			if wsPage == nil {
-				continue
-			}
-
-			if wsPage.CountConnections() == 0 {
-				continue
-			}
-
-			switch page {
-			case websockets.PageApp, websockets.PageBundle, websockets.PagePackage:
-
-				idPayload := IntPayload{}
-
-				err = helpers.Unmarshal(payload.Message, &idPayload)
-				log.Err(err)
-
-				wsPage.Send(idPayload.ID)
-
-			case websockets.PageGroup:
-
-				idPayload := StringPayload{}
-
-				err = helpers.Unmarshal(payload.Message, &idPayload)
-				log.Err(err)
-
-				wsPage.Send(idPayload.String)
-
-			case websockets.PagePlayer:
-
-				playerPayload := PlayerPayload{}
-
-				err = helpers.Unmarshal(payload.Message, &playerPayload)
-				log.Err(err)
-
-				wsPage.Send(playerPayload)
-
-			case websockets.PageChatBot:
-
-				cbPayload := ChatBotPayload{}
-
-				err = helpers.Unmarshal(payload.Message, &cbPayload)
-				log.Err(err)
-
-				wsPage.Send(cbPayload)
-
-			case websockets.PageAdmin:
-
-				adminPayload := AdminPayload{}
-
-				err = helpers.Unmarshal(payload.Message, &adminPayload)
-				log.Err(err)
-
-				wsPage.Send(adminPayload)
-
-			case websockets.PageChanges:
-
-				changePayload := ChangesPayload{}
-
-				err = helpers.Unmarshal(payload.Message, &changePayload)
-				log.Err(err)
-
-				wsPage.Send(changePayload.Data)
-
-			case websockets.PagePackages:
-
-				idPayload := IntPayload{}
-
-				err = helpers.Unmarshal(payload.Message, &idPayload)
-				log.Err(err)
-
-				pack, err := mongo.GetPackage(idPayload.ID)
-				if err != nil {
-					log.Err(err)
-					continue
-				}
-
-				wsPage.Send(pack.OutputForJSON(steamapi.ProductCCUS))
-
-			case websockets.PageBundles:
-
-				idPayload := IntPayload{}
-
-				err = helpers.Unmarshal(payload.Message, &idPayload)
-				log.Err(err)
-
-				bundle, err := mysql.GetBundle(idPayload.ID, nil)
-				log.Err(err)
-				if err == nil {
-					wsPage.Send(bundle.OutputForJSON())
-				}
-
-			case websockets.PagePrices:
-
-				idsPayload := StringsPayload{}
-
-				err = helpers.Unmarshal(payload.Message, &idsPayload)
-				log.Err(err)
-
-				prices, err := mongo.GetPricesByID(idsPayload.IDs)
-				log.Err(err)
-				if err == nil {
-					for _, v := range prices {
-						wsPage.Send(v.OutputForJSON())
-					}
-				}
-
-			default:
-				log.Err("no handler for page: " + string(page))
-			}
+		if wsPage.CountConnections() == 0 {
+			continue
 		}
 
-		//
-		message.Ack(false)
-	}
-}
+		switch page {
+		case websockets.PageApp, websockets.PageBundle, websockets.PagePackage:
 
+			idPayload := IntPayload{}
+
+			err = helpers.Unmarshal(payload.Message, &idPayload)
+			log.Err(err)
+
+			wsPage.Send(idPayload.ID)
+
+		case websockets.PageGroup:
+
+			idPayload := StringPayload{}
+
+			err = helpers.Unmarshal(payload.Message, &idPayload)
+			log.Err(err)
+
+			wsPage.Send(idPayload.String)
+
+		case websockets.PagePlayer:
+
+			playerPayload := PlayerPayload{}
+
+			err = helpers.Unmarshal(payload.Message, &playerPayload)
+			log.Err(err)
+
+			wsPage.Send(playerPayload)
+
+		case websockets.PageChatBot:
+
+			cbPayload := ChatBotPayload{}
+
+			err = helpers.Unmarshal(payload.Message, &cbPayload)
+			log.Err(err)
+
+			wsPage.Send(cbPayload)
+
+		case websockets.PageAdmin:
+
+			adminPayload := AdminPayload{}
+
+			err = helpers.Unmarshal(payload.Message, &adminPayload)
+			log.Err(err)
+
+			wsPage.Send(adminPayload)
+
+		case websockets.PageChanges:
+
+			changePayload := ChangesPayload{}
+
+			err = helpers.Unmarshal(payload.Message, &changePayload)
+			log.Err(err)
+
+			wsPage.Send(changePayload.Data)
+
+		case websockets.PagePackages:
+
+			idPayload := IntPayload{}
+
+			err = helpers.Unmarshal(payload.Message, &idPayload)
+			log.Err(err)
+
+			pack, err := mongo.GetPackage(idPayload.ID)
+			if err != nil {
+				log.Err(err)
+				continue
+			}
+
+			wsPage.Send(pack.OutputForJSON(steamapi.ProductCCUS))
+
+		case websockets.PageBundles:
+
+			idPayload := IntPayload{}
+
+			err = helpers.Unmarshal(payload.Message, &idPayload)
+			log.Err(err)
+
+			bundle, err := mysql.GetBundle(idPayload.ID, nil)
+			log.Err(err)
+			if err == nil {
+				wsPage.Send(bundle.OutputForJSON())
+			}
+
+		case websockets.PagePrices:
+
+			idsPayload := StringsPayload{}
+
+			err = helpers.Unmarshal(payload.Message, &idsPayload)
+			log.Err(err)
+
+			prices, err := mongo.GetPricesByID(idsPayload.IDs)
+			log.Err(err)
+			if err == nil {
+				for _, v := range prices {
+					wsPage.Send(v.OutputForJSON())
+				}
+			}
+
+		default:
+			log.Err("no handler for page: " + string(page))
+		}
+	}
+
+	//
+	message.Ack(false)
+}
 type IntPayload struct {
 	ID int `json:"id"`
 }

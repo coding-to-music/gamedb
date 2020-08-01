@@ -18,36 +18,33 @@ type AppsArticlesSearchMessage struct {
 	ArticleIcon string `json:"icon"`
 }
 
-func appsArticlesSearchHandler(messages []*rabbit.Message) {
+func appsArticlesSearchHandler(message *rabbit.Message) {
 
-	for _, message := range messages {
+	payload := AppsArticlesSearchMessage{}
 
-		payload := AppsArticlesSearchMessage{}
-
-		err := helpers.Unmarshal(message.Message.Body, &payload)
-		if err != nil {
-			log.Err(err, message.Message.Body)
-			sendToFailQueue(message)
-			continue
-		}
-
-		article := elasticsearch.Article{}
-		article.ID = payload.ID
-		article.Title = payload.Title
-		article.Body = payload.Body
-		article.Time = payload.Time
-		article.AppID = payload.AppID
-		article.AppName = payload.AppName
-		article.AppIcon = payload.AppIcon
-		article.ArticleIcon = payload.ArticleIcon
-
-		err = elasticsearch.IndexArticle(article)
-		if err != nil {
-			log.Err(err)
-			sendToRetryQueue(message)
-			continue
-		}
-
-		message.Ack(false)
+	err := helpers.Unmarshal(message.Message.Body, &payload)
+	if err != nil {
+		log.Err(err, message.Message.Body)
+		sendToFailQueue(message)
+		return
 	}
+
+	article := elasticsearch.Article{}
+	article.ID = payload.ID
+	article.Title = payload.Title
+	article.Body = payload.Body
+	article.Time = payload.Time
+	article.AppID = payload.AppID
+	article.AppName = payload.AppName
+	article.AppIcon = payload.AppIcon
+	article.ArticleIcon = payload.ArticleIcon
+
+	err = elasticsearch.IndexArticle(article)
+	if err != nil {
+		log.Err(err)
+		sendToRetryQueue(message)
+		return
+	}
+
+	message.Ack(false)
 }

@@ -29,239 +29,235 @@ type PackageMessage struct {
 	VDF          map[string]interface{} `json:"vdf"`
 }
 
-func packageHandler(messages []*rabbit.Message) {
+func packageHandler(message *rabbit.Message) {
 
-	for _, message := range messages {
+	payload := PackageMessage{}
 
-		payload := PackageMessage{}
+	err := helpers.Unmarshal(message.Message.Body, &payload)
+	if err != nil {
+		log.Err(err, message.Message.Body)
+		sendToFailQueue(message)
+		return
+	}
 
-		err := helpers.Unmarshal(message.Message.Body, &payload)
-		if err != nil {
-			log.Err(err, message.Message.Body)
-			sendToFailQueue(message)
-			continue
-		}
+	if !helpers.IsValidPackageID(payload.ID) {
+		message.Ack(false)
+		return
+	}
 
-		if !helpers.IsValidPackageID(payload.ID) {
-			message.Ack(false)
-			continue
-		}
+	// Load current package
+	pack, err := mongo.GetPackage(payload.ID)
+	if err == mongo.ErrNoDocuments {
+		pack = mongo.Package{}
+		pack.ID = payload.ID
+	} else if err != nil {
+		log.Err(err, payload.ID)
+		sendToRetryQueue(message)
+		return
+	}
 
-		// Load current package
-		pack, err := mongo.GetPackage(payload.ID)
-		if err == mongo.ErrNoDocuments {
-			pack = mongo.Package{}
-			pack.ID = payload.ID
-		} else if err != nil {
-			log.Err(err, payload.ID)
-			sendToRetryQueue(message)
-			continue
-		}
+	// Skip if updated in last day, unless its from PICS
+	if !config.IsLocal() && !pack.ShouldUpdate() && pack.ChangeNumber >= payload.ChangeNumber {
 
-		// Skip if updated in last day, unless its from PICS
-		if !config.IsLocal() && !pack.ShouldUpdate() && pack.ChangeNumber >= payload.ChangeNumber {
+		s, err := durationfmt.Format(time.Since(pack.UpdatedAt), "%hh %mm")
+		log.Err(err)
 
-			s, err := durationfmt.Format(time.Since(pack.UpdatedAt), "%hh %mm")
-			log.Err(err)
+		log.Info("Skipping package, updated " + s + " ago")
+		message.Ack(false)
+		return
+	}
 
-			log.Info("Skipping package, updated " + s + " ago")
-			message.Ack(false)
-			continue
-		}
+	// Produce price changes
+	if config.IsLocal() {
 
-		// Produce price changes
-		if config.IsLocal() {
+		for _, v := range i18n.GetProdCCs(true) {
 
-			for _, v := range i18n.GetProdCCs(true) {
+			payload2 := PackagePriceMessage{
+				PackageID:   uint(pack.ID),
+				PackageName: pack.Name,
+				PackageIcon: pack.Icon,
+				ProductCC:   v.ProductCode,
+				Time:        message.FirstSeen(),
+				BeforePrice: nil,
+			}
 
-				payload2 := PackagePriceMessage{
-					PackageID:   uint(pack.ID),
-					PackageName: pack.Name,
-					PackageIcon: pack.Icon,
-					ProductCC:   v.ProductCode,
-					Time:        message.FirstSeen(),
-					BeforePrice: nil,
-				}
+			price := pack.GetPrices().Get(v.ProductCode)
+			if price.Exists {
 
-				price := pack.GetPrices().Get(v.ProductCode)
-				if price.Exists {
+				payload2.BeforePrice = &price.Final
 
-					payload2.BeforePrice = &price.Final
-
-					err = producePackagePrice(payload2)
-					if err != nil {
-						log.Err(err)
-					}
+				err = producePackagePrice(payload2)
+				if err != nil {
+					log.Err(err)
 				}
 			}
 		}
+	}
 
-		//
-		var packageBeforeUpdate = pack
+	//
+	var packageBeforeUpdate = pack
 
-		// Update from PICS
-		err = updatePackageFromPICS(&pack, message, payload)
+	// Update from PICS
+	err = updatePackageFromPICS(&pack, message, payload)
+	if err != nil {
+		log.Err(err, payload.ID)
+		sendToRetryQueue(message)
+		return
+	}
+
+	var wg sync.WaitGroup
+
+	// Update from store.steampowered.com JSON
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+
+		err = updatePackageFromStore(&pack)
+		err = helpers.IgnoreErrors(err, steamapi.ErrPackageNotFound)
+		if err != nil {
+
+			if err == steamapi.ErrHTMLResponse {
+				log.Info(err, payload.ID)
+			} else {
+				steam.LogSteamError(err, payload.ID)
+			}
+
+			sendToRetryQueue(message)
+			return
+		}
+	}()
+
+	// Scrape from store.steampowered.com
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err = scrapePackage(&pack)
+		if err != nil {
+			steam.LogSteamError(err, payload.ID)
+			sendToRetryQueue(message)
+			return
+		}
+	}()
+
+	// Set package name to app name
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err = updatePackageNameFromApp(&pack)
 		if err != nil {
 			log.Err(err, payload.ID)
 			sendToRetryQueue(message)
-			continue
+			return
 		}
+	}()
 
-		var wg sync.WaitGroup
+	wg.Wait()
 
-		// Update from store.steampowered.com JSON
-		wg.Add(1)
-		go func() {
+	if message.ActionTaken {
+		return
+	}
 
-			defer wg.Done()
+	// Save price changes
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err = saveProductPricesToMongo(packageBeforeUpdate, pack)
+		if err != nil {
+			log.Err(err, payload.ID)
+			sendToRetryQueue(message)
+			return
+		}
+	}()
+
+	// Save package
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err = pack.Save()
+		if err != nil {
+			log.Err(err, payload.ID)
+			sendToRetryQueue(message)
+			return
+		}
+	}()
+
+	wg.Wait()
+
+	if message.ActionTaken {
+		return
+	}
+
+	// Send websocket
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		if payload.ChangeNumber > 0 {
 
 			var err error
 
-			err = updatePackageFromStore(&pack)
-			err = helpers.IgnoreErrors(err, steamapi.ErrPackageNotFound)
-			if err != nil {
-
-				if err == steamapi.ErrHTMLResponse {
-					log.Info(err, payload.ID)
-				} else {
-					steam.LogSteamError(err, payload.ID)
-				}
-
-				sendToRetryQueue(message)
-				return
-			}
-		}()
-
-		// Scrape from store.steampowered.com
-		wg.Add(1)
-		go func() {
-
-			defer wg.Done()
-
-			var err = scrapePackage(&pack)
-			if err != nil {
-				steam.LogSteamError(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-		}()
-
-		// Set package name to app name
-		wg.Add(1)
-		go func() {
-
-			defer wg.Done()
-
-			var err = updatePackageNameFromApp(&pack)
+			wsPayload := IntPayload{ID: payload.ID}
+			err = ProduceWebsocket(wsPayload, websockets.PagePackage, websockets.PagePackages)
 			if err != nil {
 				log.Err(err, payload.ID)
-				sendToRetryQueue(message)
-				return
 			}
-		}()
+		}
+	}()
 
-		wg.Wait()
+	// Clear caches
+	wg.Add(1)
+	go func() {
 
-		if message.ActionTaken {
-			continue
+		defer wg.Done()
+
+		var items = []string{
+			memcache.MemcachePackage(pack.ID).Key,
+			memcache.MemcachePackageInQueue(pack.ID).Key,
+			memcache.MemcachePackageBundles(pack.ID).Key,
 		}
 
-		// Save price changes
-		wg.Add(1)
-		go func() {
-
-			defer wg.Done()
-
-			var err = saveProductPricesToMongo(packageBeforeUpdate, pack)
-			if err != nil {
-				log.Err(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-		}()
-
-		// Save package
-		wg.Add(1)
-		go func() {
-
-			defer wg.Done()
-
-			var err = pack.Save()
-			if err != nil {
-				log.Err(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-		}()
-
-		wg.Wait()
-
-		if message.ActionTaken {
-			continue
+		err := memcache.Delete(items...)
+		if err != nil {
+			log.Err(err, payload.ID)
+			sendToRetryQueue(message)
+			return
 		}
+	}()
 
-		// Send websocket
-		wg.Add(1)
-		go func() {
+	// Queue apps
+	wg.Add(1)
+	go func() {
 
-			defer wg.Done()
+		defer wg.Done()
 
-			if payload.ChangeNumber > 0 {
+		if payload.ChangeNumber > 0 {
 
-				var err error
-
-				wsPayload := IntPayload{ID: payload.ID}
-				err = ProduceWebsocket(wsPayload, websockets.PagePackage, websockets.PagePackages)
-				if err != nil {
-					log.Err(err, payload.ID)
-				}
-			}
-		}()
-
-		// Clear caches
-		wg.Add(1)
-		go func() {
-
-			defer wg.Done()
-
-			var items = []string{
-				memcache.MemcachePackage(pack.ID).Key,
-				memcache.MemcachePackageInQueue(pack.ID).Key,
-				memcache.MemcachePackageBundles(pack.ID).Key,
-			}
-
-			err := memcache.Delete(items...)
-			if err != nil {
-				log.Err(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-		}()
-
-		// Queue apps
-		wg.Add(1)
-		go func() {
-
-			defer wg.Done()
-
-			if payload.ChangeNumber > 0 {
-
-				err := ProduceSteam(SteamMessage{AppIDs: pack.Apps})
-				log.Err(err)
-			}
-		}()
-
-		wg.Wait()
-
-		if message.ActionTaken {
-			continue
+			err := ProduceSteam(SteamMessage{AppIDs: pack.Apps})
+			log.Err(err)
 		}
+	}()
 
-		//
-		message.Ack(false)
+	wg.Wait()
+
+	if message.ActionTaken {
+		return
 	}
-}
 
+	//
+	message.Ack(false)
+}
 func updatePackageNameFromApp(pack *mongo.Package) (err error) {
 
 	if len(pack.Apps) == 1 {

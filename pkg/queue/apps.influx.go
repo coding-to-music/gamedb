@@ -25,156 +25,153 @@ func (m AppInfluxMessage) Queue() rabbit.QueueName {
 	return QueueAppsInflux
 }
 
-func appInfluxHandler(messages []*rabbit.Message) {
+func appInfluxHandler(message *rabbit.Message) {
 
-	for _, message := range messages {
+	// Sleep to not cause influx memory to spike too much
+	time.Sleep(time.Second * 4)
 
-		// Sleep to not cause influx memory to spike too much
-		time.Sleep(time.Second * 4)
+	payload := AppInfluxMessage{}
 
-		payload := AppInfluxMessage{}
-
-		err := helpers.Unmarshal(message.Message.Body, &payload)
-		if err != nil {
-			log.Err(err, message.Message.Body)
-			sendToFailQueue(message)
-			continue
-		}
-
-		if len(payload.AppIDs) == 0 {
-			message.Ack(false)
-			continue
-		}
-
-		var wg sync.WaitGroup
-
-		wg.Add(1)
-		var appPlayersWeek = map[int]int64{}
-		go func() {
-
-			defer wg.Done()
-
-			var err error
-			appPlayersWeek, err = getAppTopPlayersWeek(payload.AppIDs)
-			if err != nil {
-				log.Err(err, message.Message.Body)
-				sendToRetryQueue(message)
-				return
-			}
-		}()
-
-		// wg.Add(1)
-		// var appPlayersWeekAverage map[int]float64
-		// go func() {
-		//
-		// 	defer wg.Done()
-		//
-		// 	var err error
-		// 	appPlayersWeekAverage, err = getAppAveragePlayersWeek(payload.AppIDs)
-		// 	if err != nil {
-		// 		log.Err(err, message.Message.Body)
-		// 		sendToRetryQueue(message)
-		// 		return
-		// 	}
-		// }()
-
-		wg.Add(1)
-		var appPlayersAlltime map[int]int64
-		go func() {
-
-			defer wg.Done()
-
-			var err error
-			appPlayersAlltime, err = getAppTopPlayersAlltime(payload.AppIDs)
-			if err != nil {
-				log.Err(err, message.Message.Body)
-				sendToRetryQueue(message)
-				return
-			}
-		}()
-
-		wg.Add(1)
-		var appTrend map[int]float64
-		go func() {
-
-			defer wg.Done()
-
-			var err error
-			appTrend, err = getAppTrendValue(payload.AppIDs)
-			if err != nil {
-				log.Err(err, message.Message.Body)
-				sendToRetryQueue(message)
-				return
-			}
-		}()
-
-		wg.Wait()
-
-		if message.ActionTaken {
-			continue
-		}
-
-		if len(payload.AppIDs) == 0 {
-			message.Ack(false)
-			continue
-		}
-
-		// Save to Mongo
-		var writes []mongo.WriteModel
-		for _, appID := range payload.AppIDs {
-
-			update := bson.M{}
-
-			if val, ok := appTrend[appID]; ok {
-				update["player_trend"] = val
-			}
-
-			if val, ok := appPlayersWeek[appID]; ok {
-				update["player_peak_week"] = val
-			}
-
-			if val, ok := appPlayersAlltime[appID]; ok {
-				update["player_peak_alltime"] = val
-			}
-
-			// if val, ok := appPlayersWeekAverage[appID]; ok {
-			// 	update["player_avg_week"] = val
-			// }
-
-			if len(update) > 0 {
-
-				write := mongo.NewUpdateOneModel()
-				write.SetFilter(bson.M{"_id": appID})
-				write.SetUpdate(bson.M{"$set": update})
-				write.SetUpsert(false)
-
-				writes = append(writes, write)
-			}
-		}
-
-		err = mongoHelper.UpdateAppsInflux(writes)
-		if err != nil {
-			log.Err(err, message.Message.Body)
-			sendToRetryQueue(message)
-			continue
-		}
-
-		// Clear app cache
-		var items []string
-		for _, v := range payload.AppIDs {
-			items = append(items, memcache.MemcacheApp(v).Key)
-		}
-
-		err = memcache.Delete(items...)
-		if err != nil {
-			log.Err(err, message.Message.Body)
-			sendToRetryQueue(message)
-			continue
-		}
-
-		//
-		message.Ack(false)
+	err := helpers.Unmarshal(message.Message.Body, &payload)
+	if err != nil {
+		log.Err(err, message.Message.Body)
+		sendToFailQueue(message)
+		return
 	}
+
+	if len(payload.AppIDs) == 0 {
+		message.Ack(false)
+		return
+	}
+
+	var wg sync.WaitGroup
+
+	wg.Add(1)
+	var appPlayersWeek = map[int]int64{}
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		appPlayersWeek, err = getAppTopPlayersWeek(payload.AppIDs)
+		if err != nil {
+			log.Err(err, message.Message.Body)
+			sendToRetryQueue(message)
+			return
+		}
+	}()
+
+	// wg.Add(1)
+	// var appPlayersWeekAverage map[int]float64
+	// go func() {
+	//
+	// 	defer wg.Done()
+	//
+	// 	var err error
+	// 	appPlayersWeekAverage, err = getAppAveragePlayersWeek(payload.AppIDs)
+	// 	if err != nil {
+	// 		log.Err(err, message.Message.Body)
+	// 		sendToRetryQueue(message)
+	// 		return
+	// 	}
+	// }()
+
+	wg.Add(1)
+	var appPlayersAlltime map[int]int64
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		appPlayersAlltime, err = getAppTopPlayersAlltime(payload.AppIDs)
+		if err != nil {
+			log.Err(err, message.Message.Body)
+			sendToRetryQueue(message)
+			return
+		}
+	}()
+
+	wg.Add(1)
+	var appTrend map[int]float64
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		appTrend, err = getAppTrendValue(payload.AppIDs)
+		if err != nil {
+			log.Err(err, message.Message.Body)
+			sendToRetryQueue(message)
+			return
+		}
+	}()
+
+	wg.Wait()
+
+	if message.ActionTaken {
+		return
+	}
+
+	if len(payload.AppIDs) == 0 {
+		message.Ack(false)
+		return
+	}
+
+	// Save to Mongo
+	var writes []mongo.WriteModel
+	for _, appID := range payload.AppIDs {
+
+		update := bson.M{}
+
+		if val, ok := appTrend[appID]; ok {
+			update["player_trend"] = val
+		}
+
+		if val, ok := appPlayersWeek[appID]; ok {
+			update["player_peak_week"] = val
+		}
+
+		if val, ok := appPlayersAlltime[appID]; ok {
+			update["player_peak_alltime"] = val
+		}
+
+		// if val, ok := appPlayersWeekAverage[appID]; ok {
+		// 	update["player_avg_week"] = val
+		// }
+
+		if len(update) > 0 {
+
+			write := mongo.NewUpdateOneModel()
+			write.SetFilter(bson.M{"_id": appID})
+			write.SetUpdate(bson.M{"$set": update})
+			write.SetUpsert(false)
+
+			writes = append(writes, write)
+		}
+	}
+
+	err = mongoHelper.UpdateAppsInflux(writes)
+	if err != nil {
+		log.Err(err, message.Message.Body)
+		sendToRetryQueue(message)
+		return
+	}
+
+	// Clear app cache
+	var items []string
+	for _, v := range payload.AppIDs {
+		items = append(items, memcache.MemcacheApp(v).Key)
+	}
+
+	err = memcache.Delete(items...)
+	if err != nil {
+		log.Err(err, message.Message.Body)
+		sendToRetryQueue(message)
+		return
+	}
+
+	//
+	message.Ack(false)
 }
 
 func getAppTopPlayersWeek(appIDs []int) (vals map[int]int64, err error) {

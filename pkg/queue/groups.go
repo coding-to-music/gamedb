@@ -39,224 +39,220 @@ func (m GroupMessage) Queue() rabbit.QueueName {
 	return QueueGroups
 }
 
-func groupsHandler(messages []*rabbit.Message) {
+func groupsHandler(message *rabbit.Message) {
 
-	for _, message := range messages {
+	payload := GroupMessage{}
 
-		payload := GroupMessage{}
+	err := helpers.Unmarshal(message.Message.Body, &payload)
+	if err != nil {
+		log.Err(err, message.Message.Body)
+		sendToFailQueue(message)
+		return
+	}
 
-		err := helpers.Unmarshal(message.Message.Body, &payload)
-		if err != nil {
-			log.Err(err, message.Message.Body)
-			sendToFailQueue(message)
-			continue
+	if payload.ID == "" {
+		message.Ack(false)
+		return
+	}
+
+	if payload.UserAgent != nil && helpers.IsBot(*payload.UserAgent) {
+		message.Ack(false)
+		return
+	}
+
+	payload.ID, err = helpers.IsValidGroupID(payload.ID)
+	if err != nil {
+		log.Err(err, message.Message.Body)
+		sendToFailQueue(message)
+		return
+	}
+
+	//
+	group, err := mongo.GetGroup(payload.ID)
+	if err == mongo.ErrNoDocuments {
+
+		group = mongo.Group{
+			ID: payload.ID,
 		}
 
-		if payload.ID == "" {
+	} else if err != nil {
+
+		log.Err(err, payload.ID)
+		sendToRetryQueue(message)
+		return
+	}
+
+	// Skip if updated recently
+	if !config.IsLocal() && !group.ShouldUpdate() {
+		message.Ack(false)
+		return
+	}
+
+	// Get type/URL
+	if group.Type == "" || group.URL == "" {
+
+		group.Type, group.URL, err = getGroupType(payload.ID)
+		if err == helpers.ErrInvalidGroupID {
+
 			message.Ack(false)
-			continue
-		}
-
-		if payload.UserAgent != nil && helpers.IsBot(*payload.UserAgent) {
-			message.Ack(false)
-			continue
-		}
-
-		payload.ID, err = helpers.IsValidGroupID(payload.ID)
-		if err != nil {
-			log.Err(err, message.Message.Body)
-			sendToFailQueue(message)
-			continue
-		}
-
-		//
-		group, err := mongo.GetGroup(payload.ID)
-		if err == mongo.ErrNoDocuments {
-
-			group = mongo.Group{
-				ID: payload.ID,
-			}
+			return
 
 		} else if err != nil {
 
-			log.Err(err, payload.ID)
+			steam.LogSteamError(err, payload.ID)
 			sendToRetryQueue(message)
-			continue
+			return
 		}
-
-		// Skip if updated recently
-		if !config.IsLocal() && !group.ShouldUpdate() {
-			message.Ack(false)
-			continue
-		}
-
-		// Get type/URL
-		if group.Type == "" || group.URL == "" {
-
-			group.Type, group.URL, err = getGroupType(payload.ID)
-			if err == helpers.ErrInvalidGroupID {
-
-				message.Ack(false)
-				continue
-
-			} else if err != nil {
-
-				steam.LogSteamError(err, payload.ID)
-				sendToRetryQueue(message)
-				continue
-			}
-		}
-
-		// Update group
-		var found bool
-		if group.Type == helpers.GroupTypeGame {
-			found, err = updateGameGroup(payload.ID, &group)
-		} else {
-			found, err = updateRegularGroup(payload.ID, &group)
-		}
-
-		if err != nil {
-			steam.LogSteamError(err)
-			sendToRetryQueue(message)
-			continue
-		}
-
-		if !found {
-			log.Info("Group counts not found", payload.ID)
-			sendToRetryQueue(message)
-			continue
-		}
-
-		// Fix group data
-		if group.Summary == "No information given." {
-			group.Summary = ""
-		}
-
-		// Read from Influx
-		group.Trending, err = getGroupTrending(group)
-		if err != nil {
-			log.Err(err, payload.ID)
-			sendToRetryQueue(message)
-			continue
-		}
-
-		//
-		var wg sync.WaitGroup
-
-		// Read from Mongo
-		wg.Add(1)
-		var app mongo.App
-		go func() {
-
-			defer wg.Done()
-
-			var err error
-
-			app, err = getAppFromGroup(group)
-			err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
-			if err != nil {
-				log.Err(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-		}()
-
-		//
-		wg.Wait()
-
-		if message.ActionTaken {
-			continue
-		}
-
-		// Save to Mongo
-		wg.Add(1)
-		go func() {
-
-			defer wg.Done()
-
-			err = updateApp(app, group)
-			if err != nil {
-				log.Err(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-
-			err = saveGroup(group)
-			if err != nil {
-				log.Err(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-		}()
-
-		// Save to Influx
-		wg.Add(1)
-		go func() {
-
-			defer wg.Done()
-
-			err = saveGroupToInflux(group)
-			if err != nil {
-				log.Err(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-		}()
-
-		wg.Wait()
-		if message.ActionTaken {
-			continue
-		}
-
-		// Clear memcache
-		var items = []string{
-			memcache.MemcacheGroup(payload.ID).Key,
-			memcache.MemcacheGroupInQueue(payload.ID).Key,
-		}
-
-		err = memcache.Delete(items...)
-		if err != nil {
-			log.Err(err, payload.ID)
-			sendToRetryQueue(message)
-			continue
-		}
-
-		// Send websocket
-		err = sendGroupWebsocket(payload.ID)
-		if err != nil {
-			log.Err(err, payload.ID)
-			sendToRetryQueue(message)
-			continue
-		}
-
-		if message.ActionTaken {
-			continue
-		}
-
-		// Produce to sub queues
-		var produces = []QueueMessageInterface{
-			GroupSearchMessage{Group: group},
-			GroupPrimariesMessage{Group: group},
-		}
-
-		for _, v := range produces {
-			err = produce(v.Queue(), v)
-			if err != nil {
-				log.Err(err)
-				sendToRetryQueue(message)
-				break
-			}
-		}
-
-		if message.ActionTaken {
-			continue
-		}
-
-		//
-		message.Ack(false)
 	}
-}
 
+	// Update group
+	var found bool
+	if group.Type == helpers.GroupTypeGame {
+		found, err = updateGameGroup(payload.ID, &group)
+	} else {
+		found, err = updateRegularGroup(payload.ID, &group)
+	}
+
+	if err != nil {
+		steam.LogSteamError(err)
+		sendToRetryQueue(message)
+		return
+	}
+
+	if !found {
+		log.Info("Group counts not found", payload.ID)
+		sendToRetryQueue(message)
+		return
+	}
+
+	// Fix group data
+	if group.Summary == "No information given." {
+		group.Summary = ""
+	}
+
+	// Read from Influx
+	group.Trending, err = getGroupTrending(group)
+	if err != nil {
+		log.Err(err, payload.ID)
+		sendToRetryQueue(message)
+		return
+	}
+
+	//
+	var wg sync.WaitGroup
+
+	// Read from Mongo
+	wg.Add(1)
+	var app mongo.App
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+
+		app, err = getAppFromGroup(group)
+		err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
+		if err != nil {
+			log.Err(err, payload.ID)
+			sendToRetryQueue(message)
+			return
+		}
+	}()
+
+	//
+	wg.Wait()
+
+	if message.ActionTaken {
+		return
+	}
+
+	// Save to Mongo
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		err = updateApp(app, group)
+		if err != nil {
+			log.Err(err, payload.ID)
+			sendToRetryQueue(message)
+			return
+		}
+
+		err = saveGroup(group)
+		if err != nil {
+			log.Err(err, payload.ID)
+			sendToRetryQueue(message)
+			return
+		}
+	}()
+
+	// Save to Influx
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		err = saveGroupToInflux(group)
+		if err != nil {
+			log.Err(err, payload.ID)
+			sendToRetryQueue(message)
+			return
+		}
+	}()
+
+	wg.Wait()
+	if message.ActionTaken {
+		return
+	}
+
+	// Clear memcache
+	var items = []string{
+		memcache.MemcacheGroup(payload.ID).Key,
+		memcache.MemcacheGroupInQueue(payload.ID).Key,
+	}
+
+	err = memcache.Delete(items...)
+	if err != nil {
+		log.Err(err, payload.ID)
+		sendToRetryQueue(message)
+		return
+	}
+
+	// Send websocket
+	err = sendGroupWebsocket(payload.ID)
+	if err != nil {
+		log.Err(err, payload.ID)
+		sendToRetryQueue(message)
+		return
+	}
+
+	if message.ActionTaken {
+		return
+	}
+
+	// Produce to sub queues
+	var produces = []QueueMessageInterface{
+		GroupSearchMessage{Group: group},
+		GroupPrimariesMessage{Group: group},
+	}
+
+	for _, v := range produces {
+		err = produce(v.Queue(), v)
+		if err != nil {
+			log.Err(err)
+			sendToRetryQueue(message)
+			break
+		}
+	}
+
+	if message.ActionTaken {
+		return
+	}
+
+	//
+	message.Ack(false)
+}
 func updateGameGroup(id string, group *mongo.Group) (foundNumbers bool, err error) {
 
 	group.Abbr = "" // Game groups don't have abbr's

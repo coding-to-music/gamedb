@@ -22,255 +22,252 @@ type PlayerAchievementsMessage struct {
 	Force    bool  `json:"force"` // Re-add previous achievements
 }
 
-func playerAchievementsHandler(messages []*rabbit.Message) {
+func playerAchievementsHandler(message *rabbit.Message) {
 
-	for _, message := range messages {
+	payload := PlayerAchievementsMessage{}
 
-		payload := PlayerAchievementsMessage{}
+	err := helpers.Unmarshal(message.Message.Body, &payload)
+	if err != nil {
+		log.Err(err, message.Message.Body)
+		sendToFailQueue(message)
+		return
+	}
 
-		err := helpers.Unmarshal(message.Message.Body, &payload)
-		if err != nil {
-			log.Err(err, message.Message.Body)
-			sendToFailQueue(message)
-			continue
-		}
+	// Last item for this player
+	if payload.AppID == 0 {
 
-		// Last item for this player
-		if payload.AppID == 0 {
+		<-time.NewTimer(time.Second * 5).C // Sleep to make sure all other messages are consumed
 
-			<-time.NewTimer(time.Second * 5).C // Sleep to make sure all other messages are consumed
+		// Websocket
+		defer func() {
 
-			// Websocket
-			defer func() {
+			wsPayload := PlayerPayload{
+				ID:    strconv.FormatInt(payload.PlayerID, 10),
+				Queue: "achievement",
+			}
 
-				wsPayload := PlayerPayload{
-					ID:    strconv.FormatInt(payload.PlayerID, 10),
-					Queue: "achievement",
-				}
-
-				err = ProduceWebsocket(wsPayload, websockets.PagePlayer)
-				if err != nil {
-					log.Err(err, message.Message.Body)
-				}
-			}()
-
-			// Total achievements
-			count, err := mongo.CountDocuments(mongo.CollectionPlayerAchievements, bson.D{{"player_id", payload.PlayerID}}, 0)
+			err = ProduceWebsocket(wsPayload, websockets.PagePlayer)
 			if err != nil {
 				log.Err(err, message.Message.Body)
-				sendToRetryQueue(message)
-				continue
 			}
+		}()
 
-			count100, err := mongo.CountDocuments(mongo.CollectionPlayerApps, bson.D{{"player_id", payload.PlayerID}, {"app_achievements_percent", 100}}, 0)
-			if err != nil {
-				log.Err(err, message.Message.Body)
-				sendToRetryQueue(message)
-				continue
-			}
-
-			countApps, err := mongo.CountDocuments(mongo.CollectionPlayerApps, bson.D{{"player_id", payload.PlayerID}, {"app_achievements_have", bson.M{"$gt": 0}}}, 0)
-			if err != nil {
-				log.Err(err, message.Message.Body)
-				sendToRetryQueue(message)
-				continue
-			}
-
-			// Update player row
-			var update = bson.D{
-				{"achievement_count", int(count)},
-				{"achievement_count_100", int(count100)},
-				{"achievement_count_apps", int(countApps)},
-			}
-
-			_, err = mongo.UpdateOne(mongo.CollectionPlayers, bson.D{{"_id", payload.PlayerID}}, update)
-			if err != nil {
-				log.Err(err, message.Message.Body)
-				sendToRetryQueue(message)
-				continue
-			}
-
-			// Clear caches
-			var items = []string{
-				memcache.MemcachePlayer(payload.PlayerID).Key,
-				memcache.MemcacheMongoCount(mongo.CollectionPlayerAchievements.String(), bson.D{{"player_id", payload.PlayerID}}).Key,
-			}
-
-			err = memcache.Delete(items...)
-			if err != nil {
-				log.Err(err, message.Message.Body)
-				sendToRetryQueue(message)
-				continue
-			}
-
-			message.Ack(false)
-			continue
-		}
-
-		item := memcache.MemcacheAppNoAchievements(payload.AppID) // Cache if this app has no achievements
-
-		_, err = memcache.Get(item.Key)
-		if err == nil {
-			message.Ack(false)
-			continue
-		}
-
-		// Get app
-		app, err := mongo.GetApp(payload.AppID, false)
+		// Total achievements
+		count, err := mongo.CountDocuments(mongo.CollectionPlayerAchievements, bson.D{{"player_id", payload.PlayerID}}, 0)
 		if err != nil {
 			log.Err(err, message.Message.Body)
 			sendToRetryQueue(message)
-			continue
+			return
 		}
 
-		if app.AchievementsCount == 0 {
+		count100, err := mongo.CountDocuments(mongo.CollectionPlayerApps, bson.D{{"player_id", payload.PlayerID}, {"app_achievements_percent", 100}}, 0)
+		if err != nil {
+			log.Err(err, message.Message.Body)
+			sendToRetryQueue(message)
+			return
+		}
+
+		countApps, err := mongo.CountDocuments(mongo.CollectionPlayerApps, bson.D{{"player_id", payload.PlayerID}, {"app_achievements_have", bson.M{"$gt": 0}}}, 0)
+		if err != nil {
+			log.Err(err, message.Message.Body)
+			sendToRetryQueue(message)
+			return
+		}
+
+		// Update player row
+		var update = bson.D{
+			{"achievement_count", int(count)},
+			{"achievement_count_100", int(count100)},
+			{"achievement_count_apps", int(countApps)},
+		}
+
+		_, err = mongo.UpdateOne(mongo.CollectionPlayers, bson.D{{"_id", payload.PlayerID}}, update)
+		if err != nil {
+			log.Err(err, message.Message.Body)
+			sendToRetryQueue(message)
+			return
+		}
+
+		// Clear caches
+		var items = []string{
+			memcache.MemcachePlayer(payload.PlayerID).Key,
+			memcache.MemcacheMongoCount(mongo.CollectionPlayerAchievements.String(), bson.D{{"player_id", payload.PlayerID}}).Key,
+		}
+
+		err = memcache.Delete(items...)
+		if err != nil {
+			log.Err(err, message.Message.Body)
+			sendToRetryQueue(message)
+			return
+		}
+
+		message.Ack(false)
+		return
+	}
+
+	item := memcache.MemcacheAppNoAchievements(payload.AppID) // Cache if this app has no achievements
+
+	_, err = memcache.Get(item.Key)
+	if err == nil {
+		message.Ack(false)
+		return
+	}
+
+	// Get app
+	app, err := mongo.GetApp(payload.AppID, false)
+	if err != nil {
+		log.Err(err, message.Message.Body)
+		sendToRetryQueue(message)
+		return
+	}
+
+	if app.AchievementsCount == 0 {
+		err = memcache.Set(item.Key, item.Value, item.Expiration)
+		log.Err(err)
+	}
+
+	// Get player
+	player, err := mongo.GetPlayer(payload.PlayerID)
+	if err != nil {
+
+		// ErrNoDocuments can be returned on new signups as the player hasnt been created yet
+		err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
+		if err != nil {
+			log.Err(err, message.Message.Body)
+		}
+
+		sendToRetryQueueWithDelay(message, time.Second*10)
+		return
+	}
+
+	// Do API call
+	resp, err := steam.GetSteamUnlimited().GetPlayerAchievements(uint64(payload.PlayerID), uint32(payload.AppID))
+
+	// Skip private profiles
+	if val, ok := err.(steamapi.Error); ok && val.Code == 403 {
+		message.Ack(false)
+		return
+	}
+
+	err = steam.AllowSteamCodes(err, 400)
+	if err != nil {
+		steam.LogSteamError(err, message.Message.Body)
+		sendToRetryQueue(message)
+		return
+	}
+
+	if !resp.Success {
+
+		if resp.Error == "Requested app has no stats" {
 			err = memcache.Set(item.Key, item.Value, item.Expiration)
 			log.Err(err)
 		}
 
-		// Get player
-		player, err := mongo.GetPlayer(payload.PlayerID)
-		if err != nil {
-
-			// ErrNoDocuments can be returned on new signups as the player hasnt been created yet
-			err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
-			if err != nil {
-				log.Err(err, message.Message.Body)
-			}
-
-			sendToRetryQueueWithDelay(message, time.Second*10)
-			continue
-		}
-
-		// Do API call
-		resp, err := steam.GetSteamUnlimited().GetPlayerAchievements(uint64(payload.PlayerID), uint32(payload.AppID))
-
-		// Skip private profiles
-		if val, ok := err.(steamapi.Error); ok && val.Code == 403 {
-			message.Ack(false)
-			continue
-		}
-
-		err = steam.AllowSteamCodes(err, 400)
-		if err != nil {
-			steam.LogSteamError(err, message.Message.Body)
-			sendToRetryQueue(message)
-			continue
-		}
-
-		if !resp.Success {
-
-			if resp.Error == "Requested app has no stats" {
-				err = memcache.Set(item.Key, item.Value, item.Expiration)
-				log.Err(err)
-			}
-
-			message.Ack(false)
-			continue
-		}
-
-		// Get the last saved achievement
-		var timestamp int64
-		if !config.IsLocal() && !payload.Force {
-			timestamp, err = mongo.FindLatestPlayerAchievement(payload.PlayerID, payload.AppID)
-			if err != nil {
-				log.Err(err)
-				sendToRetryQueue(message)
-				continue
-			}
-		}
-
-		// Get achievements for icons
-		var a bson.A
-		for _, v := range resp.Achievements {
-			if v.Achieved && v.UnlockTime >= timestamp {
-				a = append(a, v.APIName)
-			}
-		}
-
-		var appAchievementsMap = map[string]mongo.AppAchievement{}
-
-		if len(a) > 0 {
-
-			var filter = bson.D{
-				{"app_id", payload.AppID},
-				{"key", bson.M{"$in": a}},
-			}
-
-			appAchievements, err := mongo.GetAppAchievements(0, 0, filter, nil)
-			if err != nil {
-				log.Err(err)
-				sendToRetryQueue(message)
-				continue
-			}
-
-			for _, appAchievement := range appAchievements {
-				appAchievementsMap[appAchievement.Key] = appAchievement
-			}
-		}
-
-		// Save new player achievements
-		var rows []mongo.PlayerAchievement
-
-		for _, v := range resp.Achievements {
-			if v.Achieved && v.UnlockTime >= timestamp {
-
-				appAchievement, _ := appAchievementsMap[v.APIName]
-
-				rows = append(rows, mongo.PlayerAchievement{
-					PlayerID:               payload.PlayerID,
-					PlayerName:             player.PersonaName,
-					PlayerIcon:             player.Avatar,
-					AppID:                  app.ID,
-					AppName:                app.Name,
-					AppIcon:                app.Icon,
-					AchievementID:          v.APIName,
-					AchievementName:        v.Name,
-					AchievementDescription: v.Description,
-					AchievementDate:        v.UnlockTime,
-					AchievementIcon:        appAchievement.Icon,
-					AchievementComplete:    appAchievement.Completed,
-				})
-			}
-		}
-
-		err = mongo.UpdatePlayerAchievements(rows)
-		if err != nil {
-			log.Err(err)
-			sendToRetryQueue(message)
-			continue
-		}
-
-		// Update player_apps row
-		playerApp := mongo.PlayerApp{}
-		playerApp.PlayerID = payload.PlayerID
-		playerApp.AppID = payload.AppID
-
-		var have int
-		for _, v := range resp.Achievements {
-			if v.Achieved {
-				have++
-			}
-		}
-
-		var percent float64
-		if have > 0 && app.AchievementsCount > 0 {
-			percent = float64(have) / float64(app.AchievementsCount) * 100
-		}
-
-		var update = bson.D{
-			{"app_achievements_total", app.AchievementsCount},
-			{"app_achievements_have", have},
-			{"app_achievements_percent", percent},
-		}
-
-		_, err = mongo.UpdateOne(mongo.CollectionPlayerApps, bson.D{{"_id", playerApp.GetKey()}}, update)
-		if err != nil {
-			log.Err(err)
-			sendToRetryQueue(message)
-			continue
-		}
-
 		message.Ack(false)
+		return
 	}
+
+	// Get the last saved achievement
+	var timestamp int64
+	if !config.IsLocal() && !payload.Force {
+		timestamp, err = mongo.FindLatestPlayerAchievement(payload.PlayerID, payload.AppID)
+		if err != nil {
+			log.Err(err)
+			sendToRetryQueue(message)
+			return
+		}
+	}
+
+	// Get achievements for icons
+	var a bson.A
+	for _, v := range resp.Achievements {
+		if v.Achieved && v.UnlockTime >= timestamp {
+			a = append(a, v.APIName)
+		}
+	}
+
+	var appAchievementsMap = map[string]mongo.AppAchievement{}
+
+	if len(a) > 0 {
+
+		var filter = bson.D{
+			{"app_id", payload.AppID},
+			{"key", bson.M{"$in": a}},
+		}
+
+		appAchievements, err := mongo.GetAppAchievements(0, 0, filter, nil)
+		if err != nil {
+			log.Err(err)
+			sendToRetryQueue(message)
+			return
+		}
+
+		for _, appAchievement := range appAchievements {
+			appAchievementsMap[appAchievement.Key] = appAchievement
+		}
+	}
+
+	// Save new player achievements
+	var rows []mongo.PlayerAchievement
+
+	for _, v := range resp.Achievements {
+		if v.Achieved && v.UnlockTime >= timestamp {
+
+			appAchievement, _ := appAchievementsMap[v.APIName]
+
+			rows = append(rows, mongo.PlayerAchievement{
+				PlayerID:               payload.PlayerID,
+				PlayerName:             player.PersonaName,
+				PlayerIcon:             player.Avatar,
+				AppID:                  app.ID,
+				AppName:                app.Name,
+				AppIcon:                app.Icon,
+				AchievementID:          v.APIName,
+				AchievementName:        v.Name,
+				AchievementDescription: v.Description,
+				AchievementDate:        v.UnlockTime,
+				AchievementIcon:        appAchievement.Icon,
+				AchievementComplete:    appAchievement.Completed,
+			})
+		}
+	}
+
+	err = mongo.UpdatePlayerAchievements(rows)
+	if err != nil {
+		log.Err(err)
+		sendToRetryQueue(message)
+		return
+	}
+
+	// Update player_apps row
+	playerApp := mongo.PlayerApp{}
+	playerApp.PlayerID = payload.PlayerID
+	playerApp.AppID = payload.AppID
+
+	var have int
+	for _, v := range resp.Achievements {
+		if v.Achieved {
+			have++
+		}
+	}
+
+	var percent float64
+	if have > 0 && app.AchievementsCount > 0 {
+		percent = float64(have) / float64(app.AchievementsCount) * 100
+	}
+
+	var update = bson.D{
+		{"app_achievements_total", app.AchievementsCount},
+		{"app_achievements_have", have},
+		{"app_achievements_percent", percent},
+	}
+
+	_, err = mongo.UpdateOne(mongo.CollectionPlayerApps, bson.D{{"_id", playerApp.GetKey()}}, update)
+	if err != nil {
+		log.Err(err)
+		sendToRetryQueue(message)
+		return
+	}
+
+	message.Ack(false)
 }

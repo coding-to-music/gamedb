@@ -25,101 +25,97 @@ type BundleMessage struct {
 	ID int `json:"id"`
 }
 
-func bundleHandler(messages []*rabbit.Message) {
+func bundleHandler(message *rabbit.Message) {
 
-	for _, message := range messages {
+	payload := BundleMessage{}
 
-		payload := BundleMessage{}
+	err := helpers.Unmarshal(message.Message.Body, &payload)
+	if err != nil {
+		log.Err(err, message.Message.Body)
+		sendToFailQueue(message)
+		return
+	}
 
-		err := helpers.Unmarshal(message.Message.Body, &payload)
-		if err != nil {
-			log.Err(err, message.Message.Body)
-			sendToFailQueue(message)
-			continue
-		}
+	// Load current bundle
+	gorm, err := mysql.GetMySQLClient()
+	if err != nil {
+		log.Err(err)
+		sendToRetryQueue(message)
+		return
+	}
 
-		// Load current bundle
-		gorm, err := mysql.GetMySQLClient()
-		if err != nil {
-			log.Err(err)
-			sendToRetryQueue(message)
-			continue
-		}
+	bundle := mysql.Bundle{}
+	gorm = gorm.FirstOrInit(&bundle, mysql.Bundle{ID: payload.ID})
+	if gorm.Error != nil {
+		log.Err(gorm.Error, payload.ID)
+		sendToRetryQueue(message)
+		return
+	}
 
-		bundle := mysql.Bundle{}
-		gorm = gorm.FirstOrInit(&bundle, mysql.Bundle{ID: payload.ID})
+	oldBundle := bundle
+
+	err = updateBundle(&bundle)
+	if err != nil && err != steamapi.ErrAppNotFound {
+		steam.LogSteamError(err, payload.ID)
+		sendToRetryQueue(message)
+		return
+	}
+
+	var wg sync.WaitGroup
+
+	// Save new data
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		gorm = gorm.Save(&bundle)
 		if gorm.Error != nil {
 			log.Err(gorm.Error, payload.ID)
 			sendToRetryQueue(message)
-			continue
+			return
 		}
+	}()
 
-		oldBundle := bundle
+	// Save to InfluxDB
+	wg.Add(1)
+	go func() {
 
-		err = updateBundle(&bundle)
-		if err != nil && err != steamapi.ErrAppNotFound {
-			steam.LogSteamError(err, payload.ID)
-			sendToRetryQueue(message)
-			continue
-		}
+		defer wg.Done()
 
-		var wg sync.WaitGroup
-
-		// Save new data
-		wg.Add(1)
-		go func() {
-
-			defer wg.Done()
-
-			gorm = gorm.Save(&bundle)
-			if gorm.Error != nil {
-				log.Err(gorm.Error, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-		}()
-
-		// Save to InfluxDB
-		wg.Add(1)
-		go func() {
-
-			defer wg.Done()
-
-			var err = saveBundlePriceToMongo(bundle, oldBundle)
-			if err != nil {
-				log.Err(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-		}()
-
-		wg.Wait()
-
-		if message.ActionTaken {
-			continue
-		}
-
-		// Send websocket
-		wsPayload := IntPayload{ID: payload.ID}
-		err = ProduceWebsocket(wsPayload, websockets.PageBundle, websockets.PageBundles)
+		var err = saveBundlePriceToMongo(bundle, oldBundle)
 		if err != nil {
 			log.Err(err, payload.ID)
 			sendToRetryQueue(message)
-			continue
+			return
 		}
+	}()
 
-		// Clear caches
-		err = memcache.Delete(memcache.MemcacheBundleInQueue(bundle.ID).Key)
-		if err != nil {
-			log.Err(err, payload.ID)
-			sendToRetryQueue(message)
-			continue
-		}
+	wg.Wait()
 
-		message.Ack(false)
+	if message.ActionTaken {
+		return
 	}
-}
 
+	// Send websocket
+	wsPayload := IntPayload{ID: payload.ID}
+	err = ProduceWebsocket(wsPayload, websockets.PageBundle, websockets.PageBundles)
+	if err != nil {
+		log.Err(err, payload.ID)
+		sendToRetryQueue(message)
+		return
+	}
+
+	// Clear caches
+	err = memcache.Delete(memcache.MemcacheBundleInQueue(bundle.ID).Key)
+	if err != nil {
+		log.Err(err, payload.ID)
+		sendToRetryQueue(message)
+		return
+	}
+
+	message.Ack(false)
+}
 func updateBundle(bundle *mysql.Bundle) (err error) {
 
 	c := colly.NewCollector(

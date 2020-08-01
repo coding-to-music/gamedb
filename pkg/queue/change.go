@@ -22,90 +22,87 @@ type ChangesMessage struct {
 	PackageIDs map[uint32]uint32 `json:"package_ids"`
 }
 
-func changesHandler(messages []*rabbit.Message) {
+func changesHandler(message *rabbit.Message) {
 
-	for _, message := range messages {
+	payload := ChangesMessage{}
 
-		payload := ChangesMessage{}
-
-		err := helpers.Unmarshal(message.Message.Body, &payload)
-		if err != nil {
-			log.Err(err, message.Message.Body)
-			sendToFailQueue(message)
-			continue
-		}
-
-		// Group products by change ID
-		changes := map[uint32]*mongo.Change{}
-
-		for changeNumber, appID := range payload.AppIDs {
-			if _, ok := changes[changeNumber]; ok {
-				changes[changeNumber].Apps = append(changes[changeNumber].Apps, int(appID))
-			} else {
-				changes[changeNumber] = &mongo.Change{
-					CreatedAt: message.FirstSeen(),
-					ID:        int(changeNumber),
-					Apps:      []int{int(appID)},
-				}
-			}
-		}
-
-		for changeNumber, packageID := range payload.PackageIDs {
-			if _, ok := changes[changeNumber]; ok {
-				changes[changeNumber].Packages = append(changes[changeNumber].Packages, int(packageID))
-			} else {
-				changes[changeNumber] = &mongo.Change{
-					CreatedAt: message.FirstSeen(),
-					ID:        int(changeNumber),
-					Packages:  []int{int(packageID)},
-				}
-			}
-		}
-
-		// Convert map to slice sor soeting
-		var changeSlice []*mongo.Change
-		for _, v := range changes {
-			changeSlice = append(changeSlice, v)
-		}
-
-		sort.Slice(changeSlice, func(i, j int) bool {
-			return changeSlice[i].ID < changeSlice[j].ID
-		})
-
-		// Save to Mongo
-		err = saveChangesToMongo(changeSlice)
-		if err != nil && !strings.Contains(err.Error(), "duplicate key error collection") {
-			log.Err(err)
-			sendToRetryQueue(message)
-			continue
-		}
-
-		// Save to influx
-		err = saveChangeToInflux(payload)
-		if err != nil {
-			log.Err(err)
-			sendToRetryQueue(message)
-			continue
-		}
-
-		// Get apps and packages for all changes in message
-		appMap, packageMap, err := getChangesAppsAndPackages(changeSlice)
-		if err != nil {
-			log.Err(err)
-			sendToRetryQueue(message)
-			continue
-		}
-
-		// Send websocket
-		err = sendChangesWebsocket(changeSlice, appMap, packageMap)
-		log.Err(err)
-
-		// Send to Discord
-		// err = sendChangeToDiscord(changeSlice, appMap, packageMap)
-		// log.Err(err)
-
-		message.Ack(false)
+	err := helpers.Unmarshal(message.Message.Body, &payload)
+	if err != nil {
+		log.Err(err, message.Message.Body)
+		sendToFailQueue(message)
+		return
 	}
+
+	// Group products by change ID
+	changes := map[uint32]*mongo.Change{}
+
+	for changeNumber, appID := range payload.AppIDs {
+		if _, ok := changes[changeNumber]; ok {
+			changes[changeNumber].Apps = append(changes[changeNumber].Apps, int(appID))
+		} else {
+			changes[changeNumber] = &mongo.Change{
+				CreatedAt: message.FirstSeen(),
+				ID:        int(changeNumber),
+				Apps:      []int{int(appID)},
+			}
+		}
+	}
+
+	for changeNumber, packageID := range payload.PackageIDs {
+		if _, ok := changes[changeNumber]; ok {
+			changes[changeNumber].Packages = append(changes[changeNumber].Packages, int(packageID))
+		} else {
+			changes[changeNumber] = &mongo.Change{
+				CreatedAt: message.FirstSeen(),
+				ID:        int(changeNumber),
+				Packages:  []int{int(packageID)},
+			}
+		}
+	}
+
+	// Convert map to slice sor soeting
+	var changeSlice []*mongo.Change
+	for _, v := range changes {
+		changeSlice = append(changeSlice, v)
+	}
+
+	sort.Slice(changeSlice, func(i, j int) bool {
+		return changeSlice[i].ID < changeSlice[j].ID
+	})
+
+	// Save to Mongo
+	err = saveChangesToMongo(changeSlice)
+	if err != nil && !strings.Contains(err.Error(), "duplicate key error collection") {
+		log.Err(err)
+		sendToRetryQueue(message)
+		return
+	}
+
+	// Save to influx
+	err = saveChangeToInflux(payload)
+	if err != nil {
+		log.Err(err)
+		sendToRetryQueue(message)
+		return
+	}
+
+	// Get apps and packages for all changes in message
+	appMap, packageMap, err := getChangesAppsAndPackages(changeSlice)
+	if err != nil {
+		log.Err(err)
+		sendToRetryQueue(message)
+		return
+	}
+
+	// Send websocket
+	err = sendChangesWebsocket(changeSlice, appMap, packageMap)
+	log.Err(err)
+
+	// Send to Discord
+	// err = sendChangeToDiscord(changeSlice, appMap, packageMap)
+	// log.Err(err)
+
+	message.Ack(false)
 }
 
 func saveChangesToMongo(changes []*mongo.Change) (err error) {

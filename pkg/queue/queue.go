@@ -254,7 +254,6 @@ type QueueDefinition struct {
 	name         rabbit.QueueName
 	consumer     rabbit.Handler
 	skipHeaders  bool
-	batchSize    int
 	prefetchSize int
 }
 
@@ -287,7 +286,7 @@ func Init(definitions []QueueDefinition) {
 			prefetchSize = queue.prefetchSize
 		}
 
-		q, err := rabbit.NewChannel(producerConnection, queue.name, config.Config.Environment.Get(), prefetchSize, queue.batchSize, queue.consumer, !queue.skipHeaders)
+		q, err := rabbit.NewChannel(producerConnection, queue.name, config.Config.Environment.Get(), prefetchSize, queue.consumer, !queue.skipHeaders)
 		if err != nil {
 			log.Critical(string(queue.name), err)
 		} else {
@@ -317,7 +316,7 @@ func Init(definitions []QueueDefinition) {
 				s := make([]int, 2) // todo
 				for k := range s {
 
-					q, err := rabbit.NewChannel(consumerConnection, queue.name, config.Config.Environment.Get()+"-"+strconv.Itoa(k), prefetchSize, queue.batchSize, queue.consumer, !queue.skipHeaders)
+					q, err := rabbit.NewChannel(consumerConnection, queue.name, config.Config.Environment.Get()+"-"+strconv.Itoa(k), prefetchSize, queue.consumer, !queue.skipHeaders)
 					if err != nil {
 						log.Critical(string(queue.name), err)
 						continue
