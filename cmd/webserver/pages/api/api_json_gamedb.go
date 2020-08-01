@@ -68,7 +68,7 @@ var SwaggerGameDB = &openapi3.Swagger{
 		},
 		Parameters: map[string]*openapi3.ParameterRef{
 			"limit-param": {
-				Value: openapi3.NewQueryParameter("limit").WithSchema(openapi3.NewIntegerSchema().WithDefault(10).WithMin(1).WithMax(100)),
+				Value: openapi3.NewQueryParameter("limit").WithSchema(openapi3.NewIntegerSchema().WithDefault(10).WithMin(1).WithMax(1000)),
 			},
 			"offset-param": {
 				Value: openapi3.NewQueryParameter("offset").WithSchema(openapi3.NewIntegerSchema().WithDefault(0).WithMin(0)),
