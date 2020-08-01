@@ -3,7 +3,7 @@ package api
 import (
 	"net/http"
 
-	"github.com/gamedb/gamedb/cmd/webserver/pages/api/generated"
+	"github.com/gamedb/gamedb/cmd/webserver/api/generated"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"go.mongodb.org/mongo-driver/bson"
