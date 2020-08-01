@@ -68,6 +68,9 @@ func playerAliasesHandler(message *rabbit.Message) {
 		var t time.Time
 
 		t, err = time.Parse("2 Jan @ 3:04pm", v.Time)
+		if err == nil {
+			t = t.AddDate(time.Now().Year(), 0, 0)
+		}
 		if err != nil {
 
 			t, err = time.Parse("2 Jan, 2006 @ 3:04pm", v.Time)
