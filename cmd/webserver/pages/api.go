@@ -32,7 +32,7 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 
 	var spec = path.Base(r.URL.Path)
 	if spec == "api" {
-		http.Redirect(w, r, "/api/steam", http.StatusTemporaryRedirect)
+		http.Redirect(w, r, "/api/gamedb", http.StatusTemporaryRedirect)
 		return
 	}
 
