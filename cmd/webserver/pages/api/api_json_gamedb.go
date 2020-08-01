@@ -21,7 +21,7 @@ var (
 
 	// Schemas
 	priceSchema = &openapi3.Schema{
-		Required: []string{"currency", "initial", "final", "discountPercent", "individual"},
+		Required: []string{"currency", "initial", "final", "discountPercent", "individual", "free"},
 		Properties: map[string]*openapi3.SchemaRef{
 			"currency":        {Value: openapi3.NewStringSchema()},
 			"initial":         {Value: openapi3.NewInt32Schema()},
