@@ -452,6 +452,7 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 				for {
 					resp, err := steam.GetSteam().GetGroup(val, "", page)
 					err = steam.AllowSteamCodes(err)
+					log.Err(err, r)
 
 					for _, playerID := range resp.Members.SteamID64 {
 
