@@ -27,8 +27,8 @@ func gamesCompareRouter() http.Handler {
 	r.Get("/search.json", compareSearchAjaxHandler)
 	r.Get("/apps.json", compareAppsAjaxHandler)
 	r.Get("/{id}", appsCompareHandler)
-	r.Get("/{id}/players.json", appsComparePlayersAjaxHandlerx(true))
-	r.Get("/{id}/players2.json", appsComparePlayersAjaxHandlerx(false))
+	r.Get("/{id}/players.json", appsComparePlayersAjaxHandler(true))
+	r.Get("/{id}/players2.json", appsComparePlayersAjaxHandler(false))
 	r.Get("/{id}/members.json", appsCompareGroupsHandler)
 	r.Get("/{id}/reviews.json", appsCompareScoresHandler)
 	r.Get("/{id}/wishlists.json", appsCompareWishlistHandler)
@@ -260,7 +260,7 @@ func makeCompareActionLink(ids []string, id string, linkBool bool) string {
 	return "/games/compare/" + strings.Join(newIDs, ",")
 }
 
-func appsComparePlayersAjaxHandlerx(limited bool) func(w http.ResponseWriter, r *http.Request) {
+func appsComparePlayersAjaxHandler(limited bool) func(w http.ResponseWriter, r *http.Request) {
 
 	var days string
 	var group string
