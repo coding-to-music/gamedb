@@ -564,6 +564,12 @@ func ProduceArticlesSearch(payload AppsArticlesSearchMessage) (err error) {
 	return produce(QueueAppsArticlesSearch, payload)
 }
 
+//goland:noinspection GoUnusedExportedFunction
+func ProducePlayerAlias(id int64) (err error) {
+
+	return produce(QueuePlayersAliases, PlayersAliasesMessage{PlayerID: id})
+}
+
 func ProduceAppAchievement(appID int, appName string, appOwners int64) (err error) {
 
 	return produce(QueueAppsAchievements, AppAchievementsMessage{AppID: appID, AppName: appName, AppOwners: appOwners})
