@@ -17,7 +17,7 @@ func (s Server) GetPlayers(w http.ResponseWriter, r *http.Request) {
 		params := generated.ParamsForGetPlayers(r.Context())
 
 		var limit int64 = 10
-		if params.Limit != nil {
+		if params.Limit != nil && *params.Limit >= 1 && *params.Limit <= 1000 {
 			limit = int64(*params.Limit)
 		}
 
