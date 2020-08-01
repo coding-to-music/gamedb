@@ -63,9 +63,9 @@
                             <a class="nav-link" data-toggle="tab" href="#dlc" role="tab">DLC ({{ comma .App.DLCCount }})</a>
                         </li>
                     {{ end }}
-                    {{ if or (gt (len .Packages) 0) (gt (len .Bundles) 0) }}
+                    {{ if or (gt (len .App.Packages) 0) (gt (len .App.Bundles) 0) }}
                         <li class="nav-item">
-                            <a class="nav-link" data-toggle="tab" href="#packages" role="tab">Packages ({{ sum (len .Packages) (len .Bundles) }})</a>
+                            <a class="nav-link" data-toggle="tab" href="#packages" role="tab">Packages ({{ sum (len .App.Packages) (len .App.Bundles) }})</a>
                         </li>
                     {{ end }}
                     {{ if gt (len .App.NewsIDs) 0 }}
@@ -723,7 +723,7 @@
 
                         <h5>Bundles</h5>
                         <div class="table-responsive mb-4">
-                            <table class="table table-hover table-striped table-datatable table-counts mb-0" data-row-type="bundles" data-order='[[0, "asc"]]'>
+                            <table class="table table-hover table-striped table-counts mb-0" data-row-type="bundles" data-order='[[0, "asc"]]' id="bundles-table" data-path="/games/{{ .App.ID }}/bundles.json">
                                 <thead class="thead-light">
                                 <tr>
                                     <th scope="col">Name</th>
@@ -733,26 +733,15 @@
                                     <th scope="col">Updated At</th>
                                 </tr>
                                 </thead>
-                                {{ range $key, $value := .Bundles }}
-                                    <tr data-link="{{.GetPath}}">
-                                        <td data-app-id="{{ .ID }}" class="img">
-                                            <a class="icon-name" href="{{.GetPath}}">
-                                                <div class="icon"><img src="/assets/img/no-app-image-square.jpg" alt="{{.GetName}}"></div>
-                                                <div class="name">{{ .GetName }}</div>
-                                            </a>
-                                        </td>
-                                        <td>{{ .Discount }}%</td>
-                                        <td>{{ .AppsCount }}</td>
-                                        <td>{{ len .GetPackageIDs }}</td>
-                                        <td>{{ .GetUpdatedNice }}</td>
-                                    </tr>
-                                {{ end }}
+                                <tbody>
+
+                                </tbody>
                             </table>
                         </div>
 
                         <h5>Packages</h5>
                         <div class="table-responsive">
-                            <table class="table table-hover table-striped table-datatable table-counts mb-0" data-row-type="packages" data-order='[[0, "asc"]]'>
+                            <table class="table table-hover table-striped table-counts mb-0" data-row-type="packages" data-order='[[0, "asc"]]' id="packages-table" data-path="/games/{{ .App.ID }}/packages.json">
                                 <thead class="thead-light">
                                 <tr>
                                     <th scope="col">Name</th>
@@ -762,20 +751,9 @@
                                     <th scope="col">Apps</th>
                                 </tr>
                                 </thead>
-                                {{ range $key, $value := .Packages }}
-                                    <tr data-link="{{ .GetPath }}">
-                                        <td data-app-id="{{ .ID }}" class="img">
-                                            <a class="icon-name" href="{{.GetPath}}">
-                                                <div class="icon"><img src="/assets/img/no-app-image-square.jpg" alt="{{.GetName}}"></div>
-                                                <div class="name">{{ .GetName }}</div>
-                                            </a>
-                                        </td>
-                                        <td>{{ .GetBillingType }}</td>
-                                        <td>{{ .GetLicenseType }}</td>
-                                        <td>{{ .GetStatus }}</td>
-                                        <td>{{ comma (len .Apps) }}</td>
-                                    </tr>
-                                {{ end }}
+                                <tbody>
+
+                                </tbody>
                             </table>
                         </div>
 

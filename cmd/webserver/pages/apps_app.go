@@ -47,6 +47,8 @@ func appRouter() http.Handler {
 	r.Get("/achievements.json", appAchievementsAjaxHandler)
 	r.Get("/dlc.json", appDLCAjaxHandler)
 	r.Get("/wishlist.json", appWishlistAjaxHandler)
+	r.Get("/bundles.json", appBundlesAjaxHandler)
+	r.Get("/packages.json", appPackagesAjaxHandler)
 
 	r.Get("/{slug}", appHandler)
 	return r
@@ -162,32 +164,6 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.Genres, err = GetAppGenres(app)
-		if err != nil {
-			log.Err(err, r)
-		}
-	}()
-
-	// Bundles
-	wg.Add(1)
-	go func() {
-
-		defer wg.Done()
-
-		var err error
-		t.Bundles, err = GetAppBundles(app)
-		if err != nil {
-			log.Err(err, r)
-		}
-	}()
-
-	// Get packages
-	wg.Add(1)
-	go func() {
-
-		defer wg.Done()
-
-		var err error
-		t.Packages, err = app.GetAppPackages()
 		if err != nil {
 			log.Err(err, r)
 		}
@@ -387,7 +363,6 @@ type appTemplate struct {
 	App           mongo.App
 	PlayersCount  int64
 	Banners       map[string][]string
-	Bundles       []mysql.Bundle
 	Categories    []mysql.Category
 	Common        []pics.KeyValue
 	Config        []pics.KeyValue
@@ -396,7 +371,6 @@ type appTemplate struct {
 	Extended      []pics.KeyValue
 	Genres        []mysql.Genre
 	Links         []appLinkTemplate
-	Packages      []mongo.Package
 	Price         helpers.ProductPrice
 	Publishers    []mysql.Publisher
 	Tags          []mysql.Tag
@@ -928,6 +902,94 @@ func appItemsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			item.GetType(),          // 27
 			item.Link(),             // 28
 			item.ShortDescription(), // 29
+		})
+	}
+
+	returnJSON(w, r, response)
+}
+
+func appBundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	id, err := strconv.Atoi(helpers.RegexIntsOnly.FindString(chi.URLParam(r, "id")))
+	if err != nil || !helpers.IsValidAppID(id) {
+		return
+	}
+
+	app, err := mongo.GetApp(id)
+	if err != nil {
+		log.Err(err)
+		return
+	}
+	if len(app.Bundles) == 0 {
+		return
+	}
+
+	var bundles []mysql.Bundle
+	var item = memcache.MemcacheAppBundles(app.ID)
+
+	err = memcache.GetSetInterface(item.Key, item.Expiration, &bundles, func() (interface{}, error) {
+		return mysql.GetBundlesByID(app.Bundles, nil)
+	})
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	var query = datatable.NewDataTableQuery(r, false)
+	var response = datatable.NewDataTablesResponse(r, query, int64(len(app.Bundles)), int64(len(app.Bundles)), nil)
+	for _, bundle := range bundles {
+		response.AddRow([]interface{}{
+			bundle.ID,                   // 0
+			bundle.GetPath(),            // 1
+			bundle.GetName(),            // 2
+			bundle.Discount,             // 3
+			bundle.AppsCount(),          // 4
+			len(bundle.GetPackageIDs()), // 5
+			bundle.GetUpdatedNice(),     // 6
+		})
+	}
+
+	returnJSON(w, r, response)
+}
+
+func appPackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	id, err := strconv.Atoi(helpers.RegexIntsOnly.FindString(chi.URLParam(r, "id")))
+	if err != nil || !helpers.IsValidAppID(id) {
+		return
+	}
+
+	app, err := mongo.GetApp(id)
+	if err != nil {
+		log.Err(err)
+		return
+	}
+	if len(app.Packages) == 0 {
+		return
+	}
+
+	var packages []mongo.Package
+	var item = memcache.MemcacheAppPackages(app.ID)
+
+	err = memcache.GetSetInterface(item.Key, item.Expiration, &packages, func() (interface{}, error) {
+		return mongo.GetPackagesByID(app.Packages, bson.M{})
+	})
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	var query = datatable.NewDataTableQuery(r, false)
+	var response = datatable.NewDataTablesResponse(r, query, int64(len(app.Packages)), int64(len(app.Packages)), nil)
+	for _, pack := range packages {
+		response.AddRow([]interface{}{
+			pack.ID,               // 0
+			pack.GetPath(),        // 1
+			pack.GetName(),        // 2
+			pack.GetBillingType(), // 3
+			pack.GetLicenseType(), // 4
+			pack.GetStatus(),      // 5
+			pack.AppsCount,        // 6
 		})
 	}
 

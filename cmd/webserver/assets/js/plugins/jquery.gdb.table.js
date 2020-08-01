@@ -66,7 +66,7 @@
             options = $.extend(true, {}, options, {
                 tableOptions: {
                     processing: false,
-                    serverSide: true,
+                    serverSide: options.tableOptions.serverSide !== false,
                     orderMulti: false,
                     ajax: function (data, callback, settings) {
 

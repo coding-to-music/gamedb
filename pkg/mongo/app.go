@@ -528,23 +528,6 @@ func (app App) Save() (err error) {
 	return err
 }
 
-func (app App) GetAppPackages() (packages []Package, err error) {
-
-	packages = []Package{} // Needed for marshalling into type
-
-	if len(app.Packages) == 0 {
-		return packages, nil
-	}
-
-	var item = memcache.MemcacheAppPackages(app.ID)
-
-	err = memcache.GetSetInterface(item.Key, item.Expiration, &packages, func() (interface{}, error) {
-		return GetPackagesByID(app.Packages, bson.M{})
-	})
-
-	return packages, err
-}
-
 type AppTagCount struct {
 	ID    int    `json:"id"`
 	Name  string `json:"name"`

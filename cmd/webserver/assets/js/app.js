@@ -55,6 +55,10 @@ if ($appPage.length > 0) {
         'dev-localization': loadDevLocalization,
         'media': loadAppMediaTab,
 
+        // Packages tab
+        'bundles-table': loadAppBundlesTab,
+        'packages-table': loadAppPackagesTab,
+
         // Players tab
         'players-chart': loadAppPlayersChart,
         'players-heatmap-chart': loadAppPlayersHeatmapChart,
@@ -888,6 +892,132 @@ if ($appPage.length > 0) {
         $('#dlc-table').gdbTable({
             tableOptions: options,
             searchFields: searchFields
+        });
+    }
+
+    function loadAppBundlesTab() {
+
+        const options = {
+            "serverSide": false,
+            "order": [[0, 'asc']],
+            "createdRow": function (row, data, dataIndex) {
+                $(row).attr('data-link', data[1]);
+            },
+            "columnDefs": [
+                // Name
+                {
+                    "targets": 0,
+                    "render": function (data, type, row) {
+                        return '<a href="' + row[1] + '" class="icon-name"><div class="icon"><img data-lazy="/assets/img/no-app-image-square.jpg" alt="" data-lazy-alt="' + row[2] + '"></div><div class="name">' + row[2] + '</div></a>'
+                    },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        $(td).addClass('img');
+                    },
+                    "orderSequence": ['asc', 'desc'],
+                },
+                // Discount
+                {
+                    "targets": 1,
+                    "render": function (data, type, row) {
+                        return row[3]+'%';
+                    },
+                    "orderSequence": ['desc', 'asc'],
+                },
+                // Apps Count
+                {
+                    "targets": 2,
+                    "render": function (data, type, row) {
+                        return row[4].toLocaleString();
+                    },
+                    "orderSequence": ['desc', 'asc'],
+                },
+                // Packages Count
+                {
+                    "targets": 3,
+                    "render": function (data, type, row) {
+                        return row[5].toLocaleString();
+                    },
+                    "orderSequence": ['desc', 'asc'],
+                },
+                // Updated At
+                {
+                    "targets": 4,
+                    "render": function (data, type, row) {
+                        return row[6];
+                    },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        $(td).attr('nowrap', 'nowrap');
+                    },
+                    "orderSequence": ['desc', 'asc'],
+                },
+            ]
+        };
+
+        $('#bundles-table').gdbTable({
+            tableOptions: options,
+        });
+    }
+
+    function loadAppPackagesTab() {
+
+        const options = {
+            "serverSide": false,
+            "order": [[0, 'asc']],
+            "createdRow": function (row, data, dataIndex) {
+                $(row).attr('data-link', data[1]);
+            },
+            "columnDefs": [
+                // Name
+                {
+                    "targets": 0,
+                    "render": function (data, type, row) {
+                        return '<a href="' + row[1] + '" class="icon-name"><div class="icon"><img data-lazy="/assets/img/no-app-image-square.jpg" alt="" data-lazy-alt="' + row[2] + '"></div><div class="name">' + row[2] + '</div></a>'
+                    },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        $(td).addClass('img');
+                    },
+                    "orderSequence": ['asc', 'desc'],
+                },
+                // Billing Type
+                {
+                    "targets": 1,
+                    "render": function (data, type, row) {
+                        return row[3];
+                    },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        $(td).attr('nowrap', 'nowrap');
+                    },
+                    "orderSequence": ['asc', 'desc'],
+                },
+                // License Type
+                {
+                    "targets": 2,
+                    "render": function (data, type, row) {
+                        return row[4];
+                    },
+                    "orderSequence": ['asc', 'desc'],
+                },
+                // Status
+                {
+                    "targets": 3,
+                    "render": function (data, type, row) {
+                        return row[5];
+                    },
+                    "orderSequence": ['asc', 'desc'],
+                },
+                // Apps Count
+                {
+                    "targets": 4,
+                    "render": function (data, type, row) {
+                        return row[6];
+                    },
+                    "orderSequence": ['desc', 'asc'],
+                },
+            ]
+        };
+
+        $('#packages-table').gdbTable({
+            tableOptions: options,
         });
     }
 

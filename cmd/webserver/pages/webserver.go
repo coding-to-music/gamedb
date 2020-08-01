@@ -737,23 +737,6 @@ func GetAppCategories(app mongo.App) (categories []mysql.Category, err error) {
 	return categories, err
 }
 
-func GetAppBundles(app mongo.App) (bundles []mysql.Bundle, err error) {
-
-	bundles = []mysql.Bundle{} // Needed for marshalling into type
-
-	if len(app.Bundles) == 0 {
-		return bundles, nil
-	}
-
-	var item = memcache.MemcacheAppBundles(app.ID)
-
-	err = memcache.GetSetInterface(item.Key, item.Expiration, &bundles, func() (interface{}, error) {
-		return mysql.GetBundlesByID(app.Bundles, []string{})
-	})
-
-	return bundles, err
-}
-
 // Package bits
 func GetPackageBundles(pack mongo.Package) (bundles []mysql.Bundle, err error) {
 
