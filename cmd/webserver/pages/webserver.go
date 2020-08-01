@@ -39,7 +39,7 @@ func setHeaders(w http.ResponseWriter, contentType string) {
 		"style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.datatables.net https://fonts.googleapis.com",
 		"media-src https://steamcdn-a.akamaihd.net",
 		"font-src https://fonts.gstatic.com https://cdnjs.cloudflare.com",
-		"frame-src 'self' https://platform.twitter.com https://*.facebook.com https://www.youtube.com https://*.google.com https://www.patreon.com",
+		"frame-src https://platform.twitter.com https://*.facebook.com https://www.youtube.com https://*.google.com https://www.patreon.com",
 		"connect-src 'self' ws: wss: https://*.infolinks.com https://in.hotjar.com https://vc.hotjar.io https://www.google-analytics.com https://stats.g.doubleclick.net",
 		"manifest-src 'self'",
 		"img-src 'self' data: *", // * to hotlink news article images, info link images etc
