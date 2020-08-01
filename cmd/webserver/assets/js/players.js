@@ -57,7 +57,7 @@ if ($('#players-page').length > 0) {
                 return 'Players can be searched for using their username or vanity URL. If a player is missing, <a href="/players/add?search=' + $search.val() + '">add them here</a>.';
             },
         },
-        "order": [[3, 'desc']],
+        "order": [getOrder(window.location.hash)],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-link', data[13]);
         },
@@ -253,70 +253,70 @@ if ($('#players-page').length > 0) {
 
     const dt = $('table.table').gdbTable({tableOptions: options, searchFields: searchFields});
 
+    function getOrder(hash) {
+
+        const searchSortCol = $('[data-col-sort]').attr('data-col-sort');
+
+        if ($search.val() && searchSortCol) {
+            return [parseInt(searchSortCol), 'desc'];
+        }
+
+        switch (hash) {
+            case '#games':
+                return [5, 'desc'];
+            case '#bans':
+                return [7, 'desc'];
+            case '#profile':
+                return [10, 'desc'];
+            case '#achievements':
+                return [12, 'desc'];
+            default:
+                // Level
+                return [3, 'desc'];
+        }
+    }
+
     function updateColumns(dt, hash) {
 
         if (!hash) {
             hash = '#level';
         }
 
+        // Update tab UI
         $('#player-nav a[href="' + hash + '"]').tab('show');
-
-        const oldOrder = dt.order();
 
         let hide = [];
         let show = [];
 
         switch (hash) {
             case '#level':
-
                 show = [3, 4];
                 hide = [5, 6, 7, 8, 9, 10, 11, 12, 13];
-
-                dt.order([3, 'desc']);
                 break;
-
             case '#games':
-
                 show = [5, 6];
                 hide = [3, 4, 7, 8, 9, 10, 11, 12, 13];
-
-                dt.order([5, 'desc']);
                 break;
-
             case '#bans':
-
                 show = [7, 8, 9];
                 hide = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
-
-                dt.order([7, 'desc']);
                 break;
-
             case '#profile':
-
                 show = [10, 11];
                 hide = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
-
-                dt.order([10, 'desc']);
                 break;
-
             case '#achievements':
-
                 show = [12, 13];
                 hide = [3, 4, 5, 6, 7, 8, 9, 10, 11];
-
-                dt.order([12, 'desc']);
                 break;
         }
 
-        hide.forEach(function (value, index, array) {
-            dt.column(value).visible(false);
-        });
+        dt.columns(hide).visible(false, false);
+        dt.columns(show).visible(true, false);
+        dt.columns.adjust(); // Adjust column sizing
 
-        show.forEach(function (value, index, array) {
-            dt.column(value).visible(true);
-        });
-
-        if (JSON.stringify(oldOrder) !== JSON.stringify(dt.order())) {
+        if (JSON.stringify(dt.order()) !== JSON.stringify([getOrder(hash)])) {
+            dt.order([getOrder(hash)]);
             dt.draw();
         }
 
@@ -334,12 +334,6 @@ if ($('#players-page').length > 0) {
         updateColumns(dt, href);
     });
 
-    setTimeout(
-        function () {
-            updateColumns(dt, window.location.hash);
-        },
-        1000
-    );
-
+    updateColumns(dt, window.location.hash);
     toggleStateDropDown();
 }
