@@ -103,4 +103,5 @@ var (
 	MemcacheFirstAppBadge       = func(appID int) Item { return Item{Key: "first-app-badge-" + strconv.Itoa(appID), Expiration: 0} }
 	MemcacheChatBotRequest      = func(request string) Item { return Item{Key: "chat-bot-request-" + helpers.MD5([]byte(request)), Expiration: 60 * 10} }
 	MemcachePlayerLocationAggs  = Item{Key: "player-location-aggs", Expiration: 60 * 60 * 2}
+	MemcacheAPISteam            = Item{Key: "api-steam", Expiration: 60 * 60 * 24 * 7}
 )

@@ -116,7 +116,6 @@ func main() {
 	r.Mount("/settings", pages.SettingsRouter())
 	r.Mount("/signup", pages.SignupRouter())
 	r.Mount("/stats", pages.StatsRouter())
-	r.Mount("/steam-api", pages.SteamAPIRouter())
 	r.Mount("/tags", pages.TagsRouter())
 	r.Mount("/webhooks", pages.WebhooksRouter())
 	r.Mount("/terms", pages.TermsRouter())
@@ -173,6 +172,8 @@ func main() {
 	r.Get("/chat-bot", redirectHandler("/discord-bot"))
 	r.Get("/chat/{id}", redirectHandler("/discord-server"))
 	r.Get("/sitemap/index.xml", redirectHandler("/sitemap.xml"))
+	r.Get("/steam-api", redirectHandler("/api/steam"))
+	r.Get("/api", redirectHandler("/api/gamedb"))
 
 	// Game Redirects
 	r.Get("/new-releases", redirectHandler("/games/new-releases"))

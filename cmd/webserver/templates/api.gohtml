@@ -1,13 +1,6 @@
 {{define "api"}}
     {{ template "_header" . }}
 
-    <script>
-        // Here so it's loaded before the JS in the iframe
-        function resizeIframe(iframe) {
-            iframe.height = iframe.contentWindow.document.body.scrollHeight + "px";
-        }
-    </script>
-
     <div class="container" id="api-page">
 
         <div class="jumbotron">
@@ -28,23 +21,16 @@
 
                 <ul class="nav nav-tabs card-header-tabs nav-fill-mobile">
                     <li class="nav-item">
-                        <a class="nav-link active" data-toggle="tab" href="#gamedb" role="tab">Game DB</a>
+                        <a class="nav-link {{ if eq .Spec "steam" }}active{{ end }}" href="/api/steam" role="tab">Steam</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#steam" role="tab">Steam</a>
+                        <a class="nav-link {{ if eq .Spec "gamedb" }}active{{ end }}" href="/api/gamedb" role="tab">Game DB</a>
                     </li>
                 </ul>
             </div>
             <div class="card-body p-0">
-
-                <div class="tab-content">
-                    <div class="tab-pane active" id="gamedb" role="tabpanel">
-                        <iframe src="/api/gamedb"></iframe>
-                    </div>
-                    <div class="tab-pane" id="steam" role="tabpanel">
-                        <iframe src="/api/steam"></iframe>
-                    </div>
-                </div>
+                <redoc spec-url='/api/{{ .Spec }}.json'></redoc>
+                <script src="https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js"></script>
             </div>
         </div>
 
