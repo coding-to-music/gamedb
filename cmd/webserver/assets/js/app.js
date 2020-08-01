@@ -589,9 +589,6 @@ if ($appPage.length > 0) {
                     chart: {
                         type: 'heatmap',
                     },
-                    legend: {
-                        enabled: false,
-                    },
                     xAxis: {
                         title: null,
                         type: 'category',

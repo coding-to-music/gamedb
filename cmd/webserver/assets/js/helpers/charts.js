@@ -2,6 +2,7 @@ const defaultChartOptions = {
     chart: {
         type: 'spline',
         backgroundColor: 'rgba(0,0,0,0)',
+        spacing: 0,
     },
     title: {
         text: '',
