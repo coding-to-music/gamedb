@@ -138,7 +138,7 @@ func SaveArticles(articles []Article) (err error) {
 
 		write := mongo.NewReplaceOneModel()
 		write.SetFilter(bson.M{"_id": article.ID})
-		write.SetReplacement(bson.M{"$set": article.BSON()})
+		write.SetReplacement(article.BSON())
 		write.SetUpsert(true)
 
 		writes = append(writes, write)

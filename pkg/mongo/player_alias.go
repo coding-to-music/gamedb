@@ -51,7 +51,7 @@ func UpdatePlayerAliases(aliases []PlayerAlias) (err error) {
 
 		write := mongo.NewReplaceOneModel()
 		write.SetFilter(bson.M{"_id": v.getKey()})
-		write.SetReplacement(bson.M{"$set": v.BSON()})
+		write.SetReplacement(v.BSON())
 		write.SetUpsert(true)
 
 		writes = append(writes, write)
