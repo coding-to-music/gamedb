@@ -617,6 +617,7 @@ if ($appPage.length > 0) {
                     colorAxis: {
                         minColor: darkMode ? '#212529' : '#FFFFFF',
                         maxColor: defaultChartOptions.colors[0],
+                        reversed: false,
                     },
                     plotOptions: {
                         series: {
