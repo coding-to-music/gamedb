@@ -56,7 +56,7 @@
 
                 <input type="hidden" value="{{ .IDs }}" name="ids" id="ids"/>
                 <h5>Selected Games <small>({{ len .Apps }}/10)</small></h5>
-                <div class="table-responsive">
+                <div class="table-responsive mb-4">
                     <table class="table table-hover table-striped" data-ordering="false" data-row-type="games" data-path="/games/compare/apps.json" id="apps-table">
                         <thead class="thead-light">
                         <tr>
@@ -75,39 +75,62 @@
 
                 {{ if gt (len .Apps) 0 }}
 
-                    <h5 class="mt-4">Player Count - 1 Week</h5>
-                    <div id="players-chart">
-                        <i class="fas fa-spinner fa-spin"></i>
+                    <div class="card mb-4">
+                        <h5 class="card-header">Player Count - 1 Week</h5>
+                        <div class="card-body">
+                            <div id="players-chart">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
                     </div>
 
-                    <h5 class="mt-4">Player Count - 5 Years</h5>
-                    <div id="players-chart2">
-                        <i class="fas fa-spinner fa-spin"></i>
+                    <div class="card mb-4">
+                        <h5 class="card-header">Player Count - 5 Years</h5>
+                        <div class="card-body">
+                            <div id="players-chart2">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
                     </div>
 
                     {{ if gt (len .GroupIDs) 0 }}
-                    <h5 class="mt-4">Followers</h5>
-                    <div id="group-chart">
-                        <i class="fas fa-spinner fa-spin"></i>
-                    </div>
+                        <div class="card mb-4">
+                            <h5 class="card-header">Followers</h5>
+                            <div class="card-body">
+                                <div id="group-chart">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                </div>
+                            </div>
+                        </div>
                     {{ end }}
 
-                    <h5 class="mt-4">Review Score</h5>
-                    <div id="score-chart">
-                        <i class="fas fa-spinner fa-spin"></i>
+                    <div class="card mb-4">
+                        <h5 class="card-header">Review Score</h5>
+                        <div class="card-body">
+                            <div id="score-chart">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
                     </div>
 
-                    <h5 class="mt-4">Wishlists</h5>
-                    <div id="wishlists-chart">
-                        <i class="fas fa-spinner fa-spin"></i>
+                    <div class="card mb-4">
+                        <h5 class="card-header">Wishlists</h5>
+                        <div class="card-body">
+                            <div id="wishlists-chart">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
                     </div>
 
-                    <h5 class="mt-4">Google Searches</h5>
-                    <script type="text/javascript" src="https://ssl.gstatic.com/trends_nrtr/2213_RC01/embed_loader.js"></script>
-
-                    {{ range .GoogleJSON }}
-                    <script type="text/javascript">trends.embed.renderExploreWidget("TIMESERIES", {{ . }});</script>
-                    {{ end }}
+                    <div class="card">
+                        <h5 class="card-header">Google Searches</h5>
+                        <div class="card-body p-0">
+                            <script type="text/javascript" src="https://ssl.gstatic.com/trends_nrtr/2213_RC01/embed_loader.js"></script>
+                            {{ range .GoogleJSON }}
+                                <script type="text/javascript">trends.embed.renderExploreWidget("TIMESERIES", {{ . }});</script>
+                            {{ end }}
+                        </div>
+                    </div>
 
                 {{ end }}
             </div>
