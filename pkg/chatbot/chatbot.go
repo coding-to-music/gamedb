@@ -7,9 +7,7 @@ import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
-	"github.com/gamedb/gamedb/pkg/chatbot/charts"
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 )
 
@@ -117,20 +115,11 @@ func getFooter() *discordgo.MessageEmbedFooter {
 
 func getAppEmbed(app mongo.App) *discordgo.MessageEmbed {
 
-	var image *discordgo.MessageEmbedImage
-	url, width, height, err := charts.GetAppChart(app)
-	if err != nil {
-		log.Err(err)
-	} else if url != "" {
-		image = &discordgo.MessageEmbedImage{URL: url, Width: width, Height: height}
-	}
-
 	return &discordgo.MessageEmbed{
 		Title:     app.GetName(),
 		URL:       "https://gamedb.online" + app.GetPath(),
 		Thumbnail: &discordgo.MessageEmbedThumbnail{URL: app.GetHeaderImage()},
 		Footer:    getFooter(),
-		Image:     image,
 		Fields: []*discordgo.MessageEmbedField{
 			{
 				Name:  "Max Weekly Players",

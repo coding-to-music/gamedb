@@ -2,8 +2,11 @@ package chatbot
 
 import (
 	"html/template"
+	"strconv"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/gamedb/gamedb/pkg/chatbot/charts"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -58,6 +61,17 @@ func (c CommandAppRandom) Output(msg *discordgo.MessageCreate) (message discordg
 
 		message.Content = "<@" + msg.Author.ID + ">"
 		message.Embed = getAppEmbed(app)
+
+		img, err := charts.GetAppChart(app)
+		if err != nil {
+			log.Err(err)
+		} else {
+			message.Files = append(message.Files, &discordgo.File{
+				Name:        "app-" + strconv.Itoa(app.ID) + ".png",
+				ContentType: "image/png",
+				Reader:      img,
+			})
+		}
 	}
 
 	return message, nil

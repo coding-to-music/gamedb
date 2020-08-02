@@ -2,9 +2,12 @@ package chatbot
 
 import (
 	"html/template"
+	"strconv"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/gamedb/gamedb/pkg/chatbot/charts"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 )
 
@@ -39,7 +42,7 @@ func (c CommandApp) Output(msg *discordgo.MessageCreate) (message discordgo.Mess
 
 	matches := RegexCache[c.Regex()].FindStringSubmatch(msg.Message.Content)
 
-	apps, err := elasticsearch.SearchAppsSimple(1,  matches[2])
+	apps, err := elasticsearch.SearchAppsSimple(1, matches[2])
 	if err != nil {
 		return message, err
 	} else if len(apps) == 0 {
@@ -54,6 +57,17 @@ func (c CommandApp) Output(msg *discordgo.MessageCreate) (message discordgo.Mess
 
 	message.Content = "<@" + msg.Author.ID + ">"
 	message.Embed = getAppEmbed(app)
+
+	img, err := charts.GetAppChart(app)
+	if err != nil {
+		log.Err(err)
+	} else {
+		message.Files = append(message.Files, &discordgo.File{
+			Name:        "app-" + strconv.Itoa(app.ID) + ".png",
+			ContentType: "image/png",
+			Reader:      img,
+		})
+	}
 
 	return message, nil
 }

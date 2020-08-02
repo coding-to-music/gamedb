@@ -60,21 +60,8 @@ func (c CommandGroup) Output(msg *discordgo.MessageCreate) (message discordgo.Me
 		headline = "-"
 	}
 
-	var image *discordgo.MessageEmbedImage
-	url, width, height, err := charts.GetGroupChart(group)
-	if err != nil {
-		log.Err(err)
-	} else if url != "" {
-		image = &discordgo.MessageEmbedImage{
-			URL:    url,
-			Width:  width,
-			Height: height,
-		}
-	}
-
 	message.Content = "<@" + msg.Author.ID + ">"
 	message.Embed = &discordgo.MessageEmbed{
-		Image: image,
 		Title: group.GetName(),
 		URL:   "https://gamedb.online" + group.GetPath(),
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
@@ -95,6 +82,17 @@ func (c CommandGroup) Output(msg *discordgo.MessageCreate) (message discordgo.Me
 				Value: humanize.Comma(int64(group.Members)),
 			},
 		},
+	}
+
+	img, err := charts.GetGroupChart(group)
+	if err != nil {
+		log.Err(err)
+	} else {
+		message.Files = append(message.Files, &discordgo.File{
+			Name:        "group-" + group.ID + ".png",
+			ContentType: "image/png",
+			Reader:      img,
+		})
 	}
 
 	return message, nil
