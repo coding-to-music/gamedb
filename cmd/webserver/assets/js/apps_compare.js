@@ -2,69 +2,13 @@ const $appsComparePage = $('#apps-compare-page');
 
 if ($appsComparePage.length > 0) {
 
-    const config = {rootMargin: '50px 0px 50px 0px', threshold: 0};
-
-    const callback1 = function (entries, self) {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                loadCompareSearchTable();
-                self.unobserve(entry.target);
-            }
-        });
-    };
-    new IntersectionObserver(callback1, config).observe(document.getElementById('apps-table'));
-
-    const playersChart = document.getElementById('players-chart');
-    if (playersChart) {
-        const callback2 = function (entries, self) {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    loadComparePlayersChart();
-                    self.unobserve(entry.target);
-                }
-            });
-        };
-        new IntersectionObserver(callback2, config).observe(playersChart);
-    }
-
-    const groupsChart = document.getElementById('group-chart');
-    if (groupsChart) {
-        const callback3 = function (entries, self) {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    loadCompareFollowersChart();
-                    self.unobserve(entry.target);
-                }
-            });
-        };
-        new IntersectionObserver(callback3, config).observe(groupsChart);
-    }
-
-    const scoreChart = document.getElementById('score-chart');
-    if (scoreChart) {
-        const callback4 = function (entries, self) {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    loadCompareScoreChart();
-                    self.unobserve(entry.target);
-                }
-            });
-        };
-        new IntersectionObserver(callback4, config).observe(scoreChart);
-    }
-
-    const wishlistChart = document.getElementById('wishlists-chart');
-    if (wishlistChart) {
-        const callback5 = function (entries, self) {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    loadCompareWishlistChart();
-                    self.unobserve(entry.target);
-                }
-            });
-        };
-        new IntersectionObserver(callback5, config).observe(wishlistChart);
-    }
+    loadAjaxOnObserve({
+        'apps-table': loadCompareSearchTable,
+        'players-chart': loadComparePlayersChart,
+        'group-chart': loadCompareFollowersChart,
+        'score-chart': loadCompareScoreChart,
+        'wishlists-chart': loadCompareWishlistChart,
+    });
 
     function loadCompareSearchTable() {
 
