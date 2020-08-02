@@ -47,9 +47,12 @@
                     </div>
                 </div>
 
-                <div class="mb-4">{{ .Summary }}</div>
+                <div class="card mb-4">
+                    <h5 class="card-header">Description</h5>
+                    <div class="card-body">{{ .Summary }}</div>
+                </div>
 
-                <h5>Game DB players in {{ .Group.GetAbbr }}</h5>
+                <h5>Game DB Members</h5>
                 <table class="table table-hover table-striped table-counts mb-0" data-path="/groups/{{ .Group.ID }}/table.json" id="players" data-row-type="players" data-ordering="false">
                     <thead class="thead-light">
                     <tr>
