@@ -160,7 +160,7 @@ if ($('#admin-patreon-page').length > 0) {
             {
                 'targets': 2,
                 'render': function (data, type, row) {
-                    return row[2];
+                    return row[2]['data']['relationships']['user']['data']['id'];
                 },
                 'orderable': false,
             },
@@ -168,7 +168,25 @@ if ($('#admin-patreon-page').length > 0) {
     };
 
     const $table = $('table.table');
-    const dt = $table.gdbTable({
-        tableOptions: options,
-    });
+    const dt = $table.gdbTable({tableOptions: options});
+
+    $table.on('click', 'tbody tr[role=row]', function () {
+
+            const row = dt.row($(this));
+
+            // noinspection JSUnresolvedFunction
+            if (row.child.isShown()) {
+
+                row.child.hide();
+                $(this).removeClass('shown');
+
+            } else {
+
+                const rowx = row.data()[2];
+
+                row.child('<pre>' + JSON.stringify(rowx, null, '  ') + '</pre>').show();
+                $(this).addClass('shown');
+            }
+        }
+    );
 }

@@ -192,7 +192,7 @@ func adminPatreonAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		response.AddRow([]interface{}{
 			app.CreatedAt.Format(helpers.DateSQL), // 0
 			app.Event,                             // 1
-			wh.User.ID,                            // 2
+			wh,                                    // 2
 		})
 	}
 
