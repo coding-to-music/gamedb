@@ -270,7 +270,7 @@ if ($appsComparePage.length > 0) {
                                 return this.value.toLocaleString();
                             },
                         },
-                        min: 0,
+                        // min: 0,
                     },
                     tooltip: {
                         formatter: function () {
