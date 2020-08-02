@@ -139,6 +139,9 @@ if ($('#admin-patreon-page').length > 0) {
 
     const options = {
         "order": [[0, 'desc']],
+        "createdRow": function (row, data, dataIndex) {
+            $(row).addClass('cursor-pointer');
+        },
         "columnDefs": [
             // Date
             {
