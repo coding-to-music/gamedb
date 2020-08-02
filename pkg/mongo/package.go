@@ -15,7 +15,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/mysql/pics"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var (
@@ -356,10 +355,10 @@ func GetPackagesByID(ids []int, projection bson.M) (packages []Package, err erro
 		a = append(a, v)
 	}
 
-	return GetPackages(0, 0, nil, bson.D{{"_id", bson.M{"$in": a}}}, projection, nil)
+	return GetPackages(0, 0, nil, bson.D{{"_id", bson.M{"$in": a}}}, projection)
 }
 
-func GetPackages(offset int64, limit int64, sort bson.D, filter bson.D, projection bson.M, ops *options.FindOptions) (packages []Package, err error) {
+func GetPackages(offset int64, limit int64, sort bson.D, filter bson.D, projection bson.M) (packages []Package, err error) {
 
 	cur, ctx, err := Find(CollectionPackages, offset, limit, sort, filter, projection, nil)
 	if err != nil {

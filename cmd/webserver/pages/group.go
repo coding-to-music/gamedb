@@ -142,43 +142,24 @@ func groupTableAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Get players
-	var players []mongo.Player
+	var playerGroups []mongo.PlayerGroup
 	wg.Add(1)
-	go func(r *http.Request) {
+	go func() {
 
 		defer wg.Done()
 
+		var columns = map[string]string{
+			"2": "player_level",
+			"3": "player_games",
+		}
+
 		var err error
-		playerGroups, err := mongo.GetGroupPlayers(id, query.GetOffset64())
+		playerGroups, err = mongo.GetGroupPlayers(id, query.GetOffset64(), query.GetOrderMongo(columns))
 		if err != nil {
 			log.Err(err, r)
 			return
 		}
-
-		// Get players
-		var playerIDs []int64
-		for _, v := range playerGroups {
-			playerIDs = append(playerIDs, v.PlayerID)
-		}
-
-		playersResp, err := mongo.GetPlayersByID(playerIDs, bson.M{"_id": 1, "persona_name": 1, "vanity_url": 1, "avatar": 1, "level": 1, "country_code": 1})
-		if err != nil {
-			log.Err(err, r)
-			return
-		}
-
-		var playersMap = map[int64]mongo.Player{}
-		for _, v := range playersResp {
-			playersMap[v.ID] = v
-		}
-
-		// Build response in correct order
-		for _, v := range playerGroups {
-			if val, ok := playersMap[v.PlayerID]; ok {
-				players = append(players, val)
-			}
-		}
-	}(r)
+	}()
 
 	// Get total
 	var total int64
@@ -195,17 +176,18 @@ func groupTableAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	var response = datatable.NewDataTablesResponse(r, query, total, total, nil)
-	for _, player := range players {
+	for _, playerGroup := range playerGroups {
 		response.AddRow([]interface{}{
-			player.ID,              // 0
-			player.GetName(),       // 1
-			player.CommunityLink(), // 2
-			player.GetAvatar(),     // 3
-			player.GetFlag(),       // 4
-			player.Level,           // 5
-			player.CountryCode,     // 6
-			player.GetAvatar2(),    // 7
-			player.GetPath(),       // 8
+			playerGroup.PlayerID,                 // 0
+			playerGroup.GetPlayerName(),          // 1
+			playerGroup.GetPlayerCommunityLink(), // 2
+			playerGroup.GetPlayerAvatar(),        // 3
+			playerGroup.GetPlayerFlag(),          // 4
+			playerGroup.PlayerLevel,              // 5
+			playerGroup.PlayerCountry,            // 6
+			playerGroup.GetPlayerAvatar2(),       // 7
+			playerGroup.GetPath(),                // 8
+			playerGroup.PlayerGames,              // 9
 		})
 	}
 

@@ -15,11 +15,9 @@ import (
 )
 
 type PlayersGroupsMessage struct {
-	PlayerID          int64   `json:"player_id"`
-	PlayerPersonaName string  `json:"player_persona_name"`
-	PlayerAvatar      string  `json:"player_avatar"`
-	SkipGroupUpdate   bool    `json:"skip_group"`
-	UserAgent         *string `json:"user_agent"`
+	Player          mongo.Player `json:"player"`
+	SkipGroupUpdate bool         `json:"skip_group"`
+	UserAgent       *string      `json:"user_agent"`
 }
 
 func (m PlayersGroupsMessage) Queue() rabbit.QueueName {
@@ -41,7 +39,7 @@ func playersGroupsHandler(message *rabbit.Message) {
 	defer func() {
 
 		wsPayload := PlayerPayload{
-			ID:    strconv.FormatInt(payload.PlayerID, 10),
+			ID:    strconv.FormatInt(payload.Player.ID, 10),
 			Queue: "group",
 		}
 
@@ -52,7 +50,7 @@ func playersGroupsHandler(message *rabbit.Message) {
 	}()
 
 	// Old groups
-	oldGroupsSlice, err := mongo.GetPlayerGroups(payload.PlayerID, 0, 0, nil)
+	oldGroupsSlice, err := mongo.GetPlayerGroups(payload.Player.ID, 0, 0, nil)
 	if err != nil {
 		log.Err(err, message.Message.Body)
 		sendToRetryQueue(message)
@@ -65,7 +63,7 @@ func playersGroupsHandler(message *rabbit.Message) {
 	}
 
 	// Get new groups
-	newGroupsResponse, err := steam.GetSteam().GetUserGroupList(payload.PlayerID)
+	newGroupsResponse, err := steam.GetSteam().GetUserGroupList(payload.Player.ID)
 
 	if err == steamapi.ErrProfileMissing || err == steamapi.ErrProfilePrivate {
 		message.Ack(false)
@@ -110,15 +108,18 @@ func playersGroupsHandler(message *rabbit.Message) {
 		var name = helpers.TruncateString(group.Name, 1000, "") // Truncated as caused mongo driver issue
 
 		newPlayerGroupSlice = append(newPlayerGroupSlice, mongo.PlayerGroup{
-			PlayerID:     payload.PlayerID,
-			PlayerName:   payload.PlayerPersonaName,
-			PlayerAvatar: payload.PlayerAvatar,
-			GroupID:      group.ID,
-			GroupName:    name,
-			GroupIcon:    group.Icon,
-			GroupMembers: group.Members,
-			GroupType:    group.Type,
-			GroupURL:     group.URL,
+			PlayerID:      payload.Player.ID,
+			PlayerName:    payload.Player.PersonaName,
+			PlayerAvatar:  payload.Player.Avatar,
+			PlayerLevel:   payload.Player.Level,
+			PlayerCountry: payload.Player.CountryCode,
+			PlayerGames:   payload.Player.GamesCount,
+			GroupID:       group.ID,
+			GroupName:     name,
+			GroupIcon:     group.Icon,
+			GroupMembers:  group.Members,
+			GroupType:     group.Type,
+			GroupURL:      group.URL,
 		})
 	}
 
@@ -137,7 +138,7 @@ func playersGroupsHandler(message *rabbit.Message) {
 		}
 	}
 
-	err = mongo.DeletePlayerGroups(payload.PlayerID, toDeleteIDs)
+	err = mongo.DeletePlayerGroups(payload.Player.ID, toDeleteIDs)
 	if err != nil {
 		log.Err(err, message.Message.Body)
 		sendToRetryQueue(message)
@@ -160,7 +161,7 @@ func playersGroupsHandler(message *rabbit.Message) {
 		{"groups_count", len(newGroupsMap)},
 	}
 
-	_, err = mongo.UpdateOne(mongo.CollectionPlayers, bson.D{{"_id", payload.PlayerID}}, update)
+	_, err = mongo.UpdateOne(mongo.CollectionPlayers, bson.D{{"_id", payload.Player.ID}}, update)
 	if err != nil {
 		log.Err(err, message.Message.Body)
 		sendToRetryQueue(message)
@@ -169,7 +170,7 @@ func playersGroupsHandler(message *rabbit.Message) {
 
 	// Clear caches
 	var items = []string{
-		memcache.MemcachePlayer(payload.PlayerID).Key,
+		memcache.MemcachePlayer(payload.Player.ID).Key,
 	}
 
 	err = memcache.Delete(items...)

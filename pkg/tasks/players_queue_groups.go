@@ -34,19 +34,24 @@ func (c PlayersQueueGroups) work() (err error) {
 	for {
 
 		var projection = bson.M{
-			"_id":          1,
-			"persona_name": 1,
-			"avatar":       1,
+			"common":       0,
+			"config":       0,
+			"extended":     0,
+			"install":      0,
+			"launch":       0,
+			"localization": 0,
+			"reviews":      0,
+			"ufs":          0,
 		}
 
-		players, err := mongo.GetPlayers(offset, limit, bson.D{{"_id", 1}}, nil, projection)
+		players, err := mongo.GetPlayers(offset, limit, nil, nil, projection)
 		if err != nil {
 			return err
 		}
 
 		for _, player := range players {
 
-			err = queue.ProducePlayerGroup(player.ID, player.PersonaName, player.Avatar, true)
+			err = queue.ProducePlayerGroup(player, true)
 			if err != nil {
 				return err
 			}

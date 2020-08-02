@@ -68,10 +68,6 @@ func (player Player) GetCommunityLink() string {
 	return helpers.GetPlayerCommunityLink(player.ID, player.VanityURL)
 }
 
-func (player Player) CommunityLink() string {
-	return helpers.GetPlayerCommunityLink(player.ID, player.VanityURL)
-}
-
 func IndexPlayer(p Player) error {
 	return indexDocument(IndexPlayers, strconv.FormatInt(p.ID, 10), p)
 }

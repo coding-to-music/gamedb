@@ -332,7 +332,11 @@ func playerHandler(message *rabbit.Message) {
 		produces = append(produces, PlayersAliasesMessage{PlayerID: player.ID})
 
 		if !payload.SkipGroupUpdate {
-			produces = append(produces, PlayersGroupsMessage{PlayerID: player.ID, PlayerPersonaName: player.PersonaName, PlayerAvatar: player.Avatar, SkipGroupUpdate: payload.SkipGroupUpdate, UserAgent: payload.UserAgent})
+			produces = append(produces, PlayersGroupsMessage{
+				Player:          player,
+				SkipGroupUpdate: payload.SkipGroupUpdate,
+				UserAgent:       payload.UserAgent,
+			})
 		}
 	}
 

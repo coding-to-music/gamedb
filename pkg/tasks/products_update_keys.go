@@ -130,7 +130,7 @@ func (c ProductsUpdateKeys) work() (err error) {
 
 	for {
 
-		packages, err := mongo.GetPackages(offset, limit, nil, filter, projection, nil)
+		packages, err := mongo.GetPackages(offset, limit, nil, filter, projection)
 		if err != nil {
 			return err
 		}

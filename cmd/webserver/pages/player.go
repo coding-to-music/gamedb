@@ -1090,7 +1090,7 @@ func playerGroupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			"",                                     // 1
 			group.GetName(),                        // 2
 			group.GetPath(),                        // 3
-			group.GetIcon(),                        // 4
+			group.GetGroupIcon(),                   // 4
 			group.GroupMembers,                     // 5
 			group.GroupType,                        // 6
 			group.GroupID == player.PrimaryGroupID, // 7

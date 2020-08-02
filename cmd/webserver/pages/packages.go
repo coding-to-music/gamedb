@@ -116,7 +116,7 @@ func packagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			"5": "change_number_date",
 		}
 
-		packages, err = mongo.GetPackages(query.GetOffset64(), 100, query.GetOrderMongo(sortCols), filter, mongo.PackageOutputForJSON, nil)
+		packages, err = mongo.GetPackages(query.GetOffset64(), 100, query.GetOrderMongo(sortCols), filter, mongo.PackageOutputForJSON)
 		if err != nil {
 			log.Err(err, r)
 			return

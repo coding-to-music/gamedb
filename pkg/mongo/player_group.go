@@ -11,15 +11,18 @@ import (
 )
 
 type PlayerGroup struct {
-	PlayerID     int64  `bson:"player_id"`
-	PlayerName   string `bson:"player_name"`
-	PlayerAvatar string `bson:"player_avatar"`
-	GroupID      string `bson:"group_id"`
-	GroupName    string `bson:"group_name"`
-	GroupIcon    string `bson:"group_icon"`
-	GroupMembers int    `bson:"group_members"`
-	GroupType    string `bson:"group_type"`
-	GroupURL     string `bson:"group_url"`
+	PlayerID      int64  `bson:"player_id"`
+	PlayerName    string `bson:"player_name"`
+	PlayerAvatar  string `bson:"player_avatar"`
+	PlayerCountry string `bson:"player_country"`
+	PlayerLevel   int    `bson:"player_level"`
+	PlayerGames   int    `bson:"player_games"`
+	GroupID       string `bson:"group_id"`
+	GroupName     string `bson:"group_name"`
+	GroupIcon     string `bson:"group_icon"`
+	GroupMembers  int    `bson:"group_members"`
+	GroupType     string `bson:"group_type"`
+	GroupURL      string `bson:"group_url"`
 }
 
 func (group PlayerGroup) BSON() bson.D {
@@ -29,6 +32,9 @@ func (group PlayerGroup) BSON() bson.D {
 		{"player_id", group.PlayerID},
 		{"player_name", group.PlayerName},
 		{"player_avatar", group.PlayerAvatar},
+		{"player_country", group.PlayerCountry},
+		{"player_level", group.PlayerLevel},
+		{"player_games", group.PlayerGames},
 		{"group_id", group.GroupID},
 		{"group_name", group.GroupName},
 		{"group_icon", group.GroupIcon},
@@ -62,6 +68,10 @@ func (group PlayerGroup) GetPlayerAvatar() string {
 	return helpers.GetPlayerAvatar(group.PlayerAvatar)
 }
 
+func (group PlayerGroup) GetPlayerAvatar2() string {
+	return helpers.GetPlayerAvatar2(group.PlayerLevel)
+}
+
 func (group PlayerGroup) IsOfficial() bool {
 	return helpers.IsGroupOfficial(group.GroupType)
 }
@@ -74,8 +84,16 @@ func (group PlayerGroup) GetName() string {
 	return helpers.GetGroupName(group.GroupID, group.GroupName)
 }
 
-func (group PlayerGroup) GetIcon() string {
+func (group PlayerGroup) GetGroupIcon() string {
 	return helpers.GetGroupIcon(group.GroupIcon)
+}
+
+func (group PlayerGroup) GetPlayerCommunityLink() string {
+	return helpers.GetPlayerCommunityLink(group.PlayerID, group.PlayerName)
+}
+
+func (group PlayerGroup) GetPlayerFlag() string {
+	return helpers.GetPlayerFlagPath(group.PlayerCountry)
 }
 
 func InsertPlayerGroups(groups []PlayerGroup) (err error) {
@@ -135,17 +153,17 @@ func GetPlayerGroups(playerID int64, offset int64, limit int64, sort bson.D) (gr
 
 	var filter = bson.D{{"player_id", playerID}}
 
-	return getPlayerGroups(offset, limit, filter, sort, nil)
+	return getPlayerGroups(offset, limit, filter, sort)
 }
 
-func GetGroupPlayers(groupID string, offset int64) (players []PlayerGroup, err error) {
+func GetGroupPlayers(groupID string, offset int64, order bson.D) (players []PlayerGroup, err error) {
 
 	var filter = bson.D{{"group_id", groupID}}
 
-	return getPlayerGroups(offset, 50, filter, bson.D{{"player_name", 1}}, bson.M{"_id": 1})
+	return getPlayerGroups(offset, 100, filter, order)
 }
 
-func getPlayerGroups(offset int64, limit int64, filter bson.D, sort bson.D, projection bson.M) (players []PlayerGroup, err error) {
+func getPlayerGroups(offset int64, limit int64, filter bson.D, sort bson.D) (players []PlayerGroup, err error) {
 
 	cur, ctx, err := Find(CollectionPlayerGroups, offset, limit, sort, filter, nil, nil)
 	if err != nil {
