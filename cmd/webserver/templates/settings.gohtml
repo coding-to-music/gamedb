@@ -109,14 +109,14 @@
                                                 <input type="hidden" name="openid.realm" value="{{ .Domain }}/">
                                                 <input type="hidden" name="openid.return_to" value="{{ .Domain }}/settings/oauth-callback/steam">
                                                 <p>
-                                                    <button type="submit" class="btn btn-success btn-sm" aria-label="Link Steam Account">
+                                                    <button type="submit" class="btn btn-success" aria-label="Link Steam Account">
                                                         <i class="fab fa-steam"></i> Link Steam Account
                                                     </button>
                                                 </p>
                                             </form>
                                         {{ else }}
                                             <p>
-                                                <a href="/settings/oauth-unlink/steam" role="button" class="btn btn-danger btn-sm">
+                                                <a href="/settings/oauth-unlink/steam" role="button" class="btn btn-danger">
                                                     <i class="fab fa-steam"></i> Unlink Steam Account
                                                 </a>
                                             </p>
