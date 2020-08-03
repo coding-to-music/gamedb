@@ -21,6 +21,7 @@ if ($('#stats-page').length > 0) {
             "scores": statsAppScores,
             "client-players": statsClientPlayers,
             "client-players2": statsClientPlayers2,
+            "player-countries": playerCountries,
         });
 
         //
@@ -256,8 +257,46 @@ if ($('#stats-page').length > 0) {
                             }
                         },
                         series: [{
-                            data: dataArray
+                            data: dataArray,
                         }]
+                    }));
+                },
+            });
+        }
+
+        function playerCountries() {
+
+            $.ajax({
+                type: "GET",
+                url: '/stats/player-countries.json',
+                dataType: 'json',
+                success: function (data, textStatus, jqXHR) {
+
+                    Highcharts.chart('player-countries', $.extend(true, {}, defaultChartOptions, {
+                        chart: {
+                            type: 'column',
+                        },
+                        legend: {
+                            enabled: false,
+                        },
+                        xAxis: {
+                            type: 'category',
+                        },
+                        yAxis: {
+                            type: 'logarithmic',
+                            title: null,
+                        },
+                        plotOptions: {
+                            series: {
+                                pointPadding: 0,
+                                groupPadding: 0,
+                            }
+                        },
+                        series: [{
+                            // name: 'Countries',
+                            data: data['series'],
+                        }],
+                        drilldown: {series: data['drilldown']},
                     }));
                 },
             });

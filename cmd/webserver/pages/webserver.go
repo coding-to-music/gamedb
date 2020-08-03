@@ -582,13 +582,19 @@ func (t *globalTemplate) addAssetHighCharts() {
 		URL:       "https://cdnjs.cloudflare.com/ajax/libs/highcharts/8.1.2/highcharts.js",
 		Integrity: "sha512-EGkUnujrfu0497MBWKtDPsmhcor1++/hT49wnF4Ji//vj3kfvwSM8nocX5hNRZgEZB5wEkGmXUc6mYXpNBynPg==",
 	})
+}
+
+func (t *globalTemplate) addAssetHighChartsHeatmap() {
 	t.JSFiles = append(t.JSFiles, Asset{
 		URL:       "https://cdnjs.cloudflare.com/ajax/libs/highcharts/8.1.2/modules/heatmap.src.min.js",
 		Integrity: "sha512-6LYouPFmhQ9hCS76dIm1W+FrkqF4K7oHlPm7NNlo4qESqakFJzpL5esATFAkiM3jKpNgKrx2RxWHBYze0xSZ4A==",
 	})
+}
+
+func (t *globalTemplate) addAssetHighChartsDrilldown() {
 	t.JSFiles = append(t.JSFiles, Asset{
-		URL:       "https://cdnjs.cloudflare.com/ajax/libs/highcharts/8.1.2/modules/data.src.min.js",
-		Integrity: "sha512-z1smTbR5US2c8JfqaNrnC69+C0qkMQ7mn1Vi4TvtKuKt0+QHk0et5QifE9hjeeW7HL98LWHZ/zglHVDAglDpHw==",
+		URL:       "https://cdnjs.cloudflare.com/ajax/libs/highcharts/8.1.2/modules/drilldown.min.js",
+		Integrity: "sha512-5gnV4nOL3wb+clZsM+VuHKQ0cB5zI2CTqvjT8bg4xuVT1gpIJjnX3DLauZsKMFcflTXVqHuv5GrAoiXF79xymg==",
 	})
 }
 

@@ -92,6 +92,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	t.setBackground(app, false, false)
 	t.fill(w, r, app.GetName(), template.HTML(app.ShortDescription))
 	t.addAssetHighCharts()
+	t.addAssetHighChartsHeatmap()
 	t.addAssetJSON2HTML()
 	t.addAssetMomentData()
 	t.metaImage = app.GetMetaImage()

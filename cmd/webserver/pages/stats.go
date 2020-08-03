@@ -2,12 +2,14 @@ package pages
 
 import (
 	"net/http"
+	"sort"
 	"sync"
 	"time"
 
 	"github.com/Jleagle/influxql"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
+	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -27,6 +29,7 @@ func StatsRouter() http.Handler {
 	r.Get("/app-scores.json", statsScoresHandler)
 	r.Get("/app-types.json", statsAppTypesHandler)
 	r.Get("/player-levels.json", playerLevelsHandler)
+	r.Get("/player-countries.json", playerCountriesHandler)
 	return r
 }
 
@@ -150,6 +153,7 @@ func gameDBStatsHandler(w http.ResponseWriter, r *http.Request) {
 	t := gamedbStatsTemplate{}
 	t.fill(w, r, "Stats", "Some interesting Steam Store stats.")
 	t.addAssetHighCharts()
+	t.addAssetHighChartsDrilldown()
 	t.addAssetJSON2HTML()
 
 	var wg sync.WaitGroup
@@ -250,6 +254,69 @@ func playerLevelsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	returnJSON(w, r, levels)
+}
+
+func playerCountriesHandler(w http.ResponseWriter, r *http.Request) {
+
+	aggs, err := elasticsearch.AggregatePlayerCountries()
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	var series []playerCountrySeries
+	var drilldown []map[string]interface{}
+
+	for cc := range i18n.States {
+
+		if aggs[cc] == 0 {
+			continue
+		}
+
+		countryName := i18n.CountryCodeToName(cc)
+
+		series = append(series, playerCountrySeries{
+			Name:  countryName,
+			ID:    cc,
+			Value: aggs[cc],
+		})
+
+		var data [][]interface{}
+		for sc, name := range i18n.States[cc] {
+			if aggs[cc+"-"+sc] > 0 {
+				data = append(data, []interface{}{name, aggs[cc+"-"+sc]})
+			}
+		}
+
+		sort.Slice(data, func(i, j int) bool {
+			return data[i][1].(int64) > data[j][1].(int64)
+		})
+
+		drilldown = append(drilldown, map[string]interface{}{
+			"name": countryName,
+			"id":   cc,
+			"data": data,
+		})
+	}
+
+	sort.Slice(series, func(i, j int) bool {
+		return series[i].Value > series[j].Value
+	})
+
+	if len(series) > 40 {
+		series = series[0:40]
+	}
+
+	returnJSON(w, r, map[string]interface{}{
+		"series":    series,
+		"drilldown": drilldown,
+	})
+}
+
+type playerCountrySeries struct {
+	Name  string `json:"name"`
+	ID    string `json:"drilldown"`
+	Value int64  `json:"y"`
 }
 
 func statsAppTypesHandler(w http.ResponseWriter, r *http.Request) {
