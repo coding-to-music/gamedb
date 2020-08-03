@@ -778,10 +778,6 @@ func savePlayerToInflux(player mongo.Player) (err error) {
 		"badges":   player.BadgesCount,
 		"friends":  player.FriendsCount,
 		"comments": player.CommentsCount,
-
-		// Saved in sub queues
-		// "games":    player.GamesCount,
-		// "playtime": player.PlayTime,
 	}
 
 	// Add ranks to map
@@ -792,16 +788,22 @@ func savePlayerToInflux(player mongo.Player) (err error) {
 		}
 	}
 
-	// Save
-	_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, influx.Point{
+	return savePlayerStatsToInflux(player.ID, fields)
+}
+
+// Helper used in other consumers
+func savePlayerStatsToInflux(playerId int64, fields map[string]interface{}) error {
+
+	point := influx.Point{
 		Measurement: string(influxHelper.InfluxMeasurementPlayers),
 		Tags: map[string]string{
-			"player_id": strconv.FormatInt(player.ID, 10),
+			"player_id": strconv.FormatInt(playerId, 10),
 		},
 		Fields:    fields,
 		Time:      time.Now(),
-		Precision: "m",
-	})
+		Precision: "h",
+	}
 
+	_, err := influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, point)
 	return err
 }

@@ -88,6 +88,16 @@ func playerAchievementsHandler(message *rabbit.Message) {
 			return
 		}
 
+		// Save to Influx
+		err = savePlayerStatsToInflux(payload.PlayerID, map[string]interface{}{
+			"achievements": count,
+		})
+		if err != nil {
+			log.Err(err, payload.PlayerID)
+			sendToRetryQueue(message)
+			return
+		}
+
 		// Clear caches
 		var items = []string{
 			memcache.MemcachePlayer(payload.PlayerID).Key,

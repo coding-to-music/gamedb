@@ -7,13 +7,11 @@ import (
 
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	influxHelper "github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/steam"
 	"github.com/gamedb/gamedb/pkg/websockets"
-	influx "github.com/influxdata/influxdb1-client"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -205,20 +203,10 @@ func playerGamesHandler(message *rabbit.Message) {
 	}
 
 	// Save to Influx
-	point := influx.Point{
-		Measurement: string(influxHelper.InfluxMeasurementPlayers),
-		Tags: map[string]string{
-			"player_id": strconv.FormatInt(payload.PlayerID, 10),
-		},
-		Fields: map[string]interface{}{
-			"games":    len(resp.Games),
-			"playtime": playtime,
-		},
-		Time:      time.Now(),
-		Precision: "m",
-	}
-
-	_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, point)
+	err = savePlayerStatsToInflux(payload.PlayerID, map[string]interface{}{
+		"games":    len(resp.Games),
+		"playtime": playtime,
+	})
 	if err != nil {
 		log.Err(err, payload.PlayerID)
 		sendToRetryQueue(message)
