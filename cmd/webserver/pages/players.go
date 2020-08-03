@@ -72,7 +72,7 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		aggs, err := elasticsearch.AggregatePlayers()
+		aggs, err := elasticsearch.AggregatePlayerCountries()
 		if err != nil {
 			log.Err(err, r)
 		}
@@ -146,7 +146,7 @@ func statesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	cc := r.URL.Query().Get("cc")
 	if cc != "" {
 
-		aggs, err := elasticsearch.AggregatePlayers()
+		aggs, err := elasticsearch.AggregatePlayerCountries()
 		if err != nil {
 			log.Err(err, r)
 		}

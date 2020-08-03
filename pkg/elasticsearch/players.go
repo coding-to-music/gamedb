@@ -148,7 +148,7 @@ func SearchPlayers(limit int, offset int, search string, sorters []elastic.Sorte
 	return players, searchResult.TotalHits(), err
 }
 
-func AggregatePlayers() (aggregations map[string]int64, err error) {
+func AggregatePlayerCountries() (aggregations map[string]int64, err error) {
 
 	var item = memcache.MemcachePlayerLocationAggs
 
