@@ -182,7 +182,7 @@
 
                                         {{ if gt (len .App.Categories) 0 }}
                                             <tr>
-                                                <th scope="row" class="thin">Categories</th>
+                                                <th scope="row" class="thin">Features</th>
                                                 <td>
                                                     {{ range $key, $value := .Categories }}
                                                         <a class="badge badge-success" href="/games?categories={{ .ID }}">{{ .GetName }}</a>
