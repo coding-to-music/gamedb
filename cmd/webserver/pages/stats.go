@@ -133,7 +133,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
-	returnTemplate(w, r, "stats", t)
+	returnTemplate(w, r, "stats_steam", t)
 }
 
 type statsTemplate struct {
@@ -232,7 +232,7 @@ func gameDBStatsHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
-	returnTemplate(w, r, "stats-gamedb", t)
+	returnTemplate(w, r, "stats_gamedb", t)
 }
 
 type gamedbStatsTemplate struct {
