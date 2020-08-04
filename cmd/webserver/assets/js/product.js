@@ -63,9 +63,8 @@ if ($priceChart.length > 0 && prices) {
             },
             yAxis: {
                 title: {
-                    text: 'Price ($)'
+                    text: 'Price (' + user.userCurrencySymbol + ')'
                 },
-                type: 'linear',
                 min: 0,
                 allowDecimals: true,
             },

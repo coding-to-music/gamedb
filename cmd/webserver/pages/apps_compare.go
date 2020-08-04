@@ -31,6 +31,7 @@ func gamesCompareRouter() http.Handler {
 	r.Get("/{id}/players2.json", appsComparePlayersAjaxHandler(false))
 	r.Get("/{id}/members.json", appsCompareGroupsHandler)
 	r.Get("/{id}/reviews.json", appsCompareScoresHandler)
+	r.Get("/{id}/prices.json", appsComparePricesHandler)
 	r.Get("/{id}/wishlists.json", appsCompareWishlistHandler)
 	return r
 }
@@ -352,6 +353,44 @@ func appsCompareWishlistHandler(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 		}
+	}
+
+	returnJSON(w, r, ret)
+}
+
+func appsComparePricesHandler(w http.ResponseWriter, r *http.Request) {
+
+	var idStrings = helpers.UniqueString(helpers.RegexInts.FindAllString(chi.URLParam(r, "id"), -1))
+
+	if len(idStrings) < 1 || len(idStrings) > 10 {
+		return
+	}
+
+	var idInts = helpers.StringSliceToIntSlice(idStrings)
+	var code = session.GetProductCC(r)
+
+	prices, err := mongo.GetPricesForApps(idInts, code)
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	var priceMap = map[int][][]interface{}{}
+	for _, v := range prices {
+		priceMap[v.AppID] = append(priceMap[v.AppID], []interface{}{
+			v.CreatedAt.Unix() * 1000,
+			float64(v.PriceAfter) / 100,
+		})
+	}
+
+	var ret []influx.HighChartsJSONMulti
+	for _, v := range idInts {
+		ret = append(ret, influx.HighChartsJSONMulti{
+			Key: strconv.Itoa(v),
+			Value: influx.HighChartsJSON{
+				"price": priceMap[v],
+			},
+		})
 	}
 
 	returnJSON(w, r, ret)

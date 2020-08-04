@@ -129,6 +129,25 @@ func GetPricesForProduct(productID int, productType helpers.ProductType, cc stea
 	return getProductPrices(filter, 0, 0, bson.D{{"created_at", 1}})
 }
 
+func GetPricesForApps(appIDs []int, cc steamapi.ProductCC) (prices []ProductPrice, err error) {
+
+	if len(appIDs) > 10 {
+		appIDs = appIDs[0:10]
+	}
+
+	var a = bson.A{}
+	for _, v := range appIDs {
+		a = append(a, v)
+	}
+
+	var filter = bson.D{
+		{Key: "prod_cc", Value: string(cc)},
+		{Key: "app_id", Value: bson.M{"$in": a}},
+	}
+
+	return getProductPrices(filter, 0, 0, bson.D{{"created_at", 1}})
+}
+
 func GetPrices(offset int64, limit int64, filter bson.D) (prices []ProductPrice, err error) {
 
 	return getProductPrices(filter, offset, limit, bson.D{{"created_at", -1}})

@@ -8,6 +8,7 @@ if ($appsComparePage.length > 0) {
         'group-chart': loadCompareFollowersChart,
         'score-chart': loadCompareScoreChart,
         'wishlists-chart': loadCompareWishlistChart,
+        'price-chart': loadComparePriceChart,
     });
 
     function loadCompareSearchTable() {
@@ -139,6 +140,7 @@ if ($appsComparePage.length > 0) {
             type: "GET",
             url: '/games/compare/' + $appsComparePage.attr('data-id') + '/players.json',
             dataType: 'json',
+            cache: true,
             success: function (data, textStatus, jqXHR) {
 
                 let series = [];
@@ -161,6 +163,7 @@ if ($appsComparePage.length > 0) {
             type: "GET",
             url: '/games/compare/' + $appsComparePage.attr('data-id') + '/players2.json',
             dataType: 'json',
+            cache: true,
             success: function (data, textStatus, jqXHR) {
 
                 let series = [];
@@ -191,6 +194,7 @@ if ($appsComparePage.length > 0) {
             type: "GET",
             url: '/games/compare/' + $appsComparePage.attr('data-group-id') + '/members.json',
             dataType: 'json',
+            cache: true,
             success: function (data, textStatus, jqXHR) {
 
                 let series = [];
@@ -238,6 +242,7 @@ if ($appsComparePage.length > 0) {
             type: "GET",
             url: '/games/compare/' + $appsComparePage.attr('data-id') + '/reviews.json',
             dataType: 'json',
+            cache: true,
             success: function (data, textStatus, jqXHR) {
 
                 let series = [];
@@ -276,6 +281,44 @@ if ($appsComparePage.length > 0) {
         });
     }
 
+    function loadComparePriceChart() {
+
+        if ($.isEmptyObject(appNames)) {
+            return;
+        }
+
+        $.ajax({
+            type: "GET",
+            url: '/games/compare/' + $appsComparePage.attr('data-id') + '/prices.json',
+            dataType: 'json',
+            cache: true,
+            success: function (data, textStatus, jqXHR) {
+
+                let series = [];
+
+                for (const datum of data) {
+                    series.push({
+                        name: appNames[datum.key],
+                        data: datum['value']['price'],
+                        type: 'line',
+                        step: 'left',
+                    });
+                }
+
+                Highcharts.chart('price-chart', $.extend(true, {}, defaultChartOptions, {
+                    yAxis: {
+                        title: {
+                            text: 'Price (' + user.userCurrencySymbol + ')'
+                        },
+                        allowDecimals: true,
+                        min: 0,
+                    },
+                    series: series,
+                }));
+            },
+        });
+    }
+
     function loadCompareWishlistChart() {
 
         if ($.isEmptyObject(appNames)) {
@@ -286,6 +329,7 @@ if ($appsComparePage.length > 0) {
             type: "GET",
             url: '/games/compare/' + $appsComparePage.attr('data-id') + '/wishlists.json',
             dataType: 'json',
+            cache: true,
             success: function (data, textStatus, jqXHR) {
 
                 let series = [];

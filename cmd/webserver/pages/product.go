@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
@@ -36,11 +35,8 @@ func productPricesAjaxHandler(w http.ResponseWriter, r *http.Request, productTyp
 		return
 	}
 
-	// Get code
-	code := steamapi.ProductCC(r.URL.Query().Get("code"))
-	if code == "" || !i18n.IsValidProdCC(code) {
-		code = session.GetProductCC(r)
-	}
+	//
+	var code = session.GetProductCC(r)
 
 	// Get prices
 	pricesResp, err := mongo.GetPricesForProduct(product.GetID(), product.GetProductType(), code)

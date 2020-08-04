@@ -1,18 +1,22 @@
 #apps-compare-page {
-    #group-chart, #players-chart, #players-chart2, #score-chart, #wishlists-chart {
-        height: 300px;
-    }
+  #group-chart, #players-chart, #players-chart2, #score-chart, #wishlists-chart {
+    height: 300px;
+  }
 
-    iframe {
-        border-radius: 0 !important;
-        box-shadow: none !important;
-    }
+  #price-chart {
+    height: 200px;
+  }
+
+  iframe {
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
 }
 
 body.dark {
-    #apps-compare-page {
-        iframe {
-            filter: invert(86%);
-        }
+  #apps-compare-page {
+    iframe {
+      filter: invert(86%);
     }
+  }
 }
