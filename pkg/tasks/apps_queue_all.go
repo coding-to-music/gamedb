@@ -20,11 +20,11 @@ func (c AppsQueueAll) Name() string {
 	return "Queue all apps"
 }
 
-func (c AppsQueueAll) Group() string {
+func (c AppsQueueAll) Group() TaskGroup {
 	return TaskGroupApps
 }
 
-func (c AppsQueueAll) Cron() string {
+func (c AppsQueueAll) Cron() TaskTime {
 	return ""
 }
 

@@ -21,11 +21,11 @@ func (c AutoPlayerRefreshes) Name() string {
 	return "Update donator profiles"
 }
 
-func (c AutoPlayerRefreshes) Group() string {
+func (c AutoPlayerRefreshes) Group() TaskGroup {
 	return TaskGroupPlayers
 }
 
-func (c AutoPlayerRefreshes) Cron() string {
+func (c AutoPlayerRefreshes) Cron() TaskTime {
 	return CronTimeAutoPlayerRefreshes
 }
 

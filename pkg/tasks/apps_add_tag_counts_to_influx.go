@@ -24,11 +24,11 @@ func (c AppsAddTagCountsToInflux) Name() string {
 	return "Add Tag Counts to Influx"
 }
 
-func (c AppsAddTagCountsToInflux) Group() string {
+func (c AppsAddTagCountsToInflux) Group() TaskGroup {
 	return TaskGroupApps
 }
 
-func (c AppsAddTagCountsToInflux) Cron() string {
+func (c AppsAddTagCountsToInflux) Cron() TaskTime {
 	return CronTimeAddAppTagsToInflux
 }
 

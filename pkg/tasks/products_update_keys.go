@@ -23,11 +23,11 @@ func (c ProductsUpdateKeys) Name() string {
 	return "Scan Product Keys"
 }
 
-func (c ProductsUpdateKeys) Group() string {
+func (c ProductsUpdateKeys) Group() TaskGroup {
 	return ""
 }
 
-func (c ProductsUpdateKeys) Cron() string {
+func (c ProductsUpdateKeys) Cron() TaskTime {
 	return CronTimeScanProductQueues
 }
 

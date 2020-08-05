@@ -19,11 +19,11 @@ func (c AppsQueueReviews) Name() string {
 	return "Update all app reviews"
 }
 
-func (c AppsQueueReviews) Group() string {
+func (c AppsQueueReviews) Group() TaskGroup {
 	return TaskGroupApps
 }
 
-func (c AppsQueueReviews) Cron() string {
+func (c AppsQueueReviews) Cron() TaskTime {
 	return CronTimeAppsReviews
 }
 

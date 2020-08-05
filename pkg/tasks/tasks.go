@@ -13,38 +13,42 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
-const ( //                         min hour
-	CronTimeUpdateLastUpdatedPlayers = "*    *"
-	CronTimeSteamClientPlayers       = "*/10 *"
-	CronTimeAppPlayers               = "*/10 *"
-	CronTimeAppPlayersTop            = "*/10 *"
-	CronTimeAutoPlayerRefreshes      = "0    */6"
-	CronTimeAppsReviews              = "10   0"
-	CronTimeAppsYoutube              = "20   0"
-	CronTimeQueueAppGroups           = "30   0"
-	CronTimeQueuePlayerGroups        = "40   0"
-	CronTimePlayerRanks              = "50   0"
-	CronTimeScanProductQueues        = "0    1"
-	CronTimeSetBadgeCache            = "10   1"
-	CronTimeAppsInflux               = "0    */6"
-	CronTimeAppsWishlists            = "30   1"
-	CronTimeAddAppTagsToInflux       = "40   1"
-	CronTimeGenres                   = "0    2"
-	CronTimeTags                     = "0    3"
-	CronTimePublishers               = "0    4"
-	CronTimeDevelopers               = "0    5"
-	CronTimeCategories               = "0    6"
-	CronTimeInstagram                = ""
+type TaskTime string
+
+const ( //                                       min  hour
+	CronTimeUpdateLastUpdatedPlayers TaskTime = "*    *"
+	CronTimeSteamClientPlayers       TaskTime = "*/10 *"
+	CronTimeAppPlayers               TaskTime = "*/10 *"
+	CronTimeAppPlayersTop            TaskTime = "*/10 *"
+	CronTimeAutoPlayerRefreshes      TaskTime = "0    */6"
+	CronTimeAppsReviews              TaskTime = "10   0"
+	CronTimeAppsYoutube              TaskTime = "20   0"
+	CronTimeQueueAppGroups           TaskTime = "30   0"
+	CronTimeQueuePlayerGroups        TaskTime = "40   0"
+	CronTimePlayerRanks              TaskTime = "50   0"
+	CronTimeScanProductQueues        TaskTime = "0    1"
+	CronTimeSetBadgeCache            TaskTime = "10   1"
+	CronTimeAppsInflux               TaskTime = "0    */6"
+	CronTimeAppsWishlists            TaskTime = "30   1"
+	CronTimeAddAppTagsToInflux       TaskTime = "40   1"
+	CronTimeGenres                   TaskTime = "0    2"
+	CronTimeTags                     TaskTime = "0    3"
+	CronTimePublishers               TaskTime = "0    4"
+	CronTimeDevelopers               TaskTime = "0    5"
+	CronTimeCategories               TaskTime = "0    6"
+	CronTimeInstagram                TaskTime = ""
 )
 
+type TaskGroup string
+
 const (
-	TaskGroupApps     = "apps"
-	TaskGroupGroups   = "groups"
-	TaskGroupBadges   = "badges"
-	TaskGroupNews     = "news"
-	TaskGroupPlayers  = "players"
-	TaskGroupPackages = "packages"
-	TaskGroupElastic  = "elastic"
+	TaskGroupApps     TaskGroup = "apps"
+	TaskGroupGroups   TaskGroup = "groups"
+	TaskGroupBadges   TaskGroup = "badges"
+	TaskGroupNews     TaskGroup = "news"
+	TaskGroupPlayers  TaskGroup = "players"
+	TaskGroupPackages TaskGroup = "packages"
+	TaskGroupElastic  TaskGroup = "elastic"
 )
 
 var (
@@ -96,8 +100,8 @@ func init() {
 type TaskInterface interface {
 	ID() string
 	Name() string
-	Group() string
-	Cron() string
+	Group() TaskGroup
+	Cron() TaskTime
 	work() error
 }
 
@@ -106,7 +110,7 @@ type BaseTask struct {
 
 func Next(task TaskInterface) (t time.Time) {
 
-	sched, err := Parser.Parse(task.Cron())
+	sched, err := Parser.Parse(string(task.Cron()))
 	if err != nil {
 		return t
 	}
@@ -115,7 +119,7 @@ func Next(task TaskInterface) (t time.Time) {
 
 func Prev(task TaskInterface) (d time.Time) {
 
-	sched, err := Parser.Parse(task.Cron())
+	sched, err := Parser.Parse(string(task.Cron()))
 	if err != nil {
 		return d
 	}

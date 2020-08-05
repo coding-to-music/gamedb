@@ -226,7 +226,7 @@ func adminTasksHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, "Admin", "Admin")
 	t.hideAds = true
 
-	var grouped = map[string][]adminTaskTemplate{}
+	var grouped = map[tasks.TaskGroup][]adminTaskTemplate{}
 
 	for _, v := range tasks.TaskRegister {
 		grouped[v.Group()] = append(grouped[v.Group()], adminTaskTemplate{

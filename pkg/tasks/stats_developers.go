@@ -26,11 +26,11 @@ func (c StatsDevelopers) Name() string {
 	return "Update developers"
 }
 
-func (c StatsDevelopers) Group() string {
+func (c StatsDevelopers) Group() TaskGroup {
 	return ""
 }
 
-func (c StatsDevelopers) Cron() string {
+func (c StatsDevelopers) Cron() TaskTime {
 	return CronTimeDevelopers
 }
 

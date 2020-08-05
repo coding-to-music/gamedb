@@ -18,11 +18,11 @@ func (c PlayersQueueGroups) Name() string {
 	return "Refresh player-groups for all players"
 }
 
-func (c PlayersQueueGroups) Group() string {
+func (c PlayersQueueGroups) Group() TaskGroup {
 	return TaskGroupPlayers
 }
 
-func (c PlayersQueueGroups) Cron() string {
+func (c PlayersQueueGroups) Cron() TaskTime {
 	return ""
 }
 

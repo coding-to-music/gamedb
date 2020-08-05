@@ -19,11 +19,11 @@ func (c AppsAchievementsQueueAll) Name() string {
 	return "Queue all app achievements"
 }
 
-func (c AppsAchievementsQueueAll) Group() string {
+func (c AppsAchievementsQueueAll) Group() TaskGroup {
 	return TaskGroupApps
 }
 
-func (c AppsAchievementsQueueAll) Cron() string {
+func (c AppsAchievementsQueueAll) Cron() TaskTime {
 	return ""
 }
 

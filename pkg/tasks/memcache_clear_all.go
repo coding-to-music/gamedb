@@ -16,11 +16,11 @@ func (c MemcacheClearAll) Name() string {
 	return "Clear Memcache"
 }
 
-func (c MemcacheClearAll) Group() string {
+func (c MemcacheClearAll) Group() TaskGroup {
 	return ""
 }
 
-func (c MemcacheClearAll) Cron() string {
+func (c MemcacheClearAll) Cron() TaskTime {
 	return ""
 }
 

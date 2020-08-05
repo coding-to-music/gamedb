@@ -22,11 +22,11 @@ func (c AppsPlayerCheck) Name() string {
 	return "Check apps for players (Bottom)"
 }
 
-func (c AppsPlayerCheck) Group() string {
+func (c AppsPlayerCheck) Group() TaskGroup {
 	return TaskGroupApps
 }
 
-func (c AppsPlayerCheck) Cron() string {
+func (c AppsPlayerCheck) Cron() TaskTime {
 	return CronTimeAppPlayers
 }
 

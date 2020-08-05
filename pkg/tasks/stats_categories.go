@@ -12,11 +12,11 @@ func (c StatsCategories) Name() string {
 	return "Update categories"
 }
 
-func (c StatsCategories) Group() string {
+func (c StatsCategories) Group() TaskGroup {
 	return ""
 }
 
-func (c StatsCategories) Cron() string {
+func (c StatsCategories) Cron() TaskTime {
 	return CronTimeCategories
 }
 

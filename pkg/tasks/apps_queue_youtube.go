@@ -18,11 +18,11 @@ func (c AppsQueueYoutube) Name() string {
 	return "Queue top apps for youtube stats"
 }
 
-func (c AppsQueueYoutube) Group() string {
+func (c AppsQueueYoutube) Group() TaskGroup {
 	return TaskGroupApps
 }
 
-func (c AppsQueueYoutube) Cron() string {
+func (c AppsQueueYoutube) Cron() TaskTime {
 	return CronTimeAppsYoutube
 }
 

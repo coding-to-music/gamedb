@@ -24,11 +24,11 @@ func (c SteamOnline) Name() string {
 	return "Update Steam client players"
 }
 
-func (c SteamOnline) Group() string {
+func (c SteamOnline) Group() TaskGroup {
 	return ""
 }
 
-func (c SteamOnline) Cron() string {
+func (c SteamOnline) Cron() TaskTime {
 	return CronTimeSteamClientPlayers
 }
 

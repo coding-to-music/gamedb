@@ -19,11 +19,11 @@ func (c AppsQueueWishlists) Name() string {
 	return "Update wishlist stats for all apps"
 }
 
-func (c AppsQueueWishlists) Group() string {
+func (c AppsQueueWishlists) Group() TaskGroup {
 	return TaskGroupApps
 }
 
-func (c AppsQueueWishlists) Cron() string {
+func (c AppsQueueWishlists) Cron() TaskTime {
 	return CronTimeAppsWishlists
 }
 

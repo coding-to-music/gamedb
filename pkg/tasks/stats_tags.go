@@ -27,11 +27,11 @@ func (c StatsTags) Name() string {
 	return "Update tags"
 }
 
-func (c StatsTags) Group() string {
+func (c StatsTags) Group() TaskGroup {
 	return ""
 }
 
-func (c StatsTags) Cron() string {
+func (c StatsTags) Cron() TaskTime {
 	return CronTimeTags
 }
 

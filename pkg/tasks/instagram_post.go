@@ -23,11 +23,11 @@ func (c InstagramPost) Name() string {
 	return "Post an Instagram picture"
 }
 
-func (c InstagramPost) Group() string {
+func (c InstagramPost) Group() TaskGroup {
 	return ""
 }
 
-func (c InstagramPost) Cron() string {
+func (c InstagramPost) Cron() TaskTime {
 	return CronTimeInstagram
 }
 

@@ -18,11 +18,11 @@ func (c GroupsQueuePrimaries) Name() string {
 	return "Queue all group primaries to be updated"
 }
 
-func (c GroupsQueuePrimaries) Group() string {
+func (c GroupsQueuePrimaries) Group() TaskGroup {
 	return TaskGroupGroups
 }
 
-func (c GroupsQueuePrimaries) Cron() string {
+func (c GroupsQueuePrimaries) Cron() TaskTime {
 	return ""
 }
 

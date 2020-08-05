@@ -26,11 +26,11 @@ func (c TasksGenres) Name() string {
 	return "Update genres"
 }
 
-func (c TasksGenres) Group() string {
+func (c TasksGenres) Group() TaskGroup {
 	return ""
 }
 
-func (c TasksGenres) Cron() string {
+func (c TasksGenres) Cron() TaskTime {
 	return CronTimeGenres
 }
 

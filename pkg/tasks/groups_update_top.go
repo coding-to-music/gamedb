@@ -20,11 +20,11 @@ func (c GroupsUpdateTop) Name() string {
 	return "Queue player groups"
 }
 
-func (c GroupsUpdateTop) Group() string {
+func (c GroupsUpdateTop) Group() TaskGroup {
 	return TaskGroupGroups
 }
 
-func (c GroupsUpdateTop) Cron() string {
+func (c GroupsUpdateTop) Cron() TaskTime {
 	return CronTimeQueuePlayerGroups
 }
 

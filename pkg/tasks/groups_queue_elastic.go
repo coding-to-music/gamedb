@@ -19,11 +19,11 @@ func (c GroupsQueueElastic) Name() string {
 	return "Queue all groups to Elastic"
 }
 
-func (c GroupsQueueElastic) Group() string {
+func (c GroupsQueueElastic) Group() TaskGroup {
 	return TaskGroupElastic
 }
 
-func (c GroupsQueueElastic) Cron() string {
+func (c GroupsQueueElastic) Cron() TaskTime {
 	return ""
 }
 

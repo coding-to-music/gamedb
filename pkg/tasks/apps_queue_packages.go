@@ -18,11 +18,11 @@ func (c AppsQueuePackages) Name() string {
 	return "Queue all packages"
 }
 
-func (c AppsQueuePackages) Group() string {
+func (c AppsQueuePackages) Group() TaskGroup {
 	return TaskGroupPackages
 }
 
-func (c AppsQueuePackages) Cron() string {
+func (c AppsQueuePackages) Cron() TaskTime {
 	return ""
 }
 

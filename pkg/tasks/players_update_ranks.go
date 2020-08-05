@@ -18,11 +18,11 @@ func (c PlayersUpdateRanks) Name() string {
 	return "Update player ranks"
 }
 
-func (c PlayersUpdateRanks) Group() string {
+func (c PlayersUpdateRanks) Group() TaskGroup {
 	return TaskGroupPlayers
 }
 
-func (c PlayersUpdateRanks) Cron() string {
+func (c PlayersUpdateRanks) Cron() TaskTime {
 	return CronTimePlayerRanks
 }
 

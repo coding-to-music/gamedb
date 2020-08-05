@@ -27,11 +27,11 @@ func (c PlayersQueueLastUpdated) Name() string {
 	return "Update last updated players"
 }
 
-func (c PlayersQueueLastUpdated) Group() string {
+func (c PlayersQueueLastUpdated) Group() TaskGroup {
 	return TaskGroupPlayers
 }
 
-func (c PlayersQueueLastUpdated) Cron() string {
+func (c PlayersQueueLastUpdated) Cron() TaskTime {
 	return CronTimeUpdateLastUpdatedPlayers
 }
 

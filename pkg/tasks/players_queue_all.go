@@ -18,11 +18,11 @@ func (c PlayersQueueAll) Name() string {
 	return "Queue all players"
 }
 
-func (c PlayersQueueAll) Group() string {
+func (c PlayersQueueAll) Group() TaskGroup {
 	return TaskGroupPlayers
 }
 
-func (c PlayersQueueAll) Cron() string {
+func (c PlayersQueueAll) Cron() TaskTime {
 	return ""
 }
 

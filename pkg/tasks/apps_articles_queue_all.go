@@ -18,11 +18,11 @@ func (c AppsArticlesQueueElastic) Name() string {
 	return "Queue all app articles to Elastic"
 }
 
-func (c AppsArticlesQueueElastic) Group() string {
+func (c AppsArticlesQueueElastic) Group() TaskGroup {
 	return TaskGroupElastic
 }
 
-func (c AppsArticlesQueueElastic) Cron() string {
+func (c AppsArticlesQueueElastic) Cron() TaskTime {
 	return ""
 }
 
