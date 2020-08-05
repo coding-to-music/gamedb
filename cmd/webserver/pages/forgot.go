@@ -54,8 +54,6 @@ type forgotTemplate struct {
 
 func forgotPostHandler(w http.ResponseWriter, r *http.Request) {
 
-	time.Sleep(time.Second)
-
 	message, success := func() (message string, success bool) {
 
 		// Parse form
@@ -138,6 +136,8 @@ func forgotPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	} else {
 
+		time.Sleep(time.Second)
+
 		err := session.SetFlash(r, sessionHelpers.SessionBad, message)
 		log.Err(err, r)
 
@@ -148,8 +148,6 @@ func forgotPostHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func forgotResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
-
-	time.Sleep(time.Second)
 
 	message, success := func() (message string, success bool) {
 
@@ -224,6 +222,8 @@ func forgotResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/login", http.StatusFound)
 
 	} else {
+
+		time.Sleep(time.Second)
 
 		err := session.SetFlash(r, sessionHelpers.SessionBad, message)
 		log.Err(err, r)
