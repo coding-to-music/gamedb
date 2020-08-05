@@ -46,7 +46,7 @@ func main() {
 	log.Initialise(log.LogNameWebserver)
 
 	// Get API key
-	err := mysql.GetAPIKey("webserver")
+	err := mysql.GetConsumer("webserver")
 	if err != nil {
 		log.Critical(err)
 		return

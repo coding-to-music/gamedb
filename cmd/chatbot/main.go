@@ -44,7 +44,7 @@ func main() {
 	}
 
 	// Get API key
-	err := mysql.GetAPIKey("chatbot")
+	err := mysql.GetConsumer("chatbot")
 	if err != nil {
 		log.Critical(err)
 		return

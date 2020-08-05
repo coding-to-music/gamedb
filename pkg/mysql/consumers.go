@@ -10,12 +10,12 @@ import (
 )
 
 const (
-	apiSessionLength  = time.Second * 70 // Time to keep the key for
-	apiSessionRefresh = time.Second * 60 // Heartbeat to retake the key
-	apiSessionRetry   = time.Second * 10 // Retry on no keys availabile
+	consumerSessionLength  = time.Second * 70 // Time to keep the key for
+	consumerSessionRefresh = time.Second * 60 // Heartbeat to retake the key
+	consumerSessionRetry   = time.Second * 10 // Retry on no keys availabile
 )
 
-type APIKey struct {
+type Consumer struct {
 	Key     string    `gorm:"not null;column:key;PRIMARY_KEY"`
 	Use     bool      `gorm:"not null;column:use;"`
 	Expires time.Time `gorm:"not null;column:expires;type:datetime"`
@@ -24,11 +24,7 @@ type APIKey struct {
 	Notes   string    `gorm:"-"`
 }
 
-type Lock struct {
-	Success bool `gorm:"not null;column:success"`
-}
-
-func GetAPIKey(tag string) (err error) {
+func GetConsumer(tag string) (err error) {
 
 	// Retrying as this call can fail
 	operation := func() (err error) {
@@ -44,7 +40,7 @@ func GetAPIKey(tag string) (err error) {
 		}
 
 		// Find a row
-		var row = APIKey{}
+		var row = Consumer{}
 
 		db = db.Where("`expires` < ?", time.Now())
 		db = db.Where("`use` = ?", 1)
@@ -54,20 +50,22 @@ func GetAPIKey(tag string) (err error) {
 
 		if db.Error == ErrRecordNotFound {
 			db.Rollback()
-			return errors.New("waiting for API key")
+			return errors.New("waiting for consumer")
 		} else if db.Error != nil {
 			db.Rollback()
 			return db.Error
 		}
 
 		// Update the row
-		db = db.New().Table("api_keys").Where("`key` = ?", row.Key).Updates(map[string]interface{}{
-			"expires":     time.Now().Add(apiSessionLength),
+		fields := map[string]interface{}{
+			"expires":     time.Now().Add(consumerSessionLength),
 			"owner":       tag,
 			"environment": config.Config.Environment.Get(),
 			"version":     config.GetShortCommitHash(),
 			"ip":          config.GetIP(),
-		})
+		}
+
+		db = db.New().Table("consumers").Where("`key` = ?", row.Key).Updates(fields)
 		if db.Error != nil {
 			db.Rollback()
 			return db.Error
@@ -78,13 +76,12 @@ func GetAPIKey(tag string) (err error) {
 
 		if db.Error == nil {
 			config.Config.SteamAPIKey.SetDefault(row.Key)
-			log.Info("Using Steam API key: " + config.GetSteamKeyTag())
 		}
 
 		return db.Error
 	}
 
-	policy := backoff.NewConstantBackOff(apiSessionRetry)
+	policy := backoff.NewConstantBackOff(consumerSessionRetry)
 	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err) })
 	if err != nil {
 		return err
@@ -99,16 +96,19 @@ func GetAPIKey(tag string) (err error) {
 			return
 		}
 
-		db = db.Model(&APIKey{})
+		db = db.Model(&Consumer{})
 		db = db.Where("`key` = ?", config.Config.SteamAPIKey.Get())
 
 		for {
-			time.Sleep(apiSessionRefresh)
+
+			time.Sleep(consumerSessionRefresh)
 
 			// Update key
-			db = db.Updates(map[string]interface{}{
-				"expires": time.Now().Add(apiSessionLength),
-			})
+			fields := map[string]interface{}{
+				"expires": time.Now().Add(consumerSessionLength),
+			}
+
+			db = db.Updates(fields)
 			if db.Error != nil {
 				log.Err(db.Error)
 			}

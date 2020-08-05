@@ -20,7 +20,7 @@ func main() {
 	log.Initialise(log.LogNameConsumers)
 
 	// Get API key
-	err := mysql.GetAPIKey("consumer")
+	err := mysql.GetConsumer("consumer")
 	if err != nil {
 		log.Critical(err)
 		return

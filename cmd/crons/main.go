@@ -30,7 +30,7 @@ func main() {
 	}()
 
 	// Get API key
-	err := mysql.GetAPIKey("crons")
+	err := mysql.GetConsumer("crons")
 	if err != nil {
 		log.Critical(err)
 		return
