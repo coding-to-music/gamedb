@@ -38,6 +38,12 @@
                     {{/* Settings */}}
                     <div class="tab-pane show active" id="settings" role="tabpanel">
 
+                        {{ if eq .Player.CommunityVisibilityState 3 }}
+                            <div class="alert alert-primary" role="alert">
+                                <i class="fas fa-exclamation-triangle text-danger"></i> Your profile is set to private. Update your <a target="_blank" rel="noopener" href="https://steamcommunity.com/my/edit/settings">privacy settings</a>, so we can fetch it on the next scan.
+                            </div>
+                        {{ end }}
+
                         <div class="row">
                             <div class="col-12 col-lg-6 mb-3 mb-lg-0">
 
