@@ -22,7 +22,7 @@ func (c AppsQueueGroups) Name() string {
 }
 
 func (c AppsQueueGroups) Group() string {
-	return TaskGroupGroups
+	return TaskGroupApps
 }
 
 func (c AppsQueueGroups) Cron() string {
