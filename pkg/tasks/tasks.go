@@ -14,25 +14,26 @@ import (
 )
 
 const ( //                         min hour
-	CronTimeUpdateLastUpdatedPlayers = "*   *"
+	CronTimeUpdateLastUpdatedPlayers = "*    *"
 	CronTimeSteamClientPlayers       = "*/10 *"
 	CronTimeAppPlayers               = "*/10 *"
 	CronTimeAppPlayersTop            = "*/10 *"
-	CronTimeAutoPlayerRefreshes      = "0   */6"
-	CronTimeAppsReviews              = "10  0"
-	CronTimeAppsYoutube              = "20  0"
-	CronTimeQueueAppGroups           = "30  0"
-	CronTimeQueuePlayerGroups        = "40  0"
-	CronTimePlayerRanks              = "50  0"
-	CronTimeScanProductQueues        = "0   1"
-	CronTimeSetBadgeCache            = "10  1"
-	CronTimeAppsInflux               = "20  1,13"
-	CronTimeAppsWishlists            = "30  1"
-	CronTimeGenres                   = "0   2"
-	CronTimeTags                     = "0   3"
-	CronTimePublishers               = "0   4"
-	CronTimeDevelopers               = "0   5"
-	CronTimeCategories               = "0   6"
+	CronTimeAutoPlayerRefreshes      = "0    */6"
+	CronTimeAppsReviews              = "10   0"
+	CronTimeAppsYoutube              = "20   0"
+	CronTimeQueueAppGroups           = "30   0"
+	CronTimeQueuePlayerGroups        = "40   0"
+	CronTimePlayerRanks              = "50   0"
+	CronTimeScanProductQueues        = "0    1"
+	CronTimeSetBadgeCache            = "10   1"
+	CronTimeAppsInflux               = "0    */6"
+	CronTimeAppsWishlists            = "30   1"
+	CronTimeAddAppTagsToInflux       = "40   1"
+	CronTimeGenres                   = "0    2"
+	CronTimeTags                     = "0    3"
+	CronTimePublishers               = "0    4"
+	CronTimeDevelopers               = "0    5"
+	CronTimeCategories               = "0    6"
 	CronTimeInstagram                = ""
 )
 
@@ -52,6 +53,7 @@ var (
 	tasks        = []TaskInterface{
 		AppsAchievementsQueueAll{},
 		AppsAchievementsQueueElastic{},
+		AppsAddTagCountsToInflux{},
 		AppsPlayerCheck{},
 		AppsPlayerCheckTop{},
 		AppsQueueAll{},
