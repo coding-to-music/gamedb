@@ -101,8 +101,8 @@ type App struct {
 	Stats                         []helpers.AppStat              `bson:"stats"`
 	SteamSpy                      helpers.AppSteamSpy            `bson:"steam_spy"`
 	SystemRequirements            map[string]interface{}         `bson:"system_requirements"`
-	Tags                          []int                          `bson:"tags"`
-	TagCounts                     []AppTagCount                  `bson:"tag_counts"`
+	Tags                          []int                          `bson:"tags"`       // Current tags, used for filtering
+	TagCounts                     []AppTagCount                  `bson:"tag_counts"` // Includes old tags
 	TwitchID                      int                            `bson:"twitch_id"`
 	TwitchURL                     string                         `bson:"twitch_url"`
 	Type                          string                         `bson:"type"`
@@ -118,6 +118,10 @@ func (app App) BSON() bson.D {
 
 	app.UpdatedAt = time.Now()
 	app.ReleaseState = strings.ToLower(app.ReleaseState)
+
+	sort.Slice(app.TagCounts, func(i, j int) bool {
+		return app.TagCounts[i].Count > app.TagCounts[j].Count
+	})
 
 	return bson.D{
 		{"achievements_5", app.Achievements},

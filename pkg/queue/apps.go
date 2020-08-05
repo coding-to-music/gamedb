@@ -2,7 +2,6 @@ package queue
 
 import (
 	"regexp"
-	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -699,7 +698,6 @@ func scrapeApp(app *mongo.App) (sales []mongo.Sale, err error) {
 	}
 
 	var bundleIDs []string
-	var tagCounts []mongo.AppTagCount
 
 	// Retry call
 	operation := func() (err error) {
@@ -730,7 +728,22 @@ func scrapeApp(app *mongo.App) (sales []mongo.Sale, err error) {
 							continue
 						}
 
-						tagCounts = append(tagCounts, mongo.AppTagCount{ID: tagID, Name: match[2], Count: count})
+						var tagFound bool
+						for k, tag := range app.TagCounts {
+							if tag.ID == tagID {
+								tagFound = true
+								app.TagCounts[k].Name = match[2]
+								app.TagCounts[k].Count = count
+							}
+						}
+
+						if !tagFound {
+							app.TagCounts = append(app.TagCounts, mongo.AppTagCount{
+								ID:    tagID,
+								Name:  match[2],
+								Count: count,
+							})
+						}
 					}
 				}
 			}
@@ -914,12 +927,6 @@ func scrapeApp(app *mongo.App) (sales []mongo.Sale, err error) {
 			log.Err(err)
 		}
 	}
-
-	// Save tag counts
-	sort.Slice(tagCounts, func(i, j int) bool {
-		return tagCounts[i].Count > tagCounts[j].Count
-	})
-	app.TagCounts = tagCounts
 
 	//
 	return sales, nil
