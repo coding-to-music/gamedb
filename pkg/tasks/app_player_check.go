@@ -48,7 +48,11 @@ func (c AppsPlayerCheck) work() (err error) {
 		}
 	}
 
-	var filter = bson.D{{"player_peak_week", bson.M{"$lt": topAppPlayers}}}
+	var filter = bson.D{
+		{"player_peak_week", bson.M{"$lt": topAppPlayers}},
+		{"group_followers", bson.M{"$lt": topGroupFollowers}},
+	}
+
 	var projection = bson.M{"_id": 1}
 
 	return mongo.BatchApps(filter, projection, func(apps []mongo.App) {

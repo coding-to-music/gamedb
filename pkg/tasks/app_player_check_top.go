@@ -28,11 +28,18 @@ func (c AppsPlayerCheckTop) Cron() TaskTime {
 	return CronTimeAppPlayersTop
 }
 
-const topAppPlayers = 10 // And up are top apps
+const (
+	topAppPlayers     = 10   // And up are top apps
+	topGroupFollowers = 4000 // And up are top apps
+)
 
 func (c AppsPlayerCheckTop) work() (err error) {
 
-	var filter = bson.D{{"player_peak_week", bson.M{"$gte": topAppPlayers}}}
+	var filter = bson.D{{"$or", bson.A{
+		bson.D{{"player_peak_week", bson.M{"$gte": topAppPlayers}}},
+		bson.D{{"group_followers", bson.M{"$gte": topGroupFollowers}}},
+	}}}
+
 	var projection = bson.M{"_id": 1}
 
 	return mongo.BatchApps(filter, projection, func(apps []mongo.App) {
