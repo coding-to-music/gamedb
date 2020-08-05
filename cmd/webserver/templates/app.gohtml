@@ -233,8 +233,8 @@
 
                                 <div class="card mt-3 mt-lg-0">
                                     <h5 class="card-header">Tags</h5>
-                                    <div class="card-body p-0" id="tags">
-                                        <table class="table table-no-border table-sm mb-0">
+                                    <div class="card-body p-0">
+                                        <table class="table table-no-border table-xs mb-0">
                                             <tbody>
                                             {{ range $key, $value := .App.TagCounts }}
                                                 <tr data-link="/games?tags={{ .ID }}" style="background: linear-gradient(to right, #28a74522 {{ percent .Count $.TagsMax }}%, transparent {{ percent .Count $.TagsMax }}%)">

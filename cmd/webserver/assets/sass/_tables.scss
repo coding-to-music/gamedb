@@ -36,6 +36,10 @@ table.table:not(.table-no-border) {
     width: auto !important;
 }
 
+.table.table-xs td, .table.table-xs th {
+    padding: .1rem .3rem;
+}
+
 //
 table.table {
 
