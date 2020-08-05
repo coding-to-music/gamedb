@@ -88,6 +88,7 @@ var (
 	MemcacheAppPlayersRow          = func(appID int) Item { return Item{Key: "app-players-" + strconv.Itoa(appID), Expiration: 10 * 60} }
 	MemcacheAppPlayersChart        = func(appID string, limited bool) Item { return Item{Key: "app-players-chart-" + appID + "-" + strconv.FormatBool(limited), Expiration: 10 * 60} }
 	MemcacheAppPlayersHeatmapChart = func(appID string) Item { return Item{Key: "app-players-heatmap-chart-" + appID, Expiration: 10 * 60} }
+	MemcacheAppTagsChart           = func(appID int) Item { return Item{Key: "app-tags-chart-" + strconv.Itoa(appID), Expiration: 10 * 60} }
 	MemcacheAppWishlistChart       = func(appID string) Item { return Item{Key: "app-wishlist-chart-" + appID, Expiration: 10 * 60} }
 	MemcacheAppPlayersInGameRow    = Item{Key: "app-players-in-game-0", Expiration: 10 * 60}
 

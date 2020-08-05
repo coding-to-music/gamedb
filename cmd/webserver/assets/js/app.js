@@ -54,6 +54,7 @@ if ($appPage.length > 0) {
         'dlc': loadDLC,
         'dev-localization': loadDevLocalization,
         'media': loadAppMediaTab,
+        'tags-chart': loadAppTags,
 
         // Packages tab
         'bundles-table': loadAppBundlesTab,
@@ -917,7 +918,7 @@ if ($appPage.length > 0) {
                 {
                     "targets": 1,
                     "render": function (data, type, row) {
-                        return row[3]+'%';
+                        return row[3] + '%';
                     },
                     "orderSequence": ['desc', 'asc'],
                 },
@@ -1035,5 +1036,34 @@ if ($appPage.length > 0) {
             },
         });
 
+    }
+
+    function loadAppTags() {
+
+        $.ajax({
+            type: "GET",
+            url: '/games/' + $appPage.attr('data-id') + '/tags.json',
+            dataType: 'json',
+            success: function (data, textStatus, jqXHR) {
+
+                let series = [];
+
+                for (const id of data['order']) {
+                    series.push({
+                        name: data['names'][id],
+                        data: data['counts']["tag_" + id.toString()],
+                    });
+                }
+
+                Highcharts.chart('tags-chart', $.extend(true, {}, defaultChartOptions, {
+                    yAxis: {
+                        title: {
+                            text: 'Votes'
+                        },
+                    },
+                    series: series,
+                }));
+            },
+        });
     }
 }

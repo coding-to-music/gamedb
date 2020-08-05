@@ -74,6 +74,8 @@ github.com/Jleagle/go-durationfmt v0.0.0-20190307132420-e57bfad84057 h1:gIPGag4G
 github.com/Jleagle/go-durationfmt v0.0.0-20190307132420-e57bfad84057/go.mod h1:6Q6xyLL3Dcnj8DkW7BAHG0Y4+vFG+sNhXom2uFUGC20=
 github.com/Jleagle/influxql v0.0.0-20190502115937-4ac053a1ed8e h1:3wS0Z3hJRP+1Ysi0hMeR6nxGRYJ9D2vGmFKq2mx6hoI=
 github.com/Jleagle/influxql v0.0.0-20190502115937-4ac053a1ed8e/go.mod h1:uk/L49IGLafa767sMdk1sCwO6AWZEzEOriCIERzdB6E=
+github.com/Jleagle/influxql v0.0.0-20200804190929-88324f67bffe h1:HI7ZQfPMj8bROO9GBuiZWk8wt9OTZ2HPB6+9Y1uvZi4=
+github.com/Jleagle/influxql v0.0.0-20200804190929-88324f67bffe/go.mod h1:uk/L49IGLafa767sMdk1sCwO6AWZEzEOriCIERzdB6E=
 github.com/Jleagle/patreon-go v0.0.0-20200117215733-2b8b00d4eab0 h1:DsVssn45Q0FrcIKx/cj+RR+C0qF1L49A7/njTN20f3Q=
 github.com/Jleagle/patreon-go v0.0.0-20200117215733-2b8b00d4eab0/go.mod h1:hg7AekQJKhE4BWHs2gdOxDNUmzywrRyZrNJpSXRsmaY=
 github.com/Jleagle/patreon-go v0.0.0-20200716070737-6ca37fb56a5e h1:aNKQF2c3tBAd/u8Gm/sZUTQz7D6fnHi+QHfuRvyGJzg=

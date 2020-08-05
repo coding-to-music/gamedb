@@ -49,6 +49,7 @@ func appRouter() http.Handler {
 	r.Get("/wishlist.json", appWishlistAjaxHandler)
 	r.Get("/bundles.json", appBundlesAjaxHandler)
 	r.Get("/packages.json", appPackagesAjaxHandler)
+	r.Get("/tags.json", appTagsAjaxHandler)
 
 	r.Get("/{slug}", appHandler)
 	return r
@@ -1108,6 +1109,63 @@ func appPlayersHeatmapAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	log.Err(err)
 
 	returnJSON(w, r, hc)
+}
+
+func appTagsAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	id, err := strconv.Atoi(helpers.RegexIntsOnly.FindString(chi.URLParam(r, "id")))
+	if err != nil {
+		return
+	}
+
+	var item = memcache.MemcacheAppTagsChart(id)
+	var hc influx.HighChartsJSON
+	var tagsMap = map[int]string{}
+	var tagsOrder []int
+
+	app, err := mongo.GetApp(id)
+	if err != nil {
+		log.Err(err)
+		return
+	}
+
+	for _, v := range app.TagCounts {
+		tagsMap[v.ID] = v.Name
+		tagsOrder = append(tagsOrder, v.ID)
+	}
+
+	err = memcache.GetSetInterface(item.Key, item.Expiration, &hc, func() (interface{}, error) {
+
+		builder := influxql.NewBuilder()
+		for _, v := range app.TagCounts {
+			builder.AddSelect("max(tag_"+strconv.Itoa(v.ID)+")", "tag_"+strconv.Itoa(v.ID))
+		}
+		builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
+		builder.AddWhere("app_id", "=", id)
+		builder.AddGroupByTime("1d")
+		builder.SetFillNone()
+
+		resp, err := influx.InfluxQuery(builder.String())
+		if err != nil {
+			log.Err(err, r, builder.String())
+			return hc, err
+		}
+
+		if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
+
+			hc = influx.InfluxResponseToHighCharts(resp.Results[0].Series[0], true)
+		}
+
+		return hc, err
+	})
+
+	log.Err(err)
+
+	returnJSON(w, r, map[string]interface{}{
+		"counts": hc,
+		"names":  tagsMap,
+		"order":  tagsOrder,
+	})
 }
 
 func appPlayersAjaxHandler(limit bool) func(http.ResponseWriter, *http.Request) {

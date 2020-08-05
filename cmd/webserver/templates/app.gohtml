@@ -84,6 +84,9 @@
                         </li>
                     {{ end }}
                     <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#tags" role="tab">Tags</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" data-toggle="tab" href="#dev" role="tab">Dev</a>
                     </li>
                 </ul>
@@ -247,6 +250,7 @@
                                             </tbody>
                                         </table>
                                     </div>
+                                    <div data-link-tab="tags" class="card-footer">View tags over time!</div>
                                 </div>
 
                                 <div class="card mt-3">
@@ -266,6 +270,20 @@
                             </div>
 
                         </div>
+                    </div>
+
+                    {{/* Tags */}}
+                    <div class="tab-pane" id="tags" role="tabpanel">
+
+                        <div class="card">
+                            <h5 class="card-header">Tag Votes over time</h5>
+                            <div class="card-body">
+                                <div id="tags-chart" data-ajax="/games/{{ .App.ID }}/tags.json">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
 
                     {{/* Prices */}}
