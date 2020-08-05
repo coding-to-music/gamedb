@@ -237,10 +237,12 @@
                                         <table class="table table-no-border table-xs mb-0">
                                             <tbody>
                                             {{ range $key, $value := .App.TagCounts }}
-                                                <tr data-link="/games?tags={{ .ID }}" style="background: linear-gradient(to right, #28a74522 {{ percent .Count $.TagsMax }}%, transparent {{ percent .Count $.TagsMax }}%)">
-                                                    <td>{{ .Name }}</td>
-                                                    <td class="text-right"><small>{{ comma .Count }} <i class="fas fa-thumbs-up"></i></small></td>
-                                                </tr>
+                                                {{ if gt .Count 0 }}
+                                                    <tr data-link="/games?tags={{ .ID }}" style="background: linear-gradient(to right, #28a74522 {{ percent .Count $.TagsMax }}%, transparent {{ percent .Count $.TagsMax }}%)">
+                                                        <td>{{ .Name }}</td>
+                                                        <td class="text-right"><small>{{ comma .Count }} <i class="fas fa-thumbs-up"></i></small></td>
+                                                    </tr>
+                                                {{ end }}
                                             {{ end }}
                                             </tbody>
                                         </table>
