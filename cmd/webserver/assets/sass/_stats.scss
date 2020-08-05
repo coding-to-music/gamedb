@@ -1,21 +1,21 @@
 #stats-page {
 
-  .btn.btn-success {
-    @extend .mb-2;
-  }
-
-  .chart {
-    height: 350px;
-  }
-
-  #release-dates, #client-players2 {
-    .highcharts-background {
-      cursor: ew-resize;
+    .btn.btn-success {
+        @extend .mb-2;
     }
-  }
 
-  .highcharts-drilldown-axis-label {
-    color: #28a745 !important;
-    fill: #28a745 !important;
-  }
+    .chart {
+        height: 350px;
+    }
+
+    #release-dates, #client-players2 {
+        .highcharts-background {
+            cursor: ew-resize;
+        }
+    }
+
+    .highcharts-drilldown-axis-label {
+        color: #28a745 !important;
+        fill: #28a745 !important;
+    }
 }
