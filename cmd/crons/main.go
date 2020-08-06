@@ -25,7 +25,7 @@ func main() {
 
 	// Profiling
 	go func() {
-		err := http.ListenAndServe(":6060", nil)
+		err := http.ListenAndServe(":6063", nil)
 		log.Critical(err)
 	}()
 
