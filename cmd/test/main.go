@@ -9,7 +9,7 @@ import (
 
 func main() {
 
-	config.Init("test", helpers.GetIP())
+	config.Init("test", "0", helpers.GetIP())
 	log.Initialise(log.LogNameTest)
 	queue.Init(queue.AllProducerDefinitions)
 

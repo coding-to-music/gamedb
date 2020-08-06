@@ -26,6 +26,7 @@ const (
 
 var (
 	version string
+	commits string
 
 	steamClient *steam.Client
 
@@ -36,7 +37,7 @@ var (
 
 func main() {
 
-	config.Init(version, helpers.GetIP())
+	config.Init(version, commits, helpers.GetIP())
 	log.Initialise(log.LogNameSteam)
 
 	var err error

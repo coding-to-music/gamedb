@@ -25,11 +25,12 @@ import (
 const debugAuthorID = "145456943912189952"
 
 var version string
+var commits string
 
 //noinspection GoDeferInLoop
 func main() {
 
-	config.Init(version, helpers.GetIP())
+	config.Init(version, commits, helpers.GetIP())
 	log.Initialise(log.LogNameChatbot)
 
 	log.Info("Starting chatbot")

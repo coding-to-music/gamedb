@@ -494,6 +494,10 @@ func (t globalTemplate) GetVersionHash() string {
 	return config.GetShortCommitHash()
 }
 
+func (t globalTemplate) GetCommits() string {
+	return config.Config.Commits.Get()
+}
+
 func (t globalTemplate) IsAppsPage() bool {
 
 	if strings.HasPrefix(t.Path, "/games") {

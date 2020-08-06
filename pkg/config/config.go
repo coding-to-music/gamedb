@@ -140,6 +140,10 @@ type BaseConfig struct {
 	TwitterConsumerKey       ConfigItem
 	TwitterConsumerSecret    ConfigItem
 
+	// Versions
+	CommitHash ConfigItem
+	Commits    ConfigItem
+
 	// YouTube
 	YoutubeAPIKey ConfigItem
 
@@ -149,7 +153,6 @@ type BaseConfig struct {
 	GameDBShortName     ConfigItem
 	SendGridAPIKey      ConfigItem
 	WebserverPort       ConfigItem
-	CommitHash          ConfigItem
 	IP                  ConfigItem
 	NewReleaseDays      ConfigItem
 	SlackGameDBWebhook  ConfigItem
@@ -298,13 +301,19 @@ func init() {
 	Config.SteamAPIKey.SetDefault("unset")
 }
 
-func Init(version string, ip string) {
+func Init(version string, commits string, ip string) {
 
-	if IsLocal() && version == "" {
-		version = "local"
+	if IsLocal() {
+		if version == "" {
+			version = "local"
+		}
+		if commits == "" {
+			commits = "0"
+		}
 	}
-	Config.CommitHash.SetDefault(version)
 
+	Config.CommitHash.SetDefault(version)
+	Config.Commits.SetDefault(commits)
 	Config.IP.SetDefault(ip)
 }
 

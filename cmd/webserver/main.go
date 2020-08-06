@@ -28,6 +28,7 @@ import (
 
 var (
 	version string
+	commits string
 
 	distBox  = packr.New("dist", "./assets/dist")
 	filesBox = packr.New("files", "./assets/files")
@@ -42,7 +43,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	config.Init(version, helpers.GetIP())
+	config.Init(version, commits, helpers.GetIP())
 	log.Initialise(log.LogNameWebserver)
 
 	// Get API key
