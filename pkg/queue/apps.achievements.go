@@ -160,7 +160,7 @@ func appAchievementsHandler(message *rabbit.Message) {
 		})
 	}
 
-	var updateApp = []bson.E{
+	var updateApp = bson.D{
 		{"version", schemaResponse.Version},
 		{"achievements_count", len(schemaResponse.AvailableGameStats.Achievements)},
 		{"achievements_count_total", len(globalResponse.GlobalAchievementPercentage)},
