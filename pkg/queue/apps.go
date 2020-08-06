@@ -176,7 +176,7 @@ func appHandler(message *rabbit.Message) {
 			return
 		}
 
-		err = app.Save()
+		err = replaceAppRow(app)
 		if err != nil {
 			log.Err(err, payload.ID)
 			sendToRetryQueue(message)
@@ -197,7 +197,7 @@ func appHandler(message *rabbit.Message) {
 		defer wg.Done()
 
 		var items = []string{
-			memcache.MemcacheApp(app.ID).Key,
+			// memcache.MemcacheApp(app.ID).Key, // Done in replaceAppRow
 			memcache.MemcacheAppInQueue(app.ID).Key,
 			memcache.MemcacheAppTags(app.ID).Key,
 			memcache.MemcacheAppCategories(app.ID).Key,
@@ -246,14 +246,14 @@ func appHandler(message *rabbit.Message) {
 
 	// Produce to sub queues
 	var produces = []QueueMessageInterface{
+		// AppsSearchMessage{App: app}, // Done in sub queues
 		AppAchievementsMessage{AppID: app.ID, AppName: app.Name, AppOwners: app.Owners},
 		AppMorelikeMessage{AppID: app.ID},
 		AppNewsMessage{AppID: app.ID},
-		AppSameownersMessage{ID: app.ID},
-		AppSteamspyMessage{ID: app.ID},
-		AppTwitchMessage{ID: app.ID},
+		AppSameownersMessage{AppID: app.ID},
+		AppSteamspyMessage{AppID: app.ID},
+		AppTwitchMessage{AppID: app.ID},
 		AppReviewsMessage{AppID: app.ID},
-		AppsSearchMessage{App: app},
 		AppItemsMessage{AppID: app.ID, OldDigect: app.ItemsDigest},
 	}
 
@@ -1031,4 +1031,15 @@ func saveSales(app mongo.App, newSales []mongo.Sale) (err error) {
 	}
 
 	return mongo.UpdateSales(newSales)
+}
+
+func replaceAppRow(app mongo.App) (err error) {
+
+	_, err = mongo.ReplaceOne(mongo.CollectionApps, bson.D{{"_id", app.ID}}, app)
+	if err != nil {
+		return err
+	}
+
+	// Cache cleared here to stop any race conditions with other queues
+	return memcache.Delete(memcache.MemcacheApp(app.ID).Key)
 }

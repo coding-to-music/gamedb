@@ -12,7 +12,7 @@ import (
 )
 
 type AppSameownersMessage struct {
-	ID int `json:"id"`
+	AppID int `json:"id"`
 }
 
 func (m AppSameownersMessage) Queue() rabbit.QueueName {
@@ -33,9 +33,9 @@ func appSameownersHandler(message *rabbit.Message) {
 		return
 	}
 
-	ownerRows, err := mongo.GetAppOwners(payload.ID)
+	ownerRows, err := mongo.GetAppOwners(payload.AppID)
 	if err != nil {
-		log.Err(err, payload.ID)
+		log.Err(err, payload.AppID)
 		sendToFailQueue(message)
 		return
 	}
@@ -52,7 +52,7 @@ func appSameownersHandler(message *rabbit.Message) {
 
 	apps, err := mongo.GetPlayersApps(playerIDs, bson.M{"_id": -1, "app_id": 1})
 	if err != nil {
-		log.Err(err, payload.ID)
+		log.Err(err, payload.AppID)
 		sendToFailQueue(message)
 		return
 	}
@@ -79,14 +79,18 @@ func appSameownersHandler(message *rabbit.Message) {
 		countSlice = countSlice[0:100]
 	}
 
-	_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", payload.ID}}, bson.D{{"related_owners_app_ids", countSlice}})
+	// Update app row
+	update := bson.D{{"related_owners_app_ids", countSlice}}
+
+	_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", payload.AppID}}, update)
 	if err != nil {
-		log.Err(err, payload.ID)
+		log.Err(err, payload.AppID)
 		sendToRetryQueue(message)
 		return
 	}
 
-	err = memcache.Delete(memcache.MemcacheApp(payload.ID).Key)
+	// Clear cache
+	err = memcache.Delete(memcache.MemcacheApp(payload.AppID).Key)
 	if err != nil {
 		log.Err(err, payload.AppID)
 		sendToRetryQueue(message)
@@ -101,5 +105,6 @@ func appSameownersHandler(message *rabbit.Message) {
 		return
 	}
 
+	//
 	message.Ack(false)
 }

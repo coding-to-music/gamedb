@@ -3,7 +3,6 @@ package queue
 import (
 	"sort"
 	"strconv"
-	"sync"
 	"time"
 
 	"github.com/Jleagle/rabbit-go"
@@ -115,72 +114,58 @@ func appReviewsHandler(message *rabbit.Message) {
 		score = (float64(reviews.Positive+a) / float64(reviews.GetTotal()+b)) * 100
 	}
 
-	var wg sync.WaitGroup
+	// Sort by upvotes
+	sort.Slice(reviews.Reviews, func(i, j int) bool {
+		return reviews.Reviews[i].VotesGood > reviews.Reviews[j].VotesGood
+	})
 
-	wg.Add(1)
-	go func() {
+	var update = bson.D{
+		{"reviews_score", score},
+		{"reviews", reviews},
+		{"reviews_count", reviews.GetTotal()},
+	}
 
-		defer wg.Done()
+	_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", payload.AppID}}, update)
+	if err != nil {
+		log.Err(err, payload.AppID)
+		sendToRetryQueue(message)
+		return
+	}
 
-		// Sort by upvotes
-		sort.Slice(reviews.Reviews, func(i, j int) bool {
-			return reviews.Reviews[i].VotesGood > reviews.Reviews[j].VotesGood
-		})
+	err = memcache.Delete(memcache.MemcacheApp(payload.AppID).Key)
+	if err != nil {
+		log.Err(err, payload.AppID)
+		sendToRetryQueue(message)
+		return
+	}
 
-		var update = bson.D{
-			{"reviews_score", score},
-			{"reviews", reviews},
-			{"reviews_count", reviews.GetTotal()},
-		}
+	// Update in Elastic
+	err = ProduceAppSearch(nil, payload.AppID)
+	if err != nil {
+		log.Err(err, payload.AppID)
+		sendToRetryQueue(message)
+		return
+	}
 
-		_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", payload.AppID}}, update)
-		if err != nil {
-			log.Err(err, payload.AppID)
-			sendToRetryQueue(message)
-			return
-		}
-	}()
+	// Add to Influx
+	point := influx.Point{
+		Measurement: string(influxHelper.InfluxMeasurementApps),
+		Tags: map[string]string{
+			"app_id": strconv.Itoa(payload.AppID),
+		},
+		Fields: map[string]interface{}{
+			"reviews_score":    score,
+			"reviews_positive": reviews.Positive,
+			"reviews_negative": reviews.Negative,
+		},
+		Time:      time.Now(),
+		Precision: "m",
+	}
 
-	wg.Add(1)
-	go func() {
-
-		defer wg.Done()
-
-		err = memcache.Delete(memcache.MemcacheApp(payload.AppID).Key)
-		if err != nil {
-			log.Err(err, payload.AppID)
-			sendToRetryQueue(message)
-			return
-		}
-	}()
-
-	wg.Add(1)
-	go func() {
-
-		defer wg.Done()
-
-		_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, influx.Point{
-			Measurement: string(influxHelper.InfluxMeasurementApps),
-			Tags: map[string]string{
-				"app_id": strconv.Itoa(payload.AppID),
-			},
-			Fields: map[string]interface{}{
-				"reviews_score":    score,
-				"reviews_positive": reviews.Positive,
-				"reviews_negative": reviews.Negative,
-			},
-			Time:      time.Now(),
-			Precision: "m",
-		})
-		if err != nil {
-			log.Err(err, payload.AppID)
-			sendToRetryQueue(message)
-			return
-		}
-	}()
-
-	wg.Wait()
-	if message.ActionTaken {
+	_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, point)
+	if err != nil {
+		log.Err(err, payload.AppID)
+		sendToRetryQueue(message)
 		return
 	}
 

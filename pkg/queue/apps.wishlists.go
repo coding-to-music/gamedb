@@ -15,7 +15,7 @@ import (
 )
 
 type AppWishlistsMessage struct {
-	ID int `json:"id"`
+	AppID int `json:"id"`
 }
 
 func appWishlistsHandler(message *rabbit.Message) {
@@ -29,7 +29,7 @@ func appWishlistsHandler(message *rabbit.Message) {
 		return
 	}
 
-	playerWishlists, err := mongo.GetPlayerWishlistAppsByApp(payload.ID)
+	playerWishlists, err := mongo.GetPlayerWishlistAppsByApp(payload.AppID)
 	if err != nil {
 		log.Err(err, message.Message.Body)
 		sendToRetryQueue(message)
@@ -74,7 +74,7 @@ func appWishlistsHandler(message *rabbit.Message) {
 	var point = influx.Point{
 		Measurement: string(influxHelper.InfluxMeasurementApps),
 		Tags: map[string]string{
-			"app_id": strconv.Itoa(payload.ID),
+			"app_id": strconv.Itoa(payload.AppID),
 		},
 		Fields: map[string]interface{}{
 			"wishlist_count":        wishlistCount,
@@ -99,15 +99,15 @@ func appWishlistsHandler(message *rabbit.Message) {
 		{"wishlist_percent", wishlistPercent},
 	}
 
-	_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", payload.ID}}, update)
+	_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", payload.AppID}}, update)
 	if err != nil {
-		log.Err(err, payload.ID)
+		log.Err(err, payload.AppID)
 		sendToRetryQueue(message)
 		return
 	}
 
 	// Clear app memcache
-	err = memcache.Delete(memcache.MemcacheApp(payload.ID).Key)
+	err = memcache.Delete(memcache.MemcacheApp(payload.AppID).Key)
 	if err != nil {
 		log.Err(err, payload.AppID)
 		sendToRetryQueue(message)

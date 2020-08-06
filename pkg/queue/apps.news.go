@@ -110,6 +110,7 @@ func appNewsHandler(message *rabbit.Message) {
 		return
 	}
 
+	// Update app row
 	newsIDs = helpers.UniqueInt64(newsIDs)
 
 	_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", app.ID}}, bson.D{{"news_ids", newsIDs}})
@@ -119,6 +120,7 @@ func appNewsHandler(message *rabbit.Message) {
 		return
 	}
 
+	// Clear cache
 	err = memcache.Delete(memcache.MemcacheApp(app.ID).Key)
 	if err != nil {
 		log.Err(err, payload.AppID)

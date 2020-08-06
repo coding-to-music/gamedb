@@ -13,7 +13,8 @@ import (
 )
 
 type AppsSearchMessage struct {
-	App mongo.App `json:"app"`
+	App   *mongo.App `json:"app"`
+	AppID int        `json:"app_id"`
 }
 
 func (m AppsSearchMessage) Queue() rabbit.QueueName {
@@ -31,29 +32,51 @@ func appsSearchHandler(message *rabbit.Message) {
 		return
 	}
 
+	var mongoApp mongo.App
+
+	if payload.AppID > 0 {
+
+		mongoApp, err = mongo.GetApp(payload.AppID)
+		if err != nil {
+			log.Err(err, message.Message.Body)
+			sendToFailQueue(message)
+			return
+		}
+
+	} else if payload.App != nil {
+
+		mongoApp = *payload.App
+
+	} else {
+
+		log.Err(err, message.Message.Body)
+		sendToFailQueue(message)
+		return
+	}
+
 	app := elasticsearch.App{}
-	app.AchievementsAvg = payload.App.AchievementsAverageCompletion
-	app.AchievementsCount = payload.App.AchievementsCount
-	app.AchievementsIcons = payload.App.Achievements
-	app.Aliases = makeAppAliases(app)
-	app.Categories = payload.App.Categories
-	app.Developers = payload.App.Developers
-	app.FollowersCount = payload.App.GroupFollowers
-	app.Genres = payload.App.Genres
-	app.Icon = payload.App.Icon
-	app.ID = payload.App.ID
-	app.Name = payload.App.Name
-	app.Platforms = payload.App.Platforms
-	app.PlayersCount = payload.App.PlayerPeakWeek
-	app.Prices = payload.App.Prices
-	app.Publishers = payload.App.Publishers
-	app.ReleaseDate = payload.App.ReleaseDateUnix
-	app.ReviewScore = payload.App.ReviewsScore
-	app.Tags = payload.App.Tags
-	app.Trend = payload.App.PlayerTrend
-	app.Type = payload.App.Type
-	app.WishlistAvg = payload.App.WishlistAvgPosition
-	app.WishlistCount = payload.App.WishlistCount
+	app.AchievementsAvg = mongoApp.AchievementsAverageCompletion
+	app.AchievementsCount = mongoApp.AchievementsCount
+	app.AchievementsIcons = mongoApp.Achievements
+	app.Aliases = makeAppAliases(mongoApp.ID, mongoApp.Name)
+	app.Categories = mongoApp.Categories
+	app.Developers = mongoApp.Developers
+	app.FollowersCount = mongoApp.GroupFollowers
+	app.Genres = mongoApp.Genres
+	app.Icon = mongoApp.Icon
+	app.ID = mongoApp.ID
+	app.Name = mongoApp.Name
+	app.Platforms = mongoApp.Platforms
+	app.PlayersCount = mongoApp.PlayerPeakWeek
+	app.Prices = mongoApp.Prices
+	app.Publishers = mongoApp.Publishers
+	app.ReleaseDate = mongoApp.ReleaseDateUnix
+	app.ReviewScore = mongoApp.ReviewsScore
+	app.Tags = mongoApp.Tags
+	app.Trend = mongoApp.PlayerTrend
+	app.Type = mongoApp.Type
+	app.WishlistAvg = mongoApp.WishlistAvgPosition
+	app.WishlistCount = mongoApp.WishlistCount
 
 	err = elasticsearch.IndexApp(app)
 	if err != nil {
@@ -64,6 +87,7 @@ func appsSearchHandler(message *rabbit.Message) {
 
 	message.Ack(false)
 }
+
 var aliasMap = map[int][]string{
 	813780:  {"aoe", "aoe2"},   // Age of Empires II: Definitive Edition
 	221380:  {"aoe", "aoe2"},   // Age of Empires II (2013)
@@ -85,9 +109,9 @@ var aliasMap = map[int][]string{
 	359550:  {"r6"},            // Tom Clancy's Rainbow Six Siege
 }
 
-func makeAppAliases(app elasticsearch.App) (aliases []string) {
+func makeAppAliases(ID int, name string) (aliases []string) {
 
-	if val, ok := aliasMap[app.ID]; ok {
+	if val, ok := aliasMap[ID]; ok {
 		aliases = val
 	}
 
@@ -95,7 +119,7 @@ func makeAppAliases(app elasticsearch.App) (aliases []string) {
 		for _, trimSmall := range []bool{true, false} {
 
 			var alias []string
-			for _, v := range helpers.RegexNonAlphaNumeric.Split(app.Name, -1) {
+			for _, v := range helpers.RegexNonAlphaNumeric.Split(name, -1) {
 
 				if v == "" {
 					continue

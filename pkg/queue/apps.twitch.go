@@ -14,7 +14,7 @@ import (
 )
 
 type AppTwitchMessage struct {
-	ID int `json:"id"`
+	AppID int `json:"id"`
 }
 
 func (m AppTwitchMessage) Queue() rabbit.QueueName {
@@ -32,57 +32,61 @@ func appTwitchHandler(message *rabbit.Message) {
 		return
 	}
 
-	app, err := mongo.GetApp(payload.ID, false)
+	app, err := mongo.GetApp(payload.AppID)
 	if err != nil {
-		log.Err(err, payload.ID)
+		log.Err(err, payload.AppID)
 		sendToRetryQueue(message)
 		return
 	}
 
-	if app.Name != "" && app.Type != "game" && (app.TwitchID == 0 || app.TwitchURL == "") {
+	if (app.TwitchID > 0 && app.TwitchURL != "") || app.Name == "" {
+		message.Ack(false)
+		return
+	}
 
-		client, err := twitch.GetTwitch()
-		if err != nil {
-			log.Err(err, payload.ID)
-			sendToRetryQueue(message)
-			return
-		}
+	client, err := twitch.GetTwitch()
+	if err != nil {
+		log.Err(err, payload.AppID)
+		sendToRetryQueue(message)
+		return
+	}
 
-		resp, err := client.GetGames(&helix.GamesParams{Names: []string{app.Name}})
-		if err != nil {
-			log.Err(err, payload.ID)
-			sendToRetryQueue(message)
-			return
-		}
+	resp, err := client.GetGames(&helix.GamesParams{Names: []string{app.Name}})
+	if err != nil {
+		log.Err(err, payload.AppID)
+		sendToRetryQueue(message)
+		return
+	}
 
-		if len(resp.Data.Games) > 0 {
+	if len(resp.Data.Games) == 0 {
+		message.Ack(false)
+		return
+	}
 
-			i, err := strconv.Atoi(resp.Data.Games[0].ID)
-			if err != nil {
-				log.Err(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
+	i, err := strconv.Atoi(resp.Data.Games[0].ID)
+	if err != nil {
+		log.Err(err, payload.AppID)
+		sendToRetryQueue(message)
+		return
+	}
 
-			var update = bson.D{
-				{"twitch_id", i},
-				{"twitch_url", resp.Data.Games[0].Name},
-			}
+	var update = bson.D{
+		{"twitch_id", i},
+		{"twitch_url", resp.Data.Games[0].Name},
+	}
 
-			_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", payload.ID}}, update)
-			if err != nil {
-				log.Err(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
+	_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", payload.AppID}}, update)
+	if err != nil {
+		log.Err(err, payload.AppID)
+		sendToRetryQueue(message)
+		return
+	}
 
-			err = memcache.Delete(memcache.MemcacheApp(payload.ID).Key)
-			if err != nil {
-				log.Err(err, payload.ID)
-				sendToRetryQueue(message)
-				return
-			}
-		}
+	err = memcache.Delete(memcache.MemcacheApp(payload.AppID).Key)
+	if err != nil {
+		log.Err(err, payload.AppID)
+		sendToRetryQueue(message)
+		return
 	}
 
 	message.Ack(false)

@@ -522,16 +522,6 @@ func (app App) ShouldUpdate() bool {
 	return app.UpdatedAt.Before(time.Now().Add(time.Hour * 24 * -1))
 }
 
-func (app App) Save() (err error) {
-
-	if !helpers.IsValidAppID(app.ID) {
-		return errors.New("invalid app id")
-	}
-
-	_, err = ReplaceOne(CollectionApps, bson.D{{"_id", app.ID}}, app)
-	return err
-}
-
 type AppTagCount struct {
 	ID    int    `json:"id"`
 	Name  string `json:"name"`

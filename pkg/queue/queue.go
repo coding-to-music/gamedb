@@ -406,7 +406,7 @@ func ProduceAppsYoutube(id int, name string) (err error) {
 }
 
 func ProduceAppsWishlists(id int) (err error) {
-	return produce(QueueAppsWishlists, AppWishlistsMessage{ID: id})
+	return produce(QueueAppsWishlists, AppWishlistsMessage{AppID: id})
 }
 
 func ProduceAppPlayers(appIDs []int) (err error) {
@@ -597,9 +597,10 @@ func ProducePlayerGroup(player mongo.Player, skipGroupUpdate bool) (err error) {
 	})
 }
 
-func ProduceAppSearch(app mongo.App) (err error) {
+func ProduceAppSearch(app *mongo.App, appID int) (err error) {
 
-	return produce(QueueAppsSearch, AppsSearchMessage{App: app})
+	m := AppsSearchMessage{AppID: appID, App: app}
+	return produce(m.Queue(), m)
 }
 
 func ProducePlayerSearch(player mongo.Player) (err error) {

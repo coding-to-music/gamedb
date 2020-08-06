@@ -17,7 +17,7 @@ import (
 )
 
 type AppSteamspyMessage struct {
-	ID int `json:"id"`
+	AppID int `json:"id"`
 }
 
 func (m AppSteamspyMessage) Queue() rabbit.QueueName {
@@ -41,7 +41,7 @@ func appSteamspyHandler(message *rabbit.Message) {
 	// Create request
 	query := url.Values{}
 	query.Set("request", "appdetails")
-	query.Set("appid", strconv.Itoa(payload.ID))
+	query.Set("appid", strconv.Itoa(payload.AppID))
 
 	steamspyLimiter.Take()
 	body, statusCode, err := helpers.GetWithTimeout("https://steamspy.com/api.php?"+query.Encode(), 0)
@@ -50,9 +50,9 @@ func appSteamspyHandler(message *rabbit.Message) {
 		if strings.Contains(err.Error(), "Client.Timeout exceeded while awaiting headers") ||
 			strings.Contains(err.Error(), "read: connection reset by peer") ||
 			strings.Contains(err.Error(), "connect: cannot assign requested address") {
-			log.Info(err, payload.ID)
+			log.Info(err, payload.AppID)
 		} else {
-			log.Err(err, payload.ID)
+			log.Err(err, payload.AppID)
 		}
 
 		sendToRetryQueueWithDelay(message, time.Second*10)
@@ -61,14 +61,14 @@ func appSteamspyHandler(message *rabbit.Message) {
 
 	if statusCode != 200 {
 
-		log.Info(errors.New("steamspy is down"), payload.ID)
+		log.Info(errors.New("steamspy is down"), payload.AppID)
 		sendToRetryQueueWithDelay(message, time.Minute*30)
 		return
 	}
 
 	if strings.Contains(string(body), "Connection failed") {
 
-		log.Info(errors.New("steamspy is down"), payload.ID, body)
+		log.Info(errors.New("steamspy is down"), payload.AppID, body)
 		sendToRetryQueueWithDelay(message, time.Minute*30)
 		return
 	}
@@ -78,7 +78,7 @@ func appSteamspyHandler(message *rabbit.Message) {
 	err = helpers.Unmarshal(body, &resp)
 	if err != nil {
 
-		log.Info(err, payload.ID, body)
+		log.Info(err, payload.AppID, body)
 		sendToRetryQueueWithDelay(message, time.Minute*30)
 		return
 	}
@@ -95,14 +95,19 @@ func appSteamspyHandler(message *rabbit.Message) {
 		ss.SSOwnersHigh = owners[1]
 	}
 
-	_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", payload.ID}}, bson.D{{"steam_spy", ss}})
+	// Update app row
+	filter := bson.D{{"_id", payload.AppID}}
+	update := bson.D{{"steam_spy", ss}}
+
+	_, err = mongo.UpdateOne(mongo.CollectionApps, filter, update)
 	if err != nil {
-		log.Err(err, payload.ID)
+		log.Err(err, payload.AppID)
 		sendToRetryQueue(message)
 		return
 	}
 
-	err = memcache.Delete(memcache.MemcacheApp(payload.ID).Key)
+	// Clear cache
+	err = memcache.Delete(memcache.MemcacheApp(payload.AppID).Key)
 	if err != nil {
 		log.Err(err, payload.AppID)
 		sendToRetryQueue(message)
@@ -117,5 +122,6 @@ func appSteamspyHandler(message *rabbit.Message) {
 		return
 	}
 
+	//
 	message.Ack(false)
 }
