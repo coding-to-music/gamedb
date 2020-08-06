@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"strconv"
 	"sync"
+	"time"
 
 	"github.com/Jleagle/influxql"
 	"github.com/Jleagle/rabbit-go"
@@ -25,6 +26,9 @@ func (m AppInfluxMessage) Queue() rabbit.QueueName {
 }
 
 func appInfluxHandler(message *rabbit.Message) {
+
+	// Sleep to not cause influx memory to spike too much
+	time.Sleep(time.Second * 10)
 
 	payload := AppInfluxMessage{}
 
