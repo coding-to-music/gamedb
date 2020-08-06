@@ -109,7 +109,15 @@ func appWishlistsHandler(message *rabbit.Message) {
 	// Clear app memcache
 	err = memcache.Delete(memcache.MemcacheApp(payload.ID).Key)
 	if err != nil {
-		log.Err(err, payload.ID)
+		log.Err(err, payload.AppID)
+		sendToRetryQueue(message)
+		return
+	}
+
+	// Update in Elastic
+	err = ProduceAppSearch(nil, payload.AppID)
+	if err != nil {
+		log.Err(err, payload.AppID)
 		sendToRetryQueue(message)
 		return
 	}

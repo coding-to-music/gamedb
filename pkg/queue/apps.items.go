@@ -155,6 +155,14 @@ func appItemsHandler(message *rabbit.Message) {
 		return
 	}
 
+	// Update in Elastic
+	err = ProduceAppSearch(nil, payload.AppID)
+	if err != nil {
+		log.Err(err, payload.AppID)
+		sendToRetryQueue(message)
+		return
+	}
+
 	//
 	message.Ack(false)
 }
