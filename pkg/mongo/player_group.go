@@ -48,8 +48,12 @@ func (group PlayerGroup) getKey() string {
 	return strconv.FormatInt(group.PlayerID, 10) + "-" + group.GroupID
 }
 
-func (group PlayerGroup) GetPath() string {
+func (group PlayerGroup) GetGroupPath() string {
 	return helpers.GetGroupPath(group.GroupID, group.GetName())
+}
+
+func (group PlayerGroup) GetPlayerPath() string {
+	return helpers.GetPlayerPath(group.PlayerID, group.GetPlayerName())
 }
 
 func (group PlayerGroup) GetType() string {
