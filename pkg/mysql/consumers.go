@@ -23,7 +23,7 @@ type Consumer struct {
 	IP          string    `gorm:"not null;column:ip"`
 	Environment string    `gorm:"not null;column:environment"`
 	Version     string    `gorm:"not null;column:version"`
-	Commits     int       `gorm:"not null;column:commits"`
+	Commits     string    `gorm:"not null;column:commits"`
 	Notes       string    `gorm:"-"`
 }
 
