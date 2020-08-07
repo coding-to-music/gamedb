@@ -226,34 +226,34 @@ function loadAjaxOnObserve(map) {
     }
 }
 
-(function () {
-
-    // const originalXhr = new window.XMLHttpRequest();
-    const originalXhr = $.ajaxSettings.xhr;
-    $.ajaxSetup({
-        xhr: function () {
-            const xhr = originalXhr();
-            if (xhr) {
-
-                const $loading = $('#loading');
-
-                xhr.addEventListener('loadstart', function (e) {
-                    $loading.fadeTo(100, 1);
-                });
-                xhr.addEventListener('loadend', function (e) {
-                    $loading.fadeTo(100, 0);
-                });
-                xhr.addEventListener('error', function (e) {
-                    logLocal('XHR Error', e)
-                });
-                xhr.addEventListener('abort', function (e) {
-                    logLocal('XHR Aborted', e)
-                });
-            }
-            return xhr;
-        }
-    });
-})();
+// (function () {
+//
+//     // const originalXhr = new window.XMLHttpRequest();
+//     const originalXhr = $.ajaxSettings.xhr;
+//     $.ajaxSetup({
+//         xhr: function () {
+//             const xhr = originalXhr();
+//             if (xhr) {
+//
+//                 const $loading = $('#loading');
+//
+//                 xhr.addEventListener('loadstart', function (e) {
+//                     $loading.fadeTo(100, 1);
+//                 });
+//                 xhr.addEventListener('loadend', function (e) {
+//                     $loading.fadeTo(100, 0);
+//                 });
+//                 xhr.addEventListener('error', function (e) {
+//                     logLocal('XHR Error', e)
+//                 });
+//                 xhr.addEventListener('abort', function (e) {
+//                     logLocal('XHR Aborted', e)
+//                 });
+//             }
+//             return xhr;
+//         }
+//     });
+// })();
 
 const cookieName = 'gamedb-session-2';
 

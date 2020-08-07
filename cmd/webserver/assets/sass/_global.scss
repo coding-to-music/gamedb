@@ -244,7 +244,7 @@ header {
 }
 
 //
-div#loading, div#top {
+div#top {
     position: fixed;
     right: 20px;
     opacity: 0;
@@ -252,7 +252,7 @@ div#loading, div#top {
     z-index: 1000;
 }
 
-div#loading.show, div#top.show {
+div#top.show {
     opacity: 1;
 }
 
@@ -269,26 +269,26 @@ div#top {
     transition: opacity 1s;
 }
 
-div#loading {
-    top: 20px;
-    width: 40px;
-    height: 40px;
-    pointer-events: none;
-
-    img {
-        width: 100%;
-        animation: spin 1000ms linear infinite;
-
-        @keyframes spin {
-            from {
-                transform: rotate(0deg);
-            }
-            to {
-                transform: rotate(360deg);
-            }
-        }
-    }
-}
+//div#loading {
+//    top: 20px;
+//    width: 40px;
+//    height: 40px;
+//    pointer-events: none;
+//
+//    img {
+//        width: 100%;
+//        animation: spin 1000ms linear infinite;
+//
+//        @keyframes spin {
+//            from {
+//                transform: rotate(0deg);
+//            }
+//            to {
+//                transform: rotate(360deg);
+//            }
+//        }
+//    }
+//}
 
 //
 video {
