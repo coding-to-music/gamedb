@@ -302,16 +302,6 @@ func init() {
 }
 
 func Init(version string, commits string, ip string) {
-
-	if IsLocal() {
-		if version == "" {
-			version = "local"
-		}
-		if commits == "" {
-			commits = "0"
-		}
-	}
-
 	Config.CommitHash.SetDefault(version)
 	Config.Commits.SetDefault(commits)
 	Config.IP.SetDefault(ip)
