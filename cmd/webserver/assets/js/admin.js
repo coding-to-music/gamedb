@@ -148,9 +148,9 @@ if ($('#admin-consumers-page').length > 0) {
                 api.rows().every(function (rowIdx, tableLoop, rowLoop) {
                     let group = this.data()[6];
                     if (last !== group) {
-                        if (group){
+                        if (group) {
                             $(rows).eq(rowIdx).before('<tr class="table-success"><td colspan="6">Active</td></tr>');
-                        }else{
+                        } else {
                             $(rows).eq(rowIdx).before('<tr class="table-danger"><td colspan="6">Expired</td></tr>');
                         }
                         last = group;
@@ -195,7 +195,7 @@ if ($('#admin-consumers-page').length > 0) {
             {
                 'targets': 4,
                 'render': function (data, type, row) {
-                    return row[4];
+                    return parseInt(row[4]).toLocaleString();
                 },
                 'orderSequence': ['desc', 'asc'],
             },
