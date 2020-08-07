@@ -66,7 +66,7 @@ func GetConsumer(tag string) (err error) {
 			"environment": config.Config.Environment.Get(),
 			"version":     config.GetShortCommitHash(),
 			"commits":     config.Config.Commits.Get(),
-			"ip":          config.GetIP(),
+			"ip":          config.Config.IP.Get(),
 		}
 
 		db = db.New().Table("consumers").Where("`key` = ?", row.Key).Updates(fields)

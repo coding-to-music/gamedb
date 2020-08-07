@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/cenkalti/backoff/v4"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/log"
 )
 
@@ -103,6 +104,11 @@ func requestWithTimeout(method string, link string, timeout time.Duration, heade
 }
 
 func GetIP() string {
+
+	if config.IsLocal() {
+		return "127.0 0.1"
+	}
+
 	for _, v := range []string{"http://ipinfo.io/ip", "http://myexternalip.com/raw", "https://ifconfig.co/ip"} {
 
 		body, _, err := GetWithTimeout(v, 0)
