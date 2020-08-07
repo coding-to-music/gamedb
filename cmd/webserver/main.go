@@ -129,6 +129,13 @@ func main() {
 	r.Mount("/terms", pages.TermsRouter())
 	r.Mount("/websocket", pages.WebsocketsRouter())
 
+	// Assets
+	r.Route("/assets", func(r chi.Router) {
+		r.Get("/img/*", rootFileHandler(imgBox, "/assets/img"))
+		r.Get("/files/*", rootFileHandler(filesBox, "/assets/files"))
+		r.Get("/dist/*", rootFileHandler(distBox, "/assets/dist"))
+	})
+
 	// Sitemaps, Google doesnt like having a sitemap in a sub directory
 	r.Get("/sitemap-badges.xml", pages.SiteMapBadges)
 	r.Get("/sitemap-games-by-players.xml", pages.SiteMapGamesByPlayersHandler)
@@ -141,25 +148,18 @@ func main() {
 	r.Get("/sitemap-players-by-level.xml", pages.SiteMapPlayersByLevel)
 	r.Get("/sitemap.xml", pages.SiteMapIndexHandler)
 
+	// Root files
+	r.Get("/browserconfig.xml", rootFileHandler(filesBox, ""))
+	r.Get("/robots.txt", rootFileHandler(filesBox, ""))
+	r.Get("/site.webmanifest", rootFileHandler(filesBox, ""))
+	// r.Get("/ads.txt", rootFileHandler)
+
 	// Shortcuts
 	r.Get("/a{id:[0-9]+}", redirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/games/" + chi.URLParam(r, "id") }))
 	r.Get("/g{id:[0-9]+}", redirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/games/" + chi.URLParam(r, "id") }))
 	r.Get("/s{id:[0-9]+}", redirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/packages/" + chi.URLParam(r, "id") }))
 	r.Get("/p{id:[0-9]+}", redirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/players/" + chi.URLParam(r, "id") }))
 	r.Get("/b{id:[0-9]+}", redirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/bundles/" + chi.URLParam(r, "id") }))
-
-	// Assets
-	r.Route("/assets", func(r chi.Router) {
-		r.Get("/img/*", rootFileHandler(imgBox, "/assets/img"))
-		r.Get("/files/*", rootFileHandler(filesBox, "/assets/files"))
-		r.Get("/dist/*", rootFileHandler(distBox, "/assets/dist"))
-	})
-
-	// Root files
-	r.Get("/browserconfig.xml", rootFileHandler(filesBox, ""))
-	r.Get("/robots.txt", rootFileHandler(filesBox, ""))
-	r.Get("/site.webmanifest", rootFileHandler(filesBox, ""))
-	// r.Get("/ads.txt", rootFileHandler)
 
 	// Redirects
 	r.Get("/apps", redirectHandler("/games"))
