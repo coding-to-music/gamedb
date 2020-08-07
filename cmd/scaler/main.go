@@ -9,13 +9,18 @@ import (
 
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/cmd/scaler/hosts"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/go-chi/chi"
 )
 
+var version string
+var commits string
+
 func main() {
 
+	config.Init(version, commits, helpers.GetIP())
 	log.Initialise(log.LogNameScaler)
 
 	// Web server
