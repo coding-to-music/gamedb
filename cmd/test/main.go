@@ -16,4 +16,7 @@ func main() {
 	log.Initialise(log.LogNameTest)
 	queue.Init(queue.AllProducerDefinitions)
 
+	//
+
+	helpers.KeepAlive()
 }
