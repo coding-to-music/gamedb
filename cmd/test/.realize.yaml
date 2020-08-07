@@ -4,6 +4,7 @@ schema:
     commands:
       install:
         status: true
+        args: -ldflags "-X main.version=`git rev-parse --verify HEAD` -X main.commits=`git rev-list --count master`"
       run:
         status: true
       build:
