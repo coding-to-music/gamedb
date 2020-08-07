@@ -221,8 +221,8 @@ func init() {
 
 	// Memcache
 	Config.MemcacheDSN.Set("MEMCACHE_URL")
-	Config.MemcacheUsername.Set("MEMCACHE_USERNAME")
-	Config.MemcachePassword.Set("MEMCACHE_PASSWORD")
+	Config.MemcacheUsername.Set("MEMCACHE_USERNAME", true)
+	Config.MemcachePassword.Set("MEMCACHE_PASSWORD", true)
 
 	// Mongo
 	Config.MongoHost.Set("MONGO_HOST")
@@ -311,10 +311,12 @@ func Init(version string, commits string, ip string) {
 type ConfigItem struct {
 	value        string
 	defaultValue string
+	allowEmpty   bool
 }
 
-func (ci *ConfigItem) Set(environment string) {
+func (ci *ConfigItem) Set(environment string, allowEmpty ...bool) {
 	ci.value = os.Getenv("STEAM_" + environment)
+	ci.allowEmpty = len(allowEmpty) > 0 && allowEmpty[0]
 }
 
 func (ci *ConfigItem) SetDefault(defaultValue string) {
@@ -331,20 +333,22 @@ func (ci ConfigItem) Get() string {
 		return ci.defaultValue
 	}
 
-	// Get line number of calling function
-	skip := 1
-	for {
-		_, file, no, ok := runtime.Caller(skip)
-		if ok {
-			if !strings.Contains(file, "config/config.go") {
-				fmt.Printf("missing env var @ %s#%d\n", file, no)
+	// Log line number of config item
+	if !ci.allowEmpty {
+		skip := 1
+		for {
+			_, file, no, ok := runtime.Caller(skip)
+			if ok {
+				if !strings.Contains(file, "config/config.go") {
+					fmt.Printf("missing env var @ %s#%d\n", file, no)
+					break
+				}
+			} else if !ok || skip > 10 {
+				fmt.Println("missing env var...")
 				break
 			}
-		} else if !ok || skip > 10 {
-			fmt.Println("missing env var...")
-			break
+			skip++
 		}
-		skip++
 	}
 
 	return ""
