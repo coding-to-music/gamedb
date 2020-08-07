@@ -46,6 +46,13 @@ func main() {
 	config.Init(version, commits, helpers.GetIP())
 	log.Initialise(log.LogNameWebserver)
 
+	// Profiling
+	log.Info("Starting webserver profiling")
+	go func() {
+		err := http.ListenAndServe(":6064", nil)
+		log.Critical(err)
+	}()
+
 	// Get API key
 	err := mysql.GetConsumer("webserver")
 	if err != nil {
@@ -140,13 +147,6 @@ func main() {
 	r.Get("/s{id:[0-9]+}", redirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/packages/" + chi.URLParam(r, "id") }))
 	r.Get("/p{id:[0-9]+}", redirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/players/" + chi.URLParam(r, "id") }))
 	r.Get("/b{id:[0-9]+}", redirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/bundles/" + chi.URLParam(r, "id") }))
-
-	// Profiling
-	r.Route("/debug", func(r chi.Router) {
-		r.Use(middleware.MiddlewareAuthCheck())
-		r.Use(middleware.MiddlewareAdminCheck(pages.Error404Handler))
-		r.Mount("/", chiMiddleware.Profiler())
-	})
 
 	// Assets
 	r.Route("/assets", func(r chi.Router) {
