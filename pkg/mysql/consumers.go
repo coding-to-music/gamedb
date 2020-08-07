@@ -10,18 +10,21 @@ import (
 )
 
 const (
-	consumerSessionLength  = time.Second * 70 // Time to keep the key for
+	ConsumerSessionLength  = time.Second * 70 // Time to keep the key for
 	consumerSessionRefresh = time.Second * 60 // Heartbeat to retake the key
 	consumerSessionRetry   = time.Second * 10 // Retry on no keys availabile
 )
 
 type Consumer struct {
-	Key     string    `gorm:"not null;column:key;PRIMARY_KEY"`
-	Use     bool      `gorm:"not null;column:use;"`
-	Expires time.Time `gorm:"not null;column:expires;type:datetime"`
-	Owner   string    `gorm:"not null;column:owner"`
-	IP      string    `gorm:"not null;column:ip"`
-	Notes   string    `gorm:"-"`
+	Key         string    `gorm:"not null;column:key;PRIMARY_KEY"`
+	Use         bool      `gorm:"not null;column:use;"`
+	Expires     time.Time `gorm:"not null;column:expires;type:datetime"`
+	Owner       string    `gorm:"not null;column:owner"`
+	IP          string    `gorm:"not null;column:ip"`
+	Environment string    `gorm:"not null;column:environment"`
+	Version     string    `gorm:"not null;column:version"`
+	Commits     int       `gorm:"not null;column:commits"`
+	Notes       string    `gorm:"-"`
 }
 
 func GetConsumer(tag string) (err error) {
@@ -58,10 +61,11 @@ func GetConsumer(tag string) (err error) {
 
 		// Update the row
 		fields := map[string]interface{}{
-			"expires":     time.Now().Add(consumerSessionLength),
+			"expires":     time.Now().Add(ConsumerSessionLength),
 			"owner":       tag,
 			"environment": config.Config.Environment.Get(),
 			"version":     config.GetShortCommitHash(),
+			"commits":     config.Config.Commits.Get(),
 			"ip":          config.GetIP(),
 		}
 
@@ -105,7 +109,7 @@ func GetConsumer(tag string) (err error) {
 
 			// Update key
 			fields := map[string]interface{}{
-				"expires": time.Now().Add(consumerSessionLength),
+				"expires": time.Now().Add(ConsumerSessionLength),
 			}
 
 			db = db.Updates(fields)

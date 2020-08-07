@@ -135,6 +135,87 @@ if ($('#admin-users-page').length > 0) {
     });
 }
 
+if ($('#admin-consumers-page').length > 0) {
+
+    const options = {
+        "order": [[0, 'desc']],
+        "drawCallback": function (settings) {
+            const api = this.api();
+            if (api.order()[0] && api.order()[0][0] === 0) {
+                const rows = api.rows({page: 'current'}).nodes();
+
+                let last = null;
+                api.rows().every(function (rowIdx, tableLoop, rowLoop) {
+                    let group = this.data()[6];
+                    if (last !== group) {
+                        if (group){
+                            $(rows).eq(rowIdx).before('<tr class="table-success"><td colspan="6">Active</td></tr>');
+                        }else{
+                            $(rows).eq(rowIdx).before('<tr class="table-danger"><td colspan="6">Expired</td></tr>');
+                        }
+                        last = group;
+                    }
+                });
+            }
+        },
+        "columnDefs": [
+            // Expires
+            {
+                'targets': 0,
+                'render': function (data, type, row) {
+                    return row[0];
+                },
+                'orderSequence': ['desc', 'asc'],
+            },
+            // Owner
+            {
+                'targets': 1,
+                'render': function (data, type, row) {
+                    return row[1];
+                },
+                'orderable': false,
+            },
+            // Environment
+            {
+                'targets': 2,
+                'render': function (data, type, row) {
+                    return row[2];
+                },
+                'orderable': false,
+            },
+            // Version
+            {
+                'targets': 3,
+                'render': function (data, type, row) {
+                    return row[3];
+                },
+                'orderable': false,
+            },
+            // Commits
+            {
+                'targets': 4,
+                'render': function (data, type, row) {
+                    return row[4];
+                },
+                'orderSequence': ['desc', 'asc'],
+            },
+            // IP
+            {
+                'targets': 5,
+                'render': function (data, type, row) {
+                    return row[5];
+                },
+                'orderable': false,
+            },
+        ]
+    };
+
+    const $table = $('table.table');
+    const dt = $table.gdbTable({
+        tableOptions: options,
+    });
+}
+
 if ($('#admin-patreon-page').length > 0) {
 
     const options = {

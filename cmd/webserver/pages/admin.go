@@ -36,6 +36,8 @@ func AdminRouter() http.Handler {
 	r.Get("/tasks", adminTasksHandler)
 	r.Get("/users", adminUsersHandler)
 	r.Get("/users.json", adminUsersAjaxHandler)
+	r.Get("/consumers", adminConsumersHandler)
+	r.Get("/consumers.json", adminConsumersAjaxHandler)
 	r.Get("/patreon", adminPatreonHandler)
 	r.Get("/patreon.json", adminPatreonAjaxHandler)
 	r.Get("/queues", adminQueuesHandler)
@@ -65,13 +67,10 @@ type adminUsersTemplate struct {
 
 func adminUsersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	query := datatable.NewDataTableQuery(r, false)
-
-	//
+	var query = datatable.NewDataTableQuery(r, false)
 	var wg sync.WaitGroup
-
-	// Get packages
 	var users []mysql.User
+
 	wg.Add(1)
 	go func(r *http.Request) {
 
@@ -136,6 +135,94 @@ func adminUsersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	returnJSON(w, r, response)
+}
+
+func adminConsumersAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	var query = datatable.NewDataTableQuery(r, false)
+	var wg sync.WaitGroup
+	var consumers []mysql.Consumer
+
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		db, err := mysql.GetMySQLClient()
+		if err != nil {
+			log.Err(err, r)
+			return
+		}
+
+		db = db.Model(&mysql.Consumer{})
+		db = db.Select([]string{"expires", "owner", "environment", "version", "commits", "ip"})
+		db = db.Limit(100)
+		db = db.Offset(query.GetOffset())
+
+		sortCols := map[string]string{
+			"0": "expires",
+			"4": "commits",
+		}
+		db = query.SetOrderOffsetGorm(db, sortCols)
+
+		db = db.Find(&consumers)
+
+		log.Err(db.Error, r)
+	}()
+
+	// Get total
+	var count int64
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		db, err := mysql.GetMySQLClient()
+		if err != nil {
+			log.Err(err, r)
+			return
+		}
+
+		db = db.Table("consumers").Count(&count)
+		if db.Error != nil {
+			log.Err(db.Error, r)
+			return
+		}
+	}()
+
+	// Wait
+	wg.Wait()
+
+	var response = datatable.NewDataTablesResponse(r, query, count, count, nil)
+	for _, consumer := range consumers {
+
+		expires := consumer.Expires.Format(helpers.DateSQL)
+		inDate := consumer.Expires.Add(mysql.ConsumerSessionLength).After(time.Now())
+
+		response.AddRow([]interface{}{
+			expires,              // 0
+			consumer.Owner,       // 1
+			consumer.Environment, // 2
+			consumer.Version,     // 3
+			consumer.Commits,     // 4
+			consumer.IP,          // 5
+			inDate,               // 6
+		})
+	}
+
+	returnJSON(w, r, response)
+}
+
+func adminConsumersHandler(w http.ResponseWriter, r *http.Request) {
+
+	t := adminConsumersTemplate{}
+	t.fill(w, r, "Admin", "Admin")
+
+	returnTemplate(w, r, "admin/consumers", t)
+}
+
+type adminConsumersTemplate struct {
+	globalTemplate
 }
 
 func adminPatreonHandler(w http.ResponseWriter, r *http.Request) {
