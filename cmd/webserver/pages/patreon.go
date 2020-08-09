@@ -1,12 +1,18 @@
 package pages
 
 import (
+	"crypto/hmac"
+	"crypto/sha1"
+	"encoding/hex"
+	"io/ioutil"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/Jleagle/patreon-go/patreon"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/go-chi/chi"
@@ -86,6 +92,53 @@ func saveWebhookEvent(r *http.Request, event mongo.EventEnum, pwr patreon.Webhoo
 	return mongo.CreateUserEvent(r, user.ID, mongo.EventPatreonWebhook+"-"+event)
 }
 
+const signaturePrefix = "sha1="
+const signatureLength = 45
+
 func gitHubWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 
+	// Get body
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Err(err)
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	defer log.Err(r.Body.Close())
+
+	//
+	var signature = r.Header.Get("X-Hub-Signature")
+	var event = r.Header.Get("X-GitHub-Event")
+
+	if len(signature) != signatureLength || !strings.HasPrefix(signature, signaturePrefix) {
+		http.Error(w, "Invalid signature (1)", 400)
+		return
+	}
+
+	mac := hmac.New(sha1.New, []byte(config.Config.GithubWebhookSecret.Get()))
+	mac.Write(body)
+	expectedMAC := hex.EncodeToString(mac.Sum(nil))
+
+	if !hmac.Equal([]byte(signaturePrefix+expectedMAC), []byte(signature)) {
+		http.Error(w, "Invalid signature (2)", 400)
+		return
+	}
+
+	switch event {
+	case "push":
+
+		// Clear cache
+		items := []string{
+			memcache.MemcacheCommitsPage(1).Key,
+			memcache.MemcacheCommitsTotal.Key,
+		}
+
+		err := memcache.Delete(items...)
+		if err != nil {
+			log.Err(err)
+		}
+	}
+
+	http.Error(w, "200", 200)
 }

@@ -47,9 +47,10 @@ type BaseConfig struct {
 	FacebookAppSecret ConfigItem
 
 	// GitHub
-	GitHubClient ConfigItem
-	GitHubSecret ConfigItem
-	GithubToken  ConfigItem
+	GitHubClient        ConfigItem
+	GitHubSecret        ConfigItem
+	GithubToken         ConfigItem
+	GithubWebhookSecret ConfigItem
 
 	// Google
 	GoogleBucket  ConfigItem
@@ -194,6 +195,7 @@ func init() {
 	Config.GitHubClient.Set("GITHUB_CLIENT")
 	Config.GitHubSecret.Set("GITHUB_SECRET")
 	Config.GithubToken.Set("GITHUB_TOKEN")
+	Config.GithubWebhookSecret.Set("GITHUB_WEBHOOK_SECRET")
 
 	// Google
 	Config.GoogleBucket.Set("GOOGLE_BUCKET")
