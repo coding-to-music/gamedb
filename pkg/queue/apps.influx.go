@@ -40,7 +40,7 @@ func appInfluxHandler(message *rabbit.Message) {
 	}
 
 	if len(payload.AppIDs) == 0 {
-		message.Ack(false)
+		message.Ack()
 		return
 	}
 
@@ -113,7 +113,7 @@ func appInfluxHandler(message *rabbit.Message) {
 	}
 
 	if len(payload.AppIDs) == 0 {
-		message.Ack(false)
+		message.Ack()
 		return
 	}
 
@@ -177,7 +177,7 @@ func appInfluxHandler(message *rabbit.Message) {
 	}
 
 	//
-	message.Ack(false)
+	message.Ack()
 }
 
 func getAppTopPlayersWeek(appIDs []int) (vals map[int]int64, err error) {

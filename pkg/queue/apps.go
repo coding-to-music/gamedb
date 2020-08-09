@@ -69,7 +69,7 @@ func appHandler(message *rabbit.Message) {
 		log.Err(err)
 
 		log.Info("Skipping app, updated " + s + " ago")
-		message.Ack(false)
+		message.Ack()
 		return
 	}
 
@@ -277,7 +277,7 @@ func appHandler(message *rabbit.Message) {
 	}
 
 	//
-	message.Ack(false)
+	message.Ack()
 }
 
 func updateAppPICS(app *mongo.App, message *rabbit.Message, payload AppMessage) (err error) {

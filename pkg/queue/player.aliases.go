@@ -50,7 +50,7 @@ func playerAliasesHandler(message *rabbit.Message) {
 
 	aliases, err := steam.GetSteam().GetAliases(payload.PlayerID)
 	if err == steamapi.ErrProfileMissing {
-		message.Ack(false)
+		message.Ack()
 		return
 	}
 	err = steam.AllowSteamCodes(err)
@@ -114,5 +114,5 @@ func playerAliasesHandler(message *rabbit.Message) {
 		return
 	}
 
-	message.Ack(false)
+	message.Ack()
 }

@@ -102,7 +102,7 @@ func changesHandler(message *rabbit.Message) {
 	// err = sendChangeToDiscord(changeSlice, appMap, packageMap)
 	// log.Err(err)
 
-	message.Ack(false)
+	message.Ack()
 }
 
 func saveChangesToMongo(changes []*mongo.Change) (err error) {

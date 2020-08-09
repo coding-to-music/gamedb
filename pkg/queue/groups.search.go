@@ -27,7 +27,7 @@ func groupsSearchHandler(message *rabbit.Message) {
 	}
 
 	if payload.Group.Type != helpers.GroupTypeGroup {
-		message.Ack(false)
+		message.Ack()
 		return
 	}
 
@@ -51,5 +51,5 @@ func groupsSearchHandler(message *rabbit.Message) {
 		return
 	}
 
-	message.Ack(false)
+	message.Ack()
 }

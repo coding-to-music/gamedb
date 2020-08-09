@@ -33,7 +33,7 @@ func appYoutubeHandler(message *rabbit.Message) {
 	payload.Name = strings.TrimSpace(payload.Name)
 
 	if payload.Name == "" {
-		message.Ack(false)
+		message.Ack()
 		return
 	}
 
@@ -109,5 +109,5 @@ func appYoutubeHandler(message *rabbit.Message) {
 		}
 	}
 
-	message.Ack(false)
+	message.Ack()
 }

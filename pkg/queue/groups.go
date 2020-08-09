@@ -51,12 +51,12 @@ func groupsHandler(message *rabbit.Message) {
 	}
 
 	if payload.ID == "" {
-		message.Ack(false)
+		message.Ack()
 		return
 	}
 
 	if payload.UserAgent != nil && helpers.IsBot(*payload.UserAgent) {
-		message.Ack(false)
+		message.Ack()
 		return
 	}
 
@@ -84,7 +84,7 @@ func groupsHandler(message *rabbit.Message) {
 
 	// Skip if updated recently
 	if !config.IsLocal() && !group.ShouldUpdate() {
-		message.Ack(false)
+		message.Ack()
 		return
 	}
 
@@ -94,7 +94,7 @@ func groupsHandler(message *rabbit.Message) {
 		group.Type, group.URL, err = getGroupType(payload.ID)
 		if err == helpers.ErrInvalidGroupID {
 
-			message.Ack(false)
+			message.Ack()
 			return
 
 		} else if err != nil {
@@ -251,7 +251,7 @@ func groupsHandler(message *rabbit.Message) {
 	}
 
 	//
-	message.Ack(false)
+	message.Ack()
 }
 func updateGameGroup(id string, group *mongo.Group) (foundNumbers bool, err error) {
 

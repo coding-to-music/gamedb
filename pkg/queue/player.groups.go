@@ -66,7 +66,7 @@ func playersGroupsHandler(message *rabbit.Message) {
 	newGroupsResponse, err := steam.GetSteam().GetUserGroupList(payload.Player.ID)
 
 	if err == steamapi.ErrProfileMissing || err == steamapi.ErrProfilePrivate {
-		message.Ack(false)
+		message.Ack()
 		return
 	}
 
@@ -180,5 +180,5 @@ func playersGroupsHandler(message *rabbit.Message) {
 		return
 	}
 
-	message.Ack(false)
+	message.Ack()
 }

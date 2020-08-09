@@ -112,7 +112,7 @@ func appPlayersHandler(message *rabbit.Message) {
 	}
 
 	//
-	message.Ack(false)
+	message.Ack()
 }
 
 func getAppTwitchStreamers(twitchID int) (viewers int, err error) {

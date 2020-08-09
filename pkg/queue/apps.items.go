@@ -39,7 +39,7 @@ func appItemsHandler(message *rabbit.Message) {
 	}
 
 	if meta.Response.Digest == "" || meta.Response.Digest == payload.OldDigect {
-		message.Ack(false)
+		message.Ack()
 		return
 	}
 
@@ -164,5 +164,5 @@ func appItemsHandler(message *rabbit.Message) {
 	}
 
 	//
-	message.Ack(false)
+	message.Ack()
 }

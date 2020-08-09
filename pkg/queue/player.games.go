@@ -221,5 +221,5 @@ func playerGamesHandler(message *rabbit.Message) {
 		return
 	}
 
-	message.Ack(false)
+	message.Ack()
 }

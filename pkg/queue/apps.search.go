@@ -85,7 +85,7 @@ func appsSearchHandler(message *rabbit.Message) {
 		return
 	}
 
-	message.Ack(false)
+	message.Ack()
 }
 
 var aliasMap = map[int][]string{

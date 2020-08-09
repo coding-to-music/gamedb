@@ -25,5 +25,5 @@ func testHandler(message *rabbit.Message) {
 
 	log.Info(payload.ID, time.Now().String())
 
-	message.Ack(false)
+	message.Ack()
 }

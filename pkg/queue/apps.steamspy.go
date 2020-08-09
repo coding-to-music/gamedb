@@ -123,5 +123,5 @@ func appSteamspyHandler(message *rabbit.Message) {
 	}
 
 	//
-	message.Ack(false)
+	message.Ack()
 }

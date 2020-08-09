@@ -136,5 +136,5 @@ func playerRanksHandler(message *rabbit.Message) {
 		offset += batchSize
 	}
 
-	message.Ack(false)
+	message.Ack()
 }

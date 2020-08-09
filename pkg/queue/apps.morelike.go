@@ -56,7 +56,7 @@ func appMorelikeHandler(message *rabbit.Message) {
 	}
 
 	if len(relatedAppIDs) == 0 {
-		message.Ack(false)
+		message.Ack()
 		return
 	}
 
@@ -82,5 +82,5 @@ func appMorelikeHandler(message *rabbit.Message) {
 		return
 	}
 
-	message.Ack(false)
+	message.Ack()
 }

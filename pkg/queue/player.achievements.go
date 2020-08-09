@@ -111,7 +111,7 @@ func playerAchievementsHandler(message *rabbit.Message) {
 			return
 		}
 
-		message.Ack(false)
+		message.Ack()
 		return
 	}
 
@@ -119,7 +119,7 @@ func playerAchievementsHandler(message *rabbit.Message) {
 
 	_, err = memcache.Get(item.Key)
 	if err == nil {
-		message.Ack(false)
+		message.Ack()
 		return
 	}
 
@@ -155,7 +155,7 @@ func playerAchievementsHandler(message *rabbit.Message) {
 
 	// Skip private profiles
 	if val, ok := err.(steamapi.Error); ok && val.Code == 403 {
-		message.Ack(false)
+		message.Ack()
 		return
 	}
 
@@ -173,7 +173,7 @@ func playerAchievementsHandler(message *rabbit.Message) {
 			log.Err(err)
 		}
 
-		message.Ack(false)
+		message.Ack()
 		return
 	}
 
@@ -279,5 +279,5 @@ func playerAchievementsHandler(message *rabbit.Message) {
 		return
 	}
 
-	message.Ack(false)
+	message.Ack()
 }

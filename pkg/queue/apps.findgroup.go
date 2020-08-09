@@ -52,7 +52,7 @@ func appsFindGroupHandler(message *rabbit.Message) {
 	}
 
 	if groupID == "" {
-		message.Ack(false)
+		message.Ack()
 		return
 	}
 
@@ -84,5 +84,5 @@ func appsFindGroupHandler(message *rabbit.Message) {
 	}
 
 	//
-	message.Ack(false)
+	message.Ack()
 }

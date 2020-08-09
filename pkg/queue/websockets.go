@@ -141,7 +141,7 @@ func websocketHandler(message *rabbit.Message) {
 	}
 
 	//
-	message.Ack(false)
+	message.Ack()
 }
 type IntPayload struct {
 	ID int `json:"id"`

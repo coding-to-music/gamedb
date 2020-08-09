@@ -21,7 +21,7 @@ func (m AppSameownersMessage) Queue() rabbit.QueueName {
 
 func appSameownersHandler(message *rabbit.Message) {
 
-	message.Ack(false)
+	message.Ack()
 	return
 
 	payload := AppSameownersMessage{}
@@ -41,7 +41,7 @@ func appSameownersHandler(message *rabbit.Message) {
 	}
 
 	if len(ownerRows) == 0 {
-		message.Ack(false)
+		message.Ack()
 		return
 	}
 
@@ -106,5 +106,5 @@ func appSameownersHandler(message *rabbit.Message) {
 	}
 
 	//
-	message.Ack(false)
+	message.Ack()
 }

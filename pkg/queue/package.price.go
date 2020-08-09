@@ -43,7 +43,7 @@ func packagePriceHandler(message *rabbit.Message) {
 	response, err := steam.GetSteam().GetPackageDetails(payload.PackageID, productCC.ProductCode, steamapi.LanguageEnglish)
 	err = steam.AllowSteamCodes(err)
 	if err == steamapi.ErrPackageNotFound {
-		message.Ack(false)
+		message.Ack()
 		return
 	}
 	if err != nil {
@@ -149,5 +149,5 @@ func packagePriceHandler(message *rabbit.Message) {
 	wg.Wait()
 
 	//
-	message.Ack(false)
+	message.Ack()
 }

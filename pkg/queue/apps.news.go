@@ -41,7 +41,7 @@ func appNewsHandler(message *rabbit.Message) {
 	}
 
 	if len(resp.Items) == 0 {
-		message.Ack(false)
+		message.Ack()
 		return
 	}
 
@@ -136,5 +136,5 @@ func appNewsHandler(message *rabbit.Message) {
 		return
 	}
 
-	message.Ack(false)
+	message.Ack()
 }

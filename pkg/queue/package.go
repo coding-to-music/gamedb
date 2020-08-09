@@ -41,7 +41,7 @@ func packageHandler(message *rabbit.Message) {
 	}
 
 	if !helpers.IsValidPackageID(payload.ID) {
-		message.Ack(false)
+		message.Ack()
 		return
 	}
 
@@ -63,7 +63,7 @@ func packageHandler(message *rabbit.Message) {
 		log.Err(err)
 
 		log.Info("Skipping package, updated " + s + " ago")
-		message.Ack(false)
+		message.Ack()
 		return
 	}
 
@@ -256,7 +256,7 @@ func packageHandler(message *rabbit.Message) {
 	}
 
 	//
-	message.Ack(false)
+	message.Ack()
 }
 func updatePackageNameFromApp(pack *mongo.Package) (err error) {
 

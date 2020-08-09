@@ -44,25 +44,25 @@ func playerHandler(message *rabbit.Message) {
 	}
 
 	if payload.ID == 0 {
-		message.Ack(false)
+		message.Ack()
 		return
 	}
 
 	if payload.UserAgent != nil && helpers.IsBot(*payload.UserAgent) {
-		message.Ack(false)
+		message.Ack()
 		return
 	}
 
 	payload.ID, err = helpers.IsValidPlayerID(payload.ID)
 	if err != nil {
-		message.Ack(false)
+		message.Ack()
 		return
 	}
 
 	// Update player
 	player, err := mongo.GetPlayer(payload.ID)
 	if err == nil && payload.SkipExistingPlayer {
-		message.Ack(false)
+		message.Ack()
 		return
 	}
 	newPlayer := err == mongo.ErrNoDocuments
@@ -101,7 +101,7 @@ func playerHandler(message *rabbit.Message) {
 
 	// Skip removed players
 	if player.Removed {
-		message.Ack(false)
+		message.Ack()
 		return
 	}
 
@@ -118,7 +118,7 @@ func playerHandler(message *rabbit.Message) {
 		if err != nil {
 
 			if err == steamapi.ErrProfileMissing {
-				message.Ack(false)
+				message.Ack()
 			} else {
 				steam.LogSteamError(err, payload.ID)
 				sendToRetryQueue(message)
@@ -354,7 +354,7 @@ func playerHandler(message *rabbit.Message) {
 	}
 
 	//
-	message.Ack(false)
+	message.Ack()
 }
 func updatePlayerSummary(player *mongo.Player) error {
 

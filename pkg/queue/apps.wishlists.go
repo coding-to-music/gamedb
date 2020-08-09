@@ -123,5 +123,5 @@ func appWishlistsHandler(message *rabbit.Message) {
 	}
 
 	//
-	message.Ack(false)
+	message.Ack()
 }

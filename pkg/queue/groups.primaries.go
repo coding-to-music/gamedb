@@ -36,7 +36,7 @@ func groupPrimariesHandler(message *rabbit.Message) {
 	}
 
 	if payload.Group.Primaries == int(prims) {
-		message.Ack(false)
+		message.Ack()
 		return
 	}
 
@@ -73,5 +73,5 @@ func groupPrimariesHandler(message *rabbit.Message) {
 		return
 	}
 
-	message.Ack(false)
+	message.Ack()
 }

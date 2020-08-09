@@ -114,7 +114,7 @@ func bundleHandler(message *rabbit.Message) {
 		return
 	}
 
-	message.Ack(false)
+	message.Ack()
 }
 func updateBundle(bundle *mysql.Bundle) (err error) {
 

@@ -40,7 +40,7 @@ func appTwitchHandler(message *rabbit.Message) {
 	}
 
 	if (app.TwitchID > 0 && app.TwitchURL != "") || app.Name == "" {
-		message.Ack(false)
+		message.Ack()
 		return
 	}
 
@@ -59,7 +59,7 @@ func appTwitchHandler(message *rabbit.Message) {
 	}
 
 	if len(resp.Data.Games) == 0 {
-		message.Ack(false)
+		message.Ack()
 		return
 	}
 
@@ -89,5 +89,5 @@ func appTwitchHandler(message *rabbit.Message) {
 		return
 	}
 
-	message.Ack(false)
+	message.Ack()
 }

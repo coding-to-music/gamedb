@@ -71,5 +71,5 @@ func appsPlayersHandler(message *rabbit.Message) {
 		return
 	}
 
-	message.Ack(false)
+	message.Ack()
 }
