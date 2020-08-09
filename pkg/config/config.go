@@ -372,6 +372,14 @@ func (ci ConfigItem) GetInt() int {
 	return i
 }
 
+func (ci ConfigItem) GetInt64() int64 {
+	i, err := strconv.ParseInt(ci.Get(), 10, 64)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return i
+}
+
 //
 func RabbitDSN() string {
 	return "amqp://" + Config.RabbitUsername.Get() + ":" + Config.RabbitPassword.Get() + "@" + Config.RabbitHost.Get() + ":" + Config.RabbitPort.Get()

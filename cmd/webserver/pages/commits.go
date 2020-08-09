@@ -1,9 +1,7 @@
 package pages
 
 import (
-	"errors"
 	"net/http"
-	"sync"
 	"time"
 
 	"github.com/cenkalti/backoff/v4"
@@ -41,97 +39,56 @@ const commitsLimit = 100
 
 func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	query := datatable.NewDataTableQuery(r, true)
-
-	client, ctx := githubHelper.GetGithub()
-
-	var wg sync.WaitGroup
-
+	var query = datatable.NewDataTableQuery(r, true)
 	var commits []*github.RepositoryCommit
-	wg.Add(1)
-	go func() {
+	var item = memcache.MemcacheCommitsPage(query.GetPage(commitsLimit))
 
-		defer wg.Done()
+	err := memcache.GetSetInterface(item.Key, item.Expiration, &commits, func() (interface{}, error) {
 
-		var err error
-		var item = memcache.MemcacheCommitsPage(query.GetPage(commitsLimit))
+		client, ctx := githubHelper.GetGithub()
 
-		err = memcache.GetSetInterface(item.Key, item.Expiration, &commits, func() (interface{}, error) {
+		operation := func() (err error) {
 
-			operation := func() (err error) {
+			commits, _, err = client.Repositories.ListCommits(ctx, "gamedb", "website", &github.CommitsListOptions{
+				ListOptions: github.ListOptions{
+					Page:    query.GetPage(commitsLimit),
+					PerPage: commitsLimit,
+				},
+			})
+			return err
+		}
 
-				commits, _, err = client.Repositories.ListCommits(ctx, "gamedb", "website", &github.CommitsListOptions{
-					ListOptions: github.ListOptions{
-						Page:    query.GetPage(commitsLimit),
-						PerPage: commitsLimit,
-					},
-				})
-				return err
-			}
+		policy := backoff.NewExponentialBackOff()
+		policy.InitialInterval = time.Second
 
-			policy := backoff.NewExponentialBackOff()
-			policy.InitialInterval = time.Second
-
-			err := backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 5), func(err error, t time.Duration) { log.Info(err) })
-			return commits, err
-		})
-		log.Err(err, r)
-	}()
-
-	var total int
-	wg.Add(1)
-	go func() {
-
-		defer wg.Done()
-
-		var err error
-		var item = memcache.MemcacheCommitsTotal
-
-		err = memcache.GetSetInterface(item.Key, item.Expiration, &total, func() (interface{}, error) {
-
-			operation := func() (err error) {
-
-				contributors, _, err := client.Repositories.ListContributorsStats(ctx, "gamedb", "gamedb")
-				if err != nil { // github.AcceptedError
-					return err
-				}
-				for _, v := range contributors {
-					total += v.GetTotal()
-				}
-				if total == 0 {
-					return errors.New("no commits found")
-				}
-				return nil
-			}
-
-			policy := backoff.NewExponentialBackOff()
-			policy.InitialInterval = time.Second
-
-			err := backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 5), func(err error, t time.Duration) { log.Info(err) })
-			return total, err
-		})
-		log.Err(err, r)
-	}()
-
-	wg.Wait()
+		err := backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 5), func(err error, t time.Duration) { log.Info(err) })
+		return commits, err
+	})
+	log.Err(err, r)
 
 	//
+	var total = config.Config.Commits.GetInt()
 	var deployed bool
 	var response = datatable.NewDataTablesResponse(r, query, int64(total), int64(total), nil)
-	for _, commit := range commits {
+	for k, commit := range commits {
+
+		var date = commit.GetCommit().GetAuthor().GetDate().Format(helpers.DateTime)
+		var unix = commit.GetCommit().GetAuthor().GetDate().Unix()
+		var current = commit.GetSHA() == config.Config.CommitHash.Get()
 
 		if commit.GetSHA() == config.Config.CommitHash.Get() {
 			deployed = true
 		}
 
 		response.AddRow([]interface{}{
-			commit.GetCommit().GetMessage(),                 // 0
-			commit.GetCommit().GetAuthor().GetDate().Unix(), // 1
-			deployed,            // 2
-			commit.GetHTMLURL(), // 3
-			commit.GetSHA() == config.Config.CommitHash.Get(),                 // 4
-			commit.GetSHA()[0:7],                                              // 5
-			commit.GetCommit().GetAuthor().GetDate().Format(helpers.DateTime), // 6
+			commit.GetCommit().GetMessage(), // 0
+			unix,                            // 1
+			deployed,                        // 2
+			commit.GetHTMLURL(),             // 3
+			current,                         // 4
+			commit.GetSHA()[0:7],            // 5
+			date,                            // 6
+			total - query.GetOffset() + k,   // 7
 		})
 	}
 
