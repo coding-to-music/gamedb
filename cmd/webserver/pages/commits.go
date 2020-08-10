@@ -68,7 +68,6 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	//
 	var total = config.Config.Commits.GetInt()
-	var deployed bool
 	var response = datatable.NewDataTablesResponse(r, query, int64(total), int64(total), nil)
 	for k, commit := range commits {
 
@@ -76,19 +75,15 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var unix = commit.GetCommit().GetAuthor().GetDate().Unix()
 		var current = commit.GetSHA() == config.Config.CommitHash.Get()
 
-		if commit.GetSHA() == config.Config.CommitHash.Get() {
-			deployed = true
-		}
-
 		response.AddRow([]interface{}{
 			commit.GetCommit().GetMessage(), // 0
 			unix,                            // 1
-			deployed,                        // 2
+			config.Config.Commits.GetInt(),  // 2
 			commit.GetHTMLURL(),             // 3
 			current,                         // 4
 			commit.GetSHA()[0:7],            // 5
 			date,                            // 6
-			total - query.GetOffset() + k,   // 7
+			total - (query.GetOffset() + k), // 7
 		})
 	}
 

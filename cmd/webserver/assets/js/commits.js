@@ -5,9 +5,6 @@ if ($('#commits-page').length > 0) {
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-link', data[3]);
             $(row).attr('data-target', '_blank');
-            if (data[4]) {
-                $(row).addClass('table-success');
-            }
         },
         "columnDefs": [
             // Message
@@ -53,15 +50,10 @@ if ($('#commits-page').length > 0) {
             {
                 "targets": 4,
                 "render": function (data, type, row) {
-
-                    if (page === null) {
-                        page = $table.DataTable().page.info().page;
-                    }
-
-                    if (row[2] || page > 0) {
-                        return '<i class="fas fa-check"></i>';
+                    if (row[7] <= row[2]) {
+                        return '<i class="fas fa-check text-success"></i>';
                     } else {
-                        return '<i class="fas fa-times"></i>';
+                        return '<i class="fas fa-times text-danger"></i>';
                     }
                 },
                 "orderable": false,
