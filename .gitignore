@@ -1,22 +1,10 @@
-# Binaries
-/cmd/chatbot/chatbot
-/cmd/consumers/consumers
-/cmd/crons/crons
-/cmd/webserver/webserver
-/cmd/steam/steam
-/cmd/test/test
-/cmd/scaler/scaler
-
-# Modd
-run
-modd.conf
-
 # Source maps
 /cmd/webserver/assets/dist/main.css.map
 /cmd/webserver/assets/dist/main.js.map
 
 # Vendors
 /node_modules/
+/vendor/
 
 # Caches
 /cmd/webserver/cache/

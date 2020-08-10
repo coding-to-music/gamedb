@@ -1,0 +1,16 @@
+{
+    "verbose": false,
+    "ignore": [
+        ".git",
+        "node_modules/*"
+    ],
+    "execMap": {
+        "go": "go"
+    },
+    "ext": "go",
+    "watch": [
+        "*.go"
+    ],
+    "events": {
+    }
+}
