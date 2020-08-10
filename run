@@ -4,5 +4,5 @@ CMD=${1:-"webserver"}
 
 nodemon \
   --signal SIGHUP \
-  --exec "go run -ldflags \"-X main.version=$(git rev-parse --verify HEAD) -X main.commits=$(git rev-list --count master)\"" \
-  "./cmd/$CMD/main.go"
+  --exec "cd ./cmd/$CMD/ && go run -ldflags \"-X main.version=$(git rev-parse --verify HEAD) -X main.commits=$(git rev-list --count master)\"" \
+  "main.go"
