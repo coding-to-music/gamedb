@@ -184,7 +184,7 @@ func getPlayerGroups(offset int64, limit int64, filter bson.D, sort bson.D) (pla
 		var group PlayerGroup
 		err := cur.Decode(&group)
 		if err != nil {
-			// log.Err(err, group.getKey(), cur.Current.String())
+			log.Err(err, group.getKey(), cur.Current.String())
 		} else {
 			players = append(players, group)
 		}
