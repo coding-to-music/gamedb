@@ -3,7 +3,6 @@ package queue
 import (
 	"encoding/json"
 	"strconv"
-	"sync"
 	"time"
 
 	"github.com/Jleagle/influxql"
@@ -28,7 +27,7 @@ func (m AppInfluxMessage) Queue() rabbit.QueueName {
 func appInfluxHandler(message *rabbit.Message) {
 
 	// Sleep to not cause influx memory to spike too much
-	time.Sleep(time.Second * 5)
+	time.Sleep(time.Second * 2)
 
 	payload := AppInfluxMessage{}
 
@@ -44,76 +43,31 @@ func appInfluxHandler(message *rabbit.Message) {
 		return
 	}
 
-	var wg sync.WaitGroup
+	// appPlayersWeekAverage, err := getAppAveragePlayersWeek(payload.AppIDs)
+	// if err != nil {
+	// 	log.Err(err, message.Message.Body)
+	// 	sendToRetryQueue(message)
+	// 	return
+	// }
 
-	wg.Add(1)
-	var appPlayersWeek = map[int]int64{}
-	go func() {
+	// appPlayersAlltime, err := getAppTopPlayersAlltime(payload.AppIDs)
+	// if err != nil {
+	// 	log.Err(err, message.Message.Body)
+	// 	sendToRetryQueue(message)
+	// 	return
+	// }
 
-		defer wg.Done()
-
-		var err error
-		appPlayersWeek, err = getAppTopPlayersWeek(payload.AppIDs)
-		if err != nil {
-			log.Err(err, message.Message.Body)
-			sendToRetryQueue(message)
-			return
-		}
-	}()
-
-	// wg.Add(1)
-	// var appPlayersWeekAverage map[int]float64
-	// go func() {
-	//
-	// 	defer wg.Done()
-	//
-	// 	var err error
-	// 	appPlayersWeekAverage, err = getAppAveragePlayersWeek(payload.AppIDs)
-	// 	if err != nil {
-	// 		log.Err(err, message.Message.Body)
-	// 		sendToRetryQueue(message)
-	// 		return
-	// 	}
-	// }()
-
-	// wg.Add(1)
-	// var appPlayersAlltime map[int]int64
-	// go func() {
-	//
-	// 	defer wg.Done()
-	//
-	// 	var err error
-	// 	appPlayersAlltime, err = getAppTopPlayersAlltime(payload.AppIDs)
-	// 	if err != nil {
-	// 		log.Err(err, message.Message.Body)
-	// 		sendToRetryQueue(message)
-	// 		return
-	// 	}
-	// }()
-
-	wg.Add(1)
-	var appTrend map[int]float64
-	go func() {
-
-		defer wg.Done()
-
-		var err error
-		appTrend, err = getAppTrendValue(payload.AppIDs)
-		if err != nil {
-			log.Err(err, message.Message.Body)
-			sendToRetryQueue(message)
-			return
-		}
-	}()
-
-	wg.Wait()
-
-	if message.ActionTaken {
+	appPlayersWeek, err := getAppTopPlayersWeek(payload.AppIDs)
+	if err != nil {
+		log.Err(err, message.Message.Body)
+		sendToRetryQueue(message)
 		return
 	}
 
-	if len(payload.AppIDs) == 0 {
-		message.Ack()
+	appTrend, err := getAppTrendValue(payload.AppIDs)
+	if err != nil {
+		log.Err(err, message.Message.Body)
+		sendToRetryQueue(message)
 		return
 	}
 
@@ -123,14 +77,6 @@ func appInfluxHandler(message *rabbit.Message) {
 
 		update := bson.M{}
 
-		if val, ok := appTrend[appID]; ok {
-			update["player_trend"] = val
-		}
-
-		if val, ok := appPlayersWeek[appID]; ok {
-			update["player_peak_week"] = val
-		}
-
 		// if val, ok := appPlayersAlltime[appID]; ok {
 		// 	update["player_peak_alltime"] = val
 		// }
@@ -138,6 +84,14 @@ func appInfluxHandler(message *rabbit.Message) {
 		// if val, ok := appPlayersWeekAverage[appID]; ok {
 		// 	update["player_avg_week"] = val
 		// }
+
+		if val, ok := appPlayersWeek[appID]; ok {
+			update["player_peak_week"] = val
+		}
+
+		if val, ok := appTrend[appID]; ok {
+			update["player_trend"] = val
+		}
 
 		if len(update) > 0 {
 
