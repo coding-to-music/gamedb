@@ -10,6 +10,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/steam"
 	"github.com/gamedb/gamedb/pkg/twitch"
@@ -34,7 +35,7 @@ func appPlayersHandler(message *rabbit.Message) {
 	}
 
 	// Get apps
-	apps, err := mongo.GetAppsByID(payload.IDs, bson.M{"_id": 1, "twitch_id": 1})
+	apps, err := mongo.GetAppsByID(payload.IDs, bson.M{"_id": 1, "twitch_id": 1, "player_peak_week": 1, "player_peak_alltime": 1})
 	if err != nil {
 		log.Err(err, payload.IDs)
 		sendToRetryQueue(message)
@@ -103,6 +104,42 @@ func appPlayersHandler(message *rabbit.Message) {
 				return
 			}
 		}()
+
+		// Update app row
+		if inGame > app.PlayerPeakAllTime {
+
+			wg.Add(1)
+			go func() {
+
+				defer wg.Done()
+
+				filter := bson.D{{"_id", app.ID}}
+				update := bson.D{{"player_peak_alltime", inGame}}
+
+				_, err = mongo.UpdateOne(mongo.CollectionApps, filter, update)
+				if err != nil {
+					log.Err(err, app.ID)
+					sendToRetryQueue(message)
+					return
+				}
+
+				// Clear cache
+				err = memcache.Delete(memcache.MemcacheApp(app.ID).Key)
+				if err != nil {
+					log.Err(err, app.ID)
+					sendToRetryQueue(message)
+					return
+				}
+
+				// Update in Elastic
+				err = ProduceAppSearch(nil, app.ID)
+				if err != nil {
+					log.Err(err, app.ID)
+					sendToRetryQueue(message)
+					return
+				}
+			}()
+		}
 
 		wg.Wait()
 

@@ -76,20 +76,20 @@ func appInfluxHandler(message *rabbit.Message) {
 	// 	}
 	// }()
 
-	wg.Add(1)
-	var appPlayersAlltime map[int]int64
-	go func() {
-
-		defer wg.Done()
-
-		var err error
-		appPlayersAlltime, err = getAppTopPlayersAlltime(payload.AppIDs)
-		if err != nil {
-			log.Err(err, message.Message.Body)
-			sendToRetryQueue(message)
-			return
-		}
-	}()
+	// wg.Add(1)
+	// var appPlayersAlltime map[int]int64
+	// go func() {
+	//
+	// 	defer wg.Done()
+	//
+	// 	var err error
+	// 	appPlayersAlltime, err = getAppTopPlayersAlltime(payload.AppIDs)
+	// 	if err != nil {
+	// 		log.Err(err, message.Message.Body)
+	// 		sendToRetryQueue(message)
+	// 		return
+	// 	}
+	// }()
 
 	wg.Add(1)
 	var appTrend map[int]float64
@@ -131,9 +131,9 @@ func appInfluxHandler(message *rabbit.Message) {
 			update["player_peak_week"] = val
 		}
 
-		if val, ok := appPlayersAlltime[appID]; ok {
-			update["player_peak_alltime"] = val
-		}
+		// if val, ok := appPlayersAlltime[appID]; ok {
+		// 	update["player_peak_alltime"] = val
+		// }
 
 		// if val, ok := appPlayersWeekAverage[appID]; ok {
 		// 	update["player_avg_week"] = val
