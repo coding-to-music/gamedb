@@ -1,7 +1,6 @@
 package tasks
 
 import (
-	"runtime"
 	"strconv"
 	"time"
 
@@ -185,8 +184,6 @@ func Run(task TaskInterface) {
 
 		log.Info("Cron finished: " + task.ID())
 	}
-
-	runtime.GC()
 }
 
 func GetTaskConfig(task TaskInterface) (config mysql.Config, err error) {
