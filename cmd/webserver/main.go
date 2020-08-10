@@ -187,7 +187,7 @@ func main() {
 	// 404
 	r.NotFound(pages.Error404Handler)
 
-	log.Info("Starting Webserver on " + "http://"+config.ListenOn())
+	log.Info("Starting Webserver on " + "http://" + config.ListenOn())
 
 	s := &http.Server{
 		Addr:              config.ListenOn(),
