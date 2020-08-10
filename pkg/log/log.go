@@ -30,12 +30,13 @@ const (
 	LogNameScaler    LogName = "binary-scaler"
 
 	// Others
-	LogNameMongo         LogName = "mongo"
-	LogNameRabbit        LogName = "rabbit"
-	LogNameRequests      LogName = "requests"
-	LogNameSQL           LogName = "sql"
-	LogNameTriggerUpdate LogName = "trigger-update"
-	LogNameSteamErrors   LogName = "steam-errors"
+	LogNameMongo          LogName = "mongo"
+	LogNameRabbit         LogName = "rabbit"
+	LogNameRequests       LogName = "requests"
+	LogNameSQL            LogName = "sql"
+	LogNameTriggerUpdate  LogName = "trigger-update"
+	LogNameSteamErrors    LogName = "steam-errors"
+	LogNameWebhooksGitHub LogName = "webhooks-github"
 	// LogNameInflux        LogName = "influx"
 )
 

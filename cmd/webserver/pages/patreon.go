@@ -105,6 +105,8 @@ func gitHubWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	log.Info(body, log.LogNameWebhooksGitHub)
+
 	defer log.Err(r.Body.Close())
 
 	//
