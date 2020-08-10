@@ -114,7 +114,10 @@ func appPlayersHandler(message *rabbit.Message) {
 				defer wg.Done()
 
 				filter := bson.D{{"_id", app.ID}}
-				update := bson.D{{"player_peak_alltime", inGame}}
+				update := bson.D{
+					{"player_peak_alltime", inGame},
+					{"player_peak_alltime_time", time.Now()},
+				}
 
 				_, err = mongo.UpdateOne(mongo.CollectionApps, filter, update)
 				if err != nil {

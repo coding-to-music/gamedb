@@ -80,6 +80,7 @@ type App struct {
 	Platforms                     []string                       `bson:"platforms"`
 	PlayerAverageWeek             float64                        `bson:"player_avg_week"`
 	PlayerPeakAllTime             int                            `bson:"player_peak_alltime"`
+	PlayerPeakAllTimeTime         time.Time                      `bson:"player_peak_alltime_time"`
 	PlayerPeakWeek                int                            `bson:"player_peak_week"`
 	PlayerTrend                   float64                        `bson:"player_trend"`
 	PlaytimeAverage               float64                        `bson:"playtime_average"` // Minutes
@@ -170,6 +171,7 @@ func (app App) BSON() bson.D {
 		{"platforms", app.Platforms},
 		{"player_avg_week", app.PlayerAverageWeek},
 		{"player_peak_alltime", app.PlayerPeakAllTime},
+		{"player_peak_alltime_time", app.PlayerPeakAllTimeTime},
 		{"player_peak_week", app.PlayerPeakWeek},
 		{"player_trend", app.PlayerTrend},
 		{"playtime_average", app.PlaytimeAverage},
