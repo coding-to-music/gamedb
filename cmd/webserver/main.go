@@ -125,8 +125,8 @@ func main() {
 	r.Mount("/signup", pages.SignupRouter())
 	r.Mount("/stats", pages.StatsRouter())
 	r.Mount("/tags", pages.TagsRouter())
-	r.Mount("/webhooks", pages.WebhooksRouter())
 	r.Mount("/terms", pages.TermsRouter())
+	r.Mount("/webhooks", pages.WebhooksRouter())
 	r.Mount("/websocket", pages.WebsocketsRouter())
 
 	// Assets
