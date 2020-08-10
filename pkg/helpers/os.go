@@ -10,7 +10,10 @@ func KeepAlive() {
 
 	var signals = []os.Signal{
 		syscall.SIGTERM,
-		os.Interrupt,
+		syscall.SIGHUP,
+		syscall.SIGQUIT,
+		syscall.SIGINT,
+		syscall.SIGKILL,
 	}
 
 	signalsChan := make(chan os.Signal, len(signals))
