@@ -62,30 +62,26 @@ func (c CommandPlayerUpdate) Output(msg *discordgo.MessageCreate) (message disco
 			log.Err(err)
 
 			message.Content = "Player queued: https://gamedb.online/p" + user.SteamID.String
-			return message, nil
-
 		} else {
 			message.Content = "You need to link your **Steam** account for us to know who you are: https://gamedb.online/settings"
-			return message, nil
 		}
-
-	} else {
-
-		player, _, err := mongo.SearchPlayer(matches[1], nil)
-		if err == mongo.ErrNoDocuments {
-
-			message.Content = "Player **" + matches[1] + "** not found, please enter a user's vanity URL"
-			return message, nil
-
-		} else if err != nil {
-			return message, err
-		}
-
-		err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID})
-		err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
-		log.Err(err)
-
-		message.Content = "Player queued: https://gamedb.online/p" + strconv.FormatInt(player.ID, 10)
 		return message, nil
 	}
+
+	player, _, err := mongo.SearchPlayer(matches[1], nil)
+	if err == mongo.ErrNoDocuments {
+
+		message.Content = "Player **" + matches[1] + "** not found, please enter a user's vanity URL"
+		return message, nil
+
+	} else if err != nil {
+		return message, err
+	}
+
+	err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID})
+	err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
+	log.Err(err)
+
+	message.Content = "Player queued: https://gamedb.online/p" + strconv.FormatInt(player.ID, 10)
+	return message, nil
 }

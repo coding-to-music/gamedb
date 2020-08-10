@@ -378,7 +378,7 @@ func GetRandomRows(collection collection, count int, filter bson.D, projection b
 	return c, ctx, err
 }
 
-type count struct {
+type Count struct {
 	ID    int `json:"id" bson:"_id"`
 	Count int `json:"count"`
 }

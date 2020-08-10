@@ -22,11 +22,11 @@ func IsBadgeGame(appID int) bool {
 }
 
 func GetBadgeUniqueID(appID int, badgeID int) int {
+
 	if IsBadgeSpecial(appID) {
 		return badgeID
-	} else {
-		return appID
 	}
+	return appID
 }
 
 func GetBadgeName(badgeName string, uniqueID int) string {

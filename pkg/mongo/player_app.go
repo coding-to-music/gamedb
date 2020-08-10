@@ -85,9 +85,8 @@ func (app PlayerApp) GetPriceFormatted(code steamapi.ProductCC) string {
 	val, ok := app.AppPrices[string(code)]
 	if ok {
 		return i18n.FormatPrice(i18n.GetProdCC(code).CurrencyCode, val)
-	} else {
-		return "-"
 	}
+	return "-"
 }
 
 func (app PlayerApp) GetPriceHourFormatted(code steamapi.ProductCC) string {
@@ -98,9 +97,8 @@ func (app PlayerApp) GetPriceHourFormatted(code steamapi.ProductCC) string {
 			return "∞"
 		}
 		return i18n.FormatPrice(i18n.GetProdCC(code).CurrencyCode, int(math.Round(val)))
-	} else {
-		return "-"
 	}
+	return "-"
 }
 
 func (app PlayerApp) GetAchievementPercent() string {

@@ -63,9 +63,9 @@ func (c StatsDevelopers) work() (err error) {
 	newDevelopers := make(map[int]*statsRow)
 	for _, app := range appsWithDevelopers {
 
-		if len(app.Developers) == 0 {
-			// appDevelopers = []string{""}
-		}
+		// if len(app.Developers) == 0 {
+		// 	appDevelopers = []string{""}
+		// }
 
 		// For each developer in an app
 		for _, appDeveloperID := range app.Developers {

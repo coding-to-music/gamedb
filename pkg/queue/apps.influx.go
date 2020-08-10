@@ -198,7 +198,7 @@ func getAppTopPlayersWeek(appIDs []int) (vals map[int]int64, err error) {
 	vals = map[int]int64{}
 	for _, v := range resp.Results[0].Series {
 
-		appId, err := strconv.Atoi(v.Tags["app_id"])
+		appID, err := strconv.Atoi(v.Tags["app_id"])
 		if err != nil {
 			log.Err(err)
 			continue
@@ -210,7 +210,7 @@ func getAppTopPlayersWeek(appIDs []int) (vals map[int]int64, err error) {
 			continue
 		}
 
-		vals[appId] = val
+		vals[appID] = val
 	}
 
 	return vals, err
@@ -234,7 +234,7 @@ func getAppAveragePlayersWeek(appIDs []int) (vals map[int]float64, err error) {
 	vals = map[int]float64{}
 	for _, v := range resp.Results[0].Series {
 
-		appId, err := strconv.Atoi(v.Tags["app_id"])
+		appID, err := strconv.Atoi(v.Tags["app_id"])
 		if err != nil {
 			log.Err(err)
 			continue
@@ -246,7 +246,7 @@ func getAppAveragePlayersWeek(appIDs []int) (vals map[int]float64, err error) {
 			continue
 		}
 
-		vals[appId] = val
+		vals[appID] = val
 	}
 
 	return vals, err
@@ -269,7 +269,7 @@ func getAppTopPlayersAlltime(appIDs []int) (vals map[int]int64, err error) {
 	vals = map[int]int64{}
 	for _, v := range resp.Results[0].Series {
 
-		appId, err := strconv.Atoi(v.Tags["app_id"])
+		appID, err := strconv.Atoi(v.Tags["app_id"])
 		if err != nil {
 			log.Err(err)
 			continue
@@ -281,7 +281,7 @@ func getAppTopPlayersAlltime(appIDs []int) (vals map[int]int64, err error) {
 			continue
 		}
 
-		vals[appId] = val
+		vals[appID] = val
 	}
 
 	return vals, err
@@ -308,13 +308,13 @@ func getAppTrendValue(appIDs []int) (vals map[int]float64, err error) {
 	if len(resp.Results) > 0 {
 		for _, v := range resp.Results[0].Series {
 
-			appId, err := strconv.Atoi(v.Tags["app_id"])
+			appID, err := strconv.Atoi(v.Tags["app_id"])
 			if err != nil {
 				log.Err(err)
 				continue
 			}
 
-			vals[appId] = influxHelper.GetInfluxTrendFromSeries(v, 0)
+			vals[appID] = influxHelper.GetInfluxTrendFromSeries(v, 0)
 		}
 	}
 

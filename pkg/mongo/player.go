@@ -638,7 +638,7 @@ func GetPlayers(offset int64, limit int64, sort bson.D, filter bson.D, projectio
 	return players, cur.Err()
 }
 
-func GetPlayerLevels() (counts []count, err error) {
+func GetPlayerLevels() (counts []Count, err error) {
 
 	var item = memcache.MemcachePlayerLevels
 
@@ -664,10 +664,10 @@ func GetPlayerLevels() (counts []count, err error) {
 			log.Err(err)
 		}()
 
-		var counts []count
+		var counts []Count
 		for cur.Next(ctx) {
 
-			var level count
+			var level Count
 			err := cur.Decode(&level)
 			if err != nil {
 				log.Err(err, level.ID)
@@ -685,7 +685,7 @@ func GetPlayerLevels() (counts []count, err error) {
 	return counts, err
 }
 
-func GetPlayerLevelsRounded() (counts []count, err error) {
+func GetPlayerLevelsRounded() (counts []Count, err error) {
 
 	var item = memcache.MemcachePlayerLevelsRounded
 
@@ -712,11 +712,11 @@ func GetPlayerLevelsRounded() (counts []count, err error) {
 		}()
 
 		var maxCount int
-		var countsMap = map[int]count{}
+		var countsMap = map[int]Count{}
 
 		for cur.Next(ctx) {
 
-			var level count
+			var level Count
 			err := cur.Decode(&level)
 			if err != nil {
 				log.Err(err, level.ID)
@@ -729,12 +729,12 @@ func GetPlayerLevelsRounded() (counts []count, err error) {
 			}
 		}
 
-		var counts []count
+		var counts []Count
 		for i := 0; i <= maxCount; i = i + 10 {
 			if val, ok := countsMap[i]; ok {
 				counts = append(counts, val)
 			} else {
-				counts = append(counts, count{ID: i, Count: 0})
+				counts = append(counts, Count{ID: i, Count: 0})
 			}
 		}
 

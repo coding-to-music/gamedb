@@ -119,19 +119,19 @@ func (sale Sale) GetOfferName() string {
 }
 
 func (sale Sale) GetAppRating() string {
+
 	if sale.AppRating == 0 {
 		return "-"
-	} else {
-		return helpers.FloatToString(sale.AppRating, 1) + "%"
 	}
+	return helpers.FloatToString(sale.AppRating, 1) + "%"
 }
 
 func (sale Sale) GetPriceInt() string {
+
 	if sale.AppRating == 0 {
 		return "-"
-	} else {
-		return helpers.FloatToString(sale.AppRating, 1) + "%"
 	}
+	return helpers.FloatToString(sale.AppRating, 1) + "%"
 }
 
 func (sale Sale) GetPriceString(code steamapi.ProductCC) string {
@@ -140,9 +140,8 @@ func (sale Sale) GetPriceString(code steamapi.ProductCC) string {
 	if ok {
 		cc := i18n.GetProdCC(code)
 		return i18n.FormatPrice(cc.CurrencyCode, priceInt)
-	} else {
-		return "-"
 	}
+	return "-"
 }
 
 // 0:not lowest - 1:match lowest - 2:lowest ever

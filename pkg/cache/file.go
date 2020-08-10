@@ -30,37 +30,34 @@ func GetSetCache(name string, ttl time.Duration, retrieve func() (interface{}, e
 		log.Err(err)
 	}()
 
+	// Read from cache
 	if writer == nil {
-
-		// Read from cache
 		dec := gob.NewDecoder(reader)
 		return dec.Decode(val)
+	}
 
-	} else {
+	log.Info("Saving " + name + " to cache")
 
-		log.Info("Saving " + name + " to cache")
+	// Write to cache
+	defer func() {
+		err = writer.Close()
+		log.Err(err)
+	}()
 
-		// Write to cache
-		defer func() {
-			err = writer.Close()
-			log.Err(err)
-		}()
+	var buf bytes.Buffer
+	encoder := gob.NewEncoder(&buf)
 
-		var buf bytes.Buffer
-		encoder := gob.NewEncoder(&buf)
-
-		i, err := retrieve()
-		if err != nil {
-			return err
-		}
-
-		err = encoder.Encode(i)
-		if err != nil {
-			return err
-		}
-
-		// Save to cache
-		_, err = writer.Write(buf.Bytes())
+	i, err := retrieve()
+	if err != nil {
 		return err
 	}
+
+	err = encoder.Encode(i)
+	if err != nil {
+		return err
+	}
+
+	// Save to cache
+	_, err = writer.Write(buf.Bytes())
+	return err
 }
