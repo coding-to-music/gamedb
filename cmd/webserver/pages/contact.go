@@ -84,7 +84,7 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Recaptcha
-		if !config.IsLocal() || true {
+		if !config.IsLocal() {
 
 			err = recaptcha.CheckFromRequest(r)
 			if err != nil {
