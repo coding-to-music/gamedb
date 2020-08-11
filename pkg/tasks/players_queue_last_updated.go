@@ -73,7 +73,10 @@ func (c PlayersQueueLastUpdated) work() (err error) {
 	}
 
 	// Queue last updated players
-	var filter = bson.D{{"community_visibility_state", bson.M{"$ne": 1}}} // Includes where community_visibility_state doesn't exist
+	var filter = bson.D{
+		{"community_visibility_state", bson.M{"$ne": 1}},
+		{"removed", bson.M{"$ne": false}},
+	}
 
 	players, err := mongo.GetPlayers(0, int64(toQueue*consumers), bson.D{{"updated_at", 1}}, filter, bson.M{"_id": 1})
 	if err != nil {
