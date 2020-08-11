@@ -11,7 +11,6 @@ COPY ./ ./
 RUN apk update \
   && apk add git \
   && cd ./cmd/scaler \
-  && go mod tidy \
   && CGO_ENABLED=0 GOOS=linux go build -a -ldflags "-X main.version=`git rev-parse --verify HEAD` -X main.commits=`git rev-list --count master`"
 
 # Runtime image
