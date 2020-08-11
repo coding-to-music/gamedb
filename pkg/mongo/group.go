@@ -146,13 +146,13 @@ func GetGroup(id string) (group Group, err error) {
 
 func GetGroupsByID(ids []string, projection bson.M) (groups []Group, err error) {
 
+	var chunkSize = 100
+
 	if len(ids) == 0 {
 		return groups, nil
 	}
 
-	chunks := helpers.ChunkStrings(ids, 100)
-
-	for _, chunk := range chunks {
+	for _, chunk := range helpers.ChunkStrings(ids, chunkSize) {
 
 		var idsBSON bson.A
 
@@ -166,7 +166,7 @@ func GetGroupsByID(ids []string, projection bson.M) (groups []Group, err error) 
 			idsBSON = append(idsBSON, groupID)
 		}
 
-		resp, err := getGroups(0, 0, nil, bson.D{{"_id", bson.M{"$in": idsBSON}}}, projection)
+		resp, err := getGroups(0, int64(chunkSize), nil, bson.D{{"_id", bson.M{"$in": idsBSON}}}, projection)
 		if err != nil {
 			return groups, err
 		}

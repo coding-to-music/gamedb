@@ -15,9 +15,10 @@ import (
 )
 
 type PlayersGroupsMessage struct {
-	Player          mongo.Player `json:"player"`
-	SkipGroupUpdate bool         `json:"skip_group"`
-	UserAgent       *string      `json:"user_agent"`
+	Player                    mongo.Player `json:"player"`
+	SkipGroupUpdate           bool         `json:"skip_group"`
+	ForceResavingPlayerGroups bool         `json:"force_resaving_player_groups"`
+	UserAgent                 *string      `json:"user_agent"`
 }
 
 func (m PlayersGroupsMessage) Queue() rabbit.QueueName {
@@ -88,7 +89,7 @@ func playersGroupsHandler(message *rabbit.Message) {
 	// Make list of groups to add
 	var toAddIDs []string
 	for k := range newGroupsMap {
-		if _, ok := oldGroupsMap[k]; !ok {
+		if _, ok := oldGroupsMap[k]; !ok || payload.ForceResavingPlayerGroups {
 			toAddIDs = append(toAddIDs, k)
 		}
 	}
@@ -123,7 +124,7 @@ func playersGroupsHandler(message *rabbit.Message) {
 		})
 	}
 
-	err = mongo.InsertPlayerGroups(newPlayerGroupSlice)
+	err = mongo.ReplacePlayerGroups(newPlayerGroupSlice)
 	if err != nil {
 		log.Err(err, message.Message.Body)
 		sendToRetryQueue(message)

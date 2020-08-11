@@ -100,7 +100,7 @@ func (group PlayerGroup) GetPlayerFlag() string {
 	return helpers.GetPlayerFlagPath(group.PlayerCountry)
 }
 
-func InsertPlayerGroups(groups []PlayerGroup) (err error) {
+func ReplacePlayerGroups(groups []PlayerGroup) (err error) {
 
 	if len(groups) < 1 {
 		return nil

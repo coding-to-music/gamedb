@@ -589,11 +589,12 @@ func ProduceTest(id int) (err error) {
 	return produce(QueueTest, TestMessage{ID: id})
 }
 
-func ProducePlayerGroup(player mongo.Player, skipGroupUpdate bool) (err error) {
+func ProducePlayerGroup(player mongo.Player, skipGroupUpdate bool, force bool) (err error) {
 
 	return produce(QueuePlayersGroups, PlayersGroupsMessage{
-		Player:          player,
-		SkipGroupUpdate: skipGroupUpdate,
+		Player:                    player,
+		SkipGroupUpdate:           skipGroupUpdate,
+		ForceResavingPlayerGroups: force,
 	})
 }
 

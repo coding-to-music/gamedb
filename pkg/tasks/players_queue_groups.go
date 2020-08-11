@@ -51,7 +51,7 @@ func (c PlayersQueueGroups) work() (err error) {
 
 		for _, player := range players {
 
-			err = queue.ProducePlayerGroup(player, true)
+			err = queue.ProducePlayerGroup(player, true, false)
 			if err != nil {
 				return err
 			}
