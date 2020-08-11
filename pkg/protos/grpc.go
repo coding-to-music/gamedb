@@ -8,7 +8,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-const GRPCPort = ":50051"
+const GRPCPort = "50051"
 
 var (
 	conn *grpc.ClientConn
@@ -24,7 +24,7 @@ func GetClient() (*grpc.ClientConn, context.Context, error) {
 	if conn == nil {
 
 		var err error
-		conn, err = grpc.Dial("localhost"+GRPCPort, grpc.WithInsecure())
+		conn, err = grpc.Dial(":"+GRPCPort, grpc.WithInsecure())
 		if err != nil {
 			return nil, nil, err
 		}
