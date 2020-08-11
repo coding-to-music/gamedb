@@ -150,6 +150,7 @@ type BaseConfig struct {
 
 	// Servers
 	FrontendPort ConfigItem
+	BackendPort  ConfigItem
 	APIPort      ConfigItem
 
 	// Other
@@ -293,6 +294,7 @@ func init() {
 
 	// Servers
 	Config.FrontendPort.Set("PORT")
+	Config.BackendPort.Set("BACKEND_PORT")
 	Config.APIPort.Set("API_PORT")
 
 	// Other
@@ -403,6 +405,10 @@ func MongoDSN() string {
 
 func FrontendPort() string {
 	return "0.0.0.0:" + Config.FrontendPort.Get()
+}
+
+func BackendPort() string {
+	return "0.0.0.0:" + Config.BackendPort.Get()
 }
 
 func APIPort() string {

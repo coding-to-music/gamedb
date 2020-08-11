@@ -5,6 +5,7 @@ import (
 	"net"
 
 	"github.com/gamedb/gamedb/cmd/backend/services"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/protos"
 	"google.golang.org/grpc"
 )
@@ -14,7 +15,7 @@ var commits string
 
 func main() {
 
-	lis, err := net.Listen("tcp", ":"+protos.GRPCPort)
+	lis, err := net.Listen("tcp", config.BackendPort())
 	if err != nil {
 		fmt.Println(err)
 		return
