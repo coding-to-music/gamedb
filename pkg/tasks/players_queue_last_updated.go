@@ -65,7 +65,7 @@ func (c PlayersQueueLastUpdated) work() (err error) {
 
 	if consumers == 0 {
 		if config.IsLocal() {
-			consumers = 2
+			consumers = 1
 		} else {
 			log.Warning("no consumers")
 			return nil
