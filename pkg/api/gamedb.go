@@ -36,7 +36,7 @@ var (
 var SwaggerGameDB = &openapi3.Swagger{
 	OpenAPI: "3.0.0",
 	Servers: []*openapi3.Server{
-		{URL: "https://gamedb.online/api"}, // Hardcoded to not get local domain
+		{URL: "https://api.gamedb.online"},
 	},
 	ExternalDocs: &openapi3.ExternalDocs{
 		URL: "https://gamedb.online/api/gamedb",

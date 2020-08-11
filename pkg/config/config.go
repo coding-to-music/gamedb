@@ -148,12 +148,15 @@ type BaseConfig struct {
 	// YouTube
 	YoutubeAPIKey ConfigItem
 
+	// Servers
+	FrontendPort ConfigItem
+	APIPort      ConfigItem
+
 	// Other
 	Environment         ConfigItem
 	GameDBDomain        ConfigItem
 	GameDBShortName     ConfigItem
 	SendGridAPIKey      ConfigItem
-	WebserverPort       ConfigItem
 	IP                  ConfigItem
 	NewReleaseDays      ConfigItem
 	SlackGameDBWebhook  ConfigItem
@@ -288,11 +291,14 @@ func init() {
 	// YouTube
 	Config.YoutubeAPIKey.Set("YOUTUBE_API_KEY")
 
+	// Servers
+	Config.FrontendPort.Set("PORT")
+	Config.APIPort.Set("API_PORT")
+
 	// Other
 	Config.GameDBDomain.Set("DOMAIN")
 	Config.Environment.Set("ENV")
 	Config.SendGridAPIKey.Set("SENDGRID")
-	Config.WebserverPort.Set("PORT")
 	Config.SlackGameDBWebhook.Set("SLACK_GAMEDB_WEBHOOK")
 	Config.SlackPatreonWebhook.Set("SLACK_SOCIAL_WEBHOOK")
 	Config.InfraPath.Set("INFRASTRUCTURE_PATH")
@@ -300,7 +306,7 @@ func init() {
 	// Defaults
 	Config.GameDBShortName.SetDefault("GameDB")
 	Config.NewReleaseDays.SetDefault("14")
-	Config.SteamAPIKey.SetDefault("unset")
+	Config.SteamAPIKey.SetDefault("")
 }
 
 func Init(version string, commits string, ip string) {
@@ -395,8 +401,12 @@ func MongoDSN() string {
 	return "mongodb://" + Config.MongoHost.Get() + ":" + Config.MongoPort.Get()
 }
 
-func ListenOn() string {
-	return "0.0.0.0:" + Config.WebserverPort.Get()
+func FrontendPort() string {
+	return "0.0.0.0:" + Config.FrontendPort.Get()
+}
+
+func APIPort() string {
+	return "0.0.0.0:" + Config.APIPort.Get()
 }
 
 func IsLocal() bool {

@@ -92,8 +92,8 @@ func getAuthor(guildID string) *discordgo.MessageEmbedAuthor {
 		IconURL: "https://gamedb.online/assets/img/sa-bg-32x32.png",
 	}
 	if config.IsLocal() {
-		author.Name = "localhost:" + config.Config.WebserverPort.Get()
-		author.URL = "http://localhost:" + config.Config.WebserverPort.Get() + "/"
+		author.Name = "localhost:" + config.Config.FrontendPort.Get()
+		author.URL = "http://localhost:" + config.Config.FrontendPort.Get() + "/"
 	}
 	return author
 }

@@ -14,7 +14,7 @@ var commits string
 
 func main() {
 
-	lis, err := net.Listen("tcp", protos.GRPCPort)
+	lis, err := net.Listen("tcp", ":"+protos.GRPCPort)
 	if err != nil {
 		fmt.Println(err)
 		return

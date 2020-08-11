@@ -5,9 +5,8 @@ import (
 	"net/http"
 	"path"
 
-	"github.com/gamedb/gamedb/cmd/webserver/api"
-	"github.com/gamedb/gamedb/cmd/webserver/api/generated"
 	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
+	"github.com/gamedb/gamedb/pkg/api"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/go-chi/chi"
@@ -21,9 +20,6 @@ func APIRouter() http.Handler {
 	r.Get("/steam", apiHandler)
 	r.Get("/gamedb.json", apiGamedbJSONHandler)
 	r.Get("/steam.json", apiSteamJSONHandler)
-
-	// Add generated handlers
-	generated.HandlerFromMux(api.Server{}, r)
 
 	return r
 }
