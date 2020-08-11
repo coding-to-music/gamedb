@@ -37,12 +37,19 @@ func appYoutubeHandler(message *rabbit.Message) {
 		return
 	}
 
+	client, ctx, err := youtube.GetYouTube()
+	if err != nil {
+		log.Err(err, message.Message.Body)
+		sendToRetryQueue(message)
+		return
+	}
+
 	// `part` can be:
 	// id, snippet, contentDetails, fileDetails, player, processingDetails, recordingDetails, statistics, status, suggestions, topicDetails
 
 	// Get video IDs from search
-	searchRequest := youtube.YoutubeService.Search.List([]string{"id"}).
-		Context(youtube.YoutubeContext).
+	searchRequest := client.Search.List([]string{"id"}).
+		Context(ctx).
 		MaxResults(50).
 		SafeSearch("none").
 		Type("video").
@@ -63,7 +70,7 @@ func appYoutubeHandler(message *rabbit.Message) {
 	}
 
 	// Get video statistics from IDs
-	listRequest := youtube.YoutubeService.Videos.
+	listRequest := client.Videos.
 		List([]string{"statistics"}).
 		Id(strings.Join(ids, ","))
 
