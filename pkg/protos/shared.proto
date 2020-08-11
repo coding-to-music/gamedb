@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package protos;
+
+message Empty {
+}
+
+message Price {
+    bool exists = 1;
+    string currency = 2;
+    int32 initial = 3;
+    int32 final = 4;
+    int32 discount_percent = 5;
+    int32 individual = 6;
+    bool free = 7;
+}

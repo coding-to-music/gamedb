@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package protos;
+
+service GitHubService {
+    rpc Commits (CommitsRequest) returns (stream CommitResponse) {
+    }
+}
+
+message CommitsRequest {
+    int32 limit = 1;
+    int32 page = 2;
+}
+
+message CommitResponse {
+    string message = 1;
+    int64 time = 2;
+    string link = 3;
+    string hash = 4;
+}
