@@ -316,9 +316,11 @@ type ConfigItem struct {
 	allowEmpty   bool
 }
 
-func (ci *ConfigItem) Set(environment string, allowEmpty ...bool) {
+func (ci *ConfigItem) Set(environment string, allowEmpty ...bool) *ConfigItem {
+
 	ci.value = os.Getenv("STEAM_" + environment)
 	ci.allowEmpty = len(allowEmpty) > 0 && allowEmpty[0]
+	return ci
 }
 
 func (ci *ConfigItem) SetDefault(defaultValue string) {
