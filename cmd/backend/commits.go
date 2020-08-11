@@ -1,4 +1,4 @@
-package services
+package main
 
 import (
 	githubHelper "github.com/gamedb/gamedb/pkg/github"

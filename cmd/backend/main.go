@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/gamedb/gamedb/cmd/backend/services"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/protos"
 	"google.golang.org/grpc"
@@ -22,8 +21,8 @@ func main() {
 	}
 
 	grpcServer := grpc.NewServer()
-	protos.RegisterAppsServiceServer(grpcServer, services.AppsServer{})
-	protos.RegisterGitHubServiceServer(grpcServer, services.GithubServer{})
+	protos.RegisterAppsServiceServer(grpcServer, AppsServer{})
+	protos.RegisterGitHubServiceServer(grpcServer, GithubServer{})
 
 	fmt.Println("Starting backend GRPC server")
 	err = grpcServer.Serve(lis)

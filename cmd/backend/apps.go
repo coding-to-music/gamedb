@@ -1,4 +1,4 @@
-package services
+package main
 
 import (
 	"github.com/gamedb/gamedb/pkg/protos"
