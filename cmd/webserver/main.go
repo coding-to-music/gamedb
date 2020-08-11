@@ -37,14 +37,14 @@ var (
 
 func main() {
 
+	config.Init(version, commits, helpers.GetIP())
+	log.Initialise(log.LogNameWebserver)
+
 	//
 	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
 		log.Critical("GOOGLE_APPLICATION_CREDENTIALS not found")
 		os.Exit(1)
 	}
-
-	config.Init(version, commits, helpers.GetIP())
-	log.Initialise(log.LogNameWebserver)
 
 	// Profiling
 	log.Info("Starting webserver profiling")
