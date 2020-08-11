@@ -1,18 +1,17 @@
 package pages
 
 import (
+	"io"
 	"net/http"
 	"time"
 
-	"github.com/cenkalti/backoff/v4"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/config"
-	githubHelper "github.com/gamedb/gamedb/pkg/github"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
+	"github.com/gamedb/gamedb/pkg/protos"
 	"github.com/go-chi/chi"
-	"github.com/google/go-github/v28/github"
 )
 
 func CommitsRouter() http.Handler {
@@ -40,28 +39,40 @@ const commitsLimit = 100
 func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var query = datatable.NewDataTableQuery(r, true)
-	var commits []*github.RepositoryCommit
+	var commits []protos.CommitResponse
 	var item = memcache.MemcacheCommitsPage(query.GetPage(commitsLimit))
 
 	err := memcache.GetSetInterface(item.Key, item.Expiration, &commits, func() (interface{}, error) {
 
-		client, ctx := githubHelper.GetGithub()
-
-		operation := func() (err error) {
-
-			commits, _, err = client.Repositories.ListCommits(ctx, "gamedb", "website", &github.CommitsListOptions{
-				ListOptions: github.ListOptions{
-					Page:    query.GetPage(commitsLimit),
-					PerPage: commitsLimit,
-				},
-			})
-			return err
+		conn, ctx, err := protos.GetClient()
+		if err != nil {
+			return nil, err
 		}
 
-		policy := backoff.NewExponentialBackOff()
-		policy.InitialInterval = time.Second
+		message := &protos.CommitsRequest{
+			Limit: commitsLimit,
+			Page:  int32(query.GetPage(commitsLimit)),
+		}
 
-		err := backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 5), func(err error, t time.Duration) { log.Info(err) })
+		resp, err := protos.NewGitHubServiceClient(conn).Commits(ctx, message)
+		if err != nil {
+			return nil, err
+		}
+
+		for {
+
+			commit, err := resp.Recv()
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				log.Err(err)
+				continue
+			}
+
+			commits = append(commits, *commit)
+		}
+
 		return commits, err
 	})
 	log.Err(err, r)
@@ -69,21 +80,19 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	var total = config.Config.Commits.GetInt()
 	var response = datatable.NewDataTablesResponse(r, query, int64(total), int64(total), nil)
+
 	for k, commit := range commits {
 
-		var date = commit.GetCommit().GetAuthor().GetDate().Format(helpers.DateTime)
-		var unix = commit.GetCommit().GetAuthor().GetDate().Unix()
-		var current = commit.GetSHA() == config.Config.CommitHash.Get()
+		t := time.Unix(commit.GetTime(), 0).Format(helpers.DateTime)
 
 		response.AddRow([]interface{}{
-			commit.GetCommit().GetMessage(), // 0
-			unix,                            // 1
-			config.Config.Commits.GetInt(),  // 2
-			commit.GetHTMLURL(),             // 3
-			current,                         // 4
-			commit.GetSHA()[0:7],            // 5
-			date,                            // 6
-			total - (query.GetOffset() + k), // 7
+			commit.GetMessage(),             // 0
+			commit.GetTime(),                // 1
+			t,                               // 2
+			commit.GetLink(),                // 3
+			commit.GetHash()[0:7],           // 4
+			total - (query.GetOffset() + k), // 5
+			config.Config.Commits.GetInt(),  // 6
 		})
 	}
 
