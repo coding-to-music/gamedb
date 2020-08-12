@@ -60,7 +60,7 @@ if ($homePage.length > 0) {
 
         let lastPlayerId = 0;
         const $tbody = $('#updated-players tbody');
-        const schema = function (fade) {
+        const schema = function (fade, instantTime) {
             return {
                 '<>': 'tr', 'class': (fade ? 'fade-green' : ''), 'data-app-id': '${id}', 'data-link': '${link}', 'html': [
                     {
@@ -80,7 +80,7 @@ if ($homePage.length > 0) {
                     {
                         '<>': 'td', 'nowrap': 'nowrap', 'html': [
                             {
-                                '<>': 'span', 'data-livestamp': '${updated_at}', 'text': 'a few seconds ago',
+                                '<>': 'span', 'data-livestamp': '${updated_at}', 'text': (instantTime ? 'a few seconds ago' : ''),
                             }
                         ],
                     },
@@ -105,7 +105,7 @@ if ($homePage.length > 0) {
 
                 if (isIterable(data)) {
                     $tbody.find('tr').remove();
-                    $tbody.json2html(data, schema(false), {prepend: false});
+                    $tbody.json2html(data, schema(false, false), {prepend: false});
                     observeLazyImages($tbody.find('img[data-lazy]'));
                 }
 
@@ -117,7 +117,7 @@ if ($homePage.length > 0) {
             const data = JSON.parse(e.data);
             if (data.Data['queue'] === 'player' && data.Data['id'] !== lastPlayerId) {
                 lastPlayerId = data.Data['id'];
-                $tbody.json2html([data.Data], schema(true), {prepend: true});
+                $tbody.json2html([data.Data], schema(true, true), {prepend: true});
                 $tbody.find('tr').slice(10).remove();
                 observeLazyImages($tbody.find('img[data-lazy]'));
             }
