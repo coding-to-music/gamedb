@@ -24,7 +24,7 @@ func main() {
 	protos.RegisterAppsServiceServer(grpcServer, AppsServer{})
 	protos.RegisterGitHubServiceServer(grpcServer, GithubServer{})
 
-	fmt.Println("Starting backend GRPC server")
+	fmt.Println("Starting backend GRPC server on " + config.BackendPort())
 	err = grpcServer.Serve(lis)
 	fmt.Println(err)
 }

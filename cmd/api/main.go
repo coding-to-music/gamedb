@@ -24,10 +24,10 @@ func main() {
 	// 404
 	// r.NotFound(pages.Error404Handler)
 
-	log.Info("Starting API on " + "http://" + config.FrontendPort())
+	log.Info("Starting API on " + "http://" + config.APIPort())
 
 	s := &http.Server{
-		Addr:              config.FrontendPort(),
+		Addr:              config.APIPort(),
 		Handler:           r,
 		ReadTimeout:       2 * time.Second,
 		ReadHeaderTimeout: 2 * time.Second,
