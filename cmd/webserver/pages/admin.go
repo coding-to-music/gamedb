@@ -8,10 +8,9 @@ import (
 	"time"
 
 	"github.com/Jleagle/patreon-go/patreon"
-	"github.com/Jleagle/session-go/session"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/middleware"
-	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
+	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
@@ -301,8 +300,8 @@ func adminTasksHandler(w http.ResponseWriter, r *http.Request) {
 			go tasks.Run(val)
 		}
 
-		err := session.SetFlash(r, sessionHelpers.SessionGood, "Done")
-		log.Err(err, r)
+		session.SetFlash(r, session.SessionGood, "Done")
+		session.Save(w, r)
 
 		http.Redirect(w, r, "/admin/tasks", http.StatusFound)
 		return
@@ -379,8 +378,8 @@ func adminSettingsHandler(w http.ResponseWriter, r *http.Request) {
 			log.Err(err, r)
 		}
 
-		err = session.SetFlash(r, sessionHelpers.SessionGood, "Done")
-		log.Err(err, r)
+		session.SetFlash(r, session.SessionGood, "Done")
+		session.Save(w, r)
 
 		http.Redirect(w, r, "/admin/settings", http.StatusFound)
 		return
@@ -561,8 +560,8 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 		err = queue.ProduceSteam(queue.SteamMessage{AppIDs: appIDs, PackageIDs: packageIDs})
 		log.Err(err, r)
 
-		err = session.SetFlash(r, sessionHelpers.SessionGood, "Done")
-		log.Err(err, r)
+		session.SetFlash(r, session.SessionGood, "Done")
+		session.Save(w, r)
 
 		http.Redirect(w, r, "/admin/tasks", http.StatusFound)
 		return
@@ -591,8 +590,8 @@ func adminBinLogsHandler(w http.ResponseWriter, r *http.Request) {
 			log.Err(g.Error, r)
 		}
 
-		err := session.SetFlash(r, sessionHelpers.SessionGood, "Done")
-		log.Err(err, r)
+		session.SetFlash(r, session.SessionGood, "Done")
+		session.Save(w, r)
 
 		http.Redirect(w, r, "/admin/sql-bin-logs", http.StatusFound)
 		return

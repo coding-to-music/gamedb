@@ -4,9 +4,8 @@ import (
 	"net/http"
 
 	"github.com/Jleagle/recaptcha-go"
-	"github.com/Jleagle/session-go/session"
 	webserverHelpers "github.com/gamedb/gamedb/cmd/webserver/pages/helpers"
-	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
+	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/go-chi/chi"
@@ -33,12 +32,12 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, "Contact", "Get in touch with Game DB.")
 	t.RecaptchaPublic = config.Config.RecaptchaPublic.Get()
 
-	t.SessionName = sessionHelpers.Get(r, contactSessionName)
-	t.SessionEmail = sessionHelpers.Get(r, contactSessionEmail)
-	t.SessionMessage = sessionHelpers.Get(r, contactSessionMessage)
+	t.SessionName = session.Get(r, contactSessionName)
+	t.SessionEmail = session.Get(r, contactSessionEmail)
+	t.SessionMessage = session.Get(r, contactSessionMessage)
 
 	if t.SessionEmail == "" {
-		t.SessionEmail = sessionHelpers.Get(r, sessionHelpers.SessionUserEmail)
+		t.SessionEmail = session.Get(r, session.SessionUserEmail)
 	}
 
 	returnTemplate(w, r, "contact", t)
@@ -62,11 +61,11 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 		err := r.ParseForm()
 		if err != nil {
 			log.Err(err, r)
-			return sessionHelpers.SessionBad, "Something has gone wrong (1001)"
+			return session.SessionBad, "Something has gone wrong (1001)"
 		}
 
 		// Backup
-		sessionHelpers.SetMany(r, map[string]string{
+		session.SetMany(r, map[string]string{
 			contactSessionName:    r.PostForm.Get("name"),
 			contactSessionEmail:   r.PostForm.Get("email"),
 			contactSessionMessage: r.PostForm.Get("message"),
@@ -74,13 +73,13 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Form validation
 		if r.PostForm.Get("name") == "" {
-			return sessionHelpers.SessionBad, "Please fill in your name"
+			return session.SessionBad, "Please fill in your name"
 		}
 		if r.PostForm.Get("email") == "" {
-			return sessionHelpers.SessionBad, "Please fill in your email"
+			return session.SessionBad, "Please fill in your email"
 		}
 		if r.PostForm.Get("message") == "" {
-			return sessionHelpers.SessionBad, "Please fill in a message"
+			return session.SessionBad, "Please fill in a message"
 		}
 
 		// Recaptcha
@@ -90,11 +89,11 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 
 				if err == recaptcha.ErrNotChecked {
-					return sessionHelpers.SessionBad, "Please check the captcha"
+					return session.SessionBad, "Please check the captcha"
 				}
 
 				log.Err(err, r)
-				return sessionHelpers.SessionBad, "Something has gone wrong (1002)"
+				return session.SessionBad, "Something has gone wrong (1002)"
 			}
 		}
 
@@ -107,26 +106,22 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 		)
 		if err != nil {
 			log.Err(err, r)
-			return sessionHelpers.SessionBad, "Something has gone wrong (1003)"
+			return session.SessionBad, "Something has gone wrong (1003)"
 		}
 
 		// Remove backup
-		sessionHelpers.SetMany(r, map[string]string{
+		session.SetMany(r, map[string]string{
 			contactSessionName:    "",
 			contactSessionEmail:   "",
 			contactSessionMessage: "",
 		})
 
-		return sessionHelpers.SessionGood, "Message sent!"
+		return session.SessionGood, "Message sent!"
 	}()
 
 	// Redirect
-	err := session.SetFlash(r, flashGroup, message)
-	if err != nil {
-		log.Err(err, r)
-	}
-
-	sessionHelpers.Save(w, r)
+	session.SetFlash(r, flashGroup, message)
+	session.Save(w, r)
 
 	http.Redirect(w, r, "/contact", http.StatusFound)
 }

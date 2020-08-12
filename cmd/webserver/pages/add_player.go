@@ -5,11 +5,9 @@ import (
 	"path"
 	"strconv"
 
-	"github.com/Jleagle/session-go/session"
 	"github.com/Jleagle/steam-go/steamid"
-	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
+	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -75,10 +73,8 @@ func playerAddHandler(w http.ResponseWriter, r *http.Request) {
 
 		if message != "" {
 
-			err := session.SetFlash(r, sessionHelpers.SessionBad, message)
-			log.Err(err, r)
-
-			sessionHelpers.Save(w, r)
+			session.SetFlash(r, session.SessionBad, message)
+			session.Save(w, r)
 
 			http.Redirect(w, r, "/players/add", http.StatusFound)
 			return

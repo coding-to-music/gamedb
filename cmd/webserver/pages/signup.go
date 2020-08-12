@@ -5,10 +5,9 @@ import (
 	"time"
 
 	"github.com/Jleagle/recaptcha-go"
-	"github.com/Jleagle/session-go/session"
 	"github.com/badoux/checkmail"
 	webserverHelpers "github.com/gamedb/gamedb/cmd/webserver/pages/helpers"
-	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
+	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/influx"
@@ -37,8 +36,8 @@ func signupHandler(w http.ResponseWriter, r *http.Request) {
 	_, err := getUserFromSession(r)
 	if err == nil {
 
-		err = session.SetFlash(r, sessionHelpers.SessionGood, "Login successful")
-		log.Err(err, r)
+		session.SetFlash(r, session.SessionGood, "Login successful")
+		session.Save(w, r)
 
 		http.Redirect(w, r, "/settings", http.StatusFound)
 		return
@@ -49,7 +48,7 @@ func signupHandler(w http.ResponseWriter, r *http.Request) {
 	t.hideAds = true
 	t.Domain = config.Config.GameDBDomain.Get()
 	t.RecaptchaPublic = config.Config.RecaptchaPublic.Get()
-	t.SignupEmail = sessionHelpers.Get(r, signupSessionEmail)
+	t.SignupEmail = session.Get(r, signupSessionEmail)
 
 	returnTemplate(w, r, "signup", t)
 }
@@ -77,10 +76,7 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 		password2 := r.PostForm.Get("password2")
 
 		// Remember email
-		err = session.Set(r, signupSessionEmail, email)
-		if err != nil {
-			log.Err(err, r)
-		}
+		session.Set(r, signupSessionEmail, email)
 
 		// Field validation
 		if email == "" {
@@ -138,7 +134,7 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 			Email:         email,
 			EmailVerified: false,
 			Password:      string(passwordBytes),
-			ProductCC:     sessionHelpers.GetProductCC(r),
+			ProductCC:     session.GetProductCC(r),
 			Level:         mysql.UserLevel1,
 			LoggedInAt:    time.Unix(0, 0), // Fixes a gorm bug
 		}
@@ -198,10 +194,8 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	if success {
 
-		err := session.SetFlash(r, sessionHelpers.SessionGood, message)
-		log.Err(err, r)
-
-		sessionHelpers.Save(w, r)
+		session.SetFlash(r, session.SessionGood, message)
+		session.Save(w, r)
 
 		http.Redirect(w, r, "/login", http.StatusFound)
 
@@ -209,10 +203,8 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 
 		time.Sleep(time.Second)
 
-		err := session.SetFlash(r, sessionHelpers.SessionBad, message)
-		log.Err(err, r)
-
-		sessionHelpers.Save(w, r)
+		session.SetFlash(r, session.SessionBad, message)
+		session.Save(w, r)
 
 		http.Redirect(w, r, "/signup", http.StatusFound)
 	}
@@ -266,10 +258,8 @@ func verifyHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	if success {
 
-		err := session.SetFlash(r, sessionHelpers.SessionGood, message)
-		log.Err(err, r)
-
-		sessionHelpers.Save(w, r)
+		session.SetFlash(r, session.SessionGood, message)
+		session.Save(w, r)
 
 		http.Redirect(w, r, "/login", http.StatusFound)
 
@@ -277,10 +267,8 @@ func verifyHandler(w http.ResponseWriter, r *http.Request) {
 
 		time.Sleep(time.Second)
 
-		err := session.SetFlash(r, sessionHelpers.SessionBad, message)
-		log.Err(err, r)
-
-		sessionHelpers.Save(w, r)
+		session.SetFlash(r, session.SessionBad, message)
+		session.Save(w, r)
 
 		http.Redirect(w, r, "/signup", http.StatusFound)
 	}

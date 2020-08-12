@@ -14,7 +14,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mysql"
-	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
 	"github.com/oschwald/maxminddb-golang"
 )
@@ -38,12 +37,14 @@ const (
 	SessionCountryCode = "country-code"
 
 	// Flash groups
-	SessionGood session.FlashGroup = "good"
-	SessionBad  session.FlashGroup = "bad"
+	SessionGood FlashGroup = "good"
+	SessionBad  FlashGroup = "bad"
 
 	// Cookies
 	SessionCookieName = "gamedb-session"
 )
+
+type FlashGroup session.FlashGroup
 
 func InitSession() {
 
@@ -61,54 +62,6 @@ func InitSession() {
 	}
 
 	session.Initialise(sessionInit)
-}
-
-func Get(r *http.Request, key string) (value string) {
-
-	val, err := session.Get(r, key)
-	logSessionError(err)
-	return val
-}
-
-func Set(r *http.Request, name string, value string) {
-
-	err := session.Set(r, name, value)
-	logSessionError(err)
-}
-
-func SetMany(r *http.Request, values map[string]string) {
-
-	err := session.SetMany(r, values)
-	logSessionError(err)
-}
-
-func GetFlashes(r *http.Request, group session.FlashGroup) (flashes []string) {
-
-	flashes, err := session.GetFlashes(r, group)
-	logSessionError(err)
-
-	return flashes
-}
-
-func Save(w http.ResponseWriter, r *http.Request) {
-
-	err := session.Save(w, r)
-	logSessionError(err)
-}
-
-func logSessionError(err error) {
-
-	if err != nil {
-
-		if val, ok := err.(securecookie.Error); ok {
-			if val.IsUsage() || val.IsDecode() {
-				log.Info(val.Error())
-				return
-			}
-		}
-
-		log.Err(err)
-	}
 }
 
 //
@@ -135,14 +88,14 @@ func GetPlayerIDFromSesion(r *http.Request) (id int64, err error) {
 }
 
 var (
-	ccLock    sync.Mutex
-	maxMindDB *maxminddb.Reader
+	maxMindLock sync.Mutex
+	maxMindDB   *maxminddb.Reader
 )
 
 func GetProductCC(r *http.Request) steamapi.ProductCC {
 
-	ccLock.Lock()
-	defer ccLock.Unlock()
+	maxMindLock.Lock()
+	defer maxMindLock.Unlock()
 
 	cc := func() steamapi.ProductCC {
 
@@ -220,8 +173,8 @@ func GetProductCC(r *http.Request) steamapi.ProductCC {
 
 func GetCountryCode(r *http.Request) string {
 
-	ccLock.Lock()
-	defer ccLock.Unlock()
+	maxMindLock.Lock()
+	defer maxMindLock.Unlock()
 
 	cc := func() string {
 

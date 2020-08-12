@@ -6,10 +6,9 @@ import (
 	"time"
 
 	"github.com/Jleagle/recaptcha-go"
-	"github.com/Jleagle/session-go/session"
 	"github.com/Jleagle/steam-go/steamid"
 	"github.com/badoux/checkmail"
-	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
+	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/oauth"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -39,8 +38,8 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	_, err := getUserFromSession(r)
 	if err == nil {
 
-		err = session.SetFlash(r, sessionHelpers.SessionGood, "Login successful")
-		log.Err(err, r)
+		session.SetFlash(r, session.SessionGood, "Login successful")
+		session.Save(w, r)
 
 		http.Redirect(w, r, "/settings", http.StatusFound)
 		return
@@ -50,7 +49,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, "Login", "Login to Game DB")
 	t.hideAds = true
 	t.RecaptchaPublic = config.Config.RecaptchaPublic.Get()
-	t.LoginEmail = sessionHelpers.Get(r, loginSessionEmail)
+	t.LoginEmail = session.Get(r, loginSessionEmail)
 
 	returnTemplate(w, r, "login", t)
 }
@@ -76,10 +75,7 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		password := r.PostForm.Get("password")
 
 		// Remember email
-		err = session.Set(r, loginSessionEmail, r.PostForm.Get("email"))
-		if err != nil {
-			log.Err(err, r)
-		}
+		session.Set(r, loginSessionEmail, r.PostForm.Get("email"))
 
 		// Field validation
 		if email == "" {
@@ -123,13 +119,11 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	if success {
 
-		err := session.SetFlash(r, sessionHelpers.SessionGood, message)
-		log.Err(err, r)
-
-		sessionHelpers.Save(w, r)
+		session.SetFlash(r, session.SessionGood, message)
+		session.Save(w, r)
 
 		// Get last page
-		val := sessionHelpers.Get(r, sessionHelpers.SessionLastPage)
+		val := session.Get(r, session.SessionLastPage)
 		if val == "" {
 			val = "/settings"
 		}
@@ -141,10 +135,8 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 
 		time.Sleep(time.Second)
 
-		err := session.SetFlash(r, sessionHelpers.SessionBad, message)
-		log.Err(err, r)
-
-		sessionHelpers.Save(w, r)
+		session.SetFlash(r, session.SessionBad, message)
+		session.Save(w, r)
 
 		http.Redirect(w, r, "/login", http.StatusFound)
 	}
@@ -158,28 +150,28 @@ func login(r *http.Request, user mysql.User) (string, bool) {
 
 	// Log user in
 	sessionData := map[string]string{
-		sessionHelpers.SessionUserID:         strconv.Itoa(user.ID),
-		sessionHelpers.SessionUserEmail:      user.Email,
-		sessionHelpers.SessionUserProdCC:     string(user.ProductCC),
-		sessionHelpers.SessionUserAPIKey:     user.APIKey,
-		sessionHelpers.SessionUserShowAlerts: strconv.FormatBool(user.ShowAlerts),
-		sessionHelpers.SessionUserLevel:      strconv.Itoa(int(user.Level)),
+		session.SessionUserID:         strconv.Itoa(user.ID),
+		session.SessionUserEmail:      user.Email,
+		session.SessionUserProdCC:     string(user.ProductCC),
+		session.SessionUserAPIKey:     user.APIKey,
+		session.SessionUserShowAlerts: strconv.FormatBool(user.ShowAlerts),
+		session.SessionUserLevel:      strconv.Itoa(int(user.Level)),
 	}
 
 	steamID := user.GetSteamID()
 	if steamID > 0 {
 		player, err := mongo.GetPlayer(steamID)
 		if err == nil {
-			sessionData[sessionHelpers.SessionPlayerID] = strconv.FormatInt(player.ID, 10)
-			sessionData[sessionHelpers.SessionPlayerName] = player.GetName()
-			sessionData[sessionHelpers.SessionPlayerLevel] = strconv.Itoa(player.Level)
+			sessionData[session.SessionPlayerID] = strconv.FormatInt(player.ID, 10)
+			sessionData[session.SessionPlayerName] = player.GetName()
+			sessionData[session.SessionPlayerLevel] = strconv.Itoa(player.Level)
 		} else {
 			err = helpers.IgnoreErrors(err, steamid.ErrInvalidPlayerID, mongo.ErrNoDocuments)
 			log.Err(err, r)
 		}
 	}
 
-	sessionHelpers.SetMany(r, sessionData)
+	session.SetMany(r, sessionData)
 
 	// Create login event
 	err := mongo.CreateUserEvent(r, user.ID, mongo.EventLogin)

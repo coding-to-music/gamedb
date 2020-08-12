@@ -5,10 +5,9 @@ import (
 	"time"
 
 	"github.com/Jleagle/recaptcha-go"
-	"github.com/Jleagle/session-go/session"
 	"github.com/badoux/checkmail"
 	webserverHelpers "github.com/gamedb/gamedb/cmd/webserver/pages/helpers"
-	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
+	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -31,7 +30,7 @@ func ForgotRouter() http.Handler {
 
 func forgotHandler(w http.ResponseWriter, r *http.Request) {
 
-	if sessionHelpers.IsLoggedIn(r) {
+	if session.IsLoggedIn(r) {
 
 		http.Redirect(w, r, "/settings", http.StatusFound)
 		return
@@ -41,7 +40,7 @@ func forgotHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, "Forgot Password", "")
 	t.hideAds = true
 	t.RecaptchaPublic = config.Config.RecaptchaPublic.Get()
-	t.LoginEmail = sessionHelpers.Get(r, "login-email")
+	t.LoginEmail = session.Get(r, "login-email")
 
 	returnTemplate(w, r, "forgot", t)
 }
@@ -128,10 +127,8 @@ func forgotPostHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	if success {
 
-		err := session.SetFlash(r, sessionHelpers.SessionGood, message)
-		log.Err(err, r)
-
-		sessionHelpers.Save(w, r)
+		session.SetFlash(r, session.SessionGood, message)
+		session.Save(w, r)
 
 		http.Redirect(w, r, "/login", http.StatusFound)
 
@@ -139,10 +136,8 @@ func forgotPostHandler(w http.ResponseWriter, r *http.Request) {
 
 		time.Sleep(time.Second)
 
-		err := session.SetFlash(r, sessionHelpers.SessionBad, message)
-		log.Err(err, r)
-
-		sessionHelpers.Save(w, r)
+		session.SetFlash(r, session.SessionBad, message)
+		session.Save(w, r)
 
 		http.Redirect(w, r, "/forgot", http.StatusFound)
 	}
@@ -216,10 +211,8 @@ func forgotResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	if success {
 
-		err := session.SetFlash(r, sessionHelpers.SessionGood, message)
-		log.Err(err)
-
-		sessionHelpers.Save(w, r)
+		session.SetFlash(r, session.SessionGood, message)
+		session.Save(w, r)
 
 		http.Redirect(w, r, "/login", http.StatusFound)
 
@@ -227,10 +220,8 @@ func forgotResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 
 		time.Sleep(time.Second)
 
-		err := session.SetFlash(r, sessionHelpers.SessionBad, message)
-		log.Err(err, r)
-
-		sessionHelpers.Save(w, r)
+		session.SetFlash(r, session.SessionBad, message)
+		session.Save(w, r)
 
 		http.Redirect(w, r, "/signup", http.StatusFound)
 	}

@@ -7,12 +7,11 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/Jleagle/session-go/session"
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/badoux/checkmail"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/middleware"
-	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
+	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/oauth"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -72,10 +71,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Set Steam player name to session if missing, can happen after linking
-		err = session.Set(r, sessionHelpers.SessionPlayerName, t.Player.GetName())
-		if err != nil {
-			log.Err(err, r)
-		}
+		session.Set(r, session.SessionPlayerName, t.Player.GetName())
 	}
 
 	//
@@ -208,8 +204,7 @@ func deletePostHandler(w http.ResponseWriter, r *http.Request) {
 
 		if r.PostForm.Get("id") == user.SteamID.String {
 
-			err = session.DeleteAll(r)
-			log.Err(err)
+			session.DeleteAll(r)
 			return "/", "Your account has been deleted", ""
 
 		}
@@ -218,26 +213,18 @@ func deletePostHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	if good != "" {
-		err = session.SetFlash(r, sessionHelpers.SessionGood, good)
-		if err != nil {
-			log.Err(err, r)
-		}
+		session.SetFlash(r, session.SessionGood, good)
 	}
 	if bad != "" {
-		err = session.SetFlash(r, sessionHelpers.SessionBad, bad)
-		if err != nil {
-			log.Err(err, r)
-		}
+		session.SetFlash(r, session.SessionBad, bad)
 	}
 
-	sessionHelpers.Save(w, r)
+	session.Save(w, r)
 
 	http.Redirect(w, r, redirect, http.StatusFound)
 }
 
 func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
-
-	var err error
 
 	redirect, good, bad := func() (redirect string, good string, bad string) {
 
@@ -334,36 +321,28 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Update session
-		sessionHelpers.SetMany(r, map[string]string{
-			sessionHelpers.SessionUserProdCC:     string(user.ProductCC),
-			sessionHelpers.SessionUserEmail:      user.Email,
-			sessionHelpers.SessionUserShowAlerts: strconv.FormatBool(user.ShowAlerts),
+		session.SetMany(r, map[string]string{
+			session.SessionUserProdCC:     string(user.ProductCC),
+			session.SessionUserEmail:      user.Email,
+			session.SessionUserShowAlerts: strconv.FormatBool(user.ShowAlerts),
 		})
 
 		return "/settings", "Settings saved", ""
 	}()
 
 	if good != "" {
-		err = session.SetFlash(r, sessionHelpers.SessionGood, good)
-		if err != nil {
-			log.Err(err, r)
-		}
+		session.SetFlash(r, session.SessionGood, good)
 	}
 	if bad != "" {
-		err = session.SetFlash(r, sessionHelpers.SessionBad, bad)
-		if err != nil {
-			log.Err(err, r)
-		}
+		session.SetFlash(r, session.SessionBad, bad)
 	}
 
-	sessionHelpers.Save(w, r)
+	session.Save(w, r)
 
 	http.Redirect(w, r, redirect, http.StatusFound)
 }
 
 func settingsNewKeyHandler(w http.ResponseWriter, r *http.Request) {
-
-	var err error
 
 	good, bad := func() (good string, bad string) {
 
@@ -390,27 +369,21 @@ func settingsNewKeyHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Update session
-		sessionHelpers.SetMany(r, map[string]string{
-			sessionHelpers.SessionUserAPIKey: user.APIKey,
+		session.SetMany(r, map[string]string{
+			session.SessionUserAPIKey: user.APIKey,
 		})
 
 		return "New API key generated", ""
 	}()
 
 	if good != "" {
-		err = session.SetFlash(r, sessionHelpers.SessionGood, good)
-		if err != nil {
-			log.Err(err, r)
-		}
+		session.SetFlash(r, session.SessionGood, good)
 	}
 	if bad != "" {
-		err = session.SetFlash(r, sessionHelpers.SessionBad, bad)
-		if err != nil {
-			log.Err(err, r)
-		}
+		session.SetFlash(r, session.SessionBad, bad)
 	}
 
-	sessionHelpers.Save(w, r)
+	session.Save(w, r)
 
 	http.Redirect(w, r, "/settings", http.StatusFound)
 }
