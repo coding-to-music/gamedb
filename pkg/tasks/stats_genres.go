@@ -125,11 +125,6 @@ func (c TasksGenres) work() (err error) {
 
 	wg.Wait()
 
-	gorm, err := mysql.GetMySQLClient()
-	if err != nil {
-		return err
-	}
-
 	// Update current genres
 	var count = 1
 	for k, v := range newGenres {
@@ -149,8 +144,14 @@ func (c TasksGenres) work() (err error) {
 
 			var genre mysql.Genre
 
-			gorm = gorm.Unscoped().FirstOrInit(&genre, mysql.Genre{ID: genreID})
-			log.Err(gorm.Error)
+			db, err := mysql.GetMySQLClient()
+			if err != nil {
+				log.Err(err)
+				return
+			}
+
+			db = db.Unscoped().FirstOrInit(&genre, mysql.Genre{ID: genreID})
+			log.Err(db.Error)
 
 			genre.Name = v.name
 			genre.Apps = v.count
@@ -158,8 +159,8 @@ func (c TasksGenres) work() (err error) {
 			genre.MeanScore = v.getMeanScore()
 			genre.DeletedAt = nil
 
-			gorm = gorm.Unscoped().Save(&genre)
-			log.Err(gorm.Error)
+			db = db.Unscoped().Save(&genre)
+			log.Err(db.Error)
 
 		}(k, v)
 

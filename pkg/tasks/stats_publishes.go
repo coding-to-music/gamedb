@@ -125,11 +125,6 @@ func (c TasksPublishers) work() (err error) {
 
 	wg.Wait()
 
-	gorm, err := mysql.GetMySQLClient()
-	if err != nil {
-		return err
-	}
-
 	// Update current publishers
 	var count = 1
 	for k, v := range newPublishers {
@@ -149,8 +144,14 @@ func (c TasksPublishers) work() (err error) {
 
 			var publisher mysql.Publisher
 
-			gorm = gorm.Unscoped().FirstOrInit(&publisher, mysql.Publisher{ID: publisherID})
-			log.Err(gorm.Error)
+			db, err := mysql.GetMySQLClient()
+			if err != nil {
+				log.Err(err)
+				return
+			}
+
+			db = db.Unscoped().FirstOrInit(&publisher, mysql.Publisher{ID: publisherID})
+			log.Err(db.Error)
 
 			publisher.Name = v.name
 			publisher.Apps = v.count
@@ -158,8 +159,8 @@ func (c TasksPublishers) work() (err error) {
 			publisher.MeanScore = v.getMeanScore()
 			publisher.DeletedAt = nil
 
-			gorm = gorm.Unscoped().Save(&publisher)
-			log.Err(gorm.Error)
+			db = db.Unscoped().Save(&publisher)
+			log.Err(db.Error)
 
 		}(k, v)
 

@@ -46,16 +46,16 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		gorm, err := mysql.GetMySQLClient()
+		db, err := mysql.GetMySQLClient()
 		if err != nil {
 
 			log.Err(err, r)
 			return
 		}
 
-		gorm = gorm.Model(&mysql.Bundle{})
-		gorm = gorm.Select([]string{"id", "name", "updated_at", "discount", "highest_discount", "app_ids", "package_ids"})
-		gorm = gorm.Limit(100)
+		db = db.Model(&mysql.Bundle{})
+		db = db.Select([]string{"id", "name", "updated_at", "discount", "highest_discount", "app_ids", "package_ids"})
+		db = db.Limit(100)
 
 		sortCols := map[string]string{
 			"1": "discount",
@@ -63,11 +63,11 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			"3": "JSON_LENGTH(package_ids)",
 			"4": "updated_at",
 		}
-		gorm = query.SetOrderOffsetGorm(gorm, sortCols)
+		db = query.SetOrderOffsetGorm(db, sortCols)
 
-		gorm = gorm.Find(&bundles)
+		db = db.Find(&bundles)
 
-		log.Err(gorm.Error, r)
+		log.Err(db.Error, r)
 	}(r)
 
 	// Get total

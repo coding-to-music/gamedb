@@ -37,7 +37,7 @@ func bundleHandler(message *rabbit.Message) {
 	}
 
 	// Load current bundle
-	gorm, err := mysql.GetMySQLClient()
+	db, err := mysql.GetMySQLClient()
 	if err != nil {
 		log.Err(err)
 		sendToRetryQueue(message)
@@ -45,9 +45,9 @@ func bundleHandler(message *rabbit.Message) {
 	}
 
 	bundle := mysql.Bundle{}
-	gorm = gorm.FirstOrInit(&bundle, mysql.Bundle{ID: payload.ID})
-	if gorm.Error != nil {
-		log.Err(gorm.Error, payload.ID)
+	db = db.FirstOrInit(&bundle, mysql.Bundle{ID: payload.ID})
+	if db.Error != nil {
+		log.Err(db.Error, payload.ID)
 		sendToRetryQueue(message)
 		return
 	}
@@ -69,9 +69,9 @@ func bundleHandler(message *rabbit.Message) {
 
 		defer wg.Done()
 
-		gorm = gorm.Save(&bundle)
-		if gorm.Error != nil {
-			log.Err(gorm.Error, payload.ID)
+		db = db.Save(&bundle)
+		if db.Error != nil {
+			log.Err(db.Error, payload.ID)
 			sendToRetryQueue(message)
 			return
 		}

@@ -117,11 +117,6 @@ func (c StatsTags) work() (err error) {
 
 	wg.Wait()
 
-	gorm, err := mysql.GetMySQLClient()
-	if err != nil {
-		return err
-	}
-
 	// Update current tags
 	var count = 1
 	for k, v := range newTags {
@@ -141,8 +136,14 @@ func (c StatsTags) work() (err error) {
 
 			var tag mysql.Tag
 
-			gorm = gorm.Unscoped().FirstOrInit(&tag, mysql.Tag{ID: tagID})
-			log.Err(gorm.Error)
+			db, err := mysql.GetMySQLClient()
+			if err != nil {
+				log.Err(err)
+				return
+			}
+
+			db = db.Unscoped().FirstOrInit(&tag, mysql.Tag{ID: tagID})
+			log.Err(db.Error)
 
 			tag.Name = v.name
 			tag.Apps = v.count
@@ -150,8 +151,8 @@ func (c StatsTags) work() (err error) {
 			tag.MeanScore = v.getMeanScore()
 			tag.DeletedAt = nil
 
-			gorm = gorm.Unscoped().Save(&tag)
-			log.Err(gorm.Error)
+			db = db.Unscoped().Save(&tag)
+			log.Err(db.Error)
 
 		}(k, v)
 

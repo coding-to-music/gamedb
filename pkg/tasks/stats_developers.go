@@ -124,11 +124,6 @@ func (c StatsDevelopers) work() (err error) {
 
 	wg.Wait()
 
-	gorm, err := mysql.GetMySQLClient()
-	if err != nil {
-		return err
-	}
-
 	// Update current developers
 	var count = 1
 	for k, v := range newDevelopers {
@@ -148,8 +143,14 @@ func (c StatsDevelopers) work() (err error) {
 
 			var developer mysql.Developer
 
-			gorm = gorm.Unscoped().FirstOrInit(&developer, mysql.Developer{ID: developerInt})
-			log.Err(gorm.Error)
+			db, err := mysql.GetMySQLClient()
+			if err != nil {
+				log.Err(err)
+				return
+			}
+
+			db = db.Unscoped().FirstOrInit(&developer, mysql.Developer{ID: developerInt})
+			log.Err(db.Error)
 
 			developer.Name = v.name
 			developer.Apps = v.count
@@ -157,8 +158,8 @@ func (c StatsDevelopers) work() (err error) {
 			developer.MeanScore = v.getMeanScore()
 			developer.DeletedAt = nil
 
-			gorm = gorm.Unscoped().Save(&developer)
-			log.Err(gorm.Error)
+			db = db.Unscoped().Save(&developer)
+			log.Err(db.Error)
 
 		}(k, v)
 

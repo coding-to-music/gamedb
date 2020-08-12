@@ -527,46 +527,46 @@ func updateAppDetails(app *mongo.App) (err error) {
 			app.Packages = response.Data.Packages
 
 			// Publishers
-			gorm, err := mysql.GetMySQLClient()
+			db, err := mysql.GetMySQLClient()
 			if err != nil {
 				return err
 			}
 
 			for _, v := range response.Data.Publishers {
 				var publisher mysql.Publisher
-				gorm = gorm.Unscoped().FirstOrCreate(&publisher, mysql.Publisher{Name: mysql.TrimPublisherName(v)})
-				if gorm.Error != nil {
-					return gorm.Error
+				db = db.Unscoped().FirstOrCreate(&publisher, mysql.Publisher{Name: mysql.TrimPublisherName(v)})
+				if db.Error != nil {
+					return db.Error
 				}
 				app.Publishers = append(app.Publishers, publisher.ID)
 			}
 
 			// Developers
-			gorm, err = mysql.GetMySQLClient()
+			db, err = mysql.GetMySQLClient()
 			if err != nil {
 				return err
 			}
 
 			for _, v := range response.Data.Developers {
 				var developer mysql.Developer
-				gorm = gorm.Unscoped().FirstOrCreate(&developer, mysql.Developer{Name: strings.TrimSpace(v)})
-				if gorm.Error != nil {
-					return gorm.Error
+				db = db.Unscoped().FirstOrCreate(&developer, mysql.Developer{Name: strings.TrimSpace(v)})
+				if db.Error != nil {
+					return db.Error
 				}
 				app.Developers = append(app.Developers, developer.ID)
 			}
 
 			// Genres
-			gorm, err = mysql.GetMySQLClient()
+			db, err = mysql.GetMySQLClient()
 			if err != nil {
 				return err
 			}
 
 			for _, v := range response.Data.Genres {
 				var genre mysql.Genre
-				gorm = gorm.Unscoped().Assign(mysql.Genre{Name: strings.TrimSpace(v.Description)}).FirstOrCreate(&genre, mysql.Genre{ID: int(v.ID)})
-				if gorm.Error != nil {
-					return gorm.Error
+				db = db.Unscoped().Assign(mysql.Genre{Name: strings.TrimSpace(v.Description)}).FirstOrCreate(&genre, mysql.Genre{ID: int(v.ID)})
+				if db.Error != nil {
+					return db.Error
 				}
 				app.Genres = append(app.Genres, genre.ID)
 			}

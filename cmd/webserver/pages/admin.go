@@ -575,7 +575,7 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 
 func adminBinLogsHandler(w http.ResponseWriter, r *http.Request) {
 
-	g, err := mysql.GetMySQLClient()
+	db, err := mysql.GetMySQLClient()
 	if err != nil {
 		log.Err(err, r)
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Can't connect to mysql"})
@@ -585,9 +585,9 @@ func adminBinLogsHandler(w http.ResponseWriter, r *http.Request) {
 	deleteLog := r.URL.Query().Get("delete")
 	if deleteLog != "" {
 
-		g = g.Exec("PURGE BINARY LOGS TO '" + deleteLog + "'")
-		if g.Error != nil {
-			log.Err(g.Error, r)
+		db = db.Exec("PURGE BINARY LOGS TO '" + deleteLog + "'")
+		if db.Error != nil {
+			log.Err(db.Error, r)
 		}
 
 		session.SetFlash(r, session.SessionGood, "Done")
@@ -600,9 +600,9 @@ func adminBinLogsHandler(w http.ResponseWriter, r *http.Request) {
 	t := adminBinLogsTemplate{}
 	t.fill(w, r, "Admin", "Admin")
 
-	g = g.Raw("show binary logs").Scan(&t.BinLogs)
-	if g.Error != nil {
-		log.Err(g.Error, r)
+	db = db.Raw("show binary logs").Scan(&t.BinLogs)
+	if db.Error != nil {
+		log.Err(db.Error, r)
 	}
 
 	returnTemplate(w, r, "admin/binlogs", t)
