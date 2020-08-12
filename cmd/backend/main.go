@@ -5,6 +5,8 @@ import (
 	"net"
 
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/protos"
 	"google.golang.org/grpc"
 )
@@ -13,6 +15,9 @@ var version string
 var commits string
 
 func main() {
+
+	config.Init(version, commits, helpers.GetIP())
+	log.Initialise(log.LogNameBackend)
 
 	lis, err := net.Listen("tcp", config.BackendPort())
 	if err != nil {

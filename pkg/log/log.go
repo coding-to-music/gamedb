@@ -21,6 +21,8 @@ type LogName string
 
 const (
 	// Binaries
+	LogNameAPI       LogName = "binary-api"
+	LogNameBackend   LogName = "binary-backend"
 	LogNameChatbot   LogName = "binary-chatbot"
 	LogNameConsumers LogName = "binary-consumers"
 	LogNameCrons     LogName = "binary-crons"

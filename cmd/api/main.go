@@ -8,12 +8,19 @@ import (
 
 	"github.com/gamedb/gamedb/cmd/api/generated"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/go-chi/chi"
 	chiMiddleware "github.com/go-chi/chi/middleware"
 )
 
+var version string
+var commits string
+
 func main() {
+
+	config.Init(version, commits, helpers.GetIP())
+	log.Initialise(log.LogNameAPI)
 
 	r := chi.NewRouter()
 	r.Use(chiMiddleware.RedirectSlashes)
