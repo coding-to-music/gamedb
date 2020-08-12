@@ -5,7 +5,6 @@ import (
 	"sync"
 
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/log"
 	"google.golang.org/grpc"
 )
 
@@ -28,8 +27,6 @@ func GetClient() (*grpc.ClientConn, context.Context, error) {
 			return nil, nil, err
 		}
 		ctx = context.TODO()
-
-		log.Info("a")
 	}
 
 	return conn, ctx, nil

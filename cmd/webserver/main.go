@@ -47,7 +47,7 @@ func main() {
 	}
 
 	// Profiling
-	log.Info("Starting webserver profiling")
+	// log.Info("Starting webserver profiling")
 	go func() {
 		err := http.ListenAndServe(":6064", nil)
 		log.Critical(err)
