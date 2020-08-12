@@ -308,7 +308,6 @@ func init() {
 	// Defaults
 	Config.GameDBShortName.SetDefault("GameDB")
 	Config.NewReleaseDays.SetDefault("14")
-	Config.SteamAPIKey.SetDefault("")
 }
 
 func Init(version string, commits string, ip string) {
