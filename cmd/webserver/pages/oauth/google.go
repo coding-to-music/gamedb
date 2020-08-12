@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
+	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -80,7 +80,7 @@ func (c googleConnection) LinkCallbackHandler(w http.ResponseWriter, r *http.Req
 
 	c.callbackOAuth(r, c, mongo.EventLinkGoogle, false)
 
-	sessionHelpers.Save(w, r)
+	session.Save(w, r)
 
 	http.Redirect(w, r, "/settings", http.StatusFound)
 }

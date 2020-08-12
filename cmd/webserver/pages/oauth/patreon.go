@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
+	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/mxpv/patreon-go"
@@ -76,7 +76,7 @@ func (c patreonConnection) LinkCallbackHandler(w http.ResponseWriter, r *http.Re
 
 	c.callbackOAuth(r, c, mongo.EventUnlinkPatreon, false)
 
-	sessionHelpers.Save(w, r)
+	session.Save(w, r)
 
 	http.Redirect(w, r, "/settings", http.StatusFound)
 }

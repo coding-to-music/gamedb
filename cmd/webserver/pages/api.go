@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"path"
 
-	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
+	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/api"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
@@ -34,7 +34,7 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := apiTemplate{}
 	t.fill(w, r, "API Docs", "A list of API endpoints to access Steam data & Game DB data")
-	t.Key = sessionHelpers.Get(r, sessionHelpers.SessionUserAPIKey)
+	t.Key = session.Get(r, session.SessionUserAPIKey)
 	t.Spec = spec
 
 	returnTemplate(w, r, "api", t)

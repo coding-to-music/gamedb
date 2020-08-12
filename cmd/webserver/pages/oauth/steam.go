@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"path"
 
-	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
+	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/yohcop/openid-go"
@@ -49,7 +49,7 @@ func (c steamConnection) LinkCallbackHandler(w http.ResponseWriter, r *http.Requ
 
 	c.callback(r, c, mongo.EventLinkSteam, nil, false)
 
-	sessionHelpers.Save(w, r)
+	session.Save(w, r)
 
 	http.Redirect(w, r, "/settings", http.StatusFound)
 }
@@ -63,7 +63,7 @@ func (c steamConnection) LoginCallbackHandler(w http.ResponseWriter, r *http.Req
 
 	c.callback(r, c, mongo.EventLogin, nil, true)
 
-	sessionHelpers.Save(w, r)
+	session.Save(w, r)
 
 	http.Redirect(w, r, "/login", http.StatusFound)
 }

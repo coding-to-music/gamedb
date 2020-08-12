@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
-	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
+	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/cache"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -64,7 +64,7 @@ func experienceHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	level := sessionHelpers.Get(r, sessionHelpers.SessionPlayerLevel)
+	level := session.Get(r, session.SessionPlayerLevel)
 	if level == "" {
 		t.PlayerLevel = 10
 		t.PlayerLevelTo = 20

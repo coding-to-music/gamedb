@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
+	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	gh "github.com/google/go-github/v28/github"
@@ -75,7 +75,7 @@ func (c githubConnection) LinkCallbackHandler(w http.ResponseWriter, r *http.Req
 
 	c.callbackOAuth(r, c, mongo.EventLinkGitHub, false)
 
-	sessionHelpers.Save(w, r)
+	session.Save(w, r)
 
 	http.Redirect(w, r, "/settings", http.StatusFound)
 }

@@ -10,7 +10,7 @@ import (
 
 	"github.com/didip/tollbooth/limiter"
 	"github.com/gamedb/gamedb/cmd/api/generated"
-	sessionHelpers "github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
+	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	influxHelpers "github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -58,7 +58,7 @@ func (s Server) call(w http.ResponseWriter, r *http.Request, callback func(w htt
 	if key == "" {
 		key = r.Header.Get(keyField)
 		if key == "" {
-			key = sessionHelpers.Get(r, sessionHelpers.SessionUserAPIKey)
+			key = session.Get(r, session.SessionUserAPIKey)
 		}
 	}
 
