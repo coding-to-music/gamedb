@@ -60,6 +60,7 @@ func appMorelikeHandler(message *rabbit.Message) {
 		return
 	}
 
+	// Update app
 	_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", payload.AppID}}, bson.D{{"related_app_ids", relatedAppIDs}})
 	if err != nil {
 		log.Err(err, payload.AppID)
@@ -67,6 +68,7 @@ func appMorelikeHandler(message *rabbit.Message) {
 		return
 	}
 
+	// Clear cache
 	err = memcache.Delete(memcache.MemcacheApp(payload.AppID).Key)
 	if err != nil {
 		log.Err(err, payload.AppID)

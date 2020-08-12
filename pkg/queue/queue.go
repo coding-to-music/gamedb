@@ -540,13 +540,14 @@ func ProducePlayerRank(payload PlayerRanksMessage) (err error) {
 	return produce(QueuePlayerRanks, payload)
 }
 
-func ProduceGroupSearch(group mongo.Group) (err error) {
+func ProduceGroupSearch(group *mongo.Group, groupID string, groupType string) (err error) {
 
-	return produce(QueueGroupsSearch, GroupSearchMessage{Group: group})
+	return produce(QueueGroupsSearch, GroupSearchMessage{Group: group, GroupID: groupID, GroupType: groupType})
 }
 
-func ProduceGroupPrimaries(group mongo.Group) (err error) {
-	m := GroupPrimariesMessage{Group: group}
+func ProduceGroupPrimaries(groupID string, groupType string, prims int) (err error) {
+
+	m := GroupPrimariesMessage{GroupID: groupID, GroupType: groupType, CurrentPrimaries: prims}
 	return produce(m.Queue(), m)
 }
 
@@ -600,7 +601,7 @@ func ProducePlayerGroup(player mongo.Player, skipGroupUpdate bool, force bool) (
 
 func ProduceAppSearch(app *mongo.App, appID int) (err error) {
 
-	m := AppsSearchMessage{AppID: appID, App: app}
+	m := AppsSearchMessage{App: app, AppID: appID}
 	return produce(m.Queue(), m)
 }
 

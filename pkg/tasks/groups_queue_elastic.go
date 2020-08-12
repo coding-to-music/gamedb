@@ -34,17 +34,16 @@ func (c GroupsQueueElastic) work() (err error) {
 
 	for {
 
-		var projection = bson.M{}
 		var filter = bson.D{{"type", helpers.GroupTypeGroup}}
 
-		groups, err := mongo.GetGroups(limit, offset, bson.D{{"_id", 1}}, filter, projection)
+		groups, err := mongo.GetGroups(limit, offset, bson.D{{"_id", 1}}, filter, nil)
 		if err != nil {
 			return err
 		}
 
 		for _, group := range groups {
 
-			err = queue.ProduceGroupSearch(group)
+			err = queue.ProduceGroupSearch(&group, "", "")
 			if err != nil {
 				return err
 			}

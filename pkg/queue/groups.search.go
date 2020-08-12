@@ -9,7 +9,9 @@ import (
 )
 
 type GroupSearchMessage struct {
-	Group mongo.Group `json:"group"`
+	Group     *mongo.Group `json:"group"`
+	GroupID   string       `json:"group_id"`   // Only if group is null
+	GroupType string       `json:"group_type"` // Only if group is null
 }
 
 func (m GroupSearchMessage) Queue() rabbit.QueueName {
@@ -26,22 +28,49 @@ func groupsSearchHandler(message *rabbit.Message) {
 		return
 	}
 
-	if payload.Group.Type != helpers.GroupTypeGroup {
+	if payload.GroupType != "" && payload.GroupType != helpers.GroupTypeGroup {
+		message.Ack()
+		return
+	}
+
+	var groupMongo mongo.Group
+
+	if payload.GroupID != "" {
+
+		groupMongo, err = mongo.GetGroup(payload.GroupID)
+		if err != nil {
+			log.Err(err, message.Message.Body)
+			sendToRetryQueue(message)
+			return
+		}
+
+	} else if payload.Group != nil {
+
+		groupMongo = *payload.Group
+
+	} else {
+
+		log.Err(err, message.Message.Body)
+		sendToFailQueue(message)
+		return
+	}
+
+	if groupMongo.Type != helpers.GroupTypeGroup {
 		message.Ack()
 		return
 	}
 
 	group := elasticsearch.Group{
-		ID:           payload.Group.ID,
-		Name:         payload.Group.Name,
-		URL:          payload.Group.URL,
-		Abbreviation: payload.Group.Abbr,
-		Headline:     payload.Group.Headline,
-		Icon:         payload.Group.Icon,
-		Members:      payload.Group.Members,
-		Trend:        payload.Group.Trending,
-		Error:        payload.Group.Error != "",
-		Primaries:    payload.Group.Primaries,
+		ID:           groupMongo.ID,
+		Name:         groupMongo.Name,
+		URL:          groupMongo.URL,
+		Abbreviation: groupMongo.Abbr,
+		Headline:     groupMongo.Headline,
+		Icon:         groupMongo.Icon,
+		Members:      groupMongo.Members,
+		Trend:        groupMongo.Trending,
+		Error:        groupMongo.Error != "",
+		Primaries:    groupMongo.Primaries,
 	}
 
 	err = elasticsearch.IndexGroup(group)

@@ -10,7 +10,9 @@ import (
 )
 
 type GroupPrimariesMessage struct {
-	Group mongo.Group `json:"group"`
+	GroupID          string `json:"group_id"`
+	GroupType        string `json:"group_type"`
+	CurrentPrimaries int    `json:"current_primaries"`
 }
 
 func (m GroupPrimariesMessage) Queue() rabbit.QueueName {
@@ -28,20 +30,20 @@ func groupPrimariesHandler(message *rabbit.Message) {
 		return
 	}
 
-	prims, err := mongo.CountDocuments(mongo.CollectionPlayers, bson.D{{"primary_clan_id_string", payload.Group.ID}}, 0)
+	prims, err := mongo.CountDocuments(mongo.CollectionPlayers, bson.D{{"primary_clan_id_string", payload.GroupID}}, 0)
 	if err != nil {
-		log.Err(err, payload.Group.ID)
+		log.Err(err, payload.GroupID)
 		sendToRetryQueue(message)
 		return
 	}
 
-	if payload.Group.Primaries == int(prims) {
+	if payload.CurrentPrimaries == int(prims) {
 		message.Ack()
 		return
 	}
 
 	filter := bson.D{
-		{"_id", payload.Group.ID},
+		{"_id", payload.GroupID},
 	}
 
 	update := bson.D{
@@ -50,25 +52,23 @@ func groupPrimariesHandler(message *rabbit.Message) {
 
 	_, err = mongo.UpdateOne(mongo.CollectionGroups, filter, update)
 	if err != nil {
-		log.Err(err, payload.Group.ID)
+		log.Err(err, payload.GroupID)
 		sendToRetryQueue(message)
 		return
 	}
 
-	// Clear player cache
-	err = memcache.Delete(memcache.MemcacheGroup(payload.Group.ID).Key)
+	// Clear group cache
+	err = memcache.Delete(memcache.MemcacheGroup(payload.GroupID).Key)
 	if err != nil {
-		log.Err(err, payload.Group.ID)
+		log.Err(err, payload.GroupID)
 		sendToRetryQueue(message)
 		return
 	}
 
 	// Update Elastic
-	payload.Group.Primaries = int(prims)
-
-	err = ProduceGroupSearch(payload.Group)
+	err = ProduceGroupSearch(nil, payload.GroupID, payload.GroupType)
 	if err != nil {
-		log.Err(err, payload.Group.ID)
+		log.Err(err, payload.GroupID)
 		sendToRetryQueue(message)
 		return
 	}

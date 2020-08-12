@@ -233,8 +233,8 @@ func groupsHandler(message *rabbit.Message) {
 
 	// Produce to sub queues
 	var produces = []QueueMessageInterface{
-		GroupSearchMessage{Group: group},
-		GroupPrimariesMessage{Group: group},
+		GroupSearchMessage{Group: &group},
+		GroupPrimariesMessage{GroupID: group.ID, GroupType: group.Type, CurrentPrimaries: group.Primaries},
 	}
 
 	for _, v := range produces {

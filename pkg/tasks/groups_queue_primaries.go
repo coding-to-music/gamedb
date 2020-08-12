@@ -33,14 +33,16 @@ func (c GroupsQueuePrimaries) work() (err error) {
 
 	for {
 
-		groups, err := mongo.GetGroups(limit, offset, bson.D{{"_id", 1}}, nil, nil)
+		var projection = bson.M{"_id": 1, "type": 1, "primaries": 1}
+
+		groups, err := mongo.GetGroups(limit, offset, bson.D{{"_id", 1}}, nil, projection)
 		if err != nil {
 			return err
 		}
 
 		for _, group := range groups {
 
-			err = queue.ProduceGroupPrimaries(group)
+			err = queue.ProduceGroupPrimaries(group.ID, group.Type, group.Primaries)
 			if err != nil {
 				return err
 			}
