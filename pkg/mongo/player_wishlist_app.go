@@ -64,7 +64,7 @@ func (app PlayerWishlistApp) GetReleaseDateNice() string {
 	return helpers.GetAppReleaseDateNice(0, app.AppReleaseDate.Unix(), app.AppReleaseDateNice)
 }
 
-func InsertPlayerWishlistApps(apps []PlayerWishlistApp) (err error) {
+func ReplacePlayerWishlistApps(apps []PlayerWishlistApp) (err error) {
 
 	if len(apps) < 1 {
 		return nil

@@ -122,7 +122,7 @@ func getArticles(offset int64, limit int64, filter bson.D, order bson.D, project
 	return news, cur.Err()
 }
 
-func SaveArticles(articles []Article) (err error) {
+func ReplaceArticles(articles []Article) (err error) {
 
 	if len(articles) == 0 {
 		return nil

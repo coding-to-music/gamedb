@@ -35,7 +35,7 @@ func (a PlayerAlias) GetTime() string {
 	return time.Unix(a.Time, 0).Format(helpers.DateYearTime)
 }
 
-func UpdatePlayerAliases(aliases []PlayerAlias) (err error) {
+func ReplacePlayerAliases(aliases []PlayerAlias) (err error) {
 
 	if len(aliases) == 0 {
 		return nil

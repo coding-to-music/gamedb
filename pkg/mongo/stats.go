@@ -42,7 +42,7 @@ func GetStats(c collection, offset int64, limit int64) (stats []Stat) {
 	return stats
 }
 
-func UpdateStats(c collection, stats []Stat) (err error) {
+func ReplaceStats(c collection, stats []Stat) (err error) {
 
 	if len(stats) == 0 {
 		return nil

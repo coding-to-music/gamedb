@@ -242,7 +242,7 @@ func playerAchievementsHandler(message *rabbit.Message) {
 		}
 	}
 
-	err = mongo.UpdatePlayerAchievements(rows)
+	err = mongo.ReplacePlayerAchievements(rows)
 	if err != nil {
 		log.Err(err)
 		sendToRetryQueue(message)

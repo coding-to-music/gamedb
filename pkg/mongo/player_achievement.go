@@ -174,7 +174,7 @@ func getPlayerAchievements(offset int64, limit int64, filter bson.D, sort bson.D
 	return achievements, cur.Err()
 }
 
-func UpdatePlayerAchievements(achievements []PlayerAchievement) (err error) {
+func ReplacePlayerAchievements(achievements []PlayerAchievement) (err error) {
 
 	if len(achievements) < 1 {
 		return nil

@@ -37,7 +37,7 @@ func (app PackageApp) getKey() string {
 	return strconv.Itoa(app.PackageID) + "-" + strconv.Itoa(app.AppID)
 }
 
-func UpdatePackageApps(apps []PackageApp) (err error) {
+func ReplacePackageApps(apps []PackageApp) (err error) {
 
 	if len(apps) < 1 {
 		return nil

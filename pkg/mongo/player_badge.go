@@ -129,7 +129,7 @@ func (badge PlayerBadge) GetType() string {
 	}
 }
 
-func UpdatePlayerBadges(badges []PlayerBadge) (err error) {
+func ReplacePlayerBadges(badges []PlayerBadge) (err error) {
 
 	if len(badges) == 0 {
 		return nil

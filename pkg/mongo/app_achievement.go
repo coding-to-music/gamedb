@@ -86,7 +86,7 @@ func GetAppAchievements(offset int64, limit int64, filter bson.D, sort bson.D) (
 	return achievements, cur.Err()
 }
 
-func SaveAppAchievements(achievements []AppAchievement) (err error) {
+func ReplaceAppAchievements(achievements []AppAchievement) (err error) {
 
 	if len(achievements) == 0 {
 		return nil

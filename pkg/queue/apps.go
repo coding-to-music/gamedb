@@ -1030,7 +1030,7 @@ func saveSales(app mongo.App, newSales []mongo.Sale) (err error) {
 		newSales[k].AppPrices = app.GetPrices().Map()
 	}
 
-	return mongo.UpdateSales(newSales)
+	return mongo.ReplaceSales(newSales)
 }
 
 func replaceAppRow(app mongo.App) (err error) {

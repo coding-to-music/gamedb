@@ -74,7 +74,7 @@ func GetDLCForApp(offset int64, limit int64, filter bson.D, sort bson.D) (dlcs [
 	return dlcs, cur.Err()
 }
 
-func UpdateAppDLC(DLCs []AppDLC) (err error) {
+func ReplaceAppDLCs(DLCs []AppDLC) (err error) {
 
 	if len(DLCs) < 1 {
 		return nil

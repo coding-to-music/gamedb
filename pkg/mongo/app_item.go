@@ -172,7 +172,7 @@ func GetAppItems(offset int64, limit int64, filter bson.D, projection bson.M) (i
 	return items, cur.Err()
 }
 
-func SaveAppItems(items []AppItem) (err error) {
+func ReplaceAppItems(items []AppItem) (err error) {
 
 	if len(items) < 1 {
 		return nil

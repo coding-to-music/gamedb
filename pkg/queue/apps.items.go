@@ -122,7 +122,7 @@ func appItemsHandler(message *rabbit.Message) {
 
 	// Update all new items (must be after delete)
 	// Always save them all incase they change
-	err = mongo.SaveAppItems(newDocuments)
+	err = mongo.ReplaceAppItems(newDocuments)
 	if err != nil {
 		log.Err(err, message.Message.Body)
 		sendToRetryQueue(message)

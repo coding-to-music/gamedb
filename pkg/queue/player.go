@@ -435,7 +435,7 @@ func updatePlayerRecentGames(player *mongo.Player, payload PlayerMessage) error 
 		return err
 	}
 
-	err = mongo.UpdateRecentApps(appsToAdd)
+	err = mongo.ReplaceRecentApps(appsToAdd)
 	if err != nil {
 		return err
 	}
@@ -525,7 +525,7 @@ func updatePlayerBadges(player *mongo.Player) error {
 	}
 
 	// Save to Mongo
-	return mongo.UpdatePlayerBadges(playerBadgeSlice)
+	return mongo.ReplacePlayerBadges(playerBadgeSlice)
 }
 
 func updatePlayerFriends(player *mongo.Player) error {
@@ -604,7 +604,7 @@ func updatePlayerFriends(player *mongo.Player) error {
 		friendsToAddSlice = append(friendsToAddSlice, v)
 	}
 
-	return mongo.UpdateFriends(friendsToAddSlice)
+	return mongo.ReplacePlayerFriends(friendsToAddSlice)
 }
 
 func updatePlayerLevel(player *mongo.Player) error {
@@ -731,7 +731,7 @@ func updatePlayerWishlistApps(player *mongo.Player) error {
 		toAdd[k].AppReleaseDateNice = appsMap[v.AppID].ReleaseDate
 	}
 
-	err = mongo.InsertPlayerWishlistApps(toAdd)
+	err = mongo.ReplacePlayerWishlistApps(toAdd)
 	if err != nil {
 		return err
 	}

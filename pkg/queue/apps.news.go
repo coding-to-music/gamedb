@@ -103,7 +103,7 @@ func appNewsHandler(message *rabbit.Message) {
 		log.Err(err)
 	}
 
-	err = mongo.SaveArticles(articles)
+	err = mongo.ReplaceArticles(articles)
 	if err != nil {
 		log.Err(err, payload.AppID)
 		sendToRetryQueue(message)

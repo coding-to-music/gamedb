@@ -118,7 +118,7 @@ func appAchievementsHandler(message *rabbit.Message) {
 		return achievementsSlice[i].Completed > achievementsSlice[j].Completed
 	})
 
-	err = mongo.SaveAppAchievements(achievementsSlice)
+	err = mongo.ReplaceAppAchievements(achievementsSlice)
 	if err != nil {
 		log.Err(err, payload.AppID)
 		sendToRetryQueue(message)

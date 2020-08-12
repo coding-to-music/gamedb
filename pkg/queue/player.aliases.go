@@ -89,7 +89,7 @@ func playerAliasesHandler(message *rabbit.Message) {
 		playerAliasStrings = append(playerAliasStrings, v.Alias)
 	}
 
-	err = mongo.UpdatePlayerAliases(playerAliases)
+	err = mongo.ReplacePlayerAliases(playerAliases)
 	if err != nil {
 		log.Err(err, payload.PlayerID)
 		sendToRetryQueue(message)

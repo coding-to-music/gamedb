@@ -211,7 +211,7 @@ func getSales(offset int64, limit int64, filter bson.D, sort bson.D, projection 
 	return offers, cur.Err()
 }
 
-func UpdateSales(offers []Sale) (err error) {
+func ReplaceSales(offers []Sale) (err error) {
 
 	if len(offers) < 1 {
 		return nil

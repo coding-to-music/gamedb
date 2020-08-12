@@ -77,7 +77,7 @@ func appDLCHandler(message *rabbit.Message) {
 		})
 	}
 
-	err = mongo.UpdateAppDLC(rows)
+	err = mongo.ReplaceAppDLCs(rows)
 	if err != nil {
 		log.Err(err)
 		sendToRetryQueue(message)
