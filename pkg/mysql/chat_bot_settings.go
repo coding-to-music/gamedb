@@ -26,7 +26,7 @@ func GetChatBotSettings(discordID string) (settings ChatBotSetting, err error) {
 		}
 
 		db = db.Where("discord_id = ?", discordID).First(&settings)
-		if db.Error != nil {
+		if db.Error != nil && db.Error != ErrRecordNotFound {
 			return settings, db.Error
 		}
 
