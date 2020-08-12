@@ -63,10 +63,7 @@ func deleteUserVerification(code string) (err error) {
 		return err
 	}
 
-	userVerification := UserVerification{}
-	userVerification.Code = code
-
-	err = db.Delete(&userVerification).Error
+	err = db.Where("code = ?", code).Delete(UserVerification{}).Error
 	err = helpers.IgnoreErrors(err, ErrRecordNotFound)
 
 	return err
