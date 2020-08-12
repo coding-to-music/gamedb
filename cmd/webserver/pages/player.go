@@ -225,7 +225,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		aliases, err = mongo.GetPlayerAliases(player.ID)
+		aliases, err = mongo.GetPlayerAliases(player.ID, 0, 20)
 		if err != nil {
 			log.Err(err, r)
 		}

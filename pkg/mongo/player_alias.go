@@ -64,11 +64,14 @@ func ReplacePlayerAliases(aliases []PlayerAlias) (err error) {
 	return err
 }
 
-func GetPlayerAliases(playerID int64) (aliases []PlayerAlias, err error) {
+func GetPlayerAliases(playerID int64, limit int64, afterTimestamp int64) (aliases []PlayerAlias, err error) {
 
-	filter := bson.D{{"player_id", playerID}}
+	filter := bson.D{
+		{"player_id", playerID},
+		{"time", bson.M{"$gt": afterTimestamp}},
+	}
 
-	cur, ctx, err := Find(CollectionPlayerAliases, 0, 0, bson.D{{"time", -1}}, filter, nil, nil)
+	cur, ctx, err := Find(CollectionPlayerAliases, 0, limit, bson.D{{"time", -1}}, filter, nil, nil)
 	if err != nil {
 		return aliases, err
 	}

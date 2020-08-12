@@ -1,6 +1,8 @@
 package queue
 
 import (
+	"time"
+
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -71,15 +73,13 @@ func appsPlayersHandler(message *rabbit.Message) {
 	player.Comments = mongoPlayer.CommentsCount
 
 	// Add aliases
-	aliases, err := mongo.GetPlayerAliases(mongoPlayer.ID)
+	sixMonthsAgo := time.Now().AddDate(0, -6, 0).Unix()
+
+	aliases, err := mongo.GetPlayerAliases(mongoPlayer.ID, 5, sixMonthsAgo)
 	if err != nil {
 		log.Err(err, message.Message.Body)
 		sendToFailQueue(message)
 		return
-	}
-
-	if len(aliases) > 5 {
-		aliases = aliases[0:5]
 	}
 
 	for _, v := range aliases {
