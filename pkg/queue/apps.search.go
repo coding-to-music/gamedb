@@ -39,7 +39,7 @@ func appsSearchHandler(message *rabbit.Message) {
 		mongoApp, err = mongo.GetApp(payload.AppID)
 		if err != nil {
 			log.Err(err, message.Message.Body)
-			sendToFailQueue(message)
+			sendToRetryQueue(message)
 			return
 		}
 
