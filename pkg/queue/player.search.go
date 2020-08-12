@@ -9,7 +9,8 @@ import (
 )
 
 type PlayersSearchMessage struct {
-	Player mongo.Player `json:"player"`
+	Player   *mongo.Player `json:"player"`
+	PlayerID int64         `json:"player_id"`
 }
 
 func (m PlayersSearchMessage) Queue() rabbit.QueueName {
@@ -27,28 +28,50 @@ func appsPlayersHandler(message *rabbit.Message) {
 		return
 	}
 
+	var mongoPlayer mongo.Player
+
+	if payload.PlayerID > 0 {
+
+		mongoPlayer, err = mongo.GetPlayer(payload.PlayerID)
+		if err != nil {
+			log.Err(err, message.Message.Body)
+			sendToRetryQueue(message)
+			return
+		}
+
+	} else if payload.Player != nil {
+
+		mongoPlayer = *payload.Player
+
+	} else {
+
+		log.Err(err, message.Message.Body)
+		sendToFailQueue(message)
+		return
+	}
+
 	player := elasticsearch.Player{}
-	player.ID = payload.Player.ID
-	player.PersonaName = payload.Player.PersonaName
-	player.VanityURL = payload.Player.VanityURL
-	player.Avatar = payload.Player.Avatar
-	player.CountryCode = payload.Player.CountryCode
-	player.StateCode = payload.Player.StateCode
-	player.LastBan = payload.Player.LastBan.Unix()
-	player.GameBans = payload.Player.NumberOfGameBans
-	player.Achievements = payload.Player.AchievementCount
-	player.Achievements100 = payload.Player.AchievementCount100
-	player.Continent = payload.Player.ContinentCode
-	player.VACBans = payload.Player.NumberOfVACBans
-	player.Level = payload.Player.Level
-	player.PlayTime = payload.Player.PlayTime
-	player.Badges = payload.Player.BadgesCount
-	player.Games = payload.Player.GamesCount
-	player.Friends = payload.Player.FriendsCount
-	player.Comments = payload.Player.CommentsCount
+	player.ID = mongoPlayer.ID
+	player.PersonaName = mongoPlayer.PersonaName
+	player.VanityURL = mongoPlayer.VanityURL
+	player.Avatar = mongoPlayer.Avatar
+	player.CountryCode = mongoPlayer.CountryCode
+	player.StateCode = mongoPlayer.StateCode
+	player.LastBan = mongoPlayer.LastBan.Unix()
+	player.GameBans = mongoPlayer.NumberOfGameBans
+	player.Achievements = mongoPlayer.AchievementCount
+	player.Achievements100 = mongoPlayer.AchievementCount100
+	player.Continent = mongoPlayer.ContinentCode
+	player.VACBans = mongoPlayer.NumberOfVACBans
+	player.Level = mongoPlayer.Level
+	player.PlayTime = mongoPlayer.PlayTime
+	player.Badges = mongoPlayer.BadgesCount
+	player.Games = mongoPlayer.GamesCount
+	player.Friends = mongoPlayer.FriendsCount
+	player.Comments = mongoPlayer.CommentsCount
 
 	// Add aliases
-	aliases, err := mongo.GetPlayerAliases(payload.Player.ID)
+	aliases, err := mongo.GetPlayerAliases(mongoPlayer.ID)
 	if err != nil {
 		log.Err(err, message.Message.Body)
 		sendToFailQueue(message)

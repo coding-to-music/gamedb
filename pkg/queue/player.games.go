@@ -197,7 +197,7 @@ func playerGamesHandler(message *rabbit.Message) {
 	// Update player row
 	_, err = mongo.UpdateOne(mongo.CollectionPlayers, bson.D{{"_id", payload.PlayerID}}, update)
 	if err != nil {
-		log.Err(err, payload.PlayerID)
+		log.Err(err, message.Message.Body)
 		sendToRetryQueue(message)
 		return
 	}
@@ -208,7 +208,7 @@ func playerGamesHandler(message *rabbit.Message) {
 		"playtime": playtime,
 	})
 	if err != nil {
-		log.Err(err, payload.PlayerID)
+		log.Err(err, message.Message.Body)
 		sendToRetryQueue(message)
 		return
 	}
@@ -216,10 +216,19 @@ func playerGamesHandler(message *rabbit.Message) {
 	// Clear player cache
 	err = memcache.Delete(memcache.MemcachePlayer(payload.PlayerID).Key)
 	if err != nil {
-		log.Err(err, payload.PlayerID)
+		log.Err(err, message.Message.Body)
 		sendToRetryQueue(message)
 		return
 	}
 
+	// Update Elastic
+	err = ProducePlayerSearch(nil, payload.PlayerID)
+	if err != nil {
+		log.Err(err, message.Message.Body)
+		sendToRetryQueue(message)
+		return
+	}
+
+	//
 	message.Ack()
 }

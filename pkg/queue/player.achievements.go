@@ -111,6 +111,15 @@ func playerAchievementsHandler(message *rabbit.Message) {
 			return
 		}
 
+		// Update Elastic
+		err = ProducePlayerSearch(nil, payload.PlayerID)
+		if err != nil {
+			log.Err(err, message.Message.Body)
+			sendToRetryQueue(message)
+			return
+		}
+
+		//
 		message.Ack()
 		return
 	}

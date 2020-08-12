@@ -605,9 +605,9 @@ func ProduceAppSearch(app *mongo.App, appID int) (err error) {
 	return produce(m.Queue(), m)
 }
 
-func ProducePlayerSearch(player mongo.Player) (err error) {
+func ProducePlayerSearch(player *mongo.Player, playerID int64) (err error) {
 
-	return produce(QueuePlayersSearch, PlayersSearchMessage{Player: player})
+	return produce(QueuePlayersSearch, PlayersSearchMessage{Player: player, PlayerID: playerID})
 }
 
 func ProduceWebsocket(payload interface{}, pages ...websockets.WebsocketPage) (err error) {

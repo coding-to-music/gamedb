@@ -317,7 +317,7 @@ func playerHandler(message *rabbit.Message) {
 
 	// Produce to sub queues
 	var produces = []QueueMessageInterface{
-		PlayersSearchMessage{Player: player},
+		// PlayersSearchMessage{Player: &player}, // Done in sub queues
 		PlayerGamesMessage{
 			PlayerID:                 player.ID,
 			PlayerCountry:            player.CountryCode,

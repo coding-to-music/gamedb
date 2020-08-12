@@ -43,7 +43,7 @@ func (c PlayersQueueElastic) work() (err error) {
 
 		for _, player := range players {
 
-			err = queue.ProducePlayerSearch(player)
+			err = queue.ProducePlayerSearch(&player, 0)
 			if err != nil {
 				return err
 			}
