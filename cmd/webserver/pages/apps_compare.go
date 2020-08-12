@@ -371,7 +371,7 @@ func appsComparePricesHandler(w http.ResponseWriter, r *http.Request) {
 
 	prices, err := mongo.GetPricesForApps(idInts, code)
 	if err != nil {
-		log.Err(err)
+		log.Err(err, r)
 		return
 	}
 

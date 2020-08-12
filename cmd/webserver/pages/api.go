@@ -68,7 +68,7 @@ func apiSteamJSONHandler(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
-		log.Err(err)
+		log.Err(err, r)
 		return
 	}
 

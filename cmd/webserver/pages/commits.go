@@ -66,7 +66,7 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 				break
 			}
 			if err != nil {
-				log.Err(err)
+				log.Err(err, r)
 				continue
 			}
 

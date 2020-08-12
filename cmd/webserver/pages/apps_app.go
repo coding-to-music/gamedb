@@ -443,7 +443,7 @@ func appSimilarHandler(w http.ResponseWriter, r *http.Request) {
 
 	app, err := mongo.GetApp(id)
 	if err != nil {
-		log.Err(err)
+		log.Err(err, r)
 		return
 	}
 
@@ -919,7 +919,7 @@ func appBundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	app, err := mongo.GetApp(id)
 	if err != nil {
-		log.Err(err)
+		log.Err(err, r)
 		return
 	}
 	if len(app.Bundles) == 0 {
@@ -933,7 +933,7 @@ func appBundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return mysql.GetBundlesByID(app.Bundles, nil)
 	})
 	if err != nil {
-		log.Err(err)
+		log.Err(err, r)
 		return
 	}
 
@@ -963,7 +963,7 @@ func appPackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	app, err := mongo.GetApp(id)
 	if err != nil {
-		log.Err(err)
+		log.Err(err, r)
 		return
 	}
 	if len(app.Packages) == 0 {
@@ -977,7 +977,7 @@ func appPackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return mongo.GetPackagesByID(app.Packages, bson.M{})
 	})
 	if err != nil {
-		log.Err(err)
+		log.Err(err, r)
 		return
 	}
 
@@ -1035,7 +1035,7 @@ func appWishlistAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return hc, err
 	})
 
-	log.Err(err)
+	log.Err(err, r)
 
 	returnJSON(w, r, hc)
 }
@@ -1078,13 +1078,13 @@ func appPlayersHeatmapAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 						t, err := time.Parse(time.RFC3339, vv[0].(string))
 						if err != nil {
-							log.Err(err)
+							log.Err(err, r)
 							continue
 						}
 
 						val, err := vv[k].(json.Number).Float64()
 						if err != nil {
-							log.Err(err)
+							log.Err(err, r)
 							continue
 						}
 
@@ -1106,7 +1106,7 @@ func appPlayersHeatmapAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return hc, err
 	})
 
-	log.Err(err)
+	log.Err(err, r)
 
 	returnJSON(w, r, hc)
 }
@@ -1125,7 +1125,7 @@ func appTagsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	app, err := mongo.GetApp(id)
 	if err != nil {
-		log.Err(err)
+		log.Err(err, r)
 		return
 	}
 
@@ -1159,7 +1159,7 @@ func appTagsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return hc, err
 	})
 
-	log.Err(err)
+	log.Err(err, r)
 
 	returnJSON(w, r, map[string]interface{}{
 		"counts": hc,
@@ -1224,7 +1224,7 @@ func appPlayersAjaxHandler(limit bool) func(http.ResponseWriter, *http.Request) 
 			return hc, err
 		})
 
-		log.Err(err)
+		log.Err(err, r)
 
 		returnJSON(w, r, hc)
 	}
