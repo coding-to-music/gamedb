@@ -28,7 +28,7 @@ func GetGroupChart(group elasticsearch.Group) (reader io.Reader, err error) {
 	builder.AddGroupByTime("1d")
 	builder.SetFillNone()
 
-	return getChart(builder, group.ID, "Members", "https://gamedb.online"+group.GetPath())
+	return getChart(builder, group.ID, "Members", config.Config.GameDBDomain.Get()+group.GetPath())
 }
 
 func GetAppChart(app mongo.App) (reader io.Reader, err error) {
@@ -40,7 +40,7 @@ func GetAppChart(app mongo.App) (reader io.Reader, err error) {
 	builder.AddGroupByTime("1d")
 	builder.SetFillNumber(0)
 
-	return getChart(builder, strconv.Itoa(app.ID), "In Game", "https://gamedb.online"+app.GetPath())
+	return getChart(builder, strconv.Itoa(app.ID), "In Game", config.Config.GameDBDomain.Get()+app.GetPath())
 }
 
 func getChart(builder *influxql.Builder, id string, title string, description string) (reader io.Reader, err error) {

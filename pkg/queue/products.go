@@ -309,7 +309,7 @@ func saveProductPricesToMongo(before helpers.ProductInterface, after helpers.Pro
 		//
 		// 		// Slack message
 		// 		err = slack.PostWebhook(config.Config.SlackSocialWebhook.Get(), &slack.WebhookMessage{
-		// 			Text: "https://gamedb.online" + before.GetPath(),
+		// 			Text: config.Config.GameDBDomain.Get() + before.GetPath(),
 		// 		})
 		// 		log.Err(err)
 		// 	}

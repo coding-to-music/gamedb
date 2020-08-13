@@ -4,6 +4,7 @@ import (
 	"html/template"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/gamedb/gamedb/pkg/config"
 )
 
 type CommandHelp struct {
@@ -35,7 +36,7 @@ func (CommandHelp) Type() CommandType {
 
 func (CommandHelp) Output(msg *discordgo.MessageCreate) (message discordgo.MessageSend, err error) {
 
-	message.Content = "See https://gamedb.online/discord-bot"
+	message.Content = "See " + config.Config.GameDBDomain.Get() + "/discord-bot"
 
 	return message, nil
 }

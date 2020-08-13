@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
@@ -76,7 +77,7 @@ func (c CommandPlayerWishlist) Output(msg *discordgo.MessageCreate) (message dis
 		message.Content = "<@" + msg.Author.ID + ">"
 		message.Embed = &discordgo.MessageEmbed{
 			Title:  "Wishlist Items",
-			URL:    "https://gamedb.online" + player.GetPath() + "#wishlist",
+			URL:    config.Config.GameDBDomain.Get() + player.GetPath() + "#wishlist",
 			Author: getAuthor(msg.Author.ID),
 		}
 

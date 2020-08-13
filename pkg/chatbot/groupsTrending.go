@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/mongo"
 )
 
@@ -41,7 +42,7 @@ func (CommandGroupsTrending) Output(msg *discordgo.MessageCreate) (message disco
 	message.Content = "<@" + msg.Author.ID + ">"
 	message.Embed = &discordgo.MessageEmbed{
 		Title:  "Trending Groups",
-		URL:    "https://gamedb.online/groups",
+		URL:    config.Config.GameDBDomain.Get() + "/groups",
 		Author: getAuthor(msg.Author.ID),
 	}
 

@@ -7,6 +7,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/mongo"
 )
 
@@ -42,7 +43,7 @@ func (CommandAppsPopular) Output(msg *discordgo.MessageCreate) (message discordg
 	message.Content = "<@" + msg.Author.ID + ">"
 	message.Embed = &discordgo.MessageEmbed{
 		Title:  "Popular Games",
-		URL:    "https://gamedb.online/games",
+		URL:    config.Config.GameDBDomain.Get() + "/games",
 		Author: getAuthor(msg.Author.ID),
 	}
 

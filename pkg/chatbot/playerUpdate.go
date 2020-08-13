@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
@@ -48,7 +49,7 @@ func (c CommandPlayerUpdate) Output(msg *discordgo.MessageCreate) (message disco
 
 		user, err := mysql.GetUserByKey("discord_id", msg.Author.ID, 0)
 		if err == mysql.ErrRecordNotFound {
-			message.Content = "You need to link your **Discord** account for us to know who you are: https://gamedb.online/settings"
+			message.Content = "You need to link your **Discord** account for us to know who you are: " + config.Config.GameDBDomain.Get() + "/settings"
 			return message, nil
 		} else if err != nil {
 			return message, err
@@ -61,9 +62,9 @@ func (c CommandPlayerUpdate) Output(msg *discordgo.MessageCreate) (message disco
 			err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 			log.Err(err)
 
-			message.Content = "Player queued: https://gamedb.online/p" + user.SteamID.String
+			message.Content = "Player queued: " + config.Config.GameDBDomain.Get() + "/p" + user.SteamID.String
 		} else {
-			message.Content = "You need to link your **Steam** account for us to know who you are: https://gamedb.online/settings"
+			message.Content = "You need to link your **Steam** account for us to know who you are: " + config.Config.GameDBDomain.Get() + "/settings"
 		}
 		return message, nil
 	}
@@ -82,6 +83,6 @@ func (c CommandPlayerUpdate) Output(msg *discordgo.MessageCreate) (message disco
 	err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 	log.Err(err)
 
-	message.Content = "Player queued: https://gamedb.online/p" + strconv.FormatInt(player.ID, 10)
+	message.Content = "Player queued: " + config.Config.GameDBDomain.Get() + "/p" + strconv.FormatInt(player.ID, 10)
 	return message, nil
 }

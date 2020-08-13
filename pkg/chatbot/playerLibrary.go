@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
@@ -75,7 +76,7 @@ func (c CommandPlayerLibrary) Output(msg *discordgo.MessageCreate) (message disc
 		message.Content = "<@" + msg.Author.ID + ">"
 		message.Embed = &discordgo.MessageEmbed{
 			Title:  player.GetName() + "'s Top Games",
-			URL:    "https://gamedb.online" + player.GetPath() + "#games",
+			URL:    config.Config.GameDBDomain.Get() + player.GetPath() + "#games",
 			Author: getAuthor(msg.Author.ID),
 		}
 

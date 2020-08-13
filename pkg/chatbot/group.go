@@ -6,6 +6,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/chatbot/charts"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/log"
 )
@@ -63,7 +64,7 @@ func (c CommandGroup) Output(msg *discordgo.MessageCreate) (message discordgo.Me
 	message.Content = "<@" + msg.Author.ID + ">"
 	message.Embed = &discordgo.MessageEmbed{
 		Title: group.GetName(),
-		URL:   "https://gamedb.online" + group.GetPath(),
+		URL:   config.Config.GameDBDomain.Get() + group.GetPath(),
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
 			URL: group.GetIcon(),
 		},

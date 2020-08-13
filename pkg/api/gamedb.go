@@ -1,6 +1,7 @@
 package api
 
 import (
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/getkin/kin-openapi/openapi3"
 )
 
@@ -39,18 +40,18 @@ var SwaggerGameDB = &openapi3.Swagger{
 		{URL: "https://api.gamedb.online"},
 	},
 	ExternalDocs: &openapi3.ExternalDocs{
-		URL: "https://gamedb.online/api/gamedb",
+		URL: config.Config.GameDBDomain.Get() + "/api/gamedb",
 	},
 	Info: &openapi3.Info{
 		Title:          "Game DB API",
 		Version:        "1.0.0",
-		TermsOfService: "https://gamedb.online/terms",
+		TermsOfService: config.Config.GameDBDomain.Get() + "/terms",
 		Contact: &openapi3.Contact{
 			Name: "Jleagle",
-			URL:  "https://gamedb.online/contact",
+			URL:  config.Config.GameDBDomain.Get() + "/contact",
 		},
 		ExtensionProps: openapi3.ExtensionProps{Extensions: map[string]interface{}{
-			"x-logo": "https://gamedb.online/assets/img/sa-bg-192x192.png",
+			"x-logo": config.Config.GameDBDomain.Get() + "/assets/img/sa-bg-192x192.png",
 		}},
 	},
 	Tags: openapi3.Tags{

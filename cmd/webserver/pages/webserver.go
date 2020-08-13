@@ -415,7 +415,7 @@ func (t globalTemplate) GetUserJSON() string {
 func (t globalTemplate) GetMetaImage() (text string) {
 
 	if t.metaImage == "" {
-		return "https://gamedb.online/assets/img/sa-bg-500x500.png"
+		return config.Config.GameDBDomain.Get() + "/assets/img/sa-bg-500x500.png"
 	}
 
 	return t.metaImage
@@ -481,9 +481,9 @@ func (t globalTemplate) GetCookieFlag(key string) interface{} {
 func (t globalTemplate) GetCanonical() (text string) {
 
 	if t.Canonical != "" {
-		return "https://gamedb.online" + t.Canonical
+		return config.Config.GameDBDomain.Get() + t.Canonical
 	}
-	return "https://gamedb.online" + t.request.URL.Path + strings.TrimRight("?"+t.request.URL.Query().Encode(), "?")
+	return config.Config.GameDBDomain.Get() + t.request.URL.Path + strings.TrimRight("?"+t.request.URL.Query().Encode(), "?")
 }
 
 func (t globalTemplate) GetVersionHash() string {

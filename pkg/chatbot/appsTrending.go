@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/mongo"
 )
 
@@ -41,7 +42,7 @@ func (CommandAppsTrending) Output(msg *discordgo.MessageCreate) (message discord
 	message.Content = "<@" + msg.Author.ID + ">"
 	message.Embed = &discordgo.MessageEmbed{
 		Title:  "Trending Games",
-		URL:    "https://gamedb.online/games/trending",
+		URL:    config.Config.GameDBDomain.Get() + "/games/trending",
 		Author: getAuthor(msg.Author.ID),
 	}
 

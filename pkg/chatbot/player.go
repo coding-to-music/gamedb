@@ -6,6 +6,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
@@ -83,7 +84,7 @@ func (c CommandPlayer) Output(msg *discordgo.MessageCreate) (message discordgo.M
 	message.Content = "<@" + msg.Author.ID + ">"
 	message.Embed = &discordgo.MessageEmbed{
 		Title: player.GetName(),
-		URL:   "https://gamedb.online" + player.GetPath(),
+		URL:   config.Config.GameDBDomain.Get() + player.GetPath(),
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
 			URL: avatar,
 		},
