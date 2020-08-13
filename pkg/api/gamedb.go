@@ -6,8 +6,8 @@ import (
 )
 
 const (
-	tagGame   = "game"
-	tagPlayer = "player"
+	tagGame   = "Games"
+	tagPlayer = "Players"
 )
 
 func stringPointer(s string) *string {
