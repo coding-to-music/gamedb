@@ -74,6 +74,12 @@ var SwaggerGameDB = &openapi3.Swagger{
 			"offset-param": {
 				Value: openapi3.NewQueryParameter("offset").WithSchema(openapi3.NewIntegerSchema().WithDefault(0).WithMin(0)),
 			},
+			"order-param-asc": {
+				Value: openapi3.NewQueryParameter("order").WithSchema(openapi3.NewStringSchema().WithEnum([]string{"asc", "desc"}).WithDefault("asc")),
+			},
+			"order-param-desc": {
+				Value: openapi3.NewQueryParameter("order").WithSchema(openapi3.NewStringSchema().WithEnum([]string{"asc", "desc"}).WithDefault("desc")),
+			},
 		},
 		Schemas: map[string]*openapi3.SchemaRef{
 			"pagination-schema": {
@@ -83,8 +89,8 @@ var SwaggerGameDB = &openapi3.Swagger{
 						"offset":       {Value: openapi3.NewInt64Schema()},
 						"limit":        {Value: openapi3.NewInt64Schema()},
 						"total":        {Value: openapi3.NewInt64Schema()},
-						"pagesTotal":   {Value: openapi3.NewIntegerSchema()},
-						"pagesCurrent": {Value: openapi3.NewIntegerSchema()},
+						"pagesTotal":   {Value: openapi3.NewInt64Schema()},
+						"pagesCurrent": {Value: openapi3.NewInt64Schema()},
 					},
 				},
 			},
@@ -232,8 +238,8 @@ var SwaggerGameDB = &openapi3.Swagger{
 					{Value: keyGetParam},
 					{Ref: "#/components/parameters/offset-param"},
 					{Ref: "#/components/parameters/limit-param"},
+					{Ref: "#/components/parameters/order-param-desc"},
 					{Value: openapi3.NewQueryParameter("sort").WithSchema(openapi3.NewStringSchema())},
-					{Value: openapi3.NewQueryParameter("order").WithSchema(openapi3.NewStringSchema().WithEnum([]string{"asc", "desc"}).WithDefault("asc"))},
 					{Value: openapi3.NewQueryParameter("ids").WithSchema(openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema()).WithMaxItems(100))},
 					{Value: openapi3.NewQueryParameter("tags").WithSchema(openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema()).WithMaxItems(10))},
 					{Value: openapi3.NewQueryParameter("genres").WithSchema(openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema()).WithMaxItems(10))},
@@ -290,8 +296,8 @@ var SwaggerGameDB = &openapi3.Swagger{
 					{Value: keyGetParam},
 					{Ref: "#/components/parameters/offset-param"},
 					{Ref: "#/components/parameters/limit-param"},
+					{Ref: "#/components/parameters/order-param-desc"},
 					{Value: openapi3.NewQueryParameter("sort").WithSchema(openapi3.NewStringSchema().WithEnum("id", "level", "badges", "games", "time", "friends", "comments").WithDefault("id"))},
-					{Value: openapi3.NewQueryParameter("order").WithSchema(openapi3.NewStringSchema().WithEnum([]string{"asc", "desc"}).WithDefault("desc"))},
 					{Value: openapi3.NewQueryParameter("continent").WithSchema(openapi3.NewArraySchema().WithMaxItems(3).WithItems(openapi3.NewStringSchema().WithMaxLength(2)))},
 					{Value: openapi3.NewQueryParameter("country").WithSchema(openapi3.NewArraySchema().WithMaxItems(3).WithItems(openapi3.NewStringSchema().WithMaxLength(2)))},
 				},

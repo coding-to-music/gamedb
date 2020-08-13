@@ -4,9 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gamedb/gamedb/cmd/api/generated"
-	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/mongo"
-	"go.mongodb.org/mongo-driver/bson"
+	"github.com/gamedb/gamedb/pkg/protos"
 )
 
 func (s Server) GetGames(w http.ResponseWriter, r *http.Request) {
@@ -25,69 +23,92 @@ func (s Server) GetGames(w http.ResponseWriter, r *http.Request) {
 			offset = int64(*params.Offset)
 		}
 
-		filter := bson.D{{}}
+		payload := &protos.ListAppsRequest{}
+		payload.Offset = offset
+		payload.Limit = limit
 
 		if params.Ids != nil {
-			filter = append(filter, bson.E{Key: "_id", Value: bson.M{"$in": *params.Ids}})
+			// payload.Ids = *params.Ids
 		}
 
 		if params.Tags != nil {
-			filter = append(filter, bson.E{Key: "tags", Value: bson.M{"$in": *params.Tags}})
+			// payload.Tags = *params.Ids
 		}
 
 		if params.Genres != nil {
-			filter = append(filter, bson.E{Key: "genres", Value: bson.M{"$in": *params.Genres}})
+			// payload.Genres = *params.Genres
 		}
 
 		if params.Categories != nil {
-			filter = append(filter, bson.E{Key: "categories", Value: bson.M{"$in": *params.Categories}})
+			// payload.Categories = *params.Categories
 		}
 
 		if params.Developers != nil {
-			filter = append(filter, bson.E{Key: "developers", Value: bson.M{"$in": *params.Developers}})
+			// payload.Developers = *params.Developers
 		}
 
 		if params.Publishers != nil {
-			filter = append(filter, bson.E{Key: "publishers", Value: bson.M{"$in": *params.Publishers}})
+			// payload.Publishers = *params.Publishers
 		}
 
 		if params.Platforms != nil {
-			filter = append(filter, bson.E{Key: "platforms", Value: bson.M{"$in": *params.Platforms}})
+			payload.Platforms = *params.Platforms
 		}
+		//
+		// var projection = bson.M{
+		// 	"id":                  1,
+		// 	"name":                1,
+		// 	"tags":                1,
+		// 	"genres":              1,
+		// 	"developers":          1,
+		// 	"categories":          1,
+		// 	"prices":              1,
+		// 	"player_peak_alltime": 1,
+		// 	"player_peak_week":    1,
+		// 	"player_avg_week":     1,
+		// 	"release_date_unix":   1,
+		// 	"reviews":             1,
+		// 	"reviews_score":       1,
+		// }
+		//
+		// apps, err := mongo.GetApps(offset, limit, bson.D{{"_id", 1}}, filter, projection)
+		// if err != nil {
+		// 	return 500, err
+		// }
+		//
+		// total, err := mongo.CountDocuments(mongo.CollectionApps, filter, 0)
+		// if err != nil {
+		// 	log.Err(err, r)
+		// }
+		//
+		// result := generated.AppsResponse{}
+		// result.Pagination.Fill(offset, limit, total)
+		//
+		// for _, app := range apps {
+		//
+		// 	result.Apps = append(result.Apps, generated.AppSchema{
+		// 		Id:   app.ID,
+		// 		Name: app.GetName(),
+		// 	})
+		// }
 
-		var projection = bson.M{
-			"id":                  1,
-			"name":                1,
-			"tags":                1,
-			"genres":              1,
-			"developers":          1,
-			"categories":          1,
-			"prices":              1,
-			"player_peak_alltime": 1,
-			"player_peak_week":    1,
-			"player_avg_week":     1,
-			"release_date_unix":   1,
-			"reviews":             1,
-			"reviews_score":       1,
-		}
-
-		apps, err := mongo.GetApps(offset, limit, bson.D{{"_id", 1}}, filter, projection)
+		conn, ctx, err := protos.GetClient()
 		if err != nil {
 			return 500, err
 		}
 
-		total, err := mongo.CountDocuments(mongo.CollectionApps, filter, 0)
+		resp, err := protos.NewAppsServiceClient(conn).Apps(ctx, payload)
 		if err != nil {
-			log.Err(err, r)
+			return 500, err
 		}
 
 		result := generated.AppsResponse{}
-		result.Pagination.Fill(offset, limit, total)
+		result.Pagination.Fill(offset, limit, resp.Pagination.GetTotal())
 
-		for _, app := range apps {
+		for _, app := range resp.Apps {
 
 			result.Apps = append(result.Apps, generated.AppSchema{
-				Id:   app.ID,
+				Id:   int(app.GetId()),
 				Name: app.GetName(),
 			})
 		}

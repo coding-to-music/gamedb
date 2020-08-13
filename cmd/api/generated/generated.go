@@ -52,8 +52,8 @@ type MessageSchema struct {
 type PaginationSchema struct {
 	Limit        int64 `json:"limit"`
 	Offset       int64 `json:"offset"`
-	PagesCurrent int   `json:"pagesCurrent"`
-	PagesTotal   int   `json:"pagesTotal"`
+	PagesCurrent int64 `json:"pagesCurrent"`
+	PagesTotal   int64 `json:"pagesTotal"`
 	Total        int64 `json:"total"`
 }
 
@@ -91,6 +91,12 @@ type LimitParam int
 // OffsetParam defines model for offset-param.
 type OffsetParam int
 
+// OrderParamAsc defines model for order-param-asc.
+type OrderParamAsc string
+
+// OrderParamDesc defines model for order-param-desc.
+type OrderParamDesc string
+
 // AppResponse defines model for app-response.
 type AppResponse AppSchema
 
@@ -117,18 +123,18 @@ type PlayersResponse struct {
 
 // GetGamesParams defines parameters for GetGames.
 type GetGamesParams struct {
-	Key        string       `json:"key"`
-	Offset     *OffsetParam `json:"offset,omitempty"`
-	Limit      *LimitParam  `json:"limit,omitempty"`
-	Sort       *string      `json:"sort,omitempty"`
-	Order      *string      `json:"order,omitempty"`
-	Ids        *[]int       `json:"ids,omitempty"`
-	Tags       *[]int       `json:"tags,omitempty"`
-	Genres     *[]int       `json:"genres,omitempty"`
-	Categories *[]int       `json:"categories,omitempty"`
-	Developers *[]int       `json:"developers,omitempty"`
-	Publishers *[]int       `json:"publishers,omitempty"`
-	Platforms  *[]string    `json:"platforms,omitempty"`
+	Key        string          `json:"key"`
+	Offset     *OffsetParam    `json:"offset,omitempty"`
+	Limit      *LimitParam     `json:"limit,omitempty"`
+	Order      *OrderParamDesc `json:"order,omitempty"`
+	Sort       *string         `json:"sort,omitempty"`
+	Ids        *[]int          `json:"ids,omitempty"`
+	Tags       *[]int          `json:"tags,omitempty"`
+	Genres     *[]int          `json:"genres,omitempty"`
+	Categories *[]int          `json:"categories,omitempty"`
+	Developers *[]int          `json:"developers,omitempty"`
+	Publishers *[]int          `json:"publishers,omitempty"`
+	Platforms  *[]string       `json:"platforms,omitempty"`
 }
 
 // GetGamesIdParams defines parameters for GetGamesId.
@@ -138,13 +144,13 @@ type GetGamesIdParams struct {
 
 // GetPlayersParams defines parameters for GetPlayers.
 type GetPlayersParams struct {
-	Key       string       `json:"key"`
-	Offset    *OffsetParam `json:"offset,omitempty"`
-	Limit     *LimitParam  `json:"limit,omitempty"`
-	Sort      *string      `json:"sort,omitempty"`
-	Order     *string      `json:"order,omitempty"`
-	Continent *[]string    `json:"continent,omitempty"`
-	Country   *[]string    `json:"country,omitempty"`
+	Key       string          `json:"key"`
+	Offset    *OffsetParam    `json:"offset,omitempty"`
+	Limit     *LimitParam     `json:"limit,omitempty"`
+	Order     *OrderParamDesc `json:"order,omitempty"`
+	Sort      *string         `json:"sort,omitempty"`
+	Continent *[]string       `json:"continent,omitempty"`
+	Country   *[]string       `json:"country,omitempty"`
 }
 
 // GetPlayersIdParams defines parameters for GetPlayersId.
@@ -225,17 +231,6 @@ func GetGamesCtx(next http.Handler) http.Handler {
 			return
 		}
 
-		// ------------- Optional query parameter "sort" -------------
-		if paramValue := r.URL.Query().Get("sort"); paramValue != "" {
-
-		}
-
-		err = runtime.BindQueryParameter("form", true, false, "sort", r.URL.Query(), &params.Sort)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Invalid format for parameter sort: %s", err), http.StatusBadRequest)
-			return
-		}
-
 		// ------------- Optional query parameter "order" -------------
 		if paramValue := r.URL.Query().Get("order"); paramValue != "" {
 
@@ -244,6 +239,17 @@ func GetGamesCtx(next http.Handler) http.Handler {
 		err = runtime.BindQueryParameter("form", true, false, "order", r.URL.Query(), &params.Order)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Invalid format for parameter order: %s", err), http.StatusBadRequest)
+			return
+		}
+
+		// ------------- Optional query parameter "sort" -------------
+		if paramValue := r.URL.Query().Get("sort"); paramValue != "" {
+
+		}
+
+		err = runtime.BindQueryParameter("form", true, false, "sort", r.URL.Query(), &params.Sort)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Invalid format for parameter sort: %s", err), http.StatusBadRequest)
 			return
 		}
 
@@ -435,17 +441,6 @@ func GetPlayersCtx(next http.Handler) http.Handler {
 			return
 		}
 
-		// ------------- Optional query parameter "sort" -------------
-		if paramValue := r.URL.Query().Get("sort"); paramValue != "" {
-
-		}
-
-		err = runtime.BindQueryParameter("form", true, false, "sort", r.URL.Query(), &params.Sort)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Invalid format for parameter sort: %s", err), http.StatusBadRequest)
-			return
-		}
-
 		// ------------- Optional query parameter "order" -------------
 		if paramValue := r.URL.Query().Get("order"); paramValue != "" {
 
@@ -454,6 +449,17 @@ func GetPlayersCtx(next http.Handler) http.Handler {
 		err = runtime.BindQueryParameter("form", true, false, "order", r.URL.Query(), &params.Order)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Invalid format for parameter order: %s", err), http.StatusBadRequest)
+			return
+		}
+
+		// ------------- Optional query parameter "sort" -------------
+		if paramValue := r.URL.Query().Get("sort"); paramValue != "" {
+
+		}
+
+		err = runtime.BindQueryParameter("form", true, false, "sort", r.URL.Query(), &params.Sort)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Invalid format for parameter sort: %s", err), http.StatusBadRequest)
 			return
 		}
 
@@ -629,31 +635,32 @@ func HandlerFromMux(si ServerInterface, r chi.Router) http.Handler {
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
+	"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",
 }
 
 // GetSwagger returns the Swagger specification corresponding to the generated code
