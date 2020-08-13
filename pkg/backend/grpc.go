@@ -22,7 +22,7 @@ func GetClient() (*grpc.ClientConn, context.Context, error) {
 	if conn == nil {
 
 		var err error
-		conn, err = grpc.Dial(config.BackendPort(), grpc.WithInsecure())
+		conn, err = grpc.Dial(config.Config.BackendClientPort.Get(), grpc.WithInsecure())
 		if err != nil {
 			return nil, nil, err
 		}

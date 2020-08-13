@@ -149,9 +149,10 @@ type BaseConfig struct {
 	YoutubeAPIKey ConfigItem
 
 	// Servers
-	FrontendPort ConfigItem
-	BackendPort  ConfigItem
-	APIPort      ConfigItem
+	FrontendPort      ConfigItem
+	BackendHostPort   ConfigItem
+	BackendClientPort ConfigItem
+	APIPort           ConfigItem
 
 	// Other
 	Environment         ConfigItem
@@ -294,7 +295,8 @@ func init() {
 
 	// Servers
 	Config.FrontendPort.Set("PORT")
-	Config.BackendPort.Set("BACKEND_PORT")
+	Config.BackendHostPort.Set("BACKEND_HOST_PORT")
+	Config.BackendClientPort.Set("BACKEND_CLIENT_PORT")
 	Config.APIPort.Set("API_PORT")
 
 	// Other
@@ -404,10 +406,6 @@ func MongoDSN() string {
 
 func FrontendPort() string {
 	return "0.0.0.0:" + Config.FrontendPort.Get()
-}
-
-func BackendPort() string {
-	return "0.0.0.0:" + Config.BackendPort.Get()
 }
 
 func APIPort() string {

@@ -19,7 +19,7 @@ func main() {
 	config.Init(version, commits, helpers.GetIP())
 	log.Initialise(log.LogNameBackend)
 
-	lis, err := net.Listen("tcp", config.BackendPort())
+	lis, err := net.Listen("tcp", config.Config.BackendHostPort.Get())
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -29,7 +29,7 @@ func main() {
 	backend.RegisterAppsServiceServer(grpcServer, AppsServer{})
 	backend.RegisterGitHubServiceServer(grpcServer, GithubServer{})
 
-	fmt.Println("Starting Backend on " + config.BackendPort())
+	fmt.Println("Starting Backend on " + config.Config.BackendHostPort.Get())
 	err = grpcServer.Serve(lis)
 	fmt.Println(err)
 }
