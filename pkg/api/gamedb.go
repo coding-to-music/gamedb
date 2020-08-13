@@ -246,6 +246,12 @@ var SwaggerGameDB = &openapi3.Swagger{
 					"200": {
 						Ref: "#/components/responses/apps-response",
 					},
+					"401": {
+						Ref: "#/components/responses/message-response",
+					},
+					"500": {
+						Ref: "#/components/responses/message-response",
+					},
 				},
 			},
 		},
@@ -260,6 +266,18 @@ var SwaggerGameDB = &openapi3.Swagger{
 				Responses: map[string]*openapi3.ResponseRef{
 					"200": {
 						Ref: "#/components/responses/app-response",
+					},
+					"400": {
+						Ref: "#/components/responses/message-response",
+					},
+					"401": {
+						Ref: "#/components/responses/message-response",
+					},
+					"404": {
+						Ref: "#/components/responses/message-response",
+					},
+					"500": {
+						Ref: "#/components/responses/message-response",
 					},
 				},
 			},
@@ -280,6 +298,18 @@ var SwaggerGameDB = &openapi3.Swagger{
 				Responses: map[string]*openapi3.ResponseRef{
 					"200": {
 						Ref: "#/components/responses/players-response",
+					},
+					"400": {
+						Ref: "#/components/responses/message-response",
+					},
+					"401": {
+						Ref: "#/components/responses/message-response",
+					},
+					"404": {
+						Ref: "#/components/responses/message-response",
+					},
+					"500": {
+						Ref: "#/components/responses/message-response",
 					},
 				},
 			},
@@ -307,6 +337,12 @@ var SwaggerGameDB = &openapi3.Swagger{
 				},
 				Responses: map[string]*openapi3.ResponseRef{
 					"200": {
+						Ref: "#/components/responses/message-response",
+					},
+					"401": {
+						Ref: "#/components/responses/message-response",
+					},
+					"500": {
 						Ref: "#/components/responses/message-response",
 					},
 				},
