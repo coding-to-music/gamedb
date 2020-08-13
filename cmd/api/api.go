@@ -112,7 +112,7 @@ func (s Server) call(w http.ResponseWriter, r *http.Request, callback func(w htt
 	switch v := response.(type) {
 	case string:
 		if code == 200 {
-			s.returnResponse(w, code, v)
+			s.returnResponse(w, code, generated.MessageResponse{Message: v})
 		} else {
 			s.returnErrorResponse(w, code, errors.New(v))
 		}
