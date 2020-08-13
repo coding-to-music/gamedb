@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/didip/tollbooth/limiter"
@@ -30,7 +31,6 @@ var (
 	lmt = limiter.New(&ops).SetMax(1).SetBurst(10)
 )
 
-// Shared between all requests
 type Server struct {
 }
 
@@ -65,18 +65,18 @@ func (s Server) call(w http.ResponseWriter, r *http.Request, callback func(w htt
 	key = strings.TrimLeft(key, "Bearer ")
 
 	if key == "" {
-		s.returnErrorResponse(w, http.StatusBadRequest, errors.New("no key"))
+		s.returnErrorResponse(w, http.StatusUnauthorized, errors.New("no key"))
 		return
 	}
 
 	if !apiKeyRegexp.MatchString(key) {
-		s.returnErrorResponse(w, http.StatusBadRequest, errors.New("invalid key"))
+		s.returnErrorResponse(w, http.StatusUnauthorized, errors.New("invalid key"))
 		return
 	}
 
 	// Rate limit
 	if lmt.LimitReached(key) {
-		s.returnErrorResponse(w, http.StatusUnauthorized, err)
+		s.returnErrorResponse(w, http.StatusTooManyRequests, err)
 		return
 	}
 
