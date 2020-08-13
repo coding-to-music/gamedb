@@ -3,16 +3,16 @@ package main
 import (
 	"context"
 
+	"github.com/gamedb/gamedb/pkg/backend"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/protos"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
 type AppsServer struct {
-	protos.AppsServiceServer
+	backend.AppsServiceServer
 }
 
-func (a AppsServer) Apps(ctx context.Context, request *protos.ListAppsRequest) (response *protos.AppsMongoResponse, err error) {
+func (a AppsServer) Apps(ctx context.Context, request *backend.ListAppsRequest) (response *backend.AppsMongoResponse, err error) {
 
 	filter := bson.D{{}}
 
@@ -70,11 +70,11 @@ func (a AppsServer) Apps(ctx context.Context, request *protos.ListAppsRequest) (
 		return nil, err
 	}
 
-	response = &protos.AppsMongoResponse{}
+	response = &backend.AppsMongoResponse{}
 	response.Pagination.Total = total
 
 	for _, v := range apps {
-		response.Apps = append(response.Apps, &protos.AppMongoResponse{
+		response.Apps = append(response.Apps, &backend.AppMongoResponse{
 			Id:   int32(v.GetID()),
 			Name: v.GetName(),
 		})
@@ -83,7 +83,7 @@ func (a AppsServer) Apps(ctx context.Context, request *protos.ListAppsRequest) (
 	return nil, nil
 }
 
-func (a AppsServer) Search(ctx context.Context, r *protos.SearchAppsRequest) (res *protos.AppsElasticResponse, err error) {
+func (a AppsServer) Search(ctx context.Context, r *backend.SearchAppsRequest) (res *backend.AppsElasticResponse, err error) {
 
 	return nil, nil
 }

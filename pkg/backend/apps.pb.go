@@ -22,7 +22,7 @@ It has these top-level messages:
 	Price
 	PaginationResponse
 */
-package protos
+package backend
 
 import proto "github.com/golang/protobuf/proto"
 import fmt "fmt"

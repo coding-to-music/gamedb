@@ -5,9 +5,9 @@ import (
 	"net/http"
 
 	"github.com/gamedb/gamedb/cmd/api/generated"
+	"github.com/gamedb/gamedb/pkg/backend"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/protos"
 )
 
 func (s Server) GetGamesId(w http.ResponseWriter, r *http.Request) {
@@ -90,7 +90,7 @@ func (s Server) GetGames(w http.ResponseWriter, r *http.Request) {
 			offset = int64(*params.Offset)
 		}
 
-		payload := &protos.ListAppsRequest{}
+		payload := &backend.ListAppsRequest{}
 		payload.Offset = offset
 		payload.Limit = limit
 
@@ -159,12 +159,12 @@ func (s Server) GetGames(w http.ResponseWriter, r *http.Request) {
 		// 	})
 		// }
 
-		conn, ctx, err := protos.GetClient()
+		conn, ctx, err := backend.GetClient()
 		if err != nil {
 			return 500, err
 		}
 
-		resp, err := protos.NewAppsServiceClient(conn).Apps(ctx, payload)
+		resp, err := backend.NewAppsServiceClient(conn).Apps(ctx, payload)
 		if err != nil {
 			return 500, err
 		}

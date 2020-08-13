@@ -1,16 +1,16 @@
 package main
 
 import (
+	"github.com/gamedb/gamedb/pkg/backend"
 	githubHelper "github.com/gamedb/gamedb/pkg/github"
-	"github.com/gamedb/gamedb/pkg/protos"
 	"github.com/google/go-github/v28/github"
 )
 
 type GithubServer struct {
-	protos.GitHubServiceServer
+	backend.GitHubServiceServer
 }
 
-func (g GithubServer) Commits(in *protos.CommitsRequest, server protos.GitHubService_CommitsServer) error {
+func (g GithubServer) Commits(in *backend.CommitsRequest, server backend.GitHubService_CommitsServer) error {
 
 	client, ctx := githubHelper.GetGithub()
 
@@ -27,7 +27,7 @@ func (g GithubServer) Commits(in *protos.CommitsRequest, server protos.GitHubSer
 
 	for _, commit := range commits {
 
-		message := &protos.CommitResponse{
+		message := &backend.CommitResponse{
 			Message: commit.GetCommit().GetMessage(),
 			Time:    commit.GetCommit().GetAuthor().GetDate().Unix(),
 			Link:    commit.GetHTMLURL(),

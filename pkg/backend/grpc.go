@@ -1,4 +1,4 @@
-package protos
+package backend
 
 import (
 	"context"

@@ -6,11 +6,11 @@ import (
 	"time"
 
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
+	"github.com/gamedb/gamedb/pkg/backend"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
-	"github.com/gamedb/gamedb/pkg/protos"
 	"github.com/go-chi/chi"
 )
 
@@ -39,22 +39,22 @@ const commitsLimit = 100
 func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var query = datatable.NewDataTableQuery(r, true)
-	var commits []protos.CommitResponse
+	var commits []backend.CommitResponse
 	var item = memcache.MemcacheCommitsPage(query.GetPage(commitsLimit))
 
 	err := memcache.GetSetInterface(item.Key, item.Expiration, &commits, func() (interface{}, error) {
 
-		conn, ctx, err := protos.GetClient()
+		conn, ctx, err := backend.GetClient()
 		if err != nil {
 			return nil, err
 		}
 
-		message := &protos.CommitsRequest{
+		message := &backend.CommitsRequest{
 			Limit: commitsLimit,
 			Page:  int32(query.GetPage(commitsLimit)),
 		}
 
-		resp, err := protos.NewGitHubServiceClient(conn).Commits(ctx, message)
+		resp, err := backend.NewGitHubServiceClient(conn).Commits(ctx, message)
 		if err != nil {
 			return nil, err
 		}
