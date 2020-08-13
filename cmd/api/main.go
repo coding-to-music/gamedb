@@ -2,7 +2,7 @@ package main
 
 import (
 	"compress/flate"
-	"fmt"
+	"encoding/json"
 	"net/http"
 	"time"
 
@@ -25,11 +25,10 @@ func main() {
 	r := chi.NewRouter()
 	r.Use(chiMiddleware.RedirectSlashes)
 	r.Use(chiMiddleware.NewCompressor(flate.DefaultCompression, "text/html", "text/css", "text/javascript", "application/json", "application/javascript").Handler)
+	r.Get("/", home)
+	r.NotFound(error404)
 
 	generated.HandlerFromMux(Server{}, r)
-
-	// 404
-	// r.NotFound(pages.Error404Handler)
 
 	log.Info("Starting API on " + "http://" + config.APIPort())
 
@@ -41,5 +40,21 @@ func main() {
 	}
 
 	err := s.ListenAndServe()
-	fmt.Println(err)
+	log.Critical(err)
+}
+
+func home(w http.ResponseWriter, r *http.Request) {
+
+	http.Redirect(w, r, config.Config.GameDBDomain.Get()+"/api/gamedb", http.StatusTemporaryRedirect)
+}
+
+func error404(w http.ResponseWriter, r *http.Request) {
+
+	w.WriteHeader(404)
+
+	b, err := json.Marshal(generated.MessageResponse{Message: "Invalid endpoint"})
+	log.Err(err)
+
+	_, err = w.Write(b)
+	log.Err(err)
 }
