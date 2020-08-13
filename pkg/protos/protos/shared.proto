@@ -14,3 +14,11 @@ message Price {
     int32 individual = 6;
     bool free = 7;
 }
+
+message PaginationResponse {
+    int64 offset = 1;
+    int64 limit = 2;
+    int64 total = 3;
+    int64 pagesTotal = 4;
+    int64 pagesCurrent = 5;
+}
