@@ -62,6 +62,8 @@ func (s Server) call(w http.ResponseWriter, r *http.Request, callback func(w htt
 		}
 	}
 
+	key = strings.TrimLeft(key, "Bearer ")
+
 	if key == "" {
 		s.returnErrorResponse(w, http.StatusBadRequest, errors.New("no key"))
 		return
