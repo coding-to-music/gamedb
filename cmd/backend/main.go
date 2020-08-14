@@ -27,6 +27,7 @@ func main() {
 
 	grpcServer := grpc.NewServer()
 	backend.RegisterAppsServiceServer(grpcServer, AppsServer{})
+	backend.RegisterPlayersServiceServer(grpcServer, PlayersServer{})
 	backend.RegisterGitHubServiceServer(grpcServer, GithubServer{})
 
 	fmt.Println("Starting Backend on " + config.Config.BackendHostPort.Get())
