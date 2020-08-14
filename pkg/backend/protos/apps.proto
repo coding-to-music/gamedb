@@ -19,31 +19,6 @@ message SearchAppsRequest {
     int32 sortOrder = 4;
 }
 
-message AppsMongoResponse {
-    PaginationResponse pagination = 1;
-    repeated AppMongoResponse apps = 2;
-}
-
-message AppMongoResponse {
-    int32 id = 1;
-    string name = 2;
-}
-
-// List
-message ListAppsRequest {
-    int64 offset = 1;
-    int64 limit = 2;
-    int64 sortField = 3;
-    int32 sortOrder = 4;
-    repeated int32 ids = 5;
-    repeated int32 tags = 6;
-    repeated int32 genres = 7;
-    repeated int32 categories = 8;
-    repeated int32 developers = 9;
-    repeated int32 publishers = 10;
-    repeated string platforms = 11;
-}
-
 message AppsElasticResponse {
     PaginationResponse pagination = 1;
     repeated AppElasticResponse apps = 2;
@@ -74,4 +49,29 @@ message AppElasticResponse {
     float trend = 22;
     float wishlistAvg = 23;
     int32 wishlistCount = 24;
+}
+
+// List
+message ListAppsRequest {
+    int64 offset = 1;
+    int64 limit = 2;
+    int64 sortField = 3;
+    int32 sortOrder = 4;
+    repeated int32 ids = 5;
+    repeated int32 tags = 6;
+    repeated int32 genres = 7;
+    repeated int32 categories = 8;
+    repeated int32 developers = 9;
+    repeated int32 publishers = 10;
+    repeated string platforms = 11;
+}
+
+message AppsMongoResponse {
+    PaginationResponse pagination = 1;
+    repeated AppMongoResponse apps = 2;
+}
+
+message AppMongoResponse {
+    int32 id = 1;
+    string name = 2;
 }
