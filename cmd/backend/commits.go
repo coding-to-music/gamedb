@@ -7,7 +7,6 @@ import (
 )
 
 type GithubServer struct {
-	backend.GitHubServiceServer
 }
 
 func (g GithubServer) Commits(in *backend.CommitsRequest, server backend.GitHubService_CommitsServer) error {

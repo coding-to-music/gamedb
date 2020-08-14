@@ -9,7 +9,6 @@ import (
 )
 
 type AppsServer struct {
-	backend.AppsServiceServer
 }
 
 func (a AppsServer) Apps(ctx context.Context, request *backend.ListAppsRequest) (response *backend.AppsMongoResponse, err error) {
