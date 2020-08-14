@@ -39,6 +39,8 @@ require (
 	github.com/digitalocean/godo v1.42.1
 	github.com/djherbis/fscache v0.10.1
 	github.com/dustin/go-humanize v1.0.0
+	github.com/evalphobia/google-api-go-wrapper v0.8.3 // indirect
+	github.com/evalphobia/logrus_stackdriver v0.2.2 // indirect
 	github.com/frustra/bbcode v0.0.0-20180807171629-48be21ce690c
 	github.com/getkin/kin-openapi v0.19.0
 	github.com/ghodss/yaml v1.0.1-0.20190212211648-25d852aebe32 // indirect
@@ -94,23 +96,25 @@ require (
 	github.com/tdewolff/minify/v2 v2.8.0
 	github.com/temoto/robotstxt v1.1.1 // indirect
 	github.com/tidwall/pretty v1.0.1
+	github.com/tommy351/zap-stackdriver v0.1.4 // indirect
 	github.com/uber-go/atomic v1.4.0 // indirect
 	github.com/wcharczuk/go-chart v2.0.1+incompatible
 	github.com/xdg/stringprep v1.0.0 // indirect
 	github.com/yohcop/openid-go v1.0.0
 	go.mongodb.org/mongo-driver v1.4.0
 	go.opencensus.io v0.22.4 // indirect
-	go.uber.org/atomic v1.5.1 // indirect
+	go.uber.org/zap v1.15.0
 	golang.org/x/crypto v0.0.0-20200728195943-123391ffb6de
 	golang.org/x/image v0.0.0-20200801110659-972c09e46d76 // indirect
-	golang.org/x/net v0.0.0-20200707034311-ab3426394381
+	golang.org/x/net v0.0.0-20200813134508-3edf25e44fcc
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208 // indirect
-	golang.org/x/sys v0.0.0-20200808120158-1030fc2bf1d9 // indirect
+	golang.org/x/sys v0.0.0-20200812155832-6a926be9bd1d // indirect
 	golang.org/x/text v0.3.3
 	golang.org/x/time v0.0.0-20200630173020-3af7569d3a1e // indirect
 	gonum.org/v1/gonum v0.7.0
 	google.golang.org/api v0.30.0
+	google.golang.org/genproto v0.0.0-20200814021100-8c09557e8a18 // indirect
 	google.golang.org/grpc v1.31.0
 	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/djherbis/atime.v1 v1.0.0 // indirect

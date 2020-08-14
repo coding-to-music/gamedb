@@ -10,10 +10,10 @@ import (
 	"github.com/Jleagle/steam-go/steamapi"
 	githubHelper "github.com/gamedb/gamedb/pkg/github"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/steam"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/google/go-github/v28/github"
+	"go.uber.org/zap"
 )
 
 var steamJSONLock sync.Mutex
@@ -43,7 +43,7 @@ func GetSteamJSON() *openapi3.Swagger {
 	steamResp, err := steam.GetSteam().GetSupportedAPIList()
 	err = steam.AllowSteamCodes(err)
 	if err != nil {
-		log.Err(err)
+		zap.S().Error(err)
 		return swagger
 	}
 
@@ -55,7 +55,7 @@ func GetSteamJSON() *openapi3.Swagger {
 	client, ctx := githubHelper.GetGithub()
 	_, dirs, _, err := client.Repositories.GetContents(ctx, "SteamDatabase", "SteamTracking", "API", nil)
 	if err != nil {
-		log.Err(err)
+		zap.S().Error(err)
 		return swagger
 	}
 
@@ -73,14 +73,14 @@ func GetSteamJSON() *openapi3.Swagger {
 
 			body, _, err := helpers.GetWithTimeout(*dir.DownloadURL, 0)
 			if err != nil {
-				log.Err(err)
+				zap.S().Error(err)
 				return
 			}
 
 			i := steamapi.APIInterface{}
 			err = helpers.Unmarshal(body, &i)
 			if err != nil {
-				log.Err(err)
+				zap.S().Error(err)
 				return
 			}
 
@@ -153,7 +153,7 @@ func addInterfaceToSwagger(swagger *openapi3.Swagger, interfacex *steamapi.APIIn
 			case "float":
 				paramx.WithSchema(openapi3.NewFloat64Schema())
 			default:
-				log.Warning("new param type", param.Type, interfacex.Name)
+				zap.S().Warn("new param type", param.Type, interfacex.Name)
 			}
 
 			operation.Parameters = append(operation.Parameters, &openapi3.ParameterRef{Value: paramx})
@@ -167,7 +167,7 @@ func addInterfaceToSwagger(swagger *openapi3.Swagger, interfacex *steamapi.APIIn
 		case http.MethodPost:
 			swagger.Paths[path] = &openapi3.PathItem{Get: operation}
 		default:
-			log.Warning("new http method")
+			zap.S().Warn("new http method")
 		}
 	}
 }

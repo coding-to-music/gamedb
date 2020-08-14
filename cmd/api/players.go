@@ -7,11 +7,11 @@ import (
 
 	"github.com/gamedb/gamedb/cmd/api/generated"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 func (s Server) GetPlayersId(w http.ResponseWriter, r *http.Request) {
@@ -30,13 +30,15 @@ func (s Server) GetPlayersId(w http.ResponseWriter, r *http.Request) {
 
 				ua := r.UserAgent()
 				err2 := queue.ProducePlayer(queue.PlayerMessage{ID: id, UserAgent: &ua})
-				log.Err(err2)
+				if err2 != nil {
+					zap.S().Error(err2)
+				}
 
 				return 404, "player not found, trying to add player"
 
 			} else if err != nil {
 
-				log.Err(err, r)
+				zap.S().Error(err)
 				return 500, err
 
 			} else {
@@ -76,7 +78,7 @@ func (s Server) PostPlayersId(w http.ResponseWriter, r *http.Request) {
 			if err == memcache.ErrInQueue {
 				return 200, err
 			} else if err != nil {
-				log.Err(err, r)
+				zap.S().Error(err)
 				return 500, err
 			}
 
@@ -166,7 +168,7 @@ func (s Server) GetPlayers(w http.ResponseWriter, r *http.Request) {
 
 		total, err := mongo.CountDocuments(mongo.CollectionPlayers, filter, 0)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 
 		result := generated.PlayersResponse{}

@@ -6,8 +6,8 @@ import (
 
 	"github.com/gamedb/gamedb/cmd/api/generated"
 	"github.com/gamedb/gamedb/pkg/backend"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	"go.uber.org/zap"
 )
 
 func (s Server) GetGamesId(w http.ResponseWriter, r *http.Request) {
@@ -23,7 +23,7 @@ func (s Server) GetGamesId(w http.ResponseWriter, r *http.Request) {
 
 			} else if err != nil {
 
-				log.Err(err, r)
+				zap.S().Error(err)
 				return 500, err
 
 			} else {
@@ -145,7 +145,7 @@ func (s Server) GetGames(w http.ResponseWriter, r *http.Request) {
 		//
 		// total, err := mongo.CountDocuments(mongo.CollectionApps, filter, 0)
 		// if err != nil {
-		// 	log.Err(err, r)
+		// 	zap.S().Error(err)
 		// }
 		//
 		// result := generated.AppsResponse{}

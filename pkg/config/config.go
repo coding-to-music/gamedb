@@ -228,8 +228,8 @@ func init() {
 
 	// Memcache
 	Config.MemcacheDSN.Set("MEMCACHE_URL")
-	Config.MemcacheUsername.Set("MEMCACHE_USERNAME", true)
-	Config.MemcachePassword.Set("MEMCACHE_PASSWORD", true)
+	Config.MemcacheUsername.Set("MEMCACHE_USERNAME").AllowEmpty()
+	Config.MemcachePassword.Set("MEMCACHE_PASSWORD").AllowEmpty()
 
 	// Mongo
 	Config.MongoHost.Set("MONGO_HOST")
@@ -279,6 +279,7 @@ func init() {
 	// Steam
 	Config.SteamUsername.Set("PROXY_USERNAME")
 	Config.SteamPassword.Set("PROXY_PASSWORD")
+	Config.SteamAPIKey.AllowEmpty()
 
 	// Twitch
 	Config.TwitchClientID.Set("TWITCH_CLIENT_ID")
@@ -325,15 +326,19 @@ type ConfigItem struct {
 	allowEmpty   bool
 }
 
-func (ci *ConfigItem) Set(environment string, allowEmpty ...bool) *ConfigItem {
+func (ci *ConfigItem) Set(environment string) *ConfigItem {
 
 	ci.value = os.Getenv("STEAM_" + environment)
-	ci.allowEmpty = len(allowEmpty) > 0 && allowEmpty[0]
 	return ci
 }
 
-func (ci *ConfigItem) SetDefault(defaultValue string) {
+func (ci *ConfigItem) AllowEmpty() {
+	ci.allowEmpty = true
+}
+
+func (ci *ConfigItem) SetDefault(defaultValue string) *ConfigItem {
 	ci.defaultValue = defaultValue
+	return ci
 }
 
 func (ci ConfigItem) Get() string {

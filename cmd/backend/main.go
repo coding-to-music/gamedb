@@ -1,13 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"net"
 
 	"github.com/gamedb/gamedb/pkg/backend"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"go.uber.org/zap"
 	"google.golang.org/grpc"
 )
 
@@ -17,11 +17,11 @@ var commits string
 func main() {
 
 	config.Init(version, commits, helpers.GetIP())
-	log.Initialise(log.LogNameBackend)
+	log.InitZap(log.LogNameBackend)
 
 	lis, err := net.Listen("tcp", config.Config.BackendHostPort.Get())
 	if err != nil {
-		fmt.Println(err)
+		zap.S().Error(err)
 		return
 	}
 
@@ -30,7 +30,10 @@ func main() {
 	backend.RegisterPlayersServiceServer(grpcServer, PlayersServer{})
 	backend.RegisterGitHubServiceServer(grpcServer, GithubServer{})
 
-	fmt.Println("Starting Backend on " + config.Config.BackendHostPort.Get())
+	zap.S().Info("Starting Backend on " + config.Config.BackendHostPort.Get())
+
 	err = grpcServer.Serve(lis)
-	fmt.Println(err)
+	if err != nil {
+		zap.S().Error(err)
+	}
 }
