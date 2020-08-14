@@ -60,14 +60,11 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		for {
-
 			commit, err := resp.Recv()
-			if err == io.EOF {
-				break
-			}
 			if err != nil {
+				err = helpers.IgnoreErrors(err, io.EOF)
 				log.Err(err, r)
-				continue
+				break
 			}
 
 			commits = append(commits, *commit)
