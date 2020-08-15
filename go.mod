@@ -5,7 +5,6 @@ go 1.13
 require (
 	cloud.google.com/go v0.63.0 // indirect
 	cloud.google.com/go/logging v1.0.0
-	cloud.google.com/go/storage v1.10.0
 	github.com/Jleagle/go-durationfmt v0.0.0-20190307132420-e57bfad84057
 	github.com/Jleagle/influxql v0.0.0-20200804190929-88324f67bffe
 	github.com/Jleagle/patreon-go v0.0.0-20200718083332-7a4c740e9bd3
@@ -16,7 +15,6 @@ require (
 	github.com/Jleagle/steam-go v0.0.0-20200721171856-181692ceb659
 	github.com/Jleagle/unmarshal-go v0.0.0-20200217225147-fd7db71d9ac0
 	github.com/Philipp15b/go-steam v1.0.1-0.20190816133340-b04c5a83c1c0
-	github.com/PuerkitoBio/goquery v1.5.1 // indirect
 	github.com/StefanSchroeder/Golang-Roman v0.0.0-20191231161654-ef19f7247884
 	github.com/ahmdrz/goinsta/v2 v2.4.5
 	github.com/andybalholm/cascadia v1.2.0 // indirect
@@ -39,8 +37,6 @@ require (
 	github.com/digitalocean/godo v1.42.1
 	github.com/djherbis/fscache v0.10.1
 	github.com/dustin/go-humanize v1.0.0
-	github.com/evalphobia/google-api-go-wrapper v0.8.3 // indirect
-	github.com/evalphobia/logrus_stackdriver v0.2.2 // indirect
 	github.com/frustra/bbcode v0.0.0-20180807171629-48be21ce690c
 	github.com/getkin/kin-openapi v0.20.0
 	github.com/ghodss/yaml v1.0.1-0.20190212211648-25d852aebe32 // indirect
@@ -51,7 +47,6 @@ require (
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/gocolly/colly v1.2.0
 	github.com/golang/protobuf v1.4.2
-	github.com/google/go-cmp v0.5.1 // indirect
 	github.com/google/go-github/v28 v28.1.1
 	github.com/gorilla/securecookie v1.1.1
 	github.com/gorilla/sessions v1.2.0
@@ -65,7 +60,6 @@ require (
 	github.com/jzelinskie/geddit v0.0.0-20200521013404-78c28c13fba2
 	github.com/karrick/godirwalk v1.16.1 // indirect
 	github.com/kennygrant/sanitize v1.2.4 // indirect
-	github.com/kisielk/errcheck v1.2.0 // indirect
 	github.com/klauspost/compress v1.10.11 // indirect
 	github.com/lib/pq v1.3.0 // indirect
 	github.com/logrusorgru/aurora v2.0.3+incompatible
@@ -95,20 +89,17 @@ require (
 	github.com/streadway/amqp v1.0.0
 	github.com/tdewolff/minify/v2 v2.8.0
 	github.com/temoto/robotstxt v1.1.1 // indirect
-	github.com/tidwall/pretty v1.0.1
-	github.com/tommy351/zap-stackdriver v0.1.4 // indirect
+	github.com/tidwall/pretty v1.0.1 // indirect
 	github.com/uber-go/atomic v1.4.0 // indirect
 	github.com/wcharczuk/go-chart v2.0.1+incompatible
 	github.com/xdg/stringprep v1.0.0 // indirect
 	github.com/yohcop/openid-go v1.0.0
 	go.mongodb.org/mongo-driver v1.4.0
-	go.opencensus.io v0.22.4 // indirect
 	go.uber.org/zap v1.15.0
 	golang.org/x/crypto v0.0.0-20200728195943-123391ffb6de
 	golang.org/x/image v0.0.0-20200801110659-972c09e46d76 // indirect
 	golang.org/x/net v0.0.0-20200813134508-3edf25e44fcc
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
-	golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208 // indirect
 	golang.org/x/sys v0.0.0-20200814200057-3d37ad5750ed // indirect
 	golang.org/x/text v0.3.3
 	golang.org/x/time v0.0.0-20200630173020-3af7569d3a1e // indirect
@@ -116,9 +107,7 @@ require (
 	google.golang.org/api v0.30.0
 	google.golang.org/genproto v0.0.0-20200815001618-f69a88009b70 // indirect
 	google.golang.org/grpc v1.31.0
-	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/djherbis/atime.v1 v1.0.0 // indirect
 	gopkg.in/djherbis/stream.v1 v1.3.1 // indirect
-	gopkg.in/yaml.v2 v2.3.0 // indirect
 	jaytaylor.com/html2text v0.0.0-20200412013138-3577fbdbcff7
 )
