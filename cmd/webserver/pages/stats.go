@@ -376,8 +376,8 @@ func statsClientPlayersHandler(w http.ResponseWriter, r *http.Request) {
 	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
 	builder.AddWhere("time", ">", "NOW() - 7d")
 	builder.AddWhere("app_id", "=", "0")
-	builder.AddGroupByTime("30m")
-	builder.SetFillNumber(0)
+	builder.AddGroupByTime("10m")
+	builder.SetFillNone()
 
 	resp, err := influx.InfluxQuery(builder.String())
 	if err != nil {
