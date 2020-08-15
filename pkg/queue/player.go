@@ -13,7 +13,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
 	influxHelper "github.com/gamedb/gamedb/pkg/influx"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
@@ -21,6 +20,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/websockets"
 	influx "github.com/influxdata/influxdb1-client"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 type PlayerMessage struct {
@@ -38,7 +38,7 @@ func playerHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		log.Err(err, message.Message.Body)
+		zap.S().Error(err, message.Message.Body)
 		sendToFailQueue(message)
 		return
 	}
@@ -69,7 +69,7 @@ func playerHandler(message *rabbit.Message) {
 	err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
 	if err != nil {
 
-		log.Err(err, payload.ID)
+		zap.S().Error(err, payload.ID)
 		if err == steamid.ErrInvalidPlayerID {
 			sendToFailQueue(message)
 		} else {
@@ -95,7 +95,7 @@ func playerHandler(message *rabbit.Message) {
 
 		err = ProduceWebsocket(wsPayload, websockets.PagePlayer)
 		if err != nil {
-			log.Err(err, payload.ID)
+			zap.S().Error(err, payload.ID)
 		}
 	}()
 
@@ -197,7 +197,7 @@ func playerHandler(message *rabbit.Message) {
 
 		apps, err := mongo.GetPlayerWishlistAppsByPlayer(player.ID, 0, 0, nil, bson.M{"app_prices": 1})
 		if err != nil {
-			log.Err(err, payload.ID)
+			zap.S().Error(err, payload.ID)
 			sendToRetryQueue(message)
 			return
 		}
@@ -227,7 +227,7 @@ func playerHandler(message *rabbit.Message) {
 
 		err = savePlayerRow(player)
 		if err != nil {
-			log.Err(err, payload.ID)
+			zap.S().Error(err, payload.ID)
 			sendToRetryQueue(message)
 			return
 		}
@@ -241,7 +241,7 @@ func playerHandler(message *rabbit.Message) {
 
 			err = updatePlayerFriendRows(player)
 			if err != nil {
-				log.Err(err, payload.ID)
+				zap.S().Error(err, payload.ID)
 				sendToRetryQueue(message)
 				return
 			}
@@ -255,7 +255,7 @@ func playerHandler(message *rabbit.Message) {
 
 		err = savePlayerToInflux(player)
 		if err != nil {
-			log.Err(err, payload.ID)
+			zap.S().Error(err, payload.ID)
 			sendToRetryQueue(message)
 			return
 		}
@@ -271,14 +271,14 @@ func playerHandler(message *rabbit.Message) {
 			return
 		}
 		if err != nil {
-			log.Err(err, payload.ID)
+			zap.S().Error(err, payload.ID)
 			sendToRetryQueue(message)
 			return
 		}
 
 		err = mongo.CreateUserEvent(nil, user.ID, mongo.EventRefresh)
 		if err != nil {
-			log.Err(err, payload.ID)
+			zap.S().Error(err, payload.ID)
 			sendToRetryQueue(message)
 			return
 		}
@@ -303,7 +303,7 @@ func playerHandler(message *rabbit.Message) {
 
 		err = memcache.Delete(items...)
 		if err != nil {
-			log.Err(err, payload.ID)
+			zap.S().Error(err, payload.ID)
 			sendToRetryQueue(message)
 			return
 		}
@@ -343,7 +343,7 @@ func playerHandler(message *rabbit.Message) {
 	for _, v := range produces {
 		err = produce(v.Queue(), v)
 		if err != nil {
-			log.Err(err)
+			zap.S().Error(err)
 			sendToRetryQueue(message)
 			break
 		}
@@ -445,10 +445,10 @@ func updatePlayerRecentGames(player *mongo.Player, payload PlayerMessage) error 
 		if player.UpdatedAt.After(time.Now().Add(time.Hour * 24 * 13 * -1)) { // Just under 2 weeks
 			for _, v := range newAppsSlice {
 				err = ProducePlayerAchievements(player.ID, v.AppID, false)
-				log.Err(err)
+				zap.S().Error(err)
 			}
 			err = ProducePlayerAchievements(player.ID, 0, false)
-			log.Err(err)
+			zap.S().Error(err)
 		}
 	}
 

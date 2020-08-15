@@ -5,10 +5,10 @@ import (
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.uber.org/zap"
 )
 
 type PlayerAlias struct {
@@ -78,7 +78,7 @@ func GetPlayerAliases(playerID int64, limit int64, afterTimestamp int64) (aliase
 
 	defer func() {
 		err = cur.Close(ctx)
-		log.Err(err)
+		zap.S().Error(err)
 	}()
 
 	for cur.Next(ctx) {
@@ -86,7 +86,7 @@ func GetPlayerAliases(playerID int64, limit int64, afterTimestamp int64) (aliase
 		alias := PlayerAlias{}
 		err := cur.Decode(&alias)
 		if err != nil {
-			log.Err(err, alias.getKey())
+			zap.S().Error(err, alias.getKey())
 		} else {
 			aliases = append(aliases, alias)
 		}

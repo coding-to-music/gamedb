@@ -4,11 +4,11 @@ import (
 	"net/http"
 
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 func DonateRouter() http.Handler {
@@ -45,7 +45,7 @@ func topDonateHandler(w http.ResponseWriter, r *http.Request) {
 	// Get donators
 	donators, err := mysql.TopDonators()
 	if err != nil {
-		log.Err(err)
+		zap.S().Error(err)
 		return
 	}
 
@@ -58,7 +58,7 @@ func topDonateHandler(w http.ResponseWriter, r *http.Request) {
 	var playersMap = map[int64]mongo.Player{}
 	players, err := mongo.GetPlayersByID(playerIDs, bson.M{"_id": 1, "persona_name": 1, "avatar": 1, "country_code": 1})
 	if err != nil {
-		log.Err(err)
+		zap.S().Error(err)
 		return
 	}
 
@@ -99,7 +99,7 @@ func latestDonateHandler(w http.ResponseWriter, r *http.Request) {
 	// Get donations
 	donations, err := mysql.LatestDonations()
 	if err != nil {
-		log.Err(err)
+		zap.S().Error(err)
 		return
 	}
 
@@ -112,7 +112,7 @@ func latestDonateHandler(w http.ResponseWriter, r *http.Request) {
 	var playersMap = map[int64]mongo.Player{}
 	players, err := mongo.GetPlayersByID(playerIDs, bson.M{"_id": 1, "persona_name": 1, "avatar": 1, "country_code": 1})
 	if err != nil {
-		log.Err(err)
+		zap.S().Error(err)
 		return
 	}
 

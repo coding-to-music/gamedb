@@ -1,13 +1,9 @@
 package helpers
 
 import (
-	"fmt"
 	"math/rand"
 	"strconv"
 	"strings"
-	"time"
-
-	"github.com/gamedb/gamedb/pkg/log"
 )
 
 func TruncateString(str string, size int, tail string) string {
@@ -23,32 +19,6 @@ func TruncateString(str string, size int, tail string) string {
 
 func GetHashTag(string string) (ret string) {
 	return "#" + RegexNonAlphaNumeric.ReplaceAllString(string, "")
-}
-
-func InterfaceToString(i interface{}) string {
-	switch i := i.(type) {
-	case time.Duration:
-		return i.String()
-	case time.Time:
-		return i.String()
-	case bool:
-		return strconv.FormatBool(i)
-	case int:
-		return strconv.Itoa(i)
-	case int64:
-		return strconv.FormatInt(i, 10)
-	case string:
-		return i
-	case []interface{}:
-		var sli []string
-		for _, v := range i {
-			sli = append(sli, InterfaceToString(v))
-		}
-		return "(" + strings.Join(sli, ",") + ")"
-	default:
-		log.Info("Can't convert val to " + fmt.Sprintf("%T", i))
-		return ""
-	}
 }
 
 func JoinInts(i []int, sep string) string {

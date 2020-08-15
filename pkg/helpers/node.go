@@ -40,4 +40,3 @@ func setAttribute(n *html.Node, attribute string, value string) {
 		n.Attr = append(n.Attr[:i], n.Attr[i+1:]...)
 	}
 }
-

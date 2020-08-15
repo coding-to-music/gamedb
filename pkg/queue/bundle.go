@@ -11,7 +11,6 @@ import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/cenkalti/backoff/v4"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
@@ -19,6 +18,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/gocolly/colly"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 type BundleMessage struct {
@@ -31,7 +31,7 @@ func bundleHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		log.Err(err, message.Message.Body)
+		zap.S().Error(err, message.Message.Body)
 		sendToFailQueue(message)
 		return
 	}
@@ -39,7 +39,7 @@ func bundleHandler(message *rabbit.Message) {
 	// Load current bundle
 	db, err := mysql.GetMySQLClient()
 	if err != nil {
-		log.Err(err)
+		zap.S().Error(err)
 		sendToRetryQueue(message)
 		return
 	}
@@ -47,7 +47,7 @@ func bundleHandler(message *rabbit.Message) {
 	bundle := mysql.Bundle{}
 	db = db.FirstOrInit(&bundle, mysql.Bundle{ID: payload.ID})
 	if db.Error != nil {
-		log.Err(db.Error, payload.ID)
+		zap.S().Error(db.Error, payload.ID)
 		sendToRetryQueue(message)
 		return
 	}
@@ -71,7 +71,7 @@ func bundleHandler(message *rabbit.Message) {
 
 		db = db.Save(&bundle)
 		if db.Error != nil {
-			log.Err(db.Error, payload.ID)
+			zap.S().Error(db.Error, payload.ID)
 			sendToRetryQueue(message)
 			return
 		}
@@ -85,7 +85,7 @@ func bundleHandler(message *rabbit.Message) {
 
 		var err = saveBundlePriceToMongo(bundle, oldBundle)
 		if err != nil {
-			log.Err(err, payload.ID)
+			zap.S().Error(err, payload.ID)
 			sendToRetryQueue(message)
 			return
 		}
@@ -101,7 +101,7 @@ func bundleHandler(message *rabbit.Message) {
 	wsPayload := IntPayload{ID: payload.ID}
 	err = ProduceWebsocket(wsPayload, websockets.PageBundle, websockets.PageBundles)
 	if err != nil {
-		log.Err(err, payload.ID)
+		zap.S().Error(err, payload.ID)
 		sendToRetryQueue(message)
 		return
 	}
@@ -109,7 +109,7 @@ func bundleHandler(message *rabbit.Message) {
 	// Clear caches
 	err = memcache.Delete(memcache.MemcacheBundleInQueue(bundle.ID).Key)
 	if err != nil {
-		log.Err(err, payload.ID)
+		zap.S().Error(err, payload.ID)
 		sendToRetryQueue(message)
 		return
 	}
@@ -168,7 +168,7 @@ func updateBundle(bundle *mysql.Bundle) (err error) {
 
 	policy := backoff.NewExponentialBackOff()
 
-	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err) })
+	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { zap.S().Info(err) })
 	if err != nil {
 		return err
 	}

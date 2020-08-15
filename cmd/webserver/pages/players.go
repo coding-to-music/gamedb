@@ -12,10 +12,10 @@ import (
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
 	"github.com/olivere/elastic/v7"
+	"go.uber.org/zap"
 )
 
 func PlayersRouter() http.Handler {
@@ -44,7 +44,7 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 	// 	if err != nil {
 	// 		err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
 	// 		if err != nil {
-	// 			log.Err(err, r)
+	// 			zap.S().Error(err)
 	// 		}
 	// 	} else {
 	// 		date = config.Value
@@ -60,7 +60,7 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		total, err = mongo.CountDocuments(mongo.CollectionPlayers, nil, 0)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 	}()
 
@@ -74,7 +74,7 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 
 		aggs, err := elasticsearch.AggregatePlayerCountries()
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 
 		for cc := range i18n.States {
@@ -148,7 +148,7 @@ func statesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		aggs, err := elasticsearch.AggregatePlayerCountries()
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 
 		if val, ok := i18n.States[cc]; ok {
@@ -270,7 +270,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		players, filtered, err = elasticsearch.SearchPlayers(100, query.GetOffset(), search, sorters, filters)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 	}()
 
@@ -284,7 +284,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		total, err = mongo.CountDocuments(mongo.CollectionPlayers, nil, 0)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 	}()
 

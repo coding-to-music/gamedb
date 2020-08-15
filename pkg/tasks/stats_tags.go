@@ -7,12 +7,12 @@ import (
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/i18n"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/steam"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 type StatsTags struct {
@@ -62,7 +62,7 @@ func (c StatsTags) work() (err error) {
 		return err
 	}
 
-	log.Info("Found " + strconv.Itoa(len(appsWithTags)) + " apps with tags")
+	zap.S().Info("Found " + strconv.Itoa(len(appsWithTags)) + " apps with tags")
 
 	newTags := make(map[int]*statsRow)
 	for _, app := range appsWithTags {
@@ -112,7 +112,7 @@ func (c StatsTags) work() (err error) {
 		}
 
 		err := mysql.DeleteTags(tagsToDeleteSlice)
-		log.Err(err)
+		zap.S().Error(err)
 	}()
 
 	wg.Wait()
@@ -138,12 +138,12 @@ func (c StatsTags) work() (err error) {
 
 			db, err := mysql.GetMySQLClient()
 			if err != nil {
-				log.Err(err)
+				zap.S().Error(err)
 				return
 			}
 
 			db = db.Unscoped().FirstOrInit(&tag, mysql.Tag{ID: tagID})
-			log.Err(db.Error)
+			zap.S().Error(db.Error)
 
 			tag.Name = v.name
 			tag.Apps = v.count
@@ -152,7 +152,7 @@ func (c StatsTags) work() (err error) {
 			tag.DeletedAt = nil
 
 			db = db.Unscoped().Save(&tag)
-			log.Err(db.Error)
+			zap.S().Error(db.Error)
 
 		}(k, v)
 

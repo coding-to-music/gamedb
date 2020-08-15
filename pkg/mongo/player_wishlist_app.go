@@ -6,10 +6,10 @@ import (
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.uber.org/zap"
 )
 
 type PlayerWishlistApp struct {
@@ -136,7 +136,7 @@ func getPlayerWishlistApps(offset int64, limit int64, filter bson.D, sort bson.D
 
 	defer func(cur *mongo.Cursor) {
 		err = cur.Close(ctx)
-		log.Err(err)
+		zap.S().Error(err)
 	}(cur)
 
 	for cur.Next(ctx) {
@@ -144,7 +144,7 @@ func getPlayerWishlistApps(offset int64, limit int64, filter bson.D, sort bson.D
 		var app PlayerWishlistApp
 		err := cur.Decode(&app)
 		if err != nil {
-			log.Err(err, app.getKey())
+			zap.S().Error(err, app.getKey())
 		} else {
 			apps = append(apps, app)
 		}

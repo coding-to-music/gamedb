@@ -13,7 +13,7 @@ var commits string
 func main() {
 
 	config.Init(version, commits, helpers.GetIP())
-	log.Initialise(log.LogNameTest)
+	log.InitZap(log.LogNameTest)
 	queue.Init(queue.AllProducerDefinitions)
 
 	//

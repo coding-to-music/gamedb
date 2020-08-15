@@ -7,8 +7,8 @@ import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
+	"go.uber.org/zap"
 )
 
 type Tag struct {
@@ -103,7 +103,7 @@ func GetTagsByID(ids []int, columns []string) (tags []Tag, err error) {
 
 func DeleteTags(ids []int) (err error) {
 
-	log.Info("Deleteing " + strconv.Itoa(len(ids)) + " tags")
+	zap.S().Info("Deleteing " + strconv.Itoa(len(ids)) + " tags")
 
 	if len(ids) == 0 {
 		return nil

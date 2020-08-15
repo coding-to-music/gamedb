@@ -5,8 +5,8 @@ import (
 
 	"github.com/Jleagle/patreon-go/patreon"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 type PatreonWebhook struct {
@@ -39,7 +39,7 @@ func GetPatreonWebhooks(offset int64, limit int64, sort bson.D, filter bson.D, p
 
 	defer func() {
 		err = cur.Close(ctx)
-		log.Err(err)
+		zap.S().Error(err)
 	}()
 
 	for cur.Next(ctx) {
@@ -47,7 +47,7 @@ func GetPatreonWebhooks(offset int64, limit int64, sort bson.D, filter bson.D, p
 		var webhook PatreonWebhook
 		err := cur.Decode(&webhook)
 		if err != nil {
-			log.Err(err)
+			zap.S().Error(err)
 		} else {
 			webhooks = append(webhooks, webhook)
 		}

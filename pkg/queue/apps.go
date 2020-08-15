@@ -15,7 +15,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
@@ -24,6 +23,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/gocolly/colly"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 type AppMessage struct {
@@ -38,7 +38,7 @@ func appHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		log.Err(err, message.Message.Body)
+		zap.S().Error(err, message.Message.Body)
 		sendToFailQueue(message)
 		return
 	}
@@ -46,7 +46,7 @@ func appHandler(message *rabbit.Message) {
 	var id = payload.ID
 
 	if !helpers.IsValidAppID(id) {
-		log.Err(err, payload.ID)
+		zap.S().Error(err, payload.ID)
 		sendToFailQueue(message)
 		return
 	}
@@ -57,7 +57,7 @@ func appHandler(message *rabbit.Message) {
 		app = mongo.App{}
 		app.ID = id
 	} else if err != nil {
-		log.Err(err, payload.ID)
+		zap.S().Error(err, payload.ID)
 		sendToRetryQueue(message)
 		return
 	}
@@ -66,9 +66,9 @@ func appHandler(message *rabbit.Message) {
 	if !config.IsLocal() && !app.ShouldUpdate() && app.ChangeNumber >= payload.ChangeNumber {
 
 		s, err := durationfmt.Format(time.Since(app.UpdatedAt), "%hh %mm")
-		log.Err(err)
+		zap.S().Error(err)
 
-		log.Info("Skipping app, updated " + s + " ago")
+		zap.S().Info("Skipping app, updated " + s + " ago")
 		message.Ack()
 		return
 	}
@@ -79,7 +79,7 @@ func appHandler(message *rabbit.Message) {
 	//
 	err = updateAppPICS(&app, message, payload)
 	if err != nil {
-		log.Err(err, message.Message.Body)
+		zap.S().Error(err, message.Message.Body)
 		sendToRetryQueue(message)
 		return
 	}
@@ -121,28 +121,28 @@ func appHandler(message *rabbit.Message) {
 
 		err = updateAppPlaytimeStats(&app)
 		if err != nil {
-			log.Err(err, payload.ID)
+			zap.S().Error(err, payload.ID)
 			sendToRetryQueue(message)
 			return
 		}
 
 		err = updateAppOwners(&app)
 		if err != nil {
-			log.Err(err, payload.ID)
+			zap.S().Error(err, payload.ID)
 			sendToRetryQueue(message)
 			return
 		}
 
 		err = updateAppBadgeOwners(&app)
 		if err != nil {
-			log.Err(err, payload.ID)
+			zap.S().Error(err, payload.ID)
 			sendToRetryQueue(message)
 			return
 		}
 
 		err = updateAppCountries(&app)
 		if err != nil {
-			log.Err(err, payload.ID)
+			zap.S().Error(err, payload.ID)
 			sendToRetryQueue(message)
 			return
 		}
@@ -164,21 +164,21 @@ func appHandler(message *rabbit.Message) {
 
 		err = saveProductPricesToMongo(appBeforeUpdate, app)
 		if err != nil {
-			log.Err(err, payload.ID)
+			zap.S().Error(err, payload.ID)
 			sendToRetryQueue(message)
 			return
 		}
 
 		err = saveSales(app, sales)
 		if err != nil {
-			log.Err(err, payload.ID)
+			zap.S().Error(err, payload.ID)
 			sendToRetryQueue(message)
 			return
 		}
 
 		err = replaceAppRow(app)
 		if err != nil {
-			log.Err(err, payload.ID)
+			zap.S().Error(err, payload.ID)
 			sendToRetryQueue(message)
 			return
 		}
@@ -214,7 +214,7 @@ func appHandler(message *rabbit.Message) {
 
 		err := memcache.Delete(items...)
 		if err != nil {
-			log.Err(err, payload.ID)
+			zap.S().Error(err, payload.ID)
 			sendToRetryQueue(message)
 			return
 		}
@@ -233,7 +233,7 @@ func appHandler(message *rabbit.Message) {
 			wsPayload := IntPayload{ID: id}
 			err = ProduceWebsocket(wsPayload, websockets.PageApp)
 			if err != nil {
-				log.Err(err, id)
+				zap.S().Error(err, id)
 			}
 		}
 	}()
@@ -266,7 +266,7 @@ func appHandler(message *rabbit.Message) {
 	for _, v := range produces {
 		err = produce(v.Queue(), v)
 		if err != nil {
-			log.Err(err)
+			zap.S().Error(err)
 			sendToRetryQueue(message)
 			break
 		}
@@ -428,7 +428,7 @@ func updateAppPICS(app *mongo.App, message *rabbit.Message, payload AppMessage) 
 										localization.RichPresence[vvv.Key].AddToken(vvvvv.Key, vvvvv.Value)
 									}
 								} else {
-									log.Info("Missing localization language key", payload.ID, vvvv.Key) // Sometimes the "tokens" map is missing.
+									zap.S().Info("Missing localization language key", payload.ID, vvvv.Key) // Sometimes the "tokens" map is missing.
 								}
 							}
 
@@ -440,7 +440,7 @@ func updateAppPICS(app *mongo.App, message *rabbit.Message, payload AppMessage) 
 						}
 					}
 				} else {
-					log.Warning("Missing localization key", payload.ID)
+					zap.S().Warn("Missing localization key", payload.ID)
 				}
 			}
 
@@ -456,13 +456,13 @@ func updateAppPICS(app *mongo.App, message *rabbit.Message, payload AppMessage) 
 			amd := pics.AlbumMetaData{}
 			err = helpers.MarshalUnmarshal(child.ToMapInner(), &amd)
 			if err != nil {
-				log.Err(err)
+				zap.S().Error(err)
 			} else {
 				app.AlbumMetaData = amd
 			}
 
 		default:
-			log.Warning(child.Key + " field in app PICS ignored (App: " + strconv.Itoa(app.ID) + ")")
+			zap.S().Warn(child.Key + " field in app PICS ignored (App: " + strconv.Itoa(app.ID) + ")")
 		}
 	}
 
@@ -521,7 +521,7 @@ func updateAppDetails(app *mongo.App) (err error) {
 			app.DLCCount = len(response.Data.DLC)
 
 			err = ProduceDLC(app.ID, response.Data.DLC)
-			log.Err(err)
+			zap.S().Error(err)
 
 			// Packages
 			app.Packages = response.Data.Packages
@@ -611,7 +611,7 @@ func updateAppDetails(app *mongo.App) (err error) {
 					assetMap := map[string]interface{}{}
 					err := helpers.Unmarshal([]byte(assets), &assetMap)
 					if err != nil {
-						log.Err(err, app.ID, assets)
+						zap.S().Error(err, app.ID, assets)
 						return
 					}
 
@@ -625,7 +625,7 @@ func updateAppDetails(app *mongo.App) (err error) {
 						for _, u := range urls {
 							code, err := helpers.HeadWithTimeout(u, 0)
 							if err != nil {
-								log.Err(err)
+								zap.S().Error(err)
 								continue
 							}
 							if code == 200 {
@@ -771,7 +771,7 @@ func scrapeApp(app *mongo.App) (sales []mongo.Sale, err error) {
 			if discountText != "" {
 				sale.SalePercent, err = strconv.Atoi(helpers.RegexNonNumbers.ReplaceAllString(discountText, ""))
 				if err != nil {
-					log.Err(app.ID, err)
+					zap.S().Error(app.ID, err)
 				}
 			}
 
@@ -797,7 +797,7 @@ func scrapeApp(app *mongo.App) (sales []mongo.Sale, err error) {
 				if ts != "" {
 					t, err := strconv.ParseInt(ts, 10, 64)
 					if err != nil {
-						log.Err(app.ID, err)
+						zap.S().Error(app.ID, err)
 					} else {
 						sale.SaleEnd = time.Unix(t, 0)
 					}
@@ -848,7 +848,7 @@ func scrapeApp(app *mongo.App) (sales []mongo.Sale, err error) {
 					sale.SaleEnd = t
 
 				} else {
-					log.Err(err, dateString)
+					zap.S().Error(err, dateString)
 					return
 				}
 
@@ -900,7 +900,7 @@ func scrapeApp(app *mongo.App) (sales []mongo.Sale, err error) {
 		err = c.Visit("https://store.steampowered.com/app/" + strconv.Itoa(app.ID))
 		if err != nil {
 			if strings.Contains(err.Error(), "because its not in AllowedDomains") {
-				log.Info(err)
+				zap.S().Info(err)
 				return nil
 			}
 		}
@@ -911,7 +911,7 @@ func scrapeApp(app *mongo.App) (sales []mongo.Sale, err error) {
 	policy := backoff.NewExponentialBackOff()
 	policy.InitialInterval = time.Second
 
-	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err, app.ID) })
+	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { zap.S().Info(err, app.ID) })
 	if err != nil {
 		return sales, err
 	}
@@ -924,7 +924,7 @@ func scrapeApp(app *mongo.App) (sales []mongo.Sale, err error) {
 		err = ProduceBundle(bundleID)
 		err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 		if err != nil {
-			log.Err(err)
+			zap.S().Error(err)
 		}
 	}
 

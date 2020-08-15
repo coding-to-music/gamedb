@@ -5,10 +5,10 @@ import (
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.uber.org/zap"
 )
 
 var ErrInvalidGroupID = errors.New("invalid group id")
@@ -78,12 +78,12 @@ func CreateGroupIndexes() {
 	//
 	client, ctx, err := getMongo()
 	if err != nil {
-		log.Err(err)
+		zap.S().Error(err)
 		return
 	}
 
 	_, err = client.Database(MongoDatabase).Collection(CollectionGroups.String()).Indexes().CreateMany(ctx, indexModels)
-	log.Err(err)
+	zap.S().Error(err)
 }
 
 func (group Group) GetPath() string {
@@ -160,7 +160,7 @@ func GetGroupsByID(ids []string, projection bson.M) (groups []Group, err error) 
 
 			groupID, err = helpers.IsValidGroupID(groupID)
 			if err != nil {
-				log.Err(err)
+				zap.S().Error(err)
 				continue
 			}
 			idsBSON = append(idsBSON, groupID)
@@ -208,7 +208,7 @@ func getGroups(offset int64, limit int64, sort bson.D, filter bson.D, projection
 
 	defer func() {
 		err = cur.Close(ctx)
-		log.Err(err)
+		zap.S().Error(err)
 	}()
 
 	for cur.Next(ctx) {
@@ -216,7 +216,7 @@ func getGroups(offset int64, limit int64, sort bson.D, filter bson.D, projection
 		var group Group
 		err := cur.Decode(&group)
 		if err != nil {
-			log.Err(err, group.ID)
+			zap.S().Error(err, group.ID)
 		} else {
 			groups = append(groups, group)
 		}

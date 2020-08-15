@@ -13,10 +13,10 @@ import (
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/influx"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/wcharczuk/go-chart"
 	"github.com/wcharczuk/go-chart/drawing"
+	"go.uber.org/zap"
 )
 
 func GetGroupChart(group elasticsearch.Group) (reader io.Reader, err error) {
@@ -145,7 +145,7 @@ func getChart(builder *influxql.Builder, id string, title string, description st
 
 		defer func() {
 			err := f.Close()
-			log.Err(err)
+			zap.S().Error(err)
 		}()
 
 		_, err = f.Write(b)

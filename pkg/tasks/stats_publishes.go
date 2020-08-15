@@ -7,11 +7,11 @@ import (
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/i18n"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 type TasksPublishers struct {
@@ -58,7 +58,7 @@ func (c TasksPublishers) work() (err error) {
 		return err
 	}
 
-	log.Info("Found " + strconv.Itoa(len(appsWithPublishers)) + " apps with publishers")
+	zap.S().Info("Found " + strconv.Itoa(len(appsWithPublishers)) + " apps with publishers")
 
 	newPublishers := make(map[int]*statsRow)
 	for _, app := range appsWithPublishers {
@@ -120,7 +120,7 @@ func (c TasksPublishers) work() (err error) {
 		}
 
 		err := mysql.DeletePublishers(pubsToDeleteSlice)
-		log.Err(err)
+		zap.S().Error(err)
 	}()
 
 	wg.Wait()
@@ -146,12 +146,12 @@ func (c TasksPublishers) work() (err error) {
 
 			db, err := mysql.GetMySQLClient()
 			if err != nil {
-				log.Err(err)
+				zap.S().Error(err)
 				return
 			}
 
 			db = db.Unscoped().FirstOrInit(&publisher, mysql.Publisher{ID: publisherID})
-			log.Err(db.Error)
+			zap.S().Error(db.Error)
 
 			publisher.Name = v.name
 			publisher.Apps = v.count
@@ -160,7 +160,7 @@ func (c TasksPublishers) work() (err error) {
 			publisher.DeletedAt = nil
 
 			db = db.Unscoped().Save(&publisher)
-			log.Err(db.Error)
+			zap.S().Error(db.Error)
 
 		}(k, v)
 

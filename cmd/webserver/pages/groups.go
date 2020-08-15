@@ -7,10 +7,10 @@ import (
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 func GroupsRouter() http.Handler {
@@ -62,7 +62,7 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		groups, aggregations, filtered, err = elasticsearch.SearchGroups(query.GetOffset(), 100, sorters, search, errors)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 			return
 		}
 	}()
@@ -76,7 +76,7 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		total, err = mongo.CountDocuments(mongo.CollectionGroups, bson.D{{Key: "type", Value: helpers.GroupTypeGroup}}, 60*60*6)
-		log.Err(err, r)
+		zap.S().Error(err)
 	}()
 
 	wg.Wait()

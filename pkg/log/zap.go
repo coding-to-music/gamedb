@@ -2,11 +2,37 @@ package log
 
 import (
 	"context"
+	"fmt"
 
 	"cloud.google.com/go/logging"
 	"github.com/gamedb/gamedb/pkg/config"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+)
+
+type LogName string
+
+const (
+	// Binaries
+	LogNameAPI       LogName = "binary-api"
+	LogNameBackend   LogName = "binary-backend"
+	LogNameChatbot   LogName = "binary-chatbot"
+	LogNameConsumers LogName = "binary-consumers"
+	LogNameCrons     LogName = "binary-crons"
+	LogNameSteam     LogName = "binary-steam"
+	LogNameWebserver LogName = "binary-webserver"
+	LogNameTest      LogName = "binary-test"
+	LogNameScaler    LogName = "binary-scaler"
+
+	// Others
+	LogNameMongo          LogName = "mongo"
+	LogNameRabbit         LogName = "rabbit"
+	LogNameRequests       LogName = "requests"
+	LogNameSQL            LogName = "sql"
+	LogNameTriggerUpdate  LogName = "trigger-update"
+	LogNameSteamErrors    LogName = "steam-errors"
+	LogNameWebhooksGitHub LogName = "webhooks-github"
+	// LogNameInflux        LogName = "influx"
 )
 
 func InitZap(logName LogName) {
@@ -19,13 +45,15 @@ func InitZap(logName LogName) {
 		logger, _ = zap.NewProduction()
 	}
 
-	googleClient, err := logging.NewClient(context.Background(), config.Config.GoogleProject.Get())
-	if err != nil {
-		zap.S().Error(err.Error())
-	}
+	if !config.IsLocal() {
 
-	logger = logger.WithOptions(zap.Hooks(func(e zapcore.Entry) error {
-		if !config.IsLocal() {
+		googleClient, err := logging.NewClient(context.Background(), config.Config.GoogleProject.Get())
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		logger = logger.WithOptions(zap.Hooks(func(e zapcore.Entry) error {
+
 			if googleClient != nil {
 
 				var level logging.Severity
@@ -64,9 +92,9 @@ func InitZap(logName LogName) {
 					},
 				})
 			}
-		}
-		return nil
-	}))
+			return nil
+		}))
+	}
 
 	zap.ReplaceGlobals(logger)
 }

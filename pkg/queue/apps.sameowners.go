@@ -5,10 +5,10 @@ import (
 
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 type AppSameownersMessage struct {
@@ -28,14 +28,14 @@ func appSameownersHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		log.Err(err, message.Message.Body)
+		zap.S().Error(err, message.Message.Body)
 		sendToFailQueue(message)
 		return
 	}
 
 	ownerRows, err := mongo.GetAppOwners(payload.AppID)
 	if err != nil {
-		log.Err(err, payload.AppID)
+		zap.S().Error(err, payload.AppID)
 		sendToFailQueue(message)
 		return
 	}
@@ -52,7 +52,7 @@ func appSameownersHandler(message *rabbit.Message) {
 
 	apps, err := mongo.GetPlayersApps(playerIDs, bson.M{"_id": -1, "app_id": 1})
 	if err != nil {
-		log.Err(err, payload.AppID)
+		zap.S().Error(err, payload.AppID)
 		sendToFailQueue(message)
 		return
 	}
@@ -84,7 +84,7 @@ func appSameownersHandler(message *rabbit.Message) {
 
 	_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", payload.AppID}}, update)
 	if err != nil {
-		log.Err(err, payload.AppID)
+		zap.S().Error(err, payload.AppID)
 		sendToRetryQueue(message)
 		return
 	}
@@ -92,7 +92,7 @@ func appSameownersHandler(message *rabbit.Message) {
 	// Clear cache
 	err = memcache.Delete(memcache.MemcacheApp(payload.AppID).Key)
 	if err != nil {
-		log.Err(err, payload.AppID)
+		zap.S().Error(err, payload.AppID)
 		sendToRetryQueue(message)
 		return
 	}
@@ -100,7 +100,7 @@ func appSameownersHandler(message *rabbit.Message) {
 	// Update in Elastic
 	err = ProduceAppSearch(nil, payload.AppID)
 	if err != nil {
-		log.Err(err, payload.AppID)
+		zap.S().Error(err, payload.AppID)
 		sendToRetryQueue(message)
 		return
 	}

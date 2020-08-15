@@ -6,8 +6,8 @@ import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/i18n"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/go-chi/chi"
+	"go.uber.org/zap"
 )
 
 func CurrencyHandler(w http.ResponseWriter, r *http.Request) {
@@ -29,12 +29,12 @@ func CurrencyHandler(w http.ResponseWriter, r *http.Request) {
 		if err == nil {
 			user.ProductCC = steamapi.ProductCC(id)
 			err2 := user.Save()
-			log.Err(err2, r)
+			zap.S().Error(err2, r)
 		}
 
 	} else {
 		session.SetFlash(r, session.SessionGood, "Invalid currency")
-		log.Err(err, r)
+		zap.S().Error(err)
 	}
 
 	// Save session

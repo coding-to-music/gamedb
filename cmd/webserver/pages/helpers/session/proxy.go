@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/Jleagle/session-go/session"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gorilla/securecookie"
+	"go.uber.org/zap"
 )
 
 func Get(r *http.Request, key string) (value string) {
@@ -65,11 +65,11 @@ func logSessionError(err error) {
 
 		if val, ok := err.(securecookie.Error); ok {
 			if val.IsUsage() || val.IsDecode() {
-				log.Info(val.Error())
+				zap.S().Info(val.Error())
 				return
 			}
 		}
 
-		log.Err(err)
+		zap.S().Error(err)
 	}
 }

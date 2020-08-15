@@ -7,12 +7,12 @@ import (
 	"github.com/Jleagle/rabbit-go"
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/steam"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 type PlayersAliasesMessage struct {
@@ -29,7 +29,7 @@ func playerAliasesHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		log.Err(err, message.Message.Body)
+		zap.S().Error(err, message.Message.Body)
 		sendToFailQueue(message)
 		return
 	}
@@ -44,7 +44,7 @@ func playerAliasesHandler(message *rabbit.Message) {
 
 		err = ProduceWebsocket(wsPayload, websockets.PagePlayer)
 		if err != nil {
-			log.Err(err, message.Message.Body)
+			zap.S().Error(err, message.Message.Body)
 		}
 	}()
 
@@ -75,7 +75,7 @@ func playerAliasesHandler(message *rabbit.Message) {
 
 			t, err = time.Parse("2 Jan, 2006 @ 3:04pm", v.Time)
 			if err != nil {
-				log.Err(err, v.Time, payload.PlayerID)
+				zap.S().Error(err, v.Time, payload.PlayerID)
 				continue
 			}
 		}
@@ -91,7 +91,7 @@ func playerAliasesHandler(message *rabbit.Message) {
 
 	err = mongo.ReplacePlayerAliases(playerAliases)
 	if err != nil {
-		log.Err(err, message.Message.Body)
+		zap.S().Error(err, message.Message.Body)
 		sendToRetryQueue(message)
 		return
 	}
@@ -101,7 +101,7 @@ func playerAliasesHandler(message *rabbit.Message) {
 
 	_, err = mongo.UpdateOne(mongo.CollectionPlayers, bson.D{{"_id", payload.PlayerID}}, update)
 	if err != nil {
-		log.Err(err, message.Message.Body)
+		zap.S().Error(err, message.Message.Body)
 		sendToRetryQueue(message)
 		return
 	}
@@ -109,7 +109,7 @@ func playerAliasesHandler(message *rabbit.Message) {
 	// Clear player cache
 	err = memcache.Delete(memcache.MemcachePlayer(payload.PlayerID).Key)
 	if err != nil {
-		log.Err(err, message.Message.Body)
+		zap.S().Error(err, message.Message.Body)
 		sendToRetryQueue(message)
 		return
 	}
@@ -117,7 +117,7 @@ func playerAliasesHandler(message *rabbit.Message) {
 	// Update Elastic
 	err = ProducePlayerSearch(nil, payload.PlayerID)
 	if err != nil {
-		log.Err(err, message.Message.Body)
+		zap.S().Error(err, message.Message.Body)
 		sendToRetryQueue(message)
 		return
 	}

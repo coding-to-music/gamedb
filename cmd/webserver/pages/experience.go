@@ -9,9 +9,9 @@ import (
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/cache"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
+	"go.uber.org/zap"
 )
 
 const (
@@ -46,7 +46,7 @@ func experienceHandler(w http.ResponseWriter, r *http.Request) {
 
 	err := cache.GetSetCache("experience", 0, retrieve, &chunks)
 	if err != nil {
-		log.Err(err, r)
+		zap.S().Error(err)
 		returnErrorTemplate(w, r, errorTemplate{Code: 500})
 	}
 
@@ -71,7 +71,7 @@ func experienceHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		t.PlayerLevel, err = strconv.Atoi(level)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 		t.PlayerLevelTo = t.PlayerLevel + 10
 	}
@@ -83,7 +83,7 @@ func getExperienceRows() (chunked [][]level) {
 
 	levels, err := mongo.GetPlayerLevels()
 	if err != nil {
-		log.Err(err)
+		zap.S().Error(err)
 		return
 	}
 

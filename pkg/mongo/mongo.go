@@ -6,12 +6,12 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
+	"go.uber.org/zap"
 )
 
 var (
@@ -81,7 +81,7 @@ func getMongo() (client *mongo.Client, ctx context.Context, err error) {
 
 	if mongoClient == nil {
 
-		log.Info("Getting Mongo client")
+		zap.S().Info("Getting Mongo client")
 
 		ctx = context.Background()
 

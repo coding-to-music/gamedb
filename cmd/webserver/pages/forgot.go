@@ -10,11 +10,11 @@ import (
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/go-chi/chi"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
+	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -58,7 +58,7 @@ func forgotPostHandler(w http.ResponseWriter, r *http.Request) {
 		// Parse form
 		err := r.ParseForm()
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 			return "An error occurred", false
 		}
 
@@ -86,14 +86,14 @@ func forgotPostHandler(w http.ResponseWriter, r *http.Request) {
 		if err == mysql.ErrRecordNotFound {
 			return "Email sent", true
 		} else if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 			return "An error occurred", false
 		}
 
 		// Create verification code
 		code, err := mysql.CreateUserVerification(user.ID)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 			return "An error occurred", false
 		}
 
@@ -111,14 +111,14 @@ func forgotPostHandler(w http.ResponseWriter, r *http.Request) {
 			body,
 		)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 			return "An error occurred", false
 		}
 
 		// Create login event
 		err = mongo.CreateUserEvent(r, user.ID, mongo.EventForgotPassword)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 
 		return "Email sent", true
@@ -158,7 +158,7 @@ func forgotResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 		userID, err := mysql.GetUserVerification(code)
 		if err != nil {
 			err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
-			log.Err(err, r)
+			zap.S().Error(err)
 			return "Invalid code (1002)", false
 		}
 
@@ -170,7 +170,7 @@ func forgotResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 		user, err := mysql.GetUserByID(userID)
 		if err != nil {
 			err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
-			log.Err(err, r)
+			zap.S().Error(err)
 			return "An error occurred (1001)", false
 		}
 
@@ -178,7 +178,7 @@ func forgotResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 		passwordString := helpers.RandString(16, helpers.Letters)
 		passwordBytes, err := bcrypt.GenerateFromPassword([]byte(passwordString), 14)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 			return "An error occurred (1002)", false
 		}
 
@@ -193,14 +193,14 @@ func forgotResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 			body,
 		)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 			return "An error occurred", false
 		}
 
 		// Set password
 		err = mysql.UpdateUserCol(userID, "password", string(passwordBytes))
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 			return "An error occurred (1003)", false
 		}
 

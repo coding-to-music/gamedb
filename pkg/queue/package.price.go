@@ -8,12 +8,12 @@ import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/steam"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.uber.org/zap"
 )
 
 type PackagePriceMessage struct {
@@ -32,7 +32,7 @@ func packagePriceHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		log.Err(err, message.Message.Body)
+		zap.S().Error(err, message.Message.Body)
 		sendToFailQueue(message)
 		return
 	}
@@ -74,7 +74,7 @@ func packagePriceHandler(message *rabbit.Message) {
 
 		_, err = mongo.UpdateOne(mongo.CollectionPackages, bson.D{{"_id", payload.PackageID}}, update)
 		if err != nil {
-			log.Err(err)
+			zap.S().Error(err)
 			sendToRetryQueue(message)
 		}
 	}()
@@ -108,7 +108,7 @@ func packagePriceHandler(message *rabbit.Message) {
 
 				result, err := mongo.InsertOne(mongo.CollectionProductPrices, price)
 				if err != nil {
-					log.Err(err)
+					zap.S().Error(err)
 					return
 				}
 
@@ -119,7 +119,7 @@ func packagePriceHandler(message *rabbit.Message) {
 						wsPayload := StringsPayload{IDs: []string{insertedID.Hex()}}
 						err2 := ProduceWebsocket(wsPayload, websockets.PagePrices)
 						if err2 != nil {
-							log.Err(err2)
+							zap.S().Error(err2)
 						}
 					}
 				}
@@ -139,7 +139,7 @@ func packagePriceHandler(message *rabbit.Message) {
 		// 		var msg = "Package " + strconv.FormatUint(uint64(payload.PackageID), 10) + ": " + helpers.GetPackageName(int(payload.PackageID), payload.PackageName)
 		// 		_, err := discordClient.ChannelMessageSend("685246060930924544", msg)
 		// 		if err != nil {
-		// 			log.Err(err)
+		// 			zap.S().Error(err)
 		// 		}
 		// 	}
 		// }()

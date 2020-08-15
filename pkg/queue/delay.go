@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/rabbit-go"
-	"github.com/gamedb/gamedb/pkg/log"
+	"go.uber.org/zap"
 )
 
 func delayHandler(message *rabbit.Message) {
@@ -38,7 +38,7 @@ func delayHandler(message *rabbit.Message) {
 	if message.FirstSeen().Add(time.Second * time.Duration(int64(seconds))).Before(time.Now()) {
 
 		if seconds >= max.Seconds() {
-			log.Warning("Max delay: " + string(message.LastQueue()) + ": " + string(message.Message.Body))
+			zap.S().Warn("Max delay: " + string(message.LastQueue()) + ": " + string(message.Message.Body))
 		}
 
 		sendToLastQueue(message)
@@ -59,7 +59,7 @@ func writeToFile(message *rabbit.Message) {
 
 	defer func() {
 		err := f.Close()
-		log.Err(err)
+		zap.S().Error(err)
 	}()
 
 	if queue == nil {

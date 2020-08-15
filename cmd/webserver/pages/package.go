@@ -15,6 +15,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 func PackageRouter() http.Handler {
@@ -43,7 +44,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		err = helpers.IgnoreErrors(err, mongo.ErrInvalidPackageID)
-		log.Err(err, r)
+		zap.S().Error(err)
 
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the package."})
 		return
@@ -66,7 +67,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 
 		appsSlice, err = mongo.GetAppsByID(pack.Apps, bson.M{"_id": 1, "name": 1, "icon": 1, "type": 1, "platforms": 1, "dlc": 1, "common": 1, "background": 1})
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 			return
 		}
 
@@ -84,7 +85,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 
 		err = queue.ProduceSteam(queue.SteamMessage{AppIDs: missingAppIDs})
 		err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
-		log.Err(err, r)
+		zap.S().Error(err)
 	}()
 
 	var bundles []mysql.Bundle
@@ -96,7 +97,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		bundles, err = GetPackageBundles(pack)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 	}()
 
@@ -143,11 +144,11 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 		err = queue.ProduceSteam(queue.SteamMessage{PackageIDs: []int{pack.ID}})
 		if err == nil {
 			t.addToast(Toast{Title: "Update", Message: "Package has been queued for an update", Success: true})
-			log.Info(log.LogNameTriggerUpdate, r, r.UserAgent())
+			zap.S().Info(log.LogNameTriggerUpdate, r, r.UserAgent())
 		}
 		err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 	}()
 

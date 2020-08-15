@@ -6,8 +6,8 @@ import (
 	"sync"
 
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/olivere/elastic/v7"
+	"go.uber.org/zap"
 )
 
 const (
@@ -113,33 +113,33 @@ func rebuildIndex(index string, mapping map[string]interface{}) {
 
 	client, ctx, err := GetElastic()
 	if err != nil {
-		log.Info(err)
+		zap.S().Info(err)
 		return
 	}
 
-	log.Info("Deteing " + index)
+	zap.S().Info("Deteing " + index)
 	resp, err := client.DeleteIndex(index).Do(ctx)
 	if err != nil {
-		log.Info(err)
+		zap.S().Info(err)
 		return
 	}
 	if !resp.Acknowledged {
-		log.Info("delete not acknowledged")
+		zap.S().Info("delete not acknowledged")
 		return
 	}
 
 	// time.Sleep(time.Second)
 
-	log.Info("Creating " + index)
+	zap.S().Info("Creating " + index)
 	createIndexResp, err := client.CreateIndex(index).BodyJson(mapping).Do(ctx)
 	if err != nil {
-		log.Info(err)
+		zap.S().Info(err)
 		return
 	}
 
 	if !createIndexResp.Acknowledged {
-		log.Info("create not acknowledged")
+		zap.S().Info("create not acknowledged")
 		return
 	}
-	log.Info("Indexes rebuilt")
+	zap.S().Info("Indexes rebuilt")
 }

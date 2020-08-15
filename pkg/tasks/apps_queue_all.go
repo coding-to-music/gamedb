@@ -3,9 +3,9 @@ package tasks
 import (
 	"strconv"
 
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/steam"
+	"go.uber.org/zap"
 )
 
 type AppsQueueAll struct {
@@ -56,7 +56,7 @@ func (c AppsQueueAll) work() (err error) {
 		keepGoing = apps.HaveMoreResults
 	}
 
-	log.Info("Found " + strconv.Itoa(count) + " apps")
+	zap.S().Info("Found " + strconv.Itoa(count) + " apps")
 
 	return nil
 }

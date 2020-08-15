@@ -1,7 +1,7 @@
 package i18n
 
 import (
-	"github.com/gamedb/gamedb/pkg/log"
+	"go.uber.org/zap"
 )
 
 func CountryCodeToName(code string) string {
@@ -25,7 +25,7 @@ func CountryCodeToName(code string) string {
 
 	country, err := gountriesInstance.FindCountryByAlpha(code)
 	if err != nil {
-		log.Err(err)
+		zap.S().Error(err)
 		return code
 	}
 
@@ -47,7 +47,7 @@ func CountryCodeToContinent(code string) string {
 
 	country, err := gountriesInstance.FindCountryByAlpha(code)
 	if err != nil {
-		log.Err(err, code)
+		zap.S().Error(err, code)
 		return ""
 	}
 

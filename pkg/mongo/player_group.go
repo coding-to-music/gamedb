@@ -4,10 +4,10 @@ import (
 	"strconv"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.uber.org/zap"
 )
 
 type PlayerGroup struct {
@@ -176,7 +176,7 @@ func getPlayerGroups(offset int64, limit int64, filter bson.D, sort bson.D) (pla
 
 	defer func(cur *mongo.Cursor) {
 		err = cur.Close(ctx)
-		log.Err(err)
+		zap.S().Error(err)
 	}(cur)
 
 	for cur.Next(ctx) {
@@ -184,7 +184,7 @@ func getPlayerGroups(offset int64, limit int64, filter bson.D, sort bson.D) (pla
 		var group PlayerGroup
 		err := cur.Decode(&group)
 		if err != nil {
-			log.Err(err, group.getKey(), cur.Current.String())
+			zap.S().Error(err, group.getKey(), cur.Current.String())
 		} else {
 			players = append(players, group)
 		}

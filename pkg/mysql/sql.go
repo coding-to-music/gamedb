@@ -7,10 +7,9 @@ import (
 
 	"github.com/cenkalti/backoff/v4"
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
+	"go.uber.org/zap"
 )
 
 var (
@@ -30,7 +29,7 @@ func GetMySQLClient() (conn *gorm.DB, err error) {
 		// Retrying as this call can fail
 		operation := func() (err error) {
 
-			// log.Info("Connecting to MySQL")
+			// zap.S().Info("Connecting to MySQL")
 
 			options := url.Values{}
 			options.Set("parseTime", "true")
@@ -61,9 +60,9 @@ func GetMySQLClient() (conn *gorm.DB, err error) {
 
 		policy := backoff.NewConstantBackOff(time.Second * 5)
 
-		err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err) })
+		err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { zap.S().Info(err) })
 		if err != nil {
-			log.Critical(err)
+			zap.S().Fatal(err)
 		}
 	}
 
@@ -74,6 +73,5 @@ type mySQLLogger struct {
 }
 
 func (logger mySQLLogger) Print(v ...interface{}) {
-	s := helpers.InterfaceToString(v)
-	log.Debug(s, log.LogNameSQL)
+	zap.S().Debug(v...)
 }

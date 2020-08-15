@@ -5,11 +5,11 @@ import (
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.uber.org/zap"
 )
 
 type PlayerBadge struct {
@@ -197,7 +197,7 @@ func getPlayerBadges(offset int64, limit int64, filter bson.D, sort bson.D, proj
 
 	defer func() {
 		err = cur.Close(ctx)
-		log.Err(err)
+		zap.S().Error(err)
 	}()
 
 	for cur.Next(ctx) {
@@ -205,7 +205,7 @@ func getPlayerBadges(offset int64, limit int64, filter bson.D, sort bson.D, proj
 		var badge PlayerBadge
 		err := cur.Decode(&badge)
 		if err != nil {
-			log.Err(err, badge.GetKey())
+			zap.S().Error(err, badge.GetKey())
 		} else {
 			badges = append(badges, badge)
 		}

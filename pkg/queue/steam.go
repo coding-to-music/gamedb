@@ -9,7 +9,7 @@ import (
 	"github.com/Philipp15b/go-steam/protocol/protobuf"
 	"github.com/Philipp15b/go-steam/protocol/steamlang"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
+	"go.uber.org/zap"
 )
 
 var steamClient *steam.Client
@@ -28,7 +28,7 @@ func steamHandler(message *rabbit.Message) {
 	false := false
 
 	if steamClient == nil || !steamClient.Connected() {
-		log.Err(errors.New("steamClient not connected"))
+		zap.S().Error(errors.New("steamClient not connected"))
 		sendToRetryQueue(message)
 		return
 	}
@@ -37,7 +37,7 @@ func steamHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		log.Err(err, message.Message.Body)
+		zap.S().Error(err, message.Message.Body)
 		sendToRetryQueue(message)
 		return
 	}

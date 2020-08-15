@@ -27,6 +27,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/gosimple/slug"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 func appRouter() http.Handler {
@@ -71,7 +72,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	// Get app
 	app, err := mongo.GetApp(id)
 	if err != nil && strings.HasPrefix(err.Error(), "memcache: unexpected response line from \"set\":") {
-		log.Warning(err)
+		zap.S().Warn(err)
 		err = nil
 	}
 	if err != nil {
@@ -82,7 +83,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		err = helpers.IgnoreErrors(err, mongo.ErrInvalidAppID)
-		log.Err(err, r)
+		zap.S().Error(err)
 
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the app."})
 		return
@@ -124,11 +125,11 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		err = queue.ProduceSteam(queue.SteamMessage{AppIDs: []int{app.ID}})
 		if err == nil {
 			t.addToast(Toast{Title: "Update", Message: "App has been queued for an update", Success: true})
-			log.Info(log.LogNameTriggerUpdate, r, r.UserAgent())
+			zap.S().Info(log.LogNameTriggerUpdate, r, r.UserAgent())
 		}
 		err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 	}()
 
@@ -141,7 +142,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		t.Tags, err = GetAppTags(app)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 	}()
 
@@ -154,7 +155,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		t.Categories, err = GetAppCategories(app)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 	}()
 
@@ -167,7 +168,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		t.Genres, err = GetAppGenres(app)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 	}()
 
@@ -180,7 +181,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		t.Demos, err = app.GetDemos()
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 	}()
 
@@ -193,7 +194,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		t.Developers, err = GetDevelopers(app)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 	}()
 
@@ -206,7 +207,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		t.Publishers, err = GetPublishers(app)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 	}()
 
@@ -219,7 +220,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		t.PlayersCount, err = mongo.CountDocuments(mongo.CollectionPlayers, nil, 0)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 	}()
 
@@ -238,7 +239,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 				playerApp, err := mongo.GetPlayerAppByKey(playerID, app.ID)
 				if err != nil {
 					err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
-					log.Err(err, r)
+					zap.S().Error(err)
 					return
 				}
 
@@ -278,7 +279,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	t.PlayersInGame, err = t.App.GetPlayersInGame()
 	if err != nil {
-		log.Err(err, r)
+		zap.S().Error(err)
 	}
 
 	// Functions that get called multiple times in the template
@@ -415,7 +416,7 @@ func appLocalizationHandler(w http.ResponseWriter, r *http.Request) {
 	err = mongo.FindOne(mongo.CollectionApps, bson.D{{"_id", id}}, nil, bson.M{"localization": 1}, &app)
 	if err != nil {
 		err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
-		log.Err(err, r)
+		zap.S().Error(err)
 		return
 	}
 
@@ -443,13 +444,13 @@ func appSimilarHandler(w http.ResponseWriter, r *http.Request) {
 
 	app, err := mongo.GetApp(id)
 	if err != nil {
-		log.Err(err, r)
+		zap.S().Error(err)
 		return
 	}
 
 	related, err := app.GetAppRelatedApps()
 	if err != nil {
-		log.Err(err, r)
+		zap.S().Error(err)
 		return
 	}
 
@@ -464,7 +465,7 @@ func appSimilarHandler(w http.ResponseWriter, r *http.Request) {
 
 	tags, err := mysql.GetTagsByID(tagIDs, []string{"id", "name"})
 	if err != nil {
-		log.Err(err, r)
+		zap.S().Error(err)
 		return
 	}
 
@@ -513,7 +514,7 @@ func appReviewsHandler(w http.ResponseWriter, r *http.Request) {
 	err = mongo.FindOne(mongo.CollectionApps, bson.D{{"_id", id}}, nil, bson.M{"reviews": 1}, &app)
 	if err != nil {
 		err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
-		log.Err(err, r)
+		zap.S().Error(err)
 		return
 	}
 
@@ -563,7 +564,7 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		articles, err = mongo.GetArticles(query.GetOffset64(), 100, bson.D{{"date", -1}}, filter2)
 		if err != nil {
-			log.Err(err, r, id)
+			zap.S().Error(err, r, id)
 			return
 		}
 	}()
@@ -580,13 +581,13 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		total, err = mongo.CountDocuments(mongo.CollectionAppArticles, filter, 60*60*24)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 			return
 		}
 
 		filtered, err = mongo.CountDocuments(mongo.CollectionAppArticles, filter2, 60*60*24)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 			return
 		}
 	}()
@@ -651,7 +652,7 @@ func appAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		achievements, err = mongo.GetAppAchievements(query.GetOffset64(), 100, filter, sortOrder)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 			return
 		}
 
@@ -665,7 +666,7 @@ func appAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 			playerAchievements, err := mongo.GetPlayerAchievementsForApp(playerID, id, a, 0)
 			if err != nil {
-				log.Err(err, r)
+				zap.S().Error(err)
 				return
 			}
 
@@ -685,7 +686,7 @@ func appAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		total, err = mongo.CountDocuments(mongo.CollectionAppAchievements, filter, 60*60*24*28)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 			return
 		}
 	}()
@@ -752,7 +753,7 @@ func appDLCAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		dlcs, err = mongo.GetDLCForApp(query.GetOffset64(), 100, filter2, sortOrder)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 			return
 		}
 	}()
@@ -770,13 +771,13 @@ func appDLCAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		total, err = mongo.CountDocuments(mongo.CollectionAppDLC, filter, 60*60*24)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 			return
 		}
 
 		filtered, err = mongo.CountDocuments(mongo.CollectionAppDLC, filter2, 60*60*24)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 			return
 		}
 	}()
@@ -804,7 +805,7 @@ func appItemsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
-		log.Err(err, r)
+		zap.S().Error(err)
 		return
 	}
 
@@ -836,7 +837,7 @@ func appItemsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		items, err = mongo.GetAppItems(query.GetOffset64(), 100, filter2, nil)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 			return
 		}
 
@@ -855,12 +856,12 @@ func appItemsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		total, err = mongo.CountDocuments(mongo.CollectionAppItems, filter, 0)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 
 		filtered, err = mongo.CountDocuments(mongo.CollectionAppItems, filter2, 0)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 	}()
 
@@ -919,7 +920,7 @@ func appBundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	app, err := mongo.GetApp(id)
 	if err != nil {
-		log.Err(err, r)
+		zap.S().Error(err)
 		return
 	}
 	if len(app.Bundles) == 0 {
@@ -933,7 +934,7 @@ func appBundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return mysql.GetBundlesByID(app.Bundles, nil)
 	})
 	if err != nil {
-		log.Err(err, r)
+		zap.S().Error(err)
 		return
 	}
 
@@ -963,7 +964,7 @@ func appPackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	app, err := mongo.GetApp(id)
 	if err != nil {
-		log.Err(err, r)
+		zap.S().Error(err)
 		return
 	}
 	if len(app.Packages) == 0 {
@@ -977,7 +978,7 @@ func appPackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return mongo.GetPackagesByID(app.Packages, bson.M{})
 	})
 	if err != nil {
-		log.Err(err, r)
+		zap.S().Error(err)
 		return
 	}
 
@@ -1021,7 +1022,7 @@ func appWishlistAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		resp, err := influx.InfluxQuery(builder.String())
 		if err != nil {
-			log.Err(err, r, builder.String())
+			zap.S().Error(err, r, builder.String())
 			return hc, err
 		}
 
@@ -1035,7 +1036,7 @@ func appWishlistAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return hc, err
 	})
 
-	log.Err(err, r)
+	zap.S().Error(err)
 
 	returnJSON(w, r, hc)
 }
@@ -1063,7 +1064,7 @@ func appPlayersHeatmapAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		resp, err := influx.InfluxQuery(builder.String())
 		if err != nil {
-			log.Err(err, r, builder.String())
+			zap.S().Error(err, r, builder.String())
 			return hc, err
 		}
 
@@ -1078,13 +1079,13 @@ func appPlayersHeatmapAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 						t, err := time.Parse(time.RFC3339, vv[0].(string))
 						if err != nil {
-							log.Err(err, r)
+							zap.S().Error(err)
 							continue
 						}
 
 						val, err := vv[k].(json.Number).Float64()
 						if err != nil {
-							log.Err(err, r)
+							zap.S().Error(err)
 							continue
 						}
 
@@ -1106,7 +1107,7 @@ func appPlayersHeatmapAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return hc, err
 	})
 
-	log.Err(err, r)
+	zap.S().Error(err)
 
 	returnJSON(w, r, hc)
 }
@@ -1125,7 +1126,7 @@ func appTagsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	app, err := mongo.GetApp(id)
 	if err != nil {
-		log.Err(err, r)
+		zap.S().Error(err)
 		return
 	}
 
@@ -1147,7 +1148,7 @@ func appTagsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		resp, err := influx.InfluxQuery(builder.String())
 		if err != nil {
-			log.Err(err, r, builder.String())
+			zap.S().Error(err, r, builder.String())
 			return hc, err
 		}
 
@@ -1159,7 +1160,7 @@ func appTagsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return hc, err
 	})
 
-	log.Err(err, r)
+	zap.S().Error(err)
 
 	returnJSON(w, r, map[string]interface{}{
 		"counts": hc,
@@ -1212,7 +1213,7 @@ func appPlayersAjaxHandler(limit bool) func(http.ResponseWriter, *http.Request) 
 
 			resp, err := influx.InfluxQuery(builder.String())
 			if err != nil {
-				log.Err(err, r, builder.String())
+				zap.S().Error(err, r, builder.String())
 				return hc, err
 			}
 
@@ -1224,7 +1225,7 @@ func appPlayersAjaxHandler(limit bool) func(http.ResponseWriter, *http.Request) 
 			return hc, err
 		})
 
-		log.Err(err, r)
+		zap.S().Error(err)
 
 		returnJSON(w, r, hc)
 	}
@@ -1235,7 +1236,7 @@ func appTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
-		log.Err(err, r)
+		zap.S().Error(err)
 		return
 	}
 
@@ -1248,7 +1249,7 @@ func appTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	playerApps, err := mongo.GetPlayerAppsByApp(query.GetOffset64(), playerAppFilter)
 	if err != nil {
-		log.Err(err, r)
+		zap.S().Error(err)
 		return
 	}
 
@@ -1275,7 +1276,7 @@ func appTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		players, err := mongo.GetPlayersByID(playerIDsSlice, bson.M{"_id": 1, "persona_name": 1, "avatar": 1, "country_code": 1})
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 			return
 		}
 
@@ -1312,7 +1313,7 @@ func appTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		total, err = mongo.CountDocuments(mongo.CollectionPlayerApps, playerAppFilter, 0)
-		log.Err(err, r)
+		zap.S().Error(err)
 	}()
 
 	// Wait
@@ -1365,7 +1366,7 @@ func appReviewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := influx.InfluxQuery(builder.String())
 	if err != nil {
-		log.Err(err, r, builder.String())
+		zap.S().Error(err, r, builder.String())
 		return
 	}
 

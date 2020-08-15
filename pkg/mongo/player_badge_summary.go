@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 type PlayerBadgeSummary struct {
@@ -81,7 +81,7 @@ func (badge PlayerBadgeSummary) GetSpecialLeaders() (ret template.HTML) {
 	for playerID, playerName := range badge.Leaders {
 		i, err := strconv.ParseInt(playerID, 10, 64)
 		if err != nil {
-			log.Err(err)
+			zap.S().Error(err)
 		} else {
 			return "<a href=" + template.HTML(helpers.GetPlayerPath(i, playerName)) + ">" + template.HTML(playerName) + "</a>"
 		}
@@ -102,7 +102,7 @@ func (badge PlayerBadgeSummary) GetAppLeader(foil bool) (ret template.HTML) {
 	for playerID, playerName := range leaders {
 		i, err := strconv.ParseInt(playerID, 10, 64)
 		if err != nil {
-			log.Err(err)
+			zap.S().Error(err)
 		} else {
 			return "<a href=" + template.HTML(helpers.GetPlayerPath(i, playerName)) + ">" + template.HTML(playerName) + "</a>"
 		}
@@ -123,7 +123,7 @@ func GetBadgeSummaries() (badges []PlayerBadgeSummary, err error) {
 
 	defer func() {
 		err = cur.Close(ctx)
-		log.Err(err)
+		zap.S().Error(err)
 	}()
 
 	for cur.Next(ctx) {
@@ -131,7 +131,7 @@ func GetBadgeSummaries() (badges []PlayerBadgeSummary, err error) {
 		var badge PlayerBadgeSummary
 		err := cur.Decode(&badge)
 		if err != nil {
-			log.Err(err, badge)
+			zap.S().Error(err, badge)
 			continue
 		}
 

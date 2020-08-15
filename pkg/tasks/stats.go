@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/Jleagle/steam-go/steamapi"
-	"github.com/gamedb/gamedb/pkg/log"
+	"go.uber.org/zap"
 )
 
 type statsRow struct {
@@ -23,7 +23,7 @@ func (t statsRow) getMeanPrice() string {
 	}
 
 	bytes, err := json.Marshal(means)
-	log.Err(err)
+	zap.S().Error(err)
 
 	return string(bytes)
 }

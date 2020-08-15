@@ -7,11 +7,11 @@ import (
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/influx"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	influx "github.com/influxdata/influxdb1-client"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 type AppWishlistsMessage struct {
@@ -24,14 +24,14 @@ func appWishlistsHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		log.Err(err, message.Message.Body)
+		zap.S().Error(err, message.Message.Body)
 		sendToFailQueue(message)
 		return
 	}
 
 	playerWishlists, err := mongo.GetPlayerWishlistAppsByApp(payload.AppID)
 	if err != nil {
-		log.Err(err, message.Message.Body)
+		zap.S().Error(err, message.Message.Body)
 		sendToRetryQueue(message)
 		return
 	}
@@ -59,7 +59,7 @@ func appWishlistsHandler(message *rabbit.Message) {
 	// Get percent of players
 	wishlistPlayers, err := mongo.CountDocuments(mongo.CollectionPlayers, nil, 60*60)
 	if err != nil {
-		log.Err(err, message.Message.Body)
+		zap.S().Error(err, message.Message.Body)
 		sendToRetryQueue(message)
 		return
 	}
@@ -87,7 +87,7 @@ func appWishlistsHandler(message *rabbit.Message) {
 
 	_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, point)
 	if err != nil {
-		log.Err(err, message.Message.Body)
+		zap.S().Error(err, message.Message.Body)
 		sendToRetryQueue(message)
 		return
 	}
@@ -101,7 +101,7 @@ func appWishlistsHandler(message *rabbit.Message) {
 
 	_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", payload.AppID}}, update)
 	if err != nil {
-		log.Err(err, payload.AppID)
+		zap.S().Error(err, payload.AppID)
 		sendToRetryQueue(message)
 		return
 	}
@@ -109,7 +109,7 @@ func appWishlistsHandler(message *rabbit.Message) {
 	// Clear app memcache
 	err = memcache.Delete(memcache.MemcacheApp(payload.AppID).Key)
 	if err != nil {
-		log.Err(err, payload.AppID)
+		zap.S().Error(err, payload.AppID)
 		sendToRetryQueue(message)
 		return
 	}
@@ -117,7 +117,7 @@ func appWishlistsHandler(message *rabbit.Message) {
 	// Update in Elastic
 	err = ProduceAppSearch(nil, payload.AppID)
 	if err != nil {
-		log.Err(err, payload.AppID)
+		zap.S().Error(err, payload.AppID)
 		sendToRetryQueue(message)
 		return
 	}

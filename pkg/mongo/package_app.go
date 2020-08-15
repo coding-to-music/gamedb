@@ -3,10 +3,10 @@ package mongo
 import (
 	"strconv"
 
-	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.uber.org/zap"
 )
 
 type PackageApp struct {
@@ -101,7 +101,7 @@ func GetPackageApps(packageID int, offset int64, sort bson.D) (apps []PackageApp
 
 	defer func(cur *mongo.Cursor) {
 		err = cur.Close(ctx)
-		log.Err(err)
+		zap.S().Error(err)
 	}(cur)
 
 	for cur.Next(ctx) {
@@ -109,7 +109,7 @@ func GetPackageApps(packageID int, offset int64, sort bson.D) (apps []PackageApp
 		var app PackageApp
 		err := cur.Decode(&app)
 		if err != nil {
-			log.Err(err, app.getKey())
+			zap.S().Error(err, app.getKey())
 		} else {
 			apps = append(apps, app)
 		}

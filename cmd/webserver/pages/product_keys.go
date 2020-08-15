@@ -7,11 +7,11 @@ import (
 
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 func ProductKeysRouter() http.Handler {
@@ -32,7 +32,7 @@ func productKeysHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	keys, err := mysql.GetProductKeys()
-	log.Err(err, r)
+	zap.S().Error(err)
 
 	// Template
 	t := productKeysTemplate{}
@@ -86,7 +86,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 			packages, err := mongo.GetPackages(query.GetOffset64(), 100, bson.D{{"_id", 1}}, filter, projection)
 			if err != nil {
-				log.Err(err, r)
+				zap.S().Error(err)
 				return
 			}
 
@@ -103,7 +103,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 			apps, err := mongo.GetApps(query.GetOffset64(), 100, bson.D{{"_id", 1}}, filter, projection)
 			if err != nil {
-				log.Err(err, r)
+				zap.S().Error(err)
 				return
 			}
 
@@ -133,7 +133,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 			return
 		}
 	}()
@@ -148,7 +148,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		count, err = mongo.CountDocuments(mongo.CollectionApps, nil, 0)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 	}()
 

@@ -21,7 +21,7 @@ var commits string
 func main() {
 
 	config.Init(version, commits, helpers.GetIP())
-	log.Initialise(log.LogNameAPI)
+	log.InitZap(log.LogNameAPI)
 
 	r := chi.NewRouter()
 	r.Use(chiMiddleware.RedirectSlashes)
@@ -49,7 +49,7 @@ func home(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, config.Config.GameDBDomain.Get()+"/api/gamedb", http.StatusTemporaryRedirect)
 }
 
-func error404(w http.ResponseWriter, r *http.Request) {
+func error404(w http.ResponseWriter, _ *http.Request) {
 
 	w.WriteHeader(404)
 

@@ -9,9 +9,9 @@ import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
-	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.uber.org/zap"
 )
 
 type ProductPrice struct {
@@ -105,7 +105,7 @@ func GetPricesByID(IDs []string) (prices []ProductPrice, err error) {
 	for _, ID := range IDs {
 
 		objectID, err := primitive.ObjectIDFromHex(ID)
-		log.Err(err)
+		zap.S().Error(err)
 		if err == nil {
 			idsBSON = append(idsBSON, objectID)
 		}
@@ -162,7 +162,7 @@ func getProductPrices(filter bson.D, offset int64, limit int64, sort bson.D) (pr
 
 	defer func() {
 		err = cur.Close(ctx)
-		log.Err(err)
+		zap.S().Error(err)
 	}()
 
 	for cur.Next(ctx) {
@@ -170,7 +170,7 @@ func getProductPrices(filter bson.D, offset int64, limit int64, sort bson.D) (pr
 		var price ProductPrice
 		err := cur.Decode(&price)
 		if err != nil {
-			log.Err(err, price)
+			zap.S().Error(err, price)
 		} else {
 			prices = append(prices, price)
 		}

@@ -11,10 +11,10 @@ import (
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 func newReleasesRouter() http.Handler {
@@ -87,14 +87,14 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		apps, err = mongo.GetApps(query.GetOffset64(), 100, sort, filter2, projection)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 
 		countLock.Lock()
 		filtered, err = mongo.CountDocuments(mongo.CollectionApps, filter2, 0)
 		countLock.Unlock()
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 	}()
 
@@ -114,7 +114,7 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		count, err = mongo.CountDocuments(mongo.CollectionApps, filter, 60*60*24)
 		countLock.Unlock()
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 	}()
 

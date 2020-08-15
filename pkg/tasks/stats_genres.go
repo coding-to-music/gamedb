@@ -7,11 +7,11 @@ import (
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/i18n"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 type TasksGenres struct {
@@ -58,7 +58,7 @@ func (c TasksGenres) work() (err error) {
 		return err
 	}
 
-	log.Info("Found " + strconv.Itoa(len(appsWithGenres)) + " apps with genres")
+	zap.S().Info("Found " + strconv.Itoa(len(appsWithGenres)) + " apps with genres")
 
 	newGenres := make(map[int]*statsRow)
 	for _, app := range appsWithGenres {
@@ -120,7 +120,7 @@ func (c TasksGenres) work() (err error) {
 		}
 
 		err := mysql.DeleteGenres(genresToDeleteSlice)
-		log.Err(err)
+		zap.S().Error(err)
 	}()
 
 	wg.Wait()
@@ -146,12 +146,12 @@ func (c TasksGenres) work() (err error) {
 
 			db, err := mysql.GetMySQLClient()
 			if err != nil {
-				log.Err(err)
+				zap.S().Error(err)
 				return
 			}
 
 			db = db.Unscoped().FirstOrInit(&genre, mysql.Genre{ID: genreID})
-			log.Err(db.Error)
+			zap.S().Error(db.Error)
 
 			genre.Name = v.name
 			genre.Apps = v.count
@@ -160,7 +160,7 @@ func (c TasksGenres) work() (err error) {
 			genre.DeletedAt = nil
 
 			db = db.Unscoped().Save(&genre)
-			log.Err(db.Error)
+			zap.S().Error(db.Error)
 
 		}(k, v)
 

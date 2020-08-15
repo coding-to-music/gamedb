@@ -5,10 +5,10 @@ import (
 
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/tasks"
 	"github.com/go-chi/chi"
+	"go.uber.org/zap"
 )
 
 func TagsRouter() http.Handler {
@@ -24,13 +24,13 @@ func statsTagsHandler(w http.ResponseWriter, r *http.Request) {
 	config, err := tasks.GetTaskConfig(tasks.StatsTags{})
 	if err != nil {
 		err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
-		log.Err(err, r)
+		zap.S().Error(err)
 	}
 
 	// Get tags
 	tags, err := mysql.GetAllTags()
 	if err != nil {
-		log.Err(err, r)
+		zap.S().Error(err)
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the tags."})
 		return
 	}
@@ -39,7 +39,7 @@ func statsTagsHandler(w http.ResponseWriter, r *http.Request) {
 	prices := map[int]string{}
 	for _, v := range tags {
 		price, err := v.GetMeanPrice(code)
-		log.Err(err, r)
+		zap.S().Error(err)
 		prices[v.ID] = price
 	}
 

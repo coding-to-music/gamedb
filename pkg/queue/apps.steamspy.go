@@ -9,11 +9,11 @@ import (
 
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/powerslacker/ratelimit"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 type AppSteamspyMessage struct {
@@ -33,7 +33,7 @@ func appSteamspyHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		log.Err(err, message.Message.Body)
+		zap.S().Error(err, message.Message.Body)
 		sendToFailQueue(message)
 		return
 	}
@@ -50,9 +50,9 @@ func appSteamspyHandler(message *rabbit.Message) {
 		if strings.Contains(err.Error(), "Client.Timeout exceeded while awaiting headers") ||
 			strings.Contains(err.Error(), "read: connection reset by peer") ||
 			strings.Contains(err.Error(), "connect: cannot assign requested address") {
-			log.Info(err, payload.AppID)
+			zap.S().Info(err, payload.AppID)
 		} else {
-			log.Err(err, payload.AppID)
+			zap.S().Error(err, payload.AppID)
 		}
 
 		sendToRetryQueueWithDelay(message, time.Second*10)
@@ -61,14 +61,14 @@ func appSteamspyHandler(message *rabbit.Message) {
 
 	if statusCode != 200 {
 
-		log.Info(errors.New("steamspy is down"), payload.AppID)
+		zap.S().Info(errors.New("steamspy is down"), payload.AppID)
 		sendToRetryQueueWithDelay(message, time.Minute*30)
 		return
 	}
 
 	if strings.Contains(string(body), "Connection failed") {
 
-		log.Info(errors.New("steamspy is down"), payload.AppID, body)
+		zap.S().Info(errors.New("steamspy is down"), payload.AppID, body)
 		sendToRetryQueueWithDelay(message, time.Minute*30)
 		return
 	}
@@ -78,7 +78,7 @@ func appSteamspyHandler(message *rabbit.Message) {
 	err = helpers.Unmarshal(body, &resp)
 	if err != nil {
 
-		log.Info(err, payload.AppID, body)
+		zap.S().Info(err, payload.AppID, body)
 		sendToRetryQueueWithDelay(message, time.Minute*30)
 		return
 	}
@@ -101,7 +101,7 @@ func appSteamspyHandler(message *rabbit.Message) {
 
 	_, err = mongo.UpdateOne(mongo.CollectionApps, filter, update)
 	if err != nil {
-		log.Err(err, payload.AppID)
+		zap.S().Error(err, payload.AppID)
 		sendToRetryQueue(message)
 		return
 	}
@@ -109,7 +109,7 @@ func appSteamspyHandler(message *rabbit.Message) {
 	// Clear cache
 	err = memcache.Delete(memcache.MemcacheApp(payload.AppID).Key)
 	if err != nil {
-		log.Err(err, payload.AppID)
+		zap.S().Error(err, payload.AppID)
 		sendToRetryQueue(message)
 		return
 	}
@@ -117,7 +117,7 @@ func appSteamspyHandler(message *rabbit.Message) {
 	// Update in Elastic
 	err = ProduceAppSearch(nil, payload.AppID)
 	if err != nil {
-		log.Err(err, payload.AppID)
+		zap.S().Error(err, payload.AppID)
 		sendToRetryQueue(message)
 		return
 	}

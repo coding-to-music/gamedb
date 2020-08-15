@@ -8,13 +8,13 @@ import (
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 func BundleRouter() http.Handler {
@@ -49,7 +49,7 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		log.Err(err, r)
+		zap.S().Error(err)
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the bundle."})
 		return
 	}
@@ -66,13 +66,13 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 
 		appIDs, err := bundle.GetAppIDs()
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 			return
 		}
 
 		apps, err = mongo.GetAppsByID(appIDs, nil)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 
 		// Queue missing apps
@@ -90,7 +90,7 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 					err = queue.ProduceSteam(queue.SteamMessage{AppIDs: []int{v}})
 					err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 					if err != nil {
-						log.Err(err, r)
+						zap.S().Error(err)
 					}
 				}
 			}
@@ -106,7 +106,7 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 
 		packages, err = mongo.GetPackagesByID(bundle.GetPackageIDs(), bson.M{})
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 	}()
 
@@ -143,14 +143,14 @@ func bundlePricesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
-		log.Err("invalid id", r)
+		zap.S().Error("invalid id", r)
 		return
 	}
 
 	// Get prices
 	pricesResp, err := mongo.GetBundlePrices(id)
 	if err != nil {
-		log.Err(err, r)
+		zap.S().Error(err)
 		return
 	}
 
@@ -164,7 +164,7 @@ func bundlePricesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Add current price
 	price, err := mysql.GetBundle(id, []string{"discount"})
 	if err != nil {
-		log.Err(err, r)
+		zap.S().Error(err)
 	} else {
 		prices = append(prices, []int64{time.Now().Unix() * 1000, int64(price.Discount)})
 	}

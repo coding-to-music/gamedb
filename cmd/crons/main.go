@@ -11,6 +11,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/tasks"
 	"github.com/robfig/cron/v3"
+	"go.uber.org/zap"
 )
 
 var version string
@@ -19,7 +20,7 @@ var commits string
 func main() {
 
 	config.Init(version, commits, helpers.GetIP())
-	log.Initialise(log.LogNameCrons)
+	log.InitZap(log.LogNameCrons)
 
 	// Load queue producers
 	queue.Init(queue.QueueCronsDefinitions)
@@ -27,13 +28,13 @@ func main() {
 	// Profiling
 	go func() {
 		err := http.ListenAndServe(":6063", nil)
-		log.Critical(err)
+		zap.S().Fatal(err)
 	}()
 
 	// Get API key
 	err := mysql.GetConsumer("crons")
 	if err != nil {
-		log.Critical(err)
+		zap.S().Fatal(err)
 		return
 	}
 
@@ -47,12 +48,12 @@ func main() {
 		func(task tasks.TaskInterface) {
 			if task.Cron() != "" {
 				_, err := c.AddFunc(string(task.Cron()), func() { tasks.Run(task) })
-				log.Err(err)
+				zap.S().Error(err)
 			}
 		}(task)
 	}
 
-	log.Info("Starting crons")
+	zap.S().Info("Starting crons")
 	c.Run() // Blocks
 }
 
@@ -61,9 +62,17 @@ type cronLogger struct {
 }
 
 func (cl cronLogger) Info(msg string, keysAndValues ...interface{}) {
-	// log.Info(msg)
+
+	// is := []interface{}{msg}
+	// is = append(is, keysAndValues...)
+
+	// zap.S().Error(is...)
 }
 
 func (cl cronLogger) Error(err error, msg string, keysAndValues ...interface{}) {
-	log.Err(msg, err)
+
+	is := []interface{}{msg, err}
+	is = append(is, keysAndValues...)
+
+	zap.S().Error(is...)
 }

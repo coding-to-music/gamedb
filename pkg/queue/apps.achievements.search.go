@@ -4,8 +4,8 @@ import (
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	"go.uber.org/zap"
 )
 
 type AppsAchievementsSearchMessage struct {
@@ -20,7 +20,7 @@ func appsAchievementsSearchHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		log.Err(err, message.Message.Body)
+		zap.S().Error(err, message.Message.Body)
 		sendToFailQueue(message)
 		return
 	}
@@ -47,7 +47,7 @@ func appsAchievementsSearchHandler(message *rabbit.Message) {
 		err = elasticsearch.IndexAchievement(achievement)
 	}
 	if err != nil {
-		log.Err(err)
+		zap.S().Error(err)
 		sendToRetryQueue(message)
 		return
 	}

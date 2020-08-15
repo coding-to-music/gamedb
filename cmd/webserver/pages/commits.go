@@ -9,9 +9,9 @@ import (
 	"github.com/gamedb/gamedb/pkg/backend"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/go-chi/chi"
+	"go.uber.org/zap"
 )
 
 func CommitsRouter() http.Handler {
@@ -63,7 +63,7 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			commit, err := resp.Recv()
 			if err != nil {
 				err = helpers.IgnoreErrors(err, io.EOF)
-				log.Err(err, r)
+				zap.S().Error(err)
 				break
 			}
 
@@ -72,7 +72,7 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		return commits, err
 	})
-	log.Err(err, r)
+	zap.S().Error(err)
 
 	//
 	var total = config.Config.Commits.GetInt()

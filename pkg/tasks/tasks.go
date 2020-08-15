@@ -5,11 +5,11 @@ import (
 	"time"
 
 	"github.com/cenkalti/backoff/v4"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/robfig/cron/v3"
+	"go.uber.org/zap"
 )
 
 type TaskTime string
@@ -149,40 +149,40 @@ func Bad(task TaskInterface) (b bool) {
 //
 func Run(task TaskInterface) {
 
-	log.Info("Cron started: " + task.ID())
+	zap.S().Info("Cron started: " + task.ID())
 
 	// Send start websocket
 	wsPayload := queue.AdminPayload{TaskID: task.ID(), Action: "started"}
 	err := queue.ProduceWebsocket(wsPayload, websockets.PageAdmin)
-	log.Err(err)
+	zap.S().Error(err)
 
 	// Do work
 	policy := backoff.NewConstantBackOff(time.Second * 30)
 
-	err = backoff.RetryNotify(task.work, backoff.WithMaxRetries(policy, 10), func(err error, t time.Duration) { log.Info(err, task.ID()) })
+	err = backoff.RetryNotify(task.work, backoff.WithMaxRetries(policy, 10), func(err error, t time.Duration) { zap.S().Info(err, task.ID()) })
 	if err != nil {
 
 		if val, ok := err.(TaskError); ok && val.Okay {
-			log.Info(task.ID(), err)
+			zap.S().Info(task.ID(), err)
 		} else {
-			log.Critical(task.ID(), err)
+			zap.S().Fatal(task.ID(), err)
 		}
 	} else {
 
 		// Save config row
 		err = mysql.SetConfig(mysql.ConfigID("task-"+task.ID()), strconv.FormatInt(time.Now().Unix(), 10))
 		if err != nil {
-			log.Err(err)
+			zap.S().Error(err)
 		}
 
 		// Send end websocket
 		wsPayload = queue.AdminPayload{TaskID: task.ID(), Action: "finished", Time: Next(task).Unix()}
 		err = queue.ProduceWebsocket(wsPayload, websockets.PageAdmin)
 		if err != nil {
-			log.Err(err)
+			zap.S().Error(err)
 		}
 
-		log.Info("Cron finished: " + task.ID())
+		zap.S().Info("Cron finished: " + task.ID())
 	}
 }
 

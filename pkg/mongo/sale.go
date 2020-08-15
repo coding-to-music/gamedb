@@ -9,11 +9,11 @@ import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.uber.org/zap"
 )
 
 type Sale struct {
@@ -98,12 +98,12 @@ func CreateSaleIndexes() {
 	//
 	client, ctx, err := getMongo()
 	if err != nil {
-		log.Err(err)
+		zap.S().Error(err)
 		return
 	}
 
 	_, err = client.Database(MongoDatabase).Collection(CollectionAppSales.String()).Indexes().CreateMany(ctx, indexModels)
-	log.Err(err)
+	zap.S().Error(err)
 }
 
 func (sale Sale) GetKey() (ret string) {
@@ -194,7 +194,7 @@ func getSales(offset int64, limit int64, filter bson.D, sort bson.D, projection 
 
 	defer func() {
 		err = cur.Close(ctx)
-		log.Err(err)
+		zap.S().Error(err)
 	}()
 
 	for cur.Next(ctx) {
@@ -202,7 +202,7 @@ func getSales(offset int64, limit int64, filter bson.D, sort bson.D, projection 
 		var sale Sale
 		err := cur.Decode(&sale)
 		if err != nil {
-			log.Err(err)
+			zap.S().Error(err)
 		} else {
 			offers = append(offers, sale)
 		}

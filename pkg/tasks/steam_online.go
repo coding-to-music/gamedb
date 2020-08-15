@@ -8,8 +8,8 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/influx"
-	"github.com/gamedb/gamedb/pkg/log"
 	influx "github.com/influxdata/influxdb1-client"
+	"go.uber.org/zap"
 )
 
 type SteamOnline struct {
@@ -81,6 +81,6 @@ type steamPlayersStruct struct {
 func (sp steamPlayersStruct) int(s string) int {
 	s = strings.ReplaceAll(s, ",", "")
 	i, err := strconv.Atoi(s)
-	log.Warning(err)
+	zap.S().Warn(err)
 	return i
 }

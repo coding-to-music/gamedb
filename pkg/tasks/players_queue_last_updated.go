@@ -7,12 +7,12 @@ import (
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/rabbitweb"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 type PlayersQueueLastUpdated struct {
@@ -55,7 +55,7 @@ func (c PlayersQueueLastUpdated) work() (err error) {
 	var consumers int
 	for _, q := range queues {
 		if val, ok := limits[rabbit.QueueName(q.Name)]; ok && q.Messages > val {
-			log.Info("skipping " + c.ID() + " as " + q.Name + " has " + strconv.Itoa(q.Messages) + " messages")
+			zap.S().Info("skipping " + c.ID() + " as " + q.Name + " has " + strconv.Itoa(q.Messages) + " messages")
 			return nil
 		}
 		if q.Name == string(queue.QueuePlayers) {
@@ -67,7 +67,7 @@ func (c PlayersQueueLastUpdated) work() (err error) {
 		if config.IsLocal() {
 			consumers = 1
 		} else {
-			log.Warning("no consumers")
+			zap.S().Warn("no consumers")
 			return nil
 		}
 	}

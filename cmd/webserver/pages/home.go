@@ -12,7 +12,6 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
@@ -21,6 +20,7 @@ import (
 	"github.com/mborgerson/GoTruncateHtml/truncatehtml"
 	"github.com/microcosm-cc/bluemonday"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 func HomeRouter() http.Handler {
@@ -51,7 +51,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		t.NewGames, err = mongo.PopularNewApps()
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 
 		if len(t.NewGames) > 10 {
@@ -68,7 +68,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		t.TopGames, err = mongo.PopularApps()
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 
 		if len(t.TopGames) > 10 {
@@ -101,7 +101,7 @@ func homeNewsHandler(w http.ResponseWriter, r *http.Request) {
 
 	apps, err := mongo.PopularApps()
 	if err != nil {
-		log.Err(err, r)
+		zap.S().Error(err)
 	}
 
 	var appIDs []int
@@ -113,7 +113,7 @@ func homeNewsHandler(w http.ResponseWriter, r *http.Request) {
 
 	news, err := mongo.GetArticlesByAppIDs(appIDs, 20, time.Time{})
 	if err != nil {
-		log.Err(err, r)
+		zap.S().Error(err)
 	}
 
 	for _, v := range news {
@@ -167,10 +167,10 @@ func homeTweetsHandler(w http.ResponseWriter, r *http.Request) {
 		IncludeRetweets: &f,
 	})
 
-	log.Err(err)
-	log.Err(resp.Body.Close())
+	zap.S().Error(err)
+	zap.S().Error(resp.Body.Close())
 
-	log.Info(tweets)
+	zap.S().Info(tweets)
 
 }
 
@@ -203,7 +203,7 @@ func homeSalesHandler(w http.ResponseWriter, r *http.Request) {
 
 	sales, err := mongo.GetAllSales(0, 10, filter, bson.D{{Key: sort, Value: order}})
 	if err != nil {
-		log.Err(err, r)
+		zap.S().Error(err)
 	}
 
 	var code = session.GetProductCC(r)
@@ -250,7 +250,7 @@ func homeUpdatedPlayersHandler(w http.ResponseWriter, r *http.Request) {
 
 	players, err := mongo.GetPlayers(0, 10, bson.D{{"updated_at", -1}}, nil, projection)
 	if err != nil {
-		log.Err(err, r)
+		zap.S().Error(err)
 		return
 	}
 
@@ -290,7 +290,7 @@ func homePlayersHandler(w http.ResponseWriter, r *http.Request) {
 
 	players, err := getPlayersForHome(sort)
 	if err != nil {
-		log.Err(err, r)
+		zap.S().Error(err)
 		return
 	}
 

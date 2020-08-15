@@ -7,11 +7,11 @@ import (
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/i18n"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 type StatsDevelopers struct {
@@ -58,7 +58,7 @@ func (c StatsDevelopers) work() (err error) {
 		return err
 	}
 
-	log.Info("Found " + strconv.Itoa(len(appsWithDevelopers)) + " apps with developers")
+	zap.S().Info("Found " + strconv.Itoa(len(appsWithDevelopers)) + " apps with developers")
 
 	newDevelopers := make(map[int]*statsRow)
 	for _, app := range appsWithDevelopers {
@@ -119,7 +119,7 @@ func (c StatsDevelopers) work() (err error) {
 		}
 
 		err := mysql.DeleteDevelopers(devsToDeleteSlice)
-		log.Err(err)
+		zap.S().Error(err)
 	}()
 
 	wg.Wait()
@@ -145,12 +145,12 @@ func (c StatsDevelopers) work() (err error) {
 
 			db, err := mysql.GetMySQLClient()
 			if err != nil {
-				log.Err(err)
+				zap.S().Error(err)
 				return
 			}
 
 			db = db.Unscoped().FirstOrInit(&developer, mysql.Developer{ID: developerInt})
-			log.Err(db.Error)
+			zap.S().Error(db.Error)
 
 			developer.Name = v.name
 			developer.Apps = v.count
@@ -159,7 +159,7 @@ func (c StatsDevelopers) work() (err error) {
 			developer.DeletedAt = nil
 
 			db = db.Unscoped().Save(&developer)
-			log.Err(db.Error)
+			zap.S().Error(db.Error)
 
 		}(k, v)
 

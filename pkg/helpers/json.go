@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 
-	"github.com/gamedb/gamedb/pkg/log"
+	"go.uber.org/zap"
 )
 
 var ErrUnMarshalNonPointer = errors.New("trying to unmarshal a non-pointer")
@@ -29,9 +29,9 @@ func Unmarshal(data []byte, v interface{}) (err error) {
 		if len(data) > 1000 {
 			data = data[0:1000]
 		}
-		log.Err(err.Error(), string(data))
+		zap.S().Error(err.Error(), string(data))
 	default:
-		log.Err(err)
+		zap.S().Error(err)
 	}
 
 	return err

@@ -20,7 +20,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
@@ -28,6 +27,7 @@ import (
 	"github.com/gosimple/slug"
 	"github.com/tdewolff/minify/v2"
 	minhtml "github.com/tdewolff/minify/v2/html"
+	"go.uber.org/zap"
 )
 
 func setHeaders(w http.ResponseWriter, contentType string) {
@@ -82,13 +82,13 @@ func returnJSON(w http.ResponseWriter, r *http.Request, i interface{}) {
 
 	b, err := json.Marshal(i)
 	if err != nil {
-		log.Err(err, r)
+		zap.S().Error(err)
 		return
 	}
 
 	_, err = w.Write(b)
 	if err != nil && !strings.Contains(err.Error(), "write: broken pipe") {
-		log.Critical(err, r)
+		zap.S().Fatal(err)
 	}
 }
 
@@ -135,13 +135,13 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 
 		s, err := templatesBox.FindString(v)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 			continue
 		}
 
 		t, err = t.Parse(s)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 			continue
 		}
 	}
@@ -150,7 +150,7 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 	buf := &bytes.Buffer{}
 	err = t.ExecuteTemplate(buf, path.Base(page), pageData)
 	if err != nil {
-		log.Critical(err, r)
+		zap.S().Fatal(err)
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Looks like I messed something up, will be fixed soon!"})
 		return
 	}
@@ -168,13 +168,13 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 
 		err = m.Minify("text/html", w, buf)
 		if err != nil && !strings.Contains(err.Error(), "write: broken pipe") {
-			log.Critical(err, r)
+			zap.S().Fatal(err)
 		}
 
 	} else {
 		_, err = buf.WriteTo(w)
 		if err != nil {
-			log.Critical(err, r)
+			zap.S().Fatal(err)
 		}
 	}
 }
@@ -215,7 +215,7 @@ func getTemplateFuncMap() map[string]interface{} {
 		"https":        func(link string) string { return strings.Replace(link, "http://", "https://", 1) },
 		"inc":          func(i int) int { return i + 1 },
 		"join":         func(a []string, glue string) string { return strings.Join(a, glue) },
-		"json":         func(v interface{}) (string, error) { b, err := json.Marshal(v); log.Err(err); return string(b), err },
+		"json":         func(v interface{}) (string, error) { b, err := json.Marshal(v); zap.S().Error(err); return string(b), err },
 		"lower":        func(a string) string { return strings.ToLower(a) },
 		"max":          func(a int, b int) float64 { return math.Max(float64(a), float64(b)) },
 		"ordinalComma": func(i int) string { return helpers.OrdinalComma(i) },
@@ -292,20 +292,20 @@ func (t *globalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	userIDString := session.Get(r, session.SessionUserID)
 	if userIDString != "" {
 		t.UserID, err = strconv.Atoi(userIDString)
-		log.Err(err, r)
+		zap.S().Error(err)
 	}
 
 	playerIDString := session.Get(r, session.SessionPlayerID)
 	if playerIDString != "" {
 		t.PlayerID, err = strconv.ParseInt(playerIDString, 10, 64)
-		log.Err(err, r)
+		zap.S().Error(err)
 	}
 
 	userLevel := session.Get(r, session.SessionUserLevel)
 	if userLevel != "" {
 		t.userLevel, err = strconv.Atoi(userLevel)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 	}
 
@@ -356,7 +356,7 @@ func (t *globalTemplate) setRandomBackground(title bool, link bool) {
 
 	popularApps, err := mongo.PopularApps()
 	if err != nil {
-		log.Err(err, t.request)
+		zap.S().Error(err, t.request)
 		return
 	}
 
@@ -407,7 +407,7 @@ func (t globalTemplate) GetUserJSON() string {
 	}
 
 	b, err := json.Marshal(stringMap)
-	log.Err(err, t.request)
+	zap.S().Error(err, t.request)
 
 	return string(b)
 }
@@ -454,20 +454,20 @@ func (t globalTemplate) GetCookieFlag(key string) interface{} {
 	if err == http.ErrNoCookie {
 		return false
 	} else if err != nil {
-		log.Err(err, t.request)
+		zap.S().Error(err, t.request)
 		return false
 	}
 
 	c.Value, err = url.PathUnescape(c.Value)
 	if err != nil {
-		log.Err(err, t.request)
+		zap.S().Error(err, t.request)
 		return false
 	}
 
 	var vals = map[string]interface{}{}
 	err = json.Unmarshal([]byte(c.Value), &vals)
 	if err != nil {
-		log.Err(err, t.request)
+		zap.S().Error(err, t.request)
 		return false
 	}
 

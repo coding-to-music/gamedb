@@ -3,8 +3,8 @@ package mongo
 import (
 	"time"
 
-	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 type ChatBotCommand struct {
@@ -42,7 +42,7 @@ func GetChatBotCommandsRecent() (commands []ChatBotCommand, err error) {
 
 	defer func() {
 		err = cur.Close(ctx)
-		log.Err(err)
+		zap.S().Error(err)
 	}()
 
 	for cur.Next(ctx) {
@@ -50,7 +50,7 @@ func GetChatBotCommandsRecent() (commands []ChatBotCommand, err error) {
 		var command ChatBotCommand
 		err := cur.Decode(&command)
 		if err != nil {
-			log.Err(err)
+			zap.S().Error(err)
 		} else {
 			commands = append(commands, command)
 		}

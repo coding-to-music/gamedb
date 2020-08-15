@@ -10,11 +10,11 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/influx"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	influx "github.com/influxdata/influxdb1-client"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 type ChangesMessage struct {
@@ -28,7 +28,7 @@ func changesHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		log.Err(err, message.Message.Body)
+		zap.S().Error(err, message.Message.Body)
 		sendToFailQueue(message)
 		return
 	}
@@ -73,7 +73,7 @@ func changesHandler(message *rabbit.Message) {
 	// Save to Mongo
 	err = saveChangesToMongo(changeSlice)
 	if err != nil && !strings.Contains(err.Error(), "duplicate key error collection") {
-		log.Err(err)
+		zap.S().Error(err)
 		sendToRetryQueue(message)
 		return
 	}
@@ -81,7 +81,7 @@ func changesHandler(message *rabbit.Message) {
 	// Save to influx
 	err = saveChangeToInflux(payload)
 	if err != nil {
-		log.Err(err)
+		zap.S().Error(err)
 		sendToRetryQueue(message)
 		return
 	}
@@ -89,18 +89,18 @@ func changesHandler(message *rabbit.Message) {
 	// Get apps and packages for all changes in message
 	appMap, packageMap, err := getChangesAppsAndPackages(changeSlice)
 	if err != nil {
-		log.Err(err)
+		zap.S().Error(err)
 		sendToRetryQueue(message)
 		return
 	}
 
 	// Send websocket
 	err = sendChangesWebsocket(changeSlice, appMap, packageMap)
-	log.Err(err)
+	zap.S().Error(err)
 
 	// Send to Discord
 	// err = sendChangeToDiscord(changeSlice, appMap, packageMap)
-	// log.Err(err)
+	// zap.S().Error(err)
 
 	message.Ack()
 }
@@ -142,7 +142,7 @@ func getChangesAppsAndPackages(changes []*mongo.Change) (appMap map[int]string, 
 	// Apps & packages for all changes
 	apps, err := mongo.GetAppsByID(appIDs, bson.M{"_id": 1, "name": 1})
 	if err != nil {
-		log.Err(err)
+		zap.S().Error(err)
 	}
 
 	for _, v := range apps {
@@ -222,7 +222,7 @@ func sendChangeToDiscord(changes []*mongo.Change, appMap map[int]string, package
 			for _, message := range messages {
 				var msg = "Change " + strconv.Itoa(change.ID) + ": " + message
 				_, err := discordClient.ChannelMessageSend("574563721045606431", msg)
-				log.Err(err)
+				zap.S().Error(err)
 			}
 		}
 	}

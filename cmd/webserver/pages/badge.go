@@ -8,10 +8,10 @@ import (
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 func BadgeRouter() http.Handler {
@@ -56,7 +56,7 @@ func badgeHandler(w http.ResponseWriter, r *http.Request) {
 				if err == mongo.ErrNoDocuments || err == mongo.ErrInvalidAppID {
 					returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Invalid badge ID"})
 				} else {
-					log.Err(err, r)
+					zap.S().Error(err)
 					returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Something went wrong"})
 				}
 				return
@@ -74,7 +74,7 @@ func badgeHandler(w http.ResponseWriter, r *http.Request) {
 			appBadge, err := mongo.GetAppBadge(id)
 			if err != nil {
 				err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
-				log.Err(err, r)
+				zap.S().Error(err)
 			} else {
 				playerBadge = appBadge
 			}
@@ -95,7 +95,7 @@ func badgeHandler(w http.ResponseWriter, r *http.Request) {
 			var row = mongo.PlayerBadge{}
 			err = mongo.FindOne(mongo.CollectionPlayerBadges, bson.D{{"_id", playerBadge.GetKey()}}, nil, nil, &row)
 			if err != nil && err != mongo.ErrNoDocuments {
-				log.Err(err, r)
+				zap.S().Error(err)
 				returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: err.Error()})
 				return
 			}
@@ -125,7 +125,7 @@ func badgeHandler(w http.ResponseWriter, r *http.Request) {
 
 				count, err := mongo.CountDocuments(mongo.CollectionPlayerBadges, filter, 60*60*24*14)
 				if err != nil {
-					log.Err(err, r)
+					zap.S().Error(err)
 					returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: err.Error()})
 					return
 				}
@@ -205,7 +205,7 @@ func badgeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		badges, err = mongo.GetBadgePlayers(query.GetOffset64(), filter)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 	}()
 
@@ -218,7 +218,7 @@ func badgeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		count, err = mongo.CountDocuments(mongo.CollectionPlayerBadges, filter, 0)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 	}()
 

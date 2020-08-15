@@ -6,9 +6,9 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/chatbot/charts"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 type CommandAppRandom struct {
@@ -64,7 +64,7 @@ func (c CommandAppRandom) Output(msg *discordgo.MessageCreate) (message discordg
 
 		img, err := charts.GetAppChart(app)
 		if err != nil {
-			log.Err(err)
+			zap.S().Error(err)
 		} else {
 			message.Files = append(message.Files, &discordgo.File{
 				Name:        "app-" + strconv.Itoa(app.ID) + ".png",

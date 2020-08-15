@@ -7,11 +7,11 @@ import (
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/influx"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	influx "github.com/influxdata/influxdb1-client"
 	"go.mongodb.org/mongo-driver/bson"
 	mongodb "go.mongodb.org/mongo-driver/mongo"
+	"go.uber.org/zap"
 )
 
 const batchSize = 10000
@@ -30,7 +30,7 @@ func playerRanksHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		log.Err(err, message.Message.Body)
+		zap.S().Error(err, message.Message.Body)
 		sendToFailQueue(message)
 		return
 	}
@@ -118,10 +118,10 @@ func playerRanksHandler(message *rabbit.Message) {
 		if err != nil {
 			if val, ok := err.(mongodb.BulkWriteException); ok {
 				for _, err2 := range val.WriteErrors {
-					log.Err(err2, err2.Request)
+					zap.S().Error(err2, err2.Request)
 				}
 			} else {
-				log.Err(err)
+				zap.S().Error(err)
 			}
 
 			sendToRetryQueue(message)

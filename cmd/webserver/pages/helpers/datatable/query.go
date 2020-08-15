@@ -8,11 +8,11 @@ import (
 	"github.com/derekstavis/go-qs"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/jinzhu/gorm"
 	"github.com/olivere/elastic/v7"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 // DataTablesQuery
@@ -21,14 +21,14 @@ func NewDataTableQuery(r *http.Request, limit bool) (query DataTablesQuery) {
 	// Convert string into map
 	queryMap, err := qs.Unmarshal(r.URL.Query().Encode())
 	if err != nil {
-		log.Err(err)
+		zap.S().Error(err)
 		return
 	}
 
 	// Convert map into struct
 	err = helpers.MarshalUnmarshal(queryMap, &query)
 	if err != nil {
-		log.Err(err)
+		zap.S().Error(err)
 		return
 	}
 
@@ -198,7 +198,7 @@ func (q DataTablesQuery) getOrder(colsMap map[string]string) (colsRet []sortCol)
 
 										colsRet = append(colsRet, sortCol{col: colParts[0], asc: asc})
 									} else {
-										log.Warning("weird column map")
+										zap.S().Warn("weird column map")
 									}
 
 									continue

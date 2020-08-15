@@ -14,10 +14,10 @@ import (
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/influx"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 func gamesCompareRouter() http.Handler {
@@ -57,7 +57,7 @@ func appsCompareHandler(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
 				if err != nil {
-					log.Err(err, r)
+					zap.S().Error(err)
 				}
 				continue
 			}
@@ -89,13 +89,13 @@ func appsCompareHandler(w http.ResponseWriter, r *http.Request) {
 
 	b, err := json.Marshal(namesMap)
 	if err != nil {
-		log.Err(err, r)
+		zap.S().Error(err)
 	}
 	t.AppNames = template.JS(b)
 
 	b, err = json.Marshal(groupNamesMap)
 	if err != nil {
-		log.Err(err, r)
+		zap.S().Error(err)
 	}
 	t.GroupNames = template.JS(b)
 
@@ -124,7 +124,7 @@ func appsCompareHandler(w http.ResponseWriter, r *http.Request) {
 
 		b, err = json.Marshal(j)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 
 		t.GoogleJSON = append(t.GoogleJSON, template.JS(b))
@@ -169,7 +169,7 @@ func compareSearchAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		apps, err := elasticsearch.SearchAppsSimple(limit, search)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 			return
 		}
 
@@ -207,7 +207,7 @@ func compareAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	apps, err := mongo.GetAppsByID(ids2, bson.M{"_id": 1, "name": 1, "icon": 1, "prices": 1})
 	if err != nil {
-		log.Err(err, r)
+		zap.S().Error(err)
 		return
 	}
 
@@ -296,7 +296,7 @@ func appsComparePlayersAjaxHandler(limited bool) func(w http.ResponseWriter, r *
 
 		resp, err := influx.InfluxQuery(builder.String())
 		if err != nil {
-			log.Err(err, r, builder.String())
+			zap.S().Error(err, r, builder.String())
 			return
 		}
 
@@ -337,7 +337,7 @@ func appsCompareWishlistHandler(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := influx.InfluxQuery(builder.String())
 	if err != nil {
-		log.Err(err, r, builder.String())
+		zap.S().Error(err, r, builder.String())
 		return
 	}
 
@@ -371,7 +371,7 @@ func appsComparePricesHandler(w http.ResponseWriter, r *http.Request) {
 
 	prices, err := mongo.GetPricesForApps(idInts, code)
 	if err != nil {
-		log.Err(err, r)
+		zap.S().Error(err)
 		return
 	}
 
@@ -415,7 +415,7 @@ func appsCompareScoresHandler(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := influx.InfluxQuery(builder.String())
 	if err != nil {
-		log.Err(err, r, builder.String())
+		zap.S().Error(err, r, builder.String())
 		return
 	}
 
@@ -465,7 +465,7 @@ func appsCompareGroupsHandler(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := influx.InfluxQuery(builder.String())
 	if err != nil {
-		log.Err(err, r, builder.String())
+		zap.S().Error(err, r, builder.String())
 		return
 	}
 

@@ -9,10 +9,10 @@ import (
 
 	"github.com/Jleagle/influxql"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	influx "github.com/influxdata/influxdb1-client"
 	"github.com/influxdata/influxdb1-client/models"
 	influxModels "github.com/influxdata/influxdb1-client/models"
+	"go.uber.org/zap"
 	"gonum.org/v1/gonum/stat"
 )
 
@@ -129,7 +129,7 @@ func InfluxResponseToHighCharts(series influxModels.Row, trimLeft bool) HighChar
 
 					t, err := time.Parse(time.RFC3339, vv[0].(string))
 					if err != nil {
-						log.Err(err)
+						zap.S().Error(err)
 						continue
 					}
 
@@ -158,7 +158,7 @@ func InfluxResponseToImageChartData(series influxModels.Row) (x []time.Time, y [
 
 				t, err := time.Parse(time.RFC3339, vv[0].(string))
 				if err != nil {
-					log.Err(err)
+					zap.S().Error(err)
 					continue
 				}
 
@@ -197,10 +197,10 @@ func GetFirstInfluxInt(resp *influx.Response) int64 {
 			return v
 		case json.Number:
 			i, err := v.Int64()
-			log.Err(err)
+			zap.S().Error(err)
 			return i
 		default:
-			log.Warning("Unknown type from Influx DB: " + reflect.TypeOf(v).String())
+			zap.S().Warn("Unknown type from Influx DB: " + reflect.TypeOf(v).String())
 		}
 	}
 
@@ -220,10 +220,10 @@ func GetFirstInfluxFloat(resp *influx.Response) float64 {
 			return v
 		case json.Number:
 			i, err := v.Float64()
-			log.Err(err)
+			zap.S().Error(err)
 			return i
 		default:
-			log.Warning("Unknown type from Influx DB: " + reflect.TypeOf(v).String())
+			zap.S().Warn("Unknown type from Influx DB: " + reflect.TypeOf(v).String())
 		}
 	}
 
@@ -254,7 +254,7 @@ func GetInfluxTrendFromSeries(series models.Row, padding int) (trend float64) {
 
 		val, err := v[1].(json.Number).Int64()
 		if err != nil {
-			log.Err(err)
+			zap.S().Error(err)
 			continue
 		}
 

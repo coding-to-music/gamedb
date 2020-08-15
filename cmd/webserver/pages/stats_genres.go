@@ -5,10 +5,10 @@ import (
 
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/tasks"
 	"github.com/go-chi/chi"
+	"go.uber.org/zap"
 )
 
 func GenresRouter() http.Handler {
@@ -24,13 +24,13 @@ func genresHandler(w http.ResponseWriter, r *http.Request) {
 	config, err := tasks.GetTaskConfig(tasks.TasksGenres{})
 	if err != nil {
 		err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
-		log.Err(err, r)
+		zap.S().Error(err)
 	}
 
 	// Get genres
 	genres, err := mysql.GetAllGenres(false)
 	if err != nil {
-		log.Err(err, r)
+		zap.S().Error(err)
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the genres."})
 		return
 	}
@@ -38,7 +38,7 @@ func genresHandler(w http.ResponseWriter, r *http.Request) {
 	prices := map[int]string{}
 	for _, v := range genres {
 		price, err := v.GetMeanPrice(session.GetProductCC(r))
-		log.Err(err, r)
+		zap.S().Error(err)
 		prices[v.ID] = price
 	}
 

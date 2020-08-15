@@ -16,6 +16,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 func GroupRouter() http.Handler {
@@ -52,14 +53,14 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 			err = queue.ProduceGroup(queue.GroupMessage{ID: id, UserAgent: &ua})
 			err = helpers.IgnoreErrors(err, memcache.ErrInQueue, queue.ErrIsBot)
 			if err != nil {
-				log.Err(err, r)
+				zap.S().Error(err)
 			}
 
 			returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Sorry but we can not find this group"})
 			return
 		}
 
-		log.Err(err, r)
+		zap.S().Error(err)
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the group"})
 		return
 	}
@@ -74,7 +75,7 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
 			if err != nil {
-				log.Err(err, r)
+				zap.S().Error(err)
 			}
 		} else {
 			t.setBackground(app, true, true)
@@ -96,12 +97,12 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 		ua := r.UserAgent()
 		err = queue.ProduceGroup(queue.GroupMessage{ID: group.ID, UserAgent: &ua})
 		if err == nil {
-			log.Info(log.LogNameTriggerUpdate, r, ua)
+			zap.S().Info(log.LogNameTriggerUpdate, r, ua)
 			t.addToast(Toast{Title: "Update", Message: "Group has been queued for an update", Success: true})
 		}
 		err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 	}()
 
@@ -156,7 +157,7 @@ func groupTableAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		playerGroups, err = mongo.GetGroupPlayers(id, query.GetOffset64(), query.GetOrderMongo(columns))
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 			return
 		}
 	}()
@@ -170,7 +171,7 @@ func groupTableAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		total, err = mongo.CountDocuments(mongo.CollectionPlayerGroups, bson.D{{"group_id", id}}, 60*60*6)
-		log.Err(err, r)
+		zap.S().Error(err)
 	}(r)
 
 	wg.Wait()
@@ -219,7 +220,7 @@ func groupAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		resp, err := influx.InfluxQuery(builder.String())
 		if err != nil {
-			log.Err(err, r, builder.String())
+			zap.S().Error(err, r, builder.String())
 			return hc, err
 		}
 
@@ -231,7 +232,7 @@ func groupAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return hc, err
 	})
 
-	log.Err(err)
+	zap.S().Error(err)
 
 	returnJSON(w, r, hc)
 }

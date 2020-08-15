@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 func saveFromPics() error {
@@ -13,7 +13,7 @@ func saveFromPics() error {
 
 	for {
 
-		log.Info(offset)
+		zap.S().Info(offset)
 
 		apps, err := mongo.GetApps(offset, limit, bson.D{{"_id", 1}}, bson.D{{"icon", ""}}, bson.M{"common": 1})
 		if err != nil {
@@ -26,7 +26,7 @@ func saveFromPics() error {
 			if icon != "" {
 
 				_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", app.ID}}, bson.D{{"icon", icon}})
-				log.Err(err)
+				zap.S().Error(err)
 			}
 		}
 
@@ -37,7 +37,7 @@ func saveFromPics() error {
 		offset += limit
 	}
 
-	log.Info("x")
+	zap.S().Info("x")
 
 	return nil
 }

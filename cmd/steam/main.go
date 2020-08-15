@@ -16,6 +16,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/queue"
 	steamHelpers "github.com/gamedb/gamedb/pkg/steam"
+	"go.uber.org/zap"
 )
 
 const (
@@ -38,7 +39,7 @@ var (
 func main() {
 
 	config.Init(version, commits, helpers.GetIP())
-	log.Initialise(log.LogNameSteam)
+	log.InitZap(log.LogNameSteam)
 
 	var err error
 
@@ -66,29 +67,29 @@ func main() {
 			switch e := event.(type) {
 			case *steam.ConnectedEvent:
 
-				log.Info("Steam: Connected")
+				zap.S().Info("Steam: Connected")
 				go steamClient.Auth.LogOn(&loginDetails)
 
 			case *steam.LoggedOnEvent:
 
 				// Load change checker
-				log.Info("Steam: Logged in")
+				zap.S().Info("Steam: Logged in")
 				steamLoggedOn = true
 				go checkForChanges()
 
 				// Load consumer
-				log.Info("Starting Steam consumers")
+				zap.S().Info("Starting Steam consumers")
 				queue.Init(queue.QueueSteamDefinitions)
 
 			case *steam.LoggedOffEvent:
 
-				log.Info("Steam: Logged out")
+				zap.S().Info("Steam: Logged out")
 				steamLoggedOn = false
 				go steamClient.Disconnect()
 
 			case *steam.DisconnectedEvent:
 
-				log.Info("Steam: Disconnected")
+				zap.S().Info("Steam: Disconnected")
 				steamLoggedOn = false
 
 				time.Sleep(time.Second * 5)
@@ -98,27 +99,27 @@ func main() {
 			case *steam.LogOnFailedEvent:
 
 				// Disconnects
-				log.Info("Steam: Login failed")
+				zap.S().Info("Steam: Login failed")
 
 			case *steam.MachineAuthUpdateEvent:
 
-				log.Info("Steam: Updating auth hash, it should no longer ask for auth")
+				zap.S().Info("Steam: Updating auth hash, it should no longer ask for auth")
 				loginDetails.SentryFileHash = e.Hash
 				err = ioutil.WriteFile(steamSentryFilename, e.Hash, 0666)
 				if err != nil {
-					log.Err(err)
+					zap.S().Error(err)
 				}
 
 			case steam.FatalErrorEvent:
 
 				// Disconnects
-				log.Info("Steam: Disconnected:", e.Error())
+				zap.S().Info("Steam: Disconnected:", e.Error())
 				steamLoggedOn = false
 				go steamClient.Connect()
 
 			case error:
 				if e != nil {
-					log.Err(e)
+					zap.S().Error(e)
 				}
 			}
 		}
@@ -140,7 +141,7 @@ func checkForChanges() {
 					if len(b) > 0 {
 						ui, err := strconv.ParseUint(string(b), 10, 32)
 						if err != nil {
-							log.Err(err)
+							zap.S().Error(err)
 						} else {
 							steamChangeNumber = uint32(ui)
 						}
@@ -175,9 +176,9 @@ func (ph packetHandler) HandlePacket(packet *protocol.Packet) {
 	case steamlang.EMsg_ClientMarketingMessageUpdate2:
 		// log.Debug(packet.String())
 	case steamlang.EMsg_ClientRequestFreeLicenseResponse:
-		log.Debug(packet.String())
+		zap.S().Debug(packet.String())
 	default:
-		// log.Info(packet.String())
+		// zap.S().Info(packet.String())
 	}
 }
 
@@ -195,14 +196,14 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 
 			kv, err := steamvdf.ReadBytes(app.GetBuffer())
 			if err != nil {
-				log.Err(err, id)
+				zap.S().Error(err, id)
 			} else {
 				m = kv.ToMapOuter()
 			}
 
 			err = queue.ProduceApp(queue.AppMessage{ID: id, ChangeNumber: int(app.GetChangeNumber()), VDF: m})
 			if err != nil {
-				log.Err(err, id)
+				zap.S().Error(err, id)
 			}
 		}
 	}
@@ -214,7 +215,7 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 			var id = int(app)
 			err := queue.ProduceApp(queue.AppMessage{ID: id})
 			if err != nil {
-				log.Err(err, id)
+				zap.S().Error(err, id)
 			}
 		}
 	}
@@ -228,14 +229,14 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 
 			kv, err := steamvdf.ReadBytes(pack.GetBuffer())
 			if err != nil {
-				log.Err(err, id)
+				zap.S().Error(err, id)
 			} else {
 				m = kv.ToMapOuter()
 			}
 
 			err = queue.ProducePackage(queue.PackageMessage{ID: int(pack.GetPackageid()), ChangeNumber: int(pack.GetChangeNumber()), VDF: m})
 			if err != nil {
-				log.Err(err, id)
+				zap.S().Error(err, id)
 			}
 		}
 	}
@@ -247,7 +248,7 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 			var id = int(pack)
 			err := queue.ProducePackage(queue.PackageMessage{ID: id})
 			if err != nil {
-				log.Err(err, id)
+				zap.S().Error(err, id)
 			}
 		}
 	}
@@ -279,7 +280,7 @@ func (ph packetHandler) handleChangesSince(packet *protocol.Packet) {
 	if len(appChanges) > 0 {
 
 		if config.IsLocal() {
-			log.Info(strconv.Itoa(len(appChanges)) + " apps since change " + changes)
+			zap.S().Info(strconv.Itoa(len(appChanges)) + " apps since change " + changes)
 		}
 
 		for _, appChange := range appChanges {
@@ -298,7 +299,7 @@ func (ph packetHandler) handleChangesSince(packet *protocol.Packet) {
 	if len(packageChanges) > 0 {
 
 		if config.IsLocal() {
-			log.Info(strconv.Itoa(len(packageChanges)) + " pack since change " + changes)
+			zap.S().Info(strconv.Itoa(len(packageChanges)) + " pack since change " + changes)
 		}
 
 		for _, packageChange := range packageChanges {
@@ -324,7 +325,7 @@ func (ph packetHandler) handleChangesSince(packet *protocol.Packet) {
 		PackageIDs: packageMap,
 	})
 	if err != nil {
-		log.Err(err)
+		zap.S().Error(err)
 		return
 	}
 
@@ -332,7 +333,7 @@ func (ph packetHandler) handleChangesSince(packet *protocol.Packet) {
 	steamChangeNumber = body.GetCurrentChangeNumber()
 	err = ioutil.WriteFile(steamCurrentChangeFilename, []byte(strconv.FormatUint(uint64(steamChangeNumber), 10)), 0644)
 	if err != nil {
-		log.Err(err)
+		zap.S().Error(err)
 	}
 }
 
@@ -344,6 +345,6 @@ func (ph packetHandler) handleProfileInfo(packet *protocol.Packet) {
 	var id = int64(body.GetSteamidFriend())
 	err := queue.ProducePlayer(queue.PlayerMessage{ID: id})
 	if err != nil {
-		log.Err(err, id)
+		zap.S().Error(err, id)
 	}
 }

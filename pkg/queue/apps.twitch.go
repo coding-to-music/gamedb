@@ -5,12 +5,12 @@ import (
 
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/twitch"
 	"github.com/nicklaw5/helix"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 type AppTwitchMessage struct {
@@ -27,14 +27,14 @@ func appTwitchHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		log.Err(err, message.Message.Body)
+		zap.S().Error(err, message.Message.Body)
 		sendToFailQueue(message)
 		return
 	}
 
 	app, err := mongo.GetApp(payload.AppID)
 	if err != nil {
-		log.Err(err, payload.AppID)
+		zap.S().Error(err, payload.AppID)
 		sendToRetryQueue(message)
 		return
 	}
@@ -46,14 +46,14 @@ func appTwitchHandler(message *rabbit.Message) {
 
 	client, err := twitch.GetTwitch()
 	if err != nil {
-		log.Err(err, payload.AppID)
+		zap.S().Error(err, payload.AppID)
 		sendToRetryQueue(message)
 		return
 	}
 
 	resp, err := client.GetGames(&helix.GamesParams{Names: []string{app.Name}})
 	if err != nil {
-		log.Err(err, payload.AppID)
+		zap.S().Error(err, payload.AppID)
 		sendToRetryQueue(message)
 		return
 	}
@@ -65,7 +65,7 @@ func appTwitchHandler(message *rabbit.Message) {
 
 	i, err := strconv.Atoi(resp.Data.Games[0].ID)
 	if err != nil {
-		log.Err(err, payload.AppID)
+		zap.S().Error(err, payload.AppID)
 		sendToRetryQueue(message)
 		return
 	}
@@ -77,14 +77,14 @@ func appTwitchHandler(message *rabbit.Message) {
 
 	_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", payload.AppID}}, update)
 	if err != nil {
-		log.Err(err, payload.AppID)
+		zap.S().Error(err, payload.AppID)
 		sendToRetryQueue(message)
 		return
 	}
 
 	err = memcache.Delete(memcache.MemcacheApp(payload.AppID).Key)
 	if err != nil {
-		log.Err(err, payload.AppID)
+		zap.S().Error(err, payload.AppID)
 		sendToRetryQueue(message)
 		return
 	}

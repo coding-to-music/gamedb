@@ -13,6 +13,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/go-chi/chi"
+	"go.uber.org/zap"
 )
 
 var version string
@@ -21,7 +22,7 @@ var commits string
 func main() {
 
 	config.Init(version, commits, helpers.GetIP())
-	log.Initialise(log.LogNameScaler)
+	log.InitZap(log.LogNameScaler)
 
 	// Web server
 	r := chi.NewRouter()
@@ -39,7 +40,7 @@ func main() {
 	}
 }
 
-func listHandler(w http.ResponseWriter, r *http.Request) {
+func listHandler(w http.ResponseWriter, _ *http.Request) {
 
 	funcs := template.FuncMap{
 		"join":  func(a []string) string { return strings.Join(a, ", ") },
@@ -76,7 +77,7 @@ func createHandler(w http.ResponseWriter, r *http.Request) {
 
 	_, err := hosts.GetHost().CreateConsumer()
 	if err != nil {
-		log.Err(err)
+		zap.S().Error(err)
 	}
 
 	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
@@ -131,8 +132,10 @@ func cycleHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 }
 
-func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
+func healthCheckHandler(w http.ResponseWriter, _ *http.Request) {
 
 	_, err := w.Write([]byte("OK"))
-	log.Err(err)
+	if err != nil {
+		zap.S().Error(err)
+	}
 }

@@ -2,10 +2,10 @@ package tasks
 
 import (
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 type AppsQueueInflux struct {
@@ -44,7 +44,7 @@ func (c AppsQueueInflux) work() (err error) {
 		for _, chunk := range chunks {
 			err = queue.ProduceAppsInflux(chunk)
 			if err != nil {
-				log.Err(err)
+				zap.S().Error(err)
 				return
 			}
 		}

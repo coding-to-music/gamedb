@@ -11,12 +11,13 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gocolly/colly"
+	"go.uber.org/zap"
 )
 
 func AllowSteamCodes(err error, allowedCodes ...int) error {
 
 	// if err == steam.ErrHTMLResponse {
-	// 	log.Err(err, string(bytes))
+	// 	zap.S().Error(err, string(bytes))
 	// 	time.Sleep(time.Second * 30)
 	// }
 
@@ -79,9 +80,9 @@ func LogSteamError(err error, interfaces ...interface{}) {
 	interfaces = append(interfaces, err, log.LogNameSteamErrors)
 
 	if isError {
-		log.Err(interfaces...)
+		zap.S().Error(interfaces...)
 	} else {
-		log.Info(interfaces...)
+		zap.S().Info(interfaces...)
 	}
 }
 

@@ -5,9 +5,9 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gorilla/websocket"
 	"github.com/satori/go.uuid"
+	"go.uber.org/zap"
 )
 
 type WebsocketPage string
@@ -120,7 +120,7 @@ func (p *Page) Send(data interface{}) {
 
 				if !strings.Contains(err.Error(), "broken pipe") &&
 					!strings.Contains(err.Error(), "connection reset by peer") {
-					log.Err(err, fmt.Sprint(payload))
+					zap.S().Error(err, fmt.Sprint(payload))
 				}
 			}
 		}

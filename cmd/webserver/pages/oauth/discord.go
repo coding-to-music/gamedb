@@ -28,7 +28,7 @@ func (c discordConnection) getID(r *http.Request, token *oauth2.Token) (string, 
 
 	// if !discordUser.Verified { // Seems ot always be false
 	// 	err = session.SetFlash(r, helpers.SessionBad, "This Discord account has not been verified")
-	// 	log.Err(err, r)
+	// 	zap.S().Error(err)
 	// 	return
 	// }
 

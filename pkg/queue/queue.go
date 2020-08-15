@@ -16,6 +16,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/streadway/amqp"
+	"go.uber.org/zap"
 )
 
 type QueueMessageInterface interface {
@@ -77,15 +78,15 @@ const (
 func init() {
 	rabbit.SetLogInfo(func(i ...interface{}) {
 		i = append(i, log.LogNameRabbit)
-		// log.Info(i...)
+		// zap.S().Info(i...)
 	})
 	rabbit.SetLogWarning(func(i ...interface{}) {
 		i = append(i, log.LogNameRabbit)
-		log.Warning(i...)
+		zap.S().Warn(i...)
 	})
 	rabbit.SetLogError(func(i ...interface{}) {
 		i = append(i, log.LogNameRabbit)
-		log.Err(i...)
+		zap.S().Error(i...)
 	})
 }
 
@@ -269,7 +270,7 @@ func Init(definitions []QueueDefinition) {
 		"connection_name": config.Config.Environment.Get() + "-" + string(rabbit.Consumer) + "-" + config.GetSteamKeyTag(),
 	}})
 	if err != nil {
-		log.Info(err)
+		zap.S().Info(err)
 		return
 	}
 
@@ -288,7 +289,7 @@ func Init(definitions []QueueDefinition) {
 
 		q, err := rabbit.NewChannel(producerConnection, queue.name, config.Config.Environment.Get(), prefetchSize, queue.consumer, !queue.skipHeaders)
 		if err != nil {
-			log.Critical(string(queue.name), err)
+			zap.S().Fatal(string(queue.name), err)
 		} else {
 			ProducerChannels[queue.name] = q
 		}
@@ -301,7 +302,7 @@ func Init(definitions []QueueDefinition) {
 			"connection_name": config.Config.Environment.Get() + "-" + string(rabbit.Consumer) + "-" + config.GetSteamKeyTag(),
 		}})
 		if err != nil {
-			log.Info(err)
+			zap.S().Info(err)
 			return
 		}
 
@@ -318,7 +319,7 @@ func Init(definitions []QueueDefinition) {
 
 					q, err := rabbit.NewChannel(consumerConnection, queue.name, config.Config.Environment.Get()+"-"+strconv.Itoa(k), prefetchSize, queue.consumer, !queue.skipHeaders)
 					if err != nil {
-						log.Critical(string(queue.name), err)
+						zap.S().Fatal(string(queue.name), err)
 						continue
 					}
 
@@ -333,7 +334,7 @@ func Init(definitions []QueueDefinition) {
 func sendToFailQueue(message *rabbit.Message) {
 
 	err := message.SendToQueueAndAck(ProducerChannels[QueueFailed], nil)
-	log.Err(err)
+	zap.S().Error(err)
 }
 
 func sendToRetryQueue(message *rabbit.Message) {
@@ -352,7 +353,7 @@ func sendToRetryQueueWithDelay(message *rabbit.Message, delay time.Duration) {
 	}
 
 	err := message.SendToQueueAndAck(ProducerChannels[QueueDelay], po)
-	log.Err(err)
+	zap.S().Error(err)
 }
 
 func sendToLastQueue(message *rabbit.Message) {
@@ -364,7 +365,7 @@ func sendToLastQueue(message *rabbit.Message) {
 	}
 
 	err := message.SendToQueueAndAck(ProducerChannels[queue], nil)
-	log.Err(err)
+	zap.S().Error(err)
 }
 
 // Producers

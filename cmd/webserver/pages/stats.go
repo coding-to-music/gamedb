@@ -12,10 +12,10 @@ import (
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/influx"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/go-chi/chi"
+	"go.uber.org/zap"
 )
 
 func StatsRouter() http.Handler {
@@ -51,7 +51,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		t.AppsCount, err = mongo.CountDocuments(mongo.CollectionApps, nil, 0)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 	}()
 
@@ -63,7 +63,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		t.BundlesCount, err = mysql.CountBundles()
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 	}()
 
@@ -75,7 +75,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		t.PackagesCount, err = mongo.CountDocuments(mongo.CollectionPackages, nil, 0)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 	}()
 
@@ -87,7 +87,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		t.AchievementsCount, err = mongo.CountDocuments(mongo.CollectionAppAchievements, nil, 0)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 	}()
 
@@ -99,7 +99,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		t.ArticlesCount, err = mongo.CountDocuments(mongo.CollectionAppArticles, nil, 0)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 	}()
 
@@ -113,7 +113,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 		a := mongo.App{}
 		t.SteamPlayersInGame, err = a.GetPlayersInGame()
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 	}()
 
@@ -127,7 +127,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 		a := mongo.App{}
 		t.SteamPlayersOnline, err = a.GetPlayersOnline()
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 	}()
 
@@ -166,7 +166,7 @@ func gameDBStatsHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		t.PlayersCount, err = mongo.CountDocuments(mongo.CollectionPlayers, nil, 0)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 	}()
 
@@ -178,7 +178,7 @@ func gameDBStatsHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		t.PlayerAppsCount, err = mongo.CountDocuments(mongo.CollectionPlayerApps, nil, 0)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 	}()
 
@@ -190,7 +190,7 @@ func gameDBStatsHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		t.PlayerFriendsCount, err = mongo.CountDocuments(mongo.CollectionPlayerFriends, nil, 0)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 	}()
 
@@ -202,7 +202,7 @@ func gameDBStatsHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		t.PlayerAchievementsCount, err = mongo.CountDocuments(mongo.CollectionPlayerAchievements, nil, 0)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 	}()
 
@@ -214,7 +214,7 @@ func gameDBStatsHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		t.PlayerBadgesCount, err = mongo.CountDocuments(mongo.CollectionPlayerBadges, nil, 0)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 	}()
 
@@ -226,7 +226,7 @@ func gameDBStatsHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		t.PlayerGroupsCount, err = mongo.CountDocuments(mongo.CollectionPlayerGroups, nil, 0)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 	}()
 
@@ -249,7 +249,7 @@ func playerLevelsHandler(w http.ResponseWriter, r *http.Request) {
 
 	levels, err := mongo.GetPlayerLevelsRounded()
 	if err != nil {
-		log.Err(err, r)
+		zap.S().Error(err)
 		return
 	}
 
@@ -260,7 +260,7 @@ func playerCountriesHandler(w http.ResponseWriter, r *http.Request) {
 
 	aggs, err := elasticsearch.AggregatePlayerCountries()
 	if err != nil {
-		log.Err(err)
+		zap.S().Error(err)
 		return
 	}
 
@@ -326,7 +326,7 @@ func statsAppTypesHandler(w http.ResponseWriter, r *http.Request) {
 
 	types, err := mongo.GetAppsGroupedByType(code)
 	if err != nil {
-		log.Err(err, r)
+		zap.S().Error(err)
 		return
 	}
 
@@ -381,7 +381,7 @@ func statsClientPlayersHandler(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := influx.InfluxQuery(builder.String())
 	if err != nil {
-		log.Err(err, r, builder.String())
+		zap.S().Error(err, r, builder.String())
 		return
 	}
 
@@ -409,7 +409,7 @@ func statsClientPlayers2Handler(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := influx.InfluxQuery(builder.String())
 	if err != nil {
-		log.Err(err, r, builder.String())
+		zap.S().Error(err, r, builder.String())
 		return
 	}
 
@@ -427,7 +427,7 @@ func statsDatesHandler(w http.ResponseWriter, r *http.Request) {
 
 	releaseDates, err := mongo.GetAppsGroupedByReleaseDate()
 	if err != nil {
-		log.Err(err, r)
+		zap.S().Error(err)
 		return
 	}
 
@@ -444,7 +444,7 @@ func statsScoresHandler(w http.ResponseWriter, r *http.Request) {
 
 	scores, err := mongo.GetAppsGroupedByReviewScore()
 	if err != nil {
-		log.Err(err, r)
+		zap.S().Error(err)
 		return
 	}
 

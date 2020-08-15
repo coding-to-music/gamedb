@@ -8,8 +8,8 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/i18n"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mysql"
+	"go.uber.org/zap"
 )
 
 type CommandAppPrice struct {
@@ -50,7 +50,7 @@ func (c CommandAppPrice) Output(msg *discordgo.MessageCreate) (message discordgo
 
 	matches := RegexCache[c.Regex()].FindStringSubmatch(msg.Message.Content)
 
-	apps,  err := elasticsearch.SearchAppsSimple(1,  matches[2])
+	apps, err := elasticsearch.SearchAppsSimple(1, matches[2])
 	if err != nil {
 		return message, err
 	} else if len(apps) == 0 {
@@ -66,7 +66,7 @@ func (c CommandAppPrice) Output(msg *discordgo.MessageCreate) (message discordgo
 
 		settings, err := mysql.GetChatBotSettings(msg.Author.ID)
 		if err != nil {
-			log.Err(err)
+			zap.S().Error(err)
 			return message, err
 		}
 

@@ -1,10 +1,10 @@
 package tasks
 
 import (
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 type AppsAchievementsQueueElastic struct {
@@ -49,7 +49,7 @@ func (c AppsAchievementsQueueElastic) work() (err error) {
 			} else {
 				app, err = mongo.GetApp(appAchievement.AppID)
 				if err != nil {
-					log.Err(err)
+					zap.S().Error(err)
 					continue
 				}
 				apps[appAchievement.AppID] = app

@@ -1,10 +1,10 @@
 package tasks
 
 import (
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 type AppsQueueElastic struct {
@@ -46,7 +46,7 @@ func (c AppsQueueElastic) work() (err error) {
 
 			err = queue.ProduceAppSearch(&app, 0)
 			if err != nil {
-				log.Err(err)
+				zap.S().Error(err)
 				return
 			}
 		}

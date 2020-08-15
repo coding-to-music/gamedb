@@ -8,8 +8,8 @@ import (
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
+	"go.uber.org/zap"
 )
 
 const (
@@ -79,7 +79,7 @@ func (user User) GetSteamID() (ret int64) {
 	if user.SteamID.Valid {
 		i, err := strconv.ParseInt(user.SteamID.String, 10, 64)
 		if err != nil {
-			log.Err(err)
+			zap.S().Error(err)
 		} else {
 			return i
 		}

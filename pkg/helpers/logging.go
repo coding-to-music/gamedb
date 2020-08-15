@@ -6,6 +6,7 @@ import (
 
 	"github.com/Jleagle/go-durationfmt"
 	"github.com/gamedb/gamedb/pkg/log"
+	"go.uber.org/zap"
 )
 
 type QueryLogger struct {
@@ -48,6 +49,6 @@ func (ql QueryLogger) End() {
 		b, _ = json.Marshal(ql.sort)
 		is = append(is, string(b))
 
-		log.Warning(is...)
+		zap.S().Warn(is...)
 	}
 }

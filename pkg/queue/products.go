@@ -9,11 +9,11 @@ import (
 	"github.com/Jleagle/steam-go/steamvdf"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql/pics"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.uber.org/zap"
 )
 
 func getAppConfig(kv steamvdf.KeyValue) (config pics.PICSKeyValues, launch []pics.PICSAppConfigLaunchItem) {
@@ -24,7 +24,7 @@ func getAppConfig(kv steamvdf.KeyValue) (config pics.PICSKeyValues, launch []pic
 			launch = getAppLaunch(v)
 		} else if len(v.Children) > 0 {
 			b, err := json.Marshal(v.ToMapOuter())
-			log.Err(err)
+			zap.S().Error(err)
 			config[v.Key] = string(b)
 		} else {
 			config[v.Key] = v.Value
@@ -52,7 +52,7 @@ func getAppDepots(kv steamvdf.KeyValue) (depots pics.Depots) {
 				depots.Extra[v.Key] = v.Value
 			} else {
 				b, err := json.Marshal(v.ToMapOuter())
-				log.Err(err)
+				zap.S().Error(err)
 				depots.Extra[v.Key] = string(b)
 			}
 
@@ -73,20 +73,20 @@ func getAppDepots(kv steamvdf.KeyValue) (depots pics.Depots) {
 				depot.Manifests = vv.GetChildrenAsMap()
 			case "encryptedmanifests":
 				b, err := json.Marshal(vv.ToMapOuter())
-				log.Err(err)
+				zap.S().Error(err)
 				depot.EncryptedManifests = string(b)
 			case "maxsize":
 				maxSize, err := strconv.ParseUint(vv.Value, 10, 64)
-				log.Err(err)
+				zap.S().Error(err)
 				depot.MaxSize = maxSize
 			case "dlcappid":
 				appID, err := strconv.Atoi(vv.Value)
-				log.Err(err)
+				zap.S().Error(err)
 				depot.DLCApp = appID
 			case "depotfromapp":
 				id := helpers.RegexNonInts.ReplaceAllString(vv.Value, "")
 				app, err := strconv.Atoi(id)
-				log.Err(err)
+				zap.S().Error(err)
 				depot.App = app
 			case "systemdefined":
 				if vv.Value == "1" {
@@ -113,7 +113,7 @@ func getAppDepots(kv steamvdf.KeyValue) (depots pics.Depots) {
 					depot.AllowAddRemoveWhileRunning = true
 				}
 			default:
-				log.Warning("GetAppDepots missing case: " + vv.Key)
+				zap.S().Warn("GetAppDepots missing case: " + vv.Key)
 			}
 		}
 
@@ -135,11 +135,11 @@ func getAppDepotBranches(kv steamvdf.KeyValue) (branches []pics.AppDepotBranches
 			switch vv.Key {
 			case "buildid":
 				buildID, err := strconv.Atoi(vv.Value)
-				log.Err(err)
+				zap.S().Error(err)
 				branch.BuildID = buildID
 			case "timeupdated":
 				t, err := strconv.ParseInt(vv.Value, 10, 64)
-				log.Err(err)
+				zap.S().Error(err)
 				branch.TimeUpdated = t
 			case "defaultforsubs":
 				branch.DefaultForSubs = vv.Value
@@ -156,7 +156,7 @@ func getAppDepotBranches(kv steamvdf.KeyValue) (branches []pics.AppDepotBranches
 					branch.LCSRequired = true
 				}
 			default:
-				log.Warning("GetAppDepotBranches missing case: " + vv.Key)
+				zap.S().Warn("GetAppDepotBranches missing case: " + vv.Key)
 			}
 		}
 
@@ -217,7 +217,7 @@ func setAppLaunchItem(kv steamvdf.KeyValue, launchItem *pics.PICSAppConfigLaunch
 		case "config":
 			setAppLaunchItem(child, launchItem)
 		default:
-			log.Warning("setAppLaunchItem missing case: " + child.Key)
+			zap.S().Warn("setAppLaunchItem missing case: " + child.Key)
 		}
 	}
 }
@@ -297,21 +297,21 @@ func saveProductPricesToMongo(before helpers.ProductInterface, after helpers.Pro
 		// 		_, _, err = twitter.GetTwitter().Statuses.Update("["+helpers.FloatToString(percentIncrease, 0)+"%] ($"+helpers.FloatToString(float64(newPrice)/100, 2)+") gamedb.online/games/"+strconv.Itoa(before.GetID())+" #freegame #steam "+helpers.GetHashTag(before.GetName()), nil)
 		// 		if err != nil {
 		// 			if !strings.Contains(err.Error(), "Status is a duplicate") {
-		// 				log.Critical(err)
+		// 				zap.S().Fatal(err)
 		// 			}
 		// 		}
 		//
 		// 		// Reddit
 		// 		err = reddit.PostToReddit("["+helpers.FloatToString(percentIncrease, 0)+"%] "+before.GetName()+" ($"+helpers.FloatToString(float64(newPrice)/100, 2)+")", "https://gamedb.online"+before.GetPath())
 		// 		if err != nil {
-		// 			log.Critical(err)
+		// 			zap.S().Fatal(err)
 		// 		}
 		//
 		// 		// Slack message
 		// 		err = slack.PostWebhook(config.Config.SlackSocialWebhook.Get(), &slack.WebhookMessage{
 		// 			Text: config.Config.GameDBDomain.Get() + before.GetPath(),
 		// 		})
-		// 		log.Err(err)
+		// 		zap.S().Error(err)
 		// 	}
 		// }
 	}
@@ -334,7 +334,7 @@ func saveProductPricesToMongo(before helpers.ProductInterface, after helpers.Pro
 			wsPayload := StringsPayload{IDs: priceIDs}
 			err2 := ProduceWebsocket(wsPayload, websockets.PagePrices)
 			if err2 != nil {
-				log.Err(err2)
+				zap.S().Error(err2)
 			}
 		}
 	}

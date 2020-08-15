@@ -18,6 +18,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/nlopes/slack"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 func WebhooksRouter() http.Handler {
@@ -32,7 +33,7 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	b, event, err := patreon.Validate(r, config.Config.PatreonSecret.Get())
 	if err != nil {
-		log.Err(err, r)
+		zap.S().Error(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -43,26 +44,26 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 		Event:       event,
 	})
 	if err != nil {
-		log.Err(err, r)
+		zap.S().Error(err)
 	}
 
 	pwr, err := patreon.Unmarshal(b)
 	if err != nil {
-		log.Err(err, r, b)
+		zap.S().Error(err, r, b)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	err = saveWebhookEvent(r, mongo.EventEnum(event), pwr)
 	if err != nil {
-		log.Err(err, r)
+		zap.S().Error(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	// Slack message
 	err = slack.PostWebhook(config.Config.SlackPatreonWebhook.Get(), &slack.WebhookMessage{Text: event})
-	log.Err(err)
+	zap.S().Error(err)
 }
 
 func saveWebhookEvent(r *http.Request, event mongo.EventEnum, pwr patreon.Webhook) (err error) {
@@ -100,14 +101,14 @@ func gitHubWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 	// Get body
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		log.Err(err)
+		zap.S().Error(err)
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	log.Info(body, log.LogNameWebhooksGitHub)
+	zap.S().Info(body, log.LogNameWebhooksGitHub)
 
-	defer log.Err(r.Body.Close())
+	defer zap.S().Error(r.Body.Close())
 
 	//
 	var signature = r.Header.Get("X-Hub-Signature")
@@ -138,7 +139,7 @@ func gitHubWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 
 		err := memcache.Delete(items...)
 		if err != nil {
-			log.Err(err)
+			zap.S().Error(err)
 		}
 	}
 

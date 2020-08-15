@@ -16,11 +16,11 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -57,7 +57,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	// Get user
 	t.User, err = getUserFromSession(r)
 	if err != nil {
-		log.Err(err, r)
+		zap.S().Error(err)
 	}
 
 	steamID := t.User.GetSteamID()
@@ -67,7 +67,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 		t.Player, err = mongo.GetPlayer(steamID)
 		err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 
 		// Set Steam player name to session if missing, can happen after linking
@@ -89,7 +89,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 		playerApps, err := mongo.GetPlayerApps(0, 0, bson.D{{"player_id", t.Player.ID}}, bson.D{})
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 			return
 		}
 
@@ -100,7 +100,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 		b, err := json.Marshal(appIDs)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 
 		t.Games = template.JS(b)
@@ -120,7 +120,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 		groups, err := mongo.GetPlayerGroups(t.Player.ID, 0, 0, nil)
 		if err != nil {
-			log.Err(err)
+			zap.S().Error(err)
 			return
 		}
 		for _, v := range groups {
@@ -129,7 +129,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 		b, err := json.Marshal(groupIDs)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 
 		t.Groups = template.JS(b)
@@ -150,7 +150,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 		badges, err := mongo.GetPlayerBadges(0, filter, nil)
 		if err != nil {
-			log.Err(err)
+			zap.S().Error(err)
 			return
 		}
 		for _, v := range badges {
@@ -159,7 +159,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 		b, err := json.Marshal(badgeIDs)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 
 		t.Badges = template.JS(b)
@@ -192,13 +192,13 @@ func deletePostHandler(w http.ResponseWriter, r *http.Request) {
 		// Parse form
 		err = r.ParseForm()
 		if err != nil {
-			log.Err(err)
+			zap.S().Error(err)
 			return "/settings", "", "There was an eror saving your information."
 		}
 
 		user, err := getUserFromSession(r)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 			return "/settings", "", "There was an eror saving your information."
 		}
 
@@ -231,14 +231,14 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 		// Get user
 		user, err := getUserFromSession(r)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 			return "/settings", "", "User not found"
 		}
 
 		// Parse form
 		err = r.ParseForm()
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 			return "/settings", "", "Could not read form data"
 		}
 
@@ -270,7 +270,7 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 
 			passwordBytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 			if err != nil {
-				log.Err(err, r)
+				zap.S().Error(err)
 				return "/settings", "", "Something went wrong encrypting your password"
 			}
 
@@ -301,7 +301,7 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 		// Save user
 		db, err := mysql.GetMySQLClient()
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 			return "/settings", "", "We had trouble saving your settings"
 		}
 
@@ -316,7 +316,7 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 		})
 
 		if db.Error != nil {
-			log.Err(db.Error, r)
+			zap.S().Error(db.Error, r)
 			return "/settings", "", "Something went wrong saving your settings"
 		}
 
@@ -349,7 +349,7 @@ func settingsNewKeyHandler(w http.ResponseWriter, r *http.Request) {
 		// Get user
 		user, err := getUserFromSession(r)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 			return "", "User not found"
 		}
 
@@ -357,14 +357,14 @@ func settingsNewKeyHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Save user
 		db, err := mysql.GetMySQLClient()
-		log.Err(err)
+		zap.S().Error(err)
 		if err != nil {
 			return "", "We had trouble saving your settings (1001)"
 		}
 
 		db = db.Model(&user).Update("api_key", user.APIKey)
 		if db.Error != nil {
-			log.Err(db.Error, r)
+			zap.S().Error(db.Error, r)
 			return "", "We had trouble saving your settings (1002)"
 		}
 
@@ -392,7 +392,7 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	user, err := getUserFromSession(r)
 	if err != nil {
-		log.Err(err)
+		zap.S().Error(err)
 		return
 	}
 
@@ -409,7 +409,7 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		events, err = mongo.GetEvents(user.ID, query.GetOffset64())
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 			return
 		}
 
@@ -424,7 +424,7 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		total, err = mongo.CountDocuments(mongo.CollectionEvents, bson.D{{"user_id", user.ID}}, 86400)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 	}(r)
 
@@ -442,7 +442,7 @@ func settingsDonationsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	user, err := getUserFromSession(r)
 	if err != nil {
-		log.Err(err)
+		zap.S().Error(err)
 		return
 	}
 
@@ -467,7 +467,7 @@ func settingsDonationsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		total, err = mongo.CountDocuments(mongo.CollectionPatreonWebhooks, bson.D{{"user_id", user.ID}}, 0)
-		log.Err(err, r)
+		zap.S().Error(err)
 	}(r)
 
 	wg.Wait()

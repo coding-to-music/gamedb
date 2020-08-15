@@ -9,11 +9,11 @@ import (
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/influx"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	mongoHelper "github.com/gamedb/gamedb/pkg/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.uber.org/zap"
 )
 
 type AppInfluxMessage struct {
@@ -33,7 +33,7 @@ func appInfluxHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		log.Err(err, message.Message.Body)
+		zap.S().Error(err, message.Message.Body)
 		sendToFailQueue(message)
 		return
 	}
@@ -45,28 +45,28 @@ func appInfluxHandler(message *rabbit.Message) {
 
 	// appPlayersWeekAverage, err := getAppAveragePlayersWeek(payload.AppIDs)
 	// if err != nil {
-	// 	log.Err(err, message.Message.Body)
+	// 	zap.S().Error(err, message.Message.Body)
 	// 	sendToRetryQueue(message)
 	// 	return
 	// }
 
 	// appPlayersAlltime, err := getAppTopPlayersAlltime(payload.AppIDs)
 	// if err != nil {
-	// 	log.Err(err, message.Message.Body)
+	// 	zap.S().Error(err, message.Message.Body)
 	// 	sendToRetryQueue(message)
 	// 	return
 	// }
 
 	appPlayersWeek, err := getAppTopPlayersWeek(payload.AppIDs)
 	if err != nil {
-		log.Err(err, message.Message.Body)
+		zap.S().Error(err, message.Message.Body)
 		sendToRetryQueue(message)
 		return
 	}
 
 	appTrend, err := getAppTrendValue(payload.AppIDs)
 	if err != nil {
-		log.Err(err, message.Message.Body)
+		zap.S().Error(err, message.Message.Body)
 		sendToRetryQueue(message)
 		return
 	}
@@ -106,7 +106,7 @@ func appInfluxHandler(message *rabbit.Message) {
 
 	err = mongoHelper.UpdateAppsInflux(writes)
 	if err != nil {
-		log.Err(err, message.Message.Body)
+		zap.S().Error(err, message.Message.Body)
 		sendToRetryQueue(message)
 		return
 	}
@@ -119,7 +119,7 @@ func appInfluxHandler(message *rabbit.Message) {
 
 	err = memcache.Delete(items...)
 	if err != nil {
-		log.Err(err, message.Message.Body)
+		zap.S().Error(err, message.Message.Body)
 		sendToRetryQueue(message)
 		return
 	}
@@ -127,7 +127,7 @@ func appInfluxHandler(message *rabbit.Message) {
 	// Update in Elastic
 	for _, v := range payload.AppIDs {
 		err = ProduceAppSearch(nil, v)
-		log.Err(err)
+		zap.S().Error(err)
 	}
 
 	//
@@ -154,13 +154,13 @@ func getAppTopPlayersWeek(appIDs []int) (vals map[int]int64, err error) {
 
 		appID, err := strconv.Atoi(v.Tags["app_id"])
 		if err != nil {
-			log.Err(err)
+			zap.S().Error(err)
 			continue
 		}
 
 		val, err := v.Values[0][1].(json.Number).Int64()
 		if err != nil {
-			log.Err(err)
+			zap.S().Error(err)
 			continue
 		}
 
@@ -190,13 +190,13 @@ func getAppAveragePlayersWeek(appIDs []int) (vals map[int]float64, err error) {
 
 		appID, err := strconv.Atoi(v.Tags["app_id"])
 		if err != nil {
-			log.Err(err)
+			zap.S().Error(err)
 			continue
 		}
 
 		val, err := v.Values[0][1].(json.Number).Float64()
 		if err != nil {
-			log.Err(err)
+			zap.S().Error(err)
 			continue
 		}
 
@@ -225,13 +225,13 @@ func getAppTopPlayersAlltime(appIDs []int) (vals map[int]int64, err error) {
 
 		appID, err := strconv.Atoi(v.Tags["app_id"])
 		if err != nil {
-			log.Err(err)
+			zap.S().Error(err)
 			continue
 		}
 
 		val, err := v.Values[0][1].(json.Number).Int64()
 		if err != nil {
-			log.Err(err)
+			zap.S().Error(err)
 			continue
 		}
 
@@ -264,7 +264,7 @@ func getAppTrendValue(appIDs []int) (vals map[int]float64, err error) {
 
 			appID, err := strconv.Atoi(v.Tags["app_id"])
 			if err != nil {
-				log.Err(err)
+				zap.S().Error(err)
 				continue
 			}
 

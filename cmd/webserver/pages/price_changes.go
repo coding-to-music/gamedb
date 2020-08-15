@@ -8,10 +8,10 @@ import (
 
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 func PriceChangeRouter() http.Handler {
@@ -60,7 +60,7 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	if len(percents) == 2 {
 		if percents[0] != "-100.00" {
 			min, err := strconv.ParseFloat(percents[0], 64)
-			log.Err(err, r)
+			zap.S().Error(err)
 			if err == nil {
 				filter = append(filter, bson.E{Key: "difference_percent", Value: bson.M{"$gte": min}})
 			}
@@ -76,7 +76,7 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		if percents[1] != "100.00" {
 			max, err := strconv.ParseFloat(percents[1], 64)
-			log.Err(err, r)
+			zap.S().Error(err)
 			if err == nil {
 				filter = append(filter, bson.E{Key: "difference_percent", Value: bson.M{"$lte": max}})
 			}
@@ -96,14 +96,14 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	if len(prices) == 2 {
 		if prices[0] != "0.00" {
 			min, err := strconv.Atoi(strings.Replace(prices[0], ".", "", 1))
-			log.Err(err, r)
+			zap.S().Error(err)
 			if err == nil {
 				filter = append(filter, bson.E{Key: "price_after", Value: bson.M{"$gte": min}})
 			}
 		}
 		if prices[1] != "100.00" {
 			max, err := strconv.Atoi(strings.Replace(prices[1], ".", "", 1))
-			log.Err(err, r)
+			zap.S().Error(err)
 			if err == nil {
 				filter = append(filter, bson.E{Key: "price_after", Value: bson.M{"$lte": max}})
 			}
@@ -120,7 +120,7 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		priceChanges, err = mongo.GetPrices(query.GetOffset64(), 100, filter)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 			return
 		}
 	}(r)
@@ -134,7 +134,7 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		filtered, err = mongo.CountDocuments(mongo.CollectionProductPrices, filter, 0)
-		log.Err(err, r)
+		zap.S().Error(err)
 	}(r)
 
 	// Get total count
@@ -146,7 +146,7 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		total, err = mongo.CountDocuments(mongo.CollectionProductPrices, bson.D{{Key: "prod_cc", Value: string(code)}}, 0)
-		log.Err(err, r)
+		zap.S().Error(err)
 	}(r)
 
 	// Wait

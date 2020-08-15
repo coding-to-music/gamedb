@@ -4,9 +4,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.uber.org/zap"
 )
 
 type BundlePrice struct {
@@ -41,7 +41,7 @@ func GetBundlePrices(bundleID int) (prices []BundlePrice, err error) {
 
 	defer func(cur *mongo.Cursor) {
 		err = cur.Close(ctx)
-		log.Err(err)
+		zap.S().Error(err)
 	}(cur)
 
 	for cur.Next(ctx) {
@@ -49,7 +49,7 @@ func GetBundlePrices(bundleID int) (prices []BundlePrice, err error) {
 		var price BundlePrice
 		err := cur.Decode(&price)
 		if err != nil {
-			log.Err(err, price.GetKey())
+			zap.S().Error(err, price.GetKey())
 		} else {
 			prices = append(prices, price)
 		}

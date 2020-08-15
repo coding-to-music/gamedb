@@ -9,12 +9,12 @@ import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/influx"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/steam"
 	influx "github.com/influxdata/influxdb1-client"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 type AppReviewsMessage struct {
@@ -31,7 +31,7 @@ func appReviewsHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		log.Err(err, message.Message.Body)
+		zap.S().Error(err, message.Message.Body)
 		sendToFailQueue(message)
 		return
 	}
@@ -66,7 +66,7 @@ func appReviewsHandler(message *rabbit.Message) {
 	// Get players
 	players, err := mongo.GetPlayersByID(playersSlice, bson.M{"_id": 1, "persona_name": 1})
 	if err != nil {
-		log.Err(err)
+		zap.S().Error(err)
 		sendToRetryQueue(message)
 		return
 	}
@@ -88,7 +88,7 @@ func appReviewsHandler(message *rabbit.Message) {
 
 			err = ProducePlayer(PlayerMessage{ID: int64(review.Author.SteamID), SkipExistingPlayer: true})
 			err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
-			log.Err(err)
+			zap.S().Error(err)
 		}
 
 		// Remove extra new lines
@@ -127,14 +127,14 @@ func appReviewsHandler(message *rabbit.Message) {
 
 	_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", payload.AppID}}, update)
 	if err != nil {
-		log.Err(err, payload.AppID)
+		zap.S().Error(err, payload.AppID)
 		sendToRetryQueue(message)
 		return
 	}
 
 	err = memcache.Delete(memcache.MemcacheApp(payload.AppID).Key)
 	if err != nil {
-		log.Err(err, payload.AppID)
+		zap.S().Error(err, payload.AppID)
 		sendToRetryQueue(message)
 		return
 	}
@@ -142,7 +142,7 @@ func appReviewsHandler(message *rabbit.Message) {
 	// Update in Elastic
 	err = ProduceAppSearch(nil, payload.AppID)
 	if err != nil {
-		log.Err(err, payload.AppID)
+		zap.S().Error(err, payload.AppID)
 		sendToRetryQueue(message)
 		return
 	}
@@ -164,7 +164,7 @@ func appReviewsHandler(message *rabbit.Message) {
 
 	_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, point)
 	if err != nil {
-		log.Err(err, payload.AppID)
+		zap.S().Error(err, payload.AppID)
 		sendToRetryQueue(message)
 		return
 	}

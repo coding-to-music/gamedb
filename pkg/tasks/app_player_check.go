@@ -3,11 +3,11 @@ package tasks
 import (
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/rabbitweb"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 type AppsPlayerCheck struct {
@@ -69,7 +69,7 @@ func (c AppsPlayerCheck) work() (err error) {
 		for _, chunk := range chunks {
 			err = queue.ProduceAppPlayers(chunk)
 			if err != nil {
-				log.Err(err)
+				zap.S().Error(err)
 				return
 			}
 		}

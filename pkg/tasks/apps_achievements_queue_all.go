@@ -1,10 +1,10 @@
 package tasks
 
 import (
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 type AppsAchievementsQueueAll struct {
@@ -37,7 +37,7 @@ func (c AppsAchievementsQueueAll) work() (err error) {
 
 			err = queue.ProduceAppAchievement(app.ID, app.Name, app.Owners)
 			if err != nil {
-				log.Err(err)
+				zap.S().Error(err)
 				return
 			}
 		}

@@ -8,11 +8,11 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/chatbot"
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/go-chi/chi"
+	"go.uber.org/zap"
 )
 
 const (
@@ -113,7 +113,7 @@ func (cbt chatBotTemplate) Guilds() (guilds int) {
 		return count, nil
 	})
 
-	log.Err(err)
+	zap.S().Error(err)
 
 	return guilds
 }
@@ -122,7 +122,7 @@ func chatBotRecentHandler(w http.ResponseWriter, r *http.Request) {
 
 	commands, err := mongo.GetChatBotCommandsRecent()
 	if err != nil {
-		log.Err(err, r)
+		zap.S().Error(err)
 		return
 	}
 

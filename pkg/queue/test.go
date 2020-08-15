@@ -5,7 +5,7 @@ import (
 
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
+	"go.uber.org/zap"
 )
 
 type TestMessage struct {
@@ -18,12 +18,12 @@ func testHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		log.Err(err, message.Message.Body)
+		zap.S().Error(err, message.Message.Body)
 		sendToFailQueue(message)
 		return
 	}
 
-	log.Info(payload.ID, time.Now().String())
+	zap.S().Info(payload.ID, time.Now().String())
 
 	message.Ack()
 }

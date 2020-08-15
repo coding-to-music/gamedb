@@ -13,12 +13,12 @@ import (
 	"github.com/Jleagle/steam-go/steamid"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/steam"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.uber.org/zap"
 )
 
 type RankMetric string
@@ -403,12 +403,12 @@ func CreatePlayerIndexes() {
 	//
 	client, ctx, err := getMongo()
 	if err != nil {
-		log.Err(err)
+		zap.S().Error(err)
 		return
 	}
 
 	_, err = client.Database(MongoDatabase).Collection(CollectionPlayers.String()).Indexes().CreateMany(ctx, indexModels)
-	log.Err(err)
+	zap.S().Error(err)
 }
 
 func GetPlayer(id int64) (player Player, err error) {
@@ -466,7 +466,7 @@ func SearchPlayer(search string, projection bson.M) (player Player, queue bool, 
 		err = c.FindOne(ctx, bson.D{{"_id", id}}, ops).Decode(&player)
 		err = helpers.IgnoreErrors(err, ErrNoDocuments)
 		if err != nil {
-			log.Err(err)
+			zap.S().Error(err)
 		}
 	}
 
@@ -475,7 +475,7 @@ func SearchPlayer(search string, projection bson.M) (player Player, queue bool, 
 		err = c.FindOne(ctx, bson.D{{"persona_name", search}}, ops).Decode(&player)
 		err = helpers.IgnoreErrors(err, ErrNoDocuments)
 		if err != nil {
-			log.Err(err)
+			zap.S().Error(err)
 		}
 	}
 
@@ -484,7 +484,7 @@ func SearchPlayer(search string, projection bson.M) (player Player, queue bool, 
 	// 	err = c.FindOne(ctx, bson.D{{"vanity_url", search}}, ops).Decode(&player)
 	// 	err = helpers.IgnoreErrors(err, ErrNoDocuments)
 	// 	if err != nil {
-	// 		log.Err(err)
+	// 		zap.S().Error(err)
 	// 	}
 	// }
 
@@ -513,7 +513,7 @@ func SearchPlayer(search string, projection bson.M) (player Player, queue bool, 
 						resp, err := steam.GetSteam().GetSteamLevel(player.ID)
 						err = steam.AllowSteamCodes(err)
 						if err != nil {
-							log.Err(err)
+							zap.S().Error(err)
 							return
 						}
 
@@ -534,7 +534,7 @@ func SearchPlayer(search string, projection bson.M) (player Player, queue bool, 
 								return
 							}
 							if err = steam.AllowSteamCodes(err); err != nil {
-								log.Err(err)
+								zap.S().Error(err)
 								return
 							}
 
@@ -555,7 +555,7 @@ func SearchPlayer(search string, projection bson.M) (player Player, queue bool, 
 							resp, err := steam.GetSteam().GetOwnedGames(player.ID)
 							err = steam.AllowSteamCodes(err)
 							if err != nil {
-								log.Err(err)
+								zap.S().Error(err)
 								return
 							}
 
@@ -579,7 +579,7 @@ func SearchPlayer(search string, projection bson.M) (player Player, queue bool, 
 						resp, err := steam.GetSteam().GetFriendList(player.ID)
 						err = steam.AllowSteamCodes(err, 401, 404)
 						if err != nil {
-							log.Err(err)
+							zap.S().Error(err)
 							return
 						}
 
@@ -621,7 +621,7 @@ func GetPlayers(offset int64, limit int64, sort bson.D, filter bson.D, projectio
 
 	defer func() {
 		err = cur.Close(ctx)
-		log.Err(err)
+		zap.S().Error(err)
 	}()
 
 	for cur.Next(ctx) {
@@ -629,7 +629,7 @@ func GetPlayers(offset int64, limit int64, sort bson.D, filter bson.D, projectio
 		var player Player
 		err := cur.Decode(&player)
 		if err != nil {
-			log.Err(err, player.ID)
+			zap.S().Error(err, player.ID)
 		} else {
 			players = append(players, player)
 		}
@@ -661,7 +661,7 @@ func GetPlayerLevels() (counts []Count, err error) {
 
 		defer func() {
 			err = cur.Close(ctx)
-			log.Err(err)
+			zap.S().Error(err)
 		}()
 
 		var counts []Count
@@ -670,7 +670,7 @@ func GetPlayerLevels() (counts []Count, err error) {
 			var level Count
 			err := cur.Decode(&level)
 			if err != nil {
-				log.Err(err, level.ID)
+				zap.S().Error(err, level.ID)
 			}
 			counts = append(counts, level)
 		}
@@ -708,7 +708,7 @@ func GetPlayerLevelsRounded() (counts []Count, err error) {
 
 		defer func() {
 			err = cur.Close(ctx)
-			log.Err(err)
+			zap.S().Error(err)
 		}()
 
 		var maxCount int
@@ -719,7 +719,7 @@ func GetPlayerLevelsRounded() (counts []Count, err error) {
 			var level Count
 			err := cur.Decode(&level)
 			if err != nil {
-				log.Err(err, level.ID)
+				zap.S().Error(err, level.ID)
 			}
 
 			countsMap[level.ID] = level

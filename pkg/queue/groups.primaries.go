@@ -3,10 +3,10 @@ package queue
 import (
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 type GroupPrimariesMessage struct {
@@ -25,14 +25,14 @@ func groupPrimariesHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		log.Err(err, message.Message.Body)
+		zap.S().Error(err, message.Message.Body)
 		sendToFailQueue(message)
 		return
 	}
 
 	prims, err := mongo.CountDocuments(mongo.CollectionPlayers, bson.D{{"primary_clan_id_string", payload.GroupID}}, 0)
 	if err != nil {
-		log.Err(err, payload.GroupID)
+		zap.S().Error(err, payload.GroupID)
 		sendToRetryQueue(message)
 		return
 	}
@@ -52,7 +52,7 @@ func groupPrimariesHandler(message *rabbit.Message) {
 
 	_, err = mongo.UpdateOne(mongo.CollectionGroups, filter, update)
 	if err != nil {
-		log.Err(err, payload.GroupID)
+		zap.S().Error(err, payload.GroupID)
 		sendToRetryQueue(message)
 		return
 	}
@@ -60,7 +60,7 @@ func groupPrimariesHandler(message *rabbit.Message) {
 	// Clear group cache
 	err = memcache.Delete(memcache.MemcacheGroup(payload.GroupID).Key)
 	if err != nil {
-		log.Err(err, payload.GroupID)
+		zap.S().Error(err, payload.GroupID)
 		sendToRetryQueue(message)
 		return
 	}
@@ -68,7 +68,7 @@ func groupPrimariesHandler(message *rabbit.Message) {
 	// Update Elastic
 	err = ProduceGroupSearch(nil, payload.GroupID, payload.GroupType)
 	if err != nil {
-		log.Err(err, payload.GroupID)
+		zap.S().Error(err, payload.GroupID)
 		sendToRetryQueue(message)
 		return
 	}

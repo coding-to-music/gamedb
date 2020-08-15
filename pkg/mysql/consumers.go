@@ -6,7 +6,7 @@ import (
 
 	"github.com/cenkalti/backoff/v4"
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/log"
+	"go.uber.org/zap"
 )
 
 const (
@@ -86,7 +86,7 @@ func GetConsumer(tag string) (err error) {
 	}
 
 	policy := backoff.NewConstantBackOff(consumerSessionRetry)
-	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info(err) })
+	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { zap.S().Info(err) })
 	if err != nil {
 		return err
 	}
@@ -96,7 +96,7 @@ func GetConsumer(tag string) (err error) {
 
 		db, err := GetMySQLClient()
 		if err != nil {
-			log.Err(err)
+			zap.S().Error(err)
 			return
 		}
 
@@ -114,7 +114,7 @@ func GetConsumer(tag string) (err error) {
 
 			db = db.Updates(fields)
 			if db.Error != nil {
-				log.Err(db.Error)
+				zap.S().Error(db.Error)
 			}
 		}
 	}()

@@ -8,7 +8,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/gamedb/gamedb/pkg/log"
+	"go.uber.org/zap"
 )
 
 var (
@@ -22,14 +22,14 @@ func syncStates() {
 
 	f, err := os.OpenFile("states.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 	if err != nil {
-		log.Err(err)
+		zap.S().Error(err)
 		return
 	}
 	defer f.Close()
 
 	for _, v := range countries {
 
-		log.Info(v)
+		zap.S().Info(v)
 
 		var urlx = "https://steamcommunity.com/actions/EditProcess?sId=76561197968626192"
 		var form = url.Values{}
@@ -40,7 +40,7 @@ func syncStates() {
 
 		req, err := http.NewRequest("POST", urlx, strings.NewReader(form.Encode()))
 		if err != nil {
-			log.Err(err)
+			zap.S().Error(err)
 			continue
 		}
 		req.Header.Set("content-type", "application/x-www-form-urlencoded")
@@ -50,7 +50,7 @@ func syncStates() {
 		client := &http.Client{}
 		resp, err := client.Do(req)
 		if err != nil {
-			log.Err(err)
+			zap.S().Error(err)
 			continue
 		}
 
@@ -59,13 +59,13 @@ func syncStates() {
 		steamResponse := response{}
 		err = json.Unmarshal(b, &steamResponse)
 		if err != nil {
-			log.Err(err)
+			zap.S().Error(err)
 			continue
 		}
 
 		err = resp.Body.Close()
 		if err != nil {
-			log.Err(err)
+			zap.S().Error(err)
 			continue
 		}
 

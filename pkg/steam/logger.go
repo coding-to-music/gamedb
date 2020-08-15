@@ -2,7 +2,7 @@ package steam
 
 import (
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/log"
+	"go.uber.org/zap"
 )
 
 type steamLogger struct {
@@ -10,10 +10,10 @@ type steamLogger struct {
 
 func (l steamLogger) Info(s string) {
 	if config.IsLocal() {
-		// log.Info(s, log.LogNameSteam)
+		// zap.S().Info(s, log.LogNameSteam)
 	}
 }
 
 func (l steamLogger) Err(e error) {
-	log.Err(e)
+	zap.S().Error(e)
 }

@@ -7,9 +7,9 @@ import (
 
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/api"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/go-chi/chi"
+	"go.uber.org/zap"
 )
 
 func APIRouter() http.Handler {
@@ -50,12 +50,12 @@ func apiGamedbJSONHandler(w http.ResponseWriter, r *http.Request) {
 
 	b, err := json.Marshal(api.SwaggerGameDB)
 	if err != nil {
-		log.Err(err, r)
+		zap.S().Error(err)
 		return
 	}
 
 	_, err = w.Write(b)
-	log.Err(err, r)
+	zap.S().Error(err)
 }
 
 func apiSteamJSONHandler(w http.ResponseWriter, r *http.Request) {
@@ -68,10 +68,10 @@ func apiSteamJSONHandler(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
-		log.Err(err, r)
+		zap.S().Error(err)
 		return
 	}
 
 	_, err = w.Write(b)
-	log.Err(err, r)
+	zap.S().Error(err)
 }

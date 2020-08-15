@@ -4,10 +4,10 @@ import (
 	"strconv"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.uber.org/zap"
 )
 
 type PlayerAchievement struct {
@@ -87,7 +87,7 @@ func CreatePlayerAchievementIndexes() {
 	//
 	client, ctx, err := getMongo()
 	if err != nil {
-		log.Err(err)
+		zap.S().Error(err)
 		return
 	}
 
@@ -96,7 +96,7 @@ func CreatePlayerAchievementIndexes() {
 		Indexes().
 		CreateMany(ctx, indexModels)
 
-	log.Err(err)
+	zap.S().Error(err)
 }
 
 func FindLatestPlayerAchievement(playerID int64, appID int) (int64, error) {
@@ -157,7 +157,7 @@ func getPlayerAchievements(offset int64, limit int64, filter bson.D, sort bson.D
 
 	defer func() {
 		err = cur.Close(ctx)
-		log.Err(err)
+		zap.S().Error(err)
 	}()
 
 	for cur.Next(ctx) {
@@ -165,7 +165,7 @@ func getPlayerAchievements(offset int64, limit int64, filter bson.D, sort bson.D
 		achievement := PlayerAchievement{}
 		err := cur.Decode(&achievement)
 		if err != nil {
-			log.Err(err, achievement.getKey())
+			zap.S().Error(err, achievement.getKey())
 		} else {
 			achievements = append(achievements, achievement)
 		}

@@ -7,10 +7,10 @@ import (
 
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 func PackagesRouter() http.Handler {
@@ -118,7 +118,7 @@ func packagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		packages, err = mongo.GetPackages(query.GetOffset64(), 100, query.GetOrderMongo(sortCols), filter, mongo.PackageOutputForJSON)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 			return
 		}
 	}(r)
@@ -135,7 +135,7 @@ func packagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		count, err = mongo.CountDocuments(mongo.CollectionPackages, nil, 0)
 		countLock.Unlock()
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 	}()
 
@@ -151,7 +151,7 @@ func packagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		filtered, err = mongo.CountDocuments(mongo.CollectionPackages, filter, 0)
 		countLock.Unlock()
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 	}()
 

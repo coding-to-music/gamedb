@@ -4,8 +4,8 @@ import (
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	"go.uber.org/zap"
 )
 
 type GroupSearchMessage struct {
@@ -23,7 +23,7 @@ func groupsSearchHandler(message *rabbit.Message) {
 	payload := GroupSearchMessage{}
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		log.Err(err, message.Message.Body)
+		zap.S().Error(err, message.Message.Body)
 		sendToFailQueue(message)
 		return
 	}
@@ -39,7 +39,7 @@ func groupsSearchHandler(message *rabbit.Message) {
 
 		groupMongo, err = mongo.GetGroup(payload.GroupID)
 		if err != nil {
-			log.Err(err, message.Message.Body)
+			zap.S().Error(err, message.Message.Body)
 			sendToRetryQueue(message)
 			return
 		}
@@ -50,7 +50,7 @@ func groupsSearchHandler(message *rabbit.Message) {
 
 	} else {
 
-		log.Err(err, message.Message.Body)
+		zap.S().Error(err, message.Message.Body)
 		sendToFailQueue(message)
 		return
 	}
@@ -75,7 +75,7 @@ func groupsSearchHandler(message *rabbit.Message) {
 
 	err = elasticsearch.IndexGroup(group)
 	if err != nil {
-		log.Err(err, message.Message.Body)
+		zap.S().Error(err, message.Message.Body)
 		sendToRetryQueue(message)
 		return
 	}

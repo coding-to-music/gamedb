@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/go-chi/chi"
 	"github.com/gorilla/websocket"
+	"go.uber.org/zap"
 )
 
 var upgrader = websocket.Upgrader{ReadBufferSize: 1024, WriteBufferSize: 1024}
@@ -31,10 +31,10 @@ func websocketsHandler(w http.ResponseWriter, r *http.Request) {
 	if page.GetName() == "" {
 
 		bytes, err := json.Marshal(websockets.WebsocketPayload{Error: "Invalid page"})
-		log.Err(err, r)
+		zap.S().Error(err)
 
 		_, err = w.Write(bytes)
-		log.Err(err, r)
+		zap.S().Error(err)
 		return
 	}
 
@@ -47,7 +47,7 @@ func websocketsHandler(w http.ResponseWriter, r *http.Request) {
 		if strings.Contains(err.Error(), "'websocket' token not found in 'Upgrade'") {
 			return
 		}
-		log.Err(err, r)
+		zap.S().Error(err)
 		return
 	}
 

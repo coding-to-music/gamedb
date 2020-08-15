@@ -11,11 +11,11 @@ import (
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 func salesRouter() http.Handler {
@@ -44,7 +44,7 @@ func salesHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.Tags, err = mysql.GetTagsForSelect()
-		log.Err(err, r)
+		zap.S().Error(err)
 	}()
 
 	// Count players
@@ -57,7 +57,7 @@ func salesHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.AppTypes, err = mongo.GetAppsGroupedByType(code)
-		log.Err(err, r)
+		zap.S().Error(err)
 	}()
 
 	wg.Add(1)
@@ -67,7 +67,7 @@ func salesHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.HighestOrder, err = mongo.GetHighestSaleOrder()
-		log.Err(err, r)
+		zap.S().Error(err)
 	}()
 
 	// Get categories
@@ -78,14 +78,14 @@ func salesHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.Categories, err = mysql.GetCategoriesForSelect()
-		log.Err(err, r)
+		zap.S().Error(err)
 	}()
 
 	// Upcoming days
 
 	pst, err := time.LoadLocation("America/Los_Angeles")
 	if err != nil {
-		log.Err(err, r)
+		zap.S().Error(err)
 	}
 
 	upcomingSales := []upcomingSale{
@@ -108,7 +108,7 @@ func salesHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	t.SaleTypes, err = mongo.GetUniqueSaleTypes()
-	log.Err(err, r)
+	zap.S().Error(err)
 
 	returnTemplate(w, r, "sales", t)
 }
@@ -190,10 +190,10 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	if len(scores) == 2 {
 
 		low, err := strconv.Atoi(strings.TrimSuffix(scores[0], ".00"))
-		log.Err(err, r)
+		zap.S().Error(err)
 
 		high, err := strconv.Atoi(strings.TrimSuffix(scores[1], ".00"))
-		log.Err(err, r)
+		zap.S().Error(err)
 
 		if low > 0 {
 			filter = append(filter, bson.E{Key: "app_rating", Value: bson.M{"$gte": low}})
@@ -208,10 +208,10 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	if len(prices) == 2 {
 
 		low, err := strconv.Atoi(strings.TrimSuffix(prices[0], ".00"))
-		log.Err(err, r)
+		zap.S().Error(err)
 
 		high, err := strconv.Atoi(strings.TrimSuffix(prices[1], ".00"))
-		log.Err(err, r)
+		zap.S().Error(err)
 
 		if low > 0 {
 			filter = append(filter, bson.E{Key: "app_prices." + string(code), Value: bson.M{"$gte": low * 100}})
@@ -226,10 +226,10 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	if len(discounts) == 2 {
 
 		low, err := strconv.Atoi(strings.TrimSuffix(discounts[0], ".00"))
-		log.Err(err, r)
+		zap.S().Error(err)
 
 		high, err := strconv.Atoi(strings.TrimSuffix(discounts[1], ".00"))
-		log.Err(err, r)
+		zap.S().Error(err)
 
 		if low > 0 {
 			filter = append(filter, bson.E{Key: "offer_percent", Value: bson.M{"$lte": -low}})
@@ -341,7 +341,7 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		offers, err = mongo.GetAllSales(query.GetOffset64(), 100, filter, order)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 			return
 		}
 	}()
@@ -358,7 +358,7 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		count, err = mongo.CountDocuments(mongo.CollectionAppSales, baseFilter, 0)
 		countLock.Unlock()
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 	}()
 
@@ -374,7 +374,7 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		filtered, err = mongo.CountDocuments(mongo.CollectionAppSales, filter, 0)
 		countLock.Unlock()
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 	}()
 

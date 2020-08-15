@@ -2,11 +2,11 @@ package tasks
 
 import (
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 type AppsQueueGroups struct {
@@ -41,7 +41,7 @@ func (c AppsQueueGroups) work() (err error) {
 			err = queue.ProduceGroup(queue.GroupMessage{ID: app.GroupID})
 			err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 			if err != nil {
-				log.Err(err)
+				zap.S().Error(err)
 				return
 			}
 		}

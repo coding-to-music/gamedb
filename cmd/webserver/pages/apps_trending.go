@@ -10,10 +10,10 @@ import (
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/influx"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 func trendingRouter() http.Handler {
@@ -73,7 +73,7 @@ func trendingAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		apps, err = mongo.GetApps(offset, 100, order, filter, projection)
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 	}()
 
@@ -89,7 +89,7 @@ func trendingAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		filtered, err = mongo.CountDocuments(mongo.CollectionApps, filter, 0)
 		countLock.Unlock()
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 	}()
 
@@ -105,7 +105,7 @@ func trendingAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		count, err = mongo.CountDocuments(mongo.CollectionApps, nil, 0)
 		countLock.Unlock()
 		if err != nil {
-			log.Err(err, r)
+			zap.S().Error(err)
 		}
 	}()
 
@@ -152,7 +152,7 @@ func trendingChartsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := influx.InfluxQuery(builder.String())
 	if err != nil {
-		log.Err(err, r, builder.String())
+		zap.S().Error(err, r, builder.String())
 		return
 	}
 

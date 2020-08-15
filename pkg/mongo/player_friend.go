@@ -6,10 +6,10 @@ import (
 
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.uber.org/zap"
 )
 
 type PlayerFriend struct {
@@ -144,7 +144,7 @@ func GetFriends(playerID int64, offset int64, limit int64, sort bson.D) (friends
 
 	defer func(cur *mongo.Cursor) {
 		err = cur.Close(ctx)
-		log.Err(err)
+		zap.S().Error(err)
 	}(cur)
 
 	for cur.Next(ctx) {
@@ -152,7 +152,7 @@ func GetFriends(playerID int64, offset int64, limit int64, sort bson.D) (friends
 		var friend PlayerFriend
 		err := cur.Decode(&friend)
 		if err != nil {
-			log.Err(err, friend.getKey())
+			zap.S().Error(err, friend.getKey())
 		} else {
 			friends = append(friends, friend)
 		}

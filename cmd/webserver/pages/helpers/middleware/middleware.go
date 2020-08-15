@@ -11,6 +11,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/go-chi/cors"
 	"github.com/justinas/nosurf"
+	"go.uber.org/zap"
 )
 
 func MiddlewareCSRF(h http.Handler) http.Handler {
@@ -45,7 +46,7 @@ func MiddlewareDownMessage(h http.Handler) http.Handler {
 			h.ServeHTTP(w, r)
 		} else {
 			_, err := w.Write([]byte(DownMessage))
-			log.Err(err)
+			zap.S().Error(err)
 		}
 	})
 }
@@ -62,7 +63,7 @@ func MiddlewareTime(next http.Handler) http.Handler {
 func MiddlewareLog(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if config.IsLocal() {
-			log.Info(log.LogNameRequests, r.Method+" "+r.URL.String())
+			zap.S().Info(log.LogNameRequests, r.Method+" "+r.URL.String())
 		}
 		next.ServeHTTP(w, r)
 	})

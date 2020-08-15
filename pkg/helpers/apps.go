@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gosimple/slug"
+	"go.uber.org/zap"
 )
 
 type ProductType string
@@ -79,7 +79,7 @@ func GetAppReleaseState(state string) (ret string) {
 	case "":
 		return "Unreleased"
 	default:
-		log.Warning("Missing state: " + state)
+		zap.S().Warn("Missing state: " + state)
 		return strings.Title(state)
 	}
 }
