@@ -197,7 +197,9 @@ func GetFirstInfluxInt(resp *influx.Response) int64 {
 			return v
 		case json.Number:
 			i, err := v.Int64()
-			zap.S().Error(err)
+			if err != nil {
+				zap.S().Error(err)
+			}
 			return i
 		default:
 			zap.S().Warn("Unknown type from Influx DB: " + reflect.TypeOf(v).String())

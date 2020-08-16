@@ -675,7 +675,9 @@ func GetApps(offset int64, limit int64, sort bson.D, filter bson.D, projection b
 
 	defer func() {
 		err = cur.Close(ctx)
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}()
 
 	for cur.Next(ctx) {

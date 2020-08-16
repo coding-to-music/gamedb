@@ -38,7 +38,9 @@ func publishersHandler(w http.ResponseWriter, r *http.Request) {
 	prices := map[int]string{}
 	for _, v := range publishers {
 		price, err := v.GetMeanPrice(code)
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 		prices[v.ID] = price
 	}
 

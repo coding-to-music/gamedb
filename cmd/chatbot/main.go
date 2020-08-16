@@ -183,7 +183,7 @@ func saveToInflux(m *discordgo.MessageCreate, command chatbot.Command) {
 		return
 	}
 
-	_, err := influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, influx.Point{
+	point := influx.Point{
 		Measurement: string(influxHelper.InfluxMeasurementChatBot),
 		Tags: map[string]string{
 			"guild_id":   m.GuildID,
@@ -197,8 +197,12 @@ func saveToInflux(m *discordgo.MessageCreate, command chatbot.Command) {
 		},
 		Time:      time.Now(),
 		Precision: "ms",
-	})
-	zap.S().Error(err)
+	}
+
+	_, err := influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, point)
+	if err != nil {
+		zap.S().Error(err)
+	}
 }
 
 func saveToMongo(m *discordgo.MessageCreate, command chatbot.Command, message string) {

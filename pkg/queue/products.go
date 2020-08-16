@@ -24,7 +24,9 @@ func getAppConfig(kv steamvdf.KeyValue) (config pics.PICSKeyValues, launch []pic
 			launch = getAppLaunch(v)
 		} else if len(v.Children) > 0 {
 			b, err := json.Marshal(v.ToMapOuter())
-			zap.S().Error(err)
+			if err != nil {
+				zap.S().Error(err)
+			}
 			config[v.Key] = string(b)
 		} else {
 			config[v.Key] = v.Value
@@ -52,7 +54,9 @@ func getAppDepots(kv steamvdf.KeyValue) (depots pics.Depots) {
 				depots.Extra[v.Key] = v.Value
 			} else {
 				b, err := json.Marshal(v.ToMapOuter())
-				zap.S().Error(err)
+				if err != nil {
+					zap.S().Error(err)
+				}
 				depots.Extra[v.Key] = string(b)
 			}
 
@@ -73,20 +77,28 @@ func getAppDepots(kv steamvdf.KeyValue) (depots pics.Depots) {
 				depot.Manifests = vv.GetChildrenAsMap()
 			case "encryptedmanifests":
 				b, err := json.Marshal(vv.ToMapOuter())
-				zap.S().Error(err)
+				if err != nil {
+					zap.S().Error(err)
+				}
 				depot.EncryptedManifests = string(b)
 			case "maxsize":
 				maxSize, err := strconv.ParseUint(vv.Value, 10, 64)
-				zap.S().Error(err)
+				if err != nil {
+					zap.S().Error(err)
+				}
 				depot.MaxSize = maxSize
 			case "dlcappid":
 				appID, err := strconv.Atoi(vv.Value)
-				zap.S().Error(err)
+				if err != nil {
+					zap.S().Error(err)
+				}
 				depot.DLCApp = appID
 			case "depotfromapp":
 				id := helpers.RegexNonInts.ReplaceAllString(vv.Value, "")
 				app, err := strconv.Atoi(id)
-				zap.S().Error(err)
+				if err != nil {
+					zap.S().Error(err)
+				}
 				depot.App = app
 			case "systemdefined":
 				if vv.Value == "1" {
@@ -135,11 +147,15 @@ func getAppDepotBranches(kv steamvdf.KeyValue) (branches []pics.AppDepotBranches
 			switch vv.Key {
 			case "buildid":
 				buildID, err := strconv.Atoi(vv.Value)
-				zap.S().Error(err)
+				if err != nil {
+					zap.S().Error(err)
+				}
 				branch.BuildID = buildID
 			case "timeupdated":
 				t, err := strconv.ParseInt(vv.Value, 10, 64)
-				zap.S().Error(err)
+				if err != nil {
+					zap.S().Error(err)
+				}
 				branch.TimeUpdated = t
 			case "defaultforsubs":
 				branch.DefaultForSubs = vv.Value
@@ -311,7 +327,9 @@ func saveProductPricesToMongo(before helpers.ProductInterface, after helpers.Pro
 		// 		err = slack.PostWebhook(config.Config.SlackSocialWebhook.Get(), &slack.WebhookMessage{
 		// 			Text: config.Config.GameDBDomain.Get() + before.GetPath(),
 		// 		})
+		// if err != nil {
 		// 		zap.S().Error(err)
+		// }
 		// 	}
 		// }
 	}

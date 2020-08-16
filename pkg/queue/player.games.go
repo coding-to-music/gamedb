@@ -142,11 +142,7 @@ func playerGamesHandler(message *rabbit.Message) {
 
 		//
 		playerApps[gameRow.ID].AppPrices = appPrices[gameRow.ID]
-		zap.S().Error(err)
-
-		//
 		playerApps[gameRow.ID].AppPriceHour = appPriceHour[gameRow.ID]
-		zap.S().Error(err)
 	}
 
 	update = append(update, bson.E{Key: "games_by_type", Value: gamesByType})
@@ -186,11 +182,15 @@ func playerGamesHandler(message *rabbit.Message) {
 			for _, v := range resp.Games {
 				if v.PlaytimeForever > 0 {
 					err = ProducePlayerAchievements(payload.PlayerID, v.AppID, payload.ForceAchievementsRefresh)
-					zap.S().Error(err)
+					if err != nil {
+						zap.S().Error(err)
+					}
 				}
 			}
 			err = ProducePlayerAchievements(payload.PlayerID, 0, false)
-			zap.S().Error(err)
+			if err != nil {
+				zap.S().Error(err)
+			}
 		}
 	}
 

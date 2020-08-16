@@ -151,7 +151,9 @@ func (c TasksGenres) work() (err error) {
 			}
 
 			db = db.Unscoped().FirstOrInit(&genre, mysql.Genre{ID: genreID})
-			zap.S().Error(db.Error)
+			if db.Error != nil {
+				zap.S().Error(db.Error)
+			}
 
 			genre.Name = v.name
 			genre.Apps = v.count
@@ -160,7 +162,9 @@ func (c TasksGenres) work() (err error) {
 			genre.DeletedAt = nil
 
 			db = db.Unscoped().Save(&genre)
-			zap.S().Error(db.Error)
+			if db.Error != nil {
+				zap.S().Error(db.Error)
+			}
 
 		}(k, v)
 

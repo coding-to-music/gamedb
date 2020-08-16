@@ -38,7 +38,9 @@ func genresHandler(w http.ResponseWriter, r *http.Request) {
 	prices := map[int]string{}
 	for _, v := range genres {
 		price, err := v.GetMeanPrice(session.GetProductCC(r))
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 		prices[v.ID] = price
 	}
 

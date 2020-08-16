@@ -29,9 +29,11 @@ func Unmarshal(data []byte, v interface{}) (err error) {
 		if len(data) > 1000 {
 			data = data[0:1000]
 		}
-		zap.S().Error(err.Error(), string(data))
+		zap.S().Error(err, string(data))
 	default:
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}
 
 	return err

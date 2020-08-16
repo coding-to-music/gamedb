@@ -113,7 +113,9 @@ func (cbt chatBotTemplate) Guilds() (guilds int) {
 		return count, nil
 	})
 
-	zap.S().Error(err)
+	if err != nil {
+		zap.S().Error(err)
+	}
 
 	return guilds
 }

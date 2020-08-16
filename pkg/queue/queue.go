@@ -334,7 +334,9 @@ func Init(definitions []QueueDefinition) {
 func sendToFailQueue(message *rabbit.Message) {
 
 	err := message.SendToQueueAndAck(ProducerChannels[QueueFailed], nil)
-	zap.S().Error(err)
+	if err != nil {
+		zap.S().Error(err)
+	}
 }
 
 func sendToRetryQueue(message *rabbit.Message) {
@@ -353,7 +355,9 @@ func sendToRetryQueueWithDelay(message *rabbit.Message, delay time.Duration) {
 	}
 
 	err := message.SendToQueueAndAck(ProducerChannels[QueueDelay], po)
-	zap.S().Error(err)
+	if err != nil {
+		zap.S().Error(err)
+	}
 }
 
 func sendToLastQueue(message *rabbit.Message) {
@@ -365,7 +369,9 @@ func sendToLastQueue(message *rabbit.Message) {
 	}
 
 	err := message.SendToQueueAndAck(ProducerChannels[queue], nil)
-	zap.S().Error(err)
+	if err != nil {
+		zap.S().Error(err)
+	}
 }
 
 // Producers

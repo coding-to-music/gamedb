@@ -49,7 +49,7 @@ func appsSearchHandler(message *rabbit.Message) {
 
 	} else {
 
-		zap.S().Error(err, message.Message.Body)
+		zap.S().Error(message.Message.Body)
 		sendToFailQueue(message)
 		return
 	}

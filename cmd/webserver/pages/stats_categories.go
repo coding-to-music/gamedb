@@ -39,7 +39,9 @@ func statsCategoriesHandler(w http.ResponseWriter, r *http.Request) {
 	prices := map[int]string{}
 	for _, category := range categories {
 		price, err := category.GetMeanPrice(code)
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 		prices[category.ID] = price
 	}
 

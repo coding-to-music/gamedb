@@ -60,7 +60,9 @@ func packageHandler(message *rabbit.Message) {
 	if !config.IsLocal() && !pack.ShouldUpdate() && pack.ChangeNumber >= payload.ChangeNumber {
 
 		s, err := durationfmt.Format(time.Since(pack.UpdatedAt), "%hh %mm")
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 
 		zap.S().Info("Skipping package, updated " + s + " ago")
 		message.Ack()
@@ -245,7 +247,9 @@ func packageHandler(message *rabbit.Message) {
 		if payload.ChangeNumber > 0 {
 
 			err := ProduceSteam(SteamMessage{AppIDs: pack.Apps})
-			zap.S().Error(err)
+			if err != nil {
+				zap.S().Error(err)
+			}
 		}
 	}()
 

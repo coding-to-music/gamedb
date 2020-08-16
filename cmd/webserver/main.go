@@ -76,7 +76,9 @@ func main() {
 			memcache.MemcacheCommitsPage(1).Key,
 		}
 		err = memcache.Delete(keys...)
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}
 
 	// Routes
@@ -247,7 +249,9 @@ func rootFileHandler(box *packr.Box, path string) func(w http.ResponseWriter, r 
 		if err != nil {
 			w.WriteHeader(404)
 			_, err := w.Write([]byte("Unable to read file."))
-			zap.S().Error(err)
+			if err != nil {
+				zap.S().Error(err)
+			}
 			return
 		}
 
@@ -271,6 +275,8 @@ func rootFileHandler(box *packr.Box, path string) func(w http.ResponseWriter, r 
 
 		// Output
 		_, err = w.Write(b)
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}
 }

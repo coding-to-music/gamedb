@@ -151,7 +151,9 @@ func (c TasksPublishers) work() (err error) {
 			}
 
 			db = db.Unscoped().FirstOrInit(&publisher, mysql.Publisher{ID: publisherID})
-			zap.S().Error(db.Error)
+			if db.Error != nil {
+				zap.S().Error(db.Error)
+			}
 
 			publisher.Name = v.name
 			publisher.Apps = v.count
@@ -160,7 +162,9 @@ func (c TasksPublishers) work() (err error) {
 			publisher.DeletedAt = nil
 
 			db = db.Unscoped().Save(&publisher)
-			zap.S().Error(db.Error)
+			if db.Error != nil {
+				zap.S().Error(db.Error)
+			}
 
 		}(k, v)
 

@@ -47,7 +47,6 @@ func appsPlayersHandler(message *rabbit.Message) {
 
 	} else {
 
-		zap.S().Error(err, message.Message.Body)
 		sendToFailQueue(message)
 		return
 	}

@@ -206,16 +206,22 @@ type errorTemplate struct {
 
 func getTemplateFuncMap() map[string]interface{} {
 	return template.FuncMap{
-		"bytes":        func(a uint64) string { return humanize.Bytes(a) },
-		"comma":        func(a int) string { return humanize.Comma(int64(a)) },
-		"comma64":      func(a int64) string { return humanize.Comma(a) },
-		"commaf":       func(a float64) string { return humanize.FormatFloat("#,###.##", a) },
-		"endsWith":     func(a string, b string) bool { return strings.HasSuffix(a, b) },
-		"htmlEscape":   func(text string) string { return html.EscapeString(text) },
-		"https":        func(link string) string { return strings.Replace(link, "http://", "https://", 1) },
-		"inc":          func(i int) int { return i + 1 },
-		"join":         func(a []string, glue string) string { return strings.Join(a, glue) },
-		"json":         func(v interface{}) (string, error) { b, err := json.Marshal(v); zap.S().Error(err); return string(b), err },
+		"bytes":      func(a uint64) string { return humanize.Bytes(a) },
+		"comma":      func(a int) string { return humanize.Comma(int64(a)) },
+		"comma64":    func(a int64) string { return humanize.Comma(a) },
+		"commaf":     func(a float64) string { return humanize.FormatFloat("#,###.##", a) },
+		"endsWith":   func(a string, b string) bool { return strings.HasSuffix(a, b) },
+		"htmlEscape": func(text string) string { return html.EscapeString(text) },
+		"https":      func(link string) string { return strings.Replace(link, "http://", "https://", 1) },
+		"inc":        func(i int) int { return i + 1 },
+		"join":       func(a []string, glue string) string { return strings.Join(a, glue) },
+		"json": func(v interface{}) (string, error) {
+			b, err := json.Marshal(v)
+			if err != nil {
+				zap.S().Error(err)
+			}
+			return string(b), err
+		},
 		"lower":        func(a string) string { return strings.ToLower(a) },
 		"max":          func(a int, b int) float64 { return math.Max(float64(a), float64(b)) },
 		"ordinalComma": func(i int) string { return helpers.OrdinalComma(i) },
@@ -292,13 +298,17 @@ func (t *globalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	userIDString := session.Get(r, session.SessionUserID)
 	if userIDString != "" {
 		t.UserID, err = strconv.Atoi(userIDString)
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}
 
 	playerIDString := session.Get(r, session.SessionPlayerID)
 	if playerIDString != "" {
 		t.PlayerID, err = strconv.ParseInt(playerIDString, 10, 64)
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}
 
 	userLevel := session.Get(r, session.SessionUserLevel)
@@ -356,7 +366,7 @@ func (t *globalTemplate) setRandomBackground(title bool, link bool) {
 
 	popularApps, err := mongo.PopularApps()
 	if err != nil {
-		zap.S().Error(err, t.request)
+		zap.S().Error(err)
 		return
 	}
 
@@ -407,7 +417,9 @@ func (t globalTemplate) GetUserJSON() string {
 	}
 
 	b, err := json.Marshal(stringMap)
-	zap.S().Error(err, t.request)
+	if err != nil {
+		zap.S().Error(err)
+	}
 
 	return string(b)
 }
@@ -454,20 +466,20 @@ func (t globalTemplate) GetCookieFlag(key string) interface{} {
 	if err == http.ErrNoCookie {
 		return false
 	} else if err != nil {
-		zap.S().Error(err, t.request)
+		zap.S().Error(err)
 		return false
 	}
 
 	c.Value, err = url.PathUnescape(c.Value)
 	if err != nil {
-		zap.S().Error(err, t.request)
+		zap.S().Error(err)
 		return false
 	}
 
 	var vals = map[string]interface{}{}
 	err = json.Unmarshal([]byte(c.Value), &vals)
 	if err != nil {
-		zap.S().Error(err, t.request)
+		zap.S().Error(err)
 		return false
 	}
 

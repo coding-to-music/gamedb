@@ -54,8 +54,12 @@ func error404(w http.ResponseWriter, _ *http.Request) {
 	w.WriteHeader(404)
 
 	b, err := json.Marshal(generated.MessageResponse{Message: "Invalid endpoint"})
-	zap.S().Error(err)
+	if err != nil {
+		zap.S().Error(err)
+	}
 
 	_, err = w.Write(b)
-	zap.S().Error(err)
+	if err != nil {
+		zap.S().Error(err)
+	}
 }

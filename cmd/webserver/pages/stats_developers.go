@@ -38,7 +38,9 @@ func developersHandler(w http.ResponseWriter, r *http.Request) {
 	prices := map[int]string{}
 	for _, v := range developers {
 		price, err := v.GetMeanPrice(session.GetProductCC(r))
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 		prices[v.ID] = price
 	}
 

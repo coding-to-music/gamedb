@@ -55,7 +55,9 @@ func apiGamedbJSONHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, err = w.Write(b)
-	zap.S().Error(err)
+	if err != nil {
+		zap.S().Error(err)
+	}
 }
 
 func apiSteamJSONHandler(w http.ResponseWriter, r *http.Request) {
@@ -73,5 +75,7 @@ func apiSteamJSONHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, err = w.Write(b)
-	zap.S().Error(err)
+	if err != nil {
+		zap.S().Error(err)
+	}
 }

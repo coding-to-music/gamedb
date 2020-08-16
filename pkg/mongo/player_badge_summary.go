@@ -123,7 +123,9 @@ func GetBadgeSummaries() (badges []PlayerBadgeSummary, err error) {
 
 	defer func() {
 		err = cur.Close(ctx)
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}()
 
 	for cur.Next(ctx) {

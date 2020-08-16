@@ -80,6 +80,8 @@ func (c AppsAddTagCountsToInflux) work() (err error) {
 		}
 
 		_, err = influxHelper.InfluxWriteMany(influxHelper.InfluxRetentionPolicyAllTime, batch)
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	})
 }

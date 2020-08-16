@@ -83,7 +83,9 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		err = helpers.IgnoreErrors(err, mongo.ErrInvalidAppID)
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the app."})
 		return
@@ -239,7 +241,9 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 				playerApp, err := mongo.GetPlayerAppByKey(playerID, app.ID)
 				if err != nil {
 					err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
-					zap.S().Error(err)
+					if err != nil {
+						zap.S().Error(err)
+					}
 					return
 				}
 
@@ -416,7 +420,9 @@ func appLocalizationHandler(w http.ResponseWriter, r *http.Request) {
 	err = mongo.FindOne(mongo.CollectionApps, bson.D{{"_id", id}}, nil, bson.M{"localization": 1}, &app)
 	if err != nil {
 		err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 		return
 	}
 
@@ -1036,7 +1042,9 @@ func appWishlistAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return hc, err
 	})
 
-	zap.S().Error(err)
+	if err != nil {
+		zap.S().Error(err)
+	}
 
 	returnJSON(w, r, hc)
 }
@@ -1107,7 +1115,9 @@ func appPlayersHeatmapAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return hc, err
 	})
 
-	zap.S().Error(err)
+	if err != nil {
+		zap.S().Error(err)
+	}
 
 	returnJSON(w, r, hc)
 }
@@ -1160,7 +1170,9 @@ func appTagsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return hc, err
 	})
 
-	zap.S().Error(err)
+	if err != nil {
+		zap.S().Error(err)
+	}
 
 	returnJSON(w, r, map[string]interface{}{
 		"counts": hc,
@@ -1225,7 +1237,9 @@ func appPlayersAjaxHandler(limit bool) func(http.ResponseWriter, *http.Request) 
 			return hc, err
 		})
 
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 
 		returnJSON(w, r, hc)
 	}
@@ -1313,7 +1327,9 @@ func appTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		total, err = mongo.CountDocuments(mongo.CollectionPlayerApps, playerAppFilter, 0)
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}()
 
 	// Wait

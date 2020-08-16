@@ -143,7 +143,9 @@ func (c StatsTags) work() (err error) {
 			}
 
 			db = db.Unscoped().FirstOrInit(&tag, mysql.Tag{ID: tagID})
-			zap.S().Error(db.Error)
+			if db.Error != nil {
+				zap.S().Error(db.Error)
+			}
 
 			tag.Name = v.name
 			tag.Apps = v.count
@@ -152,7 +154,9 @@ func (c StatsTags) work() (err error) {
 			tag.DeletedAt = nil
 
 			db = db.Unscoped().Save(&tag)
-			zap.S().Error(db.Error)
+			if db.Error != nil {
+				zap.S().Error(db.Error)
+			}
 
 		}(k, v)
 

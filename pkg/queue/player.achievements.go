@@ -142,7 +142,9 @@ func playerAchievementsHandler(message *rabbit.Message) {
 
 	if app.AchievementsCount == 0 {
 		err = memcache.Set(item.Key, item.Value, item.Expiration)
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}
 
 	// Get player
@@ -179,7 +181,9 @@ func playerAchievementsHandler(message *rabbit.Message) {
 
 		if resp.Error == "Requested app has no stats" {
 			err = memcache.Set(item.Key, item.Value, item.Expiration)
-			zap.S().Error(err)
+			if err != nil {
+				zap.S().Error(err)
+			}
 		}
 
 		message.Ack()

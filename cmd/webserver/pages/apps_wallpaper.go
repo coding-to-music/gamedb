@@ -23,7 +23,9 @@ func wallpaperHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, "Stats", "Some interesting Steam Store stats.")
 
 	apps, err := mongo.GetApps(0, 112, bson.D{{"player_peak_week", -1}}, nil, nil)
-	zap.S().Error(err)
+	if err != nil {
+		zap.S().Error(err)
+	}
 
 	for _, v := range apps {
 		if v.ID != 480 && v.ID != 218 {

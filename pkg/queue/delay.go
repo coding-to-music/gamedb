@@ -59,7 +59,9 @@ func writeToFile(message *rabbit.Message) {
 
 	defer func() {
 		err := f.Close()
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}()
 
 	if queue == nil {

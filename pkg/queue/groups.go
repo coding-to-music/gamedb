@@ -306,9 +306,12 @@ func updateGameGroup(id string, group *mongo.Group) (foundNumbers bool, err erro
 
 	// Summary
 	c.OnHTML("#summaryText", func(e *colly.HTMLElement) {
+
 		var err error
 		group.Summary, err = e.DOM.Html()
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 
 		if group.Summary == "No information given." {
 			group.Summary = ""
@@ -323,7 +326,9 @@ func updateGameGroup(id string, group *mongo.Group) (foundNumbers bool, err erro
 			if err == mongo.ErrNoDocuments {
 				zap.S().Warn(err, group.URL, "missing app has been queued")
 				err = ProduceSteam(SteamMessage{AppIDs: []int{i}})
-				zap.S().Error(err)
+				if err != nil {
+					zap.S().Error(err)
+				}
 			} else if err != nil {
 				zap.S().Error(err, group.URL)
 			} else {
@@ -426,9 +431,11 @@ func updateRegularGroup(id string, group *mongo.Group) (foundMembers bool, err e
 
 	// Summary
 	c.OnHTML("div.formatted_group_summary", func(e *colly.HTMLElement) {
+
 		summary, err := e.DOM.Html()
-		zap.S().Error(err)
-		if err == nil {
+		if err != nil {
+			zap.S().Error(err)
+		} else {
 			group.Summary = strings.TrimSpace(summary)
 		}
 	})
@@ -585,7 +592,9 @@ func getGroupType(id string) (groupType string, groupURL string, err error) {
 
 	defer func() {
 		err = resp.Body.Close()
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}()
 
 	if resp.StatusCode != 302 {

@@ -63,7 +63,9 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			commit, err := resp.Recv()
 			if err != nil {
 				err = helpers.IgnoreErrors(err, io.EOF)
-				zap.S().Error(err)
+				if err != nil {
+					zap.S().Error(err)
+				}
 				break
 			}
 
@@ -72,7 +74,9 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		return commits, err
 	})
-	zap.S().Error(err)
+	if err != nil {
+		zap.S().Error(err)
+	}
 
 	//
 	var total = config.Config.Commits.GetInt()

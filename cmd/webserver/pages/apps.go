@@ -71,7 +71,9 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.Tags, err = mysql.GetTagsForSelect()
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}()
 
 	// Get genres
@@ -82,7 +84,9 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.Genres, err = mysql.GetGenresForSelect()
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}()
 
 	// Get categories
@@ -93,7 +97,9 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.Categories, err = mysql.GetCategoriesForSelect()
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}()
 
 	// Get publishers
@@ -106,7 +112,9 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 
 			var err error
 			t.Publishers, err = mysql.GetPublishersForSelect()
-			zap.S().Error(err)
+			if err != nil {
+				zap.S().Error(err)
+			}
 
 			var publishersToLoad []int
 			for _, v := range val { // Loop IDs in URL
@@ -133,8 +141,9 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			publishers, err := mysql.GetPublishersByID(publishersToLoad, []string{"id", "name"})
-			zap.S().Error(err)
-			if err == nil {
+			if err != nil {
+				zap.S().Error(err)
+			} else {
 				t.Publishers = append(t.Publishers, publishers...)
 			}
 		}
@@ -154,7 +163,9 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 
 			var err error
 			t.Developers, err = mysql.GetDevelopersForSelect()
-			zap.S().Error(err)
+			if err != nil {
+				zap.S().Error(err)
+			}
 
 			var developersToLoad []int
 			for _, v := range val { // Loop IDs in URL
@@ -181,8 +192,9 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			developers, err := mysql.GetDevelopersByID(developersToLoad, []string{"id", "name"})
-			zap.S().Error(err)
-			if err == nil {
+			if err != nil {
+				zap.S().Error(err)
+			} else {
 				t.Developers = append(t.Developers, developers...)
 			}
 		}
@@ -262,14 +274,18 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		q := elastic.NewRangeQuery("prices." + string(code) + ".final")
 
 		low, err := strconv.Atoi(strings.Replace(prices[0], ".", "", 1))
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 		if err == nil && low > 0 {
 			lowCheck = true
 			q.From(low)
 		}
 
 		high, err := strconv.Atoi(strings.Replace(prices[1], ".", "", 1))
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 		if err == nil && high < 100*100 {
 			highCheck = true
 			q.To(high)
@@ -288,14 +304,18 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		q := elastic.NewRangeQuery("score")
 
 		low, err := strconv.Atoi(strings.TrimSuffix(scores[0], ".00"))
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 		if err == nil && low > 0 {
 			lowCheck = true
 			q.From(low)
 		}
 
 		high, err := strconv.Atoi(strings.TrimSuffix(scores[1], ".00"))
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 		if err == nil && high < 100 {
 			highCheck = true
 			q.To(high)

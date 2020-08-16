@@ -316,7 +316,7 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 		})
 
 		if db.Error != nil {
-			zap.S().Error(db.Error, r)
+			zap.S().Error(db.Error)
 			return "/settings", "", "Something went wrong saving your settings"
 		}
 
@@ -364,7 +364,7 @@ func settingsNewKeyHandler(w http.ResponseWriter, r *http.Request) {
 
 		db = db.Model(&user).Update("api_key", user.APIKey)
 		if db.Error != nil {
-			zap.S().Error(db.Error, r)
+			zap.S().Error(db.Error)
 			return "", "We had trouble saving your settings (1002)"
 		}
 

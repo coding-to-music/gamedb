@@ -66,7 +66,9 @@ func appHandler(message *rabbit.Message) {
 	if !config.IsLocal() && !app.ShouldUpdate() && app.ChangeNumber >= payload.ChangeNumber {
 
 		s, err := durationfmt.Format(time.Since(app.UpdatedAt), "%hh %mm")
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 
 		zap.S().Info("Skipping app, updated " + s + " ago")
 		message.Ack()
@@ -521,7 +523,9 @@ func updateAppDetails(app *mongo.App) (err error) {
 			app.DLCCount = len(response.Data.DLC)
 
 			err = ProduceDLC(app.ID, response.Data.DLC)
-			zap.S().Error(err)
+			if err != nil {
+				zap.S().Error(err)
+			}
 
 			// Packages
 			app.Packages = response.Data.Packages

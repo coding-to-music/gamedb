@@ -150,7 +150,9 @@ func (c StatsDevelopers) work() (err error) {
 			}
 
 			db = db.Unscoped().FirstOrInit(&developer, mysql.Developer{ID: developerInt})
-			zap.S().Error(db.Error)
+			if db.Error != nil {
+				zap.S().Error(db.Error)
+			}
 
 			developer.Name = v.name
 			developer.Apps = v.count
@@ -159,7 +161,9 @@ func (c StatsDevelopers) work() (err error) {
 			developer.DeletedAt = nil
 
 			db = db.Unscoped().Save(&developer)
-			zap.S().Error(db.Error)
+			if db.Error != nil {
+				zap.S().Error(db.Error)
+			}
 
 		}(k, v)
 

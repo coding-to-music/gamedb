@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
@@ -25,7 +24,9 @@ func addPackages() {
 	}
 	defer func() {
 		err = file.Close()
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}()
 
 	var (

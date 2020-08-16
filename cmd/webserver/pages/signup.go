@@ -143,7 +143,7 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 
 		db = db.Create(&user)
 		if db.Error != nil {
-			zap.S().Error(db.Error, r)
+			zap.S().Error(db.Error)
 			return "An error occurred", false
 		}
 

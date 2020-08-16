@@ -76,7 +76,9 @@ func groupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		total, err = mongo.CountDocuments(mongo.CollectionGroups, bson.D{{Key: "type", Value: helpers.GroupTypeGroup}}, 60*60*6)
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}()
 
 	wg.Wait()

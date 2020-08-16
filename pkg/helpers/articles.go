@@ -59,7 +59,9 @@ func GetArticleBody(body string) template.HTML {
 		updateArticleDom(doc)
 		var buf = bytes.NewBufferString("")
 		err := html.Render(buf, doc)
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 		body = buf.String()
 	}
 

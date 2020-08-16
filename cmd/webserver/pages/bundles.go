@@ -67,7 +67,9 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		db = db.Find(&bundles)
 
-		zap.S().Error(db.Error, r)
+		if db.Error != nil {
+			zap.S().Error(db.Error)
+		}
 	}(r)
 
 	// Get total

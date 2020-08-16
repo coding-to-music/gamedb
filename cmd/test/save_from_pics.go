@@ -26,7 +26,9 @@ func saveFromPics() error {
 			if icon != "" {
 
 				_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", app.ID}}, bson.D{{"icon", icon}})
-				zap.S().Error(err)
+				if err != nil {
+					zap.S().Error(err)
+				}
 			}
 		}
 

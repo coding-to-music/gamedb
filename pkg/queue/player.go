@@ -445,10 +445,14 @@ func updatePlayerRecentGames(player *mongo.Player, payload PlayerMessage) error 
 		if player.UpdatedAt.After(time.Now().Add(time.Hour * 24 * 13 * -1)) { // Just under 2 weeks
 			for _, v := range newAppsSlice {
 				err = ProducePlayerAchievements(player.ID, v.AppID, false)
-				zap.S().Error(err)
+				if err != nil {
+					zap.S().Error(err)
+				}
 			}
 			err = ProducePlayerAchievements(player.ID, 0, false)
-			zap.S().Error(err)
+			if err != nil {
+				zap.S().Error(err)
+			}
 		}
 	}
 

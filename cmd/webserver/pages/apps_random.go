@@ -168,7 +168,9 @@ func appsRandomHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.Tags, err = mysql.GetTagsForSelect()
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}()
 
 	wg.Wait()

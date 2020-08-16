@@ -105,7 +105,9 @@ func getArticles(offset int64, limit int64, filter bson.D, order bson.D, project
 
 	defer func() {
 		err = cur.Close(ctx)
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}()
 
 	for cur.Next(ctx) {

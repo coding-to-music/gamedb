@@ -96,11 +96,15 @@ func changesHandler(message *rabbit.Message) {
 
 	// Send websocket
 	err = sendChangesWebsocket(changeSlice, appMap, packageMap)
-	zap.S().Error(err)
+	if err != nil {
+		zap.S().Error(err)
+	}
 
 	// Send to Discord
 	// err = sendChangeToDiscord(changeSlice, appMap, packageMap)
+	// if err != nil {
 	// zap.S().Error(err)
+	// }
 
 	message.Ack()
 }
@@ -222,7 +226,9 @@ func sendChangeToDiscord(changes []*mongo.Change, appMap map[int]string, package
 			for _, message := range messages {
 				var msg = "Change " + strconv.Itoa(change.ID) + ": " + message
 				_, err := discordClient.ChannelMessageSend("574563721045606431", msg)
-				zap.S().Error(err)
+				if err != nil {
+					zap.S().Error(err)
+				}
 			}
 		}
 	}
