@@ -32,7 +32,7 @@ func GetClient() (*grpc.ClientConn, context.Context, error) {
 		if err != nil {
 			return nil, nil, err
 		}
-		ctx = context.TODO()
+		ctx = context.Background()
 	}
 
 	return conn, ctx, nil
