@@ -84,7 +84,9 @@ func SiteMapPagesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, err := sm.Write(w)
-	zap.S().Error(err)
+	if err != nil {
+		zap.S().Error(err)
+	}
 }
 
 func SiteMapGamesByPlayersHandler(w http.ResponseWriter, r *http.Request) {
@@ -174,13 +176,18 @@ func SiteMapPlayersByLevel(w http.ResponseWriter, r *http.Request) {
 	sm := sitemap.NewSitemap()
 
 	players, err := mongo.GetPlayers(0, 1000, bson.D{{Key: "level", Value: -1}}, nil, bson.M{"_id": 1, "persona_name": 1, "updated_at": 1})
-	zap.S().Error(err)
+	if err != nil {
+		zap.S().Error(err)
+	}
+
 	for _, player := range players {
 		sm.AddLocation(config.Config.GameDBDomain.Get()+player.GetPath(), player.UpdatedAt, sitemap.FrequencyWeekly, 0.9)
 	}
 
 	_, err = sm.Write(w)
-	zap.S().Error(err)
+	if err != nil {
+		zap.S().Error(err)
+	}
 }
 
 //noinspection GoUnusedParameter
@@ -189,13 +196,18 @@ func SiteMapPlayersByGamesCount(w http.ResponseWriter, r *http.Request) {
 	sm := sitemap.NewSitemap()
 
 	players, err := mongo.GetPlayers(0, 1000, bson.D{{Key: "games_count", Value: -1}}, nil, bson.M{"_id": 1, "persona_name": 1, "updated_at": 1})
-	zap.S().Error(err)
+	if err != nil {
+		zap.S().Error(err)
+	}
+
 	for _, player := range players {
 		sm.AddLocation(config.Config.GameDBDomain.Get()+player.GetPath(), player.UpdatedAt, sitemap.FrequencyWeekly, 0.9)
 	}
 
 	_, err = sm.Write(w)
-	zap.S().Error(err)
+	if err != nil {
+		zap.S().Error(err)
+	}
 }
 
 //noinspection GoUnusedParameter
@@ -204,13 +216,18 @@ func SiteMapGroups(w http.ResponseWriter, r *http.Request) {
 	sm := sitemap.NewSitemap()
 
 	groups, err := mongo.GetGroups(1000, 0, bson.D{{Key: "members", Value: -1}}, bson.D{{Key: "type", Value: helpers.GroupTypeGroup}}, bson.M{"_id": 1, "name": 1, "updated_at": 1})
-	zap.S().Error(err)
+	if err != nil {
+		zap.S().Error(err)
+	}
+
 	for _, v := range groups {
 		sm.AddLocation(config.Config.GameDBDomain.Get()+v.GetPath(), v.UpdatedAt, sitemap.FrequencyWeekly, 0.9)
 	}
 
 	_, err = sm.Write(w)
-	zap.S().Error(err)
+	if err != nil {
+		zap.S().Error(err)
+	}
 }
 
 func SiteMapBadges(w http.ResponseWriter, r *http.Request) {
@@ -225,5 +242,7 @@ func SiteMapBadges(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, err := sm.Write(w)
-	zap.S().Error(err)
+	if err != nil {
+		zap.S().Error(err)
+	}
 }

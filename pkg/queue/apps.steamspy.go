@@ -42,8 +42,10 @@ func appSteamspyHandler(message *rabbit.Message) {
 	query.Set("request", "appdetails")
 	query.Set("appid", strconv.Itoa(payload.AppID))
 
+	u := "https://steamspy.com/api.php?" + query.Encode()
+
 	steamspyLimiter.Take()
-	body, statusCode, err := helpers.GetWithTimeout("https://steamspy.com/api.php?"+query.Encode(), 0)
+	body, statusCode, err := helpers.GetWithTimeout(u, 0)
 	if err != nil {
 
 		if strings.Contains(err.Error(), "Client.Timeout exceeded while awaiting headers") ||
@@ -51,7 +53,7 @@ func appSteamspyHandler(message *rabbit.Message) {
 			strings.Contains(err.Error(), "connect: cannot assign requested address") {
 			zap.S().Info(err, payload.AppID)
 		} else {
-			zap.S().Error(err, payload.AppID)
+			zap.S().Error(err, payload.AppID, u)
 		}
 
 		sendToRetryQueueWithDelay(message, time.Second*10)
@@ -100,7 +102,7 @@ func appSteamspyHandler(message *rabbit.Message) {
 
 	_, err = mongo.UpdateOne(mongo.CollectionApps, filter, update)
 	if err != nil {
-		zap.S().Error(err, payload.AppID)
+		zap.S().Error(err, payload.AppID, u)
 		sendToRetryQueue(message)
 		return
 	}
@@ -108,7 +110,7 @@ func appSteamspyHandler(message *rabbit.Message) {
 	// Clear cache
 	err = memcache.Delete(memcache.MemcacheApp(payload.AppID).Key)
 	if err != nil {
-		zap.S().Error(err, payload.AppID)
+		zap.S().Error(err, payload.AppID, u)
 		sendToRetryQueue(message)
 		return
 	}
@@ -116,7 +118,7 @@ func appSteamspyHandler(message *rabbit.Message) {
 	// Update in Elastic
 	err = ProduceAppSearch(nil, payload.AppID)
 	if err != nil {
-		zap.S().Error(err, payload.AppID)
+		zap.S().Error(err, payload.AppID, u)
 		sendToRetryQueue(message)
 		return
 	}

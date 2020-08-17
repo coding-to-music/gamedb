@@ -726,7 +726,9 @@ func playerAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		playerAchievements, err = mongo.GetPlayerAchievements(playerID, query.GetOffset64(), query.GetOrderMongo(columns))
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}()
 
 	// Get total
@@ -794,7 +796,9 @@ func playerFriendsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		friends, err = mongo.GetFriends(playerIDInt, query.GetOffset64(), 100, query.GetOrderMongo(columns))
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}()
 
 	// Get total

@@ -48,7 +48,9 @@ func main() {
 		func(task tasks.TaskInterface) {
 			if task.Cron() != "" {
 				_, err := c.AddFunc(string(task.Cron()), func() { tasks.Run(task) })
-				zap.S().Error(err)
+				if err != nil {
+					zap.S().Error(err, task.ID())
+				}
 			}
 		}(task)
 	}

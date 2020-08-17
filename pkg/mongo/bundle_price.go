@@ -41,7 +41,9 @@ func GetBundlePrices(bundleID int) (prices []BundlePrice, err error) {
 
 	defer func(cur *mongo.Cursor) {
 		err = cur.Close(ctx)
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}(cur)
 
 	for cur.Next(ctx) {

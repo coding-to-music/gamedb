@@ -171,7 +171,9 @@ func groupTableAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		total, err = mongo.CountDocuments(mongo.CollectionPlayerGroups, bson.D{{"group_id", id}}, 60*60*6)
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}(r)
 
 	wg.Wait()
@@ -205,7 +207,7 @@ func groupAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var item = memcache.MemcacheGroupFollowersChart(id)
 	var hc influx.HighChartsJSON
 
-	err = memcache.GetSetInterface(item.Key, item.Expiration, &hc, func() (interface{}, error) {
+	callback := func() (interface{}, error) {
 
 		builder := influxql.NewBuilder()
 		builder.AddSelect(`max("members_count")`, "max_members_count")
@@ -230,9 +232,12 @@ func groupAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		return hc, err
-	})
+	}
 
-	zap.S().Error(err)
+	err = memcache.GetSetInterface(item.Key, item.Expiration, &hc, callback)
+	if err != nil {
+		zap.S().Error(err)
+	}
 
 	returnJSON(w, r, hc)
 }
