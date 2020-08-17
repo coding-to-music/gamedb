@@ -90,7 +90,7 @@ func appNewsHandler(message *rabbit.Message) {
 		articles = append(articles, news)
 		newsIDs = append(newsIDs, int64(v.GID))
 
-		err = ProduceArticlesSearch(AppsArticlesSearchMessage{
+		m := AppsArticlesSearchMessage{
 			ID:          int64(v.GID),
 			Title:       v.Title,
 			Body:        v.Contents,
@@ -99,8 +99,12 @@ func appNewsHandler(message *rabbit.Message) {
 			AppName:     app.Name,
 			AppIcon:     app.Icon,
 			ArticleIcon: news.ArticleIcon,
-		})
-		zap.S().Error(err)
+		}
+
+		err = ProduceArticlesSearch(m)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}
 
 	err = mongo.ReplaceArticles(articles)

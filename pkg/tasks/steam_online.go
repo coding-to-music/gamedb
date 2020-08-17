@@ -81,6 +81,8 @@ type steamPlayersStruct struct {
 func (sp steamPlayersStruct) int(s string) int {
 	s = strings.ReplaceAll(s, ",", "")
 	i, err := strconv.Atoi(s)
-	zap.S().Warn(err)
+	if err != nil {
+		zap.S().Warn(err)
+	}
 	return i
 }

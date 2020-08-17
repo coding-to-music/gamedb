@@ -520,7 +520,9 @@ func appReviewsHandler(w http.ResponseWriter, r *http.Request) {
 	err = mongo.FindOne(mongo.CollectionApps, bson.D{{"_id", id}}, nil, bson.M{"reviews": 1}, &app)
 	if err != nil {
 		err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 		return
 	}
 

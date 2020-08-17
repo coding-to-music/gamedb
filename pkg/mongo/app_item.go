@@ -155,7 +155,9 @@ func GetAppItems(offset int64, limit int64, filter bson.D, projection bson.M) (i
 
 	defer func() {
 		err = cur.Close(ctx)
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}()
 
 	for cur.Next(ctx) {

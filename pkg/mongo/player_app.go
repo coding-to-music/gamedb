@@ -186,7 +186,9 @@ func getPlayerApps(offset int64, limit int64, filter bson.D, sort bson.D, projec
 
 	defer func() {
 		err = cur.Close(ctx)
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}()
 
 	for cur.Next(ctx) {
@@ -252,7 +254,9 @@ func GetAppPlayersByCountry(appID int) (items []PlayerAppsByCountry, err error) 
 
 	defer func() {
 		err = cur.Close(ctx)
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}()
 
 	for cur.Next(ctx) {

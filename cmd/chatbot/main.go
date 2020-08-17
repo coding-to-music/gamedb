@@ -129,8 +129,8 @@ func main() {
 				}
 
 				// Rate limit
-				httpErr := tollbooth.LimitByKeys(lmt, []string{m.Author.ID})
-				if httpErr != nil {
+				err = tollbooth.LimitByKeys(lmt, []string{m.Author.ID})
+				if err != nil {
 					zap.S().Warn(m.Author.ID + " over chatbot rate limit")
 					return
 				}

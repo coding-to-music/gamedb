@@ -92,7 +92,9 @@ func requestWithTimeout(method string, link string, timeout time.Duration, heade
 
 	defer func() {
 		err := resp.Body.Close()
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}()
 
 	body, err = ioutil.ReadAll(resp.Body)

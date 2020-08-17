@@ -728,7 +728,9 @@ func GetRandomApps(count int, filter bson.D, projection bson.M) (apps []App, err
 
 	defer func() {
 		err = cur.Close(ctx)
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}()
 
 	for cur.Next(ctx) {
@@ -829,7 +831,9 @@ func GetAppsGroupedByType(code steamapi.ProductCC) (counts []AppTypeCount, err e
 
 		defer func() {
 			err = cur.Close(ctx)
-			zap.S().Error(err)
+			if err != nil {
+				zap.S().Error(err)
+			}
 		}()
 
 		var unknown int64
@@ -897,7 +901,9 @@ func GetAppsGroupedByReleaseDate() (counts []AppReleaseDateCount, err error) {
 
 		defer func() {
 			err = cur.Close(ctx)
-			zap.S().Error(err)
+			if err != nil {
+				zap.S().Error(err)
+			}
 		}()
 
 		var counts []AppReleaseDateCount
@@ -950,7 +956,9 @@ func GetAppsGroupedByReviewScore() (counts []AppReviewScoreCount, err error) {
 
 		defer func() {
 			err = cur.Close(ctx)
-			zap.S().Error(err)
+			if err != nil {
+				zap.S().Error(err)
+			}
 		}()
 
 		var counts []AppReviewScoreCount
