@@ -50,9 +50,7 @@ func CreateDelayQueueMessage(m *rabbit.Message) {
 	}
 }
 
-func GetDelayQueueMessages(offset int64) (messages []DelayQueueMessage, err error) {
-
-	var sort = bson.D{{"updated_at", -1}}
+func GetDelayQueueMessages(offset int64, sort bson.D) (messages []DelayQueueMessage, err error) {
 
 	cur, ctx, err := Find(CollectionDelayQueue, offset, 100, sort, nil, nil, nil)
 	if err != nil {

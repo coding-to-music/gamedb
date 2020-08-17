@@ -251,8 +251,17 @@ func adminDelaysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
+		var columns = map[string]string{
+			// "0": "created_at",
+			// "1": "updated_at",
+			"1": "attempt",
+			"2": "attempt",
+		}
+
+		var sort = query.GetOrderMongo(columns)
+
 		var err error
-		delays, err = mongo.GetDelayQueueMessages(query.GetOffset64())
+		delays, err = mongo.GetDelayQueueMessages(query.GetOffset64(), sort)
 		if err != nil {
 			zap.S().Error(err)
 		}
