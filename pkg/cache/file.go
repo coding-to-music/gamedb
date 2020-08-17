@@ -27,7 +27,9 @@ func GetSetCache(name string, ttl time.Duration, retrieve func() (interface{}, e
 
 	defer func() {
 		err = reader.Close()
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}()
 
 	// Read from cache
@@ -41,7 +43,9 @@ func GetSetCache(name string, ttl time.Duration, retrieve func() (interface{}, e
 	// Write to cache
 	defer func() {
 		err = writer.Close()
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}()
 
 	var buf bytes.Buffer

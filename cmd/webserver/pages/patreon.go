@@ -106,9 +106,14 @@ func gitHubWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	zap.S().Info(body, log.LogNameWebhooksGitHub)
+	zap.S().Info(string(body), log.LogNameWebhooksGitHub)
 
-	defer zap.S().Error(r.Body.Close())
+	defer func() {
+		err := r.Body.Close()
+		if err != nil {
+			zap.S().Error()
+		}
+	}()
 
 	//
 	var signature = r.Header.Get("X-Hub-Signature")

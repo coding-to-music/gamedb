@@ -88,7 +88,9 @@ func appReviewsHandler(message *rabbit.Message) {
 
 			err = ProducePlayer(PlayerMessage{ID: int64(review.Author.SteamID), SkipExistingPlayer: true})
 			err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
-			zap.S().Error(err)
+			if err != nil {
+				zap.S().Error(err)
+			}
 		}
 
 		// Remove extra new lines

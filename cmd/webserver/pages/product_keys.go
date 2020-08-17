@@ -32,7 +32,9 @@ func productKeysHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	keys, err := mysql.GetProductKeys()
-	zap.S().Error(err)
+	if err != nil {
+		zap.S().Error(err)
+	}
 
 	// Template
 	t := productKeysTemplate{}

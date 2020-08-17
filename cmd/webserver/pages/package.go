@@ -85,7 +85,9 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 
 		err = queue.ProduceSteam(queue.SteamMessage{AppIDs: missingAppIDs})
 		err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}()
 
 	var bundles []mysql.Bundle

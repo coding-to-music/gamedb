@@ -87,14 +87,18 @@ func (bundle Bundle) GetAppIDs() (ids []int, err error) {
 func (bundle Bundle) AppsCount() int {
 
 	apps, err := bundle.GetAppIDs()
-	zap.S().Error(err)
+	if err != nil {
+		zap.S().Error(err)
+	}
 	return len(apps)
 }
 
 func (bundle Bundle) GetPackageIDs() (ids []int) {
 
 	err := helpers.Unmarshal([]byte(bundle.PackageIDs), &ids)
-	zap.S().Error(err)
+	if err != nil {
+		zap.S().Error(err)
+	}
 
 	return ids
 }

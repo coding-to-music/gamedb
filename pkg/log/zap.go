@@ -86,7 +86,7 @@ func InitZap(logName LogName) {
 					Payload:   message,
 					Labels: map[string]string{
 						"env":    config.Config.Environment.Get(),
-						"commit": config.Config.CommitHash.Get(),
+						"commits": config.Config.CommitHash.Get(),
 						"key":    config.Config.SteamAPIKey.Get(),
 						"ip":     config.Config.IP.Get(),
 					},

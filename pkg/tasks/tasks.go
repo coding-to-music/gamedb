@@ -154,7 +154,9 @@ func Run(task TaskInterface) {
 	// Send start websocket
 	wsPayload := queue.AdminPayload{TaskID: task.ID(), Action: "started"}
 	err := queue.ProduceWebsocket(wsPayload, websockets.PageAdmin)
-	zap.S().Error(err)
+	if err != nil {
+		zap.S().Error(err)
+	}
 
 	// Do work
 	policy := backoff.NewConstantBackOff(time.Second * 30)
