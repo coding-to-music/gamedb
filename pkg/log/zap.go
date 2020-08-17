@@ -6,6 +6,7 @@ import (
 
 	"cloud.google.com/go/logging"
 	"github.com/gamedb/gamedb/pkg/config"
+	grpcZap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -95,6 +96,8 @@ func InitZap(logName LogName) {
 			return nil
 		}))
 	}
+
+	grpcZap.ReplaceGrpcLoggerV2WithVerbosity(logger, 2)
 
 	zap.ReplaceGlobals(logger)
 }
