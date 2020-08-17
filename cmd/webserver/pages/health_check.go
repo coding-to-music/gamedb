@@ -19,5 +19,7 @@ func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
 	_, err := w.Write([]byte("OK"))
-	zap.S().Error(err)
+	if err != nil {
+		zap.S().Error(err)
+	}
 }

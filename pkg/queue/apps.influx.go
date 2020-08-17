@@ -33,7 +33,7 @@ func appInfluxHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		zap.S().Error(err, message.Message.Body)
+		zap.S().Error(err, string(message.Message.Body))
 		sendToFailQueue(message)
 		return
 	}
@@ -45,28 +45,28 @@ func appInfluxHandler(message *rabbit.Message) {
 
 	// appPlayersWeekAverage, err := getAppAveragePlayersWeek(payload.AppIDs)
 	// if err != nil {
-	// 	zap.S().Error(err, message.Message.Body)
+	// 	zap.S().Error(err, string(message.Message.Body))
 	// 	sendToRetryQueue(message)
 	// 	return
 	// }
 
 	// appPlayersAlltime, err := getAppTopPlayersAlltime(payload.AppIDs)
 	// if err != nil {
-	// 	zap.S().Error(err, message.Message.Body)
+	// 	zap.S().Error(err, string(message.Message.Body))
 	// 	sendToRetryQueue(message)
 	// 	return
 	// }
 
 	appPlayersWeek, err := getAppTopPlayersWeek(payload.AppIDs)
 	if err != nil {
-		zap.S().Error(err, message.Message.Body)
+		zap.S().Error(err, string(message.Message.Body))
 		sendToRetryQueue(message)
 		return
 	}
 
 	appTrend, err := getAppTrendValue(payload.AppIDs)
 	if err != nil {
-		zap.S().Error(err, message.Message.Body)
+		zap.S().Error(err, string(message.Message.Body))
 		sendToRetryQueue(message)
 		return
 	}
@@ -106,7 +106,7 @@ func appInfluxHandler(message *rabbit.Message) {
 
 	err = mongoHelper.UpdateAppsInflux(writes)
 	if err != nil {
-		zap.S().Error(err, message.Message.Body)
+		zap.S().Error(err, string(message.Message.Body))
 		sendToRetryQueue(message)
 		return
 	}
@@ -119,7 +119,7 @@ func appInfluxHandler(message *rabbit.Message) {
 
 	err = memcache.Delete(items...)
 	if err != nil {
-		zap.S().Error(err, message.Message.Body)
+		zap.S().Error(err, string(message.Message.Body))
 		sendToRetryQueue(message)
 		return
 	}

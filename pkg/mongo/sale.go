@@ -194,7 +194,9 @@ func getSales(offset int64, limit int64, filter bson.D, sort bson.D, projection 
 
 	defer func() {
 		err = cur.Close(ctx)
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}()
 
 	for cur.Next(ctx) {

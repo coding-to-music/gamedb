@@ -144,7 +144,9 @@ func GetFriends(playerID int64, offset int64, limit int64, sort bson.D) (friends
 
 	defer func(cur *mongo.Cursor) {
 		err = cur.Close(ctx)
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}(cur)
 
 	for cur.Next(ctx) {

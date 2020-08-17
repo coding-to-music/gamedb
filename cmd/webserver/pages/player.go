@@ -246,7 +246,9 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 		if err != nil {
 			err = helpers.IgnoreErrors(err, mc.ErrNotFound)
-			zap.S().Error(err)
+			if err != nil {
+				zap.S().Error(err)
+			}
 		}
 	}()
 

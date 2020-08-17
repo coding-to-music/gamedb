@@ -1,7 +1,6 @@
 package queue
 
 import (
-	"errors"
 	"net/url"
 	"strconv"
 	"strings"
@@ -33,7 +32,7 @@ func appSteamspyHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		zap.S().Error(err, message.Message.Body)
+		zap.S().Error(err, string(message.Message.Body))
 		sendToFailQueue(message)
 		return
 	}
@@ -61,14 +60,14 @@ func appSteamspyHandler(message *rabbit.Message) {
 
 	if statusCode != 200 {
 
-		zap.S().Info(errors.New("steamspy is down"), payload.AppID)
+		zap.S().Info("steamspy is down", payload.AppID)
 		sendToRetryQueueWithDelay(message, time.Minute*30)
 		return
 	}
 
 	if strings.Contains(string(body), "Connection failed") {
 
-		zap.S().Info(errors.New("steamspy is down"), payload.AppID, body)
+		zap.S().Info("steamspy is down", payload.AppID, string(body))
 		sendToRetryQueueWithDelay(message, time.Minute*30)
 		return
 	}

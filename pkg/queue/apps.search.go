@@ -27,7 +27,7 @@ func appsSearchHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		zap.S().Error(err, message.Message.Body)
+		zap.S().Error(err, string(message.Message.Body))
 		sendToFailQueue(message)
 		return
 	}
@@ -38,7 +38,7 @@ func appsSearchHandler(message *rabbit.Message) {
 
 		mongoApp, err = mongo.GetApp(payload.AppID)
 		if err != nil {
-			zap.S().Error(err, message.Message.Body)
+			zap.S().Error(err, string(message.Message.Body))
 			sendToRetryQueue(message)
 			return
 		}

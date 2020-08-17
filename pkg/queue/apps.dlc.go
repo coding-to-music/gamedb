@@ -19,7 +19,7 @@ func appDLCHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		zap.S().Error(err, message.Message.Body)
+		zap.S().Error(err, string(message.Message.Body))
 		sendToFailQueue(message)
 		return
 	}

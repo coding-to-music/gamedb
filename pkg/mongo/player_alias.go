@@ -78,7 +78,9 @@ func GetPlayerAliases(playerID int64, limit int64, afterTimestamp int64) (aliase
 
 	defer func() {
 		err = cur.Close(ctx)
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}()
 
 	for cur.Next(ctx) {

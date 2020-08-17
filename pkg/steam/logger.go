@@ -15,5 +15,7 @@ func (l steamLogger) Info(s string) {
 }
 
 func (l steamLogger) Err(e error) {
-	zap.S().Error(e)
+	if e != nil {
+		zap.S().Error(e)
+	}
 }

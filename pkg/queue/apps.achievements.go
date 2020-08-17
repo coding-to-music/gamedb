@@ -28,7 +28,7 @@ func appAchievementsHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		zap.S().Error(err, message.Message.Body)
+		zap.S().Error(err, string(message.Message.Body))
 		sendToFailQueue(message)
 		return
 	}
@@ -103,7 +103,7 @@ func appAchievementsHandler(message *rabbit.Message) {
 	//
 	// 	_, err = mongo.UpdateManySet(mongo.CollectionPlayerAchievements, filter, update)
 	// 	if err != nil {
-	// 		zap.S().Error(err, message.Message.Body)
+	// 		zap.S().Error(err, string(message.Message.Body))
 	// 	}
 	// }
 
@@ -128,7 +128,9 @@ func appAchievementsHandler(message *rabbit.Message) {
 	// Update in Elastic
 	for _, v := range achievementsSlice {
 		err = ProduceAchievementSearch(v, payload.AppName, payload.AppOwners)
-		zap.S().Error(err)
+		if err!=nil{
+			zap.S().Error(err)
+		}
 	}
 
 	// Update app row

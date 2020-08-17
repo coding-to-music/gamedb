@@ -24,14 +24,14 @@ func appWishlistsHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		zap.S().Error(err, message.Message.Body)
+		zap.S().Error(err, string(message.Message.Body))
 		sendToFailQueue(message)
 		return
 	}
 
 	playerWishlists, err := mongo.GetPlayerWishlistAppsByApp(payload.AppID)
 	if err != nil {
-		zap.S().Error(err, message.Message.Body)
+		zap.S().Error(err, string(message.Message.Body))
 		sendToRetryQueue(message)
 		return
 	}
@@ -59,7 +59,7 @@ func appWishlistsHandler(message *rabbit.Message) {
 	// Get percent of players
 	wishlistPlayers, err := mongo.CountDocuments(mongo.CollectionPlayers, nil, 60*60)
 	if err != nil {
-		zap.S().Error(err, message.Message.Body)
+		zap.S().Error(err, string(message.Message.Body))
 		sendToRetryQueue(message)
 		return
 	}
@@ -87,7 +87,7 @@ func appWishlistsHandler(message *rabbit.Message) {
 
 	_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, point)
 	if err != nil {
-		zap.S().Error(err, message.Message.Body)
+		zap.S().Error(err, string(message.Message.Body))
 		sendToRetryQueue(message)
 		return
 	}
