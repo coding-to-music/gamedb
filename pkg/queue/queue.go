@@ -11,7 +11,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/websockets"
@@ -74,21 +73,6 @@ const (
 	QueueTest        rabbit.QueueName = "GDB_Test"
 	QueueWebsockets  rabbit.QueueName = "GDB_Websockets"
 )
-
-func init() {
-	rabbit.SetLogInfo(func(i ...interface{}) {
-		i = append(i, log.LogNameRabbit)
-		// zap.S().Info(i...)
-	})
-	rabbit.SetLogWarning(func(i ...interface{}) {
-		i = append(i, log.LogNameRabbit)
-		zap.S().Warn(i...)
-	})
-	rabbit.SetLogError(func(i ...interface{}) {
-		i = append(i, log.LogNameRabbit)
-		zap.S().Error(i...)
-	})
-}
 
 //noinspection GoUnusedGlobalVariable
 var (
@@ -266,9 +250,24 @@ func Init(definitions []QueueDefinition) {
 	}
 
 	// Producers
-	producerConnection, err := rabbit.NewConnection(config.RabbitDSN(), rabbit.Producer, amqp.Config{Heartbeat: heartbeat, Properties: map[string]interface{}{
-		"connection_name": config.Config.Environment.Get() + "-" + string(rabbit.Consumer) + "-" + config.GetSteamKeyTag(),
-	}})
+	c := rabbit.ConnectionConfig{
+		Address:  config.RabbitDSN(),
+		ConnType: rabbit.Producer,
+		Config: amqp.Config{
+			Heartbeat: heartbeat,
+			Properties: map[string]interface{}{
+				"connection_name": config.Config.Environment.Get() + "-" + string(rabbit.Consumer) + "-" + config.GetSteamKeyTag(),
+			},
+		},
+		LogInfo: func(i ...interface{}) {
+			// zap.S().Info(i...)
+		},
+		LogError: func(i ...interface{}) {
+			zap.S().Error(i...)
+		},
+	}
+
+	producerConnection, err := rabbit.NewConnection(c)
 	if err != nil {
 		zap.S().Info(err)
 		return
@@ -298,9 +297,24 @@ func Init(definitions []QueueDefinition) {
 	// Consumers
 	if consume {
 
-		consumerConnection, err := rabbit.NewConnection(config.RabbitDSN(), rabbit.Consumer, amqp.Config{Heartbeat: heartbeat, Properties: map[string]interface{}{
-			"connection_name": config.Config.Environment.Get() + "-" + string(rabbit.Consumer) + "-" + config.GetSteamKeyTag(),
-		}})
+		c = rabbit.ConnectionConfig{
+			Address:  config.RabbitDSN(),
+			ConnType: rabbit.Consumer,
+			Config: amqp.Config{
+				Heartbeat: heartbeat,
+				Properties: map[string]interface{}{
+					"connection_name": config.Config.Environment.Get() + "-" + string(rabbit.Consumer) + "-" + config.GetSteamKeyTag(),
+				},
+			},
+			LogInfo: func(i ...interface{}) {
+				// zap.S().Info(i...)
+			},
+			LogError: func(i ...interface{}) {
+				zap.S().Error(i...)
+			},
+		}
+
+		consumerConnection, err := rabbit.NewConnection(c)
 		if err != nil {
 			zap.S().Info(err)
 			return

@@ -8,7 +8,7 @@ require (
 	github.com/Jleagle/go-durationfmt v0.0.0-20190307132420-e57bfad84057
 	github.com/Jleagle/influxql v0.0.0-20200804190929-88324f67bffe
 	github.com/Jleagle/patreon-go v0.0.0-20200718083332-7a4c740e9bd3
-	github.com/Jleagle/rabbit-go v0.0.0-20200806115746-f6db71454274
+	github.com/Jleagle/rabbit-go v0.0.0-20200817121941-9caf6baf3218
 	github.com/Jleagle/recaptcha-go v0.0.0-20200117124940-d00b2c62c076
 	github.com/Jleagle/session-go v0.0.0-20190515070633-3c8712426233
 	github.com/Jleagle/sitemap-go v0.0.0-20190405195207-2bdddbb3bd50
