@@ -274,3 +274,70 @@ if ($('#admin-patreon-page').length > 0) {
         }
     );
 }
+
+if ($('#admin-delays-page').length > 0) {
+
+    const options = {
+        "order": [[0, 'desc']],
+        "createdRow": function (row, data, dataIndex) {
+            $(row).addClass('cursor-pointer');
+        },
+        "columnDefs": [
+            // First Seen
+            {
+                'targets': 0,
+                'render': function (data, type, row) {
+                    return row[1];
+                },
+                'orderable': false,
+            },
+            // Last Seen
+            {
+                'targets': 1,
+                'render': function (data, type, row) {
+                    return row[2];
+                },
+                'orderable': false,
+            },
+            // Queue
+            {
+                'targets': 2,
+                'render': function (data, type, row) {
+                    return row[3];
+                },
+                'orderable': false,
+            },
+            // Attempt
+            {
+                'targets': 3,
+                'render': function (data, type, row) {
+                    return row[4].toLocaleString();
+                },
+                'orderable': false,
+            },
+        ]
+    };
+
+    const $table = $('table.table');
+    const dt = $table.gdbTable({tableOptions: options});
+
+    $table.on('click', 'tbody tr[role=row]', function () {
+
+            const row = dt.row($(this));
+
+            // noinspection JSUnresolvedFunction
+            if (row.child.isShown()) {
+
+                row.child.hide();
+                $(this).removeClass('shown');
+
+            } else {
+
+                const rowx = row.data()[5];
+
+                row.child('<pre>' + JSON.stringify(rowx, null, '  ') + '</pre>').show();
+                $(this).addClass('shown');
+            }
+        }
+    );
+}

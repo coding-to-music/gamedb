@@ -39,6 +39,8 @@ func AdminRouter() http.Handler {
 	r.Get("/consumers.json", adminConsumersAjaxHandler)
 	r.Get("/patreon", adminPatreonHandler)
 	r.Get("/patreon.json", adminPatreonAjaxHandler)
+	r.Get("/delays", adminDelaysHandler)
+	r.Get("/delays.json", adminDelaysAjaxHandler)
 	r.Get("/queues", adminQueuesHandler)
 	r.Post("/queues", adminQueuesHandler)
 	r.Get("/settings", adminSettingsHandler)
@@ -225,6 +227,71 @@ func adminConsumersHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type adminConsumersTemplate struct {
+	globalTemplate
+}
+
+func adminDelaysHandler(w http.ResponseWriter, r *http.Request) {
+
+	t := adminDelaysTemplate{}
+	t.fill(w, r, "Admin", "Admin")
+
+	returnTemplate(w, r, "admin/delays", t)
+}
+
+func adminDelaysAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	query := datatable.NewDataTableQuery(r, false)
+
+	var wg sync.WaitGroup
+
+	// Get delays
+	var delays []mongo.DelayQueueMessage
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		delays, err = mongo.GetDelayQueueMessages(query.GetOffset64())
+		if err != nil {
+			zap.S().Error(err)
+		}
+	}()
+
+	// Get count
+	var count int64
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		count, err = mongo.CountDocuments(mongo.CollectionDelayQueue, nil, 0)
+		if err != nil {
+			zap.S().Error(err)
+		}
+	}()
+
+	// Wait
+	wg.Wait()
+
+	var response = datatable.NewDataTablesResponse(r, query, count, count, nil)
+	for _, app := range delays {
+
+		response.AddRow([]interface{}{
+			app.UUID,                              // 0
+			app.CreatedAt.Format(helpers.DateSQL), // 1
+			app.UpdatedAt.Format(helpers.DateSQL), // 2
+			app.Queue,                             // 3
+			app.Attempt,                           // 4
+			app.Message,                           // 5
+		})
+	}
+
+	returnJSON(w, r, response)
+}
+
+type adminDelaysTemplate struct {
 	globalTemplate
 }
 

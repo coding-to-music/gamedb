@@ -40,6 +40,7 @@ const (
 	CollectionBundlePrices        collection = "bundle_prices"
 	CollectionChangeItems         collection = "change_products"
 	CollectionChanges             collection = "changes"
+	CollectionDelayQueue          collection = "delay_queue"
 	CollectionEvents              collection = "events"
 	CollectionGroups              collection = "groups"
 	CollectionPatreonWebhooks     collection = "patreon_webhooks"
@@ -245,6 +246,21 @@ func UpdateOne(collection collection, filter bson.D, update bson.D) (resp *mongo
 	resp, err = client.Database(MongoDatabase, options.Database()).
 		Collection(collection.String()).
 		UpdateOne(ctx, filter, bson.M{"$set": update}, options.Update())
+
+	return resp, err
+}
+
+// DOES upsert
+func UpdateOneWithInsert(collection collection, filter bson.D, update bson.D, onInsert bson.D) (resp *mongo.UpdateResult, err error) {
+
+	client, ctx, err := getMongo()
+	if err != nil {
+		return resp, nil
+	}
+
+	resp, err = client.Database(MongoDatabase, options.Database()).
+		Collection(collection.String()).
+		UpdateOne(ctx, filter, bson.M{"$set": update, "$setOnInsert": onInsert}, options.Update().SetUpsert(true))
 
 	return resp, err
 }

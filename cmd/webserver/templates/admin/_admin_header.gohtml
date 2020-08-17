@@ -44,6 +44,14 @@
             </li>
 
             <li class="nav-item">
+                {{if endsWith .Path "/delays" }}
+                    <span class="nav-link active" role="tab">Delays</span>
+                {{else}}
+                    <a class="nav-link" href="/admin/delays" role="tab">Delays</a>
+                {{end}}
+            </li>
+
+            <li class="nav-item">
                 {{if endsWith .Path "/sql-bin-logs" }}
                     <span class="nav-link active" role="tab">SQL Bin Logs</span>
                 {{else}}
