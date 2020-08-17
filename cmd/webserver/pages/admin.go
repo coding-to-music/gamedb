@@ -235,6 +235,13 @@ func adminDelaysHandler(w http.ResponseWriter, r *http.Request) {
 	t := adminDelaysTemplate{}
 	t.fill(w, r, "Admin", "Admin")
 
+	// Remove expired messages
+	_, err := mongo.DeleteMany(mongo.CollectionDelayQueue, bson.D{{"updated_at", bson.M{"$lt": time.Now().Add(queue.MaxDelay * -1)}}})
+	if err != nil {
+		zap.S().Error(err)
+	}
+
+	//
 	returnTemplate(w, r, "admin/delays", t)
 }
 
@@ -276,15 +283,6 @@ func adminDelaysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		count, err = mongo.CountDocuments(mongo.CollectionDelayQueue, nil, 0)
-		if err != nil {
-			zap.S().Error(err)
-		}
-	}()
-
-	// Remove expired messages
-	go func() {
-
-		_, err := mongo.DeleteMany(mongo.CollectionDelayQueue, bson.D{{"updated_at", bson.M{"$lt": time.Now().Add(queue.MaxDelay * -1)}}})
 		if err != nil {
 			zap.S().Error(err)
 		}
