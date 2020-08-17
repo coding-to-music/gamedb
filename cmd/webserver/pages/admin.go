@@ -272,6 +272,15 @@ func adminDelaysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
+	// Remove expired messages
+	go func() {
+
+		_, err := mongo.DeleteMany(mongo.CollectionDelayQueue, bson.D{{"updated_at", bson.M{"$lt": time.Now().Add(queue.MaxDelay * -1)}}})
+		if err != nil {
+			zap.S().Error(err)
+		}
+	}()
+
 	// Wait
 	wg.Wait()
 

@@ -6,7 +6,11 @@ import (
 
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"go.uber.org/zap"
+)
+
+const (
+	MaxDelay = time.Hour * 6
+	minDelay = time.Second * 10
 )
 
 func delayHandler(message *rabbit.Message) {
@@ -26,21 +30,13 @@ func delayHandler(message *rabbit.Message) {
 	}
 
 	// If first seen time is before incremental backoff
-	var min = time.Second * 10
-	var max = time.Hour * 6
-
 	var seconds float64
 	seconds = math.Pow(2, float64(message.Attempt()))
-	seconds = math.Min(seconds, max.Seconds())
-	seconds = math.Max(seconds, min.Seconds())
+	seconds = math.Min(seconds, MaxDelay.Seconds())
+	seconds = math.Max(seconds, minDelay.Seconds())
 
 	// Requeue
 	if message.FirstSeen().Add(time.Second * time.Duration(int64(seconds))).Before(time.Now()) {
-
-		if seconds >= max.Seconds() {
-			zap.S().Warn("Max delay: " + string(message.LastQueue()) + ": " + string(message.Message.Body))
-		}
-
 		sendToLastQueue(message)
 	} else {
 		sendToRetryQueue(message)
