@@ -2,10 +2,12 @@ package backend
 
 import (
 	"context"
+	"path"
 	"sync"
 
 	"github.com/gamedb/gamedb/pkg/config"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 )
 
 var (
@@ -21,8 +23,12 @@ func GetClient() (*grpc.ClientConn, context.Context, error) {
 
 	if conn == nil {
 
-		var err error
-		conn, err = grpc.Dial(config.Config.BackendClientPort.Get(), grpc.WithInsecure())
+		creds, err := credentials.NewClientTLSFromFile(path.Join(config.Config.InfraPath.Get(), "/grpc/domain.crt"), "")
+		if err != nil {
+			return nil, nil, err
+		}
+
+		conn, err = grpc.Dial(config.Config.BackendClientPort.Get(), grpc.WithTransportCredentials(creds))
 		if err != nil {
 			return nil, nil, err
 		}

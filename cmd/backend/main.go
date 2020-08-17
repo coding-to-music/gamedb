@@ -2,6 +2,7 @@ package main
 
 import (
 	"net"
+	"path"
 
 	"github.com/gamedb/gamedb/pkg/backend"
 	"github.com/gamedb/gamedb/pkg/config"
@@ -9,6 +10,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 )
 
 var version string
@@ -25,7 +27,15 @@ func main() {
 		return
 	}
 
-	grpcServer := grpc.NewServer()
+	base := path.Join(config.Config.InfraPath.Get(), "/grpc")
+	creds, err := credentials.NewServerTLSFromFile(path.Join(base+"/domain.crt"), base+"/domain.key")
+	if err != nil {
+		zap.S().Error(err)
+		return
+	}
+
+	grpcServer := grpc.NewServer(grpc.Creds(creds))
+
 	backend.RegisterAppsServiceServer(grpcServer, AppsServer{})
 	backend.RegisterPlayersServiceServer(grpcServer, PlayersServer{})
 	backend.RegisterGitHubServiceServer(grpcServer, GithubServer{})
