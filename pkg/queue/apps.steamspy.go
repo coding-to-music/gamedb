@@ -79,7 +79,7 @@ func appSteamspyHandler(message *rabbit.Message) {
 	err = helpers.Unmarshal(body, &resp)
 	if err != nil {
 
-		zap.S().Info(err, payload.AppID, body)
+		zap.S().Info(err, payload.AppID, helpers.TruncateString(string(body), 200, "..."))
 		sendToRetryQueueWithDelay(message, time.Minute*30)
 		return
 	}
