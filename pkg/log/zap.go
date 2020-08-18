@@ -6,7 +6,6 @@ import (
 
 	"cloud.google.com/go/logging"
 	"github.com/gamedb/gamedb/pkg/config"
-	grpcZap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -46,7 +45,11 @@ func InitZap(logName LogName) {
 		logger, _ = zap.NewProduction()
 	}
 
-	if !config.IsLocal() {
+	if config.IsLocal() {
+
+		// grpcZap.ReplaceGrpcLoggerV2(logger)
+
+	} else {
 
 		googleClient, err := logging.NewClient(context.Background(), config.Config.GoogleProject.Get())
 		if err != nil {
@@ -96,8 +99,6 @@ func InitZap(logName LogName) {
 			return nil
 		}))
 	}
-
-	grpcZap.ReplaceGrpcLoggerV2WithVerbosity(logger, 4)
 
 	zap.ReplaceGlobals(logger)
 }
