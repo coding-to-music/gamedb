@@ -128,7 +128,11 @@
 
                                         <tr data-link-tab="players">
                                             <th scope="row" class="thin">Players</th>
-                                            <td>{{ comma64 .PlayersInGame }} <small>now</small>, {{ comma .App.PlayerPeakWeek }} <small>week peak</small></td>
+                                            <td>
+                                                {{ comma64 .PlayersInGame }} <small>Last 10 minutes</small><br>
+                                                {{ comma .App.PlayerPeakWeek }} <small>Last 7 days</small><br>
+                                                {{ comma .App.PlayerPeakAllTime }} <small>All time @ {{ .App.GetPeakTimeNice }}</small>
+                                            </td>
                                         </tr>
 
                                         {{ if ne .App.GroupID "" }}

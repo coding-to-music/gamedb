@@ -519,6 +519,10 @@ func (app App) GetUpdatedNice() string {
 	return app.UpdatedAt.Format(helpers.DateYearTime)
 }
 
+func (app App) GetPeakTimeNice() string {
+	return app.PlayerPeakAllTimeTime.Format(helpers.DateYearTime)
+}
+
 func (app App) ShouldUpdate() bool {
 
 	return app.UpdatedAt.Before(time.Now().Add(time.Hour * 24 * -1))
