@@ -97,7 +97,7 @@ func InitZap(logName LogName) {
 		}))
 	}
 
-	grpcZap.ReplaceGrpcLoggerV2WithVerbosity(logger, 2)
+	grpcZap.ReplaceGrpcLoggerV2WithVerbosity(logger, 4)
 
 	zap.ReplaceGlobals(logger)
 }
