@@ -286,12 +286,18 @@ if ($('#admin-delays-page').length > 0) {
             //     'render': function (data, type, row) {
             //         return row[1];
             //     },
+            //     "createdCell": function (td, cellData, rowData, row, col) {
+            //         $(td).attr('nowrap', 'nowrap');
+            //     },
             // },
             // Queue
             {
                 'targets': 0,
                 'render': function (data, type, row) {
                     return row[3];
+                },
+                "createdCell": function (td, cellData, rowData, row, col) {
+                    $(td).attr('nowrap', 'nowrap');
                 },
                 'orderable': false,
             },
@@ -300,6 +306,9 @@ if ($('#admin-delays-page').length > 0) {
                 'targets': 1,
                 'render': function (data, type, row) {
                     return row[2];
+                },
+                "createdCell": function (td, cellData, rowData, row, col) {
+                    $(td).attr('nowrap', 'nowrap');
                 },
                 "orderSequence": ["desc", "asc"],
             },
