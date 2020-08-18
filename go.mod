@@ -32,8 +32,7 @@ require (
 	github.com/derekstavis/go-qs v0.0.0-20180720192143-9eef69e6c4e7
 	github.com/dghubble/go-twitter v0.0.0-20200725221434-4bc8ad7ad1b4
 	github.com/dghubble/oauth1 v0.6.0
-	github.com/didip/tollbooth v4.0.2+incompatible
-	github.com/didip/tollbooth/v5 v5.2.0
+	github.com/didip/tollbooth/v6 v6.0.1
 	github.com/digitalocean/godo v1.42.1
 	github.com/djherbis/fscache v0.10.1
 	github.com/dustin/go-humanize v1.0.0
@@ -63,7 +62,6 @@ require (
 	github.com/kennygrant/sanitize v1.2.4 // indirect
 	github.com/klauspost/compress v1.10.11 // indirect
 	github.com/lib/pq v1.3.0 // indirect
-	github.com/logrusorgru/aurora v2.0.3+incompatible
 	github.com/mailru/easyjson v0.7.3 // indirect
 	github.com/mattn/go-runewidth v0.0.9 // indirect
 	github.com/mattn/go-sqlite3 v2.0.1+incompatible // indirect
@@ -77,7 +75,6 @@ require (
 	github.com/olivere/elastic/v7 v7.0.19
 	github.com/oschwald/maxminddb-golang v1.7.0
 	github.com/pariz/gountries v0.0.0-20200430155801-1c6a393df9c7
-	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
 	github.com/powerslacker/ratelimit v0.0.0-20190505003410-df2fcffc8e0d
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/russross/blackfriday v2.0.0+incompatible
