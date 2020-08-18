@@ -28,7 +28,7 @@ func main() {
 	}
 
 	base := path.Join(config.Config.InfraPath.Get(), "/grpc")
-	creds, err := credentials.NewServerTLSFromFile(path.Join(base+"/domain.crt"), base+"/domain.key")
+	creds, err := credentials.NewServerTLSFromFile(path.Join(base+"/root.crt"), base+"/root.key")
 	if err != nil {
 		zap.S().Error(err)
 		return

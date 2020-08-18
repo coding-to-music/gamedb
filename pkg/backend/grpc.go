@@ -23,7 +23,7 @@ func GetClient() (*grpc.ClientConn, context.Context, error) {
 
 	if conn == nil {
 
-		creds, err := credentials.NewClientTLSFromFile(path.Join(config.Config.InfraPath.Get(), "/grpc/domain.crt"), "")
+		creds, err := credentials.NewClientTLSFromFile(path.Join(config.Config.InfraPath.Get(), "/grpc/app.crt"), "")
 		if err != nil {
 			return nil, nil, err
 		}
