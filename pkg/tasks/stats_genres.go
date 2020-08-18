@@ -120,7 +120,9 @@ func (c TasksGenres) work() (err error) {
 		}
 
 		err := mysql.DeleteGenres(genresToDeleteSlice)
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}()
 
 	wg.Wait()

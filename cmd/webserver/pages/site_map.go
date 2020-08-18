@@ -34,7 +34,9 @@ func SiteMapIndexHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, err := sm.Write(w)
-	zap.S().Error(err)
+	if err != nil {
+		zap.S().Error(err)
+	}
 }
 
 //noinspection GoUnusedParameter

@@ -102,7 +102,9 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		user, err := mysql.GetUserByKey("email", email, 0)
 		if err != nil {
 			err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
-			zap.S().Error(err)
+			if err != nil {
+				zap.S().Error(err)
+			}
 			return "Incorrect credentials", false
 		}
 

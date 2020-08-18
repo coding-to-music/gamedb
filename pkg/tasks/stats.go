@@ -23,7 +23,9 @@ func (t statsRow) getMeanPrice() string {
 	}
 
 	bytes, err := json.Marshal(means)
-	zap.S().Error(err)
+	if err != nil {
+		zap.S().Error(err)
+	}
 
 	return string(bytes)
 }

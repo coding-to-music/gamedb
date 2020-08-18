@@ -44,7 +44,9 @@ func salesHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.Tags, err = mysql.GetTagsForSelect()
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}()
 
 	// Count players
@@ -57,7 +59,9 @@ func salesHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.AppTypes, err = mongo.GetAppsGroupedByType(code)
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}()
 
 	wg.Add(1)
@@ -67,7 +71,9 @@ func salesHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.HighestOrder, err = mongo.GetHighestSaleOrder()
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}()
 
 	// Get categories
@@ -78,7 +84,9 @@ func salesHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		t.Categories, err = mysql.GetCategoriesForSelect()
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}()
 
 	// Upcoming days
@@ -108,7 +116,9 @@ func salesHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	t.SaleTypes, err = mongo.GetUniqueSaleTypes()
-	zap.S().Error(err)
+	if err != nil {
+		zap.S().Error(err)
+	}
 
 	returnTemplate(w, r, "sales", t)
 }

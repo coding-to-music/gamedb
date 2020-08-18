@@ -119,7 +119,9 @@ func (c StatsDevelopers) work() (err error) {
 		}
 
 		err := mysql.DeleteDevelopers(devsToDeleteSlice)
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}()
 
 	wg.Wait()

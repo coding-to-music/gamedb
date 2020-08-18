@@ -112,7 +112,9 @@ func (c StatsTags) work() (err error) {
 		}
 
 		err := mysql.DeleteTags(tagsToDeleteSlice)
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}()
 
 	wg.Wait()

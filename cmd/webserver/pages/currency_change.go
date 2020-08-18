@@ -17,8 +17,6 @@ func CurrencyHandler(w http.ResponseWriter, r *http.Request) {
 		id = string(steamapi.ProductCCUS)
 	}
 
-	var err error
-
 	if i18n.IsValidProdCC(steamapi.ProductCC(id)) {
 
 		// Set to session
@@ -28,13 +26,14 @@ func CurrencyHandler(w http.ResponseWriter, r *http.Request) {
 		user, err := getUserFromSession(r)
 		if err == nil {
 			user.ProductCC = steamapi.ProductCC(id)
-			err2 := user.Save()
-			zap.S().Error(err2, r)
+			err = user.Save()
+			if err != nil {
+				zap.S().Error(err, r)
+			}
 		}
 
 	} else {
 		session.SetFlash(r, session.SessionGood, "Invalid currency")
-		zap.S().Error(err)
 	}
 
 	// Save session

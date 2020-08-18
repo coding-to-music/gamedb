@@ -661,7 +661,9 @@ func playerRecentAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		apps, err = mongo.GetRecentApps(id, query.GetOffset64(), 100, query.GetOrderMongo(columns))
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}()
 
 	// Get total

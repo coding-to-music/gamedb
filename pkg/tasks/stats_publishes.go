@@ -120,7 +120,9 @@ func (c TasksPublishers) work() (err error) {
 		}
 
 		err := mysql.DeletePublishers(pubsToDeleteSlice)
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}()
 
 	wg.Wait()
