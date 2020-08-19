@@ -79,7 +79,7 @@ func GetAppReleaseState(state string) (ret string) {
 	case "":
 		return "Unreleased"
 	default:
-		zap.S().Warn("Missing state: " + state)
+		zap.L().Warn("Missing state: " + state)
 		return strings.Title(state)
 	}
 }

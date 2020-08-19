@@ -113,7 +113,7 @@ func main() {
 			case steam.FatalErrorEvent:
 
 				// Disconnects
-				zap.S().Info("Steam: Disconnected:", e.Error())
+				zap.L().Info("Steam: Disconnected:", zap.Error(e))
 				steamLoggedOn = false
 				go steamClient.Connect()
 

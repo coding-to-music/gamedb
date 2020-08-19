@@ -18,7 +18,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/influx"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
@@ -127,7 +126,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		err = queue.ProduceSteam(queue.SteamMessage{AppIDs: []int{app.ID}})
 		if err == nil {
 			t.addToast(Toast{Title: "Update", Message: "App has been queued for an update", Success: true})
-			zap.S().Info(log.LogNameTriggerUpdate, r, r.UserAgent())
+			zap.L().Info("app queued", zap.String("ua", r.UserAgent()))
 		}
 		err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 		if err != nil {
@@ -572,7 +571,7 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		articles, err = mongo.GetArticles(query.GetOffset64(), 100, bson.D{{"date", -1}}, filter2)
 		if err != nil {
-			zap.S().Error(err, r, id)
+			zap.S().Error(err, id)
 			return
 		}
 	}()
@@ -1030,7 +1029,7 @@ func appWishlistAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		resp, err := influx.InfluxQuery(builder.String())
 		if err != nil {
-			zap.S().Error(err, r, builder.String())
+			zap.L().Error(err.Error(), zap.String("query", builder.String()))
 			return hc, err
 		}
 
@@ -1074,7 +1073,7 @@ func appPlayersHeatmapAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		resp, err := influx.InfluxQuery(builder.String())
 		if err != nil {
-			zap.S().Error(err, r, builder.String())
+			zap.L().Error(err.Error(), zap.String("query", builder.String()))
 			return hc, err
 		}
 
@@ -1160,7 +1159,7 @@ func appTagsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		resp, err := influx.InfluxQuery(builder.String())
 		if err != nil {
-			zap.S().Error(err, r, builder.String())
+			zap.L().Error(err.Error(), zap.String("query", builder.String()))
 			return hc, err
 		}
 
@@ -1227,7 +1226,7 @@ func appPlayersAjaxHandler(limit bool) func(http.ResponseWriter, *http.Request) 
 
 			resp, err := influx.InfluxQuery(builder.String())
 			if err != nil {
-				zap.S().Error(err, r, builder.String())
+				zap.L().Error(err.Error(), zap.String("query", builder.String()))
 				return hc, err
 			}
 
@@ -1384,7 +1383,7 @@ func appReviewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := influx.InfluxQuery(builder.String())
 	if err != nil {
-		zap.S().Error(err, r, builder.String())
+		zap.L().Error(err.Error(), zap.String("query", builder.String()))
 		return
 	}
 

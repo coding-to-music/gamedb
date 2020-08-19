@@ -36,7 +36,7 @@ func appSteamspyHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		zap.S().Error(err, string(message.Message.Body))
+		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToFailQueue(message)
 		return
 	}
@@ -73,7 +73,7 @@ func appSteamspyHandler(message *rabbit.Message) {
 
 	if strings.Contains(string(body), "Connection failed") {
 
-		zap.S().Info("steamspy is down", payload.AppID, string(body))
+		zap.L().Info("steamspy is down", zap.Int("app", payload.AppID), zap.ByteString("bytes", body))
 		sendToRetryQueueWithDelay(message, time.Minute*30)
 		return
 	}

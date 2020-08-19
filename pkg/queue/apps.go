@@ -38,7 +38,7 @@ func appHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		zap.S().Error(err, string(message.Message.Body))
+		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToFailQueue(message)
 		return
 	}
@@ -81,7 +81,7 @@ func appHandler(message *rabbit.Message) {
 	//
 	err = updateAppPICS(&app, message, payload)
 	if err != nil {
-		zap.S().Error(err, string(message.Message.Body))
+		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToRetryQueue(message)
 		return
 	}
@@ -464,7 +464,7 @@ func updateAppPICS(app *mongo.App, message *rabbit.Message, payload AppMessage) 
 			}
 
 		default:
-			zap.S().Warn(child.Key + " field in app PICS ignored (App: " + strconv.Itoa(app.ID) + ")")
+			zap.L().Warn(child.Key + " field in app PICS ignored (App: " + strconv.Itoa(app.ID) + ")")
 		}
 	}
 

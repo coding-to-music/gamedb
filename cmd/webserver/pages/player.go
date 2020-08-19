@@ -16,7 +16,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/influx"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
@@ -74,7 +73,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		ua := r.UserAgent()
 		err = queue.ProducePlayer(queue.PlayerMessage{ID: id, UserAgent: &ua})
 		if err == nil {
-			zap.S().Info(log.LogNameTriggerUpdate, r, "new", ua)
+			zap.L().Info("player queued", zap.String("ua", ua))
 		}
 		err = helpers.IgnoreErrors(err, memcache.ErrInQueue, queue.ErrIsBot)
 		if err != nil {
@@ -191,9 +190,11 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 			err = helpers.IgnoreErrors(err, mongo.ErrInvalidAppID)
 			if err == mongo.ErrNoDocuments {
 				err = queue.ProduceSteam(queue.SteamMessage{AppIDs: []int{player.BackgroundAppID}})
-				zap.S().Error(err, r, player.BackgroundAppID)
+				if err != nil {
+					zap.S().Error(err, player.BackgroundAppID)
+				}
 			} else if err != nil {
-				zap.S().Error(err, r, player.BackgroundAppID)
+				zap.S().Error(err, player.BackgroundAppID)
 			}
 		}()
 	}
@@ -296,7 +297,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		ua := r.UserAgent()
 		err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID, UserAgent: &ua})
 		if err == nil {
-			zap.S().Info(log.LogNameTriggerUpdate, r, ua)
+			zap.L().Info("player queued", zap.String("ua", ua))
 			t.addToast(Toast{Title: "Update", Message: "Player has been queued for an update", Success: true})
 		}
 		err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
@@ -524,7 +525,7 @@ func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
 		ua := r.UserAgent()
 		err = queue.ProducePlayer(queue.PlayerMessage{ID: friendID, UserAgent: &ua})
 		if err == nil {
-			zap.S().Info(log.LogNameTriggerUpdate, r, ua)
+			zap.L().Info("player queued", zap.String("ua", ua))
 		}
 		err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
 		if err != nil {
@@ -1150,7 +1151,7 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		ua := r.UserAgent()
 		err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID, UserAgent: &ua})
 		if err == nil {
-			zap.S().Info(log.LogNameTriggerUpdate, r, ua)
+			zap.L().Info("player queued", zap.String("ua", ua))
 		}
 		err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
 		if err != nil {
@@ -1180,7 +1181,7 @@ func playersHistoryAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "id")
 	if id == "" {
-		zap.S().Error("invalid id", r)
+		zap.S().Error("invalid id")
 		return
 	}
 
@@ -1208,7 +1209,7 @@ func playersHistoryAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := influx.InfluxQuery(builder.String())
 	if err != nil {
-		zap.S().Error(err, r, builder.String())
+		zap.L().Error(err.Error(), zap.String("query", builder.String()))
 		return
 	}
 

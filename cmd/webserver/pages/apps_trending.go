@@ -152,7 +152,7 @@ func trendingChartsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := influx.InfluxQuery(builder.String())
 	if err != nil {
-		zap.S().Error(err, r, builder.String())
+		zap.L().Error(err.Error(), zap.String("query", builder.String()))
 		return
 	}
 

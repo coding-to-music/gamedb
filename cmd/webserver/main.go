@@ -43,7 +43,7 @@ func main() {
 
 	//
 	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
-		zap.S().Fatal("GOOGLE_APPLICATION_CREDENTIALS not found")
+		zap.L().Fatal("GOOGLE_APPLICATION_CREDENTIALS not found")
 		os.Exit(1)
 	}
 
@@ -190,10 +190,11 @@ func main() {
 	// 404
 	r.NotFound(pages.Error404Handler)
 
-	zap.S().Info(
+	zap.L().Info(
 		"Starting Webserver on "+"http://"+config.FrontendPort(),
 		zap.String("env", config.Config.Environment.Get()),
-		zap.String("commit", config.Config.Commits.Get()),
+		zap.String("commits", config.Config.Commits.Get()),
+		zap.String("hash", config.Config.CommitHash.Get()),
 		zap.String("key", config.Config.SteamAPIKey.Get()),
 		zap.String("ip", config.Config.IP.Get()),
 	)

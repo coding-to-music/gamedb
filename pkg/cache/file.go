@@ -38,7 +38,7 @@ func GetSetCache(name string, ttl time.Duration, retrieve func() (interface{}, e
 		return dec.Decode(val)
 	}
 
-	zap.S().Info("Saving " + name + " to cache")
+	zap.L().Info("Saving " + name + " to cache")
 
 	// Write to cache
 	defer func() {

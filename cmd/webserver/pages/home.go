@@ -160,18 +160,26 @@ func homeTweetsHandler(w http.ResponseWriter, r *http.Request) {
 	t := true
 	f := false
 
-	tweets, resp, err := twitterHelper.GetTwitter().Timelines.UserTimeline(&twitter.UserTimelineParams{
+	params := &twitter.UserTimelineParams{
 		ScreenName:      "gamedbonline",
 		Count:           10,
 		ExcludeReplies:  &t,
 		IncludeRetweets: &f,
-	})
+	}
 
-	zap.S().Error(err)
-	zap.S().Error(resp.Body.Close())
+	tweets, resp, err := twitterHelper.GetTwitter().Timelines.UserTimeline(params)
+	if err != nil {
+		zap.S().Error(err)
+	}
+
+	defer func() {
+		err = resp.Body.Close()
+		if err != nil {
+			zap.S().Error(err)
+		}
+	}()
 
 	zap.S().Info(tweets)
-
 }
 
 func homeSalesHandler(w http.ResponseWriter, r *http.Request) {

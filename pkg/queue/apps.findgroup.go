@@ -31,7 +31,7 @@ func appsFindGroupHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		zap.S().Error(err, string(message.Message.Body))
+		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToFailQueue(message)
 		return
 	}
@@ -62,7 +62,7 @@ func appsFindGroupHandler(message *rabbit.Message) {
 
 	_, err = mongo.UpdateOne(mongo.CollectionApps, filter, update)
 	if err != nil {
-		zap.S().Error(err, string(message.Message.Body))
+		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToRetryQueue(message)
 		return
 	}
@@ -70,7 +70,7 @@ func appsFindGroupHandler(message *rabbit.Message) {
 	// Clear cache
 	err = memcache.Delete(memcache.MemcacheApp(payload.AppID).Key)
 	if err != nil {
-		zap.S().Error(err, string(message.Message.Body))
+		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToRetryQueue(message)
 		return
 	}

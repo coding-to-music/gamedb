@@ -202,7 +202,7 @@ func GetFirstInfluxInt(resp *influx.Response) int64 {
 			}
 			return i
 		default:
-			zap.S().Warn("Unknown type from Influx DB: " + reflect.TypeOf(v).String())
+			zap.L().Warn("Unknown type from Influx DB: " + reflect.TypeOf(v).String())
 		}
 	}
 
@@ -225,7 +225,7 @@ func GetFirstInfluxFloat(resp *influx.Response) float64 {
 			zap.S().Error(err)
 			return i
 		default:
-			zap.S().Warn("Unknown type from Influx DB: " + reflect.TypeOf(v).String())
+			zap.L().Warn("Unknown type from Influx DB: " + reflect.TypeOf(v).String())
 		}
 	}
 

@@ -8,7 +8,6 @@ import (
 
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
@@ -253,7 +252,7 @@ func (bc baseConnection) callback(r *http.Request, c ConnectionInterface, event 
 				ua := r.UserAgent()
 				err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID, UserAgent: &ua})
 				if err == nil {
-					zap.S().Info(log.LogNameTriggerUpdate, r, ua)
+					zap.L().Info("player queued", zap.String("ua", ua))
 				}
 				err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
 				if err != nil {

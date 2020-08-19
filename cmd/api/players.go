@@ -29,9 +29,9 @@ func (s Server) GetPlayersId(w http.ResponseWriter, r *http.Request) {
 			if err == mongo.ErrNoDocuments {
 
 				ua := r.UserAgent()
-				err2 := queue.ProducePlayer(queue.PlayerMessage{ID: id, UserAgent: &ua})
-				if err2 != nil {
-					zap.S().Error(err2)
+				err = queue.ProducePlayer(queue.PlayerMessage{ID: id, UserAgent: &ua})
+				if err != nil {
+					zap.S().Error(err)
 				}
 
 				return 404, "player not found, trying to add player"

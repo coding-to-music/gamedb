@@ -43,7 +43,7 @@ func main() {
 
 	// Append the client certificates from the CA
 	if ok := certPool.AppendCertsFromPEM(ca); !ok {
-		zap.S().Errorf("failed to append client certs")
+		zap.S().Error("failed to append client certs")
 		return
 	}
 
@@ -68,7 +68,7 @@ func main() {
 	backend.RegisterPlayersServiceServer(grpcServer, PlayersServer{})
 	backend.RegisterGitHubServiceServer(grpcServer, GithubServer{})
 
-	zap.S().Info("Starting Backend on " + config.Config.BackendHostPort.Get())
+	zap.L().Info("Starting Backend on " + config.Config.BackendHostPort.Get())
 
 	err = grpcServer.Serve(lis)
 	if err != nil {

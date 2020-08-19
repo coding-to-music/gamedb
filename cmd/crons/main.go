@@ -55,7 +55,7 @@ func main() {
 		}(task)
 	}
 
-	zap.S().Info("Starting crons")
+	zap.L().Info("Starting crons")
 	c.Run() // Blocks
 }
 

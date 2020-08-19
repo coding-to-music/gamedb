@@ -10,7 +10,6 @@ import (
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/influx"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
@@ -97,7 +96,7 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 		ua := r.UserAgent()
 		err = queue.ProduceGroup(queue.GroupMessage{ID: group.ID, UserAgent: &ua})
 		if err == nil {
-			zap.S().Info(log.LogNameTriggerUpdate, r, ua)
+			zap.L().Info("group queued", zap.String("ua", ua))
 			t.addToast(Toast{Title: "Update", Message: "Group has been queued for an update", Success: true})
 		}
 		err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
@@ -222,7 +221,7 @@ func groupAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		resp, err := influx.InfluxQuery(builder.String())
 		if err != nil {
-			zap.S().Error(err, r, builder.String())
+			zap.L().Error(err.Error(), zap.String("query", builder.String()))
 			return hc, err
 		}
 

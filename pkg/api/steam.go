@@ -167,7 +167,7 @@ func addInterfaceToSwagger(swagger *openapi3.Swagger, interfacex *steamapi.APIIn
 		case http.MethodPost:
 			swagger.Paths[path] = &openapi3.PathItem{Get: operation}
 		default:
-			zap.S().Warn("new http method")
+			zap.L().Warn("new http method")
 		}
 	}
 }

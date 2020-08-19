@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/Jleagle/go-durationfmt"
-	"github.com/gamedb/gamedb/pkg/log"
 	"go.uber.org/zap"
 )
 
@@ -36,19 +35,17 @@ func (ql QueryLogger) End() {
 			diffFormatted = diff.String()
 		}
 
-		var is = []interface{}{
-			log.LogNameMongo,
-			"Mongo call taking " + diffFormatted,
-			ql.method,
-			ql.collection,
+		var is = []zap.Field{
+			zap.String("method", ql.method),
+			zap.String("collection", ql.collection),
 		}
 
 		b, _ := json.Marshal(ql.filter)
-		is = append(is, string(b))
+		is = append(is, zap.ByteString("filter", b))
 
 		b, _ = json.Marshal(ql.sort)
-		is = append(is, string(b))
+		is = append(is, zap.ByteString("sort", b))
 
-		zap.S().Warn(is...)
+		zap.L().Warn("Mongo call taking "+diffFormatted, is...)
 	}
 }

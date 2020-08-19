@@ -117,20 +117,20 @@ func rebuildIndex(index string, mapping map[string]interface{}) {
 		return
 	}
 
-	zap.S().Info("Deteing " + index)
+	zap.L().Info("Deteing " + index)
 	resp, err := client.DeleteIndex(index).Do(ctx)
 	if err != nil {
 		zap.S().Info(err)
 		return
 	}
 	if !resp.Acknowledged {
-		zap.S().Info("delete not acknowledged")
+		zap.L().Info("delete not acknowledged")
 		return
 	}
 
 	// time.Sleep(time.Second)
 
-	zap.S().Info("Creating " + index)
+	zap.L().Info("Creating " + index)
 	createIndexResp, err := client.CreateIndex(index).BodyJson(mapping).Do(ctx)
 	if err != nil {
 		zap.S().Info(err)
@@ -138,8 +138,9 @@ func rebuildIndex(index string, mapping map[string]interface{}) {
 	}
 
 	if !createIndexResp.Acknowledged {
-		zap.S().Info("create not acknowledged")
+		zap.L().Info("create not acknowledged")
 		return
 	}
-	zap.S().Info("Indexes rebuilt")
+
+	zap.L().Info("Indexes rebuilt")
 }

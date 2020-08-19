@@ -34,11 +34,11 @@ func main() {
 	config.Init(version, commits, helpers.GetIP())
 	log.InitZap(log.LogNameChatbot)
 
-	zap.S().Info("Starting chatbot")
+	zap.L().Info("Starting chatbot")
 
 	// Profiling
 	if !config.IsConsumer() {
-		zap.S().Info("Starting chatbot profiling")
+		zap.L().Info("Starting chatbot profiling")
 		go func() {
 			err := http.ListenAndServe(":6061", nil)
 			zap.S().Fatal(err)
@@ -53,7 +53,7 @@ func main() {
 	}
 
 	if !config.IsProd() && !config.IsLocal() {
-		zap.S().Error("Prod & local only")
+		zap.L().Error("Prod & local only")
 		return
 	}
 
@@ -131,7 +131,7 @@ func main() {
 				// Rate limit
 				err = tollbooth.LimitByKeys(lmt, []string{m.Author.ID})
 				if err != nil {
-					zap.S().Warn(m.Author.ID+" over chatbot rate limit", msg)
+					zap.L().Warn("over chatbot rate limit", zap.String("author", m.Author.ID), zap.String("msg", msg))
 					return
 				}
 

@@ -7,7 +7,6 @@ import (
 
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
@@ -148,7 +147,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 		err = queue.ProduceSteam(queue.SteamMessage{PackageIDs: []int{pack.ID}})
 		if err == nil {
 			t.addToast(Toast{Title: "Update", Message: "Package has been queued for an update", Success: true})
-			zap.S().Info(log.LogNameTriggerUpdate, r, r.UserAgent())
+			zap.L().Info("package queued", zap.String("ua", r.UserAgent()))
 		}
 		err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 		if err != nil {

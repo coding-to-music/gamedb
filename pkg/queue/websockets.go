@@ -21,7 +21,7 @@ func websocketHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		zap.S().Error(err, string(message.Message.Body))
+		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToFailQueue(message)
 		return
 	}
@@ -156,7 +156,7 @@ func websocketHandler(message *rabbit.Message) {
 			}
 
 		default:
-			zap.S().Error("no handler for page: " + string(page))
+			zap.L().Error("no handler for page: " + string(page))
 		}
 	}
 

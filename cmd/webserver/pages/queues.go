@@ -59,7 +59,7 @@ func queuesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		resp, err := influx.InfluxQuery(builder.String())
 		if err != nil {
-			zap.S().Error(builder.String(), r)
+			zap.S().Error(builder.String())
 			return highcharts, err
 		}
 

@@ -31,7 +31,7 @@ func main() {
 
 	generated.HandlerFromMux(Server{}, r)
 
-	zap.S().Info("Starting API on " + "http://" + config.APIPort())
+	zap.L().Info("Starting API on " + "http://" + config.APIPort())
 
 	s := &http.Server{
 		Addr:              config.APIPort(),

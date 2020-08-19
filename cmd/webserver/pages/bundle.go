@@ -143,7 +143,7 @@ func bundlePricesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
-		zap.S().Error("invalid id", r)
+		zap.L().Error("invalid id")
 		return
 	}
 

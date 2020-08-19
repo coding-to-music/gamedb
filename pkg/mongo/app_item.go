@@ -98,7 +98,7 @@ func (item *AppItem) SetTags(tagsString string) {
 				} else if len(tagKeyVal) == 2 {
 					item.Tags = append(item.Tags, []string{tagKeyVal[0], tagKeyVal[1]})
 				} else {
-					zap.S().Warn(item.AppID, "Weird tags")
+					zap.L().Warn("Weird tags", zap.Int("app", item.AppID))
 				}
 			}
 		}

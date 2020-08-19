@@ -28,7 +28,7 @@ func CurrencyHandler(w http.ResponseWriter, r *http.Request) {
 			user.ProductCC = steamapi.ProductCC(id)
 			err = user.Save()
 			if err != nil {
-				zap.S().Error(err, r)
+				zap.S().Error(err)
 			}
 		}
 

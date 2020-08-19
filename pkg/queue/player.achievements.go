@@ -28,7 +28,7 @@ func playerAchievementsHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		zap.S().Error(err, string(message.Message.Body))
+		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToFailQueue(message)
 		return
 	}
@@ -48,28 +48,28 @@ func playerAchievementsHandler(message *rabbit.Message) {
 
 			err = ProduceWebsocket(wsPayload, websockets.PagePlayer)
 			if err != nil {
-				zap.S().Error(err, string(message.Message.Body))
+				zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
 			}
 		}()
 
 		// Total achievements
 		count, err := mongo.CountDocuments(mongo.CollectionPlayerAchievements, bson.D{{"player_id", payload.PlayerID}}, 0)
 		if err != nil {
-			zap.S().Error(err, string(message.Message.Body))
+			zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
 			sendToRetryQueue(message)
 			return
 		}
 
 		count100, err := mongo.CountDocuments(mongo.CollectionPlayerApps, bson.D{{"player_id", payload.PlayerID}, {"app_achievements_percent", 100}}, 0)
 		if err != nil {
-			zap.S().Error(err, string(message.Message.Body))
+			zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
 			sendToRetryQueue(message)
 			return
 		}
 
 		countApps, err := mongo.CountDocuments(mongo.CollectionPlayerApps, bson.D{{"player_id", payload.PlayerID}, {"app_achievements_have", bson.M{"$gt": 0}}}, 0)
 		if err != nil {
-			zap.S().Error(err, string(message.Message.Body))
+			zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
 			sendToRetryQueue(message)
 			return
 		}
@@ -83,7 +83,7 @@ func playerAchievementsHandler(message *rabbit.Message) {
 
 		_, err = mongo.UpdateOne(mongo.CollectionPlayers, bson.D{{"_id", payload.PlayerID}}, update)
 		if err != nil {
-			zap.S().Error(err, string(message.Message.Body))
+			zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
 			sendToRetryQueue(message)
 			return
 		}
@@ -106,7 +106,7 @@ func playerAchievementsHandler(message *rabbit.Message) {
 
 		err = memcache.Delete(items...)
 		if err != nil {
-			zap.S().Error(err, string(message.Message.Body))
+			zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
 			sendToRetryQueue(message)
 			return
 		}
@@ -114,7 +114,7 @@ func playerAchievementsHandler(message *rabbit.Message) {
 		// Update Elastic
 		err = ProducePlayerSearch(nil, payload.PlayerID)
 		if err != nil {
-			zap.S().Error(err, string(message.Message.Body))
+			zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
 			sendToRetryQueue(message)
 			return
 		}
@@ -135,7 +135,7 @@ func playerAchievementsHandler(message *rabbit.Message) {
 	// Get app
 	app, err := mongo.GetApp(payload.AppID, false)
 	if err != nil {
-		zap.S().Error(err, string(message.Message.Body))
+		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToRetryQueue(message)
 		return
 	}
@@ -154,7 +154,7 @@ func playerAchievementsHandler(message *rabbit.Message) {
 		// ErrNoDocuments can be returned on new signups as the player hasnt been created yet
 		err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
 		if err != nil {
-			zap.S().Error(err, string(message.Message.Body))
+			zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
 		}
 
 		sendToRetryQueueWithDelay(message, time.Second*10)

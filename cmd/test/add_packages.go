@@ -47,11 +47,11 @@ func addPackages() {
 			if c.Messages >= 10 && !locked {
 				locked = true
 				wg.Add(1)
-				zap.S().Info(time.Now().Format(helpers.DateSQL), "locked")
+				zap.S().Info(time.Now().Format(helpers.DateSQL) + " locked")
 			} else if c.Messages < 10 && locked {
 				locked = false
 				wg.Done()
-				zap.S().Info(time.Now().Format(helpers.DateSQL), "unlocked")
+				zap.S().Info(time.Now().Format(helpers.DateSQL) + " unlocked")
 			}
 		}
 	}()
@@ -71,7 +71,7 @@ func addPackages() {
 			continue
 		}
 
-		zap.S().Info(time.Now().Format(helpers.DateSQL), packageID)
+		zap.L().Info(time.Now().Format(helpers.DateSQL), zap.Int("package", packageID))
 
 		pack := mongo.Package{}
 

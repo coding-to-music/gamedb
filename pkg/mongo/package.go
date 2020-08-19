@@ -212,7 +212,7 @@ func (pack Package) GetBillingType() string {
 	case steamlang.EBillingType_NumBillingTypes:
 		return "Num"
 	default:
-		zap.S().Warn("New billing type", pack.BillingType)
+		zap.L().Warn("New billing type", zap.Int32("type", pack.BillingType))
 		return "Unknown"
 	}
 }
@@ -237,7 +237,7 @@ func (pack Package) GetLicenseType() string {
 	case steamlang.ELicenseType_LimitedUseDelayedActivation:
 		return "Limited Use Delayed Activation"
 	default:
-		zap.S().Warn("New license type", pack.LicenseType)
+		zap.L().Warn("New license type", zap.Int32("type", pack.LicenseType))
 		return "Unknown"
 	}
 }
