@@ -12,6 +12,7 @@ RUN apk update \
   && apk add git \
   && go get -u github.com/gobuffalo/packr/v2/packr2 \
   && cd ./cmd/webserver \
+  && git fetch --unshallow \
   && CGO_ENABLED=0 GOOS=linux packr2 build -a -ldflags "-X main.version=`git rev-parse --verify HEAD` -X main.commits=`git rev-list --count master`"
 
 # Runtime image
