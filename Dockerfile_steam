@@ -14,7 +14,7 @@ RUN apk update \
   && CGO_ENABLED=0 GOOS=linux go build -a -ldflags "-X main.version=`git rev-parse --verify HEAD` -X main.commits=`git rev-list --count master`"
 
 # Runtime image
-FROM alpine:3.11 AS runtime-env
+FROM alpine:3.12 AS runtime-env
 WORKDIR /root/
 COPY --from=build-env /root/cmd/steam/steam ./
 COPY ./cmd/steam/health-check.sh ./health-check.sh
