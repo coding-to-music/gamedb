@@ -24,7 +24,7 @@ func main() {
 	config.Init(version, commits, helpers.GetIP())
 	log.InitZap(log.LogNameBackend)
 
-	base := path.Join(config.Config.InfraPath.Get(), "grpc")
+	base := config.Config.GRPCKeysPath.Get()
 
 	// Load the certificates from disk
 	certificate, err := tls.LoadX509KeyPair(path.Join(base, "server.crt"), path.Join(base, "server.key"))

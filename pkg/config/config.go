@@ -163,7 +163,7 @@ type BaseConfig struct {
 	NewReleaseDays      ConfigItem
 	SlackGameDBWebhook  ConfigItem
 	SlackPatreonWebhook ConfigItem
-	InfraPath           ConfigItem
+	GRPCKeysPath        ConfigItem
 }
 
 func init() {
@@ -306,11 +306,11 @@ func init() {
 	Config.SendGridAPIKey.Set("SENDGRID")
 	Config.SlackGameDBWebhook.Set("SLACK_GAMEDB_WEBHOOK")
 	Config.SlackPatreonWebhook.Set("SLACK_SOCIAL_WEBHOOK")
-	Config.InfraPath.Set("INFRASTRUCTURE_PATH")
 
 	// Defaults
 	Config.GameDBShortName.SetDefault("GameDB")
 	Config.NewReleaseDays.SetDefault("14")
+	Config.GRPCKeysPath.SetDefault("/root/grpc-keys/")
 }
 
 func Init(version string, commits string, ip string) {

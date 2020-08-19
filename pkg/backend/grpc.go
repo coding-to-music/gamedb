@@ -28,7 +28,7 @@ func GetClient() (*grpc.ClientConn, context.Context, error) {
 
 	if conn == nil {
 
-		base := path.Join(config.Config.InfraPath.Get(), "/grpc")
+		base := config.Config.GRPCKeysPath.Get()
 
 		// Load the client certificates from disk
 		certificate, err := tls.LoadX509KeyPair(path.Join(base, "client.crt"), path.Join(base, "client.key"))
