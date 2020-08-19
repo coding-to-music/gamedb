@@ -35,7 +35,7 @@ func main() {
 
 	// Create a certificate pool from the certificate authority
 	certPool := x509.NewCertPool()
-	ca, err := ioutil.ReadFile(path.Join(base, "ca.crt"))
+	ca, err := ioutil.ReadFile(path.Join(base, "root.crt"))
 	if err != nil {
 		zap.S().Errorf("could not read ca certificate: %s", err)
 		return

@@ -38,7 +38,7 @@ func GetClient() (*grpc.ClientConn, context.Context, error) {
 
 		// Create a certificate pool from the certificate authority
 		certPool := x509.NewCertPool()
-		ca, err := ioutil.ReadFile(path.Join(base, "ca.crt"))
+		ca, err := ioutil.ReadFile(path.Join(base, "root.crt"))
 		if err != nil {
 			return nil, nil, fmt.Errorf("could not read ca certificate: %s", err)
 		}
@@ -50,7 +50,7 @@ func GetClient() (*grpc.ClientConn, context.Context, error) {
 		}
 
 		creds := credentials.NewTLS(&tls.Config{
-			ServerName:   config.Config.BackendClientPort.Get(),
+			ServerName:   "server", // Must match the key name
 			Certificates: []tls.Certificate{certificate},
 			RootCAs:      certPool,
 		})
