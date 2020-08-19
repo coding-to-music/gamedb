@@ -1,6 +1,9 @@
 steps:
   - name: gcr.io/cloud-builders/git
-    args: ["fetch", "--unshallow"]
+    args: ['fetch', '--unshallow']
+
+  - name: gcr.io/cloud-builders/git
+    args: ['fetch', 'origin', 'master']
 
   - name: gcr.io/cloud-builders/docker
     args: ['build', '--tag', 'gcr.io/$PROJECT_ID/frontend', '--file', 'Dockerfile_frontend', '.']
