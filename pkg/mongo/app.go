@@ -520,6 +520,9 @@ func (app App) GetUpdatedNice() string {
 }
 
 func (app App) GetPeakTimeNice() string {
+	if app.PlayerPeakAllTimeTime.IsZero() {
+		return "-"
+	}
 	return app.PlayerPeakAllTimeTime.Format(helpers.DateYearTime)
 }
 
