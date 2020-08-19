@@ -47,7 +47,9 @@ func main() {
 		zap.L().Info("Starting consumers profiling")
 		go func() {
 			err := http.ListenAndServe(":6062", nil)
-			zap.S().Fatal(err)
+			if err != nil {
+				zap.S().Fatal(err)
+			}
 		}()
 	}
 

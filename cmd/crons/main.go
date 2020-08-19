@@ -28,7 +28,9 @@ func main() {
 	// Profiling
 	go func() {
 		err := http.ListenAndServe(":6063", nil)
-		zap.S().Fatal(err)
+		if err != nil {
+			zap.S().Fatal(err)
+		}
 	}()
 
 	// Get API key

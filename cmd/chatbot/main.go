@@ -41,7 +41,9 @@ func main() {
 		zap.L().Info("Starting chatbot profiling")
 		go func() {
 			err := http.ListenAndServe(":6061", nil)
-			zap.S().Fatal(err)
+			if err != nil {
+				zap.S().Fatal(err)
+			}
 		}()
 	}
 

@@ -51,7 +51,9 @@ func main() {
 	// zap.S().Info("Starting webserver profiling")
 	go func() {
 		err := http.ListenAndServe(":6064", nil)
-		zap.S().Fatal(err)
+		if err != nil {
+			zap.S().Fatal(err)
+		}
 	}()
 
 	// Get API key

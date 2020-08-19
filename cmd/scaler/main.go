@@ -36,7 +36,7 @@ func main() {
 
 	err := http.ListenAndServe(":4000", r)
 	if err != nil {
-		fmt.Println(err)
+		zap.S().Fatal(err)
 	}
 }
 
