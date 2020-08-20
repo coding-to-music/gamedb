@@ -68,7 +68,7 @@ func main() {
 	backend.RegisterPlayersServiceServer(grpcServer, PlayersServer{})
 	backend.RegisterGitHubServiceServer(grpcServer, GithubServer{})
 
-	zap.L().Info("Starting Backend on " + config.Config.BackendHostPort.Get())
+	zap.L().Info("Starting Backend on tcp://" + config.Config.BackendHostPort.Get())
 
 	err = grpcServer.Serve(lis)
 	if err != nil {

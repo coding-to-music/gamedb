@@ -192,14 +192,7 @@ func main() {
 	// 404
 	r.NotFound(pages.Error404Handler)
 
-	zap.L().Info(
-		"Starting Webserver on "+"http://"+config.FrontendPort(),
-		zap.String("env", config.Config.Environment.Get()),
-		zap.String("commits", config.Config.Commits.Get()),
-		zap.String("hash", config.Config.CommitHash.Get()),
-		zap.String("key", config.Config.SteamAPIKey.Get()),
-		zap.String("ip", config.Config.IP.Get()),
-	)
+	zap.L().Info("Starting Webserver on " + "http://" + config.FrontendPort())
 
 	s := &http.Server{
 		Addr:              config.FrontendPort(),
