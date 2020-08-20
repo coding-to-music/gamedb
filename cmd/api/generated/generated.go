@@ -75,27 +75,20 @@ type PlayerSchema struct {
 	VanityUrl string `json:"vanity_url"`
 }
 
-// PriceSchema defines model for price-schema.
-type PriceSchema struct {
-	Currency        string `json:"currency"`
-	DiscountPercent int32  `json:"discountPercent"`
-	Final           int32  `json:"final"`
-	Free            bool   `json:"free"`
-	Individual      int32  `json:"individual"`
-	Initial         int32  `json:"initial"`
-}
-
 // LimitParam defines model for limit-param.
 type LimitParam int
 
 // OffsetParam defines model for offset-param.
 type OffsetParam int
 
-// OrderParamAsc defines model for order-param-asc.
-type OrderParamAsc string
-
 // OrderParamDesc defines model for order-param-desc.
 type OrderParamDesc string
+
+// List of OrderParamDesc
+const (
+	OrderParamDesc_asc  OrderParamDesc = "asc"
+	OrderParamDesc_desc OrderParamDesc = "desc"
+)
 
 // AppResponse defines model for app-response.
 type AppResponse AppSchema
@@ -108,9 +101,6 @@ type AppsResponse struct {
 
 // MessageResponse defines model for message-response.
 type MessageResponse MessageSchema
-
-// PaginationResponse defines model for pagination-response.
-type PaginationResponse PaginationSchema
 
 // PlayerResponse defines model for player-response.
 type PlayerResponse PlayerSchema
@@ -163,442 +153,402 @@ type PostPlayersIdParams struct {
 	Key string `json:"key"`
 }
 
+// ServerInterface represents all server handlers.
 type ServerInterface interface {
-	// List Apps (GET /games)
-	GetGames(w http.ResponseWriter, r *http.Request)
-	// Retrieve App (GET /games/{id})
-	GetGamesId(w http.ResponseWriter, r *http.Request)
-	// List Players (GET /players)
-	GetPlayers(w http.ResponseWriter, r *http.Request)
-	// Retrieve Player (GET /players/{id})
-	GetPlayersId(w http.ResponseWriter, r *http.Request)
-	// Update Player (POST /players/{id})
-	PostPlayersId(w http.ResponseWriter, r *http.Request)
+	// List Apps
+	// (GET /games)
+	GetGames(w http.ResponseWriter, r *http.Request, params GetGamesParams)
+	// Retrieve App
+	// (GET /games/{id})
+	GetGamesId(w http.ResponseWriter, r *http.Request, id int32, params GetGamesIdParams)
+	// List Players
+	// (GET /players)
+	GetPlayers(w http.ResponseWriter, r *http.Request, params GetPlayersParams)
+	// Retrieve Player
+	// (GET /players/{id})
+	GetPlayersId(w http.ResponseWriter, r *http.Request, id int64, params GetPlayersIdParams)
+	// Update Player
+	// (POST /players/{id})
+	PostPlayersId(w http.ResponseWriter, r *http.Request, id int64, params PostPlayersIdParams)
 }
 
-// ParamsForGetGames operation parameters from context
-func ParamsForGetGames(ctx context.Context) *GetGamesParams {
-	return ctx.Value("GetGamesParams").(*GetGamesParams)
+// ServerInterfaceWrapper converts contexts to parameters.
+type ServerInterfaceWrapper struct {
+	Handler ServerInterface
 }
 
 // GetGames operation middleware
-func GetGamesCtx(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := r.Context()
+func (siw *ServerInterfaceWrapper) GetGames(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 
-		var err error
+	var err error
 
-		ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
+	ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
 
-		ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
+	ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
 
-		// Parameter object where we will unmarshal all parameters from the context
-		var params GetGamesParams
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetGamesParams
 
-		// ------------- Required query parameter "key" -------------
-		if paramValue := r.URL.Query().Get("key"); paramValue != "" {
+	// ------------- Required query parameter "key" -------------
+	if paramValue := r.URL.Query().Get("key"); paramValue != "" {
 
-		} else {
-			http.Error(w, "Query argument key is required, but not found", http.StatusBadRequest)
-			return
-		}
+	} else {
+		http.Error(w, "Query argument key is required, but not found", http.StatusBadRequest)
+		return
+	}
 
-		err = runtime.BindQueryParameter("form", true, true, "key", r.URL.Query(), &params.Key)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Invalid format for parameter key: %s", err), http.StatusBadRequest)
-			return
-		}
+	err = runtime.BindQueryParameter("form", true, true, "key", r.URL.Query(), &params.Key)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter key: %s", err), http.StatusBadRequest)
+		return
+	}
 
-		// ------------- Optional query parameter "offset" -------------
-		if paramValue := r.URL.Query().Get("offset"); paramValue != "" {
+	// ------------- Optional query parameter "offset" -------------
+	if paramValue := r.URL.Query().Get("offset"); paramValue != "" {
 
-		}
+	}
 
-		err = runtime.BindQueryParameter("form", true, false, "offset", r.URL.Query(), &params.Offset)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Invalid format for parameter offset: %s", err), http.StatusBadRequest)
-			return
-		}
+	err = runtime.BindQueryParameter("form", true, false, "offset", r.URL.Query(), &params.Offset)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter offset: %s", err), http.StatusBadRequest)
+		return
+	}
 
-		// ------------- Optional query parameter "limit" -------------
-		if paramValue := r.URL.Query().Get("limit"); paramValue != "" {
+	// ------------- Optional query parameter "limit" -------------
+	if paramValue := r.URL.Query().Get("limit"); paramValue != "" {
 
-		}
+	}
 
-		err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Invalid format for parameter limit: %s", err), http.StatusBadRequest)
-			return
-		}
+	err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter limit: %s", err), http.StatusBadRequest)
+		return
+	}
 
-		// ------------- Optional query parameter "order" -------------
-		if paramValue := r.URL.Query().Get("order"); paramValue != "" {
+	// ------------- Optional query parameter "order" -------------
+	if paramValue := r.URL.Query().Get("order"); paramValue != "" {
 
-		}
+	}
 
-		err = runtime.BindQueryParameter("form", true, false, "order", r.URL.Query(), &params.Order)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Invalid format for parameter order: %s", err), http.StatusBadRequest)
-			return
-		}
+	err = runtime.BindQueryParameter("form", true, false, "order", r.URL.Query(), &params.Order)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter order: %s", err), http.StatusBadRequest)
+		return
+	}
 
-		// ------------- Optional query parameter "sort" -------------
-		if paramValue := r.URL.Query().Get("sort"); paramValue != "" {
+	// ------------- Optional query parameter "sort" -------------
+	if paramValue := r.URL.Query().Get("sort"); paramValue != "" {
 
-		}
+	}
 
-		err = runtime.BindQueryParameter("form", true, false, "sort", r.URL.Query(), &params.Sort)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Invalid format for parameter sort: %s", err), http.StatusBadRequest)
-			return
-		}
+	err = runtime.BindQueryParameter("form", true, false, "sort", r.URL.Query(), &params.Sort)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter sort: %s", err), http.StatusBadRequest)
+		return
+	}
 
-		// ------------- Optional query parameter "ids" -------------
-		if paramValue := r.URL.Query().Get("ids"); paramValue != "" {
+	// ------------- Optional query parameter "ids" -------------
+	if paramValue := r.URL.Query().Get("ids"); paramValue != "" {
 
-		}
+	}
 
-		err = runtime.BindQueryParameter("form", true, false, "ids", r.URL.Query(), &params.Ids)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Invalid format for parameter ids: %s", err), http.StatusBadRequest)
-			return
-		}
+	err = runtime.BindQueryParameter("form", true, false, "ids", r.URL.Query(), &params.Ids)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter ids: %s", err), http.StatusBadRequest)
+		return
+	}
 
-		// ------------- Optional query parameter "tags" -------------
-		if paramValue := r.URL.Query().Get("tags"); paramValue != "" {
+	// ------------- Optional query parameter "tags" -------------
+	if paramValue := r.URL.Query().Get("tags"); paramValue != "" {
 
-		}
+	}
 
-		err = runtime.BindQueryParameter("form", true, false, "tags", r.URL.Query(), &params.Tags)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Invalid format for parameter tags: %s", err), http.StatusBadRequest)
-			return
-		}
+	err = runtime.BindQueryParameter("form", true, false, "tags", r.URL.Query(), &params.Tags)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter tags: %s", err), http.StatusBadRequest)
+		return
+	}
 
-		// ------------- Optional query parameter "genres" -------------
-		if paramValue := r.URL.Query().Get("genres"); paramValue != "" {
+	// ------------- Optional query parameter "genres" -------------
+	if paramValue := r.URL.Query().Get("genres"); paramValue != "" {
 
-		}
+	}
 
-		err = runtime.BindQueryParameter("form", true, false, "genres", r.URL.Query(), &params.Genres)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Invalid format for parameter genres: %s", err), http.StatusBadRequest)
-			return
-		}
+	err = runtime.BindQueryParameter("form", true, false, "genres", r.URL.Query(), &params.Genres)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter genres: %s", err), http.StatusBadRequest)
+		return
+	}
 
-		// ------------- Optional query parameter "categories" -------------
-		if paramValue := r.URL.Query().Get("categories"); paramValue != "" {
+	// ------------- Optional query parameter "categories" -------------
+	if paramValue := r.URL.Query().Get("categories"); paramValue != "" {
 
-		}
+	}
 
-		err = runtime.BindQueryParameter("form", true, false, "categories", r.URL.Query(), &params.Categories)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Invalid format for parameter categories: %s", err), http.StatusBadRequest)
-			return
-		}
+	err = runtime.BindQueryParameter("form", true, false, "categories", r.URL.Query(), &params.Categories)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter categories: %s", err), http.StatusBadRequest)
+		return
+	}
 
-		// ------------- Optional query parameter "developers" -------------
-		if paramValue := r.URL.Query().Get("developers"); paramValue != "" {
+	// ------------- Optional query parameter "developers" -------------
+	if paramValue := r.URL.Query().Get("developers"); paramValue != "" {
 
-		}
+	}
 
-		err = runtime.BindQueryParameter("form", true, false, "developers", r.URL.Query(), &params.Developers)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Invalid format for parameter developers: %s", err), http.StatusBadRequest)
-			return
-		}
+	err = runtime.BindQueryParameter("form", true, false, "developers", r.URL.Query(), &params.Developers)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter developers: %s", err), http.StatusBadRequest)
+		return
+	}
 
-		// ------------- Optional query parameter "publishers" -------------
-		if paramValue := r.URL.Query().Get("publishers"); paramValue != "" {
+	// ------------- Optional query parameter "publishers" -------------
+	if paramValue := r.URL.Query().Get("publishers"); paramValue != "" {
 
-		}
+	}
 
-		err = runtime.BindQueryParameter("form", true, false, "publishers", r.URL.Query(), &params.Publishers)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Invalid format for parameter publishers: %s", err), http.StatusBadRequest)
-			return
-		}
+	err = runtime.BindQueryParameter("form", true, false, "publishers", r.URL.Query(), &params.Publishers)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter publishers: %s", err), http.StatusBadRequest)
+		return
+	}
 
-		// ------------- Optional query parameter "platforms" -------------
-		if paramValue := r.URL.Query().Get("platforms"); paramValue != "" {
+	// ------------- Optional query parameter "platforms" -------------
+	if paramValue := r.URL.Query().Get("platforms"); paramValue != "" {
 
-		}
+	}
 
-		err = runtime.BindQueryParameter("form", true, false, "platforms", r.URL.Query(), &params.Platforms)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Invalid format for parameter platforms: %s", err), http.StatusBadRequest)
-			return
-		}
+	err = runtime.BindQueryParameter("form", true, false, "platforms", r.URL.Query(), &params.Platforms)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter platforms: %s", err), http.StatusBadRequest)
+		return
+	}
 
-		ctx = context.WithValue(ctx, "GetGamesParams", &params)
-
-		next.ServeHTTP(w, r.WithContext(ctx))
-	})
-}
-
-// ParamsForGetGamesId operation parameters from context
-func ParamsForGetGamesId(ctx context.Context) *GetGamesIdParams {
-	return ctx.Value("GetGamesIdParams").(*GetGamesIdParams)
+	siw.Handler.GetGames(w, r.WithContext(ctx), params)
 }
 
 // GetGamesId operation middleware
-func GetGamesIdCtx(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := r.Context()
+func (siw *ServerInterfaceWrapper) GetGamesId(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 
-		var err error
+	var err error
 
-		// ------------- Path parameter "id" -------------
-		var id int32
+	// ------------- Path parameter "id" -------------
+	var id int32
 
-		err = runtime.BindStyledParameter("simple", false, "id", chi.URLParam(r, "id"), &id)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Invalid format for parameter id: %s", err), http.StatusBadRequest)
-			return
-		}
+	err = runtime.BindStyledParameter("simple", false, "id", chi.URLParam(r, "id"), &id)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter id: %s", err), http.StatusBadRequest)
+		return
+	}
 
-		ctx = context.WithValue(ctx, "id", id)
+	ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
 
-		ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
+	ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
 
-		ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetGamesIdParams
 
-		// Parameter object where we will unmarshal all parameters from the context
-		var params GetGamesIdParams
+	// ------------- Required query parameter "key" -------------
+	if paramValue := r.URL.Query().Get("key"); paramValue != "" {
 
-		// ------------- Required query parameter "key" -------------
-		if paramValue := r.URL.Query().Get("key"); paramValue != "" {
+	} else {
+		http.Error(w, "Query argument key is required, but not found", http.StatusBadRequest)
+		return
+	}
 
-		} else {
-			http.Error(w, "Query argument key is required, but not found", http.StatusBadRequest)
-			return
-		}
+	err = runtime.BindQueryParameter("form", true, true, "key", r.URL.Query(), &params.Key)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter key: %s", err), http.StatusBadRequest)
+		return
+	}
 
-		err = runtime.BindQueryParameter("form", true, true, "key", r.URL.Query(), &params.Key)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Invalid format for parameter key: %s", err), http.StatusBadRequest)
-			return
-		}
-
-		ctx = context.WithValue(ctx, "GetGamesIdParams", &params)
-
-		next.ServeHTTP(w, r.WithContext(ctx))
-	})
-}
-
-// ParamsForGetPlayers operation parameters from context
-func ParamsForGetPlayers(ctx context.Context) *GetPlayersParams {
-	return ctx.Value("GetPlayersParams").(*GetPlayersParams)
+	siw.Handler.GetGamesId(w, r.WithContext(ctx), id, params)
 }
 
 // GetPlayers operation middleware
-func GetPlayersCtx(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := r.Context()
+func (siw *ServerInterfaceWrapper) GetPlayers(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 
-		var err error
+	var err error
 
-		ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
+	ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
 
-		ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
+	ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
 
-		// Parameter object where we will unmarshal all parameters from the context
-		var params GetPlayersParams
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetPlayersParams
 
-		// ------------- Required query parameter "key" -------------
-		if paramValue := r.URL.Query().Get("key"); paramValue != "" {
+	// ------------- Required query parameter "key" -------------
+	if paramValue := r.URL.Query().Get("key"); paramValue != "" {
 
-		} else {
-			http.Error(w, "Query argument key is required, but not found", http.StatusBadRequest)
-			return
-		}
+	} else {
+		http.Error(w, "Query argument key is required, but not found", http.StatusBadRequest)
+		return
+	}
 
-		err = runtime.BindQueryParameter("form", true, true, "key", r.URL.Query(), &params.Key)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Invalid format for parameter key: %s", err), http.StatusBadRequest)
-			return
-		}
+	err = runtime.BindQueryParameter("form", true, true, "key", r.URL.Query(), &params.Key)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter key: %s", err), http.StatusBadRequest)
+		return
+	}
 
-		// ------------- Optional query parameter "offset" -------------
-		if paramValue := r.URL.Query().Get("offset"); paramValue != "" {
+	// ------------- Optional query parameter "offset" -------------
+	if paramValue := r.URL.Query().Get("offset"); paramValue != "" {
 
-		}
+	}
 
-		err = runtime.BindQueryParameter("form", true, false, "offset", r.URL.Query(), &params.Offset)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Invalid format for parameter offset: %s", err), http.StatusBadRequest)
-			return
-		}
+	err = runtime.BindQueryParameter("form", true, false, "offset", r.URL.Query(), &params.Offset)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter offset: %s", err), http.StatusBadRequest)
+		return
+	}
 
-		// ------------- Optional query parameter "limit" -------------
-		if paramValue := r.URL.Query().Get("limit"); paramValue != "" {
+	// ------------- Optional query parameter "limit" -------------
+	if paramValue := r.URL.Query().Get("limit"); paramValue != "" {
 
-		}
+	}
 
-		err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Invalid format for parameter limit: %s", err), http.StatusBadRequest)
-			return
-		}
+	err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter limit: %s", err), http.StatusBadRequest)
+		return
+	}
 
-		// ------------- Optional query parameter "order" -------------
-		if paramValue := r.URL.Query().Get("order"); paramValue != "" {
+	// ------------- Optional query parameter "order" -------------
+	if paramValue := r.URL.Query().Get("order"); paramValue != "" {
 
-		}
+	}
 
-		err = runtime.BindQueryParameter("form", true, false, "order", r.URL.Query(), &params.Order)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Invalid format for parameter order: %s", err), http.StatusBadRequest)
-			return
-		}
+	err = runtime.BindQueryParameter("form", true, false, "order", r.URL.Query(), &params.Order)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter order: %s", err), http.StatusBadRequest)
+		return
+	}
 
-		// ------------- Optional query parameter "sort" -------------
-		if paramValue := r.URL.Query().Get("sort"); paramValue != "" {
+	// ------------- Optional query parameter "sort" -------------
+	if paramValue := r.URL.Query().Get("sort"); paramValue != "" {
 
-		}
+	}
 
-		err = runtime.BindQueryParameter("form", true, false, "sort", r.URL.Query(), &params.Sort)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Invalid format for parameter sort: %s", err), http.StatusBadRequest)
-			return
-		}
+	err = runtime.BindQueryParameter("form", true, false, "sort", r.URL.Query(), &params.Sort)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter sort: %s", err), http.StatusBadRequest)
+		return
+	}
 
-		// ------------- Optional query parameter "continent" -------------
-		if paramValue := r.URL.Query().Get("continent"); paramValue != "" {
+	// ------------- Optional query parameter "continent" -------------
+	if paramValue := r.URL.Query().Get("continent"); paramValue != "" {
 
-		}
+	}
 
-		err = runtime.BindQueryParameter("form", true, false, "continent", r.URL.Query(), &params.Continent)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Invalid format for parameter continent: %s", err), http.StatusBadRequest)
-			return
-		}
+	err = runtime.BindQueryParameter("form", true, false, "continent", r.URL.Query(), &params.Continent)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter continent: %s", err), http.StatusBadRequest)
+		return
+	}
 
-		// ------------- Optional query parameter "country" -------------
-		if paramValue := r.URL.Query().Get("country"); paramValue != "" {
+	// ------------- Optional query parameter "country" -------------
+	if paramValue := r.URL.Query().Get("country"); paramValue != "" {
 
-		}
+	}
 
-		err = runtime.BindQueryParameter("form", true, false, "country", r.URL.Query(), &params.Country)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Invalid format for parameter country: %s", err), http.StatusBadRequest)
-			return
-		}
+	err = runtime.BindQueryParameter("form", true, false, "country", r.URL.Query(), &params.Country)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter country: %s", err), http.StatusBadRequest)
+		return
+	}
 
-		ctx = context.WithValue(ctx, "GetPlayersParams", &params)
-
-		next.ServeHTTP(w, r.WithContext(ctx))
-	})
-}
-
-// ParamsForGetPlayersId operation parameters from context
-func ParamsForGetPlayersId(ctx context.Context) *GetPlayersIdParams {
-	return ctx.Value("GetPlayersIdParams").(*GetPlayersIdParams)
+	siw.Handler.GetPlayers(w, r.WithContext(ctx), params)
 }
 
 // GetPlayersId operation middleware
-func GetPlayersIdCtx(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := r.Context()
+func (siw *ServerInterfaceWrapper) GetPlayersId(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 
-		var err error
+	var err error
 
-		// ------------- Path parameter "id" -------------
-		var id int64
+	// ------------- Path parameter "id" -------------
+	var id int64
 
-		err = runtime.BindStyledParameter("simple", false, "id", chi.URLParam(r, "id"), &id)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Invalid format for parameter id: %s", err), http.StatusBadRequest)
+	err = runtime.BindStyledParameter("simple", false, "id", chi.URLParam(r, "id"), &id)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter id: %s", err), http.StatusBadRequest)
+		return
+	}
+
+	ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
+
+	ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetPlayersIdParams
+
+	// ------------- Required query parameter "key" -------------
+	if paramValue := r.URL.Query().Get("key"); paramValue != "" {
+
+	} else {
+		http.Error(w, "Query argument key is required, but not found", http.StatusBadRequest)
+		return
+	}
+
+	err = runtime.BindQueryParameter("form", true, true, "key", r.URL.Query(), &params.Key)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter key: %s", err), http.StatusBadRequest)
+		return
+	}
+
+	siw.Handler.GetPlayersId(w, r.WithContext(ctx), id, params)
+}
+
+// PostPlayersId operation middleware
+func (siw *ServerInterfaceWrapper) PostPlayersId(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id int64
+
+	err = runtime.BindStyledParameter("simple", false, "id", chi.URLParam(r, "id"), &id)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter id: %s", err), http.StatusBadRequest)
+		return
+	}
+
+	ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
+
+	ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params PostPlayersIdParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("key")]; found {
+		var Key string
+		n := len(valueList)
+		if n != 1 {
+			http.Error(w, fmt.Sprintf("Expected one value for key, got %d", n), http.StatusBadRequest)
 			return
 		}
 
-		ctx = context.WithValue(ctx, "id", id)
-
-		ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
-
-		ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
-
-		// Parameter object where we will unmarshal all parameters from the context
-		var params GetPlayersIdParams
-
-		// ------------- Required query parameter "key" -------------
-		if paramValue := r.URL.Query().Get("key"); paramValue != "" {
-
-		} else {
-			http.Error(w, "Query argument key is required, but not found", http.StatusBadRequest)
-			return
-		}
-
-		err = runtime.BindQueryParameter("form", true, true, "key", r.URL.Query(), &params.Key)
+		err = runtime.BindStyledParameter("simple", false, "key", valueList[0], &Key)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Invalid format for parameter key: %s", err), http.StatusBadRequest)
 			return
 		}
 
-		ctx = context.WithValue(ctx, "GetPlayersIdParams", &params)
+		params.Key = Key
 
-		next.ServeHTTP(w, r.WithContext(ctx))
-	})
-}
+	} else {
+		http.Error(w, fmt.Sprintf("Header parameter key is required, but not found: %s", err), http.StatusBadRequest)
+		return
+	}
 
-// ParamsForPostPlayersId operation parameters from context
-func ParamsForPostPlayersId(ctx context.Context) *PostPlayersIdParams {
-	return ctx.Value("PostPlayersIdParams").(*PostPlayersIdParams)
-}
-
-// PostPlayersId operation middleware
-func PostPlayersIdCtx(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := r.Context()
-
-		var err error
-
-		// ------------- Path parameter "id" -------------
-		var id int64
-
-		err = runtime.BindStyledParameter("simple", false, "id", chi.URLParam(r, "id"), &id)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Invalid format for parameter id: %s", err), http.StatusBadRequest)
-			return
-		}
-
-		ctx = context.WithValue(ctx, "id", id)
-
-		ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
-
-		ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
-
-		// Parameter object where we will unmarshal all parameters from the context
-		var params PostPlayersIdParams
-
-		headers := r.Header
-
-		// ------------- Required header parameter "key" -------------
-		if valueList, found := headers[http.CanonicalHeaderKey("key")]; found {
-			var Key string
-			n := len(valueList)
-			if n != 1 {
-				http.Error(w, fmt.Sprintf("Expected one value for key, got %d", n), http.StatusBadRequest)
-				return
-			}
-
-			err = runtime.BindStyledParameter("simple", false, "key", valueList[0], &Key)
-			if err != nil {
-				http.Error(w, fmt.Sprintf("Invalid format for parameter key: %s", err), http.StatusBadRequest)
-				return
-			}
-
-			params.Key = Key
-
-		} else {
-			http.Error(w, fmt.Sprintf("Header parameter key is required, but not found", err), http.StatusBadRequest)
-			return
-		}
-
-		ctx = context.WithValue(ctx, "PostPlayersIdParams", &params)
-
-		next.ServeHTTP(w, r.WithContext(ctx))
-	})
+	siw.Handler.PostPlayersId(w, r.WithContext(ctx), id, params)
 }
 
 // Handler creates http.Handler with routing matching OpenAPI spec.
@@ -608,25 +558,24 @@ func Handler(si ServerInterface) http.Handler {
 
 // HandlerFromMux creates http.Handler with routing matching OpenAPI spec based on the provided mux.
 func HandlerFromMux(si ServerInterface, r chi.Router) http.Handler {
+	wrapper := ServerInterfaceWrapper{
+		Handler: si,
+	}
+
 	r.Group(func(r chi.Router) {
-		r.Use(GetGamesCtx)
-		r.Get("/games", si.GetGames)
+		r.Get("/games", wrapper.GetGames)
 	})
 	r.Group(func(r chi.Router) {
-		r.Use(GetGamesIdCtx)
-		r.Get("/games/{id}", si.GetGamesId)
+		r.Get("/games/{id}", wrapper.GetGamesId)
 	})
 	r.Group(func(r chi.Router) {
-		r.Use(GetPlayersCtx)
-		r.Get("/players", si.GetPlayers)
+		r.Get("/players", wrapper.GetPlayers)
 	})
 	r.Group(func(r chi.Router) {
-		r.Use(GetPlayersIdCtx)
-		r.Get("/players/{id}", si.GetPlayersId)
+		r.Get("/players/{id}", wrapper.GetPlayersId)
 	})
 	r.Group(func(r chi.Router) {
-		r.Use(PostPlayersIdCtx)
-		r.Post("/players/{id}", si.PostPlayersId)
+		r.Post("/players/{id}", wrapper.PostPlayersId)
 	})
 
 	return r
@@ -635,32 +584,31 @@ func HandlerFromMux(si ServerInterface, r chi.Router) http.Handler {
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/+xZX2/bNhD/KgbXRzlS0mxY9JatQJGtw4J1e5mhBbR0lrlKJEtSro3A330gqf+ibNl1",
-	"0A3rU8DoeL/jj/eHd35GMcs5o0CVROEz4ljgHBQIs8pITtTc/E8vCUUh+liA2CEPUZwDCq0I8pCM15Bj",
-	"LZXACheZQuF14KEcb0le5HoR6CWh5dJDase1AkIVpCDQfu8htlpJOAJoZdyIbYTAjSASEBZgjmU8CqLF",
-	"3BhIb/MQUA2yWJTLBGSMoqjGlEoQmg4gjdgZmGbfdNC9hwRIzqgEc4+Y83n1D72OGVVAVfkpIzFWhFH/",
-	"b8mo/l9jwSsBKxSib/zGS3z7VfpaaSlpELU1gnCtCYXons4w52jvaQR5HnpX4zsi1YyttFrpzT4RtZ5x",
-	"nBJqdiMPccE4CEXqI5u/REEuTzlKzSYWAu/0uoVyRE8j2TCjr+JjQQQkKFygjsXGxshBXvuo2oIcpMQp",
-	"XP4OK8Xj9/iLlejycHlDXMwNbHnEKcwIXTGRWwq1URnegXgBg6zeAw4+syKNEWd6eddvP8vZaksme37v",
-	"mH3nP+S9FdQhB65ktEQJWeWjMQJirCBlolzVh+jn8mGYJrCBTGs6dWMKVJyMRhK3XA4Kx4IoEj/JmAnj",
-	"CtZhrdzrG+Q5ttka8NzP5DXLTzneugErgU8AH57wJu0AJqxYZtAg0iJfOraNKxck7lHTu61CCKDxzml7",
-	"QmTMCqoeQcRlKEygYkUozqbKCmjTtmQsA2zyAqEJ2ZCkmKyKUKLIROleWNQkNFqqYwxJ6JhWniByVZ1i",
-	"mRG5Pt2dBWSAJTwlWA2877tb59kFbAh8kk8UUqzIBtxAlRRnkhyXGnr/uDMqnJ52yt4FkKR6RpW66qD2",
-	"2vmkkyM6DNee3g04R5g4Aq5HuYMoB8N9ohyZI2pV/rFsWX53hF+Pokow6hbyMb32WT/Ne8oX+TRhjlOQ",
-	"P5qAOWnL70wNg3Nkg5os2yOp7i2qrsZq6pjQO0LUvEHGuMQbrLBwZsglTlIY8fiY5XnVlrm+UkVoSeJA",
-	"r8k4wp2VV4IATUbUpjgfsycVrOAj3zrVsIHKdLi5dxwseIrkI9lFqjKrDfZtMCVq91SI7HgwtPNFeTv1",
-	"XbSIb7iqiKlZqM7WsrdhvX07lckdA6OqtI6/gr7W1YvUVe0yEBeCqN17TbVl9wPs5mvAut+umvFyWXfj",
-	"H2DXGIg5+RlMcdU7bd8+0sU792kzYKtAUJy9YbGxwTgqWivFQ9/PWIyzNZMqvAu+v/YxJ752uGRpGVyx",
-	"qqPAsbnuEuynDHBqSuohbdU+nRlB5PLX1XsQGxLD6A4jpo9BVKal3uIcZm9+mN0/PmhHBiHtM//6KrgK",
-	"kIe284ylbPw4UoKSPslTX+L5Mp1f391sr+9urrj1Z8aBYk5QiF6XCjlWa8OSXyek1JYYHSSmdD0k2jBQ",
-	"b8vAbE+uFofupvEwJQpoz1s4VvqOUIj+WgTzu/v5n9HzTbB/hRxjHXdb1Rjhd2ZZE+Tbs7Yp6vtTJb3H",
-	"dWjJRHda5jiKax8xaa/ZduBtluPtg/16HQTDp5pbf/lOOxlgqv76AfhiCJ2X5YuhdJ6sL4bSeQu/HEqG",
-	"lS4Ch0GaQtdgvB5ARL0Z500QjA07ajm/O4vce+g2uD6+azB+23vo2ylww426HhV5jnUBsVOSe26eE7YF",
-	"WiCbzkzhsrnPfybJ/mgCfEi+RAo0CDpXt9PGQf2DJ8DBXwTOvePeFQfnXfHZvnEb3H45p/oNlCCwAe1Y",
-	"I37VGhKOOdVjKfK1rk6uq82vNSYGyt9q7KJqFuoeo2onys6h6TPq5iPyplbqTrMxzKo53r4Dmqo1Cm+8",
-	"03LsKGDV51wW7qxwH8ze/38hb+pIE7FVyD82A/om6I+Wk3LXf7GgmBHP5QtK/yemkXxriXPy7yHOpIPu",
-	"RyaP8u1uTP9NhLsC/jMpv2hsXiLE/uAJVgfvuD1qMLfXHjIsIk12a3iwiDQxEsSmuuymg5eh72NOruwE",
-	"4IrRjFBAWr5Erft/W9S16vIflTn7aP9PAAAA//8jtgVv2iEAAA==",
+	"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",
 }
 
 // GetSwagger returns the Swagger specification corresponding to the generated code

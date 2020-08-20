@@ -10,7 +10,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func (s Server) GetGamesId(w http.ResponseWriter, r *http.Request) {
+func (s Server) GetGamesId(w http.ResponseWriter, r *http.Request, id int32, params generated.GetGamesIdParams) {
 
 	s.call(w, r, func(w http.ResponseWriter, r *http.Request) (code int, response interface{}) {
 
@@ -74,11 +74,9 @@ func (s Server) GetGamesId(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func (s Server) GetGames(w http.ResponseWriter, r *http.Request) {
+func (s Server) GetGames(w http.ResponseWriter, r *http.Request, params generated.GetGamesParams) {
 
 	s.call(w, r, func(w http.ResponseWriter, r *http.Request) (code int, response interface{}) {
-
-		params := generated.ParamsForGetGames(r.Context())
 
 		var limit int64 = 10
 		if params.Limit != nil && *params.Limit >= 1 && *params.Limit <= 1000 {

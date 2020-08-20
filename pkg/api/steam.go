@@ -16,9 +16,7 @@ import (
 	"go.uber.org/zap"
 )
 
-var steamJSONLock sync.Mutex
-
-func GetSteamJSON() *openapi3.Swagger {
+func GetSteam() *openapi3.Swagger {
 
 	var groups = map[string][]string{}
 
@@ -109,6 +107,8 @@ var groupsMap = map[string]*regexp.Regexp{
 	"Steam":           regexp.MustCompile(`^ISteam`),
 	"Team Fortress 2": regexp.MustCompile(`^ITF`),
 }
+
+var steamJSONLock sync.Mutex
 
 func addInterfaceToSwagger(swagger *openapi3.Swagger, interfacex *steamapi.APIInterface, groups map[string][]string) {
 

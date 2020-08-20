@@ -101,5 +101,6 @@ require (
 	google.golang.org/grpc v1.31.0
 	gopkg.in/djherbis/atime.v1 v1.0.0 // indirect
 	gopkg.in/djherbis/stream.v1 v1.3.1 // indirect
+	gopkg.in/yaml.v2 v2.3.0
 	jaytaylor.com/html2text v0.0.0-20200412013138-3577fbdbcff7
 )

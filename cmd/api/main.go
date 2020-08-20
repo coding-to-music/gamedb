@@ -18,6 +18,8 @@ import (
 var version string
 var commits string
 
+//go:generate bash ./scripts/generate.sh
+
 func main() {
 
 	config.Init(version, commits, helpers.GetIP())
