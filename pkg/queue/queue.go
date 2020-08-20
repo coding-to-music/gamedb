@@ -162,7 +162,7 @@ var (
 		{name: QueueWebsockets},
 	}
 
-	WebserverDefinitions = []QueueDefinition{
+	FrontendDefinitions = []QueueDefinition{
 		{name: QueueApps},
 		{name: QueueAppsAchievements},
 		{name: QueueAppsAchievementsSearch},

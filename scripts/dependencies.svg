@@ -377,165 +377,165 @@
 <path fill="none" stroke="#249107" stroke-width="2" stroke-opacity="0.698039" d="M901,-758C1008.83,-758 979.13,-867.86 1044,-954 1086.81,-1010.85 1138.3,-1076.44 1166.33,-1111.93"/>
 <polygon fill="#249107" fill-opacity="0.698039" stroke="#249107" stroke-width="2" stroke-opacity="0.698039" points="1163.66,-1114.19 1172.61,-1119.86 1169.15,-1109.85 1163.66,-1114.19"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend -->
 <g id="node8" class="node">
-<title>n_github_com_gamedb_gamedb_cmd_webserver</title>
-<g id="a_node8"><a xlink:href="https://pkg.go.dev/github.com/gamedb/gamedb/cmd/webserver" xlink:title="github.com/gamedb/gamedb/cmd/webserver\l246 / 8.0KB\l" target="_graphviz">
+<title>n_github_com_gamedb_gamedb_cmd_frontend</title>
+<g id="a_node8"><a xlink:href="https://pkg.go.dev/github.com/gamedb/gamedb/cmd/frontend" xlink:title="github.com/gamedb/gamedb/cmd/frontend\l246 / 8.0KB\l" target="_graphviz">
 <polygon fill="none" stroke="#071691" stroke-width="2" stroke-opacity="0.698039" points="216,-2319 0,-2319 0,-2283 216,-2283 216,-2319"/>
-<text text-anchor="start" x="8" y="-2303" font-family="Times,serif" font-size="10.00">github.com/gamedb/gamedb/cmd/webserver</text>
+<text text-anchor="start" x="8" y="-2303" font-family="Times,serif" font-size="10.00">github.com/gamedb/gamedb/cmd/frontend</text>
 <text text-anchor="start" x="8" y="-2293" font-family="Times,serif" font-size="10.00">246 / 8.0KB</text>
 </a>
 </g>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_helpers_middleware -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_helpers_middleware -->
 <g id="node11" class="node">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_helpers_middleware</title>
-<g id="a_node11"><a xlink:href="https://pkg.go.dev/github.com/gamedb/gamedb/cmd/webserver/helpers/middleware" xlink:title="github.com/gamedb/gamedb/cmd/webserver/helpers/middleware\l105 / 2.4KB\l" target="_graphviz">
+<title>n_github_com_gamedb_gamedb_cmd_frontend_helpers_middleware</title>
+<g id="a_node11"><a xlink:href="https://pkg.go.dev/github.com/gamedb/gamedb/cmd/frontend/helpers/middleware" xlink:title="github.com/gamedb/gamedb/cmd/frontend/helpers/middleware\l105 / 2.4KB\l" target="_graphviz">
 <polygon fill="none" stroke="#912a07" stroke-width="2" stroke-opacity="0.698039" points="1332,-3028 1044,-3028 1044,-2992 1332,-2992 1332,-3028"/>
-<text text-anchor="start" x="1052" y="-3012" font-family="Times,serif" font-size="10.00">github.com/gamedb/gamedb/cmd/webserver/helpers/middleware</text>
+<text text-anchor="start" x="1052" y="-3012" font-family="Times,serif" font-size="10.00">github.com/gamedb/gamedb/cmd/frontend/helpers/middleware</text>
 <text text-anchor="start" x="1052" y="-3002" font-family="Times,serif" font-size="10.00">105 / 2.4KB</text>
 </a>
 </g>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver&#45;&gt;n_github_com_gamedb_gamedb_cmd_webserver_helpers_middleware -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend&#45;&gt;n_github_com_gamedb_gamedb_cmd_frontend_helpers_middleware -->
 <g id="edge38" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver:e&#45;&gt;n_github_com_gamedb_gamedb_cmd_webserver_helpers_middleware</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend:e&#45;&gt;n_github_com_gamedb_gamedb_cmd_frontend_helpers_middleware</title>
 <path fill="none" stroke="#912a07" stroke-width="2" stroke-opacity="0.698039" d="M216,-2301C363.52,-2301 214.56,-2857.08 324,-2956 549.26,-3159.6 957.3,-3075.18 1118.67,-3030.77"/>
 <polygon fill="#912a07" fill-opacity="0.698039" stroke="#912a07" stroke-width="2" stroke-opacity="0.698039" points="1119.78,-3034.1 1128.48,-3028.04 1117.9,-3027.35 1119.78,-3034.1"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_helpers_session -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_helpers_session -->
 <g id="node12" class="node">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_helpers_session</title>
-<g id="a_node12"><a xlink:href="https://pkg.go.dev/github.com/gamedb/gamedb/cmd/webserver/helpers/session" xlink:title="github.com/gamedb/gamedb/cmd/webserver/helpers/session\l282 / 5.4KB\l" target="_graphviz">
+<title>n_github_com_gamedb_gamedb_cmd_frontend_helpers_session</title>
+<g id="a_node12"><a xlink:href="https://pkg.go.dev/github.com/gamedb/gamedb/cmd/frontend/helpers/session" xlink:title="github.com/gamedb/gamedb/cmd/frontend/helpers/session\l282 / 5.4KB\l" target="_graphviz">
 <polygon fill="none" stroke="#490791" stroke-width="2" stroke-opacity="0.698039" points="1728,-2700 1440,-2700 1440,-2664 1728,-2664 1728,-2700"/>
-<text text-anchor="start" x="1448" y="-2684" font-family="Times,serif" font-size="10.00">github.com/gamedb/gamedb/cmd/webserver/helpers/session</text>
+<text text-anchor="start" x="1448" y="-2684" font-family="Times,serif" font-size="10.00">github.com/gamedb/gamedb/cmd/frontend/helpers/session</text>
 <text text-anchor="start" x="1448" y="-2674" font-family="Times,serif" font-size="10.00">282 / 5.4KB</text>
 </a>
 </g>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver&#45;&gt;n_github_com_gamedb_gamedb_cmd_webserver_helpers_session -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend&#45;&gt;n_github_com_gamedb_gamedb_cmd_frontend_helpers_session -->
 <g id="edge39" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver:e&#45;&gt;n_github_com_gamedb_gamedb_cmd_webserver_helpers_session</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend:e&#45;&gt;n_github_com_gamedb_gamedb_cmd_frontend_helpers_session</title>
 <path fill="none" stroke="#490791" stroke-width="2" stroke-opacity="0.698039" d="M216,-2301C293.32,-2301 619.16,-2773.87 684,-2816 825.31,-2907.82 877.63,-2908.22 1044,-2935 1170.37,-2955.35 1214.53,-2985.83 1332,-2935 1396.35,-2907.15 1390.76,-2869.92 1440,-2820 1479.81,-2779.64 1527.43,-2734.24 1556.43,-2706.89"/>
 <polygon fill="#490791" fill-opacity="0.698039" stroke="#490791" stroke-width="2" stroke-opacity="0.698039" points="1558.86,-2709.41 1563.74,-2700.01 1554.06,-2704.32 1558.86,-2709.41"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages -->
 <g id="node13" class="node">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages</title>
-<g id="a_node13"><a xlink:href="https://pkg.go.dev/github.com/gamedb/gamedb/cmd/webserver/pages" xlink:title="github.com/gamedb/gamedb/cmd/webserver/pages\l11216 / 243.5KB\l" target="_graphviz">
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages</title>
+<g id="a_node13"><a xlink:href="https://pkg.go.dev/github.com/gamedb/gamedb/cmd/frontend/pages" xlink:title="github.com/gamedb/gamedb/cmd/frontend/pages\l11216 / 243.5KB\l" target="_graphviz">
 <polygon fill="none" stroke="#910786" stroke-width="2" stroke-opacity="0.698039" points="576,-2228 324,-2228 324,-2192 576,-2192 576,-2228"/>
-<text text-anchor="start" x="332" y="-2212" font-family="Times,serif" font-size="10.00">github.com/gamedb/gamedb/cmd/webserver/pages</text>
+<text text-anchor="start" x="332" y="-2212" font-family="Times,serif" font-size="10.00">github.com/gamedb/gamedb/cmd/frontend/pages</text>
 <text text-anchor="start" x="332" y="-2202" font-family="Times,serif" font-size="10.00">11216 / 243.5KB</text>
 </a>
 </g>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver&#45;&gt;n_github_com_gamedb_gamedb_cmd_webserver_pages -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend&#45;&gt;n_github_com_gamedb_gamedb_cmd_frontend_pages -->
 <g id="edge41" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver:e&#45;&gt;n_github_com_gamedb_gamedb_cmd_webserver_pages</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend:e&#45;&gt;n_github_com_gamedb_gamedb_cmd_frontend_pages</title>
 <path fill="none" stroke="#910786" stroke-width="2" stroke-opacity="0.698039" d="M216,-2301C290.15,-2301 369.03,-2260.52 413.35,-2233.56"/>
 <polygon fill="#910786" fill-opacity="0.698039" stroke="#910786" stroke-width="2" stroke-opacity="0.698039" points="415.35,-2236.44 422.01,-2228.2 411.66,-2230.49 415.35,-2236.44"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver&#45;&gt;n_github_com_gamedb_gamedb_pkg_config -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend&#45;&gt;n_github_com_gamedb_gamedb_pkg_config -->
 <g id="edge40" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_config</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_config</title>
 <path fill="none" stroke="#912507" stroke-width="2" stroke-opacity="0.698039" d="M216,-2301C379.11,-2301 212.5,-2907.95 324,-3027 474.76,-3187.98 588.45,-3132 809,-3132 809,-3132 809,-3132 2683,-3132 2884.64,-3132 2992.93,-3213 3132,-3067 3279.47,-2912.18 3322.86,-1267.57 3328.37,-1030.43"/>
 <polygon fill="#912507" fill-opacity="0.698039" stroke="#912507" stroke-width="2" stroke-opacity="0.698039" points="3331.88,-1030.29 3328.61,-1020.21 3324.88,-1030.13 3331.88,-1030.29"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver&#45;&gt;n_github_com_gamedb_gamedb_pkg_log -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend&#45;&gt;n_github_com_gamedb_gamedb_pkg_log -->
 <g id="edge34" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_log</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_log</title>
 <path fill="none" stroke="#5b0791" stroke-width="2" stroke-opacity="0.698039" d="M216,-2301C375.78,-2301 270.73,-1017.64 324,-867 417.84,-601.65 434.75,-476.74 684,-346 990.52,-185.22 1104.06,-449.64 1440,-533 1565.31,-564.1 1600.53,-550.49 1728,-571 1937.04,-604.64 1987.02,-625.98 2196,-660 2263.73,-671.03 2754.41,-700.13 2808,-743 2810.9,-745.32 2970.52,-1178.47 3012.81,-1293.32"/>
 <polygon fill="#5b0791" fill-opacity="0.698039" stroke="#5b0791" stroke-width="2" stroke-opacity="0.698039" points="3009.57,-1294.65 3016.31,-1302.83 3016.14,-1292.23 3009.57,-1294.65"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver&#45;&gt;n_github_com_gamedb_gamedb_pkg_mongo -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend&#45;&gt;n_github_com_gamedb_gamedb_pkg_mongo -->
 <g id="edge36" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_mongo</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_mongo</title>
 <path fill="none" stroke="#910748" stroke-width="2" stroke-opacity="0.698039" d="M216,-2301C421.41,-2301 222.02,-1561.3 324,-1383 423.7,-1208.69 493.67,-1174.01 684,-1110 973.04,-1012.8 1344.24,-1080.19 1504.06,-1117.62"/>
 <polygon fill="#910748" fill-opacity="0.698039" stroke="#910748" stroke-width="2" stroke-opacity="0.698039" points="1503.28,-1121.03 1513.82,-1119.93 1504.89,-1114.22 1503.28,-1121.03"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver&#45;&gt;n_github_com_gamedb_gamedb_pkg_queue -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend&#45;&gt;n_github_com_gamedb_gamedb_pkg_queue -->
 <g id="edge35" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_queue</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_queue</title>
 <path fill="none" stroke="#249107" stroke-width="2" stroke-opacity="0.698039" d="M216,-2301C354.67,-2301 569.48,-1222.21 684,-1144 747.24,-1100.81 959.9,-1113.98 1087.57,-1126.56"/>
 <polygon fill="#249107" fill-opacity="0.698039" stroke="#249107" stroke-width="2" stroke-opacity="0.698039" points="1087.45,-1130.07 1097.75,-1127.58 1088.15,-1123.1 1087.45,-1130.07"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver&#45;&gt;n_github_com_gamedb_gamedb_pkg_sql -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend&#45;&gt;n_github_com_gamedb_gamedb_pkg_sql -->
 <g id="edge37" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_sql</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_sql</title>
 <path fill="none" stroke="#07910a" stroke-width="2" stroke-opacity="0.698039" d="M216,-2301C537.26,-2301 616.67,-2272.14 936,-2237 947.03,-2235.79 1322.32,-2190.41 1332,-2185 1453.12,-2117.31 1538.64,-1965.75 1569.9,-1903.5"/>
 <polygon fill="#07910a" fill-opacity="0.698039" stroke="#07910a" stroke-width="2" stroke-opacity="0.698039" points="1573.16,-1904.82 1574.45,-1894.3 1566.88,-1901.71 1573.16,-1904.82"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_helpers -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_helpers -->
 <g id="node9" class="node">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_helpers</title>
-<g id="a_node9"><a xlink:href="https://pkg.go.dev/github.com/gamedb/gamedb/cmd/webserver/helpers" xlink:title="github.com/gamedb/gamedb/cmd/webserver/helpers\l21 / 572B\l" target="_graphviz">
+<title>n_github_com_gamedb_gamedb_cmd_frontend_helpers</title>
+<g id="a_node9"><a xlink:href="https://pkg.go.dev/github.com/gamedb/gamedb/cmd/frontend/helpers" xlink:title="github.com/gamedb/gamedb/cmd/frontend/helpers\l21 / 572B\l" target="_graphviz">
 <polygon fill="none" stroke="#070891" stroke-width="2" stroke-opacity="0.698039" points="2808,-3043 2556,-3043 2556,-3007 2808,-3007 2808,-3043"/>
-<text text-anchor="start" x="2564" y="-3027" font-family="Times,serif" font-size="10.00">github.com/gamedb/gamedb/cmd/webserver/helpers</text>
+<text text-anchor="start" x="2564" y="-3027" font-family="Times,serif" font-size="10.00">github.com/gamedb/gamedb/cmd/frontend/helpers</text>
 <text text-anchor="start" x="2564" y="-3017" font-family="Times,serif" font-size="10.00">21 / 572B</text>
 </a>
 </g>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_helpers&#45;&gt;n_github_com_gamedb_gamedb_pkg_config -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_helpers&#45;&gt;n_github_com_gamedb_gamedb_pkg_config -->
 <g id="edge42" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_helpers:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_config</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_helpers:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_config</title>
 <path fill="none" stroke="#912507" stroke-width="2" stroke-opacity="0.698039" d="M2808,-3025C2956.11,-3025 3034.59,-3058.57 3132,-2947 3264.19,-2795.6 3320.41,-1259.19 3328.08,-1030.42"/>
 <polygon fill="#912507" fill-opacity="0.698039" stroke="#912507" stroke-width="2" stroke-opacity="0.698039" points="3331.58,-1030.36 3328.42,-1020.25 3324.59,-1030.12 3331.58,-1030.36"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_helpers_datatable -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_helpers_datatable -->
 <g id="node10" class="node">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_helpers_datatable</title>
-<g id="a_node10"><a xlink:href="https://pkg.go.dev/github.com/gamedb/gamedb/cmd/webserver/helpers/datatable" xlink:title="github.com/gamedb/gamedb/cmd/webserver/helpers/datatable\l265 / 5.0KB\l" target="_graphviz">
+<title>n_github_com_gamedb_gamedb_cmd_frontend_helpers_datatable</title>
+<g id="a_node10"><a xlink:href="https://pkg.go.dev/github.com/gamedb/gamedb/cmd/frontend/helpers/datatable" xlink:title="github.com/gamedb/gamedb/cmd/frontend/helpers/datatable\l265 / 5.0KB\l" target="_graphviz">
 <polygon fill="none" stroke="#914b07" stroke-width="2" stroke-opacity="0.698039" points="1332,-2616 1044,-2616 1044,-2580 1332,-2580 1332,-2616"/>
-<text text-anchor="start" x="1052" y="-2600" font-family="Times,serif" font-size="10.00">github.com/gamedb/gamedb/cmd/webserver/helpers/datatable</text>
+<text text-anchor="start" x="1052" y="-2600" font-family="Times,serif" font-size="10.00">github.com/gamedb/gamedb/cmd/frontend/helpers/datatable</text>
 <text text-anchor="start" x="1052" y="-2590" font-family="Times,serif" font-size="10.00">265 / 5.0KB</text>
 </a>
 </g>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_helpers_datatable&#45;&gt;n_github_com_gamedb_gamedb_cmd_webserver_helpers_session -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_helpers_datatable&#45;&gt;n_github_com_gamedb_gamedb_cmd_frontend_helpers_session -->
 <g id="edge45" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_helpers_datatable:e&#45;&gt;n_github_com_gamedb_gamedb_cmd_webserver_helpers_session</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_helpers_datatable:e&#45;&gt;n_github_com_gamedb_gamedb_cmd_frontend_helpers_session</title>
 <path fill="none" stroke="#490791" stroke-width="2" stroke-opacity="0.698039" d="M1332,-2598C1409.49,-2598 1493.8,-2634.45 1542.33,-2659.33"/>
 <polygon fill="#490791" fill-opacity="0.698039" stroke="#490791" stroke-width="2" stroke-opacity="0.698039" points="1540.77,-2662.46 1551.25,-2663.98 1544,-2656.25 1540.77,-2662.46"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_helpers_datatable&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_helpers_datatable&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers -->
 <g id="edge46" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_helpers_datatable:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_helpers_datatable:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers</title>
 <path fill="none" stroke="#918307" stroke-width="2" stroke-opacity="0.698039" d="M1332,-2598C1344.26,-2598 2080.84,-2151.96 2088,-2142 2212.39,-1968.93 2300.22,-1269.56 2317.77,-1120.17"/>
 <polygon fill="#918307" fill-opacity="0.698039" stroke="#918307" stroke-width="2" stroke-opacity="0.698039" points="2321.28,-1120.34 2318.96,-1110 2314.32,-1119.53 2321.28,-1120.34"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_helpers_datatable&#45;&gt;n_github_com_gamedb_gamedb_pkg_log -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_helpers_datatable&#45;&gt;n_github_com_gamedb_gamedb_pkg_log -->
 <g id="edge43" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_helpers_datatable:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_log</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_helpers_datatable:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_log</title>
 <path fill="none" stroke="#5b0791" stroke-width="2" stroke-opacity="0.698039" d="M1332,-2598C1612.3,-2598 1680.7,-2552 1961,-2552 1961,-2552 1961,-2552 2323,-2552 2547.11,-2552 2656.24,-2578.91 2808,-2414 2957.95,-2251.06 3011.67,-1505 3021.33,-1349.46"/>
 <polygon fill="#5b0791" fill-opacity="0.698039" stroke="#5b0791" stroke-width="2" stroke-opacity="0.698039" points="3024.84,-1349.5 3021.95,-1339.3 3017.85,-1349.07 3024.84,-1349.5"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_helpers_datatable&#45;&gt;n_github_com_gamedb_gamedb_pkg_sql -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_helpers_datatable&#45;&gt;n_github_com_gamedb_gamedb_pkg_sql -->
 <g id="edge44" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_helpers_datatable:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_sql</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_helpers_datatable:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_sql</title>
 <path fill="none" stroke="#07910a" stroke-width="2" stroke-opacity="0.698039" d="M1332,-2598C1439.6,-2598 1400.86,-2226.23 1440,-2126 1473.77,-2039.5 1533.8,-1946.94 1564.21,-1902.63"/>
 <polygon fill="#07910a" fill-opacity="0.698039" stroke="#07910a" stroke-width="2" stroke-opacity="0.698039" points="1567.25,-1904.39 1570.06,-1894.18 1561.49,-1900.41 1567.25,-1904.39"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_helpers_middleware&#45;&gt;n_github_com_gamedb_gamedb_cmd_webserver_helpers_session -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_helpers_middleware&#45;&gt;n_github_com_gamedb_gamedb_cmd_frontend_helpers_session -->
 <g id="edge47" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_helpers_middleware:e&#45;&gt;n_github_com_gamedb_gamedb_cmd_webserver_helpers_session</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_helpers_middleware:e&#45;&gt;n_github_com_gamedb_gamedb_cmd_frontend_helpers_session</title>
 <path fill="none" stroke="#490791" stroke-width="2" stroke-opacity="0.698039" d="M1332,-3010C1429.13,-3010 1380.44,-2896.73 1440,-2820 1474.08,-2776.09 1521.9,-2732.79 1552.67,-2706.73"/>
 <polygon fill="#490791" fill-opacity="0.698039" stroke="#490791" stroke-width="2" stroke-opacity="0.698039" points="1555.08,-2709.28 1560.49,-2700.17 1550.58,-2703.91 1555.08,-2709.28"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_helpers_middleware&#45;&gt;n_github_com_gamedb_gamedb_pkg_config -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_helpers_middleware&#45;&gt;n_github_com_gamedb_gamedb_pkg_config -->
 <g id="edge49" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_helpers_middleware:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_config</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_helpers_middleware:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_config</title>
 <path fill="none" stroke="#912507" stroke-width="2" stroke-opacity="0.698039" d="M1332,-3010C1613.64,-3010 1679.36,-2933 1961,-2933 1961,-2933 1961,-2933 2683,-2933 2783.32,-2933 3061.06,-2956.94 3132,-2886 3269.56,-2748.43 3321.13,-1255.49 3328.15,-1030.36"/>
 <polygon fill="#912507" fill-opacity="0.698039" stroke="#912507" stroke-width="2" stroke-opacity="0.698039" points="3331.66,-1030.16 3328.47,-1020.06 3324.66,-1029.94 3331.66,-1030.16"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_helpers_middleware&#45;&gt;n_github_com_gamedb_gamedb_pkg_log -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_helpers_middleware&#45;&gt;n_github_com_gamedb_gamedb_pkg_log -->
 <g id="edge48" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_helpers_middleware:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_log</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_helpers_middleware:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_log</title>
 <path fill="none" stroke="#5b0791" stroke-width="2" stroke-opacity="0.698039" d="M1332,-3010C1394.77,-3010 1384.09,-2947.54 1440,-2919 1748.38,-2761.59 1858.25,-2807.17 2196,-2731 2466.73,-2669.94 2615.15,-2806.57 2808,-2607 2989.91,-2418.75 3018.61,-1520.94 3022.46,-1349.37"/>
 <polygon fill="#5b0791" fill-opacity="0.698039" stroke="#5b0791" stroke-width="2" stroke-opacity="0.698039" points="3025.96,-1349.42 3022.68,-1339.35 3018.96,-1349.27 3025.96,-1349.42"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_helpers_session&#45;&gt;n_github_com_gamedb_gamedb_pkg_config -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_helpers_session&#45;&gt;n_github_com_gamedb_gamedb_pkg_config -->
 <g id="edge52" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_helpers_session:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_config</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_helpers_session:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_config</title>
 <path fill="none" stroke="#912507" stroke-width="2" stroke-opacity="0.698039" d="M1728,-2682C1806.03,-2682 3074.37,-2694.61 3132,-2642 3256.58,-2528.27 3318.57,-1238.21 3327.79,-1030.23"/>
 <polygon fill="#912507" fill-opacity="0.698039" stroke="#912507" stroke-width="2" stroke-opacity="0.698039" points="3331.29,-1030.26 3328.23,-1020.12 3324.3,-1029.95 3331.29,-1030.26"/>
 </g>
@@ -549,123 +549,123 @@
 </a>
 </g>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_helpers_session&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers_i18n -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_helpers_session&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers_i18n -->
 <g id="edge50" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_helpers_session:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers_i18n</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_helpers_session:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers_i18n</title>
 <path fill="none" stroke="#079118" stroke-width="2" stroke-opacity="0.698039" d="M1728,-2682C1777.8,-2682 2414.5,-2184.85 2448,-2148 2554.93,-2030.38 2638.83,-1856.47 2668.95,-1789.59"/>
 <polygon fill="#079118" fill-opacity="0.698039" stroke="#079118" stroke-width="2" stroke-opacity="0.698039" points="2672.28,-1790.72 2673.16,-1780.16 2665.89,-1787.86 2672.28,-1790.72"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_helpers_session&#45;&gt;n_github_com_gamedb_gamedb_pkg_log -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_helpers_session&#45;&gt;n_github_com_gamedb_gamedb_pkg_log -->
 <g id="edge51" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_helpers_session:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_log</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_helpers_session:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_log</title>
 <path fill="none" stroke="#5b0791" stroke-width="2" stroke-opacity="0.698039" d="M1728,-2682C1776.4,-2682 1787.93,-2673.64 1836,-2668 1943.85,-2655.35 2728.7,-2640.19 2808,-2566 2992.94,-2392.96 3019.17,-1519.02 3022.54,-1349.5"/>
 <polygon fill="#5b0791" fill-opacity="0.698039" stroke="#5b0791" stroke-width="2" stroke-opacity="0.698039" points="3026.04,-1349.44 3022.73,-1339.37 3019.04,-1349.3 3026.04,-1349.44"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages&#45;&gt;n_github_com_gamedb_gamedb_cmd_webserver_helpers -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages&#45;&gt;n_github_com_gamedb_gamedb_cmd_frontend_helpers -->
 <g id="edge64" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages:e&#45;&gt;n_github_com_gamedb_gamedb_cmd_webserver_helpers</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages:e&#45;&gt;n_github_com_gamedb_gamedb_cmd_frontend_helpers</title>
 <path fill="none" stroke="#070891" stroke-width="2" stroke-opacity="0.698039" d="M576,-2210C745.93,-2210 566.91,-2843.86 684,-2967 840.44,-3131.52 959.97,-3056 1187,-3056 1187,-3056 1187,-3056 1963,-3056 2166.18,-3056 2401.39,-3043.46 2545.68,-3034.33"/>
 <polygon fill="#070891" fill-opacity="0.698039" stroke="#070891" stroke-width="2" stroke-opacity="0.698039" points="2546.15,-3037.8 2555.91,-3033.68 2545.7,-3030.82 2546.15,-3037.8"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages&#45;&gt;n_github_com_gamedb_gamedb_cmd_webserver_helpers_datatable -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages&#45;&gt;n_github_com_gamedb_gamedb_cmd_frontend_helpers_datatable -->
 <g id="edge68" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages:e&#45;&gt;n_github_com_gamedb_gamedb_cmd_webserver_helpers_datatable</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages:e&#45;&gt;n_github_com_gamedb_gamedb_cmd_frontend_helpers_datatable</title>
 <path fill="none" stroke="#914b07" stroke-width="2" stroke-opacity="0.698039" d="M576,-2210C741.34,-2210 554.39,-2463.34 684,-2566 805.56,-2662.28 999.86,-2640.6 1107.95,-2618.13"/>
 <polygon fill="#914b07" fill-opacity="0.698039" stroke="#914b07" stroke-width="2" stroke-opacity="0.698039" points="1108.76,-2621.53 1117.81,-2616.03 1107.3,-2614.69 1108.76,-2621.53"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages&#45;&gt;n_github_com_gamedb_gamedb_cmd_webserver_helpers_middleware -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages&#45;&gt;n_github_com_gamedb_gamedb_cmd_frontend_helpers_middleware -->
 <g id="edge66" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages:e&#45;&gt;n_github_com_gamedb_gamedb_cmd_webserver_helpers_middleware</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages:e&#45;&gt;n_github_com_gamedb_gamedb_cmd_frontend_helpers_middleware</title>
 <path fill="none" stroke="#912a07" stroke-width="2" stroke-opacity="0.698039" d="M576,-2210C735.15,-2210 573.14,-2803.81 684,-2918 731.61,-2967.04 903.94,-2990.37 1033.72,-3001.18"/>
 <polygon fill="#912a07" fill-opacity="0.698039" stroke="#912a07" stroke-width="2" stroke-opacity="0.698039" points="1033.53,-3004.67 1043.78,-3002 1034.09,-2997.7 1033.53,-3004.67"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages&#45;&gt;n_github_com_gamedb_gamedb_cmd_webserver_helpers_session -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages&#45;&gt;n_github_com_gamedb_gamedb_cmd_frontend_helpers_session -->
 <g id="edge69" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages:e&#45;&gt;n_github_com_gamedb_gamedb_cmd_webserver_helpers_session</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages:e&#45;&gt;n_github_com_gamedb_gamedb_cmd_frontend_helpers_session</title>
 <path fill="none" stroke="#490791" stroke-width="2" stroke-opacity="0.698039" d="M576,-2210C809,-2210 542.46,-2537.92 684,-2723 793.16,-2865.73 869.3,-2864.94 1044,-2907 1168.44,-2936.96 1212.45,-2952.74 1332,-2907 1359.46,-2896.49 1498.5,-2763.81 1557,-2707.26"/>
 <polygon fill="#490791" fill-opacity="0.698039" stroke="#490791" stroke-width="2" stroke-opacity="0.698039" points="1559.63,-2709.59 1564.38,-2700.12 1554.76,-2704.56 1559.63,-2709.59"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages_api -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages_api -->
 <g id="node14" class="node">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages_api</title>
-<g id="a_node14"><a xlink:href="https://pkg.go.dev/github.com/gamedb/gamedb/cmd/webserver/pages/api" xlink:title="github.com/gamedb/gamedb/cmd/webserver/pages/api\l839 / 24.0KB\l" target="_graphviz">
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages_api</title>
+<g id="a_node14"><a xlink:href="https://pkg.go.dev/github.com/gamedb/gamedb/cmd/frontend/pages/api" xlink:title="github.com/gamedb/gamedb/cmd/frontend/pages/api\l839 / 24.0KB\l" target="_graphviz">
 <polygon fill="none" stroke="#077691" stroke-width="2" stroke-opacity="0.698039" points="936,-2228 684,-2228 684,-2192 936,-2192 936,-2228"/>
-<text text-anchor="start" x="692" y="-2212" font-family="Times,serif" font-size="10.00">github.com/gamedb/gamedb/cmd/webserver/pages/api</text>
+<text text-anchor="start" x="692" y="-2212" font-family="Times,serif" font-size="10.00">github.com/gamedb/gamedb/cmd/frontend/pages/api</text>
 <text text-anchor="start" x="692" y="-2202" font-family="Times,serif" font-size="10.00">839 / 24.0KB</text>
 </a>
 </g>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages&#45;&gt;n_github_com_gamedb_gamedb_cmd_webserver_pages_api -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages&#45;&gt;n_github_com_gamedb_gamedb_cmd_frontend_pages_api -->
 <g id="edge53" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages:e&#45;&gt;n_github_com_gamedb_gamedb_cmd_webserver_pages_api</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages:e&#45;&gt;n_github_com_gamedb_gamedb_cmd_frontend_pages_api</title>
 <path fill="none" stroke="#077691" stroke-width="2" stroke-opacity="0.698039" d="M576,-2210C607.57,-2210 641.55,-2210 673.54,-2210"/>
 <polygon fill="#077691" fill-opacity="0.698039" stroke="#077691" stroke-width="2" stroke-opacity="0.698039" points="673.85,-2213.5 683.85,-2210 673.85,-2206.5 673.85,-2213.5"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages_api_generated -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages_api_generated -->
 <g id="node15" class="node">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages_api_generated</title>
-<g id="a_node15"><a xlink:href="https://pkg.go.dev/github.com/gamedb/gamedb/cmd/webserver/pages/api/generated" xlink:title="github.com/gamedb/gamedb/cmd/webserver/pages/api/generated\l691 / 22.4KB\l" target="_graphviz">
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages_api_generated</title>
+<g id="a_node15"><a xlink:href="https://pkg.go.dev/github.com/gamedb/gamedb/cmd/frontend/pages/api/generated" xlink:title="github.com/gamedb/gamedb/cmd/frontend/pages/api/generated\l691 / 22.4KB\l" target="_graphviz">
 <polygon fill="none" stroke="#5d0791" stroke-width="2" stroke-opacity="0.698039" points="1332,-2898 1044,-2898 1044,-2862 1332,-2862 1332,-2898"/>
-<text text-anchor="start" x="1052" y="-2882" font-family="Times,serif" font-size="10.00">github.com/gamedb/gamedb/cmd/webserver/pages/api/generated</text>
+<text text-anchor="start" x="1052" y="-2882" font-family="Times,serif" font-size="10.00">github.com/gamedb/gamedb/cmd/frontend/pages/api/generated</text>
 <text text-anchor="start" x="1052" y="-2872" font-family="Times,serif" font-size="10.00">691 / 22.4KB</text>
 </a>
 </g>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages&#45;&gt;n_github_com_gamedb_gamedb_cmd_webserver_pages_api_generated -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages&#45;&gt;n_github_com_gamedb_gamedb_cmd_frontend_pages_api_generated -->
 <g id="edge59" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages:e&#45;&gt;n_github_com_gamedb_gamedb_cmd_webserver_pages_api_generated</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages:e&#45;&gt;n_github_com_gamedb_gamedb_cmd_frontend_pages_api_generated</title>
 <path fill="none" stroke="#5d0791" stroke-width="2" stroke-opacity="0.698039" d="M576,-2210C762.29,-2210 574.48,-2464.31 684,-2615 796.05,-2769.17 868.26,-2774.26 1044,-2848 1053.97,-2852.18 1064.57,-2855.86 1075.31,-2859.08"/>
 <polygon fill="#5d0791" fill-opacity="0.698039" stroke="#5d0791" stroke-width="2" stroke-opacity="0.698039" points="1074.63,-2862.53 1085.21,-2861.91 1076.56,-2855.8 1074.63,-2862.53"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages_oauth -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages_oauth -->
 <g id="node16" class="node">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages_oauth</title>
-<g id="a_node16"><a xlink:href="https://pkg.go.dev/github.com/gamedb/gamedb/cmd/webserver/pages/oauth" xlink:title="github.com/gamedb/gamedb/cmd/webserver/pages/oauth\l756 / 18.2KB\l" target="_graphviz">
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages_oauth</title>
+<g id="a_node16"><a xlink:href="https://pkg.go.dev/github.com/gamedb/gamedb/cmd/frontend/pages/oauth" xlink:title="github.com/gamedb/gamedb/cmd/frontend/pages/oauth\l756 / 18.2KB\l" target="_graphviz">
 <polygon fill="none" stroke="#07910e" stroke-width="2" stroke-opacity="0.698039" points="936,-1544 684,-1544 684,-1508 936,-1508 936,-1544"/>
-<text text-anchor="start" x="692" y="-1528" font-family="Times,serif" font-size="10.00">github.com/gamedb/gamedb/cmd/webserver/pages/oauth</text>
+<text text-anchor="start" x="692" y="-1528" font-family="Times,serif" font-size="10.00">github.com/gamedb/gamedb/cmd/frontend/pages/oauth</text>
 <text text-anchor="start" x="692" y="-1518" font-family="Times,serif" font-size="10.00">756 / 18.2KB</text>
 </a>
 </g>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages&#45;&gt;n_github_com_gamedb_gamedb_cmd_webserver_pages_oauth -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages&#45;&gt;n_github_com_gamedb_gamedb_cmd_frontend_pages_oauth -->
 <g id="edge60" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages:e&#45;&gt;n_github_com_gamedb_gamedb_cmd_webserver_pages_oauth</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages:e&#45;&gt;n_github_com_gamedb_gamedb_cmd_frontend_pages_oauth</title>
 <path fill="none" stroke="#07910e" stroke-width="2" stroke-opacity="0.698039" d="M576,-2210C707.98,-2210 616.21,-1739.24 684,-1626 703.58,-1593.3 738.06,-1566.93 765.85,-1549.5"/>
 <polygon fill="#07910e" fill-opacity="0.698039" stroke="#07910e" stroke-width="2" stroke-opacity="0.698039" points="767.9,-1552.35 774.62,-1544.16 764.26,-1546.37 767.9,-1552.35"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages&#45;&gt;n_github_com_gamedb_gamedb_pkg_chatbot -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages&#45;&gt;n_github_com_gamedb_gamedb_pkg_chatbot -->
 <g id="edge65" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_chatbot</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_chatbot</title>
 <path fill="none" stroke="#917e07" stroke-width="2" stroke-opacity="0.698039" d="M576,-2210C710.76,-2210 622.53,-1121.92 684,-1002 702.56,-965.8 738.92,-936.56 767.66,-917.68"/>
 <polygon fill="#917e07" fill-opacity="0.698039" stroke="#917e07" stroke-width="2" stroke-opacity="0.698039" points="769.76,-920.49 776.31,-912.16 766,-914.59 769.76,-920.49"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages&#45;&gt;n_github_com_gamedb_gamedb_pkg_config -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages&#45;&gt;n_github_com_gamedb_gamedb_pkg_config -->
 <g id="edge62" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_config</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_config</title>
 <path fill="none" stroke="#912507" stroke-width="2" stroke-opacity="0.698039" d="M576,-2210C760.68,-2210 552.66,-2904.17 684,-3034 764.06,-3113.14 1074.43,-3094 1187,-3094 1187,-3094 1187,-3094 2683,-3094 2886.7,-3094 2995.64,-3153.33 3132,-3002 3270.52,-2848.28 3321.49,-1261.93 3328.21,-1030.19"/>
 <polygon fill="#912507" fill-opacity="0.698039" stroke="#912507" stroke-width="2" stroke-opacity="0.698039" points="3331.71,-1030.28 3328.5,-1020.19 3324.71,-1030.08 3331.71,-1030.28"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers -->
 <g id="edge71" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers</title>
 <path fill="none" stroke="#918307" stroke-width="2" stroke-opacity="0.698039" d="M576,-2210C704.67,-2210 612.98,-1164.3 684,-1057 754.24,-950.87 826.72,-986.24 936,-921 985.32,-891.55 988.97,-866.47 1044,-850 1335.71,-762.7 1426.32,-847.67 1728,-889 1776.29,-895.62 1787.9,-900.14 1836,-908 1947.78,-926.26 1981.78,-906.66 2088,-946 2167.53,-975.46 2248.89,-1034.34 2291.24,-1067.62"/>
 <polygon fill="#918307" fill-opacity="0.698039" stroke="#918307" stroke-width="2" stroke-opacity="0.698039" points="2289.16,-1070.45 2299.17,-1073.92 2293.52,-1064.97 2289.16,-1070.45"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers_crons -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers_crons -->
 <g id="edge70" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers_crons</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers_crons</title>
 <path fill="none" stroke="#120791" stroke-width="2" stroke-opacity="0.698039" d="M576,-2210C625.48,-2210 634.89,-2230.95 684,-2237 982.12,-2273.7 1337.61,-2208.4 1497.57,-2173.23"/>
 <polygon fill="#120791" fill-opacity="0.698039" stroke="#120791" stroke-width="2" stroke-opacity="0.698039" points="1498.36,-2176.64 1507.36,-2171.06 1496.84,-2169.81 1498.36,-2176.64"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers_i18n -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers_i18n -->
 <g id="edge74" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers_i18n</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers_i18n</title>
 <path fill="none" stroke="#079118" stroke-width="2" stroke-opacity="0.698039" d="M576,-2210C628.17,-2210 632.88,-2245.57 684,-2256 793.74,-2278.4 824.03,-2258.68 936,-2256 1288.52,-2247.55 1378.23,-2253.77 1728,-2209 1889.43,-2188.34 1936.68,-2201.9 2088,-2142 2325.14,-2048.12 2569.53,-1854.95 2651.91,-1786.62"/>
 <polygon fill="#079118" fill-opacity="0.698039" stroke="#079118" stroke-width="2" stroke-opacity="0.698039" points="2654.38,-1789.12 2659.82,-1780.03 2649.9,-1783.74 2654.38,-1789.12"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers_influx -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers_influx -->
 <g id="edge57" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers_influx</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers_influx</title>
 <path fill="none" stroke="#759107" stroke-width="2" stroke-opacity="0.698039" d="M576,-2210C699.08,-2210 581.39,-2397.03 684,-2465 777.37,-2526.85 824.39,-2474.37 936,-2465 1304.63,-2434.04 1405.77,-2390.7 1728,-2209 1778.04,-2180.79 1782.69,-2159.4 1836,-2138 1838.69,-2136.92 1841.43,-2135.89 1844.21,-2134.91"/>
 <polygon fill="#759107" fill-opacity="0.698039" stroke="#759107" stroke-width="2" stroke-opacity="0.698039" points="1845.4,-2138.21 1853.8,-2131.76 1843.21,-2131.56 1845.4,-2138.21"/>
 </g>
@@ -679,9 +679,9 @@
 </a>
 </g>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers_memcache -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers_memcache -->
 <g id="edge56" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers_memcache</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers_memcache</title>
 <path fill="none" stroke="#91073c" stroke-width="2" stroke-opacity="0.698039" d="M576,-2210C812.48,-2210 508.1,-1847.05 684,-1689 767.66,-1613.83 1514.06,-1579.47 1825.48,-1568.31"/>
 <polygon fill="#91073c" fill-opacity="0.698039" stroke="#91073c" stroke-width="2" stroke-opacity="0.698039" points="1826.05,-1571.79 1835.92,-1567.94 1825.8,-1564.8 1826.05,-1571.79"/>
 </g>
@@ -695,33 +695,33 @@
 </a>
 </g>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers_steam -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers_steam -->
 <g id="edge61" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers_steam</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers_steam</title>
 <path fill="none" stroke="#7a0791" stroke-width="2" stroke-opacity="0.698039" d="M576,-2210C814.1,-2210 514.83,-1311.56 684,-1144 844.64,-984.89 1559.88,-1070.42 1844.05,-1111.77"/>
 <polygon fill="#7a0791" fill-opacity="0.698039" stroke="#7a0791" stroke-width="2" stroke-opacity="0.698039" points="1843.57,-1115.24 1853.97,-1113.22 1844.58,-1108.31 1843.57,-1115.24"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages&#45;&gt;n_github_com_gamedb_gamedb_pkg_log -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages&#45;&gt;n_github_com_gamedb_gamedb_pkg_log -->
 <g id="edge67" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_log</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_log</title>
 <path fill="none" stroke="#5b0791" stroke-width="2" stroke-opacity="0.698039" d="M576,-2210C710.63,-2210 573.13,-2416.64 684,-2493 845.82,-2604.45 2258.84,-2422.13 2448,-2369 2615.54,-2321.94 2695.72,-2347.96 2808,-2215 2866.59,-2145.62 2990.9,-1493.21 3017.8,-1349.09"/>
 <polygon fill="#5b0791" fill-opacity="0.698039" stroke="#5b0791" stroke-width="2" stroke-opacity="0.698039" points="3021.24,-1349.71 3019.63,-1339.24 3014.36,-1348.43 3021.24,-1349.71"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages&#45;&gt;n_github_com_gamedb_gamedb_pkg_mongo -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages&#45;&gt;n_github_com_gamedb_gamedb_pkg_mongo -->
 <g id="edge54" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_mongo</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_mongo</title>
 <path fill="none" stroke="#910748" stroke-width="2" stroke-opacity="0.698039" d="M576,-2210C774.79,-2210 557.4,-1475.26 684,-1322 758.92,-1231.3 824.04,-1277.13 936,-1241 984.02,-1225.5 994.75,-1216.98 1044,-1206 1125.42,-1187.84 1351.67,-1162.31 1483.73,-1148.26"/>
 <polygon fill="#910748" fill-opacity="0.698039" stroke="#910748" stroke-width="2" stroke-opacity="0.698039" points="1484.27,-1151.73 1493.85,-1147.19 1483.54,-1144.77 1484.27,-1151.73"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages&#45;&gt;n_github_com_gamedb_gamedb_pkg_queue -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages&#45;&gt;n_github_com_gamedb_gamedb_pkg_queue -->
 <g id="edge58" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_queue</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_queue</title>
 <path fill="none" stroke="#249107" stroke-width="2" stroke-opacity="0.698039" d="M576,-2210C804.6,-2210 521.71,-1347.99 684,-1187 712.03,-1159.19 949.31,-1146.27 1087.73,-1141.04"/>
 <polygon fill="#249107" fill-opacity="0.698039" stroke="#249107" stroke-width="2" stroke-opacity="0.698039" points="1088.07,-1144.53 1097.93,-1140.66 1087.81,-1137.53 1088.07,-1144.53"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages&#45;&gt;n_github_com_gamedb_gamedb_pkg_sql -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages&#45;&gt;n_github_com_gamedb_gamedb_pkg_sql -->
 <g id="edge73" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_sql</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_sql</title>
 <path fill="none" stroke="#07910a" stroke-width="2" stroke-opacity="0.698039" d="M576,-2210C597.83,-2210 1311.58,-2003.71 1332,-1996 1407.57,-1967.48 1491.51,-1925.02 1540.64,-1898.99"/>
 <polygon fill="#07910a" fill-opacity="0.698039" stroke="#07910a" stroke-width="2" stroke-opacity="0.698039" points="1542.51,-1901.96 1549.7,-1894.18 1539.22,-1895.78 1542.51,-1901.96"/>
 </g>
@@ -735,9 +735,9 @@
 </a>
 </g>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages&#45;&gt;n_github_com_gamedb_gamedb_pkg_sql_pics -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages&#45;&gt;n_github_com_gamedb_gamedb_pkg_sql_pics -->
 <g id="edge55" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_sql_pics</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_sql_pics</title>
 <path fill="none" stroke="#916e07" stroke-width="2" stroke-opacity="0.698039" d="M576,-2210C735.81,-2210 573.43,-1614.38 684,-1499 999.74,-1169.53 1619.51,-1236.63 1861.17,-1278.18"/>
 <polygon fill="#916e07" fill-opacity="0.698039" stroke="#916e07" stroke-width="2" stroke-opacity="0.698039" points="1860.9,-1281.69 1871.35,-1279.96 1862.1,-1274.79 1860.9,-1281.69"/>
 </g>
@@ -751,123 +751,123 @@
 </a>
 </g>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages&#45;&gt;n_github_com_gamedb_gamedb_pkg_tasks -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages&#45;&gt;n_github_com_gamedb_gamedb_pkg_tasks -->
 <g id="edge63" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_tasks</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_tasks</title>
 <path fill="none" stroke="#07914d" stroke-width="2" stroke-opacity="0.698039" d="M576,-2210C679.82,-2210 776.51,-1848.55 802.31,-1744"/>
 <polygon fill="#07914d" fill-opacity="0.698039" stroke="#07914d" stroke-width="2" stroke-opacity="0.698039" points="805.73,-1744.71 804.71,-1734.17 798.94,-1743.05 805.73,-1744.71"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages&#45;&gt;n_github_com_gamedb_gamedb_pkg_websockets -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages&#45;&gt;n_github_com_gamedb_gamedb_pkg_websockets -->
 <g id="edge72" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_websockets</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_websockets</title>
 <path fill="none" stroke="#073191" stroke-width="2" stroke-opacity="0.698039" d="M576,-2210C740.77,-2210 571.88,-851.74 684,-731 787.64,-619.4 1246.25,-600.48 1465.49,-597.93"/>
 <polygon fill="#073191" fill-opacity="0.698039" stroke="#073191" stroke-width="2" stroke-opacity="0.698039" points="1465.79,-601.42 1475.75,-597.82 1465.71,-594.42 1465.79,-601.42"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages_api&#45;&gt;n_github_com_gamedb_gamedb_cmd_webserver_helpers_session -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages_api&#45;&gt;n_github_com_gamedb_gamedb_cmd_frontend_helpers_session -->
 <g id="edge83" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages_api:e&#45;&gt;n_github_com_gamedb_gamedb_cmd_webserver_helpers_session</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages_api:e&#45;&gt;n_github_com_gamedb_gamedb_cmd_frontend_helpers_session</title>
 <path fill="none" stroke="#490791" stroke-width="2" stroke-opacity="0.698039" d="M936,-2210C1157.27,-2210 871.4,-2557.55 1044,-2696 1186.15,-2810.03 1423.79,-2742.54 1529.5,-2703.66"/>
 <polygon fill="#490791" fill-opacity="0.698039" stroke="#490791" stroke-width="2" stroke-opacity="0.698039" points="1530.86,-2706.88 1539,-2700.11 1528.41,-2700.33 1530.86,-2706.88"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages_api&#45;&gt;n_github_com_gamedb_gamedb_cmd_webserver_pages_api_generated -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages_api&#45;&gt;n_github_com_gamedb_gamedb_cmd_frontend_pages_api_generated -->
 <g id="edge79" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages_api:e&#45;&gt;n_github_com_gamedb_gamedb_cmd_webserver_pages_api_generated</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages_api:e&#45;&gt;n_github_com_gamedb_gamedb_cmd_frontend_pages_api_generated</title>
 <path fill="none" stroke="#5d0791" stroke-width="2" stroke-opacity="0.698039" d="M936,-2210C1071.48,-2210 962.35,-2701.89 1044,-2810 1060.54,-2831.91 1085.77,-2847.35 1110.46,-2858.05"/>
 <polygon fill="#5d0791" fill-opacity="0.698039" stroke="#5d0791" stroke-width="2" stroke-opacity="0.698039" points="1109.29,-2861.36 1119.87,-2861.92 1111.96,-2854.88 1109.29,-2861.36"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages_api&#45;&gt;n_github_com_gamedb_gamedb_pkg_config -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages_api&#45;&gt;n_github_com_gamedb_gamedb_pkg_config -->
 <g id="edge82" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages_api:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_config</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages_api:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_config</title>
 <path fill="none" stroke="#912507" stroke-width="2" stroke-opacity="0.698039" d="M936,-2210C1170.3,-2210 869.81,-2569.3 1044,-2726 1216.48,-2881.16 2968.75,-2900.85 3132,-2736 3257.67,-2609.11 3318.96,-1245.11 3327.86,-1030.38"/>
 <polygon fill="#912507" fill-opacity="0.698039" stroke="#912507" stroke-width="2" stroke-opacity="0.698039" points="3331.36,-1030.37 3328.28,-1020.24 3324.37,-1030.08 3331.36,-1030.37"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages_api&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages_api&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers -->
 <g id="edge81" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages_api:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages_api:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers</title>
 <path fill="none" stroke="#918307" stroke-width="2" stroke-opacity="0.698039" d="M936,-2210C992.25,-2210 995.06,-2171.74 1044,-2144 1169.73,-2072.72 1221.94,-2086.67 1332,-1993 1392.92,-1941.15 1374.22,-1894.54 1440,-1849 1549.63,-1773.11 1613.74,-1833.72 1728,-1765 1786.99,-1729.53 1776.34,-1688.32 1836,-1654 1936.07,-1596.43 1998.92,-1664.44 2088,-1591 2244,-1462.39 2301.26,-1205.79 2316.46,-1120.38"/>
 <polygon fill="#918307" fill-opacity="0.698039" stroke="#918307" stroke-width="2" stroke-opacity="0.698039" points="2319.93,-1120.84 2318.19,-1110.39 2313.04,-1119.65 2319.93,-1120.84"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages_api&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers_influx -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages_api&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers_influx -->
 <g id="edge76" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages_api:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers_influx</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages_api:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers_influx</title>
 <path fill="none" stroke="#759107" stroke-width="2" stroke-opacity="0.698039" d="M936,-2210C1288.25,-2210 1379.97,-2234.37 1728,-2180 1787.46,-2170.71 1853.37,-2151.45 1899.87,-2136.3"/>
 <polygon fill="#759107" fill-opacity="0.698039" stroke="#759107" stroke-width="2" stroke-opacity="0.698039" points="1901.08,-2139.58 1909.48,-2133.13 1898.89,-2132.93 1901.08,-2139.58"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages_api&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers_memcache -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages_api&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers_memcache -->
 <g id="edge75" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages_api:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers_memcache</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages_api:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers_memcache</title>
 <path fill="none" stroke="#91073c" stroke-width="2" stroke-opacity="0.698039" d="M936,-2210C1010.43,-2210 988.57,-2131.68 1044,-2082 1201.89,-1940.5 1254.58,-1918.82 1440,-1816 1562.66,-1747.98 1602.8,-1750.22 1728,-1687 1777.21,-1662.15 1787.29,-1651.81 1836,-1626 1861.6,-1612.43 1890.57,-1598.01 1914.17,-1586.49"/>
 <polygon fill="#91073c" fill-opacity="0.698039" stroke="#91073c" stroke-width="2" stroke-opacity="0.698039" points="1915.8,-1589.59 1923.26,-1582.06 1912.74,-1583.29 1915.8,-1589.59"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages_api&#45;&gt;n_github_com_gamedb_gamedb_pkg_log -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages_api&#45;&gt;n_github_com_gamedb_gamedb_pkg_log -->
 <g id="edge80" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages_api:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_log</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages_api:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_log</title>
 <path fill="none" stroke="#5b0791" stroke-width="2" stroke-opacity="0.698039" d="M936,-2210C1009.85,-2210 1509.15,-2362 1583,-2362 1583,-2362 1583,-2362 1963,-2362 2374.97,-2362 2532.95,-2287.69 2808,-1981 2852.81,-1931.03 2982.45,-1468.22 3015.34,-1348.94"/>
 <polygon fill="#5b0791" fill-opacity="0.698039" stroke="#5b0791" stroke-width="2" stroke-opacity="0.698039" points="3018.77,-1349.67 3018.05,-1339.1 3012.02,-1347.81 3018.77,-1349.67"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages_api&#45;&gt;n_github_com_gamedb_gamedb_pkg_mongo -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages_api&#45;&gt;n_github_com_gamedb_gamedb_pkg_mongo -->
 <g id="edge84" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages_api:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_mongo</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages_api:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_mongo</title>
 <path fill="none" stroke="#910748" stroke-width="2" stroke-opacity="0.698039" d="M936,-2210C1038.59,-2210 992.91,-2094.96 1044,-2006 1238.42,-1667.46 1496.93,-1269.47 1565.63,-1164.47"/>
 <polygon fill="#910748" fill-opacity="0.698039" stroke="#910748" stroke-width="2" stroke-opacity="0.698039" points="1568.6,-1166.33 1571.15,-1156.04 1562.74,-1162.49 1568.6,-1166.33"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages_api&#45;&gt;n_github_com_gamedb_gamedb_pkg_queue -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages_api&#45;&gt;n_github_com_gamedb_gamedb_pkg_queue -->
 <g id="edge78" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages_api:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_queue</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages_api:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_queue</title>
 <path fill="none" stroke="#249107" stroke-width="2" stroke-opacity="0.698039" d="M936,-2210C991.26,-2210 1151.55,-1334.96 1181.98,-1166.04"/>
 <polygon fill="#249107" fill-opacity="0.698039" stroke="#249107" stroke-width="2" stroke-opacity="0.698039" points="1185.43,-1166.62 1183.76,-1156.16 1178.54,-1165.38 1185.43,-1166.62"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages_api&#45;&gt;n_github_com_gamedb_gamedb_pkg_sql -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages_api&#45;&gt;n_github_com_gamedb_gamedb_pkg_sql -->
 <g id="edge77" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages_api:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_sql</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages_api:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_sql</title>
 <path fill="none" stroke="#07910a" stroke-width="2" stroke-opacity="0.698039" d="M936,-2210C947.13,-2210 1322.18,-2153.24 1332,-2148 1443.95,-2088.23 1532.56,-1958.78 1567.21,-1902.75"/>
 <polygon fill="#07910a" fill-opacity="0.698039" stroke="#07910a" stroke-width="2" stroke-opacity="0.698039" points="1570.27,-1904.46 1572.49,-1894.1 1564.29,-1900.81 1570.27,-1904.46"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages_oauth&#45;&gt;n_github_com_gamedb_gamedb_cmd_webserver_helpers_session -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages_oauth&#45;&gt;n_github_com_gamedb_gamedb_cmd_frontend_helpers_session -->
 <g id="edge85" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages_oauth:e&#45;&gt;n_github_com_gamedb_gamedb_cmd_webserver_helpers_session</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages_oauth:e&#45;&gt;n_github_com_gamedb_gamedb_cmd_frontend_helpers_session</title>
 <path fill="none" stroke="#490791" stroke-width="2" stroke-opacity="0.698039" d="M936,-1526C1188.7,-1526 860.85,-2483.89 1044,-2658 1071.5,-2684.14 1280.1,-2686.81 1429.55,-2685.24"/>
 <polygon fill="#490791" fill-opacity="0.698039" stroke="#490791" stroke-width="2" stroke-opacity="0.698039" points="1429.79,-2688.74 1439.75,-2685.13 1429.72,-2681.74 1429.79,-2688.74"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages_oauth&#45;&gt;n_github_com_gamedb_gamedb_pkg_config -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages_oauth&#45;&gt;n_github_com_gamedb_gamedb_pkg_config -->
 <g id="edge90" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages_oauth:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_config</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages_oauth:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_config</title>
 <path fill="none" stroke="#912507" stroke-width="2" stroke-opacity="0.698039" d="M936,-1526C1181.4,-1526 862.19,-2460.18 1044,-2625 1082.43,-2659.84 1696.33,-2658.49 2448,-2566 2609.78,-2546.09 2677.83,-2594.1 2808,-2496 3061.34,-2305.07 3023.69,-2158.17 3132,-1860 3246.51,-1544.77 3309.46,-1139.52 3325.1,-1030.21"/>
 <polygon fill="#912507" fill-opacity="0.698039" stroke="#912507" stroke-width="2" stroke-opacity="0.698039" points="3328.57,-1030.68 3326.51,-1020.29 3321.64,-1029.7 3328.57,-1030.68"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages_oauth&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages_oauth&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers -->
 <g id="edge91" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages_oauth:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages_oauth:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers</title>
 <path fill="none" stroke="#918307" stroke-width="2" stroke-opacity="0.698039" d="M936,-1526C1126.59,-1526 898.65,-1234.28 1044,-1111 1219.82,-961.88 1952.62,-1042.48 2221.51,-1078"/>
 <polygon fill="#918307" fill-opacity="0.698039" stroke="#918307" stroke-width="2" stroke-opacity="0.698039" points="2221.28,-1081.5 2231.65,-1079.34 2222.2,-1074.56 2221.28,-1081.5"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages_oauth&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers_memcache -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages_oauth&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers_memcache -->
 <g id="edge92" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages_oauth:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers_memcache</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages_oauth:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_helpers_memcache</title>
 <path fill="none" stroke="#91073c" stroke-width="2" stroke-opacity="0.698039" d="M936,-1526C1105.19,-1526 1587.95,-1546.94 1825.55,-1557.73"/>
 <polygon fill="#91073c" fill-opacity="0.698039" stroke="#91073c" stroke-width="2" stroke-opacity="0.698039" points="1825.49,-1561.23 1835.64,-1558.19 1825.81,-1554.24 1825.49,-1561.23"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages_oauth&#45;&gt;n_github_com_gamedb_gamedb_pkg_log -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages_oauth&#45;&gt;n_github_com_gamedb_gamedb_pkg_log -->
 <g id="edge86" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages_oauth:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_log</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages_oauth:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_log</title>
 <path fill="none" stroke="#5b0791" stroke-width="2" stroke-opacity="0.698039" d="M936,-1526C1136.45,-1526 2536.6,-1374.28 2923.91,-1331.89"/>
 <polygon fill="#5b0791" fill-opacity="0.698039" stroke="#5b0791" stroke-width="2" stroke-opacity="0.698039" points="2924.42,-1335.35 2933.98,-1330.78 2923.66,-1328.39 2924.42,-1335.35"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages_oauth&#45;&gt;n_github_com_gamedb_gamedb_pkg_mongo -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages_oauth&#45;&gt;n_github_com_gamedb_gamedb_pkg_mongo -->
 <g id="edge88" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages_oauth:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_mongo</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages_oauth:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_mongo</title>
 <path fill="none" stroke="#910748" stroke-width="2" stroke-opacity="0.698039" d="M936,-1526C1024.02,-1526 976.25,-1416.19 1044,-1360 1177.41,-1249.36 1373.54,-1187.4 1488.77,-1158.5"/>
 <polygon fill="#910748" fill-opacity="0.698039" stroke="#910748" stroke-width="2" stroke-opacity="0.698039" points="1489.77,-1161.86 1498.64,-1156.06 1488.09,-1155.07 1489.77,-1161.86"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages_oauth&#45;&gt;n_github_com_gamedb_gamedb_pkg_queue -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages_oauth&#45;&gt;n_github_com_gamedb_gamedb_pkg_queue -->
 <g id="edge87" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages_oauth:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_queue</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages_oauth:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_queue</title>
 <path fill="none" stroke="#249107" stroke-width="2" stroke-opacity="0.698039" d="M936,-1526C1053.78,-1526 977.75,-1381.38 1044,-1284 1076.52,-1236.2 1125.57,-1190.1 1156.94,-1162.9"/>
 <polygon fill="#249107" fill-opacity="0.698039" stroke="#249107" stroke-width="2" stroke-opacity="0.698039" points="1159.59,-1165.24 1164.9,-1156.08 1155.03,-1159.93 1159.59,-1165.24"/>
 </g>
-<!-- n_github_com_gamedb_gamedb_cmd_webserver_pages_oauth&#45;&gt;n_github_com_gamedb_gamedb_pkg_sql -->
+<!-- n_github_com_gamedb_gamedb_cmd_frontend_pages_oauth&#45;&gt;n_github_com_gamedb_gamedb_pkg_sql -->
 <g id="edge89" class="edge">
-<title>n_github_com_gamedb_gamedb_cmd_webserver_pages_oauth:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_sql</title>
+<title>n_github_com_gamedb_gamedb_cmd_frontend_pages_oauth:e&#45;&gt;n_github_com_gamedb_gamedb_pkg_sql</title>
 <path fill="none" stroke="#07910a" stroke-width="2" stroke-opacity="0.698039" d="M936,-1526C1073.38,-1526 1436.82,-1773.2 1549.32,-1852.1"/>
 <polygon fill="#07910a" fill-opacity="0.698039" stroke="#07910a" stroke-width="2" stroke-opacity="0.698039" points="1547.4,-1855.03 1557.59,-1857.92 1551.43,-1849.3 1547.4,-1855.03"/>
 </g>

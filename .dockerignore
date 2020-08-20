@@ -2,19 +2,19 @@
 /cmd/chatbot/chatbot
 /cmd/consumers/consumers
 /cmd/crons/crons
-/cmd/webserver/webserver
+/cmd/frontend/frontend
 /cmd/steam/steam
 /cmd/test/test
 
 # Source maps
-/cmd/webserver/assets/dist/main.css.map
-/cmd/webserver/assets/dist/main.js.map
+/cmd/frontend/assets/dist/main.css.map
+/cmd/frontend/assets/dist/main.js.map
 
 # Vendors
 /node_modules/
 
 # Caches
-/cmd/webserver/cache/
+/cmd/frontend/cache/
 /tmp/
 /.tscache/
 

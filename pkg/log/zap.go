@@ -20,7 +20,7 @@ const (
 	LogNameConsumers LogName = "binary-consumers"
 	LogNameCrons     LogName = "binary-crons"
 	LogNameSteam     LogName = "binary-steam"
-	LogNameWebserver LogName = "binary-webserver"
+	LogNameFrontend  LogName = "binary-frontend"
 	LogNameTest      LogName = "binary-test"
 	LogNameScaler    LogName = "binary-scaler"
 )

@@ -11,18 +11,18 @@ COPY ./ ./
 RUN apk update \
   && apk add git \
   && go get -u github.com/gobuffalo/packr/v2/packr2 \
-  && cd ./cmd/webserver \
+  && cd ./cmd/frontend \
   && CGO_ENABLED=0 GOOS=linux packr2 build -a -ldflags "-X main.version=`git rev-parse --verify HEAD` -X main.commits=`git rev-list --count master`"
 
 # Runtime image
 FROM alpine:3.12 AS runtime-env
 WORKDIR /root/
-COPY --from=build-env /root/cmd/webserver/webserver ./
-COPY ./cmd/webserver/assets/GeoLite2-Country.mmdb ./assets/GeoLite2-Country.mmdb
-COPY ./cmd/webserver/health-check.sh ./health-check.sh
+COPY --from=build-env /root/cmd/frontend/frontend ./
+COPY ./cmd/frontend/assets/GeoLite2-Country.mmdb ./assets/GeoLite2-Country.mmdb
+COPY ./cmd/frontend/health-check.sh ./health-check.sh
 RUN chmod +x health-check.sh \
   && touch ./google-auth.json \
   && apk update \
   && apk add ca-certificates curl bash tzdata
-CMD ["./webserver"]
+CMD ["./frontend"]
 HEALTHCHECK --interval=60s --timeout=10s --start-period=30s --retries=2 CMD ./health-check.sh

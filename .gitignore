@@ -1,13 +1,13 @@
 # Source maps
-/cmd/webserver/assets/dist/main.css.map
-/cmd/webserver/assets/dist/main.js.map
+/cmd/frontend/assets/dist/main.css.map
+/cmd/frontend/assets/dist/main.js.map
 
 # Vendors
 /node_modules/
 /vendor/
 
 # Caches
-/cmd/webserver/cache/
+/cmd/frontend/cache/
 /tmp/
 /.tscache/
 

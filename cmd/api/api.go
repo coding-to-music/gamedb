@@ -11,7 +11,7 @@ import (
 
 	"github.com/didip/tollbooth/v6/limiter"
 	"github.com/gamedb/gamedb/cmd/api/generated"
-	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
+	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	influxHelpers "github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/mysql"

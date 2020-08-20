@@ -18,10 +18,10 @@ module.exports = {
     },
     mode: 'production',
     entry: [
-        path.resolve(__dirname, 'cmd/webserver/assets/sass/index.scss'),
+        path.resolve(__dirname, 'cmd/frontend/assets/sass/index.scss'),
     ],
     output: {
-        path: path.resolve(__dirname, 'cmd/webserver/assets/dist'),
+        path: path.resolve(__dirname, 'cmd/frontend/assets/dist'),
         publicPath: '/assets/dist/',
     },
     // devtool: "source-map",
@@ -74,7 +74,7 @@ module.exports = {
                             implementation: require("node-sass"),
                             sassOptions: {
                                 includePaths: [
-                                    path.resolve(__dirname, 'cmd/webserver/assets/sass/*'),
+                                    path.resolve(__dirname, 'cmd/frontend/assets/sass/*'),
                                 ],
                             }
                         },
@@ -106,12 +106,12 @@ module.exports = {
             outputPath: './',
             fileName: 'main.js',
             filesToConcat: [
-                path.resolve(__dirname, 'cmd/webserver/assets/js/third-party/*.js'),
-                path.resolve(__dirname, 'cmd/webserver/assets/js/helpers/*.js'),
-                path.resolve(__dirname, 'cmd/webserver/assets/js/plugins/*.js'),
-                path.resolve(__dirname, 'cmd/webserver/assets/js/global.js'),
-                path.resolve(__dirname, 'cmd/webserver/assets/js/product.js'),
-                path.resolve(__dirname, 'cmd/webserver/assets/js/*.js'),
+                path.resolve(__dirname, 'cmd/frontend/assets/js/third-party/*.js'),
+                path.resolve(__dirname, 'cmd/frontend/assets/js/helpers/*.js'),
+                path.resolve(__dirname, 'cmd/frontend/assets/js/plugins/*.js'),
+                path.resolve(__dirname, 'cmd/frontend/assets/js/global.js'),
+                path.resolve(__dirname, 'cmd/frontend/assets/js/product.js'),
+                path.resolve(__dirname, 'cmd/frontend/assets/js/*.js'),
             ],
             attributes: {
                 async: true
@@ -124,16 +124,16 @@ module.exports = {
         // ),
         new HtmlWebpackPlugin(
             {
-                filename: path.resolve(__dirname, 'cmd/webserver/templates/_webpack_header.gohtml'),
-                template: path.resolve(__dirname, 'cmd/webserver/templates/_webpack_header.ejs'),
+                filename: path.resolve(__dirname, 'cmd/frontend/templates/_webpack_header.gohtml'),
+                template: path.resolve(__dirname, 'cmd/frontend/templates/_webpack_header.ejs'),
                 hash: true,
                 inject: false,
             }
         ),
         new HtmlWebpackPlugin(
             {
-                filename: path.resolve(__dirname, 'cmd/webserver/templates/_webpack_footer.gohtml'),
-                template: path.resolve(__dirname, 'cmd/webserver/templates/_webpack_footer.ejs'),
+                filename: path.resolve(__dirname, 'cmd/frontend/templates/_webpack_footer.gohtml'),
+                template: path.resolve(__dirname, 'cmd/frontend/templates/_webpack_footer.ejs'),
                 hash: true,
                 inject: false,
             }

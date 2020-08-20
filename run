@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CMD=${1:-"webserver"}
+CMD=${1:-"frontend"}
 
 nodemon \
   --signal SIGHUP \
