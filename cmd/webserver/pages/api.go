@@ -10,6 +10,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/go-chi/chi"
 	"go.uber.org/zap"
+	"gopkg.in/yaml.v2"
 )
 
 func APIRouter() http.Handler {
@@ -19,7 +20,9 @@ func APIRouter() http.Handler {
 	r.Get("/gamedb", apiHandler)
 	r.Get("/steam", apiHandler)
 	r.Get("/gamedb.json", apiGamedbJSONHandler)
+	r.Get("/gamedb.yaml", apiGamedbYAMLHandler)
 	r.Get("/steam.json", apiSteamJSONHandler)
+	r.Get("/steam.yaml", apiSteamYAMLHandler)
 
 	return r
 }
@@ -60,15 +63,51 @@ func apiGamedbJSONHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func apiGamedbYAMLHandler(w http.ResponseWriter, r *http.Request) {
+
+	b, err := yaml.Marshal(api.SwaggerGameDB)
+	if err != nil {
+		zap.S().Error(err)
+		return
+	}
+
+	_, err = w.Write(b)
+	if err != nil {
+		zap.S().Error(err)
+	}
+}
+
 func apiSteamJSONHandler(w http.ResponseWriter, r *http.Request) {
 
 	var item = memcache.MemcacheAPISteam
 	var b []byte
 
-	err := memcache.GetSetInterface(item.Key, item.Expiration, &b, func() (interface{}, error) {
-		return json.Marshal(api.GetSteamJSON())
-	})
+	callback := func() (interface{}, error) {
+		return json.Marshal(api.GetSteam())
+	}
 
+	err := memcache.GetSetInterface(item.Key, item.Expiration, &b, callback)
+	if err != nil {
+		zap.S().Error(err)
+		return
+	}
+
+	_, err = w.Write(b)
+	if err != nil {
+		zap.S().Error(err)
+	}
+}
+
+func apiSteamYAMLHandler(w http.ResponseWriter, r *http.Request) {
+
+	var item = memcache.MemcacheAPISteam
+	var b []byte
+
+	callback := func() (interface{}, error) {
+		return yaml.Marshal(api.GetSteam())
+	}
+
+	err := memcache.GetSetInterface(item.Key, item.Expiration, &b, callback)
 	if err != nil {
 		zap.S().Error(err)
 		return
