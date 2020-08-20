@@ -19,6 +19,7 @@ const (
 var Config BaseConfig
 
 type BaseConfig struct {
+
 	// Admin
 	AdminName    ConfigItem
 	AdminEmail   ConfigItem
@@ -42,10 +43,6 @@ type BaseConfig struct {
 	ElasticAddress  ConfigItem
 	ElasticUsername ConfigItem
 	ElasticPassword ConfigItem
-
-	// Facebook
-	FacebookAppID     ConfigItem
-	FacebookAppSecret ConfigItem
 
 	// GitHub
 	GitHubClient        ConfigItem
@@ -189,10 +186,6 @@ func init() {
 	Config.ElasticAddress.Set("ELASTIC_SEARCH_ADDRESS")
 	Config.ElasticUsername.Set("ELASTIC_SEARCH_USERNAME")
 	Config.ElasticPassword.Set("ELASTIC_SEARCH_PASSWORD")
-
-	// Facebook
-	Config.FacebookAppID.Set("FACEBOOK_APP_ID")
-	Config.FacebookAppID.Set("FACEBOOK_APP_SECRET")
 
 	// GitHub
 	Config.GitHubClient.Set("GITHUB_CLIENT")
