@@ -782,14 +782,7 @@ func savePlayerToInflux(player mongo.Player) (err error) {
 		"badges":   player.BadgesCount,
 		"friends":  player.FriendsCount,
 		"comments": player.CommentsCount,
-	}
-
-	// Add ranks to map
-	for k, v := range mongo.PlayerRankFieldsInflux {
-
-		if val, ok := player.Ranks[string(k)]; ok && val > 0 {
-			fields[v] = val
-		}
+		// Others stored in sub queues
 	}
 
 	return savePlayerStatsToInflux(player.ID, fields)
