@@ -42,6 +42,7 @@ if ($playerPage.length > 0) {
                     '<li data-queue="alias">Aliases</li>' +
                     '<li data-queue="group">Groups</li>' +
                     '<li data-queue="game">Games</li>' +
+                    '<li data-queue="badge">Badges</li>' +
                     '<li data-queue="achievement">Achievements</li>' +
                     '</ul>';
 
@@ -55,8 +56,6 @@ if ($playerPage.length > 0) {
                     t.find('.toast-message').html('Click to refresh!');
                 }
             }
-
-            // toast(true, 'Click to refresh', 'This player has been updated', -1, 'refresh');
 
             $('i, svg', $updateLink).removeClass('fa-spin', 'fa-sync-alt').addClass('fa-check');
             $updateLink.contents().last()[0].textContent = ' Updated';

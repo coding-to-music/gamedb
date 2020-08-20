@@ -87,6 +87,7 @@ type Player struct {
 	Avatar                   string                     `bson:"avatar"`
 	BackgroundAppID          int                        `bson:"background_app_id"`
 	BadgesCount              int                        `bson:"badges_count"`
+	BadgesFoilCount          int                        `bson:"badges_foil_count"`
 	BadgeStats               ProfileBadgeStats          `bson:"badge_stats"`
 	Bans                     PlayerBans                 `bson:"bans"`
 	CommentsCount            int                        `bson:"comments_count"`
@@ -167,6 +168,7 @@ func (player Player) BSON() bson.D {
 
 		// Rank Metrics
 		{"badges_count", player.BadgesCount},
+		{"badges_foil_count", player.BadgesFoilCount},
 		{"friends_count", player.FriendsCount},
 		{"games_count", player.GamesCount},
 		{"level", player.Level},

@@ -133,13 +133,6 @@ func playerHandler(message *rabbit.Message) {
 			return
 		}
 
-		err = updatePlayerBadges(&player)
-		if err != nil {
-			steam.LogSteamError(err, payload.ID)
-			sendToRetryQueue(message)
-			return
-		}
-
 		err = updatePlayerFriends(&player)
 		if err != nil {
 			steam.LogSteamError(err, payload.ID)
@@ -318,6 +311,11 @@ func playerHandler(message *rabbit.Message) {
 	// Produce to sub queues
 	var produces = []QueueMessageInterface{
 		// PlayersSearchMessage{Player: &player}, // Done in sub queues
+		PlayerBadgesMessage{
+			PlayerID:     player.ID,
+			PlayerName:   player.PersonaName,
+			PlayerAvatar: player.Avatar,
+		},
 		PlayerGamesMessage{
 			PlayerID:                 player.ID,
 			PlayerCountry:            player.CountryCode,
@@ -457,79 +455,6 @@ func updatePlayerRecentGames(player *mongo.Player, payload PlayerMessage) error 
 	}
 
 	return nil
-}
-
-func updatePlayerBadges(player *mongo.Player) error {
-
-	response, err := steam.GetSteam().GetBadges(player.ID)
-	err = steam.AllowSteamCodes(err)
-	if err != nil {
-		return err
-	}
-
-	// Save count
-	player.BadgesCount = len(response.Badges)
-
-	// Save stats
-	player.BadgeStats = mongo.ProfileBadgeStats{
-		PlayerXP:                   response.PlayerXP,
-		PlayerLevel:                response.PlayerLevel,
-		PlayerXPNeededToLevelUp:    response.PlayerXPNeededToLevelUp,
-		PlayerXPNeededCurrentLevel: response.PlayerXPNeededCurrentLevel,
-		PercentOfLevel:             response.GetPercentOfLevel(),
-	}
-
-	// Save badges
-	var playerBadgeSlice []mongo.PlayerBadge
-	var appIDSlice []int
-
-	for _, badge := range response.Badges {
-
-		appIDSlice = append(appIDSlice, badge.AppID)
-		playerBadgeSlice = append(playerBadgeSlice, mongo.PlayerBadge{
-			AppID:               badge.AppID,
-			BadgeCompletionTime: time.Unix(badge.CompletionTime, 0),
-			BadgeFoil:           bool(badge.BorderColor),
-			BadgeID:             badge.BadgeID,
-			BadgeItemID:         int64(badge.CommunityItemID),
-			BadgeLevel:          badge.Level,
-			BadgeScarcity:       badge.Scarcity,
-			BadgeXP:             badge.XP,
-			PlayerID:            player.ID,
-			PlayerIcon:          player.Avatar,
-			PlayerName:          player.PersonaName,
-		})
-	}
-	appIDSlice = helpers.UniqueInt(appIDSlice)
-
-	// Make map of app rows
-	var appRowsMap = map[int]mongo.App{}
-	appRows, err := mongo.GetAppsByID(appIDSlice, bson.M{"_id": 1, "name": 1, "icon": 1})
-	if err != nil {
-		return err
-	}
-
-	for _, v := range appRows {
-		appRowsMap[v.ID] = v
-	}
-
-	// Finish badges slice
-	for k, v := range playerBadgeSlice {
-
-		if v.IsSpecial() {
-			if badge, ok := helpers.BuiltInSpecialBadges[v.BadgeID]; ok {
-				playerBadgeSlice[k].AppName = badge.Name
-			}
-		} else {
-			if app, ok := appRowsMap[v.AppID]; ok {
-				playerBadgeSlice[k].AppName = app.Name
-				playerBadgeSlice[k].BadgeIcon = app.Icon
-			}
-		}
-	}
-
-	// Save to Mongo
-	return mongo.ReplacePlayerBadges(playerBadgeSlice)
 }
 
 func updatePlayerFriends(player *mongo.Player) error {
@@ -779,7 +704,6 @@ func savePlayerToInflux(player mongo.Player) (err error) {
 
 	fields := map[string]interface{}{
 		"level":    player.Level,
-		"badges":   player.BadgesCount,
 		"friends":  player.FriendsCount,
 		"comments": player.CommentsCount,
 		// Others stored in sub queues
@@ -803,4 +727,18 @@ func savePlayerStatsToInflux(playerId int64, fields map[string]interface{}) erro
 
 	_, err := influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, point)
 	return err
+}
+
+// Helper used in other consumers
+func sendPlayerWebsocket(playerID int64, key string, message *rabbit.Message) {
+
+	wsPayload := PlayerPayload{
+		ID:    strconv.FormatInt(playerID, 10),
+		Queue: key,
+	}
+
+	err := ProduceWebsocket(wsPayload, websockets.PagePlayer)
+	if err != nil {
+		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+	}
 }
