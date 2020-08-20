@@ -17,7 +17,7 @@ RUN apk update \
 FROM alpine:3.12 AS runtime-env
 WORKDIR /root/
 COPY --from=build-env /root/cmd/backend/backend ./
-COPY ./cmd/backend/_health-check.sh ./health-check.sh
+COPY ./cmd/backend/scripts/health-check.sh ./health-check.sh
 RUN chmod +x health-check.sh \
   && touch ./google-auth.json \
   && apk update \
