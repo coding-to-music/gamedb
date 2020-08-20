@@ -8,7 +8,6 @@ import (
 
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/go-chi/cors"
 	"github.com/justinas/nosurf"
 	"go.uber.org/zap"
@@ -63,7 +62,7 @@ func MiddlewareTime(next http.Handler) http.Handler {
 func MiddlewareLog(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if config.IsLocal() {
-			zap.S().Info(log.LogNameRequests, r.Method+" "+r.URL.String())
+			zap.S().Info(r.Method + " " + r.URL.String())
 		}
 		next.ServeHTTP(w, r)
 	})
