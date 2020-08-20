@@ -105,8 +105,9 @@ func GetPricesByID(IDs []string) (prices []ProductPrice, err error) {
 	for _, ID := range IDs {
 
 		objectID, err := primitive.ObjectIDFromHex(ID)
-		zap.S().Error(err)
-		if err == nil {
+		if err != nil {
+			zap.S().Error(err)
+		} else {
 			idsBSON = append(idsBSON, objectID)
 		}
 	}
