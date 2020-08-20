@@ -323,19 +323,15 @@ func playerHandler(message *rabbit.Message) {
 			SkipAchievements:         payload.SkipAchievements,
 			ForceAchievementsRefresh: payload.ForceAchievementsRefresh,
 		},
-	}
-
-	if !player.Removed {
-
-		produces = append(produces, PlayersAliasesMessage{PlayerID: player.ID})
-
-		if !payload.SkipGroupUpdate {
-			produces = append(produces, PlayersGroupsMessage{
-				Player:          player,
-				SkipGroupUpdate: payload.SkipGroupUpdate,
-				UserAgent:       payload.UserAgent,
-			})
-		}
+		PlayersGroupsMessage{
+			Player:          player,
+			SkipGroupUpdate: payload.SkipGroupUpdate,
+			UserAgent:       payload.UserAgent,
+		},
+		PlayersAliasesMessage{
+			PlayerID:      player.ID,
+			PlayerRemoved: player.Removed,
+		},
 	}
 
 	for _, v := range produces {

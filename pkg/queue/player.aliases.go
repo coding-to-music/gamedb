@@ -14,7 +14,8 @@ import (
 )
 
 type PlayersAliasesMessage struct {
-	PlayerID int64 `json:"player_id"`
+	PlayerID      int64 `json:"player_id"`
+	PlayerRemoved bool  `json:"player_removed"`
 }
 
 func (m PlayersAliasesMessage) Queue() rabbit.QueueName {
@@ -35,6 +36,13 @@ func playerAliasesHandler(message *rabbit.Message) {
 	// Websocket
 	defer sendPlayerWebsocket(payload.PlayerID, "alias", message)
 
+	//
+	if payload.PlayerRemoved {
+		message.Ack()
+		return
+	}
+
+	//
 	aliases, err := steam.GetSteam().GetAliases(payload.PlayerID)
 	if err == steamapi.ErrProfileMissing {
 		message.Ack()

@@ -36,6 +36,11 @@ func playersGroupsHandler(message *rabbit.Message) {
 	// Websocket
 	defer sendPlayerWebsocket(payload.Player.ID, "group", message)
 
+	if payload.Player.Removed {
+		message.Ack()
+		return
+	}
+
 	// Old groups
 	oldGroupsSlice, err := mongo.GetPlayerGroups(payload.Player.ID, 0, 0, nil)
 	if err != nil {
