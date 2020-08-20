@@ -41,7 +41,9 @@ func main() {
 	}
 
 	err := s.ListenAndServe()
-	zap.S().Fatal(err)
+	if err != nil {
+		zap.S().Fatal(err)
+	}
 }
 
 func home(w http.ResponseWriter, r *http.Request) {

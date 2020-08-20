@@ -202,7 +202,9 @@ func main() {
 	}
 
 	err = s.ListenAndServe()
-	zap.S().Fatal(err)
+	if err != nil {
+		zap.S().Fatal(err)
+	}
 }
 
 func redirectHandler(path string) func(w http.ResponseWriter, r *http.Request) {

@@ -156,7 +156,7 @@ func websocketHandler(message *rabbit.Message) {
 			}
 
 		default:
-			zap.L().Error("no handler for page: " + string(page))
+			zap.L().Error("no handler for page", zap.String("page", string(page)))
 		}
 	}
 

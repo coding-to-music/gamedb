@@ -134,8 +134,10 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		filtered, err = mongo.CountDocuments(mongo.CollectionProductPrices, filter, 0)
-		zap.S().Error(err)
-	}(r)
+		if err != nil {
+			zap.S().Error(err)
+		}
+	}()
 
 	// Get total count
 	var total int64
@@ -146,8 +148,10 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		total, err = mongo.CountDocuments(mongo.CollectionProductPrices, bson.D{{Key: "prod_cc", Value: string(code)}}, 0)
-		zap.S().Error(err)
-	}(r)
+		if err != nil {
+			zap.S().Error(err)
+		}
+	}()
 
 	// Wait
 	wg.Wait()
