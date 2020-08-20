@@ -2,7 +2,6 @@ package queue
 
 import (
 	"sort"
-	"strconv"
 	"time"
 
 	"github.com/Jleagle/rabbit-go"
@@ -10,7 +9,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/steam"
-	"github.com/gamedb/gamedb/pkg/websockets"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.uber.org/zap"
 )
@@ -40,18 +38,7 @@ func playerGamesHandler(message *rabbit.Message) {
 	}
 
 	// Websocket
-	defer func() {
-
-		wsPayload := PlayerPayload{
-			ID:    strconv.FormatInt(payload.PlayerID, 10),
-			Queue: "game",
-		}
-
-		err = ProduceWebsocket(wsPayload, websockets.PagePlayer)
-		if err != nil {
-			zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
-		}
-	}()
+	defer sendPlayerWebsocket(payload.PlayerID, "game", message)
 
 	//
 	update := bson.D{}

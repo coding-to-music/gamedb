@@ -1,15 +1,12 @@
 package queue
 
 import (
-	"strconv"
-
 	"github.com/Jleagle/rabbit-go"
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/steam"
-	"github.com/gamedb/gamedb/pkg/websockets"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.uber.org/zap"
 )
@@ -37,18 +34,7 @@ func playersGroupsHandler(message *rabbit.Message) {
 	}
 
 	// Websocket
-	defer func() {
-
-		wsPayload := PlayerPayload{
-			ID:    strconv.FormatInt(payload.Player.ID, 10),
-			Queue: "group",
-		}
-
-		err = ProduceWebsocket(wsPayload, websockets.PagePlayer)
-		if err != nil {
-			zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
-		}
-	}()
+	defer sendPlayerWebsocket(payload.Player.ID, "group", message)
 
 	// Old groups
 	oldGroupsSlice, err := mongo.GetPlayerGroups(payload.Player.ID, 0, 0, nil)
