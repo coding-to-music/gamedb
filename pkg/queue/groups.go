@@ -19,7 +19,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/steam"
 	"github.com/gamedb/gamedb/pkg/websockets"
-	"github.com/gocolly/colly"
+	"github.com/gocolly/colly/v2"
 	influx "github.com/influxdata/influxdb1-client"
 	"github.com/powerslacker/ratelimit"
 	"go.mongodb.org/mongo-driver/bson"

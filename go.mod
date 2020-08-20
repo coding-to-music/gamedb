@@ -3,7 +3,7 @@ module github.com/gamedb/gamedb
 go 1.13
 
 require (
-	cloud.google.com/go v0.63.0 // indirect
+	cloud.google.com/go v0.64.0 // indirect
 	cloud.google.com/go/logging v1.0.0
 	github.com/Jleagle/go-durationfmt v0.0.0-20190307132420-e57bfad84057
 	github.com/Jleagle/influxql v0.0.0-20200804190929-88324f67bffe
@@ -17,18 +17,15 @@ require (
 	github.com/Philipp15b/go-steam v1.0.1-0.20190816133340-b04c5a83c1c0
 	github.com/StefanSchroeder/Golang-Roman v0.0.0-20191231161654-ef19f7247884
 	github.com/ahmdrz/goinsta/v2 v2.4.5
-	github.com/andybalholm/cascadia v1.2.0 // indirect
-	github.com/antchfx/htmlquery v1.2.3 // indirect
-	github.com/antchfx/xmlquery v1.2.4 // indirect
 	github.com/antchfx/xpath v1.1.10 // indirect
-	github.com/aws/aws-sdk-go v1.34.5 // indirect
+	github.com/aws/aws-sdk-go v1.34.8 // indirect
 	github.com/badoux/checkmail v1.2.0
 	github.com/beefsack/go-rate v0.0.0-20180408011153-efa7637bb9b6 // indirect
 	github.com/blend/go-sdk v1.1.1 // indirect
 	github.com/bwmarrin/discordgo v0.22.0
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/cenkalti/backoff/v4 v4.0.2
-	github.com/deepmap/oapi-codegen v1.3.11
+	github.com/deepmap/oapi-codegen v1.3.12
 	github.com/derekstavis/go-qs v0.0.0-20180720192143-9eef69e6c4e7
 	github.com/dghubble/go-twitter v0.0.0-20200725221434-4bc8ad7ad1b4
 	github.com/dghubble/oauth1 v0.6.0
@@ -43,32 +40,30 @@ require (
 	github.com/go-chi/cors v1.1.1
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/gobuffalo/packr/v2 v2.8.0
-	github.com/gobwas/glob v0.2.3 // indirect
-	github.com/gocolly/colly v1.2.0
+	github.com/gocolly/colly/v2 v2.1.0
 	github.com/golang/protobuf v1.4.2
-	github.com/google/go-github/v28 v28.1.1
+	github.com/google/go-github/v32 v32.1.0
 	github.com/gorilla/securecookie v1.1.1
 	github.com/gorilla/sessions v1.2.0
 	github.com/gorilla/websocket v1.4.2
 	github.com/gosimple/slug v1.9.0
-	github.com/hetznercloud/hcloud-go v1.20.0
+	github.com/hetznercloud/hcloud-go v1.21.1
 	github.com/influxdata/influxdb1-client v0.0.0-20200515024757-02f0bf5dbca3
 	github.com/jinzhu/gorm v1.9.16
 	github.com/jinzhu/now v1.1.1
 	github.com/justinas/nosurf v1.1.0
 	github.com/jzelinskie/geddit v0.0.0-20200521013404-78c28c13fba2
 	github.com/karrick/godirwalk v1.16.1 // indirect
-	github.com/kennygrant/sanitize v1.2.4 // indirect
 	github.com/klauspost/compress v1.10.11 // indirect
 	github.com/lib/pq v1.3.0 // indirect
-	github.com/mailru/easyjson v0.7.3 // indirect
+	github.com/mailru/easyjson v0.7.6 // indirect
 	github.com/mattn/go-runewidth v0.0.9 // indirect
 	github.com/mattn/go-sqlite3 v2.0.1+incompatible // indirect
 	github.com/mborgerson/GoTruncateHtml v0.0.0-20150507032438-125d9154cd1e
-	github.com/memcachier/mc v2.0.1+incompatible
+	github.com/memcachier/mc/v3 v3.0.1
 	github.com/microcosm-cc/bluemonday v1.0.4
 	github.com/mxpv/patreon-go v0.0.0-20190917022727-646111f1d983
-	github.com/nicklaw5/helix v0.6.0
+	github.com/nicklaw5/helix v0.7.0
 	github.com/nlopes/slack v0.6.0
 	github.com/olekukonko/tablewriter v0.0.4 // indirect
 	github.com/olivere/elastic/v7 v7.0.19
@@ -78,15 +73,13 @@ require (
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/rogpeppe/go-internal v1.6.1 // indirect
 	github.com/russross/blackfriday v2.0.0+incompatible
-	github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca // indirect
 	github.com/satori/go.uuid v1.2.0
-	github.com/sendgrid/rest v2.6.0+incompatible
-	github.com/sendgrid/sendgrid-go v3.6.1+incompatible
+	github.com/sendgrid/rest v2.6.1+incompatible
+	github.com/sendgrid/sendgrid-go v3.6.2+incompatible
 	github.com/sirupsen/logrus v1.6.0 // indirect
 	github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf // indirect
 	github.com/streadway/amqp v1.0.0
 	github.com/tdewolff/minify/v2 v2.8.0
-	github.com/temoto/robotstxt v1.1.1 // indirect
 	github.com/tidwall/pretty v1.0.1 // indirect
 	github.com/uber-go/atomic v1.4.0 // indirect
 	github.com/wcharczuk/go-chart v2.0.1+incompatible
@@ -99,13 +92,12 @@ require (
 	golang.org/x/image v0.0.0-20200801110659-972c09e46d76 // indirect
 	golang.org/x/net v0.0.0-20200813134508-3edf25e44fcc
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
-	golang.org/x/sys v0.0.0-20200819091447-39769834ee22 // indirect
+	golang.org/x/sys v0.0.0-20200819171115-d785dc25833f // indirect
 	golang.org/x/text v0.3.3
 	golang.org/x/time v0.0.0-20200630173020-3af7569d3a1e // indirect
 	golang.org/x/tools v0.0.0-20200818005847-188abfa75333 // indirect
-	gonum.org/v1/gonum v0.7.0
+	gonum.org/v1/gonum v0.8.0
 	google.golang.org/api v0.30.0
-	google.golang.org/genproto v0.0.0-20200815001618-f69a88009b70 // indirect
 	google.golang.org/grpc v1.31.0
 	gopkg.in/djherbis/atime.v1 v1.0.0 // indirect
 	gopkg.in/djherbis/stream.v1 v1.3.1 // indirect

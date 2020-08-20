@@ -16,7 +16,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/steam"
 	"github.com/gamedb/gamedb/pkg/websockets"
-	"github.com/gocolly/colly"
+	"github.com/gocolly/colly/v2"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.uber.org/zap"
 )

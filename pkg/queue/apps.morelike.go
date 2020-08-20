@@ -9,7 +9,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/steam"
-	"github.com/gocolly/colly"
+	"github.com/gocolly/colly/v2"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.uber.org/zap"
 )

@@ -3,7 +3,7 @@ package memcache
 import (
 	"testing"
 
-	"github.com/memcachier/mc"
+	"github.com/memcachier/mc/v3"
 )
 
 type test struct {

@@ -8,7 +8,7 @@ import (
 	"github.com/gamedb/gamedb/cmd/webserver/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	gh "github.com/google/go-github/v28/github"
+	gh "github.com/google/go-github/v32/github"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/github"
 )

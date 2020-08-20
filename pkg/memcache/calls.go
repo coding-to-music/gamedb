@@ -7,7 +7,7 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/memcachier/mc"
+	"github.com/memcachier/mc/v3"
 )
 
 var client = mc.NewMC(config.Config.MemcacheDSN.Get(), config.Config.MemcacheUsername.Get(), config.Config.MemcachePassword.Get())

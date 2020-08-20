@@ -19,7 +19,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/mysql/pics"
 	"github.com/gamedb/gamedb/pkg/steam"
 	"github.com/gamedb/gamedb/pkg/websockets"
-	"github.com/gocolly/colly"
+	"github.com/gocolly/colly/v2"
 	"go.uber.org/zap"
 )
 

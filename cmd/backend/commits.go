@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/gamedb/gamedb/pkg/backend"
 	githubHelper "github.com/gamedb/gamedb/pkg/github"
-	"github.com/google/go-github/v28/github"
+	"github.com/google/go-github/v32/github"
 )
 
 type GithubServer struct {

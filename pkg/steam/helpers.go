@@ -9,8 +9,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gocolly/colly"
+	"github.com/gocolly/colly/v2"
 	"go.uber.org/zap"
 )
 
@@ -77,7 +76,8 @@ func LogSteamError(err error, interfaces ...interface{}) {
 		return true
 	}()
 
-	interfaces = append(interfaces, err, log.LogNameSteamErrors)
+	// Prepend error
+	interfaces = append([]interface{}{err}, interfaces...)
 
 	if isError {
 		zap.S().Error(interfaces...)

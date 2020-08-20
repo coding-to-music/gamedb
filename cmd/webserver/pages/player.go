@@ -23,7 +23,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/rabbitweb"
 	"github.com/go-chi/chi"
 	"github.com/justinas/nosurf"
-	"github.com/memcachier/mc"
+	"github.com/memcachier/mc/v3"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.uber.org/zap"
 )

@@ -12,7 +12,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/steam"
 	"github.com/getkin/kin-openapi/openapi3"
-	"github.com/google/go-github/v28/github"
+	"github.com/google/go-github/v32/github"
 	"go.uber.org/zap"
 )
 
