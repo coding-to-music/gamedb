@@ -278,7 +278,7 @@ if ($('#admin-patreon-page').length > 0) {
 if ($('#admin-delays-page').length > 0) {
 
     const options = {
-        "order": [[1, 'desc']],
+        "order": [[0, 'desc']],
         "columnDefs": [
             // First Seen
             // {
@@ -290,20 +290,9 @@ if ($('#admin-delays-page').length > 0) {
             //         $(td).attr('nowrap', 'nowrap');
             //     },
             // },
-            // Queue
-            {
-                'targets': 0,
-                'render': function (data, type, row) {
-                    return row[3];
-                },
-                "createdCell": function (td, cellData, rowData, row, col) {
-                    $(td).attr('nowrap', 'nowrap');
-                },
-                'orderable': false,
-            },
             // Last Seen
             {
-                'targets': 1,
+                'targets': 0,
                 'render': function (data, type, row) {
                     return row[2];
                 },
@@ -311,6 +300,17 @@ if ($('#admin-delays-page').length > 0) {
                     $(td).attr('nowrap', 'nowrap');
                 },
                 "orderSequence": ["desc", "asc"],
+            },
+            // Queue
+            {
+                'targets': 1,
+                'render': function (data, type, row) {
+                    return row[3];
+                },
+                "createdCell": function (td, cellData, rowData, row, col) {
+                    $(td).attr('nowrap', 'nowrap');
+                },
+                'orderable': false,
             },
             // Attempt
             {

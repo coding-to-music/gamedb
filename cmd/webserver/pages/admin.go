@@ -261,8 +261,8 @@ func adminDelaysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var columns = map[string]string{
 			// "0": "created_at",
 			// "1": "updated_at",
-			"1": "attempt",
-			"2": "attempt",
+			"0": "updated_at",
+			"2": "attempt, updated_at asc",
 		}
 
 		var sort = query.GetOrderMongo(columns)
