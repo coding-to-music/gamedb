@@ -48,7 +48,6 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		db, err := mysql.GetMySQLClient()
 		if err != nil {
-
 			zap.S().Error(err)
 			return
 		}
@@ -81,8 +80,9 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		count, err = mysql.CountBundles()
-		zap.S().Error(err)
-
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}()
 
 	// Wait
