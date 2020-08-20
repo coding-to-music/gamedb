@@ -113,7 +113,7 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Get rows
 	var priceChanges []mongo.ProductPrice
 	wg.Add(1)
-	go func(r *http.Request) {
+	go func() {
 
 		defer wg.Done()
 
@@ -123,12 +123,12 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			zap.S().Error(err)
 			return
 		}
-	}(r)
+	}()
 
 	// Get filtered count
 	var filtered int64
 	wg.Add(1)
-	go func(r *http.Request) {
+	go func() {
 
 		defer wg.Done()
 
@@ -142,7 +142,7 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Get total count
 	var total int64
 	wg.Add(1)
-	go func(r *http.Request) {
+	go func() {
 
 		defer wg.Done()
 

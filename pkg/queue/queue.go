@@ -74,7 +74,6 @@ const (
 	QueueWebsockets  rabbit.QueueName = "GDB_Websockets"
 )
 
-//noinspection GoUnusedGlobalVariable
 var (
 	ProducerChannels = map[rabbit.QueueName]*rabbit.Channel{}
 
@@ -328,8 +327,7 @@ func Init(definitions []QueueDefinition) {
 					prefetchSize = queue.prefetchSize
 				}
 
-				s := make([]int, 2) // todo
-				for k := range s {
+				for k := range make([]int, 2) {
 
 					q, err := rabbit.NewChannel(consumerConnection, queue.name, config.Config.Environment.Get()+"-"+strconv.Itoa(k), prefetchSize, queue.consumer, !queue.skipHeaders)
 					if err != nil {
