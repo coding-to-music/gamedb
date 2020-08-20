@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
+	"path"
 	"runtime"
 	"strconv"
 	"strings"
@@ -164,6 +165,7 @@ type BaseConfig struct {
 	SlackGameDBWebhook  ConfigItem
 	SlackPatreonWebhook ConfigItem
 	GRPCKeysPath        ConfigItem
+	InfraPath           ConfigItem
 }
 
 func init() {
@@ -306,11 +308,17 @@ func init() {
 	Config.SendGridAPIKey.Set("SENDGRID")
 	Config.SlackGameDBWebhook.Set("SLACK_GAMEDB_WEBHOOK")
 	Config.SlackPatreonWebhook.Set("SLACK_SOCIAL_WEBHOOK")
+	Config.InfraPath.Set("INFRASTRUCTURE_PATH")
 
 	// Defaults
 	Config.GameDBShortName.SetDefault("GameDB")
 	Config.NewReleaseDays.SetDefault("14")
-	Config.GRPCKeysPath.SetDefault("/root/grpc-keys/")
+
+	if IsLocal() {
+		Config.GRPCKeysPath.SetDefault(path.Join(Config.InfraPath.Get(), "grpc"))
+	} else {
+		Config.GRPCKeysPath.SetDefault("/root/grpc-keys/")
+	}
 }
 
 func Init(version string, commits string, ip string) {
