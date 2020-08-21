@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/gamedb/gamedb/pkg/backend"
+	"github.com/gamedb/gamedb/pkg/backend/generated"
 	githubHelper "github.com/gamedb/gamedb/pkg/github"
 	"github.com/google/go-github/v32/github"
 )
@@ -9,7 +9,7 @@ import (
 type GithubServer struct {
 }
 
-func (g GithubServer) Commits(in *backend.CommitsRequest, server backend.GitHubService_CommitsServer) error {
+func (g GithubServer) Commits(in *generated.CommitsRequest, server generated.GitHubService_CommitsServer) error {
 
 	client, ctx := githubHelper.GetGithub()
 
@@ -26,7 +26,7 @@ func (g GithubServer) Commits(in *backend.CommitsRequest, server backend.GitHubS
 
 	for _, commit := range commits {
 
-		message := &backend.CommitResponse{
+		message := &generated.CommitResponse{
 			Message: commit.GetCommit().GetMessage(),
 			Time:    commit.GetCommit().GetAuthor().GetDate().Unix(),
 			Link:    commit.GetHTMLURL(),

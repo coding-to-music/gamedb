@@ -7,7 +7,7 @@ import (
 	"net"
 	"path"
 
-	"github.com/gamedb/gamedb/pkg/backend"
+	"github.com/gamedb/gamedb/pkg/backend/generated"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -66,9 +66,9 @@ func main() {
 	// Serve
 	grpcServer := grpc.NewServer(grpc.Creds(creds))
 
-	backend.RegisterAppsServiceServer(grpcServer, AppsServer{})
-	backend.RegisterPlayersServiceServer(grpcServer, PlayersServer{})
-	backend.RegisterGitHubServiceServer(grpcServer, GithubServer{})
+	generated.RegisterAppsServiceServer(grpcServer, AppsServer{})
+	generated.RegisterPlayersServiceServer(grpcServer, PlayersServer{})
+	generated.RegisterGitHubServiceServer(grpcServer, GithubServer{})
 
 	zap.L().Info("Starting Backend on tcp://" + config.Config.BackendHostPort.Get())
 

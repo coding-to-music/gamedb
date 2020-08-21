@@ -6,6 +6,7 @@ import (
 
 	"github.com/gamedb/gamedb/cmd/api/generated"
 	"github.com/gamedb/gamedb/pkg/backend"
+	generatedBackend "github.com/gamedb/gamedb/pkg/backend/generated"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"go.uber.org/zap"
 )
@@ -88,7 +89,7 @@ func (s Server) GetGames(w http.ResponseWriter, r *http.Request, params generate
 			offset = int64(*params.Offset)
 		}
 
-		payload := &backend.ListAppsRequest{}
+		payload := &generatedBackend.ListAppsRequest{}
 		payload.Offset = offset
 		payload.Limit = limit
 
@@ -162,7 +163,7 @@ func (s Server) GetGames(w http.ResponseWriter, r *http.Request, params generate
 			return 500, err
 		}
 
-		resp, err := backend.NewAppsServiceClient(conn).Apps(ctx, payload)
+		resp, err := generatedBackend.NewAppsServiceClient(conn).Apps(ctx, payload)
 		if err != nil {
 			return 500, err
 		}

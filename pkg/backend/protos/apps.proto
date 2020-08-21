@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package backend;
+package generated;
 
 import "shared.proto";
 

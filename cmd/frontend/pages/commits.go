@@ -7,6 +7,7 @@ import (
 
 	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/backend"
+	"github.com/gamedb/gamedb/pkg/backend/generated"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/memcache"
@@ -39,7 +40,7 @@ const commitsLimit = 100
 func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var query = datatable.NewDataTableQuery(r, true)
-	var commits []backend.CommitResponse
+	var commits []generated.CommitResponse
 	var item = memcache.MemcacheCommitsPage(query.GetPage(commitsLimit))
 
 	err := memcache.GetSetInterface(item.Key, item.Expiration, &commits, func() (interface{}, error) {
@@ -49,12 +50,12 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			return nil, err
 		}
 
-		message := &backend.CommitsRequest{
+		message := &generated.CommitsRequest{
 			Limit: commitsLimit,
 			Page:  int32(query.GetPage(commitsLimit)),
 		}
 
-		resp, err := backend.NewGitHubServiceClient(conn).Commits(ctx, message)
+		resp, err := generated.NewGitHubServiceClient(conn).Commits(ctx, message)
 		if err != nil {
 			return nil, err
 		}
