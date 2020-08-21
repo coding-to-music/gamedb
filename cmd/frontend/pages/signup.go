@@ -114,7 +114,9 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 
 		// Create user
 		db, err := mysql.GetMySQLClient()
@@ -124,7 +126,6 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		passwordBytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
-		zap.S().Error(err)
 		if err != nil {
 			zap.S().Error(err)
 			return "An error occurred", false
@@ -178,15 +179,19 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Influx
-		_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, influx.Point{
+		point := influx.Point{
 			Measurement: string(influxHelper.InfluxMeasurementSignups),
 			Fields: map[string]interface{}{
 				"signup": 1,
 			},
 			Time:      time.Now(),
 			Precision: "s",
-		})
-		zap.S().Error(err)
+		}
+
+		_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, point)
+		if err != nil {
+			zap.S().Error(err)
+		}
 
 		return "Please check your email to verify your email", true
 	}()
@@ -241,15 +246,19 @@ func verifyHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Influx
-		_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, influx.Point{
+		point := influx.Point{
 			Measurement: string(influxHelper.InfluxMeasurementSignups),
 			Fields: map[string]interface{}{
 				"validate": 1,
 			},
 			Time:      time.Now(),
 			Precision: "s",
-		})
-		zap.S().Error(err)
+		}
+
+		_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, point)
+		if err != nil {
+			zap.S().Error(err)
+		}
 
 		//
 		return "Email has been verified", true

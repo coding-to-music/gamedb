@@ -467,7 +467,9 @@ func settingsDonationsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		total, err = mongo.CountDocuments(mongo.CollectionPatreonWebhooks, bson.D{{"user_id", user.ID}}, 0)
-		zap.S().Error(err)
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}(r)
 
 	wg.Wait()
