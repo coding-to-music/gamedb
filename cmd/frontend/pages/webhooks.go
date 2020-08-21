@@ -106,14 +106,14 @@ func gitHubWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	zap.L().Named(log.LogNameWebhooksGitHub).Info("Incoming GitHub webhook", zap.ByteString("webhook", body))
-
 	defer func() {
 		err := r.Body.Close()
 		if err != nil {
 			zap.S().Error()
 		}
 	}()
+
+	zap.L().Named(log.LogNameWebhooksGitHub).Info("Incoming GitHub webhook", zap.ByteString("webhook", body))
 
 	//
 	var signature = r.Header.Get("X-Hub-Signature")
@@ -129,6 +129,7 @@ func gitHubWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 	expectedMAC := hex.EncodeToString(mac.Sum(nil))
 
 	if !hmac.Equal([]byte(signaturePrefix+expectedMAC), []byte(signature)) {
+		zap.L().Error("Invalid signature (2)", zap.String("secret", config.Config.PatreonSecret.Get()))
 		http.Error(w, "Invalid signature (2)", 400)
 		return
 	}
