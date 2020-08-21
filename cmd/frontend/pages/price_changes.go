@@ -59,9 +59,11 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	percents := query.GetSearchSlice("change")
 	if len(percents) == 2 {
 		if percents[0] != "-100.00" {
+
 			min, err := strconv.ParseFloat(percents[0], 64)
-			zap.S().Error(err)
-			if err == nil {
+			if err != nil {
+				zap.S().Error(err)
+			} else {
 				filter = append(filter, bson.E{Key: "difference_percent", Value: bson.M{"$gte": min}})
 			}
 
@@ -75,9 +77,11 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 		if percents[1] != "100.00" {
+
 			max, err := strconv.ParseFloat(percents[1], 64)
-			zap.S().Error(err)
-			if err == nil {
+			if err != nil {
+				zap.S().Error(err)
+			} else {
 				filter = append(filter, bson.E{Key: "difference_percent", Value: bson.M{"$lte": max}})
 			}
 
@@ -94,13 +98,16 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	prices := query.GetSearchSlice("price")
 	if len(prices) == 2 {
+
 		if prices[0] != "0.00" {
 			min, err := strconv.Atoi(strings.Replace(prices[0], ".", "", 1))
-			zap.S().Error(err)
-			if err == nil {
+			if err != nil {
+				zap.S().Error(err)
+			} else {
 				filter = append(filter, bson.E{Key: "price_after", Value: bson.M{"$gte": min}})
 			}
 		}
+
 		if prices[1] != "100.00" {
 			max, err := strconv.Atoi(strings.Replace(prices[1], ".", "", 1))
 			zap.S().Error(err)
