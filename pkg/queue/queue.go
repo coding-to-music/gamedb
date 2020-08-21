@@ -11,6 +11,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/websockets"
@@ -262,10 +263,10 @@ func Init(definitions []QueueDefinition) {
 			},
 		},
 		LogInfo: func(i ...interface{}) {
-			// zap.S().Info(i...)
+			// zap.S().Named(log.LogNameRabbit).Info(i...)
 		},
 		LogError: func(i ...interface{}) {
-			zap.S().Error(i...)
+			zap.S().Named(log.LogNameRabbit).Error(i...)
 		},
 	}
 

@@ -7,6 +7,7 @@ import (
 
 	"github.com/cenkalti/backoff/v4"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/log"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	"go.uber.org/zap"
@@ -73,5 +74,5 @@ type mySQLLogger struct {
 }
 
 func (logger mySQLLogger) Print(v ...interface{}) {
-	zap.S().Debug(v...)
+	zap.S().Named(log.LogNameSQL).Debug(v...)
 }

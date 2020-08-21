@@ -11,6 +11,7 @@ import (
 
 	"github.com/Jleagle/patreon-go/patreon"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
@@ -105,7 +106,7 @@ func gitHubWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	zap.L().Info("Incoming GitHub webhook", zap.ByteString("webhook", body))
+	zap.L().Named(log.LogNameWebhooksGitHub).Info("Incoming GitHub webhook", zap.ByteString("webhook", body))
 
 	defer func() {
 		err := r.Body.Close()
