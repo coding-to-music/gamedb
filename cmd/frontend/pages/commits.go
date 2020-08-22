@@ -1,7 +1,6 @@
 package pages
 
 import (
-	"io"
 	"net/http"
 	"time"
 
@@ -40,10 +39,10 @@ const commitsLimit = 100
 func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var query = datatable.NewDataTableQuery(r, true)
-	var commits []generated.CommitResponse
+	var commits []*generated.CommitResponse
 	var item = memcache.MemcacheCommitsPage(query.GetPage(commitsLimit))
 
-	err := memcache.GetSetInterface(item.Key, item.Expiration, &commits, func() (interface{}, error) {
+	callback := func() (interface{}, error) {
 
 		conn, ctx, err := backend.GetClient()
 		if err != nil {
@@ -51,8 +50,10 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		message := &generated.CommitsRequest{
-			Limit: commitsLimit,
-			Page:  int32(query.GetPage(commitsLimit)),
+			Pagination: &generated.PaginationRequest2{
+				Limit: commitsLimit,
+				Page:  int64(query.GetPage(commitsLimit)),
+			},
 		}
 
 		resp, err := generated.NewGitHubServiceClient(conn).Commits(ctx, message)
@@ -60,21 +61,10 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			return nil, err
 		}
 
-		for {
-			commit, err := resp.Recv()
-			if err != nil {
-				err = helpers.IgnoreErrors(err, io.EOF)
-				if err != nil {
-					zap.S().Error(err)
-				}
-				break
-			}
+		return resp.GetCommits(), err
+	}
 
-			commits = append(commits, *commit)
-		}
-
-		return commits, err
-	})
+	err := memcache.GetSetInterface(item.Key, item.Expiration, &commits, callback)
 	if err != nil {
 		zap.S().Error(err)
 	}

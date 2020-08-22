@@ -59,7 +59,7 @@ func (a AppsServer) Apps(ctx context.Context, request *generated.ListAppsRequest
 		"reviews_score":       1,
 	}
 
-	apps, err := mongo.GetApps(request.GetOffset(), request.GetLimit(), bson.D{{"_id", 1}}, filter, projection)
+	apps, err := mongo.GetApps(request.GetPagination().GetOffset(), request.GetPagination().GetLimit(), bson.D{{"_id", 1}}, filter, projection)
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +70,8 @@ func (a AppsServer) Apps(ctx context.Context, request *generated.ListAppsRequest
 	}
 
 	response = &generated.AppsMongoResponse{}
-	response.Pagination.Total = total
+	response.Pagination = &generated.PaginationResponse{}
+	response.Pagination.SetPagination(request.GetPagination(), total)
 
 	for _, v := range apps {
 		response.Apps = append(response.Apps, &generated.AppMongoResponse{
@@ -79,10 +80,10 @@ func (a AppsServer) Apps(ctx context.Context, request *generated.ListAppsRequest
 		})
 	}
 
-	return nil, nil
+	return response, err
 }
 
-func (a AppsServer) Search(ctx context.Context, r *generated.SearchAppsRequest) (res *generated.AppsElasticResponse, err error) {
+func (a AppsServer) Search(ctx context.Context, request *generated.SearchAppsRequest) (response *generated.AppsElasticResponse, err error) {
 
-	return nil, nil
+	return response, err
 }

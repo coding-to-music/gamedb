@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+
 	"github.com/gamedb/gamedb/pkg/backend/generated"
 	githubHelper "github.com/gamedb/gamedb/pkg/github"
 	"github.com/google/go-github/v32/github"
@@ -9,34 +11,32 @@ import (
 type GithubServer struct {
 }
 
-func (g GithubServer) Commits(in *generated.CommitsRequest, server generated.GitHubService_CommitsServer) error {
+func (g GithubServer) Commits(ctx context.Context, request *generated.CommitsRequest) (response *generated.CommitsResponse, err error) {
 
 	client, ctx := githubHelper.GetGithub()
 
 	ops := &github.CommitsListOptions{
 		ListOptions: github.ListOptions{
-			Page:    int(in.GetPage()),
-			PerPage: int(in.GetLimit()),
+			Page:    int(request.GetPagination().GetPage()),
+			PerPage: int(request.GetPagination().GetLimit()),
 		},
 	}
+
 	commits, _, err := client.Repositories.ListCommits(ctx, "gamedb", "website", ops)
 	if err != nil {
-		return err
+		return response, err
 	}
 
+	response = &generated.CommitsResponse{}
 	for _, commit := range commits {
 
-		message := &generated.CommitResponse{
+		response.Commits = append(response.Commits, &generated.CommitResponse{
 			Message: commit.GetCommit().GetMessage(),
 			Time:    commit.GetCommit().GetAuthor().GetDate().Unix(),
 			Link:    commit.GetHTMLURL(),
 			Hash:    commit.GetSHA(),
-		}
-		err = server.Send(message)
-		if err != nil {
-			return err
-		}
+		})
 	}
 
-	return nil
+	return response, err
 }

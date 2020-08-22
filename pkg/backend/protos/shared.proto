@@ -15,10 +15,22 @@ message Price {
     bool free = 7;
 }
 
+message PaginationRequest {
+    int64 offset = 1;
+    int64 limit = 2;
+    string sortField = 3;
+    string sortOrder = 4;
+}
+
 message PaginationResponse {
     int64 offset = 1;
     int64 limit = 2;
     int64 total = 3;
     int64 pagesTotal = 4;
     int64 pagesCurrent = 5;
+}
+
+message PaginationRequest2 {
+    int64 page = 1;
+    int64 limit = 2;
 }

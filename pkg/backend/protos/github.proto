@@ -2,14 +2,19 @@ syntax = "proto3";
 
 package generated;
 
+import "shared.proto";
+
 service GitHubService {
-    rpc Commits (CommitsRequest) returns (stream CommitResponse) {
+    rpc Commits (CommitsRequest) returns (CommitsResponse) {
     }
 }
 
 message CommitsRequest {
-    int32 limit = 1;
-    int32 page = 2;
+    PaginationRequest2 pagination = 1;
+}
+
+message CommitsResponse {
+    repeated CommitResponse commits = 1;
 }
 
 message CommitResponse {

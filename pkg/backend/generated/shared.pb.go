@@ -3,91 +3,37 @@
 
 package generated
 
-import (
-	fmt "fmt"
-	proto "github.com/golang/protobuf/proto"
-	math "math"
-)
+import proto "github.com/golang/protobuf/proto"
+import fmt "fmt"
+import math "math"
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
 
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the proto package it is being compiled against.
-// A compilation error at this line likely means your copy of the
-// proto package needs to be updated.
-const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
-
 type Empty struct {
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *Empty) Reset()         { *m = Empty{} }
-func (m *Empty) String() string { return proto.CompactTextString(m) }
-func (*Empty) ProtoMessage()    {}
-func (*Empty) Descriptor() ([]byte, []int) {
-	return fileDescriptor_d8a4e87e678c5ced, []int{0}
-}
-
-func (m *Empty) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Empty.Unmarshal(m, b)
-}
-func (m *Empty) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Empty.Marshal(b, m, deterministic)
-}
-func (m *Empty) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Empty.Merge(m, src)
-}
-func (m *Empty) XXX_Size() int {
-	return xxx_messageInfo_Empty.Size(m)
-}
-func (m *Empty) XXX_DiscardUnknown() {
-	xxx_messageInfo_Empty.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Empty proto.InternalMessageInfo
+func (m *Empty) Reset()                    { *m = Empty{} }
+func (m *Empty) String() string            { return proto.CompactTextString(m) }
+func (*Empty) ProtoMessage()               {}
+func (*Empty) Descriptor() ([]byte, []int) { return fileDescriptor3, []int{0} }
 
 type Price struct {
-	Exists               bool     `protobuf:"varint,1,opt,name=exists,proto3" json:"exists,omitempty"`
-	Currency             string   `protobuf:"bytes,2,opt,name=currency,proto3" json:"currency,omitempty"`
-	Initial              int32    `protobuf:"varint,3,opt,name=initial,proto3" json:"initial,omitempty"`
-	Final                int32    `protobuf:"varint,4,opt,name=final,proto3" json:"final,omitempty"`
-	DiscountPercent      int32    `protobuf:"varint,5,opt,name=discount_percent,json=discountPercent,proto3" json:"discount_percent,omitempty"`
-	Individual           int32    `protobuf:"varint,6,opt,name=individual,proto3" json:"individual,omitempty"`
-	Free                 bool     `protobuf:"varint,7,opt,name=free,proto3" json:"free,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	Exists          bool   `protobuf:"varint,1,opt,name=exists" json:"exists,omitempty"`
+	Currency        string `protobuf:"bytes,2,opt,name=currency" json:"currency,omitempty"`
+	Initial         int32  `protobuf:"varint,3,opt,name=initial" json:"initial,omitempty"`
+	Final           int32  `protobuf:"varint,4,opt,name=final" json:"final,omitempty"`
+	DiscountPercent int32  `protobuf:"varint,5,opt,name=discount_percent,json=discountPercent" json:"discount_percent,omitempty"`
+	Individual      int32  `protobuf:"varint,6,opt,name=individual" json:"individual,omitempty"`
+	Free            bool   `protobuf:"varint,7,opt,name=free" json:"free,omitempty"`
 }
 
-func (m *Price) Reset()         { *m = Price{} }
-func (m *Price) String() string { return proto.CompactTextString(m) }
-func (*Price) ProtoMessage()    {}
-func (*Price) Descriptor() ([]byte, []int) {
-	return fileDescriptor_d8a4e87e678c5ced, []int{1}
-}
-
-func (m *Price) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Price.Unmarshal(m, b)
-}
-func (m *Price) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Price.Marshal(b, m, deterministic)
-}
-func (m *Price) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Price.Merge(m, src)
-}
-func (m *Price) XXX_Size() int {
-	return xxx_messageInfo_Price.Size(m)
-}
-func (m *Price) XXX_DiscardUnknown() {
-	xxx_messageInfo_Price.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Price proto.InternalMessageInfo
+func (m *Price) Reset()                    { *m = Price{} }
+func (m *Price) String() string            { return proto.CompactTextString(m) }
+func (*Price) ProtoMessage()               {}
+func (*Price) Descriptor() ([]byte, []int) { return fileDescriptor3, []int{1} }
 
 func (m *Price) GetExists() bool {
 	if m != nil {
@@ -138,41 +84,58 @@ func (m *Price) GetFree() bool {
 	return false
 }
 
+type PaginationRequest struct {
+	Offset    int64  `protobuf:"varint,1,opt,name=offset" json:"offset,omitempty"`
+	Limit     int64  `protobuf:"varint,2,opt,name=limit" json:"limit,omitempty"`
+	SortField string `protobuf:"bytes,3,opt,name=sortField" json:"sortField,omitempty"`
+	SortOrder string `protobuf:"bytes,4,opt,name=sortOrder" json:"sortOrder,omitempty"`
+}
+
+func (m *PaginationRequest) Reset()                    { *m = PaginationRequest{} }
+func (m *PaginationRequest) String() string            { return proto.CompactTextString(m) }
+func (*PaginationRequest) ProtoMessage()               {}
+func (*PaginationRequest) Descriptor() ([]byte, []int) { return fileDescriptor3, []int{2} }
+
+func (m *PaginationRequest) GetOffset() int64 {
+	if m != nil {
+		return m.Offset
+	}
+	return 0
+}
+
+func (m *PaginationRequest) GetLimit() int64 {
+	if m != nil {
+		return m.Limit
+	}
+	return 0
+}
+
+func (m *PaginationRequest) GetSortField() string {
+	if m != nil {
+		return m.SortField
+	}
+	return ""
+}
+
+func (m *PaginationRequest) GetSortOrder() string {
+	if m != nil {
+		return m.SortOrder
+	}
+	return ""
+}
+
 type PaginationResponse struct {
-	Offset               int64    `protobuf:"varint,1,opt,name=offset,proto3" json:"offset,omitempty"`
-	Limit                int64    `protobuf:"varint,2,opt,name=limit,proto3" json:"limit,omitempty"`
-	Total                int64    `protobuf:"varint,3,opt,name=total,proto3" json:"total,omitempty"`
-	PagesTotal           int64    `protobuf:"varint,4,opt,name=pagesTotal,proto3" json:"pagesTotal,omitempty"`
-	PagesCurrent         int64    `protobuf:"varint,5,opt,name=pagesCurrent,proto3" json:"pagesCurrent,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	Offset       int64 `protobuf:"varint,1,opt,name=offset" json:"offset,omitempty"`
+	Limit        int64 `protobuf:"varint,2,opt,name=limit" json:"limit,omitempty"`
+	Total        int64 `protobuf:"varint,3,opt,name=total" json:"total,omitempty"`
+	PagesTotal   int64 `protobuf:"varint,4,opt,name=pagesTotal" json:"pagesTotal,omitempty"`
+	PagesCurrent int64 `protobuf:"varint,5,opt,name=pagesCurrent" json:"pagesCurrent,omitempty"`
 }
 
-func (m *PaginationResponse) Reset()         { *m = PaginationResponse{} }
-func (m *PaginationResponse) String() string { return proto.CompactTextString(m) }
-func (*PaginationResponse) ProtoMessage()    {}
-func (*PaginationResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_d8a4e87e678c5ced, []int{2}
-}
-
-func (m *PaginationResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_PaginationResponse.Unmarshal(m, b)
-}
-func (m *PaginationResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_PaginationResponse.Marshal(b, m, deterministic)
-}
-func (m *PaginationResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_PaginationResponse.Merge(m, src)
-}
-func (m *PaginationResponse) XXX_Size() int {
-	return xxx_messageInfo_PaginationResponse.Size(m)
-}
-func (m *PaginationResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_PaginationResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_PaginationResponse proto.InternalMessageInfo
+func (m *PaginationResponse) Reset()                    { *m = PaginationResponse{} }
+func (m *PaginationResponse) String() string            { return proto.CompactTextString(m) }
+func (*PaginationResponse) ProtoMessage()               {}
+func (*PaginationResponse) Descriptor() ([]byte, []int) { return fileDescriptor3, []int{3} }
 
 func (m *PaginationResponse) GetOffset() int64 {
 	if m != nil {
@@ -209,32 +172,61 @@ func (m *PaginationResponse) GetPagesCurrent() int64 {
 	return 0
 }
 
+type PaginationRequest2 struct {
+	Page  int64 `protobuf:"varint,1,opt,name=page" json:"page,omitempty"`
+	Limit int64 `protobuf:"varint,2,opt,name=limit" json:"limit,omitempty"`
+}
+
+func (m *PaginationRequest2) Reset()                    { *m = PaginationRequest2{} }
+func (m *PaginationRequest2) String() string            { return proto.CompactTextString(m) }
+func (*PaginationRequest2) ProtoMessage()               {}
+func (*PaginationRequest2) Descriptor() ([]byte, []int) { return fileDescriptor3, []int{4} }
+
+func (m *PaginationRequest2) GetPage() int64 {
+	if m != nil {
+		return m.Page
+	}
+	return 0
+}
+
+func (m *PaginationRequest2) GetLimit() int64 {
+	if m != nil {
+		return m.Limit
+	}
+	return 0
+}
+
 func init() {
 	proto.RegisterType((*Empty)(nil), "generated.Empty")
 	proto.RegisterType((*Price)(nil), "generated.Price")
+	proto.RegisterType((*PaginationRequest)(nil), "generated.PaginationRequest")
 	proto.RegisterType((*PaginationResponse)(nil), "generated.PaginationResponse")
+	proto.RegisterType((*PaginationRequest2)(nil), "generated.PaginationRequest2")
 }
 
-func init() { proto.RegisterFile("shared.proto", fileDescriptor_d8a4e87e678c5ced) }
+func init() { proto.RegisterFile("shared.proto", fileDescriptor3) }
 
-var fileDescriptor_d8a4e87e678c5ced = []byte{
-	// 274 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x54, 0x91, 0xcf, 0x4a, 0xfc, 0x30,
-	0x10, 0xc7, 0xc9, 0xaf, 0xdb, 0xfd, 0x33, 0x2c, 0xfc, 0x24, 0x88, 0x04, 0x0f, 0xb2, 0xf4, 0x54,
-	0x2f, 0x5e, 0x7c, 0x04, 0xf1, 0x5e, 0x82, 0x77, 0x89, 0xed, 0xb4, 0x0e, 0x74, 0x93, 0x92, 0x4c,
-	0xc5, 0x7d, 0x17, 0x9f, 0xc8, 0xa7, 0x92, 0x4e, 0xbb, 0xb2, 0xde, 0xf2, 0xf9, 0xcc, 0x1c, 0xbe,
-	0xdf, 0x0c, 0xec, 0xd3, 0xbb, 0x8b, 0xd8, 0x3c, 0x0c, 0x31, 0x70, 0xd0, 0xbb, 0x0e, 0x3d, 0x46,
-	0xc7, 0xd8, 0x14, 0x1b, 0xc8, 0x9f, 0x8f, 0x03, 0x9f, 0x8a, 0x6f, 0x05, 0x79, 0x15, 0xa9, 0x46,
-	0x7d, 0x03, 0x6b, 0xfc, 0xa4, 0xc4, 0xc9, 0xa8, 0x83, 0x2a, 0xb7, 0x76, 0x21, 0x7d, 0x0b, 0xdb,
-	0x7a, 0x8c, 0x11, 0x7d, 0x7d, 0x32, 0xff, 0x0e, 0xaa, 0xdc, 0xd9, 0x5f, 0xd6, 0x06, 0x36, 0xe4,
-	0x89, 0xc9, 0xf5, 0x26, 0x3b, 0xa8, 0x32, 0xb7, 0x67, 0xd4, 0xd7, 0x90, 0xb7, 0xe4, 0x5d, 0x6f,
-	0x56, 0xe2, 0x67, 0xd0, 0xf7, 0x70, 0xd5, 0x50, 0xaa, 0xc3, 0xe8, 0xf9, 0x75, 0xc0, 0x58, 0xa3,
-	0x67, 0x93, 0xcb, 0xc2, 0xff, 0xb3, 0xaf, 0x66, 0xad, 0xef, 0x00, 0xc8, 0x37, 0xf4, 0x41, 0xcd,
-	0xe8, 0x7a, 0xb3, 0x96, 0xa5, 0x0b, 0xa3, 0x35, 0xac, 0xda, 0x88, 0x68, 0x36, 0x12, 0x56, 0xde,
-	0xc5, 0x97, 0x02, 0x5d, 0xb9, 0x8e, 0xbc, 0x63, 0x0a, 0xde, 0x62, 0x1a, 0x82, 0x4f, 0xd2, 0x2c,
-	0xb4, 0x6d, 0x42, 0x96, 0x66, 0x99, 0x5d, 0x68, 0xca, 0xd8, 0xd3, 0x91, 0x58, 0x6a, 0x65, 0x76,
-	0x86, 0xc9, 0x72, 0xe0, 0xa5, 0x51, 0x66, 0x67, 0x98, 0xe2, 0x0c, 0xae, 0xc3, 0xf4, 0x22, 0xa3,
-	0x95, 0x8c, 0x2e, 0x8c, 0x2e, 0x60, 0x2f, 0xf4, 0x24, 0x5f, 0x33, 0xb7, 0xca, 0xec, 0x1f, 0xf7,
-	0xb6, 0x96, 0x33, 0x3c, 0xfe, 0x04, 0x00, 0x00, 0xff, 0xff, 0x2b, 0xcb, 0x19, 0x0f, 0x96, 0x01,
-	0x00, 0x00,
+var fileDescriptor3 = []byte{
+	// 336 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x92, 0x41, 0x4b, 0xeb, 0x40,
+	0x14, 0x85, 0xc9, 0x4b, 0xd3, 0x36, 0x97, 0xc2, 0x7b, 0x6f, 0x28, 0x32, 0x88, 0x48, 0xc9, 0xaa,
+	0x6e, 0x5c, 0xe8, 0xde, 0x8d, 0xe8, 0xd6, 0x32, 0xb8, 0x97, 0x31, 0x73, 0x53, 0x2f, 0xa4, 0x33,
+	0x71, 0x66, 0x22, 0x76, 0xe1, 0x3f, 0xf1, 0x17, 0xf9, 0xab, 0x24, 0x37, 0xa9, 0xb6, 0xe0, 0xc6,
+	0xdd, 0x3d, 0xdf, 0xbd, 0x90, 0x73, 0x4e, 0x06, 0x66, 0xe1, 0x49, 0x7b, 0x34, 0xe7, 0x8d, 0x77,
+	0xd1, 0x89, 0x7c, 0x8d, 0x16, 0xbd, 0x8e, 0x68, 0x8a, 0x09, 0x64, 0x37, 0x9b, 0x26, 0x6e, 0x8b,
+	0x8f, 0x04, 0xb2, 0x95, 0xa7, 0x12, 0xc5, 0x11, 0x8c, 0xf1, 0x95, 0x42, 0x0c, 0x32, 0x59, 0x24,
+	0xcb, 0xa9, 0x1a, 0x94, 0x38, 0x86, 0x69, 0xd9, 0x7a, 0x8f, 0xb6, 0xdc, 0xca, 0x3f, 0x8b, 0x64,
+	0x99, 0xab, 0x2f, 0x2d, 0x24, 0x4c, 0xc8, 0x52, 0x24, 0x5d, 0xcb, 0x74, 0x91, 0x2c, 0x33, 0xb5,
+	0x93, 0x62, 0x0e, 0x59, 0x45, 0x56, 0xd7, 0x72, 0xc4, 0xbc, 0x17, 0xe2, 0x0c, 0xfe, 0x19, 0x0a,
+	0xa5, 0x6b, 0x6d, 0x7c, 0x68, 0xd0, 0x97, 0x68, 0xa3, 0xcc, 0xf8, 0xe0, 0xef, 0x8e, 0xaf, 0x7a,
+	0x2c, 0x4e, 0x01, 0xc8, 0x1a, 0x7a, 0x21, 0xd3, 0xea, 0x5a, 0x8e, 0xf9, 0x68, 0x8f, 0x08, 0x01,
+	0xa3, 0xca, 0x23, 0xca, 0x09, 0x9b, 0xe5, 0xb9, 0x78, 0x83, 0xff, 0x2b, 0xbd, 0x26, 0xab, 0x23,
+	0x39, 0xab, 0xf0, 0xb9, 0xc5, 0x10, 0xbb, 0x5c, 0xae, 0xaa, 0x02, 0x46, 0xce, 0x95, 0xaa, 0x41,
+	0x75, 0x0e, 0x6b, 0xda, 0x50, 0xe4, 0x50, 0xa9, 0xea, 0x85, 0x38, 0x81, 0x3c, 0x38, 0x1f, 0x6f,
+	0x09, 0x6b, 0xc3, 0x99, 0x72, 0xf5, 0x0d, 0x76, 0xdb, 0x3b, 0x6f, 0xd0, 0x73, 0xb2, 0x61, 0xcb,
+	0xa0, 0x78, 0x4f, 0x40, 0xec, 0x7f, 0x3f, 0x34, 0xce, 0x06, 0xfc, 0xa5, 0x81, 0x39, 0x64, 0xd1,
+	0xc5, 0xa1, 0xd0, 0x54, 0xf5, 0xa2, 0x6b, 0xa3, 0xd1, 0x6b, 0x0c, 0xf7, 0xbc, 0x1a, 0xf1, 0x6a,
+	0x8f, 0x88, 0x02, 0x66, 0xac, 0xae, 0xf9, 0xcf, 0xf4, 0xa5, 0xa6, 0xea, 0x80, 0x15, 0x57, 0x87,
+	0xee, 0xb8, 0x9d, 0x8b, 0xae, 0xc7, 0xee, 0x6a, 0xf0, 0xc6, 0xf3, 0xcf, 0xce, 0x1e, 0xc7, 0xfc,
+	0x8a, 0x2e, 0x3f, 0x03, 0x00, 0x00, 0xff, 0xff, 0xdb, 0x69, 0x52, 0x59, 0x55, 0x02, 0x00, 0x00,
 }

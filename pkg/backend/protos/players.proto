@@ -13,10 +13,7 @@ service PlayersService {
 
 // Search
 message SearchPlayersRequest {
-    int64 offset = 1;
-    int32 limit = 2;
-    int64 sortField = 3;
-    int32 sortOrder = 4;
+    PaginationRequest pagination = 1;
 }
 
 message PlayersElasticResponse {
@@ -31,11 +28,8 @@ message PlayerElasticResponse {
 
 // List
 message ListPlayersRequest {
-    int64 offset = 1;
-    int64 limit = 2;
-    int64 sortField = 3;
-    int32 sortOrder = 4;
-    repeated int64 ids = 5;
+    PaginationRequest pagination = 1;
+    repeated int64 ids = 2;
 }
 
 message PlayersMongoResponse {
