@@ -74,6 +74,6 @@ func main() {
 
 	err = grpcServer.Serve(lis)
 	if err != nil {
-		zap.S().Error(err)
+		zap.S().Fatal(err)
 	}
 }
