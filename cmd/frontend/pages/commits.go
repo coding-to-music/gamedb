@@ -72,10 +72,15 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	var total = config.Config.Commits.GetInt()
 	var response = datatable.NewDataTablesResponse(r, query, int64(total), int64(total), nil)
+	var live bool
 
 	for k, commit := range commits {
 
 		t := time.Unix(commit.GetTime(), 0).Format(helpers.DateTime)
+
+		if commit.GetHash() == config.Config.CommitHash.Get() {
+			live = true
+		}
 
 		response.AddRow([]interface{}{
 			commit.GetMessage(),             // 0
@@ -84,7 +89,7 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			commit.GetLink(),                // 3
 			commit.GetHash()[0:7],           // 4
 			total - (query.GetOffset() + k), // 5
-			config.Config.Commits.GetInt(),  // 6
+			live,                            // 6
 		})
 	}
 

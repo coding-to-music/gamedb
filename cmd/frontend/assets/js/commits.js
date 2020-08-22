@@ -50,7 +50,7 @@ if ($('#commits-page').length > 0) {
             {
                 "targets": 4,
                 "render": function (data, type, row) {
-                    if (row[5] <= row[6]) {
+                    if (row[6]) {
                         return '<i class="fas fa-check text-success"></i>';
                     } else {
                         return '<i class="fas fa-times text-danger"></i>';
