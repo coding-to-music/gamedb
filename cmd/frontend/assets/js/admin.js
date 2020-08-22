@@ -187,7 +187,7 @@ if ($('#admin-consumers-page').length > 0) {
             {
                 'targets': 3,
                 'render': function (data, type, row) {
-                    return row[3];
+                    return '<a href="https://github.com/gamedb/gamedb/compare/' + row[3] + '...master" target="_blank" rel="noopener">' + row[3] + '</a>';
                 },
                 'orderable': false,
             },
