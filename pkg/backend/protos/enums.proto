@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package generated;
+
+enum ProductCode {
+    AE = 0;
+    AR = 1;
+    AU = 2;
+    AZ = 3;
+    BR = 4;
+    CA = 5;
+    CH = 6;
+    CL = 7;
+    CN = 8;
+    CO = 9;
+    CR = 10;
+    EU = 11;
+    HK = 12;
+    ID = 13;
+    IL = 14;
+    IN = 15;
+    JP = 16;
+    KR = 17;
+    KW = 18;
+    KZ = 19;
+    MX = 20;
+    MY = 21;
+    NO = 22;
+    NZ = 23;
+    PE = 24;
+    PH = 25;
+    PK = 26;
+    PL = 27;
+    QA = 28;
+    RU = 29;
+    SA = 30;
+    SG = 31;
+    TH = 32;
+    TR = 33;
+    TW = 34;
+    UA = 35;
+    UK = 36;
+    US = 37;
+    UY = 38;
+    VN = 39;
+    ZA = 40;
+}

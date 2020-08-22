@@ -25,7 +25,7 @@ type SearchPlayersRequest struct {
 func (m *SearchPlayersRequest) Reset()                    { *m = SearchPlayersRequest{} }
 func (m *SearchPlayersRequest) String() string            { return proto.CompactTextString(m) }
 func (*SearchPlayersRequest) ProtoMessage()               {}
-func (*SearchPlayersRequest) Descriptor() ([]byte, []int) { return fileDescriptor2, []int{0} }
+func (*SearchPlayersRequest) Descriptor() ([]byte, []int) { return fileDescriptor3, []int{0} }
 
 func (m *SearchPlayersRequest) GetPagination() *PaginationRequest {
 	if m != nil {
@@ -42,7 +42,7 @@ type PlayersElasticResponse struct {
 func (m *PlayersElasticResponse) Reset()                    { *m = PlayersElasticResponse{} }
 func (m *PlayersElasticResponse) String() string            { return proto.CompactTextString(m) }
 func (*PlayersElasticResponse) ProtoMessage()               {}
-func (*PlayersElasticResponse) Descriptor() ([]byte, []int) { return fileDescriptor2, []int{1} }
+func (*PlayersElasticResponse) Descriptor() ([]byte, []int) { return fileDescriptor3, []int{1} }
 
 func (m *PlayersElasticResponse) GetPagination() *PaginationResponse {
 	if m != nil {
@@ -66,7 +66,7 @@ type PlayerElasticResponse struct {
 func (m *PlayerElasticResponse) Reset()                    { *m = PlayerElasticResponse{} }
 func (m *PlayerElasticResponse) String() string            { return proto.CompactTextString(m) }
 func (*PlayerElasticResponse) ProtoMessage()               {}
-func (*PlayerElasticResponse) Descriptor() ([]byte, []int) { return fileDescriptor2, []int{2} }
+func (*PlayerElasticResponse) Descriptor() ([]byte, []int) { return fileDescriptor3, []int{2} }
 
 func (m *PlayerElasticResponse) GetId() int64 {
 	if m != nil {
@@ -91,7 +91,7 @@ type ListPlayersRequest struct {
 func (m *ListPlayersRequest) Reset()                    { *m = ListPlayersRequest{} }
 func (m *ListPlayersRequest) String() string            { return proto.CompactTextString(m) }
 func (*ListPlayersRequest) ProtoMessage()               {}
-func (*ListPlayersRequest) Descriptor() ([]byte, []int) { return fileDescriptor2, []int{3} }
+func (*ListPlayersRequest) Descriptor() ([]byte, []int) { return fileDescriptor3, []int{3} }
 
 func (m *ListPlayersRequest) GetPagination() *PaginationRequest {
 	if m != nil {
@@ -115,7 +115,7 @@ type PlayersMongoResponse struct {
 func (m *PlayersMongoResponse) Reset()                    { *m = PlayersMongoResponse{} }
 func (m *PlayersMongoResponse) String() string            { return proto.CompactTextString(m) }
 func (*PlayersMongoResponse) ProtoMessage()               {}
-func (*PlayersMongoResponse) Descriptor() ([]byte, []int) { return fileDescriptor2, []int{4} }
+func (*PlayersMongoResponse) Descriptor() ([]byte, []int) { return fileDescriptor3, []int{4} }
 
 func (m *PlayersMongoResponse) GetPagination() *PaginationResponse {
 	if m != nil {
@@ -139,7 +139,7 @@ type PlayerMongoResponse struct {
 func (m *PlayerMongoResponse) Reset()                    { *m = PlayerMongoResponse{} }
 func (m *PlayerMongoResponse) String() string            { return proto.CompactTextString(m) }
 func (*PlayerMongoResponse) ProtoMessage()               {}
-func (*PlayerMongoResponse) Descriptor() ([]byte, []int) { return fileDescriptor2, []int{5} }
+func (*PlayerMongoResponse) Descriptor() ([]byte, []int) { return fileDescriptor3, []int{5} }
 
 func (m *PlayerMongoResponse) GetId() int64 {
 	if m != nil {
@@ -269,9 +269,9 @@ var _PlayersService_serviceDesc = grpc.ServiceDesc{
 	Metadata: "players.proto",
 }
 
-func init() { proto.RegisterFile("players.proto", fileDescriptor2) }
+func init() { proto.RegisterFile("players.proto", fileDescriptor3) }
 
-var fileDescriptor2 = []byte{
+var fileDescriptor3 = []byte{
 	// 323 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x53, 0x4d, 0x4f, 0xc2, 0x40,
 	0x10, 0xa5, 0x2d, 0xc1, 0x30, 0x28, 0x31, 0x23, 0x1a, 0x42, 0x54, 0xea, 0x9e, 0x38, 0x71, 0xc0,

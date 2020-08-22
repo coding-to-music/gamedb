@@ -24,7 +24,7 @@ type CommitsRequest struct {
 func (m *CommitsRequest) Reset()                    { *m = CommitsRequest{} }
 func (m *CommitsRequest) String() string            { return proto.CompactTextString(m) }
 func (*CommitsRequest) ProtoMessage()               {}
-func (*CommitsRequest) Descriptor() ([]byte, []int) { return fileDescriptor1, []int{0} }
+func (*CommitsRequest) Descriptor() ([]byte, []int) { return fileDescriptor2, []int{0} }
 
 func (m *CommitsRequest) GetPagination() *PaginationRequest2 {
 	if m != nil {
@@ -40,7 +40,7 @@ type CommitsResponse struct {
 func (m *CommitsResponse) Reset()                    { *m = CommitsResponse{} }
 func (m *CommitsResponse) String() string            { return proto.CompactTextString(m) }
 func (*CommitsResponse) ProtoMessage()               {}
-func (*CommitsResponse) Descriptor() ([]byte, []int) { return fileDescriptor1, []int{1} }
+func (*CommitsResponse) Descriptor() ([]byte, []int) { return fileDescriptor2, []int{1} }
 
 func (m *CommitsResponse) GetCommits() []*CommitResponse {
 	if m != nil {
@@ -59,7 +59,7 @@ type CommitResponse struct {
 func (m *CommitResponse) Reset()                    { *m = CommitResponse{} }
 func (m *CommitResponse) String() string            { return proto.CompactTextString(m) }
 func (*CommitResponse) ProtoMessage()               {}
-func (*CommitResponse) Descriptor() ([]byte, []int) { return fileDescriptor1, []int{2} }
+func (*CommitResponse) Descriptor() ([]byte, []int) { return fileDescriptor2, []int{2} }
 
 func (m *CommitResponse) GetMessage() string {
 	if m != nil {
@@ -167,9 +167,9 @@ var _GitHubService_serviceDesc = grpc.ServiceDesc{
 	Metadata: "github.proto",
 }
 
-func init() { proto.RegisterFile("github.proto", fileDescriptor1) }
+func init() { proto.RegisterFile("github.proto", fileDescriptor2) }
 
-var fileDescriptor1 = []byte{
+var fileDescriptor2 = []byte{
 	// 242 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x6c, 0x50, 0xcf, 0x4b, 0xc3, 0x30,
 	0x14, 0xb6, 0x76, 0x58, 0xf6, 0x36, 0x15, 0x72, 0x8a, 0x05, 0xa1, 0xf4, 0xd4, 0x53, 0x0f, 0xdd,

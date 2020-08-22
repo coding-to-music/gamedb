@@ -70,10 +70,10 @@ func (a AppsServer) Apps(ctx context.Context, request *generated.ListAppsRequest
 	response.Pagination = &generated.PaginationResponse{}
 	response.Pagination.SetPagination(request.GetPagination(), total)
 
-	for _, v := range apps {
+	for _, app := range apps {
 		response.Apps = append(response.Apps, &generated.AppMongoResponse{
-			Id:   int32(v.GetID()),
-			Name: v.GetName(),
+			Id:   int32(app.GetID()),
+			Name: app.GetName(),
 		})
 	}
 

@@ -3,6 +3,7 @@ syntax = "proto3";
 package generated;
 
 import "shared.proto";
+import "enums.proto";
 
 service AppsService {
     rpc Search (SearchAppsRequest) returns (AppsElasticResponse) {
@@ -14,6 +15,19 @@ service AppsService {
 // Search
 message SearchAppsRequest {
     PaginationRequest pagination = 1;
+    repeated string types = 2;
+    repeated int32 tags = 3;
+    repeated int32 genres = 4;
+    repeated int32 developers = 5;
+    repeated int32 publishers = 6;
+    repeated int32 categories = 7;
+    repeated string platforms = 8;
+    float priceMin = 9;
+    float priceMax = 10;
+    float scoreMin = 11;
+    float scoreMax = 12;
+    ProductCode currency = 13;
+    string search = 14;
 }
 
 message AppsElasticResponse {
@@ -22,20 +36,20 @@ message AppsElasticResponse {
 }
 
 message AppElasticResponse {
-    int32 achievementsCounts = 1;
-    float floatachievementsAvg = 2;
+    int64 achievementsCounts = 1;
+    float achievementsAvg = 2;
     map<string, string> achievementIcons = 3;
     repeated string aliases = 4;
     repeated int32 categories = 5;
     repeated int32 developers = 6;
-    int32 followers = 7;
+    int64 followers = 7;
     repeated int32 genres = 8;
     string icon = 9;
     int32 id = 10;
     string name = 11;
     string nameMarked = 12;
     repeated string platforms = 13;
-    int32 players = 14;
+    int64 players = 14;
     map<string, Price> prices = 15;
     repeated int32 publishers = 16;
     int64 releaseDate = 17;

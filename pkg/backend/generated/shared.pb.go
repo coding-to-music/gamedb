@@ -18,7 +18,7 @@ type Empty struct {
 func (m *Empty) Reset()                    { *m = Empty{} }
 func (m *Empty) String() string            { return proto.CompactTextString(m) }
 func (*Empty) ProtoMessage()               {}
-func (*Empty) Descriptor() ([]byte, []int) { return fileDescriptor3, []int{0} }
+func (*Empty) Descriptor() ([]byte, []int) { return fileDescriptor4, []int{0} }
 
 type Price struct {
 	Exists          bool   `protobuf:"varint,1,opt,name=exists" json:"exists,omitempty"`
@@ -33,7 +33,7 @@ type Price struct {
 func (m *Price) Reset()                    { *m = Price{} }
 func (m *Price) String() string            { return proto.CompactTextString(m) }
 func (*Price) ProtoMessage()               {}
-func (*Price) Descriptor() ([]byte, []int) { return fileDescriptor3, []int{1} }
+func (*Price) Descriptor() ([]byte, []int) { return fileDescriptor4, []int{1} }
 
 func (m *Price) GetExists() bool {
 	if m != nil {
@@ -94,7 +94,7 @@ type PaginationRequest struct {
 func (m *PaginationRequest) Reset()                    { *m = PaginationRequest{} }
 func (m *PaginationRequest) String() string            { return proto.CompactTextString(m) }
 func (*PaginationRequest) ProtoMessage()               {}
-func (*PaginationRequest) Descriptor() ([]byte, []int) { return fileDescriptor3, []int{2} }
+func (*PaginationRequest) Descriptor() ([]byte, []int) { return fileDescriptor4, []int{2} }
 
 func (m *PaginationRequest) GetOffset() int64 {
 	if m != nil {
@@ -135,7 +135,7 @@ type PaginationResponse struct {
 func (m *PaginationResponse) Reset()                    { *m = PaginationResponse{} }
 func (m *PaginationResponse) String() string            { return proto.CompactTextString(m) }
 func (*PaginationResponse) ProtoMessage()               {}
-func (*PaginationResponse) Descriptor() ([]byte, []int) { return fileDescriptor3, []int{3} }
+func (*PaginationResponse) Descriptor() ([]byte, []int) { return fileDescriptor4, []int{3} }
 
 func (m *PaginationResponse) GetOffset() int64 {
 	if m != nil {
@@ -180,7 +180,7 @@ type PaginationRequest2 struct {
 func (m *PaginationRequest2) Reset()                    { *m = PaginationRequest2{} }
 func (m *PaginationRequest2) String() string            { return proto.CompactTextString(m) }
 func (*PaginationRequest2) ProtoMessage()               {}
-func (*PaginationRequest2) Descriptor() ([]byte, []int) { return fileDescriptor3, []int{4} }
+func (*PaginationRequest2) Descriptor() ([]byte, []int) { return fileDescriptor4, []int{4} }
 
 func (m *PaginationRequest2) GetPage() int64 {
 	if m != nil {
@@ -204,9 +204,9 @@ func init() {
 	proto.RegisterType((*PaginationRequest2)(nil), "generated.PaginationRequest2")
 }
 
-func init() { proto.RegisterFile("shared.proto", fileDescriptor3) }
+func init() { proto.RegisterFile("shared.proto", fileDescriptor4) }
 
-var fileDescriptor3 = []byte{
+var fileDescriptor4 = []byte{
 	// 336 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x92, 0x41, 0x4b, 0xeb, 0x40,
 	0x14, 0x85, 0xc9, 0x4b, 0xd3, 0x36, 0x97, 0xc2, 0x7b, 0x6f, 0x28, 0x32, 0x88, 0x48, 0xc9, 0xaa,
