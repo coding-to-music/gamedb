@@ -129,7 +129,7 @@ func gitHubWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 	expectedMAC := hex.EncodeToString(mac.Sum(nil))
 
 	if !hmac.Equal([]byte(signaturePrefix+expectedMAC), []byte(signature)) {
-		zap.L().Error("Invalid signature (2)", zap.String("secret", config.Config.PatreonSecret.Get()))
+		zap.L().Error("Invalid signature (2)", zap.String("secret", config.Config.GithubWebhookSecret.Get()))
 		http.Error(w, "Invalid signature (2)", 400)
 		return
 	}
