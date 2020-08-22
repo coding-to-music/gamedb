@@ -8,9 +8,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-type AppsServer struct {
-}
-
 func (a AppsServer) Apps(ctx context.Context, request *generated.ListAppsRequest) (response *generated.AppsMongoResponse, err error) {
 
 	filter := bson.D{{}}
@@ -79,11 +76,6 @@ func (a AppsServer) Apps(ctx context.Context, request *generated.ListAppsRequest
 			Name: v.GetName(),
 		})
 	}
-
-	return response, err
-}
-
-func (a AppsServer) Search(ctx context.Context, request *generated.SearchAppsRequest) (response *generated.AppsElasticResponse, err error) {
 
 	return response, err
 }

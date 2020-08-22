@@ -77,3 +77,12 @@ func main() {
 		zap.S().Fatal(err)
 	}
 }
+
+type AppsServer struct {
+}
+
+type PlayersServer struct {
+}
+
+type GithubServer struct {
+}

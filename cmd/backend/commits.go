@@ -8,9 +8,6 @@ import (
 	"github.com/google/go-github/v32/github"
 )
 
-type GithubServer struct {
-}
-
 func (g GithubServer) Commits(ctx context.Context, request *generated.CommitsRequest) (response *generated.CommitsResponse, err error) {
 
 	client, ctx := githubHelper.GetGithub()
