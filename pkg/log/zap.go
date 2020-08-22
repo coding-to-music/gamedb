@@ -39,7 +39,7 @@ const (
 func InitZap(logName string) {
 
 	var logger *zap.Logger
-	if config.IsLocal() && false {
+	if config.IsLocal() {
 		logger = zap.New(getStandardCore()).Named(logName)
 	} else {
 		logger = zap.New(zapcore.NewTee(getStandardCore(), getGoogleCore())).Named(logName)
