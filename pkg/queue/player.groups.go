@@ -85,41 +85,42 @@ func playersGroupsHandler(message *rabbit.Message) {
 		}
 	}
 
-	// Find new groups
-	toAdd, err := mongo.GetGroupsByID(toAddIDs, nil)
-	if err != nil {
-		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
-		sendToRetryQueue(message)
-		return
-	}
+	if len(toAddIDs) > 0 {
 
-	// Add
-	var newPlayerGroupSlice []mongo.PlayerGroup
-	for _, group := range toAdd {
+		// Find new groups
+		toAdd, err := mongo.GetGroupsByID(toAddIDs, nil)
+		if err != nil {
+			zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+			sendToRetryQueue(message)
+			return
+		}
 
-		var name = helpers.TruncateString(group.Name, 1000, "") // Truncated as caused mongo driver issue
+		// Add
+		var newPlayerGroupSlice []mongo.PlayerGroup
+		for _, group := range toAdd {
 
-		newPlayerGroupSlice = append(newPlayerGroupSlice, mongo.PlayerGroup{
-			PlayerID:      payload.Player.ID,
-			PlayerName:    payload.Player.PersonaName,
-			PlayerAvatar:  payload.Player.Avatar,
-			PlayerLevel:   payload.Player.Level,
-			PlayerCountry: payload.Player.CountryCode,
-			PlayerGames:   payload.Player.GamesCount,
-			GroupID:       group.ID,
-			GroupName:     name,
-			GroupIcon:     group.Icon,
-			GroupMembers:  group.Members,
-			GroupType:     group.Type,
-			GroupURL:      group.URL,
-		})
-	}
+			newPlayerGroupSlice = append(newPlayerGroupSlice, mongo.PlayerGroup{
+				PlayerID:      payload.Player.ID,
+				PlayerName:    payload.Player.PersonaName,
+				PlayerAvatar:  payload.Player.Avatar,
+				PlayerLevel:   payload.Player.Level,
+				PlayerCountry: payload.Player.CountryCode,
+				PlayerGames:   payload.Player.GamesCount,
+				GroupID:       group.ID,
+				GroupName:     helpers.TruncateString(group.Name, 1000, ""), // Truncated as caused mongo driver issue
+				GroupIcon:     group.Icon,
+				GroupMembers:  group.Members,
+				GroupType:     group.Type,
+				GroupURL:      group.URL,
+			})
+		}
 
-	err = mongo.ReplacePlayerGroups(newPlayerGroupSlice)
-	if err != nil {
-		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
-		sendToRetryQueue(message)
-		return
+		err = mongo.ReplacePlayerGroups(newPlayerGroupSlice)
+		if err != nil {
+			zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+			sendToRetryQueue(message)
+			return
+		}
 	}
 
 	// Delete
