@@ -18,9 +18,8 @@ require (
 	github.com/StefanSchroeder/Golang-Roman v0.0.0-20191231161654-ef19f7247884
 	github.com/ahmdrz/goinsta/v2 v2.4.5
 	github.com/antchfx/xpath v1.1.10 // indirect
-	github.com/aws/aws-sdk-go v1.34.8 // indirect
+	github.com/aws/aws-sdk-go v1.34.9 // indirect
 	github.com/badoux/checkmail v1.2.0
-	github.com/beefsack/go-rate v0.0.0-20180408011153-efa7637bb9b6 // indirect
 	github.com/blend/go-sdk v1.1.1 // indirect
 	github.com/bwmarrin/discordgo v0.22.0
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
@@ -52,7 +51,6 @@ require (
 	github.com/jinzhu/gorm v1.9.16
 	github.com/jinzhu/now v1.1.1
 	github.com/justinas/nosurf v1.1.0
-	github.com/jzelinskie/geddit v0.0.0-20200521013404-78c28c13fba2
 	github.com/karrick/godirwalk v1.16.1 // indirect
 	github.com/klauspost/compress v1.10.11 // indirect
 	github.com/lib/pq v1.3.0 // indirect
@@ -87,12 +85,12 @@ require (
 	github.com/yohcop/openid-go v1.0.0
 	go.mongodb.org/mongo-driver v1.4.0
 	go.uber.org/zap v1.15.0
-	golang.org/x/crypto v0.0.0-20200728195943-123391ffb6de
+	golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a
 	golang.org/x/exp v0.0.0-20200331195152-e8c3332aa8e5 // indirect
 	golang.org/x/image v0.0.0-20200801110659-972c09e46d76 // indirect
 	golang.org/x/net v0.0.0-20200813134508-3edf25e44fcc
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
-	golang.org/x/sys v0.0.0-20200819171115-d785dc25833f // indirect
+	golang.org/x/sys v0.0.0-20200821140526-fda516888d29 // indirect
 	golang.org/x/text v0.3.3
 	golang.org/x/time v0.0.0-20200630173020-3af7569d3a1e // indirect
 	golang.org/x/tools v0.0.0-20200818005847-188abfa75333 // indirect
