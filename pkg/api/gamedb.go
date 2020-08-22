@@ -170,7 +170,7 @@ var SwaggerGameDB = &openapi3.Swagger{
 			},
 			"app-response": {
 				Value: &openapi3.Response{
-					Description: stringPointer("An app"),
+					Description: stringPointer("A game"),
 					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
 						Ref: "#/components/schemas/app-schema",
 					}),
@@ -178,7 +178,7 @@ var SwaggerGameDB = &openapi3.Swagger{
 			},
 			"apps-response": {
 				Value: &openapi3.Response{
-					Description: stringPointer("List of apps"),
+					Description: stringPointer("List of games"),
 					Content: openapi3.NewContentWithJSONSchema(&openapi3.Schema{
 						Description: "List of apps, with pagination",
 						Required:    []string{"pagination", "apps"},
@@ -233,7 +233,7 @@ var SwaggerGameDB = &openapi3.Swagger{
 		"/games": &openapi3.PathItem{
 			Get: &openapi3.Operation{
 				Tags:    []string{tagGame},
-				Summary: "List Apps",
+				Summary: "List Games",
 				Parameters: openapi3.Parameters{
 					{Value: keyGetParam},
 					{Ref: "#/components/parameters/offset-param"},
@@ -264,7 +264,7 @@ var SwaggerGameDB = &openapi3.Swagger{
 		"/games/{id}": &openapi3.PathItem{
 			Get: &openapi3.Operation{
 				Tags:    []string{tagGame},
-				Summary: "Retrieve App",
+				Summary: "Retrieve Game",
 				Parameters: openapi3.Parameters{
 					{Value: keyGetParam},
 					{Value: openapi3.NewPathParameter("id").WithRequired(true).WithSchema(openapi3.NewInt32Schema().WithMin(1))},
