@@ -68,7 +68,7 @@ func main() {
 	go queue.Init(queue.FrontendDefinitions)
 
 	// Setup Recaptcha
-	recaptcha.SetSecret(config.Config.RecaptchaPrivate.Get())
+	recaptcha.SetSecret(config.C.RecaptchaPrivate)
 
 	session.InitSession()
 
@@ -192,10 +192,10 @@ func main() {
 	// 404
 	r.NotFound(pages.Error404Handler)
 
-	zap.L().Info("Starting Frontend on " + "http://" + config.FrontendPort())
+	zap.L().Info("Starting Frontend on " + "http://" + config.GetFrontendPort())
 
 	s := &http.Server{
-		Addr:              config.FrontendPort(),
+		Addr:              config.GetFrontendPort(),
 		Handler:           r,
 		ReadTimeout:       2 * time.Second,
 		ReadHeaderTimeout: 2 * time.Second,

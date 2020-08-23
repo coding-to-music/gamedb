@@ -25,7 +25,7 @@ func GetGithub() (*github.Client, context.Context) {
 			ctx,
 			oauth2.StaticTokenSource(
 				&oauth2.Token{
-					AccessToken: config.Config.GithubToken.Get()},
+					AccessToken: config.C.GithubToken},
 			)))
 	}
 

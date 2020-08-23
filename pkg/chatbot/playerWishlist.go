@@ -77,7 +77,7 @@ func (c CommandPlayerWishlist) Output(msg *discordgo.MessageCreate) (message dis
 		message.Content = "<@" + msg.Author.ID + ">"
 		message.Embed = &discordgo.MessageEmbed{
 			Title:  "Wishlist Items",
-			URL:    config.Config.GameDBDomain.Get() + player.GetPath() + "#wishlist",
+			URL:    config.C.GameDBDomain + player.GetPath() + "#wishlist",
 			Author: getAuthor(msg.Author.ID),
 		}
 

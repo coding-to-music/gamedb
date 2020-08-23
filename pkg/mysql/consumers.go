@@ -63,10 +63,10 @@ func GetConsumer(tag string) (err error) {
 		fields := map[string]interface{}{
 			"expires":     time.Now().Add(ConsumerSessionLength),
 			"owner":       tag,
-			"environment": config.Config.Environment.Get(),
+			"environment": config.C.Environment,
 			"version":     config.GetShortCommitHash(),
-			"commits":     config.Config.Commits.Get(),
-			"ip":          config.Config.IP.Get(),
+			"commits":     config.C.Commits,
+			"ip":          config.C.IP,
 		}
 
 		db = db.New().Table("consumers").Where("`key` = ?", row.Key).Updates(fields)
@@ -79,7 +79,7 @@ func GetConsumer(tag string) (err error) {
 		db = db.Commit()
 
 		if db.Error == nil {
-			config.Config.SteamAPIKey.SetDefault(row.Key)
+			config.C.SteamAPIKey = row.Key
 		}
 
 		return db.Error
@@ -101,7 +101,7 @@ func GetConsumer(tag string) (err error) {
 		}
 
 		db = db.Model(&Consumer{})
-		db = db.Where("`key` = ?", config.Config.SteamAPIKey.Get())
+		db = db.Where("`key` = ?", config.C.SteamAPIKey)
 
 		for {
 

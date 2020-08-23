@@ -324,8 +324,8 @@ func saveProductPricesToMongo(before helpers.ProductInterface, after helpers.Pro
 		// 		}
 		//
 		// 		// Slack message
-		// 		err = slack.PostWebhook(config.Config.SlackSocialWebhook.Get(), &slack.WebhookMessage{
-		// 			Text: config.Config.GameDBDomain.Get() + before.GetPath(),
+		// 		err = slack.PostWebhook(config.Config.SlackSocialWebhook, &slack.WebhookMessage{
+		// 			Text: config.Config.GameDBDomain + before.GetPath(),
 		// 		})
 		// if err != nil {
 		// 		zap.S().Error(err)

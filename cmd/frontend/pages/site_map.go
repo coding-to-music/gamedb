@@ -30,7 +30,7 @@ func SiteMapIndexHandler(w http.ResponseWriter, r *http.Request) {
 	sm := sitemap.NewSiteMapIndex()
 
 	for _, v := range sitemaps {
-		sm.AddSitemap(config.Config.GameDBDomain.Get()+v, time.Time{})
+		sm.AddSitemap(config.C.GameDBDomain+v, time.Time{})
 	}
 
 	_, err := sm.Write(w)
@@ -82,7 +82,7 @@ func SiteMapPagesHandler(w http.ResponseWriter, r *http.Request) {
 	sm := sitemap.NewSitemap()
 
 	for _, v := range pages {
-		sm.AddLocation(config.Config.GameDBDomain.Get()+v, time.Time{}, sitemap.FrequencyHourly, 1)
+		sm.AddLocation(config.C.GameDBDomain+v, time.Time{}, sitemap.FrequencyHourly, 1)
 	}
 
 	_, err := sm.Write(w)
@@ -101,7 +101,7 @@ func SiteMapGamesByPlayersHandler(w http.ResponseWriter, r *http.Request) {
 
 	sm := sitemap.NewSitemap()
 	for _, app := range apps {
-		sm.AddLocation(config.Config.GameDBDomain.Get()+app.GetPath(), app.UpdatedAt, sitemap.FrequencyWeekly, 0.9)
+		sm.AddLocation(config.C.GameDBDomain+app.GetPath(), app.UpdatedAt, sitemap.FrequencyWeekly, 0.9)
 	}
 
 	_, err = sm.Write(w)
@@ -120,7 +120,7 @@ func SiteMapGamesByScoreHandler(w http.ResponseWriter, r *http.Request) {
 
 	sm := sitemap.NewSitemap()
 	for _, app := range apps {
-		sm.AddLocation(config.Config.GameDBDomain.Get()+app.GetPath(), app.UpdatedAt, sitemap.FrequencyWeekly, 0.9)
+		sm.AddLocation(config.C.GameDBDomain+app.GetPath(), app.UpdatedAt, sitemap.FrequencyWeekly, 0.9)
 	}
 
 	_, err = sm.Write(w)
@@ -139,7 +139,7 @@ func SiteMapGamesUpcomingHandler(w http.ResponseWriter, r *http.Request) {
 
 	sm := sitemap.NewSitemap()
 	for _, app := range apps {
-		sm.AddLocation(config.Config.GameDBDomain.Get()+app.GetPath(), app.UpdatedAt, sitemap.FrequencyWeekly, 0.9)
+		sm.AddLocation(config.C.GameDBDomain+app.GetPath(), app.UpdatedAt, sitemap.FrequencyWeekly, 0.9)
 	}
 
 	_, err = sm.Write(w)
@@ -152,7 +152,7 @@ func SiteMapGamesNewHandler(w http.ResponseWriter, r *http.Request) {
 
 	var filter = bson.D{
 		{"release_date_unix", bson.M{"$lt": time.Now().Unix()}},
-		{"release_date_unix", bson.M{"$gt": time.Now().AddDate(0, 0, -config.Config.NewReleaseDays.GetInt()).Unix()}},
+		{"release_date_unix", bson.M{"$gt": time.Now().AddDate(0, 0, -config.C.NewReleaseDays).Unix()}},
 	}
 
 	apps, err := mongo.GetApps(0, 1000, bson.D{{"release_date_unix", -1}}, filter, bson.M{"_id": 1, "name": 1, "updated_at": 1})
@@ -163,7 +163,7 @@ func SiteMapGamesNewHandler(w http.ResponseWriter, r *http.Request) {
 
 	sm := sitemap.NewSitemap()
 	for _, app := range apps {
-		sm.AddLocation(config.Config.GameDBDomain.Get()+app.GetPath(), app.UpdatedAt, sitemap.FrequencyWeekly, 0.9)
+		sm.AddLocation(config.C.GameDBDomain+app.GetPath(), app.UpdatedAt, sitemap.FrequencyWeekly, 0.9)
 	}
 
 	_, err = sm.Write(w)
@@ -183,7 +183,7 @@ func SiteMapPlayersByLevel(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, player := range players {
-		sm.AddLocation(config.Config.GameDBDomain.Get()+player.GetPath(), player.UpdatedAt, sitemap.FrequencyWeekly, 0.9)
+		sm.AddLocation(config.C.GameDBDomain+player.GetPath(), player.UpdatedAt, sitemap.FrequencyWeekly, 0.9)
 	}
 
 	_, err = sm.Write(w)
@@ -203,7 +203,7 @@ func SiteMapPlayersByGamesCount(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, player := range players {
-		sm.AddLocation(config.Config.GameDBDomain.Get()+player.GetPath(), player.UpdatedAt, sitemap.FrequencyWeekly, 0.9)
+		sm.AddLocation(config.C.GameDBDomain+player.GetPath(), player.UpdatedAt, sitemap.FrequencyWeekly, 0.9)
 	}
 
 	_, err = sm.Write(w)
@@ -223,7 +223,7 @@ func SiteMapGroups(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, v := range groups {
-		sm.AddLocation(config.Config.GameDBDomain.Get()+v.GetPath(), v.UpdatedAt, sitemap.FrequencyWeekly, 0.9)
+		sm.AddLocation(config.C.GameDBDomain+v.GetPath(), v.UpdatedAt, sitemap.FrequencyWeekly, 0.9)
 	}
 
 	_, err = sm.Write(w)
@@ -237,10 +237,10 @@ func SiteMapBadges(w http.ResponseWriter, r *http.Request) {
 	sm := sitemap.NewSitemap()
 
 	for _, badge := range helpers.BuiltInSpecialBadges {
-		sm.AddLocation(config.Config.GameDBDomain.Get()+badge.GetPath(false), time.Time{}, sitemap.FrequencyWeekly, 0.9)
+		sm.AddLocation(config.C.GameDBDomain+badge.GetPath(false), time.Time{}, sitemap.FrequencyWeekly, 0.9)
 	}
 	for _, badge := range helpers.BuiltInEventBadges {
-		sm.AddLocation(config.Config.GameDBDomain.Get()+badge.GetPath(false), time.Time{}, sitemap.FrequencyWeekly, 0.9)
+		sm.AddLocation(config.C.GameDBDomain+badge.GetPath(false), time.Time{}, sitemap.FrequencyWeekly, 0.9)
 	}
 
 	_, err := sm.Write(w)

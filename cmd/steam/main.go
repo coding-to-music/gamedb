@@ -44,8 +44,8 @@ func main() {
 	var err error
 
 	loginDetails := steam.LogOnDetails{}
-	loginDetails.Username = config.Config.SteamUsername.Get()
-	loginDetails.Password = config.Config.SteamPassword.Get()
+	loginDetails.Username = config.C.SteamUsername
+	loginDetails.Password = config.C.SteamPassword
 	loginDetails.SentryFileHash, _ = ioutil.ReadFile(steamSentryFilename)
 	loginDetails.ShouldRememberPassword = true
 	loginDetails.AuthCode = ""

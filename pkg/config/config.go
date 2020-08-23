@@ -1,12 +1,10 @@
 package config
 
 import (
-	"fmt"
-	"os"
-	"path"
-	"runtime"
-	"strconv"
 	"strings"
+
+	"github.com/kelseyhightower/envconfig"
+	"go.uber.org/zap"
 )
 
 //noinspection GoUnusedConst
@@ -16,415 +14,202 @@ const (
 	EnvConsumer = "consumer"
 )
 
-var Config BaseConfig
-
-type BaseConfig struct {
+type Config struct {
 
 	// Admin
-	AdminName    ConfigItem
-	AdminEmail   ConfigItem
-	AdminSteamID ConfigItem
+	AdminName  string `envconfig:"ADMIN_NAME"`
+	AdminEmail string `envconfig:"ADMIN_EMAIL"`
 
 	// Digital Ocean (Auto Scaler)
-	DigitalOceanAccessToken    ConfigItem
-	DigitalOceanProjectID      ConfigItem
-	DigitalOceanKeyID          ConfigItem
-	DigitalOceanKeyFingerprint ConfigItem
+	DigitalOceanAccessToken    string `envconfig:"DO_ACCESS_TOKEN"`
+	DigitalOceanProjectID      string `envconfig:"DO_PROJECT_ID"`
+	DigitalOceanKeyID          int    `envconfig:"DO_KEY_ID"`
+	DigitalOceanKeyFingerprint string `envconfig:"DO_KEY_FINGERPRINT"`
 
 	// Discord
-	DiscordClientID      ConfigItem
-	DiscordClientSescret ConfigItem
+	DiscordClientID      string `envconfig:"DISCORD_CLIENT_ID"`
+	DiscordClientSescret string `envconfig:"DISCORD_SECRET"`
 
-	DiscordRelayBotToken   ConfigItem
-	DiscordChatBotToken    ConfigItem
-	DiscordChangesBotToken ConfigItem
+	DiscordChatBotToken    string `envconfig:"DISCORD_BOT_TOKEN"`
+	DiscordRelayBotToken   string `envconfig:"DISCORD_RELAY_TOKEN"`
+	DiscordChangesBotToken string `envconfig:"DISCORD_CHANGES_BOT_TOKEN"`
 
-	// Elastic Seach
-	ElasticAddress  ConfigItem
-	ElasticUsername ConfigItem
-	ElasticPassword ConfigItem
+	// Elastic Search
+	ElasticAddress  string `envconfig:"ELASTIC_SEARCH_ADDRESS"`
+	ElasticUsername string `envconfig:"ELASTIC_SEARCH_USERNAME"`
+	ElasticPassword string `envconfig:"ELASTIC_SEARCH_PASSWORD"`
 
 	// GitHub
-	GitHubClient        ConfigItem
-	GitHubSecret        ConfigItem
-	GithubToken         ConfigItem
-	GithubWebhookSecret ConfigItem
+	GitHubClient        string `envconfig:"GITHUB_CLIENT"`
+	GitHubSecret        string `envconfig:"GITHUB_SECRET"`
+	GithubToken         string `envconfig:"GITHUB_TOKEN"`
+	GithubWebhookSecret string `envconfig:"GITHUB_WEBHOOK_SECRET"`
 
 	// Google
-	GoogleBucket  ConfigItem
-	GoogleProject ConfigItem
+	GoogleBucket  string `envconfig:"GOOGLE_BUCKET"`
+	GoogleProject string `envconfig:"GOOGLE_PROJECT"`
 
-	GoogleOauthClientID     ConfigItem
-	GoogleOauthClientSecret ConfigItem
+	GoogleOauthClientID     string `envconfig:"GOOGLE_OAUTH_CLIENT_ID"`
+	GoogleOauthClientSecret string `envconfig:"GOOGLE_OAUTH_CLIENT_SECRET"`
 
-	// Hetzner (Auto Scaler)
-	HetznerSSHKeyID  ConfigItem
-	HetznerNetworkID ConfigItem
-	HetznerAPIToken  ConfigItem
+	// Hetzner
+	HetznerSSHKeyID  int    `envconfig:"HETZNER_SSH_KEY_ID"`
+	HetznerNetworkID int    `envconfig:"HETZNER_NETWORK_ID"`
+	HetznerAPIToken  string `envconfig:"HETZNER_API_TOKEN"`
 
 	// Imgur
-	ImgurClientID ConfigItem
+	ImgurClientID string `envconfig:"IMGUR_CLIENT_ID"`
 
 	// Influx
-	InfluxURL      ConfigItem
-	InfluxPassword ConfigItem
-	InfluxUsername ConfigItem
+	InfluxURL      string `envconfig:"INFLUX_URL"`
+	InfluxUsername string `envconfig:"INFLUX_USERNAME"`
+	InfluxPassword string `envconfig:"INFLUX_PASSWORD"`
 
 	// Instagram
-	InstagramPassword ConfigItem
-	InstagramUsername ConfigItem
+	InstagramUsername string `envconfig:"INSTAGRAM_USERNAME"`
+	InstagramPassword string `envconfig:"INSTAGRAM_PASSWORD"`
 
 	// Memcache
-	MemcacheDSN      ConfigItem
-	MemcacheUsername ConfigItem
-	MemcachePassword ConfigItem
+	MemcacheDSN      string `envconfig:"MEMCACHE_URL"`
+	MemcacheUsername string `envconfig:"MEMCACHE_USERNAME"`
+	MemcachePassword string `envconfig:"MEMCACHE_PASSWORD"`
 
 	// Mongo
-	MongoHost     ConfigItem
-	MongoPort     ConfigItem
-	MongoUsername ConfigItem
-	MongoPassword ConfigItem
-	MongoDatabase ConfigItem
+	MongoHost     string `envconfig:"MONGO_HOST"`
+	MongoPort     string `envconfig:"MONGO_PORT"`
+	MongoUsername string `envconfig:"MONGO_USERNAME"`
+	MongoPassword string `envconfig:"MONGO_PASSWORD"`
+	MongoDatabase string `envconfig:"MONGO_DATABASE"`
 
 	// MySQL
-	MySQLHost     ConfigItem
-	MySQLPort     ConfigItem
-	MySQLUsername ConfigItem
-	MySQLPassword ConfigItem
-	MySQLDatabase ConfigItem
+	MySQLHost     string `envconfig:"MYSQL_HOST"`
+	MySQLPort     string `envconfig:"MYSQL_PORT"`
+	MySQLUsername string `envconfig:"MYSQL_USERNAME"`
+	MySQLPassword string `envconfig:"MYSQL_PASSWORD"`
+	MySQLDatabase string `envconfig:"MYSQL_DATABASE"`
 
 	// Patreon
-	PatreonSecret       ConfigItem
-	PatreonClientID     ConfigItem
-	PatreonClientSecret ConfigItem
+	PatreonSecret       string `envconfig:"PATREON_WEBOOK_SECRET"`
+	PatreonClientID     string `envconfig:"PATREON_CLIENT_ID"`
+	PatreonClientSecret string `envconfig:"PATREON_CLIENT_SECRET"`
 
 	// Rabbit
-	RabbitUsername      ConfigItem
-	RabbitPassword      ConfigItem
-	RabbitHost          ConfigItem
-	RabbitPort          ConfigItem
-	RabbitManagmentPort ConfigItem
+	RabbitUsername      string `envconfig:"RABBIT_USER"`
+	RabbitPassword      string `envconfig:"RABBIT_PASS"`
+	RabbitHost          string `envconfig:"RABBIT_HOST"`
+	RabbitPort          string `envconfig:"RABBIT_PORT"`
+	RabbitManagmentPort string `envconfig:"RABBIT_MANAGEMENT_PORT"`
 
 	// Recaptcha
-	RecaptchaPrivate ConfigItem
-	RecaptchaPublic  ConfigItem
+	RecaptchaPublic  string `envconfig:"RECAPTCHA_PUBLIC"`
+	RecaptchaPrivate string `envconfig:"RECAPTCHA_PRIVATE"`
 
 	// Rollbar
-	RollbarSecret ConfigItem
-	RollbarUser   ConfigItem
+	RollbarSecret string `envconfig:"ROLLBAR_PRIVATE"`
+	RollbarUser   string `envconfig:"ROLLBAR_USER"`
 
 	// Sentry
-	SentryDSN ConfigItem
+	SentryDSN string `envconfig:"SENTRY_DSN"`
 
-	// Sessions
-	SessionAuthentication ConfigItem
-	SessionEncryption     ConfigItem
+	// Session
+	SessionAuthentication string `envconfig:"SESSION_AUTHENTICATION"`
+	SessionEncryption     string `envconfig:"SESSION_ENCRYPTION"`
 
 	// Steam
-	SteamUsername ConfigItem
-	SteamPassword ConfigItem
-	SteamAPIKey   ConfigItem // Not set from ENV
+	SteamUsername string `envconfig:"PROXY_USERNAME"`
+	SteamPassword string `envconfig:"PROXY_PASSWORD"`
+	SteamAPIKey   string
 
 	// Twitch
-	TwitchClientID     ConfigItem
-	TwitchClientSecret ConfigItem
+	TwitchClientID     string `envconfig:"TWITCH_CLIENT_ID"`
+	TwitchClientSecret string `envconfig:"TWITCH_CLIENT_SECRET"`
 
 	// Twitter
-	TwitterAccessToken       ConfigItem
-	TwitterAccessTokenSecret ConfigItem
-	TwitterConsumerKey       ConfigItem
-	TwitterConsumerSecret    ConfigItem
-
-	// Versions
-	CommitHash ConfigItem
-	Commits    ConfigItem
+	TwitterAccessToken       string `envconfig:"TWITTER_ACCESS_TOKEN"`
+	TwitterAccessTokenSecret string `envconfig:"TWITTER_ACCESS_TOKEN_SECRET"`
+	TwitterConsumerKey       string `envconfig:"TWITTER_CONSUMER_KEY"`
+	TwitterConsumerSecret    string `envconfig:"TWITTER_CONSUMER_SECRET"`
 
 	// YouTube
-	YoutubeAPIKey ConfigItem
+	YoutubeAPIKey string `envconfig:"YOUTUBE_API_KEY"`
 
 	// Servers
-	FrontendPort      ConfigItem
-	BackendHostPort   ConfigItem
-	BackendClientPort ConfigItem
-	APIPort           ConfigItem
+	FrontendPort      string `envconfig:"PORT"`
+	BackendHostPort   string `envconfig:"BACKEND_HOST_PORT"`
+	BackendClientPort string `envconfig:"BACKEND_CLIENT_PORT"`
+	APIPort           string `envconfig:"API_PORT"`
 
 	// Other
-	Environment         ConfigItem
-	GameDBDomain        ConfigItem
-	GameDBShortName     ConfigItem
-	SendGridAPIKey      ConfigItem
-	IP                  ConfigItem
-	NewReleaseDays      ConfigItem
-	SlackGameDBWebhook  ConfigItem
-	SlackPatreonWebhook ConfigItem
-	GRPCKeysPath        ConfigItem
-	InfraPath           ConfigItem
+	GameDBDomain        string `envconfig:"DOMAIN"`
+	Environment         string `envconfig:"ENV"`
+	SendGridAPIKey      string `envconfig:"SENDGRID"`
+	SlackGameDBWebhook  string `envconfig:"SLACK_GAMEDB_WEBHOOK"`
+	SlackPatreonWebhook string `envconfig:"SLACK_SOCIAL_WEBHOOK"`
+	InfraPath           string `envconfig:"INFRASTRUCTURE_PATH"`
+	GRPCKeysPath        string `envconfig:"STEAM_GRPC_KEYS_PATH"`
+
+	// Non-environment
+	IP              string
+	CommitHash      string
+	Commits         string
+	GameDBShortName string
+	NewReleaseDays  int
 }
+
+var C Config
 
 func init() {
 
-	// Admin
-	Config.AdminName.Set("ADMIN_NAME")
-	Config.AdminEmail.Set("ADMIN_EMAIL")
-	Config.AdminSteamID.Set("ADMIN_STEAM_ID")
-
-	// Digital Ocean (Auto Scaler)
-	Config.DigitalOceanAccessToken.Set("DO_ACCESS_TOKEN")
-	Config.DigitalOceanProjectID.Set("DO_PROJECT_ID")
-	Config.DigitalOceanKeyID.Set("DO_KEY_ID")
-	Config.DigitalOceanKeyFingerprint.Set("DO_KEY_FINGERPRINT")
-
-	// Discord
-	Config.DiscordClientID.Set("DISCORD_CLIENT_ID")
-	Config.DiscordClientSescret.Set("DISCORD_SECRET")
-
-	Config.DiscordChatBotToken.Set("DISCORD_BOT_TOKEN")
-	Config.DiscordRelayBotToken.Set("DISCORD_RELAY_TOKEN")
-	Config.DiscordChangesBotToken.Set("DISCORD_CHANGES_BOT_TOKEN")
-
-	// Elastic Search
-	Config.ElasticAddress.Set("ELASTIC_SEARCH_ADDRESS")
-	Config.ElasticUsername.Set("ELASTIC_SEARCH_USERNAME")
-	Config.ElasticPassword.Set("ELASTIC_SEARCH_PASSWORD")
-
-	// GitHub
-	Config.GitHubClient.Set("GITHUB_CLIENT")
-	Config.GitHubSecret.Set("GITHUB_SECRET")
-	Config.GithubToken.Set("GITHUB_TOKEN")
-	Config.GithubWebhookSecret.Set("GITHUB_WEBHOOK_SECRET")
-
-	// Google
-	Config.GoogleBucket.Set("GOOGLE_BUCKET")
-	Config.GoogleProject.Set("GOOGLE_PROJECT")
-
-	Config.GoogleOauthClientID.Set("GOOGLE_OAUTH_CLIENT_ID")
-	Config.GoogleOauthClientSecret.Set("GOOGLE_OAUTH_CLIENT_SECRET")
-
-	// Hetzner
-	Config.HetznerSSHKeyID.Set("HETZNER_SSH_KEY_ID")
-	Config.HetznerNetworkID.Set("HETZNER_NETWORK_ID")
-	Config.HetznerAPIToken.Set("HETZNER_API_TOKEN")
-
-	// Imgur
-	Config.ImgurClientID.Set("IMGUR_CLIENT_ID")
-
-	// Influx
-	Config.InfluxURL.Set("INFLUX_URL")
-	Config.InfluxUsername.Set("INFLUX_USERNAME")
-	Config.InfluxPassword.Set("INFLUX_PASSWORD")
-
-	// Instagram
-	Config.InstagramUsername.Set("INSTAGRAM_USERNAME")
-	Config.InstagramPassword.Set("INSTAGRAM_PASSWORD")
-
-	// Memcache
-	Config.MemcacheDSN.Set("MEMCACHE_URL")
-	Config.MemcacheUsername.Set("MEMCACHE_USERNAME").AllowEmpty()
-	Config.MemcachePassword.Set("MEMCACHE_PASSWORD").AllowEmpty()
-
-	// Mongo
-	Config.MongoHost.Set("MONGO_HOST")
-	Config.MongoPort.Set("MONGO_PORT")
-	Config.MongoUsername.Set("MONGO_USERNAME")
-	Config.MongoPassword.Set("MONGO_PASSWORD")
-	Config.MongoDatabase.Set("MONGO_DATABASE")
-
-	// MySQL
-	Config.MySQLHost.Set("MYSQL_HOST")
-	Config.MySQLPort.Set("MYSQL_PORT")
-	Config.MySQLUsername.Set("MYSQL_USERNAME")
-	Config.MySQLPassword.Set("MYSQL_PASSWORD")
-	Config.MySQLDatabase.Set("MYSQL_DATABASE")
-
-	// Patreon
-	Config.PatreonSecret.Set("PATREON_WEBOOK_SECRET")
-	Config.PatreonClientID.Set("PATREON_CLIENT_ID")
-	Config.PatreonClientSecret.Set("PATREON_CLIENT_SECRET")
-
-	// Rabbit
-	Config.RabbitUsername.Set("RABBIT_USER")
-	Config.RabbitPassword.Set("RABBIT_PASS")
-	Config.RabbitHost.Set("RABBIT_HOST")
-	Config.RabbitPort.Set("RABBIT_PORT")
-	Config.RabbitManagmentPort.Set("RABBIT_MANAGEMENT_PORT")
-
-	// Recaptcha
-	Config.RecaptchaPublic.Set("RECAPTCHA_PUBLIC")
-	Config.RecaptchaPrivate.Set("RECAPTCHA_PRIVATE")
-
-	// Rollbar
-	Config.RollbarSecret.Set("ROLLBAR_PRIVATE")
-	Config.RollbarUser.Set("ROLLBAR_USER")
-
-	// Sentry
-	Config.SentryDSN.Set("SENTRY_DSN")
-
-	// Session
-	Config.SessionAuthentication.Set("SESSION_AUTHENTICATION")
-	Config.SessionEncryption.Set("SESSION_ENCRYPTION")
-
-	// Steam
-	Config.SteamUsername.Set("PROXY_USERNAME")
-	Config.SteamPassword.Set("PROXY_PASSWORD")
-	Config.SteamAPIKey.AllowEmpty()
-
-	// Twitch
-	Config.TwitchClientID.Set("TWITCH_CLIENT_ID")
-	Config.TwitchClientSecret.Set("TWITCH_CLIENT_SECRET")
-
-	// Twitter
-	Config.TwitterAccessToken.Set("TWITTER_ACCESS_TOKEN")
-	Config.TwitterAccessTokenSecret.Set("TWITTER_ACCESS_TOKEN_SECRET")
-	Config.TwitterConsumerKey.Set("TWITTER_CONSUMER_KEY")
-	Config.TwitterConsumerSecret.Set("TWITTER_CONSUMER_SECRET")
-
-	// YouTube
-	Config.YoutubeAPIKey.Set("YOUTUBE_API_KEY")
-
-	// Servers
-	Config.FrontendPort.Set("PORT")
-	Config.BackendHostPort.Set("BACKEND_HOST_PORT")
-	Config.BackendClientPort.Set("BACKEND_CLIENT_PORT")
-	Config.APIPort.Set("API_PORT")
-
-	// Other
-	Config.GameDBDomain.Set("DOMAIN")
-	Config.Environment.Set("ENV")
-	Config.SendGridAPIKey.Set("SENDGRID")
-	Config.SlackGameDBWebhook.Set("SLACK_GAMEDB_WEBHOOK")
-	Config.SlackPatreonWebhook.Set("SLACK_SOCIAL_WEBHOOK")
-	Config.InfraPath.Set("INFRASTRUCTURE_PATH")
-
-	// Defaults
-	Config.GameDBShortName.SetDefault("GameDB")
-	Config.NewReleaseDays.SetDefault("14")
-
-	if IsLocal() {
-		Config.GRPCKeysPath.SetDefault(path.Join(Config.InfraPath.Get(), "grpc"))
-	} else {
-		Config.GRPCKeysPath.SetDefault("/root/grpc-keys/")
+	err := envconfig.Process("steam", &C)
+	if err != nil {
+		zap.L().Fatal(err.Error())
 	}
+
+	C.GameDBShortName = "GameDB"
+	C.NewReleaseDays = 14
 }
 
 func Init(version string, commits string, ip string) {
-	Config.CommitHash.SetDefault(version)
-	Config.Commits.SetDefault(commits)
-	Config.IP.SetDefault(ip)
-}
-
-// ConfigItem
-type ConfigItem struct {
-	value        string
-	defaultValue string
-	allowEmpty   bool
-}
-
-func (ci *ConfigItem) Set(environment string) *ConfigItem {
-
-	ci.value = os.Getenv("STEAM_" + environment)
-	return ci
-}
-
-func (ci *ConfigItem) AllowEmpty() {
-	ci.allowEmpty = true
-}
-
-func (ci *ConfigItem) SetDefault(defaultValue string) *ConfigItem {
-	ci.defaultValue = defaultValue
-	return ci
-}
-
-func (ci ConfigItem) Get() string {
-
-	if ci.value != "" {
-		return ci.value
-	}
-
-	if ci.defaultValue != "" {
-		return ci.defaultValue
-	}
-
-	// Log line number of config item
-	if !ci.allowEmpty {
-		skip := 1
-		for {
-			_, file, no, ok := runtime.Caller(skip)
-			if ok {
-				if !strings.Contains(file, "config/config.go") {
-					fmt.Printf("missing env var @ %s#%d\n", file, no)
-					break
-				}
-			} else if !ok || skip > 10 {
-				fmt.Println("missing env var...")
-				break
-			}
-			skip++
-		}
-	}
-
-	return ""
-}
-
-func (ci ConfigItem) GetBool() bool {
-	b, err := strconv.ParseBool(ci.Get())
-	if err != nil {
-		fmt.Println(err)
-	}
-	return b
-}
-
-func (ci ConfigItem) GetInt() int {
-	i, err := strconv.Atoi(ci.Get())
-	if err != nil {
-		fmt.Println(err)
-	}
-	return i
-}
-
-func (ci ConfigItem) GetInt64() int64 {
-	i, err := strconv.ParseInt(ci.Get(), 10, 64)
-	if err != nil {
-		fmt.Println(err)
-	}
-	return i
-}
-
-//
-func RabbitDSN() string {
-	return "amqp://" + Config.RabbitUsername.Get() + ":" + Config.RabbitPassword.Get() + "@" + Config.RabbitHost.Get() + ":" + Config.RabbitPort.Get()
+	C.CommitHash = version
+	C.Commits = commits
+	C.IP = ip
 }
 
 func MySQLDNS() string {
-	return Config.MySQLUsername.Get() + ":" + Config.MySQLPassword.Get() + "@tcp(" + Config.MySQLHost.Get() + ":" + Config.MySQLPort.Get() + ")/" + Config.MySQLDatabase.Get()
+	return C.MySQLUsername + ":" + C.MySQLPassword + "@tcp(" + C.MySQLHost + ":" + C.MySQLPort + ")/" + C.MySQLDatabase
+}
+
+func RabbitDSN() string {
+	return "amqp://" + C.RabbitUsername + ":" + C.RabbitPassword + "@" + C.RabbitHost + ":" + C.RabbitPort
 }
 
 func MongoDSN() string {
-	return "mongodb://" + Config.MongoHost.Get() + ":" + Config.MongoPort.Get()
+	return "mongodb://" + C.MongoHost + ":" + C.MongoPort
 }
 
-func FrontendPort() string {
-	return "0.0.0.0:" + Config.FrontendPort.Get()
+func GetFrontendPort() string {
+	return "0.0.0.0:" + C.FrontendPort
 }
 
-func APIPort() string {
-	return "0.0.0.0:" + Config.APIPort.Get()
+func GetAPIPort() string {
+	return "0.0.0.0:" + C.APIPort
 }
 
 func IsLocal() bool {
-	return Config.Environment.Get() == EnvLocal
+	return C.Environment == EnvLocal
 }
 
 func IsProd() bool {
-	return Config.Environment.Get() == EnvProd
+	return C.Environment == EnvProd
 }
 
 func IsConsumer() bool {
-	return Config.Environment.Get() == EnvConsumer
+	return C.Environment == EnvConsumer
 }
 
 func GetSteamKeyTag() string {
 
-	key := Config.SteamAPIKey.Get()
+	key := C.SteamAPIKey
 	if len(key) > 7 {
 		key = key[0:7]
 	}
@@ -434,7 +219,7 @@ func GetSteamKeyTag() string {
 
 func GetShortCommitHash() string {
 
-	key := Config.CommitHash.Get()
+	key := C.CommitHash
 	if len(key) > 7 {
 		key = key[0:7]
 	}

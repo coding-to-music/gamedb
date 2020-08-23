@@ -47,14 +47,14 @@ func (c discordConnection) getConfig(login bool) oauth2.Config {
 
 	var redirectURL string
 	if login {
-		redirectURL = config.Config.GameDBDomain.Get() + "/login/oauth-callback/discord"
+		redirectURL = config.C.GameDBDomain + "/login/oauth-callback/discord"
 	} else {
-		redirectURL = config.Config.GameDBDomain.Get() + "/settings/oauth-callback/discord"
+		redirectURL = config.C.GameDBDomain + "/settings/oauth-callback/discord"
 	}
 
 	return oauth2.Config{
-		ClientID:     config.Config.DiscordClientID.Get(),
-		ClientSecret: config.Config.DiscordClientSescret.Get(),
+		ClientID:     config.C.DiscordClientID,
+		ClientSecret: config.C.DiscordClientSescret,
 		Scopes:       []string{"identify"},
 		RedirectURL:  redirectURL,
 		Endpoint: oauth2.Endpoint{

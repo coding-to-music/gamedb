@@ -50,10 +50,10 @@ func GetElastic() (*elastic.Client, context.Context, error) {
 		ctx = context.Background()
 
 		ops := []elastic.ClientOptionFunc{
-			elastic.SetURL(config.Config.ElasticAddress.Get()),
+			elastic.SetURL(config.C.ElasticAddress),
 			elastic.SetSniff(false),
 			elastic.SetHealthcheck(true),
-			elastic.SetBasicAuth(config.Config.ElasticUsername.Get(), config.Config.ElasticPassword.Get()),
+			elastic.SetBasicAuth(config.C.ElasticUsername, config.C.ElasticPassword),
 		}
 
 		client, err = elastic.NewClient(ops...)

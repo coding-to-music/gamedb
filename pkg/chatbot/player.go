@@ -84,7 +84,7 @@ func (c CommandPlayer) Output(msg *discordgo.MessageCreate) (message discordgo.M
 	message.Content = "<@" + msg.Author.ID + ">"
 	message.Embed = &discordgo.MessageEmbed{
 		Title: player.GetName(),
-		URL:   config.Config.GameDBDomain.Get() + player.GetPath(),
+		URL:   config.C.GameDBDomain + player.GetPath(),
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
 			URL: avatar,
 		},

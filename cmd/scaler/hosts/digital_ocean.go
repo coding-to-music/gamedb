@@ -21,7 +21,7 @@ func (do DigitalOcean) getClient() *godo.Client {
 	if do.client == nil {
 
 		oauthClient := oauth2.NewClient(context.Background(), &DOTokenSource{
-			AccessToken: config.Config.DigitalOceanAccessToken.Get(),
+			AccessToken: config.C.DigitalOceanAccessToken,
 		})
 
 		do.client = godo.NewClient(oauthClient)
@@ -85,8 +85,8 @@ func (do DigitalOcean) CreateConsumer() (consumer Consumer, err error) {
 
 	//
 	key2 := godo.Key{
-		ID:          config.Config.DigitalOceanKeyID.GetInt(),
-		Fingerprint: config.Config.DigitalOceanKeyFingerprint.Get(),
+		ID:          config.C.DigitalOceanKeyID,
+		Fingerprint: config.C.DigitalOceanKeyFingerprint,
 	}
 
 	createRequest := &godo.DropletCreateRequest{
@@ -106,7 +106,7 @@ func (do DigitalOcean) CreateConsumer() (consumer Consumer, err error) {
 		return consumer, err
 	}
 
-	_, _, err = do.getClient().Projects.AssignResources(do.getContext(), config.Config.DigitalOceanProjectID.Get(), droplet.URN())
+	_, _, err = do.getClient().Projects.AssignResources(do.getContext(), config.C.DigitalOceanProjectID, droplet.URN())
 	return consumer, err
 }
 

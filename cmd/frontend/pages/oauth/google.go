@@ -52,14 +52,14 @@ func (c googleConnection) getConfig(login bool) oauth2.Config {
 
 	var redirectURL string
 	if login {
-		redirectURL = config.Config.GameDBDomain.Get() + "/login/oauth-callback/google"
+		redirectURL = config.C.GameDBDomain + "/login/oauth-callback/google"
 	} else {
-		redirectURL = config.Config.GameDBDomain.Get() + "/settings/oauth-callback/google"
+		redirectURL = config.C.GameDBDomain + "/settings/oauth-callback/google"
 	}
 
 	return oauth2.Config{
-		ClientID:     config.Config.GoogleOauthClientID.Get(),
-		ClientSecret: config.Config.GoogleOauthClientSecret.Get(),
+		ClientID:     config.C.GoogleOauthClientID,
+		ClientSecret: config.C.GoogleOauthClientSecret,
 		Scopes:       []string{"profile"},
 		RedirectURL:  redirectURL,
 		Endpoint:     google.Endpoint,

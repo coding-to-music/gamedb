@@ -47,14 +47,14 @@ func (c githubConnection) getConfig(login bool) oauth2.Config {
 
 	var redirectURL string
 	if login {
-		redirectURL = config.Config.GameDBDomain.Get() + "/login/oauth-callback/github"
+		redirectURL = config.C.GameDBDomain + "/login/oauth-callback/github"
 	} else {
-		redirectURL = config.Config.GameDBDomain.Get() + "/settings/oauth-callback/github"
+		redirectURL = config.C.GameDBDomain + "/settings/oauth-callback/github"
 	}
 
 	return oauth2.Config{
-		ClientID:     config.Config.GitHubClient.Get(),
-		ClientSecret: config.Config.GitHubSecret.Get(),
+		ClientID:     config.C.GitHubClient,
+		ClientSecret: config.C.GitHubSecret,
 		Scopes:       []string{""},
 		RedirectURL:  redirectURL,
 		Endpoint:     github.Endpoint,

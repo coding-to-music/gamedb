@@ -31,7 +31,7 @@ func WebhooksRouter() http.Handler {
 
 func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 
-	b, event, err := patreon.Validate(r, config.Config.PatreonSecret.Get())
+	b, event, err := patreon.Validate(r, config.C.PatreonSecret)
 	if err != nil {
 		zap.S().Error(err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -62,7 +62,7 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Slack message
-	err = slack.PostWebhook(config.Config.SlackPatreonWebhook.Get(), &slack.WebhookMessage{Text: event})
+	err = slack.PostWebhook(config.C.SlackPatreonWebhook, &slack.WebhookMessage{Text: event})
 	zap.S().Error(err)
 }
 
@@ -124,12 +124,12 @@ func gitHubWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	mac := hmac.New(sha1.New, []byte(config.Config.GithubWebhookSecret.Get()))
+	mac := hmac.New(sha1.New, []byte(config.C.GithubWebhookSecret))
 	mac.Write(body)
 	expectedMAC := hex.EncodeToString(mac.Sum(nil))
 
 	if !hmac.Equal([]byte(signaturePrefix+expectedMAC), []byte(signature)) {
-		zap.L().Error("Invalid signature (2)", zap.String("secret", config.Config.GithubWebhookSecret.Get()))
+		zap.L().Error("Invalid signature (2)", zap.String("secret", config.C.GithubWebhookSecret))
 		http.Error(w, "Invalid signature (2)", 400)
 		return
 	}

@@ -28,7 +28,7 @@ func GetClient() (*grpc.ClientConn, context.Context, error) {
 
 	if conn == nil {
 
-		base := config.Config.GRPCKeysPath.Get()
+		base := config.C.GRPCKeysPath
 
 		// Load the client certificates from disk
 		certificate, err := tls.LoadX509KeyPair(path.Join(base, "client.crt"), path.Join(base, "client.key"))
@@ -55,7 +55,7 @@ func GetClient() (*grpc.ClientConn, context.Context, error) {
 			RootCAs:      certPool,
 		})
 
-		conn, err = grpc.Dial(config.Config.BackendClientPort.Get(), grpc.WithTransportCredentials(creds))
+		conn, err = grpc.Dial(config.C.BackendClientPort, grpc.WithTransportCredentials(creds))
 		if err != nil {
 			return nil, nil, err
 		}

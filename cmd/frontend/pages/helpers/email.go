@@ -8,7 +8,7 @@ import (
 	"jaytaylor.com/html2text"
 )
 
-var sendGrid = sendgrid.NewSendClient(config.Config.SendGridAPIKey.Get())
+var sendGrid = sendgrid.NewSendClient(config.C.SendGridAPIKey)
 
 func SendEmail(to, from *mail.Email, subject, html string) (resp *rest.Response, err error) {
 

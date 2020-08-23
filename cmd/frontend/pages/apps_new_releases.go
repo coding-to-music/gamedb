@@ -27,10 +27,10 @@ func newReleasesRouter() http.Handler {
 
 func newReleasesHandler(w http.ResponseWriter, r *http.Request) {
 
-	var days = config.Config.NewReleaseDays.Get()
+	var days = config.C.NewReleaseDays
 
 	t := newReleasesTemplate{}
-	t.fill(w, r, "New Releases", template.HTML("Newly released games in the last "+days+" days"))
+	t.fill(w, r, "New Releases", template.HTML("Newly released games in the last "+strconv.Itoa(days)+" days"))
 	t.addAssetHighCharts()
 	t.Days = days
 
@@ -40,7 +40,7 @@ func newReleasesHandler(w http.ResponseWriter, r *http.Request) {
 
 type newReleasesTemplate struct {
 	globalTemplate
-	Days string
+	Days int
 }
 
 func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
@@ -57,7 +57,7 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		var days = config.Config.NewReleaseDays.GetInt()
+		var days = config.C.NewReleaseDays
 
 		i, err := strconv.Atoi(query.GetSearchString("days"))
 		if err == nil && i >= 1 && i <= 30 {
@@ -107,7 +107,7 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		var filter = bson.D{
 			{"release_date_unix", bson.M{"$lt": time.Now().Unix()}},
-			{"release_date_unix", bson.M{"$gt": time.Now().AddDate(0, 0, -config.Config.NewReleaseDays.GetInt()).Unix()}},
+			{"release_date_unix", bson.M{"$gt": time.Now().AddDate(0, 0, -config.C.NewReleaseDays).Unix()}},
 		}
 
 		countLock.Lock()

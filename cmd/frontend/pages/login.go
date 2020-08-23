@@ -48,7 +48,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	t := loginTemplate{}
 	t.fill(w, r, "Login", "Login to Game DB")
 	t.hideAds = true
-	t.RecaptchaPublic = config.Config.RecaptchaPublic.Get()
+	t.RecaptchaPublic = config.C.RecaptchaPublic
 	t.LoginEmail = session.Get(r, loginSessionEmail)
 
 	returnTemplate(w, r, "login", t)

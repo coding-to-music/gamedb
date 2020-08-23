@@ -52,6 +52,7 @@ require (
 	github.com/jinzhu/now v1.1.1
 	github.com/justinas/nosurf v1.1.0
 	github.com/karrick/godirwalk v1.16.1 // indirect
+	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/klauspost/compress v1.10.11 // indirect
 	github.com/lib/pq v1.3.0 // indirect
 	github.com/mailru/easyjson v0.7.6 // indirect

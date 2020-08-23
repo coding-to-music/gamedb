@@ -259,7 +259,7 @@ func Init(definitions []QueueDefinition) {
 		Config: amqp.Config{
 			Heartbeat: heartbeat,
 			Properties: map[string]interface{}{
-				"connection_name": config.Config.Environment.Get() + "-" + string(rabbit.Consumer) + "-" + config.GetSteamKeyTag(),
+				"connection_name": config.C.Environment + "-" + string(rabbit.Consumer) + "-" + config.GetSteamKeyTag(),
 			},
 		},
 		LogInfo: func(i ...interface{}) {
@@ -289,7 +289,7 @@ func Init(definitions []QueueDefinition) {
 			prefetchSize = queue.prefetchSize
 		}
 
-		q, err := rabbit.NewChannel(producerConnection, queue.name, config.Config.Environment.Get(), prefetchSize, queue.consumer, !queue.skipHeaders)
+		q, err := rabbit.NewChannel(producerConnection, queue.name, config.C.Environment, prefetchSize, queue.consumer, !queue.skipHeaders)
 		if err != nil {
 			zap.S().Fatal(string(queue.name), err)
 		} else {
@@ -306,7 +306,7 @@ func Init(definitions []QueueDefinition) {
 			Config: amqp.Config{
 				Heartbeat: heartbeat,
 				Properties: map[string]interface{}{
-					"connection_name": config.Config.Environment.Get() + "-" + string(rabbit.Consumer) + "-" + config.GetSteamKeyTag(),
+					"connection_name": config.C.Environment + "-" + string(rabbit.Consumer) + "-" + config.GetSteamKeyTag(),
 				},
 			},
 			LogInfo: func(i ...interface{}) {
@@ -333,7 +333,7 @@ func Init(definitions []QueueDefinition) {
 
 				for k := range make([]int, 2) {
 
-					q, err := rabbit.NewChannel(consumerConnection, queue.name, config.Config.Environment.Get()+"-"+strconv.Itoa(k), prefetchSize, queue.consumer, !queue.skipHeaders)
+					q, err := rabbit.NewChannel(consumerConnection, queue.name, config.C.Environment+"-"+strconv.Itoa(k), prefetchSize, queue.consumer, !queue.skipHeaders)
 					if err != nil {
 						zap.S().Fatal(string(queue.name), err)
 						continue

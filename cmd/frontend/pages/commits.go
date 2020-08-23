@@ -2,6 +2,7 @@ package pages
 
 import (
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/datatable"
@@ -70,7 +71,8 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//
-	var total = config.Config.Commits.GetInt()
+	total, err := strconv.Atoi(config.C.Commits)
+
 	var response = datatable.NewDataTablesResponse(r, query, int64(total), int64(total), nil)
 	var live bool
 
@@ -78,7 +80,7 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		t := time.Unix(commit.GetTime(), 0).Format(helpers.DateTime)
 
-		if commit.GetHash() == config.Config.CommitHash.Get() {
+		if commit.GetHash() == config.C.CommitHash {
 			live = true
 		}
 

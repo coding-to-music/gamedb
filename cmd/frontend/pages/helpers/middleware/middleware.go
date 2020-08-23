@@ -21,7 +21,7 @@ func MiddlewareCSRF(h http.Handler) http.Handler {
 // todo, check this is alright
 func MiddlewareCors() func(next http.Handler) http.Handler {
 	return cors.New(cors.Options{
-		AllowedOrigins: []string{config.Config.GameDBDomain.Get()}, // Use this to allow specific origin hosts
+		AllowedOrigins: []string{config.C.GameDBDomain}, // Use this to allow specific origin hosts
 		AllowedMethods: []string{"GET", "POST"},
 	}).Handler
 }

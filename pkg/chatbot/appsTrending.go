@@ -42,7 +42,7 @@ func (CommandAppsTrending) Output(msg *discordgo.MessageCreate) (message discord
 	message.Content = "<@" + msg.Author.ID + ">"
 	message.Embed = &discordgo.MessageEmbed{
 		Title:  "Trending Games",
-		URL:    config.Config.GameDBDomain.Get() + "/games/trending",
+		URL:    config.C.GameDBDomain + "/games/trending",
 		Author: getAuthor(msg.Author.ID),
 	}
 

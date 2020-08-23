@@ -51,7 +51,7 @@ func IsGroupOfficial(typex string) bool {
 }
 
 func GetGroupLink(typex string, url string, ) string {
-	return "https://steamcommunity.com/" + typex + "s/" + url + "?utm_source=" + config.Config.GameDBShortName.Get()
+	return "https://steamcommunity.com/" + typex + "s/" + url + "?utm_source=" + config.C.GameDBShortName
 }
 
 func GetGroupName(id string, name string) string {

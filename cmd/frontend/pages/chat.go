@@ -24,7 +24,7 @@ func init() {
 
 	var err error
 
-	discordRelayBotSession, err = discordgo.New("Bot " + config.Config.DiscordRelayBotToken.Get())
+	discordRelayBotSession, err = discordgo.New("Bot " + config.C.DiscordRelayBotToken)
 	if err != nil {
 		zap.S().Error(err)
 		return

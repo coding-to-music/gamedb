@@ -49,7 +49,7 @@ func (c CommandPlayerUpdate) Output(msg *discordgo.MessageCreate) (message disco
 
 		user, err := mysql.GetUserByKey("discord_id", msg.Author.ID, 0)
 		if err == mysql.ErrRecordNotFound {
-			message.Content = "You need to link your **Discord** account for us to know who you are: " + config.Config.GameDBDomain.Get() + "/settings"
+			message.Content = "You need to link your **Discord** account for us to know who you are: " + config.C.GameDBDomain + "/settings"
 			return message, nil
 		} else if err != nil {
 			return message, err
@@ -62,9 +62,9 @@ func (c CommandPlayerUpdate) Output(msg *discordgo.MessageCreate) (message disco
 			err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 			zap.S().Error(err)
 
-			message.Content = "Player queued: " + config.Config.GameDBDomain.Get() + "/p" + user.SteamID.String
+			message.Content = "Player queued: " + config.C.GameDBDomain + "/p" + user.SteamID.String
 		} else {
-			message.Content = "You need to link your **Steam** account for us to know who you are: " + config.Config.GameDBDomain.Get() + "/settings"
+			message.Content = "You need to link your **Steam** account for us to know who you are: " + config.C.GameDBDomain + "/settings"
 		}
 		return message, nil
 	}
@@ -83,6 +83,6 @@ func (c CommandPlayerUpdate) Output(msg *discordgo.MessageCreate) (message disco
 	err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 	zap.S().Error(err)
 
-	message.Content = "Player queued: " + config.Config.GameDBDomain.Get() + "/p" + strconv.FormatInt(player.ID, 10)
+	message.Content = "Player queued: " + config.C.GameDBDomain + "/p" + strconv.FormatInt(player.ID, 10)
 	return message, nil
 }

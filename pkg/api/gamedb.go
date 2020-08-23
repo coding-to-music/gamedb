@@ -40,18 +40,18 @@ var SwaggerGameDB = &openapi3.Swagger{
 		{URL: "https://api.gamedb.online"},
 	},
 	ExternalDocs: &openapi3.ExternalDocs{
-		URL: config.Config.GameDBDomain.Get() + "/api/gamedb",
+		URL: config.C.GameDBDomain + "/api/gamedb",
 	},
 	Info: &openapi3.Info{
 		Title:          "Game DB API",
 		Version:        "1.0.0",
-		TermsOfService: config.Config.GameDBDomain.Get() + "/terms",
+		TermsOfService: config.C.GameDBDomain + "/terms",
 		Contact: &openapi3.Contact{
 			Name: "Jleagle",
-			URL:  config.Config.GameDBDomain.Get() + "/contact",
+			URL:  config.C.GameDBDomain + "/contact",
 		},
 		ExtensionProps: openapi3.ExtensionProps{Extensions: map[string]interface{}{
-			"x-logo": config.Config.GameDBDomain.Get() + "/assets/img/sa-bg-192x192.png",
+			"x-logo": config.C.GameDBDomain + "/assets/img/sa-bg-192x192.png",
 		}},
 	},
 	Tags: openapi3.Tags{

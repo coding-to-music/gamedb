@@ -290,7 +290,7 @@ func (t *globalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	t.Title = title + " - Game DB"
 	t.TitleOnly = title
 	t.Description = description
-	t.Env = config.Config.Environment.Get()
+	t.Env = config.C.Environment
 	t.Path = r.URL.Path
 	t.ProductCCs = i18n.GetProdCCs(true)
 	t.Continents = i18n.Continents
@@ -427,7 +427,7 @@ func (t globalTemplate) GetUserJSON() string {
 func (t globalTemplate) GetMetaImage() (text string) {
 
 	if t.metaImage == "" {
-		return config.Config.GameDBDomain.Get() + "/assets/img/sa-bg-500x500.png"
+		return config.C.GameDBDomain + "/assets/img/sa-bg-500x500.png"
 	}
 
 	return t.metaImage
@@ -493,9 +493,9 @@ func (t globalTemplate) GetCookieFlag(key string) interface{} {
 func (t globalTemplate) GetCanonical() (text string) {
 
 	if t.Canonical != "" {
-		return config.Config.GameDBDomain.Get() + t.Canonical
+		return config.C.GameDBDomain + t.Canonical
 	}
-	return config.Config.GameDBDomain.Get() + t.request.URL.Path + strings.TrimRight("?"+t.request.URL.Query().Encode(), "?")
+	return config.C.GameDBDomain + t.request.URL.Path + strings.TrimRight("?"+t.request.URL.Query().Encode(), "?")
 }
 
 func (t globalTemplate) GetVersionHash() string {
@@ -503,7 +503,7 @@ func (t globalTemplate) GetVersionHash() string {
 }
 
 func (t globalTemplate) GetCommits() string {
-	return config.Config.Commits.Get()
+	return config.C.Commits
 }
 
 func (t globalTemplate) IsAppsPage() bool {

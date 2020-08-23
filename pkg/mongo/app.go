@@ -777,7 +777,7 @@ func PopularNewApps() (apps []App, err error) {
 
 	err = memcache.GetSetInterface(item.Key, item.Expiration, &apps, func() (interface{}, error) {
 
-		releaseDate := time.Now().AddDate(0, 0, -config.Config.NewReleaseDays.GetInt()).Unix()
+		releaseDate := time.Now().AddDate(0, 0, -config.C.NewReleaseDays).Unix()
 
 		return GetApps(
 			0,

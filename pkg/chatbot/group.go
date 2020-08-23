@@ -64,7 +64,7 @@ func (c CommandGroup) Output(msg *discordgo.MessageCreate) (message discordgo.Me
 	message.Content = "<@" + msg.Author.ID + ">"
 	message.Embed = &discordgo.MessageEmbed{
 		Title: group.GetName(),
-		URL:   config.Config.GameDBDomain.Get() + group.GetPath(),
+		URL:   config.C.GameDBDomain + group.GetPath(),
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
 			URL: group.GetIcon(),
 		},

@@ -10,7 +10,7 @@ import (
 	"github.com/memcachier/mc/v3"
 )
 
-var client = mc.NewMC(config.Config.MemcacheDSN.Get(), config.Config.MemcacheUsername.Get(), config.Config.MemcachePassword.Get())
+var client = mc.NewMC(config.C.MemcacheDSN, config.C.MemcacheUsername, config.C.MemcachePassword)
 
 func Get(key string) (val string, err error) {
 

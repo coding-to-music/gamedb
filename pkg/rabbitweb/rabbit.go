@@ -6,8 +6,8 @@ import (
 )
 
 var RabbitClient = rabbit.Rabbit{
-	Host:     config.Config.RabbitHost.Get(),
-	Port:     config.Config.RabbitManagmentPort.Get(),
-	Username: config.Config.RabbitUsername.Get(),
-	Password: config.Config.RabbitPassword.Get(),
+	Host:     config.C.RabbitHost,
+	Port:     config.C.RabbitManagmentPort,
+	Username: config.C.RabbitUsername,
+	Password: config.C.RabbitPassword,
 }

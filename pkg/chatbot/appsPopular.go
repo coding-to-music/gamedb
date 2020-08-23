@@ -43,7 +43,7 @@ func (CommandAppsPopular) Output(msg *discordgo.MessageCreate) (message discordg
 	message.Content = "<@" + msg.Author.ID + ">"
 	message.Embed = &discordgo.MessageEmbed{
 		Title:  "Popular Games",
-		URL:    config.Config.GameDBDomain.Get() + "/games",
+		URL:    config.C.GameDBDomain + "/games",
 		Author: getAuthor(msg.Author.ID),
 	}
 

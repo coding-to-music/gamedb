@@ -60,7 +60,7 @@ func getStandardCore() zapcore.Core {
 func getGoogleCore() zapcore.Core {
 
 	ctx := context.Background()
-	googleClient, err := logging.NewClient(ctx, config.Config.GoogleProject.Get())
+	googleClient, err := logging.NewClient(ctx, config.C.GoogleProject)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -158,11 +158,11 @@ func (g GoogleCore) Write(entry zapcore.Entry, fields []zapcore.Field) error {
 	} else {
 
 		common := map[string]string{
-			"env":     config.Config.Environment.Get(),
-			"commits": config.Config.Commits.Get(),
-			"hash":    config.Config.CommitHash.Get(),
-			"key":     config.Config.SteamAPIKey.Get(),
-			"ip":      config.Config.IP.Get(),
+			"env":     config.C.Environment,
+			"commits": config.C.Commits,
+			"hash":    config.C.CommitHash,
+			"key":     config.C.SteamAPIKey,
+			"ip":      config.C.IP,
 		}
 
 		logger = g.client.Logger(entry.LoggerName, logging.CommonLabels(common))

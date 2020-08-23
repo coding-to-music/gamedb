@@ -33,10 +33,10 @@ func main() {
 
 	generated.HandlerFromMux(Server{}, r)
 
-	zap.L().Info("Starting API on " + "http://" + config.APIPort())
+	zap.L().Info("Starting API on " + "http://" + config.GetAPIPort())
 
 	s := &http.Server{
-		Addr:              config.APIPort(),
+		Addr:              config.GetAPIPort(),
 		Handler:           r,
 		ReadTimeout:       2 * time.Second,
 		ReadHeaderTimeout: 2 * time.Second,
@@ -50,7 +50,7 @@ func main() {
 
 func home(w http.ResponseWriter, r *http.Request) {
 
-	http.Redirect(w, r, config.Config.GameDBDomain.Get()+"/api/gamedb", http.StatusTemporaryRedirect)
+	http.Redirect(w, r, config.C.GameDBDomain+"/api/gamedb", http.StatusTemporaryRedirect)
 }
 
 func error404(w http.ResponseWriter, _ *http.Request) {

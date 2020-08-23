@@ -14,8 +14,8 @@ func getInstagram() (*goinsta.Instagram, error) {
 	if instagram == nil {
 
 		client := goinsta.New(
-			config.Config.InstagramUsername.Get(),
-			config.Config.InstagramPassword.Get(),
+			config.C.InstagramUsername,
+			config.C.InstagramPassword,
 		)
 
 		err := client.Login()

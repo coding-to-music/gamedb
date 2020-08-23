@@ -49,8 +49,8 @@ type FlashGroup session.FlashGroup
 func InitSession() {
 
 	sessionInit := session.Init{}
-	sessionInit.AuthenticationKey = config.Config.SessionAuthentication.Get()
-	sessionInit.EncryptionKey = config.Config.SessionEncryption.Get()
+	sessionInit.AuthenticationKey = config.C.SessionAuthentication
+	sessionInit.EncryptionKey = config.C.SessionEncryption
 	sessionInit.CookieName = SessionCookieName
 	sessionInit.CookieOptions = sessions.Options{
 		HttpOnly: true,

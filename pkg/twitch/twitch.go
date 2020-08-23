@@ -20,8 +20,8 @@ func GetTwitch() (*helix.Client, error) {
 	if client == nil {
 
 		ops := &helix.Options{
-			ClientID:     config.Config.TwitchClientID.Get(),
-			ClientSecret: config.Config.TwitchClientSecret.Get(),
+			ClientID:     config.C.TwitchClientID,
+			ClientSecret: config.C.TwitchClientSecret,
 		}
 
 		client, err = helix.NewClient(ops)

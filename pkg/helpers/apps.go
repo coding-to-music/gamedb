@@ -38,7 +38,7 @@ func GetAppPath(id int, name string) string {
 }
 
 func GetAppCommunityLink(appID int) string {
-	name := config.Config.GameDBShortName.Get()
+	name := config.C.GameDBShortName
 	return "https://steamcommunity.com/app/" + strconv.Itoa(appID) + "?utm_source=" + name + "&utm_medium=link&curator_clanid=" // todo curator_clanid
 }
 
@@ -98,7 +98,7 @@ func GetAppReleaseDateNice(releaseDateOriginal int64, releaseDateSteam int64, re
 }
 
 func GetAppStoreLink(appID int) string {
-	name := config.Config.GameDBShortName.Get()
+	name := config.C.GameDBShortName
 	return "https://store.steampowered.com/app/" + strconv.Itoa(appID) + "?utm_source=" + name + "&utm_medium=link&curator_clanid=" // todo curator_clanid
 }
 

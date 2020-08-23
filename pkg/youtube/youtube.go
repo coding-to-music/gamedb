@@ -24,7 +24,7 @@ func GetYouTube() (*youtube.Service, context.Context, error) {
 
 		var err error
 		ctx = context.TODO()
-		client, err = youtube.NewService(ctx, option.WithAPIKey(config.Config.YoutubeAPIKey.Get()))
+		client, err = youtube.NewService(ctx, option.WithAPIKey(config.C.YoutubeAPIKey))
 		if err != nil {
 			return nil, nil, err
 		}

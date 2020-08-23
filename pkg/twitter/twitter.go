@@ -20,8 +20,8 @@ func GetTwitter() *twitter.Client {
 
 	if client == nil {
 
-		confi := oauth1.NewConfig(config.Config.TwitterConsumerKey.Get(), config.Config.TwitterConsumerSecret.Get())
-		token := oauth1.NewToken(config.Config.TwitterAccessToken.Get(), config.Config.TwitterAccessTokenSecret.Get())
+		confi := oauth1.NewConfig(config.C.TwitterConsumerKey, config.C.TwitterConsumerSecret)
+		token := oauth1.NewToken(config.C.TwitterAccessToken, config.C.TwitterAccessTokenSecret)
 
 		httpClient := confi.Client(oauth1.NoContext, token)
 

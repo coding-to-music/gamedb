@@ -67,7 +67,7 @@ func main() {
 	lmt := limiter.New(&ops).SetMax(1).SetBurst(5)
 
 	// Start discord
-	discordSession, err := discordgo.New("Bot " + config.Config.DiscordChatBotToken.Get())
+	discordSession, err := discordgo.New("Bot " + config.C.DiscordChatBotToken)
 	if err != nil {
 		panic("Can't create Discord session")
 	}

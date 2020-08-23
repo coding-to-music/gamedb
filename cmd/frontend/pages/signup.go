@@ -46,8 +46,8 @@ func signupHandler(w http.ResponseWriter, r *http.Request) {
 	t := signupTemplate{}
 	t.fill(w, r, "Login", "Login to Game DB to set your currency and other things.")
 	t.hideAds = true
-	t.Domain = config.Config.GameDBDomain.Get()
-	t.RecaptchaPublic = config.Config.RecaptchaPublic.Get()
+	t.Domain = config.C.GameDBDomain
+	t.RecaptchaPublic = config.C.RecaptchaPublic
 	t.SignupEmail = session.Get(r, signupSessionEmail)
 
 	returnTemplate(w, r, "signup", t)
@@ -157,7 +157,7 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Send email
 		body := "Please click the below link to verify your email address<br />" +
-			config.Config.GameDBDomain.Get() + "/signup/verify?code=" + code.Code +
+			config.C.GameDBDomain + "/signup/verify?code=" + code.Code +
 			"<br><br>Thanks, Jleagle." +
 			"<br><br>From IP: " + r.RemoteAddr
 

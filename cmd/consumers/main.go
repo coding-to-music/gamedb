@@ -29,7 +29,7 @@ func main() {
 	}
 
 	// Load Discord
-	discord, err := discordgo.New("Bot " + config.Config.DiscordChangesBotToken.Get())
+	discord, err := discordgo.New("Bot " + config.C.DiscordChangesBotToken)
 	if err != nil {
 		panic(err)
 	}

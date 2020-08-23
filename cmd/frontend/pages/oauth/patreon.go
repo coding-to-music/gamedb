@@ -45,14 +45,14 @@ func (c patreonConnection) getConfig(login bool) oauth2.Config {
 
 	var redirectURL string
 	if login {
-		redirectURL = config.Config.GameDBDomain.Get() + "/login/oauth-callback/patreon"
+		redirectURL = config.C.GameDBDomain + "/login/oauth-callback/patreon"
 	} else {
-		redirectURL = config.Config.GameDBDomain.Get() + "/settings/oauth-callback/patreon"
+		redirectURL = config.C.GameDBDomain + "/settings/oauth-callback/patreon"
 	}
 
 	return oauth2.Config{
-		ClientID:     config.Config.PatreonClientID.Get(),
-		ClientSecret: config.Config.PatreonClientSecret.Get(),
+		ClientID:     config.C.PatreonClientID,
+		ClientSecret: config.C.PatreonClientSecret,
 		Scopes:       []string{"identity", "identity[email]"}, // identity[email] scope is only needed as the Patreon package we are using only handles v1 API
 		RedirectURL:  redirectURL,
 		Endpoint: oauth2.Endpoint{

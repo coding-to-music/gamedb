@@ -42,7 +42,7 @@ func (CommandGroupsTrending) Output(msg *discordgo.MessageCreate) (message disco
 	message.Content = "<@" + msg.Author.ID + ">"
 	message.Embed = &discordgo.MessageEmbed{
 		Title:  "Trending Groups",
-		URL:    config.Config.GameDBDomain.Get() + "/groups",
+		URL:    config.C.GameDBDomain + "/groups",
 		Author: getAuthor(msg.Author.ID),
 	}
 

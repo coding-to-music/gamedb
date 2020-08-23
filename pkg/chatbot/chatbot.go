@@ -88,12 +88,12 @@ func getAuthor(guildID string) *discordgo.MessageEmbedAuthor {
 
 	author := &discordgo.MessageEmbedAuthor{
 		Name:    "gamedb.online",
-		URL:     config.Config.GameDBDomain.Get() + "/?utm_source=discord&utm_medium=discord&utm_content=" + guildID,
+		URL:     config.C.GameDBDomain + "/?utm_source=discord&utm_medium=discord&utm_content=" + guildID,
 		IconURL: "https://gamedb.online/assets/img/sa-bg-32x32.png",
 	}
 	if config.IsLocal() {
-		author.Name = "localhost:" + config.Config.FrontendPort.Get()
-		author.URL = "http://localhost:" + config.Config.FrontendPort.Get() + "/"
+		author.Name = "localhost:" + config.C.FrontendPort
+		author.URL = "http://localhost:" + config.C.FrontendPort + "/"
 	}
 	return author
 }
@@ -117,7 +117,7 @@ func getAppEmbed(app mongo.App) *discordgo.MessageEmbed {
 
 	return &discordgo.MessageEmbed{
 		Title:     app.GetName(),
-		URL:       config.Config.GameDBDomain.Get() + app.GetPath(),
+		URL:       config.C.GameDBDomain + app.GetPath(),
 		Thumbnail: &discordgo.MessageEmbedThumbnail{URL: app.GetHeaderImage()},
 		Footer:    getFooter(),
 		Fields: []*discordgo.MessageEmbedField{

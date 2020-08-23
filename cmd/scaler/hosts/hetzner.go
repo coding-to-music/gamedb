@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	hetznerClient  = hcloud.NewClient(hcloud.WithToken(config.Config.HetznerAPIToken.Get()))
+	hetznerClient  = hcloud.NewClient(hcloud.WithToken(config.C.HetznerAPIToken))
 	hetznerContext = context.TODO()
 )
 
@@ -61,11 +61,11 @@ func (h Hetzner) CreateConsumer() (c Consumer, err error) {
 		Name:       "gamedb-consumer-" + helpers.RandString(5, helpers.Letters),
 		ServerType: &hcloud.ServerType{Name: "cx11"},
 		Image:      &hcloud.Image{Name: "debian-10"},
-		SSHKeys:    []*hcloud.SSHKey{{ID: config.Config.HetznerSSHKeyID.GetInt()}},
+		SSHKeys:    []*hcloud.SSHKey{{ID: config.C.HetznerSSHKeyID}},
 		Datacenter: &hcloud.Datacenter{Name: "nbg1-dc3"},
 		UserData:   string(body),
 		Labels:     map[string]string{"consumers": "", ConsumerTag: ""},
-		Networks:   []*hcloud.Network{{ID: config.Config.HetznerNetworkID.GetInt()}},
+		Networks:   []*hcloud.Network{{ID: config.C.HetznerNetworkID}},
 	})
 
 	return c, err

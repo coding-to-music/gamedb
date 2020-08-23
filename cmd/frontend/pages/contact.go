@@ -30,7 +30,7 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := contactTemplate{}
 	t.fill(w, r, "Contact", "Get in touch with Game DB.")
-	t.RecaptchaPublic = config.Config.RecaptchaPublic.Get()
+	t.RecaptchaPublic = config.C.RecaptchaPublic
 
 	t.SessionName = session.Get(r, contactSessionName)
 	t.SessionEmail = session.Get(r, contactSessionEmail)
@@ -99,7 +99,7 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Send
 		_, err = helpers.SendEmail(
-			mail.NewEmail(config.Config.AdminName.Get(), config.Config.AdminEmail.Get()),
+			mail.NewEmail(config.C.AdminName, config.C.AdminEmail),
 			mail.NewEmail(r.PostForm.Get("name"), r.PostForm.Get("email")),
 			"Game DB Contact Form",
 			r.PostForm.Get("message"),

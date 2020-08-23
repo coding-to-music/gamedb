@@ -76,7 +76,7 @@ func (c CommandPlayerLibrary) Output(msg *discordgo.MessageCreate) (message disc
 		message.Content = "<@" + msg.Author.ID + ">"
 		message.Embed = &discordgo.MessageEmbed{
 			Title:  player.GetName() + "'s Top Games",
-			URL:    config.Config.GameDBDomain.Get() + player.GetPath() + "#games",
+			URL:    config.C.GameDBDomain + player.GetPath() + "#games",
 			Author: getAuthor(msg.Author.ID),
 		}
 

@@ -18,7 +18,7 @@ type steamConnection struct {
 func (c steamConnection) getID(r *http.Request, token *oauth2.Token) (string, error) {
 
 	// Get Steam ID
-	openID, err := openid.Verify(config.Config.GameDBDomain.Get()+r.URL.String(), openid.NewSimpleDiscoveryCache(), openid.NewSimpleNonceStore())
+	openID, err := openid.Verify(config.C.GameDBDomain+r.URL.String(), openid.NewSimpleDiscoveryCache(), openid.NewSimpleNonceStore())
 	if err != nil {
 		return "", oauthError{err, "We could not verify your Steam account"}
 	}

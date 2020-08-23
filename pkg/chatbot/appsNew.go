@@ -43,7 +43,7 @@ func (CommandAppsNew) Output(msg *discordgo.MessageCreate) (message discordgo.Me
 	message.Content = "<@" + msg.Author.ID + ">"
 	message.Embed = &discordgo.MessageEmbed{
 		Title:  "Popular New Apps",
-		URL:    config.Config.GameDBDomain.Get() + "/games/new-releases",
+		URL:    config.C.GameDBDomain + "/games/new-releases",
 		Author: getAuthor(msg.Author.ID),
 	}
 

@@ -83,7 +83,7 @@ func playerAddHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := addPlayerTemplate{}
 	t.fill(w, r, "Add Player", "Start tracking your stats in Game DB.")
-	t.RecaptchaPublic = config.Config.RecaptchaPublic.Get()
+	t.RecaptchaPublic = config.C.RecaptchaPublic
 	t.Default = r.URL.Query().Get("search")
 
 	//

@@ -39,7 +39,7 @@ func forgotHandler(w http.ResponseWriter, r *http.Request) {
 	t := forgotTemplate{}
 	t.fill(w, r, "Forgot Password", "")
 	t.hideAds = true
-	t.RecaptchaPublic = config.Config.RecaptchaPublic.Get()
+	t.RecaptchaPublic = config.C.RecaptchaPublic
 	t.LoginEmail = session.Get(r, "login-email")
 
 	returnTemplate(w, r, "forgot", t)
@@ -100,7 +100,7 @@ func forgotPostHandler(w http.ResponseWriter, r *http.Request) {
 		// Send email
 		body := "You or someone else has requested a new password for Game DB.<br><br>" +
 			"If this was not you, please ignore this email.<br><br>Click the following link to reset your password: " +
-			config.Config.GameDBDomain.Get() + "/forgot/reset?code=" + code.Code +
+			config.C.GameDBDomain + "/forgot/reset?code=" + code.Code +
 			"<br><br>Thanks, Jleagle." +
 			"<br><br>From IP: " + r.RemoteAddr
 

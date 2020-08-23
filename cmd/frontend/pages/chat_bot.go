@@ -83,7 +83,7 @@ func (cbt chatBotTemplate) Guilds() (guilds int) {
 
 	err := memcache.GetSetInterface(item.Key, item.Expiration, &guilds, func() (i interface{}, err error) {
 
-		discordChatBotSession, err := discordgo.New("Bot " + config.Config.DiscordChatBotToken.Get())
+		discordChatBotSession, err := discordgo.New("Bot " + config.C.DiscordChatBotToken)
 		if err != nil {
 			return i, err
 		}

@@ -26,7 +26,7 @@ func main() {
 	config.Init(version, commits, helpers.GetIP())
 	log.InitZap(log.LogNameBackend)
 
-	base := config.Config.GRPCKeysPath.Get()
+	base := config.C.GRPCKeysPath
 
 	// Load the certificates from disk
 	certificate, err := tls.LoadX509KeyPair(path.Join(base, "server.crt"), path.Join(base, "server.key"))
@@ -50,7 +50,7 @@ func main() {
 	}
 
 	// Create the channel to listen on
-	lis, err := net.Listen("tcp", config.Config.BackendHostPort.Get())
+	lis, err := net.Listen("tcp", config.C.BackendHostPort)
 	if err != nil {
 		zap.S().Error(err)
 		return
@@ -70,7 +70,7 @@ func main() {
 	generated.RegisterPlayersServiceServer(grpcServer, PlayersServer{})
 	generated.RegisterGitHubServiceServer(grpcServer, GithubServer{})
 
-	zap.L().Info("Starting Backend on tcp://" + config.Config.BackendHostPort.Get())
+	zap.L().Info("Starting Backend on tcp://" + config.C.BackendHostPort)
 
 	err = grpcServer.Serve(lis)
 	if err != nil {

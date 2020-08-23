@@ -36,7 +36,7 @@ func (CommandHelp) Type() CommandType {
 
 func (CommandHelp) Output(msg *discordgo.MessageCreate) (message discordgo.MessageSend, err error) {
 
-	message.Content = "See " + config.Config.GameDBDomain.Get() + "/discord-bot"
+	message.Content = "See " + config.C.GameDBDomain + "/discord-bot"
 
 	return message, nil
 }
