@@ -19,6 +19,7 @@ WORKDIR /root/
 COPY --from=build-env /root/cmd/api/api ./
 COPY ./cmd/api/scripts/health-check.sh ./health-check.sh
 RUN chmod +x health-check.sh \
+  && mkdir ./chatbot \
   && touch ./google-auth.json \
   && apk update \
   && apk add ca-certificates curl bash tzdata
