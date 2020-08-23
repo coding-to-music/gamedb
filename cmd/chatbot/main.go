@@ -8,6 +8,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/didip/tollbooth/v6"
+	"github.com/didip/tollbooth/v6/errors"
 	"github.com/didip/tollbooth/v6/limiter"
 	"github.com/gamedb/gamedb/pkg/chatbot"
 	"github.com/gamedb/gamedb/pkg/config"
@@ -132,7 +133,7 @@ func main() {
 
 				// Rate limit
 				err = tollbooth.LimitByKeys(lmt, []string{m.Author.ID})
-				if err != nil {
+				if err != nil && err != (*errors.HTTPError)(nil) {
 					zap.L().Warn("over chatbot rate limit", zap.String("author", m.Author.ID), zap.String("msg", msg))
 					return
 				}
