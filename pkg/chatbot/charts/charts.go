@@ -161,5 +161,5 @@ func getChart(builder *influxql.Builder, id string, title string) (path string, 
 		zap.S().Error(err)
 	}
 
-	return config.C.GameDBDomain + "/assets/img/chatbot/" + file, err
+	return "https://gamedb.online/assets/img/chatbot/" + file, err
 }
