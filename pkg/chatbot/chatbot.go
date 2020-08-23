@@ -7,8 +7,10 @@ import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
+	"github.com/gamedb/gamedb/pkg/chatbot/charts"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	"go.uber.org/zap"
 )
 
 type CommandType string
@@ -115,6 +117,8 @@ func getFooter() *discordgo.MessageEmbedFooter {
 
 func getAppEmbed(app mongo.App) *discordgo.MessageEmbed {
 
+	zap.S().Info(charts.GetAppChart(app))
+
 	return &discordgo.MessageEmbed{
 		Title:     app.GetName(),
 		URL:       config.C.GameDBDomain + app.GetPath(),
@@ -141,6 +145,9 @@ func getAppEmbed(app mongo.App) *discordgo.MessageEmbed {
 				Name:  "Followers",
 				Value: app.GetFollowers(),
 			},
+		},
+		Image: &discordgo.MessageEmbedImage{
+			URL: charts.GetAppChart(app),
 		},
 	}
 }

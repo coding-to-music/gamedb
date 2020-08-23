@@ -8,7 +8,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/chatbot/charts"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
-	"go.uber.org/zap"
 )
 
 type CommandGroup struct {
@@ -83,17 +82,9 @@ func (c CommandGroup) Output(msg *discordgo.MessageCreate) (message discordgo.Me
 				Value: humanize.Comma(int64(group.Members)),
 			},
 		},
-	}
-
-	img, err := charts.GetGroupChart(group)
-	if err != nil {
-		zap.S().Error(err)
-	} else {
-		message.Files = append(message.Files, &discordgo.File{
-			Name:        "group-" + group.ID + ".png",
-			ContentType: "image/png",
-			Reader:      img,
-		})
+		Image: &discordgo.MessageEmbedImage{
+			URL: charts.GetGroupChart(group),
+		},
 	}
 
 	return message, nil

@@ -2,7 +2,6 @@ package charts
 
 import (
 	"bytes"
-	"io"
 	"os"
 	"strconv"
 	"time"
@@ -19,7 +18,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func GetGroupChart(group elasticsearch.Group) (reader io.Reader, err error) {
+func GetGroupChart(group elasticsearch.Group) (path string) {
 
 	builder := influxql.NewBuilder()
 	builder.AddSelect(`max("members_count")`, "max_members_count")
@@ -28,10 +27,14 @@ func GetGroupChart(group elasticsearch.Group) (reader io.Reader, err error) {
 	builder.AddGroupByTime("1d")
 	builder.SetFillNone()
 
-	return getChart(builder, group.ID, "Members", config.C.GameDBDomain+group.GetPath())
+	path, err := getChart(builder, group.ID, "Members")
+	if err != nil {
+		zap.L().Error(err.Error())
+	}
+	return path
 }
 
-func GetAppChart(app mongo.App) (reader io.Reader, err error) {
+func GetAppChart(app mongo.App) (path string) {
 
 	builder := influxql.NewBuilder()
 	builder.AddSelect("max(player_count)", "max_player_count")
@@ -40,18 +43,22 @@ func GetAppChart(app mongo.App) (reader io.Reader, err error) {
 	builder.AddGroupByTime("1d")
 	builder.SetFillNumber(0)
 
-	return getChart(builder, strconv.Itoa(app.ID), "In Game", config.C.GameDBDomain+app.GetPath())
+	path, err := getChart(builder, strconv.Itoa(app.ID), "In Game")
+	if err != nil {
+		zap.L().Error(err.Error())
+	}
+	return path
 }
 
-func getChart(builder *influxql.Builder, id string, title string, description string) (reader io.Reader, err error) {
+func getChart(builder *influxql.Builder, id string, title string) (path string, err error) {
 
 	resp, err := influx.InfluxQuery(builder.String())
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	if !(len(resp.Results) > 0 && len(resp.Results[0].Series) > 0) {
-		return nil, nil
+		return "", nil
 	}
 
 	x, y := influx.InfluxResponseToImageChartData(resp.Results[0].Series[0])
@@ -130,31 +137,29 @@ func getChart(builder *influxql.Builder, id string, title string, description st
 	buffer := bytes.NewBuffer([]byte{})
 	err = graph.Render(chart.PNG, buffer)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	var b = buffer.Bytes()
+	var file = "app-" + id + ".png"
 
 	// Save chart to file
-	if config.IsLocal() {
-
-		f, err := os.OpenFile("app-"+id+".png", os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0600)
-		if err != nil {
-			return nil, err
-		}
-
-		defer func() {
-			err := f.Close()
-			if err != nil {
-				zap.S().Error(err)
-			}
-		}()
-
-		_, err = f.Write(b)
-		if err != nil {
-			return nil, err
-		}
+	f, err := os.OpenFile(config.C.ChatBotAttachments+"/"+file, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0600)
+	if err != nil {
+		return "", err
 	}
 
-	return bytes.NewReader(b), err
+	defer func() {
+		err := f.Close()
+		if err != nil {
+			zap.S().Error(err)
+		}
+	}()
+
+	_, err = f.Write(b)
+	if err != nil {
+		zap.S().Error(err)
+	}
+
+	return config.C.GameDBDomain + "/assets/img/chatbot/" + file, err
 }

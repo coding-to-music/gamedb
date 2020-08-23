@@ -23,4 +23,5 @@
 # Other
 /cmd/steam/change.txt
 /cmd/steam/sentry.txt
+/cmd/frontend/assets/img/chatbot
 sqlboiler.toml

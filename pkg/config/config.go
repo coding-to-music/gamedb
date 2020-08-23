@@ -57,9 +57,6 @@ type Config struct {
 	HetznerNetworkID int    `envconfig:"HETZNER_NETWORK_ID"`
 	HetznerAPIToken  string `envconfig:"HETZNER_API_TOKEN"`
 
-	// Imgur
-	ImgurClientID string `envconfig:"IMGUR_CLIENT_ID"`
-
 	// Influx
 	InfluxURL      string `envconfig:"INFLUX_URL"`
 	InfluxUsername string `envconfig:"INFLUX_USERNAME"`
@@ -140,12 +137,13 @@ type Config struct {
 	APIPort           string `envconfig:"API_PORT"`
 
 	// Other
-	GameDBDomain        string `envconfig:"DOMAIN"`
+	GameDBDomain        string `envconfig:"DOMAIN"` // With proto & port
 	Environment         string `envconfig:"ENV"`
 	SendGridAPIKey      string `envconfig:"SENDGRID"`
 	SlackGameDBWebhook  string `envconfig:"SLACK_GAMEDB_WEBHOOK"`
 	SlackPatreonWebhook string `envconfig:"SLACK_SOCIAL_WEBHOOK"`
 	InfraPath           string `envconfig:"INFRASTRUCTURE_PATH"`
+	ChatBotAttachments  string `envconfig:"STEAM_CHATBOT_ATTACHMENTS"`
 	GRPCKeysPath        string `envconfig:"STEAM_GRPC_KEYS_PATH"`
 
 	// Non-environment

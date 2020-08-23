@@ -2,13 +2,10 @@ package chatbot
 
 import (
 	"html/template"
-	"strconv"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/gamedb/gamedb/pkg/chatbot/charts"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"go.uber.org/zap"
 )
 
 type CommandApp struct {
@@ -57,17 +54,6 @@ func (c CommandApp) Output(msg *discordgo.MessageCreate) (message discordgo.Mess
 
 	message.Content = "<@" + msg.Author.ID + ">"
 	message.Embed = getAppEmbed(app)
-
-	img, err := charts.GetAppChart(app)
-	if err != nil {
-		zap.S().Error(err)
-	} else {
-		message.Files = append(message.Files, &discordgo.File{
-			Name:        "app-" + strconv.Itoa(app.ID) + ".png",
-			ContentType: "image/png",
-			Reader:      img,
-		})
-	}
 
 	return message, nil
 }
