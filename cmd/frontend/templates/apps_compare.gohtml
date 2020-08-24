@@ -1,5 +1,5 @@
 {{define "apps_compare"}}
-    {{ template "_header" . }}
+    {{ template "header" . }}
 
     <div class="container" id="apps-compare-page" data-id="{{ .IDs }}" data-group-id="{{ .GroupIDs }}">
 
@@ -29,7 +29,7 @@
             </div>
         </div>
 
-        {{ template "_flashes" . }}
+        {{ template "flashes" . }}
 
         <div class="card">
             <div class="card-body">
@@ -152,5 +152,5 @@
         const groupNames = {{ .GroupNames }};
     </script>
 
-    {{ template "_footer" . }}
+    {{ template "footer" . }}
 {{end}}

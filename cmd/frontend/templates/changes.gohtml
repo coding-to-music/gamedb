@@ -1,5 +1,5 @@
 {{define "changes"}}
-    {{ template "_header" . }}
+    {{ template "header" . }}
 
     <div class="container" id="changes-page">
 
@@ -8,10 +8,10 @@
             <p class="lead">{{ .Description }}</p>
         </div>
 
-        {{ template "_flashes" . }}
+        {{ template "flashes" . }}
 
         <div class="card">
-            {{ template "_changes_header" . }}
+            {{ template "changes_header" . }}
             <div class="card-body">
 
                 <div class="table-responsive">
@@ -36,5 +36,5 @@
 
     </div>
 
-    {{ template "_footer" . }}
+    {{ template "footer" . }}
 {{end}}

@@ -1,11 +1,11 @@
 {{define "package"}}
-    {{ template "_header" . }}
+    {{ template "header" . }}
 
     <div class="container" id="package-page" data-id="{{ .Package.ID }}" data-path="{{ .Package.GetPath }}">
 
         <div class="jumbotron">
 
-            {{ template "_social" .Package }}
+            {{ template "social" .Package }}
 
             <h1 class="text-truncate"><i class="fas fa-cube"></i> {{.Package.GetName}}</h1>
 
@@ -17,7 +17,7 @@
 
         </div>
 
-        {{ template "_flashes" . }}
+        {{ template "flashes" . }}
 
         <div class="card">
             <div class="card-header">
@@ -340,5 +340,5 @@
 
     </div>
 
-    {{ template "_footer" . }}
+    {{ template "footer" . }}
 {{end}}

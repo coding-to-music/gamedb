@@ -1,5 +1,5 @@
 {{define "group"}}
-    {{ template "_header" . }}
+    {{ template "header" . }}
 
     <div class="container" id="group-page" data-group-id="{{ .Group.ID }}" data-path="{{ .Group.GetPath }}">
 
@@ -9,7 +9,7 @@
                 <img src="{{ .Group.GetIcon }}" alt="{{ .Group.Name }}">
             {{ end }}
 
-            {{ template "_social" .Group }}
+            {{ template "social" .Group }}
 
             <h1 class="text-truncate" title="{{ .Group.Name }}">
                 <i class="fas fa-users"></i> {{ .Group.GetName }}
@@ -31,7 +31,7 @@
 
         </div>
 
-        {{ template "_flashes" . }}
+        {{ template "flashes" . }}
 
         <div class="card">
             <div class="card-body">
@@ -73,5 +73,5 @@
 
     </div>
 
-    {{ template "_footer" . }}
+    {{ template "footer" . }}
 {{end}}

@@ -398,24 +398,28 @@ type playerTemplate struct {
 	Aliases       []mongo.PlayerAlias
 }
 
-func (pt playerTemplate) TypePercent(typex string) string {
+func (t playerTemplate) includes() []string {
+	return []string{"includes/social.gohtml"}
+}
 
-	if _, ok := pt.Player.GamesByType[typex]; !ok {
+func (t playerTemplate) TypePercent(typex string) string {
+
+	if _, ok := t.Player.GamesByType[typex]; !ok {
 		return "0%"
 	}
 
-	if _, ok := pt.Types[typex]; !ok {
+	if _, ok := t.Types[typex]; !ok {
 		return "0%"
 	}
 
-	f := float64(pt.Player.GamesByType[typex]) / float64(pt.Types[typex]) * 100
+	f := float64(t.Player.GamesByType[typex]) / float64(t.Types[typex]) * 100
 
 	return helpers.FloatToString(f, 2) + "%"
 }
 
-func (pt playerTemplate) HasRanks() bool {
+func (t playerTemplate) HasRanks() bool {
 
-	for _, v := range pt.Ranks {
+	for _, v := range t.Ranks {
 		if len(v.Ranks) > 0 {
 			return true
 		}

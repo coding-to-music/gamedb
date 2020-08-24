@@ -1,12 +1,12 @@
 {{define "queues"}}
-    {{ template "_header" . }}
+    {{ template "header" . }}
 
     <div class="container" id="admin-queues-page">
 
-        {{ template "_flashes" . }}
+        {{ template "flashes" . }}
 
         <div class="card">
-            {{ template "_admin_header" . }}
+            {{ template "admin_header" . }}
             <div class="card-body">
 
                 <form action="/admin/queues" method="post" id="queues">
@@ -66,5 +66,5 @@
 
     </div>
 
-    {{ template "_footer" . }}
+    {{ template "footer" . }}
 {{end}}

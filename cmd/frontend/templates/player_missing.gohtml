@@ -1,5 +1,5 @@
 {{define "player_missing"}}
-    {{ template "_header" . }}
+    {{ template "header" . }}
 
     <div class="container" id="player-missing-page" data-id="{{ .Player.ID }}">
 
@@ -11,7 +11,7 @@
 
         </div>
 
-        {{ template "_flashes" . }}
+        {{ template "flashes" . }}
 
         <div class="card">
             <div class="card-body">
@@ -41,5 +41,5 @@
         let queue_current = {{ .Queue }};
     </script>
 
-    {{ template "_footer" . }}
+    {{ template "footer" . }}
 {{end}}

@@ -94,6 +94,10 @@ func returnJSON(w http.ResponseWriter, r *http.Request, i interface{}) {
 
 var templatesBox = packr.New("templates", "../templates")
 
+type hasIncludes interface {
+	includes() []string
+}
+
 func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageData interface{}) {
 
 	var err error
@@ -115,18 +119,24 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 	t = t.Funcs(getTemplateFuncMap())
 
 	templates := []string{
-		"admin/_admin_header.gohtml",
-		"_players_header.gohtml",
-		"_header.gohtml",
-		"_footer.gohtml",
-		"_apps_header.gohtml",
-		"_packages_header.gohtml",
-		"_changes_header.gohtml",
-		"_login_header.gohtml",
-		"_flashes.gohtml",
-		"_stats_header.gohtml",
-		"_social.gohtml",
+		"includes/admin_header.gohtml",
+		"includes/players_header.gohtml",
+		"includes/header.gohtml",
+		"includes/footer.gohtml",
+		"includes/apps_header.gohtml",
+		"includes/packages_header.gohtml",
+		"includes/changes_header.gohtml",
+		"includes/login_header.gohtml",
+		"includes/flashes.gohtml",
+		"includes/stats_header.gohtml",
+		// "includes/social.gohtml",
 		page + ".gohtml",
+	}
+
+	if val, ok := pageData.(hasIncludes); ok {
+		for _, v := range val.includes() {
+			templates = append(templates, v)
+		}
 	}
 
 	for _, v := range templates {

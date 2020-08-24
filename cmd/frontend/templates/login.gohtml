@@ -1,5 +1,5 @@
 {{define "login"}}
-    {{ template "_header" . }}
+    {{ template "header" . }}
 
     <script src='https://www.google.com/recaptcha/api.js'></script>
 
@@ -9,10 +9,10 @@
             <h1><i class="fas fa-key"></i> Login</h1>
         </div>
 
-        {{ template "_flashes" . }}
+        {{ template "flashes" . }}
 
         <div class="card">
-            {{ template "_login_header" . }}
+            {{ template "login_header" . }}
             <div class="card-body">
 
                 <div class="tab-content">
@@ -65,5 +65,5 @@
 
     </div>
 
-    {{ template "_footer" . }}
+    {{ template "footer" . }}
 {{end}}

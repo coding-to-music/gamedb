@@ -1,5 +1,5 @@
 {{define "new_releases"}}
-    {{ template "_header" . }}
+    {{ template "header" . }}
 
     <div class="container" id="new-releases-page">
 
@@ -27,10 +27,10 @@
             </div>
         </div>
 
-        {{ template "_flashes" . }}
+        {{ template "flashes" . }}
 
         <div class="card">
-            {{ template "_apps_header" . }}
+            {{ template "apps_header" . }}
             <div class="card-body">
 
                 <label for="days">Number of days to look back</label>
@@ -69,5 +69,5 @@
         </div>
 
     </div>
-    {{ template "_footer" . }}
+    {{ template "footer" . }}
 {{end}}

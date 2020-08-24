@@ -1,5 +1,5 @@
 {{define "stats_developers"}}
-    {{ template "_header" . }}
+    {{ template "header" . }}
 
     <div class="container" id="developers-page">
 
@@ -21,10 +21,10 @@
             </div>
         </div>
 
-        {{ template "_flashes" . }}
+        {{ template "flashes" . }}
 
         <div class="card">
-            {{ template "_stats_header" . }}
+            {{ template "stats_header" . }}
             <div class="card-body">
 
                 <div class="table-responsive">
@@ -55,5 +55,5 @@
 
     </div>
 
-    {{ template "_footer" . }}
+    {{ template "footer" . }}
 {{end}}

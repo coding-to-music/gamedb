@@ -1,5 +1,5 @@
 {{define "news"}}
-    {{ template "_header" . }}
+    {{ template "header" . }}
 
     <div class="container" id="news-page">
 
@@ -7,7 +7,7 @@
             <h1><i class="fas fa-newspaper"></i> News</h1>
         </div>
 
-        {{ template "_flashes" . }}
+        {{ template "flashes" . }}
 
         <div class="card">
 
@@ -104,5 +104,5 @@
 
     </div>
 
-    {{ template "_footer" . }}
+    {{ template "footer" . }}
 {{end}}

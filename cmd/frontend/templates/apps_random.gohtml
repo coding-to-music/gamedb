@@ -1,5 +1,5 @@
 {{define "apps_random"}}
-    {{ template "_header" . }}
+    {{ template "header" . }}
 
     <div class="container" id="apps-random-page" data-bg="{{ if gt (len .Apps) 0 }}{{ (index .Apps 0).ID }}{{ end }}">
 
@@ -10,7 +10,7 @@
             {{ end }}
         </div>
 
-        {{ template "_flashes" . }}
+        {{ template "flashes" . }}
 
         <div class="card mb-3" id="search-card">
             <div class="card-body">
@@ -171,5 +171,5 @@
 
     </div>
 
-    {{ template "_footer" . }}
+    {{ template "footer" . }}
 {{end}}

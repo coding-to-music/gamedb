@@ -1,12 +1,12 @@
 {{define "tasks"}}
-    {{ template "_header" . }}
+    {{ template "header" . }}
 
     <div class="container" id="admin-tasks-page">
 
-        {{ template "_flashes" . }}
+        {{ template "flashes" . }}
 
         <div class="card">
-            {{ template "_admin_header" . }}
+            {{ template "admin_header" . }}
             <div class="card-body">
 
                 {{ range .Tasks }}
@@ -52,5 +52,5 @@
 
     </div>
 
-    {{ template "_footer" . }}
+    {{ template "footer" . }}
 {{end}}

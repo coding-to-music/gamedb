@@ -160,6 +160,10 @@ type badgeTemplate struct {
 	LoggedIn    bool
 }
 
+func (t badgeTemplate) includes() []string {
+	return []string{"includes/social.gohtml"}
+}
+
 func badgeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))

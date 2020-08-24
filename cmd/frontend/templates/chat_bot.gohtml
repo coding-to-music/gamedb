@@ -1,5 +1,5 @@
 {{define "chat_bot"}}
-    {{ template "_header" . }}
+    {{ template "header" . }}
 
     <div class="container" id="chat-bot-page">
 
@@ -12,7 +12,7 @@
             <small>Used on {{ .Guilds }}+ servers so far.</small>
         </div>
 
-        {{ template "_flashes" . }}
+        {{ template "flashes" . }}
 
         <div class="card mb-4">
             <div class="card-body">
@@ -74,5 +74,5 @@
 
     </div>
 
-    {{ template "_footer" . }}
+    {{ template "footer" . }}
 {{end}}

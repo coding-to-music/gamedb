@@ -1,5 +1,5 @@
 {{define "sales"}}
-    {{ template "_header" . }}
+    {{ template "header" . }}
 
     <div class="container" id="sales-page">
 
@@ -27,7 +27,7 @@
             </div>
         </div>
 
-        {{ template "_flashes" . }}
+        {{ template "flashes" . }}
 
         {{ if and (.UpcomingSale.Show) (not ($.GetCookieFlag .UpcomingSale.ID)) }}
             <div class="jumbotron">
@@ -45,7 +45,7 @@
         {{ end }}
 
         <div class="card">
-            {{ template "_apps_header" . }}
+            {{ template "apps_header" . }}
             <div class="card-body">
 
                 <div class="row">
@@ -172,5 +172,5 @@
         </div>
 
     </div>
-    {{ template "_footer" . }}
+    {{ template "footer" . }}
 {{end}}

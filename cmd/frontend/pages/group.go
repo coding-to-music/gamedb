@@ -124,6 +124,10 @@ type groupTemplate struct {
 	Summary template.HTML
 }
 
+func (t groupTemplate) includes() []string {
+	return []string{"includes/social.gohtml"}
+}
+
 func groupTableAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "id")

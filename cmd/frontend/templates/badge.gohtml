@@ -1,5 +1,5 @@
 {{define "badge"}}
-    {{ template "_header" . }}
+    {{ template "header" . }}
 
     <div class="container" id="badge-page" data-path="{{ .Badge.GetPath }}">
 
@@ -9,7 +9,7 @@
                 <img src="{{ .Badge.GetIcon }}" alt="{{ .Badge.GetName }}">
             {{ end }}
 
-            {{ template "_social" .Badge }}
+            {{ template "social" .Badge }}
 
             <h1 class="text-truncate mb-4"><i class="fas fa-ribbon"></i> {{ .Badge.GetName }}</h1>
 
@@ -28,7 +28,7 @@
 
         </div>
 
-        {{ template "_flashes" . }}
+        {{ template "flashes" . }}
 
         <div class="card mb-3">
             <div class="card-body">
@@ -86,5 +86,5 @@
 
     </div>
 
-    {{ template "_footer" . }}
+    {{ template "footer" . }}
 {{end}}

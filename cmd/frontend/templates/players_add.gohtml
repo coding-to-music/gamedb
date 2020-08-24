@@ -1,5 +1,5 @@
 {{define "players_add"}}
-    {{ template "_header" . }}
+    {{ template "header" . }}
 
     <script src='https://www.google.com/recaptcha/api.js'></script>
 
@@ -10,10 +10,10 @@
             <p class="lead">{{ .Description }}</p>
         </div>
 
-        {{ template "_flashes" . }}
+        {{ template "flashes" . }}
 
         <div class="card">
-            {{ template "_players_header" . }}
+            {{ template "players_header" . }}
             <div class="card-body">
 
                 <form action="/players/add" method="post" data-recaptcha>
@@ -51,5 +51,5 @@
 
     </div>
 
-    {{ template "_footer" . }}
+    {{ template "footer" . }}
 {{end}}

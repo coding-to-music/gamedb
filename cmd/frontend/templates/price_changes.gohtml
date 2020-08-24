@@ -1,5 +1,5 @@
 {{define "price_changes"}}
-    {{ template "_header" . }}
+    {{ template "header" . }}
 
     <div class="container" id="price-changes-page">
 
@@ -9,10 +9,10 @@
 
         </div>
 
-        {{ template "_flashes" . }}
+        {{ template "flashes" . }}
 
         <div class="card">
-            {{ template "_changes_header" . }}
+            {{ template "changes_header" . }}
             <div class="card-body">
 
                 <form class="mb-4">
@@ -64,5 +64,5 @@
 
     </div>
 
-    {{ template "_footer" . }}
+    {{ template "footer" . }}
 {{end}}

@@ -1,5 +1,5 @@
 {{define "packages"}}
-    {{ template "_header" . }}
+    {{ template "header" . }}
 
     <div class="container" id="packages-page">
 
@@ -7,10 +7,10 @@
             <h1><i class="fas fa-cube"></i> Packages</h1>
         </div>
 
-        {{ template "_flashes" . }}
+        {{ template "flashes" . }}
 
         <div class="card">
-            {{ template "_packages_header" . }}
+            {{ template "packages_header" . }}
             <div class="card-body">
 
                 <div class="row">
@@ -103,5 +103,5 @@
 
     </div>
 
-    {{ template "_footer" . }}
+    {{ template "footer" . }}
 {{end}}

@@ -1,5 +1,5 @@
 {{define "home"}}
-    {{ template "_header" . }}
+    {{ template "header" . }}
 
     <link href="https://fonts.googleapis.com/css?family=Audiowide&display=fallback&text=Game DB" rel="stylesheet">
 
@@ -9,7 +9,7 @@
             <h1>Game DB</h1>
         </div>
 
-        {{ template "_flashes" . }}
+        {{ template "flashes" . }}
 
         {{/*        {{ if not (.GetCookieFlag "home-message") }}*/}}
         {{/*            <div class="jumbotron">*/}}
@@ -212,5 +212,5 @@
 
     </div>
 
-    {{ template "_footer" . }}
+    {{ template "footer" . }}
 {{end}}

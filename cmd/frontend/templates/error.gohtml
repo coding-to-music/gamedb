@@ -1,11 +1,11 @@
 {{define "error"}}
-    {{ template "_header" . }}
+    {{ template "header" . }}
 
     {{ if startsWith .Path "/players/" }}
         <div id="player-page" data-id="{{ .DataID }}"></div>
     {{ end }}
 
-    {{ template "_flashes" . }}
+    {{ template "flashes" . }}
 
     <div class="container" id="error-page">
 
@@ -20,5 +20,5 @@
 
     </div>
 
-    {{ template "_footer" . }}
+    {{ template "footer" . }}
 {{end}}

@@ -1,5 +1,5 @@
 {{define "trending_apps"}}
-    {{ template "_header" . }}
+    {{ template "header" . }}
 
     <div class="container" id="trending-apps-page">
 
@@ -9,10 +9,10 @@
 
         </div>
 
-        {{ template "_flashes" . }}
+        {{ template "flashes" . }}
 
         <div class="card">
-            {{ template "_apps_header" . }}
+            {{ template "apps_header" . }}
             <div class="card-body">
 
                 <div class="table-responsive">
@@ -36,5 +36,5 @@
         </div>
 
     </div>
-    {{ template "_footer" . }}
+    {{ template "footer" . }}
 {{end}}

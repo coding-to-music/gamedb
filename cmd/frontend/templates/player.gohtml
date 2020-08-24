@@ -1,5 +1,5 @@
 {{define "player"}}
-    {{ template "_header" . }}
+    {{ template "header" . }}
 
     <div class="container" id="player-page" data-id="{{ .Player.ID }}" data-path="{{ .Player.GetPath }}">
 
@@ -7,7 +7,7 @@
 
             <img class="rounded d-none d-md-inline-block" src="{{ .Player.GetAvatar }}" alt="{{ .Player.GetName }}">
 
-            {{ template "_social" .Player }}
+            {{ template "social" .Player }}
 
             <h1 class="text-truncate"><i class="fas fa-user"></i> {{ .Player.GetName }}</h1>
 
@@ -21,7 +21,7 @@
 
         </div>
 
-        {{ template "_flashes" . }}
+        {{ template "flashes" . }}
 
         {{ range $k, $v := .Banners }}
             <div class="alert alert-{{ $k }}" role="alert">
@@ -673,5 +673,5 @@
         </div>
     </div>
 
-    {{ template "_footer" . }}
+    {{ template "footer" . }}
 {{end}}

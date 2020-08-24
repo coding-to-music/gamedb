@@ -1,5 +1,5 @@
 {{define "players"}}
-    {{ template "_header" . }}
+    {{ template "header" . }}
 
     <div class="container" id="players-page">
 
@@ -27,10 +27,10 @@
             </div>
         </div>
 
-        {{ template "_flashes" . }}
+        {{ template "flashes" . }}
 
         <div class="card">
-            {{ template "_players_header" . }}
+            {{ template "players_header" . }}
             <div class="card-body">
 
                 <div class="row">
@@ -97,5 +97,5 @@
 
     </div>
 
-    {{ template "_footer" . }}
+    {{ template "footer" . }}
 {{end}}

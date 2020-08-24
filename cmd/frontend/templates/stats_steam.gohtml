@@ -1,5 +1,5 @@
 {{define "stats_steam"}}
-    {{ template "_header" . }}
+    {{ template "header" . }}
 
     <div class="container" id="stats-page">
 
@@ -7,10 +7,10 @@
             <h1 class="mb-0"><i class="fas fa-chart-bar"></i> Stats</h1>
         </div>
 
-        {{ template "_flashes" . }}
+        {{ template "flashes" . }}
 
         <div class="card">
-            {{ template "_stats_header" . }}
+            {{ template "stats_header" . }}
             <div class="card-body">
 
                 <div class="row">
@@ -99,5 +99,5 @@
 
     </div>
 
-    {{ template "_footer" . }}
+    {{ template "footer" . }}
 {{end}}

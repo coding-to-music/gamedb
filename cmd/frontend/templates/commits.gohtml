@@ -1,5 +1,5 @@
 {{define "commits"}}
-    {{ template "_header" . }}
+    {{ template "header" . }}
 
     <div class="container" id="commits-page">
 
@@ -8,7 +8,7 @@
             <p class="lead">Game DB is fully open sourced on <a href="https://github.com/gamedb" target="_blank" rel="noopener">GitHub</a>.</p>
         </div>
 
-        {{ template "_flashes" . }}
+        {{ template "flashes" . }}
 
         <div class="card">
             <div class="card-body">
@@ -34,5 +34,5 @@
 
     </div>
 
-    {{ template "_footer" . }}
+    {{ template "footer" . }}
 {{end}}
