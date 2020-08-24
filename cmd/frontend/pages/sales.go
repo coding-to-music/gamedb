@@ -200,10 +200,14 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	if len(scores) == 2 {
 
 		low, err := strconv.Atoi(strings.TrimSuffix(scores[0], ".00"))
-		log.ErrS(err)
+		if err != nil {
+			log.ErrS(err)
+		}
 
 		high, err := strconv.Atoi(strings.TrimSuffix(scores[1], ".00"))
-		log.ErrS(err)
+		if err != nil {
+			log.ErrS(err)
+		}
 
 		if low > 0 {
 			filter = append(filter, bson.E{Key: "app_rating", Value: bson.M{"$gte": low}})
@@ -218,10 +222,14 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	if len(prices) == 2 {
 
 		low, err := strconv.Atoi(strings.TrimSuffix(prices[0], ".00"))
-		log.ErrS(err)
+		if err != nil {
+			log.ErrS(err)
+		}
 
 		high, err := strconv.Atoi(strings.TrimSuffix(prices[1], ".00"))
-		log.ErrS(err)
+		if err != nil {
+			log.ErrS(err)
+		}
 
 		if low > 0 {
 			filter = append(filter, bson.E{Key: "app_prices." + string(code), Value: bson.M{"$gte": low * 100}})
@@ -236,10 +244,14 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	if len(discounts) == 2 {
 
 		low, err := strconv.Atoi(strings.TrimSuffix(discounts[0], ".00"))
-		log.ErrS(err)
+		if err != nil {
+			log.ErrS(err)
+		}
 
 		high, err := strconv.Atoi(strings.TrimSuffix(discounts[1], ".00"))
-		log.ErrS(err)
+		if err != nil {
+			log.ErrS(err)
+		}
 
 		if low > 0 {
 			filter = append(filter, bson.E{Key: "offer_percent", Value: bson.M{"$lte": -low}})

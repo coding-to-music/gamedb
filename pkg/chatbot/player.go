@@ -59,7 +59,9 @@ func (c CommandPlayer) Output(msg *discordgo.MessageCreate) (message discordgo.M
 	if q {
 		err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID})
 		err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
-		log.ErrS(err)
+		if err != nil {
+			log.ErrS(err)
+		}
 	}
 
 	avatar := player.GetAvatar()

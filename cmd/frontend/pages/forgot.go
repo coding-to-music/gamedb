@@ -158,7 +158,9 @@ func forgotResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 		userID, err := mysql.GetUserVerification(code)
 		if err != nil {
 			err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
-			log.ErrS(err)
+			if err != nil {
+				log.ErrS(err)
+			}
 			return "Invalid code (1002)", false
 		}
 
@@ -170,7 +172,9 @@ func forgotResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 		user, err := mysql.GetUserByID(userID)
 		if err != nil {
 			err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
-			log.ErrS(err)
+			if err != nil {
+				log.ErrS(err)
+			}
 			return "An error occurred (1001)", false
 		}
 

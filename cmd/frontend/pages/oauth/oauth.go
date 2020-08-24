@@ -242,7 +242,9 @@ func (bc baseConnection) callback(r *http.Request, c ConnectionInterface, event 
 			if err != nil {
 
 				err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
-				log.ErrS(err)
+				if err != nil {
+					log.ErrS(err)
+				}
 
 			} else {
 				session.Set(r, session.SessionPlayerName, player.GetName())

@@ -57,7 +57,9 @@ func (c CommandPlayerApps) Output(msg *discordgo.MessageCreate) (message discord
 	if q {
 		err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID})
 		err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
-		log.ErrS(err)
+		if err != nil {
+			log.ErrS(err)
+		}
 	}
 
 	if player.GamesCount > 0 {

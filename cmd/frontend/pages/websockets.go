@@ -31,10 +31,14 @@ func websocketsHandler(w http.ResponseWriter, r *http.Request) {
 	if page.GetName() == "" {
 
 		bytes, err := json.Marshal(websockets.WebsocketPayload{Error: "Invalid page"})
-		log.ErrS(err)
+		if err != nil {
+			log.ErrS(err)
+		}
 
 		_, err = w.Write(bytes)
-		log.ErrS(err)
+		if err != nil {
+			log.ErrS(err)
+		}
 		return
 	}
 

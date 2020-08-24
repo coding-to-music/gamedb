@@ -101,7 +101,9 @@ func GetPackageApps(packageID int, offset int64, sort bson.D) (apps []PackageApp
 
 	defer func(cur *mongo.Cursor) {
 		err = cur.Close(ctx)
-		log.ErrS(err)
+		if err != nil {
+			log.ErrS(err)
+		}
 	}(cur)
 
 	for cur.Next(ctx) {

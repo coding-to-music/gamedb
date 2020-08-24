@@ -110,8 +110,9 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		if prices[1] != "100.00" {
 			max, err := strconv.Atoi(strings.Replace(prices[1], ".", "", 1))
-			log.ErrS(err)
-			if err == nil {
+			if err != nil {
+				log.ErrS(err)
+			} else {
 				filter = append(filter, bson.E{Key: "price_after", Value: bson.M{"$lte": max}})
 			}
 		}

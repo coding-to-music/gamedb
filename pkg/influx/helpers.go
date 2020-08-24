@@ -222,7 +222,9 @@ func GetFirstInfluxFloat(resp *influx.Response) float64 {
 			return v
 		case json.Number:
 			i, err := v.Float64()
-			log.ErrS(err)
+			if err != nil {
+				log.ErrS(err)
+			}
 			return i
 		default:
 			log.Warn("Unknown type from Influx DB: " + reflect.TypeOf(v).String())

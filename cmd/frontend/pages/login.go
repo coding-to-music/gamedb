@@ -111,7 +111,9 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 		if err != nil {
 			err = helpers.IgnoreErrors(err, bcrypt.ErrMismatchedHashAndPassword)
-			log.ErrS(err)
+			if err != nil {
+				log.ErrS(err)
+			}
 			return "Incorrect credentials", false
 		}
 
@@ -169,7 +171,9 @@ func login(r *http.Request, user mysql.User) (string, bool) {
 			sessionData[session.SessionPlayerLevel] = strconv.Itoa(player.Level)
 		} else {
 			err = helpers.IgnoreErrors(err, steamid.ErrInvalidPlayerID, mongo.ErrNoDocuments)
-			log.ErrS(err)
+			if err != nil {
+				log.ErrS(err)
+			}
 		}
 	}
 

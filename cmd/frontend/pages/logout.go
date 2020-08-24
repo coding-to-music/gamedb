@@ -22,7 +22,9 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	userID, err := session.GetUserIDFromSesion(r)
 	if err == nil {
 		err = mongo.CreateUserEvent(r, userID, mongo.EventLogout)
-		log.ErrS(err)
+		if err != nil {
+			log.ErrS(err)
+		}
 	}
 
 	// Get last page

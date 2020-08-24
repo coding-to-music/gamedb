@@ -60,7 +60,9 @@ func (c CommandPlayerWishlist) Output(msg *discordgo.MessageCreate) (message dis
 	if q {
 		err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID})
 		err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
-		log.ErrS(err)
+		if err != nil {
+			log.ErrS(err)
+		}
 	}
 
 	wishlistApps, err := mongo.GetPlayerWishlistAppsByPlayer(player.ID, 0, 10, bson.D{{"order", 1}}, nil)

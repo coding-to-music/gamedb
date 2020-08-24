@@ -74,7 +74,9 @@ func badgeHandler(w http.ResponseWriter, r *http.Request) {
 			appBadge, err := mongo.GetAppBadge(id)
 			if err != nil {
 				err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
-				log.ErrS(err)
+				if err != nil {
+					log.ErrS(err)
+				}
 			} else {
 				playerBadge = appBadge
 			}

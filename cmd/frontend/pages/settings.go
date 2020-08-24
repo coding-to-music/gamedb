@@ -357,8 +357,8 @@ func settingsNewKeyHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Save user
 		db, err := mysql.GetMySQLClient()
-		log.ErrS(err)
 		if err != nil {
+			log.ErrS(err)
 			return "", "We had trouble saving your settings (1001)"
 		}
 
