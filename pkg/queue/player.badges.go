@@ -41,7 +41,7 @@ func playerBadgesHandler(message *rabbit.Message) {
 	response, err := steam.GetSteam().GetBadges(payload.PlayerID)
 	err = steam.AllowSteamCodes(err)
 	if err != nil {
-		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+		steam.LogSteamError(err, message.Message.Body)
 		sendToRetryQueue(message)
 		return
 	}
