@@ -1,10 +1,10 @@
 package config
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/kelseyhightower/envconfig"
-	"go.uber.org/zap"
 )
 
 //noinspection GoUnusedConst
@@ -158,7 +158,7 @@ func init() {
 
 	err := envconfig.Process("steam", &C)
 	if err != nil {
-		zap.L().Fatal(err.Error())
+		fmt.Println(err) // Zap not ready yet
 	}
 
 	C.GameDBShortName = "GameDB"
