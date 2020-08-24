@@ -102,7 +102,7 @@ func GetCategoriesForSelect() (tags []Category, err error) {
 
 // func DeleteTags(ids []int) (err error) {
 //
-// 	zap.S().Info("Deleteing " + strconv.Itoa(len(ids)) + " tags")
+// 	log.InfoS("Deleteing " + strconv.Itoa(len(ids)) + " tags")
 //
 // 	if len(ids) == 0 {
 // 		return nil

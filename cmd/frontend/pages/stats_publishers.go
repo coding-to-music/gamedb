@@ -5,10 +5,10 @@ import (
 
 	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/tasks"
 	"github.com/go-chi/chi"
-	"go.uber.org/zap"
 )
 
 func PublishersRouter() http.Handler {
@@ -23,13 +23,13 @@ func publishersHandler(w http.ResponseWriter, r *http.Request) {
 	config, err := tasks.GetTaskConfig(tasks.TasksPublishers{})
 	if err != nil {
 		err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
-		zap.S().Error(err)
+		log.ErrS(err)
 	}
 
 	// Get publishers
 	publishers, err := mysql.GetAllPublishers()
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the publishers."})
 		return
 	}
@@ -39,7 +39,7 @@ func publishersHandler(w http.ResponseWriter, r *http.Request) {
 	for _, v := range publishers {
 		price, err := v.GetMeanPrice(code)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 		prices[v.ID] = price
 	}

@@ -6,8 +6,8 @@ import (
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/olivere/elastic/v7"
-	"go.uber.org/zap"
 )
 
 type App struct {
@@ -124,7 +124,7 @@ func searchApps(limit int, offset int, search string, totals bool, highlights bo
 
 		err := json.Unmarshal(hit.Source, &app)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 			continue
 		}
 

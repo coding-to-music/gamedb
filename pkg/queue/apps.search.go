@@ -8,6 +8,7 @@ import (
 	roman "github.com/StefanSchroeder/Golang-Roman"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"go.uber.org/zap"
 )
@@ -27,7 +28,7 @@ func appsSearchHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToFailQueue(message)
 		return
 	}
@@ -38,7 +39,7 @@ func appsSearchHandler(message *rabbit.Message) {
 
 		mongoApp, err = mongo.GetApp(payload.AppID)
 		if err != nil {
-			zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+			log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
 			sendToRetryQueue(message)
 			return
 		}
@@ -49,7 +50,7 @@ func appsSearchHandler(message *rabbit.Message) {
 
 	} else {
 
-		zap.S().Error(message.Message.Body)
+		log.ErrS(message.Message.Body)
 		sendToFailQueue(message)
 		return
 	}
@@ -80,7 +81,7 @@ func appsSearchHandler(message *rabbit.Message) {
 
 	err = elasticsearch.IndexApp(app)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		sendToRetryQueue(message)
 		return
 	}

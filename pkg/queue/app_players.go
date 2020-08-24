@@ -9,6 +9,7 @@ import (
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/influx"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/steam"
@@ -29,7 +30,7 @@ func appPlayersHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		zap.L().Error(err.Error(), zap.ByteString("bytes", message.Message.Body))
+		log.Err(err.Error(), zap.ByteString("bytes", message.Message.Body))
 		sendToFailQueue(message)
 		return
 	}
@@ -37,7 +38,7 @@ func appPlayersHandler(message *rabbit.Message) {
 	// Get apps
 	apps, err := mongo.GetAppsByID(payload.IDs, bson.M{"_id": 1, "twitch_id": 1, "player_peak_week": 1, "player_peak_alltime": 1})
 	if err != nil {
-		zap.S().Error(err, payload.IDs)
+		log.ErrS(err, payload.IDs)
 		sendToRetryQueue(message)
 		return
 	}
@@ -60,9 +61,9 @@ func appPlayersHandler(message *rabbit.Message) {
 				if strings.Contains(err.Error(), "read: connection reset by peer") ||
 					strings.Contains(err.Error(), "i/o timeout") ||
 					strings.Contains(err.Error(), "unexpected EOF") {
-					zap.S().Info(err, payload.IDs)
+					log.InfoS(err, payload.IDs)
 				} else {
-					zap.S().Error(err, payload.IDs)
+					log.ErrS(err, payload.IDs)
 				}
 
 				sendToRetryQueue(message)
@@ -99,7 +100,7 @@ func appPlayersHandler(message *rabbit.Message) {
 
 			err = saveAppPlayerToInflux(app.ID, twitchViewers, inGame)
 			if err != nil {
-				zap.S().Error(err, payload.IDs)
+				log.ErrS(err, payload.IDs)
 				sendToRetryQueue(message)
 				return
 			}
@@ -121,7 +122,7 @@ func appPlayersHandler(message *rabbit.Message) {
 
 				_, err = mongo.UpdateOne(mongo.CollectionApps, filter, update)
 				if err != nil {
-					zap.S().Error(err, app.ID)
+					log.ErrS(err, app.ID)
 					sendToRetryQueue(message)
 					return
 				}
@@ -129,7 +130,7 @@ func appPlayersHandler(message *rabbit.Message) {
 				// Clear cache
 				err = memcache.Delete(memcache.MemcacheApp(app.ID).Key)
 				if err != nil {
-					zap.S().Error(err, app.ID)
+					log.ErrS(err, app.ID)
 					sendToRetryQueue(message)
 					return
 				}
@@ -137,7 +138,7 @@ func appPlayersHandler(message *rabbit.Message) {
 				// Update in Elastic
 				err = ProduceAppSearch(nil, app.ID)
 				if err != nil {
-					zap.S().Error(err, app.ID)
+					log.ErrS(err, app.ID)
 					sendToRetryQueue(message)
 					return
 				}

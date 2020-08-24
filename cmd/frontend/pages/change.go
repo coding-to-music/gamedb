@@ -5,10 +5,10 @@ import (
 	"strconv"
 	"sync"
 
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.uber.org/zap"
 )
 
 func ChangeRouter() http.Handler {
@@ -32,7 +32,7 @@ func changeHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		zap.S().Error(r, err)
+		log.ErrS(r, err)
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the change."})
 		return
 	}
@@ -57,7 +57,7 @@ func changeHandler(w http.ResponseWriter, r *http.Request) {
 		apps, err := mongo.GetAppsByID(change.Apps, bson.M{"_id": 1, "icon": 1, "type": 1, "name": 1})
 		if err != nil {
 
-			zap.S().Error(err)
+			log.ErrS(err)
 			return
 		}
 
@@ -75,7 +75,7 @@ func changeHandler(w http.ResponseWriter, r *http.Request) {
 		packagesSlice, err := mongo.GetPackagesByID(change.Packages, bson.M{})
 		if err != nil {
 
-			zap.S().Error(err)
+			log.ErrS(err)
 			return
 		}
 

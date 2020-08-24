@@ -30,7 +30,7 @@ func GetMySQLClient() (conn *gorm.DB, err error) {
 		// Retrying as this call can fail
 		operation := func() (err error) {
 
-			// zap.S().Info("Connecting to MySQL")
+			// log.InfoS("Connecting to MySQL")
 
 			options := url.Values{}
 			options.Set("parseTime", "true")
@@ -61,9 +61,9 @@ func GetMySQLClient() (conn *gorm.DB, err error) {
 
 		policy := backoff.NewConstantBackOff(time.Second * 5)
 
-		err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { zap.S().Info(err) })
+		err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.InfoS(err) })
 		if err != nil {
-			zap.S().Fatal(err)
+			log.FatalS(err)
 		}
 	}
 

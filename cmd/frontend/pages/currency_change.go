@@ -6,8 +6,8 @@ import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/i18n"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/go-chi/chi"
-	"go.uber.org/zap"
 )
 
 func CurrencyHandler(w http.ResponseWriter, r *http.Request) {
@@ -28,7 +28,7 @@ func CurrencyHandler(w http.ResponseWriter, r *http.Request) {
 			user.ProductCC = steamapi.ProductCC(id)
 			err = user.Save()
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 			}
 		}
 

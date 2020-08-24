@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -177,7 +178,7 @@ func getPlayerGroups(offset int64, limit int64, filter bson.D, sort bson.D) (pla
 	defer func(cur *mongo.Cursor) {
 		err = cur.Close(ctx)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}(cur)
 
@@ -186,7 +187,7 @@ func getPlayerGroups(offset int64, limit int64, filter bson.D, sort bson.D) (pla
 		var group PlayerGroup
 		err := cur.Decode(&group)
 		if err != nil {
-			zap.L().Error(err.Error(), zap.String("key", group.getKey()), zap.String("current", cur.Current.String()))
+			log.Err(err.Error(), zap.String("key", group.getKey()), zap.String("current", cur.Current.String()))
 		} else {
 			players = append(players, group)
 		}

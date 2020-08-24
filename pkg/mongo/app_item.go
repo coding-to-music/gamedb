@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -98,7 +99,7 @@ func (item *AppItem) SetTags(tagsString string) {
 				} else if len(tagKeyVal) == 2 {
 					item.Tags = append(item.Tags, []string{tagKeyVal[0], tagKeyVal[1]})
 				} else {
-					zap.L().Warn("Weird tags", zap.Int("app", item.AppID))
+					log.Warn("Weird tags", zap.Int("app", item.AppID))
 				}
 			}
 		}
@@ -156,7 +157,7 @@ func GetAppItems(offset int64, limit int64, filter bson.D, projection bson.M) (i
 	defer func() {
 		err = cur.Close(ctx)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -165,7 +166,7 @@ func GetAppItems(offset int64, limit int64, filter bson.D, projection bson.M) (i
 		item := AppItem{}
 		err := cur.Decode(&item)
 		if err != nil {
-			zap.S().Error(err, item.getKey())
+			log.ErrS(err, item.getKey())
 		} else {
 			items = append(items, item)
 		}

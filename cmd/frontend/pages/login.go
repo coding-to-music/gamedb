@@ -12,10 +12,10 @@ import (
 	"github.com/gamedb/gamedb/cmd/frontend/pages/oauth"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/go-chi/chi"
-	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -67,7 +67,7 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		// Parse form
 		err := r.ParseForm()
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 			return "An error occurred", false
 		}
 
@@ -103,7 +103,7 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 			}
 			return "Incorrect credentials", false
 		}
@@ -111,7 +111,7 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 		if err != nil {
 			err = helpers.IgnoreErrors(err, bcrypt.ErrMismatchedHashAndPassword)
-			zap.S().Error(err)
+			log.ErrS(err)
 			return "Incorrect credentials", false
 		}
 
@@ -169,7 +169,7 @@ func login(r *http.Request, user mysql.User) (string, bool) {
 			sessionData[session.SessionPlayerLevel] = strconv.Itoa(player.Level)
 		} else {
 			err = helpers.IgnoreErrors(err, steamid.ErrInvalidPlayerID, mongo.ErrNoDocuments)
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}
 
@@ -178,12 +178,12 @@ func login(r *http.Request, user mysql.User) (string, bool) {
 	// Create login event
 	err := mongo.CreateUserEvent(r, user.ID, mongo.EventLogin)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 	}
 
 	err = mysql.UpdateUserCol(user.ID, "logged_in_at", time.Now())
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 	}
 
 	return "You have been logged in", true

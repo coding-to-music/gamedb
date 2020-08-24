@@ -4,6 +4,7 @@ import (
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"go.uber.org/zap"
 )
 
@@ -24,7 +25,7 @@ func appsArticlesSearchHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToFailQueue(message)
 		return
 	}
@@ -41,7 +42,7 @@ func appsArticlesSearchHandler(message *rabbit.Message) {
 
 	err = elasticsearch.IndexArticle(article)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		sendToRetryQueue(message)
 		return
 	}

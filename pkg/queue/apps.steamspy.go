@@ -8,6 +8,7 @@ import (
 
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/powerslacker/ratelimit"
@@ -36,7 +37,7 @@ func appSteamspyHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToFailQueue(message)
 		return
 	}
@@ -55,9 +56,9 @@ func appSteamspyHandler(message *rabbit.Message) {
 		if strings.Contains(err.Error(), "Client.Timeout exceeded while awaiting headers") ||
 			strings.Contains(err.Error(), "read: connection reset by peer") ||
 			strings.Contains(err.Error(), "connect: cannot assign requested address") {
-			zap.S().Info(err, payload.AppID)
+			log.InfoS(err, payload.AppID)
 		} else {
-			zap.S().Error(err, payload.AppID, u)
+			log.ErrS(err, payload.AppID, u)
 		}
 
 		sendToRetryQueueWithDelay(message, time.Second*10)
@@ -66,14 +67,14 @@ func appSteamspyHandler(message *rabbit.Message) {
 
 	if statusCode != 200 {
 
-		zap.S().Info("steamspy is down", payload.AppID)
+		log.InfoS("steamspy is down", payload.AppID)
 		sendToRetryQueueWithDelay(message, time.Minute*30)
 		return
 	}
 
 	if strings.Contains(string(body), "Connection failed") {
 
-		zap.L().Info("steamspy is down", zap.Int("app", payload.AppID), zap.ByteString("bytes", body))
+		log.Info("steamspy is down", zap.Int("app", payload.AppID), zap.ByteString("bytes", body))
 		sendToRetryQueueWithDelay(message, time.Minute*30)
 		return
 	}
@@ -83,7 +84,7 @@ func appSteamspyHandler(message *rabbit.Message) {
 	err = helpers.Unmarshal(body, &resp)
 	if err != nil {
 
-		zap.S().Info(err, payload.AppID, helpers.TruncateString(string(body), 200, "..."))
+		log.InfoS(err, payload.AppID, helpers.TruncateString(string(body), 200, "..."))
 		sendToRetryQueueWithDelay(message, time.Minute*30)
 		return
 	}
@@ -106,7 +107,7 @@ func appSteamspyHandler(message *rabbit.Message) {
 
 	_, err = mongo.UpdateOne(mongo.CollectionApps, filter, update)
 	if err != nil {
-		zap.S().Error(err, payload.AppID, u)
+		log.ErrS(err, payload.AppID, u)
 		sendToRetryQueue(message)
 		return
 	}
@@ -114,7 +115,7 @@ func appSteamspyHandler(message *rabbit.Message) {
 	// Clear cache
 	err = memcache.Delete(memcache.MemcacheApp(payload.AppID).Key)
 	if err != nil {
-		zap.S().Error(err, payload.AppID, u)
+		log.ErrS(err, payload.AppID, u)
 		sendToRetryQueue(message)
 		return
 	}
@@ -122,7 +123,7 @@ func appSteamspyHandler(message *rabbit.Message) {
 	// Update in Elastic
 	err = ProduceAppSearch(nil, payload.AppID)
 	if err != nil {
-		zap.S().Error(err, payload.AppID, u)
+		log.ErrS(err, payload.AppID, u)
 		sendToRetryQueue(message)
 		return
 	}

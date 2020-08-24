@@ -1,10 +1,10 @@
 package tasks
 
 import (
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.uber.org/zap"
 )
 
 type AppsQueueReviews struct {
@@ -38,7 +38,7 @@ func (c AppsQueueReviews) work() (err error) {
 
 			err = queue.ProduceAppsReviews(app.ID)
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 				return
 			}
 		}

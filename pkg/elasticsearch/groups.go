@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/olivere/elastic/v7"
-	"go.uber.org/zap"
 )
 
 type Group struct {
@@ -126,7 +126,7 @@ func SearchGroups(offset int, limit int, sorters []elastic.Sorter, search string
 		var group Group
 		err := json.Unmarshal(hit.Source, &group)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 			continue
 		}
 

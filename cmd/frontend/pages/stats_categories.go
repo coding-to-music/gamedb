@@ -5,10 +5,10 @@ import (
 
 	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/tasks"
 	"github.com/go-chi/chi"
-	"go.uber.org/zap"
 )
 
 func CategoriesRouter() http.Handler {
@@ -24,13 +24,13 @@ func statsCategoriesHandler(w http.ResponseWriter, r *http.Request) {
 	config, err := tasks.GetTaskConfig(tasks.StatsCategories{})
 	if err != nil {
 		err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
-		zap.S().Error(err)
+		log.ErrS(err)
 	}
 
 	// Get categories
 	categories, err := mysql.GetAllCategories()
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the categories."})
 		return
 	}
@@ -40,7 +40,7 @@ func statsCategoriesHandler(w http.ResponseWriter, r *http.Request) {
 	for _, category := range categories {
 		price, err := category.GetMeanPrice(code)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 		prices[category.ID] = price
 	}

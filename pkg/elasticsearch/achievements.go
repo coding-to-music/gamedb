@@ -5,8 +5,8 @@ import (
 	"strconv"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/olivere/elastic/v7"
-	"go.uber.org/zap"
 )
 
 type Achievement struct {
@@ -100,7 +100,7 @@ func SearchAppAchievements(offset int, search string, sorters []elastic.Sorter) 
 		var achievement Achievement
 		err := json.Unmarshal(hit.Source, &achievement)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 			continue
 		}
 

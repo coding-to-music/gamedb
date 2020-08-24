@@ -9,14 +9,14 @@ import (
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gocolly/colly/v2"
-	"go.uber.org/zap"
 )
 
 func AllowSteamCodes(err error, allowedCodes ...int) error {
 
 	// if err == steam.ErrHTMLResponse {
-	// 	zap.S().Error(err, string(bytes))
+	// 	log.ErrS(err, string(bytes))
 	// 	time.Sleep(time.Second * 30)
 	// }
 
@@ -80,9 +80,9 @@ func LogSteamError(err error, interfaces ...interface{}) {
 	interfaces = append([]interface{}{err}, interfaces...)
 
 	if isError {
-		zap.S().Error(interfaces...)
+		log.ErrS(interfaces...)
 	} else {
-		zap.S().Info(interfaces...)
+		log.InfoS(interfaces...)
 	}
 }
 

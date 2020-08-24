@@ -5,10 +5,10 @@ import (
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.uber.org/zap"
 )
 
 type Article struct {
@@ -106,7 +106,7 @@ func getArticles(offset int64, limit int64, filter bson.D, order bson.D, project
 	defer func() {
 		err = cur.Close(ctx)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -115,7 +115,7 @@ func getArticles(offset int64, limit int64, filter bson.D, order bson.D, project
 		var article Article
 		err := cur.Decode(&article)
 		if err != nil {
-			zap.S().Error(err, article.ID)
+			log.ErrS(err, article.ID)
 		} else {
 			news = append(news, article)
 		}

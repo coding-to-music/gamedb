@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/djherbis/fscache"
-	"go.uber.org/zap"
+	"github.com/gamedb/gamedb/pkg/log"
 )
 
 func GetSetCache(name string, ttl time.Duration, retrieve func() (interface{}, error), val interface{}) (err error) {
@@ -28,7 +28,7 @@ func GetSetCache(name string, ttl time.Duration, retrieve func() (interface{}, e
 	defer func() {
 		err = reader.Close()
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -38,13 +38,13 @@ func GetSetCache(name string, ttl time.Duration, retrieve func() (interface{}, e
 		return dec.Decode(val)
 	}
 
-	zap.L().Info("Saving " + name + " to cache")
+	log.Info("Saving " + name + " to cache")
 
 	// Write to cache
 	defer func() {
 		err = writer.Close()
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 

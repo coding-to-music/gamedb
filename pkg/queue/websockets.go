@@ -4,6 +4,7 @@ import (
 	"github.com/Jleagle/rabbit-go"
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/websockets"
@@ -21,7 +22,7 @@ func websocketHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToFailQueue(message)
 		return
 	}
@@ -44,7 +45,7 @@ func websocketHandler(message *rabbit.Message) {
 
 			err = helpers.Unmarshal(payload.Message, &idPayload)
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 			}
 
 			wsPage.Send(idPayload.ID)
@@ -55,7 +56,7 @@ func websocketHandler(message *rabbit.Message) {
 
 			err = helpers.Unmarshal(payload.Message, &idPayload)
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 			}
 
 			wsPage.Send(idPayload.String)
@@ -66,7 +67,7 @@ func websocketHandler(message *rabbit.Message) {
 
 			err = helpers.Unmarshal(payload.Message, &playerPayload)
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 			}
 
 			wsPage.Send(playerPayload)
@@ -77,7 +78,7 @@ func websocketHandler(message *rabbit.Message) {
 
 			err = helpers.Unmarshal(payload.Message, &cbPayload)
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 			}
 
 			wsPage.Send(cbPayload)
@@ -88,7 +89,7 @@ func websocketHandler(message *rabbit.Message) {
 
 			err = helpers.Unmarshal(payload.Message, &adminPayload)
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 			}
 
 			wsPage.Send(adminPayload)
@@ -99,7 +100,7 @@ func websocketHandler(message *rabbit.Message) {
 
 			err = helpers.Unmarshal(payload.Message, &changePayload)
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 			}
 
 			wsPage.Send(changePayload.Data)
@@ -110,12 +111,12 @@ func websocketHandler(message *rabbit.Message) {
 
 			err = helpers.Unmarshal(payload.Message, &idPayload)
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 			}
 
 			pack, err := mongo.GetPackage(idPayload.ID)
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 				continue
 			}
 
@@ -127,12 +128,12 @@ func websocketHandler(message *rabbit.Message) {
 
 			err = helpers.Unmarshal(payload.Message, &idPayload)
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 			}
 
 			bundle, err := mysql.GetBundle(idPayload.ID, nil)
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 			} else {
 				wsPage.Send(bundle.OutputForJSON())
 			}
@@ -143,12 +144,12 @@ func websocketHandler(message *rabbit.Message) {
 
 			err = helpers.Unmarshal(payload.Message, &idsPayload)
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 			}
 
 			prices, err := mongo.GetPricesByID(idsPayload.IDs)
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 			} else {
 				for _, v := range prices {
 					wsPage.Send(v.OutputForJSON())
@@ -156,7 +157,7 @@ func websocketHandler(message *rabbit.Message) {
 			}
 
 		default:
-			zap.L().Error("no handler for page", zap.String("page", string(page)))
+			log.Err("no handler for page", zap.String("page", string(page)))
 		}
 	}
 

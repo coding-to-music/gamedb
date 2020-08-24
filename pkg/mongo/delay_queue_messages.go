@@ -4,8 +4,8 @@ import (
 	"time"
 
 	"github.com/Jleagle/rabbit-go"
+	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.uber.org/zap"
 )
 
 type DelayQueueMessage struct {
@@ -46,7 +46,7 @@ func CreateDelayQueueMessage(m *rabbit.Message) {
 
 	_, err := UpdateOneWithInsert(CollectionDelayQueue, filter, message.BSON(), insert)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 	}
 }
 
@@ -60,7 +60,7 @@ func GetDelayQueueMessages(offset int64, sort bson.D) (messages []DelayQueueMess
 	defer func() {
 		err = cur.Close(ctx)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -69,7 +69,7 @@ func GetDelayQueueMessages(offset int64, sort bson.D) (messages []DelayQueueMess
 		var message DelayQueueMessage
 		err := cur.Decode(&message)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		} else {
 			messages = append(messages, message)
 		}

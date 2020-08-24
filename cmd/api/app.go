@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/gamedb/gamedb/cmd/api/generated"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"go.uber.org/zap"
 )
 
 func (s Server) GetGamesId(w http.ResponseWriter, r *http.Request, id int32, params generated.GetGamesIdParams) {
@@ -22,7 +22,7 @@ func (s Server) GetGamesId(w http.ResponseWriter, r *http.Request, id int32, par
 
 			} else if err != nil {
 
-				zap.S().Error(err)
+				log.ErrS(err)
 				return 500, err
 
 			} else {

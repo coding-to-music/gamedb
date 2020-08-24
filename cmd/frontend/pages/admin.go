@@ -12,6 +12,7 @@ import (
 	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/middleware"
 	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
@@ -21,7 +22,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.uber.org/zap"
 )
 
 func AdminRouter() http.Handler {
@@ -79,7 +79,7 @@ func adminUsersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		db, err := mysql.GetMySQLClient()
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 			return
 		}
 
@@ -98,7 +98,7 @@ func adminUsersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		db = db.Find(&users)
 
 		if db.Error != nil {
-			zap.S().Error(db.Error)
+			log.ErrS(db.Error)
 		}
 	}(r)
 
@@ -111,13 +111,13 @@ func adminUsersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		db, err := mysql.GetMySQLClient()
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 			return
 		}
 
 		db = db.Table("users").Count(&count)
 		if db.Error != nil {
-			zap.S().Error(db.Error)
+			log.ErrS(db.Error)
 			return
 		}
 	}()
@@ -153,7 +153,7 @@ func adminConsumersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		db, err := mysql.GetMySQLClient()
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 			return
 		}
 
@@ -171,7 +171,7 @@ func adminConsumersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		db = db.Find(&consumers)
 
 		if db.Error != nil {
-			zap.S().Error(db.Error)
+			log.ErrS(db.Error)
 		}
 	}()
 
@@ -184,13 +184,13 @@ func adminConsumersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		db, err := mysql.GetMySQLClient()
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 			return
 		}
 
 		db = db.Table("consumers").Count(&count)
 		if db.Error != nil {
-			zap.S().Error(db.Error)
+			log.ErrS(db.Error)
 			return
 		}
 	}()
@@ -238,7 +238,7 @@ func adminDelaysHandler(w http.ResponseWriter, r *http.Request) {
 	// Remove expired messages
 	_, err := mongo.DeleteMany(mongo.CollectionDelayQueue, bson.D{{"updated_at", bson.M{"$lt": time.Now().Add(queue.MaxDelay * -1)}}})
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 	}
 
 	//
@@ -270,7 +270,7 @@ func adminDelaysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		delays, err = mongo.GetDelayQueueMessages(query.GetOffset64(), sort)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -284,7 +284,7 @@ func adminDelaysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		count, err = mongo.CountDocuments(mongo.CollectionDelayQueue, nil, 0)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -335,7 +335,7 @@ func adminPatreonAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		webhooks, err = mongo.GetPatreonWebhooks(query.GetOffset64(), 100, bson.D{{"created_at", -1}}, nil, nil)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -349,7 +349,7 @@ func adminPatreonAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		count, err = mongo.CountDocuments(mongo.CollectionPatreonWebhooks, nil, 0)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -361,7 +361,7 @@ func adminPatreonAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		wh, err := patreon.Unmarshal([]byte(app.RequestBody))
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 
 		response.AddRow([]interface{}{
@@ -426,7 +426,7 @@ func adminTasksHandler(w http.ResponseWriter, r *http.Request) {
 	// Get configs for times
 	configs, err := mysql.GetAllConfigs()
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 	}
 
 	t.Configs = configs
@@ -458,7 +458,7 @@ func adminSettingsHandler(w http.ResponseWriter, r *http.Request) {
 
 		err := r.ParseForm()
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 
 		middleware.DownMessage = r.PostFormValue("down-message")
@@ -467,7 +467,7 @@ func adminSettingsHandler(w http.ResponseWriter, r *http.Request) {
 		if mcItem != "" {
 			err := memcache.Delete(mcItem)
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 			}
 		}
 
@@ -496,7 +496,7 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 
 		err := r.ParseForm()
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 
 		ua := r.UserAgent()
@@ -520,7 +520,7 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 
 		if val := r.PostForm.Get("apps-ts"); val != "" {
 
-			zap.S().Info("Queueing apps")
+			log.InfoS("Queueing apps")
 
 			val = strings.TrimSpace(val)
 
@@ -530,10 +530,10 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 				apps, err := steam.GetSteam().GetAppList(100000, 0, ts, "")
 				err = steam.AllowSteamCodes(err)
 				if err != nil {
-					zap.S().Error(err)
+					log.ErrS(err)
 				} else {
 
-					zap.S().Info("Found " + strconv.Itoa(len(apps.Apps)) + " apps")
+					log.InfoS("Found " + strconv.Itoa(len(apps.Apps)) + " apps")
 
 					for _, app := range apps.Apps {
 						appIDs = append(appIDs, app.AppID)
@@ -571,7 +571,7 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 					err = queue.ProducePlayer(queue.PlayerMessage{ID: playerID, UserAgent: &ua})
 					err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 					if err != nil {
-						zap.S().Error(err)
+						log.ErrS(err)
 					}
 				}
 			}
@@ -591,7 +591,7 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 					err = queue.ProduceBundle(bundleID)
 					err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 					if err != nil {
-						zap.S().Error(err)
+						log.ErrS(err)
 					}
 				}
 			}
@@ -602,7 +602,7 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 			val = strings.TrimSpace(val)
 			count, err := strconv.Atoi(val)
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 			}
 
 			for i := 1; i <= count; i++ {
@@ -610,7 +610,7 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 				err = queue.ProduceTest(i)
 				err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 				if err != nil {
-					zap.S().Error(err)
+					log.ErrS(err)
 				}
 			}
 		}
@@ -626,7 +626,7 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 				err := queue.ProduceGroup(queue.GroupMessage{ID: val, UserAgent: &ua})
 				err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
 				if err != nil {
-					zap.S().Error(err)
+					log.ErrS(err)
 				}
 			}
 		}
@@ -643,7 +643,7 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 					resp, err := steam.GetSteam().GetGroup(val, "", page)
 					err = steam.AllowSteamCodes(err)
 					if err != nil {
-						zap.S().Error(err)
+						log.ErrS(err)
 					}
 
 					for _, playerID := range resp.Members.SteamID64 {
@@ -651,7 +651,7 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 						err = queue.ProducePlayer(queue.PlayerMessage{ID: int64(playerID), SkipExistingPlayer: true})
 						err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 						if err != nil {
-							zap.S().Error(err)
+							log.ErrS(err)
 						}
 
 					}
@@ -667,7 +667,7 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 
 		err = queue.ProduceSteam(queue.SteamMessage{AppIDs: appIDs, PackageIDs: packageIDs})
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 
 		session.SetFlash(r, session.SessionGood, "Done")
@@ -687,7 +687,7 @@ func adminBinLogsHandler(w http.ResponseWriter, r *http.Request) {
 
 	db, err := mysql.GetMySQLClient()
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Can't connect to mysql"})
 		return
 	}
@@ -697,7 +697,7 @@ func adminBinLogsHandler(w http.ResponseWriter, r *http.Request) {
 
 		db = db.Exec("PURGE BINARY LOGS TO '" + deleteLog + "'")
 		if db.Error != nil {
-			zap.S().Error(db.Error)
+			log.ErrS(db.Error)
 		}
 
 		session.SetFlash(r, session.SessionGood, "Done")
@@ -712,7 +712,7 @@ func adminBinLogsHandler(w http.ResponseWriter, r *http.Request) {
 
 	db = db.Raw("show binary logs").Scan(&t.BinLogs)
 	if db.Error != nil {
-		zap.S().Error(db.Error)
+		log.ErrS(db.Error)
 	}
 
 	returnTemplate(w, r, "admin/binlogs", t)

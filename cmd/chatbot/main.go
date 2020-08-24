@@ -35,15 +35,15 @@ func main() {
 	config.Init(version, commits, helpers.GetIP())
 	log.InitZap(log.LogNameChatbot)
 
-	zap.L().Info("Starting chatbot")
+	log.Info("Starting chatbot")
 
 	// Profiling
 	if !config.IsConsumer() {
-		zap.L().Info("Starting chatbot profiling")
+		log.Info("Starting chatbot profiling")
 		go func() {
 			err := http.ListenAndServe(":6061", nil)
 			if err != nil {
-				zap.S().Fatal(err)
+				log.FatalS(err)
 			}
 		}()
 	}
@@ -51,12 +51,12 @@ func main() {
 	// Get API key
 	err := mysql.GetConsumer("chatbot")
 	if err != nil {
-		zap.S().Fatal(err)
+		log.FatalS(err)
 		return
 	}
 
 	if !config.IsProd() && !config.IsLocal() {
-		zap.L().Error("Prod & local only")
+		log.Err("Prod & local only")
 		return
 	}
 
@@ -134,13 +134,13 @@ func main() {
 				// Rate limit
 				err = tollbooth.LimitByKeys(lmt, []string{m.Author.ID})
 				if err != nil && err != (*errors.HTTPError)(nil) {
-					zap.L().Warn("over chatbot rate limit", zap.String("author", m.Author.ID), zap.String("msg", msg))
+					log.Warn("over chatbot rate limit", zap.String("author", m.Author.ID), zap.String("msg", msg))
 					return
 				}
 
 				message, err := command.Output(m)
 				if err != nil {
-					zap.S().Warn(err, msg)
+					log.WarnS(err, msg)
 					return
 				}
 
@@ -153,7 +153,7 @@ func main() {
 				// Save to cache
 				err = memcache.SetInterface(cacheItem.Key, message, cacheItem.Expiration)
 				if err != nil {
-					zap.S().Error(err, msg)
+					log.ErrS(err, msg)
 				}
 
 				return
@@ -204,7 +204,7 @@ func saveToInflux(m *discordgo.MessageCreate, command chatbot.Command) {
 
 	_, err := influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, point)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 	}
 }
 
@@ -229,7 +229,7 @@ func saveToMongo(m *discordgo.MessageCreate, command chatbot.Command, message st
 
 	_, err := mongo.InsertOne(mongo.CollectionChatBotCommands, row)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		return
 	}
 
@@ -241,7 +241,7 @@ func saveToMongo(m *discordgo.MessageCreate, command chatbot.Command, message st
 
 	err = queue.ProduceWebsocket(wsPayload, websockets.PageChatBot)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		return
 	}
 }
@@ -256,11 +256,11 @@ func discordError(err error) {
 	if err != nil {
 		if val, ok := err.(*discordgo.RESTError); ok {
 			if _, ok2 := allowed[val.Message.Code]; ok2 {
-				zap.S().Info(err)
+				log.InfoS(err)
 				return
 			}
 		}
 
-		zap.S().Error(err)
+		log.ErrS(err)
 	}
 }

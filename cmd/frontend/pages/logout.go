@@ -4,9 +4,9 @@ import (
 	"net/http"
 
 	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/session"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
-	"go.uber.org/zap"
 )
 
 func LogoutRouter() http.Handler {
@@ -22,7 +22,7 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	userID, err := session.GetUserIDFromSesion(r)
 	if err == nil {
 		err = mongo.CreateUserEvent(r, userID, mongo.EventLogout)
-		zap.S().Error(err)
+		log.ErrS(err)
 	}
 
 	// Get last page

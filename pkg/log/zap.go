@@ -45,6 +45,7 @@ func InitZap(logName string) {
 			getStandardCore(),
 			zap.AddStacktrace(zap.WarnLevel),
 			zap.AddCaller(),
+			zap.AddCallerSkip(1),
 			zap.Development(),
 		)
 	} else {
@@ -52,6 +53,7 @@ func InitZap(logName string) {
 			zapcore.NewTee(getStandardCore(), getGoogleCore()),
 			zap.AddStacktrace(zap.WarnLevel),
 			zap.AddCaller(),
+			zap.AddCallerSkip(1),
 		)
 	}
 

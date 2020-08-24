@@ -10,7 +10,7 @@ import (
 
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"go.uber.org/zap"
+	"github.com/gamedb/gamedb/pkg/log"
 )
 
 const (
@@ -347,7 +347,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 
 			err := helpers.Unmarshal([]byte(val), &idMap)
 			if err != nil {
-				zap.S().Error(err, val)
+				log.ErrS(err, val)
 			}
 
 			var idSlice []string
@@ -376,7 +376,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 
 			err := helpers.Unmarshal([]byte(val), &m)
 			if err != nil {
-				zap.S().Error(err, val)
+				log.ErrS(err, val)
 			}
 
 			var items []string
@@ -392,7 +392,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 
 			err := helpers.Unmarshal([]byte(val), &idMap)
 			if err != nil {
-				zap.S().Error(err, val)
+				log.ErrS(err, val)
 			}
 
 			var idSlice []string
@@ -448,7 +448,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 				m := map[string]string{}
 				err := helpers.Unmarshal([]byte(val), &m)
 				if err != nil {
-					zap.S().Error(err, val)
+					log.ErrS(err, val)
 				}
 
 				var items []string
@@ -491,7 +491,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 					langs := SupportedLanguages{}
 					err := helpers.Unmarshal([]byte(val), &langs)
 					if err != nil {
-						zap.S().Error(err, val)
+						log.ErrS(err, val)
 					}
 
 					var items []string
@@ -534,7 +534,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 					categories := map[string]string{}
 					err := helpers.Unmarshal([]byte(val), &categories)
 					if err != nil {
-						zap.S().Error(err, val)
+						log.ErrS(err, val)
 					}
 
 					var items []int
@@ -569,7 +569,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 					languages := map[string]string{}
 					err := helpers.Unmarshal([]byte(val), &languages)
 					if err != nil {
-						zap.S().Error(err, val)
+						log.ErrS(err, val)
 					}
 
 					var items []string
@@ -593,7 +593,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 					associations := Associations{}
 					err := helpers.Unmarshal([]byte(val), &associations)
 					if err != nil {
-						zap.S().Error(err, val)
+						log.ErrS(err, val)
 					}
 
 					var items []string
@@ -611,7 +611,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 					files := saveFiles{}
 					err := helpers.Unmarshal([]byte(val), &files)
 					if err != nil {
-						zap.S().Error(err, val)
+						log.ErrS(err, val)
 					}
 
 					var items []string

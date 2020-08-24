@@ -8,6 +8,7 @@ import (
 
 	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
@@ -109,7 +110,7 @@ func (bc baseConnection) unlink(w http.ResponseWriter, r *http.Request, c Connec
 
 	userID, err := session.GetUserIDFromSesion(r)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		session.SetFlash(r, session.SessionBad, "An error occurred (1001)")
 		return
 	}
@@ -117,7 +118,7 @@ func (bc baseConnection) unlink(w http.ResponseWriter, r *http.Request, c Connec
 	// Update user
 	err = mysql.UpdateUserCol(userID, strings.ToLower(c.getName())+"_id", nil)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		session.SetFlash(r, session.SessionBad, "An error occurred (1002)")
 		return
 	}
@@ -133,7 +134,7 @@ func (bc baseConnection) unlink(w http.ResponseWriter, r *http.Request, c Connec
 	// Create event
 	err = mongo.CreateUserEvent(r, userID, event)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 	}
 }
 
@@ -149,7 +150,7 @@ func (bc baseConnection) callbackOAuth(r *http.Request, c ConnectionInterface, e
 
 	err = r.ParseForm()
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		session.SetFlash(r, session.SessionBad, "An error occurred (1002)")
 		return
 	}
@@ -169,7 +170,7 @@ func (bc baseConnection) callbackOAuth(r *http.Request, c ConnectionInterface, e
 	conf := c.getConfig(login)
 	token, err := conf.Exchange(context.Background(), code)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		session.SetFlash(r, session.SessionBad, "Invalid token")
 		return
 	}
@@ -181,7 +182,7 @@ func (bc baseConnection) callback(r *http.Request, c ConnectionInterface, event 
 
 	id, err := c.getID(r, token)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		if val, ok := err.(oauthError); ok {
 			session.SetFlash(r, session.SessionBad, val.flash)
 		}
@@ -206,7 +207,7 @@ func (bc baseConnection) callback(r *http.Request, c ConnectionInterface, event 
 			session.SetFlash(r, session.SessionBad, "This "+c.getName()+" account is already linked to another Game DB account")
 			return
 		} else if err != mysql.ErrRecordNotFound {
-			zap.S().Error(err)
+			log.ErrS(err)
 			session.SetFlash(r, session.SessionBad, "An error occurred (1002)")
 			return
 		}
@@ -214,7 +215,7 @@ func (bc baseConnection) callback(r *http.Request, c ConnectionInterface, event 
 		// Update user
 		err = mysql.UpdateUserCol(userID, strings.ToLower(c.getName())+"_id", id)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 			session.SetFlash(r, session.SessionBad, "An error occurred (1003)")
 			return
 		}
@@ -226,14 +227,14 @@ func (bc baseConnection) callback(r *http.Request, c ConnectionInterface, event 
 	// Create event
 	err = mongo.CreateUserEvent(r, userID, event)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 	}
 
 	if c.getEnum() == ConnectionSteam {
 
 		i, err := strconv.ParseInt(id, 10, 64)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		} else {
 
 			// Queue for an update
@@ -241,7 +242,7 @@ func (bc baseConnection) callback(r *http.Request, c ConnectionInterface, event 
 			if err != nil {
 
 				err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
-				zap.S().Error(err)
+				log.ErrS(err)
 
 			} else {
 				session.Set(r, session.SessionPlayerName, player.GetName())
@@ -252,11 +253,11 @@ func (bc baseConnection) callback(r *http.Request, c ConnectionInterface, event 
 				ua := r.UserAgent()
 				err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID, UserAgent: &ua})
 				if err == nil {
-					zap.L().Info("player queued", zap.String("ua", ua))
+					log.Info("player queued", zap.String("ua", ua))
 				}
 				err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
 				if err != nil {
-					zap.S().Error(err)
+					log.ErrS(err)
 				} else {
 					session.SetFlash(r, session.SessionGood, "Player has been queued for an update")
 				}

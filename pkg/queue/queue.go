@@ -272,7 +272,7 @@ func Init(definitions []QueueDefinition) {
 
 	producerConnection, err := rabbit.NewConnection(c)
 	if err != nil {
-		zap.S().Info(err)
+		log.InfoS(err)
 		return
 	}
 
@@ -291,7 +291,7 @@ func Init(definitions []QueueDefinition) {
 
 		q, err := rabbit.NewChannel(producerConnection, queue.name, config.C.Environment, prefetchSize, queue.consumer, !queue.skipHeaders)
 		if err != nil {
-			zap.S().Fatal(string(queue.name), err)
+			log.FatalS(string(queue.name), err)
 		} else {
 			ProducerChannels[queue.name] = q
 		}
@@ -310,16 +310,16 @@ func Init(definitions []QueueDefinition) {
 				},
 			},
 			LogInfo: func(i ...interface{}) {
-				// zap.S().Info(i...)
+				// log.InfoS(i...)
 			},
 			LogError: func(i ...interface{}) {
-				zap.S().Error(i...)
+				log.ErrS(i...)
 			},
 		}
 
 		consumerConnection, err := rabbit.NewConnection(c)
 		if err != nil {
-			zap.S().Info(err)
+			log.InfoS(err)
 			return
 		}
 
@@ -335,7 +335,7 @@ func Init(definitions []QueueDefinition) {
 
 					q, err := rabbit.NewChannel(consumerConnection, queue.name, config.C.Environment+"-"+strconv.Itoa(k), prefetchSize, queue.consumer, !queue.skipHeaders)
 					if err != nil {
-						zap.S().Fatal(string(queue.name), err)
+						log.FatalS(string(queue.name), err)
 						continue
 					}
 
@@ -351,7 +351,7 @@ func sendToFailQueue(message *rabbit.Message) {
 
 	err := message.SendToQueueAndAck(ProducerChannels[QueueFailed], nil)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 	}
 }
 
@@ -372,7 +372,7 @@ func sendToRetryQueueWithDelay(message *rabbit.Message, delay time.Duration) {
 
 	err := message.SendToQueueAndAck(ProducerChannels[QueueDelay], po)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 	}
 }
 
@@ -386,7 +386,7 @@ func sendToLastQueue(message *rabbit.Message) {
 
 	err := message.SendToQueueAndAck(ProducerChannels[queue], nil)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 	}
 }
 

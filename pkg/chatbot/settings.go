@@ -7,8 +7,8 @@ import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/i18n"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mysql"
-	"go.uber.org/zap"
 )
 
 type CommandSettings struct {
@@ -59,7 +59,7 @@ func (c CommandSettings) Output(msg *discordgo.MessageCreate) (message discordgo
 
 			err = mysql.SetChatBotSettings(msg.Author.ID, func(s *mysql.ChatBotSetting) { s.ProductCode = steamapi.ProductCC(value) })
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 				return
 			}
 			text = "Region set to " + strings.ToUpper(value) + " (" + string(i18n.GetProdCC(steamapi.ProductCC(value)).CurrencyCode) + ")"

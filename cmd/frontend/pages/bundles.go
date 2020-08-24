@@ -5,9 +5,9 @@ import (
 	"sync"
 
 	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/datatable"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/go-chi/chi"
-	"go.uber.org/zap"
 )
 
 func BundlesRouter() http.Handler {
@@ -48,7 +48,7 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		db, err := mysql.GetMySQLClient()
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 			return
 		}
 
@@ -67,7 +67,7 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		db = db.Find(&bundles)
 
 		if db.Error != nil {
-			zap.S().Error(db.Error)
+			log.ErrS(db.Error)
 		}
 	}(r)
 
@@ -81,7 +81,7 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		count, err = mysql.CountBundles()
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 

@@ -10,7 +10,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/queue"
-	"go.uber.org/zap"
 )
 
 var version string
@@ -24,7 +23,7 @@ func main() {
 	// Get API key
 	err := mysql.GetConsumer("consumer")
 	if err != nil {
-		zap.S().Fatal(err)
+		log.FatalS(err)
 		return
 	}
 
@@ -44,11 +43,11 @@ func main() {
 
 	// Profiling
 	if !config.IsConsumer() {
-		zap.L().Info("Starting consumers profiling")
+		log.Info("Starting consumers profiling")
 		go func() {
 			err := http.ListenAndServe(":6062", nil)
 			if err != nil {
-				zap.S().Fatal(err)
+				log.FatalS(err)
 			}
 		}()
 	}

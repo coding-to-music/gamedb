@@ -4,11 +4,11 @@ import (
 	"strconv"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/mysql/pics"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.uber.org/zap"
 )
 
 type ProductsUpdateKeys struct {
@@ -105,11 +105,11 @@ func (c ProductsUpdateKeys) work() (err error) {
 
 	for k, v := range productKeysMap {
 		for kk, vv := range v {
-			// zap.S().Info(k, kk)
+			// log.InfoS(k, kk)
 			for kkk, vvv := range vv {
 				err := vvv.Save()
 				if err != nil {
-					zap.S().Error(err, k, kk, kkk)
+					log.ErrS(err, k, kk, kkk)
 				} else {
 					addedKeys = append(addedKeys, k+"-"+kk+"-"+kkk)
 				}
@@ -180,11 +180,11 @@ func (c ProductsUpdateKeys) work() (err error) {
 
 	for k, v := range productKeysMap {
 		for kk, vv := range v {
-			// zap.S().Info(k, kk)
+			// log.InfoS(k, kk)
 			for kkk, vvv := range vv {
 				err := vvv.Save()
 				if err != nil {
-					zap.S().Error(err, k, kk, kkk)
+					log.ErrS(err, k, kk, kkk)
 				} else {
 					addedKeys = append(addedKeys, k+"-"+kk+"-"+kkk)
 				}
@@ -215,14 +215,14 @@ func (c ProductsUpdateKeys) work() (err error) {
 			v.Count = 0
 			err = v.Save()
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 			} else {
 				deleted++
 			}
 		}
 	}
 
-	zap.S().Info("Removing " + strconv.Itoa(deleted) + " keys")
+	log.InfoS("Removing " + strconv.Itoa(deleted) + " keys")
 
 	return nil
 }

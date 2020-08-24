@@ -3,6 +3,7 @@ package queue
 import (
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/steam"
@@ -25,7 +26,7 @@ func appItemsHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToFailQueue(message)
 		return
 	}
@@ -103,7 +104,7 @@ func appItemsHandler(message *rabbit.Message) {
 
 	resp, err := mongo.GetAppItems(0, 0, filter, bson.M{"item_def_id": 1})
 	if err != nil {
-		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToRetryQueue(message)
 		return
 	}
@@ -115,7 +116,7 @@ func appItemsHandler(message *rabbit.Message) {
 
 	err = mongo.DeleteAppItems(payload.AppID, itemIDsToDelete)
 	if err != nil {
-		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToRetryQueue(message)
 		return
 	}
@@ -124,7 +125,7 @@ func appItemsHandler(message *rabbit.Message) {
 	// Always save them all incase they change
 	err = mongo.ReplaceAppItems(newDocuments)
 	if err != nil {
-		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToRetryQueue(message)
 		return
 	}
@@ -137,7 +138,7 @@ func appItemsHandler(message *rabbit.Message) {
 
 	_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", payload.AppID}}, update)
 	if err != nil {
-		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToRetryQueue(message)
 		return
 	}
@@ -150,7 +151,7 @@ func appItemsHandler(message *rabbit.Message) {
 
 	err = memcache.Delete(items...)
 	if err != nil {
-		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToRetryQueue(message)
 		return
 	}
@@ -158,7 +159,7 @@ func appItemsHandler(message *rabbit.Message) {
 	// Update in Elastic
 	err = ProduceAppSearch(nil, payload.AppID)
 	if err != nil {
-		zap.S().Error(err, payload.AppID)
+		log.ErrS(err, payload.AppID)
 		sendToRetryQueue(message)
 		return
 	}

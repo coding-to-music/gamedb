@@ -10,9 +10,9 @@ import (
 	"github.com/gamedb/gamedb/pkg/backend/generated"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/go-chi/chi"
-	"go.uber.org/zap"
 )
 
 func CommitsRouter() http.Handler {
@@ -67,7 +67,7 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	err := memcache.GetSetInterface(item.Key, item.Expiration, &commits, callback)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 	}
 
 	//

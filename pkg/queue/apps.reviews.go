@@ -9,6 +9,7 @@ import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/influx"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/steam"
@@ -31,7 +32,7 @@ func appReviewsHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToFailQueue(message)
 		return
 	}
@@ -66,7 +67,7 @@ func appReviewsHandler(message *rabbit.Message) {
 	// Get players
 	players, err := mongo.GetPlayersByID(playersSlice, bson.M{"_id": 1, "persona_name": 1})
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		sendToRetryQueue(message)
 		return
 	}
@@ -89,7 +90,7 @@ func appReviewsHandler(message *rabbit.Message) {
 			err = ProducePlayer(PlayerMessage{ID: int64(review.Author.SteamID), SkipExistingPlayer: true})
 			err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 			}
 		}
 
@@ -129,14 +130,14 @@ func appReviewsHandler(message *rabbit.Message) {
 
 	_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", payload.AppID}}, update)
 	if err != nil {
-		zap.S().Error(err, payload.AppID)
+		log.ErrS(err, payload.AppID)
 		sendToRetryQueue(message)
 		return
 	}
 
 	err = memcache.Delete(memcache.MemcacheApp(payload.AppID).Key)
 	if err != nil {
-		zap.S().Error(err, payload.AppID)
+		log.ErrS(err, payload.AppID)
 		sendToRetryQueue(message)
 		return
 	}
@@ -144,7 +145,7 @@ func appReviewsHandler(message *rabbit.Message) {
 	// Update in Elastic
 	err = ProduceAppSearch(nil, payload.AppID)
 	if err != nil {
-		zap.S().Error(err, payload.AppID)
+		log.ErrS(err, payload.AppID)
 		sendToRetryQueue(message)
 		return
 	}
@@ -166,7 +167,7 @@ func appReviewsHandler(message *rabbit.Message) {
 
 	_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, point)
 	if err != nil {
-		zap.S().Error(err, payload.AppID)
+		log.ErrS(err, payload.AppID)
 		sendToRetryQueue(message)
 		return
 	}

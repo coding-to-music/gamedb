@@ -3,9 +3,9 @@ package pages
 import (
 	"net/http"
 
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
-	"go.uber.org/zap"
 )
 
 func BadgesRouter() http.Handler {
@@ -23,7 +23,7 @@ func badgesHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	t.Badges, err = mongo.GetBadgeSummaries()
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 	}
 
 	returnTemplate(w, r, "badges", t)

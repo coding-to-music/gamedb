@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.uber.org/zap"
 )
 
 type Change struct {
@@ -127,7 +127,7 @@ func GetChanges(offset int64) (changes []Change, err error) {
 	defer func() {
 		err = cur.Close(ctx)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -136,7 +136,7 @@ func GetChanges(offset int64) (changes []Change, err error) {
 		var change Change
 		err := cur.Decode(&change)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		} else {
 			changes = append(changes, change)
 		}

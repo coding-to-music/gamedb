@@ -24,7 +24,6 @@ import (
 	"github.com/go-chi/chi"
 	chiMiddleware "github.com/go-chi/chi/middleware"
 	"github.com/gobuffalo/packr/v2"
-	"go.uber.org/zap"
 )
 
 var (
@@ -41,25 +40,27 @@ func main() {
 	config.Init(version, commits, helpers.GetIP())
 	log.InitZap(log.LogNameFrontend)
 
+	log.Err("xx")
+
 	//
 	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
-		zap.L().Fatal("GOOGLE_APPLICATION_CREDENTIALS not found")
+		log.Fatal("GOOGLE_APPLICATION_CREDENTIALS not found")
 		os.Exit(1)
 	}
 
 	// Profiling
-	// zap.S().Info("Starting frontend profiling")
+	// log.InfoS("Starting frontend profiling")
 	go func() {
 		err := http.ListenAndServe(":6064", nil)
 		if err != nil {
-			zap.S().Fatal(err)
+			log.FatalS(err)
 		}
 	}()
 
 	// Get API key
 	err := mysql.GetConsumer("frontend")
 	if err != nil {
-		zap.S().Fatal(err)
+		log.FatalS(err)
 		return
 	}
 
@@ -79,7 +80,7 @@ func main() {
 		}
 		err = memcache.Delete(keys...)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}
 
@@ -192,7 +193,7 @@ func main() {
 	// 404
 	r.NotFound(pages.Error404Handler)
 
-	zap.L().Info("Starting Frontend on " + "http://" + config.GetFrontendPort())
+	log.Info("Starting Frontend on " + "http://" + config.GetFrontendPort())
 
 	s := &http.Server{
 		Addr:              config.GetFrontendPort(),
@@ -203,7 +204,7 @@ func main() {
 
 	err = s.ListenAndServe()
 	if err != nil {
-		zap.S().Fatal(err)
+		log.FatalS(err)
 	}
 }
 
@@ -254,7 +255,7 @@ func rootFileHandler(box *packr.Box, path string) func(w http.ResponseWriter, r 
 			w.WriteHeader(404)
 			_, err := w.Write([]byte("Unable to read file."))
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 			}
 			return
 		}
@@ -280,7 +281,7 @@ func rootFileHandler(box *packr.Box, path string) func(w http.ResponseWriter, r 
 		// Output
 		_, err = w.Write(b)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}
 }

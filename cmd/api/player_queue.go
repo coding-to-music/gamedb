@@ -5,9 +5,9 @@ import (
 	"net/http"
 
 	"github.com/gamedb/gamedb/cmd/api/generated"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/queue"
-	"go.uber.org/zap"
 )
 
 func (s Server) PostPlayersId(w http.ResponseWriter, r *http.Request, id int64, params generated.PostPlayersIdParams) {
@@ -20,7 +20,7 @@ func (s Server) PostPlayersId(w http.ResponseWriter, r *http.Request, id int64, 
 			if err == memcache.ErrInQueue {
 				return 200, err
 			} else if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 				return 500, err
 			}
 

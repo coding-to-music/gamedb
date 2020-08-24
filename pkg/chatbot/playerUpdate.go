@@ -7,11 +7,11 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/queue"
-	"go.uber.org/zap"
 )
 
 type CommandPlayerUpdate struct {
@@ -60,7 +60,7 @@ func (c CommandPlayerUpdate) Output(msg *discordgo.MessageCreate) (message disco
 
 			err = queue.ProducePlayer(queue.PlayerMessage{ID: playerID})
 			err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
-			zap.S().Error(err)
+			log.ErrS(err)
 
 			message.Content = "Player queued: " + config.C.GameDBDomain + "/p" + user.SteamID.String
 		} else {
@@ -81,7 +81,7 @@ func (c CommandPlayerUpdate) Output(msg *discordgo.MessageCreate) (message disco
 
 	err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID})
 	err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
-	zap.S().Error(err)
+	log.ErrS(err)
 
 	message.Content = "Player queued: " + config.C.GameDBDomain + "/p" + strconv.FormatInt(player.ID, 10)
 	return message, nil

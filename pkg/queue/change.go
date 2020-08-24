@@ -10,6 +10,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/influx"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	influx "github.com/influxdata/influxdb1-client"
@@ -28,7 +29,7 @@ func changesHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToFailQueue(message)
 		return
 	}
@@ -73,7 +74,7 @@ func changesHandler(message *rabbit.Message) {
 	// Save to Mongo
 	err = saveChangesToMongo(changeSlice)
 	if err != nil && !strings.Contains(err.Error(), "duplicate key error collection") {
-		zap.S().Error(err)
+		log.ErrS(err)
 		sendToRetryQueue(message)
 		return
 	}
@@ -81,7 +82,7 @@ func changesHandler(message *rabbit.Message) {
 	// Save to influx
 	err = saveChangeToInflux(payload)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		sendToRetryQueue(message)
 		return
 	}
@@ -89,7 +90,7 @@ func changesHandler(message *rabbit.Message) {
 	// Get apps and packages for all changes in message
 	appMap, packageMap, err := getChangesAppsAndPackages(changeSlice)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		sendToRetryQueue(message)
 		return
 	}
@@ -97,13 +98,13 @@ func changesHandler(message *rabbit.Message) {
 	// Send websocket
 	err = sendChangesWebsocket(changeSlice, appMap, packageMap)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 	}
 
 	// Send to Discord
 	// err = sendChangeToDiscord(changeSlice, appMap, packageMap)
 	// if err != nil {
-	// zap.S().Error(err)
+	// log.ErrS(err)
 	// }
 
 	message.Ack()
@@ -146,7 +147,7 @@ func getChangesAppsAndPackages(changes []*mongo.Change) (appMap map[int]string, 
 	// Apps & packages for all changes
 	apps, err := mongo.GetAppsByID(appIDs, bson.M{"_id": 1, "name": 1})
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 	}
 
 	for _, v := range apps {
@@ -227,7 +228,7 @@ func sendChangeToDiscord(changes []*mongo.Change, appMap map[int]string, package
 				var msg = "Change " + strconv.Itoa(change.ID) + ": " + message
 				_, err := discordClient.ChannelMessageSend("574563721045606431", msg)
 				if err != nil {
-					zap.S().Error(err)
+					log.ErrS(err)
 				}
 			}
 		}

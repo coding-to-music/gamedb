@@ -20,6 +20,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
@@ -27,7 +28,6 @@ import (
 	"github.com/gosimple/slug"
 	"github.com/tdewolff/minify/v2"
 	minhtml "github.com/tdewolff/minify/v2/html"
-	"go.uber.org/zap"
 )
 
 func setHeaders(w http.ResponseWriter, contentType string) {
@@ -82,13 +82,13 @@ func returnJSON(w http.ResponseWriter, r *http.Request, i interface{}) {
 
 	b, err := json.Marshal(i)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		return
 	}
 
 	_, err = w.Write(b)
 	if err != nil && !strings.Contains(err.Error(), "write: broken pipe") {
-		zap.S().Fatal(err)
+		log.FatalS(err)
 	}
 }
 
@@ -133,13 +133,13 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 
 		s, err := templatesBox.FindString(v)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 			continue
 		}
 
 		t, err = t.Parse(s)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 			continue
 		}
 	}
@@ -148,7 +148,7 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 	buf := &bytes.Buffer{}
 	err = t.ExecuteTemplate(buf, path.Base(page), pageData)
 	if err != nil {
-		zap.S().Fatal(err)
+		log.FatalS(err)
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Looks like I messed something up, will be fixed soon!"})
 		return
 	}
@@ -166,13 +166,13 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 
 		err = m.Minify("text/html", w, buf)
 		if err != nil && !strings.Contains(err.Error(), "write: broken pipe") {
-			zap.S().Fatal(err)
+			log.FatalS(err)
 		}
 
 	} else {
 		_, err = buf.WriteTo(w)
 		if err != nil {
-			zap.S().Fatal(err)
+			log.FatalS(err)
 		}
 	}
 }
@@ -216,7 +216,7 @@ func getTemplateFuncMap() map[string]interface{} {
 		"json": func(v interface{}) (string, error) {
 			b, err := json.Marshal(v)
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 			}
 			return string(b), err
 		},
@@ -297,7 +297,7 @@ func (t *globalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	if userIDString != "" {
 		t.UserID, err = strconv.Atoi(userIDString)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}
 
@@ -305,7 +305,7 @@ func (t *globalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	if playerIDString != "" {
 		t.PlayerID, err = strconv.ParseInt(playerIDString, 10, 64)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}
 
@@ -313,7 +313,7 @@ func (t *globalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	if userLevel != "" {
 		t.userLevel, err = strconv.Atoi(userLevel)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}
 
@@ -364,7 +364,7 @@ func (t *globalTemplate) setRandomBackground(title bool, link bool) {
 
 	popularApps, err := mongo.PopularApps()
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		return
 	}
 
@@ -416,7 +416,7 @@ func (t globalTemplate) GetUserJSON() string {
 
 	b, err := json.Marshal(stringMap)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 	}
 
 	return string(b)
@@ -464,20 +464,20 @@ func (t globalTemplate) GetCookieFlag(key string) interface{} {
 	if err == http.ErrNoCookie {
 		return false
 	} else if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		return false
 	}
 
 	c.Value, err = url.PathUnescape(c.Value)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		return false
 	}
 
 	var vals = map[string]interface{}{}
 	err = json.Unmarshal([]byte(c.Value), &vals)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		return false
 	}
 

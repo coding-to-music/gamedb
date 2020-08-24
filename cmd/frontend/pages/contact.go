@@ -7,9 +7,9 @@ import (
 	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers"
 	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/go-chi/chi"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
-	"go.uber.org/zap"
 )
 
 const (
@@ -60,7 +60,7 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 		// Parse form
 		err := r.ParseForm()
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 			return session.SessionBad, "Something has gone wrong (1001)"
 		}
 
@@ -92,7 +92,7 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 					return session.SessionBad, "Please check the captcha"
 				}
 
-				zap.S().Error(err)
+				log.ErrS(err)
 				return session.SessionBad, "Something has gone wrong (1002)"
 			}
 		}
@@ -105,7 +105,7 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 			r.PostForm.Get("message"),
 		)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 			return session.SessionBad, "Something has gone wrong (1003)"
 		}
 

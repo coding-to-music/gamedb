@@ -4,10 +4,10 @@ import (
 	"strconv"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.uber.org/zap"
 )
 
 type PlayerAchievement struct {
@@ -87,7 +87,7 @@ func CreatePlayerAchievementIndexes() {
 	//
 	client, ctx, err := getMongo()
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		return
 	}
 
@@ -96,7 +96,9 @@ func CreatePlayerAchievementIndexes() {
 		Indexes().
 		CreateMany(ctx, indexModels)
 
-	zap.S().Error(err)
+	if err != nil {
+		log.ErrS(err)
+	}
 }
 
 func FindLatestPlayerAchievement(playerID int64, appID int) (int64, error) {
@@ -158,7 +160,7 @@ func getPlayerAchievements(offset int64, limit int64, filter bson.D, sort bson.D
 	defer func() {
 		err = cur.Close(ctx)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -167,7 +169,7 @@ func getPlayerAchievements(offset int64, limit int64, filter bson.D, sort bson.D
 		achievement := PlayerAchievement{}
 		err := cur.Decode(&achievement)
 		if err != nil {
-			zap.S().Error(err, achievement.getKey())
+			log.ErrS(err, achievement.getKey())
 		} else {
 			achievements = append(achievements, achievement)
 		}

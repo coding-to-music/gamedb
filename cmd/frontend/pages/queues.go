@@ -6,9 +6,9 @@ import (
 
 	"github.com/Jleagle/influxql"
 	"github.com/gamedb/gamedb/pkg/influx"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/go-chi/chi"
-	"go.uber.org/zap"
 )
 
 func QueuesRouter() http.Handler {
@@ -59,7 +59,7 @@ func queuesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		resp, err := influx.InfluxQuery(builder.String())
 		if err != nil {
-			zap.S().Error(builder.String())
+			log.ErrS(builder.String())
 			return highcharts, err
 		}
 
@@ -74,7 +74,7 @@ func queuesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		return
 	}
 

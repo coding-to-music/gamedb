@@ -10,6 +10,7 @@ import (
 	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/influx"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
@@ -52,14 +53,14 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 			err = queue.ProduceGroup(queue.GroupMessage{ID: id, UserAgent: &ua})
 			err = helpers.IgnoreErrors(err, memcache.ErrInQueue, queue.ErrIsBot)
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 			}
 
 			returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Sorry but we can not find this group"})
 			return
 		}
 
-		zap.S().Error(err)
+		log.ErrS(err)
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the group"})
 		return
 	}
@@ -74,7 +75,7 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 			}
 		} else {
 			t.setBackground(app, true, true)
@@ -96,12 +97,12 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 		ua := r.UserAgent()
 		err = queue.ProduceGroup(queue.GroupMessage{ID: group.ID, UserAgent: &ua})
 		if err == nil {
-			zap.L().Info("group queued", zap.String("ua", ua))
+			log.Info("group queued", zap.String("ua", ua))
 			t.addToast(Toast{Title: "Update", Message: "Group has been queued for an update", Success: true})
 		}
 		err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -156,7 +157,7 @@ func groupTableAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		playerGroups, err = mongo.GetGroupPlayers(id, query.GetOffset64(), query.GetOrderMongo(columns))
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 			return
 		}
 	}()
@@ -171,7 +172,7 @@ func groupTableAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		total, err = mongo.CountDocuments(mongo.CollectionPlayerGroups, bson.D{{"group_id", id}}, 60*60*6)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}(r)
 
@@ -221,7 +222,7 @@ func groupAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		resp, err := influx.InfluxQuery(builder.String())
 		if err != nil {
-			zap.L().Error(err.Error(), zap.String("query", builder.String()))
+			log.Err(err.Error(), zap.String("query", builder.String()))
 			return hc, err
 		}
 
@@ -235,7 +236,7 @@ func groupAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = memcache.GetSetInterface(item.Key, item.Expiration, &hc, callback)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 	}
 
 	returnJSON(w, r, hc)

@@ -5,10 +5,10 @@ import (
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.uber.org/zap"
 )
 
 type AppAchievement struct {
@@ -70,7 +70,7 @@ func GetAppAchievements(offset int64, limit int64, filter bson.D, sort bson.D) (
 	defer func() {
 		err = cur.Close(ctx)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -79,7 +79,7 @@ func GetAppAchievements(offset int64, limit int64, filter bson.D, sort bson.D) (
 		var appAcievement AppAchievement
 		err := cur.Decode(&appAcievement)
 		if err != nil {
-			zap.S().Error(err, appAcievement.GetKey())
+			log.ErrS(err, appAcievement.GetKey())
 		} else {
 			achievements = append(achievements, appAcievement)
 		}

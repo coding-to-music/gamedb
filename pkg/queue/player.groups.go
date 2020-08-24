@@ -4,6 +4,7 @@ import (
 	"github.com/Jleagle/rabbit-go"
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/steam"
@@ -28,7 +29,7 @@ func playersGroupsHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToFailQueue(message)
 		return
 	}
@@ -44,7 +45,7 @@ func playersGroupsHandler(message *rabbit.Message) {
 	// Old groups
 	oldGroupsSlice, err := mongo.GetPlayerGroups(payload.Player.ID, 0, 0, nil)
 	if err != nil {
-		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToRetryQueue(message)
 		return
 	}
@@ -90,7 +91,7 @@ func playersGroupsHandler(message *rabbit.Message) {
 		// Find new groups
 		toAdd, err := mongo.GetGroupsByID(toAddIDs, nil)
 		if err != nil {
-			zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+			log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
 			sendToRetryQueue(message)
 			return
 		}
@@ -117,7 +118,7 @@ func playersGroupsHandler(message *rabbit.Message) {
 
 		err = mongo.ReplacePlayerGroups(newPlayerGroupSlice)
 		if err != nil {
-			zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+			log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
 			sendToRetryQueue(message)
 			return
 		}
@@ -133,7 +134,7 @@ func playersGroupsHandler(message *rabbit.Message) {
 
 	err = mongo.DeletePlayerGroups(payload.Player.ID, toDeleteIDs)
 	if err != nil {
-		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToRetryQueue(message)
 		return
 	}
@@ -144,7 +145,7 @@ func playersGroupsHandler(message *rabbit.Message) {
 			err = ProduceGroup(GroupMessage{ID: id, UserAgent: payload.UserAgent})
 			err = helpers.IgnoreErrors(err, memcache.ErrInQueue, ErrIsBot)
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 			}
 		}
 	}
@@ -156,7 +157,7 @@ func playersGroupsHandler(message *rabbit.Message) {
 
 	_, err = mongo.UpdateOne(mongo.CollectionPlayers, bson.D{{"_id", payload.Player.ID}}, update)
 	if err != nil {
-		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToRetryQueue(message)
 		return
 	}
@@ -168,7 +169,7 @@ func playersGroupsHandler(message *rabbit.Message) {
 
 	err = memcache.Delete(items...)
 	if err != nil {
-		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToRetryQueue(message)
 		return
 	}
@@ -176,7 +177,7 @@ func playersGroupsHandler(message *rabbit.Message) {
 	// Update Elastic
 	err = ProducePlayerSearch(nil, payload.Player.ID)
 	if err != nil {
-		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToRetryQueue(message)
 		return
 	}

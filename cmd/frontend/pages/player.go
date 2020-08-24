@@ -16,6 +16,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/influx"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
@@ -55,7 +56,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid Player ID"})
 		return
 	}
@@ -73,11 +74,11 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		ua := r.UserAgent()
 		err = queue.ProducePlayer(queue.PlayerMessage{ID: id, UserAgent: &ua})
 		if err == nil {
-			zap.L().Info("player queued", zap.String("ua", ua))
+			log.Info("player queued", zap.String("ua", ua))
 		}
 		err = helpers.IgnoreErrors(err, memcache.ErrInQueue, queue.ErrIsBot)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 
 		// Template
@@ -93,7 +94,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 		q, err := rabbitweb.RabbitClient.GetQueue(queue.QueuePlayers, p)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		} else {
 			tm.Queue = q.Messages
 		}
@@ -103,7 +104,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 	} else if err != nil {
 
-		zap.S().Error(err)
+		log.ErrS(err)
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the player."})
 		return
 	}
@@ -125,7 +126,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		playersCount, err = mongo.CountDocuments(mongo.CollectionPlayers, nil, 0)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -140,7 +141,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 			var err error
 			playersContinentCount, err = mongo.CountDocuments(mongo.CollectionPlayers, bson.D{{"continent_code", player.ContinentCode}}, 60*60*24*7)
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 			}
 		}()
 	}
@@ -156,7 +157,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 			var err error
 			playersCountryCount, err = mongo.CountDocuments(mongo.CollectionPlayers, bson.D{{"country_code", player.CountryCode}}, 60*60*24*7)
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 			}
 		}()
 	}
@@ -172,7 +173,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 			var err error
 			playersStateCount, err = mongo.CountDocuments(mongo.CollectionPlayers, bson.D{{"country_code", player.CountryCode}, {"status_code", player.StateCode}}, 60*60*24*7)
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 			}
 		}()
 	}
@@ -191,10 +192,10 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 			if err == mongo.ErrNoDocuments {
 				err = queue.ProduceSteam(queue.SteamMessage{AppIDs: []int{player.BackgroundAppID}})
 				if err != nil {
-					zap.S().Error(err, player.BackgroundAppID)
+					log.ErrS(err, player.BackgroundAppID)
 				}
 			} else if err != nil {
-				zap.S().Error(err, player.BackgroundAppID)
+				log.ErrS(err, player.BackgroundAppID)
 			}
 		}()
 	}
@@ -210,7 +211,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 		counts, err := mongo.GetAppsGroupedByType(code)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 			return
 		}
 
@@ -229,7 +230,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		aliases, err = mongo.GetPlayerAliases(player.ID, 0, 20)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -248,7 +249,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			err = helpers.IgnoreErrors(err, mc.ErrNotFound)
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 			}
 		}
 	}()
@@ -264,7 +265,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		user, err = mysql.GetUserByKey("steam_id", player.ID, 0)
 		err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 			return
 		}
 	}()
@@ -297,12 +298,12 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		ua := r.UserAgent()
 		err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID, UserAgent: &ua})
 		if err == nil {
-			zap.L().Info("player queued", zap.String("ua", ua))
+			log.Info("player queued", zap.String("ua", ua))
 			t.addToast(Toast{Title: "Update", Message: "Player has been queued for an update", Success: true})
 		}
 		err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}
 
@@ -486,7 +487,7 @@ func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
 
 		user, err := getUserFromSession(r)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 			return
 		}
 
@@ -506,7 +507,7 @@ func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
 	var friendIDsMap = map[int64]bool{}
 
 	friends, err := mongo.GetFriends(idx, 0, 0, nil)
-	zap.S().Error(err)
+	log.ErrS(err)
 	for _, v := range friends {
 		friendIDs = append(friendIDs, v.FriendID)
 		friendIDsMap[v.FriendID] = true
@@ -514,7 +515,7 @@ func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Remove players we already have
 	players, err := mongo.GetPlayersByID(friendIDs, bson.M{"_id": 1})
-	zap.S().Error(err)
+	log.ErrS(err)
 	for _, v := range players {
 		delete(friendIDsMap, v.ID)
 	}
@@ -525,11 +526,11 @@ func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
 		ua := r.UserAgent()
 		err = queue.ProducePlayer(queue.PlayerMessage{ID: friendID, UserAgent: &ua})
 		if err == nil {
-			zap.L().Info("player queued", zap.String("ua", ua))
+			log.Info("player queued", zap.String("ua", ua))
 		}
 		err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}
 
@@ -540,7 +541,7 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		return
 	}
 
@@ -578,7 +579,7 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		playerApps, err = mongo.GetPlayerApps(query.GetOffset64(), 100, filter2, query.GetOrderMongo(columns))
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -592,7 +593,7 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		totalFiltered, err = mongo.CountDocuments(mongo.CollectionPlayerApps, filter2, 0)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 			return
 		}
 	}()
@@ -607,7 +608,7 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		total, err = mongo.CountDocuments(mongo.CollectionPlayerApps, filter, 0)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 			return
 		}
 	}()
@@ -663,7 +664,7 @@ func playerRecentAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		apps, err = mongo.GetRecentApps(id, query.GetOffset64(), 100, query.GetOrderMongo(columns))
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -677,7 +678,7 @@ func playerRecentAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		player, err := mongo.GetPlayer(id)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 			return
 		}
 
@@ -706,7 +707,7 @@ func playerAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	playerID, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		return
 	}
 
@@ -730,7 +731,7 @@ func playerAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		playerAchievements, err = mongo.GetPlayerAchievements(playerID, query.GetOffset64(), query.GetOrderMongo(columns))
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -744,7 +745,7 @@ func playerAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		count, err = mongo.CountDocuments(mongo.CollectionPlayerAchievements, bson.D{{"player_id", playerID}}, 0)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 			return
 		}
 	}()
@@ -775,7 +776,7 @@ func playerFriendsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	playerIDInt, err := strconv.ParseInt(playerID, 10, 64)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		return
 	}
 
@@ -800,7 +801,7 @@ func playerFriendsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		friends, err = mongo.GetFriends(playerIDInt, query.GetOffset64(), 100, query.GetOrderMongo(columns))
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -814,7 +815,7 @@ func playerFriendsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		count, err = mongo.CountFriends(playerIDInt)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 			return
 		}
 	}()
@@ -882,7 +883,7 @@ func playerBadgesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		badges, err = mongo.GetPlayerBadges(query.GetOffset64(), filter2, query.GetOrderMongo(sortCols))
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -899,7 +900,7 @@ func playerBadgesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		total, err = mongo.CountDocuments(mongo.CollectionPlayerBadges, filter, 0)
 		lock.Unlock()
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -916,7 +917,7 @@ func playerBadgesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		filtered, err = mongo.CountDocuments(mongo.CollectionPlayerBadges, filter2, 0)
 		lock.Unlock()
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -982,7 +983,7 @@ func playerWishlistAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		wishlistApps, err = mongo.GetPlayerWishlistAppsByPlayer(id, query.GetOffset64(), 0, query.GetOrderMongo(columns), nil)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 			return
 		}
 	}(r)
@@ -997,7 +998,7 @@ func playerWishlistAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		player, err := mongo.GetPlayer(id)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 
 		total = int64(player.WishlistAppsCount)
@@ -1041,7 +1042,7 @@ func playerGroupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	player, err := mongo.GetPlayer(id)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		return
 	}
 
@@ -1065,7 +1066,7 @@ func playerGroupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		groups, err = mongo.GetPlayerGroups(id, query.GetOffset64(), 100, query.GetOrderMongo(columns))
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}(r)
 
@@ -1080,7 +1081,7 @@ func playerGroupsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		player, err := mongo.GetPlayer(id)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 
 		total = int64(player.GroupsCount)
@@ -1134,7 +1135,7 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			message = "Looking for new player!"
 			player = mongo.Player{ID: idx}
 		} else {
-			zap.S().Error(err)
+			log.ErrS(err)
 			return "Error looking for player", false, err
 		}
 
@@ -1151,11 +1152,11 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		ua := r.UserAgent()
 		err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID, UserAgent: &ua})
 		if err == nil {
-			zap.L().Info("player queued", zap.String("ua", ua))
+			log.Info("player queued", zap.String("ua", ua))
 		}
 		err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 			return "Something has gone wrong", false, err
 		}
 
@@ -1181,7 +1182,7 @@ func playersHistoryAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "id")
 	if id == "" {
-		zap.S().Error("invalid id")
+		log.ErrS("invalid id")
 		return
 	}
 
@@ -1209,7 +1210,7 @@ func playersHistoryAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := influx.InfluxQuery(builder.String())
 	if err != nil {
-		zap.L().Error(err.Error(), zap.String("query", builder.String()))
+		log.Err(err.Error(), zap.String("query", builder.String()))
 		return
 	}
 

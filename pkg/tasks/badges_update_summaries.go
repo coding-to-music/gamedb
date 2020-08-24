@@ -2,8 +2,8 @@ package tasks
 
 import (
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"go.uber.org/zap"
 )
 
 type BadgesUpdateRandom struct {
@@ -32,7 +32,7 @@ func (c BadgesUpdateRandom) work() (err error) {
 
 		err = mongo.UpdateBadgeSummary(k)
 		if err != nil {
-			zap.S().Error(err, k)
+			log.ErrS(err, k)
 			continue
 		}
 	}
@@ -41,7 +41,7 @@ func (c BadgesUpdateRandom) work() (err error) {
 
 		err = mongo.UpdateBadgeSummary(k)
 		if err != nil {
-			zap.S().Error(err, k)
+			log.ErrS(err, k)
 			continue
 		}
 	}
@@ -55,7 +55,7 @@ func (c BadgesUpdateRandom) work() (err error) {
 
 		err = mongo.UpdateBadgeSummary(v.ID)
 		if err != nil {
-			zap.S().Error(err, v.ID)
+			log.ErrS(err, v.ID)
 			continue
 		}
 	}

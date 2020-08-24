@@ -7,9 +7,9 @@ import (
 
 	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
-	"go.uber.org/zap"
 )
 
 func NewsRouter() http.Handler {
@@ -27,7 +27,7 @@ func newsHandler(w http.ResponseWriter, r *http.Request) {
 
 	apps, err := mongo.PopularApps()
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 	}
 
 	var appIDs []int
@@ -37,7 +37,7 @@ func newsHandler(w http.ResponseWriter, r *http.Request) {
 
 	t.Articles, err = mongo.GetArticlesByAppIDs(appIDs, 0, time.Now().AddDate(0, 0, -7))
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 	}
 
 	returnTemplate(w, r, "news", t)
@@ -70,7 +70,7 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		articles, filtered, err = elasticsearch.SearchArticles(query.GetOffset(), sorters, search)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -83,7 +83,7 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		count, err = mongo.CountDocuments(mongo.CollectionAppArticles, nil, 0)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 

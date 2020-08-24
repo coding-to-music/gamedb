@@ -5,9 +5,9 @@ import (
 	"strconv"
 
 	"github.com/gamedb/gamedb/cmd/api/generated"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.uber.org/zap"
 )
 
 func (s Server) GetPlayers(w http.ResponseWriter, r *http.Request, params generated.GetPlayersParams) {
@@ -87,7 +87,7 @@ func (s Server) GetPlayers(w http.ResponseWriter, r *http.Request, params genera
 
 		total, err := mongo.CountDocuments(mongo.CollectionPlayers, filter, 0)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 
 		result := generated.PlayersResponse{}

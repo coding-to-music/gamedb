@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/olivere/elastic/v7"
-	"go.uber.org/zap"
 )
 
 type Article struct {
@@ -111,7 +111,7 @@ func SearchArticles(offset int, sorters []elastic.Sorter, search string) (articl
 		var article Article
 		err := json.Unmarshal(hit.Source, &article)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 			continue
 		}
 

@@ -5,10 +5,10 @@ import (
 	"sync"
 
 	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/datatable"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.uber.org/zap"
 )
 
 func ChangesRouter() http.Handler {
@@ -38,7 +38,7 @@ func changesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	changes, err := mongo.GetChanges(query.GetOffset64())
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		return
 	}
 
@@ -61,7 +61,7 @@ func changesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		// App map
 		apps, err := mongo.GetAppsByID(appIDs, bson.M{"_id": 1, "name": 1})
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 
 		for _, app := range apps {
@@ -85,7 +85,7 @@ func changesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		// Package map
 		packages, err := mongo.GetPackagesByID(packageIDs, bson.M{"_id": 1, "name": 1})
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 
 		for _, v := range packages {
@@ -102,7 +102,7 @@ func changesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		count, err = mongo.CountDocuments(mongo.CollectionChanges, nil, 0)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 

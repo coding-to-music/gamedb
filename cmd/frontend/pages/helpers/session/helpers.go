@@ -12,10 +12,10 @@ import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/i18n"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gorilla/sessions"
 	"github.com/oschwald/maxminddb-golang"
-	"go.uber.org/zap"
 )
 
 const (
@@ -131,7 +131,7 @@ func GetProductCC(r *http.Request) steamapi.ProductCC {
 		if maxMindDB == nil {
 			maxMindDB, err = maxminddb.Open("./assets/GeoLite2-Country.mmdb")
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 				return steamapi.ProductCCUS
 			}
 		}
@@ -150,7 +150,7 @@ func GetProductCC(r *http.Request) steamapi.ProductCC {
 
 			err = maxMindDB.Lookup(ip, &record)
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 				return steamapi.ProductCCUS
 			}
 
@@ -195,7 +195,7 @@ func GetCountryCode(r *http.Request) string {
 		if maxMindDB == nil {
 			maxMindDB, err = maxminddb.Open("./assets/GeoLite2-Country.mmdb")
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 				return "US"
 			}
 		}
@@ -214,7 +214,7 @@ func GetCountryCode(r *http.Request) string {
 
 			err = maxMindDB.Lookup(ip, &record)
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 				return "US"
 			}
 

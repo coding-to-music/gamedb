@@ -8,11 +8,11 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.uber.org/zap"
 )
 
 type CommandPlayerRecent struct {
@@ -59,7 +59,7 @@ func (c CommandPlayerRecent) Output(msg *discordgo.MessageCreate) (message disco
 	if q {
 		err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID})
 		err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
-		zap.S().Error(err)
+		log.ErrS(err)
 	}
 
 	recent, err := mongo.GetRecentApps(player.ID, 0, 10, bson.D{{"playtime_2_weeks", -1}})

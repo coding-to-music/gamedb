@@ -6,6 +6,7 @@ import (
 
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/steam"
@@ -28,7 +29,7 @@ func appMorelikeHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToFailQueue(message)
 		return
 	}
@@ -63,7 +64,7 @@ func appMorelikeHandler(message *rabbit.Message) {
 	// Update app
 	_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", payload.AppID}}, bson.D{{"related_app_ids", relatedAppIDs}})
 	if err != nil {
-		zap.S().Error(err, payload.AppID)
+		log.ErrS(err, payload.AppID)
 		sendToRetryQueue(message)
 		return
 	}
@@ -71,7 +72,7 @@ func appMorelikeHandler(message *rabbit.Message) {
 	// Clear cache
 	err = memcache.Delete(memcache.MemcacheApp(payload.AppID).Key)
 	if err != nil {
-		zap.S().Error(err, payload.AppID)
+		log.ErrS(err, payload.AppID)
 		sendToRetryQueue(message)
 		return
 	}
@@ -79,7 +80,7 @@ func appMorelikeHandler(message *rabbit.Message) {
 	// Update in Elastic
 	err = ProduceAppSearch(nil, payload.AppID)
 	if err != nil {
-		zap.S().Error(err, payload.AppID)
+		log.ErrS(err, payload.AppID)
 		sendToRetryQueue(message)
 		return
 	}

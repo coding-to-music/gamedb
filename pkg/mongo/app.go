@@ -17,12 +17,12 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/influx"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mysql/pics"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.uber.org/zap"
 )
 
 const (
@@ -614,12 +614,14 @@ func CreateAppIndexes() {
 	//
 	client, ctx, err := getMongo()
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		return
 	}
 
 	_, err = client.Database(MongoDatabase).Collection(CollectionApps.String()).Indexes().CreateMany(ctx, indexModels)
-	zap.S().Error(err)
+	if err != nil {
+		log.ErrS(err)
+	}
 }
 
 func BatchApps(filter bson.D, projection bson.M, callback func(apps []App)) (err error) {
@@ -683,7 +685,7 @@ func GetApps(offset int64, limit int64, sort bson.D, filter bson.D, projection b
 	defer func() {
 		err = cur.Close(ctx)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -692,7 +694,7 @@ func GetApps(offset int64, limit int64, sort bson.D, filter bson.D, projection b
 		var app App
 		err := cur.Decode(&app)
 		if err != nil {
-			zap.S().Error(err, app.ID)
+			log.ErrS(err, app.ID)
 		} else {
 			apps = append(apps, app)
 		}
@@ -736,7 +738,7 @@ func GetRandomApps(count int, filter bson.D, projection bson.M) (apps []App, err
 	defer func() {
 		err = cur.Close(ctx)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -745,7 +747,7 @@ func GetRandomApps(count int, filter bson.D, projection bson.M) (apps []App, err
 		var app App
 		err := cur.Decode(&app)
 		if err != nil {
-			zap.S().Error(err, app.ID)
+			log.ErrS(err, app.ID)
 		}
 		apps = append(apps, app)
 	}
@@ -839,7 +841,7 @@ func GetAppsGroupedByType(code steamapi.ProductCC) (counts []AppTypeCount, err e
 		defer func() {
 			err = cur.Close(ctx)
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 			}
 		}()
 
@@ -850,7 +852,7 @@ func GetAppsGroupedByType(code steamapi.ProductCC) (counts []AppTypeCount, err e
 			var appType AppTypeCount
 			err := cur.Decode(&appType)
 			if err != nil {
-				zap.S().Error(err, appType.Type)
+				log.ErrS(err, appType.Type)
 			}
 
 			if appType.Type == "" {
@@ -909,7 +911,7 @@ func GetAppsGroupedByReleaseDate() (counts []AppReleaseDateCount, err error) {
 		defer func() {
 			err = cur.Close(ctx)
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 			}
 		}()
 
@@ -919,7 +921,7 @@ func GetAppsGroupedByReleaseDate() (counts []AppReleaseDateCount, err error) {
 			var row AppReleaseDateCount
 			err := cur.Decode(&row)
 			if err != nil {
-				zap.S().Error(err, row.Date)
+				log.ErrS(err, row.Date)
 			}
 
 			counts = append(counts, row)
@@ -964,7 +966,7 @@ func GetAppsGroupedByReviewScore() (counts []AppReviewScoreCount, err error) {
 		defer func() {
 			err = cur.Close(ctx)
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 			}
 		}()
 
@@ -974,7 +976,7 @@ func GetAppsGroupedByReviewScore() (counts []AppReviewScoreCount, err error) {
 			var row AppReviewScoreCount
 			err := cur.Decode(&row)
 			if err != nil {
-				zap.S().Error(err, row.Score)
+				log.ErrS(err, row.Score)
 			}
 
 			counts = append(counts, row)

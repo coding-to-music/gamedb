@@ -11,11 +11,11 @@ import (
 	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/go-chi/chi"
 	"github.com/olivere/elastic/v7"
-	"go.uber.org/zap"
 )
 
 func GamesRouter() http.Handler {
@@ -59,7 +59,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		t.Types, err = mongo.GetAppsGroupedByType(code)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -72,7 +72,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		t.Tags, err = mysql.GetTagsForSelect()
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -85,7 +85,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		t.Genres, err = mysql.GetGenresForSelect()
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -98,7 +98,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		t.Categories, err = mysql.GetCategoriesForSelect()
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -113,7 +113,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 			var err error
 			t.Publishers, err = mysql.GetPublishersForSelect()
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 			}
 
 			var publishersToLoad []int
@@ -142,7 +142,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 
 			publishers, err := mysql.GetPublishersByID(publishersToLoad, []string{"id", "name"})
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 			} else {
 				t.Publishers = append(t.Publishers, publishers...)
 			}
@@ -164,7 +164,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 			var err error
 			t.Developers, err = mysql.GetDevelopersForSelect()
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 			}
 
 			var developersToLoad []int
@@ -193,7 +193,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 
 			developers, err := mysql.GetDevelopersByID(developersToLoad, []string{"id", "name"})
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 			} else {
 				t.Developers = append(t.Developers, developers...)
 			}
@@ -275,7 +275,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		low, err := strconv.Atoi(strings.Replace(prices[0], ".", "", 1))
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 		if err == nil && low > 0 {
 			lowCheck = true
@@ -284,7 +284,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		high, err := strconv.Atoi(strings.Replace(prices[1], ".", "", 1))
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 		if err == nil && high < 100*100 {
 			highCheck = true
@@ -305,7 +305,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		low, err := strconv.Atoi(strings.TrimSuffix(scores[0], ".00"))
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 		if err == nil && low > 0 {
 			lowCheck = true
@@ -314,7 +314,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		high, err := strconv.Atoi(strings.TrimSuffix(scores[1], ".00"))
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 		if err == nil && high < 100 {
 			highCheck = true
@@ -347,7 +347,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		apps, recordsFiltered, err = elasticsearch.SearchAppsAdvanced(query.GetOffset(), search, order, filters)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -361,7 +361,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		count, err = mongo.CountDocuments(mongo.CollectionApps, nil, 0)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 

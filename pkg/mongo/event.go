@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.uber.org/zap"
 )
 
 type EventEnum string
@@ -135,7 +135,7 @@ func GetEvents(userID int, offset int64) (events []Event, err error) {
 	defer func() {
 		err = cur.Close(ctx)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -144,7 +144,7 @@ func GetEvents(userID int, offset int64) (events []Event, err error) {
 		var event Event
 		err := cur.Decode(&event)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		} else {
 			events = append(events, event)
 		}

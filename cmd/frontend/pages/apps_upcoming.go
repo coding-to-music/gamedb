@@ -7,10 +7,10 @@ import (
 
 	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.uber.org/zap"
 )
 
 var upcomingFilter = bson.D{{"release_date_unix", bson.M{"$gte": time.Now().Add(time.Hour * 12 * -1).Unix()}}}
@@ -66,7 +66,7 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		apps, err = mongo.GetApps(query.GetOffset64(), 100, query.GetOrderMongo(columns), filter2, projection)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -82,7 +82,7 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		filtered, err = mongo.CountDocuments(mongo.CollectionApps, filter2, 0)
 		countLock.Unlock()
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -98,7 +98,7 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		count, err = mongo.CountDocuments(mongo.CollectionApps, upcomingFilter, 86400)
 		countLock.Unlock()
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 

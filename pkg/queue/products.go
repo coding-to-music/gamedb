@@ -9,11 +9,11 @@ import (
 	"github.com/Jleagle/steam-go/steamvdf"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql/pics"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.uber.org/zap"
 )
 
 func getAppConfig(kv steamvdf.KeyValue) (config pics.PICSKeyValues, launch []pics.PICSAppConfigLaunchItem) {
@@ -25,7 +25,7 @@ func getAppConfig(kv steamvdf.KeyValue) (config pics.PICSKeyValues, launch []pic
 		} else if len(v.Children) > 0 {
 			b, err := json.Marshal(v.ToMapOuter())
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 			}
 			config[v.Key] = string(b)
 		} else {
@@ -55,7 +55,7 @@ func getAppDepots(kv steamvdf.KeyValue) (depots pics.Depots) {
 			} else {
 				b, err := json.Marshal(v.ToMapOuter())
 				if err != nil {
-					zap.S().Error(err)
+					log.ErrS(err)
 				}
 				depots.Extra[v.Key] = string(b)
 			}
@@ -78,26 +78,26 @@ func getAppDepots(kv steamvdf.KeyValue) (depots pics.Depots) {
 			case "encryptedmanifests":
 				b, err := json.Marshal(vv.ToMapOuter())
 				if err != nil {
-					zap.S().Error(err)
+					log.ErrS(err)
 				}
 				depot.EncryptedManifests = string(b)
 			case "maxsize":
 				maxSize, err := strconv.ParseUint(vv.Value, 10, 64)
 				if err != nil {
-					zap.S().Error(err)
+					log.ErrS(err)
 				}
 				depot.MaxSize = maxSize
 			case "dlcappid":
 				appID, err := strconv.Atoi(vv.Value)
 				if err != nil {
-					zap.S().Error(err)
+					log.ErrS(err)
 				}
 				depot.DLCApp = appID
 			case "depotfromapp":
 				id := helpers.RegexNonInts.ReplaceAllString(vv.Value, "")
 				app, err := strconv.Atoi(id)
 				if err != nil {
-					zap.S().Error(err)
+					log.ErrS(err)
 				}
 				depot.App = app
 			case "systemdefined":
@@ -125,7 +125,7 @@ func getAppDepots(kv steamvdf.KeyValue) (depots pics.Depots) {
 					depot.AllowAddRemoveWhileRunning = true
 				}
 			default:
-				zap.S().Warn("GetAppDepots missing case: " + vv.Key)
+				log.WarnS("GetAppDepots missing case: " + vv.Key)
 			}
 		}
 
@@ -148,13 +148,13 @@ func getAppDepotBranches(kv steamvdf.KeyValue) (branches []pics.AppDepotBranches
 			case "buildid":
 				buildID, err := strconv.Atoi(vv.Value)
 				if err != nil {
-					zap.S().Error(err)
+					log.ErrS(err)
 				}
 				branch.BuildID = buildID
 			case "timeupdated":
 				t, err := strconv.ParseInt(vv.Value, 10, 64)
 				if err != nil {
-					zap.S().Error(err)
+					log.ErrS(err)
 				}
 				branch.TimeUpdated = t
 			case "defaultforsubs":
@@ -172,7 +172,7 @@ func getAppDepotBranches(kv steamvdf.KeyValue) (branches []pics.AppDepotBranches
 					branch.LCSRequired = true
 				}
 			default:
-				zap.S().Warn("GetAppDepotBranches missing case: " + vv.Key)
+				log.WarnS("GetAppDepotBranches missing case: " + vv.Key)
 			}
 		}
 
@@ -233,7 +233,7 @@ func setAppLaunchItem(kv steamvdf.KeyValue, launchItem *pics.PICSAppConfigLaunch
 		case "config":
 			setAppLaunchItem(child, launchItem)
 		default:
-			zap.S().Warn("setAppLaunchItem missing case: " + child.Key)
+			log.WarnS("setAppLaunchItem missing case: " + child.Key)
 		}
 	}
 }
@@ -313,14 +313,14 @@ func saveProductPricesToMongo(before helpers.ProductInterface, after helpers.Pro
 		// 		_, _, err = twitter.GetTwitter().Statuses.Update("["+helpers.FloatToString(percentIncrease, 0)+"%] ($"+helpers.FloatToString(float64(newPrice)/100, 2)+") gamedb.online/games/"+strconv.Itoa(before.GetID())+" #freegame #steam "+helpers.GetHashTag(before.GetName()), nil)
 		// 		if err != nil {
 		// 			if !strings.Contains(err.Error(), "Status is a duplicate") {
-		// 				zap.S().Fatal(err)
+		// 				log.FatalS(err)
 		// 			}
 		// 		}
 		//
 		// 		// Reddit
 		// 		err = reddit.PostToReddit("["+helpers.FloatToString(percentIncrease, 0)+"%] "+before.GetName()+" ($"+helpers.FloatToString(float64(newPrice)/100, 2)+")", "https://gamedb.online"+before.GetPath())
 		// 		if err != nil {
-		// 			zap.S().Fatal(err)
+		// 			log.FatalS(err)
 		// 		}
 		//
 		// 		// Slack message
@@ -328,7 +328,7 @@ func saveProductPricesToMongo(before helpers.ProductInterface, after helpers.Pro
 		// 			Text: config.Config.GameDBDomain + before.GetPath(),
 		// 		})
 		// if err != nil {
-		// 		zap.S().Error(err)
+		// 		log.ErrS(err)
 		// }
 		// 	}
 		// }
@@ -352,7 +352,7 @@ func saveProductPricesToMongo(before helpers.ProductInterface, after helpers.Pro
 			wsPayload := StringsPayload{IDs: priceIDs}
 			err2 := ProduceWebsocket(wsPayload, websockets.PagePrices)
 			if err2 != nil {
-				zap.S().Error(err2)
+				log.ErrS(err2)
 			}
 		}
 	}

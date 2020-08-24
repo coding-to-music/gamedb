@@ -62,7 +62,7 @@ func (c InstagramPost) work() (err error) {
 		" #steamgames #steam #gaming " + helpers.GetHashTag(app.GetName())
 
 	// err = helpers.UpdateBio("https://gamedb.online" + app.GetPath())
-	// zap.S().Error(err)
+	// log.ErrS(err)
 
 	return instagram.UploadInstagram(url, text)
 }

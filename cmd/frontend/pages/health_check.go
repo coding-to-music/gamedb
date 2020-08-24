@@ -3,8 +3,8 @@ package pages
 import (
 	"net/http"
 
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/go-chi/chi"
-	"go.uber.org/zap"
 )
 
 func HealthCheckRouter() http.Handler {
@@ -20,6 +20,6 @@ func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 
 	_, err := w.Write([]byte("OK"))
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 	}
 }

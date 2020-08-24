@@ -12,7 +12,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/go-chi/chi"
 	chiMiddleware "github.com/go-chi/chi/middleware"
-	"go.uber.org/zap"
 )
 
 var version string
@@ -33,7 +32,7 @@ func main() {
 
 	generated.HandlerFromMux(Server{}, r)
 
-	zap.L().Info("Starting API on " + "http://" + config.GetAPIPort())
+	log.Info("Starting API on " + "http://" + config.GetAPIPort())
 
 	s := &http.Server{
 		Addr:              config.GetAPIPort(),
@@ -44,7 +43,7 @@ func main() {
 
 	err := s.ListenAndServe()
 	if err != nil {
-		zap.S().Fatal(err)
+		log.FatalS(err)
 	}
 }
 
@@ -59,11 +58,11 @@ func error404(w http.ResponseWriter, _ *http.Request) {
 
 	b, err := json.Marshal(generated.MessageResponse{Message: "Invalid endpoint"})
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 	}
 
 	_, err = w.Write(b)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 	}
 }

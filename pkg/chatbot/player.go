@@ -8,11 +8,11 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.uber.org/zap"
 )
 
 type CommandPlayer struct {
@@ -59,7 +59,7 @@ func (c CommandPlayer) Output(msg *discordgo.MessageCreate) (message discordgo.M
 	if q {
 		err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID})
 		err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
-		zap.S().Error(err)
+		log.ErrS(err)
 	}
 
 	avatar := player.GetAvatar()

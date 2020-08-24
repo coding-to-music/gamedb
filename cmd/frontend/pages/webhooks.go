@@ -33,7 +33,7 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	b, event, err := patreon.Validate(r, config.C.PatreonSecret)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -44,26 +44,26 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 		Event:       event,
 	})
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 	}
 
 	pwr, err := patreon.Unmarshal(b)
 	if err != nil {
-		zap.L().Error(err.Error(), zap.ByteString("webhook", b))
+		log.Err(err.Error(), zap.ByteString("webhook", b))
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	err = saveWebhookEvent(r, mongo.EventEnum(event), pwr)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	// Slack message
 	err = slack.PostWebhook(config.C.SlackPatreonWebhook, &slack.WebhookMessage{Text: event})
-	zap.S().Error(err)
+	log.ErrS(err)
 }
 
 func saveWebhookEvent(r *http.Request, event mongo.EventEnum, pwr patreon.Webhook) (err error) {
@@ -101,7 +101,7 @@ func gitHubWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 	// Get body
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		http.Error(w, err.Error(), 500)
 		return
 	}
@@ -109,7 +109,7 @@ func gitHubWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 	defer func() {
 		err := r.Body.Close()
 		if err != nil {
-			zap.S().Error()
+			log.ErrS()
 		}
 	}()
 
@@ -129,7 +129,7 @@ func gitHubWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 	expectedMAC := hex.EncodeToString(mac.Sum(nil))
 
 	if !hmac.Equal([]byte(signaturePrefix+expectedMAC), []byte(signature)) {
-		zap.L().Error("Invalid signature (2)", zap.String("secret", config.C.GithubWebhookSecret))
+		log.Err("Invalid signature (2)", zap.String("secret", config.C.GithubWebhookSecret))
 		http.Error(w, "Invalid signature (2)", 400)
 		return
 	}
@@ -145,7 +145,7 @@ func gitHubWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 
 		err := memcache.Delete(items...)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}
 

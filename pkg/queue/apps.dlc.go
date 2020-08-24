@@ -3,6 +3,7 @@ package queue
 import (
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.uber.org/zap"
@@ -19,14 +20,14 @@ func appDLCHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToFailQueue(message)
 		return
 	}
 
 	currentDLCs, err := mongo.GetDLCForApp(0, 0, bson.D{{"app_id", payload.AppID}}, nil)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		sendToRetryQueue(message)
 		return
 	}
@@ -60,7 +61,7 @@ func appDLCHandler(message *rabbit.Message) {
 	//
 	apps, err := mongo.GetAppsByID(toAdd, bson.M{})
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		sendToRetryQueue(message)
 		return
 	}
@@ -79,14 +80,14 @@ func appDLCHandler(message *rabbit.Message) {
 
 	err = mongo.ReplaceAppDLCs(rows)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		sendToRetryQueue(message)
 		return
 	}
 
 	err = mongo.DeleteAppDLC(payload.AppID, toRem)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		sendToRetryQueue(message)
 		return
 	}

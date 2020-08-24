@@ -14,6 +14,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql/pics"
@@ -35,7 +36,7 @@ func packageHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToFailQueue(message)
 		return
 	}
@@ -51,7 +52,7 @@ func packageHandler(message *rabbit.Message) {
 		pack = mongo.Package{}
 		pack.ID = payload.ID
 	} else if err != nil {
-		zap.S().Error(err, payload.ID)
+		log.ErrS(err, payload.ID)
 		sendToRetryQueue(message)
 		return
 	}
@@ -61,10 +62,10 @@ func packageHandler(message *rabbit.Message) {
 
 		s, err := durationfmt.Format(time.Since(pack.UpdatedAt), "%hh %mm")
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 
-		zap.S().Info("Skipping package, updated " + s + " ago")
+		log.InfoS("Skipping package, updated " + s + " ago")
 		message.Ack()
 		return
 	}
@@ -90,7 +91,7 @@ func packageHandler(message *rabbit.Message) {
 
 				err = producePackagePrice(payload2)
 				if err != nil {
-					zap.S().Error(err)
+					log.ErrS(err)
 				}
 			}
 		}
@@ -102,7 +103,7 @@ func packageHandler(message *rabbit.Message) {
 	// Update from PICS
 	err = updatePackageFromPICS(&pack, message, payload)
 	if err != nil {
-		zap.S().Error(err, payload.ID)
+		log.ErrS(err, payload.ID)
 		sendToRetryQueue(message)
 		return
 	}
@@ -122,7 +123,7 @@ func packageHandler(message *rabbit.Message) {
 		if err != nil {
 
 			if err == steamapi.ErrHTMLResponse {
-				zap.S().Info(err, payload.ID)
+				log.InfoS(err, payload.ID)
 			} else {
 				steam.LogSteamError(err, payload.ID)
 			}
@@ -154,7 +155,7 @@ func packageHandler(message *rabbit.Message) {
 
 		var err = updatePackageNameFromApp(&pack)
 		if err != nil {
-			zap.S().Error(err, payload.ID)
+			log.ErrS(err, payload.ID)
 			sendToRetryQueue(message)
 			return
 		}
@@ -174,7 +175,7 @@ func packageHandler(message *rabbit.Message) {
 
 		var err = saveProductPricesToMongo(packageBeforeUpdate, pack)
 		if err != nil {
-			zap.S().Error(err, payload.ID)
+			log.ErrS(err, payload.ID)
 			sendToRetryQueue(message)
 			return
 		}
@@ -188,7 +189,7 @@ func packageHandler(message *rabbit.Message) {
 
 		var err = pack.Save()
 		if err != nil {
-			zap.S().Error(err, payload.ID)
+			log.ErrS(err, payload.ID)
 			sendToRetryQueue(message)
 			return
 		}
@@ -213,7 +214,7 @@ func packageHandler(message *rabbit.Message) {
 			wsPayload := IntPayload{ID: payload.ID}
 			err = ProduceWebsocket(wsPayload, websockets.PagePackage, websockets.PagePackages)
 			if err != nil {
-				zap.S().Error(err, payload.ID)
+				log.ErrS(err, payload.ID)
 			}
 		}
 	}()
@@ -232,7 +233,7 @@ func packageHandler(message *rabbit.Message) {
 
 		err := memcache.Delete(items...)
 		if err != nil {
-			zap.S().Error(err, payload.ID)
+			log.ErrS(err, payload.ID)
 			sendToRetryQueue(message)
 			return
 		}
@@ -248,7 +249,7 @@ func packageHandler(message *rabbit.Message) {
 
 			err := ProduceSteam(SteamMessage{AppIDs: pack.Apps})
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 			}
 		}
 	}()
@@ -351,7 +352,7 @@ func updatePackageFromPICS(pack *mongo.Package, message *rabbit.Message, payload
 			var appItems = map[int]int{}
 
 			if len(child.Children) > 1 {
-				zap.S().Warn("More app items", pack.ID)
+				log.WarnS("More app items", pack.ID)
 			}
 
 			for _, vv := range child.Children {
@@ -366,7 +367,7 @@ func updatePackageFromPICS(pack *mongo.Package, message *rabbit.Message, payload
 					}
 
 					if len(vv.Children) > 1 {
-						zap.S().Warn("More app items2", pack.ID)
+						log.WarnS("More app items2", pack.ID)
 					}
 				}
 			}
@@ -382,23 +383,23 @@ func updatePackageFromPICS(pack *mongo.Package, message *rabbit.Message, payload
 			if len(pack.Extended) == 0 {
 				pack.Extended = child.GetChildrenAsMap()
 			} else {
-				zap.S().Warn("extendedz", pack.ID, child)
+				log.WarnS("extendedz", pack.ID, child)
 			}
 
 		case "extendedasdf": // For package 439981
 
-			zap.S().Info(child) // todo
+			log.InfoS(child) // todo
 
 		case "is_available": // For package 439981
 
-			zap.S().Info(child) // todo, bool
+			log.InfoS(child) // todo, bool
 
 		case "":
 
 			// Some packages (46028) have blank children
 
 		default:
-			zap.S().Warn(child.Key + " field in package PICS ignored (Package: " + strconv.Itoa(pack.ID) + ")")
+			log.WarnS(child.Key + " field in package PICS ignored (Package: " + strconv.Itoa(pack.ID) + ")")
 		}
 
 		if err != nil {
@@ -434,7 +435,7 @@ func scrapePackage(pack *mongo.Package) (err error) {
 
 	err = c.Visit("https://store.steampowered.com/sub/" + strconv.Itoa(pack.ID))
 	if err != nil && strings.Contains(err.Error(), "because its not in AllowedDomains") {
-		zap.S().Info(err)
+		log.InfoS(err)
 		return nil
 	}
 
@@ -493,7 +494,7 @@ func updatePackageFromStore(pack *mongo.Package) (err error) {
 
 				code, err := helpers.HeadWithTimeout(response.Data.SmallLogo, 0)
 				if err != nil {
-					zap.S().Error(err)
+					log.ErrS(err)
 					return
 				}
 				pack.ImageLogo = ""
@@ -509,7 +510,7 @@ func updatePackageFromStore(pack *mongo.Package) (err error) {
 
 				code, err := helpers.HeadWithTimeout(response.Data.PageImage, 0)
 				if err != nil {
-					zap.S().Error(err)
+					log.ErrS(err)
 					return
 				}
 				pack.ImagePage = ""

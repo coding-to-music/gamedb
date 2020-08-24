@@ -7,9 +7,9 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/olivere/elastic/v7"
-	"go.uber.org/zap"
 )
 
 type Player struct {
@@ -128,7 +128,7 @@ func SearchPlayers(limit int, offset int, search string, sorters []elastic.Sorte
 		var player Player
 		err := json.Unmarshal(hit.Source, &player)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 
 		if hit.Score != nil {

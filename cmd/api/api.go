@@ -14,9 +14,9 @@ import (
 	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	influxHelpers "github.com/gamedb/gamedb/pkg/influx"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	influx "github.com/influxdata/influxdb1-client"
-	"go.uber.org/zap"
 )
 
 const (
@@ -40,7 +40,7 @@ func (s Server) returnResponse(w http.ResponseWriter, code int, i interface{}) {
 
 	err := json.NewEncoder(w).Encode(i)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 	}
 }
 
@@ -104,7 +104,7 @@ func (s Server) call(w http.ResponseWriter, r *http.Request, callback func(w htt
 
 		err = s.saveToInflux(r, code, key, user)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 
 	}(r, code, key, user)

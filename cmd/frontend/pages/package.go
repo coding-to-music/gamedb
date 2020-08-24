@@ -7,6 +7,7 @@ import (
 
 	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
@@ -44,7 +45,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 
 		err = helpers.IgnoreErrors(err, mongo.ErrInvalidPackageID)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "There was an issue retrieving the package."})
@@ -68,7 +69,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 
 		appsSlice, err = mongo.GetAppsByID(pack.Apps, bson.M{"_id": 1, "name": 1, "icon": 1, "type": 1, "platforms": 1, "dlc": 1, "common": 1, "background": 1})
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 			return
 		}
 
@@ -87,7 +88,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 		err = queue.ProduceSteam(queue.SteamMessage{AppIDs: missingAppIDs})
 		err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -100,7 +101,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		bundles, err = GetPackageBundles(pack)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -147,11 +148,11 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 		err = queue.ProduceSteam(queue.SteamMessage{PackageIDs: []int{pack.ID}})
 		if err == nil {
 			t.addToast(Toast{Title: "Update", Message: "Package has been queued for an update", Success: true})
-			zap.L().Info("package queued", zap.String("ua", r.UserAgent()))
+			log.Info("package queued", zap.String("ua", r.UserAgent()))
 		}
 		err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 

@@ -5,6 +5,7 @@ import (
 
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/steam"
@@ -29,7 +30,7 @@ func playerBadgesHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToFailQueue(message)
 		return
 	}
@@ -78,7 +79,7 @@ func playerBadgesHandler(message *rabbit.Message) {
 	var appRowsMap = map[int]mongo.App{}
 	appRows, err := mongo.GetAppsByID(appIDSlice, bson.M{"_id": 1, "name": 1, "icon": 1})
 	if err != nil {
-		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToRetryQueue(message)
 		return
 	}
@@ -105,7 +106,7 @@ func playerBadgesHandler(message *rabbit.Message) {
 	// Save to Mongo
 	err = mongo.ReplacePlayerBadges(playerBadgeSlice)
 	if err != nil {
-		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToRetryQueue(message)
 		return
 	}
@@ -125,7 +126,7 @@ func playerBadgesHandler(message *rabbit.Message) {
 
 	_, err = mongo.UpdateOne(mongo.CollectionPlayers, bson.D{{"_id", payload.PlayerID}}, update)
 	if err != nil {
-		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToRetryQueue(message)
 		return
 	}
@@ -138,7 +139,7 @@ func playerBadgesHandler(message *rabbit.Message) {
 
 	err = savePlayerStatsToInflux(payload.PlayerID, fields)
 	if err != nil {
-		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToRetryQueue(message)
 		return
 	}
@@ -146,7 +147,7 @@ func playerBadgesHandler(message *rabbit.Message) {
 	// Clear player cache
 	err = memcache.Delete(memcache.MemcachePlayer(payload.PlayerID).Key)
 	if err != nil {
-		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToRetryQueue(message)
 		return
 	}
@@ -154,7 +155,7 @@ func playerBadgesHandler(message *rabbit.Message) {
 	// Update Elastic
 	err = ProducePlayerSearch(nil, payload.PlayerID)
 	if err != nil {
-		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToRetryQueue(message)
 		return
 	}

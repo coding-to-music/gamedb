@@ -8,8 +8,8 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/i18n"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mysql"
-	"go.uber.org/zap"
 )
 
 type CommandAppPrice struct {
@@ -66,7 +66,7 @@ func (c CommandAppPrice) Output(msg *discordgo.MessageCreate) (message discordgo
 
 		settings, err := mysql.GetChatBotSettings(msg.Author.ID)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 			return message, err
 		}
 

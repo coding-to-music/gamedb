@@ -10,6 +10,7 @@ import (
 	"github.com/Philipp15b/go-steam/protocol/steamlang"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mysql/pics"
 	"go.mongodb.org/mongo-driver/bson"
@@ -116,12 +117,12 @@ func CreatePackageIndexes() {
 	//
 	client, ctx, err := getMongo()
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		return
 	}
 
 	_, err = client.Database(MongoDatabase).Collection(CollectionPackages.String()).Indexes().CreateMany(ctx, indexModels)
-	zap.S().Error(err)
+	log.ErrS(err)
 }
 
 func (pack Package) GetID() int {
@@ -212,7 +213,7 @@ func (pack Package) GetBillingType() string {
 	case steamlang.EBillingType_NumBillingTypes:
 		return "Num"
 	default:
-		zap.L().Warn("New billing type", zap.Int32("type", pack.BillingType))
+		log.Warn("New billing type", zap.Int32("type", pack.BillingType))
 		return "Unknown"
 	}
 }
@@ -237,7 +238,7 @@ func (pack Package) GetLicenseType() string {
 	case steamlang.ELicenseType_LimitedUseDelayedActivation:
 		return "Limited Use Delayed Activation"
 	default:
-		zap.L().Warn("New license type", zap.Int32("type", pack.LicenseType))
+		log.Warn("New license type", zap.Int32("type", pack.LicenseType))
 		return "Unknown"
 	}
 }
@@ -368,7 +369,7 @@ func GetPackages(offset int64, limit int64, sort bson.D, filter bson.D, projecti
 	defer func() {
 		err = cur.Close(ctx)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -377,7 +378,7 @@ func GetPackages(offset int64, limit int64, sort bson.D, filter bson.D, projecti
 		var pack Package
 		err := cur.Decode(&pack)
 		if err != nil {
-			zap.S().Error(err, pack.ID)
+			log.ErrS(err, pack.ID)
 		} else {
 			packages = append(packages, pack)
 		}

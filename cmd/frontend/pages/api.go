@@ -7,9 +7,9 @@ import (
 
 	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/api"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/go-chi/chi"
-	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
 )
 
@@ -53,13 +53,13 @@ func apiGamedbJSONHandler(w http.ResponseWriter, r *http.Request) {
 
 	b, err := json.Marshal(api.SwaggerGameDB)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		return
 	}
 
 	_, err = w.Write(b)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 	}
 }
 
@@ -67,13 +67,13 @@ func apiGamedbYAMLHandler(w http.ResponseWriter, r *http.Request) {
 
 	b, err := yaml.Marshal(api.SwaggerGameDB)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		return
 	}
 
 	_, err = w.Write(b)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 	}
 }
 
@@ -88,13 +88,13 @@ func apiSteamJSONHandler(w http.ResponseWriter, r *http.Request) {
 
 	err := memcache.GetSetInterface(item.Key, item.Expiration, &b, callback)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		return
 	}
 
 	_, err = w.Write(b)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 	}
 }
 
@@ -109,12 +109,12 @@ func apiSteamYAMLHandler(w http.ResponseWriter, r *http.Request) {
 
 	err := memcache.GetSetInterface(item.Key, item.Expiration, &b, callback)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		return
 	}
 
 	_, err = w.Write(b)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 	}
 }

@@ -5,6 +5,7 @@ import (
 
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/steam"
@@ -28,7 +29,7 @@ func appAchievementsHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToFailQueue(message)
 		return
 	}
@@ -103,7 +104,7 @@ func appAchievementsHandler(message *rabbit.Message) {
 	//
 	// 	_, err = mongo.UpdateManySet(mongo.CollectionPlayerAchievements, filter, update)
 	// 	if err != nil {
-	// 		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+	// 		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
 	// 	}
 	// }
 
@@ -120,7 +121,7 @@ func appAchievementsHandler(message *rabbit.Message) {
 
 	err = mongo.ReplaceAppAchievements(achievementsSlice)
 	if err != nil {
-		zap.S().Error(err, payload.AppID)
+		log.ErrS(err, payload.AppID)
 		sendToRetryQueue(message)
 		return
 	}
@@ -129,7 +130,7 @@ func appAchievementsHandler(message *rabbit.Message) {
 	for _, v := range achievementsSlice {
 		err = ProduceAchievementSearch(v, payload.AppName, payload.AppOwners)
 		if err!=nil{
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}
 
@@ -173,7 +174,7 @@ func appAchievementsHandler(message *rabbit.Message) {
 
 	_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", payload.AppID}}, updateApp)
 	if err != nil {
-		zap.S().Error(err, payload.AppID)
+		log.ErrS(err, payload.AppID)
 		sendToRetryQueue(message)
 		return
 	}
@@ -190,7 +191,7 @@ func appAchievementsHandler(message *rabbit.Message) {
 
 	_, err = mongo.UpdateManySet(mongo.CollectionAppAchievements, filter, bson.D{{"deleted", true}})
 	if err != nil {
-		zap.S().Error(err, payload.AppID)
+		log.ErrS(err, payload.AppID)
 		sendToRetryQueue(message)
 		return
 	}
@@ -203,7 +204,7 @@ func appAchievementsHandler(message *rabbit.Message) {
 
 	err = memcache.Delete(items...)
 	if err != nil {
-		zap.S().Error(err, payload.AppID)
+		log.ErrS(err, payload.AppID)
 		sendToRetryQueue(message)
 		return
 	}
@@ -211,7 +212,7 @@ func appAchievementsHandler(message *rabbit.Message) {
 	// Update in Elastic
 	err = ProduceAppSearch(nil, payload.AppID)
 	if err != nil {
-		zap.S().Error(err, payload.AppID)
+		log.ErrS(err, payload.AppID)
 		sendToRetryQueue(message)
 		return
 	}

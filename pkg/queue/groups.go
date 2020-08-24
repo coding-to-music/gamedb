@@ -14,6 +14,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/influx"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
@@ -45,7 +46,7 @@ func groupsHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToFailQueue(message)
 		return
 	}
@@ -62,7 +63,7 @@ func groupsHandler(message *rabbit.Message) {
 
 	payload.ID, err = helpers.IsValidGroupID(payload.ID)
 	if err != nil {
-		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToFailQueue(message)
 		return
 	}
@@ -77,7 +78,7 @@ func groupsHandler(message *rabbit.Message) {
 
 	} else if err != nil {
 
-		zap.S().Error(err, payload.ID)
+		log.ErrS(err, payload.ID)
 		sendToRetryQueue(message)
 		return
 	}
@@ -120,7 +121,7 @@ func groupsHandler(message *rabbit.Message) {
 	}
 
 	if !found {
-		zap.S().Info("Group counts not found", payload.ID)
+		log.InfoS("Group counts not found", payload.ID)
 		sendToRetryQueue(message)
 		return
 	}
@@ -133,7 +134,7 @@ func groupsHandler(message *rabbit.Message) {
 	// Read from Influx
 	group.Trending, err = getGroupTrending(group)
 	if err != nil {
-		zap.S().Error(err, payload.ID)
+		log.ErrS(err, payload.ID)
 		sendToRetryQueue(message)
 		return
 	}
@@ -153,7 +154,7 @@ func groupsHandler(message *rabbit.Message) {
 		app, err = getAppFromGroup(group)
 		err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
 		if err != nil {
-			zap.S().Error(err, payload.ID)
+			log.ErrS(err, payload.ID)
 			sendToRetryQueue(message)
 			return
 		}
@@ -174,14 +175,14 @@ func groupsHandler(message *rabbit.Message) {
 
 		err = updateApp(app, group)
 		if err != nil {
-			zap.S().Error(err, payload.ID)
+			log.ErrS(err, payload.ID)
 			sendToRetryQueue(message)
 			return
 		}
 
 		err = saveGroup(group)
 		if err != nil {
-			zap.S().Error(err, payload.ID)
+			log.ErrS(err, payload.ID)
 			sendToRetryQueue(message)
 			return
 		}
@@ -195,7 +196,7 @@ func groupsHandler(message *rabbit.Message) {
 
 		err = saveGroupToInflux(group)
 		if err != nil {
-			zap.S().Error(err, payload.ID)
+			log.ErrS(err, payload.ID)
 			sendToRetryQueue(message)
 			return
 		}
@@ -214,7 +215,7 @@ func groupsHandler(message *rabbit.Message) {
 
 	err = memcache.Delete(items...)
 	if err != nil {
-		zap.S().Error(err, payload.ID)
+		log.ErrS(err, payload.ID)
 		sendToRetryQueue(message)
 		return
 	}
@@ -222,7 +223,7 @@ func groupsHandler(message *rabbit.Message) {
 	// Send websocket
 	err = sendGroupWebsocket(payload.ID)
 	if err != nil {
-		zap.S().Error(err, payload.ID)
+		log.ErrS(err, payload.ID)
 		sendToRetryQueue(message)
 		return
 	}
@@ -240,7 +241,7 @@ func groupsHandler(message *rabbit.Message) {
 	for _, v := range produces {
 		err = produce(v.Queue(), v)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 			sendToRetryQueue(message)
 			break
 		}
@@ -310,7 +311,7 @@ func updateGameGroup(id string, group *mongo.Group) (foundNumbers bool, err erro
 		var err error
 		group.Summary, err = e.DOM.Html()
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 
 		if group.Summary == "No information given." {
@@ -324,13 +325,13 @@ func updateGameGroup(id string, group *mongo.Group) (foundNumbers bool, err erro
 		if err == nil && i > 0 {
 			app, err := mongo.GetApp(i)
 			if err == mongo.ErrNoDocuments {
-				zap.S().Warn(err, group.URL, "missing app has been queued")
+				log.WarnS(err, group.URL, "missing app has been queued")
 				err = ProduceSteam(SteamMessage{AppIDs: []int{i}})
 				if err != nil {
-					zap.S().Error(err)
+					log.ErrS(err)
 				}
 			} else if err != nil {
-				zap.S().Error(err, group.URL)
+				log.ErrS(err, group.URL)
 			} else {
 				group.Icon = app.Icon
 			}
@@ -434,7 +435,7 @@ func updateRegularGroup(id string, group *mongo.Group) (foundMembers bool, err e
 
 		summary, err := e.DOM.Html()
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		} else {
 			group.Summary = strings.TrimSpace(summary)
 		}
@@ -593,7 +594,7 @@ func getGroupType(id string) (groupType string, groupURL string, err error) {
 	defer func() {
 		err = resp.Body.Close()
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 

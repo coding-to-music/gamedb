@@ -7,10 +7,10 @@ import (
 	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/datatable"
 	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.uber.org/zap"
 )
 
 func appsAchievementsRouter() http.Handler {
@@ -62,7 +62,7 @@ func appsAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		apps, err = mongo.GetApps(query.GetOffset64(), 100, sort, filter2, projection)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -77,7 +77,7 @@ func appsAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		filtered, err = mongo.CountDocuments(mongo.CollectionApps, filter2, 0)
 		countLock.Unlock()
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -92,7 +92,7 @@ func appsAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		count, err = mongo.CountDocuments(mongo.CollectionApps, filter, 60*60*24)
 		countLock.Unlock()
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 

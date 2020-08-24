@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
@@ -19,13 +20,13 @@ func main() {
 
 	file, err := os.Open("ids.txt")
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		return
 	}
 	defer func() {
 		err = file.Close()
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -40,18 +41,18 @@ func main() {
 
 			c, err := queue.ProducerChannels[queue.QueuePackages].Inspect()
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 				continue
 			}
 
 			if c.Messages >= 10 && !locked {
 				locked = true
 				wg.Add(1)
-				zap.S().Info(time.Now().Format(helpers.DateSQL) + " locked")
+				log.InfoS(time.Now().Format(helpers.DateSQL) + " locked")
 			} else if c.Messages < 10 && locked {
 				locked = false
 				wg.Done()
-				zap.S().Info(time.Now().Format(helpers.DateSQL) + " unlocked")
+				log.InfoS(time.Now().Format(helpers.DateSQL) + " unlocked")
 			}
 		}
 	}()
@@ -63,7 +64,7 @@ func main() {
 
 		packageID, err := strconv.Atoi(scanner.Text())
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 			continue
 		}
 
@@ -71,20 +72,20 @@ func main() {
 			continue
 		}
 
-		zap.L().Info(time.Now().Format(helpers.DateSQL), zap.Int("package", packageID))
+		log.Info(time.Now().Format(helpers.DateSQL), zap.Int("package", packageID))
 
 		pack := mongo.Package{}
 
 		err = mongo.FindOne(mongo.CollectionPackages, bson.D{{"_id", packageID}}, nil, bson.M{"_id": 1}, &pack)
 		if err != nil && err != mongo.ErrNoDocuments {
-			zap.S().Error(err)
+			log.ErrS(err)
 			continue
 		}
 
 		if err == mongo.ErrNoDocuments {
 			err = queue.ProduceSteam(queue.SteamMessage{PackageIDs: []int{packageID}})
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 			} else {
 				// Success
 				time.Sleep(time.Second)
@@ -93,6 +94,6 @@ func main() {
 	}
 
 	if scanner.Err() != nil {
-		zap.S().Error(scanner.Err())
+		log.ErrS(scanner.Err())
 	}
 }

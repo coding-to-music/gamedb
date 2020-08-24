@@ -8,10 +8,10 @@ import (
 
 	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.uber.org/zap"
 )
 
 func appsRandomHandler(w http.ResponseWriter, r *http.Request) {
@@ -79,7 +79,7 @@ func appsRandomHandler(w http.ResponseWriter, r *http.Request) {
 
 		user, err := getUserFromSession(r)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 			returnErrorTemplate(w, r, errorTemplate{Code: 500})
 			return
 		}
@@ -89,7 +89,7 @@ func appsRandomHandler(w http.ResponseWriter, r *http.Request) {
 
 			player, err = mongo.GetPlayer(steamID)
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 				returnErrorTemplate(w, r, errorTemplate{Code: 500})
 				return
 			}
@@ -101,7 +101,7 @@ func appsRandomHandler(w http.ResponseWriter, r *http.Request) {
 
 				playerApps, err := mongo.GetPlayerApps(0, 0, bson.D{{"player_id", steamID}}, nil)
 				if err != nil {
-					zap.S().Error(err)
+					log.ErrS(err)
 					returnErrorTemplate(w, r, errorTemplate{Code: 500})
 					return
 				}
@@ -140,7 +140,7 @@ func appsRandomHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		t.Apps, err = mongo.GetRandomApps(1, filter, projection)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 
 		if len(t.Apps) > 0 {
@@ -157,7 +157,7 @@ func appsRandomHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		t.AppCount, err = mongo.CountDocuments(mongo.CollectionApps, filter, 0)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -169,7 +169,7 @@ func appsRandomHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		t.Tags, err = mysql.GetTagsForSelect()
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -192,7 +192,7 @@ func appsRandomHandler(w http.ResponseWriter, r *http.Request) {
 			var err error
 			t.AppTags, err = GetAppTags(t.Apps[0])
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 			}
 		}()
 	}

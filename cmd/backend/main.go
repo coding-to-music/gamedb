@@ -45,14 +45,14 @@ func main() {
 
 	// Append the client certificates from the CA
 	if ok := certPool.AppendCertsFromPEM(ca); !ok {
-		zap.S().Error("failed to append client certs")
+		log.ErrS("failed to append client certs")
 		return
 	}
 
 	// Create the channel to listen on
 	lis, err := net.Listen("tcp", config.C.BackendHostPort)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		return
 	}
 
@@ -70,11 +70,11 @@ func main() {
 	generated.RegisterPlayersServiceServer(grpcServer, PlayersServer{})
 	generated.RegisterGitHubServiceServer(grpcServer, GithubServer{})
 
-	zap.L().Info("Starting Backend on tcp://" + config.C.BackendHostPort)
+	log.Info("Starting Backend on tcp://" + config.C.BackendHostPort)
 
 	err = grpcServer.Serve(lis)
 	if err != nil {
-		zap.S().Fatal(err)
+		log.FatalS(err)
 	}
 }
 

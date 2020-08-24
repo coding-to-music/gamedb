@@ -46,7 +46,7 @@ func MiddlewareDownMessage(h http.Handler) http.Handler {
 			h.ServeHTTP(w, r)
 		} else {
 			_, err := w.Write([]byte(DownMessage))
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	})
 }

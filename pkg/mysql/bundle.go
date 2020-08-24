@@ -7,10 +7,10 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gosimple/slug"
 	"github.com/jinzhu/gorm"
-	"go.uber.org/zap"
 )
 
 type Bundle struct {
@@ -88,7 +88,7 @@ func (bundle Bundle) AppsCount() int {
 
 	apps, err := bundle.GetAppIDs()
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 	}
 	return len(apps)
 }
@@ -97,7 +97,7 @@ func (bundle Bundle) GetPackageIDs() (ids []int) {
 
 	err := helpers.Unmarshal([]byte(bundle.PackageIDs), &ids)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 	}
 
 	return ids
@@ -180,7 +180,7 @@ func GetBundlesByID(ids []int, columns []string) (bundles []Bundle, err error) {
 		var bundlesChunk []Bundle
 		db = db.Where("id IN (?)", chunk).Find(&bundlesChunk)
 		if db.Error != nil {
-			zap.S().Error(db.Error)
+			log.ErrS(db.Error)
 			return bundles, db.Error
 		}
 

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 
+	"github.com/gamedb/gamedb/pkg/log"
 	"go.uber.org/zap"
 )
 
@@ -29,10 +30,10 @@ func Unmarshal(data []byte, v interface{}) (err error) {
 		if len(data) > 1000 {
 			data = data[0:1000]
 		}
-		zap.L().Error(err.Error(), zap.ByteString("bytes", data))
+		log.Err(err.Error(), zap.ByteString("bytes", data))
 	default:
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}
 

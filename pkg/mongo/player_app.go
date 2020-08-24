@@ -7,10 +7,10 @@ import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
+	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.uber.org/zap"
 )
 
 type PlayerApp struct {
@@ -116,12 +116,14 @@ func CreatePlayerAppIndexes() {
 	//
 	client, ctx, err := getMongo()
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		return
 	}
 
 	_, err = client.Database(MongoDatabase).Collection(CollectionGroups.String()).Indexes().CreateMany(ctx, indexModels)
-	zap.S().Error(err)
+	if err != nil {
+		log.ErrS(err)
+	}
 }
 
 func GetPlayerAppsByApp(offset int64, filter bson.D) (apps []PlayerApp, err error) {
@@ -187,7 +189,7 @@ func getPlayerApps(offset int64, limit int64, filter bson.D, sort bson.D, projec
 	defer func() {
 		err = cur.Close(ctx)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -196,7 +198,7 @@ func getPlayerApps(offset int64, limit int64, filter bson.D, sort bson.D, projec
 		var playerApp PlayerApp
 		err := cur.Decode(&playerApp)
 		if err != nil {
-			zap.S().Error(err, playerApp.GetKey())
+			log.ErrS(err, playerApp.GetKey())
 		} else {
 			apps = append(apps, playerApp)
 		}
@@ -255,7 +257,7 @@ func GetAppPlayersByCountry(appID int) (items []PlayerAppsByCountry, err error) 
 	defer func() {
 		err = cur.Close(ctx)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -264,7 +266,7 @@ func GetAppPlayersByCountry(appID int) (items []PlayerAppsByCountry, err error) 
 		var item PlayerAppsByCountry
 		err := cur.Decode(&item)
 		if err != nil {
-			zap.S().Error(err, item)
+			log.ErrS(err, item)
 		}
 
 		items = append(items, item)

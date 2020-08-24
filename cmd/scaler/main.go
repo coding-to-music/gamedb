@@ -13,7 +13,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/go-chi/chi"
-	"go.uber.org/zap"
 )
 
 var version string
@@ -36,7 +35,7 @@ func main() {
 
 	err := http.ListenAndServe(":4000", r)
 	if err != nil {
-		zap.S().Fatal(err)
+		log.FatalS(err)
 	}
 }
 
@@ -77,7 +76,7 @@ func createHandler(w http.ResponseWriter, r *http.Request) {
 
 	_, err := hosts.GetHost().CreateConsumer()
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 	}
 
 	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
@@ -136,6 +135,6 @@ func healthCheckHandler(w http.ResponseWriter, _ *http.Request) {
 
 	_, err := w.Write([]byte("OK"))
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 	}
 }

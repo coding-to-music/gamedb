@@ -4,10 +4,10 @@ import (
 	"strconv"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.uber.org/zap"
 )
 
 type AppDLC struct {
@@ -58,7 +58,7 @@ func GetDLCForApp(offset int64, limit int64, filter bson.D, sort bson.D) (dlcs [
 	defer func() {
 		err = cur.Close(ctx)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -67,7 +67,7 @@ func GetDLCForApp(offset int64, limit int64, filter bson.D, sort bson.D) (dlcs [
 		dlc := AppDLC{}
 		err := cur.Decode(&dlc)
 		if err != nil {
-			zap.S().Error(err, dlc.getKey())
+			log.ErrS(err, dlc.getKey())
 		} else {
 			dlcs = append(dlcs, dlc)
 		}

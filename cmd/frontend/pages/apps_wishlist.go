@@ -8,10 +8,10 @@ import (
 	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/datatable"
 	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.uber.org/zap"
 )
 
 func wishlistsRouter() http.Handler {
@@ -76,7 +76,7 @@ func wishlistAppsHandler(w http.ResponseWriter, r *http.Request) {
 
 		apps, err = mongo.GetApps(offset, 100, order, filter2, projection)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -92,7 +92,7 @@ func wishlistAppsHandler(w http.ResponseWriter, r *http.Request) {
 		filtered, err = mongo.CountDocuments(mongo.CollectionApps, filter2, 0)
 		countLock.Unlock()
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -108,7 +108,7 @@ func wishlistAppsHandler(w http.ResponseWriter, r *http.Request) {
 		count, err = mongo.CountDocuments(mongo.CollectionApps, filter, 86400)
 		countLock.Unlock()
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 

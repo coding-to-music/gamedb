@@ -6,6 +6,7 @@ import (
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"go.uber.org/zap"
 )
@@ -25,7 +26,7 @@ func appsPlayersHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToFailQueue(message)
 		return
 	}
@@ -36,7 +37,7 @@ func appsPlayersHandler(message *rabbit.Message) {
 
 		mongoPlayer, err = mongo.GetPlayer(payload.PlayerID)
 		if err != nil {
-			zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+			log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
 			sendToRetryQueue(message)
 			return
 		}
@@ -76,7 +77,7 @@ func appsPlayersHandler(message *rabbit.Message) {
 
 	aliases, err := mongo.GetPlayerAliases(mongoPlayer.ID, 5, sixMonthsAgo)
 	if err != nil {
-		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToFailQueue(message)
 		return
 	}
@@ -88,7 +89,7 @@ func appsPlayersHandler(message *rabbit.Message) {
 	// Send to Elastic
 	err = elasticsearch.IndexPlayer(player)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		sendToRetryQueue(message)
 		return
 	}

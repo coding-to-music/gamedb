@@ -12,7 +12,7 @@ import (
 
 	"github.com/cenkalti/backoff/v4"
 	"github.com/gamedb/gamedb/pkg/config"
-	"go.uber.org/zap"
+	"github.com/gamedb/gamedb/pkg/log"
 )
 
 var botRegex = regexp.MustCompile("(?i)bot|crawl|slurp|wget|curl|spider|yandex|baidu|google|msn|bing|yahoo|jeeves|twitter|facebook")
@@ -40,7 +40,7 @@ func HeadWithTimeout(link string, timeout time.Duration) (code int, err error) {
 	policy := backoff.NewExponentialBackOff()
 	policy.InitialInterval = time.Second
 
-	err = backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 5), func(err error, t time.Duration) { zap.S().Info(err) })
+	err = backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 5), func(err error, t time.Duration) { log.InfoS(err) })
 	return code, err
 }
 
@@ -93,7 +93,7 @@ func requestWithTimeout(method string, link string, timeout time.Duration, heade
 	defer func() {
 		err := resp.Body.Close()
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 

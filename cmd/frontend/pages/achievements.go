@@ -6,9 +6,9 @@ import (
 
 	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
-	"go.uber.org/zap"
 )
 
 func AchievementsRouter() http.Handler {
@@ -48,7 +48,7 @@ func achievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		achievements, filtered, err = elasticsearch.SearchAppAchievements(query.GetOffset(), search, sorters)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -61,7 +61,7 @@ func achievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 		count, err = mongo.CountDocuments(mongo.CollectionAppAchievements, nil, 60*60*24)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 

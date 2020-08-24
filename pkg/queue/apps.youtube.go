@@ -8,6 +8,7 @@ import (
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/influx"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/youtube"
 	influx "github.com/influxdata/influxdb1-client"
 	"go.uber.org/zap"
@@ -25,7 +26,7 @@ func appYoutubeHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToFailQueue(message)
 		return
 	}
@@ -39,7 +40,7 @@ func appYoutubeHandler(message *rabbit.Message) {
 
 	client, ctx, err := youtube.GetYouTube()
 	if err != nil {
-		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToRetryQueue(message)
 		return
 	}
@@ -59,7 +60,7 @@ func appYoutubeHandler(message *rabbit.Message) {
 
 	searchResponse, err := searchRequest.Do()
 	if err != nil {
-		zap.S().Error(err, payload.ID)
+		log.ErrS(err, payload.ID)
 		sendToRetryQueue(message)
 		return
 	}
@@ -76,7 +77,7 @@ func appYoutubeHandler(message *rabbit.Message) {
 
 	listResponse, err := listRequest.Do()
 	if err != nil {
-		zap.S().Error(err, payload.ID)
+		log.ErrS(err, payload.ID)
 		sendToRetryQueue(message)
 		return
 	}
@@ -107,7 +108,7 @@ func appYoutubeHandler(message *rabbit.Message) {
 
 		_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, point)
 		if err != nil {
-			zap.S().Error(err, payload.ID)
+			log.ErrS(err, payload.ID)
 			if val, ok := err.(*googleapi.Error); ok && val.Code == 403 {
 				time.Sleep(time.Minute)
 			}

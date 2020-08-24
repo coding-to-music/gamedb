@@ -9,9 +9,9 @@ import (
 	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
-	"go.uber.org/zap"
 )
 
 // Get prices ajax
@@ -31,7 +31,7 @@ func productPricesAjaxHandler(w http.ResponseWriter, r *http.Request, productTyp
 		product, err = mongo.GetPackage(id)
 	}
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		return
 	}
 
@@ -41,7 +41,7 @@ func productPricesAjaxHandler(w http.ResponseWriter, r *http.Request, productTyp
 	// Get prices
 	pricesResp, err := mongo.GetPricesForProduct(product.GetID(), product.GetProductType(), code)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		return
 	}
 

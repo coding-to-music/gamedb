@@ -7,10 +7,10 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/cenkalti/backoff/v4"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/go-chi/chi"
 	"github.com/russross/blackfriday"
-	"go.uber.org/zap"
 )
 
 const (
@@ -26,7 +26,7 @@ func init() {
 
 	discordRelayBotSession, err = discordgo.New("Bot " + config.C.DiscordRelayBotToken)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		return
 	}
 
@@ -50,7 +50,7 @@ func init() {
 	// // Open connection
 	// err = discordRelayBotSession.Open()
 	// if err != nil {
-	// 	zap.S().Error(err)
+	// 	log.ErrS(err)
 	// }
 }
 
@@ -98,10 +98,10 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	// 	policy := backoff.NewExponentialBackOff()
 	//
-	// 	err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { zap.S().Info(err) })
+	// 	err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.InfoS(err) })
 	// 	if err != nil {
 	// 		discordErr = err
-	// 		zap.S().Fatal(err)
+	// 		log.FatalS(err)
 	// 	}
 	//
 	// 	for _, v := range channelsResponse {
@@ -133,10 +133,10 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	// 	policy := backoff.NewExponentialBackOff()
 	//
-	// 	err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { zap.S().Info(err) })
+	// 	err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.InfoS(err) })
 	// 	if err != nil {
 	// 		discordErr = err
-	// 		zap.S().Fatal(err)
+	// 		log.FatalS(err)
 	// 	}
 	//
 	// 	for _, v := range membersResponse {
@@ -181,9 +181,9 @@ func chatAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	policy := backoff.NewExponentialBackOff()
 
-	err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { zap.S().Info(err) })
+	err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.InfoS(err) })
 	if err != nil {
-		zap.S().Fatal(err)
+		log.FatalS(err)
 		return
 	}
 

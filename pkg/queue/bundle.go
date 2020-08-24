@@ -11,6 +11,7 @@ import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/cenkalti/backoff/v4"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
@@ -31,7 +32,7 @@ func bundleHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		zap.L().Error(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
 		sendToFailQueue(message)
 		return
 	}
@@ -39,7 +40,7 @@ func bundleHandler(message *rabbit.Message) {
 	// Load current bundle
 	db, err := mysql.GetMySQLClient()
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		sendToRetryQueue(message)
 		return
 	}
@@ -47,7 +48,7 @@ func bundleHandler(message *rabbit.Message) {
 	bundle := mysql.Bundle{}
 	db = db.FirstOrInit(&bundle, mysql.Bundle{ID: payload.ID})
 	if db.Error != nil {
-		zap.S().Error(db.Error, payload.ID)
+		log.ErrS(db.Error, payload.ID)
 		sendToRetryQueue(message)
 		return
 	}
@@ -71,7 +72,7 @@ func bundleHandler(message *rabbit.Message) {
 
 		db = db.Save(&bundle)
 		if db.Error != nil {
-			zap.S().Error(db.Error, payload.ID)
+			log.ErrS(db.Error, payload.ID)
 			sendToRetryQueue(message)
 			return
 		}
@@ -85,7 +86,7 @@ func bundleHandler(message *rabbit.Message) {
 
 		var err = saveBundlePriceToMongo(bundle, oldBundle)
 		if err != nil {
-			zap.S().Error(err, payload.ID)
+			log.ErrS(err, payload.ID)
 			sendToRetryQueue(message)
 			return
 		}
@@ -101,7 +102,7 @@ func bundleHandler(message *rabbit.Message) {
 	wsPayload := IntPayload{ID: payload.ID}
 	err = ProduceWebsocket(wsPayload, websockets.PageBundle, websockets.PageBundles)
 	if err != nil {
-		zap.S().Error(err, payload.ID)
+		log.ErrS(err, payload.ID)
 		sendToRetryQueue(message)
 		return
 	}
@@ -109,7 +110,7 @@ func bundleHandler(message *rabbit.Message) {
 	// Clear caches
 	err = memcache.Delete(memcache.MemcacheBundleInQueue(bundle.ID).Key)
 	if err != nil {
-		zap.S().Error(err, payload.ID)
+		log.ErrS(err, payload.ID)
 		sendToRetryQueue(message)
 		return
 	}
@@ -168,7 +169,7 @@ func updateBundle(bundle *mysql.Bundle) (err error) {
 
 	policy := backoff.NewExponentialBackOff()
 
-	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { zap.S().Info(err) })
+	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.InfoS(err) })
 	if err != nil {
 		return err
 	}

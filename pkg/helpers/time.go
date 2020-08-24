@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/go-durationfmt"
-	"go.uber.org/zap"
+	"github.com/gamedb/gamedb/pkg/log"
 )
 
 const (
@@ -36,7 +36,7 @@ func formatTime(minutes int, pieces int, format string) string {
 
 	t, err := durationfmt.Format(time.Minute*time.Duration(minutes), format)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		return "-"
 	}
 

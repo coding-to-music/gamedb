@@ -11,12 +11,12 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/influx"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/go-chi/chi"
 	influx "github.com/influxdata/influxdb1-client"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
-	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -67,7 +67,7 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 		// Parse form
 		err := r.ParseForm()
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 			return "An error occurred", false
 		}
 
@@ -115,19 +115,19 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 
 		err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 
 		// Create user
 		db, err := mysql.GetMySQLClient()
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 			return "An error occurred", false
 		}
 
 		passwordBytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 			return "An error occurred", false
 		}
 
@@ -144,14 +144,14 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 
 		db = db.Create(&user)
 		if db.Error != nil {
-			zap.S().Error(db.Error)
+			log.ErrS(db.Error)
 			return "An error occurred", false
 		}
 
 		// Create verification code
 		code, err := mysql.CreateUserVerification(user.ID)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 			return "An error occurred", false
 		}
 
@@ -168,14 +168,14 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 			body,
 		)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 			return "An error occurred", false
 		}
 
 		// Create event
 		err = mongo.CreateUserEvent(r, user.ID, mongo.EventSignup)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 
 		// Influx
@@ -190,7 +190,7 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 
 		_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, point)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 
 		return "Please check your email to verify your email", true
@@ -230,7 +230,7 @@ func verifyHandler(w http.ResponseWriter, r *http.Request) {
 		userID, err := mysql.GetUserVerification(code)
 		if err != nil {
 			err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
-			zap.S().Error(err)
+			log.ErrS(err)
 			return "Invalid code (1002)", false
 		}
 
@@ -241,7 +241,7 @@ func verifyHandler(w http.ResponseWriter, r *http.Request) {
 		// Enable user
 		err = mysql.UpdateUserCol(userID, "email_verified", true)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 			return "Invalid code (1003)", false
 		}
 
@@ -257,7 +257,7 @@ func verifyHandler(w http.ResponseWriter, r *http.Request) {
 
 		_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, point)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 
 		//

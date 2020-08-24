@@ -6,9 +6,9 @@ import (
 
 	"github.com/gamedb/gamedb/cmd/api/generated"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
-	"go.uber.org/zap"
 )
 
 func (s Server) GetPlayersId(w http.ResponseWriter, r *http.Request, id int64, params generated.GetPlayersIdParams) {
@@ -28,14 +28,14 @@ func (s Server) GetPlayersId(w http.ResponseWriter, r *http.Request, id int64, p
 				ua := r.UserAgent()
 				err = queue.ProducePlayer(queue.PlayerMessage{ID: id, UserAgent: &ua})
 				if err != nil {
-					zap.S().Error(err)
+					log.ErrS(err)
 				}
 
 				return 404, "player not found, trying to add player"
 
 			} else if err != nil {
 
-				zap.S().Error(err)
+				log.ErrS(err)
 				return 500, err
 
 			} else {

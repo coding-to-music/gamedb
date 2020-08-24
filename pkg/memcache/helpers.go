@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.uber.org/zap"
 )
 
 var ErrInQueue = errors.New("already in queue")
@@ -40,7 +40,7 @@ func FilterToString(d bson.D) string {
 
 	b, err := json.Marshal(d)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		return "[]"
 	}
 

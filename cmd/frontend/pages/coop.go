@@ -9,6 +9,7 @@ import (
 	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
@@ -66,7 +67,7 @@ func coopSearchAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		players, _, err := elasticsearch.SearchPlayers(5, 0, search, nil, nil)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 			return
 		}
 
@@ -103,7 +104,7 @@ func coopPlayersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	players, err := mongo.GetPlayersByID(ids2, bson.M{"_id": 1, "persona_name": 1, "avatar": 1, "level": 1, "games_count": 1})
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		return
 	}
 
@@ -179,7 +180,7 @@ func coopGames(w http.ResponseWriter, r *http.Request) {
 	// Get players
 	players, err := mongo.GetPlayersByID(playerIDs, bson.M{"_id": 1, "persona_name": 1, "avatar": 1})
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		returnErrorTemplate(w, r, errorTemplate{Code: 500})
 		return
 	}
@@ -196,11 +197,11 @@ func coopGames(w http.ResponseWriter, r *http.Request) {
 			ua := r.UserAgent()
 			err = queue.ProducePlayer(queue.PlayerMessage{ID: playerID, UserAgent: &ua})
 			if err == nil {
-				zap.L().Info("player queued", zap.String("ua", ua))
+				log.Info("player queued", zap.String("ua", ua))
 			}
 			err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 			}
 		}
 	}
@@ -211,7 +212,7 @@ func coopGames(w http.ResponseWriter, r *http.Request) {
 
 	playerApps, err := mongo.GetPlayersApps(foundPlayerIDs, bson.M{"_id": 0, "player_id": 1, "app_id": 1})
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 		return
 	}
 
@@ -268,7 +269,7 @@ func coopGames(w http.ResponseWriter, r *http.Request) {
 
 			apps, err := mongo.GetApps(query.GetOffset64(), 100, bson.D{{"reviews_score", -1}}, filter, projection)
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 			}
 
 			// Make visible tags
@@ -276,7 +277,7 @@ func coopGames(w http.ResponseWriter, r *http.Request) {
 
 				coopTags, err := app.GetCoopTags()
 				if err != nil {
-					zap.S().Error(err)
+					log.ErrS(err)
 					continue
 				}
 
@@ -295,7 +296,7 @@ func coopGames(w http.ResponseWriter, r *http.Request) {
 			var err error
 			count, err = mongo.CountDocuments(mongo.CollectionApps, filter, 60*60)
 			if err != nil {
-				zap.S().Error(err)
+				log.ErrS(err)
 			}
 		}()
 

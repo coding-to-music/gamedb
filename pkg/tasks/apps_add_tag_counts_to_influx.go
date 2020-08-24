@@ -6,10 +6,10 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/config"
 	influxHelper "github.com/gamedb/gamedb/pkg/influx"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	influx "github.com/influxdata/influxdb1-client"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.uber.org/zap"
 )
 
 type AppsAddTagCountsToInflux struct {
@@ -48,7 +48,7 @@ func (c AppsAddTagCountsToInflux) work() (err error) {
 	return mongo.BatchApps(filter, projection, func(apps []mongo.App) {
 
 		if config.IsLocal() {
-			zap.S().Info(i)
+			log.InfoS(i)
 			i++
 		}
 
@@ -81,7 +81,7 @@ func (c AppsAddTagCountsToInflux) work() (err error) {
 
 		_, err = influxHelper.InfluxWriteMany(influxHelper.InfluxRetentionPolicyAllTime, batch)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	})
 }

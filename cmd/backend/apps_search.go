@@ -7,9 +7,9 @@ import (
 	"github.com/gamedb/gamedb/cmd/backend/helpers"
 	"github.com/gamedb/gamedb/pkg/backend/generated"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/olivere/elastic/v7"
-	"go.uber.org/zap"
 )
 
 func (a AppsServer) Search(ctx context.Context, request *generated.SearchAppsRequest) (response *generated.AppsElasticResponse, err error) {
@@ -53,7 +53,7 @@ func (a AppsServer) Search(ctx context.Context, request *generated.SearchAppsReq
 	//
 	// 	low, err := strconv.Atoi(strings.Replace(prices[0], ".", "", 1))
 	// 	if err != nil {
-	// 		zap.S().Error(err)
+	// 		log.ErrS(err)
 	// 	}
 	// 	if err == nil && low > 0 {
 	// 		lowCheck = true
@@ -62,7 +62,7 @@ func (a AppsServer) Search(ctx context.Context, request *generated.SearchAppsReq
 	//
 	// 	high, err := strconv.Atoi(strings.Replace(prices[1], ".", "", 1))
 	// 	if err != nil {
-	// 		zap.S().Error(err)
+	// 		log.ErrS(err)
 	// 	}
 	// 	if err == nil && high < 100*100 {
 	// 		highCheck = true
@@ -83,7 +83,7 @@ func (a AppsServer) Search(ctx context.Context, request *generated.SearchAppsReq
 	//
 	// 	low, err := strconv.Atoi(strings.TrimSuffix(scores[0], ".00"))
 	// 	if err != nil {
-	// 		zap.S().Error(err)
+	// 		log.ErrS(err)
 	// 	}
 	// 	if err == nil && low > 0 {
 	// 		lowCheck = true
@@ -92,7 +92,7 @@ func (a AppsServer) Search(ctx context.Context, request *generated.SearchAppsReq
 	//
 	// 	high, err := strconv.Atoi(strings.TrimSuffix(scores[1], ".00"))
 	// 	if err != nil {
-	// 		zap.S().Error(err)
+	// 		log.ErrS(err)
 	// 	}
 	// 	if err == nil && high < 100 {
 	// 		highCheck = true
@@ -117,7 +117,7 @@ func (a AppsServer) Search(ctx context.Context, request *generated.SearchAppsReq
 		var err error
 		apps, recordsFiltered, err = elasticsearch.SearchAppsAdvanced(int(request.GetPagination().GetOffset()), request.GetSearch(), nil, filters)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
@@ -131,7 +131,7 @@ func (a AppsServer) Search(ctx context.Context, request *generated.SearchAppsReq
 		var err error
 		count, err = mongo.CountDocuments(mongo.CollectionApps, nil, 0)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 

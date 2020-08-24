@@ -7,7 +7,7 @@ import (
 	"regexp"
 	"strings"
 
-	"go.uber.org/zap"
+	"github.com/gamedb/gamedb/pkg/log"
 	"golang.org/x/net/html"
 )
 
@@ -60,7 +60,7 @@ func GetArticleBody(body string) template.HTML {
 		var buf = bytes.NewBufferString("")
 		err := html.Render(buf, doc)
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 		body = buf.String()
 	}

@@ -12,10 +12,10 @@ import (
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/influx"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/wcharczuk/go-chart"
 	"github.com/wcharczuk/go-chart/drawing"
-	"go.uber.org/zap"
 )
 
 func GetGroupChart(group elasticsearch.Group) (path string) {
@@ -29,7 +29,7 @@ func GetGroupChart(group elasticsearch.Group) (path string) {
 
 	path, err := getChart(builder, group.ID, "Members")
 	if err != nil {
-		zap.L().Error(err.Error())
+		log.Err(err.Error())
 	}
 	return path
 }
@@ -45,7 +45,7 @@ func GetAppChart(app mongo.App) (path string) {
 
 	path, err := getChart(builder, strconv.Itoa(app.ID), "In Game")
 	if err != nil {
-		zap.L().Error(err.Error())
+		log.Err(err.Error())
 	}
 	return path
 }
@@ -152,13 +152,13 @@ func getChart(builder *influxql.Builder, id string, title string) (path string, 
 	defer func() {
 		err := f.Close()
 		if err != nil {
-			zap.S().Error(err)
+			log.ErrS(err)
 		}
 	}()
 
 	_, err = f.Write(b)
 	if err != nil {
-		zap.S().Error(err)
+		log.ErrS(err)
 	}
 
 	return "https://gamedb.online/assets/img/chatbot/" + file, err
