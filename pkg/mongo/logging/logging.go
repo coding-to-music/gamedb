@@ -1,4 +1,4 @@
-package helpers
+package logging
 
 import (
 	"encoding/json"
@@ -17,12 +17,16 @@ type QueryLogger struct {
 	sort       interface{}
 }
 
-func (ql *QueryLogger) Start(method string, collection string, filter interface{}, sort interface{}) {
+func NewLogger(method string, collection string, filter interface{}, sort interface{}) QueryLogger {
+
+	ql := QueryLogger{}
 	ql.startTime = time.Now()
 	ql.method = method
 	ql.collection = collection
 	ql.filter = filter
 	ql.sort = sort
+
+	return ql
 }
 
 func (ql QueryLogger) End() {

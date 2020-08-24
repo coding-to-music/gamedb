@@ -5,8 +5,8 @@ import (
 	"sync"
 
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/memcache"
+	"github.com/gamedb/gamedb/pkg/mongo/logging"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -137,8 +137,7 @@ func FindOne(collection collection, filter bson.D, sort bson.D, projection bson.
 		ops.SetSort(sort)
 	}
 
-	ql := helpers.QueryLogger{}
-	ql.Start("FindOne", collection.String(), filter, sort)
+	ql := logging.NewLogger("FindOne", collection.String(), filter, sort)
 
 	result := client.Database(MongoDatabase).Collection(collection.String()).FindOne(ctx, filter, ops)
 
@@ -310,11 +309,15 @@ func CountDocuments(collection collection, filter bson.D, ttl uint32) (count int
 			return count, err
 		}
 
+		ql := logging.NewLogger("Count", collection.String(), filter, nil)
+
 		if len(filter) == 0 {
 			count, err = client.Database(MongoDatabase).Collection(collection.String()).EstimatedDocumentCount(ctx)
 		} else {
 			count, err = client.Database(MongoDatabase).Collection(collection.String()).CountDocuments(ctx, filter)
 		}
+
+		ql.End()
 
 		return count, err
 	})
@@ -350,8 +353,7 @@ func Find(collection collection, offset int64, limit int64, sort bson.D, filter 
 		ops.SetProjection(projection)
 	}
 
-	ql := helpers.QueryLogger{}
-	ql.Start("Find", collection.String(), filter, sort)
+	ql := logging.NewLogger("Find", collection.String(), filter, sort)
 
 	cur, err = client.Database(MongoDatabase, options.Database()).Collection(collection.String()).Find(ctx, filter, ops)
 
@@ -381,8 +383,7 @@ func GetRandomRows(collection collection, count int, filter bson.D, projection b
 	}
 
 	//
-	ql := helpers.QueryLogger{}
-	ql.Start("Random Aggregate", collection.String(), pipeline, nil)
+	ql := logging.NewLogger("Random Aggregate", collection.String(), pipeline, nil)
 
 	c, err := client.Database(MongoDatabase, options.Database()).Collection(collection.String()).Aggregate(ctx, pipeline, options.Aggregate())
 
