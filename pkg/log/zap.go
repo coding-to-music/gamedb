@@ -39,11 +39,23 @@ const (
 func InitZap(logName string) {
 
 	var logger *zap.Logger
+
 	if config.IsLocal() {
-		logger = zap.New(getStandardCore()).Named(logName)
+		logger = zap.New(
+			getStandardCore(),
+			zap.AddStacktrace(zap.WarnLevel),
+			zap.AddCaller(),
+			zap.Development(),
+		)
 	} else {
-		logger = zap.New(zapcore.NewTee(getStandardCore(), getGoogleCore())).Named(logName)
+		logger = zap.New(
+			zapcore.NewTee(getStandardCore(), getGoogleCore()),
+			zap.AddStacktrace(zap.WarnLevel),
+			zap.AddCaller(),
+		)
 	}
+
+	logger = logger.Named(logName)
 
 	zap.ReplaceGlobals(logger)
 }
@@ -51,32 +63,31 @@ func InitZap(logName string) {
 func getStandardCore() zapcore.Core {
 
 	encoder := zapcore.NewConsoleEncoder(zap.NewDevelopmentEncoderConfig())
-	consoleDebugging := zapcore.Lock(os.Stdout)
+	output := zapcore.Lock(os.Stdout)
 	level := zap.NewAtomicLevelAt(zapcore.DebugLevel)
 
-	return zapcore.NewCore(encoder, consoleDebugging, level)
+	return zapcore.NewCore(encoder, output, level)
 }
 
 func getGoogleCore() zapcore.Core {
 
 	ctx := context.Background()
+
 	googleClient, err := logging.NewClient(ctx, config.C.GoogleProject)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	c := GoogleCore{
+	return GoogleCore{
 		client:  googleClient,
 		context: ctx,
 		loggers: map[string]*logging.Logger{},
 		async:   true,
 
-		levelEnabler: zap.NewAtomicLevelAt(zapcore.InfoLevel),
+		levelEnabler: zap.NewAtomicLevelAt(zapcore.DebugLevel),
 		encoder:      zapcore.NewConsoleEncoder(zap.NewDevelopmentEncoderConfig()),
-		syncer:       zapcore.AddSync(ioutil.Discard),
+		output:       zapcore.AddSync(ioutil.Discard),
 	}
-
-	return c
 }
 
 type GoogleCore struct {
@@ -87,7 +98,7 @@ type GoogleCore struct {
 
 	levelEnabler zapcore.LevelEnabler
 	encoder      zapcore.Encoder
-	syncer       zapcore.WriteSyncer
+	output       zapcore.WriteSyncer
 }
 
 func (g *GoogleCore) clone() *GoogleCore {
@@ -100,7 +111,7 @@ func (g *GoogleCore) clone() *GoogleCore {
 
 		levelEnabler: g.levelEnabler,
 		encoder:      g.encoder.Clone(),
-		syncer:       g.syncer,
+		output:       g.output,
 	}
 }
 
@@ -184,5 +195,5 @@ func (g GoogleCore) Write(entry zapcore.Entry, fields []zapcore.Field) error {
 }
 
 func (g GoogleCore) Sync() error {
-	return g.syncer.Sync()
+	return g.output.Sync()
 }
