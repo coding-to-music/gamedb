@@ -141,8 +141,8 @@ type Config struct {
 	SlackGameDBWebhook  string `envconfig:"SLACK_GAMEDB_WEBHOOK"`
 	SlackPatreonWebhook string `envconfig:"SLACK_SOCIAL_WEBHOOK"`
 	InfraPath           string `envconfig:"INFRASTRUCTURE_PATH"`
-	ChatBotAttachments  string `envconfig:"STEAM_CHATBOT_ATTACHMENTS"`
-	GRPCKeysPath        string `envconfig:"STEAM_GRPC_KEYS_PATH"`
+	ChatBotAttachments  string `envconfig:"CHATBOT_ATTACHMENTS"`
+	GRPCKeysPath        string `envconfig:"GRPC_KEYS_PATH"`
 
 	// Non-environment
 	IP              string
