@@ -44,6 +44,7 @@ func (rk RankMetric) String() string {
 const (
 	RankKeyLevel        RankMetric = "l"
 	RankKeyBadges       RankMetric = "b"
+	RankKeyBadgesFoil   RankMetric = "d"
 	RankKeyFriends      RankMetric = "f"
 	RankKeyComments     RankMetric = "c"
 	RankKeyGames        RankMetric = "g"
@@ -51,20 +52,24 @@ const (
 	RankKeyAchievements RankMetric = "a"
 )
 
+// Mongo col -> Rank key
 var PlayerRankFields = map[string]RankMetric{
 	"level":             RankKeyLevel,
 	"games_count":       RankKeyGames,
 	"badges_count":      RankKeyBadges,
+	"badges_foil_count": RankKeyBadgesFoil,
 	"play_time":         RankKeyPlaytime,
 	"friends_count":     RankKeyFriends,
 	"comments_count":    RankKeyComments,
 	"achievement_count": RankKeyAchievements,
 }
 
+// Rank key -> Influx col
 var PlayerRankFieldsInflux = map[RankMetric]string{
 	RankKeyLevel:        "level_rank",
 	RankKeyGames:        "games_rank",
 	RankKeyBadges:       "badges_rank",
+	RankKeyBadgesFoil:   "badges_foil_count",
 	RankKeyPlaytime:     "playtime_rank",
 	RankKeyFriends:      "friends_rank",
 	RankKeyComments:     "comments_rank",
