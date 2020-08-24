@@ -145,11 +145,11 @@ type Config struct {
 	GRPCKeysPath        string `envconfig:"GRPC_KEYS_PATH"`
 
 	// Non-environment
-	IP              string
-	CommitHash      string
-	Commits         string
-	GameDBShortName string
-	NewReleaseDays  int
+	IP              string `ignored:"true"`
+	CommitHash      string `ignored:"true"`
+	Commits         string `ignored:"true"`
+	GameDBShortName string `ignored:"true"`
+	NewReleaseDays  int    `ignored:"true"`
 }
 
 var C Config
