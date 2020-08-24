@@ -21,6 +21,7 @@ COPY --from=build-env /root/cmd/frontend/frontend ./
 COPY ./cmd/frontend/assets/GeoLite2-Country.mmdb ./assets/GeoLite2-Country.mmdb
 COPY ./cmd/frontend/health-check.sh ./health-check.sh
 RUN chmod +x health-check.sh \
+  && mkdir -p ./chatbot \
   && touch ./google-auth.json \
   && apk update \
   && apk add ca-certificates curl bash tzdata
