@@ -6,7 +6,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func saveFromPics() error {
+func main() {
 
 	var offset int64 = 0
 	var limit int64 = 10_000
@@ -17,7 +17,8 @@ func saveFromPics() error {
 
 		apps, err := mongo.GetApps(offset, limit, bson.D{{"_id", 1}}, bson.D{{"icon", ""}}, bson.M{"common": 1})
 		if err != nil {
-			return err
+			zap.L().Error(err.Error())
+			return
 		}
 
 		for _, app := range apps {
@@ -27,7 +28,7 @@ func saveFromPics() error {
 
 				_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", app.ID}}, bson.D{{"icon", icon}})
 				if err != nil {
-					zap.S().Error(err)
+					zap.L().Error(err.Error())
 				}
 			}
 		}
@@ -39,7 +40,5 @@ func saveFromPics() error {
 		offset += limit
 	}
 
-	zap.S().Info("x")
-
-	return nil
+	zap.S().Info("Done")
 }

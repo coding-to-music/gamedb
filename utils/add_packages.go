@@ -15,7 +15,7 @@ import (
 )
 
 //noinspection GoUnusedFunction
-func addPackages() {
+func main() {
 
 	file, err := os.Open("ids.txt")
 	if err != nil {

@@ -18,7 +18,7 @@ var (
 	steamLoginSecure = ""
 )
 
-func syncStates() {
+func main() {
 
 	f, err := os.OpenFile("states.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 	if err != nil {
