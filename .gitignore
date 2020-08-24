@@ -1,11 +1,13 @@
 # Binaries
+/cmd/chatbot/api
+/cmd/chatbot/backend
 /cmd/chatbot/chatbot
 /cmd/consumers/consumers
 /cmd/crons/crons
 /cmd/frontend/frontend
+/cmd/scaler/scaler
 /cmd/steam/steam
 /cmd/test/test
-/cmd/scaler/scaler
 
 # Source maps
 /cmd/frontend/assets/dist/main.css.map
