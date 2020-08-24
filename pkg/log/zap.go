@@ -115,6 +115,26 @@ func (g *GoogleCore) clone() *GoogleCore {
 	}
 }
 
+func (g *GoogleCore) getLogger(name string) *logging.Logger {
+
+	// Return cached logger
+	if val, ok := g.loggers[name]; ok {
+		return val
+	}
+
+	// Create logger
+	common := map[string]string{
+		"env":     config.C.Environment,
+		"commits": config.C.Commits,
+		"hash":    config.C.CommitHash,
+		"key":     config.C.SteamAPIKey,
+		"ip":      config.C.IP,
+	}
+	g.loggers[name] = g.client.Logger(name, logging.CommonLabels(common))
+
+	return g.loggers[name]
+}
+
 func (g GoogleCore) Enabled(level zapcore.Level) bool {
 	return level.Enabled(level)
 }
@@ -162,28 +182,13 @@ func (g GoogleCore) Write(entry zapcore.Entry, fields []zapcore.Field) error {
 		level = logging.Debug
 	}
 
-	var logger *logging.Logger
-
-	if val, ok := g.loggers[entry.LoggerName]; ok {
-		logger = val
-	} else {
-
-		common := map[string]string{
-			"env":     config.C.Environment,
-			"commits": config.C.Commits,
-			"hash":    config.C.CommitHash,
-			"key":     config.C.SteamAPIKey,
-			"ip":      config.C.IP,
-		}
-
-		logger = g.client.Logger(entry.LoggerName, logging.CommonLabels(common))
-	}
-
 	googleEntry := logging.Entry{
 		Timestamp: entry.Time,
 		Severity:  level,
 		Payload:   buf.String(),
 	}
+
+	logger := g.getLogger(entry.LoggerName)
 
 	if g.async {
 		logger.Log(googleEntry)
@@ -195,5 +200,14 @@ func (g GoogleCore) Write(entry zapcore.Entry, fields []zapcore.Field) error {
 }
 
 func (g GoogleCore) Sync() error {
+
+	for _, logger := range g.loggers {
+
+		err := logger.Flush()
+		if err != nil {
+			return err
+		}
+	}
+
 	return g.output.Sync()
 }
