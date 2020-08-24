@@ -40,8 +40,6 @@ func main() {
 	config.Init(version, commits, helpers.GetIP())
 	log.InitZap(log.LogNameFrontend)
 
-	log.Err("xx")
-
 	//
 	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
 		log.Fatal("GOOGLE_APPLICATION_CREDENTIALS not found")
