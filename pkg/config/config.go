@@ -46,9 +46,7 @@ type Config struct {
 	GithubWebhookSecret string `envconfig:"GITHUB_WEBHOOK_SECRET"`
 
 	// Google
-	GoogleBucket  string `envconfig:"GOOGLE_BUCKET"`
-	GoogleProject string `envconfig:"GOOGLE_PROJECT"`
-
+	GoogleProject           string `envconfig:"GOOGLE_PROJECT"`
 	GoogleOauthClientID     string `envconfig:"GOOGLE_OAUTH_CLIENT_ID"`
 	GoogleOauthClientSecret string `envconfig:"GOOGLE_OAUTH_CLIENT_SECRET"`
 
