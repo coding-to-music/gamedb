@@ -25,11 +25,10 @@
     {{ range .JSFiles }}
         <script src="{{ .URL }}" integrity="{{ .Integrity }}" crossorigin="anonymous"></script>
     {{ end }}
-
     <script src="https://cdn.datatables.net/v/bs4/dt-1.10.20/fh-3.1.6/rg-1.1.1/datatables.min.js"></script>
 
     <script>const user = JSON.parse({{ .GetUserJSON }});</script>
-    {{ template "_webpack_footer" . }}
+    <script src="/assets/dist/main.js?c={{ .AssetTime }}" rel="stylesheet"></script>
 
     {{/* Google Analytics */}}
     {{ if eq .Env "production" }}

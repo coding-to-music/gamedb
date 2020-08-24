@@ -3,7 +3,7 @@ const path = require('path');
 
 // Plugins
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+// const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const ConcatPlugin = require('webpack-concat-plugin');
@@ -122,22 +122,22 @@ module.exports = {
         //         sourceMap: true
         //     }
         // ),
-        new HtmlWebpackPlugin(
-            {
-                filename: path.resolve(__dirname, 'cmd/frontend/templates/_webpack_header.gohtml'),
-                template: path.resolve(__dirname, 'cmd/frontend/templates/_webpack_header.ejs'),
-                hash: true,
-                inject: false,
-            }
-        ),
-        new HtmlWebpackPlugin(
-            {
-                filename: path.resolve(__dirname, 'cmd/frontend/templates/_webpack_footer.gohtml'),
-                template: path.resolve(__dirname, 'cmd/frontend/templates/_webpack_footer.ejs'),
-                hash: true,
-                inject: false,
-            }
-        ),
+        // new HtmlWebpackPlugin(
+        //     {
+        //         filename: path.resolve(__dirname, 'cmd/frontend/templates/_webpack_header.gohtml'),
+        //         template: path.resolve(__dirname, 'cmd/frontend/templates/_webpack_header.ejs'),
+        //         hash: true,
+        //         inject: false,
+        //     }
+        // ),
+        // new HtmlWebpackPlugin(
+        //     {
+        //         filename: path.resolve(__dirname, 'cmd/frontend/templates/_webpack_footer.gohtml'),
+        //         template: path.resolve(__dirname, 'cmd/frontend/templates/_webpack_footer.ejs'),
+        //         hash: true,
+        //         inject: false,
+        //     }
+        // ),
         new WebpackBuildNotifierPlugin(
             {
                 // title: "My Project Webpack Build",

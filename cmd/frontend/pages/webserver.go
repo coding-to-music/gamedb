@@ -116,8 +116,6 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 
 	templates := []string{
 		"admin/_admin_header.gohtml",
-		"_webpack_header.gohtml",
-		"_webpack_footer.gohtml",
 		"_players_header.gohtml",
 		"_header.gohtml",
 		"_footer.gohtml",
@@ -504,6 +502,12 @@ func (t globalTemplate) GetVersionHash() string {
 
 func (t globalTemplate) GetCommits() string {
 	return config.C.Commits
+}
+
+var assetTime = time.Now().Unix()
+
+func (t globalTemplate) AssetTime() int64 {
+	return assetTime
 }
 
 func (t globalTemplate) IsAppsPage() bool {

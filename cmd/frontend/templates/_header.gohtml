@@ -13,7 +13,7 @@
         <link rel="stylesheet" href="{{ .URL }}" integrity="{{ .Integrity }}" crossorigin="anonymous">
     {{ end }}
     <link rel="stylesheet" href="https://cdn.datatables.net/v/bs4/dt-1.10.20/fh-3.1.6/rg-1.1.1/datatables.min.css"/>
-    {{ template "_webpack_header" . }}
+    <link rel="stylesheet" href="/assets/dist/main.css?c={{ .AssetTime }}">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/sa-bg-180x180.png">
     <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/sa-bg-192x192.png">
