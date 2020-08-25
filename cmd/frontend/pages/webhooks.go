@@ -109,7 +109,7 @@ func gitHubWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 	defer func() {
 		err := r.Body.Close()
 		if err != nil {
-			log.ErrS()
+			log.ErrS(err)
 		}
 	}()
 
