@@ -148,6 +148,10 @@ type statsTemplate struct {
 	SteamPlayersInGame int64
 }
 
+func (t statsTemplate) includes() []string {
+	return []string{"includes/stats_header.gohtml"}
+}
+
 func gameDBStatsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
@@ -244,6 +248,10 @@ type gamedbStatsTemplate struct {
 	PlayerBadgesCount       int64
 	PlayerGroupsCount       int64
 	PlayersCount            int64
+}
+
+func (t gamedbStatsTemplate) includes() []string {
+	return []string{"includes/stats_header.gohtml"}
 }
 
 func playerLevelsHandler(w http.ResponseWriter, r *http.Request) {

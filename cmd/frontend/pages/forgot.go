@@ -51,6 +51,10 @@ type forgotTemplate struct {
 	LoginEmail      string
 }
 
+func (t forgotTemplate) includes() []string {
+	return []string{"includes/login_header.gohtml"}
+}
+
 func forgotPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	message, success := func() (message string, success bool) {

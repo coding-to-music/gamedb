@@ -138,6 +138,10 @@ type playersTemplate struct {
 	Total       int64
 }
 
+func (t playersTemplate) includes() []string {
+	return []string{"includes/players_header.gohtml"}
+}
+
 func statesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	//noinspection GoPreferNilSlice

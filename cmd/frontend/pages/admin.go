@@ -66,6 +66,10 @@ type adminUsersTemplate struct {
 	globalTemplate
 }
 
+func (t adminUsersTemplate) includes() []string {
+	return []string{"includes/admin_header.gohtml"}
+}
+
 func adminUsersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var query = datatable.NewDataTableQuery(r, false)
@@ -230,6 +234,10 @@ type adminConsumersTemplate struct {
 	globalTemplate
 }
 
+func (t adminConsumersTemplate) includes() []string {
+	return []string{"includes/admin_header.gohtml"}
+}
+
 func adminDelaysHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := adminDelaysTemplate{}
@@ -311,6 +319,10 @@ type adminDelaysTemplate struct {
 	globalTemplate
 }
 
+func (t adminDelaysTemplate) includes() []string {
+	return []string{"includes/admin_header.gohtml"}
+}
+
 func adminPatreonHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := adminPatreonTemplate{}
@@ -378,6 +390,10 @@ type adminPatreonTemplate struct {
 	globalTemplate
 }
 
+func (t adminPatreonTemplate) includes() []string {
+	return []string{"includes/admin_header.gohtml"}
+}
+
 func adminTasksHandler(w http.ResponseWriter, r *http.Request) {
 
 	task := r.URL.Query().Get("run")
@@ -440,6 +456,10 @@ type adminTasksTemplate struct {
 	Configs map[string]mysql.Config
 }
 
+func (t adminTasksTemplate) includes() []string {
+	return []string{"includes/admin_header.gohtml"}
+}
+
 type adminTaskListTemplate struct {
 	Title string
 	Tasks []adminTaskTemplate
@@ -488,6 +508,10 @@ func adminSettingsHandler(w http.ResponseWriter, r *http.Request) {
 type adminSettingsTemplate struct {
 	globalTemplate
 	DownMessage string
+}
+
+func (t adminSettingsTemplate) includes() []string {
+	return []string{"includes/admin_header.gohtml"}
 }
 
 func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
@@ -677,10 +701,18 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	t := globalTemplate{}
+	t := adminQueuesTemplate{}
 	t.fill(w, r, "Admin", "Admin")
 
 	returnTemplate(w, r, "admin/queues", t)
+}
+
+type adminQueuesTemplate struct {
+	globalTemplate
+}
+
+func (t adminQueuesTemplate) includes() []string {
+	return []string{"includes/admin_header.gohtml"}
 }
 
 func adminBinLogsHandler(w http.ResponseWriter, r *http.Request) {
@@ -723,6 +755,10 @@ type adminBinLogsTemplate struct {
 	BinLogs []adminBinLogTemplate
 }
 
+func (t adminBinLogsTemplate) includes() []string {
+	return []string{"includes/admin_header.gohtml"}
+}
+
 type adminBinLogTemplate struct {
 	Name      string `gorm:"column:Log_name"`
 	Bytes     uint64 `gorm:"column:File_size"`
@@ -747,4 +783,8 @@ type adminWebsocketsTemplate struct {
 	globalTemplate
 	Websockets map[websockets.WebsocketPage]*websockets.Page
 	Total      int
+}
+
+func (t adminWebsocketsTemplate) includes() []string {
+	return []string{"includes/admin_header.gohtml"}
 }

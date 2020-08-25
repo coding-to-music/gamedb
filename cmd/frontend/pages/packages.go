@@ -34,6 +34,10 @@ type packagesTemplate struct {
 	globalTemplate
 }
 
+func (t packagesTemplate) includes() []string {
+	return []string{"includes/packages_header.gohtml"}
+}
+
 func packagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := datatable.NewDataTableQuery(r, false)

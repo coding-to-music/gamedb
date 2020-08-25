@@ -32,6 +32,10 @@ type changesTemplate struct {
 	globalTemplate
 }
 
+func (t changesTemplate) includes() []string {
+	return []string{"includes/changes_header.gohtml"}
+}
+
 func changesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := datatable.NewDataTableQuery(r, true)

@@ -95,3 +95,7 @@ type addPlayerTemplate struct {
 	RecaptchaPublic string
 	Default         string
 }
+
+func (t addPlayerTemplate) includes() []string {
+	return []string{"includes/players_header.gohtml"}
+}

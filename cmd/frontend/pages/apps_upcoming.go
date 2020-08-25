@@ -35,6 +35,10 @@ type upcomingTemplate struct {
 	globalTemplate
 }
 
+func (t upcomingTemplate) includes() []string {
+	return []string{"includes/apps_header.gohtml"}
+}
+
 func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := datatable.NewDataTableQuery(r, false)

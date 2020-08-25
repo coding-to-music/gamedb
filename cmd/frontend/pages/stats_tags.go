@@ -64,3 +64,7 @@ type statsTagsTemplate struct {
 	Date   string
 	Prices map[int]string
 }
+
+func (t statsTagsTemplate) includes() []string {
+	return []string{"includes/stats_header.gohtml"}
+}

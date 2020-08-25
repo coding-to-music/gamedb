@@ -60,6 +60,10 @@ type signupTemplate struct {
 	SignupEmail     string
 }
 
+func (t signupTemplate) includes() []string {
+	return []string{"includes/login_header.gohtml"}
+}
+
 func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	message, success := func() (message string, success bool) {

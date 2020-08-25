@@ -23,11 +23,19 @@ func appsAchievementsRouter() http.Handler {
 
 func appsAchievementsHandler(w http.ResponseWriter, r *http.Request) {
 
-	t := globalTemplate{}
+	t := appsAchievementsTemplate{}
 	t.fill(w, r, "Achievements", "Games with the most achievements")
 	t.addAssetJSON2HTML()
 
 	returnTemplate(w, r, "apps_achievements", t)
+}
+
+type appsAchievementsTemplate struct {
+	globalTemplate
+}
+
+func (t appsAchievementsTemplate) includes() []string {
+	return []string{"includes/apps_header.gohtml"}
 }
 
 func appsAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {

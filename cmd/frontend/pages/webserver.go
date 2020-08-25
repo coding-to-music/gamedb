@@ -119,17 +119,9 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 	t = t.Funcs(getTemplateFuncMap())
 
 	templates := []string{
-		"includes/admin_header.gohtml",
-		"includes/players_header.gohtml",
 		"includes/header.gohtml",
-		"includes/footer.gohtml",
-		"includes/apps_header.gohtml",
-		"includes/packages_header.gohtml",
-		"includes/changes_header.gohtml",
-		"includes/login_header.gohtml",
 		"includes/flashes.gohtml",
-		"includes/stats_header.gohtml",
-		// "includes/social.gohtml",
+		"includes/footer.gohtml",
 		page + ".gohtml",
 	}
 

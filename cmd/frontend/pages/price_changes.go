@@ -35,6 +35,10 @@ type priceChangesTemplate struct {
 	globalTemplate
 }
 
+func (t priceChangesTemplate) includes() []string {
+	return []string{"includes/changes_header.gohtml"}
+}
+
 func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := datatable.NewDataTableQuery(r, true)

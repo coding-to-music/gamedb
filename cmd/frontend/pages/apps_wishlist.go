@@ -34,6 +34,10 @@ type wishlistsTemplate struct {
 	globalTemplate
 }
 
+func (t wishlistsTemplate) includes() []string {
+	return []string{"includes/apps_header.gohtml"}
+}
+
 func wishlistAppsHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := datatable.NewDataTableQuery(r, true)
