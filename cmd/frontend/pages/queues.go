@@ -57,7 +57,7 @@ func queuesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		builder.AddGroupBy("queue")
 		builder.SetFillNone()
 
-		resp, err := influx.InfluxQuery(builder.String())
+		resp, err := influx.InfluxQuery(builder)
 		if err != nil {
 			log.ErrS(builder.String())
 			return highcharts, err

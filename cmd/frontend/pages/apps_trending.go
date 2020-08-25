@@ -155,7 +155,7 @@ func trendingChartsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	builder.AddGroupBy("app_id")
 	builder.SetFillNumber(0)
 
-	resp, err := influx.InfluxQuery(builder.String())
+	resp, err := influx.InfluxQuery(builder)
 	if err != nil {
 		log.Err(err.Error(), zap.String("query", builder.String()))
 		return

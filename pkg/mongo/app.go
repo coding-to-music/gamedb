@@ -454,9 +454,7 @@ func (app App) GetPlayersInGame() (players int64, err error) {
 		builder.AddOrderBy("time", false)
 		builder.SetLimit(1)
 
-		resp, err := influx.InfluxQuery(builder.String())
-
-		return influx.GetFirstInfluxInt(resp), err
+		return influx.GetFirstInfluxInt(builder)
 	})
 
 	return players, err
@@ -481,9 +479,7 @@ func (app App) GetPlayersOnline() (players int64, err error) {
 		builder.AddOrderBy("time", false)
 		builder.SetLimit(1)
 
-		resp, err := influx.InfluxQuery(builder.String())
-
-		return influx.GetFirstInfluxInt(resp), err
+		return influx.GetFirstInfluxInt(builder)
 	})
 
 	return players, err

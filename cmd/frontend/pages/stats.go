@@ -388,7 +388,7 @@ func statsClientPlayersHandler(w http.ResponseWriter, r *http.Request) {
 	builder.AddGroupByTime("10m")
 	builder.SetFillNone()
 
-	resp, err := influx.InfluxQuery(builder.String())
+	resp, err := influx.InfluxQuery(builder)
 	if err != nil {
 		log.Err(err.Error(), zap.String("query", builder.String()))
 		return
@@ -416,7 +416,7 @@ func statsClientPlayers2Handler(w http.ResponseWriter, r *http.Request) {
 	builder.AddGroupByTime("1d")
 	builder.SetFillNumber(0)
 
-	resp, err := influx.InfluxQuery(builder.String())
+	resp, err := influx.InfluxQuery(builder)
 	if err != nil {
 		log.Err(err.Error(), zap.String("query", builder.String()))
 		return

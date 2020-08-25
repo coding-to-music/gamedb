@@ -147,7 +147,7 @@ func getAppTopPlayersWeek(appIDs []int) (vals map[int]int64, err error) {
 	builder.AddGroupBy("app_id")
 	builder.SetFillNumber(0)
 
-	resp, err := influxHelper.InfluxQuery(builder.String())
+	resp, err := influxHelper.InfluxQuery(builder)
 	if err != nil {
 		return vals, err
 	}
@@ -183,7 +183,7 @@ func getAppAveragePlayersWeek(appIDs []int) (vals map[int]float64, err error) {
 	builder.AddGroupBy("app_id")
 	builder.SetFillNumber(0)
 
-	resp, err := influxHelper.InfluxQuery(builder.String())
+	resp, err := influxHelper.InfluxQuery(builder)
 	if err != nil {
 		return vals, err
 	}
@@ -218,7 +218,7 @@ func getAppTopPlayersAlltime(appIDs []int) (vals map[int]int64, err error) {
 	builder.AddGroupBy("app_id")
 	builder.SetFillNumber(0)
 
-	resp, err := influxHelper.InfluxQuery(builder.String())
+	resp, err := influxHelper.InfluxQuery(builder)
 	if err != nil {
 		return vals, err
 	}
@@ -255,7 +255,7 @@ func getAppTrendValue(appIDs []int) (vals map[int]float64, err error) {
 	builder.AddGroupBy("app_id")
 	builder.SetFillNumber(0)
 
-	resp, err := influxHelper.InfluxQuery(builder.String())
+	resp, err := influxHelper.InfluxQuery(builder)
 	if err != nil {
 		return vals, err
 	}

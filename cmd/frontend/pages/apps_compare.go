@@ -295,7 +295,7 @@ func appsComparePlayersAjaxHandler(limited bool) func(w http.ResponseWriter, r *
 		builder.AddGroupBy("app_id")
 		builder.SetFillNumber(0)
 
-		resp, err := influx.InfluxQuery(builder.String())
+		resp, err := influx.InfluxQuery(builder)
 		if err != nil {
 			log.Err(err.Error(), zap.String("query", builder.String()))
 			return
@@ -336,7 +336,7 @@ func appsCompareWishlistHandler(w http.ResponseWriter, r *http.Request) {
 	builder.AddGroupBy("app_id")
 	builder.SetFillNone()
 
-	resp, err := influx.InfluxQuery(builder.String())
+	resp, err := influx.InfluxQuery(builder)
 	if err != nil {
 		log.Err(err.Error(), zap.String("query", builder.String()))
 		return
@@ -414,7 +414,7 @@ func appsCompareScoresHandler(w http.ResponseWriter, r *http.Request) {
 	builder.AddGroupBy("app_id")
 	builder.SetFillNone()
 
-	resp, err := influx.InfluxQuery(builder.String())
+	resp, err := influx.InfluxQuery(builder)
 	if err != nil {
 		log.Err(err.Error(), zap.String("query", builder.String()))
 		return
@@ -464,7 +464,7 @@ func appsCompareGroupsHandler(w http.ResponseWriter, r *http.Request) {
 	builder.AddGroupBy("group_id")
 	builder.SetFillNone()
 
-	resp, err := influx.InfluxQuery(builder.String())
+	resp, err := influx.InfluxQuery(builder)
 	if err != nil {
 		log.Err(err.Error(), zap.String("query", builder.String()))
 		return

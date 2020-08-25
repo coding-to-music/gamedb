@@ -23,11 +23,12 @@ func GetGroupChart(group elasticsearch.Group) (path string) {
 	builder := influxql.NewBuilder()
 	builder.AddSelect(`max("members_count")`, "max_members_count")
 	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementGroups.String())
+	builder.AddWhere("time", ">", "NOW()-168d")
 	builder.AddWhere("group_id", "=", group.ID)
 	builder.AddGroupByTime("1d")
 	builder.SetFillNone()
 
-	path, err := getChart(builder, group.ID, "Members")
+	path, err := getChart(builder, group.ID, "Members - 6 months")
 	if err != nil {
 		log.Err(err.Error())
 	}
@@ -39,11 +40,12 @@ func GetAppChart(app mongo.App) (path string) {
 	builder := influxql.NewBuilder()
 	builder.AddSelect("max(player_count)", "max_player_count")
 	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
+	builder.AddWhere("time", ">", "NOW()-28d")
 	builder.AddWhere("app_id", "=", app.ID)
 	builder.AddGroupByTime("1d")
 	builder.SetFillNumber(0)
 
-	path, err := getChart(builder, strconv.Itoa(app.ID), "In Game")
+	path, err := getChart(builder, strconv.Itoa(app.ID), "In Game - 4 Weeks")
 	if err != nil {
 		log.Err(err.Error())
 	}
@@ -52,7 +54,7 @@ func GetAppChart(app mongo.App) (path string) {
 
 func getChart(builder *influxql.Builder, id string, title string) (path string, err error) {
 
-	resp, err := influx.InfluxQuery(builder.String())
+	resp, err := influx.InfluxQuery(builder)
 	if err != nil {
 		return "", err
 	}

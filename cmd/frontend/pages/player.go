@@ -1212,7 +1212,7 @@ func playersHistoryAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	builder.AddGroupByTime("1d")
 	builder.SetFillNone()
 
-	resp, err := influx.InfluxQuery(builder.String())
+	resp, err := influx.InfluxQuery(builder)
 	if err != nil {
 		log.Err(err.Error(), zap.String("query", builder.String()))
 		return

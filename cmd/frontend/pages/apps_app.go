@@ -1032,7 +1032,7 @@ func appWishlistAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		builder.AddGroupByTime("1d")
 		builder.SetFillNone()
 
-		resp, err := influx.InfluxQuery(builder.String())
+		resp, err := influx.InfluxQuery(builder)
 		if err != nil {
 			log.Err(err.Error(), zap.String("query", builder.String()))
 			return hc, err
@@ -1076,7 +1076,7 @@ func appPlayersHeatmapAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		builder.AddGroupByTime("1h")
 		builder.SetFillNumber(0)
 
-		resp, err := influx.InfluxQuery(builder.String())
+		resp, err := influx.InfluxQuery(builder)
 		if err != nil {
 			log.Err(err.Error(), zap.String("query", builder.String()))
 			return hc, err
@@ -1162,7 +1162,7 @@ func appTagsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		builder.AddGroupByTime("1d")
 		builder.SetFillNone()
 
-		resp, err := influx.InfluxQuery(builder.String())
+		resp, err := influx.InfluxQuery(builder)
 		if err != nil {
 			log.Err(err.Error(), zap.String("query", builder.String()))
 			return hc, err
@@ -1229,7 +1229,7 @@ func appPlayersAjaxHandler(limit bool) func(http.ResponseWriter, *http.Request) 
 			builder.AddGroupByTime(group)
 			builder.SetFillNumber(0)
 
-			resp, err := influx.InfluxQuery(builder.String())
+			resp, err := influx.InfluxQuery(builder)
 			if err != nil {
 				log.Err(err.Error(), zap.String("query", builder.String()))
 				return hc, err
@@ -1386,7 +1386,7 @@ func appReviewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	builder.AddGroupByTime("1d")
 	builder.SetFillNone()
 
-	resp, err := influx.InfluxQuery(builder.String())
+	resp, err := influx.InfluxQuery(builder)
 	if err != nil {
 		log.Err(err.Error(), zap.String("query", builder.String()))
 		return

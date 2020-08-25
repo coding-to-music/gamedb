@@ -3,7 +3,6 @@ package influx
 import (
 	"encoding/json"
 	"math"
-	"reflect"
 	"sort"
 	"time"
 
@@ -77,7 +76,7 @@ func InfluxWriteMany(retention InfluxRetentionPolicy, batch influx.BatchPoints) 
 	return client.Write(batch)
 }
 
-func InfluxQuery(query string) (resp *influx.Response, err error) {
+func InfluxQuery(builder *influxql.Builder) (resp *influx.Response, err error) {
 
 	client, err := getInfluxClient()
 	if err != nil {
@@ -85,7 +84,7 @@ func InfluxQuery(query string) (resp *influx.Response, err error) {
 	}
 
 	resp, err = client.Query(influx.Query{
-		Command:         query,
+		Command:         builder.String(),
 		Database:        InfluxGameDB,
 		RetentionPolicy: string(InfluxRetentionPolicyAllTime),
 	})
@@ -153,17 +152,12 @@ func InfluxResponseToHighCharts(series influxModels.Row, trimLeft bool) HighChar
 func InfluxResponseToImageChartData(series influxModels.Row) (x []time.Time, y []float64) {
 
 	for k := range series.Columns {
-		if k > 0 {
+		if k == 1 {
 			for _, vv := range series.Values {
 
 				t, err := time.Parse(time.RFC3339, vv[0].(string))
 				if err != nil {
 					log.ErrS(err)
-					continue
-				}
-
-				// Hide some incorrect data in Influx
-				if t.Year() < 2000 {
 					continue
 				}
 
@@ -182,7 +176,12 @@ func InfluxResponseToImageChartData(series influxModels.Row) (x []time.Time, y [
 	return x, y
 }
 
-func GetFirstInfluxInt(resp *influx.Response) int64 {
+func GetFirstInfluxInt(builder *influxql.Builder) (i int64, err error) {
+
+	resp, err := InfluxQuery(builder)
+	if err != nil {
+		return 0, err
+	}
 
 	if resp != nil &&
 		len(resp.Results) > 0 &&
@@ -190,53 +189,17 @@ func GetFirstInfluxInt(resp *influx.Response) int64 {
 		len(resp.Results[0].Series[0].Values) > 0 &&
 		len(resp.Results[0].Series[0].Values[0]) > 1 {
 
-		switch v := resp.Results[0].Series[0].Values[0][1].(type) {
-		case int:
-			return int64(v)
-		case int64:
-			return v
-		case json.Number:
-			i, err := v.Int64()
-			if err != nil {
-				log.ErrS(err)
-			}
-			return i
-		default:
-			log.Warn("Unknown type from Influx DB: " + reflect.TypeOf(v).String())
+		if val, ok := resp.Results[0].Series[0].Values[0][1].(json.Number); ok {
+			return val.Int64()
 		}
 	}
 
-	return 0
-}
-
-func GetFirstInfluxFloat(resp *influx.Response) float64 {
-
-	if resp != nil &&
-		len(resp.Results) > 0 &&
-		len(resp.Results[0].Series) > 0 &&
-		len(resp.Results[0].Series[0].Values) > 0 &&
-		len(resp.Results[0].Series[0].Values[0]) > 1 {
-
-		switch v := resp.Results[0].Series[0].Values[0][1].(type) {
-		case float64:
-			return v
-		case json.Number:
-			i, err := v.Float64()
-			if err != nil {
-				log.ErrS(err)
-			}
-			return i
-		default:
-			log.Warn("Unknown type from Influx DB: " + reflect.TypeOf(v).String())
-		}
-	}
-
-	return 0
+	return i, err
 }
 
 func GetInfluxTrendFromResponse(builder *influxql.Builder, padding int) (trend float64, err error) {
 
-	resp, err := InfluxQuery(builder.String())
+	resp, err := InfluxQuery(builder)
 	if err != nil {
 		return 0, err
 	}
