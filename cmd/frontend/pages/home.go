@@ -1,6 +1,7 @@
 package pages
 
 import (
+	"fmt"
 	"html/template"
 	"net/http"
 	"strconv"
@@ -157,30 +158,61 @@ type homeNewsItemTemplate struct {
 
 func homeTweetsHandler(w http.ResponseWriter, r *http.Request) {
 
-	t := true
-	f := false
+	var item = memcache.HomeTweets
+	var ret []homeTweet
 
-	params := &twitter.UserTimelineParams{
-		ScreenName:      "gamedb_online",
-		Count:           10,
-		ExcludeReplies:  &t,
-		IncludeRetweets: &f,
+	callback := func() (interface{}, error) {
+
+		t := true
+		f := false
+
+		params := &twitter.UserTimelineParams{
+			ScreenName:      "gamedb_online",
+			Count:           10,
+			ExcludeReplies:  &t,
+			IncludeRetweets: &f,
+		}
+
+		tweets, resp, err := twitterHelper.GetTwitter().Timelines.UserTimeline(params)
+		if err != nil {
+			return nil, err
+		}
+
+		defer func() {
+			err = resp.Body.Close()
+			if err != nil {
+				log.ErrS(err)
+			}
+		}()
+
+		for _, v := range tweets {
+			ret = append(ret, homeTweet{
+				ScreenName: v.User.ScreenName,
+				Name:       v.User.Name,
+				Avatar:     v.User.ProfileImageURLHttps,
+				Text:       v.Text,
+				Link:       fmt.Sprintf("https://twitter.com/%s/status/%s", v.User.ScreenName, v.IDStr),
+			})
+		}
+
+		return ret, nil
 	}
 
-	tweets, resp, err := twitterHelper.GetTwitter().Timelines.UserTimeline(params)
+	err := memcache.GetSetInterface(item.Key, item.Expiration, &ret, callback)
 	if err != nil {
 		log.ErrS(err)
 		return
 	}
 
-	defer func() {
-		err = resp.Body.Close()
-		if err != nil {
-			log.ErrS(err)
-		}
-	}()
+	returnJSON(w, r, ret)
+}
 
-	log.InfoS(tweets)
+type homeTweet struct {
+	ScreenName string `json:"screen_name"`
+	Name       string `json:"name"`
+	Avatar     string `json:"avatar"`
+	Text       string `json:"text"`
+	Link       string `json:"link"`
 }
 
 func homeSalesHandler(w http.ResponseWriter, r *http.Request) {

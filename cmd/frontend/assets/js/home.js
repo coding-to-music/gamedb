@@ -32,7 +32,38 @@ if ($homePage.length > 0) {
         },
         "updated-players": loadLatestUpdatedPlayers,
         "news": loadNewsSection,
+        "tweets": loadHomeTweets,
     });
+
+    function loadHomeTweets() {
+
+        $.ajax({
+            url: '/home/tweets.json',
+            dataType: 'json',
+            cache: true,
+            success: function (data, textStatus, jqXHR) {
+
+                if (isIterable(data)) {
+
+                    const $container = $('#tweets .card-body').empty();
+
+                    $container.json2html(
+                        data,
+                        {
+                            '<>': 'div', 'class': 'tweet', 'target': '_blank', 'rel': 'noopener', 'data-link': '${link}', 'html': [
+                                {
+                                    '<>': 'p', 'html': '${text}',
+                                },
+                            ]
+                        },
+                        {
+                            prepend: false,
+                        }
+                    );
+                }
+            },
+        });
+    }
 
     function loadNewsSection() {
 

@@ -27,9 +27,9 @@ var (
 	MemcacheGenreKeyNames        = Item{Key: "genre-key-names", Expiration: 86400 * 7}
 	MemcachePublisherKeyNames    = Item{Key: "publisher-key-names", Expiration: 86400 * 7}
 	MemcacheDeveloperKeyNames    = Item{Key: "developer-key-names", Expiration: 86400 * 7}
-	MemcacheAppTypeCounts        = func(cc steamapi.ProductCC) Item { return Item{Key: "app-type-counts-" + string(cc), Expiration: 86400 * 7} }
 	MemcacheAppReleaseDateCounts = Item{Key: "app-release-date-counts", Expiration: 60 * 60 * 24}
 	MemcacheAppReviewScoreCounts = Item{Key: "app-review-score-counts", Expiration: 60 * 60 * 24 * 2}
+	MemcacheAppTypeCounts        = func(cc steamapi.ProductCC) Item { return Item{Key: "app-type-counts-" + string(cc), Expiration: 86400 * 7} }
 
 	// Single Rows
 	MemcacheApp        = func(changeID int) Item { return Item{Key: "app-" + strconv.Itoa(changeID), Expiration: 0} }
@@ -85,12 +85,12 @@ var (
 	MemcacheCommitsPage  = func(page int) Item { return Item{Key: "commits-page-" + strconv.Itoa(page), Expiration: 60 * 60} }
 
 	// Players online
+	MemcacheAppPlayersInGameRow    = Item{Key: "app-players-in-game-0", Expiration: 10 * 60}
 	MemcacheAppPlayersRow          = func(appID int) Item { return Item{Key: "app-players-" + strconv.Itoa(appID), Expiration: 10 * 60} }
 	MemcacheAppPlayersChart        = func(appID string, limited bool) Item { return Item{Key: "app-players-chart-" + appID + "-" + strconv.FormatBool(limited), Expiration: 10 * 60} }
 	MemcacheAppPlayersHeatmapChart = func(appID string) Item { return Item{Key: "app-players-heatmap-chart-" + appID, Expiration: 10 * 60} }
 	MemcacheAppTagsChart           = func(appID int) Item { return Item{Key: "app-tags-chart-" + strconv.Itoa(appID), Expiration: 10 * 60} }
 	MemcacheAppWishlistChart       = func(appID string) Item { return Item{Key: "app-wishlist-chart-" + appID, Expiration: 10 * 60} }
-	MemcacheAppPlayersInGameRow    = Item{Key: "app-players-in-game-0", Expiration: 10 * 60}
 
 	// Queries
 	MemcachePopularApps    = Item{Key: "popular-apps", Expiration: 60 * 3}
@@ -105,4 +105,5 @@ var (
 	MemcacheChatBotRequest      = func(request string) Item { return Item{Key: "chat-bot-request-" + helpers.MD5([]byte(request)), Expiration: 60 * 10} }
 	MemcachePlayerLocationAggs  = Item{Key: "player-location-aggs", Expiration: 60 * 60 * 2}
 	MemcacheAPISteam            = Item{Key: "api-steam", Expiration: 60 * 60 * 24 * 7}
+	HomeTweets                  = Item{Key: "home-tweets", Expiration: 60 * 60 * 24 * 7}
 )
