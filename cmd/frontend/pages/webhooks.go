@@ -26,7 +26,24 @@ func WebhooksRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Post("/patreon", patreonWebhookPostHandler)
 	r.Post("/github", gitHubWebhookPostHandler)
+	r.Post("/twitter", twitterWebhookPostHandler)
 	return r
+}
+
+func twitterWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
+
+	secret := r.Header.Get("secret")
+
+	zap.L().Named(log.LogNameTwitter).Debug("twitter webhook", zap.String("secret", secret))
+
+	if config.C.TwitterZapierSecret == secret {
+		err := memcache.Delete(memcache.HomeTweets.Key)
+		if err != nil {
+			log.Err(err.Error())
+		}
+	}
+
+	returnJSON(w, r, nil)
 }
 
 func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
@@ -64,6 +81,8 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 	// Slack message
 	err = slack.PostWebhook(config.C.SlackPatreonWebhook, &slack.WebhookMessage{Text: event})
 	log.ErrS(err)
+
+	returnJSON(w, r, nil)
 }
 
 func savePatreonWebhookEvent(r *http.Request, event mongo.EventEnum, pwr patreon.Webhook) (err error) {
@@ -117,7 +136,7 @@ func gitHubWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 	var signature = r.Header.Get("X-Hub-Signature")
 	var event = r.Header.Get("X-GitHub-Event")
 
-	zap.L().Named(log.LogNameWebhooksGitHub).Info("Incoming GitHub webhook", zap.ByteString("webhook", body), zap.String("event", event))
+	zap.L().Named(log.LogNameWebhooksGitHub).Debug("Incoming GitHub webhook", zap.ByteString("webhook", body), zap.String("event", event))
 
 	if len(signature) != signatureLength || !strings.HasPrefix(signature, signaturePrefix) {
 		http.Error(w, "Invalid signature (1)", 400)
@@ -149,5 +168,5 @@ func gitHubWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	http.Error(w, "200", 200)
+	returnJSON(w, r, nil)
 }

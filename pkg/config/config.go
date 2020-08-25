@@ -124,6 +124,7 @@ type Config struct {
 	TwitterAccessTokenSecret string `envconfig:"TWITTER_ACCESS_TOKEN_SECRET"`
 	TwitterConsumerKey       string `envconfig:"TWITTER_CONSUMER_KEY"`
 	TwitterConsumerSecret    string `envconfig:"TWITTER_CONSUMER_SECRET"`
+	TwitterZapierSecret      string `envconfig:"TWITTER_ZAPIER_SECRET"`
 
 	// YouTube
 	YoutubeAPIKey string `envconfig:"YOUTUBE_API_KEY"`

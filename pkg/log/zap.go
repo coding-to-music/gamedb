@@ -27,6 +27,7 @@ const (
 
 	// Others
 	LogNameMongo          = "mongo"
+	LogNameTwitter        = "twitter" // Zapier
 	LogNameRabbit         = "rabbit"
 	LogNameRequests       = "requests"
 	LogNameSQL            = "sql"
