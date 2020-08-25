@@ -1,6 +1,6 @@
 # Binaries
-/cmd/chatbot/api
-/cmd/chatbot/backend
+/cmd/api/api
+/cmd/backend/backend
 /cmd/chatbot/chatbot
 /cmd/consumers/consumers
 /cmd/crons/crons
