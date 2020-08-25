@@ -113,11 +113,11 @@ func gitHubWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	zap.L().Named(log.LogNameWebhooksGitHub).Info("Incoming GitHub webhook", zap.ByteString("webhook", body))
-
 	//
 	var signature = r.Header.Get("X-Hub-Signature")
 	var event = r.Header.Get("X-GitHub-Event")
+
+	zap.L().Named(log.LogNameWebhooksGitHub).Info("Incoming GitHub webhook", zap.ByteString("webhook", body), zap.String("event", event))
 
 	if len(signature) != signatureLength || !strings.HasPrefix(signature, signaturePrefix) {
 		http.Error(w, "Invalid signature (1)", 400)
