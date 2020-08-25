@@ -54,7 +54,7 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = saveWebhookEvent(r, mongo.EventEnum(event), pwr)
+	err = savePatreonWebhookEvent(r, mongo.EventEnum(event), pwr)
 	if err != nil {
 		log.ErrS(err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -66,7 +66,7 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 	log.ErrS(err)
 }
 
-func saveWebhookEvent(r *http.Request, event mongo.EventEnum, pwr patreon.Webhook) (err error) {
+func savePatreonWebhookEvent(r *http.Request, event mongo.EventEnum, pwr patreon.Webhook) (err error) {
 
 	email := pwr.User.Attributes.Email
 	if email == "" {
