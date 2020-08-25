@@ -170,6 +170,7 @@ func homeTweetsHandler(w http.ResponseWriter, r *http.Request) {
 	tweets, resp, err := twitterHelper.GetTwitter().Timelines.UserTimeline(params)
 	if err != nil {
 		log.ErrS(err)
+		return
 	}
 
 	defer func() {
