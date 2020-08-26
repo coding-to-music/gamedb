@@ -151,6 +151,8 @@ func InfluxResponseToHighCharts(series influxModels.Row, trimLeft bool) HighChar
 
 func InfluxResponseToImageChartData(series influxModels.Row) (x []time.Time, y []float64) {
 
+	var gotData bool // This is used to trim leading zeros
+
 	for k := range series.Columns {
 		if k == 1 {
 			for _, vv := range series.Values {
@@ -165,8 +167,15 @@ func InfluxResponseToImageChartData(series influxModels.Row) (x []time.Time, y [
 				if ok {
 					i, err := val.Float64()
 					if err == nil {
-						x = append(x, t)
-						y = append(y, i)
+
+						if i > 0 {
+							gotData = true
+						}
+
+						if gotData {
+							x = append(x, t)
+							y = append(y, i)
+						}
 					}
 				}
 			}

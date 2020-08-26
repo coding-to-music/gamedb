@@ -28,7 +28,7 @@ func GetGroupChart(group elasticsearch.Group) (path string) {
 	builder.AddGroupByTime("1d")
 	builder.SetFillNone()
 
-	path, err := getChart(builder, group.ID, "Members - 6 months")
+	path, err := getChart(builder, group.ID, "Members")
 	if err != nil {
 		log.Err(err.Error())
 	}
@@ -40,12 +40,12 @@ func GetAppChart(app mongo.App) (path string) {
 	builder := influxql.NewBuilder()
 	builder.AddSelect("max(player_count)", "max_player_count")
 	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
-	builder.AddWhere("time", ">", "NOW()-28d")
+	builder.AddWhere("time", ">", "NOW()-168d")
 	builder.AddWhere("app_id", "=", app.ID)
-	builder.AddGroupByTime("1d")
-	builder.SetFillNumber(0)
+	builder.AddGroupByTime("2h")
+	builder.SetFillNone()
 
-	path, err := getChart(builder, strconv.Itoa(app.ID), "In Game - 4 Weeks")
+	path, err := getChart(builder, strconv.Itoa(app.ID), "In Game")
 	if err != nil {
 		log.Err(err.Error())
 	}
@@ -111,8 +111,8 @@ func getChart(builder *influxql.Builder, id string, title string) (path string, 
 				Show: true,
 			},
 			Range: &chart.ContinuousRange{
-				Min: min,
-				Max: max,
+				Min: min - 1,
+				Max: max + 1,
 			},
 			ValueFormatter: func(v interface{}) string {
 				if (max - min) > 10 {
