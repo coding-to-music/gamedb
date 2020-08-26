@@ -4,7 +4,6 @@ import (
 	"net/http"
 	_ "net/http/pprof"
 
-	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -28,18 +27,20 @@ func main() {
 	}
 
 	// Load Discord
-	discord, err := discordgo.New("Bot " + config.C.DiscordChangesBotToken)
-	if err != nil {
-		panic(err)
-	}
-
-	// Not used right now
+	// discord, err := discordgo.New("Bot " + config.C.DiscordChangesBotToken)
+	// if err != nil {
+	// 	log.FatalS(err)
+	// 	return
+	// }
+	//
+	// // Not used right now
 	// err = discord.Open()
 	// if err != nil {
-	// 	panic(err)
+	// 	log.FatalS(err)
+	// 	return
 	// }
-
-	queue.SetDiscordClient(discord)
+	//
+	// queue.SetDiscordClient(discord)
 
 	// Profiling
 	if !config.IsConsumer() {

@@ -2,6 +2,7 @@ package queue
 
 import (
 	"encoding/json"
+	"errors"
 	"strconv"
 	"strings"
 	"time"
@@ -276,7 +277,7 @@ func saveProductPricesToMongo(before helpers.ProductInterface, after helpers.Pro
 			} else if after.GetProductType() == helpers.ProductTypePackage {
 				price.PackageID = after.GetID()
 			} else {
-				panic("Invalid productType")
+				return errors.New("invalid productType")
 			}
 
 			price.Name = after.GetName()

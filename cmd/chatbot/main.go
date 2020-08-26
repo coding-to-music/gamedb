@@ -70,7 +70,8 @@ func main() {
 	// Start discord
 	discordSession, err := discordgo.New("Bot " + config.C.DiscordChatBotToken)
 	if err != nil {
-		panic("Can't create Discord session")
+		log.Fatal(err.Error())
+		return
 	}
 
 	discordSession.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -163,7 +164,8 @@ func main() {
 
 	err = discordSession.Open()
 	if err != nil {
-		panic("Can't connect to Discord session")
+		log.Fatal(err.Error())
+		return
 	}
 
 	helpers.KeepAlive()
