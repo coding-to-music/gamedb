@@ -224,6 +224,7 @@ if ($playerPage.length > 0) {
                         yAxis,
                         yAxis,
                         yAxis,
+                        yAxis,
                     ],
                     tooltip: {
                         formatter: function () {
@@ -256,22 +257,28 @@ if ($playerPage.length > 0) {
                             yAxis: 2,
                         },
                         {
+                            name: 'Foil Badges',
+                            data: data['max_badges_foil'],
+                            marker: {symbol: 'circle'},
+                            yAxis: 3,
+                        },
+                        {
                             name: 'Playtime',
                             data: data['max_playtime'],
                             marker: {symbol: 'circle'},
-                            yAxis: 3,
+                            yAxis: 4,
                         },
                         {
                             name: 'Friends',
                             data: data['max_friends'],
                             marker: {symbol: 'circle'},
-                            yAxis: 4,
+                            yAxis: 5,
                         },
                         {
                             name: 'Achievements',
                             data: data['max_achievements'],
                             marker: {symbol: 'circle'},
-                            yAxis: 5,
+                            yAxis: 6,
                         },
                     ],
                 }));
@@ -304,6 +311,11 @@ if ($playerPage.length > 0) {
                         {
                             name: 'Badges',
                             data: data['max_badges_rank'],
+                            marker: {symbol: 'circle'},
+                        },
+                        {
+                            name: 'Foil Badges',
+                            data: data['max_badges_foil_rank'],
                             marker: {symbol: 'circle'},
                         },
                         {

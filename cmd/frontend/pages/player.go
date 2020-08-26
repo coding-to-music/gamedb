@@ -1196,6 +1196,7 @@ func playersHistoryAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	builder.AddSelect(`max("achievements")`, "max_achievements")
 	builder.AddSelect(`max("games")`, "max_games")
 	builder.AddSelect(`max("badges")`, "max_badges")
+	builder.AddSelect(`max("badges_foil")`, "max_badges_foil")
 	builder.AddSelect(`max("playtime")`, "max_playtime")
 	builder.AddSelect(`max("friends")`, "max_friends")
 
@@ -1203,6 +1204,7 @@ func playersHistoryAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	builder.AddSelect(`max("achievements_rank")`, "max_achievements_rank")
 	builder.AddSelect(`max("games_rank")`, "max_games_rank")
 	builder.AddSelect(`max("badges_rank")`, "max_badges_rank")
+	builder.AddSelect(`max("badges_foil_rank")`, "max_badges_foil_rank")
 	builder.AddSelect(`max("playtime_rank")`, "max_playtime_rank")
 	builder.AddSelect(`max("friends_rank")`, "max_friends_rank")
 
