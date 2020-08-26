@@ -9,8 +9,11 @@ import (
 	"io/ioutil"
 	"path"
 	"sync"
+	"time"
 
+	"github.com/cenkalti/backoff/v4"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/log"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 )
@@ -55,12 +58,25 @@ func GetClient() (*grpc.ClientConn, context.Context, error) {
 			RootCAs:      certPool,
 		})
 
-		conn, err = grpc.Dial(config.C.BackendClientPort, grpc.WithTransportCredentials(creds))
+		// Retry
+		operation := func() (err error) {
+
+			c, err := grpc.Dial(config.C.BackendClientPort, grpc.WithTransportCredentials(creds))
+			if err == nil {
+				conn = c
+				ctx = context.Background()
+			}
+			return err
+		}
+
+		policy := backoff.NewExponentialBackOff()
+		policy.InitialInterval = time.Second / 2
+		policy.MaxInterval = time.Second * 10
+
+		err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Warn(err.Error()) })
 		if err != nil {
 			return nil, nil, err
 		}
-
-		ctx = context.Background()
 	}
 
 	return conn, ctx, nil
