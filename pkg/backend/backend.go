@@ -7,7 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"path"
+	"path/filepath"
 	"sync"
 	"time"
 
@@ -34,14 +34,14 @@ func GetClient() (*grpc.ClientConn, context.Context, error) {
 		base := config.C.GRPCKeysPath
 
 		// Load the client certificates from disk
-		certificate, err := tls.LoadX509KeyPair(path.Join(base, "client.crt"), path.Join(base, "client.key"))
+		certificate, err := tls.LoadX509KeyPair(filepath.Join(base, "client.crt"), filepath.Join(base, "client.key"))
 		if err != nil {
 			return nil, nil, fmt.Errorf("could not load client key pair: %s", err)
 		}
 
 		// Create a certificate pool from the certificate authority
 		certPool := x509.NewCertPool()
-		ca, err := ioutil.ReadFile(path.Join(base, "root.crt"))
+		ca, err := ioutil.ReadFile(filepath.Join(base, "root.crt"))
 		if err != nil {
 			return nil, nil, fmt.Errorf("could not read ca certificate: %s", err)
 		}

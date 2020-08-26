@@ -5,7 +5,7 @@ import (
 	"crypto/x509"
 	"io/ioutil"
 	"net"
-	"path"
+	"path/filepath"
 
 	"github.com/gamedb/gamedb/pkg/backend/generated"
 	"github.com/gamedb/gamedb/pkg/config"
@@ -32,7 +32,7 @@ func main() {
 	}
 
 	// Load the certificates from disk
-	certificate, err := tls.LoadX509KeyPair(path.Join(config.C.GRPCKeysPath, "server.crt"), path.Join(config.C.GRPCKeysPath, "server.key"))
+	certificate, err := tls.LoadX509KeyPair(filepath.Join(config.C.GRPCKeysPath, "server.crt"), filepath.Join(config.C.GRPCKeysPath, "server.key"))
 	if err != nil {
 		zap.S().Errorf("could not load server key pair: %s", err)
 		return
@@ -40,7 +40,7 @@ func main() {
 
 	// Create a certificate pool from the certificate authority
 	certPool := x509.NewCertPool()
-	ca, err := ioutil.ReadFile(path.Join(config.C.GRPCKeysPath, "root.crt"))
+	ca, err := ioutil.ReadFile(filepath.Join(config.C.GRPCKeysPath, "root.crt"))
 	if err != nil {
 		zap.S().Errorf("could not read ca certificate: %s", err)
 		return
