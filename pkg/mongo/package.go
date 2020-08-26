@@ -122,7 +122,9 @@ func CreatePackageIndexes() {
 	}
 
 	_, err = client.Database(MongoDatabase).Collection(CollectionPackages.String()).Indexes().CreateMany(ctx, indexModels)
-	log.ErrS(err)
+	if err != nil {
+		log.ErrS(err)
+	}
 }
 
 func (pack Package) GetID() int {

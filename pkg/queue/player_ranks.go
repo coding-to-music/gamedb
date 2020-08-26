@@ -122,7 +122,7 @@ func playerRanksHandler(message *rabbit.Message) {
 					log.ErrS(err2, err2.Request)
 				}
 			} else {
-				log.ErrS(err)
+				log.ErrS(err, payload)
 			}
 
 			sendToRetryQueue(message)

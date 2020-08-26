@@ -83,7 +83,9 @@ func CreateGroupIndexes() {
 	}
 
 	_, err = client.Database(MongoDatabase).Collection(CollectionGroups.String()).Indexes().CreateMany(ctx, indexModels)
-	log.ErrS(err)
+	if err != nil {
+		log.ErrS(err)
+	}
 }
 
 func (group Group) GetPath() string {
