@@ -69,7 +69,7 @@ var PlayerRankFieldsInflux = map[RankMetric]string{
 	RankKeyLevel:        "level_rank",
 	RankKeyGames:        "games_rank",
 	RankKeyBadges:       "badges_rank",
-	RankKeyBadgesFoil:   "badges_foil_count",
+	RankKeyBadgesFoil:   "badges_foil_rank",
 	RankKeyPlaytime:     "playtime_rank",
 	RankKeyFriends:      "friends_rank",
 	RankKeyComments:     "comments_rank",
