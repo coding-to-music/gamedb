@@ -26,10 +26,8 @@ func main() {
 	config.Init(version, commits, helpers.GetIP())
 	log.InitZap(log.LogNameBackend)
 
-	base := config.C.GRPCKeysPath
-
 	// Load the certificates from disk
-	certificate, err := tls.LoadX509KeyPair(path.Join(base, "server.crt"), path.Join(base, "server.key"))
+	certificate, err := tls.LoadX509KeyPair(path.Join(config.C.GRPCKeysPath, "server.crt"), path.Join(config.C.GRPCKeysPath, "server.key"))
 	if err != nil {
 		zap.S().Errorf("could not load server key pair: %s", err)
 		return
@@ -37,7 +35,7 @@ func main() {
 
 	// Create a certificate pool from the certificate authority
 	certPool := x509.NewCertPool()
-	ca, err := ioutil.ReadFile(path.Join(base, "root.crt"))
+	ca, err := ioutil.ReadFile(path.Join(config.C.GRPCKeysPath, "root.crt"))
 	if err != nil {
 		zap.S().Errorf("could not read ca certificate: %s", err)
 		return
