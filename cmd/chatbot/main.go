@@ -39,11 +39,10 @@ func main() {
 
 	// Profiling
 	if !config.IsConsumer() {
-		log.Info("Starting chatbot profiling")
 		go func() {
 			err := http.ListenAndServe(":6061", nil)
 			if err != nil {
-				log.FatalS(err)
+				log.ErrS(err)
 			}
 		}()
 	}
