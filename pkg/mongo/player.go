@@ -353,59 +353,70 @@ func CreatePlayerIndexes() {
 	// These are for the ranking cron
 	for col := range PlayerRankFields {
 		indexModels = append(indexModels, mongo.IndexModel{
-			Keys: bson.D{{col, -1}},
+			Keys: bson.D{
+				{col, -1},
+			},
 		})
 		indexModels = append(indexModels, mongo.IndexModel{
-			Keys: bson.D{{"continent_code", 1}, {col, -1}},
+			Keys: bson.D{
+				{"continent_code", 1},
+				{col, -1},
+			},
 		})
 		indexModels = append(indexModels, mongo.IndexModel{
-			Keys: bson.D{{"country_code", 1}, {col, -1}},
+			Keys: bson.D{
+				{"country_code", 1},
+				{col, -1},
+			},
 		})
 		indexModels = append(indexModels, mongo.IndexModel{
-			Keys: bson.D{{"country_code", 1}, {"status_code", 1}, {col, -1}},
+			Keys: bson.D{
+				{"country_code", 1},
+				{"status_code", 1},
+				{col, -1},
+			},
 		})
 	}
+
+	//
+	indexModels = append(indexModels,
+
+		// Asc
+		mongo.IndexModel{Keys: bson.D{{"primary_clan_id_string", 1}}},
+
+		// Desc
+		mongo.IndexModel{Keys: bson.D{{"achievement_count_100", -1}}},
+		mongo.IndexModel{Keys: bson.D{{"bans_cav", -1}}},
+		mongo.IndexModel{Keys: bson.D{{"bans_game", -1}}},
+		mongo.IndexModel{Keys: bson.D{{"bans_last", -1}}},
+	)
 
 	// For last updated task
 	indexModels = append(indexModels, mongo.IndexModel{
-		Keys: bson.D{{"community_visibility_state", 1}, {"updated_at", 1}},
+		Keys: bson.D{
+			{"community_visibility_state", 1},
+			{"removed", 1},
+			{"updated_at", 1},
+		},
 	})
-
-	// For sorting main players table, ranked columns are added above
-	ascending := []string{
-		"primary_clan_id_string", // Groups queue
-	}
-
-	descending := []string{
-		"achievement_count_100",
-		"bans_cav",
-		"bans_game",
-		"bans_last",
-	}
-
-	for _, col := range ascending {
-		indexModels = append(indexModels, mongo.IndexModel{Keys: bson.D{{col, 1}}})
-	}
-
-	for _, col := range descending {
-		indexModels = append(indexModels, mongo.IndexModel{Keys: bson.D{{col, -1}}})
-	}
 
 	// For player search in chatbot
-	indexModels = append(indexModels, mongo.IndexModel{
-		Keys: bson.D{{"persona_name", 1}},
-		Options: options.Index().SetCollation(&options.Collation{
-			Locale:   "en",
-			Strength: 2, // Case insensitive
-		}),
-	})
-	indexModels = append(indexModels, mongo.IndexModel{
-		Keys: bson.D{{"vanity_url", 1}},
-		Options: options.Index().SetCollation(&options.Collation{
-			Locale:   "en",
-			Strength: 2, // Case insensitive
-		}),
-	})
+	indexModels = append(indexModels,
+		mongo.IndexModel{
+			Keys: bson.D{{"persona_name", 1}},
+			Options: options.Index().SetCollation(&options.Collation{
+				Locale:   "en",
+				Strength: 2, // Case insensitive
+			}),
+		},
+		mongo.IndexModel{
+			Keys: bson.D{{"vanity_url", 1}},
+			Options: options.Index().SetCollation(&options.Collation{
+				Locale:   "en",
+				Strength: 2, // Case insensitive
+			}),
+		},
+	)
 
 	//
 	client, ctx, err := getMongo()
