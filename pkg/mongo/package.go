@@ -86,7 +86,7 @@ func (pack Package) BSON() bson.D {
 }
 
 //noinspection GoUnusedExportedFunction
-func CreatePackageIndexes() {
+func createPackageIndexes() {
 
 	var indexModels []mongo.IndexModel
 

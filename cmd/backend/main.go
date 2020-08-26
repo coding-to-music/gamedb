@@ -11,6 +11,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -25,6 +26,10 @@ func main() {
 
 	config.Init(version, commits, helpers.GetIP())
 	log.InitZap(log.LogNameBackend)
+
+	if config.IsProd() {
+		mongo.Migrations()
+	}
 
 	// Load the certificates from disk
 	certificate, err := tls.LoadX509KeyPair(path.Join(config.C.GRPCKeysPath, "server.crt"), path.Join(config.C.GRPCKeysPath, "server.key"))

@@ -57,7 +57,7 @@ func (a PlayerAchievement) GetComplete() string {
 }
 
 //noinspection GoUnusedExportedFunction
-func CreatePlayerAchievementIndexes() {
+func createPlayerAchievementIndexes() {
 
 	var indexModels = []mongo.IndexModel{
 		// GetPlayerAchievements

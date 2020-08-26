@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo/logging"
 	"go.mongodb.org/mongo-driver/bson"
@@ -116,6 +117,18 @@ func getMongo() (client *mongo.Client, ctx context.Context, err error) {
 	}
 
 	return mongoClient, mongoCtx, err
+}
+
+func Migrations() {
+	log.Info("Starting migrations")
+	createAppIndexes()
+	createGroupIndexes()
+	createPackageIndexes()
+	createPlayerIndexes()
+	createPlayerAchievementIndexes()
+	createPlayerAppIndexes()
+	createSaleIndexes()
+	log.Info("Finished migrations")
 }
 
 func FindOne(collection collection, filter bson.D, sort bson.D, projection bson.M, document Document) (err error) {
