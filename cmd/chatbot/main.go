@@ -55,7 +55,7 @@ func main() {
 		return
 	}
 
-	if !config.IsProd() && !config.IsLocal() {
+	if config.IsConsumer() {
 		log.Err("Prod & local only")
 		return
 	}
