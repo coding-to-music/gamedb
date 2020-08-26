@@ -68,6 +68,7 @@ func appsPlayersHandler(message *rabbit.Message) {
 	player.Level = mongoPlayer.Level
 	player.PlayTime = mongoPlayer.PlayTime
 	player.Badges = mongoPlayer.BadgesCount
+	player.BadgesFoil = mongoPlayer.BadgesFoilCount
 	player.Games = mongoPlayer.GamesCount
 	player.Friends = mongoPlayer.FriendsCount
 	player.Comments = mongoPlayer.CommentsCount

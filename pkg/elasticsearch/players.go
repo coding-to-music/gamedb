@@ -28,6 +28,7 @@ type Player struct {
 	Level             int      `json:"level"`
 	PlayTime          int      `json:"play_time"`
 	Badges            int      `json:"badges"`
+	BadgesFoil        int      `json:"badges_foil"`
 	Games             int      `json:"games"`
 	Friends           int      `json:"friends"`
 	Comments          int      `json:"comments"`
@@ -217,6 +218,7 @@ func DeleteAndRebuildPlayersIndex() {
 				"level":            fieldTypeInt32,
 				"play_time":        fieldTypeInt32,
 				"badges":           fieldTypeInt32,
+				"badges_foil":      fieldTypeInt32,
 				"games":            fieldTypeInt32,
 				"friends":          fieldTypeInt32,
 				"comments":         fieldTypeInt32,

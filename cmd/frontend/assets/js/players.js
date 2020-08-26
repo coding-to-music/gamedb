@@ -242,6 +242,14 @@ if ($('#players-page').length > 0) {
                 "orderable": false,
                 "visible": false,
             },
+            // Foil Badges
+            {
+                "targets": 16,
+                "render": function (data, type, row) {
+                    return row[24].toLocaleString();
+                },
+                "orderSequence": ["desc"],
+            },
         ]
     };
 
@@ -290,24 +298,24 @@ if ($('#players-page').length > 0) {
 
         switch (hash) {
             case '#level':
-                show = [3, 4];
+                show = [3, 4, 16];
                 hide = [5, 6, 7, 8, 9, 10, 11, 12, 13];
                 break;
             case '#games':
                 show = [5, 6];
-                hide = [3, 4, 7, 8, 9, 10, 11, 12, 13];
+                hide = [3, 4, 7, 8, 9, 10, 11, 12, 13, 16];
                 break;
             case '#bans':
                 show = [7, 8, 9];
-                hide = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+                hide = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16];
                 break;
             case '#profile':
                 show = [10, 11];
-                hide = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+                hide = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16];
                 break;
             case '#achievements':
                 show = [12, 13];
-                hide = [3, 4, 5, 6, 7, 8, 9, 10, 11];
+                hide = [3, 4, 5, 6, 7, 8, 9, 10, 11, 16];
                 break;
         }
 
