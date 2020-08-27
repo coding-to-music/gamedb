@@ -1,5 +1,8 @@
 if ($('#commits-page').length > 0) {
 
+    const $table = $('table.table');
+    let page = null;
+
     const options = {
         "order": [[1, 'desc']],
         "createdRow": function (row, data, dataIndex) {
@@ -50,7 +53,12 @@ if ($('#commits-page').length > 0) {
             {
                 "targets": 4,
                 "render": function (data, type, row) {
-                    if (row[6]) {
+
+                    if (page === null) {
+                        page = $table.DataTable().page.info().page;
+                    }
+
+                    if (row[6] || page > 0) {
                         return '<i class="fas fa-check text-success"></i>';
                     } else {
                         return '<i class="fas fa-times text-danger"></i>';
@@ -61,8 +69,6 @@ if ($('#commits-page').length > 0) {
         ]
     };
 
-    let page = null;
-    const $table = $('table.table');
     const dt = $table.gdbTable({tableOptions: options});
 
     dt.on('draw.dt', function (e, settings) {
