@@ -38,6 +38,12 @@ func (c PlayersQueueLastUpdated) Cron() TaskTime {
 const toQueue = 10
 const cronTime = time.Minute
 
+// Just here so frontend can use it
+var LastUpdatedQuery = bson.D{
+	{"community_visibility_state", 3}, // Public
+	{"removed", false},
+}
+
 func (c PlayersQueueLastUpdated) work() (err error) {
 
 	// Skip if queues have activity
@@ -73,12 +79,7 @@ func (c PlayersQueueLastUpdated) work() (err error) {
 	}
 
 	// Queue last updated players
-	var filter = bson.D{
-		{"community_visibility_state", bson.M{"$ne": 1}},
-		{"removed", bson.M{"$ne": true}},
-	}
-
-	players, err := mongo.GetPlayers(0, int64(toQueue*consumers), bson.D{{"updated_at", 1}}, filter, bson.M{"_id": 1})
+	players, err := mongo.GetPlayers(0, int64(toQueue*consumers), bson.D{{"updated_at", 1}}, LastUpdatedQuery, bson.M{"_id": 1})
 	if err != nil {
 		return err
 	}
