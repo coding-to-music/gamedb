@@ -4,6 +4,14 @@
         <ul class="nav nav-tabs card-header-tabs nav-fill-mobile" role="tablist">
 
             <li class="nav-item">
+                {{if endsWith .Path "/stats" }}
+                    <span class="nav-link active" role="tab">Stats</span>
+                {{else}}
+                    <a class="nav-link" href="/admin/stats" role="tab">Stats</a>
+                {{end}}
+            </li>
+
+            <li class="nav-item">
                 {{if endsWith .Path "/tasks" }}
                     <span class="nav-link active" role="tab">Tasks</span>
                 {{else}}

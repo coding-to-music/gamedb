@@ -7,10 +7,12 @@ import (
 	"sync"
 	"time"
 
+	"github.com/Jleagle/go-durationfmt"
 	"github.com/Jleagle/patreon-go/patreon"
 	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/datatable"
 	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/middleware"
 	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/session"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
@@ -32,6 +34,7 @@ func AdminRouter() http.Handler {
 	r.Use(middleware.MiddlewareAdminCheck(Error404Handler))
 
 	r.Get("/", adminHandler)
+	r.Get("/stats", adminStatsHandler)
 	r.Get("/tasks", adminTasksHandler)
 	r.Get("/users", adminUsersHandler)
 	r.Get("/users.json", adminUsersAjaxHandler)
@@ -51,7 +54,7 @@ func AdminRouter() http.Handler {
 }
 
 func adminHandler(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, "/admin/tasks", http.StatusFound)
+	http.Redirect(w, r, "/admin/stats", http.StatusFound)
 }
 
 func adminUsersHandler(w http.ResponseWriter, r *http.Request) {
@@ -391,6 +394,41 @@ type adminPatreonTemplate struct {
 }
 
 func (t adminPatreonTemplate) includes() []string {
+	return []string{"includes/admin_header.gohtml"}
+}
+
+func adminStatsHandler(w http.ResponseWriter, r *http.Request) {
+
+	t := adminStatsTemplate{}
+	t.fill(w, r, "Admin", "Admin")
+
+	t.Commits = config.C.Commits
+	t.Hash = config.GetShortCommitHash()
+
+	// Oldest player
+	players, err := mongo.GetPlayers(0, 1, bson.D{{"updated_at", 1}}, tasks.LastUpdatedQuery, bson.M{"updated_at": 1})
+	if err != nil {
+		log.ErrS(err)
+	}
+
+	if len(players) > 0 {
+		t.Oldest, err = durationfmt.Format(time.Now().Sub(players[0].UpdatedAt), "%d days")
+		if err != nil {
+			log.ErrS(err)
+		}
+	}
+
+	returnTemplate(w, r, "admin/stats", t)
+}
+
+type adminStatsTemplate struct {
+	globalTemplate
+	Oldest  string
+	Commits string
+	Hash    string
+}
+
+func (t adminStatsTemplate) includes() []string {
 	return []string{"includes/admin_header.gohtml"}
 }
 
