@@ -41,24 +41,16 @@ if ($('#commits-page').length > 0) {
                 },
                 "orderable": false,
             },
-            // Commit
-            {
-                "targets": 3,
-                "render": function (data, type, row) {
-                    return row[5].toLocaleString();
-                },
-                "orderable": false,
-            },
             // Live
             {
-                "targets": 4,
+                "targets": 3,
                 "render": function (data, type, row) {
 
                     if (page === null) {
                         page = $table.DataTable().page.info().page;
                     }
 
-                    if (row[6] || page > 0) {
+                    if (row[5] || page > 0) {
                         return '<i class="fas fa-check text-success"></i>';
                     } else {
                         return '<i class="fas fa-times text-danger"></i>';
