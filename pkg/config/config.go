@@ -12,6 +12,8 @@ const (
 	EnvConsumer = "consumer"
 )
 
+var ErrMissingEnvironmentVariable = errors.New("missing env var")
+
 type Config struct {
 
 	// Admin
@@ -34,7 +36,7 @@ type Config struct {
 	// Elastic Search
 	ElasticAddress  string `envconfig:"ELASTIC_SEARCH_ADDRESS" required:"true"`
 	ElasticUsername string `envconfig:"ELASTIC_SEARCH_USERNAME" required:"true"`
-	ElasticPassword string `envconfig:"ELASTIC_SEARCH_PASSWORD" required:"true"`
+	ElasticPassword string `envconfig:"ELASTIC_SEARCH_PASSWORD"`
 
 	// GitHub
 	GitHubClient        string `envconfig:"GITHUB_CLIENT"`         // OAuth
@@ -56,7 +58,7 @@ type Config struct {
 	// Influx
 	InfluxURL      string `envconfig:"INFLUX_URL" required:"true"`
 	InfluxUsername string `envconfig:"INFLUX_USERNAME" required:"true"`
-	InfluxPassword string `envconfig:"INFLUX_PASSWORD" required:"true"`
+	InfluxPassword string `envconfig:"INFLUX_PASSWORD"`
 
 	// Instagram
 	InstagramUsername string `envconfig:"INSTAGRAM_USERNAME"`
@@ -64,21 +66,21 @@ type Config struct {
 
 	// Memcache
 	MemcacheDSN      string `envconfig:"MEMCACHE_URL" required:"true"`
-	MemcacheUsername string `envconfig:"MEMCACHE_USERNAME" required:"true"`
-	MemcachePassword string `envconfig:"MEMCACHE_PASSWORD" required:"true"`
+	MemcacheUsername string `envconfig:"MEMCACHE_USERNAME"`
+	MemcachePassword string `envconfig:"MEMCACHE_PASSWORD"`
 
 	// Mongo
 	MongoHost     string `envconfig:"MONGO_HOST" required:"true"`
 	MongoPort     string `envconfig:"MONGO_PORT" required:"true"`
 	MongoUsername string `envconfig:"MONGO_USERNAME" required:"true"`
-	MongoPassword string `envconfig:"MONGO_PASSWORD" required:"true"`
+	MongoPassword string `envconfig:"MONGO_PASSWORD"`
 	MongoDatabase string `envconfig:"MONGO_DATABASE" required:"true"`
 
 	// MySQL
 	MySQLHost     string `envconfig:"MYSQL_HOST" required:"true"`
 	MySQLPort     string `envconfig:"MYSQL_PORT" required:"true"`
 	MySQLUsername string `envconfig:"MYSQL_USERNAME" required:"true"`
-	MySQLPassword string `envconfig:"MYSQL_PASSWORD" required:"true"`
+	MySQLPassword string `envconfig:"MYSQL_PASSWORD"`
 	MySQLDatabase string `envconfig:"MYSQL_DATABASE" required:"true"`
 
 	// Patreon

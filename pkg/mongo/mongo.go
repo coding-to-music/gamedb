@@ -82,6 +82,10 @@ func getMongo() (client *mongo.Client, ctx context.Context, err error) {
 
 	if mongoClient == nil {
 
+		if config.C.TwitchClientID == "" || config.C.TwitchClientSecret == "" {
+			return nil, nil, config.ErrMissingEnvironmentVariable
+		}
+
 		ctx = context.Background()
 
 		creds := options.Credential{
