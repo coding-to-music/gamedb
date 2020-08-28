@@ -39,7 +39,7 @@ func (c CommandApp) Output(msg *discordgo.MessageCreate) (message discordgo.Mess
 
 	matches := RegexCache[c.Regex()].FindStringSubmatch(msg.Message.Content)
 
-	apps, err := elasticsearch.SearchAppsSimple(1, matches[2])
+	apps, err := elasticsearch.SearchAppsSimple(1, matches[2], nil)
 	if err != nil {
 		return message, err
 	} else if len(apps) == 0 {

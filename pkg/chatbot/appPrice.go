@@ -50,7 +50,7 @@ func (c CommandAppPrice) Output(msg *discordgo.MessageCreate) (message discordgo
 
 	matches := RegexCache[c.Regex()].FindStringSubmatch(msg.Message.Content)
 
-	apps, err := elasticsearch.SearchAppsSimple(1, matches[2])
+	apps, err := elasticsearch.SearchAppsSimple(1, matches[2], []string{"id", "name", "prices"})
 	if err != nil {
 		return message, err
 	} else if len(apps) == 0 {

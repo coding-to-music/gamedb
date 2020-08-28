@@ -61,18 +61,18 @@ func (app App) GetStoreLink() string {
 	return helpers.GetAppStoreLink(app.ID)
 }
 
-func SearchAppsSimple(limit int, search string) (apps []App, err error) {
+func SearchAppsSimple(limit int, search string, cols []string) (apps []App, err error) {
 
-	apps, _, err = searchApps(limit, 0, search, false, false, nil, nil)
+	apps, _, err = searchApps(limit, 0, search, false, false, nil, nil, cols)
 	return apps, err
 }
 
 func SearchAppsAdvanced(offset int, search string, sorters []elastic.Sorter, filters []elastic.Query) (apps []App, total int64, err error) {
 
-	return searchApps(100, offset, search, true, true, sorters, filters)
+	return searchApps(100, offset, search, true, true, sorters, filters, nil)
 }
 
-func searchApps(limit int, offset int, search string, totals bool, highlights bool, sorters []elastic.Sorter, filters []elastic.Query) (apps []App, total int64, err error) {
+func searchApps(limit int, offset int, search string, totals bool, highlights bool, sorters []elastic.Sorter, filters []elastic.Query, cols []string) (apps []App, total int64, err error) {
 
 	client, ctx, err := GetElastic()
 	if err != nil {
@@ -111,6 +111,10 @@ func searchApps(limit int, offset int, search string, totals bool, highlights bo
 
 	if totals {
 		searchService.TrackTotalHits(true)
+	}
+
+	if len(cols) > 0 {
+		searchService.DocvalueFields(cols...)
 	}
 
 	searchResult, err := searchService.Do(ctx)
