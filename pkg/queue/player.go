@@ -162,13 +162,6 @@ func playerHandler(message *rabbit.Message) {
 
 		defer wg.Done()
 
-		err = updatePlayerWishlistApps(&player)
-		if err != nil {
-			steam.LogSteamError(err, payload.ID)
-			sendToRetryQueue(message)
-			return
-		}
-
 		err = updatePlayerComments(&player)
 		if err != nil {
 			steam.LogSteamError(err, payload.ID)
@@ -332,6 +325,9 @@ func playerHandler(message *rabbit.Message) {
 		PlayersAliasesMessage{
 			PlayerID:      player.ID,
 			PlayerRemoved: player.Removed,
+		},
+		PlayersWishlistMessage{
+			PlayerID: player.ID,
 		},
 	}
 
@@ -574,92 +570,6 @@ func updatePlayerBans(player *mongo.Player) error {
 		DaysSinceLastBan: response.DaysSinceLastBan,
 		NumberOfGameBans: response.NumberOfGameBans,
 		EconomyBan:       response.EconomyBan,
-	}
-
-	return nil
-}
-
-func updatePlayerWishlistApps(player *mongo.Player) error {
-
-	// New
-	resp, err := steam.GetSteam().GetWishlist(player.ID)
-	err = steam.AllowSteamCodes(err, 500)
-	if err == steamapi.ErrWishlistNotFound {
-		return nil
-	} else if err != nil {
-		return err
-	}
-
-	var newAppSlice = resp.Items
-
-	player.WishlistAppsCount = len(resp.Items)
-
-	var newAppMap = map[int]steamapi.WishlistItem{}
-	for k, v := range newAppSlice {
-		newAppMap[int(k)] = v
-	}
-
-	// Old
-	oldAppsSlice, err := mongo.GetPlayerWishlistAppsByPlayer(player.ID, 0, 0, nil, nil)
-	if err != nil {
-		return err
-	}
-
-	oldAppsMap := map[int]mongo.PlayerWishlistApp{}
-	for _, v := range oldAppsSlice {
-		oldAppsMap[v.AppID] = v
-	}
-
-	// Delete
-	var toDelete []int
-	for _, v := range oldAppsSlice {
-		if _, ok := newAppMap[v.AppID]; !ok {
-			toDelete = append(toDelete, v.AppID)
-		}
-	}
-
-	err = mongo.DeletePlayerWishlistApps(player.ID, toDelete)
-	if err != nil {
-		return err
-	}
-
-	// Add
-	var appIDs []int
-	var toAdd []mongo.PlayerWishlistApp
-	for appID, v := range newAppMap {
-		if _, ok := oldAppsMap[appID]; !ok {
-			appIDs = append(appIDs, appID)
-			toAdd = append(toAdd, mongo.PlayerWishlistApp{
-				PlayerID: player.ID,
-				AppID:    appID,
-				Order:    v.Priority,
-			})
-		}
-	}
-
-	// Fill in data from SQL
-	apps, err := mongo.GetAppsByID(appIDs, bson.M{"_id": 1, "name": 1, "icon": 1, "release_state": 1, "release_date": 1, "release_date_unix": 1, "prices": 1})
-	if err != nil {
-		return err
-	}
-
-	var appsMap = map[int]mongo.App{}
-	for _, app := range apps {
-		appsMap[app.ID] = app
-	}
-
-	for k, v := range toAdd {
-		toAdd[k].AppPrices = appsMap[v.AppID].Prices.Map()
-		toAdd[k].AppName = appsMap[v.AppID].Name
-		toAdd[k].AppIcon = appsMap[v.AppID].Icon
-		toAdd[k].AppReleaseState = appsMap[v.AppID].ReleaseState
-		toAdd[k].AppReleaseDate = time.Unix(appsMap[v.AppID].ReleaseDateUnix, 0)
-		toAdd[k].AppReleaseDateNice = appsMap[v.AppID].ReleaseDate
-	}
-
-	err = mongo.ReplacePlayerWishlistApps(toAdd)
-	if err != nil {
-		return err
 	}
 
 	return nil

@@ -55,6 +55,7 @@ const (
 	QueuePlayersGames        rabbit.QueueName = "GDB_Players.Games"
 	QueuePlayersAliases      rabbit.QueueName = "GDB_Players.Aliases"
 	QueuePlayersGroups       rabbit.QueueName = "GDB_Players.Groups"
+	QueuePlayersWishlist     rabbit.QueueName = "GDB_Players.Wishlist"
 
 	// Group
 	QueueGroups          rabbit.QueueName = "GDB_Groups"
@@ -115,6 +116,7 @@ var (
 		{name: QueuePlayersSearch, prefetchSize: 1000},
 		{name: QueuePlayersAliases},
 		{name: QueuePlayersGroups},
+		{name: QueuePlayersWishlist},
 		{name: QueueSteam},
 		{name: QueueFailed, skipHeaders: true},
 		{name: QueueTest},
@@ -150,6 +152,7 @@ var (
 		{name: QueuePlayers, consumer: playerHandler},
 		{name: QueuePlayersAliases, consumer: playerAliasesHandler},
 		{name: QueuePlayersGroups, consumer: playersGroupsHandler},
+		{name: QueuePlayersWishlist, consumer: playersWishlistHandler},
 		{name: QueuePlayerRanks, consumer: playerRanksHandler},
 		{name: QueuePlayersAchievements, consumer: playerAchievementsHandler},
 		{name: QueuePlayersGames, consumer: playerGamesHandler},
@@ -184,6 +187,7 @@ var (
 		{name: QueuePackagesPrices},
 		{name: QueuePlayers},
 		{name: QueuePlayersGroups},
+		{name: QueuePlayersWishlist},
 		{name: QueuePlayersSearch, prefetchSize: 1000},
 		{name: QueuePlayerRanks},
 		{name: QueueDelay, skipHeaders: true},
