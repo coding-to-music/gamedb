@@ -8,31 +8,6 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-//goland:noinspection GoUnusedConst
-const (
-	// Binaries
-	LogNameAPI       = "api"
-	LogNameBackend   = "backend"
-	LogNameChatbot   = "chatbot"
-	LogNameConsumers = "consumers"
-	LogNameCrons     = "crons"
-	LogNameSteam     = "steam"
-	LogNameFrontend  = "frontend"
-	LogNameTest      = "test"
-	LogNameScaler    = "scaler"
-
-	// Others
-	LogNameMongo          = "mongo"
-	LogNameTwitter        = "twitter" // Zapier
-	LogNameRabbit         = "rabbit"
-	LogNameRequests       = "requests"
-	LogNameSQL            = "sql"
-	LogNameTriggerUpdate  = "trigger"
-	LogNameSteamErrors    = "steam-lib"
-	LogNameWebhooksGitHub = "github"
-	LogNameInflux         = "influx"
-)
-
 func InitZap(logName string) {
 
 	var cores = []zapcore.Core{
