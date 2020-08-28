@@ -246,7 +246,7 @@ if ($('#players-page').length > 0) {
             {
                 "targets": 16,
                 "render": function (data, type, row) {
-                    return row[24].toLocaleString();
+                    return row[25].toLocaleString();
                 },
                 "orderSequence": ["desc"],
             },
