@@ -4,29 +4,49 @@ import (
 	"encoding/json"
 	"errors"
 	"reflect"
+	"sync"
 
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/memcachier/mc/v3"
 )
 
-var client = mc.NewMC(config.C.MemcacheDSN, config.C.MemcacheUsername, config.C.MemcachePassword)
+var lock sync.Mutex
+var client *mc.Client
+
+func getClient() *mc.Client {
+
+	lock.Lock()
+	defer lock.Unlock()
+
+	if client == nil {
+
+		if config.C.MemcacheDSN == "" {
+			log.Fatal("Missing environment variables")
+		}
+
+		client = mc.NewMC(config.C.MemcacheDSN, config.C.MemcacheUsername, config.C.MemcachePassword)
+	}
+
+	return client
+}
 
 func Get(key string) (val string, err error) {
 
-	val, _, _, err = client.Get(key)
+	val, _, _, err = getClient().Get(key)
 	return val, err
 }
 
 func Set(key string, val string, exp uint32) (err error) {
 
-	_, err = client.Set(key, val, 0, exp, 0)
+	_, err = getClient().Set(key, val, 0, exp, 0)
 	return err
 }
 
 func GetInterface(key string, i interface{}) (err error) {
 
-	val, _, _, err := client.Get(key)
+	val, _, _, err := getClient().Get(key)
 	if err != nil {
 		return err
 	}
@@ -41,7 +61,7 @@ func SetInterface(key string, val interface{}, exp uint32) (err error) {
 		return err
 	}
 
-	_, err = client.Set(key, string(b), 0, exp, 0)
+	_, err = getClient().Set(key, string(b), 0, exp, 0)
 	return err
 }
 
@@ -81,7 +101,7 @@ func GetSetInterface(key string, exp uint32, value interface{}, callback func() 
 func Delete(keys ...string) (err error) {
 
 	for _, key := range keys {
-		err = client.Del(key)
+		err = getClient().Del(key)
 		err = helpers.IgnoreErrors(err, mc.ErrNotFound)
 		if err != nil {
 			return err
@@ -93,5 +113,5 @@ func Delete(keys ...string) (err error) {
 
 func DeleteAll() error {
 
-	return client.Flush(0)
+	return getClient().Flush(0)
 }
