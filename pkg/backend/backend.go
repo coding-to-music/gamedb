@@ -29,19 +29,21 @@ func GetClient() (*grpc.ClientConn, context.Context, error) {
 	lock.Lock()
 	defer lock.Unlock()
 
+	if config.C.GRPCKeysPath == "" {
+		return nil, nil, errors.New("missing environment variables")
+	}
+
 	if conn == nil {
 
-		base := config.C.GRPCKeysPath
-
 		// Load the client certificates from disk
-		certificate, err := tls.LoadX509KeyPair(filepath.Join(base, "client.crt"), filepath.Join(base, "client.key"))
+		certificate, err := tls.LoadX509KeyPair(filepath.Join(config.C.GRPCKeysPath, "client.crt"), filepath.Join(config.C.GRPCKeysPath, "client.key"))
 		if err != nil {
 			return nil, nil, fmt.Errorf("could not load client key pair: %s", err)
 		}
 
 		// Create a certificate pool from the certificate authority
 		certPool := x509.NewCertPool()
-		ca, err := ioutil.ReadFile(filepath.Join(base, "root.crt"))
+		ca, err := ioutil.ReadFile(filepath.Join(config.C.GRPCKeysPath, "root.crt"))
 		if err != nil {
 			return nil, nil, fmt.Errorf("could not read ca certificate: %s", err)
 		}

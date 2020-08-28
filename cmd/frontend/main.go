@@ -1,11 +1,11 @@
 package main
 
+import "C"
 import (
 	"compress/flate"
 	"net/http"
 	_ "net/http/pprof"
 	"net/url"
-	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -37,17 +37,14 @@ var (
 
 func main() {
 
-	config.Init(version, commits, helpers.GetIP())
+	err := config.Init(version, commits, helpers.GetIP())
 	log.InitZap(log.LogNameFrontend)
-
-	//
-	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
-		log.Fatal("GOOGLE_APPLICATION_CREDENTIALS not found")
-		os.Exit(1)
+	if err != nil {
+		log.FatalS(err)
+		return
 	}
 
 	// Profiling
-	// log.InfoS("Starting frontend profiling")
 	go func() {
 		err := http.ListenAndServe(":6064", nil)
 		if err != nil {
@@ -56,7 +53,7 @@ func main() {
 	}()
 
 	// Get API key
-	err := mysql.GetConsumer("frontend")
+	err = mysql.GetConsumer("frontend")
 	if err != nil {
 		log.FatalS(err)
 		return
@@ -67,7 +64,11 @@ func main() {
 	go queue.Init(queue.FrontendDefinitions)
 
 	// Setup Recaptcha
-	recaptcha.SetSecret(config.C.RecaptchaPrivate)
+	if config.C.RecaptchaPublic == "" || config.C.RecaptchaPrivate == "" {
+		log.Fatal("Missing environment variables")
+	} else {
+		recaptcha.SetSecret(config.C.RecaptchaPrivate)
+	}
 
 	session.InitSession()
 
@@ -191,10 +192,18 @@ func main() {
 	// 404
 	r.NotFound(pages.Error404Handler)
 
-	log.Info("Starting Frontend on " + "http://" + config.GetFrontendPort())
+	// Serve
+	if config.C.FrontendPort == "" {
+		log.Fatal("Missing environment variables")
+		return
+	}
+
+	add := "0.0.0.0:" + config.C.FrontendPort
+
+	log.Info("Starting Frontend on " + "http://" + add)
 
 	s := &http.Server{
-		Addr:              config.GetFrontendPort(),
+		Addr:              add,
 		Handler:           r,
 		ReadTimeout:       2 * time.Second,
 		ReadHeaderTimeout: 2 * time.Second,

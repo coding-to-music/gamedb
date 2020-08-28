@@ -38,10 +38,16 @@ var (
 
 func main() {
 
-	config.Init(version, commits, helpers.GetIP())
+	err := config.Init(version, commits, helpers.GetIP())
 	log.InitZap(log.LogNameSteam)
+	if err != nil {
+		log.FatalS(err)
+		return
+	}
 
-	var err error
+	if config.C.SteamUsername == "" || config.C.SteamPassword == "" {
+		log.Fatal("Missing environment variables")
+	}
 
 	loginDetails := steam.LogOnDetails{}
 	loginDetails.Username = config.C.SteamUsername

@@ -36,6 +36,10 @@ func twitterWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	zap.L().Named(log.LogNameTwitter).Debug("twitter webhook", zap.String("secret", secret))
 
+	if config.C.TwitterZapierSecret == "" {
+		log.Fatal("Missing environment variables")
+	}
+
 	if config.C.TwitterZapierSecret == secret {
 		err := memcache.Delete(memcache.HomeTweets.Key)
 		if err != nil {
@@ -79,8 +83,12 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Slack message
-	err = slack.PostWebhook(config.C.SlackPatreonWebhook, &slack.WebhookMessage{Text: event})
-	log.ErrS(err)
+	if config.C.SlackPatreonWebhook == "" {
+		log.Fatal("Missing environment variables")
+	} else {
+		err = slack.PostWebhook(config.C.SlackPatreonWebhook, &slack.WebhookMessage{Text: event})
+		log.ErrS(err)
+	}
 
 	returnJSON(w, r, nil)
 }

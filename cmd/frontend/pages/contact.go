@@ -98,15 +98,19 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Send
-		_, err = helpers.SendEmail(
-			mail.NewEmail(config.C.AdminName, config.C.AdminEmail),
-			mail.NewEmail(r.PostForm.Get("name"), r.PostForm.Get("email")),
-			"Game DB Contact Form",
-			r.PostForm.Get("message"),
-		)
-		if err != nil {
-			log.ErrS(err)
-			return session.SessionBad, "Something has gone wrong (1003)"
+		if config.C.AdminName == "" || config.C.AdminEmail == "" {
+			log.Fatal("Missing environment variables")
+		} else {
+			_, err = helpers.SendEmail(
+				mail.NewEmail(config.C.AdminName, config.C.AdminEmail),
+				mail.NewEmail(r.PostForm.Get("name"), r.PostForm.Get("email")),
+				"Game DB Contact Form",
+				r.PostForm.Get("message"),
+			)
+			if err != nil {
+				log.ErrS(err)
+				return session.SessionBad, "Something has gone wrong (1003)"
+			}
 		}
 
 		// Remove backup

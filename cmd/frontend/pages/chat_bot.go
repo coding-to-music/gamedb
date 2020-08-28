@@ -79,6 +79,11 @@ func (cbt chatBotTemplate) Commands() (ret [][]chatbot.Command) {
 
 func (cbt chatBotTemplate) Guilds() (guilds int) {
 
+	if config.C.DiscordChatBotToken == "" {
+		log.Fatal("Missing environment variables")
+		return 0
+	}
+
 	var item = memcache.MemcacheChatBotGuildsCount
 
 	err := memcache.GetSetInterface(item.Key, item.Expiration, &guilds, func() (i interface{}, err error) {

@@ -16,11 +16,15 @@ var commits string
 
 func main() {
 
-	config.Init(version, commits, helpers.GetIP())
+	err := config.Init(version, commits, helpers.GetIP())
 	log.InitZap(log.LogNameConsumers)
+	if err != nil {
+		log.FatalS(err)
+		return
+	}
 
 	// Get API key
-	err := mysql.GetConsumer("consumer")
+	err = mysql.GetConsumer("consumer")
 	if err != nil {
 		log.FatalS(err)
 		return

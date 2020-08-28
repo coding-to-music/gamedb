@@ -1,6 +1,8 @@
 package helpers
 
 import (
+	"errors"
+
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/sendgrid/rest"
 	"github.com/sendgrid/sendgrid-go"
@@ -17,5 +19,9 @@ func SendEmail(to, from *mail.Email, subject, html string) (resp *rest.Response,
 		return resp, err
 	}
 
-	return sendGrid.Send(mail.NewSingleEmail(from, subject, to, text, html))
+	if config.C.SendGridAPIKey == "" {
+		return nil, errors.New("missing environment variables")
+	} else {
+		return sendGrid.Send(mail.NewSingleEmail(from, subject, to, text, html))
+	}
 }

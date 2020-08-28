@@ -24,11 +24,20 @@ var commits string
 
 func main() {
 
-	config.Init(version, commits, helpers.GetIP())
+	err := config.Init(version, commits, helpers.GetIP())
 	log.InitZap(log.LogNameBackend)
+	if err != nil {
+		log.FatalS(err)
+		return
+	}
 
 	if config.IsProd() {
 		mongo.Migrations()
+	}
+
+	if config.C.GRPCKeysPath == "" {
+		log.Fatal("Missing environment variables")
+		return
 	}
 
 	// Load the certificates from disk

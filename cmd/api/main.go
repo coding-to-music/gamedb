@@ -1,5 +1,6 @@
 package main
 
+import "C"
 import (
 	"compress/flate"
 	"encoding/json"
@@ -21,8 +22,12 @@ var commits string
 
 func main() {
 
-	config.Init(version, commits, helpers.GetIP())
+	err := config.Init(version, commits, helpers.GetIP())
 	log.InitZap(log.LogNameAPI)
+	if err != nil {
+		log.FatalS(err)
+		return
+	}
 
 	r := chi.NewRouter()
 	r.Use(chiMiddleware.RedirectSlashes)
@@ -32,16 +37,18 @@ func main() {
 
 	generated.HandlerFromMux(Server{}, r)
 
-	log.Info("Starting API on " + "http://" + config.GetAPIPort())
+	addr := "0.0.0.0:" + config.C.APIPort
+
+	log.Info("Starting API on " + "http://" + addr)
 
 	s := &http.Server{
-		Addr:              config.GetAPIPort(),
+		Addr:              addr,
 		Handler:           r,
 		ReadTimeout:       2 * time.Second,
 		ReadHeaderTimeout: 2 * time.Second,
 	}
 
-	err := s.ListenAndServe()
+	err = s.ListenAndServe()
 	if err != nil {
 		log.FatalS(err)
 	}

@@ -20,8 +20,12 @@ var commits string
 
 func main() {
 
-	config.Init(version, commits, helpers.GetIP())
+	err := config.Init(version, commits, helpers.GetIP())
 	log.InitZap(log.LogNameScaler)
+	if err != nil {
+		log.FatalS(err)
+		return
+	}
 
 	// Web server
 	r := chi.NewRouter()
@@ -33,7 +37,7 @@ func main() {
 
 	fmt.Println("Starting scaler on :4000")
 
-	err := http.ListenAndServe(":4000", r)
+	err = http.ListenAndServe(":4000", r)
 	if err != nil {
 		log.FatalS(err)
 	}

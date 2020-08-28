@@ -18,8 +18,12 @@ var commits string
 
 func main() {
 
-	config.Init(version, commits, helpers.GetIP())
+	err := config.Init(version, commits, helpers.GetIP())
 	log.InitZap(log.LogNameCrons)
+	if err != nil {
+		log.FatalS(err)
+		return
+	}
 
 	// Load queue producers
 	queue.Init(queue.QueueCronsDefinitions)
@@ -33,7 +37,7 @@ func main() {
 	}()
 
 	// Get API key
-	err := mysql.GetConsumer("crons")
+	err = mysql.GetConsumer("crons")
 	if err != nil {
 		log.FatalS(err)
 		return

@@ -2,6 +2,7 @@ package charts
 
 import (
 	"bytes"
+	"errors"
 	"os"
 	"strconv"
 	"time"
@@ -146,6 +147,10 @@ func getChart(builder *influxql.Builder, id string, title string) (path string, 
 	var file = "app-" + id + ".png"
 
 	// Save chart to file
+	if config.C.ChatBotAttachments == "" {
+		return "", errors.New("missing environment variables")
+	}
+
 	f, err := os.OpenFile(config.C.ChatBotAttachments+"/"+file, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0600)
 	if err != nil {
 		return "", err

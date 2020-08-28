@@ -1,13 +1,11 @@
 package config
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/kelseyhightower/envconfig"
 )
 
-//noinspection GoUnusedConst
 const (
 	EnvProd     = "production"
 	EnvLocal    = "local"
@@ -27,73 +25,73 @@ type Config struct {
 	DigitalOceanKeyFingerprint string `envconfig:"DO_KEY_FINGERPRINT"`
 
 	// Discord
-	DiscordClientID      string `envconfig:"DISCORD_CLIENT_ID"`
-	DiscordClientSescret string `envconfig:"DISCORD_SECRET"`
-
-	DiscordChatBotToken    string `envconfig:"DISCORD_BOT_TOKEN"`
-	DiscordRelayBotToken   string `envconfig:"DISCORD_RELAY_TOKEN"`
-	DiscordChangesBotToken string `envconfig:"DISCORD_CHANGES_BOT_TOKEN"`
+	DiscordClientID        string `envconfig:"DISCORD_CLIENT_ID"`         // OAuth
+	DiscordClientSescret   string `envconfig:"DISCORD_SECRET"`            // OAuth
+	DiscordChatBotToken    string `envconfig:"DISCORD_BOT_TOKEN"`         // Bot
+	DiscordRelayBotToken   string `envconfig:"DISCORD_RELAY_TOKEN"`       // Bot
+	DiscordChangesBotToken string `envconfig:"DISCORD_CHANGES_BOT_TOKEN"` // Bot
 
 	// Elastic Search
-	ElasticAddress  string `envconfig:"ELASTIC_SEARCH_ADDRESS"`
-	ElasticUsername string `envconfig:"ELASTIC_SEARCH_USERNAME"`
-	ElasticPassword string `envconfig:"ELASTIC_SEARCH_PASSWORD"`
+	ElasticAddress  string `envconfig:"ELASTIC_SEARCH_ADDRESS" required:"true"`
+	ElasticUsername string `envconfig:"ELASTIC_SEARCH_USERNAME" required:"true"`
+	ElasticPassword string `envconfig:"ELASTIC_SEARCH_PASSWORD" required:"true"`
 
 	// GitHub
-	GitHubClient        string `envconfig:"GITHUB_CLIENT"`
-	GitHubSecret        string `envconfig:"GITHUB_SECRET"`
-	GithubToken         string `envconfig:"GITHUB_TOKEN"`
-	GithubWebhookSecret string `envconfig:"GITHUB_WEBHOOK_SECRET"`
+	GitHubClient        string `envconfig:"GITHUB_CLIENT"`         // OAuth
+	GitHubSecret        string `envconfig:"GITHUB_SECRET"`         // OAuth
+	GithubToken         string `envconfig:"GITHUB_TOKEN"`          // API
+	GithubWebhookSecret string `envconfig:"GITHUB_WEBHOOK_SECRET"` // Webhooks
 
 	// Google
-	GoogleProject           string `envconfig:"GOOGLE_PROJECT"`
-	GoogleOauthClientID     string `envconfig:"GOOGLE_OAUTH_CLIENT_ID"`
-	GoogleOauthClientSecret string `envconfig:"GOOGLE_OAUTH_CLIENT_SECRET"`
+	GoogleOauthClientID     string `envconfig:"GOOGLE_OAUTH_CLIENT_ID"`     // OAuth
+	GoogleOauthClientSecret string `envconfig:"GOOGLE_OAUTH_CLIENT_SECRET"` // OAuth
+	GoogleProject           string `envconfig:"GOOGLE_PROJECT"`             // Logging
+	GoogleAuthFile          string `envconfig:"GOOGLE_AUTH"`                // Logging
 
 	// Hetzner
-	HetznerSSHKeyID  int    `envconfig:"HETZNER_SSH_KEY_ID"`
-	HetznerNetworkID int    `envconfig:"HETZNER_NETWORK_ID"`
-	HetznerAPIToken  string `envconfig:"HETZNER_API_TOKEN"`
+	HetznerSSHKeyID  int    `envconfig:"HETZNER_SSH_KEY_ID"` // Scaler
+	HetznerNetworkID int    `envconfig:"HETZNER_NETWORK_ID"` // Scaler
+	HetznerAPIToken  string `envconfig:"HETZNER_API_TOKEN"`  // Scaler
 
 	// Influx
-	InfluxURL      string `envconfig:"INFLUX_URL"`
-	InfluxUsername string `envconfig:"INFLUX_USERNAME"`
-	InfluxPassword string `envconfig:"INFLUX_PASSWORD"`
+	InfluxURL      string `envconfig:"INFLUX_URL" required:"true"`
+	InfluxUsername string `envconfig:"INFLUX_USERNAME" required:"true"`
+	InfluxPassword string `envconfig:"INFLUX_PASSWORD" required:"true"`
 
 	// Instagram
 	InstagramUsername string `envconfig:"INSTAGRAM_USERNAME"`
 	InstagramPassword string `envconfig:"INSTAGRAM_PASSWORD"`
 
 	// Memcache
-	MemcacheDSN      string `envconfig:"MEMCACHE_URL"`
-	MemcacheUsername string `envconfig:"MEMCACHE_USERNAME"`
-	MemcachePassword string `envconfig:"MEMCACHE_PASSWORD"`
+	MemcacheDSN      string `envconfig:"MEMCACHE_URL" required:"true"`
+	MemcacheUsername string `envconfig:"MEMCACHE_USERNAME" required:"true"`
+	MemcachePassword string `envconfig:"MEMCACHE_PASSWORD" required:"true"`
 
 	// Mongo
-	MongoHost     string `envconfig:"MONGO_HOST"`
-	MongoPort     string `envconfig:"MONGO_PORT"`
-	MongoUsername string `envconfig:"MONGO_USERNAME"`
-	MongoPassword string `envconfig:"MONGO_PASSWORD"`
-	MongoDatabase string `envconfig:"MONGO_DATABASE"`
+	MongoHost     string `envconfig:"MONGO_HOST" required:"true"`
+	MongoPort     string `envconfig:"MONGO_PORT" required:"true"`
+	MongoUsername string `envconfig:"MONGO_USERNAME" required:"true"`
+	MongoPassword string `envconfig:"MONGO_PASSWORD" required:"true"`
+	MongoDatabase string `envconfig:"MONGO_DATABASE" required:"true"`
 
 	// MySQL
-	MySQLHost     string `envconfig:"MYSQL_HOST"`
-	MySQLPort     string `envconfig:"MYSQL_PORT"`
-	MySQLUsername string `envconfig:"MYSQL_USERNAME"`
-	MySQLPassword string `envconfig:"MYSQL_PASSWORD"`
-	MySQLDatabase string `envconfig:"MYSQL_DATABASE"`
+	MySQLHost     string `envconfig:"MYSQL_HOST" required:"true"`
+	MySQLPort     string `envconfig:"MYSQL_PORT" required:"true"`
+	MySQLUsername string `envconfig:"MYSQL_USERNAME" required:"true"`
+	MySQLPassword string `envconfig:"MYSQL_PASSWORD" required:"true"`
+	MySQLDatabase string `envconfig:"MYSQL_DATABASE" required:"true"`
 
 	// Patreon
-	PatreonSecret       string `envconfig:"PATREON_WEBOOK_SECRET"`
-	PatreonClientID     string `envconfig:"PATREON_CLIENT_ID"`
-	PatreonClientSecret string `envconfig:"PATREON_CLIENT_SECRET"`
+	PatreonSecret       string `envconfig:"PATREON_WEBOOK_SECRET"` // Webhooks
+	PatreonClientID     string `envconfig:"PATREON_CLIENT_ID"`     // OAuth
+	PatreonClientSecret string `envconfig:"PATREON_CLIENT_SECRET"` // OAuth
 
 	// Rabbit
-	RabbitUsername      string `envconfig:"RABBIT_USER"`
-	RabbitPassword      string `envconfig:"RABBIT_PASS"`
-	RabbitHost          string `envconfig:"RABBIT_HOST"`
-	RabbitPort          string `envconfig:"RABBIT_PORT"`
-	RabbitManagmentPort string `envconfig:"RABBIT_MANAGEMENT_PORT"`
+	RabbitUsername      string `envconfig:"RABBIT_USER" required:"true"`
+	RabbitPassword      string `envconfig:"RABBIT_PASS" required:"true"`
+	RabbitHost          string `envconfig:"RABBIT_HOST" required:"true"`
+	RabbitPort          string `envconfig:"RABBIT_PORT" required:"true"`
+	RabbitManagmentPort string `envconfig:"RABBIT_MANAGEMENT_PORT" required:"true"`
 
 	// Recaptcha
 	RecaptchaPublic  string `envconfig:"RECAPTCHA_PUBLIC"`
@@ -107,8 +105,8 @@ type Config struct {
 	SentryDSN string `envconfig:"SENTRY_DSN"`
 
 	// Session
-	SessionAuthentication string `envconfig:"SESSION_AUTHENTICATION"`
-	SessionEncryption     string `envconfig:"SESSION_ENCRYPTION"`
+	SessionAuthentication string `envconfig:"SESSION_AUTHENTICATION" required:"true"`
+	SessionEncryption     string `envconfig:"SESSION_ENCRYPTION" required:"true"`
 
 	// Steam
 	SteamUsername string `envconfig:"PROXY_USERNAME"`
@@ -120,11 +118,11 @@ type Config struct {
 	TwitchClientSecret string `envconfig:"TWITCH_CLIENT_SECRET"`
 
 	// Twitter
-	TwitterAccessToken       string `envconfig:"TWITTER_ACCESS_TOKEN"`
-	TwitterAccessTokenSecret string `envconfig:"TWITTER_ACCESS_TOKEN_SECRET"`
-	TwitterConsumerKey       string `envconfig:"TWITTER_CONSUMER_KEY"`
-	TwitterConsumerSecret    string `envconfig:"TWITTER_CONSUMER_SECRET"`
-	TwitterZapierSecret      string `envconfig:"TWITTER_ZAPIER_SECRET"`
+	TwitterAccessToken       string `envconfig:"TWITTER_ACCESS_TOKEN"`        // API (Home)
+	TwitterAccessTokenSecret string `envconfig:"TWITTER_ACCESS_TOKEN_SECRET"` // API (Home)
+	TwitterConsumerKey       string `envconfig:"TWITTER_CONSUMER_KEY"`        // API (Home)
+	TwitterConsumerSecret    string `envconfig:"TWITTER_CONSUMER_SECRET"`     // API (Home)
+	TwitterZapierSecret      string `envconfig:"TWITTER_ZAPIER_SECRET"`       // Webhooks
 
 	// YouTube
 	YoutubeAPIKey string `envconfig:"YOUTUBE_API_KEY"`
@@ -137,39 +135,34 @@ type Config struct {
 
 	// Other
 	GameDBDomain        string `envconfig:"DOMAIN"` // With proto & port
-	Environment         string `envconfig:"ENV"`
+	Environment         string `envconfig:"ENV" required:"true"`
 	SendGridAPIKey      string `envconfig:"SENDGRID"`
 	SlackGameDBWebhook  string `envconfig:"SLACK_GAMEDB_WEBHOOK"`
 	SlackPatreonWebhook string `envconfig:"SLACK_SOCIAL_WEBHOOK"`
-	InfraPath           string `envconfig:"INFRASTRUCTURE_PATH"`
 	ChatBotAttachments  string `envconfig:"CHATBOT_ATTACHMENTS"`
 	GRPCKeysPath        string `envconfig:"GRPC_KEYS_PATH"`
 
 	// Non-environment
-	IP              string `ignored:"true"`
 	CommitHash      string `ignored:"true"`
 	Commits         string `ignored:"true"`
 	GameDBShortName string `ignored:"true"`
+	IP              string `ignored:"true"`
 	NewReleaseDays  int    `ignored:"true"`
 }
 
 var C Config
 
-func init() {
+func Init(version string, commits string, ip string) error {
 
 	err := envconfig.Process("steam", &C)
-	if err != nil {
-		fmt.Println(err) // Zap not ready yet
-	}
 
-	C.GameDBShortName = "GameDB"
-	C.NewReleaseDays = 14
-}
-
-func Init(version string, commits string, ip string) {
 	C.CommitHash = version
 	C.Commits = commits
+	C.GameDBShortName = "GameDB"
 	C.IP = ip
+	C.NewReleaseDays = 14
+
+	return err
 }
 
 func MySQLDNS() string {
@@ -182,14 +175,6 @@ func RabbitDSN() string {
 
 func MongoDSN() string {
 	return "mongodb://" + C.MongoHost + ":" + C.MongoPort
-}
-
-func GetFrontendPort() string {
-	return "0.0.0.0:" + C.FrontendPort
-}
-
-func GetAPIPort() string {
-	return "0.0.0.0:" + C.APIPort
 }
 
 func IsLocal() bool {

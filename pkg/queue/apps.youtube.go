@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/rabbit-go"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -27,6 +28,12 @@ func appYoutubeHandler(message *rabbit.Message) {
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
 		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
+		sendToFailQueue(message)
+		return
+	}
+
+	if config.C.YoutubeAPIKey == "" {
+		log.Fatal("Missing environment variables")
 		sendToFailQueue(message)
 		return
 	}
