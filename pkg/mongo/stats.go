@@ -3,6 +3,7 @@ package mongo
 import (
 	"time"
 
+	"github.com/gamedb/gamedb/pkg/config"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -64,7 +65,7 @@ func ReplaceStats(c collection, stats []Stat) (err error) {
 		writes = append(writes, write)
 	}
 
-	collection := client.Database(MongoDatabase).Collection(c.String())
+	collection := client.Database(config.C.MongoDatabase).Collection(c.String())
 
 	_, err = collection.BulkWrite(ctx, writes, options.BulkWrite())
 	return err
@@ -77,7 +78,7 @@ func FindOrCreate(c collection, name string, id int, row Stat) (foundID int, err
 		return 0, err
 	}
 
-	collection := client.Database(MongoDatabase, options.Database()).Collection(CollectionPlayerApps.String())
+	collection := client.Database(config.C.MongoDatabase, options.Database()).Collection(CollectionPlayerApps.String())
 
 	result := collection.FindOne(ctx, bson.M{}, options.FindOne())
 	if result.Err() != nil && err != ErrNoDocuments {

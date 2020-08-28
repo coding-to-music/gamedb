@@ -8,6 +8,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/Philipp15b/go-steam/protocol/steamlang"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -121,7 +122,7 @@ func createPackageIndexes() {
 		return
 	}
 
-	_, err = client.Database(MongoDatabase).Collection(CollectionPackages.String()).Indexes().CreateMany(ctx, indexModels)
+	_, err = client.Database(config.C.MongoDatabase).Collection(CollectionPackages.String()).Indexes().CreateMany(ctx, indexModels)
 	if err != nil {
 		log.ErrS(err)
 	}

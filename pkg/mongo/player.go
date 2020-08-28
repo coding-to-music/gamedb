@@ -11,6 +11,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/Jleagle/steam-go/steamid"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -425,7 +426,7 @@ func createPlayerIndexes() {
 		return
 	}
 
-	_, err = client.Database(MongoDatabase).Collection(CollectionPlayers.String()).Indexes().CreateMany(ctx, indexModels)
+	_, err = client.Database(config.C.MongoDatabase).Collection(CollectionPlayers.String()).Indexes().CreateMany(ctx, indexModels)
 	if err != nil {
 		log.ErrS(err)
 	}
@@ -477,7 +478,7 @@ func SearchPlayer(search string, projection bson.M) (player Player, queue bool, 
 		return player, false, err
 	}
 
-	c := client.Database(MongoDatabase).Collection(CollectionPlayers.String())
+	c := client.Database(config.C.MongoDatabase).Collection(CollectionPlayers.String())
 
 	// Get by ID
 	id, err := steamid.ParsePlayerID(search)
@@ -676,7 +677,7 @@ func GetPlayerLevels() (counts []Count, err error) {
 			{{Key: "$group", Value: bson.M{"_id": "$level", "count": bson.M{"$sum": 1}}}},
 		}
 
-		cur, err := client.Database(MongoDatabase, options.Database()).Collection(CollectionPlayers.String()).Aggregate(ctx, pipeline, options.Aggregate())
+		cur, err := client.Database(config.C.MongoDatabase, options.Database()).Collection(CollectionPlayers.String()).Aggregate(ctx, pipeline, options.Aggregate())
 		if err != nil {
 			return counts, err
 		}
@@ -725,7 +726,7 @@ func GetPlayerLevelsRounded() (counts []Count, err error) {
 			{{Key: "$group", Value: bson.M{"_id": bson.M{"$trunc": bson.A{"$level", -1}}, "count": bson.M{"$sum": 1}}}},
 		}
 
-		cur, err := client.Database(MongoDatabase, options.Database()).Collection(CollectionPlayers.String()).Aggregate(ctx, pipeline, options.Aggregate())
+		cur, err := client.Database(config.C.MongoDatabase, options.Database()).Collection(CollectionPlayers.String()).Aggregate(ctx, pipeline, options.Aggregate())
 		if err != nil {
 			return counts, err
 		}
@@ -781,7 +782,7 @@ func BulkUpdatePlayers(writes []mongo.WriteModel) (err error) {
 		return err
 	}
 
-	c := client.Database(MongoDatabase).Collection(CollectionPlayers.String())
+	c := client.Database(config.C.MongoDatabase).Collection(CollectionPlayers.String())
 
 	_, err = c.BulkWrite(ctx, writes, options.BulkWrite().SetOrdered(false))
 	return err

@@ -3,6 +3,7 @@ package mongo
 import (
 	"strconv"
 
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
@@ -98,7 +99,7 @@ func ReplaceAppDLCs(DLCs []AppDLC) (err error) {
 		writes = append(writes, write)
 	}
 
-	collection := client.Database(MongoDatabase).Collection(CollectionAppDLC.String())
+	collection := client.Database(config.C.MongoDatabase).Collection(CollectionAppDLC.String())
 	_, err = collection.BulkWrite(ctx, writes, options.BulkWrite())
 	return err
 }
@@ -124,7 +125,7 @@ func DeleteAppDLC(appID int, DLCs []int) (err error) {
 		keys = append(keys, dlc.getKey())
 	}
 
-	collection := client.Database(MongoDatabase).Collection(CollectionAppDLC.String())
+	collection := client.Database(config.C.MongoDatabase).Collection(CollectionAppDLC.String())
 	_, err = collection.DeleteMany(ctx, bson.M{"_id": bson.M{"$in": keys}})
 
 	return err

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
@@ -82,7 +83,7 @@ func createGroupIndexes() {
 		return
 	}
 
-	_, err = client.Database(MongoDatabase).Collection(CollectionGroups.String()).Indexes().CreateMany(ctx, indexModels)
+	_, err = client.Database(config.C.MongoDatabase).Collection(CollectionGroups.String()).Indexes().CreateMany(ctx, indexModels)
 	if err != nil {
 		log.ErrS(err)
 	}

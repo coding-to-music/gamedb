@@ -3,6 +3,7 @@ package mongo
 import (
 	"strconv"
 
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
@@ -91,7 +92,7 @@ func createPlayerAchievementIndexes() {
 		return
 	}
 
-	_, err = client.Database(MongoDatabase).
+	_, err = client.Database(config.C.MongoDatabase).
 		Collection(CollectionPlayerAchievements.String()).
 		Indexes().
 		CreateMany(ctx, indexModels)
@@ -200,7 +201,7 @@ func ReplacePlayerAchievements(achievements []PlayerAchievement) (err error) {
 		writes = append(writes, write)
 	}
 
-	collection := client.Database(MongoDatabase).Collection(CollectionPlayerAchievements.String())
+	collection := client.Database(config.C.MongoDatabase).Collection(CollectionPlayerAchievements.String())
 	_, err = collection.BulkWrite(ctx, writes, options.BulkWrite())
 	return err
 }

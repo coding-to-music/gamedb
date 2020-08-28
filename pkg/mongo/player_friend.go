@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/dustin/go-humanize"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
@@ -101,7 +102,7 @@ func DeleteFriends(playerID int64, friends []int64) (err error) {
 		keys = append(keys, friend.getKey())
 	}
 
-	collection := client.Database(MongoDatabase).Collection(CollectionPlayerFriends.String())
+	collection := client.Database(config.C.MongoDatabase).Collection(CollectionPlayerFriends.String())
 	_, err = collection.DeleteMany(ctx, bson.M{"_id": bson.M{"$in": keys}})
 	return err
 }
@@ -128,7 +129,7 @@ func ReplacePlayerFriends(friends []*PlayerFriend) (err error) {
 		writes = append(writes, write)
 	}
 
-	collection := client.Database(MongoDatabase).Collection(CollectionPlayerFriends.String())
+	collection := client.Database(config.C.MongoDatabase).Collection(CollectionPlayerFriends.String())
 	_, err = collection.BulkWrite(ctx, writes, options.BulkWrite())
 	return err
 }

@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/Jleagle/steam-go/steamapi"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -120,7 +121,7 @@ func createPlayerAppIndexes() {
 		return
 	}
 
-	_, err = client.Database(MongoDatabase).Collection(CollectionGroups.String()).Indexes().CreateMany(ctx, indexModels)
+	_, err = client.Database(config.C.MongoDatabase).Collection(CollectionGroups.String()).Indexes().CreateMany(ctx, indexModels)
 	if err != nil {
 		log.ErrS(err)
 	}
@@ -230,7 +231,7 @@ func UpdatePlayerApps(apps map[int]*PlayerApp) (err error) {
 		writes = append(writes, write)
 	}
 
-	c := client.Database(MongoDatabase).Collection(CollectionPlayerApps.String())
+	c := client.Database(config.C.MongoDatabase).Collection(CollectionPlayerApps.String())
 
 	_, err = c.BulkWrite(ctx, writes, options.BulkWrite())
 
@@ -249,7 +250,7 @@ func GetAppPlayersByCountry(appID int) (items []PlayerAppsByCountry, err error) 
 		{{Key: "$group", Value: bson.M{"_id": "$player_country", "count": bson.M{"$sum": 1}}}},
 	}
 
-	cur, err := client.Database(MongoDatabase, options.Database()).Collection(CollectionPlayerApps.String()).Aggregate(ctx, pipeline, nil)
+	cur, err := client.Database(config.C.MongoDatabase, options.Database()).Collection(CollectionPlayerApps.String()).Aggregate(ctx, pipeline, nil)
 	if err != nil {
 		return items, err
 	}

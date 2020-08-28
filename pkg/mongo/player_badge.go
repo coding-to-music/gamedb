@@ -4,6 +4,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
@@ -151,7 +152,7 @@ func ReplacePlayerBadges(badges []PlayerBadge) (err error) {
 		writes = append(writes, write)
 	}
 
-	c := client.Database(MongoDatabase).Collection(CollectionPlayerBadges.String())
+	c := client.Database(config.C.MongoDatabase).Collection(CollectionPlayerBadges.String())
 
 	_, err = c.BulkWrite(ctx, writes, options.BulkWrite())
 

@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
@@ -197,7 +198,7 @@ func ReplaceAppItems(items []AppItem) (err error) {
 		writes = append(writes, write)
 	}
 
-	collection := client.Database(MongoDatabase).Collection(CollectionAppItems.String())
+	collection := client.Database(config.C.MongoDatabase).Collection(CollectionAppItems.String())
 	_, err = collection.BulkWrite(ctx, writes, options.BulkWrite())
 	return err
 }
@@ -223,7 +224,7 @@ func DeleteAppItems(appID int, items []int) (err error) {
 		keys = append(keys, item.getKey())
 	}
 
-	collection := client.Database(MongoDatabase).Collection(CollectionAppItems.String())
+	collection := client.Database(config.C.MongoDatabase).Collection(CollectionAppItems.String())
 	_, err = collection.DeleteMany(ctx, bson.M{"_id": bson.M{"$in": keys}})
 
 	return err

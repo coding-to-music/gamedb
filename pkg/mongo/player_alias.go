@@ -4,6 +4,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
@@ -57,7 +58,7 @@ func ReplacePlayerAliases(aliases []PlayerAlias) (err error) {
 		writes = append(writes, write)
 	}
 
-	c := client.Database(MongoDatabase).Collection(CollectionPlayerAliases.String())
+	c := client.Database(config.C.MongoDatabase).Collection(CollectionPlayerAliases.String())
 
 	_, err = c.BulkWrite(ctx, writes, options.BulkWrite())
 

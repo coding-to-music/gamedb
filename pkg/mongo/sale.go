@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steamapi"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -102,7 +103,7 @@ func createSaleIndexes() {
 		return
 	}
 
-	_, err = client.Database(MongoDatabase).Collection(CollectionAppSales.String()).Indexes().CreateMany(ctx, indexModels)
+	_, err = client.Database(config.C.MongoDatabase).Collection(CollectionAppSales.String()).Indexes().CreateMany(ctx, indexModels)
 	if err != nil {
 		log.ErrS(err)
 	}
@@ -237,7 +238,7 @@ func ReplaceSales(offers []Sale) (err error) {
 		writes = append(writes, write)
 	}
 
-	collection := client.Database(MongoDatabase).Collection(CollectionAppSales.String())
+	collection := client.Database(config.C.MongoDatabase).Collection(CollectionAppSales.String())
 	_, err = collection.BulkWrite(ctx, writes, options.BulkWrite())
 	return err
 }
@@ -253,7 +254,7 @@ func GetUniqueSaleTypes() (types []string, err error) {
 			return types, err
 		}
 
-		c := client.Database(MongoDatabase, options.Database()).Collection(CollectionAppSales.String())
+		c := client.Database(config.C.MongoDatabase, options.Database()).Collection(CollectionAppSales.String())
 
 		resp, err := c.Distinct(ctx, "offer_type", bson.M{"offer_end": bson.M{"$gt": time.Now()}}, options.Distinct())
 		if err != nil {

@@ -4,6 +4,7 @@ import (
 	"html/template"
 	"time"
 
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
@@ -146,7 +147,7 @@ func ReplaceArticles(articles []Article) (err error) {
 		writes = append(writes, write)
 	}
 
-	c := client.Database(MongoDatabase).Collection(CollectionAppArticles.String())
+	c := client.Database(config.C.MongoDatabase).Collection(CollectionAppArticles.String())
 
 	_, err = c.BulkWrite(ctx, writes, options.BulkWrite())
 

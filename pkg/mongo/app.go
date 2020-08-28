@@ -558,7 +558,7 @@ func UpdateAppsInflux(writes []mongo.WriteModel) (err error) {
 		return err
 	}
 
-	c := client.Database(MongoDatabase).Collection(CollectionApps.String())
+	c := client.Database(config.C.MongoDatabase).Collection(CollectionApps.String())
 	_, err = c.BulkWrite(ctx, writes, options.BulkWrite())
 
 	return err
@@ -614,7 +614,7 @@ func createAppIndexes() {
 		return
 	}
 
-	_, err = client.Database(MongoDatabase).Collection(CollectionApps.String()).Indexes().CreateMany(ctx, indexModels)
+	_, err = client.Database(config.C.MongoDatabase).Collection(CollectionApps.String()).Indexes().CreateMany(ctx, indexModels)
 	if err != nil {
 		log.ErrS(err)
 	}
@@ -829,7 +829,7 @@ func GetAppsGroupedByType(code steamapi.ProductCC) (counts []AppTypeCount, err e
 			}}},
 		}
 
-		cur, err := client.Database(MongoDatabase, options.Database()).Collection(CollectionApps.String()).Aggregate(ctx, pipeline, options.Aggregate())
+		cur, err := client.Database(config.C.MongoDatabase, options.Database()).Collection(CollectionApps.String()).Aggregate(ctx, pipeline, options.Aggregate())
 		if err != nil {
 			return counts, err
 		}
@@ -899,7 +899,7 @@ func GetAppsGroupedByReleaseDate() (counts []AppReleaseDateCount, err error) {
 			bson.D{{Key: "$group", Value: bson.M{"_id": bson.M{"$dateToString": bson.M{"format": "%Y-%m-%d", "date": "$release_date"}}, "count": bson.M{"$sum": 1}}}},
 		}
 
-		cur, err := client.Database(MongoDatabase, options.Database()).Collection(CollectionApps.String()).Aggregate(ctx, pipeline, options.Aggregate())
+		cur, err := client.Database(config.C.MongoDatabase, options.Database()).Collection(CollectionApps.String()).Aggregate(ctx, pipeline, options.Aggregate())
 		if err != nil {
 			return counts, err
 		}
@@ -954,7 +954,7 @@ func GetAppsGroupedByReviewScore() (counts []AppReviewScoreCount, err error) {
 			bson.D{{Key: "$group", Value: bson.M{"_id": bson.M{"$floor": "$reviews_score"}, "count": bson.M{"$sum": 1}}}},
 		}
 
-		cur, err := client.Database(MongoDatabase, options.Database()).Collection(CollectionApps.String()).Aggregate(ctx, pipeline, options.Aggregate())
+		cur, err := client.Database(config.C.MongoDatabase, options.Database()).Collection(CollectionApps.String()).Aggregate(ctx, pipeline, options.Aggregate())
 		if err != nil {
 			return counts, err
 		}
