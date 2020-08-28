@@ -37,7 +37,7 @@ func (c AppsPlayerCheck) work() (err error) {
 		queue.QueueAppPlayers: 1000,
 	}
 
-	queues, err := rabbitweb.RabbitClient.GetQueues()
+	queues, err := rabbitweb.GetRabbitWebClient().GetQueues()
 	if err != nil {
 		return err
 	}

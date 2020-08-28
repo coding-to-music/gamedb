@@ -53,7 +53,7 @@ func (c PlayersQueueLastUpdated) work() (err error) {
 		queue.QueuePlayers:  5,
 	}
 
-	queues, err := rabbitweb.RabbitClient.GetQueues()
+	queues, err := rabbitweb.GetRabbitWebClient().GetQueues()
 	if err != nil {
 		return err
 	}

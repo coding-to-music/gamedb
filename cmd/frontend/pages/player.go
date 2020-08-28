@@ -92,7 +92,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		p := rabbit.Payload{}
 		p.Preset(rabbit.RangeOneMinute)
 
-		q, err := rabbitweb.RabbitClient.GetQueue(queue.QueuePlayers, p)
+		q, err := rabbitweb.GetRabbitWebClient().GetQueue(queue.QueuePlayers, p)
 		if err != nil {
 			log.ErrS(err)
 		} else {
