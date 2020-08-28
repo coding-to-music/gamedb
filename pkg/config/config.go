@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"strings"
 
 	"github.com/kelseyhightower/envconfig"
@@ -154,9 +155,9 @@ type Config struct {
 
 var C Config
 
-func Init(version string, commits string, ip string) error {
+func Init(version string, commits string, ip string) (err error) {
 
-	err := envconfig.Process("steam", &C)
+	err = envconfig.Process("steam", &C)
 
 	C.CommitHash = version
 	C.Commits = commits
