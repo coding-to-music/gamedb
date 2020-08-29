@@ -10,7 +10,17 @@ import (
 	"jaytaylor.com/html2text"
 )
 
-var sendGrid = sendgrid.NewSendClient(config.C.SendGridAPIKey)
+var sendGridClient *sendgrid.Client
+
+// Lazy load client, fixes race condition with config
+func getSendGridClient() *sendgrid.Client {
+
+	if sendGridClient == nil {
+		sendGridClient = sendgrid.NewSendClient(config.C.SendGridAPIKey)
+	}
+
+	return sendGridClient
+}
 
 func SendEmail(to, from *mail.Email, subject, html string) (resp *rest.Response, err error) {
 
@@ -22,6 +32,6 @@ func SendEmail(to, from *mail.Email, subject, html string) (resp *rest.Response,
 	if config.C.SendGridAPIKey == "" {
 		return nil, errors.New("missing environment variables")
 	} else {
-		return sendGrid.Send(mail.NewSingleEmail(from, subject, to, text, html))
+		return getSendGridClient().Send(mail.NewSingleEmail(from, subject, to, text, html))
 	}
 }
