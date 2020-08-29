@@ -15,7 +15,6 @@ import (
 	"go.uber.org/zap"
 )
 
-//noinspection GoUnusedFunction
 func main() {
 
 	file, err := os.Open("ids.txt")
