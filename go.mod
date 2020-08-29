@@ -3,8 +3,8 @@ module github.com/gamedb/gamedb
 go 1.13
 
 require (
-	cloud.google.com/go v0.64.0 // indirect
-	cloud.google.com/go/logging v1.0.0
+	cloud.google.com/go v0.65.0 // indirect
+	cloud.google.com/go/logging v1.1.0
 	github.com/Jleagle/go-durationfmt v0.0.0-20190307132420-e57bfad84057
 	github.com/Jleagle/influxql v0.0.0-20200804190929-88324f67bffe
 	github.com/Jleagle/patreon-go v0.0.0-20200718083332-7a4c740e9bd3
@@ -17,8 +17,9 @@ require (
 	github.com/Philipp15b/go-steam v1.0.1-0.20190816133340-b04c5a83c1c0
 	github.com/StefanSchroeder/Golang-Roman v0.0.0-20191231161654-ef19f7247884
 	github.com/ahmdrz/goinsta/v2 v2.4.5
+	github.com/antchfx/xmlquery v1.3.0 // indirect
 	github.com/antchfx/xpath v1.1.10 // indirect
-	github.com/aws/aws-sdk-go v1.34.9 // indirect
+	github.com/aws/aws-sdk-go v1.34.13 // indirect
 	github.com/badoux/checkmail v1.2.0
 	github.com/blend/go-sdk v1.1.1 // indirect
 	github.com/bwmarrin/discordgo v0.22.0
@@ -41,13 +42,14 @@ require (
 	github.com/gobuffalo/packr/v2 v2.8.0
 	github.com/gocolly/colly/v2 v2.1.0
 	github.com/golang/protobuf v1.4.2
+	github.com/google/go-cmp v0.5.2 // indirect
 	github.com/google/go-github/v32 v32.1.0
 	github.com/gorilla/securecookie v1.1.1
-	github.com/gorilla/sessions v1.2.0
+	github.com/gorilla/sessions v1.2.1
 	github.com/gorilla/websocket v1.4.2
 	github.com/gosimple/slug v1.9.0
-	github.com/hetznercloud/hcloud-go v1.21.1
-	github.com/influxdata/influxdb1-client v0.0.0-20200515024757-02f0bf5dbca3
+	github.com/hetznercloud/hcloud-go v1.22.0
+	github.com/influxdata/influxdb1-client v0.0.0-20200827194710-b269163b24ab
 	github.com/jinzhu/gorm v1.9.16
 	github.com/jinzhu/now v1.1.1
 	github.com/justinas/nosurf v1.1.0
@@ -78,7 +80,7 @@ require (
 	github.com/sirupsen/logrus v1.6.0 // indirect
 	github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf // indirect
 	github.com/streadway/amqp v1.0.0
-	github.com/tdewolff/minify/v2 v2.8.0
+	github.com/tdewolff/minify/v2 v2.9.0
 	github.com/tidwall/pretty v1.0.1 // indirect
 	github.com/uber-go/atomic v1.4.0 // indirect
 	github.com/wcharczuk/go-chart v2.0.1+incompatible
@@ -89,15 +91,16 @@ require (
 	golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a
 	golang.org/x/exp v0.0.0-20200331195152-e8c3332aa8e5 // indirect
 	golang.org/x/image v0.0.0-20200801110659-972c09e46d76 // indirect
-	golang.org/x/net v0.0.0-20200813134508-3edf25e44fcc
+	golang.org/x/net v0.0.0-20200822124328-c89045814202
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
-	golang.org/x/sys v0.0.0-20200821140526-fda516888d29 // indirect
+	golang.org/x/sys v0.0.0-20200828194041-157a740278f4 // indirect
 	golang.org/x/text v0.3.3
 	golang.org/x/time v0.0.0-20200630173020-3af7569d3a1e // indirect
-	golang.org/x/tools v0.0.0-20200818005847-188abfa75333 // indirect
-	gonum.org/v1/gonum v0.8.0
+	golang.org/x/tools v0.0.0-20200828161849-5deb26317202 // indirect
+	gonum.org/v1/gonum v0.8.1
 	google.golang.org/api v0.30.0
-	google.golang.org/grpc v1.31.0
+	google.golang.org/genproto v0.0.0-20200828030656-73b5761be4c5 // indirect
+	google.golang.org/grpc v1.31.1
 	gopkg.in/djherbis/atime.v1 v1.0.0 // indirect
 	gopkg.in/djherbis/stream.v1 v1.3.1 // indirect
 	gopkg.in/yaml.v2 v2.3.0
