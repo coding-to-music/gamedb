@@ -62,15 +62,15 @@ func createPlayerAchievementIndexes() {
 
 	var indexModels = []mongo.IndexModel{
 		// GetPlayerAchievements
-		{Keys: bson.D{
-			{"player_id", 1},
-			{"achievement_date", -1},
-		}},
+		// {Keys: bson.D{
+		// 	{"player_id", 1},
+		// 	{"achievement_date", -1},
+		// }},
 		// GetPlayerAchievements
-		{Keys: bson.D{
-			{"player_id", 1},
-			{"achievement_complete", 1},
-		}},
+		// {Keys: bson.D{
+		// 	{"player_id", 1},
+		// 	{"achievement_complete", 1},
+		// }},
 		// FindLatestPlayerAchievement
 		{Keys: bson.D{
 			{"player_id", 1},
@@ -78,11 +78,11 @@ func createPlayerAchievementIndexes() {
 			{"achievement_date", -1}},
 		},
 		// GetPlayerAchievementsForApp
-		{Keys: bson.D{
-			{"player_id", 1},
-			{"app_id", 1},
-			{"achievement_id", 1}},
-		},
+		// {Keys: bson.D{
+		// 	{"player_id", 1},
+		// 	{"app_id", 1},
+		// 	{"achievement_id", 1}},
+		// },
 	}
 
 	//
