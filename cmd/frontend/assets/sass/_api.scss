@@ -1,3 +1,38 @@
 #api-page {
 
 }
+
+body.dark {
+    #api-page {
+
+        .menu-content {
+
+        }
+
+        .api-content {
+            color: #e9ecef;
+
+            h1, h2, h3, h4, h5, .hctKJM, .iwWBsD, .kImnVv button, a {
+                color: #e9ecef;
+            }
+
+            .hKsEtX, .evfsKO {
+                color: rgb(212, 31, 28);
+            }
+
+            .cbdZGY {
+                border-color: #28a745;
+            }
+
+            table.security-details {
+                tr {
+                    background-color: transparent;
+
+                    th, td {
+                        border-width: 0;
+                    }
+                }
+            }
+        }
+    }
+}
