@@ -104,6 +104,10 @@ type Config struct {
 	RollbarSecret string `envconfig:"ROLLBAR_PRIVATE"`
 	RollbarUser   string `envconfig:"ROLLBAR_USER"`
 
+	// Sendgrid
+	SendGridSecret string `envconfig:"SENDGRID_WEBHOOK_SECRET"`
+	SendGridAPIKey string `envconfig:"SENDGRID"`
+
 	// Sentry
 	SentryDSN string `envconfig:"SENTRY_DSN"`
 
@@ -139,7 +143,6 @@ type Config struct {
 	// Other
 	GameDBDomain        string `envconfig:"DOMAIN"` // With proto & port
 	Environment         string `envconfig:"ENV" required:"true"`
-	SendGridAPIKey      string `envconfig:"SENDGRID"`
 	SlackGameDBWebhook  string `envconfig:"SLACK_GAMEDB_WEBHOOK"`
 	SlackPatreonWebhook string `envconfig:"SLACK_SOCIAL_WEBHOOK"`
 	ChatBotAttachments  string `envconfig:"CHATBOT_ATTACHMENTS"`

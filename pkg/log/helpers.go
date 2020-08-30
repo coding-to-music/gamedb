@@ -16,16 +16,19 @@ const (
 	LogNameTest      = "test"
 	LogNameScaler    = "scaler"
 
+	// Webhooks
+	LogNameTwitter  = "twitter" // Zapier
+	LogNameSendGrid = "sendgrid"
+	LognameGitHub   = "github"
+
 	// Others
-	LogNameMongo          = "mongo"
-	LogNameTwitter        = "twitter" // Zapier
-	LogNameRabbit         = "rabbit"
-	LogNameRequests       = "requests"
-	LogNameSQL            = "sql"
-	LogNameTriggerUpdate  = "trigger"
-	LogNameSteamErrors    = "steam-lib"
-	LogNameWebhooksGitHub = "github"
-	LogNameInflux         = "influx"
+	LogNameMongo         = "mongo"
+	LogNameRabbit        = "rabbit"
+	LogNameRequests      = "requests"
+	LogNameSQL           = "sql"
+	LogNameTriggerUpdate = "trigger"
+	LogNameSteamErrors   = "steam-lib"
+	LogNameInflux        = "influx"
 )
 
 func Debug(msg string, fields ...zap.Field) {

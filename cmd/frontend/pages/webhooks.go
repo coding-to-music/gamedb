@@ -27,14 +27,41 @@ func WebhooksRouter() http.Handler {
 	r.Post("/patreon", patreonWebhookPostHandler)
 	r.Post("/github", gitHubWebhookPostHandler)
 	r.Post("/twitter", twitterWebhookPostHandler)
+	r.Post("/sendgrid", sendgridWebhookPostHandler)
 	return r
+}
+
+func sendgridWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
+
+	var valid bool
+
+	if r.Header.Get("X-Twilio-Email-Event-Webhook-Signature") == config.C.SendGridSecret {
+		valid = true
+	}
+
+	// Get body
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.ErrS(err)
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	defer func() {
+		err := r.Body.Close()
+		if err != nil {
+			log.ErrS(err)
+		}
+	}()
+
+	zap.L().Named(log.LogNameSendGrid).Debug("SendGrid webhook", zap.ByteString("body", body), zap.Bool("valid", valid))
 }
 
 func twitterWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	secret := r.Header.Get("secret")
 
-	zap.L().Named(log.LogNameTwitter).Debug("twitter webhook", zap.String("secret", secret))
+	zap.L().Named(log.LogNameTwitter).Debug("Twitter webhook", zap.String("secret", secret))
 
 	if config.C.TwitterZapierSecret == "" {
 		log.Fatal("Missing environment variables")
@@ -144,7 +171,7 @@ func gitHubWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 	var signature = r.Header.Get("X-Hub-Signature")
 	var event = r.Header.Get("X-GitHub-Event")
 
-	zap.L().Named(log.LogNameWebhooksGitHub).Debug("Incoming GitHub webhook", zap.ByteString("webhook", body), zap.String("event", event))
+	zap.L().Named(log.LognameGitHub).Debug("Incoming GitHub webhook", zap.ByteString("webhook", body), zap.String("event", event))
 
 	if len(signature) != signatureLength || !strings.HasPrefix(signature, signaturePrefix) {
 		http.Error(w, "Invalid signature (1)", 400)
