@@ -46,7 +46,7 @@ func playersWishlistHandler(message *rabbit.Message) {
 
 	} else if err != nil {
 
-		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
+		steam.LogSteamError(err, zap.ByteString("message", message.Message.Body))
 		sendToRetryQueue(message)
 		return
 	}
