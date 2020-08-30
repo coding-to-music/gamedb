@@ -113,7 +113,6 @@ type PlayersResponse struct {
 
 // GetGamesParams defines parameters for GetGames.
 type GetGamesParams struct {
-	Key        string          `json:"key"`
 	Offset     *OffsetParam    `json:"offset,omitempty"`
 	Limit      *LimitParam     `json:"limit,omitempty"`
 	Order      *OrderParamDesc `json:"order,omitempty"`
@@ -127,14 +126,8 @@ type GetGamesParams struct {
 	Platforms  *[]string       `json:"platforms,omitempty"`
 }
 
-// GetGamesIdParams defines parameters for GetGamesId.
-type GetGamesIdParams struct {
-	Key string `json:"key"`
-}
-
 // GetPlayersParams defines parameters for GetPlayers.
 type GetPlayersParams struct {
-	Key       string          `json:"key"`
 	Offset    *OffsetParam    `json:"offset,omitempty"`
 	Limit     *LimitParam     `json:"limit,omitempty"`
 	Order     *OrderParamDesc `json:"order,omitempty"`
@@ -143,33 +136,23 @@ type GetPlayersParams struct {
 	Country   *[]string       `json:"country,omitempty"`
 }
 
-// GetPlayersIdParams defines parameters for GetPlayersId.
-type GetPlayersIdParams struct {
-	Key string `json:"key"`
-}
-
-// PostPlayersIdParams defines parameters for PostPlayersId.
-type PostPlayersIdParams struct {
-	Key string `json:"key"`
-}
-
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 	// List Games
 	// (GET /games)
 	GetGames(w http.ResponseWriter, r *http.Request, params GetGamesParams)
-	// Retrieve App
+	// Retrieve Game
 	// (GET /games/{id})
-	GetGamesId(w http.ResponseWriter, r *http.Request, id int32, params GetGamesIdParams)
+	GetGamesId(w http.ResponseWriter, r *http.Request, id int32)
 	// List Players
 	// (GET /players)
 	GetPlayers(w http.ResponseWriter, r *http.Request, params GetPlayersParams)
 	// Retrieve Player
 	// (GET /players/{id})
-	GetPlayersId(w http.ResponseWriter, r *http.Request, id int64, params GetPlayersIdParams)
+	GetPlayersId(w http.ResponseWriter, r *http.Request, id int64)
 	// Update Player
 	// (POST /players/{id})
-	PostPlayersId(w http.ResponseWriter, r *http.Request, id int64, params PostPlayersIdParams)
+	PostPlayersId(w http.ResponseWriter, r *http.Request, id int64)
 }
 
 // ServerInterfaceWrapper converts contexts to parameters.
@@ -189,20 +172,6 @@ func (siw *ServerInterfaceWrapper) GetGames(w http.ResponseWriter, r *http.Reque
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params GetGamesParams
-
-	// ------------- Required query parameter "key" -------------
-	if paramValue := r.URL.Query().Get("key"); paramValue != "" {
-
-	} else {
-		http.Error(w, "Query argument key is required, but not found", http.StatusBadRequest)
-		return
-	}
-
-	err = runtime.BindQueryParameter("form", true, true, "key", r.URL.Query(), &params.Key)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Invalid format for parameter key: %s", err), http.StatusBadRequest)
-		return
-	}
 
 	// ------------- Optional query parameter "offset" -------------
 	if paramValue := r.URL.Query().Get("offset"); paramValue != "" {
@@ -347,24 +316,7 @@ func (siw *ServerInterfaceWrapper) GetGamesId(w http.ResponseWriter, r *http.Req
 
 	ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
 
-	// Parameter object where we will unmarshal all parameters from the context
-	var params GetGamesIdParams
-
-	// ------------- Required query parameter "key" -------------
-	if paramValue := r.URL.Query().Get("key"); paramValue != "" {
-
-	} else {
-		http.Error(w, "Query argument key is required, but not found", http.StatusBadRequest)
-		return
-	}
-
-	err = runtime.BindQueryParameter("form", true, true, "key", r.URL.Query(), &params.Key)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Invalid format for parameter key: %s", err), http.StatusBadRequest)
-		return
-	}
-
-	siw.Handler.GetGamesId(w, r.WithContext(ctx), id, params)
+	siw.Handler.GetGamesId(w, r.WithContext(ctx), id)
 }
 
 // GetPlayers operation middleware
@@ -379,20 +331,6 @@ func (siw *ServerInterfaceWrapper) GetPlayers(w http.ResponseWriter, r *http.Req
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params GetPlayersParams
-
-	// ------------- Required query parameter "key" -------------
-	if paramValue := r.URL.Query().Get("key"); paramValue != "" {
-
-	} else {
-		http.Error(w, "Query argument key is required, but not found", http.StatusBadRequest)
-		return
-	}
-
-	err = runtime.BindQueryParameter("form", true, true, "key", r.URL.Query(), &params.Key)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Invalid format for parameter key: %s", err), http.StatusBadRequest)
-		return
-	}
 
 	// ------------- Optional query parameter "offset" -------------
 	if paramValue := r.URL.Query().Get("offset"); paramValue != "" {
@@ -482,24 +420,7 @@ func (siw *ServerInterfaceWrapper) GetPlayersId(w http.ResponseWriter, r *http.R
 
 	ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
 
-	// Parameter object where we will unmarshal all parameters from the context
-	var params GetPlayersIdParams
-
-	// ------------- Required query parameter "key" -------------
-	if paramValue := r.URL.Query().Get("key"); paramValue != "" {
-
-	} else {
-		http.Error(w, "Query argument key is required, but not found", http.StatusBadRequest)
-		return
-	}
-
-	err = runtime.BindQueryParameter("form", true, true, "key", r.URL.Query(), &params.Key)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Invalid format for parameter key: %s", err), http.StatusBadRequest)
-		return
-	}
-
-	siw.Handler.GetPlayersId(w, r.WithContext(ctx), id, params)
+	siw.Handler.GetPlayersId(w, r.WithContext(ctx), id)
 }
 
 // PostPlayersId operation middleware
@@ -521,34 +442,7 @@ func (siw *ServerInterfaceWrapper) PostPlayersId(w http.ResponseWriter, r *http.
 
 	ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
 
-	// Parameter object where we will unmarshal all parameters from the context
-	var params PostPlayersIdParams
-
-	headers := r.Header
-
-	// ------------- Required header parameter "key" -------------
-	if valueList, found := headers[http.CanonicalHeaderKey("key")]; found {
-		var Key string
-		n := len(valueList)
-		if n != 1 {
-			http.Error(w, fmt.Sprintf("Expected one value for key, got %d", n), http.StatusBadRequest)
-			return
-		}
-
-		err = runtime.BindStyledParameter("simple", false, "key", valueList[0], &Key)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Invalid format for parameter key: %s", err), http.StatusBadRequest)
-			return
-		}
-
-		params.Key = Key
-
-	} else {
-		http.Error(w, fmt.Sprintf("Header parameter key is required, but not found: %s", err), http.StatusBadRequest)
-		return
-	}
-
-	siw.Handler.PostPlayersId(w, r.WithContext(ctx), id, params)
+	siw.Handler.PostPlayersId(w, r.WithContext(ctx), id)
 }
 
 // Handler creates http.Handler with routing matching OpenAPI spec.
@@ -584,31 +478,31 @@ func HandlerFromMux(si ServerInterface, r chi.Router) http.Handler {
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
+	"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",
+	"HQAA",
 }
 
 // GetSwagger returns the Swagger specification corresponding to the generated code

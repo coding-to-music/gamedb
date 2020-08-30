@@ -235,7 +235,6 @@ var SwaggerGameDB = &openapi3.Swagger{
 				Tags:    []string{tagGame},
 				Summary: "List Games",
 				Parameters: openapi3.Parameters{
-					{Value: keyGetParam},
 					{Ref: "#/components/parameters/offset-param"},
 					{Ref: "#/components/parameters/limit-param"},
 					{Ref: "#/components/parameters/order-param-desc"},
@@ -266,7 +265,6 @@ var SwaggerGameDB = &openapi3.Swagger{
 				Tags:    []string{tagGame},
 				Summary: "Retrieve Game",
 				Parameters: openapi3.Parameters{
-					{Value: keyGetParam},
 					{Value: openapi3.NewPathParameter("id").WithRequired(true).WithSchema(openapi3.NewInt32Schema().WithMin(1))},
 				},
 				Responses: map[string]*openapi3.ResponseRef{
@@ -293,7 +291,6 @@ var SwaggerGameDB = &openapi3.Swagger{
 				Tags:    []string{tagPlayer},
 				Summary: "List Players",
 				Parameters: openapi3.Parameters{
-					{Value: keyGetParam},
 					{Ref: "#/components/parameters/offset-param"},
 					{Ref: "#/components/parameters/limit-param"},
 					{Ref: "#/components/parameters/order-param-desc"},
@@ -325,7 +322,6 @@ var SwaggerGameDB = &openapi3.Swagger{
 				Tags:    []string{tagPlayer},
 				Summary: "Retrieve Player",
 				Parameters: openapi3.Parameters{
-					{Value: keyGetParam},
 					{Value: openapi3.NewPathParameter("id").WithRequired(true).WithSchema(openapi3.NewInt64Schema().WithMin(1))},
 				},
 				Responses: map[string]*openapi3.ResponseRef{
@@ -338,7 +334,6 @@ var SwaggerGameDB = &openapi3.Swagger{
 				Tags:    []string{tagPlayer},
 				Summary: "Update Player",
 				Parameters: openapi3.Parameters{
-					{Value: keyPostParam},
 					{Value: openapi3.NewPathParameter("id").WithRequired(true).WithSchema(openapi3.NewInt64Schema().WithMaxLength(2))},
 				},
 				Responses: map[string]*openapi3.ResponseRef{
