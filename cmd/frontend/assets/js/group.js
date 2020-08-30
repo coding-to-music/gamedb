@@ -114,6 +114,21 @@ function loadGroupChart($page) {
         return
     }
 
+    let plotlines = [];
+    if ($groupChart.attr('data-release') !== '') {
+        plotlines.push({
+            value: parseInt($groupChart.attr('data-release')) * 1000,
+            color: 'red',
+            width: 1,
+            zIndex: 3,
+            label: {
+                formatter: function () {
+                    return 'Steam Release';
+                }
+            }
+        });
+    }
+
     // Load chart
     $.ajax({
         type: "GET",
@@ -126,6 +141,9 @@ function loadGroupChart($page) {
             }
 
             Highcharts.chart('group-chart', $.extend(true, {}, defaultChartOptions, {
+                xAxis: {
+                    plotLines: plotlines,
+                },
                 yAxis: {
                     allowDecimals: false,
                     title: {
