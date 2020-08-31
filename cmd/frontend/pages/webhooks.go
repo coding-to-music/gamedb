@@ -4,12 +4,14 @@ import (
 	"crypto/hmac"
 	"crypto/sha1"
 	"encoding/hex"
+	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"strings"
 	"time"
 
 	"github.com/Jleagle/patreon-go/patreon"
+	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
@@ -64,17 +66,63 @@ func twitterWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 	zap.L().Named(log.LogNameTwitter).Debug("Twitter webhook", zap.String("secret", secret))
 
 	if config.C.TwitterZapierSecret == "" {
+
 		log.Fatal("Missing environment variables")
+		return
 	}
 
-	if config.C.TwitterZapierSecret == secret {
-		err := memcache.Delete(memcache.HomeTweets.Key)
+	if config.C.TwitterZapierSecret != secret {
+		return
+	}
+
+	// Get body
+	b, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.ErrS(err)
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	defer func() {
+		err := r.Body.Close()
+		if err != nil {
+			log.ErrS(err)
+		}
+	}()
+
+	webhooks := twitterWebhook{}
+	err = json.Unmarshal(b, &webhooks)
+
+	//
+	if webhooks.Name == "gamedb_online" && webhooks.OriginalName == "" {
+
+		// Delete cache
+		err = memcache.Delete(memcache.HomeTweets.Key)
+		if err != nil {
+			log.Err(err.Error())
+		}
+
+		// Forward to Discord
+		discordSession, err := discordgo.New("Bot " + config.C.DiscordRelayBotToken)
+		if err != nil {
+			log.Fatal(err.Error())
+			return
+		}
+
+		_, err = discordSession.ChannelMessageSend("407493777058693121", webhooks.URL)
 		if err != nil {
 			log.Err(err.Error())
 		}
 	}
 
 	returnJSON(w, r, nil)
+}
+
+type twitterWebhook struct {
+	Name         string `json:"screen_name"`
+	OriginalName string `json:"retweeted_screen_name"`
+	Text         string `json:"full_text"`
+	URL          string `json:"url"`
 }
 
 func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
