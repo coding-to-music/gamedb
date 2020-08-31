@@ -5,6 +5,7 @@ import (
 
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -133,8 +134,8 @@ func playerBadgesHandler(message *rabbit.Message) {
 
 	// Save to Influx
 	fields := map[string]interface{}{
-		"badges":      len(response.Badges),
-		"badges_foil": foilBadgeCount,
+		influx.InfPlayersBadges.String():     len(response.Badges),
+		influx.InfPlayersBadgesFoil.String(): foilBadgeCount,
 	}
 
 	err = savePlayerStatsToInflux(payload.PlayerID, fields)

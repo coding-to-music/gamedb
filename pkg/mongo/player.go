@@ -14,6 +14,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
+	"github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/steam"
@@ -67,14 +68,14 @@ var PlayerRankFields = map[string]RankMetric{
 
 // Rank key -> Influx col
 var PlayerRankFieldsInflux = map[RankMetric]string{
-	RankKeyLevel:        "level_rank",
-	RankKeyGames:        "games_rank",
-	RankKeyBadges:       "badges_rank",
-	RankKeyBadgesFoil:   "badges_foil_rank",
-	RankKeyPlaytime:     "playtime_rank",
-	RankKeyFriends:      "friends_rank",
-	RankKeyComments:     "comments_rank",
-	RankKeyAchievements: "achievements_rank",
+	RankKeyLevel:        influx.InfPlayersLevelRank.String(),
+	RankKeyGames:        influx.InfPlayersGamesRank.String(),
+	RankKeyBadges:       influx.InfPlayersBadgesRank.String(),
+	RankKeyBadgesFoil:   influx.InfPlayersBadgesFoilRank.String(),
+	RankKeyPlaytime:     influx.InfPlayersPlaytimeRank.String(),
+	RankKeyFriends:      influx.InfPlayersFriendsRank.String(),
+	RankKeyComments:     influx.InfPlayersCommentsRank.String(),
+	RankKeyAchievements: influx.InfPlayersAchievementsRank.String(),
 }
 
 const (

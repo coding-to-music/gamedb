@@ -6,6 +6,7 @@ import (
 
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -192,8 +193,8 @@ func playerGamesHandler(message *rabbit.Message) {
 
 	// Save to Influx
 	err = savePlayerStatsToInflux(payload.PlayerID, map[string]interface{}{
-		"games":    len(resp.Games),
-		"playtime": playtime,
+		influx.InfPlayersGames.String():    len(resp.Games),
+		influx.InfPlayersPlaytime.String(): playtime,
 	})
 	if err != nil {
 		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))

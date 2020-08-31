@@ -8,6 +8,7 @@ import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -91,7 +92,7 @@ func playerAchievementsHandler(message *rabbit.Message) {
 
 		// Save to Influx
 		err = savePlayerStatsToInflux(payload.PlayerID, map[string]interface{}{
-			"achievements": count,
+			influx.InfPlayersAchievements.String(): count,
 		})
 		if err != nil {
 			log.ErrS(err, payload.PlayerID)

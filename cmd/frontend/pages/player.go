@@ -1190,23 +1190,30 @@ func playersHistoryAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	fields := []influx.Field{
+		influx.InfPlayersAchievements,
+		influx.InfPlayersBadges,
+		influx.InfPlayersBadgesFoil,
+		influx.InfPlayersComments,
+		influx.InfPlayersFriends,
+		influx.InfPlayersGames,
+		influx.InfPlayersLevel,
+		influx.InfPlayersPlaytime,
+
+		influx.InfPlayersAchievementsRank,
+		influx.InfPlayersBadgesRank,
+		influx.InfPlayersBadgesFoilRank,
+		influx.InfPlayersCommentsRank,
+		influx.InfPlayersFriendsRank,
+		influx.InfPlayersGamesRank,
+		influx.InfPlayersLevelRank,
+		influx.InfPlayersPlaytimeRank,
+	}
+
 	builder := influxql.NewBuilder()
-
-	builder.AddSelect(`max("level")`, "max_level")
-	builder.AddSelect(`max("achievements")`, "max_achievements")
-	builder.AddSelect(`max("games")`, "max_games")
-	builder.AddSelect(`max("badges")`, "max_badges")
-	builder.AddSelect(`max("badges_foil")`, "max_badges_foil")
-	builder.AddSelect(`max("playtime")`, "max_playtime")
-	builder.AddSelect(`max("friends")`, "max_friends")
-
-	builder.AddSelect(`max("level_rank")`, "max_level_rank")
-	builder.AddSelect(`max("achievements_rank")`, "max_achievements_rank")
-	builder.AddSelect(`max("games_rank")`, "max_games_rank")
-	builder.AddSelect(`max("badges_rank")`, "max_badges_rank")
-	builder.AddSelect(`max("badges_foil_rank")`, "max_badges_foil_rank")
-	builder.AddSelect(`max("playtime_rank")`, "max_playtime_rank")
-	builder.AddSelect(`max("friends_rank")`, "max_friends_rank")
+	for _, v := range fields {
+		builder.AddSelect(v.Max().String(), v.Max().Alias())
+	}
 
 	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementPlayers.String())
 	builder.AddWhere("player_id", "=", id)

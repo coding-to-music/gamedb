@@ -610,9 +610,9 @@ func updatePlayerFriendRows(player mongo.Player) error {
 func savePlayerToInflux(player mongo.Player) (err error) {
 
 	fields := map[string]interface{}{
-		"level":    player.Level,
-		"friends":  player.FriendsCount,
-		"comments": player.CommentsCount,
+		influxHelper.InfPlayersComments.String(): player.CommentsCount,
+		influxHelper.InfPlayersFriends.String():  player.FriendsCount,
+		influxHelper.InfPlayersLevel.String():    player.Level,
 		// Others stored in sub queues
 	}
 
