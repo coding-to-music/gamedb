@@ -52,7 +52,7 @@ func playerRanksHandler(message *rabbit.Message) {
 	if payload.State != nil {
 		filter = append(filter, bson.E{Key: "status_code", Value: *payload.State})
 	}
-	filter = append(filter, bson.E{Key: payload.SortColumn, Value: bson.M{"$ne": 0, "$exists": true}})
+	filter = append(filter, bson.E{Key: payload.SortColumn, Value: bson.M{"$gt": 0}})
 
 	// Batched to use less memory consumer memory
 	var offset int64
