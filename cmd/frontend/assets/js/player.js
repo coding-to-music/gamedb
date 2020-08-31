@@ -226,6 +226,7 @@ if ($playerPage.length > 0) {
                         yAxis,
                         yAxis,
                         yAxis,
+                        yAxis,
                     ],
                     tooltip: {
                         formatter: function () {
@@ -281,6 +282,12 @@ if ($playerPage.length > 0) {
                             marker: {symbol: 'circle'},
                             yAxis: 6,
                         },
+                        {
+                            name: 'Comments',
+                            data: data['max_comments'],
+                            marker: {symbol: 'circle'},
+                            yAxis: 7,
+                        },
                     ],
                 }));
 
@@ -332,6 +339,11 @@ if ($playerPage.length > 0) {
                         {
                             name: 'Achievements',
                             data: data['max_achievements_rank'],
+                            marker: {symbol: 'circle'},
+                        },
+                        {
+                            name: 'Comments',
+                            data: data['max_comments_rank'],
                             marker: {symbol: 'circle'},
                         },
                     ],
