@@ -12,8 +12,14 @@ var commits string
 
 func main() {
 
-	config.Init(version, commits, helpers.GetIP())
+	err := config.Init(version, commits, helpers.GetIP())
 	log.InitZap(log.LogNameTest)
+	defer log.Flush()
+	if err != nil {
+		log.FatalS(err)
+		return
+	}
+
 	queue.Init(queue.AllProducerDefinitions)
 
 	//

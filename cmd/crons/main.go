@@ -20,6 +20,7 @@ func main() {
 
 	err := config.Init(version, commits, helpers.GetIP())
 	log.InitZap(log.LogNameCrons)
+	defer log.Flush()
 	if err != nil {
 		log.FatalS(err)
 		return

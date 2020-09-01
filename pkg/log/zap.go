@@ -42,6 +42,21 @@ func InitZap(logName string) {
 	zap.ReplaceGlobals(logger)
 }
 
+func Flush() {
+
+	Info("Flushing logs")
+
+	err := recover()
+	if err != nil {
+		zap.S().Error(err)
+	}
+
+	err = zap.L().Sync()
+	if err != nil {
+		zap.S().Error(err)
+	}
+}
+
 func getStandardCore() zapcore.Core {
 
 	encoder := zapcore.NewConsoleEncoder(zap.NewDevelopmentEncoderConfig())
