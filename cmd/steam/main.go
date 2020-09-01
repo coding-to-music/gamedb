@@ -14,6 +14,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 	steamHelpers "github.com/gamedb/gamedb/pkg/steam"
 	"go.uber.org/zap"
@@ -242,6 +243,7 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 
 			err = queue.ProducePackage(queue.PackageMessage{ID: int(pack.GetPackageid()), ChangeNumber: int(pack.GetChangeNumber()), VDF: m})
 			if err != nil {
+				err = helpers.IgnoreErrors(err, mongo.ErrInvalidPackageID)
 				log.ErrS(err, id)
 			}
 		}
