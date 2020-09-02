@@ -31,9 +31,7 @@ const (
 	InfluxMeasurementPlayers     InfluxMeasurement = "players"
 	InfluxMeasurementRabbitQueue InfluxMeasurement = "rabbitmq_queue"
 	InfluxMeasurementSignups     InfluxMeasurement = "signups"
-	// InfluxMeasurementPackages    InfluxMeasurement = "packages"
-	// InfluxMeasurementStats       InfluxMeasurement = "stats"
-	// InfluxMeasurementTags        InfluxMeasurement = "tags"
+	InfluxMeasurementStats       InfluxMeasurement = "stats"
 )
 
 type InfluxRetentionPolicy string
