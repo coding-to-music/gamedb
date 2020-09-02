@@ -25,6 +25,10 @@ type Field struct {
 }
 
 func (c Field) String() string {
+
+	if c.Function == "" {
+		return c.Field
+	}
 	return c.Function + `("` + c.Field + `")`
 }
 
