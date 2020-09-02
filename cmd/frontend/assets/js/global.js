@@ -61,7 +61,9 @@ $(document).on('mouseup', '[data-link]', function (e) {
 });
 
 // Console
-const consoleText = `
+if (user.isProd) {
+
+    const consoleText = `
  _____                       ____________ 
 |  __ \\                      |  _  \\ ___ \\
 | |  \\/ __ _ _ __ ___   ___  | | | | |_/ /
@@ -70,7 +72,8 @@ const consoleText = `
  \\____/\\__,_|_| |_| |_|\\___| |___/ \\____/ 
 `;
 
-console.log(consoleText);
+    console.log(consoleText);
+}
 
 // Auto dropdowns
 const $dropdowns = $('.navbar .dropdown');
