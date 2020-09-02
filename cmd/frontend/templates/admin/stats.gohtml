@@ -16,6 +16,16 @@
                     <div class="col-12 col-lg-3 mb-4">
                         <div class="btn btn-success btn-block">Commit Hash<br/>{{ .Hash }}</div>
                     </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-lg-3 mb-4">
+                        <div class="btn btn-success btn-block">Private Players<br/>{{ comma64 .Private }}</div>
+                    </div>
+                    <div class="col-12 col-lg-3 mb-4">
+                        <div class="btn btn-success btn-block">Removed Players<br/>{{ comma64 .Removed }}</div>
+                    </div>
+                </div>
+                <div class="row">
                     <div class="col-12 col-lg-3 mb-4">
                         <div class="btn btn-success btn-block">Oldest Player<br/>{{ .Oldest }}</div>
                     </div>

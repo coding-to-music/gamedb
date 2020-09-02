@@ -418,6 +418,16 @@ func adminStatsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	t.Private, err = mongo.CountDocuments(mongo.CollectionPlayers, bson.D{{"community_visibility_state", 1}}, 0)
+	if err != nil {
+		log.ErrS(err)
+	}
+
+	t.Removed, err = mongo.CountDocuments(mongo.CollectionPlayers, bson.D{{"removed", true}}, 0)
+	if err != nil {
+		log.ErrS(err)
+	}
+
 	returnTemplate(w, r, "admin/stats", t)
 }
 
@@ -426,6 +436,8 @@ type adminStatsTemplate struct {
 	Oldest  string
 	Commits string
 	Hash    string
+	Private int64
+	Removed int64
 }
 
 func (t adminStatsTemplate) includes() []string {
