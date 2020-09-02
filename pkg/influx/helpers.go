@@ -110,6 +110,7 @@ func InfluxResponseToHighCharts(series influxModels.Row, trimLeft bool) HighChar
 			var hasValue bool
 			for _, vv := range series.Values {
 
+				// Check if any of the series' have a value above zero
 				if !hasValue && trimLeft {
 					for k, vvv := range vv {
 						if k > 0 {
@@ -124,16 +125,17 @@ func InfluxResponseToHighCharts(series influxModels.Row, trimLeft bool) HighChar
 					}
 				}
 
-				if hasValue || !trimLeft {
-
-					t, err := time.Parse(time.RFC3339, vv[0].(string))
-					if err != nil {
-						log.ErrS(err)
-						continue
-					}
-
-					resp[v] = append(resp[v], []interface{}{t.Unix() * 1000, vv[k]})
+				if trimLeft && !hasValue {
+					continue
 				}
+
+				t, err := time.Parse(time.RFC3339, vv[0].(string))
+				if err != nil {
+					log.ErrS(err)
+					continue
+				}
+
+				resp[v] = append(resp[v], []interface{}{t.Unix() * 1000, vv[k]})
 			}
 		}
 	}
@@ -143,7 +145,6 @@ func InfluxResponseToHighCharts(series influxModels.Row, trimLeft bool) HighChar
 		sort.Slice(resp[k], func(i, j int) bool {
 			return resp[k][i][0].(int64) < resp[k][j][0].(int64)
 		})
-
 	}
 
 	return resp
