@@ -3,14 +3,22 @@
 
 package generated
 
-import proto "github.com/golang/protobuf/proto"
-import fmt "fmt"
-import math "math"
+import (
+	fmt "fmt"
+	proto "github.com/golang/protobuf/proto"
+	math "math"
+)
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
+
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the proto package it is being compiled against.
+// A compilation error at this line likely means your copy of the
+// proto package needs to be updated.
+const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
 type ProductCode int32
 
@@ -101,6 +109,7 @@ var ProductCode_name = map[int32]string{
 	39: "VN",
 	40: "ZA",
 }
+
 var ProductCode_value = map[string]int32{
 	"AE": 0,
 	"AR": 1,
@@ -148,15 +157,18 @@ var ProductCode_value = map[string]int32{
 func (x ProductCode) String() string {
 	return proto.EnumName(ProductCode_name, int32(x))
 }
-func (ProductCode) EnumDescriptor() ([]byte, []int) { return fileDescriptor1, []int{0} }
+
+func (ProductCode) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_888b6bd9597961ff, []int{0}
+}
 
 func init() {
 	proto.RegisterEnum("generated.ProductCode", ProductCode_name, ProductCode_value)
 }
 
-func init() { proto.RegisterFile("enums.proto", fileDescriptor1) }
+func init() { proto.RegisterFile("enums.proto", fileDescriptor_888b6bd9597961ff) }
 
-var fileDescriptor1 = []byte{
+var fileDescriptor_888b6bd9597961ff = []byte{
 	// 234 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x1c, 0xd0, 0xc9, 0x36, 0xc3, 0x60,
 	0x18, 0xc7, 0x61, 0x8a, 0xd2, 0xd4, 0xf0, 0x53, 0xf3, 0x3c, 0x0f, 0xc7, 0xc2, 0xc6, 0x15, 0x7c,

@@ -3,13 +3,12 @@
 
 package generated
 
-import proto "github.com/golang/protobuf/proto"
-import fmt "fmt"
-import math "math"
-
 import (
-	context "golang.org/x/net/context"
+	context "context"
+	fmt "fmt"
+	proto "github.com/golang/protobuf/proto"
 	grpc "google.golang.org/grpc"
+	math "math"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -17,14 +16,43 @@ var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
 
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the proto package it is being compiled against.
+// A compilation error at this line likely means your copy of the
+// proto package needs to be updated.
+const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
+
 type CommitsRequest struct {
-	Pagination *PaginationRequest2 `protobuf:"bytes,1,opt,name=pagination" json:"pagination,omitempty"`
+	Pagination           *PaginationRequest2 `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}            `json:"-"`
+	XXX_unrecognized     []byte              `json:"-"`
+	XXX_sizecache        int32               `json:"-"`
 }
 
-func (m *CommitsRequest) Reset()                    { *m = CommitsRequest{} }
-func (m *CommitsRequest) String() string            { return proto.CompactTextString(m) }
-func (*CommitsRequest) ProtoMessage()               {}
-func (*CommitsRequest) Descriptor() ([]byte, []int) { return fileDescriptor2, []int{0} }
+func (m *CommitsRequest) Reset()         { *m = CommitsRequest{} }
+func (m *CommitsRequest) String() string { return proto.CompactTextString(m) }
+func (*CommitsRequest) ProtoMessage()    {}
+func (*CommitsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_7664b366d7fb87ed, []int{0}
+}
+
+func (m *CommitsRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CommitsRequest.Unmarshal(m, b)
+}
+func (m *CommitsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CommitsRequest.Marshal(b, m, deterministic)
+}
+func (m *CommitsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CommitsRequest.Merge(m, src)
+}
+func (m *CommitsRequest) XXX_Size() int {
+	return xxx_messageInfo_CommitsRequest.Size(m)
+}
+func (m *CommitsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_CommitsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CommitsRequest proto.InternalMessageInfo
 
 func (m *CommitsRequest) GetPagination() *PaginationRequest2 {
 	if m != nil {
@@ -34,13 +62,36 @@ func (m *CommitsRequest) GetPagination() *PaginationRequest2 {
 }
 
 type CommitsResponse struct {
-	Commits []*CommitResponse `protobuf:"bytes,1,rep,name=commits" json:"commits,omitempty"`
+	Commits              []*CommitResponse `protobuf:"bytes,1,rep,name=commits,proto3" json:"commits,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
+	XXX_unrecognized     []byte            `json:"-"`
+	XXX_sizecache        int32             `json:"-"`
 }
 
-func (m *CommitsResponse) Reset()                    { *m = CommitsResponse{} }
-func (m *CommitsResponse) String() string            { return proto.CompactTextString(m) }
-func (*CommitsResponse) ProtoMessage()               {}
-func (*CommitsResponse) Descriptor() ([]byte, []int) { return fileDescriptor2, []int{1} }
+func (m *CommitsResponse) Reset()         { *m = CommitsResponse{} }
+func (m *CommitsResponse) String() string { return proto.CompactTextString(m) }
+func (*CommitsResponse) ProtoMessage()    {}
+func (*CommitsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_7664b366d7fb87ed, []int{1}
+}
+
+func (m *CommitsResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CommitsResponse.Unmarshal(m, b)
+}
+func (m *CommitsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CommitsResponse.Marshal(b, m, deterministic)
+}
+func (m *CommitsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CommitsResponse.Merge(m, src)
+}
+func (m *CommitsResponse) XXX_Size() int {
+	return xxx_messageInfo_CommitsResponse.Size(m)
+}
+func (m *CommitsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_CommitsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CommitsResponse proto.InternalMessageInfo
 
 func (m *CommitsResponse) GetCommits() []*CommitResponse {
 	if m != nil {
@@ -50,16 +101,39 @@ func (m *CommitsResponse) GetCommits() []*CommitResponse {
 }
 
 type CommitResponse struct {
-	Message string `protobuf:"bytes,1,opt,name=message" json:"message,omitempty"`
-	Time    int64  `protobuf:"varint,2,opt,name=time" json:"time,omitempty"`
-	Link    string `protobuf:"bytes,3,opt,name=link" json:"link,omitempty"`
-	Hash    string `protobuf:"bytes,4,opt,name=hash" json:"hash,omitempty"`
+	Message              string   `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
+	Time                 int64    `protobuf:"varint,2,opt,name=time,proto3" json:"time,omitempty"`
+	Link                 string   `protobuf:"bytes,3,opt,name=link,proto3" json:"link,omitempty"`
+	Hash                 string   `protobuf:"bytes,4,opt,name=hash,proto3" json:"hash,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *CommitResponse) Reset()                    { *m = CommitResponse{} }
-func (m *CommitResponse) String() string            { return proto.CompactTextString(m) }
-func (*CommitResponse) ProtoMessage()               {}
-func (*CommitResponse) Descriptor() ([]byte, []int) { return fileDescriptor2, []int{2} }
+func (m *CommitResponse) Reset()         { *m = CommitResponse{} }
+func (m *CommitResponse) String() string { return proto.CompactTextString(m) }
+func (*CommitResponse) ProtoMessage()    {}
+func (*CommitResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_7664b366d7fb87ed, []int{2}
+}
+
+func (m *CommitResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CommitResponse.Unmarshal(m, b)
+}
+func (m *CommitResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CommitResponse.Marshal(b, m, deterministic)
+}
+func (m *CommitResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CommitResponse.Merge(m, src)
+}
+func (m *CommitResponse) XXX_Size() int {
+	return xxx_messageInfo_CommitResponse.Size(m)
+}
+func (m *CommitResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_CommitResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CommitResponse proto.InternalMessageInfo
 
 func (m *CommitResponse) GetMessage() string {
 	if m != nil {
@@ -95,6 +169,28 @@ func init() {
 	proto.RegisterType((*CommitResponse)(nil), "generated.CommitResponse")
 }
 
+func init() { proto.RegisterFile("github.proto", fileDescriptor_7664b366d7fb87ed) }
+
+var fileDescriptor_7664b366d7fb87ed = []byte{
+	// 242 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x6c, 0x50, 0xcf, 0x4b, 0xc3, 0x30,
+	0x14, 0xb6, 0x76, 0x58, 0xf6, 0x36, 0x15, 0x72, 0x8a, 0x05, 0xa1, 0xf4, 0xd4, 0x53, 0x0f, 0xdd,
+	0xd9, 0x8b, 0x82, 0x7a, 0x53, 0xb2, 0xbf, 0x20, 0xdd, 0x9e, 0x6d, 0xd0, 0x26, 0xb5, 0x79, 0xf5,
+	0xef, 0x97, 0x26, 0x4b, 0x18, 0xe8, 0xed, 0xcb, 0xf7, 0x8b, 0x2f, 0x0f, 0xb6, 0x9d, 0xa2, 0x7e,
+	0x6e, 0xeb, 0x71, 0x32, 0x64, 0xd8, 0xba, 0x43, 0x8d, 0x93, 0x24, 0x3c, 0xe6, 0x5b, 0xdb, 0xcb,
+	0x09, 0x8f, 0x5e, 0x28, 0xdf, 0xe0, 0xe6, 0xc9, 0x0c, 0x83, 0x22, 0x2b, 0xf0, 0x7b, 0x46, 0x4b,
+	0xec, 0x01, 0x60, 0x94, 0x9d, 0xd2, 0x92, 0x94, 0xd1, 0x3c, 0x29, 0x92, 0x6a, 0xd3, 0xdc, 0xd7,
+	0x31, 0x5f, 0xbf, 0x47, 0xf1, 0x94, 0x68, 0xc4, 0x59, 0xa0, 0x7c, 0x86, 0xdb, 0x58, 0x68, 0x47,
+	0xa3, 0x2d, 0xb2, 0x1d, 0x64, 0x07, 0x4f, 0xf1, 0xa4, 0x48, 0xab, 0x4d, 0x73, 0x77, 0x56, 0xe7,
+	0xcd, 0xc1, 0x2b, 0x82, 0xb3, 0xfc, 0x08, 0xc3, 0x62, 0x0d, 0x87, 0x6c, 0x40, 0x6b, 0x65, 0x87,
+	0x6e, 0xd5, 0x5a, 0x84, 0x27, 0x63, 0xb0, 0x22, 0x35, 0x20, 0xbf, 0x2c, 0x92, 0x2a, 0x15, 0x0e,
+	0x2f, 0xdc, 0x97, 0xd2, 0x9f, 0x3c, 0x75, 0x56, 0x87, 0x17, 0xae, 0x97, 0xb6, 0xe7, 0x2b, 0xcf,
+	0x2d, 0xb8, 0xd9, 0xc3, 0xf5, 0x8b, 0xa2, 0xd7, 0xb9, 0xdd, 0xe3, 0xf4, 0xa3, 0x0e, 0xc8, 0x1e,
+	0x21, 0x3b, 0x7d, 0x80, 0xfd, 0xdd, 0x19, 0xae, 0x94, 0xe7, 0xff, 0x49, 0x7e, 0x68, 0x79, 0xd1,
+	0x5e, 0xb9, 0xe3, 0xee, 0x7e, 0x03, 0x00, 0x00, 0xff, 0xff, 0xbb, 0x1b, 0x4b, 0xfc, 0x85, 0x01,
+	0x00, 0x00,
+}
+
 // Reference imports to suppress errors if they are not otherwise used.
 var _ context.Context
 var _ grpc.ClientConn
@@ -103,8 +199,9 @@ var _ grpc.ClientConn
 // is compatible with the grpc package it is being compiled against.
 const _ = grpc.SupportPackageIsVersion4
 
-// Client API for GitHubService service
-
+// GitHubServiceClient is the client API for GitHubService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type GitHubServiceClient interface {
 	Commits(ctx context.Context, in *CommitsRequest, opts ...grpc.CallOption) (*CommitsResponse, error)
 }
@@ -119,15 +216,14 @@ func NewGitHubServiceClient(cc *grpc.ClientConn) GitHubServiceClient {
 
 func (c *gitHubServiceClient) Commits(ctx context.Context, in *CommitsRequest, opts ...grpc.CallOption) (*CommitsResponse, error) {
 	out := new(CommitsResponse)
-	err := grpc.Invoke(ctx, "/generated.GitHubService/Commits", in, out, c.cc, opts...)
+	err := c.cc.Invoke(ctx, "/generated.GitHubService/Commits", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// Server API for GitHubService service
-
+// GitHubServiceServer is the server API for GitHubService service.
 type GitHubServiceServer interface {
 	Commits(context.Context, *CommitsRequest) (*CommitsResponse, error)
 }
@@ -165,26 +261,4 @@ var _GitHubService_serviceDesc = grpc.ServiceDesc{
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "github.proto",
-}
-
-func init() { proto.RegisterFile("github.proto", fileDescriptor2) }
-
-var fileDescriptor2 = []byte{
-	// 242 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x6c, 0x50, 0xcf, 0x4b, 0xc3, 0x30,
-	0x14, 0xb6, 0x76, 0x58, 0xf6, 0x36, 0x15, 0x72, 0x8a, 0x05, 0xa1, 0xf4, 0xd4, 0x53, 0x0f, 0xdd,
-	0xd9, 0x8b, 0x82, 0x7a, 0x53, 0xb2, 0xbf, 0x20, 0xdd, 0x9e, 0x6d, 0xd0, 0x26, 0xb5, 0x79, 0xf5,
-	0xef, 0x97, 0x26, 0x4b, 0x18, 0xe8, 0xed, 0xcb, 0xf7, 0x8b, 0x2f, 0x0f, 0xb6, 0x9d, 0xa2, 0x7e,
-	0x6e, 0xeb, 0x71, 0x32, 0x64, 0xd8, 0xba, 0x43, 0x8d, 0x93, 0x24, 0x3c, 0xe6, 0x5b, 0xdb, 0xcb,
-	0x09, 0x8f, 0x5e, 0x28, 0xdf, 0xe0, 0xe6, 0xc9, 0x0c, 0x83, 0x22, 0x2b, 0xf0, 0x7b, 0x46, 0x4b,
-	0xec, 0x01, 0x60, 0x94, 0x9d, 0xd2, 0x92, 0x94, 0xd1, 0x3c, 0x29, 0x92, 0x6a, 0xd3, 0xdc, 0xd7,
-	0x31, 0x5f, 0xbf, 0x47, 0xf1, 0x94, 0x68, 0xc4, 0x59, 0xa0, 0x7c, 0x86, 0xdb, 0x58, 0x68, 0x47,
-	0xa3, 0x2d, 0xb2, 0x1d, 0x64, 0x07, 0x4f, 0xf1, 0xa4, 0x48, 0xab, 0x4d, 0x73, 0x77, 0x56, 0xe7,
-	0xcd, 0xc1, 0x2b, 0x82, 0xb3, 0xfc, 0x08, 0xc3, 0x62, 0x0d, 0x87, 0x6c, 0x40, 0x6b, 0x65, 0x87,
-	0x6e, 0xd5, 0x5a, 0x84, 0x27, 0x63, 0xb0, 0x22, 0x35, 0x20, 0xbf, 0x2c, 0x92, 0x2a, 0x15, 0x0e,
-	0x2f, 0xdc, 0x97, 0xd2, 0x9f, 0x3c, 0x75, 0x56, 0x87, 0x17, 0xae, 0x97, 0xb6, 0xe7, 0x2b, 0xcf,
-	0x2d, 0xb8, 0xd9, 0xc3, 0xf5, 0x8b, 0xa2, 0xd7, 0xb9, 0xdd, 0xe3, 0xf4, 0xa3, 0x0e, 0xc8, 0x1e,
-	0x21, 0x3b, 0x7d, 0x80, 0xfd, 0xdd, 0x19, 0xae, 0x94, 0xe7, 0xff, 0x49, 0x7e, 0x68, 0x79, 0xd1,
-	0x5e, 0xb9, 0xe3, 0xee, 0x7e, 0x03, 0x00, 0x00, 0xff, 0xff, 0xbb, 0x1b, 0x4b, 0xfc, 0x85, 0x01,
-	0x00, 0x00,
 }
