@@ -4,8 +4,8 @@ import (
 	"errors"
 	"strconv"
 	"strings"
-	"time"
 
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -39,27 +39,20 @@ const (
 )
 
 type Stat struct {
-	Type        StatsType          `bson:"type"`
-	ID          int                `bson:"id"`
-	CreatedAt   time.Time          `bson:"created_at"`
-	Name        string             `bson:"name"`
-	Apps        int                `bson:"apps"`
-	MeanPrice   map[string]float32 `bson:"mean_price"`
-	MeanScore   float32            `bson:"mean_score"`
-	MeanPlayers float64            `bson:"mean_players"`
+	Type        StatsType                      `bson:"type"`
+	ID          int                            `bson:"id"`
+	Name        string                         `bson:"name"`
+	Apps        int                            `bson:"apps"`
+	MeanPrice   map[steamapi.ProductCC]float32 `bson:"mean_price"`
+	MeanScore   float32                        `bson:"mean_score"`
+	MeanPlayers float64                        `bson:"mean_players"`
 }
 
 func (stat Stat) BSON() bson.D {
-
-	if stat.CreatedAt.IsZero() || stat.CreatedAt.Unix() == 0 {
-		stat.CreatedAt = time.Now()
-	}
-
 	return bson.D{
 		{"_id", stat.getKey()},
 		{"type", stat.Type},
 		{"id", stat.ID},
-		{"created_at", stat.CreatedAt},
 		{"name", stat.Name},
 		{"apps", stat.Apps},
 		{"mean_price", stat.MeanPrice},
