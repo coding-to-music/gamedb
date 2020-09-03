@@ -4,10 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/session"
-	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mysql"
-	"github.com/gamedb/gamedb/pkg/tasks"
 	"github.com/go-chi/chi"
 )
 
@@ -19,15 +17,6 @@ func TagsRouter() http.Handler {
 }
 
 func statsTagsHandler(w http.ResponseWriter, r *http.Request) {
-
-	// Get config
-	config, err := tasks.GetTaskConfig(tasks.StatsTags{})
-	if err != nil {
-		err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
-		if err != nil {
-			log.ErrS(err)
-		}
-	}
 
 	// Get tags
 	tags, err := mysql.GetAllTags()
@@ -52,7 +41,6 @@ func statsTagsHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, "Tags", "Top Steam tags")
 	t.addAssetMark()
 	t.Tags = tags
-	t.Date = config.Value
 	t.Prices = prices
 
 	returnTemplate(w, r, "stats_tags", t)
@@ -61,7 +49,6 @@ func statsTagsHandler(w http.ResponseWriter, r *http.Request) {
 type statsTagsTemplate struct {
 	globalTemplate
 	Tags   []mysql.Tag
-	Date   string
 	Prices map[int]string
 }
 

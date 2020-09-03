@@ -4,10 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/session"
-	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mysql"
-	"github.com/gamedb/gamedb/pkg/tasks"
 	"github.com/go-chi/chi"
 )
 
@@ -19,15 +17,6 @@ func DevelopersRouter() http.Handler {
 }
 
 func developersHandler(w http.ResponseWriter, r *http.Request) {
-
-	// Get config
-	config, err := tasks.GetTaskConfig(tasks.StatsDevelopers{})
-	if err != nil {
-		err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
-		if err != nil {
-			log.ErrS(err)
-		}
-	}
 
 	// Get developers
 	developers, err := mysql.GetAllDevelopers([]string{})
@@ -51,7 +40,6 @@ func developersHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, "Developers", "All the software developers that create Steam content.")
 	t.addAssetMark()
 	t.Developers = developers
-	t.Date = config.Value
 	t.Prices = prices
 
 	returnTemplate(w, r, "stats_developers", t)
@@ -60,7 +48,6 @@ func developersHandler(w http.ResponseWriter, r *http.Request) {
 type statsDevelopersTemplate struct {
 	globalTemplate
 	Developers []mysql.Developer
-	Date       string
 	Prices     map[int]string
 }
 

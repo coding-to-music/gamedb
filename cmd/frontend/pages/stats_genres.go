@@ -4,10 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/session"
-	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mysql"
-	"github.com/gamedb/gamedb/pkg/tasks"
 	"github.com/go-chi/chi"
 )
 
@@ -19,15 +17,6 @@ func GenresRouter() http.Handler {
 }
 
 func genresHandler(w http.ResponseWriter, r *http.Request) {
-
-	// Get config
-	config, err := tasks.GetTaskConfig(tasks.TasksGenres{})
-	if err != nil {
-		err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
-		if err != nil {
-			log.ErrS(err)
-		}
-	}
 
 	// Get genres
 	genres, err := mysql.GetAllGenres(false)
@@ -51,7 +40,6 @@ func genresHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, "Genres", "All Steam genres")
 	t.addAssetMark()
 	t.Genres = genres
-	t.Date = config.Value
 	t.Prices = prices
 
 	returnTemplate(w, r, "stats_genres", t)
@@ -60,7 +48,6 @@ func genresHandler(w http.ResponseWriter, r *http.Request) {
 type statsGenresTemplate struct {
 	globalTemplate
 	Genres []mysql.Genre
-	Date   string
 	Prices map[int]string
 }
 
