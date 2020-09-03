@@ -130,6 +130,14 @@
 
                             <div class="dropdown-divider"></div>
 
+                            <a class="dropdown-item" href="/players#level">Level Ladder</a>
+                            <a class="dropdown-item" href="/players#games">Games Ladder</a>
+                            <a class="dropdown-item" href="/players#bans">Bans Ladder</a>
+                            <a class="dropdown-item" href="/players#profile">Profile Ladder</a>
+                            <a class="dropdown-item" href="/players#achievements">Achievements Ladder</a>
+
+                            <div class="dropdown-divider"></div>
+
                             {{ range $key, $value:= .Continents }}
                                 <a class="dropdown-item" href="/players?country=c-{{ .Key }}">{{ .Value }}</a>
                             {{ end }}
