@@ -38,7 +38,7 @@ func (p *ProductPrices) AddPriceFromPackage(code steamapi.ProductCC, prices stea
 	}
 }
 
-func (p *ProductPrices) AddPriceFromApp(code steamapi.ProductCC, prices steamapi.AppDetailsBody) {
+func (p *ProductPrices) AddPriceFromApp(code steamapi.ProductCC, prices steamapi.AppDetails) {
 
 	if prices.Data == nil {
 		return
