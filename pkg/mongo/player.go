@@ -350,7 +350,7 @@ func (player Player) NeedsUpdate(updateType UpdateType) bool {
 }
 
 //noinspection GoUnusedExportedFunction
-func createPlayerIndexes() {
+func ensurePlayerIndexes() {
 
 	var indexModels []mongo.IndexModel
 
@@ -382,19 +382,6 @@ func createPlayerIndexes() {
 		})
 	}
 
-	//
-	indexModels = append(indexModels,
-
-		// Asc
-		mongo.IndexModel{Keys: bson.D{{"primary_clan_id_string", 1}}},
-
-		// Desc
-		mongo.IndexModel{Keys: bson.D{{"achievement_count_100", -1}}},
-		mongo.IndexModel{Keys: bson.D{{"bans_cav", -1}}},
-		mongo.IndexModel{Keys: bson.D{{"bans_game", -1}}},
-		mongo.IndexModel{Keys: bson.D{{"bans_last", -1}}},
-	)
-
 	// For last updated task
 	indexModels = append(indexModels, mongo.IndexModel{
 		Keys: bson.D{
@@ -420,6 +407,25 @@ func createPlayerIndexes() {
 				Strength: 2, // Case insensitive
 			}),
 		},
+	)
+
+	// For admin stats
+	indexModels = append(indexModels,
+		mongo.IndexModel{Keys: bson.D{{"community_visibility_state", 1}}},
+		mongo.IndexModel{Keys: bson.D{{"removed", 1}}},
+	)
+
+	// Misc
+	indexModels = append(indexModels,
+
+		// Asc
+		mongo.IndexModel{Keys: bson.D{{"primary_clan_id_string", 1}}},
+
+		// Desc
+		mongo.IndexModel{Keys: bson.D{{"achievement_count_100", -1}}},
+		mongo.IndexModel{Keys: bson.D{{"bans_cav", -1}}},
+		mongo.IndexModel{Keys: bson.D{{"bans_game", -1}}},
+		mongo.IndexModel{Keys: bson.D{{"bans_last", -1}}},
 	)
 
 	//

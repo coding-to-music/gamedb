@@ -565,7 +565,7 @@ func UpdateAppsInflux(writes []mongo.WriteModel) (err error) {
 }
 
 //noinspection GoUnusedExportedFunction
-func createAppIndexes() {
+func ensureAppIndexes() {
 
 	var indexModels []mongo.IndexModel
 

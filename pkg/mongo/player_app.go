@@ -107,7 +107,7 @@ func (app PlayerApp) GetAchievementPercent() string {
 }
 
 //noinspection GoUnusedExportedFunction
-func createPlayerAppIndexes() {
+func ensurePlayerAppIndexes() {
 
 	var indexModels = []mongo.IndexModel{
 		{Keys: bson.D{{"app_id", 1}, {"app_time", -1}, {"player_country", 1}}},

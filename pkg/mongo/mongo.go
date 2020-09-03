@@ -111,15 +111,15 @@ func getMongo() (client *mongo.Client, ctx context.Context, err error) {
 	return mongoClient, mongoCtx, err
 }
 
-func Migrations() {
+func EnsureIndexes() {
 	log.Info("Starting migrations")
-	createAppIndexes()
-	createGroupIndexes()
-	createPackageIndexes()
-	createPlayerIndexes()
-	createPlayerAchievementIndexes()
-	createPlayerAppIndexes()
-	createSaleIndexes()
+	ensureAppIndexes()
+	ensureGroupIndexes()
+	ensurePackageIndexes()
+	ensurePlayerIndexes()
+	ensurePlayerAchievementIndexes()
+	ensurePlayerAppIndexes()
+	ensureSaleIndexes()
 	log.Info("Finished migrations")
 }
 
