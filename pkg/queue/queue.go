@@ -72,6 +72,7 @@ const (
 	QueueDelay       rabbit.QueueName = "GDB_Delay"
 	QueueFailed      rabbit.QueueName = "GDB_Failed"
 	QueuePlayerRanks rabbit.QueueName = "GDB_Player_Ranks"
+	QueueStats       rabbit.QueueName = "GDB_Stats"
 	QueueSteam       rabbit.QueueName = "GDB_Steam"
 	QueueTest        rabbit.QueueName = "GDB_Test"
 	QueueWebsockets  rabbit.QueueName = "GDB_Websockets"
@@ -117,6 +118,7 @@ var (
 		{name: QueuePlayersAliases},
 		{name: QueuePlayersGroups},
 		{name: QueuePlayersWishlist},
+		{name: QueueStats},
 		{name: QueueSteam},
 		{name: QueueFailed, skipHeaders: true},
 		{name: QueueTest},
@@ -160,6 +162,7 @@ var (
 		{name: QueueDelay, consumer: delayHandler, skipHeaders: true},
 		{name: QueueAppsSearch, consumer: appsSearchHandler, prefetchSize: 5000},
 		{name: QueuePlayersSearch, consumer: appsPlayersHandler, prefetchSize: 5000},
+		{name: QueueStats, consumer: statsHandler},
 		{name: QueueSteam},
 		{name: QueueFailed, skipHeaders: true},
 		{name: QueueTest, consumer: testHandler},
@@ -191,6 +194,7 @@ var (
 		{name: QueuePlayersSearch, prefetchSize: 5000},
 		{name: QueuePlayerRanks},
 		{name: QueueDelay, skipHeaders: true},
+		{name: QueueStats},
 		{name: QueueSteam},
 		{name: QueueFailed, skipHeaders: true},
 		{name: QueueTest},
@@ -225,6 +229,7 @@ var (
 		{name: QueuePlayersGroups},
 		{name: QueuePlayersSearch, prefetchSize: 5000},
 		{name: QueuePlayerRanks},
+		{name: QueueStats},
 		{name: QueueSteam},
 		{name: QueueDelay, skipHeaders: true},
 		{name: QueueWebsockets},
@@ -615,6 +620,17 @@ func ProduceSteam(payload SteamMessage) (err error) {
 func ProduceTest(id int) (err error) {
 
 	return produce(QueueTest, TestMessage{ID: id})
+}
+
+func ProduceStats(typex mongo.StatsType, ID int, appsCount int64) (err error) {
+
+	m := StatsMessage{
+		Type:      typex,
+		StatID:    ID,
+		AppsCount: appsCount,
+	}
+
+	return produce(m.Queue(), m)
 }
 
 func ProducePlayerGroup(player mongo.Player, skipGroupUpdate bool, force bool) (err error) {
