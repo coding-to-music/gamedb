@@ -52,9 +52,9 @@ func (s StatsServer) getList(ctx context.Context, request *generated.StatsReques
 			Id:          int32(stat.ID),
 			Name:        stat.Name,
 			Apps:        int32(stat.Apps),
-			MeanPrice:   stat.MeanPrice,
 			MeanScore:   stat.MeanScore,
 			MeanPlayers: float32(stat.MeanPlayers),
+			// MeanPrice:   stat.MeanPrice,
 		})
 	}
 
