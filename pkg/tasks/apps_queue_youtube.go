@@ -1,8 +1,6 @@
 package tasks
 
 import (
-	"math"
-
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
@@ -30,10 +28,7 @@ func (c AppsQueueYoutube) Cron() TaskTime {
 
 func (c AppsQueueYoutube) work() (err error) {
 
-	// Each app takes 101 api "points"
-	limit := math.Floor(1_000_000 / 101)
-
-	apps, err := mongo.GetApps(0, int64(limit), bson.D{{"player_peak_week", -1}}, nil, bson.M{"_id": 1, "name": 1})
+	apps, err := mongo.GetApps(0, 9000, bson.D{{"player_peak_week", -1}}, nil, bson.M{"_id": 1, "name": 1})
 	if err != nil {
 		return err
 	}
