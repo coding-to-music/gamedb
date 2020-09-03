@@ -22,11 +22,12 @@ var (
 	MemcacheMongoCount   = func(collection string, filter bson.D) Item { return Item{Key: "mongo-count-" + collection + "-" + FilterToString(filter), Expiration: 60 * 60} }
 
 	// Apps Page Dropdowns
-	MemcacheTagKeyNames          = Item{Key: "tag-key-names", Expiration: 86400 * 7}
-	MemcacheCategoryKeyNames     = Item{Key: "category-key-names", Expiration: 86400 * 7}
-	MemcacheGenreKeyNames        = Item{Key: "genre-key-names", Expiration: 86400 * 7}
-	MemcachePublisherKeyNames    = Item{Key: "publisher-key-names", Expiration: 86400 * 7}
-	MemcacheDeveloperKeyNames    = Item{Key: "developer-key-names", Expiration: 86400 * 7}
+	MemcacheTagKeyNames       = Item{Key: "tag-key-names", Expiration: 60 * 60 * 24 * 2}
+	MemcacheCategoryKeyNames  = Item{Key: "category-key-names", Expiration: 60 * 60 * 24 * 2}
+	MemcacheGenreKeyNames     = Item{Key: "genre-key-names", Expiration: 60 * 60 * 24 * 2}
+	MemcachePublisherKeyNames = Item{Key: "publisher-key-names", Expiration: 60 * 60 * 24 * 2}
+	MemcacheDeveloperKeyNames = Item{Key: "developer-key-names", Expiration: 60 * 60 * 24 * 2}
+
 	MemcacheAppReleaseDateCounts = Item{Key: "app-release-date-counts", Expiration: 60 * 60 * 24}
 	MemcacheAppReviewScoreCounts = Item{Key: "app-review-score-counts", Expiration: 60 * 60 * 24 * 2}
 	MemcacheAppTypeCounts        = func(cc steamapi.ProductCC) Item { return Item{Key: "app-type-counts-" + string(cc), Expiration: 86400 * 7} }
