@@ -37,6 +37,8 @@ func (rk RankMetric) String() string {
 		return "Comments"
 	case RankKeyGames:
 		return "Games"
+	case RankKeyAchievements:
+		return "Achievements"
 	case RankKeyPlaytime:
 		return "Playtime"
 	}
