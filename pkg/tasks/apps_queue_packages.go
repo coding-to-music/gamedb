@@ -33,7 +33,14 @@ func (c AppsQueuePackages) work() (err error) {
 
 	for {
 
-		apps, err := mongo.GetNonEmptyArrays(offset, limit, "packages", bson.M{"packages": 1})
+		sort := bson.D{{"_id", 1}}
+		projection := bson.M{"packages": 1}
+		filter := bson.D{
+			{"packages", bson.M{"$exists": true}},
+			{"packages", bson.M{"$ne": bson.A{}}},
+		}
+
+		apps, err := mongo.GetApps(offset, limit, sort, filter, projection)
 		if err != nil {
 			return err
 		}

@@ -713,17 +713,6 @@ func GetAppsByID(ids []int, projection bson.M) (apps []App, err error) {
 	return GetApps(0, 0, nil, bson.D{{"_id", bson.M{"$in": a}}}, projection)
 }
 
-func GetNonEmptyArrays(offset int64, limit int64, column string, projection bson.M) (apps []App, err error) {
-
-	var filter = bson.D{
-		{column, bson.M{"$exists": true}},
-		{column, bson.M{"$ne": bson.A{}}},
-	}
-	var order = bson.D{{"_id", 1}}
-
-	return GetApps(offset, limit, order, filter, projection)
-}
-
 func GetRandomApps(count int, filter bson.D, projection bson.M) (apps []App, err error) {
 
 	cur, ctx, err := GetRandomRows(CollectionApps, count, filter, projection)

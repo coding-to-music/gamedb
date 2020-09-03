@@ -30,11 +30,7 @@ const ( //                                       min  hour
 	CronTimeAppsInflux               TaskTime = "0    */6"
 	CronTimeAppsWishlists            TaskTime = "30   1"
 	CronTimeAddAppTagsToInflux       TaskTime = "40   1"
-	CronTimeGenres                   TaskTime = "0    2"
-	CronTimeTags                     TaskTime = "0    3"
-	CronTimePublishers               TaskTime = "0    4"
-	CronTimeDevelopers               TaskTime = "0    5"
-	CronTimeCategories               TaskTime = "0    6"
+	CronTimeStats                    TaskTime = "0    2"
 	CronTimeInstagram                TaskTime = ""
 )
 
@@ -81,12 +77,8 @@ var (
 		PlayersQueueGroups{},
 		PlayersUpdateRanks{},
 		ProductsUpdateKeys{},
-		StatsCategories{},
-		StatsDevelopers{},
-		StatsTags{},
+		StatsTask{},
 		SteamOnline{},
-		TasksGenres{},
-		TasksPublishers{},
 	}
 )
 

@@ -1,35 +1,55 @@
 package tasks
 
 import (
-	"encoding/json"
-
-	"github.com/Jleagle/steam-go/steamapi"
-	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/queue"
 )
 
-type statsRow struct {
-	name       string
-	count      int
-	totalPrice map[steamapi.ProductCC]int
-	totalScore float64
+type StatsTask struct {
+	BaseTask
 }
 
-func (t statsRow) getMeanPrice() string {
+func (c StatsTask) ID() string {
+	return "update-stats"
+}
 
-	means := map[steamapi.ProductCC]float64{}
+func (c StatsTask) Name() string {
+	return "Update stats"
+}
 
-	for code, total := range t.totalPrice {
-		means[code] = float64(total) / float64(t.count)
-	}
+func (c StatsTask) Group() TaskGroup {
+	return ""
+}
 
-	bytes, err := json.Marshal(means)
+func (c StatsTask) Cron() TaskTime {
+	return CronTimeStats
+}
+
+func (c StatsTask) work() (err error) {
+
+	appsCount, err := mongo.CountDocuments(mongo.CollectionApps, nil, 0)
 	if err != nil {
-		log.ErrS(err)
+		return err
 	}
 
-	return string(bytes)
-}
+	types := []mongo.StatsType{
+		mongo.StatsTypeCategories,
+		mongo.StatsTypeDevelopers,
+		mongo.StatsTypeGenres,
+		mongo.StatsTypePublishers,
+		mongo.StatsTypeTags,
+	}
 
-func (t statsRow) getMeanScore() float64 {
-	return t.totalScore / float64(t.count)
+	for _, t := range types {
+		err := mongo.BatchStats(t, func(stats []mongo.Stat) {
+			for _, stat := range stats {
+				err = queue.ProduceStats(stat.Type, stat.ID, appsCount)
+			}
+		})
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
