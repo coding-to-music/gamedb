@@ -314,7 +314,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		RankListState:     {Players: playersStateCount},
 	}
 
-	for _, v := range []mongo.RankMetric{mongo.RankKeyLevel, mongo.RankKeyBadges, mongo.RankKeyFriends, mongo.RankKeyComments, mongo.RankKeyGames, mongo.RankKeyPlaytime} {
+	for _, v := range mongo.PlayerRankFields {
 
 		if position, ok := player.Ranks[string(v)]; ok {
 			ranks[RankListGlobally].Description = RankListGlobally
