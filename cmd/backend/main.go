@@ -33,7 +33,7 @@ func main() {
 	}
 
 	if config.IsProd() {
-		mongo.Migrations()
+		go mongo.EnsureIndexes()
 	}
 
 	if config.C.GRPCKeysPath == "" {
