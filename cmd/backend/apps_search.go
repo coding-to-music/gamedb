@@ -139,8 +139,7 @@ func (a AppsServer) Search(ctx context.Context, request *generated.SearchAppsReq
 	wg.Wait()
 
 	response = &generated.AppsElasticResponse{}
-	response.Pagination = &generated.PaginationResponse{}
-	response.Pagination.SetPagination(request.GetPagination(), count)
+	response.Pagination = helpers.MakePagination(request.GetPagination(), count)
 
 	for _, app := range apps {
 

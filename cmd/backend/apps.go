@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 
+	"github.com/gamedb/gamedb/cmd/backend/helpers"
 	"github.com/gamedb/gamedb/pkg/backend/generated"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"go.mongodb.org/mongo-driver/bson"
@@ -67,8 +68,7 @@ func (a AppsServer) Apps(ctx context.Context, request *generated.ListAppsRequest
 	}
 
 	response = &generated.AppsMongoResponse{}
-	response.Pagination = &generated.PaginationResponse{}
-	response.Pagination.SetPagination(request.GetPagination(), total)
+	response.Pagination = helpers.MakePagination(request.GetPagination(), total)
 
 	for _, app := range apps {
 		response.Apps = append(response.Apps, &generated.AppMongoResponse{
