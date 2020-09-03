@@ -133,7 +133,10 @@ func InfluxResponseToHighCharts(series influxModels.Row, trimLeft bool) HighChar
 					continue
 				}
 
-				resp[v] = append(resp[v], []interface{}{t.Unix() * 1000, vv[k]})
+				if val, ok := vv[k].(json.Number); ok && val != "" {
+
+					resp[v] = append(resp[v], []interface{}{t.Unix() * 1000, vv[k]})
+				}
 			}
 		}
 	}
