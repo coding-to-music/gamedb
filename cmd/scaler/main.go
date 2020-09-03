@@ -138,7 +138,7 @@ func cycleHandler(w http.ResponseWriter, r *http.Request) {
 
 func healthCheckHandler(w http.ResponseWriter, _ *http.Request) {
 
-	_, err := w.Write([]byte("OK"))
+	_, err := w.Write([]byte(http.StatusText(http.StatusOK)))
 	if err != nil {
 		log.ErrS(err)
 	}

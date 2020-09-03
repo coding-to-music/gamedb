@@ -18,7 +18,7 @@ func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/plain")
 	w.WriteHeader(http.StatusOK)
 
-	_, err := w.Write([]byte("OK"))
+	_, err := w.Write([]byte(http.StatusText(http.StatusOK)))
 	if err != nil {
 		log.ErrS(err)
 	}
