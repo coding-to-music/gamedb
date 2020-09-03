@@ -82,6 +82,7 @@ func main() {
 	generated.RegisterAppsServiceServer(grpcServer, AppsServer{})
 	generated.RegisterPlayersServiceServer(grpcServer, PlayersServer{})
 	generated.RegisterGitHubServiceServer(grpcServer, GithubServer{})
+	generated.RegisterStatsServiceServer(grpcServer, StatsServer{})
 
 	log.Info("Starting Backend on tcp://" + config.C.BackendHostPort)
 
@@ -98,4 +99,7 @@ type PlayersServer struct {
 }
 
 type GithubServer struct {
+}
+
+type StatsServer struct {
 }

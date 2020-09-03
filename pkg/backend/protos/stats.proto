@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package generated;
+
+import "shared.proto";
+
+service StatsService {
+    rpc Tags (StatsRequest) returns (StatsResponse) {
+    }
+    rpc Genres (StatsRequest) returns (StatsResponse) {
+    }
+    rpc Developers (StatsRequest) returns (StatsResponse) {
+    }
+    rpc Publishers (StatsRequest) returns (StatsResponse) {
+    }
+    rpc Categories (StatsRequest) returns (StatsResponse) {
+    }
+}
+
+message StatsRequest {
+    PaginationRequest pagination = 1;
+    repeated int64 ids = 2;
+}
+
+message StatsResponse {
+    PaginationResponse pagination = 1;
+    repeated StatResponse items = 2;
+}
+
+message StatResponse {
+    int32 id = 1;
+    string name = 2;
+    int32 apps = 3;
+    map<string, float> meanPrice = 4;
+    float meanScore = 5;
+    float meanPlayers = 6;
+}
