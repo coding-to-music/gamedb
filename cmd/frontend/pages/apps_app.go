@@ -1227,7 +1227,7 @@ func appPlayersAjaxHandler(limit bool) func(http.ResponseWriter, *http.Request) 
 			builder.AddWhere("time", ">", "NOW()-"+days)
 			builder.AddWhere("app_id", "=", id)
 			builder.AddGroupByTime(group)
-			builder.SetFillNumber(0)
+			builder.SetFillNone()
 
 			resp, err := influx.InfluxQuery(builder)
 			if err != nil {
