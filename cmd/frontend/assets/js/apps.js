@@ -140,7 +140,7 @@ if ($('#apps-page').length > 0) {
         };
 
         // Default form inputs
-        const params = new URL(window.location).searchParams;
+        // const params = new URL(window.location).searchParams;
 
         const $platforms = $('#platforms');
         // if (params.getAll($platforms.attr('name')).length === 0) {

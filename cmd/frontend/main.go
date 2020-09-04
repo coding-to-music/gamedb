@@ -18,6 +18,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/go-chi/chi"
@@ -94,17 +95,22 @@ func main() {
 	// Pages
 	r.Get("/", pages.HomeHandler)
 	r.Get("/currency/{id}", pages.CurrencyHandler)
+
+	r.Get("/categories", pages.StatsListHandler(mongo.StatsTypeCategories))
+	r.Get("/developers", pages.StatsListHandler(mongo.StatsTypeDevelopers))
+	r.Get("/genres", pages.StatsListHandler(mongo.StatsTypeGenres))
+	r.Get("/publishers", pages.StatsListHandler(mongo.StatsTypePublishers))
+	r.Get("/tags", pages.StatsListHandler(mongo.StatsTypeTags))
+
 	r.Mount("/achievements", pages.AchievementsRouter())
 	r.Mount("/admin", pages.AdminRouter())
 	r.Mount("/api", pages.APIRouter())
 	r.Mount("/badges", pages.BadgesRouter())
 	r.Mount("/bundles", pages.BundlesRouter())
-	r.Mount("/categories", pages.CategoriesRouter())
 	r.Mount("/changes", pages.ChangesRouter())
 	r.Mount("/commits", pages.CommitsRouter())
 	r.Mount("/contact", pages.ContactRouter())
 	r.Mount("/depots", pages.DepotsRouter())
-	r.Mount("/developers", pages.DevelopersRouter())
 	r.Mount("/discord-bot", pages.ChatBotRouter())
 	r.Mount("/discord-server", pages.ChatRouter())
 	r.Mount("/donate", pages.DonateRouter())
@@ -112,7 +118,6 @@ func main() {
 	r.Mount("/forgot", pages.ForgotRouter())
 	r.Mount("/franchise", pages.FranchiseRouter())
 	r.Mount("/games", pages.GamesRouter())
-	r.Mount("/genres", pages.GenresRouter())
 	r.Mount("/groups", pages.GroupsRouter())
 	r.Mount("/health-check", pages.HealthCheckRouter())
 	r.Mount("/home", pages.HomeRouter())
@@ -124,22 +129,13 @@ func main() {
 	r.Mount("/players", pages.PlayersRouter())
 	r.Mount("/price-changes", pages.PriceChangeRouter())
 	r.Mount("/product-keys", pages.ProductKeysRouter())
-	r.Mount("/publishers", pages.PublishersRouter())
 	r.Mount("/queues", pages.QueuesRouter())
 	r.Mount("/settings", pages.SettingsRouter())
 	r.Mount("/signup", pages.SignupRouter())
 	r.Mount("/stats", pages.StatsRouter())
-	r.Mount("/tags", pages.TagsRouter())
 	r.Mount("/terms", pages.TermsRouter())
 	r.Mount("/webhooks", pages.WebhooksRouter())
 	r.Mount("/websocket", pages.WebsocketsRouter())
-
-	// Assets
-	r.Route("/assets", func(r chi.Router) {
-		r.Get("/img/*", rootFileHandler(imgBox, "/assets/img"))
-		r.Get("/files/*", rootFileHandler(filesBox, "/assets/files"))
-		r.Get("/dist/*", rootFileHandler(distBox, "/assets/dist"))
-	})
 
 	// Sitemaps, Google doesnt like having a sitemap in a sub directory
 	r.Get("/sitemap-badges.xml", pages.SiteMapBadges)
@@ -152,6 +148,13 @@ func main() {
 	r.Get("/sitemap-players-by-games.xml", pages.SiteMapPlayersByGamesCount)
 	r.Get("/sitemap-players-by-level.xml", pages.SiteMapPlayersByLevel)
 	r.Get("/sitemap.xml", pages.SiteMapIndexHandler)
+
+	// Assets
+	r.Route("/assets", func(r chi.Router) {
+		r.Get("/img/*", rootFileHandler(imgBox, "/assets/img"))
+		r.Get("/files/*", rootFileHandler(filesBox, "/assets/files"))
+		r.Get("/dist/*", rootFileHandler(distBox, "/assets/dist"))
+	})
 
 	// Root files
 	r.Get("/browserconfig.xml", rootFileHandler(filesBox, ""))
@@ -188,6 +191,13 @@ func main() {
 	r.Get("/trending", redirectHandler("/games/trending"))
 	r.Get("/upcoming", redirectHandler("/games/upcoming"))
 	r.Get("/wishlists", redirectHandler("/games/wishlists"))
+
+	// Stats Redirects
+	// r.Get("/tags", redirectHandler("/stats/tags"))
+	// r.Get("/genres", redirectHandler("/stats/genres"))
+	// r.Get("/categories", redirectHandler("/stats/categories"))
+	// r.Get("/publishers", redirectHandler("/stats/publishers"))
+	// r.Get("/developers", redirectHandler("/stats/developers"))
 
 	// 404
 	r.NotFound(pages.Error404Handler)

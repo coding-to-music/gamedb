@@ -1,14 +1,3 @@
-if ($('#genres-page').length > 0 || $('#developers-page').length > 0 || $('#publishers-page').length > 0 || $('#tags-page').length > 0 || $('#categories-page').length > 0) {
-
-    const searchFields = [
-        $('#search'),
-    ];
-
-    $('table.table').gdbTable({
-        searchFields: searchFields
-    });
-}
-
 if ($('#stats-page').length > 0) {
 
     (function ($, window) {

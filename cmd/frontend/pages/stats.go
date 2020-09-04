@@ -1,6 +1,7 @@
 package pages
 
 import (
+	"html/template"
 	"net/http"
 	"sort"
 	"sync"
@@ -8,8 +9,12 @@ import (
 
 	"github.com/Jleagle/influxql"
 	"github.com/dustin/go-humanize"
+	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/datatable"
 	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/session"
+	"github.com/gamedb/gamedb/pkg/backend"
+	"github.com/gamedb/gamedb/pkg/backend/generated"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -29,9 +34,83 @@ func StatsRouter() http.Handler {
 	r.Get("/release-dates.json", statsDatesHandler)
 	r.Get("/app-scores.json", statsScoresHandler)
 	r.Get("/app-types.json", statsAppTypesHandler)
-	r.Get("/player-levels.json", playerLevelsHandler)
-	r.Get("/player-countries.json", playerCountriesHandler)
+	r.Get("/player-levels.json", statsPlayerLevelsHandler)
+	r.Get("/player-countries.json", statsPlayerCountriesHandler)
+	r.Get("/list.json", statsListHandler)
 	return r
+}
+
+func StatsListHandler(typex mongo.StatsType) func(http.ResponseWriter, *http.Request) {
+
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		t := statsTagsTemplate{}
+		t.fill(w, r, typex.Title()+"s", template.HTML("Top Steam "+typex.Title()+"s"))
+		t.addAssetMark()
+
+		t.Type = typex
+
+		returnTemplate(w, r, "stats_list", t)
+	}
+}
+
+type statsTagsTemplate struct {
+	globalTemplate
+	Type mongo.StatsType
+}
+
+func (t statsTagsTemplate) includes() []string {
+	return []string{"includes/stats_header.gohtml"}
+}
+
+func statsListHandler(w http.ResponseWriter, r *http.Request) {
+
+	query := datatable.NewDataTableQuery(r, false)
+
+	conn, ctx, err := backend.GetClient()
+	if err != nil {
+		log.ErrS(err)
+		return
+	}
+
+	var columns = map[string]string{
+		"0": "name",
+		"1": "apps",
+		"2": "mean_price",
+		"3": "mean_score",
+		"4": "mean_players",
+	}
+
+	message := &generated.StatsRequest{
+		Pagination: backend.MakePaginationRequest(query, columns, 100),
+		Type:       query.GetSearchString("type"),
+		Currency:   string(session.GetProductCC(r)),
+		Search:     query.GetSearchString("search"),
+	}
+
+	resp, err := generated.NewStatsServiceClient(conn).List(ctx, message)
+	if err != nil {
+		log.ErrS(err)
+		return
+	}
+
+	var response = datatable.NewDataTablesResponse(r, query, resp.GetPagination().GetTotal(), resp.GetPagination().GetTotalFiltered(), nil)
+	for _, stat := range resp.GetStats() {
+
+		statPath := helpers.GetStatPath(query.GetSearchString("type"), stat.GetId(), stat.GetName())
+		statScore := helpers.RoundFloatTo2DP(float64(stat.GetMeanScore()))
+
+		response.AddRow([]interface{}{
+			statPath,              // 0
+			stat.GetName(),        // 1
+			stat.GetApps(),        // 2
+			stat.GetMeanPrice(),   // 3
+			stat.GetMeanPlayers(), // 4
+			statScore,             // 5
+		})
+	}
+
+	returnJSON(w, r, response)
 }
 
 func statsHandler(w http.ResponseWriter, r *http.Request) {
@@ -254,7 +333,7 @@ func (t gamedbStatsTemplate) includes() []string {
 	return []string{"includes/stats_header.gohtml"}
 }
 
-func playerLevelsHandler(w http.ResponseWriter, r *http.Request) {
+func statsPlayerLevelsHandler(w http.ResponseWriter, r *http.Request) {
 
 	levels, err := mongo.GetPlayerLevelsRounded()
 	if err != nil {
@@ -265,7 +344,7 @@ func playerLevelsHandler(w http.ResponseWriter, r *http.Request) {
 	returnJSON(w, r, levels)
 }
 
-func playerCountriesHandler(w http.ResponseWriter, r *http.Request) {
+func statsPlayerCountriesHandler(w http.ResponseWriter, r *http.Request) {
 
 	aggs, err := elasticsearch.AggregatePlayerCountries()
 	if err != nil {

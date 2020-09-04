@@ -145,6 +145,23 @@ func (q DataTablesQuery) GetOrderMongo(columns map[string]string) (cols bson.D) 
 	return cols
 }
 
+func (q DataTablesQuery) GetOrderBackend(columns map[string]string) (a, b string) {
+
+	for _, v := range q.getOrder(columns) {
+
+		var sort string
+		if v.asc {
+			sort = "asc"
+		} else {
+			sort = "desc"
+		}
+
+		return v.col, sort
+	}
+
+	return "", ""
+}
+
 func (q DataTablesQuery) GetOrderElastic(columns map[string]string) (sorters []elastic.Sorter) {
 
 	for _, v := range q.getOrder(columns) {
