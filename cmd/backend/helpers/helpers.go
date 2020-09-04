@@ -24,6 +24,10 @@ func MakeMongoOrder(request *generated.PaginationRequest) (o bson.D) {
 
 	field := request.GetSortField()
 
+	if field == "" {
+		return bson.D{}
+	}
+
 	order := 1
 	if request.GetSortOrder() == "desc" {
 		order = -1
