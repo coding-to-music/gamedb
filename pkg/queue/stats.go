@@ -108,7 +108,7 @@ func statsHandler(message *rabbit.Message) {
 
 	// Update Influx
 	fields := map[string]interface{}{
-		"count":        totalApps,
+		"app_count":    totalApps,
 		"percent":      (float64(totalApps) / float64(payload.AppsCount)) * 100,
 		"mean_price":   meanPrice,
 		"mean_score":   meanScore,
