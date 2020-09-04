@@ -2,6 +2,7 @@ package pages
 
 import (
 	"html/template"
+	"math"
 	"net/http"
 	"sort"
 	"sync"
@@ -81,10 +82,12 @@ func statsListHandler(w http.ResponseWriter, r *http.Request) {
 		"4": "mean_players",
 	}
 
+	code := session.GetProductCC(r)
+
 	message := &generated.StatsRequest{
 		Pagination: backend.MakePaginationRequest(query, columns, 100),
 		Type:       query.GetSearchString("type"),
-		Currency:   string(session.GetProductCC(r)),
+		Currency:   string(code),
 		Search:     query.GetSearchString("search"),
 	}
 
@@ -98,15 +101,17 @@ func statsListHandler(w http.ResponseWriter, r *http.Request) {
 	for _, stat := range resp.GetStats() {
 
 		statPath := helpers.GetStatPath(query.GetSearchString("type"), stat.GetId(), stat.GetName())
-		statScore := helpers.RoundFloatTo2DP(float64(stat.GetMeanScore()))
+		statScore := helpers.GetAppReviewScore(float64(stat.GetMeanScore()))
+		statPlayers := math.Round(float64(stat.GetMeanPlayers()))
+		statPrice := i18n.FormatPrice(i18n.GetProdCC(code).CurrencyCode, int(math.Round(float64(stat.GetMeanPrice()))))
 
 		response.AddRow([]interface{}{
-			statPath,              // 0
-			stat.GetName(),        // 1
-			stat.GetApps(),        // 2
-			stat.GetMeanPrice(),   // 3
-			stat.GetMeanPlayers(), // 4
-			statScore,             // 5
+			statPath,       // 0
+			stat.GetName(), // 1
+			stat.GetApps(), // 2
+			statPrice,      // 3
+			statPlayers,    // 4
+			statScore,      // 5
 		})
 	}
 

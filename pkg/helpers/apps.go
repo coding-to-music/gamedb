@@ -219,3 +219,7 @@ func (sr SystemRequirement) Format() template.HTML {
 		return template.HTML(sr.Val)
 	}
 }
+
+func GetAppReviewScore(score float64) string {
+	return FloatToString(score, 2) + "%"
+}

@@ -49,7 +49,7 @@ func statsHandler(message *rabbit.Message) {
 	}
 
 	var totalApps int
-	var totalScore float64
+	var totalScore float32
 	var totalPrice = map[steamapi.ProductCC]int{}
 	var totalPlayers int
 
@@ -61,7 +61,7 @@ func statsHandler(message *rabbit.Message) {
 			totalApps++
 
 			// Score
-			totalScore += app.ReviewsScore
+			totalScore += float32(app.ReviewsScore)
 
 			// Prices
 			for k, v := range app.Prices {
@@ -73,13 +73,13 @@ func statsHandler(message *rabbit.Message) {
 		}
 	})
 
-	var meanScore float64
+	var meanScore float32
 	var meanPlayers float64
 	var meanPrice = map[steamapi.ProductCC]float32{}
 
 	if totalApps > 0 {
 
-		meanScore = totalScore / float64(totalApps)
+		meanScore = totalScore / float32(totalApps)
 		meanPlayers = float64(totalPlayers) / float64(totalApps)
 
 		for k, v := range totalPrice {
@@ -108,11 +108,14 @@ func statsHandler(message *rabbit.Message) {
 
 	// Update Influx
 	fields := map[string]interface{}{
-		"app_count":    totalApps,
-		"percent":      (float64(totalApps) / float64(payload.AppsCount)) * 100,
-		"mean_price":   meanPrice,
+		"apps_count":   totalApps,
+		"apps_percent": (float64(totalApps) / float64(payload.AppsCount)) * 100,
 		"mean_score":   meanScore,
 		"mean_players": meanPlayers,
+	}
+
+	for k, v := range meanPrice {
+		fields["mean_price_"+string(k)] = v
 	}
 
 	point := influx.Point{

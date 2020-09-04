@@ -309,7 +309,7 @@ func (app App) GetPlayLink() template.URL {
 }
 
 func (app App) GetReviewScore() string {
-	return helpers.FloatToString(app.ReviewsScore, 2) + "%"
+	return helpers.GetAppReviewScore(app.ReviewsScore)
 }
 
 func (app App) GetFollowers() (ret string) {

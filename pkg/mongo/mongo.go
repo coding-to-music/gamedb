@@ -229,7 +229,9 @@ func UpdateManySet(collection collection, filter bson.D, update bson.D) (resp *m
 		return resp, nil
 	}
 
-	resp, err = client.Database(config.C.MongoDatabase, options.Database()).Collection(collection.String()).UpdateMany(ctx, filter, bson.M{"$set": update}, options.Update())
+	resp, err = client.Database(config.C.MongoDatabase, options.Database()).
+		Collection(collection.String()).
+		UpdateMany(ctx, filter, bson.M{"$set": update}, options.Update())
 
 	return resp, err
 }

@@ -45,7 +45,7 @@ if ($('#stats-list-page').length > 0) {
                 {
                     "targets": 4,
                     "render": function (data, type, row) {
-                        return row[4];
+                        return row[4].toLocaleString();
                     },
                     "orderSequence": ['desc', 'asc'],
                 },
