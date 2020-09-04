@@ -91,15 +91,3 @@ func main() {
 		log.FatalS(err)
 	}
 }
-
-type AppsServer struct {
-}
-
-type PlayersServer struct {
-}
-
-type GithubServer struct {
-}
-
-type StatsServer struct {
-}

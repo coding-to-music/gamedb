@@ -12,6 +12,8 @@ import (
 	"time"
 
 	"github.com/cenkalti/backoff/v4"
+	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/datatable"
+	"github.com/gamedb/gamedb/pkg/backend/generated"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/log"
 	"google.golang.org/grpc"
@@ -82,4 +84,18 @@ func GetClient() (*grpc.ClientConn, context.Context, error) {
 	}
 
 	return conn, ctx, nil
+}
+
+func MakePaginationRequest(query datatable.DataTablesQuery, cols map[string]string, limit int64) *generated.PaginationRequest {
+
+	a, b := query.GetOrderBackend(cols)
+
+	p := &generated.PaginationRequest{
+		Offset:    query.GetOffset64(),
+		Limit:     limit,
+		SortField: a,
+		SortOrder: b,
+	}
+
+	return p
 }

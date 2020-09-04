@@ -9,6 +9,9 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
+type AppsServer struct {
+}
+
 func (a AppsServer) Apps(ctx context.Context, request *generated.ListAppsRequest) (response *generated.AppsMongoResponse, err error) {
 
 	filter := bson.D{{}}
@@ -62,13 +65,18 @@ func (a AppsServer) Apps(ctx context.Context, request *generated.ListAppsRequest
 		return nil, err
 	}
 
-	total, err := mongo.CountDocuments(mongo.CollectionApps, filter, 0)
+	total, err := mongo.CountDocuments(mongo.CollectionApps, nil, 0)
+	if err != nil {
+		return nil, err
+	}
+
+	filtered, err := mongo.CountDocuments(mongo.CollectionApps, filter, 0)
 	if err != nil {
 		return nil, err
 	}
 
 	response = &generated.AppsMongoResponse{}
-	response.Pagination = helpers.MakePagination(request.GetPagination(), total)
+	response.Pagination = helpers.MakePaginationResponse(request.GetPagination(), total, filtered)
 
 	for _, app := range apps {
 		response.Apps = append(response.Apps, &generated.AppMongoResponse{

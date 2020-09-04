@@ -10,34 +10,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-type StatsType string
-
-func (st StatsType) MongoCol() string {
-	switch st {
-	case StatsTypeCategories:
-		return "categories"
-	case StatsTypeDevelopers:
-		return "developers"
-	case StatsTypeGenres:
-		return "genres"
-	case StatsTypePublishers:
-		return "publishers"
-	case StatsTypeTags:
-		return "tags"
-	default:
-		log.WarnS("invalid stats type")
-		return ""
-	}
-}
-
-const (
-	StatsTypeCategories StatsType = "c"
-	StatsTypeDevelopers StatsType = "d"
-	StatsTypeGenres     StatsType = "g"
-	StatsTypePublishers StatsType = "p"
-	StatsTypeTags       StatsType = "t"
-)
-
 type Stat struct {
 	Type        StatsType                      `bson:"type"`
 	ID          int                            `bson:"id"`
@@ -65,10 +37,73 @@ func (stat Stat) getKey() string {
 	return string(stat.Type) + "-" + strconv.Itoa(stat.ID)
 }
 
-func GetStats(typex StatsType, offset int64, limit int64) (offers []Stat, err error) {
+// Types
+type StatsType string
 
-	sort := bson.D{{"name", 1}}
-	filter := bson.D{{"type", typex}}
+const (
+	StatsTypeCategories StatsType = "c"
+	StatsTypeDevelopers StatsType = "d"
+	StatsTypeGenres     StatsType = "g"
+	StatsTypePublishers StatsType = "p"
+	StatsTypeTags       StatsType = "t"
+)
+
+func (st StatsType) MongoCol() string {
+	switch st {
+	case StatsTypeCategories:
+		return "categories"
+	case StatsTypeDevelopers:
+		return "developers"
+	case StatsTypeGenres:
+		return "genres"
+	case StatsTypePublishers:
+		return "publishers"
+	case StatsTypeTags:
+		return "tags"
+	default:
+		log.WarnS("invalid stats type")
+		return ""
+	}
+}
+
+func (st StatsType) Title() string {
+	switch st {
+	case StatsTypeCategories:
+		return "Category"
+	case StatsTypeDevelopers:
+		return "Developer"
+	case StatsTypeGenres:
+		return "Genre"
+	case StatsTypePublishers:
+		return "Publisher"
+	case StatsTypeTags:
+		return "Tag"
+	default:
+		log.WarnS("invalid stats type")
+		return ""
+	}
+}
+
+func (st StatsType) Plural() string {
+	switch st {
+	case StatsTypeCategories:
+		return "Categories"
+	case StatsTypeDevelopers:
+		return "Developers"
+	case StatsTypeGenres:
+		return "Genres"
+	case StatsTypePublishers:
+		return "Publishers"
+	case StatsTypeTags:
+		return "Tags"
+	default:
+		log.WarnS("invalid stats type")
+		return ""
+	}
+}
+
+//
+func GetStats(offset int64, limit int64, filter bson.D, sort bson.D) (offers []Stat, err error) {
 
 	cur, ctx, err := Find(CollectionStats, offset, limit, sort, filter, nil, nil)
 	if err != nil {
@@ -103,7 +138,7 @@ func BatchStats(typex StatsType, callback func(stats []Stat)) (err error) {
 
 	for {
 
-		stats, err := GetStats(typex, offset, limit)
+		stats, err := GetStats(offset, limit, bson.D{{"type", typex}}, bson.D{{"name", 1}})
 		if err != nil {
 			return err
 		}

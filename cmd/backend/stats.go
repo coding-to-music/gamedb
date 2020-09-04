@@ -2,60 +2,67 @@ package main
 
 import (
 	"context"
+	"regexp"
 
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/cmd/backend/helpers"
 	"github.com/gamedb/gamedb/pkg/backend/generated"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func (s StatsServer) Tags(ctx context.Context, request *generated.StatsRequest) (*generated.StatsResponse, error) {
-	return s.getList(ctx, request, mongo.StatsTypeTags)
+type StatsServer struct {
 }
 
-func (s StatsServer) Genres(ctx context.Context, request *generated.StatsRequest) (*generated.StatsResponse, error) {
-	return s.getList(ctx, request, mongo.StatsTypeGenres)
-}
-
-func (s StatsServer) Developers(ctx context.Context, request *generated.StatsRequest) (*generated.StatsResponse, error) {
-	return s.getList(ctx, request, mongo.StatsTypeDevelopers)
-}
-
-func (s StatsServer) Publishers(ctx context.Context, request *generated.StatsRequest) (*generated.StatsResponse, error) {
-	return s.getList(ctx, request, mongo.StatsTypePublishers)
-}
-
-func (s StatsServer) Categories(ctx context.Context, request *generated.StatsRequest) (*generated.StatsResponse, error) {
-	return s.getList(ctx, request, mongo.StatsTypePublishers)
-}
-
-func (s StatsServer) getList(ctx context.Context, request *generated.StatsRequest, typex mongo.StatsType) (response *generated.StatsResponse, err error) {
+func (s StatsServer) List(ctx context.Context, request *generated.StatsRequest) (response *generated.StatsResponse, err error) {
 
 	offset := request.GetPagination().GetOffset()
 	limit := request.GetPagination().GetLimit()
 
-	stats, err := mongo.GetStats(typex, offset, limit)
+	filter := bson.D{{"type", request.GetType()}}
+	filter2 := filter
+
+	if len(request.GetSearch()) > 0 {
+		quoted := regexp.QuoteMeta(request.GetSearch())
+		filter2 = append(filter2, bson.E{Key: "$or", Value: bson.A{
+			bson.M{"name": bson.M{"$regex": quoted, "$options": "i"}},
+		}})
+	}
+log.InfoS(helpers.MakeMongoOrder(request.GetPagination()))
+	stats, err := mongo.GetStats(offset, limit, filter2, helpers.MakeMongoOrder(request.GetPagination()))
 	if err != nil {
 		return nil, err
 	}
 
-	total, err := mongo.CountDocuments(mongo.CollectionStats, bson.D{{"type", typex}}, 0)
+	total, err := mongo.CountDocuments(mongo.CollectionStats, filter, 0)
+	if err != nil {
+		return nil, err
+	}
+
+	filtered, err := mongo.CountDocuments(mongo.CollectionStats, filter2, 0)
 	if err != nil {
 		return nil, err
 	}
 
 	response = &generated.StatsResponse{}
-	response.Pagination = helpers.MakePagination(request.GetPagination(), total)
+	response.Pagination = helpers.MakePaginationResponse(request.GetPagination(), total, filtered)
 
 	for _, stat := range stats {
-		response.Items = append(response.Items, &generated.StatResponse{
+
+		s := &generated.StatResponse{
 			Id:          int32(stat.ID),
 			Name:        stat.Name,
 			Apps:        int32(stat.Apps),
 			MeanScore:   stat.MeanScore,
 			MeanPlayers: float32(stat.MeanPlayers),
-			// MeanPrice:   stat.MeanPrice,
-		})
+		}
+
+		if val, ok := stat.MeanPrice[steamapi.ProductCC(request.GetCurrency())]; ok {
+			s.MeanPrice = val
+		}
+
+		response.Stats = append(response.Stats, s)
 	}
 
 	return response, err

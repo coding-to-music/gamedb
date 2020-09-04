@@ -108,28 +108,28 @@ func (a AppsServer) Search(ctx context.Context, request *generated.SearchAppsReq
 	var wg sync.WaitGroup
 
 	var apps []elasticsearch.App
-	var recordsFiltered int64
+	var filtered int64
 	wg.Add(1)
 	go func() {
 
 		defer wg.Done()
 
 		var err error
-		apps, recordsFiltered, err = elasticsearch.SearchAppsAdvanced(int(request.GetPagination().GetOffset()), request.GetSearch(), nil, filters)
+		apps, filtered, err = elasticsearch.SearchAppsAdvanced(int(request.GetPagination().GetOffset()), request.GetSearch(), nil, filters)
 		if err != nil {
 			log.ErrS(err)
 		}
 	}()
 
 	// Get count
-	var count int64
+	var total int64
 	wg.Add(1)
 	go func() {
 
 		defer wg.Done()
 
 		var err error
-		count, err = mongo.CountDocuments(mongo.CollectionApps, nil, 0)
+		total, err = mongo.CountDocuments(mongo.CollectionApps, nil, 0)
 		if err != nil {
 			log.ErrS(err)
 		}
@@ -139,7 +139,7 @@ func (a AppsServer) Search(ctx context.Context, request *generated.SearchAppsReq
 	wg.Wait()
 
 	response = &generated.AppsElasticResponse{}
-	response.Pagination = helpers.MakePagination(request.GetPagination(), count)
+	response.Pagination = helpers.MakePaginationResponse(request.GetPagination(), total, filtered)
 
 	for _, app := range apps {
 

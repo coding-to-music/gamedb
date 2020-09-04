@@ -24,7 +24,9 @@ const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
 type StatsRequest struct {
 	Pagination           *PaginationRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
-	Ids                  []int64            `protobuf:"varint,2,rep,packed,name=ids,proto3" json:"ids,omitempty"`
+	Type                 string             `protobuf:"bytes,2,opt,name=type,proto3" json:"type,omitempty"`
+	Currency             string             `protobuf:"bytes,3,opt,name=currency,proto3" json:"currency,omitempty"`
+	Search               string             `protobuf:"bytes,4,opt,name=search,proto3" json:"search,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
 	XXX_unrecognized     []byte             `json:"-"`
 	XXX_sizecache        int32              `json:"-"`
@@ -62,16 +64,30 @@ func (m *StatsRequest) GetPagination() *PaginationRequest {
 	return nil
 }
 
-func (m *StatsRequest) GetIds() []int64 {
+func (m *StatsRequest) GetType() string {
 	if m != nil {
-		return m.Ids
+		return m.Type
 	}
-	return nil
+	return ""
+}
+
+func (m *StatsRequest) GetCurrency() string {
+	if m != nil {
+		return m.Currency
+	}
+	return ""
+}
+
+func (m *StatsRequest) GetSearch() string {
+	if m != nil {
+		return m.Search
+	}
+	return ""
 }
 
 type StatsResponse struct {
 	Pagination           *PaginationResponse `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
-	Items                []*StatResponse     `protobuf:"bytes,2,rep,name=items,proto3" json:"items,omitempty"`
+	Stats                []*StatResponse     `protobuf:"bytes,2,rep,name=stats,proto3" json:"stats,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}            `json:"-"`
 	XXX_unrecognized     []byte              `json:"-"`
 	XXX_sizecache        int32               `json:"-"`
@@ -109,23 +125,23 @@ func (m *StatsResponse) GetPagination() *PaginationResponse {
 	return nil
 }
 
-func (m *StatsResponse) GetItems() []*StatResponse {
+func (m *StatsResponse) GetStats() []*StatResponse {
 	if m != nil {
-		return m.Items
+		return m.Stats
 	}
 	return nil
 }
 
 type StatResponse struct {
-	Id                   int32              `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Name                 string             `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	Apps                 int32              `protobuf:"varint,3,opt,name=apps,proto3" json:"apps,omitempty"`
-	MeanPrice            map[string]float32 `protobuf:"bytes,4,rep,name=meanPrice,proto3" json:"meanPrice,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"fixed32,2,opt,name=value,proto3"`
-	MeanScore            float32            `protobuf:"fixed32,5,opt,name=meanScore,proto3" json:"meanScore,omitempty"`
-	MeanPlayers          float32            `protobuf:"fixed32,6,opt,name=meanPlayers,proto3" json:"meanPlayers,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
-	XXX_unrecognized     []byte             `json:"-"`
-	XXX_sizecache        int32              `json:"-"`
+	Id                   int32    `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name                 string   `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Apps                 int32    `protobuf:"varint,3,opt,name=apps,proto3" json:"apps,omitempty"`
+	MeanPrice            float32  `protobuf:"fixed32,4,opt,name=meanPrice,proto3" json:"meanPrice,omitempty"`
+	MeanScore            float32  `protobuf:"fixed32,5,opt,name=meanScore,proto3" json:"meanScore,omitempty"`
+	MeanPlayers          float32  `protobuf:"fixed32,6,opt,name=meanPlayers,proto3" json:"meanPlayers,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
 }
 
 func (m *StatResponse) Reset()         { *m = StatResponse{} }
@@ -174,11 +190,11 @@ func (m *StatResponse) GetApps() int32 {
 	return 0
 }
 
-func (m *StatResponse) GetMeanPrice() map[string]float32 {
+func (m *StatResponse) GetMeanPrice() float32 {
 	if m != nil {
 		return m.MeanPrice
 	}
-	return nil
+	return 0
 }
 
 func (m *StatResponse) GetMeanScore() float32 {
@@ -199,37 +215,32 @@ func init() {
 	proto.RegisterType((*StatsRequest)(nil), "generated.StatsRequest")
 	proto.RegisterType((*StatsResponse)(nil), "generated.StatsResponse")
 	proto.RegisterType((*StatResponse)(nil), "generated.StatResponse")
-	proto.RegisterMapType((map[string]float32)(nil), "generated.StatResponse.MeanPriceEntry")
 }
 
 func init() { proto.RegisterFile("stats.proto", fileDescriptor_b4756a0aec8b9d44) }
 
 var fileDescriptor_b4756a0aec8b9d44 = []byte{
-	// 381 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x93, 0x41, 0xab, 0xd3, 0x40,
-	0x10, 0xc7, 0xcd, 0xa6, 0x29, 0x64, 0xf2, 0x7c, 0xc8, 0x22, 0xb8, 0x94, 0x27, 0x84, 0x1c, 0x24,
-	0x17, 0x73, 0xa8, 0x17, 0xd1, 0xf6, 0x20, 0x56, 0x3c, 0x09, 0x65, 0xeb, 0x59, 0xd8, 0x36, 0x43,
-	0xba, 0x98, 0x6e, 0xe2, 0xee, 0xb6, 0xd0, 0x83, 0x5f, 0xc0, 0xaf, 0xe7, 0x17, 0x92, 0xec, 0xb6,
-	0x69, 0xab, 0xf6, 0xd2, 0x77, 0x9b, 0xcc, 0xfc, 0xff, 0xf3, 0xcb, 0x7f, 0x48, 0x20, 0x31, 0x56,
-	0x58, 0x53, 0xb4, 0xba, 0xb1, 0x0d, 0x8d, 0x2b, 0x54, 0xa8, 0x85, 0xc5, 0x72, 0x74, 0x67, 0xd6,
-	0x42, 0x63, 0xe9, 0x07, 0xd9, 0x37, 0xb8, 0x5b, 0x74, 0x3a, 0x8e, 0x3f, 0xb6, 0x68, 0x2c, 0x9d,
-	0x00, 0xb4, 0xa2, 0x92, 0x4a, 0x58, 0xd9, 0x28, 0x16, 0xa4, 0x41, 0x9e, 0x8c, 0x1f, 0x8a, 0xde,
-	0x5d, 0xcc, 0xfb, 0xe1, 0xc1, 0xc1, 0xcf, 0xf4, 0xf4, 0x19, 0x84, 0xb2, 0x34, 0x8c, 0xa4, 0x61,
-	0x1e, 0xf2, 0xae, 0xcc, 0x7e, 0xc2, 0xd3, 0xc3, 0x7e, 0xd3, 0x36, 0xca, 0x20, 0x9d, 0xfe, 0x07,
-	0xf0, 0xf2, 0x0a, 0xc0, 0x5b, 0x2e, 0x08, 0xaf, 0x21, 0x92, 0x16, 0x37, 0x9e, 0x91, 0x8c, 0x5f,
-	0x9c, 0x39, 0x3b, 0x4e, 0xef, 0xf1, 0xaa, 0xec, 0x17, 0xf1, 0xf9, 0x7a, 0xfc, 0x3d, 0x10, 0x59,
-	0x3a, 0x6c, 0xc4, 0x89, 0x2c, 0x29, 0x85, 0x81, 0x12, 0x1b, 0x64, 0x24, 0x0d, 0xf2, 0x98, 0xbb,
-	0xba, 0xeb, 0x89, 0xb6, 0x35, 0x2c, 0x74, 0x2a, 0x57, 0xd3, 0x19, 0xc4, 0x1b, 0x14, 0x6a, 0xae,
-	0xe5, 0x0a, 0xd9, 0xc0, 0xb1, 0x5f, 0x5d, 0x61, 0x17, 0x5f, 0x8e, 0xc2, 0x4f, 0xca, 0xea, 0x3d,
-	0x3f, 0x19, 0xe9, 0x83, 0xdf, 0xb2, 0x58, 0x35, 0x1a, 0x59, 0x94, 0x06, 0x39, 0xe1, 0xa7, 0x06,
-	0x4d, 0x21, 0x71, 0xd2, 0x5a, 0xec, 0x51, 0x1b, 0x36, 0x74, 0xf3, 0xf3, 0xd6, 0x68, 0x02, 0xf7,
-	0x97, 0xcb, 0xbb, 0x8b, 0x7f, 0xc7, 0xbd, 0x0b, 0x14, 0xf3, 0xae, 0xa4, 0xcf, 0x21, 0xda, 0x89,
-	0x7a, 0xeb, 0x23, 0x11, 0xee, 0x1f, 0xde, 0x91, 0xb7, 0xc1, 0xf8, 0xf7, 0xe1, 0x18, 0x66, 0x81,
-	0x7a, 0xd7, 0xbd, 0xce, 0x7b, 0x18, 0x7c, 0x15, 0x95, 0xa1, 0x7f, 0x5f, 0xf1, 0xf8, 0x35, 0x8c,
-	0xd8, 0xbf, 0x03, 0x9f, 0x31, 0x7b, 0x42, 0xa7, 0x30, 0xfc, 0x8c, 0x4a, 0xe3, 0x8d, 0xf6, 0x0f,
-	0x00, 0x33, 0xdc, 0x61, 0xdd, 0xb4, 0xa8, 0x6f, 0x5f, 0x31, 0xdf, 0x2e, 0x6b, 0x69, 0xd6, 0x8f,
-	0x59, 0xf1, 0x51, 0x58, 0xac, 0x1a, 0x2d, 0x6f, 0x0c, 0xb2, 0x1c, 0xba, 0x1f, 0xe9, 0xcd, 0x9f,
-	0x00, 0x00, 0x00, 0xff, 0xff, 0xef, 0xb7, 0xd0, 0xa2, 0x70, 0x03, 0x00, 0x00,
+	// 312 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x74, 0x52, 0x4d, 0x4e, 0xf3, 0x30,
+	0x10, 0xfd, 0x92, 0x36, 0xd5, 0xd7, 0x49, 0x61, 0xe1, 0x05, 0x58, 0x55, 0x91, 0xa2, 0xac, 0xba,
+	0xa1, 0x8b, 0xb2, 0x04, 0x4e, 0x00, 0x8b, 0xca, 0x3d, 0x81, 0x49, 0x46, 0xad, 0x25, 0xea, 0x18,
+	0xdb, 0x45, 0xea, 0x82, 0x5b, 0x70, 0x04, 0x0e, 0x8a, 0x3c, 0x49, 0xdd, 0xf0, 0xb7, 0x1b, 0xbf,
+	0x9f, 0xcc, 0x7b, 0x76, 0x20, 0x77, 0x5e, 0x7a, 0xb7, 0x30, 0xb6, 0xf1, 0x0d, 0x1b, 0x6f, 0x50,
+	0xa3, 0x95, 0x1e, 0xeb, 0xe9, 0xc4, 0x6d, 0xa5, 0xc5, 0xba, 0x25, 0xca, 0xf7, 0x04, 0x26, 0xeb,
+	0x20, 0x14, 0xf8, 0xb2, 0x47, 0xe7, 0xd9, 0x1d, 0x80, 0x91, 0x1b, 0xa5, 0xa5, 0x57, 0x8d, 0xe6,
+	0x49, 0x91, 0xcc, 0xf3, 0xe5, 0x6c, 0x11, 0xed, 0x8b, 0x55, 0x24, 0x3b, 0x87, 0xe8, 0xe9, 0x19,
+	0x83, 0xa1, 0x3f, 0x18, 0xe4, 0x69, 0x91, 0xcc, 0xc7, 0x82, 0x66, 0x36, 0x85, 0xff, 0xd5, 0xde,
+	0x5a, 0xd4, 0xd5, 0x81, 0x0f, 0x08, 0x8f, 0x67, 0x76, 0x01, 0x23, 0x87, 0xd2, 0x56, 0x5b, 0x3e,
+	0x24, 0xa6, 0x3b, 0x95, 0x6f, 0x70, 0xd6, 0xa5, 0x72, 0xa6, 0xd1, 0x0e, 0xd9, 0xfd, 0x2f, 0xb1,
+	0xae, 0xfe, 0x88, 0xd5, 0x5a, 0xbe, 0xe4, 0xba, 0x86, 0x8c, 0xae, 0x83, 0xa7, 0xc5, 0x60, 0x9e,
+	0x2f, 0x2f, 0x7b, 0xce, 0xb0, 0x27, 0x7a, 0x5a, 0x55, 0xf9, 0xd1, 0xdd, 0x4a, 0x5c, 0x7f, 0x0e,
+	0xa9, 0xaa, 0x69, 0x6d, 0x26, 0x52, 0x55, 0x87, 0x9e, 0x5a, 0xee, 0x62, 0xcf, 0x30, 0x07, 0x4c,
+	0x1a, 0xe3, 0xa8, 0x63, 0x26, 0x68, 0x66, 0x33, 0x18, 0xef, 0x50, 0xea, 0x95, 0x55, 0x15, 0x52,
+	0xc5, 0x54, 0x9c, 0x80, 0x23, 0xbb, 0xae, 0x1a, 0x8b, 0x3c, 0x3b, 0xb1, 0x04, 0xb0, 0x02, 0x72,
+	0x92, 0x3e, 0xcb, 0x03, 0x5a, 0xc7, 0x47, 0xc4, 0xf7, 0xa1, 0xe5, 0x43, 0xf7, 0x76, 0x6b, 0xb4,
+	0xaf, 0xe1, 0x7b, 0xb7, 0x30, 0x7c, 0x54, 0xce, 0xb3, 0xef, 0xf5, 0x8e, 0x8f, 0x3b, 0xe5, 0x3f,
+	0x89, 0xb6, 0x60, 0xf9, 0xef, 0x69, 0x44, 0x3f, 0xc4, 0xcd, 0x67, 0x00, 0x00, 0x00, 0xff, 0xff,
+	0xe4, 0xd1, 0x57, 0x31, 0x38, 0x02, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -244,11 +255,7 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type StatsServiceClient interface {
-	Tags(ctx context.Context, in *StatsRequest, opts ...grpc.CallOption) (*StatsResponse, error)
-	Genres(ctx context.Context, in *StatsRequest, opts ...grpc.CallOption) (*StatsResponse, error)
-	Developers(ctx context.Context, in *StatsRequest, opts ...grpc.CallOption) (*StatsResponse, error)
-	Publishers(ctx context.Context, in *StatsRequest, opts ...grpc.CallOption) (*StatsResponse, error)
-	Categories(ctx context.Context, in *StatsRequest, opts ...grpc.CallOption) (*StatsResponse, error)
+	List(ctx context.Context, in *StatsRequest, opts ...grpc.CallOption) (*StatsResponse, error)
 }
 
 type statsServiceClient struct {
@@ -259,45 +266,9 @@ func NewStatsServiceClient(cc *grpc.ClientConn) StatsServiceClient {
 	return &statsServiceClient{cc}
 }
 
-func (c *statsServiceClient) Tags(ctx context.Context, in *StatsRequest, opts ...grpc.CallOption) (*StatsResponse, error) {
+func (c *statsServiceClient) List(ctx context.Context, in *StatsRequest, opts ...grpc.CallOption) (*StatsResponse, error) {
 	out := new(StatsResponse)
-	err := c.cc.Invoke(ctx, "/generated.StatsService/Tags", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *statsServiceClient) Genres(ctx context.Context, in *StatsRequest, opts ...grpc.CallOption) (*StatsResponse, error) {
-	out := new(StatsResponse)
-	err := c.cc.Invoke(ctx, "/generated.StatsService/Genres", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *statsServiceClient) Developers(ctx context.Context, in *StatsRequest, opts ...grpc.CallOption) (*StatsResponse, error) {
-	out := new(StatsResponse)
-	err := c.cc.Invoke(ctx, "/generated.StatsService/Developers", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *statsServiceClient) Publishers(ctx context.Context, in *StatsRequest, opts ...grpc.CallOption) (*StatsResponse, error) {
-	out := new(StatsResponse)
-	err := c.cc.Invoke(ctx, "/generated.StatsService/Publishers", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *statsServiceClient) Categories(ctx context.Context, in *StatsRequest, opts ...grpc.CallOption) (*StatsResponse, error) {
-	out := new(StatsResponse)
-	err := c.cc.Invoke(ctx, "/generated.StatsService/Categories", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/generated.StatsService/List", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -306,103 +277,27 @@ func (c *statsServiceClient) Categories(ctx context.Context, in *StatsRequest, o
 
 // StatsServiceServer is the server API for StatsService service.
 type StatsServiceServer interface {
-	Tags(context.Context, *StatsRequest) (*StatsResponse, error)
-	Genres(context.Context, *StatsRequest) (*StatsResponse, error)
-	Developers(context.Context, *StatsRequest) (*StatsResponse, error)
-	Publishers(context.Context, *StatsRequest) (*StatsResponse, error)
-	Categories(context.Context, *StatsRequest) (*StatsResponse, error)
+	List(context.Context, *StatsRequest) (*StatsResponse, error)
 }
 
 func RegisterStatsServiceServer(s *grpc.Server, srv StatsServiceServer) {
 	s.RegisterService(&_StatsService_serviceDesc, srv)
 }
 
-func _StatsService_Tags_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _StatsService_List_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(StatsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(StatsServiceServer).Tags(ctx, in)
+		return srv.(StatsServiceServer).List(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/generated.StatsService/Tags",
+		FullMethod: "/generated.StatsService/List",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(StatsServiceServer).Tags(ctx, req.(*StatsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _StatsService_Genres_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(StatsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(StatsServiceServer).Genres(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/generated.StatsService/Genres",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(StatsServiceServer).Genres(ctx, req.(*StatsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _StatsService_Developers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(StatsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(StatsServiceServer).Developers(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/generated.StatsService/Developers",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(StatsServiceServer).Developers(ctx, req.(*StatsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _StatsService_Publishers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(StatsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(StatsServiceServer).Publishers(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/generated.StatsService/Publishers",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(StatsServiceServer).Publishers(ctx, req.(*StatsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _StatsService_Categories_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(StatsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(StatsServiceServer).Categories(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/generated.StatsService/Categories",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(StatsServiceServer).Categories(ctx, req.(*StatsRequest))
+		return srv.(StatsServiceServer).List(ctx, req.(*StatsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -412,24 +307,8 @@ var _StatsService_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*StatsServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Tags",
-			Handler:    _StatsService_Tags_Handler,
-		},
-		{
-			MethodName: "Genres",
-			Handler:    _StatsService_Genres_Handler,
-		},
-		{
-			MethodName: "Developers",
-			Handler:    _StatsService_Developers_Handler,
-		},
-		{
-			MethodName: "Publishers",
-			Handler:    _StatsService_Publishers_Handler,
-		},
-		{
-			MethodName: "Categories",
-			Handler:    _StatsService_Categories_Handler,
+			MethodName: "List",
+			Handler:    _StatsService_List_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
