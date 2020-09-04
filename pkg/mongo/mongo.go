@@ -54,7 +54,7 @@ const (
 	CollectionPlayers             collection = "players"
 	CollectionPlayerWishlistApps  collection = "player_wishlist_apps"
 	CollectionProductPrices       collection = "product_prices"
-	CollectionStats                collection = "stats"
+	CollectionStats               collection = "stats"
 )
 
 var (
@@ -144,7 +144,9 @@ func FindOne(collection collection, filter bson.D, sort bson.D, projection bson.
 
 	ql := logging.NewLogger("FindOne", collection.String(), filter, sort)
 
-	result := client.Database(config.C.MongoDatabase).Collection(collection.String()).FindOne(ctx, filter, ops)
+	result := client.Database(config.C.MongoDatabase).
+		Collection(collection.String()).
+		FindOne(ctx, filter, ops)
 
 	ql.End()
 
@@ -164,7 +166,9 @@ func InsertOne(collection collection, document Document) (resp *mongo.InsertOneR
 		return resp, err
 	}
 
-	resp, err = client.Database(config.C.MongoDatabase).Collection(collection.String()).InsertOne(ctx, document.BSON(), options.InsertOne())
+	resp, err = client.Database(config.C.MongoDatabase).
+		Collection(collection.String()).
+		InsertOne(ctx, document.BSON(), options.InsertOne())
 
 	return resp, err
 }
@@ -177,7 +181,9 @@ func ReplaceOne(collection collection, filter bson.D, document Document) (resp *
 		return resp, err
 	}
 
-	resp, err = client.Database(config.C.MongoDatabase).Collection(collection.String()).ReplaceOne(ctx, filter, document.BSON(), options.Replace().SetUpsert(true))
+	resp, err = client.Database(config.C.MongoDatabase).
+		Collection(collection.String()).
+		ReplaceOne(ctx, filter, document.BSON(), options.Replace().SetUpsert(true))
 
 	return resp, err
 }
@@ -189,7 +195,9 @@ func DeleteMany(collection collection, filter bson.D) (resp *mongo.DeleteResult,
 		return resp, nil
 	}
 
-	resp, err = client.Database(config.C.MongoDatabase, options.Database()).Collection(collection.String()).DeleteMany(ctx, filter)
+	resp, err = client.Database(config.C.MongoDatabase, options.Database()).
+		Collection(collection.String()).
+		DeleteMany(ctx, filter)
 
 	return resp, err
 }
@@ -202,11 +210,14 @@ func DeleteOne(collection collection, filter bson.D) (resp *mongo.DeleteResult, 
 		return resp, err
 	}
 
-	resp, err = client.Database(config.C.MongoDatabase, options.Database()).Collection(collection.String()).DeleteOne(ctx, filter, options.Delete())
+	resp, err = client.Database(config.C.MongoDatabase, options.Database()).
+		Collection(collection.String()).
+		DeleteOne(ctx, filter, options.Delete())
 
 	return resp, err
 }
 
+// Does NOT upsert
 func UpdateManySet(collection collection, filter bson.D, update bson.D) (resp *mongo.UpdateResult, err error) {
 
 	if filter == nil {
@@ -231,7 +242,9 @@ func UpdateManyUnset(collection collection, columns bson.D) (resp *mongo.UpdateR
 		return resp, nil
 	}
 
-	resp, err = client.Database(config.C.MongoDatabase, options.Database()).Collection(collection.String()).UpdateMany(ctx, bson.M{}, bson.M{"$unset": columns})
+	resp, err = client.Database(config.C.MongoDatabase, options.Database()).
+		Collection(collection.String()).
+		UpdateMany(ctx, bson.M{}, bson.M{"$unset": columns})
 
 	return resp, err
 }
@@ -317,9 +330,13 @@ func CountDocuments(collection collection, filter bson.D, ttl uint32) (count int
 		ql := logging.NewLogger("Count", collection.String(), filter, nil)
 
 		if len(filter) == 0 {
-			count, err = client.Database(config.C.MongoDatabase).Collection(collection.String()).EstimatedDocumentCount(ctx)
+			count, err = client.Database(config.C.MongoDatabase).
+				Collection(collection.String()).
+				EstimatedDocumentCount(ctx)
 		} else {
-			count, err = client.Database(config.C.MongoDatabase).Collection(collection.String()).CountDocuments(ctx, filter)
+			count, err = client.Database(config.C.MongoDatabase).
+				Collection(collection.String()).
+				CountDocuments(ctx, filter)
 		}
 
 		ql.End()
@@ -360,7 +377,9 @@ func Find(collection collection, offset int64, limit int64, sort bson.D, filter 
 
 	ql := logging.NewLogger("Find", collection.String(), filter, sort)
 
-	cur, err = client.Database(config.C.MongoDatabase, options.Database()).Collection(collection.String()).Find(ctx, filter, ops)
+	cur, err = client.Database(config.C.MongoDatabase, options.Database()).
+		Collection(collection.String()).
+		Find(ctx, filter, ops)
 
 	ql.End()
 
@@ -390,7 +409,9 @@ func GetRandomRows(collection collection, count int, filter bson.D, projection b
 	//
 	ql := logging.NewLogger("Random Aggregate", collection.String(), pipeline, nil)
 
-	c, err := client.Database(config.C.MongoDatabase, options.Database()).Collection(collection.String()).Aggregate(ctx, pipeline, options.Aggregate())
+	c, err := client.Database(config.C.MongoDatabase, options.Database()).
+		Collection(collection.String()).
+		Aggregate(ctx, pipeline, options.Aggregate())
 
 	ql.End()
 
