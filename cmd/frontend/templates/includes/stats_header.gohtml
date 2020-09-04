@@ -5,17 +5,17 @@
 
             <li class="nav-item">
                 {{if endsWith .Path "/stats" }}
-                    <span class="nav-link active" role="tab"><i class="fas fa-signal"></i> Steam</span>
+                    <span class="nav-link active" role="tab"><i class="fas fa-chart-bar"></i> Steam</span>
                 {{else}}
-                    <a class="nav-link" href="/stats" role="tab"><i class="fas fa-signal"></i> Steam</a>
+                    <a class="nav-link" href="/stats" role="tab"><i class="fas fa-chart-bar"></i> Steam</a>
                 {{end}}
             </li>
 
             <li class="nav-item">
                 {{if startsWith .Path "/stats/gamedb" }}
-                    <span class="nav-link active" role="tab"><i class="fas fa-signal"></i> Game DB</span>
+                    <span class="nav-link active" role="tab"><i class="fas fa-chart-bar"></i> Game DB</span>
                 {{else}}
-                    <a class="nav-link" href="/stats/gamedb" role="tab"><i class="fas fa-signal"></i> Game DB</a>
+                    <a class="nav-link" href="/stats/gamedb" role="tab"><i class="fas fa-chart-bar"></i> Game DB</a>
                 {{end}}
             </li>
 
