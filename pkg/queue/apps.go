@@ -531,8 +531,6 @@ func updateAppDetails(app *mongo.App) (err error) {
 			app.Packages = response.Data.Packages
 
 			// Publishers
-			response.Data.Publishers = append(response.Data.Publishers, "xx test xx")
-
 			app.Publishers, err = mongo.FindOrCreateStatsByName(mongo.StatsTypePublishers, response.Data.Publishers)
 			if err != nil {
 				return err
