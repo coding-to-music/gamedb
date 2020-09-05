@@ -287,7 +287,7 @@ func Init(definitions []QueueDefinition) {
 
 	var consume bool
 
-	for _, queue := range definitions {
+	for k, queue := range definitions {
 
 		if queue.consumer != nil {
 			consume = true
@@ -298,7 +298,17 @@ func Init(definitions []QueueDefinition) {
 			prefetchSize = queue.prefetchSize
 		}
 
-		q, err := rabbit.NewChannel(producerConnection, queue.name, config.C.Environment, prefetchSize, queue.consumer, !queue.skipHeaders)
+		chanConfig := rabbit.ChannelConfig{
+			Connection:    producerConnection,
+			QueueName:     queue.name,
+			ConsumerName:  config.C.Environment + "-" + strconv.Itoa(k),
+			PrefetchCount: prefetchSize,
+			Handler:       queue.consumer,
+			UpdateHeaders: !queue.skipHeaders,
+			AutoDelete:    false,
+		}
+
+		q, err := rabbit.NewChannel(chanConfig)
 		if err != nil {
 			log.FatalS(string(queue.name), err)
 		} else {
@@ -342,7 +352,17 @@ func Init(definitions []QueueDefinition) {
 
 				for k := range make([]int, 2) {
 
-					q, err := rabbit.NewChannel(consumerConnection, queue.name, config.C.Environment+"-"+strconv.Itoa(k), prefetchSize, queue.consumer, !queue.skipHeaders)
+					chanConfig := rabbit.ChannelConfig{
+						Connection:    consumerConnection,
+						QueueName:     queue.name,
+						ConsumerName:  config.C.Environment + "-" + strconv.Itoa(k),
+						PrefetchCount: prefetchSize,
+						Handler:       queue.consumer,
+						UpdateHeaders: !queue.skipHeaders,
+						AutoDelete:    false,
+					}
+
+					q, err := rabbit.NewChannel(chanConfig)
 					if err != nil {
 						log.FatalS(string(queue.name), err)
 						continue
