@@ -47,7 +47,9 @@ func statsHandler(message *rabbit.Message) {
 	var totalPrice = map[steamapi.ProductCC]int{}
 	var totalPlayers int
 
-	err = mongo.BatchApps(bson.D{{payload.Type.MongoCol(), payload.StatID}}, nil, func(apps []mongo.App) {
+	projection := bson.M{"reviews_score": 1, "prices": 1, "player_peak_week": 1}
+
+	err = mongo.BatchApps(bson.D{{payload.Type.MongoCol(), payload.StatID}}, projection, func(apps []mongo.App) {
 
 		for _, app := range apps {
 
