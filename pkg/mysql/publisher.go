@@ -1,7 +1,6 @@
 package mysql
 
 import (
-	"sort"
 	"strconv"
 	"strings"
 	"time"
