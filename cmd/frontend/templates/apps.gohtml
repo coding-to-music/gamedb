@@ -53,7 +53,7 @@
                             </label>
                             <select multiple data-placeholder="Choose Tags" class="form-control form-control-chosen" id="tags" name="tags">
                                 {{ range $key, $value := .Tags }}
-                                    <option value="{{ .ID }}">{{ .GetName }}</option>
+                                    <option value="{{ .ID }}">{{ .Name }}</option>
                                 {{ end }}
                             </select>
                         </div>
@@ -65,7 +65,7 @@
                             </label>
                             <select multiple data-placeholder="Choose Genres" class="form-control form-control-chosen" id="genres" name="genres">
                                 {{ range $key, $value := .Genres }}
-                                    <option value="{{ .ID }}">{{ .GetName }}</option>
+                                    <option value="{{ .ID }}">{{ .Name }}</option>
                                 {{ end }}
                             </select>
                         </div>
@@ -77,7 +77,7 @@
                             </label>
                             <select multiple data-placeholder="Choose Categories" class="form-control form-control-chosen" id="categories" name="categories">
                                 {{ range $key, $value := .Categories }}
-                                    <option value="{{ .ID }}">{{ .GetName }}</option>
+                                    <option value="{{ .ID }}">{{ .Name }}</option>
                                 {{ end }}
                             </select>
                         </div>
@@ -100,7 +100,7 @@
                                 </label>
                                 <select multiple data-placeholder="Choose Developers" class="form-control form-control-chosen" id="developers" name="developers">
                                     {{ range $key, $value := .Developers }}
-                                        <option value="{{ .ID }}">{{ .GetName }}</option>
+                                        <option value="{{ .ID }}">{{ .Name }}</option>
                                     {{ end }}
                                 </select>
                             </div>
@@ -114,7 +114,7 @@
                                 </label>
                                 <select multiple data-placeholder="Choose Publishers" class="form-control form-control-chosen" id="publishers" name="publishers">
                                     {{ range $key, $value := .Publishers }}
-                                        <option value="{{ .ID }}">{{ .GetName }}</option>
+                                        <option value="{{ .ID }}">{{ .Name }}</option>
                                     {{ end }}
                                 </select>
                             </div>

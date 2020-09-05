@@ -181,7 +181,7 @@
                                                 <th scope="row" class="thin">Genres</th>
                                                 <td>
                                                     {{ range $key, $value := .Genres }}
-                                                        <a class="badge badge-success" href="/games?genres={{ .ID }}">{{ .GetName }}</a>
+                                                        <a class="badge badge-success" href="/games?genres={{ .ID }}">{{ .Name }}</a>
                                                     {{ end }}
                                                 </td>
                                             </tr>
@@ -192,7 +192,7 @@
                                                 <th scope="row" class="thin">Features</th>
                                                 <td>
                                                     {{ range $key, $value := .Categories }}
-                                                        <a class="badge badge-success" href="/games?categories={{ .ID }}">{{ .GetName }}</a>
+                                                        <a class="badge badge-success" href="/games?categories={{ .ID }}">{{ .Name }}</a>
                                                     {{ end }}
                                                 </td>
                                             </tr>
@@ -203,7 +203,7 @@
                                                 <th scope="row" class="thin">Developers</th>
                                                 <td>
                                                     {{ range $key, $value := .Developers }}
-                                                        <a class="badge badge-success" href="/games?developers={{ .ID }}">{{ .GetName }}</a>
+                                                        <a class="badge badge-success" href="/games?developers={{ .ID }}">{{ .Name }}</a>
                                                     {{ end }}
                                                 </td>
                                             </tr>
@@ -214,7 +214,7 @@
                                                 <th scope="row" class="thin">Publishers</th>
                                                 <td>
                                                     {{ range $key, $value := .Publishers }}
-                                                        <a class="badge badge-success" href="/games?publishers={{ .ID }}">{{ .GetName }}</a>
+                                                        <a class="badge badge-success" href="/games?publishers={{ .ID }}">{{ .Name }}</a>
                                                     {{ end }}
                                                 </td>
                                             </tr>

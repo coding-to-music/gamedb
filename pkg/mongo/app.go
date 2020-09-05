@@ -528,7 +528,7 @@ func (app App) ShouldUpdate() bool {
 }
 
 func (app App) GetTags() (stats []Stat, err error) {
-	return app.getStats(StatsTypeCategories, app.Tags)
+	return app.getStats(StatsTypeTags, app.Tags)
 }
 
 func (app App) GetCategories() (stats []Stat, err error) {
@@ -536,15 +536,15 @@ func (app App) GetCategories() (stats []Stat, err error) {
 }
 
 func (app App) GetGenres() (stats []Stat, err error) {
-	return app.getStats(StatsTypeCategories, app.Categories)
+	return app.getStats(StatsTypeGenres, app.Genres)
 }
 
 func (app App) GetPublishers() (stats []Stat, err error) {
-	return app.getStats(StatsTypeCategories, app.Categories)
+	return app.getStats(StatsTypePublishers, app.Publishers)
 }
 
 func (app App) GetDevelopers() (stats []Stat, err error) {
-	return app.getStats(StatsTypeCategories, app.Categories)
+	return app.getStats(StatsTypeDevelopers, app.Developers)
 }
 
 func (app App) getStats(typex StatsType, ids []int) (stats []Stat, err error) {

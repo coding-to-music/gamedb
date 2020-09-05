@@ -33,7 +33,7 @@
                             <select class="form-control form-control-chosen" id="tag" name="tag">
                                 <option value="">All Games</option>
                                 {{ range $key, $value := .Tags }}
-                                    <option value="{{ .ID }}">{{ .GetName }}</option>
+                                    <option value="{{ .ID }}">{{ .Name }}</option>
                                 {{ end }}
                             </select>
                         </div>

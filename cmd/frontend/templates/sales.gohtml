@@ -104,7 +104,7 @@
                             <label for="tags-in">Tag <small>(Filter in)</small></label>
                             <select multiple data-placeholder="Choose Tags" class="form-control form-control-chosen" id="tags-in" name="tags-in">
                                 {{ range $key, $value := .Tags }}
-                                    <option value="{{ .ID }}">{{ .GetName }}</option>
+                                    <option value="{{ .ID }}">{{ .Name }}</option>
                                 {{ end }}
                             </select>
                         </div>
@@ -114,7 +114,7 @@
                             <label for="tags-out">Tag <small>(Filter out)</small></label>
                             <select multiple data-placeholder="Choose Tags" class="form-control form-control-chosen" id="tags-out" name="tags-out">
                                 {{ range $key, $value := .Tags }}
-                                    <option value="{{ .ID }}">{{ .GetName }}</option>
+                                    <option value="{{ .ID }}">{{ .Name }}</option>
                                 {{ end }}
                             </select>
                         </div>
@@ -126,7 +126,7 @@
                             </label>
                             <select multiple data-placeholder="Choose Categories" class="form-control form-control-chosen" id="categories" name="categories">
                                 {{ range $key, $value := .Categories }}
-                                    <option value="{{ .ID }}">{{ .GetName }}</option>
+                                    <option value="{{ .ID }}">{{ .Name }}</option>
                                 {{ end }}
                             </select>
                         </div>
