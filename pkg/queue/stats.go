@@ -1,7 +1,6 @@
 package queue
 
 import (
-	"strconv"
 	"time"
 
 	"github.com/Jleagle/rabbit-go"
@@ -122,11 +121,16 @@ func statsHandler(message *rabbit.Message) {
 		fields["mean_price_"+string(k)] = v
 	}
 
+	stat := mongo.Stat{}
+	stat.Type = payload.Type
+	stat.ID = payload.StatID
+
 	point := influx.Point{
 		Measurement: string(influxHelper.InfluxMeasurementStats),
 		Tags: map[string]string{
-			"type": string(payload.Type),
-			"id":   strconv.Itoa(payload.StatID),
+			"key": stat.GetKey(),
+			// "type": string(payload.Type),
+			// "id":   strconv.Itoa(payload.StatID),
 		},
 		Fields:    fields,
 		Time:      time.Now(),

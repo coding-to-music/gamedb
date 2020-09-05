@@ -30,7 +30,7 @@ type Stat struct {
 
 func (stat Stat) BSON() bson.D {
 	return bson.D{
-		{"_id", stat.getKey()},
+		{"_id", stat.GetKey()},
 		{"type", stat.Type},
 		{"id", stat.ID},
 		{"name", stat.Name},
@@ -41,7 +41,7 @@ func (stat Stat) BSON() bson.D {
 	}
 }
 
-func (stat Stat) getKey() string {
+func (stat Stat) GetKey() string {
 	return string(stat.Type) + "-" + strconv.Itoa(stat.ID)
 }
 
@@ -128,7 +128,7 @@ func GetStat(typex StatsType, id int) (stat Stat, err error) {
 		stat.Type = typex
 		stat.ID = id
 
-		err = FindOne(CollectionStats, bson.D{{"_id", stat.getKey()}}, nil, nil, &stat)
+		err = FindOne(CollectionStats, bson.D{{"_id", stat.GetKey()}}, nil, nil, &stat)
 		return stat, err
 	})
 
