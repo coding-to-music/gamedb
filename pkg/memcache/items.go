@@ -36,6 +36,7 @@ var (
 	MemcacheApp        = func(changeID int) Item { return Item{Key: "app-" + strconv.Itoa(changeID), Expiration: 0} }
 	MemcacheChange     = func(changeID int64) Item { return Item{Key: "change-" + strconv.FormatInt(changeID, 10), Expiration: 0} }
 	MemcacheGroup      = func(changeID string) Item { return Item{Key: "group-" + changeID, Expiration: 0} }
+	MemcacheStat       = func(t string, id int) Item { return Item{Key: "stat-" + t + "_" + strconv.Itoa(id), Expiration: 0} }
 	MemcachePackage    = func(changeID int) Item { return Item{Key: "package-" + strconv.Itoa(changeID), Expiration: 0} }
 	MemcachePlayer     = func(changeID int64) Item { return Item{Key: "player-" + strconv.FormatInt(changeID, 10), Expiration: 0} }
 	MemcacheConfigItem = func(changeID string) Item { return Item{Key: "config-item-" + changeID, Expiration: 0} }

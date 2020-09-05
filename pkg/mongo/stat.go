@@ -4,10 +4,16 @@ import (
 	"errors"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/Jleagle/steam-go/steamapi"
+	"github.com/cenkalti/backoff/v4"
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/memcache"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.uber.org/zap"
 )
 
 type Stat struct {
@@ -37,6 +43,10 @@ func (stat Stat) getKey() string {
 	return string(stat.Type) + "-" + strconv.Itoa(stat.ID)
 }
 
+func (stat Stat) GetPath() string {
+	return helpers.GetStatPath(stat.Type.MongoCol(), stat.ID, stat.Name)
+}
+
 // Types
 type StatsType string
 
@@ -61,7 +71,7 @@ func (st StatsType) MongoCol() string {
 	case StatsTypeTags:
 		return "tags"
 	default:
-		log.WarnS("invalid stats type")
+		log.Warn("invalid stats type", zap.String("type", string(st)))
 		return ""
 	}
 }
@@ -79,7 +89,7 @@ func (st StatsType) Title() string {
 	case StatsTypeTags:
 		return "Tag"
 	default:
-		log.WarnS("invalid stats type")
+		log.Warn("invalid stats type", zap.String("type", string(st)))
 		return ""
 	}
 }
@@ -97,15 +107,32 @@ func (st StatsType) Plural() string {
 	case StatsTypeTags:
 		return "Tags"
 	default:
-		log.WarnS("invalid stats type")
+		log.Warn("invalid stats type", zap.String("type", string(st)))
 		return ""
 	}
 }
 
 //
+func GetStat(typex StatsType, id int) (stat Stat, err error) {
+
+	var item = memcache.MemcacheStat(string(typex), id)
+
+	err = memcache.GetSetInterface(item.Key, item.Expiration, &stat, func() (interface{}, error) {
+
+		stat.Type = typex
+		stat.ID = id
+
+		err = FindOne(CollectionStats, bson.D{{"_id", stat.getKey()}}, nil, nil, &stat)
+		return stat, err
+	})
+
+	return stat, err
+}
+
+//
 func GetStats(offset int64, limit int64, filter bson.D, sort bson.D) (offers []Stat, err error) {
 
-	cur, ctx, err := Find(CollectionStats, offset, limit, sort, filter, nil, nil)
+	cur, ctx, err := Find(CollectionStats, offset, limit, sort, filter, nil, options.Find())
 	if err != nil {
 		return offers, err
 	}
@@ -155,77 +182,85 @@ func BatchStats(typex StatsType, callback func(stats []Stat)) (err error) {
 	return nil
 }
 
+var existingTagNames = map[StatsType]map[string]int{}
+
 func FindOrCreateStatsByName(typex StatsType, names []string) (IDs []int, err error) {
 
-	for _, v := range names {
+	for _, name := range names {
 
-		v = strings.TrimSpace(v)
+		name = strings.TrimSpace(name)
 
-		stat := Stat{}
-		err = FindOne(CollectionStats, bson.D{{"type", typex}, {"name", v}}, nil, bson.M{"_id": 1}, &stat)
+		if val, ok := existingTagNames[typex][name]; ok {
+			IDs = append(IDs, val)
+			continue
+		}
+
+		// Check if it exists
+		existing := Stat{}
+		err = FindOne(CollectionStats, bson.D{{"type", typex}, {"name", name}}, nil, nil, &existing)
 		if err == ErrNoDocuments {
 
-			stat.Type = typex
-			stat.Name = v
-
 			// Get highest ID to increment
-			err = FindOne(CollectionStats, bson.D{{"type", typex}}, nil, bson.M{"_id": 1}, &stat)
-
-			resp, err := InsertOne(CollectionStats, stat)
+			highest := Stat{}
+			err = FindOne(CollectionStats, bson.D{{"type", typex}}, nil, nil, &highest)
 			if err != nil {
 				return nil, err
 			}
 
-			var ok bool
-			stat.ID, ok = resp.InsertedID.(int)
-			stat.ID++
-			if !ok {
-				return nil, errors.New("invalid casting stat id")
+			newStat := Stat{}
+			newStat.Type = typex
+			newStat.ID = highest.ID
+			newStat.Name = name
+
+			operation := func() (err error) {
+				newStat.ID++
+				_, err = InsertOne(CollectionStats, newStat)
+				return err
 			}
+
+			policy := backoff.NewExponentialBackOff()
+			policy.InitialInterval = time.Second * 1
+
+			err = backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 5), func(err error, t time.Duration) { log.InfoS(err) })
+			if err != nil {
+				return nil, err
+			}
+
+			IDs = append(IDs, newStat.ID)
 
 		} else if err != nil {
 			return nil, err
 		}
 
-		IDs = append(IDs, stat.ID)
+		IDs = append(IDs, existing.ID)
 	}
 
 	return IDs, nil
 }
 
-func FindOrCreateStatsByID(typex StatsType, names []string, ids []int) (IDs []int, err error) {
+var existingTagIDs = map[StatsType]map[int]bool{}
 
-	for _, v := range names {
+func EnsureStat(typex StatsType, ids []int, names []string) (err error) {
 
-		v = strings.TrimSpace(v)
-
-		stat := Stat{}
-		err = FindOne(CollectionStats, bson.D{{"type", typex}, {"name", v}}, nil, bson.M{"_id": 1}, &stat)
-		if err == ErrNoDocuments {
-
-			stat.Type = typex
-			stat.Name = v
-
-			// Get highest ID to increment
-			err = FindOne(CollectionStats, bson.D{{"type", typex}}, nil, bson.M{"_id": 1}, &stat)
-
-			resp, err := InsertOne(CollectionStats, stat)
-			if err != nil {
-				return nil, err
-			}
-
-			var ok bool
-			stat.ID, ok = resp.InsertedID.(int)
-			if !ok {
-				return nil, errors.New("invalid casting stat id")
-			}
-
-		} else if err != nil {
-			return nil, err
-		}
-
-		IDs = append(IDs, stat.ID)
+	if len(ids) != len(names) {
+		return errors.New("invalid stats")
 	}
 
-	return IDs, nil
+	var docs []Document
+	for k, v := range ids {
+
+		if _, ok := existingTagIDs[typex][v]; ok {
+			continue
+		}
+
+		docs = append(docs, Stat{
+			Type: typex,
+			ID:   v,
+			Name: names[k],
+			Apps: 1,
+		})
+	}
+
+	_, err = InsertMany(CollectionStats, docs)
+	return err
 }

@@ -162,7 +162,7 @@ if (isIterable(user.toasts)) {
 
 // Fix URLs
 $(function (e) {
-    const path = $('#app-page, #package-page, #player-page, #bundle-page, #group-page, #badge-page').attr('data-path');
+    const path = $('#app-page, #package-page, #player-page, #bundle-page, #group-page, #badge-page, #stat-page').attr('data-path');
     if (path && path !== window.location.pathname) {
         history.replaceState(null, null, path + window.location.hash);
     }

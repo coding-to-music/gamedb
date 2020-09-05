@@ -1,8 +1,6 @@
 package pages
 
 import (
-	"html/template"
-	"math"
 	"net/http"
 	"sort"
 	"sync"
@@ -10,12 +8,8 @@ import (
 
 	"github.com/Jleagle/influxql"
 	"github.com/dustin/go-humanize"
-	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/datatable"
 	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/session"
-	"github.com/gamedb/gamedb/pkg/backend"
-	"github.com/gamedb/gamedb/pkg/backend/generated"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
-	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -37,85 +31,8 @@ func StatsRouter() http.Handler {
 	r.Get("/app-types.json", statsAppTypesHandler)
 	r.Get("/player-levels.json", statsPlayerLevelsHandler)
 	r.Get("/player-countries.json", statsPlayerCountriesHandler)
-	r.Get("/list.json", statsListHandler)
+
 	return r
-}
-
-func StatsListHandler(typex mongo.StatsType) func(http.ResponseWriter, *http.Request) {
-
-	return func(w http.ResponseWriter, r *http.Request) {
-
-		t := statsTagsTemplate{}
-		t.fill(w, r, typex.Title()+"s", template.HTML("Top Steam "+typex.Title()+"s"))
-		t.addAssetMark()
-
-		t.Type = typex
-
-		returnTemplate(w, r, "stats_list", t)
-	}
-}
-
-type statsTagsTemplate struct {
-	globalTemplate
-	Type mongo.StatsType
-}
-
-func (t statsTagsTemplate) includes() []string {
-	return []string{"includes/stats_header.gohtml"}
-}
-
-func statsListHandler(w http.ResponseWriter, r *http.Request) {
-
-	query := datatable.NewDataTableQuery(r, false)
-
-	conn, ctx, err := backend.GetClient()
-	if err != nil {
-		log.ErrS(err)
-		return
-	}
-
-	var columns = map[string]string{
-		"0": "name",
-		"1": "apps",
-		"2": "mean_price",
-		"3": "mean_score",
-		"4": "mean_players",
-	}
-
-	code := session.GetProductCC(r)
-
-	message := &generated.StatsRequest{
-		Pagination: backend.MakePaginationRequest(query, columns, 100),
-		Type:       query.GetSearchString("type"),
-		Currency:   string(code),
-		Search:     query.GetSearchString("search"),
-	}
-
-	resp, err := generated.NewStatsServiceClient(conn).List(ctx, message)
-	if err != nil {
-		log.ErrS(err)
-		return
-	}
-
-	var response = datatable.NewDataTablesResponse(r, query, resp.GetPagination().GetTotal(), resp.GetPagination().GetTotalFiltered(), nil)
-	for _, stat := range resp.GetStats() {
-
-		statPath := helpers.GetStatPath(query.GetSearchString("type"), stat.GetId(), stat.GetName())
-		statScore := helpers.GetAppReviewScore(float64(stat.GetMeanScore()))
-		statPlayers := math.Round(float64(stat.GetMeanPlayers()))
-		statPrice := i18n.FormatPrice(i18n.GetProdCC(code).CurrencyCode, int(math.Round(float64(stat.GetMeanPrice()))))
-
-		response.AddRow([]interface{}{
-			statPath,       // 0
-			stat.GetName(), // 1
-			stat.GetApps(), // 2
-			statPrice,      // 3
-			statPlayers,    // 4
-			statScore,      // 5
-		})
-	}
-
-	returnJSON(w, r, response)
 }
 
 func statsHandler(w http.ResponseWriter, r *http.Request) {

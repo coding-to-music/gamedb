@@ -1,0 +1,36 @@
+{{define "stat"}}
+    {{ template "header" . }}
+
+    <div class="container" id="stat-page" data-stat-id="{{ .Stat.Type.MongoCol }}" data-stat-id="{{ .Stat.ID }}" data-path="{{ .Stat.GetPath }}">
+
+        <div class="jumbotron">
+
+            <h1 class="text-truncate">
+                <i class="fas fa-users"></i> {{ .Stat.Name }} {{ .Stat.Type.Title }}
+            </h1>
+
+            <a class="btn btn-success" href="/{{ .Stat.Type.MongoCol }}?tags={{ .Stat.ID }}">View Games With {{ .Stat.Type.Title }}</a>
+
+        </div>
+
+        {{ template "flashes" . }}
+
+        <div class="card">
+            <div class="card-body">
+
+                <div class="card">
+                    {{/*<h5 class="card-header">Games</h5>*/}}
+                    <div class="card-body">
+                        <div id="stat-chart">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    {{ template "footer" . }}
+{{end}}

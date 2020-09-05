@@ -18,7 +18,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
-	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/go-chi/chi"
@@ -96,11 +95,7 @@ func main() {
 	r.Get("/", pages.HomeHandler)
 	r.Get("/currency/{id}", pages.CurrencyHandler)
 
-	r.Get("/categories", pages.StatsListHandler(mongo.StatsTypeCategories))
-	r.Get("/developers", pages.StatsListHandler(mongo.StatsTypeDevelopers))
-	r.Get("/genres", pages.StatsListHandler(mongo.StatsTypeGenres))
-	r.Get("/publishers", pages.StatsListHandler(mongo.StatsTypePublishers))
-	r.Get("/tags", pages.StatsListHandler(mongo.StatsTypeTags))
+	r.Mount("/{type:(categories|developers|genres|publishers|tags)}", pages.StatsListRouter())
 
 	r.Mount("/achievements", pages.AchievementsRouter())
 	r.Mount("/admin", pages.AdminRouter())
