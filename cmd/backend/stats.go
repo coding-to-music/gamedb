@@ -7,7 +7,6 @@ import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/cmd/backend/helpers"
 	"github.com/gamedb/gamedb/pkg/backend/generated"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -29,7 +28,7 @@ func (s StatsServer) List(ctx context.Context, request *generated.StatsRequest) 
 			bson.M{"name": bson.M{"$regex": quoted, "$options": "i"}},
 		}})
 	}
-log.InfoS(helpers.MakeMongoOrder(request.GetPagination()))
+
 	stats, err := mongo.GetStats(offset, limit, filter2, helpers.MakeMongoOrder(request.GetPagination()))
 	if err != nil {
 		return nil, err

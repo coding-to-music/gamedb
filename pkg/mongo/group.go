@@ -137,10 +137,6 @@ func GetGroup(id string) (group Group, err error) {
 	err = memcache.GetSetInterface(item.Key, item.Expiration, &group, func() (interface{}, error) {
 
 		err = FindOne(CollectionGroups, bson.D{{"_id", id}}, nil, nil, &group)
-		if err != nil {
-			return group, err
-		}
-
 		return group, err
 	})
 
