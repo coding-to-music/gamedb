@@ -43,6 +43,7 @@ func statsHandler(message *rabbit.Message) {
 	}
 
 	var totalApps int
+	var totalAppsWithScore int
 	var totalScore float32
 	var totalPrice = map[steamapi.ProductCC]int{}
 	var totalPlayers int
@@ -53,8 +54,12 @@ func statsHandler(message *rabbit.Message) {
 
 		for _, app := range apps {
 
-			// Count
+			// Counts
 			totalApps++
+
+			if app.ReviewsScore > 0 {
+				totalAppsWithScore++
+			}
 
 			// Score
 			totalScore += float32(app.ReviewsScore)
@@ -73,9 +78,12 @@ func statsHandler(message *rabbit.Message) {
 	var meanPlayers float64
 	var meanPrice = map[steamapi.ProductCC]float32{}
 
+	if totalAppsWithScore > 0 {
+		meanScore = totalScore / float32(totalAppsWithScore)
+	}
+
 	if totalApps > 0 {
 
-		meanScore = totalScore / float32(totalApps)
 		meanPlayers = float64(totalPlayers) / float64(totalApps)
 
 		for k, v := range totalPrice {
