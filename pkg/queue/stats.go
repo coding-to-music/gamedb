@@ -6,7 +6,6 @@ import (
 
 	"github.com/Jleagle/rabbit-go"
 	"github.com/Jleagle/steam-go/steamapi"
-	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -27,11 +26,6 @@ func (m StatsMessage) Queue() rabbit.QueueName {
 }
 
 func statsHandler(message *rabbit.Message) {
-
-	if !config.IsLocal() {
-		message.Ack()
-		return
-	}
 
 	payload := StatsMessage{}
 
