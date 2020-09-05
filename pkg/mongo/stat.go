@@ -4,6 +4,7 @@ import (
 	"errors"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/Jleagle/steam-go/steamapi"
@@ -182,9 +183,19 @@ func BatchStats(typex StatsType, callback func(stats []Stat)) (err error) {
 	return nil
 }
 
-var existingTagNames = map[StatsType]map[string]int{}
+var (
+	existingTagNames = map[StatsType]map[string]int{}
+	tagLock          sync.Mutex
+)
 
 func FindOrCreateStatsByName(typex StatsType, names []string) (IDs []int, err error) {
+
+	tagLock.Lock()
+	defer tagLock.Unlock()
+
+	if _, ok := existingTagNames[typex]; !ok {
+		existingTagNames[typex] = map[string]int{}
+	}
 
 	for _, name := range names {
 
@@ -202,7 +213,7 @@ func FindOrCreateStatsByName(typex StatsType, names []string) (IDs []int, err er
 
 			// Get highest ID to increment
 			highest := Stat{}
-			err = FindOne(CollectionStats, bson.D{{"type", typex}}, nil, nil, &highest)
+			err = FindOne(CollectionStats, bson.D{{"type", typex}}, bson.D{{"id", -1}}, nil, &highest)
 			if err != nil {
 				return nil, err
 			}
@@ -226,13 +237,17 @@ func FindOrCreateStatsByName(typex StatsType, names []string) (IDs []int, err er
 				return nil, err
 			}
 
+			existingTagNames[typex][name] = newStat.ID
 			IDs = append(IDs, newStat.ID)
+			continue
 
 		} else if err != nil {
 			return nil, err
 		}
 
+		existingTagNames[typex][name] = existing.ID
 		IDs = append(IDs, existing.ID)
+		continue
 	}
 
 	return IDs, nil
@@ -241,6 +256,10 @@ func FindOrCreateStatsByName(typex StatsType, names []string) (IDs []int, err er
 var existingTagIDs = map[StatsType]map[int]bool{}
 
 func EnsureStat(typex StatsType, ids []int, names []string) (err error) {
+
+	if _, ok := existingTagIDs[typex]; !ok {
+		existingTagIDs[typex] = map[int]bool{}
+	}
 
 	if len(ids) != len(names) {
 		return errors.New("invalid stats")

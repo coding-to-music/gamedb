@@ -18,7 +18,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/mysql/pics"
 	"github.com/gamedb/gamedb/pkg/steam"
 	"github.com/gamedb/gamedb/pkg/websockets"
@@ -532,53 +531,33 @@ func updateAppDetails(app *mongo.App) (err error) {
 			app.Packages = response.Data.Packages
 
 			// Publishers
-			db, err := mysql.GetMySQLClient()
+			response.Data.Publishers = append(response.Data.Publishers, "xx test xx")
+
+			app.Publishers, err = mongo.FindOrCreateStatsByName(mongo.StatsTypePublishers, response.Data.Publishers)
 			if err != nil {
 				return err
-			}
-
-			for _, v := range response.Data.Publishers {
-				var publisher mysql.Publisher
-				db = db.Unscoped().FirstOrCreate(&publisher, mysql.Publisher{Name: mysql.TrimPublisherName(v)})
-				if db.Error != nil {
-					return db.Error
-				}
-				app.Publishers = append(app.Publishers, publisher.ID)
 			}
 
 			// Developers
-			db, err = mysql.GetMySQLClient()
+			app.Developers, err = mongo.FindOrCreateStatsByName(mongo.StatsTypeDevelopers, response.Data.Developers)
 			if err != nil {
 				return err
-			}
-
-			for _, v := range response.Data.Developers {
-				var developer mysql.Developer
-				db = db.Unscoped().FirstOrCreate(&developer, mysql.Developer{Name: strings.TrimSpace(v)})
-				if db.Error != nil {
-					return db.Error
-				}
-				app.Developers = append(app.Developers, developer.ID)
 			}
 
 			// Genres
-			db, err = mysql.GetMySQLClient()
+			app.Genres = response.Data.Genres.IDs()
+
+			err = mongo.EnsureStat(mongo.StatsTypeGenres, response.Data.Genres.IDs(), response.Data.Genres.Names())
 			if err != nil {
 				return err
 			}
 
-			for _, v := range response.Data.Genres {
-				var genre mysql.Genre
-				db = db.Unscoped().Assign(mysql.Genre{Name: strings.TrimSpace(v.Description)}).FirstOrCreate(&genre, mysql.Genre{ID: int(v.ID)})
-				if db.Error != nil {
-					return db.Error
-				}
-				app.Genres = append(app.Genres, genre.ID)
-			}
-
 			// Categories
-			for _, v := range response.Data.Categories {
-				app.Categories = append(app.Categories, int(v.ID))
+			app.Categories = response.Data.Categories.IDs()
+
+			err = mongo.EnsureStat(mongo.StatsTypeCategories, response.Data.Categories.IDs(), response.Data.Categories.Names())
+			if err != nil {
+				return err
 			}
 
 			// Demos
