@@ -9,7 +9,6 @@ import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/jinzhu/gorm"
 )
 
@@ -120,48 +119,4 @@ func GetAllPublishers() (publishers []Publisher, err error) {
 	}
 
 	return publishers, nil
-}
-
-func GetPublishersForSelect() (pubs []Publisher, err error) {
-
-	var item = memcache.MemcachePublisherKeyNames
-
-	err = memcache.GetSetInterface(item.Key, item.Expiration, &pubs, func() (interface{}, error) {
-
-		var pubs []Publisher
-
-		db, err := GetMySQLClient()
-		if err != nil {
-			return pubs, err
-		}
-
-		db = db.Select([]string{"id", "name"}).Order("apps DESC").Limit(200).Find(&pubs)
-		if db.Error != nil {
-			return pubs, db.Error
-		}
-
-		sort.Slice(pubs, func(i, j int) bool {
-			return pubs[i].Name < pubs[j].Name
-		})
-
-		return pubs, err
-	})
-
-	return pubs, err
-}
-
-func DeletePublishers(ids []int) (err error) {
-
-	if len(ids) == 0 {
-		return nil
-	}
-
-	db, err := GetMySQLClient()
-	if err != nil {
-		return err
-	}
-
-	db.Where("id IN (?)", ids).Delete(Publisher{})
-
-	return db.Error
 }

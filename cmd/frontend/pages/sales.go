@@ -13,7 +13,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -43,7 +42,7 @@ func salesHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.Tags, err = mysql.GetTagsForSelect()
+		t.Tags, err = mongo.GetStatsForSelect(mongo.StatsTypeTags)
 		if err != nil {
 			log.ErrS(err)
 		}
@@ -83,7 +82,7 @@ func salesHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.Categories, err = mysql.GetCategoriesForSelect()
+		t.Categories, err = mongo.GetStatsForSelect(mongo.StatsTypeCategories)
 		if err != nil {
 			log.ErrS(err)
 		}
@@ -125,8 +124,8 @@ func salesHandler(w http.ResponseWriter, r *http.Request) {
 
 type salesTemplate struct {
 	globalTemplate
-	Tags         []mysql.Tag
-	Categories   []mysql.Category
+	Tags         []mongo.Stat
+	Categories   []mongo.Stat
 	UpcomingSale upcomingSale
 	HighestOrder int
 	AppTypes     []mongo.AppTypeCount

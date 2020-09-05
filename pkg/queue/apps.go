@@ -201,13 +201,13 @@ func appHandler(message *rabbit.Message) {
 		var items = []string{
 			// memcache.MemcacheApp(app.ID).Key, // Done in replaceAppRow
 			memcache.MemcacheAppInQueue(app.ID).Key,
-			memcache.MemcacheAppTags(app.ID).Key,
-			memcache.MemcacheAppCategories(app.ID).Key,
-			memcache.MemcacheAppGenres(app.ID).Key,
+			memcache.MemcacheAppStats(mongo.StatsTypeTags.String(), app.ID).Key,
+			memcache.MemcacheAppStats(mongo.StatsTypeCategories.String(), app.ID).Key,
+			memcache.MemcacheAppStats(mongo.StatsTypeGenres.String(), app.ID).Key,
+			memcache.MemcacheAppStats(mongo.StatsTypeDevelopers.String(), app.ID).Key,
+			memcache.MemcacheAppStats(mongo.StatsTypePublishers.String(), app.ID).Key,
 			memcache.MemcacheAppDemos(app.ID).Key,
 			memcache.MemcacheAppRelated(app.ID).Key,
-			memcache.MemcacheAppDevelopers(app.ID).Key,
-			memcache.MemcacheAppPublishers(app.ID).Key,
 			memcache.MemcacheAppBundles(app.ID).Key,
 			memcache.MemcacheAppPackages(app.ID).Key,
 			memcache.MemcacheAppNoAchievements(app.ID).Key,

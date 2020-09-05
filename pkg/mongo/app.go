@@ -527,6 +527,44 @@ func (app App) ShouldUpdate() bool {
 	return app.UpdatedAt.Before(time.Now().Add(time.Hour * 24 * -1))
 }
 
+func (app App) GetTags() (stats []Stat, err error) {
+	return app.getStats(StatsTypeCategories, app.Tags)
+}
+
+func (app App) GetCategories() (stats []Stat, err error) {
+	return app.getStats(StatsTypeCategories, app.Categories)
+}
+
+func (app App) GetGenres() (stats []Stat, err error) {
+	return app.getStats(StatsTypeCategories, app.Categories)
+}
+
+func (app App) GetPublishers() (stats []Stat, err error) {
+	return app.getStats(StatsTypeCategories, app.Categories)
+}
+
+func (app App) GetDevelopers() (stats []Stat, err error) {
+	return app.getStats(StatsTypeCategories, app.Categories)
+}
+
+func (app App) getStats(typex StatsType, ids []int) (stats []Stat, err error) {
+
+	stats = []Stat{} // Needed for marshalling into type
+
+	if len(app.Categories) == 0 {
+		return stats, nil
+	}
+
+	var item = memcache.MemcacheAppStats(string(typex), app.ID)
+
+	err = memcache.GetSetInterface(item.Key, item.Expiration, &stats, func() (interface{}, error) {
+
+		return GetStatsByID(typex, ids)
+	})
+
+	return stats, err
+}
+
 type AppTagCount struct {
 	ID    int    `json:"id"`
 	Name  string `json:"name"`

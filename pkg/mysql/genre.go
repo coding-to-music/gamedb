@@ -7,7 +7,6 @@ import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/memcache"
 )
 
 type Genre struct {
@@ -58,63 +57,4 @@ func GetAllGenres(includeDeleted bool) (genres []Genre, err error) {
 	}
 
 	return genres, nil
-}
-
-func GetGenresForSelect() (genres []Genre, err error) {
-
-	var item = memcache.MemcacheGenreKeyNames
-
-	err = memcache.GetSetInterface(item.Key, item.Expiration, &genres, func() (interface{}, error) {
-
-		var genres []Genre
-
-		db, err := GetMySQLClient()
-		if err != nil {
-			return genres, err
-		}
-
-		db = db.Select([]string{"id", "name"}).Order("name ASC").Find(&genres)
-		return genres, db.Error
-	})
-
-	return genres, err
-}
-
-func GetGenresByID(ids []int, columns []string) (genres []Genre, err error) {
-
-	if len(ids) == 0 {
-		return genres, err
-	}
-
-	db, err := GetMySQLClient()
-	if err != nil {
-		return genres, err
-	}
-
-	if len(columns) > 0 {
-		db = db.Select(columns)
-	}
-
-	db = db.Where("id IN (?)", ids)
-	db = db.Order("name ASC")
-	db = db.Limit(100)
-	db = db.Find(&genres)
-
-	return genres, db.Error
-}
-
-func DeleteGenres(ids []int) (err error) {
-
-	if len(ids) == 0 {
-		return nil
-	}
-
-	db, err := GetMySQLClient()
-	if err != nil {
-		return err
-	}
-
-	db.Where("id IN (?)", ids).Delete(Genre{})
-
-	return db.Error
 }

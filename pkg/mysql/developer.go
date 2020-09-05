@@ -1,14 +1,12 @@
 package mysql
 
 import (
-	"sort"
 	"strconv"
 	"time"
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/memcache"
 )
 
 type Developer struct {
@@ -82,48 +80,4 @@ func GetAllDevelopers(fields []string) (developers []Developer, err error) {
 	}
 
 	return developers, nil
-}
-
-func GetDevelopersForSelect() (devs []Developer, err error) {
-
-	var item = memcache.MemcacheDeveloperKeyNames
-
-	err = memcache.GetSetInterface(item.Key, item.Expiration, &devs, func() (interface{}, error) {
-
-		var devs []Developer
-
-		db, err := GetMySQLClient()
-		if err != nil {
-			return devs, err
-		}
-
-		db = db.Select([]string{"id", "name"}).Order("apps DESC").Limit(200).Find(&devs)
-		if db.Error != nil {
-			return devs, db.Error
-		}
-
-		sort.Slice(devs, func(i, j int) bool {
-			return devs[i].Name < devs[j].Name
-		})
-
-		return devs, err
-	})
-
-	return devs, err
-}
-
-func DeleteDevelopers(ids []int) (err error) {
-
-	if len(ids) == 0 {
-		return nil
-	}
-
-	db, err := GetMySQLClient()
-	if err != nil {
-		return err
-	}
-
-	db.Where("id IN (?)", ids).Delete(Developer{})
-
-	return db.Error
 }

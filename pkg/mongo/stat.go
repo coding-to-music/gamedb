@@ -59,6 +59,10 @@ const (
 	StatsTypeTags       StatsType = "t"
 )
 
+func (st StatsType) String() string {
+	return string(st)
+}
+
 func (st StatsType) MongoCol() string {
 	switch st {
 	case StatsTypeCategories:
@@ -157,6 +161,38 @@ func GetStats(offset int64, limit int64, filter bson.D, sort bson.D) (offers []S
 	}
 
 	return offers, cur.Err()
+}
+
+func GetStatsByID(typex StatsType, ids []int) (apps []Stat, err error) {
+
+	if len(ids) < 1 {
+		return apps, nil
+	}
+
+	a := bson.A{}
+	for _, v := range ids {
+		a = append(a, v)
+	}
+
+	return GetStats(0, 0, bson.D{{"type", typex}, {"id", bson.M{"$in": a}}}, nil)
+}
+
+func GetStatsForSelect(typex StatsType) (stats []Stat, err error) {
+
+	var item = memcache.MemcacheStatsForSelect(string(typex))
+
+	err = memcache.GetSetInterface(item.Key, item.Expiration, &stats, func() (interface{}, error) {
+
+		stats, err = GetStats(0, 200, nil, bson.D{{"mean_score", -1}})
+
+		sort.Slice(stats, func(i, j int) bool {
+			return stats[i].Name < stats[j].Name
+		})
+
+		return stats, err
+	})
+
+	return stats, err
 }
 
 func BatchStats(typex StatsType, callback func(stats []Stat)) (err error) {

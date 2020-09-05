@@ -142,7 +142,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.Tags, err = GetAppTags(app)
+		t.Tags, err = app.GetTags()
 		if err != nil {
 			log.ErrS(err)
 		}
@@ -155,7 +155,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.Categories, err = GetAppCategories(app)
+		t.Categories, err = app.GetCategories()
 		if err != nil {
 			log.ErrS(err)
 		}
@@ -168,7 +168,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.Genres, err = GetAppGenres(app)
+		t.Genres, err = app.GetGenres()
 		if err != nil {
 			log.ErrS(err)
 		}
@@ -194,7 +194,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.Developers, err = GetDevelopers(app)
+		t.Developers, err = app.GetDevelopers()
 		if err != nil {
 			log.ErrS(err)
 		}
@@ -207,7 +207,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.Publishers, err = GetPublishers(app)
+		t.Publishers, err = app.GetPublishers()
 		if err != nil {
 			log.ErrS(err)
 		}
@@ -370,22 +370,24 @@ type appTemplate struct {
 	App           mongo.App
 	PlayersCount  int64
 	Banners       map[string][]string
-	Categories    []mysql.Category
 	Common        []pics.KeyValue
 	Config        []pics.KeyValue
 	Demos         []mongo.App
-	Developers    []mysql.Developer
 	Extended      []pics.KeyValue
-	Genres        []mysql.Genre
 	Links         []appLinkTemplate
 	Price         helpers.ProductPrice
-	Publishers    []mysql.Publisher
-	Tags          []mysql.Tag
 	TagsMax       int
 	UFS           []pics.KeyValue
 	PlayersInGame int64
 	GroupPath     string
 	Countries     []AppCountry
+
+	// Stats
+	Categories []mongo.Stat
+	Developers []mongo.Stat
+	Genres     []mongo.Stat
+	Publishers []mongo.Stat
+	Tags       []mongo.Stat
 }
 
 func (t appTemplate) includes() []string {

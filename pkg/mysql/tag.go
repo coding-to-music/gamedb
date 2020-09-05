@@ -7,8 +7,6 @@ import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/memcache"
 )
 
 type Tag struct {
@@ -58,26 +56,6 @@ func GetAllTags() (tags []Tag, err error) {
 	return tags, nil
 }
 
-func GetTagsForSelect() (tags []Tag, err error) {
-
-	var item = memcache.MemcacheTagKeyNames
-
-	err = memcache.GetSetInterface(item.Key, item.Expiration, &tags, func() (interface{}, error) {
-
-		var tags []Tag
-
-		db, err := GetMySQLClient()
-		if err != nil {
-			return tags, err
-		}
-
-		db = db.Select([]string{"id", "name"}).Order("name ASC").Find(&tags)
-		return tags, db.Error
-	})
-
-	return tags, err
-}
-
 func GetTagsByID(ids []int, columns []string) (tags []Tag, err error) {
 
 	if len(ids) == 0 {
@@ -99,22 +77,4 @@ func GetTagsByID(ids []int, columns []string) (tags []Tag, err error) {
 	db = db.Find(&tags)
 
 	return tags, db.Error
-}
-
-func DeleteTags(ids []int) (err error) {
-
-	log.Info("Deleteing " + strconv.Itoa(len(ids)) + " tags")
-
-	if len(ids) == 0 {
-		return nil
-	}
-
-	db, err := GetMySQLClient()
-	if err != nil {
-		return err
-	}
-
-	db.Where("id IN (?)", ids).Delete(Tag{})
-
-	return db.Error
 }

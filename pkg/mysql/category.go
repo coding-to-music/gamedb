@@ -7,7 +7,6 @@ import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/memcache"
 )
 
 type Category struct {
@@ -79,41 +78,3 @@ func GetCategoriesByID(ids []int, columns []string) (categories []Category, err 
 
 	return categories, db.Error
 }
-
-func GetCategoriesForSelect() (tags []Category, err error) {
-
-	var item = memcache.MemcacheCategoryKeyNames
-
-	err = memcache.GetSetInterface(item.Key, item.Expiration, &tags, func() (interface{}, error) {
-
-		var cats []Category
-
-		db, err := GetMySQLClient()
-		if err != nil {
-			return cats, err
-		}
-
-		db = db.Select([]string{"id", "name"}).Order("name ASC").Find(&cats)
-		return cats, db.Error
-	})
-
-	return tags, err
-}
-
-// func DeleteTags(ids []int) (err error) {
-//
-// 	log.InfoS("Deleteing " + strconv.Itoa(len(ids)) + " tags")
-//
-// 	if len(ids) == 0 {
-// 		return nil
-// 	}
-//
-// 	db, err := GetMySQLClient()
-// 	if err != nil {
-// 		return err
-// 	}
-//
-// 	db.Where("id IN (?)", ids).Delete(Tag{})
-//
-// 	return db.Error
-// }

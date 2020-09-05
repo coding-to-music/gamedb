@@ -10,7 +10,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/mysql"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -167,7 +166,7 @@ func appsRandomHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.Tags, err = mysql.GetTagsForSelect()
+		t.Tags, err = mongo.GetStatsForSelect(mongo.StatsTypeTags)
 		if err != nil {
 			log.ErrS(err)
 		}
@@ -190,7 +189,7 @@ func appsRandomHandler(w http.ResponseWriter, r *http.Request) {
 			defer wg.Done()
 
 			var err error
-			t.AppTags, err = GetAppTags(t.Apps[0])
+			t.AppTags, err = t.Apps[0].GetTags()
 			if err != nil {
 				log.ErrS(err)
 			}
@@ -207,8 +206,8 @@ type appsRandomTemplate struct {
 	Apps     []mongo.App
 	AppCount int64
 	Player   mongo.Player
-	Tags     []mysql.Tag
-	AppTags  []mysql.Tag
+	Tags     []mongo.Stat
+	AppTags  []mongo.Stat
 	Price    helpers.ProductPrice
 	Years    []int
 }
