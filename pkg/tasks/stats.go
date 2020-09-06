@@ -3,6 +3,7 @@ package tasks
 import (
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
+	"github.com/gamedb/gamedb/pkg/steam"
 )
 
 type StatsTask struct {
@@ -51,5 +52,22 @@ func (c StatsTask) work() (err error) {
 		}
 	}
 
-	return nil
+	// Get tags from Steam
+	tagsResp, err := steam.GetSteam().GetTags()
+	err = steam.AllowSteamCodes(err)
+	if err != nil {
+		return err
+	}
+
+	var tags []mongo.Document
+	for _, v := range tagsResp.Tags {
+		tags = append(tags, mongo.Stat{
+			Type: mongo.StatsTypeTags,
+			ID:   v.TagID,
+			Name: v.Name,
+		})
+	}
+
+	_, err = mongo.InsertMany(mongo.CollectionStats, tags)
+	return err
 }
