@@ -11,7 +11,6 @@ import (
 
 	"github.com/didip/tollbooth/v6/limiter"
 	"github.com/gamedb/gamedb/cmd/api/generated"
-	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	influxHelpers "github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -57,9 +56,9 @@ func (s Server) call(w http.ResponseWriter, r *http.Request, callback func(w htt
 	key := r.URL.Query().Get(keyField)
 	if key == "" {
 		key = r.Header.Get(keyField)
-		if key == "" {
-			key = session.Get(r, session.SessionUserAPIKey)
-		}
+		// if key == "" {
+		// 	key = session.Get(r, session.SessionUserAPIKey)
+		// }
 	}
 
 	key = strings.TrimLeft(key, "Bearer ")
