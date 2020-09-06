@@ -45,7 +45,7 @@ func statHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	t := statTagsTemplate{}
-	t.fill(w, r, "x", template.HTML("s"))
+	t.fill(w, r, stat.Name+" "+stat.Type.Title(), template.HTML(stat.Name+" "+stat.Type.Title()))
 	t.addAssetHighCharts()
 
 	t.Stat = stat
