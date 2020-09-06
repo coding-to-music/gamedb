@@ -223,26 +223,22 @@ func GetInfluxTrendFromResponse(builder *influxql.Builder, padding int) (trend f
 	return trend, nil
 }
 
+// Padding is for charts without a start time
 func GetInfluxTrendFromSeries(series models.Row, padding int) (trend float64) {
 
 	var xs []float64
 	var ys []float64
 
-	for _, v := range series.Values {
+	for k, v := range series.Values {
 
-		val, err := v[1].(json.Number).Int64()
+		val, err := v[1].(json.Number).Float64()
 		if err != nil {
 			log.ErrS(err)
 			continue
 		}
 
-		ys = append(ys, float64(val))
-	}
-
-	avg := helpers.Max(ys...)
-
-	for k := range series.Values {
-		xs = append(xs, float64(k)*avg)
+		xs = append(xs, float64(k))
+		ys = append(ys, val)
 	}
 
 	if len(ys) > 0 {
@@ -258,7 +254,7 @@ func GetInfluxTrendFromSeries(series models.Row, padding int) (trend float64) {
 
 		_, slope := stat.LinearRegression(xs, ys, nil, false)
 		if !math.IsNaN(slope) {
-			trend = slope
+			trend = slope * math.Sqrt(helpers.Avg(ys...))
 		}
 	}
 
