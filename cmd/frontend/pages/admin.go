@@ -24,6 +24,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 func AdminRouter() http.Handler {
@@ -645,7 +646,7 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 					err = queue.ProducePlayer(queue.PlayerMessage{ID: playerID, UserAgent: &ua})
 					err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 					if err != nil {
-						log.ErrS(err)
+						log.Err(err.Error(), zap.Int64("id", playerID))
 					}
 				}
 			}
@@ -665,7 +666,7 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 					err = queue.ProduceBundle(bundleID)
 					err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 					if err != nil {
-						log.ErrS(err)
+						log.Err(err.Error(), zap.Int("id", bundleID))
 					}
 				}
 			}
@@ -684,7 +685,7 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 				err = queue.ProduceTest(i)
 				err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 				if err != nil {
-					log.ErrS(err)
+					log.Err(err.Error(), zap.Int("id", i))
 				}
 			}
 		}
@@ -741,7 +742,7 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 
 		err = queue.ProduceSteam(queue.SteamMessage{AppIDs: appIDs, PackageIDs: packageIDs})
 		if err != nil {
-			log.ErrS(err)
+			log.Err(err.Error(), zap.Ints("app-ids", appIDs), zap.Ints("pack-ids", packageIDs))
 		}
 
 		session.SetFlash(r, session.SessionGood, "Done")
