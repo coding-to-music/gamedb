@@ -1,7 +1,7 @@
 {{define "stat"}}
     {{ template "header" . }}
 
-    <div class="container" id="stat-page" data-stat-id="{{ .Stat.Type.MongoCol }}" data-stat-id="{{ .Stat.ID }}" data-path="{{ .Stat.GetPath }}">
+    <div class="container" id="stat-page" data-stat-type="{{ .Stat.Type.MongoCol }}" data-stat-id="{{ .Stat.ID }}" data-path="{{ .Stat.GetPath }}">
 
         <div class="jumbotron">
 

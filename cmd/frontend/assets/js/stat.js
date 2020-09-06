@@ -4,7 +4,7 @@ if ($statPage.length > 0) {
 
     $.ajax({
         type: "GET",
-        url: '/' + $statPage.attr('data-stat-id') + '/' + $statPage.attr('data-stat-id') + '/time.json',
+        url: '/' + $statPage.attr('data-stat-type') + '/' + $statPage.attr('data-stat-id') + '/time.json',
         dataType: 'json',
         success: function (data, textStatus, jqXHR) {
 
