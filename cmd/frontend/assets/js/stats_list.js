@@ -15,6 +15,9 @@ if ($('#stats-list-page').length > 0) {
                     "render": function (data, type, row) {
                         return '<i class="fas fa-star"></i> <span class="markable">' + row[1] + '</span>';
                     },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        $(td).attr('nowrap', 'nowrap');
+                    },
                     "orderSequence": ['asc', 'desc'],
                 },
                 // Apps
@@ -30,6 +33,9 @@ if ($('#stats-list-page').length > 0) {
                     "targets": 2,
                     "render": function (data, type, row) {
                         return row[3];
+                    },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        $(td).attr('nowrap', 'nowrap');
                     },
                     "orderSequence": ['desc', 'asc'],
                 },
