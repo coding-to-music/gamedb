@@ -6,7 +6,7 @@
         <div class="jumbotron">
 
             <h1 class="text-truncate">
-                <i class="fas fa-users"></i> {{ .Stat.Name }} {{ .Stat.Type.Title }}
+                <i class="fas fa-star"></i> {{ .Stat.Name }} {{ .Stat.Type.Title }}
             </h1>
 
             <a class="btn btn-success" href="/games?{{ .Stat.Type.MongoCol }}={{ .Stat.ID }}">View {{ comma .Stat.Apps }} Games With {{ .Stat.Type.Title }}</a>
