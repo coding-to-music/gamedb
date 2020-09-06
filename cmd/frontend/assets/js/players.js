@@ -222,9 +222,18 @@ if ($('#players-page').length > 0) {
                 },
                 "orderSequence": ["desc"],
             },
-            // Link
+
+            // Foil Badges
             {
                 "targets": 14,
+                "render": function (data, type, row) {
+                    return row[25].toLocaleString();
+                },
+                "orderSequence": ["desc"],
+            },
+            // Link
+            {
+                "targets": 15,
                 "render": function (data, type, row) {
                     if (row[14]) {
                         return '<a href="' + row[14] + '" target="_blank" rel="noopener"><i class="fas fa-link"></i></a>';
@@ -235,20 +244,12 @@ if ($('#players-page').length > 0) {
             },
             // Search Score
             {
-                "targets": 15,
+                "targets": 16,
                 "render": function (data, type, row) {
                     return row[24].toLocaleString();
                 },
                 "orderable": false,
                 "visible": false,
-            },
-            // Foil Badges
-            {
-                "targets": 16,
-                "render": function (data, type, row) {
-                    return row[25].toLocaleString();
-                },
-                "orderSequence": ["desc"],
             },
         ]
     };
@@ -298,24 +299,24 @@ if ($('#players-page').length > 0) {
 
         switch (hash) {
             case '#level':
-                show = [3, 4, 16];
+                show = [3, 4, 14];
                 hide = [5, 6, 7, 8, 9, 10, 11, 12, 13];
                 break;
             case '#games':
                 show = [5, 6];
-                hide = [3, 4, 7, 8, 9, 10, 11, 12, 13, 16];
+                hide = [3, 4, 7, 8, 9, 10, 11, 12, 13, 14];
                 break;
             case '#bans':
                 show = [7, 8, 9];
-                hide = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16];
+                hide = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
                 break;
             case '#profile':
                 show = [10, 11];
-                hide = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16];
+                hide = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
                 break;
             case '#achievements':
                 show = [12, 13];
-                hide = [3, 4, 5, 6, 7, 8, 9, 10, 11, 16];
+                hide = [3, 4, 5, 6, 7, 8, 9, 10, 11, 14];
                 break;
         }
 

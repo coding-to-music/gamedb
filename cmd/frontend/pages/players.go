@@ -207,7 +207,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var sorters = query.GetOrderElastic(map[string]string{
 		"3":  "level",
 		"4":  "badges",
-		"16": "badges_foil",
+		"14": "badges_foil",
 
 		"5": "games",
 		"6": "play_time",
