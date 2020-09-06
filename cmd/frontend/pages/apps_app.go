@@ -475,13 +475,13 @@ func appSimilarHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	tags, err := mysql.GetTagsByID(tagIDs, []string{"id", "name"})
+	tags, err := mongo.GetStatsByID(mongo.StatsTypeTags, tagIDs)
 	if err != nil {
 		log.ErrS(err)
 		return
 	}
 
-	relatedTags := map[int]mysql.Tag{}
+	relatedTags := map[int]mongo.Stat{}
 	for _, v := range tags {
 		relatedTags[v.ID] = v
 	}
@@ -495,7 +495,7 @@ func appSimilarHandler(w http.ResponseWriter, r *http.Request) {
 
 type appSimilarTemplate struct {
 	globalTemplate
-	RelatedTags map[int]mysql.Tag
+	RelatedTags map[int]mongo.Stat
 	Related     []mongo.App
 }
 
@@ -504,7 +504,7 @@ func (t appSimilarTemplate) GetRelatedTags(relatedApp mongo.App) template.HTML {
 	var ret []string
 	for _, v := range relatedApp.Tags {
 		if val, ok := t.RelatedTags[v]; ok {
-			ret = append(ret, `<a href="`+val.GetPath()+`">`+val.GetName()+`</a>`)
+			ret = append(ret, `<a href="`+val.GetPath()+`">`+val.Name+`</a>`)
 		}
 	}
 
