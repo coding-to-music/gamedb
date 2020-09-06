@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package generated;
+
+import "shared.proto";
+
+service GroupsService {
+    rpc List (GroupsRequest) returns (GroupsResponse) {
+    }
+    rpc Retrieve (GroupRequest) returns (GroupResponse) {
+    }
+}
+
+message GroupRequest {
+    int64 ID = 1;
+}
+
+message GroupsRequest {
+    PaginationRequest pagination = 1;
+}
+
+message GroupsResponse {
+    PaginationResponse pagination = 1;
+    repeated GroupResponse groups = 2;
+}
+
+message GroupResponse {
+    int64 ID = 1;
+    int64 CreatedAt = 2;
+    int64 UpdatedAt = 3;
+    string Name = 4;
+    string Abbr = 5;
+    string URL = 6;
+    int32 AppID = 7;
+    string Headline = 8;
+    string Summary = 9;
+    string Icon = 10;
+    float Trending = 11;
+    int32 Members = 12;
+    int32 MembersInChat = 13;
+    int32 MembersInGame = 14;
+    int32 MembersOnline = 15;
+    string Error = 16;
+    string Type = 17;
+    int32 Primaries = 18;
+}
