@@ -456,10 +456,14 @@ func adminTasksHandler(w http.ResponseWriter, r *http.Request) {
 			go tasks.Run(val)
 		}
 
-		session.SetFlash(r, session.SessionGood, "Done")
-		session.Save(w, r)
+		w.Header().Set("Content-Type", "text/plain")
+		w.WriteHeader(http.StatusOK)
 
-		http.Redirect(w, r, "/admin/tasks", http.StatusFound)
+		_, err := w.Write([]byte(http.StatusText(http.StatusOK)))
+		if err != nil {
+			log.ErrS(err)
+		}
+
 		return
 	}
 
