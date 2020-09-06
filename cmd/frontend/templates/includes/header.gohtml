@@ -122,19 +122,18 @@
                         <a class="nav-link dropdown-toggle d-none d-lg-block" href="/players" data-toggle="dropdown">Players</a>
                         <div class="dropdown-menu">
 
-                            <a class="dropdown-item" href="/players">All Players</a>
+                            <a class="dropdown-item" href="/players">Global Ladder</a>
 
                             {{ if ne .CurrentCC "" }}
-                                <a class="dropdown-item" href="/players?country={{ .CurrentCC }}">{{ .CurrentCC }} Players</a>
+                                <a class="dropdown-item" href="/players?country={{ .CurrentCC }}">{{ .CurrentCC }} Ladder</a>
                             {{ end }}
 
-                            <div class="dropdown-divider"></div>
-
-                            <a class="dropdown-item" href="/players#level">Level Ladder</a>
-                            <a class="dropdown-item" href="/players#games">Games Ladder</a>
-                            <a class="dropdown-item" href="/players#bans">Bans Ladder</a>
-                            <a class="dropdown-item" href="/players#profile">Profile Ladder</a>
-                            <a class="dropdown-item" href="/players#achievements">Achievements Ladder</a>
+                            {{/*<div class="dropdown-divider"></div>*/}}
+                            {{/*<a class="dropdown-item" href="/players#level">Level Ladder</a>*/}}
+                            {{/*<a class="dropdown-item" href="/players#games">Games Ladder</a>*/}}
+                            {{/*<a class="dropdown-item" href="/players#bans">Bans Ladder</a>*/}}
+                            {{/*<a class="dropdown-item" href="/players#profile">Profile Ladder</a>*/}}
+                            {{/*<a class="dropdown-item" href="/players#achievements">Achievements Ladder</a>*/}}
 
                             <div class="dropdown-divider"></div>
 
