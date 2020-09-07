@@ -52,6 +52,7 @@ if ($statPage.length > 0) {
                         data: data['max_apps_count'],
                         marker: {symbol: 'circle'},
                         yAxis: 0,
+                        visible: false,
                     },
                     {
                         name: 'Apps (%)',
