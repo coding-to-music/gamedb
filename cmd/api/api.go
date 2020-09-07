@@ -64,12 +64,12 @@ func (s Server) call(w http.ResponseWriter, r *http.Request, callback func(w htt
 	key = strings.TrimLeft(key, "Bearer ")
 
 	if key == "" {
-		s.returnErrorResponse(w, http.StatusUnauthorized, errors.New("no key"))
+		s.returnErrorResponse(w, http.StatusUnauthorized, errors.New("empty api key"))
 		return
 	}
 
 	if !apiKeyRegexp.MatchString(key) {
-		s.returnErrorResponse(w, http.StatusUnauthorized, errors.New("invalid key"))
+		s.returnErrorResponse(w, http.StatusUnauthorized, errors.New("invalid api key"))
 		return
 	}
 
@@ -83,7 +83,7 @@ func (s Server) call(w http.ResponseWriter, r *http.Request, callback func(w htt
 	user, err := mysql.GetUserFromKeyCache(key)
 	if err == mysql.ErrRecordNotFound {
 
-		s.returnErrorResponse(w, http.StatusUnauthorized, errors.New("invalid key: "+key))
+		s.returnErrorResponse(w, http.StatusUnauthorized, errors.New("invalid api key: "+key))
 		return
 
 	} else if err != nil {
