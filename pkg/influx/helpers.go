@@ -254,7 +254,7 @@ func GetInfluxTrendFromSeries(series models.Row, padding int) (trend float64) {
 
 		_, slope := stat.LinearRegression(xs, ys, nil, false)
 		if !math.IsNaN(slope) {
-			trend = slope * math.Sqrt(helpers.Avg(ys...))
+			trend = slope * math.Pow(helpers.Max(ys...), 1/4)
 		}
 	}
 
