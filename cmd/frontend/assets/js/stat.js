@@ -40,9 +40,9 @@ if ($statPage.length > 0) {
                             case 'Mean Players':
                                 return this.y.toLocaleString() + ' mean max weakly players on ' + moment(this.key).format("dddd DD MMM YYYY");
                             case 'Mean Price (' + user.userCurrencySymbol + ')':
-                                return this.y.toLocaleString() + ' mean price on ' + moment(this.key).format("dddd DD MMM YYYY");
+                                return user.userCurrencySymbol + ' ' + (this.y / 100).toFixed(2).toLocaleString() + ' mean price on ' + moment(this.key).format("dddd DD MMM YYYY");
                             case 'Mean Review Score':
-                                return this.y.toLocaleString() + ' mean review score on ' + moment(this.key).format("dddd DD MMM YYYY");
+                                return this.y.toLocaleString() + '% mean review score on ' + moment(this.key).format("dddd DD MMM YYYY");
                         }
                     },
                 },
