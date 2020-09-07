@@ -15,12 +15,6 @@ func stringPointer(s string) *string {
 }
 
 var (
-	apiKeySchema = openapi3.NewStringSchema().WithPattern("^[0-9A-Z]{20}$")
-
-	keyGetParam  = openapi3.NewQueryParameter("key").WithSchema(apiKeySchema).WithRequired(true)
-	keyPostParam = openapi3.NewHeaderParameter("key").WithSchema(apiKeySchema).WithRequired(true)
-
-	// Schemas
 	priceSchema = &openapi3.Schema{
 		Required: []string{"currency", "initial", "final", "discountPercent", "individual", "free"},
 		Properties: map[string]*openapi3.SchemaRef{
