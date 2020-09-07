@@ -33,6 +33,7 @@ func main() {
 	r.Use(chiMiddleware.RedirectSlashes)
 	r.Use(chiMiddleware.NewCompressor(flate.DefaultCompression, "text/html", "text/css", "text/javascript", "application/json", "application/javascript").Handler)
 	r.Get("/", home)
+	r.Get("/health-check", healthCheckHandler)
 	r.NotFound(error404)
 
 	generated.HandlerFromMux(Server{}, r)
@@ -69,6 +70,17 @@ func error404(w http.ResponseWriter, _ *http.Request) {
 	}
 
 	_, err = w.Write(b)
+	if err != nil {
+		log.ErrS(err)
+	}
+}
+
+func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(http.StatusOK)
+
+	_, err := w.Write([]byte(http.StatusText(http.StatusOK)))
 	if err != nil {
 		log.ErrS(err)
 	}
