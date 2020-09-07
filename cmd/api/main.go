@@ -32,9 +32,9 @@ func main() {
 	r := chi.NewRouter()
 	r.Use(chiMiddleware.RedirectSlashes)
 	r.Use(chiMiddleware.NewCompressor(flate.DefaultCompression, "text/html", "text/css", "text/javascript", "application/json", "application/javascript").Handler)
-	r.Get("/", home)
+	r.Get("/", homeHandler)
 	r.Get("/health-check", healthCheckHandler)
-	r.NotFound(error404)
+	r.NotFound(errorHandler)
 
 	generated.HandlerFromMux(Server{}, r)
 
@@ -55,12 +55,12 @@ func main() {
 	}
 }
 
-func home(w http.ResponseWriter, r *http.Request) {
+func homeHandler(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, config.C.GameDBDomain+"/api/gamedb", http.StatusTemporaryRedirect)
 }
 
-func error404(w http.ResponseWriter, _ *http.Request) {
+func errorHandler(w http.ResponseWriter, _ *http.Request) {
 
 	w.WriteHeader(404)
 
