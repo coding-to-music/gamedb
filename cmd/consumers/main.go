@@ -24,6 +24,9 @@ func main() {
 		return
 	}
 
+	//
+	log.Info("Starting consumers")
+
 	// Get API key
 	err = mysql.GetConsumer("consumer")
 	if err != nil {
@@ -48,8 +51,7 @@ func main() {
 	// queue.SetDiscordClient(discord)
 
 	// Profiling
-	if !config.IsConsumer() {
-		log.Info("Starting consumers profiling")
+	if config.IsLocal() {
 		go func() {
 			err := http.ListenAndServe(":6062", nil)
 			if err != nil {
