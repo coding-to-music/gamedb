@@ -1,8 +1,11 @@
 # Binaries
+/cmd/api/api
+/cmd/backend/backend
 /cmd/chatbot/chatbot
 /cmd/consumers/consumers
 /cmd/crons/crons
 /cmd/frontend/frontend
+/cmd/scaler/scaler
 /cmd/steam/steam
 /cmd/test/test
 
@@ -12,6 +15,7 @@
 
 # Vendors
 /node_modules/
+/vendor/
 
 # Caches
 /cmd/frontend/cache/
@@ -21,6 +25,7 @@
 # Other
 /cmd/steam/change.txt
 /cmd/steam/sentry.txt
+/cmd/frontend/assets/img/chatbot
 LICENSE.md
 package.json
 package-lock.json
