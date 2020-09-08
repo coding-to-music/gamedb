@@ -10,16 +10,28 @@ import (
 )
 
 var (
-	hetznerClient  = hcloud.NewClient(hcloud.WithToken(config.C.HetznerAPIToken))
-	hetznerContext = context.TODO()
+	hetznerClient  *hcloud.Client
+	hetznerContext context.Context
 )
+
+func getHetzner() (*hcloud.Client, context.Context) {
+
+	if hetznerClient == nil {
+		hetznerClient = hcloud.NewClient(hcloud.WithToken(config.C.HetznerAPIToken))
+		hetznerContext = context.TODO()
+	}
+
+	return hetznerClient, hetznerContext
+}
 
 type Hetzner struct {
 }
 
 func (h Hetzner) ListConsumers() (consumers []Consumer, err error) {
 
-	servers, err := hetznerClient.Server.All(hetznerContext)
+	client, ctx := getHetzner()
+
+	servers, err := client.Server.All(ctx)
 	if err != nil {
 		return consumers, err
 	}
@@ -57,7 +69,9 @@ func (h Hetzner) CreateConsumer() (c Consumer, err error) {
 		return c, err
 	}
 
-	_, _, err = hetznerClient.Server.Create(hetznerContext, hcloud.ServerCreateOpts{
+	client, ctx := getHetzner()
+
+	_, _, err = client.Server.Create(ctx, hcloud.ServerCreateOpts{
 		Name:       "gamedb-consumer-" + helpers.RandString(5, helpers.Letters),
 		ServerType: &hcloud.ServerType{Name: "cx11"},
 		Image:      &hcloud.Image{Name: "debian-10"},
@@ -73,6 +87,8 @@ func (h Hetzner) CreateConsumer() (c Consumer, err error) {
 
 func (h Hetzner) DeleteConsumer(id int) (err error) {
 
-	_, err = hetznerClient.Server.Delete(hetznerContext, &hcloud.Server{ID: id})
+	client, ctx := getHetzner()
+
+	_, err = client.Server.Delete(ctx, &hcloud.Server{ID: id})
 	return err
 }
