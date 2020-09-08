@@ -14,7 +14,7 @@ type AppsServer struct {
 
 func (a AppsServer) Apps(ctx context.Context, request *generated.ListAppsRequest) (response *generated.AppsMongoResponse, err error) {
 
-	filter := bson.D{{}}
+	filter := bson.D{}
 
 	if len(request.GetIds()) > 0 {
 		filter = append(filter, bson.E{Key: "_id", Value: bson.M{"$in": request.GetIds()}})

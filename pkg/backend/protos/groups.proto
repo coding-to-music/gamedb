@@ -5,20 +5,26 @@ package generated;
 option go_package = "github.com/gamedb/gamedb/pkg/backend/generated";
 
 import "shared.proto";
+import "google/protobuf/timestamp.proto";
 
 service GroupsService {
+    rpc Stream (GroupsRequest) returns (stream GroupResponse) {
+    }
     rpc List (GroupsRequest) returns (GroupsResponse) {
     }
     rpc Retrieve (GroupRequest) returns (GroupResponse) {
     }
 }
 
-message GroupRequest {
-    int64 ID = 1;
-}
-
 message GroupsRequest {
     PaginationRequest pagination = 1;
+    repeated string projection = 2;
+    repeated string IDs = 3;
+    string Type = 4;
+}
+
+message GroupRequest {
+    int64 ID = 1;
 }
 
 message GroupsResponse {
@@ -27,9 +33,9 @@ message GroupsResponse {
 }
 
 message GroupResponse {
-    int64 ID = 1;
-    int64 CreatedAt = 2;
-    int64 UpdatedAt = 3;
+    string ID = 1;
+    google.protobuf.Timestamp CreatedAt = 2;
+    google.protobuf.Timestamp UpdatedAt = 3;
     string Name = 4;
     string Abbr = 5;
     string URL = 6;

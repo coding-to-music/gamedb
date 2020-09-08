@@ -25,7 +25,7 @@ func MakeMongoOrder(request *generated.PaginationRequest) (o bson.D) {
 	field := request.GetSortField()
 
 	if field == "" {
-		return bson.D{}
+		return bson.D{{"_id", 1}}
 	}
 
 	order := 1
@@ -34,6 +34,15 @@ func MakeMongoOrder(request *generated.PaginationRequest) (o bson.D) {
 	}
 
 	return bson.D{{field, order}}
+}
+
+func MakeMongoProjection(p []string) (b bson.M) {
+
+	b = bson.M{}
+	for _, v := range p {
+		b[v] = 1
+	}
+	return b
 }
 
 func StringsToInterfaces(s []string) (o []interface{}) {

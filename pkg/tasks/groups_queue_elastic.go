@@ -36,7 +36,7 @@ func (c GroupsQueueElastic) work() (err error) {
 
 		var filter = bson.D{{"type", helpers.GroupTypeGroup}}
 
-		groups, err := mongo.GetGroups(limit, offset, bson.D{{"_id", 1}}, filter, nil)
+		groups, err := mongo.GetGroups(offset, limit, bson.D{{"_id", 1}}, filter, nil)
 		if err != nil {
 			return err
 		}

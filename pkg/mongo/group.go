@@ -193,7 +193,7 @@ func TrendingGroups() (groups []Group, err error) {
 	return groups, err
 }
 
-func GetGroups(limit int64, offset int64, sort bson.D, filter bson.D, projection bson.M) (groups []Group, err error) {
+func GetGroups(offset int64, limit int64, sort bson.D, filter bson.D, projection bson.M) (groups []Group, err error) {
 
 	return getGroups(offset, limit, sort, filter, projection)
 }

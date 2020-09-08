@@ -5,6 +5,8 @@ import (
 	"time"
 
 	"github.com/Jleagle/sitemap-go/sitemap"
+	"github.com/gamedb/gamedb/pkg/backend"
+	"github.com/gamedb/gamedb/pkg/backend/generated"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -215,15 +217,33 @@ func SiteMapPlayersByGamesCount(w http.ResponseWriter, r *http.Request) {
 //noinspection GoUnusedParameter
 func SiteMapGroups(w http.ResponseWriter, r *http.Request) {
 
-	sm := sitemap.NewSitemap()
-
-	groups, err := mongo.GetGroups(1000, 0, bson.D{{Key: "members", Value: -1}}, bson.D{{Key: "type", Value: helpers.GroupTypeGroup}}, bson.M{"_id": 1, "name": 1, "updated_at": 1})
+	conn, ctx, err := backend.GetClient()
 	if err != nil {
-		log.ErrS(err)
+		log.Err(err.Error())
+		return
 	}
 
-	for _, v := range groups {
-		sm.AddLocation(config.C.GameDBDomain+v.GetPath(), v.UpdatedAt, sitemap.FrequencyWeekly, 0.9)
+	message := &generated.GroupsRequest{
+		Pagination: &generated.PaginationRequest{
+			Limit:     1000,
+			SortField: "members",
+			SortOrder: "desc",
+		},
+		Type: helpers.GroupTypeGroup,
+	}
+
+	resp, err := generated.NewGroupsServiceClient(conn).List(ctx, message)
+	if err != nil {
+		log.Err(err.Error())
+		return
+	}
+
+	sm := sitemap.NewSitemap()
+	for _, v := range resp.GetGroups() {
+
+		p := helpers.GetGroupPath(v.GetID(), v.GetName())
+
+		sm.AddLocation(config.C.GameDBDomain+p, v.GetUpdatedAt().AsTime(), sitemap.FrequencyWeekly, 0.9)
 	}
 
 	_, err = sm.Write(w)

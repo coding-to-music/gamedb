@@ -1,9 +1,13 @@
 package tasks
 
 import (
-	"github.com/gamedb/gamedb/pkg/mongo"
+	"io"
+
+	"github.com/gamedb/gamedb/pkg/backend"
+	"github.com/gamedb/gamedb/pkg/backend/generated"
+	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/queue"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 type GroupsQueuePrimaries struct {
@@ -28,31 +32,38 @@ func (c GroupsQueuePrimaries) Cron() TaskTime {
 
 func (c GroupsQueuePrimaries) work() (err error) {
 
-	var offset int64 = 0
-	var limit int64 = 10_000
+	conn, ctx, err := backend.GetClient()
+	if err != nil {
+		log.Err(err.Error())
+		return
+	}
+
+	message := &generated.GroupsRequest{
+		Projection: []string{"_id", "type", "primaries"},
+		Type:       helpers.GroupTypeGroup,
+	}
+
+	resp, err := generated.NewGroupsServiceClient(conn).Stream(ctx, message)
+	if err != nil {
+		log.Err(err.Error())
+		return
+	}
 
 	for {
 
-		var projection = bson.M{"_id": 1, "type": 1, "primaries": 1}
-
-		groups, err := mongo.GetGroups(limit, offset, bson.D{{"_id", 1}}, nil, projection)
-		if err != nil {
-			return err
-		}
-
-		for _, group := range groups {
-
-			err = queue.ProduceGroupPrimaries(group.ID, group.Type, group.Primaries)
-			if err != nil {
-				return err
-			}
-		}
-
-		if int64(len(groups)) != limit {
+		group, err := resp.Recv()
+		if err == io.EOF {
 			break
+		} else if err != nil {
+			log.Err(err.Error())
+			continue
 		}
 
-		offset += limit
+		err = queue.ProduceGroupPrimaries(group.GetID(), group.GetType(), int(group.GetPrimaries()))
+		if err != nil {
+			log.Err(err.Error())
+			continue
+		}
 	}
 
 	return nil
