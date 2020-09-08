@@ -36,7 +36,7 @@ func main() {
 	r.Get("/delete/{id}", deleteHandler)
 	r.Get("/health-check", healthCheckHandler)
 
-	fmt.Println("Starting scaler on :4000")
+	fmt.Println("Starting scaler on http://0.0.0.0:4000")
 
 	err = http.ListenAndServe(":4000", r)
 	if err != nil {
