@@ -16,12 +16,19 @@ import (
 	"google.golang.org/api/googleapi"
 )
 
+var youtubeOverLimitAt time.Time
+
 type AppYoutubeMessage struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`
 }
 
 func appYoutubeHandler(message *rabbit.Message) {
+
+	if time.Now().Sub(youtubeOverLimitAt) < time.Hour {
+		message.Ack()
+		return
+	}
 
 	payload := AppYoutubeMessage{}
 
@@ -67,6 +74,13 @@ func appYoutubeHandler(message *rabbit.Message) {
 
 	searchResponse, err := searchRequest.Do()
 	if err != nil {
+
+		if val, ok := err.(*googleapi.Error); ok {
+			if val.Code == 403 {
+				youtubeOverLimitAt = time.Now()
+			}
+		}
+
 		log.ErrS(err, payload.ID)
 		sendToRetryQueue(message)
 		return
@@ -84,6 +98,13 @@ func appYoutubeHandler(message *rabbit.Message) {
 
 	listResponse, err := listRequest.Do()
 	if err != nil {
+
+		if val, ok := err.(*googleapi.Error); ok {
+			if val.Code == 403 {
+				youtubeOverLimitAt = time.Now()
+			}
+		}
+
 		log.ErrS(err, payload.ID)
 		sendToRetryQueue(message)
 		return
