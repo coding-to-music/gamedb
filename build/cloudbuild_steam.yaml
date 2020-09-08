@@ -1,0 +1,11 @@
+steps:
+  - name: gcr.io/cloud-builders/git
+    args: [ 'fetch', '--unshallow' ]
+
+  - name: gcr.io/cloud-builders/docker
+    args: [ 'build', '--tag', 'gcr.io/$PROJECT_ID/steam', '--file', 'Dockerfile_steam', '.' ]
+
+  - name: gcr.io/cloud-builders/docker
+    args: [ 'push', 'gcr.io/$PROJECT_ID/steam' ]
+
+tags: [ 'gamedb', 'steam' ]
