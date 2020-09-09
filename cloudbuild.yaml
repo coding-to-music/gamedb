@@ -1,0 +1,11 @@
+steps:
+  - name: gcr.io/cloud-builders/git
+    args: [ 'fetch', '--unshallow' ]
+
+  - name: gcr.io/cloud-builders/docker
+    args: [ 'build', '--tag', 'gcr.io/$PROJECT_ID/$_BIN:$SHORT_SHA', '--file', './docker/Dockerfile_$_BIN', '.' ]
+
+  - name: gcr.io/cloud-builders/docker
+    args: [ 'push', 'gcr.io/$PROJECT_ID/$_BIN:$SHORT_SHA' ]
+
+tags: [ 'gamedb', '$_BIN', '$SHORT_SHA' ]
