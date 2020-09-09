@@ -1019,35 +1019,3 @@ type AppReviewScoreCount struct {
 	Score int64 `json:"score" bson:"_id"`
 	Count int64 `json:"count" bson:"count"`
 }
-
-//
-type SteamSpyAppResponse struct {
-	Appid     int    `json:"appid"`
-	Name      string `json:"name"`
-	Developer string `json:"developer"`
-	Publisher string `json:"publisher"`
-	// ScoreRank      int    `json:"score_rank"` // Can be empty string
-	Positive       int    `json:"positive"`
-	Negative       int    `json:"negative"`
-	Userscore      int    `json:"userscore"`
-	Owners         string `json:"owners"`
-	AverageForever int    `json:"average_forever"`
-	Average2Weeks  int    `json:"average_2weeks"`
-	MedianForever  int    `json:"median_forever"`
-	Median2Weeks   int    `json:"median_2weeks"`
-	Price          string `json:"price"`
-	Initialprice   string `json:"initialprice"`
-	Discount       string `json:"discount"`
-	Languages      string `json:"languages"`
-	Genre          string `json:"genre"`
-	Ccu            int    `json:"ccu"`
-	// Tags           map[string]int `json:"tags"` // Can be an empty slice
-}
-
-func (a SteamSpyAppResponse) GetOwners() (ret []int) {
-
-	owners := strings.ReplaceAll(a.Owners, ",", "")
-	owners = strings.ReplaceAll(owners, " ", "")
-	ownersStrings := strings.Split(owners, "..")
-	return helpers.StringSliceToIntSlice(ownersStrings)
-}
