@@ -29,10 +29,6 @@ var steamspyLimiter = ratelimit.New(4, ratelimit.WithoutSlack, ratelimit.WithCus
 
 func appSteamspyHandler(message *rabbit.Message) {
 
-	// Disable for now
-	message.Ack()
-	return
-
 	payload := AppSteamspyMessage{}
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
