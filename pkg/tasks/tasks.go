@@ -31,6 +31,7 @@ const ( //                                       min  hour
 	CronTimeAppsWishlists            TaskTime = "30   1"
 	CronTimeAddAppTagsToInflux       TaskTime = "40   1"
 	CronTimeStats                    TaskTime = "0    2"
+	CronTimeSteamSpy                 TaskTime = "0    3"
 	CronTimeInstagram                TaskTime = ""
 )
 
@@ -53,17 +54,18 @@ var (
 		AppsAchievementsQueueAll{},
 		AppsAchievementsQueueElastic{},
 		AppsAddTagCountsToInflux{},
-		AppsPlayerCheck{},
+		AppsArticlesQueueElastic{},
 		AppsPlayerCheckTop{},
+		AppsPlayerCheck{},
 		AppsQueueAll{},
 		AppsQueueElastic{},
-		AppsQueueWishlists{},
 		AppsQueueGroups{},
-		AppsArticlesQueueElastic{},
 		AppsQueueInflux{},
 		AppsQueuePackages{},
-		AppsQueueYoutube{},
 		AppsQueueReviews{},
+		AppsQueueSteamSpy{},
+		AppsQueueWishlists{},
+		AppsQueueYoutube{},
 		AutoPlayerRefreshes{},
 		BadgesUpdateRandom{},
 		GroupsQueueElastic{},
@@ -73,8 +75,8 @@ var (
 		MemcacheClearAll{},
 		PlayersQueueAll{},
 		PlayersQueueElastic{},
-		PlayersQueueLastUpdated{},
 		PlayersQueueGroups{},
+		PlayersQueueLastUpdated{},
 		PlayersUpdateRanks{},
 		ProductsUpdateKeys{},
 		StatsTask{},

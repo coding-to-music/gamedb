@@ -253,7 +253,6 @@ func appHandler(message *rabbit.Message) {
 		AppMorelikeMessage{AppID: app.ID},
 		AppNewsMessage{AppID: app.ID},
 		AppSameownersMessage{AppID: app.ID},
-		AppSteamspyMessage{AppID: app.ID},
 		AppTwitchMessage{AppID: app.ID},
 		AppReviewsMessage{AppID: app.ID},
 		AppItemsMessage{AppID: app.ID, OldDigect: app.ItemsDigest},

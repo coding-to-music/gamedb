@@ -668,6 +668,12 @@ func ProduceAppSearch(app *mongo.App, appID int) (err error) {
 	return produce(m.Queue(), m)
 }
 
+func ProduceAppSteamSpy(appID int) (err error) {
+
+	m := AppSteamspyMessage{AppID: appID}
+	return produce(m.Queue(), m)
+}
+
 func ProducePlayerSearch(player *mongo.Player, playerID int64) (err error) {
 
 	return produce(QueuePlayersSearch, PlayersSearchMessage{Player: player, PlayerID: playerID})
