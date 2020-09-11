@@ -288,6 +288,21 @@
                             </div>
                         </div>
 
+                        <table class="table table-hover table-striped table-datatable table-xs mb-0" id="players" data-row-type="players" data-ordering="false">
+                            <thead>
+                            <th>Name</th>
+                            <th>Count</th>
+                            </thead>
+                            <tbody>
+                            {{ range .App.TagCounts }}
+                                <tr data-link="{{ .GetPath }}" style="background: linear-gradient(to right, #28a74522 {{ percent .Count $.TagsMax }}%, transparent {{ percent .Count $.TagsMax }}%)">
+                                    <td style="width: 20%" nowrap>{{ .Name }}</td>
+                                    <td>{{ comma .Count }}</td>
+                                </tr>
+                            {{ end }}
+                            </tbody>
+                        </table>
+
                     </div>
 
                     {{/* Prices */}}
