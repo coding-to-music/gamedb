@@ -20,88 +20,80 @@ if ($groupPage.length > 0) {
 
     function loadGroupPlayers() {
 
-        $.ajax({
-            type: "GET",
-            url: '/groups/' + $groupPage.attr('data-group-id') + '/table.json',
-            dataType: 'json',
-            success: function (data, textStatus, jqXHR) {
-
-                const options = {
-                    "order": [[2, 'desc']],
-                    "createdRow": function (row, data, dataIndex) {
-                        $(row).attr('data-link', data[8]);
-                        $(row).attr('data-player-id', data[0]);
-                    },
-                    "columnDefs": [
-                        // Flag
-                        {
-                            "targets": 0,
-                            "render": function (data, type, row) {
-                                if (row[6]) {
-                                    const img = '<img data-lazy="' + row[4] + '" alt="" data-lazy-alt="' + row[6] + '" class="wide" data-toggle="tooltip" data-placement="left" data-lazy-title="' + row[6] + '">';
-                                    return '<a href="/players?country=' + row[6] + '">' + img + '</a>';
-                                }
-                                return '';
-                            },
-                            "createdCell": function (td, cellData, rowData, row, col) {
-                                $(td).addClass('img');
-                            },
-                            "orderable": false,
-                        },
-                        // Icon / Player Name
-                        {
-                            "targets": 1,
-                            "render": function (data, type, row) {
-                                return '<a href="' + row[8] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[3] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></a>'
-                            },
-                            "createdCell": function (td, cellData, rowData, row, col) {
-                                $(td).addClass('img');
-                            },
-                            "orderable": false,
-                        },
-                        // Avatar 2 / Level
-                        {
-                            "targets": 2,
-                            "render": function (data, type, row) {
-                                return '<div class="icon-name"><div class="icon"><div class="' + row[7] + '"></div></div><div class="name min nowrap">' + row[5].toLocaleString() + '</div></div>'
-                            },
-                            "createdCell": function (td, cellData, rowData, row, col) {
-                                $(td).addClass('img');
-                            },
-                            "orderSequence": ["desc", "asc"],
-                        },
-                        // Games
-                        {
-                            "targets": 3,
-                            "render": function (data, type, row) {
-                                return row[9].toLocaleString();
-                            },
-                            "createdCell": function (td, cellData, rowData, row, col) {
-                                $(td).addClass('img');
-                            },
-                            "orderSequence": ["desc", "asc"],
-                        },
-                        // Link
-                        {
-                            "targets": 4,
-                            "render": function (data, type, row) {
-                                if (row[2]) {
-                                    return '<a href="' + row[2] + '" target="_blank" rel="noopener"><i class="fas fa-link"></i></a>';
-                                }
-                                return '';
-                            },
-                            "orderable": false,
-                        },
-                    ]
-                };
-
-                $('#players').gdbTable({
-                    tableOptions: options,
-                    searchFields: [
-                        $('#items-search'),
-                    ],
-                });
+        const options = {
+            "order": [[1, 'desc']],
+            "createdRow": function (row, data, dataIndex) {
+                $(row).attr('data-link', data[3]);
+                $(row).attr('data-app-id', data[0]);
             },
+            "columnDefs": [
+                // Flag
+                {
+                    "targets": 0,
+                    "render": function (data, type, row) {
+                        if (row[6]) {
+                            const img = '<img data-lazy="' + row[4] + '" alt="" data-lazy-alt="' + row[6] + '" class="wide" data-toggle="tooltip" data-placement="left" data-lazy-title="' + row[6] + '">';
+                            return '<a href="/players?country=' + row[6] + '">' + img + '</a>';
+                        }
+                        return '';
+                    },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        $(td).addClass('img');
+                    },
+                    "orderable": false,
+                },
+                // Icon / Player Name
+                {
+                    "targets": 1,
+                    "render": function (data, type, row) {
+                        return '<a href="' + row[8] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[3] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></a>'
+                    },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        $(td).addClass('img');
+                    },
+                    "orderable": false,
+                },
+                // Avatar 2 / Level
+                {
+                    "targets": 2,
+                    "render": function (data, type, row) {
+                        return '<div class="icon-name"><div class="icon"><div class="' + row[7] + '"></div></div><div class="name min nowrap">' + row[5].toLocaleString() + '</div></div>'
+                    },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        $(td).addClass('img');
+                    },
+                    "orderSequence": ["desc", "asc"],
+                },
+                // Games
+                {
+                    "targets": 3,
+                    "render": function (data, type, row) {
+                        return row[9].toLocaleString();
+                    },
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        $(td).addClass('img');
+                    },
+                    "orderSequence": ["desc", "asc"],
+                },
+                // Link
+                {
+                    "targets": 4,
+                    "render": function (data, type, row) {
+                        if (row[2]) {
+                            return '<a href="' + row[2] + '" target="_blank" rel="noopener"><i class="fas fa-link"></i></a>';
+                        }
+                        return '';
+                    },
+                    "orderable": false,
+                },
+            ]
+        };
+
+        $('#players').gdbTable({
+            tableOptions: options,
+            searchFields: [
+                $('#items-search'),
+            ],
         });
     }
 }
