@@ -35,7 +35,7 @@ services:
       - "5672:5672"
     restart: "unless-stopped"
     volumes:
-      - ${STEAM_PATH_DOCKER_DATA}/rabbitmq:/var/lib/rabbitmq
+      - ${DATA_DIR}/rabbitmq:/var/lib/rabbitmq
   memcache:
     container_name: memcache
     hostname: memcache
@@ -51,7 +51,7 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - ${STEAM_PATH_DOCKER_DATA}/mongodb:/data/db
+      - ${DATA_DIR}/mongodb:/data/db
   influx:
     container_name: influx
     hostname: influx
@@ -60,9 +60,9 @@ services:
     ports:
       - "8086:8086"
     volumes:
-      - ${STEAM_PATH_DOCKER_DATA}/influxdb/data:/root/.influxdb/data
-      - ${STEAM_PATH_DOCKER_DATA}/influxdb/wal:/root/.influxdb/wal
-      - ${STEAM_PATH_DOCKER_DATA}/influxdb/meta:/root/.influxdb/meta
+      - ${DATA_DIR}/influxdb/data:/root/.influxdb/data
+      - ${DATA_DIR}/influxdb/wal:/root/.influxdb/wal
+      - ${DATA_DIR}/influxdb/meta:/root/.influxdb/meta
   mysql:
     container_name: mysql
     hostname: mysql
@@ -71,10 +71,10 @@ services:
       - "3306:3306"
     restart: "unless-stopped"
     environment:
-      - MYSQL_DATABASE=${STEAM_MYSQL_DATABASE}
-      - MYSQL_ROOT_PASSWORD=${STEAM_MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD}
     volumes:
-      - ${STEAM_PATH_DOCKER_DATA}/mysql:/var/lib/mysql
+      - ${DATA_DIR}/mysql:/var/lib/mysql
   search:
     container_name: search
     hostname: search
@@ -83,9 +83,9 @@ services:
       - "9200:9200"
     restart: "unless-stopped"
     environment:
-      - ELASTIC_PASSWORD=${STEAM_ELASTIC_SEARCH_PASSWORD}
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
     volumes:
-      - ${STEAM_PATH_DOCKER_DATA}/elasticsearch/:/usr/share/elasticsearch/data/
+      - ${DATA_DIR}/elasticsearch/:/usr/share/elasticsearch/data/
 ```
 
 ### Updating Assets
