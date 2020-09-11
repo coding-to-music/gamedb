@@ -57,7 +57,7 @@ func (c CommandAppRandom) Output(msg *discordgo.MessageCreate) (message discordg
 		var app = apps[0]
 
 		message.Content = "<@" + msg.Author.ID + ">"
-		message.Embed = getAppEmbed(app)
+		message.Embed = getAppEmbed(app, msg.Author.ID)
 	}
 
 	return message, nil

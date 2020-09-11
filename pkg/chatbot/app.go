@@ -53,7 +53,7 @@ func (c CommandApp) Output(msg *discordgo.MessageCreate) (message discordgo.Mess
 	}
 
 	message.Content = "<@" + msg.Author.ID + ">"
-	message.Embed = getAppEmbed(app)
+	message.Embed = getAppEmbed(app, msg.Author.ID)
 
 	return message, nil
 }

@@ -9,7 +9,9 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/chatbot/charts"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/mysql"
 )
 
 type CommandType string
@@ -114,7 +116,13 @@ func getFooter() *discordgo.MessageEmbedFooter {
 	return footer
 }
 
-func getAppEmbed(app mongo.App) *discordgo.MessageEmbed {
+func getAppEmbed(app mongo.App, authorID string) *discordgo.MessageEmbed {
+
+	settings, err := mysql.GetChatBotSettings(authorID)
+	if err != nil {
+		log.ErrS(err)
+		settings.ProductCode = steamapi.ProductCCUS
+	}
 
 	return &discordgo.MessageEmbed{
 		Title:     app.GetName(),
@@ -132,7 +140,7 @@ func getAppEmbed(app mongo.App) *discordgo.MessageEmbed {
 			},
 			{
 				Name:  "Price",
-				Value: app.Prices.Get(steamapi.ProductCCUS).GetFinal(),
+				Value: app.Prices.Get(settings.ProductCode).GetFinal(),
 			},
 			{
 				Name:  "Review Score",
