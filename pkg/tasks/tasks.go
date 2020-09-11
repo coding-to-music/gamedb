@@ -31,7 +31,7 @@ const ( //                                       min  hour
 	CronTimeAppsWishlists            TaskTime = "30   1"
 	CronTimeAddAppTagsToInflux       TaskTime = "40   1"
 	CronTimeStats                    TaskTime = "0    2"
-	CronTimeSteamSpy                 TaskTime = "0    3"
+	CronTimeSteamSpy                 TaskTime = ""
 	CronTimeInstagram                TaskTime = ""
 )
 
