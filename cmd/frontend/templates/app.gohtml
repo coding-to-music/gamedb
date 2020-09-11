@@ -181,7 +181,7 @@
                                                 <th scope="row" class="thin">Genres</th>
                                                 <td>
                                                     {{ range $key, $value := .Genres }}
-                                                        <a class="badge badge-success" href="/games?genres={{ .ID }}">{{ .Name }}</a>
+                                                        <a class="badge badge-success" href="/genres/{{ .ID }}/{{ slug .Name }}">{{ .Name }}</a>
                                                     {{ end }}
                                                 </td>
                                             </tr>
@@ -203,7 +203,7 @@
                                                 <th scope="row" class="thin">Developers</th>
                                                 <td>
                                                     {{ range $key, $value := .Developers }}
-                                                        <a class="badge badge-success" href="/games?developers={{ .ID }}">{{ .Name }}</a>
+                                                        <a class="badge badge-success" href="/developers/{{ .ID }}/{{ slug .Name }}">{{ .Name }}</a>
                                                     {{ end }}
                                                 </td>
                                             </tr>
@@ -214,7 +214,7 @@
                                                 <th scope="row" class="thin">Publishers</th>
                                                 <td>
                                                     {{ range $key, $value := .Publishers }}
-                                                        <a class="badge badge-success" href="/games?publishers={{ .ID }}">{{ .Name }}</a>
+                                                        <a class="badge badge-success" href="/publishers/{{ .ID }}/{{ slug .Name }}">{{ .Name }}</a>
                                                     {{ end }}
                                                 </td>
                                             </tr>
@@ -245,7 +245,7 @@
                                             <tbody>
                                             {{ range $key, $value := .App.TagCounts }}
                                                 {{ if gt .Count 0 }}
-                                                    <tr data-link="/games?tags={{ .ID }}" style="background: linear-gradient(to right, #28a74522 {{ percent .Count $.TagsMax }}%, transparent {{ percent .Count $.TagsMax }}%)">
+                                                    <tr data-link="{{ .GetPath }}" style="background: linear-gradient(to right, #28a74522 {{ percent .Count $.TagsMax }}%, transparent {{ percent .Count $.TagsMax }}%)">
                                                         <td>{{ .Name }}</td>
                                                         <td class="text-right"><small>{{ comma .Count }} <i class="fas fa-thumbs-up"></i></small></td>
                                                     </tr>
@@ -279,7 +279,7 @@
                     {{/* Tags */}}
                     <div class="tab-pane" id="tags" role="tabpanel">
 
-                        <div class="card">
+                        <div class="card mb-4">
                             <h5 class="card-header">Tag Votes over time</h5>
                             <div class="card-body">
                                 <div id="tags-chart" data-ajax="/games/{{ .App.ID }}/tags.json">

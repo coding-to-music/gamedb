@@ -565,12 +565,18 @@ func (app App) getStats(typex StatsType, ids []int) (stats []Stat, err error) {
 	return stats, err
 }
 
+//
 type AppTagCount struct {
 	ID    int    `json:"id"`
 	Name  string `json:"name"`
 	Count int    `json:"count"`
 }
 
+func (t AppTagCount) GetPath() string {
+	return helpers.GetStatPath(StatsTypeTags.MongoCol(), t.ID, t.Name)
+}
+
+//
 func ChunkApps(strings []App, n int) (chunks [][]App) {
 
 	for i := 0; i < len(strings); i += n {
