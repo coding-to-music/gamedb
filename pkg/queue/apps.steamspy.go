@@ -129,11 +129,10 @@ func appSteamspyHandler(message *rabbit.Message) {
 }
 
 type steamSpyAppResponse struct {
-	Appid     int    `json:"appid"`
-	Name      string `json:"name"`
-	Developer string `json:"developer"`
-	Publisher string `json:"publisher"`
-	// ScoreRank      int    `json:"score_rank"` // Can be empty string
+	AppID          int    `json:"appid"`
+	Name           string `json:"name"`
+	Developer      string `json:"developer"`
+	Publisher      string `json:"publisher"`
 	Positive       int    `json:"positive"`
 	Negative       int    `json:"negative"`
 	Userscore      int    `json:"userscore"`
@@ -143,11 +142,12 @@ type steamSpyAppResponse struct {
 	MedianForever  int    `json:"median_forever"`
 	Median2Weeks   int    `json:"median_2weeks"`
 	Price          string `json:"price"`
-	Initialprice   string `json:"initialprice"`
+	InitialPrice   string `json:"initialprice"`
 	Discount       string `json:"discount"`
 	Languages      string `json:"languages"`
 	Genre          string `json:"genre"`
-	Ccu            int    `json:"ccu"`
+	CCU            int    `json:"ccu"`
+	// ScoreRank      int    `json:"score_rank"` // Can be empty string
 	// Tags           map[string]int `json:"tags"` // Can be an empty slice
 }
 
