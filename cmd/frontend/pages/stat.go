@@ -4,14 +4,18 @@ import (
 	"html/template"
 	"net/http"
 	"strconv"
+	"sync"
 
 	"github.com/Jleagle/influxql"
+	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/datatable"
 	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/session"
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.uber.org/zap"
 )
 
@@ -19,7 +23,8 @@ func StatRouter() http.Handler {
 
 	r := chi.NewRouter()
 	r.Get("/", statHandler)
-	r.Get("/time.json", statAppsAjaxHandler)
+	r.Get("/time.json", statTimeAjaxHandler)
+	r.Get("/apps.json", statAppsAjaxHandler)
 	r.Get("/{slug}", statHandler)
 
 	return r
@@ -59,6 +64,92 @@ type statTagsTemplate struct {
 }
 
 func statAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	id := chi.URLParam(r, "id")
+	idx, err := strconv.Atoi(id)
+	if err != nil {
+		return
+	}
+
+	query := datatable.NewDataTableQuery(r, false)
+
+	var wg sync.WaitGroup
+	var filter = bson.D{{Key: statPathToConst(chi.URLParam(r, "type")).MongoCol(), Value: idx}}
+	var countLock sync.Mutex
+
+	var apps []mongo.App
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var code = session.GetProductCC(r)
+
+		var columns = map[string]string{
+			"1": "player_peak_week",
+			"2": "prices." + string(code) + ".final",
+			"3": "reviews_score",
+		}
+
+		var projection = bson.M{
+			"_id":              1,
+			"name":             1,
+			"icon":             1,
+			"player_peak_week": 1,
+			"prices":           1,
+			"reviews_score":    1,
+		}
+		var sort = query.GetOrderMongo(columns)
+
+		var err error
+		apps, err = mongo.GetApps(query.GetOffset64(), 100, sort, filter, projection)
+		if err != nil {
+			log.ErrS(err)
+		}
+	}()
+
+	var count int64
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		countLock.Lock()
+		count, err = mongo.CountDocuments(mongo.CollectionApps, filter, 60*60*24)
+		countLock.Unlock()
+		if err != nil {
+			log.ErrS(err)
+		}
+	}()
+
+	wg.Wait()
+
+	//
+	var code = session.GetProductCC(r)
+	var response = datatable.NewDataTablesResponse(r, query, count, count, nil)
+	for _, app := range apps {
+
+		for k, v := range app.Achievements {
+			app.Achievements[k].Key = helpers.GetAchievementIcon(app.ID, v.Key)
+		}
+
+		response.AddRow([]interface{}{
+			app.ID,                          // 0
+			app.GetName(),                   // 1
+			app.GetIcon(),                   // 2
+			app.GetPath(),                   // 3
+			app.PlayerPeakWeek,              // 4
+			app.Prices.Get(code).GetFinal(), // 5
+			app.GetReviewScore(),            // 6
+			app.GetStoreLink(),              // 7
+		})
+	}
+
+	returnJSON(w, r, response)
+}
+
+func statTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	typex := chi.URLParam(r, "type")
 	id := chi.URLParam(r, "id")

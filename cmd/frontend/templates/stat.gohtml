@@ -5,11 +5,11 @@
 
         <div class="jumbotron">
 
-            <h1 class="text-truncate">
+            <a class="btn btn-success float-right" href="/games?{{ .Stat.Type.MongoCol }}={{ .Stat.ID }}">Advanced Search</a>
+
+            <h1 class="text-truncate mb-3">
                 <i class="fas fa-star"></i> {{ .Stat.Name }} {{ .Stat.Type.Title }}
             </h1>
-
-            <a class="btn btn-success" href="/games?{{ .Stat.Type.MongoCol }}={{ .Stat.ID }}">View {{ comma .Stat.Apps }} Games With {{ .Stat.Type.Title }}</a>
 
         </div>
 
@@ -18,7 +18,7 @@
         <div class="card">
             <div class="card-body">
 
-                <div class="card">
+                <div class="card mb-4">
                     {{/*<h5 class="card-header">Games</h5>*/}}
                     <div class="card-body">
                         <div id="stat-chart">
@@ -26,6 +26,22 @@
                         </div>
                     </div>
                 </div>
+
+                <h5>{{ .Stat.Name }} Games</h5>
+                <table class="table table-hover table-striped table-counts mb-0" data-path="/{{ .Stat.Type.MongoCol }}/{{ .Stat.ID }}/apps.json" id="games" data-row-type="games">
+                    <thead class="thead-light">
+                    <tr>
+                        <th>Game</th>
+                        <th>Players</th>
+                        <th>Price</th>
+                        <th>Score</th>
+                        <th class="thin"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
 
             </div>
         </div>
