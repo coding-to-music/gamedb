@@ -10,12 +10,12 @@ You will need to run `npm install` to install dependencies first.
 
 ##### Environment
 
-All configs are handled through environment vriables, you can find a list of them all in `config.go`.
+All configs are handled through environment variables, you can find a list of them all in `config.go`.
 You should get warnings if you run a process without a required config set.
 
 ### Services
 
-Game DB uses several third party apps ro run. You can install these with Brew:
+Game DB uses several third party apps to run. You can install these with Brew:
 
 `brew tap mongodb/brew`
 
