@@ -19,11 +19,7 @@ func (g GroupsServer) Stream(request *generated.GroupsRequest, response generate
 	var offset int64 = 0
 	var limit int64 = 10_000
 	var projection = helpers.MakeMongoProjection(request.GetProjection())
-
-	var filter = bson.D{}
-	if len(request.GetType()) > 0 {
-		filter = append(filter, bson.E{Key: "type", Value: request.GetType()})
-	}
+	var filter = g.makeFilter(request)
 
 	for {
 
@@ -52,18 +48,9 @@ func (g GroupsServer) Stream(request *generated.GroupsRequest, response generate
 
 func (g GroupsServer) List(ctx context.Context, request *generated.GroupsRequest) (response *generated.GroupsResponse, err error) {
 
-	filter := bson.D{}
-
-	if len(request.GetIDs()) > 0 {
-		filter = append(filter, bson.E{Key: "_id", Value: bson.M{"$in": request.GetIDs()}})
-	}
-
-	if len(request.GetType()) > 0 {
-		filter = append(filter, bson.E{Key: "type", Value: request.GetType()})
-	}
-
 	sort := helpers.MakeMongoOrder(request.GetPagination())
 	projection := helpers.MakeMongoProjection(request.GetProjection())
+	filter := g.makeFilter(request)
 
 	groups, err := mongo.GetGroups(request.GetPagination().GetOffset(), request.GetPagination().GetLimit(), sort, filter, projection)
 	if err != nil {
@@ -126,4 +113,19 @@ func (g GroupsServer) makeGroup(m mongo.Group) (r *generated.GroupResponse) {
 		Type:          m.Type,
 		Primaries:     int32(m.Primaries),
 	}
+}
+
+func (g GroupsServer) makeFilter(request *generated.GroupsRequest) (b bson.D) {
+
+	filter := bson.D{}
+
+	if len(request.GetIDs()) > 0 {
+		filter = append(filter, bson.E{Key: "_id", Value: bson.M{"$in": request.GetIDs()}})
+	}
+
+	if len(request.GetType()) > 0 {
+		filter = append(filter, bson.E{Key: "type", Value: request.GetType()})
+	}
+
+	return b
 }
