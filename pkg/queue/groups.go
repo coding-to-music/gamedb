@@ -22,14 +22,12 @@ import (
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/gocolly/colly/v2"
 	influx "github.com/influxdata/influxdb1-client"
-	"github.com/powerslacker/ratelimit"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/ratelimit"
 	"go.uber.org/zap"
 )
 
-var (
-	groupScrapeRateLimit = ratelimit.New(1, ratelimit.WithCustomDuration(1, time.Second), ratelimit.WithoutSlack)
-)
+var groupScrapeRateLimit = ratelimit.New(1, ratelimit.WithoutSlack)
 
 type GroupMessage struct {
 	ID        string  `json:"id"`

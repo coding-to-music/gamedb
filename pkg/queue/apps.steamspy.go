@@ -11,8 +11,8 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/powerslacker/ratelimit"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/ratelimit"
 	"go.uber.org/zap"
 )
 
@@ -25,7 +25,7 @@ func (m AppSteamspyMessage) Queue() rabbit.QueueName {
 }
 
 // https://steamspy.com/api.php
-var steamspyLimiter = ratelimit.New(4, ratelimit.WithoutSlack, ratelimit.WithCustomDuration(1, time.Minute))
+var steamspyLimiter = ratelimit.New(1, ratelimit.WithoutSlack)
 
 func appSteamspyHandler(message *rabbit.Message) {
 
