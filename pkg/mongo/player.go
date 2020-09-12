@@ -509,14 +509,14 @@ func SearchPlayer(search string, projection bson.M) (player Player, queue bool, 
 		}
 	}
 
-	// if player.ID == 0 {
-	//
-	// 	err = c.FindOne(ctx, bson.D{{"vanity_url", search}}, ops).Decode(&player)
-	// 	err = helpers.IgnoreErrors(err, ErrNoDocuments)
-	// 	if err != nil {
-	// 		log.ErrS(err)
-	// 	}
-	// }
+	if player.ID == 0 {
+
+		err = c.FindOne(ctx, bson.D{{"vanity_url", search}}, ops).Decode(&player)
+		err = helpers.IgnoreErrors(err, ErrNoDocuments)
+		if err != nil {
+			log.ErrS(err)
+		}
+	}
 
 	if player.ID == 0 {
 
