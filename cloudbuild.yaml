@@ -3,7 +3,7 @@ steps:
     args: [ 'fetch', '--unshallow' ]
 
   - name: gcr.io/cloud-builders/docker
-    args: [ 'build', '--tag', 'gcr.io/$PROJECT_ID/$_BIN:$SHORT_SHA', '--file', './docker/Dockerfile_$_BIN', '.' ]
+    args: [ 'build', '--tag', 'gcr.io/$PROJECT_ID/$_BIN:latest', '--tag', 'gcr.io/$PROJECT_ID/$_BIN:$SHORT_SHA', '--file', './docker/Dockerfile_$_BIN', '.' ]
 
   - name: gcr.io/cloud-builders/docker
     args: [ 'push', 'gcr.io/$PROJECT_ID/$_BIN:$SHORT_SHA' ]
