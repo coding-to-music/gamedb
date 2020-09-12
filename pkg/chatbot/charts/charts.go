@@ -43,7 +43,7 @@ func GetAppChart(app mongo.App) (path string) {
 	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
 	builder.AddWhere("time", ">", "NOW()-168d")
 	builder.AddWhere("app_id", "=", app.ID)
-	builder.AddGroupByTime("2h")
+	builder.AddGroupByTime("1d")
 	builder.SetFillNone()
 
 	path, err := getChart(builder, strconv.Itoa(app.ID), "In Game")
@@ -116,7 +116,7 @@ func getChart(builder *influxql.Builder, id string, title string) (path string, 
 				Show: true,
 			},
 			Range: &chart.ContinuousRange{
-				Min: min - 1,
+				Min: 0,
 				Max: max + 1,
 			},
 			ValueFormatter: func(v interface{}) string {
