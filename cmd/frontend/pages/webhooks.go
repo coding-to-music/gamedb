@@ -125,6 +125,12 @@ type twitterWebhook struct {
 	URL          string `json:"url"`
 }
 
+const (
+	PATREON_TIER_1 = 2431311
+	PATREON_TIER_2 = 2431320
+	PATREON_TIER_3 = 2431347
+)
+
 func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	b, event, err := patreon.Validate(r, config.C.PatreonSecret)
