@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
@@ -44,7 +45,7 @@ func (c CommandPlayerApps) Output(msg *discordgo.MessageCreate) (message discord
 
 	matches := RegexCache[c.Regex()].FindStringSubmatch(msg.Message.Content)
 
-	player, q, err := mongo.SearchPlayer(matches[2], bson.M{"_id": 1, "persona_name": 1, "games_count": 1})
+	player, q, err := mongo.SearchPlayer(matches[2], bson.M{"_id": 1, "persona_name": 1, "games_count": 1, "ranks": 1})
 	if err == mongo.ErrNoDocuments {
 
 		message.Content = "Player **" + matches[2] + "** not found, please enter a user's vanity URL"
@@ -62,8 +63,14 @@ func (c CommandPlayerApps) Output(msg *discordgo.MessageCreate) (message discord
 		}
 	}
 
+	var rank = "Unranked"
+	if val, ok := player.Ranks[string(mongo.RankKeyGames)]; ok {
+		rank = "Rank " + humanize.Comma(int64(val))
+	}
+
 	if player.GamesCount > 0 {
-		message.Content = "<@" + msg.Author.ID + ">, " + player.GetName() + " has **" + strconv.Itoa(player.GamesCount) + "** " + matches[1]
+		message.Content = "<@" + msg.Author.ID + ">, " + player.GetName() + " has **" + strconv.Itoa(player.GamesCount) + "** " +
+			matches[1] + " (" + rank + ")"
 	} else {
 		message.Content = "<@" + msg.Author.ID + ">, Profile set to private"
 	}
