@@ -329,15 +329,13 @@ if ($playerPage.length > 0) {
                                 enabled: false,
                             },
                             yAxis: [
+                                // Value
                                 {
-                                    allowDecimals: false,
-                                    title: {
-                                        text: ''
-                                    },
                                     labels: {
                                         enabled: false
                                     },
                                 },
+                                // Rank
                                 {
                                     allowDecimals: false,
                                     title: {
