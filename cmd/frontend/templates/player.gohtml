@@ -213,95 +213,60 @@
                             </div>
                         </div>
 
-                        {{ if .HasRanks }}
+                        <div class="row">
+                            {{ range $key, $value := .Ranks }}
 
-                            <div class="row">
-
-                                {{ range $key, $value := .Ranks }}
-                                    {{ if gt (len $value.Ranks) 0 }}
-
-                                        <div class="col col-md-6 col-xl-3">
-
-                                            <div class="card mb-3">
-                                                <h5 class="card-header">{{ $value.Description }}</h5>
-                                                <div class="card-body p-0">
-                                                    <div class="table-responsive">
-                                                        <table class="table table-no-border mb-0">
-                                                            {{ range $key2, $value2 := $value.Ranks }}
-                                                                <tr>
-                                                                    <td>{{ .Metric.String }}</td>
-                                                                    <td>
-                                                                        <strong>{{ .Rank }}</strong>
-                                                                        <small class="nowrap d-none d-xl-block">Top {{ .Percentile $value.Players }}%</small>
-                                                                    </td>
-                                                                    <td>
-                                                                        <small class="nowrap d-block d-xl-none">Top {{ .Percentile $value.Players }}%</small>
-                                                                    </td>
-                                                                </tr>
-                                                            {{ end }}
-                                                        </table>
-                                                    </div>
-                                                </div>
-                                                <small class="card-footer">Out of {{ .GetPlayers }} players</small>
-                                            </div>
-
-                                        </div>
-
-                                    {{ end }}
-                                {{ end }}
-
-                            </div>
-                            <div class="row">
-                                <div class="col">
-
-                                    <div class="card" id="details-charts">
-                                        <div class="card-header">
-                                            <div class="nav nav-tabs card-header-tabs" id="nav-tab" role="tablist">
-                                                <a class="nav-item nav-link active" id="nav-profile-tab" data-toggle="tab" href="#details-stats" role="tab">Stats</a>
-                                                <a class="nav-item nav-link" id="nav-home-tab" data-toggle="tab" href="#details-ranks" role="tab">Ranks</a>
-                                            </div>
-                                        </div>
-                                        <div class="card-body pb-0">
-
-                                            <div class="tab-content" id="nav-tabContent">
-                                                <div class="tab-pane active" id="details-stats" role="tabpanel">
-
-                                                    <div id="history-chart">
-                                                        <i class="fas fa-spinner fa-spin"></i>
-                                                    </div>
-
-                                                </div>
-                                                <div class="tab-pane" id="details-ranks" role="tabpanel">
-
-                                                    <div id="ranks-chart">
-                                                        <i class="fas fa-spinner fa-spin"></i>
-                                                    </div>
-
-                                                </div>
-                                            </div>
-
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-
-                        {{ else }}
-
-                            <div class="row">
-                                <div class="col">
-                                    <div class="card">
-                                        <h5 class="card-header">Ranks</h5>
+                                <div class="col col-md-6 col-lg-4 col-xl-3">
+                                    <div class="card mb-3">
+                                        <h5 class="card-header">{{ .Metric.String }}</h5>
                                         <div class="card-body">
-                                            <p class="m-0">{{ .Player.GetName }} has not been ranked yet, check back tomorrow!</p>
-                                            {{/*<p class="mb-0">Your profile must be set to public to gather information,*/}}
-                                            {{/*    go <a href="https://steamcommunity.com/my/edit/settings" target="_blank" rel="noopener">here</a> to change your privacy settings.</p>*/}}
+
+                                            <h5 class="mb-3">{{ comma .Value }}</h5>
+
+                                            {{ if gt (len .Geos) 0 }}
+                                                <table style="width: 100%; border: 0; padding: 0;">
+                                                    {{ range $key, $value := .Geos }}
+                                                        <tr>
+                                                            <td><h6>{{ .Geo }}</h6></td>
+                                                            <td><h6 data-toggle="tooltip" data-placement="top" title="Out of {{ .GetPlayers }} (Top {{ .Percentile }}%)">{{ ordinalComma .Rank }}</h6></td>
+                                                        </tr>
+                                                    {{ end }}
+                                                </table>
+                                            {{ else }}
+                                                <table>
+                                                    <tr>
+                                                        <td><h6>Unranked</h6></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><h6>&nbsp;</h6></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><h6>&nbsp;</h6></td>
+                                                    </tr>
+                                                </table>
+                                            {{ end }}
+
+                                        </div>
+                                        <div class="card-body rank-chart" id="{{ .Metric.Letter }}-chart">
+                                            <i class="fas fa-spinner fa-spin"></i>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            {{ end }}
+                        </div>
 
-                        {{ end }}
+                        {{/*<div class="row">*/}}
+                        {{/*    <div class="col">*/}}
+                        {{/*        <div class="card">*/}}
+                        {{/*            <h5 class="card-header">Ranks</h5>*/}}
+                        {{/*            <div class="card-body">*/}}
+                        {{/*                <p class="m-0">{{ .Player.GetName }} has not been ranked yet, check back tomorrow!</p>*/}}
+                        {{/*                */}}{{/*<p class="mb-0">Your profile must be set to public to gather information,*/}}
+                        {{/*                */}}{{/*    go <a href="https://steamcommunity.com/my/edit/settings" target="_blank" rel="noopener">here</a> to change your privacy settings.</p>*/}}
+                        {{/*            </div>*/}}
+                        {{/*        </div>*/}}
+                        {{/*    </div>*/}}
+                        {{/*</div>*/}}
 
                     </div>
 

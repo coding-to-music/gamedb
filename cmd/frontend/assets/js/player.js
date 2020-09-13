@@ -68,7 +68,7 @@ if ($playerPage.length > 0) {
     loadAjaxOnObserve({
         "all-games": loadPlayerLibraryTab,
         "recent-games": loadPlayerLibraryStatsTab,
-        "details-charts": loadPlayerDetailsTab,
+        "details": loadPlayerDetailsTab,
         "badges-table": loadPlayerBadgesTab,
         "friends-table": loadPlayerFriendsTab,
         "groups-table": loadPlayerGroupsTab,
@@ -204,42 +204,11 @@ if ($playerPage.length > 0) {
             success: function (data, textStatus, jqXHR) {
 
                 if (data === null) {
-                    data = [];
+                    data = {};
                 }
 
-                const yAxis = {
-                    allowDecimals: false,
-                    title: {
-                        text: ''
-                    },
-                    labels: {
-                        enabled: false
-                    },
-                };
-
-                Highcharts.chart('history-chart', $.extend(true, {}, defaultChartOptions, {
-                    yAxis: [
-                        yAxis,
-                        yAxis,
-                        yAxis,
-                        yAxis,
-                        yAxis,
-                        yAxis,
-                        yAxis,
-                        yAxis,
-                    ],
-                    tooltip: {
-                        formatter: function () {
-
-                            switch (this.series.name) {
-                                case 'Playtime':
-                                    return this.y.toLocaleString() + ' minutes played on ' + moment(this.key).format("dddd DD MMM YYYY");
-                                default:
-                                    return this.y.toLocaleString() + ' ' + this.series.name.toLowerCase() + ' on ' + moment(this.key).format("dddd DD MMM YYYY");
-                            }
-                        },
-                    },
-                    series: [
+                const charts = {
+                    'l': [
                         {
                             name: 'Level',
                             data: data['max_level'],
@@ -247,107 +216,161 @@ if ($playerPage.length > 0) {
                             yAxis: 0,
                         },
                         {
-                            name: 'Games',
-                            data: data['max_games'],
+                            name: 'Level Rank',
+                            data: data['max_level_rank'],
                             marker: {symbol: 'circle'},
                             yAxis: 1,
                         },
+                    ],
+                    'b': [
                         {
                             name: 'Badges',
                             data: data['max_badges'],
                             marker: {symbol: 'circle'},
-                            yAxis: 2,
+                            yAxis: 0,
                         },
+                        {
+                            name: 'Badges Rank',
+                            data: data['max_badges_rank'],
+                            marker: {symbol: 'circle'},
+                            yAxis: 1,
+                        },
+                    ],
+                    'd': [
                         {
                             name: 'Foil Badges',
                             data: data['max_badges_foil'],
                             marker: {symbol: 'circle'},
-                            yAxis: 3,
+                            yAxis: 0,
                         },
                         {
-                            name: 'Playtime',
-                            data: data['max_playtime'],
+                            name: 'Foil Badges Rank',
+                            data: data['max_badges_foil_rank'],
                             marker: {symbol: 'circle'},
-                            yAxis: 4,
+                            yAxis: 1,
                         },
+                    ],
+                    'f': [
                         {
                             name: 'Friends',
                             data: data['max_friends'],
                             marker: {symbol: 'circle'},
-                            yAxis: 5,
+                            yAxis: 0,
                         },
                         {
-                            name: 'Achievements',
-                            data: data['max_achievements'],
+                            name: 'Friends Rank',
+                            data: data['max_friends_rank'],
                             marker: {symbol: 'circle'},
-                            yAxis: 6,
+                            yAxis: 1,
                         },
+                    ],
+                    'c': [
                         {
                             name: 'Comments',
                             data: data['max_comments'],
                             marker: {symbol: 'circle'},
-                            yAxis: 7,
-                        },
-                    ],
-                }));
-
-                Highcharts.chart('ranks-chart', $.extend(true, {}, defaultChartOptions, {
-                    yAxis: {
-                        allowDecimals: false,
-                        title: {
-                            text: ''
-                        },
-                        reversed: true,
-                        min: 1,
-                    },
-                    tooltip: {
-                        formatter: function () {
-                            return this.series.name + ' rank ' + this.y.toLocaleString() + ' on ' + moment(this.key).format("dddd DD MMM YYYY");
-                        },
-                    },
-                    series: [
-                        {
-                            name: 'Level',
-                            data: data['max_level_rank'],
-                            marker: {symbol: 'circle'},
+                            yAxis: 0,
                         },
                         {
-                            name: 'Games',
-                            data: data['max_games_rank'],
-                            marker: {symbol: 'circle'},
-                        },
-                        {
-                            name: 'Badges',
-                            data: data['max_badges_rank'],
-                            marker: {symbol: 'circle'},
-                        },
-                        {
-                            name: 'Foil Badges',
-                            data: data['max_badges_foil_rank'],
-                            marker: {symbol: 'circle'},
-                        },
-                        {
-                            name: 'Playtime',
-                            data: data['max_playtime_rank'],
-                            marker: {symbol: 'circle'},
-                        },
-                        {
-                            name: 'Friends',
-                            data: data['max_friends_rank'],
-                            marker: {symbol: 'circle'},
-                        },
-                        {
-                            name: 'Achievements',
-                            data: data['max_achievements_rank'],
-                            marker: {symbol: 'circle'},
-                        },
-                        {
-                            name: 'Comments',
+                            name: 'Comments Rank',
                             data: data['max_comments_rank'],
                             marker: {symbol: 'circle'},
+                            yAxis: 1,
                         },
                     ],
-                }));
+                    'g': [
+                        {
+                            name: 'Games',
+                            data: data['max_games'],
+                            marker: {symbol: 'circle'},
+                            yAxis: 0,
+                        }, {
+                            name: 'Games Rank',
+                            data: data['max_games_rank'],
+                            marker: {symbol: 'circle'},
+                            yAxis: 1,
+                        }
+                    ],
+                    'p': [
+                        {
+                            name: 'Playtime',
+                            data: data['max_playtime'],
+                            marker: {symbol: 'circle'},
+                            yAxis: 0,
+                        },
+                        {
+                            name: 'Playtime Rank',
+                            data: data['max_playtime_rank'],
+                            marker: {symbol: 'circle'},
+                            yAxis: 1,
+                        },
+                    ],
+                    'a': [
+                        {
+                            name: 'Achievements',
+                            data: data['max_achievements'],
+                            marker: {symbol: 'circle'},
+                            yAxis: 0,
+                        },
+                        {
+                            name: 'Achievements Rank',
+                            data: data['max_achievements_rank'],
+                            marker: {symbol: 'circle'},
+                            yAxis: 1,
+                        }
+                    ],
+                };
+
+                for (let k in charts) {
+                    if (charts.hasOwnProperty(k)) {
+
+                        Highcharts.chart(k + '-chart', $.extend(true, {}, defaultChartOptions, {
+                            legend: {
+                                enabled: false,
+                            },
+                            yAxis: [
+                                {
+                                    allowDecimals: false,
+                                    title: {
+                                        text: ''
+                                    },
+                                    labels: {
+                                        enabled: false
+                                    },
+                                },
+                                {
+                                    allowDecimals: false,
+                                    title: {
+                                        text: ''
+                                    },
+                                    reversed: true,
+                                    min: 1,
+                                },
+                            ],
+                            tooltip: {
+                                outside: true,
+                                formatter: function () {
+
+                                    switch (this.series.name) {
+                                        case 'Level':
+                                        case 'Badges':
+                                        case 'Foil Badges':
+                                        case 'Friends':
+                                        case 'Comments':
+                                        case 'Games':
+                                        case 'Achievements':
+                                            return this.y.toLocaleString() + ' ' + this.series.name + ' on ' + moment(this.key).format("dddd DD MMM YYYY");
+                                        case 'Playtime':
+                                            return this.y.toLocaleString() + ' minutes played on ' + moment(this.key).format("dddd DD MMM YYYY");
+                                        default:
+                                            return this.series.name + this.y.toLocaleString() + ' on ' + moment(this.key).format("dddd DD MMM YYYY");
+                                    }
+                                },
+                            },
+                            series: charts[k],
+                        }));
+                    }
+                }
             },
         });
     }

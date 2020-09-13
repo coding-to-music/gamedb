@@ -31,6 +31,8 @@ func (rk RankMetric) String() string {
 		return "Level"
 	case RankKeyBadges:
 		return "Badges"
+	case RankKeyBadgesFoil:
+		return "Foil Badges"
 	case RankKeyFriends:
 		return "Friends"
 	case RankKeyComments:
@@ -43,6 +45,32 @@ func (rk RankMetric) String() string {
 		return "Playtime"
 	}
 	return ""
+}
+
+func (rk RankMetric) Value(p Player) int {
+	switch rk {
+	case RankKeyLevel:
+		return p.Level
+	case RankKeyBadges:
+		return p.BadgesCount
+	case RankKeyBadgesFoil:
+		return p.BadgesFoilCount
+	case RankKeyFriends:
+		return p.FriendsCount
+	case RankKeyComments:
+		return p.CommentsCount
+	case RankKeyGames:
+		return p.GamesCount
+	case RankKeyAchievements:
+		return p.AchievementCount
+	case RankKeyPlaytime:
+		return p.PlayTime
+	}
+	return 0
+}
+
+func (rk RankMetric) Letter() string {
+	return string(rk)
 }
 
 const (

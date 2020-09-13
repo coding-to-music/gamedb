@@ -307,64 +307,6 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	var ranks = map[string]*playerRankListTemplate{
-		RankListGlobally:  {Players: playersCount},
-		RankListContinent: {Players: playersContinentCount},
-		RankListCountry:   {Players: playersCountryCount},
-		RankListState:     {Players: playersStateCount},
-	}
-
-	for _, v := range mongo.PlayerRankFields {
-
-		if position, ok := player.Ranks[string(v)]; ok {
-			ranks[RankListGlobally].Description = RankListGlobally
-			ranks[RankListGlobally].Ranks = append(ranks[RankListGlobally].Ranks, &playerRankTemplate{
-				Metric:   v,
-				Position: position,
-			})
-		}
-		if player.ContinentCode != "" {
-			if position, ok := player.Ranks[string(v)+"_continent-"+player.ContinentCode]; ok {
-				ranks[RankListContinent].Description = RankListContinent
-				ranks[RankListContinent].Ranks = append(ranks[RankListContinent].Ranks, &playerRankTemplate{
-					Metric:   v,
-					Position: position,
-				})
-			}
-		}
-		if player.CountryCode != "" {
-			if position, ok := player.Ranks[string(v)+"_country-"+player.CountryCode]; ok {
-				ranks[RankListCountry].Description = RankListCountry
-				ranks[RankListCountry].Ranks = append(ranks[RankListCountry].Ranks, &playerRankTemplate{
-					Metric:   v,
-					Position: position,
-				})
-			}
-		}
-		if player.StateCode != "" {
-			if position, ok := player.Ranks[string(v)+"_state-"+player.StateCode]; ok {
-				ranks[RankListState].Description = RankListState
-				ranks[RankListState].Ranks = append(ranks[RankListState].Ranks, &playerRankTemplate{
-					Metric:   v,
-					Position: position,
-				})
-			}
-		}
-	}
-
-	for _, v := range ranks {
-		sort.Slice(v.Ranks, func(i, j int) bool {
-			return v.Ranks[i].Position < v.Ranks[j].Position
-		})
-	}
-
-	t.Ranks = []*playerRankListTemplate{
-		ranks[RankListGlobally],
-		ranks[RankListContinent],
-		ranks[RankListCountry],
-		ranks[RankListState],
-	}
-
 	// Template
 	t.setBackground(backgroundApp, true, false)
 	t.fill(w, r, player.GetName(), "")
@@ -381,7 +323,78 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	t.User = user
 	t.Aliases = aliases
 
+	for _, v := range mongo.PlayerRankFields {
+
+		rank := playerRankTemplate{}
+		rank.Metric = v
+		rank.Value = v.Value(player)
+
+		if position, ok := player.Ranks[string(v)]; ok {
+			rank.Geos = append(rank.Geos, playerRankGeoTemplate{
+				Geo:   "Global",
+				Rank:  position,
+				Total: playersCount,
+			})
+		}
+		if position, ok := player.Ranks[string(v)+"_continent-"+player.ContinentCode]; ok {
+			rank.Geos = append(rank.Geos, playerRankGeoTemplate{
+				Geo:   "Continent",
+				Rank:  position,
+				Total: playersContinentCount,
+			})
+		}
+		if position, ok := player.Ranks[string(v)+"_country-"+player.CountryCode]; ok {
+			rank.Geos = append(rank.Geos, playerRankGeoTemplate{
+				Geo:   "Country",
+				Rank:  position,
+				Total: playersCountryCount,
+			})
+		}
+		if position, ok := player.Ranks[string(v)+"_state-"+player.StateCode]; ok {
+			rank.Geos = append(rank.Geos, playerRankGeoTemplate{
+				Geo:   "State",
+				Rank:  position,
+				Total: playersStateCount,
+			})
+		}
+
+		t.Ranks = append(t.Ranks, rank)
+	}
+
+	sort.Slice(t.Ranks, func(i, j int) bool {
+		return t.Ranks[i].Metric.String() < t.Ranks[j].Metric.String()
+	})
+
 	returnTemplate(w, r, "player", t)
+}
+
+type playerRankTemplate struct {
+	Metric mongo.RankMetric
+	Geos   []playerRankGeoTemplate
+	Value  int
+}
+
+type playerRankGeoTemplate struct {
+	Geo   string
+	Rank  int
+	Total int64
+}
+
+func (geo playerRankGeoTemplate) Percentile() string {
+
+	p := float64(geo.Rank) / float64(geo.Total) * 100
+
+	if p < 1 {
+		return helpers.FloatToString(p, 2)
+	} else if p < 10 {
+		return helpers.FloatToString(p, 1)
+	} else {
+		return helpers.FloatToString(p, 0)
+	}
+}
+
+func (geo playerRankGeoTemplate) GetPlayers() string {
+	return humanize.FormatFloat("#,###.", float64(geo.Total))
 }
 
 type playerTemplate struct {
@@ -390,7 +403,7 @@ type playerTemplate struct {
 	CSRF          string
 	DefaultAvatar string
 	Player        mongo.Player
-	Ranks         []*playerRankListTemplate
+	Ranks         []playerRankTemplate
 	Types         map[string]int64
 	InQueue       bool
 	User          mysql.User
@@ -417,60 +430,11 @@ func (t playerTemplate) TypePercent(typex string) string {
 	return helpers.FloatToString(f, 2) + "%"
 }
 
-func (t playerTemplate) HasRanks() bool {
-
-	for _, v := range t.Ranks {
-		if len(v.Ranks) > 0 {
-			return true
-		}
-	}
-
-	return false
-}
-
 type playerMissingTemplate struct {
 	globalTemplate
 	Player        mongo.Player
 	DefaultAvatar string
 	Queue         int
-}
-
-const (
-	RankListGlobally  = "Global Ranks"
-	RankListContinent = "Continent Ranks"
-	RankListCountry   = "Country Ranks"
-	RankListState     = "State Ranks"
-)
-
-type playerRankListTemplate struct {
-	Players     int64
-	Description string
-	Ranks       []*playerRankTemplate
-}
-type playerRankTemplate struct {
-	Metric   mongo.RankMetric
-	Position int
-}
-
-func (pr playerRankTemplate) Rank() string {
-	return helpers.OrdinalComma(pr.Position)
-}
-
-func (pr playerRankListTemplate) GetPlayers() string {
-	return humanize.FormatFloat("#,###.", float64(pr.Players))
-}
-
-func (pr playerRankTemplate) Percentile(players int64) string {
-
-	p := float64(pr.Position) / float64(players) * 100
-
-	if p < 1 {
-		return helpers.FloatToString(p, 2)
-	} else if p < 10 {
-		return helpers.FloatToString(p, 1)
-	} else {
-		return helpers.FloatToString(p, 0)
-	}
 }
 
 func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
