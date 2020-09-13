@@ -221,7 +221,7 @@
                                         <h5 class="card-header">{{ .Metric.String }}</h5>
                                         <div class="card-body">
 
-                                            <h5 class="mb-3">{{ comma .Value }}</h5>
+                                            <h5 class="mb-3">{{ .GetValue }}</h5>
 
                                             {{ if gt (len .Geos) 0 }}
                                                 <table style="width: 100%; border: 0; padding: 0;">

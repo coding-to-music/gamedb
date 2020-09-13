@@ -374,6 +374,14 @@ type playerRankTemplate struct {
 	Value  int
 }
 
+func (rank playerRankTemplate) GetValue() string {
+
+	if rank.Metric == mongo.RankKeyPlaytime {
+		return helpers.GetTimeLong(rank.Value, 2)
+	}
+	return humanize.Comma(int64(rank.Value))
+}
+
 type playerRankGeoTemplate struct {
 	Geo   string
 	Rank  int
