@@ -4,13 +4,16 @@ if ($('#stats-page').length > 0) {
         'use strict';
 
         loadAjaxOnObserve({
-            "app-types": statsAppTypes,
-            "release-dates": statsReleaseDates,
-            "player-levels": statsPlayerLevels,
-            "scores": statsAppScores,
+            // Steam
             "client-players": statsClientPlayers,
             "client-players2": statsClientPlayers2,
+            "scores": statsAppScores,
+            "release-dates": statsReleaseDates,
+            "app-types": statsAppTypes,
+
+            // Game DB
             "player-countries": playerCountries,
+            "player-levels": statsPlayerLevels,
         });
 
         //
@@ -126,7 +129,7 @@ if ($('#stats-page').length > 0) {
                 cache: true,
                 success: function (data, textStatus, jqXHR) {
 
-                    const $container = $('#app-types tbody');
+                    const $container = $('#app-types-table tbody');
 
                     $container.empty();
 
@@ -152,7 +155,7 @@ if ($('#stats-page').length > 0) {
 
                     $('#total-price').text(data.total);
 
-                    $('#app-types').gdbTable();
+                    $('#app-types-table').gdbTable();
                 },
             });
         }
@@ -169,7 +172,7 @@ if ($('#stats-page').length > 0) {
                         data = [];
                     }
 
-                    Highcharts.chart('release-dates', $.extend(true, {}, defaultChartOptions, {
+                    Highcharts.chart('release-dates-chart', $.extend(true, {}, defaultChartOptions, {
                         chart: {
                             zoomType: 'x',
                         },
@@ -215,7 +218,7 @@ if ($('#stats-page').length > 0) {
                         dataArray.push(value['count']);
                     });
 
-                    Highcharts.chart('player-levels', $.extend(true, {}, defaultChartOptions, {
+                    Highcharts.chart('player-levels-chart', $.extend(true, {}, defaultChartOptions, {
                         chart: {
                             type: 'column',
                         },
@@ -261,7 +264,7 @@ if ($('#stats-page').length > 0) {
                 dataType: 'json',
                 success: function (data, textStatus, jqXHR) {
 
-                    Highcharts.chart('player-countries', $.extend(true, {}, defaultChartOptions, {
+                    Highcharts.chart('player-countries-chart', $.extend(true, {}, defaultChartOptions, {
                         chart: {
                             type: 'column',
                         },
@@ -303,7 +306,7 @@ if ($('#stats-page').length > 0) {
                         data = [];
                     }
 
-                    Highcharts.chart('scores', $.extend(true, {}, defaultChartOptions, {
+                    Highcharts.chart('scores-chart', $.extend(true, {}, defaultChartOptions, {
                         chart: {
                             type: 'column',
                         },
