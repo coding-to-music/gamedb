@@ -563,6 +563,10 @@ func (t globalTemplate) IsAdmin() bool {
 	return session.IsAdmin(t.request)
 }
 
+func (t globalTemplate) IsLocal() bool {
+	return config.IsLocal()
+}
+
 func (t globalTemplate) ShowAds() bool {
 
 	if config.IsLocal() || t.userLevel > 0 {

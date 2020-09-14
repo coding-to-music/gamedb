@@ -43,12 +43,16 @@
                             </div>
 
                         </div>
-                        <div class="col-sm-12">
 
-                            <label for="message">Captcha</label>
-                            <div class="g-recaptcha" data-sitekey="{{ .RecaptchaPublic }}" data-callback="recaptchaCallback"></div>
+                        {{ if not .IsLocal }}
+                            <div class="col-sm-12">
 
-                        </div>
+                                <label for="message">Captcha</label>
+                                <div class="g-recaptcha" data-sitekey="{{ .RecaptchaPublic }}" data-callback="recaptchaCallback"></div>
+
+                            </div>
+                        {{ end }}
+
                         <div class="col-sm-12 mt-4">
 
                             <button type="submit" class="btn btn-success" aria-label="Send">Send</button>
