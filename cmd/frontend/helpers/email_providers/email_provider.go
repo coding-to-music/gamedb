@@ -1,7 +1,7 @@
 package email_providers
 
 type EmailSender interface {
-	Send(toName, toEmail, fromName, fromEmail, subject, html string) error
+	Send(toName, toEmail, replyToName, replyToEmail, subject, html string) error
 }
 
 func GetSender() EmailSender {

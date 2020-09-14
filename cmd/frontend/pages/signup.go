@@ -167,8 +167,8 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 		err = email_providers.GetSender().Send(
 			email,
 			email,
-			"Game DB",
-			"no-reply@gamedb.online",
+			"",
+			"",
 			"Game DB Email Verification",
 			body,
 		)

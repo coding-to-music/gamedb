@@ -110,8 +110,8 @@ func forgotPostHandler(w http.ResponseWriter, r *http.Request) {
 		err = email_providers.GetSender().Send(
 			email,
 			email,
-			"Game DB",
-			"no-reply@gamedb.online",
+			"",
+			"",
 			"Game DB Forgotten Password",
 			body,
 		)
@@ -198,8 +198,8 @@ func forgotResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 		err = email_providers.GetSender().Send(
 			user.Email,
 			user.Email,
-			"Game DB",
-			"no-reply@gamedb.online",
+			"",
+			"",
 			"Game DB Password Reset",
 			body,
 		)

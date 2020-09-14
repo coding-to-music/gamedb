@@ -11,7 +11,7 @@ import (
 type mailjetProvider struct {
 }
 
-func (mailjetProvider) Send(toName, toEmail, fromName, fromEmail, subject, html string) (err error) {
+func (mailjetProvider) Send(toName, toEmail, replyToName, replyToEmail, subject, html string) (err error) {
 
 	if config.C.MailjetPublic == "" || config.C.MailjetPrivate == "" {
 		return errors.New("missing environment variables")
@@ -22,19 +22,20 @@ func (mailjetProvider) Send(toName, toEmail, fromName, fromEmail, subject, html 
 		return err
 	}
 
-	messages := []mailjet.InfoMessagesV31{
-		{
-			To:       &mailjet.RecipientsV31{mailjet.RecipientV31{Name: toName, Email: toEmail}},
-			From:     &mailjet.RecipientV31{Name: "Game DB", Email: "no-reply@gamedb.online"},
-			ReplyTo:  &mailjet.RecipientV31{Name: fromName, Email: fromEmail},
-			Subject:  subject,
-			HTMLPart: html,
-			TextPart: text,
-			CustomID: "",
-		},
+	message := mailjet.InfoMessagesV31{
+		To:       &mailjet.RecipientsV31{mailjet.RecipientV31{Name: toName, Email: toEmail}},
+		From:     &mailjet.RecipientV31{Name: "Game DB", Email: "no-reply@gamedb.online"},
+		Subject:  subject,
+		HTMLPart: html,
+		TextPart: text,
+		CustomID: "",
+	}
+
+	if replyToName != "" && replyToEmail != "" {
+		message.ReplyTo = &mailjet.RecipientV31{Name: replyToName, Email: replyToEmail}
 	}
 
 	client := mailjet.NewMailjetClient(config.C.MailjetPublic, config.C.MailjetPrivate)
-	_, err = client.SendMailV31(&mailjet.MessagesV31{Info: messages})
+	_, err = client.SendMailV31(&mailjet.MessagesV31{Info: []mailjet.InfoMessagesV31{message}})
 	return err
 }
