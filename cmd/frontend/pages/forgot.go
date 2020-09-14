@@ -6,7 +6,7 @@ import (
 
 	"github.com/Jleagle/recaptcha-go"
 	"github.com/badoux/checkmail"
-	frontendHelpers "github.com/gamedb/gamedb/cmd/frontend/pages/helpers"
+	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/email_providers"
 	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -14,7 +14,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/go-chi/chi"
-	"github.com/sendgrid/sendgrid-go/helpers/mail"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -108,9 +107,11 @@ func forgotPostHandler(w http.ResponseWriter, r *http.Request) {
 			"<br><br>Thanks, Jleagle." +
 			"<br><br>From IP: " + r.RemoteAddr
 
-		_, err = frontendHelpers.SendEmail(
-			mail.NewEmail(email, email),
-			mail.NewEmail("Game DB", "no-reply@gamedb.online"),
+		err = email_providers.GetSender().Send(
+			email,
+			email,
+			"Game DB",
+			"no-reply@gamedb.online",
 			"Game DB Forgotten Password",
 			body,
 		)
@@ -194,9 +195,11 @@ func forgotResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 		body := "Your new Game DB password is:<br><br>" + passwordString + "<br><br>Thanks, Jleagle." +
 			"<br><br>From IP: " + r.RemoteAddr
 
-		_, err = frontendHelpers.SendEmail(
-			mail.NewEmail(user.Email, user.Email),
-			mail.NewEmail("Game DB", "no-reply@gamedb.online"),
+		err = email_providers.GetSender().Send(
+			user.Email,
+			user.Email,
+			"Game DB",
+			"no-reply@gamedb.online",
 			"Game DB Forgotten Password",
 			body,
 		)

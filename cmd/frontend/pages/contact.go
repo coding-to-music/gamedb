@@ -4,12 +4,11 @@ import (
 	"net/http"
 
 	"github.com/Jleagle/recaptcha-go"
-	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers"
+	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/email_providers"
 	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/go-chi/chi"
-	"github.com/sendgrid/sendgrid-go/helpers/mail"
 )
 
 const (
@@ -101,12 +100,16 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 		if config.C.AdminName == "" || config.C.AdminEmail == "" {
 			log.Fatal("Missing environment variables")
 		} else {
-			_, err = helpers.SendEmail(
-				mail.NewEmail(config.C.AdminName, config.C.AdminEmail),
-				mail.NewEmail(r.PostForm.Get("name"), r.PostForm.Get("email")),
+
+			err = email_providers.GetSender().Send(
+				config.C.AdminName,
+				config.C.AdminEmail,
+				r.PostForm.Get("name"),
+				r.PostForm.Get("email"),
 				"Game DB Contact Form",
 				r.PostForm.Get("message"),
 			)
+
 			if err != nil {
 				log.ErrS(err)
 				return session.SessionBad, "Something has gone wrong (1003)"

@@ -3,7 +3,6 @@ module github.com/gamedb/gamedb
 go 1.13
 
 require (
-	cloud.google.com/go v0.65.0 // indirect
 	cloud.google.com/go/logging v1.1.0
 	github.com/Jleagle/go-durationfmt v0.0.0-20190307132420-e57bfad84057
 	github.com/Jleagle/influxql v0.0.0-20200804190929-88324f67bffe
@@ -18,7 +17,6 @@ require (
 	github.com/StefanSchroeder/Golang-Roman v0.0.0-20191231161654-ef19f7247884
 	github.com/ahmdrz/goinsta/v2 v2.4.5
 	github.com/antchfx/xmlquery v1.3.0 // indirect
-	github.com/antchfx/xpath v1.1.10 // indirect
 	github.com/aws/aws-sdk-go v1.34.22 // indirect
 	github.com/badoux/checkmail v1.2.1
 	github.com/blend/go-sdk v1.1.1 // indirect
@@ -42,7 +40,6 @@ require (
 	github.com/gobuffalo/packr/v2 v2.8.0
 	github.com/gocolly/colly/v2 v2.1.0
 	github.com/golang/protobuf v1.4.2
-	github.com/google/go-cmp v0.5.2 // indirect
 	github.com/google/go-github/v32 v32.1.0
 	github.com/google/uuid v1.1.2 // indirect
 	github.com/gorilla/securecookie v1.1.1
@@ -58,7 +55,7 @@ require (
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/klauspost/compress v1.11.0 // indirect
 	github.com/lib/pq v1.3.0 // indirect
-	github.com/mailru/easyjson v0.7.6 // indirect
+	github.com/mailjet/mailjet-apiv3-go v0.0.0-20190724151621-55e56f74078c
 	github.com/mattn/go-runewidth v0.0.9 // indirect
 	github.com/mattn/go-sqlite3 v2.0.1+incompatible // indirect
 	github.com/mborgerson/GoTruncateHtml v0.0.0-20150507032438-125d9154cd1e
@@ -71,19 +68,17 @@ require (
 	github.com/olivere/elastic/v7 v7.0.20
 	github.com/oschwald/maxminddb-golang v1.7.0
 	github.com/pariz/gountries v0.0.0-20200430155801-1c6a393df9c7
-	github.com/powerslacker/ratelimit v0.0.0-20190505003410-df2fcffc8e0d
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/rogpeppe/go-internal v1.6.1 // indirect
 	github.com/russross/blackfriday v2.0.0+incompatible
 	github.com/satori/go.uuid v1.2.0
-	github.com/sendgrid/rest v2.6.1+incompatible
+	github.com/sendgrid/rest v2.6.1+incompatible // indirect
 	github.com/sendgrid/sendgrid-go v3.6.3+incompatible
 	github.com/sirupsen/logrus v1.6.0 // indirect
 	github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf // indirect
 	github.com/streadway/amqp v1.0.0
 	github.com/tdewolff/minify/v2 v2.9.4
 	github.com/tidwall/pretty v1.0.1 // indirect
-	github.com/uber-go/atomic v1.4.0 // indirect
 	github.com/wcharczuk/go-chart v2.0.1+incompatible
 	github.com/xdg/stringprep v1.0.0 // indirect
 	github.com/yohcop/openid-go v1.0.0

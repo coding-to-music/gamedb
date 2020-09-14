@@ -6,7 +6,7 @@ import (
 
 	"github.com/Jleagle/recaptcha-go"
 	"github.com/badoux/checkmail"
-	frontendHelpers "github.com/gamedb/gamedb/cmd/frontend/pages/helpers"
+	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/email_providers"
 	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -16,7 +16,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/go-chi/chi"
 	influx "github.com/influxdata/influxdb1-client"
-	"github.com/sendgrid/sendgrid-go/helpers/mail"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -165,9 +164,11 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 			"<br><br>Thanks, Jleagle." +
 			"<br><br>From IP: " + r.RemoteAddr
 
-		_, err = frontendHelpers.SendEmail(
-			mail.NewEmail(email, email),
-			mail.NewEmail("Game DB", "no-reply@gamedb.online"),
+		err = email_providers.GetSender().Send(
+			email,
+			email,
+			"Game DB",
+			"no-reply@gamedb.online",
 			"Game DB Email Verification",
 			body,
 		)
