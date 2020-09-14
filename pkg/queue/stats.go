@@ -48,8 +48,9 @@ func statsHandler(message *rabbit.Message) {
 	var totalPlayers int
 
 	projection := bson.M{"reviews_score": 1, "prices": 1, "player_peak_week": 1}
+	filter := bson.D{{payload.Type.MongoCol(), payload.StatID}}
 
-	err = mongo.BatchApps(bson.D{{payload.Type.MongoCol(), payload.StatID}}, projection, func(apps []mongo.App) {
+	err = mongo.BatchApps(filter, projection, func(apps []mongo.App) {
 
 		for _, app := range apps {
 
@@ -91,7 +92,7 @@ func statsHandler(message *rabbit.Message) {
 	}
 
 	// Update Mongo
-	filter := bson.D{
+	filter = bson.D{
 		{"type", payload.Type},
 		{"id", payload.StatID},
 	}
