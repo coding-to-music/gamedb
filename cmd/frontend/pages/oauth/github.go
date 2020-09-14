@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/session"
+	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	gh "github.com/google/go-github/v32/github"

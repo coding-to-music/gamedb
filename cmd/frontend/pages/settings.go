@@ -9,9 +9,9 @@ import (
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/badoux/checkmail"
-	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/datatable"
-	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/middleware"
-	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/session"
+	"github.com/gamedb/gamedb/cmd/frontend/helpers/datatable"
+	"github.com/gamedb/gamedb/cmd/frontend/helpers/middleware"
+	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/cmd/frontend/pages/oauth"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"

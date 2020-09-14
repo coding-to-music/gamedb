@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/datatable"
+	"github.com/gamedb/gamedb/cmd/frontend/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"

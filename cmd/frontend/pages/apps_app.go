@@ -13,8 +13,8 @@ import (
 	"time"
 
 	"github.com/Jleagle/influxql"
-	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/datatable"
-	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/session"
+	"github.com/gamedb/gamedb/cmd/frontend/helpers/datatable"
+	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/influx"

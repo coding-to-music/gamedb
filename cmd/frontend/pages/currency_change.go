@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/Jleagle/steam-go/steamapi"
-	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/session"
+	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/go-chi/chi"

@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/datatable"
+	"github.com/gamedb/gamedb/cmd/frontend/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/backend/generated"
 	"github.com/gamedb/gamedb/pkg/config"
 	"google.golang.org/grpc"

@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"path"
 
-	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/session"
+	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/yohcop/openid-go"

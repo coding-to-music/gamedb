@@ -6,8 +6,8 @@ import (
 
 	"github.com/Jleagle/recaptcha-go"
 	"github.com/badoux/checkmail"
-	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/email_providers"
-	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/session"
+	"github.com/gamedb/gamedb/cmd/frontend/helpers/email_providers"
+	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"

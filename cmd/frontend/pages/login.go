@@ -8,7 +8,7 @@ import (
 	"github.com/Jleagle/recaptcha-go"
 	"github.com/Jleagle/steam-go/steamid"
 	"github.com/badoux/checkmail"
-	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/session"
+	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/cmd/frontend/pages/oauth"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"

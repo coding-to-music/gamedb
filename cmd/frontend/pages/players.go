@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/dustin/go-humanize"
-	"github.com/gamedb/gamedb/cmd/frontend/pages/helpers/datatable"
+	"github.com/gamedb/gamedb/cmd/frontend/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
