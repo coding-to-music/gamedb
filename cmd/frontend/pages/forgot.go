@@ -200,7 +200,7 @@ func forgotResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 			user.Email,
 			"Game DB",
 			"no-reply@gamedb.online",
-			"Game DB Forgotten Password",
+			"Game DB Password Reset",
 			body,
 		)
 		if err != nil {
