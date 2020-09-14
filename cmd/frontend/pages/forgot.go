@@ -184,7 +184,7 @@ func forgotResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Create password
-		passwordString := helpers.RandString(16, helpers.Letters)
+		passwordString := helpers.RandString(10, helpers.LettersCaps+helpers.Numbers)
 		passwordBytes, err := bcrypt.GenerateFromPassword([]byte(passwordString), 14)
 		if err != nil {
 			log.ErrS(err)
