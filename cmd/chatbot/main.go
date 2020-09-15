@@ -126,14 +126,14 @@ func main() {
 
 				// Get user settings
 				code := steamapi.ProductCCUS
-				cacheItem := memcache.MemcacheChatBotRequest(msg)
+				cacheItem := memcache.MemcacheChatBotRequest(msg, code)
 				if command.PerProdCode() {
 					settings, err := mysql.GetChatBotSettings(m.Author.ID)
 					if err != nil {
 						log.ErrS(err)
 					}
 					code = settings.ProductCode
-					cacheItem = memcache.MemcacheChatBotRequest(string(code) + "-" + msg)
+					cacheItem = memcache.MemcacheChatBotRequest(msg, code)
 				}
 
 				// Check in cache first

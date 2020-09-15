@@ -44,7 +44,7 @@ var (
 	MemcacheChatBotGuilds      = Item{Key: "chat-bot-grouped-guilds", Expiration: 60 * 10}
 	MemcacheChatBotCommands    = Item{Key: "chat-bot-grouped-commands", Expiration: 60 * 10}
 	MemcacheChatBotSettings    = func(discordID string) Item { return Item{Key: "chat-bot-settings-" + discordID, Expiration: 0} }
-	MemcacheChatBotRequest     = func(request string) Item { return Item{Key: "chat-bot-request-" + helpers.MD5([]byte(request)), Expiration: 60 * 10} }
+	MemcacheChatBotRequest     = func(request string, code steamapi.ProductCC) Item { return Item{Key: "chat-bot-request-" + string(code) + "-" + helpers.MD5([]byte(request)), Expiration: 60 * 10} }
 
 	// GitHub
 	MemcacheCommitsTotal = Item{Key: "commits-total", Expiration: 60 * 60}
