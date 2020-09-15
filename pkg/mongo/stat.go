@@ -19,13 +19,16 @@ import (
 )
 
 type Stat struct {
-	Type        StatsType                      `bson:"type"`
-	ID          int                            `bson:"id"`
-	Name        string                         `bson:"name"`
-	Apps        int                            `bson:"apps"`
-	MeanPrice   map[steamapi.ProductCC]float32 `bson:"mean_price"`
-	MeanScore   float32                        `bson:"mean_score"`
-	MeanPlayers float64                        `bson:"mean_players"`
+	Type          StatsType                      `bson:"type"`
+	ID            int                            `bson:"id"`
+	Name          string                         `bson:"name"`
+	Apps          int                            `bson:"apps"`
+	MeanPrice     map[steamapi.ProductCC]float32 `bson:"mean_price"`
+	MeanScore     float32                        `bson:"mean_score"`
+	MeanPlayers   float64                        `bson:"mean_players"`
+	MedianPrice   map[steamapi.ProductCC]int     `bson:"median_price"`
+	MedianScore   float32                        `bson:"median_score"`
+	MedianPlayers int                            `bson:"median_players"`
 }
 
 func (stat Stat) BSON() bson.D {
@@ -38,6 +41,9 @@ func (stat Stat) BSON() bson.D {
 		{"mean_price", stat.MeanPrice},
 		{"mean_score", stat.MeanScore},
 		{"mean_players", stat.MeanPlayers},
+		{"median_price", stat.MedianPrice},
+		{"median_score", stat.MedianScore},
+		{"median_players", stat.MedianPlayers},
 	}
 }
 

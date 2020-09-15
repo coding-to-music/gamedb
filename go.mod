@@ -61,6 +61,7 @@ require (
 	github.com/mborgerson/GoTruncateHtml v0.0.0-20150507032438-125d9154cd1e
 	github.com/memcachier/mc/v3 v3.0.1
 	github.com/microcosm-cc/bluemonday v1.0.4
+	github.com/montanaflynn/stats v0.6.3 // indirect
 	github.com/mxpv/patreon-go v0.0.0-20190917022727-646111f1d983
 	github.com/nicklaw5/helix v0.7.0
 	github.com/nlopes/slack v0.6.0
