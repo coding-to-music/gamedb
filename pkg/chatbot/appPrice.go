@@ -8,8 +8,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/i18n"
-	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/mysql"
 )
 
 type CommandAppPrice struct {
@@ -25,6 +23,10 @@ func (CommandAppPrice) Regex() string {
 
 func (CommandAppPrice) DisableCache() bool {
 	return false
+}
+
+func (CommandAppPrice) PerProdCode() bool {
+	return true
 }
 
 func (CommandAppPrice) Example() string {
@@ -46,7 +48,7 @@ func (CommandAppPrice) Type() CommandType {
 	return TypeGame
 }
 
-func (c CommandAppPrice) Output(msg *discordgo.MessageCreate) (message discordgo.MessageSend, err error) {
+func (c CommandAppPrice) Output(msg *discordgo.MessageCreate, code steamapi.ProductCC) (message discordgo.MessageSend, err error) {
 
 	matches := RegexCache[c.Regex()].FindStringSubmatch(msg.Message.Content)
 
@@ -60,19 +62,7 @@ func (c CommandAppPrice) Output(msg *discordgo.MessageCreate) (message discordgo
 
 	app := apps[0]
 
-	var code = steamapi.ProductCCUS
-
-	if matches[1] == "" {
-
-		settings, err := mysql.GetChatBotSettings(msg.Author.ID)
-		if err != nil {
-			log.ErrS(err)
-			return message, err
-		}
-
-		code = settings.ProductCode
-
-	} else {
+	if matches[1] != "" {
 		matches[1] = strings.ToLower(matches[1])
 		if matches[1] == "gb" {
 			matches[1] = "uk"

@@ -30,12 +30,12 @@ func GetChatBotSettings(discordID string) (settings ChatBotSetting, err error) {
 			return settings, db.Error
 		}
 
-		if settings.ProductCode == "" {
-			settings.ProductCode = steamapi.ProductCCUS
-		}
-
 		return settings, nil
 	})
+
+	if settings.ProductCode == "" {
+		settings.ProductCode = steamapi.ProductCCUS
+	}
 
 	return settings, err
 }

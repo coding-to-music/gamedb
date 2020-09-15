@@ -4,6 +4,7 @@ import (
 	"html/template"
 	"strings"
 
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/config"
@@ -30,6 +31,10 @@ func (CommandPlayer) DisableCache() bool {
 	return false
 }
 
+func (CommandPlayer) PerProdCode() bool {
+	return false
+}
+
 func (CommandPlayer) Example() string {
 	return ".player {player}"
 }
@@ -42,7 +47,7 @@ func (CommandPlayer) Type() CommandType {
 	return TypePlayer
 }
 
-func (c CommandPlayer) Output(msg *discordgo.MessageCreate) (message discordgo.MessageSend, err error) {
+func (c CommandPlayer) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC) (message discordgo.MessageSend, err error) {
 
 	matches := RegexCache[c.Regex()].FindStringSubmatch(msg.Message.Content)
 

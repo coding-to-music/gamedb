@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"strings"
 
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/config"
@@ -26,6 +27,10 @@ func (CommandAppsNew) DisableCache() bool {
 	return false
 }
 
+func (CommandAppsNew) PerProdCode() bool {
+	return false
+}
+
 func (CommandAppsNew) Example() string {
 	return ".new"
 }
@@ -38,7 +43,7 @@ func (CommandAppsNew) Type() CommandType {
 	return TypeGame
 }
 
-func (CommandAppsNew) Output(msg *discordgo.MessageCreate) (message discordgo.MessageSend, err error) {
+func (CommandAppsNew) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC) (message discordgo.MessageSend, err error) {
 
 	message.Content = "<@" + msg.Author.ID + ">"
 	message.Embed = &discordgo.MessageEmbed{

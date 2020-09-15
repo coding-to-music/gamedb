@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
 	"github.com/didip/tollbooth/v6"
 	"github.com/didip/tollbooth/v6/errors"
@@ -97,8 +98,6 @@ func main() {
 
 			if chatbot.RegexCache[command.Regex()].MatchString(msg) {
 
-				cacheItem := memcache.MemcacheChatBotRequest(msg)
-
 				// Disable PMs
 				private, err := isPrivateChannel(s, m)
 				if err != nil {
@@ -125,6 +124,18 @@ func main() {
 				// 	discordError(err)
 				// }()
 
+				// Get user settings
+				code := steamapi.ProductCCUS
+				cacheItem := memcache.MemcacheChatBotRequest(msg)
+				if command.PerProdCode() {
+					settings, err := mysql.GetChatBotSettings(m.Author.ID)
+					if err != nil {
+						log.ErrS(err)
+					}
+					code = settings.ProductCode
+					cacheItem = memcache.MemcacheChatBotRequest(string(code) + "-" + msg)
+				}
+
 				// Check in cache first
 				if !command.DisableCache() && !config.IsLocal() {
 					var message discordgo.MessageSend
@@ -143,7 +154,7 @@ func main() {
 					return
 				}
 
-				message, err := command.Output(m)
+				message, err := command.Output(m, code)
 				if err != nil {
 					log.WarnS(err, msg)
 					return

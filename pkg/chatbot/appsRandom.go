@@ -3,6 +3,7 @@ package chatbot
 import (
 	"html/template"
 
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"go.mongodb.org/mongo-driver/bson"
@@ -23,6 +24,10 @@ func (CommandAppRandom) DisableCache() bool {
 	return true
 }
 
+func (CommandAppRandom) PerProdCode() bool {
+	return true
+}
+
 func (CommandAppRandom) Example() string {
 	return ".random"
 }
@@ -35,7 +40,7 @@ func (CommandAppRandom) Type() CommandType {
 	return TypeGame
 }
 
-func (c CommandAppRandom) Output(msg *discordgo.MessageCreate) (message discordgo.MessageSend, err error) {
+func (c CommandAppRandom) Output(msg *discordgo.MessageCreate, code steamapi.ProductCC) (message discordgo.MessageSend, err error) {
 
 	var filter = bson.D{
 		{"$or", bson.A{
@@ -57,7 +62,7 @@ func (c CommandAppRandom) Output(msg *discordgo.MessageCreate) (message discordg
 		var app = apps[0]
 
 		message.Content = "<@" + msg.Author.ID + ">"
-		message.Embed = getAppEmbed(app, msg.Author.ID)
+		message.Embed = getAppEmbed(app, msg.Author.ID, code)
 	}
 
 	return message, nil

@@ -4,6 +4,7 @@ import (
 	"html/template"
 	"strconv"
 
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -29,6 +30,10 @@ func (CommandPlayerLevel) DisableCache() bool {
 	return false
 }
 
+func (CommandPlayerLevel) PerProdCode() bool {
+	return false
+}
+
 func (CommandPlayerLevel) Example() string {
 	return ".level {player}"
 }
@@ -41,7 +46,7 @@ func (CommandPlayerLevel) Type() CommandType {
 	return TypePlayer
 }
 
-func (c CommandPlayerLevel) Output(msg *discordgo.MessageCreate) (message discordgo.MessageSend, err error) {
+func (c CommandPlayerLevel) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC) (message discordgo.MessageSend, err error) {
 
 	matches := RegexCache[c.Regex()].FindStringSubmatch(msg.Message.Content)
 

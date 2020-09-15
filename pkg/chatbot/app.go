@@ -3,6 +3,7 @@ package chatbot
 import (
 	"html/template"
 
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -23,6 +24,10 @@ func (CommandApp) DisableCache() bool {
 	return false
 }
 
+func (CommandApp) PerProdCode() bool {
+	return false
+}
+
 func (CommandApp) Example() string {
 	return ".game {game}"
 }
@@ -35,7 +40,7 @@ func (CommandApp) Type() CommandType {
 	return TypeGame
 }
 
-func (c CommandApp) Output(msg *discordgo.MessageCreate) (message discordgo.MessageSend, err error) {
+func (c CommandApp) Output(msg *discordgo.MessageCreate, code steamapi.ProductCC) (message discordgo.MessageSend, err error) {
 
 	matches := RegexCache[c.Regex()].FindStringSubmatch(msg.Message.Content)
 
@@ -53,7 +58,7 @@ func (c CommandApp) Output(msg *discordgo.MessageCreate) (message discordgo.Mess
 	}
 
 	message.Content = "<@" + msg.Author.ID + ">"
-	message.Embed = getAppEmbed(app, msg.Author.ID)
+	message.Embed = getAppEmbed(app, msg.Author.ID, code)
 
 	return message, nil
 }

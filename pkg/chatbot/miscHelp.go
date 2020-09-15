@@ -3,6 +3,7 @@ package chatbot
 import (
 	"html/template"
 
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/config"
 )
@@ -22,6 +23,10 @@ func (CommandHelp) DisableCache() bool {
 	return true
 }
 
+func (CommandHelp) PerProdCode() bool {
+	return false
+}
+
 func (CommandHelp) Example() string {
 	return ".help"
 }
@@ -34,7 +39,7 @@ func (CommandHelp) Type() CommandType {
 	return TypeOther
 }
 
-func (CommandHelp) Output(msg *discordgo.MessageCreate) (message discordgo.MessageSend, err error) {
+func (CommandHelp) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC) (message discordgo.MessageSend, err error) {
 
 	message.Content = "See " + config.C.GameDBDomain + "/discord-bot"
 

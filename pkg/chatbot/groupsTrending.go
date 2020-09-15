@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"strings"
 
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -25,6 +26,10 @@ func (CommandGroupsTrending) DisableCache() bool {
 	return false
 }
 
+func (CommandGroupsTrending) PerProdCode() bool {
+	return false
+}
+
 func (CommandGroupsTrending) Example() string {
 	return ".trending groups"
 }
@@ -37,7 +42,7 @@ func (CommandGroupsTrending) Type() CommandType {
 	return TypeGroup
 }
 
-func (CommandGroupsTrending) Output(msg *discordgo.MessageCreate) (message discordgo.MessageSend, err error) {
+func (CommandGroupsTrending) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC) (message discordgo.MessageSend, err error) {
 
 	message.Content = "<@" + msg.Author.ID + ">"
 	message.Embed = &discordgo.MessageEmbed{

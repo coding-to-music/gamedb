@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -31,6 +32,10 @@ func (CommandPlayerWishlist) DisableCache() bool {
 	return false
 }
 
+func (CommandPlayerWishlist) PerProdCode() bool {
+	return false
+}
+
 func (CommandPlayerWishlist) Example() string {
 	return ".wishlist {player}"
 }
@@ -43,7 +48,7 @@ func (CommandPlayerWishlist) Type() CommandType {
 	return TypePlayer
 }
 
-func (c CommandPlayerWishlist) Output(msg *discordgo.MessageCreate) (message discordgo.MessageSend, err error) {
+func (c CommandPlayerWishlist) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC) (message discordgo.MessageSend, err error) {
 
 	matches := RegexCache[c.Regex()].FindStringSubmatch(msg.Message.Content)
 

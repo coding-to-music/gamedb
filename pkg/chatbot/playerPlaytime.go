@@ -3,6 +3,7 @@ package chatbot
 import (
 	"html/template"
 
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -28,6 +29,10 @@ func (CommandPlayerPlaytime) DisableCache() bool {
 	return false
 }
 
+func (CommandPlayerPlaytime) PerProdCode() bool {
+	return false
+}
+
 func (CommandPlayerPlaytime) Example() string {
 	return ".playtime {player}"
 }
@@ -40,7 +45,7 @@ func (CommandPlayerPlaytime) Type() CommandType {
 	return TypePlayer
 }
 
-func (c CommandPlayerPlaytime) Output(msg *discordgo.MessageCreate) (message discordgo.MessageSend, err error) {
+func (c CommandPlayerPlaytime) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC) (message discordgo.MessageSend, err error) {
 
 	matches := RegexCache[c.Regex()].FindStringSubmatch(msg.Message.Content)
 

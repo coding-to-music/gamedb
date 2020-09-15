@@ -3,6 +3,7 @@ package chatbot
 import (
 	"html/template"
 
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/chatbot/charts"
@@ -25,6 +26,10 @@ func (CommandGroup) DisableCache() bool {
 	return false
 }
 
+func (CommandGroup) PerProdCode() bool {
+	return false
+}
+
 func (CommandGroup) Example() string {
 	return ".group {game}"
 }
@@ -37,7 +42,7 @@ func (CommandGroup) Type() CommandType {
 	return TypeGroup
 }
 
-func (c CommandGroup) Output(msg *discordgo.MessageCreate) (message discordgo.MessageSend, err error) {
+func (c CommandGroup) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC) (message discordgo.MessageSend, err error) {
 
 	matches := RegexCache[c.Regex()].FindStringSubmatch(msg.Message.Content)
 

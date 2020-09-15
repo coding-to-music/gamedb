@@ -26,6 +26,10 @@ func (CommandSettings) DisableCache() bool {
 	return false
 }
 
+func (CommandSettings) PerProdCode() bool {
+	return false
+}
+
 func (CommandSettings) Example() string {
 	return ".set region uk"
 }
@@ -45,7 +49,7 @@ func (CommandSettings) Type() CommandType {
 	return TypeOther
 }
 
-func (c CommandSettings) Output(msg *discordgo.MessageCreate) (message discordgo.MessageSend, err error) {
+func (c CommandSettings) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC) (message discordgo.MessageSend, err error) {
 
 	matches := RegexCache[c.Regex()].FindStringSubmatch(msg.Message.Content)
 

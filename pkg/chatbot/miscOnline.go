@@ -3,6 +3,7 @@ package chatbot
 import (
 	"html/template"
 
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -23,6 +24,10 @@ func (CommandSteamOnline) DisableCache() bool {
 	return false
 }
 
+func (CommandSteamOnline) PerProdCode() bool {
+	return false
+}
+
 func (CommandSteamOnline) Example() string {
 	return ".players"
 }
@@ -35,7 +40,7 @@ func (CommandSteamOnline) Type() CommandType {
 	return TypeOther
 }
 
-func (c CommandSteamOnline) Output(msg *discordgo.MessageCreate) (message discordgo.MessageSend, err error) {
+func (c CommandSteamOnline) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC) (message discordgo.MessageSend, err error) {
 
 	var app = mongo.App{}
 
