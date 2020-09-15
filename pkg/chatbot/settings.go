@@ -27,7 +27,7 @@ func (CommandSettings) DisableCache() bool {
 }
 
 func (CommandSettings) Example() string {
-	return ".set region {region}"
+	return ".set region uk"
 }
 
 func (CommandSettings) Description() template.HTML {
