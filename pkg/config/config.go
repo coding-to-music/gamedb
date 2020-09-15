@@ -65,7 +65,7 @@ type Config struct {
 	InstagramUsername string `envconfig:"INSTAGRAM_USERNAME"`
 	InstagramPassword string `envconfig:"INSTAGRAM_PASSWORD"`
 
-	// Mailchimp
+	// Mailjet
 	MailjetPublic  string `envconfig:"MAILJET_PUBLIC"`  // API
 	MailjetPrivate string `envconfig:"MAILJET_PRIVATE"` // API
 
