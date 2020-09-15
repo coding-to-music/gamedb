@@ -407,7 +407,7 @@ func adminStatsHandler(w http.ResponseWriter, r *http.Request) {
 	t.Hash = config.GetShortCommitHash()
 
 	// Oldest player
-	players, err := mongo.GetPlayers(0, 1, bson.D{{"updated_at", 1}}, tasks.LastUpdatedQuery, bson.M{"updated_at": 1})
+	players, err := mongo.GetPlayers(0, 1, bson.D{{"updated_at", 1}}, helpers.LastUpdatedQuery, bson.M{"updated_at": 1})
 	if err != nil {
 		log.ErrS(err)
 	}

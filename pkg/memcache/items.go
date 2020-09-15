@@ -88,6 +88,7 @@ var (
 	MemcacheAppWishlistChart       = func(playerID string) Item { return Item{Key: "app-wishlist-chart-" + playerID, Expiration: 10 * 60} }
 
 	MemcachePlayerLevels        = Item{Key: "player-levels", Expiration: 60 * 60 * 24}
+	MemcachePlayerUpdateDates   = Item{Key: "player-update-days", Expiration: 60 * 60 * 24}
 	MemcachePlayerLevelsRounded = Item{Key: "player-levels-rounded", Expiration: 60 * 60 * 24}
 	MemcachePlayerLocationAggs  = Item{Key: "player-location-aggs", Expiration: 60 * 60 * 2}
 

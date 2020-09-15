@@ -31,6 +31,7 @@ func StatsRouter() http.Handler {
 	r.Get("/app-types.json", statsAppTypesHandler)
 	r.Get("/player-levels.json", statsPlayerLevelsHandler)
 	r.Get("/player-countries.json", statsPlayerCountriesHandler)
+	r.Get("/player-update-dates.json", statsPlayerUpdateDatesHandler)
 
 	return r
 }
@@ -264,6 +265,23 @@ func statsPlayerLevelsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	returnJSON(w, r, levels)
+}
+
+func statsPlayerUpdateDatesHandler(w http.ResponseWriter, r *http.Request) {
+
+	levels, err := mongo.GetPlayerUpdateDays()
+	if err != nil {
+		log.ErrS(err)
+		return
+	}
+
+	var ret [][]interface{}
+	for _, v := range levels {
+		ts, _ := time.Parse("2006-01-02", v.Date)
+		ret = append(ret, []interface{}{ts.Unix() * 1000, v.Count})
+	}
+
+	returnJSON(w, r, ret)
 }
 
 func statsPlayerCountriesHandler(w http.ResponseWriter, r *http.Request) {

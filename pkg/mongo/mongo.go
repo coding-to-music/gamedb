@@ -424,3 +424,8 @@ type Count struct {
 	ID    int `json:"id" bson:"_id"`
 	Count int `json:"count"`
 }
+
+type DateCount struct {
+	Date  string `json:"date" bson:"_id"`
+	Count int    `json:"count"`
+}

@@ -747,6 +747,56 @@ func GetPlayerLevels() (counts []Count, err error) {
 	return counts, err
 }
 
+func GetPlayerUpdateDays() (counts []DateCount, err error) {
+
+	var item = memcache.MemcachePlayerUpdateDates
+
+	err = memcache.GetSetInterface(item.Key, item.Expiration, &counts, func() (interface{}, error) {
+
+		client, ctx, err := getMongo()
+		if err != nil {
+			return counts, err
+		}
+
+		pipeline := mongo.Pipeline{
+			{{Key: "$match", Value: helpers.LastUpdatedQuery}},
+			{{Key: "$project", Value: bson.M{"yearMonthDayUTC": bson.M{"$dateToString": bson.M{"format": "%Y-%m-%d", "date": "$updated_at"}}}}},
+			{{Key: "$group", Value: bson.M{"_id": "$yearMonthDayUTC", "count": bson.M{"$sum": 1}}}},
+		}
+
+		cur, err := client.Database(config.C.MongoDatabase, options.Database()).Collection(CollectionPlayers.String()).Aggregate(ctx, pipeline, options.Aggregate())
+		if err != nil {
+			return counts, err
+		}
+
+		defer func() {
+			err = cur.Close(ctx)
+			if err != nil {
+				log.ErrS(err)
+			}
+		}()
+
+		var counts []DateCount
+		for cur.Next(ctx) {
+
+			var count DateCount
+			err := cur.Decode(&count)
+			if err != nil {
+				log.ErrS(err, count.Date)
+			}
+			counts = append(counts, count)
+		}
+
+		sort.Slice(counts, func(i, j int) bool {
+			return counts[i].Date < counts[j].Date
+		})
+
+		return counts, cur.Err()
+	})
+
+	return counts, err
+}
+
 func GetPlayerLevelsRounded() (counts []Count, err error) {
 
 	var item = memcache.MemcachePlayerLevelsRounded

@@ -14,6 +14,7 @@ if ($('#stats-page').length > 0) {
             // Game DB
             "player-countries": playerCountries,
             "player-levels": statsPlayerLevels,
+            "player-update-days": statsPlayerUpdateDays,
         });
 
         //
@@ -251,6 +252,50 @@ if ($('#stats-page').length > 0) {
                         series: [{
                             data: dataArray,
                         }]
+                    }));
+                },
+            });
+        }
+
+        function statsPlayerUpdateDays() {
+
+            $.ajax({
+                type: "GET",
+                url: '/stats/player-update-dates.json',
+                dataType: 'json',
+                success: function (data, textStatus, jqXHR) {
+
+                    if (data === null) {
+                        data = [];
+                    }
+
+                    Highcharts.chart('player-update-days-chart', $.extend(true, {}, defaultChartOptions, {
+                        chart: {
+                            type: 'column',
+                        },
+                        legend: {
+                            enabled: false,
+                        },
+                        yAxis: {
+                            allowDecimals: false,
+                            title: {
+                                text: ''
+                            },
+                        },
+                        tooltip: {
+                            formatter: function () {
+                                return this.y.toLocaleString() + ' players updated on ' + moment(this.x).format("dddd DD MMM YYYY");
+                            },
+                        },
+                        plotOptions: {
+                            series: {
+                                pointPadding: 0,
+                                groupPadding: 0,
+                            }
+                        },
+                        series: [{
+                            data: data,
+                        }],
                     }));
                 },
             });
