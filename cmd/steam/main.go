@@ -245,7 +245,9 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 			err = queue.ProducePackage(queue.PackageMessage{ID: int(pack.GetPackageid()), ChangeNumber: int(pack.GetChangeNumber()), VDF: m})
 			if err != nil {
 				err = helpers.IgnoreErrors(err, mongo.ErrInvalidPackageID)
-				log.ErrS(err, id)
+				if err != nil {
+					log.ErrS(err, id)
+				}
 			}
 		}
 	}
