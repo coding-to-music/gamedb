@@ -48,16 +48,20 @@ func (c CommandAppPlayers) Output(msg *discordgo.MessageCreate) (message discord
 		return message, nil
 	}
 
-	app := mongo.App{}
-	app.ID = apps[0].ID
-	app.Name = apps[0].Name
+	app, err := mongo.GetApp(apps[0].ID)
+	if err != nil {
+		return message, err
+	}
 
 	i, err := app.GetPlayersInGame()
 	if err != nil {
 		return message, err
 	}
 
-	message.Content = "<@" + msg.Author.ID + ">, " + app.GetName() + " has **" + humanize.Comma(i) + "** players"
+	message.Content = "<@" + msg.Author.ID + ">, " + app.GetName() + " has " +
+		"**" + humanize.Comma(i) + "** players currently, " +
+		"**" + humanize.Comma(int64(app.PlayerPeakWeek)) + "** max weekly, " +
+		"**" + humanize.Comma(int64(app.PlayerPeakAllTime)) + "** max all time"
 
 	return message, nil
 }
