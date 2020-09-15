@@ -55,6 +55,11 @@ func (c CommandSettings) Output(msg *discordgo.MessageCreate) (message discordgo
 
 	switch setting {
 	case "region":
+
+		if value == "gb" {
+			value = "uk"
+		}
+
 		if steamapi.IsProductCC(value) {
 
 			err = mysql.SetChatBotSettings(msg.Author.ID, func(s *mysql.ChatBotSetting) { s.ProductCode = steamapi.ProductCC(value) })

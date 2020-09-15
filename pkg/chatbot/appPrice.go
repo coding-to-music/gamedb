@@ -74,6 +74,9 @@ func (c CommandAppPrice) Output(msg *discordgo.MessageCreate) (message discordgo
 
 	} else {
 		matches[1] = strings.ToLower(matches[1])
+		if matches[1] == "gb" {
+			matches[1] = "uk"
+		}
 		if steamapi.IsProductCC(matches[1]) {
 			code = steamapi.ProductCC(matches[1])
 		}
