@@ -729,12 +729,12 @@ func GetPlayerLevels() (counts []Count, err error) {
 		var counts []Count
 		for cur.Next(ctx) {
 
-			var level Count
-			err := cur.Decode(&level)
+			var count Count
+			err := cur.Decode(&count)
 			if err != nil {
-				log.ErrS(err, level.ID)
+				log.ErrS(err, count.ID)
 			}
-			counts = append(counts, level)
+			counts = append(counts, count)
 		}
 
 		sort.Slice(counts, func(i, j int) bool {
