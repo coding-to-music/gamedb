@@ -114,7 +114,7 @@ func searchApps(limit int, offset int, search string, totals bool, highlights bo
 	}
 
 	if len(cols) > 0 {
-		searchService.DocvalueFields(cols...)
+		// searchService.DocvalueFields(cols...) // Breaks things
 	}
 
 	searchResult, err := searchService.Do(ctx)
