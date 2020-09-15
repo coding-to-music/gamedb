@@ -25,7 +25,7 @@ func (CommandApp) DisableCache() bool {
 }
 
 func (CommandApp) PerProdCode() bool {
-	return false
+	return true
 }
 
 func (CommandApp) Example() string {
