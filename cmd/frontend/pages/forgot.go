@@ -203,14 +203,14 @@ func forgotResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 		)
 		if err != nil {
 			log.ErrS(err)
-			return "An error occurred", false
+			return "An error occurred (1003)", false
 		}
 
 		// Set password
 		err = mysql.UpdateUserCol(userID, "password", string(passwordBytes))
 		if err != nil {
 			log.ErrS(err)
-			return "An error occurred (1003)", false
+			return "An error occurred (1004)", false
 		}
 
 		//
