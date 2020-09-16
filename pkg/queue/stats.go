@@ -96,7 +96,14 @@ func statsHandler(message *rabbit.Message) {
 
 	// Calculate medians
 	medianScore, _ := scores.Median()
+	if math.IsNaN(medianScore) {
+		medianScore = 0
+	}
+
 	medianPlayers, _ := players.Median()
+	if math.IsNaN(medianPlayers) {
+		medianPlayers = 0
+	}
 
 	medianPrice := map[steamapi.ProductCC]int{}
 	for k, v := range prices {
