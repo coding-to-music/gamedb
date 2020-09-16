@@ -28,20 +28,22 @@
                 </div>
 
                 <h5>{{ .Stat.Name }} Games</h5>
-                <table class="table table-hover table-striped table-counts mb-0" data-path="/{{ .Stat.Type.MongoCol }}/{{ .Stat.ID }}/apps.json" id="games" data-row-type="games">
-                    <thead class="thead-light">
-                    <tr>
-                        <th>Game</th>
-                        <th>Players</th>
-                        <th>Price</th>
-                        <th>Score</th>
-                        <th class="thin"></th>
-                    </tr>
-                    </thead>
-                    <tbody>
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped table-counts mb-0" data-path="/{{ .Stat.Type.MongoCol }}/{{ .Stat.ID }}/apps.json" id="games" data-row-type="games">
+                        <thead class="thead-light">
+                        <tr>
+                            <th>Game</th>
+                            <th>Players</th>
+                            <th>Price</th>
+                            <th>Score</th>
+                            <th class="thin"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
 
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
 
             </div>
         </div>
