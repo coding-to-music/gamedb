@@ -67,12 +67,12 @@ func requestWithTimeout(method string, link string, timeout time.Duration, heade
 		timeout = time.Second * 10
 	}
 
-	var x io.Reader
+	var reader io.Reader
 	if len(data) > 0 {
-		x = bytes.NewBufferString(data.Encode())
+		reader = bytes.NewBufferString(data.Encode())
 	}
 
-	req, err := http.NewRequest(method, u.String(), x)
+	req, err := http.NewRequest(method, u.String(), reader)
 	if err != nil {
 		return nil, 0, err
 	}
