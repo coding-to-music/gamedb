@@ -125,13 +125,13 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 		db, err := mysql.GetMySQLClient()
 		if err != nil {
 			log.ErrS(err)
-			return "An error occurred", false
+			return "An error occurred (1001)", false
 		}
 
 		passwordBytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 		if err != nil {
 			log.ErrS(err)
-			return "An error occurred", false
+			return "An error occurred (1002)", false
 		}
 
 		user := mysql.User{
@@ -148,14 +148,14 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 		db = db.Create(&user)
 		if db.Error != nil {
 			log.ErrS(db.Error)
-			return "An error occurred", false
+			return "An error occurred (1003)", false
 		}
 
 		// Create verification code
 		code, err := mysql.CreateUserVerification(user.ID)
 		if err != nil {
 			log.ErrS(err)
-			return "An error occurred", false
+			return "An error occurred (1004)", false
 		}
 
 		// Send email
@@ -174,7 +174,7 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 		)
 		if err != nil {
 			log.ErrS(err)
-			return "An error occurred", false
+			return "An error occurred (1005)", false
 		}
 
 		// Create event
