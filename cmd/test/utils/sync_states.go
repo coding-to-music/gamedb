@@ -8,6 +8,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 )
 
@@ -26,12 +27,13 @@ func (syncStates) name() string {
 
 func (syncStates) run() {
 
-	f, err := os.OpenFile("states.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
+	file, err := os.OpenFile("states.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 	if err != nil {
 		log.ErrS(err)
 		return
 	}
-	defer f.Close()
+
+	defer helpers.Close(file)
 
 	for _, v := range countries {
 
@@ -75,18 +77,18 @@ func (syncStates) run() {
 			continue
 		}
 
-		f.WriteString(`"` + v + `": {` + "\n")
+		file.WriteString(`"` + v + `": {` + "\n")
 		for _, v := range steamResponse.State {
 			if v.Attribs.Key != "" {
-				f.WriteString(`    "` + v.Attribs.Key + `": "` + v.Val + `",` + "\n")
+				file.WriteString(`    "` + v.Attribs.Key + `": "` + v.Val + `",` + "\n")
 			}
 		}
 		for _, v := range steamResponse.City {
 			if v.Attribs.Key != "" {
-				f.WriteString(`    "` + v.Attribs.Key + `": "` + v.Val + `",` + "\n")
+				file.WriteString(`    "` + v.Attribs.Key + `": "` + v.Val + `",` + "\n")
 			}
 		}
-		f.WriteString(`},` + "\n")
+		file.WriteString(`},` + "\n")
 	}
 }
 
