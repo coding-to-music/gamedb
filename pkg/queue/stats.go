@@ -1,6 +1,7 @@
 package queue
 
 import (
+	"math"
 	"time"
 
 	"github.com/Jleagle/rabbit-go"
@@ -78,7 +79,14 @@ func statsHandler(message *rabbit.Message) {
 
 	// Calculate means
 	meanScore, _ := scores.Mean()
+	if math.IsNaN(meanScore) {
+		meanScore = 0
+	}
+
 	meanPlayers, _ := players.Mean()
+	if math.IsNaN(meanPlayers) {
+		meanPlayers = 0
+	}
 
 	meanPrice := map[steamapi.ProductCC]float32{}
 	for k, v := range prices {
