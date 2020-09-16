@@ -113,7 +113,7 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 		// Check user doesnt exist
 		_, err = mysql.GetUserByKey("email", email, 0)
 		if err == nil {
-			return "An account with this email already exists", true
+			return "An account with this email already exists", false
 		}
 
 		err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
