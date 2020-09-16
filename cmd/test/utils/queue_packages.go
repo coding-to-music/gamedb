@@ -1,4 +1,4 @@
-package main
+package utils
 
 import (
 	"bufio"
@@ -15,7 +15,13 @@ import (
 	"go.uber.org/zap"
 )
 
-func main() {
+type queuePackages struct{}
+
+func (queuePackages) name() string {
+	return "queue-packages"
+}
+
+func (queuePackages) run() {
 
 	file, err := os.Open("ids.txt")
 	if err != nil {

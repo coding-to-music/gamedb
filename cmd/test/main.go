@@ -1,6 +1,9 @@
 package main
 
 import (
+	"os"
+
+	"github.com/gamedb/gamedb/cmd/test/utils"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -18,6 +21,10 @@ func main() {
 	if err != nil {
 		log.FatalS(err)
 		return
+	}
+
+	if len(os.Args) > 1 {
+		utils.RunUtil(os.Args[1])
 	}
 
 	queue.Init(queue.AllProducerDefinitions)

@@ -1,4 +1,4 @@
-package main
+package utils
 
 import (
 	"encoding/json"
@@ -18,7 +18,13 @@ var (
 	steamLoginSecure = ""
 )
 
-func main() {
+type syncStates struct{}
+
+func (syncStates) name() string {
+	return "sync-states"
+}
+
+func (syncStates) run() {
 
 	f, err := os.OpenFile("states.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 	if err != nil {

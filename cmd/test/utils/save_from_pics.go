@@ -1,4 +1,4 @@
-package main
+package utils
 
 import (
 	"github.com/gamedb/gamedb/pkg/log"
@@ -6,7 +6,13 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func main() {
+type saveFromPics struct{}
+
+func (saveFromPics) name() string {
+	return "save-from-pics"
+}
+
+func (saveFromPics) run() {
 
 	var offset int64 = 0
 	var limit int64 = 10_000
