@@ -8,11 +8,11 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/Jleagle/patreon-go/patreon"
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -28,62 +28,110 @@ func WebhooksRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Post("/patreon", patreonWebhookPostHandler)
 	r.Post("/github", gitHubWebhookPostHandler)
-	r.Post("/twitter", twitterWebhookPostHandler)
+	r.Post("/twitter", twitterZapierWebhookPostHandler)
 	r.Post("/sendgrid", sendgridWebhookPostHandler)
+	r.Post("/mailjet", mailjetWebhookPostHandler)
 	return r
+}
+
+func mailjetWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
+
+	// Get body
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.ErrS(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	defer helpers.Close(r.Body)
+
+	// Save webhook
+	err = mongo.NewWebhook(mongo.WebhookServicePatreon, "", string(body))
+	if err != nil {
+		log.ErrS(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Return
+	_, err = w.Write([]byte(http.StatusText(http.StatusOK)))
+	if err != nil {
+		log.ErrS(err)
+	}
 }
 
 func sendgridWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 
-	var valid bool
+	// Validate
+	if config.C.SendGridSecret == "" {
+		log.Fatal("Missing sendgrid environment variables")
+	}
 
-	if r.Header.Get("X-Twilio-Email-Event-Webhook-Signature") == config.C.SendGridSecret {
-		valid = true
+	if r.Header.Get("X-Twilio-Email-Event-Webhook-Signature") != config.C.SendGridSecret {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
 	}
 
 	// Get body
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.ErrS(err)
-		http.Error(w, err.Error(), 500)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	defer helpers.Close(r.Body)
 
-	zap.L().Named(log.LogNameSendGrid).Debug("SendGrid webhook", zap.ByteString("body", body), zap.Bool("valid", valid))
-}
-
-func twitterWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
-
-	secret := r.Header.Get("secret")
-
-	zap.L().Named(log.LogNameTwitter).Debug("Twitter webhook", zap.String("secret", secret))
-
-	if config.C.TwitterZapierSecret == "" {
-
-		log.Fatal("Missing environment variables")
+	// Save webhook
+	err = mongo.NewWebhook(mongo.WebhookServiceSendgrid, "", string(body))
+	if err != nil {
+		log.ErrS(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	if config.C.TwitterZapierSecret != secret {
+	// Return
+	_, err = w.Write([]byte(http.StatusText(http.StatusOK)))
+	if err != nil {
+		log.ErrS(err)
+	}
+}
+
+func twitterZapierWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
+
+	// Validate
+	if config.C.TwitterZapierSecret == "" {
+		log.Fatal("Missing zapier environment variables")
+	}
+
+	if config.C.TwitterZapierSecret != r.Header.Get("secret") {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
 
 	// Get body
-	b, err := ioutil.ReadAll(r.Body)
+	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.ErrS(err)
-		http.Error(w, err.Error(), 500)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	defer helpers.Close(r.Body)
 
-	webhooks := twitterWebhook{}
-	err = json.Unmarshal(b, &webhooks)
+	// Save webhook
+	err = mongo.NewWebhook(mongo.WebhookServiceTwitter, "", string(body))
+	if err != nil {
+		log.ErrS(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
-	//
+	// Handle
+	webhooks := twitterWebhook{}
+	err = json.Unmarshal(body, &webhooks)
+
 	if webhooks.Name == "gamedb_online" && webhooks.OriginalName == "" {
 
 		// Delete cache
@@ -93,19 +141,27 @@ func twitterWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Forward to Discord
+		if config.C.DiscordRelayBotToken == "" {
+			log.Fatal("Missing discord environment variable")
+		}
+
 		discordSession, err := discordgo.New("Bot " + config.C.DiscordRelayBotToken)
 		if err != nil {
 			log.Fatal(err.Error())
 			return
 		}
 
-		_, err = discordSession.ChannelMessageSend("407493777058693121", webhooks.URL)
+		_, err = discordSession.ChannelMessageSend(generalChannelID, webhooks.URL)
 		if err != nil {
 			log.Err(err.Error())
 		}
 	}
 
-	returnJSON(w, r, nil)
+	// Return
+	_, err = w.Write([]byte(http.StatusText(http.StatusOK)))
+	if err != nil {
+		log.ErrS(err)
+	}
 }
 
 type twitterWebhook struct {
@@ -123,33 +179,15 @@ const (
 
 func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 
+	// Validate
+	if config.C.PatreonSecret == "" {
+		log.Fatal("Missing patreon environment variable")
+	}
+
 	b, event, err := patreon.Validate(r, config.C.PatreonSecret)
 	if err != nil {
 		log.ErrS(err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	_, err = mongo.InsertOne(mongo.CollectionPatreonWebhooks, mongo.PatreonWebhook{
-		CreatedAt:   time.Now(),
-		RequestBody: string(b),
-		Event:       event,
-	})
-	if err != nil {
-		log.ErrS(err)
-	}
-
-	pwr, err := patreon.Unmarshal(b)
-	if err != nil {
-		log.Err(err.Error(), zap.ByteString("webhook", b))
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	err = savePatreonWebhookEvent(r, mongo.EventEnum(event), pwr)
-	if err != nil {
-		log.ErrS(err)
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
@@ -161,38 +199,56 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 		log.ErrS(err)
 	}
 
-	returnJSON(w, r, nil)
-}
+	// Save webhook
+	err = mongo.NewWebhook(mongo.WebhookServicePatreon, event, string(b))
+	if err != nil {
+		log.ErrS(err)
+	}
 
-func savePatreonWebhookEvent(r *http.Request, event mongo.EventEnum, pwr patreon.Webhook) (err error) {
+	// Handle
+	pwr, err := patreon.Unmarshal(b)
+	if err != nil {
+		log.Err(err.Error(), zap.ByteString("webhook", b))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	email := pwr.User.Attributes.Email
-	if email == "" {
-		return nil
+	if email != "" {
+
+		// Create user event
+		player := mongo.Player{}
+		err = mongo.FindOne(mongo.CollectionPlayers, bson.D{{Key: "email", Value: email}}, nil, bson.M{"_id": 1}, &player)
+		if err != nil && err != mongo.ErrNoDocuments {
+
+			log.Err(err.Error(), zap.ByteString("webhook", b))
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+
+		} else if err == nil {
+
+			user, err := mysql.GetUserByKey("steam_id", player.ID, 0)
+			if err != nil && err != mysql.ErrRecordNotFound {
+				log.Err(err.Error(), zap.ByteString("webhook", b))
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			} else if err == nil {
+
+				err = mongo.CreateUserEvent(r, user.ID, mongo.EventPatreonWebhook+"-"+mongo.EventEnum(event))
+				if err != nil {
+					log.Err(err.Error(), zap.ByteString("webhook", b))
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				}
+			}
+		}
 	}
 
-	player := mongo.Player{}
-	err = mongo.FindOne(mongo.CollectionPlayers, bson.D{{Key: "email", Value: email}}, nil, bson.M{"_id": 1}, &player)
-	if err == mongo.ErrNoDocuments {
-		return nil
-	}
+	// Return
+	_, err = w.Write([]byte(http.StatusText(http.StatusOK)))
 	if err != nil {
-		return err
+		log.ErrS(err)
 	}
-
-	user, err := mysql.GetUserByKey("steam_id", player.ID, 0)
-	if err == mysql.ErrRecordNotFound {
-		return nil
-	}
-	if err != nil {
-		return err
-	}
-
-	return mongo.CreateUserEvent(r, user.ID, mongo.EventPatreonWebhook+"-"+event)
 }
-
-const signaturePrefix = "sha1="
-const signatureLength = 45
 
 func gitHubWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 
@@ -200,40 +256,47 @@ func gitHubWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.ErrS(err)
-		http.Error(w, err.Error(), 500)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	defer helpers.Close(r.Body)
 
-	//
+	// Validate
 	var signature = r.Header.Get("X-Hub-Signature")
-	var event = r.Header.Get("X-GitHub-Event")
 
-	zap.L().Named(log.LognameGitHub).Debug("Incoming GitHub webhook", zap.ByteString("webhook", body), zap.String("event", event))
-
-	if len(signature) != signatureLength || !strings.HasPrefix(signature, signaturePrefix) {
+	if len(signature) != 45 || !strings.HasPrefix(signature, "sha1=") {
 		http.Error(w, "Invalid signature (1)", 400)
 		return
+	}
+
+	if config.C.GithubWebhookSecret == "" {
+		log.Fatal("Missing github environment variables")
 	}
 
 	mac := hmac.New(sha1.New, []byte(config.C.GithubWebhookSecret))
 	mac.Write(body)
 	expectedMAC := hex.EncodeToString(mac.Sum(nil))
 
-	if !hmac.Equal([]byte(signaturePrefix+expectedMAC), []byte(signature)) {
+	if !hmac.Equal([]byte("sha1="+expectedMAC), []byte(signature)) {
 		log.Err("Invalid signature (2)", zap.String("secret", config.C.GithubWebhookSecret))
 		http.Error(w, "Invalid signature (2)", 400)
 		return
 	}
 
-	switch event {
+	// Save webhook
+	err = mongo.NewWebhook(mongo.WebhookServicePatreon, "", string(body))
+	if err != nil {
+		log.ErrS(err)
+	}
+
+	//
+	switch r.Header.Get("X-GitHub-Event") {
 	case "push":
 
 		// Clear cache
 		items := []string{
 			memcache.MemcacheCommitsPage(1).Key,
-			memcache.MemcacheCommitsTotal.Key,
 		}
 
 		err := memcache.Delete(items...)
@@ -242,5 +305,9 @@ func gitHubWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	returnJSON(w, r, nil)
+	// Return
+	_, err = w.Write([]byte(http.StatusText(http.StatusOK)))
+	if err != nil {
+		log.ErrS(err)
+	}
 }

@@ -47,7 +47,6 @@ var (
 	MemcacheChatBotRequest     = func(request string, code steamapi.ProductCC) Item { return Item{Key: "chat-bot-request-" + string(code) + "-" + helpers.MD5([]byte(request)), Expiration: 60 * 10} }
 
 	// GitHub
-	MemcacheCommitsTotal = Item{Key: "commits-total", Expiration: 60 * 60}
 	MemcacheCommitsPage  = func(page int) Item { return Item{Key: "commits-page-" + strconv.Itoa(page), Expiration: 60 * 60} }
 
 	// Group

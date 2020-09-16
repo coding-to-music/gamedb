@@ -42,7 +42,7 @@ const (
 	CollectionGroups              collection = "groups"
 	CollectionPackageApps         collection = "package_apps"
 	CollectionPackages            collection = "packages"
-	CollectionPatreonWebhooks     collection = "patreon_webhooks"
+	CollectionWebhooks            collection = "patreon_webhooks"
 	CollectionPlayerAchievements  collection = "player_achievements"
 	CollectionPlayerAliases       collection = "player_aliases"
 	CollectionPlayerApps          collection = "player_apps"

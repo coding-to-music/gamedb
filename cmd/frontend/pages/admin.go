@@ -342,14 +342,14 @@ func adminPatreonAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// Get webhooks
-	var webhooks []mongo.PatreonWebhook
+	var webhooks []mongo.Webhook
 	wg.Add(1)
 	go func() {
 
 		defer wg.Done()
 
 		var err error
-		webhooks, err = mongo.GetPatreonWebhooks(query.GetOffset64(), 100, bson.D{{"created_at", -1}}, nil, nil)
+		webhooks, err = mongo.GetWebhooks(query.GetOffset64(), 100, bson.D{{"created_at", -1}}, nil, nil)
 		if err != nil {
 			log.ErrS(err)
 		}
@@ -363,7 +363,7 @@ func adminPatreonAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		count, err = mongo.CountDocuments(mongo.CollectionPatreonWebhooks, nil, 0)
+		count, err = mongo.CountDocuments(mongo.CollectionWebhooks, nil, 0)
 		if err != nil {
 			log.ErrS(err)
 		}
