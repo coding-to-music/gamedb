@@ -49,12 +49,7 @@ func sendgridWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	defer func() {
-		err := r.Body.Close()
-		if err != nil {
-			log.ErrS(err)
-		}
-	}()
+	defer helpers.Close(r.Body)
 
 	zap.L().Named(log.LogNameSendGrid).Debug("SendGrid webhook", zap.ByteString("body", body), zap.Bool("valid", valid))
 }
@@ -83,12 +78,7 @@ func twitterWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	defer func() {
-		err := r.Body.Close()
-		if err != nil {
-			log.ErrS(err)
-		}
-	}()
+	defer helpers.Close(r.Body)
 
 	webhooks := twitterWebhook{}
 	err = json.Unmarshal(b, &webhooks)
@@ -214,12 +204,7 @@ func gitHubWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	defer func() {
-		err := r.Body.Close()
-		if err != nil {
-			log.ErrS(err)
-		}
-	}()
+	defer helpers.Close(r.Body)
 
 	//
 	var signature = r.Header.Get("X-Hub-Signature")

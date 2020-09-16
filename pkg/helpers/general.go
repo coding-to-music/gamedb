@@ -1,5 +1,11 @@
 package helpers
 
+import (
+	"io"
+
+	"github.com/gamedb/gamedb/pkg/log"
+)
+
 type Tuple struct {
 	Key   string `json:"k"`
 	Value string `json:"v"`
@@ -20,4 +26,11 @@ func IgnoreErrors(err error, errs ...error) error {
 	}
 
 	return err
+}
+
+func Close(closer io.Closer) {
+	err := closer.Close()
+	if err != nil {
+		log.ErrS(err)
+	}
 }

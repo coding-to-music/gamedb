@@ -178,12 +178,7 @@ func homeTweetsHandler(w http.ResponseWriter, r *http.Request) {
 			return nil, err
 		}
 
-		defer func() {
-			err = resp.Body.Close()
-			if err != nil {
-				log.ErrS(err)
-			}
-		}()
+		defer helpers.Close(resp.Body)
 
 		for _, v := range tweets {
 			ret = append(ret, homeTweet{

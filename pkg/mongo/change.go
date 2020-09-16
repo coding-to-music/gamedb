@@ -124,12 +124,7 @@ func GetChanges(offset int64) (changes []Change, err error) {
 		return changes, err
 	}
 
-	defer func() {
-		err = cur.Close(ctx)
-		if err != nil {
-			log.ErrS(err)
-		}
-	}()
+	defer close(cur, ctx)
 
 	for cur.Next(ctx) {
 

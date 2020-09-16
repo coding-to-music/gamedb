@@ -160,12 +160,7 @@ func getChart(builder *influxql.Builder, id string, title string) (path string, 
 		return "", err
 	}
 
-	defer func() {
-		err := f.Close()
-		if err != nil {
-			log.ErrS(err)
-		}
-	}()
+	defer helpers.Close(f)
 
 	_, err = f.Write(b)
 	if err != nil {

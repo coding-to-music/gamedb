@@ -90,12 +90,7 @@ func requestWithTimeout(method string, link string, timeout time.Duration, heade
 		return nil, 0, err
 	}
 
-	defer func() {
-		err := resp.Body.Close()
-		if err != nil {
-			log.ErrS(err)
-		}
-	}()
+	defer Close(resp.Body)
 
 	body, err = ioutil.ReadAll(resp.Body)
 	if err != nil {

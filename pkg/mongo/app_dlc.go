@@ -56,12 +56,7 @@ func GetDLCForApp(offset int64, limit int64, filter bson.D, sort bson.D) (dlcs [
 		return dlcs, err
 	}
 
-	defer func() {
-		err = cur.Close(ctx)
-		if err != nil {
-			log.ErrS(err)
-		}
-	}()
+	defer close(cur, ctx)
 
 	for cur.Next(ctx) {
 

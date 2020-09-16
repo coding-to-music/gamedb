@@ -589,12 +589,7 @@ func getGroupType(id string) (groupType string, groupURL string, err error) {
 		return "", "", err
 	}
 
-	defer func() {
-		err = resp.Body.Close()
-		if err != nil {
-			log.ErrS(err)
-		}
-	}()
+	defer helpers.Close(resp.Body)
 
 	if resp.StatusCode != 302 {
 		return "", "", helpers.ErrInvalidGroupID

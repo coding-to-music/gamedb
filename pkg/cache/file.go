@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/djherbis/fscache"
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 )
 
@@ -25,12 +26,7 @@ func GetSetCache(name string, ttl time.Duration, retrieve func() (interface{}, e
 		return err
 	}
 
-	defer func() {
-		err = reader.Close()
-		if err != nil {
-			log.ErrS(err)
-		}
-	}()
+	defer helpers.Close(reader)
 
 	// Read from cache
 	if writer == nil {
@@ -41,12 +37,7 @@ func GetSetCache(name string, ttl time.Duration, retrieve func() (interface{}, e
 	log.Info("Saving " + name + " to cache")
 
 	// Write to cache
-	defer func() {
-		err = writer.Close()
-		if err != nil {
-			log.ErrS(err)
-		}
-	}()
+	defer helpers.Close(writer)
 
 	var buf bytes.Buffer
 	encoder := gob.NewEncoder(&buf)

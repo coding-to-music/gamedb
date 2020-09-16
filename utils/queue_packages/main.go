@@ -22,12 +22,8 @@ func main() {
 		log.ErrS(err)
 		return
 	}
-	defer func() {
-		err = file.Close()
-		if err != nil {
-			log.ErrS(err)
-		}
-	}()
+
+	defer helpers.Close(file)
 
 	var (
 		wg     sync.WaitGroup

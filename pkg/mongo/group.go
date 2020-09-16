@@ -205,12 +205,7 @@ func getGroups(offset int64, limit int64, sort bson.D, filter bson.D, projection
 		return groups, err
 	}
 
-	defer func() {
-		err = cur.Close(ctx)
-		if err != nil {
-			log.ErrS(err)
-		}
-	}()
+	defer close(cur, ctx)
 
 	for cur.Next(ctx) {
 

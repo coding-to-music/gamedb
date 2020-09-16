@@ -369,12 +369,7 @@ func GetPackages(offset int64, limit int64, sort bson.D, filter bson.D, projecti
 		return packages, err
 	}
 
-	defer func() {
-		err = cur.Close(ctx)
-		if err != nil {
-			log.ErrS(err)
-		}
-	}()
+	defer close(cur, ctx)
 
 	for cur.Next(ctx) {
 

@@ -111,6 +111,13 @@ func getMongo() (client *mongo.Client, ctx context.Context, err error) {
 	return mongoClient, mongoCtx, err
 }
 
+func close(cur *mongo.Cursor, ctx context.Context) {
+	err := cur.Close(ctx)
+	if err != nil {
+		log.ErrS(err)
+	}
+}
+
 func EnsureIndexes() {
 	log.Info("Starting migrations")
 	ensureAppIndexes()
