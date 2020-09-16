@@ -14,7 +14,7 @@ type mailjetProvider struct {
 func (mailjetProvider) Send(toName, toEmail, replyToName, replyToEmail, subject, html string) (err error) {
 
 	if config.C.MailjetPublic == "" || config.C.MailjetPrivate == "" {
-		return errors.New("missing environment variables")
+		return errors.New("missing mailjet environment variables")
 	}
 
 	text, err := html2text.FromString(html, html2text.Options{PrettyTables: true})
