@@ -233,17 +233,15 @@ func verifyHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Find email from code
 		userID, err := mysql.GetUserVerification(code)
-		if err != nil {
+		if err == mysql.ErrExpiredVerification {
+			return "Link Expired", false
+		} else if err != nil {
 			err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
 			if err != nil {
 				log.ErrS(err)
 			}
 			return "Invalid code (1002)", false
 		}
-
-		// if userVerify.Expires.Unix() < time.Now().Unix() {
-		// return "This verify code has expired", false
-		// }
 
 		// Enable user
 		err = mysql.UpdateUserCol(userID, "email_verified", true)

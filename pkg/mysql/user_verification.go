@@ -15,6 +15,8 @@ type UserVerification struct {
 	Expires   time.Time `gorm:"not null;column:expires"`
 }
 
+var ErrExpiredVerification = errors.New("verification code expired")
+
 func GetUserVerification(code string) (userID int, err error) {
 
 	if len(code) != 10 {
@@ -25,13 +27,18 @@ func GetUserVerification(code string) (userID int, err error) {
 	if err != nil {
 		return userID, err
 	}
-	userVerification := UserVerification{}
-	db = db.Where("code = ?", code).Find(&userVerification)
+
+	row := UserVerification{}
+	db = db.Where("code = ?", code).Find(&row)
 	if db.Error != nil {
-		return userVerification.UserID, db.Error
+		return row.UserID, db.Error
 	}
 
-	return userVerification.UserID, deleteUserVerification(code)
+	if row.Expires.Unix() < time.Now().Unix() {
+		return userID, ErrExpiredVerification
+	}
+
+	return row.UserID, deleteUserVerification(code)
 }
 
 func CreateUserVerification(userID int) (userVerification UserVerification, err error) {
