@@ -161,7 +161,7 @@ func DeleteUser(id int64) (err error) {
 	return db.Error
 }
 
-func GetUserFromKeyCache(key string) (user User, err error) {
+func GetUserByAPIKey(key string) (user User, err error) {
 
 	var item = memcache.MemcacheUserByAPIKey(key)
 

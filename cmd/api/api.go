@@ -80,7 +80,7 @@ func (s Server) call(w http.ResponseWriter, r *http.Request, callback func(w htt
 	}
 
 	// Check user has access to api
-	user, err := mysql.GetUserFromKeyCache(key)
+	user, err := mysql.GetUserByAPIKey(key)
 	if err == mysql.ErrRecordNotFound {
 
 		s.returnErrorResponse(w, http.StatusUnauthorized, errors.New("invalid api key: "+key))
