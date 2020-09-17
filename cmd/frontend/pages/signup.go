@@ -34,10 +34,6 @@ func signupHandler(w http.ResponseWriter, r *http.Request) {
 
 	_, err := getUserFromSession(r)
 	if err == nil {
-
-		session.SetFlash(r, session.SessionGood, "Login successful")
-		session.Save(w, r)
-
 		http.Redirect(w, r, "/settings", http.StatusFound)
 		return
 	}
