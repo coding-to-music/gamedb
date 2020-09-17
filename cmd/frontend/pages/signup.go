@@ -198,7 +198,7 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 			log.ErrS(err)
 		}
 
-		return "Please check your email to verify your email", true
+		return "Please check your email to verify your account (You might need to check the spam folder)", true
 	}()
 
 	//

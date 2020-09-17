@@ -126,7 +126,7 @@ func forgotPostHandler(w http.ResponseWriter, r *http.Request) {
 			log.ErrS(err)
 		}
 
-		return "Email sent", true
+		return "Email sent! (You might need to check the spam folder)", true
 	}()
 
 	//
@@ -214,7 +214,7 @@ func forgotResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		//
-		return "A new password has been emailed to you", true
+		return "A new password has been emailed to you (You might need to check the spam folder)", true
 	}()
 
 	//
