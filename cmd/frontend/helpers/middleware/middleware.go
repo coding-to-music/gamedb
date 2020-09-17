@@ -29,10 +29,15 @@ func MiddlewareCors() func(next http.Handler) http.Handler {
 func MiddlewareRealIP(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		rip := r.Header.Get("X-Real-IP")
-		if rip != "" {
-			r.RemoteAddr = rip
+		cf := r.Header.Get("cf-connecting-ip")
+		nginx := r.Header.Get("X-Real-IP")
+
+		if cf != "" {
+			r.RemoteAddr = nginx
+		} else if nginx != "" {
+			r.RemoteAddr = nginx
 		}
+
 		h.ServeHTTP(w, r)
 	})
 }
