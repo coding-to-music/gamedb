@@ -105,7 +105,6 @@ func main() {
 	r.Mount("/changes", pages.ChangesRouter())
 	r.Mount("/commits", pages.CommitsRouter())
 	r.Mount("/contact", pages.ContactRouter())
-	r.Mount("/depots", pages.DepotsRouter())
 	r.Mount("/discord-bot", pages.ChatBotRouter())
 	r.Mount("/discord-server", pages.ChatRouter())
 	r.Mount("/donate", pages.DonateRouter())
