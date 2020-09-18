@@ -16,7 +16,7 @@ const (
 )
 
 type Consumer struct {
-	Key         string    `gorm:"not null;column:key;PRIMARY_KEY"`
+	Key         string    `gorm:"not null;column:key;primary_key"`
 	Use         bool      `gorm:"not null;column:use;"`
 	Expires     time.Time `gorm:"not null;column:expires;type:datetime"`
 	Owner       string    `gorm:"not null;column:owner"`

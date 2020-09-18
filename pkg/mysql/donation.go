@@ -7,7 +7,7 @@ import (
 )
 
 type Donation struct {
-	ID               int       `gorm:"not null;column:id;primary_key;AUTO_INCREMENT"`
+	ID               int       `gorm:"not null;column:id;primary_key;auto_increment"`
 	CreatedAt        time.Time `gorm:"not null;column:created_at"`
 	PlayerID         int64     `gorm:"not null;column:player_id"`
 	Email            string    `gorm:"not null;column:email"`
