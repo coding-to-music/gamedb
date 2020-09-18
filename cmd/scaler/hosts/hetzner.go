@@ -64,7 +64,7 @@ func (h Hetzner) CreateConsumer() (c Consumer, err error) {
 		return c, err
 	}
 
-	body, _, err := helpers.GetWithTimeout(ghResponse.GetDownloadURL(), 0)
+	body, _, err := helpers.Get(ghResponse.GetDownloadURL(), 0, nil)
 	if err != nil {
 		return c, err
 	}

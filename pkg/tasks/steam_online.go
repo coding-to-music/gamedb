@@ -34,7 +34,7 @@ func (c SteamOnline) Cron() TaskTime {
 
 func (c SteamOnline) work() (err error) {
 
-	body, _, err := helpers.GetWithTimeout("https://www.valvesoftware.com/en/about/stats", 0)
+	body, _, err := helpers.Get("https://www.valvesoftware.com/en/about/stats", 0, nil)
 	if err != nil {
 		return err
 	}

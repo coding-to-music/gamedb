@@ -69,7 +69,7 @@ func GetSteam() *openapi3.Swagger {
 				return
 			}
 
-			body, _, err := helpers.GetWithTimeout(*dir.DownloadURL, 0)
+			body, _, err := helpers.Get(*dir.DownloadURL, 0, nil)
 			if err != nil {
 				log.ErrS(err)
 				return

@@ -13,7 +13,7 @@ func UploadInstagram(imageURL string, message string) (err error) {
 		return err
 	}
 
-	body, _, err := helpers.GetWithTimeout(imageURL, 0)
+	body, _, err := helpers.Get(imageURL, 0, nil)
 	if err != nil {
 		return err
 	}

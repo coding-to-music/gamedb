@@ -26,11 +26,11 @@ func IsBot(userAgent string) bool {
 	return botRegex.MatchString(userAgent)
 }
 
-func GetWithTimeout(link string, timeout time.Duration) (b []byte, code int, err error) {
-	return requestWithTimeout("GET", link, timeout, nil, nil)
+func Get(link string, timeout time.Duration, headers http.Header) (b []byte, code int, err error) {
+	return requestWithTimeout("GET", link, timeout, headers, nil)
 }
 
-func HeadWithTimeout(link string, timeout time.Duration) (code int, err error) {
+func Head(link string, timeout time.Duration) (code int, err error) {
 
 	operation := func() (err error) {
 		_, code, err = requestWithTimeout("HEAD", link, timeout, nil, nil)
@@ -108,7 +108,7 @@ func GetIP() string {
 
 	for _, v := range []string{"http://ipinfo.io/ip", "http://myexternalip.com/raw", "https://ifconfig.co/ip"} {
 
-		body, _, err := GetWithTimeout(v, 0)
+		body, _, err := Get(v, 0, nil)
 		if err != nil {
 			continue
 		}

@@ -604,7 +604,7 @@ func updateAppDetails(app *mongo.App) (err error) {
 						}
 
 						for _, u := range urls {
-							code, err := helpers.HeadWithTimeout(u, 0)
+							code, err := helpers.Head(u, 0)
 							if err != nil {
 								log.ErrS(err)
 								continue

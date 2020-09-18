@@ -46,7 +46,7 @@ func appSteamspyHandler(message *rabbit.Message) {
 	u := "https://steamspy.com/api.php?" + query.Encode()
 
 	steamspyLimiter.Take()
-	body, statusCode, err := helpers.GetWithTimeout(u, 0)
+	body, statusCode, err := helpers.Get(u, 0, nil)
 	if err != nil {
 
 		if strings.Contains(err.Error(), "Client.Timeout exceeded while awaiting headers") ||
