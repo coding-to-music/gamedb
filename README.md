@@ -71,8 +71,8 @@ services:
       - "3306:3306"
     restart: "unless-stopped"
     environment:
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE
+      - MYSQL_ROOT_PASSWORD
     volumes:
       - ${DATA_DIR}/mysql:/var/lib/mysql
   search:
@@ -83,7 +83,7 @@ services:
       - "9200:9200"
     restart: "unless-stopped"
     environment:
-      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - ELASTIC_PASSWORD
     volumes:
       - ${DATA_DIR}/elasticsearch/:/usr/share/elasticsearch/data/
 ```
