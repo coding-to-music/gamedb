@@ -3,6 +3,7 @@ module github.com/gamedb/gamedb
 go 1.13
 
 require (
+	cloud.google.com/go v0.66.0 // indirect
 	cloud.google.com/go/logging v1.1.0
 	github.com/Jleagle/go-durationfmt v0.0.0-20190307132420-e57bfad84057
 	github.com/Jleagle/influxql v0.0.0-20200804190929-88324f67bffe
@@ -16,8 +17,8 @@ require (
 	github.com/Philipp15b/go-steam v1.0.1-0.20190816133340-b04c5a83c1c0
 	github.com/StefanSchroeder/Golang-Roman v0.0.0-20191231161654-ef19f7247884
 	github.com/ahmdrz/goinsta/v2 v2.4.5
-	github.com/antchfx/xmlquery v1.3.0 // indirect
-	github.com/aws/aws-sdk-go v1.34.22 // indirect
+	github.com/antchfx/xmlquery v1.3.1 // indirect
+	github.com/aws/aws-sdk-go v1.34.27 // indirect
 	github.com/badoux/checkmail v1.2.1
 	github.com/blend/go-sdk v1.1.1 // indirect
 	github.com/bwmarrin/discordgo v0.22.0
@@ -50,6 +51,7 @@ require (
 	github.com/influxdata/influxdb1-client v0.0.0-20200827194710-b269163b24ab
 	github.com/jinzhu/gorm v1.9.16
 	github.com/jinzhu/now v1.1.1
+	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/justinas/nosurf v1.1.1
 	github.com/karrick/godirwalk v1.16.1 // indirect
 	github.com/kelseyhightower/envconfig v1.4.0
@@ -63,7 +65,7 @@ require (
 	github.com/microcosm-cc/bluemonday v1.0.4
 	github.com/montanaflynn/stats v0.6.3
 	github.com/mxpv/patreon-go v0.0.0-20190917022727-646111f1d983
-	github.com/nicklaw5/helix v0.7.0
+	github.com/nicklaw5/helix v1.0.0
 	github.com/nlopes/slack v0.6.0
 	github.com/olekukonko/tablewriter v0.0.4 // indirect
 	github.com/olivere/elastic/v7 v7.0.20
@@ -84,6 +86,7 @@ require (
 	github.com/xdg/stringprep v1.0.0 // indirect
 	github.com/yohcop/openid-go v1.0.0
 	go.mongodb.org/mongo-driver v1.4.1
+	go.uber.org/multierr v1.6.0 // indirect
 	go.uber.org/ratelimit v0.1.0
 	go.uber.org/zap v1.16.0
 	golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a
@@ -91,13 +94,13 @@ require (
 	golang.org/x/image v0.0.0-20200801110659-972c09e46d76 // indirect
 	golang.org/x/net v0.0.0-20200904194848-62affa334b73
 	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43
-	golang.org/x/sys v0.0.0-20200909081042-eff7692f9009 // indirect
+	golang.org/x/sys v0.0.0-20200918174421-af09f7315aff // indirect
 	golang.org/x/text v0.3.3
 	golang.org/x/time v0.0.0-20200630173020-3af7569d3a1e // indirect
-	golang.org/x/tools v0.0.0-20200911193555-6422fca01df9 // indirect
+	golang.org/x/tools v0.0.0-20200918232735-d647fc253266 // indirect
 	gonum.org/v1/gonum v0.8.1
-	google.golang.org/api v0.31.0
-	google.golang.org/genproto v0.0.0-20200911024640-645f7a48b24f // indirect
+	google.golang.org/api v0.32.0
+	google.golang.org/genproto v0.0.0-20200918140846-d0d605568037 // indirect
 	google.golang.org/grpc v1.32.0
 	google.golang.org/protobuf v1.25.0
 	gopkg.in/djherbis/atime.v1 v1.0.0 // indirect

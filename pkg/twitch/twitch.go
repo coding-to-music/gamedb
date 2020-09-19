@@ -33,7 +33,7 @@ func GetTwitch() (*helix.Client, error) {
 			return nil, err
 		}
 
-		token, err := client.GetAppAccessToken(nil)
+		token, err := client.RequestAppAccessToken(nil)
 		if err != nil {
 			return nil, err
 		}
