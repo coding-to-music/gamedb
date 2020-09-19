@@ -150,7 +150,7 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 	buf := &bytes.Buffer{}
 	err = t.ExecuteTemplate(buf, path.Base(page), pageData)
 	if err != nil {
-		log.FatalS(err)
+		log.ErrS(err)
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Looks like I messed something up, will be fixed soon!"})
 		return
 	}
@@ -168,13 +168,13 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 
 		err = m.Minify("text/html", w, buf)
 		if err != nil && !strings.Contains(err.Error(), "write: broken pipe") {
-			log.FatalS(err)
+			log.ErrS(err)
 		}
 
 	} else {
 		_, err = buf.WriteTo(w)
 		if err != nil {
-			log.FatalS(err)
+			log.ErrS(err)
 		}
 	}
 }
