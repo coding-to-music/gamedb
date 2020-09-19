@@ -10,6 +10,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
+	"golang.org/x/crypto/bcrypt"
 )
 
 const (
@@ -103,6 +104,36 @@ func (user User) Save() error {
 	return db.Error
 }
 
+func NewUser(email, password string, prodCC steamapi.ProductCC, verified bool) (user User, err error) {
+
+	db, err := GetMySQLClient()
+	if err != nil {
+		return user, err
+	}
+
+	var passwordBytes []byte
+	if password != "" {
+		passwordBytes, err = bcrypt.GenerateFromPassword([]byte(password), 14)
+		if err != nil {
+			return user, err
+		}
+	}
+
+	user = User{
+		Email:         email,
+		EmailVerified: verified,
+		Password:      string(passwordBytes),
+		ProductCC:     prodCC,
+		Level:         UserLevel1,
+		LoggedInAt:    time.Unix(0, 0), // Fixes a gorm bug
+	}
+
+	user.SetAPIKey()
+
+	db = db.Create(&user)
+	return user, db.Error
+}
+
 func UpdateUserCol(userID int, column string, value interface{}) (err error) {
 
 	if userID == 0 {
@@ -130,6 +161,17 @@ func GetUserByID(id int) (user User, err error) {
 	}
 
 	db = db.Where("id = ?", id).First(&user)
+	return user, db.Error
+}
+
+func GetUserByEmail(email string) (user User, err error) {
+
+	db, err := GetMySQLClient()
+	if err != nil {
+		return user, err
+	}
+
+	db = db.Where("email = ?", email).First(&user)
 	return user, db.Error
 }
 

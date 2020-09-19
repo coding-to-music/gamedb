@@ -7,30 +7,21 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/oauth"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
 type EventEnum string
 
-const (
+var (
 	EventSignup         EventEnum = "signup"
 	EventLogin          EventEnum = "login"
 	EventForgotPassword EventEnum = "forgot-password"
 	EventLogout         EventEnum = "logout"
 	EventPatreonWebhook EventEnum = "patreon-webhook"
 	EventRefresh        EventEnum = "refresh"
-
-	// Connections
-	EventLinkSteam     EventEnum = "link-steam"
-	EventUnlinkSteam   EventEnum = "unlink-steam"
-	EventLinkPatreon   EventEnum = "link-patreon"
-	EventUnlinkPatreon EventEnum = "unlink-patreon"
-	EventLinkGoogle    EventEnum = "link-google"
-	EventUnlinkGoogle  EventEnum = "unlink-google"
-	EventLinkDiscord   EventEnum = "link-discord"
-	EventUnlinkDiscord EventEnum = "unlink-discord"
-	EventLinkGitHub    EventEnum = "link-github"
-	EventUnlinkGitHub  EventEnum = "unlink-github"
+	EventLink                     = func(provider oauth.ProviderEnum) EventEnum { return EventEnum("link-" + provider) }
+	EventUnlink                   = func(provider oauth.ProviderEnum) EventEnum { return EventEnum("unlink-" + provider) }
 )
 
 type Event struct {

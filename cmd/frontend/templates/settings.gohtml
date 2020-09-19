@@ -45,9 +45,9 @@
                         {{ end }}
 
                         <div class="row">
-                            <div class="col-12 col-lg-6 mb-3 mb-lg-0">
+                            <div class="col-12 col-lg-8 mb-3 mb-lg-0">
 
-                                <div class="card">
+                                <div class="card mb-2">
                                     <div class="card-header">Settings</div>
                                     <div class="card-body">
 
@@ -98,12 +98,60 @@
                                     </div>
                                 </div>
 
+                                <div class="card" id="api">
+                                    <div class="card-header">
+                                        <span>API</span>
+                                        <h5 class="float-right mb-0">
+                                            <a href="/api" class="badge badge-success">Documentation</a>
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+
+                                        <p>API key: {{ .User.APIKey }}</p>
+
+                                        <a href="/settings/new-key" role="button" class="btn btn-warning btn-sm">
+                                            <i class="fas fa-retweet"></i> Generate new key
+                                        </a>
+
+                                    </div>
+                                </div>
+
                             </div>
 
-                            <div class="col-12 col-lg-6">
+                            <div class="col-12 col-lg-4">
+
+                                {{ range $key, $value := .Providers }}
+                                    <div class="card mb-2">
+                                        <h5 class="card-header">
+                                            <i class="{{ .GetIcon }}"></i>
+                                            <span>{{ .GetName }}</span>
+                                        </h5>
+                                        <div class="card-body p-2">
+                                            <img src="" alt="" class="float-right">
+                                            <table>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <td>{{ . }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Name</td>
+                                                    <td>{{ . }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Email</td>
+                                                    <td>{{ . }}</td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        <small class="card-footer text-right">
+                                            <a href="/oauth/out/{{ .GetEnum }}" class="mr-2"><i class="fas fa-link"></i> Relink</a>
+                                            <a href="/settings/remove-provider/{{ .GetEnum }}"><i class="fas fa-unlink"></i> Unlink</a>
+                                        </small>
+                                    </div>
+                                {{ end }}
 
                                 <div class="card mb-3" id="connections">
-                                    <div class="card-header">Connections</div>
+                                    <div class="card-header">Auth Connections</div>
                                     <div class="card-body">
 
                                         {{ if eq .User.SteamID.String "" }}
@@ -127,72 +175,6 @@
                                                 </a>
                                             </p>
                                         {{ end }}
-
-                                        <p>
-                                            {{ if eq .User.PatreonID.String "" }}
-                                                <a href="/settings/oauth-link/patreon" role="button" class="btn btn-success btn-sm">
-                                                    <i class="fab fa-patreon"></i> Link Patreon Account
-                                                </a>
-                                            {{ else }}
-                                                <a href="/settings/oauth-unlink/patreon" role="button" class="btn btn-danger btn-sm">
-                                                    <i class="fab fa-patreon"></i> Unlink Patreon Account
-                                                </a>
-                                            {{ end }}
-                                        </p>
-
-                                        <p>
-                                            {{ if eq .User.DiscordID.String "" }}
-                                                <a href="/settings/oauth-link/discord" role="button" class="btn btn-success btn-sm">
-                                                    <i class="fab fa-discord"></i> Link Discord Account
-                                                </a>
-                                            {{ else }}
-                                                <a href="/settings/oauth-unlink/discord" role="button" class="btn btn-danger btn-sm">
-                                                    <i class="fab fa-discord"></i> Unlink Discord Account
-                                                </a>
-                                            {{ end }}
-                                        </p>
-
-                                        <p>
-                                            {{ if eq .User.GoogleID.String "" }}
-                                                <a href="/settings/oauth-link/google" role="button" class="btn btn-success btn-sm">
-                                                    <i class="fab fa-google"></i> Link Google Account
-                                                </a>
-                                            {{ else }}
-                                                <a href="/settings/oauth-unlink/google" role="button" class="btn btn-danger btn-sm">
-                                                    <i class="fab fa-google"></i> Unlink Google Account
-                                                </a>
-                                            {{ end }}
-                                        </p>
-
-                                        <p class="mb-0">
-                                            {{ if eq .User.GitHubID.String "" }}
-                                                <a href="/settings/oauth-link/github" role="button" class="btn btn-success btn-sm">
-                                                    <i class="fab fa-github"></i> Link GitHub Account
-                                                </a>
-                                            {{ else }}
-                                                <a href="/settings/oauth-unlink/github" role="button" class="btn btn-danger btn-sm">
-                                                    <i class="fab fa-github"></i> Unlink GitHub Account
-                                                </a>
-                                            {{ end }}
-                                        </p>
-
-                                    </div>
-                                </div>
-
-                                <div class="card" id="api">
-                                    <div class="card-header">
-                                        <span>API</span>
-                                        <h5 class="float-right mb-0">
-                                            <a href="/api" class="badge badge-success">Documentation</a>
-                                        </h5>
-                                    </div>
-                                    <div class="card-body">
-
-                                        <p>API key: {{ .User.APIKey }}</p>
-
-                                        <a href="/settings/new-key" role="button" class="btn btn-warning btn-sm">
-                                            <i class="fas fa-retweet"></i> Generate new key
-                                        </a>
 
                                     </div>
                                 </div>

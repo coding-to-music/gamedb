@@ -119,6 +119,7 @@ func main() {
 	r.Mount("/login", pages.LoginRouter())
 	r.Mount("/logout", pages.LogoutRouter())
 	r.Mount("/news", pages.NewsRouter())
+	r.Mount("/oauth", pages.OauthRouter())
 	r.Mount("/packages", pages.PackagesRouter())
 	r.Mount("/players", pages.PlayersRouter())
 	r.Mount("/price-changes", pages.PriceChangeRouter())

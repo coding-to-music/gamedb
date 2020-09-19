@@ -1,29 +1,10 @@
-#login-page {
-    #oauth-buttons {
-
+#login-page, #signup-page {
+    #providers {
         a {
-            font-size: 4rem;
-            @extend .mr-3;
-        }
-
-        .fa-steam {
-            color: #000;
-        }
-
-        .fa-patreon {
-            color: #f96854;
-        }
-
-        .fa-discord {
-            color: #7289DA;
-        }
-
-        .fa-google {
-            color: #4285F4;
-        }
-
-        .fa-github {
-            color: #4078c0;
+            color: white;
+            display: inline-block;
+            @extend .mb-2;
+            @extend .mr-2;
         }
     }
 }

@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"net/http"
 	"strconv"
+	"strings"
 	"sync"
 
 	"github.com/Jleagle/steam-go/steamapi"
@@ -12,13 +13,13 @@ import (
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/datatable"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/middleware"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
-	"github.com/gamedb/gamedb/cmd/frontend/pages/oauth"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
+	"github.com/gamedb/gamedb/pkg/oauth"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
 	"golang.org/x/crypto/bcrypt"
@@ -35,10 +36,7 @@ func SettingsRouter() http.Handler {
 	r.Get("/events.json", settingsEventsAjaxHandler)
 	r.Get("/new-key", settingsNewKeyHandler)
 	r.Get("/donations.json", settingsDonationsAjaxHandler)
-
-	r.Get("/oauth-link/{id:[a-z]+}", oauthLinkHandler)
-	r.Get("/oauth-unlink/{id:[a-z]+}", oauthUnlinkHandler)
-	r.Get("/oauth-callback/{id:[a-z]+}", oauthCallbackHandler)
+	r.Get("/remove-provider/{provider:[a-z]+}", settingsRemoveProviderHandler)
 
 	return r
 }
@@ -168,19 +166,29 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
+	t.Providers = []oauth.Provider{
+		oauth.New(oauth.ProviderDiscord),
+		oauth.New(oauth.ProviderGoogle),
+		oauth.New(oauth.ProviderGithub),
+		oauth.New(oauth.ProviderPatreon),
+		oauth.New(oauth.ProviderSteam),
+		oauth.New(oauth.ProviderTwitter),
+	}
+
 	// Template
 	returnTemplate(w, r, "settings", t)
 }
 
 type settingsTemplate struct {
 	globalTemplate
-	User    mysql.User
-	Player  mongo.Player
-	ProdCCs []i18n.ProductCountryCode
-	Domain  string
-	Groups  template.JS
-	Badges  template.JS
-	Games   template.JS
+	User      mysql.User
+	Player    mongo.Player
+	ProdCCs   []i18n.ProductCountryCode
+	Domain    string
+	Groups    template.JS
+	Badges    template.JS
+	Games     template.JS
+	Providers []oauth.Provider
 }
 
 func deletePostHandler(w http.ResponseWriter, r *http.Request) {
@@ -482,32 +490,45 @@ func settingsDonationsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	returnJSON(w, r, response)
 }
 
-func oauthLinkHandler(w http.ResponseWriter, r *http.Request) {
+func settingsRemoveProviderHandler(w http.ResponseWriter, r *http.Request) {
 
-	id := oauth.ConnectionEnum(chi.URLParam(r, "id"))
+	defer func() {
+		session.Save(w, r)
+		http.Redirect(w, r, "/settings", http.StatusFound)
+	}()
 
-	if _, ok := oauth.Connections[id]; ok {
-		connection := oauth.New(id)
-		connection.LinkHandler(w, r)
+	provider := oauth.New(oauth.ProviderEnum(chi.URLParam(r, "id")))
+	if provider == nil {
+		session.SetFlash(r, session.SessionBad, "Invalid Provider")
+		return
 	}
-}
 
-func oauthUnlinkHandler(w http.ResponseWriter, r *http.Request) {
-
-	id := oauth.ConnectionEnum(chi.URLParam(r, "id"))
-
-	if _, ok := oauth.Connections[id]; ok {
-		connection := oauth.New(id)
-		connection.UnlinkHandler(w, r)
+	userID, err := session.GetUserIDFromSesion(r)
+	if err != nil {
+		log.ErrS(err)
+		session.SetFlash(r, session.SessionBad, "An error occurred (1001)")
+		return
 	}
-}
 
-func oauthCallbackHandler(w http.ResponseWriter, r *http.Request) {
+	// Update user
+	err = mysql.UpdateUserCol(userID, strings.ToLower(provider.GetName())+"_id", nil)
+	if err != nil {
+		log.ErrS(err)
+		session.SetFlash(r, session.SessionBad, "An error occurred (1002)")
+		return
+	}
 
-	id := oauth.ConnectionEnum(chi.URLParam(r, "id"))
+	// Clear session
+	if provider.GetEnum() == oauth.ProviderSteam {
+		session.DeleteMany(r, []string{session.SessionPlayerID, session.SessionPlayerName, session.SessionPlayerLevel})
+	}
 
-	if _, ok := oauth.Connections[id]; ok {
-		connection := oauth.New(id)
-		connection.LinkCallbackHandler(w, r)
+	// Flash message
+	session.SetFlash(r, session.SessionGood, provider.GetName()+" unlinked")
+
+	// Create event
+	err = mongo.CreateUserEvent(r, userID, mongo.EventUnlink(provider.GetEnum()))
+	if err != nil {
+		log.ErrS(err)
 	}
 }

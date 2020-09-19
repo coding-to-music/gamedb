@@ -14,9 +14,9 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
+	"github.com/gamedb/gamedb/pkg/oauth"
 	"github.com/go-chi/chi"
 	influx "github.com/influxdata/influxdb1-client"
-	"golang.org/x/crypto/bcrypt"
 )
 
 const signupSessionEmail = "signup-email"
@@ -44,6 +44,7 @@ func signupHandler(w http.ResponseWriter, r *http.Request) {
 	t.Domain = config.C.GameDBDomain
 	t.RecaptchaPublic = config.C.RecaptchaPublic
 	t.SignupEmail = session.Get(r, signupSessionEmail)
+	t.Providers = oauth.Providers
 
 	returnTemplate(w, r, "signup", t)
 }
@@ -53,6 +54,7 @@ type signupTemplate struct {
 	RecaptchaPublic string
 	Domain          string
 	SignupEmail     string
+	Providers       []oauth.Provider
 }
 
 func (t signupTemplate) includes() []string {
@@ -67,7 +69,7 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 		err := r.ParseForm()
 		if err != nil {
 			log.ErrS(err)
-			return "An error occurred", false
+			return "An error occurred (1001)", false
 		}
 
 		email := r.PostForm.Get("email")
@@ -118,40 +120,17 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Create user
-		db, err := mysql.GetMySQLClient()
-		if err != nil {
-			log.ErrS(err)
-			return "An error occurred (1001)", false
-		}
-
-		passwordBytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+		user, err := mysql.NewUser(email, password, session.GetProductCC(r), false)
 		if err != nil {
 			log.ErrS(err)
 			return "An error occurred (1002)", false
-		}
-
-		user := mysql.User{
-			Email:         email,
-			EmailVerified: false,
-			Password:      string(passwordBytes),
-			ProductCC:     session.GetProductCC(r),
-			Level:         mysql.UserLevel1,
-			LoggedInAt:    time.Unix(0, 0), // Fixes a gorm bug
-		}
-
-		user.SetAPIKey()
-
-		db = db.Create(&user)
-		if db.Error != nil {
-			log.ErrS(db.Error)
-			return "An error occurred (1003)", false
 		}
 
 		// Create verification code
 		code, err := mysql.CreateUserVerification(user.ID)
 		if err != nil {
 			log.ErrS(err)
-			return "An error occurred (1004)", false
+			return "An error occurred (1003)", false
 		}
 
 		// Send email
@@ -170,7 +149,7 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 		)
 		if err != nil {
 			log.ErrS(err)
-			return "An error occurred (1005)", false
+			return "An error occurred (1004)", false
 		}
 
 		// Create event

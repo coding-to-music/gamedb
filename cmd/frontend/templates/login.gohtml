@@ -19,7 +19,7 @@
                     <div class="tab-pane show active" id="gamedb" role="tabpanel">
 
                         <div class="row">
-                            <div class="col-12 col-md-8 col-lg-6">
+                            <div class="col-12 col-lg-6 mb-4 mb-lg-0">
 
                                 <form action="/login" method="post" data-recaptcha>
                                     <div class="form-group">
@@ -43,17 +43,12 @@
                                 </form>
 
                             </div>
-
-                            {{ if .IsAdmin }}
-                                <div class="col-12 col-md-4 col-lg-6" id="oauth-buttons">
-                                    <p class="mb-0">Or login with:</p>
-                                    <a href="/login/oauth/steam" data-toggle="tooltip" data-placement="bottom" title="Steam"><i class="fab fa-steam"></i></a>
-                                    <a href="/login/oauth/patreon" data-toggle="tooltip" data-placement="bottom" title="Patreon"><i class="fab fa-patreon"></i></a>
-                                    <a href="/login/oauth/google" data-toggle="tooltip" data-placement="bottom" title="Google"><i class="fab fa-google"></i></a>
-                                    <a href="/login/oauth/discord" data-toggle="tooltip" data-placement="bottom" title="Discord"><i class="fab fa-discord"></i></a>
-                                    <a href="/login/oauth/github" data-toggle="tooltip" data-placement="bottom" title="GitHub"><i class="fab fa-github"></i></a>
-                                </div>
-                            {{ end }}
+                            <div class="col-12 col-lg-6" id="providers">
+                                <p class="mb-2">Or login with:</p>
+                                {{ range $key, $value := .Providers }}
+                                    <a class="btn btn-lg" href="/oauth/out/{{ .GetEnum }}?page=login" style="background-color: #{{ .GetColour}}; border-color: #{{ .GetColour}}"><i class="{{ .GetIcon }}"></i> {{ .GetName }}</a>
+                                {{ end }}
+                            </div>
                         </div>
 
                     </div>

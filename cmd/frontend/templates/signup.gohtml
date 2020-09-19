@@ -20,7 +20,7 @@
                     <div class="tab-pane show active" id="signup" role="tabpanel">
 
                         <div class="row">
-                            <div class="col-12 col-sm-12 col-md-8 col-lg-6">
+                            <div class="col-12 col-lg-6 mb-4 mb-lg-0">
 
                                 <form action="/signup" method="post" data-recaptcha>
                                     <div class="form-group">
@@ -49,6 +49,14 @@
                                     <button type="submit" class="btn btn-success" aria-label="Sign Up">Sign Up</button>
                                 </form>
 
+                            </div>
+                            <div class="col-12 col-lg-6" id="providers">
+                                <p class="mb-2">Or login with:</p>
+                                {{ range $key, $value := .Providers }}
+                                    {{ if ne .GetName "Steam" }} {{/* Not OAuth */}}
+                                    <a class="btn btn-lg" href="/oauth/out/{{ .GetEnum }}?page=signup" style="background-color: #{{ .GetColour}}; border-color: #{{ .GetColour}}"><i class="{{ .GetIcon }}"></i> {{ .GetName }}</a>
+                                    {{ end }}
+                                {{ end }}
                             </div>
                         </div>
 

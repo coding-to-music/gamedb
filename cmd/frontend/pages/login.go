@@ -9,12 +9,12 @@ import (
 	"github.com/Jleagle/steam-go/steamid"
 	"github.com/badoux/checkmail"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
-	"github.com/gamedb/gamedb/cmd/frontend/pages/oauth"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
+	"github.com/gamedb/gamedb/pkg/oauth"
 	"github.com/go-chi/chi"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -26,9 +26,6 @@ func LoginRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", loginHandler)
 	r.Post("/", loginPostHandler)
-
-	r.Get("/oauth/{id:[a-z]+}", oauthLoginHandler)
-	r.Get("/oauth-callback/{id:[a-z]+}", oauthLCallbackHandler)
 
 	return r
 }
@@ -46,6 +43,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	t.hideAds = true
 	t.RecaptchaPublic = config.C.RecaptchaPublic
 	t.LoginEmail = session.Get(r, loginSessionEmail)
+	t.Providers = oauth.Providers
 
 	returnTemplate(w, r, "login", t)
 }
@@ -54,6 +52,7 @@ type loginTemplate struct {
 	globalTemplate
 	RecaptchaPublic string
 	LoginEmail      string
+	Providers       []oauth.Provider
 }
 
 func (t loginTemplate) includes() []string {
@@ -191,24 +190,4 @@ func login(r *http.Request, user mysql.User) (string, bool) {
 	}
 
 	return "You have been logged in", true
-}
-
-func oauthLoginHandler(w http.ResponseWriter, r *http.Request) {
-
-	id := oauth.ConnectionEnum(chi.URLParam(r, "id"))
-
-	if _, ok := oauth.Connections[id]; ok {
-		connection := oauth.New(id)
-		connection.LoginHandler(w, r)
-	}
-}
-
-func oauthLCallbackHandler(w http.ResponseWriter, r *http.Request) {
-
-	id := oauth.ConnectionEnum(chi.URLParam(r, "id"))
-
-	if _, ok := oauth.Connections[id]; ok {
-		connection := oauth.New(id)
-		connection.LoginCallbackHandler(w, r)
-	}
 }
