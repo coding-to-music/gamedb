@@ -92,7 +92,7 @@ func oauthInHandler(w http.ResponseWriter, r *http.Request) {
 			state := oauth.State{}
 			state.Unmarshal(stateString)
 
-			if stateString == "" || stateString != realState.State {
+			if state.State == "" || state.State != realState.State {
 				session.SetFlash(r, session.SessionBad, "Invalid state")
 				return
 			}
