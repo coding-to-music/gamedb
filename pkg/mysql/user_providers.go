@@ -12,6 +12,7 @@ type UserProvider struct {
 	Provider  oauth.ProviderEnum `gorm:"not null;column:provider;primary_key"`
 	CreatedAt time.Time          `gorm:"not null;column:created_at"`
 	UpdatedAt time.Time          `gorm:"not null;column:updated_at"`
+	DeletedAt *time.Time         `gorm:"not null;column:deleted_at"`
 	Token     string             `gorm:"not null;column:token"`
 	ID        string             `gorm:"not null;column:id"`
 	Email     string             `gorm:"not null;column:email"`
@@ -35,11 +36,11 @@ func UpdateUserProvider(userID int, provider oauth.ProviderEnum, resp oauth.User
 	user.Username = resp.Username
 	user.Avatar = resp.Avatar
 
-	db = db.Save(&user)
+	db = db.Unscoped().Save(&user)
 	return db.Error
 }
 
-func DeleteUserProvider(userID int, providerEnum string) (err error) {
+func DeleteUserProvider(providerEnum oauth.ProviderEnum, userID int) (err error) {
 
 	db, err := GetMySQLClient()
 	if err != nil {

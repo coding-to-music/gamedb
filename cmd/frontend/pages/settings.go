@@ -5,7 +5,6 @@ import (
 	"html/template"
 	"net/http"
 	"strconv"
-	"strings"
 	"sync"
 
 	"github.com/Jleagle/steam-go/steamapi"
@@ -497,7 +496,7 @@ func settingsRemoveProviderHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/settings", http.StatusFound)
 	}()
 
-	provider := oauth.New(oauth.ProviderEnum(chi.URLParam(r, "id")))
+	provider := oauth.New(oauth.ProviderEnum(chi.URLParam(r, "provider")))
 	if provider == nil {
 		session.SetFlash(r, session.SessionBad, "Invalid Provider")
 		return
@@ -511,7 +510,7 @@ func settingsRemoveProviderHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Update user
-	err = mysql.UpdateUserCol(userID, strings.ToLower(provider.GetName())+"_id", nil)
+	err = mysql.DeleteUserProvider(provider.GetEnum(), userID)
 	if err != nil {
 		log.ErrS(err)
 		session.SetFlash(r, session.SessionBad, "An error occurred (1002)")
@@ -524,7 +523,7 @@ func settingsRemoveProviderHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Flash message
-	session.SetFlash(r, session.SessionGood, provider.GetName()+" unlinked")
+	session.SetFlash(r, session.SessionGood, provider.GetName()+" removed")
 
 	// Create event
 	err = mongo.CreateUserEvent(r, userID, mongo.EventUnlink(provider.GetEnum()))
