@@ -122,7 +122,7 @@
 
                                 {{ range $key, $value := .Providers }}
                                     <div class="card mb-2">
-                                        <h5 class="card-header">
+                                        <h5 class="card-header" style="background-color: #{{ .GetColour }}; color: white">
                                             <i class="{{ .GetIcon }}"></i>
                                             <span>{{ .GetName }}</span>
                                         </h5>
