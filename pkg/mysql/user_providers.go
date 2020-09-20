@@ -15,10 +15,11 @@ type UserProvider struct {
 	Token     string             `gorm:"not null;column:token"`
 	ID        string             `gorm:"not null;column:id"`
 	Email     string             `gorm:"not null;column:email"`
+	Username  string             `gorm:"not null;column:username"`
 	Avatar    string             `gorm:"not null;column:avatar"`
 }
 
-func UpdateUserProvider(userID int, provider oauth.ProviderEnum, token, ID, email, avatar string) error {
+func UpdateUserProvider(userID int, provider oauth.ProviderEnum, resp oauth.User) error {
 
 	db, err := GetMySQLClient()
 	if err != nil {
@@ -28,10 +29,11 @@ func UpdateUserProvider(userID int, provider oauth.ProviderEnum, token, ID, emai
 	user := UserProvider{}
 	user.UserID = userID
 	user.Provider = provider
-	user.Token = token
-	user.ID = ID
-	user.Email = email
-	user.Avatar = avatar
+	user.Token = resp.Token
+	user.ID = resp.ID
+	user.Email = resp.Email
+	user.Username = resp.Username
+	user.Avatar = resp.Avatar
 
 	db = db.Save(&user)
 	return db.Error
