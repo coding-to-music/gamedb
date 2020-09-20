@@ -3,6 +3,7 @@ package mysql
 import (
 	"time"
 
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/oauth"
 )
 
@@ -59,8 +60,8 @@ func CheckExistingUserProvider(provider oauth.ProviderEnum, id string, userID in
 
 	db = db.Where("provider = ?", provider)
 	db = db.Where("id = ?", id)
-	db = db.Where("userID != ?", userID)
+	db = db.Where("user_id != ?", userID)
 	db = db.First(&UserProvider{})
 
-	return db.Error != ErrRecordNotFound, db.Error
+	return db.Error != ErrRecordNotFound, helpers.IgnoreErrors(db.Error, ErrRecordNotFound)
 }
