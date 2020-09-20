@@ -177,7 +177,9 @@ func oauthInHandler(w http.ResponseWriter, r *http.Request) {
 
 		err = mysql.UpdateUserProvider(user.ID, provider.GetEnum(), resp.Token, resp.ID, resp.Email, resp.Avatar)
 		if err != nil {
-			// error
+			log.ErrS(err)
+			session.SetFlash(r, session.SessionBad, "An error occurred (1006)")
+			return
 		}
 
 		// Success flash
