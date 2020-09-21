@@ -196,7 +196,9 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatal("Missing environment variables")
 	} else {
 		err = slack.PostWebhook(config.C.SlackPatreonWebhook, &slack.WebhookMessage{Text: event})
-		log.ErrS(err)
+		if err != nil {
+			log.ErrS(err)
+		}
 	}
 
 	// Save webhook

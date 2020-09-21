@@ -10,6 +10,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/robfig/cron/v3"
+	"go.uber.org/zap"
 )
 
 type TaskTime string
@@ -155,7 +156,7 @@ func Run(task TaskInterface) {
 	// Do work
 	policy := backoff.NewConstantBackOff(time.Second * 30)
 
-	err = backoff.RetryNotify(task.work, backoff.WithMaxRetries(policy, 10), func(err error, t time.Duration) { log.InfoS(err, task.ID()) })
+	err = backoff.RetryNotify(task.work, backoff.WithMaxRetries(policy, 10), func(err error, t time.Duration) { log.Info(err.Error(), zap.String("cron id", task.ID())) })
 	if err != nil {
 
 		if val, ok := err.(TaskError); ok && val.Okay {

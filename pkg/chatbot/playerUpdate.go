@@ -88,7 +88,9 @@ func (c CommandPlayerUpdate) Output(msg *discordgo.MessageCreate, _ steamapi.Pro
 
 	err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID})
 	err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
-	log.ErrS(err)
+	if err != nil {
+		log.ErrS(err)
+	}
 
 	message.Content = "Player queued: " + config.C.GameDBDomain + "/p" + strconv.FormatInt(player.ID, 10)
 	return message, nil

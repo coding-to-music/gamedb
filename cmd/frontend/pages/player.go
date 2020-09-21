@@ -483,7 +483,9 @@ func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
 	var friendIDsMap = map[int64]bool{}
 
 	friends, err := mongo.GetFriends(idx, 0, 0, nil)
-	log.ErrS(err)
+	if err != nil {
+		log.ErrS(err)
+	}
 	for _, v := range friends {
 		friendIDs = append(friendIDs, v.FriendID)
 		friendIDsMap[v.FriendID] = true
@@ -491,7 +493,9 @@ func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Remove players we already have
 	players, err := mongo.GetPlayersByID(friendIDs, bson.M{"_id": 1})
-	log.ErrS(err)
+	if err != nil {
+		log.ErrS(err)
+	}
 	for _, v := range players {
 		delete(friendIDsMap, v.ID)
 	}
