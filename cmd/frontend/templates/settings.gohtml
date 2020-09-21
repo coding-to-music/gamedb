@@ -136,14 +136,18 @@
                                             <div class="card-body p-2">
                                                 <div class="table-responsive">
                                                     <table>
-                                                        <tr>
-                                                            <td class="pr-2">Username</td>
-                                                            <td>{{ $p.Username }}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Email</td>
-                                                            <td>{{ $p.Email }}</td>
-                                                        </tr>
+                                                        {{ if ne $p.Username "" }}
+                                                            <tr>
+                                                                <td class="pr-2">Username</td>
+                                                                <td>{{ $p.Username }}</td>
+                                                            </tr>
+                                                        {{ end }}
+                                                        {{ if ne $p.Email "" }}
+                                                            <tr>
+                                                                <td>Email</td>
+                                                                <td>{{ $p.Email }}</td>
+                                                            </tr>
+                                                        {{ end }}
                                                     </table>
                                                 </div>
                                             </div>
