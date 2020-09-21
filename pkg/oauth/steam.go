@@ -4,8 +4,14 @@ import (
 	"net/http"
 	"net/url"
 	"path"
+	"strconv"
+	"time"
 
+	"github.com/Jleagle/steam-go/steamapi"
+	"github.com/cenkalti/backoff/v4"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/steam"
 	"github.com/yohcop/openid-go"
 	"golang.org/x/oauth2"
 )
@@ -37,11 +43,9 @@ func (c steamProvider) Redirect(w http.ResponseWriter, r *http.Request, state st
 	q.Set("openid.ns", "http://specs.openid.net/auth/2.0")
 	q.Set("openid.mode", "checkid_setup")
 	q.Set("openid.realm", config.C.GameDBDomain+"/")
-	q.Set("openid.return_to", config.C.GameDBDomain+"/oauth/in/steam")
+	q.Set("openid.return_to", config.C.GameDBDomain+"/oauth/in/steam?page="+state)
 
-	u := "https://steamcommunity.com/openid/login?" + q.Encode()
-
-	http.Redirect(w, r, u, http.StatusFound)
+	http.Redirect(w, r, "https://steamcommunity.com/openid/login?"+q.Encode(), http.StatusFound)
 }
 
 func (c steamProvider) GetUser(r *http.Request, _ *oauth2.Token) (user User, err error) {
@@ -52,7 +56,33 @@ func (c steamProvider) GetUser(r *http.Request, _ *oauth2.Token) (user User, err
 		return user, OauthError{err, "We could not verify your Steam account"}
 	}
 
-	user.ID = path.Base(resp)
+	i, err := strconv.ParseInt(path.Base(resp), 10, 64)
+	if err != nil {
+		return user, err
+	}
+
+	var player steamapi.PlayerSummary
+
+	operation := func() (err error) {
+
+		player, err = steam.GetSteamUnlimited().GetPlayer(i)
+		if err == steamapi.ErrProfileMissing {
+			return backoff.Permanent(err)
+		}
+		return err
+	}
+
+	policy := backoff.NewExponentialBackOff()
+
+	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.InfoS(err) })
+	if err != nil {
+		log.FatalS(err)
+		return user, err
+	}
+
+	user.ID = strconv.FormatInt(int64(player.SteamID), 10)
+	user.Username = player.PersonaName
+	user.Avatar = player.AvatarFull
 
 	return user, nil
 }
