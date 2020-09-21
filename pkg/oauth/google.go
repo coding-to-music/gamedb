@@ -42,18 +42,23 @@ func (c googleProvider) GetConfig() oauth2.Config {
 
 func (c googleProvider) GetUser(_ *http.Request, token *oauth2.Token) (user User, err error) {
 
-	body, _, err := helpers.Get("https://www.googleapis.com/oauth2/v2/userinfo?access_token="+token.AccessToken, 0, nil)
+	q := url.Values{}
+	q.Set("access_token", token.AccessToken)
+
+	body, _, err := helpers.Get("https://openidconnect.googleapis.com/v1/userinfo?"+q.Encode(), 0, nil)
 	if err != nil {
 		return user, OauthError{err, "Invalid token"}
 	}
 
 	userInfo := struct {
-		ID         string `json:"id"`
-		Name       string `json:"name"`
-		GivenName  string `json:"given_name"`
-		FamilyName string `json:"family_name"`
-		Picture    string `json:"picture"`
-		Locale     string `json:"locale"`
+		Sub     string `json:"sub"`
+		Name    string `json:"name"`
+		Picture string `json:"picture"`
+		Email   string `json:"email"`
+		// GivenName     string `json:"given_name"`
+		// FamilyName    string `json:"family_name"`
+		// EmailVerified bool   `json:"email_verified"`
+		// Locale        string `json:"locale"`
 	}{}
 
 	err = json.Unmarshal(body, &userInfo)
@@ -62,9 +67,9 @@ func (c googleProvider) GetUser(_ *http.Request, token *oauth2.Token) (user User
 	}
 
 	user.Token = token.AccessToken
-	user.ID = userInfo.ID
-	user.Username = userInfo.GivenName + " " + userInfo.FamilyName
-	// user.Email = userInfo.Email // todo
+	user.ID = userInfo.Sub
+	user.Username = userInfo.Name
+	user.Email = userInfo.Email
 	user.Avatar = userInfo.Picture
 
 	return user, nil
