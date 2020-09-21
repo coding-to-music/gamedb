@@ -35,21 +35,28 @@ func providerRedirect(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	state := oauth.State{
-		State: helpers.RandString(10, helpers.LettersCaps),
-		Page:  r.URL.Query().Get("page"),
-	}.Marshal()
+	if oauthProvider, ok := provider.(oauth.OAuthProvider); ok {
 
-	session.Set(r, "oauth-state-"+strings.ToLower(provider.GetName()), state)
-	session.Save(w, r)
+		state := oauth.State{
+			State: helpers.RandString(10, helpers.LettersCaps),
+			Page:  r.URL.Query().Get("page"),
+		}.Marshal()
 
-	provider.Redirect(w, r, state)
+		session.Set(r, "oauth-state-"+strings.ToLower(oauthProvider.GetName()), state)
+		session.Save(w, r)
+
+		oauthProvider.Redirect(w, r, state)
+
+	} else {
+
+		provider.Redirect(w, r, r.URL.Query().Get("page"))
+	}
 }
 
 const (
-	oauthRedirectLogin    = "login"
-	oauthRedirectSignup   = "signup"
-	oauthRedirectSettings = "settings"
+	authPageLogin    = "login"
+	authPageSignup   = "signup"
+	authPageSettings = "settings"
 )
 
 func providerCallback(w http.ResponseWriter, r *http.Request) {
@@ -60,8 +67,6 @@ func providerCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var token *oauth2.Token
-	var err error
 	var page string
 
 	defer func() {
@@ -69,21 +74,24 @@ func providerCallback(w http.ResponseWriter, r *http.Request) {
 		session.Save(w, r)
 
 		switch page {
-		case oauthRedirectLogin:
+		case authPageLogin:
 			http.Redirect(w, r, "/login", http.StatusFound)
-		case oauthRedirectSignup:
+		case authPageSignup:
 			http.Redirect(w, r, "/signup", http.StatusFound)
-		case oauthRedirectSettings:
+		case authPageSettings:
 			http.Redirect(w, r, "/settings", http.StatusFound)
 		default:
 			http.Redirect(w, r, "/", http.StatusFound)
 		}
 	}()
 
-	if provider, ok := provider.(oauth.OAuthProvider); ok {
+	var token *oauth2.Token
+	var err error
+
+	if oauthProvider, ok := provider.(oauth.OAuthProvider); ok {
 
 		// Handle outgoing generated state
-		realStateString := session.Get(r, "oauth-state-"+strings.ToLower(provider.GetName()))
+		realStateString := session.Get(r, "oauth-state-"+strings.ToLower(oauthProvider.GetName()))
 		if realStateString == "" {
 			session.SetFlash(r, session.SessionBad, "An error occurred (1001)")
 			return
@@ -116,7 +124,7 @@ func providerCallback(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		conf := provider.GetConfig()
+		conf := oauthProvider.GetConfig()
 		token, err = conf.Exchange(context.Background(), code)
 		if err != nil {
 			log.ErrS(err)
@@ -173,34 +181,62 @@ func providerCallback(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-	} else if provider.GetEnum() == oauth.ProviderSteam {
+	}
+
+	if provider.GetEnum() == oauth.ProviderSteam {
+
+		page = r.URL.Query().Get("page")
 
 		if resp.ID == "" {
 			session.SetFlash(r, session.SessionBad, "We were unable to fetch your details from "+provider.GetName()+" (1002)")
 			return
 		}
 
-		// Look for existing user by email
-		userProvider, err := mysql.GetUserProvider(provider.GetEnum(), resp.IDInt())
-		if err != nil {
-			log.ErrS(err)
-			session.SetFlash(r, session.SessionGood, "An error occurred (1004)")
-			return
-		}
+		switch page {
+		case authPageLogin:
 
-		user, err = mysql.GetUserByID(userProvider.UserID)
-		if err == mysql.ErrRecordNotFound {
-			session.SetFlash(r, session.SessionGood, "Unable to find a Game DB account linked with this Steam account")
-			return
-		} else if err != nil {
-			log.ErrS(err)
-			session.SetFlash(r, session.SessionGood, "An error occurred (1005)")
+			// Look for existing user by email
+			userProvider, err := mysql.GetUserProvider(provider.GetEnum(), resp.IDInt())
+			if err != nil {
+				log.ErrS(err)
+				session.SetFlash(r, session.SessionGood, "Unable to find a Game DB account linked with this Steam account (1001)")
+				return
+			}
+
+			user, err = mysql.GetUserByID(userProvider.UserID)
+			if err == mysql.ErrRecordNotFound {
+				session.SetFlash(r, session.SessionGood, "Unable to find a Game DB account linked with this Steam account (1002)")
+				return
+			} else if err != nil {
+				log.ErrS(err)
+				session.SetFlash(r, session.SessionGood, "An error occurred (1005)")
+				return
+			}
+
+		case authPageSettings:
+
+			userID, err := session.GetUserIDFromSesion(r)
+			if err != nil {
+				log.ErrS(err)
+				session.SetFlash(r, session.SessionGood, "An error occurred (1005)")
+				return
+			}
+
+			user, err = mysql.GetUserByID(userID)
+			if err != nil {
+				log.ErrS(err)
+				session.SetFlash(r, session.SessionGood, "An error occurred (1005)")
+				return
+			}
+
+		default:
+			session.SetFlash(r, session.SessionGood, "Steam can't be used to sign up yet")
 			return
 		}
 	}
 
 	switch page {
-	case oauthRedirectLogin, oauthRedirectSignup:
+	case authPageLogin, authPageSignup:
 		login(r, user)
 	}
 
@@ -224,10 +260,10 @@ func providerCallback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Success flash
-	if page == oauthRedirectSettings {
+	if page == authPageSettings {
 		session.SetFlash(r, session.SessionGood, provider.GetName()+" account linked")
 	}
-	if page == oauthRedirectSignup {
+	if page == authPageSignup {
 		session.SetFlash(r, session.SessionGood, "Account created")
 	}
 
