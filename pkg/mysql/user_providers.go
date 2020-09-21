@@ -82,16 +82,16 @@ func GetUserProviders(userID int) (providers []UserProvider, err error) {
 	return providers, db.Error
 }
 
-func GetUserProvider(enum oauth.ProviderEnum, userID int) (provider UserProvider, err error) {
+func GetUserProvider(enum oauth.ProviderEnum, userID int) (userProvider UserProvider, err error) {
 
 	db, err := GetMySQLClient()
 	if err != nil {
-		return provider, err
+		return userProvider, err
 	}
 
 	db = db.Where("provider = ?", enum)
-	db = db.Where("user_id = ?", userID)
-	db = db.Find(&provider)
+	db = db.Where("id = ?", userID)
+	db = db.Find(&userProvider)
 
-	return provider, db.Error
+	return userProvider, db.Error
 }
