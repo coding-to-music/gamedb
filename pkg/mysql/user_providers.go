@@ -68,3 +68,30 @@ func CheckExistingUserProvider(provider oauth.ProviderEnum, id string, userID in
 
 	return db.Error != ErrRecordNotFound, helpers.IgnoreErrors(db.Error, ErrRecordNotFound)
 }
+
+func GetUserProviders(userID int) (providers []UserProvider, err error) {
+
+	db, err := GetMySQLClient()
+	if err != nil {
+		return providers, err
+	}
+
+	db = db.Where("user_id = ?", userID)
+	db = db.Find(&providers)
+
+	return providers, db.Error
+}
+
+func GetUserProvider(enum oauth.ProviderEnum, userID int) (provider UserProvider, err error) {
+
+	db, err := GetMySQLClient()
+	if err != nil {
+		return provider, err
+	}
+
+	db = db.Where("provider = ?", enum)
+	db = db.Where("user_id = ?", userID)
+	db = db.Find(&provider)
+
+	return provider, db.Error
+}

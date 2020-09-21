@@ -20,7 +20,7 @@ func (c discordProvider) GetIcon() string {
 }
 
 func (c discordProvider) GetColour() string {
-	return "7289DA"
+	return "#7289DA"
 }
 
 func (c discordProvider) GetEnum() ProviderEnum {

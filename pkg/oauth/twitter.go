@@ -22,7 +22,7 @@ func (c twitterProvider) GetIcon() string {
 }
 
 func (c twitterProvider) GetColour() string {
-	return "1DA1F2"
+	return "#1DA1F2"
 }
 
 func (c twitterProvider) GetEnum() ProviderEnum {

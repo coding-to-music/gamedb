@@ -21,7 +21,7 @@ func (c steamProvider) GetIcon() string {
 }
 
 func (c steamProvider) GetColour() string {
-	return "000"
+	return "#000000"
 }
 
 func (c steamProvider) GetEnum() ProviderEnum {

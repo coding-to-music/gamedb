@@ -46,7 +46,7 @@
                             <div class="col-12 col-lg-6" id="providers">
                                 <p class="mb-2">Or login with:</p>
                                 {{ range $key, $value := .Providers }}
-                                    <a class="btn btn-lg" href="/oauth/out/{{ .GetEnum }}?page=login" style="background-color: #{{ .GetColour}}; border-color: #{{ .GetColour}}"><i class="{{ .GetIcon }}"></i> {{ .GetName }}</a>
+                                    <a class="btn btn-lg" href="/oauth/out/{{ .GetEnum }}?page=login" style="background-color: {{ .GetColour}}; border-color: {{ .GetColour}}"><i class="{{ .GetIcon }}"></i> {{ .GetName }}</a>
                                 {{ end }}
                             </div>
                         </div>

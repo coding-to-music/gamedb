@@ -23,7 +23,7 @@ func (c githubProvider) GetIcon() string {
 }
 
 func (c githubProvider) GetColour() string {
-	return "4078c0"
+	return "#4078c0"
 }
 
 func (c githubProvider) GetEnum() ProviderEnum {

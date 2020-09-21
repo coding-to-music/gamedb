@@ -22,7 +22,7 @@ func (c googleProvider) GetIcon() string {
 }
 
 func (c googleProvider) GetColour() string {
-	return "4285F4"
+	return "#4285F4"
 }
 
 func (c googleProvider) GetEnum() ProviderEnum {

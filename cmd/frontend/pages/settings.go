@@ -12,7 +12,6 @@ import (
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/datatable"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/middleware"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
-	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -48,7 +47,6 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	t := settingsTemplate{}
 	t.fill(w, r, "Settings", "Game DB settings")
 	t.addAssetPasswordStrength()
-	t.Domain = config.C.GameDBDomain
 	t.ProdCCs = i18n.GetProdCCs(true)
 
 	// Get user
@@ -162,16 +160,34 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 		t.Badges = template.JS(b)
 	}()
 
+	// Get providers
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		providers, err := mysql.GetUserProviders(t.User.ID)
+		if err != nil {
+			log.ErrS(err)
+			return
+		}
+
+		t.UserProviders = map[oauth.ProviderEnum]mysql.UserProvider{}
+		for _, v := range providers {
+			t.UserProviders[v.Provider] = v
+		}
+	}()
+
 	// Wait
 	wg.Wait()
 
 	t.Providers = []oauth.Provider{
+		oauth.New(oauth.ProviderSteam),
 		oauth.New(oauth.ProviderDiscord),
 		oauth.New(oauth.ProviderGoogle),
-		oauth.New(oauth.ProviderGithub),
-		oauth.New(oauth.ProviderPatreon),
-		oauth.New(oauth.ProviderSteam),
 		oauth.New(oauth.ProviderTwitter),
+		oauth.New(oauth.ProviderPatreon),
+		oauth.New(oauth.ProviderGithub),
 	}
 
 	// Template
@@ -180,14 +196,14 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 type settingsTemplate struct {
 	globalTemplate
-	User      mysql.User
-	Player    mongo.Player
-	ProdCCs   []i18n.ProductCountryCode
-	Domain    string
-	Groups    template.JS
-	Badges    template.JS
-	Games     template.JS
-	Providers []oauth.Provider
+	User          mysql.User
+	Player        mongo.Player
+	ProdCCs       []i18n.ProductCountryCode
+	Groups        template.JS
+	Badges        template.JS
+	Games         template.JS
+	Providers     []oauth.Provider
+	UserProviders map[oauth.ProviderEnum]mysql.UserProvider
 }
 
 func deletePostHandler(w http.ResponseWriter, r *http.Request) {

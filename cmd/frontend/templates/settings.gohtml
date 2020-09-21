@@ -118,66 +118,46 @@
 
                             </div>
 
-                            <div class="col-12 col-lg-4">
+                            <div class="col-12 col-lg-4" id="providers">
 
                                 {{ range $key, $value := .Providers }}
+
+                                    {{ $p := (index $.UserProviders .GetEnum) }}
+
                                     <div class="card mb-2">
-                                        <h5 class="card-header" style="background-color: #{{ .GetColour }}; color: white">
+                                        <h5 class="card-header pr-0" style="background-color: {{ .GetColour }}; color: white">
+                                            {{ if ne $p.ID "" }}
+                                                <img src="{{ $p.Avatar }}" alt="{{ $p.Username }}" class="float-right">
+                                            {{ end }}
                                             <i class="{{ .GetIcon }}"></i>
                                             <span>{{ .GetName }}</span>
                                         </h5>
-                                        <div class="card-body p-2">
-                                            <img src="" alt="" class="float-right">
-                                            <table>
-                                                <tr>
-                                                    <th>ID</th>
-                                                    <td>{{ . }}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Name</td>
-                                                    <td>{{ . }}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Email</td>
-                                                    <td>{{ . }}</td>
-                                                </tr>
-                                            </table>
-                                        </div>
-                                        <small class="card-footer text-right">
-                                            <a href="/oauth/out/{{ .GetEnum }}?page=settings" class="mr-2"><i class="fas fa-link"></i> Relink</a>
-                                            <a href="/settings/remove-provider/{{ .GetEnum }}"><i class="fas fa-unlink"></i> Unlink</a>
-                                        </small>
+                                        {{ if ne $p.ID "" }}
+                                            <div class="card-body p-2">
+                                                <div class="table-responsive">
+                                                    <table>
+                                                        <tr>
+                                                            <td class="pr-2">Username</td>
+                                                            <td>{{ $p.Username }}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Email</td>
+                                                            <td>{{ $p.Email }}</td>
+                                                        </tr>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                            <small class="card-footer text-right">
+                                                <a href="/oauth/out/{{ .GetEnum }}?page=settings" class="mr-2"><i class="fas fa-link"></i> Relink</a>
+                                                <a href="/settings/remove-provider/{{ .GetEnum }}"><i class="fas fa-unlink"></i> Unlink</a>
+                                            </small>
+                                        {{ else }}
+                                            <small class="card-footer">
+                                                <a href="/oauth/out/{{ .GetEnum }}?page=settings" class="mr-2"><i class="fas fa-link"></i> Link</a>
+                                            </small>
+                                        {{ end }}
                                     </div>
                                 {{ end }}
-
-                                <div class="card mb-3" id="connections">
-                                    <div class="card-header">Auth Connections</div>
-                                    <div class="card-body">
-
-                                        {{ if eq .User.SteamID.String "" }}
-                                            <form action="https://steamcommunity.com/openid/login" method="post">
-                                                <input type="hidden" name="openid.identity" value="http://specs.openid.net/auth/2.0/identifier_select">
-                                                <input type="hidden" name="openid.claimed_id" value="http://specs.openid.net/auth/2.0/identifier_select">
-                                                <input type="hidden" name="openid.ns" value="http://specs.openid.net/auth/2.0">
-                                                <input type="hidden" name="openid.mode" value="checkid_setup">
-                                                <input type="hidden" name="openid.realm" value="{{ .Domain }}/">
-                                                <input type="hidden" name="openid.return_to" value="{{ .Domain }}/settings/oauth-callback/steam">
-                                                <p>
-                                                    <button type="submit" class="btn btn-success" aria-label="Link Steam Account">
-                                                        <i class="fab fa-steam"></i> Link Steam Account
-                                                    </button>
-                                                </p>
-                                            </form>
-                                        {{ else }}
-                                            <p>
-                                                <a href="/settings/oauth-unlink/steam" role="button" class="btn btn-danger">
-                                                    <i class="fab fa-steam"></i> Unlink Steam Account
-                                                </a>
-                                            </p>
-                                        {{ end }}
-
-                                    </div>
-                                </div>
 
                             </div>
 

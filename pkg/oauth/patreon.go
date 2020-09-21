@@ -21,7 +21,7 @@ func (c patreonProvider) GetIcon() string {
 }
 
 func (c patreonProvider) GetColour() string {
-	return "f96854"
+	return "#f96854"
 }
 
 func (c patreonProvider) GetEnum() ProviderEnum {
