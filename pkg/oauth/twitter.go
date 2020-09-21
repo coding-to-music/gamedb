@@ -29,18 +29,9 @@ func (c twitterProvider) GetEnum() ProviderEnum {
 	return ProviderTwitter
 }
 
-func (c twitterProvider) GetConfig() oauth2.Config {
-
-	return oauth2.Config{
-		ClientID:     config.C.TwitterConsumerKey,
-		ClientSecret: config.C.TwitterConsumerSecret,
-		Scopes:       []string{"identity", "identity[email]"}, // identity[email] scope is only needed as the Patreon package we are using only handles v1 API
-		RedirectURL:  config.C.GameDBDomain + "/oauth/in/" + string(c.GetEnum()),
-		Endpoint: oauth2.Endpoint{
-			AuthURL:  "https://api.twitter.com/oauth/authenticate",
-			TokenURL: "https://api.twitter.com/oauth2/token",
-		},
-	}
+func (c twitterProvider) Redirect(w http.ResponseWriter, r *http.Request, state string) {
+	conf := c.GetConfig()
+	http.Redirect(w, r, conf.AuthCodeURL(state), http.StatusFound)
 }
 
 func (c twitterProvider) GetUser(_ *http.Request, token *oauth2.Token) (user User, err error) {
@@ -74,4 +65,18 @@ func (c twitterProvider) GetUser(_ *http.Request, token *oauth2.Token) (user Use
 	user.Avatar = resp.ProfileImageURL
 
 	return user, nil
+}
+
+func (c twitterProvider) GetConfig() oauth2.Config {
+
+	return oauth2.Config{
+		ClientID:     config.C.TwitterConsumerKey,
+		ClientSecret: config.C.TwitterConsumerSecret,
+		Scopes:       []string{"identity", "identity[email]"}, // identity[email] scope is only needed as the Patreon package we are using only handles v1 API
+		RedirectURL:  config.C.GameDBDomain + "/oauth/in/" + string(c.GetEnum()),
+		Endpoint: oauth2.Endpoint{
+			AuthURL:  "https://api.twitter.com/oauth/authenticate",
+			TokenURL: "https://api.twitter.com/oauth2/token",
+		},
+	}
 }

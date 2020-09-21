@@ -34,8 +34,13 @@ type Provider interface {
 	GetIcon() string
 	GetColour() string
 	GetEnum() ProviderEnum
-	GetConfig() oauth2.Config
+	Redirect(w http.ResponseWriter, r *http.Request, state string)
 	GetUser(r *http.Request, token *oauth2.Token) (User, error) // r for OpenID, token for OAuth
+}
+
+type OAuthProvider interface {
+	Provider
+	GetConfig() oauth2.Config
 }
 
 func New(p ProviderEnum) Provider {

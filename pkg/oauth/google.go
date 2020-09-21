@@ -3,6 +3,7 @@ package oauth
 import (
 	"encoding/json"
 	"net/http"
+	"net/url"
 
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -29,15 +30,9 @@ func (c googleProvider) GetEnum() ProviderEnum {
 	return ProviderGoogle
 }
 
-func (c googleProvider) GetConfig() oauth2.Config {
-
-	return oauth2.Config{
-		ClientID:     config.C.GoogleOauthClientID,
-		ClientSecret: config.C.GoogleOauthClientSecret,
-		Scopes:       []string{"profile"},
-		RedirectURL:  config.C.GameDBDomain + "/oauth/in/" + string(c.GetEnum()),
-		Endpoint:     google.Endpoint,
-	}
+func (c googleProvider) Redirect(w http.ResponseWriter, r *http.Request, state string) {
+	conf := c.GetConfig()
+	http.Redirect(w, r, conf.AuthCodeURL(state), http.StatusFound)
 }
 
 func (c googleProvider) GetUser(_ *http.Request, token *oauth2.Token) (user User, err error) {
@@ -73,4 +68,15 @@ func (c googleProvider) GetUser(_ *http.Request, token *oauth2.Token) (user User
 	user.Avatar = userInfo.Picture
 
 	return user, nil
+}
+
+func (c googleProvider) GetConfig() oauth2.Config {
+
+	return oauth2.Config{
+		ClientID:     config.C.GoogleOauthClientID,
+		ClientSecret: config.C.GoogleOauthClientSecret,
+		Scopes:       []string{"profile", "email"},
+		RedirectURL:  config.C.GameDBDomain + "/oauth/in/" + string(c.GetEnum()),
+		Endpoint:     google.Endpoint,
+	}
 }

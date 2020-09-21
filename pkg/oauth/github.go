@@ -30,15 +30,9 @@ func (c githubProvider) GetEnum() ProviderEnum {
 	return ProviderGithub
 }
 
-func (c githubProvider) GetConfig() oauth2.Config {
-
-	return oauth2.Config{
-		ClientID:     config.C.GitHubClient,
-		ClientSecret: config.C.GitHubSecret,
-		Scopes:       []string{""},
-		RedirectURL:  config.C.GameDBDomain + "/oauth/in/" + string(c.GetEnum()),
-		Endpoint:     github.Endpoint,
-	}
+func (c githubProvider) Redirect(w http.ResponseWriter, r *http.Request, state string) {
+	conf := c.GetConfig()
+	http.Redirect(w, r, conf.AuthCodeURL(state), http.StatusFound)
 }
 
 func (c githubProvider) GetUser(_ *http.Request, token *oauth2.Token) (user User, err error) {
@@ -63,4 +57,15 @@ func (c githubProvider) GetUser(_ *http.Request, token *oauth2.Token) (user User
 	user.Avatar = resp.GetAvatarURL()
 
 	return user, nil
+}
+
+func (c githubProvider) GetConfig() oauth2.Config {
+
+	return oauth2.Config{
+		ClientID:     config.C.GitHubClient,
+		ClientSecret: config.C.GitHubSecret,
+		Scopes:       []string{""},
+		RedirectURL:  config.C.GameDBDomain + "/oauth/in/" + string(c.GetEnum()),
+		Endpoint:     github.Endpoint,
+	}
 }

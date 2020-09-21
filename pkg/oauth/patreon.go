@@ -28,18 +28,9 @@ func (c patreonProvider) GetEnum() ProviderEnum {
 	return ProviderPatreon
 }
 
-func (c patreonProvider) GetConfig() oauth2.Config {
-
-	return oauth2.Config{
-		ClientID:     config.C.PatreonClientID,
-		ClientSecret: config.C.PatreonClientSecret,
-		Scopes:       []string{"identity", "identity[email]"}, // identity[email] scope is only needed as the Patreon package we are using only handles v1 API
-		RedirectURL:  config.C.GameDBDomain + "/oauth/in/" + string(c.GetEnum()),
-		Endpoint: oauth2.Endpoint{
-			AuthURL:  patreon.AuthorizationURL,
-			TokenURL: patreon.AccessTokenURL,
-		},
-	}
+func (c patreonProvider) Redirect(w http.ResponseWriter, r *http.Request, state string) {
+	conf := c.GetConfig()
+	http.Redirect(w, r, conf.AuthCodeURL(state), http.StatusFound)
 }
 
 func (c patreonProvider) GetUser(_ *http.Request, token *oauth2.Token) (user User, err error) {
@@ -64,4 +55,18 @@ func (c patreonProvider) GetUser(_ *http.Request, token *oauth2.Token) (user Use
 	user.Avatar = resp.Data.Attributes.ImageURL
 
 	return user, nil
+}
+
+func (c patreonProvider) GetConfig() oauth2.Config {
+
+	return oauth2.Config{
+		ClientID:     config.C.PatreonClientID,
+		ClientSecret: config.C.PatreonClientSecret,
+		Scopes:       []string{"identity", "identity[email]"}, // identity[email] scope is only needed as the Patreon package we are using only handles v1 API
+		RedirectURL:  config.C.GameDBDomain + "/oauth/in/" + string(c.GetEnum()),
+		Endpoint: oauth2.Endpoint{
+			AuthURL:  patreon.AuthorizationURL,
+			TokenURL: patreon.AccessTokenURL,
+		},
+	}
 }

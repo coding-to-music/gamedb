@@ -27,18 +27,9 @@ func (c discordProvider) GetEnum() ProviderEnum {
 	return ProviderDiscord
 }
 
-func (c discordProvider) GetConfig() oauth2.Config {
-
-	return oauth2.Config{
-		ClientID:     config.C.DiscordClientID,
-		ClientSecret: config.C.DiscordClientSescret,
-		Scopes:       []string{"identify", "email"},
-		RedirectURL:  config.C.GameDBDomain + "/oauth/in/" + string(c.GetEnum()),
-		Endpoint: oauth2.Endpoint{
-			AuthURL:  "https://discordapp.com/api/oauth2/authorize",
-			TokenURL: "https://discordapp.com/api/oauth2/token",
-		},
-	}
+func (c discordProvider) Redirect(w http.ResponseWriter, r *http.Request, state string) {
+	conf := c.GetConfig()
+	http.Redirect(w, r, conf.AuthCodeURL(state), http.StatusFound)
 }
 
 func (c discordProvider) GetUser(_ *http.Request, token *oauth2.Token) (user User, err error) {
@@ -66,4 +57,18 @@ func (c discordProvider) GetUser(_ *http.Request, token *oauth2.Token) (user Use
 	user.Avatar = discordUser.AvatarURL("64")
 
 	return user, nil
+}
+
+func (c discordProvider) GetConfig() oauth2.Config {
+
+	return oauth2.Config{
+		ClientID:     config.C.DiscordClientID,
+		ClientSecret: config.C.DiscordClientSescret,
+		Scopes:       []string{"identify", "email"},
+		RedirectURL:  config.C.GameDBDomain + "/oauth/in/" + string(c.GetEnum()),
+		Endpoint: oauth2.Endpoint{
+			AuthURL:  "https://discordapp.com/api/oauth2/authorize",
+			TokenURL: "https://discordapp.com/api/oauth2/token",
+		},
+	}
 }
