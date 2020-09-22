@@ -151,24 +151,20 @@ func statAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 func statTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	typex := chi.URLParam(r, "type")
-	id := chi.URLParam(r, "id")
-
-	idx, err := strconv.Atoi(id)
+	idx, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		return
 	}
 
-	var hc influx.HighChartsJSON
+	key := mongo.Stat{
+		Type: statPathToConst(chi.URLParam(r, "type")),
+		ID:   idx,
+	}.GetKey()
+
+	hc := influx.HighChartsJSON{}
+	code := session.GetProductCC(r)
 
 	callback := func() (interface{}, error) {
-
-		code := session.GetProductCC(r)
-
-		stat := mongo.Stat{
-			Type: statPathToConst(typex),
-			ID:   idx,
-		}
 
 		builder := influxql.NewBuilder()
 		builder.AddSelect(`max("apps_count")`, "max_apps_count")
@@ -177,7 +173,7 @@ func statTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		builder.AddSelect(`max("mean_players")`, "max_mean_players")
 		builder.AddSelect(`max("mean_price_`+string(code)+`")`, "max_mean_price_"+string(code))
 		builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementStats.String())
-		builder.AddWhere("key", "=", stat.GetKey())
+		builder.AddWhere("key", "=", key)
 		builder.AddWhere("time", ">", "now()-365d")
 		builder.AddGroupByTime("1d")
 		builder.SetFillNone()
@@ -196,7 +192,7 @@ func statTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return hc, err
 	}
 
-	var item = memcache.MemcacheGroupFollowersChart(id)
+	var item = memcache.MemcacheStatTime(key, code)
 	err = memcache.GetSetInterface(item.Key, item.Expiration, &hc, callback)
 	if err != nil {
 		log.ErrS(err)

@@ -47,7 +47,7 @@ var (
 	MemcacheChatBotRequest     = func(request string, code steamapi.ProductCC) Item { return Item{Key: "chat-bot-request-" + string(code) + "-" + helpers.MD5([]byte(request)), Expiration: 60 * 10} }
 
 	// GitHub
-	MemcacheCommitsPage  = func(page int) Item { return Item{Key: "commits-page-" + strconv.Itoa(page), Expiration: 60 * 60} }
+	MemcacheCommitsPage = func(page int) Item { return Item{Key: "commits-page-" + strconv.Itoa(page), Expiration: 60 * 60} }
 
 	// Group
 	MemcacheTrendingGroups      = Item{Key: "trending-apps", Expiration: 60 * 10}
@@ -75,6 +75,7 @@ var (
 
 	// Stat
 	MemcacheStat           = func(t string, id int) Item { return Item{Key: "stat-" + t + "_" + strconv.Itoa(id), Expiration: 0} }
+	MemcacheStatTime       = func(statKey string, cc steamapi.ProductCC) Item { return Item{Key: "stat-time-" + statKey + "-" + string(cc), Expiration: 60 * 60 * 6} }
 	MemcacheStatsForSelect = func(t string) Item { return Item{Key: "stats-select-" + t, Expiration: 60 * 60 * 24} }
 
 	// Player
