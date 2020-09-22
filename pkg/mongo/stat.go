@@ -23,6 +23,7 @@ type Stat struct {
 	ID            int                            `bson:"id"`
 	Name          string                         `bson:"name"`
 	Apps          int                            `bson:"apps"`
+	AppsPercnt    float32                        `bson:"apps_percent"`
 	MeanPrice     map[steamapi.ProductCC]float32 `bson:"mean_price"`
 	MeanScore     float32                        `bson:"mean_score"`
 	MeanPlayers   float64                        `bson:"mean_players"`
@@ -38,6 +39,7 @@ func (stat Stat) BSON() bson.D {
 		{"id", stat.ID},
 		{"name", stat.Name},
 		{"apps", stat.Apps},
+		{"apps_percent", stat.AppsPercnt},
 		{"mean_price", stat.MeanPrice},
 		{"mean_score", stat.MeanScore},
 		{"mean_players", stat.MeanPlayers},

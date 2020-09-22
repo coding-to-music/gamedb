@@ -105,17 +105,26 @@ if ($statPage.length > 0) {
                     ],
                     tooltip: {
                         formatter: function () {
+
+                            const day = moment(this.key).format("dddd DD MMM YYYY");
+
                             switch (this.series.name) {
                                 case 'Apps':
-                                    return Math.round(this.y).toLocaleString() + ' games with tag on ' + moment(this.key).format("dddd DD MMM YYYY");
+                                    return Math.round(this.y).toLocaleString() + ' games with tag on ' + day;
                                 case 'Apps (%)':
-                                    return this.y.toLocaleString() + '% of games have tag ' + moment(this.key).format("dddd DD MMM YYYY");
+                                    return this.y.toLocaleString() + '% of games have tag ' + day;
                                 case 'Mean Players':
-                                    return this.y.toLocaleString() + ' mean max weakly players on ' + moment(this.key).format("dddd DD MMM YYYY");
+                                    return this.y.toLocaleString() + ' mean max weakly players on ' + day;
                                 case 'Mean Price (' + user.userCurrencySymbol + ')':
-                                    return user.userCurrencySymbol + ' ' + (this.y / 100).toFixed(2).toLocaleString() + ' mean price on ' + moment(this.key).format("dddd DD MMM YYYY");
+                                    return user.userCurrencySymbol + ' ' + (this.y / 100).toFixed(2).toLocaleString() + ' mean price on ' + day;
                                 case 'Mean Review Score':
-                                    return this.y.toLocaleString() + '% mean review score on ' + moment(this.key).format("dddd DD MMM YYYY");
+                                    return this.y.toLocaleString() + '% mean review score on ' + day;
+                                case 'Median Players':
+                                    return this.y.toLocaleString() + ' median max weakly players on ' + day;
+                                case 'Median Price (' + user.userCurrencySymbol + ')':
+                                    return user.userCurrencySymbol + ' ' + (this.y / 100).toFixed(2).toLocaleString() + ' median price on ' + day;
+                                case 'Median Review Score':
+                                    return this.y.toLocaleString() + '% median review score on ' + day;
                             }
                         },
                     },
@@ -138,16 +147,37 @@ if ($statPage.length > 0) {
                             data: data['max_mean_players'],
                             marker: {symbol: 'circle'},
                             yAxis: 2,
+                            visible: false,
+                        },
+                        {
+                            name: 'Median Players',
+                            data: data['max_median_players'],
+                            marker: {symbol: 'circle'},
+                            yAxis: 2,
                         },
                         {
                             name: 'Mean Price (' + user.userCurrencySymbol + ')',
-                            data: data['max_mean_price_uk'],
+                            data: data['max_mean_price_' + user.prodCC],
+                            marker: {symbol: 'circle'},
+                            yAxis: 3,
+                            visible: false,
+                        },
+                        {
+                            name: 'Median Price (' + user.userCurrencySymbol + ')',
+                            data: data['max_median_price_' + user.prodCC],
                             marker: {symbol: 'circle'},
                             yAxis: 3,
                         },
                         {
                             name: 'Mean Review Score',
                             data: data['max_mean_score'],
+                            marker: {symbol: 'circle'},
+                            yAxis: 4,
+                            visible: false,
+                        },
+                        {
+                            name: 'Median Review Score',
+                            data: data['max_median_score'],
                             marker: {symbol: 'circle'},
                             yAxis: 4,
                         },

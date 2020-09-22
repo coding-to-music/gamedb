@@ -49,13 +49,13 @@ func statsHandler(message *rabbit.Message) {
 
 	var totalApps int
 	var scores stats.Float64Data
-	var players stats.Float64Data
 	var prices = map[steamapi.ProductCC]stats.Float64Data{}
+	var players stats.Float64Data
 
-	projection := bson.M{"reviews_score": 1, "prices": 1, "player_peak_week": 1}
 	filter := bson.D{{payload.Type.MongoCol(), payload.StatID}}
+	projection := bson.M{"reviews_score": 1, "prices": 1, "player_peak_week": 1}
 
-	err = mongo.BatchApps(filter, projection, func(apps []mongo.App) {
+	callback := func(apps []mongo.App) {
 
 		for _, app := range apps {
 
@@ -75,7 +75,16 @@ func statsHandler(message *rabbit.Message) {
 			// Players
 			players = append(players, float64(app.PlayerPeakWeek))
 		}
-	})
+	}
+
+	err = mongo.BatchApps(filter, projection, callback)
+	if err != nil {
+		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
+		sendToRetryQueue(message)
+		return
+	}
+
+	var percent = (float64(totalApps) / float64(payload.AppsCount)) * 100
 
 	// Calculate means
 	meanScore, _ := scores.Mean()
@@ -114,6 +123,7 @@ func statsHandler(message *rabbit.Message) {
 	// Update Mongo
 	update := bson.D{
 		{Key: "apps", Value: totalApps},
+		{Key: "apps_percent", Value: float32(percent)},
 
 		{Key: "mean_price", Value: meanPrice},
 		{Key: "mean_score", Value: float32(meanScore)},
@@ -134,7 +144,7 @@ func statsHandler(message *rabbit.Message) {
 	// Update Influx
 	fields := map[string]interface{}{
 		"apps_count":     totalApps,
-		"apps_percent":   (float64(totalApps) / float64(payload.AppsCount)) * 100,
+		"apps_percent":   percent,
 		"mean_score":     float32(meanScore),
 		"mean_players":   meanPlayers,
 		"median_score":   float32(medianScore),

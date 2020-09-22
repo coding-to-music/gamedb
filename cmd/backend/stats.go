@@ -50,15 +50,21 @@ func (s StatsServer) List(ctx context.Context, request *generated.StatsRequest) 
 	for _, stat := range stats {
 
 		s := &generated.StatResponse{
-			Id:          int32(stat.ID),
-			Name:        stat.Name,
-			Apps:        int32(stat.Apps),
-			MeanScore:   stat.MeanScore,
-			MeanPlayers: float32(stat.MeanPlayers),
+			Id:            int32(stat.ID),
+			Name:          stat.Name,
+			Apps:          int32(stat.Apps),
+			MeanScore:     stat.MeanScore,
+			MeanPlayers:   float32(stat.MeanPlayers),
+			MedianScore:   stat.MedianScore,
+			MedianPlayers: int32(stat.MedianPlayers),
 		}
 
 		if val, ok := stat.MeanPrice[steamapi.ProductCC(request.GetCurrency())]; ok {
 			s.MeanPrice = val
+		}
+
+		if val, ok := stat.MedianPrice[steamapi.ProductCC(request.GetCurrency())]; ok {
+			s.MedianPrice = int32(val)
 		}
 
 		response.Stats = append(response.Stats, s)
