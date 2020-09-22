@@ -365,9 +365,14 @@ func updatePlayerSummary(player *mongo.Player) error {
 		player.VanityURL = path.Base(summary.ProfileURL)
 	}
 
+	continent, err := i18n.CountryCodeToContinent(summary.CountryCode)
+	if err != nil {
+		log.Err(err.Error(), zap.Int64("player", player.ID), zap.String("country", summary.CountryCode))
+	}
+
 	player.Avatar = summary.AvatarHash
 	player.CountryCode = summary.CountryCode
-	player.ContinentCode = i18n.CountryCodeToContinent(summary.CountryCode)
+	player.ContinentCode = continent
 	player.StateCode = summary.StateCode
 	player.PersonaName = summary.PersonaName
 	player.TimeCreated = time.Unix(summary.TimeCreated, 0)
