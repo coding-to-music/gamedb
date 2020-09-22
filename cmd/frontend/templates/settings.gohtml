@@ -140,34 +140,19 @@
                                             <i class="{{ .GetIcon }}"></i>
                                             <span>{{ .GetName }}</span>
                                         </h5>
-                                        {{ if ne $p.ID "" }}
-                                            <div class="card-body p-2">
-                                                <div class="table-responsive">
-                                                    <table>
-                                                        {{ if ne $p.Username "" }}
-                                                            <tr>
-                                                                <td class="pr-2">Username</td>
-                                                                <td>{{ $p.Username }}</td>
-                                                            </tr>
-                                                        {{ end }}
-                                                        {{ if ne $p.Email "" }}
-                                                            <tr>
-                                                                <td>Email</td>
-                                                                <td>{{ $p.Email }}</td>
-                                                            </tr>
-                                                        {{ end }}
-                                                    </table>
+                                        <div class="card-footer">
+                                            {{ if ne $p.ID "" }}
+                                                <span class="float-left mr-1">{{ $p.Username }}</span>
+                                                <small class="float-right d-block nowrap pt-1">
+                                                    <a href="/oauth/out/{{ .GetEnum }}?page=settings" class="mr-2"><i class="fas fa-link"></i> Relink</a>
+                                                    <a href="/settings/remove-provider/{{ .GetEnum }}"><i class="fas fa-unlink"></i> Unlink</a>
+                                                </small>
+                                            {{ else }}
+                                                <div class="nowrap">
+                                                    <a href="/oauth/out/{{ .GetEnum }}?page=settings" class="mr-2"><i class="fas fa-link"></i> Link</a>
                                                 </div>
-                                            </div>
-                                            <small class="card-footer text-right">
-                                                <a href="/oauth/out/{{ .GetEnum }}?page=settings" class="mr-2"><i class="fas fa-link"></i> Relink</a>
-                                                <a href="/settings/remove-provider/{{ .GetEnum }}"><i class="fas fa-unlink"></i> Unlink</a>
-                                            </small>
-                                        {{ else }}
-                                            <small class="card-footer">
-                                                <a href="/oauth/out/{{ .GetEnum }}?page=settings" class="mr-2"><i class="fas fa-link"></i> Link</a>
-                                            </small>
-                                        {{ end }}
+                                            {{ end }}
+                                        </div>
                                     </div>
                                 {{ end }}
 
