@@ -75,6 +75,7 @@ func updateArticleDom(n *html.Node) {
 
 		// Remove image heights to make responsive
 		removeAttribute(n, "height")
+		removeAttribute(n, "width")
 
 		// Lazy load
 		var src = getAttribute(n, "src")
