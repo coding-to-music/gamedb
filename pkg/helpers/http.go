@@ -6,16 +6,14 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"regexp"
 	"strings"
 	"time"
 
 	"github.com/cenkalti/backoff/v4"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/mssola/user_agent"
 )
-
-var botRegex = regexp.MustCompile("(?i)bot|crawl|slurp|wget|curl|spider|yandex|baidu|google|msn|bing|yahoo|jeeves|twitter|facebook")
 
 func IsBot(userAgent string) bool {
 
@@ -23,7 +21,7 @@ func IsBot(userAgent string) bool {
 		return true
 	}
 
-	return botRegex.MatchString(userAgent)
+	return user_agent.New(userAgent).Bot()
 }
 
 func Get(link string, timeout time.Duration, headers http.Header) (b []byte, code int, err error) {
