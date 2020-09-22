@@ -176,6 +176,10 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 		for _, v := range providers {
 			t.UserProviders[v.Provider] = v
 		}
+
+		if _, ok := t.UserProviders[oauth.ProviderSteam]; !ok {
+			t.Banners = append(t.Banners, "<a href='/oauth/out/steam?page=settings'>Link your Steam account.</a>")
+		}
 	}()
 
 	// Wait
@@ -204,6 +208,7 @@ type settingsTemplate struct {
 	Games         template.JS
 	Providers     []oauth.Provider
 	UserProviders map[oauth.ProviderEnum]mysql.UserProvider
+	Banners       []template.HTML
 }
 
 func deletePostHandler(w http.ResponseWriter, r *http.Request) {
