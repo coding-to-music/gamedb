@@ -185,7 +185,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 		oauth.New(oauth.ProviderSteam),
 		oauth.New(oauth.ProviderDiscord),
 		oauth.New(oauth.ProviderGoogle),
-		oauth.New(oauth.ProviderTwitter),
+		// oauth.New(oauth.ProviderTwitter),
 		oauth.New(oauth.ProviderPatreon),
 		oauth.New(oauth.ProviderGithub),
 	}

@@ -37,8 +37,8 @@ func (c twitterProvider) Redirect(w http.ResponseWriter, r *http.Request, state 
 func (c twitterProvider) GetUser(_ *http.Request, token *oauth2.Token) (user User, err error) {
 
 	configx := &clientcredentials.Config{
-		ClientID:     "consumerKey",
-		ClientSecret: "consumerSecret",
+		ClientID:     config.C.TwitterConsumerKey,
+		ClientSecret: config.C.TwitterConsumerSecret,
 		TokenURL:     "https://api.twitter.com/oauth2/token",
 	}
 
@@ -72,7 +72,7 @@ func (c twitterProvider) GetConfig() oauth2.Config {
 	return oauth2.Config{
 		ClientID:     config.C.TwitterConsumerKey,
 		ClientSecret: config.C.TwitterConsumerSecret,
-		Scopes:       []string{"identity", "identity[email]"}, // identity[email] scope is only needed as the Patreon package we are using only handles v1 API
+		Scopes:       []string{},
 		RedirectURL:  config.C.GameDBDomain + "/oauth/in/" + string(c.GetEnum()),
 		Endpoint: oauth2.Endpoint{
 			AuthURL:  "https://api.twitter.com/oauth/authenticate",
