@@ -183,7 +183,7 @@ func chatAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.InfoS(err) })
 	if err != nil {
-		log.FatalS(err)
+		log.ErrS(err)
 		return
 	}
 

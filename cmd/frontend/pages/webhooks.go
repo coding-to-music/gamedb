@@ -65,7 +65,7 @@ func sendgridWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Validate
 	if config.C.SendGridSecret == "" {
-		log.Fatal("Missing sendgrid environment variables")
+		log.ErrS("Missing sendgrid environment variables")
 	}
 
 	if r.Header.Get("X-Twilio-Email-Event-Webhook-Signature") != config.C.SendGridSecret {
@@ -102,7 +102,7 @@ func twitterZapierWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Validate
 	if config.C.TwitterZapierSecret == "" {
-		log.Fatal("Missing zapier environment variables")
+		log.ErrS("Missing zapier environment variables")
 	}
 
 	if config.C.TwitterZapierSecret != r.Header.Get("secret") {
@@ -142,12 +142,12 @@ func twitterZapierWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Forward to Discord
 		if config.C.DiscordRelayBotToken == "" {
-			log.Fatal("Missing discord environment variable")
+			log.ErrS("Missing discord environment variable")
 		}
 
 		discordSession, err := discordgo.New("Bot " + config.C.DiscordRelayBotToken)
 		if err != nil {
-			log.Fatal(err.Error())
+			log.ErrS(err)
 			return
 		}
 
@@ -181,7 +181,7 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Validate
 	if config.C.PatreonSecret == "" {
-		log.Fatal("Missing patreon environment variable")
+		log.ErrS("Missing patreon environment variable")
 	}
 
 	b, event, err := patreon.Validate(r, config.C.PatreonSecret)
@@ -193,7 +193,7 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Slack message
 	if config.C.SlackPatreonWebhook == "" {
-		log.Fatal("Missing environment variables")
+		log.ErrS("Missing environment variables")
 	} else {
 		err = slack.PostWebhook(config.C.SlackPatreonWebhook, &slack.WebhookMessage{Text: event})
 		if err != nil {
@@ -273,7 +273,7 @@ func gitHubWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if config.C.GithubWebhookSecret == "" {
-		log.Fatal("Missing github environment variables")
+		log.ErrS("Missing github environment variables")
 	}
 
 	mac := hmac.New(sha1.New, []byte(config.C.GithubWebhookSecret))

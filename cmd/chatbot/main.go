@@ -37,7 +37,7 @@ func main() {
 	log.InitZap(log.LogNameChatbot)
 	defer log.Flush()
 	if err != nil {
-		log.FatalS(err)
+		log.ErrS(err)
 		return
 	}
 
@@ -56,7 +56,7 @@ func main() {
 	// Get API key
 	err = mysql.GetConsumer("chatbot")
 	if err != nil {
-		log.FatalS(err)
+		log.ErrS(err)
 		return
 	}
 
@@ -75,7 +75,7 @@ func main() {
 	// Start discord
 	discordSession, err := discordgo.New("Bot " + config.C.DiscordChatBotToken)
 	if err != nil {
-		log.Fatal(err.Error())
+		log.ErrS(err)
 		return
 	}
 
@@ -179,7 +179,7 @@ func main() {
 
 	err = discordSession.Open()
 	if err != nil {
-		log.Fatal(err.Error())
+		log.ErrS(err)
 		return
 	}
 

@@ -19,7 +19,7 @@ func main() {
 	log.InitZap(log.LogNameTest)
 	defer log.Flush()
 	if err != nil {
-		log.FatalS(err)
+		log.ErrS(err)
 		return
 	}
 

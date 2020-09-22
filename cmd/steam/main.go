@@ -43,12 +43,12 @@ func main() {
 	log.InitZap(log.LogNameSteam)
 	defer log.Flush()
 	if err != nil {
-		log.FatalS(err)
+		log.ErrS(err)
 		return
 	}
 
 	if config.C.SteamUsername == "" || config.C.SteamPassword == "" {
-		log.Fatal("Missing environment variables")
+		log.ErrS("Missing environment variables")
 	}
 
 	loginDetails := steam.LogOnDetails{}

@@ -47,6 +47,7 @@ func Err(msg string, fields ...zap.Field) {
 	zap.L().Error(msg, fields...)
 }
 
+// The logger then calls os.Exit(1)
 func Fatal(msg string, fields ...zap.Field) {
 	zap.L().Fatal(msg, fields...)
 }

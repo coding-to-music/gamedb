@@ -23,7 +23,7 @@ func getClient() *mc.Client {
 	if client == nil {
 
 		if config.C.MemcacheDSN == "" {
-			log.Fatal("Missing environment variables")
+			log.ErrS("Missing environment variables")
 		}
 
 		client = mc.NewMC(config.C.MemcacheDSN, config.C.MemcacheUsername, config.C.MemcachePassword)

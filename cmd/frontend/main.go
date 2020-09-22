@@ -40,7 +40,7 @@ func main() {
 	log.InitZap(log.LogNameFrontend)
 	defer log.Flush()
 	if err != nil {
-		log.FatalS(err)
+		log.ErrS(err)
 		return
 	}
 
@@ -48,14 +48,14 @@ func main() {
 	go func() {
 		err := http.ListenAndServe(":6064", nil)
 		if err != nil {
-			log.FatalS(err)
+			log.ErrS(err)
 		}
 	}()
 
 	// Get API key
 	err = mysql.GetConsumer("frontend")
 	if err != nil {
-		log.FatalS(err)
+		log.ErrS(err)
 		return
 	}
 
@@ -65,7 +65,7 @@ func main() {
 
 	// Setup Recaptcha
 	if config.C.RecaptchaPublic == "" || config.C.RecaptchaPrivate == "" {
-		log.Fatal("Missing environment variables")
+		log.ErrS("Missing environment variables")
 	} else {
 		recaptcha.SetSecret(config.C.RecaptchaPrivate)
 	}
@@ -199,7 +199,7 @@ func main() {
 
 	// Serve
 	if config.C.FrontendPort == "" {
-		log.Fatal("Missing environment variables")
+		log.ErrS("Missing environment variables")
 		return
 	}
 
@@ -216,7 +216,7 @@ func main() {
 
 	err = s.ListenAndServe()
 	if err != nil {
-		log.FatalS(err)
+		log.ErrS(err)
 	}
 }
 

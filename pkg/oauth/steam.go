@@ -76,7 +76,7 @@ func (c steamProvider) GetUser(r *http.Request, _ *oauth2.Token) (user User, err
 
 	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.InfoS(err) })
 	if err != nil {
-		log.FatalS(err)
+		log.ErrS(err)
 		return user, err
 	}
 

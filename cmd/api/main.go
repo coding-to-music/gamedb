@@ -25,7 +25,7 @@ func main() {
 	log.InitZap(log.LogNameAPI)
 	defer log.Flush()
 	if err != nil {
-		log.FatalS(err)
+		log.ErrS(err)
 		return
 	}
 
@@ -51,7 +51,7 @@ func main() {
 
 	err = s.ListenAndServe()
 	if err != nil {
-		log.FatalS(err)
+		log.ErrS(err)
 	}
 }
 

@@ -13,7 +13,7 @@ func GetRabbitWebClient() *rabbit.Rabbit {
 	if rabbitWebClient == nil {
 
 		if config.C.RabbitHost == "" {
-			log.Fatal("Missing environment variables")
+			log.ErrS("Missing environment variables")
 		}
 
 		rabbitWebClient = &rabbit.Rabbit{

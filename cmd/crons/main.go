@@ -22,7 +22,7 @@ func main() {
 	log.InitZap(log.LogNameCrons)
 	defer log.Flush()
 	if err != nil {
-		log.FatalS(err)
+		log.ErrS(err)
 		return
 	}
 
@@ -33,14 +33,14 @@ func main() {
 	go func() {
 		err := http.ListenAndServe(":6063", nil)
 		if err != nil {
-			log.FatalS(err)
+			log.ErrS(err)
 		}
 	}()
 
 	// Get API key
 	err = mysql.GetConsumer("crons")
 	if err != nil {
-		log.FatalS(err)
+		log.ErrS(err)
 		return
 	}
 

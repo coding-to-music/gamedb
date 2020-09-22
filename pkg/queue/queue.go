@@ -312,7 +312,7 @@ func Init(definitions []QueueDefinition) {
 
 		q, err := rabbit.NewChannel(chanConfig)
 		if err != nil {
-			log.FatalS(string(queue.name), err)
+			log.ErrS(string(queue.name), err)
 		} else {
 			ProducerChannels[queue.name] = q
 		}
@@ -366,7 +366,7 @@ func Init(definitions []QueueDefinition) {
 
 					q, err := rabbit.NewChannel(chanConfig)
 					if err != nil {
-						log.FatalS(string(queue.name), err)
+						log.ErrS(string(queue.name), err)
 						continue
 					}
 

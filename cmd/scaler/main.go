@@ -24,7 +24,7 @@ func main() {
 	log.InitZap(log.LogNameScaler)
 	defer log.Flush()
 	if err != nil {
-		log.FatalS(err)
+		log.ErrS(err)
 		return
 	}
 
@@ -40,7 +40,7 @@ func main() {
 
 	err = http.ListenAndServe(":4000", r)
 	if err != nil {
-		log.FatalS(err)
+		log.ErrS(err)
 	}
 }
 

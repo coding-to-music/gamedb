@@ -40,7 +40,7 @@ func appYoutubeHandler(message *rabbit.Message) {
 	}
 
 	if config.C.YoutubeAPIKey == "" {
-		log.Fatal("Missing environment variables")
+		log.ErrS("Missing environment variables")
 		sendToFailQueue(message)
 		return
 	}

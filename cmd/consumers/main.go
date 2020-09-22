@@ -20,7 +20,7 @@ func main() {
 	log.InitZap(log.LogNameConsumers)
 	defer log.Flush()
 	if err != nil {
-		log.FatalS(err)
+		log.ErrS(err)
 		return
 	}
 
@@ -30,7 +30,7 @@ func main() {
 	// Get API key
 	err = mysql.GetConsumer("consumer")
 	if err != nil {
-		log.FatalS(err)
+		log.ErrS(err)
 		return
 	}
 
@@ -55,7 +55,7 @@ func main() {
 		go func() {
 			err := http.ListenAndServe(":6062", nil)
 			if err != nil {
-				log.FatalS(err)
+				log.ErrS(err)
 			}
 		}()
 	}

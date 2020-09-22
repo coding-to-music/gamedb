@@ -88,7 +88,7 @@ func returnJSON(w http.ResponseWriter, r *http.Request, i interface{}) {
 
 	_, err = w.Write(b)
 	if err != nil && !strings.Contains(err.Error(), "write: broken pipe") {
-		log.FatalS(err)
+		log.ErrS(err)
 	}
 }
 

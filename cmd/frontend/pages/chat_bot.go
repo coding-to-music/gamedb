@@ -80,7 +80,7 @@ func (cbt chatBotTemplate) Commands() (ret [][]chatbot.Command) {
 func (cbt chatBotTemplate) Guilds() (guilds int) {
 
 	if config.C.DiscordChatBotToken == "" {
-		log.Fatal("Missing environment variables")
+		log.ErrS("Missing environment variables")
 		return 0
 	}
 

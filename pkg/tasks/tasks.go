@@ -162,7 +162,7 @@ func Run(task TaskInterface) {
 		if val, ok := err.(TaskError); ok && val.Okay {
 			log.InfoS(task.ID(), err)
 		} else {
-			log.FatalS(task.ID(), err)
+			log.ErrS(task.ID(), err)
 		}
 	} else {
 

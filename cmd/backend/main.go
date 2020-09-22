@@ -28,7 +28,7 @@ func main() {
 	log.InitZap(log.LogNameBackend)
 	defer log.Flush()
 	if err != nil {
-		log.FatalS(err)
+		log.ErrS(err)
 		return
 	}
 
@@ -37,7 +37,7 @@ func main() {
 	}
 
 	if config.C.GRPCKeysPath == "" {
-		log.Fatal("Missing environment variables")
+		log.ErrS("Missing environment variables")
 		return
 	}
 
@@ -89,6 +89,6 @@ func main() {
 
 	err = grpcServer.Serve(lis)
 	if err != nil {
-		log.FatalS(err)
+		log.ErrS(err)
 	}
 }
