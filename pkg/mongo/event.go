@@ -52,7 +52,7 @@ func (event Event) OutputForJSON(ip string) (output []interface{}) {
 		event.GetType(),
 		event.GetIP(""),
 		event.UserAgent,
-		event.GetUserAgentShort(),
+		"",
 		event.GetIP(ip),
 		event.GetIcon(),
 	}
@@ -60,15 +60,6 @@ func (event Event) OutputForJSON(ip string) (output []interface{}) {
 
 func (event Event) GetCreatedNice() (t string) {
 	return event.CreatedAt.Format(helpers.DateTime)
-}
-
-func (event Event) GetUserAgentShort() (t string) {
-
-	if len(event.UserAgent) > 50 {
-		return event.UserAgent[0:50] + "&hellip;"
-	}
-
-	return event.UserAgent
 }
 
 // Defaults to IP on struct

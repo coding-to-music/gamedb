@@ -19,6 +19,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/oauth"
 	"github.com/go-chi/chi"
+	"github.com/mssola/user_agent"
 	"go.mongodb.org/mongo-driver/bson"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -459,8 +460,21 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	var response = datatable.NewDataTablesResponse(r, query, total, total, nil)
-	for _, v := range events {
-		response.AddRow(v.OutputForJSON(r.RemoteAddr))
+	for _, event := range events {
+
+		ua := user_agent.New(event.UserAgent)
+		browser, version := ua.Browser()
+
+		response.AddRow([]interface{}{
+			event.CreatedAt.Unix(),
+			event.GetCreatedNice(),
+			event.GetType(),
+			event.GetIP(""),
+			event.UserAgent,
+			ua.OSInfo().Name + " " + ua.OSInfo().Version + " - " + browser + " " + version,
+			event.GetIP(r.RemoteAddr),
+			event.GetIcon(),
+		})
 	}
 
 	returnJSON(w, r, response)

@@ -64,6 +64,7 @@ require (
 	github.com/memcachier/mc/v3 v3.0.1
 	github.com/microcosm-cc/bluemonday v1.0.4
 	github.com/montanaflynn/stats v0.6.3
+	github.com/mssola/user_agent v0.5.2
 	github.com/mxpv/patreon-go v0.0.0-20190917022727-646111f1d983
 	github.com/nicklaw5/helix v1.0.0
 	github.com/nlopes/slack v0.6.0
