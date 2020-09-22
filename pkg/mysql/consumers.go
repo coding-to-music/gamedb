@@ -59,6 +59,11 @@ func GetConsumer(tag string) (err error) {
 			return db.Error
 		}
 
+		if row.Key == "" {
+			db.Rollback()
+			return errors.New("invalid empty key")
+		}
+
 		// Update the row
 		fields := map[string]interface{}{
 			"expires":     time.Now().Add(ConsumerSessionLength),
