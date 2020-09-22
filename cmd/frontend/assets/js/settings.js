@@ -1,15 +1,11 @@
-if ($('#settings-page').length > 0) {
+const $settingsPage = $('#settings-page');
 
-    // Password
-    $('input:password').pwstrength({
-        ui: {
-            showPopover: false,
-            showErrors: false,
-        },
-        common: {
-            usernameField: '#email'
-        }
-    });
+if ($settingsPage.length > 0 || $('#signup-page').length > 0) {
+
+    $('#password-container input:password').pwstrength();
+}
+
+if ($settingsPage.length > 0) {
 
     // Browser alert permissions
     // const $checkbox = $('#browser-alerts');
