@@ -561,7 +561,7 @@ func settingsRemoveProviderHandler(w http.ResponseWriter, r *http.Request) {
 	session.SetFlash(r, session.SessionGood, provider.GetName()+" removed")
 
 	// Create event
-	err = mongo.CreateUserEvent(r, userID, mongo.EventUnlink(provider.GetEnum()))
+	err = mongo.NewEvent(r, userID, mongo.EventUnlink(provider.GetEnum()))
 	if err != nil {
 		log.ErrS(err)
 	}

@@ -263,7 +263,7 @@ func playerHandler(message *rabbit.Message) {
 			return
 		}
 
-		err = mongo.CreateUserEvent(nil, user.ID, mongo.EventRefresh)
+		err = mongo.NewEvent(nil, user.ID, mongo.EventRefresh)
 		if err != nil {
 			log.ErrS(err, payload.ID)
 			sendToRetryQueue(message)

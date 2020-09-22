@@ -268,7 +268,7 @@ func providerCallback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Create event
-	err = mongo.CreateUserEvent(r, user.ID, mongo.EventLink(provider.GetEnum()))
+	err = mongo.NewEvent(r, user.ID, mongo.EventLink(provider.GetEnum()))
 	if err != nil {
 		log.ErrS(err)
 	}

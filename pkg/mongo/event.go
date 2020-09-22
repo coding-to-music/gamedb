@@ -130,7 +130,7 @@ func GetEvents(userID int, offset int64) (events []Event, err error) {
 	return events, cur.Err()
 }
 
-func CreateUserEvent(r *http.Request, userID int, eventType EventEnum) (err error) {
+func NewEvent(r *http.Request, userID int, eventType EventEnum) (err error) {
 
 	event := Event{}
 	event.CreatedAt = time.Now()

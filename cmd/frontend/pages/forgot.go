@@ -121,7 +121,7 @@ func forgotPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Create login event
-		err = mongo.CreateUserEvent(r, user.ID, mongo.EventForgotPassword)
+		err = mongo.NewEvent(r, user.ID, mongo.EventForgotPassword)
 		if err != nil {
 			log.ErrS(err)
 		}

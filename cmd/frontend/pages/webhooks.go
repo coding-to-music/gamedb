@@ -235,7 +235,7 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 				return
 			} else if err == nil {
 
-				err = mongo.CreateUserEvent(r, user.ID, mongo.EventPatreonWebhook+"-"+mongo.EventEnum(event))
+				err = mongo.NewEvent(r, user.ID, mongo.EventPatreonWebhook+"-"+mongo.EventEnum(event))
 				if err != nil {
 					log.Err(err.Error(), zap.ByteString("webhook", b))
 					http.Error(w, err.Error(), http.StatusInternalServerError)
