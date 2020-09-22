@@ -522,7 +522,12 @@ func (t globalTemplate) IsAppsPage() bool {
 }
 
 func (t globalTemplate) IsStatsPage() bool {
-	return helpers.SliceHasString(strings.TrimPrefix(t.Path, "/"), []string{"stats", "tags", "genres", "publishers", "developers"})
+	return strings.HasPrefix(t.Path, "/stats") ||
+		strings.HasPrefix(t.Path, "/tags") ||
+		strings.HasPrefix(t.Path, "/genres") ||
+		strings.HasPrefix(t.Path, "/publishers") ||
+		strings.HasPrefix(t.Path, "/developers") ||
+		strings.HasPrefix(t.Path, "/categories")
 }
 
 func (t globalTemplate) IsBadgesPage() bool {
