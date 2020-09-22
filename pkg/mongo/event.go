@@ -26,7 +26,7 @@ var (
 
 type Event struct {
 	CreatedAt time.Time `bson:"created_at"`
-	Type      string    `bson:"type"`
+	Type      EventEnum `bson:"type"`
 	UserID    int       `bson:"user_id"`
 	UserAgent string    `bson:"user_agent"`
 	IP        string    `bson:"ip"`
@@ -86,7 +86,7 @@ func (event Event) GetType() string {
 	case EventRefresh:
 		return "Profile Update"
 	default:
-		return strings.Title(event.Type)
+		return strings.Title(string(event.Type))
 	}
 }
 
@@ -135,7 +135,7 @@ func NewEvent(r *http.Request, userID int, eventType EventEnum) (err error) {
 	event := Event{}
 	event.CreatedAt = time.Now()
 	event.UserID = userID
-	event.Type = string(eventType)
+	event.Type = eventType
 
 	if r != nil {
 		event.UserAgent = r.Header.Get("User-Agent")
