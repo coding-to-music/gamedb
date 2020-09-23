@@ -57,7 +57,7 @@ type Record struct {
 	} `maxminddb:"country"`
 }
 
-var trimPort = regexp.MustCompile(`:[0-9]{2,}`)
+var trimPort = regexp.MustCompile(`:[0-9]{2,}$`)
 
 func GetFirstIP(ip string) string {
 

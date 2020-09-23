@@ -10,6 +10,7 @@ import (
 
 	"github.com/Jleagle/session-go/session"
 	"github.com/Jleagle/steam-go/steamapi"
+	"github.com/gamedb/gamedb/cmd/frontend/helpers/geo"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -136,7 +137,7 @@ func GetProductCC(r *http.Request) steamapi.ProductCC {
 			}
 		}
 
-		ip := net.ParseIP(r.RemoteAddr)
+		ip := net.ParseIP(geo.GetFirstIP(r.RemoteAddr))
 		if ip != nil {
 
 			// More fields available @ https://github.com/oschwald/geoip2-golang/blob/master/reader.go
@@ -200,7 +201,7 @@ func GetCountryCode(r *http.Request) string {
 			}
 		}
 
-		ip := net.ParseIP(r.RemoteAddr)
+		ip := net.ParseIP(geo.GetFirstIP(r.RemoteAddr))
 		if ip != nil {
 
 			// More fields available @ https://github.com/oschwald/geoip2-golang/blob/master/reader.go
