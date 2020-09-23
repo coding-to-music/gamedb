@@ -6,6 +6,7 @@ import (
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/dghubble/oauth1"
 	"github.com/gamedb/gamedb/pkg/config"
+	"golang.org/x/oauth2/clientcredentials"
 )
 
 var (
@@ -20,10 +21,13 @@ func GetTwitter() *twitter.Client {
 
 	if client == nil {
 
-		confi := oauth1.NewConfig(config.C.TwitterConsumerKey, config.C.TwitterConsumerSecret)
-		token := oauth1.NewToken(config.C.TwitterAccessToken, config.C.TwitterAccessTokenSecret)
+		creds := &clientcredentials.Config{
+			ClientID:     config.C.TwitterConsumerKey,
+			ClientSecret: config.C.TwitterConsumerSecret,
+			TokenURL:     "https://api.twitter.com/oauth2/token",
+		}
 
-		httpClient := confi.Client(oauth1.NoContext, token)
+		httpClient := creds.Client(oauth1.NoContext)
 
 		client = twitter.NewClient(httpClient)
 	}
