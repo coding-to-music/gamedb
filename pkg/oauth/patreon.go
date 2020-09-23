@@ -36,7 +36,7 @@ func (c patreonProvider) Redirect(w http.ResponseWriter, r *http.Request, state 
 func (c patreonProvider) GetUser(_ *http.Request, token *oauth2.Token) (user User, err error) {
 
 	// Get Patreon user
-	ts := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: token.AccessToken})
+	ts := oauth2.StaticTokenSource(token)
 	tc := oauth2.NewClient(context.TODO(), ts)
 
 	resp, err := patreon.NewClient(tc).FetchUser()
