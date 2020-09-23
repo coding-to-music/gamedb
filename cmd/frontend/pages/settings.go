@@ -5,11 +5,13 @@ import (
 	"html/template"
 	"net/http"
 	"strconv"
+	"strings"
 	"sync"
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/badoux/checkmail"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/datatable"
+	"github.com/gamedb/gamedb/cmd/frontend/helpers/geo"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/middleware"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -462,18 +464,38 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var response = datatable.NewDataTablesResponse(r, query, total, total, nil)
 	for _, event := range events {
 
+		// Parse user agent
 		ua := user_agent.New(event.UserAgent)
 		browser, version := ua.Browser()
+		agent := ua.OSInfo().Name + " " + ua.OSInfo().Version + " - " + browser + " " + version
 
+		// Get IP location
+		var location []string
+		record, err := geo.GetCountryCode(event.IP)
+		if err == nil {
+			if val, ok := record.Country.Names["en"]; ok {
+				location = append(location, val)
+			}
+			if val, ok := record.City.Names["en"]; ok {
+				location = append(location, val)
+			}
+		}
+
+		if len(location) == 0 {
+			location = append(location, geo.GetFirstIP(event.IP))
+		}
+
+		//
 		response.AddRow([]interface{}{
-			event.CreatedAt.Unix(),
-			event.GetCreatedNice(),
-			event.GetType(),
-			event.GetIP(""),
-			event.UserAgent,
-			ua.OSInfo().Name + " " + ua.OSInfo().Version + " - " + browser + " " + version,
-			event.GetIP(r.RemoteAddr),
-			event.GetIcon(),
+			event.CreatedAt.Unix(),       // 0
+			event.GetCreatedNice(),       // 1
+			event.GetType(),              // 2
+			geo.GetFirstIP(event.IP),     // 3
+			event.UserAgent,              // 4
+			agent,                        // 5
+			geo.GetFirstIP(r.RemoteAddr), // 6
+			event.GetIcon(),              // 7
+			strings.Join(location, ", "), // 8
 		})
 	}
 
@@ -518,7 +540,9 @@ func settingsDonationsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var response = datatable.NewDataTablesResponse(r, query, total, total, nil)
 	for _, v := range events {
-		response.AddRow(v.OutputForJSON(r.RemoteAddr))
+		response.AddRow([]interface{}{
+			v.IP,
+		})
 	}
 
 	returnJSON(w, r, response)

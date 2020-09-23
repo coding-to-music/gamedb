@@ -43,37 +43,8 @@ func (event Event) BSON() bson.D {
 	}
 }
 
-// Data array for datatables
-func (event Event) OutputForJSON(ip string) (output []interface{}) {
-
-	return []interface{}{
-		event.CreatedAt.Unix(),
-		event.GetCreatedNice(),
-		event.GetType(),
-		event.GetIP(""),
-		event.UserAgent,
-		"",
-		event.GetIP(ip),
-		event.GetIcon(),
-	}
-}
-
 func (event Event) GetCreatedNice() (t string) {
 	return event.CreatedAt.Format(helpers.DateTime)
-}
-
-// Defaults to IP on struct
-func (event Event) GetIP(ip string) string {
-
-	if ip == "" {
-		ip = event.IP
-	}
-
-	var ips = strings.Split(ip, ", ")
-	if len(ips) > 0 && ips[0] != "" {
-		return ips[0]
-	}
-	return "-"
 }
 
 func (event Event) GetType() string {

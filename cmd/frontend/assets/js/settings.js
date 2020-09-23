@@ -60,7 +60,7 @@ if ($settingsPage.length > 0) {
                     },
                     "orderable": false
                 },
-                // Type
+                // Event Type
                 {
                     "targets": 1,
                     "render": function (data, type, row) {
@@ -71,15 +71,15 @@ if ($settingsPage.length > 0) {
                     },
                     "orderable": false
                 },
-                // IP
+                // Location (IP)
                 {
                     "targets": 2,
                     "render": function (data, type, row) {
 
                         if (row[3] === row[6]) {
-                            return '<span class="font-weight-bold" data-toggle="tooltip" data-placement="left" title="Your current IP">' + row[3] + '</span>';
+                            return '<span class="font-weight-bold" data-toggle="tooltip" data-placement="left" title="Your current IP">' + row[8] + '</span>';
                         }
-                        return row[3];
+                        return row[8];
                     },
                     "orderable": false
                 },
@@ -87,7 +87,6 @@ if ($settingsPage.length > 0) {
                 {
                     "targets": 3,
                     "render": function (data, type, row) {
-                        // return row[4];
                         return '<span data-toggle="tooltip" data-placement="left" title="' + row[4] + '">' + row[5] + '</span>';
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
