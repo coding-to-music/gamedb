@@ -39,12 +39,15 @@ func providerRedirect(w http.ResponseWriter, r *http.Request) {
 	provider := oauth.New(oauth.ProviderEnum(chi.URLParam(r, "provider")))
 	if provider, ok := provider.(oauth.OAuth2Provider); ok {
 		providerOAuth2Redirect(w, r, provider)
+		return
 	}
 	if provider, ok := provider.(oauth.OAuth1Provider); ok {
 		providerOAuth1Redirect(w, r, provider)
+		return
 	}
 	if provider, ok := provider.(oauth.OpenIDProvider); ok {
 		providerOpenIDRedirect(w, r, provider)
+		return
 	}
 
 	Error404Handler(w, r)
@@ -55,12 +58,15 @@ func providerCallback(w http.ResponseWriter, r *http.Request) {
 	provider := oauth.New(oauth.ProviderEnum(chi.URLParam(r, "provider")))
 	if provider, ok := provider.(oauth.OAuth2Provider); ok {
 		providerOAuth2Callback(w, r, provider)
+		return
 	}
 	if provider, ok := provider.(oauth.OAuth1Provider); ok {
 		providerOAuth1Callback(w, r, provider)
+		return
 	}
 	if provider, ok := provider.(oauth.OpenIDProvider); ok {
 		providerOpenIDCallback(w, r, provider)
+		return
 	}
 
 	Error404Handler(w, r)
