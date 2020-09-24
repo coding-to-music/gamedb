@@ -197,12 +197,6 @@ func providerOAuth2Callback(w http.ResponseWriter, r *http.Request, provider oau
 	}
 
 	//
-	switch page {
-	case authPageLogin, authPageSignup:
-		login(r, user)
-	}
-
-	//
 	oauthHandleUser(provider, resp, user, page, r)
 }
 
@@ -287,12 +281,6 @@ func providerOAuth1Callback(w http.ResponseWriter, r *http.Request, provider oau
 	}
 
 	//
-	switch page {
-	case authPageLogin, authPageSignup:
-		login(r, user)
-	}
-
-	//
 	oauthHandleUser(provider, resp, user, page, r)
 }
 
@@ -367,12 +355,6 @@ func providerOpenIDCallback(w http.ResponseWriter, r *http.Request, provider oau
 	}
 
 	//
-	switch page {
-	case authPageLogin, authPageSignup:
-		login(r, user)
-	}
-
-	//
 	oauthHandleUser(provider, resp, user, page, r)
 
 	//
@@ -431,6 +413,12 @@ func oauthRedirect(w http.ResponseWriter, r *http.Request, page *string) {
 }
 
 func oauthHandleUser(provider oauth.Provider, resp oauth.User, user mysql.User, page string, r *http.Request) {
+
+	//
+	switch page {
+	case authPageLogin, authPageSignup:
+		login(r, user)
+	}
 
 	// Check ID is not already in use
 	used, err := mysql.CheckExistingUserProvider(provider.GetEnum(), resp.ID, user.ID)
