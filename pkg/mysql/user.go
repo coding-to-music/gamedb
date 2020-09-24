@@ -3,13 +3,20 @@ package mysql
 import (
 	"database/sql"
 	"errors"
+	"net/http"
 	"strconv"
 	"time"
 
 	"github.com/Jleagle/steam-go/steamapi"
+	"github.com/gamedb/gamedb/cmd/frontend/helpers/email_providers"
+	"github.com/gamedb/gamedb/cmd/frontend/helpers/geo"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	influxHelper "github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
+	"github.com/gamedb/gamedb/pkg/mongo"
+	influx "github.com/influxdata/influxdb1-client"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -104,7 +111,7 @@ func (user User) Save() error {
 	return db.Error
 }
 
-func NewUser(email, password string, prodCC steamapi.ProductCC, verified bool) (user User, err error) {
+func NewUser(email, password string, prodCC steamapi.ProductCC, verified bool, r *http.Request) (user User, err error) {
 
 	db, err := GetMySQLClient()
 	if err != nil {
@@ -131,7 +138,59 @@ func NewUser(email, password string, prodCC steamapi.ProductCC, verified bool) (
 	user.SetAPIKey()
 
 	db = db.Create(&user)
-	return user, db.Error
+	if db.Error != nil {
+		return user, db.Error
+	}
+
+	if !verified {
+
+		// Create verification code
+		code, err := CreateUserVerification(user.ID)
+		if err != nil {
+			return user, err
+		}
+
+		// Send email
+		body := "Please click the below link to verify your email address<br />" +
+			config.C.GameDBDomain + "/signup/verify?code=" + code.Code +
+			"<br><br>Thanks, Jleagle." +
+			"<br><br>From IP: " + geo.GetFirstIP(r.RemoteAddr)
+
+		err = email_providers.GetSender().Send(
+			email,
+			email,
+			"",
+			"",
+			"Game DB Email Verification",
+			body,
+		)
+		if err != nil {
+			return user, err
+		}
+	}
+
+	// Create event
+	err = mongo.NewEvent(r, user.ID, mongo.EventSignup)
+	if err != nil {
+		log.ErrS(err)
+	}
+
+	// Influx
+	point := influx.Point{
+		Measurement: string(influxHelper.InfluxMeasurementSignups),
+		Fields: map[string]interface{}{
+			"signup": 1,
+		},
+		Time:      time.Now(),
+		Precision: "s",
+	}
+
+	_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, point)
+	if err != nil {
+		log.ErrS(err)
+	}
+
+	return user, nil
 }
 
 func UpdateUserCol(userID int, column string, value interface{}) (err error) {

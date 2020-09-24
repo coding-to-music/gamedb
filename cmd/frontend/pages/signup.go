@@ -6,14 +6,11 @@ import (
 
 	"github.com/Jleagle/recaptcha-go"
 	"github.com/badoux/checkmail"
-	"github.com/gamedb/gamedb/cmd/frontend/helpers/email_providers"
-	"github.com/gamedb/gamedb/cmd/frontend/helpers/geo"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/oauth"
 	"github.com/go-chi/chi"
@@ -122,57 +119,10 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Create user
-		user, err := mysql.NewUser(email, password, session.GetProductCC(r), false)
+		_, err = mysql.NewUser(email, password, session.GetProductCC(r), false, r)
 		if err != nil {
 			log.ErrS(err)
 			return "An error occurred (1002)", false
-		}
-
-		// Create verification code
-		code, err := mysql.CreateUserVerification(user.ID)
-		if err != nil {
-			log.ErrS(err)
-			return "An error occurred (1003)", false
-		}
-
-		// Send email
-		body := "Please click the below link to verify your email address<br />" +
-			config.C.GameDBDomain + "/signup/verify?code=" + code.Code +
-			"<br><br>Thanks, Jleagle." +
-			"<br><br>From IP: " + geo.GetFirstIP(r.RemoteAddr)
-
-		err = email_providers.GetSender().Send(
-			email,
-			email,
-			"",
-			"",
-			"Game DB Email Verification",
-			body,
-		)
-		if err != nil {
-			log.ErrS(err)
-			return "An error occurred (1004)", false
-		}
-
-		// Create event
-		err = mongo.NewEvent(r, user.ID, mongo.EventSignup)
-		if err != nil {
-			log.ErrS(err)
-		}
-
-		// Influx
-		point := influx.Point{
-			Measurement: string(influxHelper.InfluxMeasurementSignups),
-			Fields: map[string]interface{}{
-				"signup": 1,
-			},
-			Time:      time.Now(),
-			Precision: "s",
-		}
-
-		_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, point)
-		if err != nil {
-			log.ErrS(err)
 		}
 
 		return "Please check your email to verify your account (You might need to check the spam folder)", true

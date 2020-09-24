@@ -170,7 +170,7 @@ func providerOAuth2Callback(w http.ResponseWriter, r *http.Request, provider oau
 	if err == mysql.ErrRecordNotFound {
 
 		// Create new user
-		user, err = mysql.NewUser(resp.Email, "", session.GetProductCC(r), true)
+		user, err = mysql.NewUser(resp.Email, "", session.GetProductCC(r), true, r)
 		if err != nil {
 			log.ErrS(err)
 			session.SetFlash(r, session.SessionGood, "Account could not be created")
@@ -254,7 +254,7 @@ func providerOAuth1Callback(w http.ResponseWriter, r *http.Request, provider oau
 	if err == mysql.ErrRecordNotFound {
 
 		// Create new user
-		user, err = mysql.NewUser(resp.Email, "", session.GetProductCC(r), true)
+		user, err = mysql.NewUser(resp.Email, "", session.GetProductCC(r), true, r)
 		if err != nil {
 			log.ErrS(err)
 			session.SetFlash(r, session.SessionGood, "Account could not be created")
