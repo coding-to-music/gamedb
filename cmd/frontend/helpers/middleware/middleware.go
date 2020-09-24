@@ -85,8 +85,8 @@ func MiddlewareAuthCheck() func(http.Handler) http.Handler {
 				return
 			}
 
-			session.SetFlash(r, session.SessionBad, "Please login")
-			session.Save(w, r)
+			// session.SetFlash(r, session.SessionBad, "Please login")
+			// session.Save(w, r)
 
 			http.Redirect(w, r, "/login", http.StatusFound)
 		})
