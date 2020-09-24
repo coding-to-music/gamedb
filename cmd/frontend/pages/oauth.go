@@ -129,7 +129,7 @@ func providerOAuth2Callback(w http.ResponseWriter, r *http.Request, provider oau
 	// Get incoming state from provider
 	stateString := r.URL.Query().Get("state")
 	if stateString == "" {
-		session.SetFlash(r, session.SessionBad, "Invalid state")
+		session.SetFlash(r, session.SessionBad, "Invalid state (1002)")
 		return
 	}
 
@@ -137,14 +137,14 @@ func providerOAuth2Callback(w http.ResponseWriter, r *http.Request, provider oau
 	state.Unmarshal(stateString)
 
 	if state.State == "" || state.State != realState.State {
-		session.SetFlash(r, session.SessionBad, "Invalid state")
+		session.SetFlash(r, session.SessionBad, "Invalid state (1003)")
 		return
 	}
 
 	// Swap code for token
 	code := r.URL.Query().Get("code")
 	if code == "" {
-		session.SetFlash(r, session.SessionBad, "Invalid code")
+		session.SetFlash(r, session.SessionBad, "Invalid code (1004)")
 		return
 	}
 
@@ -152,58 +152,20 @@ func providerOAuth2Callback(w http.ResponseWriter, r *http.Request, provider oau
 	token, err := conf.Exchange(context.Background(), code)
 	if err != nil {
 		log.ErrS(err)
-		session.SetFlash(r, session.SessionBad, "An error occurred (1003)")
+		session.SetFlash(r, session.SessionBad, "An error occurred (1005)")
 		return
 	}
 
-	// Api call to get user info
+	// Get user
 	resp, err := provider.GetUser(token)
 	if err != nil {
 		log.ErrS(err)
-		session.SetFlash(r, session.SessionBad, "We were unable to fetch your details from "+provider.GetName()+" (1001)")
-		return
-	}
-
-	var user mysql.User
-
-	if resp.Email == "" {
-		session.SetFlash(r, session.SessionBad, "We were unable to fetch your details from "+provider.GetName()+" (1002)")
-		return
-	}
-
-	// Look for existing user by email
-	user, err = mysql.GetUserByEmail(resp.Email)
-	if err == mysql.ErrRecordNotFound {
-
-		// Create new user
-		user, err = mysql.NewUser(resp.Email, "", session.GetProductCC(r), true, r)
-		if err != nil {
-			log.ErrS(err)
-			session.SetFlash(r, session.SessionGood, "Account could not be created")
-		}
-
-		// err = email_providers.GetSender().Send(
-		// 	resp.Username,
-		// 	resp.Email,
-		// 	"",
-		// 	"",
-		// 	"Welcome to Game DB",
-		// 	"todo", // todo
-		// )
-		// if err != nil {
-		// 	log.Err(err.Error())
-		// }
-
-		// session.SetFlash(r, session.SessionGood, "Account created")
-
-	} else if err != nil {
-		log.ErrS(err)
-		session.SetFlash(r, session.SessionGood, "An error occurred (1004)")
+		session.SetFlash(r, session.SessionBad, "We were unable to fetch your details from "+provider.GetName()+" (1006)")
 		return
 	}
 
 	//
-	oauthHandleUser(provider, resp, user, page, r)
+	oauthHandleUser(provider, resp, page, r)
 }
 
 func providerOAuth1Callback(w http.ResponseWriter, r *http.Request, provider oauth.OAuth1Provider) {
@@ -228,7 +190,7 @@ func providerOAuth1Callback(w http.ResponseWriter, r *http.Request, provider oau
 	requestToken, verifier, err := oauth1.ParseAuthorizationCallback(r)
 	if err != nil {
 		log.ErrS(err)
-		session.SetFlash(r, session.SessionBad, "An error occurred (1001)")
+		session.SetFlash(r, session.SessionBad, "An error occurred (1002)")
 		return
 	}
 
@@ -242,52 +204,16 @@ func providerOAuth1Callback(w http.ResponseWriter, r *http.Request, provider oau
 
 	token := oauth1.NewToken(accessToken, accessSecret)
 
-	// Api call to get user info
+	// Get user
 	resp, err := provider.GetUser(token)
 	if err != nil {
 		log.ErrS(err)
-		session.SetFlash(r, session.SessionBad, "We were unable to fetch your details from "+provider.GetName()+" (1001)")
-		return
-	}
-
-	if resp.Email == "" {
-		session.SetFlash(r, session.SessionBad, "We were unable to fetch your details from "+provider.GetName()+" (1002)")
-		return
-	}
-
-	// Look for existing user by email
-	user, err := mysql.GetUserByEmail(resp.Email)
-	if err == mysql.ErrRecordNotFound {
-
-		// Create new user
-		user, err = mysql.NewUser(resp.Email, "", session.GetProductCC(r), true, r)
-		if err != nil {
-			log.ErrS(err)
-			session.SetFlash(r, session.SessionGood, "Account could not be created")
-		}
-
-		// err = email_providers.GetSender().Send(
-		// 	resp.Username,
-		// 	resp.Email,
-		// 	"",
-		// 	"",
-		// 	"Welcome to Game DB",
-		// 	"todo", // todo
-		// )
-		// if err != nil {
-		// 	log.Err(err.Error())
-		// }
-
-		// session.SetFlash(r, session.SessionGood, "Account created")
-
-	} else if err != nil {
-		log.ErrS(err)
-		session.SetFlash(r, session.SessionGood, "An error occurred (1004)")
+		session.SetFlash(r, session.SessionBad, "We were unable to fetch your details from "+provider.GetName()+" (1004)")
 		return
 	}
 
 	//
-	oauthHandleUser(provider, resp, user, page, r)
+	oauthHandleUser(provider, resp, page, r)
 }
 
 func providerOpenIDCallback(w http.ResponseWriter, r *http.Request, provider oauth.OpenIDProvider) {
@@ -296,7 +222,7 @@ func providerOpenIDCallback(w http.ResponseWriter, r *http.Request, provider oau
 
 	defer oauthRedirect(w, r, &page)
 
-	// Api call to get user info
+	// Get user
 	resp, err := provider.GetUser(r)
 	if err != nil {
 		log.ErrS(err)
@@ -309,59 +235,8 @@ func providerOpenIDCallback(w http.ResponseWriter, r *http.Request, provider oau
 		return
 	}
 
-	var user mysql.User
-
-	switch page {
-	case authPageLogin:
-
-		// Look for existing user by email
-		i, err := strconv.Atoi(resp.ID)
-		if err != nil {
-			log.Err(err.Error(), zap.String("id", resp.ID))
-			session.SetFlash(r, session.SessionBad, "We were unable to fetch your details from "+provider.GetName()+" (1002)")
-			return
-		}
-
-		userProvider, err := mysql.GetUserProvider(provider.GetEnum(), i)
-		if err != nil {
-			log.ErrS(err)
-			session.SetFlash(r, session.SessionGood, "Unable to find a Game DB account linked with this Steam account (1001)")
-			return
-		}
-
-		user, err = mysql.GetUserByID(userProvider.UserID)
-		if err == mysql.ErrRecordNotFound {
-			session.SetFlash(r, session.SessionGood, "Unable to find a Game DB account linked with this Steam account (1002)")
-			return
-		} else if err != nil {
-			log.ErrS(err)
-			session.SetFlash(r, session.SessionGood, "An error occurred (1005)")
-			return
-		}
-
-	case authPageSettings:
-
-		userID, err := session.GetUserIDFromSesion(r)
-		if err != nil {
-			log.ErrS(err)
-			session.SetFlash(r, session.SessionGood, "An error occurred (1005)")
-			return
-		}
-
-		user, err = mysql.GetUserByID(userID)
-		if err != nil {
-			log.ErrS(err)
-			session.SetFlash(r, session.SessionGood, "An error occurred (1005)")
-			return
-		}
-
-	default:
-		session.SetFlash(r, session.SessionGood, "Steam can't be used to sign up yet")
-		return
-	}
-
 	//
-	oauthHandleUser(provider, resp, user, page, r)
+	oauthHandleUser(provider, resp, page, r)
 
 	//
 	i, err := strconv.ParseInt(resp.ID, 10, 64)
@@ -418,7 +293,83 @@ func oauthRedirect(w http.ResponseWriter, r *http.Request, page *string) {
 	}
 }
 
-func oauthHandleUser(provider oauth.Provider, resp oauth.User, user mysql.User, page string, r *http.Request) {
+func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *http.Request) {
+
+	var user mysql.User
+	var err error
+
+	// Get the user from DB
+	if page == authPageSettings {
+
+		user, err = getUserFromSession(r)
+		if err != nil {
+			log.ErrS(err)
+			session.SetFlash(r, session.SessionBad, "Account could not be created (1008)")
+			return
+		}
+
+	} else if provider.GetType() == oauth.TypeOAuth {
+
+		if resp.Email == "" {
+			session.SetFlash(r, session.SessionBad, "We were unable to fetch your details from "+provider.GetName()+" (1007)")
+			return
+		}
+
+		// Look for existing user by email
+		user, err = mysql.GetUserByEmail(resp.Email)
+		if err == mysql.ErrRecordNotFound {
+
+			// Create new user
+			user, err = mysql.NewUser(resp.Email, "", session.GetProductCC(r), true, r)
+			if err != nil {
+				log.ErrS(err)
+				session.SetFlash(r, session.SessionBad, "Account could not be created (1006)")
+				return
+			}
+
+		} else if err != nil {
+			log.ErrS(err)
+			session.SetFlash(r, session.SessionBad, "An error occurred (1007)")
+			return
+		}
+
+	} else if provider.GetType() == oauth.TypeOpenID {
+
+		// Look for existing user by email
+		i, err := strconv.Atoi(resp.ID)
+		if err != nil {
+			log.Err(err.Error(), zap.String("id", resp.ID))
+			session.SetFlash(r, session.SessionBad, "We were unable to fetch your details from "+provider.GetName()+" (1003)")
+			return
+		}
+
+		userProvider, err := mysql.GetUserProvider(provider.GetEnum(), i)
+		if err != nil {
+			log.ErrS(err)
+			session.SetFlash(r, session.SessionBad, "Unable to find a Game DB account linked with this Steam account (1004)")
+			return
+		}
+
+		user, err = mysql.GetUserByID(userProvider.UserID)
+		if err == mysql.ErrRecordNotFound {
+			session.SetFlash(r, session.SessionBad, "Unable to find a Game DB account linked with this Steam account (1005)")
+			return
+		} else if err != nil {
+			log.ErrS(err)
+			session.SetFlash(r, session.SessionBad, "An error occurred (1006)")
+			return
+		}
+
+	} else {
+
+		session.SetFlash(r, session.SessionBad, "Unsupported auth type")
+		return
+	}
+
+	if user.Email != resp.Email {
+		session.SetFlash(r, session.SessionBad, "Your email address on "+provider.GetName()+" ("+resp.Email+") does not match Game DB")
+		return
+	}
 
 	//
 	switch page {

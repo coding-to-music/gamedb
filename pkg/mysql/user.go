@@ -120,6 +120,7 @@ func NewUser(email, password string, prodCC steamapi.ProductCC, verified bool, r
 
 	var passwordBytes []byte
 	if password != "" {
+
 		passwordBytes, err = bcrypt.GenerateFromPassword([]byte(password), 14)
 		if err != nil {
 			return user, err
