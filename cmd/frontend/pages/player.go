@@ -464,6 +464,7 @@ func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
 		user, err := getUserFromSession(r)
 		if err != nil {
 			log.ErrS(err)
+			session.SetFlash(r, session.SessionBad, "Something went wrong")
 			return
 		}
 
