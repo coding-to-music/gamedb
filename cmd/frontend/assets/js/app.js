@@ -813,19 +813,19 @@ if ($appPage.length > 0) {
                     },
                     "orderable": false,
                 },
-                // Description
+                // Completed Time
                 {
                     "targets": 1,
                     "render": function (data, type, row) {
                         if (row[7] && row[7] > 0) {
-                            return '<span data-livestamp="' + row[7] + '"></span>' +
-                                '<br><small>' + row[8] + '</small>';
+                            return '<span data-livestamp="' + row[7] + '"></span>'
+                                + '<br><small class="text-muted">' + row[8] + '</small>';
                         }
                         return '';
                     },
                     "orderable": false,
                 },
-                // Completed
+                // Completed Percent
                 {
                     "targets": 2,
                     "render": function (data, type, row) {

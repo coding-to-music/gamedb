@@ -702,7 +702,8 @@ if ($playerPage.length > 0) {
                     "targets": 1,
                     "render": function (data, type, row) {
                         if (row[6]) {
-                            return '<span data-livestamp="' + row[6] + '"></span>';
+                            return '<span data-livestamp="' + row[6] + '"></span>'
+                            +'<br><small class="text-muted">' + row[8] + '</small>';
                         } else {
                             return 'Unknown';
                         }

@@ -6,6 +6,7 @@ import (
 	"sort"
 	"strconv"
 	"sync"
+	"time"
 
 	"github.com/Jleagle/influxql"
 	"github.com/Jleagle/rabbit-go"
@@ -736,6 +737,9 @@ func playerAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var response = datatable.NewDataTablesResponse(r, query, count, count, nil)
 	for _, pa := range playerAchievements {
+
+		achievedTimeFormatted := time.Unix(pa.AchievementDate, 0).Format(helpers.DateSQL)
+
 		response.AddRow([]interface{}{
 			helpers.GetAppPath(pa.AppID, pa.AppName), // 0
 			helpers.GetAppName(pa.AppID, pa.AppName), // 1
@@ -745,6 +749,7 @@ func playerAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			pa.AchievementDescription,                // 5
 			pa.AchievementDate,                       // 6
 			pa.GetComplete(),                         // 7
+			achievedTimeFormatted,                    // 8
 		})
 	}
 
