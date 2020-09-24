@@ -13,7 +13,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/steam"
 	"github.com/yohcop/openid-go"
-	"golang.org/x/oauth2"
 )
 
 type steamProvider struct {
@@ -35,7 +34,7 @@ func (c steamProvider) GetEnum() ProviderEnum {
 	return ProviderSteam
 }
 
-func (c steamProvider) Redirect(w http.ResponseWriter, r *http.Request, state string) {
+func (c steamProvider) Redirect(w http.ResponseWriter, r *http.Request, page string) {
 
 	q := url.Values{}
 	q.Set("openid.identity", "http://specs.openid.net/auth/2.0/identifier_select")
@@ -43,12 +42,12 @@ func (c steamProvider) Redirect(w http.ResponseWriter, r *http.Request, state st
 	q.Set("openid.ns", "http://specs.openid.net/auth/2.0")
 	q.Set("openid.mode", "checkid_setup")
 	q.Set("openid.realm", config.C.GameDBDomain+"/")
-	q.Set("openid.return_to", config.C.GameDBDomain+"/oauth/in/steam?page="+state)
+	q.Set("openid.return_to", config.C.GameDBDomain+"/oauth/in/steam?page="+page)
 
 	http.Redirect(w, r, "https://steamcommunity.com/openid/login?"+q.Encode(), http.StatusFound)
 }
 
-func (c steamProvider) GetUser(r *http.Request, _ *oauth2.Token) (user User, err error) {
+func (c steamProvider) GetUser(r *http.Request) (user User, err error) {
 
 	// Get Steam ID
 	resp, err := openid.Verify(config.C.GameDBDomain+r.URL.String(), openid.NewSimpleDiscoveryCache(), openid.NewSimpleNonceStore())
@@ -74,7 +73,7 @@ func (c steamProvider) GetUser(r *http.Request, _ *oauth2.Token) (user User, err
 
 	policy := backoff.NewExponentialBackOff()
 
-	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.InfoS(err) })
+	err = backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 5), func(err error, t time.Duration) { log.InfoS(err) })
 	if err != nil {
 		log.ErrS(err)
 		return user, err

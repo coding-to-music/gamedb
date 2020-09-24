@@ -2,10 +2,12 @@ package oauth
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"strconv"
 
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/log"
 	gh "github.com/google/go-github/v32/github"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/github"
@@ -35,7 +37,7 @@ func (c githubProvider) Redirect(w http.ResponseWriter, r *http.Request, state s
 	http.Redirect(w, r, conf.AuthCodeURL(state), http.StatusFound)
 }
 
-func (c githubProvider) GetUser(_ *http.Request, token *oauth2.Token) (user User, err error) {
+func (c githubProvider) GetUser(token *oauth2.Token) (user User, err error) {
 
 	ctx := context.Background()
 
@@ -50,7 +52,12 @@ func (c githubProvider) GetUser(_ *http.Request, token *oauth2.Token) (user User
 		return user, err
 	}
 
-	user.Token = token.AccessToken
+	b, err := json.Marshal(token)
+	if err != nil {
+		log.ErrS(err)
+	}
+
+	user.Token = string(b)
 	user.ID = strconv.FormatInt(resp.GetID(), 10)
 	user.Username = resp.GetName()
 	user.Email = resp.GetEmail()

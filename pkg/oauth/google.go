@@ -7,6 +7,7 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 )
@@ -35,7 +36,7 @@ func (c googleProvider) Redirect(w http.ResponseWriter, r *http.Request, state s
 	http.Redirect(w, r, conf.AuthCodeURL(state), http.StatusFound)
 }
 
-func (c googleProvider) GetUser(_ *http.Request, token *oauth2.Token) (user User, err error) {
+func (c googleProvider) GetUser(token *oauth2.Token) (user User, err error) {
 
 	q := url.Values{}
 	q.Set("access_token", token.AccessToken)
@@ -61,7 +62,12 @@ func (c googleProvider) GetUser(_ *http.Request, token *oauth2.Token) (user User
 		return user, OauthError{err, "An error occurred (1005)"}
 	}
 
-	user.Token = token.AccessToken
+	b, err := json.Marshal(token)
+	if err != nil {
+		log.ErrS(err)
+	}
+
+	user.Token = string(b)
 	user.ID = userInfo.Sub
 	user.Username = userInfo.Name
 	user.Email = userInfo.Email

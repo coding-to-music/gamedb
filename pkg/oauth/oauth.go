@@ -3,8 +3,8 @@ package oauth
 import (
 	"encoding/json"
 	"net/http"
-	"strconv"
 
+	"github.com/dghubble/oauth1"
 	"github.com/gamedb/gamedb/pkg/log"
 	"golang.org/x/oauth2"
 )
@@ -29,18 +29,43 @@ var Providers = []Provider{
 	twitterProvider{},
 }
 
+// Just here for a compile time error
+//goland:noinspection GoUnusedGlobalVariable
+var oauth1Providers = []OAuth1Provider{
+	twitterProvider{},
+}
+
+// Just here for a compile time error
+//goland:noinspection GoUnusedGlobalVariable
+var openIDProviders = []OpenIDProvider{
+	steamProvider{},
+}
+
 type Provider interface {
 	GetName() string
 	GetIcon() string
 	GetColour() string
 	GetEnum() ProviderEnum
-	Redirect(w http.ResponseWriter, r *http.Request, state string)
-	GetUser(r *http.Request, token *oauth2.Token) (User, error) // r for OpenID, token for OAuth
 }
 
-type OAuthProvider interface {
+type OAuth2Provider interface {
 	Provider
 	GetConfig() oauth2.Config
+	GetUser(*oauth2.Token) (User, error)
+	Redirect(http.ResponseWriter, *http.Request, string)
+}
+
+type OAuth1Provider interface {
+	Provider
+	GetConfig() oauth1.Config
+	GetUser(*oauth1.Token) (User, error)
+	Redirect() (string, string, error)
+}
+
+type OpenIDProvider interface {
+	Provider
+	GetUser(*http.Request) (User, error)
+	Redirect(http.ResponseWriter, *http.Request, string)
 }
 
 func New(p ProviderEnum) Provider {
@@ -83,14 +108,6 @@ type User struct {
 	Username string
 	Email    string
 	Avatar   string
-}
-
-func (u User) IDInt() int {
-	i, err := strconv.Atoi(u.ID)
-	if err != nil {
-		log.Err(err.Error())
-	}
-	return i
 }
 
 //

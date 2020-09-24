@@ -1,13 +1,13 @@
 package oauth
 
 import (
-	"context"
-	"net/http"
+	"encoding/json"
 
-	twitter2 "github.com/dghubble/go-twitter/twitter"
+	"github.com/dghubble/go-twitter/twitter"
+	"github.com/dghubble/oauth1"
+	twitter2 "github.com/dghubble/oauth1/twitter"
 	"github.com/gamedb/gamedb/pkg/config"
-	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/clientcredentials"
+	"github.com/gamedb/gamedb/pkg/log"
 )
 
 type twitterProvider struct {
@@ -29,25 +29,30 @@ func (c twitterProvider) GetEnum() ProviderEnum {
 	return ProviderTwitter
 }
 
-func (c twitterProvider) Redirect(w http.ResponseWriter, r *http.Request, state string) {
+func (c twitterProvider) Redirect() (redirect string, secret string, err error) {
+
 	conf := c.GetConfig()
-	http.Redirect(w, r, conf.AuthCodeURL(state), http.StatusFound)
-}
-
-func (c twitterProvider) GetUser(_ *http.Request, token *oauth2.Token) (user User, err error) {
-
-	configx := &clientcredentials.Config{
-		ClientID:     config.C.TwitterConsumerKey,
-		ClientSecret: config.C.TwitterConsumerSecret,
-		TokenURL:     "https://api.twitter.com/oauth2/token",
+	requestToken, requestSecret, err := conf.RequestToken()
+	if err != nil {
+		return "", "", err
 	}
 
-	httpClient := configx.Client(context.Background())
+	authorizationURL, err := conf.AuthorizationURL(requestToken)
+	if err != nil {
+		return "", "", err
+	}
 
-	client := twitter2.NewClient(httpClient)
+	return authorizationURL.String(), requestSecret, nil
+}
+
+func (c twitterProvider) GetUser(token *oauth1.Token) (user User, err error) {
+
+	conf := oauth1.NewConfig(config.C.TwitterConsumerKey, config.C.TwitterConsumerSecret)
+	httpClient := conf.Client(oauth1.NoContext, token)
+	client := twitter.NewClient(httpClient)
 
 	t := true
-	params := twitter2.AccountVerifyParams{
+	params := twitter.AccountVerifyParams{
 		IncludeEntities: &t,
 		SkipStatus:      &t,
 		IncludeEmail:    &t,
@@ -58,25 +63,26 @@ func (c twitterProvider) GetUser(_ *http.Request, token *oauth2.Token) (user Use
 		return user, err
 	}
 
-	user.Token = token.AccessToken
+	b, err := json.Marshal(token)
+	if err != nil {
+		log.ErrS(err)
+	}
+
+	user.Token = string(b)
 	user.ID = resp.IDStr
-	user.Username = resp.ScreenName
+	user.Username = resp.Name
 	user.Email = resp.Email
 	user.Avatar = resp.ProfileImageURL
 
 	return user, nil
 }
 
-func (c twitterProvider) GetConfig() oauth2.Config {
+func (c twitterProvider) GetConfig() oauth1.Config {
 
-	return oauth2.Config{
-		ClientID:     config.C.TwitterConsumerKey,
-		ClientSecret: config.C.TwitterConsumerSecret,
-		Scopes:       []string{},
-		RedirectURL:  config.C.GameDBDomain + "/oauth/in/" + string(c.GetEnum()),
-		Endpoint: oauth2.Endpoint{
-			AuthURL:  "https://api.twitter.com/oauth/authenticate",
-			TokenURL: "https://api.twitter.com/oauth2/token",
-		},
+	return oauth1.Config{
+		ConsumerKey:    config.C.TwitterConsumerKey,
+		ConsumerSecret: config.C.TwitterConsumerSecret,
+		CallbackURL:    config.C.GameDBDomain + "/oauth/in/" + string(c.GetEnum()),
+		Endpoint:       twitter2.AuthenticateEndpoint,
 	}
 }

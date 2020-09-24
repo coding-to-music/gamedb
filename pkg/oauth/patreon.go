@@ -2,9 +2,11 @@ package oauth
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/mxpv/patreon-go"
 	"golang.org/x/oauth2"
 )
@@ -33,7 +35,7 @@ func (c patreonProvider) Redirect(w http.ResponseWriter, r *http.Request, state 
 	http.Redirect(w, r, conf.AuthCodeURL(state), http.StatusFound)
 }
 
-func (c patreonProvider) GetUser(_ *http.Request, token *oauth2.Token) (user User, err error) {
+func (c patreonProvider) GetUser(token *oauth2.Token) (user User, err error) {
 
 	// Get Patreon user
 	ts := oauth2.StaticTokenSource(token)
@@ -48,7 +50,12 @@ func (c patreonProvider) GetUser(_ *http.Request, token *oauth2.Token) (user Use
 	// 	return "", OauthError{nil, "This Patreon account has not been verified"}
 	// }
 
-	user.Token = token.AccessToken
+	b, err := json.Marshal(token)
+	if err != nil {
+		log.ErrS(err)
+	}
+
+	user.Token = string(b)
 	user.ID = resp.Data.ID
 	user.Username = resp.Data.Attributes.FullName
 	user.Email = resp.Data.Attributes.Email

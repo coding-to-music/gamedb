@@ -1,10 +1,12 @@
 package oauth
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/log"
 	"golang.org/x/oauth2"
 )
 
@@ -32,7 +34,7 @@ func (c discordProvider) Redirect(w http.ResponseWriter, r *http.Request, state 
 	http.Redirect(w, r, conf.AuthCodeURL(state), http.StatusFound)
 }
 
-func (c discordProvider) GetUser(_ *http.Request, token *oauth2.Token) (user User, err error) {
+func (c discordProvider) GetUser(token *oauth2.Token) (user User, err error) {
 
 	discord, err := discordgo.New("Bearer " + token.AccessToken)
 	if err != nil {
@@ -50,7 +52,12 @@ func (c discordProvider) GetUser(_ *http.Request, token *oauth2.Token) (user Use
 	// 	return
 	// }
 
-	user.Token = token.AccessToken
+	b, err := json.Marshal(token)
+	if err != nil {
+		log.ErrS(err)
+	}
+
+	user.Token = string(b)
 	user.ID = discordUser.ID
 	user.Username = discordUser.Username
 	user.Email = discordUser.Email
