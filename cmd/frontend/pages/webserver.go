@@ -3,6 +3,7 @@ package pages
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"html"
 	"html/template"
 	"math"
@@ -676,12 +677,22 @@ type Toast struct {
 
 func getUserFromSession(r *http.Request) (user mysql.User, err error) {
 
-	userID, err := session.GetUserIDFromSesion(r)
-	if err != nil {
-		return user, err
+	userID := session.GetUserIDFromSesion(r)
+	if userID == 0 {
+		return user, errors.New("logged out")
 	}
 
 	return mysql.GetUserByID(userID)
+}
+
+func getPlayerFromSession(r *http.Request) (player mongo.Player, err error) {
+
+	playerID := session.GetPlayerIDFromSesion(r)
+	if playerID == 0 {
+		return player, errors.New("logged out")
+	}
+
+	return mongo.GetPlayer(playerID)
 }
 
 // Has to be here as it contains mysql _and_ mongo

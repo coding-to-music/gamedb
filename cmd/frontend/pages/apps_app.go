@@ -235,8 +235,8 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 
 		if session.IsLoggedIn(r) {
 
-			playerID, err := session.GetPlayerIDFromSesion(r)
-			if err == nil && playerID > 0 {
+			playerID := session.GetPlayerIDFromSesion(r)
+			if playerID > 0 {
 
 				playerApp, err := mongo.GetPlayerAppByKey(playerID, app.ID)
 				if err != nil {
@@ -670,8 +670,8 @@ func appAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		playerID, err := session.GetPlayerIDFromSesion(r)
-		if err == nil && playerID > 0 {
+		playerID := session.GetPlayerIDFromSesion(r)
+		if playerID > 0 {
 
 			var a = bson.A{}
 			for _, v := range achievements {

@@ -30,8 +30,7 @@ func SignupRouter() http.Handler {
 
 func signupHandler(w http.ResponseWriter, r *http.Request) {
 
-	_, err := getUserFromSession(r)
-	if err == nil {
+	if session.IsLoggedIn(r) {
 		http.Redirect(w, r, "/settings", http.StatusFound)
 		return
 	}

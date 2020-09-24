@@ -15,8 +15,6 @@ import (
 
 func appsRandomHandler(w http.ResponseWriter, r *http.Request) {
 
-	var player mongo.Player
-
 	var filter = bson.D{
 		{"$or", bson.A{
 			bson.M{"type": "game"},
@@ -76,29 +74,21 @@ func appsRandomHandler(w http.ResponseWriter, r *http.Request) {
 
 		ids := bson.A{}
 
-		user, err := getUserFromSession(r)
+		player, err := getPlayerFromSession(r)
 		if err != nil {
 			log.ErrS(err)
 			returnErrorTemplate(w, r, errorTemplate{Code: 500})
 			return
 		}
 
-		var steamID = user.GetSteamID()
-		if steamID > 0 {
-
-			player, err = mongo.GetPlayer(steamID)
-			if err != nil {
-				log.ErrS(err)
-				returnErrorTemplate(w, r, errorTemplate{Code: 500})
-				return
-			}
+		if player.ID > 0 {
 
 			t.Player = player
 
 			var played = r.URL.Query().Get("played")
 			if played != "" {
 
-				playerApps, err := mongo.GetPlayerApps(0, 0, bson.D{{"player_id", steamID}}, nil)
+				playerApps, err := mongo.GetPlayerApps(0, 0, bson.D{{"player_id", player.ID}}, nil)
 				if err != nil {
 					log.ErrS(err)
 					returnErrorTemplate(w, r, errorTemplate{Code: 500})

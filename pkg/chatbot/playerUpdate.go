@@ -60,7 +60,7 @@ func (c CommandPlayerUpdate) Output(msg *discordgo.MessageCreate, _ steamapi.Pro
 			return message, err
 		}
 
-		playerID := user.GetSteamID()
+		playerID := mysql.GetUserSteamID(user.ID)
 		if playerID > 0 {
 
 			err = queue.ProducePlayer(queue.PlayerMessage{ID: playerID})

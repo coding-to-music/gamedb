@@ -1,7 +1,6 @@
 package session
 
 import (
-	"errors"
 	"net"
 	"net/http"
 	"strconv"
@@ -66,26 +65,34 @@ func InitSession() {
 }
 
 //
-func GetUserIDFromSesion(r *http.Request) (id int, err error) {
+func GetUserIDFromSesion(r *http.Request) (id int) {
 
 	idx := Get(r, SessionUserID)
 
 	if idx == "" {
-		return id, errors.New("no user id set")
+		return 0
 	}
 
-	return strconv.Atoi(idx)
+	id, err := strconv.Atoi(idx)
+	if err != nil {
+		log.ErrS(err)
+	}
+	return id
 }
 
-func GetPlayerIDFromSesion(r *http.Request) (id int64, err error) {
+func GetPlayerIDFromSesion(r *http.Request) (id int64) {
 
 	idx := Get(r, SessionPlayerID)
 
 	if idx == "" {
-		return 0, nil
+		return 0
 	}
 
-	return strconv.ParseInt(idx, 10, 64)
+	id, err := strconv.ParseInt(idx, 10, 64)
+	if err != nil {
+		log.ErrS(err)
+	}
+	return id
 }
 
 var (

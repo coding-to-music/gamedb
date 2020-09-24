@@ -58,7 +58,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 		log.ErrS(err)
 	}
 
-	steamID := t.User.GetSteamID()
+	steamID := mysql.GetUserSteamID(t.User.ID)
 	if steamID > 0 {
 
 		// Get player
@@ -561,15 +561,14 @@ func settingsRemoveProviderHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID, err := session.GetUserIDFromSesion(r)
-	if err != nil {
-		log.ErrS(err)
+	userID := session.GetUserIDFromSesion(r)
+	if userID == 0 {
 		session.SetFlash(r, session.SessionBad, "An error occurred (1001)")
 		return
 	}
 
 	// Update user
-	err = mysql.DeleteUserProvider(provider.GetEnum(), userID)
+	err := mysql.DeleteUserProvider(provider.GetEnum(), userID)
 	if err != nil {
 		log.ErrS(err)
 		session.SetFlash(r, session.SessionBad, "An error occurred (1002)")

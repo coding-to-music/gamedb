@@ -1,9 +1,11 @@
 package mysql
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/oauth"
 )
 
@@ -94,4 +96,24 @@ func GetUserProvider(enum oauth.ProviderEnum, userID int) (userProvider UserProv
 	db = db.Find(&userProvider)
 
 	return userProvider, db.Error
+}
+
+func GetUserSteamID(userID int) int64 {
+
+	provider, err := GetUserProvider(oauth.ProviderSteam, userID)
+	if err != nil {
+		err = helpers.IgnoreErrors(err, ErrRecordNotFound)
+		if err != nil {
+			log.ErrS(err)
+		}
+		return 0
+	}
+
+	i, err := strconv.ParseInt(provider.ID, 10, 64)
+	if err != nil {
+		log.ErrS(err)
+		return 0
+	}
+
+	return i
 }

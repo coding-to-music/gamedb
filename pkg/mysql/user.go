@@ -82,19 +82,6 @@ type User struct {
 	APIKey        string             `gorm:"not null;column:api_key"`
 }
 
-func (user User) GetSteamID() (ret int64) {
-
-	if user.SteamID.Valid {
-		i, err := strconv.ParseInt(user.SteamID.String, 10, 64)
-		if err != nil {
-			log.ErrS(err)
-		} else {
-			return i
-		}
-	}
-	return 0
-}
-
 func (user *User) SetAPIKey() {
 	// Must match api validation regex
 	user.APIKey = helpers.RandString(20, helpers.Numbers+helpers.LettersCaps)

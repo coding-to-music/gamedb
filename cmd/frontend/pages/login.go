@@ -32,8 +32,7 @@ func LoginRouter() http.Handler {
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 
-	_, err := getUserFromSession(r)
-	if err == nil {
+	if session.IsLoggedIn(r) {
 		http.Redirect(w, r, "/settings", http.StatusFound)
 		return
 	}
@@ -161,9 +160,9 @@ func login(r *http.Request, user mysql.User) (string, bool) {
 		session.SessionUserLevel:      strconv.Itoa(int(user.Level)),
 	}
 
-	steamID := user.GetSteamID()
-	if steamID > 0 {
-		player, err := mongo.GetPlayer(steamID)
+	playerID := mysql.GetUserSteamID(user.ID)
+	if playerID > 0 {
+		player, err := mongo.GetPlayer(playerID)
 		if err == nil {
 			sessionData[session.SessionPlayerID] = strconv.FormatInt(player.ID, 10)
 			sessionData[session.SessionPlayerName] = player.GetName()

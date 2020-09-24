@@ -50,8 +50,7 @@ func (c AutoPlayerRefreshes) work() (err error) {
 	var playerIDs []int64
 	for _, user := range users {
 
-		playerID := user.GetSteamID()
-
+		playerID := mysql.GetUserSteamID(user.ID)
 		if playerID > 0 {
 
 			playerIDs = append(playerIDs, playerID)
