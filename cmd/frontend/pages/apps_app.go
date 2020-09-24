@@ -653,7 +653,7 @@ func appAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get achievements
 	var achievements []mongo.AppAchievement
-	var achievedMap = map[string]bool{}
+	var achievedMap = map[string]int64{}
 	wg.Add(1)
 	go func() {
 
@@ -685,7 +685,7 @@ func appAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			for _, v := range playerAchievements {
-				achievedMap[v.AchievementID] = true
+				achievedMap[v.AchievementID] = v.AchievementDate
 			}
 		}
 	}()
@@ -711,7 +711,8 @@ func appAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	response := datatable.NewDataTablesResponse(r, query, total, total, nil)
 	for _, achievement := range achievements {
 
-		_, achieved := achievedMap[achievement.Key]
+		achievedTime := achievedMap[achievement.Key]
+		achievedTimeFormatted := time.Unix(achievedTime, 0).Format(helpers.DateSQL)
 
 		response.AddRow([]interface{}{
 			achievement.Name,           // 0
@@ -721,7 +722,8 @@ func appAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			achievement.Active,         // 4
 			achievement.Hidden,         // 5
 			achievement.Deleted,        // 6
-			achieved,                   // 7
+			achievedTime,               // 7
+			achievedTimeFormatted,      // 8
 		})
 	}
 

@@ -787,11 +787,6 @@ if ($appPage.length > 0) {
         const options = {
             "pageLength": 100,
             "order": [[1, 'desc']],
-            "createdRow": function (row, data, dataIndex) {
-                if (data[7]) {
-                    $(row).addClass('font-weight-bold');
-                }
-            },
             "columnDefs": [
                 // Name
                 {
@@ -819,16 +814,20 @@ if ($appPage.length > 0) {
                     "orderable": false,
                 },
                 // Description
-                // {
-                //     "targets": 1,
-                //     "render": function (data, type, row) {
-                //         return row[1];
-                //     },
-                //     "orderable": false,
-                // },
-                // Completed
                 {
                     "targets": 1,
+                    "render": function (data, type, row) {
+                        if (row[7] && row[7] > 0) {
+                            return '<span data-livestamp="' + row[7] + '"></span>' +
+                                '<br><small>' + row[8] + '</small>';
+                        }
+                        return '';
+                    },
+                    "orderable": false,
+                },
+                // Completed
+                {
+                    "targets": 2,
                     "render": function (data, type, row) {
                         return row[3] + '%';
                     },
