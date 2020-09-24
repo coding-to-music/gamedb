@@ -343,7 +343,7 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 			return
 		}
 
-		userProvider, err := mysql.GetUserProvider(provider.GetEnum(), i)
+		userProvider, err := mysql.GetUserProviderByProviderID(provider.GetEnum(), i)
 		if err != nil {
 			log.ErrS(err)
 			session.SetFlash(r, session.SessionBad, "Unable to find a Game DB account linked with this Steam account (1004)")

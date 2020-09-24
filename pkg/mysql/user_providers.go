@@ -84,7 +84,7 @@ func GetUserProviders(userID int) (providers []UserProvider, err error) {
 	return providers, db.Error
 }
 
-func GetUserProvider(enum oauth.ProviderEnum, userID int) (userProvider UserProvider, err error) {
+func GetUserProviderByProviderID(enum oauth.ProviderEnum, userID int) (userProvider UserProvider, err error) {
 
 	db, err := GetMySQLClient()
 	if err != nil {
@@ -98,9 +98,23 @@ func GetUserProvider(enum oauth.ProviderEnum, userID int) (userProvider UserProv
 	return userProvider, db.Error
 }
 
+func GetUserProviderByUserID(enum oauth.ProviderEnum, userID int) (userProvider UserProvider, err error) {
+
+	db, err := GetMySQLClient()
+	if err != nil {
+		return userProvider, err
+	}
+
+	db = db.Where("provider = ?", enum)
+	db = db.Where("user_id = ?", userID)
+	db = db.Find(&userProvider)
+
+	return userProvider, db.Error
+}
+
 func GetUserSteamID(userID int) int64 {
 
-	provider, err := GetUserProvider(oauth.ProviderSteam, userID)
+	provider, err := GetUserProviderByUserID(oauth.ProviderSteam, userID)
 	if err != nil {
 		err = helpers.IgnoreErrors(err, ErrRecordNotFound)
 		if err != nil {
