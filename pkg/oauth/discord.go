@@ -29,6 +29,10 @@ func (c discordProvider) GetEnum() ProviderEnum {
 	return ProviderDiscord
 }
 
+func (c discordProvider) GetType() ProviderType {
+	return TypeOAuth
+}
+
 func (c discordProvider) Redirect(w http.ResponseWriter, r *http.Request, state string) {
 	conf := c.GetConfig()
 	http.Redirect(w, r, conf.AuthCodeURL(state), http.StatusFound)

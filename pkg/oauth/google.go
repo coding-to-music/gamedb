@@ -31,6 +31,10 @@ func (c googleProvider) GetEnum() ProviderEnum {
 	return ProviderGoogle
 }
 
+func (c googleProvider) GetType() ProviderType {
+	return TypeOAuth
+}
+
 func (c googleProvider) Redirect(w http.ResponseWriter, r *http.Request, state string) {
 	conf := c.GetConfig()
 	http.Redirect(w, r, conf.AuthCodeURL(state), http.StatusFound)

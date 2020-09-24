@@ -9,6 +9,13 @@ import (
 	"golang.org/x/oauth2"
 )
 
+type ProviderType int
+
+const (
+	TypeOAuth ProviderType = iota
+	TypeOpenID
+)
+
 type ProviderEnum string
 
 var (
@@ -46,6 +53,7 @@ type Provider interface {
 	GetIcon() string
 	GetColour() string
 	GetEnum() ProviderEnum
+	GetType() ProviderType
 }
 
 type OAuth2Provider interface {

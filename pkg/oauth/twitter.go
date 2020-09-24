@@ -29,6 +29,10 @@ func (c twitterProvider) GetEnum() ProviderEnum {
 	return ProviderTwitter
 }
 
+func (c twitterProvider) GetType() ProviderType {
+	return TypeOAuth
+}
+
 func (c twitterProvider) Redirect() (redirect string, secret string, err error) {
 
 	conf := c.GetConfig()

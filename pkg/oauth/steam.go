@@ -34,6 +34,10 @@ func (c steamProvider) GetEnum() ProviderEnum {
 	return ProviderSteam
 }
 
+func (c steamProvider) GetType() ProviderType {
+	return TypeOpenID
+}
+
 func (c steamProvider) Redirect(w http.ResponseWriter, r *http.Request, page string) {
 
 	q := url.Values{}
