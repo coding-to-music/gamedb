@@ -55,15 +55,22 @@
 
         {{ if .IsAdmin }}
             <div class="card">
+                <h5 class="card-header">Recent Requests</h5>
                 <div class="card-body">
-
-                    <h5>Recent Requests</h5>
 
                     <div id="chart"></div>
 
                     <div class="table-responsive">
-                        <table id="recent" class="table table-hover table-striped mb-0">
+                        <table class="table table-hover table-striped" data-row-type="commands" data-path="/discord-bot/recent.json" id="recent-table">
+                            <thead class="thead-light">
+                            <tr>
+                                <th scope="col">Author</th>
+                                <th scope="col">Command</th>
+                                <th scope="col">Time</th>
+                            </tr>
+                            </thead>
                             <tbody>
+
                             </tbody>
                         </table>
                     </div>

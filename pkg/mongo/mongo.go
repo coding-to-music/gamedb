@@ -38,6 +38,7 @@ const (
 	CollectionChanges             collection = "changes"
 	CollectionChatBotCommands     collection = "chat_bot_commands"
 	CollectionDelayQueue          collection = "delay_queue"
+	CollectionDiscordGuilds       collection = "discord_guilds"
 	CollectionEvents              collection = "events"
 	CollectionGroups              collection = "groups"
 	CollectionPackageApps         collection = "package_apps"

@@ -6,12 +6,13 @@ import (
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/gamedb/gamedb/cmd/frontend/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/chatbot"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/go-chi/chi"
 )
 
@@ -23,7 +24,7 @@ func ChatBotRouter() http.Handler {
 
 	r := chi.NewRouter()
 	r.Get("/", chatBotHandler)
-	r.Get("/commands.json", chatBotRecentHandler)
+	r.Get("/recent.json", chatBotRecentHandler)
 	return r
 }
 
@@ -127,33 +128,45 @@ func (cbt chatBotTemplate) Guilds() (guilds int) {
 
 func chatBotRecentHandler(w http.ResponseWriter, r *http.Request) {
 
+	query := datatable.NewDataTableQuery(r, false)
+
 	commands, err := mongo.GetChatBotCommandsRecent()
 	if err != nil {
 		log.ErrS(err)
 		return
 	}
 
-	var last string
-	var messages []queue.ChatBotPayload
+	var guildIDs []string
 	for _, v := range commands {
+		guildIDs = append(guildIDs, v.GuildID)
+	}
+
+	guilds, err := mongo.GetGuilds(guildIDs)
+
+	var last string
+	var response = datatable.NewDataTablesResponse(r, query, 100, 100, nil)
+	for _, command := range commands {
 
 		// Show all command prefixes as a full stop
-		if strings.HasPrefix(v.Message, "!") {
-			v.Message = strings.Replace(v.Message, "!", ".", 1)
+		if strings.HasPrefix(command.Message, "!") {
+			command.Message = strings.Replace(command.Message, "!", ".", 1)
 		}
 
-		if last != v.AuthorID+v.Message { // Stop dupes
+		if last != command.AuthorID+command.Message { // Stop dupes
 
-			messages = append(messages, queue.ChatBotPayload{
-				AuthorID:     v.AuthorID,
-				AuthorName:   v.AuthorName,
-				AuthorAvatar: v.AuthorAvatar,
-				Message:      v.Message,
+			response.AddRow([]interface{}{
+				command.AuthorID,                     // 0
+				command.AuthorName,                   // 1
+				command.AuthorAvatar,                 // 2
+				command.Message,                      // 3
+				command.Time.Unix(),                  // 4
+				command.Time.Format(helpers.DateSQL), // 5
+				guilds[command.GuildID].Name,         // 6
 			})
 		}
 
-		last = v.AuthorID + v.Message
+		last = command.AuthorID + command.Message
 	}
 
-	returnJSON(w, r, messages)
+	returnJSON(w, r, response)
 }
