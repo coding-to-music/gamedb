@@ -164,13 +164,19 @@ func NewUser(email, password string, prodCC steamapi.ProductCC, verified bool, r
 	}
 
 	// Influx
+	fields := map[string]interface{}{
+		"signup": 1,
+	}
+
+	if verified {
+		fields["oauth"] = 1
+	}
+
 	point := influx.Point{
 		Measurement: string(influxHelper.InfluxMeasurementSignups),
-		Fields: map[string]interface{}{
-			"signup": 1,
-		},
-		Time:      time.Now(),
-		Precision: "s",
+		Fields:      fields,
+		Time:        time.Now(),
+		Precision:   "s",
 	}
 
 	_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, point)
