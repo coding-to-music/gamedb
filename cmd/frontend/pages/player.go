@@ -469,7 +469,8 @@ func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if user.SteamID.String != id {
+		playerID := session.GetPlayerIDFromSesion(r)
+		if playerID != idx {
 			session.SetFlash(r, session.SessionBad, "Invalid user")
 			return
 		}

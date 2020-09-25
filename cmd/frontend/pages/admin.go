@@ -78,8 +78,9 @@ func adminUsersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var query = datatable.NewDataTableQuery(r, false)
 	var wg sync.WaitGroup
-	var users []mysql.User
 
+	var users []mysql.User
+	var playerIDs = map[int]string{}
 	wg.Add(1)
 	go func(r *http.Request) {
 
@@ -92,7 +93,7 @@ func adminUsersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		db = db.Model(&mysql.User{})
-		db = db.Select([]string{"created_at", "email", "email_verified", "steam_id", "level", "logged_in_at"})
+		db = db.Select([]string{"id", "created_at", "email", "email_verified", "steam_id", "level", "logged_in_at"})
 		db = db.Limit(100)
 		db = db.Offset(query.GetOffset())
 
@@ -104,9 +105,38 @@ func adminUsersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		db = query.SetOrderOffsetGorm(db, sortCols)
 
 		db = db.Find(&users)
-
 		if db.Error != nil {
 			log.ErrS(db.Error)
+			return
+		}
+
+		// Get Steam IDs
+		db, err = mysql.GetMySQLClient()
+		if err != nil {
+			log.ErrS(err)
+			return
+		}
+
+		var userIDs []int
+		for _, v := range users {
+			userIDs = append(userIDs, v.ID)
+		}
+
+		var userProviders []mysql.UserProvider
+		db = db.Model(&mysql.UserProvider{})
+		db = db.Select([]string{"user_id", "id"})
+		db = db.Where("user_id IN (?)", userIDs)
+		db = db.Where("provider = ?", "steam")
+		db = db.Limit(100)
+
+		db = db.Find(&userProviders)
+		if db.Error != nil {
+			log.ErrS(db.Error)
+			return
+		}
+
+		for _, v := range userProviders {
+			playerIDs[v.UserID] = v.ID
 		}
 	}(r)
 
@@ -135,11 +165,12 @@ func adminUsersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var response = datatable.NewDataTablesResponse(r, query, count, count, nil)
 	for _, user := range users {
+
 		response.AddRow([]interface{}{
 			user.CreatedAt.Format(helpers.DateSQL),  // 0
 			user.Email,                              // 1
 			user.EmailVerified,                      // 2
-			user.SteamID.String,                     // 3 - Must be string
+			playerIDs[user.ID],                      // 3
 			user.Level,                              // 4
 			user.LoggedInAt.Format(helpers.DateSQL), // 5
 		})

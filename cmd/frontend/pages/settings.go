@@ -33,7 +33,6 @@ func SettingsRouter() http.Handler {
 
 	r.Get("/", settingsHandler)
 	r.Post("/update", settingsPostHandler)
-	r.Post("/delete", deletePostHandler)
 	r.Get("/events.json", settingsEventsAjaxHandler)
 	r.Get("/new-key", settingsNewKeyHandler)
 	r.Get("/donations.json", settingsDonationsAjaxHandler)
@@ -212,47 +211,6 @@ type settingsTemplate struct {
 	Providers     []oauth.Provider
 	UserProviders map[oauth.ProviderEnum]mysql.UserProvider
 	Banners       []template.HTML
-}
-
-func deletePostHandler(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	redirect, good, bad := func() (redirect string, good string, bad string) {
-
-		// Parse form
-		err = r.ParseForm()
-		if err != nil {
-			log.ErrS(err)
-			return "/settings", "", "There was an eror saving your information."
-		}
-
-		user, err := getUserFromSession(r)
-		if err != nil {
-			log.ErrS(err)
-			return "/settings", "", "There was an eror saving your information."
-		}
-
-		if r.PostForm.Get("id") == user.SteamID.String {
-
-			session.DeleteAll(r)
-			return "/", "Your account has been deleted", ""
-
-		}
-
-		return "/settings", "", "Invalid player ID."
-	}()
-
-	if good != "" {
-		session.SetFlash(r, session.SessionGood, good)
-	}
-	if bad != "" {
-		session.SetFlash(r, session.SessionBad, bad)
-	}
-
-	session.Save(w, r)
-
-	http.Redirect(w, r, redirect, http.StatusFound)
 }
 
 func settingsPostHandler(w http.ResponseWriter, r *http.Request) {

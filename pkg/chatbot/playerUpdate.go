@@ -69,7 +69,7 @@ func (c CommandPlayerUpdate) Output(msg *discordgo.MessageCreate, _ steamapi.Pro
 				log.ErrS(err)
 			}
 
-			message.Content = "Player queued: " + config.C.GameDBDomain + "/p" + user.SteamID.String
+			message.Content = "Player queued: " + config.C.GameDBDomain + "/p" + strconv.FormatInt(playerID, 10)
 		} else {
 			message.Content = "You need to link your **Steam** account for us to know who you are: " + config.C.GameDBDomain + "/settings"
 		}
