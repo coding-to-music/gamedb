@@ -113,6 +113,7 @@ func main() {
 					defer saveToInflux(m, command)
 					defer saveToMongo(m, command, msg)
 				}
+				defer sendWebsocket(m, msg)
 
 				// Typing notification
 				err = discordSession.ChannelTyping(m.ChannelID)
@@ -247,8 +248,10 @@ func saveToMongo(m *discordgo.MessageCreate, command chatbot.Command, message st
 	_, err := mongo.InsertOne(mongo.CollectionChatBotCommands, row)
 	if err != nil {
 		log.ErrS(err)
-		return
 	}
+}
+
+func sendWebsocket(m *discordgo.MessageCreate, message string) {
 
 	wsPayload := queue.ChatBotPayload{}
 	wsPayload.AuthorID = m.Author.ID
@@ -256,10 +259,9 @@ func saveToMongo(m *discordgo.MessageCreate, command chatbot.Command, message st
 	wsPayload.AuthorAvatar = m.Author.Avatar
 	wsPayload.Message = message
 
-	err = queue.ProduceWebsocket(wsPayload, websockets.PageChatBot)
+	err := queue.ProduceWebsocket(wsPayload, websockets.PageChatBot)
 	if err != nil {
 		log.ErrS(err)
-		return
 	}
 }
 
