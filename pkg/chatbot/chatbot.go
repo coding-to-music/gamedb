@@ -37,6 +37,7 @@ type Command interface {
 const (
 	CApp            = "app"
 	CSettings       = "settings"
+	CAppFollowers   = "app-followers"
 	CAppPlayers     = "app-players"
 	CAppRandom      = "app-random"
 	CAppPrice       = "app-price"
@@ -59,6 +60,7 @@ const (
 
 var CommandRegister = []Command{
 	CommandApp{},
+	CommandAppFollowers{},
 	CommandAppPlayers{},
 	CommandSteamOnline{},
 	CommandAppRandom{},
@@ -115,7 +117,7 @@ func getFooter() *discordgo.MessageEmbedFooter {
 	return footer
 }
 
-func getAppEmbed(app mongo.App, authorID string, code steamapi.ProductCC) *discordgo.MessageEmbed {
+func getAppEmbed(commandID string, app mongo.App, authorID string, code steamapi.ProductCC) *discordgo.MessageEmbed {
 
 	return &discordgo.MessageEmbed{
 		Title:     app.GetName(),
@@ -145,7 +147,7 @@ func getAppEmbed(app mongo.App, authorID string, code steamapi.ProductCC) *disco
 			},
 		},
 		Image: &discordgo.MessageEmbedImage{
-			URL: charts.GetAppChart(app),
+			URL: charts.GetAppPlayersChart(commandID, app.ID, "168d", "1d"),
 		},
 	}
 }

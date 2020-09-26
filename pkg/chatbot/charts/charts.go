@@ -10,50 +10,48 @@ import (
 	"github.com/Jleagle/influxql"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/wcharczuk/go-chart"
 	"github.com/wcharczuk/go-chart/drawing"
 )
 
-func GetGroupChart(group elasticsearch.Group) (path string) {
+func GetGroupChart(commandID string, groupID string) (path string) {
 
 	builder := influxql.NewBuilder()
 	builder.AddSelect(`max("members_count")`, "max_members_count")
 	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementGroups.String())
 	builder.AddWhere("time", ">", "NOW()-168d")
-	builder.AddWhere("group_id", "=", group.ID)
+	builder.AddWhere("group_id", "=", groupID)
 	builder.AddGroupByTime("1d")
 	builder.SetFillNone()
 
-	path, err := getChart(builder, group.ID, "Members")
+	path, err := getChart(commandID, builder, groupID, "Members")
 	if err != nil {
 		log.Err(err.Error())
 	}
 	return path
 }
 
-func GetAppChart(app mongo.App) (path string) {
+func GetAppPlayersChart(commandID string, appID int, time string, groupBy string) (path string) {
 
 	builder := influxql.NewBuilder()
 	builder.AddSelect("max(player_count)", "max_player_count")
 	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
-	builder.AddWhere("time", ">", "NOW()-168d")
-	builder.AddWhere("app_id", "=", app.ID)
-	builder.AddGroupByTime("1d")
+	builder.AddWhere("time", ">", "NOW()-"+time)
+	builder.AddWhere("app_id", "=", appID)
+	builder.AddGroupByTime(groupBy)
 	builder.SetFillNone()
 
-	path, err := getChart(builder, strconv.Itoa(app.ID), "In Game")
+	path, err := getChart(commandID, builder, strconv.Itoa(appID), "In Game")
 	if err != nil {
 		log.Err(err.Error())
 	}
 	return path
 }
 
-func getChart(builder *influxql.Builder, id string, title string) (path string, err error) {
+func getChart(commandID string, builder *influxql.Builder, id string, title string) (path string, err error) {
 
 	resp, err := influx.InfluxQuery(builder)
 	if err != nil {
@@ -148,7 +146,7 @@ func getChart(builder *influxql.Builder, id string, title string) (path string, 
 	}
 
 	var b = buffer.Bytes()
-	var file = "app-" + id + ".png"
+	var file = commandID + "-" + id + ".png"
 
 	// Save chart to file
 	if config.C.ChatBotAttachments == "" {

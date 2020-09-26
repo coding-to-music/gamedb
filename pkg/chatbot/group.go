@@ -88,7 +88,7 @@ func (c CommandGroup) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC)
 			},
 		},
 		Image: &discordgo.MessageEmbedImage{
-			URL: charts.GetGroupChart(group),
+			URL: charts.GetGroupChart(c.ID(), group.ID),
 		},
 	}
 

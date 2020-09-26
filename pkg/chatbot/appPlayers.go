@@ -6,6 +6,8 @@ import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
+	"github.com/gamedb/gamedb/pkg/chatbot/charts"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/mongo"
 )
@@ -63,10 +65,32 @@ func (c CommandAppPlayers) Output(msg *discordgo.MessageCreate, _ steamapi.Produ
 		return message, err
 	}
 
-	message.Content = "<@" + msg.Author.ID + ">, " + app.GetName() + " has " +
-		"**" + humanize.Comma(i) + "** players currently, " +
-		"**" + humanize.Comma(int64(app.PlayerPeakWeek)) + "** max weekly, " +
-		"**" + humanize.Comma(int64(app.PlayerPeakAllTime)) + "** max all time"
+	message.Embed = &discordgo.MessageEmbed{
+		Title:     app.GetName(),
+		URL:       config.C.GameDBDomain + app.GetPath(),
+		Thumbnail: &discordgo.MessageEmbedThumbnail{URL: app.GetHeaderImage()},
+		Footer:    getFooter(),
+		Image: &discordgo.MessageEmbedImage{
+			URL: charts.GetAppPlayersChart(c.ID(), app.ID, "7d", "30m"),
+		},
+		Fields: []*discordgo.MessageEmbedField{
+			{
+				Name:   "Now",
+				Value:  humanize.Comma(i),
+				Inline: true,
+			},
+			{
+				Name:   "7 Days",
+				Value:  humanize.Comma(int64(app.PlayerPeakWeek)),
+				Inline: true,
+			},
+			{
+				Name:   "All Time",
+				Value:  humanize.Comma(int64(app.PlayerPeakAllTime)),
+				Inline: true,
+			},
+		},
+	}
 
 	return message, nil
 }
