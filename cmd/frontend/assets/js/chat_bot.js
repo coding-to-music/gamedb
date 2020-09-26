@@ -2,18 +2,15 @@ if ($('#chat-bot-page').length > 0) {
 
     const options = {
         "order": [[2, 'desc']],
-        "createdRow": function (row, data, dataIndex) {
-            $(row).attr('data-link', data[1]);
-        },
         "columnDefs": [
             // Name
             {
                 "targets": 0,
                 "render": function (data, type, row) {
-                    return '<a href="' + row[1] + '" class="icon-name">' +
+                    return '<div class="icon-name">' +
                         '<div class="icon"><img class="tall" alt="" data-lazy="https://cdn.discordapp.com/avatars/' + row[0] + '/' + row[2] + '.png?size=64" data-lazy-alt="' + row[1] + '"></div>' +
                         '<div class="name nowrap">' + row[1] + '<br><small>' + row[6] + '</small></div>' +
-                        '</a>'
+                        '</div>'
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img thin');
