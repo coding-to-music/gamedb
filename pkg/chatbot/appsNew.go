@@ -45,7 +45,6 @@ func (CommandAppsNew) Type() CommandType {
 
 func (CommandAppsNew) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC) (message discordgo.MessageSend, err error) {
 
-	message.Content = "<@" + msg.Author.ID + ">"
 	message.Embed = &discordgo.MessageEmbed{
 		Title:  "Popular New Apps",
 		URL:    config.C.GameDBDomain + "/games/new-releases",

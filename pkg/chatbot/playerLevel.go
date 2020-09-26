@@ -73,7 +73,7 @@ func (c CommandPlayerLevel) Output(msg *discordgo.MessageCreate, _ steamapi.Prod
 		rank = "Rank " + humanize.Comma(int64(val))
 	}
 
-	message.Content = "<@" + msg.Author.ID + ">, " + player.GetName() + " is level **" + strconv.Itoa(player.Level) + "**" +
+	message.Content = player.GetName() + " is level **" + strconv.Itoa(player.Level) + "**" +
 		" (" + rank + ")"
 	return message, nil
 }

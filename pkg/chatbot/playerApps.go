@@ -74,10 +74,10 @@ func (c CommandPlayerApps) Output(msg *discordgo.MessageCreate, _ steamapi.Produ
 	}
 
 	if player.GamesCount > 0 {
-		message.Content = "<@" + msg.Author.ID + ">, " + player.GetName() + " has **" + strconv.Itoa(player.GamesCount) + "** " +
+		message.Content = player.GetName() + " has **" + strconv.Itoa(player.GamesCount) + "** " +
 			matches[1] + " (" + rank + ")"
 	} else {
-		message.Content = "<@" + msg.Author.ID + ">, Profile set to private"
+		message.Content = "Profile set to private"
 	}
 
 	return message, nil

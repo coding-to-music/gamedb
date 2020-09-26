@@ -57,7 +57,6 @@ func (c CommandApp) Output(msg *discordgo.MessageCreate, code steamapi.ProductCC
 		return message, err
 	}
 
-	message.Content = "<@" + msg.Author.ID + ">"
 	message.Embed = getAppEmbed(c.ID(), app, msg.Author.ID, code)
 
 	return message, nil

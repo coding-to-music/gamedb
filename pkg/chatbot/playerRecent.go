@@ -80,7 +80,6 @@ func (c CommandPlayerRecent) Output(msg *discordgo.MessageCreate, _ steamapi.Pro
 
 	if len(recent) > 0 {
 
-		message.Content = "<@" + msg.Author.ID + ">"
 		message.Embed = &discordgo.MessageEmbed{
 			Title:  "Recent Games",
 			URL:    config.C.GameDBDomain + player.GetPath() + "#games",

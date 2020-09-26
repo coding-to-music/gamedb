@@ -79,6 +79,6 @@ func (c CommandSettings) Output(msg *discordgo.MessageCreate, _ steamapi.Product
 		text = "Invalid setting, see .help"
 	}
 
-	message.Content = "<@" + msg.Author.ID + ">, " + text
+	message.Content = text
 	return message, nil
 }

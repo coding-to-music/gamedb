@@ -44,7 +44,6 @@ func (CommandGroupsTrending) Type() CommandType {
 
 func (CommandGroupsTrending) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC) (message discordgo.MessageSend, err error) {
 
-	message.Content = "<@" + msg.Author.ID + ">"
 	message.Embed = &discordgo.MessageEmbed{
 		Title:  "Trending Groups",
 		URL:    config.C.GameDBDomain + "/groups",

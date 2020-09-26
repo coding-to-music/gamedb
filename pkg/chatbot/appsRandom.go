@@ -61,7 +61,6 @@ func (c CommandAppRandom) Output(msg *discordgo.MessageCreate, code steamapi.Pro
 
 		var app = apps[0]
 
-		message.Content = "<@" + msg.Author.ID + ">"
 		message.Embed = getAppEmbed(c.ID(), app, msg.Author.ID, code)
 	}
 

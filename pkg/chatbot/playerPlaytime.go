@@ -73,9 +73,9 @@ func (c CommandPlayerPlaytime) Output(msg *discordgo.MessageCreate, _ steamapi.P
 	}
 
 	if player.PlayTime == 0 {
-		message.Content = "<@" + msg.Author.ID + ">, Profile set to private"
+		message.Content = "Profile set to private"
 	} else {
-		message.Content = "<@" + msg.Author.ID + ">, " + player.GetName() + " has played for **" + helpers.GetTimeLong(player.PlayTime, 0) + "**" +
+		message.Content = player.GetName() + " has played for **" + helpers.GetTimeLong(player.PlayTime, 0) + "**" +
 			" (" + rank + ")"
 	}
 

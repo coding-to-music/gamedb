@@ -65,7 +65,6 @@ func (c CommandGroup) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC)
 		headline = "-"
 	}
 
-	message.Content = "<@" + msg.Author.ID + ">"
 	message.Embed = &discordgo.MessageEmbed{
 		Title: group.GetName(),
 		URL:   config.C.GameDBDomain + group.GetPath(),

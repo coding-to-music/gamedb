@@ -81,7 +81,6 @@ func (c CommandPlayerWishlist) Output(msg *discordgo.MessageCreate, _ steamapi.P
 
 	if len(wishlistApps) > 0 {
 
-		message.Content = "<@" + msg.Author.ID + ">"
 		message.Embed = &discordgo.MessageEmbed{
 			Title:  "Wishlist Items",
 			URL:    config.C.GameDBDomain + player.GetPath() + "#wishlist",

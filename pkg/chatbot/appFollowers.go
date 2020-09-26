@@ -61,11 +61,9 @@ func (c CommandAppFollowers) Output(msg *discordgo.MessageCreate, _ steamapi.Pro
 	}
 
 	if app.GroupID == "" {
-		message.Content = "<@" + msg.Author.ID + ">, " + app.GetName() + " has no followers"
+		message.Content = app.GetName() + " has no followers"
 		return
 	}
-
-	message.Content = "<@" + msg.Author.ID + ">"
 
 	message.Embed = &discordgo.MessageEmbed{
 		Title:       app.GetName(),

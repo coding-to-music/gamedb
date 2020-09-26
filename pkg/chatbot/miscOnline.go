@@ -54,7 +54,7 @@ func (c CommandSteamOnline) Output(msg *discordgo.MessageCreate, _ steamapi.Prod
 		return message, err
 	}
 
-	message.Content = "<@" + msg.Author.ID + ">, Steam has **" + humanize.Comma(i) + "** players online, **" + humanize.Comma(i2) + "** in game."
+	message.Content = "Steam has **" + humanize.Comma(i) + "** players online, **" + humanize.Comma(i2) + "** in game."
 
 	return message, nil
 }

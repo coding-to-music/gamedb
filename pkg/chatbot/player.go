@@ -88,7 +88,6 @@ func (c CommandPlayer) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC
 		playtime = helpers.GetTimeLong(player.PlayTime, 3)
 	}
 
-	message.Content = "<@" + msg.Author.ID + ">"
 	message.Embed = &discordgo.MessageEmbed{
 		Title: player.GetName(),
 		URL:   config.C.GameDBDomain + player.GetPath(),

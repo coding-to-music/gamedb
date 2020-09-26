@@ -75,10 +75,10 @@ func (c CommandAppPrice) Output(msg *discordgo.MessageCreate, code steamapi.Prod
 	price := app.Prices.Get(code)
 
 	if price.Exists {
-		message.Content = "<@" + msg.Author.ID + ">, " + app.GetName() + " is **" + price.GetFinal() + "** for " + strings.ToUpper(string(code))
+		message.Content = app.GetName() + " is **" + price.GetFinal() + "** for " + strings.ToUpper(string(code))
 		return message, nil
 	}
 
-	message.Content = "<@" + msg.Author.ID + ">, " + app.GetName() + " has no price for " + strings.ToUpper(string(code))
+	message.Content = app.GetName() + " has no price for " + strings.ToUpper(string(code))
 	return message, nil
 }

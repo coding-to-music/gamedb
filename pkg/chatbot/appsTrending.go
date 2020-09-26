@@ -44,7 +44,6 @@ func (CommandAppsTrending) Type() CommandType {
 
 func (CommandAppsTrending) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC) (message discordgo.MessageSend, err error) {
 
-	message.Content = "<@" + msg.Author.ID + ">"
 	message.Embed = &discordgo.MessageEmbed{
 		Title:  "Trending Games",
 		URL:    config.C.GameDBDomain + "/games/trending",
