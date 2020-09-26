@@ -169,7 +169,7 @@ func NewUser(email, password string, prodCC steamapi.ProductCC, verified bool, r
 	}
 
 	if verified {
-		fields["oauth"] = 1
+		fields["validate"] = 1
 	}
 
 	point := influx.Point{
