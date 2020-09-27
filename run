@@ -5,5 +5,3 @@ CMD=${1:-"frontend"}
 nodemon \
   --signal SIGHUP \
   --exec "cd ./cmd/$CMD/ && go build -ldflags \"-X main.version=$(git rev-parse --verify HEAD) -X main.commits=$(git rev-list --count master)\" && ./$CMD || exit 1"
-
-rm ./cmd/"$CMD"/"$CMD"
