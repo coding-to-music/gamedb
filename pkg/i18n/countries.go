@@ -54,7 +54,7 @@ func CountryCodeToContinent(code string) (string, error) {
 	}
 
 	for _, v := range Continents {
-		if v.Value == country.Continent {
+		if v.Value == country.Geo.Continent {
 			return v.Key, nil
 		}
 	}
