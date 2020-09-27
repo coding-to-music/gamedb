@@ -74,12 +74,12 @@ func providerCallback(w http.ResponseWriter, r *http.Request) {
 
 func providerOAuth2Redirect(w http.ResponseWriter, r *http.Request, provider oauth.OAuth2Provider) {
 
-	state := oauth.State{
-		State: helpers.RandString(10, helpers.LettersCaps),
-		Page:  r.URL.Query().Get("page"),
-	}.Marshal()
+	state := helpers.RandString(32, helpers.LettersCaps)
+	name := strings.ToLower(provider.GetName())
+	page := r.URL.Query().Get("page")
 
-	session.Set(r, "oauth-state-"+strings.ToLower(provider.GetName()), state)
+	session.Set(r, "oauth-page-"+name, page)
+	session.Set(r, "oauth-state-"+name, state)
 	session.Save(w, r)
 
 	provider.Redirect(w, r, state)
@@ -87,25 +87,30 @@ func providerOAuth2Redirect(w http.ResponseWriter, r *http.Request, provider oau
 
 func providerOAuth1Redirect(w http.ResponseWriter, r *http.Request, provider oauth.OAuth1Provider) {
 
-	u, secret, err := provider.Redirect()
+	name := strings.ToLower(provider.GetName())
+	page := r.URL.Query().Get("page")
+
+	redirect, secret, err := provider.Redirect()
 	if err != nil {
 		log.ErrS(err)
 	}
 
-	state := oauth.State{
-		State: secret,
-		Page:  r.URL.Query().Get("page"),
-	}.Marshal()
-
-	session.Set(r, "oauth-state-"+strings.ToLower(provider.GetName()), state)
+	session.Set(r, "oauth-page-"+name, page)
+	session.Set(r, "oauth-state-"+name, secret)
 	session.Save(w, r)
 
-	http.Redirect(w, r, u, http.StatusFound)
+	http.Redirect(w, r, redirect, http.StatusFound)
 }
 
 func providerOpenIDRedirect(w http.ResponseWriter, r *http.Request, provider oauth.OpenIDProvider) {
 
-	provider.Redirect(w, r, r.URL.Query().Get("page"))
+	name := strings.ToLower(provider.GetName())
+	page := r.URL.Query().Get("page")
+
+	session.Set(r, "oauth-page-"+name, page)
+	session.Save(w, r)
+
+	provider.Redirect(w, r, page)
 }
 
 func providerOAuth2Callback(w http.ResponseWriter, r *http.Request, provider oauth.OAuth2Provider) {
@@ -114,37 +119,35 @@ func providerOAuth2Callback(w http.ResponseWriter, r *http.Request, provider oau
 
 	defer oauthRedirect(w, r, &page)
 
-	// Get generated state
-	realStateString := session.Get(r, "oauth-state-"+strings.ToLower(provider.GetName()))
-	if realStateString == "" {
+	// Get page
+	page = session.Get(r, "oauth-page-"+strings.ToLower(provider.GetName()))
+	if page == "" {
 		session.SetFlash(r, session.SessionBad, "An error occurred (1001)")
 		return
 	}
 
-	realState := oauth.State{}
-	realState.Unmarshal(realStateString)
-
-	page = realState.Page
-
-	// Get incoming state from provider
-	stateString := r.URL.Query().Get("state")
-	if stateString == "" {
-		session.SetFlash(r, session.SessionBad, "Invalid state (1002)")
+	// Validate state
+	stateOut := session.Get(r, "oauth-state-"+strings.ToLower(provider.GetName()))
+	if stateOut == "" {
+		session.SetFlash(r, session.SessionBad, "An error occurred (1002)")
 		return
 	}
 
-	state := oauth.State{}
-	state.Unmarshal(stateString)
-
-	if state.State == "" || state.State != realState.State {
+	stateIn := r.URL.Query().Get("state")
+	if stateIn == "" {
 		session.SetFlash(r, session.SessionBad, "Invalid state (1003)")
+		return
+	}
+
+	if stateOut != stateIn {
+		session.SetFlash(r, session.SessionBad, "Invalid state (1004)")
 		return
 	}
 
 	// Swap code for token
 	code := r.URL.Query().Get("code")
 	if code == "" {
-		session.SetFlash(r, session.SessionBad, "Invalid code (1004)")
+		session.SetFlash(r, session.SessionBad, "Invalid code (1005)")
 		return
 	}
 
@@ -152,7 +155,7 @@ func providerOAuth2Callback(w http.ResponseWriter, r *http.Request, provider oau
 	token, err := conf.Exchange(context.Background(), code)
 	if err != nil {
 		log.ErrS(err)
-		session.SetFlash(r, session.SessionBad, "An error occurred (1005)")
+		session.SetFlash(r, session.SessionBad, "An error occurred (1006)")
 		return
 	}
 
@@ -160,7 +163,7 @@ func providerOAuth2Callback(w http.ResponseWriter, r *http.Request, provider oau
 	resp, err := provider.GetUser(token)
 	if err != nil {
 		log.ErrS(err)
-		session.SetFlash(r, session.SessionBad, "We were unable to fetch your details from "+provider.GetName()+" (1006)")
+		session.SetFlash(r, session.SessionBad, "We were unable to fetch your details from "+provider.GetName()+" (1007)")
 		return
 	}
 
@@ -174,31 +177,33 @@ func providerOAuth1Callback(w http.ResponseWriter, r *http.Request, provider oau
 
 	defer oauthRedirect(w, r, &page)
 
-	// Get state from session
-	stateString := session.Get(r, "oauth-state-"+strings.ToLower(provider.GetName()))
-	if stateString == "" {
+	// Get page
+	page = session.Get(r, "oauth-page-"+strings.ToLower(provider.GetName()))
+	if page == "" {
 		session.SetFlash(r, session.SessionBad, "An error occurred (1001)")
 		return
 	}
 
-	state := oauth.State{}
-	state.Unmarshal(stateString)
-
-	page = state.Page
+	// Validate state
+	state := session.Get(r, "oauth-state-"+strings.ToLower(provider.GetName()))
+	if state == "" {
+		session.SetFlash(r, session.SessionBad, "An error occurred (1002)")
+		return
+	}
 
 	//
 	requestToken, verifier, err := oauth1.ParseAuthorizationCallback(r)
 	if err != nil {
 		log.ErrS(err)
-		session.SetFlash(r, session.SessionBad, "An error occurred (1002)")
+		session.SetFlash(r, session.SessionBad, "An error occurred (1003)")
 		return
 	}
 
 	config := provider.GetConfig()
-	accessToken, accessSecret, err := config.AccessToken(requestToken, state.State, verifier)
+	accessToken, accessSecret, err := config.AccessToken(requestToken, state, verifier)
 	if err != nil {
 		log.ErrS(err)
-		session.SetFlash(r, session.SessionBad, "An error occurred (1003)")
+		session.SetFlash(r, session.SessionBad, "An error occurred (1004)")
 		return
 	}
 
@@ -208,7 +213,7 @@ func providerOAuth1Callback(w http.ResponseWriter, r *http.Request, provider oau
 	resp, err := provider.GetUser(token)
 	if err != nil {
 		log.ErrS(err)
-		session.SetFlash(r, session.SessionBad, "We were unable to fetch your details from "+provider.GetName()+" (1004)")
+		session.SetFlash(r, session.SessionBad, "We were unable to fetch your details from "+provider.GetName()+" (1005)")
 		return
 	}
 
@@ -218,67 +223,55 @@ func providerOAuth1Callback(w http.ResponseWriter, r *http.Request, provider oau
 
 func providerOpenIDCallback(w http.ResponseWriter, r *http.Request, provider oauth.OpenIDProvider) {
 
-	var page = r.URL.Query().Get("page")
+	var page string
 
 	defer oauthRedirect(w, r, &page)
+
+	// Get page
+	page = session.Get(r, "oauth-page-"+strings.ToLower(provider.GetName()))
+	if page == "" {
+		session.SetFlash(r, session.SessionBad, "An error occurred (1001)")
+		return
+	}
 
 	// Get user
 	resp, err := provider.GetUser(r)
 	if err != nil {
 		log.ErrS(err)
-		session.SetFlash(r, session.SessionBad, "We were unable to fetch your details from "+provider.GetName()+" (1001)")
+		session.SetFlash(r, session.SessionBad, "We were unable to fetch your details from "+provider.GetName()+" (1002)")
 		return
 	}
 
 	if resp.ID == "" {
-		session.SetFlash(r, session.SessionBad, "We were unable to fetch your details from "+provider.GetName()+" (1002)")
+		session.SetFlash(r, session.SessionBad, "We were unable to fetch your details from "+provider.GetName()+" (1003)")
 		return
 	}
 
 	//
 	oauthHandleUser(provider, resp, page, r)
 
-	//
-	i, err := strconv.ParseInt(resp.ID, 10, 64)
-	if err != nil {
-		log.ErrS(err)
-	} else {
+	// Queue player
+	if provider.GetEnum() == oauth.ProviderSteam {
 
-		// Queue for an update
-		player, err := mongo.GetPlayer(i)
-		if err != nil {
-
-			err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
-			if err != nil {
-				log.ErrS(err)
-			}
-
-		} else {
-			session.Set(r, session.SessionPlayerName, player.GetName())
-		}
-
-		if player.NeedsUpdate(mongo.PlayerUpdateManual) {
+		i, err := strconv.ParseInt(resp.ID, 10, 64)
+		if err == nil {
 
 			ua := r.UserAgent()
-			err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID, UserAgent: &ua})
+			err = queue.ProducePlayer(queue.PlayerMessage{ID: i, UserAgent: &ua})
 			if err == nil {
 				log.Info("player queued", zap.String("ua", ua))
 			}
 			err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
 			if err != nil {
 				log.ErrS(err)
-			} else {
-				session.SetFlash(r, session.SessionGood, "Player has been queued for an update")
 			}
 		}
-
-		// Add player to session
-		session.Set(r, session.SessionPlayerID, strconv.FormatInt(i, 10))
 	}
 }
 
 func oauthRedirect(w http.ResponseWriter, r *http.Request, page *string) {
 
+	// Save for flashes
 	session.Save(w, r)
 
 	switch *page {
@@ -304,14 +297,14 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 		user, err = getUserFromSession(r)
 		if err != nil {
 			log.ErrS(err)
-			session.SetFlash(r, session.SessionBad, "Account could not be created (1008)")
+			session.SetFlash(r, session.SessionBad, "Account could not be created (1101)")
 			return
 		}
 
 	} else if provider.GetType() == oauth.TypeOAuth {
 
 		if resp.Email == "" {
-			session.SetFlash(r, session.SessionBad, "We were unable to fetch your details from "+provider.GetName()+" (1007)")
+			session.SetFlash(r, session.SessionBad, "We were unable to fetch your details from "+provider.GetName()+" (1102)")
 			return
 		}
 
@@ -323,13 +316,19 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 			user, err = mysql.NewUser(resp.Email, "", session.GetProductCC(r), true, r)
 			if err != nil {
 				log.ErrS(err)
-				session.SetFlash(r, session.SessionBad, "Account could not be created (1006)")
+				session.SetFlash(r, session.SessionBad, "Account could not be created (1103)")
 				return
 			}
 
 		} else if err != nil {
 			log.ErrS(err)
-			session.SetFlash(r, session.SessionBad, "An error occurred (1007)")
+			session.SetFlash(r, session.SessionBad, "An error occurred (1104)")
+			return
+		}
+
+		// Validate email
+		if user.Email != resp.Email {
+			session.SetFlash(r, session.SessionBad, "Your email address on "+provider.GetName()+" ("+resp.Email+") does not match Game DB")
 			return
 		}
 
@@ -339,35 +338,30 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 		i, err := strconv.Atoi(resp.ID)
 		if err != nil {
 			log.Err(err.Error(), zap.String("id", resp.ID))
-			session.SetFlash(r, session.SessionBad, "We were unable to fetch your details from "+provider.GetName()+" (1003)")
+			session.SetFlash(r, session.SessionBad, "We were unable to fetch your details from "+provider.GetName()+" (1105)")
 			return
 		}
 
 		userProvider, err := mysql.GetUserProviderByProviderID(provider.GetEnum(), i)
 		if err != nil {
 			log.ErrS(err)
-			session.SetFlash(r, session.SessionBad, "Unable to find a Game DB account linked with this Steam account (1004)")
+			session.SetFlash(r, session.SessionBad, "Unable to find a Game DB account linked with this Steam account (1106)")
 			return
 		}
 
 		user, err = mysql.GetUserByID(userProvider.UserID)
 		if err == mysql.ErrRecordNotFound {
-			session.SetFlash(r, session.SessionBad, "Unable to find a Game DB account linked with this Steam account (1005)")
+			session.SetFlash(r, session.SessionBad, "Unable to find a Game DB account linked with this Steam account (1107)")
 			return
 		} else if err != nil {
 			log.ErrS(err)
-			session.SetFlash(r, session.SessionBad, "An error occurred (1006)")
+			session.SetFlash(r, session.SessionBad, "An error occurred (1108)")
 			return
 		}
 
 	} else {
 
 		session.SetFlash(r, session.SessionBad, "Unsupported auth type")
-		return
-	}
-
-	if user.Email != resp.Email {
-		session.SetFlash(r, session.SessionBad, "Your email address on "+provider.GetName()+" ("+resp.Email+") does not match Game DB")
 		return
 	}
 
@@ -381,7 +375,7 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 	used, err := mysql.CheckExistingUserProvider(provider.GetEnum(), resp.ID, user.ID)
 	if err != nil {
 		log.ErrS(err)
-		session.SetFlash(r, session.SessionBad, "An error occurred (1006)")
+		session.SetFlash(r, session.SessionBad, "An error occurred (1109)")
 		return
 	}
 
@@ -394,7 +388,7 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 	err = mysql.UpdateUserProvider(user.ID, provider.GetEnum(), resp)
 	if err != nil {
 		log.ErrS(err)
-		session.SetFlash(r, session.SessionBad, "An error occurred (1007)")
+		session.SetFlash(r, session.SessionBad, "An error occurred (1110)")
 		return
 	}
 

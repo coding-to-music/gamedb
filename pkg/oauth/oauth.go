@@ -1,11 +1,9 @@
 package oauth
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/dghubble/oauth1"
-	"github.com/gamedb/gamedb/pkg/log"
 	"golang.org/x/oauth2"
 )
 
@@ -116,25 +114,4 @@ type User struct {
 	Username string
 	Email    string
 	Avatar   string
-}
-
-//
-type State struct {
-	State string
-	Page  string
-}
-
-func (s State) Marshal() string {
-	b, err := json.Marshal(s)
-	if err != nil {
-		log.ErrS(err)
-	}
-	return string(b)
-}
-
-func (s *State) Unmarshal(in string) {
-	err := json.Unmarshal([]byte(in), s)
-	if err != nil {
-		log.ErrS(err)
-	}
 }
