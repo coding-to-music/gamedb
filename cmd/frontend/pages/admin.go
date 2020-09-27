@@ -10,6 +10,7 @@ import (
 	"github.com/Jleagle/go-durationfmt"
 	"github.com/Jleagle/patreon-go/patreon"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/datatable"
+	"github.com/gamedb/gamedb/cmd/frontend/helpers/geo"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/middleware"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
@@ -460,16 +461,33 @@ func adminStatsHandler(w http.ResponseWriter, r *http.Request) {
 		log.ErrS(err)
 	}
 
+	t.IP = r.RemoteAddr
+
+	var location []string
+	record, err := geo.GetCountryCode(r.RemoteAddr)
+	if err == nil {
+		if val, ok := record.Country.Names["en"]; ok {
+			location = append(location, val)
+		}
+		if val, ok := record.City.Names["en"]; ok {
+			location = append(location, val)
+		}
+	}
+
+	t.Location = strings.Join(location, ", ")
+
 	returnTemplate(w, r, "admin/stats", t)
 }
 
 type adminStatsTemplate struct {
 	globalTemplate
-	Oldest  string
-	Commits string
-	Hash    string
-	Private int64
-	Removed int64
+	Oldest   string
+	Commits  string
+	Hash     string
+	Private  int64
+	Removed  int64
+	IP       string
+	Location string
 }
 
 func (t adminStatsTemplate) includes() []string {
