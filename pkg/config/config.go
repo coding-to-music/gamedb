@@ -67,8 +67,8 @@ type Config struct {
 	InstagramPassword string `envconfig:"INSTAGRAM_PASSWORD"`
 
 	// Mailjet
-	MailjetPublic  string `envconfig:"MAILJET_PUBLIC"`  // API
-	MailjetPrivate string `envconfig:"MAILJET_PRIVATE"` // API
+	MailjetPublic  string `envconfig:"MAILJET_PUBLIC" required:"true"`  // API
+	MailjetPrivate string `envconfig:"MAILJET_PRIVATE" required:"true"` // API
 
 	// Memcache
 	MemcacheDSN      string `envconfig:"MEMCACHE_URL" required:"true"`
