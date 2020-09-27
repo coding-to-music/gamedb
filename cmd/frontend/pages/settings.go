@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"html/template"
 	"net/http"
-	"strconv"
 	"strings"
 	"sync"
 
@@ -17,6 +16,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/oauth"
@@ -53,21 +53,23 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get user
 	t.User, err = getUserFromSession(r)
-	if err != nil {
+	if err == ErrLoggedOut {
+		returnErrorTemplate(w, r, errorTemplate{Code: http.StatusForbidden})
+		return
+	} else if err != nil {
 		log.ErrS(err)
+		returnErrorTemplate(w, r, errorTemplate{Code: 500})
+		return
 	}
 
-	steamID := mysql.GetUserSteamID(t.User.ID)
-	if steamID > 0 {
-
-		// Get player
-		t.Player, err = mongo.GetPlayer(steamID)
-		err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
+	// Get player
+	t.Player, err = getPlayerFromSession(r)
+	if err != nil {
+		err = helpers.IgnoreErrors(err, ErrLoggedOut)
 		if err != nil {
 			log.ErrS(err)
 		}
-
-		// Set Steam player name to session if missing, can happen after linking
+	} else {
 		session.Set(r, session.SessionPlayerName, t.Player.GetName())
 	}
 
@@ -215,166 +217,175 @@ type settingsTemplate struct {
 
 func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 
-	redirect, good, bad := func() (redirect string, good string, bad string) {
-
-		// Get user
-		user, err := getUserFromSession(r)
-		if err != nil {
-			log.ErrS(err)
-			return "/settings", "", "User not found"
-		}
-
-		// Parse form
-		err = r.ParseForm()
-		if err != nil {
-			log.ErrS(err)
-			return "/settings", "", "Could not read form data"
-		}
-
-		email := r.PostForm.Get("email")
-		password := r.PostForm.Get("password")
-		prodCC := steamapi.ProductCC(r.PostForm.Get("prod_cc"))
-
-		// Email
-		if email != "" && email != user.Email {
-
-			err = checkmail.ValidateFormat(r.PostForm.Get("email"))
-			if err != nil {
-				return "/settings", "", "Invalid email address"
-			}
-
-			user.Email = r.PostForm.Get("email")
-		}
-
-		// Password
-		if email != user.Email {
-			user.EmailVerified = false
-		}
-
-		if password != "" {
-
-			if len(password) < 8 {
-				return "/settings", "", "Password must be at least 8 characters long"
-			}
-
-			passwordBytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
-			if err != nil {
-				log.ErrS(err)
-				return "/settings", "", "Something went wrong encrypting your password"
-			}
-
-			user.Password = string(passwordBytes)
-		}
-
-		// Country code
-		if i18n.IsValidProdCC(prodCC) {
-			user.ProductCC = prodCC
-		} else {
-			user.ProductCC = steamapi.ProductCCUS
-		}
-
-		// Save hidden
-		if r.PostForm.Get("hide") == "1" {
-			user.HideProfile = true
-		} else {
-			user.HideProfile = false
-		}
-
-		// Save alerts
-		if r.PostForm.Get("alerts") == "1" {
-			user.ShowAlerts = true
-		} else {
-			user.ShowAlerts = false
-		}
-
-		// Save user
-		db, err := mysql.GetMySQLClient()
-		if err != nil {
-			log.ErrS(err)
-			return "/settings", "", "We had trouble saving your settings"
-		}
-
-		// Have to save as a map because gorm does not save empty values otherwise
-		db = db.Model(&user).Updates(map[string]interface{}{
-			"email":          user.Email,
-			"email_verified": user.EmailVerified,
-			"password":       user.Password,
-			"hide_profile":   user.HideProfile,
-			"show_alerts":    user.ShowAlerts,
-			"country_code":   user.ProductCC,
-		})
-
-		if db.Error != nil {
-			log.ErrS(db.Error)
-			return "/settings", "", "Something went wrong saving your settings"
-		}
-
-		// Update session
-		session.SetMany(r, map[string]string{
-			session.SessionUserProdCC:     string(user.ProductCC),
-			session.SessionUserEmail:      user.Email,
-			session.SessionUserShowAlerts: strconv.FormatBool(user.ShowAlerts),
-		})
-
-		return "/settings", "Settings saved", ""
+	defer func() {
+		session.Save(w, r)
+		http.Redirect(w, r, "/settings", http.StatusFound)
 	}()
 
-	if good != "" {
-		session.SetFlash(r, session.SessionGood, good)
-	}
-	if bad != "" {
-		session.SetFlash(r, session.SessionBad, bad)
+	// Get user
+	user, err := getUserFromSession(r)
+	if err != nil {
+		log.ErrS(err)
+		session.SetFlash(r, session.SessionBad, "User not found")
+		return
 	}
 
-	session.Save(w, r)
+	// Parse form
+	err = r.ParseForm()
+	if err != nil {
+		log.ErrS(err)
+		session.SetFlash(r, session.SessionBad, "Could not read form data")
+		return
+	}
 
-	http.Redirect(w, r, redirect, http.StatusFound)
+	// Email
+	email := r.PostForm.Get("email")
+	if email != user.Email {
+
+		err = checkmail.ValidateFormat(r.PostForm.Get("email"))
+		if err != nil {
+			session.SetFlash(r, session.SessionBad, "Invalid email address")
+			return
+		}
+
+		user.Email = email
+		user.EmailVerified = false
+	}
+
+	// Password
+	password := r.PostForm.Get("password")
+	if password != "" {
+
+		if len(password) < 8 {
+			session.SetFlash(r, session.SessionBad, "Password must be at least 8 characters long")
+			return
+		}
+
+		passwordBytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+		if err != nil {
+			log.ErrS(err)
+			session.SetFlash(r, session.SessionBad, "Something went wrong encrypting your password")
+			return
+		}
+
+		user.Password = string(passwordBytes)
+	}
+
+	// Country code
+	prodCC := steamapi.ProductCC(r.PostForm.Get("prod_cc"))
+
+	if i18n.IsValidProdCC(prodCC) {
+		user.ProductCC = prodCC
+	} else {
+		user.ProductCC = steamapi.ProductCCUS
+	}
+
+	// Save hidden
+	// if r.PostForm.Get("hide") == "1" {
+	// 	user.HideProfile = true
+	// } else {
+	// 	user.HideProfile = false
+	// }
+
+	// Save alerts
+	// if r.PostForm.Get("alerts") == "1" {
+	// 	user.ShowAlerts = true
+	// } else {
+	// 	user.ShowAlerts = false
+	// }
+
+	// Save user
+	db, err := mysql.GetMySQLClient()
+	if err != nil {
+		log.ErrS(err)
+		session.SetFlash(r, session.SessionBad, "We had trouble saving your settings")
+		return
+	}
+
+	// Have to save as a map because gorm does not save empty values otherwise
+	db = db.Model(&user).Updates(map[string]interface{}{
+		"email":          user.Email,
+		"email_verified": user.EmailVerified,
+		"password":       user.Password,
+		"country_code":   user.ProductCC,
+		// "hide_profile":   user.HideProfile,
+		// "show_alerts":    user.ShowAlerts,
+	})
+
+	if db.Error != nil {
+		log.ErrS(db.Error)
+		session.SetFlash(r, session.SessionBad, "Something went wrong saving your settings")
+		return
+	}
+
+	// Save player
+	playerID := session.GetPlayerIDFromSesion(r)
+
+	if playerID > 0 {
+		filter := bson.D{{"_id", playerID}}
+		update := bson.D{{"private", r.PostForm.Get("private") == "1"}}
+
+		_, err = mongo.UpdateOne(mongo.CollectionPlayers, filter, update)
+		if err != nil {
+			log.ErrS(err)
+			session.SetFlash(r, session.SessionBad, "We had trouble saving your settings")
+			return
+		}
+
+		err = memcache.Delete(memcache.MemcachePlayer(playerID).Key)
+		if err != nil {
+			log.ErrS(err)
+		}
+	}
+
+	// Update session
+	session.SetMany(r, map[string]string{
+		session.SessionUserProdCC: string(user.ProductCC),
+		session.SessionUserEmail:  user.Email,
+		// session.SessionUserShowAlerts: strconv.FormatBool(user.ShowAlerts),
+	})
+
+	session.SetFlash(r, session.SessionGood, "Settings saved")
 }
 
 func settingsNewKeyHandler(w http.ResponseWriter, r *http.Request) {
 
-	good, bad := func() (good string, bad string) {
-
-		// Get user
-		user, err := getUserFromSession(r)
-		if err != nil {
-			log.ErrS(err)
-			return "", "User not found"
-		}
-
-		user.SetAPIKey()
-
-		// Save user
-		db, err := mysql.GetMySQLClient()
-		if err != nil {
-			log.ErrS(err)
-			return "", "We had trouble saving your settings (1001)"
-		}
-
-		db = db.Model(&user).Update("api_key", user.APIKey)
-		if db.Error != nil {
-			log.ErrS(db.Error)
-			return "", "We had trouble saving your settings (1002)"
-		}
-
-		// Update session
-		session.SetMany(r, map[string]string{
-			session.SessionUserAPIKey: user.APIKey,
-		})
-
-		return "New API key generated", ""
+	defer func() {
+		session.Save(w, r)
+		http.Redirect(w, r, "/settings", http.StatusFound)
 	}()
 
-	if good != "" {
-		session.SetFlash(r, session.SessionGood, good)
-	}
-	if bad != "" {
-		session.SetFlash(r, session.SessionBad, bad)
+	// Get user
+	user, err := getUserFromSession(r)
+	if err != nil {
+		log.ErrS(err)
+		session.SetFlash(r, session.SessionBad, "User not found")
+		return
 	}
 
-	session.Save(w, r)
+	user.SetAPIKey()
 
-	http.Redirect(w, r, "/settings", http.StatusFound)
+	// Save user
+	db, err := mysql.GetMySQLClient()
+	if err != nil {
+		log.ErrS(err)
+		session.SetFlash(r, session.SessionBad, "We had trouble saving your settings (1001)")
+		return
+	}
+
+	db = db.Model(&user).Update("api_key", user.APIKey)
+	if db.Error != nil {
+		log.ErrS(db.Error)
+		session.SetFlash(r, session.SessionBad, "We had trouble saving your settings (1002)")
+		return
+	}
+
+	// Update session
+	session.SetMany(r, map[string]string{
+		session.SessionUserAPIKey: user.APIKey,
+	})
+
+	session.SetFlash(r, session.SessionGood, "New API key generated")
 }
 
 func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {

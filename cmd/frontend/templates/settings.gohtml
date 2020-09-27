@@ -55,60 +55,63 @@
                                     </div>
                                 {{ end }}
 
-                                <div class="card mb-2">
-                                    <div class="card-header">Settings</div>
-                                    <div class="card-body">
+                                <form action="/settings/update" method="post" class="mb-4">
 
-                                        <form action="/settings/update" method="post">
+                                    <div class="row">
+                                        <div class="col-12">
 
-                                            <div class="row">
-                                                <div class="col-12">
-
-                                                    <div class="form-group">
-                                                        <label for="email">Email</label>
-                                                        <input type="email" class="form-control" id="email" placeholder="Email" autofocus name="email" autocomplete="current-email" value="{{ .User.Email }}">
-                                                        <small class="form-text text-muted">Currently only used for login purposes.</small>
-                                                    </div>
-
-                                                    <div class="form-group" id="password-container">
-                                                        <label for="password">Password</label>
-                                                        <input type="password" class="form-control" id="password" placeholder="Password" name="password" autocomplete="new-password">
-                                                        {{ if eq .User.Password "" }}
-                                                            <small class="form-text text-muted">No password set, OAuth only. Fill in to set.</small>
-                                                        {{ else }}
-                                                            <small class="form-text text-muted">Fill in to change.</small>
-                                                        {{ end }}
-                                                    </div>
-
-                                                    <div class="form-group">
-                                                        <label for="country">Currency</label>
-                                                        <select class="form-control" id="country" name="prod_cc">
-                                                            {{ range $key, $value := .ProdCCs }}
-                                                                <option value="{{ .ProductCode }}" {{ if eq $.UserProductCC.ProductCode .ProductCode }} selected{{ end }}>{{ .Name }}</option>
-                                                            {{ end }}
-                                                        </select>
-                                                    </div>
-
-                                                    {{/*                                                <label>Settings</label>*/}}
-                                                    {{/*                                                <div class="form-check">*/}}
-                                                    {{/*                                                    <input type="checkbox" class="form-check-input" id="hide-profile" name="hide" value="1" {{ if .User.HideProfile }}checked{{ end }}>*/}}
-                                                    {{/*                                                    <label class="form-check-label" for="hide-profile">Hide my profile from all areas</label>*/}}
-                                                    {{/*                                                </div>*/}}
-
-                                                    {{/*                                                <div class="form-check">*/}}
-                                                    {{/*                                                    <input type="checkbox" class="form-check-input" id="browser-alerts" name="alerts" value="1" {{ if .User.ShowAlerts }}checked{{ end }}>*/}}
-                                                    {{/*                                                    <label class="form-check-label" for="browser-alerts">Show browser alerts on page updates</label>*/}}
-                                                    {{/*                                                </div>*/}}
-
-                                                    <button type="submit" class="btn btn-success" aria-label="Save">Save</button>
-
-                                                </div>
+                                            <div class="form-group">
+                                                <label for="email">Email</label>
+                                                <input type="email" class="form-control" id="email" placeholder="Email" autofocus required name="email" autocomplete="current-email" value="{{ .User.Email }}">
+                                                <small class="form-text text-muted">Currently only used for login purposes.</small>
                                             </div>
 
-                                        </form>
+                                            <div class="form-group" id="password-container">
+                                                <label for="password">Password</label>
+                                                <input type="password" class="form-control" id="password" placeholder="Password" name="password" autocomplete="new-password">
+                                                {{ if eq .User.Password "" }}
+                                                    <small class="form-text text-muted">No password set, OAuth only. Fill in to set.</small>
+                                                {{ else }}
+                                                    <small class="form-text text-muted">Fill in to change.</small>
+                                                {{ end }}
+                                            </div>
 
+                                            <div class="form-group">
+                                                <label for="country">Currency</label>
+                                                <select class="form-control" id="country" name="prod_cc">
+                                                    {{ range $key, $value := .ProdCCs }}
+                                                        <option value="{{ .ProductCode }}" {{ if eq $.UserProductCC.ProductCode .ProductCode }} selected{{ end }}>{{ .Name }}</option>
+                                                    {{ end }}
+                                                </select>
+                                            </div>
+
+                                            {{ if gt .Player.ID 0 }}
+                                                <div class="form-group">
+                                                    <label for="private">Privacy</label>
+                                                    <select class="form-control" name="private">
+                                                        <option value="0">Public</option>
+                                                        <option value="1" {{ if .Player.Private }} selected{{ end }}>Private</option>
+                                                    </select>
+                                                </div>
+                                            {{ end }}
+
+                                            {{/*                                                <label>Settings</label>*/}}
+                                            {{/*                                                <div class="form-check">*/}}
+                                            {{/*                                                    <input type="checkbox" class="form-check-input" id="hide-profile" name="hide" value="1" {{ if .User.HideProfile }}checked{{ end }}>*/}}
+                                            {{/*                                                    <label class="form-check-label" for="hide-profile">Hide my profile from all areas</label>*/}}
+                                            {{/*                                                </div>*/}}
+
+                                            {{/*                                                <div class="form-check">*/}}
+                                            {{/*                                                    <input type="checkbox" class="form-check-input" id="browser-alerts" name="alerts" value="1" {{ if .User.ShowAlerts }}checked{{ end }}>*/}}
+                                            {{/*                                                    <label class="form-check-label" for="browser-alerts">Show browser alerts on page updates</label>*/}}
+                                            {{/*                                                </div>*/}}
+
+                                            <button type="submit" class="btn btn-success" aria-label="Save">Save</button>
+
+                                        </div>
                                     </div>
-                                </div>
+
+                                </form>
 
                                 <div class="card" id="api">
                                     <div class="card-header">

@@ -110,6 +110,12 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Private profile
+	if player.Private {
+		returnErrorTemplate(w, r, errorTemplate{Code: http.StatusForbidden, Message: "Private profile."})
+		return
+	}
+
 	var code = session.GetProductCC(r)
 	player.GameStats.All.ProductCC = code
 	player.GameStats.Played.ProductCC = code

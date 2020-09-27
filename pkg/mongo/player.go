@@ -149,6 +149,7 @@ type Player struct {
 	PlayTimeMac              int                        `bson:"play_time_mac"`
 	PlayTimeLinux            int                        `bson:"play_time_linux"`
 	PrimaryGroupID           string                     `bson:"primary_clan_id_string"`
+	Private                  bool                       `bson:"private"`
 	Ranks                    map[string]int             `bson:"ranks"`
 	RecentAppsCount          int                        `bson:"recent_apps_count"`
 	Removed                  bool                       `bson:"removed"` // Removed from Steam
@@ -189,6 +190,7 @@ func (player Player) BSON() bson.D {
 		{"bans_cav", player.NumberOfVACBans},
 		{"persona_name", player.PersonaName},
 		{"primary_clan_id_string", player.PrimaryGroupID},
+		{"private", player.Private},
 		{"status_code", player.StateCode},
 		{"time_created", player.TimeCreated},
 		{"updated_at", player.UpdatedAt},

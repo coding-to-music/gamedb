@@ -675,11 +675,13 @@ type Toast struct {
 	Success bool   `json:"success"`
 }
 
+var ErrLoggedOut = errors.New("logged out")
+
 func getUserFromSession(r *http.Request) (user mysql.User, err error) {
 
 	userID := session.GetUserIDFromSesion(r)
 	if userID == 0 {
-		return user, errors.New("logged out")
+		return user, ErrLoggedOut
 	}
 
 	return mysql.GetUserByID(userID)
@@ -689,7 +691,7 @@ func getPlayerFromSession(r *http.Request) (player mongo.Player, err error) {
 
 	playerID := session.GetPlayerIDFromSesion(r)
 	if playerID == 0 {
-		return player, errors.New("logged out")
+		return player, ErrLoggedOut
 	}
 
 	return mongo.GetPlayer(playerID)
