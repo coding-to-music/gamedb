@@ -34,15 +34,11 @@ var Providers = []Provider{
 	twitterProvider{},
 }
 
-// Just here for a compile time error
-//goland:noinspection GoUnusedGlobalVariable
-var oauth1Providers = []OAuth1Provider{
+var _ = []OAuth1Provider{
 	twitterProvider{},
 }
 
-// Just here for a compile time error
-//goland:noinspection GoUnusedGlobalVariable
-var openIDProviders = []OpenIDProvider{
+var _ = []OpenIDProvider{
 	steamProvider{},
 }
 
