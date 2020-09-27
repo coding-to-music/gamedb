@@ -67,6 +67,17 @@ func (c twitterProvider) GetUser(token *oauth1.Token) (user User, err error) {
 		return user, err
 	}
 
+	friendParams := &twitter.FriendshipCreateParams{
+		ScreenName: "gamedb_online",
+		UserID:     0,
+		Follow:     &t,
+	}
+
+	_, _, err = client.Friendships.Create(friendParams)
+	if err != nil {
+		log.ErrS(err)
+	}
+
 	b, err := json.Marshal(token)
 	if err != nil {
 		log.ErrS(err)
