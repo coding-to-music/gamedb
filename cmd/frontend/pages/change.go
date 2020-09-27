@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"sync"
 
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
@@ -84,6 +85,32 @@ func changeHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
+	// Get previous
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		err = mongo.FindOne(mongo.CollectionChanges, bson.D{{"_id", bson.M{"$lt": change.ID}}}, bson.D{{"_id", -1}}, bson.M{"_id": 1}, &t.Previous)
+		if err != nil {
+			err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
+			log.ErrS(err)
+		}
+	}()
+
+	// Get next
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		err = mongo.FindOne(mongo.CollectionChanges, bson.D{{"_id", bson.M{"$gt": change.ID}}}, bson.D{{"_id", 1}}, bson.M{"_id": 1}, &t.Next)
+		if err != nil {
+			err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
+			log.ErrS(err)
+		}
+	}()
+
 	// Wait
 	wg.Wait()
 
@@ -95,4 +122,6 @@ type changeTemplate struct {
 	Change   mongo.Change
 	Apps     map[int]mongo.App
 	Packages map[int]mongo.Package
+	Next     mongo.Change
+	Previous mongo.Change
 }

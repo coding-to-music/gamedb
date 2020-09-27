@@ -9,6 +9,15 @@
 
         {{ template "flashes" . }}
 
+        <div class="text-center mb-3 position-relative">
+            {{ if gt .Previous.ID 0 }}
+                <a class="btn btn-success" href="/changes/{{ .Previous.ID }}"><i class="fas fa-arrow-alt-circle-left"></i> {{ .Previous.ID }}</a>
+            {{ end }}
+            {{ if gt .Next.ID 0 }}
+                <a class="btn btn-success" href="/changes/{{ .Next.ID }}">{{ .Next.ID }} <i class="fas fa-arrow-alt-circle-right"></i></a>
+            {{ end }}
+        </div>
+
         <div class="card">
             <div class="card-body">
 
