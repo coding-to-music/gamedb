@@ -83,9 +83,11 @@
                             <a class="nav-link" data-toggle="tab" href="#items" role="tab">Items ({{ .App.Items }})</a>
                         </li>
                     {{ end }}
-                    <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#tags" role="tab">Tags</a>
-                    </li>
+                    {{ if gt (len .App.TagCounts) 0 }}
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#tags" role="tab">Tags</a>
+                        </li>
+                    {{ end }}
                     <li class="nav-item">
                         <a class="nav-link" data-toggle="tab" href="#dev" role="tab">Dev</a>
                     </li>

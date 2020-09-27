@@ -1047,11 +1047,13 @@ if ($appPage.length > 0) {
 
                 let series = [];
 
-                for (const id of data['order']) {
-                    series.push({
-                        name: data['names'][id],
-                        data: data['counts']["tag_" + id.toString()],
-                    });
+                if (isIterable(data['order'])) {
+                    for (const id of data['order']) {
+                        series.push({
+                            name: data['names'][id],
+                            data: data['counts']["tag_" + id.toString()],
+                        });
+                    }
                 }
 
                 Highcharts.chart('tags-chart', $.extend(true, {}, defaultChartOptions, {
