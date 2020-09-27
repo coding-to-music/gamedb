@@ -47,7 +47,7 @@ func (c discordProvider) GetUser(token *oauth2.Token) (user User, err error) {
 
 	discordUser, err := discord.User("@me")
 	if err != nil {
-		return user, OauthError{err, "An error occurred (1003)"}
+		return user, err
 	}
 
 	// if !discordUser.Verified { // Seems to always be false

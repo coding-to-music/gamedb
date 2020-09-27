@@ -56,7 +56,7 @@ func (c steamProvider) GetUser(r *http.Request) (user User, err error) {
 	// Get Steam ID
 	resp, err := openid.Verify(config.C.GameDBDomain+r.URL.String(), openid.NewSimpleDiscoveryCache(), openid.NewSimpleNonceStore())
 	if err != nil {
-		return user, OauthError{err, "We could not verify your Steam account"}
+		return user, err
 	}
 
 	i, err := strconv.ParseInt(path.Base(resp), 10, 64)

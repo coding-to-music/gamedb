@@ -47,7 +47,7 @@ func (c googleProvider) GetUser(token *oauth2.Token) (user User, err error) {
 
 	body, _, err := helpers.Get("https://openidconnect.googleapis.com/v1/userinfo?"+q.Encode(), 0, nil)
 	if err != nil {
-		return user, OauthError{err, "Invalid token"}
+		return user, err
 	}
 
 	userInfo := struct {
@@ -63,7 +63,7 @@ func (c googleProvider) GetUser(token *oauth2.Token) (user User, err error) {
 
 	err = json.Unmarshal(body, &userInfo)
 	if err != nil {
-		return user, OauthError{err, "An error occurred (1005)"}
+		return user, err
 	}
 
 	b, err := json.Marshal(token)

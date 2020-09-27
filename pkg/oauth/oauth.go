@@ -91,19 +91,6 @@ func New(p ProviderEnum) Provider {
 }
 
 //
-type OauthError struct {
-	Err   error
-	Flash string
-}
-
-func (oe OauthError) Error() string {
-	if oe.Err != nil {
-		return oe.Err.Error()
-	}
-	return ""
-}
-
-//
 type User struct {
 	Token    string
 	ID       string

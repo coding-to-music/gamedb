@@ -47,7 +47,7 @@ func (c patreonProvider) GetUser(token *oauth2.Token) (user User, err error) {
 
 	resp, err := patreon.NewClient(tc).FetchUser()
 	if err != nil {
-		return user, OauthError{err, "An error occurred (1003)"}
+		return user, err
 	}
 
 	// if !patreonUser.Data.Attributes.IsEmailVerified {
