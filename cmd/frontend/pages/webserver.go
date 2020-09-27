@@ -104,7 +104,11 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 	var err error
 
 	// Set the last page
-	if r.Method == "GET" && page != "error" && page != "login" && page != "forgot" {
+	if r.Method == "GET" &&
+		page != "error" &&
+		page != "login" &&
+		page != "forgot" &&
+		!strings.HasSuffix(r.URL.Path, ".html") {
 
 		session.Set(r, session.SessionLastPage, r.URL.Path)
 	}
