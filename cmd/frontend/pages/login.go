@@ -152,12 +152,12 @@ func login(r *http.Request, user mysql.User) (string, bool) {
 
 	// Log user in
 	sessionData := map[string]string{
-		session.SessionUserID:         strconv.Itoa(user.ID),
-		session.SessionUserEmail:      user.Email,
-		session.SessionUserProdCC:     string(user.ProductCC),
-		session.SessionUserAPIKey:     user.APIKey,
-		session.SessionUserShowAlerts: strconv.FormatBool(user.ShowAlerts),
-		session.SessionUserLevel:      strconv.Itoa(int(user.Level)),
+		session.SessionUserID:     strconv.Itoa(user.ID),
+		session.SessionUserEmail:  user.Email,
+		session.SessionUserProdCC: string(user.ProductCC),
+		session.SessionUserAPIKey: user.APIKey,
+		session.SessionUserLevel:  strconv.Itoa(int(user.Level)),
+		// session.SessionUserShowAlerts: strconv.FormatBool(user.ShowAlerts),
 	}
 
 	playerID := mysql.GetUserSteamID(user.ID)

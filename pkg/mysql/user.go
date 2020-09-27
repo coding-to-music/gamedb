@@ -1,7 +1,6 @@
 package mysql
 
 import (
-	"database/sql"
 	"errors"
 	"net/http"
 	"strconv"
@@ -70,16 +69,16 @@ type User struct {
 	Email         string             `gorm:"not null;column:email;unique_index"`
 	EmailVerified bool               `gorm:"not null;column:email_verified"`
 	Password      string             `gorm:"not null;column:password"`
-	SteamID       sql.NullString     `gorm:"not null;column:steam_id"`
-	PatreonID     sql.NullString     `gorm:"not null;column:patreon_id"`
-	GoogleID      sql.NullString     `gorm:"not null;column:google_id"`
-	DiscordID     sql.NullString     `gorm:"not null;column:discord_id"`
-	GitHubID      sql.NullString     `gorm:"not null;column:github_id"`
 	Level         int8               `gorm:"not null;column:level"` // Patreon
-	HideProfile   bool               `gorm:"not null;column:hide_profile"`
-	ShowAlerts    bool               `gorm:"not null;column:show_alerts"`
 	ProductCC     steamapi.ProductCC `gorm:"not null;column:country_code"`
 	APIKey        string             `gorm:"not null;column:api_key"`
+	// SteamID       sql.NullString     `gorm:"not null;column:steam_id"`
+	// PatreonID     sql.NullString     `gorm:"not null;column:patreon_id"`
+	// GoogleID      sql.NullString     `gorm:"not null;column:google_id"`
+	// DiscordID     sql.NullString     `gorm:"not null;column:discord_id"`
+	// GitHubID      sql.NullString     `gorm:"not null;column:github_id"`
+	// HideProfile   bool               `gorm:"not null;column:hide_profile"`
+	// ShowAlerts    bool               `gorm:"not null;column:show_alerts"`
 }
 
 func (user *User) SetAPIKey() {
