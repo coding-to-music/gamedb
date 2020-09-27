@@ -6,6 +6,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"golang.org/x/oauth2"
 )
@@ -40,6 +41,7 @@ func (c discordProvider) Redirect(w http.ResponseWriter, r *http.Request, state 
 
 func (c discordProvider) GetUser(token *oauth2.Token) (user User, err error) {
 
+	// Get user
 	discord, err := discordgo.New("Bearer " + token.AccessToken)
 	if err != nil {
 		return user, err
@@ -48,6 +50,17 @@ func (c discordProvider) GetUser(token *oauth2.Token) (user User, err error) {
 	discordUser, err := discord.User("@me")
 	if err != nil {
 		return user, err
+	}
+
+	// Join guild
+	discord, err = discordgo.New("Bearer " + config.C.DiscordOAuthBotToken)
+	if err != nil {
+		return user, err
+	}
+
+	err = discord.GuildMemberAdd(token.AccessToken, helpers.GuildID, discordUser.ID, "", nil, false, false)
+	if err != nil {
+		log.ErrS(err)
 	}
 
 	// if !discordUser.Verified { // Seems to always be false

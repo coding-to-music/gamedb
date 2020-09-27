@@ -14,7 +14,6 @@ import (
 )
 
 const (
-	// guildID          = "407493776597057538"
 	generalChannelID = "407493777058693121"
 )
 

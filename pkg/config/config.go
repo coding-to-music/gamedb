@@ -33,6 +33,7 @@ type Config struct {
 	DiscordChatBotToken    string `envconfig:"DISCORD_BOT_TOKEN"`         // Bot
 	DiscordRelayBotToken   string `envconfig:"DISCORD_RELAY_TOKEN"`       // Bot
 	DiscordChangesBotToken string `envconfig:"DISCORD_CHANGES_BOT_TOKEN"` // Bot
+	DiscordOAuthBotToken   string `envconfig:"DISCORD_OAUTH_BOT_TOKEN"`   // Bot
 
 	// Elastic Search
 	ElasticAddress  string `envconfig:"ELASTIC_SEARCH_ADDRESS" required:"true"`
