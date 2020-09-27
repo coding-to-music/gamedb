@@ -508,16 +508,16 @@ func settingsDonationsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 func settingsRemoveProviderHandler(w http.ResponseWriter, r *http.Request) {
 
+	provider := oauth.New(oauth.ProviderEnum(chi.URLParam(r, "provider")))
+	if provider == nil {
+		Error404Handler(w, r)
+		return
+	}
+
 	defer func() {
 		session.Save(w, r)
 		http.Redirect(w, r, "/settings", http.StatusFound)
 	}()
-
-	provider := oauth.New(oauth.ProviderEnum(chi.URLParam(r, "provider")))
-	if provider == nil {
-		session.SetFlash(r, session.SessionBad, "Invalid Provider")
-		return
-	}
 
 	userID := session.GetUserIDFromSesion(r)
 	if userID == 0 {
