@@ -249,24 +249,6 @@ func providerOpenIDCallback(w http.ResponseWriter, r *http.Request, provider oau
 
 	//
 	oauthHandleUser(provider, resp, page, r)
-
-	// Queue player
-	if provider.GetEnum() == oauth.ProviderSteam {
-
-		i, err := strconv.ParseInt(resp.ID, 10, 64)
-		if err == nil {
-
-			ua := r.UserAgent()
-			err = queue.ProducePlayer(queue.PlayerMessage{ID: i, UserAgent: &ua})
-			if err == nil {
-				log.Info("player queued", zap.String("ua", ua))
-			}
-			err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
-			if err != nil {
-				log.ErrS(err)
-			}
-		}
-	}
 }
 
 func oauthRedirect(w http.ResponseWriter, r *http.Request, page *string) {
@@ -301,10 +283,11 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 	// Get the user from DB
 	if page == authPageSettings {
 
+		// Just get user from session
 		user, err = getUserFromSession(r)
 		if err != nil {
 			log.ErrS(err)
-			session.SetFlash(r, session.SessionBad, "Account could not be created (1101)")
+			session.SetFlash(r, session.SessionBad, "Account could not be created (1102)")
 			return
 		}
 
@@ -401,5 +384,23 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 	err = mongo.NewEvent(r, user.ID, mongo.EventLink(provider.GetEnum()))
 	if err != nil {
 		log.ErrS(err)
+	}
+
+	// Queue player
+	if provider.GetEnum() == oauth.ProviderSteam {
+
+		i, err := strconv.ParseInt(resp.ID, 10, 64)
+		if err == nil {
+
+			ua := r.UserAgent()
+			err = queue.ProducePlayer(queue.PlayerMessage{ID: i, UserAgent: &ua})
+			if err == nil {
+				log.Info("player queued", zap.String("ua", ua))
+			}
+			err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
+			if err != nil {
+				log.ErrS(err)
+			}
+		}
 	}
 }
