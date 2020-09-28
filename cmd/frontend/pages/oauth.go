@@ -328,12 +328,6 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 			return
 		}
 
-		// Validate email
-		if user.Email != resp.Email {
-			session.SetFlash(r, session.SessionBad, "Your email address on "+provider.GetName()+" ("+resp.Email+") does not match Game DB")
-			return
-		}
-
 	} else if provider.GetType() == oauth.TypeOpenID {
 
 		// Look for existing user by email
