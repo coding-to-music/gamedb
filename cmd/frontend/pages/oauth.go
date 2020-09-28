@@ -291,6 +291,13 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 	var user mysql.User
 	var err error
 
+	if provider.GetType() == oauth.TypeOAuth && resp.Email == "" ||
+		provider.GetType() == oauth.TypeOpenID && resp.ID == "" {
+
+		session.SetFlash(r, session.SessionBad, "We were unable to fetch your details from "+provider.GetName()+" (1101)")
+		return
+	}
+
 	// Get the user from DB
 	if page == authPageSettings {
 
@@ -302,11 +309,6 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 		}
 
 	} else if provider.GetType() == oauth.TypeOAuth {
-
-		if resp.Email == "" {
-			session.SetFlash(r, session.SessionBad, "We were unable to fetch your details from "+provider.GetName()+" (1102)")
-			return
-		}
 
 		// Look for existing user by email
 		user, err = mysql.GetUserByEmail(resp.Email)
