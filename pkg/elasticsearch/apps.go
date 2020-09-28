@@ -11,30 +11,32 @@ import (
 )
 
 type App struct {
-	AchievementsCount int                   `json:"achievements_counts"`
-	AchievementsAvg   float64               `json:"achievements_avg"`
-	AchievementsIcons []helpers.Tuple       `json:"achievements_icons"`
-	Aliases           []string              `json:"aliases"`
-	Categories        []int                 `json:"categories"`
-	Developers        []int                 `json:"developers"`
-	FollowersCount    int                   `json:"followers"`
-	Genres            []int                 `json:"genres"`
-	Icon              string                `json:"icon"`
-	ID                int                   `json:"id"`
-	Name              string                `json:"name"`
-	NameMarked        string                `json:"name_marked"` // Not in DB
-	Platforms         []string              `json:"platforms"`
-	PlayersCount      int                   `json:"players"`
-	Prices            helpers.ProductPrices `json:"prices"`
-	Publishers        []int                 `json:"publishers"`
-	ReleaseDate       int64                 `json:"release_date"`
-	ReviewScore       float64               `json:"score"`
-	Score             float64               `json:"-"` // Not in DB - Search score
-	Tags              []int                 `json:"tags"`
-	Type              string                `json:"type"`
-	Trend             float64               `json:"trend"`
-	WishlistAvg       float64               `json:"wishlist_avg"`
-	WishlistCount     int                   `json:"wishlist_count"`
+	AchievementsCount  int                   `json:"achievements_counts"`
+	AchievementsAvg    float64               `json:"achievements_avg"`
+	AchievementsIcons  []helpers.Tuple       `json:"achievements_icons"`
+	Aliases            []string              `json:"aliases"`
+	Categories         []int                 `json:"categories"`
+	Developers         []int                 `json:"developers"`
+	FollowersCount     int                   `json:"followers"`
+	Genres             []int                 `json:"genres"`
+	GroupID            string                `json:"group_id"`
+	Icon               string                `json:"icon"`
+	ID                 int                   `json:"id"`
+	Name               string                `json:"name"`
+	NameMarked         string                `json:"name_marked"` // Not in DB
+	Platforms          []string              `json:"platforms"`
+	PlayersCount       int                   `json:"players"`
+	Prices             helpers.ProductPrices `json:"prices"`
+	Publishers         []int                 `json:"publishers"`
+	ReleaseDate        int64                 `json:"release_date"`
+	ReleaseDateRounded int64                 `json:"release_date_rounded"`
+	ReviewScore        float64               `json:"score"`
+	Score              float64               `json:"-"` // Not in DB - Search score
+	Tags               []int                 `json:"tags"`
+	Type               string                `json:"type"`
+	Trend              float64               `json:"trend"`
+	WishlistAvg        float64               `json:"wishlist_avg"`
+	WishlistCount      int                   `json:"wishlist_count"`
 }
 
 func (app App) GetName() string {
@@ -51,6 +53,18 @@ func (app App) GetIcon() string {
 
 func (app App) GetPath() string {
 	return helpers.GetAppPath(app.ID, app.Name)
+}
+
+func (app App) GetType() string {
+	return helpers.GetAppType(app.Type)
+}
+
+func (app App) GetReleaseDateNice() string {
+	return helpers.GetAppReleaseDateNice(0, app.ReleaseDate, "")
+}
+
+func (app App) GetFollowers() string {
+	return helpers.GetAppFollowers(app.GroupID, app.FollowersCount)
 }
 
 func (app App) GetCommunityLink() string {
@@ -177,28 +191,30 @@ func DeleteAndRebuildAppsIndex() {
 		"settings": settings,
 		"mappings": map[string]interface{}{
 			"properties": map[string]interface{}{
-				"achievements_counts": fieldTypeInt32,
-				"achievements_avg":    fieldTypeFloat16,
-				"achievements_icons":  fieldTypeDisabled,
-				"aliases":             fieldTypeText,
-				"categories":          fieldTypeKeyword,
-				"developers":          fieldTypeKeyword,
-				"followers":           fieldTypeInt32,
-				"genres":              fieldTypeKeyword,
-				"icon":                fieldTypeDisabled,
-				"id":                  fieldTypeKeyword,
-				"name":                fieldTypeText,
-				"platforms":           fieldTypeKeyword,
-				"players":             fieldTypeInt32,
-				"prices":              map[string]interface{}{"type": "object", "properties": priceProperties},
-				"publishers":          fieldTypeKeyword,
-				"release_date":        fieldTypeInt64,
-				"score":               fieldTypeFloat16,
-				"tags":                fieldTypeKeyword,
-				"type":                fieldTypeKeyword,
-				"trend":               fieldTypeKeyword,
-				"wishlist_avg":        fieldTypeFloat32,
-				"wishlist_count":      fieldTypeInt32,
+				"achievements_counts":  fieldTypeInt32,
+				"achievements_avg":     fieldTypeFloat16,
+				"achievements_icons":   fieldTypeDisabled,
+				"aliases":              fieldTypeText,
+				"categories":           fieldTypeKeyword,
+				"developers":           fieldTypeKeyword,
+				"followers":            fieldTypeInt32,
+				"genres":               fieldTypeKeyword,
+				"group_id":             fieldTypeDisabled,
+				"icon":                 fieldTypeDisabled,
+				"id":                   fieldTypeKeyword,
+				"name":                 fieldTypeText,
+				"platforms":            fieldTypeKeyword,
+				"players":              fieldTypeInt32,
+				"prices":               map[string]interface{}{"type": "object", "properties": priceProperties},
+				"publishers":           fieldTypeKeyword,
+				"release_date":         fieldTypeInt64,
+				"release_date_rounded": fieldTypeInt64,
+				"score":                fieldTypeFloat16,
+				"tags":                 fieldTypeKeyword,
+				"type":                 fieldTypeKeyword,
+				"trend":                fieldTypeKeyword,
+				"wishlist_avg":         fieldTypeFloat32,
+				"wishlist_count":       fieldTypeInt32,
 			},
 		},
 	}

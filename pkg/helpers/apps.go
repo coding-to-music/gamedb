@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gosimple/slug"
@@ -222,4 +223,13 @@ func (sr SystemRequirement) Format() template.HTML {
 
 func GetAppReviewScore(score float64) string {
 	return FloatToString(score, 2) + "%"
+}
+
+func GetAppFollowers(groupID string, followers int) string {
+
+	if groupID == "" {
+		return "-"
+	}
+
+	return humanize.Comma(int64(followers))
 }

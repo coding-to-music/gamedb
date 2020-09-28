@@ -3,6 +3,7 @@ package queue
 import (
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/Jleagle/rabbit-go"
 	roman "github.com/StefanSchroeder/Golang-Roman"
@@ -64,6 +65,7 @@ func appsSearchHandler(message *rabbit.Message) {
 	app.Developers = mongoApp.Developers
 	app.FollowersCount = mongoApp.GroupFollowers
 	app.Genres = mongoApp.Genres
+	app.GroupID = mongoApp.GroupID
 	app.Icon = mongoApp.Icon
 	app.ID = mongoApp.ID
 	app.Name = mongoApp.Name
@@ -72,6 +74,7 @@ func appsSearchHandler(message *rabbit.Message) {
 	app.Prices = mongoApp.Prices
 	app.Publishers = mongoApp.Publishers
 	app.ReleaseDate = mongoApp.ReleaseDateUnix
+	app.ReleaseDateRounded = time.Unix(mongoApp.ReleaseDateUnix, 10).Truncate(time.Hour * 24).Unix()
 	app.ReviewScore = mongoApp.ReviewsScore
 	app.Tags = mongoApp.Tags
 	app.Trend = mongoApp.PlayerTrend

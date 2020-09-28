@@ -12,7 +12,6 @@ import (
 
 	"github.com/Jleagle/influxql"
 	"github.com/Jleagle/steam-go/steamapi"
-	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
@@ -312,13 +311,8 @@ func (app App) GetReviewScore() string {
 	return helpers.GetAppReviewScore(app.ReviewsScore)
 }
 
-func (app App) GetFollowers() (ret string) {
-
-	if app.GroupID == "" {
-		return "-"
-	}
-
-	return humanize.Comma(int64(app.GroupFollowers))
+func (app App) GetFollowers() string {
+	return helpers.GetAppFollowers(app.GroupID, app.GroupFollowers)
 }
 
 func (app App) GetPlatformImages() (ret template.HTML) {
