@@ -355,7 +355,7 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 	}
 
 	if used {
-		session.SetFlash(r, session.SessionBad, "This "+provider.GetName()+" account is already linked to another Game DB account")
+		session.SetFlash(r, session.SessionBad, "This "+provider.GetName()+" account ("+resp.Username+") is already linked to another Game DB account")
 		return
 	}
 
