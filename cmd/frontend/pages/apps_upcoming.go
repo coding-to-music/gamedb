@@ -59,7 +59,7 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 
 		columns := map[string]string{
-			"1": "followers, name asc",
+			"1": "followers, name.raw asc",
 			"3": "release_date_rounded, followers desc, name.raw asc",
 		}
 
