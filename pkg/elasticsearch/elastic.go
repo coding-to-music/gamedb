@@ -20,16 +20,23 @@ const (
 )
 
 var (
-	settings                = map[string]interface{}{"number_of_shards": 1, "number_of_replicas": 0}
-	fieldTypeInt32          = map[string]interface{}{"type": "integer"}
-	fieldTypeInt64          = map[string]interface{}{"type": "long"}
-	fieldTypeFloat32        = map[string]interface{}{"type": "float"}
-	fieldTypeFloat16        = map[string]interface{}{"type": "half_float"}
-	fieldTypeBool           = map[string]interface{}{"type": "boolean"}
-	fieldTypeKeyword        = map[string]interface{}{"type": "keyword"} // Exact matches
-	fieldTypeText           = map[string]interface{}{"type": "text"}    // To search
-	fieldTypeDisabled       = map[string]interface{}{"enabled": false}  // No indexing
-	fieldTypeTextWithPrefix = map[string]interface{}{"type": "text", "index_prefixes": map[string]interface{}{"min_chars": 1, "max_chars": 10}}
+	settings          = map[string]interface{}{"number_of_shards": 1, "number_of_replicas": 0}
+	fieldTypeInt32    = map[string]interface{}{"type": "integer"}
+	fieldTypeInt64    = map[string]interface{}{"type": "long"}
+	fieldTypeFloat32  = map[string]interface{}{"type": "float"}
+	fieldTypeFloat16  = map[string]interface{}{"type": "half_float"}
+	fieldTypeBool     = map[string]interface{}{"type": "boolean"}
+	fieldTypeKeyword  = map[string]interface{}{"type": "keyword"} // Exact matches
+	fieldTypeText     = map[string]interface{}{"type": "text"}    // To search, no sorting
+	fieldTypeDisabled = map[string]interface{}{"enabled": false}  // No indexing
+
+	// fieldTypeTextWithPrefix = map[string]interface{}{
+	// 	"type": "text",
+	// 	"index_prefixes": map[string]interface{}{
+	// 		"min_chars": 1,
+	// 		"max_chars": 10,
+	// 	},
+	// }
 )
 
 var (
