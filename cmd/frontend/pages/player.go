@@ -253,11 +253,9 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 		inQueue = err == nil
 
+		err = helpers.IgnoreErrors(err, mc.ErrNotFound)
 		if err != nil {
-			err = helpers.IgnoreErrors(err, mc.ErrNotFound)
-			if err != nil {
-				log.ErrS(err)
-			}
+			log.ErrS(err)
 		}
 	}()
 
@@ -273,7 +271,6 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
 		if err != nil {
 			log.ErrS(err)
-			return
 		}
 	}()
 
