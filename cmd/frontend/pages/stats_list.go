@@ -2,6 +2,7 @@ package pages
 
 import (
 	"html/template"
+	"math"
 	"net/http"
 
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/datatable"
@@ -80,9 +81,9 @@ func statsListJSONHandler(w http.ResponseWriter, r *http.Request) {
 	var columns = map[string]string{
 		"0": "name",
 		"1": "apps",
-		"2": "median_price",
-		"3": "median_score",
-		"4": "median_players",
+		"2": "mean_price",
+		"3": "mean_score",
+		"4": "mean_players",
 	}
 
 	code := session.GetProductCC(r)
@@ -104,9 +105,9 @@ func statsListJSONHandler(w http.ResponseWriter, r *http.Request) {
 	for _, stat := range resp.GetStats() {
 
 		statPath := helpers.GetStatPath(mongo.StatsType(query.GetSearchString("type")).MongoCol(), int(stat.GetId()), stat.GetName())
-		statScore := helpers.GetAppReviewScore(float64(stat.GetMedianScore()))
-		statPlayers := stat.GetMedianPlayers()
-		statPrice := i18n.FormatPrice(i18n.GetProdCC(code).CurrencyCode, int(stat.GetMedianPrice()))
+		statScore := helpers.GetAppReviewScore(float64(stat.GetMeanScore()))
+		statPlayers := math.Round(float64(stat.GetMeanPlayers()))
+		statPrice := i18n.FormatPrice(i18n.GetProdCC(code).CurrencyCode, int(math.Round(float64(stat.GetMeanPrice()))))
 
 		response.AddRow([]interface{}{
 			statPath,       // 0
