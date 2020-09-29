@@ -117,7 +117,7 @@ func getFooter() *discordgo.MessageEmbedFooter {
 	return footer
 }
 
-func getAppEmbed(commandID string, app mongo.App, authorID string, code steamapi.ProductCC) *discordgo.MessageEmbed {
+func getAppEmbed(commandID string, app mongo.App, code steamapi.ProductCC) *discordgo.MessageEmbed {
 
 	return &discordgo.MessageEmbed{
 		Title:     app.GetName(),
