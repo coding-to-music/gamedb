@@ -34,9 +34,9 @@ func GetUserVerification(code string) (userID int, err error) {
 		return row.UserID, db.Error
 	}
 
-	if row.Expires.Unix() < time.Now().Unix() {
-		return userID, ErrExpiredVerification
-	}
+	// if row.Expires.Unix() < time.Now().Unix() {
+	// 	return userID, ErrExpiredVerification
+	// }
 
 	return row.UserID, deleteUserVerification(code)
 }
