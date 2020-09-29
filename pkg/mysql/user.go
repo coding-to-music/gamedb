@@ -259,19 +259,6 @@ func GetUserByEmail(email string) (user User, err error) {
 	return user, db.Error
 }
 
-func GetUserByKeyx(key string, value interface{}) (user User, err error) {
-
-	db, err := GetMySQLClient()
-	if err != nil {
-		return user, err
-	}
-
-	db = db.Where(key+" = ?", value)
-	db = db.First(&user)
-
-	return user, db.Error
-}
-
 func GetUserByAPIKey(key string) (user User, err error) {
 
 	var item = memcache.MemcacheUserByAPIKey(key)
