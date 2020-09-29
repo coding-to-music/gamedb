@@ -106,8 +106,8 @@ func GetIP() string {
 
 	for _, v := range []string{"http://ipinfo.io/ip", "http://myexternalip.com/raw", "https://ifconfig.co/ip"} {
 
-		body, _, err := Get(v, 0, nil)
-		if err != nil {
+		body, code, err := Get(v, 0, nil)
+		if err != nil || code != 200 {
 			continue
 		}
 
