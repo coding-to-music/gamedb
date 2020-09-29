@@ -64,7 +64,7 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		var filters = []elastic.Query{
-			elastic.NewRangeQuery("type").From(time.Now().Add(upcomingFilterHours).Unix()),
+			elastic.NewRangeQuery("release_date").From(time.Now().Add(upcomingFilterHours).Unix()),
 		}
 
 		apps, filtered, err = elasticsearch.SearchAppsAdvanced(query.GetOffset(), query.GetSearchString("search"), query.GetOrderElastic(columns), filters)
