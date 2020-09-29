@@ -184,6 +184,7 @@ func main() {
 	r.Get("/sitemap/index.xml", redirectHandler("/sitemap.xml"))
 	r.Get("/steam-api", redirectHandler("/api/steam"))
 	r.Get("/api", redirectHandler("/api/gamedb"))
+	r.Get("/discord", redirectHandler("/discord-bot")) // Used in discord messages
 
 	// Game Redirects
 	r.Get("/new-releases", redirectHandler("/games/new-releases"))

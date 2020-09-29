@@ -105,7 +105,7 @@ func getAuthor(guildID string) *discordgo.MessageEmbedAuthor {
 func getFooter() *discordgo.MessageEmbedFooter {
 
 	footer := &discordgo.MessageEmbedFooter{
-		Text:         "Powered by gamedb.online",
+		Text:         "gamedb.online/discord for all commands",
 		IconURL:      "https://gamedb.online/assets/img/sa-bg-32x32.png",
 		ProxyIconURL: "",
 	}
