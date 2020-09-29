@@ -2,6 +2,7 @@ package pages
 
 import (
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/Jleagle/recaptcha-go"
@@ -31,7 +32,6 @@ func ForgotRouter() http.Handler {
 func forgotHandler(w http.ResponseWriter, r *http.Request) {
 
 	if session.IsLoggedIn(r) {
-
 		http.Redirect(w, r, "/settings", http.StatusFound)
 		return
 	}
@@ -57,182 +57,170 @@ func (t forgotTemplate) includes() []string {
 
 func forgotPostHandler(w http.ResponseWriter, r *http.Request) {
 
-	message, success := func() (message string, success bool) {
+	const successMessage = "Email sent! (You might need to check the spam folder)"
 
-		// Parse form
-		err := r.ParseForm()
-		if err != nil {
-			log.ErrS(err)
-			return "An error occurred", false
-		}
-
-		email := r.PostForm.Get("email")
-
-		// Field validation
-		if email == "" {
-			return "Please fill in your email address", false
-		}
-
-		err = checkmail.ValidateFormat(email)
-		if err != nil {
-			return "Invalid email address", false
-		}
-
-		if config.IsProd() {
-			err = recaptcha.CheckFromRequest(r)
-			if err != nil {
-				return "Please check the captcha", false
-			}
-		}
-
-		// Find user
-		user, err := mysql.GetUserByEmail(email)
-		if err == mysql.ErrRecordNotFound {
-			return "Email sent", true
-		} else if err != nil {
-			log.ErrS(err)
-			return "An error occurred", false
-		}
-
-		// Create verification code
-		code, err := mysql.CreateUserVerification(user.ID)
-		if err != nil {
-			log.ErrS(err)
-			return "An error occurred", false
-		}
-
-		// Send email
-		body := "You or someone else has requested a new password for Game DB.<br><br>" +
-			"If this was not you, please ignore this email.<br><br>Click the following link to reset your password: " +
-			config.C.GameDBDomain + "/forgot/reset?code=" + code.Code +
-			"<br><br>Thanks, Jleagle." +
-			"<br><br>From IP: " + geo.GetFirstIP(r.RemoteAddr)
-
-		err = email_providers.GetSender().Send(
-			email,
-			email,
-			"",
-			"",
-			"Game DB Forgotten Password",
-			body,
-		)
-		if err != nil {
-			log.ErrS(err)
-			return "An error occurred", false
-		}
-
-		// Create login event
-		err = mongo.NewEvent(r, user.ID, mongo.EventForgotPassword)
-		if err != nil {
-			log.ErrS(err)
-		}
-
-		return "Email sent! (You might need to check the spam folder)", true
+	defer func() {
+		time.Sleep(time.Second)
+		session.Save(w, r)
+		http.Redirect(w, r, "/forgot", http.StatusFound)
 	}()
 
-	//
-	if success {
+	// Field validation
+	email := strings.TrimSpace(r.PostFormValue("email"))
 
-		session.SetFlash(r, session.SessionGood, message)
-		session.Save(w, r)
-
-		http.Redirect(w, r, "/login", http.StatusFound)
-
-	} else {
-
-		time.Sleep(time.Second)
-
-		session.SetFlash(r, session.SessionBad, message)
-		session.Save(w, r)
-
-		http.Redirect(w, r, "/forgot", http.StatusFound)
+	if email == "" {
+		session.SetFlash(r, session.SessionBad, "Please fill in your email address")
+		return
 	}
+
+	err := checkmail.ValidateFormat(email)
+	if err != nil {
+		session.SetFlash(r, session.SessionBad, "Invalid email address")
+		return
+	}
+
+	if config.IsProd() {
+		err = recaptcha.CheckFromRequest(r)
+		if err != nil {
+			session.SetFlash(r, session.SessionBad, "Please check the captcha")
+			return
+		}
+	}
+
+	// Find user
+	user, err := mysql.GetUserByEmail(email)
+	if err == mysql.ErrRecordNotFound {
+		session.SetFlash(r, session.SessionGood, successMessage)
+		return
+	} else if err != nil {
+		log.ErrS(err)
+		session.SetFlash(r, session.SessionBad, "An error occurred (1001)")
+		return
+	}
+
+	// Create verification code
+	code, err := mysql.CreateUserVerification(user.ID)
+	if err != nil {
+		log.ErrS(err)
+		session.SetFlash(r, session.SessionBad, "An error occurred (1002)")
+		return
+	}
+
+	// Send email
+	body := "You or someone else has requested a new password for Game DB.<br><br>" +
+		"If this was not you, please ignore this email.<br><br>Click the following link to reset your password: " +
+		config.C.GameDBDomain + "/forgot/reset?code=" + code.Code +
+		"<br><br>Thanks, Jleagle." +
+		"<br><br>From IP: " + geo.GetFirstIP(r.RemoteAddr)
+
+	err = email_providers.GetSender().Send(
+		email,
+		email,
+		"",
+		"",
+		"Game DB Forgotten Password",
+		body,
+	)
+	if err != nil {
+		log.ErrS(err)
+		session.SetFlash(r, session.SessionBad, "An error occurred (1003)")
+		return
+	}
+
+	// Create login event
+	err = mongo.NewEvent(r, user.ID, mongo.EventForgotPassword)
+	if err != nil {
+		log.ErrS(err)
+	}
+
+	session.SetFlash(r, session.SessionGood, successMessage)
 }
 
 func forgotResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 
-	message, success := func() (message string, success bool) {
+	var success bool
 
-		// Validate code
-		code := r.URL.Query().Get("code")
-
-		if len(code) != 10 {
-			return "Invalid code (1001)", false
-		}
-
-		// Find email from code
-		userID, err := mysql.GetUserVerification(code)
-		if err == mysql.ErrExpiredVerification {
-			return "Link Expired", false
-		} else if err != nil {
-			err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
-			if err != nil {
-				log.ErrS(err)
-			}
-			return "Invalid code (1002)", false
-		}
-
-		// Get user
-		user, err := mysql.GetUserByID(userID)
-		if err != nil {
-			err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
-			if err != nil {
-				log.ErrS(err)
-			}
-			return "An error occurred (1001)", false
-		}
-
-		// Create password
-		passwordString := helpers.RandString(10, helpers.LettersCaps+helpers.Numbers)
-		passwordBytes, err := bcrypt.GenerateFromPassword([]byte(passwordString), 14)
-		if err != nil {
-			log.ErrS(err)
-			return "An error occurred (1002)", false
-		}
-
-		// Send email
-		body := "Your new Game DB password is:<br><br>" + passwordString + "<br><br>Thanks, Jleagle." +
-			"<br><br>From IP: " + geo.GetFirstIP(r.RemoteAddr)
-
-		err = email_providers.GetSender().Send(
-			user.Email,
-			user.Email,
-			"",
-			"",
-			"Game DB Password Reset",
-			body,
-		)
-		if err != nil {
-			log.ErrS(err)
-			return "An error occurred (1003)", false
-		}
-
-		// Set password
-		err = user.SetPassword(passwordBytes)
-		if err != nil {
-			log.ErrS(err)
-			return "An error occurred (1004)", false
-		}
-
-		//
-		return "A new password has been emailed to you (You might need to check the spam folder)", true
-	}()
-
-	//
-	if success {
-
-		session.SetFlash(r, session.SessionGood, message)
-		session.Save(w, r)
-
-		http.Redirect(w, r, "/login", http.StatusFound)
-
-	} else {
+	defer func() {
 
 		time.Sleep(time.Second)
-
-		session.SetFlash(r, session.SessionBad, message)
 		session.Save(w, r)
 
-		http.Redirect(w, r, "/signup", http.StatusFound)
+		if success {
+			http.Redirect(w, r, "/login", http.StatusFound)
+		} else {
+			http.Redirect(w, r, "/forgot", http.StatusFound)
+		}
+	}()
+
+	// Validate code
+	code := strings.TrimSpace(r.URL.Query().Get("code"))
+
+	if len(code) != 10 {
+		session.SetFlash(r, session.SessionBad, "Invalid code (1001)")
+		return
 	}
+
+	// Find email from code
+	userID, err := mysql.GetUserVerification(code)
+	if err == mysql.ErrExpiredVerification {
+		session.SetFlash(r, session.SessionBad, "Link Expired")
+		return
+	} else if err != nil {
+		err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
+		if err != nil {
+			log.ErrS(err)
+		}
+		session.SetFlash(r, session.SessionBad, "Invalid code (1002)")
+		return
+	}
+
+	// Get user
+	user, err := mysql.GetUserByID(userID)
+	if err != nil {
+		err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
+		if err != nil {
+			log.ErrS(err)
+		}
+		session.SetFlash(r, session.SessionBad, "An error occurred (1001)")
+		return
+	}
+
+	// Create password
+	passwordString := helpers.RandString(10, helpers.LettersCaps+helpers.Numbers)
+	passwordBytes, err := bcrypt.GenerateFromPassword([]byte(passwordString), 14)
+	if err != nil {
+		log.ErrS(err)
+		session.SetFlash(r, session.SessionBad, "An error occurred (1002)")
+		return
+	}
+
+	// Send email
+	body := "Your new Game DB password is:<br><br>" + passwordString + "<br><br>Thanks, Jleagle." +
+		"<br><br>From IP: " + geo.GetFirstIP(r.RemoteAddr)
+
+	err = email_providers.GetSender().Send(
+		user.Email,
+		user.Email,
+		"",
+		"",
+		"Game DB Password Reset",
+		body,
+	)
+	if err != nil {
+		log.ErrS(err)
+		session.SetFlash(r, session.SessionBad, "An error occurred (1003)")
+		return
+	}
+
+	// Set password
+	err = user.SetPassword(passwordBytes)
+	if err != nil {
+		log.ErrS(err)
+		session.SetFlash(r, session.SessionBad, "An error occurred (1004)")
+		return
+	}
+
+	//
+	success = true
+	session.SetFlash(r, session.SessionGood, "A new password has been emailed to you (You might need to check the spam folder)")
 }
