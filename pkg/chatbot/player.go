@@ -51,7 +51,22 @@ func (c CommandPlayer) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC
 
 	matches := RegexCache[c.Regex()].FindStringSubmatch(msg.Message.Content)
 
-	player, q, err := mongo.SearchPlayer(matches[2], bson.M{"_id": 1, "persona_name": 1, "avatar": 1, "level": 1, "games_count": 1, "play_time": 1, "friends_count": 1})
+	projection := bson.M{
+		"_id":               1,
+		"achievement_count": 1,
+		"avatar":            1,
+		"badges_count":      1,
+		"badges_foil_count": 1,
+		"comments_count":    1,
+		"friends_count":     1,
+		"games_count":       1,
+		"level":             1,
+		"persona_name":      1,
+		"play_time":         1,
+		"ranks":             1,
+	}
+
+	player, q, err := mongo.SearchPlayer(matches[2], projection)
 	if err == mongo.ErrNoDocuments {
 
 		message.Content = "Player **" + matches[2] + "** not found, please enter a user's vanity URL"
@@ -98,19 +113,35 @@ func (c CommandPlayer) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC
 		Fields: []*discordgo.MessageEmbedField{
 			{
 				Name:  "Level",
-				Value: humanize.Comma(int64(player.Level)),
+				Value: humanize.Comma(int64(player.Level)) + " (" + helpers.OrdinalComma(player.Ranks[string(mongo.RankKeyLevel)]) + ")",
 			},
 			{
 				Name:  "Games",
-				Value: games,
+				Value: games + " (" + helpers.OrdinalComma(player.Ranks[string(mongo.RankKeyGames)]) + ")",
+			},
+			{
+				Name:  "Achievements",
+				Value: humanize.Comma(int64(player.AchievementCount)) + " (" + helpers.OrdinalComma(player.Ranks[string(mongo.RankKeyAchievements)]) + ")",
+			},
+			{
+				Name:  "Badges",
+				Value: humanize.Comma(int64(player.BadgesCount)) + " (" + helpers.OrdinalComma(player.Ranks[string(mongo.RankKeyBadges)]) + ")",
+			},
+			{
+				Name:  "Foil Badges",
+				Value: humanize.Comma(int64(player.BadgesFoilCount)) + " (" + helpers.OrdinalComma(player.Ranks[string(mongo.RankKeyBadgesFoil)]) + ")",
 			},
 			{
 				Name:  "Playtime",
-				Value: playtime,
+				Value: playtime + " (" + helpers.OrdinalComma(player.Ranks[string(mongo.RankKeyPlaytime)]) + ")",
 			},
 			{
 				Name:  "Friends",
-				Value: humanize.Comma(int64(player.FriendsCount)),
+				Value: humanize.Comma(int64(player.FriendsCount)) + " (" + helpers.OrdinalComma(player.Ranks[string(mongo.RankKeyFriends)]) + ")",
+			},
+			{
+				Name:  "Comments",
+				Value: humanize.Comma(int64(player.CommentsCount)) + " (" + helpers.OrdinalComma(player.Ranks[string(mongo.RankKeyComments)]) + ")",
 			},
 		},
 	}

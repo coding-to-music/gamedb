@@ -66,21 +66,14 @@ func (c CommandGroup) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC)
 	}
 
 	message.Embed = &discordgo.MessageEmbed{
-		Title: group.GetName(),
-		URL:   config.C.GameDBDomain + group.GetPath(),
+		Title:       group.GetName(),
+		Description: headline,
+		URL:         config.C.GameDBDomain + group.GetPath(),
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
 			URL: group.GetIcon(),
 		},
 		Footer: getFooter(),
 		Fields: []*discordgo.MessageEmbedField{
-			{
-				Name:  "Headline",
-				Value: headline,
-			},
-			{
-				Name:  "Short Name",
-				Value: abbr,
-			},
 			{
 				Name:  "Members",
 				Value: humanize.Comma(int64(group.Members)),

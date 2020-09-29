@@ -126,24 +126,39 @@ func getAppEmbed(commandID string, app mongo.App, authorID string, code steamapi
 		Footer:    getFooter(),
 		Fields: []*discordgo.MessageEmbedField{
 			{
-				Name:  "Max Weekly Players",
-				Value: humanize.Comma(int64(app.PlayerPeakWeek)),
+				Name:   "Max Weekly Players",
+				Value:  humanize.Comma(int64(app.PlayerPeakWeek)),
+				Inline: true,
 			},
 			{
-				Name:  "Release Date",
-				Value: app.GetReleaseDateNice(),
+				Name:   "Followers",
+				Value:  app.GetFollowers(),
+				Inline: true,
 			},
 			{
-				Name:  "Price",
-				Value: app.Prices.Get(code).GetFinal(),
+				Name:   "\u200B",
+				Value:  "\u200B",
+				Inline: true,
 			},
 			{
-				Name:  "Review Score",
-				Value: app.GetReviewScore(),
+				Name:   "Price",
+				Value:  app.Prices.Get(code).GetFinal(),
+				Inline: true,
 			},
 			{
-				Name:  "Followers",
-				Value: app.GetFollowers(),
+				Name:   "Review Score",
+				Value:  app.GetReviewScore(),
+				Inline: true,
+			},
+			{
+				Name:   "\u200B",
+				Value:  "\u200B",
+				Inline: true,
+			},
+			{
+				Name:   "Release Date",
+				Value:  app.GetReleaseDateNice(),
+				Inline: true,
 			},
 		},
 		Image: &discordgo.MessageEmbedImage{
