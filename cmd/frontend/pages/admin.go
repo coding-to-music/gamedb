@@ -19,6 +19,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
+	"github.com/gamedb/gamedb/pkg/oauth"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/steam"
 	"github.com/gamedb/gamedb/pkg/tasks"
@@ -81,7 +82,7 @@ func adminUsersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	var users []mysql.User
-	var playerIDs = map[int]string{}
+	var playerIDs = map[int]map[oauth.ProviderEnum]string{}
 	wg.Add(1)
 	go func(r *http.Request) {
 
@@ -125,10 +126,7 @@ func adminUsersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var userProviders []mysql.UserProvider
 		db = db.Model(&mysql.UserProvider{})
-		db = db.Select([]string{"user_id", "id"})
 		db = db.Where("user_id IN (?)", userIDs)
-		db = db.Where("provider = ?", "steam")
-		db = db.Limit(100)
 
 		db = db.Find(&userProviders)
 		if db.Error != nil {
@@ -137,7 +135,10 @@ func adminUsersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		for _, v := range userProviders {
-			playerIDs[v.UserID] = v.ID
+			if _, ok := playerIDs[v.UserID]; !ok {
+				playerIDs[v.UserID] = map[oauth.ProviderEnum]string{}
+			}
+			playerIDs[v.UserID][v.Provider] = v.ID
 		}
 	}(r)
 

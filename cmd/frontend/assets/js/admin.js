@@ -108,8 +108,29 @@ if ($('#admin-users-page').length > 0) {
             {
                 'targets': 3,
                 'render': function (data, type, row) {
-                    if (row[3] > 0) {
-                        return '<a href="/players/' + row[3] + '">' + row[3] + '</a>';
+                    if (row[3]) {
+
+                        const m = row[3];
+                        let str = '';
+                        if (m.hasOwnProperty('steam')) {
+                            str += '<a class="mr-1" href="/players/' + m['steam'] + '"><i class="fab fa-steam"></i></a>';
+                        }
+                        if (m.hasOwnProperty('discord')) {
+                            str += '<span class="mr-1"><i class="fab fa-discord"></i></span>';
+                        }
+                        if (m.hasOwnProperty('google')) {
+                            str += '<span class="mr-1"><i class="fab fa-google"></i></span>';
+                        }
+                        if (m.hasOwnProperty('github')) {
+                            str += '<span class="mr-1"><i class="fab fa-github"></i></span>';
+                        }
+                        if (m.hasOwnProperty('patreon')) {
+                            str += '<span class="mr-1"><i class="fab fa-patreon"></i></span>';
+                        }
+                        if (m.hasOwnProperty('twitter')) {
+                            str += '<span class="mr-1"><i class="fab fa-twitter"></i></span>';
+                        }
+                        return str;
                     }
                     return '';
                 },
