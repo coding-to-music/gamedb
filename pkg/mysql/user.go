@@ -1,9 +1,7 @@
 package mysql
 
 import (
-	"errors"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/Jleagle/steam-go/steamapi"
@@ -15,6 +13,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/oauth"
 	influx "github.com/influxdata/influxdb1-client"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -86,18 +85,49 @@ func (user *User) SetAPIKey() {
 	user.APIKey = helpers.RandString(20, helpers.Numbers+helpers.LettersCaps)
 }
 
-func (user User) Save() error {
+func (user User) TouchLoggedInTime() error {
 
 	db, err := GetMySQLClient()
 	if err != nil {
 		return err
 	}
 
-	db = db.Save(&user)
-	return db.Error
+	update := map[string]interface{}{
+		"logged_in_at": time.Now(),
+	}
+
+	return db.Model(&user).Updates(update).Error
 }
 
-func NewUser(email, password string, prodCC steamapi.ProductCC, verified bool, r *http.Request) (user User, err error) {
+func (user User) SetPassword(b []byte) error {
+
+	db, err := GetMySQLClient()
+	if err != nil {
+		return err
+	}
+
+	update := map[string]interface{}{
+		"password": string(b),
+	}
+
+	return db.Model(&user).Updates(update).Error
+}
+
+func (user User) SetProdCC(cc steamapi.ProductCC) error {
+
+	db, err := GetMySQLClient()
+	if err != nil {
+		return err
+	}
+
+	update := map[string]interface{}{
+		"country_code": cc,
+	}
+
+	return db.Model(&user).Updates(update).Error
+}
+
+func NewUser(r *http.Request, email, password string, prodCC steamapi.ProductCC, verified bool) (user User, err error) {
 
 	db, err := GetMySQLClient()
 	if err != nil {
@@ -130,27 +160,7 @@ func NewUser(email, password string, prodCC steamapi.ProductCC, verified bool, r
 	}
 
 	if !verified {
-
-		// Create verification code
-		code, err := CreateUserVerification(user.ID)
-		if err != nil {
-			return user, err
-		}
-
-		// Send email
-		body := "Please click the below link to verify your email address<br />" +
-			config.C.GameDBDomain + "/signup/verify?code=" + code.Code +
-			"<br><br>Thanks, Jleagle." +
-			"<br><br>From IP: " + geo.GetFirstIP(r.RemoteAddr)
-
-		err = email_providers.GetSender().Send(
-			email,
-			email,
-			"",
-			"",
-			"Game DB Email Verification",
-			body,
-		)
+		err = SendUserVerification(r, user.ID, email)
 		if err != nil {
 			return user, err
 		}
@@ -186,23 +196,45 @@ func NewUser(email, password string, prodCC steamapi.ProductCC, verified bool, r
 	return user, nil
 }
 
-func UpdateUserCol(userID int, column string, value interface{}) (err error) {
+func SendUserVerification(r *http.Request, userID int, email string) error {
 
-	if userID == 0 {
-		return errors.New("invalid user id: " + strconv.Itoa(userID))
+	// Create verification code
+	code, err := CreateUserVerification(userID)
+	if err != nil {
+		return err
 	}
+
+	// Send email
+	body := "Please click the below link to verify your email address<br />" +
+		config.C.GameDBDomain + "/signup/verify?code=" + code.Code +
+		"<br><br>Thanks, Jleagle." +
+		"<br><br>From IP: " + geo.GetFirstIP(r.RemoteAddr)
+
+	return email_providers.GetSender().Send(
+		email,
+		email,
+		"",
+		"",
+		"Game DB Email Verification",
+		body,
+	)
+}
+
+func VerifyUser(userID int) error {
 
 	db, err := GetMySQLClient()
 	if err != nil {
 		return err
 	}
 
-	var user = User{ID: userID}
+	update := map[string]interface{}{
+		"email_verified": true,
+	}
 
-	db = db.Model(&user).Updates(map[string]interface{}{
-		column: value,
-	})
-	return db.Error
+	user := User{}
+	user.ID = userID
+
+	return db.Model(&user).Updates(update).Error
 }
 
 func GetUserByID(id int) (user User, err error) {
@@ -227,7 +259,7 @@ func GetUserByEmail(email string) (user User, err error) {
 	return user, db.Error
 }
 
-func GetUserByKey(key string, value interface{}, excludeUserID int) (user User, err error) {
+func GetUserByKeyx(key string, value interface{}) (user User, err error) {
 
 	db, err := GetMySQLClient()
 	if err != nil {
@@ -235,24 +267,9 @@ func GetUserByKey(key string, value interface{}, excludeUserID int) (user User, 
 	}
 
 	db = db.Where(key+" = ?", value)
-	if excludeUserID > 0 {
-		db = db.Where("id != ?", excludeUserID)
-	}
 	db = db.First(&user)
 
 	return user, db.Error
-}
-
-func DeleteUser(id int64) (err error) {
-
-	db, err := GetMySQLClient()
-	if err != nil {
-		return err
-	}
-
-	db = db.Where("player_id = ?", id).Delete(&User{})
-
-	return db.Error
 }
 
 func GetUserByAPIKey(key string) (user User, err error) {
@@ -261,8 +278,26 @@ func GetUserByAPIKey(key string) (user User, err error) {
 
 	err = memcache.GetSetInterface(item.Key, item.Expiration, &user, func() (interface{}, error) {
 
-		return GetUserByKey("api_key", key, 0)
+		db, err := GetMySQLClient()
+		if err != nil {
+			return user, err
+		}
+
+		db = db.Where("api_key = ?", key)
+		db = db.First(&user)
+
+		return user, db.Error
 	})
 
 	return user, err
+}
+
+func GetUserByProviderID(provider oauth.ProviderEnum, providerID string) (user User, err error) {
+
+	userProvider, err := GetUserProviderByProviderID(provider, providerID)
+	if err != nil {
+		return user, err
+	}
+
+	return GetUserByID(userProvider.UserID)
 }

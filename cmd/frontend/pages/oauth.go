@@ -298,7 +298,7 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 		if err == mysql.ErrRecordNotFound {
 
 			// Create new user
-			user, err = mysql.NewUser(resp.Email, "", session.GetProductCC(r), true, r)
+			user, err = mysql.NewUser(r, resp.Email, "", session.GetProductCC(r), true)
 			if err != nil {
 				log.ErrS(err)
 				session.SetFlash(r, session.SessionBad, "Account could not be created (1103)")
@@ -314,14 +314,7 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 	} else if provider.GetType() == oauth.TypeOpenID {
 
 		// Look for existing user by email
-		i, err := strconv.Atoi(resp.ID)
-		if err != nil {
-			log.Err(err.Error(), zap.String("id", resp.ID))
-			session.SetFlash(r, session.SessionBad, "We were unable to fetch your details from "+provider.GetName()+" (1105)")
-			return
-		}
-
-		userProvider, err := mysql.GetUserProviderByProviderID(provider.GetEnum(), i)
+		userProvider, err := mysql.GetUserProviderByProviderID(provider.GetEnum(), resp.ID)
 		if err != nil {
 			err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
 			log.ErrS(err)

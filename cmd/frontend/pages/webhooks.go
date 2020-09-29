@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/Jleagle/patreon-go/patreon"
@@ -17,6 +18,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
+	"github.com/gamedb/gamedb/pkg/oauth"
 	"github.com/go-chi/chi"
 	"github.com/nlopes/slack"
 	"go.mongodb.org/mongo-driver/bson"
@@ -228,7 +230,7 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 
 		} else if err == nil {
 
-			user, err := mysql.GetUserByKey("steam_id", player.ID, 0)
+			user, err := mysql.GetUserByProviderID(oauth.ProviderSteam, strconv.FormatInt(player.ID, 10))
 			if err != nil && err != mysql.ErrRecordNotFound {
 				log.Err(err.Error(), zap.ByteString("webhook", b))
 				http.Error(w, err.Error(), http.StatusInternalServerError)

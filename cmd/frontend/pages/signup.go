@@ -107,7 +107,7 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Check user doesnt exist
-		_, err = mysql.GetUserByKey("email", email, 0)
+		_, err = mysql.GetUserByEmail(email)
 		if err == nil {
 			return "An account with this email already exists", false
 		}
@@ -118,7 +118,7 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Create user
-		_, err = mysql.NewUser(email, password, session.GetProductCC(r), false, r)
+		_, err = mysql.NewUser(r, email, password, session.GetProductCC(r), false)
 		if err != nil {
 			log.ErrS(err)
 			return "An error occurred (1002)", false
@@ -170,7 +170,7 @@ func verifyHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Enable user
-		err = mysql.UpdateUserCol(userID, "email_verified", true)
+		err = mysql.VerifyUser(userID)
 		if err != nil {
 			log.ErrS(err)
 			return "Invalid code (1003)", false

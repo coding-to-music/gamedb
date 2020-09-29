@@ -12,21 +12,20 @@ import (
 
 func CurrencyHandler(w http.ResponseWriter, r *http.Request) {
 
-	id := chi.URLParam(r, "id")
+	id := steamapi.ProductCC(chi.URLParam(r, "id"))
 	if id == "" {
-		id = string(steamapi.ProductCCUS)
+		id = steamapi.ProductCCUS
 	}
 
-	if i18n.IsValidProdCC(steamapi.ProductCC(id)) {
+	if i18n.IsValidProdCC(id) {
 
 		// Set to session
-		session.Set(r, session.SessionUserProdCC, id)
+		session.Set(r, session.SessionUserProdCC, string(id))
 
 		// Set to user row
 		user, err := getUserFromSession(r)
 		if err == nil {
-			user.ProductCC = steamapi.ProductCC(id)
-			err = user.Save()
+			err = user.SetProdCC(id)
 			if err != nil {
 				log.ErrS(err)
 			}

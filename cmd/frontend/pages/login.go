@@ -97,7 +97,7 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Find user
-		user, err := mysql.GetUserByKey("email", email, 0)
+		user, err := mysql.GetUserByEmail(email)
 		if err != nil {
 			err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
 			if err != nil {
@@ -183,7 +183,7 @@ func login(r *http.Request, user mysql.User) (string, bool) {
 		log.ErrS(err)
 	}
 
-	err = mysql.UpdateUserCol(user.ID, "logged_in_at", time.Now())
+	err = user.TouchLoggedInTime()
 	if err != nil {
 		log.ErrS(err)
 	}

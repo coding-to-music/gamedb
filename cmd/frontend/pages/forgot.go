@@ -86,7 +86,7 @@ func forgotPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Find user
-		user, err := mysql.GetUserByKey("email", email, 0)
+		user, err := mysql.GetUserByEmail(email)
 		if err == mysql.ErrRecordNotFound {
 			return "Email sent", true
 		} else if err != nil {
@@ -208,7 +208,7 @@ func forgotResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Set password
-		err = mysql.UpdateUserCol(userID, "password", string(passwordBytes))
+		err = user.SetPassword(passwordBytes)
 		if err != nil {
 			log.ErrS(err)
 			return "An error occurred (1004)", false

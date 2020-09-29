@@ -21,6 +21,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
+	"github.com/gamedb/gamedb/pkg/oauth"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/rabbitweb"
 	"github.com/go-chi/chi"
@@ -267,7 +268,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		user, err = mysql.GetUserByKey("steam_id", player.ID, 0)
+		user, err = mysql.GetUserByProviderID(oauth.ProviderSteam, strconv.FormatInt(player.ID, 10))
 		err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
 		if err != nil {
 			log.ErrS(err)

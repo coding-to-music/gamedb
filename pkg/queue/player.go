@@ -17,6 +17,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
+	"github.com/gamedb/gamedb/pkg/oauth"
 	"github.com/gamedb/gamedb/pkg/steam"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	influx "github.com/influxdata/influxdb1-client"
@@ -253,7 +254,7 @@ func playerHandler(message *rabbit.Message) {
 
 		defer wg.Done()
 
-		user, err := mysql.GetUserByKey("steam_id", player.ID, 0)
+		user, err := mysql.GetUserByProviderID(oauth.ProviderSteam, strconv.FormatInt(player.ID, 10))
 		if err == mysql.ErrRecordNotFound {
 			return
 		}

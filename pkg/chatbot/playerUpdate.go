@@ -12,6 +12,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
+	"github.com/gamedb/gamedb/pkg/oauth"
 	"github.com/gamedb/gamedb/pkg/queue"
 )
 
@@ -52,7 +53,7 @@ func (c CommandPlayerUpdate) Output(msg *discordgo.MessageCreate, _ steamapi.Pro
 
 	if matches[1] == "" {
 
-		user, err := mysql.GetUserByKey("discord_id", msg.Author.ID, 0)
+		user, err := mysql.GetUserByProviderID(oauth.ProviderDiscord, msg.Author.ID)
 		if err == mysql.ErrRecordNotFound {
 			message.Content = "You need to link your **Discord** account for us to know who you are: " + config.C.GameDBDomain + "/settings"
 			return message, nil
