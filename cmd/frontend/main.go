@@ -2,6 +2,7 @@ package main
 
 import (
 	"compress/flate"
+	"errors"
 	"net/http"
 	_ "net/http/pprof"
 	"net/url"
@@ -41,6 +42,11 @@ func main() {
 	defer log.Flush()
 	if err != nil {
 		log.ErrS(err)
+		return
+	}
+
+	if config.C.MailjetPublic == "" || config.C.MailjetPrivate == "" {
+		log.ErrS(errors.New("missing mailjet environment variables"))
 		return
 	}
 
