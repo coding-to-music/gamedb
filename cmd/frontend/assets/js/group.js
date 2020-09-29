@@ -21,7 +21,7 @@ if ($groupPage.length > 0) {
     function loadGroupPlayers() {
 
         const options = {
-            "order": [[1, 'desc']],
+            "order": [[2, 'desc']],
             "createdRow": function (row, data, dataIndex) {
                 $(row).attr('data-link', data[3]);
                 $(row).attr('data-app-id', data[0]);
