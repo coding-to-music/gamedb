@@ -4,7 +4,7 @@
 
 Game DB is split into processes. They are found in the ./cmd folder. To run a process, you can use the helper script:
 
-`./run frontend` `./run backend`
+`./run frontend`, `./run backend` etc
 
 You will need to run `npm install` to install dependencies first.
 
