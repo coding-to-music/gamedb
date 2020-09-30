@@ -784,6 +784,59 @@ if ($appPage.length > 0) {
 
     function loadAchievements() {
 
+        $.ajax({
+            type: "GET",
+            url: '/games/' + $appPage.attr('data-id') + '/achievement-counts.json',
+            dataType: 'json',
+            success: function (data, textStatus, jqXHR) {
+
+                if (data === null) {
+                    data = {};
+                }
+                if (!data.hasOwnProperty('data')) {
+                    data.data = [];
+                }
+
+                let plotlines = [{
+                    value: data.marker,
+                    color: 'red',
+                    width: 1,
+                    zIndex: 3,
+                    label: {
+                        formatter: function () {
+                            return 'You are here!';
+                        }
+                    }
+                }];
+
+                Highcharts.chart('achievement-counts-chart', $.extend(true, {}, defaultChartOptions, {
+                    legend: {
+                        enabled: false,
+                    },
+                    yAxis: {
+                        type: 'logarithmic',
+                        allowDecimals: false,
+                        title: {
+                            text: ''
+                        },
+                    },
+                    xAxis: {
+                        type: 'category',
+                        plotLines: plotlines,
+                    },
+                    tooltip: {
+                        formatter: function () {
+                            return  this.y.toLocaleString()+ ' players have ' + this.x.toLocaleString() + ' achievements';
+                        },
+                    },
+                    series: [{
+                        data: data.data,
+                    }],
+
+                }));
+            },
+        });
+
         const options = {
             "pageLength": 100,
             "order": [[1, 'desc']],

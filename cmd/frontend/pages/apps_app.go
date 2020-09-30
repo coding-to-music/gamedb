@@ -45,6 +45,7 @@ func appRouter() http.Handler {
 	r.Get("/items.json", appItemsAjaxHandler)
 	r.Get("/reviews.json", appReviewsAjaxHandler)
 	r.Get("/time.json", appTimeAjaxHandler)
+	r.Get("/achievement-counts.json", appAchievementCountsAjaxHandler)
 	r.Get("/achievements.json", appAchievementsAjaxHandler)
 	r.Get("/dlc.json", appDLCAjaxHandler)
 	r.Get("/wishlist.json", appWishlistAjaxHandler)
@@ -636,6 +637,40 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 func appPricesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	productPricesAjaxHandler(w, r, helpers.ProductTypeApp)
+}
+
+func appAchievementCountsAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		return
+	}
+
+	counts, err := mongo.GetAchievmentCounts(id)
+	if err != nil {
+		log.ErrS(err)
+		return
+	}
+
+	var marker int
+	playerID := session.GetPlayerIDFromSesion(r)
+	if playerID > 0 {
+		playerApp, err := mongo.GetPlayerAppByKey(playerID, id)
+		if err != nil {
+			log.ErrS(err)
+		}
+		marker = playerApp.AppAchievementsHave
+	}
+
+	var ret [][]int
+	for _, v := range counts {
+		ret = append(ret, []int{v.ID, v.Count})
+	}
+
+	returnJSON(w, r, map[string]interface{}{
+		"data":   ret,
+		"marker": marker,
+	})
 }
 
 func appAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {

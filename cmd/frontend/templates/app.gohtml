@@ -691,6 +691,16 @@
                             </div>
                         </div>
 
+                        <div class="card mb-4">
+                            <div class="card-header">Achievement Distribution</div>
+                            <div class="card-body">
+                                <div id="achievement-counts-chart">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                </div>
+                            </div>
+                            <small class="card-footer">Data from Game DB players who own the game</small>
+                        </div>
+
                         <div class="table-responsive">
                             <table class="table table-hover table-striped table-counts mb-0" data-path="/games/{{ .App.ID }}/achievements.json" data-row-type="players" id="achievements-table">
                                 <thead class="thead-light">

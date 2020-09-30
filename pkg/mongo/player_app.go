@@ -2,6 +2,7 @@ package mongo
 
 import (
 	"math"
+	"sort"
 	"strconv"
 
 	"github.com/Jleagle/steam-go/steamapi"
@@ -9,6 +10,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/memcache"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -125,6 +127,51 @@ func ensurePlayerAppIndexes() {
 	if err != nil {
 		log.ErrS(err)
 	}
+}
+
+func GetAchievmentCounts(appID int) (counts []Count, err error) {
+
+	var item = memcache.MemcacheAppAchievementsCounts(appID)
+
+	err = memcache.GetSetInterface(item.Key, item.Expiration, &counts, func() (interface{}, error) {
+
+		client, ctx, err := getMongo()
+		if err != nil {
+			return counts, err
+		}
+
+		pipeline := mongo.Pipeline{
+			{{Key: "$match", Value: bson.M{"app_id": appID}}},
+			{{Key: "$match", Value: bson.M{"app_achievements_have": bson.M{"$type": "int"}}}},
+			{{Key: "$group", Value: bson.M{"_id": "$app_achievements_have", "count": bson.M{"$sum": 1}}}},
+		}
+
+		cur, err := client.Database(config.C.MongoDatabase, options.Database()).Collection(CollectionPlayerApps.String()).Aggregate(ctx, pipeline, options.Aggregate())
+		if err != nil {
+			return counts, err
+		}
+
+		defer close(cur, ctx)
+
+		var counts []Count
+		for cur.Next(ctx) {
+
+			var count Count
+			err := cur.Decode(&count)
+			if err != nil {
+				log.ErrS(err, count.ID)
+			}
+			counts = append(counts, count)
+		}
+
+		sort.Slice(counts, func(i, j int) bool {
+			return counts[i].ID < counts[j].ID
+		})
+
+		return counts, cur.Err()
+	})
+
+	return counts, err
 }
 
 func GetPlayerAppsByApp(offset int64, filter bson.D) (apps []PlayerApp, err error) {

@@ -18,16 +18,17 @@ type Item struct {
 
 var (
 	// App
-	MemcacheAppReleaseDateCounts = Item{Key: "app-release-date-counts", Expiration: 60 * 60 * 24}
-	MemcacheAppReviewScoreCounts = Item{Key: "app-review-score-counts", Expiration: 60 * 60 * 24 * 2}
-	MemcacheApp                  = func(changeID int) Item { return Item{Key: "app-" + strconv.Itoa(changeID), Expiration: 0} }
-	MemcacheAppTypeCounts        = func(cc steamapi.ProductCC) Item { return Item{Key: "app-type-counts-" + string(cc), Expiration: 86400 * 7} }
-	MemcacheAppStats             = func(typex string, appID int) Item { return Item{Key: "app-stats-" + typex + "-" + strconv.Itoa(appID), Expiration: 0} }
-	MemcacheAppDemos             = func(appID int) Item { return Item{Key: "app-demos-" + strconv.Itoa(appID), Expiration: 0} }
-	MemcacheAppRelated           = func(appID int) Item { return Item{Key: "app-related-" + strconv.Itoa(appID), Expiration: 0} }
-	MemcacheAppBundles           = func(appID int) Item { return Item{Key: "app-bundles-" + strconv.Itoa(appID), Expiration: 0} }
-	MemcacheAppPackages          = func(appID int) Item { return Item{Key: "app-packages-" + strconv.Itoa(appID), Expiration: 0} }
-	MemcacheAppNoAchievements    = func(appID int) Item { return Item{Key: "app-no-stats-" + strconv.Itoa(appID), Expiration: 60 * 60, Value: "1"} }
+	MemcacheAppReleaseDateCounts  = Item{Key: "app-release-date-counts", Expiration: 60 * 60 * 24}
+	MemcacheAppReviewScoreCounts  = Item{Key: "app-review-score-counts", Expiration: 60 * 60 * 24 * 2}
+	MemcacheApp                   = func(changeID int) Item { return Item{Key: "app-" + strconv.Itoa(changeID), Expiration: 0} }
+	MemcacheAppTypeCounts         = func(cc steamapi.ProductCC) Item { return Item{Key: "app-type-counts-" + string(cc), Expiration: 86400 * 7} }
+	MemcacheAppStats              = func(typex string, appID int) Item { return Item{Key: "app-stats-" + typex + "-" + strconv.Itoa(appID), Expiration: 0} }
+	MemcacheAppDemos              = func(appID int) Item { return Item{Key: "app-demos-" + strconv.Itoa(appID), Expiration: 0} }
+	MemcacheAppRelated            = func(appID int) Item { return Item{Key: "app-related-" + strconv.Itoa(appID), Expiration: 0} }
+	MemcacheAppBundles            = func(appID int) Item { return Item{Key: "app-bundles-" + strconv.Itoa(appID), Expiration: 0} }
+	MemcacheAppPackages           = func(appID int) Item { return Item{Key: "app-packages-" + strconv.Itoa(appID), Expiration: 0} }
+	MemcacheAppNoAchievements     = func(appID int) Item { return Item{Key: "app-no-stats-" + strconv.Itoa(appID), Expiration: 60 * 60, Value: "1"} }
+	MemcacheAppAchievementsCounts = func(appID int) Item { return Item{Key: "app-ach-counts-" + strconv.Itoa(appID), Expiration: 60 * 60 * 24 * 2} }
 
 	MemcachePopularApps    = Item{Key: "popular-apps", Expiration: 60 * 3}
 	MemcachePopularNewApps = Item{Key: "popular-new-apps", Expiration: 60}
