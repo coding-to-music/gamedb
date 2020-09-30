@@ -26,7 +26,7 @@ func appsPlayersHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err("decode failed", zap.Error(err), zap.ByteString("message", message.Message.Body))
 		sendToFailQueue(message)
 		return
 	}
@@ -37,7 +37,7 @@ func appsPlayersHandler(message *rabbit.Message) {
 
 		mongoPlayer, err = mongo.GetPlayer(payload.PlayerID)
 		if err != nil {
-			log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
+			log.Err("retrieve player", zap.Error(err), zap.ByteString("message", message.Message.Body))
 			sendToRetryQueue(message)
 			return
 		}
@@ -78,7 +78,7 @@ func appsPlayersHandler(message *rabbit.Message) {
 
 	aliases, err := mongo.GetPlayerAliases(mongoPlayer.ID, 5, sixMonthsAgo)
 	if err != nil {
-		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err("retrieve aliases", zap.Error(err), zap.ByteString("message", message.Message.Body))
 		sendToFailQueue(message)
 		return
 	}
