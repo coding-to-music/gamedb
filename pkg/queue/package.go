@@ -2,6 +2,7 @@ package queue
 
 import (
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -21,6 +22,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/steam"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/gocolly/colly/v2"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.uber.org/zap"
 )
 
@@ -265,18 +267,23 @@ func packageHandler(message *rabbit.Message) {
 }
 func updatePackageNameFromApp(pack *mongo.Package) (err error) {
 
-	if len(pack.Apps) == 1 {
+	apps, err := mongo.GetAppsByID(pack.Apps, bson.M{"_id": 1, "player_peak_alltime": 1})
+	if err != nil {
+		return err
+	}
 
-		app, err := mongo.GetApp(pack.Apps[0])
-		if err == nil && app.Name != "" && (pack.Name == "" || pack.Name == "Package "+strconv.Itoa(pack.ID) || pack.Name == strconv.Itoa(pack.ID)) {
+	sort.Slice(apps, func(i, j int) bool {
+		return apps[i].PlayerPeakAllTime > apps[j].PlayerPeakAllTime
+	})
 
-			pack.SetName(app.GetName(), false)
-			pack.Icon = app.GetIcon()
-
-		} else if err == mongo.ErrNoDocuments {
-			return nil
-		} else {
-			return err
+	if pack.Name == "" || pack.Name == "Package "+strconv.Itoa(pack.ID) || pack.Name == strconv.Itoa(pack.ID) {
+		for _, app := range apps {
+			if app.Name != "" {
+				pack.SetName(app.GetName(), false)
+				pack.Icon = app.GetIcon()
+				pack.ImageLogo = app.GetHeaderImage()
+				break
+			}
 		}
 	}
 
