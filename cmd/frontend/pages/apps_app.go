@@ -659,8 +659,9 @@ func appAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
+		// Can't sort by earned time, as it's from a different table
 		var sortOrder = query.GetOrderMongo(map[string]string{
-			"1": "completed",
+			"2": "completed",
 		})
 
 		var err error
