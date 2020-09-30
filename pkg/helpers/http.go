@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"bytes"
+	"errors"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -46,6 +47,8 @@ func Post(link string, data url.Values, headers http.Header) (b []byte, code int
 	return requestWithTimeout("POST", link, 0, headers, data)
 }
 
+var ErrNon200 = errors.New("server responded with error")
+
 func requestWithTimeout(method string, link string, timeout time.Duration, headers http.Header, data url.Values) (body []byte, code int, err error) {
 
 	if link == "" {
@@ -89,6 +92,10 @@ func requestWithTimeout(method string, link string, timeout time.Duration, heade
 	}
 
 	defer Close(resp.Body)
+
+	if resp.StatusCode != 200 {
+		return nil, resp.StatusCode, ErrNon200
+	}
 
 	body, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
