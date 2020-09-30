@@ -102,7 +102,7 @@ func upcomingAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			app.GetPath(),                   // 3
 			app.GetType(),                   // 4
 			"",                              // 5
-			app.GetReleaseDateNice(),        // 6
+			app.GetReleaseDateNiceRounded(), // 6
 			app.GetFollowers(),              // 7
 			helpers.GetAppStoreLink(app.ID), // 8
 			app.ReleaseDate,                 // 9

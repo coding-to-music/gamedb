@@ -3,6 +3,7 @@ package elasticsearch
 import (
 	"encoding/json"
 	"strconv"
+	"time"
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -60,7 +61,11 @@ func (app App) GetType() string {
 }
 
 func (app App) GetReleaseDateNice() string {
-	return helpers.GetAppReleaseDateNice(0, app.ReleaseDate, "")
+	return time.Unix(app.ReleaseDate, 0).Format(helpers.DateYear) // No need to use helper
+}
+
+func (app App) GetReleaseDateNiceRounded() string {
+	return time.Unix(app.ReleaseDateRounded, 0).Format(helpers.DateYear) // No need to use helper
 }
 
 func (app App) GetFollowers() string {
