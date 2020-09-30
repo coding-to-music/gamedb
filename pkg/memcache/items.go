@@ -60,6 +60,7 @@ var (
 
 	// Home
 	HomeTweets          = Item{Key: "home-tweets", Expiration: 60 * 60 * 24 * 7}
+	HomeTopSellers      = Item{Key: "home-top-sellers", Expiration: 60 * 60 * 6}
 	MemcacheHomePlayers = func(sort string) Item { return Item{Key: "home-players-" + sort, Expiration: 60 * 60 * 48} }
 
 	// Queue

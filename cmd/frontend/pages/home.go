@@ -1,9 +1,11 @@
 package pages
 
 import (
+	"encoding/xml"
 	"fmt"
 	"html/template"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 	"sync"
@@ -22,6 +24,7 @@ import (
 	"github.com/mborgerson/GoTruncateHtml/truncatehtml"
 	"github.com/microcosm-cc/bluemonday"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 func HomeRouter() http.Handler {
@@ -33,6 +36,11 @@ func HomeRouter() http.Handler {
 	r.Get("/news.html", homeNewsHandler)
 	return r
 }
+
+var (
+	regexpAppID = regexp.MustCompile(`/app/([0-9]+)/`)
+	regexpSubID = regexp.MustCompile(`/sub/([0-9]+)/`)
+)
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
@@ -77,6 +85,90 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
+	// Top games
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var topSellers []homeTopSellerTemplate
+
+		callback := func() (interface{}, error) {
+
+			b, _, err := helpers.Get("https://store.steampowered.com/feeds/weeklytopsellers.xml", 0, nil)
+			if err != nil {
+				return b, err
+			}
+
+			vdf := RDF{}
+			err = xml.Unmarshal(b, &vdf)
+			if err != nil {
+				return b, err
+			}
+
+			for _, v := range vdf.Channel.Seq.Li {
+
+				matches := regexpAppID.FindStringSubmatch(v.Resource)
+				if len(matches) == 2 {
+					i, err := strconv.Atoi(matches[1])
+					if err == nil {
+
+						app, err := mongo.GetApp(i)
+						if err != nil {
+							log.ErrS(err, zap.Int("app", i))
+							continue
+						}
+
+						topSellers = append(topSellers, homeTopSellerTemplate{
+							ID:    app.ID,
+							Path:  app.GetPath(),
+							Name:  app.GetName(),
+							Image: app.GetHeaderImage(),
+						})
+					}
+				}
+
+				matches = regexpSubID.FindStringSubmatch(v.Resource)
+				if len(matches) == 2 {
+					i, err := strconv.Atoi(matches[1])
+					if err == nil {
+
+						sub, err := mongo.GetPackage(i)
+						if err != nil {
+							log.ErrS(err, zap.Int("sub", i))
+							continue
+						}
+
+						// Force absolute for images.weserv.nl
+						// Not using domain from config to make local work
+						image := sub.GetIcon()
+						if strings.HasPrefix(image, "/") {
+							image = "http://gamedb.online" + image
+						}
+
+						topSellers = append(topSellers, homeTopSellerTemplate{
+							ID:    sub.ID,
+							Path:  sub.GetPath(),
+							Name:  sub.GetName(),
+							Image: image,
+						})
+					}
+				}
+			}
+
+			return topSellers, nil
+		}
+
+		item := memcache.HomeTopSellers
+		err := memcache.GetSetInterface(item.Key, item.Expiration, &topSellers, callback)
+		if err != nil {
+			log.ErrS(err)
+			return
+		}
+
+		t.TopSellers = topSellers
+	}()
+
 	wg.Wait()
 
 	//
@@ -85,9 +177,28 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 type homeTemplate struct {
 	globalTemplate
-	TopGames []mongo.App
-	NewGames []mongo.App
-	Players  []mongo.Player
+	TopGames   []mongo.App
+	NewGames   []mongo.App
+	Players    []mongo.Player
+	TopSellers []homeTopSellerTemplate
+}
+
+type homeTopSellerTemplate struct {
+	ID    int
+	Path  string
+	Name  string
+	Image string
+}
+
+type RDF struct {
+	Channel struct {
+		Seq struct {
+			Text string `xml:",chardata"`
+			Li   []struct {
+				Resource string `xml:"resource,attr"`
+			} `xml:"li"`
+		} `xml:"Seq"`
+	} `xml:"channel"`
 }
 
 var htmlPolicy = bluemonday.
@@ -390,7 +501,7 @@ func getPlayersForHome(sort string) (players []mongo.Player, err error) {
 			"comments_count": 1,
 		}
 
-		return mongo.GetPlayers(0, 12, bson.D{{Key: sort, Value: -1}}, bson.D{{Key: sort, Value: bson.M{"$gt": 0}}}, projection)
+		return mongo.GetPlayers(0, 10, bson.D{{Key: sort, Value: -1}}, bson.D{{Key: sort, Value: bson.M{"$gt": 0}}}, projection)
 	})
 
 	return players, err
