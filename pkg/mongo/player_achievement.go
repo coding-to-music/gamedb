@@ -75,8 +75,8 @@ func ensurePlayerAchievementIndexes() {
 		{Keys: bson.D{
 			{"player_id", 1},
 			{"app_id", 1},
-			{"achievement_date", -1}},
-		},
+			{"achievement_date", -1},
+		}},
 		// GetPlayerAchievementsForApp
 		// {Keys: bson.D{
 		// 	{"player_id", 1},
