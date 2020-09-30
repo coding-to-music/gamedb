@@ -13,12 +13,14 @@ import (
 	"github.com/gosimple/slug"
 )
 
-type ProductType string
+type ProductType int
 
 const (
-	ProductTypeApp     ProductType = "product"
-	ProductTypePackage ProductType = "package"
+	ProductTypeApp ProductType = iota
+	ProductTypePackage
+)
 
+const(
 	AppIconBase    = "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/" // Also the base for achievements
 	DefaultAppIcon = "/assets/img/no-app-image-square.jpg"
 )
