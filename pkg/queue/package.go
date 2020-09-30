@@ -492,15 +492,17 @@ func updatePackageFromStore(pack *mongo.Package) (err error) {
 
 				defer wg.Done()
 
+				pack.ImageLogo = ""
+
 				code, err := helpers.Head(response.Data.SmallLogo, 0)
-				if err != nil {
-					log.ErrS(err)
+				if err == helpers.ErrNon200 {
+					return
+				} else if err != nil {
+					log.Err("failed image check", zap.Error(err), zap.String("url", response.Data.PageImage), zap.Int("code", code))
 					return
 				}
-				pack.ImageLogo = ""
-				if code == 200 {
-					pack.ImageLogo = response.Data.SmallLogo
-				}
+
+				pack.ImageLogo = response.Data.SmallLogo
 			}()
 
 			wg.Add(1)
@@ -508,15 +510,17 @@ func updatePackageFromStore(pack *mongo.Package) (err error) {
 
 				defer wg.Done()
 
+				pack.ImagePage = ""
+
 				code, err := helpers.Head(response.Data.PageImage, 0)
-				if err != nil {
-					log.ErrS(err)
+				if err == helpers.ErrNon200 {
+					return
+				} else if err != nil {
+					log.Err("failed image check", zap.Error(err), zap.String("url", response.Data.PageImage), zap.Int("code", code))
 					return
 				}
-				pack.ImagePage = ""
-				if code == 200 {
-					pack.ImagePage = response.Data.PageImage
-				}
+
+				pack.ImagePage = response.Data.PageImage
 			}()
 
 			wg.Wait()
