@@ -838,7 +838,7 @@ if ($appPage.length > 0) {
         });
 
         const options = {
-            "pageLength": 100,
+            "pageLength": 1000,
             "order": [[2, 'desc']],
             "columnDefs": [
                 // Name

@@ -700,7 +700,7 @@ func appAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		})
 
 		var err error
-		achievements, err = mongo.GetAppAchievements(query.GetOffset64(), 100, filter, sortOrder)
+		achievements, err = mongo.GetAppAchievements(query.GetOffset64(), 1000, filter, sortOrder)
 		if err != nil {
 			log.ErrS(err)
 			return
