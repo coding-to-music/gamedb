@@ -15,7 +15,7 @@ type battlenetProvider struct {
 }
 
 func (c battlenetProvider) GetName() string {
-	return "Battle.net US"
+	return "Battle.net (US)"
 }
 
 func (c battlenetProvider) GetIcon() string {
