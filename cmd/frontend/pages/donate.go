@@ -24,7 +24,7 @@ func donateHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := donateTemplate{}
 	t.fill(w, r, "Support the Game DB open source project", "Databases take up a tonne of resources. Help pay for the server costs or just buy me a beer 🍻")
-	t.Pages = map[int]int{
+	t.Pages = map[mysql.UserLevel]int{
 		mysql.UserLevel0: mysql.UserLevelLimit0,
 		mysql.UserLevel1: mysql.UserLevelLimit1,
 		mysql.UserLevel2: mysql.UserLevelLimit2,
@@ -37,7 +37,7 @@ func donateHandler(w http.ResponseWriter, r *http.Request) {
 
 type donateTemplate struct {
 	globalTemplate
-	Pages map[int]int
+	Pages map[mysql.UserLevel]int
 }
 
 func topDonateHandler(w http.ResponseWriter, r *http.Request) {

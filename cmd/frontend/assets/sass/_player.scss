@@ -6,7 +6,7 @@
             margin-bottom: 0;
         }
 
-        .ch-days{
+        .ch-days {
             margin-bottom: 0;
         }
 
@@ -39,6 +39,11 @@
     }
 
     #details {
+
+        #patreon {
+            width: 100%;
+            @extend .mb-2;
+        }
 
         #links {
             img {

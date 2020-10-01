@@ -18,12 +18,14 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+type UserLevel int
+
 const (
-	UserLevel0 = 0 // Guest
-	UserLevel1 = 1 // Free
-	UserLevel2 = 2 // Level 1
-	UserLevel3 = 3 // Level 2
-	UserLevel4 = 4 // Level 3
+	UserLevel0 UserLevel = iota // Guest
+	UserLevel1                  // Free
+	UserLevel2                  // Level 1
+	UserLevel3                  // Level 2
+	UserLevel4                  // Level 3
 
 	// Pages
 	UserLevelLimit0 = 5   // Guest
@@ -32,8 +34,6 @@ const (
 	UserLevelLimit3 = 100 // Level 2
 	UserLevelLimit4 = 0   // Level 3
 )
-
-type UserLevel int
 
 func (ul UserLevel) MaxResults(limit int64) int64 {
 
@@ -68,7 +68,7 @@ type User struct {
 	Email         string             `gorm:"not null;column:email;unique_index"`
 	EmailVerified bool               `gorm:"not null;column:email_verified"`
 	Password      string             `gorm:"not null;column:password"`
-	Level         int8               `gorm:"not null;column:level"` // Patreon
+	Level         UserLevel          `gorm:"not null;column:level"`
 	ProductCC     steamapi.ProductCC `gorm:"not null;column:country_code"`
 	APIKey        string             `gorm:"not null;column:api_key"`
 }

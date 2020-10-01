@@ -29,6 +29,7 @@ import (
 	"github.com/gosimple/slug"
 	"github.com/tdewolff/minify/v2"
 	minhtml "github.com/tdewolff/minify/v2/html"
+	"go.uber.org/zap"
 )
 
 func setHeaders(w http.ResponseWriter, contentType string) {
@@ -272,7 +273,7 @@ type globalTemplate struct {
 	UserID        int
 	UserName      string
 	UserProductCC i18n.ProductCountryCode
-	userLevel     int // Donation level of logged in user
+	userLevel     mysql.UserLevel // Donation level of logged in user
 
 	PlayerID   int64
 	PlayerName string
@@ -318,9 +319,11 @@ func (t *globalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 
 	userLevel := session.Get(r, session.SessionUserLevel)
 	if userLevel != "" {
-		t.userLevel, err = strconv.Atoi(userLevel)
+		userLevelInt, err := strconv.Atoi(userLevel)
 		if err != nil {
-			log.ErrS(err)
+			log.Err("aoti", zap.Error(err), zap.String("level", userLevel))
+		} else {
+			t.userLevel = mysql.UserLevel(userLevelInt)
 		}
 	}
 
@@ -579,10 +582,7 @@ func (t globalTemplate) IsLocal() bool {
 
 func (t globalTemplate) ShowAds() bool {
 
-	if config.IsLocal() || t.userLevel > 0 {
-		return false
-	}
-	return !t.hideAds
+	return config.IsProd() && t.userLevel < mysql.UserLevel2 && !t.hideAds
 }
 
 func (t *globalTemplate) addToast(toast Toast) {

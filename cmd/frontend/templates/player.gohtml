@@ -132,6 +132,13 @@
 
                                 </div>
 
+                                <div class="card mb-3" data-link-tab="stats">
+                                    {{/*<h5 class="card-header">Value</h5>*/}}
+                                    <div class="card-body">
+                                        <h4 class="mb-0 text-danger">Value: {{ .Player.GameStats.All.GetTotalPrice }}</h4>
+                                    </div>
+                                </div>
+
                             </div>
                             <div class="col-sm-12 col-md-6 col-lg-4">
 
@@ -179,12 +186,11 @@
                             </div>
                             <div class="col-sm-12 col-lg-4">
 
-                                <div class="card mb-3" data-link-tab="stats">
-                                    {{/*<h5 class="card-header">Value</h5>*/}}
-                                    <div class="card-body">
-                                        <h4 class="mb-0 text-danger">Value: {{ .Player.GameStats.All.GetTotalPrice }}</h4>
-                                    </div>
-                                </div>
+                                {{ if .ShowAds }}
+                                    <a href="https://www.patreon.com/bePatron?u=9962078" target="_blank" rel="noopener">
+                                        <img src="/assets/img/patreon.png" alt="Patreon" id="patreon">
+                                    </a>
+                                {{ end }}
 
                                 <div class="card mb-3">
                                     <h5 class="card-header">Aliases</h5>

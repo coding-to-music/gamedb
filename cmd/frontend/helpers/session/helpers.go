@@ -237,7 +237,7 @@ func GetCountryCode(r *http.Request) string {
 	return cc
 }
 
-func GetUserLevel(r *http.Request) int {
+func GetUserLevel(r *http.Request) mysql.UserLevel {
 
 	val := Get(r, SessionUserLevel)
 	if val == "" {
@@ -246,10 +246,11 @@ func GetUserLevel(r *http.Request) int {
 
 	i, err := strconv.Atoi(val)
 	if err != nil {
+		log.ErrS(err)
 		return mysql.UserLevel0
 	}
 
-	return i
+	return mysql.UserLevel(i)
 }
 
 func IsAdmin(r *http.Request) bool {
