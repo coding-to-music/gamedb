@@ -21,6 +21,10 @@ type Config struct {
 	AdminName  string `envconfig:"ADMIN_NAME"`
 	AdminEmail string `envconfig:"ADMIN_EMAIL"`
 
+	// Battlenet
+	BattlenetClient string `envconfig:"BATTLENET_CLIENT_ID"`     // OAuth
+	BattlenetSecret string `envconfig:"BATTLENET_CLIENT_SECRET"` // OAuth
+
 	// Digital Ocean (Auto Scaler)
 	DigitalOceanAccessToken    string `envconfig:"DO_ACCESS_TOKEN"`
 	DigitalOceanProjectID      string `envconfig:"DO_PROJECT_ID"`

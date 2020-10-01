@@ -189,14 +189,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	t.Providers = []oauth.Provider{
-		oauth.New(oauth.ProviderSteam),
-		oauth.New(oauth.ProviderDiscord),
-		oauth.New(oauth.ProviderGoogle),
-		oauth.New(oauth.ProviderTwitter),
-		oauth.New(oauth.ProviderPatreon),
-		oauth.New(oauth.ProviderGithub),
-	}
+	t.Providers = oauth.Providers
 
 	// Template
 	returnTemplate(w, r, "settings", t)

@@ -17,21 +17,23 @@ const (
 type ProviderEnum string
 
 var (
-	ProviderDiscord ProviderEnum = "discord"
-	ProviderGoogle  ProviderEnum = "google"
-	ProviderGithub  ProviderEnum = "github"
-	ProviderPatreon ProviderEnum = "patreon"
-	ProviderSteam   ProviderEnum = "steam"
-	ProviderTwitter ProviderEnum = "twitter"
+	ProviderDiscord   ProviderEnum = "discord"
+	ProviderGoogle    ProviderEnum = "google"
+	ProviderGithub    ProviderEnum = "github"
+	ProviderBattlenet ProviderEnum = "battlenetus"
+	ProviderPatreon   ProviderEnum = "patreon"
+	ProviderSteam     ProviderEnum = "steam"
+	ProviderTwitter   ProviderEnum = "twitter"
 )
 
 var Providers = []Provider{
-	discordProvider{},
-	googleProvider{},
-	patreonProvider{},
 	steamProvider{},
-	githubProvider{},
+	discordProvider{},
+	battlenetProvider{},
+	googleProvider{},
 	twitterProvider{},
+	patreonProvider{},
+	githubProvider{},
 }
 
 var _ = []OAuth1Provider{
@@ -48,6 +50,7 @@ type Provider interface {
 	GetColour() string
 	GetEnum() ProviderEnum
 	GetType() ProviderType
+	HasEmail() bool
 }
 
 type OAuth2Provider interface {
@@ -72,22 +75,13 @@ type OpenIDProvider interface {
 
 func New(p ProviderEnum) Provider {
 
-	switch p {
-	case ProviderDiscord:
-		return discordProvider{}
-	case ProviderGoogle:
-		return googleProvider{}
-	case ProviderPatreon:
-		return patreonProvider{}
-	case ProviderSteam:
-		return steamProvider{}
-	case ProviderGithub:
-		return githubProvider{}
-	case ProviderTwitter:
-		return twitterProvider{}
-	default:
-		return nil
+	for _, v := range Providers {
+		if p == v.GetEnum() {
+			return v
+		}
 	}
+
+	return nil
 }
 
 //
