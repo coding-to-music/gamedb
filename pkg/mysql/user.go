@@ -71,13 +71,6 @@ type User struct {
 	Level         int8               `gorm:"not null;column:level"` // Patreon
 	ProductCC     steamapi.ProductCC `gorm:"not null;column:country_code"`
 	APIKey        string             `gorm:"not null;column:api_key"`
-	// SteamID       sql.NullString     `gorm:"not null;column:steam_id"`
-	// PatreonID     sql.NullString     `gorm:"not null;column:patreon_id"`
-	// GoogleID      sql.NullString     `gorm:"not null;column:google_id"`
-	// DiscordID     sql.NullString     `gorm:"not null;column:discord_id"`
-	// GitHubID      sql.NullString     `gorm:"not null;column:github_id"`
-	// HideProfile   bool               `gorm:"not null;column:hide_profile"`
-	// ShowAlerts    bool               `gorm:"not null;column:show_alerts"`
 }
 
 func (user *User) SetAPIKey() {

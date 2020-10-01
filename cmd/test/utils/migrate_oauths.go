@@ -38,25 +38,25 @@ func (migrateOAuths) run() {
 
 		log.InfoS(v.ID)
 
-		if v.DiscordID.Valid && v.DiscordID.String != "" {
-			createUser(v.ID, oauth.ProviderDiscord, v.DiscordID.String)
-		}
-
-		if v.GitHubID.Valid && v.GitHubID.String != "" {
-			createUser(v.ID, oauth.ProviderGithub, v.GitHubID.String)
-		}
-
-		if v.GoogleID.Valid && v.GoogleID.String != "" {
-			createUser(v.ID, oauth.ProviderGoogle, v.GoogleID.String)
-		}
-
-		if v.PatreonID.Valid && v.PatreonID.String != "" {
-			createUser(v.ID, oauth.ProviderPatreon, v.PatreonID.String)
-		}
-
-		if v.SteamID.Valid && v.SteamID.String != "" {
-			createUser(v.ID, oauth.ProviderSteam, v.SteamID.String)
-		}
+		// if v.DiscordID.Valid && v.DiscordID.String != "" {
+		// 	createUser(v.ID, oauth.ProviderDiscord, v.DiscordID.String)
+		// }
+		//
+		// if v.GitHubID.Valid && v.GitHubID.String != "" {
+		// 	createUser(v.ID, oauth.ProviderGithub, v.GitHubID.String)
+		// }
+		//
+		// if v.GoogleID.Valid && v.GoogleID.String != "" {
+		// 	createUser(v.ID, oauth.ProviderGoogle, v.GoogleID.String)
+		// }
+		//
+		// if v.PatreonID.Valid && v.PatreonID.String != "" {
+		// 	createUser(v.ID, oauth.ProviderPatreon, v.PatreonID.String)
+		// }
+		//
+		// if v.SteamID.Valid && v.SteamID.String != "" {
+		// 	createUser(v.ID, oauth.ProviderSteam, v.SteamID.String)
+		// }
 	}
 }
 
