@@ -690,8 +690,6 @@ if ($playerPage.length > 0) {
                     data = [];
                 }
 
-                // data = [{count: 2, date: "2020-09-23"}];
-
                 $("#achievement-days-chart").empty().calmosaic(data);
             },
         });
