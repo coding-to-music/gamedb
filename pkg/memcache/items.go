@@ -30,6 +30,13 @@ var (
 	MemcacheAppNoAchievements     = func(appID int) Item { return Item{Key: "app-no-stats-" + strconv.Itoa(appID), Expiration: 60 * 60, Value: "1"} }
 	MemcacheAppAchievementsCounts = func(appID int) Item { return Item{Key: "app-ach-counts-" + strconv.Itoa(appID), Expiration: 60 * 60 * 24 * 2} }
 
+	MemcacheAppPlayersInGameRow    = Item{Key: "app-players-in-game-0", Expiration: 10 * 60}
+	MemcacheAppPlayersRow          = func(appID int) Item { return Item{Key: "app-players-" + strconv.Itoa(appID), Expiration: 10 * 60} }
+	MemcacheAppPlayersChart        = func(appID string, limited bool) Item { return Item{Key: "app-players-chart-" + appID + "-" + strconv.FormatBool(limited), Expiration: 10 * 60} }
+	MemcacheAppPlayersHeatmapChart = func(appID string) Item { return Item{Key: "app-players-heatmap-chart-" + appID, Expiration: 10 * 60} }
+	MemcacheAppTagsChart           = func(appID int) Item { return Item{Key: "app-tags-chart-" + strconv.Itoa(appID), Expiration: 10 * 60} }
+	MemcacheAppWishlistChart       = func(appID string) Item { return Item{Key: "app-wishlist-chart-" + appID, Expiration: 10 * 60} }
+
 	MemcachePopularApps    = Item{Key: "popular-apps", Expiration: 60 * 3}
 	MemcachePopularNewApps = Item{Key: "popular-new-apps", Expiration: 60}
 	MemcacheTrendingApps   = Item{Key: "trending-apps", Expiration: 60 * 10}
@@ -81,18 +88,11 @@ var (
 	MemcacheStatsForSelect = func(t string) Item { return Item{Key: "stats-select-" + t, Expiration: 60 * 60 * 24} }
 
 	// Player
-	MemcacheAppPlayersInGameRow    = Item{Key: "app-players-in-game-0", Expiration: 10 * 60}
 	MemcachePlayer                 = func(playerID int64) Item { return Item{Key: "player-" + strconv.FormatInt(playerID, 10), Expiration: 0} }
-	MemcacheAppPlayersRow          = func(playerID int) Item { return Item{Key: "app-players-" + strconv.Itoa(playerID), Expiration: 10 * 60} }
-	MemcacheAppPlayersChart        = func(playerID string, limited bool) Item { return Item{Key: "app-players-chart-" + playerID + "-" + strconv.FormatBool(limited), Expiration: 10 * 60} }
-	MemcacheAppPlayersHeatmapChart = func(playerID string) Item { return Item{Key: "app-players-heatmap-chart-" + playerID, Expiration: 10 * 60} }
-	MemcacheAppTagsChart           = func(playerID int) Item { return Item{Key: "app-tags-chart-" + strconv.Itoa(playerID), Expiration: 10 * 60} }
-	MemcacheAppWishlistChart       = func(playerID string) Item { return Item{Key: "app-wishlist-chart-" + playerID, Expiration: 10 * 60} }
-
-	MemcachePlayerLevels        = Item{Key: "player-levels", Expiration: 60 * 60 * 24}
-	MemcachePlayerUpdateDates   = Item{Key: "player-update-days", Expiration: 60 * 60 * 24}
-	MemcachePlayerLevelsRounded = Item{Key: "player-levels-rounded", Expiration: 60 * 60 * 24}
-	MemcachePlayerLocationAggs  = Item{Key: "player-location-aggs", Expiration: 60 * 60 * 2}
+	MemcachePlayerLevels           = Item{Key: "player-levels", Expiration: 60 * 60 * 24}
+	MemcachePlayerUpdateDates      = Item{Key: "player-update-days", Expiration: 60 * 60 * 24}
+	MemcachePlayerLevelsRounded    = Item{Key: "player-levels-rounded", Expiration: 60 * 60 * 24}
+	MemcachePlayerLocationAggs     = Item{Key: "player-location-aggs", Expiration: 60 * 60 * 2}
 
 	// Other
 	MemcacheAPISteam      = Item{Key: "api-steam", Expiration: 60 * 60 * 24 * 7}
