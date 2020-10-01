@@ -141,7 +141,7 @@
 
                                     <div class="card mb-2">
                                         <h5 class="card-header pr-0" style="background-color: {{ .GetColour }}; color: white">
-                                            {{ if ne $p.ID "" }}
+                                            {{ if and (ne $p.ID "") (ne $p.Avatar "") }}
                                                 <img src="{{ $p.Avatar }}" alt="{{ $p.Username }}" class="float-right">
                                             {{ end }}
                                             <i class="{{ .GetIcon }}"></i>
