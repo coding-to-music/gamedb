@@ -91,6 +91,9 @@ if ($('#admin-users-page').length > 0) {
                 'render': function (data, type, row) {
                     return row[0];
                 },
+                "createdCell": function (td, cellData, rowData, row, col) {
+                    $(td).attr('nowrap', 'nowrap');
+                },
                 'orderSequence': ['desc', 'asc'],
             },
             // Logged In
@@ -101,6 +104,9 @@ if ($('#admin-users-page').length > 0) {
                         return '';
                     }
                     return row[5];
+                },
+                "createdCell": function (td, cellData, rowData, row, col) {
+                    $(td).attr('nowrap', 'nowrap');
                 },
                 'orderSequence': ['desc', 'asc'],
             },
@@ -133,6 +139,9 @@ if ($('#admin-users-page').length > 0) {
                         return str;
                     }
                     return '';
+                },
+                "createdCell": function (td, cellData, rowData, row, col) {
+                    $(td).attr('nowrap', 'nowrap');
                 },
                 'orderable': false,
             },
