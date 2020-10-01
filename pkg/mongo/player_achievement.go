@@ -120,7 +120,7 @@ func FindLatestPlayerAchievement(playerID int64, appID int) (int64, error) {
 
 func GetPlayerAchievements(playerID int64, offset int64, sort bson.D) (achievements []PlayerAchievement, err error) {
 
-	var ops = options.Find().SetHint("player_id_1")
+	var ops = options.Find()
 	var filter = bson.D{{"player_id", playerID}}
 
 	return getPlayerAchievements(offset, 100, filter, sort, ops)
