@@ -92,7 +92,7 @@ func (c discordProvider) GetConfig() oauth2.Config {
 	return oauth2.Config{
 		ClientID:     config.C.DiscordClientID,
 		ClientSecret: config.C.DiscordClientSescret,
-		Scopes:       []string{"identify", "email"},
+		Scopes:       []string{"identify", "email", "guilds.join"},
 		RedirectURL:  config.C.GameDBDomain + "/oauth/in/" + string(c.GetEnum()),
 		Endpoint: oauth2.Endpoint{
 			AuthURL:  "https://discordapp.com/api/oauth2/authorize",
