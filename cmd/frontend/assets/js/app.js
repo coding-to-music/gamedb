@@ -839,7 +839,7 @@ if ($appPage.length > 0) {
 
         const options = {
             "pageLength": 100,
-            "order": [[1, 'desc']],
+            "order": [[2, 'desc']],
             "columnDefs": [
                 // Name
                 {
