@@ -27,13 +27,13 @@ var (
 )
 
 var Providers = []Provider{
-	steamProvider{},
-	discordProvider{},
-	battlenetProvider{},
-	googleProvider{},
-	twitterProvider{},
-	patreonProvider{},
-	githubProvider{},
+	&steamProvider{},
+	&discordProvider{},
+	&battlenetProvider{},
+	&googleProvider{},
+	&twitterProvider{},
+	&patreonProvider{},
+	&githubProvider{},
 }
 
 var _ = []OAuth1Provider{
