@@ -46,6 +46,7 @@ func PlayerRouter() http.Handler {
 	r.Get("/badges.json", playerBadgesAjaxHandler)
 	r.Get("/friends.json", playerFriendsAjaxHandler)
 	r.Get("/achievements.json", playerAchievementsAjaxHandler)
+	r.Get("/achievement-days.json", playerAchievementDaysAjaxHandler)
 	r.Get("/games.json", playerGamesAjaxHandler)
 	r.Get("/groups.json", playerGroupsAjaxHandler)
 	r.Get("/history.json", playersHistoryAjaxHandler)
@@ -316,6 +317,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	t.setBackground(backgroundApp, true, false)
 	t.fill(w, r, player.GetName(), "")
 	t.addAssetHighCharts()
+	t.addAssetCalmosaic()
 	t.IncludeSocialJS = true
 
 	t.Banners = banners
@@ -688,6 +690,22 @@ func playerRecentAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	returnJSON(w, r, response)
+}
+
+func playerAchievementDaysAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+	if err != nil {
+		return
+	}
+
+	counts, err := mongo.GetPlayerAchievementDays(id)
+	if err != nil {
+		log.ErrS(err)
+		return
+	}
+
+	returnJSON(w, r, counts)
 }
 
 func playerAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {

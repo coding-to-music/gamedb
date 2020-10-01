@@ -1,11 +1,14 @@
 package mongo
 
 import (
+	"sort"
 	"strconv"
+	"time"
 
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/memcache"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -172,6 +175,63 @@ func getPlayerAchievements(offset int64, limit int64, filter bson.D, sort bson.D
 	}
 
 	return achievements, cur.Err()
+}
+
+func GetPlayerAchievementDays(playerID int64) (counts []DateCount, err error) {
+
+	var item = memcache.MemcachePlayerAchievementsDays(playerID)
+
+	err = memcache.GetSetInterface(item.Key, item.Expiration, &counts, func() (interface{}, error) {
+
+		client, ctx, err := getMongo()
+		if err != nil {
+			return counts, err
+		}
+
+		pipeline := mongo.Pipeline{
+			{{Key: "$match", Value: bson.M{"player_id": playerID}}},
+			{{Key: "$match", Value: bson.M{"achievement_date": bson.M{"$gt": time.Now().AddDate(-1, 0, 0).Unix()}}}},
+			{{Key: "$group", Value: bson.M{
+				"_id": bson.M{
+					"$dateToString": bson.M{
+						"format": "%Y-%m-%d",
+						"date": bson.M{
+							"$toDate": bson.M{
+								"$multiply": bson.A{1000, "$achievement_date"},
+							},
+						},
+					},
+				},
+				"count": bson.M{"$sum": 1},
+			}}},
+		}
+
+		cur, err := client.Database(config.C.MongoDatabase, options.Database()).Collection(CollectionPlayerAchievements.String()).Aggregate(ctx, pipeline, options.Aggregate())
+		if err != nil {
+			return counts, err
+		}
+
+		defer close(cur, ctx)
+
+		var counts []DateCount
+		for cur.Next(ctx) {
+
+			var count DateCount
+			err := cur.Decode(&count)
+			if err != nil {
+				log.ErrS(err, count.Date)
+			}
+			counts = append(counts, count)
+		}
+
+		sort.Slice(counts, func(i, j int) bool {
+			return counts[i].Date < counts[j].Date
+		})
+
+		return counts, cur.Err()
+	})
+
+	return counts, err
 }
 
 func ReplacePlayerAchievements(achievements []PlayerAchievement) (err error) {

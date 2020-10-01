@@ -680,6 +680,22 @@ if ($playerPage.length > 0) {
 
     function loadPlayerAchievementsTab() {
 
+        $.ajax({
+            type: "GET",
+            url: '/players/' + $playerPage.attr('data-id') + '/achievement-days.json',
+            dataType: 'json',
+            success: function (data, textStatus, jqXHR) {
+
+                if (data === null) {
+                    data = [];
+                }
+
+                // data = [{count: 2, date: "2020-09-23"}];
+
+                $("#achievement-days-chart").empty().calmosaic(data);
+            },
+        });
+
         const recentOptions = {
             "order": [[1, 'desc']],
             "createdRow": function (row, data, dataIndex) {
@@ -703,7 +719,7 @@ if ($playerPage.length > 0) {
                     "render": function (data, type, row) {
                         if (row[6]) {
                             return '<span data-livestamp="' + row[6] + '"></span>'
-                            +'<br><small class="text-muted">' + row[8] + '</small>';
+                                + '<br><small class="text-muted">' + row[8] + '</small>';
                         } else {
                             return 'Unknown';
                         }
