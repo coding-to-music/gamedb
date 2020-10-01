@@ -270,24 +270,39 @@ func oauthRedirect(w http.ResponseWriter, r *http.Request, page *string) {
 
 func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *http.Request) {
 
-	var user mysql.User
-	var err error
+	// Check page is valid
+	switch page {
+	case authPageLogin, authPageSignup, authPageSettings:
+	default:
+		session.SetFlash(r, session.SessionBad, "Invalid page (1101)")
+		return
+	}
 
-	if provider.GetType() == oauth.TypeOAuth && resp.Email == "" ||
-		provider.GetType() == oauth.TypeOpenID && resp.ID == "" {
+	//
+	if page == authPageSignup && !provider.HasEmail() {
 
-		session.SetFlash(r, session.SessionBad, "We were unable to fetch your details from "+provider.GetName()+" (1101)")
+		session.SetFlash(r, session.SessionBad, provider.GetName()+" currently can't be used to sign up (1102)")
+		return
+	}
+
+	//
+	if (provider.HasEmail() && resp.Email == "") || (resp.ID == "") {
+
+		session.SetFlash(r, session.SessionBad, "We were unable to fetch your details from "+provider.GetName()+" (1103)")
 		return
 	}
 
 	// Get the user from DB
+	var user mysql.User
+	var err error
+
 	if page == authPageSettings {
 
 		// Just get user from session
 		user, err = getUserFromSession(r)
 		if err != nil {
 			log.ErrS(err)
-			session.SetFlash(r, session.SessionBad, "Account could not be created (1102)")
+			session.SetFlash(r, session.SessionBad, "Account could not be created (1104)")
 			return
 		}
 
@@ -301,13 +316,13 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 			user, err = mysql.NewUser(r, resp.Email, "", session.GetProductCC(r), true)
 			if err != nil {
 				log.ErrS(err)
-				session.SetFlash(r, session.SessionBad, "Account could not be created (1103)")
+				session.SetFlash(r, session.SessionBad, "Account could not be created (1105)")
 				return
 			}
 
 		} else if err != nil {
 			log.ErrS(err)
-			session.SetFlash(r, session.SessionBad, "An error occurred (1104)")
+			session.SetFlash(r, session.SessionBad, "An error occurred (1106)")
 			return
 		}
 
@@ -320,24 +335,19 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 			if err != nil {
 				log.ErrS(err)
 			}
-			session.SetFlash(r, session.SessionBad, "Unable to find a Game DB account linked with this Steam account (1106)")
+			session.SetFlash(r, session.SessionBad, "Unable to find a Game DB account linked with this "+provider.GetName()+" account (1107)")
 			return
 		}
 
 		user, err = mysql.GetUserByID(userProvider.UserID)
 		if err == mysql.ErrRecordNotFound {
-			session.SetFlash(r, session.SessionBad, "Unable to find a Game DB account linked with this Steam account (1107)")
+			session.SetFlash(r, session.SessionBad, "Unable to find a Game DB account linked with this "+provider.GetName()+" account (1108)")
 			return
 		} else if err != nil {
 			log.ErrS(err)
-			session.SetFlash(r, session.SessionBad, "An error occurred (1108)")
+			session.SetFlash(r, session.SessionBad, "An error occurred (1109)")
 			return
 		}
-
-	} else {
-
-		session.SetFlash(r, session.SessionBad, "Unsupported auth type")
-		return
 	}
 
 	//
@@ -350,7 +360,7 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 	used, err := mysql.CheckExistingUserProvider(provider.GetEnum(), resp.ID, user.ID)
 	if err != nil {
 		log.ErrS(err)
-		session.SetFlash(r, session.SessionBad, "An error occurred (1109)")
+		session.SetFlash(r, session.SessionBad, "An error occurred (1110)")
 		return
 	}
 
@@ -363,7 +373,7 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 	err = mysql.UpdateUserProvider(user.ID, provider.GetEnum(), resp)
 	if err != nil {
 		log.ErrS(err)
-		session.SetFlash(r, session.SessionBad, "An error occurred (1110)")
+		session.SetFlash(r, session.SessionBad, "An error occurred (1111)")
 		return
 	}
 

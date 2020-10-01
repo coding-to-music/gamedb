@@ -53,8 +53,8 @@
                             <div class="col-12 col-lg-6" id="providers">
                                 <p class="mb-2">Or login with:</p>
                                 {{ range $key, $value := .Providers }}
-                                    {{ if ne .GetName "Steam" }} {{/* Not OAuth */}}
-                                    <a class="btn btn-lg" href="/oauth/out/{{ .GetEnum }}?page=signup" style="background-color: {{ .GetColour}}; border-color: {{ .GetColour}}"><i class="{{ .GetIcon }}"></i> {{ .GetName }}</a>
+                                    {{ if .HasEmail }}
+                                        <a class="btn btn-lg" href="/oauth/out/{{ .GetEnum }}?page=signup" style="background-color: {{ .GetColour}}; border-color: {{ .GetColour}}"><i class="{{ .GetIcon }}"></i> {{ .GetName }}</a>
                                     {{ end }}
                                 {{ end }}
                             </div>

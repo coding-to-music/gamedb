@@ -36,6 +36,10 @@ func (c githubProvider) GetType() ProviderType {
 	return TypeOAuth
 }
 
+func (c githubProvider) HasEmail() bool {
+	return true
+}
+
 func (c githubProvider) Redirect(w http.ResponseWriter, r *http.Request, state string) {
 	conf := c.GetConfig()
 	http.Redirect(w, r, conf.AuthCodeURL(state), http.StatusFound)

@@ -34,6 +34,10 @@ func (c patreonProvider) GetType() ProviderType {
 	return TypeOAuth
 }
 
+func (c patreonProvider) HasEmail() bool {
+	return true
+}
+
 func (c patreonProvider) Redirect(w http.ResponseWriter, r *http.Request, state string) {
 	conf := c.GetConfig()
 	http.Redirect(w, r, conf.AuthCodeURL(state), http.StatusFound)
