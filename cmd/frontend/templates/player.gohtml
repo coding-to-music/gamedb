@@ -135,7 +135,13 @@
                                 <div class="card mb-3" data-link-tab="stats">
                                     {{/*<h5 class="card-header">Value</h5>*/}}
                                     <div class="card-body">
-                                        <h4 class="mb-0 text-danger">Value: {{ .Player.GameStats.All.GetTotalPrice }}</h4>
+                                        <h4 class="mb-0 text-danger">
+                                            {{ if gt .Player.GameStats.All.Count 0 }}
+                                                Value: {{ .Player.GameStats.All.GetTotalPrice }}
+                                            {{ else }}
+                                                Value: Private
+                                            {{ end }}
+                                        </h4>
                                     </div>
                                 </div>
 
