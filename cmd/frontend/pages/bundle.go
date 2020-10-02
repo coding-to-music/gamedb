@@ -45,7 +45,7 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 
 		if err == mysql.ErrRecordNotFound {
-			returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Sorry but we can not find this bundle."})
+			returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Sorry but we can not find this bundle."})
 			return
 		}
 
