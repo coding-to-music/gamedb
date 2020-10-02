@@ -49,7 +49,7 @@ func mailjetWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 	defer helpers.Close(r.Body)
 
 	// Save webhook
-	err = mongo.NewWebhook(mongo.WebhookServicePatreon, "", string(body))
+	err = mongo.NewWebhook(mongo.WebhookServiceMailjet, "", string(body))
 	if err != nil {
 		log.ErrS(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -289,7 +289,7 @@ func gitHubWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Save webhook
-	err = mongo.NewWebhook(mongo.WebhookServicePatreon, "", string(body))
+	err = mongo.NewWebhook(mongo.WebhookServiceGithub, "", string(body))
 	if err != nil {
 		log.ErrS(err)
 	}

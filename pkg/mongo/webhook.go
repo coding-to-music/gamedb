@@ -48,7 +48,7 @@ func NewWebhook(service WebhookService, event string, body string) error {
 		CreatedAt:   time.Now(),
 		RequestBody: body,
 		Event:       event,
-		Service:     WebhookServicePatreon,
+		Service:     service,
 	}
 
 	_, err := InsertOne(CollectionWebhooks, row)
