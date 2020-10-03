@@ -189,7 +189,7 @@ func statTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
 
-			hc = influx.InfluxResponseToHighCharts(resp.Results[0].Series[0], true)
+			hc = influx.InfluxResponseToHighCharts(resp.Results[0].Series[0], true, influx.FilterAtLeastOne)
 		}
 
 		return hc, err

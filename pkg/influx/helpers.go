@@ -98,7 +98,25 @@ type (
 	}
 )
 
-func InfluxResponseToHighCharts(series influxModels.Row, trimLeft bool) HighChartsJSON {
+type HCFilter func(vv []interface{}) bool
+
+func FilterAtLeastOne(vv []interface{}) bool {
+
+	for k, vvv := range vv {
+		if k > 0 {
+			if val, ok := vvv.(json.Number); ok {
+				i, err := val.Float64()
+				if err == nil && i != 0 {
+					return true
+				}
+			}
+		}
+	}
+
+	return false
+}
+
+func InfluxResponseToHighCharts(series influxModels.Row, trimLeft bool, filters ...HCFilter) HighChartsJSON {
 
 	resp := HighChartsJSON{}
 
@@ -108,35 +126,44 @@ func InfluxResponseToHighCharts(series influxModels.Row, trimLeft bool) HighChar
 			var hasValue bool
 			for _, vv := range series.Values {
 
-				// Check if any of the series' have a value above zero
-				if !hasValue && trimLeft {
-					for k, vvv := range vv {
-						if k > 0 {
-							if val, ok := vvv.(json.Number); ok {
-								i, err := val.Float64()
-								if err == nil && i != 0 {
-									hasValue = true
-									break
+				func() {
+
+					// Check if any of the series' have a value above zero
+					if !hasValue && trimLeft {
+						for kk, vvv := range vv {
+							if kk > 0 {
+								if val, ok := vvv.(json.Number); ok {
+									i, err := val.Float64()
+									if err == nil && i != 0 {
+										hasValue = true
+										break
+									}
 								}
 							}
 						}
 					}
-				}
 
-				if trimLeft && !hasValue {
-					continue
-				}
+					if trimLeft && !hasValue {
+						return
+					}
 
-				t, err := time.Parse(time.RFC3339, vv[0].(string))
-				if err != nil {
-					log.ErrS(err)
-					continue
-				}
+					for _, filter := range filters {
+						if !filter(vv) {
+							return
+						}
+					}
 
-				if val, ok := vv[k].(json.Number); ok && val != "" {
+					t, err := time.Parse(time.RFC3339, vv[0].(string))
+					if err != nil {
+						log.ErrS(err)
+						return
+					}
 
-					resp[v] = append(resp[v], []interface{}{t.Unix() * 1000, vv[k]})
-				}
+					if val, ok := vv[k].(json.Number); ok && val != "" {
+
+						resp[v] = append(resp[v], []interface{}{t.Unix() * 1000, vv[k]})
+					}
+				}()
 			}
 		}
 	}
