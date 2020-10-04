@@ -38,8 +38,8 @@ func HomeRouter() http.Handler {
 }
 
 var (
-	regexpAppID = regexp.MustCompile(`/app/([0-9]+)/`)
-	regexpSubID = regexp.MustCompile(`/sub/([0-9]+)/`)
+	regexpAppID = regexp.MustCompile(`/app/([0-9]+)`)
+	regexpSubID = regexp.MustCompile(`/sub/([0-9]+)`)
 )
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
