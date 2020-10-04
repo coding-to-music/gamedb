@@ -604,15 +604,12 @@ func updateAppDetails(app *mongo.App) (err error) {
 						}
 
 						for _, u := range urls {
-							code, err := helpers.Head(u, 0)
+							_, err := helpers.Head(u, 0)
 							if err != nil {
-								log.ErrS(err)
 								continue
 							}
-							if code == 200 {
-								app.Background = u
-								break
-							}
+							app.Background = u
+							break
 						}
 					}
 				}

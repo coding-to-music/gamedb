@@ -501,11 +501,8 @@ func updatePackageFromStore(pack *mongo.Package) (err error) {
 
 				pack.ImageLogo = ""
 
-				code, err := helpers.Head(response.Data.SmallLogo, 0)
-				if err == helpers.ErrNon200 {
-					return
-				} else if err != nil {
-					log.Err("failed image check", zap.Error(err), zap.String("url", response.Data.PageImage), zap.Int("code", code))
+				_, err := helpers.Head(response.Data.SmallLogo, 0)
+				if err != nil {
 					return
 				}
 
