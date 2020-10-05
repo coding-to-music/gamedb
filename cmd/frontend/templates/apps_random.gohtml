@@ -120,7 +120,7 @@
                             {{ end }}
 
                             {{ range $key, $value := .App.GetScreenshots }}
-                                <img src='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080"%3E%3C/svg%3E' data-lazy="{{ .App.PathFull }}" alt="Media {{ $key }}">
+                                <img src='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080"%3E%3C/svg%3E' data-lazy="{{ .PathFull }}" alt="Media {{ $key }}">
                             {{ end }}
 
                         </div>
@@ -145,7 +145,7 @@
                             <div>{{ comma .App.ReviewsCount }} reviews</div>
                             {{ if gt .App.ReviewsCount 0 }}
                                 <div class="progress">
-                                    <div class="progress-bar bg-success" role="progressbar" style="width: {{ .App.ReviewsScore}}%" aria-valuenow="{{ .App.ReviewsScore}}" aria-valuemin="0" aria-valuemax="100">{{ .App.GetReviewScore}} review score</div>
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: {{ .App.ReviewScore}}%" aria-valuenow="{{ .App.ReviewScore}}" aria-valuemin="0" aria-valuemax="100">{{ .App.GetReviewScore}} review score</div>
                                 </div>
                             {{ end }}
 

@@ -88,9 +88,11 @@ func appsSearchHandler(message *rabbit.Message) {
 
 	b, _ := json.Marshal(mongoApp.Movies)
 	app.Movies = string(b)
+	app.MoviesCount = len(mongoApp.Movies)
 
 	b, _ = json.Marshal(mongoApp.Screenshots)
 	app.Screenshots = string(b)
+	app.ScreenshotsCount = len(mongoApp.Screenshots)
 
 	err = elasticsearch.IndexApp(app)
 	if err != nil {

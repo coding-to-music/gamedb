@@ -13,8 +13,8 @@ import (
 )
 
 type App struct {
-	AchievementsCount  int                   `json:"achievements_counts"`
 	AchievementsAvg    float64               `json:"achievements_avg"`
+	AchievementsCount  int                   `json:"achievements_counts"`
 	AchievementsIcons  []helpers.Tuple       `json:"achievements_icons"`
 	Aliases            []string              `json:"aliases"`
 	Background         string                `json:"background"`
@@ -25,6 +25,9 @@ type App struct {
 	GroupID            string                `json:"group_id"`
 	Icon               string                `json:"icon"`
 	ID                 int                   `json:"id"`
+	MicroTrailor       string                `json:"micro_trailor"`
+	Movies             string                `json:"movies"`
+	MoviesCount        int                   `json:"movies_count"`
 	Name               string                `json:"name"`
 	NameMarked         string                `json:"name_marked"` // Not in DB
 	Platforms          []string              `json:"platforms"`
@@ -36,14 +39,13 @@ type App struct {
 	ReviewScore        float64               `json:"score"`
 	ReviewsCount       int                   `json:"reviews_count"`
 	Score              float64               `json:"-"` // Not in DB - Search score
+	Screenshots        string                `json:"screenshots"`
+	ScreenshotsCount   int                   `json:"screenshots_count"`
 	Tags               []int                 `json:"tags"`
-	Type               string                `json:"type"`
 	Trend              float64               `json:"trend"`
+	Type               string                `json:"type"`
 	WishlistAvg        float64               `json:"wishlist_avg"`
 	WishlistCount      int                   `json:"wishlist_count"`
-	Movies             string                `json:"movies"`
-	Screenshots        string                `json:"screenshots"`
-	MicroTrailor       string                `json:"micro_trailor"`
 }
 
 func (app App) GetName() string {
@@ -81,6 +83,10 @@ func (app App) GetReleaseDateNiceRounded() string {
 
 func (app App) GetFollowers() string {
 	return helpers.GetAppFollowers(app.GroupID, app.FollowersCount)
+}
+
+func (app App) GetReviewScore() string {
+	return helpers.GetAppReviewScore(app.ReviewScore)
 }
 
 func (app App) GetCommunityLink() string {
@@ -271,6 +277,9 @@ func DeleteAndRebuildAppsIndex() {
 				"group_id":            fieldTypeDisabled,
 				"icon":                fieldTypeDisabled,
 				"id":                  fieldTypeKeyword,
+				"micro_trailor":       fieldTypeDisabled,
+				"movies":              fieldTypeDisabled,
+				"movies_count":        fieldTypeInt32,
 				"name": map[string]interface{}{ // type:text allows search, type:keyword allows sorting
 					"type": "text",
 					"fields": map[string]interface{}{
@@ -285,16 +294,15 @@ func DeleteAndRebuildAppsIndex() {
 				"publishers":           fieldTypeKeyword,
 				"release_date":         fieldTypeInt64,
 				"release_date_rounded": fieldTypeInt64,
+				"reviews_count":        fieldTypeInt32,
 				"score":                fieldTypeFloat16,
+				"screenshots":          fieldTypeDisabled,
+				"screenshots_count":    fieldTypeInt32,
 				"tags":                 fieldTypeKeyword,
 				"type":                 fieldTypeKeyword,
 				"trend":                fieldTypeKeyword,
 				"wishlist_avg":         fieldTypeFloat32,
 				"wishlist_count":       fieldTypeInt32,
-				"movies":               fieldTypeDisabled,
-				"screenshots":          fieldTypeDisabled,
-				"micro_trailor":        fieldTypeDisabled,
-				"reviews_count":        fieldTypeInt32,
 			},
 		},
 	}
