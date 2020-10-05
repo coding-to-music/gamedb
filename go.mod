@@ -67,7 +67,6 @@ require (
 	github.com/mssola/user_agent v0.5.2
 	github.com/mxpv/patreon-go v0.0.0-20190917022727-646111f1d983
 	github.com/nicklaw5/helix v1.0.0
-	github.com/nlopes/slack v0.6.0
 	github.com/olekukonko/tablewriter v0.0.4 // indirect
 	github.com/olivere/elastic/v7 v7.0.20
 	github.com/oschwald/maxminddb-golang v1.7.0
@@ -79,7 +78,7 @@ require (
 	github.com/sendgrid/rest v2.6.1+incompatible // indirect
 	github.com/sendgrid/sendgrid-go v3.6.4+incompatible
 	github.com/sirupsen/logrus v1.7.0 // indirect
-	github.com/slack-go/slack v0.7.0 // indirect
+	github.com/slack-go/slack v0.7.0
 	github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf // indirect
 	github.com/streadway/amqp v1.0.0
 	github.com/tdewolff/minify/v2 v2.9.7
