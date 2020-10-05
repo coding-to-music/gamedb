@@ -20,7 +20,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/oauth"
 	"github.com/go-chi/chi"
-	"github.com/nlopes/slack"
+	"github.com/slack-go/slack"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.uber.org/zap"
 )

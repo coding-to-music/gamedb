@@ -80,6 +80,7 @@ require (
 	github.com/sendgrid/rest v2.6.1+incompatible // indirect
 	github.com/sendgrid/sendgrid-go v3.6.4+incompatible
 	github.com/sirupsen/logrus v1.7.0 // indirect
+	github.com/slack-go/slack v0.7.0 // indirect
 	github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf // indirect
 	github.com/streadway/amqp v1.0.0
 	github.com/tdewolff/minify/v2 v2.9.7
