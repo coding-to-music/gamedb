@@ -30,7 +30,7 @@ func appsRandomHandler(w http.ResponseWriter, r *http.Request) {
 			elastic.NewBoolQuery().MustNot(
 				elastic.NewTermQuery("name.raw", ""),
 			).MinimumNumberShouldMatch(1),
-			elastic.NewBoolQuery().Filter(
+			elastic.NewBoolQuery().Should(
 				elastic.NewRangeQuery("movies_count").From(1),
 				elastic.NewRangeQuery("screenshots_count").From(1),
 			).MinimumNumberShouldMatch(1),

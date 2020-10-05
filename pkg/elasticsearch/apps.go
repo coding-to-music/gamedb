@@ -196,7 +196,7 @@ func searchApps(limit int, offset int, search string, totals bool, highlights bo
 	}
 
 	if random {
-		searchService.Query(elastic.NewFunctionScoreQuery().BoostMode("sum").AddScoreFunc(elastic.NewRandomFunction()).Query(boolQuery))
+		searchService.Query(elastic.NewFunctionScoreQuery().BoostMode("replace").AddScoreFunc(elastic.NewRandomFunction()).Query(boolQuery))
 	} else {
 		searchService.Query(boolQuery)
 	}
