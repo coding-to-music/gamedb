@@ -37,10 +37,20 @@ body.dark {
             color: rgb(29, 161, 242);
         }
 
-        .tweet:last-child {
+        .tweet {
+            border-bottom: solid lightgray 1px;
+            @extend .mb-2;
+            @extend .pb-2;
+
             p {
                 margin-bottom: 0;
             }
+        }
+
+        .tweet:last-child {
+            border-bottom: none;
+            @extend .mb-0;
+            @extend .pb-0;
         }
     }
 

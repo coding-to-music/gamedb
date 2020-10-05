@@ -52,7 +52,7 @@ if ($homePage.length > 0) {
                         {
                             '<>': 'div', 'class': 'tweet', 'target': '_blank', 'rel': 'noopener', 'data-link': '${link}', 'html': [
                                 {
-                                    '<>': 'p', 'html': '${text}',
+                                    '<>': 'p', 'html': '<i class="fas fa-star"></i> ${text}',
                                 },
                             ]
                         },
