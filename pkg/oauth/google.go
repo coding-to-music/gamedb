@@ -3,7 +3,6 @@ package oauth
 import (
 	"encoding/json"
 	"net/http"
-	"net/url"
 
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -46,40 +45,30 @@ func (c googleProvider) Redirect(w http.ResponseWriter, r *http.Request, state s
 
 func (c googleProvider) GetUser(token *oauth2.Token) (user User, err error) {
 
-	q := url.Values{}
-	q.Set("access_token", token.AccessToken)
+	headers := http.Header{}
+	headers.Add("Authorization", "Bearer "+token.AccessToken)
 
-	body, _, err := helpers.Get("https://openidconnect.googleapis.com/v1/userinfo?"+q.Encode(), 0, nil)
+	b, _, err := helpers.Get("https://openidconnect.googleapis.com/v1/userinfo", 0, headers)
 	if err != nil {
 		return user, err
 	}
 
-	userInfo := struct {
-		Sub     string `json:"sub"`
-		Name    string `json:"name"`
-		Picture string `json:"picture"`
-		Email   string `json:"email"`
-		// GivenName     string `json:"given_name"`
-		// FamilyName    string `json:"family_name"`
-		// EmailVerified bool   `json:"email_verified"`
-		// Locale        string `json:"locale"`
-	}{}
-
-	err = json.Unmarshal(body, &userInfo)
+	resp := GoogleUser{}
+	err = json.Unmarshal(b, &resp)
 	if err != nil {
 		return user, err
 	}
 
-	b, err := json.Marshal(token)
+	b, err = json.Marshal(token)
 	if err != nil {
 		log.ErrS(err)
 	}
 
 	user.Token = string(b)
-	user.ID = userInfo.Sub
-	user.Username = userInfo.Name
-	user.Email = userInfo.Email
-	user.Avatar = userInfo.Picture
+	user.ID = resp.Sub
+	user.Username = resp.Name
+	user.Email = resp.Email
+	user.Avatar = resp.Picture
 
 	return user, nil
 }
@@ -93,4 +82,11 @@ func (c googleProvider) GetConfig() oauth2.Config {
 		RedirectURL:  config.C.GameDBDomain + "/oauth/in/" + string(c.GetEnum()),
 		Endpoint:     google.Endpoint,
 	}
+}
+
+type GoogleUser struct {
+	Sub     string `json:"sub"`
+	Name    string `json:"name"`
+	Picture string `json:"picture"`
+	Email   string `json:"email"`
 }

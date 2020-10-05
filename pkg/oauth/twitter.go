@@ -59,6 +59,7 @@ func (c twitterProvider) GetUser(token *oauth1.Token) (user User, err error) {
 	httpClient := conf.Client(oauth1.NoContext, token)
 	client := twitter.NewClient(httpClient)
 
+	// Get user
 	t := true
 	params := twitter.AccountVerifyParams{
 		IncludeEntities: &t,
@@ -71,17 +72,6 @@ func (c twitterProvider) GetUser(token *oauth1.Token) (user User, err error) {
 		return user, err
 	}
 
-	friendParams := &twitter.FriendshipCreateParams{
-		ScreenName: "gamedb_online",
-		UserID:     0,
-		Follow:     &t,
-	}
-
-	_, _, err = client.Friendships.Create(friendParams)
-	if err != nil {
-		log.ErrS(err)
-	}
-
 	b, err := json.Marshal(token)
 	if err != nil {
 		log.ErrS(err)
@@ -92,6 +82,18 @@ func (c twitterProvider) GetUser(token *oauth1.Token) (user User, err error) {
 	user.Username = resp.Name
 	user.Email = resp.Email
 	user.Avatar = resp.ProfileImageURL
+
+	// Add friend
+	friendParams := &twitter.FriendshipCreateParams{
+		ScreenName: "gamedb_online",
+		UserID:     0,
+		Follow:     &t,
+	}
+
+	_, _, err = client.Friendships.Create(friendParams)
+	if err != nil {
+		log.ErrS(err)
+	}
 
 	return user, nil
 }

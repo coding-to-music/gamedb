@@ -1,14 +1,13 @@
 package oauth
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
 	"strconv"
 
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	gh "github.com/google/go-github/v32/github"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/github"
 )
@@ -47,29 +46,30 @@ func (c githubProvider) Redirect(w http.ResponseWriter, r *http.Request, state s
 
 func (c githubProvider) GetUser(token *oauth2.Token) (user User, err error) {
 
-	ctx := context.Background()
+	headers := http.Header{}
+	headers.Add("Authorization", "Bearer "+token.AccessToken)
 
-	client := gh.NewClient(oauth2.NewClient(ctx, oauth2.StaticTokenSource(
-		&oauth2.Token{
-			AccessToken: token.AccessToken,
-		},
-	)))
-
-	resp, _, err := client.Users.Get(ctx, "")
+	b, _, err := helpers.Get("https://api.github.com/user", 0, headers)
 	if err != nil {
 		return user, err
 	}
 
-	b, err := json.Marshal(token)
+	resp := GithubUser{}
+	err = json.Unmarshal(b, &resp)
+	if err != nil {
+		return user, err
+	}
+
+	b, err = json.Marshal(token)
 	if err != nil {
 		log.ErrS(err)
 	}
 
 	user.Token = string(b)
-	user.ID = strconv.FormatInt(resp.GetID(), 10)
-	user.Username = resp.GetName()
-	user.Email = resp.GetEmail()
-	user.Avatar = resp.GetAvatarURL()
+	user.ID = strconv.FormatInt(resp.ID, 10)
+	user.Username = resp.Name
+	user.Email = resp.Email
+	user.Avatar = resp.AvatarURL
 
 	return user, nil
 }
@@ -83,4 +83,11 @@ func (c githubProvider) GetConfig() oauth2.Config {
 		RedirectURL:  config.C.GameDBDomain + "/oauth/in/" + string(c.GetEnum()),
 		Endpoint:     github.Endpoint,
 	}
+}
+
+type GithubUser struct {
+	Name      string `json:"name"`
+	Email     string `json:"email"`
+	AvatarURL string `json:"avatar_url"`
+	ID        int64  `json:"id"`
 }

@@ -1,13 +1,12 @@
 package oauth
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
 
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/mxpv/patreon-go"
 	"golang.org/x/oauth2"
 )
 
@@ -45,11 +44,16 @@ func (c patreonProvider) Redirect(w http.ResponseWriter, r *http.Request, state 
 
 func (c patreonProvider) GetUser(token *oauth2.Token) (user User, err error) {
 
-	// Get Patreon user
-	ts := oauth2.StaticTokenSource(token)
-	tc := oauth2.NewClient(context.TODO(), ts)
+	headers := http.Header{}
+	headers.Add("Authorization", "Bearer "+token.AccessToken)
 
-	resp, err := patreon.NewClient(tc).FetchUser()
+	b, _, err := helpers.Get("https://www.patreon.com/api/oauth2/api/current_user", 0, headers)
+	if err != nil {
+		return user, err
+	}
+
+	resp := PatreonUser{}
+	err = json.Unmarshal(b, &resp)
 	if err != nil {
 		return user, err
 	}
@@ -58,7 +62,7 @@ func (c patreonProvider) GetUser(token *oauth2.Token) (user User, err error) {
 	// 	return "", OauthError{nil, "This Patreon account has not been verified"}
 	// }
 
-	b, err := json.Marshal(token)
+	b, err = json.Marshal(token)
 	if err != nil {
 		log.ErrS(err)
 	}
@@ -80,8 +84,19 @@ func (c patreonProvider) GetConfig() oauth2.Config {
 		Scopes:       []string{"identity", "identity[email]"}, // identity[email] scope is only needed as the Patreon package we are using only handles v1 API
 		RedirectURL:  config.C.GameDBDomain + "/oauth/in/" + string(c.GetEnum()),
 		Endpoint: oauth2.Endpoint{
-			AuthURL:  patreon.AuthorizationURL,
-			TokenURL: patreon.AccessTokenURL,
+			AuthURL:  "https://www.patreon.com/oauth2/authorize",
+			TokenURL: "https://api.patreon.com/oauth2/token",
 		},
 	}
+}
+
+type PatreonUser struct {
+	Data struct {
+		Attributes struct {
+			Email    string `json:"email"`
+			FullName string `json:"full_name"`
+			ImageURL string `json:"image_url"`
+		} `json:"attributes"`
+		ID string `json:"id"`
+	} `json:"data"`
 }
