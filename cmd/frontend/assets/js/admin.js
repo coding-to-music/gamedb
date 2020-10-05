@@ -128,7 +128,8 @@ if ($('#admin-users-page').length > 0) {
                             str += '<span class="mr-1"><i class="fab fa-google"></i></span>';
                         }
                         if (m.hasOwnProperty('github')) {
-                            str += '<span class="mr-1"><i class="fab fa-github"></i></span>';
+                            str += '<a class="mr-1" href="https://api.github.com/user/' + m['github'] + '" target="_blank" rel="noopener">' +
+                                '<i class="fab fa-google"></i></a>';
                         }
                         if (m.hasOwnProperty('patreon')) {
                             str += '<span class="mr-1"><i class="fab fa-patreon"></i></span>';
