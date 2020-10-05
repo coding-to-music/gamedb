@@ -235,3 +235,7 @@ func GetAppFollowers(groupID string, followers int) string {
 
 	return humanize.Comma(int64(followers))
 }
+
+func GetAppPlayLink(appID int) template.URL {
+	return template.URL("steam://run/" + strconv.Itoa(appID))
+}

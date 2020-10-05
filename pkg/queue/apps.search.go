@@ -1,6 +1,7 @@
 package queue
 
 import (
+	"encoding/json"
 	"strconv"
 	"strings"
 	"time"
@@ -61,6 +62,7 @@ func appsSearchHandler(message *rabbit.Message) {
 	app.AchievementsCount = mongoApp.AchievementsCount
 	app.AchievementsIcons = mongoApp.Achievements
 	app.Aliases = makeAppAliases(mongoApp.ID, mongoApp.Name)
+	app.Background = mongoApp.Background
 	app.Categories = mongoApp.Categories
 	app.Developers = mongoApp.Developers
 	app.FollowersCount = mongoApp.GroupFollowers
@@ -68,6 +70,7 @@ func appsSearchHandler(message *rabbit.Message) {
 	app.GroupID = mongoApp.GroupID
 	app.Icon = mongoApp.Icon
 	app.ID = mongoApp.ID
+	app.MicroTrailor = mongoApp.GetMicroTrailer()
 	app.Name = mongoApp.Name
 	app.Platforms = mongoApp.Platforms
 	app.PlayersCount = mongoApp.PlayerPeakWeek
@@ -76,11 +79,18 @@ func appsSearchHandler(message *rabbit.Message) {
 	app.ReleaseDate = mongoApp.ReleaseDateUnix
 	app.ReleaseDateRounded = time.Unix(mongoApp.ReleaseDateUnix, 10).Truncate(time.Hour * 24).Unix()
 	app.ReviewScore = mongoApp.ReviewsScore
+	app.ReviewsCount = mongoApp.ReviewsCount
 	app.Tags = mongoApp.Tags
 	app.Trend = mongoApp.PlayerTrend
 	app.Type = mongoApp.Type
 	app.WishlistAvg = mongoApp.WishlistAvgPosition
 	app.WishlistCount = mongoApp.WishlistCount
+
+	b, _ := json.Marshal(mongoApp.Movies)
+	app.Movies = string(b)
+
+	b, _ = json.Marshal(mongoApp.Screenshots)
+	app.Screenshots = string(b)
 
 	err = elasticsearch.IndexApp(app)
 	if err != nil {

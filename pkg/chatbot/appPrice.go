@@ -52,7 +52,7 @@ func (c CommandAppPrice) Output(msg *discordgo.MessageCreate, code steamapi.Prod
 
 	matches := RegexCache[c.Regex()].FindStringSubmatch(msg.Message.Content)
 
-	apps, err := elasticsearch.SearchAppsSimple(1, matches[2], []string{"id", "name", "prices"})
+	apps, err := elasticsearch.SearchAppsSimple(1, matches[2])
 	if err != nil {
 		return message, err
 	} else if len(apps) == 0 {

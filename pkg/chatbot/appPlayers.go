@@ -47,7 +47,7 @@ func (c CommandAppPlayers) Output(msg *discordgo.MessageCreate, _ steamapi.Produ
 
 	matches := RegexCache[c.Regex()].FindStringSubmatch(msg.Message.Content)
 
-	apps, err := elasticsearch.SearchAppsSimple(1, matches[2], []string{"id", "name"})
+	apps, err := elasticsearch.SearchAppsSimple(1, matches[2])
 	if err != nil {
 		return message, err
 	} else if len(apps) == 0 {

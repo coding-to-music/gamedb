@@ -341,24 +341,27 @@ func (t *globalTemplate) fill(w http.ResponseWriter, r *http.Request, title stri
 	t.setFlashes()
 }
 
-func (t *globalTemplate) setBackground(app mongo.App, title bool, link bool) {
+type backgrounder interface {
+	GetBackground() string
+	GetName() string
+	GetPath() string
+}
 
-	t.backgroundSet = true
+func (t *globalTemplate) setBackground(app backgrounder, title bool, link bool) {
 
-	if app.Background != "" {
-		t.Background = app.Background
-	} else {
+	if app.GetBackground() == "" {
 		return
 	}
+
+	t.backgroundSet = true
+	t.Background = app.GetBackground()
+
 	if title {
 		t.BackgroundTitle = app.GetName()
-	} else {
-		t.BackgroundTitle = ""
 	}
+
 	if link {
 		t.BackgroundLink = app.GetPath()
-	} else {
-		t.BackgroundLink = ""
 	}
 }
 

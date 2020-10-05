@@ -348,7 +348,7 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		search := query.GetSearchString("search")
 
 		var err error
-		apps, recordsFiltered, err = elasticsearch.SearchAppsAdvanced(query.GetOffset(), search, order, filters)
+		apps, recordsFiltered, err = elasticsearch.SearchAppsAdvanced(query.GetOffset(), 100, search, order, filters)
 		if err != nil {
 			log.ErrS(err)
 		}

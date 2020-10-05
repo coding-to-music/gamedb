@@ -10,6 +10,8 @@ import (
 	"github.com/olivere/elastic/v7"
 )
 
+var ErrNoResult = errors.New("no result")
+
 const (
 	IndexAchievements = "achievements"
 	IndexGroups       = "groups"

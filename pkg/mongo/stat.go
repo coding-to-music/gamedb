@@ -167,10 +167,10 @@ func GetStats(offset int64, limit int64, filter bson.D, sort bson.D) (offers []S
 	return offers, cur.Err()
 }
 
-func GetStatsByID(typex StatsType, ids []int) (apps []Stat, err error) {
+func GetStatsByID(typex StatsType, ids []int) (stats []Stat, err error) {
 
 	if len(ids) < 1 {
-		return apps, nil
+		return stats, nil
 	}
 
 	a := bson.A{}
@@ -322,4 +322,21 @@ func EnsureStat(typex StatsType, ids []int, names []string) (err error) {
 
 	_, err = InsertMany(CollectionStats, docs)
 	return err
+}
+
+func GetStatsByType(typex StatsType, ids []int, id int) (stats []Stat, err error) {
+
+	stats = []Stat{} // Needed for marshalling into type
+
+	if len(ids) == 0 {
+		return stats, nil
+	}
+
+	item := memcache.MemcacheAppStats(string(typex), id)
+	callback := func() (interface{}, error) {
+		return GetStatsByID(typex, ids)
+	}
+
+	err = memcache.GetSetInterface(item.Key, item.Expiration, &stats, callback)
+	return stats, err
 }

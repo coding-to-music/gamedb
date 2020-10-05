@@ -2,6 +2,7 @@ package elasticsearch
 
 import (
 	"encoding/json"
+	"html/template"
 	"strconv"
 	"time"
 
@@ -16,6 +17,7 @@ type App struct {
 	AchievementsAvg    float64               `json:"achievements_avg"`
 	AchievementsIcons  []helpers.Tuple       `json:"achievements_icons"`
 	Aliases            []string              `json:"aliases"`
+	Background         string                `json:"background"`
 	Categories         []int                 `json:"categories"`
 	Developers         []int                 `json:"developers"`
 	FollowersCount     int                   `json:"followers"`
@@ -32,12 +34,16 @@ type App struct {
 	ReleaseDate        int64                 `json:"release_date"`
 	ReleaseDateRounded int64                 `json:"release_date_rounded"`
 	ReviewScore        float64               `json:"score"`
+	ReviewsCount       int                   `json:"reviews_count"`
 	Score              float64               `json:"-"` // Not in DB - Search score
 	Tags               []int                 `json:"tags"`
 	Type               string                `json:"type"`
 	Trend              float64               `json:"trend"`
 	WishlistAvg        float64               `json:"wishlist_avg"`
 	WishlistCount      int                   `json:"wishlist_count"`
+	Movies             string                `json:"movies"`
+	Screenshots        string                `json:"screenshots"`
+	MicroTrailor       string                `json:"micro_trailor"`
 }
 
 func (app App) GetName() string {
@@ -60,6 +66,11 @@ func (app App) GetType() string {
 	return helpers.GetAppType(app.Type)
 }
 
+// For an interface
+func (app App) GetBackground() string {
+	return app.Background
+}
+
 func (app App) GetReleaseDateNice() string {
 	return time.Unix(app.ReleaseDate, 0).Format(helpers.DateYear) // No need to use helper
 }
@@ -80,18 +91,69 @@ func (app App) GetStoreLink() string {
 	return helpers.GetAppStoreLink(app.ID)
 }
 
-func SearchAppsSimple(limit int, search string, cols []string) (apps []App, err error) {
+func (app App) GetMovies() (movies []helpers.AppVideo) {
 
-	apps, _, err = searchApps(limit, 0, search, false, false, nil, nil, cols)
+	movies = []helpers.AppVideo{}
+
+	if app.Movies == "" {
+		return movies
+	}
+
+	err := json.Unmarshal([]byte(app.Movies), &movies)
+	if err != nil {
+		log.ErrS(err)
+	}
+
+	return movies
+}
+
+func (app App) GetScreenshots() (screenshots []helpers.AppImage) {
+
+	screenshots = []helpers.AppImage{}
+
+	if app.Screenshots == "" {
+		return screenshots
+	}
+
+	err := json.Unmarshal([]byte(app.Screenshots), &screenshots)
+	if err != nil {
+		log.ErrS(err)
+	}
+
+	return screenshots
+}
+
+func (app App) GetPlayLink() template.URL {
+	return helpers.GetAppPlayLink(app.ID)
+}
+
+func SearchAppsSimple(limit int, search string) (apps []App, err error) {
+
+	apps, _, err = searchApps(limit, 0, search, false, false, nil, nil, false)
 	return apps, err
 }
 
-func SearchAppsAdvanced(offset int, search string, sorters []elastic.Sorter, filters []elastic.Query) (apps []App, total int64, err error) {
+func SearchAppsAdvanced(offset int, limit int, search string, sorters []elastic.Sorter, filters []elastic.Query) (apps []App, total int64, err error) {
 
-	return searchApps(100, offset, search, true, true, sorters, filters, nil)
+	return searchApps(limit, offset, search, true, true, sorters, filters, false)
 }
 
-func searchApps(limit int, offset int, search string, totals bool, highlights bool, sorters []elastic.Sorter, filters []elastic.Query, cols []string) (apps []App, total int64, err error) {
+func SearchAppsRandom(filters []elastic.Query) (app App, count int64, err error) {
+
+	apps, count, err := searchApps(1, 0, "", false, true, nil, filters, true)
+	if err != nil {
+		return app, count, err
+	}
+
+	if len(apps) > 0 {
+		return apps[0], count, nil
+	}
+
+	return app, count, ErrNoResult
+
+}
+
+func searchApps(limit int, offset int, search string, totals bool, highlights bool, sorters []elastic.Sorter, filters []elastic.Query, random bool) (apps []App, total int64, err error) {
 
 	client, ctx, err := GetElastic()
 	if err != nil {
@@ -101,7 +163,8 @@ func searchApps(limit int, offset int, search string, totals bool, highlights bo
 	searchService := client.Search().
 		Index(IndexApps).
 		From(offset).
-		Size(limit).SortBy(sorters...)
+		Size(limit).
+		SortBy(sorters...)
 
 	boolQuery := elastic.NewBoolQuery().Filter(filters...)
 
@@ -126,14 +189,14 @@ func searchApps(limit int, offset int, search string, totals bool, highlights bo
 		}
 	}
 
-	searchService.Query(boolQuery)
+	if random {
+		searchService.Query(elastic.NewFunctionScoreQuery().BoostMode("sum").AddScoreFunc(elastic.NewRandomFunction()).Query(boolQuery))
+	} else {
+		searchService.Query(boolQuery)
+	}
 
 	if totals {
 		searchService.TrackTotalHits(true)
-	}
-
-	if len(cols) > 0 {
-		// searchService.DocvalueFields(cols...) // Breaks things
 	}
 
 	searchResult, err := searchService.Do(ctx)
@@ -200,6 +263,7 @@ func DeleteAndRebuildAppsIndex() {
 				"achievements_avg":    fieldTypeFloat16,
 				"achievements_icons":  fieldTypeDisabled,
 				"aliases":             fieldTypeText,
+				"background":          fieldTypeDisabled,
 				"categories":          fieldTypeKeyword,
 				"developers":          fieldTypeKeyword,
 				"followers":           fieldTypeInt32,
@@ -227,6 +291,10 @@ func DeleteAndRebuildAppsIndex() {
 				"trend":                fieldTypeKeyword,
 				"wishlist_avg":         fieldTypeFloat32,
 				"wishlist_count":       fieldTypeInt32,
+				"movies":               fieldTypeDisabled,
+				"screenshots":          fieldTypeDisabled,
+				"micro_trailor":        fieldTypeDisabled,
+				"reviews_count":        fieldTypeInt32,
 			},
 		},
 	}

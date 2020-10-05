@@ -1,11 +1,11 @@
 {{define "apps_random"}}
     {{ template "header" . }}
 
-    <div class="container" id="apps-random-page" data-bg="{{ if gt (len .Apps) 0 }}{{ (index .Apps 0).ID }}{{ end }}">
+    <div class="container" id="apps-random-page" data-bg="{{ if gt .App.ID 0 }}{{ .App.ID }}{{ end }}">
 
         <div class="jumbotron">
             <h1><i class="fas fa-gamepad"></i> Find a game to play</h1>
-            {{ if gt (len .Apps) 0 }}
+            {{ if gt .App.ID 0 }}
                 <p class="lead mt-4">Here's a random game from the {{ comma64 .AppCount }} games that match your filter.</p>
             {{ end }}
         </div>
@@ -97,72 +97,70 @@
 
         </div>
 
-        {{ if gt (len .Apps) 0 }}
-            {{ range $key, $value := .Apps }}
-                <div class="card" id="results-card">
-                    <h3 class="card-header">{{ .GetName }}</h3>
-                    <div class="card-body">
+        {{ if gt .App.ID 0 }}
+            <div class="card" id="results-card">
+                <h3 class="card-header">{{ .App.GetName }}</h3>
+                <div class="card-body">
 
-                        <div class="row">
-                            <div class="col-12 col-lg-6 order-2 order-lg-1" id="media">
+                    <div class="row">
+                        <div class="col-12 col-lg-6 order-2 order-lg-1" id="media">
 
-                                {{ if ne .GetMicroTrailer "" }}
-                                    <video controls preload="none" autoplay loop muted>
-                                        <source src="{{ https .GetMicroTrailer }}" type="video/webm">
-                                        Sorry, your browser doesn't support embedded videos.
-                                    </video>
-                                {{ end }}
+                            {{ if ne .App.MicroTrailor "" }}
+                                <video controls preload="none" autoplay loop muted>
+                                    <source src="{{ https .App.MicroTrailor }}" type="video/webm">
+                                    Sorry, your browser doesn't support embedded videos.
+                                </video>
+                            {{ end }}
 
-                                {{ range $key, $value := .Movies }}
-                                    <video controls preload="none">
-                                        <source src="{{ https .PathFull }}" type="video/webm">
-                                        Sorry, your browser doesn't support embedded videos.
-                                    </video>
-                                {{ end }}
+                            {{ range $key, $value := .App.GetMovies }}
+                                <video controls preload="none">
+                                    <source src="{{ https .PathFull }}" type="video/webm">
+                                    Sorry, your browser doesn't support embedded videos.
+                                </video>
+                            {{ end }}
 
-                                {{ range $key, $value := .Screenshots }}
-                                    <img src='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080"%3E%3C/svg%3E' data-lazy="{{ .PathFull }}" alt="Media {{ $key }}">
-                                {{ end }}
+                            {{ range $key, $value := .App.GetScreenshots }}
+                                <img src='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080"%3E%3C/svg%3E' data-lazy="{{ .App.PathFull }}" alt="Media {{ $key }}">
+                            {{ end }}
 
-                            </div>
-                            <div class="col-12 col-lg-6 order-1 order-lg-2 mb-4">
-
-                                <div id="controls">
-                                    <div class="btn btn-danger cursor-pointer mr-1" id="find-another"><i class="fas fa-retweet"></i> Find Another</div>
-                                    <a class="btn btn-warning mr-1" href="{{ .GetPath }}"><i class="fas fa-info"></i> More Info</a>
-                                    <a class="btn btn-success" href="{{ .GetPlayLink }}"><i class="fas fa-sign-in-alt"></i> Play</a>
-                                </div>
-
-                                <h5 class="mb-0">Tags:</h5>
-                                {{ if gt (len $.AppTags) 0 }}
-                                    {{ range $.AppTags }}
-                                        <a class="badge badge-pill badge-success" href="{{ .GetPath }}" target="_blank">{{ .Name }}</a>
-                                    {{ end }}
-                                {{ else }}
-                                    No tags
-                                {{ end }}
-
-                                <h5 class="mt-2 mb-0">Rating:</h5>
-                                <div>{{ comma .ReviewsCount }} reviews</div>
-                                {{ if gt .ReviewsCount 0 }}
-                                    <div class="progress">
-                                        <div class="progress-bar bg-success" role="progressbar" style="width: {{.ReviewsScore}}%" aria-valuenow="{{.ReviewsScore}}" aria-valuemin="0" aria-valuemax="100">{{.GetReviewScore}} review score</div>
-                                    </div>
-                                {{ end }}
-
-                                <h5 class="mt-2 mb-0">Price:</h5>
-                                {{ $.Price.GetFinal }}
-
-                                <h5 class="mt-2 mb-0">Achievements:</h5>
-                                {{ comma .AchievementsCount }}
-
-                            </div>
                         </div>
+                        <div class="col-12 col-lg-6 order-1 order-lg-2 mb-4">
 
+                            <div id="controls">
+                                <div class="btn btn-danger cursor-pointer mr-1" id="find-another"><i class="fas fa-retweet"></i> Find Another</div>
+                                <a class="btn btn-warning mr-1" href="{{ .App.GetPath }}"><i class="fas fa-info"></i> More Info</a>
+                                <a class="btn btn-success" href="{{ .App.GetPlayLink }}"><i class="fas fa-sign-in-alt"></i> Play</a>
+                            </div>
+
+                            <h5 class="mb-0">Tags:</h5>
+                            {{ if gt (len $.AppTags) 0 }}
+                                {{ range $.AppTags }}
+                                    <a class="badge badge-pill badge-success" href="{{ .GetPath }}" target="_blank">{{ .Name }}</a>
+                                {{ end }}
+                            {{ else }}
+                                No tags
+                            {{ end }}
+
+                            <h5 class="mt-2 mb-0">Rating:</h5>
+                            <div>{{ comma .App.ReviewsCount }} reviews</div>
+                            {{ if gt .App.ReviewsCount 0 }}
+                                <div class="progress">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: {{ .App.ReviewsScore}}%" aria-valuenow="{{ .App.ReviewsScore}}" aria-valuemin="0" aria-valuemax="100">{{ .App.GetReviewScore}} review score</div>
+                                </div>
+                            {{ end }}
+
+                            <h5 class="mt-2 mb-0">Price:</h5>
+                            {{ $.Price.GetFinal }}
+
+                            <h5 class="mt-2 mb-0">Achievements:</h5>
+                            {{ comma .App.AchievementsCount }}
+
+                        </div>
                     </div>
 
                 </div>
-            {{ end }}
+
+            </div>
         {{ else }}
             <div class="card">
                 <div class="card-body">No apps match your search filters</div>

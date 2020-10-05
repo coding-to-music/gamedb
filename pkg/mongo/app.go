@@ -221,7 +221,7 @@ func (app App) GetName() string {
 	return helpers.GetAppName(app.ID, app.Name)
 }
 
-func (app App) GetIcon() (ret string) {
+func (app App) GetIcon() string {
 	return helpers.GetAppIcon(app.ID, app.Icon)
 }
 
@@ -233,8 +233,13 @@ func (app App) GetTrend() string {
 	return helpers.GetTrendValue(app.PlayerTrend)
 }
 
-func (app App) GetType() (ret string) {
+func (app App) GetType() string {
 	return helpers.GetAppType(app.Type)
+}
+
+// For an interface
+func (app App) GetBackground() string {
+	return app.Background
 }
 
 func (app App) GetTypeLower() (ret string) {
@@ -304,7 +309,7 @@ func (app App) GetInstallLink() template.URL {
 }
 
 func (app App) GetPlayLink() template.URL {
-	return template.URL("steam://run/" + strconv.Itoa(app.ID))
+	return helpers.GetAppPlayLink(app.ID)
 }
 
 func (app App) GetReviewScore() string {
@@ -522,41 +527,23 @@ func (app App) ShouldUpdate() bool {
 }
 
 func (app App) GetTags() (stats []Stat, err error) {
-	return app.getStats(StatsTypeTags, app.Tags)
+	return GetStatsByType(StatsTypeTags, app.Tags, app.ID)
 }
 
 func (app App) GetCategories() (stats []Stat, err error) {
-	return app.getStats(StatsTypeCategories, app.Categories)
+	return GetStatsByType(StatsTypeCategories, app.Categories, app.ID)
 }
 
 func (app App) GetGenres() (stats []Stat, err error) {
-	return app.getStats(StatsTypeGenres, app.Genres)
+	return GetStatsByType(StatsTypeGenres, app.Genres, app.ID)
 }
 
 func (app App) GetPublishers() (stats []Stat, err error) {
-	return app.getStats(StatsTypePublishers, app.Publishers)
+	return GetStatsByType(StatsTypePublishers, app.Publishers, app.ID)
 }
 
 func (app App) GetDevelopers() (stats []Stat, err error) {
-	return app.getStats(StatsTypeDevelopers, app.Developers)
-}
-
-func (app App) getStats(typex StatsType, ids []int) (stats []Stat, err error) {
-
-	stats = []Stat{} // Needed for marshalling into type
-
-	if len(app.Categories) == 0 {
-		return stats, nil
-	}
-
-	var item = memcache.MemcacheAppStats(string(typex), app.ID)
-
-	err = memcache.GetSetInterface(item.Key, item.Expiration, &stats, func() (interface{}, error) {
-
-		return GetStatsByID(typex, ids)
-	})
-
-	return stats, err
+	return GetStatsByType(StatsTypeDevelopers, app.Developers, app.ID)
 }
 
 //
