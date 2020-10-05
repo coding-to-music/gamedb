@@ -267,23 +267,31 @@ func packageHandler(message *rabbit.Message) {
 }
 func updatePackageNameFromApp(pack *mongo.Package) (err error) {
 
-	apps, err := mongo.GetAppsByID(pack.Apps, bson.M{"_id": 1, "player_peak_alltime": 1})
-	if err != nil {
-		return err
-	}
+	if pack.HasEmptyName() || pack.HasEmptyIcon() || pack.ImageLogo == "" {
 
-	sort.Slice(apps, func(i, j int) bool {
-		return apps[i].PlayerPeakAllTime > apps[j].PlayerPeakAllTime
-	})
+		apps, err := mongo.GetAppsByID(pack.Apps, bson.M{"_id": 1, "player_peak_alltime": 1})
+		if err != nil {
+			return err
+		}
 
-	if pack.Name == "" || pack.Name == "Package "+strconv.Itoa(pack.ID) || pack.Name == strconv.Itoa(pack.ID) {
-		for _, app := range apps {
-			if app.Name != "" {
-				pack.SetName(app.GetName(), false)
-				pack.Icon = app.GetIcon()
-				pack.ImageLogo = app.GetHeaderImage()
-				break
-			}
+		if len(apps) == 0 {
+			return nil
+		}
+
+		sort.Slice(apps, func(i, j int) bool {
+			return apps[i].PlayerPeakAllTime > apps[j].PlayerPeakAllTime
+		})
+
+		if pack.HasEmptyName() {
+			pack.SetName(apps[0].GetName(), false)
+		}
+
+		if pack.HasEmptyIcon() {
+			pack.Icon = apps[0].GetIcon()
+		}
+
+		if pack.ImageLogo == "" {
+			pack.ImageLogo = apps[0].GetHeaderImage()
 		}
 	}
 

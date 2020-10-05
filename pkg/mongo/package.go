@@ -335,6 +335,17 @@ func (pack *Package) SetName(name string, force bool) {
 	}
 }
 
+func (pack Package) HasEmptyName() bool {
+	return pack.Name == "" ||
+		pack.Name == "Package "+strconv.Itoa(pack.ID) ||
+		pack.Name == strconv.Itoa(pack.ID)
+}
+
+func (pack Package) HasEmptyIcon() bool {
+	return pack.Icon == "" ||
+		pack.Icon == helpers.DefaultAppIcon
+}
+
 func GetPackage(id int) (pack Package, err error) {
 
 	if !helpers.IsValidPackageID(id) {
