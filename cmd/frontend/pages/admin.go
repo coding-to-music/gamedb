@@ -43,8 +43,8 @@ func AdminRouter() http.Handler {
 	r.Get("/users.json", adminUsersAjaxHandler)
 	r.Get("/consumers", adminConsumersHandler)
 	r.Get("/consumers.json", adminConsumersAjaxHandler)
-	r.Get("/patreon", adminPatreonHandler)
-	r.Get("/patreon.json", adminPatreonAjaxHandler)
+	r.Get("/webhooks", adminWebhooksHandler)
+	r.Get("/webhooks.json", adminWebhooksAjaxHandler)
 	r.Get("/delays", adminDelaysHandler)
 	r.Get("/delays.json", adminDelaysAjaxHandler)
 	r.Get("/queues", adminQueuesHandler)
@@ -168,13 +168,20 @@ func adminUsersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var response = datatable.NewDataTablesResponse(r, query, count, count, nil)
 	for _, user := range users {
 
+		var createdAt = user.CreatedAt.Format(helpers.DateSQL)
+
+		var loggedIn string
+		if user.LoggedInAt != nil {
+			loggedIn = user.LoggedInAt.Format(helpers.DateSQL)
+		}
+
 		response.AddRow([]interface{}{
-			user.CreatedAt.Format(helpers.DateSQL),  // 0
-			user.Email,                              // 1
-			user.EmailVerified,                      // 2
-			playerIDs[user.ID],                      // 3
-			user.Level,                              // 4
-			user.LoggedInAt.Format(helpers.DateSQL), // 5
+			createdAt,          // 0
+			user.Email,         // 1
+			user.EmailVerified, // 2
+			playerIDs[user.ID], // 3
+			user.Level,         // 4
+			loggedIn,           // 5
 		})
 	}
 
@@ -360,15 +367,15 @@ func (t adminDelaysTemplate) includes() []string {
 	return []string{"includes/admin_header.gohtml"}
 }
 
-func adminPatreonHandler(w http.ResponseWriter, r *http.Request) {
+func adminWebhooksHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := adminPatreonTemplate{}
 	t.fill(w, r, "Admin", "Admin")
 
-	returnTemplate(w, r, "admin/patreon", t)
+	returnTemplate(w, r, "admin/webhooks", t)
 }
 
-func adminPatreonAjaxHandler(w http.ResponseWriter, r *http.Request) {
+func adminWebhooksAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := datatable.NewDataTableQuery(r, false)
 
@@ -415,8 +422,9 @@ func adminPatreonAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		response.AddRow([]interface{}{
 			app.CreatedAt.Format(helpers.DateSQL), // 0
-			app.Event,                             // 1
-			wh,                                    // 2
+			app.Service,                           // 1
+			app.Event,                             // 2
+			wh,                                    // 3
 		})
 	}
 

@@ -247,7 +247,7 @@ if ($('#admin-consumers-page').length > 0) {
     });
 }
 
-if ($('#admin-patreon-page').length > 0) {
+if ($('#admin-webhooks-page').length > 0) {
 
     const options = {
         "order": [[0, 'desc']],
@@ -263,7 +263,7 @@ if ($('#admin-patreon-page').length > 0) {
                 },
                 'orderable': false,
             },
-            // Event
+            // Service
             {
                 'targets': 1,
                 'render': function (data, type, row) {
@@ -271,11 +271,22 @@ if ($('#admin-patreon-page').length > 0) {
                 },
                 'orderable': false,
             },
-            // User
+            // Event
             {
                 'targets': 2,
                 'render': function (data, type, row) {
-                    return row[2]['data']['relationships']['user']['data']['id'];
+                    return row[2];
+                },
+                'orderable': false,
+            },
+            // User
+            {
+                'targets': 3,
+                'render': function (data, type, row) {
+                    if (row[1] === 'patreon') {
+                        return row[3]['data']['relationships']['user']['data']['id'];
+                    }
+                    return '';
                 },
                 'orderable': false,
             },
