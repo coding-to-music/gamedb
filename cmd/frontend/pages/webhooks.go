@@ -20,9 +20,8 @@ import (
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/oauth"
 	"github.com/go-chi/chi"
-	"github.com/slack-go/slack"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.uber.org/zap"
+	"golang.org/x/text/currency"
 )
 
 func WebhooksRouter() http.Handler {
@@ -189,18 +188,8 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 	b, event, err := patreon.Validate(r, config.C.PatreonSecret)
 	if err != nil {
 		log.ErrS(err)
-		w.WriteHeader(http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
-	}
-
-	// Slack message
-	if config.C.SlackPatreonWebhook == "" {
-		log.ErrS("Missing environment variables")
-	} else {
-		err = slack.PostWebhook(config.C.SlackPatreonWebhook, &slack.WebhookMessage{Text: event})
-		if err != nil {
-			log.ErrS(err)
-		}
 	}
 
 	// Save webhook
@@ -217,33 +206,92 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	email := pwr.User.Attributes.Email
-	if email != "" {
+	// Find user
+	user, err := mysql.GetUserByProviderID(oauth.ProviderPatreon, strconv.Itoa(int(pwr.User.ID)))
+	if err == mysql.ErrRecordNotFound {
 
-		// Create user event
-		player := mongo.Player{}
-		err = mongo.FindOne(mongo.CollectionPlayers, bson.D{{Key: "email", Value: email}}, nil, bson.M{"_id": 1}, &player)
-		if err != nil && err != mongo.ErrNoDocuments {
+		user, err = mysql.GetUserByEmail(pwr.User.Attributes.Email)
+		if err != nil {
+			log.ErrS(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 
+	} else if err != nil {
+		log.ErrS(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Update donation bits
+	if user.Donated < pwr.Data.Attributes.LifetimeSupportCents {
+
+		// Get player ID
+		var playerID int64
+
+		steam, err := mysql.GetUserProviderByUserID(oauth.ProviderSteam, user.ID)
+		if err != nil && err != mysql.ErrRecordNotFound {
+			log.ErrS(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		} else if err == nil {
+			playerID, err = strconv.ParseInt(steam.ID, 10, 64)
+			if err != nil {
+				log.ErrS(err)
+			}
+		}
+
+		// Save donation
+		db, err := mysql.GetMySQLClient()
+		if err != nil {
+			log.ErrS(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		donation := mysql.Donation{
+			UserID:           user.ID,
+			PlayerID:         playerID,
+			Email:            user.Email,
+			AmountUSD:        pwr.Data.Attributes.WillPayAmountCents,
+			OriginalCurrency: currency.USD.String(),
+			OriginalAmount:   pwr.Data.Attributes.WillPayAmountCents,
+			Source:           mysql.DonationSourcePatreon,
+			Anon:             false, // todo
+		}
+
+		db = db.Create(&donation)
+		if db.Error != nil {
+			log.ErrS(db.Error)
+			http.Error(w, db.Error.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		// Update user
+		db, err = mysql.GetMySQLClient()
+		if err != nil {
+			log.ErrS(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		update := map[string]interface{}{
+			"donated": pwr.Data.Attributes.LifetimeSupportCents,
+		}
+
+		db = db.Model(&user).Updates(update)
+		if db.Error != nil {
+			log.ErrS(db.Error)
+			http.Error(w, db.Error.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		// Create event
+		err = mongo.NewEvent(r, user.ID, mongo.EventPatreonWebhook+"-"+mongo.EventEnum(event))
+		if err != nil {
 			log.Err(err.Error(), zap.ByteString("webhook", b))
 			http.Error(w, err.Error(), http.StatusInternalServerError)
-
-		} else if err == nil {
-
-			user, err := mysql.GetUserByProviderID(oauth.ProviderSteam, strconv.FormatInt(player.ID, 10))
-			if err != nil && err != mysql.ErrRecordNotFound {
-				log.Err(err.Error(), zap.ByteString("webhook", b))
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			} else if err == nil {
-
-				err = mongo.NewEvent(r, user.ID, mongo.EventPatreonWebhook+"-"+mongo.EventEnum(event))
-				if err != nil {
-					log.Err(err.Error(), zap.ByteString("webhook", b))
-					http.Error(w, err.Error(), http.StatusInternalServerError)
-					return
-				}
-			}
+			return
 		}
 	}
 
@@ -300,11 +348,7 @@ func gitHubWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 	case "push":
 
 		// Clear cache
-		items := []string{
-			memcache.MemcacheCommitsPage(1).Key,
-		}
-
-		err := memcache.Delete(items...)
+		err := memcache.Delete(memcache.MemcacheCommitsPage(1).Key)
 		if err != nil {
 			log.ErrS(err)
 		}

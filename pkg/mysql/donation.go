@@ -6,18 +6,28 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 )
 
+type DonationSource string
+
+const (
+	DonationSourcePatreon = "patreon"
+	DonationSourceManual  = "manual"
+)
+
 type Donation struct {
 	ID               int       `gorm:"not null;column:id;primary_key;auto_increment"`
 	CreatedAt        time.Time `gorm:"not null;column:created_at"`
+	UserID           int       `gorm:"not null;column:user_id"`
 	PlayerID         int64     `gorm:"not null;column:player_id"`
 	Email            string    `gorm:"not null;column:email"`
-	AmountUSD        float64   `gorm:"not null;column:amount_usd"`
+	AmountUSD        int       `gorm:"not null;column:amount_usd"`
 	OriginalCurrency string    `gorm:"not null;column:original_currency"`
-	OriginalAmount   float64   `gorm:"not null;column:original_amount"`
+	OriginalAmount   int       `gorm:"not null;column:original_amount"`
+	Source           string    `gorm:"not null;column:source"`
+	Anon             bool      `gorm:"not null;column:anon"`
 }
 
 func (d Donation) Format() string {
-	return helpers.FloatToString(d.AmountUSD, 2)
+	return helpers.FloatToString(float64(d.AmountUSD)/100, 2)
 }
 
 func LatestDonations() (donations []Donation, err error) {
@@ -35,15 +45,6 @@ func LatestDonations() (donations []Donation, err error) {
 	return donations, nil
 }
 
-type GroupedDonation struct {
-	PlayerID  int64   `json:"player_id"`
-	Donations float64 `json:"donations"`
-}
-
-func (d GroupedDonation) Format() string {
-	return helpers.FloatToString(d.Donations, 2)
-}
-
 func TopDonators() (donations []GroupedDonation, err error) {
 
 	db, err := GetMySQLClient()
@@ -57,9 +58,14 @@ func TopDonators() (donations []GroupedDonation, err error) {
 		Order("donations desc").
 		Scan(&donations)
 
-	if db.Error != nil {
-		return donations, db.Error
-	}
+	return donations, db.Error
+}
 
-	return donations, nil
+type GroupedDonation struct {
+	PlayerID  int64 `json:"player_id"`
+	Donations int   `json:"donations"`
+}
+
+func (d GroupedDonation) Format() string {
+	return helpers.FloatToString(float64(d.Donations)/100, 2)
 }

@@ -71,6 +71,7 @@ type User struct {
 	Level         UserLevel          `gorm:"not null;column:level"`
 	ProductCC     steamapi.ProductCC `gorm:"not null;column:country_code"`
 	APIKey        string             `gorm:"not null;column:api_key"`
+	Donated       int                `gorm:"not null;column:donated"`
 }
 
 func (user *User) SetAPIKey() {

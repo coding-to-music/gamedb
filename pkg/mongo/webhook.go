@@ -21,18 +21,18 @@ const (
 
 type Webhook struct {
 	CreatedAt   time.Time      `bson:"created_at"`
-	RequestBody string         `bson:"request_body"`
-	Event       string         `bson:"event"`
 	Service     WebhookService `bson:"service"`
+	Event       string         `bson:"event"`
+	RequestBody string         `bson:"request_body"`
 }
 
 func (webhook Webhook) BSON() bson.D {
 
 	return bson.D{
 		{"created_at", webhook.CreatedAt},
-		{"request_body", webhook.RequestBody},
-		{"event", webhook.Event},
 		{"service", webhook.Service},
+		{"event", webhook.Event},
+		{"request_body", webhook.RequestBody},
 	}
 }
 
