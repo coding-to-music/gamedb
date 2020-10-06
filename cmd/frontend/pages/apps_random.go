@@ -77,7 +77,10 @@ func appsRandomHandler(w http.ResponseWriter, r *http.Request) {
 
 			player, err := getPlayerFromSession(r)
 			if err != nil {
-				log.ErrS(err)
+				err = helpers.IgnoreErrors(err, ErrLoggedOut)
+				if err != nil {
+					log.ErrS(err)
+				}
 				returnErrorTemplate(w, r, errorTemplate{Code: 500})
 				return
 			}
