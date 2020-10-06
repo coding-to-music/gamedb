@@ -64,7 +64,7 @@ type User struct {
 	ID            int                `gorm:"not null;column:id;primary_key"`
 	CreatedAt     time.Time          `gorm:"not null;column:created_at"`
 	UpdatedAt     time.Time          `gorm:"not null;column:updated_at"`
-	LoggedInAt    time.Time          `gorm:"not null;column:logged_in_at;type:datetime"`
+	LoggedInAt    *time.Time         `gorm:"column:logged_in_at;type:datetime"`
 	Email         string             `gorm:"not null;column:email;unique_index"`
 	EmailVerified bool               `gorm:"not null;column:email_verified"`
 	Password      string             `gorm:"not null;column:password"`
@@ -142,7 +142,6 @@ func NewUser(r *http.Request, email, password string, prodCC steamapi.ProductCC,
 		Password:      string(passwordBytes),
 		ProductCC:     prodCC,
 		Level:         UserLevel1,
-		LoggedInAt:    time.Unix(0, 0), // Fixes a gorm bug
 	}
 
 	user.SetAPIKey()
