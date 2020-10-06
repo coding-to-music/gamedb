@@ -268,6 +268,7 @@ func gitHubWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Validate
 	var signature = r.Header.Get("X-Hub-Signature")
+	var event = r.Header.Get("X-GitHub-Event")
 
 	if len(signature) != 45 || !strings.HasPrefix(signature, "sha1=") {
 		http.Error(w, "Invalid signature (1)", 400)
@@ -289,13 +290,13 @@ func gitHubWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Save webhook
-	err = mongo.NewWebhook(mongo.WebhookServiceGithub, "", string(body))
+	err = mongo.NewWebhook(mongo.WebhookServiceGithub, event, string(body))
 	if err != nil {
 		log.ErrS(err)
 	}
 
-	//
-	switch r.Header.Get("X-GitHub-Event") {
+	// Handle
+	switch event {
 	case "push":
 
 		// Clear cache
