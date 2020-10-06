@@ -395,3 +395,27 @@ func GetPackages(offset int64, limit int64, sort bson.D, filter bson.D, projecti
 
 	return packages, cur.Err()
 }
+
+func BatchPackages(filter bson.D, projection bson.M, callback func(packages []Package)) (err error) {
+
+	var offset int64 = 0
+	var limit int64 = 10_000
+
+	for {
+
+		packages, err := GetPackages(offset, limit, bson.D{{"_id", 1}}, filter, projection)
+		if err != nil {
+			return err
+		}
+
+		callback(packages)
+
+		if int64(len(packages)) != limit {
+			break
+		}
+
+		offset += limit
+	}
+
+	return nil
+}
