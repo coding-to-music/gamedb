@@ -95,7 +95,7 @@ func adminUsersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		db = db.Model(&mysql.User{})
-		db = db.Select([]string{"id", "created_at", "email", "email_verified", "steam_id", "level", "logged_in_at"})
+		db = db.Select([]string{"id", "created_at", "email", "email_verified", "level", "logged_in_at"})
 		db = db.Limit(100)
 		db = db.Offset(query.GetOffset())
 

@@ -61,17 +61,17 @@ func (ul UserLevel) MaxOffset(limit int64) int64 {
 }
 
 type User struct {
-	ID            int                `gorm:"not null;column:id;primary_key"`
-	CreatedAt     time.Time          `gorm:"not null;column:created_at"`
-	UpdatedAt     time.Time          `gorm:"not null;column:updated_at"`
-	LoggedInAt    *time.Time         `gorm:"column:logged_in_at;type:datetime"`
-	Email         string             `gorm:"not null;column:email;unique_index"`
-	EmailVerified bool               `gorm:"not null;column:email_verified"`
-	Password      string             `gorm:"not null;column:password"`
-	Level         UserLevel          `gorm:"not null;column:level"`
-	ProductCC     steamapi.ProductCC `gorm:"not null;column:country_code"`
-	APIKey        string             `gorm:"not null;column:api_key"`
-	Donated       int                `gorm:"not null;column:donated"`
+	ID             int                `gorm:"not null;column:id;primary_key"`
+	CreatedAt      time.Time          `gorm:"not null;column:created_at"`
+	UpdatedAt      time.Time          `gorm:"not null;column:updated_at"`
+	LoggedInAt     *time.Time         `gorm:"column:logged_in_at;type:datetime"`
+	Email          string             `gorm:"not null;column:email;unique_index"`
+	EmailVerified  bool               `gorm:"not null;column:email_verified"`
+	Password       string             `gorm:"not null;column:password"`
+	Level          UserLevel          `gorm:"not null;column:level"`
+	ProductCC      steamapi.ProductCC `gorm:"not null;column:country_code"`
+	APIKey         string             `gorm:"not null;column:api_key"`
+	DonatedPatreon int                `gorm:"not null;column:donated_patreon"`
 }
 
 func (user *User) SetAPIKey() {
