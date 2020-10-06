@@ -260,6 +260,5 @@ func IsAdmin(r *http.Request) bool {
 
 func IsLoggedIn(r *http.Request) (val bool) {
 
-	read := Get(r, SessionUserEmail)
-	return read != ""
+	return Get(r, SessionUserID) != "" && Get(r, SessionUserEmail) != ""
 }
