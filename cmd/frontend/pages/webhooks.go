@@ -224,7 +224,8 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Update donation bits
-	if user.Donated < pwr.Data.Attributes.LifetimeSupportCents {
+	amount := pwr.Data.Attributes.LifetimeSupportCents - user.DonatedPatreon
+	if amount > 0 {
 
 		// Get player ID
 		var playerID int64
@@ -253,9 +254,9 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 			UserID:           user.ID,
 			PlayerID:         playerID,
 			Email:            user.Email,
-			AmountUSD:        pwr.Data.Attributes.WillPayAmountCents,
+			AmountUSD:        amount,
 			OriginalCurrency: currency.USD.String(),
-			OriginalAmount:   pwr.Data.Attributes.WillPayAmountCents,
+			OriginalAmount:   amount,
 			Source:           mysql.DonationSourcePatreon,
 			Anon:             false, // todo
 		}
