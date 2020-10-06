@@ -276,8 +276,21 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		// Update user
+		var level = mysql.UserLevel1
+
+		for _, v := range pwr.Data.Relationships.CurrentlyEntitledTiers.Data {
+			switch v := mysql.UserLevel(v.ID); v {
+			case PATREON_TIER_1, PATREON_TIER_2, PATREON_TIER_3:
+				if v > level {
+					level = v
+				}
+			}
+		}
+
 		update := map[string]interface{}{
 			"donated": pwr.Data.Attributes.LifetimeSupportCents,
+			"level":   level,
 		}
 
 		db = db.Model(&user).Updates(update)

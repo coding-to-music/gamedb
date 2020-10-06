@@ -71,6 +71,8 @@ github.com/Jleagle/influxql v0.0.0-20200804190929-88324f67bffe h1:HI7ZQfPMj8bROO
 github.com/Jleagle/influxql v0.0.0-20200804190929-88324f67bffe/go.mod h1:uk/L49IGLafa767sMdk1sCwO6AWZEzEOriCIERzdB6E=
 github.com/Jleagle/patreon-go v0.0.0-20200718083332-7a4c740e9bd3 h1:GdSRhoRFOyyeOdzzrS7LBTdFXFEuYIs6ZM4UJEAW6Rk=
 github.com/Jleagle/patreon-go v0.0.0-20200718083332-7a4c740e9bd3/go.mod h1:nf7hEdupgOorSajbB7rcl+HUpLOUJbwG4hF15kkTeJE=
+github.com/Jleagle/patreon-go v0.0.0-20201006180837-366bfaa6710a h1:I4uIIzK7ivhbgPQ5VQayCCMwS5F9Q1TCubjXqgq/u9o=
+github.com/Jleagle/patreon-go v0.0.0-20201006180837-366bfaa6710a/go.mod h1:nf7hEdupgOorSajbB7rcl+HUpLOUJbwG4hF15kkTeJE=
 github.com/Jleagle/rabbit-go v0.0.0-20200831220529-13e96c303e94 h1:ZnbMDEQpI0rbkXanXNRujTp4esYyCjnrULbouUEfDZs=
 github.com/Jleagle/rabbit-go v0.0.0-20200831220529-13e96c303e94/go.mod h1:7PltZcrBDjdPUl6rMohCe7DE/vAMAXoVx02z+bw7Z98=
 github.com/Jleagle/recaptcha-go v0.0.0-20200117124940-d00b2c62c076 h1:1iC2sM36BG8CDjy7bzFocvYKmFbOed35eyYqnCElaJU=
