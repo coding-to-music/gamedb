@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/Jleagle/go-durationfmt"
-	"github.com/Jleagle/patreon-go/patreon"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/datatable"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/geo"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/middleware"
@@ -415,16 +414,11 @@ func adminWebhooksAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var response = datatable.NewDataTablesResponse(r, query, count, count, nil)
 	for _, app := range webhooks {
 
-		wh, err := patreon.Unmarshal([]byte(app.RequestBody))
-		if err != nil {
-			log.ErrS(err)
-		}
-
 		response.AddRow([]interface{}{
 			app.CreatedAt.Format(helpers.DateSQL), // 0
 			app.Service,                           // 1
 			app.Event,                             // 2
-			wh,                                    // 3
+			app.RequestBody,                       // 3
 		})
 	}
 

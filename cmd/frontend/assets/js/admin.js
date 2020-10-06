@@ -261,6 +261,9 @@ if ($('#admin-webhooks-page').length > 0) {
                 'render': function (data, type, row) {
                     return row[0];
                 },
+                "createdCell": function (td, cellData, rowData, row, col) {
+                    $(td).attr('nowrap', 'nowrap');
+                },
                 'orderable': false,
             },
             // Service
@@ -268,6 +271,9 @@ if ($('#admin-webhooks-page').length > 0) {
                 'targets': 1,
                 'render': function (data, type, row) {
                     return row[1];
+                },
+                "createdCell": function (td, cellData, rowData, row, col) {
+                    $(td).attr('nowrap', 'nowrap');
                 },
                 'orderable': false,
             },
@@ -277,16 +283,8 @@ if ($('#admin-webhooks-page').length > 0) {
                 'render': function (data, type, row) {
                     return row[2];
                 },
-                'orderable': false,
-            },
-            // User
-            {
-                'targets': 3,
-                'render': function (data, type, row) {
-                    if (row[1] === 'patreon') {
-                        return row[3]['data']['relationships']['user']['data']['id'];
-                    }
-                    return '';
+                "createdCell": function (td, cellData, rowData, row, col) {
+                    $(td).attr('nowrap', 'nowrap');
                 },
                 'orderable': false,
             },
@@ -308,9 +306,7 @@ if ($('#admin-webhooks-page').length > 0) {
 
             } else {
 
-                const rowx = row.data()[2];
-
-                row.child('<pre>' + JSON.stringify(rowx, null, '  ') + '</pre>').show();
+                row.child('<pre>' + JSON.stringify(JSON.parse(row.data()[3]), null, 4) + '</pre>').show();
                 $(this).addClass('shown');
             }
         }
