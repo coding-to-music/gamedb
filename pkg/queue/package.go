@@ -267,7 +267,7 @@ func packageHandler(message *rabbit.Message) {
 }
 func updatePackageNameFromApp(pack *mongo.Package) (err error) {
 
-	if pack.HasEmptyName() || pack.HasEmptyIcon() || pack.ImageLogo == "" {
+	if pack.HasEmptyName() || pack.HasEmptyIcon() || pack.ImageLogo == "" || pack.ImagePage == "" {
 
 		apps, err := mongo.GetAppsByID(pack.Apps, bson.M{"_id": 1, "player_peak_alltime": 1})
 		if err != nil {
@@ -292,6 +292,10 @@ func updatePackageNameFromApp(pack *mongo.Package) (err error) {
 
 		if pack.ImageLogo == "" {
 			pack.ImageLogo = apps[0].GetHeaderImage()
+		}
+
+		if pack.ImagePage == "" {
+			pack.ImagePage = apps[0].GetHeaderImage()
 		}
 	}
 
