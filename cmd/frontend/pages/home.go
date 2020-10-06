@@ -140,10 +140,9 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 						}
 
 						// Force absolute for images.weserv.nl
-						// Not using domain from config to make local work
-						image := sub.GetIcon()
+						image := sub.ImagePage
 						if strings.HasPrefix(image, "/") {
-							image = "http://gamedb.online" + image
+							image = "http://gamedb.online" + image // Not using domain from config to make local work
 						}
 
 						topSellers = append(topSellers, homeTopSellerTemplate{
