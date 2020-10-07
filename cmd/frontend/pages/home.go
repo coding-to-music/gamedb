@@ -141,6 +141,9 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 						// Force absolute for images.weserv.nl
 						image := sub.ImagePage
+						if image == "" {
+							image = helpers.DefaultAppIcon
+						}
 						if strings.HasPrefix(image, "/") {
 							image = "http://gamedb.online" + image // Not using domain from config to make local work
 						}
