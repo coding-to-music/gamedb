@@ -17,7 +17,7 @@ var utils = []util{
 	saveFromPics{},
 	syncStates{},
 	testUtil{},
-	migrateOAuths{},
+	syncSubApp{},
 }
 
 func init() {

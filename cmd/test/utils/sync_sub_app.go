@@ -3,6 +3,7 @@ package utils
 import (
 	"sort"
 
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"go.mongodb.org/mongo-driver/bson"
@@ -11,17 +12,18 @@ import (
 type syncSubApp struct{}
 
 func (syncSubApp) name() string {
-	return "test"
+	return "sync-sub-app"
 }
 
 func (syncSubApp) run() {
 
 	var i int
 	err := mongo.BatchPackages(nil, nil, func(packages []mongo.Package) {
+		log.InfoS("Batch ", i)
 		for _, v := range packages {
-			log.InfoS("Batch ", i)
 			syncSubAppInner(&v)
 		}
+		i++
 	})
 	log.ErrS(err)
 }
@@ -57,7 +59,7 @@ func syncSubAppInner(pack *mongo.Package) {
 			update = append(update, bson.E{Key: "name", Value: apps[0].GetName()})
 		}
 
-		if pack.HasEmptyIcon() {
+		if pack.HasEmptyIcon() && apps[0].Icon != helpers.DefaultAppIcon {
 			update = append(update, bson.E{Key: "icon", Value: apps[0].GetIcon()})
 		}
 
