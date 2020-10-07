@@ -38,7 +38,7 @@ func CountryCodeToName(code string) string {
 func CountryCodeToContinent(code string) (string, error) {
 
 	switch code {
-	case "":
+	case "", "0":
 		return "", nil
 	case "BQ":
 		return ContinentSouthAmerica, nil
