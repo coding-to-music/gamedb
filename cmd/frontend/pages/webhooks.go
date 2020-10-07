@@ -152,7 +152,7 @@ func twitterZapierWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		_, err = discordSession.ChannelMessageSend(generalChannelID, webhooks.URL)
+		_, err = discordSession.ChannelMessageSend(announcementsChannelID, webhooks.URL)
 		if err != nil {
 			log.Err(err.Error())
 		}

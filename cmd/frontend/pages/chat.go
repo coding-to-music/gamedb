@@ -14,7 +14,8 @@ import (
 )
 
 const (
-	generalChannelID = "407493777058693121"
+	generalChannelID       = "407493777058693121"
+	announcementsChannelID = "763071873402798090"
 )
 
 var discordRelayBotSession *discordgo.Session
