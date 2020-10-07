@@ -351,11 +351,6 @@ func playerHandler(message *rabbit.Message) {
 func updatePlayerSummary(player *mongo.Player) error {
 
 	summary, err := steam.GetSteam().GetPlayer(player.ID)
-	if err == steamapi.ErrProfileMissing {
-		player.Removed = true
-		return nil
-	}
-
 	err = steam.AllowSteamCodes(err)
 	if err != nil {
 		return err
