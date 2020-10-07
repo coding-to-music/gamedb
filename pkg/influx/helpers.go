@@ -17,7 +17,7 @@ import (
 
 const (
 	InfluxGameDB     = "GameDB"
-	InfluxTelegrafDB = "Telegraf-Web"
+	InfluxTelegrafDB = "Telegraf"
 
 	InfluxRetentionPolicyAllTime InfluxRetentionPolicy = "alltime"
 	InfluxRetentionPolicy14Day   InfluxRetentionPolicy = "14d"
