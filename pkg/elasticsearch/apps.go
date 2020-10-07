@@ -146,7 +146,7 @@ func SearchAppsAdvanced(offset int, limit int, search string, sorters []elastic.
 
 func SearchAppsRandom(filters []elastic.Query) (app App, count int64, err error) {
 
-	apps, count, err := searchApps(1, 0, "", false, true, nil, filters, true)
+	apps, count, err := searchApps(1, 0, "", true, true, nil, filters, true)
 	if err != nil {
 		return app, count, err
 	}
