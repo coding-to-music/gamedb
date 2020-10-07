@@ -173,9 +173,9 @@ type twitterWebhook struct {
 }
 
 const (
-	PATREON_TIER_1 = 2431311
-	PATREON_TIER_2 = 2431320
-	PATREON_TIER_3 = 2431347
+	patreonTier1 = 2431311
+	patreonTier2 = 2431320
+	patreonTier3 = 2431347
 )
 
 func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
@@ -281,7 +281,7 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 
 		for _, v := range pwr.Data.Relationships.CurrentlyEntitledTiers.Data {
 			switch v := mysql.UserLevel(v.ID); v {
-			case PATREON_TIER_1, PATREON_TIER_2, PATREON_TIER_3:
+			case patreonTier1, patreonTier2, patreonTier3:
 				if v > level {
 					level = v
 				}
