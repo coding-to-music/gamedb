@@ -46,6 +46,7 @@ func websocketHandler(message *rabbit.Message) {
 			err = helpers.Unmarshal(payload.Message, &idPayload)
 			if err != nil {
 				log.ErrS(err)
+				continue
 			}
 
 			wsPage.Send(idPayload.ID)
@@ -57,6 +58,7 @@ func websocketHandler(message *rabbit.Message) {
 			err = helpers.Unmarshal(payload.Message, &idPayload)
 			if err != nil {
 				log.ErrS(err)
+				continue
 			}
 
 			wsPage.Send(idPayload.String)
@@ -68,6 +70,7 @@ func websocketHandler(message *rabbit.Message) {
 			err = helpers.Unmarshal(payload.Message, &playerPayload)
 			if err != nil {
 				log.ErrS(err)
+				continue
 			}
 
 			wsPage.Send(playerPayload)
@@ -79,6 +82,7 @@ func websocketHandler(message *rabbit.Message) {
 			err = helpers.Unmarshal(payload.Message, &cbPayload)
 			if err != nil {
 				log.ErrS(err)
+				continue
 			}
 
 			wsPage.Send(cbPayload)
@@ -90,6 +94,7 @@ func websocketHandler(message *rabbit.Message) {
 			err = helpers.Unmarshal(payload.Message, &adminPayload)
 			if err != nil {
 				log.ErrS(err)
+				continue
 			}
 
 			wsPage.Send(adminPayload)
@@ -101,6 +106,7 @@ func websocketHandler(message *rabbit.Message) {
 			err = helpers.Unmarshal(payload.Message, &changePayload)
 			if err != nil {
 				log.ErrS(err)
+				continue
 			}
 
 			wsPage.Send(changePayload.Data)
@@ -112,6 +118,7 @@ func websocketHandler(message *rabbit.Message) {
 			err = helpers.Unmarshal(payload.Message, &idPayload)
 			if err != nil {
 				log.ErrS(err)
+				continue
 			}
 
 			pack, err := mongo.GetPackage(idPayload.ID)
@@ -129,11 +136,13 @@ func websocketHandler(message *rabbit.Message) {
 			err = helpers.Unmarshal(payload.Message, &idPayload)
 			if err != nil {
 				log.ErrS(err)
+				continue
 			}
 
 			bundle, err := mysql.GetBundle(idPayload.ID, nil)
 			if err != nil {
 				log.ErrS(err)
+				continue
 			} else {
 				wsPage.Send(bundle.OutputForJSON())
 			}
@@ -145,11 +154,13 @@ func websocketHandler(message *rabbit.Message) {
 			err = helpers.Unmarshal(payload.Message, &idsPayload)
 			if err != nil {
 				log.ErrS(err)
+				continue
 			}
 
 			prices, err := mongo.GetPricesByID(idsPayload.IDs)
 			if err != nil {
 				log.ErrS(err)
+				continue
 			} else {
 				for _, v := range prices {
 					wsPage.Send(v.OutputForJSON())
