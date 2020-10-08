@@ -25,7 +25,12 @@
 
     #jumbotron {
 
-        img {
+        img#flag {
+            height: 2.5rem;
+            vertical-align: text-bottom;
+        }
+
+        img#avatar {
             float: right;
             height: 144px;
             margin: -2rem -2rem -2rem 2rem;

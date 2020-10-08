@@ -5,11 +5,16 @@
 
         <div class="jumbotron" id="jumbotron">
 
-            <img class="rounded d-none d-md-inline-block" src="{{ .Player.GetAvatar }}" alt="{{ .Player.GetName }}">
+            <img class="rounded d-none d-md-inline-block" id="avatar" src="{{ .Player.GetAvatar }}" alt="{{ .Player.GetName }}">
 
-            {{ template "social" .Player }}
-
-            <h1 class="text-truncate"><i class="fas fa-user"></i> {{ .Player.GetName }}</h1>
+            <h1 class="text-truncate">
+                {{ if ne .Player.CountryCode "" }}
+                    <img id="flag" class="wide" alt="{{ .Player.GetCountry }}" src="{{.Player.GetFlag}}" data-toggle="tooltip" data-placement="top" title="{{ .Player.GetCountry }}">
+                {{ else }}
+                    <i class="fas fa-user"></i>
+                {{ end }}
+                <span>{{ .Player.GetName }}</span>
+            </h1>
 
             <small class="d-block">
                 <a target="_blank" rel="noopener" href="{{ .Player.CommunityLink }}"><i class="fab fa-steam-square"></i> Steam Community Profile</a>
@@ -83,20 +88,30 @@
                                     <div class="card-body p-0">
                                         <div class="table-responsive">
                                             <table class="table table-no-border mb-0">
+                                                <tr data-link-tab="stats">
+                                                    <th scope="row">Value</th>
+                                                    <td nowrap="nowrap" colspan="2">
+                                                        {{ if gt .Player.GameStats.All.Count 0 }}
+                                                            <h4 class="text-danger mb-0">{{ .Player.GameStats.All.GetTotalPrice }}</h4>
+                                                        {{ else }}
+                                                            Private
+                                                        {{ end }}
+                                                    </td>
+                                                </tr>
                                                 <tr data-link-tab="badges">
-                                                    <th scope="col" nowrap="nowrap">Level</th>
+                                                    <th scope="row" nowrap="nowrap">Level</th>
                                                     <td><a href="/experience/{{ .Player.Level }}">{{ comma .Player.Level }}</a></td>
                                                 </tr>
                                                 <tr>
-                                                    <th scope="col" nowrap="nowrap">Comments</th>
+                                                    <th scope="row" nowrap="nowrap">Comments</th>
                                                     <td>{{ comma .Player.CommentsCount }}</td>
                                                 </tr>
                                                 <tr data-link-tab="stats">
-                                                    <th scope="col" nowrap="nowrap">Playtime</th>
+                                                    <th scope="row" nowrap="nowrap">Playtime</th>
                                                     <td>{{ .Player.GetPlaytimeShort "" 3 }}</td>
                                                 </tr>
                                                 <tr>
-                                                    <th scope="col" nowrap="nowrap">On Steam</th>
+                                                    <th scope="row" nowrap="nowrap">On Steam</th>
                                                     <td>
                                                         {{ if eq .Player.GetSteamTimeUnix 0 }}
                                                             -
@@ -105,44 +120,20 @@
                                                         {{ end }}
                                                     </td>
                                                 </tr>
-                                                {{ if ne .Player.CountryCode "" }}
-                                                    <tr>
-                                                        <th scope="col" nowrap="nowrap">Country</th>
-                                                        <td class="img">
-                                                            <div class="icon-name">
-                                                                <div class="icon"><img class="wide" alt="{{ .Player.GetCountry }}" src="{{.Player.GetFlag}}"></div>
-                                                                <div class="name min">{{ .Player.GetCountry }}</div>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                {{ end }}
                                                 {{ if ne .Player.StateCode "" }}
                                                     <tr>
-                                                        <th scope="col" nowrap="nowrap">State</th>
+                                                        <th scope="row" nowrap="nowrap">State</th>
                                                         <td>{{ .Player.GetStateName }}</td>
                                                     </tr>
                                                 {{ end }}
                                                 <tr>
-                                                    <th scope="col" nowrap="nowrap">Last Updated</th>
+                                                    <th scope="row" nowrap="nowrap">Last Updated</th>
                                                     <td><span data-toggle="tooltip" data-placement="top" title="{{ .Player.GetUpdatedNice }}" data-livestamp="{{ .Player.GetUpdatedUnix }}">{{ .Player.GetUpdatedNice }}</span></td>
                                                 </tr>
                                             </table>
                                         </div>
                                     </div>
 
-                                </div>
-
-                                <div class="card mb-3" data-link-tab="stats">
-                                    {{/*<h5 class="card-header">Value</h5>*/}}
-                                    <div class="card-body">
-                                        <h4 class="mb-0 text-danger">
-                                            {{ if gt .Player.GameStats.All.Count 0 }}
-                                                Value: {{ .Player.GameStats.All.GetTotalPrice }}
-                                            {{ else }}
-                                                Value: Private
-                                            {{ end }}
-                                        </h4>
-                                    </div>
                                 </div>
 
                             </div>
