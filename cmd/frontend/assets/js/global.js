@@ -175,7 +175,10 @@ const $lockIcon = '<i class="fa fa-lock text-muted" data-toggle="tooltip" data-p
 function addDataTablesRow(options, data, limit, $table) {
 
     let $row = $('<tr class="fade-green" />');
-    options.createdRow($row[0], data, null);
+
+    if (typeof options.createdRow === 'function') {
+        options.createdRow($row[0], data, null);
+    }
 
     if (isIterable(options.columnDefs)) {
         for (const v of options.columnDefs) {
