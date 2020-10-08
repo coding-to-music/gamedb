@@ -145,6 +145,9 @@
                         <div class="row no-gutters">
                             {{ range .TopSellers }}
                                 <div class="col-6 col-md-12">
+                                    {{ if eq .Type $.ConstPackage }}
+                                        <div class="type">{{ .Type.String }}</div>
+                                    {{ end }}
                                     <a href="{{ .Path }}">
                                         <img src='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 215"%3E%3C/svg%3E' data-lazy="https://images.weserv.nl/?url={{ .Image }}&output=webp&w=460&h=215&fit=cover" alt="{{ .Name }}">
                                     </a>

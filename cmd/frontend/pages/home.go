@@ -85,7 +85,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	// Top games
+	// Top sellers
 	wg.Add(1)
 	go func() {
 
@@ -124,6 +124,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 							Path:  app.GetPath(),
 							Name:  app.GetName(),
 							Image: app.GetHeaderImage(),
+							Type:  helpers.ProductTypeApp,
 						})
 					}
 				}
@@ -153,6 +154,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 							Path:  sub.GetPath(),
 							Name:  sub.GetName(),
 							Image: image,
+							Type:  helpers.ProductTypePackage,
 						})
 					}
 				}
@@ -173,16 +175,21 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
+	t.ConstApp = helpers.ProductTypeApp
+	t.ConstPackage = helpers.ProductTypePackage
+
 	//
 	returnTemplate(w, r, "home", t)
 }
 
 type homeTemplate struct {
 	globalTemplate
-	TopGames   []mongo.App
-	NewGames   []mongo.App
-	Players    []mongo.Player
-	TopSellers []homeTopSellerTemplate
+	TopGames     []mongo.App
+	NewGames     []mongo.App
+	Players      []mongo.Player
+	TopSellers   []homeTopSellerTemplate
+	ConstApp     helpers.ProductType
+	ConstPackage helpers.ProductType
 }
 
 type homeTopSellerTemplate struct {
@@ -190,6 +197,7 @@ type homeTopSellerTemplate struct {
 	Path  string
 	Name  string
 	Image string
+	Type  helpers.ProductType
 }
 
 type RDF struct {

@@ -15,6 +15,18 @@ import (
 
 type ProductType int
 
+func (pt ProductType) String() string {
+
+	switch pt {
+	case ProductTypeApp:
+		return "Game"
+	case ProductTypePackage:
+		return "Package"
+	default:
+		return "?"
+	}
+}
+
 const (
 	ProductTypeApp ProductType = iota
 	ProductTypePackage

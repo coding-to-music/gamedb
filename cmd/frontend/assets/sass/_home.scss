@@ -59,6 +59,16 @@ body.dark {
     }
 
     .games {
+
+        .type {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: #28a745;
+            padding: 1px 4px;
+            opacity: 0.9;
+        }
+
         img {
             width: 100%;
             border-bottom: solid 1px white;
