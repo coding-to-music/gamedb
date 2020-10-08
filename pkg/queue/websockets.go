@@ -199,10 +199,7 @@ type AdminPayload struct {
 }
 
 type ChatBotPayload struct {
-	AuthorID     string `json:"author_id"`
-	AuthorName   string `json:"author_name"`
-	AuthorAvatar string `json:"author_avatar"`
-	Message      string `json:"message"`
+	RowData []interface{} `json:"row_data"`
 }
 
 type ChatPayload struct {

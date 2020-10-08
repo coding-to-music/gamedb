@@ -111,9 +111,8 @@ func main() {
 				// Save stats
 				if m.Author.ID != debugAuthorID {
 					defer saveToInflux(m, command)
-					defer saveToMongo(m, command, msg)
+					defer saveToMongoAndSendWebsocket(m, command, msg)
 				}
-				defer sendWebsocket(m, msg)
 
 				// Typing notification
 				err = discordSession.ChannelTyping(m.ChannelID)
@@ -226,7 +225,7 @@ func saveToInflux(m *discordgo.MessageCreate, command chatbot.Command) {
 	}
 }
 
-func saveToMongo(m *discordgo.MessageCreate, command chatbot.Command, message string) {
+func saveToMongoAndSendWebsocket(m *discordgo.MessageCreate, command chatbot.Command, message string) {
 
 	if config.IsLocal() {
 		return
@@ -249,17 +248,16 @@ func saveToMongo(m *discordgo.MessageCreate, command chatbot.Command, message st
 	if err != nil {
 		log.ErrS(err)
 	}
-}
 
-func sendWebsocket(m *discordgo.MessageCreate, message string) {
+	guilds, err := mongo.GetGuilds([]string{row.GuildID})
+	if err != nil {
+		log.ErrS(err)
+	}
 
 	wsPayload := queue.ChatBotPayload{}
-	wsPayload.AuthorID = m.Author.ID
-	wsPayload.AuthorName = m.Author.Username
-	wsPayload.AuthorAvatar = m.Author.Avatar
-	wsPayload.Message = message
+	wsPayload.RowData = row.GetTableRowJSON(guilds)
 
-	err := queue.ProduceWebsocket(wsPayload, websockets.PageChatBot)
+	err = queue.ProduceWebsocket(wsPayload, websockets.PageChatBot)
 	if err != nil {
 		log.ErrS(err)
 	}

@@ -3,13 +3,11 @@ package pages
 import (
 	"net/http"
 	"sort"
-	"strings"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/chatbot"
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -142,30 +140,14 @@ func chatBotRecentHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	guilds, err := mongo.GetGuilds(guildIDs)
+	if err != nil {
+		log.ErrS(err)
+	}
 
-	var last string
 	var response = datatable.NewDataTablesResponse(r, query, 100, 100, nil)
 	for _, command := range commands {
 
-		// Show all command prefixes as a full stop
-		if strings.HasPrefix(command.Message, "!") {
-			command.Message = strings.Replace(command.Message, "!", ".", 1)
-		}
-
-		if last != command.AuthorID+command.Message { // Stop dupes
-
-			response.AddRow([]interface{}{
-				command.AuthorID,                     // 0
-				command.AuthorName,                   // 1
-				command.AuthorAvatar,                 // 2
-				command.Message,                      // 3
-				command.Time.Unix(),                  // 4
-				command.Time.Format(helpers.DateSQL), // 5
-				guilds[command.GuildID].Name,         // 6
-			})
-		}
-
-		last = command.AuthorID + command.Message
+		response.AddRow(command.GetTableRowJSON(guilds))
 	}
 
 	returnJSON(w, r, response)

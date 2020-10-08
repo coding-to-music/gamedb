@@ -59,7 +59,7 @@ if ($('#chat-bot-page').length > 0) {
         if (info.page === 0) { // Page 1
 
             const data = JSON.parse(e.data);
-            addDataTablesRow(options, data.Data, info.length, $table);
+            addDataTablesRow(options, data.Data['row_data'], info.length, $table);
         }
     });
 }
