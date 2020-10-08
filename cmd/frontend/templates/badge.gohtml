@@ -9,8 +9,6 @@
                 <img src="{{ .Badge.GetIcon }}" alt="{{ .Badge.GetName }}">
             {{ end }}
 
-            {{ template "social" .Badge }}
-
             <h1 class="text-truncate mb-4"><i class="fas fa-ribbon"></i> {{ .Badge.GetName }}</h1>
 
             <p class="lead mb-3">{{ .Badge.GetType }} Badge{{ if .Badge.BadgeFoil }} (Foil){{ end }}</p>

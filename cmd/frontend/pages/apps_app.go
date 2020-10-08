@@ -101,7 +101,6 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	t.addAssetJSON2HTML()
 	t.addAssetMomentData()
 	t.metaImage = app.GetMetaImage()
-	t.IncludeSocialJS = true
 	t.App = app
 	t.Description = template.HTML(app.ShortDescription)
 	t.Canonical = app.GetPath()

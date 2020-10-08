@@ -318,7 +318,6 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, player.GetName(), "")
 	t.addAssetHighCharts()
 	t.addAssetCalmosaic()
-	t.IncludeSocialJS = true
 
 	t.Banners = banners
 	t.Canonical = player.GetPath()

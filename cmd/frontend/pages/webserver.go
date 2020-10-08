@@ -256,7 +256,6 @@ type globalTemplate struct {
 	Env             string        // Environment
 	CSSFiles        []Asset
 	JSFiles         []Asset
-	IncludeSocialJS bool
 	Canonical       string
 	ProductCCs      []i18n.ProductCountryCode
 	Continents      []i18n.Continent
