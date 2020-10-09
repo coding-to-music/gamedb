@@ -8,6 +8,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
+	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/go-chi/chi"
 )
 
@@ -38,21 +39,21 @@ func queuesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	err := memcache.GetSetInterface(item.Key, item.Expiration, &highcharts, func() (interface{}, error) {
 
-		fields := []string{
-			`"queue"='GDB_Apps'`,
-			`"queue"='GDB_Bundles'`,
-			`"queue"='GDB_Changes'`,
-			`"queue"='GDB_Groups'`,
-			`"queue"='GDB_Packages'`,
-			`"queue"='GDB_Players'`,
-			// `"queue"='GDB_Steam'`,
+		// just get ones with prefix of frontend
+		var fields = []string{
+			string(queue.QueueApps),
+			string(queue.QueueBundles),
+			string(queue.QueueChanges),
+			string(queue.QueueGroups),
+			string(queue.QueuePackages),
+			string(queue.QueuePlayers),
 		}
 
 		builder := influxql.NewBuilder()
 		builder.AddSelect(`sum("messages")`, "sum_messages")
 		builder.SetFrom(influx.InfluxTelegrafDB, influx.InfluxRetentionPolicy14Day.String(), influx.InfluxMeasurementRabbitQueue.String())
 		builder.AddWhere("time", ">=", "now() - 1h")
-		builder.AddWhereRaw("(" + strings.Join(fields, " OR ") + ")")
+		builder.AddWhereRaw(`"queue" =~ /^(` + strings.Join(fields, "|") + `)/`)
 		builder.AddGroupByTime("10s")
 		builder.AddGroupBy("queue")
 		builder.SetFillNone()
@@ -66,7 +67,7 @@ func queuesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		ret := map[string]influx.HighChartsJSON{}
 		if len(resp.Results) > 0 {
 			for _, v := range resp.Results[0].Series {
-				ret[strings.Replace(v.Tags["queue"], "GameDB_Go_", "", 1)] = influx.InfluxResponseToHighCharts(v, false)
+				ret[strings.Replace(v.Tags["queue"], "GameDB_Go_", "", 1)] = influx.InfluxResponseToHighCharts(v)
 			}
 		}
 

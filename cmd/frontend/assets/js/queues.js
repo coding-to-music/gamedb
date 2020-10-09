@@ -19,6 +19,8 @@ if ($('#queues-page').length > 0 || $('#player-missing-page').length > 0) {
 
     const timer = window.setInterval(updateCharts, 10000); // 10 Seconds
 
+    let firstRun = true;
+
     function updateCharts() {
 
         if (!activeWindow) {
@@ -32,9 +34,29 @@ if ($('#queues-page').length > 0 || $('#player-missing-page').length > 0) {
             success: function (data, textStatus, jqXHR) {
 
                 $.each(charts, function (index, value) {
-                    value.series[0].setData(data['GDB_' + index]['sum_messages']);
+
+                    let seriesKey = 0
+
+                    for (let k in data) {
+                        if (data.hasOwnProperty(k)) {
+                            if (k.startsWith('GDB_' + index)) {
+
+                                if (firstRun) {
+                                    value.addSeries({
+                                        name: k,
+                                        data: data[k]['sum_messages'],
+                                    });
+                                } else {
+                                    value.series[seriesKey].setData(data[k]['sum_messages']);
+                                }
+
+                                seriesKey++;
+                            }
+                        }
+                    }
                 });
 
+                firstRun = false;
                 $('#live-badge').addClass('badge-success').removeClass('badge-secondary badge-danger');
             },
             error: function (xhr, ajaxOptions, thrownError) {
@@ -78,17 +100,10 @@ if ($('#queues-page').length > 0 || $('#player-missing-page').length > 0) {
                     animation: false
                 }
             },
-            series: [
-                {
-                    color: '#28a745',
-                    yAxis: 0,
-                    name: 'size',
-                    type: 'areaspline',
-                },
-            ],
+            series: [],
             tooltip: {
                 formatter: function () {
-                    return this.y.toLocaleString() + ' items in the queue at ' + moment(this.key).format("h:mm") + ' UTC';
+                    return this.y.toLocaleString() + ' items in ' + this.series.name.replace(/^GDB_/, '') + ' at ' + moment(this.key).format("h:mm");
                 },
             }
         }));
