@@ -72,7 +72,7 @@ var (
 	MemcacheHomePlayers = func(sort string) Item { return Item{Key: "home-players-" + sort, Expiration: 60 * 60 * 48} }
 
 	// Queue
-	MemcacheQueues         = Item{Key: "queues", Expiration: 10}
+	MemcacheQueues         = Item{Key: "queues", Expiration: 9} // Frontend refreshes every 10 seconds
 	MemcacheAppInQueue     = func(appID int) Item { return Item{Key: "app-in-queue-" + strconv.Itoa(appID), Expiration: 60 * 60, Value: "1"} }
 	MemcacheBundleInQueue  = func(bundleID int) Item { return Item{Key: "bundle-in-queue-" + strconv.Itoa(bundleID), Expiration: 60 * 60, Value: "1"} }
 	MemcachePackageInQueue = func(packageID int) Item { return Item{Key: "package-in-queue-" + strconv.Itoa(packageID), Expiration: 60 * 60, Value: "1"} }
