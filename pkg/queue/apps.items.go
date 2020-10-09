@@ -26,7 +26,7 @@ func appItemsHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 		sendToFailQueue(message)
 		return
 	}
@@ -104,7 +104,7 @@ func appItemsHandler(message *rabbit.Message) {
 
 	resp, err := mongo.GetAppItems(0, 0, filter, bson.M{"item_def_id": 1})
 	if err != nil {
-		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 		sendToRetryQueue(message)
 		return
 	}
@@ -116,7 +116,7 @@ func appItemsHandler(message *rabbit.Message) {
 
 	err = mongo.DeleteAppItems(payload.AppID, itemIDsToDelete)
 	if err != nil {
-		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 		sendToRetryQueue(message)
 		return
 	}
@@ -125,7 +125,7 @@ func appItemsHandler(message *rabbit.Message) {
 	// Always save them all incase they change
 	err = mongo.ReplaceAppItems(newDocuments)
 	if err != nil {
-		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 		sendToRetryQueue(message)
 		return
 	}
@@ -138,7 +138,7 @@ func appItemsHandler(message *rabbit.Message) {
 
 	_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", payload.AppID}}, update)
 	if err != nil {
-		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 		sendToRetryQueue(message)
 		return
 	}
@@ -151,7 +151,7 @@ func appItemsHandler(message *rabbit.Message) {
 
 	err = memcache.Delete(items...)
 	if err != nil {
-		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 		sendToRetryQueue(message)
 		return
 	}

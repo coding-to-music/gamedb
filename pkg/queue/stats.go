@@ -32,7 +32,7 @@ func statsHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 		sendToFailQueue(message)
 		return
 	}
@@ -42,7 +42,7 @@ func statsHandler(message *rabbit.Message) {
 	stat.ID = payload.StatID
 
 	if payload.AppsCount == 0 {
-		log.Err("Missing app count", zap.ByteString("message", message.Message.Body))
+		log.Err("Missing app count", zap.String("body", string(message.Message.Body)))
 		sendToRetryQueue(message)
 		return
 	}
@@ -79,7 +79,7 @@ func statsHandler(message *rabbit.Message) {
 
 	err = mongo.BatchApps(filter, projection, callback)
 	if err != nil {
-		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 		sendToRetryQueue(message)
 		return
 	}
@@ -136,7 +136,7 @@ func statsHandler(message *rabbit.Message) {
 
 	_, err = mongo.UpdateOne(mongo.CollectionStats, bson.D{{"_id", stat.GetKey()}}, update)
 	if err != nil {
-		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 		sendToRetryQueue(message)
 		return
 	}
@@ -171,7 +171,7 @@ func statsHandler(message *rabbit.Message) {
 
 	_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, point)
 	if err != nil {
-		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 		sendToRetryQueue(message)
 		return
 	}

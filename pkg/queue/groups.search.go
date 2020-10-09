@@ -24,7 +24,7 @@ func groupsSearchHandler(message *rabbit.Message) {
 	payload := GroupSearchMessage{}
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 		sendToFailQueue(message)
 		return
 	}
@@ -40,7 +40,7 @@ func groupsSearchHandler(message *rabbit.Message) {
 
 		groupMongo, err = mongo.GetGroup(payload.GroupID)
 		if err != nil {
-			log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
+			log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 			sendToRetryQueue(message)
 			return
 		}
@@ -75,7 +75,7 @@ func groupsSearchHandler(message *rabbit.Message) {
 
 	err = elasticsearch.IndexGroup(group)
 	if err != nil {
-		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 		sendToRetryQueue(message)
 		return
 	}

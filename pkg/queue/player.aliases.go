@@ -29,7 +29,7 @@ func playerAliasesHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 		sendToFailQueue(message)
 		return
 	}
@@ -87,7 +87,7 @@ func playerAliasesHandler(message *rabbit.Message) {
 
 	err = mongo.ReplacePlayerAliases(playerAliases)
 	if err != nil {
-		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 		sendToRetryQueue(message)
 		return
 	}
@@ -97,7 +97,7 @@ func playerAliasesHandler(message *rabbit.Message) {
 
 	_, err = mongo.UpdateOne(mongo.CollectionPlayers, bson.D{{"_id", payload.PlayerID}}, update)
 	if err != nil {
-		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 		sendToRetryQueue(message)
 		return
 	}
@@ -105,7 +105,7 @@ func playerAliasesHandler(message *rabbit.Message) {
 	// Clear player cache
 	err = memcache.Delete(memcache.MemcachePlayer(payload.PlayerID).Key)
 	if err != nil {
-		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 		sendToRetryQueue(message)
 		return
 	}
@@ -113,7 +113,7 @@ func playerAliasesHandler(message *rabbit.Message) {
 	// Update Elastic
 	err = ProducePlayerSearch(nil, payload.PlayerID)
 	if err != nil {
-		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 		sendToRetryQueue(message)
 		return
 	}

@@ -46,10 +46,10 @@ func (ql QueryLogger) End() {
 		}
 
 		b, _ := json.Marshal(ql.filter)
-		is = append(is, zap.ByteString("filter", b))
+		is = append(is, zap.String("filter", string(b)))
 
 		b, _ = json.Marshal(ql.sort)
-		is = append(is, zap.ByteString("sort", b))
+		is = append(is, zap.String("sort", string(b)))
 
 		zap.L().Named(log.LogNameMongo).Warn("Mongo call taking "+diffFormatted, is...)
 	}

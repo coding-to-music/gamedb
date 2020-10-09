@@ -28,7 +28,7 @@ func playersWishlistHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 		sendToFailQueue(message)
 		return
 	}
@@ -46,7 +46,7 @@ func playersWishlistHandler(message *rabbit.Message) {
 
 	} else if err != nil {
 
-		steam.LogSteamError(err, zap.ByteString("message", message.Message.Body))
+		steam.LogSteamError(err, zap.String("body", string(message.Message.Body)))
 		sendToRetryQueue(message)
 		return
 	}
@@ -60,7 +60,7 @@ func playersWishlistHandler(message *rabbit.Message) {
 	// Old
 	oldAppsSlice, err := mongo.GetPlayerWishlistAppsByPlayer(payload.PlayerID, 0, 0, nil, nil)
 	if err != nil {
-		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 		sendToRetryQueue(message)
 		return
 	}
@@ -80,7 +80,7 @@ func playersWishlistHandler(message *rabbit.Message) {
 
 	err = mongo.DeletePlayerWishlistApps(payload.PlayerID, toDelete)
 	if err != nil {
-		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 		sendToRetryQueue(message)
 		return
 	}
@@ -102,7 +102,7 @@ func playersWishlistHandler(message *rabbit.Message) {
 	// Fill in data from SQL
 	apps, err := mongo.GetAppsByID(toAddIDs, bson.M{"_id": 1, "name": 1, "icon": 1, "release_state": 1, "release_date": 1, "release_date_unix": 1, "prices": 1})
 	if err != nil {
-		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 		sendToRetryQueue(message)
 		return
 	}
@@ -123,7 +123,7 @@ func playersWishlistHandler(message *rabbit.Message) {
 
 	err = mongo.ReplacePlayerWishlistApps(toAdd)
 	if err != nil {
-		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 		sendToRetryQueue(message)
 		return
 	}
@@ -135,7 +135,7 @@ func playersWishlistHandler(message *rabbit.Message) {
 
 	_, err = mongo.UpdateOne(mongo.CollectionPlayers, bson.D{{"_id", payload.PlayerID}}, update)
 	if err != nil {
-		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 		sendToRetryQueue(message)
 		return
 	}
@@ -147,7 +147,7 @@ func playersWishlistHandler(message *rabbit.Message) {
 
 	err = memcache.Delete(items...)
 	if err != nil {
-		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 		sendToRetryQueue(message)
 		return
 	}
@@ -155,7 +155,7 @@ func playersWishlistHandler(message *rabbit.Message) {
 	// Update Elastic
 	// err = ProducePlayerSearch(nil, payload.PlayerID)
 	// if err != nil {
-	// 	log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
+	// 	log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 	// 	sendToRetryQueue(message)
 	// 	return
 	// }

@@ -29,7 +29,7 @@ func appAchievementsHandler(message *rabbit.Message) {
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
 	if err != nil {
-		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
+		log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 		sendToFailQueue(message)
 		return
 	}
@@ -104,7 +104,7 @@ func appAchievementsHandler(message *rabbit.Message) {
 	//
 	// 	_, err = mongo.UpdateManySet(mongo.CollectionPlayerAchievements, filter, update)
 	// 	if err != nil {
-	// 		log.Err(err.Error(), zap.ByteString("message", message.Message.Body))
+	// 		log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 	// 	}
 	// }
 

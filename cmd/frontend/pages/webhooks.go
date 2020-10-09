@@ -201,7 +201,7 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 	// Handle
 	pwr, err := patreon.Unmarshal(b)
 	if err != nil {
-		log.Err(err.Error(), zap.ByteString("webhook", b))
+		log.Err(err.Error(), zap.String("body", string(b)))
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -303,7 +303,7 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 		// Create event
 		err = mongo.NewEvent(r, user.ID, mongo.EventPatreonWebhook+"-"+mongo.EventEnum(event))
 		if err != nil {
-			log.Err(err.Error(), zap.ByteString("webhook", b))
+			log.Err(err.Error(), zap.String("body", string(b)))
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
