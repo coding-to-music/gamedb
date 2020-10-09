@@ -172,10 +172,24 @@ type twitterWebhook struct {
 	URL          string `json:"url"`
 }
 
+type patreonTier int
+
+func (t patreonTier) toUserLevel() mysql.UserLevel {
+	switch t {
+	case patreonTier1:
+		return mysql.UserLevel2
+	case patreonTier2:
+		return mysql.UserLevel3
+	case patreonTier3:
+		return mysql.UserLevel4
+	}
+	return mysql.UserLevel1
+}
+
 const (
-	patreonTier1 = 2431311
-	patreonTier2 = 2431320
-	patreonTier3 = 2431347
+	patreonTier1 patreonTier = 2431311
+	patreonTier2 patreonTier = 2431320
+	patreonTier3 patreonTier = 2431347
 )
 
 func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
@@ -280,10 +294,10 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 		var level = mysql.UserLevel1
 
 		for _, v := range pwr.Data.Relationships.CurrentlyEntitledTiers.Data {
-			switch v := mysql.UserLevel(v.ID); v {
+			switch i := patreonTier(v.ID); i {
 			case patreonTier1, patreonTier2, patreonTier3:
-				if v > level {
-					level = v
+				if i.toUserLevel() > level {
+					level = i.toUserLevel()
 				}
 			}
 		}
