@@ -13,7 +13,7 @@ import (
 	"github.com/gosimple/slug"
 )
 
-type ProductType int
+type ProductType uint8
 
 func (pt ProductType) String() string {
 

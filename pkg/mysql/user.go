@@ -18,7 +18,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type UserLevel int
+type UserLevel uint8
 
 const (
 	UserLevel0 UserLevel = iota // Guest

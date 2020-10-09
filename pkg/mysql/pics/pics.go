@@ -45,7 +45,7 @@ type KeyValue struct {
 	Key            string
 	Value          string
 	ValueFormatted interface{}
-	Type           int
+	Type           uint8
 	Description    string
 }
 

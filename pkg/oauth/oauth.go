@@ -7,7 +7,7 @@ import (
 	"golang.org/x/oauth2"
 )
 
-type ProviderType int
+type ProviderType uint8
 
 const (
 	TypeOAuth ProviderType = iota

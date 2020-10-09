@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	picsTypeBool = iota + 1
+	picsTypeBool uint8 = iota + 1
 	picsTypeBytes
 	picsTypeCustom
 	picsTypeImage
@@ -212,12 +212,12 @@ var UFSKeys = map[string]PicsKey{
 }
 
 type PicsKey struct {
-	FormatType  int
+	FormatType  uint8
 	Link        string
 	Description string
 }
 
-func getType(key string, keys map[string]PicsKey) int {
+func getType(key string, keys map[string]PicsKey) uint8 {
 
 	if val, ok := keys[key]; ok {
 		return val.FormatType
