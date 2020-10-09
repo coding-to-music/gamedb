@@ -120,7 +120,7 @@ func playerHandler(message *rabbit.Message) {
 		if err != nil {
 
 			if err == steamapi.ErrProfileMissing {
-				message.Ack()
+				player.Removed = true
 			} else {
 				steam.LogSteamError(err, payload.ID)
 				sendToRetryQueue(message)
