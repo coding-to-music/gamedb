@@ -22,7 +22,19 @@ const (
 )
 
 var (
-	settings          = map[string]interface{}{"number_of_shards": 1, "number_of_replicas": 0}
+	settings = map[string]interface{}{
+		"number_of_shards":   1,
+		"number_of_replicas": 0,
+		"analysis": map[string]interface{}{
+			"normalizer": map[string]interface{}{
+				"gdb_lowercase": map[string]interface{}{
+					"type":   "custom",
+					"filter": []string{"lowercase", "asciifolding"},
+				},
+			},
+		},
+	}
+
 	fieldTypeInt32    = map[string]interface{}{"type": "integer"}
 	fieldTypeInt64    = map[string]interface{}{"type": "long"}
 	fieldTypeFloat32  = map[string]interface{}{"type": "float"}
