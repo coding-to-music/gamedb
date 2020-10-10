@@ -20,49 +20,23 @@
                 </h5>
 
             </div>
-            <div class="card-body">
+            <div class="card-body pt-0">
 
                 {{ if eq .Env "local" }}
-                    <div class="alert alert-primary" role="alert">Showing production queues</div>
+                    <div class="alert alert-primary mb-0 mt-4" role="alert">Showing production queues</div>
                 {{ end }}
 
                 <div class="row">
-                    <div class="col-12 col-xl-6">
-                        <div data-queue="Players" class="mb-2">
-                            <h5>Players</h5>
-                            <div id="profiles"><i class="fas fa-spinner fa-spin fa-fw"></i></div>
+                    {{ range .Charts }}
+                        <div class="col-12 col-lg-6 mt-4">
+                            <div class="card">
+                                <h5 class="card-header">{{ . }}</h5>
+                                <div class="card-body" data-queue="{{ . }}" id="{{ . }}">
+                                    <i class="fas fa-spinner fa-spin fa-fw"></i>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-12 col-xl-6">
-                        <div data-queue="Groups" class="mb-2">
-                            <h5>Groups</h5>
-                            <div id="groups"><i class="fas fa-spinner fa-spin fa-fw"></i></div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-xl-6">
-                        <div data-queue="Apps" class="mb-2">
-                            <h5>Apps</h5>
-                            <div id="apps"><i class="fas fa-spinner fa-spin fa-fw"></i></div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-xl-6">
-                        <div data-queue="Packages" class="mb-2">
-                            <h5>Packages</h5>
-                            <div id="packages"><i class="fas fa-spinner fa-spin fa-fw"></i></div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-xl-6">
-                        <div data-queue="Bundles" class="mb-2">
-                            <h5>Bundles</h5>
-                            <div id="bundles"><i class="fas fa-spinner fa-spin fa-fw"></i></div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-xl-6">
-                        <div data-queue="Changes" class="mb-2">
-                            <h5>Changes</h5>
-                            <div id="changes"><i class="fas fa-spinner fa-spin fa-fw"></i></div>
-                        </div>
-                    </div>
+                    {{ end }}
                 </div>
 
             </div>

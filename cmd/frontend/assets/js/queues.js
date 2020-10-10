@@ -12,7 +12,7 @@ if ($('#queues-page').length > 0 || $('#player-missing-page').length > 0) {
 
     const charts = {};
     $('[data-queue]').each(function (index, value) {
-        charts[$(this).attr('data-queue')] = loadChart($(this).find('div').attr('id'));
+        charts[$(this).attr('data-queue')] = loadChart($(this).attr('id'));
     });
 
     updateCharts();
