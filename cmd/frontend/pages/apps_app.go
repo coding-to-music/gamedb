@@ -562,6 +562,7 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		filter2 = append(filter2, bson.E{Key: "$or", Value: bson.A{
 			bson.M{"_id": search},
 			bson.M{"title": bson.M{"$regex": quoted, "$options": "i"}},
+			bson.M{"author": bson.M{"$regex": quoted, "$options": "i"}},
 		}})
 	}
 
