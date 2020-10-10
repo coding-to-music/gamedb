@@ -94,6 +94,7 @@ func appNewsHandler(message *rabbit.Message) {
 		m := AppsArticlesSearchMessage{
 			ID:          int64(v.GID),
 			Title:       v.Title,
+			Author:      v.Author,
 			Body:        v.Contents,
 			Time:        v.Date,
 			AppID:       app.ID,

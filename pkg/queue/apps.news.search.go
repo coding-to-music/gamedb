@@ -11,6 +11,7 @@ import (
 type AppsArticlesSearchMessage struct {
 	ID          int64  `json:"id"`
 	Title       string `json:"title"`
+	Author      string `json:"author"`
 	Body        string `json:"body"`
 	Time        int64  `json:"time"`
 	AppID       int    `json:"app_id"`
@@ -33,6 +34,7 @@ func appsArticlesSearchHandler(message *rabbit.Message) {
 	article := elasticsearch.Article{}
 	article.ID = payload.ID
 	article.Title = payload.Title
+	article.Author = payload.Author
 	article.Body = payload.Body
 	article.Time = payload.Time
 	article.AppID = payload.AppID

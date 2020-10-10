@@ -15,6 +15,7 @@ type Article struct {
 	ID          int64   `json:"id"`
 	Title       string  `json:"title"`
 	TitleMarked string  `json:"title_marked"`
+	Author      string  `json:"author"`
 	Body        string  `json:"body"`
 	AppID       int     `json:"app_id"`
 	AppName     string  `json:"app_name"`
@@ -84,6 +85,7 @@ func SearchArticles(offset int, sorters []elastic.Sorter, search string) (articl
 				elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
 					elastic.NewMatchQuery("title", search).Boost(2),
 					elastic.NewMatchQuery("app_name", search).Boost(1),
+					elastic.NewMatchQuery("author", search).Boost(1),
 					elastic.NewPrefixQuery("title", search).Boost(0.2),
 					elastic.NewPrefixQuery("app_name", search).Boost(0.1),
 				),
@@ -147,6 +149,7 @@ func DeleteAndRebuildArticlesIndex() {
 			"properties": map[string]interface{}{
 				"id":       fieldTypeDisabled,
 				"title":    fieldTypeText,
+				"author":   fieldTypeKeyword,
 				"body":     fieldTypeDisabled,
 				"app_id":   fieldTypeDisabled,
 				"app_name": fieldTypeText,
