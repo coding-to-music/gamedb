@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/Jleagle/rabbit-go"
-	"github.com/gamedb/gamedb/pkg/mongo"
 )
 
 const (
@@ -16,8 +15,6 @@ const (
 func delayHandler(message *rabbit.Message) {
 
 	time.Sleep(time.Second / 10)
-
-	mongo.CreateDelayQueueMessage(message)
 
 	// If time.Now() is before "delay-until", keep delaying
 	if val, ok := message.Message.Headers["delay-until"]; ok {
