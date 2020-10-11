@@ -332,6 +332,7 @@ func adminWebhooksAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			app.Service,                           // 1
 			app.Event,                             // 2
 			app.RequestBody,                       // 3
+			app.GetHash(),                         // 4
 		})
 	}
 

@@ -289,6 +289,17 @@ if ($('#admin-webhooks-page').length > 0) {
                 },
                 'orderable': false,
             },
+            // Event
+            {
+                'targets': 3,
+                'render': function (data, type, row) {
+                    return row[4];
+                },
+                "createdCell": function (td, cellData, rowData, row, col) {
+                    $(td).attr('nowrap', 'nowrap');
+                },
+                'orderable': false,
+            },
         ]
     };
 

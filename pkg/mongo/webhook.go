@@ -42,6 +42,15 @@ func (webhook Webhook) UnmarshalPatreon() (wh patreon.Webhook, err error) {
 	return wh, err
 }
 
+func (webhook Webhook) GetHash() string {
+
+	hash := helpers.MD5([]byte(webhook.RequestBody))
+	if len(hash) > 7 {
+		hash = hash[0:7]
+	}
+	return hash
+}
+
 func NewWebhook(service WebhookService, event string, body string) error {
 
 	row := Webhook{
