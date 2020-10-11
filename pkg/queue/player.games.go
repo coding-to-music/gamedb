@@ -21,6 +21,9 @@ type PlayerGamesMessage struct {
 	PlayerUpdated            time.Time `json:"player_updated"`
 	SkipAchievements         bool      `json:"skip_achievements"`
 	ForceAchievementsRefresh bool      `json:"force_achievements_refresh"`
+	OldAchievementCount      int       `json:"old_achievement_count"`
+	OldAchievementCount100   int       `json:"old_achievement_count_100"`
+	OldAchievementCountApps  int       `json:"old_achievement_count_apps"`
 }
 
 func (m PlayerGamesMessage) Queue() rabbit.QueueName {
@@ -170,13 +173,19 @@ func playerGamesHandler(message *rabbit.Message) {
 		if payload.PlayerUpdated.Before(time.Now().Add(time.Hour * 24 * 13 * -1)) { // Just under 2 weeks
 			for _, v := range resp.Games {
 				if v.PlaytimeForever > 0 {
-					err = ProducePlayerAchievements(payload.PlayerID, v.AppID, payload.ForceAchievementsRefresh)
+					err = ProducePlayerAchievements(
+						payload.PlayerID, v.AppID, payload.ForceAchievementsRefresh,
+						payload.OldAchievementCount, payload.OldAchievementCount100, payload.OldAchievementCountApps,
+					)
 					if err != nil {
 						log.ErrS(err)
 					}
 				}
 			}
-			err = ProducePlayerAchievements(payload.PlayerID, 0, false)
+			err = ProducePlayerAchievements(
+				payload.PlayerID, 0, false,
+				payload.OldAchievementCount, payload.OldAchievementCount100, payload.OldAchievementCountApps,
+			)
 			if err != nil {
 				log.ErrS(err)
 			}

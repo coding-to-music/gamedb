@@ -508,9 +508,16 @@ func ProduceDLC(appID int, DLCIDs []int) (err error) {
 	return produce(QueueAppsDLC, DLCMessage{AppID: appID, DLCIDs: DLCIDs})
 }
 
-func ProducePlayerAchievements(playerID int64, appID int, force bool) (err error) {
+func ProducePlayerAchievements(playerID int64, appID int, force bool, oldCount, oldCount100, oldCountApps int) (err error) {
 
-	return produce(QueuePlayersAchievements, PlayerAchievementsMessage{PlayerID: playerID, AppID: appID, Force: force})
+	return produce(QueuePlayersAchievements, PlayerAchievementsMessage{
+		PlayerID:     playerID,
+		AppID:        appID,
+		Force:        force,
+		OldCount:     oldCount,
+		OldCount100:  oldCount100,
+		OldCountApps: oldCountApps,
+	})
 }
 
 func ProduceGroup(payload GroupMessage) (err error) {

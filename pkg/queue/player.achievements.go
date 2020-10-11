@@ -19,9 +19,12 @@ import (
 )
 
 type PlayerAchievementsMessage struct {
-	PlayerID int64 `json:"player_id"`
-	AppID    int   `json:"app_id"`
-	Force    bool  `json:"force"` // Re-add previous achievements
+	PlayerID     int64 `json:"player_id"`
+	AppID        int   `json:"app_id"`
+	Force        bool  `json:"force"` // Re-add previous achievements
+	OldCount     int   `json:"old_count"`
+	OldCount100  int   `json:"old_count_100"`
+	OldCountApps int   `json:"old_count_apps"`
 }
 
 func playerAchievementsHandler(message *rabbit.Message) {
@@ -74,6 +77,16 @@ func playerAchievementsHandler(message *rabbit.Message) {
 			log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 			sendToRetryQueue(message)
 			return
+		}
+
+		if payload.OldCount > int(count) {
+			count = int64(payload.OldCount)
+		}
+		if payload.OldCount100 > int(count100) {
+			count100 = int64(payload.OldCount100)
+		}
+		if payload.OldCountApps > int(countApps) {
+			countApps = int64(payload.OldCountApps)
 		}
 
 		// Update player row

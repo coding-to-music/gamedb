@@ -18,6 +18,8 @@ type PlayerBadgesMessage struct {
 	PlayerID     int64  `json:"player_id"`
 	PlayerName   string `json:"player_name"`
 	PlayerAvatar string `json:"player_avatar"`
+	OldCount     int    `json:"old_count"`
+	OldFoilCount int    `json:"old_foil_count"`
 }
 
 func (m PlayerBadgesMessage) Queue() rabbit.QueueName {
@@ -104,6 +106,17 @@ func playerBadgesHandler(message *rabbit.Message) {
 		}
 	}
 
+	// Stop values going down
+	badgesCount := len(response.Badges)
+
+	if payload.OldCount > badgesCount {
+		badgesCount = payload.OldCount
+	}
+
+	if payload.OldFoilCount > foilBadgeCount {
+		foilBadgeCount = payload.OldFoilCount
+	}
+
 	// Save to Mongo
 	err = mongo.ReplacePlayerBadges(playerBadgeSlice)
 	if err != nil {
@@ -114,7 +127,7 @@ func playerBadgesHandler(message *rabbit.Message) {
 
 	// Update player row
 	update := bson.D{
-		{"badges_count", len(response.Badges)},
+		{"badges_count", badgesCount},
 		{"badges_foil_count", foilBadgeCount},
 		{"badge_stats", mongo.ProfileBadgeStats{
 			PlayerXP:                   response.PlayerXP,
@@ -134,7 +147,7 @@ func playerBadgesHandler(message *rabbit.Message) {
 
 	// Save to Influx
 	fields := map[string]interface{}{
-		influx.InfPlayersBadges.String():     len(response.Badges),
+		influx.InfPlayersBadges.String():     badgesCount,
 		influx.InfPlayersBadgesFoil.String(): foilBadgeCount,
 	}
 

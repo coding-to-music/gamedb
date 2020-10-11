@@ -310,6 +310,8 @@ func playerHandler(message *rabbit.Message) {
 			PlayerID:     player.ID,
 			PlayerName:   player.PersonaName,
 			PlayerAvatar: player.Avatar,
+			OldCount:     player.BadgesCount,
+			OldFoilCount: player.BadgesFoilCount,
 		},
 		PlayerGamesMessage{
 			PlayerID:                 player.ID,
@@ -317,6 +319,9 @@ func playerHandler(message *rabbit.Message) {
 			PlayerUpdated:            player.UpdatedAt,
 			SkipAchievements:         payload.SkipAchievements,
 			ForceAchievementsRefresh: payload.ForceAchievementsRefresh,
+			OldAchievementCount:      player.AchievementCount,
+			OldAchievementCount100:   player.AchievementCount100,
+			OldAchievementCountApps:  player.AchievementCountApps,
 		},
 		PlayersGroupsMessage{
 			Player:          player,
@@ -436,12 +441,18 @@ func updatePlayerRecentGames(player *mongo.Player, payload PlayerMessage) error 
 	if !payload.SkipAchievements && !payload.ForceAchievementsRefresh {
 		if player.UpdatedAt.After(time.Now().Add(time.Hour * 24 * 13 * -1)) { // Just under 2 weeks
 			for _, v := range newAppsSlice {
-				err = ProducePlayerAchievements(player.ID, v.AppID, false)
+				err = ProducePlayerAchievements(
+					player.ID, v.AppID, false,
+					player.AchievementCount, player.AchievementCount100, player.AchievementCountApps,
+				)
 				if err != nil {
 					log.ErrS(err)
 				}
 			}
-			err = ProducePlayerAchievements(player.ID, 0, false)
+			err = ProducePlayerAchievements(
+				player.ID, 0, false,
+				player.AchievementCount, player.AchievementCount100, player.AchievementCountApps,
+			)
 			if err != nil {
 				log.ErrS(err)
 			}
@@ -538,7 +549,9 @@ func updatePlayerLevel(player *mongo.Player) error {
 		return err
 	}
 
-	player.Level = level
+	if level > player.Level {
+		player.Level = level
+	}
 
 	return nil
 }
