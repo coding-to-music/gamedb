@@ -27,9 +27,17 @@ var (
 		"number_of_replicas": 0,
 		"analysis": map[string]interface{}{
 			"normalizer": map[string]interface{}{
-				"gdb_lowercase": map[string]interface{}{
-					"type":   "custom",
-					"filter": []string{"lowercase", "asciifolding"},
+				"gdb_lowercase_keyword": map[string]interface{}{
+					"type":        "custom",
+					"char_filter": []string{},
+					"filter":      []string{"lowercase"},
+				},
+			},
+			"analyzer": map[string]interface{}{
+				"gdb_lowercase_text": map[string]interface{}{
+					"type":      "custom",
+					"tokenizer": "standard",
+					"filter":    []string{"lowercase"},
 				},
 			},
 		},

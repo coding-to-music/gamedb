@@ -206,16 +206,16 @@ func DeleteAndRebuildPlayersIndex() {
 			"properties": map[string]interface{}{
 				"id": fieldTypeKeyword,
 				"name": map[string]interface{}{
-					"type":       "text",
-					"normalizer": "gdb_lowercase",
+					"type":     "text",
+					"analyzer": "gdb_lowercase_text",
 				},
 				"name_recent": map[string]interface{}{
-					"type":       "text",
-					"normalizer": "gdb_lowercase",
+					"type":     "text",
+					"analyzer": "gdb_lowercase_text",
 				},
 				"url": map[string]interface{}{
-					"type":       "text",
-					"normalizer": "gdb_lowercase",
+					"type":     "text",
+					"analyzer": "gdb_lowercase_text",
 				},
 				"avatar":           fieldTypeDisabled,
 				"continent":        fieldTypeKeyword,

@@ -284,8 +284,8 @@ func DeleteAndRebuildAppsIndex() {
 				"movies":        fieldTypeDisabled,
 				"movies_count":  fieldTypeInt32,
 				"name": map[string]interface{}{ // type:text allows search, type:keyword allows sorting
-					"type":       "text",
-					"normalizer": "gdb_lowercase",
+					"type":     "text",
+					"analyzer": "gdb_lowercase_text",
 					"fields": map[string]interface{}{
 						"raw": map[string]interface{}{
 							"type": "keyword",

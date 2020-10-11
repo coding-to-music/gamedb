@@ -142,20 +142,20 @@ func DeleteAndRebuildAchievementsIndex() {
 			"properties": map[string]interface{}{
 				"id": fieldTypeKeyword,
 				"name": map[string]interface{}{
-					"type":       "text",
-					"normalizer": "gdb_lowercase",
+					"type":     "text",
+					"analyzer": "gdb_lowercase_text",
 				},
 				"icon": fieldTypeDisabled,
 				"description": map[string]interface{}{
-					"type":       "text",
-					"normalizer": "gdb_lowercase",
+					"type":     "text",
+					"analyzer": "gdb_lowercase_text",
 				},
 				"hidden":    fieldTypeBool,
 				"completed": fieldTypeFloat16,
 				"app_id":    fieldTypeInt32,
 				"app_name": map[string]interface{}{
-					"type":       "text",
-					"normalizer": "gdb_lowercase",
+					"type":     "text",
+					"analyzer": "gdb_lowercase_text",
 				},
 				"app_owners": fieldTypeInt64,
 			},
