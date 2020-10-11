@@ -6,6 +6,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/olivere/elastic/v7"
 	"go.uber.org/zap"
 )
 
@@ -44,6 +45,9 @@ func appsAchievementsSearchHandler(message *rabbit.Message) {
 
 	if payload.AppAchievement.Deleted {
 		err = elasticsearch.DeleteDocument(elasticsearch.IndexAchievements, achievement.GetKey())
+		if val, ok := err.(*elastic.Error); ok && val.Status == 404 {
+			err = nil
+		}
 	} else {
 		err = elasticsearch.IndexAchievement(achievement)
 	}
