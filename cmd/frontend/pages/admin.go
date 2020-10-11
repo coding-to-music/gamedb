@@ -44,8 +44,6 @@ func AdminRouter() http.Handler {
 	r.Get("/consumers.json", adminConsumersAjaxHandler)
 	r.Get("/webhooks", adminWebhooksHandler)
 	r.Get("/webhooks.json", adminWebhooksAjaxHandler)
-	r.Get("/delays", adminDelaysHandler)
-	r.Get("/delays.json", adminDelaysAjaxHandler)
 	r.Get("/queues", adminQueuesHandler)
 	r.Post("/queues", adminQueuesHandler)
 	r.Get("/settings", adminSettingsHandler)
@@ -278,91 +276,6 @@ type adminConsumersTemplate struct {
 }
 
 func (t adminConsumersTemplate) includes() []string {
-	return []string{"includes/admin_header.gohtml"}
-}
-
-func adminDelaysHandler(w http.ResponseWriter, r *http.Request) {
-
-	t := adminDelaysTemplate{}
-	t.fill(w, r, "Admin", "Admin")
-
-	// Remove expired messages
-	_, err := mongo.DeleteMany(mongo.CollectionDelayQueue, bson.D{{"updated_at", bson.M{"$lt": time.Now().Add(queue.MaxDelay * -1)}}})
-	if err != nil {
-		log.ErrS(err)
-	}
-
-	//
-	returnTemplate(w, r, "admin/delays", t)
-}
-
-func adminDelaysAjaxHandler(w http.ResponseWriter, r *http.Request) {
-
-	query := datatable.NewDataTableQuery(r, false)
-
-	var wg sync.WaitGroup
-
-	// Get delays
-	var delays []mongo.DelayQueueMessage
-	wg.Add(1)
-	go func() {
-
-		defer wg.Done()
-
-		var columns = map[string]string{
-			// "0": "created_at",
-			// "1": "updated_at",
-			"0": "updated_at",
-			"2": "attempt, updated_at asc",
-		}
-
-		var sort = query.GetOrderMongo(columns)
-
-		var err error
-		delays, err = mongo.GetDelayQueueMessages(query.GetOffset64(), sort)
-		if err != nil {
-			log.ErrS(err)
-		}
-	}()
-
-	// Get count
-	var count int64
-	wg.Add(1)
-	go func() {
-
-		defer wg.Done()
-
-		var err error
-		count, err = mongo.CountDocuments(mongo.CollectionDelayQueue, nil, 0)
-		if err != nil {
-			log.ErrS(err)
-		}
-	}()
-
-	// Wait
-	wg.Wait()
-
-	var response = datatable.NewDataTablesResponse(r, query, count, count, nil)
-	for _, app := range delays {
-
-		response.AddRow([]interface{}{
-			app.UUID,                              // 0
-			app.CreatedAt.Format(helpers.DateSQL), // 1
-			app.UpdatedAt.Format(helpers.DateSQL), // 2
-			app.Queue,                             // 3
-			app.Attempt,                           // 4
-			app.Message,                           // 5
-		})
-	}
-
-	returnJSON(w, r, response)
-}
-
-type adminDelaysTemplate struct {
-	globalTemplate
-}
-
-func (t adminDelaysTemplate) includes() []string {
 	return []string{"includes/admin_header.gohtml"}
 }
 
