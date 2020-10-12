@@ -10,7 +10,7 @@ import (
 func CountryCodeToName(code string) string {
 
 	switch code {
-	case "", "_":
+	case "", "_", "0":
 		return "No Country"
 	case "AX":
 		return "Aland Islands"
