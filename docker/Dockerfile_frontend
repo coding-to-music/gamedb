@@ -19,6 +19,7 @@ FROM alpine:3.12 AS runtime-env
 WORKDIR /root/
 COPY --from=build-env /root/cmd/frontend/frontend ./
 COPY ./cmd/frontend/assets/GeoLite2-Country.mmdb ./assets/GeoLite2-Country.mmdb
+COPY ./cmd/frontend/assets/GeoLite2-City.mmdb ./assets/GeoLite2-City.mmdb
 COPY ./cmd/frontend/health-check.sh ./health-check.sh
 RUN chmod +x health-check.sh \
   && mkdir -p ./chatbot \
