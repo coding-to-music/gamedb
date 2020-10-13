@@ -20,6 +20,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
+	"github.com/gamedb/gamedb/pkg/steam"
 	"github.com/go-chi/chi"
 	"github.com/mborgerson/GoTruncateHtml/truncatehtml"
 	"github.com/microcosm-cc/bluemonday"
@@ -166,7 +167,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		item := memcache.HomeTopSellers
 		err := memcache.GetSetInterface(item.Key, item.Expiration, &topSellers, callback)
 		if err != nil {
-			log.ErrS(err)
+			steam.LogSteamError(err)
 			return
 		}
 
