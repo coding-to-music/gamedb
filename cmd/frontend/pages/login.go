@@ -38,13 +38,13 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	t := loginTemplate{}
-	t.fill(w, r, "Login", "Login to Game DB")
+	t.fill(w, r, "login", "Login", "Login to Game DB")
 	t.hideAds = true
 	t.RecaptchaPublic = config.C.RecaptchaPublic
 	t.LoginEmail = session.Get(r, loginSessionEmail)
 	t.Providers = oauth.Providers
 
-	returnTemplate(w, r, "login", t)
+	returnTemplate(w, r, t)
 }
 
 type loginTemplate struct {

@@ -100,9 +100,10 @@ type hasIncludes interface {
 	includes() []string
 }
 
-func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageData interface{}) {
+func returnTemplate(w http.ResponseWriter, r *http.Request, pageData interface{ GetPageID() string }) {
 
 	var err error
+	var page = pageData.GetPageID()
 
 	// Set the last page
 	if r.Method == "GET" &&
@@ -187,19 +188,15 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, page string, pageDat
 
 func returnErrorTemplate(w http.ResponseWriter, r *http.Request, t errorTemplate) {
 
-	if t.Title == "" {
-		t.Title = "Error " + strconv.Itoa(t.Code)
-	}
+	t.fill(w, r, "error", "Error", "Something has gone wrong!")
 
 	if t.Code == 0 {
 		t.Code = 500
 	}
 
-	t.fill(w, r, "Error", "Something has gone wrong!")
-
 	w.WriteHeader(t.Code)
 
-	returnTemplate(w, r, "error", t)
+	returnTemplate(w, r, t)
 }
 
 type errorTemplate struct {
@@ -249,17 +246,18 @@ func getTemplateFuncMap() map[string]interface{} {
 
 // globalTemplate is added to every other template
 type globalTemplate struct {
-	Title           string        // Page title for Chrome
-	TitleOnly       string        // Page title
-	Description     template.HTML // Page description
-	Path            string        // URL path
-	Env             string        // Environment
-	CSSFiles        []Asset
-	JSFiles         []Asset
-	Canonical       string
-	ProductCCs      []i18n.ProductCountryCode
-	Continents      []i18n.Continent
-	CurrentCC       string
+	Title       string        // Page title for Chrome
+	TitleOnly   string        // Page title
+	Description template.HTML // Page description
+	Path        string        // URL path
+	Env         string        // Environment
+	CSSFiles    []Asset
+	JSFiles     []Asset
+	Canonical   string
+	ProductCCs  []i18n.ProductCountryCode
+	Continents  []i18n.Continent
+	CurrentCC   string
+	PageID      string
 
 	Background      string
 	BackgroundTitle string
@@ -285,12 +283,18 @@ type globalTemplate struct {
 	hideAds   bool
 }
 
-func (t *globalTemplate) fill(w http.ResponseWriter, r *http.Request, title string, description template.HTML) {
+// For an interface
+func (t globalTemplate) GetPageID() string {
+	return t.PageID
+}
+
+func (t *globalTemplate) fill(w http.ResponseWriter, r *http.Request, pageID string, title string, description template.HTML) {
 
 	var err error
 
 	t.request = r
 	t.response = w
+	t.PageID = pageID
 
 	t.Title = title + " - Game DB"
 	t.TitleOnly = title

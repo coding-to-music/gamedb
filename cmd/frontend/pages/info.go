@@ -16,7 +16,7 @@ func InfoRouter() http.Handler {
 func infoHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := globalTemplate{}
-	t.fill(w, r, "Info", "Game DB Information")
+	t.fill(w, r, "info", "Info", "Game DB Information")
 
-	returnTemplate(w, r, "info", t)
+	returnTemplate(w, r, t)
 }

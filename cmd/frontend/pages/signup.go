@@ -36,7 +36,7 @@ func signupHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	t := signupTemplate{}
-	t.fill(w, r, "Login", "Login to Game DB to set your currency and other things.")
+	t.fill(w, r, "signup", "Login", "Login to Game DB to set your currency and other things.")
 	t.addAssetPasswordStrength()
 	t.hideAds = true
 	t.Domain = config.C.GameDBDomain
@@ -44,7 +44,7 @@ func signupHandler(w http.ResponseWriter, r *http.Request) {
 	t.SignupEmail = session.Get(r, signupSessionEmail)
 	t.Providers = oauth.Providers
 
-	returnTemplate(w, r, "signup", t)
+	returnTemplate(w, r, t)
 }
 
 type signupTemplate struct {

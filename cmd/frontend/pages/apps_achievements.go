@@ -24,10 +24,10 @@ func appsAchievementsRouter() http.Handler {
 func appsAchievementsHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := appsAchievementsTemplate{}
-	t.fill(w, r, "Achievements", "Games with the most achievements")
+	t.fill(w, r, "apps_achievements", "Achievements", "Games with the most achievements")
 	t.addAssetJSON2HTML()
 
-	returnTemplate(w, r, "apps_achievements", t)
+	returnTemplate(w, r, t)
 }
 
 type appsAchievementsTemplate struct {

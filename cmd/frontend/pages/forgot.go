@@ -37,12 +37,12 @@ func forgotHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	t := forgotTemplate{}
-	t.fill(w, r, "Forgot Password", "")
+	t.fill(w, r, "forgot", "Forgot Password", "")
 	t.hideAds = true
 	t.RecaptchaPublic = config.C.RecaptchaPublic
 	t.LoginEmail = session.Get(r, "login-email")
 
-	returnTemplate(w, r, "forgot", t)
+	returnTemplate(w, r, t)
 }
 
 type forgotTemplate struct {

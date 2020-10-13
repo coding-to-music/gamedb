@@ -139,7 +139,7 @@ func badgeHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := badgeTemplate{}
 	t.setBackground(app, false, false)
-	t.fill(w, r, playerBadge.GetName()+" Badge", "Steam Badge Ladder / Leaderboard")
+	t.fill(w, r, "badge", playerBadge.GetName()+" Badge", "Steam Badge Ladder / Leaderboard")
 
 	t.LoggedIn = session.IsLoggedIn(r)
 	t.Badge = playerBadge
@@ -147,7 +147,7 @@ func badgeHandler(w http.ResponseWriter, r *http.Request) {
 	t.PlayerTime = playerTime
 	t.PlayerRank = playerRank
 
-	returnTemplate(w, r, "badge", t)
+	returnTemplate(w, r, t)
 }
 
 type badgeTemplate struct {

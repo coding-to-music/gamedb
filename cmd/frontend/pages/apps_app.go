@@ -95,7 +95,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	// Template
 	t := appTemplate{}
 	t.setBackground(app, false, false)
-	t.fill(w, r, app.GetName(), template.HTML(app.ShortDescription))
+	t.fill(w, r, "app", app.GetName(), template.HTML(app.ShortDescription))
 	t.addAssetHighCharts()
 	t.addAssetHighChartsHeatmap()
 	t.addAssetJSON2HTML()
@@ -362,7 +362,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//
-	returnTemplate(w, r, "app", t)
+	returnTemplate(w, r, t)
 }
 
 type appTemplate struct {
@@ -433,9 +433,10 @@ func appLocalizationHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	t := appLocalizationTemplate{}
+	t.fill(w, r, "app_localization", "", "")
 	t.App = app
 
-	returnTemplate(w, r, "app_localization", t)
+	returnTemplate(w, r, t)
 }
 
 type appLocalizationTemplate struct {
@@ -487,10 +488,11 @@ func appSimilarHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	t := appSimilarTemplate{}
+	t.fill(w, r, "app_similar", "", "")
 	t.Related = related
 	t.RelatedTags = relatedTags
 
-	returnTemplate(w, r, "app_similar", t)
+	returnTemplate(w, r, t)
 }
 
 type appSimilarTemplate struct {
@@ -533,9 +535,10 @@ func appReviewsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	t := appReviewsTemplate{}
+	t.fill(w, r, "app_reviews", "", "")
 	t.App = app
 
-	returnTemplate(w, r, "app_reviews", t)
+	returnTemplate(w, r, t)
 }
 
 type appReviewsTemplate struct {

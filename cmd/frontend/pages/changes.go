@@ -23,9 +23,9 @@ func changesHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := changesTemplate{}
-	t.fill(w, r, "Changes", "Every time the Steam library gets updated, a change record is created. We use these to keep website information up to date.")
+	t.fill(w, r, "changes", "Changes", "Every time the Steam library gets updated, a change record is created. We use these to keep website information up to date.")
 
-	returnTemplate(w, r, "changes", t)
+	returnTemplate(w, r, t)
 }
 
 type changesTemplate struct {

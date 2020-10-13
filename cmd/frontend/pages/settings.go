@@ -47,7 +47,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 	//
 	t := settingsTemplate{}
-	t.fill(w, r, "Settings", "Game DB settings")
+	t.fill(w, r, "settings", "Settings", "Game DB settings")
 	t.addAssetPasswordStrength()
 	t.ProdCCs = i18n.GetProdCCs(true)
 
@@ -192,7 +192,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	t.Providers = oauth.Providers
 
 	// Template
-	returnTemplate(w, r, "settings", t)
+	returnTemplate(w, r, t)
 }
 
 type settingsTemplate struct {

@@ -156,14 +156,14 @@ func appsRandomHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
-	t.fill(w, r, "Random Steam Game", "Find a random Steam game")
+	t.fill(w, r, "apps_random", "Random Steam Game", "Find a random Steam game")
 	t.addAssetChosen()
 
 	for i := time.Now().Year(); i >= 1995; i-- {
 		t.Years = append(t.Years, i)
 	}
 
-	returnTemplate(w, r, "apps_random", t)
+	returnTemplate(w, r, t)
 }
 
 type appsRandomTemplate struct {

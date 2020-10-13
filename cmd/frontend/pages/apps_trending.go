@@ -30,10 +30,10 @@ func trendingHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := trendingTemplate{}
-	t.fill(w, r, "Trending", "Trending Steam Games")
+	t.fill(w, r, "trending_apps", "Trending", "Trending Steam Games")
 	t.addAssetHighCharts()
 
-	returnTemplate(w, r, "trending_apps", t)
+	returnTemplate(w, r, t)
 }
 
 type trendingTemplate struct {

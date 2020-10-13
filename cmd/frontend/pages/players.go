@@ -123,12 +123,12 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	t := playersTemplate{}
-	t.fill(w, r, "Players", "See where you come against the rest of the world")
+	t.fill(w, r, "players", "Players", "See where you come against the rest of the world")
 	t.Countries = countries
 	t.Continents2 = continents
 	t.Total = total
 
-	returnTemplate(w, r, "players", t)
+	returnTemplate(w, r, t)
 }
 
 type playersTemplate struct {

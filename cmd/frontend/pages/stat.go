@@ -50,12 +50,12 @@ func statHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	t := statTagsTemplate{}
-	t.fill(w, r, stat.Name+" "+stat.Type.Title(), template.HTML(stat.Name+" "+stat.Type.Title()))
+	t.fill(w, r, "stat", stat.Name+" "+stat.Type.Title(), template.HTML(stat.Name+" "+stat.Type.Title()))
 	t.addAssetHighCharts()
 
 	t.Stat = stat
 
-	returnTemplate(w, r, "stat", t)
+	returnTemplate(w, r, t)
 }
 
 type statTagsTemplate struct {

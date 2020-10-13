@@ -47,7 +47,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := homeTemplate{}
 	t.setRandomBackground(true, true)
-	t.fill(w, r, "Home", "Stats and information on the Steam Catalogue.")
+	t.fill(w, r, "home", "Home", "Stats and information on the Steam Catalogue.")
 	t.addAssetJSON2HTML()
 
 	var wg sync.WaitGroup
@@ -180,7 +180,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	t.ConstPackage = helpers.ProductTypePackage
 
 	//
-	returnTemplate(w, r, "home", t)
+	returnTemplate(w, r, t)
 }
 
 type homeTemplate struct {
@@ -220,7 +220,7 @@ var htmlPolicy = bluemonday.
 func homeNewsHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := homeNewsTemplate{}
-	t.fill(w, r, "", "")
+	t.fill(w, r, "home_news", "", "")
 
 	apps, err := mongo.PopularApps()
 	if err != nil {
@@ -262,7 +262,7 @@ func homeNewsHandler(w http.ResponseWriter, r *http.Request) {
 		t.NewsID = v.ID
 	}
 
-	returnTemplate(w, r, "home_news", t)
+	returnTemplate(w, r, t)
 }
 
 type homeNewsTemplate struct {

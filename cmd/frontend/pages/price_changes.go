@@ -24,11 +24,11 @@ func PriceChangeRouter() http.Handler {
 func priceChangesHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := priceChangesTemplate{}
-	t.fill(w, r, "Price Changes", "All game price changes")
+	t.fill(w, r, "price_changes", "Price Changes", "All game price changes")
 	t.addAssetChosen()
 	t.addAssetSlider()
 
-	returnTemplate(w, r, "price_changes", t)
+	returnTemplate(w, r, t)
 }
 
 type priceChangesTemplate struct {

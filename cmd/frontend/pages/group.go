@@ -82,7 +82,7 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	t.fill(w, r, group.GetName(), template.HTML(group.Headline))
+	t.fill(w, r, "group", group.GetName(), template.HTML(group.Headline))
 	t.addAssetHighCharts()
 	t.Canonical = group.GetPath()
 
@@ -114,7 +114,7 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 	t.Summary = helpers.RenderHTMLAndBBCode(summary)
 	t.Group.Error = strings.Replace(t.Group.Error, "Click here for information on how to report groups on Steam.", "", 1)
 
-	returnTemplate(w, r, "group", t)
+	returnTemplate(w, r, t)
 }
 
 type groupTemplate struct {

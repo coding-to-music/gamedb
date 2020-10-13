@@ -22,9 +22,9 @@ func BundlesRouter() http.Handler {
 func bundlesHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := bundlesTemplate{}
-	t.fill(w, r, "Bundles", "All the bundles on Steam")
+	t.fill(w, r, "bundles", "Bundles", "All the bundles on Steam")
 
-	returnTemplate(w, r, "bundles", t)
+	returnTemplate(w, r, t)
 }
 
 type bundlesTemplate struct {

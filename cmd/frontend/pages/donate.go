@@ -23,7 +23,7 @@ func DonateRouter() http.Handler {
 func donateHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := donateTemplate{}
-	t.fill(w, r, "Support the Game DB open source project", "Databases take up a tonne of resources. Help pay for the server costs or just buy me a beer 🍻")
+	t.fill(w, r, "donate", "Support the Game DB open source project", "Databases take up a tonne of resources. Help pay for the server costs or just buy me a beer 🍻")
 	t.Pages = map[mysql.UserLevel]int{
 		mysql.UserLevel0: mysql.UserLevelLimit0,
 		mysql.UserLevel1: mysql.UserLevelLimit1,
@@ -32,7 +32,7 @@ func donateHandler(w http.ResponseWriter, r *http.Request) {
 		mysql.UserLevel4: mysql.UserLevelLimit4,
 	}
 
-	returnTemplate(w, r, "donate", t)
+	returnTemplate(w, r, t)
 }
 
 type donateTemplate struct {

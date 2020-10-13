@@ -44,10 +44,10 @@ func coopHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	t := coopTemplate{}
-	t.fill(w, r, "Co-op", "Find a game to play with friends.")
+	t.fill(w, r, "coop", "Co-op", "Find a game to play with friends.")
 	t.IDs = idStrings
 
-	returnTemplate(w, r, "coop", t)
+	returnTemplate(w, r, t)
 }
 
 type coopTemplate struct {

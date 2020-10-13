@@ -22,8 +22,8 @@ import (
 func StatsRouter() http.Handler {
 
 	r := chi.NewRouter()
-	r.Get("/", statsHandler)
-	r.Get("/gamedb", gameDBStatsHandler)
+	r.Get("/", statsSteamHandler)
+	r.Get("/gamedb", statsGameDBHandler)
 	r.Get("/client-players.json", statsClientPlayersHandler)
 	r.Get("/client-players2.json", statsClientPlayers2Handler)
 	r.Get("/release-dates.json", statsDatesHandler)
@@ -36,11 +36,11 @@ func StatsRouter() http.Handler {
 	return r
 }
 
-func statsHandler(w http.ResponseWriter, r *http.Request) {
+func statsSteamHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := statsTemplate{}
-	t.fill(w, r, "Stats", "Some interesting Steam Store stats.")
+	t.fill(w, r, "stats_steam", "Stats", "Some interesting Steam Store stats.")
 	t.addAssetHighCharts()
 	t.addAssetJSON2HTML()
 
@@ -136,7 +136,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
-	returnTemplate(w, r, "stats_steam", t)
+	returnTemplate(w, r, t)
 }
 
 type statsTemplate struct {
@@ -154,11 +154,11 @@ func (t statsTemplate) includes() []string {
 	return []string{"includes/stats_header.gohtml"}
 }
 
-func gameDBStatsHandler(w http.ResponseWriter, r *http.Request) {
+func statsGameDBHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := gamedbStatsTemplate{}
-	t.fill(w, r, "Stats", "Some interesting Steam Store stats.")
+	t.fill(w, r, "stats_gamedb", "Stats", "Some interesting Steam Store stats.")
 	t.addAssetHighCharts()
 	t.addAssetHighChartsDrilldown()
 	t.addAssetJSON2HTML()
@@ -239,7 +239,7 @@ func gameDBStatsHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
-	returnTemplate(w, r, "stats_gamedb", t)
+	returnTemplate(w, r, t)
 }
 
 type gamedbStatsTemplate struct {

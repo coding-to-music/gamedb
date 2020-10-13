@@ -121,7 +121,7 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 	}
-	t.fill(w, r, bundle.Name, "Steam bundle")
+	t.fill(w, r, "bundle", bundle.Name, "Steam bundle")
 	t.addAssetHighCharts()
 	t.Bundle = bundle
 	t.Canonical = bundle.GetPath()
@@ -129,7 +129,7 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 	t.Packages = packages
 
 	//
-	returnTemplate(w, r, "bundle", t)
+	returnTemplate(w, r, t)
 }
 
 type bundleTemplate struct {

@@ -23,7 +23,7 @@ func NewsRouter() http.Handler {
 func newsHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := newsTemplate{}
-	t.fill(w, r, "News", "All the news from all the games on Steam")
+	t.fill(w, r, "news", "News", "All the news from all the games on Steam")
 
 	apps, err := mongo.PopularApps()
 	if err != nil {
@@ -40,7 +40,7 @@ func newsHandler(w http.ResponseWriter, r *http.Request) {
 		log.ErrS(err)
 	}
 
-	returnTemplate(w, r, "news", t)
+	returnTemplate(w, r, t)
 }
 
 type newsTemplate struct {

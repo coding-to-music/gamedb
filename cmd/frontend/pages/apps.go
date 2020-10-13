@@ -40,7 +40,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := appsTemplate{}
-	t.fill(w, r, "Games", "A live database of all Steam games")
+	t.fill(w, r, "apps", "Games", "A live database of all Steam games")
 	t.addAssetChosen()
 	t.addAssetSlider()
 
@@ -208,7 +208,7 @@ func appsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// t.Columns = allColumns
 
-	returnTemplate(w, r, "apps", t)
+	returnTemplate(w, r, t)
 }
 
 type appsTemplate struct {

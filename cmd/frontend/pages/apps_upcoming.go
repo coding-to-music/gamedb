@@ -30,9 +30,9 @@ func upcomingRouter() http.Handler {
 func upcomingHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := upcomingTemplate{}
-	t.fill(w, r, "Upcoming", "Games with a release date in the future")
+	t.fill(w, r, "upcoming", "Upcoming", "Games with a release date in the future")
 
-	returnTemplate(w, r, "upcoming", t)
+	returnTemplate(w, r, t)
 }
 
 type upcomingTemplate struct {

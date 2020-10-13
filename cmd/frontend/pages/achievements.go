@@ -22,9 +22,9 @@ func AchievementsRouter() http.Handler {
 func achievementsHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := globalTemplate{}
-	t.fill(w, r, "Achievements", "Search all Steam achievements")
+	t.fill(w, r, "achievements", "Achievements", "Search all Steam achievements")
 
-	returnTemplate(w, r, "achievements", t)
+	returnTemplate(w, r, t)
 }
 
 func achievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {

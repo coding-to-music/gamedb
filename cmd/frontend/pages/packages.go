@@ -24,10 +24,10 @@ func PackagesRouter() http.Handler {
 func packagesHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := packagesTemplate{}
-	t.fill(w, r, "Packages", "All the packages on Steam")
+	t.fill(w, r, "packages", "Packages", "All the packages on Steam")
 	t.addAssetChosen()
 
-	returnTemplate(w, r, "packages", t)
+	returnTemplate(w, r, t)
 }
 
 type packagesTemplate struct {

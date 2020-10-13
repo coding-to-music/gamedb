@@ -28,7 +28,7 @@ func ContactRouter() http.Handler {
 func contactHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := contactTemplate{}
-	t.fill(w, r, "Contact", "Get in touch with Game DB.")
+	t.fill(w, r, "contact", "Contact", "Get in touch with Game DB.")
 	t.RecaptchaPublic = config.C.RecaptchaPublic
 
 	t.SessionName = session.Get(r, contactSessionName)
@@ -39,7 +39,7 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 		t.SessionEmail = session.Get(r, session.SessionUserEmail)
 	}
 
-	returnTemplate(w, r, "contact", t)
+	returnTemplate(w, r, t)
 }
 
 type contactTemplate struct {

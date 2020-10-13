@@ -51,12 +51,12 @@ func statsListHandler(w http.ResponseWriter, r *http.Request) {
 	typex := statPathToConst(chi.URLParam(r, "type"))
 
 	t := statsTagsTemplate{}
-	t.fill(w, r, typex.Title()+"s", template.HTML("Top Steam "+typex.Title()+"s"))
+	t.fill(w, r, "stats_list", typex.Title()+"s", template.HTML("Top Steam "+typex.Title()+"s"))
 	t.addAssetMark()
 
 	t.Type = typex
 
-	returnTemplate(w, r, "stats_list", t)
+	returnTemplate(w, r, t)
 }
 
 type statsTagsTemplate struct {

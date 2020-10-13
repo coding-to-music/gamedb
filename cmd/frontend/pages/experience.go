@@ -34,7 +34,7 @@ func ExperienceRouter() http.Handler {
 func experienceHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := experienceTemplate{}
-	t.fill(w, r, "Experience", "Check how much XP you need to go up a level")
+	t.fill(w, r, "experience", "Experience", "Check how much XP you need to go up a level")
 
 	//
 	var chunks [][]level
@@ -76,7 +76,7 @@ func experienceHandler(w http.ResponseWriter, r *http.Request) {
 		t.PlayerLevelTo = t.PlayerLevel + 10
 	}
 
-	returnTemplate(w, r, "experience", t)
+	returnTemplate(w, r, t)
 }
 
 func getExperienceRows() (chunked [][]level) {

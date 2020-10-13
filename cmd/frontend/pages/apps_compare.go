@@ -82,7 +82,7 @@ func appsCompareHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := appsCompareTemplate{}
-	t.fill(w, r, "Compare Games", template.HTML(strings.Join(names, " vs ")))
+	t.fill(w, r, "apps_compare", "Compare Games", template.HTML(strings.Join(names, " vs ")))
 	t.addAssetHighCharts()
 	t.Apps = apps
 	t.IDs = strings.Join(ids, ",")
@@ -131,7 +131,7 @@ func appsCompareHandler(w http.ResponseWriter, r *http.Request) {
 		t.GoogleJSON = append(t.GoogleJSON, template.JS(b))
 	}
 
-	returnTemplate(w, r, "apps_compare", t)
+	returnTemplate(w, r, t)
 }
 
 type appsCompareTemplate struct {

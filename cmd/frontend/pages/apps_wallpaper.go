@@ -20,7 +20,7 @@ func wallpaperHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := wallpaperTemplate{}
-	t.fill(w, r, "Stats", "Some interesting Steam Store stats.")
+	t.fill(w, r, "wallpaper", "Stats", "Some interesting Steam Store stats.")
 
 	apps, err := mongo.GetApps(0, 112, bson.D{{"player_peak_week", -1}}, nil, nil)
 	if err != nil {
@@ -33,7 +33,7 @@ func wallpaperHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	returnTemplate(w, r, "wallpaper", t)
+	returnTemplate(w, r, t)
 }
 
 type wallpaperTemplate struct {

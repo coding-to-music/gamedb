@@ -86,7 +86,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Template
 		tm := playerMissingTemplate{}
-		tm.fill(w, r, "Looking for player!", "")
+		tm.fill(w, r, "player_missing", "Looking for player!", "")
 		tm.addAssetHighCharts()
 		tm.addToast(Toast{Title: "Update", Message: "Player has been queued for an update", Success: true})
 		tm.Player = player
@@ -102,7 +102,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 			tm.Queue = q.Messages
 		}
 
-		returnTemplate(w, r, "player_missing", tm)
+		returnTemplate(w, r, tm)
 		return
 
 	} else if err != nil {
@@ -315,7 +315,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t.setBackground(backgroundApp, true, false)
-	t.fill(w, r, player.GetName(), "")
+	t.fill(w, r, "player", player.GetName(), "")
 	t.addAssetHighCharts()
 	t.addAssetCalmosaic()
 
@@ -371,7 +371,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		return t.Ranks[i].Metric.String() < t.Ranks[j].Metric.String()
 	})
 
-	returnTemplate(w, r, "player", t)
+	returnTemplate(w, r, t)
 }
 
 type playerRankTemplate struct {

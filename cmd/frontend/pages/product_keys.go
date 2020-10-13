@@ -38,13 +38,13 @@ func productKeysHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := productKeysTemplate{}
-	t.fill(w, r, "PICS Keys", "Search PICS keys")
+	t.fill(w, r, "product_keys", "PICS Keys", "Search PICS keys")
 	t.Type = productType
 	t.Key = q.Get("key")
 	t.Value = q.Get("value")
 	t.Keys = keys
 
-	returnTemplate(w, r, "product_keys", t)
+	returnTemplate(w, r, t)
 }
 
 type productKeysTemplate struct {

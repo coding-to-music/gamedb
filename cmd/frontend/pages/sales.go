@@ -31,7 +31,7 @@ func salesHandler(w http.ResponseWriter, r *http.Request) {
 	t.addAssetChosen()
 	t.addAssetSlider()
 	t.addAssetCountdown()
-	t.fill(w, r, "Offers", "Discounted games")
+	t.fill(w, r, "sales", "Offers", "Discounted games")
 
 	var wg sync.WaitGroup
 
@@ -119,7 +119,7 @@ func salesHandler(w http.ResponseWriter, r *http.Request) {
 		log.ErrS(err)
 	}
 
-	returnTemplate(w, r, "sales", t)
+	returnTemplate(w, r, t)
 }
 
 type salesTemplate struct {

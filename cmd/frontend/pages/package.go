@@ -125,7 +125,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 	if len(appsSlice) == 1 {
 		t.setBackground(appsSlice[0], true, true)
 	}
-	t.fill(w, r, pack.GetName(), "Steam package")
+	t.fill(w, r, "package", pack.GetName(), "Steam package")
 	t.metaImage = pack.GetMetaImage()
 	t.addAssetHighCharts()
 	t.Package = pack
@@ -161,7 +161,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 	t.Extended = t.Package.Extended.Formatted(pack.ID, pics.ExtendedKeys)
 
 	//
-	returnTemplate(w, r, "package", t)
+	returnTemplate(w, r, t)
 }
 
 type packageTemplate struct {

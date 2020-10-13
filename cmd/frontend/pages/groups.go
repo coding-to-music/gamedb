@@ -25,10 +25,10 @@ func GroupsRouter() http.Handler {
 func groupsHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := groupsTemplate{}
-	t.fill(w, r, "Groups", "All the groups on Steam")
+	t.fill(w, r, "groups", "Groups", "All the groups on Steam")
 	t.addAssetChosen()
 
-	returnTemplate(w, r, "groups", t)
+	returnTemplate(w, r, t)
 }
 
 type groupsTemplate struct {

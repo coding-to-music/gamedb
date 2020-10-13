@@ -25,9 +25,9 @@ func wishlistsRouter() http.Handler {
 func wishlistsHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := wishlistsTemplate{}
-	t.fill(w, r, "Wishlists", "Games on the most wishlists")
+	t.fill(w, r, "wishlists", "Wishlists", "Games on the most wishlists")
 
-	returnTemplate(w, r, "wishlists", t)
+	returnTemplate(w, r, t)
 }
 
 type wishlistsTemplate struct {

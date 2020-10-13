@@ -30,12 +30,12 @@ func newReleasesHandler(w http.ResponseWriter, r *http.Request) {
 	var days = config.C.NewReleaseDays
 
 	t := newReleasesTemplate{}
-	t.fill(w, r, "New Releases", template.HTML("Newly released games in the last "+strconv.Itoa(days)+" days"))
+	t.fill(w, r, "new_releases", "New Releases", template.HTML("Newly released games in the last "+strconv.Itoa(days)+" days"))
 	t.addAssetHighCharts()
 	t.Days = days
 
 	//
-	returnTemplate(w, r, "new_releases", t)
+	returnTemplate(w, r, t)
 }
 
 type newReleasesTemplate struct {

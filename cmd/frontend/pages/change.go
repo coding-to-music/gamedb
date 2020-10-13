@@ -40,7 +40,7 @@ func changeHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := changeTemplate{}
-	t.fill(w, r, change.GetName(), "Steam change")
+	t.fill(w, r, "change", change.GetName(), "Steam change")
 	t.Change = change
 	t.Apps = map[int]mongo.App{}
 	t.Packages = map[int]mongo.Package{}
@@ -114,7 +114,7 @@ func changeHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	returnTemplate(w, r, "change", t)
+	returnTemplate(w, r, t)
 }
 
 type changeTemplate struct {

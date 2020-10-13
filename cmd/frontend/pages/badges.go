@@ -18,7 +18,7 @@ func BadgesRouter() http.Handler {
 func badgesHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := badgesTemplate{}
-	t.fill(w, r, "Badges", "Steam badge leaderboards")
+	t.fill(w, r, "badges", "Badges", "Steam badge leaderboards")
 
 	var err error
 	t.Badges, err = mongo.GetBadgeSummaries()
@@ -26,7 +26,7 @@ func badgesHandler(w http.ResponseWriter, r *http.Request) {
 		log.ErrS(err)
 	}
 
-	returnTemplate(w, r, "badges", t)
+	returnTemplate(w, r, t)
 }
 
 type badgesTemplate struct {
