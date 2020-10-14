@@ -1,11 +1,9 @@
 package session
 
 import (
-	"net"
 	"net/http"
 	"strconv"
 	"strings"
-	"sync"
 
 	"github.com/Jleagle/session-go/session"
 	"github.com/Jleagle/steam-go/steamapi"
@@ -15,7 +13,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gorilla/sessions"
-	"github.com/oschwald/maxminddb-golang"
 )
 
 const (
@@ -95,15 +92,7 @@ func GetPlayerIDFromSesion(r *http.Request) (id int64) {
 	return id
 }
 
-var (
-	maxMindLock sync.Mutex
-	maxMindDB   *maxminddb.Reader
-)
-
 func GetProductCC(r *http.Request) steamapi.ProductCC {
-
-	maxMindLock.Lock()
-	defer maxMindLock.Unlock()
 
 	cc := func() steamapi.ProductCC {
 
@@ -126,47 +115,25 @@ func GetProductCC(r *http.Request) steamapi.ProductCC {
 
 		// Get from cloudflare
 		q = strings.ToLower(r.Header.Get("cf-ipcountry"))
-		if q == "gb" {
-			q = "uk"
-		}
-		if q != "" && steamapi.IsProductCC(q) {
-			return steamapi.ProductCC(q)
-		}
-
-		var err error
-
-		// Get from Maxmind
-		if maxMindDB == nil {
-			maxMindDB, err = maxminddb.Open("./assets/GeoLite2-Country.mmdb")
-			if err != nil {
-				log.ErrS(err)
-				return steamapi.ProductCCUS
+		if q != "" {
+			if q == "gb" {
+				q = "uk" // Convert to Steam's incorrect cc
+			}
+			if steamapi.IsProductCC(q) {
+				return steamapi.ProductCC(q)
 			}
 		}
 
-		ip := net.ParseIP(geo.GetFirstIP(r.RemoteAddr))
-		if ip != nil {
+		record, err := geo.GetLocation(r.RemoteAddr)
+		if err != nil {
+			log.ErrS(err)
+			return steamapi.ProductCCUS
+		}
 
-			// More fields available @ https://github.com/oschwald/geoip2-golang/blob/master/reader.go
-			// Only using what we need is faster
-			var record struct {
-				Country struct {
-					ISOCode           string `maxminddb:"iso_code"`
-					IsInEuropeanUnion bool   `maxminddb:"is_in_european_union"`
-				} `maxminddb:"country"`
-			}
-
-			err = maxMindDB.Lookup(ip, &record)
-			if err != nil {
-				log.ErrS(err)
-				return steamapi.ProductCCUS
-			}
-
-			for _, cc := range i18n.GetProdCCs(true) {
-				for _, code := range cc.CountryCodes {
-					if record.Country.ISOCode == code {
-						return cc.ProductCode
-					}
+		for _, cc := range i18n.GetProdCCs(true) {
+			for _, code := range cc.CountryCodes {
+				if record.Country.ISOCode == code {
+					return cc.ProductCode
 				}
 			}
 		}
@@ -181,9 +148,6 @@ func GetProductCC(r *http.Request) steamapi.ProductCC {
 
 func GetCountryCode(r *http.Request) string {
 
-	maxMindLock.Lock()
-	defer maxMindLock.Unlock()
-
 	cc := func() string {
 
 		// Get from session
@@ -197,39 +161,13 @@ func GetCountryCode(r *http.Request) string {
 			return "GB"
 		}
 
-		var err error
-
-		// Get from Maxmind
-		if maxMindDB == nil {
-			maxMindDB, err = maxminddb.Open("./assets/GeoLite2-Country.mmdb")
-			if err != nil {
-				log.ErrS(err)
-				return "US"
-			}
+		record, err := geo.GetLocation(r.RemoteAddr)
+		if err != nil {
+			log.ErrS(err)
+			return "US"
 		}
 
-		ip := net.ParseIP(geo.GetFirstIP(r.RemoteAddr))
-		if ip != nil {
-
-			// More fields available @ https://github.com/oschwald/geoip2-golang/blob/master/reader.go
-			// Only using what we need is faster
-			var record struct {
-				Country struct {
-					ISOCode           string `maxminddb:"iso_code"`
-					IsInEuropeanUnion bool   `maxminddb:"is_in_european_union"`
-				} `maxminddb:"country"`
-			}
-
-			err = maxMindDB.Lookup(ip, &record)
-			if err != nil {
-				log.ErrS(err)
-				return "US"
-			}
-
-			return record.Country.ISOCode
-		}
-
-		return "US"
+		return record.Country.ISOCode
 	}()
 
 	Set(r, SessionCountryCode, cc)

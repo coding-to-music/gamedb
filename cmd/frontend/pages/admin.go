@@ -381,7 +381,7 @@ func adminStatsHandler(w http.ResponseWriter, r *http.Request) {
 	t.IP = r.RemoteAddr
 
 	var location []string
-	record, err := geo.GetCountryCode(r.RemoteAddr)
+	record, err := geo.GetLocation(r.RemoteAddr)
 	if err == nil {
 		if val, ok := record.Country.Names["en"]; ok {
 			location = append(location, val)

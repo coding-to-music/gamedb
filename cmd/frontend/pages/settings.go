@@ -433,7 +433,7 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Get IP location
 		var location []string
-		record, err := geo.GetCountryCode(event.IP)
+		record, err := geo.GetLocation(event.IP)
 		if err == nil {
 			if val, ok := record.Country.Names["en"]; ok {
 				location = append(location, val)

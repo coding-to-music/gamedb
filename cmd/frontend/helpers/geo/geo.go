@@ -15,7 +15,7 @@ var (
 	maxMind *maxminddb.Reader
 )
 
-func GetCountryCode(ipIn string) (record *Record, err error) {
+func GetLocation(ipIn string) (record *Record, err error) {
 
 	lock.Lock()
 	defer lock.Unlock()
@@ -52,8 +52,9 @@ type Record struct {
 		Names map[string]string `maxminddb:"names"`
 	} `maxminddb:"continent"`
 	Country struct {
-		IsoCode string            `maxminddb:"iso_code"`
-		Names   map[string]string `maxminddb:"names"`
+		ISOCode           string            `maxminddb:"iso_code"`
+		Names             map[string]string `maxminddb:"names"`
+		IsInEuropeanUnion bool              `maxminddb:"is_in_european_union"`
 	} `maxminddb:"country"`
 }
 
