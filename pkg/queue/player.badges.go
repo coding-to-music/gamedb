@@ -42,6 +42,12 @@ func playerBadgesHandler(message *rabbit.Message) {
 	defer sendPlayerWebsocket(payload.PlayerID, "badge", message)
 
 	//
+	if message.Attempt() > 10 {
+		message.Ack()
+		return
+	}
+
+	//
 	response, err := steam.GetSteam().GetBadges(payload.PlayerID)
 	err = steam.AllowSteamCodes(err)
 	if err != nil {

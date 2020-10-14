@@ -46,6 +46,12 @@ func playerGamesHandler(message *rabbit.Message) {
 	defer sendPlayerWebsocket(payload.PlayerID, "game", message)
 
 	//
+	if message.Attempt() > 10 {
+		message.Ack()
+		return
+	}
+
+	//
 	update := bson.D{}
 
 	// Grab games from Steam
