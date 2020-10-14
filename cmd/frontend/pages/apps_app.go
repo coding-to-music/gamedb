@@ -660,9 +660,13 @@ func appAchievementCountsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	if playerID > 0 {
 		playerApp, err := mongo.GetPlayerAppByKey(playerID, id)
 		if err != nil {
-			log.ErrS(err)
+			err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
+			if err != nil {
+				log.ErrS(err)
+			}
+		} else {
+			marker = playerApp.AppAchievementsHave
 		}
-		marker = playerApp.AppAchievementsHave
 	}
 
 	var ret [][]int
