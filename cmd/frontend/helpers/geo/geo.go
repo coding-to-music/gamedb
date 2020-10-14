@@ -11,11 +11,17 @@ import (
 )
 
 var (
+	ErrInvalidIP = errors.New("invalid ip")
+
 	lock    sync.Mutex
 	maxMind *maxminddb.Reader
 )
 
 func GetLocation(ipIn string) (record *Record, err error) {
+
+	if ipIn == "" {
+		return nil, ErrInvalidIP
+	}
 
 	lock.Lock()
 	defer lock.Unlock()
@@ -29,7 +35,7 @@ func GetLocation(ipIn string) (record *Record, err error) {
 
 	ip := net.ParseIP(GetFirstIP(ipIn))
 	if ip == nil {
-		return nil, errors.New("invalid ip")
+		return nil, ErrInvalidIP
 	}
 
 	record = &Record{}

@@ -9,10 +9,12 @@ import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/geo"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gorilla/sessions"
+	"go.uber.org/zap"
 )
 
 const (
@@ -126,7 +128,10 @@ func GetProductCC(r *http.Request) steamapi.ProductCC {
 
 		record, err := geo.GetLocation(r.RemoteAddr)
 		if err != nil {
-			log.ErrS(err)
+			err = helpers.IgnoreErrors(err, geo.ErrInvalidIP)
+			if err != nil {
+				log.Err(err.Error(), zap.String("ip", r.RemoteAddr))
+			}
 			return steamapi.ProductCCUS
 		}
 
@@ -163,7 +168,10 @@ func GetCountryCode(r *http.Request) string {
 
 		record, err := geo.GetLocation(r.RemoteAddr)
 		if err != nil {
-			log.ErrS(err)
+			err = helpers.IgnoreErrors(err, geo.ErrInvalidIP)
+			if err != nil {
+				log.Err(err.Error(), zap.String("ip", r.RemoteAddr))
+			}
 			return "US"
 		}
 
