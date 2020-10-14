@@ -76,6 +76,7 @@ func appsSearchHandler(message *rabbit.Message) {
 	app.PlayersCount = mongoApp.PlayerPeakWeek
 	app.Prices = mongoApp.Prices
 	app.Publishers = mongoApp.Publishers
+	app.ReleaseDateOriginal = mongoApp.ReleaseDate
 	app.ReleaseDate = mongoApp.ReleaseDateUnix
 	app.ReleaseDateRounded = time.Unix(mongoApp.ReleaseDateUnix, 10).Truncate(time.Hour * 24).Unix()
 	app.ReviewScore = mongoApp.ReviewsScore

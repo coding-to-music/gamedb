@@ -13,39 +13,40 @@ import (
 )
 
 type App struct {
-	AchievementsAvg    float64               `json:"achievements_avg"`
-	AchievementsCount  int                   `json:"achievements_counts"`
-	AchievementsIcons  []helpers.Tuple       `json:"achievements_icons"`
-	Aliases            []string              `json:"aliases"`
-	Background         string                `json:"background"`
-	Categories         []int                 `json:"categories"`
-	Developers         []int                 `json:"developers"`
-	FollowersCount     int                   `json:"followers"`
-	Genres             []int                 `json:"genres"`
-	GroupID            string                `json:"group_id"`
-	Icon               string                `json:"icon"`
-	ID                 int                   `json:"id"`
-	MicroTrailor       string                `json:"micro_trailor"`
-	Movies             string                `json:"movies"`
-	MoviesCount        int                   `json:"movies_count"`
-	Name               string                `json:"name"`
-	NameMarked         string                `json:"name_marked"` // Not in DB
-	Platforms          []string              `json:"platforms"`
-	PlayersCount       int                   `json:"players"`
-	Prices             helpers.ProductPrices `json:"prices"`
-	Publishers         []int                 `json:"publishers"`
-	ReleaseDate        int64                 `json:"release_date"`
-	ReleaseDateRounded int64                 `json:"release_date_rounded"`
-	ReviewScore        float64               `json:"score"`
-	ReviewsCount       int                   `json:"reviews_count"`
-	Score              float64               `json:"-"` // Not in DB - Search score
-	Screenshots        string                `json:"screenshots"`
-	ScreenshotsCount   int                   `json:"screenshots_count"`
-	Tags               []int                 `json:"tags"`
-	Trend              float64               `json:"trend"`
-	Type               string                `json:"type"`
-	WishlistAvg        float64               `json:"wishlist_avg"`
-	WishlistCount      int                   `json:"wishlist_count"`
+	AchievementsAvg     float64               `json:"achievements_avg"`
+	AchievementsCount   int                   `json:"achievements_counts"`
+	AchievementsIcons   []helpers.Tuple       `json:"achievements_icons"`
+	Aliases             []string              `json:"aliases"`
+	Background          string                `json:"background"`
+	Categories          []int                 `json:"categories"`
+	Developers          []int                 `json:"developers"`
+	FollowersCount      int                   `json:"followers"`
+	Genres              []int                 `json:"genres"`
+	GroupID             string                `json:"group_id"`
+	Icon                string                `json:"icon"`
+	ID                  int                   `json:"id"`
+	MicroTrailor        string                `json:"micro_trailor"`
+	Movies              string                `json:"movies"`
+	MoviesCount         int                   `json:"movies_count"`
+	Name                string                `json:"name"`
+	NameMarked          string                `json:"name_marked"` // Not in DB
+	Platforms           []string              `json:"platforms"`
+	PlayersCount        int                   `json:"players"`
+	Prices              helpers.ProductPrices `json:"prices"`
+	Publishers          []int                 `json:"publishers"`
+	ReleaseDateOriginal string                `json:"release_date_original"`
+	ReleaseDate         int64                 `json:"release_date"`
+	ReleaseDateRounded  int64                 `json:"release_date_rounded"`
+	ReviewScore         float64               `json:"score"`
+	ReviewsCount        int                   `json:"reviews_count"`
+	Score               float64               `json:"-"` // Not in DB - Search score
+	Screenshots         string                `json:"screenshots"`
+	ScreenshotsCount    int                   `json:"screenshots_count"`
+	Tags                []int                 `json:"tags"`
+	Trend               float64               `json:"trend"`
+	Type                string                `json:"type"`
+	WishlistAvg         float64               `json:"wishlist_avg"`
+	WishlistCount       int                   `json:"wishlist_count"`
 }
 
 func (app App) GetName() string {
@@ -292,21 +293,22 @@ func DeleteAndRebuildAppsIndex() {
 						},
 					},
 				},
-				"platforms":            fieldTypeKeyword,
-				"players":              fieldTypeInt32,
-				"prices":               map[string]interface{}{"type": "object", "properties": priceProperties},
-				"publishers":           fieldTypeKeyword,
-				"release_date":         fieldTypeInt64,
-				"release_date_rounded": fieldTypeInt64,
-				"reviews_count":        fieldTypeInt32,
-				"score":                fieldTypeFloat16,
-				"screenshots":          fieldTypeDisabled,
-				"screenshots_count":    fieldTypeInt32,
-				"tags":                 fieldTypeKeyword,
-				"type":                 fieldTypeKeyword,
-				"trend":                fieldTypeKeyword,
-				"wishlist_avg":         fieldTypeFloat32,
-				"wishlist_count":       fieldTypeInt32,
+				"platforms":             fieldTypeKeyword,
+				"players":               fieldTypeInt32,
+				"prices":                map[string]interface{}{"type": "object", "properties": priceProperties},
+				"publishers":            fieldTypeKeyword,
+				"release_date_original": fieldTypeText,
+				"release_date":          fieldTypeInt64,
+				"release_date_rounded":  fieldTypeInt64,
+				"reviews_count":         fieldTypeInt32,
+				"score":                 fieldTypeFloat16,
+				"screenshots":           fieldTypeDisabled,
+				"screenshots_count":     fieldTypeInt32,
+				"tags":                  fieldTypeKeyword,
+				"type":                  fieldTypeKeyword,
+				"trend":                 fieldTypeKeyword,
+				"wishlist_avg":          fieldTypeFloat32,
+				"wishlist_count":        fieldTypeInt32,
 			},
 		},
 	}
