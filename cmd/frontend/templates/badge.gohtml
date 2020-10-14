@@ -11,10 +11,10 @@
 
             <h1 class="text-truncate mb-4"><i class="fas fa-ribbon"></i> {{ .Badge.GetName }}</h1>
 
-            <p class="lead mb-3">{{ .Badge.GetType }} Badge{{ if .Badge.BadgeFoil }} (Foil){{ end }}</p>
+            <p class="lead mb-0">{{ .Badge.GetType }} Badge{{ if .Badge.BadgeFoil }} (Foil){{ end }}</p>
 
             {{ if gt .Badge.AppID 0 }}
-                <p class="mb-0">
+                <p class="mb-0 mt-3">
                     <a href="{{ .Badge.GetPathToggle }}" class="btn btn-success">
                         {{ if .Badge.BadgeFoil }}Go to non foil badge{{ else }}Go to Foil Badge{{ end }}
                     </a>
