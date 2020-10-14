@@ -86,11 +86,12 @@ if ($('#queues-page').length > 0 || $('#player-missing-page').length > 0) {
                 },
             },
             yAxis: {
+                type: 'logarithmic',
                 title: {
                     text: ''
                 },
                 allowDecimals: false,
-                min: 0,
+                min: 1,
             },
             plotOptions: {
                 series: {
