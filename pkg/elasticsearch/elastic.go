@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"sync"
+	"time"
 
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -156,7 +157,7 @@ func rebuildIndex(index string, mapping map[string]interface{}) {
 		return
 	}
 
-	// time.Sleep(time.Second)
+	time.Sleep(time.Second)
 
 	log.Info("Creating " + index)
 	createIndexResp, err := client.CreateIndex(index).BodyJson(mapping).Do(ctx)
