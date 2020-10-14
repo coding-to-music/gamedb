@@ -230,6 +230,7 @@ func getTemplateFuncMap() map[string]interface{} {
 			return string(b), err
 		},
 		"lower":        func(a string) string { return strings.ToLower(a) },
+		"replace":      func(s, old, new string) string { return strings.Replace(s, old, new, 1) },
 		"max":          func(a int, b int) float64 { return math.Max(float64(a), float64(b)) },
 		"ordinalComma": func(i int) string { return helpers.OrdinalComma(i) },
 		"percent":      func(small, big int) float64 { return float64(small) / float64(big) * 100 },
@@ -250,7 +251,7 @@ func getTemplateFuncMap() map[string]interface{} {
 
 // globalTemplate is added to every other template
 type globalTemplate struct {
-	Title       string        // Page title for Chrome
+	Title        string        // Page title for Chrome
 	TitleOnly    string        // Page title
 	Description  template.HTML // Page description
 	Path         string        // URL path

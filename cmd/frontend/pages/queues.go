@@ -12,6 +12,16 @@ import (
 	"github.com/go-chi/chi"
 )
 
+var queuePageCharts = []string{
+	string(queue.QueuePlayers),
+	string(queue.QueueGroups),
+	string(queue.QueueApps),
+	string(queue.QueuePackages),
+	string(queue.QueueBundles),
+	string(queue.QueueChanges),
+	string(queue.QueueDelay),
+}
+
 func QueuesRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", queuesHandler)
@@ -24,7 +34,7 @@ func queuesHandler(w http.ResponseWriter, r *http.Request) {
 	t := queuesTemplate{}
 	t.fill(w, r, "queues", "Queues", "When new items get added to the site, they go through a queue to not overload the servers.")
 	t.addAssetHighCharts()
-	t.Charts = []string{"Players", "Groups", "Apps", "Packages", "Bundles", "Changes", "Delay"}
+	t.Charts = queuePageCharts
 
 	returnTemplate(w, r, t)
 }
@@ -41,22 +51,11 @@ func queuesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	err := memcache.GetSetInterface(item.Key, item.Expiration, &highcharts, func() (interface{}, error) {
 
-		// just get ones with prefix of frontend
-		var fields = []string{
-			string(queue.QueueApps),
-			string(queue.QueueBundles),
-			string(queue.QueueChanges),
-			string(queue.QueueGroups),
-			string(queue.QueuePackages),
-			string(queue.QueuePlayers),
-			string(queue.QueueDelay),
-		}
-
 		builder := influxql.NewBuilder()
 		builder.AddSelect(`sum("messages")`, "sum_messages")
 		builder.SetFrom(influx.InfluxTelegrafDB, influx.InfluxRetentionPolicy14Day.String(), influx.InfluxMeasurementRabbitQueue.String())
 		builder.AddWhere("time", ">=", "now() - 1h")
-		builder.AddWhereRaw(`"queue" =~ /^(` + strings.Join(fields, "|") + `)/`)
+		builder.AddWhereRaw(`"queue" =~ /^(` + strings.Join(queuePageCharts, "|") + `)/`) // just get the main prefixes
 		builder.AddGroupByTime("10s")
 		builder.AddGroupBy("queue")
 		builder.SetFillNone()

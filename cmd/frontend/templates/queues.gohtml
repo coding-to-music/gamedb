@@ -28,10 +28,11 @@
 
                 <div class="row">
                     {{ range .Charts }}
+                        {{ $name := replace . "GDB_" "" }}
                         <div class="col-12 col-lg-6 mt-4">
                             <div class="card">
-                                <h5 class="card-header">{{ . }}</h5>
-                                <div class="card-body" data-queue="{{ . }}" id="{{ . }}">
+                                <h5 class="card-header">{{ $name }}</h5>
+                                <div class="card-body" data-queue="{{ $name }}" id="{{ $name }}">
                                     <i class="fas fa-spinner fa-spin fa-fw"></i>
                                 </div>
                             </div>
