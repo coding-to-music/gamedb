@@ -151,8 +151,7 @@ func rebuildIndex(index string, mapping map[string]interface{}) {
 	if err != nil {
 		log.InfoS(err)
 		return
-	}
-	if !resp.Acknowledged {
+	} else if !resp.Acknowledged {
 		log.Info("delete not acknowledged")
 		return
 	}
