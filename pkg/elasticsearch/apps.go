@@ -270,8 +270,8 @@ func DeleteAndRebuildAppsIndex() {
 				"achievements_avg":    fieldTypeFloat16,
 				"achievements_icons":  fieldTypeDisabled,
 				"aliases": map[string]interface{}{
-					"type":       "text",
-					"normalizer": "gdb_lowercase",
+					"type":     "text",
+					"analyzer": "gdb_lowercase_text",
 				},
 				"background":    fieldTypeDisabled,
 				"categories":    fieldTypeKeyword,
