@@ -100,7 +100,11 @@ type hasIncludes interface {
 	includes() []string
 }
 
-func returnTemplate(w http.ResponseWriter, r *http.Request, pageData interface{ GetPageID() string }) {
+type pageInterface interface {
+	GetPageID() string
+}
+
+func returnTemplate(w http.ResponseWriter, r *http.Request, pageData pageInterface) {
 
 	var err error
 	var page = pageData.GetPageID()
@@ -247,17 +251,17 @@ func getTemplateFuncMap() map[string]interface{} {
 // globalTemplate is added to every other template
 type globalTemplate struct {
 	Title       string        // Page title for Chrome
-	TitleOnly   string        // Page title
-	Description template.HTML // Page description
-	Path        string        // URL path
-	Env         string        // Environment
-	CSSFiles    []Asset
-	JSFiles     []Asset
-	Canonical   string
-	ProductCCs  []i18n.ProductCountryCode
-	Continents  []i18n.Continent
-	CurrentCC   string
-	PageID      string
+	TitleOnly    string        // Page title
+	Description  template.HTML // Page description
+	Path         string        // URL path
+	Env          string        // Environment
+	CSSFiles     []Asset
+	JSFiles      []Asset
+	Canonical    string
+	ProductCCs   []i18n.ProductCountryCode
+	Continents   []i18n.Continent
+	CurrentCC    string
+	TemplateName string
 
 	Background      string
 	BackgroundTitle string
@@ -285,16 +289,16 @@ type globalTemplate struct {
 
 // For an interface
 func (t globalTemplate) GetPageID() string {
-	return t.PageID
+	return t.TemplateName
 }
 
-func (t *globalTemplate) fill(w http.ResponseWriter, r *http.Request, pageID string, title string, description template.HTML) {
+func (t *globalTemplate) fill(w http.ResponseWriter, r *http.Request, templateName string, title string, description template.HTML) {
 
 	var err error
 
 	t.request = r
 	t.response = w
-	t.PageID = pageID
+	t.TemplateName = templateName
 
 	t.Title = title + " - Game DB"
 	t.TitleOnly = title
