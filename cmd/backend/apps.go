@@ -195,7 +195,7 @@ func (a AppsServer) Search(ctx context.Context, request *generated.SearchAppsReq
 		defer wg.Done()
 
 		var err error
-		apps, filtered, err = elasticsearch.SearchAppsAdvanced(int(request.GetPagination().GetOffset()), 100, request.GetSearch(), nil, filters)
+		apps, filtered, err = elasticsearch.SearchAppsAdvanced(int(request.GetPagination().GetOffset()), 100, request.GetSearch(), nil, elastic.NewBoolQuery().Filter(filters...))
 		if err != nil {
 			log.ErrS(err)
 		}

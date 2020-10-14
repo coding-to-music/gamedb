@@ -140,14 +140,16 @@ func SearchAppsSimple(limit int, search string) (apps []App, err error) {
 	return apps, err
 }
 
-func SearchAppsAdvanced(offset int, limit int, search string, sorters []elastic.Sorter, filters []elastic.Query) (apps []App, total int64, err error) {
+func SearchAppsAdvanced(offset int, limit int, search string, sorters []elastic.Sorter, boolQuery *elastic.BoolQuery) (apps []App, total int64, err error) {
 
-	return searchApps(limit, offset, search, true, true, sorters, filters, false)
+	return searchApps(limit, offset, search, true, true, sorters, boolQuery, false)
 }
 
 func SearchAppsRandom(filters []elastic.Query) (app App, count int64, err error) {
 
-	apps, count, err := searchApps(1, 0, "", true, true, nil, filters, true)
+	boolQuery := elastic.NewBoolQuery().Filter(filters...)
+
+	apps, count, err := searchApps(1, 0, "", true, true, nil, boolQuery, true)
 	if err != nil {
 		return app, count, err
 	}
@@ -160,7 +162,7 @@ func SearchAppsRandom(filters []elastic.Query) (app App, count int64, err error)
 
 }
 
-func searchApps(limit int, offset int, search string, totals bool, highlights bool, sorters []elastic.Sorter, filters []elastic.Query, random bool) (apps []App, total int64, err error) {
+func searchApps(limit int, offset int, search string, totals bool, highlights bool, sorters []elastic.Sorter, boolQuery *elastic.BoolQuery, random bool) (apps []App, total int64, err error) {
 
 	client, ctx, err := GetElastic()
 	if err != nil {
@@ -172,8 +174,6 @@ func searchApps(limit int, offset int, search string, totals bool, highlights bo
 		From(offset).
 		Size(limit).
 		SortBy(sorters...)
-
-	boolQuery := elastic.NewBoolQuery().Filter(filters...)
 
 	if search != "" {
 
