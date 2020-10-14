@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func WallpaperRouter() http.Handler {
+func wallpaperRouter() http.Handler {
 
 	r := chi.NewRouter()
 	r.Get("/", wallpaperHandler)

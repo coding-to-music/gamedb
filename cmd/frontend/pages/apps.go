@@ -31,7 +31,8 @@ func GamesRouter() http.Handler {
 	r.Mount("/sales", salesRouter())
 	r.Mount("/trending", trendingRouter())
 	r.Mount("/wishlists", wishlistsRouter())
-	r.Mount("/wallpaper", WallpaperRouter())
+	r.Mount("/wallpaper", wallpaperRouter())
+	r.Mount("/release-dates", releaseDatesRouter())
 	r.Mount("/{id}", appRouter())
 	return r
 }
