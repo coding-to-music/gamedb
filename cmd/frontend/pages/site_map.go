@@ -66,6 +66,7 @@ func SiteMapPagesHandler(w http.ResponseWriter, r *http.Request) {
 		"/games/trending",
 		"/games/upcoming",
 		"/games/wishlist",
+		"/games/release-dates",
 		"/genres",
 		"/groups",
 		"/info",
