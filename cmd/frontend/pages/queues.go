@@ -24,7 +24,7 @@ func queuesHandler(w http.ResponseWriter, r *http.Request) {
 	t := queuesTemplate{}
 	t.fill(w, r, "queues", "Queues", "When new items get added to the site, they go through a queue to not overload the servers.")
 	t.addAssetHighCharts()
-	t.Charts = []string{"Players", "Groups", "Apps", "Packages", "Bundles", "Changes"}
+	t.Charts = []string{"Players", "Groups", "Apps", "Packages", "Bundles", "Changes", "Delay"}
 
 	returnTemplate(w, r, t)
 }
@@ -49,6 +49,7 @@ func queuesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			string(queue.QueueGroups),
 			string(queue.QueuePackages),
 			string(queue.QueuePlayers),
+			string(queue.QueueDelay),
 		}
 
 		builder := influxql.NewBuilder()
