@@ -226,8 +226,11 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 
 		user, err = mysql.GetUserByEmail(pwr.User.Attributes.Email)
 		if err != nil {
-			log.ErrS(err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			err2 := helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
+			if err2 != nil {
+				log.ErrS(err2)
+				http.Error(w, err2.Error(), http.StatusInternalServerError)
+			}
 			return
 		}
 
