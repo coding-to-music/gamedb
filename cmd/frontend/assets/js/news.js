@@ -58,7 +58,7 @@ if ($('#news-page').length > 0) {
                 {
                     "targets": 2,
                     "render": function (data, type, row) {
-                        return row[6].toLocaleString();
+                        return row[6];
                     },
                     "orderable": false,
                     "visible": false,

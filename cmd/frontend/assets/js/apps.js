@@ -131,7 +131,7 @@ if ($('#apps-page').length > 0) {
                 {
                     "targets": 7,
                     "render": function (data, type, row) {
-                        return row[11].toLocaleString();
+                        return row[11];
                     },
                     "orderable": false,
                     "visible": false,

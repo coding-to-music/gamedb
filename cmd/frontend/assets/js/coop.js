@@ -82,7 +82,7 @@ if ($('#coop-page').length > 0) {
                 {
                     "targets": 5,
                     "render": function (data, type, row) {
-                        return row[9].toLocaleString();
+                        return row[9];
                     },
                     "orderable": false,
                     "visible": false,
