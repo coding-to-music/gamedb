@@ -4,59 +4,31 @@
         <ul class="nav nav-tabs card-header-tabs" role="tablist">
 
             <li class="nav-item">
-                {{if endsWith .Path "/stats" }}
-                    <span class="nav-link active" role="tab"><i class="fas fa-chart-bar"></i> Steam</span>
-                {{else}}
-                    <a class="nav-link" href="/stats" role="tab"><i class="fas fa-chart-bar"></i> Steam</a>
-                {{end}}
+                <a class="nav-link {{if eq .Path "/stats" }}active{{end}}" href="/stats" role="tab"><i class="fas fa-chart-bar"></i> Steam</a>
             </li>
 
             <li class="nav-item">
-                {{if startsWith .Path "/stats/gamedb" }}
-                    <span class="nav-link active" role="tab"><i class="fas fa-chart-bar"></i> Game DB</span>
-                {{else}}
-                    <a class="nav-link" href="/stats/gamedb" role="tab"><i class="fas fa-chart-bar"></i> Game DB</a>
-                {{end}}
+                <a class="nav-link {{if startsWith .Path "/stats/gamedb" }}active{{end}}" href="/stats/gamedb" role="tab"><i class="fas fa-chart-bar"></i> Game DB</a>
             </li>
 
             <li class="nav-item">
-                {{if startsWith .Path "/tags" }}
-                    <span class="nav-link active" role="tab"><i class="fas fa-star"></i> Tags</span>
-                {{else}}
-                    <a class="nav-link" href="/tags" role="tab"><i class="fas fa-star"></i> Tags</a>
-                {{end}}
+                <a class="nav-link {{if startsWith .Path "/tags" }}active{{end}}" href="/tags" role="tab"><i class="fas fa-star"></i> Tags</a>
             </li>
 
             <li class="nav-item">
-                {{if startsWith .Path "/genres" }}
-                    <span class="nav-link active" role="tab"><i class="fas fa-star"></i> Genres</span>
-                {{else}}
-                    <a class="nav-link" href="/genres" role="tab"><i class="fas fa-star"></i> Genres</a>
-                {{end}}
+                <a class="nav-link {{if startsWith .Path "/genres" }}active{{end}}" href="/genres" role="tab"><i class="fas fa-star"></i> Genres</a>
             </li>
 
             <li class="nav-item">
-                {{if startsWith .Path "/categories" }}
-                    <span class="nav-link active" role="tab"><i class="fas fa-star"></i> Categories</span>
-                {{else}}
-                    <a class="nav-link" href="/categories" role="tab"><i class="fas fa-star"></i> Categories</a>
-                {{end}}
+                <a class="nav-link {{if startsWith .Path "/categories" }}active{{end}}" href="/categories" role="tab"><i class="fas fa-star"></i> Categories</a>
             </li>
 
             <li class="nav-item">
-                {{if startsWith .Path "/publishers" }}
-                    <span class="nav-link active" role="tab"><i class="fas fa-star"></i> Publishers</span>
-                {{else}}
-                    <a class="nav-link" href="/publishers" role="tab"><i class="fas fa-star"></i> Publishers</a>
-                {{end}}
+                <a class="nav-link {{if startsWith .Path "/publishers" }}active{{end}}" href="/publishers" role="tab"><i class="fas fa-star"></i> Publishers</a>
             </li>
 
             <li class="nav-item">
-                {{if startsWith .Path "/developers" }}
-                    <span class="nav-link active" role="tab"><i class="fas fa-star"></i> Developers</span>
-                {{else}}
-                    <a class="nav-link" href="/developers" role="tab"><i class="fas fa-star"></i> Developers</a>
-                {{end}}
+                <a class="nav-link {{if startsWith .Path "/developers" }}active{{end}}" href="/developers" role="tab"><i class="fas fa-star"></i> Developers</a>
             </li>
 
         </ul>

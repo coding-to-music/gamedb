@@ -63,6 +63,10 @@ type statTagsTemplate struct {
 	Stat mongo.Stat
 }
 
+func (t statTagsTemplate) includes() []string {
+	return []string{"includes/stats_header.gohtml"}
+}
+
 func statAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "id")
