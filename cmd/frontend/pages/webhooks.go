@@ -231,6 +231,7 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 				log.ErrS(err2)
 				http.Error(w, err2.Error(), http.StatusInternalServerError)
 			}
+			// Send patreon a 200
 			return
 		}
 
