@@ -18,23 +18,6 @@ if ($('#release-dates-page').length > 0) {
                 $(row).attr('data-app-id', data[0]);
                 $(row).attr('data-link', data[3]);
             },
-            "drawCallback": function (settings) {
-                const api = this.api();
-                if (api.order()[0] && api.order()[0][0] === 3) {
-                    const rows = api.rows({page: 'current'}).nodes();
-
-                    let last = null;
-                    api.rows().every(function (rowIdx, tableLoop, rowLoop) {
-                        let group = this.data()[6];
-                        if (last !== group) {
-                            $(rows).eq(rowIdx).before(
-                                '<tr class="table-success"><td colspan="6">' + group + '</td></tr>'
-                            );
-                            last = group;
-                        }
-                    });
-                }
-            },
             "columnDefs": [
                 // Icon / App Name
                 {
