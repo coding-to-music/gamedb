@@ -12,7 +12,6 @@ import (
 	"github.com/didip/tollbooth/v6/limiter"
 	"github.com/gamedb/gamedb/cmd/api/generated"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
-	"github.com/gamedb/gamedb/pkg/config"
 	influxHelpers "github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mysql"
@@ -98,14 +97,7 @@ func (s Server) call(w http.ResponseWriter, r *http.Request, callback func(w htt
 
 	code, response := callback(w, r)
 
-	go func(r *http.Request, code int, key string, user mysql.User) {
-
-		err = s.saveToInflux(r, code, key, user)
-		if err != nil {
-			log.ErrS(err)
-		}
-
-	}(r, code, key, user)
+	go s.saveToInflux(r, code, user.ID)
 
 	switch v := response.(type) {
 	case string:
@@ -121,25 +113,27 @@ func (s Server) call(w http.ResponseWriter, r *http.Request, callback func(w htt
 	}
 }
 
-func (s Server) saveToInflux(r *http.Request, code int, key string, user mysql.User) (err error) {
+func (s Server) saveToInflux(r *http.Request, code int, userID int) {
 
-	if config.IsLocal() {
-		return nil
-	}
+	// if config.IsLocal() {
+	// 	return
+	// }
 
-	_, err = influxHelpers.InfluxWrite(influxHelpers.InfluxRetentionPolicyAllTime, influx.Point{
+	_, err := influxHelpers.InfluxWrite(influxHelpers.InfluxRetentionPolicyAllTime, influx.Point{
 		Measurement: string(influxHelpers.InfluxMeasurementAPICalls),
 		Tags: map[string]string{
-			"path":       r.URL.Path,
-			"key":        key,
-			"user_email": user.Email,
+			"path":    r.URL.Path,
+			"user_id": strconv.Itoa(userID),
+			"code":    strconv.Itoa(code),
 		},
 		Fields: map[string]interface{}{
-			strconv.Itoa(code): 1,
+			"call": 1,
 		},
 		Time:      time.Now(),
-		Precision: "ms",
+		Precision: "s",
 	})
 
-	return err
+	if err != nil {
+		log.ErrS(err)
+	}
 }

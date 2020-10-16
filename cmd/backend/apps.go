@@ -84,8 +84,13 @@ func (a AppsServer) Apps(ctx context.Context, request *generated.ListAppsRequest
 
 	for _, app := range apps {
 		response.Apps = append(response.Apps, &generated.AppMongoResponse{
-			Id:   int32(app.GetID()),
-			Name: app.GetName(),
+			Id:         int32(app.GetID()),
+			Name:       app.GetName(),
+			Tags:       helpers.IntsToInt32s(app.Tags),
+			Categories: helpers.IntsToInt32s(app.Categories),
+			Developers: helpers.IntsToInt32s(app.Developers),
+			Publishers: helpers.IntsToInt32s(app.Publishers),
+			Genres:     helpers.IntsToInt32s(app.Genres),
 		})
 	}
 

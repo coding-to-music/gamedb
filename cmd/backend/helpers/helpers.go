@@ -58,3 +58,10 @@ func IntsToInt32s(s []int) (o []int32) {
 	}
 	return o
 }
+
+func Int32sToInts(s []int32) (o []int) {
+	for _, v := range s {
+		o = append(o, int(v))
+	}
+	return o
+}
