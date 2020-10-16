@@ -55,13 +55,11 @@ func (s Server) call(w http.ResponseWriter, r *http.Request, callback func(w htt
 	// Check API key
 	key := r.URL.Query().Get(keyField)
 	if key == "" {
-		key = r.Header.Get(keyField)
-		// if key == "" {
-		// 	key = session.Get(r, session.SessionUserAPIKey)
-		// }
+		key = strings.TrimLeft(r.Header.Get(keyField), "Bearer ")
+		if key == "" {
+			key = session.Get(r, session.SessionUserAPIKey)
+		}
 	}
-
-	key = strings.TrimLeft(key, "Bearer ")
 
 	if key == "" {
 		s.returnErrorResponse(w, http.StatusUnauthorized, errors.New("empty api key"))
