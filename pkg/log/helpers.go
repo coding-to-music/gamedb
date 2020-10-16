@@ -13,6 +13,7 @@ const (
 	LogNameCrons     = "crons"
 	LogNameSteam     = "steam"
 	LogNameFrontend  = "frontend"
+	LogNameDown      = "down"
 	LogNameTest      = "test"
 	LogNameScaler    = "scaler"
 
