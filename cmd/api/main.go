@@ -1,5 +1,7 @@
 package main
 
+//go:generate bash ./scripts/generate.sh
+
 import (
 	"compress/flate"
 	"encoding/json"
@@ -7,6 +9,7 @@ import (
 	"time"
 
 	"github.com/gamedb/gamedb/cmd/api/generated"
+	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -16,8 +19,6 @@ import (
 
 var version string
 var commits string
-
-//go:generate bash ./scripts/generate.sh
 
 func main() {
 

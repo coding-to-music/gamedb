@@ -173,6 +173,8 @@ func GetStatsByID(typex StatsType, ids []int) (stats []Stat, err error) {
 		return stats, nil
 	}
 
+	ids = helpers.UniqueInt(ids)
+
 	a := bson.A{}
 	for _, v := range ids {
 		a = append(a, v)

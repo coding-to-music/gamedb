@@ -18,29 +18,22 @@ import (
 
 // AppSchema defines model for app-schema.
 type AppSchema struct {
-	Categories      []int   `json:"categories"`
-	Developers      []int   `json:"developers"`
-	Genres          []int   `json:"genres"`
-	Id              int     `json:"id"`
-	MetacriticScore int32   `json:"metacritic_score"`
-	Name            string  `json:"name"`
-	PlayersMax      int     `json:"players_max"`
-	PlayersWeekAvg  float64 `json:"players_week_avg"`
-	PlayersWeekMax  int     `json:"players_week_max"`
-	Prices          []struct {
-		Currency        string `json:"currency"`
-		DiscountPercent int32  `json:"discountPercent"`
-		Final           int32  `json:"final"`
-		Free            bool   `json:"free"`
-		Individual      int32  `json:"individual"`
-		Initial         int32  `json:"initial"`
-	} `json:"prices"`
-	Publishers      []int   `json:"publishers"`
-	ReleaseDate     int64   `json:"release_date"`
-	ReviewsNegative int     `json:"reviews_negative"`
-	ReviewsPositive int     `json:"reviews_positive"`
-	ReviewsScore    float64 `json:"reviews_score"`
-	Tags            []int   `json:"tags"`
+	Categories      []StatSchema         `json:"categories"`
+	Developers      []StatSchema         `json:"developers"`
+	Genres          []StatSchema         `json:"genres"`
+	Id              int                  `json:"id"`
+	MetacriticScore int32                `json:"metacritic_score"`
+	Name            string               `json:"name"`
+	PlayersMax      int                  `json:"players_max"`
+	PlayersWeekAvg  float64              `json:"players_week_avg"`
+	PlayersWeekMax  int                  `json:"players_week_max"`
+	Prices          []ProductPriceSchema `json:"prices"`
+	Publishers      []StatSchema         `json:"publishers"`
+	ReleaseDate     int64                `json:"release_date"`
+	ReviewsNegative int                  `json:"reviews_negative"`
+	ReviewsPositive int                  `json:"reviews_positive"`
+	ReviewsScore    float64              `json:"reviews_score"`
+	Tags            []StatSchema         `json:"tags"`
 }
 
 // MessageSchema defines model for message-schema.
@@ -73,6 +66,22 @@ type PlayerSchema struct {
 	Playtime  int    `json:"playtime"`
 	State     string `json:"state"`
 	VanityUrl string `json:"vanity_url"`
+}
+
+// ProductPriceSchema defines model for product-price-schema.
+type ProductPriceSchema struct {
+	Currency        string `json:"currency"`
+	DiscountPercent int32  `json:"discountPercent"`
+	Final           int32  `json:"final"`
+	Free            bool   `json:"free"`
+	Individual      int32  `json:"individual"`
+	Initial         int32  `json:"initial"`
+}
+
+// StatSchema defines model for stat-schema.
+type StatSchema struct {
+	Id   int    `json:"id"`
+	Name string `json:"name"`
 }
 
 // LimitParam defines model for limit-param.
@@ -478,31 +487,31 @@ func HandlerFromMux(si ServerInterface, r chi.Router) http.Handler {
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
-	"HQAA",
+	"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",
 }
 
 // GetSwagger returns the Swagger specification corresponding to the generated code

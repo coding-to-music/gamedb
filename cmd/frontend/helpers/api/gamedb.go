@@ -14,20 +14,6 @@ func stringPointer(s string) *string {
 	return &s
 }
 
-var (
-	priceSchema = &openapi3.Schema{
-		Required: []string{"currency", "initial", "final", "discountPercent", "individual", "free"},
-		Properties: map[string]*openapi3.SchemaRef{
-			"currency":        {Value: openapi3.NewStringSchema()},
-			"initial":         {Value: openapi3.NewInt32Schema()},
-			"final":           {Value: openapi3.NewInt32Schema()},
-			"discountPercent": {Value: openapi3.NewInt32Schema()},
-			"individual":      {Value: openapi3.NewInt32Schema()},
-			"free":            {Value: openapi3.NewBoolSchema()},
-		},
-	}
-)
-
 var SwaggerGameDB = &openapi3.Swagger{
 	OpenAPI: "3.0.0",
 	Servers: []*openapi3.Server{
@@ -94,12 +80,12 @@ var SwaggerGameDB = &openapi3.Swagger{
 					Properties: map[string]*openapi3.SchemaRef{
 						"id":               {Value: openapi3.NewIntegerSchema()},
 						"name":             {Value: openapi3.NewStringSchema()},
-						"tags":             {Value: openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema())},
-						"genres":           {Value: openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema())},
-						"categories":       {Value: openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema())},
-						"developers":       {Value: openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema())},
-						"publishers":       {Value: openapi3.NewArraySchema().WithItems(openapi3.NewIntegerSchema())},
-						"prices":           {Value: openapi3.NewArraySchema().WithItems(priceSchema)},
+						"tags":             {Value: &openapi3.Schema{Type: "array", Items: &openapi3.SchemaRef{Ref: "#/components/schemas/stat-schema"}}},
+						"genres":           {Value: &openapi3.Schema{Type: "array", Items: &openapi3.SchemaRef{Ref: "#/components/schemas/stat-schema"}}},
+						"categories":       {Value: &openapi3.Schema{Type: "array", Items: &openapi3.SchemaRef{Ref: "#/components/schemas/stat-schema"}}},
+						"developers":       {Value: &openapi3.Schema{Type: "array", Items: &openapi3.SchemaRef{Ref: "#/components/schemas/stat-schema"}}},
+						"publishers":       {Value: &openapi3.Schema{Type: "array", Items: &openapi3.SchemaRef{Ref: "#/components/schemas/stat-schema"}}},
+						"prices":           {Value: &openapi3.Schema{Type: "array", Items: &openapi3.SchemaRef{Ref: "#/components/schemas/product-price-schema"}}},
 						"players_max":      {Value: openapi3.NewIntegerSchema()},
 						"players_week_max": {Value: openapi3.NewIntegerSchema()},
 						"players_week_avg": {Value: openapi3.NewFloat64Schema().WithFormat("double")},
@@ -108,6 +94,28 @@ var SwaggerGameDB = &openapi3.Swagger{
 						"reviews_negative": {Value: openapi3.NewIntegerSchema()},
 						"reviews_score":    {Value: openapi3.NewFloat64Schema().WithFormat("double")},
 						"metacritic_score": {Value: openapi3.NewInt32Schema()},
+					},
+				},
+			},
+			"stat-schema": {
+				Value: &openapi3.Schema{
+					Required: []string{"id", "name"},
+					Properties: map[string]*openapi3.SchemaRef{
+						"id":   {Value: openapi3.NewIntegerSchema()},
+						"name": {Value: openapi3.NewStringSchema()},
+					},
+				},
+			},
+			"product-price-schema": {
+				Value: &openapi3.Schema{
+					Required: []string{"currency", "initial", "final", "discountPercent", "individual", "free"},
+					Properties: map[string]*openapi3.SchemaRef{
+						"currency":        {Value: openapi3.NewStringSchema()},
+						"initial":         {Value: openapi3.NewInt32Schema()},
+						"final":           {Value: openapi3.NewInt32Schema()},
+						"discountPercent": {Value: openapi3.NewInt32Schema()},
+						"individual":      {Value: openapi3.NewInt32Schema()},
+						"free":            {Value: openapi3.NewBoolSchema()},
 					},
 				},
 			},
@@ -141,7 +149,7 @@ var SwaggerGameDB = &openapi3.Swagger{
 				},
 			},
 			"price-schema": {
-				Value: priceSchema,
+				Ref: "#/components/schemas/product-price-schema",
 			},
 		},
 		Responses: map[string]*openapi3.ResponseRef{
