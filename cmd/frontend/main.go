@@ -210,16 +210,14 @@ func main() {
 		return
 	}
 
-	add := "0.0.0.0:" + config.C.FrontendPort
-
-	log.Info("Starting Frontend on " + "http://" + add)
-
 	s := &http.Server{
-		Addr:              add,
+		Addr:              "0.0.0.0:" + config.C.FrontendPort,
 		Handler:           r,
 		ReadTimeout:       2 * time.Second,
 		ReadHeaderTimeout: 2 * time.Second,
 	}
+
+	log.Info("Starting Frontend on " + "http://" + s.Addr)
 
 	err = s.ListenAndServe()
 	if err != nil {

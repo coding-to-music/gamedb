@@ -38,16 +38,14 @@ func main() {
 
 	generated.HandlerFromMux(Server{}, r)
 
-	addr := "0.0.0.0:" + config.C.APIPort
-
-	log.Info("Starting API on " + "http://" + addr)
-
 	s := &http.Server{
-		Addr:              addr,
+		Addr:              "0.0.0.0:" + config.C.APIPort,
 		Handler:           r,
 		ReadTimeout:       2 * time.Second,
 		ReadHeaderTimeout: 2 * time.Second,
 	}
+
+	log.Info("Starting API on " + "http://" + s.Addr + "/no-redirect")
 
 	err = s.ListenAndServe()
 	if err != nil {

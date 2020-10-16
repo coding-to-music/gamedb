@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/cmd/scaler/hosts"
@@ -36,9 +37,16 @@ func main() {
 	r.Get("/delete/{id}", deleteHandler)
 	r.Get("/health-check", healthCheckHandler)
 
-	fmt.Println("Starting scaler on http://0.0.0.0:4000")
+	s := &http.Server{
+		Addr:              "0.0.0.0:4000",
+		Handler:           r,
+		ReadTimeout:       2 * time.Second,
+		ReadHeaderTimeout: 2 * time.Second,
+	}
 
-	err = http.ListenAndServe(":4000", r)
+	log.Info("Starting Scaler on " + "http://" + s.Addr)
+
+	err = s.ListenAndServe()
 	if err != nil {
 		log.ErrS(err)
 	}
