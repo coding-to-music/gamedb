@@ -434,6 +434,7 @@ func (t globalTemplate) GetUserJSON() string {
 		"log":                config.IsLocal() || t.IsAdmin(),
 		"isLoggedIn":         t.IsLoggedIn(),
 		"isProd":             config.IsProd(),
+		"isLocal":            config.IsLocal(),
 	}
 
 	b, err := json.Marshal(stringMap)

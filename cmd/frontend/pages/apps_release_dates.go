@@ -2,6 +2,7 @@ package pages
 
 import (
 	"net/http"
+	"strings"
 	"sync"
 
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/datatable"
@@ -52,18 +53,25 @@ func releaseDatesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 
 		columns := map[string]string{
-			"0": "name.raw",
 			"2": "followers, name.raw asc",
+			"4": "_score",
 		}
 
-		boolQuery := elastic.NewBoolQuery().Filter(
-			elastic.NewTermQuery("release_date", 0),
-		).MustNot(
-			elastic.NewTermQuery("release_date_original.raw", ""),
-			// elastic.NewRegexpQuery("release_date_original", "/(tbd|tba|coming soon|^$)/i"),
-		)
+		// Boost the bad ones and show in reverse order
+		boolQuery := elastic.NewBoolQuery().
+			Filter(
+				elastic.NewTermQuery("release_date", 0),
+			).
+			Should(
+				// match query is case insensitive
+				elastic.NewMatchQuery("release_date_original", strings.Join([]string{"tbd", "tba", "\"coming soon\"", "fall", "winter", "spring", "autumn", "q1", "q2", "q3", "q4"}, " OR ")),
+				elastic.NewRegexpQuery("release_date_original", "[0-9]{4}"),
+			).
+			MustNot(
+				elastic.NewTermQuery("release_date_original.raw", ""),
+			)
 
-		apps, filtered, err = elasticsearch.SearchAppsAdvanced(query.GetOffset(), 1000, query.GetSearchString("search"), query.GetOrderElastic(columns), boolQuery)
+		apps, filtered, err = elasticsearch.SearchAppsAdvanced(query.GetOffset(), 100, "", query.GetOrderElastic(columns), boolQuery)
 		if err != nil {
 			log.ErrS(err)
 		}
@@ -83,6 +91,7 @@ func releaseDatesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			app.GetFollowers(),              // 4
 			helpers.GetAppStoreLink(app.ID), // 5
 			app.ReleaseDateOriginal,         // 6
+			app.Score,                       // 7
 		})
 	}
 

@@ -12,8 +12,7 @@ if ($('#release-dates-page').length > 0) {
             $('#search'),
         ],
         tableOptions: {
-            "pageLength": 1000,
-            "order": [[0, 'asc']],
+            "order": [[4, 'asc']],
             "createdRow": function (row, data, dataIndex) {
                 $(row).attr('data-app-id', data[0]);
                 $(row).attr('data-link', data[3]);
@@ -27,6 +26,7 @@ if ($('#release-dates-page').length > 0) {
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
+                        $(td).attr('nowrap', 'nowrap');
                     },
                     "orderable": false,
                 },
@@ -35,9 +35,6 @@ if ($('#release-dates-page').length > 0) {
                     "targets": 1,
                     "render": function (data, type, row) {
                         return row[6];
-                    },
-                    "createdCell": function (td, cellData, rowData, row, col) {
-                        $(td).attr('nowrap', 'nowrap');
                     },
                     "orderable": false,
                 },
@@ -59,6 +56,16 @@ if ($('#release-dates-page').length > 0) {
                         return '';
                     },
                     "orderable": false,
+                },
+                // Search Score
+                {
+                    "targets": 4,
+                    "render": function (data, type, row) {
+                        return row[7];
+                    },
+                    "visible": user.isLocal,
+                    "orderable": false,
+                    "orderSequence": ["asc", "desc"],
                 },
             ]
         },
