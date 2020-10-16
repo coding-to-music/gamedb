@@ -85,7 +85,7 @@ func main() {
 	generated.RegisterStatsServiceServer(grpcServer, StatsServer{})
 	generated.RegisterGroupsServiceServer(grpcServer, GroupsServer{})
 
-	log.Info("Starting Backend on tcp://" + config.C.BackendHostPort)
+	log.Info("Starting Backend on tcp://" + lis.Addr().String())
 
 	err = grpcServer.Serve(lis)
 	if err != nil {
