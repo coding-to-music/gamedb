@@ -8,7 +8,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
 	"github.com/olivere/elastic/v7"
 )
@@ -54,12 +53,14 @@ func releaseDatesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		columns := map[string]string{
 			"0": "name.raw",
-			"1": "followers, name.raw asc",
+			"2": "followers, name.raw asc",
 		}
 
 		boolQuery := elastic.NewBoolQuery().Filter(
 			elastic.NewTermQuery("release_date", 0),
-			elastic.NewBoostingQuery().Negative(elastic.NewRegexpQuery("", "/(tbd|tba|coming soon|^$)/i")),
+		).MustNot(
+			elastic.NewTermQuery("release_date_original.raw", ""),
+			// elastic.NewRegexpQuery("release_date_original", "/(tbd|tba|coming soon|^$)/i"),
 		)
 
 		apps, filtered, err = elasticsearch.SearchAppsAdvanced(query.GetOffset(), 1000, query.GetSearchString("search"), query.GetOrderElastic(columns), boolQuery)
@@ -68,24 +69,10 @@ func releaseDatesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	// Get count
-	var count int64
-	wg.Add(1)
-	go func() {
-
-		defer wg.Done()
-
-		var err error
-		count, err = mongo.CountDocuments(mongo.CollectionApps, upcomingFilter, 60*60)
-		if err != nil {
-			log.ErrS(err)
-		}
-	}()
-
 	wg.Wait()
 
 	//
-	var response = datatable.NewDataTablesResponse(r, query, count, filtered, nil)
+	var response = datatable.NewDataTablesResponse(r, query, filtered, filtered, nil)
 	for _, app := range apps {
 
 		response.AddRow([]interface{}{
