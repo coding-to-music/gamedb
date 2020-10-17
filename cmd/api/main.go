@@ -48,6 +48,10 @@ func main() {
 		ReadHeaderTimeout: 2 * time.Second,
 	}
 
+	if config.IsLocal() {
+		s.Addr = "localhost:" + config.C.APIPort
+	}
+
 	log.Info("Starting API on " + "http://" + s.Addr + "/no-redirect")
 
 	err = s.ListenAndServe()
