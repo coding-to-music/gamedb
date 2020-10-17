@@ -466,44 +466,48 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 func settingsDonationsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	user, err := getUserFromSession(r)
-	if err != nil {
-		log.ErrS(err)
-		return
-	}
-
-	query := datatable.NewDataTableQuery(r, true)
+	query := datatable.NewDataTableQuery(r, false)
+	userID := session.GetUserIDFromSesion(r)
 
 	var wg sync.WaitGroup
 
-	// Get events
-	var events []mongo.Event
+	// Get donations
+	var donations []mysql.Donation
 	wg.Add(1)
-	go func(r *http.Request) {
+	go func() {
 
 		defer wg.Done()
 
-	}(r)
-
-	// Get total
-	var total int64
-	wg.Add(1)
-	go func(r *http.Request) {
-
-		defer wg.Done()
-
-		total, err = mongo.CountDocuments(mongo.CollectionWebhooks, bson.D{{"user_id", user.ID}}, 0)
+		var err error
+		donations, err = mysql.GetDonationsByUser(userID, query.GetOffset())
 		if err != nil {
 			log.ErrS(err)
 		}
-	}(r)
+	}()
+
+	// Get total
+	var total int
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		total, err = mysql.GetDonationCountByUser(userID)
+		if err != nil {
+			log.ErrS(err)
+		}
+	}()
 
 	wg.Wait()
 
-	var response = datatable.NewDataTablesResponse(r, query, total, total, nil)
-	for _, v := range events {
+	var response = datatable.NewDataTablesResponse(r, query, int64(total), int64(total), nil)
+	for _, donation := range donations {
 		response.AddRow([]interface{}{
-			v.IP,
+			donation.CreatedAt.Unix(),                       // 0
+			donation.CreatedAt.Format(helpers.DateYearTime), // 1
+			donation.AmountUSD,                              // 2
+			strings.Title(donation.Source),                  // 3
 		})
 	}
 

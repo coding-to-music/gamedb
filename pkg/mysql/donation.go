@@ -30,6 +30,35 @@ func (d Donation) Format() string {
 	return helpers.FloatToString(float64(d.AmountUSD)/100, 2)
 }
 
+func GetDonationsByUser(userID int, offset int) (donations []Donation, err error) {
+
+	db, err := GetMySQLClient()
+	if err != nil {
+		return donations, err
+	}
+
+	err = db.
+		Where("user_id = ?", userID).
+		Order("created_at desc").
+		Limit(100).
+		Offset(offset).
+		Find(&donations).Error
+
+	return donations, err
+}
+
+func GetDonationCountByUser(userID int) (count int, err error) {
+
+	db, err := GetMySQLClient()
+	if err != nil {
+		return count, err
+	}
+
+	err = db.Model(&Donation{}).Where("user_id = ?", userID).Count(&count).Error
+
+	return count, err
+}
+
 func LatestDonations() (donations []Donation, err error) {
 
 	db, err := GetMySQLClient()

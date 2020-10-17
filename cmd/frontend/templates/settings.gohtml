@@ -171,12 +171,15 @@
                     {{/* Donations */}}
                     <div class="tab-pane" id="donations" role="tabpanel">
 
+                        <div class="alert alert-info" role="alert">Donations from Patreon only get sent at the beginning of the month</div>
+
                         <div class="table-responsive">
-                            <table class="table table-hover table-striped table-counts mb-0" data-row-type="donations" data-order='[[0, "desc"]]' data-path="/settings/donations.json">
+                            <table class="table table-hover table-striped table-counts mb-0" data-row-type="donations" data-order='[[0, "desc"]]' data-path="/settings/donations.json" id="donations-table">
                                 <thead class="thead-light">
                                 <tr>
                                     <th scope="col">Date</th>
                                     <th scope="col">Amount</th>
+                                    <th scope="col">Source</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -191,7 +194,7 @@
                     <div class="tab-pane" id="events" role="tabpanel">
 
                         <div class="table-responsive">
-                            <table class="table table-hover table-striped table-counts mb-0" data-row-type="events" data-order='[[0, "desc"]]' data-path="/settings/events.json">
+                            <table class="table table-hover table-striped table-counts mb-0" data-row-type="events" data-order='[[0, "desc"]]' data-path="/settings/events.json" id="events-table">
                                 <thead class="thead-light">
                                 <tr>
                                     <th scope="col">Time</th>
