@@ -87,7 +87,7 @@
                                             {{ if gt .Player.ID 0 }}
                                                 <div class="form-group">
                                                     <label for="private">Privacy</label>
-                                                    <select class="form-control" name="private">
+                                                    <select class="form-control" name="private" id="private">
                                                         <option value="0">Public</option>
                                                         <option value="1" {{ if .Player.Private }} selected{{ end }}>Private</option>
                                                     </select>
