@@ -58,10 +58,12 @@ func (a AppsServer) Apps(ctx context.Context, request *generated.ListAppsRequest
 		"prices":              1,
 		"player_peak_alltime": 1,
 		"player_peak_week":    1,
-		"player_avg_week":     1,
+		"release_date":        1,
 		"release_date_unix":   1,
 		"reviews":             1,
 		"reviews_score":       1,
+		"metacritic_score":    1,
+		// "player_avg_week":     1,
 	}
 
 	apps, err := mongo.GetApps(request.GetPagination().GetOffset(), request.GetPagination().GetLimit(), bson.D{{"_id", 1}}, filter, projection)
@@ -83,15 +85,42 @@ func (a AppsServer) Apps(ctx context.Context, request *generated.ListAppsRequest
 	response.Pagination = helpers.MakePaginationResponse(request.GetPagination(), total, filtered)
 
 	for _, app := range apps {
-		response.Apps = append(response.Apps, &generated.AppMongoResponse{
-			Id:         int32(app.GetID()),
-			Name:       app.GetName(),
-			Tags:       helpers.IntsToInt32s(app.Tags),
-			Categories: helpers.IntsToInt32s(app.Categories),
-			Developers: helpers.IntsToInt32s(app.Developers),
-			Publishers: helpers.IntsToInt32s(app.Publishers),
-			Genres:     helpers.IntsToInt32s(app.Genres),
-		})
+
+		newApp := &generated.AppMongoResponse{
+			Id:              int32(app.GetID()),
+			Name:            app.GetName(),
+			Tags:            helpers.IntsToInt32s(app.Tags),
+			Genres:          helpers.IntsToInt32s(app.Genres),
+			Categories:      helpers.IntsToInt32s(app.Categories),
+			Publishers:      helpers.IntsToInt32s(app.Publishers),
+			Developers:      helpers.IntsToInt32s(app.Developers),
+			ReviewsScore:    float32(app.ReviewsScore),
+			ReviewsPositive: int32(app.Reviews.Positive),
+			ReviewsNegative: int32(app.Reviews.Negative),
+			ReleaseDateUnix: app.ReleaseDateUnix,
+			ReleaseDate:     app.ReleaseDate,
+			MetaScore:       int32(app.MetacriticScore),
+			PlayersMax:      int32(app.PlayerPeakAllTime),
+			PlayersWeekMax:  int32(app.PlayerPeakWeek),
+			// PlayersWeekAvg:  app.avg,
+
+			// Fix nulls in JSON
+			Prices: map[string]*generated.Price{},
+		}
+
+		for k, price := range app.Prices {
+			newApp.Prices[string(k)] = &generated.Price{
+				Exists:          price.Exists,
+				Currency:        string(price.Currency),
+				Initial:         int32(price.Initial),
+				Final:           int32(price.Final),
+				DiscountPercent: int32(price.DiscountPercent),
+				Individual:      int32(price.Individual),
+				Free:            price.Free,
+			}
+		}
+
+		response.Apps = append(response.Apps, newApp)
 	}
 
 	return response, err

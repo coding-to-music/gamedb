@@ -143,15 +143,37 @@ func (s Server) GetGames(w http.ResponseWriter, r *http.Request, params generate
 		for _, app := range resp.Apps {
 
 			newApp := generated.AppSchema{
-				Id:   int(app.GetId()),
-				Name: app.GetName(),
+				Id:              int(app.GetId()),
+				Name:            app.GetName(),
+				MetacriticScore: app.GetMetaScore(),
+				PlayersMax:      int(app.GetPlayersMax()),
+				PlayersWeekMax:  int(app.GetPlayersWeekMax()),
+				ReleaseDate:     app.GetReleaseDateUnix(),
+				ReviewsNegative: int(app.GetReviewsNegative()),
+				ReviewsPositive: int(app.GetReviewsPositive()),
+				ReviewsScore:    float64(app.GetReviewsScore()),
+				// PlayersWeekAvg:  float64(app.GetPlayersWeekAvg()),
 
 				// Fix nulls in JSON
+				Prices: generated.AppSchema_Prices{
+					AdditionalProperties: map[string]generated.ProductPriceSchema{},
+				},
 				Tags:       []generated.StatSchema{},
 				Categories: []generated.StatSchema{},
 				Genres:     []generated.StatSchema{},
 				Developers: []generated.StatSchema{},
 				Publishers: []generated.StatSchema{},
+			}
+
+			for k, price := range app.GetPrices() {
+				newApp.Prices.AdditionalProperties[k] = generated.ProductPriceSchema{
+					Currency:        price.GetCurrency(),
+					DiscountPercent: price.GetDiscountPercent(),
+					Final:           price.GetFinal(),
+					Free:            price.GetFree(),
+					Individual:      price.GetIndividual(),
+					Initial:         price.GetInitial(),
+				}
 			}
 
 			for _, v := range app.GetTags() {

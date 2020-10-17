@@ -89,4 +89,14 @@ message AppMongoResponse {
     repeated int32 categories = 5;
     repeated int32 publishers = 6;
     repeated int32 developers = 7;
+    float reviewsScore = 8;
+    int32 reviewsPositive = 9;
+    int32 reviewsNegative = 10;
+    int64 releaseDateUnix = 11;
+    string releaseDate = 12;
+    map<string, Price> prices = 13;
+    int32 metaScore = 14;
+    int32 playersMax = 15;
+    int32 playersWeekMax = 16;
+    float playersWeekAvg = 17;
 }

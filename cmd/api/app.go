@@ -31,21 +31,26 @@ func (s Server) GetGamesId(w http.ResponseWriter, r *http.Request, id int32) {
 			ret.ReleaseDate = app.ReleaseDateUnix
 			ret.PlayersMax = app.PlayerPeakAllTime
 			ret.PlayersWeekMax = app.PlayerPeakWeek
-			ret.PlayersWeekAvg = app.PlayerAverageWeek
 			ret.ReviewsNegative = app.Reviews.Positive
 			ret.ReviewsPositive = app.Reviews.Negative
 			ret.ReviewsScore = app.ReviewsScore
 			ret.MetacriticScore = int32(app.MetacriticScore)
+			// ret.PlayersWeekAvg = app.PlayerAverageWeek
 
-			for _, v := range app.Prices {
-				ret.Prices = append(ret.Prices, generated.ProductPriceSchema{
+			// Fix nulls in JSON
+			ret.Prices = generated.AppSchema_Prices{
+				AdditionalProperties: map[string]generated.ProductPriceSchema{},
+			}
+
+			for k, v := range app.Prices {
+				ret.Prices.AdditionalProperties[string(k)] = generated.ProductPriceSchema{
 					Currency:        string(v.Currency),
 					DiscountPercent: int32(v.DiscountPercent),
 					Final:           int32(v.Final),
 					Free:            v.Free,
 					Individual:      int32(v.Individual),
 					Initial:         int32(v.Initial),
-				})
+				}
 			}
 
 			categories, err := app.GetCategories()
