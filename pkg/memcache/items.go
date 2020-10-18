@@ -87,6 +87,10 @@ var (
 	MemcacheStatTime       = func(statKey string, cc steamapi.ProductCC) Item { return Item{Key: "stat-time-" + statKey + "-" + string(cc), Expiration: 60 * 60 * 6} }
 	MemcacheStatsForSelect = func(t string) Item { return Item{Key: "stats-select-" + t, Expiration: 60 * 60 * 24} }
 
+	// User
+	MemcacheUserEvents   = func(userID int) Item { return Item{Key: "user-event-counts" + strconv.Itoa(userID), Expiration: 0} }
+	MemcacheUserByAPIKey = func(key string) Item { return Item{Key: "user-level-by-key-" + key, Expiration: 10 * 60} }
+
 	// Player
 	MemcachePlayer                 = func(playerID int64) Item { return Item{Key: "player-" + strconv.FormatInt(playerID, 10), Expiration: 0} }
 	MemcachePlayerAchievementsDays = func(playerID int64) Item { return Item{Key: "player-ach-days-" + strconv.FormatInt(playerID, 10), Expiration: 60 * 60 * 24 * 2} }
@@ -98,7 +102,6 @@ var (
 	// Other
 	MemcacheAPISteam      = Item{Key: "api-steam", Expiration: 60 * 60 * 24 * 7}
 	MemcacheConfigItem    = func(configID string) Item { return Item{Key: "config-item-" + configID, Expiration: 0} }
-	MemcacheUserByAPIKey  = func(key string) Item { return Item{Key: "user-level-by-key-" + key, Expiration: 10 * 60} }
 	MemcacheFirstAppBadge = func(appID int) Item { return Item{Key: "first-app-badge-" + strconv.Itoa(appID), Expiration: 0} }
 	MemcacheMongoCount    = func(collection string, filter bson.D) Item { return Item{Key: "mongo-count-" + collection + "-" + FilterToString(filter), Expiration: 60 * 60} }
 )

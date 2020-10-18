@@ -166,6 +166,16 @@ func FindOne(collection collection, filter bson.D, sort bson.D, projection bson.
 	return result.Decode(document)
 }
 
+func GetDistict(collection collection, field string) (values []interface{}, err error) {
+
+	client, ctx, err := getMongo()
+	if err != nil {
+		return values, err
+	}
+
+	return client.Database(config.C.MongoDatabase).Collection(collection.String()).Distinct(ctx, field, bson.D{})
+}
+
 // Errors if key already exists
 func InsertOne(collection collection, document Document) (resp *mongo.InsertOneResult, err error) {
 
@@ -431,6 +441,11 @@ func GetRandomRows(collection collection, count int, filter bson.D, projection b
 type Count struct {
 	ID    int `json:"id" bson:"_id"`
 	Count int `json:"count"`
+}
+
+type StringCount struct {
+	ID    string `json:"id" bson:"_id"`
+	Count int    `json:"count"`
 }
 
 type DateCount struct {

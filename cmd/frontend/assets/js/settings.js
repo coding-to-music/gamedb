@@ -14,7 +14,18 @@ if ($settingsPage.length > 0) {
 
     function loadEvents() {
 
+        // Setup drop downs
+        $('select.form-control-chosen').chosen({
+            disable_search_threshold: 10,
+            allow_single_deselect: true,
+            rtl: false,
+        });
+
+        //
         $('#events table.table').gdbTable({
+            searchFields: [
+                $('#type'),
+            ],
             tableOptions: {
                 "order": [[0, 'desc']],
                 "columnDefs": [

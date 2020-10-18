@@ -2,13 +2,18 @@ package mongo
 
 import (
 	"net/http"
+	"sort"
 	"strings"
 	"time"
 
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/oauth"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type EventEnum string
@@ -23,6 +28,31 @@ var (
 	EventLink                     = func(provider oauth.ProviderEnum) EventEnum { return EventEnum("link-" + provider) }
 	EventUnlink                   = func(provider oauth.ProviderEnum) EventEnum { return EventEnum("unlink-" + provider) }
 )
+
+func (event EventEnum) ToString() string {
+
+	if strings.HasPrefix(string(event), "link") || strings.HasPrefix(string(event), "unlink") {
+		parts := strings.Split(string(event), "-")
+		if len(parts) == 2 {
+			parts[0] = strings.Title(parts[0])
+			parts[1] = oauth.New(oauth.ProviderEnum(parts[1])).GetName()
+		}
+		return strings.Join(parts, " ")
+	}
+
+	switch event {
+	case EventLogin:
+		return "User Login"
+	case EventLogout:
+		return "User Logout"
+	case EventRefresh:
+		return "Profile Update"
+	case EventForgotPassword:
+		return "Forgot Password"
+	default:
+		return strings.Title(string(event))
+	}
+}
 
 type Event struct {
 	CreatedAt time.Time `bson:"created_at"`
@@ -47,20 +77,6 @@ func (event Event) GetCreatedNice() (t string) {
 	return event.CreatedAt.Format(helpers.DateTime)
 }
 
-func (event Event) GetType() string {
-
-	switch EventEnum(event.Type) {
-	case EventLogin:
-		return "User Login"
-	case EventLogout:
-		return "User Logout"
-	case EventRefresh:
-		return "Profile Update"
-	default:
-		return strings.Title(string(event.Type))
-	}
-}
-
 func (event Event) GetIcon() string {
 
 	switch EventEnum(event.Type) {
@@ -75,10 +91,9 @@ func (event Event) GetIcon() string {
 	}
 }
 
-func GetEvents(userID int, offset int64) (events []Event, err error) {
+func GetEvents(filter bson.D, offset int64) (events []Event, err error) {
 
 	var sort = bson.D{{"created_at", -1}}
-	var filter = bson.D{{"user_id", userID}}
 
 	cur, ctx, err := Find(CollectionEvents, offset, 100, sort, filter, nil, nil)
 	if err != nil {
@@ -99,6 +114,49 @@ func GetEvents(userID int, offset int64) (events []Event, err error) {
 	}
 
 	return events, cur.Err()
+}
+
+func GetEventCounts(userID int) (counts []StringCount, err error) {
+
+	var item = memcache.MemcacheUserEvents(userID)
+
+	err = memcache.GetSetInterface(item.Key, item.Expiration, &counts, func() (interface{}, error) {
+
+		client, ctx, err := getMongo()
+		if err != nil {
+			return counts, err
+		}
+
+		pipeline := mongo.Pipeline{
+			{{Key: "$match", Value: bson.M{"user_id": userID}}},
+			{{Key: "$group", Value: bson.M{"_id": "$type", "count": bson.M{"$sum": 1}}}},
+		}
+
+		cur, err := client.Database(config.C.MongoDatabase, options.Database()).Collection(CollectionEvents.String()).Aggregate(ctx, pipeline, options.Aggregate())
+		if err != nil {
+			return counts, err
+		}
+
+		defer close(cur, ctx)
+
+		for cur.Next(ctx) {
+
+			var count StringCount
+			err := cur.Decode(&count)
+			if err != nil {
+				log.ErrS(err, count.ID)
+			}
+			counts = append(counts, count)
+		}
+
+		sort.Slice(counts, func(i, j int) bool {
+			return counts[i].Count > counts[j].Count
+		})
+
+		return counts, cur.Err()
+	})
+
+	return counts, err
 }
 
 func NewEvent(r *http.Request, userID int, eventType EventEnum) (err error) {

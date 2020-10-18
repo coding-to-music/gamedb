@@ -49,6 +49,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	t := settingsTemplate{}
 	t.fill(w, r, "settings", "Settings", "Game DB settings")
 	t.addAssetPasswordStrength()
+	t.addAssetChosen()
 	t.ProdCCs = i18n.GetProdCCs(true)
 
 	// Get user
@@ -186,6 +187,27 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
+	// Get event types
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		types, err := mongo.GetEventCounts(t.User.ID)
+		if err != nil {
+			log.ErrS(err)
+			return
+		}
+
+		for _, v := range types {
+			t.EventTypes = append(t.EventTypes, settingsEventTemplate{
+				ID:    v.ID,
+				Name:  mongo.EventEnum(v.ID).ToString(),
+				Count: v.Count,
+			})
+		}
+	}()
+
 	// Wait
 	wg.Wait()
 
@@ -206,6 +228,13 @@ type settingsTemplate struct {
 	Providers     []oauth.Provider
 	UserProviders map[oauth.ProviderEnum]mysql.UserProvider
 	Banners       []template.HTML
+	EventTypes    []settingsEventTemplate
+}
+
+type settingsEventTemplate struct {
+	ID    string
+	Name  string
+	Count int
 }
 
 func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
@@ -383,43 +412,48 @@ func settingsNewKeyHandler(w http.ResponseWriter, r *http.Request) {
 
 func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	user, err := getUserFromSession(r)
-	if err != nil {
-		log.ErrS(err)
+	userID := session.GetUserIDFromSesion(r)
+	if userID == 0 {
 		return
 	}
 
 	query := datatable.NewDataTableQuery(r, true)
+	types := query.GetSearchSlice("type")
+
+	var filter = bson.D{{"user_id", userID}}
+	if len(types) > 0 {
+		filter = append(filter, bson.E{Key: "type", Value: bson.M{"$in": types}})
+	}
 
 	var wg sync.WaitGroup
 
 	// Get events
 	var events []mongo.Event
 	wg.Add(1)
-	go func(r *http.Request) {
+	go func() {
 
 		defer wg.Done()
 
-		events, err = mongo.GetEvents(user.ID, query.GetOffset64())
+		var err error
+		events, err = mongo.GetEvents(filter, query.GetOffset64())
 		if err != nil {
 			log.ErrS(err)
-			return
 		}
-
-	}(r)
+	}()
 
 	// Get total
 	var total int64
 	wg.Add(1)
-	go func(r *http.Request) {
+	go func() {
 
 		defer wg.Done()
 
-		total, err = mongo.CountDocuments(mongo.CollectionEvents, bson.D{{"user_id", user.ID}}, 86400)
+		var err error
+		total, err = mongo.CountDocuments(mongo.CollectionEvents, bson.D{{"user_id", userID}}, 86400)
 		if err != nil {
 			log.ErrS(err)
 		}
-	}(r)
+	}()
 
 	wg.Wait()
 
@@ -451,7 +485,7 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		response.AddRow([]interface{}{
 			event.CreatedAt.Unix(),       // 0
 			event.GetCreatedNice(),       // 1
-			event.GetType(),              // 2
+			event.Type.ToString(),        // 2
 			geo.GetFirstIP(event.IP),     // 3
 			event.UserAgent,              // 4
 			agent,                        // 5

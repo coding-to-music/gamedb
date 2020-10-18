@@ -193,6 +193,19 @@
                     {{/* Events */}}
                     <div class="tab-pane" id="events" role="tabpanel">
 
+                        <div class="row">
+                            <div class="col-sm-6 col-md-4">
+                                <div class="form-group">
+                                    <label for="type">Event</label>
+                                    <select data-placeholder="Choose Product Type" class="form-control form-control-chosen" id="type" name="type" multiple>
+                                        {{ range .EventTypes }}
+                                            <option value="{{ .ID }}">{{ .Name }} ({{ comma .Count }})</option>
+                                        {{ end }}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="table-responsive">
                             <table class="table table-hover table-striped table-counts mb-0" data-row-type="events" data-order='[[0, "desc"]]' data-path="/settings/events.json" id="events-table">
                                 <thead class="thead-light">
