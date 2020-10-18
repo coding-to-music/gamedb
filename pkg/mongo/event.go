@@ -172,5 +172,9 @@ func NewEvent(r *http.Request, userID int, eventType EventEnum) (err error) {
 	}
 
 	_, err = InsertOne(CollectionEvents, event)
-	return err
+	if err != nil {
+		return err
+	}
+
+	return memcache.Delete(memcache.MemcacheUserEvents(userID).Value)
 }
