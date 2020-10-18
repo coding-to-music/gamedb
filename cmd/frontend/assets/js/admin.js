@@ -250,6 +250,13 @@ if ($('#admin-consumers-page').length > 0) {
 
 if ($('#admin-webhooks-page').length > 0) {
 
+    // Setup drop downs
+    $('select.form-control-chosen').chosen({
+        disable_search_threshold: 10,
+        allow_single_deselect: true,
+        rtl: false,
+    });
+
     const options = {
         "order": [[0, 'desc']],
         "createdRow": function (row, data, dataIndex) {
@@ -304,7 +311,12 @@ if ($('#admin-webhooks-page').length > 0) {
     };
 
     const $table = $('table.table');
-    const dt = $table.gdbTable({tableOptions: options});
+    const dt = $table.gdbTable({
+        tableOptions: options,
+        searchFields: [
+            $('#service'),
+        ],
+    });
 
     $table.on('click', 'tbody tr[role=row]', function () {
 

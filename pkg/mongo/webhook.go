@@ -1,6 +1,7 @@
 package mongo
 
 import (
+	"strings"
 	"time"
 
 	"github.com/Jleagle/patreon-go/patreon"
@@ -10,6 +11,17 @@ import (
 )
 
 type WebhookService string
+
+func (s WebhookService) ToString() string {
+	switch s {
+	case WebhookServiceGithub:
+		return "GitHub"
+	case WebhookServiceSendgrid:
+		return "SendGrid"
+	default:
+		return strings.Title(string(s))
+	}
+}
 
 const (
 	WebhookServicePatreon  WebhookService = "patreon"

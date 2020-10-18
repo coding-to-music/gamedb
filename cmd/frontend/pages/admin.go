@@ -281,10 +281,29 @@ func (t adminConsumersTemplate) includes() []string {
 
 func adminWebhooksHandler(w http.ResponseWriter, r *http.Request) {
 
-	t := adminPatreonTemplate{}
+	t := adminWebhooksTemplate{}
 	t.fill(w, r, "admin/webhooks", "Admin", "Admin")
+	t.addAssetChosen()
+
+	services, err := mongo.GetDistict(mongo.CollectionWebhooks, "service")
+	if err != nil {
+		log.ErrS(err)
+	} else {
+		for _, v := range services {
+			t.Services = append(t.Services, mongo.WebhookService(v.(string)))
+		}
+	}
 
 	returnTemplate(w, r, t)
+}
+
+type adminWebhooksTemplate struct {
+	globalTemplate
+	Services []mongo.WebhookService
+}
+
+func (t adminWebhooksTemplate) includes() []string {
+	return []string{"includes/admin_header.gohtml"}
 }
 
 func adminWebhooksAjaxHandler(w http.ResponseWriter, r *http.Request) {
@@ -292,6 +311,12 @@ func adminWebhooksAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	query := datatable.NewDataTableQuery(r, false)
 
 	var wg sync.WaitGroup
+
+	filter := bson.D{}
+	services := query.GetSearchSlice("service")
+	if len(services) > 0 {
+		filter = append(filter, bson.E{Key: "service", Value: bson.M{"$in": services}})
+	}
 
 	// Get webhooks
 	var webhooks []mongo.Webhook
@@ -301,7 +326,7 @@ func adminWebhooksAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		webhooks, err = mongo.GetWebhooks(query.GetOffset64(), 100, bson.D{{"created_at", -1}}, nil, nil)
+		webhooks, err = mongo.GetWebhooks(query.GetOffset64(), 100, bson.D{{"created_at", -1}}, filter, nil)
 		if err != nil {
 			log.ErrS(err)
 		}
@@ -315,7 +340,7 @@ func adminWebhooksAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		count, err = mongo.CountDocuments(mongo.CollectionWebhooks, nil, 0)
+		count, err = mongo.CountDocuments(mongo.CollectionWebhooks, filter, 0)
 		if err != nil {
 			log.ErrS(err)
 		}
@@ -329,7 +354,7 @@ func adminWebhooksAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		response.AddRow([]interface{}{
 			app.CreatedAt.Format(helpers.DateSQL), // 0
-			app.Service,                           // 1
+			app.Service.ToString(),                // 1
 			app.Event,                             // 2
 			app.RequestBody,                       // 3
 			app.GetHash(),                         // 4
@@ -337,14 +362,6 @@ func adminWebhooksAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	returnJSON(w, r, response)
-}
-
-type adminPatreonTemplate struct {
-	globalTemplate
-}
-
-func (t adminPatreonTemplate) includes() []string {
-	return []string{"includes/admin_header.gohtml"}
 }
 
 func adminStatsHandler(w http.ResponseWriter, r *http.Request) {
