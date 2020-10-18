@@ -468,6 +468,9 @@ func settingsDonationsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := datatable.NewDataTableQuery(r, false)
 	userID := session.GetUserIDFromSesion(r)
+	if userID == 0 {
+		return
+	}
 
 	var wg sync.WaitGroup
 
