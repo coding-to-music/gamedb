@@ -176,5 +176,5 @@ func NewEvent(r *http.Request, userID int, eventType EventEnum) (err error) {
 		return err
 	}
 
-	return memcache.Delete(memcache.MemcacheUserEvents(userID).Value)
+	return memcache.Delete(memcache.MemcacheUserEvents(userID).Key)
 }
