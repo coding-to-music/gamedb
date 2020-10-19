@@ -382,7 +382,7 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 	case authPageSettings:
 		session.SetFlash(r, session.SessionGood, provider.GetName()+" account linked")
 	case authPageSignup:
-		session.SetFlash(r, session.SessionGood, "Account created")
+		session.SetFlash(r, session.SessionGood, "Account created with "+provider.GetName())
 	}
 
 	// Create event
