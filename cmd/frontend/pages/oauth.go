@@ -386,9 +386,13 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 	}
 
 	// Create event
-	err = mongo.NewEvent(r, user.ID, mongo.EventLink(provider.GetEnum()))
-	if err != nil {
-		log.ErrS(err)
+	switch page {
+	case authPageSettings, authPageSignup:
+
+		err = mongo.NewEvent(r, user.ID, mongo.EventLink(provider.GetEnum()))
+		if err != nil {
+			log.ErrS(err)
+		}
 	}
 
 	// Queue player
