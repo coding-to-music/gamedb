@@ -498,20 +498,24 @@ if ($appPage.length > 0) {
                 const start = d.getTime();
 
                 let max = 0;
-                data['max_youtube_views'].forEach(function myFunction(value, index, array) {
-                    if (value[0] > start && value[1] != null && value[1] > max) {
-                        max = value[1];
-                    }
-                });
+                if (isIterable(data['max_youtube_views'])) {
+                    data['max_youtube_views'].forEach(function myFunction(value, index, array) {
+                        if (value[0] > start && value[1] != null && value[1] > max) {
+                            max = value[1];
+                        }
+                    });
+                }
                 $('#youtube-max-views').html(max.toLocaleString());
 
                 //
                 max = 0;
-                data['max_youtube_comments'].forEach(function myFunction(value, index, array) {
-                    if (value[0] > start && value[1] != null && value[1] > max) {
-                        max = value[1];
-                    }
-                });
+                if (isIterable(data['max_youtube_comments'])) {
+                    data['max_youtube_comments'].forEach(function myFunction(value, index, array) {
+                        if (value[0] > start && value[1] != null && value[1] > max) {
+                            max = value[1];
+                        }
+                    });
+                }
                 $('#youtube-max-comments').html(max.toLocaleString());
 
                 Highcharts.chart('players-chart', $.extend(true, {}, chartOptions, {
