@@ -57,7 +57,7 @@ func (c discordProvider) GetUser(token *oauth2.Token) (user User, err error) {
 	}
 
 	// Join guild
-	discord, err = discordgo.New("Bearer " + config.C.DiscordOAuthBotToken)
+	discord, err = discordgo.New("Bot " + config.C.DiscordOAuthBotToken)
 	if err != nil {
 		return user, err
 	}
