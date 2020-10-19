@@ -565,17 +565,37 @@ func settingsRemoveProviderHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/settings", http.StatusFound)
 	}()
 
-	userID := session.GetUserIDFromSesion(r)
-	if userID == 0 {
+	user, err := getUserFromSession(r)
+	if err != nil {
+		err = helpers.IgnoreErrors(err, ErrLoggedOut)
+		if err != nil {
+			log.ErrS(err)
+		}
 		session.SetFlash(r, session.SessionBad, "An error occurred (1001)")
 		return
 	}
 
+	if user.Password == "" {
+
+		providers, err := mysql.GetUserProviders(user.ID)
+		if err != nil {
+			log.ErrS(err)
+			session.SetFlash(r, session.SessionBad, "An error occurred (1002)")
+			return
+		}
+
+		if len(providers) < 2 {
+			log.ErrS(err)
+			session.SetFlash(r, session.SessionBad, "You need at least one provider if you are not using a password")
+			return
+		}
+	}
+
 	// Update user
-	err := mysql.DeleteUserProvider(provider.GetEnum(), userID)
+	err = mysql.DeleteUserProvider(provider.GetEnum(), user.ID)
 	if err != nil {
 		log.ErrS(err)
-		session.SetFlash(r, session.SessionBad, "An error occurred (1002)")
+		session.SetFlash(r, session.SessionBad, "An error occurred (1003)")
 		return
 	}
 
@@ -588,7 +608,7 @@ func settingsRemoveProviderHandler(w http.ResponseWriter, r *http.Request) {
 	session.SetFlash(r, session.SessionGood, provider.GetName()+" removed")
 
 	// Create event
-	err = mongo.NewEvent(r, userID, mongo.EventUnlink(provider.GetEnum()))
+	err = mongo.NewEvent(r, user.ID, mongo.EventUnlink(provider.GetEnum()))
 	if err != nil {
 		log.ErrS(err)
 	}
