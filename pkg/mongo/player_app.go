@@ -143,6 +143,7 @@ func GetAchievmentCounts(appID int) (counts []Count, err error) {
 		pipeline := mongo.Pipeline{
 			{{Key: "$match", Value: bson.M{"app_id": appID}}},
 			{{Key: "$match", Value: bson.M{"app_achievements_have": bson.M{"$type": "int"}}}},
+			{{Key: "$match", Value: bson.M{"app_achievements_have": bson.M{"$gt": 0}}}},
 			{{Key: "$group", Value: bson.M{"_id": "$app_achievements_have", "count": bson.M{"$sum": 1}}}},
 		}
 
