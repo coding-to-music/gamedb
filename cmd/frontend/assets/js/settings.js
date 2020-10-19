@@ -7,6 +7,28 @@ if ($settingsPage.length > 0 || $('#signup-page').length > 0) {
 
 if ($settingsPage.length > 0) {
 
+    $('#reset-api-key-btn').on('click', function (e) {
+
+        return bootbox.confirm({
+            message: "Are you sure? Any calls using the current API key will stop wirking.",
+            buttons: {
+                confirm: {
+                    label: 'Yes',
+                    className: 'btn-success'
+                },
+                cancel: {
+                    label: 'No',
+                    className: 'btn-danger'
+                }
+            },
+            callback: function (result) {
+                if (result) {
+                    window.location.replace('/settings/new-key');
+                }
+            }
+        });
+    });
+
     loadAjaxOnObserve({
         'events-table': loadEvents,
         'donations-table': loadDonations,

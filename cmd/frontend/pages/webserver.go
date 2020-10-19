@@ -654,6 +654,13 @@ func (t *globalTemplate) addAssetSlider() {
 	})
 }
 
+func (t *globalTemplate) addAssetBootbox() {
+	t.JSFiles = append(t.JSFiles, Asset{
+		URL:       "https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.4.1/bootbox.min.js",
+		Integrity: "sha512-eoo3vw71DUo5NRvDXP/26LFXjSFE1n5GQ+jZJhHz+oOTR4Bwt7QBCjsgGvuVMQUMMMqeEvKrQrNEI4xQMXp3uA==",
+	})
+}
+
 func (t *globalTemplate) addAssetPasswordStrength() {
 	t.JSFiles = append(t.JSFiles, Asset{
 		URL:       "https://cdnjs.cloudflare.com/ajax/libs/pwstrength-bootstrap/3.0.9/pwstrength-bootstrap.min.js",

@@ -50,6 +50,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, "settings", "Settings", "Game DB settings")
 	t.addAssetPasswordStrength()
 	t.addAssetChosen()
+	t.addAssetBootbox()
 	t.ProdCCs = i18n.GetProdCCs(true)
 
 	// Get user
