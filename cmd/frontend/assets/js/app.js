@@ -835,7 +835,7 @@ if ($appPage.length > 0) {
                     },
                     tooltip: {
                         formatter: function () {
-                            return  this.y.toLocaleString()+ ' players have ' + this.x.toLocaleString() + ' achievements';
+                            return this.y.toLocaleString() + ' players have ' + this.x.toLocaleString() + ' achievements';
                         },
                     },
                     series: [{
@@ -846,65 +846,63 @@ if ($appPage.length > 0) {
             },
         });
 
-        const options = {
-            "pageLength": 1000,
-            "order": [[2, 'desc']],
-            "columnDefs": [
-                // Name
-                {
-                    "targets": 0,
-                    "render": function (data, type, row) {
-
-                        let name = row[0];
-                        if (!row[4]) {
-                            name += '<span class="badge badge-danger float-right ml-1">Inactive</span>';
-                        }
-                        if (row[5]) {
-                            row[1] = '<em>&lt;Hidden&gt;</em> ' + row[1];
-                        }
-                        if (row[6]) {
-                            name += '<span class="badge badge-danger float-right ml-1">Deleted</span>';
-                        }
-
-                        name += '<br><small>' + row[1] + '</small>';
-
-                        return '<div class="icon-name"><div class="icon"><img class="tall" data-lazy="' + row[2] + '" alt="" data-lazy-alt="' + row[0] + '"></div><div class="name">' + name + '</div></div>'
-                    },
-                    "createdCell": function (td, cellData, rowData, row, col) {
-                        $(td).addClass('img');
-                    },
-                    "orderable": false,
-                },
-                // Completed Time
-                {
-                    "targets": 1,
-                    "render": function (data, type, row) {
-                        if (row[7] && row[7] > 0) {
-                            return '<span data-livestamp="' + row[7] + '"></span>'
-                                + '<br><small class="text-muted">' + row[8] + '</small>';
-                        }
-                        return '';
-                    },
-                    "orderable": false,
-                },
-                // Completed Percent
-                {
-                    "targets": 2,
-                    "render": function (data, type, row) {
-                        return row[3] + '%';
-                    },
-                    "createdCell": function (td, cellData, rowData, row, col) {
-                        rowData[3] = Math.ceil(rowData[3]);
-                        $(td).css('background', 'linear-gradient(to right, rgba(0,0,0,.15) ' + rowData[3] + '%, transparent ' + rowData[3] + '%)');
-                        $(td).addClass('thin');
-                    },
-                    "orderSequence": ['desc', 'asc'],
-                },
-            ]
-        };
-
         $('#achievements-table').gdbTable({
-            tableOptions: options,
+            tableOptions: {
+                "pageLength": 1000,
+                "order": [[2, 'desc']],
+                "columnDefs": [
+                    // Name
+                    {
+                        "targets": 0,
+                        "render": function (data, type, row) {
+
+                            let name = row[0];
+                            if (!row[4]) {
+                                name += '<span class="badge badge-danger float-right ml-1">Inactive</span>';
+                            }
+                            if (row[5]) {
+                                row[1] = '<em>&lt;Hidden&gt;</em> ' + row[1];
+                            }
+                            if (row[6]) {
+                                name += '<span class="badge badge-danger float-right ml-1">Deleted</span>';
+                            }
+
+                            name += '<br><small>' + row[1] + '</small>';
+
+                            return '<div class="icon-name"><div class="icon"><img class="tall" data-lazy="' + row[2] + '" alt="" data-lazy-alt="' + row[0] + '"></div><div class="name">' + name + '</div></div>'
+                        },
+                        "createdCell": function (td, cellData, rowData, row, col) {
+                            $(td).addClass('img');
+                        },
+                        "orderable": false,
+                    },
+                    // Completed Time
+                    {
+                        "targets": 1,
+                        "render": function (data, type, row) {
+                            if (row[7] && row[7] > 0) {
+                                return '<span data-livestamp="' + row[7] + '"></span>'
+                                    + '<br><small class="text-muted">' + row[8] + '</small>';
+                            }
+                            return '';
+                        },
+                        "orderable": false,
+                    },
+                    // Completed Percent
+                    {
+                        "targets": 2,
+                        "render": function (data, type, row) {
+                            return row[3] + '%';
+                        },
+                        "createdCell": function (td, cellData, rowData, row, col) {
+                            rowData[3] = Math.ceil(rowData[3]);
+                            $(td).css('background', 'linear-gradient(to right, rgba(0,0,0,.15) ' + rowData[3] + '%, transparent ' + rowData[3] + '%)');
+                            $(td).addClass('thin');
+                        },
+                        "orderSequence": ['desc', 'asc'],
+                    },
+                ]
+            },
         });
     }
 
