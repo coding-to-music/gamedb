@@ -101,13 +101,15 @@ func sendgridWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 
 func twitterZapierWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 
-	// Validate
-	if config.C.TwitterZapierSecret == "" {
-		log.ErrS("Missing zapier environment variables")
+	// Validate secret
+	if config.C.TwitterWebhookSecret == "" {
+		log.ErrS("Missing Twitter environment variables")
 	}
 
-	if config.C.TwitterZapierSecret != r.Header.Get("secret") {
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+	var secret = r.URL.Query().Get("secret")
+	if secret != config.C.TwitterWebhookSecret {
+		log.Err("invalid secret", zap.String("secret", secret))
+		http.Error(w, "invalid secret", http.StatusBadRequest)
 		return
 	}
 
@@ -133,29 +135,26 @@ func twitterZapierWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 	webhooks := twitterWebhook{}
 	err = json.Unmarshal(body, &webhooks)
 
-	if webhooks.Name == "gamedb_online" && webhooks.OriginalName == "" {
+	// Delete cache
+	err = memcache.Delete(memcache.HomeTweets.Key)
+	if err != nil {
+		log.Err(err.Error())
+	}
 
-		// Delete cache
-		err = memcache.Delete(memcache.HomeTweets.Key)
-		if err != nil {
-			log.Err(err.Error())
-		}
+	// Forward to Discord
+	if config.C.DiscordRelayBotToken == "" {
+		log.ErrS("Missing discord environment variable")
+	}
 
-		// Forward to Discord
-		if config.C.DiscordRelayBotToken == "" {
-			log.ErrS("Missing discord environment variable")
-		}
+	discordSession, err := discordgo.New("Bot " + config.C.DiscordRelayBotToken)
+	if err != nil {
+		log.ErrS(err)
+		return
+	}
 
-		discordSession, err := discordgo.New("Bot " + config.C.DiscordRelayBotToken)
-		if err != nil {
-			log.ErrS(err)
-			return
-		}
-
-		_, err = discordSession.ChannelMessageSend(announcementsChannelID, webhooks.URL)
-		if err != nil {
-			log.Err(err.Error())
-		}
+	_, err = discordSession.ChannelMessageSend(announcementsChannelID, webhooks.Link)
+	if err != nil {
+		log.Err(err.Error())
 	}
 
 	// Return
@@ -166,10 +165,9 @@ func twitterZapierWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type twitterWebhook struct {
-	Name         string `json:"screen_name"`
-	OriginalName string `json:"retweeted_screen_name"`
-	Text         string `json:"full_text"`
-	URL          string `json:"url"`
+	Text      string `json:"text"`
+	Link      string `json:"link"`
+	CreatedAt string `json:"created_at"`
 }
 
 type patreonTier int
