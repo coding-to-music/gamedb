@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"context"
 	"net/http"
 	"strconv"
 	"strings"
@@ -12,6 +13,7 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/justinas/nosurf"
 	"go.uber.org/zap"
+	"golang.org/x/time/rate"
 )
 
 func MiddlewareCSRF(h http.Handler) http.Handler {
@@ -36,6 +38,29 @@ func MiddlewareRealIP(h http.Handler) http.Handler {
 			r.RemoteAddr = cf
 		} else if nginx != "" {
 			r.RemoteAddr = nginx
+		}
+
+		h.ServeHTTP(w, r)
+	})
+}
+
+var (
+	limit    = rate.NewLimiter(rate.Every(time.Second), 10)
+	limitCtx = context.TODO()
+)
+
+func NewDelayingLimiter(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		err := limit.Wait(limitCtx)
+		if err != nil {
+
+			w.WriteHeader(429)
+			_, err := w.Write([]byte("rate limited"))
+			if err != nil {
+				log.ErrS(err)
+			}
+			return
 		}
 
 		h.ServeHTTP(w, r)
