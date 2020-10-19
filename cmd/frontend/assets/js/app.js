@@ -800,6 +800,10 @@ if ($appPage.length > 0) {
                 if (!data.hasOwnProperty('data')) {
                     data.data = [];
                 }
+                if (!data.data) {
+                    $('#achievement-counts-chart').css('height', 'auto').html('No data');
+                    return;
+                }
 
                 let plotlines = [{
                     value: data.marker,
