@@ -1,16 +1,6 @@
 if ($('#release-dates-page').length > 0) {
 
-    // Search
-    $('form').on('submit', function (e) {
-        e.preventDefault();
-        dt.search($('#search').val()).draw();
-    });
-
-    // Table
     $('table.table').gdbTable({
-        searchFields: [
-            $('#search'),
-        ],
         tableOptions: {
             "order": [[4, 'asc']],
             "createdRow": function (row, data, dataIndex) {
