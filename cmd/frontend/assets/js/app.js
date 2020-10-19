@@ -822,11 +822,12 @@ if ($appPage.length > 0) {
                         enabled: false,
                     },
                     yAxis: {
-                        type: 'logarithmic',
+                        // type: 'logarithmic',
                         allowDecimals: false,
                         title: {
                             text: ''
                         },
+                        min: 0,
                     },
                     xAxis: {
                         type: 'category',
