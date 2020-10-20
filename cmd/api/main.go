@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/gamedb/gamedb/cmd/api/generated"
+	"github.com/gamedb/gamedb/cmd/frontend/helpers/middleware"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -35,8 +36,12 @@ func main() {
 	r := chi.NewRouter()
 	r.Use(chiMiddleware.RedirectSlashes)
 	r.Use(chiMiddleware.NewCompressor(flate.DefaultCompression, "text/html", "text/css", "text/javascript", "application/json", "application/javascript").Handler)
+	r.Use(middleware.MiddlewareRealIP)
+	r.Use(middleware.RateLimiterBlock)
+
 	r.Get("/", homeHandler)
 	r.Get("/health-check", healthCheckHandler)
+
 	r.NotFound(errorHandler)
 
 	generated.HandlerFromMux(Server{}, r)
