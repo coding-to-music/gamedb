@@ -36,6 +36,7 @@ type Server struct {
 
 func (s Server) returnResponse(w http.ResponseWriter, code int, i interface{}) {
 
+	w.Header().Set("content-type", "application/json")
 	w.WriteHeader(code)
 
 	err := json.NewEncoder(w).Encode(i)
