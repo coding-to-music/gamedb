@@ -12,6 +12,7 @@ import (
 	"github.com/didip/tollbooth/v6/limiter"
 	"github.com/gamedb/gamedb/cmd/api/generated"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
+	"github.com/gamedb/gamedb/pkg/config"
 	influxHelpers "github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mysql"
@@ -115,9 +116,9 @@ func (s Server) call(w http.ResponseWriter, r *http.Request, callback func(w htt
 
 func (s Server) saveToInflux(r *http.Request, code int, userID int) {
 
-	// if config.IsLocal() {
-	// 	return
-	// }
+	if config.IsLocal() {
+		return
+	}
 
 	_, err := influxHelpers.InfluxWrite(influxHelpers.InfluxRetentionPolicyAllTime, influx.Point{
 		Measurement: string(influxHelpers.InfluxMeasurementAPICalls),
