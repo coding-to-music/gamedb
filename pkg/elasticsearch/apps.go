@@ -175,6 +175,10 @@ func searchApps(limit int, offset int, search string, totals bool, highlights bo
 		Size(limit).
 		SortBy(sorters...)
 
+	if boolQuery == nil {
+		boolQuery = elastic.NewBoolQuery()
+	}
+
 	if search != "" {
 
 		var search2 = helpers.RegexNonAlphaNumeric.ReplaceAllString(search, "")
