@@ -58,7 +58,7 @@ var (
 	MemcacheCommitsPage = func(page int) Item { return Item{Key: "commits-page-" + strconv.Itoa(page), Expiration: 60 * 60} }
 
 	// Group
-	MemcacheTrendingGroups      = Item{Key: "trending-apps", Expiration: 60 * 10}
+	MemcacheTrendingGroups      = Item{Key: "trending-groups", Expiration: 60 * 10}
 	MemcacheGroup               = func(changeID string) Item { return Item{Key: "group-" + changeID, Expiration: 0} }
 	MemcacheGroupFollowersChart = func(groupID string) Item { return Item{Key: "group-followers-chart-" + groupID, Expiration: 10 * 60} }
 
