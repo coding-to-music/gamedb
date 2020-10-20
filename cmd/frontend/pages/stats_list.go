@@ -26,7 +26,7 @@ func StatsListRouter() http.Handler {
 	return r
 }
 
-func statPathToConst(path string) mongo.StatsType {
+func statPathToConst(path string, r *http.Request) mongo.StatsType {
 
 	switch path {
 	case "categories":
@@ -40,7 +40,7 @@ func statPathToConst(path string) mongo.StatsType {
 	case "tags":
 		return mongo.StatsTypeTags
 	default:
-		log.Warn("invalid stats type", zap.String("path", path))
+		log.Warn("invalid stats type", zap.String("path", path), zap.String("path", r.URL.Path))
 		return ""
 	}
 
@@ -48,7 +48,7 @@ func statPathToConst(path string) mongo.StatsType {
 
 func statsListHandler(w http.ResponseWriter, r *http.Request) {
 
-	typex := statPathToConst(chi.URLParam(r, "type"))
+	typex := statPathToConst(chi.URLParam(r, "type"), r)
 
 	t := statsTagsTemplate{}
 	t.fill(w, r, "stats_list", typex.Title()+"s", template.HTML("Top Steam "+typex.Title()+"s"))

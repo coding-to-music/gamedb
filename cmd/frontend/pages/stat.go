@@ -32,7 +32,7 @@ func StatRouter() http.Handler {
 
 func statHandler(w http.ResponseWriter, r *http.Request) {
 
-	typex := statPathToConst(chi.URLParam(r, "type"))
+	typex := statPathToConst(chi.URLParam(r, "type"), r)
 
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
@@ -78,7 +78,7 @@ func statAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	query := datatable.NewDataTableQuery(r, false)
 
 	var wg sync.WaitGroup
-	var filter = bson.D{{Key: statPathToConst(chi.URLParam(r, "type")).MongoCol(), Value: idx}}
+	var filter = bson.D{{Key: statPathToConst(chi.URLParam(r, "type"), r).MongoCol(), Value: idx}}
 	var countLock sync.Mutex
 
 	var apps []mongo.App
@@ -161,7 +161,7 @@ func statTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	key := mongo.Stat{
-		Type: statPathToConst(chi.URLParam(r, "type")),
+		Type: statPathToConst(chi.URLParam(r, "type"), r),
 		ID:   idx,
 	}.GetKey()
 
