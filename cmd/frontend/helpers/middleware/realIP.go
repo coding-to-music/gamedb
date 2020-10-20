@@ -4,7 +4,7 @@ import (
 	"net/http"
 )
 
-func MiddlewareRealIP(h http.Handler) http.Handler {
+func MiddlewareRealIP(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		cf := r.Header.Get("cf-connecting-ip")
@@ -16,6 +16,6 @@ func MiddlewareRealIP(h http.Handler) http.Handler {
 			r.RemoteAddr = nginx
 		}
 
-		h.ServeHTTP(w, r)
+		next.ServeHTTP(w, r)
 	})
 }

@@ -9,11 +9,11 @@ import (
 
 var DownMessage string
 
-func MiddlewareDownMessage(h http.Handler) http.Handler {
+func MiddlewareDownMessage(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		if DownMessage == "" || strings.HasPrefix(r.URL.Path, "/admin") {
-			h.ServeHTTP(w, r)
+			next.ServeHTTP(w, r)
 		} else {
 			_, err := w.Write([]byte(DownMessage))
 			if err != nil {

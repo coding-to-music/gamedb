@@ -6,24 +6,22 @@ import (
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 )
 
-func MiddlewareAuthCheck() func(http.Handler) http.Handler {
-	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func MiddlewareAuthCheck(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-			if session.IsLoggedIn(r) {
-				next.ServeHTTP(w, r)
-				return
-			}
+		if session.IsLoggedIn(r) {
+			next.ServeHTTP(w, r)
+			return
+		}
 
-			// session.SetFlash(r, session.SessionBad, "Please login")
-			// session.Save(w, r)
+		// session.SetFlash(r, session.SessionBad, "Please login")
+		// session.Save(w, r)
 
-			http.Redirect(w, r, "/login", http.StatusFound)
-		})
-	}
+		http.Redirect(w, r, "/login", http.StatusFound)
+	})
 }
 
-func MiddlewareAdminCheck(handler http.HandlerFunc) func(http.Handler) http.Handler {
+func MiddlewareAdminCheck(errorHandler http.HandlerFunc) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
@@ -32,7 +30,7 @@ func MiddlewareAdminCheck(handler http.HandlerFunc) func(http.Handler) http.Hand
 				return
 			}
 
-			handler(w, r)
+			errorHandler(w, r)
 		})
 	}
 }

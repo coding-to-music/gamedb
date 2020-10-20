@@ -29,7 +29,7 @@ import (
 func SettingsRouter() http.Handler {
 
 	r := chi.NewRouter()
-	r.Use(middleware.MiddlewareAuthCheck())
+	r.Use(middleware.MiddlewareAuthCheck)
 
 	r.Get("/", settingsHandler)
 	r.Post("/update", settingsPostHandler)

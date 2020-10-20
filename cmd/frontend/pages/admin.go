@@ -32,7 +32,7 @@ func AdminRouter() http.Handler {
 
 	r := chi.NewRouter()
 
-	r.Use(middleware.MiddlewareAuthCheck())
+	r.Use(middleware.MiddlewareAuthCheck)
 	r.Use(middleware.MiddlewareAdminCheck(Error404Handler))
 
 	r.Get("/", adminHandler)
