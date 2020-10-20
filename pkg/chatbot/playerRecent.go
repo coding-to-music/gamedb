@@ -100,7 +100,7 @@ func (c CommandPlayerRecent) Output(msg *discordgo.MessageCreate, _ steamapi.Pro
 				message.Embed.Thumbnail = &discordgo.MessageEmbedThumbnail{URL: avatar}
 			}
 
-			code = append(code, fmt.Sprintf("%2d", k+1)+": "+app.AppName+" - "+helpers.GetTimeShort(app.PlayTime2Weeks, 2))
+			code = append(code, fmt.Sprintf("%2d", k+1)+": "+helpers.GetTimeShort(app.PlayTime2Weeks, 2)+" - "+app.AppName)
 		}
 
 		message.Embed.Description = "```" + strings.Join(code, "\n") + "```"

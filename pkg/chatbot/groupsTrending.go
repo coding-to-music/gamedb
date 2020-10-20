@@ -73,7 +73,7 @@ func (CommandGroupsTrending) Output(msg *discordgo.MessageCreate, _ steamapi.Pro
 			message.Embed.Thumbnail = &discordgo.MessageEmbedThumbnail{URL: avatar}
 		}
 
-		code = append(code, fmt.Sprintf("%2d", k+1)+": "+group.GetName()+" ("+group.GetTrend()+")")
+		code = append(code, fmt.Sprintf("%2d", k+1)+": "+group.GetTrend()+" - "+group.GetName())
 	}
 
 	message.Embed.Description = "```" + strings.Join(code, "\n") + "```"

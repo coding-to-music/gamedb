@@ -102,7 +102,7 @@ func (c CommandPlayerLibrary) Output(msg *discordgo.MessageCreate, _ steamapi.Pr
 				}
 			}
 
-			code = append(code, fmt.Sprintf("%2d", k+1)+": "+app.AppName+" - "+app.GetTimeNice())
+			code = append(code, fmt.Sprintf("%2d", k+1)+": "+app.GetTimeNice()+" - "+app.AppName)
 		}
 
 		message.Embed.Description = "```" + strings.Join(code, "\n") + "```"

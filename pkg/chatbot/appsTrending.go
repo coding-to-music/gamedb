@@ -67,7 +67,7 @@ func (CommandAppsTrending) Output(msg *discordgo.MessageCreate, _ steamapi.Produ
 			message.Embed.Thumbnail = &discordgo.MessageEmbedThumbnail{URL: app.GetHeaderImage()}
 		}
 
-		code = append(code, fmt.Sprintf("%2d", k+1)+": "+app.GetName()+" ("+app.GetTrend()+")")
+		code = append(code, fmt.Sprintf("%2d", k+1)+": "+app.GetTrend()+" "+app.GetName())
 	}
 
 	message.Embed.Description = "```" + strings.Join(code, "\n") + "```"

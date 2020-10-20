@@ -68,7 +68,7 @@ func (CommandAppsPopular) Output(msg *discordgo.MessageCreate, _ steamapi.Produc
 			message.Embed.Thumbnail = &discordgo.MessageEmbedThumbnail{URL: v.GetHeaderImage()}
 		}
 
-		code = append(code, fmt.Sprintf("%2d", k+1)+": "+v.GetName()+" - "+humanize.Comma(int64(v.PlayerPeakWeek))+" players")
+		code = append(code, fmt.Sprintf("%2d", k+1)+": "+humanize.Comma(int64(v.PlayerPeakWeek))+" - "+v.GetName())
 	}
 
 	message.Embed.Description = "```" + strings.Join(code, "\n") + "```"
