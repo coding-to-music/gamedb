@@ -385,31 +385,48 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 		session.SetFlash(r, session.SessionGood, "Account created with "+provider.GetName())
 	}
 
-	// Create event
-	switch page {
-	case authPageSettings, authPageSignup:
+	// Provider specific actions
+	switch provider.GetEnum() {
+	case oauth.ProviderSteam:
 
-		err = mongo.NewEvent(r, user.ID, mongo.EventLink(provider.GetEnum()))
+		// Queue player
+		i, err := strconv.ParseInt(resp.ID, 10, 64)
 		if err != nil {
 			log.ErrS(err)
+			break
 		}
-	}
 
-	// Queue player
-	if provider.GetEnum() == oauth.ProviderSteam {
-
-		i, err := strconv.ParseInt(resp.ID, 10, 64)
+		ua := r.UserAgent()
+		err = queue.ProducePlayer(queue.PlayerMessage{ID: i, UserAgent: &ua})
 		if err == nil {
+			log.Info("player queued", zap.String("ua", ua))
+		}
+		err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
+		if err != nil {
+			log.ErrS(err)
+			break
+		}
 
-			ua := r.UserAgent()
-			err = queue.ProducePlayer(queue.PlayerMessage{ID: i, UserAgent: &ua})
-			if err == nil {
-				log.Info("player queued", zap.String("ua", ua))
-			}
-			err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
-			if err != nil {
-				log.ErrS(err)
-			}
+	case oauth.ProviderDiscord:
+
+		// Join guild
+		token := oauth2.Token{}
+		err = json.Unmarshal([]byte(resp.Token), &token)
+		if err != nil {
+			log.ErrS(err)
+			break
+		}
+
+		discord, err := discordgo.New("Bot " + config.C.DiscordOAuthBotToken)
+		if err != nil {
+			log.ErrS(err)
+			break
+		}
+
+		err = discord.GuildMemberAdd(token.AccessToken, helpers.GuildID, resp.ID, "", nil, false, false)
+		if err != nil {
+			log.ErrS(err)
+			break
 		}
 	}
 }

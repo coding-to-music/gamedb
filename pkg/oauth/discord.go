@@ -6,7 +6,6 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"golang.org/x/oauth2"
 )
@@ -55,23 +54,6 @@ func (c discordProvider) GetUser(token *oauth2.Token) (user User, err error) {
 	if err != nil {
 		return user, err
 	}
-
-	// Join guild
-	discord, err = discordgo.New("Bot " + config.C.DiscordOAuthBotToken)
-	if err != nil {
-		return user, err
-	}
-
-	err = discord.GuildMemberAdd(token.AccessToken, helpers.GuildID, discordUser.ID, "", nil, false, false)
-	if err != nil {
-		log.ErrS(err)
-	}
-
-	// if !discordUser.Verified { // Seems to always be false
-	// 	err = session.SetFlash(r, helpers.SessionBad, "This Discord account has not been verified")
-	// 	log.ErrS(err)
-	// 	return
-	// }
 
 	b, err := json.Marshal(token)
 	if err != nil {
