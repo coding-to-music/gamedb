@@ -2,12 +2,15 @@ package pages
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"strconv"
 	"strings"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/dghubble/oauth1"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
@@ -17,6 +20,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/go-chi/chi"
 	"go.uber.org/zap"
+	"golang.org/x/oauth2"
 )
 
 const (
@@ -278,15 +282,13 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 		return
 	}
 
-	//
+	// Check we can get an email/id if we need it
 	if page == authPageSignup && !provider.HasEmail() {
 
 		session.SetFlash(r, session.SessionBad, provider.GetName()+" currently can't be used to sign up (1102)")
 		return
-	}
 
-	//
-	if (provider.HasEmail() && resp.Email == "") || (resp.ID == "") {
+	} else if (provider.HasEmail() && resp.Email == "") || (resp.ID == "") {
 
 		session.SetFlash(r, session.SessionBad, "We were unable to fetch your details from "+provider.GetName()+" (1103)")
 		return
@@ -348,23 +350,20 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 			session.SetFlash(r, session.SessionBad, "An error occurred (1109)")
 			return
 		}
-	}
 
-	//
-	switch page {
-	case authPageLogin, authPageSignup:
-		login(r, user)
+	} else {
+
+		session.SetFlash(r, session.SessionBad, "Can't find user (1110)")
+		return
 	}
 
 	// Check ID is not already in use
 	used, err := mysql.CheckExistingUserProvider(provider.GetEnum(), resp.ID, user.ID)
 	if err != nil {
 		log.ErrS(err)
-		session.SetFlash(r, session.SessionBad, "An error occurred (1110)")
+		session.SetFlash(r, session.SessionBad, "An error occurred (1111)")
 		return
-	}
-
-	if used {
+	} else if used {
 		session.SetFlash(r, session.SessionBad, "This "+provider.GetName()+" account ("+resp.Username+") is already linked to another Game DB account")
 		return
 	}
@@ -373,8 +372,24 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 	err = mysql.UpdateUserProvider(user.ID, provider.GetEnum(), resp)
 	if err != nil {
 		log.ErrS(err)
-		session.SetFlash(r, session.SessionBad, "An error occurred (1111)")
+		session.SetFlash(r, session.SessionBad, "An error occurred (1112)")
 		return
+	}
+
+	// Create event
+	switch page {
+	case authPageSettings, authPageSignup:
+
+		err = mongo.NewEvent(r, user.ID, mongo.EventLink(provider.GetEnum()))
+		if err != nil {
+			log.ErrS(err)
+		}
+	}
+
+	// Log the user in
+	switch page {
+	case authPageLogin, authPageSignup:
+		login(r, user)
 	}
 
 	// Success flash
