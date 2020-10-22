@@ -5,8 +5,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steamapi"
-	"github.com/gamedb/gamedb/cmd/frontend/helpers/email_providers"
-	"github.com/gamedb/gamedb/cmd/frontend/helpers/geo"
+	"github.com/gamedb/gamedb/cmd/frontend/helpers/email"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/influx"
@@ -153,7 +152,7 @@ func NewUser(r *http.Request, email, password string, prodCC steamapi.ProductCC,
 	}
 
 	if !verified {
-		err = SendUserVerification(r, user.ID, email)
+		err = SendUserVerification(user.ID, email)
 		if err != nil {
 			return user, err
 		}
@@ -189,7 +188,7 @@ func NewUser(r *http.Request, email, password string, prodCC steamapi.ProductCC,
 	return user, nil
 }
 
-func SendUserVerification(r *http.Request, userID int, email string) error {
+func SendUserVerification(userID int, userEmail string) error {
 
 	// Create verification code
 	code, err := CreateUserVerification(userID)
@@ -198,18 +197,16 @@ func SendUserVerification(r *http.Request, userID int, email string) error {
 	}
 
 	// Send email
-	body := "Please click the below link to verify your email address<br />" +
-		config.C.GameDBDomain + "/signup/verify?code=" + code.Code +
-		"<br><br>Thanks, Jleagle." +
-		"<br><br>From IP: " + geo.GetFirstIP(r.RemoteAddr)
-
-	return email_providers.GetSender().Send(
-		email,
-		email,
+	return email.GetProvider().Send(
+		userEmail,
+		userEmail,
 		"",
 		"",
 		"Game DB Email Verification",
-		body,
+		email.VerifyTemplate{
+			Domain: config.C.GameDBDomain,
+			Code:   code.Code,
+		},
 	)
 }
 

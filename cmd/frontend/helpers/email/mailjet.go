@@ -1,4 +1,4 @@
-package email_providers
+package email
 
 import (
 	"errors"
@@ -11,10 +11,15 @@ import (
 type mailjetProvider struct {
 }
 
-func (mailjetProvider) Send(toName, toEmail, replyToName, replyToEmail, subject, html string) (err error) {
+func (mailjetProvider) Send(toName, toEmail, replyToName, replyToEmail, subject string, template interface{}) (err error) {
 
 	if config.C.MailjetPublic == "" || config.C.MailjetPrivate == "" {
 		return errors.New("missing mailjet environment variables")
+	}
+
+	html, err := getBodyFromTemplate(template)
+	if err != nil {
+		return err
 	}
 
 	text, err := html2text.FromString(html, html2text.Options{PrettyTables: true})

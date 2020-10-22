@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/Jleagle/recaptcha-go"
-	"github.com/gamedb/gamedb/cmd/frontend/helpers/email_providers"
+	"github.com/gamedb/gamedb/cmd/frontend/helpers/email"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -101,13 +101,15 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 			log.ErrS("Missing environment variables")
 		} else {
 
-			err = email_providers.GetSender().Send(
+			err = email.GetProvider().Send(
 				config.C.AdminName,
 				config.C.AdminEmail,
 				r.PostForm.Get("name"),
 				r.PostForm.Get("email"),
 				"Game DB Contact Form",
-				r.PostForm.Get("message"),
+				email.ContactTemplate{
+					Message: r.PostForm.Get("message"),
+				},
 			)
 
 			if err != nil {

@@ -7,7 +7,7 @@ import (
 
 	"github.com/Jleagle/recaptcha-go"
 	"github.com/badoux/checkmail"
-	"github.com/gamedb/gamedb/cmd/frontend/helpers/email_providers"
+	"github.com/gamedb/gamedb/cmd/frontend/helpers/email"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/geo"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
@@ -66,14 +66,14 @@ func forgotPostHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	// Field validation
-	email := strings.TrimSpace(r.PostFormValue("email"))
+	userEmail := strings.TrimSpace(r.PostFormValue("email"))
 
-	if email == "" {
+	if userEmail == "" {
 		session.SetFlash(r, session.SessionBad, "Please fill in your email address")
 		return
 	}
 
-	err := checkmail.ValidateFormat(email)
+	err := checkmail.ValidateFormat(userEmail)
 	if err != nil {
 		session.SetFlash(r, session.SessionBad, "Invalid email address")
 		return
@@ -88,7 +88,7 @@ func forgotPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Find user
-	user, err := mysql.GetUserByEmail(email)
+	user, err := mysql.GetUserByEmail(userEmail)
 	if err == mysql.ErrRecordNotFound {
 		session.SetFlash(r, session.SessionGood, successMessage)
 		return
@@ -107,19 +107,17 @@ func forgotPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Send email
-	body := "You or someone else has requested a new password for Game DB.<br><br>" +
-		"If this was not you, please ignore this email.<br><br>Click the following link to reset your password: " +
-		config.C.GameDBDomain + "/forgot/reset?code=" + code.Code +
-		"<br><br>Thanks, Jleagle." +
-		"<br><br>From IP: " + geo.GetFirstIP(r.RemoteAddr)
-
-	err = email_providers.GetSender().Send(
-		email,
-		email,
+	err = email.GetProvider().Send(
+		userEmail,
+		userEmail,
 		"",
 		"",
 		"Game DB Forgotten Password",
-		body,
+		email.Forgot1Template{
+			Domain: config.C.GameDBDomain,
+			Code:   code.Code,
+			IP:     geo.GetFirstIP(r.RemoteAddr),
+		},
 	)
 	if err != nil {
 		log.ErrS(err)
@@ -195,16 +193,16 @@ func forgotResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Send email
-	body := "Your new Game DB password is:<br><br>" + passwordString + "<br><br>Thanks, Jleagle." +
-		"<br><br>From IP: " + geo.GetFirstIP(r.RemoteAddr)
-
-	err = email_providers.GetSender().Send(
+	err = email.GetProvider().Send(
 		user.Email,
 		user.Email,
 		"",
 		"",
 		"Game DB Password Reset",
-		body,
+		email.Forgot2Template{
+			Password: passwordString,
+			IP:       geo.GetFirstIP(r.RemoteAddr),
+		},
 	)
 	if err != nil {
 		log.ErrS(err)

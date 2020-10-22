@@ -1,4 +1,4 @@
-package email_providers
+package email
 
 import (
 	"errors"
@@ -12,10 +12,15 @@ import (
 type sendgridProvider struct {
 }
 
-func (sendgridProvider) Send(toName, toEmail, fromName, fromEmail, subject, html string) (err error) {
+func (sendgridProvider) Send(toName, toEmail, fromName, fromEmail, subject string, template interface{}) (err error) {
 
 	if config.C.SendGridAPIKey == "" {
 		return errors.New("missing environment variables")
+	}
+
+	html, err := getBodyFromTemplate(template)
+	if err != nil {
+		return err
 	}
 
 	text, err := html2text.FromString(html, html2text.Options{PrettyTables: true})
