@@ -191,7 +191,7 @@
 
                                 <div class="card mb-3">
                                     <h5 class="card-header">Aliases</h5>
-                                    <div class="card-body">
+                                    <div class="card-body" id="aliases">
 
                                         {{ if gt (len .Aliases) 0 }}
                                             {{ range $key, $value := .Aliases }}

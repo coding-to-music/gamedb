@@ -45,6 +45,11 @@
 
     #details {
 
+        #aliases {
+            max-height: 140px;
+            overflow: auto;
+        }
+
         #patreon {
             width: 100%;
             @extend .mb-2;
