@@ -12,13 +12,13 @@ import (
 	"time"
 
 	"github.com/Jleagle/recaptcha-go"
-	"github.com/gamedb/gamedb/cmd/frontend/helpers/middleware"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/cmd/frontend/pages"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
+	"github.com/gamedb/gamedb/pkg/middleware"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/go-chi/chi"
@@ -96,7 +96,7 @@ func main() {
 	r.Use(middleware.MiddlewareCors())
 	r.Use(middleware.MiddlewareRealIP)
 	r.Use(chiMiddleware.NewCompressor(flate.DefaultCompression, "text/html", "text/css", "text/javascript", "application/json", "application/javascript").Handler)
-	r.Use(middleware.RateLimiterWait)
+	r.Use(middleware.RateLimiterBlock(time.Second, 10, true))
 
 	// Pages
 	r.Get("/", pages.HomeHandler)

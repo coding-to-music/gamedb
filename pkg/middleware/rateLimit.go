@@ -58,42 +58,46 @@ func (l *ipLimiters) Clean() {
 	}
 }
 
-var limiters = func() *ipLimiters {
+func newLimiters(per time.Duration, burst int) *ipLimiters {
+
+	if burst < 1 {
+		burst = 1
+	}
 
 	l := &ipLimiters{
 		ips:   map[string]*ipLimiter{},
 		lock:  sync.Mutex{},
-		limit: rate.Every(time.Second),
-		burst: 10,
+		limit: rate.Every(per),
+		burst: burst,
 	}
 
 	go l.Clean()
 
 	return l
-}()
-
-func RateLimiterWait(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
-		err := limiters.GetLimiter(r.RemoteAddr).Wait(r.Context())
-		if err != nil {
-			log.ErrS(err)
-			http.Error(w, http.StatusText(http.StatusTooManyRequests), http.StatusTooManyRequests)
-			return
-		}
-
-		next.ServeHTTP(w, r)
-	})
 }
 
-func RateLimiterBlock(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func RateLimiterBlock(per time.Duration, burst int, block bool) func(http.Handler) http.Handler {
 
-		if !limiters.GetLimiter(r.RemoteAddr).Allow() {
-			http.Error(w, http.StatusText(http.StatusTooManyRequests), http.StatusTooManyRequests)
-			return
-		}
+	limiters := newLimiters(per, burst)
 
-		next.ServeHTTP(w, r)
-	})
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+			if block {
+				err := limiters.GetLimiter(r.RemoteAddr).Wait(r.Context())
+				if err != nil {
+					log.ErrS(err)
+					http.Error(w, http.StatusText(http.StatusTooManyRequests), http.StatusTooManyRequests)
+					return
+				}
+			} else {
+				if !limiters.GetLimiter(r.RemoteAddr).Allow() {
+					http.Error(w, http.StatusText(http.StatusTooManyRequests), http.StatusTooManyRequests)
+					return
+				}
+			}
+
+			next.ServeHTTP(w, r)
+		})
+	}
 }

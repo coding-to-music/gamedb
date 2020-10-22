@@ -9,11 +9,11 @@ import (
 	"time"
 
 	"github.com/gamedb/gamedb/cmd/api/generated"
-	"github.com/gamedb/gamedb/cmd/frontend/helpers/middleware"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/middleware"
 	"github.com/go-chi/chi"
 	chiMiddleware "github.com/go-chi/chi/middleware"
 )
@@ -37,7 +37,7 @@ func main() {
 	r.Use(chiMiddleware.RedirectSlashes)
 	r.Use(chiMiddleware.NewCompressor(flate.DefaultCompression, "text/html", "text/css", "text/javascript", "application/json", "application/javascript").Handler)
 	r.Use(middleware.MiddlewareRealIP)
-	r.Use(middleware.RateLimiterBlock)
+	r.Use(middleware.RateLimiterBlock(time.Second/2, 1, false))
 
 	r.Get("/", homeHandler)
 	r.Get("/health-check", healthCheckHandler)
