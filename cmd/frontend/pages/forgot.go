@@ -109,7 +109,6 @@ func forgotPostHandler(w http.ResponseWriter, r *http.Request) {
 	// Send email
 	err = email.GetProvider().Send(
 		userEmail,
-		userEmail,
 		"",
 		"",
 		"Game DB Forgotten Password",
@@ -194,7 +193,6 @@ func forgotResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Send email
 	err = email.GetProvider().Send(
-		user.Email,
 		user.Email,
 		"",
 		"",

@@ -11,7 +11,7 @@ import (
 type mailjetProvider struct {
 }
 
-func (mailjetProvider) Send(toName, toEmail, replyToName, replyToEmail, subject string, template interface{}) (err error) {
+func (mailjetProvider) Send(toEmail, replyToName, replyToEmail, subject string, template interface{}) (err error) {
 
 	if config.C.MailjetPublic == "" || config.C.MailjetPrivate == "" {
 		return errors.New("missing mailjet environment variables")
@@ -28,8 +28,8 @@ func (mailjetProvider) Send(toName, toEmail, replyToName, replyToEmail, subject 
 	}
 
 	message := mailjet.InfoMessagesV31{
-		To:       &mailjet.RecipientsV31{mailjet.RecipientV31{Name: toName, Email: toEmail}},
-		From:     &mailjet.RecipientV31{Name: "Game DB", Email: "no-reply@gamedb.online"},
+		To:       &mailjet.RecipientsV31{mailjet.RecipientV31{Email: toEmail}},
+		From:     &mailjet.RecipientV31{Name: "Game DB", Email: "no-reply@gamedb.online"}, // Must be from verified domain
 		Subject:  subject,
 		HTMLPart: html,
 		TextPart: text,

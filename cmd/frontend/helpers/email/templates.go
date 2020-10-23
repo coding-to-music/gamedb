@@ -11,18 +11,19 @@ const (
 )
 
 type ContactTemplate struct {
+	IP      string
 	Message string
 }
 
 type Forgot1Template struct {
+	IP     string
 	Domain string
 	Code   string
-	IP     string
 }
 
 type Forgot2Template struct {
-	Password string
 	IP       string
+	Password string
 }
 
 type SignupTemplate struct {
@@ -30,6 +31,7 @@ type SignupTemplate struct {
 }
 
 type VerifyTemplate struct {
+	IP     string
 	Domain string
 	Code   string
 }

@@ -6,6 +6,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/email"
+	"github.com/gamedb/gamedb/cmd/frontend/helpers/geo"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/influx"
@@ -120,7 +121,7 @@ func (user User) SetProdCC(cc steamapi.ProductCC) error {
 	return db.Model(&user).Updates(update).Error
 }
 
-func NewUser(r *http.Request, email, password string, prodCC steamapi.ProductCC, verified bool) (user User, err error) {
+func NewUser(r *http.Request, userEmail, password string, prodCC steamapi.ProductCC, verified bool) (user User, err error) {
 
 	db, err := GetMySQLClient()
 	if err != nil {
@@ -137,7 +138,7 @@ func NewUser(r *http.Request, email, password string, prodCC steamapi.ProductCC,
 	}
 
 	user = User{
-		Email:         email,
+		Email:         userEmail,
 		EmailVerified: verified,
 		Password:      string(passwordBytes),
 		ProductCC:     prodCC,
@@ -151,8 +152,16 @@ func NewUser(r *http.Request, email, password string, prodCC steamapi.ProductCC,
 		return user, db.Error
 	}
 
-	if !verified {
-		err = SendUserVerification(user.ID, email)
+	if verified {
+
+		err = email.NewSignup(userEmail, r)
+		if err != nil {
+			return user, err
+		}
+
+	} else {
+
+		err = SendUserVerification(user.ID, userEmail, r)
 		if err != nil {
 			return user, err
 		}
@@ -188,7 +197,7 @@ func NewUser(r *http.Request, email, password string, prodCC steamapi.ProductCC,
 	return user, nil
 }
 
-func SendUserVerification(userID int, userEmail string) error {
+func SendUserVerification(userID int, userEmail string, r *http.Request) error {
 
 	// Create verification code
 	code, err := CreateUserVerification(userID)
@@ -199,13 +208,13 @@ func SendUserVerification(userID int, userEmail string) error {
 	// Send email
 	return email.GetProvider().Send(
 		userEmail,
-		userEmail,
 		"",
 		"",
 		"Game DB Email Verification",
 		email.VerifyTemplate{
 			Domain: config.C.GameDBDomain,
 			Code:   code.Code,
+			IP:     geo.GetFirstIP(r.RemoteAddr),
 		},
 	)
 }

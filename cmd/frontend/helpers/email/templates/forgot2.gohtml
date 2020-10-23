@@ -1,8 +1,7 @@
-{{define "forgot"}}
+{{define "forgot2"}}
     {{ template "header" . }}
 
-    Your new Game DB password is:<br><br>" + passwordString + "<br><br>Thanks, Jleagle." +
-    "<br><br>From IP: " + geo.GetFirstIP(r.RemoteAddr)
+    <p>Your new Game DB password is: <strong>{{ .Password }}</strong></p>
 
     {{ template "footer" . }}
 {{end}}

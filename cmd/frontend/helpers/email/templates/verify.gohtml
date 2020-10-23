@@ -1,13 +1,8 @@
 {{define "verify"}}
     {{ template "header" . }}
 
-        <p>Please click the below link to verify your email address</p>
-        <p></p>config.C.GameDBDomain + "/signup/verify?code=" + code.Code +
-
-    <br/>" +
-
-    "<br><br>Thanks, Jleagle." +
-    "<br><br>From IP: " + geo.GetFirstIP(r.RemoteAddr)
+    <p>Please click the below link to verify your email address</p>
+    <p>{{ .Domain }}/signup/verify?code={{ .Code }}</p>
 
     {{ template "footer" . }}
 {{end}}

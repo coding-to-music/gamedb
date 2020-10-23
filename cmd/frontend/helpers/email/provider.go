@@ -5,12 +5,10 @@ import (
 	"errors"
 	"html/template"
 	"os"
-
-	"github.com/gamedb/gamedb/pkg/log"
 )
 
 type EmailProvider interface {
-	Send(toName, toEmail, replyToName, replyToEmail, subject string, template interface{}) error
+	Send(toEmail, replyToName, replyToEmail, subject string, template interface{}) error
 }
 
 func GetProvider() EmailProvider {
@@ -36,14 +34,12 @@ func getBodyFromTemplate(data interface{}) (body string, err error) {
 		return "", errors.New("invalid email template")
 	}
 
-	ex, err := os.Executable()
+	ex, err := os.Getwd()
 	if err != nil {
 		return "", err
 	}
 
 	base := ex + "/helpers/email/templates/"
-
-	log.DebugS(base + "_header.gohtml")
 
 	tmpl, err := template.ParseFiles(
 		base+"_header.gohtml",

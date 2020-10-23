@@ -6,6 +6,7 @@ import (
 
 	"github.com/Jleagle/recaptcha-go"
 	"github.com/badoux/checkmail"
+	"github.com/gamedb/gamedb/cmd/frontend/helpers/email"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -169,6 +170,12 @@ func verifyHandler(w http.ResponseWriter, r *http.Request) {
 			return "Invalid code (1002)", false
 		}
 
+		user, err := mysql.GetUserByID(userID)
+		if err != nil {
+			log.ErrS(err)
+			return "User not found (1003)", false
+		}
+
 		// Enable user
 		err = mysql.VerifyUser(userID)
 		if err != nil {
@@ -187,6 +194,11 @@ func verifyHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, point)
+		if err != nil {
+			log.ErrS(err)
+		}
+
+		err = email.NewSignup(user.Email, r)
 		if err != nil {
 			log.ErrS(err)
 		}

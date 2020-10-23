@@ -12,7 +12,7 @@ import (
 type sendgridProvider struct {
 }
 
-func (sendgridProvider) Send(toName, toEmail, fromName, fromEmail, subject string, template interface{}) (err error) {
+func (sendgridProvider) Send(toEmail, replyToName, replyToEmail, subject string, template interface{}) (err error) {
 
 	if config.C.SendGridAPIKey == "" {
 		return errors.New("missing environment variables")
@@ -29,7 +29,7 @@ func (sendgridProvider) Send(toName, toEmail, fromName, fromEmail, subject strin
 	}
 
 	_, err = sendgrid.NewSendClient(config.C.SendGridAPIKey).
-		Send(mail.NewSingleEmail(mail.NewEmail(fromName, fromEmail), subject, mail.NewEmail(toName, toEmail), text, html))
+		Send(mail.NewSingleEmail(mail.NewEmail(replyToName, replyToEmail), subject, mail.NewEmail("", toEmail), text, html))
 
 	return err
 }
