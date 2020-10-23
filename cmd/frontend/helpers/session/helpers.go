@@ -56,8 +56,13 @@ func InitSession() {
 		SameSite: http.SameSiteLaxMode, // Can't be strict, stops oauth callbacks working
 		MaxAge:   2419200,              // 30 days
 		Path:     "/",
-		Domain:   "",
-		Secure:   config.IsProd(),
+		Domain:   "gamedb.online",
+		Secure:   true,
+	}
+
+	if config.IsLocal() {
+		sessionInit.CookieOptions.Secure = false
+		sessionInit.CookieOptions.Domain = "" // Works on any local ip
 	}
 
 	session.Initialise(sessionInit)
