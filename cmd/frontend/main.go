@@ -3,6 +3,7 @@ package main
 import (
 	"compress/flate"
 	"errors"
+	"math/rand"
 	"net/http"
 	_ "net/http/pprof"
 	"net/url"
@@ -36,6 +37,8 @@ var (
 )
 
 func main() {
+
+	rand.Seed(time.Now().Unix())
 
 	err := config.Init(version, commits, helpers.GetIP())
 	log.InitZap(log.LogNameFrontend)
