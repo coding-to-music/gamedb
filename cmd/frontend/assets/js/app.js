@@ -807,13 +807,16 @@ if ($appPage.length > 0) {
 
                 let plotlines = [{
                     value: data.marker,
-                    color: 'red',
+                    color: user.darkmode ? '#e9ecef' : 'red',
                     width: 1,
                     zIndex: 3,
                     label: {
                         formatter: function () {
                             return 'You are here!';
-                        }
+                        },
+                        style: {
+                            color: darkMode ? '#e9ecef' : '#000000',
+                        },
                     }
                 }];
 
