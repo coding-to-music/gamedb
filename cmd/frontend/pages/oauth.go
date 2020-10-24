@@ -297,6 +297,7 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 	// Get the user from DB
 	var user mysql.User
 	var err error
+	var newUser bool
 
 	if page == authPageSettings {
 
@@ -321,6 +322,7 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 				session.SetFlash(r, session.SessionBad, "Account could not be created (1105)")
 				return
 			}
+			newUser = true
 
 		} else if err != nil {
 			log.ErrS(err)
@@ -396,8 +398,10 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 	switch page {
 	case authPageSettings:
 		session.SetFlash(r, session.SessionGood, provider.GetName()+" account linked")
-	case authPageSignup:
-		session.SetFlash(r, session.SessionGood, "Account created with "+provider.GetName())
+	case authPageLogin, authPageSignup:
+		if newUser {
+			session.SetFlash(r, session.SessionGood, "Account created with "+provider.GetName())
+		}
 	}
 
 	// Provider specific actions
