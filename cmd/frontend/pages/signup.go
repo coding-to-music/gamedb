@@ -207,6 +207,8 @@ func verifyHandler(w http.ResponseWriter, r *http.Request) {
 		log.ErrS(err)
 	}
 
+	login(r, user)
+
 	//
 	session.SetFlash(r, session.SessionGood, "Email has been verified")
 }
