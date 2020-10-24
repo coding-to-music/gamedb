@@ -886,6 +886,9 @@ if ($appPage.length > 0) {
                             }
                             return '';
                         },
+                        "createdCell": function (td, cellData, rowData, row, col) {
+                            $(td).attr('nowrap', 'nowrap');
+                        },
                         "orderable": false,
                     },
                     // Completed Percent
