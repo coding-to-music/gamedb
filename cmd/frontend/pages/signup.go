@@ -62,166 +62,151 @@ func (t signupTemplate) includes() []string {
 
 func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 
-	message, success := func() (message string, success bool) {
-
-		// Parse form
-		err := r.ParseForm()
-		if err != nil {
-			log.ErrS(err)
-			return "An error occurred (1001)", false
-		}
-
-		email := r.PostForm.Get("email")
-		password := r.PostForm.Get("password")
-		password2 := r.PostForm.Get("password2")
-
-		// Remember email
-		session.Set(r, signupSessionEmail, email)
-
-		// Field validation
-		if email == "" {
-			return "Please fill in your email address", false
-		}
-
-		if password == "" || password2 == "" {
-			return "Please fill in your password", false
-		}
-
-		if len(password) < 8 {
-			return "Password must be at least 8 characters", false
-		}
-
-		if password != password2 {
-			return "Passwords do not match", false
-		}
-
-		err = checkmail.ValidateFormat(email)
-		if err != nil {
-			return "Invalid email address", false
-		}
-
-		if config.IsProd() {
-			err = recaptcha.CheckFromRequest(r)
-			if err != nil {
-				return "Please check the captcha", false
-			}
-		}
-
-		// Check user doesnt exist
-		_, err = mysql.GetUserByEmail(email)
-		if err == nil {
-			return "An account with this email already exists", false
-		}
-
-		err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
-		if err != nil {
-			log.ErrS(err)
-		}
-
-		// Create user
-		_, err = mysql.NewUser(r, email, password, session.GetProductCC(r), false)
-		if err != nil {
-			log.ErrS(err)
-			return "An error occurred (1002)", false
-		}
-
-		return "Please check your email to verify your account (You might need to check the spam folder)", true
+	defer func() {
+		time.Sleep(time.Second)
+		session.Save(w, r)
+		http.Redirect(w, r, "/signup", http.StatusFound)
 	}()
 
-	//
-	if success {
-
-		session.SetFlash(r, session.SessionGood, message)
-		session.Save(w, r)
-
-		http.Redirect(w, r, "/login", http.StatusFound)
-
-	} else {
-
-		time.Sleep(time.Second)
-
-		session.SetFlash(r, session.SessionBad, message)
-		session.Save(w, r)
-
-		http.Redirect(w, r, "/signup", http.StatusFound)
+	// Parse form
+	err := r.ParseForm()
+	if err != nil {
+		log.ErrS(err)
+		session.SetFlash(r, session.SessionBad, "An error occurred (1001)")
+		return
 	}
+
+	userEmail := r.PostForm.Get("email")
+	password := r.PostForm.Get("password")
+	password2 := r.PostForm.Get("password2")
+
+	// Remember email
+	session.Set(r, signupSessionEmail, userEmail)
+
+	// Field validation
+	if userEmail == "" {
+		session.SetFlash(r, session.SessionBad, "Please fill in your email address")
+		return
+	}
+
+	if password == "" || password2 == "" {
+		session.SetFlash(r, session.SessionBad, "Please fill in your password")
+		return
+	}
+
+	if len(password) < 8 {
+		session.SetFlash(r, session.SessionBad, "Password must be at least 8 characters")
+		return
+	}
+
+	if password != password2 {
+		session.SetFlash(r, session.SessionBad, "Passwords do not match")
+		return
+	}
+
+	err = checkmail.ValidateFormat(userEmail)
+	if err != nil {
+		session.SetFlash(r, session.SessionBad, "Invalid email address")
+		return
+	}
+
+	if config.IsProd() {
+		err = recaptcha.CheckFromRequest(r)
+		if err != nil {
+			session.SetFlash(r, session.SessionBad, "Please check the captcha")
+			return
+		}
+	}
+
+	// Check user doesnt exist already
+	_, err = mysql.GetUserByEmail(userEmail)
+	if err == nil {
+		session.SetFlash(r, session.SessionBad, "An account with this email already exists")
+		return
+	}
+
+	err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
+	if err != nil {
+		log.ErrS(err)
+	}
+
+	// Create user
+	_, err = mysql.NewUser(r, userEmail, password, session.GetProductCC(r), false)
+	if err != nil {
+		log.ErrS(err)
+		session.SetFlash(r, session.SessionBad, "An error occurred (1002)")
+		return
+	}
+
+	session.SetFlash(r, session.SessionGood, "Please check your email to verify your account (You might need to check the spam folder)")
 }
 
 func verifyHandler(w http.ResponseWriter, r *http.Request) {
 
-	message, success := func() (message string, success bool) {
-
-		// Validate code
-		code := r.URL.Query().Get("code")
-
-		if len(code) != 10 {
-			return "Invalid code (1001)", false
-		}
-
-		// Find email from code
-		userID, err := mysql.GetUserVerification(code)
-		if err == mysql.ErrExpiredVerification {
-			return "Link Expired", false
-		} else if err != nil {
-			err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
-			if err != nil {
-				log.ErrS(err)
-			}
-			return "Invalid code (1002)", false
-		}
-
-		user, err := mysql.GetUserByID(userID)
-		if err != nil {
-			log.ErrS(err)
-			return "User not found (1003)", false
-		}
-
-		// Enable user
-		err = mysql.VerifyUser(userID)
-		if err != nil {
-			log.ErrS(err)
-			return "Invalid code (1003)", false
-		}
-
-		// Influx
-		point := influx.Point{
-			Measurement: string(influxHelper.InfluxMeasurementSignups),
-			Fields: map[string]interface{}{
-				"validate": 1,
-			},
-			Time:      time.Now(),
-			Precision: "s",
-		}
-
-		_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, point)
-		if err != nil {
-			log.ErrS(err)
-		}
-
-		err = email.NewSignup(user.Email, r)
-		if err != nil {
-			log.ErrS(err)
-		}
-
-		//
-		return "Email has been verified", true
+	defer func() {
+		time.Sleep(time.Second)
+		session.Save(w, r)
+		http.Redirect(w, r, "/signup", http.StatusFound)
 	}()
 
-	//
-	if success {
+	// Validate code
+	code := r.URL.Query().Get("code")
 
-		session.SetFlash(r, session.SessionGood, message)
-		session.Save(w, r)
-
-		http.Redirect(w, r, "/login", http.StatusFound)
-
-	} else {
-
-		time.Sleep(time.Second)
-
-		session.SetFlash(r, session.SessionBad, message)
-		session.Save(w, r)
-
-		http.Redirect(w, r, "/signup", http.StatusFound)
+	if len(code) != 10 {
+		session.SetFlash(r, session.SessionBad, "Invalid code (1001)")
+		return
 	}
+
+	// Find email from code
+	userID, err := mysql.GetUserVerification(code)
+	if err == mysql.ErrExpiredVerification {
+		session.SetFlash(r, session.SessionBad, "The link you clicked has expired")
+		return
+	} else if err == mysql.ErrRecordNotFound {
+		session.SetFlash(r, session.SessionBad, "The requested link can't be found")
+		return
+	} else if err != nil {
+		log.ErrS(err)
+		session.SetFlash(r, session.SessionBad, "Invalid code (1002)")
+		return
+	}
+
+	user, err := mysql.GetUserByID(userID)
+	if err != nil {
+		log.ErrS(err)
+		session.SetFlash(r, session.SessionBad, "User not found")
+		return
+	}
+
+	// Enable user
+	err = mysql.VerifyUser(userID)
+	if err != nil {
+		log.ErrS(err)
+		session.SetFlash(r, session.SessionBad, "Invalid code (1003)")
+		return
+	}
+	user.EmailVerified = true
+
+	// Influx
+	point := influx.Point{
+		Measurement: string(influxHelper.InfluxMeasurementSignups),
+		Fields: map[string]interface{}{
+			"validate": 1,
+		},
+		Time:      time.Now(),
+		Precision: "s",
+	}
+
+	_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, point)
+	if err != nil {
+		log.ErrS(err)
+	}
+
+	err = email.NewSignup(user.Email, r)
+	if err != nil {
+		log.ErrS(err)
+	}
+
+	//
+	session.SetFlash(r, session.SessionGood, "Email has been verified")
 }
