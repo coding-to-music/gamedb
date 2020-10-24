@@ -48,7 +48,7 @@
                             <div class="col-12 col-lg-8 mb-3 mb-lg-0">
 
                                 {{ if gt (len .Banners) 0 }}
-                                    <div class="alert alert-danger" role="alert">
+                                    <div class="alert alert-primary" role="alert">
                                         {{ range $k, $v := .Banners }}
                                             <div>{{ $v }}</div>
                                         {{ end }}
