@@ -136,7 +136,8 @@ if ($('#admin-users-page').length > 0) {
                                 '<i class="fab fa-patreon"></i></a>';
                         }
                         if (m.hasOwnProperty('twitter')) {
-                            str += '<span class="mr-1"><i class="fab fa-twitter"></i></span>';
+                            str += '<a class="mr-1" href="https://twitter.com/i/user/' + m['twitter'] + '" target="_blank" rel="noopener">' +
+                                '<i class="fab fa-twitter"></i></a>';
                         }
                         return str;
                     }
