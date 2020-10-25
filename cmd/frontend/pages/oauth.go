@@ -203,8 +203,8 @@ func providerOAuth1Callback(w http.ResponseWriter, r *http.Request, provider oau
 		return
 	}
 
-	config := provider.GetConfig()
-	accessToken, accessSecret, err := config.AccessToken(requestToken, state, verifier)
+	c := provider.GetConfig()
+	accessToken, accessSecret, err := c.AccessToken(requestToken, state, verifier)
 	if err != nil {
 		log.ErrS(err)
 		session.SetFlash(r, session.SessionBad, "An error occurred (1004)")
