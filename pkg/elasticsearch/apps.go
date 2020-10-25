@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"html/template"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/Jleagle/steam-go/steamapi"
@@ -181,7 +182,8 @@ func searchApps(limit int, offset int, search string, totals bool, highlights bo
 
 	if search != "" {
 
-		var search2 = helpers.RegexNonAlphaNumeric.ReplaceAllString(search, "")
+		search2 := helpers.RegexNonAlphaNumeric.ReplaceAllString(search, "")
+		search2 = strings.ToLower(search2)
 
 		boolQuery.Must(
 			elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
