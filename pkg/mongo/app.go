@@ -209,6 +209,10 @@ func (app App) GetID() int {
 	return app.ID
 }
 
+func (app App) GetPlayersPeakWeek() int {
+	return app.PlayerPeakWeek
+}
+
 func (app App) GetProductType() helpers.ProductType {
 	return helpers.ProductTypeApp
 }
@@ -731,28 +735,6 @@ func GetAppsByID(ids []int, projection bson.M) (apps []App, err error) {
 	}
 
 	return GetApps(0, 0, nil, bson.D{{"_id", bson.M{"$in": a}}}, projection)
-}
-
-func GetRandomApps(count int, filter bson.D, projection bson.M) (apps []App, err error) {
-
-	cur, ctx, err := GetRandomRows(CollectionApps, count, filter, projection)
-	if err != nil {
-		return apps, err
-	}
-
-	defer close(cur, ctx)
-
-	for cur.Next(ctx) {
-
-		var app App
-		err := cur.Decode(&app)
-		if err != nil {
-			log.ErrS(err, app.ID)
-		}
-		apps = append(apps, app)
-	}
-
-	return apps, cur.Err()
 }
 
 func PopularApps() (apps []App, err error) {

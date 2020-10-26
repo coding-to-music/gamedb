@@ -9,7 +9,7 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/chatbot/charts"
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/interfaces"
 )
 
 type CommandType string
@@ -117,7 +117,7 @@ func getFooter() *discordgo.MessageEmbedFooter {
 	return footer
 }
 
-func getAppEmbed(commandID string, app mongo.App, code steamapi.ProductCC) *discordgo.MessageEmbed {
+func getAppEmbed(commandID string, app interfaces.App, code steamapi.ProductCC) *discordgo.MessageEmbed {
 
 	return &discordgo.MessageEmbed{
 		Title:     app.GetName(),
@@ -127,7 +127,7 @@ func getAppEmbed(commandID string, app mongo.App, code steamapi.ProductCC) *disc
 		Fields: []*discordgo.MessageEmbedField{
 			{
 				Name:   "Max Weekly Players",
-				Value:  humanize.Comma(int64(app.PlayerPeakWeek)),
+				Value:  humanize.Comma(int64(app.GetPlayersPeakWeek())),
 				Inline: true,
 			},
 			{
@@ -142,7 +142,7 @@ func getAppEmbed(commandID string, app mongo.App, code steamapi.ProductCC) *disc
 			},
 			{
 				Name:   "Price",
-				Value:  app.Prices.Get(code).GetFinal(),
+				Value:  app.GetPrices().Get(code).GetFinal(),
 				Inline: true,
 			},
 			{
@@ -162,7 +162,7 @@ func getAppEmbed(commandID string, app mongo.App, code steamapi.ProductCC) *disc
 			},
 		},
 		Image: &discordgo.MessageEmbedImage{
-			URL: charts.GetAppPlayersChart(commandID, app.ID, "168d", "1d"),
+			URL: charts.GetAppPlayersChart(commandID, app.GetID(), "168d", "1d"),
 		},
 	}
 }

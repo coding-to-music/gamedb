@@ -26,14 +26,18 @@ func appsRandomHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		filters := []elastic.Query{
-			elastic.NewTermsQuery("type", "game", ""),
-			elastic.NewBoolQuery().MustNot(
-				elastic.NewTermQuery("name.raw", ""),
-			).MinimumNumberShouldMatch(1),
-			elastic.NewBoolQuery().Should(
-				elastic.NewRangeQuery("movies_count").From(1),
-				elastic.NewRangeQuery("screenshots_count").From(1),
-			).MinimumNumberShouldMatch(1),
+
+			elastic.NewBoolQuery().
+				Filter(
+					elastic.NewTermsQuery("type", "game", ""),
+				).
+				MustNot(
+					elastic.NewTermQuery("name.raw", ""),
+				).
+				Should(
+					elastic.NewRangeQuery("movies_count").From(1),
+					elastic.NewRangeQuery("screenshots_count").From(1),
+				).MinimumNumberShouldMatch(1),
 		}
 
 		var tag = r.URL.Query().Get("tag")

@@ -32,7 +32,7 @@ type App struct {
 	Name                string                `json:"name"`
 	NameMarked          string                `json:"name_marked"` // Not in DB
 	Platforms           []string              `json:"platforms"`
-	PlayersCount        int                   `json:"players"`
+	PlayersCount        int                   `json:"players"` // Peak week
 	Prices              helpers.ProductPrices `json:"prices"`
 	Publishers          []int                 `json:"publishers"`
 	ReleaseDateOriginal string                `json:"release_date_original"`
@@ -50,8 +50,20 @@ type App struct {
 	WishlistCount       int                   `json:"wishlist_count"`
 }
 
+func (app App) GetID() int {
+	return app.ID
+}
+
+func (app App) GetPlayersPeakWeek() int {
+	return app.PlayersCount
+}
+
 func (app App) GetName() string {
 	return helpers.GetAppName(app.ID, app.Name)
+}
+
+func (app App) GetHeaderImage() string {
+	return "https://steamcdn-a.akamaihd.net/steam/apps/" + strconv.Itoa(app.ID) + "/header.jpg"
 }
 
 func (app App) GetMarkedName() string {
@@ -68,6 +80,10 @@ func (app App) GetPath() string {
 
 func (app App) GetType() string {
 	return helpers.GetAppType(app.Type)
+}
+
+func (app App) GetPrices() (prices helpers.ProductPrices) {
+	return app.Prices
 }
 
 // For an interface

@@ -5,8 +5,8 @@ import (
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
-	"github.com/gamedb/gamedb/pkg/mongo"
-	"go.mongodb.org/mongo-driver/bson"
+	"github.com/gamedb/gamedb/pkg/elasticsearch"
+	"github.com/olivere/elastic/v7"
 )
 
 type CommandAppRandom struct {
@@ -42,27 +42,22 @@ func (CommandAppRandom) Type() CommandType {
 
 func (c CommandAppRandom) Output(msg *discordgo.MessageCreate, code steamapi.ProductCC) (message discordgo.MessageSend, err error) {
 
-	var filter = bson.D{
-		{"$or", bson.A{
-			bson.M{"type": "game"},
-			bson.M{"type": ""},
-		}},
-		{"name", bson.M{"$ne": ""}},
+	filters := []elastic.Query{
+		elastic.NewBoolQuery().
+			Filter(
+				elastic.NewTermsQuery("type", "game", ""),
+			).
+			MustNot(
+				elastic.NewTermQuery("name.raw", ""),
+			),
 	}
 
-	var projection = bson.M{"_id": 1, "name": 1, "prices": 1, "release_date": 1, "release_date_unix": 1, "reviews_score": 1, "group_id": 1, "group_followers": 1, "player_peak_week": 1}
-
-	apps, err := mongo.GetRandomApps(1, filter, projection)
+	app, _, err := elasticsearch.SearchAppsRandom(filters)
 	if err != nil {
 		return message, err
 	}
 
-	if len(apps) > 0 {
-
-		var app = apps[0]
-
-		message.Embed = getAppEmbed(c.ID(), app, code)
-	}
+	message.Embed = getAppEmbed(c.ID(), app, code)
 
 	return message, nil
 }
