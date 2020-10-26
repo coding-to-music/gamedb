@@ -56,10 +56,6 @@ type signupTemplate struct {
 	Providers       []oauth.Provider
 }
 
-func (t signupTemplate) includes() []string {
-	return []string{"includes/login_header.gohtml"}
-}
-
 func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	defer func() {

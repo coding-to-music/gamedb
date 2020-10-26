@@ -40,10 +40,6 @@ type trendingTemplate struct {
 	globalTemplate
 }
 
-func (t trendingTemplate) includes() []string {
-	return []string{"includes/apps_header.gohtml"}
-}
-
 func trendingAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := datatable.NewDataTableQuery(r, true)

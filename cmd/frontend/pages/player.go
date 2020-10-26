@@ -425,10 +425,6 @@ type playerTemplate struct {
 	Aliases       []mongo.PlayerAlias
 }
 
-func (t playerTemplate) includes() []string {
-	return []string{"includes/social.gohtml"}
-}
-
 func (t playerTemplate) TypePercent(typex string) string {
 
 	if _, ok := t.Player.GamesByType[typex]; !ok {

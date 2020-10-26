@@ -64,10 +64,6 @@ type statsTagsTemplate struct {
 	Type mongo.StatsType
 }
 
-func (t statsTagsTemplate) includes() []string {
-	return []string{"includes/stats_header.gohtml"}
-}
-
 func statsListJSONHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := datatable.NewDataTableQuery(r, false)

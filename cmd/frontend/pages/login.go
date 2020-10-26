@@ -54,10 +54,6 @@ type loginTemplate struct {
 	Providers       []oauth.Provider
 }
 
-func (t loginTemplate) includes() []string {
-	return []string{"includes/login_header.gohtml"}
-}
-
 func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	message, success := func() (message string, success bool) {

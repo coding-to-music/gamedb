@@ -31,10 +31,6 @@ type bundlesTemplate struct {
 	globalTemplate
 }
 
-func (t bundlesTemplate) includes() []string {
-	return []string{"includes/packages_header.gohtml"}
-}
-
 func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := datatable.NewDataTableQuery(r, false)

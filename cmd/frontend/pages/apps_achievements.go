@@ -34,10 +34,6 @@ type appsAchievementsTemplate struct {
 	globalTemplate
 }
 
-func (t appsAchievementsTemplate) includes() []string {
-	return []string{"includes/apps_header.gohtml"}
-}
-
 func appsAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := datatable.NewDataTableQuery(r, false)

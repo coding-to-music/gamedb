@@ -132,10 +132,6 @@ type salesTemplate struct {
 	SaleTypes    []string
 }
 
-func (t salesTemplate) includes() []string {
-	return []string{"includes/apps_header.gohtml"}
-}
-
 type upcomingSale struct {
 	Start time.Time
 	Days  int

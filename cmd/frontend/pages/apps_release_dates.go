@@ -33,10 +33,6 @@ type releaseDatesTemplate struct {
 	globalTemplate
 }
 
-func (t releaseDatesTemplate) includes() []string {
-	return []string{"includes/apps_header.gohtml"}
-}
-
 func releaseDatesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := datatable.NewDataTableQuery(r, false)

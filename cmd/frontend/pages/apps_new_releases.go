@@ -43,10 +43,6 @@ type newReleasesTemplate struct {
 	Days int
 }
 
-func (t newReleasesTemplate) includes() []string {
-	return []string{"includes/apps_header.gohtml"}
-}
-
 func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var query = datatable.NewDataTableQuery(r, false)

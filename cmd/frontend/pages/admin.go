@@ -69,10 +69,6 @@ type adminUsersTemplate struct {
 	globalTemplate
 }
 
-func (t adminUsersTemplate) includes() []string {
-	return []string{"includes/admin_header.gohtml"}
-}
-
 func adminUsersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var query = datatable.NewDataTableQuery(r, false)
@@ -275,10 +271,6 @@ type adminConsumersTemplate struct {
 	globalTemplate
 }
 
-func (t adminConsumersTemplate) includes() []string {
-	return []string{"includes/admin_header.gohtml"}
-}
-
 func adminWebhooksHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := adminWebhooksTemplate{}
@@ -300,10 +292,6 @@ func adminWebhooksHandler(w http.ResponseWriter, r *http.Request) {
 type adminWebhooksTemplate struct {
 	globalTemplate
 	Services []mongo.WebhookService
-}
-
-func (t adminWebhooksTemplate) includes() []string {
-	return []string{"includes/admin_header.gohtml"}
 }
 
 func adminWebhooksAjaxHandler(w http.ResponseWriter, r *http.Request) {
@@ -424,10 +412,6 @@ type adminStatsTemplate struct {
 	Location string
 }
 
-func (t adminStatsTemplate) includes() []string {
-	return []string{"includes/admin_header.gohtml"}
-}
-
 func adminTasksHandler(w http.ResponseWriter, r *http.Request) {
 
 	task := r.URL.Query().Get("run")
@@ -494,10 +478,6 @@ type adminTasksTemplate struct {
 	Configs map[string]mysql.Config
 }
 
-func (t adminTasksTemplate) includes() []string {
-	return []string{"includes/admin_header.gohtml"}
-}
-
 type adminTaskListTemplate struct {
 	Title string
 	Tasks []adminTaskTemplate
@@ -546,10 +526,6 @@ func adminSettingsHandler(w http.ResponseWriter, r *http.Request) {
 type adminSettingsTemplate struct {
 	globalTemplate
 	DownMessage string
-}
-
-func (t adminSettingsTemplate) includes() []string {
-	return []string{"includes/admin_header.gohtml"}
 }
 
 func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
@@ -749,10 +725,6 @@ type adminQueuesTemplate struct {
 	globalTemplate
 }
 
-func (t adminQueuesTemplate) includes() []string {
-	return []string{"includes/admin_header.gohtml"}
-}
-
 func adminBinLogsHandler(w http.ResponseWriter, r *http.Request) {
 
 	db, err := mysql.GetMySQLClient()
@@ -793,10 +765,6 @@ type adminBinLogsTemplate struct {
 	BinLogs []adminBinLogTemplate
 }
 
-func (t adminBinLogsTemplate) includes() []string {
-	return []string{"includes/admin_header.gohtml"}
-}
-
 type adminBinLogTemplate struct {
 	Name      string `gorm:"column:Log_name"`
 	Bytes     uint64 `gorm:"column:File_size"`
@@ -821,8 +789,4 @@ type adminWebsocketsTemplate struct {
 	globalTemplate
 	Websockets map[websockets.WebsocketPage]*websockets.Page
 	Total      int
-}
-
-func (t adminWebsocketsTemplate) includes() []string {
-	return []string{"includes/admin_header.gohtml"}
 }

@@ -94,10 +94,31 @@ func returnJSON(w http.ResponseWriter, r *http.Request, i interface{}) {
 	}
 }
 
-var templatesBox = packr.New("templates", "../templates")
+var (
+	templatex    *template.Template
+	templatesBox = packr.New("templates", "../templates")
+)
 
-type hasIncludes interface {
-	includes() []string
+func init() {
+
+	templatex = template.New("t")
+	templatex.Funcs(getTemplateFuncMap())
+
+	callback := func(path string, bf packr.File) error {
+
+		s, err := templatesBox.FindString(path)
+		if err != nil {
+			return err
+		}
+
+		_, err = templatex.Parse(s)
+		return err
+	}
+
+	err := templatesBox.Walk(callback)
+	if err != nil {
+		log.ErrS(err)
+	}
 }
 
 type pageInterface interface {
@@ -125,41 +146,9 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, pageData pageInterfa
 	//
 	setHeaders(w, "text/html")
 
-	//
-	t := template.New("t")
-	t = t.Funcs(getTemplateFuncMap())
-
-	templates := []string{
-		"includes/header.gohtml",
-		"includes/flashes.gohtml",
-		"includes/footer.gohtml",
-		page + ".gohtml",
-	}
-
-	if val, ok := pageData.(hasIncludes); ok {
-		for _, v := range val.includes() {
-			templates = append(templates, v)
-		}
-	}
-
-	for _, v := range templates {
-
-		s, err := templatesBox.FindString(v)
-		if err != nil {
-			log.ErrS(err)
-			continue
-		}
-
-		t, err = t.Parse(s)
-		if err != nil {
-			log.ErrS(err)
-			continue
-		}
-	}
-
 	// Write a respone
 	buf := &bytes.Buffer{}
-	err = t.ExecuteTemplate(buf, path.Base(page), pageData)
+	err = templatex.ExecuteTemplate(buf, path.Base(page), pageData)
 	if err != nil {
 		log.ErrS(err)
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Looks like I messed something up, will be fixed soon!"})

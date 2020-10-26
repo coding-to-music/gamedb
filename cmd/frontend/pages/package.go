@@ -175,10 +175,6 @@ type packageTemplate struct {
 	Price      helpers.ProductPrice
 }
 
-func (t packageTemplate) includes() []string {
-	return []string{"includes/social.gohtml"}
-}
-
 func (p packageTemplate) ShowDev() bool {
 
 	return len(p.Extended) > 0 || len(p.Controller) > 0 || len(p.Package.Depots) > 0

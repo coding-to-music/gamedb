@@ -390,10 +390,6 @@ type appTemplate struct {
 	Tags       []mongo.Stat
 }
 
-func (t appTemplate) includes() []string {
-	return []string{"includes/social.gohtml"}
-}
-
 type AppCountry struct {
 	Country string
 	Count   int

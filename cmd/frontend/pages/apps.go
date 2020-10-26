@@ -222,10 +222,6 @@ type appsTemplate struct {
 	Developers []mongo.Stat
 }
 
-func (t appsTemplate) includes() []string {
-	return []string{"includes/apps_header.gohtml"}
-}
-
 func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := datatable.NewDataTableQuery(r, false)
