@@ -3,10 +3,23 @@ package main
 import (
 	"testing"
 
+	"github.com/Jleagle/steam-go/steamapi"
+	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/chatbot"
+	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 )
 
 func Test(t *testing.T) {
+
+	err := config.Init(version, commits, helpers.GetIP())
+	log.InitZap(log.LogNameTest)
+	defer log.Flush()
+	if err != nil {
+		log.ErrS(err)
+		return
+	}
 
 	tests := map[string]string{
 		"app 440":           chatbot.CApp,
@@ -36,20 +49,37 @@ func Test(t *testing.T) {
 
 	for _, start := range []string{".", "!"} {
 		for message, commandID := range tests {
-
-			var id string
-
 			for _, c := range chatbot.CommandRegister {
 				if chatbot.RegexCache[c.Regex()].MatchString(start + message) {
-					if c.ID() == commandID {
-						id = commandID
-						break
+
+					if c.ID() != commandID {
+						t.Error(start+message, "!=", commandID)
+					}
+
+					if start == "." {
+
+						t.Log(start + message)
+
+						messagex := &discordgo.MessageCreate{
+							Message: &discordgo.Message{
+								Content: start + message,
+								Author: &discordgo.User{
+									ID: "123",
+								},
+							},
+						}
+
+						msg, err := c.Output(messagex, steamapi.ProductCCUS)
+						if err != nil {
+							t.Error(start+message, "!=", commandID)
+							continue
+						}
+						if msg.Content == "" && msg.Embed == nil {
+							t.Error("no return")
+							continue
+						}
 					}
 				}
-			}
-
-			if id != commandID {
-				t.Error(start+message, "!=", commandID)
 			}
 		}
 	}
