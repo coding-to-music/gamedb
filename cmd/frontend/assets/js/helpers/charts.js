@@ -46,3 +46,25 @@ const defaultChartOptions = {
         '#91e8e1'
     ],
 };
+
+function plotline(ts, text) {
+
+    let plotlines = [];
+    if (ts !== '') { // Allow 0
+        plotlines.push({
+            value: parseInt(ts) * 1000,
+            color: 'red',
+            width: 1,
+            zIndex: 3,
+            label: {
+                formatter: function () {
+                    return text;
+                },
+                style: {
+                    color: darkMode ? '#e9ecef' : '#000000',
+                },
+            }
+        });
+    }
+    return plotlines;
+}

@@ -403,6 +403,9 @@ if ($appPage.length > 0) {
                 },
                 visible: true,
             },
+            xAxis: {
+                plotLines: plotline($appPage.attr('data-release'), 'Steam Release'),
+            },
             plotOptions: {
                 series: {
                     marker: {
@@ -684,6 +687,9 @@ if ($appPage.length > 0) {
                             },
                         }
                     ],
+                    xAxis: {
+                        plotLines: plotline($appPage.attr('data-release'), 'Steam Release'),
+                    },
                     tooltip: {
                         formatter: function () {
                             switch (this.series.name) {
@@ -805,21 +811,6 @@ if ($appPage.length > 0) {
                     return;
                 }
 
-                let plotlines = [{
-                    value: data.marker,
-                    color: user.darkmode ? '#e9ecef' : 'red',
-                    width: 1,
-                    zIndex: 3,
-                    label: {
-                        formatter: function () {
-                            return 'You are here!';
-                        },
-                        style: {
-                            color: darkMode ? '#e9ecef' : '#000000',
-                        },
-                    }
-                }];
-
                 Highcharts.chart('achievement-counts-chart', $.extend(true, {}, defaultChartOptions, {
                     legend: {
                         enabled: false,
@@ -834,7 +825,7 @@ if ($appPage.length > 0) {
                     },
                     xAxis: {
                         type: 'category',
-                        plotLines: plotlines,
+                        plotLines: plotline(data.marker, 'You are here!'),
                         min: 0,
                     },
                     tooltip: {
