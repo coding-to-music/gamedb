@@ -51,8 +51,9 @@
         }
 
         #patreon {
-            width: 100%;
             @extend .mb-2;
+            width: 100%;
+            background-color: #e9ecef;
         }
 
         #links {
