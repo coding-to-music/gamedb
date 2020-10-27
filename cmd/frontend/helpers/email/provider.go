@@ -4,7 +4,8 @@ import (
 	"bytes"
 	"errors"
 	"html/template"
-	"os"
+
+	"github.com/gamedb/gamedb/pkg/log"
 )
 
 type EmailProvider interface {
@@ -13,6 +14,18 @@ type EmailProvider interface {
 
 func GetProvider() EmailProvider {
 	return mailjetProvider{}
+}
+
+var templatex *template.Template
+
+func Init() {
+
+	var err error
+	templatex, err = template.ParseGlob("./helpers/email/templates/*.gohtml")
+	if err != nil {
+		log.ErrS(err)
+		return
+	}
 }
 
 func getBodyFromTemplate(data interface{}) (body string, err error) {
@@ -34,24 +47,8 @@ func getBodyFromTemplate(data interface{}) (body string, err error) {
 		return "", errors.New("invalid email template")
 	}
 
-	ex, err := os.Getwd()
-	if err != nil {
-		return "", err
-	}
-
-	base := ex + "/helpers/email/templates/"
-
-	tmpl, err := template.ParseFiles(
-		base+"_header.gohtml",
-		base+"_footer.gohtml",
-		base+string(t)+".gohtml")
-	if err != nil {
-		return "", err
-	}
-
 	buf := bytes.Buffer{}
-
-	err = tmpl.ExecuteTemplate(&buf, string(t), data)
+	err = templatex.ExecuteTemplate(&buf, string(t), data)
 	if err != nil {
 		return "", err
 	}

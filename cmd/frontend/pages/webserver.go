@@ -25,7 +25,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
-	"github.com/gobuffalo/packr/v2"
 	"github.com/gosimple/slug"
 	"github.com/tdewolff/minify/v2"
 	minhtml "github.com/tdewolff/minify/v2/html"
@@ -94,30 +93,21 @@ func returnJSON(w http.ResponseWriter, r *http.Request, i interface{}) {
 	}
 }
 
-var (
-	templatex    *template.Template
-	templatesBox = packr.New("templates", "../templates")
-)
+var templatex *template.Template
 
-func init() {
+func Init() {
 
-	templatex = template.New("t")
-	templatex.Funcs(getTemplateFuncMap())
+	var err error
 
-	callback := func(path string, bf packr.File) error {
+	templatex = template.New("t").Funcs(getTemplateFuncMap())
 
-		s, err := templatesBox.FindString(path)
+	for _, v := range []string{"./templates/*.gohtml", "./templates/*/*.gohtml"} {
+
+		templatex, err = templatex.ParseGlob(v)
 		if err != nil {
-			return err
+			log.ErrS(err)
+			return
 		}
-
-		_, err = templatex.Parse(s)
-		return err
-	}
-
-	err := templatesBox.Walk(callback)
-	if err != nil {
-		log.ErrS(err)
 	}
 }
 
@@ -127,8 +117,11 @@ type pageInterface interface {
 
 func returnTemplate(w http.ResponseWriter, r *http.Request, pageData pageInterface) {
 
-	var err error
-	var page = pageData.GetPageID()
+	if config.IsLocal() {
+		Init()
+	}
+
+	page := pageData.GetPageID()
 
 	// Set the last page
 	if r.Method == "GET" &&
@@ -148,7 +141,7 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, pageData pageInterfa
 
 	// Write a respone
 	buf := &bytes.Buffer{}
-	err = templatex.ExecuteTemplate(buf, path.Base(page), pageData)
+	err := templatex.ExecuteTemplate(buf, path.Base(page), pageData)
 	if err != nil {
 		log.ErrS(err)
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Looks like I messed something up, will be fixed soon!"})
@@ -163,6 +156,7 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, pageData pageInterfa
 			KeepDefaultAttrVals:     true,
 			KeepDocumentTags:        true,
 			KeepEndTags:             true,
+			KeepQuotes:              false,
 			KeepWhitespace:          true,
 		})
 

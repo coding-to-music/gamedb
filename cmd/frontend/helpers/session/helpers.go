@@ -45,7 +45,7 @@ const (
 
 type FlashGroup session.FlashGroup
 
-func InitSession() {
+func Init() {
 
 	sessionInit := session.Init{}
 	sessionInit.AuthenticationKey = config.C.SessionAuthentication

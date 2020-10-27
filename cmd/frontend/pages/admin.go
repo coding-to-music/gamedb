@@ -60,7 +60,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 func adminUsersHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := adminUsersTemplate{}
-	t.fill(w, r, "admin/users", "Admin", "Admin")
+	t.fill(w, r, "admin_users", "Admin", "Admin")
 
 	returnTemplate(w, r, t)
 }
@@ -262,7 +262,7 @@ func adminConsumersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 func adminConsumersHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := adminConsumersTemplate{}
-	t.fill(w, r, "admin/consumers", "Admin", "Admin")
+	t.fill(w, r, "admin_consumers", "Admin", "Admin")
 
 	returnTemplate(w, r, t)
 }
@@ -274,7 +274,7 @@ type adminConsumersTemplate struct {
 func adminWebhooksHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := adminWebhooksTemplate{}
-	t.fill(w, r, "admin/webhooks", "Admin", "Admin")
+	t.fill(w, r, "admin_webhooks", "Admin", "Admin")
 	t.addAssetChosen()
 
 	services, err := mongo.GetDistict(mongo.CollectionWebhooks, "service")
@@ -355,7 +355,7 @@ func adminWebhooksAjaxHandler(w http.ResponseWriter, r *http.Request) {
 func adminStatsHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := adminStatsTemplate{}
-	t.fill(w, r, "admin/stats", "Admin", "Admin")
+	t.fill(w, r, "admin_stats", "Admin", "Admin")
 
 	t.Commits = config.C.Commits
 	t.Hash = config.GetShortCommitHash()
@@ -436,7 +436,7 @@ func adminTasksHandler(w http.ResponseWriter, r *http.Request) {
 
 	//
 	t := adminTasksTemplate{}
-	t.fill(w, r, "admin/tasks", "Admin", "Admin")
+	t.fill(w, r, "admin_tasks", "Admin", "Admin")
 	t.hideAds = true
 
 	var grouped = map[tasks.TaskGroup][]adminTaskTemplate{}
@@ -517,7 +517,7 @@ func adminSettingsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	t := adminSettingsTemplate{}
-	t.fill(w, r, "admin/settings", "Admin", "Admin")
+	t.fill(w, r, "admin_settings", "Admin", "Admin")
 	t.DownMessage = middleware.DownMessage
 
 	returnTemplate(w, r, t)
@@ -716,7 +716,7 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	t := adminQueuesTemplate{}
-	t.fill(w, r, "admin/queues", "Admin", "Admin")
+	t.fill(w, r, "admin_queues", "Admin", "Admin")
 
 	returnTemplate(w, r, t)
 }
@@ -750,7 +750,7 @@ func adminBinLogsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	t := adminBinLogsTemplate{}
-	t.fill(w, r, "admin/binlogs", "Admin", "Admin")
+	t.fill(w, r, "admin_binlogs", "Admin", "Admin")
 
 	db = db.Raw("show binary logs").Scan(&t.BinLogs)
 	if db.Error != nil {
@@ -775,7 +775,7 @@ type adminBinLogTemplate struct {
 func adminWebsocketsHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := adminWebsocketsTemplate{}
-	t.fill(w, r, "admin/websockets", "Admin", "Admin")
+	t.fill(w, r, "admin_websockets", "Admin", "Admin")
 	t.Websockets = websockets.Pages
 
 	for _, v := range websockets.Pages {

@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/recaptcha-go"
+	"github.com/gamedb/gamedb/cmd/frontend/helpers/email"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/cmd/frontend/pages"
 	"github.com/gamedb/gamedb/pkg/config"
@@ -79,7 +80,9 @@ func main() {
 		recaptcha.SetSecret(config.C.RecaptchaPrivate)
 	}
 
-	session.InitSession()
+	session.Init()
+	pages.Init()
+	email.Init()
 
 	// Clear caches on process restart
 	if config.IsProd() {

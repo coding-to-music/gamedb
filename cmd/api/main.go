@@ -31,7 +31,7 @@ func main() {
 		return
 	}
 
-	session.InitSession()
+	session.Init()
 
 	r := chi.NewRouter()
 	r.Use(chiMiddleware.RedirectSlashes)
