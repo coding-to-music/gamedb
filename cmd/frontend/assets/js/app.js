@@ -835,6 +835,7 @@ if ($appPage.length > 0) {
                     xAxis: {
                         type: 'category',
                         plotLines: plotlines,
+                        min: 0,
                     },
                     tooltip: {
                         formatter: function () {
