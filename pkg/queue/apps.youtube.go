@@ -10,7 +10,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/youtube"
+	"github.com/gamedb/gamedb/pkg/queue/helpers/youtube"
 	influx "github.com/influxdata/influxdb1-client"
 	"go.uber.org/zap"
 	"google.golang.org/api/googleapi"

@@ -9,6 +9,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/dghubble/oauth1"
+	"github.com/gamedb/gamedb/cmd/frontend/helpers/oauth"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -16,7 +17,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
-	"github.com/gamedb/gamedb/pkg/oauth"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/go-chi/chi"
 	"go.uber.org/zap"

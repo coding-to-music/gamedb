@@ -11,7 +11,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
-	"github.com/gamedb/gamedb/pkg/rabbitweb"
+	"github.com/gamedb/gamedb/pkg/tasks/helpers/rabbitweb"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
