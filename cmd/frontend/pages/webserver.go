@@ -577,7 +577,7 @@ func (t globalTemplate) IsLocal() bool {
 
 func (t globalTemplate) ShowAds() bool {
 
-	return config.IsProd() && t.userLevel < mysql.UserLevel2 && !t.hideAds
+	return t.userLevel < mysql.UserLevel2 && !t.hideAds
 }
 
 func (t *globalTemplate) addToast(toast Toast) {
