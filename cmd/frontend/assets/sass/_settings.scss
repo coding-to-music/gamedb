@@ -21,6 +21,16 @@
 
 #settings-page {
 
+    #highlight {
+        padding: 0;
+        border: none;
+        width: 300px;
+    }
+
+    #highlight:focus {
+        outline: none;
+    }
+
     #providers {
         .card-header {
             border-bottom: none;

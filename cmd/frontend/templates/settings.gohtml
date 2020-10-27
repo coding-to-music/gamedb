@@ -127,7 +127,8 @@
                                     </div>
                                     <div class="card-body">
 
-                                        <p>API key: {{ .User.APIKey }}</p>
+                                        <label for="highlight" class="sr-only sr-only-focusable"></label>
+                                        <p>API key: <input id="highlight" value="{{ .User.APIKey }}"/></p>
 
                                         <div role="button" class="btn btn-warning btn-sm cursor-pointer" id="reset-api-key-btn">
                                             <i class="fas fa-retweet"></i> Generate new key

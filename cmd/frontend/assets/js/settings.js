@@ -29,6 +29,14 @@ if ($settingsPage.length > 0) {
         });
     });
 
+    $('#highlight').on('mouseenter', function (e) {
+
+        // $(this).width((this.value.length) + 'ch');
+        $(this).select();
+        document.execCommand("copy");
+        toast(true, 'API Key Copied')
+    });
+
     loadAjaxOnObserve({
         'events-table': loadEvents,
         'donations-table': loadDonations,
