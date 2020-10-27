@@ -40,7 +40,7 @@ const (
 	SessionBad  FlashGroup = "bad"
 
 	// Cookies
-	SessionCookieName = "gamedb-session"
+	SessionCookieName = "gamedb-session-3"
 )
 
 type FlashGroup session.FlashGroup
