@@ -1,7 +1,7 @@
 {{define "app"}}
     {{ template "header" . }}
 
-    <div class="container" id="app-page" data-group-id="{{ .App.GroupID }}" data-bg="{{ .App.Background }}" data-id="{{ .App.ID }}" data-path="{{ .App.GetPath }}">
+    <div class="container" id="app-page" data-release="{{ .App.ReleaseDateUnix }}" data-group-id="{{ .App.GroupID }}" data-bg="{{ .App.Background }}" data-id="{{ .App.ID }}" data-path="{{ .App.GetPath }}">
 
         <div class="jumbotron">
 
@@ -488,7 +488,7 @@
                             <div class="card mb-4">
                                 <h5 class="card-header" id="followers">Followers</h5>
                                 <div class="card-body">
-                                    <div class="player-chart" id="group-chart" data-release="{{ .App.ReleaseDateUnix }}">
+                                    <div class="player-chart" id="group-chart">
                                         <i class="fas fa-spinner fa-spin"></i>
                                     </div>
                                 </div>

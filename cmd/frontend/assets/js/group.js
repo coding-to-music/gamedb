@@ -107,16 +107,19 @@ function loadGroupChart($page) {
     }
 
     let plotlines = [];
-    if ($groupChart.attr('data-release') !== '') {
+    if ($page.attr('data-release') !== '') {
         plotlines.push({
-            value: parseInt($groupChart.attr('data-release')) * 1000,
+            value: parseInt($page.attr('data-release')) * 1000,
             color: 'red',
             width: 1,
             zIndex: 3,
             label: {
                 formatter: function () {
                     return 'Steam Release';
-                }
+                },
+                style: {
+                    color: darkMode ? '#e9ecef' : '#000000',
+                },
             }
         });
     }
