@@ -70,8 +70,7 @@ func main() {
 	}
 
 	// Start queue producers to send to.
-	// In a go routine so if Rabbit is not working, the frontend still starts
-	go queue.Init(queue.FrontendDefinitions)
+	queue.Init(queue.FrontendDefinitions)
 
 	// Setup Recaptcha
 	if config.C.RecaptchaPublic == "" || config.C.RecaptchaPrivate == "" {
