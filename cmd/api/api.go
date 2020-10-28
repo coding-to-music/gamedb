@@ -9,7 +9,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/didip/tollbooth/v6/limiter"
 	"github.com/gamedb/gamedb/cmd/api/generated"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
@@ -19,17 +18,9 @@ import (
 	influx "github.com/influxdata/influxdb1-client"
 )
 
-const (
-	keyField = "key"
-)
+const keyField = "key"
 
-var (
-	apiKeyRegexp = regexp.MustCompile("^[A-Z0-9]{20}$")
-
-	// Limiter
-	ops = limiter.ExpirableOptions{DefaultExpirationTTL: time.Second}
-	lmt = limiter.New(&ops).SetMax(1).SetBurst(10)
-)
+var apiKeyRegexp = regexp.MustCompile("^[A-Z0-9]{20}$")
 
 type Server struct {
 }
@@ -70,12 +61,6 @@ func (s Server) call(w http.ResponseWriter, r *http.Request, callback func(w htt
 
 	if !apiKeyRegexp.MatchString(key) {
 		s.returnErrorResponse(w, http.StatusUnauthorized, errors.New("invalid api key"))
-		return
-	}
-
-	// Rate limit
-	if lmt.LimitReached(key) {
-		s.returnErrorResponse(w, http.StatusTooManyRequests, err)
 		return
 	}
 
