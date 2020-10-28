@@ -2,16 +2,13 @@ package pages
 
 import (
 	"context"
-	"encoding/json"
 	"net/http"
 	"strconv"
 	"strings"
 
-	"github.com/bwmarrin/discordgo"
 	"github.com/dghubble/oauth1"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/oauth"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
-	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
@@ -20,7 +17,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/go-chi/chi"
 	"go.uber.org/zap"
-	"golang.org/x/oauth2"
 )
 
 const (
@@ -421,28 +417,6 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 			log.Info("player queued", zap.String("ua", ua))
 		}
 		err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
-		if err != nil {
-			log.ErrS(err)
-			break
-		}
-
-	case oauth.ProviderDiscord:
-
-		// Join guild
-		token := oauth2.Token{}
-		err = json.Unmarshal([]byte(resp.Token), &token)
-		if err != nil {
-			log.ErrS(err)
-			break
-		}
-
-		discord, err := discordgo.New("Bot " + config.C.DiscordOAuthBotToken)
-		if err != nil {
-			log.ErrS(err)
-			break
-		}
-
-		err = discord.GuildMemberAdd(token.AccessToken, helpers.GuildID, resp.ID, "", nil, false, false)
 		if err != nil {
 			log.ErrS(err)
 			break

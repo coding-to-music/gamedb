@@ -9,10 +9,12 @@ import (
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/badoux/checkmail"
+	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/datatable"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/geo"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/oauth"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -24,6 +26,7 @@ import (
 	"github.com/mssola/user_agent"
 	"go.mongodb.org/mongo-driver/bson"
 	"golang.org/x/crypto/bcrypt"
+	"golang.org/x/oauth2"
 )
 
 func SettingsRouter() http.Handler {
@@ -37,6 +40,7 @@ func SettingsRouter() http.Handler {
 	r.Get("/new-key", settingsNewKeyHandler)
 	r.Get("/donations.json", settingsDonationsAjaxHandler)
 	r.Get("/remove-provider/{provider:[a-z]+}", settingsRemoveProviderHandler)
+	r.Get("/join-discord-server", joinDiscordServerHandler)
 
 	return r
 }
@@ -185,6 +189,10 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 		if _, ok := t.UserProviders[oauth.ProviderSteam]; !ok {
 			t.Banners = append(t.Banners, "<a href='/oauth/out/steam?page=settings'>Link your Steam account.</a>")
+		}
+
+		if _, ok := t.UserProviders[oauth.ProviderDiscord]; ok {
+			t.Banners = append(t.Banners, "<a href='/settings/join-discord-server'>Join the Discord server!</a>")
 		}
 	}()
 
@@ -369,6 +377,51 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 	})
 
 	session.SetFlash(r, session.SessionGood, "Settings saved")
+}
+
+func joinDiscordServerHandler(w http.ResponseWriter, r *http.Request) {
+
+	defer func() {
+		session.Save(w, r)
+		http.Redirect(w, r, "/settings", http.StatusFound)
+	}()
+
+	userID := session.GetUserIDFromSesion(r)
+	if userID == 0 {
+		session.SetFlash(r, session.SessionBad, "Can't find user session")
+		return
+	}
+
+	provider, err := mysql.GetUserProviderByUserID(oauth.ProviderDiscord, userID)
+	if err != nil {
+		log.ErrS(err)
+		session.SetFlash(r, session.SessionBad, "Can't find user session")
+		return
+	}
+
+	var token oauth2.Token
+	err = json.Unmarshal([]byte(provider.Token), &token)
+	if err != nil {
+		log.ErrS(err)
+		session.SetFlash(r, session.SessionBad, "Something went wrong (1001)")
+		return
+	}
+
+	discord, err := discordgo.New("Bot " + config.C.DiscordOAuthBotToken)
+	if err != nil {
+		log.ErrS(err)
+		session.SetFlash(r, session.SessionBad, "Something went wrong (1002)")
+		return
+	}
+
+	err = discord.GuildMemberAdd(token.AccessToken, helpers.GuildID, provider.ID, "", nil, false, false)
+	if err != nil {
+		log.ErrS(err)
+		session.SetFlash(r, session.SessionBad, "Something went wrong (1003)")
+		return
+	}
+
+	session.SetFlash(r, session.SessionGood, "You are now in the server")
 }
 
 func settingsNewKeyHandler(w http.ResponseWriter, r *http.Request) {
