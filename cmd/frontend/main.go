@@ -102,7 +102,7 @@ func main() {
 	r.Use(middleware.MiddlewareCors())
 	r.Use(middleware.MiddlewareRealIP)
 	r.Use(chiMiddleware.NewCompressor(flate.DefaultCompression, "text/html", "text/css", "text/javascript", "application/json", "application/javascript").Handler)
-	r.Use(middleware.RateLimiterBlock(time.Second, 10, true))
+	r.Use(middleware.RateLimiterWait(time.Second, 10))
 
 	// Pages
 	r.Get("/", pages.HomeHandler)

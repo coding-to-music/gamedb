@@ -1,4 +1,4 @@
-package helpers
+package ratelimit
 
 import (
 	"sync"
@@ -7,47 +7,48 @@ import (
 	"golang.org/x/time/rate"
 )
 
-type ipLimiters struct {
-	ips   map[string]*ipLimiter
-	lock  sync.Mutex
-	limit rate.Limit
-	burst int
+type limiters struct {
+	limiters map[string]*limiterInner
+	lock     sync.Mutex
+	limit    rate.Limit
+	burst    int
 }
 
-type ipLimiter struct {
+type limiterInner struct {
 	limiter *rate.Limiter
 	updated time.Time
 }
 
-func (l *ipLimiters) GetLimiter(ip string) *rate.Limiter {
+func (l *limiters) GetLimiter(key string) *rate.Limiter {
 
-	limiter, exists := l.ips[ip]
+	limiter, exists := l.limiters[key]
 
 	if !exists {
 
-		limiter = &ipLimiter{
+		limiter = &limiterInner{
 			limiter: rate.NewLimiter(l.limit, l.burst),
 		}
 
 		l.lock.Lock()
-		l.ips[ip] = limiter
+		l.limiters[key] = limiter
 		l.lock.Unlock()
 	}
 
-	// Touch IP
+	// Touch limiter
 	limiter.updated = time.Now()
 
 	return limiter.limiter
 }
 
-func (l *ipLimiters) clean() {
+func (l *limiters) clean() {
+
 	for {
 		cutoff := time.Now().Add(time.Hour * -1)
 
 		l.lock.Lock()
-		for k, v := range l.ips {
+		for k, v := range l.limiters {
 			if v.updated.Before(cutoff) {
-				delete(l.ips, k)
+				delete(l.limiters, k)
 			}
 		}
 		l.lock.Unlock()
@@ -56,17 +57,17 @@ func (l *ipLimiters) clean() {
 	}
 }
 
-func NewLimiters(per time.Duration, burst int) *ipLimiters {
+func New(per time.Duration, burst int) *limiters {
 
 	if burst < 1 {
 		burst = 1
 	}
 
-	l := &ipLimiters{
-		ips:   map[string]*ipLimiter{},
-		lock:  sync.Mutex{},
-		limit: rate.Every(per),
-		burst: burst,
+	l := &limiters{
+		limiters: map[string]*limiterInner{},
+		lock:     sync.Mutex{},
+		limit:    rate.Every(per),
+		burst:    burst,
 	}
 
 	go l.clean()

@@ -37,7 +37,7 @@ func main() {
 	r.Use(chiMiddleware.RedirectSlashes)
 	r.Use(chiMiddleware.NewCompressor(flate.DefaultCompression, "text/html", "text/css", "text/javascript", "application/json", "application/javascript").Handler)
 	r.Use(middleware.MiddlewareRealIP)
-	r.Use(middleware.RateLimiterBlock(time.Second/2, 1, false))
+	r.Use(middleware.RateLimiterBlock(time.Second/2, 1))
 
 	r.Get("/", homeHandler)
 	r.Get("/health-check", healthCheckHandler)

@@ -8,9 +8,6 @@ import (
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
-	"github.com/didip/tollbooth/v6"
-	"github.com/didip/tollbooth/v6/errors"
-	"github.com/didip/tollbooth/v6/limiter"
 	"github.com/gamedb/gamedb/pkg/chatbot"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -20,6 +17,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/queue"
+	"github.com/gamedb/gamedb/pkg/ratelimit"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	influx "github.com/influxdata/influxdb1-client"
 	"go.uber.org/zap"
@@ -69,8 +67,7 @@ func main() {
 	queue.Init(queue.ChatbotDefinitions)
 
 	// Set limiter
-	ops := limiter.ExpirableOptions{DefaultExpirationTTL: time.Second}
-	lmt := limiter.New(&ops).SetMax(1).SetBurst(5)
+	limits := ratelimit.New(time.Second, 5)
 
 	// Start discord
 	discordSession, err := discordgo.New("Bot " + config.C.DiscordChatBotToken)
@@ -148,8 +145,7 @@ func main() {
 				}
 
 				// Rate limit
-				err = tollbooth.LimitByKeys(lmt, []string{m.Author.ID})
-				if err != nil && err != (*errors.HTTPError)(nil) {
+				if !limits.GetLimiter(m.Author.ID).Allow() {
 					log.Warn("over chatbot rate limit", zap.String("author", m.Author.ID), zap.String("msg", msg))
 					return
 				}
