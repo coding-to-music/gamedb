@@ -2,16 +2,19 @@ package chatbot
 
 import (
 	"html/template"
+	"strconv"
 	"strings"
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
+	"github.com/gamedb/gamedb/cmd/frontend/helpers/oauth"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -24,7 +27,7 @@ func (c CommandPlayer) ID() string {
 }
 
 func (CommandPlayer) Regex() string {
-	return `^[.|!](player|user) (.{2,32})$`
+	return `^[.|!](player|user)\s?(.{2,32})?$`
 }
 
 func (CommandPlayer) DisableCache() bool {
@@ -66,21 +69,52 @@ func (c CommandPlayer) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC
 		"ranks":             1,
 	}
 
-	player, q, err := mongo.SearchPlayer(matches[2], projection)
-	if err == mongo.ErrNoDocuments {
+	var player mongo.Player
 
-		message.Content = "Player **" + matches[2] + "** not found, please enter a user's vanity URL"
-		return message, nil
+	if matches[2] == "" {
 
-	} else if err != nil {
-		return message, err
-	}
-
-	if q {
-		err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID})
-		err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
+		provider, err := mysql.GetUserProviderByProviderID(oauth.ProviderDiscord, msg.Author.ID)
 		if err != nil {
-			log.ErrS(err)
+			message.Content = "Please connect your Discord account first: <https://gamedb.online/oauth/out/discord?page=settings>"
+			return message, nil
+		}
+
+		provider, err = mysql.GetUserProviderByUserID(oauth.ProviderSteam, provider.UserID)
+		if err != nil {
+			message.Content = "Please connect your Steam account first: <https://gamedb.online/oauth/out/steam?page=settings>"
+			return message, nil
+		}
+
+		i, err := strconv.ParseInt(provider.ID, 10, 64)
+		if err != nil || i == 0 {
+			message.Content = "We had trouble finding your profile on Game DB"
+			return message, nil
+		}
+
+		player, err = mongo.GetPlayer(i)
+		if err != nil {
+			message.Content = "We had trouble finding your profile on Game DB"
+			return message, nil
+		}
+
+	} else {
+
+		player, q, err := mongo.SearchPlayer(matches[2], projection)
+		if err == mongo.ErrNoDocuments {
+
+			message.Content = "Player **" + matches[2] + "** not found, please enter a user's vanity URL"
+			return message, nil
+
+		} else if err != nil {
+			return message, err
+		}
+
+		if q {
+			err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID})
+			err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
+			if err != nil {
+				log.ErrS(err)
+			}
 		}
 	}
 
