@@ -5,6 +5,7 @@ package main
 import (
 	"compress/flate"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"time"
 
@@ -37,7 +38,7 @@ func main() {
 	r.Use(chiMiddleware.RedirectSlashes)
 	r.Use(chiMiddleware.NewCompressor(flate.DefaultCompression, "text/html", "text/css", "text/javascript", "application/json", "application/javascript").Handler)
 	r.Use(middleware.MiddlewareRealIP)
-	r.Use(middleware.RateLimiterBlock(time.Second/2, 1))
+	r.Use(middleware.RateLimiterBlock(time.Second/2, 1, rateLimitedHandler))
 
 	r.Get("/", homeHandler)
 	r.Get("/health-check", healthCheckHandler)
@@ -83,6 +84,12 @@ func errorHandler(w http.ResponseWriter, _ *http.Request) {
 	if err != nil {
 		log.ErrS(err)
 	}
+}
+
+func rateLimitedHandler(w http.ResponseWriter, _ *http.Request) {
+
+	s := Server{}
+	s.returnErrorResponse(w, http.StatusTooManyRequests, errors.New(http.StatusText(http.StatusTooManyRequests)))
 }
 
 func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
