@@ -637,18 +637,20 @@ func updateAppDetails(app *mongo.App) (err error) {
 
 			// Release dates
 			releaseDate := strings.ToValidUTF8(response.Data.ReleaseDate.Date, "")
+			if releaseDate != "" {
 
-			if len(releaseDate) > 255 {
-				releaseDate = releaseDate[0:255] // Column limit
-			}
+				if len(releaseDate) > 255 {
+					releaseDate = releaseDate[0:255] // Column limit
+				}
 
-			if app.ReleaseDate == "" {
 				app.ReleaseDate = releaseDate
+
+				releaseDateUnix := helpers.GetReleaseDateUnix(releaseDate)
+				if releaseDateUnix > 0 {
+					app.ReleaseDateUnix = releaseDateUnix
+				}
 			}
 
-			if app.ReleaseDateUnix == 0 {
-				app.ReleaseDateUnix = helpers.GetReleaseDateUnix(releaseDate)
-			}
 		}
 	}
 
