@@ -1,9 +1,11 @@
 package middleware
 
 import (
+	"context"
 	"net/http"
 	"time"
 
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/ratelimit"
 )
@@ -34,7 +36,10 @@ func RateLimiterWait(per time.Duration, burst int) func(http.Handler) http.Handl
 
 			err := limiters.GetLimiter(r.RemoteAddr).Wait(r.Context())
 			if err != nil {
-				log.ErrS(err)
+				err = helpers.IgnoreErrors(err, context.Canceled)
+				if err != nil {
+					log.ErrS(err)
+				}
 				http.Error(w, http.StatusText(http.StatusTooManyRequests), http.StatusTooManyRequests)
 				return
 			}
