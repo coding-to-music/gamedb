@@ -387,7 +387,10 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 	// Log the user in
 	switch page {
 	case authPageLogin, authPageSignup:
-		login(r, user)
+		err, ok := login(r, user)
+		if !ok {
+			session.SetFlash(r, session.SessionBad, err)
+		}
 	}
 
 	// Success flash
