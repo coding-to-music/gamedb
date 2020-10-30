@@ -12,6 +12,7 @@ import (
 )
 
 type StatsServer struct {
+	generated.UnimplementedStatsServiceServer
 }
 
 func (s StatsServer) List(ctx context.Context, request *generated.StatsRequest) (response *generated.StatsResponse, err error) {

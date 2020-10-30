@@ -12,6 +12,7 @@ import (
 )
 
 type GroupsServer struct {
+	generated.UnimplementedGroupsServiceServer
 }
 
 func (g GroupsServer) Stream(request *generated.GroupsRequest, response generated.GroupsService_StreamServer) (err error) {

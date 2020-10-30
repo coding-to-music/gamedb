@@ -9,6 +9,7 @@ import (
 )
 
 type GithubServer struct {
+	generated.UnimplementedGitHubServiceServer
 }
 
 func (g GithubServer) Commits(ctx context.Context, request *generated.CommitsRequest) (response *generated.CommitsResponse, err error) {

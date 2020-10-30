@@ -7,11 +7,7 @@
 package generated
 
 import (
-	context "context"
 	proto "github.com/golang/protobuf/proto"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -422,84 +418,4 @@ func file_stats_proto_init() {
 	file_stats_proto_rawDesc = nil
 	file_stats_proto_goTypes = nil
 	file_stats_proto_depIdxs = nil
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// StatsServiceClient is the client API for StatsService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type StatsServiceClient interface {
-	List(ctx context.Context, in *StatsRequest, opts ...grpc.CallOption) (*StatsResponse, error)
-}
-
-type statsServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewStatsServiceClient(cc grpc.ClientConnInterface) StatsServiceClient {
-	return &statsServiceClient{cc}
-}
-
-func (c *statsServiceClient) List(ctx context.Context, in *StatsRequest, opts ...grpc.CallOption) (*StatsResponse, error) {
-	out := new(StatsResponse)
-	err := c.cc.Invoke(ctx, "/generated.StatsService/List", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// StatsServiceServer is the server API for StatsService service.
-type StatsServiceServer interface {
-	List(context.Context, *StatsRequest) (*StatsResponse, error)
-}
-
-// UnimplementedStatsServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedStatsServiceServer struct {
-}
-
-func (*UnimplementedStatsServiceServer) List(context.Context, *StatsRequest) (*StatsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method List not implemented")
-}
-
-func RegisterStatsServiceServer(s *grpc.Server, srv StatsServiceServer) {
-	s.RegisterService(&_StatsService_serviceDesc, srv)
-}
-
-func _StatsService_List_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(StatsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(StatsServiceServer).List(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/generated.StatsService/List",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(StatsServiceServer).List(ctx, req.(*StatsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _StatsService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "generated.StatsService",
-	HandlerType: (*StatsServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "List",
-			Handler:    _StatsService_List_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "stats.proto",
 }

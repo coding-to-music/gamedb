@@ -7,6 +7,7 @@ import (
 )
 
 type PlayersServer struct {
+	generated.UnimplementedPlayersServiceServer
 }
 
 func (p PlayersServer) List(ctx context.Context, request *generated.ListPlayersRequest) (*generated.PlayersMongoResponse, error) {
