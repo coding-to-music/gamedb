@@ -638,7 +638,6 @@ func settingsRemoveProviderHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if len(providers) < 2 {
-			log.ErrS(err)
 			session.SetFlash(r, session.SessionBad, "You need at least one provider if you are not using a password")
 			return
 		}
