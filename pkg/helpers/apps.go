@@ -117,6 +117,10 @@ func GetAppStoreLink(appID int) string {
 	return "https://store.steampowered.com/app/" + strconv.Itoa(appID) + "?utm_source=" + name + "&utm_medium=link&curator_clanid=" // todo curator_clanid
 }
 
+func GetAppHeaderImage(appID int) string {
+	return "https://steamcdn-a.akamaihd.net/steam/apps/" + strconv.Itoa(appID) + "/header.jpg"
+}
+
 func GetAppType(appType string) (ret string) {
 
 	switch appType {

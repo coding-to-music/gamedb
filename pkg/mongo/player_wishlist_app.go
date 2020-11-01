@@ -57,6 +57,10 @@ func (app PlayerWishlistApp) GetIcon() (ret string) {
 	return helpers.GetAppIcon(app.AppID, app.AppIcon)
 }
 
+func (app PlayerWishlistApp) GetHeaderImage() string {
+	return helpers.GetAppHeaderImage(app.AppID)
+}
+
 func (app PlayerWishlistApp) GetReleaseState() (ret string) {
 	return helpers.GetAppReleaseState(app.AppReleaseState)
 }

@@ -83,6 +83,10 @@ func (app PlayerApp) GetTimeNice() string {
 	return helpers.GetTimeShort(app.AppTime, 2)
 }
 
+func (app PlayerApp) GetHeaderImage() string {
+	return helpers.GetAppHeaderImage(app.AppID)
+}
+
 func (app PlayerApp) GetPriceFormatted(code steamapi.ProductCC) string {
 
 	val, ok := app.AppPrices[string(code)]
@@ -180,11 +184,11 @@ func GetPlayerAppsByApp(offset int64, filter bson.D) (apps []PlayerApp, err erro
 	return getPlayerApps(offset, 100, filter, bson.D{{"app_time", -1}}, bson.M{"_id": 0, "player_id": 1, "app_time": 1}, nil)
 }
 
-func GetPlayerAppsByPlayer(playerID int64, offset int64, limit int64, sort bson.D) (apps []PlayerApp, err error) {
+func GetPlayerAppsByPlayer(playerID int64, offset int64, limit int64, sort bson.D, projection bson.M) (apps []PlayerApp, err error) {
 
 	var filter = bson.D{{"player_id", playerID}}
 
-	return getPlayerApps(offset, limit, filter, sort, bson.M{"app_name": 1, "app_time": 1}, nil)
+	return getPlayerApps(offset, limit, filter, sort, projection, nil)
 }
 
 func GetPlayerAppByKey(playerID int64, appID int) (playerApp PlayerApp, err error) {

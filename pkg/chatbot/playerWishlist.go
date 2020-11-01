@@ -93,7 +93,7 @@ func (c CommandPlayerWishlist) Output(msg *discordgo.MessageCreate, _ steamapi.P
 
 			if k == 0 {
 
-				avatar := app.GetIcon()
+				avatar := app.GetHeaderImage()
 				if strings.HasPrefix(avatar, "/") {
 					avatar = "https://gamedb.online" + avatar
 				}

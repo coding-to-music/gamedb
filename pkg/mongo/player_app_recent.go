@@ -38,6 +38,10 @@ func (app PlayerRecentApp) getKey() (ret interface{}) {
 	return strconv.FormatInt(app.PlayerID, 10) + "-" + strconv.Itoa(app.AppID)
 }
 
+func (app PlayerRecentApp) GetHeaderImage() string {
+	return helpers.GetAppHeaderImage(app.AppID)
+}
+
 func (app PlayerRecentApp) GetIcon() string {
 	return helpers.GetAppIcon(app.AppID, app.Icon)
 }

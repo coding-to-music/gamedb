@@ -69,7 +69,7 @@ func (c CommandPlayerLibrary) Output(msg *discordgo.MessageCreate, _ steamapi.Pr
 		}
 	}
 
-	apps, err := mongo.GetPlayerAppsByPlayer(player.ID, 0, 10, bson.D{{"app_time", -1}})
+	apps, err := mongo.GetPlayerAppsByPlayer(player.ID, 0, 10, bson.D{{"app_time", -1}}, bson.M{"app_name": 1, "app_time": 1, "app_id": 1})
 	if err != nil {
 		return message, err
 	}
@@ -92,7 +92,7 @@ func (c CommandPlayerLibrary) Output(msg *discordgo.MessageCreate, _ steamapi.Pr
 
 			if k == 0 {
 
-				avatar := app.GetIcon()
+				avatar := app.GetHeaderImage()
 				if strings.HasPrefix(avatar, "/") {
 					avatar = "https://gamedb.online" + avatar
 				}

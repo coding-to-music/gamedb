@@ -92,7 +92,7 @@ func (c CommandPlayerRecent) Output(msg *discordgo.MessageCreate, _ steamapi.Pro
 
 			if k == 0 {
 
-				avatar := app.GetIcon()
+				avatar := app.GetHeaderImage()
 				if strings.HasPrefix(avatar, "/") {
 					avatar = "https://gamedb.online" + avatar
 				}

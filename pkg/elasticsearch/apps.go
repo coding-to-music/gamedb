@@ -63,7 +63,7 @@ func (app App) GetName() string {
 }
 
 func (app App) GetHeaderImage() string {
-	return "https://steamcdn-a.akamaihd.net/steam/apps/" + strconv.Itoa(app.ID) + "/header.jpg"
+	return helpers.GetAppHeaderImage(app.ID)
 }
 
 func (app App) GetMarkedName() string {
