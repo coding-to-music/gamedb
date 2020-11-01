@@ -88,8 +88,9 @@ var (
 	MemcacheStatsForSelect = func(t string) Item { return Item{Key: "stats-select-" + t, Expiration: 60 * 60 * 24} }
 
 	// User
-	MemcacheUserEvents   = func(userID int) Item { return Item{Key: "user-event-counts" + strconv.Itoa(userID), Expiration: 0} }
-	MemcacheUserByAPIKey = func(key string) Item { return Item{Key: "user-level-by-key-" + key, Expiration: 10 * 60} }
+	MemcacheUserEvents    = func(userID int) Item { return Item{Key: "user-event-counts" + strconv.Itoa(userID), Expiration: 0} }
+	MemcacheUserByAPIKey  = func(key string) Item { return Item{Key: "user-level-by-key-" + key, Expiration: 10 * 60} }
+	MemcacheUserInDiscord = func(discordID string) Item { return Item{Key: "discord-id-" + discordID, Expiration: 60 * 60 * 24} }
 
 	// Player
 	MemcachePlayer                 = func(playerID int64) Item { return Item{Key: "player-" + strconv.FormatInt(playerID, 10), Expiration: 0} }

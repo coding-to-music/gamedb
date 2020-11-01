@@ -176,6 +176,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
+		// Get providers user has
 		providers, err := mysql.GetUserProviders(t.User.ID)
 		if err != nil {
 			log.ErrS(err)
@@ -187,12 +188,39 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 			t.UserProviders[v.Provider] = v
 		}
 
+		// Check if user has not linked steam yet
 		if _, ok := t.UserProviders[oauth.ProviderSteam]; !ok {
 			t.Banners = append(t.Banners, "<a href='/oauth/out/steam?page=settings'>Link your Steam account.</a>")
 		}
 
-		if _, ok := t.UserProviders[oauth.ProviderDiscord]; ok {
-			t.Banners = append(t.Banners, "<a href='/settings/join-discord-server'>Join the Discord server!</a>")
+		// Check if user is in discord server
+		if val, ok := t.UserProviders[oauth.ProviderDiscord]; ok {
+
+			var inGuild bool
+			var item = memcache.MemcacheUserInDiscord(val.ID)
+
+			err = memcache.GetSetInterface(item.Key, item.Expiration, &inGuild, func() (interface{}, error) {
+
+				discord, err := discordgo.New("Bot " + config.C.DiscordOAuthBotToken)
+				if err != nil {
+					return false, err
+				}
+
+				_, err = discord.GuildMember(helpers.GuildID, val.ID)
+				if val, ok := err.(*discordgo.RESTError); ok && val.Response.StatusCode == 404 {
+					return false, nil // 404, not in guild
+				}
+
+				if err != nil {
+					return false, err // unknown error
+				} else {
+					return true, nil // no error, in guild
+				}
+			})
+
+			if !inGuild {
+				t.Banners = append(t.Banners, "<a href='/settings/join-discord-server'>Join the Discord server!</a>")
+			}
 		}
 	}()
 
