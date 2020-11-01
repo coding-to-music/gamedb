@@ -52,7 +52,7 @@ func playerGamesHandler(message *rabbit.Message) {
 	}
 
 	//
-	update := bson.D{}
+	updatePlayer := bson.D{}
 
 	// Grab games from Steam
 	resp, err := steam.GetSteam().GetOwnedGames(payload.PlayerID)
@@ -64,7 +64,7 @@ func playerGamesHandler(message *rabbit.Message) {
 	}
 
 	// Save count
-	update = append(update, bson.E{Key: "games_count", Value: len(resp.Games)})
+	updatePlayer = append(updatePlayer, bson.E{Key: "games_count", Value: len(resp.Games)})
 
 	// Start creating PlayerApp's
 	var playerApps = map[int]*mongo.PlayerApp{}
@@ -97,14 +97,14 @@ func playerGamesHandler(message *rabbit.Message) {
 		appPriceHour[v.AppID] = map[string]float64{}
 	}
 
-	update = append(update,
+	updatePlayer = append(updatePlayer,
 		bson.E{Key: "play_time", Value: playtime},
 		bson.E{Key: "play_time_windows", Value: playtimeWindows},
 		bson.E{Key: "play_time_mac", Value: playtimeMac},
 		bson.E{Key: "play_time_linux", Value: playtimeLinux},
 	)
 
-	// Getting missing price info from MySQL
+	// Getting missing price info from Mongo
 	gameRows, err := mongo.GetAppsByID(appIDs, bson.M{"_id": 1, "prices": 1, "type": 1})
 	if err != nil {
 		log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
@@ -143,7 +143,7 @@ func playerGamesHandler(message *rabbit.Message) {
 		playerApps[gameRow.ID].AppPriceHour = appPriceHour[gameRow.ID]
 	}
 
-	update = append(update, bson.E{Key: "games_by_type", Value: gamesByType})
+	updatePlayer = append(updatePlayer, bson.E{Key: "games_by_type", Value: gamesByType})
 
 	// Save playerApps to Mongo
 	err = mongo.UpdatePlayerApps(playerApps)
@@ -160,7 +160,7 @@ func playerGamesHandler(message *rabbit.Message) {
 			return playerApps[appIDs[i]].AppTime > playerApps[appIDs[j]].AppTime
 		})
 
-		update = append(update, bson.E{Key: "background_app_id", Value: appIDs[0]})
+		updatePlayer = append(updatePlayer, bson.E{Key: "background_app_id", Value: appIDs[0]})
 	}
 
 	// Save stats to player
@@ -173,7 +173,7 @@ func playerGamesHandler(message *rabbit.Message) {
 		}
 	}
 
-	update = append(update, bson.E{Key: "game_stats", Value: gameStats})
+	updatePlayer = append(updatePlayer, bson.E{Key: "game_stats", Value: gameStats})
 
 	if !payload.SkipAchievements || payload.ForceAchievementsRefresh {
 		if payload.PlayerUpdated.Before(time.Now().Add(time.Hour * 24 * 13 * -1)) { // Just under 2 weeks
@@ -199,7 +199,7 @@ func playerGamesHandler(message *rabbit.Message) {
 	}
 
 	// Update player row
-	_, err = mongo.UpdateOne(mongo.CollectionPlayers, bson.D{{"_id", payload.PlayerID}}, update)
+	_, err = mongo.UpdateOne(mongo.CollectionPlayers, bson.D{{"_id", payload.PlayerID}}, updatePlayer)
 	if err != nil {
 		log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 		sendToRetryQueue(message)
