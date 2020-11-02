@@ -305,8 +305,8 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		update := map[string]interface{}{
-			"donated": pwr.Data.Attributes.LifetimeSupportCents,
-			"level":   level,
+			"donated_patreon": pwr.Data.Attributes.LifetimeSupportCents,
+			"level":           level,
 		}
 
 		db = db.Model(&user).Updates(update)
