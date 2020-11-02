@@ -7,11 +7,11 @@ if ($('#admin-websockets-page').length > 0) {
 
 if ($('#admin-tasks-page').length > 0) {
 
-    $('#actions tbody tr').on('click', function () {
+    $('#actions tbody td:not(.dataTables_empty)').on('click', function () {
         if (confirm('Are you sure?')) {
             $.ajax({
                 type: 'get',
-                url: $(this).attr('data-action'),
+                url: $(this).parent().attr('data-action'),
                 // success: function (data, textStatus, jqXHR) {
                 //     toast(true, 'Triggered');
                 // },
