@@ -25,6 +25,7 @@ type PlayerApp struct {
 	AppTime       int                `bson:"app_time"`
 	AppPrices     map[string]int     `bson:"app_prices"`
 	AppPriceHour  map[string]float64 `bson:"app_prices_hour"`
+	GameID        int                `bson:"game_id"`
 
 	AppAchievementsTotal   int     `bson:"app_achievements_total"`
 	AppAchievementsHave    int     `bson:"app_achievements_have"`
@@ -63,6 +64,7 @@ func (app PlayerApp) BSONUpdate() bson.D {
 		{"app_time", app.AppTime},
 		{"app_prices", prices},
 		{"app_prices_hour", pricesHour},
+		{"game_id", app.GameID},
 	}
 }
 

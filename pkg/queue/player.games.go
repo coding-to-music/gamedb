@@ -105,7 +105,7 @@ func playerGamesHandler(message *rabbit.Message) {
 	)
 
 	// Getting missing price info from Mongo
-	gameRows, err := mongo.GetAppsByID(appIDs, bson.M{"_id": 1, "prices": 1, "type": 1})
+	gameRows, err := mongo.GetAppsByID(appIDs, bson.M{"_id": 1, "prices": 1, "type": 1, "game_id": 1})
 	if err != nil {
 		log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 		sendToRetryQueue(message)
@@ -115,6 +115,8 @@ func playerGamesHandler(message *rabbit.Message) {
 	gamesByType := map[string]int{}
 
 	for _, gameRow := range gameRows {
+
+		playerApps[gameRow.ID].GameID = gameRow.ID
 
 		// Set games by type
 		if _, ok := gamesByType[gameRow.GetType()]; ok {
