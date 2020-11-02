@@ -707,7 +707,7 @@ func GetApps(offset int64, limit int64, sort bson.D, filter bson.D, projection b
 		return apps, err
 	}
 
-	defer close(cur, ctx)
+	defer closeCursor(cur, ctx)
 
 	for cur.Next(ctx) {
 
@@ -820,7 +820,7 @@ func GetAppsGroupedByType(code steamapi.ProductCC) (counts []AppTypeCount, err e
 			return counts, err
 		}
 
-		defer close(cur, ctx)
+		defer closeCursor(cur, ctx)
 
 		var unknown int64
 		var counts []AppTypeCount
@@ -885,7 +885,7 @@ func GetAppsGroupedByReleaseDate() (counts []AppReleaseDateCount, err error) {
 			return counts, err
 		}
 
-		defer close(cur, ctx)
+		defer closeCursor(cur, ctx)
 
 		var counts []AppReleaseDateCount
 		for cur.Next(ctx) {
@@ -935,7 +935,7 @@ func GetAppsGroupedByReviewScore() (counts []AppReviewScoreCount, err error) {
 			return counts, err
 		}
 
-		defer close(cur, ctx)
+		defer closeCursor(cur, ctx)
 
 		var counts []AppReviewScoreCount
 		for cur.Next(ctx) {

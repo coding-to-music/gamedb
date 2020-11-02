@@ -65,7 +65,7 @@ func GetChatBotCommandsRecent() (commands []ChatBotCommand, err error) {
 		return commands, err
 	}
 
-	defer close(cur, ctx)
+	defer closeCursor(cur, ctx)
 
 	for cur.Next(ctx) {
 

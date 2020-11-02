@@ -156,7 +156,7 @@ func GetAchievmentCounts(appID int) (counts []Count, err error) {
 			return counts, err
 		}
 
-		defer close(cur, ctx)
+		defer closeCursor(cur, ctx)
 
 		var counts []Count
 		for cur.Next(ctx) {
@@ -239,7 +239,7 @@ func getPlayerApps(offset int64, limit int64, filter bson.D, sort bson.D, projec
 		return apps, err
 	}
 
-	defer close(cur, ctx)
+	defer closeCursor(cur, ctx)
 
 	for cur.Next(ctx) {
 
@@ -302,7 +302,7 @@ func GetAppPlayersByCountry(appID int) (items []PlayerAppsByCountry, err error) 
 		return items, err
 	}
 
-	defer close(cur, ctx)
+	defer closeCursor(cur, ctx)
 
 	for cur.Next(ctx) {
 

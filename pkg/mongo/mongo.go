@@ -7,7 +7,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
-	"github.com/gamedb/gamedb/pkg/mongo/logging"
+	"github.com/gamedb/gamedb/pkg/mongo/helpers/logging"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -112,7 +112,7 @@ func getMongo() (client *mongo.Client, ctx context.Context, err error) {
 	return mongoClient, mongoCtx, err
 }
 
-func close(cur *mongo.Cursor, ctx context.Context) {
+func closeCursor(cur *mongo.Cursor, ctx context.Context) {
 	err := cur.Close(ctx)
 	if err != nil {
 		log.ErrS(err)

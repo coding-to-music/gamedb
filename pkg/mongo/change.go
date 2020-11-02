@@ -124,7 +124,7 @@ func GetChanges(offset int64) (changes []Change, err error) {
 		return changes, err
 	}
 
-	defer close(cur, ctx)
+	defer closeCursor(cur, ctx)
 
 	for cur.Next(ctx) {
 

@@ -6,7 +6,6 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type BundlePrice struct {
@@ -39,12 +38,7 @@ func GetBundlePrices(bundleID int) (prices []BundlePrice, err error) {
 		return prices, err
 	}
 
-	defer func(cur *mongo.Cursor) {
-		err = cur.Close(ctx)
-		if err != nil {
-			log.ErrS(err)
-		}
-	}(cur)
+	defer closeCursor(cur, ctx)
 
 	for cur.Next(ctx) {
 

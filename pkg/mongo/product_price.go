@@ -161,7 +161,7 @@ func getProductPrices(filter bson.D, offset int64, limit int64, sort bson.D) (pr
 		return prices, err
 	}
 
-	defer close(cur, ctx)
+	defer closeCursor(cur, ctx)
 
 	for cur.Next(ctx) {
 

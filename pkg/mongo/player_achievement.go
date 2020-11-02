@@ -161,7 +161,7 @@ func getPlayerAchievements(offset int64, limit int64, filter bson.D, sort bson.D
 		return achievements, err
 	}
 
-	defer close(cur, ctx)
+	defer closeCursor(cur, ctx)
 
 	for cur.Next(ctx) {
 
@@ -211,7 +211,7 @@ func GetPlayerAchievementDays(playerID int64) (counts []DateCount, err error) {
 			return counts, err
 		}
 
-		defer close(cur, ctx)
+		defer closeCursor(cur, ctx)
 
 		var counts []DateCount
 		for cur.Next(ctx) {

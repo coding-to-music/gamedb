@@ -380,7 +380,7 @@ func GetPackages(offset int64, limit int64, sort bson.D, filter bson.D, projecti
 		return packages, err
 	}
 
-	defer close(cur, ctx)
+	defer closeCursor(cur, ctx)
 
 	for cur.Next(ctx) {
 

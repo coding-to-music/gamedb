@@ -196,7 +196,7 @@ func getPlayerBadges(offset int64, limit int64, filter bson.D, sort bson.D, proj
 		return badges, err
 	}
 
-	defer close(cur, ctx)
+	defer closeCursor(cur, ctx)
 
 	for cur.Next(ctx) {
 

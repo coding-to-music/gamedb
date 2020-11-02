@@ -121,7 +121,7 @@ func GetBadgeSummaries() (badges []PlayerBadgeSummary, err error) {
 		return badges, err
 	}
 
-	defer close(cur, ctx)
+	defer closeCursor(cur, ctx)
 
 	for cur.Next(ctx) {
 

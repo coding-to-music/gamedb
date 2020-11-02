@@ -205,7 +205,7 @@ func getGroups(offset int64, limit int64, sort bson.D, filter bson.D, projection
 		return groups, err
 	}
 
-	defer close(cur, ctx)
+	defer closeCursor(cur, ctx)
 
 	for cur.Next(ctx) {
 

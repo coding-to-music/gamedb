@@ -155,7 +155,7 @@ func GetAppItems(offset int64, limit int64, filter bson.D, projection bson.M) (i
 		return items, err
 	}
 
-	defer close(cur, ctx)
+	defer closeCursor(cur, ctx)
 
 	for cur.Next(ctx) {
 

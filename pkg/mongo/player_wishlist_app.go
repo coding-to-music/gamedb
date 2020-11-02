@@ -139,12 +139,7 @@ func getPlayerWishlistApps(offset int64, limit int64, filter bson.D, sort bson.D
 		return apps, err
 	}
 
-	defer func(cur *mongo.Cursor) {
-		err = cur.Close(ctx)
-		if err != nil {
-			log.ErrS(err)
-		}
-	}(cur)
+	defer closeCursor(cur, ctx)
 
 	for cur.Next(ctx) {
 

@@ -679,7 +679,7 @@ func GetPlayers(offset int64, limit int64, sort bson.D, filter bson.D, projectio
 		return players, err
 	}
 
-	defer close(cur, ctx)
+	defer closeCursor(cur, ctx)
 
 	for cur.Next(ctx) {
 
@@ -716,7 +716,7 @@ func GetPlayerLevels() (counts []Count, err error) {
 			return counts, err
 		}
 
-		defer close(cur, ctx)
+		defer closeCursor(cur, ctx)
 
 		var counts []Count
 		for cur.Next(ctx) {
@@ -761,7 +761,7 @@ func GetPlayerUpdateDays() (counts []DateCount, err error) {
 			return counts, err
 		}
 
-		defer close(cur, ctx)
+		defer closeCursor(cur, ctx)
 
 		var counts []DateCount
 		for cur.Next(ctx) {
@@ -805,7 +805,7 @@ func GetPlayerLevelsRounded() (counts []Count, err error) {
 			return counts, err
 		}
 
-		defer close(cur, ctx)
+		defer closeCursor(cur, ctx)
 
 		var maxCount int
 		var countsMap = map[int]Count{}

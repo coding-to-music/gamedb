@@ -100,7 +100,7 @@ func GetEvents(filter bson.D, offset int64) (events []Event, err error) {
 		return events, err
 	}
 
-	defer close(cur, ctx)
+	defer closeCursor(cur, ctx)
 
 	for cur.Next(ctx) {
 
@@ -137,7 +137,7 @@ func GetEventCounts(userID int) (counts []StringCount, err error) {
 			return counts, err
 		}
 
-		defer close(cur, ctx)
+		defer closeCursor(cur, ctx)
 
 		for cur.Next(ctx) {
 

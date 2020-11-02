@@ -39,7 +39,7 @@ func GetGuilds(guildIDs []string) (guilds map[string]DiscordGuild, err error) {
 		return guilds, err
 	}
 
-	defer close(cur, ctx)
+	defer closeCursor(cur, ctx)
 
 	guilds = map[string]DiscordGuild{}
 	for cur.Next(ctx) {
