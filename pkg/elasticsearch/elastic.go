@@ -151,7 +151,6 @@ func rebuildIndex(index string, mapping map[string]interface{}) {
 	resp, err := client.DeleteIndex(index).Do(ctx)
 	if err != nil {
 		log.InfoS(err)
-		return
 	} else if !resp.Acknowledged {
 		log.Info("delete not acknowledged")
 		return
