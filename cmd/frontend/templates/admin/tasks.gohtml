@@ -28,13 +28,13 @@
                                 {{ $realLast:= (index $.Configs (print "task-" .Task.ID)).Value }}
 
                                 <tr data-id="{{ .Task.ID }}" class="cursor-pointer {{ if .Bad }}table-danger{{ end }}" data-action="/admin/tasks?run={{ .Task.ID }}">
-                                    <td>{{ .Task.Name }}</td>
-                                    <td class="prev" data-sort="{{ $realLast }}">
+                                    <td nowrap="nowrap">{{ .Task.Name }}</td>
+                                    <td nowrap="nowrap" class="prev" data-sort="{{ $realLast }}">
                                         <span data-livestamp="{{ $realLast }}"></span>
                                     </td>
                                     {{ if gt .Next.Unix 0 }}
-                                        <td data-sort="{{ .Prev }}"><span data-livestamp="{{ .Prev.Unix }}"></span></td>
-                                        <td class="next" data-sort="{{ .Next.Unix }}"><span data-livestamp="{{ .Next.Unix }}"></span></td>
+                                        <td nowrap="nowrap" data-sort="{{ .Prev }}"><span data-livestamp="{{ .Prev.Unix }}"></span></td>
+                                        <td nowrap="nowrap" class="next" data-sort="{{ .Next.Unix }}"><span data-livestamp="{{ .Next.Unix }}"></span></td>
                                     {{ else }}
                                         <td data-sort="10000000000"></td>
                                         <td data-sort="10000000000"></td>
