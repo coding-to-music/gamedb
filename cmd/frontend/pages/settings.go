@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/badoux/checkmail"
@@ -432,6 +433,11 @@ func joinDiscordServerHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.ErrS(err)
 		session.SetFlash(r, session.SessionBad, "Something went wrong (1001)")
+		return
+	}
+
+	if token.Expiry.Before(time.Now().Add(time.Minute)) {
+		http.Redirect(w, r, config.C.DiscordInviteURL, http.StatusFound)
 		return
 	}
 
