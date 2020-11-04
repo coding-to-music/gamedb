@@ -1,0 +1,176 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "groups.proto",
+    "version": "version not set"
+  },
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {},
+  "definitions": {
+    "generatedGroupResponse": {
+      "type": "object",
+      "properties": {
+        "ID": {
+          "type": "string"
+        },
+        "CreatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "UpdatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "Name": {
+          "type": "string"
+        },
+        "Abbr": {
+          "type": "string"
+        },
+        "URL": {
+          "type": "string"
+        },
+        "AppID": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "Headline": {
+          "type": "string"
+        },
+        "Summary": {
+          "type": "string"
+        },
+        "Icon": {
+          "type": "string"
+        },
+        "Trending": {
+          "type": "number",
+          "format": "float"
+        },
+        "Members": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "MembersInChat": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "MembersInGame": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "MembersOnline": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "Error": {
+          "type": "string"
+        },
+        "Type": {
+          "type": "string"
+        },
+        "Primaries": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "generatedGroupsResponse": {
+      "type": "object",
+      "properties": {
+        "pagination": {
+          "$ref": "#/definitions/generatedPaginationResponse"
+        },
+        "groups": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/generatedGroupResponse"
+          }
+        }
+      }
+    },
+    "generatedPaginationRequest": {
+      "type": "object",
+      "properties": {
+        "offset": {
+          "type": "string",
+          "format": "int64"
+        },
+        "limit": {
+          "type": "string",
+          "format": "int64"
+        },
+        "sortField": {
+          "type": "string"
+        },
+        "sortOrder": {
+          "type": "string"
+        }
+      }
+    },
+    "generatedPaginationResponse": {
+      "type": "object",
+      "properties": {
+        "offset": {
+          "type": "string",
+          "format": "int64"
+        },
+        "limit": {
+          "type": "string",
+          "format": "int64"
+        },
+        "total": {
+          "type": "string",
+          "format": "int64"
+        },
+        "totalFiltered": {
+          "type": "string",
+          "format": "int64"
+        },
+        "pagesTotal": {
+          "type": "string",
+          "format": "int64"
+        },
+        "pagesCurrent": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "typeUrl": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}

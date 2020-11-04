@@ -1,0 +1,407 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "apps.proto",
+    "version": "version not set"
+  },
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {},
+  "definitions": {
+    "generatedAppElasticResponse": {
+      "type": "object",
+      "properties": {
+        "achievementsCounts": {
+          "type": "string",
+          "format": "int64"
+        },
+        "achievementsAvg": {
+          "type": "number",
+          "format": "float"
+        },
+        "achievementIcons": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "aliases": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "categories": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "developers": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "followers": {
+          "type": "string",
+          "format": "int64"
+        },
+        "genres": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "icon": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "type": "string"
+        },
+        "nameMarked": {
+          "type": "string"
+        },
+        "platforms": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "players": {
+          "type": "string",
+          "format": "int64"
+        },
+        "prices": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/generatedPrice"
+          }
+        },
+        "publishers": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "releaseDate": {
+          "type": "string",
+          "format": "int64"
+        },
+        "score": {
+          "type": "number",
+          "format": "float"
+        },
+        "searchScore": {
+          "type": "number",
+          "format": "float"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "type": {
+          "type": "string"
+        },
+        "trend": {
+          "type": "number",
+          "format": "float"
+        },
+        "wishlistAvg": {
+          "type": "number",
+          "format": "float"
+        },
+        "wishlistCount": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "generatedAppMongoResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "genres": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "categories": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "publishers": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "developers": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "reviewsScore": {
+          "type": "number",
+          "format": "float"
+        },
+        "reviewsPositive": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "reviewsNegative": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "releaseDateUnix": {
+          "type": "string",
+          "format": "int64"
+        },
+        "releaseDate": {
+          "type": "string"
+        },
+        "prices": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/generatedPrice"
+          }
+        },
+        "metaScore": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "playersMax": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "playersWeekMax": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "playersWeekAvg": {
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "generatedAppsElasticResponse": {
+      "type": "object",
+      "properties": {
+        "pagination": {
+          "$ref": "#/definitions/generatedPaginationResponse"
+        },
+        "apps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/generatedAppElasticResponse"
+          }
+        }
+      }
+    },
+    "generatedAppsMongoResponse": {
+      "type": "object",
+      "properties": {
+        "pagination": {
+          "$ref": "#/definitions/generatedPaginationResponse"
+        },
+        "apps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/generatedAppMongoResponse"
+          }
+        }
+      }
+    },
+    "generatedPaginationRequest": {
+      "type": "object",
+      "properties": {
+        "offset": {
+          "type": "string",
+          "format": "int64"
+        },
+        "limit": {
+          "type": "string",
+          "format": "int64"
+        },
+        "sortField": {
+          "type": "string"
+        },
+        "sortOrder": {
+          "type": "string"
+        }
+      }
+    },
+    "generatedPaginationResponse": {
+      "type": "object",
+      "properties": {
+        "offset": {
+          "type": "string",
+          "format": "int64"
+        },
+        "limit": {
+          "type": "string",
+          "format": "int64"
+        },
+        "total": {
+          "type": "string",
+          "format": "int64"
+        },
+        "totalFiltered": {
+          "type": "string",
+          "format": "int64"
+        },
+        "pagesTotal": {
+          "type": "string",
+          "format": "int64"
+        },
+        "pagesCurrent": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "generatedPrice": {
+      "type": "object",
+      "properties": {
+        "exists": {
+          "type": "boolean"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "initial": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "final": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "discountPercent": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "individual": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "free": {
+          "type": "boolean"
+        }
+      }
+    },
+    "generatedProductCode": {
+      "type": "string",
+      "enum": [
+        "AE",
+        "AR",
+        "AU",
+        "AZ",
+        "BR",
+        "CA",
+        "CH",
+        "CL",
+        "CN",
+        "CO",
+        "CR",
+        "EU",
+        "HK",
+        "ID",
+        "IL",
+        "IN",
+        "JP",
+        "KR",
+        "KW",
+        "KZ",
+        "MX",
+        "MY",
+        "NO",
+        "NZ",
+        "PE",
+        "PH",
+        "PK",
+        "PL",
+        "QA",
+        "RU",
+        "SA",
+        "SG",
+        "TH",
+        "TR",
+        "TW",
+        "UA",
+        "UK",
+        "US",
+        "UY",
+        "VN",
+        "ZA"
+      ],
+      "default": "AE"
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "typeUrl": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}

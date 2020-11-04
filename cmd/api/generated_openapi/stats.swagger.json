@@ -1,0 +1,152 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "stats.proto",
+    "version": "version not set"
+  },
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {},
+  "definitions": {
+    "generatedPaginationRequest": {
+      "type": "object",
+      "properties": {
+        "offset": {
+          "type": "string",
+          "format": "int64"
+        },
+        "limit": {
+          "type": "string",
+          "format": "int64"
+        },
+        "sortField": {
+          "type": "string"
+        },
+        "sortOrder": {
+          "type": "string"
+        }
+      }
+    },
+    "generatedPaginationResponse": {
+      "type": "object",
+      "properties": {
+        "offset": {
+          "type": "string",
+          "format": "int64"
+        },
+        "limit": {
+          "type": "string",
+          "format": "int64"
+        },
+        "total": {
+          "type": "string",
+          "format": "int64"
+        },
+        "totalFiltered": {
+          "type": "string",
+          "format": "int64"
+        },
+        "pagesTotal": {
+          "type": "string",
+          "format": "int64"
+        },
+        "pagesCurrent": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "generatedStatResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "type": "string"
+        },
+        "apps": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "appsPercent": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "meanPrice": {
+          "type": "number",
+          "format": "float"
+        },
+        "meanScore": {
+          "type": "number",
+          "format": "float"
+        },
+        "meanPlayers": {
+          "type": "number",
+          "format": "float"
+        },
+        "medianPrice": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "medianScore": {
+          "type": "number",
+          "format": "float"
+        },
+        "medianPlayers": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "generatedStatsResponse": {
+      "type": "object",
+      "properties": {
+        "pagination": {
+          "$ref": "#/definitions/generatedPaginationResponse"
+        },
+        "stats": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/generatedStatResponse"
+          }
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "typeUrl": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}
