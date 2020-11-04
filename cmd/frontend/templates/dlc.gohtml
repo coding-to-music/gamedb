@@ -1,0 +1,32 @@
+{{define "dlc"}}
+    {{ template "header" . }}
+
+    <div class="container" id="dlc-page">
+
+        <div class="jumbotron">
+
+            <h1><i class="fas fa-gamepad"></i> DLC</h1>
+
+        </div>
+
+        {{ template "flashes" . }}
+
+        <div class="card">
+            <div class="card-body">
+
+                <table>
+                    {{ range .PlayerApps }}
+                        <tr>
+                            <td>{{ .AppName }}</td>
+                            <td>{{ .AppDLCCount }}</td>
+                        </tr>
+                    {{ end }}
+                </table>
+
+            </div>
+        </div>
+
+    </div>
+
+    {{ template "footer" . }}
+{{end}}

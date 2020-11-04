@@ -25,6 +25,7 @@ func GamesRouter() http.Handler {
 	r.Get("/random", appsRandomHandler)
 	r.Mount("/coop", coopRouter())
 	r.Mount("/compare", gamesCompareRouter())
+	r.Mount("/dlc", appsDLCRouter())
 	r.Mount("/upcoming", upcomingRouter())
 	r.Mount("/achievements", appsAchievementsRouter())
 	r.Mount("/new-releases", newReleasesRouter())

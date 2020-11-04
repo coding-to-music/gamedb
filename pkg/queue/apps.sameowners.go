@@ -51,7 +51,7 @@ func appSameownersHandler(message *rabbit.Message) {
 		playerIDs = append(playerIDs, v.PlayerID)
 	}
 
-	apps, err := mongo.GetPlayersApps(playerIDs, bson.M{"_id": -1, "app_id": 1})
+	apps, err := mongo.GetPlayerAppsByPlayers(playerIDs, bson.M{"_id": -1, "app_id": 1})
 	if err != nil {
 		log.ErrS(err, payload.AppID)
 		sendToFailQueue(message)

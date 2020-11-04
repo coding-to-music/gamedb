@@ -105,7 +105,7 @@ func playerGamesHandler(message *rabbit.Message) {
 	)
 
 	// Getting missing price info from Mongo
-	gameRows, err := mongo.GetAppsByID(appIDs, bson.M{"_id": 1, "prices": 1, "type": 1, "game_id": 1})
+	gameRows, err := mongo.GetAppsByID(appIDs, bson.M{"_id": 1, "prices": 1, "type": 1, "game_id": 1, "dlc_count": 1})
 	if err != nil {
 		log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 		sendToRetryQueue(message)

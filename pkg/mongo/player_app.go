@@ -183,14 +183,16 @@ func GetAchievmentCounts(appID int) (counts []Count, err error) {
 	return counts, err
 }
 
-func GetPlayerAppsByApp(offset int64, filter bson.D) (apps []PlayerApp, err error) {
+func GetPlayerAppsByApp(appID int, offset int64, filter bson.D) (apps []PlayerApp, err error) {
+
+	filter = append(bson.D{{"app_id", appID}}, filter...)
 
 	return getPlayerApps(offset, 100, filter, bson.D{{"app_time", -1}}, bson.M{"_id": 0, "player_id": 1, "app_time": 1}, nil)
 }
 
-func GetPlayerAppsByPlayer(playerID int64, offset int64, limit int64, sort bson.D, projection bson.M) (apps []PlayerApp, err error) {
+func GetPlayerAppsByPlayer(playerID int64, offset int64, limit int64, sort bson.D, projection bson.M, filter bson.D) (apps []PlayerApp, err error) {
 
-	var filter = bson.D{{"player_id", playerID}}
+	filter = append(bson.D{{"player_id", playerID}}, filter...)
 
 	return getPlayerApps(offset, limit, filter, sort, projection, nil)
 }
@@ -212,7 +214,7 @@ func GetPlayerApps(offset int64, limit int64, filter bson.D, sort bson.D) (apps 
 	return getPlayerApps(offset, limit, filter, sort, nil, ops)
 }
 
-func GetPlayersApps(playerIDs []int64, projection bson.M) (apps []PlayerApp, err error) {
+func GetPlayerAppsByPlayers(playerIDs []int64, projection bson.M) (apps []PlayerApp, err error) {
 
 	if len(playerIDs) < 1 {
 		return apps, err
