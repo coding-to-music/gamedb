@@ -47,12 +47,17 @@ const defaultChartOptions = {
     ],
 };
 
-function plotline(ts, text) {
+function plotline(val, text) {
 
-    let plotlines = [];
-    if (ts !== '') { // Allow 0
-        plotlines.push({
-            value: parseInt(ts) * 1000,
+    val = parseInt(val)
+
+    if (val.toString().length >= 10) { // Timestamp
+        val = val * 1000;
+    }
+
+    return [
+        {
+            value: val,
             color: 'red',
             width: 1,
             zIndex: 3,
@@ -64,7 +69,6 @@ function plotline(ts, text) {
                     color: darkMode ? '#e9ecef' : '#000000',
                 },
             }
-        });
-    }
-    return plotlines;
+        }
+    ];
 }
