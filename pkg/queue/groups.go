@@ -76,7 +76,7 @@ func groupsHandler(message *rabbit.Message) {
 
 	} else if err != nil {
 
-		log.ErrS(err, payload.ID)
+		log.Err(err.Error(), zap.String("group id", payload.ID))
 		sendToRetryQueue(message)
 		return
 	}
