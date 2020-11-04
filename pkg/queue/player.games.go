@@ -116,7 +116,7 @@ func playerGamesHandler(message *rabbit.Message) {
 
 	for _, gameRow := range gameRows {
 
-		playerApps[gameRow.ID].GameID = gameRow.ID
+		playerApps[gameRow.ID].AppDLCCount = gameRow.DLCCount
 
 		// Set games by type
 		if _, ok := gamesByType[gameRow.GetType()]; ok {

@@ -25,7 +25,7 @@ type PlayerApp struct {
 	AppTime       int                `bson:"app_time"`
 	AppPrices     map[string]int     `bson:"app_prices"`
 	AppPriceHour  map[string]float64 `bson:"app_prices_hour"`
-	GameID        int                `bson:"game_id"`
+	AppDLCCount   int                `bson:"app_dlc_count"`
 
 	AppAchievementsTotal   int     `bson:"app_achievements_total"`
 	AppAchievementsHave    int     `bson:"app_achievements_have"`
@@ -38,6 +38,8 @@ func (app PlayerApp) BSON() bson.D {
 		bson.E{Key: "app_achievements_total", Value: app.AppAchievementsTotal},
 		bson.E{Key: "app_achievements_have", Value: app.AppAchievementsHave},
 		bson.E{Key: "app_achievements_percent", Value: app.AppAchievementsPercent},
+
+		bson.E{Key: "app_dlc_count", Value: app.AppDLCCount},
 	)
 }
 
@@ -64,7 +66,7 @@ func (app PlayerApp) BSONUpdate() bson.D {
 		{"app_time", app.AppTime},
 		{"app_prices", prices},
 		{"app_prices_hour", pricesHour},
-		{"game_id", app.GameID},
+		{"app_dlc_count", app.AppDLCCount},
 	}
 }
 
