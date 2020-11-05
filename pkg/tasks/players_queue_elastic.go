@@ -33,10 +33,7 @@ func (c PlayersQueueElastic) work() (err error) {
 
 	for {
 
-		var projection = bson.M{
-		}
-
-		players, err := mongo.GetPlayers(offset, limit, bson.D{{"_id", 1}}, nil, projection)
+		players, err := mongo.GetPlayers(offset, limit, bson.D{{"_id", 1}}, nil, nil)
 		if err != nil {
 			return err
 		}
