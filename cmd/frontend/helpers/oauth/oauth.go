@@ -36,6 +36,14 @@ var Providers = []Provider{
 	&githubProvider{},
 }
 
+var _ = []OAuth2Provider{
+	discordProvider{},
+	battlenetProvider{},
+	googleProvider{},
+	patreonProvider{},
+	githubProvider{},
+}
+
 var _ = []OAuth1Provider{
 	twitterProvider{},
 }
