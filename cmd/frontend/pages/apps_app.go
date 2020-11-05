@@ -1305,7 +1305,10 @@ func appTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := datatable.NewDataTableQuery(r, true)
 
-	playerAppFilter := bson.D{{Key: "app_time", Value: bson.M{"$gt": 0}}}
+	playerAppFilter := bson.D{
+		{Key: "app_id", Value: id}, // needed for count too
+		{Key: "app_time", Value: bson.M{"$gt": 0}},
+	}
 
 	playerApps, err := mongo.GetPlayerAppsByApp(id, query.GetOffset64(), playerAppFilter)
 	if err != nil {

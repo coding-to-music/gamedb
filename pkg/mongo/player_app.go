@@ -209,9 +209,7 @@ func GetPlayerAppByKey(playerID int64, appID int) (playerApp PlayerApp, err erro
 
 func GetPlayerApps(offset int64, limit int64, filter bson.D, sort bson.D) (apps []PlayerApp, err error) {
 
-	var ops = options.Find().SetHint("player_id_1_app_achievements_have_1")
-
-	return getPlayerApps(offset, limit, filter, sort, nil, ops)
+	return getPlayerApps(offset, limit, filter, sort, nil, nil)
 }
 
 func GetPlayerAppsByPlayers(playerIDs []int64, projection bson.M) (apps []PlayerApp, err error) {
