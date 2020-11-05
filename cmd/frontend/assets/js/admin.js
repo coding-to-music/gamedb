@@ -127,6 +127,9 @@ if ($('#admin-users-page').length > 0) {
                         if (m.hasOwnProperty('google')) {
                             str += '<span class="mr-1"><i class="fab fa-google"></i></span>';
                         }
+                        if (m.hasOwnProperty('twitch')) {
+                            str += '<span class="mr-1"><i class="fab twitch"></i></span>';
+                        }
                         if (m.hasOwnProperty('github')) {
                             str += '<a class="mr-1" href="https://api.github.com/user/' + m['github'] + '" target="_blank" rel="noopener">' +
                                 '<i class="fab fa-google"></i></a>';
