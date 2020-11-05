@@ -1,7 +1,6 @@
 package tasks
 
 import (
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
@@ -32,30 +31,26 @@ func (c AppsAchievementsQueueElastic) work() (err error) {
 	var offset int64 = 0
 	var limit int64 = 10_000
 
-	var apps = map[int]mongo.App{} // Memory cache
+	var appCache = mongo.App{}
 
 	for {
 
-		appAchievements, err := mongo.GetAppAchievements(offset, limit, nil, bson.D{{"_id", 1}})
+		// Sort by app id so we only need to cache one app at a time
+		appAchievements, err := mongo.GetAppAchievements(offset, limit, nil, bson.D{{"app_id", 1}})
 		if err != nil {
 			return err
 		}
 
 		for _, appAchievement := range appAchievements {
 
-			var app mongo.App
-			if val, ok := apps[appAchievement.AppID]; ok {
-				app = val
-			} else {
-				app, err = mongo.GetApp(appAchievement.AppID)
+			if appCache.ID != appAchievement.AppID {
+				appCache, err = mongo.GetApp(appAchievement.AppID)
 				if err != nil {
-					log.ErrS(err)
-					continue
+					return err
 				}
-				apps[appAchievement.AppID] = app
 			}
 
-			err = queue.ProduceAchievementSearch(appAchievement, app.Name, app.Owners)
+			err = queue.ProduceAchievementSearch(appAchievement, appCache.Name, appCache.Owners)
 			if err != nil {
 				return err
 			}
