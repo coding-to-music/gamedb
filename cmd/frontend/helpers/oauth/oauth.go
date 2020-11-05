@@ -20,6 +20,7 @@ var (
 	ProviderDiscord   ProviderEnum = "discord"
 	ProviderGoogle    ProviderEnum = "google"
 	ProviderGithub    ProviderEnum = "github"
+	ProviderTwitch    ProviderEnum = "twitch"
 	ProviderBattlenet ProviderEnum = "battlenetus"
 	ProviderPatreon   ProviderEnum = "patreon"
 	ProviderSteam     ProviderEnum = "steam"
@@ -29,6 +30,7 @@ var (
 var Providers = []Provider{
 	&steamProvider{},
 	&discordProvider{},
+	&twitchProvider{},
 	&battlenetProvider{},
 	&googleProvider{},
 	&twitterProvider{},
@@ -42,6 +44,7 @@ var _ = []OAuth2Provider{
 	googleProvider{},
 	patreonProvider{},
 	githubProvider{},
+	twitchProvider{},
 }
 
 var _ = []OAuth1Provider{
