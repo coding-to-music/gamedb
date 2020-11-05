@@ -9,7 +9,7 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/chatbot/charts"
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/interfaces"
+	"github.com/gamedb/gamedb/pkg/helpers"
 )
 
 type CommandType string
@@ -119,7 +119,19 @@ func getFooter() *discordgo.MessageEmbedFooter {
 	return footer
 }
 
-func getAppEmbed(commandID string, app interfaces.App, code steamapi.ProductCC) *discordgo.MessageEmbed {
+type App interface {
+	GetID() int
+	GetName() string
+	GetPath() string
+	GetHeaderImage() string
+	GetPlayersPeakWeek() int
+	GetFollowers() string
+	GetPrices() helpers.ProductPrices
+	GetReviewScore() string
+	GetReleaseDateNice() string
+}
+
+func getAppEmbed(commandID string, app App, code steamapi.ProductCC) *discordgo.MessageEmbed {
 
 	return &discordgo.MessageEmbed{
 		Title:     app.GetName(),
