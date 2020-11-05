@@ -48,7 +48,6 @@ func AdminRouter() http.Handler {
 	r.Post("/queues", adminQueuesHandler)
 	r.Get("/settings", adminSettingsHandler)
 	r.Post("/settings", adminSettingsHandler)
-	r.Get("/sql-bin-logs", adminBinLogsHandler)
 	r.Get("/websockets", adminWebsocketsHandler)
 	return r
 }
@@ -723,53 +722,6 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 
 type adminQueuesTemplate struct {
 	globalTemplate
-}
-
-func adminBinLogsHandler(w http.ResponseWriter, r *http.Request) {
-
-	db, err := mysql.GetMySQLClient()
-	if err != nil {
-		log.ErrS(err)
-		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Can't connect to mysql"})
-		return
-	}
-
-	deleteLog := r.URL.Query().Get("delete")
-	if deleteLog != "" {
-
-		db = db.Exec("PURGE BINARY LOGS TO '" + deleteLog + "'")
-		if db.Error != nil {
-			log.ErrS(db.Error)
-		}
-
-		session.SetFlash(r, session.SessionGood, "Done")
-		session.Save(w, r)
-
-		http.Redirect(w, r, "/admin/sql-bin-logs", http.StatusFound)
-		return
-	}
-
-	t := adminBinLogsTemplate{}
-	t.fill(w, r, "admin_binlogs", "Admin", "Admin")
-
-	db = db.Raw("show binary logs").Scan(&t.BinLogs)
-	if db.Error != nil {
-		log.ErrS(db.Error)
-	}
-
-	returnTemplate(w, r, t)
-}
-
-type adminBinLogsTemplate struct {
-	globalTemplate
-	BinLogs []adminBinLogTemplate
-}
-
-type adminBinLogTemplate struct {
-	Name      string `gorm:"column:Log_name"`
-	Bytes     uint64 `gorm:"column:File_size"`
-	Encrypted string `gorm:"column:Encrypted"`
-	Total     uint64
 }
 
 func adminWebsocketsHandler(w http.ResponseWriter, r *http.Request) {

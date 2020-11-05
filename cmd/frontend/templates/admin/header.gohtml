@@ -52,14 +52,6 @@
             </li>
 
             <li class="nav-item">
-                {{if endsWith .Path "/sql-bin-logs" }}
-                    <span class="nav-link active" role="tab">SQL Bin Logs</span>
-                {{else}}
-                    <a class="nav-link" href="/admin/sql-bin-logs" role="tab">SQL Bin Logs</a>
-                {{end}}
-            </li>
-
-            <li class="nav-item">
                 {{if endsWith .Path "/websockets" }}
                     <span class="nav-link active" role="tab">Websockets</span>
                 {{else}}
