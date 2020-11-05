@@ -132,7 +132,7 @@ if ($('#admin-users-page').length > 0) {
                         }
                         if (m.hasOwnProperty('github')) {
                             str += '<a class="mr-1" href="https://api.github.com/user/' + m['github'] + '" target="_blank" rel="noopener">' +
-                                '<i class="fab fa-google"></i></a>';
+                                '<i class="fab github"></i></a>';
                         }
                         if (m.hasOwnProperty('patreon')) {
                             str += '<a class="mr-1" href="https://www.patreon.com/user?u=' + m['patreon'] + '" target="_blank" rel="noopener">' +
