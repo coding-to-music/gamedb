@@ -1,6 +1,5 @@
 package chatbot
 
-import "C"
 import (
 	"html/template"
 
