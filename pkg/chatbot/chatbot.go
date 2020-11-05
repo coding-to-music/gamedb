@@ -55,6 +55,7 @@ const (
 	CPlayerWishlist = "player-wishlist"
 	CPlayerLibrary  = "player-library"
 	CHelp           = "help"
+	CInvite         = "invite"
 	CSteamOnline    = "steam-online"
 )
 
@@ -79,6 +80,7 @@ var CommandRegister = []Command{
 	CommandPlayerUpdate{},
 	CommandPlayerWishlist{},
 	CommandHelp{},
+	CommandInvite{},
 	CommandSettings{},
 }
 

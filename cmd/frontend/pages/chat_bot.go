@@ -14,10 +14,6 @@ import (
 	"github.com/go-chi/chi"
 )
 
-const (
-	chatBotClientID = "567257603185311745"
-)
-
 func ChatBotRouter() http.Handler {
 
 	r := chi.NewRouter()
@@ -32,16 +28,14 @@ func chatBotHandler(w http.ResponseWriter, r *http.Request) {
 	t := chatBotTemplate{}
 	t.fill(w, r, "chat_bot", "Steam Bot", "Steam Discord Chat Bot")
 	t.addAssetJSON2HTML()
+	t.Link = config.C.DiscordBotInviteURL
 
 	returnTemplate(w, r, t)
 }
 
 type chatBotTemplate struct {
 	globalTemplate
-}
-
-func (cbt chatBotTemplate) Link() string {
-	return "https://discordapp.com/oauth2/authorize?client_id=" + chatBotClientID + "&scope=bot&permissions=0"
+	Link string
 }
 
 func (cbt chatBotTemplate) Commands() (ret [][]chatbot.Command) {

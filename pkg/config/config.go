@@ -158,12 +158,13 @@ type Config struct {
 	GRPCKeysPath        string `envconfig:"GRPC_KEYS_PATH"`
 
 	// Non-environment
-	CommitHash       string `ignored:"true"`
-	Commits          string `ignored:"true"`
-	GameDBShortName  string `ignored:"true"`
-	IP               string `ignored:"true"`
-	NewReleaseDays   int    `ignored:"true"`
-	DiscordInviteURL string `ignored:"true"`
+	CommitHash             string `ignored:"true"`
+	Commits                string `ignored:"true"`
+	GameDBShortName        string `ignored:"true"`
+	IP                     string `ignored:"true"`
+	NewReleaseDays         int    `ignored:"true"`
+	DiscordServerInviteURL string `ignored:"true"`
+	DiscordBotInviteURL    string `ignored:"true"`
 }
 
 var C Config
@@ -177,7 +178,8 @@ func Init(version string, commits string, ip string) (err error) {
 	C.GameDBShortName = "GameDB"
 	C.IP = ip
 	C.NewReleaseDays = 14
-	C.DiscordInviteURL = "https://discord.gg/c5zrcus"
+	C.DiscordServerInviteURL = "https://discord.gg/c5zrcus"
+	C.DiscordBotInviteURL = "https://discordapp.com/oauth2/authorize?client_id=567257603185311745&scope=bot&permissions=0"
 
 	return err
 }

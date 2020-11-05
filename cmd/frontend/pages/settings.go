@@ -437,7 +437,7 @@ func joinDiscordServerHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if token.Expiry.Before(time.Now().Add(time.Minute)) {
-		http.Redirect(w, r, config.C.DiscordInviteURL, http.StatusFound)
+		http.Redirect(w, r, config.C.DiscordServerInviteURL, http.StatusFound)
 		return
 	}
 
