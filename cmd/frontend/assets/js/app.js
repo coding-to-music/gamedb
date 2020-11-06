@@ -826,7 +826,7 @@ if ($appPage.length > 0) {
                     xAxis: {
                         type: 'category',
                         plotLines: plotline(data.marker, 'You are here!'),
-                        min: 0,
+                        min: data.marker === 0 ? 0 : 1,
                     },
                     tooltip: {
                         formatter: function () {
