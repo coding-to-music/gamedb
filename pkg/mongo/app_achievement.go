@@ -53,10 +53,16 @@ func (achievement AppAchievement) GetCompleted() string {
 
 func (achievement *AppAchievement) Fill(appID int, response steamapi.SchemaForGameAchievement) {
 
+	// Apps don't always use a hash in the URL, see HL2/220
+	sha1 := helpers.RegexSha1.FindString(response.Icon)
+	if sha1 != "" {
+		response.Icon = sha1
+	}
+
 	achievement.AppID = appID
 	achievement.Key = response.Name
 	achievement.Name = response.DisplayName
-	achievement.Icon = helpers.RegexSha1.FindString(response.Icon)
+	achievement.Icon = response.Icon
 	achievement.Description = response.Description
 	achievement.Hidden = bool(response.Hidden)
 }
