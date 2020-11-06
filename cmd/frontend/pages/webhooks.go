@@ -293,35 +293,38 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Update user
-		var level = mysql.UserLevel1
+		if user.ID > 0 {
 
-		for _, v := range pwr.Data.Relationships.CurrentlyEntitledTiers.Data {
-			switch i := patreonTier(v.ID); i {
-			case patreonTier1, patreonTier2, patreonTier3:
-				if i.toUserLevel() > level {
-					level = i.toUserLevel()
+			var level = mysql.UserLevel1
+
+			for _, v := range pwr.Data.Relationships.CurrentlyEntitledTiers.Data {
+				switch i := patreonTier(v.ID); i {
+				case patreonTier1, patreonTier2, patreonTier3:
+					if i.toUserLevel() > level {
+						level = i.toUserLevel()
+					}
 				}
 			}
-		}
 
-		update := map[string]interface{}{
-			"donated_patreon": pwr.Data.Attributes.LifetimeSupportCents,
-			"level":           level,
-		}
+			update := map[string]interface{}{
+				"donated_patreon": pwr.Data.Attributes.LifetimeSupportCents,
+				"level":           level,
+			}
 
-		db = db.Model(&user).Updates(update)
-		if db.Error != nil {
-			log.ErrS(db.Error)
-			http.Error(w, db.Error.Error(), http.StatusInternalServerError)
-			return
-		}
+			db = db.Model(&user).Updates(update)
+			if db.Error != nil {
+				log.ErrS(db.Error)
+				http.Error(w, db.Error.Error(), http.StatusInternalServerError)
+				return
+			}
 
-		// Create event
-		err = mongo.NewEvent(r, user.ID, mongo.EventPatreonWebhook+"-"+mongo.EventEnum(event))
-		if err != nil {
-			log.Err(err.Error(), zap.String("body", string(b)))
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
+			// Create event
+			err = mongo.NewEvent(r, user.ID, mongo.EventPatreonWebhook+"-"+mongo.EventEnum(event))
+			if err != nil {
+				log.Err(err.Error(), zap.String("body", string(b)))
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
 		}
 	}
 
