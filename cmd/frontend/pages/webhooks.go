@@ -275,6 +275,7 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 			OriginalAmount:   amount,
 			Source:           mysql.DonationSourcePatreon,
 			Anon:             false, // todo
+			PatreonRef:       pwr.Data.ID,
 		}
 
 		db = db.Create(&donation)

@@ -24,6 +24,7 @@ type Donation struct {
 	OriginalAmount   int       `gorm:"not null;column:original_amount"`
 	Source           string    `gorm:"not null;column:source"`
 	Anon             bool      `gorm:"not null;column:anon"`
+	PatreonRef       string    `gorm:"column:patreon_ref"` // Nullable, indexed
 }
 
 func (d Donation) Format() string {
