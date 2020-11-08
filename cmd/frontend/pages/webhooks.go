@@ -237,6 +237,10 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if user.Email == "" {
+		user.Email = pwr.User.Attributes.Email
+	}
+
 	// Update donation bits
 	amount := pwr.Data.Attributes.LifetimeSupportCents - user.DonatedPatreon
 	if amount > 0 {
