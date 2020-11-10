@@ -14,6 +14,18 @@
         <div class="card">
             <div class="card-body">
 
+                {{ if .IsLoggedIn }}
+                    {{ if eq .PlayerID 0}}
+                        <div class="alert alert-primary" role="alert">
+                            <div>You must <a href="/oauth/out/steam?page=settings">link</a> your Steam account to see your games</div>
+                        </div>
+                    {{ end }}
+                {{ else }}
+                    <div class="alert alert-primary" role="alert">
+                        <div>You must <a href="/login">login</a> to see your games</div>
+                    </div>
+                {{ end }}
+
                 <div class="table-responsive">
                     <table class="table table-hover table-striped table-counts mb-0" data-row-type="games" data-path="/games/dlc/dlc.json">
                         <thead class="thead-light">
