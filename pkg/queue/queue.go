@@ -272,6 +272,7 @@ func Init(definitions []QueueDefinition) {
 			Properties: map[string]interface{}{
 				"connection_name": config.C.Environment + "-" + string(rabbit.Consumer) + "-" + config.GetSteamKeyTag(),
 			},
+			Dial: amqp.DefaultDial(time.Second * 5),
 		},
 		LogInfo: func(i ...interface{}) {
 			// zap.S().Named(log.LogNameRabbit).Info(i...)
