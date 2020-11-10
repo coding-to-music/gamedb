@@ -806,7 +806,7 @@ func appDLCAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		})
 
 		var err error
-		dlcs, err = mongo.GetDLCForApp(query.GetOffset64(), 100, filter2, sortOrder)
+		dlcs, err = mongo.GetDLCForApp(query.GetOffset64(), 100, filter2, sortOrder, nil)
 		if err != nil {
 			log.ErrS(err)
 			return

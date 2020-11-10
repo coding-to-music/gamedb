@@ -25,7 +25,7 @@ func appDLCHandler(message *rabbit.Message) {
 		return
 	}
 
-	currentDLCs, err := mongo.GetDLCForApp(0, 0, bson.D{{"app_id", payload.AppID}}, nil)
+	currentDLCs, err := mongo.GetDLCForApp(0, 0, bson.D{{"app_id", payload.AppID}}, nil, nil)
 	if err != nil {
 		log.ErrS(err)
 		sendToRetryQueue(message)

@@ -49,7 +49,7 @@ func (dlc AppDLC) GetPath() string {
 	return helpers.GetAppPath(dlc.DLCID, dlc.Name)
 }
 
-func GetDLCForApps(appIDs []int, offset int64, limit int64, filter bson.D, sort bson.D) (dlcs []AppDLC, err error) {
+func GetDLCForApps(appIDs []int, offset int64, limit int64, filter bson.D, sort bson.D, projection bson.M) (dlcs []AppDLC, err error) {
 
 	var ids bson.A
 	for _, v := range appIDs {
@@ -58,12 +58,12 @@ func GetDLCForApps(appIDs []int, offset int64, limit int64, filter bson.D, sort 
 
 	filter = append(bson.D{{"app_id", bson.M{"$in": ids}}}, filter...)
 
-	return GetDLCForApp(offset, limit, filter, sort)
+	return GetDLCForApp(offset, limit, filter, sort, projection)
 }
 
-func GetDLCForApp(offset int64, limit int64, filter bson.D, sort bson.D) (dlcs []AppDLC, err error) {
+func GetDLCForApp(offset int64, limit int64, filter bson.D, sort bson.D, projection bson.M) (dlcs []AppDLC, err error) {
 
-	cur, ctx, err := Find(CollectionAppDLC, offset, limit, sort, filter, nil, nil)
+	cur, ctx, err := Find(CollectionAppDLC, offset, limit, sort, filter, projection, nil)
 	if err != nil {
 		return dlcs, err
 	}
@@ -123,10 +123,10 @@ func DeleteAppDLC(appID int, DLCs []int) (err error) {
 	}
 
 	keys := bson.A{}
-	for _, DLCID := range DLCs {
+	for _, dlcID := range DLCs {
 
 		dlc := AppDLC{}
-		dlc.DLCID = DLCID
+		dlc.DLCID = dlcID
 		dlc.AppID = appID
 
 		keys = append(keys, dlc.getKey())

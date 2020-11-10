@@ -78,6 +78,10 @@ func (app PlayerApp) GetPath() string {
 	return helpers.GetAppPath(app.AppID, app.AppName)
 }
 
+func (app PlayerApp) GetStoreLink() string {
+	return helpers.GetAppStoreLink(app.AppID)
+}
+
 func (app PlayerApp) GetIcon() string {
 	return helpers.GetAppIcon(app.AppID, app.AppIcon)
 }

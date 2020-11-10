@@ -1,7 +1,7 @@
 {{define "dlc"}}
     {{ template "header" . }}
 
-    <div class="container" id="dlc-page">
+    <div class="container" id="apps-dlc-page">
 
         <div class="jumbotron">
 
@@ -14,14 +14,21 @@
         <div class="card">
             <div class="card-body">
 
-                <table>
-                    {{ range .PlayerApps }}
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped table-counts mb-0" data-row-type="games" data-path="/games/dlc/dlc.json">
+                        <thead class="thead-light">
                         <tr>
-                            <td>{{ .AppName }}</td>
-                            <td>{{ .AppDLCCount }}</td>
+                            <th scope="col" nowrap="nowrap">Game</th>
+                            <th scope="col" nowrap="nowrap">DLC</th>
+                            <th scope="col" nowrap="nowrap">Owned</th>
+                            <th scope="col" nowrap="nowrap" class="thin"></th>
                         </tr>
-                    {{ end }}
-                </table>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
 
             </div>
         </div>
