@@ -909,6 +909,7 @@ if ($appPage.length > 0) {
         const options = {
             "order": [[1, 'desc']],
             "createdRow": function (row, data, dataIndex) {
+                $(row).attr('data-app-id', data[0]);
                 $(row).attr('data-link', data[5]);
             },
             "columnDefs": [
