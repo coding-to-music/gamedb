@@ -21,7 +21,7 @@ const ( //                                       min  hour
 	CronTimeAppPlayers               TaskTime = "*/10 *"
 	CronTimeAppPlayersTop            TaskTime = "*/10 *"
 	CronTimeAutoPlayerRefreshes      TaskTime = "0    */6"
-	CronTimeAppsInflux               TaskTime = "0    2,6,10,14,18,22" // Run when no other crons are running
+	CronTimeAppsInflux               TaskTime = "0    */2"
 	CronTimeAppsReviews              TaskTime = "0    0"
 	CronTimeAppsYoutube              TaskTime = "5    0"
 	CronTimeQueueAppGroups           TaskTime = "10   0"
