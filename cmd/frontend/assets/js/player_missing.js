@@ -28,6 +28,10 @@ if ($playerMissingPage.length > 0) {
                 percent = 100 - (queue_current / queue_start * 100);
             }
 
+            if (percent < 5) {
+                percent = 5;
+            }
+
             let text = queue_current.toLocaleString() + ' / ' + queue_start.toLocaleString();
 
             $('.progress .progress-bar')
