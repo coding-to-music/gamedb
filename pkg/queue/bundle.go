@@ -205,7 +205,7 @@ func saveBundlePriceToMongo(bundle mysql.Bundle, oldBundle mysql.Bundle) (err er
 	bundlePriceLock.Lock()
 	defer bundlePriceLock.Unlock()
 
-	time.Sleep(time.Second) // prices are keyed by the second
+	// time.Sleep(time.Second) // prices are keyed by the second
 
 	if bundle.Discount != oldBundle.Discount {
 

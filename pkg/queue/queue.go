@@ -705,7 +705,7 @@ func ProduceWebsocket(payload interface{}, pages ...websockets.WebsocketPage) (e
 func produce(q rabbit.QueueName, payload interface{}) error {
 
 	if !config.IsLocal() {
-		time.Sleep(time.Second / 2_000)
+		time.Sleep(time.Second / 1_000)
 	}
 
 	if val, ok := ProducerChannels[q]; ok {
