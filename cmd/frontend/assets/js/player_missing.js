@@ -32,10 +32,8 @@ if ($playerMissingPage.length > 0) {
                 percent = 5;
             }
 
-            let text = queue_current.toLocaleString() + ' / ' + queue_start.toLocaleString();
-
             $('.progress .progress-bar')
-                .html(text)
+                .html(ordinal(queue_current))
                 .width(percent + '%');
 
         } else {
