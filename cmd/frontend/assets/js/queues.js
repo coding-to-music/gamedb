@@ -1,4 +1,6 @@
-if ($('#queues-page').length > 0 || $('#player-missing-page').length > 0) {
+const $queuesPage = $('#queues-page');
+
+if ($queuesPage.length > 0 || $playerMissingPage.length > 0) {
 
     let activeWindow = true;
 
@@ -32,6 +34,13 @@ if ($('#queues-page').length > 0 || $('#player-missing-page').length > 0) {
             dataType: 'json',
             cache: false,
             success: function (data, textStatus, jqXHR) {
+
+                // Only show one series for new player page
+                if ($playerMissingPage.length > 0) {
+                    data = {
+                        GDB_Players: data.GDB_Players,
+                    };
+                }
 
                 $.each(charts, function (index, value) {
 
