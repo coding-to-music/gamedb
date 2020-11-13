@@ -22,12 +22,12 @@ func GetGroupChart(commandID string, groupID string) (path string) {
 	builder := influxql.NewBuilder()
 	builder.AddSelect(`max("members_count")`, "max_members_count")
 	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementGroups.String())
-	builder.AddWhere("time", ">", "NOW()-168d")
+	builder.AddWhere("time", ">", "NOW()-180d")
 	builder.AddWhere("group_id", "=", groupID)
 	builder.AddGroupByTime("1d")
 	builder.SetFillNone()
 
-	path, err := getChart(commandID, builder, groupID, "Members")
+	path, err := getChart(commandID, builder, groupID, "Members (180 days)")
 	if err != nil {
 		log.Err(err.Error())
 	}
@@ -44,7 +44,7 @@ func GetAppPlayersChart(commandID string, appID int, time string, groupBy string
 	builder.AddGroupByTime(groupBy)
 	builder.SetFillNone()
 
-	path, err := getChart(commandID, builder, strconv.Itoa(appID), "In Game")
+	path, err := getChart(commandID, builder, strconv.Itoa(appID), "In Game ("+time+")")
 	if err != nil {
 		log.Err(err.Error())
 	}
