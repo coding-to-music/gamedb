@@ -59,6 +59,11 @@ func productPricesAjaxHandler(w http.ResponseWriter, r *http.Request, productTyp
 		response.Prices = append(response.Prices, []float64{float64(time.Now().Unix()) * 1000, float64(price.Final) / 100})
 	}
 
+	// Convert a single dot into a line
+	if len(response.Prices) == 1 {
+		response.Prices = append(response.Prices, []float64{response.Prices[0][0] - 1000, response.Prices[0][1]})
+	}
+
 	// Sort prices for Highcharts
 	sort.Slice(response.Prices, func(i, j int) bool {
 		return response.Prices[i][0] < response.Prices[j][0]
