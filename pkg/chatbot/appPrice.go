@@ -56,7 +56,7 @@ func (c CommandAppPrice) Output(msg *discordgo.MessageCreate, code steamapi.Prod
 	if err != nil {
 		return message, err
 	} else if len(apps) == 0 {
-		message.Content = "Game **" + matches[2] + "** not found"
+		message.Content = "Game **" + matches[2] + "** not found on Steam"
 		return message, nil
 	}
 

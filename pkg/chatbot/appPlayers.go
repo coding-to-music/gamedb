@@ -51,7 +51,7 @@ func (c CommandAppPlayers) Output(msg *discordgo.MessageCreate, _ steamapi.Produ
 	if err != nil {
 		return message, err
 	} else if len(apps) == 0 {
-		message.Content = "Game **" + matches[2] + "** not found"
+		message.Content = "Game **" + matches[2] + "** not found on Steam"
 		return message, nil
 	}
 
