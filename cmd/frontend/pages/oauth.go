@@ -403,6 +403,10 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 		}
 	}
 
+	if newUser {
+		page = authPageSettings
+	}
+
 	// Provider specific actions
 	switch provider.GetEnum() {
 	case oauth.ProviderSteam:
