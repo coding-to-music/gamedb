@@ -735,7 +735,11 @@ func appAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	response := datatable.NewDataTablesResponse(r, query, total, total, nil)
 	for _, achievement := range achievements {
 
-		achievedTime := achievedMap[achievement.Key]
+		achievedTime, ok := achievedMap[achievement.Key]
+		if ok && achievedTime == 0 {
+			achievedTime = -1
+		}
+
 		achievedTimeFormatted := time.Unix(achievedTime, 0).Format(helpers.DateSQL)
 
 		response.AddRow([]interface{}{

@@ -895,6 +895,9 @@ if ($appPage.length > 0) {
                                 return '<span data-livestamp="' + row[7] + '"></span>'
                                     + '<br><small class="text-muted">' + row[8] + '</small>';
                             }
+                            if (row[7] === -1) {
+                                return 'Unknown';
+                            }
                             return '';
                         },
                         "createdCell": function (td, cellData, rowData, row, col) {
