@@ -100,6 +100,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	t.addAssetHighChartsHeatmap()
 	t.addAssetJSON2HTML()
 	t.addAssetMomentData()
+	t.addAssetChosen()
 	t.metaImage = app.GetMetaImage()
 	t.App = app
 	t.Description = template.HTML(app.ShortDescription)
@@ -683,70 +684,54 @@ func appAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var query = datatable.NewDataTableQuery(r, false)
-	var filter = bson.D{{"app_id", id}}
+	// Get player achievements
+	var achievedMap = map[string]int64{}
+	var achievementKeys bson.A
+	var playerID = session.GetPlayerIDFromSesion(r)
 
-	//
-	var wg sync.WaitGroup
+	if playerID > 0 {
+
+		playerAchievements, err := mongo.GetPlayerAchievementsForApp(playerID, id)
+		if err != nil {
+			log.ErrS(err)
+			return
+		}
+
+		for _, v := range playerAchievements {
+			achievedMap[v.AchievementID] = v.AchievementDate
+			achievementKeys = append(achievementKeys, v.AchievementID)
+		}
+	}
 
 	// Get achievements
-	var achievements []mongo.AppAchievement
-	var achievedMap = map[string]int64{}
-	wg.Add(1)
-	go func() {
+	var query = datatable.NewDataTableQuery(r, false)
+	var sortOrder = query.GetOrderMongo(map[string]string{
+		"2": "completed",
+	})
 
-		defer wg.Done()
+	var filter = bson.D{{"app_id", id}}
 
-		// Can't sort by earned time, as it's from a different table
-		var sortOrder = query.GetOrderMongo(map[string]string{
-			"2": "completed",
-		})
+	var search = query.GetSearchString("achievements-filter")
+	if search == "locked" {
+		filter = append(filter, bson.E{Key: "key", Value: bson.M{"$in": achievementKeys}})
+	} else if search == "unlocked" {
+		filter = append(filter, bson.E{Key: "key", Value: bson.M{"$nin": achievementKeys}})
+	}
 
-		var err error
-		achievements, err = mongo.GetAppAchievements(query.GetOffset64(), 1000, filter, sortOrder)
-		if err != nil {
-			log.ErrS(err)
-			return
-		}
-
-		playerID := session.GetPlayerIDFromSesion(r)
-		if playerID > 0 {
-
-			var a = bson.A{}
-			for _, v := range achievements {
-				a = append(a, v.Key)
-			}
-
-			playerAchievements, err := mongo.GetPlayerAchievementsForApp(playerID, id, a, 0)
-			if err != nil {
-				log.ErrS(err)
-				return
-			}
-
-			for _, v := range playerAchievements {
-				achievedMap[v.AchievementID] = v.AchievementDate
-			}
-		}
-	}()
+	achievements, err := mongo.GetAppAchievements(query.GetOffset64(), 1000, filter, sortOrder)
+	if err != nil {
+		log.ErrS(err)
+		return
+	}
 
 	// Get total
-	var total int64
-	wg.Add(1)
-	go func() {
+	total, err := mongo.CountDocuments(mongo.CollectionAppAchievements, filter, 60*60*24*28)
+	if err != nil {
+		log.ErrS(err)
+		return
+	}
 
-		defer wg.Done()
-
-		var err error
-		total, err = mongo.CountDocuments(mongo.CollectionAppAchievements, filter, 60*60*24*28)
-		if err != nil {
-			log.ErrS(err)
-			return
-		}
-	}()
-
-	// Wait
-	wg.Wait()
-
+	//
 	response := datatable.NewDataTablesResponse(r, query, total, total, nil)
 	for _, achievement := range achievements {
 
@@ -763,6 +748,7 @@ func appAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			achievement.Deleted,        // 6
 			achievedTime,               // 7
 			achievedTimeFormatted,      // 8
+			achievement.Key,            // 9
 		})
 	}
 

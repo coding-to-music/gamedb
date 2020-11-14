@@ -129,19 +129,18 @@ func GetPlayerAchievements(playerID int64, offset int64, sort bson.D) (achieveme
 	return getPlayerAchievements(offset, 100, filter, sort, ops)
 }
 
-func GetPlayerAchievementsForApp(playerID int64, appID int, achievementKeys bson.A, limit int64) (achievements []PlayerAchievement, err error) {
+func GetPlayerAchievementsForApp(playerID int64, appID int) (achievements []PlayerAchievement, err error) {
 
-	if len(achievementKeys) < 1 {
+	if playerID == 0 || appID == 0 {
 		return achievements, err
 	}
 
 	var filter = bson.D{
 		{"player_id", playerID},
 		{"app_id", appID},
-		{"achievement_id", bson.M{"$in": achievementKeys}},
 	}
 
-	return getPlayerAchievements(0, limit, filter, nil, nil)
+	return getPlayerAchievements(0, 0, filter, nil, nil)
 }
 
 func GetPlayersWithAchievement(appID int, achievementID string, offset int64) (achievements []PlayerAchievement, err error) {

@@ -699,6 +699,19 @@
                             <small class="card-footer">Data from Game DB players who have at least one achievement</small>
                         </div>
 
+                        <div class="form-row">
+                            <div class="col-12 col-md-6 col-lg-5 col-xl-4 mb-2">
+                                <div class="form-group">
+                                    <label for="achievements-filter">Filter (Must be logged in)</label>
+                                    <select data-placeholder="Filter" class="form-control form-control-chosen" id="achievements-filter" name="achievements-filter">
+                                        <option value="" selected>All Achievements</option>
+                                        <option value="locked">Locked</option>
+                                        <option value="unlocked">Unlocked</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="table-responsive">
                             <table class="table table-hover table-striped table-counts mb-0" data-path="/games/{{ .App.ID }}/achievements.json" data-row-type="achievements" id="achievements-table">
                                 <thead class="thead-light">

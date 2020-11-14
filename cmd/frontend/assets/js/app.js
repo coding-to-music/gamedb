@@ -794,6 +794,14 @@ if ($appPage.length > 0) {
 
     function loadAchievements() {
 
+        // Setup drop downs
+        $('select#achievements-filter').chosen({
+            disable_search_threshold: 10,
+            allow_single_deselect: true,
+            rtl: false,
+            max_selected_options: 10
+        });
+
         $.ajax({
             type: "GET",
             url: '/games/' + $appPage.attr('data-id') + '/achievement-counts.json',
@@ -842,9 +850,17 @@ if ($appPage.length > 0) {
         });
 
         $('#achievements-table').gdbTable({
+            searchFields: [
+                $('#achievements-filter'),
+            ],
             tableOptions: {
                 "pageLength": 1000,
                 "order": [[2, 'desc']],
+                "createdRow": function (row, data, dataIndex) {
+                    if (user.isLocal) {
+                        $(row).attr('data-ach-id', data[9]);
+                    }
+                },
                 "columnDefs": [
                     // Name
                     {
