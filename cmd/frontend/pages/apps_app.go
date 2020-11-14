@@ -718,24 +718,44 @@ func appAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		filter = append(filter, bson.E{Key: "key", Value: bson.M{"$nin": achievementKeys}})
 	}
 
-	achievements, err := mongo.GetAppAchievements(query.GetOffset64(), 1000, filter, sortOrder)
-	if err != nil {
-		log.ErrS(err)
-		return
-	}
+	//
+	var wg sync.WaitGroup
 
-	// Get total
-	total, err := mongo.CountDocuments(mongo.CollectionAppAchievements, filter, 60*60*24*28)
-	if err != nil {
-		log.ErrS(err)
-		return
-	}
+	wg.Add(1)
+	var appAchievements []mongo.AppAchievement
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		appAchievements, err = mongo.GetAppAchievements(query.GetOffset64(), 1000, filter, sortOrder)
+		if err != nil {
+			log.ErrS(err)
+			return
+		}
+	}()
+
+	wg.Add(1)
+	var total int64
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		total, err = mongo.CountDocuments(mongo.CollectionAppAchievements, filter, 60*60*24*28)
+		if err != nil {
+			log.ErrS(err)
+			return
+		}
+	}()
+
+	wg.Wait()
 
 	//
 	response := datatable.NewDataTablesResponse(r, query, total, total, nil)
-	for _, achievement := range achievements {
+	for _, appCchievement := range appAchievements {
 
-		achievedTime, ok := achievedMap[achievement.Key]
+		achievedTime, ok := achievedMap[appCchievement.Key]
 		if ok && achievedTime == 0 {
 			achievedTime = -1
 		}
@@ -746,16 +766,16 @@ func appAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		response.AddRow([]interface{}{
-			achievement.Name,           // 0
-			achievement.Description,    // 1
-			achievement.GetIcon(),      // 2
-			achievement.GetCompleted(), // 3
-			achievement.Active,         // 4
-			achievement.Hidden,         // 5
-			achievement.Deleted,        // 6
-			achievedTime,               // 7
-			achievedTimeFormatted,      // 8
-			achievement.Key,            // 9
+			appCchievement.Name,           // 0
+			appCchievement.Description,    // 1
+			appCchievement.GetIcon(),      // 2
+			appCchievement.GetCompleted(), // 3
+			appCchievement.Active,         // 4
+			appCchievement.Hidden,         // 5
+			appCchievement.Deleted,        // 6
+			achievedTime,                  // 7
+			achievedTimeFormatted,         // 8
+			appCchievement.Key,            // 9
 		})
 	}
 
