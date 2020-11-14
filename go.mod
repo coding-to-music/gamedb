@@ -3,8 +3,8 @@ module github.com/gamedb/gamedb
 go 1.13
 
 require (
-	cloud.google.com/go v0.71.0 // indirect
-	cloud.google.com/go/logging v1.1.1
+	cloud.google.com/go v0.72.0 // indirect
+	cloud.google.com/go/logging v1.1.2
 	github.com/Jleagle/go-durationfmt v0.0.0-20190307132420-e57bfad84057
 	github.com/Jleagle/influxql v0.0.0-20200804190929-88324f67bffe
 	github.com/Jleagle/patreon-go v0.0.0-20201006180837-366bfaa6710a
@@ -19,7 +19,7 @@ require (
 	github.com/StefanSchroeder/Golang-Roman v0.0.0-20191231161654-ef19f7247884
 	github.com/ahmdrz/goinsta/v2 v2.4.5
 	github.com/antchfx/xmlquery v1.3.3 // indirect
-	github.com/aws/aws-sdk-go v1.35.23 // indirect
+	github.com/aws/aws-sdk-go v1.35.28 // indirect
 	github.com/badoux/checkmail v1.2.1
 	github.com/blend/go-sdk v1.1.1 // indirect
 	github.com/bwmarrin/discordgo v0.22.0
@@ -33,15 +33,16 @@ require (
 	github.com/djherbis/fscache v0.10.1
 	github.com/dustin/go-humanize v1.0.0
 	github.com/frustra/bbcode v0.0.0-20180807171629-48be21ce690c
-	github.com/getkin/kin-openapi v0.26.0
+	github.com/getkin/kin-openapi v0.28.0
 	github.com/ghodss/yaml v1.0.1-0.20190212211648-25d852aebe32 // indirect
 	github.com/go-chi/chi v4.1.2+incompatible
 	github.com/go-chi/cors v1.1.1
 	github.com/go-sql-driver/mysql v1.5.0
-	github.com/gobuffalo/packr/v2 v2.8.0
+	github.com/gobuffalo/packr/v2 v2.8.1
 	github.com/gocolly/colly/v2 v2.1.0
 	github.com/golang/protobuf v1.4.3
 	github.com/golang/snappy v0.0.2 // indirect
+	github.com/google/go-cmp v0.5.3 // indirect
 	github.com/google/go-github/v32 v32.1.0
 	github.com/gorilla/securecookie v1.1.1
 	github.com/gorilla/sessions v1.2.1
@@ -89,19 +90,19 @@ require (
 	go.uber.org/multierr v1.6.0 // indirect
 	go.uber.org/ratelimit v0.1.0
 	go.uber.org/zap v1.16.0
-	golang.org/x/crypto v0.0.0-20201016220609-9e8e0b390897
+	golang.org/x/crypto v0.0.0-20201112155050-0c6587e931a9
 	golang.org/x/exp v0.0.0-20200331195152-e8c3332aa8e5 // indirect
 	golang.org/x/image v0.0.0-20200927104501-e162460cd6b5 // indirect
-	golang.org/x/net v0.0.0-20201031054903-ff519b6c9102
-	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43
-	golang.org/x/sys v0.0.0-20201107080550-4d91cf3a1aaf // indirect
+	golang.org/x/net v0.0.0-20201110031124-69a78807bb2b
+	golang.org/x/oauth2 v0.0.0-20201109201403-9fd604954f58
+	golang.org/x/sys v0.0.0-20201113233024-12cec1faf1ba // indirect
 	golang.org/x/text v0.3.4
 	golang.org/x/time v0.0.0-20200630173020-3af7569d3a1e
-	golang.org/x/tools v0.0.0-20201105220310-78b158585360 // indirect
+	golang.org/x/tools v0.0.0-20201113202037-1643af1435f3 // indirect
 	gonum.org/v1/gonum v0.8.1
 	google.golang.org/api v0.35.0
 	google.golang.org/appengine v1.6.7 // indirect
-	google.golang.org/genproto v0.0.0-20201106154455-f9bfe239b0ba // indirect
+	google.golang.org/genproto v0.0.0-20201113130914-ce600e9a6f9e // indirect
 	google.golang.org/grpc v1.33.2
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.0.1
 	google.golang.org/protobuf v1.25.0
