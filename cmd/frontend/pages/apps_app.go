@@ -686,9 +686,10 @@ func appAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get player achievements
 	var achievedMap = map[string]int64{}
-	var achievementKeys bson.A
-	var playerID = session.GetPlayerIDFromSesion(r)
+	var filter = bson.D{{"app_id", id}}
+	var query = datatable.NewDataTableQuery(r, false)
 
+	var playerID = session.GetPlayerIDFromSesion(r)
 	if playerID > 0 {
 
 		playerAchievements, err := mongo.GetPlayerAchievementsForApp(playerID, id)
@@ -697,25 +698,18 @@ func appAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		var achievementKeys = bson.A{"_"} // $in & $nin can't have empty arrays
 		for _, v := range playerAchievements {
 			achievedMap[v.AchievementID] = v.AchievementDate
 			achievementKeys = append(achievementKeys, v.AchievementID)
 		}
-	}
 
-	// Get achievements
-	var query = datatable.NewDataTableQuery(r, false)
-	var sortOrder = query.GetOrderMongo(map[string]string{
-		"2": "completed",
-	})
-
-	var filter = bson.D{{"app_id", id}}
-
-	var search = query.GetSearchString("achievements-filter")
-	if search == "locked" {
-		filter = append(filter, bson.E{Key: "key", Value: bson.M{"$in": achievementKeys}})
-	} else if search == "unlocked" {
-		filter = append(filter, bson.E{Key: "key", Value: bson.M{"$nin": achievementKeys}})
+		var search = query.GetSearchString("achievements-filter")
+		if search == "locked" {
+			filter = append(filter, bson.E{Key: "key", Value: bson.M{"$nin": achievementKeys}})
+		} else if search == "unlocked" {
+			filter = append(filter, bson.E{Key: "key", Value: bson.M{"$in": achievementKeys}})
+		}
 	}
 
 	//
@@ -728,6 +722,10 @@ func appAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
+		var sortOrder = query.GetOrderMongo(map[string]string{
+			"2": "completed",
+		})
+
 		appAchievements, err = mongo.GetAppAchievements(query.GetOffset64(), 1000, filter, sortOrder)
 		if err != nil {
 			log.ErrS(err)
