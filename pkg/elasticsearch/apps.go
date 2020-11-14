@@ -210,7 +210,7 @@ func searchApps(limit int, offset int, search string, totals bool, highlights bo
 			),
 		).Should(
 			elastic.NewFunctionScoreQuery().
-				AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("players").Factor(0.0005)),
+				AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("players").Factor(0.0001)),
 		)
 
 		if highlights {
