@@ -17,6 +17,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/go-chi/chi"
 	"go.uber.org/zap"
+	"golang.org/x/oauth2"
 )
 
 const (
@@ -113,6 +114,13 @@ func providerOpenIDRedirect(w http.ResponseWriter, r *http.Request, provider oau
 	provider.Redirect(w, r, page)
 }
 
+type oauth2Transport struct{}
+
+func (t *oauth2Transport) RoundTrip(req *http.Request) (*http.Response, error) {
+	req.Header.Set("User-Agent", oauth.UserAgent)
+	return http.DefaultTransport.RoundTrip(req)
+}
+
 func providerOAuth2Callback(w http.ResponseWriter, r *http.Request, provider oauth.OAuth2Provider) {
 
 	var page string
@@ -151,8 +159,14 @@ func providerOAuth2Callback(w http.ResponseWriter, r *http.Request, provider oau
 		return
 	}
 
+	ctx := context.WithValue(
+		context.Background(),
+		oauth2.HTTPClient,
+		&http.Client{Transport: &oauth2Transport{}},
+	)
+
 	conf := provider.GetConfig()
-	token, err := conf.Exchange(context.Background(), code)
+	token, err := conf.Exchange(ctx, code)
 	if err != nil {
 		log.ErrS(err)
 		session.SetFlash(r, session.SessionBad, "An error occurred (1006)")
