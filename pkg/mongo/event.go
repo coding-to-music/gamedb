@@ -14,6 +14,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.uber.org/zap"
 )
 
 type EventEnum string
@@ -35,7 +36,13 @@ func (event EventEnum) ToString() string {
 		parts := strings.Split(string(event), "-")
 		if len(parts) == 2 {
 			parts[0] = strings.Title(parts[0])
-			parts[1] = oauth.New(oauth.ProviderEnum(parts[1])).GetName()
+
+			provider := oauth.New(oauth.ProviderEnum(parts[1]))
+			if provider != nil {
+				parts[1] = provider.GetName()
+			} else {
+				log.ErrS("invalid provider", zap.String("provider", parts[1]))
+			}
 		}
 		return strings.Join(parts, " ")
 	}
