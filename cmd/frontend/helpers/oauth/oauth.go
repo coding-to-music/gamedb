@@ -22,6 +22,7 @@ var (
 	ProviderGithub    ProviderEnum = "github"
 	ProviderTwitch    ProviderEnum = "twitch"
 	ProviderBattlenet ProviderEnum = "battlenetus"
+	ProviderReddit    ProviderEnum = "reddit"
 	ProviderPatreon   ProviderEnum = "patreon"
 	ProviderSteam     ProviderEnum = "steam"
 	ProviderTwitter   ProviderEnum = "twitter"
@@ -35,6 +36,7 @@ var Providers = []Provider{
 	&battlenetProvider{},
 	&googleProvider{},
 	&twitterProvider{},
+	&redditProvider{},
 	&patreonProvider{},
 	&githubProvider{},
 }
@@ -44,6 +46,7 @@ var _ = []OAuth2Provider{
 	twitchProvider{},
 	battlenetProvider{},
 	googleProvider{},
+	&redditProvider{},
 	patreonProvider{},
 	githubProvider{},
 }

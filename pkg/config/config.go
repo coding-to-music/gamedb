@@ -109,6 +109,10 @@ type Config struct {
 	RecaptchaPublic  string `envconfig:"RECAPTCHA_PUBLIC"`
 	RecaptchaPrivate string `envconfig:"RECAPTCHA_PRIVATE"`
 
+	// Reddit
+	RedditClient string `envconfig:"REDDIT_APP_KEY"`    // OAuth
+	RedditSecret string `envconfig:"REDDIT_APP_SECRET"` // OAuth
+
 	// Rollbar
 	RollbarSecret string `envconfig:"ROLLBAR_PRIVATE"`
 	RollbarUser   string `envconfig:"ROLLBAR_USER"`
