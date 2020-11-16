@@ -27,6 +27,7 @@ var (
 	ProviderTwitter   ProviderEnum = "twitter"
 )
 
+// In order for frontend
 var Providers = []Provider{
 	&steamProvider{},
 	&discordProvider{},
@@ -40,11 +41,11 @@ var Providers = []Provider{
 
 var _ = []OAuth2Provider{
 	discordProvider{},
+	twitchProvider{},
 	battlenetProvider{},
 	googleProvider{},
 	patreonProvider{},
 	githubProvider{},
-	twitchProvider{},
 }
 
 var _ = []OAuth1Provider{
