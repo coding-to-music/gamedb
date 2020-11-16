@@ -144,7 +144,7 @@ func Bad(task TaskInterface) (b bool) {
 //
 func Run(task TaskInterface) {
 
-	log.InfoS("Cron started: " + task.ID())
+	// log.InfoS("Cron started: " + task.ID())
 
 	// Send start websocket
 	wsPayload := queue.AdminPayload{TaskID: task.ID(), Action: "started"}
@@ -179,7 +179,7 @@ func Run(task TaskInterface) {
 			log.ErrS(err)
 		}
 
-		log.InfoS("Cron finished: " + task.ID())
+		// log.InfoS("Cron finished: " + task.ID())
 	}
 }
 
