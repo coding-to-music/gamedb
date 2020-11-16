@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"html/template"
 	"net/http"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -249,7 +250,28 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	t.Providers = oauth.Providers
+	// Sort providers
+	t.Providers = append(t.Providers, oauth.Providers...) // Copy without reference
+
+	var providerOrders = map[oauth.ProviderEnum]int{}
+	for k, v := range t.Providers {
+		providerOrders[v.GetEnum()] = k
+	}
+
+	sort.Slice(t.Providers, func(i, j int) bool {
+
+		_, ok1 := t.UserProviders[t.Providers[i].GetEnum()]
+		_, ok2 := t.UserProviders[t.Providers[j].GetEnum()]
+
+		switch {
+		case ok1 == ok2:
+			return providerOrders[t.Providers[i].GetEnum()] < providerOrders[t.Providers[j].GetEnum()]
+		case ok1:
+			return true
+		default:
+			return false
+		}
+	})
 
 	// Template
 	returnTemplate(w, r, t)
