@@ -67,6 +67,7 @@ func (c battlenetProvider) GetUser(token *oauth2.Token) (user User, err error) {
 	user.Token = string(b)
 	user.ID = strconv.Itoa(resp.ID)
 	user.Username = resp.Battletag
+	user.Avatar = "https://play-lh.googleusercontent.com/NhrJdTU7jrwvxk6riquxbLeL1sPhyXt8P5Bxkm47FZjQgcnmQsx8veLg2kIIjOGuANE=s180-rw"
 
 	return user, nil
 }
