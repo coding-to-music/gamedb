@@ -21,11 +21,13 @@ func InitZap(logName string) {
 	}
 
 	if config.IsLocal() {
-		options = append(options, zap.Development())
-	}
 
-	// Cloud logging
-	if !config.IsLocal() {
+		options = append(options, zap.Development())
+
+		cores = append(cores, newFileCore(logName))
+
+	} else {
+
 		if config.C.GoogleProject != "" && config.C.GoogleAuthFile != "" {
 			cores = append(cores, newGoogleCore())
 		}
