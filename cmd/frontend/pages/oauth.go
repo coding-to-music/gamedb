@@ -442,5 +442,18 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 			log.ErrS(err)
 			break
 		}
+
+		// This already happens in login() but do it again incase youre just linking
+		player, err := mongo.GetPlayer(i)
+		if err != nil {
+			log.ErrS(err)
+			break
+		}
+
+		session.SetMany(r, map[string]string{
+			session.SessionPlayerID:    strconv.FormatInt(player.ID, 10),
+			session.SessionPlayerLevel: strconv.Itoa(player.Level),
+			session.SessionPlayerName:  player.GetName(),
+		})
 	}
 }
