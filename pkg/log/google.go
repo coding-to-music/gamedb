@@ -21,7 +21,7 @@ func newGoogleCore() zapcore.Core {
 		fmt.Println(err)
 	}
 
-	return GoogleCore{
+	return googleCore{
 		client:  googleClient,
 		context: ctx,
 		loggers: map[string]*logging.Logger{},
@@ -33,7 +33,7 @@ func newGoogleCore() zapcore.Core {
 	}
 }
 
-type GoogleCore struct {
+type googleCore struct {
 	client  *logging.Client
 	context context.Context
 	loggers map[string]*logging.Logger
@@ -44,9 +44,9 @@ type GoogleCore struct {
 	output       zapcore.WriteSyncer
 }
 
-func (g *GoogleCore) clone() *GoogleCore {
+func (g *googleCore) clone() *googleCore {
 
-	return &GoogleCore{
+	return &googleCore{
 		client:  g.client,
 		context: g.context,
 		loggers: g.loggers,
@@ -58,7 +58,7 @@ func (g *GoogleCore) clone() *GoogleCore {
 	}
 }
 
-func (g *GoogleCore) getLogger(name string) *logging.Logger {
+func (g *googleCore) getLogger(name string) *logging.Logger {
 
 	// Return cached logger
 	if val, ok := g.loggers[name]; ok {
@@ -78,11 +78,11 @@ func (g *GoogleCore) getLogger(name string) *logging.Logger {
 	return g.loggers[name]
 }
 
-func (g GoogleCore) Enabled(level zapcore.Level) bool {
+func (g googleCore) Enabled(level zapcore.Level) bool {
 	return level.Enabled(level)
 }
 
-func (g GoogleCore) With(fields []zapcore.Field) zapcore.Core {
+func (g googleCore) With(fields []zapcore.Field) zapcore.Core {
 
 	clone := g.clone()
 	for k := range fields {
@@ -91,7 +91,7 @@ func (g GoogleCore) With(fields []zapcore.Field) zapcore.Core {
 	return clone
 }
 
-func (g GoogleCore) Check(entry zapcore.Entry, checkedEntry *zapcore.CheckedEntry) *zapcore.CheckedEntry {
+func (g googleCore) Check(entry zapcore.Entry, checkedEntry *zapcore.CheckedEntry) *zapcore.CheckedEntry {
 
 	if g.Enabled(entry.Level) {
 		return checkedEntry.AddCore(entry, g)
@@ -99,7 +99,7 @@ func (g GoogleCore) Check(entry zapcore.Entry, checkedEntry *zapcore.CheckedEntr
 	return checkedEntry
 }
 
-func (g GoogleCore) Write(entry zapcore.Entry, fields []zapcore.Field) error {
+func (g googleCore) Write(entry zapcore.Entry, fields []zapcore.Field) error {
 
 	buf, err := g.encoder.EncodeEntry(entry, fields)
 	if err != nil {
@@ -142,7 +142,7 @@ func (g GoogleCore) Write(entry zapcore.Entry, fields []zapcore.Field) error {
 	return err
 }
 
-func (g GoogleCore) Sync() error {
+func (g googleCore) Sync() error {
 
 	for _, logger := range g.loggers {
 
