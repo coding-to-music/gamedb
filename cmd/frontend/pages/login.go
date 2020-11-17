@@ -147,22 +147,24 @@ func login(r *http.Request, user mysql.User) (string, bool) {
 	}
 
 	// Log user in
-	sessionData := map[string]string{
+	session.SetMany(r, map[string]string{
 		session.SessionUserID:     strconv.Itoa(user.ID),
 		session.SessionUserEmail:  user.Email,
 		session.SessionUserProdCC: string(user.ProductCC),
 		session.SessionUserAPIKey: user.APIKey,
 		session.SessionUserLevel:  strconv.Itoa(int(user.Level)),
 		// session.SessionUserShowAlerts: strconv.FormatBool(user.ShowAlerts),
-	}
+	})
 
 	playerID := mysql.GetUserSteamID(user.ID)
 	if playerID > 0 {
 		player, err := mongo.GetPlayer(playerID)
 		if err == nil {
-			sessionData[session.SessionPlayerID] = strconv.FormatInt(player.ID, 10)
-			sessionData[session.SessionPlayerName] = player.GetName()
-			sessionData[session.SessionPlayerLevel] = strconv.Itoa(player.Level)
+			session.SetMany(r, map[string]string{
+				session.SessionPlayerID:    strconv.FormatInt(player.ID, 10),
+				session.SessionPlayerName:  player.GetName(),
+				session.SessionPlayerLevel: strconv.Itoa(player.Level),
+			})
 		} else {
 			err = helpers.IgnoreErrors(err, steamid.ErrInvalidPlayerID, mongo.ErrNoDocuments)
 			if err != nil {
@@ -170,8 +172,6 @@ func login(r *http.Request, user mysql.User) (string, bool) {
 			}
 		}
 	}
-
-	session.SetMany(r, sessionData)
 
 	// Create login event
 	err := mongo.NewEvent(r, user.ID, mongo.EventLogin)
