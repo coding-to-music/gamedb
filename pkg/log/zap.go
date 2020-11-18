@@ -46,8 +46,6 @@ func InitZap(logName string) {
 
 func Flush() {
 
-	Info("Flushing logs")
-
 	err := recover()
 	if err != nil {
 		zap.S().Error(err)
