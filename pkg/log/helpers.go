@@ -16,6 +16,7 @@ const (
 	LogNameDown      = "down"
 	LogNameTest      = "test"
 	LogNameScaler    = "scaler"
+	LogNameDevenv    = "devenv"
 
 	// Webhooks
 	LogNameTwitter  = "twitter" // Zapier
