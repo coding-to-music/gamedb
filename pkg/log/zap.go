@@ -2,6 +2,7 @@ package log
 
 import (
 	"os"
+	"syscall"
 
 	"github.com/gamedb/gamedb/pkg/config"
 	"go.uber.org/zap"
@@ -52,6 +53,16 @@ func Flush() {
 	}
 
 	err = zap.L().Sync()
+
+	// Ignore unactionable errors
+	if osErr, ok := err.(*os.PathError); ok {
+		wrappedErr := osErr.Unwrap()
+		switch wrappedErr {
+		case syscall.EINVAL, syscall.ENOTSUP, syscall.ENOTTY:
+			err = nil
+		}
+	}
+
 	if err != nil {
 		zap.S().Error(err)
 	}
