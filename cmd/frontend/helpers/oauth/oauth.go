@@ -46,7 +46,7 @@ var _ = []OAuth2Provider{
 	twitchProvider{},
 	battlenetProvider{},
 	googleProvider{},
-	&redditProvider{},
+	redditProvider{},
 	patreonProvider{},
 	githubProvider{},
 }
