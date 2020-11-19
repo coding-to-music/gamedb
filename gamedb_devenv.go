@@ -4,11 +4,10 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
-	"os/signal"
 	"path/filepath"
 	"strconv"
 	"strings"
-	"syscall"
+	"time"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/gamedb/gamedb/pkg/config"
@@ -30,21 +29,20 @@ func main() {
 		return
 	}
 
-	if len(os.Args) <= 1 {
+	processes = filterSlice(os.Args)
+	if len(processes) <= 1 {
 		log.InfoS("please specify a cmd")
+		helpers.KeepAlive()
 		return
 	}
-	processes = os.Args[1:]
+	processes = processes[1:]
 
 	stopAll()
 	startAll()
 
 	go watchFiles()
 
-	// ctrl-c
-	signals := make(chan os.Signal)
-	signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
-	<-signals
+	helpers.KeepAlive()
 
 	stopAll()
 }
@@ -56,19 +54,25 @@ func startAll() {
 	for _, process := range processes {
 		go func(process string) {
 
-			cmd := exec.Command("sh", "-c", `cd ./cmd/`+process+`/; go build -ldflags "-X main.version=$(git rev-parse --verify HEAD) -X main.commits=$(git rev-list --count master)" *.go; ./`+process+``)
-			err := cmd.Start()
+			cmd := exec.Command("sh", "-c", `go build -o `+process+` -ldflags "-X main.version=$(git rev-parse --verify HEAD) -X main.commits=$(git rev-list --count master)" *.go`)
+			cmd.Dir = "./cmd/" + process
+			err := cmd.Run() // Blocks
 			if err != nil {
 				log.ErrS(err)
 				return
 			}
 
-			filename := TMP + process + ".pid"
-
-			err = ioutil.WriteFile(filename, []byte(strconv.Itoa(cmd.Process.Pid)), 0644)
+			cmd = exec.Command("sh", "-c", "./"+process)
+			cmd.Dir = "./cmd/" + process
+			err = cmd.Start()
 			if err != nil {
 				log.ErrS(err)
 				return
+			}
+
+			err = ioutil.WriteFile(TMP+process+".pid", []byte(strconv.Itoa(cmd.Process.Pid)), 0644)
+			if err != nil {
+				log.ErrS(err)
 			}
 
 		}(process)
@@ -98,6 +102,8 @@ func stopAll() {
 	}
 }
 
+var lastUpdated time.Time
+
 func watchFiles() {
 
 	watcher, err := fsnotify.NewWatcher()
@@ -120,9 +126,12 @@ func watchFiles() {
 
 					if strings.HasPrefix(filepath.Ext(event.Name), ".go") {
 
-						log.InfoS("Updating: ", event.Name)
-						stopAll()
-						startAll()
+						if time.Now().Sub(lastUpdated) > (time.Second / 10) {
+							lastUpdated = time.Now()
+							log.InfoS("Updating: ", event.Name)
+							stopAll()
+							startAll()
+						}
 					}
 				}
 
@@ -174,4 +183,13 @@ func getDirs() (p []string, err error) {
 	})
 
 	return p, err
+}
+
+func filterSlice(in []string) (out []string) {
+	for _, str := range in {
+		if str != "" {
+			out = append(out, str)
+		}
+	}
+	return out
 }

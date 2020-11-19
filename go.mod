@@ -33,6 +33,7 @@ require (
 	github.com/djherbis/fscache v0.10.1
 	github.com/dustin/go-humanize v1.0.0
 	github.com/frustra/bbcode v0.0.0-20180807171629-48be21ce690c
+	github.com/fsnotify/fsnotify v1.4.9
 	github.com/getkin/kin-openapi v0.28.0
 	github.com/ghodss/yaml v1.0.1-0.20190212211648-25d852aebe32 // indirect
 	github.com/go-chi/chi v4.1.2+incompatible

@@ -1,0 +1,18 @@
+#!/bin/bash
+
+LOGS=/tmp/gamedb
+
+#
+cd ~/Sites/gamedb/gamedb || exit 1
+
+# Run Go devenv
+go build gamedb_devenv.go
+./gamedb_devenv "$@" >/dev/null &
+ID=$!
+
+# Launch lnav
+mkdir -p $LOGS
+lnav $LOGS
+
+# Hide output as ctrl-c will cause the go process to already be killed
+kill $ID > /dev/null 2>&1
