@@ -46,10 +46,14 @@ func main() {
 
 	log.Info("Starting Scaler on " + "http://" + s.Addr)
 
-	err = s.ListenAndServe()
-	if err != nil {
-		log.ErrS(err)
-	}
+	go func() {
+		err = s.ListenAndServe()
+		if err != nil {
+			log.ErrS(err)
+		}
+	}()
+
+	helpers.KeepAlive()
 }
 
 func listHandler(w http.ResponseWriter, _ *http.Request) {

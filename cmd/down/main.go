@@ -44,10 +44,14 @@ func main() {
 
 	log.Info("Starting Down on " + "http://" + s.Addr)
 
-	err = s.ListenAndServe()
-	if err != nil {
-		log.ErrS(err)
-	}
+	go func() {
+		err = s.ListenAndServe()
+		if err != nil {
+			log.ErrS(err)
+		}
+	}()
+
+	helpers.KeepAlive()
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {

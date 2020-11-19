@@ -60,10 +60,14 @@ func main() {
 
 	log.Info("Starting API on " + "http://" + s.Addr + "/games")
 
-	err = s.ListenAndServe()
-	if err != nil {
-		log.ErrS(err)
-	}
+	go func() {
+		err = s.ListenAndServe()
+		if err != nil {
+			log.ErrS(err)
+		}
+	}()
+
+	helpers.KeepAlive()
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {

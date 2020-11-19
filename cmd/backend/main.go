@@ -87,8 +87,12 @@ func main() {
 
 	log.Info("Starting Backend on tcp://" + lis.Addr().String())
 
-	err = grpcServer.Serve(lis)
-	if err != nil {
-		log.ErrS(err)
-	}
+	go func() {
+		err = grpcServer.Serve(lis)
+		if err != nil {
+			log.ErrS(err)
+		}
+	}()
+
+	helpers.KeepAlive()
 }

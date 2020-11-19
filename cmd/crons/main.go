@@ -62,7 +62,9 @@ func main() {
 	}
 
 	log.Info("Starting crons")
-	c.Run() // Blocks
+	go c.Run() // Blocks
+
+	helpers.KeepAlive()
 }
 
 //

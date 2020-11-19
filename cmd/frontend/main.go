@@ -225,10 +225,14 @@ func main() {
 
 	log.Info("Starting Frontend on " + "http://" + s.Addr)
 
-	err = s.ListenAndServe()
-	if err != nil {
-		log.ErrS(err)
-	}
+	go func() {
+		err = s.ListenAndServe()
+		if err != nil {
+			log.ErrS(err)
+		}
+	}()
+
+	helpers.KeepAlive()
 }
 
 func redirectHandler(path string) func(w http.ResponseWriter, r *http.Request) {
