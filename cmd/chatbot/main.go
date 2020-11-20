@@ -25,13 +25,10 @@ import (
 
 const debugAuthorID = "145456943912189952"
 
-var version string
-var commits string
-
 //noinspection GoDeferInLoop
 func main() {
 
-	err := config.Init(version, commits, helpers.GetIP())
+	err := config.Init(helpers.GetIP())
 	log.InitZap(log.LogNameChatbot)
 	defer log.Flush()
 	if err != nil {

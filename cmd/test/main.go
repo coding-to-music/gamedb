@@ -10,12 +10,9 @@ import (
 	"github.com/gamedb/gamedb/pkg/queue"
 )
 
-var version string
-var commits string
-
 func main() {
 
-	err := config.Init(version, commits, helpers.GetIP())
+	err := config.Init(helpers.GetIP())
 	log.InitZap(log.LogNameTest)
 	defer log.Flush()
 	if err != nil {

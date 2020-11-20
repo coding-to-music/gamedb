@@ -8,8 +8,8 @@ import (
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/backend"
 	"github.com/gamedb/gamedb/pkg/backend/generated"
-	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/ldflags"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/go-chi/chi"
@@ -71,7 +71,7 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//
-	commitsCount, err := strconv.Atoi(config.C.Commits)
+	commitsCount, err := strconv.Atoi(ldflags.CommitCount)
 
 	var response = datatable.NewDataTablesResponse(r, query, int64(commitsCount), int64(commitsCount), nil)
 	var live bool
@@ -80,7 +80,7 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		t := time.Unix(commit.GetTime(), 0).Format(helpers.DateTime)
 
-		if commit.GetHash() == config.C.CommitHash {
+		if commit.GetHash() == ldflags.CommitHash {
 			live = true
 		}
 

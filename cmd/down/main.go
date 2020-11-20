@@ -11,14 +11,9 @@ import (
 	"go.uber.org/zap"
 )
 
-var (
-	version string
-	commits string
-)
-
 func main() {
 
-	err := config.Init(version, commits, helpers.GetIP())
+	err := config.Init(helpers.GetIP())
 	log.InitZap(log.LogNameDown)
 	defer log.Flush()
 	if err != nil {

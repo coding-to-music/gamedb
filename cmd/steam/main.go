@@ -27,9 +27,6 @@ const (
 )
 
 var (
-	version string
-	commits string
-
 	steamClient *steam.Client
 
 	steamChangeNumber uint32
@@ -39,7 +36,7 @@ var (
 
 func main() {
 
-	err := config.Init(version, commits, helpers.GetIP())
+	err := config.Init(helpers.GetIP())
 	log.InitZap(log.LogNameSteam)
 	defer log.Flush()
 	if err != nil {

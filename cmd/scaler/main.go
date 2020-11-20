@@ -16,12 +16,9 @@ import (
 	"github.com/go-chi/chi"
 )
 
-var version string
-var commits string
-
 func main() {
 
-	err := config.Init(version, commits, helpers.GetIP())
+	err := config.Init(helpers.GetIP())
 	log.InitZap(log.LogNameScaler)
 	defer log.Flush()
 	if err != nil {

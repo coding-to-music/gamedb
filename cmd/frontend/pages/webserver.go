@@ -21,6 +21,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
+	"github.com/gamedb/gamedb/pkg/ldflags"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -507,7 +508,7 @@ func (t globalTemplate) GetVersionHash() string {
 }
 
 func (t globalTemplate) GetCommits() string {
-	return config.C.Commits
+	return ldflags.CommitCount
 }
 
 var assetTime = time.Now().Unix()

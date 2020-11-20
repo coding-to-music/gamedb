@@ -13,12 +13,9 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
-var version string
-var commits string
-
 func main() {
 
-	err := config.Init(version, commits, helpers.GetIP())
+	err := config.Init(helpers.GetIP())
 	log.InitZap(log.LogNameCrons)
 	defer log.Flush()
 	if err != nil {

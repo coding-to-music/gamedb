@@ -4,6 +4,7 @@ import (
 	"errors"
 	"strings"
 
+	"github.com/gamedb/gamedb/pkg/ldflags"
 	"github.com/kelseyhightower/envconfig"
 )
 
@@ -162,8 +163,6 @@ type Config struct {
 	GRPCKeysPath        string `envconfig:"GRPC_KEYS_PATH"`
 
 	// Non-environment
-	CommitHash             string `ignored:"true"`
-	Commits                string `ignored:"true"`
 	GameDBShortName        string `ignored:"true"`
 	IP                     string `ignored:"true"`
 	NewReleaseDays         int    `ignored:"true"`
@@ -173,12 +172,10 @@ type Config struct {
 
 var C Config
 
-func Init(version string, commits string, ip string) (err error) {
+func Init(ip string) (err error) {
 
 	err = envconfig.Process("steam", &C)
 
-	C.CommitHash = version
-	C.Commits = commits
 	C.GameDBShortName = "GameDB"
 	C.IP = ip
 	C.NewReleaseDays = 14
@@ -224,7 +221,7 @@ func GetSteamKeyTag() string {
 
 func GetShortCommitHash() string {
 
-	key := C.CommitHash
+	key := ldflags.CommitHash
 	if len(key) > 7 {
 		key = key[0:7]
 	}

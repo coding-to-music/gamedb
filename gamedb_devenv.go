@@ -21,7 +21,7 @@ var processes []string
 
 func main() {
 
-	err := config.Init("", "", "")
+	err := config.Init("")
 	log.InitZap(log.LogNameDevenv)
 	defer log.Flush()
 	if err != nil {

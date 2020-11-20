@@ -19,12 +19,9 @@ import (
 	chiMiddleware "github.com/go-chi/chi/middleware"
 )
 
-var version string
-var commits string
-
 func main() {
 
-	err := config.Init(version, commits, helpers.GetIP())
+	err := config.Init(helpers.GetIP())
 	log.InitZap(log.LogNameAPI)
 	defer log.Flush()
 	if err != nil {

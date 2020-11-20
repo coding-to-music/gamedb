@@ -29,9 +29,6 @@ import (
 )
 
 var (
-	version string
-	commits string
-
 	distBox  = packr.New("dist", "./assets/dist")
 	filesBox = packr.New("files", "./assets/files")
 	imgBox   = packr.New("img", "./assets/img")
@@ -41,7 +38,7 @@ func main() {
 
 	rand.Seed(time.Now().Unix())
 
-	err := config.Init(version, commits, helpers.GetIP())
+	err := config.Init(helpers.GetIP())
 	log.InitZap(log.LogNameFrontend)
 	defer log.Flush()
 	if err != nil {

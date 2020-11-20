@@ -6,6 +6,7 @@ import (
 
 	"github.com/cenkalti/backoff/v4"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/ldflags"
 	"github.com/gamedb/gamedb/pkg/log"
 )
 
@@ -70,8 +71,8 @@ func GetConsumer(tag string) (err error) {
 			"owner":       tag,
 			"environment": config.C.Environment,
 			"version":     config.GetShortCommitHash(),
-			"commits":     config.C.Commits,
 			"ip":          config.C.IP,
+			"commits":     ldflags.CommitCount,
 		}
 
 		db = db.New().Table("consumers").Where("`key` = ?", row.Key).Updates(fields)

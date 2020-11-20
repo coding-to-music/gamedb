@@ -17,14 +17,11 @@ import (
 	"google.golang.org/grpc/credentials"
 )
 
-var version string
-var commits string
-
 //go:generate bash ./scripts/generate.sh
 
 func main() {
 
-	err := config.Init(version, commits, helpers.GetIP())
+	err := config.Init(helpers.GetIP())
 	log.InitZap(log.LogNameBackend)
 	defer log.Flush()
 	if err != nil {

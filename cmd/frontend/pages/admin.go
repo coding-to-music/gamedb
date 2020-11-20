@@ -14,6 +14,7 @@ import (
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/ldflags"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/middleware"
@@ -356,7 +357,7 @@ func adminStatsHandler(w http.ResponseWriter, r *http.Request) {
 	t := adminStatsTemplate{}
 	t.fill(w, r, "admin_stats", "Admin", "Admin")
 
-	t.Commits = config.C.Commits
+	t.Commits = ldflags.CommitCount
 	t.Hash = config.GetShortCommitHash()
 
 	// Oldest player

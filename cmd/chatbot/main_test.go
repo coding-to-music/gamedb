@@ -13,7 +13,7 @@ import (
 
 func Test(t *testing.T) {
 
-	err := config.Init(version, commits, helpers.GetIP())
+	err := config.Init(helpers.GetIP())
 	log.InitZap(log.LogNameTest)
 	defer log.Flush()
 	if err != nil {

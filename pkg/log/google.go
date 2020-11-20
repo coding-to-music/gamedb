@@ -7,6 +7,7 @@ import (
 
 	"cloud.google.com/go/logging"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/ldflags"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"google.golang.org/api/option"
@@ -68,10 +69,10 @@ func (g *googleCore) getLogger(name string) *logging.Logger {
 	// Create logger
 	common := map[string]string{
 		"env":     config.C.Environment,
-		"commits": config.C.Commits,
-		"hash":    config.C.CommitHash,
 		"key":     config.C.SteamAPIKey,
 		"ip":      config.C.IP,
+		"commits": ldflags.CommitCount,
+		"hash":    ldflags.CommitHash,
 	}
 	g.loggers[name] = g.client.Logger(name, logging.CommonLabels(common))
 
