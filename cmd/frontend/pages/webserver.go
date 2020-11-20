@@ -374,15 +374,16 @@ func (t *globalTemplate) setRandomBackground(title bool, link bool) {
 	}
 
 	blocklist := []int{
-		10,     // Counter-Strike
-		550,    // Left 4 Dead 2
-		4000,   // Garry's Mod
-		236850, // Europa Universalis IV
-		227300, // Euro Truck Simulator 2
-		242760, // The Forest
-		289070, // Sid Meier's Civilization VI
-		431960, // Wallpaper Engine
-		526870, // Satisfactory
+		10,      // Counter-Strike
+		550,     // Left 4 Dead 2
+		4000,    // Garry's Mod
+		236850,  // Europa Universalis IV
+		227300,  // Euro Truck Simulator 2
+		242760,  // The Forest
+		289070,  // Sid Meier's Civilization VI
+		431960,  // Wallpaper Engine
+		526870,  // Satisfactory
+		1313860, // EA SPORTS™ FIFA 21
 	}
 
 	extras := []mongo.App{
