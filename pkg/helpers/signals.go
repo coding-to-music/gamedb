@@ -9,7 +9,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func KeepAlive() {
+func KeepAlive(callbacks ...func()) {
 
 	var signals = []os.Signal{
 		syscall.SIGTERM,
@@ -23,6 +23,10 @@ func KeepAlive() {
 	signal.Notify(signalsChan, signals...)
 
 	s := <-signalsChan // Blocks
+
+	for _, callback := range callbacks {
+		callback()
+	}
 
 	log.Info("Shutting down", zap.String("signal", s.String()))
 }
