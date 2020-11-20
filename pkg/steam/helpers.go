@@ -9,8 +9,8 @@ import (
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gocolly/colly/v2"
+	"go.uber.org/zap"
 )
 
 func AllowSteamCodes(err error, allowedCodes ...int) error {
@@ -79,10 +79,11 @@ func LogSteamError(err error, interfaces ...interface{}) {
 	// Prepend error
 	interfaces = append([]interface{}{err}, interfaces...)
 
+	// These don't use the log helper to fix the extra stack offset
 	if isError {
-		log.ErrS(interfaces...)
+		zap.S().Error(interfaces...)
 	} else {
-		log.InfoS(interfaces...)
+		zap.S().Info(interfaces...)
 	}
 }
 
