@@ -28,5 +28,7 @@ func KeepAlive(callbacks ...func()) {
 		callback()
 	}
 
+	log.Flush()
+
 	log.Info("Shutting down", zap.String("signal", s.String()))
 }
