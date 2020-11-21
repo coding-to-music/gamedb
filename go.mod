@@ -51,6 +51,7 @@ require (
 	github.com/gosimple/slug v1.9.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.0.1
 	github.com/hetznercloud/hcloud-go v1.23.1
+	github.com/influxdata/influxdb-client-go/v2 v2.2.0
 	github.com/influxdata/influxdb1-client v0.0.0-20200827194710-b269163b24ab
 	github.com/jinzhu/gorm v1.9.16
 	github.com/jinzhu/now v1.1.1

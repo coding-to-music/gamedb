@@ -176,7 +176,9 @@ func main() {
 		return
 	}
 
-	helpers.KeepAlive()
+	helpers.KeepAlive(func() {
+		influxHelper.GetWriter().Flush()
+	})
 }
 
 func isPrivateChannel(s *discordgo.Session, m *discordgo.MessageCreate) (bool, error) {

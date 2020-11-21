@@ -6,6 +6,7 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/queue"
@@ -60,5 +61,7 @@ func main() {
 	// Load consumers
 	queue.Init(queue.ConsumersDefinitions)
 
-	helpers.KeepAlive()
+	helpers.KeepAlive(func() {
+		influx.GetWriter().Flush()
+	})
 }

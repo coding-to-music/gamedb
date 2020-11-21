@@ -1,6 +1,7 @@
 package influx
 
 import (
+	"context"
 	"encoding/json"
 	"math"
 	"sort"
@@ -9,6 +10,7 @@ import (
 	"github.com/Jleagle/influxql"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/influxdata/influxdb-client-go/v2"
 	influx "github.com/influxdata/influxdb1-client"
 	"github.com/influxdata/influxdb1-client/models"
 	influxModels "github.com/influxdata/influxdb1-client/models"
@@ -88,6 +90,32 @@ func InfluxQuery(builder *influxql.Builder) (resp *influx.Response, err error) {
 	})
 
 	return resp, err
+}
+
+func Write(measurement InfluxMeasurement, tags map[string]string, fields map[string]interface{}) {
+
+	GetWriter().WritePoint(influxdb2.NewPoint(measurement.String(), tags, fields, time.Now()))
+}
+
+func Read(builder *influxql.Builder) error {
+
+	result, err := getReader().Query(context.Background(), builder.String())
+	if err != nil {
+		return err
+	}
+
+	for result.Next() {
+		if result.TableChanged() {
+			log.InfoS("table: %s\n", result.TableMetadata().String())
+		}
+		log.InfoS("row: %s\n", result.Record().String())
+	}
+
+	if result.Err() != nil {
+		return err
+	}
+
+	return nil
 }
 
 type (

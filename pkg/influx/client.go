@@ -1,22 +1,27 @@
 package influx
 
 import (
+	"fmt"
 	"net/url"
 	"sync"
 
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/influxdata/influxdb-client-go/v2"
+	"github.com/influxdata/influxdb-client-go/v2/api"
 	influx "github.com/influxdata/influxdb1-client"
+	"go.uber.org/zap"
 )
 
 var (
 	client *influx.Client
-	lock   sync.Mutex
+	mutex  sync.Mutex
 )
 
 func getInfluxClient() (*influx.Client, error) {
 
-	lock.Lock()
-	defer lock.Unlock()
+	mutex.Lock()
+	defer mutex.Unlock()
 
 	var err error
 	var host *url.URL
@@ -36,4 +41,62 @@ func getInfluxClient() (*influx.Client, error) {
 	}
 
 	return client, err
+}
+
+var (
+	client2 influxdb2.Client
+	mutex2  sync.Mutex
+)
+
+func getInfluxClient2() influxdb2.Client {
+
+	mutex2.Lock()
+	defer mutex2.Unlock()
+
+	if client2 == nil {
+		client2 = influxdb2.NewClient(config.C.InfluxURL, fmt.Sprintf("%s:%s", config.C.InfluxUsername, config.C.InfluxPassword))
+	}
+
+	return client2
+}
+
+var (
+	reader      api.QueryAPI
+	readerMutex sync.Mutex
+)
+
+func getReader() api.QueryAPI {
+
+	readerMutex.Lock()
+	defer readerMutex.Unlock()
+
+	if reader == nil {
+		reader = getInfluxClient2().QueryAPI("")
+	}
+
+	return reader
+}
+
+var (
+	writer      api.WriteAPI
+	writerMutex sync.Mutex
+)
+
+func GetWriter() api.WriteAPI {
+
+	writerMutex.Lock()
+	defer writerMutex.Unlock()
+
+	if writer == nil {
+
+		writer = getInfluxClient2().WriteAPI("", InfluxGameDB+"/"+InfluxRetentionPolicyAllTime.String())
+
+		go func() {
+			for err := range writer.Errors() {
+				log.Err("writing to influx", zap.Error(err))
+			}
+		}()
+	}
+
+	return writer
 }

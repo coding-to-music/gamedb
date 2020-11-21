@@ -18,6 +18,7 @@ import (
 	"github.com/gamedb/gamedb/cmd/frontend/pages"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/middleware"
@@ -229,7 +230,9 @@ func main() {
 		}
 	}()
 
-	helpers.KeepAlive()
+	helpers.KeepAlive(func() {
+		influx.GetWriter().Flush()
+	})
 }
 
 func redirectHandler(path string) func(w http.ResponseWriter, r *http.Request) {
