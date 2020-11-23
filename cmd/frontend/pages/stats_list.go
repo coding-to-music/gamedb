@@ -49,6 +49,10 @@ func statPathToConst(path string, r *http.Request) mongo.StatsType {
 func statsListHandler(w http.ResponseWriter, r *http.Request) {
 
 	typex := statPathToConst(chi.URLParam(r, "type"), r)
+	if typex == "" {
+		Error404Handler(w, r)
+		return
+	}
 
 	t := statsTagsTemplate{}
 	t.fill(w, r, "stats_list", typex.Title()+"s", template.HTML("Top Steam "+typex.Title()+"s"))

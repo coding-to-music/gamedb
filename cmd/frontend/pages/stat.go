@@ -33,10 +33,14 @@ func StatRouter() http.Handler {
 func statHandler(w http.ResponseWriter, r *http.Request) {
 
 	typex := statPathToConst(chi.URLParam(r, "type"), r)
+	if typex == "" {
+		Error404Handler(w, r)
+		return
+	}
 
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
-		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid App ID"})
+		returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Invalid App ID"})
 		return
 	}
 
@@ -73,8 +77,14 @@ func statAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := datatable.NewDataTableQuery(r, false)
 
+	typex := statPathToConst(chi.URLParam(r, "type"), r)
+	if typex == "" {
+		Error404Handler(w, r)
+		return
+	}
+
 	var wg sync.WaitGroup
-	var filter = bson.D{{Key: statPathToConst(chi.URLParam(r, "type"), r).MongoCol(), Value: idx}}
+	var filter = bson.D{{Key: typex.MongoCol(), Value: idx}}
 	var countLock sync.Mutex
 
 	var apps []mongo.App
@@ -156,10 +166,13 @@ func statTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	key := mongo.Stat{
-		Type: statPathToConst(chi.URLParam(r, "type"), r),
-		ID:   idx,
-	}.GetKey()
+	typex := statPathToConst(chi.URLParam(r, "type"), r)
+	if typex == "" {
+		Error404Handler(w, r)
+		return
+	}
+
+	key := mongo.Stat{Type: typex, ID: idx}.GetKey()
 
 	hc := influx.HighChartsJSON{}
 	code := session.GetProductCC(r)
