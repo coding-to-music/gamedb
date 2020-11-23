@@ -2,6 +2,8 @@ package influx
 
 var (
 	InfPlayersAchievements     = Field{Field: "achievements"}
+	InfPlayersAchievements100  = Field{Field: "achievements_count_100"}
+	InfPlayersAchievementsApps = Field{Field: "achievements_count_apps"}
 	InfPlayersAchievementsRank = Field{Field: "achievements_rank"}
 	InfPlayersBadges           = Field{Field: "badges"}
 	InfPlayersBadgesRank       = Field{Field: "badges_rank"}

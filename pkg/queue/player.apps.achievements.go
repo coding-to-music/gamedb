@@ -105,7 +105,9 @@ func playerAchievementsHandler(message *rabbit.Message) {
 
 		// Update Influx
 		err = savePlayerStatsToInflux(payload.PlayerID, map[string]interface{}{
-			influx.InfPlayersAchievements.String(): count,
+			influx.InfPlayersAchievements.String():     count,
+			influx.InfPlayersAchievements100.String():  count100,
+			influx.InfPlayersAchievementsApps.String(): countApps,
 		})
 		if err != nil {
 			log.ErrS(err, payload.PlayerID)
@@ -117,6 +119,8 @@ func playerAchievementsHandler(message *rabbit.Message) {
 		var items = []string{
 			memcache.MemcachePlayer(payload.PlayerID).Key,
 			memcache.MemcacheMongoCount(mongo.CollectionPlayerAchievements.String(), bson.D{{"player_id", payload.PlayerID}}).Key,
+			memcache.MemcachePlayerAchievementsDays(payload.PlayerID).Key,
+			memcache.MemcachePlayerAchievementsInflux(payload.PlayerID).Key,
 		}
 
 		err = memcache.Delete(items...)
