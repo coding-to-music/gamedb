@@ -127,6 +127,7 @@ func EnsureIndexes() {
 	ensurePlayerIndexes()
 	ensurePlayerAchievementIndexes()
 	ensurePlayerAppIndexes()
+	ensurePlayerFriendIndexes()
 	ensureSaleIndexes()
 	log.Info("Finished migrations")
 }

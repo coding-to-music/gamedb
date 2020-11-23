@@ -76,6 +76,38 @@ func (friend PlayerFriend) CommunityLink() string {
 	return helpers.GetPlayerCommunityLink(friend.FriendID, "")
 }
 
+func ensurePlayerFriendIndexes() {
+
+	var indexModels = []mongo.IndexModel{
+		{
+			Keys: bson.D{{"player_id", 1}, {"name", 1}},
+			Options: options.Index().SetCollation(&options.Collation{
+				Locale:   "en",
+				Strength: 2, // Case insensitive
+			}),
+		},
+		{
+			Keys: bson.D{{"friend_id", 1}},
+			Options: options.Index().SetCollation(&options.Collation{
+				Locale:   "en",
+				Strength: 2, // Case insensitive
+			}),
+		},
+	}
+
+	//
+	client, ctx, err := getMongo()
+	if err != nil {
+		log.ErrS(err)
+		return
+	}
+
+	_, err = client.Database(config.C.MongoDatabase).Collection(CollectionPlayerFriends.String()).Indexes().CreateMany(ctx, indexModels)
+	if err != nil {
+		log.ErrS(err)
+	}
+}
+
 func CountFriends(playerID int64) (count int64, err error) {
 
 	return CountDocuments(CollectionPlayerFriends, bson.D{{"player_id", playerID}}, 0)
