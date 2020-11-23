@@ -41,7 +41,7 @@ func playerAchievementsHandler(message *rabbit.Message) {
 	// Last item for this player
 	if payload.AppID == 0 {
 
-		<-time.NewTimer(time.Second * 5).C // Sleep to make sure all other messages are consumed
+		<-time.NewTimer(time.Second * 10).C // Sleep to make sure all other messages are consumed
 
 		// Websocket
 		defer func() {
