@@ -182,6 +182,10 @@ func returnErrorTemplate(w http.ResponseWriter, r *http.Request, t errorTemplate
 		t.Code = 500
 	}
 
+	if t.Code == 404 && t.Message == "" {
+		t.Message = "Page Not Found"
+	}
+
 	w.WriteHeader(t.Code)
 
 	returnTemplate(w, r, t)
