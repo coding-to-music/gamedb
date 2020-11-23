@@ -166,9 +166,9 @@ func ReplacePlayerFriends(friends []*PlayerFriend) (err error) {
 	return err
 }
 
-func GetFriends(playerID int64, offset int64, limit int64, sort bson.D) (friends []PlayerFriend, err error) {
+func GetFriends(playerID int64, offset int64, limit int64, sort bson.D, filter bson.D) (friends []PlayerFriend, err error) {
 
-	var filter = bson.D{{"player_id", playerID}}
+	filter = append(bson.D{{"player_id", playerID}}, filter...)
 
 	cur, ctx, err := Find(CollectionPlayerFriends, offset, limit, sort, filter, nil, nil)
 	if err != nil {

@@ -474,7 +474,7 @@ func updatePlayerFriends(player *mongo.Player) error {
 	player.FriendsCount = len(newFriendsSlice)
 
 	// Get data
-	oldFriendsSlice, err := mongo.GetFriends(player.ID, 0, 0, nil)
+	oldFriendsSlice, err := mongo.GetFriends(player.ID, 0, 0, nil, nil)
 	if err != nil {
 		return err
 	}

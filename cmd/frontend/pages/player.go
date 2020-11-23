@@ -487,7 +487,7 @@ func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
 	var friendIDs []int64
 	var friendIDsMap = map[int64]bool{}
 
-	friends, err := mongo.GetFriends(idx, 0, 0, nil)
+	friends, err := mongo.GetFriends(idx, 0, 0, nil, nil)
 	if err != nil {
 		log.ErrS(err)
 	}
@@ -804,7 +804,7 @@ func playerFriendsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		var err error
-		friends, err = mongo.GetFriends(playerIDInt, query.GetOffset64(), 100, query.GetOrderMongo(columns))
+		friends, err = mongo.GetFriends(playerIDInt, query.GetOffset64(), 100, query.GetOrderMongo(columns), nil)
 		if err != nil {
 			log.ErrS(err)
 		}
