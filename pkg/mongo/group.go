@@ -65,7 +65,6 @@ func (group Group) BSON() bson.D {
 	}
 }
 
-//noinspection GoUnusedExportedFunction
 func ensureGroupIndexes() {
 
 	var indexModels = []mongo.IndexModel{

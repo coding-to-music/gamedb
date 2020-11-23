@@ -89,7 +89,7 @@ func playerAchievementsHandler(message *rabbit.Message) {
 			countApps = int64(payload.OldCountApps)
 		}
 
-		// Update player row
+		// Update Mongo
 		var update = bson.D{
 			{"achievement_count", int(count)},
 			{"achievement_count_100", int(count100)},
@@ -103,7 +103,7 @@ func playerAchievementsHandler(message *rabbit.Message) {
 			return
 		}
 
-		// Save to Influx
+		// Update Influx
 		err = savePlayerStatsToInflux(payload.PlayerID, map[string]interface{}{
 			influx.InfPlayersAchievements.String(): count,
 		})

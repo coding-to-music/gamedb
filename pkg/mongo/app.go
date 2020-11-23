@@ -593,7 +593,6 @@ func UpdateAppsInflux(writes []mongo.WriteModel) (err error) {
 	return err
 }
 
-//noinspection GoUnusedExportedFunction
 func ensureAppIndexes() {
 
 	var indexModels []mongo.IndexModel

@@ -120,7 +120,6 @@ func (app PlayerApp) GetAchievementPercent() string {
 	return helpers.GetAchievementCompleted(app.AppAchievementsPercent)
 }
 
-//noinspection GoUnusedExportedFunction
 func ensurePlayerAppIndexes() {
 
 	var indexModels = []mongo.IndexModel{

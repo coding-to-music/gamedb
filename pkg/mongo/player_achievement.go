@@ -60,7 +60,6 @@ func (a PlayerAchievement) GetComplete() string {
 	return helpers.GetAchievementCompleted(a.AchievementComplete)
 }
 
-//noinspection GoUnusedExportedFunction
 func ensurePlayerAchievementIndexes() {
 
 	var indexModels = []mongo.IndexModel{
