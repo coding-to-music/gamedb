@@ -47,6 +47,7 @@ func PlayerRouter() http.Handler {
 	r.Get("/friends.json", playerFriendsAjaxHandler)
 	r.Get("/achievements.json", playerAchievementsAjaxHandler)
 	r.Get("/achievement-days.json", playerAchievementDaysAjaxHandler)
+	r.Get("/achievement-influx.json", playerAchievementInfluxAjaxHandler)
 	r.Get("/games.json", playerGamesAjaxHandler)
 	r.Get("/groups.json", playerGroupsAjaxHandler)
 	r.Get("/history.json", playersHistoryAjaxHandler)
@@ -1232,6 +1233,55 @@ func playersHistoryAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
 
 		hc = influx.InfluxResponseToHighCharts(resp.Results[0].Series[0], true)
+	}
+
+	returnJSON(w, r, hc)
+}
+
+func playerAchievementInfluxAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	id := helpers.RegexIntsOnly.FindString(chi.URLParam(r, "id"))
+	if id == "" {
+		return
+	}
+
+	playerID, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return
+	}
+
+	var item = memcache.MemcachePlayerAchievementsInflux(playerID)
+	var hc influx.HighChartsJSON
+
+	err = memcache.GetSetInterface(item.Key, item.Expiration, &hc, func() (interface{}, error) {
+
+		builder := influxql.NewBuilder()
+		builder.AddSelect("MAX("+influx.InfPlayersAchievements.String()+")", "max_"+influx.InfPlayersAchievements.String())
+		builder.AddSelect("MAX("+influx.InfPlayersAchievements100.String()+")", "max_"+influx.InfPlayersAchievements100.String())
+		builder.AddSelect("MAX("+influx.InfPlayersAchievementsApps.String()+")", "max_"+influx.InfPlayersAchievementsApps.String())
+		builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementPlayers.String())
+		builder.AddWhere("player_id", "=", id)
+		builder.AddGroupByTime("1d")
+		builder.SetFillNone()
+
+		resp, err := influx.InfluxQuery(builder)
+		if err != nil {
+			log.Err(err.Error(), zap.String("query", builder.String()))
+			return hc, err
+		}
+
+		var hc influx.HighChartsJSON
+
+		if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
+
+			hc = influx.InfluxResponseToHighCharts(resp.Results[0].Series[0], true)
+		}
+
+		return hc, err
+	})
+
+	if err != nil {
+		log.ErrS(err)
 	}
 
 	returnJSON(w, r, hc)

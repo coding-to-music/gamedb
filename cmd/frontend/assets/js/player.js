@@ -74,6 +74,7 @@ if ($playerPage.length > 0) {
         "groups-table": loadPlayerGroupsTab,
         "wishlist-table": loadPlayerWishlistTab,
         "achievements-table": loadPlayerAchievementsTab,
+        "achievement-influx-chart": loadPlayerAchievementsInfluxChart,
     });
 
     //
@@ -745,6 +746,65 @@ if ($playerPage.length > 0) {
 
         $('#achievements-table').gdbTable({
             tableOptions: recentOptions,
+        });
+    }
+
+    function loadPlayerAchievementsInfluxChart() {
+
+        $.ajax({
+            type: "GET",
+            url: '/players/' + $playerPage.attr('data-id') + '/achievement-influx.json',
+            dataType: 'json',
+            success: function (data, textStatus, jqXHR) {
+
+                if (data === null) {
+                    data = [];
+                }
+
+                Highcharts.chart('achievement-influx-chart', $.extend(true, {}, defaultChartOptions, {
+                    yAxis: {
+                        allowDecimals: false,
+                        title: {
+                            text: 'Achievements'
+                        },
+                        labels: {
+                            formatter: function () {
+                                return this.value.toLocaleString();
+                            },
+                        },
+                        // min:0,
+                    },
+                    tooltip: {
+                        formatter: function () {
+                            switch (this.series.name) {
+                                case 'Achievements':
+                                    return this.y.toLocaleString() + ' achievements on ' + moment(this.key).format("dddd DD MMM YYYY");
+                                case 'Games with Achievements':
+                                    return this.y.toLocaleString() + ' games with achievements on ' + moment(this.key).format("dddd DD MMM YYYY");
+                                case 'Games with 100%':
+                                    return this.y.toLocaleString() + ' games with 100% achievements on ' + moment(this.key).format("dddd DD MMM YYYY");
+                            }
+                        },
+                    },
+                    series: [
+                        {
+                            name: 'Achievements',
+                            data: data['max_achievements'],
+                            marker: {symbol: 'circle'},
+                        },
+                        {
+                            name: 'Games with Achievements',
+                            data: data['max_achievements_count_100'],
+                            marker: {symbol: 'circle'},
+                        },
+                        {
+                            name: 'Games with 100%',
+                            data: data['max_achievements_count_apps'],
+                            marker: {symbol: 'circle'},
+                        },
+                    ],
+                }));
+            },
         });
     }
 }

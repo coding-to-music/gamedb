@@ -2,24 +2,29 @@
 
     #achievements {
 
-        .ch-months {
-            margin-bottom: 0;
+        #achievement-days-chart {
+
+            .ch-months {
+                margin-bottom: 0;
+            }
+
+            .ch-days {
+                margin-bottom: 0;
+            }
+
+            .ch-graph {
+                margin: 0;
+                padding: 0;
+                border: none;
+            }
+
+            .ch-legend {
+                padding-top: 0;
+            }
         }
 
-        .ch-days {
-            margin-bottom: 0;
-        }
-
-        .ch-graph {
-            margin-top: 0;
-            margin-bottom: 0;
-            padding-top: 0;
-            padding-bottom: 0;
-            border: none;
-        }
-
-        .ch-legend {
-            padding-top: 0;
+        #achievement-influx-chart{
+            height: 200px;
         }
     }
 
