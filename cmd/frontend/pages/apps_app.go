@@ -760,7 +760,7 @@ func appAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var achievedTimeFormatted string
 		if achievedTime != 0 {
-			achievedTimeFormatted = time.Unix(achievedTime, 0).Format(helpers.DateSQL)
+			achievedTimeFormatted = time.Unix(achievedTime, 0).Format(helpers.DateSQLMinute)
 		}
 
 		response.AddRow([]interface{}{

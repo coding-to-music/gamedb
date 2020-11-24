@@ -10,12 +10,13 @@ import (
 )
 
 const (
-	Date         = "02 Jan"
-	DateTime     = "02 Jan 15:04"
-	DateYear     = "02 Jan 2006"
-	DateYearTime = "02 Jan 06 15:04"
-	DateSQL      = "2006-01-02 15:04:05"
-	DateSQLDay   = "2006-01-02"
+	Date          = "02 Jan"
+	DateTime      = "02 Jan 15:04"
+	DateYear      = "02 Jan 2006"
+	DateYearTime  = "02 Jan 06 15:04"
+	DateSQL       = "2006-01-02 15:04:05"
+	DateSQLMinute = "2006-01-02 15:04"
+	DateSQLDay    = "2006-01-02"
 )
 
 func GetTimeShort(minutes int, max int) (ret string) {

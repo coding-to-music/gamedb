@@ -60,6 +60,10 @@ func (a PlayerAchievement) GetComplete() string {
 	return helpers.GetAchievementCompleted(a.AchievementComplete)
 }
 
+func (a PlayerAchievement) GetDate() string {
+	return time.Unix(a.AchievementDate, 0).Format(helpers.DateSQLMinute)
+}
+
 func ensurePlayerAchievementIndexes() {
 
 	var indexModels = []mongo.IndexModel{
