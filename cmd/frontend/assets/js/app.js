@@ -821,11 +821,17 @@ if ($appPage.length > 0) {
                     $select.append('<option value="' + friend.k + '">' + friend.v + '</option>');
                 }
 
-                $select.chosen({
+                const $chosen = $select.chosen({
                     disable_search_threshold: 10,
                     max_selected_options: 1
-                }).change(function (e) {
-                    alert('Coming soon');
+                })
+
+                $chosen.change(function (e) {
+                    const val = $chosen.val();
+                    if (val) {
+                        window.location.href = '/games/' + $appPage.attr('data-id')
+                            + '/compare-achievements/' + user.playerID + ',' + val;
+                    }
                 });
             },
         });
