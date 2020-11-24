@@ -41,6 +41,11 @@ func appsCompareHandler(w http.ResponseWriter, r *http.Request) {
 
 	var idStrings = helpers.UniqueString(helpers.RegexInts.FindAllString(chi.URLParam(r, "id"), -1))
 
+	if len(idStrings) > 10 {
+		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Too many apps"})
+		return
+	}
+
 	var apps []mongo.App
 	var names []string
 	var namesMap = map[string]string{}
@@ -73,11 +78,6 @@ func appsCompareHandler(w http.ResponseWriter, r *http.Request) {
 				groupIDs = append(groupIDs, app.GroupID)
 			}
 		}
-	}
-
-	if len(apps) > 10 {
-		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Too many apps"})
-		return
 	}
 
 	// Template
