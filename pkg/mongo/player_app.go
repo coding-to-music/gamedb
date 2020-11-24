@@ -87,8 +87,11 @@ func (app PlayerApp) GetIcon() string {
 }
 
 func (app PlayerApp) GetTimeNice() string {
-
 	return helpers.GetTimeShort(app.AppTime, 2)
+}
+
+func (app PlayerApp) GetTimeNiceLong() string {
+	return helpers.GetTimeLong(app.AppTime, 2)
 }
 
 func (app PlayerApp) GetHeaderImage() string {

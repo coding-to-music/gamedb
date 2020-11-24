@@ -52,8 +52,9 @@ func appRouter() http.Handler {
 	r.Get("/bundles.json", appBundlesAjaxHandler)
 	r.Get("/packages.json", appPackagesAjaxHandler)
 	r.Get("/tags.json", appTagsAjaxHandler)
-
 	r.Get("/{slug}", appHandler)
+	r.Mount("/compare-achievements", appCompareAchievementsRouter())
+
 	return r
 }
 

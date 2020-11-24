@@ -802,38 +802,12 @@ if ($appPage.length > 0) {
             max_selected_options: 10
         });
 
-        $.ajax({
-            type: "GET",
-            url: '/friends/friends.json',
-            dataType: 'json',
-            success: function (data, textStatus, jqXHR) {
-
-                const $select = $('select#friend');
-
-                if (data === null) {
-                    data = [];
-                }
-
-                $select.empty();
-                $select.append('<option value="">Choose Friend</option>');
-
-                for (const friend of data) {
-                    $select.append('<option value="' + friend.k + '">' + friend.v + '</option>');
-                }
-
-                const $chosen = $select.chosen({
-                    disable_search_threshold: 10,
-                    max_selected_options: 1
-                })
-
-                $chosen.change(function (e) {
-                    const val = $chosen.val();
-                    if (val) {
-                        window.location.href = '/games/' + $appPage.attr('data-id')
-                            + '/compare-achievements/' + user.playerID + ',' + val;
-                    }
-                });
-            },
+        loadFriends(function ($chosen) {
+            const val = $chosen.val();
+            if (val) {
+                window.location.href = '/games/' + $appPage.attr('data-id')
+                    + '/compare-achievements/' + user.playerID + ',' + val;
+            }
         });
 
         $.ajax({

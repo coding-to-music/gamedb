@@ -200,6 +200,7 @@ type errorTemplate struct {
 func getTemplateFuncMap() map[string]interface{} {
 	return template.FuncMap{
 		"bytes":      func(a uint64) string { return humanize.Bytes(a) },
+		"ceil":       func(a float64) float64 { return math.Ceil(a) },
 		"comma":      func(a int) string { return humanize.Comma(int64(a)) },
 		"comma64":    func(a int64) string { return humanize.Comma(a) },
 		"commaf":     func(a float64) string { return humanize.FormatFloat("#,###.##", a) },
@@ -418,8 +419,9 @@ func (t globalTemplate) GetUserJSON() string {
 		"prodCC":             t.UserProductCC.ProductCode,
 		"userCurrencySymbol": t.UserProductCC.Symbol,
 		"toasts":             t.toasts,
-		"log":                config.IsLocal() || t.IsAdmin(),
 		"isLoggedIn":         t.IsLoggedIn(),
+		"playerID":           t.GetPlayerID(),
+		"log":                config.IsLocal() || t.IsAdmin(),
 		"isProd":             config.IsProd(),
 		"isLocal":            config.IsLocal(),
 	}
@@ -439,6 +441,10 @@ func (t globalTemplate) GetMetaImage() (text string) {
 	}
 
 	return t.metaImage
+}
+
+func (t globalTemplate) GetPlayerID() string {
+	return strconv.FormatInt(t.PlayerID, 10)
 }
 
 func (t globalTemplate) GetSpecialBadges() (badges []helpers.BuiltInbadge) {

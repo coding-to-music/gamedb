@@ -1,0 +1,92 @@
+{{define "apps_achievements_compare"}}
+
+    {{ template "header" . }}
+
+    <div class="container" id="apps-achievements-compare-page" data-app-id="{{ .App.ID }}">
+
+        <div class="jumbotron">
+            <h1><i class="fas fa-trophy"></i> {{ .App.GetName }}</h1>
+        </div>
+
+        {{ template "flashes" . }}
+
+        <div class="card">
+            <div class="card-body">
+
+                <div class="form-row">
+                    <div class="col-12 col-md-6 col-lg-5 col-xl-4 mb-2">
+                        <div class="form-group">
+                            <label for="friend">Add Friend (Must be logged in)</label>
+                            <select data-placeholder="Friend" class="form-control form-control-chosen" id="friend" name="friend">
+                                <option value="">Loading...</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-responsive mb-4">
+                    <table class="table table-hover table-striped table-datatable mb-0" data-row-type="players" data-order='[[0, "asc"]]'>
+                        <thead class="thead-light">
+                        <tr>
+                            <th scope="col">Player</th>
+                            <th scope="col">Time on Game</th>
+                            <th scope="col">Add / Remove</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {{ range $key, $value := .Players }}
+                            <tr data-link="{{ .Player.GetPath }}">
+                                <td>{{ .Player.GetName }}</td>
+                                <td data-sort="{{ .PlayerApp.AppTime }}">{{ .PlayerApp.GetTimeNiceLong }}</td>
+                                <td></td>
+                            </tr>
+                        {{ end }}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped table-datatable mb-0" data-row-type="achievements" data-order='[[3, "desc"]]'>
+                        <thead class="thead-light">
+                        <tr>
+                            <th scope="col">Achievement</th>
+                            {{ range .Players }}
+                                <th>{{ .Player.GetName }}</th>
+                            {{ end }}
+                            <th scope="col">Avg Completion</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {{ range $k, $achievement := .Achievements }}
+                            <tr>
+                                <th scope="row" class="img" data-sort="{{ .Name }}">
+                                    <div class="icon-name">
+                                        <div class="icon"><img class="tall" data-lazy="{{ $achievement.GetIcon }}" data-lazy-alt="{{ .Name }}" src="" alt=""></div>
+                                        <div class="name">{{ .Name }}<br><small>{{ .Description }}</small></div>
+                                    </div>
+                                </th>
+                                {{ range $kk, $player := $.Players }}
+                                    {{ $cell := $.GetCell $player.Player.ID $achievement.Key }}
+                                    <td data-sort="{{ $cell.AchievementDate }}">
+                                        {{ if gt $cell.PlayerID 0 }}
+                                            <span data-livestamp="{{ $cell.AchievementDate }}"></span><br>
+                                            <small class="text-muted">{{ $cell.GetDate }}</small>
+                                        {{ end }}
+                                    </td>
+                                {{ end }}
+                                <td class="thin" data-sort="{{ $achievement.GetCompleted }}" style="background: linear-gradient(to right, rgba(0,0,0,.15) {{ $achievement.Completed }}%, transparent {{ $achievement.Completed }}%);">
+                                    {{ $achievement.GetCompleted }}%
+                                </td>
+                            </tr>
+                        {{ end }}
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    {{ template "footer" . }}
+{{end}}

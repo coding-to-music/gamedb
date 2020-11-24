@@ -341,3 +341,36 @@ $('[data-link-tab]').on('mouseup', function () {
     $('a.nav-link[href="#' + tab + '"]').tab('show');
     return false;
 });
+
+function loadFriends(callback) {
+
+    $.ajax({
+        type: "GET",
+        url: '/friends/friends.json',
+        dataType: 'json',
+        success: function (data, textStatus, jqXHR) {
+
+            const $select = $('select#friend');
+
+            if (data === null) {
+                data = [];
+            }
+
+            $select.empty();
+            $select.append('<option value="">Choose Friend</option>');
+
+            for (const friend of data) {
+                $select.append('<option value="' + friend.k + '">' + friend.v + '</option>');
+            }
+
+            const $chosen = $select.chosen({
+                disable_search_threshold: 10,
+                max_selected_options: 1
+            })
+
+            $chosen.change(function (e){
+                callback($chosen);
+            });
+        },
+    });
+}
