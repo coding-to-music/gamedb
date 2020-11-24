@@ -692,7 +692,7 @@ func appAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var playerID = session.GetPlayerIDFromSesion(r)
 	if playerID > 0 {
 
-		playerAchievements, err := mongo.GetPlayerAchievementsForApp(playerID, id)
+		playerAchievements, err := mongo.GetPlayerAchievementsByPlayerAndApp(playerID, id)
 		if err != nil {
 			log.ErrS(err)
 			return

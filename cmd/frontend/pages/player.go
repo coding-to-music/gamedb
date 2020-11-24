@@ -730,7 +730,7 @@ func playerAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			"2": "achievement_complete, achievement_date asc",
 		}
 
-		playerAchievements, err = mongo.GetPlayerAchievements(playerID, query.GetOffset64(), query.GetOrderMongo(columns))
+		playerAchievements, err = mongo.GetPlayerAchievementsByPlayer(playerID, query.GetOffset64(), query.GetOrderMongo(columns))
 		if err != nil {
 			log.ErrS(err)
 		}
