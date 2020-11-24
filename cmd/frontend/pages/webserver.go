@@ -162,15 +162,13 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, pageData pageInterfa
 		})
 
 		err = m.Minify("text/html", w, buf)
-		if err != nil && !strings.Contains(err.Error(), "write: broken pipe") {
-			log.ErrS(err)
-		}
 
 	} else {
 		_, err = buf.WriteTo(w)
-		if err != nil {
-			log.ErrS(err)
-		}
+	}
+
+	if err != nil && !strings.Contains(err.Error(), "write: broken pipe") {
+		log.ErrS(err)
 	}
 }
 
