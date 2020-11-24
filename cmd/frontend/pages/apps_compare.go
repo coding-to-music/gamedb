@@ -37,11 +37,13 @@ func gamesCompareRouter() http.Handler {
 	return r
 }
 
+const maxAppsToCompare = 10
+
 func appsCompareHandler(w http.ResponseWriter, r *http.Request) {
 
 	var idStrings = helpers.UniqueString(helpers.RegexInts.FindAllString(chi.URLParam(r, "id"), -1))
 
-	if len(idStrings) > 10 {
+	if len(idStrings) > maxAppsToCompare {
 		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Too many apps"})
 		return
 	}
@@ -158,17 +160,17 @@ type appsCompareGoogleItemTemplate struct {
 
 func compareSearchAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	var limit = 5
+	var searchLimit = 5
 
 	query := datatable.NewDataTableQuery(r, true)
 	search := query.GetSearchString("search")
 	code := session.GetProductCC(r)
 	ids := helpers.StringToSlice(query.GetSearchString("ids"), ",")
-	response := datatable.NewDataTablesResponse(r, query, int64(limit), int64(limit), nil)
+	response := datatable.NewDataTablesResponse(r, query, int64(searchLimit), int64(searchLimit), nil)
 
 	if search != "" {
 
-		apps, err := elasticsearch.SearchAppsSimple(limit, search)
+		apps, err := elasticsearch.SearchAppsSimple(searchLimit, search)
 		if err != nil {
 			log.ErrS(err)
 			return
@@ -181,6 +183,7 @@ func compareSearchAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			var linkBool = helpers.SliceHasString(strconv.Itoa(app.ID), ids)
 			var link = makeCompareActionLink(ids, strconv.Itoa(app.ID), linkBool)
 
+			// this must match compareAppsAjaxHandler
 			response.AddRow([]interface{}{
 				offset,                 // 0
 				app.ID,                 // 1
@@ -204,6 +207,9 @@ func compareAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	query := datatable.NewDataTableQuery(r, true)
 	code := session.GetProductCC(r)
 	ids := helpers.StringToSlice(query.GetSearchString("ids"), ",")
+	if len(ids) < 1 || len(ids) > maxAppsToCompare {
+		return
+	}
 	ids2 := helpers.StringSliceToIntSlice(ids)
 
 	apps, err := mongo.GetAppsByID(ids2, bson.M{"_id": 1, "name": 1, "icon": 1, "prices": 1})
@@ -221,6 +227,7 @@ func compareAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var linkBool = helpers.SliceHasString(strconv.Itoa(app.ID), ids)
 		var link = makeCompareActionLink(ids, strconv.Itoa(app.ID), linkBool)
 
+		// this must match compareSearchAjaxHandler
 		appMap[app.ID] = []interface{}{
 			nil,                    // 0
 			app.ID,                 // 1
@@ -282,7 +289,7 @@ func appsComparePlayersAjaxHandler(limited bool) func(w http.ResponseWriter, r *
 
 		var ids = helpers.UniqueString(helpers.RegexInts.FindAllString(chi.URLParam(r, "id"), -1))
 
-		if len(ids) < 1 || len(ids) > 10 {
+		if len(ids) < 1 || len(ids) > maxAppsToCompare {
 			return
 		}
 
@@ -323,7 +330,7 @@ func appsCompareWishlistHandler(w http.ResponseWriter, r *http.Request) {
 
 	var ids = helpers.UniqueString(helpers.RegexInts.FindAllString(chi.URLParam(r, "id"), -1))
 
-	if len(ids) < 1 || len(ids) > 10 {
+	if len(ids) < 1 || len(ids) > maxAppsToCompare {
 		return
 	}
 
@@ -363,7 +370,7 @@ func appsComparePricesHandler(w http.ResponseWriter, r *http.Request) {
 
 	var idStrings = helpers.UniqueString(helpers.RegexInts.FindAllString(chi.URLParam(r, "id"), -1))
 
-	if len(idStrings) < 1 || len(idStrings) > 10 {
+	if len(idStrings) < 1 || len(idStrings) > maxAppsToCompare {
 		return
 	}
 
@@ -401,7 +408,7 @@ func appsCompareScoresHandler(w http.ResponseWriter, r *http.Request) {
 
 	var ids = helpers.UniqueString(helpers.RegexInts.FindAllString(chi.URLParam(r, "id"), -1))
 
-	if len(ids) < 1 || len(ids) > 10 {
+	if len(ids) < 1 || len(ids) > maxAppsToCompare {
 		return
 	}
 
@@ -452,7 +459,7 @@ func appsCompareGroupsHandler(w http.ResponseWriter, r *http.Request) {
 		ids = append(ids, v)
 	}
 
-	if len(ids) < 1 || len(ids) > 10 {
+	if len(ids) < 1 || len(ids) > maxAppsToCompare {
 		return
 	}
 
