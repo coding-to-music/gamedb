@@ -60,7 +60,7 @@ table.table {
         width: 1%;
     }
 
-    td {
+    td, th {
         box-sizing: content-box;
 
         img {
@@ -104,7 +104,7 @@ table.table {
         }
     }
 
-    td.img {
+    td.img, th.img {
         @extend .pt-0;
         @extend .pb-0;
 
