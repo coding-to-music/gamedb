@@ -8,6 +8,7 @@ import (
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
@@ -35,10 +36,15 @@ func friendsJSONHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	friends, err := mongo.GetFriends(playerID, 0, 0, bson.D{{"name", 1}}, bson.D{{"name", bson.M{"$ne": ""}}})
+	callback := func() (interface{}, error) {
+		return mongo.GetFriends(playerID, 0, 0, bson.D{{"name", 1}}, bson.D{{"name", bson.M{"$ne": ""}}})
+	}
+
+	var friends []mongo.PlayerFriend
+	var item = memcache.MemcachePlayerFriends(playerID)
+	err := memcache.GetSetInterface(item.Key, item.Expiration, &friends, callback)
 	if err != nil {
 		log.ErrS(err)
-		return
 	}
 
 	for _, v := range friends {

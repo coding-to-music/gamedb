@@ -96,6 +96,7 @@ var (
 	MemcachePlayer                   = func(playerID int64) Item { return Item{Key: "player-" + strconv.FormatInt(playerID, 10), Expiration: 0} }
 	MemcachePlayerAchievementsDays   = func(playerID int64) Item { return Item{Key: "player-ach-days-" + strconv.FormatInt(playerID, 10), Expiration: 0} }
 	MemcachePlayerAchievementsInflux = func(playerID int64) Item { return Item{Key: "player-ach-influx-" + strconv.FormatInt(playerID, 10), Expiration: 0} }
+	MemcachePlayerFriends            = func(playerID int64) Item { return Item{Key: "player-friends-" + strconv.FormatInt(playerID, 10), Expiration: 0} }
 	MemcachePlayerLevels             = Item{Key: "player-levels", Expiration: 60 * 60 * 24}
 	MemcachePlayerUpdateDates        = Item{Key: "player-update-days", Expiration: 60 * 60 * 24}
 	MemcachePlayerLevelsRounded      = Item{Key: "player-levels-rounded", Expiration: 60 * 60 * 24}
