@@ -24,13 +24,12 @@ const maxAppAchievementPlayersToCompare = 10
 func appCompareAchievementsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get app
-	appID := chi.URLParam(r, "id")
-	appIDX, err := strconv.Atoi(appID)
+	appID, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 
 	}
 
-	app, err := mongo.GetApp(appIDX)
+	app, err := mongo.GetApp(appID)
 	if err == mongo.ErrNoDocuments {
 		returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "App Not Found"})
 		return
