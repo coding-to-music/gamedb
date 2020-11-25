@@ -286,7 +286,6 @@ func playerHandler(message *rabbit.Message) {
 
 		var items = []string{
 			memcache.MemcachePlayer(player.ID).Key,
-			memcache.MemcachePlayerFriends(player.ID).Key,
 			memcache.MemcachePlayerInQueue(player.ID).Key,
 		}
 

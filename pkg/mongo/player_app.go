@@ -224,12 +224,31 @@ func GetPlayerAppsByPlayers(playerIDs []int64, projection bson.M) (apps []Player
 		return apps, err
 	}
 
-	playersFilter := bson.A{}
+	a := bson.A{}
 	for _, v := range playerIDs {
-		playersFilter = append(playersFilter, v)
+		a = append(a, v)
 	}
 
-	return getPlayerApps(0, 0, bson.D{{"player_id", bson.M{"$in": playersFilter}}}, nil, projection, nil)
+	return getPlayerApps(0, 0, bson.D{{"player_id", bson.M{"$in": a}}}, nil, projection, nil)
+}
+
+func GetPlayerAppsByPlayersAndApp(playerIDs []int64, appID int) (apps []PlayerApp, err error) {
+
+	if len(playerIDs) < 1 || appID == 0 {
+		return apps, err
+	}
+
+	a := bson.A{}
+	for _, v := range playerIDs {
+		a = append(a, v)
+	}
+
+	filter := bson.D{
+		{"player_id", bson.M{"$in": a}},
+		{"app_id", appID},
+	}
+
+	return getPlayerApps(0, 0, filter, nil, bson.M{"player_id": 1}, nil)
 }
 
 func GetAppPlayTimes(appID int) ([]PlayerApp, error) {

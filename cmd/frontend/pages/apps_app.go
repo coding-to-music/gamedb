@@ -52,6 +52,7 @@ func appRouter() http.Handler {
 	r.Get("/bundles.json", appBundlesAjaxHandler)
 	r.Get("/packages.json", appPackagesAjaxHandler)
 	r.Get("/tags.json", appTagsAjaxHandler)
+	r.Get("/friends.json", friendsJSONHandler)
 	r.Get("/{slug}", appHandler)
 	r.Mount("/compare-achievements", appCompareAchievementsRouter())
 
@@ -1475,4 +1476,72 @@ func appReviewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	returnJSON(w, r, hc)
+}
+
+func friendsJSONHandler(w http.ResponseWriter, r *http.Request) {
+
+	//goland:noinspection GoPreferNilSlice
+	var ret = []helpers.Tuple{}
+
+	defer func() {
+		b, _ := json.Marshal(ret)
+		_, _ = w.Write(b)
+	}()
+
+	playerID := session.GetPlayerIDFromSesion(r)
+	if playerID == 0 {
+		return
+	}
+
+	appID, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil || appID == 0 {
+		return
+	}
+
+	callback := func() (interface{}, error) {
+
+		// Get player's friends
+		friends, err := mongo.GetFriends(playerID, 0, 0, nil, bson.D{{"name", bson.M{"$ne": ""}}})
+		if err != nil {
+			return nil, err
+		}
+
+		var friendIDs []int64
+		for _, v := range friends {
+			friendIDs = append(friendIDs, v.FriendID)
+		}
+
+		// Make map of playerApp's
+		playerApps, err := mongo.GetPlayerAppsByPlayersAndApp(friendIDs, appID)
+		if err != nil {
+			return nil, err
+		}
+
+		playerAppsMap := map[int64]struct{}{}
+		for _, v := range playerApps {
+			playerAppsMap[v.PlayerID] = struct{}{}
+		}
+
+		// Filter friends not in the map
+		var friends2 []mongo.PlayerFriend
+		for _, v := range friends {
+			if _, ok := playerAppsMap[v.FriendID]; ok {
+				friends2 = append(friends2, v)
+			}
+		}
+
+		return friends2, err
+	}
+
+	var friends []mongo.PlayerFriend
+	var item = memcache.MemcachePlayerFriends(playerID, appID)
+	err = memcache.GetSetInterface(item.Key, item.Expiration, &friends, callback)
+	if err != nil {
+		log.ErrS(err)
+		return
+	}
+
+	for _, v := range friends {
+		ret = append(ret, helpers.Tuple{Key: strconv.FormatInt(v.FriendID, 10), Value: v.GetName()})
+	}
 }

@@ -342,11 +342,11 @@ $('[data-link-tab]').on('mouseup', function () {
     return false;
 });
 
-function loadFriends(callback) {
+function loadFriends(appID, addSelf, callback) {
 
     $.ajax({
         type: "GET",
-        url: '/friends/friends.json',
+        url: '/games/'+appID+'/friends.json',
         dataType: 'json',
         success: function (data, textStatus, jqXHR) {
 
@@ -356,8 +356,23 @@ function loadFriends(callback) {
                 data = [];
             }
 
+            // Sort alphabetically
+            data.sort(function (a, b) {
+                if (a.v < b.v) {
+                    return -1;
+                }
+                if (a.v > b.v) {
+                    return 1;
+                }
+                return 0;
+            })
+
             $select.empty();
             $select.append('<option value="">Choose Friend</option>');
+
+            if (addSelf && user.playerID && user.playerName) {
+                $select.append('<option value="' + user.playerID + '">' + user.playerName + '</option>');
+            }
 
             for (const friend of data) {
                 $select.append('<option value="' + friend.k + '">' + friend.v + '</option>');
@@ -368,7 +383,7 @@ function loadFriends(callback) {
                 max_selected_options: 1
             })
 
-            $chosen.change(function (e){
+            $chosen.change(function (e) {
                 callback($chosen);
             });
         },

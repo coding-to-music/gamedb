@@ -794,6 +794,8 @@ if ($appPage.length > 0) {
 
     function loadAchievements() {
 
+        const appID = $appPage.attr('data-id');
+
         // Setup drop downs
         $('select#achievements-filter').chosen({
             disable_search_threshold: 10,
@@ -802,11 +804,10 @@ if ($appPage.length > 0) {
             max_selected_options: 10
         });
 
-        loadFriends(function ($chosen) {
+        loadFriends(appID, false,function ($chosen) {
             const val = $chosen.val();
             if (val) {
-                window.location.href = '/games/' + $appPage.attr('data-id')
-                    + '/compare-achievements/' + user.playerID + ',' + val;
+                window.location.href = '/games/' + appID + '/compare-achievements/' + user.playerID + ',' + val;
             }
         });
 

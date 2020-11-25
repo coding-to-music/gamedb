@@ -2,7 +2,9 @@ const $appsAchievementsComparePage = $('#apps-achievements-compare-page');
 
 if ($appsAchievementsComparePage.length > 0) {
 
-    loadFriends(function ($chosen) {
+    const appID = $appsAchievementsComparePage.attr('data-app-id');
+
+    loadFriends(appID, false, function ($chosen) {
 
         const val = $chosen.val();
         if (val) {
@@ -13,8 +15,7 @@ if ($appsAchievementsComparePage.length > 0) {
             ids.push(val);
             ids = [...new Set(ids)]; // Unique
 
-            window.location.href = '/games/' + $appsAchievementsComparePage.attr('data-app-id')
-                + '/compare-achievements/' + ids.join(',');
+            window.location.href = '/games/' + appID + '/compare-achievements/' + ids.join(',');
         }
     });
 }
