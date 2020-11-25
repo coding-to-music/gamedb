@@ -164,6 +164,7 @@ var BuiltInSpecialBadges = map[int]BuiltInbadge{
 	47: {BadgeID: 47, Icon: "47_springcleaning2020/dewey_badge_3.0_80x80.png", Name: "Spring Cleaning Event 2020"},
 	48: {BadgeID: 48, Icon: "48_communitycontributor/1_80.png", Name: "Community Contributor"},
 	49: {BadgeID: 49, Icon: "49_communitypatron/1_80.png", Name: "Community Patron"},
+	50: {BadgeID: 50, Icon: "50_steamawardnominations/level04_80.png", Name: "Steam Award Nominations"},
 }
 
 var BuiltInEventBadges = map[int]BuiltInbadge{
