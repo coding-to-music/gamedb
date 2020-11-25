@@ -49,15 +49,15 @@ func appCompareAchievementsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get players
-	var playerIDs = helpers.UniqueString(helpers.RegexInts.FindAllString(chi.URLParam(r, "ids"), -1))
-	if len(playerIDs) > maxAppAchievementPlayersToCompare {
+	var ids = helpers.UniqueString(helpers.RegexInts.FindAllString(chi.URLParam(r, "ids"), -1))
+	if len(ids) > maxAppAchievementPlayersToCompare {
 		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Too many players"})
 		return
 	}
 
 	var players []compareAppAchievementsPlayerTemplate
-	var playerIDInts []int64
-	for _, v := range playerIDs {
+	var playerIDs []int64
+	for _, v := range ids {
 
 		playerID, err := strconv.ParseInt(v, 10, 64)
 		if err != nil {
@@ -89,13 +89,13 @@ func appCompareAchievementsHandler(w http.ResponseWriter, r *http.Request) {
 			PlayerApp: playerApp,
 		})
 
-		playerIDInts = append(playerIDInts, player.ID)
+		playerIDs = append(playerIDs, player.ID)
 	}
 
 	// Get player app achievements
 	var playerAchievements = map[int64]map[string]mongo.PlayerAchievement{}
 
-	playerAchs, err := mongo.GetPlayerAchievementsByPlayersAndApp(playerIDInts, app.ID)
+	playerAchs, err := mongo.GetPlayerAchievementsByPlayersAndApp(playerIDs, app.ID)
 	if err != nil {
 		log.ErrS(err)
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Something went wrong (1002)"})
