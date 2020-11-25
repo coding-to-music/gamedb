@@ -26,7 +26,8 @@ func appCompareAchievementsHandler(w http.ResponseWriter, r *http.Request) {
 	// Get app
 	appID, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
-
+		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid App ID"})
+		return
 	}
 
 	app, err := mongo.GetApp(appID)
@@ -42,7 +43,9 @@ func appCompareAchievementsHandler(w http.ResponseWriter, r *http.Request) {
 	// Get achievements
 	achievements, err := mongo.GetAppAchievements(0, 0, bson.D{{"app_id", app.ID}}, bson.D{{"completed", -1}})
 	if err != nil {
-
+		log.ErrS(err)
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Something went wrong (1001)"})
+		return
 	}
 
 	// Get players
@@ -68,7 +71,10 @@ func appCompareAchievementsHandler(w http.ResponseWriter, r *http.Request) {
 
 		player, err := mongo.GetPlayer(playerID)
 		if err != nil {
-			log.ErrS(err)
+			err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
+			if err != nil {
+				log.ErrS(err)
+			}
 			continue
 		}
 
@@ -92,6 +98,8 @@ func appCompareAchievementsHandler(w http.ResponseWriter, r *http.Request) {
 	playerAchs, err := mongo.GetPlayerAchievementsByPlayersAndApp(playerIDInts, app.ID)
 	if err != nil {
 		log.ErrS(err)
+		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Something went wrong (1002)"})
+		return
 	}
 
 	for _, playerAch := range playerAchs {
