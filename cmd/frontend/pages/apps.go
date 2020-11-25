@@ -34,7 +34,7 @@ func GamesRouter() http.Handler {
 	r.Mount("/wishlists", wishlistsRouter())
 	r.Mount("/wallpaper", wallpaperRouter())
 	r.Mount("/release-dates", releaseDatesRouter())
-	r.Mount("/{id}", appRouter())
+	r.Mount("/{id:[0-9]+}", appRouter())
 	return r
 }
 
