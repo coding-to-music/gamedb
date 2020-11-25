@@ -67,7 +67,7 @@
                                 </th>
                                 {{ range $kk, $player := $.Players }}
                                     {{ $cell := $.GetCell $player.Player.ID $achievement.Key }}
-                                    <td data-sort="{{ $cell.AchievementDate }}">
+                                    <td data-sort="{{ $cell.AchievementDate }}" class="nowrap">
                                         {{ if gt $cell.PlayerID 0 }}
                                             <span data-livestamp="{{ $cell.AchievementDate }}"></span><br>
                                             <small class="text-muted">{{ $cell.GetDate }}</small>
