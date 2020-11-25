@@ -46,7 +46,7 @@
                 </div>
 
                 <div class="table-responsive">
-                    <table class="table table-hover table-striped table-datatable mb-0" data-row-type="achievements" data-order='[[3, "desc"]]'>
+                    <table class="table table-hover table-striped table-datatable mb-0" data-row-type="achievements" data-order='[[{{ sum (len .Players) 1 }}, "desc"]]' data-limit="1000">
                         <thead class="thead-light">
                         <tr>
                             <th scope="col">Achievement</th>
