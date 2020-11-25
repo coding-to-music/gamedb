@@ -15,4 +15,4 @@ mkdir -p $LOGS
 lnav $LOGS
 
 # Hide output as ctrl-c will cause the go process to already be killed
-kill $ID > /dev/null 2>&1
+kill $ID >/dev/null 2>&1
