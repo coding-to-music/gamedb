@@ -67,13 +67,13 @@ func SetInterface(key string, val interface{}, exp uint32) (err error) {
 
 var ErrNotPointer = errors.New("value must be a pointer")
 
-func GetSetInterface(key string, exp uint32, value interface{}, callback func() (interface{}, error)) (err error) {
+func GetSetInterface(item Item, value interface{}, callback func() (interface{}, error)) (err error) {
 
 	if config.IsLocal() && reflect.TypeOf(value).Kind() != reflect.Ptr {
 		return ErrNotPointer
 	}
 
-	err = GetInterface(key, value)
+	err = GetInterface(item.Key, value)
 	if err == mc.ErrNotFound {
 
 		var s interface{}
@@ -92,7 +92,7 @@ func GetSetInterface(key string, exp uint32, value interface{}, callback func() 
 			return err
 		}
 
-		return SetInterface(key, s, exp)
+		return SetInterface(item.Key, s, item.Expiration)
 	}
 
 	return err

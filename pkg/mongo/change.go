@@ -100,7 +100,7 @@ func GetChange(id int64) (change Change, err error) {
 
 	var item = memcache.MemcacheChange(id)
 
-	err = memcache.GetSetInterface(item.Key, item.Expiration, &change, func() (interface{}, error) {
+	err = memcache.GetSetInterface(item, &change, func() (interface{}, error) {
 
 		var change Change
 

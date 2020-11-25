@@ -65,7 +65,7 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return resp.GetCommits(), err
 	}
 
-	err := memcache.GetSetInterface(item.Key, item.Expiration, &commits, callback)
+	err := memcache.GetSetInterface(item, &commits, callback)
 	if err != nil {
 		log.ErrS(err)
 	}

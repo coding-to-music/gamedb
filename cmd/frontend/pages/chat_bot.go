@@ -81,7 +81,7 @@ func (cbt chatBotTemplate) Guilds() (guilds int) {
 
 	var item = memcache.MemcacheChatBotGuildsCount
 
-	err := memcache.GetSetInterface(item.Key, item.Expiration, &guilds, func() (i interface{}, err error) {
+	err := memcache.GetSetInterface(item, &guilds, func() (i interface{}, err error) {
 
 		discordChatBotSession, err := discordgo.New("Bot " + config.C.DiscordChatBotToken)
 		if err != nil {

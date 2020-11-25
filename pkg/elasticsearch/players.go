@@ -153,7 +153,7 @@ func AggregatePlayerCountries() (aggregations map[string]int64, err error) {
 
 	var item = memcache.MemcachePlayerLocationAggs
 
-	err = memcache.GetSetInterface(item.Key, item.Expiration, &aggregations, func() (interface{}, error) {
+	err = memcache.GetSetInterface(item, &aggregations, func() (interface{}, error) {
 
 		client, ctx, err := GetElastic()
 		if err != nil {

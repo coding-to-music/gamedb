@@ -233,7 +233,7 @@ func groupAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return hc, err
 	}
 
-	err = memcache.GetSetInterface(item.Key, item.Expiration, &hc, callback)
+	err = memcache.GetSetInterface(item, &hc, callback)
 	if err != nil {
 		log.ErrS(err)
 	}

@@ -147,7 +147,7 @@ func GetAchievmentCounts(appID int) (counts []Count, err error) {
 
 	var item = memcache.MemcacheAppAchievementsCounts(appID)
 
-	err = memcache.GetSetInterface(item.Key, item.Expiration, &counts, func() (interface{}, error) {
+	err = memcache.GetSetInterface(item, &counts, func() (interface{}, error) {
 
 		client, ctx, err := getMongo()
 		if err != nil {

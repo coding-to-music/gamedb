@@ -383,7 +383,7 @@ func (app App) GetAppRelatedApps() (apps []App, err error) {
 
 	var item = memcache.MemcacheAppRelated(app.ID)
 
-	err = memcache.GetSetInterface(item.Key, item.Expiration, &apps, func() (interface{}, error) {
+	err = memcache.GetSetInterface(item, &apps, func() (interface{}, error) {
 
 		return GetAppsByID(app.RelatedAppIDs, bson.M{"_id": 1, "name": 1, "icon": 1, "tags": 1})
 	})
@@ -401,7 +401,7 @@ func (app App) GetDemos() (demos []App, err error) {
 
 	var item = memcache.MemcacheAppDemos(app.ID)
 
-	err = memcache.GetSetInterface(item.Key, item.Expiration, &demos, func() (interface{}, error) {
+	err = memcache.GetSetInterface(item, &demos, func() (interface{}, error) {
 		return GetAppsByID(app.Demos, bson.M{"_id": 1, "name": 1})
 	})
 
@@ -448,7 +448,7 @@ func (app App) GetPlayersInGame() (players int64, err error) {
 
 	var item = memcache.MemcacheAppPlayersRow(app.ID)
 
-	err = memcache.GetSetInterface(item.Key, item.Expiration, &players, func() (interface{}, error) {
+	err = memcache.GetSetInterface(item, &players, func() (interface{}, error) {
 
 		builder := influxql.NewBuilder()
 		builder.AddSelect("player_count", "")
@@ -473,7 +473,7 @@ func (app App) GetPlayersOnline() (players int64, err error) {
 
 	var item = memcache.MemcacheAppPlayersInGameRow
 
-	err = memcache.GetSetInterface(item.Key, item.Expiration, &players, func() (interface{}, error) {
+	err = memcache.GetSetInterface(item, &players, func() (interface{}, error) {
 
 		builder := influxql.NewBuilder()
 		builder.AddSelect("player_online", "")
@@ -687,7 +687,7 @@ func GetApp(id int, full ...bool) (app App, err error) {
 
 		// Load from Memcache
 		var item = memcache.MemcacheApp(id)
-		err = memcache.GetSetInterface(item.Key, item.Expiration, &app, func() (interface{}, error) {
+		err = memcache.GetSetInterface(item, &app, func() (interface{}, error) {
 
 			var projection = bson.M{"reviews.reviews": 0, "localization": 0, "achievements": 0, "achievements_5": 0} // Too much for memcache
 
@@ -740,7 +740,7 @@ func PopularApps() (apps []App, err error) {
 
 	var item = memcache.MemcachePopularApps
 
-	err = memcache.GetSetInterface(item.Key, item.Expiration, &apps, func() (interface{}, error) {
+	err = memcache.GetSetInterface(item, &apps, func() (interface{}, error) {
 
 		return GetApps(
 			0,
@@ -758,7 +758,7 @@ func PopularNewApps() (apps []App, err error) {
 
 	var item = memcache.MemcachePopularNewApps
 
-	err = memcache.GetSetInterface(item.Key, item.Expiration, &apps, func() (interface{}, error) {
+	err = memcache.GetSetInterface(item, &apps, func() (interface{}, error) {
 
 		releaseDate := time.Now().AddDate(0, 0, -config.C.NewReleaseDays).Unix()
 
@@ -781,7 +781,7 @@ func TrendingApps() (apps []App, err error) {
 
 	var item = memcache.MemcacheTrendingApps
 
-	err = memcache.GetSetInterface(item.Key, item.Expiration, &apps, func() (interface{}, error) {
+	err = memcache.GetSetInterface(item, &apps, func() (interface{}, error) {
 		return GetApps(
 			0,
 			10,
@@ -798,7 +798,7 @@ func GetAppsGroupedByType(code steamapi.ProductCC) (counts []AppTypeCount, err e
 
 	var item = memcache.MemcacheAppTypeCounts(code)
 
-	err = memcache.GetSetInterface(item.Key, item.Expiration, &counts, func() (interface{}, error) {
+	err = memcache.GetSetInterface(item, &counts, func() (interface{}, error) {
 
 		client, ctx, err := getMongo()
 		if err != nil {
@@ -865,7 +865,7 @@ func GetAppsGroupedByReleaseDate() (counts []AppReleaseDateCount, err error) {
 
 	var item = memcache.MemcacheAppReleaseDateCounts
 
-	err = memcache.GetSetInterface(item.Key, item.Expiration, &counts, func() (interface{}, error) {
+	err = memcache.GetSetInterface(item, &counts, func() (interface{}, error) {
 
 		client, ctx, err := getMongo()
 		if err != nil {
@@ -917,7 +917,7 @@ func GetAppsGroupedByReviewScore() (counts []AppReviewScoreCount, err error) {
 
 	var item = memcache.MemcacheAppReviewScoreCounts
 
-	err = memcache.GetSetInterface(item.Key, item.Expiration, &counts, func() (interface{}, error) {
+	err = memcache.GetSetInterface(item, &counts, func() (interface{}, error) {
 
 		client, ctx, err := getMongo()
 		if err != nil {

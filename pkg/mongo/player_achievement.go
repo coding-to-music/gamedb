@@ -197,7 +197,7 @@ func GetPlayerAchievementDays(playerID int64) (counts []DateCount, err error) {
 
 	var item = memcache.MemcachePlayerAchievementsDays(playerID)
 
-	err = memcache.GetSetInterface(item.Key, item.Expiration, &counts, func() (interface{}, error) {
+	err = memcache.GetSetInterface(item, &counts, func() (interface{}, error) {
 
 		client, ctx, err := getMongo()
 		if err != nil {

@@ -86,7 +86,7 @@ func apiSteamJSONHandler(w http.ResponseWriter, r *http.Request) {
 		return json.Marshal(api.GetSteam())
 	}
 
-	err := memcache.GetSetInterface(item.Key, item.Expiration, &b, callback)
+	err := memcache.GetSetInterface(item, &b, callback)
 	if err != nil {
 		log.ErrS(err)
 		return
@@ -107,7 +107,7 @@ func apiSteamYAMLHandler(w http.ResponseWriter, r *http.Request) {
 		return yaml.Marshal(api.GetSteam())
 	}
 
-	err := memcache.GetSetInterface(item.Key, item.Expiration, &b, callback)
+	err := memcache.GetSetInterface(item, &b, callback)
 	if err != nil {
 		log.ErrS(err)
 		return

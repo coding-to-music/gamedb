@@ -474,7 +474,7 @@ func GetPlayer(id int64) (player Player, err error) {
 
 	var item = memcache.MemcachePlayer(id)
 
-	err = memcache.GetSetInterface(item.Key, item.Expiration, &player, func() (interface{}, error) {
+	err = memcache.GetSetInterface(item, &player, func() (interface{}, error) {
 
 		id, err := helpers.IsValidPlayerID(id)
 		if err != nil {
@@ -698,7 +698,7 @@ func GetPlayerLevels() (counts []Count, err error) {
 
 	var item = memcache.MemcachePlayerLevels
 
-	err = memcache.GetSetInterface(item.Key, item.Expiration, &counts, func() (interface{}, error) {
+	err = memcache.GetSetInterface(item, &counts, func() (interface{}, error) {
 
 		client, ctx, err := getMongo()
 		if err != nil {
@@ -742,7 +742,7 @@ func GetPlayerUpdateDays() (counts []DateCount, err error) {
 
 	var item = memcache.MemcachePlayerUpdateDates
 
-	err = memcache.GetSetInterface(item.Key, item.Expiration, &counts, func() (interface{}, error) {
+	err = memcache.GetSetInterface(item, &counts, func() (interface{}, error) {
 
 		client, ctx, err := getMongo()
 		if err != nil {
@@ -787,7 +787,7 @@ func GetPlayerLevelsRounded() (counts []Count, err error) {
 
 	var item = memcache.MemcachePlayerLevelsRounded
 
-	err = memcache.GetSetInterface(item.Key, item.Expiration, &counts, func() (interface{}, error) {
+	err = memcache.GetSetInterface(item, &counts, func() (interface{}, error) {
 
 		client, ctx, err := getMongo()
 		if err != nil {

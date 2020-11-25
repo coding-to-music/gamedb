@@ -201,7 +201,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 			var inGuild bool
 			var item = memcache.MemcacheUserInDiscord(val.ID)
 
-			err = memcache.GetSetInterface(item.Key, item.Expiration, &inGuild, func() (interface{}, error) {
+			err = memcache.GetSetInterface(item, &inGuild, func() (interface{}, error) {
 
 				discord, err := discordgo.New("Bot " + config.C.DiscordOAuthBotToken)
 				if err != nil {

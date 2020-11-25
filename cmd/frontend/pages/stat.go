@@ -209,7 +209,7 @@ func statTimeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var item = memcache.MemcacheStatTime(key, code)
-	err = memcache.GetSetInterface(item.Key, item.Expiration, &hc, callback)
+	err = memcache.GetSetInterface(item, &hc, callback)
 	if err != nil {
 		log.ErrS(err)
 	}

@@ -1253,7 +1253,7 @@ func playerAchievementInfluxAjaxHandler(w http.ResponseWriter, r *http.Request) 
 	var item = memcache.MemcachePlayerAchievementsInflux(playerID)
 	var hc influx.HighChartsJSON
 
-	err = memcache.GetSetInterface(item.Key, item.Expiration, &hc, func() (interface{}, error) {
+	err = memcache.GetSetInterface(item, &hc, func() (interface{}, error) {
 
 		builder := influxql.NewBuilder()
 		builder.AddSelect("MAX("+influx.InfPlayersAchievements.String()+")", "max_"+influx.InfPlayersAchievements.String())

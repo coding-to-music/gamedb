@@ -353,7 +353,7 @@ func GetPackage(id int) (pack Package, err error) {
 
 	var item = memcache.MemcachePackage(id)
 
-	err = memcache.GetSetInterface(item.Key, item.Expiration, &pack, func() (interface{}, error) {
+	err = memcache.GetSetInterface(item, &pack, func() (interface{}, error) {
 
 		err := FindOne(CollectionPackages, bson.D{{"_id", id}}, nil, nil, &pack)
 		return pack, err

@@ -127,7 +127,7 @@ func GetEventCounts(userID int) (counts []StringCount, err error) {
 
 	var item = memcache.MemcacheUserEvents(userID)
 
-	err = memcache.GetSetInterface(item.Key, item.Expiration, &counts, func() (interface{}, error) {
+	err = memcache.GetSetInterface(item, &counts, func() (interface{}, error) {
 
 		client, ctx, err := getMongo()
 		if err != nil {

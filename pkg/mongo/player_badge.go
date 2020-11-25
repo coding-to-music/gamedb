@@ -168,7 +168,7 @@ func GetAppBadge(appID int) (badge PlayerBadge, err error) {
 
 	var item = memcache.MemcacheFirstAppBadge(appID)
 
-	err = memcache.GetSetInterface(item.Key, item.Expiration, &badge, func() (interface{}, error) {
+	err = memcache.GetSetInterface(item, &badge, func() (interface{}, error) {
 
 		badges, err := getPlayerBadges(0, 1, bson.D{{"app_id", appID}}, nil, nil)
 		if err != nil {

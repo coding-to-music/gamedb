@@ -165,7 +165,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		item := memcache.HomeTopSellers
-		err := memcache.GetSetInterface(item.Key, item.Expiration, &topSellers, callback)
+		err := memcache.GetSetInterface(item, &topSellers, callback)
 		if err != nil {
 			steam.LogSteamError(err)
 			return
@@ -315,7 +315,7 @@ func homeTweetsHandler(w http.ResponseWriter, r *http.Request) {
 		return ret, nil
 	}
 
-	err := memcache.GetSetInterface(item.Key, item.Expiration, &ret, callback)
+	err := memcache.GetSetInterface(item, &ret, callback)
 	if err != nil {
 		log.ErrS(err)
 		return
@@ -496,7 +496,7 @@ func getPlayersForHome(sort string) (players []mongo.Player, err error) {
 
 	var item = memcache.MemcacheHomePlayers(sort)
 
-	err = memcache.GetSetInterface(item.Key, item.Expiration, &players, func() (interface{}, error) {
+	err = memcache.GetSetInterface(item, &players, func() (interface{}, error) {
 
 		projection := bson.M{
 			"_id":            1,
