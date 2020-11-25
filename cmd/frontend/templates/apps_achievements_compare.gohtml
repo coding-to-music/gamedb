@@ -38,7 +38,7 @@
                             <tr data-link="{{ .Player.GetPath }}">
                                 <td>{{ .Player.GetName }}</td>
                                 <td data-sort="{{ .PlayerApp.AppTime }}">{{ .PlayerApp.GetTimeNiceLong }}</td>
-                                <td></td>
+                                <td><a href="/games/{{ $.App.ID }}/compare-achievements/{{ $.GetRemoveLink .Player.ID }}"><i class="fas fa-minus"></i> Remove</a></td>
                             </tr>
                         {{ end }}
                         </tbody>

@@ -120,7 +120,6 @@ func main() {
 	r.Mount("/donate", pages.DonateRouter())
 	r.Mount("/experience", pages.ExperienceRouter())
 	r.Mount("/forgot", pages.ForgotRouter())
-	r.Mount("/friends", pages.FriendsRouter())
 	r.Mount("/franchise", pages.FranchiseRouter())
 	r.Mount("/games", pages.GamesRouter())
 	r.Mount("/groups", pages.GroupsRouter())

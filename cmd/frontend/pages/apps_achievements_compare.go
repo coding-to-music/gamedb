@@ -3,6 +3,7 @@ package pages
 import (
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -120,6 +121,7 @@ func appCompareAchievementsHandler(w http.ResponseWriter, r *http.Request) {
 	t.Achievements = achievements
 	t.Players = players
 	t.PlayerAchievements = playerAchievements
+	t.PlayerIDs = playerIDs
 
 	returnTemplate(w, r, t)
 }
@@ -130,10 +132,23 @@ type compareAppAchievementsTemplate struct {
 	Achievements       []mongo.AppAchievement
 	Players            []compareAppAchievementsPlayerTemplate
 	PlayerAchievements map[int64]map[string]mongo.PlayerAchievement
+	PlayerIDs          []int64
 }
 
 func (t compareAppAchievementsTemplate) GetCell(playerID int64, achKey string) mongo.PlayerAchievement {
 	return t.PlayerAchievements[playerID][achKey]
+}
+
+func (t compareAppAchievementsTemplate) GetRemoveLink(playerID int64) string {
+
+	var ids []string
+	for _, v := range t.PlayerIDs {
+		if v != playerID {
+			ids = append(ids, strconv.FormatInt(v, 10))
+		}
+	}
+
+	return strings.Join(ids, ",")
 }
 
 type compareAppAchievementsPlayerTemplate struct {

@@ -421,6 +421,7 @@ func (t globalTemplate) GetUserJSON() string {
 		"toasts":             t.toasts,
 		"isLoggedIn":         t.IsLoggedIn(),
 		"playerID":           t.GetPlayerID(),
+		"playerName":         t.PlayerName,
 		"log":                config.IsLocal() || t.IsAdmin(),
 		"isProd":             config.IsProd(),
 		"isLocal":            config.IsLocal(),
