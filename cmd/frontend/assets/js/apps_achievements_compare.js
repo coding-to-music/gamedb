@@ -7,14 +7,14 @@ if ($appsAchievementsComparePage.length > 0) {
         const val = $chosen.val();
         if (val) {
 
-            let pieces = window.location.pathname.substring(window.location.pathname.lastIndexOf('/') + 1);
-            let playerIds = pieces.split(',')
-            playerIds.push(val);
+            let pieces = window.location.pathname.split('/');
+            let ids = pieces.length === 5 ? pieces[4].split(',') : [];
 
-            pieces = [...new Set(playerIds)]; // Unique
+            ids.push(val);
+            ids = [...new Set(ids)]; // Unique
 
             window.location.href = '/games/' + $appsAchievementsComparePage.attr('data-app-id')
-                + '/compare-achievements/' + pieces.join(',');
+                + '/compare-achievements/' + ids.join(',');
         }
     });
 }
