@@ -8,10 +8,12 @@ import (
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/chatbot"
 	"github.com/gamedb/gamedb/pkg/config"
+	influxHelper "github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
+	influx "github.com/influxdata/influxdb1-client"
 )
 
 func ChatBotRouter() http.Handler {
@@ -106,6 +108,18 @@ func (cbt chatBotTemplate) Guilds() (guilds int) {
 			}
 
 			count += len(guilds)
+		}
+
+		// Save to Influx
+		_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, influx.Point{
+			Measurement: influxHelper.InfluxMeasurementChatBot.String(),
+			Fields: map[string]interface{}{
+				"guilds": count,
+			},
+			Precision: "h",
+		})
+		if err != nil {
+			log.ErrS(err)
 		}
 
 		return count, nil
