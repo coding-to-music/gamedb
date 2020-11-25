@@ -13,9 +13,11 @@ import (
 func BundlesRouter() http.Handler {
 
 	r := chi.NewRouter()
+	r.Mount("/{id}", BundleRouter())
+
 	r.Get("/", bundlesHandler)
 	r.Get("/bundles.json", bundlesAjaxHandler)
-	r.Mount("/{id}", BundleRouter())
+
 	return r
 }
 

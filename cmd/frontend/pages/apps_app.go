@@ -33,6 +33,8 @@ import (
 func appRouter() http.Handler {
 
 	r := chi.NewRouter()
+	r.Mount("/compare-achievements", appCompareAchievementsRouter())
+
 	r.Get("/", appHandler)
 	r.Get("/localization.html", appLocalizationHandler)
 	r.Get("/reviews.html", appReviewsHandler)
@@ -54,7 +56,6 @@ func appRouter() http.Handler {
 	r.Get("/tags.json", appTagsAjaxHandler)
 	r.Get("/friends.json", friendsJSONHandler)
 	r.Get("/{slug}", appHandler)
-	r.Mount("/compare-achievements", appCompareAchievementsRouter())
 
 	return r
 }

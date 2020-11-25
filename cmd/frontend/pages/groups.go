@@ -16,9 +16,11 @@ import (
 func GroupsRouter() http.Handler {
 
 	r := chi.NewRouter()
+	r.Mount("/{id}", GroupRouter())
+
 	r.Get("/", groupsHandler)
 	r.Get("/groups.json", groupsAjaxHandler)
-	r.Mount("/{id}", GroupRouter())
+
 	return r
 }
 

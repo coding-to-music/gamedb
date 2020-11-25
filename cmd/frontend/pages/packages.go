@@ -14,10 +14,13 @@ import (
 )
 
 func PackagesRouter() http.Handler {
+
 	r := chi.NewRouter()
+	r.Mount("/{id}", PackageRouter())
+
 	r.Get("/", packagesHandler)
 	r.Get("/packages.json", packagesAjaxHandler)
-	r.Mount("/{id}", PackageRouter())
+
 	return r
 }
 

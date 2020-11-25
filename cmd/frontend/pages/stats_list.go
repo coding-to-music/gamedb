@@ -20,9 +20,11 @@ import (
 func StatsListRouter() http.Handler {
 
 	r := chi.NewRouter()
+	r.Mount("/{id}", StatRouter())
+
 	r.Get("/", statsListHandler)
 	r.Get("/list.json", statsListJSONHandler)
-	r.Mount("/{id}", StatRouter())
+
 	return r
 }
 

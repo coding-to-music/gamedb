@@ -9,9 +9,12 @@ import (
 )
 
 func BadgesRouter() http.Handler {
+
 	r := chi.NewRouter()
-	r.Get("/", badgesHandler)
 	r.Mount("/{id}", BadgeRouter())
+
+	r.Get("/", badgesHandler)
+
 	return r
 }
 

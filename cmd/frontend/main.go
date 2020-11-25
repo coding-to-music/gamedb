@@ -102,11 +102,7 @@ func main() {
 	r.Use(middleware.RateLimiterWait(time.Second, 10))
 
 	// Pages
-	r.Get("/", pages.HomeHandler)
-	r.Get("/currency/{id}", pages.CurrencyHandler)
-
 	r.Mount("/{type:(categories|developers|genres|publishers|tags)}", pages.StatsListRouter())
-
 	r.Mount("/achievements", pages.AchievementsRouter())
 	r.Mount("/admin", pages.AdminRouter())
 	r.Mount("/api", pages.APIRouter())
@@ -141,6 +137,9 @@ func main() {
 	r.Mount("/terms", pages.TermsRouter())
 	r.Mount("/webhooks", pages.WebhooksRouter())
 	r.Mount("/websocket", pages.WebsocketsRouter())
+
+	r.Get("/", pages.HomeHandler)
+	r.Get("/currency/{id}", pages.CurrencyHandler)
 
 	// Sitemaps, Google doesnt like having a sitemap in a sub directory
 	r.Get("/sitemap-badges.xml", pages.SiteMapBadges)

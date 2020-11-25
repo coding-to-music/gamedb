@@ -19,13 +19,16 @@ import (
 )
 
 func PlayersRouter() http.Handler {
+
 	r := chi.NewRouter()
+	r.Mount("/{id:[0-9]+}", PlayerRouter())
+
 	r.Get("/", playersHandler)
 	r.Get("/add", playerAddHandler)
 	r.Post("/add", playerAddHandler)
 	r.Get("/states.json", statesAjaxHandler)
 	r.Get("/players.json", playersAjaxHandler)
-	r.Mount("/{id:[0-9]+}", PlayerRouter())
+
 	return r
 }
 

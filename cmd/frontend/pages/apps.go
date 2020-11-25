@@ -20,21 +20,24 @@ import (
 func GamesRouter() http.Handler {
 
 	r := chi.NewRouter()
+
+	r.Mount("/achievements", appsAchievementsRouter())
+	r.Mount("/compare", gamesCompareRouter())
+	r.Mount("/coop", coopRouter())
+	r.Mount("/dlc", appsDLCRouter())
+	r.Mount("/new-releases", newReleasesRouter())
+	r.Mount("/release-dates", releaseDatesRouter())
+	r.Mount("/sales", salesRouter())
+	r.Mount("/trending", trendingRouter())
+	r.Mount("/upcoming", upcomingRouter())
+	r.Mount("/wallpaper", wallpaperRouter())
+	r.Mount("/wishlists", wishlistsRouter())
+	r.Mount("/{id:[0-9]+}", appRouter())
+
 	r.Get("/", appsHandler)
 	r.Get("/games.json", appsAjaxHandler)
 	r.Get("/random", appsRandomHandler)
-	r.Mount("/coop", coopRouter())
-	r.Mount("/compare", gamesCompareRouter())
-	r.Mount("/dlc", appsDLCRouter())
-	r.Mount("/upcoming", upcomingRouter())
-	r.Mount("/achievements", appsAchievementsRouter())
-	r.Mount("/new-releases", newReleasesRouter())
-	r.Mount("/sales", salesRouter())
-	r.Mount("/trending", trendingRouter())
-	r.Mount("/wishlists", wishlistsRouter())
-	r.Mount("/wallpaper", wallpaperRouter())
-	r.Mount("/release-dates", releaseDatesRouter())
-	r.Mount("/{id:[0-9]+}", appRouter())
+
 	return r
 }
 
