@@ -27,7 +27,7 @@ func GetGroupChart(commandID string, groupID string) (path string) {
 	builder.AddGroupByTime("1d")
 	builder.SetFillNone()
 
-	path, err := getChart(commandID, builder, groupID, "Members (180 days)")
+	path, err := getChart(commandID, builder, groupID, "Members (180d)")
 	if err != nil {
 		log.Err(err.Error())
 	}
@@ -165,5 +165,5 @@ func getChart(commandID string, builder *influxql.Builder, id string, title stri
 		log.ErrS(err)
 	}
 
-	return "https://gamedb.online/assets/img/chatbot/" + file + "?_=" + strconv.FormatInt(time.Now().Truncate(time.Hour).Unix(), 10), err
+	return "https://gamedb.online/assets/img/chatbot/" + file + "?_=" + strconv.FormatInt(time.Now().Truncate(time.Minute*10).Unix(), 10), err
 }
