@@ -1,0 +1,9 @@
+{{define "forgot_missing"}}
+    {{ template "header" . }}
+
+    <p>You or someone else has requested a new password for Game DB</p>
+    <p>We could not find an account with the email "{{ .Email }}", but you can create one here:</p>
+    <p><a href="https://gamedb.online/signup">https://gamedb.online/signup</a></p>
+
+    {{ template "footer" . }}
+{{end}}

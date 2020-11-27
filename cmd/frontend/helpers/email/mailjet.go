@@ -11,13 +11,13 @@ import (
 type mailjetProvider struct {
 }
 
-func (mailjetProvider) Send(toEmail, replyToName, replyToEmail, subject string, template interface{}) (err error) {
+func (mailjetProvider) Send(toEmail, replyToName, replyToEmail, subject string, template emailTemplate) (err error) {
 
 	if config.C.MailjetPublic == "" || config.C.MailjetPrivate == "" {
 		return errors.New("missing mailjet environment variables")
 	}
 
-	html, err := getBodyFromTemplate(template)
+	html, err := renderTemplate(template)
 	if err != nil {
 		return err
 	}

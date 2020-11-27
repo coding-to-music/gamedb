@@ -2,14 +2,13 @@ package email
 
 import (
 	"bytes"
-	"errors"
 	"html/template"
 
 	"github.com/gamedb/gamedb/pkg/log"
 )
 
 type EmailProvider interface {
-	Send(toEmail, replyToName, replyToEmail, subject string, template interface{}) error
+	Send(toEmail, replyToName, replyToEmail, subject string, template emailTemplate) error
 }
 
 func GetProvider() EmailProvider {
@@ -28,30 +27,9 @@ func Init() {
 	}
 }
 
-func getBodyFromTemplate(data interface{}) (body string, err error) {
-
-	var t Template
-
-	switch data.(type) {
-	case ContactTemplate:
-		t = TemplateContact
-	case Forgot1Template:
-		t = TemplateForgot1
-	case Forgot2Template:
-		t = TemplateForgot2
-	case SignupTemplate:
-		t = TemplateSignup
-	case VerifyTemplate:
-		t = TemplateVerify
-	default:
-		return "", errors.New("invalid email template")
-	}
+func renderTemplate(template emailTemplate) (body string, err error) {
 
 	buf := bytes.Buffer{}
-	err = templatex.ExecuteTemplate(&buf, string(t), data)
-	if err != nil {
-		return "", err
-	}
-
-	return buf.String(), nil
+	err = templatex.ExecuteTemplate(&buf, template.filename(), template)
+	return buf.String(), err
 }

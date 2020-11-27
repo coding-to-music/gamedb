@@ -86,8 +86,26 @@ func forgotPostHandler(w http.ResponseWriter, r *http.Request) {
 	// Find user
 	user, err := mysql.GetUserByEmail(userEmail)
 	if err == mysql.ErrRecordNotFound {
-		session.SetFlash(r, session.SessionGood, successMessage)
+
+		// Send email
+		err = email.GetProvider().Send(
+			userEmail,
+			"",
+			"",
+			"Game DB Forgotten Password",
+			email.ForgotMissingTemplate{
+				Email: userEmail,
+				IP:    geo.GetFirstIP(r.RemoteAddr),
+			},
+		)
+		if err != nil {
+			log.ErrS(err)
+			session.SetFlash(r, session.SessionBad, "An error occurred (1003)")
+		} else {
+			session.SetFlash(r, session.SessionGood, successMessage)
+		}
 		return
+
 	} else if err != nil {
 		log.ErrS(err)
 		session.SetFlash(r, session.SessionBad, "An error occurred (1001)")

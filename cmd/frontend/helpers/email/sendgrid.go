@@ -12,13 +12,13 @@ import (
 type sendgridProvider struct {
 }
 
-func (sendgridProvider) Send(toEmail, replyToName, replyToEmail, subject string, template interface{}) (err error) {
+func (sendgridProvider) Send(toEmail, replyToName, replyToEmail, subject string, template emailTemplate) (err error) {
 
 	if config.C.SendGridAPIKey == "" {
 		return errors.New("missing environment variables")
 	}
 
-	html, err := getBodyFromTemplate(template)
+	html, err := renderTemplate(template)
 	if err != nil {
 		return err
 	}
