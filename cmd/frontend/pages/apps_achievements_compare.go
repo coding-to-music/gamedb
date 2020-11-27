@@ -123,6 +123,15 @@ func appCompareAchievementsHandler(w http.ResponseWriter, r *http.Request) {
 	t.PlayerAchievements = playerAchievements
 	t.PlayerIDs = playerIDs
 
+	var sortCol int8 = 1
+	for _, v := range players {
+		if v.PlayerApp.AppTime > 0 {
+			sortCol++
+		}
+	}
+
+	t.SortCol = sortCol
+
 	returnTemplate(w, r, t)
 }
 
@@ -133,6 +142,7 @@ type compareAppAchievementsTemplate struct {
 	Players            []compareAppAchievementsPlayerTemplate
 	PlayerAchievements map[int64]map[string]mongo.PlayerAchievement
 	PlayerIDs          []int64
+	SortCol            int8
 }
 
 func (t compareAppAchievementsTemplate) GetCell(playerID int64, achKey string) mongo.PlayerAchievement {
