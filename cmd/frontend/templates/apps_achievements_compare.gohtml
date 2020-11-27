@@ -51,7 +51,9 @@
                         <tr>
                             <th scope="col">Achievement</th>
                             {{ range .Players }}
-                                <th>{{ .Player.GetName }}</th>
+                                {{ if gt .PlayerApp.AppTime 0 }}
+                                    <th>{{ .Player.GetName }}</th>
+                                {{ end }}
                             {{ end }}
                             <th scope="col">Avg Completion</th>
                         </tr>
@@ -66,13 +68,15 @@
                                     </div>
                                 </th>
                                 {{ range $kk, $player := $.Players }}
-                                    {{ $cell := $.GetCell $player.Player.ID $achievement.Key }}
-                                    <td data-sort="{{ $cell.AchievementDate }}" class="nowrap">
-                                        {{ if gt $cell.PlayerID 0 }}
-                                            <span data-livestamp="{{ $cell.AchievementDate }}"></span><br>
-                                            <small class="text-muted">{{ $cell.GetDate }}</small>
-                                        {{ end }}
-                                    </td>
+                                    {{ if gt $player.PlayerApp.AppTime 0 }}
+                                        {{ $cell := $.GetCell $player.Player.ID $achievement.Key }}
+                                        <td data-sort="{{ $cell.AchievementDate }}" class="nowrap">
+                                            {{ if gt $cell.PlayerID 0 }}
+                                                <span data-livestamp="{{ $cell.AchievementDate }}"></span><br>
+                                                <small class="text-muted">{{ $cell.GetDate }}</small>
+                                            {{ end }}
+                                        </td>
+                                    {{ end }}
                                 {{ end }}
                                 <td class="thin" data-sort="{{ $achievement.GetCompleted }}" style="background: linear-gradient(to right, rgba(0,0,0,.15) {{ $achievement.Completed }}%, transparent {{ $achievement.Completed }}%);">
                                     {{ $achievement.GetCompleted }}%
