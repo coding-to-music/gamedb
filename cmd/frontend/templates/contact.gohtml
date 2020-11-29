@@ -44,12 +44,7 @@
 
                         </div>
 
-                        {{ if eq .Env "production" }}
-                            <div class="col-sm-12">
-                                <label for="message">Captcha</label>
-                                <div class="h-captcha" data-sitekey="{{ .HCaptchaPublic }}"></div>
-                            </div>
-                        {{ end }}
+                        {{ template "hcaptcha" . }}
 
                         <div class="col-sm-12 mt-4">
 

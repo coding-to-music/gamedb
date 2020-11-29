@@ -27,12 +27,7 @@
                                         <input type="email" class="form-control" id="email" name="email" value="{{ .LoginEmail }}" autofocus required>
                                     </div>
 
-                                    {{ if eq .Env "production" }}
-                                        <div class="form-group">
-                                            <label for="message">Captcha</label>
-                                            <div class="h-captcha" data-sitekey="{{ .HCaptchaPublic }}"></div>
-                                        </div>
-                                    {{ end }}
+                                    {{ template "hcaptcha" . }}
 
                                     <button type="submit" class="btn btn-success" aria-label="Login">Send Email</button>
                                 </form>

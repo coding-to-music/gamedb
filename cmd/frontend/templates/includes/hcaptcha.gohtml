@@ -1,0 +1,12 @@
+{{define "hcaptcha"}}
+
+    {{/*    {{ if eq .Env "production" }}*/}}
+    <div class="col-sm-12">
+        <label for="message">Captcha</label>
+        <div class="h-captcha"
+             data-sitekey="{{ .HCaptchaPublic }}"
+             data-theme="{{ if .GetCookieFlag "dark" }}dark{{end}}"></div>
+    </div>
+    {{/*    {{ end }}*/}}
+
+{{end}}
