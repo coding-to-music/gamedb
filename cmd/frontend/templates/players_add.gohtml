@@ -1,7 +1,7 @@
 {{define "players_add"}}
     {{ template "header" . }}
 
-    <script src='https://www.google.com/recaptcha/api.js'></script>
+    <script src="https://hcaptcha.com/1/api.js" async defer></script>
 
     <div class="container" id="add-player-page">
 
@@ -16,7 +16,7 @@
             {{ template "players_header" . }}
             <div class="card-body">
 
-                <form action="/players/add" method="post" data-recaptcha>
+                <form action="/players/add" method="post">
                     <div class="row">
                         <div class="col-sm-6">
 
@@ -25,8 +25,12 @@
                                 <input type="search" class="form-control" id="search" name="search" value="{{ .Default }}" autofocus required>
                             </div>
 
-                            {{/*                            <label for="message">Captcha</label>*/}}
-                            {{/*                            <div class="g-recaptcha mb-3" data-sitekey="{{ .RecaptchaPublic }}" data-callback="recaptchaCallback"></div>*/}}
+{{/*                            {{ if eq .Env "production" }}*/}}
+{{/*                                <div class="form-group">*/}}
+{{/*                                    <label for="message">Captcha</label>*/}}
+{{/*                                    <div class="h-captcha" data-sitekey="{{ .HCaptchaPublic }}"></div>*/}}
+{{/*                                </div>*/}}
+{{/*                            {{ end }}*/}}
 
                             <button type="submit" class="btn btn-success" aria-label="Search">Search</button>
 

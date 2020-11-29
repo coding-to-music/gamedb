@@ -12,7 +12,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Jleagle/recaptcha-go"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/email"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/cmd/frontend/pages"
@@ -67,16 +66,8 @@ func main() {
 		return
 	}
 
-	// Start queue producers to send to.
+	// Init modules
 	queue.Init(queue.FrontendDefinitions)
-
-	// Setup Recaptcha
-	if config.C.RecaptchaPublic == "" || config.C.RecaptchaPrivate == "" {
-		log.ErrS("Missing environment variables")
-	} else {
-		recaptcha.SetSecret(config.C.RecaptchaPrivate)
-	}
-
 	session.Init()
 	pages.Init()
 	email.Init()

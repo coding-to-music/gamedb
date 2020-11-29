@@ -5,8 +5,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Jleagle/recaptcha-go"
 	"github.com/badoux/checkmail"
+	"github.com/gamedb/gamedb/cmd/frontend/helpers/captcha"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/email"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/geo"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
@@ -39,7 +39,7 @@ func forgotHandler(w http.ResponseWriter, r *http.Request) {
 	t := forgotTemplate{}
 	t.fill(w, r, "forgot", "Forgot Password", "")
 	t.hideAds = true
-	t.RecaptchaPublic = config.C.RecaptchaPublic
+	t.HCaptchaPublic = config.C.HCaptchaPublic
 	t.LoginEmail = session.Get(r, "login-email")
 
 	returnTemplate(w, r, t)
@@ -47,8 +47,8 @@ func forgotHandler(w http.ResponseWriter, r *http.Request) {
 
 type forgotTemplate struct {
 	globalTemplate
-	RecaptchaPublic string
-	LoginEmail      string
+	HCaptchaPublic string
+	LoginEmail     string
 }
 
 func forgotPostHandler(w http.ResponseWriter, r *http.Request) {
@@ -76,8 +76,15 @@ func forgotPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if config.IsProd() {
-		err = recaptcha.CheckFromRequest(r)
+
+		resp, err := captcha.GetCaptcha().CheckRequest(r)
 		if err != nil {
+			log.ErrS(err)
+			session.SetFlash(r, session.SessionBad, "An error occurred (1002)")
+			return
+		}
+
+		if !resp.Success {
 			session.SetFlash(r, session.SessionBad, "Please check the captcha")
 			return
 		}
@@ -138,7 +145,7 @@ func forgotPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Create login event
+	// Create event
 	err = mongo.NewEvent(r, user.ID, mongo.EventForgotPassword)
 	if err != nil {
 		log.ErrS(err)

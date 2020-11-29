@@ -5,9 +5,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/Jleagle/recaptcha-go"
 	"github.com/Jleagle/steam-go/steamid"
 	"github.com/badoux/checkmail"
+	"github.com/gamedb/gamedb/cmd/frontend/helpers/captcha"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/oauth"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
@@ -40,7 +40,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	t := loginTemplate{}
 	t.fill(w, r, "login", "Login", "Login to Game DB")
 	t.hideAds = true
-	t.RecaptchaPublic = config.C.RecaptchaPublic
+	t.HCaptchaPublic = config.C.HCaptchaPublic
 	t.LoginEmail = session.Get(r, loginSessionEmail)
 	t.Providers = oauth.Providers
 
@@ -49,9 +49,9 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 type loginTemplate struct {
 	globalTemplate
-	RecaptchaPublic string
-	LoginEmail      string
-	Providers       []oauth.Provider
+	HCaptchaPublic string
+	LoginEmail     string
+	Providers      []oauth.Provider
 }
 
 func loginPostHandler(w http.ResponseWriter, r *http.Request) {
@@ -86,8 +86,14 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if config.IsProd() {
-			err = recaptcha.CheckFromRequest(r)
+
+			resp, err := captcha.GetCaptcha().CheckRequest(r)
 			if err != nil {
+				log.ErrS(err)
+				return "Something went wrong", false
+			}
+
+			if !resp.Success {
 				return "Please check the captcha", false
 			}
 		}

@@ -23,4 +23,5 @@ var (
 	RegexFilterEmptyCharacters = regexp.MustCompile(`[\p{Cf}\p{Co}\p{Cs}\p{Cc}\p{C}\p{Braille}]`)
 	RegexSmallRomanOnly        = regexp.MustCompile(`^[IVX]+$`)
 	RegexYouTubeID             = regexp.MustCompile(`[a-zA-Z0-9_\-]{11}`)
+	RegexIP                    = regexp.MustCompile(`(?:[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})`)
 )

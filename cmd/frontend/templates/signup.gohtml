@@ -1,7 +1,7 @@
 {{define "signup"}}
     {{ template "header" . }}
 
-    <script src='https://www.google.com/recaptcha/api.js'></script>
+    <script src="https://hcaptcha.com/1/api.js" async defer></script>
 
     <div class="container" id="signup-page">
 
@@ -22,7 +22,7 @@
                         <div class="row">
                             <div class="col-12 col-lg-6 mb-4 mb-lg-0">
 
-                                <form action="/signup" method="post" data-recaptcha>
+                                <form action="/signup" method="post">
                                     <div class="form-group">
                                         <label for="email">Email</label>
                                         <input type="email" class="form-control" id="email" name="email" value="{{ .SignupEmail }}" autofocus required>
@@ -42,7 +42,7 @@
                                     {{ if eq .Env "production" }}
                                         <div class="form-group">
                                             <label for="message">Captcha</label>
-                                            <div class="g-recaptcha" data-sitekey="{{ .RecaptchaPublic }}" data-callback="recaptchaCallback"></div>
+                                            <div class="h-captcha" data-sitekey="{{ .HCaptchaPublic }}"></div>
                                         </div>
                                     {{ end }}
 

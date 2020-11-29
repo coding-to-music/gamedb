@@ -57,6 +57,10 @@ type Config struct {
 	GoogleProject           string `envconfig:"GOOGLE_PROJECT"`             // Logging
 	GoogleAuthFile          string `envconfig:"GOOGLE_AUTH"`                // Logging
 
+	// HCAPTCHA
+	HCaptchaPublic string `envconfig:"HCAPTCHA_KEY"`
+	HCaptchaSecret string `envconfig:"HCAPTCHA_SECRET"`
+
 	// Hetzner
 	HetznerSSHKeyID  int    `envconfig:"HETZNER_SSH_KEY_ID"` // Scaler
 	HetznerNetworkID int    `envconfig:"HETZNER_NETWORK_ID"` // Scaler

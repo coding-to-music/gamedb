@@ -1,7 +1,7 @@
 {{define "contact"}}
     {{ template "header" . }}
 
-    <script src='https://www.google.com/recaptcha/api.js'></script>
+    <script src="https://hcaptcha.com/1/api.js" async defer></script>
 
     <div class="container" id="contact-page">
 
@@ -15,7 +15,7 @@
         <div class="card">
             <div class="card-body">
 
-                <form action="/contact" method="post" data-recaptcha>
+                <form action="/contact" method="post">
                     <div class="row">
                         <div class="col-12 col-md-8 col-lg-6">
 
@@ -44,12 +44,10 @@
 
                         </div>
 
-                        {{ if not .IsLocal }}
+                        {{ if eq .Env "production" }}
                             <div class="col-sm-12">
-
                                 <label for="message">Captcha</label>
-                                <div class="g-recaptcha" data-sitekey="{{ .RecaptchaPublic }}" data-callback="recaptchaCallback"></div>
-
+                                <div class="h-captcha" data-sitekey="{{ .HCaptchaPublic }}"></div>
                             </div>
                         {{ end }}
 

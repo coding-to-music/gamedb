@@ -3,7 +3,7 @@ package pages
 import (
 	"net/http"
 
-	"github.com/Jleagle/recaptcha-go"
+	"github.com/gamedb/gamedb/cmd/frontend/helpers/captcha"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/email"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/geo"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
@@ -30,7 +30,7 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := contactTemplate{}
 	t.fill(w, r, "contact", "Contact", "Get in touch with Game DB.")
-	t.RecaptchaPublic = config.C.RecaptchaPublic
+	t.HCaptchaPublic = config.C.HCaptchaPublic
 
 	t.SessionName = session.Get(r, contactSessionName)
 	t.SessionEmail = session.Get(r, contactSessionEmail)
@@ -45,12 +45,12 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 
 type contactTemplate struct {
 	globalTemplate
-	RecaptchaPublic string
-	Messages        []string
-	Success         bool
-	SessionName     string
-	SessionEmail    string
-	SessionMessage  string
+	HCaptchaPublic string
+	Messages       []string
+	Success        bool
+	SessionName    string
+	SessionEmail   string
+	SessionMessage string
 }
 
 func postContactHandler(w http.ResponseWriter, r *http.Request) {
@@ -82,18 +82,17 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 			return session.SessionBad, "Please fill in a message"
 		}
 
-		// Recaptcha
+		// Captcha
 		if !config.IsLocal() {
 
-			err = recaptcha.CheckFromRequest(r)
+			resp, err := captcha.GetCaptcha().CheckRequest(r)
 			if err != nil {
-
-				if err == recaptcha.ErrNotChecked {
-					return session.SessionBad, "Please check the captcha"
-				}
-
 				log.ErrS(err)
 				return session.SessionBad, "Something has gone wrong (1002)"
+			}
+
+			if !resp.Success {
+				return session.SessionBad, "Captcha Failed"
 			}
 		}
 

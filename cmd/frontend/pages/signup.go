@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Jleagle/recaptcha-go"
 	"github.com/badoux/checkmail"
+	"github.com/gamedb/gamedb/cmd/frontend/helpers/captcha"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/email"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/oauth"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
@@ -41,7 +41,7 @@ func signupHandler(w http.ResponseWriter, r *http.Request) {
 	t.addAssetPasswordStrength()
 	t.hideAds = true
 	t.Domain = config.C.GameDBDomain
-	t.RecaptchaPublic = config.C.RecaptchaPublic
+	t.HCaptchaPublic = config.C.HCaptchaPublic
 	t.SignupEmail = session.Get(r, signupSessionEmail)
 	t.Providers = oauth.Providers
 
@@ -50,10 +50,10 @@ func signupHandler(w http.ResponseWriter, r *http.Request) {
 
 type signupTemplate struct {
 	globalTemplate
-	RecaptchaPublic string
-	Domain          string
-	SignupEmail     string
-	Providers       []oauth.Provider
+	HCaptchaPublic string
+	Domain         string
+	SignupEmail    string
+	Providers      []oauth.Provider
 }
 
 func signupPostHandler(w http.ResponseWriter, r *http.Request) {
@@ -107,9 +107,16 @@ func signupPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if config.IsProd() {
-		err = recaptcha.CheckFromRequest(r)
+
+		resp, err := captcha.GetCaptcha().CheckRequest(r)
 		if err != nil {
-			session.SetFlash(r, session.SessionBad, "Please check the captcha")
+			log.ErrS(err)
+			session.SetFlash(r, session.SessionBad, "Something went wrong")
+			return
+		}
+
+		if !resp.Success {
+			session.SetFlash(r, session.SessionBad, "Captcha failed")
 			return
 		}
 	}
