@@ -109,7 +109,7 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 				{Key: "_", Value: "No Country" + noCountryAgg},
 				// {Key: "", Value: "---"},
 			},
-			countries...
+			countries...,
 		)
 
 		// Continents
@@ -187,7 +187,7 @@ func statesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 					{Key: "_", Value: "No State" + stateAgg2},
 					{Key: "", Value: "---"},
 				},
-				states...
+				states...,
 			)
 		}
 	}
