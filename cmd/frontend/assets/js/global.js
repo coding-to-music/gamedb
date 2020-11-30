@@ -346,7 +346,7 @@ function loadFriends(appID, addSelf, callback) {
 
     $.ajax({
         type: "GET",
-        url: '/games/'+appID+'/friends.json',
+        url: '/games/' + appID + '/friends.json',
         dataType: 'json',
         success: function (data, textStatus, jqXHR) {
 
@@ -379,7 +379,8 @@ function loadFriends(appID, addSelf, callback) {
             }
 
             const $chosen = $select.chosen({
-                disable_search_threshold: 10,
+                disable_search_threshold: 5,
+                allow_single_deselect: false,
                 max_selected_options: 1
             })
 

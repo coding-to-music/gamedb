@@ -798,13 +798,12 @@ if ($appPage.length > 0) {
 
         // Setup drop downs
         $('select#achievements-filter').chosen({
-            disable_search_threshold: 10,
-            allow_single_deselect: true,
-            rtl: false,
-            max_selected_options: 10
+            disable_search_threshold: 5,
+            allow_single_deselect: false,
+            max_selected_options: 1
         });
 
-        loadFriends(appID, false,function ($chosen) {
+        loadFriends(appID, false, function ($chosen) {
             const val = $chosen.val();
             if (val) {
                 window.location.href = '/games/' + appID + '/compare-achievements/' + user.playerID + ',' + val;

@@ -46,9 +46,8 @@ if ($settingsPage.length > 0) {
 
         // Setup drop downs
         $('select.form-control-chosen').chosen({
-            disable_search_threshold: 10,
+            disable_search_threshold: 5,
             allow_single_deselect: true,
-            rtl: false,
         });
 
         //
