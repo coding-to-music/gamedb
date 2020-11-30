@@ -73,6 +73,17 @@ func main() {
 		return
 	}
 
+	// On joining a new guild
+	discordSession.AddHandlerOnce(func(s *discordgo.Session, m *discordgo.GuildCreate) {
+
+		err := memcache.Delete(memcache.MemcacheChatBotGuildsCount.Key)
+		if err != nil {
+			log.ErrS(err)
+			return
+		}
+	})
+
+	// On new messages
 	discordSession.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 		// Don't reply to bots
