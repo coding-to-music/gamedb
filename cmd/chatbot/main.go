@@ -114,10 +114,7 @@ func main() {
 				}
 
 				// Save stats
-				if m.Author.ID != debugAuthorID {
-					defer saveToInflux(m, command)
-					defer saveToMongoAndSendWebsocket(m, command, msg)
-				}
+				defer saveToDB(m, command, msg)
 
 				// Typing notification
 				err = discordSession.ChannelTyping(m.ChannelID)
@@ -203,7 +200,11 @@ func isPrivateChannel(s *discordgo.Session, m *discordgo.MessageCreate) (bool, e
 	return channel.Type == discordgo.ChannelTypeDM, nil
 }
 
-func saveToInflux(m *discordgo.MessageCreate, command chatbot.Command) {
+func saveToDB(m *discordgo.MessageCreate, command chatbot.Command, message string) {
+
+	if m.Author.ID == debugAuthorID {
+		return
+	}
 
 	if config.IsLocal() {
 		return
@@ -234,14 +235,8 @@ func saveToInflux(m *discordgo.MessageCreate, command chatbot.Command) {
 	if err != nil {
 		log.ErrS(err)
 	}
-}
 
-func saveToMongoAndSendWebsocket(m *discordgo.MessageCreate, command chatbot.Command, message string) {
-
-	if config.IsLocal() {
-		return
-	}
-
+	// Mongo
 	t, _ := m.Timestamp.Parse()
 
 	var row = mongo.ChatBotCommand{
@@ -255,11 +250,12 @@ func saveToMongoAndSendWebsocket(m *discordgo.MessageCreate, command chatbot.Com
 		Time:         t,
 	}
 
-	_, err := mongo.InsertOne(mongo.CollectionChatBotCommands, row)
+	_, err = mongo.InsertOne(mongo.CollectionChatBotCommands, row)
 	if err != nil {
 		log.ErrS(err)
 	}
 
+	// Websocket
 	guilds, err := mongo.GetGuilds([]string{row.GuildID})
 	if err != nil {
 		log.ErrS(err)
