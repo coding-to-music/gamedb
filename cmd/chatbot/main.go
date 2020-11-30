@@ -279,11 +279,12 @@ func discordError(err error) {
 	if err != nil {
 		if val, ok := err.(*discordgo.RESTError); ok {
 			if _, ok2 := allowed[val.Message.Code]; ok2 {
-				log.InfoS(err)
+				zap.S().Info(err) // No helper to fix stack offset
 				return
 			}
 		}
 
-		log.ErrS(err)
+		zap.S().Error(err) // No helper to fix stack offset
+		return
 	}
 }
