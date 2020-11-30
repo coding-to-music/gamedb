@@ -194,6 +194,7 @@
     $.extend(Plugin.prototype, {
         init: function () {
 
+            let delayTimer;
             const parent = this;
 
             // Before AJAX
@@ -327,7 +328,10 @@
                                 window.updateLabels();
                             }
 
-                            dt.draw();
+                            clearTimeout(delayTimer);
+                            delayTimer = setTimeout(function () {
+                                dt.draw();
+                            }, 500);
                         });
 
 
@@ -341,7 +345,7 @@
 
                         const name = $field.attr('name');
 
-                        $field.on('change search', function (e) {
+                        $field.on('input', function (e) {
 
                             let value = getFieldValue($field);
 
@@ -373,9 +377,12 @@
                                 // }
                             }
 
-                            dt.draw();
+                            clearTimeout(delayTimer);
+                            delayTimer = setTimeout(function () {
+                                dt.draw();
+                            }, 500);
 
-                            return false;
+                            return true;
                         });
                     }
                 }
