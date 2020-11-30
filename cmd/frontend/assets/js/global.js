@@ -358,13 +358,7 @@ function loadFriends(appID, addSelf, callback) {
 
             // Sort alphabetically
             data.sort(function (a, b) {
-                if (a.v < b.v) {
-                    return -1;
-                }
-                if (a.v > b.v) {
-                    return 1;
-                }
-                return 0;
+                return a.v.toLowerCase().localeCompare(b.v.toLowerCase());
             })
 
             $select.empty();
