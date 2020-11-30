@@ -173,13 +173,14 @@
         //     options.tableOptions.displayStart = (page - 1) * options.tableOptions.pageLength;
         //     currentValues['p'] = page;
         // }
-        // if (urlParams.has('s') && urlParams.has('o')) {
-        //     const sort = urlParams.get('s');
-        //     const order = urlParams.get('o');
-        //     options.tableOptions.order = [[parseInt(sort), order]];
-        //     currentValues['s'] = sort;
-        //     currentValues['o'] = order;
-        // }
+
+        if (urlParams.has('s') && urlParams.has('o')) {
+            const sort = urlParams.get('s');
+            const order = urlParams.get('o');
+            options.tableOptions.order = [[parseInt(sort), order]];
+            currentValues['s'] = sort;
+            currentValues['o'] = order;
+        }
 
         //
         this.options = options;
