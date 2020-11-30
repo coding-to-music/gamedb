@@ -209,6 +209,11 @@ func saveToInflux(m *discordgo.MessageCreate, command chatbot.Command) {
 		return
 	}
 
+	if command.ID() == chatbot.CHelp {
+		return
+	}
+
+	// Influx
 	point := influx.Point{
 		Measurement: string(influxHelper.InfluxMeasurementChatBot),
 		Tags: map[string]string{
