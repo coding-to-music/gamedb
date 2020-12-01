@@ -2,7 +2,6 @@
 
     "use strict";
 
-    // Create the defaults once
     const pluginName = "gdbTable";
     const defaults = {
         cache: true,
@@ -195,7 +194,6 @@
     $.extend(Plugin.prototype, {
         init: function () {
 
-            let delayTimer;
             const parent = this;
 
             // Before AJAX
@@ -301,132 +299,73 @@
             });
 
             // On search field change
-            if (this.options.isAjax()) {
-                for (const $field of this.options.searchFields) {
+            let delayTimer = setTimeout(null);
 
-                    if ($field.hasClass('noUi-target')) { // Sliders
+            for (const $field of this.options.searchFields) {
 
-                        const name = $field.attr('data-name');
-                        const slider = $field[0].noUiSlider;
+                const callback = function (e) {
+                    console.log('callback');
+                    let value = getFieldValue($field);
 
-                        slider.on('set', function (e) {
-
-                            const value = slider.get();
-
-                            if (name) {
-
-                                parent.currentValues[name] = value;
-
-                                setUrlParam(name, value);
-                                // if (JSON.stringify(parent.initialValues[name]) === JSON.stringify(value)) {
-                                //     deleteUrlParam(name);
-                                // } else {
-                                //     setUrlParam(name, value);
-                                // }
+                    const colToSortBy = $field.attr('data-col-sort');
+                    if (colToSortBy) {
+                        if (value) {
+                            if (dt.order()[0][0] !== parseInt(colToSortBy)) {
+                                parent.sortBeforeSearch = dt.order();
                             }
-
-                            if (typeof window.updateLabels == 'function') {
-                                window.updateLabels();
-                            }
-
-                            clearTimeout(delayTimer);
-                            delayTimer = setTimeout(function () {
-                                dt.draw();
-                            }, 500);
-                        });
-
-
-                        slider.on('update', function (e) {
-                            if (typeof window.updateLabels == 'function') {
-                                window.updateLabels();
-                            }
-                        });
-
-                    } else { // Inputs
-
-                        const name = $field.attr('name');
-
-                        $field.on('input', function (e) {
-
-                            let value = getFieldValue($field);
-
-                            const colToSortBy = $field.attr('data-col-sort');
-                            if (colToSortBy) {
-                                if (value) {
-                                    if (dt.order()[0][0] !== parseInt(colToSortBy)) {
-                                        parent.sortBeforeSearch = dt.order();
-                                    }
-                                    dt.order([parseInt(colToSortBy), 'desc']);
-                                } else {
-                                    dt.order(parent.sortBeforeSearch);
-                                }
-                            }
-
-                            if ($field.attr('data-hightlight')) {
-                                parent.highlight = value;
-                            }
-
-                            if (name) {
-
-                                parent.currentValues[name] = value;
-
-                                setUrlParam(name, value);
-                                // if (JSON.stringify(parent.initialValues[name]) === JSON.stringify(value)) {
-                                //     deleteUrlParam(name);
-                                // } else {
-                                //     setUrlParam(name, value);
-                                // }
-                            }
-
-                            clearTimeout(delayTimer);
-                            delayTimer = setTimeout(function () {
-                                dt.draw();
-                            }, 500);
-
-                            return true;
-                        });
+                            dt.order([parseInt(colToSortBy), 'desc']);
+                        } else {
+                            dt.order(parent.sortBeforeSearch);
+                        }
                     }
-                }
-            } else {
-                for (const $field of this.options.searchFields) {
 
-                    const name = $field.attr('name');
+                    if ($field.attr('data-hightlight')) {
+                        parent.highlight = value;
+                    }
 
-                    $field.on('keyup search', function (e) {
+                    const name = getFieldName($field);
+                    if (name) {
 
-                        let value = getFieldValue($field);
+                        parent.currentValues[name] = value;
 
-                        const colToSortBy = $field.attr('data-col-sort');
-                        if (colToSortBy) {
-                            if (value) {
-                                if (dt.order()[0][0] !== parseInt(colToSortBy)) {
-                                    parent.sortBeforeSearch = dt.order();
-                                }
-                                dt.order([parseInt(colToSortBy), 'desc']);
-                            } else {
-                                dt.order(parent.sortBeforeSearch);
-                            }
-                        }
+                        setUrlParam(name, value);
+                        // if (JSON.stringify(parent.initialValues[name]) === JSON.stringify(value)) {
+                        //     deleteUrlParam(name);
+                        // } else {
+                        //     setUrlParam(name, value);
+                        // }
+                    }
 
-                        if ($field.attr('data-hightlight')) {
-                            parent.highlight = value;
-                        }
+                    if ($field.hasClass('noUi-target')) {
+                        updateLabels();
+                    }
 
-                        if (name) {
-
-                            parent.currentValues[name] = value;
-
-                            setUrlParam(name, value);
-                            // if (JSON.stringify(parent.initialValues[name]) === JSON.stringify(value)) {
-                            //     deleteUrlParam(name);
-                            // } else {
-                            //     setUrlParam(name, value);
-                            // }
-                        }
-
-                        dt.search($(this).val());
+                    if (parent.options.isAjax()) {
+                        clearTimeout(delayTimer);
+                        delayTimer = setTimeout(function () {
+                            dt.draw();
+                        }, 600);
+                        return true;
+                    } else {
                         dt.draw();
+                        return false;
+                    }
+                };
+
+                if ($field.hasClass('noUi-target')) {
+
+                    // Sliders
+                    $field[0].noUiSlider.on('set', callback);
+                    $field[0].noUiSlider.on('set update', function (e) {
+                        if (typeof window.updateLabels == 'function') {
+                            window.updateLabels();
+                        }
                     });
+
+                } else {
+
+                    // Inputs
+                    $field.on('input search', callback);
                 }
             }
 
@@ -502,9 +441,7 @@
             return getFieldValue($field).length > 1;
 
         } else if ($field.prop('multiple')) {
-
             return true;
-
         } else {
             return false;
         }
