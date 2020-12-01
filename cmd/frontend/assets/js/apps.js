@@ -133,7 +133,7 @@ if ($('#apps-page').length > 0) {
                         return row[11];
                     },
                     "orderable": false,
-                    "visible": false,
+                    "visible": user.isLocal,
                 },
             ]
         };
