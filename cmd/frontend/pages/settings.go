@@ -220,6 +220,10 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 				}
 			})
 
+			if err != nil {
+				log.ErrS(err)
+			}
+
 			if !inGuild {
 				t.Banners = append(t.Banners, "<a href='/settings/join-discord-server'>Join the Discord server!</a>")
 			}
