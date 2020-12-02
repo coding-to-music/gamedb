@@ -205,7 +205,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 				discord, err := discordgo.New("Bot " + config.C.DiscordOAuthBotToken)
 				if err != nil {
-					return false, err
+					return true, err
 				}
 
 				_, err = discord.GuildMember(helpers.GuildID, val.ID)
@@ -213,11 +213,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 					return false, nil // 404, not in guild
 				}
 
-				if err != nil {
-					return false, err // unknown error
-				} else {
-					return true, nil // no error, in guild
-				}
+				return true, err
 			})
 
 			if err != nil {
