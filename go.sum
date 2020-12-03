@@ -71,6 +71,8 @@ github.com/Jleagle/captcha-go v0.0.0-20201129095153-4a425c113169 h1:/2wnHXL42byZ
 github.com/Jleagle/captcha-go v0.0.0-20201129095153-4a425c113169/go.mod h1:I1CrS0WgRbi9jDLPpcFE8svOg2hb9DaTSxy1S+vPwT8=
 github.com/Jleagle/captcha-go v0.0.0-20201129170305-78b3e54be9c7 h1:yg9JvAhbGt+oAgPAbDYI2RZciw5bZBCKm6SVY8MjJbE=
 github.com/Jleagle/captcha-go v0.0.0-20201129170305-78b3e54be9c7/go.mod h1:I1CrS0WgRbi9jDLPpcFE8svOg2hb9DaTSxy1S+vPwT8=
+github.com/Jleagle/captcha-go v0.0.0-20201203202350-806e55b8099c h1:22DB5XmznghFH3L1kJl6ihhK0grrz2B/Vvyzi1KrpqU=
+github.com/Jleagle/captcha-go v0.0.0-20201203202350-806e55b8099c/go.mod h1:I1CrS0WgRbi9jDLPpcFE8svOg2hb9DaTSxy1S+vPwT8=
 github.com/Jleagle/go-durationfmt v0.0.0-20190307132420-e57bfad84057 h1:gIPGag4G5pc8Hhm9AAuJclokTqczjkq28Xuyjzs7yKY=
 github.com/Jleagle/go-durationfmt v0.0.0-20190307132420-e57bfad84057/go.mod h1:6Q6xyLL3Dcnj8DkW7BAHG0Y4+vFG+sNhXom2uFUGC20=
 github.com/Jleagle/influxql v0.0.0-20200804190929-88324f67bffe h1:HI7ZQfPMj8bROO9GBuiZWk8wt9OTZ2HPB6+9Y1uvZi4=
@@ -85,6 +87,8 @@ github.com/Jleagle/sitemap-go v0.0.0-20190405195207-2bdddbb3bd50 h1:QkHMYi6HhE8H
 github.com/Jleagle/sitemap-go v0.0.0-20190405195207-2bdddbb3bd50/go.mod h1:6XUIBoc/yO+w//k1YvVfZY6bsiG4Z/7l31B54EeSh/c=
 github.com/Jleagle/steam-go v0.0.0-20200902113949-8ea84a7fe3f4 h1:9bEbkjRdmgRYsTGk3x0Nf0CGzvdlMiLKBgEhmukktsI=
 github.com/Jleagle/steam-go v0.0.0-20200902113949-8ea84a7fe3f4/go.mod h1:u2NS0l9MOJZ7dYDxv4OWfVFmevvtx+ZqUGMh0j6QrcA=
+github.com/Jleagle/steam-go v0.0.0-20201203202638-01820f681d7a h1:rNSn7a3RhbssbHGVkhp/w2x8zVfFipjCqInKomuIAF0=
+github.com/Jleagle/steam-go v0.0.0-20201203202638-01820f681d7a/go.mod h1:u2NS0l9MOJZ7dYDxv4OWfVFmevvtx+ZqUGMh0j6QrcA=
 github.com/Jleagle/unmarshal-go v0.0.0-20200217225147-fd7db71d9ac0 h1:DYxBI3XK1rB2S6HcBN37F6UpuoM1s7PXniT5rVwn2WU=
 github.com/Jleagle/unmarshal-go v0.0.0-20200217225147-fd7db71d9ac0/go.mod h1:ilcgtR3U6eAPVcoKJOG/01kzZH7gaQw1gXM62hUAGHE=
 github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=

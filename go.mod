@@ -5,14 +5,14 @@ go 1.13
 require (
 	cloud.google.com/go v0.72.0 // indirect
 	cloud.google.com/go/logging v1.1.2
-	github.com/Jleagle/captcha-go v0.0.0-20201129170305-78b3e54be9c7
+	github.com/Jleagle/captcha-go v0.0.0-20201203202350-806e55b8099c
 	github.com/Jleagle/go-durationfmt v0.0.0-20190307132420-e57bfad84057
 	github.com/Jleagle/influxql v0.0.0-20200804190929-88324f67bffe
 	github.com/Jleagle/patreon-go v0.0.0-20201006180837-366bfaa6710a
 	github.com/Jleagle/rabbit-go v0.0.0-20200831220529-13e96c303e94
 	github.com/Jleagle/session-go v0.0.0-20190515070633-3c8712426233
 	github.com/Jleagle/sitemap-go v0.0.0-20190405195207-2bdddbb3bd50
-	github.com/Jleagle/steam-go v0.0.0-20200902113949-8ea84a7fe3f4
+	github.com/Jleagle/steam-go v0.0.0-20201203202638-01820f681d7a
 	github.com/Jleagle/unmarshal-go v0.0.0-20200217225147-fd7db71d9ac0
 	github.com/Philipp15b/go-steam v1.0.1-0.20190816133340-b04c5a83c1c0
 	github.com/PuerkitoBio/goquery v1.6.0 // indirect
