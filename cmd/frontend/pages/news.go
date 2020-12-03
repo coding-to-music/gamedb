@@ -3,13 +3,14 @@ package pages
 import (
 	"net/http"
 	"sync"
-	"time"
 
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
+	"github.com/olivere/elastic/v7"
 )
 
 func NewsRouter() http.Handler {
@@ -25,27 +26,19 @@ func newsHandler(w http.ResponseWriter, r *http.Request) {
 	t := newsTemplate{}
 	t.fill(w, r, "news", "News", "All the news from all the games on Steam")
 
-	apps, err := mongo.PopularApps()
+	feeds, err := elasticsearch.AggregateArticleFeeds()
 	if err != nil {
 		log.ErrS(err)
 	}
 
-	var appIDs []int
-	for _, app := range apps {
-		appIDs = append(appIDs, app.ID)
-	}
-
-	t.Articles, err = mongo.GetArticlesByAppIDs(appIDs, 0, time.Now().AddDate(0, 0, -7))
-	if err != nil {
-		log.ErrS(err)
-	}
+	t.Feeds = feeds
 
 	returnTemplate(w, r, t)
 }
 
 type newsTemplate struct {
 	globalTemplate
-	Articles []mongo.Article
+	Feeds []helpers.TupleStringInt
 }
 
 func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
@@ -67,8 +60,21 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		})
 
 		var search = query.GetSearchString("search")
+		var filters []elastic.Query
 
-		articles, filtered, err = elasticsearch.SearchArticles(query.GetOffset(), sorters, search)
+		switch query.GetSearchString("filter") {
+		case "mine":
+			filters = append(filters, elastic.NewTermQuery("", ""))
+		case "popular":
+			filters = append(filters, elastic.NewTermQuery("", ""))
+		}
+
+		var feed = query.GetSearchString("feed")
+		if feed != "" {
+			filters = append(filters, elastic.NewTermQuery("feed", feed))
+		}
+
+		articles, filtered, err = elasticsearch.SearchArticles(query.GetOffset(), sorters, search, filters)
 		if err != nil {
 			log.ErrS(err)
 		}
@@ -104,6 +110,7 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			article.GetAppPath(),     // 8
 			article.GetDate(),        // 9
 			article.TitleMarked,      // 10
+			article.FeedName,         // 11
 		})
 	}
 

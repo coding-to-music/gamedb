@@ -8,6 +8,7 @@ import (
 
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/olivere/elastic/v7"
 )
 
@@ -66,7 +67,7 @@ func IndexArticlesBulk(articles map[string]Article) error {
 	return indexDocuments(IndexArticles, i)
 }
 
-func SearchArticles(offset int, sorters []elastic.Sorter, search string) (articles []Article, total int64, err error) {
+func SearchArticles(offset int, sorters []elastic.Sorter, search string, filters []elastic.Query) (articles []Article, total int64, err error) {
 
 	client, ctx, err := GetElastic()
 	if err != nil {
@@ -80,30 +81,35 @@ func SearchArticles(offset int, sorters []elastic.Sorter, search string) (articl
 		TrackTotalHits(true).
 		SortBy(sorters...)
 
+	b := elastic.NewBoolQuery()
+
+	if len(filters) > 0 {
+		b.Filter(filters...)
+	}
+
 	if search != "" {
 
-		searchService.Query(elastic.NewBoolQuery().
-			Must(
-				elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
-					elastic.NewMatchQuery("title", search).Boost(2),
-					elastic.NewMatchQuery("app_name", search).Boost(1),
-					elastic.NewMatchQuery("author", search).Boost(1),
-					elastic.NewPrefixQuery("title", search).Boost(0.2),
-					elastic.NewPrefixQuery("app_name", search).Boost(0.1),
-				),
-			).
-			Should(
-				elastic.NewFunctionScoreQuery().
-					AddScoreFunc(elastic.NewGaussDecayFunction().FieldName("time").
-						Origin(time.Now().Unix()). // Max
-						Scale(1213743600). // Min - First news article - 2008-06-18
-						Decay(0.1),
-					),
+		b.Must(
+			elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
+				elastic.NewMatchQuery("title", search).Boost(2),
+				elastic.NewMatchQuery("app_name", search).Boost(1),
+				elastic.NewMatchQuery("author", search).Boost(1),
+				elastic.NewPrefixQuery("title", search).Boost(0.2),
+				elastic.NewPrefixQuery("app_name", search).Boost(0.1),
 			),
+		).Should(
+			elastic.NewFunctionScoreQuery().
+				AddScoreFunc(elastic.NewGaussDecayFunction().FieldName("time").
+					Origin(time.Now().Unix()). // Max
+					Scale(1213743600). // Min - First news article - 2008-06-18
+					Decay(0.1),
+				),
 		)
 
 		searchService.Highlight(elastic.NewHighlight().Field("title").Field("app_name").PreTags("<mark>").PostTags("</mark>"))
 	}
+
+	searchService.Query(b)
 
 	searchResult, err := searchService.Do(ctx)
 	if err != nil {
@@ -140,6 +146,45 @@ func SearchArticles(offset int, sorters []elastic.Sorter, search string) (articl
 	}
 
 	return articles, searchResult.TotalHits(), nil
+}
+
+func AggregateArticleFeeds() (aggregations []helpers.TupleStringInt, err error) {
+
+	var item = memcache.MemcacheArticleFeedAggs
+
+	err = memcache.GetSetInterface(item, &aggregations, func() (interface{}, error) {
+
+		client, ctx, err := GetElastic()
+		if err != nil {
+			return aggregations, err
+		}
+
+		searchService := client.Search().
+			Index(IndexArticles).
+			Aggregation("feed", elastic.NewTermsAggregation().Field("feed").Size(100).OrderByCountDesc())
+
+		searchResult, err := searchService.Do(ctx)
+		if err != nil {
+			return aggregations, err
+		}
+
+		if a, ok := searchResult.Aggregations.Terms("feed"); ok {
+			for _, feeds := range a.Buckets {
+				aggregations = append(aggregations, helpers.TupleStringInt{
+					Key:   feeds.Key.(string),
+					Value: feeds.DocCount,
+				})
+			}
+		}
+
+		// sort.Slice(aggregations, func(i, j int) bool {
+		// 	return strings.ToLower(aggregations[i].Value) < strings.ToLower(aggregations[j].Value)
+		// })
+
+		return aggregations, err
+	})
+
+	return aggregations, err
 }
 
 //noinspection GoUnusedExportedFunction

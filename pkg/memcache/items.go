@@ -104,8 +104,9 @@ var (
 	MemcachePlayerLocationAggs       = Item{Key: "player-location-aggs", Expiration: 60 * 60 * 2}
 
 	// Other
-	MemcacheAPISteam      = Item{Key: "api-steam", Expiration: 60 * 60 * 24 * 7}
-	MemcacheConfigItem    = func(configID string) Item { return Item{Key: "config-item-" + configID, Expiration: 0} }
-	MemcacheFirstAppBadge = func(appID int) Item { return Item{Key: "first-app-badge-" + strconv.Itoa(appID), Expiration: 0} }
-	MemcacheMongoCount    = func(collection string, filter bson.D) Item { return Item{Key: "mongo-count-" + collection + "-" + FilterToString(filter), Expiration: 60 * 60} }
+	MemcacheAPISteam        = Item{Key: "api-steam", Expiration: 60 * 60 * 24 * 7}
+	MemcacheConfigItem      = func(configID string) Item { return Item{Key: "config-item-" + configID, Expiration: 0} }
+	MemcacheFirstAppBadge   = func(appID int) Item { return Item{Key: "first-app-badge-" + strconv.Itoa(appID), Expiration: 0} }
+	MemcacheMongoCount      = func(collection string, filter bson.D) Item { return Item{Key: "mongo-count-" + collection + "-" + FilterToString(filter), Expiration: 60 * 60} }
+	MemcacheArticleFeedAggs = Item{Key: "app-article-feeds", Expiration: 60 * 60 * 24 * 7}
 )

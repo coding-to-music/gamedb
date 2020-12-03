@@ -16,6 +16,11 @@ type TupleInt struct {
 	Value int `json:"v"`
 }
 
+type TupleStringInt struct {
+	Key   string `json:"k"`
+	Value int64  `json:"v"`
+}
+
 // IgnoreErrors returns nil if an error is of one of the provided types, returns the provided error otherwise.
 func IgnoreErrors(err error, errs ...error) error {
 

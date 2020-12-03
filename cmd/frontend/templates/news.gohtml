@@ -10,93 +10,51 @@
         {{ template "flashes" . }}
 
         <div class="card">
-
-            <div class="card-header">
-
-                <ul class="nav nav-tabs card-header-tabs" role="tablist">
-                    <li class="nav-item">
-                        <a class="nav-link active" data-toggle="tab" href="#popular" role="tab">Popular App News</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#all" role="tab">All News</a>
-                    </li>
-                    <li class="nav-item d-none">
-                        <a class="nav-link" data-toggle="tab" href="#steam" role="tab">Steam News</a>
-                    </li>
-                </ul>
-
-            </div>
             <div class="card-body">
 
-                <div class="tab-content">
-
-                    {{/* Popular App News */}}
-                    <div class="tab-pane show active" id="popular" role="tabpanel">
-
-                        {{ range $key, $value := .Articles }}
-
-                            <div class="card mb-3" id="{{ .ID }}">
-                                <div class="card-header">
-
-                                    <img src="" data-lazy="{{ .GetAppIcon }}" alt="" data-lazy-alt="{{ .Title }}" class="rounded float-left" data-src="/assets/img/no-app-image-square.jpg">
-
-                                    <div class="text-truncate">
-                                        <strong title="{{ .Title }}">{{ .Title }}</strong>
-                                    </div>
-                                    <div>
-                                        <a href="{{ .GetAppPath }}">{{ .AppName }}</a>
-                                        <span class="float-right">{{ .GetDate }}</span>
-                                    </div>
-                                </div>
-                                <div class="card-body minned">
-                                    <div>{{ .GetBody }}</div>
-                                </div>
-                            </div>
-
-                        {{ end }}
-
-                    </div>
-
-                    {{/* All App News */}}
-                    <div class="tab-pane" id="all" role="tabpanel">
-
-                        <div class="row">
-                            <div class="d-none">
-                                {{/* This div is so Chrome auto-fills this one and not the rest! */}}
-                                <label for="hidden">Hidden</label>
-                                <select multiple data-placeholder="Hidden" class="form-control form-control-chosen" id="hidden" name="hidden">
-                                </select>
-                            </div>
-                            <div class="col-sm-6 col-md-4">
-                                <div class="form-group">
-                                    <label for="search">Search</label>
-                                    <input class="form-control" type="search" placeholder="Search" id="search" name="search" data-col-sort="2">
-                                </div>
-                            </div>
+                <div class="row">
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="form-group">
+                            <label for="filter">Filter</label>
+                            <select data-placeholder="Filter" class="form-control form-control-chosen" id="filter" name="filter">
+                                <option value="" selected>All News</option>
+                                <option value="mine">My Game News</option>
+                                <option value="popular">Popular Game News</option>
+                            </select>
                         </div>
-
-                        <div class="table-responsive">
-                            <table class="table table-hover table-striped table-counts mb-0" data-row-type="articles" id="news-table" data-path="/news/news.json">
-                                <thead class="thead-light">
-                                <tr>
-                                    <th scope="col">Article</th>
-                                    <th scope="col">Date</th>
-                                    <th scope="col">Score</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-
-                                </tbody>
-                            </table>
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="form-group">
+                            <label for="feed">Feed</label>
+                            <select data-placeholder="Filter" class="form-control form-control-chosen" id="feed" name="feed">
+                                <option value="" selected>All Feeds</option>
+                                {{ range .Feeds }}
+                                    <option value="{{ .Value }}">{{ .Key }} ({{ .Value }})</option>
+                                {{ end }}
+                            </select>
                         </div>
-
                     </div>
-
-                    {{/* Steam Blogs */}}
-                    <div class="tab-pane" id="steam" role="tabpanel">
-
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="form-group">
+                            <label for="search">Search</label>
+                            <input class="form-control" type="search" placeholder="Search" id="search" name="search" data-col-sort="2">
+                        </div>
                     </div>
+                </div>
 
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped table-counts mb-0" data-row-type="articles" id="news-table" data-path="/news/news.json">
+                        <thead class="thead-light">
+                        <tr>
+                            <th scope="col">Article</th>
+                            <th scope="col" class="thin">Date</th>
+                            <th scope="col" class="thin">Score</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
                 </div>
 
             </div>
