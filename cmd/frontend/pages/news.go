@@ -101,10 +101,9 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			article.Time,             // 5
 			article.Score,            // 6
 			article.GetAppName(),     // 7
-			"",                       // 8
-			article.GetAppPath(),     // 9
-			article.GetDate(),        // 10
-			article.TitleMarked,      // 11
+			article.GetAppPath(),     // 8
+			article.GetDate(),        // 9
+			article.TitleMarked,      // 10
 		})
 	}
 

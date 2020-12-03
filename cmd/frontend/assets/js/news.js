@@ -35,7 +35,7 @@ if ($('#news-page').length > 0) {
                 {
                     "targets": 0,
                     "render": function (data, type, row) {
-                        const name = row[11] + '<br><small><a href="' + row[9] + '">' + row[7] + '</a></small>';
+                        const name = row[10] + '<br><small><a href="' + row[8] + '">' + row[7] + '</a></small>';
                         return '<div class="icon-name"><div class="icon"><img class="tall" alt="" src="" data-lazy="' + row[4] + '" data-lazy-alt="' + row[1] + '"></div><div class="name">' + name + '</div></div><div class="d-none">' + row[5] + '</div>'
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
@@ -47,7 +47,7 @@ if ($('#news-page').length > 0) {
                 {
                     "targets": 1,
                     "render": function (data, type, row) {
-                        return '<span data-toggle="tooltip" data-placement="left" title="' + row[10] + '" data-livestamp="' + row[5] + '"></span>';
+                        return '<span data-toggle="tooltip" data-placement="left" title="' + row[9] + '" data-livestamp="' + row[5] + '"></span>';
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).attr('nowrap', 'nowrap');
