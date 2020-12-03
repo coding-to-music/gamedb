@@ -87,6 +87,7 @@ if ($('#news-page').length > 0) {
             } else {
                 row.child($("<div/>").html(row.data()[2])).show();
                 $tr.addClass('shown');
+                observeLazyImages($(this).next().find('img[data-lazy]'));
             }
         });
     }
