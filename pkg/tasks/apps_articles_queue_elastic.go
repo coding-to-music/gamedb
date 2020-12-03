@@ -41,13 +41,15 @@ func (c AppsArticlesQueueElastic) work() (err error) {
 		for _, article := range articles {
 
 			err = queue.ProduceArticlesSearch(queue.AppsArticlesSearchMessage{
-				ID:      article.ID,
-				Title:   article.Title,
-				Body:    article.Contents,
-				Time:    article.Date.Unix(),
-				AppID:   article.AppID,
-				AppName: article.AppName,
-				AppIcon: article.AppIcon,
+				ID:       article.ID,
+				Title:    article.Title,
+				Body:     article.Contents,
+				Feed:     article.FeedName,
+				FeedName: article.FeedLabel,
+				Time:     article.Date.Unix(),
+				AppID:    article.AppID,
+				AppName:  article.AppName,
+				AppIcon:  article.AppIcon,
 			})
 			if err != nil {
 				return err

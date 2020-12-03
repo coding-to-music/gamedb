@@ -17,6 +17,8 @@ type Article struct {
 	TitleMarked string  `json:"title_marked"`
 	Author      string  `json:"author"`
 	Body        string  `json:"body"`
+	Feed        string  `json:"feed"`
+	FeedName    string  `json:"feed_name"`
 	AppID       int     `json:"app_id"`
 	AppName     string  `json:"app_name"`
 	AppIcon     string  `json:"app_icon"`
@@ -156,8 +158,10 @@ func DeleteAndRebuildArticlesIndex() {
 					"type":       "keyword",
 					"normalizer": "gdb_lowercase_keyword",
 				},
-				"body":   fieldTypeDisabled,
-				"app_id": fieldTypeDisabled,
+				"body":      fieldTypeDisabled,
+				"feed":      fieldTypeKeyword,
+				"feed_name": fieldTypeDisabled,
+				"app_id":    fieldTypeDisabled,
 				"app_name": map[string]interface{}{
 					"type":     "text",
 					"analyzer": "gdb_lowercase_text",

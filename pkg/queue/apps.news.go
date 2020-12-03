@@ -96,6 +96,8 @@ func appNewsHandler(message *rabbit.Message) {
 			Title:       v.Title,
 			Author:      v.Author,
 			Body:        v.Contents,
+			Feed:        v.Feedname,
+			FeedName:    v.Feedlabel,
 			Time:        v.Date,
 			AppID:       app.ID,
 			AppName:     app.Name,

@@ -14,6 +14,8 @@ type AppsArticlesSearchMessage struct {
 	Author      string `json:"author"`
 	Body        string `json:"body"`
 	Time        int64  `json:"time"`
+	Feed        string `json:"feed"`
+	FeedName    string `json:"feed_name"`
 	AppID       int    `json:"app_id"`
 	AppName     string `json:"app_name"`
 	AppIcon     string `json:"app_icon"`
@@ -37,6 +39,8 @@ func appsArticlesSearchHandler(message *rabbit.Message) {
 	article.Author = payload.Author
 	article.Body = payload.Body
 	article.Time = payload.Time
+	article.Feed = payload.Feed
+	article.FeedName = payload.FeedName
 	article.AppID = payload.AppID
 	article.AppName = payload.AppName
 	article.AppIcon = payload.AppIcon
