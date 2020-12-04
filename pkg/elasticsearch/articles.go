@@ -175,10 +175,6 @@ func AggregateArticleFeeds() (aggregations []helpers.TupleStringInt, err error) 
 			}
 		}
 
-		// sort.Slice(aggregations, func(i, j int) bool {
-		// 	return strings.ToLower(aggregations[i].Value) < strings.ToLower(aggregations[j].Value)
-		// })
-
 		return aggregations, err
 	})
 
