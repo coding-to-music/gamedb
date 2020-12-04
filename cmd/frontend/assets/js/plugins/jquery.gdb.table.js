@@ -304,7 +304,7 @@
             for (const $field of this.options.searchFields) {
 
                 const callback = function (e) {
-                    console.log('callback');
+
                     let value = getFieldValue($field);
 
                     const colToSortBy = $field.attr('data-col-sort');
