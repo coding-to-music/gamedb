@@ -200,7 +200,7 @@ func DeleteAndRebuildArticlesIndex() {
 				"body":      fieldTypeDisabled,
 				"feed":      fieldTypeKeyword,
 				"feed_name": fieldTypeDisabled,
-				"app_id":    fieldTypeDisabled,
+				"app_id":    fieldTypeKeyword,
 				"app_name": map[string]interface{}{
 					"type":     "text",
 					"analyzer": "gdb_lowercase_text",
