@@ -2,14 +2,11 @@ package middleware
 
 import (
 	"net/http"
-	"regexp"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
 )
 
-var ipSplitRegex = regexp.MustCompile("[:,]")
-
-func MiddlewareRealIP(next http.Handler) http.Handler {
+func RealIP(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		headers := []string{
@@ -30,7 +27,7 @@ func MiddlewareRealIP(next http.Handler) http.Handler {
 			}
 		}
 
-		r.RemoteAddr = ipSplitRegex.Split(r.RemoteAddr, 2)[0]
+		r.RemoteAddr = helpers.RegexIP.FindString(r.RemoteAddr)
 
 		next.ServeHTTP(w, r)
 	})

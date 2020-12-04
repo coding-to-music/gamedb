@@ -88,7 +88,7 @@ func main() {
 	r.Use(chiMiddleware.RedirectSlashes)
 	r.Use(middleware.MiddlewareDownMessage)
 	r.Use(middleware.MiddlewareCors())
-	r.Use(middleware.MiddlewareRealIP)
+	r.Use(middleware.RealIP)
 	r.Use(chiMiddleware.NewCompressor(flate.DefaultCompression, "text/html", "text/css", "text/javascript", "application/json", "application/javascript").Handler)
 	r.Use(middleware.RateLimiterWait(time.Second, 10))
 
