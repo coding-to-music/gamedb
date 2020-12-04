@@ -102,7 +102,8 @@ if ($appPage.length > 0) {
                 {
                     "targets": 0,
                     "render": function (data, type, row) {
-                        return '<div class="icon-name"><div class="icon"><img class="tall" data-lazy="' + row[10] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '<br /><small>' + row[2] + '</small></div></div><div class="d-none">' + row[5] + '</div>'
+                        return '<div class="icon-name"><div class="icon"><img class="tall" data-lazy="' + row[10] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '<br /><small>' + row[2] + '</small></div></div>'
+                            + '<div class="d-none">' + row[5] + '</div>'
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).attr('style', 'min-width: 300px;')
