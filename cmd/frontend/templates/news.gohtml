@@ -18,7 +18,7 @@
                             <label for="filter">Filter</label>
                             <select data-placeholder="Filter" class="form-control form-control-chosen" id="filter" name="filter">
                                 <option value="" selected>All News</option>
-                                <option value="mine">My Game News</option>
+                                <option value="mine">My Game News (Must be logged in)</option>
                                 <option value="popular">Popular Game News</option>
                             </select>
                         </div>
@@ -29,7 +29,7 @@
                             <select data-placeholder="Filter" class="form-control form-control-chosen" id="feed" name="feed">
                                 <option value="" selected>All Feeds</option>
                                 {{ range .Feeds }}
-                                    <option value="{{ .Value }}">{{ .Key }} ({{ .Value }})</option>
+                                    <option value="{{ .ID }}">{{ .GetName }} ({{ .GetCount }})</option>
                                 {{ end }}
                             </select>
                         </div>

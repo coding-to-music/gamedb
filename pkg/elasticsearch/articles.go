@@ -44,6 +44,10 @@ func (article Article) GetAppPath() string {
 	return helpers.GetAppPath(article.AppID, article.AppName) + "#news"
 }
 
+func (article Article) GetFeedName() string {
+	return helpers.GetAppArticleFeedName(article.Feed, article.FeedName)
+}
+
 func (article Article) GetAppName() string {
 	return helpers.GetAppName(article.AppID, article.AppName)
 }

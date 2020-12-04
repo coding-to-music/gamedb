@@ -2,11 +2,14 @@ package mongo
 
 import (
 	"html/template"
+	"sort"
 	"time"
 
+	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/memcache"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -147,4 +150,67 @@ func ReplaceArticles(articles []Article) (err error) {
 	_, err = c.BulkWrite(ctx, writes, options.BulkWrite())
 
 	return err
+}
+
+type ArticleFeed struct {
+	ID    string `bson:"_id" json:"id"`
+	Name  string `bson:"name" json:"name"`
+	Count int    `bson:"count" json:"count"`
+}
+
+func (af ArticleFeed) GetCount() string {
+	return humanize.Comma(int64(af.Count))
+}
+
+func (af ArticleFeed) GetName() string {
+	return helpers.GetAppArticleFeedName(af.ID, af.Name)
+}
+
+func GetAppArticlesGroupedByFeed() (feeds []ArticleFeed, err error) {
+
+	err = memcache.GetSetInterface(memcache.MemcacheArticleFeedAggsMongo, &feeds, func() (interface{}, error) {
+
+		client, ctx, err := getMongo()
+		if err != nil {
+			return feeds, err
+		}
+
+		pipeline := mongo.Pipeline{
+			{{
+				Key: "$group",
+				Value: bson.M{
+					"_id":   "$feed_name",
+					"count": bson.M{"$sum": 1},
+					"name":  bson.M{"$first": "$feed_label"},
+				},
+			}},
+		}
+
+		cur, err := client.Database(config.C.MongoDatabase, options.Database()).Collection(CollectionAppArticles.String()).Aggregate(ctx, pipeline)
+		if err != nil {
+			return feeds, err
+		}
+
+		defer closeCursor(cur, ctx)
+
+		var feeds []ArticleFeed
+		for cur.Next(ctx) {
+
+			var feed ArticleFeed
+			err := cur.Decode(&feed)
+			if err != nil {
+				log.ErrS(err, feed.ID)
+			}
+
+			feeds = append(feeds, feed)
+		}
+
+		sort.Slice(feeds, func(i, j int) bool {
+			return feeds[i].Count > feeds[j].Count
+		})
+
+		return feeds, cur.Err()
+	})
+
+	return feeds, err
 }

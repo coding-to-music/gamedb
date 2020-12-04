@@ -5,12 +5,13 @@ import (
 	"sync"
 
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/datatable"
+	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
-	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
 	"github.com/olivere/elastic/v7"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func NewsRouter() http.Handler {
@@ -26,7 +27,7 @@ func newsHandler(w http.ResponseWriter, r *http.Request) {
 	t := newsTemplate{}
 	t.fill(w, r, "news", "News", "All the news from all the games on Steam")
 
-	feeds, err := elasticsearch.AggregateArticleFeeds()
+	feeds, err := mongo.GetAppArticlesGroupedByFeed()
 	if err != nil {
 		log.ErrS(err)
 	}
@@ -38,7 +39,7 @@ func newsHandler(w http.ResponseWriter, r *http.Request) {
 
 type newsTemplate struct {
 	globalTemplate
-	Feeds []helpers.TupleStringInt
+	Feeds []mongo.ArticleFeed
 }
 
 func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
@@ -59,21 +60,60 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			"1": "time",
 		})
 
-		var search = query.GetSearchString("search")
 		var filters []elastic.Query
 
+		// Search
+		var search = query.GetSearchString("search")
+
+		// Filter
 		switch query.GetSearchString("filter") {
 		case "mine":
-			filters = append(filters, elastic.NewTermQuery("", ""))
+
+			playerID := session.GetPlayerIDFromSesion(r)
+			if playerID == 0 {
+				break
+			}
+
+			apps, err := mongo.GetPlayerAppsByPlayer(playerID, 0, 0, nil, bson.M{"_id": 1}, bson.D{{"app_time", bson.M{"$gt": 0}}})
+			if err != nil {
+				log.ErrS(err)
+				break
+			}
+
+			var appIDs []interface{}
+			for _, v := range apps {
+				appIDs = append(appIDs, v.AppID)
+			}
+
+			log.InfoS(len(appIDs))
+
+			filters = append(filters, elastic.NewTermsQuery("app_id", appIDs...))
+
 		case "popular":
-			filters = append(filters, elastic.NewTermQuery("", ""))
+
+			apps, err := mongo.PopularApps()
+			if err != nil {
+				log.ErrS(err)
+				break
+			}
+
+			var appIDs []interface{}
+			for _, v := range apps {
+				appIDs = append(appIDs, v.ID)
+			}
+
+			log.InfoS(len(appIDs))
+
+			filters = append(filters, elastic.NewTermsQuery("app_id", appIDs...))
 		}
 
+		// Feed
 		var feed = query.GetSearchString("feed")
 		if feed != "" {
 			filters = append(filters, elastic.NewTermQuery("feed", feed))
 		}
 
+		//
 		articles, filtered, err = elasticsearch.SearchArticles(query.GetOffset(), sorters, search, filters)
 		if err != nil {
 			log.ErrS(err)
@@ -110,7 +150,7 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			article.GetAppPath(),     // 8
 			article.GetDate(),        // 9
 			article.TitleMarked,      // 10
-			article.FeedName,         // 11
+			article.GetFeedName(),    // 11
 		})
 	}
 

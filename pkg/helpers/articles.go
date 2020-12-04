@@ -153,3 +153,10 @@ func findArticleImage(n *html.Node) string {
 
 	return ""
 }
+
+func GetAppArticleFeedName(id, name string) string {
+	if name == "" {
+		return strings.Title(strings.ReplaceAll(id, "_", " "))
+	}
+	return name
+}
