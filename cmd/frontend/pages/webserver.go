@@ -494,7 +494,7 @@ func (t globalTemplate) GetCookieFlag(key string) interface{} {
 	var vals = map[string]interface{}{}
 	err = json.Unmarshal([]byte(c.Value), &vals)
 	if err != nil {
-		log.ErrS(err)
+		log.Err(err.Error(), zap.String("cookie", c.Value))
 		return false
 	}
 
