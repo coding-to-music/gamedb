@@ -44,7 +44,7 @@ type newsTemplate struct {
 
 func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
-	query := datatable.NewDataTableQuery(r, true)
+	query := datatable.NewDataTableQuery(r, false)
 
 	var wg sync.WaitGroup
 
