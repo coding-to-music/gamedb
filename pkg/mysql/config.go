@@ -47,9 +47,7 @@ func SetConfig(id ConfigID, value string) (err error) {
 
 func GetConfig(id ConfigID) (config Config, err error) {
 
-	var item = memcache.MemcacheConfigItem(id.String())
-
-	err = memcache.GetSetInterface(item, &config, func() (interface{}, error) {
+	err = memcache.GetSetInterface(memcache.MemcacheConfigItem(id.String()), &config, func() (interface{}, error) {
 
 		var config Config
 

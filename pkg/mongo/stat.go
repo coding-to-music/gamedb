@@ -129,9 +129,7 @@ func (st StatsType) Plural() string {
 //
 func GetStat(typex StatsType, id int) (stat Stat, err error) {
 
-	var item = memcache.MemcacheStat(string(typex), id)
-
-	err = memcache.GetSetInterface(item, &stat, func() (interface{}, error) {
+	err = memcache.GetSetInterface(memcache.MemcacheStat(string(typex), id), &stat, func() (interface{}, error) {
 
 		stat.Type = typex
 		stat.ID = id
@@ -185,9 +183,7 @@ func GetStatsByID(typex StatsType, ids []int) (stats []Stat, err error) {
 
 func GetStatsForSelect(typex StatsType) (stats []Stat, err error) {
 
-	var item = memcache.MemcacheStatsForSelect(string(typex))
-
-	err = memcache.GetSetInterface(item, &stats, func() (interface{}, error) {
+	err = memcache.GetSetInterface(memcache.MemcacheStatsForSelect(string(typex)), &stats, func() (interface{}, error) {
 
 		stats, err = GetStats(0, 200, bson.D{{"type", typex}}, bson.D{{"mean_score", -1}})
 
@@ -334,11 +330,10 @@ func GetStatsByType(typex StatsType, ids []int, id int) (stats []Stat, err error
 		return stats, nil
 	}
 
-	item := memcache.MemcacheAppStats(string(typex), id)
-	callback := func() (interface{}, error) {
+	var callback = func() (interface{}, error) {
 		return GetStatsByID(typex, ids)
 	}
 
-	err = memcache.GetSetInterface(item, &stats, callback)
+	err = memcache.GetSetInterface(memcache.MemcacheAppStats(string(typex), id), &stats, callback)
 	return stats, err
 }

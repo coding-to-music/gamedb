@@ -472,9 +472,7 @@ func ensurePlayerIndexes() {
 
 func GetPlayer(id int64) (player Player, err error) {
 
-	var item = memcache.MemcachePlayer(id)
-
-	err = memcache.GetSetInterface(item, &player, func() (interface{}, error) {
+	err = memcache.GetSetInterface(memcache.MemcachePlayer(id), &player, func() (interface{}, error) {
 
 		id, err := helpers.IsValidPlayerID(id)
 		if err != nil {
@@ -696,9 +694,7 @@ func GetPlayers(offset int64, limit int64, sort bson.D, filter bson.D, projectio
 
 func GetPlayerLevels() (counts []Count, err error) {
 
-	var item = memcache.MemcachePlayerLevels
-
-	err = memcache.GetSetInterface(item, &counts, func() (interface{}, error) {
+	err = memcache.GetSetInterface(memcache.MemcachePlayerLevels, &counts, func() (interface{}, error) {
 
 		client, ctx, err := getMongo()
 		if err != nil {
@@ -740,9 +736,7 @@ func GetPlayerLevels() (counts []Count, err error) {
 
 func GetPlayerUpdateDays() (counts []DateCount, err error) {
 
-	var item = memcache.MemcachePlayerUpdateDates
-
-	err = memcache.GetSetInterface(item, &counts, func() (interface{}, error) {
+	err = memcache.GetSetInterface(memcache.MemcachePlayerUpdateDates, &counts, func() (interface{}, error) {
 
 		client, ctx, err := getMongo()
 		if err != nil {
@@ -785,9 +779,7 @@ func GetPlayerUpdateDays() (counts []DateCount, err error) {
 
 func GetPlayerLevelsRounded() (counts []Count, err error) {
 
-	var item = memcache.MemcachePlayerLevelsRounded
-
-	err = memcache.GetSetInterface(item, &counts, func() (interface{}, error) {
+	err = memcache.GetSetInterface(memcache.MemcachePlayerLevelsRounded, &counts, func() (interface{}, error) {
 
 		client, ctx, err := getMongo()
 		if err != nil {

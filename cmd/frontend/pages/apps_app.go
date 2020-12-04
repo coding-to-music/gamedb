@@ -997,11 +997,11 @@ func appBundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var bundles []mysql.Bundle
-	var item = memcache.MemcacheAppBundles(app.ID)
-
-	err = memcache.GetSetInterface(item, &bundles, func() (interface{}, error) {
+	var callback = func() (interface{}, error) {
 		return mysql.GetBundlesByID(app.Bundles, nil)
-	})
+	}
+
+	err = memcache.GetSetInterface(memcache.MemcacheAppBundles(app.ID), &bundles, callback)
 	if err != nil {
 		log.ErrS(err)
 		return
@@ -1041,11 +1041,11 @@ func appPackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var packages []mongo.Package
-	var item = memcache.MemcacheAppPackages(app.ID)
-
-	err = memcache.GetSetInterface(item, &packages, func() (interface{}, error) {
+	var callback = func() (interface{}, error) {
 		return mongo.GetPackagesByID(app.Packages, bson.M{})
-	})
+	}
+
+	err = memcache.GetSetInterface(memcache.MemcacheAppPackages(app.ID), &packages, callback)
 	if err != nil {
 		log.ErrS(err)
 		return
@@ -1075,10 +1075,9 @@ func appWishlistAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var item = memcache.MemcacheAppWishlistChart(id)
 	var hc influx.HighChartsJSON
 
-	err := memcache.GetSetInterface(item, &hc, func() (interface{}, error) {
+	err := memcache.GetSetInterface(memcache.MemcacheAppWishlistChart(id), &hc, func() (interface{}, error) {
 
 		builder := influxql.NewBuilder()
 		builder.AddSelect("MEAN(wishlist_avg_position)", "mean_wishlist_avg_position")
@@ -1119,11 +1118,8 @@ func appPlayersHeatmapAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var item = memcache.MemcacheAppPlayersHeatmapChart(id)
 	var hc = influx.HighChartsJSON{}
-	var data = map[time.Weekday]map[int][]float64{}
-
-	err := memcache.GetSetInterface(item, &hc, func() (interface{}, error) {
+	var callback = func() (interface{}, error) {
 
 		builder := influxql.NewBuilder()
 		builder.AddSelect("max(player_count)", "max_player_count")
@@ -1138,6 +1134,8 @@ func appPlayersHeatmapAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			log.Err(err.Error(), zap.String("query", builder.String()))
 			return hc, err
 		}
+
+		var data = map[time.Weekday]map[int][]float64{}
 
 		if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
 
@@ -1176,8 +1174,9 @@ func appPlayersHeatmapAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		return hc, err
-	})
+	}
 
+	err := memcache.GetSetInterface(memcache.MemcacheAppPlayersHeatmapChart(id), &hc, callback)
 	if err != nil {
 		log.ErrS(err)
 	}
@@ -1192,7 +1191,6 @@ func appTagsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var item = memcache.MemcacheAppTagsChart(id)
 	var hc influx.HighChartsJSON
 	var tagsMap = map[int]string{}
 	var tagsOrder []int
@@ -1208,7 +1206,7 @@ func appTagsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		tagsOrder = append(tagsOrder, v.ID)
 	}
 
-	err = memcache.GetSetInterface(item, &hc, func() (interface{}, error) {
+	err = memcache.GetSetInterface(memcache.MemcacheAppTagsChart(id), &hc, func() (interface{}, error) {
 
 		builder := influxql.NewBuilder()
 		for _, v := range app.TagCounts {
@@ -1267,10 +1265,8 @@ func appPlayersAjaxHandler(limit bool) func(http.ResponseWriter, *http.Request) 
 			return
 		}
 
-		var item = memcache.MemcacheAppPlayersChart(id, limit)
 		var hc influx.HighChartsJSON
-
-		err := memcache.GetSetInterface(item, &hc, func() (interface{}, error) {
+		var callback = func() (interface{}, error) {
 
 			builder := influxql.NewBuilder()
 			builder.AddSelect("max(player_count)", "max_player_count")
@@ -1298,8 +1294,9 @@ func appPlayersAjaxHandler(limit bool) func(http.ResponseWriter, *http.Request) 
 			}
 
 			return hc, err
-		})
+		}
 
+		err := memcache.GetSetInterface(memcache.MemcacheAppPlayersChart(id, limit), &hc, callback)
 		if err != nil {
 			log.ErrS(err)
 		}
@@ -1499,7 +1496,8 @@ func friendsJSONHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	callback := func() (interface{}, error) {
+	var friends []mongo.PlayerFriend
+	var callback = func() (interface{}, error) {
 
 		// Get player's friends
 		friends, err := mongo.GetFriends(playerID, 0, 0, nil, bson.D{{"name", bson.M{"$ne": ""}}})
@@ -1534,9 +1532,7 @@ func friendsJSONHandler(w http.ResponseWriter, r *http.Request) {
 		return friends2, err
 	}
 
-	var friends []mongo.PlayerFriend
-	var item = memcache.MemcachePlayerFriends(playerID, appID)
-	err = memcache.GetSetInterface(item, &friends, callback)
+	err = memcache.GetSetInterface(memcache.MemcachePlayerFriends(playerID, appID), &friends, callback)
 	if err != nil {
 		log.ErrS(err)
 		return

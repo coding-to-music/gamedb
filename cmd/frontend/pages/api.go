@@ -79,14 +79,12 @@ func apiGamedbYAMLHandler(w http.ResponseWriter, r *http.Request) {
 
 func apiSteamJSONHandler(w http.ResponseWriter, r *http.Request) {
 
-	var item = memcache.MemcacheAPISteam
 	var b []byte
-
-	callback := func() (interface{}, error) {
+	var callback = func() (interface{}, error) {
 		return json.Marshal(api.GetSteam())
 	}
 
-	err := memcache.GetSetInterface(item, &b, callback)
+	err := memcache.GetSetInterface(memcache.MemcacheAPISteam, &b, callback)
 	if err != nil {
 		log.ErrS(err)
 		return
@@ -100,14 +98,12 @@ func apiSteamJSONHandler(w http.ResponseWriter, r *http.Request) {
 
 func apiSteamYAMLHandler(w http.ResponseWriter, r *http.Request) {
 
-	var item = memcache.MemcacheAPISteam
 	var b []byte
-
-	callback := func() (interface{}, error) {
+	var callback = func() (interface{}, error) {
 		return yaml.Marshal(api.GetSteam())
 	}
 
-	err := memcache.GetSetInterface(item, &b, callback)
+	err := memcache.GetSetInterface(memcache.MemcacheAPISteam, &b, callback)
 	if err != nil {
 		log.ErrS(err)
 		return

@@ -17,8 +17,7 @@ type ChatBotSetting struct {
 
 func GetChatBotSettings(discordID string) (settings ChatBotSetting, err error) {
 
-	var item = memcache.MemcacheChatBotSettings(discordID)
-	err = memcache.GetSetInterface(item, &settings, func() (interface{}, error) {
+	err = memcache.GetSetInterface(memcache.MemcacheChatBotSettings(discordID), &settings, func() (interface{}, error) {
 
 		db, err := GetMySQLClient()
 		if err != nil {

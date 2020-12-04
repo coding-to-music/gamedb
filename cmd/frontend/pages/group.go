@@ -203,7 +203,6 @@ func groupAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var item = memcache.MemcacheGroupFollowersChart(id)
 	var hc influx.HighChartsJSON
 
 	callback := func() (interface{}, error) {
@@ -233,7 +232,7 @@ func groupAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return hc, err
 	}
 
-	err = memcache.GetSetInterface(item, &hc, callback)
+	err = memcache.GetSetInterface(memcache.MemcacheGroupFollowersChart(id), &hc, callback)
 	if err != nil {
 		log.ErrS(err)
 	}

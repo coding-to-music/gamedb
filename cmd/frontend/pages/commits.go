@@ -41,7 +41,6 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var query = datatable.NewDataTableQuery(r, true)
 	var commits []*generated.CommitResponse
-	var item = memcache.MemcacheCommitsPage(query.GetPage(commitsLimit))
 
 	callback := func() (interface{}, error) {
 
@@ -65,7 +64,7 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return resp.GetCommits(), err
 	}
 
-	err := memcache.GetSetInterface(item, &commits, callback)
+	err := memcache.GetSetInterface(memcache.MemcacheCommitsPage(query.GetPage(commitsLimit)), &commits, callback)
 	if err != nil {
 		log.ErrS(err)
 	}

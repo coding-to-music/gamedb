@@ -734,9 +734,7 @@ func GetPackageBundles(pack mongo.Package) (bundles []mysql.Bundle, err error) {
 		return bundles, nil
 	}
 
-	var item = memcache.MemcachePackageBundles(pack.ID)
-
-	err = memcache.GetSetInterface(item, &bundles, func() (interface{}, error) {
+	err = memcache.GetSetInterface(memcache.MemcachePackageBundles(pack.ID), &bundles, func() (interface{}, error) {
 		return mysql.GetBundlesByID(pack.Bundles, []string{})
 	})
 

@@ -98,9 +98,7 @@ type changeProduct struct {
 
 func GetChange(id int64) (change Change, err error) {
 
-	var item = memcache.MemcacheChange(id)
-
-	err = memcache.GetSetInterface(item, &change, func() (interface{}, error) {
+	err = memcache.GetSetInterface(memcache.MemcacheChange(id), &change, func() (interface{}, error) {
 
 		var change Change
 

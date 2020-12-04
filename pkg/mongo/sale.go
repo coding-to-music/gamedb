@@ -239,9 +239,7 @@ func ReplaceSales(offers []Sale) (err error) {
 
 func GetUniqueSaleTypes() (types []string, err error) {
 
-	var item = memcache.MemcacheUniqueSaleTypes
-
-	err = memcache.GetSetInterface(item, &types, func() (interface{}, error) {
+	err = memcache.GetSetInterface(memcache.MemcacheUniqueSaleTypes, &types, func() (interface{}, error) {
 
 		client, ctx, err := getMongo()
 		if err != nil {
