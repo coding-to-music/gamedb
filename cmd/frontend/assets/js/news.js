@@ -69,4 +69,8 @@ if ($('#news-page').length > 0) {
             observeLazyImages($(this).next().find('img[data-lazy]'));
         }
     });
+
+    $table.on('click', 'a', function (e) {
+        e.stopPropagation();
+    });
 }
