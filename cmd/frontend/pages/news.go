@@ -81,11 +81,9 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			var appIDs []interface{}
-			for _, v := range apps {
-				appIDs = append(appIDs, v.AppID)
+			for _, app := range apps {
+				appIDs = append(appIDs, app.AppID)
 			}
-
-			log.InfoS(len(appIDs))
 
 			filters = append(filters, elastic.NewTermsQuery("app_id", appIDs...))
 
