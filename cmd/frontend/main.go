@@ -166,11 +166,11 @@ func main() {
 
 	// Redirects
 	r.Get("/apps", redirectHandler("/games"))
-	r.Get("/apps/{id:[0-9]+}", redirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/games/" + chi.URLParam(r, "id") }))
-	r.Get("/apps/{id:[0-9]+}/{slug}", redirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/games/" + chi.URLParam(r, "id") + "/" + chi.URLParam(r, "slug") }))
+	r.Get("/apps/{one}", redirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/games/" + chi.URLParam(r, "one") }))
+	r.Get("/apps/{one}/{two}", redirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/games/" + chi.URLParam(r, "one") + "/" + chi.URLParam(r, "two") }))
 	r.Get("/subs", redirectHandler("/packages"))
-	r.Get("/subs/{id:[0-9]+}", redirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/packages/" + chi.URLParam(r, "id") }))
-	r.Get("/subs/{id:[0-9]+}/{slug}", redirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/packages/" + chi.URLParam(r, "id") + "/" + chi.URLParam(r, "slug") }))
+	r.Get("/subs/{one}", redirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/packages/" + chi.URLParam(r, "one") }))
+	r.Get("/subs/{one}/{two}", redirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/packages/" + chi.URLParam(r, "one") + "/" + chi.URLParam(r, "two") }))
 	r.Get("/coop", redirectHandler("/games/coop"))
 	r.Get("/chat", redirectHandler("/discord-server"))
 	r.Get("/chat-bot", redirectHandler("/discord-bot"))
