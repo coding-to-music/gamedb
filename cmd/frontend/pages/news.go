@@ -74,7 +74,7 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 				break
 			}
 
-			apps, err := mongo.GetPlayerAppsByPlayer(playerID, 0, 0, nil, bson.M{"_id": 1}, bson.D{{"app_time", bson.M{"$gt": 0}}})
+			apps, err := mongo.GetPlayerAppsByPlayer(playerID, 0, 0, nil, bson.M{"app_id": 1}, bson.D{{"app_time", bson.M{"$gt": 0}}})
 			if err != nil {
 				log.ErrS(err)
 				break
