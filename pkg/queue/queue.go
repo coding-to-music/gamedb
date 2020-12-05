@@ -176,6 +176,7 @@ var (
 		{Name: QueueAppsAchievements},
 		{Name: QueueAppsArticlesSearch, prefetchSize: 1_000},
 		{Name: QueueAppsInflux},
+		{Name: QueueAppsNews},
 		{Name: QueueAppsReviews},
 		{Name: QueueAppsSearch, prefetchSize: 1_000},
 		{Name: QueueAppsSteamspy},
@@ -217,6 +218,7 @@ var (
 		{Name: QueueAppsAchievementsSearch, prefetchSize: 1_000},
 		{Name: QueueAppsAchievements},
 		{Name: QueueAppsInflux},
+		{Name: QueueAppsNews},
 		{Name: QueueAppsReviews},
 		{Name: QueueAppsSearch, prefetchSize: 1_000},
 		{Name: QueueAppsSteamspy},
@@ -681,6 +683,12 @@ func ProduceAppSearch(app *mongo.App, appID int) (err error) {
 func ProduceAppSteamSpy(appID int) (err error) {
 
 	m := AppSteamspyMessage{AppID: appID}
+	return produce(m.Queue(), m)
+}
+
+func ProduceAppNews(appID int) (err error) {
+
+	m := AppNewsMessage{AppID: appID}
 	return produce(m.Queue(), m)
 }
 
