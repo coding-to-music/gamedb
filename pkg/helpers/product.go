@@ -138,7 +138,7 @@ var releaseDateFormats = []string{
 	"Jan 2006",
 	"January 2, 2006",
 	"January 2006",
-	"2006",
+	// "2006", // Too wide a range
 }
 
 func GetReleaseDateUnix(date string) int64 {
