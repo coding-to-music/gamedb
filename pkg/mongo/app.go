@@ -202,6 +202,7 @@ func (app App) BSON() bson.D {
 		{"version", app.Version},
 		{"wishlist_avg_position", app.WishlistAvgPosition},
 		{"wishlist_count", app.WishlistCount},
+		{"wishlist_percent", app.WishlistPercent},
 	}
 }
 
