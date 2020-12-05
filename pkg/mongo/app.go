@@ -112,6 +112,7 @@ type App struct {
 	WishlistAvgPosition           float64                        `bson:"wishlist_avg_position"`
 	WishlistCount                 int                            `bson:"wishlist_count"`
 	WishlistPercent               float64                        `bson:"wishlist_percent"`
+	WishlistFirsts                float64                        `bson:"wishlist_firsts"`
 }
 
 func (app App) BSON() bson.D {
@@ -203,6 +204,7 @@ func (app App) BSON() bson.D {
 		{"wishlist_avg_position", app.WishlistAvgPosition},
 		{"wishlist_count", app.WishlistCount},
 		{"wishlist_percent", app.WishlistPercent},
+		{"wishlist_firsts", app.WishlistFirsts},
 	}
 }
 

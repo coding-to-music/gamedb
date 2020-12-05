@@ -37,14 +37,22 @@ func appWishlistsHandler(message *rabbit.Message) {
 		return
 	}
 
-	var wishlistCount = len(playerWishlists)
-	var wishlistAverage float64
-	var wishlistPercent float64
+	var (
+		wishlistCount   = len(playerWishlists)
+		wishlistAverage float64
+		wishlistPercent float64
+		wishlistFirsts  float64
+	)
 
 	//
 	var total int
 	var count int
 	for _, v := range playerWishlists {
+
+		if v.Order == 1 {
+			wishlistFirsts++
+		}
+
 		if v.Order > 0 {
 			total += v.Order
 			count++
@@ -81,6 +89,7 @@ func appWishlistsHandler(message *rabbit.Message) {
 			"wishlist_count":        wishlistCount,
 			"wishlist_avg_position": wishlistAverage,
 			"wishlist_percent":      wishlistPercent,
+			"wishlist_firsts":       wishlistFirsts,
 		},
 		Time:      time.Now(),
 		Precision: "m",
@@ -98,6 +107,7 @@ func appWishlistsHandler(message *rabbit.Message) {
 		{"wishlist_count", wishlistCount},
 		{"wishlist_avg_position", wishlistAverage},
 		{"wishlist_percent", wishlistPercent},
+		{"wishlist_firsts", wishlistFirsts},
 	}
 
 	_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", payload.AppID}}, update)
