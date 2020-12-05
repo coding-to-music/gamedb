@@ -199,8 +199,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 		if val, ok := t.UserProviders[oauth.ProviderDiscord]; ok {
 
 			var inGuild bool
-
-			err = memcache.GetSetInterface(memcache.MemcacheUserInDiscord(val.ID), &inGuild, func() (interface{}, error) {
+			var callback = func() (interface{}, error) {
 
 				discord, err := discordgo.New("Bot " + config.C.DiscordOAuthBotToken)
 				if err != nil {
@@ -208,13 +207,19 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 				}
 
 				_, err = discord.GuildMember(helpers.GuildID, val.ID)
-				if val, ok := err.(*discordgo.RESTError); ok && val.Response.StatusCode == 404 {
-					return false, nil // 404, not in guild
+				if val, ok := err.(*discordgo.RESTError); ok {
+					if val.Response.StatusCode == 404 { // Not in guilds
+						return false, nil
+					}
+					if val.Response.StatusCode == 401 { // Unauthorized
+						return true, nil
+					}
 				}
 
 				return true, err
-			})
+			}
 
+			err = memcache.GetSetInterface(memcache.MemcacheUserInDiscord(val.ID), &inGuild, callback)
 			if err != nil {
 				log.ErrS(err)
 			}
