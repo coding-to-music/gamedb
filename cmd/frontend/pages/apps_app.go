@@ -15,6 +15,7 @@ import (
 	"github.com/Jleagle/influxql"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/datatable"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
+	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/influx"
@@ -26,6 +27,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/go-chi/chi"
 	"github.com/gosimple/slug"
+	"github.com/olivere/elastic/v7"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.uber.org/zap"
 )
@@ -555,32 +557,21 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var query = datatable.NewDataTableQuery(r, false)
-	var search = query.GetSearchString("search")
-
-	var filter = bson.D{{"app_id", id}}
-	var filter2 = filter
-
-	if len(search) > 1 {
-		quoted := regexp.QuoteMeta(search)
-		filter2 = append(filter2, bson.E{Key: "$or", Value: bson.A{
-			bson.M{"_id": search},
-			bson.M{"title": bson.M{"$regex": quoted, "$options": "i"}},
-			bson.M{"author": bson.M{"$regex": quoted, "$options": "i"}},
-		}})
-	}
-
-	//
 	var wg sync.WaitGroup
 
 	// Get articles
-	var articles []mongo.Article
+	var articles []elasticsearch.Article
+	var filtered int64
 	wg.Add(1)
 	go func() {
 
 		defer wg.Done()
 
+		var filters = []elastic.Query{elastic.NewTermQuery("app_id", id)}
+		var sorter = []elastic.Sorter{elastic.NewFieldSort("time").Desc()}
+
 		var err error
-		articles, err = mongo.GetArticles(query.GetOffset64(), 100, bson.D{{"date", -1}}, filter2)
+		articles, filtered, err = elasticsearch.SearchArticles(query.GetOffset(), sorter, query.GetSearchString("search"), filters)
 		if err != nil {
 			log.ErrS(err, id)
 			return
@@ -589,21 +580,13 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get totals
 	var total int64
-	var filtered int64
 	wg.Add(1)
 	go func() {
 
 		defer wg.Done()
 
 		var err error
-
-		total, err = mongo.CountDocuments(mongo.CollectionAppArticles, filter, 60*60*24)
-		if err != nil {
-			log.ErrS(err)
-			return
-		}
-
-		filtered, err = mongo.CountDocuments(mongo.CollectionAppArticles, filter2, 60*60*24)
+		total, err = mongo.CountDocuments(mongo.CollectionAppArticles, bson.D{{"app_id", id}}, 60*60*24)
 		if err != nil {
 			log.ErrS(err)
 			return
@@ -618,19 +601,20 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var id = strconv.FormatInt(article.ID, 10)
 		var path = helpers.GetAppPath(article.AppID, article.AppName)
+		var formatted = time.Unix(article.Time, 0).Format(helpers.DateYear)
 
 		response.AddRow([]interface{}{
-			id,                                    // 0
-			article.Title,                         // 1
-			article.Author,                        // 2
-			article.Date.Unix(),                   // 3
-			article.Date.Format(helpers.DateYear), // 4
-			article.GetBody(),                     // 5
-			article.AppID,                         // 6
-			article.AppName,                       // 7
-			article.GetAppIcon(),                  // 8
-			path + "#news," + id,                  // 9
-			article.GetArticleIcon(),              // 10
+			id,                       // 0
+			article.Title,            // 1
+			article.Author,           // 2
+			article.Time,             // 3
+			formatted,                // 4
+			article.GetBody(),        // 5
+			article.AppID,            // 6
+			article.AppName,          // 7
+			article.GetAppIcon(),     // 8
+			path + "#news," + id,     // 9
+			article.GetArticleIcon(), // 10
 		})
 	}
 
