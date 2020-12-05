@@ -2,6 +2,7 @@ package pages
 
 import (
 	"net/http"
+	"runtime"
 	"strconv"
 	"strings"
 	"sync"
@@ -384,6 +385,7 @@ func adminStatsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	t.IP = r.RemoteAddr
+	t.Cores = runtime.NumCPU()
 
 	var location []string
 	record, err := geo.GetLocation(r.RemoteAddr)
@@ -410,6 +412,7 @@ type adminStatsTemplate struct {
 	Removed  int64
 	IP       string
 	Location string
+	Cores    int
 }
 
 func adminTasksHandler(w http.ResponseWriter, r *http.Request) {
