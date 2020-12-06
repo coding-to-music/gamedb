@@ -28,7 +28,6 @@ import (
 	"github.com/mssola/user_agent"
 	"go.mongodb.org/mongo-driver/bson"
 	"golang.org/x/crypto/bcrypt"
-	"golang.org/x/oauth2"
 )
 
 func SettingsRouter() http.Handler {
@@ -454,8 +453,7 @@ func joinDiscordServerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var token oauth2.Token
-	err = json.Unmarshal([]byte(provider.Token), &token)
+	token, err := provider.GetToken()
 	if err != nil {
 		log.ErrS(err)
 		session.SetFlash(r, session.SessionBad, "Something went wrong (1001)")

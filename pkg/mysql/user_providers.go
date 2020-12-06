@@ -1,12 +1,14 @@
 package mysql
 
 import (
+	"encoding/json"
 	"strconv"
 	"time"
 
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/oauth"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"golang.org/x/oauth2"
 )
 
 type UserProvider struct {
@@ -20,6 +22,11 @@ type UserProvider struct {
 	Email     string             `gorm:"not null;column:email"`
 	Username  string             `gorm:"not null;column:username"`
 	Avatar    string             `gorm:"not null;column:avatar"`
+}
+
+func (up UserProvider) GetToken() (token oauth2.Token, err error) {
+	err = json.Unmarshal([]byte(up.Token), &token)
+	return token, err
 }
 
 func UpdateUserProvider(userID int, provider oauth.ProviderEnum, resp oauth.User) error {
