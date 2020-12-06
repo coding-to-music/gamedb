@@ -356,7 +356,7 @@ func Init(definitions []QueueDefinition) {
 					prefetchSize = queue.prefetchSize
 				}
 
-				for k := range make([]int, runtime.NumCPU()) {
+				for k := range make([]int, runtime.NumCPU()*2) {
 
 					chanConfig := rabbit.ChannelConfig{
 						Connection:    consumerConnection,
