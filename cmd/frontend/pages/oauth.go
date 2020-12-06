@@ -6,9 +6,11 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/dghubble/oauth1"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/oauth"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
@@ -456,5 +458,59 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 			session.SessionPlayerLevel: strconv.Itoa(player.Level),
 			session.SessionPlayerName:  player.GetName(),
 		})
+
+		// Set discord nickname
+		discordProvider, err := mysql.GetUserProviderByUserID(oauth.ProviderDiscord, user.ID)
+		if err == nil {
+
+			discord, err := discordgo.New("Bot " + config.C.DiscordOAuthBotToken)
+			if err != nil {
+				log.ErrS(err)
+				session.SetFlash(r, session.SessionBad, "Something went wrong (1113)")
+				return
+			}
+
+			err = discord.GuildMemberNickname(helpers.GuildID, discordProvider.ID, player.GetName())
+			if err != nil {
+				log.ErrS(err)
+				session.SetFlash(r, session.SessionBad, "Something went wrong (1114)")
+				return
+			}
+		}
+
+	case oauth.ProviderDiscord:
+
+		// Set discord nickname
+		steamProvider, err := mysql.GetUserProviderByUserID(oauth.ProviderSteam, user.ID)
+		if err == nil {
+
+			i, err:= strconv.ParseInt(steamProvider.ID, 10, 64)
+			if err != nil {
+				log.ErrS(err)
+				session.SetFlash(r, session.SessionBad, "Something went wrong (1115)")
+				return
+			}
+
+			player, err := mongo.GetPlayer(i)
+			if err != nil {
+				err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
+				log.ErrS(err)
+				break
+			}
+
+			discord, err := discordgo.New("Bot " + config.C.DiscordOAuthBotToken)
+			if err != nil {
+				log.ErrS(err)
+				session.SetFlash(r, session.SessionBad, "Something went wrong (1116)")
+				return
+			}
+
+			err = discord.GuildMemberNickname(helpers.GuildID, resp.ID, player.GetName())
+			if err != nil {
+				log.ErrS(err)
+				session.SetFlash(r, session.SessionBad, "Something went wrong (1117)")
+				return
+			}
+		}
 	}
 }
