@@ -445,7 +445,7 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 			break
 		}
 
-		// This already happens in login() but do it again incase youre just linking
+		// This already happens in login() but do it again in case you're just linking
 		player, err := mongo.GetPlayer(i)
 		if err != nil {
 			err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
