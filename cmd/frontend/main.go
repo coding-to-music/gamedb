@@ -21,6 +21,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/middleware"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/go-chi/chi"
@@ -220,9 +221,12 @@ func main() {
 		}
 	}()
 
-	helpers.KeepAlive(func() {
-		influx.GetWriter().Flush()
-	})
+	helpers.KeepAlive(
+		mysql.Close,
+		mongo.Close,
+		func() {
+			influx.GetWriter().Flush()
+		})
 }
 
 func redirectHandler(path string) func(w http.ResponseWriter, r *http.Request) {

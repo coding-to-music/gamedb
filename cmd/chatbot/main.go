@@ -184,9 +184,13 @@ func main() {
 		return
 	}
 
-	helpers.KeepAlive(func() {
-		influxHelper.GetWriter().Flush()
-	})
+	helpers.KeepAlive(
+		mysql.Close,
+		mongo.Close,
+		func() {
+			influxHelper.GetWriter().Flush()
+		},
+	)
 }
 
 func isPrivateChannel(s *discordgo.Session, m *discordgo.MessageCreate) (bool, error) {

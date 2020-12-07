@@ -76,3 +76,17 @@ type mySQLLogger struct {
 func (logger mySQLLogger) Print(v ...interface{}) {
 	zap.S().Named(log.LogNameSQL).Debug(v...)
 }
+
+func Close() {
+
+	db, err := GetMySQLClient()
+	if err != nil {
+		log.ErrS(err)
+		return
+	}
+
+	err = db.Close()
+	if err != nil {
+		log.ErrS(err)
+	}
+}

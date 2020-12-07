@@ -453,3 +453,20 @@ type DateCount struct {
 	Date  string `json:"date" bson:"_id"`
 	Count int    `json:"count"`
 }
+
+func Close() {
+
+	client, ctx, err := getMongo()
+	if err != nil {
+		log.ErrS(err)
+		return
+	}
+
+	if client.NumberSessionsInProgress() > 0 {
+
+		err = client.Disconnect(ctx)
+		if err != nil {
+			log.ErrS(err)
+		}
+	}
+}

@@ -12,6 +12,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/mysql"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -91,5 +92,8 @@ func main() {
 		}
 	}()
 
-	helpers.KeepAlive()
+	helpers.KeepAlive(
+		mysql.Close,
+		mongo.Close,
+	)
 }

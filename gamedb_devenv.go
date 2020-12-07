@@ -13,6 +13,8 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/mysql"
 )
 
 const TMP = "/tmp/gamedb/"
@@ -32,7 +34,10 @@ func main() {
 	processes = filterSlice(os.Args)
 	if len(processes) <= 1 {
 		log.InfoS("please specify a cmd")
-		helpers.KeepAlive()
+		helpers.KeepAlive(
+			mysql.Close,
+			mongo.Close,
+		)
 		return
 	}
 	processes = processes[1:]
@@ -42,7 +47,10 @@ func main() {
 
 	go watchFiles()
 
-	helpers.KeepAlive()
+	helpers.KeepAlive(
+		mysql.Close,
+		mongo.Close,
+	)
 
 	stopAll()
 }

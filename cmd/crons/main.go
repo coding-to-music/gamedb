@@ -7,6 +7,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/tasks"
@@ -61,7 +62,10 @@ func main() {
 	log.Info("Starting crons")
 	go c.Run() // Blocks
 
-	helpers.KeepAlive()
+	helpers.KeepAlive(
+		mysql.Close,
+		mongo.Close,
+	)
 }
 
 //
