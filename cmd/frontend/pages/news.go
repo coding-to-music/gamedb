@@ -26,6 +26,7 @@ func newsHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := newsTemplate{}
 	t.fill(w, r, "news", "News", "All the news from all the games on Steam")
+	t.addAssetChosen()
 
 	feeds, err := mongo.GetAppArticlesGroupedByFeed()
 	if err != nil {
@@ -106,9 +107,9 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Feed
-		var feed = query.GetSearchString("feed")
-		if feed != "" {
-			filters = append(filters, elastic.NewTermQuery("feed", feed))
+		var feeds = query.GetSearchSliceInterface("feed")
+		if len(feeds) > 0 {
+			filters = append(filters, elastic.NewTermsQuery("feed", feeds...))
 		}
 
 		//
