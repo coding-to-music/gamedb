@@ -5,10 +5,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
 
-	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 )
 
@@ -27,13 +25,7 @@ func (syncStates) name() string {
 
 func (syncStates) run() {
 
-	file, err := os.OpenFile("states.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
-	if err != nil {
-		log.ErrS(err)
-		return
-	}
-
-	defer helpers.Close(file)
+	m := map[string]map[string]string{}
 
 	for _, v := range countries {
 
@@ -77,18 +69,30 @@ func (syncStates) run() {
 			continue
 		}
 
-		file.WriteString(`"` + v + `": {` + "\n")
-		for _, v := range steamResponse.State {
-			if v.Attribs.Key != "" {
-				file.WriteString(`    "` + v.Attribs.Key + `": "` + v.Val + `",` + "\n")
+		m[v] = map[string]string{}
+
+		for _, vv := range steamResponse.State {
+			if vv.Attribs.Key != "" {
+				m[v][vv.Attribs.Key] = vv.Val
 			}
 		}
-		for _, v := range steamResponse.City {
-			if v.Attribs.Key != "" {
-				file.WriteString(`    "` + v.Attribs.Key + `": "` + v.Val + `",` + "\n")
+		for _, vv := range steamResponse.City {
+			if vv.Attribs.Key != "" {
+				m[v][vv.Attribs.Key] = vv.Val
 			}
 		}
-		file.WriteString(`},` + "\n")
+	}
+
+	b, err := json.MarshalIndent(m, "", "  ")
+	if err != nil {
+		log.ErrS(err)
+		return
+	}
+
+	err = ioutil.WriteFile("states.txt", b, 0644)
+	if err != nil {
+		log.ErrS(err)
+		return
 	}
 }
 
