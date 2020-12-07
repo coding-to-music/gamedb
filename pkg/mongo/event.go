@@ -86,7 +86,7 @@ func (event Event) GetCreatedNice() (t string) {
 
 func (event Event) GetIcon() string {
 
-	switch EventEnum(event.Type) {
+	switch event.Type {
 	case EventLogin:
 		return "fa-sign-in-alt"
 	case EventLogout:
@@ -100,9 +100,9 @@ func (event Event) GetIcon() string {
 
 func GetEvents(filter bson.D, offset int64) (events []Event, err error) {
 
-	var sort = bson.D{{"created_at", -1}}
+	var sortx = bson.D{{"created_at", -1}}
 
-	cur, ctx, err := Find(CollectionEvents, offset, 100, sort, filter, nil, nil)
+	cur, ctx, err := Find(CollectionEvents, offset, 100, sortx, filter, nil, nil)
 	if err != nil {
 		return events, err
 	}

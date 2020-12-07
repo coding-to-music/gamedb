@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
-	"github.com/gamedb/gamedb/pkg/mysql"
 )
 
 func NewDataTablesResponse(r *http.Request, query DataTablesQuery, count int64, countFiltered int64, aggregations map[string]map[string]int64) (ret *DataTablesResponse) {
@@ -22,7 +21,7 @@ func NewDataTablesResponse(r *http.Request, query DataTablesQuery, count int64, 
 
 	if query.limited {
 
-		level := mysql.UserLevel(session.GetUserLevel(r))
+		level := session.GetUserLevel(r)
 		max := level.MaxResults(100)
 
 		if max > 0 && max < ret.RecordsFiltered {

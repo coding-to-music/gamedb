@@ -9,7 +9,6 @@ import (
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/jinzhu/gorm"
 	"github.com/olivere/elastic/v7"
 	"go.mongodb.org/mongo-driver/bson"
@@ -36,7 +35,7 @@ func NewDataTableQuery(r *http.Request, limit bool) (query DataTablesQuery) {
 
 		query.limited = true
 
-		maxStart := mysql.UserLevel(session.GetUserLevel(r)).MaxOffset(100)
+		maxStart := session.GetUserLevel(r).MaxOffset(100)
 		start, _ := strconv.Atoi(query.Start)
 
 		if maxStart > 0 && int64(start) > maxStart {
