@@ -64,13 +64,14 @@ func wishlistAppsHandler(w http.ResponseWriter, r *http.Request) {
 
 		columns := map[string]string{
 			"1": "wishlist_count",
-			"2": "wishlist_avg_position, wishlist_count desc",
-			"3": "group_followers",
-			"4": "prices." + string(code) + ".final",
-			"5": "release_date_unix",
+			"2": "wishlist_firsts",
+			"3": "wishlist_avg_position, wishlist_count desc",
+			"4": "group_followers",
+			"5": "prices." + string(code) + ".final",
+			"6": "release_date_unix",
 		}
 
-		projection := bson.M{"_id": 1, "name": 1, "icon": 1, "wishlist_count": 1, "wishlist_avg_position": 1, "prices": 1, "group_followers": 1, "group_id": 1, "release_date_unix": 1, "release_state": 1}
+		projection := bson.M{"_id": 1, "name": 1, "icon": 1, "wishlist_count": 1, "wishlist_avg_position": 1, "wishlist_firsts": 1, "prices": 1, "group_followers": 1, "group_id": 1, "release_date_unix": 1, "release_state": 1}
 		order := query.GetOrderMongo(columns)
 		offset := query.GetOffset64()
 
@@ -132,6 +133,7 @@ func wishlistAppsHandler(w http.ResponseWriter, r *http.Request) {
 			app.ReleaseDateUnix,             // 8
 			app.GetReleaseDateNice(),        // 9
 			app.Prices.Get(code).GetFinal(), // 10
+			app.WishlistFirsts,              // 11
 		})
 	}
 

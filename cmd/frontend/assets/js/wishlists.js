@@ -26,9 +26,17 @@ if ($('#wishlists-page').length > 0) {
                 },
                 "orderSequence": ["desc"],
             },
-            // Average Position
+            // Firsts
             {
                 "targets": 2,
+                "render": function (data, type, row) {
+                    return row[11].toLocaleString();
+                },
+                "orderSequence": ["desc"],
+            },
+            // Average Position
+            {
+                "targets": 3,
                 "render": function (data, type, row) {
                     return row[5].toLocaleString();
                 },
@@ -36,7 +44,7 @@ if ($('#wishlists-page').length > 0) {
             },
             // Followers
             {
-                "targets": 3,
+                "targets": 4,
                 "render": function (data, type, row) {
                     return row[6];
                 },
@@ -44,7 +52,7 @@ if ($('#wishlists-page').length > 0) {
             },
             // Price
             {
-                "targets": 4,
+                "targets": 5,
                 "render": function (data, type, row) {
                     return row[10];
                 },
@@ -52,7 +60,7 @@ if ($('#wishlists-page').length > 0) {
             },
             // Release Date
             {
-                "targets": 5,
+                "targets": 6,
                 "render": function (data, type, row) {
                     return row[9];
                 },
@@ -60,7 +68,7 @@ if ($('#wishlists-page').length > 0) {
             },
             // Link
             {
-                "targets": 6,
+                "targets": 7,
                 "render": function (data, type, row) {
                     if (row[7]) {
                         return '<a href="' + row[7] + '" target="_blank" rel="noopener"><i class="fas fa-link"></i></a>';
