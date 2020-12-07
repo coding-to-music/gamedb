@@ -60,22 +60,31 @@ func wishlistAppsHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		var err error
+		projection := bson.M{
+			"_id":                   1,
+			"group_followers":       1,
+			"group_id":              1,
+			"icon":                  1,
+			"name":                  1,
+			"prices":                1,
+			"release_date_unix":     1,
+			"release_state":         1,
+			"wishlist_avg_position": 1,
+			"wishlist_count":        1,
+			"wishlist_firsts":       1,
+		}
 
-		columns := map[string]string{
+		order := query.GetOrderMongo(map[string]string{
 			"1": "wishlist_count",
 			"2": "wishlist_firsts",
 			"3": "wishlist_avg_position, wishlist_count desc",
 			"4": "group_followers",
 			"5": "prices." + string(code) + ".final",
 			"6": "release_date_unix",
-		}
+		})
 
-		projection := bson.M{"_id": 1, "name": 1, "icon": 1, "wishlist_count": 1, "wishlist_avg_position": 1, "wishlist_firsts": 1, "prices": 1, "group_followers": 1, "group_id": 1, "release_date_unix": 1, "release_state": 1}
-		order := query.GetOrderMongo(columns)
-		offset := query.GetOffset64()
-
-		apps, err = mongo.GetApps(offset, 100, order, filter2, projection)
+		var err error
+		apps, err = mongo.GetApps(query.GetOffset64(), 100, order, filter2, projection)
 		if err != nil {
 			log.ErrS(err)
 		}

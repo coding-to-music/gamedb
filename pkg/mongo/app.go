@@ -610,6 +610,8 @@ func ensureAppIndexes() {
 		"updated_at",
 		"wishlist_avg_position",
 		"wishlist_count",
+		"wishlist_firsts",
+		"wishlist_percent",
 	}
 
 	// Price fields
