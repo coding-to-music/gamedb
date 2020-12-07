@@ -4,10 +4,6 @@ if ($('#bundles-page').length > 0) {
         "order": [[4, 'desc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-link', data[2]);
-
-            // if (data[7]) {
-            //     $(row).addClass('table-success');
-            // }
         },
         "columnDefs": [
             // Icon / Bundle Name
