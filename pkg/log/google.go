@@ -62,9 +62,10 @@ func (g *googleCore) clone() *googleCore {
 func (g *googleCore) getLogger(name string) *logging.Logger {
 
 	// Return cached logger
-	if val, ok := g.loggers[name]; ok {
-		return val
-	}
+	// Disabled for now to get up to date common values
+	// if val, ok := g.loggers[name]; ok {
+	// 	return val
+	// }
 
 	// Create logger
 	common := map[string]string{

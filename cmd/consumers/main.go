@@ -67,5 +67,6 @@ func main() {
 		mongo.Close,
 		func() {
 			influx.GetWriter().Flush()
-		})
+		},
+	)
 }
