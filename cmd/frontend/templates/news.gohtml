@@ -27,7 +27,6 @@
                         <div class="form-group">
                             <label for="feed">Feed</label>
                             <select multiple data-placeholder="Filter" class="form-control form-control-chosen" id="feed" name="feed">
-                                <option value="" selected>All Feeds</option>
                                 {{ range .Feeds }}
                                     <option value="{{ .ID }}">{{ .GetName }} ({{ .GetCount }})</option>
                                 {{ end }}
