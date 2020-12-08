@@ -387,6 +387,7 @@ func (t *globalTemplate) setRandomBackground(title bool, link bool) {
 		431960,  // Wallpaper Engine
 		526870,  // Satisfactory
 		1313860, // EA SPORTS™ FIFA 21
+		739630,  // Phasmophobia
 	}
 
 	extras := []mongo.App{
