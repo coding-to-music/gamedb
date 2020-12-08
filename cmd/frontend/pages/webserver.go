@@ -36,7 +36,7 @@ func setHeaders(w http.ResponseWriter, contentType string) {
 
 	csp := []string{
 		"default-src 'none'",
-		"script-src 'self' 'unsafe-eval' 'unsafe-inline' blob: https://cdnjs.cloudflare.com https://cdn.datatables.net https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://platform.twitter.com https://www.google.com https://*.gstatic.com https://*.patreon.com https://cdn.jsdelivr.net https://hcaptcha.com https://*.hcaptcha.com https://arc.io",
+		"script-src 'self' 'unsafe-eval' 'unsafe-inline' blob: https://cdnjs.cloudflare.com https://cdn.datatables.net https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://platform.twitter.com https://www.google.com https://*.gstatic.com https://*.patreon.com https://cdn.jsdelivr.net https://hcaptcha.com https://*.hcaptcha.com https://arc.io https://*.arc.io",
 		"style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.datatables.net https://fonts.googleapis.com https://cdn.jsdelivr.net https://hcaptcha.com https://*.hcaptcha.com",
 		"media-src https://steamcdn-a.akamaihd.net",
 		"font-src https://fonts.gstatic.com https://cdnjs.cloudflare.com",
