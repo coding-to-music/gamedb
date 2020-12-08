@@ -20,7 +20,7 @@
         },
         "time": {
           "type": "string",
-          "format": "int64"
+          "format": "date-time"
         },
         "link": {
           "type": "string"

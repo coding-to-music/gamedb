@@ -5,6 +5,7 @@ package generated;
 option go_package = "github.com/gamedb/gamedb/pkg/backend/generated";
 
 import "shared.proto";
+import "google/protobuf/timestamp.proto";
 
 service GitHubService {
     rpc Commits (CommitsRequest) returns (CommitsResponse) {
@@ -21,7 +22,7 @@ message CommitsResponse {
 
 message CommitResponse {
     string message = 1;
-    int64 time = 2;
+    google.protobuf.Timestamp time = 2;
     string link = 3;
     string hash = 4;
 }

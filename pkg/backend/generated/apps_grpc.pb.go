@@ -18,7 +18,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AppsServiceClient interface {
 	Search(ctx context.Context, in *SearchAppsRequest, opts ...grpc.CallOption) (*AppsElasticResponse, error)
-	Apps(ctx context.Context, in *ListAppsRequest, opts ...grpc.CallOption) (*AppsMongoResponse, error)
+	List(ctx context.Context, in *ListAppsRequest, opts ...grpc.CallOption) (*AppsMongoResponse, error)
 }
 
 type appsServiceClient struct {
@@ -38,9 +38,9 @@ func (c *appsServiceClient) Search(ctx context.Context, in *SearchAppsRequest, o
 	return out, nil
 }
 
-func (c *appsServiceClient) Apps(ctx context.Context, in *ListAppsRequest, opts ...grpc.CallOption) (*AppsMongoResponse, error) {
+func (c *appsServiceClient) List(ctx context.Context, in *ListAppsRequest, opts ...grpc.CallOption) (*AppsMongoResponse, error) {
 	out := new(AppsMongoResponse)
-	err := c.cc.Invoke(ctx, "/generated.AppsService/Apps", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/generated.AppsService/List", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +52,7 @@ func (c *appsServiceClient) Apps(ctx context.Context, in *ListAppsRequest, opts 
 // for forward compatibility
 type AppsServiceServer interface {
 	Search(context.Context, *SearchAppsRequest) (*AppsElasticResponse, error)
-	Apps(context.Context, *ListAppsRequest) (*AppsMongoResponse, error)
+	List(context.Context, *ListAppsRequest) (*AppsMongoResponse, error)
 	mustEmbedUnimplementedAppsServiceServer()
 }
 
@@ -63,8 +63,8 @@ type UnimplementedAppsServiceServer struct {
 func (UnimplementedAppsServiceServer) Search(context.Context, *SearchAppsRequest) (*AppsElasticResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Search not implemented")
 }
-func (UnimplementedAppsServiceServer) Apps(context.Context, *ListAppsRequest) (*AppsMongoResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Apps not implemented")
+func (UnimplementedAppsServiceServer) List(context.Context, *ListAppsRequest) (*AppsMongoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method List not implemented")
 }
 func (UnimplementedAppsServiceServer) mustEmbedUnimplementedAppsServiceServer() {}
 
@@ -97,20 +97,20 @@ func _AppsService_Search_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AppsService_Apps_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _AppsService_List_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListAppsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AppsServiceServer).Apps(ctx, in)
+		return srv.(AppsServiceServer).List(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/generated.AppsService/Apps",
+		FullMethod: "/generated.AppsService/List",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AppsServiceServer).Apps(ctx, req.(*ListAppsRequest))
+		return srv.(AppsServiceServer).List(ctx, req.(*ListAppsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -124,8 +124,8 @@ var _AppsService_serviceDesc = grpc.ServiceDesc{
 			Handler:    _AppsService_Search_Handler,
 		},
 		{
-			MethodName: "Apps",
-			Handler:    _AppsService_Apps_Handler,
+			MethodName: "List",
+			Handler:    _AppsService_List_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

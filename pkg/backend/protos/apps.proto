@@ -6,11 +6,12 @@ option go_package = "github.com/gamedb/gamedb/pkg/backend/generated";
 
 import "shared.proto";
 import "enums.proto";
+import "google/protobuf/timestamp.proto";
 
 service AppsService {
     rpc Search (SearchAppsRequest) returns (AppsElasticResponse) {
     }
-    rpc Apps (ListAppsRequest) returns (AppsMongoResponse) {
+    rpc List (ListAppsRequest) returns (AppsMongoResponse) {
     }
 }
 
@@ -54,7 +55,7 @@ message AppElasticResponse {
     int64 players = 14;
     map<string, Price> prices = 15;
     repeated int32 publishers = 16;
-    int64 releaseDate = 17;
+    google.protobuf.Timestamp releaseDate = 17;
     float score = 18;
     float searchScore = 19;
     repeated int32 tags = 20;
@@ -92,7 +93,7 @@ message AppMongoResponse {
     float reviewsScore = 8;
     int32 reviewsPositive = 9;
     int32 reviewsNegative = 10;
-    int64 releaseDateUnix = 11;
+    google.protobuf.Timestamp releaseDateUnix = 11;
     string releaseDate = 12;
     map<string, Price> prices = 13;
     int32 metaScore = 14;

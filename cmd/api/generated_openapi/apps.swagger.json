@@ -98,7 +98,7 @@
         },
         "releaseDate": {
           "type": "string",
-          "format": "int64"
+          "format": "date-time"
         },
         "score": {
           "type": "number",
@@ -191,7 +191,7 @@
         },
         "releaseDateUnix": {
           "type": "string",
-          "format": "int64"
+          "format": "date-time"
         },
         "releaseDate": {
           "type": "string"

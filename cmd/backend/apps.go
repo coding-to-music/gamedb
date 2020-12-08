@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"sync"
+	"time"
 
 	"github.com/gamedb/gamedb/cmd/backend/helpers"
 	"github.com/gamedb/gamedb/pkg/backend/generated"
@@ -11,6 +12,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/olivere/elastic/v7"
 	"go.mongodb.org/mongo-driver/bson"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type AppsServer struct {
@@ -98,7 +100,7 @@ func (a AppsServer) Apps(ctx context.Context, request *generated.ListAppsRequest
 			ReviewsScore:    float32(app.ReviewsScore),
 			ReviewsPositive: int32(app.Reviews.Positive),
 			ReviewsNegative: int32(app.Reviews.Negative),
-			ReleaseDateUnix: app.ReleaseDateUnix,
+			ReleaseDateUnix: timestamppb.New(time.Unix(app.ReleaseDateUnix, 0)),
 			ReleaseDate:     app.ReleaseDate,
 			MetaScore:       int32(app.MetacriticScore),
 			PlayersMax:      int32(app.PlayerPeakAllTime),
@@ -273,7 +275,7 @@ func (a AppsServer) Search(ctx context.Context, request *generated.SearchAppsReq
 			Platforms:          app.Platforms,
 			Players:            int64(app.PlayersCount),
 			Publishers:         helpers.IntsToInt32s(app.Publishers),
-			ReleaseDate:        app.ReleaseDate,
+			ReleaseDate:        timestamppb.New(time.Unix(app.ReleaseDate, 0)),
 			Score:              float32(app.Score),
 			SearchScore:        float32(app.ReviewScore),
 			Tags:               helpers.IntsToInt32s(app.Tags),
