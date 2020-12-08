@@ -33,8 +33,12 @@
     <script>const user = JSON.parse({{ .GetUserJSON }});</script>
     <script src="/assets/dist/main.js?c={{ .AssetTime }}" rel="stylesheet"></script>
 
-    {{/* Google Analytics */}}
     {{ if eq .Env "production" }}
+
+        {{/* Arc */}}
+        <script async src="https://arc.io/widget.min.js#NZRmQpba"></script>
+
+        {{/* Google Analytics */}}
         <script src="https://www.googletagmanager.com/gtag/js?id=UA-125104-31"></script>
         <script>
             window.dataLayer = window.dataLayer || [];
@@ -50,18 +54,19 @@
             gtag('set', {'user_id': {{ .UserID }}});
             {{ end }}
         </script>
-    {{ end }}
 
-    {{ if .ShowAds }}
-        {{/*        <!--suppress ES6ConvertVarToLetConst -->*/}}
-        {{/*        <script>*/}}
-        {{/*            $('small.small-print').css('margin-bottom', '140px');*/}}
+        {{ if .ShowAds }}
+            {{/*        <!--suppress ES6ConvertVarToLetConst -->*/}}
+            {{/*        <script>*/}}
+            {{/*            $('small.small-print').css('margin-bottom', '140px');*/}}
 
-        {{/*            // Must be vars*/}}
-        {{/*            var infolinks_pid = 3185749;*/}}
-        {{/*            var infolinks_wsid = 0;*/}}
-        {{/*        </script>*/}}
-        {{/*        <script src="https://resources.infolinks.com/js/infolinks_main.js"></script>*/}}
+            {{/*            // Must be vars*/}}
+            {{/*            var infolinks_pid = 3185749;*/}}
+            {{/*            var infolinks_wsid = 0;*/}}
+            {{/*        </script>*/}}
+            {{/*        <script src="https://resources.infolinks.com/js/infolinks_main.js"></script>*/}}
+        {{ end }}
+
     {{ end }}
 
     </body>
