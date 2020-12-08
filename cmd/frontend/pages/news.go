@@ -67,15 +67,41 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var search = query.GetSearchString("search")
 
 		// Filter
-		switch query.GetSearchString("filter") {
-		case "mine":
+		switch filterVal := query.GetSearchString("filter"); filterVal {
+		case "owned", "played":
 
 			playerID := session.GetPlayerIDFromSesion(r)
 			if playerID == 0 {
 				break
 			}
 
-			apps, err := mongo.GetPlayerAppsByPlayer(playerID, 0, 0, nil, bson.M{"app_id": 1}, bson.D{{"app_time", bson.M{"$gt": 0}}})
+			filter := bson.D{}
+
+			if filterVal == "played" {
+				filter = append(filter, bson.E{Key: "app_time", Value: bson.M{"$gt": 0}})
+			}
+
+			apps, err := mongo.GetPlayerAppsByPlayer(playerID, 0, 0, nil, bson.M{"app_id": 1}, filter)
+			if err != nil {
+				log.ErrS(err)
+				break
+			}
+
+			var appIDs []interface{}
+			for _, app := range apps {
+				appIDs = append(appIDs, app.AppID)
+			}
+
+			filters = append(filters, elastic.NewTermsQuery("app_id", appIDs...))
+
+		case "recent":
+
+			playerID := session.GetPlayerIDFromSesion(r)
+			if playerID == 0 {
+				break
+			}
+
+			apps, err := mongo.GetRecentApps(playerID, 0, 0, nil)
 			if err != nil {
 				log.ErrS(err)
 				break
