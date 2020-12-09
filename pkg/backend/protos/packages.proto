@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package generated;
+
+option go_package = "github.com/gamedb/gamedb/pkg/backend/generated";
+
+import "shared.proto";
+import "google/protobuf/timestamp.proto";
+
+service PackagesService {
+    rpc List (ListPackagesRequest) returns (PackagesResponse) {
+    }
+}
+
+message ListPackagesRequest {
+    PaginationRequest pagination = 1;
+    repeated int32 ids = 2;
+    repeated int32 billingType = 3;
+    repeated int32 licenseType = 4;
+    repeated int32 status = 5;
+}
+
+message PackagesResponse {
+    PaginationResponse pagination = 1;
+    repeated PackageResponse packages = 2;
+}
+
+message PackageResponse {
+    int32 id = 1;
+    string name = 2;
+    string billingType = 3;
+    string changeNumber = 4;
+    google.protobuf.Timestamp changeNumberDate = 5;
+    string comingSoon = 6;
+    string depots = 7;
+    string icon = 8;
+    string imageLogo = 9;
+    string imagePage = 10;
+    string licenseType = 11;
+    repeated string platforms = 12;
+    string prices = 13;
+    string purchaseText = 14;
+    string releaseDate = 15;
+    google.protobuf.Timestamp releaseDateUnix = 16;
+    string status = 17;
+    repeated int32 apps = 18;
+    repeated int32 bundles = 19;
+    map<int32, int32> items = 20;
+    int32 appsCount = 21;
+    map<string, bool> controller = 22;
+    google.protobuf.Timestamp createdAt = 23;
+    map<string, string> extended = 24;
+    bool inStore = 25;
+    google.protobuf.Timestamp updatedAt = 26;
+}

@@ -82,6 +82,8 @@ func main() {
 	generated.RegisterGitHubServiceServer(grpcServer, GithubServer{})
 	generated.RegisterStatsServiceServer(grpcServer, StatsServer{})
 	generated.RegisterGroupsServiceServer(grpcServer, GroupsServer{})
+	generated.RegisterArticlesServiceServer(grpcServer, ArticlesServer{})
+	generated.RegisterPackagesServiceServer(grpcServer, PackagesServer{})
 
 	log.Info("Starting Backend on tcp://" + lis.Addr().String())
 

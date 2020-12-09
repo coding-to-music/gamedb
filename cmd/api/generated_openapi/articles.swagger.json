@@ -1,0 +1,157 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "articles.proto",
+    "version": "version not set"
+  },
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {},
+  "definitions": {
+    "generatedArticleResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "title": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "isExternal": {
+          "type": "string"
+        },
+        "author": {
+          "type": "string"
+        },
+        "contents": {
+          "type": "string"
+        },
+        "date": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "feedLabel": {
+          "type": "string"
+        },
+        "feedName": {
+          "type": "string"
+        },
+        "feedType": {
+          "type": "string"
+        },
+        "appID": {
+          "type": "string"
+        },
+        "appName": {
+          "type": "string"
+        },
+        "appIcon": {
+          "type": "string"
+        },
+        "articleIcon": {
+          "type": "string"
+        }
+      }
+    },
+    "generatedArticlesResponse": {
+      "type": "object",
+      "properties": {
+        "pagination": {
+          "$ref": "#/definitions/generatedPaginationResponse"
+        },
+        "articles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/generatedArticleResponse"
+          }
+        }
+      }
+    },
+    "generatedPaginationRequest": {
+      "type": "object",
+      "properties": {
+        "offset": {
+          "type": "string",
+          "format": "int64"
+        },
+        "limit": {
+          "type": "string",
+          "format": "int64"
+        },
+        "sortField": {
+          "type": "string"
+        },
+        "sortOrder": {
+          "type": "string"
+        }
+      }
+    },
+    "generatedPaginationResponse": {
+      "type": "object",
+      "properties": {
+        "offset": {
+          "type": "string",
+          "format": "int64"
+        },
+        "limit": {
+          "type": "string",
+          "format": "int64"
+        },
+        "total": {
+          "type": "string",
+          "format": "int64"
+        },
+        "totalFiltered": {
+          "type": "string",
+          "format": "int64"
+        },
+        "pagesTotal": {
+          "type": "string",
+          "format": "int64"
+        },
+        "pagesCurrent": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "typeUrl": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}

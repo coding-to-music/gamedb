@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package generated;
+
+option go_package = "github.com/gamedb/gamedb/pkg/backend/generated";
+
+import "shared.proto";
+import "google/protobuf/timestamp.proto";
+
+service ArticlesService {
+    rpc List (ListArticlesRequest) returns (ArticlesResponse) {
+    }
+}
+
+message ListArticlesRequest {
+    PaginationRequest pagination = 1;
+    repeated int32 ids = 2;
+    repeated int32 feedLabel = 3;
+}
+
+message ArticlesResponse {
+    PaginationResponse pagination = 1;
+    repeated ArticleResponse articles = 2;
+}
+
+message ArticleResponse {
+    int32 id = 1;
+    string title = 2;
+    string url = 3;
+    string isExternal = 4;
+    string author = 5;
+    string contents = 6;
+    google.protobuf.Timestamp date = 7;
+    string feedLabel = 8;
+    string feedName = 9;
+    string feedType = 10;
+    string appID = 11;
+    string appName = 12;
+    string appIcon = 13;
+    string articleIcon = 14;
+}
