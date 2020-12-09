@@ -392,18 +392,32 @@ if ($appPage.length > 0) {
         d.setDate(d.getDate() - 7);
 
         const chartOptions = $.extend(true, {}, defaultChartOptions, {
-            yAxis: {
-                allowDecimals: false,
-                title: {text: ''},
-                min: 0,
-                opposite: false,
-                labels: {
-                    formatter: function () {
-                        return this.value.toLocaleString();
+            yAxis: [
+                {
+                    allowDecimals: false,
+                    title: {text: ''},
+                    min: 0,
+                    opposite: false,
+                    labels: {
+                        formatter: function () {
+                            return this.value.toLocaleString();
+                        },
                     },
+                    visible: true,
                 },
-                visible: true,
-            },
+                {
+                    allowDecimals: false,
+                    title: {text: ''},
+                    min: 0,
+                    opposite: true,
+                    labels: {
+                        formatter: function () {
+                            return this.value.toLocaleString();
+                        },
+                    },
+                    visible: true,
+                }
+            ],
             xAxis: {
                 plotLines: plotline($appPage.attr('data-release'), 'Steam Release'),
             },
@@ -440,19 +454,21 @@ if ($appPage.length > 0) {
                     color: '#6441A4', // Twitch purple
                     data: data['max_twitch_viewers'],
                     connectNulls: true,
-                    visible: false,
+                    yAxis: 1,
                 },
                 {
                     name: 'Players Online (Average)',
                     color: '#28a74544',
                     data: data['max_moving_average'],
                     connectNulls: true,
+                    yAxis: 0,
                 },
                 {
                     name: 'Players Online',
                     color: '#28a745',
                     data: data['max_player_count'],
                     connectNulls: true,
+                    yAxis: 0,
                 },
             ];
 
@@ -466,6 +482,7 @@ if ($appPage.length > 0) {
                         type: 'line',
                         step: 'right',
                         visible: false,
+                        yAxis: 1,
                     },
                     {
                         name: 'YouTube Views',
@@ -475,6 +492,7 @@ if ($appPage.length > 0) {
                         type: 'line',
                         step: 'right',
                         visible: false,
+                        yAxis: 1,
                     },
                 )
             }

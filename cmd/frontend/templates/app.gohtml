@@ -451,37 +451,33 @@
                             </div>
                         </div>
 
-                        {{ if gt .App.PlayerPeakAllTime 0 }}
-
-                            <div class="card mb-4">
-                                <h5 class="card-header">Player Count - 1 Week</h5>
-                                <div class="card-body">
-                                    <div class="player-chart" id="players-chart">
-                                        <i class="fas fa-spinner fa-spin"></i>
-                                    </div>
+                        <div class="card mb-4">
+                            <h5 class="card-header">Player Count - 1 Week</h5>
+                            <div class="card-body">
+                                <div class="player-chart" id="players-chart">
+                                    <i class="fas fa-spinner fa-spin"></i>
                                 </div>
                             </div>
+                        </div>
 
-                            <div class="card mb-4">
-                                <h5 class="card-header">Player Count - All Time</h5>
-                                <div class="card-body">
-                                    <div class="player-chart" id="players-chart2">
-                                        <i class="fas fa-spinner fa-spin"></i>
-                                    </div>
+                        <div class="card mb-4">
+                            <h5 class="card-header">Player Count - All Time</h5>
+                            <div class="card-body">
+                                <div class="player-chart" id="players-chart2">
+                                    <i class="fas fa-spinner fa-spin"></i>
                                 </div>
                             </div>
+                        </div>
 
-                            <div class="card mb-4">
-                                <h5 class="card-header">Player Count - By Time of Day/Week</h5>
-                                <div class="card-body">
-                                    <div class="player-chart" id="players-heatmap-chart">
-                                        <i class="fas fa-spinner fa-spin"></i>
-                                    </div>
+                        <div class="card mb-4">
+                            <h5 class="card-header">Player Count - By Time of Day/Week</h5>
+                            <div class="card-body">
+                                <div class="player-chart" id="players-heatmap-chart">
+                                    <i class="fas fa-spinner fa-spin"></i>
                                 </div>
-                                <small class="card-footer">Averages taken over the last 4 weeks.</small>
                             </div>
-
-                        {{ end }}
+                            <small class="card-footer">Averages taken over the last 4 weeks.</small>
+                        </div>
 
                         {{ if ne .App.GroupID "" }}
 
