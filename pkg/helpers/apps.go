@@ -38,7 +38,7 @@ const (
 )
 
 func IsValidAppID(id int) bool {
-	return id > 0 // Zero is valid
+	return id > 0
 }
 
 func GetAppPath(id int, name string) string {
