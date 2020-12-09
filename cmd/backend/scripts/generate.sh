@@ -15,3 +15,5 @@ protoc \
   --openapiv2_out $BASE/cmd/api/generated_openapi \
   --openapiv2_opt logtostderr=true \
   $BASE/pkg/backend/protos/*.proto
+
+echo "Done"

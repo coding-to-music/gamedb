@@ -5,3 +5,5 @@ oapi-codegen \
   -generate types,chi-server,spec \
   -package generated \
   http://localhost:"$STEAM_PORT"/api/gamedb.json
+
+echo "Done"
