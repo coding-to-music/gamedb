@@ -30,6 +30,7 @@ import (
 	"github.com/tdewolff/minify/v2"
 	minhtml "github.com/tdewolff/minify/v2/html"
 	"go.uber.org/zap"
+	"gopkg.in/yaml.v2"
 )
 
 func setHeaders(w http.ResponseWriter, contentType string) {
@@ -82,10 +83,46 @@ func returnJSON(w http.ResponseWriter, r *http.Request, i interface{}) {
 
 	setHeaders(w, "application/json")
 
-	b, err := json.Marshal(i)
-	if err != nil {
+	var err error
+	var b []byte
+
+	switch v := i.(type) {
+	case string:
+		b = []byte(v)
+	case []byte:
+		b = v
+	default:
+		b, err = json.Marshal(i)
+		if err != nil {
+			log.ErrS(err)
+			return
+		}
+	}
+
+	_, err = w.Write(b)
+	if err != nil && !strings.Contains(err.Error(), "write: broken pipe") {
 		log.ErrS(err)
-		return
+	}
+}
+
+func returnYAML(w http.ResponseWriter, r *http.Request, i interface{}) {
+
+	setHeaders(w, "application/x-yaml")
+
+	var err error
+	var b []byte
+
+	switch v := i.(type) {
+	case string:
+		b = []byte(v)
+	case []byte:
+		b = v
+	default:
+		b, err = yaml.Marshal(i)
+		if err != nil {
+			log.ErrS(err)
+			return
+		}
 	}
 
 	_, err = w.Write(b)

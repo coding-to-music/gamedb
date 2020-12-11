@@ -51,30 +51,12 @@ type apiTemplate struct {
 
 func apiGamedbJSONHandler(w http.ResponseWriter, r *http.Request) {
 
-	b, err := json.Marshal(api.SwaggerGameDB)
-	if err != nil {
-		log.ErrS(err)
-		return
-	}
-
-	_, err = w.Write(b)
-	if err != nil {
-		log.ErrS(err)
-	}
+	returnJSON(w, r, api.SwaggerGameDB)
 }
 
 func apiGamedbYAMLHandler(w http.ResponseWriter, r *http.Request) {
 
-	b, err := yaml.Marshal(api.SwaggerGameDB)
-	if err != nil {
-		log.ErrS(err)
-		return
-	}
-
-	_, err = w.Write(b)
-	if err != nil {
-		log.ErrS(err)
-	}
+	returnYAML(w, r, api.SwaggerGameDB)
 }
 
 func apiSteamJSONHandler(w http.ResponseWriter, r *http.Request) {
@@ -90,10 +72,7 @@ func apiSteamJSONHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = w.Write(b)
-	if err != nil {
-		log.ErrS(err)
-	}
+	returnJSON(w, r, b)
 }
 
 func apiSteamYAMLHandler(w http.ResponseWriter, r *http.Request) {
@@ -109,8 +88,5 @@ func apiSteamYAMLHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = w.Write(b)
-	if err != nil {
-		log.ErrS(err)
-	}
+	returnYAML(w, r, b)
 }
