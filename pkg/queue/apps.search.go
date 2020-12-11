@@ -106,24 +106,27 @@ func appsSearchHandler(message *rabbit.Message) {
 }
 
 var aliasMap = map[int][]string{
-	813780:  {"aoe", "aoe2"},   // Age of Empires II: Definitive Edition
-	221380:  {"aoe", "aoe2"},   // Age of Empires II (2013)
-	105450:  {"aoe", "aoe3"},   // Age of Empires® III: Complete Collection
-	1017900: {"aoe"},           // Age of Empires: Definitive Edition
-	105430:  {"aoe"},           // Age of Empires Online
-	346110:  {"ark"},           // ARK: Survival Evolved
-	49520:   {"bl", "bl2"},     // Borderlands 2
-	397540:  {"bl", "bl3"},     // Borderlands 3
-	8980:    {"bl"},            // Borderlands GOTY
-	570:     {"dota", "dota2"}, // Dota 2
-	8500:    {"eve"},           // EVE Online
-	24240:   {"pd", "pdth"},    // PAYDAY: The Heist
-	218620:  {"pd", "pd2"},     // PAYDAY 2
-	578080:  {"pubg"},          // PLAYERUNKNOWN'S BATTLEGROUNDS
-	3900:    {"civ", "civ4"},   // Sid Meier's Civilization IV
-	8930:    {"civ", "civ5"},   // Sid Meier's Civilization V
-	289070:  {"civ", "civ6"},   // Sid Meier's Civilization VI
-	359550:  {"r6"},            // Tom Clancy's Rainbow Six Siege
+	813780:  {"aoe", "aoe2"},           // Age of Empires II: Definitive Edition
+	221380:  {"aoe", "aoe2"},           // Age of Empires II (2013)
+	105450:  {"aoe", "aoe3"},           // Age of Empires® III: Complete Collection
+	1017900: {"aoe", "aoede"},          // Age of Empires: Definitive Edition
+	105430:  {"aoe", "aoeo"},           // Age of Empires Online
+	1172470: {"apex"},                  // Apex Legends
+	346110:  {"ark"},                   // ARK: Survival Evolved
+	49520:   {"bl", "bl2"},             // Borderlands 2
+	397540:  {"bl", "bl3"},             // Borderlands 3
+	8980:    {"bl", "goty"},            // Borderlands GOTY
+	1091500: {"cp", "cp2077", "cyber"}, // Cyberpunk 2077
+	570:     {"dota", "dota2"},         // Dota 2
+	8500:    {"eve", "eo"},             // EVE Online
+	24240:   {"pd", "pd1", "pdth"},     // PAYDAY: The Heist
+	218620:  {"pd", "pd2"},             // PAYDAY 2
+	578080:  {"pubg"},                  // PLAYERUNKNOWN'S BATTLEGROUNDS
+	3900:    {"civ", "civ4"},           // Sid Meier's Civilization IV
+	8930:    {"civ", "civ5"},           // Sid Meier's Civilization V
+	289070:  {"civ", "civ6"},           // Sid Meier's Civilization VI
+	359550:  {"r6"},                    // Tom Clancy's Rainbow Six Siege
+	230410:  {"wf"},                    // Warframe
 }
 
 func makeAppAliases(ID int, name string) (aliases []string) {
