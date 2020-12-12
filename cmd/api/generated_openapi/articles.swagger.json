@@ -16,8 +16,8 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "int64"
         },
         "title": {
           "type": "string"
@@ -26,7 +26,7 @@
           "type": "string"
         },
         "isExternal": {
-          "type": "string"
+          "type": "boolean"
         },
         "author": {
           "type": "string"
@@ -45,10 +45,12 @@
           "type": "string"
         },
         "feedType": {
-          "type": "string"
+          "type": "integer",
+          "format": "int32"
         },
         "appID": {
-          "type": "string"
+          "type": "integer",
+          "format": "int32"
         },
         "appName": {
           "type": "string"

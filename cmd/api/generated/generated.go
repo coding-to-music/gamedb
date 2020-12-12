@@ -42,9 +42,37 @@ type AppSchema_Prices struct {
 	AdditionalProperties map[string]ProductPriceSchema `json:"-"`
 }
 
+// ArticleSchema defines model for article-schema.
+type ArticleSchema struct {
+	AppIcon   string `json:"app_icon"`
+	AppId     int32  `json:"app_id"`
+	Author    string `json:"author"`
+	Contents  string `json:"contents"`
+	Date      int64  `json:"date"`
+	Feed      string `json:"feed"`
+	FeedLabel string `json:"feed_label"`
+	FeedType  int32  `json:"feed_type"`
+	Icon      string `json:"icon"`
+	Id        int64  `json:"id"`
+	Title     string `json:"title"`
+	Url       string `json:"url"`
+}
+
 // MessageSchema defines model for message-schema.
 type MessageSchema struct {
 	Message string `json:"message"`
+}
+
+// PackageSchema defines model for package-schema.
+type PackageSchema struct {
+	Id              int      `json:"id"`
+	MetacriticScore *int32   `json:"metacritic_score,omitempty"`
+	Name            string   `json:"name"`
+	PlayersWeekMax  *int     `json:"players_week_max,omitempty"`
+	ReleaseDate     *int64   `json:"release_date,omitempty"`
+	ReviewsNegative *int     `json:"reviews_negative,omitempty"`
+	ReviewsPositive *int     `json:"reviews_positive,omitempty"`
+	ReviewsScore    *float64 `json:"reviews_score,omitempty"`
 }
 
 // PaginationSchema defines model for pagination-schema.
@@ -114,8 +142,20 @@ type AppsResponse struct {
 	Pagination PaginationSchema `json:"pagination"`
 }
 
+// ArticlesResponse defines model for articles-response.
+type ArticlesResponse struct {
+	Articles   []ArticleSchema  `json:"articles"`
+	Pagination PaginationSchema `json:"pagination"`
+}
+
 // MessageResponse defines model for message-response.
 type MessageResponse MessageSchema
+
+// PackagesResponse defines model for packages-response.
+type PackagesResponse struct {
+	Packages   []PackageSchema  `json:"packages"`
+	Pagination PaginationSchema `json:"pagination"`
+}
 
 // PlayerResponse defines model for player-response.
 type PlayerResponse PlayerSchema
@@ -124,6 +164,17 @@ type PlayerResponse PlayerSchema
 type PlayersResponse struct {
 	Pagination PaginationSchema `json:"pagination"`
 	Players    []PlayerSchema   `json:"players"`
+}
+
+// GetArticlesParams defines parameters for GetArticles.
+type GetArticlesParams struct {
+	Offset *OffsetParam    `json:"offset,omitempty"`
+	Limit  *LimitParam     `json:"limit,omitempty"`
+	Order  *OrderParamDesc `json:"order,omitempty"`
+	Sort   *string         `json:"sort,omitempty"`
+	Ids    *[]int32        `json:"ids,omitempty"`
+	AppIds *[]int32        `json:"app_ids,omitempty"`
+	Feed   *string         `json:"feed,omitempty"`
 }
 
 // GetGamesParams defines parameters for GetGames.
@@ -139,6 +190,28 @@ type GetGamesParams struct {
 	Developers *[]int32        `json:"developers,omitempty"`
 	Publishers *[]int32        `json:"publishers,omitempty"`
 	Platforms  *[]string       `json:"platforms,omitempty"`
+}
+
+// GetGroupsParams defines parameters for GetGroups.
+type GetGroupsParams struct {
+	Offset *OffsetParam    `json:"offset,omitempty"`
+	Limit  *LimitParam     `json:"limit,omitempty"`
+	Order  *OrderParamDesc `json:"order,omitempty"`
+	Sort   *string         `json:"sort,omitempty"`
+	Ids    *[]int64        `json:"ids,omitempty"`
+	Type   *[]string       `json:"type,omitempty"`
+}
+
+// GetPackagesParams defines parameters for GetPackages.
+type GetPackagesParams struct {
+	Offset      *OffsetParam    `json:"offset,omitempty"`
+	Limit       *LimitParam     `json:"limit,omitempty"`
+	Order       *OrderParamDesc `json:"order,omitempty"`
+	Sort        *string         `json:"sort,omitempty"`
+	Ids         *[]int32        `json:"ids,omitempty"`
+	BillingType *[]int32        `json:"billingType,omitempty"`
+	LicenseType *[]int32        `json:"licenseType,omitempty"`
+	Status      *[]int32        `json:"status,omitempty"`
 }
 
 // GetPlayersParams defines parameters for GetPlayers.
@@ -206,12 +279,21 @@ func (a AppSchema_Prices) MarshalJSON() ([]byte, error) {
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
+	// List Articles
+	// (GET /articles)
+	GetArticles(w http.ResponseWriter, r *http.Request, params GetArticlesParams)
 	// List Games
 	// (GET /games)
 	GetGames(w http.ResponseWriter, r *http.Request, params GetGamesParams)
 	// Retrieve Game
 	// (GET /games/{id})
 	GetGamesId(w http.ResponseWriter, r *http.Request, id int32)
+	// List Groups
+	// (GET /groups)
+	GetGroups(w http.ResponseWriter, r *http.Request, params GetGroupsParams)
+	// List Packages
+	// (GET /packages)
+	GetPackages(w http.ResponseWriter, r *http.Request, params GetPackagesParams)
 	// List Players
 	// (GET /players)
 	GetPlayers(w http.ResponseWriter, r *http.Request, params GetPlayersParams)
@@ -226,6 +308,99 @@ type ServerInterface interface {
 // ServerInterfaceWrapper converts contexts to parameters.
 type ServerInterfaceWrapper struct {
 	Handler ServerInterface
+}
+
+// GetArticles operation middleware
+func (siw *ServerInterfaceWrapper) GetArticles(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
+
+	ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetArticlesParams
+
+	// ------------- Optional query parameter "offset" -------------
+	if paramValue := r.URL.Query().Get("offset"); paramValue != "" {
+
+	}
+
+	err = runtime.BindQueryParameter("form", true, false, "offset", r.URL.Query(), &params.Offset)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter offset: %s", err), http.StatusBadRequest)
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+	if paramValue := r.URL.Query().Get("limit"); paramValue != "" {
+
+	}
+
+	err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter limit: %s", err), http.StatusBadRequest)
+		return
+	}
+
+	// ------------- Optional query parameter "order" -------------
+	if paramValue := r.URL.Query().Get("order"); paramValue != "" {
+
+	}
+
+	err = runtime.BindQueryParameter("form", true, false, "order", r.URL.Query(), &params.Order)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter order: %s", err), http.StatusBadRequest)
+		return
+	}
+
+	// ------------- Optional query parameter "sort" -------------
+	if paramValue := r.URL.Query().Get("sort"); paramValue != "" {
+
+	}
+
+	err = runtime.BindQueryParameter("form", true, false, "sort", r.URL.Query(), &params.Sort)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter sort: %s", err), http.StatusBadRequest)
+		return
+	}
+
+	// ------------- Optional query parameter "ids" -------------
+	if paramValue := r.URL.Query().Get("ids"); paramValue != "" {
+
+	}
+
+	err = runtime.BindQueryParameter("form", true, false, "ids", r.URL.Query(), &params.Ids)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter ids: %s", err), http.StatusBadRequest)
+		return
+	}
+
+	// ------------- Optional query parameter "app_ids" -------------
+	if paramValue := r.URL.Query().Get("app_ids"); paramValue != "" {
+
+	}
+
+	err = runtime.BindQueryParameter("form", true, false, "app_ids", r.URL.Query(), &params.AppIds)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter app_ids: %s", err), http.StatusBadRequest)
+		return
+	}
+
+	// ------------- Optional query parameter "feed" -------------
+	if paramValue := r.URL.Query().Get("feed"); paramValue != "" {
+
+	}
+
+	err = runtime.BindQueryParameter("form", true, false, "feed", r.URL.Query(), &params.Feed)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter feed: %s", err), http.StatusBadRequest)
+		return
+	}
+
+	siw.Handler.GetArticles(w, r.WithContext(ctx), params)
 }
 
 // GetGames operation middleware
@@ -387,6 +562,192 @@ func (siw *ServerInterfaceWrapper) GetGamesId(w http.ResponseWriter, r *http.Req
 	siw.Handler.GetGamesId(w, r.WithContext(ctx), id)
 }
 
+// GetGroups operation middleware
+func (siw *ServerInterfaceWrapper) GetGroups(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
+
+	ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetGroupsParams
+
+	// ------------- Optional query parameter "offset" -------------
+	if paramValue := r.URL.Query().Get("offset"); paramValue != "" {
+
+	}
+
+	err = runtime.BindQueryParameter("form", true, false, "offset", r.URL.Query(), &params.Offset)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter offset: %s", err), http.StatusBadRequest)
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+	if paramValue := r.URL.Query().Get("limit"); paramValue != "" {
+
+	}
+
+	err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter limit: %s", err), http.StatusBadRequest)
+		return
+	}
+
+	// ------------- Optional query parameter "order" -------------
+	if paramValue := r.URL.Query().Get("order"); paramValue != "" {
+
+	}
+
+	err = runtime.BindQueryParameter("form", true, false, "order", r.URL.Query(), &params.Order)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter order: %s", err), http.StatusBadRequest)
+		return
+	}
+
+	// ------------- Optional query parameter "sort" -------------
+	if paramValue := r.URL.Query().Get("sort"); paramValue != "" {
+
+	}
+
+	err = runtime.BindQueryParameter("form", true, false, "sort", r.URL.Query(), &params.Sort)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter sort: %s", err), http.StatusBadRequest)
+		return
+	}
+
+	// ------------- Optional query parameter "ids" -------------
+	if paramValue := r.URL.Query().Get("ids"); paramValue != "" {
+
+	}
+
+	err = runtime.BindQueryParameter("form", true, false, "ids", r.URL.Query(), &params.Ids)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter ids: %s", err), http.StatusBadRequest)
+		return
+	}
+
+	// ------------- Optional query parameter "type" -------------
+	if paramValue := r.URL.Query().Get("type"); paramValue != "" {
+
+	}
+
+	err = runtime.BindQueryParameter("form", true, false, "type", r.URL.Query(), &params.Type)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter type: %s", err), http.StatusBadRequest)
+		return
+	}
+
+	siw.Handler.GetGroups(w, r.WithContext(ctx), params)
+}
+
+// GetPackages operation middleware
+func (siw *ServerInterfaceWrapper) GetPackages(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
+
+	ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetPackagesParams
+
+	// ------------- Optional query parameter "offset" -------------
+	if paramValue := r.URL.Query().Get("offset"); paramValue != "" {
+
+	}
+
+	err = runtime.BindQueryParameter("form", true, false, "offset", r.URL.Query(), &params.Offset)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter offset: %s", err), http.StatusBadRequest)
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+	if paramValue := r.URL.Query().Get("limit"); paramValue != "" {
+
+	}
+
+	err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter limit: %s", err), http.StatusBadRequest)
+		return
+	}
+
+	// ------------- Optional query parameter "order" -------------
+	if paramValue := r.URL.Query().Get("order"); paramValue != "" {
+
+	}
+
+	err = runtime.BindQueryParameter("form", true, false, "order", r.URL.Query(), &params.Order)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter order: %s", err), http.StatusBadRequest)
+		return
+	}
+
+	// ------------- Optional query parameter "sort" -------------
+	if paramValue := r.URL.Query().Get("sort"); paramValue != "" {
+
+	}
+
+	err = runtime.BindQueryParameter("form", true, false, "sort", r.URL.Query(), &params.Sort)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter sort: %s", err), http.StatusBadRequest)
+		return
+	}
+
+	// ------------- Optional query parameter "ids" -------------
+	if paramValue := r.URL.Query().Get("ids"); paramValue != "" {
+
+	}
+
+	err = runtime.BindQueryParameter("form", true, false, "ids", r.URL.Query(), &params.Ids)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter ids: %s", err), http.StatusBadRequest)
+		return
+	}
+
+	// ------------- Optional query parameter "billingType" -------------
+	if paramValue := r.URL.Query().Get("billingType"); paramValue != "" {
+
+	}
+
+	err = runtime.BindQueryParameter("form", true, false, "billingType", r.URL.Query(), &params.BillingType)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter billingType: %s", err), http.StatusBadRequest)
+		return
+	}
+
+	// ------------- Optional query parameter "licenseType" -------------
+	if paramValue := r.URL.Query().Get("licenseType"); paramValue != "" {
+
+	}
+
+	err = runtime.BindQueryParameter("form", true, false, "licenseType", r.URL.Query(), &params.LicenseType)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter licenseType: %s", err), http.StatusBadRequest)
+		return
+	}
+
+	// ------------- Optional query parameter "status" -------------
+	if paramValue := r.URL.Query().Get("status"); paramValue != "" {
+
+	}
+
+	err = runtime.BindQueryParameter("form", true, false, "status", r.URL.Query(), &params.Status)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter status: %s", err), http.StatusBadRequest)
+		return
+	}
+
+	siw.Handler.GetPackages(w, r.WithContext(ctx), params)
+}
+
 // GetPlayers operation middleware
 func (siw *ServerInterfaceWrapper) GetPlayers(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -525,10 +886,19 @@ func HandlerFromMux(si ServerInterface, r chi.Router) http.Handler {
 	}
 
 	r.Group(func(r chi.Router) {
+		r.Get("/articles", wrapper.GetArticles)
+	})
+	r.Group(func(r chi.Router) {
 		r.Get("/games", wrapper.GetGames)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get("/games/{id}", wrapper.GetGamesId)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get("/groups", wrapper.GetGroups)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get("/packages", wrapper.GetPackages)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get("/players", wrapper.GetPlayers)
@@ -546,31 +916,37 @@ func HandlerFromMux(si ServerInterface, r chi.Router) http.Handler {
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/+RZX2/bNhD/Kga3Rzly0mxA/datQJGtw4J1ewqMgJbOMluJVEnKtRH4uw/HP/pL2Wrq",
-	"ZcD2FFC+u9/xfnfHI/NEElGUggPXiiyfSEklLUCDNKucFUzPzTdcMk6W5HMF8kAiwmkBZGlFSERUsoWC",
-	"olQKG1rlmiyvFxEp6J4VVYGLBS4Zd8uI6EOJBhjXkIEkx2NExGaj4AyglQkjthEWYQSZgrQA8xRUMoqC",
-	"cmEQYvQiAhxhHgg1K/NxVWMqLRnPyBExJahScAUmpLQs5/4DrhPBNXDtfspZQjUTPP6oBMdvDf73EjZk",
-	"Sb6LG8Ji+6uK0aiTNIjojGQlWiJL8maW4aaOESKo56F3Lb5nSs/EZob2otkXprezkmaMG20SkVKKEqRm",
-	"9ZbNX6ahUF+zlTqaVEp6wHUL5YydRrKJDFLxuWISUuSt47HxcRUInt8qhlChCwUoRTO4PIne8DiRv1kJ",
-	"E4icHkBe3gln91QyWZHGiWdmVDdHvonY2pPJWdbbZj/RTmWKhzqVLF4GJRykr/2xACRUQyakW03ahNJU",
-	"n6iVFHaQI8TFLGbA5eX8Yyka6PdoLDBNE8k0Sx5VIqTJqo2QBdVW7tUNiQJqtnE/9RtwTdhjQfdhQC/w",
-	"BeDTCSnJEtfP0pQh4TS/71B4MuGkSKtEz42VYVDE+iMk2sBU65yp7QVZk5ADVfCYUj2I5Y+3wVhK2DH4",
-	"oh45ZFSzHYQj4qVKodh5qSGXqajWOTQO8KpYWx1Nswttv1fJLPVHvAOpkzpqV2CneDqc1HnQzatAEvU+",
-	"0V1GelwEIhgIfT+CgQJZtY6lsf7ifg9USC9EXnDVOW5H7dr5b1paudFtmnBJM1A/V1K602Sqyp9C03yi",
-	"gp4s2wtSPYT68dda6rjQ28KqObXHYkl3VFMZbGJrmmZWaLiLRBSFn99Dv3LNuAviwG4iKq7lIfjbRjLg",
-	"6YhZOw+Ff5KiKkd+6zT9BirHcgtrnOzrmhUjbQe7QlhvRznTh8dK5ueLod0vHDs1F63AN7Hygamj4PfW",
-	"8reJepsd73LHQZM0oaNjOD+YNEvCTKZMGch7kEmgnEZO1A3jw+oYk5XQjvZaiBwoN4zzlO1YWk02xTjT",
-	"bKJ0j646CI0Vv41hEDquuR2sXOaMhnlsaBnJ0tF0WpnREJJKMn34gGDW/ic4zLdA8fLpb6ZuWV9NP8Gh",
-	"iQQt2a9gjnnUtJfYkSttUA/dgL0GyWn+ViTGB1MZJKYlizGZ07VlZSP8fE8Tk0LO7i850Myc407Ri2CD",
-	"BVmo3zcfQO5YgsKx+YJ+MJ3jh3e0gNnbn2Zv7u8w9UEqO0pfXy2uFiQi+3kuMmH8UQq0ilmRxYrO19n8",
-	"+vXN/vr1zVVpk1yUwGnJyJK8crol1Vuzo7juVpk9f5BSc67dpegD6HeuatvvHw/huaMRiTvvFcforHz7",
-	"PWWC+OCxAnVC1Cohuy8igzQM6zHTsRq1et6aUKYF3d9Z8evFYjh2hQHdzPXtiFMB6+nu5SA7c+TLwXYm",
-	"1peD7czGLwibU42mR1AHJ2CD8WoAseo90d0sFmN3jlou7j6lHSNyu7g+rzV4PDpG5IcpcENFPD+qoqDY",
-	"8O3Dg+9h9vb0QOzanDS2AcZPLD2e7YJ36bAPGgqwnbZ7B2kfblpW0KZiwPvJp9/nUtBjYPE8Bp5N3e3i",
-	"9t/j/A/QksEODO8jtLfexcY4v3ci/5mzr3moNynqn+nNws/i9Qjvp3U3mDdjfD3bB970xxp/e5Yf9qSC",
-	"7t8Dz/SWLG+ir+tQo4D+GnFZuGdV4+Ax+P9XkaYLN/XkC/K+eTFuSvJsL3Zal+/G5n3j8t24/x+JkWZl",
-	"txWMTkRKoQLBuBfqn45GqFa+MR4XTetLZOdfZUr1SQLad1IT2vZt9GGFbah1y3xYYWAUyJ1nwt7/tlqX",
-	"ahnj/fHK3h+vBM8ZB4LyDrW+Pb5z/1erP3h3jqvj3wEAAP//kQtL9Z0eAAA=",
+	"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",
+	"AP//5ImQiSQwAAA=",
 }
 
 // GetSwagger returns the Swagger specification corresponding to the generated code

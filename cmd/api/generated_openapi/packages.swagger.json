@@ -92,6 +92,33 @@
             "type": "integer",
             "format": "int32"
           }
+        },
+        "appsCount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "controller": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "boolean"
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "extended": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "inStore": {
+          "type": "boolean"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },

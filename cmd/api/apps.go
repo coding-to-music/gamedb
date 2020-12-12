@@ -66,7 +66,7 @@ func (s Server) GetGames(w http.ResponseWriter, r *http.Request, params generate
 			return 500, err
 		}
 
-		resp, err := generatedBackend.NewAppsServiceClient(conn).Apps(ctx, payload)
+		resp, err := generatedBackend.NewAppsServiceClient(conn).List(ctx, payload)
 		if err != nil {
 			return 500, err
 		}
@@ -148,7 +148,7 @@ func (s Server) GetGames(w http.ResponseWriter, r *http.Request, params generate
 				MetacriticScore: app.GetMetaScore(),
 				PlayersMax:      int(app.GetPlayersMax()),
 				PlayersWeekMax:  int(app.GetPlayersWeekMax()),
-				ReleaseDate:     app.GetReleaseDateUnix(),
+				ReleaseDate:     app.GetReleaseDateUnix().GetSeconds(),
 				ReviewsNegative: int(app.GetReviewsNegative()),
 				ReviewsPositive: int(app.GetReviewsPositive()),
 				ReviewsScore:    float64(app.GetReviewsScore()),

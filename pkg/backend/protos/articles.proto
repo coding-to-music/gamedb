@@ -14,8 +14,10 @@ service ArticlesService {
 
 message ListArticlesRequest {
     PaginationRequest pagination = 1;
-    repeated int32 ids = 2;
-    repeated int32 feedLabel = 3;
+    repeated string projection = 2;
+    repeated int32 ids = 3;
+    repeated int32 appIds = 4;
+    string feed = 5;
 }
 
 message ArticlesResponse {
@@ -24,17 +26,17 @@ message ArticlesResponse {
 }
 
 message ArticleResponse {
-    int32 id = 1;
+    int64 id = 1;
     string title = 2;
     string url = 3;
-    string isExternal = 4;
+    bool isExternal = 4;
     string author = 5;
     string contents = 6;
     google.protobuf.Timestamp date = 7;
     string feedLabel = 8;
     string feedName = 9;
-    string feedType = 10;
-    string appID = 11;
+    int32 feedType = 10;
+    int32 appID = 11;
     string appName = 12;
     string appIcon = 13;
     string articleIcon = 14;

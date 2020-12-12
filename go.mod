@@ -45,7 +45,6 @@ require (
 	github.com/gocolly/colly/v2 v2.1.0
 	github.com/golang/protobuf v1.4.3
 	github.com/golang/snappy v0.0.2 // indirect
-	github.com/google/go-cmp v0.5.4 // indirect
 	github.com/google/go-github/v32 v32.1.0
 	github.com/gorilla/securecookie v1.1.1
 	github.com/gorilla/sessions v1.2.1
@@ -110,7 +109,6 @@ require (
 	golang.org/x/tools v0.0.0-20201211185031-d93e913c1a58 // indirect
 	gonum.org/v1/gonum v0.8.2
 	google.golang.org/api v0.36.0
-	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20201211151036-40ec1c210f7a // indirect
 	google.golang.org/grpc v1.34.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.0.1
