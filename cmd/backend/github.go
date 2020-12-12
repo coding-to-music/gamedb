@@ -6,6 +6,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/backend/generated"
 	githubHelper "github.com/gamedb/gamedb/pkg/github"
 	"github.com/google/go-github/v32/github"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type GithubServer struct {
@@ -33,7 +34,7 @@ func (g GithubServer) Commits(ctx context.Context, request *generated.CommitsReq
 
 		response.Commits = append(response.Commits, &generated.CommitResponse{
 			Message: commit.GetCommit().GetMessage(),
-			Time:    commit.GetCommit().GetAuthor().GetDate().Unix(),
+			Time:    timestamppb.New(commit.GetCommit().GetAuthor().GetDate()),
 			Link:    commit.GetHTMLURL(),
 			Hash:    commit.GetSHA(),
 		})
