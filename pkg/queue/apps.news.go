@@ -11,6 +11,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/steam"
+	"github.com/gamedb/gamedb/pkg/websockets"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.uber.org/zap"
 )
@@ -109,6 +110,11 @@ func appNewsHandler(message *rabbit.Message) {
 		}
 
 		err = ProduceArticlesSearch(m)
+		if err != nil {
+			log.ErrS(err)
+		}
+
+		err = ProduceWebsocket(NewsPayload{m.Elastic.OutputForJSON()}, websockets.PageNews)
 		if err != nil {
 			log.ErrS(err)
 		}

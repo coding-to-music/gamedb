@@ -222,3 +222,7 @@ type PlayerPayload struct {
 	Queue         string `json:"queue"`
 	CommunityLink string `json:"community_link"`
 }
+
+type NewsPayload struct {
+	RowData []interface{} `json:"row_data"`
+}

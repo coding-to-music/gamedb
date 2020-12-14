@@ -162,21 +162,7 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var response = datatable.NewDataTablesResponse(r, query, count, filtered, nil)
 	for _, article := range articles {
-
-		response.AddRow([]interface{}{
-			article.ID,               // 0
-			article.Title,            // 1
-			article.GetBody(),        // 2
-			article.AppID,            // 3
-			article.GetArticleIcon(), // 4
-			article.Time,             // 5
-			article.Score,            // 6
-			article.GetAppName(),     // 7
-			article.GetAppPath(),     // 8
-			article.GetDate(),        // 9
-			article.TitleMarked,      // 10
-			article.GetFeedName(),    // 11
-		})
+		response.AddRow(article.OutputForJSON())
 	}
 
 	returnJSON(w, r, response)

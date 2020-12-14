@@ -56,6 +56,23 @@ func (article Article) GetDate() string {
 	return time.Unix(article.Time, 0).Format(helpers.DateYearTime)
 }
 
+func (article Article) OutputForJSON() []interface{} {
+	return []interface{}{
+		article.ID,               // 0
+		article.Title,            // 1
+		article.GetBody(),        // 2
+		article.AppID,            // 3
+		article.GetArticleIcon(), // 4
+		article.Time,             // 5
+		article.Score,            // 6
+		article.GetAppName(),     // 7
+		article.GetAppPath(),     // 8
+		article.GetDate(),        // 9
+		article.TitleMarked,      // 10
+		article.GetFeedName(),    // 11
+	}
+}
+
 func IndexArticle(article Article) error {
 	return indexDocument(IndexArticles, strconv.FormatInt(article.ID, 10), article)
 }
