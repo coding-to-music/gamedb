@@ -8,7 +8,7 @@
 /cmd/scaler/scaler
 /cmd/steam/steam
 /cmd/test/test
-/gamedb_devenv
+/cmd/devenv/devenv
 
 # Source maps
 /cmd/frontend/assets/dist/main.css.map

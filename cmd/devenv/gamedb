@@ -1,0 +1,15 @@
+#!/bin/bash
+
+cd $STEAM_PATH || exit 1
+
+# Build and run
+go build -o ./cmd/devenv/devenv ./cmd/devenv/*.go
+./cmd/devenv/devenv >/dev/null &
+ID=$!
+
+# Launch lnav
+mkdir -p /tmp/gamedb
+lnav /tmp/gamedb
+
+# Hide output as ctrl-c will cause the go process to already be killed
+kill $ID >/dev/null 2>&1

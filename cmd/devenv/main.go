@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -13,13 +14,21 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/mysql"
 )
 
 const TMP = "/tmp/gamedb/"
 
-var processes []string
+type processesConfig struct {
+	Processes []struct {
+		Path    string
+		Enabled bool
+	}
+	Mongo    bool
+	Elastic  bool
+	Memcache bool
+	MySQL    bool
+	Rabbit   bool
+}
 
 func main() {
 
@@ -31,88 +40,93 @@ func main() {
 		return
 	}
 
-	processes = filterSlice(os.Args)
-	if len(processes) <= 1 {
-		log.InfoS("please specify a cmd")
-		helpers.KeepAlive(
-			mysql.Close,
-			mongo.Close,
-		)
+	// Get config
+	b, err := ioutil.ReadFile("./cmd/devenv/config.json")
+	if err != nil {
+		log.ErrS(err)
 		return
 	}
-	processes = processes[1:]
 
-	stopAll()
-	startAll()
+	var cfg processesConfig
+	err = json.Unmarshal(b, &cfg)
+	if err != nil {
+		log.ErrS(err)
+		return
+	}
 
-	go watchFiles()
+	stopAll(cfg)
+	startAll(cfg)
 
-	helpers.KeepAlive(
-		mysql.Close,
-		mongo.Close,
-	)
+	go watchFiles(cfg)
 
-	stopAll()
+	helpers.KeepAlive()
+
+	stopAll(cfg)
 }
 
-func startAll() {
+func startAll(cfg processesConfig) {
 
-	log.InfoS("starting: " + strings.Join(processes, ", "))
+	log.InfoS("starting")
 
-	for _, process := range processes {
-		go func(process string) {
+	for _, process := range cfg.Processes {
+		if process.Enabled {
+			go func(process string) {
 
-			cmd := exec.Command("sh", "-c", `go build -o `+process+` -ldflags "-X main.version=$(git rev-parse --verify HEAD) -X main.commits=$(git rev-list --count master)" *.go`)
-			cmd.Dir = "./cmd/" + process
-			err := cmd.Run() // Blocks
-			if err != nil {
-				log.ErrS(err)
-				return
-			}
+				cmd := exec.Command("sh", "-c", `go build -o `+process+` -ldflags "-X main.version=$(git rev-parse --verify HEAD) -X main.commits=$(git rev-list --count master)" *.go`)
+				cmd.Dir = "./cmd/" + process
+				err := cmd.Run() // Blocks
+				if err != nil {
+					log.ErrS(err)
+					return
+				}
 
-			cmd = exec.Command("sh", "-c", "./"+process)
-			cmd.Dir = "./cmd/" + process
-			err = cmd.Start()
-			if err != nil {
-				log.ErrS(err)
-				return
-			}
+				cmd = exec.Command("sh", "-c", "./"+process)
+				cmd.Dir = "./cmd/" + process
+				err = cmd.Start()
+				if err != nil {
+					log.ErrS(err)
+					return
+				}
 
-			err = ioutil.WriteFile(TMP+process+".pid", []byte(strconv.Itoa(cmd.Process.Pid)), 0644)
-			if err != nil {
-				log.ErrS(err)
-			}
+				err = ioutil.WriteFile(TMP+process+".pid", []byte(strconv.Itoa(cmd.Process.Pid)), 0644)
+				if err != nil {
+					log.ErrS(err)
+				}
 
-		}(process)
+			}(process.Path)
+		}
 	}
 }
 
-func stopAll() {
+func stopAll(cfg processesConfig) {
 
-	log.InfoS("quitting: " + strings.Join(processes, ", "))
+	log.InfoS("quitting")
 
-	for _, process := range processes {
+	for _, process := range cfg.Processes {
 
-		filename := TMP + process + ".pid"
+		if process.Enabled {
 
-		b, err := ioutil.ReadFile(filename)
-		if err != nil {
-			continue
-		}
+			filename := TMP + process.Path + ".pid"
 
-		exec.Command("sh", "-c", "kill", string(b))
+			b, err := ioutil.ReadFile(filename)
+			if err != nil {
+				continue
+			}
 
-		err = os.Remove(filename)
-		if err != nil {
-			log.ErrS(err)
-			continue
+			exec.Command("sh", "-c", "kill", string(b))
+
+			err = os.Remove(filename)
+			if err != nil {
+				log.ErrS(err)
+				continue
+			}
 		}
 	}
 }
 
 var lastUpdated time.Time
 
-func watchFiles() {
+func watchFiles(cfg processesConfig) {
 
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
@@ -137,8 +151,8 @@ func watchFiles() {
 						if time.Now().Sub(lastUpdated) > (time.Second / 10) {
 							lastUpdated = time.Now()
 							log.InfoS("Updating: ", event.Name)
-							stopAll()
-							startAll()
+							stopAll(cfg)
+							startAll(cfg)
 						}
 					}
 				}
@@ -191,13 +205,4 @@ func getDirs() (p []string, err error) {
 	})
 
 	return p, err
-}
-
-func filterSlice(in []string) (out []string) {
-	for _, str := range in {
-		if str != "" {
-			out = append(out, str)
-		}
-	}
-	return out
 }

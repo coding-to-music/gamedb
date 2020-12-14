@@ -1,0 +1,45 @@
+{
+  "Processes": [
+    {
+      "Path": "api",
+      "Enabled": true
+    },
+    {
+      "Path": "backend",
+      "Enabled": true
+    },
+    {
+      "Path": "consumers",
+      "Enabled": true
+    },
+    {
+      "Path": "crons",
+      "Enabled": false
+    },
+    {
+      "Path": "down",
+      "Enabled": false
+    },
+    {
+      "Path": "frontend",
+      "Enabled": true
+    },
+    {
+      "Path": "scaler",
+      "Enabled": true
+    },
+    {
+      "Path": "steam",
+      "Enabled": true
+    },
+    {
+      "Path": "test",
+      "Enabled": false
+    }
+  ],
+  "Mongo": false,
+  "Elastic": false,
+  "Memcache": true,
+  "MySQL": false,
+  "Rabbit": true
+}
