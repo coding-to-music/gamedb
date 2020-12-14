@@ -102,6 +102,8 @@ func GetArticles(offset int64, limit int64, order bson.D, filter bson.D) (news [
 
 func getArticles(offset int64, limit int64, filter bson.D, order bson.D, projection bson.M) (news []Article, err error) {
 
+	filter = append(filter, bson.E{Key: "feed_name", Value: bson.M{"$ne": "Gamemag.ru"}})
+
 	cur, ctx, err := Find(CollectionAppArticles, offset, limit, order, filter, projection, nil)
 	if err != nil {
 		return news, err
@@ -177,12 +179,12 @@ func GetAppArticlesGroupedByFeed() (feeds []ArticleFeed, err error) {
 
 		pipeline := mongo.Pipeline{
 			{{
-				Key: "$group",
-				Value: bson.M{
-					"_id":   "$feed_name",
-					"count": bson.M{"$sum": 1},
-					"name":  bson.M{"$first": "$feed_label"},
-				},
+				Key:   "$group",
+				Value: bson.M{"_id": "$feed_name", "count": bson.M{"$sum": 1}, "name": bson.M{"$first": "$feed_label"}},
+			}},
+			{{
+				Key:   "$match",
+				Value: bson.M{"_id": bson.M{"$ne": "Gamemag.ru"}},
 			}},
 		}
 
