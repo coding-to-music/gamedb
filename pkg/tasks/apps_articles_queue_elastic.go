@@ -1,6 +1,8 @@
 package tasks
 
 import (
+	"github.com/gamedb/gamedb/pkg/elasticsearch"
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
@@ -41,15 +43,21 @@ func (c AppsArticlesQueueElastic) work() (err error) {
 		for _, article := range articles {
 
 			err = queue.ProduceArticlesSearch(queue.AppsArticlesSearchMessage{
-				ID:       article.ID,
-				Title:    article.Title,
-				Body:     article.Contents,
-				Feed:     article.FeedName,
-				FeedName: article.FeedLabel,
-				Time:     article.Date.Unix(),
-				AppID:    article.AppID,
-				AppName:  article.AppName,
-				AppIcon:  article.AppIcon,
+				Elastic: elasticsearch.Article{
+					ID:          article.ID,
+					Title:       article.Title,
+					Author:      article.Author,
+					Body:        article.Contents,
+					Feed:        article.FeedName,
+					FeedName:    article.FeedLabel,
+					Time:        article.Date.Unix(),
+					AppID:       article.AppID,
+					AppName:     article.AppName,
+					AppIcon:     article.AppIcon,
+					ArticleIcon: helpers.FindArticleImage(article.Contents),
+					// TitleMarked: "",
+					// Score:       0,
+				},
 			})
 			if err != nil {
 				return err

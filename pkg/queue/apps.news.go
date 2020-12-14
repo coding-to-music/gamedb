@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/rabbit-go"
+	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
@@ -92,17 +93,19 @@ func appNewsHandler(message *rabbit.Message) {
 		newsIDs = append(newsIDs, int64(v.GID))
 
 		m := AppsArticlesSearchMessage{
-			ID:          int64(v.GID),
-			Title:       v.Title,
-			Author:      v.Author,
-			Body:        v.Contents,
-			Feed:        v.FeedName,
-			FeedName:    v.Feedlabel,
-			Time:        v.Date,
-			AppID:       app.ID,
-			AppName:     app.Name,
-			AppIcon:     app.Icon,
-			ArticleIcon: news.ArticleIcon,
+			Elastic: elasticsearch.Article{
+				ID:          int64(v.GID),
+				Title:       v.Title,
+				Author:      v.Author,
+				Body:        v.Contents,
+				Feed:        v.FeedName,
+				FeedName:    v.Feedlabel,
+				Time:        v.Date,
+				AppID:       app.ID,
+				AppName:     app.Name,
+				AppIcon:     app.Icon,
+				ArticleIcon: news.ArticleIcon,
+			},
 		}
 
 		err = ProduceArticlesSearch(m)
