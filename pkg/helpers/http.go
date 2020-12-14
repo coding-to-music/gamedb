@@ -18,7 +18,7 @@ import (
 
 func IsBot(userAgent string) bool {
 
-	if userAgent == "" {
+	if userAgent == "" || strings.Contains(strings.ToLower(userAgent), strings.ToLower("bot")) {
 		return true
 	}
 
