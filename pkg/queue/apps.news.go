@@ -131,7 +131,7 @@ func appNewsHandler(message *rabbit.Message) {
 		return
 	}
 
-	// Clear cache
+	// Clear app cache
 	err = memcache.Delete(memcache.MemcacheApp(app.ID).Key)
 	if err != nil {
 		log.ErrS(err, payload.AppID)
@@ -139,7 +139,7 @@ func appNewsHandler(message *rabbit.Message) {
 		return
 	}
 
-	// Update in Elastic
+	// Update app in Elastic
 	err = ProduceAppSearch(nil, payload.AppID)
 	if err != nil {
 		log.ErrS(err, payload.AppID)
@@ -147,5 +147,6 @@ func appNewsHandler(message *rabbit.Message) {
 		return
 	}
 
+	//
 	message.Ack()
 }
