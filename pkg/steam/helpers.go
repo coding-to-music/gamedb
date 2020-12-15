@@ -94,8 +94,8 @@ func WithAgeCheckCookie(c *colly.Collector) {
 	jar, _ := cookiejar.New(nil)
 
 	jar.SetCookies(cookieURL, []*http.Cookie{
-		{Name: "birthtime", Value: "536457601", Path: "/", Domain: "store.steampowered.com"},
-		{Name: "lastagecheckage", Value: "1-January-1987", Path: "/", Domain: "store.steampowered.com"},
+		{Name: "birthtime", Value: "631152000", Path: "/", Domain: "store.steampowered.com"},
+		{Name: "lastagecheckage", Value: "1-January-1990", Path: "/", Domain: "store.steampowered.com"},
 		{Name: "mature_content", Value: "1", Path: "/", Domain: "store.steampowered.com"},
 		{Name: "wants_mature_content", Value: "1", Path: "/", Domain: "store.steampowered.com"},
 	})
