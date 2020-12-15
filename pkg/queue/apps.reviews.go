@@ -79,12 +79,15 @@ func appReviewsHandler(message *rabbit.Message) {
 	}
 
 	// Make template slice
+	var missingPlayers bool
+
 	for _, review := range respEnglish.Reviews {
 
 		var player mongo.Player
 		if val, ok := playersMap[int64(review.Author.SteamID)]; ok {
 			player = val
 		} else {
+
 			player.ID = int64(review.Author.SteamID)
 
 			err = ProducePlayer(PlayerMessage{ID: int64(review.Author.SteamID), SkipExistingPlayer: true})
@@ -92,6 +95,8 @@ func appReviewsHandler(message *rabbit.Message) {
 			if err != nil {
 				log.ErrS(err)
 			}
+
+			missingPlayers = true
 		}
 
 		// Remove extra new lines
@@ -106,6 +111,12 @@ func appReviewsHandler(message *rabbit.Message) {
 			VotesFunny: review.VotesFunny,
 			Vote:       review.VotedUp,
 		})
+	}
+
+	// Retry later to get queued players
+	if missingPlayers {
+		sendToRetryQueueWithDelay(message, time.Minute)
+		return
 	}
 
 	// Set score
