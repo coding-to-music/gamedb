@@ -10,12 +10,12 @@ import (
 
 func newFileCore(bin string) zapcore.Core {
 
-	err := os.MkdirAll("/tmp/gamedb/", os.ModePerm)
+	err := os.MkdirAll("/tmp/gamedb/logs/", os.ModePerm)
 	if err != nil {
 		panic(err)
 	}
 
-	f, err := os.OpenFile("/tmp/gamedb/"+bin+".log", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+	f, err := os.OpenFile("/tmp/gamedb/logs/"+bin+".log", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
 	if err != nil {
 		panic(err)
 	}

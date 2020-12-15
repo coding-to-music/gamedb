@@ -1,5 +1,10 @@
 #!/bin/bash
 
+mkdir -p /tmp/gamedb/bins
+mkdir -p /tmp/gamedb/pids
+mkdir -p /tmp/gamedb/logs
+
+#
 cd $STEAM_PATH || exit 1
 
 # Build and run
@@ -8,8 +13,7 @@ go build -o ./cmd/devenv/devenv ./cmd/devenv/*.go
 ID=$!
 
 # Launch lnav
-mkdir -p /tmp/gamedb
-lnav /tmp/gamedb
+lnav /tmp/gamedb/logs
 
 # Hide output as ctrl-c will cause the go process to already be killed
 kill $ID >/dev/null 2>&1

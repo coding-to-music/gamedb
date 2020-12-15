@@ -2,21 +2,25 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strconv"
 	"strings"
+	"sync"
+	"syscall"
 	"time"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"go.uber.org/zap"
 )
 
-const TMP = "/tmp/gamedb/"
+const TMP = "/tmp/gamedb"
 
 type processesConfig struct {
 	Processes []struct {
@@ -54,6 +58,14 @@ func main() {
 		return
 	}
 
+	// Check Dependencies
+	err = checkDependencies(cfg)
+	if err != nil {
+		log.ErrS(err)
+		return
+	}
+
+	// Run
 	stopAll(cfg)
 	startAll(cfg)
 
@@ -64,68 +76,114 @@ func main() {
 	stopAll(cfg)
 }
 
-func startAll(cfg processesConfig) {
+func startAll(cfg processesConfig, only ...string) {
 
-	log.InfoS("starting")
+	var wg sync.WaitGroup
+	var message []string
 
 	for _, process := range cfg.Processes {
-		if process.Enabled {
+
+		if process.Enabled && (len(only) == 0 || helpers.SliceHasString(process.Path, only)) {
+
+			wg.Add(1)
 			go func(process string) {
 
-				cmd := exec.Command("sh", "-c", `go build -o `+process+` -ldflags "-X main.version=$(git rev-parse --verify HEAD) -X main.commits=$(git rev-list --count master)" *.go`)
+				defer wg.Done()
+
+				binPath := TMP + `/bins/GDB_` + process
+
+				cmd := exec.Command("sh", "-c", `go build -o `+binPath+` -ldflags "-X main.version=$(git rev-parse --verify HEAD) -X main.commits=$(git rev-list --count master)" *.go`)
 				cmd.Dir = "./cmd/" + process
-				err := cmd.Run() // Blocks
+				err := cmd.Run() // Blocks while building
 				if err != nil {
-					log.ErrS(err)
+					if exiterr, ok := err.(*exec.ExitError); ok {
+						if status, ok := exiterr.Sys().(syscall.WaitStatus); ok {
+							if status.ExitStatus() == 2 {
+								log.ErrS("Count not build " + process)
+								return
+							}
+						}
+					}
+					log.ErrS(err, zap.String("process", process))
 					return
 				}
 
-				cmd = exec.Command("sh", "-c", "./"+process)
+				cmd = exec.Command("sh", "-c", binPath)
 				cmd.Dir = "./cmd/" + process
 				err = cmd.Start()
 				if err != nil {
-					log.ErrS(err)
+					log.ErrS(err, zap.String("process", process))
 					return
 				}
 
-				err = ioutil.WriteFile(TMP+process+".pid", []byte(strconv.Itoa(cmd.Process.Pid)), 0644)
+				err = ioutil.WriteFile(TMP+"/pids/"+process+".pid", []byte(strconv.Itoa(cmd.Process.Pid)), 0644)
 				if err != nil {
-					log.ErrS(err)
+					log.ErrS(err, zap.String("process", process))
 				}
+
+				message = append(message, process)
 
 			}(process.Path)
 		}
 	}
+
+	wg.Wait()
+
+	if len(message) > 0 {
+		log.InfoS("started: " + strings.Join(message, ", "))
+	}
 }
 
-func stopAll(cfg processesConfig) {
+func stopAll(cfg processesConfig, only ...string) {
 
-	log.InfoS("quitting")
+	var wg sync.WaitGroup
+	var message []string
 
 	for _, process := range cfg.Processes {
 
-		if process.Enabled {
+		if process.Enabled && (len(only) == 0 || helpers.SliceHasString(process.Path, only)) {
 
-			filename := TMP + process.Path + ".pid"
+			wg.Add(1)
+			go func(process string) {
 
-			b, err := ioutil.ReadFile(filename)
-			if err != nil {
-				continue
-			}
+				defer wg.Done()
 
-			exec.Command("sh", "-c", "kill", string(b))
+				filename := TMP + "/pids/" + process + ".pid"
 
-			err = os.Remove(filename)
-			if err != nil {
-				log.ErrS(err)
-				continue
-			}
+				b, err := ioutil.ReadFile(filename)
+				if err != nil {
+					return
+				}
+
+				err = exec.Command("kill", string(b)).Run()
+				if err != nil {
+					log.ErrS(err, zap.String("process", process))
+					return
+				}
+
+				err = os.Remove(filename)
+				if err != nil {
+					log.ErrS(err, zap.String("process", process))
+					return
+				}
+
+				message = append(message, process)
+
+			}(process.Path)
 		}
+	}
+
+	wg.Wait()
+
+	if len(message) > 0 {
+		log.InfoS("quited: " + strings.Join(message, ", "))
 	}
 }
 
 var lastUpdated time.Time
 
+// todo, update with a cooldown like searching in js
+// todo, only update needed bins if file in cmd has changed
 func watchFiles(cfg processesConfig) {
 
 	watcher, err := fsnotify.NewWatcher()
@@ -205,4 +263,47 @@ func getDirs() (p []string, err error) {
 	})
 
 	return p, err
+}
+
+//goland:noinspection GoErrorStringFormat
+func checkDependencies(cfg processesConfig) error {
+
+	// MySQL
+	if cfg.MySQL {
+		if !netcat("localhost", "3306") {
+			return errors.New("MySQL not running")
+		}
+	}
+
+	// Memcache
+	if cfg.Memcache {
+		if !netcat("localhost", "11211") {
+			return errors.New("Memcache not running")
+		}
+	}
+
+	// Rabbit
+	if cfg.Rabbit {
+		if !netcat("localhost", "15672") {
+			return errors.New("Rabbit not running")
+		}
+	}
+
+	// LNAV
+	if _, err := exec.LookPath("lnav"); err != nil {
+		return errors.New("LNAV not installed not running")
+	}
+
+	return nil
+}
+
+func netcat(host, port string) bool {
+
+	cmd := exec.Command("nc", "-z", host, port)
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		return false
+	}
+
+	return strings.Contains(string(out), "succeeded")
 }
