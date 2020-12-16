@@ -57,8 +57,11 @@ func (article Article) GetDate() string {
 }
 
 func (article Article) OutputForJSON() []interface{} {
+
+	var id = strconv.FormatInt(article.ID, 10)
+
 	return []interface{}{
-		article.ID,               // 0
+		id,                       // 0
 		article.Title,            // 1
 		article.GetBody(),        // 2
 		article.AppID,            // 3
