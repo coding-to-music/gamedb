@@ -22,6 +22,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/steam"
 	"github.com/go-chi/chi"
+	"github.com/gosimple/slug"
 	"github.com/mborgerson/GoTruncateHtml/truncatehtml"
 	"github.com/microcosm-cc/bluemonday"
 	"go.mongodb.org/mongo-driver/bson"
@@ -255,7 +256,7 @@ func homeNewsHandler(w http.ResponseWriter, r *http.Request) {
 		t.News = append(t.News, homeNewsItemTemplate{
 			Title:    v.Title,
 			Contents: template.HTML(contents),
-			Link:     "/news#" + strconv.FormatInt(v.ID, 10),
+			Link:     "/games/" + fmt.Sprint(v.AppID) + "/" + slug.Make(v.AppName) + "#news," + strconv.FormatInt(v.ID, 10),
 			Image:    template.HTMLAttr(appIDmap[v.AppID].GetHeaderImage()),
 		})
 
