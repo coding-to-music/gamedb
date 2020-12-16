@@ -23,15 +23,15 @@ func StatsRouter() http.Handler {
 
 	r := chi.NewRouter()
 	r.Get("/", statsSteamHandler)
-	r.Get("/gamedb", statsGameDBHandler)
-	r.Get("/client-players.json", statsClientPlayersHandler)
-	r.Get("/client-players2.json", statsClientPlayers2Handler)
-	r.Get("/release-dates.json", statsDatesHandler)
 	r.Get("/app-scores.json", statsScoresHandler)
 	r.Get("/app-types.json", statsAppTypesHandler)
-	r.Get("/player-levels.json", statsPlayerLevelsHandler)
+	r.Get("/client-players.json", statsClientPlayersHandler)
+	r.Get("/client-players2.json", statsClientPlayers2Handler)
+	r.Get("/gamedb", statsGameDBHandler)
 	r.Get("/player-countries.json", statsPlayerCountriesHandler)
+	r.Get("/player-levels.json", statsPlayerLevelsHandler)
 	r.Get("/player-update-dates.json", statsPlayerUpdateDatesHandler)
+	r.Get("/release-dates.json", statsDatesHandler)
 
 	return r
 }

@@ -36,12 +36,12 @@ func SettingsRouter() http.Handler {
 	r.Use(middleware.MiddlewareAuthCheck)
 
 	r.Get("/", settingsHandler)
-	r.Post("/update", settingsPostHandler)
-	r.Get("/events.json", settingsEventsAjaxHandler)
-	r.Get("/new-key", settingsNewKeyHandler)
 	r.Get("/donations.json", settingsDonationsAjaxHandler)
-	r.Get("/remove-provider/{provider:[a-z]+}", settingsRemoveProviderHandler)
+	r.Get("/events.json", settingsEventsAjaxHandler)
 	r.Get("/join-discord-server", joinDiscordServerHandler)
+	r.Get("/new-key", settingsNewKeyHandler)
+	r.Get("/remove-provider/{provider:[a-z]+}", settingsRemoveProviderHandler)
+	r.Post("/update", settingsPostHandler)
 
 	return r
 }

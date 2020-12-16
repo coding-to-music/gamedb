@@ -18,9 +18,9 @@ func APIRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", apiHandler)
 	r.Get("/gamedb", apiHandler)
-	r.Get("/steam", apiHandler)
 	r.Get("/gamedb.json", apiGamedbJSONHandler)
 	r.Get("/gamedb.yaml", apiGamedbYAMLHandler)
+	r.Get("/steam", apiHandler)
 	r.Get("/steam.json", apiSteamJSONHandler)
 	r.Get("/steam.yaml", apiSteamYAMLHandler)
 

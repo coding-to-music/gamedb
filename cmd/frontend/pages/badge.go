@@ -18,8 +18,8 @@ func BadgeRouter() http.Handler {
 
 	r := chi.NewRouter()
 	r.Get("/", badgeHandler)
-	r.Get("/{slug}", badgeHandler)
 	r.Get("/players.json", badgeAjaxHandler)
+	r.Get("/{slug}", badgeHandler)
 	return r
 }
 

@@ -31,8 +31,8 @@ const (
 func OauthRouter() http.Handler {
 
 	r := chi.NewRouter()
-	r.Get("/out/{provider:[a-z]+}", providerRedirect)
 	r.Get("/in/{provider:[a-z]+}", providerCallback)
+	r.Get("/out/{provider:[a-z]+}", providerRedirect)
 
 	return r
 }

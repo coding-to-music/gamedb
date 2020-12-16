@@ -15,8 +15,8 @@ func DonateRouter() http.Handler {
 
 	r := chi.NewRouter()
 	r.Get("/", donateHandler)
-	r.Get("/top.json", topDonateHandler)
 	r.Get("/latest.json", latestDonateHandler)
+	r.Get("/top.json", topDonateHandler)
 	return r
 }
 

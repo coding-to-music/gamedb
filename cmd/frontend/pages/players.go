@@ -26,8 +26,8 @@ func PlayersRouter() http.Handler {
 	r.Get("/", playersHandler)
 	r.Get("/add", playerAddHandler)
 	r.Post("/add", playerAddHandler)
-	r.Get("/states.json", statesAjaxHandler)
 	r.Get("/players.json", playersAjaxHandler)
+	r.Get("/states.json", statesAjaxHandler)
 
 	return r
 }

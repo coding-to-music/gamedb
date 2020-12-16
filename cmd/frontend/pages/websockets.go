@@ -14,8 +14,10 @@ import (
 var upgrader = websocket.Upgrader{ReadBufferSize: 1024, WriteBufferSize: 1024}
 
 func WebsocketsRouter() http.Handler {
+
 	r := chi.NewRouter()
 	r.Get("/{id:[a-z-]+}", websocketsHandler)
+
 	return r
 }
 

@@ -8,8 +8,10 @@ import (
 )
 
 func HealthCheckRouter() http.Handler {
+
 	r := chi.NewRouter()
 	r.Get("/", healthCheckHandler)
+
 	return r
 }
 

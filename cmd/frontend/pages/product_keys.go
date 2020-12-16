@@ -19,6 +19,7 @@ func ProductKeysRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", productKeysHandler)
 	r.Get("/product-keys.json", productKeysAjaxHandler)
+
 	return r
 }
 

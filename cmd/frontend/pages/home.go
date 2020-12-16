@@ -29,12 +29,13 @@ import (
 )
 
 func HomeRouter() http.Handler {
+
 	r := chi.NewRouter()
-	// r.Get("/sales/{sort}.json", homeSalesHandler)
-	r.Get("/players/{sort}.json", homePlayersHandler)
-	r.Get("/updated-players.json", homeUpdatedPlayersHandler)
-	r.Get("/tweets.json", homeTweetsHandler)
 	r.Get("/news.html", homeNewsHandler)
+	r.Get("/players/{sort}.json", homePlayersHandler)
+	// r.Get("/sales/{sort}.json", homeSalesHandler)
+	r.Get("/tweets.json", homeTweetsHandler)
+	r.Get("/updated-players.json", homeUpdatedPlayersHandler)
 	return r
 }
 

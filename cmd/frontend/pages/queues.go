@@ -23,9 +23,11 @@ var queuePageCharts = []string{
 }
 
 func QueuesRouter() http.Handler {
+
 	r := chi.NewRouter()
 	r.Get("/", queuesHandler)
 	r.Get("/queues.json", queuesAjaxHandler)
+
 	return r
 }
 

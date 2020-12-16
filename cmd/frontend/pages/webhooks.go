@@ -27,11 +27,12 @@ import (
 func WebhooksRouter() http.Handler {
 
 	r := chi.NewRouter()
-	r.Post("/patreon", patreonWebhookPostHandler)
 	r.Post("/github", gitHubWebhookPostHandler)
-	r.Post("/twitter", twitterZapierWebhookPostHandler)
-	r.Post("/sendgrid", sendgridWebhookPostHandler)
 	r.Post("/mailjet", mailjetWebhookPostHandler)
+	r.Post("/patreon", patreonWebhookPostHandler)
+	r.Post("/sendgrid", sendgridWebhookPostHandler)
+	r.Post("/twitter", twitterZapierWebhookPostHandler)
+
 	return r
 }
 

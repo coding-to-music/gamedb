@@ -21,8 +21,8 @@ func trendingRouter() http.Handler {
 
 	r := chi.NewRouter()
 	r.Get("/", trendingHandler)
-	r.Get("/trending.json", trendingAppsAjaxHandler)
 	r.Get("/charts.json", trendingChartsAjaxHandler)
+	r.Get("/trending.json", trendingAppsAjaxHandler)
 	return r
 }
 

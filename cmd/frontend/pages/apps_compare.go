@@ -25,14 +25,14 @@ func gamesCompareRouter() http.Handler {
 
 	r := chi.NewRouter()
 	r.Get("/", appsCompareHandler)
-	r.Get("/search.json", compareSearchAjaxHandler)
 	r.Get("/apps.json", compareAppsAjaxHandler)
+	r.Get("/search.json", compareSearchAjaxHandler)
 	r.Get("/{id}", appsCompareHandler)
+	r.Get("/{id}/members.json", appsCompareGroupsHandler)
 	r.Get("/{id}/players.json", appsComparePlayersAjaxHandler(true))
 	r.Get("/{id}/players2.json", appsComparePlayersAjaxHandler(false))
-	r.Get("/{id}/members.json", appsCompareGroupsHandler)
-	r.Get("/{id}/reviews.json", appsCompareScoresHandler)
 	r.Get("/{id}/prices.json", appsComparePricesHandler)
+	r.Get("/{id}/reviews.json", appsCompareScoresHandler)
 	r.Get("/{id}/wishlists.json", appsCompareWishlistHandler)
 	return r
 }

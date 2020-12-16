@@ -22,6 +22,7 @@ func salesRouter() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", salesHandler)
 	r.Get("/sales.json", salesAjaxHandler)
+
 	return r
 }
 

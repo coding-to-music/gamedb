@@ -38,19 +38,19 @@ func AdminRouter() http.Handler {
 	r.Use(middleware.MiddlewareAdminCheck(Error404Handler))
 
 	r.Get("/", adminHandler)
+	r.Get("/consumers", adminConsumersHandler)
+	r.Get("/consumers.json", adminConsumersAjaxHandler)
+	r.Get("/queues", adminQueuesHandler)
+	r.Get("/settings", adminSettingsHandler)
 	r.Get("/stats", adminStatsHandler)
 	r.Get("/tasks", adminTasksHandler)
 	r.Get("/users", adminUsersHandler)
 	r.Get("/users.json", adminUsersAjaxHandler)
-	r.Get("/consumers", adminConsumersHandler)
-	r.Get("/consumers.json", adminConsumersAjaxHandler)
 	r.Get("/webhooks", adminWebhooksHandler)
 	r.Get("/webhooks.json", adminWebhooksAjaxHandler)
-	r.Get("/queues", adminQueuesHandler)
-	r.Post("/queues", adminQueuesHandler)
-	r.Get("/settings", adminSettingsHandler)
-	r.Post("/settings", adminSettingsHandler)
 	r.Get("/websockets", adminWebsocketsHandler)
+	r.Post("/queues", adminQueuesHandler)
+	r.Post("/settings", adminSettingsHandler)
 	return r
 }
 

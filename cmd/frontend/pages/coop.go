@@ -26,9 +26,9 @@ func coopRouter() http.Handler {
 
 	r := chi.NewRouter()
 	r.Get("/", coopHandler)
-	r.Get("/search.json", coopSearchAjaxHandler)
-	r.Get("/players.json", coopPlayersAjaxHandler)
 	r.Get("/games.json", coopGames)
+	r.Get("/players.json", coopPlayersAjaxHandler)
+	r.Get("/search.json", coopSearchAjaxHandler)
 	r.Get("/{id}", coopHandler)
 	return r
 }

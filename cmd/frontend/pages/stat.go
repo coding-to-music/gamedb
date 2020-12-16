@@ -23,8 +23,8 @@ func StatRouter() http.Handler {
 
 	r := chi.NewRouter()
 	r.Get("/", statHandler)
-	r.Get("/time.json", statTimeAjaxHandler)
 	r.Get("/apps.json", statAppsAjaxHandler)
+	r.Get("/time.json", statTimeAjaxHandler)
 	r.Get("/{slug}", statHandler)
 
 	return r
