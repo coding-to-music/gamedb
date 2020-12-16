@@ -1,6 +1,7 @@
 package queue
 
 import (
+	"context"
 	"net/http"
 	"path"
 	"regexp"
@@ -18,16 +19,16 @@ import (
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
+	"github.com/gamedb/gamedb/pkg/ratelimit"
 	"github.com/gamedb/gamedb/pkg/steam"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/gocolly/colly/v2"
 	influx "github.com/influxdata/influxdb1-client"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.uber.org/ratelimit"
 	"go.uber.org/zap"
 )
 
-var groupScrapeRateLimit = ratelimit.New(1, ratelimit.WithoutSlack)
+var groupScrapeRateLimit = ratelimit.New(time.Second, 1)
 
 type GroupMessage struct {
 	ID        string  `json:"id"`
@@ -256,7 +257,10 @@ func updateGameGroup(id string, group *mongo.Group) (foundNumbers bool, err erro
 
 	group.Abbr = "" // Game groups don't have abbr's
 
-	groupScrapeRateLimit.Take()
+	err = groupScrapeRateLimit.GetLimiter("groups").Wait(context.TODO())
+	if err != nil {
+		return false, err
+	}
 
 	c := colly.NewCollector(
 		colly.AllowURLRevisit(),
@@ -387,7 +391,10 @@ func updateRegularGroup(id string, group *mongo.Group) (foundMembers bool, err e
 		return true, nil
 	}
 
-	groupScrapeRateLimit.Take()
+	err = groupScrapeRateLimit.GetLimiter("groups").Wait(context.TODO())
+	if err != nil {
+		return false, err
+	}
 
 	group.AppID = 0
 
@@ -574,7 +581,10 @@ func sendGroupWebsocket(id string) (err error) {
 
 func getGroupType(id string) (groupType string, groupURL string, err error) {
 
-	groupScrapeRateLimit.Take()
+	err = groupScrapeRateLimit.GetLimiter("groups").Wait(context.TODO())
+	if err != nil {
+		return "", "", err
+	}
 
 	client := &http.Client{
 		Timeout: 10 * time.Second,

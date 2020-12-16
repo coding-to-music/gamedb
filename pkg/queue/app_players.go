@@ -180,7 +180,8 @@ func getAppTwitchStreamers(twitchID int) (viewers int, err error) {
 
 func getAppOnlinePlayers(appID int) (count int, err error) {
 
-	count, err = steam.GetSteamUnlimited().GetNumberOfCurrentPlayers(appID)
+	// Used to use unlimited Steam
+	count, err = steam.GetSteam().GetNumberOfCurrentPlayers(appID)
 	err = steam.AllowSteamCodes(err, 404)
 	return count, err
 }

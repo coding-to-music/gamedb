@@ -1,6 +1,7 @@
 package queue
 
 import (
+	"context"
 	"net/url"
 	"strconv"
 	"strings"
@@ -11,8 +12,8 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/ratelimit"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.uber.org/ratelimit"
 	"go.uber.org/zap"
 )
 
@@ -25,7 +26,7 @@ func (m AppSteamspyMessage) Queue() rabbit.QueueName {
 }
 
 // https://steamspy.com/api.php
-var steamspyLimiter = ratelimit.New(1, ratelimit.WithoutSlack)
+var steamspyLimiter = ratelimit.New(time.Second, 1)
 
 func appSteamspyHandler(message *rabbit.Message) {
 
@@ -45,7 +46,13 @@ func appSteamspyHandler(message *rabbit.Message) {
 
 	u := "https://steamspy.com/api.php?" + query.Encode()
 
-	steamspyLimiter.Take()
+	err = steamspyLimiter.GetLimiter("ss").Wait(context.TODO())
+	if err != nil {
+		log.ErrS(err)
+		sendToRetryQueue(message)
+		return
+	}
+
 	body, statusCode, err := helpers.Get(u, 0, nil)
 	if err != nil {
 
