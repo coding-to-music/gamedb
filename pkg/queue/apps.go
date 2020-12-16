@@ -256,6 +256,7 @@ func appHandler(message *rabbit.Message) {
 		AppTwitchMessage{AppID: app.ID},
 		AppReviewsMessage{AppID: app.ID},
 		AppItemsMessage{AppID: app.ID, OldDigect: app.ItemsDigest},
+		AppSteamspyMessage{AppID: app.ID},
 	}
 
 	if app.GroupID == "" {
