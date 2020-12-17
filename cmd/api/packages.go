@@ -101,7 +101,7 @@ func (s Server) GetPackages(w http.ResponseWriter, r *http.Request, params gener
 			return 500, err
 		}
 
-		total, err := mongo.CountDocuments(mongo.CollectionPlayers, filter, 0)
+		total, err := mongo.CountDocuments(mongo.CollectionPackages, filter, 0)
 		if err != nil {
 			log.ErrS(err)
 		}
