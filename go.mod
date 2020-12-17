@@ -11,7 +11,7 @@ require (
 	github.com/Jleagle/patreon-go v0.0.0-20201006180837-366bfaa6710a
 	github.com/Jleagle/rabbit-go v0.0.0-20200831220529-13e96c303e94
 	github.com/Jleagle/session-go v0.0.0-20190515070633-3c8712426233
-	github.com/Jleagle/sitemap-go v0.0.0-20190405195207-2bdddbb3bd50
+	github.com/Jleagle/sitemap-go v0.0.0-20201217201247-75f3818f336a
 	github.com/Jleagle/steam-go v0.0.0-20201203202638-01820f681d7a
 	github.com/Jleagle/unmarshal-go v0.0.0-20200217225147-fd7db71d9ac0
 	github.com/Philipp15b/go-steam v1.0.1-0.20190816133340-b04c5a83c1c0

@@ -35,10 +35,12 @@ func SiteMapIndexHandler(w http.ResponseWriter, r *http.Request) {
 		sm.AddSitemap(config.C.GameDBDomain+v, time.Time{})
 	}
 
-	_, err := sm.Write(w)
+	s, err := sm.String()
 	if err != nil {
 		log.ErrS(err)
 	}
+
+	returnXML(w, r, s)
 }
 
 //noinspection GoUnusedParameter
@@ -88,10 +90,12 @@ func SiteMapPagesHandler(w http.ResponseWriter, r *http.Request) {
 		sm.AddLocation(config.C.GameDBDomain+v, time.Time{}, sitemap.FrequencyHourly, 1)
 	}
 
-	_, err := sm.Write(w)
+	s, err := sm.String()
 	if err != nil {
 		log.ErrS(err)
 	}
+
+	returnXML(w, r, s)
 }
 
 func SiteMapGamesByPlayersHandler(w http.ResponseWriter, r *http.Request) {
@@ -107,10 +111,12 @@ func SiteMapGamesByPlayersHandler(w http.ResponseWriter, r *http.Request) {
 		sm.AddLocation(config.C.GameDBDomain+app.GetPath(), app.UpdatedAt, sitemap.FrequencyWeekly, 0.9)
 	}
 
-	_, err = sm.Write(w)
+	s, err := sm.String()
 	if err != nil {
 		log.ErrS(err)
 	}
+
+	returnXML(w, r, s)
 }
 
 func SiteMapGamesByScoreHandler(w http.ResponseWriter, r *http.Request) {
@@ -126,10 +132,12 @@ func SiteMapGamesByScoreHandler(w http.ResponseWriter, r *http.Request) {
 		sm.AddLocation(config.C.GameDBDomain+app.GetPath(), app.UpdatedAt, sitemap.FrequencyWeekly, 0.9)
 	}
 
-	_, err = sm.Write(w)
+	s, err := sm.String()
 	if err != nil {
 		log.ErrS(err)
 	}
+
+	returnXML(w, r, s)
 }
 
 func SiteMapGamesUpcomingHandler(w http.ResponseWriter, r *http.Request) {
@@ -145,10 +153,12 @@ func SiteMapGamesUpcomingHandler(w http.ResponseWriter, r *http.Request) {
 		sm.AddLocation(config.C.GameDBDomain+app.GetPath(), app.UpdatedAt, sitemap.FrequencyWeekly, 0.9)
 	}
 
-	_, err = sm.Write(w)
+	s, err := sm.String()
 	if err != nil {
 		log.ErrS(err)
 	}
+
+	returnXML(w, r, s)
 }
 
 func SiteMapGamesNewHandler(w http.ResponseWriter, r *http.Request) {
@@ -169,10 +179,12 @@ func SiteMapGamesNewHandler(w http.ResponseWriter, r *http.Request) {
 		sm.AddLocation(config.C.GameDBDomain+app.GetPath(), app.UpdatedAt, sitemap.FrequencyWeekly, 0.9)
 	}
 
-	_, err = sm.Write(w)
+	s, err := sm.String()
 	if err != nil {
 		log.ErrS(err)
 	}
+
+	returnXML(w, r, s)
 }
 
 //noinspection GoUnusedParameter
@@ -189,10 +201,12 @@ func SiteMapPlayersByLevel(w http.ResponseWriter, r *http.Request) {
 		sm.AddLocation(config.C.GameDBDomain+player.GetPath(), player.UpdatedAt, sitemap.FrequencyWeekly, 0.9)
 	}
 
-	_, err = sm.Write(w)
+	s, err := sm.String()
 	if err != nil {
 		log.ErrS(err)
 	}
+
+	returnXML(w, r, s)
 }
 
 //noinspection GoUnusedParameter
@@ -209,10 +223,12 @@ func SiteMapPlayersByGamesCount(w http.ResponseWriter, r *http.Request) {
 		sm.AddLocation(config.C.GameDBDomain+player.GetPath(), player.UpdatedAt, sitemap.FrequencyWeekly, 0.9)
 	}
 
-	_, err = sm.Write(w)
+	s, err := sm.String()
 	if err != nil {
 		log.ErrS(err)
 	}
+
+	returnXML(w, r, s)
 }
 
 //noinspection GoUnusedParameter
@@ -247,10 +263,12 @@ func SiteMapGroups(w http.ResponseWriter, r *http.Request) {
 		sm.AddLocation(config.C.GameDBDomain+p, v.GetUpdatedAt().AsTime(), sitemap.FrequencyWeekly, 0.9)
 	}
 
-	_, err = sm.Write(w)
+	s, err := sm.String()
 	if err != nil {
 		log.ErrS(err)
 	}
+
+	returnXML(w, r, s)
 }
 
 func SiteMapBadges(w http.ResponseWriter, r *http.Request) {
@@ -264,8 +282,10 @@ func SiteMapBadges(w http.ResponseWriter, r *http.Request) {
 		sm.AddLocation(config.C.GameDBDomain+badge.GetPath(false), time.Time{}, sitemap.FrequencyWeekly, 0.9)
 	}
 
-	_, err := sm.Write(w)
+	s, err := sm.String()
 	if err != nil {
 		log.ErrS(err)
 	}
+
+	returnXML(w, r, s)
 }

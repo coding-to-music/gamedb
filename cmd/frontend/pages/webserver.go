@@ -3,6 +3,7 @@ package pages
 import (
 	"bytes"
 	"encoding/json"
+	"encoding/xml"
 	"errors"
 	"html"
 	"html/template"
@@ -119,6 +120,32 @@ func returnYAML(w http.ResponseWriter, r *http.Request, i interface{}) {
 		b = v
 	default:
 		b, err = yaml.Marshal(i)
+		if err != nil {
+			log.ErrS(err)
+			return
+		}
+	}
+
+	_, err = w.Write(b)
+	if err != nil && !strings.Contains(err.Error(), "write: broken pipe") {
+		log.ErrS(err)
+	}
+}
+
+func returnXML(w http.ResponseWriter, r *http.Request, i interface{}) {
+
+	setHeaders(w, "application/xml")
+
+	var err error
+	var b []byte
+
+	switch v := i.(type) {
+	case string:
+		b = []byte(v)
+	case []byte:
+		b = v
+	default:
+		b, err = xml.Marshal(i)
 		if err != nil {
 			log.ErrS(err)
 			return

@@ -81,6 +81,8 @@ github.com/Jleagle/session-go v0.0.0-20190515070633-3c8712426233 h1:a51IBJjhY/73
 github.com/Jleagle/session-go v0.0.0-20190515070633-3c8712426233/go.mod h1:atNOr9kQFyr7Zep/wGTj4t3fJIzNJ49DNURYEF7NQhQ=
 github.com/Jleagle/sitemap-go v0.0.0-20190405195207-2bdddbb3bd50 h1:QkHMYi6HhE8HxBFROlbltZaAKRHU5cQ7UPsuT7M64ZY=
 github.com/Jleagle/sitemap-go v0.0.0-20190405195207-2bdddbb3bd50/go.mod h1:6XUIBoc/yO+w//k1YvVfZY6bsiG4Z/7l31B54EeSh/c=
+github.com/Jleagle/sitemap-go v0.0.0-20201217201247-75f3818f336a h1:GHVJ93ZGe1qPp2VwCqGh+N92Stt3VhA1mqM9aomi5qk=
+github.com/Jleagle/sitemap-go v0.0.0-20201217201247-75f3818f336a/go.mod h1:6XUIBoc/yO+w//k1YvVfZY6bsiG4Z/7l31B54EeSh/c=
 github.com/Jleagle/steam-go v0.0.0-20201203202638-01820f681d7a h1:rNSn7a3RhbssbHGVkhp/w2x8zVfFipjCqInKomuIAF0=
 github.com/Jleagle/steam-go v0.0.0-20201203202638-01820f681d7a/go.mod h1:u2NS0l9MOJZ7dYDxv4OWfVFmevvtx+ZqUGMh0j6QrcA=
 github.com/Jleagle/unmarshal-go v0.0.0-20200217225147-fd7db71d9ac0 h1:DYxBI3XK1rB2S6HcBN37F6UpuoM1s7PXniT5rVwn2WU=
