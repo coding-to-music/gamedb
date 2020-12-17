@@ -19,7 +19,7 @@ type AppsServer struct {
 	generated.UnimplementedAppsServiceServer
 }
 
-func (a AppsServer) Apps(ctx context.Context, request *generated.ListAppsRequest) (response *generated.AppsMongoResponse, err error) {
+func (a AppsServer) List(ctx context.Context, request *generated.ListAppsRequest) (response *generated.AppsMongoResponse, err error) {
 
 	filter := bson.D{}
 
