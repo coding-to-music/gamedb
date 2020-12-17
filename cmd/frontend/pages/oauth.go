@@ -449,7 +449,9 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 		player, err := mongo.GetPlayer(i)
 		if err != nil {
 			err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
-			log.ErrS(err)
+			if err != nil {
+				log.ErrS(err)
+			}
 			break
 		}
 
@@ -466,15 +468,13 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 			discord, err := discordgo.New("Bot " + config.C.DiscordOAuthBotToken)
 			if err != nil {
 				log.ErrS(err)
-				session.SetFlash(r, session.SessionBad, "Something went wrong (1113)")
-				return
+				break
 			}
 
 			err = discord.GuildMemberNickname(helpers.GuildID, discordProvider.ID, player.GetName())
 			if err != nil {
 				log.ErrS(err)
-				session.SetFlash(r, session.SessionBad, "Something went wrong (1114)")
-				return
+				break
 			}
 		}
 
@@ -484,32 +484,31 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 		steamProvider, err := mysql.GetUserProviderByUserID(oauth.ProviderSteam, user.ID)
 		if err == nil {
 
-			i, err:= strconv.ParseInt(steamProvider.ID, 10, 64)
+			i, err := strconv.ParseInt(steamProvider.ID, 10, 64)
 			if err != nil {
 				log.ErrS(err)
-				session.SetFlash(r, session.SessionBad, "Something went wrong (1115)")
-				return
+				break
 			}
 
 			player, err := mongo.GetPlayer(i)
 			if err != nil {
 				err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
-				log.ErrS(err)
+				if err != nil {
+					log.ErrS(err)
+				}
 				break
 			}
 
 			discord, err := discordgo.New("Bot " + config.C.DiscordOAuthBotToken)
 			if err != nil {
 				log.ErrS(err)
-				session.SetFlash(r, session.SessionBad, "Something went wrong (1116)")
-				return
+				break
 			}
 
 			err = discord.GuildMemberNickname(helpers.GuildID, resp.ID, player.GetName())
 			if err != nil {
 				log.ErrS(err)
-				session.SetFlash(r, session.SessionBad, "Something went wrong (1117)")
-				return
+				break
 			}
 		}
 	}
