@@ -189,13 +189,6 @@ func main() {
 	r.Get("/upcoming", redirectHandler("/games/upcoming"))
 	r.Get("/wishlists", redirectHandler("/games/wishlists"))
 
-	// Stats Redirects
-	// r.Get("/tags", redirectHandler("/stats/tags"))
-	// r.Get("/genres", redirectHandler("/stats/genres"))
-	// r.Get("/categories", redirectHandler("/stats/categories"))
-	// r.Get("/publishers", redirectHandler("/stats/publishers"))
-	// r.Get("/developers", redirectHandler("/stats/developers"))
-
 	// 404
 	r.NotFound(pages.Error404Handler)
 
