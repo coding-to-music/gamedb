@@ -10,12 +10,13 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"strings"
+
 	"github.com/deepmap/oapi-codegen/pkg/runtime"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/go-chi/chi"
 	"github.com/pkg/errors"
-	"net/http"
-	"strings"
 )
 
 // AppSchema defines model for app-schema.
@@ -58,6 +59,25 @@ type ArticleSchema struct {
 	Url       string `json:"url"`
 }
 
+// GroupSchema defines model for group-schema.
+type GroupSchema struct {
+	Abbreviation  string  `json:"abbreviation"`
+	AppId         int32   `json:"app_id"`
+	Error         string  `json:"error"`
+	Headline      string  `json:"headline"`
+	Icon          string  `json:"icon"`
+	Id            string  `json:"id"`
+	Members       int32   `json:"members"`
+	MembersInChat int32   `json:"members_in_chat"`
+	MembersInGame int32   `json:"members_in_game"`
+	MembersOnline int32   `json:"members_online"`
+	Name          string  `json:"name"`
+	Primaries     int32   `json:"primaries"`
+	Trending      float32 `json:"trending"`
+	Type          string  `json:"type"`
+	Url           string  `json:"url"`
+}
+
 // MessageSchema defines model for message-schema.
 type MessageSchema struct {
 	Message string `json:"message"`
@@ -65,14 +85,30 @@ type MessageSchema struct {
 
 // PackageSchema defines model for package-schema.
 type PackageSchema struct {
-	Id              int      `json:"id"`
-	MetacriticScore *int32   `json:"metacritic_score,omitempty"`
-	Name            string   `json:"name"`
-	PlayersWeekMax  *int     `json:"players_week_max,omitempty"`
-	ReleaseDate     *int64   `json:"release_date,omitempty"`
-	ReviewsNegative *int     `json:"reviews_negative,omitempty"`
-	ReviewsPositive *int     `json:"reviews_positive,omitempty"`
-	ReviewsScore    *float64 `json:"reviews_score,omitempty"`
+	Apps             []int32              `json:"apps"`
+	AppsCount        int32                `json:"apps_count"`
+	BillingType      string               `json:"billing_type"`
+	Bundle           []int32              `json:"bundle"`
+	ChangeId         int32                `json:"change_id"`
+	ChangeNumberDate int64                `json:"change_number_date"`
+	ComingSoon       bool                 `json:"coming_soon"`
+	DepotIds         []int32              `json:"depot_ids"`
+	Icon             string               `json:"icon"`
+	Id               int32                `json:"id"`
+	ImageLogo        string               `json:"image_logo"`
+	ImagePage        string               `json:"image_page"`
+	LicenseType      string               `json:"license_type"`
+	Name             string               `json:"name"`
+	Platforms        []string             `json:"platforms"`
+	Prices           PackageSchema_Prices `json:"prices"`
+	ReleaseDate      string               `json:"release_date"`
+	ReleaseDateUnix  int64                `json:"release_date_unix"`
+	Status           string               `json:"status"`
+}
+
+// PackageSchema_Prices defines model for PackageSchema.Prices.
+type PackageSchema_Prices struct {
+	AdditionalProperties map[string]ProductPriceSchema `json:"-"`
 }
 
 // PaginationSchema defines model for pagination-schema.
@@ -145,6 +181,12 @@ type AppsResponse struct {
 // ArticlesResponse defines model for articles-response.
 type ArticlesResponse struct {
 	Articles   []ArticleSchema  `json:"articles"`
+	Pagination PaginationSchema `json:"pagination"`
+}
+
+// GroupsResponse defines model for groups-response.
+type GroupsResponse struct {
+	Groups     []GroupSchema    `json:"groups"`
 	Pagination PaginationSchema `json:"pagination"`
 }
 
@@ -265,6 +307,59 @@ func (a *AppSchema_Prices) UnmarshalJSON(b []byte) error {
 
 // Override default JSON handling for AppSchema_Prices to handle AdditionalProperties
 func (a AppSchema_Prices) MarshalJSON() ([]byte, error) {
+	var err error
+	object := make(map[string]json.RawMessage)
+
+	for fieldName, field := range a.AdditionalProperties {
+		object[fieldName], err = json.Marshal(field)
+		if err != nil {
+			return nil, errors.Wrap(err, fmt.Sprintf("error marshaling '%s'", fieldName))
+		}
+	}
+	return json.Marshal(object)
+}
+
+// Getter for additional properties for PackageSchema_Prices. Returns the specified
+// element and whether it was found
+func (a PackageSchema_Prices) Get(fieldName string) (value ProductPriceSchema, found bool) {
+	if a.AdditionalProperties != nil {
+		value, found = a.AdditionalProperties[fieldName]
+	}
+	return
+}
+
+// Setter for additional properties for PackageSchema_Prices
+func (a *PackageSchema_Prices) Set(fieldName string, value ProductPriceSchema) {
+	if a.AdditionalProperties == nil {
+		a.AdditionalProperties = make(map[string]ProductPriceSchema)
+	}
+	a.AdditionalProperties[fieldName] = value
+}
+
+// Override default JSON handling for PackageSchema_Prices to handle AdditionalProperties
+func (a *PackageSchema_Prices) UnmarshalJSON(b []byte) error {
+	object := make(map[string]json.RawMessage)
+	err := json.Unmarshal(b, &object)
+	if err != nil {
+		return err
+	}
+
+	if len(object) != 0 {
+		a.AdditionalProperties = make(map[string]ProductPriceSchema)
+		for fieldName, fieldBuf := range object {
+			var fieldVal ProductPriceSchema
+			err := json.Unmarshal(fieldBuf, &fieldVal)
+			if err != nil {
+				return errors.Wrap(err, fmt.Sprintf("error unmarshaling field %s", fieldName))
+			}
+			a.AdditionalProperties[fieldName] = fieldVal
+		}
+	}
+	return nil
+}
+
+// Override default JSON handling for PackageSchema_Prices to handle AdditionalProperties
+func (a PackageSchema_Prices) MarshalJSON() ([]byte, error) {
 	var err error
 	object := make(map[string]json.RawMessage)
 
@@ -881,33 +976,37 @@ func Handler(si ServerInterface) http.Handler {
 
 // HandlerFromMux creates http.Handler with routing matching OpenAPI spec based on the provided mux.
 func HandlerFromMux(si ServerInterface, r chi.Router) http.Handler {
+	return HandlerFromMuxWithBaseURL(si, r, "")
+}
+
+func HandlerFromMuxWithBaseURL(si ServerInterface, r chi.Router, baseURL string) http.Handler {
 	wrapper := ServerInterfaceWrapper{
 		Handler: si,
 	}
 
 	r.Group(func(r chi.Router) {
-		r.Get("/articles", wrapper.GetArticles)
+		r.Get(baseURL+"/articles", wrapper.GetArticles)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get("/games", wrapper.GetGames)
+		r.Get(baseURL+"/games", wrapper.GetGames)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get("/games/{id}", wrapper.GetGamesId)
+		r.Get(baseURL+"/games/{id}", wrapper.GetGamesId)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get("/groups", wrapper.GetGroups)
+		r.Get(baseURL+"/groups", wrapper.GetGroups)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get("/packages", wrapper.GetPackages)
+		r.Get(baseURL+"/packages", wrapper.GetPackages)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get("/players", wrapper.GetPlayers)
+		r.Get(baseURL+"/players", wrapper.GetPlayers)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get("/players/{id}", wrapper.GetPlayersId)
+		r.Get(baseURL+"/players/{id}", wrapper.GetPlayersId)
 	})
 	r.Group(func(r chi.Router) {
-		r.Post("/players/{id}", wrapper.PostPlayersId)
+		r.Post(baseURL+"/players/{id}", wrapper.PostPlayersId)
 	})
 
 	return r
@@ -916,37 +1015,42 @@ func HandlerFromMux(si ServerInterface, r chi.Router) http.Handler {
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
-	"AP//5ImQiSQwAAA=",
+	"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",
+	"AAD//wnWuLpINwAA",
 }
 
 // GetSwagger returns the Swagger specification corresponding to the generated code

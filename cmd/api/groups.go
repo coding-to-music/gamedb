@@ -2,7 +2,6 @@ package main
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/gamedb/gamedb/cmd/api/generated"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -29,18 +28,12 @@ func (s Server) GetGroups(w http.ResponseWriter, r *http.Request, params generat
 			switch *params.Sort {
 			case "id":
 				sort = "_id"
-			case "level":
-				sort = "level"
-			case "badges":
-				sort = "badges_count"
-			case "games":
-				sort = "games_count"
-			case "time":
-				sort = "play_time"
-			case "friends":
-				sort = "friends_count"
-			case "comments":
-				sort = "comments_count"
+			case "members":
+				sort = "members"
+			case "trending":
+				sort = "trending"
+			case "primaries":
+				sort = "primaries"
 			default:
 				sort = "_id"
 			}
@@ -60,57 +53,63 @@ func (s Server) GetGroups(w http.ResponseWriter, r *http.Request, params generat
 
 		filter := bson.D{{}}
 
-		if params.Continent != nil {
-			filter = append(filter, bson.E{Key: "continent_code", Value: *params.Continent})
+		if params.Ids != nil {
+			filter = append(filter, bson.E{Key: "_id", Value: bson.M{"$in": *params.Ids}})
 		}
 
-		if params.Country != nil {
-			filter = append(filter, bson.E{Key: "country_code", Value: *params.Country})
+		if params.Type != nil {
+			filter = append(filter, bson.E{Key: "type", Value: *params.Type})
 		}
 
-		players, err := mongo.GetPlayers(offset, limit, bson.D{{sort, order}}, filter, bson.M{"_id": 1,
-			"persona_name":   1,
-			"avatar":         1,
-			"continent_code": 1,
-			"country_code":   1,
-			"status_code":    1,
-			"badges_count":   1,
-			"comments_count": 1,
-			"friends_count":  1,
-			"games_count":    1,
-			"groups_count":   1,
-			"level":          1,
-			"play_time":      1})
+		projection := bson.M{
+			"_id":             1,
+			"name":            1,
+			"abbreviation":    1,
+			"url":             1,
+			"app_id":          1,
+			"headline":        1,
+			"icon":            1,
+			"trending":        1,
+			"members":         1,
+			"members_in_chat": 1,
+			"members_in_game": 1,
+			"members_online":  1,
+			"error":           1,
+			"type":            1,
+			"primaries":       1,
+		}
+
+		groups, err := mongo.GetGroups(offset, limit, bson.D{{sort, order}}, filter, projection)
 		if err != nil {
 			return 500, err
 		}
 
-		total, err := mongo.CountDocuments(mongo.CollectionPlayers, filter, 0)
+		total, err := mongo.CountDocuments(mongo.CollectionGroups, filter, 0)
 		if err != nil {
 			log.ErrS(err)
 		}
 
-		result := generated.PlayersResponse{}
+		result := generated.GroupsResponse{}
 		result.Pagination.Fill(offset, limit, total)
 
-		for _, player := range players {
+		for _, group := range groups {
 
-			result.Players = append(result.Players, generated.PlayerSchema{
-				Id:     strconv.FormatInt(player.ID, 10),
-				Name:   player.PersonaName,
-				Avatar: player.Avatar,
-
-				Continent: player.ContinentCode,
-				Country:   player.CountryCode,
-				State:     player.StateCode,
-
-				Badges:   player.BadgesCount,
-				Comments: player.CommentsCount,
-				Friends:  player.FriendsCount,
-				Games:    player.GamesCount,
-				Level:    player.Level,
-				Playtime: player.PlayTime,
-				Groups:   player.GroupsCount,
+			result.Groups = append(result.Groups, generated.GroupSchema{
+				Abbreviation:  group.GetAbbr(),
+				AppId:         int32(group.AppID),
+				Error:         group.Error,
+				Headline:      group.Headline,
+				Icon:          group.GetIcon(),
+				Id:            group.ID,
+				Members:       int32(group.Members),
+				MembersInChat: int32(group.MembersInChat),
+				MembersInGame: int32(group.MembersInGame),
+				MembersOnline: int32(group.MembersOnline),
+				Name:          group.GetName(),
+				Primaries:     int32(group.Primaries),
+				Trending:      float32(group.Trending),
+				Type:          group.Type,
+				Url:           group.GetURL(),
 			})
 		}
 

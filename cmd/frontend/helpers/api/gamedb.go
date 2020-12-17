@@ -124,33 +124,49 @@ var SwaggerGameDB = &openapi3.Swagger{
 			},
 			"group-schema": {
 				Value: &openapi3.Schema{
-					Required: []string{"id", "name"},
+					Required: []string{"id", "name", "abbreviation", "url", "app_id", "headline", "icon", "trending", "members", "members_in_chat", "members_in_game", "members_online", "error", "type", "primaries"},
 					Properties: map[string]*openapi3.SchemaRef{
-						"id":               {Value: openapi3.NewIntegerSchema()},
-						"name":             {Value: openapi3.NewStringSchema()},
-						"players_week_max": {Value: openapi3.NewIntegerSchema()},
-						"release_date":     {Value: openapi3.NewInt64Schema()},
-						"reviews_positive": {Value: openapi3.NewIntegerSchema()},
-						"reviews_negative": {Value: openapi3.NewIntegerSchema()},
-						"reviews_score":    {Value: openapi3.NewFloat64Schema().WithFormat("double")},
-						"metacritic_score": {Value: openapi3.NewInt32Schema()},
-						// "players_week_avg": {Value: openapi3.NewFloat64Schema().WithFormat("double")},
+						"id":              {Value: openapi3.NewStringSchema()},
+						"name":            {Value: openapi3.NewStringSchema()},
+						"abbreviation":    {Value: openapi3.NewStringSchema()},
+						"url":             {Value: openapi3.NewStringSchema()},
+						"app_id":          {Value: openapi3.NewInt32Schema()},
+						"headline":        {Value: openapi3.NewStringSchema()},
+						"icon":            {Value: openapi3.NewStringSchema()},
+						"trending":        {Value: openapi3.NewFloat64Schema()},
+						"members":         {Value: openapi3.NewInt32Schema()},
+						"members_in_chat": {Value: openapi3.NewInt32Schema()},
+						"members_in_game": {Value: openapi3.NewInt32Schema()},
+						"members_online":  {Value: openapi3.NewInt32Schema()},
+						"error":           {Value: openapi3.NewStringSchema()},
+						"type":            {Value: openapi3.NewStringSchema()},
+						"primaries":       {Value: openapi3.NewInt32Schema()},
 					},
 				},
 			},
 			"package-schema": {
 				Value: &openapi3.Schema{
-					Required: []string{"id", "name"},
+					Required: []string{"apps", "apps_count", "bundle", "billing_type", "change_id", "change_number_date", "coming_soon", "depot_ids", "icon", "id", "image_logo", "image_page", "license_type", "name", "platforms", "prices", "release_date", "release_date_unix", "status"},
 					Properties: map[string]*openapi3.SchemaRef{
-						"id":               {Value: openapi3.NewIntegerSchema()},
-						"name":             {Value: openapi3.NewStringSchema()},
-						"players_week_max": {Value: openapi3.NewIntegerSchema()},
-						"release_date":     {Value: openapi3.NewInt64Schema()},
-						"reviews_positive": {Value: openapi3.NewIntegerSchema()},
-						"reviews_negative": {Value: openapi3.NewIntegerSchema()},
-						"reviews_score":    {Value: openapi3.NewFloat64Schema().WithFormat("double")},
-						"metacritic_score": {Value: openapi3.NewInt32Schema()},
-						// "players_week_avg": {Value: openapi3.NewFloat64Schema().WithFormat("double")},
+						"apps":               {Value: openapi3.NewArraySchema().WithItems(openapi3.NewInt32Schema())},
+						"apps_count":         {Value: openapi3.NewInt32Schema()},
+						"bundle":             {Value: openapi3.NewArraySchema().WithItems(openapi3.NewInt32Schema())},
+						"billing_type":       {Value: openapi3.NewStringSchema()},
+						"change_id":          {Value: openapi3.NewInt32Schema()},
+						"change_number_date": {Value: openapi3.NewInt64Schema()},
+						"coming_soon":        {Value: openapi3.NewBoolSchema()},
+						"depot_ids":          {Value: openapi3.NewArraySchema().WithItems(openapi3.NewInt32Schema())},
+						"icon":               {Value: openapi3.NewStringSchema()},
+						"id":                 {Value: openapi3.NewInt32Schema()},
+						"image_logo":         {Value: openapi3.NewStringSchema()},
+						"image_page":         {Value: openapi3.NewStringSchema()},
+						"license_type":       {Value: openapi3.NewStringSchema()},
+						"name":               {Value: openapi3.NewStringSchema()},
+						"platforms":          {Value: openapi3.NewArraySchema().WithItems(openapi3.NewStringSchema())},
+						"prices":             {Value: &openapi3.Schema{Type: "object", AdditionalProperties: &openapi3.SchemaRef{Ref: "#/components/schemas/product-price-schema"}}},
+						"release_date":       {Value: openapi3.NewStringSchema()},
+						"release_date_unix":  {Value: openapi3.NewInt64Schema()},
+						"status":             {Value: openapi3.NewStringSchema()},
 					},
 				},
 			},
@@ -297,7 +313,7 @@ var SwaggerGameDB = &openapi3.Swagger{
 			},
 			"groups-response": {
 				Value: &openapi3.Response{
-					Description: stringPointer("List of games"),
+					Description: stringPointer("List of groups"),
 					Content: openapi3.NewContentWithJSONSchema(&openapi3.Schema{
 						Description: "List of groups",
 						Required:    []string{"pagination", "groups"},
@@ -464,19 +480,19 @@ var SwaggerGameDB = &openapi3.Swagger{
 		},
 		"/groups": &openapi3.PathItem{
 			Get: &openapi3.Operation{
-				Tags:    []string{tagPlayers},
+				Tags:    []string{tagGroups},
 				Summary: "List Groups",
 				Parameters: openapi3.Parameters{
 					{Ref: "#/components/parameters/offset-param"},
 					{Ref: "#/components/parameters/limit-param"},
 					{Ref: "#/components/parameters/order-param-desc"},
-					{Value: openapi3.NewQueryParameter("sort").WithSchema(openapi3.NewStringSchema().WithEnum("id", "level", "badges", "games", "time", "friends", "comments").WithDefault("id"))},
+					{Value: openapi3.NewQueryParameter("sort").WithSchema(openapi3.NewStringSchema().WithEnum("id", "members", "trending", "primaries").WithDefault("id"))},
 					{Value: openapi3.NewQueryParameter("ids").WithSchema(openapi3.NewArraySchema().WithMaxItems(10).WithItems(openapi3.NewInt64Schema()))},
 					{Value: openapi3.NewQueryParameter("type").WithSchema(openapi3.NewArraySchema().WithMaxItems(2).WithItems(openapi3.NewStringSchema()))},
 				},
 				Responses: map[string]*openapi3.ResponseRef{
 					"200": {
-						Ref: "#/components/responses/players-response",
+						Ref: "#/components/responses/groups-response",
 					},
 					"400": {
 						Ref: "#/components/responses/message-response",
@@ -496,7 +512,7 @@ var SwaggerGameDB = &openapi3.Swagger{
 		"/groups/{id}": &openapi3.PathItem{},
 		"/packages": &openapi3.PathItem{
 			Get: &openapi3.Operation{
-				Tags:    []string{tagPlayers},
+				Tags:    []string{tagPackages},
 				Summary: "List Packages",
 				Parameters: openapi3.Parameters{
 					{Ref: "#/components/parameters/offset-param"},
