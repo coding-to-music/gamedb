@@ -24,10 +24,22 @@ func (s Server) GetPackages(w http.ResponseWriter, r *http.Request, params gener
 			offset = int64(*params.Offset)
 		}
 
-		var sort string
+		var sort = "_id"
 		if params.Sort != nil {
 			switch *params.Sort {
 			case "id":
+				sort = "_id"
+			case "apps_count":
+				sort = "_id"
+			case "billing_type":
+				sort = "_id"
+			case "change_number_date":
+				sort = "_id"
+			case "license_type":
+				sort = "_id"
+			case "platforms":
+				sort = "_id"
+			case "status":
 				sort = "_id"
 			default:
 				sort = "_id"
