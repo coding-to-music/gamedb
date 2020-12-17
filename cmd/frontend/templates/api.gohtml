@@ -6,9 +6,13 @@
         <div class="jumbotron">
 
             <h1><i class="fas fa-book-reader"></i> {{ .TitleOnly }}</h1>
-            <div>
-                <small>If you need anything that is not in the Game DB API yet, please <a href="/contact">contact</a> me.</small>
-            </div>
+
+            {{ if eq .Spec "gamedb" }}
+                <p class="lead">
+                    <small>If you need anything that is not in the Game DB API yet, please <a href="/contact">contact</a> me.</small><br>
+                    <small>The Game DB API is currently open to donators only to help pay for hosting costs.</small>
+                </p>
+            {{ end }}
 
         </div>
 
