@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"sync"
@@ -180,10 +181,12 @@ func stopAll(cfg processesConfig, only ...string) {
 	}
 }
 
-var lastUpdated time.Time
+var (
+	regxCMDFile      = regexp.MustCompile(`cmd/([a-z]+)/`)
+	processesToBuild = map[string]bool{}
+	buildTicker      = time.NewTicker(time.Second)
+)
 
-// todo, update with a cooldown like searching in js
-// todo, only update needed bins if file in cmd has changed
 func watchFiles(cfg processesConfig) {
 
 	watcher, err := fsnotify.NewWatcher()
@@ -191,13 +194,13 @@ func watchFiles(cfg processesConfig) {
 		log.ErrS(err)
 		return
 	}
-	defer helpers.Close(watcher)
+	// defer helpers.Close(watcher)
 
-	done := make(chan bool)
 	go func() {
 		for {
 			select {
 			case event, ok := <-watcher.Events:
+
 				if !ok {
 					return
 				}
@@ -206,16 +209,21 @@ func watchFiles(cfg processesConfig) {
 
 					if strings.HasPrefix(filepath.Ext(event.Name), ".go") {
 
-						if time.Now().Sub(lastUpdated) > (time.Second / 10) {
-							lastUpdated = time.Now()
-							log.InfoS("Updating: ", event.Name)
-							stopAll(cfg)
-							startAll(cfg)
+						log.InfoS("Updating: ", event.Name)
+
+						process := regxCMDFile.FindStringSubmatch(event.Name)
+						if len(process) == 2 {
+							processesToBuild[process[1]] = true
+						} else {
+							processesToBuild[""] = true
 						}
+
+						buildTicker.Reset(time.Second)
 					}
 				}
 
 			case err, ok := <-watcher.Errors:
+
 				if !ok {
 					return
 				}
@@ -231,7 +239,9 @@ func watchFiles(cfg processesConfig) {
 		return
 	}
 
-	log.InfoS("waching ", len(dirs), " dirs")
+	if len(dirs) < 10 {
+		log.ErrS("Could not find dirs to watch")
+	}
 
 	for _, v := range dirs {
 		err = watcher.Add(v)
@@ -239,7 +249,39 @@ func watchFiles(cfg processesConfig) {
 			log.ErrS(err)
 		}
 	}
-	<-done
+
+	go func() {
+		for {
+			select {
+			case <-buildTicker.C:
+
+				buildTicker.Stop()
+
+				log.InfoS("to build ", processesToBuild)
+
+				if len(processesToBuild) > 0 {
+
+					if _, ok := processesToBuild[""]; ok {
+						log.InfoS("building all")
+						stopAll(cfg)
+						startAll(cfg)
+					} else {
+						var x []string
+						for k := range processesToBuild {
+							x = append(x, k)
+						}
+						log.InfoS("building ", x)
+						stopAll(cfg, x...)
+						startAll(cfg, x...)
+					}
+
+					processesToBuild = map[string]bool{}
+				}
+			}
+		}
+	}()
+
+	<-make(chan bool) // Block
 }
 
 func getDirs() (p []string, err error) {
