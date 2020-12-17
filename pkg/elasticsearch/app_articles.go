@@ -111,6 +111,8 @@ func SearchArticles(offset int, sorters []elastic.Sorter, search string, filters
 		b.Filter(filters...)
 	}
 
+	b.MustNot(elastic.NewTermQuery("feed", "Gamemag.ru"))
+
 	if search != "" {
 
 		b.Must(
@@ -190,6 +192,7 @@ func AggregateArticleFeeds() (aggregations []helpers.TupleStringInt, err error) 
 			return aggregations, err
 		}
 
+		// todo, remove Russian
 		if a, ok := searchResult.Aggregations.Terms("feed"); ok {
 			for _, feeds := range a.Buckets {
 				aggregations = append(aggregations, helpers.TupleStringInt{
