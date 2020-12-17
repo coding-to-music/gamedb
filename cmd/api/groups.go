@@ -23,7 +23,7 @@ func (s Server) GetGroups(w http.ResponseWriter, r *http.Request, params generat
 			offset = int64(*params.Offset)
 		}
 
-		var sort string
+		var sort = "members"
 		if params.Sort != nil {
 			switch *params.Sort {
 			case "id":
@@ -35,11 +35,11 @@ func (s Server) GetGroups(w http.ResponseWriter, r *http.Request, params generat
 			case "primaries":
 				sort = "primaries"
 			default:
-				sort = "_id"
+				sort = "members"
 			}
 		}
 
-		var order int
+		var order = -1
 		if params.Order != nil {
 			switch *params.Sort {
 			case "1", "asc", "ascending":
@@ -51,7 +51,7 @@ func (s Server) GetGroups(w http.ResponseWriter, r *http.Request, params generat
 			}
 		}
 
-		filter := bson.D{{}}
+		filter := bson.D{}
 
 		if params.Ids != nil {
 			filter = append(filter, bson.E{Key: "_id", Value: bson.M{"$in": *params.Ids}})

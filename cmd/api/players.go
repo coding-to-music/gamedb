@@ -24,7 +24,7 @@ func (s Server) GetPlayers(w http.ResponseWriter, r *http.Request, params genera
 			offset = int64(*params.Offset)
 		}
 
-		var sort string
+		var sort = "_id"
 		if params.Sort != nil {
 			switch *params.Sort {
 			case "id":
@@ -46,7 +46,7 @@ func (s Server) GetPlayers(w http.ResponseWriter, r *http.Request, params genera
 			}
 		}
 
-		var order int
+		var order = -1
 		if params.Order != nil {
 			switch *params.Sort {
 			case "1", "asc", "ascending":
@@ -58,7 +58,7 @@ func (s Server) GetPlayers(w http.ResponseWriter, r *http.Request, params genera
 			}
 		}
 
-		filter := bson.D{{}}
+		filter := bson.D{}
 
 		if params.Continent != nil {
 			filter = append(filter, bson.E{Key: "continent_code", Value: *params.Continent})

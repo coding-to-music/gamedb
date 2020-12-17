@@ -46,7 +46,7 @@ func (s Server) GetPackages(w http.ResponseWriter, r *http.Request, params gener
 			}
 		}
 
-		var order int
+		var order = 1
 		if params.Order != nil {
 			switch *params.Sort {
 			case "1", "asc", "ascending":
@@ -54,11 +54,11 @@ func (s Server) GetPackages(w http.ResponseWriter, r *http.Request, params gener
 			case "0", "-1", "desc", "descending":
 				order = -1
 			default:
-				order = -1
+				order = 1
 			}
 		}
 
-		filter := bson.D{{}}
+		filter := bson.D{}
 
 		if params.Ids != nil {
 			filter = append(filter, bson.E{Key: "_id", Value: *params.Ids})
