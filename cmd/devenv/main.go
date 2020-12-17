@@ -99,7 +99,7 @@ func startAll(cfg processesConfig, only ...string) {
 					if exiterr, ok := err.(*exec.ExitError); ok {
 						if status, ok := exiterr.Sys().(syscall.WaitStatus); ok {
 							if status.ExitStatus() == 2 {
-								log.ErrS("Count not build " + process)
+								log.ErrS("Could not build " + process)
 								return
 							}
 						}
