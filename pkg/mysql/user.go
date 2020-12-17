@@ -21,33 +21,33 @@ import (
 type UserLevel uint8
 
 const (
-	UserLevel0 UserLevel = iota // Guest
-	UserLevel1                  // Free
-	UserLevel2                  // Level 1
-	UserLevel3                  // Level 2
-	UserLevel4                  // Level 3
+	UserLevelGuest UserLevel = iota // Guest
+	UserLevelFree                   // Free
+	UserLevel1                      // Level 1
+	UserLevel2                      // Level 2
+	UserLevel3                      // Level 3
 
 	// Pages
-	UserLevelLimit0 = 5   // Guest
-	UserLevelLimit1 = 10  // Free
-	UserLevelLimit2 = 10  // Level 1
-	UserLevelLimit3 = 100 // Level 2
-	UserLevelLimit4 = 0   // Level 3
+	UserLevelLimitGuest = 5   // Guest
+	UserLevelLimitFree  = 10  // Free
+	UserLevelLimit1     = 10  // Level 1
+	UserLevelLimit2     = 100 // Level 2
+	UserLevelLimit3     = 0   // Level 3
 )
 
 func (ul UserLevel) MaxResults(limit int64) int64 {
 
 	switch ul {
 	default:
-		return UserLevelLimit0 * limit
+		return UserLevelLimitGuest * limit
+	case UserLevelFree:
+		return UserLevelLimitFree * limit
 	case UserLevel1:
 		return UserLevelLimit1 * limit
 	case UserLevel2:
 		return UserLevelLimit2 * limit
 	case UserLevel3:
-		return UserLevelLimit3 * limit
-	case UserLevel4:
-		return UserLevelLimit4
+		return UserLevelLimit3
 	}
 }
 
@@ -142,7 +142,7 @@ func NewUser(r *http.Request, userEmail, password string, prodCC steamapi.Produc
 		EmailVerified: verified,
 		Password:      string(passwordBytes),
 		ProductCC:     prodCC,
-		Level:         UserLevel1,
+		Level:         UserLevelFree,
 	}
 
 	user.SetAPIKey()

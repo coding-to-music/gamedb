@@ -39,7 +39,7 @@ func (c AutoPlayerRefreshes) work() (err error) {
 
 	var users []mysql.User
 	db = db.Select([]string{"id"})
-	db = db.Where("level >= ?", mysql.UserLevel3)
+	db = db.Where("level >= ?", mysql.UserLevel2)
 	db = db.Find(&users)
 	if db.Error != nil {
 		return db.Error

@@ -76,7 +76,7 @@ func (s Server) call(w http.ResponseWriter, r *http.Request, callback func(w htt
 		s.returnErrorResponse(w, http.StatusInternalServerError, err)
 		return
 
-	} else if user.Level <= mysql.UserLevel3 {
+	} else if user.Level < mysql.UserLevel2 {
 
 		s.returnErrorResponse(w, http.StatusUnauthorized, errors.New("invalid user level"))
 		return

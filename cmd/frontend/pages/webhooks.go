@@ -176,13 +176,13 @@ type patreonTier int
 func (t patreonTier) toUserLevel() mysql.UserLevel {
 	switch t {
 	case patreonTier1:
-		return mysql.UserLevel2
+		return mysql.UserLevel1
 	case patreonTier2:
-		return mysql.UserLevel3
+		return mysql.UserLevel2
 	case patreonTier3:
-		return mysql.UserLevel4
+		return mysql.UserLevel3
 	}
-	return mysql.UserLevel1
+	return mysql.UserLevelFree
 }
 
 const (
@@ -299,7 +299,7 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 		// Update user
 		if user.ID > 0 {
 
-			var level = mysql.UserLevel1
+			var level = mysql.UserLevelFree
 
 			for _, v := range pwr.Data.Relationships.CurrentlyEntitledTiers.Data {
 				switch i := patreonTier(v.ID); i {

@@ -477,7 +477,7 @@ func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if user.Level <= mysql.UserLevel2 {
+		if user.Level <= mysql.UserLevel1 {
 			session.SetFlash(r, session.SessionBad, "Invalid user level")
 			return
 		}

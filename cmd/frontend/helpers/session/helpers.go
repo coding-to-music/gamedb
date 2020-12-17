@@ -192,13 +192,13 @@ func GetUserLevel(r *http.Request) mysql.UserLevel {
 
 	val := Get(r, SessionUserLevel)
 	if val == "" {
-		return mysql.UserLevel0
+		return mysql.UserLevelGuest
 	}
 
 	i, err := strconv.Atoi(val)
 	if err != nil {
 		log.ErrS(err)
-		return mysql.UserLevel0
+		return mysql.UserLevelGuest
 	}
 
 	return mysql.UserLevel(i)
