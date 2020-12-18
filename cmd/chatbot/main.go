@@ -97,6 +97,7 @@ func slashCommandRegister() error {
 		}
 
 		req.Header = http.Header{}
+		req.Header.Set("Authorization", "Bot "+config.C.DiscordChatBotToken)
 
 		clientWithTimeout := &http.Client{
 			Timeout: time.Second * 2,
