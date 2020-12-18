@@ -11,6 +11,7 @@ import (
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/oauth"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
+	discordHelpers "github.com/gamedb/gamedb/pkg/discord"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
@@ -471,7 +472,7 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 				break
 			}
 
-			err = discord.GuildMemberNickname(helpers.GuildID, discordProvider.ID, player.GetName())
+			err = discord.GuildMemberNickname(discordHelpers.GuildID, discordProvider.ID, player.GetName())
 			if err != nil {
 				log.ErrS(err)
 				break
@@ -505,7 +506,7 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 				break
 			}
 
-			err = discord.GuildMemberNickname(helpers.GuildID, resp.ID, player.GetName())
+			err = discord.GuildMemberNickname(discordHelpers.GuildID, resp.ID, player.GetName())
 			if err != nil {
 				log.ErrS(err)
 				break

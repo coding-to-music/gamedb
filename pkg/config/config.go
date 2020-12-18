@@ -4,6 +4,7 @@ import (
 	"errors"
 	"strings"
 
+	"github.com/gamedb/gamedb/pkg/discord"
 	"github.com/gamedb/gamedb/pkg/ldflags"
 	"github.com/kelseyhightower/envconfig"
 )
@@ -153,10 +154,12 @@ type Config struct {
 	YoutubeAPIKey string `envconfig:"YOUTUBE_API_KEY"`
 
 	// Servers
-	FrontendPort      string `envconfig:"PORT"`
+	APIPort      string `envconfig:"API_PORT" default:"80"`
+	ChatbotPort  string `envconfig:"CHATBOT_PORT" default:"80"` // For slash commands
+	FrontendPort string `envconfig:"PORT" default:"80"`
+
 	BackendHostPort   string `envconfig:"BACKEND_HOST_PORT"`
 	BackendClientPort string `envconfig:"BACKEND_CLIENT_PORT"`
-	APIPort           string `envconfig:"API_PORT"`
 
 	// Other
 	GameDBDomain        string `envconfig:"DOMAIN"` // With proto & port
@@ -184,7 +187,7 @@ func Init(ip string) (err error) {
 	C.IP = ip
 	C.NewReleaseDays = 14
 	C.DiscordServerInviteURL = "https://discord.gg/c5zrcus"
-	C.DiscordBotInviteURL = "https://discordapp.com/oauth2/authorize?client_id=567257603185311745&scope=bot&permissions=0"
+	C.DiscordBotInviteURL = "https://discordapp.com/oauth2/authorize?client_id=" + discord.ClientIDBot + "&scope=bot&permissions=0"
 
 	return err
 }
