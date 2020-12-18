@@ -51,6 +51,18 @@ func websocketHandler(message *rabbit.Message) {
 
 			wsPage.Send(idPayload.ID)
 
+		case websockets.PageNews:
+
+			newsPayload := NewsPayload{}
+
+			err = helpers.Unmarshal(payload.Message, &newsPayload)
+			if err != nil {
+				log.ErrS(err)
+				continue
+			}
+
+			wsPage.Send(newsPayload.RowData)
+
 		case websockets.PageGroup:
 
 			idPayload := StringPayload{}
@@ -168,6 +180,7 @@ func websocketHandler(message *rabbit.Message) {
 			}
 
 		default:
+
 			log.Err("no handler for page", zap.String("page", string(page)))
 		}
 	}
