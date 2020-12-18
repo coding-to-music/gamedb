@@ -19,6 +19,7 @@ if ($('#news-page').length > 0) {
             "createdRow": function (row, data, dataIndex) {
                 $(row).attr('data-app-id', data[3]);
                 $(row).attr('data-article-id', data[0]);
+                $(row).attr('data-time', data[5]);
                 $(row).addClass('cursor-pointer');
             },
             "columnDefs": [
@@ -93,7 +94,7 @@ if ($('#news-page').length > 0) {
 
     websocketListener('news', function (e) {
 
-        const info = dt.page.info();
+        const info = table.page.info();
         if (info.page === 0) { // Page 1
 
             const data = JSON.parse(e.data);
@@ -103,15 +104,11 @@ if ($('#news-page').length > 0) {
 
                 addDataTablesRow(options, data.Data, info.length, $table);
 
-                console.log(data.Data);
-                return
-
                 // Sort rows
                 const rows = $table.find('tr').get();
                 rows.sort(function (a, b) {
-                    const keyA = $(a).attr('myAttribute');
-                    const keyB = $(b).attr('myAttribute');
-
+                    const keyA = $(a).attr('data-time');
+                    const keyB = $(b).attr('data-time');
                     return Math.sign(keyA - keyB);
                 });
 
