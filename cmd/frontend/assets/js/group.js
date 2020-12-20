@@ -152,21 +152,18 @@ function loadGroupChart($page) {
                         color: '#007bff',
                         data: data['max_members_in_chat'],
                         marker: {symbol: 'circle'},
-                        visible: false,
                     },
                     {
                         name: 'In Game',
                         color: '#e83e8c',
                         data: data['max_members_in_game'],
                         marker: {symbol: 'circle'},
-                        visible: false,
                     },
                     // {
                     //     name: 'Online',
                     //     color: '#ffc107',
                     //     data: data['max_members_online'],
                     //     marker: {symbol: 'circle'},
-                    //     visible: false,
                     // },
                     {
                         name: 'Members',
