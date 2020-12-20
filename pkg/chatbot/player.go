@@ -125,16 +125,16 @@ func (c CommandPlayer) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC
 
 	var games string
 	if player.GamesCount == 0 {
-		games = "<private profile>"
+		games = "Profile set to private"
 	} else {
-		games = humanize.Comma(int64(player.GamesCount))
+		games = humanize.Comma(int64(player.GamesCount)) + " (" + helpers.OrdinalComma(player.Ranks[string(mongo.RankKeyGames)]) + ")"
 	}
 
 	var playtime string
 	if player.PlayTime == 0 {
-		playtime = "<private profile>"
+		playtime = "Profile set to private"
 	} else {
-		playtime = helpers.GetTimeLong(player.PlayTime, 3)
+		playtime = helpers.GetTimeLong(player.PlayTime, 3) + " (" + helpers.OrdinalComma(player.Ranks[string(mongo.RankKeyPlaytime)]) + ")"
 	}
 
 	message.Embed = &discordgo.MessageEmbed{
@@ -151,7 +151,7 @@ func (c CommandPlayer) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC
 			},
 			{
 				Name:  "Games",
-				Value: games + " (" + helpers.OrdinalComma(player.Ranks[string(mongo.RankKeyGames)]) + ")",
+				Value: games,
 			},
 			{
 				Name:  "Achievements",
@@ -167,7 +167,7 @@ func (c CommandPlayer) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC
 			},
 			{
 				Name:  "Playtime",
-				Value: playtime + " (" + helpers.OrdinalComma(player.Ranks[string(mongo.RankKeyPlaytime)]) + ")",
+				Value: playtime,
 			},
 			{
 				Name:  "Friends",
