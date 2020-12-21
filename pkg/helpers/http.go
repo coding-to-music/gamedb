@@ -3,6 +3,7 @@ package helpers
 import (
 	"bytes"
 	"errors"
+	"go.uber.org/zap"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -12,7 +13,6 @@ import (
 
 	"github.com/cenkalti/backoff/v4"
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/mssola/user_agent"
 )
 
@@ -39,7 +39,7 @@ func Head(link string, timeout time.Duration) (code int, err error) {
 	policy := backoff.NewExponentialBackOff()
 	policy.InitialInterval = time.Second
 
-	err = backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 5), func(err error, t time.Duration) { log.InfoS(err) })
+	err = backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 5), func(err error, t time.Duration) { zap.S().Info(err) })
 	return code, err
 }
 
