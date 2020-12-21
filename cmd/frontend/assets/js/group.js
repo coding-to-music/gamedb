@@ -121,17 +121,32 @@ function loadGroupChart($page) {
                 xAxis: {
                     plotLines: plotline($page.attr('data-release'), 'Steam Release'),
                 },
-                yAxis: {
-                    allowDecimals: false,
-                    title: {
-                        text: ''
-                    },
-                    labels: {
-                        formatter: function () {
-                            return this.value.toLocaleString();
+                yAxis: [
+                    {
+                        allowDecimals: false,
+                        title: {
+                            text: ''
                         },
+                        labels: {
+                            formatter: function () {
+                                return this.value.toLocaleString();
+                            },
+                        },
+                        opposite: false,
                     },
-                },
+                    {
+                        allowDecimals: false,
+                        title: {
+                            text: ''
+                        },
+                        labels: {
+                            formatter: function () {
+                                return this.value.toLocaleString();
+                            },
+                        },
+                        opposite: true,
+                    }
+                ],
                 tooltip: {
                     formatter: function () {
                         switch (this.series.name) {
@@ -152,12 +167,15 @@ function loadGroupChart($page) {
                         color: '#007bff',
                         data: data['max_members_in_chat'],
                         marker: {symbol: 'circle'},
+                        yAxis: 1,
                     },
                     {
                         name: 'In Game',
                         color: '#e83e8c',
                         data: data['max_members_in_game'],
                         marker: {symbol: 'circle'},
+                        yAxis: 1,
+                        visible: false,
                     },
                     // {
                     //     name: 'Online',
@@ -170,6 +188,7 @@ function loadGroupChart($page) {
                         color: '#28a745',
                         data: data['max_members_count'],
                         marker: {symbol: 'circle'},
+                        yAxis: 0,
                     },
                 ],
             }));
