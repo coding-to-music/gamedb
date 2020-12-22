@@ -11,10 +11,12 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	influxHelpers "github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/websockets"
+	influx "github.com/influxdata/influxdb1-client"
 	"github.com/streadway/amqp"
 	"go.uber.org/zap"
 )
@@ -573,7 +575,7 @@ func producePackagePrice(payload PackagePriceMessage) (err error) {
 
 var ErrIsBot = errors.New("bots can't update players")
 
-func ProducePlayer(payload PlayerMessage) (err error) {
+func ProducePlayer(payload PlayerMessage, event string) (err error) {
 
 	if payload.UserAgent != nil && helpers.IsBot(*payload.UserAgent) {
 		return ErrIsBot
@@ -593,7 +595,37 @@ func ProducePlayer(payload PlayerMessage) (err error) {
 
 	err = produce(QueuePlayers, payload)
 	if err == nil {
-		err = memcache.Set(item.Key, item.Value, item.Expiration)
+
+		go func() {
+			if err := memcache.Set(item.Key, item.Value, item.Expiration); err != nil {
+				log.ErrS(err)
+			}
+		}()
+
+		go func() {
+
+			fields := map[string]interface{}{
+				"produce": 1,
+			}
+
+			if payload.UserAgent != nil {
+				fields["user-agent"] = *payload.UserAgent
+			}
+
+			point := influx.Point{
+				Measurement: string(influxHelpers.InfluxMeasurementPlayerUpdates),
+				Tags: map[string]string{
+					"trigger": string(event),
+				},
+				Fields:    fields,
+				Time:      time.Now(),
+				Precision: "ms",
+			}
+
+			if _, err := influxHelpers.InfluxWrite(influxHelpers.InfluxRetentionPolicy14Day, point); err != nil {
+				log.ErrS(err)
+			}
+		}()
 	}
 
 	return err

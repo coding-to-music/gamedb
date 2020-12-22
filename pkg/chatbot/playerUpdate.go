@@ -64,7 +64,7 @@ func (c CommandPlayerUpdate) Output(msg *discordgo.MessageCreate, _ steamapi.Pro
 		playerID := mysql.GetUserSteamID(user.ID)
 		if playerID > 0 {
 
-			err = queue.ProducePlayer(queue.PlayerMessage{ID: playerID})
+			err = queue.ProducePlayer(queue.PlayerMessage{ID: playerID}, "chatbot-player.update")
 			err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 			if err != nil {
 				log.ErrS(err)
@@ -87,7 +87,7 @@ func (c CommandPlayerUpdate) Output(msg *discordgo.MessageCreate, _ steamapi.Pro
 		return message, err
 	}
 
-	err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID})
+	err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID}, "chatbot-player.update")
 	err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 	if err != nil {
 		log.ErrS(err)

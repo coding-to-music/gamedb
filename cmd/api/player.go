@@ -24,7 +24,7 @@ func (s Server) GetPlayersId(w http.ResponseWriter, r *http.Request, id int64) {
 		if err == mongo.ErrNoDocuments {
 
 			ua := r.UserAgent()
-			err = queue.ProducePlayer(queue.PlayerMessage{ID: id, UserAgent: &ua})
+			err = queue.ProducePlayer(queue.PlayerMessage{ID: id, UserAgent: &ua}, "api-retrieve")
 			if err != nil {
 				log.ErrS(err)
 			}

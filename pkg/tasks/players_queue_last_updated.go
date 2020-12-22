@@ -86,7 +86,7 @@ func (c PlayersQueueLastUpdated) work() (err error) {
 			SkipAchievements: true,
 		}
 
-		err = queue.ProducePlayer(m)
+		err = queue.ProducePlayer(m, "crons-last-updated")
 		err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 		if err != nil {
 			return err

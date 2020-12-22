@@ -76,12 +76,8 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	if err == mongo.ErrNoDocuments {
 
 		ua := r.UserAgent()
-		err = queue.ProducePlayer(queue.PlayerMessage{ID: id, UserAgent: &ua})
-		if err == nil {
-			log.Info("player queued", zap.String("ua", ua))
-		}
-		err = helpers.IgnoreErrors(err, memcache.ErrInQueue, queue.ErrIsBot)
-		if err != nil {
+		err = queue.ProducePlayer(queue.PlayerMessage{ID: id, UserAgent: &ua}, "frontend-player-missing")
+		if err = helpers.IgnoreErrors(err, memcache.ErrInQueue, queue.ErrIsBot); err != nil {
 			log.ErrS(err)
 		}
 
@@ -303,13 +299,11 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	if player.NeedsUpdate(mongo.PlayerUpdateAuto) {
 
 		ua := r.UserAgent()
-		err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID, UserAgent: &ua})
+		err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID, UserAgent: &ua}, "frontend-update-request")
 		if err == nil {
-			log.Info("player queued", zap.String("ua", ua))
 			t.addToast(Toast{Title: "Update", Message: "Player has been queued for an update", Success: true})
 		}
-		err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
-		if err != nil {
+		if err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue); err != nil {
 			log.ErrS(err)
 		}
 	}
@@ -509,12 +503,8 @@ func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
 	for friendID := range friendIDsMap {
 
 		ua := r.UserAgent()
-		err = queue.ProducePlayer(queue.PlayerMessage{ID: friendID, UserAgent: &ua})
-		if err == nil {
-			log.Info("player queued", zap.String("ua", ua))
-		}
-		err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
-		if err != nil {
+		err = queue.ProducePlayer(queue.PlayerMessage{ID: friendID, UserAgent: &ua}, "frontend-friends")
+		if err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue); err != nil {
 			log.ErrS(err)
 		}
 	}
@@ -1155,12 +1145,8 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		ua := r.UserAgent()
-		err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID, UserAgent: &ua})
-		if err == nil {
-			log.Info("player queued", zap.String("ua", ua))
-		}
-		err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
-		if err != nil {
+		err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID, UserAgent: &ua}, "frontend-udate-click")
+		if err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue); err != nil {
 			log.ErrS(err)
 			return "Something has gone wrong", false, err
 		}

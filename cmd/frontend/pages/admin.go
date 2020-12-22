@@ -609,7 +609,7 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 
 				playerID, err := strconv.ParseInt(val, 10, 64)
 				if err == nil {
-					err = queue.ProducePlayer(queue.PlayerMessage{ID: playerID, UserAgent: &ua})
+					err = queue.ProducePlayer(queue.PlayerMessage{ID: playerID, UserAgent: &ua}, "frontend-admin")
 					err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 					if err != nil {
 						log.Err(err.Error(), zap.Int64("id", playerID))
@@ -689,12 +689,11 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 
 					for _, playerID := range resp.Members.SteamID64 {
 
-						err = queue.ProducePlayer(queue.PlayerMessage{ID: int64(playerID), SkipExistingPlayer: true})
+						err = queue.ProducePlayer(queue.PlayerMessage{ID: int64(playerID), SkipExistingPlayer: true}, "frontend-admin-group")
 						err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 						if err != nil {
 							log.ErrS(err)
 						}
-
 					}
 
 					if resp.NextPageLink == "" {

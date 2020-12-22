@@ -15,7 +15,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/go-chi/chi"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.uber.org/zap"
 )
 
 const (
@@ -195,12 +194,9 @@ func coopGames(w http.ResponseWriter, r *http.Request) {
 		if !helpers.SliceHasInt64(foundPlayerIDs, playerID) {
 
 			ua := r.UserAgent()
-			err = queue.ProducePlayer(queue.PlayerMessage{ID: playerID, UserAgent: &ua})
-			if err == nil {
-				log.Info("player queued", zap.String("ua", ua))
-			}
-			err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
-			if err != nil {
+			err = queue.ProducePlayer(queue.PlayerMessage{ID: playerID, UserAgent: &ua}, "frontend-coop")
+
+			if err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue); err != nil {
 				log.ErrS(err)
 			}
 		}

@@ -62,7 +62,7 @@ func (c CommandPlayerLibrary) Output(msg *discordgo.MessageCreate, _ steamapi.Pr
 	}
 
 	if q {
-		err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID})
+		err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID}, "chatbot-player.library")
 		err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 		if err != nil {
 			log.ErrS(err)

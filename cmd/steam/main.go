@@ -355,7 +355,7 @@ func (ph packetHandler) handleProfileInfo(packet *protocol.Packet) {
 	packet.ReadProtoMsg(&body)
 
 	var id = int64(body.GetSteamidFriend())
-	err := queue.ProducePlayer(queue.PlayerMessage{ID: id})
+	err := queue.ProducePlayer(queue.PlayerMessage{ID: id}, "steam")
 	if err != nil {
 		log.ErrS(err, id)
 	}

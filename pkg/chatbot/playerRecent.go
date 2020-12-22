@@ -62,7 +62,7 @@ func (c CommandPlayerRecent) Output(msg *discordgo.MessageCreate, _ steamapi.Pro
 	}
 
 	if q {
-		err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID})
+		err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID}, "chatbot-player.recent")
 		err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 		if err != nil {
 			log.ErrS(err)

@@ -63,7 +63,7 @@ func (c CommandPlayerWishlist) Output(msg *discordgo.MessageCreate, _ steamapi.P
 	}
 
 	if q {
-		err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID})
+		err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID}, "chatbot-player.wishlist")
 		err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 		if err != nil {
 			log.ErrS(err)

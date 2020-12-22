@@ -61,7 +61,7 @@ func (c CommandPlayerLevel) Output(msg *discordgo.MessageCreate, _ steamapi.Prod
 	}
 
 	if q {
-		err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID})
+		err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID}, "chatbot-player.level")
 		err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 		if err != nil {
 			log.ErrS(err)

@@ -54,7 +54,7 @@ func (c AutoPlayerRefreshes) work() (err error) {
 
 			playerIDs = append(playerIDs, playerID)
 
-			err = queue.ProducePlayer(queue.PlayerMessage{ID: playerID})
+			err = queue.ProducePlayer(queue.PlayerMessage{ID: playerID}, "crons-donators")
 			err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 			if err != nil {
 				return err

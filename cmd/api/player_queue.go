@@ -12,7 +12,7 @@ func (s Server) PostPlayersId(w http.ResponseWriter, r *http.Request, id int64) 
 
 	s.call(w, r, func(w http.ResponseWriter, r *http.Request) (code int, response interface{}) {
 
-		err := queue.ProducePlayer(queue.PlayerMessage{ID: id})
+		err := queue.ProducePlayer(queue.PlayerMessage{ID: id}, "api-update")
 		if err == memcache.ErrInQueue {
 			return 200, err
 		} else if err != nil {

@@ -61,7 +61,7 @@ func (c CommandPlayerApps) Output(msg *discordgo.MessageCreate, _ steamapi.Produ
 	}
 
 	if q {
-		err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID})
+		err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID}, "chatbot-player.apps")
 		err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
 		if err != nil {
 			log.ErrS(err)

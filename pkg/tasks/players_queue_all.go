@@ -40,7 +40,7 @@ func (c PlayersQueueAll) work() (err error) {
 
 		for _, player := range players {
 
-			err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID})
+			err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID}, "crons-queue-all")
 			if err != nil {
 				return err
 			}

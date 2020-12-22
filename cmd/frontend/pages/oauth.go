@@ -19,7 +19,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/go-chi/chi"
-	"go.uber.org/zap"
 	"golang.org/x/oauth2"
 )
 
@@ -436,12 +435,8 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 		}
 
 		ua := r.UserAgent()
-		err = queue.ProducePlayer(queue.PlayerMessage{ID: i, UserAgent: &ua})
-		if err == nil {
-			log.Info("player queued", zap.String("ua", ua))
-		}
-		err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
-		if err != nil {
+		err = queue.ProducePlayer(queue.PlayerMessage{ID: i, UserAgent: &ua}, "frontend-oauth")
+		if err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue); err != nil {
 			log.ErrS(err)
 			break
 		}

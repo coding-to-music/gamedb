@@ -25,15 +25,16 @@ const (
 	InfluxRetentionPolicy14Day   InfluxRetentionPolicy = "14d"
 	// InfluxRetentionPolicy7Day    InfluxRetentionPolicy = "7d"
 
-	InfluxMeasurementAPICalls    InfluxMeasurement = "api_calls"
-	InfluxMeasurementApps        InfluxMeasurement = "apps"
-	InfluxMeasurementChanges     InfluxMeasurement = "changes"
-	InfluxMeasurementChatBot     InfluxMeasurement = "chat_bot"
-	InfluxMeasurementGroups      InfluxMeasurement = "groups"
-	InfluxMeasurementPlayers     InfluxMeasurement = "players"
-	InfluxMeasurementRabbitQueue InfluxMeasurement = "rabbitmq_queue"
-	InfluxMeasurementSignups     InfluxMeasurement = "signups"
-	InfluxMeasurementStats       InfluxMeasurement = "stats"
+	InfluxMeasurementAPICalls      InfluxMeasurement = "api_calls"
+	InfluxMeasurementApps          InfluxMeasurement = "apps"
+	InfluxMeasurementChanges       InfluxMeasurement = "changes"
+	InfluxMeasurementChatBot       InfluxMeasurement = "chat_bot"
+	InfluxMeasurementGroups        InfluxMeasurement = "groups"
+	InfluxMeasurementPlayers       InfluxMeasurement = "players"
+	InfluxMeasurementPlayerUpdates InfluxMeasurement = "player_updates"
+	InfluxMeasurementRabbitQueue   InfluxMeasurement = "rabbitmq_queue"
+	InfluxMeasurementSignups       InfluxMeasurement = "signups"
+	InfluxMeasurementStats         InfluxMeasurement = "stats"
 )
 
 type InfluxRetentionPolicy string
