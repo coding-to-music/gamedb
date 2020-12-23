@@ -162,9 +162,9 @@ func Run(task TaskInterface) {
 	if err != nil {
 
 		if val, ok := err.(TaskError); ok && val.Okay {
-			log.InfoS(task.ID(), err)
+			log.Info(err.Error(), zap.String("cron id", task.ID()))
 		} else {
-			log.ErrS(task.ID(), err)
+			log.Err(err.Error(), zap.String("cron id", task.ID()))
 		}
 	} else {
 
