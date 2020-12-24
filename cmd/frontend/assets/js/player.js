@@ -794,12 +794,12 @@ if ($playerPage.length > 0) {
                         },
                         {
                             name: 'Games with Achievements',
-                            data: data['max_achievements_count_100'],
+                            data: data['max_achievements_count_apps'],
                             marker: {symbol: 'circle'},
                         },
                         {
                             name: 'Games with 100%',
-                            data: data['max_achievements_count_apps'],
+                            data: data['max_achievements_count_100'],
                             marker: {symbol: 'circle'},
                         },
                     ],
