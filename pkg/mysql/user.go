@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"net/http"
 	"time"
 
@@ -10,11 +11,8 @@ import (
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/oauth"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	influxHelper "github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
-	"github.com/gamedb/gamedb/pkg/mongo"
-	influx "github.com/influxdata/influxdb1-client"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -168,31 +166,34 @@ func NewUser(r *http.Request, userEmail, password string, prodCC steamapi.Produc
 	}
 
 	// Create event
-	err = mongo.NewEvent(r, user.ID, mongo.EventSignup)
-	if err != nil {
-		log.ErrS(err)
-	}
+	go func() {
+		if err = mongo.NewEvent(r, user.ID, mongo.EventSignup); err != nil {
+			log.ErrS(err)
+		}
+	}()
 
 	// Influx
-	fields := map[string]interface{}{
-		"signup": 1,
-	}
-
-	if verified {
-		fields["validate"] = 1
-	}
-
-	point := influx.Point{
-		Measurement: string(influxHelper.InfluxMeasurementSignups),
-		Fields:      fields,
-		Time:        time.Now(),
-		Precision:   "s",
-	}
-
-	_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, point)
-	if err != nil {
-		log.ErrS(err)
-	}
+	//go func() {
+	//
+	//	fields := map[string]interface{}{
+	//		"signup": 1,
+	//	}
+	//
+	//	if verified {
+	//		fields["validate"] = 1
+	//	}
+	//
+	//	point := influx.Point{
+	//		Measurement: string(influxHelper.InfluxMeasurementSignups),
+	//		Fields:      fields,
+	//		Time:        time.Now(),
+	//		Precision:   "s",
+	//	}
+	//
+	//	if _, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, point); err != nil {
+	//		log.ErrS(err)
+	//	}
+	//}()
 
 	return user, nil
 }
