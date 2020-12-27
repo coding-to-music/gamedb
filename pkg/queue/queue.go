@@ -615,7 +615,7 @@ func ProducePlayer(payload PlayerMessage, event string) (err error) {
 			point := influx.Point{
 				Measurement: string(influxHelpers.InfluxMeasurementPlayerUpdates),
 				Tags: map[string]string{
-					"trigger": string(event),
+					"trigger": event,
 				},
 				Fields:    fields,
 				Time:      time.Now(),
