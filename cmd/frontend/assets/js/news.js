@@ -84,9 +84,12 @@ if ($('#news-page').length > 0) {
         const hash = window.location.hash;
         if (hash) {
 
-            const $tr = $('tr[data-article-id=' + hash.replace('#', '') + ']').trigger('click');
-            $('html, body').animate({scrollTop: $tr.offset().top - 100}, 200);
-            history.replaceState(null, null, ' ');
+            const $tr = $('tr[data-article-id=' + hash.replace('#', '') + ']');
+            if ($tr.length > 0) {
+                $tr.trigger('click');
+                $('html, body').animate({scrollTop: $tr.offset().top - 100}, 200);
+                history.replaceState(null, null, ' ');
+            }
         }
     });
 
