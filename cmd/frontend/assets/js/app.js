@@ -44,7 +44,7 @@ if ($appPage.length > 0) {
         }
     });
 
-    // SHow more player countries
+    // Show more player countries
     $('#player-countries .show-more').on('click', function (e) {
         $('#player-countries tr.d-none').removeClass('d-none');
         $(this).remove();
@@ -162,10 +162,14 @@ if ($appPage.length > 0) {
 
             const hash = window.location.hash;
             if (hash) {
-
                 const id = hash.replace('#', '').replace('news,', '');
-                const $tr = $('tr[data-article-id=' + id + ']').trigger('click');
-                $('html, body').animate({scrollTop: $tr.offset().top - 100}, 200);
+                if (id) {
+                    const $tr = $('tr[data-article-id=' + id + ']');
+                    if ($tr.length > 0) {
+                        $tr.trigger('click');
+                        $('html, body').animate({scrollTop: $tr.offset().top - 100}, 200);
+                    }
+                }
             }
         });
     }
