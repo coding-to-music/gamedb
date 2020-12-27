@@ -431,13 +431,13 @@
                             </div>
                             <div class="col-12 col-lg-4">
 
-                                <div class="card">
+                                <div class="card" id="player-countries">
                                     <h5 class="card-header">Player Countries</h5>
                                     <div class="card-body p-0">
                                         <table class="table table-no-border table-sm mb-0">
                                             <tbody>
-                                            {{ range .Countries }}
-                                                <tr style="background: linear-gradient(to right, #28a74522 {{ .Percent }}%, transparent {{ .Percent }}%)">
+                                            {{  range $key, $val:= .Countries }}
+                                                <tr class="{{ if gt $key 13 }}d-none{{ end }}" style="background: linear-gradient(to right, #28a74522 {{ .Percent }}%, transparent {{ .Percent }}%)">
                                                     <td>{{ .Country }}</td>
                                                     <td>{{ .GetPercent }}<small>%</small></td>
                                                 </tr>
@@ -445,7 +445,10 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                    <small class="card-footer">From Game DB players</small>
+                                    <small class="card-footer">
+                                        From Game DB players
+                                        <span class="show-more float-right cursor-pointer">Show More</span>
+                                    </small>
                                 </div>
 
                             </div>

@@ -282,9 +282,6 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	sort.Slice(t.Countries, func(i, j int) bool {
 		return t.Countries[i].Count > t.Countries[j].Count
 	})
-	if len(t.Countries) > 10 {
-		t.Countries = t.Countries[0:14]
-	}
 
 	//
 	t.PlayersInGame, err = t.App.GetPlayersInGame()
