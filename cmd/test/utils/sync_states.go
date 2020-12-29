@@ -25,6 +25,11 @@ func (syncStates) name() string {
 
 func (syncStates) run() {
 
+	//goland:noinspection GoBoolExpressions
+	if sessionID == "" || steamLoginSecure == "" {
+		log.Err("fill in cookie values")
+	}
+
 	m := map[string]map[string]string{}
 
 	for _, v := range countries {
