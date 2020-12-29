@@ -245,7 +245,7 @@ func saveProductPricesToMongo(before helpers.ProductInterface, after helpers.Pro
 	var price helpers.ProductPrice
 	var documents []mongo.Document
 
-	for _, productCC := range i18n.GetProdCCs(true) {
+	for _, productCC := range i18n.GetProdCCs() {
 
 		var oldPrice, newPrice int
 

@@ -81,7 +81,7 @@ func ensureSaleIndexes() {
 	}
 
 	// Price fields
-	for _, v := range i18n.GetProdCCs(true) {
+	for _, v := range i18n.GetProdCCs() {
 		cols = append(cols, "app_prices."+string(v.ProductCode))
 		cols = append(cols, "app_lowest_price."+string(v.ProductCode))
 	}

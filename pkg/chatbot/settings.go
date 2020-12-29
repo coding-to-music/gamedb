@@ -37,7 +37,7 @@ func (CommandSettings) Example() string {
 func (CommandSettings) Description() template.HTML {
 
 	var ccs []string
-	for _, v := range i18n.GetProdCCs(true) {
+	for _, v := range i18n.GetProdCCs() {
 		ccs = append(ccs, string(v.ProductCode))
 	}
 

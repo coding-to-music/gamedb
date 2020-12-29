@@ -75,7 +75,7 @@ func packageHandler(message *rabbit.Message) {
 	// Produce price changes
 	if config.IsLocal() {
 
-		for _, v := range i18n.GetProdCCs(true) {
+		for _, v := range i18n.GetProdCCs() {
 
 			payload2 := PackagePriceMessage{
 				PackageID:   uint(pack.ID),
@@ -465,7 +465,7 @@ func updatePackageFromStore(pack *mongo.Package) (err error) {
 
 	prices := helpers.ProductPrices{}
 
-	for _, cc := range i18n.GetProdCCs(true) {
+	for _, cc := range i18n.GetProdCCs() {
 
 		// Get package details
 		response, err := steam.GetSteam().GetPackageDetails(uint(pack.ID), cc.ProductCode, steamapi.LanguageEnglish)

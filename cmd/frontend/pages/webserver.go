@@ -357,7 +357,7 @@ func (t *globalTemplate) fill(w http.ResponseWriter, r *http.Request, templateNa
 	t.Description = description
 	t.Env = config.C.Environment
 	t.Path = r.URL.Path
-	t.ProductCCs = i18n.GetProdCCs(true)
+	t.ProductCCs = i18n.GetProdCCs()
 	t.Continents = i18n.Continents
 
 	userIDString := session.Get(r, session.SessionUserID)

@@ -140,7 +140,7 @@ func GetProductCC(r *http.Request) steamapi.ProductCC {
 			return steamapi.ProductCCUS
 		}
 
-		for _, cc := range i18n.GetProdCCs(true) {
+		for _, cc := range i18n.GetProdCCs() {
 			for _, code := range cc.CountryCodes {
 				if record.Country.ISOCode == code {
 					return cc.ProductCode
