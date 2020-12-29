@@ -32,7 +32,7 @@ func salesHandler(w http.ResponseWriter, r *http.Request) {
 	t.addAssetChosen()
 	t.addAssetSlider()
 	t.addAssetCountdown()
-	t.fill(w, r, "sales", "Offers", "Discounted games")
+	t.fill(w, r, "sales", "Sales", "All discounted games")
 
 	var wg sync.WaitGroup
 
@@ -338,7 +338,7 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	//
 	var wg sync.WaitGroup
-	var offers []mongo.Sale
+	var sales []mongo.Sale
 
 	// Get rows
 	wg.Add(1)
@@ -361,7 +361,7 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		order = append(order, bson.E{Key: "sub_order", Value: 1})
 
 		var err error
-		offers, err = mongo.GetAllSales(query.GetOffset64(), 100, filter, order)
+		sales, err = mongo.GetAllSales(query.GetOffset64(), 100, filter, order)
 		if err != nil {
 			log.ErrS(err)
 			return
@@ -404,25 +404,25 @@ func salesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	var response = datatable.NewDataTablesResponse(r, query, count, filtered, nil)
-	for _, offer := range offers {
+	for _, sale := range sales {
 
 		response.AddRow([]interface{}{
-			offer.AppID,          // 0
-			offer.GetOfferName(), // 1
-			offer.AppIcon,        // 2
-			helpers.GetAppPath(offer.AppID, offer.AppName), // 3
-			offer.GetPriceString(code),                     // 4
-			offer.SalePercent,                              // 5
-			offer.GetAppRating(),                           // 6
-			offer.SaleEnd.String(),                         // 7
-			helpers.GetAppStoreLink(offer.AppID),           // 8
-			offer.AppReleaseDate.String(),                  // 9
-			offer.GetType(),                                // 10
-			offer.IsLowest(code),                           // 11
-			offer.SaleEndEstimate,                          // 12
-			helpers.GetAppType(offer.AppType),              // 13
-			offer.AppReleaseDateString,                     // 14
-			offer.AppCategories,                            // 15
+			sale.AppID,          // 0
+			sale.GetOfferName(), // 1
+			sale.AppIcon,        // 2
+			helpers.GetAppPath(sale.AppID, sale.AppName), // 3
+			sale.GetPriceString(code),                    // 4
+			sale.SalePercent,                             // 5
+			sale.GetAppRating(),                          // 6
+			sale.SaleEnd.String(),                        // 7
+			helpers.GetAppStoreLink(sale.AppID),          // 8
+			sale.AppReleaseDate.String(),                 // 9
+			sale.GetType(),                               // 10
+			sale.IsLowest(code),                          // 11
+			sale.SaleEndEstimate,                         // 12
+			helpers.GetAppType(sale.AppType),             // 13
+			sale.AppReleaseDateString,                    // 14
+			sale.AppCategories,                           // 15
 		})
 	}
 
