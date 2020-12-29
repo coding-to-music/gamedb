@@ -20,6 +20,10 @@ $document.on('mousedown', '[data-link]', function (e) {
     dataLinkX = e.screenX;
     dataLinkY = e.screenY;
     dataLinkDrag = false;
+
+    if (e.button === 1) {
+        return false; // False to stop middle button click dragging
+    }
 });
 
 $document.on('mousemove', '[data-link]', function handler(e) {
@@ -48,8 +52,8 @@ $(document).on('mouseup', '[data-link]', function (e) {
         return true;
     }
 
-    // Middle click
-    if (e.ctrlKey || e.shiftKey || e.metaKey || e.which === 2 || target === '_blank') {
+    // New window
+    if (e.button === 1 || e.ctrlKey || e.shiftKey || e.metaKey || e.which === 2 || target === '_blank') {
         if (!$(e.target).is("a")) {
             window.open(link, '_blank');
         }
