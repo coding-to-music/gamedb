@@ -211,7 +211,7 @@ func SendUserVerification(userID int, userEmail string, r *http.Request) error {
 		userEmail,
 		"",
 		"",
-		"Game DB Email Verification",
+		"Global Steam Email Verification",
 		email.VerifyTemplate{
 			Domain: config.C.GameDBDomain,
 			Code:   code.Code,

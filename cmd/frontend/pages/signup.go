@@ -37,7 +37,7 @@ func signupHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	t := signupTemplate{}
-	t.fill(w, r, "signup", "Login", "Login to Game DB to set your currency and other things.")
+	t.fill(w, r, "signup", "Login", "Login to Global Steam to set your currency and other things.")
 	t.addAssetPasswordStrength()
 	t.hideAds = true
 	t.Domain = config.C.GameDBDomain

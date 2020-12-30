@@ -87,7 +87,7 @@ func getMongo() (client *mongo.Client, ctx context.Context, err error) {
 		ops := options.Client().
 			SetAuth(creds).
 			ApplyURI(config.MongoDSN()).
-			SetAppName("Game DB")
+			SetAppName("Global Steam")
 
 		client, err = mongo.NewClient(ops)
 

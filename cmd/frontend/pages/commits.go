@@ -24,7 +24,7 @@ func CommitsRouter() http.Handler {
 func commitsHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := commitsTemplate{}
-	t.fill(w, r, "commits", "Commits", "All the open source commits for Game DB")
+	t.fill(w, r, "commits", "Commits", "All the open source commits for Global Steam")
 
 	returnTemplate(w, r, t)
 }

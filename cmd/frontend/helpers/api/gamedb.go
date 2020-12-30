@@ -26,7 +26,7 @@ var SwaggerGameDB = &openapi3.Swagger{
 		URL: config.C.GameDBDomain + "/api/gamedb",
 	},
 	Info: &openapi3.Info{
-		Title:          "Game DB API",
+		Title:          "Global Steam API",
 		Version:        "1.0.0",
 		TermsOfService: config.C.GameDBDomain + "/terms",
 		Contact: &openapi3.Contact{

@@ -351,13 +351,13 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 			if err != nil {
 				log.ErrS(err)
 			}
-			session.SetFlash(r, session.SessionBad, "Unable to find a Game DB account linked with this "+provider.GetName()+" account (1107)")
+			session.SetFlash(r, session.SessionBad, "Unable to find a Global Steam account linked with this "+provider.GetName()+" account (1107)")
 			return
 		}
 
 		user, err = mysql.GetUserByID(userProvider.UserID)
 		if err == mysql.ErrRecordNotFound {
-			session.SetFlash(r, session.SessionBad, "Unable to find a Game DB account linked with this "+provider.GetName()+" account (1108)")
+			session.SetFlash(r, session.SessionBad, "Unable to find a Global Steam account linked with this "+provider.GetName()+" account (1108)")
 			return
 		} else if err != nil {
 			log.ErrS(err)
@@ -378,7 +378,7 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 		session.SetFlash(r, session.SessionBad, "An error occurred (1111)")
 		return
 	} else if used {
-		session.SetFlash(r, session.SessionBad, "This "+provider.GetName()+" account ("+resp.Username+") is already linked to another Game DB account")
+		session.SetFlash(r, session.SessionBad, "This "+provider.GetName()+" account ("+resp.Username+") is already linked to another Global Steam account")
 		return
 	}
 

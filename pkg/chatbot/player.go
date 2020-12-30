@@ -87,13 +87,13 @@ func (c CommandPlayer) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC
 
 		i, err := strconv.ParseInt(provider.ID, 10, 64)
 		if err != nil || i == 0 {
-			message.Content = "We had trouble finding your profile on Game DB"
+			message.Content = "We had trouble finding your profile on Global Steam"
 			return message, nil
 		}
 
 		player, err = mongo.GetPlayer(i)
 		if err != nil {
-			message.Content = "We had trouble finding your profile on Game DB"
+			message.Content = "We had trouble finding your profile on Global Steam"
 			return message, nil
 		}
 

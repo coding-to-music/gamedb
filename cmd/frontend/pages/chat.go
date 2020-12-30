@@ -75,7 +75,7 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	// // Template
 	// t := chatTemplate{}
-	// t.fill(w, r, "Chat", "The Game DB community.")
+	// t.fill(w, r, "Chat", "The Global Steam community.")
 	// t.ChannelID = id
 	// t.addAssetJSON2HTML()
 	//

@@ -99,7 +99,7 @@ func forgotPostHandler(w http.ResponseWriter, r *http.Request) {
 			userEmail,
 			"",
 			"",
-			"Game DB Forgotten Password",
+			"Global Steam Forgotten Password",
 			email.ForgotMissingTemplate{
 				Email: userEmail,
 				IP:    geo.GetFirstIP(r.RemoteAddr),
@@ -132,7 +132,7 @@ func forgotPostHandler(w http.ResponseWriter, r *http.Request) {
 		userEmail,
 		"",
 		"",
-		"Game DB Forgotten Password",
+		"Global Steam Forgotten Password",
 		email.Forgot1Template{
 			Domain: config.C.GameDBDomain,
 			Code:   code.Code,
@@ -217,7 +217,7 @@ func forgotResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 		user.Email,
 		"",
 		"",
-		"Game DB Password Reset",
+		"Global Steam Password Reset",
 		email.Forgot2Template{
 			Password: passwordString,
 			IP:       geo.GetFirstIP(r.RemoteAddr),

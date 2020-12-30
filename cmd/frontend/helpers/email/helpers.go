@@ -12,7 +12,7 @@ func NewSignup(email string, r *http.Request) error {
 		email,
 		"",
 		"",
-		"Welcome to Game DB",
+		"Welcome to Global Steam",
 		SignupTemplate{
 			IP: geo.GetFirstIP(r.RemoteAddr),
 		},

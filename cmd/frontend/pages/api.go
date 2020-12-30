@@ -36,7 +36,7 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	t := apiTemplate{}
-	t.fill(w, r, "api", "API Docs", "A list of API endpoints to access Steam data & Game DB data")
+	t.fill(w, r, "api", "API Docs", "A list of API endpoints to access Steam & Global Steam data")
 	t.Key = session.Get(r, session.SessionUserAPIKey)
 	t.Spec = spec
 

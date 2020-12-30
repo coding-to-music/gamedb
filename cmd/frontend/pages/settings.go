@@ -53,7 +53,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 
 	//
 	t := settingsTemplate{}
-	t.fill(w, r, "settings", "Settings", "Game DB settings")
+	t.fill(w, r, "settings", "Settings", "Global Steam settings")
 	t.addAssetPasswordStrength()
 	t.addAssetChosen()
 	t.addAssetBootbox()

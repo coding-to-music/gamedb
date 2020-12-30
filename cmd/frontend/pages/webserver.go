@@ -352,7 +352,7 @@ func (t *globalTemplate) fill(w http.ResponseWriter, r *http.Request, templateNa
 	t.response = w
 	t.TemplateName = templateName
 
-	t.Title = title + " - Game DB"
+	t.Title = title + " - Global Steam"
 	t.TitleOnly = title
 	t.Description = description
 	t.Env = config.C.Environment

@@ -29,7 +29,7 @@ func ContactRouter() http.Handler {
 func contactHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := contactTemplate{}
-	t.fill(w, r, "contact", "Contact", "Get in touch with Game DB.")
+	t.fill(w, r, "contact", "Contact", "Get in touch with Global Steam")
 	t.HCaptchaPublic = config.C.HCaptchaPublic
 
 	t.SessionName = session.Get(r, contactSessionName)
@@ -105,7 +105,7 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 				config.C.AdminEmail,
 				r.PostForm.Get("name"),
 				r.PostForm.Get("email"),
-				"Game DB Contact Form",
+				"Global Steam Contact Form",
 				email.ContactTemplate{
 					Message: r.PostForm.Get("message"),
 					IP:      geo.GetFirstIP(r.RemoteAddr),
