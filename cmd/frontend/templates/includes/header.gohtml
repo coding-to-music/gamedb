@@ -299,14 +299,11 @@
                         </a>
                         <div class="dropdown-menu dropdown-menu-right">
                             {{ range $key, $value:= .ProductCCs }}
-                                {{ if .Enabled }}
-                                    <a class="dropdown-item" href="/currency/{{ .ProductCode }}">
-                                        <img src="/assets/img/flags/{{ .GetFlag }}.png" alt="{{ .Name }}">
-                                        {{ .Name }}
-                                    </a>
-                                {{ end }}
+                                <a class="dropdown-item" href="/currency/{{ .ProductCode }}">
+                                    <img src="/assets/img/flags/{{ .GetFlag }}.png" alt="{{ .Name }}">
+                                    {{ .Name }}
+                                </a>
                             {{ end }}
-                            <span class="dropdown-item">The rest coming soon.</span>
                         </div>
                     </li>
 
