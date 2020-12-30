@@ -11,7 +11,7 @@ if ($('#stats-page').length > 0) {
             "release-dates": statsReleaseDates,
             "app-types": statsAppTypes,
 
-            // Game DB
+            // Global Steam
             "player-countries": playerCountries,
             "player-levels": statsPlayerLevels,
             "player-update-days": statsPlayerUpdateDays,

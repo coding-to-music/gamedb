@@ -1,8 +1,8 @@
-# Game DB
+# Global Steam
 
 ### Processes
 
-Game DB is split into processes. They are found in the ./cmd folder. To run a process, you can use the helper script:
+Global Steam is split into processes. They are found in the ./cmd folder. To run a process, you can use the helper script:
 
 `./run frontend`, `./run backend` etc
 
@@ -15,7 +15,7 @@ You should get warnings if you run a process without a required config set.
 
 ### Services
 
-Game DB uses several third party apps to run. You can install these with Brew:
+Global Steam uses several third party apps to run. You can install these with Brew:
 
 `brew tap mongodb/brew`
 

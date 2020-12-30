@@ -15,7 +15,7 @@ if ($('#coop-page').length > 0) {
             },
             "language": {
                 "zeroRecords": function () {
-                    return 'No matching players found on Game DB. If a player is missing, <a href="/players/add?search=' + $search.val() + '">add them here</a>.';
+                    return 'No matching players found on Global Steam. If a player is missing, <a href="/players/add?search=' + $search.val() + '">add them here</a>.';
                 },
             },
             "columnDefs": [

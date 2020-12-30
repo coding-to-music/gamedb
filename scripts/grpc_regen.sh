@@ -3,7 +3,7 @@
 # Settings
 OUT=${STEAM_INFRASTRUCTURE_PATH}/grpc
 COUNTRY="GBR"
-BRAND="Game DB"
+BRAND="Global Steam"
 EXPIRES="10 years"
 
 # CA

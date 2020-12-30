@@ -381,7 +381,7 @@
                                             {{/*    <td>{{ commaf .App.PlayerAverageWeek }}</td>*/}}
                                             {{/*</tr>*/}}
                                             <tr>
-                                                <td>Average Playtime <small>(On Game DB)</small></td>
+                                                <td>Average Playtime <small>(On Global Steam)</small></td>
                                                 <td>{{ .App.GetPlaytimeAverage }}</td>
                                             </tr>
                                             {{/*Todo, explain what these values are*/}}
@@ -446,7 +446,7 @@
                                         </table>
                                     </div>
                                     <small class="card-footer">
-                                        From Game DB players
+                                        From Global Steam players
                                         <span class="show-more float-right cursor-pointer">Show More</span>
                                     </small>
                                 </div>
@@ -695,7 +695,7 @@
                                     <i class="fas fa-spinner fa-spin"></i>
                                 </div>
                             </div>
-                            <small class="card-footer">Data from Game DB players who have at least one achievement</small>
+                            <small class="card-footer">Data from Global Steam players who have at least one achievement</small>
                         </div>
 
                         <div class="form-row">
@@ -850,7 +850,7 @@
 
                         <div class="row">
                             <div class="col-6 col-md-4 col-lg-3 mb-3">
-                                <div role="button" class="btn btn-success btn-block mb-0">Game DB Score<br/>{{ .App.GetReviewScore }}</div>
+                                <div role="button" class="btn btn-success btn-block mb-0">Global Steam Score<br/>{{ .App.GetReviewScore }}</div>
                             </div>
 
                             <div class="col-6 col-md-4 col-lg-3 mb-3">

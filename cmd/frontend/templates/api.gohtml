@@ -9,8 +9,8 @@
 
             {{ if eq .Spec "gamedb" }}
                 <p class="lead">
-                    <small>If you need anything that is not in the Game DB API yet, please <a href="/contact">contact</a> me.</small><br>
-                    <small>The Game DB API is currently open to donators only to help pay for hosting costs.</small>
+                    <small>If you need anything that is not in the Global Steam API yet, please <a href="/contact">contact</a> me.</small><br>
+                    <small>The Global Steam API is currently open to donators only to help pay for hosting costs.</small>
                 </p>
             {{ end }}
 
@@ -23,7 +23,7 @@
 
                 <ul class="nav nav-tabs card-header-tabs nav-fill-mobile">
                     <li class="nav-item">
-                        <a class="nav-link {{ if eq .Spec "gamedb" }}active{{ end }}" href="/api/gamedb" role="tab">Game DB</a>
+                        <a class="nav-link {{ if eq .Spec "gamedb" }}active{{ end }}" href="/api/gamedb" role="tab">Global Steam</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {{ if eq .Spec "steam" }}active{{ end }}" href="/api/steam" role="tab">Steam</a>

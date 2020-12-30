@@ -23,7 +23,7 @@
                 <a href="{{ .Group.GetURL }}" target="_blank" rel="noopener"><i class="fas fa-link"></i> Steam Group Page</a>
 
                 {{ if eq .Group.Type "game" }}
-                    <a href="/games/{{ .Group.AppID }}"><i class="fas fa-gamepad"></i> Game DB Page</a>
+                    <a href="/games/{{ .Group.AppID }}"><i class="fas fa-gamepad"></i> Global Steam Page</a>
                 {{ end }}
             </small>
 
@@ -52,7 +52,7 @@
                     </div>
                 {{ end }}
 
-                <h5>Game DB Members</h5>
+                <h5>Global Steam Members</h5>
                 <table class="table table-hover table-striped table-counts mb-0" data-path="/groups/{{ .Group.ID }}/table.json" id="players" data-row-type="players">
                     <thead class="thead-light">
                     <tr>
