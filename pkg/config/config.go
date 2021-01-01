@@ -187,7 +187,7 @@ func Init(ip string) (err error) {
 	C.IP = ip
 	C.NewReleaseDays = 14
 	C.DiscordServerInviteURL = "https://discord.gg/c5zrcus"
-	C.DiscordBotInviteURL = "https://discordapp.com/oauth2/authorize?client_id=" + discord.ClientIDBot + "&scope=bot&permissions=0"
+	C.DiscordBotInviteURL = "https://discordapp.com/oauth2/authorize?client_id=" + discord.ClientIDBot + "&scope=bot&scope=applications.commands&permissions=0"
 
 	return err
 }
