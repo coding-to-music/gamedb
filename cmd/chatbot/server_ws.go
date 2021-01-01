@@ -32,7 +32,7 @@ func websocketServer() (*discordgo.Session, error) {
 	}
 
 	// On joining a new guild
-	discordSession.AddHandlerOnce(func(s *discordgo.Session, m *discordgo.GuildCreate) {
+	discordSession.AddHandler(func(s *discordgo.Session, m *discordgo.GuildCreate) {
 
 		err := memcache.Delete(memcache.MemcacheChatBotGuildsCount.Key)
 		if err != nil {
