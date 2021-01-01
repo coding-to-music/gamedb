@@ -43,6 +43,22 @@ func (CommandAppPlayers) Type() CommandType {
 	return TypeGame
 }
 
+func (c CommandAppPlayers) Slash() SlashCommand {
+
+	return SlashCommand{
+		Name:        c.ID(),
+		Description: string(c.Description()),
+		Options: []SlashCommandOption{
+			{
+				Name:        "Game Name",
+				Description: "The name or ID of the game, or blank for all of steam",
+				Type:        CommandOptionString,
+				Required:    false,
+			},
+		},
+	}
+}
+
 func (c CommandAppPlayers) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC) (message discordgo.MessageSend, err error) {
 
 	matches := RegexCache[c.Regex()].FindStringSubmatch(msg.Message.Content)
