@@ -28,6 +28,7 @@ func (syncStates) run() {
 	//goland:noinspection GoBoolExpressions
 	if sessionID == "" || steamLoginSecure == "" {
 		log.Err("fill in cookie values")
+		return
 	}
 
 	m := map[string]map[string]string{}
