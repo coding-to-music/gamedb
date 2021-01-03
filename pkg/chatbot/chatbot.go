@@ -131,41 +131,6 @@ type App interface {
 	GetReleaseDateNice() string
 }
 
-//goland:noinspection GoUnusedConst
-const (
-	CommandOptionSubCommand = iota + 1
-	CommandOptionSubCommandGroup
-	CommandOptionString
-	CommandOptionInteger
-	CommandOptionBoolean
-	CommandOptionUser
-	CommandOptionChannel
-	CommandOptionRole
-)
-
-type SlashCommandInterface interface {
-	Slash() SlashCommand
-}
-
-type SlashCommand struct {
-	Name        string               `json:"name"`
-	Description string               `json:"description"`
-	Options     []SlashCommandOption `json:"options"`
-}
-
-type SlashCommandOption struct {
-	Name        string                     `json:"name"`
-	Description string                     `json:"description"`
-	Type        int                        `json:"type"`
-	Required    bool                       `json:"required"`
-	Choices     []SlashCommandOptionChoice `json:"choices,omitempty"`
-}
-
-type SlashCommandOptionChoice struct {
-	Name  string `json:"name"`
-	Value string `json:"value"`
-}
-
 func getAppEmbed(commandID string, app App, code steamapi.ProductCC) *discordgo.MessageEmbed {
 
 	return &discordgo.MessageEmbed{
