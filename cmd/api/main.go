@@ -99,11 +99,5 @@ func rateLimitedHandler(w http.ResponseWriter, _ *http.Request) {
 }
 
 func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
-
-	w.Header().Set("Content-Type", "text/plain")
-
-	_, err := w.Write([]byte(http.StatusText(http.StatusOK)))
-	if err != nil {
-		log.ErrS(err)
-	}
+	http.Error(w, http.StatusText(http.StatusOK), http.StatusOK)
 }

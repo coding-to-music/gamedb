@@ -3,7 +3,6 @@ package pages
 import (
 	"net/http"
 
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/go-chi/chi"
 )
 
@@ -16,12 +15,5 @@ func HealthCheckRouter() http.Handler {
 }
 
 func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
-
-	w.Header().Set("Content-Type", "text/plain")
-	w.WriteHeader(http.StatusOK)
-
-	_, err := w.Write([]byte(http.StatusText(http.StatusOK)))
-	if err != nil {
-		log.ErrS(err)
-	}
+	http.Error(w, http.StatusText(http.StatusOK), http.StatusOK)
 }
