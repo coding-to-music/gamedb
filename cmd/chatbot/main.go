@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/chatbot"
+	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/discord"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -91,9 +92,17 @@ func slashCommandRegister() error {
 
 	for _, c := range chatbot.CommandRegister {
 
-		if val, ok := c.(chatbot.SlashCommandInterface); ok {
+		continue
 
-			b, err := json.Marshal(val.Slash())
+		if val, ok := c.(chatbot.SlashCommand); ok {
+
+			payload := interactions.Interaction{
+				Name:        c.ID(),
+				Description: string(c.Description()),
+				Options:     val.Slash(),
+			}
+
+			b, err := json.Marshal(payload)
 			if err != nil {
 				return err
 			}
