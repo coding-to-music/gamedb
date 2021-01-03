@@ -20,7 +20,8 @@ var (
 	TypeGroup  CommandType = "Group"
 	TypeOther  CommandType = "Miscellaneous"
 
-	RegexCache = make(map[string]*regexp.Regexp, len(CommandRegister))
+	RegexCache   = make(map[string]*regexp.Regexp, len(CommandRegister))
+	CommandCache = make(map[string]Command, len(CommandRegister))
 )
 
 type Command interface {
@@ -60,33 +61,34 @@ const (
 )
 
 var CommandRegister = []Command{
-	CommandApp{},
-	CommandAppFollowers{},
-	CommandAppPlayers{},
-	CommandSteamOnline{},
-	CommandAppRandom{},
-	CommandAppsNew{},
-	CommandAppPrice{},
-	CommandAppsPopular{},
-	CommandAppsTrending{},
-	CommandGroup{},
-	CommandGroupsTrending{},
-	CommandPlayer{},
-	CommandPlayerApps{},
-	CommandPlayerLevel{},
-	CommandPlayerPlaytime{},
-	CommandPlayerRecent{},
-	CommandPlayerLibrary{},
-	CommandPlayerUpdate{},
-	CommandPlayerWishlist{},
-	CommandHelp{},
-	CommandInvite{},
-	CommandSettings{},
+	&CommandApp{},
+	&CommandAppFollowers{},
+	&CommandAppPlayers{},
+	&CommandSteamOnline{},
+	&CommandAppRandom{},
+	&CommandAppsNew{},
+	&CommandAppPrice{},
+	&CommandAppsPopular{},
+	&CommandAppsTrending{},
+	&CommandGroup{},
+	&CommandGroupsTrending{},
+	&CommandPlayer{},
+	&CommandPlayerApps{},
+	&CommandPlayerLevel{},
+	&CommandPlayerPlaytime{},
+	&CommandPlayerRecent{},
+	&CommandPlayerLibrary{},
+	&CommandPlayerUpdate{},
+	&CommandPlayerWishlist{},
+	&CommandHelp{},
+	&CommandInvite{},
+	&CommandSettings{},
 }
 
 func init() {
 	for _, v := range CommandRegister {
 		RegexCache[v.Regex()] = regexp.MustCompile(v.Regex())
+		CommandCache[v.Regex()] = v
 	}
 }
 
