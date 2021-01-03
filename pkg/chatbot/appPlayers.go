@@ -86,6 +86,7 @@ func (c CommandAppPlayers) Output(msg *discordgo.MessageCreate, _ steamapi.Produ
 		URL:       config.C.GameDBDomain + app.GetPath(),
 		Thumbnail: &discordgo.MessageEmbedThumbnail{URL: app.GetHeaderImage()},
 		Footer:    getFooter(),
+		Color:     2664261,
 		Image: &discordgo.MessageEmbedImage{
 			URL: charts.GetAppPlayersChart(c.ID(), app.ID, "7d", "10m"),
 		},

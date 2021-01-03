@@ -49,6 +49,7 @@ func (CommandAppsPopular) Output(msg *discordgo.MessageCreate, _ steamapi.Produc
 		Title:  "Popular Games",
 		URL:    config.C.GameDBDomain + "/games",
 		Author: getAuthor(msg.Author.ID),
+		Color:  2664261,
 	}
 
 	apps, err := mongo.PopularApps()

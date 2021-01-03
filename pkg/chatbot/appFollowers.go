@@ -71,6 +71,7 @@ func (c CommandAppFollowers) Output(msg *discordgo.MessageCreate, _ steamapi.Pro
 		URL:         config.C.GameDBDomain + app.GetPath(),
 		Thumbnail:   &discordgo.MessageEmbedThumbnail{URL: app.GetHeaderImage()},
 		Footer:      getFooter(),
+		Color:       2664261,
 		Image: &discordgo.MessageEmbedImage{
 			URL: charts.GetGroupChart(c.ID(), app.GroupID),
 		},

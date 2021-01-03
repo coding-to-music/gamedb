@@ -48,6 +48,7 @@ func (CommandGroupsTrending) Output(msg *discordgo.MessageCreate, _ steamapi.Pro
 		Title:  "Trending Groups",
 		URL:    config.C.GameDBDomain + "/groups",
 		Author: getAuthor(msg.Author.ID),
+		Color:  2664261,
 	}
 
 	groups, err := mongo.TrendingGroups()

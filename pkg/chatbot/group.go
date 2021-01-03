@@ -73,6 +73,7 @@ func (c CommandGroup) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC)
 			URL: group.GetIcon(),
 		},
 		Footer: getFooter(),
+		Color:  2664261,
 		Fields: []*discordgo.MessageEmbedField{
 			{
 				Name:  "Members",

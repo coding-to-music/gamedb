@@ -48,6 +48,7 @@ func (CommandAppsTrending) Output(msg *discordgo.MessageCreate, _ steamapi.Produ
 		Title:  "Trending Games",
 		URL:    config.C.GameDBDomain + "/games/trending",
 		Author: getAuthor(msg.Author.ID),
+		Color:  2664261,
 	}
 
 	apps, err := mongo.TrendingApps()

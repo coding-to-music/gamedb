@@ -85,6 +85,7 @@ func (c CommandPlayerWishlist) Output(msg *discordgo.MessageCreate, _ steamapi.P
 			Title:  "Wishlist Items",
 			URL:    config.C.GameDBDomain + player.GetPath() + "#wishlist",
 			Author: getAuthor(msg.Author.ID),
+			Color:  2664261,
 		}
 
 		var code []string

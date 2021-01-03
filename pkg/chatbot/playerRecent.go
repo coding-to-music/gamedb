@@ -84,6 +84,7 @@ func (c CommandPlayerRecent) Output(msg *discordgo.MessageCreate, _ steamapi.Pro
 			Title:  "Recent Games",
 			URL:    config.C.GameDBDomain + player.GetPath() + "#games",
 			Author: getAuthor(msg.Author.ID),
+			Color:  2664261,
 		}
 
 		var code []string

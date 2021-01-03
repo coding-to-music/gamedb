@@ -144,6 +144,7 @@ func (c CommandPlayer) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC
 			URL: avatar,
 		},
 		Footer: getFooter(),
+		Color:  2664261,
 		Fields: []*discordgo.MessageEmbedField{
 			{
 				Name:  "Level",

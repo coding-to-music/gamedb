@@ -173,6 +173,10 @@ func getAppEmbed(commandID string, app App, code steamapi.ProductCC) *discordgo.
 		URL:       config.C.GameDBDomain + app.GetPath(),
 		Thumbnail: &discordgo.MessageEmbedThumbnail{URL: app.GetHeaderImage()},
 		Footer:    getFooter(),
+		Color:     2664261,
+		Image: &discordgo.MessageEmbedImage{
+			URL: charts.GetAppPlayersChart(commandID, app.GetID(), "168d", "1d"),
+		},
 		Fields: []*discordgo.MessageEmbedField{
 			{
 				Name:   "Max Weekly Players",
@@ -209,9 +213,6 @@ func getAppEmbed(commandID string, app App, code steamapi.ProductCC) *discordgo.
 				Value:  app.GetReleaseDateNice(),
 				Inline: true,
 			},
-		},
-		Image: &discordgo.MessageEmbedImage{
-			URL: charts.GetAppPlayersChart(commandID, app.GetID(), "168d", "1d"),
 		},
 	}
 }
