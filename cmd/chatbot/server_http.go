@@ -2,10 +2,17 @@ package main
 
 import (
 	"compress/flate"
+	"crypto/ed25519"
+	"encoding/hex"
+	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"time"
 
+	"github.com/Jleagle/steam-go/steamapi"
+	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/chatbot"
+	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/middleware"
@@ -20,6 +27,7 @@ func slashCommandServer() error {
 	r.Use(chiMiddleware.NewCompressor(flate.DefaultCompression, "text/html", "text/css", "text/javascript", "application/json", "application/javascript").Handler)
 	r.Use(middleware.RealIP)
 
+	r.Post("/", discordHandler)
 	r.Get("/health-check", healthCheckHandler)
 
 	for _, c := range chatbot.CommandRegister {
@@ -54,14 +62,120 @@ func slashCommandServer() error {
 	return nil
 }
 
-func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
+func discordHandler(w http.ResponseWriter, r *http.Request) {
 
-	w.Header().Set("Content-Type", "text/plain")
+	w.Header().Set("Content-Type", "application/json")
 
-	_, err := w.Write([]byte(http.StatusText(http.StatusOK)))
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.ErrS(err)
+		http.Error(w, http.StatusText(500), 500)
+		return
+	}
+
+	signature := r.Header.Get("X-Signature-Ed25519")
+	timestamp := r.Header.Get("X-Signature-Timestamp")
+
+	// Verify against signature
+	valid, err := verifyRequest(signature, timestamp+string(body), config.C.DiscordOChatBotPublKey)
 	if err != nil {
 		log.ErrS(err)
 	}
+	if !valid {
+		http.Error(w, http.StatusText(401), 401)
+		return
+	}
+
+	event := interactions.Event{}
+	err = json.Unmarshal(body, &event)
+	if err != nil {
+		log.ErrS(err)
+		http.Error(w, http.StatusText(500), 500)
+		return
+	}
+
+	// Check for pings
+	if event.Type == 1 {
+
+		response := interactions.Response{
+			Type: interactions.ResponseTypePong,
+		}
+
+		b, err := json.Marshal(response)
+		if err != nil {
+			log.ErrS(err)
+			http.Error(w, http.StatusText(500), 500)
+			return
+		}
+
+		_, _ = w.Write(b)
+		return
+	}
+
+	// todo
+	// command, ok := chatbot.CommandCache[event.Data.Name]
+	command, ok := chatbot.CommandCache["app-players"]
+	if !ok {
+		http.Error(w, http.StatusText(404), 404)
+		return
+	}
+
+	payload := &discordgo.MessageCreate{
+		Message: &discordgo.Message{
+			Content: "",
+			Author: &discordgo.User{
+				ID: event.Member.User.ID,
+			},
+		},
+	}
+
+	out, err := command.Output(payload, steamapi.ProductCCUS)
+	if err != nil {
+		log.ErrS(err)
+		http.Error(w, http.StatusText(500), 500)
+		return
+	}
+
+	response := interactions.Response{
+		Type: interactions.ResponseTypeMessageWithSource,
+		Data: interactions.ResponseData{
+			Content: out.Content,
+			Embeds:  []*discordgo.MessageEmbed{out.Embed},
+		},
+	}
+
+	b, err := json.Marshal(response)
+	if err != nil {
+		log.ErrS(err)
+		http.Error(w, http.StatusText(500), 500)
+		return
+	}
+
+	_, err = w.Write(b)
+	if err != nil {
+		log.ErrS(err)
+		http.Error(w, http.StatusText(500), 500)
+		return
+	}
+}
+
+func verifyRequest(signature, hash, publicKey string) (bool, error) {
+
+	decodedSignature, err := hex.DecodeString(signature)
+	if err != nil {
+		return false, err
+	}
+
+	decodedPublicKey, err := hex.DecodeString(publicKey)
+	if err != nil {
+		return false, err
+	}
+
+	return ed25519.Verify(decodedPublicKey, []byte(hash), decodedSignature), nil
+}
+
+func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
+	http.Error(w, http.StatusText(http.StatusOK), http.StatusOK)
 }
 
 func errorHandler(w http.ResponseWriter, _ *http.Request) {

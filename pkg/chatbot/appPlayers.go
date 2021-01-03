@@ -7,6 +7,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/chatbot/charts"
+	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -43,18 +44,14 @@ func (CommandAppPlayers) Type() CommandType {
 	return TypeGame
 }
 
-func (c CommandAppPlayers) Slash() SlashCommand {
+func (c CommandAppPlayers) Slash() []interactions.InteractionOption {
 
-	return SlashCommand{
-		Name:        c.ID(),
-		Description: string(c.Description()),
-		Options: []SlashCommandOption{
-			{
-				Name:        "Game Name",
-				Description: "The name or ID of the game, or blank for all of steam",
-				Type:        CommandOptionString,
-				Required:    false,
-			},
+	return []interactions.InteractionOption{
+		{
+			Name:        "Game Name",
+			Description: "The name or ID of the game, or blank for all of steam",
+			Type:        interactions.CommandOptionString,
+			Required:    false,
 		},
 	}
 }

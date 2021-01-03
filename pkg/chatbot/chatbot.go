@@ -8,6 +8,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/chatbot/charts"
+	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 )
@@ -35,6 +36,12 @@ type Command interface {
 	Type() CommandType
 }
 
+type SlashCommand interface {
+	Command
+	Slash() []interactions.InteractionOption
+}
+
+// These are the discord slash command names
 const (
 	CApp            = "app"
 	CSettings       = "settings"
@@ -88,7 +95,7 @@ var CommandRegister = []Command{
 func init() {
 	for _, v := range CommandRegister {
 		RegexCache[v.Regex()] = regexp.MustCompile(v.Regex())
-		CommandCache[v.Regex()] = v
+		CommandCache[v.ID()] = v
 	}
 }
 

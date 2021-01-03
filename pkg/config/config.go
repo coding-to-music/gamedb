@@ -34,12 +34,13 @@ type Config struct {
 	DigitalOceanKeyFingerprint string `envconfig:"DO_KEY_FINGERPRINT"`
 
 	// Discord
+	DiscordChangesBotToken string `envconfig:"DISCORD_CHANGES_BOT_TOKEN"` // Changes
+	DiscordChatBotToken    string `envconfig:"DISCORD_BOT_TOKEN"`         // Chat Bot
+	DiscordOChatBotPublKey string `envconfig:"DISCORD_BOT_PUBLIC_KEY"`    // Chat Bot
 	DiscordClientID        string `envconfig:"DISCORD_CLIENT_ID"`         // OAuth
 	DiscordClientSescret   string `envconfig:"DISCORD_SECRET"`            // OAuth
-	DiscordChatBotToken    string `envconfig:"DISCORD_BOT_TOKEN"`         // Bot
-	DiscordRelayBotToken   string `envconfig:"DISCORD_RELAY_TOKEN"`       // Bot
-	DiscordChangesBotToken string `envconfig:"DISCORD_CHANGES_BOT_TOKEN"` // Bot
-	DiscordOAuthBotToken   string `envconfig:"DISCORD_OAUTH_BOT_TOKEN"`   // Bot
+	DiscordOAuthBotToken   string `envconfig:"DISCORD_OAUTH_BOT_TOKEN"`   // Oauth
+	DiscordRelayBotToken   string `envconfig:"DISCORD_RELAY_TOKEN"`       // Relay
 
 	// Elastic Search
 	ElasticAddress  string `envconfig:"ELASTIC_SEARCH_ADDRESS" required:"true"`
