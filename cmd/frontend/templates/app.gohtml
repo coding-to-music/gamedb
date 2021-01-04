@@ -240,21 +240,25 @@
 
                                 <div class="card mt-3 mt-lg-0">
                                     <h5 class="card-header">Tags</h5>
-                                    <div class="card-body p-0">
-                                        <table class="table table-no-border table-xs mb-0">
-                                            <tbody>
-                                            {{ range $key, $value := .App.TagCounts }}
-                                                {{ if gt .Count 0 }}
-                                                    <tr data-link="{{ .GetPath }}" style="background: linear-gradient(to right, #28a74522 {{ percent .Count $.TagsMax }}%, transparent {{ percent .Count $.TagsMax }}%)">
-                                                        <td>{{ .Name }}</td>
-                                                        <td class="text-right"><small>{{ comma .Count }} <i class="fas fa-thumbs-up"></i></small></td>
-                                                    </tr>
+                                    {{ if gt (len .App.TagCounts) 0 }}
+                                        <div class="card-body p-0">
+                                            <table class="table table-no-border table-xs mb-0">
+                                                <tbody>
+                                                {{ range $key, $value := .App.TagCounts }}
+                                                    {{ if gt .Count 0 }}
+                                                        <tr data-link="{{ .GetPath }}" style="background: linear-gradient(to right, #28a74522 {{ percent .Count $.TagsMax }}%, transparent {{ percent .Count $.TagsMax }}%)">
+                                                            <td>{{ .Name }}</td>
+                                                            <td class="text-right"><small>{{ comma .Count }} <i class="fas fa-thumbs-up"></i></small></td>
+                                                        </tr>
+                                                    {{ end }}
                                                 {{ end }}
-                                            {{ end }}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <div data-link-tab="tags" class="card-footer">View tags over time!</div>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div data-link-tab="tags" class="card-footer">View tags over time!</div>
+                                    {{ else }}
+                                        <div class="card-body">No Tags</div>
+                                    {{ end  }}
                                 </div>
 
                                 <div class="card mt-3">
