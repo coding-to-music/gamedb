@@ -55,17 +55,15 @@ func (c SteamOnline) work() (err error) {
 		}
 	}
 
-	fields := map[string]interface{}{
-		"player_online": sp.int(sp.Online),
-		"player_count":  sp.int(sp.InGame),
-	}
-
 	_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, influx.Point{
 		Measurement: string(influxHelper.InfluxMeasurementApps),
 		Tags: map[string]string{
 			"app_id": "0",
 		},
-		Fields:    fields,
+		Fields: map[string]interface{}{
+			"player_online": toInt(sp.Online),
+			"player_count":  toInt(sp.InGame),
+		},
 		Time:      time.Now(),
 		Precision: "m",
 	})
@@ -78,11 +76,39 @@ type steamPlayersStruct struct {
 	InGame string `json:"users_ingame"`
 }
 
-func (sp steamPlayersStruct) int(s string) int {
-	s = strings.ReplaceAll(s, ",", "")
+func toInt(s string) int {
+
+	s = helpers.RegexNonInts.ReplaceAllString(s, "")
+
 	i, err := strconv.Atoi(s)
 	if err != nil {
 		log.WarnS(err)
 	}
+
 	return i
 }
+
+// func fallback(){
+//
+// 	col := colly.NewCollector(
+// 		steam.WithTimeout(0),
+// 	)
+//
+// 	col.OnHTML("#stats_users_online", func(e *colly.HTMLElement) {
+// 		online = toInt(e.Text)
+// 	})
+//
+// 	col.OnHTML("#stats_users_ingame", func(e *colly.HTMLElement) {
+// 		ingame = toInt(e.Text)
+// 	})
+//
+// 	//
+// 	col.OnError(func(r *colly.Response, err error) {
+// 		log.ErrS(err)
+// 	})
+//
+// 	err = col.Visit("https://www.valvesoftware.com/en/about")
+// 	if err != nil {
+// 		return err
+// 	}
+// }
