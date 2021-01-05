@@ -32,7 +32,10 @@ if ($('#stats-list-page').length > 0) {
                 {
                     "targets": 2,
                     "render": function (data, type, row) {
-                        return row[3];
+                        if (row[2]) {
+                            return row[3];
+                        }
+                        return '-';
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).attr('nowrap', 'nowrap');
@@ -43,7 +46,10 @@ if ($('#stats-list-page').length > 0) {
                 {
                     "targets": 3,
                     "render": function (data, type, row) {
-                        return row[5];
+                        if (row[2]) {
+                            return row[5];
+                        }
+                        return '-';
                     },
                     "orderSequence": ['desc', 'asc'],
                 },
@@ -51,7 +57,10 @@ if ($('#stats-list-page').length > 0) {
                 {
                     "targets": 4,
                     "render": function (data, type, row) {
-                        return row[4].toLocaleString();
+                        if (row[2]) {
+                            return row[4].toLocaleString();
+                        }
+                        return '-';
                     },
                     "orderSequence": ['desc', 'asc'],
                 },
