@@ -185,7 +185,7 @@ func GetStatsForSelect(typex StatsType) (stats []Stat, err error) {
 
 	err = memcache.GetSetInterface(memcache.MemcacheStatsForSelect(string(typex)), &stats, func() (interface{}, error) {
 
-		stats, err = GetStats(0, 200, bson.D{{"type", typex}}, bson.D{{"mean_score", -1}})
+		stats, err = GetStats(0, 500, bson.D{{"type", typex}}, bson.D{{"mean_score", -1}})
 
 		sort.Slice(stats, func(i, j int) bool {
 			return stats[i].Name < stats[j].Name
