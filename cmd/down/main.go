@@ -1,6 +1,7 @@
 package main
 
 import (
+	"io/ioutil"
 	"net/http"
 	"time"
 
@@ -55,8 +56,16 @@ func main() {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	_, err := w.Write([]byte("Down for maintenance"))
+
+	b, err := ioutil.ReadFile("down.gohtml")
 	if err != nil {
 		log.ErrS(zap.Error(err))
+		return
+	}
+
+	_, err = w.Write(b)
+	if err != nil {
+		log.ErrS(zap.Error(err))
+		return
 	}
 }
