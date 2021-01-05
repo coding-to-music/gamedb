@@ -28,7 +28,7 @@
         }
     }
 
-    #achievements{
+    #achievements {
         #achievement-counts-chart {
             height: 300px;
         }
@@ -43,6 +43,17 @@
         #players-chart2 {
             .highcharts-background {
                 cursor: ew-resize;
+            }
+        }
+
+        #player-countries {
+            .card-body {
+                overflow: auto;
+                height: 165px;
+
+                @include media-breakpoint-up(lg) {
+                    height: 462px;
+                }
             }
         }
     }
