@@ -7,6 +7,7 @@ import (
 //noinspection GoUnusedGlobalVariable
 var (
 	RegexInts                  = regexp.MustCompile(`[0-9]+`)
+	RegexIntsCommas            = regexp.MustCompile(`[0-9,]+`)
 	RegexIntsOnly              = regexp.MustCompile(`^[0-9]+$`)
 	RegexMD5Only               = regexp.MustCompile(`^[a-f0-9]{32}$`)
 	RegexSha1                  = regexp.MustCompile(`[a-f0-9]{40}`)

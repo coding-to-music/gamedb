@@ -41,6 +41,7 @@ if ($playerPage.length > 0) {
                     '<li data-queue="player">Details</li>' +
                     '<li data-queue="achievement">Achievements</li>' +
                     '<li data-queue="alias">Aliases</li>' +
+                    '<li data-queue="award">Awards</li>' +
                     '<li data-queue="badge">Badges</li>' +
                     '<li data-queue="game">Games</li>' +
                     '<li data-queue="group">Groups</li>' +

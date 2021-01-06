@@ -335,6 +335,9 @@ func playerHandler(message *rabbit.Message) {
 		PlayersWishlistMessage{
 			PlayerID: player.ID,
 		},
+		PlayersAwardsMessage{
+			PlayerID: player.ID,
+		},
 	}
 
 	for _, v := range produces {

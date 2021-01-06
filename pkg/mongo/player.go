@@ -153,6 +153,10 @@ type Player struct {
 	Ranks                    map[string]int             `bson:"ranks"`
 	RecentAppsCount          int                        `bson:"recent_apps_count"`
 	Removed                  bool                       `bson:"removed"` // Removed from Steam
+	AwardsGivenCount         int                        `bson:"awards_given_count"`
+	AwardsGivenPoints        int                        `bson:"awards_given_points"`
+	AwardsReceivedCount      int                        `bson:"awards_received_count"`
+	AwardsReceivedPoints     int                        `bson:"awards_received_points"`
 	StateCode                string                     `bson:"status_code"`
 	TimeCreated              time.Time                  `bson:"time_created"` // Created on Steam
 	UpdatedAt                time.Time                  `bson:"updated_at"`
@@ -213,6 +217,10 @@ func (player Player) BSON() bson.D {
 		{"level", player.Level},
 		{"play_time", player.PlayTime},
 		{"comments_count", player.CommentsCount},
+		{"awards_given_count", player.AwardsGivenCount},
+		{"awards_given_points", player.AwardsGivenPoints},
+		{"awards_received_count", player.AwardsReceivedCount},
+		{"awards_received_points", player.AwardsReceivedPoints},
 	}
 }
 
