@@ -13,7 +13,7 @@ type CommandAppRandom struct {
 }
 
 func (c CommandAppRandom) ID() string {
-	return CAppRandom
+	return CAppsRandom
 }
 
 func (CommandAppRandom) Regex() string {
