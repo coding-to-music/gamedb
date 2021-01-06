@@ -2,14 +2,14 @@ package interactions
 
 //goland:noinspection GoUnusedConst
 const (
-	CommandOptionSubCommand = iota + 1
-	CommandOptionSubCommandGroup
-	CommandOptionString
-	CommandOptionInteger
-	CommandOptionBoolean
-	CommandOptionUser
-	CommandOptionChannel
-	CommandOptionRole
+	InteractionOptionTypeSubCommand = iota + 1
+	InteractionOptionTypeSubCommandGroup
+	InteractionOptionTypeString
+	InteractionOptionTypeInteger
+	InteractionOptionTypeBoolean
+	InteractionOptionTypeUser
+	InteractionOptionTypeChannel
+	InteractionOptionTypeRole
 )
 
 type Interaction struct {
