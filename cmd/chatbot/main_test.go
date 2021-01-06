@@ -29,7 +29,7 @@ func Test(t *testing.T) {
 		"players {game}":    chatbot.CAppPlayers,
 		"online {game}":     chatbot.CAppPlayers,
 		"popular":           chatbot.CAppsPopular,
-		"random":            chatbot.CAppRandom,
+		"random":            chatbot.CAppsRandom,
 		"trending":          chatbot.CAppsTrending,
 		"group {game}":      chatbot.CGroup,
 		"clan {game}":       chatbot.CGroup,
