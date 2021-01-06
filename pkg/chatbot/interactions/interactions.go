@@ -13,13 +13,13 @@ const (
 )
 
 type Interaction struct {
-	Name        string              `json:"name"`
+	Name        string              `json:"name"` // ^[\w-]{3,32}$
 	Description string              `json:"description"`
 	Options     []InteractionOption `json:"options"`
 }
 
 type InteractionOption struct {
-	Name        string              `json:"name"`
+	Name        string              `json:"name"` // ^[\w-]{1,32}$
 	Description string              `json:"description"`
 	Type        int                 `json:"type"`
 	Required    bool                `json:"required"`
@@ -27,6 +27,6 @@ type InteractionOption struct {
 }
 
 type InteractionChoice struct {
-	Name  string `json:"name"`
-	Value string `json:"value"`
+	Name  string `json:"name"`  // 1-100 character choice name
+	Value string `json:"value"` // value of the choice
 }
