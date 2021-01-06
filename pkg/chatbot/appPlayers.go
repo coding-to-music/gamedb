@@ -48,10 +48,10 @@ func (c CommandAppPlayers) Slash() []interactions.InteractionOption {
 
 	return []interactions.InteractionOption{
 		{
-			Name:        "Game Name",
+			Name:        "game",
 			Description: "The name or ID of the game, or blank for all of steam",
 			Type:        interactions.CommandOptionString,
-			Required:    false,
+			Required:    true,
 		},
 	}
 }
