@@ -39,7 +39,7 @@ func appsFindGroupHandler(message *rabbit.Message) {
 
 	body, _, err := helpers.Get("https://steamcommunity.com/app/"+strconv.Itoa(payload.AppID), 0, nil)
 	if err != nil {
-		steam.LogSteamError(err, string(message.Message.Body))
+		steam.LogSteamError(err, zap.String("body", string(message.Message.Body)))
 		sendToRetryQueue(message)
 		return
 	}

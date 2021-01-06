@@ -99,7 +99,7 @@ func groupsHandler(message *rabbit.Message) {
 
 		} else if err != nil {
 
-			steam.LogSteamError(err, payload.ID)
+			steam.LogSteamError(err, zap.String("group id", payload.ID))
 			sendToRetryQueue(message)
 			return
 		}

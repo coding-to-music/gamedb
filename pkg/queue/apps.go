@@ -100,14 +100,14 @@ func appHandler(message *rabbit.Message) {
 
 		err = updateAppDetails(&app)
 		if err != nil && err != steamapi.ErrAppNotFound {
-			steam.LogSteamError(err, payload.ID)
+			steam.LogSteamError(err, zap.Int("app id", payload.ID))
 			sendToRetryQueue(message)
 			return
 		}
 
 		sales, err = scrapeApp(&app)
 		if err != nil {
-			steam.LogSteamError(err, payload.ID)
+			steam.LogSteamError(err, zap.Int("app id", payload.ID))
 			sendToRetryQueue(message)
 			return
 		}

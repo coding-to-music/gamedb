@@ -127,7 +127,7 @@ func packageHandler(message *rabbit.Message) {
 			if err == steamapi.ErrHTMLResponse {
 				log.InfoS(err, payload.ID)
 			} else {
-				steam.LogSteamError(err, payload.ID)
+				steam.LogSteamError(err, zap.Int("package id", payload.ID))
 			}
 
 			sendToRetryQueue(message)
@@ -143,7 +143,7 @@ func packageHandler(message *rabbit.Message) {
 
 		var err = scrapePackage(&pack)
 		if err != nil {
-			steam.LogSteamError(err, payload.ID)
+			steam.LogSteamError(err, zap.Int("package id", payload.ID))
 			sendToRetryQueue(message)
 			return
 		}

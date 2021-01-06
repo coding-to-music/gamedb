@@ -57,7 +57,7 @@ func bundleHandler(message *rabbit.Message) {
 
 	err = updateBundle(&bundle)
 	if err != nil && err != steamapi.ErrAppNotFound {
-		steam.LogSteamError(err, payload.ID)
+		steam.LogSteamError(err, zap.Int("bundle id", payload.ID))
 		sendToRetryQueue(message)
 		return
 	}

@@ -80,7 +80,7 @@ func appPlayersHandler(message *rabbit.Message) {
 			var err error
 			inGame, err = getAppOnlinePlayers(app.ID)
 			if err != nil {
-				steam.LogSteamError(err, payload.IDs)
+				steam.LogSteamError(err, zap.Ints("app ids", payload.IDs))
 				sendToRetryQueue(message)
 				return
 			}

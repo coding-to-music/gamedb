@@ -30,7 +30,7 @@ func AllowSteamCodes(err error, allowedCodes ...int) error {
 }
 
 // Downgrade some Steam errors to info.
-func LogSteamError(err error, interfaces ...interface{}) {
+func LogSteamError(err error, interfaces ...zap.Field) {
 
 	isError := func() bool {
 
@@ -78,13 +78,13 @@ func LogSteamError(err error, interfaces ...interface{}) {
 	}()
 
 	// Prepend error
-	interfaces = append([]interface{}{err}, interfaces...)
+	interfaces = append([]zap.Field{zap.Error(err)}, interfaces...)
 
 	// These don't use the log helper to fix the extra stack offset
 	if isError {
-		zap.S().Error(interfaces...)
+		zap.L().Error("Calling Steam", interfaces...)
 	} else {
-		zap.S().Info(interfaces...)
+		zap.L().Info("Calling Steam", interfaces...)
 	}
 }
 

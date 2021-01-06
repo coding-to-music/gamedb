@@ -122,7 +122,7 @@ func playerHandler(message *rabbit.Message) {
 			if err == steamapi.ErrProfileMissing {
 				player.Removed = true
 			} else {
-				steam.LogSteamError(err, payload.ID)
+				steam.LogSteamError(err, zap.Int64("player id", payload.ID))
 				sendToRetryQueue(message)
 			}
 			return
@@ -130,28 +130,28 @@ func playerHandler(message *rabbit.Message) {
 
 		err = updatePlayerRecentGames(&player, payload)
 		if err != nil {
-			steam.LogSteamError(err, payload.ID)
+			steam.LogSteamError(err, zap.Int64("player id", payload.ID))
 			sendToRetryQueue(message)
 			return
 		}
 
 		err = updatePlayerFriends(&player)
 		if err != nil {
-			steam.LogSteamError(err, payload.ID)
+			steam.LogSteamError(err, zap.Int64("player id", payload.ID))
 			sendToRetryQueue(message)
 			return
 		}
 
 		err = updatePlayerLevel(&player)
 		if err != nil {
-			steam.LogSteamError(err, payload.ID)
+			steam.LogSteamError(err, zap.Int64("player id", payload.ID))
 			sendToRetryQueue(message)
 			return
 		}
 
 		err = updatePlayerBans(&player)
 		if err != nil {
-			steam.LogSteamError(err, payload.ID)
+			steam.LogSteamError(err, zap.Int64("player id", payload.ID))
 			sendToRetryQueue(message)
 			return
 		}
@@ -165,7 +165,7 @@ func playerHandler(message *rabbit.Message) {
 
 		err = updatePlayerComments(&player)
 		if err != nil {
-			steam.LogSteamError(err, payload.ID)
+			steam.LogSteamError(err, zap.Int64("player id", payload.ID))
 			sendToRetryQueue(message)
 			return
 		}

@@ -191,7 +191,7 @@ func playerAchievementsHandler(message *rabbit.Message) {
 
 	err = steam.AllowSteamCodes(err, 400)
 	if err != nil {
-		steam.LogSteamError(err, string(message.Message.Body))
+		steam.LogSteamError(err, zap.String("body", string(message.Message.Body)))
 		sendToRetryQueue(message)
 		return
 	}
