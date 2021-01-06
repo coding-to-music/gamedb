@@ -3,13 +3,14 @@ package helpers
 import (
 	"bytes"
 	"errors"
-	"go.uber.org/zap"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
+
+	"go.uber.org/zap"
 
 	"github.com/cenkalti/backoff/v4"
 	"github.com/gamedb/gamedb/pkg/config"
@@ -27,6 +28,10 @@ func IsBot(userAgent string) bool {
 
 func Get(link string, timeout time.Duration, headers http.Header) (b []byte, code int, err error) {
 	return requestWithTimeout("GET", link, timeout, headers, nil)
+}
+
+func Delete(link string, timeout time.Duration, headers http.Header) (b []byte, code int, err error) {
+	return requestWithTimeout("DELETE", link, timeout, headers, nil)
 }
 
 func Head(link string, timeout time.Duration) (code int, err error) {
