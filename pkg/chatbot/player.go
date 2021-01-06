@@ -9,6 +9,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/oauth"
+	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -48,6 +49,18 @@ func (CommandPlayer) Description() template.HTML {
 
 func (CommandPlayer) Type() CommandType {
 	return TypePlayer
+}
+
+func (c CommandPlayer) Slash() []interactions.InteractionOption {
+
+	return []interactions.InteractionOption{
+		{
+			Name:        "player",
+			Description: "The name or ID of the player",
+			Type:        interactions.InteractionOptionTypeString,
+			Required:    true,
+		},
+	}
 }
 
 func (c CommandPlayer) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC) (message discordgo.MessageSend, err error) {

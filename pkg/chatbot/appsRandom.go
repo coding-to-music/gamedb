@@ -5,6 +5,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
+	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/olivere/elastic/v7"
 )
@@ -38,6 +39,10 @@ func (CommandAppRandom) Description() template.HTML {
 
 func (CommandAppRandom) Type() CommandType {
 	return TypeGame
+}
+
+func (c CommandAppRandom) Slash() []interactions.InteractionOption {
+	return []interactions.InteractionOption{}
 }
 
 func (c CommandAppRandom) Output(msg *discordgo.MessageCreate, code steamapi.ProductCC) (message discordgo.MessageSend, err error) {

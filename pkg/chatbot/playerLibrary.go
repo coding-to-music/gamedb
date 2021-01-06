@@ -7,6 +7,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
+	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -45,6 +46,18 @@ func (CommandPlayerLibrary) Description() template.HTML {
 
 func (CommandPlayerLibrary) Type() CommandType {
 	return TypePlayer
+}
+
+func (c CommandPlayerLibrary) Slash() []interactions.InteractionOption {
+
+	return []interactions.InteractionOption{
+		{
+			Name:        "player",
+			Description: "The name or ID of the player",
+			Type:        interactions.InteractionOptionTypeString,
+			Required:    true,
+		},
+	}
 }
 
 func (c CommandPlayerLibrary) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC) (message discordgo.MessageSend, err error) {

@@ -6,6 +6,7 @@ import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
+	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"github.com/gamedb/gamedb/pkg/mongo"
 )
 
@@ -38,6 +39,11 @@ func (CommandSteamOnline) Description() template.HTML {
 
 func (CommandSteamOnline) Type() CommandType {
 	return TypeOther
+}
+
+func (c CommandSteamOnline) Slash() []interactions.InteractionOption {
+
+	return []interactions.InteractionOption{}
 }
 
 func (c CommandSteamOnline) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC) (message discordgo.MessageSend, err error) {

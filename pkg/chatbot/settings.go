@@ -6,6 +6,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
+	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mysql"
@@ -47,6 +48,28 @@ func (CommandSettings) Description() template.HTML {
 
 func (CommandSettings) Type() CommandType {
 	return TypeOther
+}
+
+func (c CommandSettings) Slash() []interactions.InteractionOption {
+
+	// todo, use sub commands for each setting?
+	return []interactions.InteractionOption{
+		{
+			Name:        "setting",
+			Description: "The setting to set/retrieve",
+			Type:        interactions.InteractionOptionTypeString,
+			Required:    true,
+			Choices: []interactions.InteractionChoice{
+				{"Region", "region"},
+			},
+		},
+		{
+			Name:        "player",
+			Description: "The value to set, leave empty to retrieve the value",
+			Type:        interactions.InteractionOptionTypeString,
+			Required:    false,
+		},
+	}
 }
 
 func (c CommandSettings) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC) (message discordgo.MessageSend, err error) {

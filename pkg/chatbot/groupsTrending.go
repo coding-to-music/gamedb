@@ -2,6 +2,7 @@ package chatbot
 
 import (
 	"fmt"
+	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"html/template"
 	"strings"
 
@@ -40,6 +41,10 @@ func (CommandGroupsTrending) Description() template.HTML {
 
 func (CommandGroupsTrending) Type() CommandType {
 	return TypeGroup
+}
+
+func (c CommandGroupsTrending) Slash() []interactions.InteractionOption {
+	return []interactions.InteractionOption{}
 }
 
 func (CommandGroupsTrending) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC) (message discordgo.MessageSend, err error) {

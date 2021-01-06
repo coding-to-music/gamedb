@@ -5,6 +5,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
+	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/mongo"
 )
@@ -38,6 +39,18 @@ func (CommandApp) Description() template.HTML {
 
 func (CommandApp) Type() CommandType {
 	return TypeGame
+}
+
+func (c CommandApp) Slash() []interactions.InteractionOption {
+
+	return []interactions.InteractionOption{
+		{
+			Name:        "game",
+			Description: "The name or ID of the game",
+			Type:        interactions.InteractionOptionTypeString,
+			Required:    true,
+		},
+	}
 }
 
 func (c CommandApp) Output(msg *discordgo.MessageCreate, code steamapi.ProductCC) (message discordgo.MessageSend, err error) {

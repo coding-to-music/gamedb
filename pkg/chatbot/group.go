@@ -7,6 +7,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/chatbot/charts"
+	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 )
@@ -40,6 +41,18 @@ func (CommandGroup) Description() template.HTML {
 
 func (CommandGroup) Type() CommandType {
 	return TypeGroup
+}
+
+func (c CommandGroup) Slash() []interactions.InteractionOption {
+
+	return []interactions.InteractionOption{
+		{
+			Name:        "group",
+			Description: "The name or ID of the group",
+			Type:        interactions.InteractionOptionTypeString,
+			Required:    true,
+		},
+	}
 }
 
 func (c CommandGroup) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC) (message discordgo.MessageSend, err error) {

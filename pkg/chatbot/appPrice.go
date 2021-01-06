@@ -1,6 +1,7 @@
 package chatbot
 
 import (
+	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"html/template"
 	"strings"
 
@@ -46,6 +47,24 @@ func (CommandAppPrice) Description() template.HTML {
 
 func (CommandAppPrice) Type() CommandType {
 	return TypeGame
+}
+
+func (c CommandAppPrice) Slash() []interactions.InteractionOption {
+
+	return []interactions.InteractionOption{
+		{
+			Name:        "region",
+			Description: "The region code",
+			Type:        interactions.InteractionOptionTypeString,
+			Required:    false,
+		},
+		{
+			Name:        "game",
+			Description: "The name or ID of the game",
+			Type:        interactions.InteractionOptionTypeString,
+			Required:    true,
+		},
+	}
 }
 
 func (c CommandAppPrice) Output(msg *discordgo.MessageCreate, code steamapi.ProductCC) (message discordgo.MessageSend, err error) {

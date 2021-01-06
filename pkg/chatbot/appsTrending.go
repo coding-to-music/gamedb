@@ -7,6 +7,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
+	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/mongo"
 )
@@ -40,6 +41,10 @@ func (CommandAppsTrending) Description() template.HTML {
 
 func (CommandAppsTrending) Type() CommandType {
 	return TypeGame
+}
+
+func (c CommandAppsTrending) Slash() []interactions.InteractionOption {
+	return []interactions.InteractionOption{}
 }
 
 func (CommandAppsTrending) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC) (message discordgo.MessageSend, err error) {
