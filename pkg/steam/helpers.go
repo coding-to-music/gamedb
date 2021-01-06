@@ -65,6 +65,7 @@ func LogSteamError(err error, interfaces ...interface{}) {
 			"EOF",
 			"write: connection reset by peer",
 			"steam: store: null response",
+			"server responded with error",
 		}
 
 		for _, v := range steamErrors {
