@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steamvdf"
-	"github.com/Philipp15b/go-steam"
+	gosteam "github.com/Philipp15b/go-steam"
 	"github.com/Philipp15b/go-steam/protocol"
 	"github.com/Philipp15b/go-steam/protocol/protobuf"
 	"github.com/Philipp15b/go-steam/protocol/steamlang"
@@ -17,7 +17,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/queue"
-	steamHelpers "github.com/gamedb/gamedb/pkg/steam"
+	"github.com/gamedb/gamedb/pkg/steam"
 	"go.uber.org/zap"
 )
 
@@ -28,7 +28,7 @@ const (
 )
 
 var (
-	steamClient *steam.Client
+	steamClient *gosteam.Client
 
 	steamChangeNumber uint32
 	steamChangeLock   sync.Mutex
@@ -49,19 +49,19 @@ func main() {
 		log.ErrS("Missing environment variables")
 	}
 
-	loginDetails := steam.LogOnDetails{}
+	loginDetails := gosteam.LogOnDetails{}
 	loginDetails.Username = config.C.SteamUsername
 	loginDetails.Password = config.C.SteamPassword
 	loginDetails.SentryFileHash, _ = ioutil.ReadFile(steamSentryFilename)
 	loginDetails.ShouldRememberPassword = true
 	loginDetails.AuthCode = ""
 
-	err = steam.InitializeSteamDirectory()
+	err = gosteam.InitializeSteamDirectory()
 	if err != nil {
-		steamHelpers.LogSteamError(err)
+		steam.LogSteamError(err)
 	}
 
-	steamClient = steam.NewClient()
+	steamClient = gosteam.NewClient()
 	steamClient.RegisterPacketHandler(packetHandler{})
 	steamClient.Connect()
 
@@ -71,12 +71,12 @@ func main() {
 		for event := range steamClient.Events() {
 
 			switch e := event.(type) {
-			case *steam.ConnectedEvent:
+			case *gosteam.ConnectedEvent:
 
 				log.InfoS("Steam: Connected")
 				go steamClient.Auth.LogOn(&loginDetails)
 
-			case *steam.LoggedOnEvent:
+			case *gosteam.LoggedOnEvent:
 
 				// Load change checker
 				log.InfoS("Steam: Logged in")
@@ -87,13 +87,13 @@ func main() {
 				log.InfoS("Starting Steam consumers")
 				queue.Init(queue.QueueSteamDefinitions)
 
-			case *steam.LoggedOffEvent:
+			case *gosteam.LoggedOffEvent:
 
 				log.InfoS("Steam: Logged out")
 				steamLoggedOn = false
 				go steamClient.Disconnect()
 
-			case *steam.DisconnectedEvent:
+			case *gosteam.DisconnectedEvent:
 
 				log.InfoS("Steam: Disconnected")
 				steamLoggedOn = false
@@ -102,12 +102,12 @@ func main() {
 
 				go steamClient.Connect()
 
-			case *steam.LogOnFailedEvent:
+			case *gosteam.LogOnFailedEvent:
 
 				// Disconnects
 				log.InfoS("Steam: Login failed")
 
-			case *steam.MachineAuthUpdateEvent:
+			case *gosteam.MachineAuthUpdateEvent:
 
 				log.InfoS("Steam: Updating auth hash, it should no longer ask for auth")
 				loginDetails.SentryFileHash = e.Hash
@@ -116,7 +116,7 @@ func main() {
 					log.ErrS(err)
 				}
 
-			case steam.FatalErrorEvent:
+			case gosteam.FatalErrorEvent:
 
 				// Disconnects
 				log.Info("Steam: Disconnected:", zap.Error(e))
