@@ -31,7 +31,7 @@ func (CommandGroup) PerProdCode() bool {
 }
 
 func (CommandGroup) Example() string {
-	return ".group {game}"
+	return ".group {group}"
 }
 
 func (CommandGroup) Description() template.HTML {
