@@ -16,6 +16,8 @@ func delayHandler(message *rabbit.Message) {
 
 	time.Sleep(time.Second / 10)
 
+	// log.InfoS(fmt.Sprint(message.LastQueue()), " - ", message.Attempt(), " - ", string(message.Message.Body))
+
 	// If time.Now() is before "delay-until", keep delaying
 	if val, ok := message.Message.Headers["delay-until"]; ok {
 		if val2, ok2 := val.(int64); ok2 {
