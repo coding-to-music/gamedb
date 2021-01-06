@@ -58,10 +58,12 @@ func appSteamspyHandler(message *rabbit.Message) {
 
 		if strings.Contains(err.Error(), "Client.Timeout exceeded while awaiting headers") ||
 			strings.Contains(err.Error(), "read: connection reset by peer") ||
-			strings.Contains(err.Error(), "connect: cannot assign requested address") {
-			log.InfoS(err, payload.AppID)
+			strings.Contains(err.Error(), "connect: cannot assign requested address") ||
+			strings.Contains(err.Error(), "server responded with error") {
+
+			log.Info(err.Error(), zap.Int("app id", payload.AppID))
 		} else {
-			log.ErrS(err, payload.AppID, u)
+			log.Err(err.Error(), zap.Int("app id", payload.AppID), zap.String("url", u))
 		}
 
 		sendToRetryQueueWithDelay(message, time.Minute)
