@@ -64,7 +64,7 @@ func appSteamspyHandler(message *rabbit.Message) {
 			log.ErrS(err, payload.AppID, u)
 		}
 
-		sendToRetryQueueWithDelay(message, time.Second*10)
+		sendToRetryQueueWithDelay(message, time.Minute)
 		return
 	}
 
