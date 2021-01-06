@@ -2,13 +2,11 @@ package tasks
 
 import (
 	"errors"
-	"strconv"
 	"strings"
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/influx"
-	"github.com/gamedb/gamedb/pkg/log"
 	influx "github.com/influxdata/influxdb1-client"
 )
 
@@ -61,8 +59,8 @@ func (c SteamOnline) work() (err error) {
 			"app_id": "0",
 		},
 		Fields: map[string]interface{}{
-			"player_online": toInt(sp.Online),
-			"player_count":  toInt(sp.InGame),
+			"player_online": helpers.StringToInt(sp.Online),
+			"player_count":  helpers.StringToInt(sp.InGame),
 		},
 		Time:      time.Now(),
 		Precision: "m",
@@ -74,18 +72,6 @@ func (c SteamOnline) work() (err error) {
 type steamPlayersStruct struct {
 	Online string `json:"users_online"`
 	InGame string `json:"users_ingame"`
-}
-
-func toInt(s string) int {
-
-	s = helpers.RegexNonInts.ReplaceAllString(s, "")
-
-	i, err := strconv.Atoi(s)
-	if err != nil {
-		log.WarnS(err)
-	}
-
-	return i
 }
 
 // func fallback(){

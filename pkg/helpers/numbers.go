@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/dustin/go-humanize"
+	"github.com/gamedb/gamedb/pkg/log"
 )
 
 func RoundIntTo2DP(i int) float64 {
@@ -87,6 +88,18 @@ func ChunkInts(ints []int, n int) (chunks [][]int) {
 		chunks = append(chunks, ints[i:end])
 	}
 	return chunks
+}
+
+func StringToInt(s string) int {
+
+	s = RegexNonInts.ReplaceAllString(s, "")
+
+	i, err := strconv.Atoi(s)
+	if err != nil {
+		log.ErrS(err)
+	}
+
+	return i
 }
 
 func Min(vars ...float64) float64 {
