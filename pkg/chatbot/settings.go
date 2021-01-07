@@ -1,6 +1,7 @@
 package chatbot
 
 import (
+	"errors"
 	"html/template"
 	"strings"
 
@@ -75,6 +76,9 @@ func (c CommandSettings) Slash() []interactions.InteractionOption {
 func (c CommandSettings) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC) (message discordgo.MessageSend, err error) {
 
 	matches := RegexCache[c.Regex()].FindStringSubmatch(msg.Message.Content)
+	if len(matches) == 0 {
+		return message, errors.New("invalid regex")
+	}
 
 	var setting = strings.ToLower(matches[1])
 	var value = strings.ToLower(matches[2])

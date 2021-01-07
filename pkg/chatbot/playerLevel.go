@@ -1,6 +1,7 @@
 package chatbot
 
 import (
+	"errors"
 	"html/template"
 	"strconv"
 
@@ -62,6 +63,9 @@ func (c CommandPlayerLevel) Slash() []interactions.InteractionOption {
 func (c CommandPlayerLevel) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC) (message discordgo.MessageSend, err error) {
 
 	matches := RegexCache[c.Regex()].FindStringSubmatch(msg.Message.Content)
+	if len(matches) == 0 {
+		return message, errors.New("invalid regex")
+	}
 
 	player, q, err := mongo.SearchPlayer(matches[1], bson.M{"_id": 1, "persona_name": 1, "level": 1, "ranks": 1})
 	if err == mongo.ErrNoDocuments {

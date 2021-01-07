@@ -1,6 +1,7 @@
 package chatbot
 
 import (
+	"errors"
 	"html/template"
 	"strconv"
 	"strings"
@@ -66,6 +67,9 @@ func (c CommandPlayer) Slash() []interactions.InteractionOption {
 func (c CommandPlayer) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC) (message discordgo.MessageSend, err error) {
 
 	matches := RegexCache[c.Regex()].FindStringSubmatch(msg.Message.Content)
+	if len(matches) == 0 {
+		return message, errors.New("invalid regex")
+	}
 
 	projection := bson.M{
 		"_id":               1,

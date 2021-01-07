@@ -1,12 +1,13 @@
 package chatbot
 
 import (
-	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
+	"errors"
 	"html/template"
 	"strings"
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
+	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/i18n"
 )
@@ -70,6 +71,9 @@ func (c CommandAppPrice) Slash() []interactions.InteractionOption {
 func (c CommandAppPrice) Output(msg *discordgo.MessageCreate, code steamapi.ProductCC) (message discordgo.MessageSend, err error) {
 
 	matches := RegexCache[c.Regex()].FindStringSubmatch(msg.Message.Content)
+	if len(matches) == 0 {
+		return message, errors.New("invalid regex")
+	}
 
 	apps, err := elasticsearch.SearchAppsSimple(1, matches[2])
 	if err != nil {

@@ -1,6 +1,7 @@
 package chatbot
 
 import (
+	"errors"
 	"html/template"
 
 	"github.com/Jleagle/steam-go/steamapi"
@@ -56,6 +57,9 @@ func (c CommandApp) Slash() []interactions.InteractionOption {
 func (c CommandApp) Output(msg *discordgo.MessageCreate, code steamapi.ProductCC) (message discordgo.MessageSend, err error) {
 
 	matches := RegexCache[c.Regex()].FindStringSubmatch(msg.Message.Content)
+	if len(matches) == 0 {
+		return message, errors.New("invalid regex")
+	}
 
 	apps, err := elasticsearch.SearchAppsSimple(1, matches[2])
 	if err != nil {
