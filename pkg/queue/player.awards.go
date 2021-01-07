@@ -1,20 +1,20 @@
 package queue
 
 import (
-	influxHelper "github.com/gamedb/gamedb/pkg/influx"
-	"github.com/gamedb/gamedb/pkg/memcache"
-	"github.com/gamedb/gamedb/pkg/mongo"
-	influx "github.com/influxdata/influxdb1-client"
-	"go.mongodb.org/mongo-driver/bson"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	influxHelper "github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/memcache"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/steam"
 	"github.com/gocolly/colly/v2"
+	influx "github.com/influxdata/influxdb1-client"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.uber.org/zap"
 )
 

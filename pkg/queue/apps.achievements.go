@@ -129,7 +129,7 @@ func appAchievementsHandler(message *rabbit.Message) {
 	// Update in Elastic
 	for _, v := range achievementsSlice {
 		err = ProduceAchievementSearch(v, payload.AppName, payload.AppOwners)
-		if err!=nil{
+		if err != nil {
 			log.ErrS(err)
 		}
 	}

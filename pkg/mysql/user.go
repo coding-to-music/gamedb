@@ -1,7 +1,6 @@
 package mysql
 
 import (
-	"github.com/gamedb/gamedb/pkg/mongo"
 	"net/http"
 	"time"
 
@@ -13,6 +12,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -173,7 +173,7 @@ func NewUser(r *http.Request, userEmail, password string, prodCC steamapi.Produc
 	}()
 
 	// Influx
-	//go func() {
+	// go func() {
 	//
 	//	fields := map[string]interface{}{
 	//		"signup": 1,
@@ -193,7 +193,7 @@ func NewUser(r *http.Request, userEmail, password string, prodCC steamapi.Produc
 	//	if _, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, point); err != nil {
 	//		log.ErrS(err)
 	//	}
-	//}()
+	// }()
 
 	return user, nil
 }
