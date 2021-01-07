@@ -25,7 +25,7 @@ func (c CommandPlayerLevel) ID() string {
 }
 
 func (CommandPlayerLevel) Regex() string {
-	return `^[.|!]level (.{2,32})$`
+	return `^[.|!]level (.{2,32})`
 }
 
 func (CommandPlayerLevel) DisableCache() bool {

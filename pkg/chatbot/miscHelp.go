@@ -17,7 +17,7 @@ func (c CommandHelp) ID() string {
 }
 
 func (CommandHelp) Regex() string {
-	return `^[.|!]help$`
+	return `^[.|!]help`
 }
 
 func (CommandHelp) DisableCache() bool {

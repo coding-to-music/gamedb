@@ -21,7 +21,7 @@ func (c CommandAppsPopular) ID() string {
 }
 
 func (CommandAppsPopular) Regex() string {
-	return `^[.|!](popular|top)$`
+	return `^[.|!](popular|top)`
 }
 
 func (CommandAppsPopular) DisableCache() bool {

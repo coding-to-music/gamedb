@@ -17,7 +17,7 @@ func (c CommandInvite) ID() string {
 }
 
 func (CommandInvite) Regex() string {
-	return `^[.|!]invite$`
+	return `^[.|!]invite`
 }
 
 func (CommandInvite) DisableCache() bool {

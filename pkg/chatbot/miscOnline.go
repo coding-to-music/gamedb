@@ -18,7 +18,7 @@ func (c CommandSteamOnline) ID() string {
 }
 
 func (CommandSteamOnline) Regex() string {
-	return `^[.|!](players|online)$`
+	return `^[.|!](players|online)`
 }
 
 func (CommandSteamOnline) DisableCache() bool {

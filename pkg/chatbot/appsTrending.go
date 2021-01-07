@@ -20,7 +20,7 @@ func (c CommandAppsTrending) ID() string {
 }
 
 func (CommandAppsTrending) Regex() string {
-	return `^[.|!]trending$`
+	return `^[.|!]trending`
 }
 
 func (CommandAppsTrending) DisableCache() bool {

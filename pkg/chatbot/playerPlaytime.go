@@ -24,7 +24,7 @@ func (c CommandPlayerPlaytime) ID() string {
 }
 
 func (CommandPlayerPlaytime) Regex() string {
-	return `^[.|!]playtime (.{2,32})$`
+	return `^[.|!]playtime (.{2,32})`
 }
 
 func (CommandPlayerPlaytime) DisableCache() bool {

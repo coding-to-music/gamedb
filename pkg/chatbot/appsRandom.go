@@ -18,7 +18,7 @@ func (c CommandAppRandom) ID() string {
 }
 
 func (CommandAppRandom) Regex() string {
-	return `^[.|!]random$`
+	return `^[.|!]random`
 }
 
 func (CommandAppRandom) DisableCache() bool {
