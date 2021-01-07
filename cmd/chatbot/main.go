@@ -119,12 +119,12 @@ func setCommands() {
 
 	for _, c := range chatbot.CommandRegister {
 
-		if val, ok := c.(chatbot.SlashCommand); ok {
+		func(c chatbot.Command) {
 
 			payload := interactions.Interaction{
 				Name:        c.ID(),
 				Description: string(c.Description()),
-				Options:     val.Slash(),
+				Options:     c.Slash(),
 			}
 
 			b, err := json.Marshal(payload)
@@ -151,10 +151,9 @@ func setCommands() {
 				return
 			}
 
-			//goland:noinspection GoDeferInLoop
 			defer helpers.Close(resp.Body)
 
 			log.Info("Command updated", zap.Int("code", resp.StatusCode), zap.String("id", c.ID()))
-		}
+		}(c)
 	}
 }

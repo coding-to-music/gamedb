@@ -34,10 +34,6 @@ type Command interface {
 	Example() string
 	Description() template.HTML
 	Type() CommandType
-}
-
-type SlashCommand interface {
-	Command
 	Slash() []interactions.InteractionOption
 }
 
