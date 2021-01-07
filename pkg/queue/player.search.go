@@ -72,6 +72,10 @@ func appsPlayersHandler(message *rabbit.Message) {
 	player.Games = mongoPlayer.GamesCount
 	player.Friends = mongoPlayer.FriendsCount
 	player.Comments = mongoPlayer.CommentsCount
+	player.AwardsGivenCount = mongoPlayer.AwardsGivenCount
+	player.AwardsGivenPoints = mongoPlayer.AwardsGivenPoints
+	player.AwardsReceivedCount = mongoPlayer.AwardsReceivedCount
+	player.AwardsReceivedPoints = mongoPlayer.AwardsReceivedPoints
 
 	// Add aliases
 	sixMonthsAgo := time.Now().AddDate(0, -6, 0).Unix()

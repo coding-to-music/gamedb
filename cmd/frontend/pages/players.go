@@ -220,6 +220,11 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		"12": "achievements",
 		"13": "achievements_100",
+
+		"15": "awards_given_count",
+		"16": "awards_given_points",
+		"17": "awards_received_count",
+		"18": "awards_received_points",
 	})
 
 	var isContinent bool
@@ -306,32 +311,36 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var playtimeLong = helpers.GetTimeShort(v.PlayTime, 5)
 
 		response.AddRow([]interface{}{
-			index,                // 0
-			id,                   // 1
-			v.GetName(),          // 2
-			v.GetAvatar(),        // 3
-			v.GetAvatar2(),       // 4
-			v.Level,              // 5
-			v.Games,              // 6
-			v.Badges,             // 7
-			playtimeShort,        // 8
-			playtimeLong,         // 9
-			v.Friends,            // 10
-			v.GetFlag(),          // 11
-			v.GetCountry(),       // 12
-			v.GetPath(),          // 13
-			v.GetCommunityLink(), // 14
-			v.GameBans,           // 15
-			v.VACBans,            // 16
-			v.LastBan,            // 17
-			lastBan,              // 18
-			v.CountryCode,        // 19
-			v.Comments,           // 20
-			v.Achievements,       // 21
-			v.Achievements100,    // 22
-			v.GetNameMarked(),    // 23
-			v.Score,              // 24
-			v.BadgesFoil,         // 25
+			index,                  // 0
+			id,                     // 1
+			v.GetName(),            // 2
+			v.GetAvatar(),          // 3
+			v.GetAvatar2(),         // 4
+			v.Level,                // 5
+			v.Games,                // 6
+			v.Badges,               // 7
+			playtimeShort,          // 8
+			playtimeLong,           // 9
+			v.Friends,              // 10
+			v.GetFlag(),            // 11
+			v.GetCountry(),         // 12
+			v.GetPath(),            // 13
+			v.GetCommunityLink(),   // 14
+			v.GameBans,             // 15
+			v.VACBans,              // 16
+			v.LastBan,              // 17
+			lastBan,                // 18
+			v.CountryCode,          // 19
+			v.Comments,             // 20
+			v.Achievements,         // 21
+			v.Achievements100,      // 22
+			v.GetNameMarked(),      // 23
+			v.Score,                // 24
+			v.BadgesFoil,           // 25
+			v.AwardsGivenCount,     // 26
+			v.AwardsGivenPoints,    // 27
+			v.AwardsReceivedCount,  // 28
+			v.AwardsReceivedPoints, // 29
 		})
 	}
 

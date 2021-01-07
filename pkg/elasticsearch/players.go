@@ -13,28 +13,32 @@ import (
 )
 
 type Player struct {
-	ID                int64    `json:"id"`
-	PersonaName       string   `json:"name"`
-	PersonaNameMarked string   `json:"name_marked"`
-	PersonaNameRecent []string `json:"name_recent"`
-	VanityURL         string   `json:"url"`
-	Avatar            string   `json:"avatar"`
-	Continent         string   `json:"continent"`
-	CountryCode       string   `json:"country_code"`
-	StateCode         string   `json:"state_code"`
-	LastBan           int64    `json:"last_ban"`
-	GameBans          int      `json:"game_bans"`
-	VACBans           int      `json:"vac_bans"`
-	Level             int      `json:"level"`
-	PlayTime          int      `json:"play_time"`
-	Badges            int      `json:"badges"`
-	BadgesFoil        int      `json:"badges_foil"`
-	Games             int      `json:"games"`
-	Friends           int      `json:"friends"`
-	Comments          int      `json:"comments"`
-	Achievements      int      `json:"achievements"`
-	Achievements100   int      `json:"achievements_100"`
-	Score             float64  `json:"-"`
+	ID                   int64    `json:"id"`
+	PersonaName          string   `json:"name"`
+	PersonaNameMarked    string   `json:"name_marked"`
+	PersonaNameRecent    []string `json:"name_recent"`
+	VanityURL            string   `json:"url"`
+	Avatar               string   `json:"avatar"`
+	Continent            string   `json:"continent"`
+	CountryCode          string   `json:"country_code"`
+	StateCode            string   `json:"state_code"`
+	LastBan              int64    `json:"last_ban"`
+	GameBans             int      `json:"game_bans"`
+	VACBans              int      `json:"vac_bans"`
+	Level                int      `json:"level"`
+	PlayTime             int      `json:"play_time"`
+	Badges               int      `json:"badges"`
+	BadgesFoil           int      `json:"badges_foil"`
+	Games                int      `json:"games"`
+	Friends              int      `json:"friends"`
+	Comments             int      `json:"comments"`
+	Achievements         int      `json:"achievements"`
+	Achievements100      int      `json:"achievements_100"`
+	AwardsGivenCount     int      `bson:"awards_given_count"`
+	AwardsGivenPoints    int      `bson:"awards_given_points"`
+	AwardsReceivedCount  int      `bson:"awards_received_count"`
+	AwardsReceivedPoints int      `bson:"awards_received_points"`
+	Score                float64  `json:"-"`
 }
 
 func (player Player) GetName() string {
@@ -215,22 +219,26 @@ func DeleteAndRebuildPlayersIndex() {
 					"type":     "text",
 					"analyzer": "gdb_lowercase_text",
 				},
-				"avatar":           fieldTypeDisabled,
-				"continent":        fieldTypeKeyword,
-				"country_code":     fieldTypeKeyword,
-				"state_code":       fieldTypeKeyword,
-				"last_ban":         fieldTypeInt64,
-				"game_bans":        fieldTypeInt32,
-				"vac_bans":         fieldTypeInt32,
-				"level":            fieldTypeInt32,
-				"play_time":        fieldTypeInt32,
-				"badges":           fieldTypeInt32,
-				"badges_foil":      fieldTypeInt32,
-				"games":            fieldTypeInt32,
-				"friends":          fieldTypeInt32,
-				"comments":         fieldTypeInt32,
-				"achievements":     fieldTypeInt32,
-				"achievements_100": fieldTypeInt32,
+				"avatar":                 fieldTypeDisabled,
+				"continent":              fieldTypeKeyword,
+				"country_code":           fieldTypeKeyword,
+				"state_code":             fieldTypeKeyword,
+				"last_ban":               fieldTypeInt64,
+				"game_bans":              fieldTypeInt32,
+				"vac_bans":               fieldTypeInt32,
+				"level":                  fieldTypeInt32,
+				"play_time":              fieldTypeInt32,
+				"badges":                 fieldTypeInt32,
+				"badges_foil":            fieldTypeInt32,
+				"games":                  fieldTypeInt32,
+				"friends":                fieldTypeInt32,
+				"comments":               fieldTypeInt32,
+				"achievements":           fieldTypeInt32,
+				"achievements_100":       fieldTypeInt32,
+				"awards_given_count":     fieldTypeInt32,
+				"awards_given_points":    fieldTypeInt32,
+				"awards_received_count":  fieldTypeInt32,
+				"awards_received_points": fieldTypeInt32,
 			},
 		},
 	}
