@@ -20,6 +20,7 @@ type Response struct {
 }
 
 type ResponseData struct {
+	TTS     bool                      `json:"tts"`
 	Content string                    `json:"content"`
 	Embeds  []*discordgo.MessageEmbed `json:"embeds"`
 }
