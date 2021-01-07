@@ -37,7 +37,7 @@ type Command interface {
 	Slash() []interactions.InteractionOption
 }
 
-// These are the discord slash command names
+// These are the discord slash command names, if changed, the old one needs to be deleted
 const (
 	CApp            = "game-details"
 	CAppFollowers   = "game-followers"
