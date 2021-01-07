@@ -50,6 +50,10 @@ func (CommandPlayerWishlist) Type() CommandType {
 	return TypePlayer
 }
 
+func (CommandPlayerWishlist) LegacyPrefix() string {
+	return "wishlist"
+}
+
 func (c CommandPlayerWishlist) Slash() []interactions.InteractionOption {
 
 	return []interactions.InteractionOption{

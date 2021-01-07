@@ -50,6 +50,10 @@ func (CommandAppPrice) Type() CommandType {
 	return TypeGame
 }
 
+func (CommandAppPrice) LegacyPrefix() string {
+	return "price"
+}
+
 func (c CommandAppPrice) Slash() []interactions.InteractionOption {
 
 	return []interactions.InteractionOption{

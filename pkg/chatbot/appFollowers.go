@@ -45,6 +45,10 @@ func (CommandAppFollowers) Type() CommandType {
 	return TypeGame
 }
 
+func (CommandAppFollowers) LegacyPrefix() string {
+	return "followers"
+}
+
 func (c CommandAppFollowers) Slash() []interactions.InteractionOption {
 
 	return []interactions.InteractionOption{

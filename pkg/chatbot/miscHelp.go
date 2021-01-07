@@ -40,6 +40,10 @@ func (CommandHelp) Type() CommandType {
 	return TypeOther
 }
 
+func (CommandHelp) LegacyPrefix() string {
+	return "help"
+}
+
 func (c CommandHelp) Slash() []interactions.InteractionOption {
 	return []interactions.InteractionOption{}
 }

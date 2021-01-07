@@ -41,6 +41,10 @@ func (CommandSteamOnline) Type() CommandType {
 	return TypeOther
 }
 
+func (CommandSteamOnline) LegacyPrefix() string {
+	return "players"
+}
+
 func (c CommandSteamOnline) Slash() []interactions.InteractionOption {
 
 	return []interactions.InteractionOption{}

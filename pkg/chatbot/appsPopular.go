@@ -44,6 +44,10 @@ func (CommandAppsPopular) Type() CommandType {
 	return TypeGame
 }
 
+func (CommandAppsPopular) LegacyPrefix() string {
+	return "popular"
+}
+
 func (c CommandAppsPopular) Slash() []interactions.InteractionOption {
 	return []interactions.InteractionOption{}
 }

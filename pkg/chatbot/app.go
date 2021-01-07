@@ -42,6 +42,10 @@ func (CommandApp) Type() CommandType {
 	return TypeGame
 }
 
+func (CommandApp) LegacyPrefix() string {
+	return "app"
+}
+
 func (c CommandApp) Slash() []interactions.InteractionOption {
 
 	return []interactions.InteractionOption{

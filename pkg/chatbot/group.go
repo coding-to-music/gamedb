@@ -44,6 +44,10 @@ func (CommandGroup) Type() CommandType {
 	return TypeGroup
 }
 
+func (CommandGroup) LegacyPrefix() string {
+	return "group"
+}
+
 func (c CommandGroup) Slash() []interactions.InteractionOption {
 
 	return []interactions.InteractionOption{

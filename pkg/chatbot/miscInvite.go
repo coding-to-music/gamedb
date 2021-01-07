@@ -40,6 +40,10 @@ func (CommandInvite) Type() CommandType {
 	return TypeOther
 }
 
+func (CommandInvite) LegacyPrefix() string {
+	return "invite$"
+}
+
 func (c CommandInvite) Slash() []interactions.InteractionOption {
 	return []interactions.InteractionOption{}
 }

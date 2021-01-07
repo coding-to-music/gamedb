@@ -47,6 +47,10 @@ func (CommandPlayerPlaytime) Type() CommandType {
 	return TypePlayer
 }
 
+func (CommandPlayerPlaytime) LegacyPrefix() string {
+	return "playtime"
+}
+
 func (c CommandPlayerPlaytime) Slash() []interactions.InteractionOption {
 
 	return []interactions.InteractionOption{

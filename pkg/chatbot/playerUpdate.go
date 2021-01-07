@@ -49,6 +49,10 @@ func (CommandPlayerUpdate) Type() CommandType {
 	return TypePlayer
 }
 
+func (CommandPlayerUpdate) LegacyPrefix() string {
+	return "update"
+}
+
 func (c CommandPlayerUpdate) Slash() []interactions.InteractionOption {
 
 	return []interactions.InteractionOption{

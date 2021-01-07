@@ -41,6 +41,10 @@ func (CommandAppRandom) Type() CommandType {
 	return TypeGame
 }
 
+func (CommandAppRandom) LegacyPrefix() string {
+	return "random$"
+}
+
 func (c CommandAppRandom) Slash() []interactions.InteractionOption {
 	return []interactions.InteractionOption{}
 }

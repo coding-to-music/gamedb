@@ -49,6 +49,10 @@ func (CommandPlayerRecent) Type() CommandType {
 	return TypePlayer
 }
 
+func (CommandPlayerRecent) LegacyPrefix() string {
+	return "recent"
+}
+
 func (c CommandPlayerRecent) Slash() []interactions.InteractionOption {
 
 	return []interactions.InteractionOption{

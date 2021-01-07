@@ -51,6 +51,10 @@ func (CommandSettings) Type() CommandType {
 	return TypeOther
 }
 
+func (CommandSettings) LegacyPrefix() string {
+	return "set"
+}
+
 func (c CommandSettings) Slash() []interactions.InteractionOption {
 
 	// todo, use sub commands for each setting?

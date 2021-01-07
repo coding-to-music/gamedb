@@ -48,6 +48,10 @@ func (CommandPlayerLevel) Type() CommandType {
 	return TypePlayer
 }
 
+func (CommandPlayerLevel) LegacyPrefix() string {
+	return "level"
+}
+
 func (c CommandPlayerLevel) Slash() []interactions.InteractionOption {
 
 	return []interactions.InteractionOption{

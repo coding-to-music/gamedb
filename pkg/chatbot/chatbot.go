@@ -35,6 +35,7 @@ type Command interface {
 	Description() template.HTML
 	Type() CommandType
 	Slash() []interactions.InteractionOption
+	LegacyPrefix() string
 }
 
 // These are the discord slash command names, if changed, the old one needs to be deleted

@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/Jleagle/steam-go/steamapi"
@@ -112,17 +113,21 @@ func discordHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// todo
-	// command, ok := chatbot.CommandCache[event.Data.Name]
-	command, ok := chatbot.CommandCache["app-players"]
+	command, ok := chatbot.CommandCache[event.Data.Name]
 	if !ok {
 		http.Error(w, http.StatusText(404), 404)
 		return
 	}
 
+	// Convert to old style input
+	var oldStyle = []string{"." + command.LegacyPrefix()}
+	for _, v := range event.Data.Options {
+		oldStyle = append(oldStyle, v.Value)
+	}
+
 	payload := &discordgo.MessageCreate{
 		Message: &discordgo.Message{
-			Content: "",
+			Content: strings.Join(oldStyle, " "),
 			Author: &discordgo.User{
 				ID: event.Member.User.ID,
 			},

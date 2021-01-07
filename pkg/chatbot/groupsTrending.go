@@ -2,12 +2,12 @@ package chatbot
 
 import (
 	"fmt"
-	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"html/template"
 	"strings"
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
+	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/mongo"
 )
@@ -41,6 +41,10 @@ func (CommandGroupsTrending) Description() template.HTML {
 
 func (CommandGroupsTrending) Type() CommandType {
 	return TypeGroup
+}
+
+func (CommandGroupsTrending) LegacyPrefix() string {
+	return "trending-groups"
 }
 
 func (c CommandGroupsTrending) Slash() []interactions.InteractionOption {

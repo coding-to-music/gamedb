@@ -43,6 +43,10 @@ func (CommandAppsTrending) Type() CommandType {
 	return TypeGame
 }
 
+func (CommandAppsTrending) LegacyPrefix() string {
+	return "trending$"
+}
+
 func (c CommandAppsTrending) Slash() []interactions.InteractionOption {
 	return []interactions.InteractionOption{}
 }

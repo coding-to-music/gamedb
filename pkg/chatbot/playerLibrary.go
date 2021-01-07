@@ -49,6 +49,10 @@ func (CommandPlayerLibrary) Type() CommandType {
 	return TypePlayer
 }
 
+func (CommandPlayerLibrary) LegacyPrefix() string {
+	return "library"
+}
+
 func (c CommandPlayerLibrary) Slash() []interactions.InteractionOption {
 
 	return []interactions.InteractionOption{

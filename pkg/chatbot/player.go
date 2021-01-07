@@ -52,6 +52,10 @@ func (CommandPlayer) Type() CommandType {
 	return TypePlayer
 }
 
+func (CommandPlayer) LegacyPrefix() string {
+	return "player"
+}
+
 func (c CommandPlayer) Slash() []interactions.InteractionOption {
 
 	return []interactions.InteractionOption{
