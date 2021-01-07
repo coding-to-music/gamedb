@@ -4,6 +4,8 @@
 /cmd/chatbot/chatbot
 /cmd/consumers/consumers
 /cmd/crons/crons
+/cmd/devenv/devenv
+/cmd/down/down
 /cmd/frontend/frontend
 /cmd/scaler/scaler
 /cmd/steam/steam
@@ -15,21 +17,20 @@
 
 # Vendors
 /node_modules/
-/vendor/
 
 # Caches
 /cmd/frontend/cache/
-/tmp/
 /.tscache/
 
 # Other
 /cmd/steam/change.txt
 /cmd/steam/sentry.txt
 /cmd/frontend/assets/img/chatbot
+scripts/renovate.json
+scripts/revive.toml
+sqlboiler.toml
 LICENSE.md
+README.md
 package.json
 package-lock.json
-README.md
-renovate.json
-revive.toml
 webpack.config.js

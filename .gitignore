@@ -4,11 +4,12 @@
 /cmd/chatbot/chatbot
 /cmd/consumers/consumers
 /cmd/crons/crons
+/cmd/devenv/devenv
+/cmd/down/down
 /cmd/frontend/frontend
 /cmd/scaler/scaler
 /cmd/steam/steam
 /cmd/test/test
-/cmd/devenv/devenv
 
 # Source maps
 /cmd/frontend/assets/dist/main.css.map
@@ -16,11 +17,9 @@
 
 # Vendors
 /node_modules/
-/vendor/
 
 # Caches
 /cmd/frontend/cache/
-/tmp/
 /.tscache/
 
 # Other
