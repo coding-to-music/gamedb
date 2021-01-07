@@ -109,7 +109,7 @@ func getCommands() {
 }
 
 //goland:noinspection GoUnusedFunction
-func slashCommandRegister() {
+func setCommands() {
 
 	path := "https://discord.com/api/v8/applications/" + discord.ClientIDBot + "/commands"
 
