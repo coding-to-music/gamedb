@@ -55,6 +55,7 @@ func (c CommandAppRandom) Output(msg *discordgo.MessageCreate, code steamapi.Pro
 		elastic.NewBoolQuery().
 			Filter(
 				elastic.NewTermsQuery("type", "game", ""),
+				elastic.NewRangeQuery("players").Gte(10),
 			).
 			MustNot(
 				elastic.NewTermQuery("name.raw", ""),
