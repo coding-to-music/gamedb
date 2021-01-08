@@ -8,23 +8,23 @@ body.dark {
     }
 }
 
-#home-page {
+#hero {
+    margin-top: 140px;
+    margin-bottom: 140px;
+    position: relative;
+    pointer-events: none;
 
-    #hero {
-        margin-top: 140px;
-        margin-bottom: 140px;
-        position: relative;
-        pointer-events: none;
-
-        h1 {
-            color: #28a745;
-            font-family: 'Audiowide', sans-serif;
-            text-align: center;
-            text-shadow: 0 0 10px #1b2738, 0 0 10px #1b2738;
-            font-size: 5rem;
-            margin: 0;
-        }
+    h1 {
+        color: #28a745;
+        font-family: 'Audiowide', sans-serif;
+        text-align: center;
+        text-shadow: 0 0 10px #1b2738, 0 0 10px #1b2738;
+        font-size: 5rem;
+        margin: 0;
     }
+}
+
+#home-page {
 
     #panels {
         > a {
