@@ -1,6 +1,9 @@
 package pages
 
 import (
+	"net/http"
+	"strconv"
+
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/backend"
 	"github.com/gamedb/gamedb/pkg/backend/generated"
@@ -9,8 +12,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/go-chi/chi"
-	"net/http"
-	"strconv"
 )
 
 func CommitsRouter() http.Handler {
@@ -75,19 +76,19 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	for _, commit := range commits {
 
-		t := commit.GetTime().AsTime().Format(helpers.DateTime)
+		formattedTime := commit.GetTime().AsTime().Format(helpers.DateTime)
 
 		if commit.GetHash() == ldflags.CommitHash {
 			live = true
 		}
 
 		response.AddRow([]interface{}{
-			commit.GetMessage(),   // 0
-			commit.GetTime(),      // 1
-			t,                     // 2
-			commit.GetLink(),      // 3
-			commit.GetHash()[0:7], // 4
-			live,                  // 5
+			commit.GetMessage(),           // 0
+			commit.GetTime().GetSeconds(), // 1
+			formattedTime,                 // 2
+			commit.GetLink(),              // 3
+			commit.GetHash()[0:7],         // 4
+			live,                          // 5
 		})
 	}
 
