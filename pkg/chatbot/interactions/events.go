@@ -38,3 +38,12 @@ type Event struct {
 	Type    int    `json:"type"`
 	Version int    `json:"version"`
 }
+
+func (e Event) Arguments() (a map[string]string) {
+
+	a = map[string]string{}
+	for _, v := range e.Data.Options {
+		a[v.Name] = v.Value
+	}
+	return a
+}
