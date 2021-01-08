@@ -3,7 +3,6 @@ package chatbot
 import (
 	"errors"
 	"fmt"
-	"html/template"
 	"strings"
 
 	"github.com/Jleagle/steam-go/steamapi"
@@ -41,7 +40,7 @@ func (CommandPlayerRecent) Example() string {
 	return ".recent {player}"
 }
 
-func (CommandPlayerRecent) Description() template.HTML {
+func (CommandPlayerRecent) Description() string {
 	return "Returns the last 10 games played by user"
 }
 

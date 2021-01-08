@@ -1,8 +1,6 @@
 package chatbot
 
 import (
-	"html/template"
-
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
@@ -33,7 +31,7 @@ func (CommandSteamOnline) Example() string {
 	return ".players"
 }
 
-func (CommandSteamOnline) Description() template.HTML {
+func (CommandSteamOnline) Description() string {
 	return "Gets the number of people on Steam."
 }
 

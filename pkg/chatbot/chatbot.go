@@ -1,7 +1,6 @@
 package chatbot
 
 import (
-	"html/template"
 	"regexp"
 
 	"github.com/Jleagle/steam-go/steamapi"
@@ -32,7 +31,7 @@ type Command interface {
 	PerProdCode() bool
 	Output(*discordgo.MessageCreate, steamapi.ProductCC) (discordgo.MessageSend, error)
 	Example() string
-	Description() template.HTML
+	Description() string
 	Type() CommandType
 	Slash() []interactions.InteractionOption
 	LegacyPrefix() string

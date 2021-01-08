@@ -2,7 +2,6 @@ package chatbot
 
 import (
 	"fmt"
-	"html/template"
 	"strings"
 
 	"github.com/Jleagle/steam-go/steamapi"
@@ -36,7 +35,7 @@ func (CommandAppsNew) Example() string {
 	return ".new"
 }
 
-func (CommandAppsNew) Description() template.HTML {
+func (CommandAppsNew) Description() string {
 	return "Returns the most popular newly released games"
 }
 

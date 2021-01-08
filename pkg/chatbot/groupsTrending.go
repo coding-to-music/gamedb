@@ -2,7 +2,6 @@ package chatbot
 
 import (
 	"fmt"
-	"html/template"
 	"strings"
 
 	"github.com/Jleagle/steam-go/steamapi"
@@ -35,7 +34,7 @@ func (CommandGroupsTrending) Example() string {
 	return ".trending groups"
 }
 
-func (CommandGroupsTrending) Description() template.HTML {
+func (CommandGroupsTrending) Description() string {
 	return "Returns the top trending groups"
 }
 

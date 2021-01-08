@@ -2,7 +2,6 @@ package chatbot
 
 import (
 	"errors"
-	"html/template"
 	"strconv"
 
 	"github.com/Jleagle/steam-go/steamapi"
@@ -41,7 +40,7 @@ func (CommandPlayerUpdate) Example() string {
 	return ".update {player}?"
 }
 
-func (CommandPlayerUpdate) Description() template.HTML {
+func (CommandPlayerUpdate) Description() string {
 	return "Updates a player, connect your discord account to leave out the a player ID"
 }
 

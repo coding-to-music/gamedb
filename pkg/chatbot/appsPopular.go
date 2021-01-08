@@ -2,7 +2,6 @@ package chatbot
 
 import (
 	"fmt"
-	"html/template"
 	"strings"
 
 	"github.com/Jleagle/steam-go/steamapi"
@@ -36,7 +35,7 @@ func (CommandAppsPopular) Example() string {
 	return ".popular"
 }
 
-func (CommandAppsPopular) Description() template.HTML {
+func (CommandAppsPopular) Description() string {
 	return "Returns the most popular games in order of players over the last week"
 }
 

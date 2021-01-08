@@ -1,8 +1,6 @@
 package chatbot
 
 import (
-	"html/template"
-
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
@@ -32,7 +30,7 @@ func (CommandHelp) Example() string {
 	return ".help"
 }
 
-func (CommandHelp) Description() template.HTML {
+func (CommandHelp) Description() string {
 	return "Links to this list of commands"
 }
 

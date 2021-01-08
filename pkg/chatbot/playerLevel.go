@@ -2,7 +2,6 @@ package chatbot
 
 import (
 	"errors"
-	"html/template"
 	"strconv"
 
 	"github.com/Jleagle/steam-go/steamapi"
@@ -40,7 +39,7 @@ func (CommandPlayerLevel) Example() string {
 	return ".level {player}"
 }
 
-func (CommandPlayerLevel) Description() template.HTML {
+func (CommandPlayerLevel) Description() string {
 	return "Get the level of a player"
 }
 

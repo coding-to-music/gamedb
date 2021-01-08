@@ -3,7 +3,6 @@ package chatbot
 import (
 	"errors"
 	"fmt"
-	"html/template"
 	"strconv"
 	"strings"
 
@@ -42,7 +41,7 @@ func (CommandPlayerWishlist) Example() string {
 	return ".wishlist {player}"
 }
 
-func (CommandPlayerWishlist) Description() template.HTML {
+func (CommandPlayerWishlist) Description() string {
 	return "Lists a player's wishlist"
 }
 

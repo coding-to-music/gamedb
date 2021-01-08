@@ -2,7 +2,6 @@ package chatbot
 
 import (
 	"errors"
-	"html/template"
 	"strings"
 
 	"github.com/Jleagle/steam-go/steamapi"
@@ -36,7 +35,7 @@ func (CommandSettings) Example() string {
 	return ".set region uk"
 }
 
-func (CommandSettings) Description() template.HTML {
+func (CommandSettings) Description() string {
 	return "Set your region for price commands"
 }
 

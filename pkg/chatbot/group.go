@@ -2,7 +2,6 @@ package chatbot
 
 import (
 	"errors"
-	"html/template"
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
@@ -36,7 +35,7 @@ func (CommandGroup) Example() string {
 	return ".group {group}"
 }
 
-func (CommandGroup) Description() template.HTML {
+func (CommandGroup) Description() string {
 	return "Get info on a group"
 }
 

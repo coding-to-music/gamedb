@@ -2,7 +2,6 @@ package chatbot
 
 import (
 	"errors"
-	"html/template"
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
@@ -39,7 +38,7 @@ func (CommandPlayerPlaytime) Example() string {
 	return ".playtime {player}"
 }
 
-func (CommandPlayerPlaytime) Description() template.HTML {
+func (CommandPlayerPlaytime) Description() string {
 	return "Get the playtime of a player"
 }
 

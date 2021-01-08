@@ -2,7 +2,6 @@ package chatbot
 
 import (
 	"errors"
-	"html/template"
 	"strconv"
 	"strings"
 
@@ -44,7 +43,7 @@ func (CommandPlayer) Example() string {
 	return ".player {player}"
 }
 
-func (CommandPlayer) Description() template.HTML {
+func (CommandPlayer) Description() string {
 	return "Get info on a player"
 }
 

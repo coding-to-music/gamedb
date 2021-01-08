@@ -3,7 +3,6 @@ package chatbot
 import (
 	"errors"
 	"fmt"
-	"html/template"
 	"strings"
 
 	"github.com/Jleagle/steam-go/steamapi"
@@ -41,7 +40,7 @@ func (CommandPlayerLibrary) Example() string {
 	return ".library {player}"
 }
 
-func (CommandPlayerLibrary) Description() template.HTML {
+func (CommandPlayerLibrary) Description() string {
 	return "Returns the players most played games"
 }
 

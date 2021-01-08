@@ -2,7 +2,6 @@ package chatbot
 
 import (
 	"errors"
-	"html/template"
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
@@ -37,7 +36,7 @@ func (CommandAppPlayers) Example() string {
 	return ".players {game}"
 }
 
-func (CommandAppPlayers) Description() template.HTML {
+func (CommandAppPlayers) Description() string {
 	return "Gets the number of people playing a game."
 }
 

@@ -1,8 +1,6 @@
 package chatbot
 
 import (
-	"html/template"
-
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
@@ -32,7 +30,7 @@ func (CommandInvite) Example() string {
 	return ".invite"
 }
 
-func (CommandInvite) Description() template.HTML {
+func (CommandInvite) Description() string {
 	return "Gives you the link to invite the bot to your server"
 }
 

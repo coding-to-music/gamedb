@@ -2,7 +2,6 @@ package chatbot
 
 import (
 	"errors"
-	"html/template"
 	"strings"
 
 	"github.com/Jleagle/steam-go/steamapi"
@@ -34,7 +33,7 @@ func (CommandAppPrice) Example() string {
 	return ".price {region}? {game}"
 }
 
-func (CommandAppPrice) Description() template.HTML {
+func (CommandAppPrice) Description() string {
 	return "Get the price of a game"
 }
 

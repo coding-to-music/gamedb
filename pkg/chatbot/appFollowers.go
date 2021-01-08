@@ -2,7 +2,6 @@ package chatbot
 
 import (
 	"errors"
-	"html/template"
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
@@ -37,7 +36,7 @@ func (CommandAppFollowers) Example() string {
 	return ".followers {game}"
 }
 
-func (CommandAppFollowers) Description() template.HTML {
+func (CommandAppFollowers) Description() string {
 	return "Gets the number of followers for a game."
 }
 

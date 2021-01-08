@@ -2,7 +2,6 @@ package chatbot
 
 import (
 	"errors"
-	"html/template"
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
@@ -34,7 +33,7 @@ func (CommandApp) Example() string {
 	return ".game {game}"
 }
 
-func (CommandApp) Description() template.HTML {
+func (CommandApp) Description() string {
 	return "Get info on a game"
 }
 

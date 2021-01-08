@@ -2,7 +2,6 @@ package chatbot
 
 import (
 	"errors"
-	"html/template"
 	"strconv"
 
 	"github.com/Jleagle/steam-go/steamapi"
@@ -40,7 +39,7 @@ func (CommandPlayerApps) Example() string {
 	return ".games {player}"
 }
 
-func (CommandPlayerApps) Description() template.HTML {
+func (CommandPlayerApps) Description() string {
 	return "Get the amount of games a player has in their library"
 }
 

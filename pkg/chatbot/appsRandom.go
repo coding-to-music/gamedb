@@ -1,8 +1,6 @@
 package chatbot
 
 import (
-	"html/template"
-
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
@@ -33,7 +31,7 @@ func (CommandAppRandom) Example() string {
 	return ".random"
 }
 
-func (CommandAppRandom) Description() template.HTML {
+func (CommandAppRandom) Description() string {
 	return "Get a random game"
 }
 
