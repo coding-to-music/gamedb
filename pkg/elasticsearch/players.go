@@ -34,10 +34,10 @@ type Player struct {
 	Comments             int      `json:"comments"`
 	Achievements         int      `json:"achievements"`
 	Achievements100      int      `json:"achievements_100"`
-	AwardsGivenCount     int      `bson:"awards_given_count"`
-	AwardsGivenPoints    int      `bson:"awards_given_points"`
-	AwardsReceivedCount  int      `bson:"awards_received_count"`
-	AwardsReceivedPoints int      `bson:"awards_received_points"`
+	AwardsGivenCount     int      `json:"awards_given_count"`
+	AwardsGivenPoints    int      `json:"awards_given_points"`
+	AwardsReceivedCount  int      `json:"awards_received_count"`
+	AwardsReceivedPoints int      `json:"awards_received_points"`
 	Score                float64  `json:"-"`
 }
 
