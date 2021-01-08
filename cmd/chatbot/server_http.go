@@ -115,7 +115,7 @@ func discordHandler(w http.ResponseWriter, r *http.Request) {
 
 	command, ok := chatbot.CommandCache[event.Data.Name]
 	if !ok {
-		http.Error(w, http.StatusText(404), 404)
+		http.Error(w, "Command ID not found in register", 404)
 		return
 	}
 
