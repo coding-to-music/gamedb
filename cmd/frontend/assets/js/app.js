@@ -44,12 +44,6 @@ if ($appPage.length > 0) {
         }
     });
 
-    // Show more player countries
-    $('#player-countries .show-more').on('click', function (e) {
-        $('#player-countries tr.d-none').removeClass('d-none');
-        $(this).remove();
-    })
-
     loadAjaxOnObserve({
         'news': loadNews,
         'items': loadItems,
