@@ -79,6 +79,12 @@ func playerAwardsHandler(message *rabbit.Message) {
 		return
 	}
 
+	if awardsGivenCount == 0 && awardsGivenPoints == 0 && awardsReceivedCount == 0 && awardsReceivedPoints == 0 {
+
+		message.Ack()
+		return
+	}
+
 	// Update in Mongo
 	var update = bson.D{
 		{"awards_given_count", awardsGivenCount},
