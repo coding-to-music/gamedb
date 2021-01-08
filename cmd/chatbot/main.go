@@ -165,6 +165,8 @@ func setCommands() {
 			if resp.StatusCode != 200 && resp.StatusCode != 201 {
 				log.Info(string(body))
 			}
+
+			time.Sleep(time.Second / 4)
 		}(c)
 	}
 }
