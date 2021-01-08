@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	_ "net/http/pprof"
 	"time"
@@ -153,7 +154,17 @@ func setCommands() {
 
 			defer helpers.Close(resp.Body)
 
+			body, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				log.ErrS(err)
+				return
+			}
+
 			log.Info("Command updated", zap.Int("code", resp.StatusCode), zap.String("id", c.ID()))
+
+			if resp.StatusCode != 200 && resp.StatusCode != 201 {
+				log.Info(string(body))
+			}
 		}(c)
 	}
 }
