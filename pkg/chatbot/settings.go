@@ -37,14 +37,7 @@ func (CommandSettings) Example() string {
 }
 
 func (CommandSettings) Description() template.HTML {
-
-	var ccs []string
-	for _, v := range i18n.GetProdCCs() {
-		ccs = append(ccs, string(v.ProductCode))
-	}
-
-	//noinspection GoRedundantConversion
-	return "Set your region for price commands <small>(Allowed regions: " + template.HTML(strings.Join(ccs, ", ")) + ")</small>"
+	return "Set your region for price commands"
 }
 
 func (CommandSettings) Type() CommandType {

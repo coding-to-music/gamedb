@@ -9,7 +9,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
-	"github.com/gamedb/gamedb/pkg/i18n"
 )
 
 type CommandAppPrice struct {
@@ -36,14 +35,7 @@ func (CommandAppPrice) Example() string {
 }
 
 func (CommandAppPrice) Description() template.HTML {
-
-	var ccs []string
-	for _, v := range i18n.GetProdCCs() {
-		ccs = append(ccs, string(v.ProductCode))
-	}
-
-	//noinspection GoRedundantConversion
-	return "Get the price of a game <small>(Allowed regions: " + template.HTML(strings.Join(ccs, ", ")) + ")</small>"
+	return "Get the price of a game"
 }
 
 func (CommandAppPrice) Type() CommandType {
