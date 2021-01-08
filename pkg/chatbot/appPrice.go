@@ -49,16 +49,16 @@ func (c CommandAppPrice) Slash() []interactions.InteractionOption {
 
 	return []interactions.InteractionOption{
 		{
-			Name:        "region",
-			Description: "The region code",
-			Type:        interactions.InteractionOptionTypeString,
-			Required:    false,
-		},
-		{
 			Name:        "game",
 			Description: "The name or ID of the game",
 			Type:        interactions.InteractionOptionTypeString,
 			Required:    true,
+		},
+		{
+			Name:        "region",
+			Description: "The region code",
+			Type:        interactions.InteractionOptionTypeString,
+			Required:    false,
 		},
 	}
 }

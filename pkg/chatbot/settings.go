@@ -49,7 +49,6 @@ func (CommandSettings) LegacyPrefix() string {
 
 func (c CommandSettings) Slash() []interactions.InteractionOption {
 
-	// todo, use sub commands for each setting?
 	return []interactions.InteractionOption{
 		{
 			Name:        "setting",
