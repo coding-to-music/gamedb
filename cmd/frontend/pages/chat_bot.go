@@ -32,7 +32,7 @@ func chatBotHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, "chat_bot", "Steam Discord Chat Bot", "Steam Discord Chat Bot")
 	t.addAssetJSON2HTML()
 	t.Link = config.C.DiscordBotInviteURL
-	t.Regions = i18n.GetProdCCs()
+	t.Regions = i18n.GetProdCCs(true)
 
 	returnTemplate(w, r, t)
 }
