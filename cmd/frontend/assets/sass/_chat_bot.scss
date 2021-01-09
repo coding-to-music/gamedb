@@ -1,11 +1,19 @@
 #chat-bot-page {
+
     .jumbotron {
         img {
             height: 105px;
         }
     }
 
-    .commands-table:last-of-type {
-        @extend .mb-0;
+    #regions {
+        span {
+            @extend .mb-1;
+        }
+
+        code {
+            font-size: 20px;
+            text-transform: uppercase;
+        }
     }
 }

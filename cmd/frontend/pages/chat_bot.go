@@ -1,6 +1,7 @@
 package pages
 
 import (
+	"github.com/gamedb/gamedb/pkg/i18n"
 	"net/http"
 	"sort"
 
@@ -28,16 +29,18 @@ func chatBotHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Template
 	t := chatBotTemplate{}
-	t.fill(w, r, "chat_bot", "Steam Bot", "Steam Discord Chat Bot")
+	t.fill(w, r, "chat_bot", "Steam Discord Chat Bot", "Steam Discord Chat Bot")
 	t.addAssetJSON2HTML()
 	t.Link = config.C.DiscordBotInviteURL
+	t.Regions = i18n.GetProdCCs()
 
 	returnTemplate(w, r, t)
 }
 
 type chatBotTemplate struct {
 	globalTemplate
-	Link string
+	Link    string
+	Regions []i18n.ProductCountryCode
 }
 
 func (cbt chatBotTemplate) Commands() (ret [][]chatbot.Command) {

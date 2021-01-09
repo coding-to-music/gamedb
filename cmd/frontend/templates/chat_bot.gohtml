@@ -49,6 +49,15 @@
 
                 {{ end }}
 
+                <div id="regions">
+                    <h5>Currency Regions</h5>
+                    {{ range .Regions }}
+
+                        <span class="badge bg-success">{{ .Name }} <code>{{ .ProductCode }}</code></span>
+
+                    {{ end }}
+                </div>
+
             </div>
         </div>
 
