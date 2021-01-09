@@ -352,18 +352,10 @@ if ($playerPage.length > 0) {
                                 formatter: function () {
 
                                     switch (this.series.name) {
-                                        case 'Level':
-                                        case 'Badges':
-                                        case 'Foil Badges':
-                                        case 'Friends':
-                                        case 'Comments':
-                                        case 'Games':
-                                        case 'Achievements':
-                                            return this.y.toLocaleString() + ' ' + this.series.name + ' on ' + moment(this.key).format("dddd DD MMM YYYY");
                                         case 'Playtime':
                                             return this.y.toLocaleString() + ' minutes played on ' + moment(this.key).format("dddd DD MMM YYYY");
                                         default:
-                                            return this.series.name + this.y.toLocaleString() + ' on ' + moment(this.key).format("dddd DD MMM YYYY");
+                                            return this.y.toLocaleString() + ' ' + this.series.name + ' on ' + moment(this.key).format("dddd DD MMM YYYY");
                                     }
                                 },
                             },
