@@ -26,7 +26,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/mysql/pics"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/go-chi/chi"
-	"github.com/gosimple/slug"
 	"github.com/olivere/elastic/v7"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.uber.org/zap"
@@ -335,12 +334,6 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 			Link: "https://twitch.tv/directory/game/" + url.PathEscape(app.TwitchURL),
 			Icon: "/assets/img/links/twitch.png",
 			Hide: app.TwitchURL == "",
-		},
-		{
-			Text: "View " + app.GetTypeLower() + " on Steam Prices",
-			Link: "https://steamprices.com/" + app.GetSteamPricesURL() + "/" + strconv.Itoa(app.ID) + "/" + slug.Make(app.GetName()),
-			Icon: "/assets/img/links/steam-prices.png",
-			Hide: app.GetSteamPricesURL() == "",
 		},
 		{
 			Text: "View " + app.GetTypeLower() + " on Achievement Stats",
