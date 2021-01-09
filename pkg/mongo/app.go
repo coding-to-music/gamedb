@@ -14,7 +14,6 @@ import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
@@ -590,47 +589,26 @@ func UpdateAppsInflux(writes []mongo.WriteModel) (err error) {
 
 func ensureAppIndexes() {
 
-	var indexModels []mongo.IndexModel
-
-	var cols = []string{
-		"achievements_average_completion",
-		"achievements_count",
-		"categories",
-		"developers",
-		"genres",
-		"group_followers",
-		"platforms",
-		"player_peak_week",
-		"player_trend",
-		"publishers",
-		"release_date_unix",
-		"reviews_score",
-		"tags",
-		"type",
-		"updated_at",
-		"wishlist_avg_position",
-		"wishlist_count",
-		"wishlist_firsts",
-		"wishlist_percent",
+	var indexModels = []mongo.IndexModel{
+		{Keys: bson.D{{"achievements_average_completion", -1}}},
+		{Keys: bson.D{{"achievements_count", -1}, {"achievements_average_completion", -1}}},
+		{Keys: bson.D{{"categories", 1}}},
+		{Keys: bson.D{{"developers", 1}}},
+		{Keys: bson.D{{"genres", 1}}},
+		{Keys: bson.D{{"genres", -1}}},
+		{Keys: bson.D{{"group_followers", -1}}},
+		{Keys: bson.D{{"player_peak_week", -1}}},
+		{Keys: bson.D{{"player_trend", -1}}},
+		{Keys: bson.D{{"publishers", 1}}},
+		{Keys: bson.D{{"release_date_unix", 1}}},
+		{Keys: bson.D{{"release_date_unix", -1}}},
+		{Keys: bson.D{{"reviews_score", -1}}},
+		{Keys: bson.D{{"tags", 1}}},
+		{Keys: bson.D{{"tags", -1}}},
+		{Keys: bson.D{{"type", 1}}},
+		{Keys: bson.D{{"wishlist_avg_position", 1}}},
+		{Keys: bson.D{{"wishlist_count", -1}}},
 	}
-
-	// Price fields
-	for _, v := range i18n.GetProdCCs(true) {
-		cols = append(cols, "prices."+string(v.ProductCode)+".final")
-	}
-
-	// Asc & Desc
-	for _, v := range cols {
-		indexModels = append(indexModels,
-			mongo.IndexModel{Keys: bson.D{{v, 1}}},
-			mongo.IndexModel{Keys: bson.D{{v, -1}}},
-		)
-	}
-
-	// Achievements page
-	indexModels = append(indexModels, mongo.IndexModel{
-		Keys: bson.D{{"achievements_count", -1}, {"achievements_average_completion", -1}},
-	})
 
 	//
 	client, ctx, err := getMongo()
