@@ -124,7 +124,7 @@ func setCommands() {
 
 			payload := interactions.Interaction{
 				Name:        c.ID(),
-				Description: string(c.Description()),
+				Description: c.Description(),
 				Options:     c.Slash(),
 			}
 

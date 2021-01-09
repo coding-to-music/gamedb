@@ -15,7 +15,7 @@ type ArticlesServer struct {
 	generated.UnimplementedArticlesServiceServer
 }
 
-func (a ArticlesServer) List(ctx context.Context, request *generated.ListArticlesRequest) (response *generated.ArticlesResponse, err error) {
+func (as ArticlesServer) List(ctx context.Context, request *generated.ListArticlesRequest) (response *generated.ArticlesResponse, err error) {
 
 	sort := helpers.MakeMongoOrder(request.GetPagination())
 	// projection := helpers.MakeMongoProjection(request.GetProjection())
@@ -53,13 +53,13 @@ func (a ArticlesServer) List(ctx context.Context, request *generated.ListArticle
 	response.Pagination = helpers.MakePaginationResponse(request.GetPagination(), total, filtered)
 
 	for _, group := range articles {
-		response.Articles = append(response.Articles, a.makeArticle(group))
+		response.Articles = append(response.Articles, as.makeArticle(group))
 	}
 
 	return response, err
 }
 
-func (g ArticlesServer) makeArticle(m mongo.Article) (r *generated.ArticleResponse) {
+func (as ArticlesServer) makeArticle(m mongo.Article) (r *generated.ArticleResponse) {
 
 	date, err := ptypes.TimestampProto(m.Date)
 	if err != nil {

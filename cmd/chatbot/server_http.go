@@ -183,7 +183,7 @@ func verifyRequest(signature, hash, publicKey string) (bool, error) {
 	return ed25519.Verify(decodedPublicKey, []byte(hash), decodedSignature), nil
 }
 
-func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
+func healthCheckHandler(w http.ResponseWriter, _ *http.Request) {
 	http.Error(w, http.StatusText(http.StatusOK), http.StatusOK)
 }
 
