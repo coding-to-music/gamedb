@@ -21,8 +21,9 @@ const ( //                                       min  hour
 	CronTimeSteamClientPlayers       TaskTime = "*/10 *"
 	CronTimeAppPlayers               TaskTime = "*/10 *"
 	CronTimeAppPlayersTop            TaskTime = "*/10 *"
-	CronTimeAutoPlayerRefreshes      TaskTime = "0    */6"
 	CronTimeAppsInflux               TaskTime = "0    */2"
+	CronTimeAutoPlayerRefreshes      TaskTime = "0    */6"
+	CronTimeGameDBStats              TaskTime = "0    */6"
 	CronTimeAppsReviews              TaskTime = "0    0"
 	CronTimeAppsYoutube              TaskTime = "5    0"
 	CronTimeQueueAppGroups           TaskTime = "10   0"
@@ -68,8 +69,10 @@ var (
 		AppsQueueSteamSpy{},
 		AppsQueueWishlists{},
 		AppsQueueYoutube{},
+		ArticlesLatest{},
 		AutoPlayerRefreshes{},
 		BadgesUpdateRandom{},
+		GameDBStats{},
 		GroupsQueueElastic{},
 		GroupsQueuePrimaries{},
 		GroupsUpdateTop{},
@@ -83,7 +86,6 @@ var (
 		ProductsUpdateKeys{},
 		StatsTask{},
 		SteamOnline{},
-		ArticlesLatest{},
 	}
 )
 

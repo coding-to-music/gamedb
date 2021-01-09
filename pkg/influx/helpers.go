@@ -29,6 +29,7 @@ const (
 	InfluxMeasurementApps          InfluxMeasurement = "apps"
 	InfluxMeasurementChanges       InfluxMeasurement = "changes"
 	InfluxMeasurementChatBot       InfluxMeasurement = "chat_bot"
+	InfluxMeasurementGameDBStats   InfluxMeasurement = "gamedb-stats"
 	InfluxMeasurementGroups        InfluxMeasurement = "groups"
 	InfluxMeasurementPlayers       InfluxMeasurement = "players"
 	InfluxMeasurementPlayerUpdates InfluxMeasurement = "player_updates"
