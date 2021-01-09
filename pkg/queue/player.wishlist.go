@@ -142,7 +142,7 @@ func playersWishlistHandler(message *rabbit.Message) {
 
 	// Clear caches
 	var items = []string{
-		memcache.MemcachePlayer(payload.PlayerID).Key,
+		memcache.ItemPlayer(payload.PlayerID).Key,
 	}
 
 	err = memcache.Delete(items...)

@@ -117,10 +117,10 @@ func playerAchievementsHandler(message *rabbit.Message) {
 
 		// Clear caches
 		var items = []string{
-			memcache.MemcachePlayer(payload.PlayerID).Key,
-			memcache.MemcacheMongoCount(mongo.CollectionPlayerAchievements.String(), bson.D{{"player_id", payload.PlayerID}}).Key,
-			memcache.MemcachePlayerAchievementsDays(payload.PlayerID).Key,
-			memcache.MemcachePlayerAchievementsInflux(payload.PlayerID).Key,
+			memcache.ItemPlayer(payload.PlayerID).Key,
+			memcache.ItemMongoCount(mongo.CollectionPlayerAchievements.String(), bson.D{{"player_id", payload.PlayerID}}).Key,
+			memcache.ItemPlayerAchievementsDays(payload.PlayerID).Key,
+			memcache.ItemPlayerAchievementsInflux(payload.PlayerID).Key,
 		}
 
 		err = memcache.Delete(items...)
@@ -143,7 +143,7 @@ func playerAchievementsHandler(message *rabbit.Message) {
 		return
 	}
 
-	item := memcache.MemcacheAppNoAchievements(payload.AppID) // Cache if this app has no achievements
+	item := memcache.ItemAppNoAchievements(payload.AppID) // Cache if this app has no achievements
 
 	_, err = memcache.Get(item.Key)
 	if err == nil {

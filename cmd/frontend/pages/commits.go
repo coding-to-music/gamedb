@@ -63,7 +63,7 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return resp.GetCommits(), err
 	}
 
-	err := memcache.GetSetInterface(memcache.MemcacheCommitsPage(query.GetPage(commitsLimit)), &commits, callback)
+	err := memcache.GetSetInterface(memcache.ItemCommitsPage(query.GetPage(commitsLimit)), &commits, callback)
 	if err != nil {
 		log.ErrS(err)
 	}

@@ -261,7 +261,7 @@ func GetUserByEmail(email string) (user User, err error) {
 
 func GetUserByAPIKey(key string) (user User, err error) {
 
-	err = memcache.GetSetInterface(memcache.MemcacheUserByAPIKey(key), &user, func() (interface{}, error) {
+	err = memcache.GetSetInterface(memcache.ItemUserByAPIKey(key), &user, func() (interface{}, error) {
 
 		db, err := GetMySQLClient()
 		if err != nil {

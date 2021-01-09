@@ -336,7 +336,7 @@ func InsertMany(collection collection, documents []Document) (resp *mongo.Insert
 
 func CountDocuments(collection collection, filter bson.D, ttl uint32) (count int64, err error) {
 
-	item := memcache.MemcacheMongoCount(collection.String(), filter)
+	item := memcache.ItemMongoCount(collection.String(), filter)
 	if ttl > 0 {
 		item.Expiration = ttl
 	}

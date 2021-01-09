@@ -228,9 +228,9 @@ func packageHandler(message *rabbit.Message) {
 		defer wg.Done()
 
 		var items = []string{
-			memcache.MemcachePackage(pack.ID).Key,
-			memcache.MemcachePackageInQueue(pack.ID).Key,
-			memcache.MemcachePackageBundles(pack.ID).Key,
+			memcache.ItemPackage(pack.ID).Key,
+			memcache.ItemPackageInQueue(pack.ID).Key,
+			memcache.ItemPackageBundles(pack.ID).Key,
 		}
 
 		err := memcache.Delete(items...)

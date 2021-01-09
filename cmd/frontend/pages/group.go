@@ -232,7 +232,7 @@ func groupAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return hc, err
 	}
 
-	err = memcache.GetSetInterface(memcache.MemcacheGroupFollowersChart(id), &hc, callback)
+	err = memcache.GetSetInterface(memcache.ItemGroupFollowersChart(id), &hc, callback)
 	if err != nil {
 		log.ErrS(err)
 	}

@@ -799,7 +799,7 @@ func GetPackageBundles(pack mongo.Package) (bundles []mysql.Bundle, err error) {
 		return bundles, nil
 	}
 
-	err = memcache.GetSetInterface(memcache.MemcachePackageBundles(pack.ID), &bundles, func() (interface{}, error) {
+	err = memcache.GetSetInterface(memcache.ItemPackageBundles(pack.ID), &bundles, func() (interface{}, error) {
 		return mysql.GetBundlesByID(pack.Bundles, []string{})
 	})
 

@@ -137,7 +137,7 @@ func twitterZapierWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, &webhooks)
 
 	// Delete cache
-	err = memcache.Delete(memcache.HomeTweets.Key)
+	err = memcache.Delete(memcache.ItemHomeTweets.Key)
 	if err != nil {
 		log.Err(err.Error())
 	}
@@ -385,7 +385,7 @@ func gitHubWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 	case "push":
 
 		// Clear cache
-		err := memcache.Delete(memcache.MemcacheCommitsPage(1).Key)
+		err := memcache.Delete(memcache.ItemCommitsPage(1).Key)
 		if err != nil {
 			log.ErrS(err)
 		}

@@ -114,7 +114,7 @@ func appInfluxHandler(message *rabbit.Message) {
 	// Clear app cache
 	var items []string
 	for _, v := range payload.AppIDs {
-		items = append(items, memcache.MemcacheApp(v).Key)
+		items = append(items, memcache.ItemApp(v).Key)
 	}
 
 	err = memcache.Delete(items...)

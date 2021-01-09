@@ -41,13 +41,13 @@ func SetConfig(id ConfigID, value string) (err error) {
 
 	// Clear cache
 	return memcache.Delete(
-		memcache.MemcacheConfigItem(id.String()).Key,
+		memcache.ItemConfigItem(id.String()).Key,
 	)
 }
 
 func GetConfig(id ConfigID) (config Config, err error) {
 
-	err = memcache.GetSetInterface(memcache.MemcacheConfigItem(id.String()), &config, func() (interface{}, error) {
+	err = memcache.GetSetInterface(memcache.ItemConfigItem(id.String()), &config, func() (interface{}, error) {
 
 		var config Config
 

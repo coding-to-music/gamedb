@@ -34,7 +34,7 @@ func websocketServer() (*discordgo.Session, error) {
 	// On joining a new guild
 	discordSession.AddHandler(func(s *discordgo.Session, m *discordgo.GuildCreate) {
 
-		err := memcache.Delete(memcache.MemcacheChatBotGuildsCount.Key)
+		err := memcache.Delete(memcache.ItemChatBotGuildsCount.Key)
 		if err != nil {
 			log.ErrS(err)
 			return
@@ -87,14 +87,14 @@ func websocketServer() (*discordgo.Session, error) {
 
 				// Get user settings
 				code := steamapi.ProductCCUS
-				cacheItem := memcache.MemcacheChatBotRequest(msg, code)
+				cacheItem := memcache.ItemChatBotRequest(msg, code)
 				if command.PerProdCode() {
 					settings, err := mysql.GetChatBotSettings(m.Author.ID)
 					if err != nil {
 						log.ErrS(err)
 					}
 					code = settings.ProductCode
-					cacheItem = memcache.MemcacheChatBotRequest(msg, code)
+					cacheItem = memcache.ItemChatBotRequest(msg, code)
 				}
 
 				// Check in cache first

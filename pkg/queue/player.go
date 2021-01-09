@@ -285,8 +285,8 @@ func playerHandler(message *rabbit.Message) {
 		defer wg.Done()
 
 		var items = []string{
-			memcache.MemcachePlayer(player.ID).Key,
-			memcache.MemcachePlayerInQueue(player.ID).Key,
+			memcache.ItemPlayer(player.ID).Key,
+			memcache.ItemPlayerInQueue(player.ID).Key,
 		}
 
 		err = memcache.Delete(items...)

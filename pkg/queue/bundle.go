@@ -108,7 +108,7 @@ func bundleHandler(message *rabbit.Message) {
 	}
 
 	// Clear caches
-	err = memcache.Delete(memcache.MemcacheBundleInQueue(bundle.ID).Key)
+	err = memcache.Delete(memcache.ItemBundleInQueue(bundle.ID).Key)
 	if err != nil {
 		log.ErrS(err, payload.ID)
 		sendToRetryQueue(message)

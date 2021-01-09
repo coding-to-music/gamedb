@@ -198,8 +198,8 @@ func appAchievementsHandler(message *rabbit.Message) {
 
 	//
 	var items = []string{
-		memcache.MemcacheApp(payload.AppID).Key,
-		memcache.MemcacheMongoCount(mongo.CollectionAppAchievements.String(), bson.D{{"app_id", payload.AppID}}).Key,
+		memcache.ItemApp(payload.AppID).Key,
+		memcache.ItemMongoCount(mongo.CollectionAppAchievements.String(), bson.D{{"app_id", payload.AppID}}).Key,
 	}
 
 	err = memcache.Delete(items...)

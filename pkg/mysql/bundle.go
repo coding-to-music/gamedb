@@ -192,7 +192,7 @@ func GetBundlesByID(ids []int, columns []string) (bundles []Bundle, err error) {
 
 func CountBundles() (count int, err error) {
 
-	err = memcache.GetSetInterface(memcache.MemcacheBundlesCount, &count, func() (interface{}, error) {
+	err = memcache.GetSetInterface(memcache.ItemBundlesCount, &count, func() (interface{}, error) {
 
 		var count int
 

@@ -176,7 +176,7 @@ func SearchArticles(offset int, sorters []elastic.Sorter, search string, filters
 
 func AggregateArticleFeeds() (aggregations []helpers.TupleStringInt, err error) {
 
-	err = memcache.GetSetInterface(memcache.MemcacheArticleFeedAggs, &aggregations, func() (interface{}, error) {
+	err = memcache.GetSetInterface(memcache.ItemArticleFeedAggs, &aggregations, func() (interface{}, error) {
 
 		client, ctx, err := GetElastic()
 		if err != nil {

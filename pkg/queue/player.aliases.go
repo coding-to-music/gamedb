@@ -103,7 +103,7 @@ func playerAliasesHandler(message *rabbit.Message) {
 	}
 
 	// Clear player cache
-	err = memcache.Delete(memcache.MemcachePlayer(payload.PlayerID).Key)
+	err = memcache.Delete(memcache.ItemPlayer(payload.PlayerID).Key)
 	if err != nil {
 		log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 		sendToRetryQueue(message)

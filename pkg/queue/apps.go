@@ -199,19 +199,19 @@ func appHandler(message *rabbit.Message) {
 		defer wg.Done()
 
 		var items = []string{
-			// memcache.MemcacheApp(app.ID).Key, // Done in replaceAppRow
-			memcache.MemcacheAppInQueue(app.ID).Key,
-			memcache.MemcacheAppStats(mongo.StatsTypeTags.String(), app.ID).Key,
-			memcache.MemcacheAppStats(mongo.StatsTypeCategories.String(), app.ID).Key,
-			memcache.MemcacheAppStats(mongo.StatsTypeGenres.String(), app.ID).Key,
-			memcache.MemcacheAppStats(mongo.StatsTypeDevelopers.String(), app.ID).Key,
-			memcache.MemcacheAppStats(mongo.StatsTypePublishers.String(), app.ID).Key,
-			memcache.MemcacheAppDemos(app.ID).Key,
-			memcache.MemcacheAppRelated(app.ID).Key,
-			memcache.MemcacheAppBundles(app.ID).Key,
-			memcache.MemcacheAppPackages(app.ID).Key,
-			memcache.MemcacheAppNoAchievements(app.ID).Key,
-			memcache.MemcacheMongoCount(mongo.CollectionAppSales.String(), bson.D{{"app_id", app.ID}}).Key,
+			// memcache.ItemApp(app.ID).Key, // Done in replaceAppRow
+			memcache.ItemAppInQueue(app.ID).Key,
+			memcache.ItemAppStats(mongo.StatsTypeTags.String(), app.ID).Key,
+			memcache.ItemAppStats(mongo.StatsTypeCategories.String(), app.ID).Key,
+			memcache.ItemAppStats(mongo.StatsTypeGenres.String(), app.ID).Key,
+			memcache.ItemAppStats(mongo.StatsTypeDevelopers.String(), app.ID).Key,
+			memcache.ItemAppStats(mongo.StatsTypePublishers.String(), app.ID).Key,
+			memcache.ItemAppDemos(app.ID).Key,
+			memcache.ItemAppRelated(app.ID).Key,
+			memcache.ItemAppBundles(app.ID).Key,
+			memcache.ItemAppPackages(app.ID).Key,
+			memcache.ItemAppNoAchievements(app.ID).Key,
+			memcache.ItemMongoCount(mongo.CollectionAppSales.String(), bson.D{{"app_id", app.ID}}).Key,
 		}
 
 		err := memcache.Delete(items...)
@@ -1022,5 +1022,5 @@ func replaceAppRow(app mongo.App) (err error) {
 	}
 
 	// Cache cleared here to stop any race conditions with other queues
-	return memcache.Delete(memcache.MemcacheApp(app.ID).Key)
+	return memcache.Delete(memcache.ItemApp(app.ID).Key)
 }

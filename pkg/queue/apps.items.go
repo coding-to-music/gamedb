@@ -145,8 +145,8 @@ func appItemsHandler(message *rabbit.Message) {
 
 	// Clear caches
 	var items = []string{
-		memcache.MemcacheApp(payload.AppID).Key,
-		memcache.MemcacheMongoCount(mongo.CollectionAppItems.String(), bson.D{{"app_id", payload.AppID}}).Key,
+		memcache.ItemApp(payload.AppID).Key,
+		memcache.ItemMongoCount(mongo.CollectionAppItems.String(), bson.D{{"app_id", payload.AppID}}).Key,
 	}
 
 	err = memcache.Delete(items...)

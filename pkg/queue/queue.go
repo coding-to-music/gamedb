@@ -436,7 +436,7 @@ func ProduceApp(payload AppMessage) (err error) {
 		return mongo.ErrInvalidAppID
 	}
 
-	item := memcache.MemcacheAppInQueue(payload.ID)
+	item := memcache.ItemAppInQueue(payload.ID)
 
 	if payload.ChangeNumber == 0 {
 		_, err = memcache.Get(item.Key)
@@ -491,7 +491,7 @@ func ProduceAppPlayersTop(appIDs []int) (err error) {
 
 func ProduceBundle(id int) (err error) {
 
-	item := memcache.MemcacheBundleInQueue(id)
+	item := memcache.ItemBundleInQueue(id)
 
 	_, err = memcache.Get(item.Key)
 	if err == nil {
@@ -534,7 +534,7 @@ func ProduceGroup(payload GroupMessage) (err error) {
 		return ErrIsBot
 	}
 
-	item := memcache.MemcacheGroupInQueue(payload.ID)
+	item := memcache.ItemGroupInQueue(payload.ID)
 
 	_, err = memcache.Get(item.Key)
 	if err == nil {
@@ -555,7 +555,7 @@ func ProducePackage(payload PackageMessage) (err error) {
 		return mongo.ErrInvalidPackageID
 	}
 
-	item := memcache.MemcachePackageInQueue(payload.ID)
+	item := memcache.ItemPackageInQueue(payload.ID)
 
 	if payload.ChangeNumber == 0 {
 		_, err = memcache.Get(item.Key)
@@ -589,7 +589,7 @@ func ProducePlayer(payload PlayerMessage, event string) (err error) {
 		return steamid.ErrInvalidPlayerID
 	}
 
-	item := memcache.MemcachePlayerInQueue(payload.ID)
+	item := memcache.ItemPlayerInQueue(payload.ID)
 
 	_, err = memcache.Get(item.Key)
 	if err == nil {

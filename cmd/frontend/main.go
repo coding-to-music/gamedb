@@ -76,7 +76,7 @@ func main() {
 	// Clear caches on process restart
 	if config.IsProd() {
 		keys := []string{
-			memcache.MemcacheCommitsPage(1).Key,
+			memcache.ItemCommitsPage(1).Key,
 		}
 		err = memcache.Delete(keys...)
 		if err != nil {

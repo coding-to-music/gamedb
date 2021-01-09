@@ -50,7 +50,7 @@ func queuesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var highcharts = map[string]influx.HighChartsJSON{}
 
-	err := memcache.GetSetInterface(memcache.MemcacheQueues, &highcharts, func() (interface{}, error) {
+	err := memcache.GetSetInterface(memcache.ItemQueues, &highcharts, func() (interface{}, error) {
 
 		builder := influxql.NewBuilder()
 		builder.AddSelect(`sum("messages")`, "sum_messages")

@@ -125,7 +125,7 @@ func GetEvents(filter bson.D, offset int64) (events []Event, err error) {
 
 func GetEventCounts(userID int) (counts []StringCount, err error) {
 
-	err = memcache.GetSetInterface(memcache.MemcacheUserEvents(userID), &counts, func() (interface{}, error) {
+	err = memcache.GetSetInterface(memcache.ItemUserEvents(userID), &counts, func() (interface{}, error) {
 
 		client, ctx, err := getMongo()
 		if err != nil {
@@ -181,5 +181,5 @@ func NewEvent(r *http.Request, userID int, eventType EventEnum) (err error) {
 		return err
 	}
 
-	return memcache.Delete(memcache.MemcacheUserEvents(userID).Key)
+	return memcache.Delete(memcache.ItemUserEvents(userID).Key)
 }

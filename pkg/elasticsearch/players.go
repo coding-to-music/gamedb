@@ -155,7 +155,7 @@ func SearchPlayers(limit int, offset int, search string, sorters []elastic.Sorte
 
 func AggregatePlayerCountries() (aggregations map[string]int64, err error) {
 
-	err = memcache.GetSetInterface(memcache.MemcachePlayerLocationAggs, &aggregations, func() (interface{}, error) {
+	err = memcache.GetSetInterface(memcache.ItemPlayerLocationAggs, &aggregations, func() (interface{}, error) {
 
 		client, ctx, err := GetElastic()
 		if err != nil {

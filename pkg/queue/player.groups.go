@@ -164,7 +164,7 @@ func playersGroupsHandler(message *rabbit.Message) {
 
 	// Clear caches
 	var items = []string{
-		memcache.MemcachePlayer(payload.Player.ID).Key,
+		memcache.ItemPlayer(payload.Player.ID).Key,
 	}
 
 	err = memcache.Delete(items...)

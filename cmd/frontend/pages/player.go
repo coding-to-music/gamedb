@@ -247,7 +247,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		item := memcache.MemcachePlayerInQueue(player.ID)
+		item := memcache.ItemPlayerInQueue(player.ID)
 		_, err = memcache.Get(item.Key)
 
 		inQueue = err == nil
@@ -1238,7 +1238,7 @@ func playerAchievementInfluxAjaxHandler(w http.ResponseWriter, r *http.Request) 
 
 	var hc influx.HighChartsJSON
 
-	err = memcache.GetSetInterface(memcache.MemcachePlayerAchievementsInflux(playerID), &hc, func() (interface{}, error) {
+	err = memcache.GetSetInterface(memcache.ItemPlayerAchievementsInflux(playerID), &hc, func() (interface{}, error) {
 
 		builder := influxql.NewBuilder()
 		builder.AddSelect("MAX("+influx.InfPlayersAchievements.String()+")", "max_"+influx.InfPlayersAchievements.String())

@@ -128,7 +128,7 @@ func appPlayersHandler(message *rabbit.Message) {
 				}
 
 				// Clear cache
-				err = memcache.Delete(memcache.MemcacheApp(app.ID).Key)
+				err = memcache.Delete(memcache.ItemApp(app.ID).Key)
 				if err != nil {
 					log.ErrS(err, app.ID)
 					sendToRetryQueue(message)

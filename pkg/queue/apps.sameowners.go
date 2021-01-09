@@ -91,7 +91,7 @@ func appSameownersHandler(message *rabbit.Message) {
 	}
 
 	// Clear cache
-	err = memcache.Delete(memcache.MemcacheApp(payload.AppID).Key)
+	err = memcache.Delete(memcache.ItemApp(payload.AppID).Key)
 	if err != nil {
 		log.ErrS(err, payload.AppID)
 		sendToRetryQueue(message)

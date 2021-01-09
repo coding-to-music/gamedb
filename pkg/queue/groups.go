@@ -208,8 +208,8 @@ func groupsHandler(message *rabbit.Message) {
 
 	// Clear memcache
 	var items = []string{
-		memcache.MemcacheGroup(payload.ID).Key,
-		memcache.MemcacheGroupInQueue(payload.ID).Key,
+		memcache.ItemGroup(payload.ID).Key,
+		memcache.ItemGroupInQueue(payload.ID).Key,
 	}
 
 	err = memcache.Delete(items...)
