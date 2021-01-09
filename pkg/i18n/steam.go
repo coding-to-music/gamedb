@@ -17,6 +17,7 @@ type ProductCountryCode struct {
 	CountryCodes []string // Used to get a currency from an country from an IP
 	Name         string
 	Symbol       string
+	Enabled      bool
 }
 
 func (pcc ProductCountryCode) GetFlag() string {
@@ -76,6 +77,7 @@ var ProductCountryCodes = map[steamapi.ProductCC]ProductCountryCode{
 		CurrencyCode: steamapi.CurrencyCNY,
 		Name:         "Chinese Renminbi",
 		Symbol:       "¥",
+		Enabled:      true,
 	},
 	steamapi.ProductCCCO: {
 		ProductCode:  steamapi.ProductCCCO,
@@ -97,6 +99,7 @@ var ProductCountryCodes = map[steamapi.ProductCC]ProductCountryCode{
 		CurrencyCode: steamapi.CurrencyEUR,
 		Name:         "Euro",
 		Symbol:       "€",
+		Enabled:      true,
 	},
 	steamapi.ProductCCHK: {
 		ProductCode:  steamapi.ProductCCHK,
@@ -209,6 +212,7 @@ var ProductCountryCodes = map[steamapi.ProductCC]ProductCountryCode{
 		CurrencyCode: steamapi.CurrencyGBP,
 		Name:         "Pound Sterling",
 		Symbol:       "£",
+		Enabled:      true,
 	},
 	steamapi.ProductCCQA: {
 		ProductCode:  steamapi.ProductCCQA,
@@ -223,6 +227,7 @@ var ProductCountryCodes = map[steamapi.ProductCC]ProductCountryCode{
 		CurrencyCode: steamapi.CurrencyRUB,
 		Name:         "Russian Ruble",
 		Symbol:       "₽",
+		Enabled:      true,
 	},
 	steamapi.ProductCCSA: {
 		ProductCode:  steamapi.ProductCCSA,
@@ -292,6 +297,7 @@ var ProductCountryCodes = map[steamapi.ProductCC]ProductCountryCode{
 		CurrencyCode: steamapi.CurrencyUSD,
 		Name:         "United States Dollar",
 		Symbol:       "$",
+		Enabled:      true,
 	},
 	steamapi.ProductCCAZ: { // CIS
 		ProductCode:  steamapi.ProductCCAZ,
@@ -336,10 +342,12 @@ func GetProdCC(cc steamapi.ProductCC) ProductCountryCode {
 	return ProductCountryCodes[steamapi.ProductCCUS]
 }
 
-func GetProdCCs() (ccs []ProductCountryCode) {
+func GetProdCCs(activeOnly bool) (ccs []ProductCountryCode) {
 
 	for _, v := range ProductCountryCodes {
-		ccs = append(ccs, v)
+		if !activeOnly || v.Enabled {
+			ccs = append(ccs, v)
+		}
 	}
 
 	sort.Slice(ccs, func(i, j int) bool {

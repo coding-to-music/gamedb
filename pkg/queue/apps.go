@@ -475,7 +475,7 @@ func updateAppDetails(app *mongo.App) (err error) {
 
 	prices := helpers.ProductPrices{}
 
-	for _, code := range i18n.GetProdCCs() {
+	for _, code := range i18n.GetProdCCs(true) {
 
 		// No price_overview filter so we can get `is_free`
 		response, err := steam.GetSteam().GetAppDetails(uint(app.ID), code.ProductCode, steamapi.LanguageEnglish, nil)

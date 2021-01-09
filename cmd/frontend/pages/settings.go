@@ -57,7 +57,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	t.addAssetPasswordStrength()
 	t.addAssetChosen()
 	t.addAssetBootbox()
-	t.ProdCCs = i18n.GetProdCCs()
+	t.ProdCCs = i18n.GetProdCCs(true)
 
 	// Get user
 	t.User, err = getUserFromSession(r)

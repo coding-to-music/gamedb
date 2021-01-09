@@ -905,7 +905,7 @@ func (p *playerAppStatsInnerTemplate) AddApp(appTime int, prices map[string]int,
 		p.PriceHour = map[steamapi.ProductCC]float64{}
 	}
 
-	for _, code := range i18n.GetProdCCs() {
+	for _, code := range i18n.GetProdCCs(true) {
 
 		// Sometimes priceHour can be -1, meaning infinite
 		var priceHour = priceHours[string(code.ProductCode)]
