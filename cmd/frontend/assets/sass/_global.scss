@@ -57,7 +57,7 @@ body.bg {
     }
 }
 
-body.bg.dark {
+body.dark.bg {
     div.jumbotron {
         opacity: .95;
     }
@@ -418,14 +418,14 @@ video {
 }
 
 // Info panels
-div.jumbotron.bottom {
+div.jumbotron.inline {
 
     @extend .p-3;
 
     display: table;
     width: 100%;
 
-    h1 {
+    h4 {
         display: table-cell;
         width: 1%;
         vertical-align: middle;
@@ -439,6 +439,12 @@ div.jumbotron.bottom {
     div {
         display: table-cell;
         vertical-align: middle;
+    }
+}
+
+body.dark {
+    div.jumbotron.inline {
+        background-color: #28a745;
     }
 }
 
