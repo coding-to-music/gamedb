@@ -24,9 +24,6 @@ if ($('#chat-bot-page').length > 0) {
                 "render": function (data, type, row) {
                     return row[3];
                 },
-                "createdCell": function (td, cellData, rowData, row, col) {
-                    $(td).attr('nowrap', 'nowrap');
-                },
                 "orderable": false,
             },
             // Time
