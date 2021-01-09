@@ -16,7 +16,6 @@ func InitZap(logName string) {
 	}
 
 	var options = []zap.Option{
-		zap.AddStacktrace(zap.WarnLevel),
 		zap.AddCaller(),
 		zap.AddCallerSkip(1),
 	}
@@ -28,6 +27,8 @@ func InitZap(logName string) {
 		cores = append(cores, newFileCore(logName))
 
 	} else {
+
+		options = append(options, zap.AddStacktrace(zap.WarnLevel))
 
 		if config.C.GoogleProject != "" && config.C.GoogleAuthFile != "" {
 			cores = append(cores, newGoogleCore())
