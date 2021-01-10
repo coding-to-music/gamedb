@@ -5,6 +5,13 @@ if ($('#players-page').length > 0) {
     const $state = $('#state');
     const $stateContainer = $('#state-container');
 
+    // Setup drop downs
+    $('select.form-control-chosen').chosen({
+        disable_search_threshold: 5,
+        allow_single_deselect: true,
+        max_selected_options: 1
+    });
+
     $country.on('change', function (e) {
         toggleStateDropDown();
     });
@@ -47,6 +54,7 @@ if ($('#players-page').length > 0) {
 
                 $state.val('');
                 $stateContainer.show();
+                $state.trigger("chosen:updated");
             },
         });
     }

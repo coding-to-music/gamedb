@@ -127,6 +127,7 @@ func playersHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := playersTemplate{}
 	t.fill(w, r, "players", "Players", "See where you come against the rest of the world")
+	t.addAssetChosen()
 	t.Countries = countries
 	t.Continents2 = continents
 	t.Total = total
