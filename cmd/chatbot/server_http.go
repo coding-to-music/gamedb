@@ -31,17 +31,6 @@ func slashCommandServer() error {
 	r.Post("/", discordHandler)
 	r.Get("/health-check", healthCheckHandler)
 
-	for _, c := range chatbot.CommandRegister {
-
-		r.Get("/"+c.ID(), func(w http.ResponseWriter, r *http.Request) {
-
-			_, err := w.Write([]byte("success"))
-			if err != nil {
-				log.ErrS(err)
-			}
-		})
-	}
-
 	r.NotFound(errorHandler)
 
 	s := &http.Server{
