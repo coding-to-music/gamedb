@@ -60,7 +60,7 @@ func (c CommandSettings) Slash() []interactions.InteractionOption {
 			},
 		},
 		{
-			Name:        "player",
+			Name:        "value",
 			Description: "The value to set, leave empty to retrieve the value",
 			Type:        interactions.InteractionOptionTypeString,
 			Required:    false,
