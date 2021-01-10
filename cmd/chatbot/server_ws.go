@@ -61,78 +61,78 @@ func websocketServer() (*discordgo.Session, error) {
 
 			if chatbot.RegexCache[command.Regex()].MatchString(msg) {
 
-				// Disable PMs
-				private, err := isPrivateChannel(s, m)
-				if err != nil {
-					discordError(err)
-					return
-				}
-				if private && m.Author.ID != discord.AdminID {
-					return
-				}
+				func() {
 
-				// Save stats
-				//goland:noinspection GoDeferInLoop
-				defer saveToDB(m, command, msg)
-
-				// Typing notification
-				err = discordSession.ChannelTyping(m.ChannelID)
-				discordError(err)
-
-				// React to request message
-				// go func() {
-				// 	err = discordSession.MessageReactionAdd(m.ChannelID, m.Message.ID, "👍")
-				// 	discordError(err)
-				// }()
-
-				// Get user settings
-				code := steamapi.ProductCCUS
-				cacheItem := memcache.ItemChatBotRequest(msg, code)
-				if command.PerProdCode() {
-					settings, err := mysql.GetChatBotSettings(m.Author.ID)
+					// Disable PMs
+					private, err := isPrivateChannel(s, m)
 					if err != nil {
-						log.ErrS(err)
-					}
-					code = settings.ProductCode
-					cacheItem = memcache.ItemChatBotRequest(msg, code)
-				}
-
-				// Check in cache first
-				if !command.DisableCache() && !config.IsLocal() {
-					var message discordgo.MessageSend
-					err = memcache.GetInterface(cacheItem.Key, &message)
-					if err == nil {
-						_, err = s.ChannelMessageSendComplex(m.ChannelID, &message)
 						discordError(err)
 						return
 					}
-				}
+					if private && m.Author.ID != discord.AdminID {
+						return
+					}
 
-				// Rate limit
-				if !limits.GetLimiter(m.Author.ID).Allow() {
-					log.Warn("over chatbot rate limit", zap.String("author", m.Author.ID), zap.String("msg", msg))
-					return
-				}
+					// Save stats
+					defer saveToDB(m, command, msg)
 
-				message, err := command.Output(m, code)
-				if err != nil {
-					log.WarnS(err, msg)
-					return
-				}
-
-				_, err = s.ChannelMessageSendComplex(m.ChannelID, &message)
-				if err != nil {
+					// Typing notification
+					err = discordSession.ChannelTyping(m.ChannelID)
 					discordError(err)
-					return
-				}
 
-				// Save to cache
-				err = memcache.SetInterface(cacheItem.Key, message, cacheItem.Expiration)
-				if err != nil {
-					log.ErrS(err, msg)
-				}
+					// React to request message
+					// go func() {
+					// 	err = discordSession.MessageReactionAdd(m.ChannelID, m.Message.ID, "👍")
+					// 	discordError(err)
+					// }()
 
-				return
+					// Get user settings
+					code := steamapi.ProductCCUS
+					cacheItem := memcache.ItemChatBotRequest(msg, code)
+					if command.PerProdCode() {
+						settings, err := mysql.GetChatBotSettings(m.Author.ID)
+						if err != nil {
+							log.ErrS(err)
+						}
+						code = settings.ProductCode
+						cacheItem = memcache.ItemChatBotRequest(msg, code)
+					}
+
+					// Check in cache first
+					if !command.DisableCache() && !config.IsLocal() {
+						var message discordgo.MessageSend
+						err = memcache.GetInterface(cacheItem.Key, &message)
+						if err == nil {
+							_, err = s.ChannelMessageSendComplex(m.ChannelID, &message)
+							discordError(err)
+							return
+						}
+					}
+
+					// Rate limit
+					if !limits.GetLimiter(m.Author.ID).Allow() {
+						log.Warn("over chatbot rate limit", zap.String("author", m.Author.ID), zap.String("msg", msg))
+						return
+					}
+
+					message, err := command.Output(m, code)
+					if err != nil {
+						log.WarnS(err, msg)
+						return
+					}
+
+					_, err = s.ChannelMessageSendComplex(m.ChannelID, &message)
+					if err != nil {
+						discordError(err)
+						return
+					}
+
+					// Save to cache
+					err = memcache.SetInterface(cacheItem.Key, message, cacheItem.Expiration)
+					if err != nil {
+						log.ErrS(err, msg)
+					}
+				}()
 			}
 		}
 	})
