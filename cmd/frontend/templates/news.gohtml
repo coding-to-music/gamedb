@@ -27,8 +27,8 @@
                     </div>
                     <div class="col-12 col-md-6 col-lg-4">
                         <div class="form-group">
-                            <label for="feed">Feed</label>
-                            <select multiple data-placeholder="Filter" class="form-control form-control-chosen" id="feed" name="feed">
+                            <label for="feed">Feeds</label>
+                            <select multiple data-placeholder="Feeds" class="form-control form-control-chosen" id="feed" name="feed">
                                 {{ range .Feeds }}
                                     <option value="{{ .ID }}">{{ .GetName }} ({{ .GetCount }})</option>
                                 {{ end }}

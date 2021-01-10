@@ -45,6 +45,7 @@ func appRouter() http.Handler {
 	r.Get("/items.json", appItemsAjaxHandler)
 	r.Get("/localization.html", appLocalizationHandler)
 	r.Get("/news.json", appNewsAjaxHandler)
+	r.Get("/news-feeds.json", appNewsFeedsAjaxHandler)
 	r.Get("/packages.json", appPackagesAjaxHandler)
 	r.Get("/players-heatmap.json", appPlayersHeatmapAjaxHandler)
 	r.Get("/players.json", appPlayersAjaxHandler(true))
@@ -560,6 +561,12 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var filters = []elastic.Query{elastic.NewTermQuery("app_id", id)}
 		var sorter = []elastic.Sorter{elastic.NewFieldSort("time").Desc()}
 
+		// Feed
+		var feeds = query.GetSearchSliceInterface("article-feed")
+		if len(feeds) > 0 {
+			filters = append(filters, elastic.NewTermsQuery("feed", feeds...))
+		}
+
 		var err error
 		articles, filtered, err = elasticsearch.SearchArticles(query.GetOffset(), sorter, query.GetSearchString("search"), filters)
 		if err != nil {
@@ -609,6 +616,22 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	returnJSON(w, r, response)
+}
+
+func appNewsFeedsAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid App ID"})
+		return
+	}
+
+	feeds, err := mongo.GetAppArticlesGroupedByFeed(id)
+	if err != nil {
+		log.ErrS(err)
+	}
+
+	returnJSON(w, r, feeds)
 }
 
 func appPricesAjaxHandler(w http.ResponseWriter, r *http.Request) {

@@ -95,7 +95,7 @@ var (
 	// Other
 	ItemAPISteam             = Item{Key: "api-steam", Expiration: 60 * 60 * 24 * 7}
 	ItemArticleFeedAggs      = Item{Key: "app-article-feeds", Expiration: 60 * 60 * 24 * 7}
-	ItemArticleFeedAggsMongo = Item{Key: "app-article-feeds-mongo", Expiration: 60 * 60 * 24 * 7}
+	ItemArticleFeedAggsMongo = func(appID int) Item { return Item{Key: "app-article-feeds-mongo-"+strconv.Itoa(appID), Expiration: 60 * 60 * 24 * 7} }
 	ItemBundlesCount         = Item{Key: "bundles-count", Expiration: 86400}
 	ItemChange               = func(changeID int64) Item { return Item{Key: "change-" + strconv.FormatInt(changeID, 10), Expiration: 0} }
 	ItemCommitsPage          = func(page int) Item { return Item{Key: "commits-page-" + strconv.Itoa(page), Expiration: 60 * 60} }

@@ -67,7 +67,7 @@ func (c ArticlesLatest) work() (err error) {
 		}
 	})
 
-	feeds, err := mongo.GetAppArticlesGroupedByFeed()
+	feeds, err := mongo.GetAppArticlesGroupedByFeed(0)
 	if err != nil {
 		return err
 	}

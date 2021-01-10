@@ -91,81 +91,118 @@ if ($appPage.length > 0) {
     // News data table
     function loadNews() {
 
-        const $newsTable = $('#news-table');
-        const table = $newsTable.gdbTable({
-            searchFields: [
-                $('#article-search'),
-            ],
-            tableOptions: {
-                "order": [[1, 'desc']],
-                "createdRow": function (row, data, dataIndex) {
-                    // $(row).attr('data-id', data[0]);
-                    $(row).attr('data-article-id', data[0]);
-                    $(row).addClass('cursor-pointer');
-                },
-                "columnDefs": [
-                    // Title
-                    {
-                        "targets": 0,
-                        "render": function (data, type, row) {
-                            return '<div class="icon-name"><div class="icon"><img class="tall" data-lazy="' + row[10] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '<br /><small>' + row[2] + '</small></div></div>'
-                                + '<div class="d-none">' + row[5] + '</div>'
-                        },
-                        "createdCell": function (td, cellData, rowData, row, col) {
-                            $(td).attr('style', 'min-width: 300px;')
-                            $(td).addClass('img');
-                        },
-                        "orderable": false
-                    },
-                    // Date
-                    {
-                        "targets": 1,
-                        "render": function (data, type, row) {
-                            return '<span data-toggle="tooltip" data-placement="left" title="' + row[4] + '" data-livestamp="' + row[3] + '"></span>';
-                        },
-                        "createdCell": function (td, cellData, rowData, row, col) {
-                            $(td).attr('nowrap', 'nowrap');
-                        },
-                        "orderable": false
-                    },
-                ]
-            }
+        // Feed drop down
+        const $feed = $('#article-feed');
+
+        $.ajax({
+            type: "GET",
+            url: '/games/' + $appPage.attr('data-id') + '/news-feeds.json',
+            dataType: 'json',
+            success: function (data, textStatus, jqXHR) {
+
+                if (data === null) {
+                    data = [];
+                }
+
+                $.each(data, function (i, item) {
+                    $feed.append($('<option>', {
+                        value: item.id,
+                        text: item.name + ' (' + item.count + ')'
+                    }));
+                });
+
+                $feed.val('steam_community_announcements');
+
+                $feed.chosen({
+                    disable_search_threshold: 5,
+                    allow_single_deselect: true,
+                    max_selected_options: 10
+                });
+
+                loadNewsTable();
+            },
         });
 
-        $newsTable.on('click', 'tbody tr[role=row]', function () {
+        function loadNewsTable() {
 
-            const row = table.row($(this));
+            // Table
+            const $newsTable = $('#news-table');
+            const table = $newsTable.gdbTable({
+                searchFields: [
+                    $('#article-search'),
+                    $feed,
+                ],
+                tableOptions: {
+                    "order": [[1, 'desc']],
+                    "createdRow": function (row, data, dataIndex) {
+                        // $(row).attr('data-id', data[0]);
+                        $(row).attr('data-article-id', data[0]);
+                        $(row).addClass('cursor-pointer');
+                    },
+                    "columnDefs": [
+                        // Title
+                        {
+                            "targets": 0,
+                            "render": function (data, type, row) {
+                                return '<div class="icon-name"><div class="icon"><img class="tall" data-lazy="' + row[10] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '<br /><small>' + row[2] + '</small></div></div>'
+                                    + '<div class="d-none">' + row[5] + '</div>'
+                            },
+                            "createdCell": function (td, cellData, rowData, row, col) {
+                                $(td).attr('style', 'min-width: 300px;')
+                                $(td).addClass('img');
+                            },
+                            "orderable": false
+                        },
+                        // Date
+                        {
+                            "targets": 1,
+                            "render": function (data, type, row) {
+                                return '<span data-toggle="tooltip" data-placement="left" title="' + row[4] + '" data-livestamp="' + row[3] + '"></span>';
+                            },
+                            "createdCell": function (td, cellData, rowData, row, col) {
+                                $(td).attr('nowrap', 'nowrap');
+                            },
+                            "orderable": false
+                        },
+                    ]
+                }
+            });
 
-            // noinspection JSUnresolvedFunction
-            if (row.child.isShown()) {
+            $newsTable.on('click', 'tbody tr[role=row]', function () {
 
-                row.child.hide();
-                $(this).removeClass('shown');
-                history.replaceState(null, null, '#news');
+                const row = table.row($(this));
 
-            } else {
+                // noinspection JSUnresolvedFunction
+                if (row.child.isShown()) {
 
-                row.child($("<div/>").html(row.data()[5])).show();
-                $(this).addClass('shown');
-                observeLazyImages($(this).next().find('img[data-lazy]'));
-                history.replaceState(null, null, '#news,' + $(this).attr('data-article-id'));
-            }
-        });
+                    row.child.hide();
+                    $(this).removeClass('shown');
+                    history.replaceState(null, null, '#news');
 
-        $newsTable.on('draw.dt', function (e, settings) {
+                } else {
 
-            const hash = window.location.hash;
-            if (hash) {
-                const id = hash.replace('#', '').replace('news,', '');
-                if (id) {
-                    const $tr = $('tr[data-article-id=' + id + ']');
-                    if ($tr.length > 0) {
-                        $tr.trigger('click');
-                        $('html, body').animate({scrollTop: $tr.offset().top - 100}, 200);
+                    row.child($("<div/>").html(row.data()[5])).show();
+                    $(this).addClass('shown');
+                    observeLazyImages($(this).next().find('img[data-lazy]'));
+                    history.replaceState(null, null, '#news,' + $(this).attr('data-article-id'));
+                }
+            });
+
+            $newsTable.on('draw.dt', function (e, settings) {
+
+                const hash = window.location.hash;
+                if (hash) {
+                    const id = hash.replace('#', '').replace('news,', '');
+                    if (id) {
+                        const $tr = $('tr[data-article-id=' + id + ']');
+                        if ($tr.length > 0) {
+                            $tr.trigger('click');
+                            $('html, body').animate({scrollTop: $tr.offset().top - 100}, 200);
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
     }
 
     function loadAppMediaTab() {

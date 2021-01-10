@@ -168,25 +168,34 @@ func (af ArticleFeed) GetName() string {
 	return helpers.GetAppArticleFeedName(af.ID, af.Name)
 }
 
-func GetAppArticlesGroupedByFeed() (feeds []ArticleFeed, err error) {
+func GetAppArticlesGroupedByFeed(appID int) (feeds []ArticleFeed, err error) {
 
-	err = memcache.GetSetInterface(memcache.ItemArticleFeedAggsMongo, &feeds, func() (interface{}, error) {
+	err = memcache.GetSetInterface(memcache.ItemArticleFeedAggsMongo(appID), &feeds, func() (interface{}, error) {
 
 		client, ctx, err := getMongo()
 		if err != nil {
 			return feeds, err
 		}
 
-		pipeline := mongo.Pipeline{
-			{{
+		pipeline := mongo.Pipeline{}
+
+		if appID > 0 {
+			pipeline = append(pipeline, bson.D{{
+				Key:   "$match",
+				Value: bson.M{"app_id": appID},
+			}})
+		}
+
+		pipeline = append(pipeline,
+			bson.D{{
 				Key:   "$group",
 				Value: bson.M{"_id": "$feed_name", "count": bson.M{"$sum": 1}, "name": bson.M{"$first": "$feed_label"}},
 			}},
-			{{
+			bson.D{{
 				Key:   "$match",
 				Value: bson.M{"_id": bson.M{"$ne": "Gamemag.ru"}},
 			}},
-		}
+		)
 
 		cur, err := client.Database(config.C.MongoDatabase, options.Database()).Collection(CollectionAppArticles.String()).Aggregate(ctx, pipeline)
 		if err != nil {

@@ -28,7 +28,7 @@ func newsHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, "news", "News", "All the news from all the games on Steam")
 	t.addAssetChosen()
 
-	feeds, err := mongo.GetAppArticlesGroupedByFeed()
+	feeds, err := mongo.GetAppArticlesGroupedByFeed(0)
 	if err != nil {
 		log.ErrS(err)
 	}
