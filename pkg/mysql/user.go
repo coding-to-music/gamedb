@@ -286,3 +286,15 @@ func GetUserByProviderID(provider oauth.ProviderEnum, providerID string) (user U
 
 	return GetUserByID(userProvider.UserID)
 }
+
+func CountUsers() (count int, err error) {
+
+	db, err := GetMySQLClient()
+	if err != nil {
+		return count, err
+	}
+
+	db.Model(&User{}).Count(&count)
+
+	return count, db.Error
+}

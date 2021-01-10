@@ -1,6 +1,7 @@
 package tasks
 
 import (
+	"github.com/gamedb/gamedb/pkg/mysql"
 	"time"
 
 	influxHelper "github.com/gamedb/gamedb/pkg/influx"
@@ -60,6 +61,11 @@ func (c GameDBStats) work() (err error) {
 		return err
 	}
 
+	users, err := mysql.CountUsers()
+	if err != nil {
+		return err
+	}
+
 	// Save to influx
 	var point = influx.Point{
 		Measurement: string(influxHelper.InfluxMeasurementGameDBStats),
@@ -70,6 +76,7 @@ func (c GameDBStats) work() (err error) {
 			"packages": packages,
 			"webhooks": webhooks,
 			"players":  players,
+			"users":    users,
 		},
 		Time:      time.Now(),
 		Precision: "h",
