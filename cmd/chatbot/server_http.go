@@ -59,7 +59,7 @@ func discordHandler(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.ErrS(err)
-		http.Error(w, http.StatusText(500), 500)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
@@ -70,9 +70,10 @@ func discordHandler(w http.ResponseWriter, r *http.Request) {
 	valid, err := verifyRequest(signature, timestamp+string(body), config.C.DiscordOChatBotPublKey)
 	if err != nil {
 		log.ErrS(err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
 	if !valid {
-		http.Error(w, http.StatusText(401), 401)
+		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusInternalServerError)
 		return
 	}
 
@@ -80,7 +81,7 @@ func discordHandler(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, &event)
 	if err != nil {
 		log.ErrS(err)
-		http.Error(w, http.StatusText(500), 500)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
@@ -126,7 +127,7 @@ func discordHandler(w http.ResponseWriter, r *http.Request) {
 	out, err := command.Output(payload, steamapi.ProductCCUS)
 	if err != nil {
 		log.ErrS(err)
-		http.Error(w, http.StatusText(500), 500)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
@@ -152,7 +153,7 @@ func discordHandler(w http.ResponseWriter, r *http.Request) {
 	_, err = w.Write(b)
 	if err != nil {
 		log.ErrS(err)
-		http.Error(w, http.StatusText(500), 500)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 }
