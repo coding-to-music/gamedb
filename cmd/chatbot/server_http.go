@@ -31,7 +31,7 @@ func slashCommandServer() error {
 	r.Post("/", discordHandler)
 	r.Get("/health-check", healthCheckHandler)
 
-	r.NotFound(errorHandler)
+	r.NotFound(notFoundHandler)
 
 	s := &http.Server{
 		Addr:              "0.0.0.0:" + config.C.ChatbotPort,
@@ -176,12 +176,6 @@ func healthCheckHandler(w http.ResponseWriter, _ *http.Request) {
 	http.Error(w, http.StatusText(http.StatusOK), http.StatusOK)
 }
 
-func errorHandler(w http.ResponseWriter, _ *http.Request) {
-
-	w.WriteHeader(404)
-
-	_, err := w.Write([]byte("404"))
-	if err != nil {
-		log.ErrS(err)
-	}
+func notFoundHandler(w http.ResponseWriter, _ *http.Request) {
+	http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 }
