@@ -61,9 +61,9 @@ func appSteamspyHandler(message *rabbit.Message) {
 			strings.Contains(err.Error(), "connect: cannot assign requested address") ||
 			strings.Contains(err.Error(), "server responded with error") {
 
-			log.Info(err.Error(), zap.Int("app id", payload.AppID))
+			log.Info(err.Error(), zap.Int("app", payload.AppID))
 		} else {
-			log.Err(err.Error(), zap.Int("app id", payload.AppID), zap.String("url", u))
+			log.Err(err.Error(), zap.Int("app", payload.AppID), zap.String("url", u))
 		}
 
 		sendToRetryQueueWithDelay(message, time.Minute)
@@ -79,7 +79,7 @@ func appSteamspyHandler(message *rabbit.Message) {
 
 	if strings.Contains(string(body), "Connection failed") {
 
-		log.Info("steamspy is down", zap.Int("app", payload.AppID), zap.String("body", string(body)))
+		log.Info("steamspy is down", zap.Int("app", payload.AppID), zap.String("url", u), zap.String("body", string(body)))
 		sendToRetryQueueWithDelay(message, time.Minute*30)
 		return
 	}
