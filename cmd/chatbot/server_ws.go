@@ -64,7 +64,7 @@ func websocketServer() (*discordgo.Session, error) {
 				func() {
 
 					// Disable PMs
-					private, err := isPrivateChannel(s, m)
+					private, err := isChannelPrivateMessage(s, m)
 					if err != nil {
 						discordError(err)
 						return
@@ -142,7 +142,7 @@ func websocketServer() (*discordgo.Session, error) {
 	return discordSession, discordSession.Open()
 }
 
-func isPrivateChannel(s *discordgo.Session, m *discordgo.MessageCreate) (bool, error) {
+func isChannelPrivateMessage(s *discordgo.Session, m *discordgo.MessageCreate) (bool, error) {
 	channel, err := s.State.Channel(m.ChannelID)
 	if err != nil {
 		if channel, err = s.Channel(m.ChannelID); err != nil {
