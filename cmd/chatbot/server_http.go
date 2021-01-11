@@ -25,7 +25,7 @@ func slashCommandServer() error {
 
 	r := chi.NewRouter()
 	r.Use(chiMiddleware.RedirectSlashes)
-	r.Use(chiMiddleware.NewCompressor(flate.DefaultCompression, "text/html", "text/css", "text/javascript", "application/json", "application/javascript").Handler)
+	r.Use(chiMiddleware.NewCompressor(flate.DefaultCompression, "text/plain", "application/json").Handler)
 	r.Use(middleware.RealIP)
 
 	r.Post("/", discordHandler)
