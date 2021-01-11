@@ -1,8 +1,6 @@
 package chatbot
 
 import (
-	"errors"
-
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
@@ -46,8 +44,13 @@ func (CommandPlayerPlaytime) Type() CommandType {
 	return TypePlayer
 }
 
-func (CommandPlayerPlaytime) LegacyPrefix() string {
-	return "playtime"
+func (c CommandPlayerPlaytime) LegacyInputs(input string) map[string]string {
+
+	matches := RegexCache[c.Regex()].FindStringSubmatch(input)
+
+	return map[string]string{
+		"player": matches[1],
+	}
 }
 
 func (c CommandPlayerPlaytime) Slash() []interactions.InteractionOption {
@@ -62,17 +65,12 @@ func (c CommandPlayerPlaytime) Slash() []interactions.InteractionOption {
 	}
 }
 
-func (c CommandPlayerPlaytime) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC) (message discordgo.MessageSend, err error) {
+func (c CommandPlayerPlaytime) Output(_ string, _ steamapi.ProductCC, inputs map[string]string) (message discordgo.MessageSend, err error) {
 
-	matches := RegexCache[c.Regex()].FindStringSubmatch(msg.Message.Content)
-	if len(matches) == 0 {
-		return message, errors.New("invalid regex")
-	}
-
-	player, q, err := mongo.SearchPlayer(matches[1], bson.M{"_id": 1, "persona_name": 1, "play_time": 1, "ranks": 1})
+	player, q, err := mongo.SearchPlayer(inputs["player"], bson.M{"_id": 1, "persona_name": 1, "play_time": 1, "ranks": 1})
 	if err == mongo.ErrNoDocuments {
 
-		message.Content = "Player **" + matches[1] + "** not found, please enter a user's vanity URL"
+		message.Content = "Player **" + inputs["player"] + "** not found, please enter a user's vanity URL"
 		return message, nil
 
 	} else if err != nil {

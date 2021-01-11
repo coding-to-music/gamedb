@@ -1,7 +1,6 @@
 package chatbot
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
@@ -48,8 +47,13 @@ func (CommandPlayerLibrary) Type() CommandType {
 	return TypePlayer
 }
 
-func (CommandPlayerLibrary) LegacyPrefix() string {
-	return "library"
+func (c CommandPlayerLibrary) LegacyInputs(input string) map[string]string {
+
+	matches := RegexCache[c.Regex()].FindStringSubmatch(input)
+
+	return map[string]string{
+		"player": matches[2],
+	}
 }
 
 func (c CommandPlayerLibrary) Slash() []interactions.InteractionOption {
@@ -64,17 +68,12 @@ func (c CommandPlayerLibrary) Slash() []interactions.InteractionOption {
 	}
 }
 
-func (c CommandPlayerLibrary) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC) (message discordgo.MessageSend, err error) {
+func (c CommandPlayerLibrary) Output(authorID string, _ steamapi.ProductCC, inputs map[string]string) (message discordgo.MessageSend, err error) {
 
-	matches := RegexCache[c.Regex()].FindStringSubmatch(msg.Message.Content)
-	if len(matches) == 0 {
-		return message, errors.New("invalid regex")
-	}
-
-	player, q, err := mongo.SearchPlayer(matches[2], nil)
+	player, q, err := mongo.SearchPlayer(inputs["player"], nil)
 	if err == mongo.ErrNoDocuments {
 
-		message.Content = "Player **" + matches[2] + "** not found, please enter a user's vanity URL"
+		message.Content = "Player **" + inputs["player"] + "** not found, please enter a user's vanity URL"
 		return message, nil
 
 	} else if err != nil {
@@ -103,7 +102,7 @@ func (c CommandPlayerLibrary) Output(msg *discordgo.MessageCreate, _ steamapi.Pr
 		message.Embed = &discordgo.MessageEmbed{
 			Title:  player.GetName() + "'s Top Games",
 			URL:    config.C.GameDBDomain + player.GetPath() + "#games",
-			Author: getAuthor(msg.Author.ID),
+			Author: getAuthor(authorID),
 			Color:  2664261,
 		}
 

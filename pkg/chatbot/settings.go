@@ -1,7 +1,6 @@
 package chatbot
 
 import (
-	"errors"
 	"strings"
 
 	"github.com/Jleagle/steam-go/steamapi"
@@ -43,8 +42,14 @@ func (CommandSettings) Type() CommandType {
 	return TypeOther
 }
 
-func (CommandSettings) LegacyPrefix() string {
-	return "set"
+func (c CommandSettings) LegacyInputs(input string) map[string]string {
+
+	matches := RegexCache[c.Regex()].FindStringSubmatch(input)
+
+	return map[string]string{
+		"setting": matches[1],
+		"value":   matches[2],
+	}
 }
 
 func (c CommandSettings) Slash() []interactions.InteractionOption {
@@ -68,15 +73,10 @@ func (c CommandSettings) Slash() []interactions.InteractionOption {
 	}
 }
 
-func (c CommandSettings) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC) (message discordgo.MessageSend, err error) {
+func (c CommandSettings) Output(authorID string, _ steamapi.ProductCC, inputs map[string]string) (message discordgo.MessageSend, err error) {
 
-	matches := RegexCache[c.Regex()].FindStringSubmatch(msg.Message.Content)
-	if len(matches) == 0 {
-		return message, errors.New("invalid regex")
-	}
-
-	var setting = strings.ToLower(matches[1])
-	var value = strings.ToLower(matches[2])
+	var setting = strings.ToLower(inputs["setting"])
+	var value = strings.ToLower(inputs["value"])
 	var text string
 
 	switch setting {
@@ -88,7 +88,7 @@ func (c CommandSettings) Output(msg *discordgo.MessageCreate, _ steamapi.Product
 
 		if steamapi.IsProductCC(value) {
 
-			err = mysql.SetChatBotSettings(msg.Author.ID, func(s *mysql.ChatBotSetting) { s.ProductCode = steamapi.ProductCC(value) })
+			err = mysql.SetChatBotSettings(authorID, func(s *mysql.ChatBotSetting) { s.ProductCode = steamapi.ProductCC(value) })
 			if err != nil {
 				log.ErrS(err)
 				return

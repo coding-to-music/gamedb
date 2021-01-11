@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/Jleagle/steam-go/steamapi"
@@ -16,9 +15,12 @@ import (
 	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/middleware"
+	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/go-chi/chi"
 	chiMiddleware "github.com/go-chi/chi/middleware"
+	"go.uber.org/zap"
 )
 
 func slashCommandServer() error {
@@ -92,39 +94,74 @@ func discordHandler(w http.ResponseWriter, r *http.Request) {
 			Type: interactions.ResponseTypePong,
 		}
 
-		b, err := json.Marshal(response)
-		if err != nil {
-			log.ErrS(err)
-			http.Error(w, http.StatusText(500), 500)
-			return
-		}
-
+		b, _ := json.Marshal(response)
 		_, _ = w.Write(b)
 		return
 	}
 
+	// Get command
 	command, ok := chatbot.CommandCache[event.Data.Name]
 	if !ok {
-		http.Error(w, "Command ID not found in register", 404)
+		http.Error(w, "Command ID not found in register", http.StatusNotFound)
 		return
 	}
 
-	// Convert to old style input
-	var oldStyle = []string{"." + command.LegacyPrefix()}
-	for _, v := range event.Data.Options {
-		oldStyle = append(oldStyle, v.Value)
+	// Save stats
+	defer saveToDB(
+		command,
+		event.Arguments(),
+		true,
+		event.GuildID,
+		event.ChannelID,
+		event.Member.User.ID,
+		event.Member.User.Username,
+		event.Member.User.Avatar,
+	)
+
+	discordSession, err := getSession()
+	if err != nil {
+		log.ErrS(err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
 	}
 
-	payload := &discordgo.MessageCreate{
-		Message: &discordgo.Message{
-			Content: strings.Join(oldStyle, " "),
-			Author: &discordgo.User{
-				ID: event.Member.User.ID,
-			},
-		},
+	// Typing notification
+	err = discordSession.ChannelTyping(event.ChannelID)
+	discordError(err)
+
+	// Get user settings
+	code := steamapi.ProductCCUS
+	if command.PerProdCode() {
+		settings, err := mysql.GetChatBotSettings(event.Member.User.ID)
+		if err != nil {
+			log.ErrS(err)
+		}
+		code = settings.ProductCode
 	}
 
-	out, err := command.Output(payload, steamapi.ProductCCUS)
+	cacheItem := memcache.ItemChatBotRequestSlash(event.Arguments(), code)
+
+	// Check in cache first
+	if !command.DisableCache() && !config.IsLocal() {
+
+		var response interactions.Response
+		err = memcache.GetInterface(cacheItem.Key, &response)
+		if err == nil {
+
+			b, _ := json.Marshal(response)
+			_, _ = w.Write(b)
+			return
+		}
+	}
+
+	// Rate limit
+	if !limits.GetLimiter(event.Member.User.ID).Allow() {
+		log.Warn("over chatbot rate limit", zap.String("author", event.Member.User.ID), zap.String("msg", event.ArgumentsString()))
+		http.Error(w, http.StatusText(http.StatusTooManyRequests), http.StatusTooManyRequests)
+		return
+	}
+
+	out, err := command.Output(event.Member.User.ID, code, event.Arguments())
 	if err != nil {
 		log.ErrS(err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -143,13 +180,14 @@ func discordHandler(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
-	b, err := json.Marshal(response)
+	// Save to cache
+	err = memcache.SetInterface(cacheItem.Key, response, cacheItem.Expiration)
 	if err != nil {
-		log.ErrS(err)
-		http.Error(w, http.StatusText(500), 500)
-		return
+		log.Err("Saving to memcache", zap.Error(err), zap.String("msg", event.ArgumentsString()))
 	}
 
+	// Respond
+	b, _ := json.Marshal(response)
 	_, err = w.Write(b)
 	if err != nil {
 		log.ErrS(err)

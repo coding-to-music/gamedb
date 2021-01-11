@@ -16,7 +16,7 @@ func (c CommandSteamOnline) ID() string {
 }
 
 func (CommandSteamOnline) Regex() string {
-	return `^[.|!](players|online)`
+	return `^[.|!](players|online)$`
 }
 
 func (CommandSteamOnline) DisableCache() bool {
@@ -39,8 +39,8 @@ func (CommandSteamOnline) Type() CommandType {
 	return TypeOther
 }
 
-func (CommandSteamOnline) LegacyPrefix() string {
-	return "players"
+func (CommandSteamOnline) LegacyInputs(input string) map[string]string {
+	return map[string]string{}
 }
 
 func (c CommandSteamOnline) Slash() []interactions.InteractionOption {
@@ -48,7 +48,7 @@ func (c CommandSteamOnline) Slash() []interactions.InteractionOption {
 	return []interactions.InteractionOption{}
 }
 
-func (c CommandSteamOnline) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC) (message discordgo.MessageSend, err error) {
+func (c CommandSteamOnline) Output(_ string, _ steamapi.ProductCC, _ map[string]string) (message discordgo.MessageSend, err error) {
 
 	var app = mongo.App{}
 

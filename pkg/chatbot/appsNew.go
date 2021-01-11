@@ -43,20 +43,20 @@ func (CommandAppsNew) Type() CommandType {
 	return TypeGame
 }
 
-func (CommandAppsNew) LegacyPrefix() string {
-	return "new$"
+func (c CommandAppsNew) LegacyInputs(input string) map[string]string {
+	return map[string]string{}
 }
 
 func (c CommandAppsNew) Slash() []interactions.InteractionOption {
 	return []interactions.InteractionOption{}
 }
 
-func (CommandAppsNew) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC) (message discordgo.MessageSend, err error) {
+func (CommandAppsNew) Output(authorID string, _ steamapi.ProductCC, _ map[string]string) (message discordgo.MessageSend, err error) {
 
 	message.Embed = &discordgo.MessageEmbed{
 		Title:  "Popular New Apps",
 		URL:    config.C.GameDBDomain + "/games/new-releases",
-		Author: getAuthor(msg.Author.ID),
+		Author: getAuthor(authorID),
 		Color:  2664261,
 	}
 

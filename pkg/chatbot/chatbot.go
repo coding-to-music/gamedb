@@ -29,12 +29,12 @@ type Command interface {
 	Regex() string
 	DisableCache() bool
 	PerProdCode() bool
-	Output(*discordgo.MessageCreate, steamapi.ProductCC) (discordgo.MessageSend, error)
+	Output(authorID string, region steamapi.ProductCC, inputs map[string]string) (discordgo.MessageSend, error)
 	Example() string
 	Description() string
 	Type() CommandType
 	Slash() []interactions.InteractionOption
-	LegacyPrefix() string
+	LegacyInputs(input string) map[string]string
 }
 
 // These are the discord slash command names, if changed, the old one needs to be deleted
@@ -47,14 +47,14 @@ const (
 	CAppsNew        = "games-new"
 	CAppsPopular    = "games-popular"
 	CAppsTrending   = "games-trending"
-	CGroup          = "group"
+	CGroup          = "group-details"
 	CGroupsTrending = "groups-trending"
-	CPlayer         = "player"
-	CPlayerApps     = "player-apps"
+	CPlayer         = "player-details"
+	CPlayerApps     = "player-games-count"
 	CPlayerLevel    = "player-level"
 	CPlayerPlaytime = "player-playtime"
-	CPlayerRecent   = "player-recent-games"
-	CPlayerUpdate   = "player-update-profile"
+	CPlayerRecent   = "player-recent"
+	CPlayerUpdate   = "player-update"
 	CPlayerWishlist = "player-wishlist"
 	CPlayerLibrary  = "player-library"
 	CHelp           = "help"

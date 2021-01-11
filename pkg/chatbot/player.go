@@ -1,7 +1,6 @@
 package chatbot
 
 import (
-	"errors"
 	"strconv"
 	"strings"
 
@@ -28,7 +27,7 @@ func (c CommandPlayer) ID() string {
 }
 
 func (CommandPlayer) Regex() string {
-	return `^[.|!](player|user)\s?(.{2,32})?`
+	return `^[.|!](player|user)\s(.{2,32})`
 }
 
 func (CommandPlayer) DisableCache() bool {
@@ -51,8 +50,13 @@ func (CommandPlayer) Type() CommandType {
 	return TypePlayer
 }
 
-func (CommandPlayer) LegacyPrefix() string {
-	return "player"
+func (c CommandPlayer) LegacyInputs(input string) map[string]string {
+
+	matches := RegexCache[c.Regex()].FindStringSubmatch(input)
+
+	return map[string]string{
+		"player": matches[2],
+	}
 }
 
 func (c CommandPlayer) Slash() []interactions.InteractionOption {
@@ -67,12 +71,7 @@ func (c CommandPlayer) Slash() []interactions.InteractionOption {
 	}
 }
 
-func (c CommandPlayer) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC) (message discordgo.MessageSend, err error) {
-
-	matches := RegexCache[c.Regex()].FindStringSubmatch(msg.Message.Content)
-	if len(matches) == 0 {
-		return message, errors.New("invalid regex")
-	}
+func (c CommandPlayer) Output(authorID string, _ steamapi.ProductCC, inputs map[string]string) (message discordgo.MessageSend, err error) {
 
 	projection := bson.M{
 		"_id":               1,
@@ -91,9 +90,9 @@ func (c CommandPlayer) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC
 
 	var player mongo.Player
 
-	if matches[2] == "" {
+	if inputs["player"] == "" {
 
-		provider, err := mysql.GetUserProviderByProviderID(oauth.ProviderDiscord, msg.Author.ID)
+		provider, err := mysql.GetUserProviderByProviderID(oauth.ProviderDiscord, authorID)
 		if err != nil {
 			message.Content = "Please connect your Discord account first: <https://gamedb.online/oauth/out/discord?page=settings>"
 			return message, nil
@@ -119,10 +118,10 @@ func (c CommandPlayer) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC
 
 	} else {
 
-		player, q, err := mongo.SearchPlayer(matches[2], projection)
+		player, q, err := mongo.SearchPlayer(inputs["player"], projection)
 		if err == mongo.ErrNoDocuments {
 
-			message.Content = "Player **" + matches[2] + "** not found, please enter a user's vanity URL"
+			message.Content = "Player **" + inputs["player"] + "** not found, please enter a user's vanity URL"
 			return message, nil
 
 		} else if err != nil {

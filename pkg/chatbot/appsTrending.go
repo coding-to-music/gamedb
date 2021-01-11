@@ -19,7 +19,7 @@ func (c CommandAppsTrending) ID() string {
 }
 
 func (CommandAppsTrending) Regex() string {
-	return `^[.|!]trending`
+	return `^[.|!]trending$`
 }
 
 func (CommandAppsTrending) DisableCache() bool {
@@ -42,20 +42,20 @@ func (CommandAppsTrending) Type() CommandType {
 	return TypeGame
 }
 
-func (CommandAppsTrending) LegacyPrefix() string {
-	return "trending$"
+func (CommandAppsTrending) LegacyInputs(input string) map[string]string {
+	return map[string]string{}
 }
 
 func (c CommandAppsTrending) Slash() []interactions.InteractionOption {
 	return []interactions.InteractionOption{}
 }
 
-func (CommandAppsTrending) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC) (message discordgo.MessageSend, err error) {
+func (CommandAppsTrending) Output(authorID string, _ steamapi.ProductCC, _ map[string]string) (message discordgo.MessageSend, err error) {
 
 	message.Embed = &discordgo.MessageEmbed{
 		Title:  "Trending Games",
 		URL:    config.C.GameDBDomain + "/games/trending",
-		Author: getAuthor(msg.Author.ID),
+		Author: getAuthor(authorID),
 		Color:  2664261,
 	}
 

@@ -1,7 +1,6 @@
 package chatbot
 
 import (
-	"errors"
 	"strings"
 
 	"github.com/Jleagle/steam-go/steamapi"
@@ -41,8 +40,14 @@ func (CommandAppPrice) Type() CommandType {
 	return TypeGame
 }
 
-func (CommandAppPrice) LegacyPrefix() string {
-	return "price"
+func (c CommandAppPrice) LegacyInputs(input string) map[string]string {
+
+	matches := RegexCache[c.Regex()].FindStringSubmatch(input)
+
+	return map[string]string{
+		"region": matches[1],
+		"game":   matches[2],
+	}
 }
 
 func (c CommandAppPrice) Slash() []interactions.InteractionOption {
@@ -63,40 +68,23 @@ func (c CommandAppPrice) Slash() []interactions.InteractionOption {
 	}
 }
 
-func (c CommandAppPrice) Output(msg *discordgo.MessageCreate, code steamapi.ProductCC) (message discordgo.MessageSend, err error) {
+func (c CommandAppPrice) Output(_ string, region steamapi.ProductCC, inputs map[string]string) (message discordgo.MessageSend, err error) {
 
-	matches := RegexCache[c.Regex()].FindStringSubmatch(msg.Message.Content)
-	if len(matches) == 0 {
-		return message, errors.New("invalid regex")
-	}
-
-	apps, err := elasticsearch.SearchAppsSimple(1, matches[2])
+	apps, err := elasticsearch.SearchAppsSimple(1, inputs["game"])
 	if err != nil {
 		return message, err
 	} else if len(apps) == 0 {
-		message.Content = "Game **" + matches[2] + "** not found on Steam"
+		message.Content = "Game **" + inputs["game"] + "** not found on Steam"
 		return message, nil
 	}
 
-	app := apps[0]
-
-	if matches[1] != "" {
-		matches[1] = strings.ToLower(matches[1])
-		if matches[1] == "gb" {
-			matches[1] = "uk"
-		}
-		if steamapi.IsProductCC(matches[1]) {
-			code = steamapi.ProductCC(matches[1])
-		}
-	}
-
-	price := app.Prices.Get(code)
+	price := apps[0].Prices.Get(region)
 
 	if price.Exists {
-		message.Content = app.GetName() + " is **" + price.GetFinal() + "** for " + strings.ToUpper(string(code))
+		message.Content = apps[0].GetName() + " is **" + price.GetFinal() + "** for " + strings.ToUpper(inputs["region"])
 		return message, nil
 	}
 
-	message.Content = app.GetName() + " has no price for " + strings.ToUpper(string(code))
+	message.Content = apps[0].GetName() + " has no price for " + strings.ToUpper(inputs["region"])
 	return message, nil
 }

@@ -4,10 +4,8 @@ import (
 	"testing"
 
 	"github.com/Jleagle/steam-go/steamapi"
-	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/chatbot"
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 )
 
@@ -22,29 +20,30 @@ func Test(t *testing.T) {
 	}
 
 	tests := map[string]string{
-		"app 440":           chatbot.CApp,
-		"app tf2":           chatbot.CApp,
-		"game {game}":       chatbot.CApp,
-		"new":               chatbot.CAppsNew,
-		"players {game}":    chatbot.CAppPlayers,
-		"online {game}":     chatbot.CAppPlayers,
-		"popular":           chatbot.CAppsPopular,
-		"random":            chatbot.CAppsRandom,
-		"trending":          chatbot.CAppsTrending,
-		"group {game}":      chatbot.CGroup,
-		"clan {game}":       chatbot.CGroup,
-		"trendinggroups":    chatbot.CGroupsTrending,
-		"trending-groups":   chatbot.CGroupsTrending,
-		"trending groups":   chatbot.CGroupsTrending,
-		"help":              chatbot.CHelp,
-		"players":           chatbot.CSteamOnline,
-		"games {player}":    chatbot.CPlayerApps,
-		"level {player}":    chatbot.CPlayerLevel,
-		"player {player}":   chatbot.CPlayer,
-		"playtime {player}": chatbot.CPlayerPlaytime,
-		"recent {player}":   chatbot.CPlayerRecent,
-		"update":            chatbot.CPlayerUpdate,
-		"update {player}":   chatbot.CPlayerUpdate,
+		"app 440":          chatbot.CApp,
+		"app tf2":          chatbot.CApp,
+		"game 440":         chatbot.CApp,
+		"game tf2":         chatbot.CApp,
+		"new":              chatbot.CAppsNew,
+		"players tf2":      chatbot.CAppPlayers,
+		"online tf2":       chatbot.CAppPlayers,
+		"popular":          chatbot.CAppsPopular,
+		"random":           chatbot.CAppsRandom,
+		"trending":         chatbot.CAppsTrending,
+		"group tf2":        chatbot.CGroup,
+		"clan tf2":         chatbot.CGroup,
+		"trendinggroups":   chatbot.CGroupsTrending,
+		"trending-groups":  chatbot.CGroupsTrending,
+		"trending groups":  chatbot.CGroupsTrending,
+		"help":             chatbot.CHelp,
+		"players":          chatbot.CSteamOnline,
+		"games Jleagle":    chatbot.CPlayerApps,
+		"level Jleagle":    chatbot.CPlayerLevel,
+		"player Jleagle":   chatbot.CPlayer,
+		"playtime Jleagle": chatbot.CPlayerPlaytime,
+		"recent Jleagle":   chatbot.CPlayerRecent,
+		"update":           chatbot.CPlayerUpdate,
+		"update Jleagle":   chatbot.CPlayerUpdate,
 	}
 
 	for _, start := range []string{".", "!"} {
@@ -52,32 +51,21 @@ func Test(t *testing.T) {
 			for _, c := range chatbot.CommandRegister {
 				if chatbot.RegexCache[c.Regex()].MatchString(start + message) {
 
+					t.Log(start + message)
+
 					if c.ID() != commandID {
-						t.Error(start+message, "!=", commandID)
+						t.Error(c.ID(), "!=", commandID)
+						continue
 					}
 
-					if start == "." {
-
-						t.Log(start + message)
-
-						messagex := &discordgo.MessageCreate{
-							Message: &discordgo.Message{
-								Content: start + message,
-								Author: &discordgo.User{
-									ID: "123",
-								},
-							},
-						}
-
-						msg, err := c.Output(messagex, steamapi.ProductCCUS)
-						if err != nil {
-							t.Error(start+message, "!=", commandID)
-							continue
-						}
-						if msg.Content == "" && msg.Embed == nil {
-							t.Error("no return")
-							continue
-						}
+					msg, err := c.Output("123", steamapi.ProductCCUS, c.LegacyInputs(start+message))
+					if err != nil {
+						t.Error(err)
+						continue
+					}
+					if msg.Content == "" && msg.Embed == nil {
+						t.Error("no return")
+						continue
 					}
 				}
 			}

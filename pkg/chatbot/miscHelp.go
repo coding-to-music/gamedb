@@ -38,15 +38,15 @@ func (CommandHelp) Type() CommandType {
 	return TypeOther
 }
 
-func (CommandHelp) LegacyPrefix() string {
-	return "help"
+func (CommandHelp) LegacyInputs(input string) map[string]string {
+	return map[string]string{}
 }
 
 func (c CommandHelp) Slash() []interactions.InteractionOption {
 	return []interactions.InteractionOption{}
 }
 
-func (CommandHelp) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC) (message discordgo.MessageSend, err error) {
+func (CommandHelp) Output(_ string, _ steamapi.ProductCC, _ map[string]string) (message discordgo.MessageSend, err error) {
 
 	message.Content = "See " + config.C.GameDBDomain + "/discord-bot"
 

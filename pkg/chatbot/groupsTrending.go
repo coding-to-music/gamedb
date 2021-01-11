@@ -42,20 +42,20 @@ func (CommandGroupsTrending) Type() CommandType {
 	return TypeGroup
 }
 
-func (CommandGroupsTrending) LegacyPrefix() string {
-	return "trending-groups"
+func (CommandGroupsTrending) LegacyInputs(input string) map[string]string {
+	return map[string]string{}
 }
 
 func (c CommandGroupsTrending) Slash() []interactions.InteractionOption {
 	return []interactions.InteractionOption{}
 }
 
-func (CommandGroupsTrending) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC) (message discordgo.MessageSend, err error) {
+func (CommandGroupsTrending) Output(authorID string, _ steamapi.ProductCC, _ map[string]string) (message discordgo.MessageSend, err error) {
 
 	message.Embed = &discordgo.MessageEmbed{
 		Title:  "Trending Groups",
 		URL:    config.C.GameDBDomain + "/groups",
-		Author: getAuthor(msg.Author.ID),
+		Author: getAuthor(authorID),
 		Color:  2664261,
 	}
 

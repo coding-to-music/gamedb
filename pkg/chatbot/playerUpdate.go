@@ -1,7 +1,6 @@
 package chatbot
 
 import (
-	"errors"
 	"strconv"
 
 	"github.com/Jleagle/steam-go/steamapi"
@@ -48,8 +47,13 @@ func (CommandPlayerUpdate) Type() CommandType {
 	return TypePlayer
 }
 
-func (CommandPlayerUpdate) LegacyPrefix() string {
-	return "update"
+func (c CommandPlayerUpdate) LegacyInputs(input string) map[string]string {
+
+	matches := RegexCache[c.Regex()].FindStringSubmatch(input)
+
+	return map[string]string{
+		"player": matches[1],
+	}
 }
 
 func (c CommandPlayerUpdate) Slash() []interactions.InteractionOption {
@@ -64,16 +68,11 @@ func (c CommandPlayerUpdate) Slash() []interactions.InteractionOption {
 	}
 }
 
-func (c CommandPlayerUpdate) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC) (message discordgo.MessageSend, err error) {
+func (c CommandPlayerUpdate) Output(authorID string, _ steamapi.ProductCC, inputs map[string]string) (message discordgo.MessageSend, err error) {
 
-	matches := RegexCache[c.Regex()].FindStringSubmatch(msg.Message.Content)
-	if len(matches) == 0 {
-		return message, errors.New("invalid regex")
-	}
+	if inputs["player"] == "" {
 
-	if matches[1] == "" {
-
-		user, err := mysql.GetUserByProviderID(oauth.ProviderDiscord, msg.Author.ID)
+		user, err := mysql.GetUserByProviderID(oauth.ProviderDiscord, authorID)
 		if err == mysql.ErrRecordNotFound {
 			message.Content = "You need to link your **Discord** account for us to know who you are: " + config.C.GameDBDomain + "/settings"
 			return message, nil
@@ -97,10 +96,10 @@ func (c CommandPlayerUpdate) Output(msg *discordgo.MessageCreate, _ steamapi.Pro
 		return message, nil
 	}
 
-	player, _, err := mongo.SearchPlayer(matches[1], nil)
+	player, _, err := mongo.SearchPlayer(inputs["player"], nil)
 	if err == mongo.ErrNoDocuments {
 
-		message.Content = "Player **" + matches[1] + "** not found, please enter a user's vanity URL"
+		message.Content = "Player **" + inputs["player"] + "** not found, please enter a user's vanity URL"
 		return message, nil
 
 	} else if err != nil {

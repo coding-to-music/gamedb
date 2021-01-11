@@ -17,6 +17,7 @@ type ChatBotCommand struct {
 	AuthorName   string    `bson:"author_name"`
 	AuthorAvatar string    `bson:"author_avatar"`
 	Message      string    `bson:"message"`
+	Slash        bool      `bson:"slash"`
 	Time         time.Time `bson:"time"`
 }
 
@@ -30,6 +31,7 @@ func (command ChatBotCommand) BSON() bson.D {
 		{"author_name", command.AuthorName},
 		{"author_avatar", command.AuthorAvatar},
 		{"message", command.Message},
+		{"slash", command.Slash},
 		{"time", command.Time},
 	}
 }

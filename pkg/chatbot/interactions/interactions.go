@@ -13,17 +13,19 @@ const (
 )
 
 type Interaction struct {
-	Name        string              `json:"name"` // ^[\w-]{3,32}$
-	Description string              `json:"description"`
-	Options     []InteractionOption `json:"options"`
+	ID            string              `json:"id"`             // no need to set
+	ApplicationID string              `json:"application_id"` // no need to set
+	Name          string              `json:"name"`           // ^[\w-]{3,32}$
+	Description   string              `json:"description"`    //
+	Options       []InteractionOption `json:"options"`        //
 }
 
 type InteractionOption struct {
-	Name        string              `json:"name"` // ^[\w-]{1,32}$
-	Description string              `json:"description"`
-	Type        int                 `json:"type"`
-	Required    bool                `json:"required"`
-	Choices     []InteractionChoice `json:"choices,omitempty"`
+	Name        string              `json:"name"`              // ^[\w-]{1,32}$
+	Description string              `json:"description"`       //
+	Type        int                 `json:"type"`              //
+	Required    bool                `json:"required"`          //
+	Choices     []InteractionChoice `json:"choices,omitempty"` //
 }
 
 type InteractionChoice struct {

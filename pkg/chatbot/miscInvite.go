@@ -38,15 +38,15 @@ func (CommandInvite) Type() CommandType {
 	return TypeOther
 }
 
-func (CommandInvite) LegacyPrefix() string {
-	return "invite$"
+func (CommandInvite) LegacyInputs(input string) map[string]string {
+	return map[string]string{}
 }
 
 func (c CommandInvite) Slash() []interactions.InteractionOption {
 	return []interactions.InteractionOption{}
 }
 
-func (CommandInvite) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC) (message discordgo.MessageSend, err error) {
+func (CommandInvite) Output(_ string, _ steamapi.ProductCC, _ map[string]string) (message discordgo.MessageSend, err error) {
 
 	message.Content = "See <" + config.C.DiscordBotInviteURL + ">"
 

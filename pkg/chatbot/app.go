@@ -1,8 +1,6 @@
 package chatbot
 
 import (
-	"errors"
-
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
@@ -41,8 +39,13 @@ func (CommandApp) Type() CommandType {
 	return TypeGame
 }
 
-func (CommandApp) LegacyPrefix() string {
-	return "app"
+func (c CommandApp) LegacyInputs(input string) map[string]string {
+
+	matches := RegexCache[c.Regex()].FindStringSubmatch(input)
+
+	return map[string]string{
+		"game": matches[2],
+	}
 }
 
 func (c CommandApp) Slash() []interactions.InteractionOption {
@@ -57,18 +60,13 @@ func (c CommandApp) Slash() []interactions.InteractionOption {
 	}
 }
 
-func (c CommandApp) Output(msg *discordgo.MessageCreate, code steamapi.ProductCC) (message discordgo.MessageSend, err error) {
+func (c CommandApp) Output(_ string, region steamapi.ProductCC, inputs map[string]string) (message discordgo.MessageSend, err error) {
 
-	matches := RegexCache[c.Regex()].FindStringSubmatch(msg.Message.Content)
-	if len(matches) == 0 {
-		return message, errors.New("invalid regex")
-	}
-
-	apps, err := elasticsearch.SearchAppsSimple(1, matches[2])
+	apps, err := elasticsearch.SearchAppsSimple(1, inputs["game"])
 	if err != nil {
 		return message, err
 	} else if len(apps) == 0 {
-		message.Content = "Game **" + matches[2] + "** not found on Steam"
+		message.Content = "Game **" + inputs["game"] + "** not found on Steam"
 		return message, nil
 	}
 
@@ -77,7 +75,7 @@ func (c CommandApp) Output(msg *discordgo.MessageCreate, code steamapi.ProductCC
 		return message, err
 	}
 
-	message.Embed = getAppEmbed(c.ID(), app, code)
+	message.Embed = getAppEmbed(c.ID(), app, region)
 
 	return message, nil
 }

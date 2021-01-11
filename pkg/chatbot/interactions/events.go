@@ -1,6 +1,7 @@
 package interactions
 
 import (
+	"strings"
 	"time"
 )
 
@@ -46,4 +47,13 @@ func (e Event) Arguments() (a map[string]string) {
 		a[v.Name] = v.Value
 	}
 	return a
+}
+
+func (e Event) ArgumentsString() string {
+
+	var s = []string{e.Data.Name}
+	for _, v := range e.Data.Options {
+		s = append(s, v.Name+":"+v.Value)
+	}
+	return strings.Join(s, " ")
 }

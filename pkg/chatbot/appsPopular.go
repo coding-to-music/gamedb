@@ -43,20 +43,20 @@ func (CommandAppsPopular) Type() CommandType {
 	return TypeGame
 }
 
-func (CommandAppsPopular) LegacyPrefix() string {
-	return "popular"
+func (CommandAppsPopular) LegacyInputs(input string) map[string]string {
+	return map[string]string{}
 }
 
 func (c CommandAppsPopular) Slash() []interactions.InteractionOption {
 	return []interactions.InteractionOption{}
 }
 
-func (CommandAppsPopular) Output(msg *discordgo.MessageCreate, _ steamapi.ProductCC) (message discordgo.MessageSend, err error) {
+func (CommandAppsPopular) Output(authorID string, _ steamapi.ProductCC, _ map[string]string) (message discordgo.MessageSend, err error) {
 
 	message.Embed = &discordgo.MessageEmbed{
 		Title:  "Popular Games",
 		URL:    config.C.GameDBDomain + "/games",
-		Author: getAuthor(msg.Author.ID),
+		Author: getAuthor(authorID),
 		Color:  2664261,
 	}
 

@@ -1,15 +1,14 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
-	"io/ioutil"
 	"net/http"
-	_ "net/http/pprof"
+	"strconv"
+	"sync"
 	"time"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/chatbot"
-	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/discord"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -18,8 +17,13 @@ import (
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/queue"
+	"github.com/gamedb/gamedb/pkg/ratelimit"
+	"github.com/gamedb/gamedb/pkg/websockets"
+	influx "github.com/influxdata/influxdb1-client"
 	"go.uber.org/zap"
 )
+
+var limits = ratelimit.New(time.Second, 3)
 
 func main() {
 
@@ -63,6 +67,14 @@ func main() {
 		log.FatalS(err)
 	}
 
+	if config.IsProd() {
+
+		err = refreshCommands()
+		if err != nil {
+			log.Err("refreshing commands", zap.Error(err))
+		}
+	}
+
 	helpers.KeepAlive(
 		mysql.Close,
 		mongo.Close,
@@ -78,98 +90,117 @@ func main() {
 	)
 }
 
-//goland:noinspection GoUnusedFunction
-func deleteCommand(id string) {
+var discordSession *discordgo.Session
+var discordSessionLock sync.Mutex
 
-	headers := http.Header{}
-	headers.Set("Authorization", "Bot "+config.C.DiscordChatBotToken)
-	headers.Set("Content-Type", "application/json")
+func getSession() (*discordgo.Session, error) {
 
-	_, code, err := helpers.Delete("https://discord.com/api/v8/applications/"+discord.ClientIDBot+"/commands/"+id, 0, headers)
-	log.InfoS(code, err)
+	discordSessionLock.Lock()
+	defer discordSessionLock.Unlock()
+
+	var err error
+
+	if discordSession == nil {
+		discordSession, err = discordgo.New("Bot " + config.C.DiscordChatBotToken)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return discordSession, err
+
 }
 
-//goland:noinspection GoUnusedFunction
-func getCommands() {
+func saveToDB(command chatbot.Command, inputs map[string]string, slash bool, guildID, channelID, authorID, authorName, authorAvatar string) {
 
-	headers := http.Header{}
-	headers.Set("Authorization", "Bot "+config.C.DiscordChatBotToken)
-	headers.Set("Content-Type", "application/json")
-
-	b, _, err := helpers.Get("https://discord.com/api/v8/applications/"+discord.ClientIDBot+"/commands", 0, headers)
-	if err != nil {
-		log.ErrS(err)
+	if authorID == discord.AdminID {
 		return
 	}
 
-	buf := bytes.NewBuffer(nil)
-	err = json.Indent(buf, b, "", "  ")
-	if err != nil {
-		log.ErrS(err)
+	if config.IsLocal() {
 		return
 	}
 
-	log.Info(buf.String())
+	if command.ID() == chatbot.CHelp {
+		return
+	}
+
+	// Influx
+	point := influx.Point{
+		Measurement: string(influxHelper.InfluxMeasurementChatBot),
+		Tags: map[string]string{
+			"guild_id":   guildID,
+			"channel_id": channelID,
+			"author_id":  authorID,
+			"command_id": command.ID(),
+			"slash":      strconv.FormatBool(slash),
+		},
+		Fields: map[string]interface{}{
+			"request": 1,
+		},
+		Time:      time.Now(),
+		Precision: "ms",
+	}
+
+	_, err := influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, point)
+	if err != nil {
+		log.ErrS(err)
+	}
+
+	// Mongo
+	b, err := json.Marshal(inputs)
+	if err != nil {
+		log.ErrS(err)
+	}
+
+	var row = mongo.ChatBotCommand{
+		GuildID:      guildID,
+		ChannelID:    channelID,
+		AuthorID:     authorID,
+		AuthorName:   authorName,
+		AuthorAvatar: authorAvatar,
+		CommandID:    command.ID(),
+		Message:      string(b),
+		Slash:        slash,
+		Time:         time.Now(), // Can get from ws message?
+	}
+
+	_, err = mongo.InsertOne(mongo.CollectionChatBotCommands, row)
+	if err != nil {
+		log.ErrS(err)
+	}
+
+	// Websocket
+	guilds, err := mongo.GetGuilds([]string{row.GuildID})
+	if err != nil {
+		log.ErrS(err)
+	}
+
+	wsPayload := queue.ChatBotPayload{}
+	wsPayload.RowData = row.GetTableRowJSON(guilds)
+
+	err = queue.ProduceWebsocket(wsPayload, websockets.PageChatBot)
+	if err != nil {
+		log.ErrS(err)
+	}
 }
 
-//goland:noinspection GoUnusedFunction
-func setCommands() {
+func discordError(err error) {
 
-	path := "https://discord.com/api/v8/applications/" + discord.ClientIDBot + "/commands"
+	var allowed = map[int]string{
+		50001: "Missing Access",
+		50013: "Missing Permissions",
+	}
 
-	headers := http.Header{}
-	headers.Set("Authorization", "Bot "+config.C.DiscordChatBotToken)
-	headers.Set("Content-Type", "application/json")
-
-	for _, c := range chatbot.CommandRegister {
-
-		func(c chatbot.Command) {
-
-			payload := interactions.Interaction{
-				Name:        c.ID(),
-				Description: c.Description(),
-				Options:     c.Slash(),
-			}
-
-			b, err := json.Marshal(payload)
-			if err != nil {
-				log.ErrS(err)
+	if err != nil {
+		if val, ok := err.(*discordgo.RESTError); ok {
+			if _, ok2 := allowed[val.Message.Code]; ok2 {
+				zap.S().Info(err) // No helper to fix stack offset
 				return
 			}
+		}
 
-			req, err := http.NewRequest("POST", path, bytes.NewBuffer(b))
-			if err != nil {
-				log.ErrS(err)
-				return
-			}
-
-			req.Header = headers
-
-			clientWithTimeout := &http.Client{
-				Timeout: time.Second * 2,
-			}
-
-			resp, err := clientWithTimeout.Do(req)
-			if err != nil {
-				log.ErrS(err)
-				return
-			}
-
-			defer helpers.Close(resp.Body)
-
-			body, err := ioutil.ReadAll(resp.Body)
-			if err != nil {
-				log.ErrS(err)
-				return
-			}
-
-			log.Info("Command updated", zap.Int("code", resp.StatusCode), zap.String("id", c.ID()))
-
-			if resp.StatusCode != 200 && resp.StatusCode != 201 {
-				log.Info(string(body))
-			}
-
-			time.Sleep(time.Second / 4)
-		}(c)
+		zap.S().Error(err) // No helper to fix stack offset
+		return
 	}
 }
