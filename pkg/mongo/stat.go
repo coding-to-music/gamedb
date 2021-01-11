@@ -142,11 +142,11 @@ func GetStat(typex StatsType, id int) (stat Stat, err error) {
 }
 
 //
-func GetStats(offset int64, limit int64, filter bson.D, sort bson.D) (offers []Stat, err error) {
+func GetStats(offset int64, limit int64, filter bson.D, sort bson.D) (stats []Stat, err error) {
 
 	cur, ctx, err := Find(CollectionStats, offset, limit, sort, filter, nil, options.Find())
 	if err != nil {
-		return offers, err
+		return stats, err
 	}
 
 	defer closeCursor(cur, ctx)
@@ -158,11 +158,11 @@ func GetStats(offset int64, limit int64, filter bson.D, sort bson.D) (offers []S
 		if err != nil {
 			log.ErrS(err)
 		} else {
-			offers = append(offers, stat)
+			stats = append(stats, stat)
 		}
 	}
 
-	return offers, cur.Err()
+	return stats, cur.Err()
 }
 
 func GetStatsByID(typex StatsType, ids []int) (stats []Stat, err error) {
