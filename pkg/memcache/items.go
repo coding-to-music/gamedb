@@ -46,8 +46,8 @@ var (
 	// Chat
 	ItemChatBotGuildsCount  = Item{Key: "chat-bot-guilds", Expiration: 60 * 60 * 24}
 	ItemChatBotSettings     = func(discordID string) Item { return Item{Key: "chat-bot-settings-" + discordID, Expiration: 0} }
-	ItemChatBotRequest      = func(request string, code steamapi.ProductCC) Item { return Item{Key: "chat-bot-request-" + string(code) + "-" + helpers.MD5([]byte(request)), Expiration: 60 * 10} }
-	ItemChatBotRequestSlash = func(inputs map[string]string, code steamapi.ProductCC) Item { return Item{Key: "chat-bot-request-slash-" + string(code) + "-" + helpers.MD5Interface(inputs), Expiration: 60 * 10} }
+	ItemChatBotRequest      = func(request string, code steamapi.ProductCC) Item { return Item{Key: "interaction-" + string(code) + "-" + helpers.MD5([]byte(request)), Expiration: 60 * 10} }
+	ItemChatBotRequestSlash = func(commandID string, inputs map[string]string, code steamapi.ProductCC) Item { return Item{Key: "interaction-slash-" + commandID + "-" + string(code) + "-" + helpers.MD5Interface(inputs), Expiration: 60 * 10} }
 	ItemChatBotCommands     = Item{Key: "chat-bot-grouped-commands", Expiration: 60 * 10}
 	ItemChatBotGuilds       = Item{Key: "chat-bot-grouped-guilds", Expiration: 60 * 10}
 

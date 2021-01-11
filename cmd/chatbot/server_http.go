@@ -139,7 +139,7 @@ func discordHandler(w http.ResponseWriter, r *http.Request) {
 		code = settings.ProductCode
 	}
 
-	cacheItem := memcache.ItemChatBotRequestSlash(event.Arguments(), code)
+	cacheItem := memcache.ItemChatBotRequestSlash(command.ID(), event.Arguments(), code)
 
 	// Check in cache first
 	if !command.DisableCache() && !config.IsLocal() {
