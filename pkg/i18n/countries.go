@@ -12,6 +12,8 @@ func CountryCodeToName(code string) string {
 	switch code {
 	case "", "_", "0":
 		return "No Country"
+	case "AN":
+		return "Netherlands Antilles"
 	case "AX":
 		return "Aland Islands"
 	case "BQ":
@@ -44,7 +46,7 @@ func CountryCodeToContinent(code string) (string, error) {
 		return ContinentSouthAmerica, nil
 	case "SH":
 		return ContinentAfrica, nil
-	case "YU", "FX", "XK":
+	case "YU", "FX", "XK", "AN":
 		return ContinentEurope, nil
 	}
 
