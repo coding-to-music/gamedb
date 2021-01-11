@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/datatable"
+	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/pkg/backend"
 	"github.com/gamedb/gamedb/pkg/backend/generated"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -82,11 +83,16 @@ func commitsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			live = true
 		}
 
+		link := commit.GetLink()
+		if session.IsAdmin(r) {
+			link = "https://github.com/gamedb/gamedb/compare/" + commit.GetHash() + "...master?w=1"
+		}
+
 		response.AddRow([]interface{}{
 			commit.GetMessage(),           // 0
 			commit.GetTime().GetSeconds(), // 1
 			formattedTime,                 // 2
-			commit.GetLink(),              // 3
+			link,                          // 3
 			commit.GetHash()[0:7],         // 4
 			live,                          // 5
 		})
