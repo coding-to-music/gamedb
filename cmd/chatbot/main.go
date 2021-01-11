@@ -67,7 +67,10 @@ func main() {
 		mysql.Close,
 		mongo.Close,
 		func() {
-			_ = discordSession.Close()
+			err = discordSession.Close()
+			if err != nil {
+				log.Err("disconnecting from discord", zap.Error(err))
+			}
 		},
 		func() {
 			influxHelper.GetWriter().Flush()
