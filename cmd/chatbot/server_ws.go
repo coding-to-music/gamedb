@@ -80,12 +80,6 @@ func websocketServer() (*discordgo.Session, error) {
 					err = discordSession.ChannelTyping(m.ChannelID)
 					discordError(err)
 
-					// React to request message
-					// go func() {
-					// 	err = discordSession.MessageReactionAdd(m.ChannelID, m.Message.ID, "👍")
-					// 	discordError(err)
-					// }()
-
 					// Get user settings
 					code := steamapi.ProductCCUS
 					cacheItem := memcache.ItemChatBotRequest(msg, code)
