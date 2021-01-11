@@ -118,7 +118,8 @@ func (c CommandPlayer) Output(authorID string, _ steamapi.ProductCC, inputs map[
 
 	} else {
 
-		player, q, err := mongo.SearchPlayer(inputs["player"], projection)
+		var q bool
+		player, q, err = mongo.SearchPlayer(inputs["player"], projection)
 		if err == mongo.ErrNoDocuments {
 
 			message.Content = "Player **" + inputs["player"] + "** not found, please enter a user's vanity URL"
