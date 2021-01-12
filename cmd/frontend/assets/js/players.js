@@ -191,9 +191,18 @@ if ($('#players-page').length > 0) {
                 },
                 "orderSequence": ["desc"],
             },
-            // Friends
+            // Comments
             {
                 "targets": 10,
+                "render": function (data, type, row) {
+                    return row[20].toLocaleString();
+                },
+                "orderSequence": ["desc"],
+                "visible": false,
+            },
+            // Friends
+            {
+                "targets": 11,
                 "render": function (data, type, row) {
 
                     if (row[10] === 0) {
@@ -201,15 +210,6 @@ if ($('#players-page').length > 0) {
                     }
 
                     return row[10].toLocaleString();
-                },
-                "orderSequence": ["desc"],
-                "visible": false,
-            },
-            // Comments
-            {
-                "targets": 11,
-                "render": function (data, type, row) {
-                    return row[20].toLocaleString();
                 },
                 "orderSequence": ["desc"],
                 "visible": false,

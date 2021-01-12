@@ -216,8 +216,8 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		"8": "vac_bans",
 		"9": "last_ban",
 
-		"10": "friends",
-		"11": "comments",
+		"10": "comments",
+		"11": "friends",
 
 		"12": "achievements",
 		"13": "achievements_100",
