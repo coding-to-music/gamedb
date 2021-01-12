@@ -30,9 +30,9 @@ func refreshCommands() error {
 
 			log.Info("Deleting " + v.Name)
 
-			err := deleteCommand(v.ID)
+			code, err := deleteCommand(v.ID)
 			if err != nil {
-				log.Err("deleting old discord command", zap.Error(err))
+				log.Err("Deleting old discord command", zap.Int("code", code), zap.Error(err))
 			}
 		}
 	}
@@ -42,14 +42,14 @@ func refreshCommands() error {
 }
 
 //goland:noinspection GoUnusedFunction
-func deleteCommand(id string) error {
+func deleteCommand(id string) (int, error) {
 
 	headers := http.Header{}
 	headers.Set("Authorization", "Bot "+config.C.DiscordChatBotToken)
 	headers.Set("Content-Type", "application/json")
 
-	_, _, err := helpers.Delete("https://discord.com/api/v8/applications/"+discord.ClientIDBot+"/commands/"+id, 0, headers)
-	return err
+	_, code, err := helpers.Delete("https://discord.com/api/v8/applications/"+discord.ClientIDBot+"/commands/"+id, 0, headers)
+	return code, err
 }
 
 //goland:noinspection GoUnusedFunction
