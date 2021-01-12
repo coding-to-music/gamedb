@@ -75,8 +75,8 @@
           "format": "int32"
         },
         "appsPercent": {
-          "type": "integer",
-          "format": "int32"
+          "type": "number",
+          "format": "float"
         },
         "meanPrice": {
           "type": "number",

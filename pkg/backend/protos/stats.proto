@@ -27,7 +27,7 @@ message StatResponse {
     int32 id = 1;
     string name = 2;
     int32 apps = 3;
-    int32 apps_percent = 4;
+    float apps_percent = 4;
     float meanPrice = 5;
     float meanScore = 6;
     float meanPlayers = 7;

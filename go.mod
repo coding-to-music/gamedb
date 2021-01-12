@@ -112,7 +112,7 @@ require (
 	golang.org/x/tools v0.0.0-20210108195828-e2f9c7f1fc8e // indirect
 	gonum.org/v1/gonum v0.8.2
 	google.golang.org/api v0.36.0
-	google.golang.org/genproto v0.0.0-20210108203827-ffc7fda8c3d7 // indirect
+	google.golang.org/genproto v0.0.0-20210111234610-22ae2b108f89 // indirect
 	google.golang.org/grpc v1.34.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.0.1
 	google.golang.org/protobuf v1.25.0

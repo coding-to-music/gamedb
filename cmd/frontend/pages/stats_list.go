@@ -83,9 +83,10 @@ func statsListJSONHandler(w http.ResponseWriter, r *http.Request) {
 	var columns = map[string]string{
 		"0": "name",
 		"1": "apps",
-		"2": "mean_price",
-		"3": "mean_score",
-		"4": "mean_players",
+		"2": "apps_percent",
+		"3": "mean_price",
+		"4": "mean_score",
+		"5": "mean_players",
 	}
 
 	code := session.GetProductCC(r)
@@ -112,12 +113,13 @@ func statsListJSONHandler(w http.ResponseWriter, r *http.Request) {
 		statPrice := i18n.FormatPrice(i18n.GetProdCC(code).CurrencyCode, int(math.Round(float64(stat.GetMeanPrice()))))
 
 		response.AddRow([]interface{}{
-			statPath,       // 0
-			stat.GetName(), // 1
-			stat.GetApps(), // 2
-			statPrice,      // 3
-			statPlayers,    // 4
-			statScore,      // 5
+			statPath,              // 0
+			stat.GetName(),        // 1
+			stat.GetApps(),        // 2
+			statPrice,             // 3
+			statPlayers,           // 4
+			statScore,             // 5
+			stat.GetAppsPercent(), // 6
 		})
 	}
 

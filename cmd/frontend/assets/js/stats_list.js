@@ -28,9 +28,17 @@ if ($('#stats-list-page').length > 0) {
                     },
                     "orderSequence": ['desc', 'asc'],
                 },
-                // Price
+                // Apps Percent
                 {
                     "targets": 2,
+                    "render": function (data, type, row) {
+                        return row[6].toFixed(2).toLocaleString() + '%';
+                    },
+                    "orderSequence": ['desc', 'asc'],
+                },
+                // Price
+                {
+                    "targets": 3,
                     "render": function (data, type, row) {
                         if (row[2]) {
                             return row[3];
@@ -44,7 +52,7 @@ if ($('#stats-list-page').length > 0) {
                 },
                 // Score
                 {
-                    "targets": 3,
+                    "targets": 4,
                     "render": function (data, type, row) {
                         if (row[2]) {
                             return row[5];
@@ -55,7 +63,7 @@ if ($('#stats-list-page').length > 0) {
                 },
                 // Players
                 {
-                    "targets": 4,
+                    "targets": 5,
                     "render": function (data, type, row) {
                         if (row[2]) {
                             return row[4].toLocaleString();

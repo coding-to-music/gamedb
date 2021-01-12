@@ -54,10 +54,13 @@ func (s StatsServer) List(ctx context.Context, request *generated.StatsRequest) 
 			Id:            int32(stat.ID),
 			Name:          stat.Name,
 			Apps:          int32(stat.Apps),
+			AppsPercent:   stat.AppsPercnt,
 			MeanScore:     stat.MeanScore,
 			MeanPlayers:   float32(stat.MeanPlayers),
 			MedianScore:   stat.MedianScore,
 			MedianPlayers: int32(stat.MedianPlayers),
+			// MeanPrice:     stat.MeanPrice,
+			// MedianPrice:   stat.MedianPrice,
 		}
 
 		if val, ok := stat.MeanPrice[steamapi.ProductCC(request.GetCurrency())]; ok {
