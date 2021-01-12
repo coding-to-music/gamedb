@@ -44,7 +44,7 @@ func Head(link string, timeout time.Duration) (code int, err error) {
 	policy := backoff.NewExponentialBackOff()
 	policy.InitialInterval = time.Second
 
-	err = backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 5), func(err error, t time.Duration) { zap.S().Info(err) })
+	err = backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 5), func(err error, t time.Duration) { zap.L().Info("Doing a HEAD call", zap.Error(err)) })
 	return code, err
 }
 

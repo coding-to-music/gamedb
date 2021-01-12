@@ -270,7 +270,7 @@ func FindOrCreateStatsByName(typex StatsType, names []string) (IDs []int, err er
 			policy := backoff.NewExponentialBackOff()
 			policy.InitialInterval = time.Second * 1
 
-			err = backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 5), func(err error, t time.Duration) { log.InfoS(err) })
+			err = backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 5), func(err error, t time.Duration) { zap.L().Info("Inserting a new stat", zap.Error(err)) })
 			if err != nil {
 				return nil, err
 			}

@@ -81,7 +81,7 @@ func (c steamProvider) GetUser(r *http.Request) (user User, err error) {
 
 	policy := backoff.NewExponentialBackOff()
 
-	err = backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 5), func(err error, t time.Duration) { log.InfoS(err) })
+	err = backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 5), func(err error, t time.Duration) { zap.L().Info("Finding Steam player info for oauth", zap.Error(err)) })
 	if err != nil {
 		return user, err
 	}

@@ -8,6 +8,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/ldflags"
 	"github.com/gamedb/gamedb/pkg/log"
+	"go.uber.org/zap"
 )
 
 const (
@@ -92,7 +93,7 @@ func GetConsumer(tag string) (err error) {
 	}
 
 	policy := backoff.NewConstantBackOff(consumerSessionRetry)
-	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.InfoS(err) })
+	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { zap.L().Info("Getting an available consumer", zap.Error(err)) })
 	if err != nil {
 		return err
 	}

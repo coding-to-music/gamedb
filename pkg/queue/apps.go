@@ -892,7 +892,7 @@ func scrapeApp(app *mongo.App) (sales []mongo.Sale, err error) {
 	policy := backoff.NewExponentialBackOff()
 	policy.InitialInterval = time.Second
 
-	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.InfoS(err, app.ID) })
+	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { zap.L().Info("Scraping steam app", zap.Int("app", app.ID), zap.Error(err)) })
 	if err != nil {
 		return sales, err
 	}

@@ -11,6 +11,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/go-chi/chi"
 	"github.com/russross/blackfriday"
+	"go.uber.org/zap"
 )
 
 const (
@@ -181,7 +182,7 @@ func chatAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	policy := backoff.NewExponentialBackOff()
 
-	err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.InfoS(err) })
+	err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { zap.L().Info("Getting channel messages from discord API", zap.Error(err)) })
 	if err != nil {
 		log.ErrS(err)
 		return
