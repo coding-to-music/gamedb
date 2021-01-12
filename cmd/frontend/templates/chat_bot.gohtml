@@ -22,32 +22,38 @@
                     <div>For slash command integration, you will need to add the bot to your server again, using the link above.</div>
                 </div>
 
-                {{ range $key, $value := .Commands }}
+                <h5>Commands</h5>
 
-                    <h5>{{ (index $value 0).Type }} Commands </h5>
-
-                    <div class="table-responsive commands-table mb-4">
-                        <table class="table table-hover table-striped table-datatable" data-ordering="false">
-                            <thead class="thead-light">
+                <div class="table-responsive commands-table mb-4">
+                    <table class="table table-hover table-striped table-datatable" data-order='[[0, "asc"], [1, "asc"]]'>
+                        <thead class="thead-light">
+                        <tr>
+                            <th scope="col">Category</th>
+                            <th scope="col">Slash Command</th>
+                            <th scope="col">Legacy Command</th>
+                            <th scope="col">Description</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {{ range .Commands }}
                             <tr>
-                                <th scope="col">Example</th>
-                                {{/*<th scope="col">Regex</th>*/}}
-                                <th scope="col">Description</th>
+                                <td class="nowrap" data-sort="{{ .Type.Order }}">{{ .Type }}</td>
+                                <td class="nowrap" style="width: 25%;">
+                                    /{{ .ID }}
+                                    {{ range .Slash }}
+                                        <span class="badge rounded-pill bg-light text-dark" data-toggle="tooltip" data-placement="top" title="{{ .Description }}">
+                                            {{ .Name }}
+                                            {{ if not .Required }}?{{ end }}
+                                        </span>
+                                    {{ end }}
+                                </td>
+                                <td class="nowrap" style="width: 25%;"><span data-toggle="tooltip" data-placement="top" title="{{ .Regex }}">{{ .Example }}</span></td>
+                                <td class="nowrap">{{ .Description }}</td>
                             </tr>
-                            </thead>
-                            <tbody>
-                            {{ range $value }}
-                                <tr>
-                                    <td class="nowrap" style="width: 25%;">{{ .Example }}</td>
-                                    {{/*<td class="nowrap" style="width: 25%;">{{ .Regex }}</td>*/}}
-                                    <td class="nowrap">{{ .Description }}</td>
-                                </tr>
-                            {{ end }}
-                            </tbody>
-                        </table>
-                    </div>
-
-                {{ end }}
+                        {{ end }}
+                        </tbody>
+                    </table>
+                </div>
 
                 <div id="regions">
                     <h5>Currency Regions</h5>

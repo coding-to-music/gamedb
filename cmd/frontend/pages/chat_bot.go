@@ -1,14 +1,13 @@
 package pages
 
 import (
-	"github.com/gamedb/gamedb/pkg/i18n"
 	"net/http"
-	"sort"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/chatbot"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/i18n"
 	influxHelper "github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
@@ -33,46 +32,16 @@ func chatBotHandler(w http.ResponseWriter, r *http.Request) {
 	t.addAssetJSON2HTML()
 	t.Link = config.C.DiscordBotInviteURL
 	t.Regions = i18n.GetProdCCs(true)
+	t.Commands = chatbot.CommandRegister
 
 	returnTemplate(w, r, t)
 }
 
 type chatBotTemplate struct {
 	globalTemplate
-	Link    string
-	Regions []i18n.ProductCountryCode
-}
-
-func (cbt chatBotTemplate) Commands() (ret [][]chatbot.Command) {
-
-	var groupedMap = map[chatbot.CommandType][]chatbot.Command{}
-	for _, v := range chatbot.CommandRegister {
-
-		if _, ok := groupedMap[v.Type()]; ok {
-
-			groupedMap[v.Type()] = append(groupedMap[v.Type()], v)
-
-		} else {
-
-			groupedMap[v.Type()] = []chatbot.Command{v}
-
-		}
-	}
-
-	for _, v := range groupedMap {
-
-		sort.Slice(v, func(i, j int) bool {
-			return v[i].Example() < v[j].Example()
-		})
-
-		ret = append(ret, v)
-	}
-
-	sort.Slice(ret, func(i, j int) bool {
-		return ret[i][0].Type() < ret[j][0].Type()
-	})
-
-	return ret
+	Link     string
+	Regions  []i18n.ProductCountryCode
+	Commands []chatbot.Command
 }
 
 func (cbt chatBotTemplate) Guilds() (guilds int) {

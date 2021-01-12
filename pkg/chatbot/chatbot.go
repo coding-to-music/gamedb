@@ -14,12 +14,29 @@ import (
 
 type CommandType string
 
-var (
+func (ct CommandType) Order() int {
+	switch ct {
+	case TypeGame:
+		return 0
+	case TypePlayer:
+		return 1
+	case TypeGroup:
+		return 2
+	case TypeOther:
+		return 3
+	default:
+		return 4
+	}
+}
+
+const (
 	TypeGame   CommandType = "Game"
 	TypePlayer CommandType = "Player"
 	TypeGroup  CommandType = "Group"
-	TypeOther  CommandType = "Miscellaneous"
+	TypeOther  CommandType = "Misc"
+)
 
+var (
 	RegexCache   = make(map[string]*regexp.Regexp, len(CommandRegister))
 	CommandCache = make(map[string]Command, len(CommandRegister))
 )
