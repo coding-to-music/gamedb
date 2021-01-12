@@ -168,9 +168,6 @@ func discordHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Don't need footer on slash commands
-	out.Embed.Footer = nil
-
 	response := interactions.Response{
 		Type: interactions.ResponseTypeMessageWithSource,
 		Data: interactions.ResponseData{
