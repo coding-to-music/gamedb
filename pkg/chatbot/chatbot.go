@@ -39,28 +39,28 @@ type Command interface {
 
 // These are the discord slash command names, if changed, the old one needs to be deleted
 const (
-	CApp            = "game-details"
-	CAppFollowers   = "game-followers"
-	CAppPlayers     = "game-players"
-	CAppPrice       = "game-price"
-	CAppsRandom     = "games-random"
-	CAppsNew        = "games-new"
-	CAppsPopular    = "games-popular"
-	CAppsTrending   = "games-trending"
-	CGroup          = "group-details"
-	CGroupsTrending = "groups-trending"
-	CPlayer         = "player-details"
-	CPlayerApps     = "player-games-count"
-	CPlayerLevel    = "player-level"
-	CPlayerPlaytime = "player-playtime"
-	CPlayerRecent   = "player-recent"
-	CPlayerUpdate   = "player-update"
-	CPlayerWishlist = "player-wishlist"
-	CPlayerLibrary  = "player-library"
-	CHelp           = "help"
-	CInvite         = "invite"
-	CSettings       = "settings"
-	CSteamOnline    = "steam-online-players"
+	CApp            = "game"            //
+	CAppFollowers   = "followers"       //
+	CAppPlayers     = "players"         //
+	CAppPrice       = "price"           //
+	CAppsRandom     = "random"          //
+	CAppsNew        = "new"             //
+	CAppsPopular    = "top"             //
+	CAppsTrending   = "trending-games"  //
+	CGroup          = "group"           //
+	CGroupsTrending = "trending-groups" //
+	CPlayer         = "player"          //
+	CPlayerApps     = "games"           // Count
+	CPlayerLevel    = "level"           //
+	CPlayerPlaytime = "playtime"        //
+	CPlayerRecent   = "recent"          //
+	CPlayerUpdate   = "update"          //
+	CPlayerWishlist = "wishlist"        //
+	CPlayerLibrary  = "library"         //
+	CHelp           = "help"            //
+	CInvite         = "invite"          //
+	CSettings       = "settings"        //
+	CSteamOnline    = "online"          //
 )
 
 var CommandRegister = []Command{
