@@ -1,11 +1,11 @@
 package tasks
 
 import (
-	"github.com/gamedb/gamedb/pkg/mysql"
 	"time"
 
 	influxHelper "github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/mysql"
 	influx "github.com/influxdata/influxdb1-client"
 )
 

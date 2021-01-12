@@ -171,7 +171,6 @@ func discordHandler(w http.ResponseWriter, r *http.Request) {
 	response := interactions.Response{
 		Type: interactions.ResponseTypeMessageWithSource,
 		Data: interactions.ResponseData{
-			TTS:     false,
 			Content: out.Content,
 		},
 	}

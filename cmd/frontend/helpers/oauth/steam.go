@@ -10,9 +10,9 @@ import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/cenkalti/backoff/v4"
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/steam"
 	"github.com/yohcop/openid-go"
+	"go.uber.org/zap"
 )
 
 type steamProvider struct {
