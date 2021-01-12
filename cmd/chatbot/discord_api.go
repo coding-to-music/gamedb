@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/chatbot"
@@ -83,7 +84,7 @@ func setCommands() {
 
 			payload := interactions.Interaction{
 				Name:        c.ID(),
-				Description: c.Description(),
+				Description: strings.ToUpper(string(c.Type())) + ":" + c.Description(),
 				Options:     c.Slash(),
 			}
 
