@@ -48,7 +48,7 @@ func (c CommandHelp) Slash() []interactions.InteractionOption {
 
 func (CommandHelp) Output(_ string, _ steamapi.ProductCC, _ map[string]string) (message discordgo.MessageSend, err error) {
 
-	message.Content = "See " + config.C.GameDBDomain + "/discord-bot"
+	message.Content = "See <" + config.C.GameDBDomain + "/discord-bot>"
 
 	return message, nil
 }

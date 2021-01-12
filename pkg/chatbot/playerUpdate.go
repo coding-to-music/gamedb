@@ -74,7 +74,7 @@ func (c CommandPlayerUpdate) Output(authorID string, _ steamapi.ProductCC, input
 
 		user, err := mysql.GetUserByProviderID(oauth.ProviderDiscord, authorID)
 		if err == mysql.ErrRecordNotFound {
-			message.Content = "You need to link your **Discord** account for us to know who you are: " + config.C.GameDBDomain + "/settings"
+			message.Content = "You need to link your **Discord** account for us to know who you are: <" + config.C.GameDBDomain + "/settings>"
 			return message, nil
 		} else if err != nil {
 			return message, err
@@ -89,9 +89,9 @@ func (c CommandPlayerUpdate) Output(authorID string, _ steamapi.ProductCC, input
 				log.ErrS(err)
 			}
 
-			message.Content = "Player queued: " + config.C.GameDBDomain + "/p" + strconv.FormatInt(playerID, 10)
+			message.Content = "Player queued: <" + config.C.GameDBDomain + "/p" + strconv.FormatInt(playerID, 10) + ">"
 		} else {
-			message.Content = "You need to link your **Steam** account for us to know who you are: " + config.C.GameDBDomain + "/settings"
+			message.Content = "You need to link your **Steam** account for us to know who you are: <" + config.C.GameDBDomain + "/settings>"
 		}
 		return message, nil
 	}
@@ -112,6 +112,6 @@ func (c CommandPlayerUpdate) Output(authorID string, _ steamapi.ProductCC, input
 		log.ErrS(err)
 	}
 
-	message.Content = "Player queued: " + config.C.GameDBDomain + "/p" + strconv.FormatInt(player.ID, 10)
+	message.Content = "Player queued: <" + config.C.GameDBDomain + "/p" + strconv.FormatInt(player.ID, 10) + ">"
 	return message, nil
 }
