@@ -46,7 +46,8 @@ if ($playerPage.length > 0) {
                     '<li data-queue="game">Games</li>' +
                     '<li data-queue="group">Groups</li>' +
                     '<li data-queue="wishlist">Wishlist</li>' +
-                    '</ul>';
+                    '</ul>' +
+                    '<p><a href="/queues">Queues</a></p>';
 
                 t = toast(true, ul, 'Player Updating', -1, 'refresh');
             }
