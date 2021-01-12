@@ -31,7 +31,7 @@ func (CommandInvite) Example() string {
 }
 
 func (CommandInvite) Description() string {
-	return "Gives you the link to invite the bot to your server"
+	return "Retrieve a bot invite link for your Discord server"
 }
 
 func (CommandInvite) Type() CommandType {

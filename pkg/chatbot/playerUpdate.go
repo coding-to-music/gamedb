@@ -40,7 +40,7 @@ func (CommandPlayerUpdate) Example() string {
 }
 
 func (CommandPlayerUpdate) Description() string {
-	return "Updates a player, connect your discord account to leave out the a player ID"
+	return "Updates a player's Global Steam profile"
 }
 
 func (CommandPlayerUpdate) Type() CommandType {

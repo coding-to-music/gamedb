@@ -40,7 +40,7 @@ func (CommandPlayerLibrary) Example() string {
 }
 
 func (CommandPlayerLibrary) Description() string {
-	return "Returns the players most played games"
+	return "Retrieve a players top played games"
 }
 
 func (CommandPlayerLibrary) Type() CommandType {

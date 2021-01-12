@@ -35,7 +35,7 @@ func (CommandAppPlayers) Example() string {
 }
 
 func (CommandAppPlayers) Description() string {
-	return "Gets the number of people playing a game."
+	return "Retrieve information about the number of people playing a game"
 }
 
 func (CommandAppPlayers) Type() CommandType {

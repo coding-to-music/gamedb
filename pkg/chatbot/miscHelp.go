@@ -31,7 +31,7 @@ func (CommandHelp) Example() string {
 }
 
 func (CommandHelp) Description() string {
-	return "Links to this list of commands"
+	return "Retrieve a full list of commands"
 }
 
 func (CommandHelp) Type() CommandType {

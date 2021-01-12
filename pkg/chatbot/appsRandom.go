@@ -35,7 +35,7 @@ func (CommandAppRandom) Example() string {
 }
 
 func (CommandAppRandom) Description() string {
-	return "Get a random game"
+	return "Retrieve a random game"
 }
 
 func (CommandAppRandom) Type() CommandType {

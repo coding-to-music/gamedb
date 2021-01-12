@@ -39,7 +39,7 @@ func (CommandPlayerLevel) Example() string {
 }
 
 func (CommandPlayerLevel) Description() string {
-	return "Get the level of a player"
+	return "Retrieve a player's level"
 }
 
 func (CommandPlayerLevel) Type() CommandType {

@@ -32,7 +32,7 @@ func (CommandApp) Example() string {
 }
 
 func (CommandApp) Description() string {
-	return "Get info on a game"
+	return "Retrieve information about a game"
 }
 
 func (CommandApp) Type() CommandType {

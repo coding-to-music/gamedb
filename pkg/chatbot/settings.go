@@ -35,7 +35,7 @@ func (CommandSettings) Example() string {
 }
 
 func (CommandSettings) Description() string {
-	return "Set your region for price commands"
+	return "Update or view a Global Steam Discord setting"
 }
 
 func (CommandSettings) Type() CommandType {

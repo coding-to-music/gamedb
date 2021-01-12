@@ -40,7 +40,7 @@ func (CommandPlayerRecent) Example() string {
 }
 
 func (CommandPlayerRecent) Description() string {
-	return "Returns the last 10 games played by user"
+	return "Retrieve a player's last opened games"
 }
 
 func (CommandPlayerRecent) Type() CommandType {

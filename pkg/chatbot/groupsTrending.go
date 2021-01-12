@@ -35,7 +35,7 @@ func (CommandGroupsTrending) Example() string {
 }
 
 func (CommandGroupsTrending) Description() string {
-	return "Returns the top trending groups"
+	return "Retrieve the most trending groups"
 }
 
 func (CommandGroupsTrending) Type() CommandType {

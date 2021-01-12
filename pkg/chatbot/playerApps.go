@@ -39,7 +39,7 @@ func (CommandPlayerApps) Example() string {
 }
 
 func (CommandPlayerApps) Description() string {
-	return "Get the amount of games a player has in their library"
+	return "Retrieve the number of games in a player's library"
 }
 
 func (CommandPlayerApps) Type() CommandType {

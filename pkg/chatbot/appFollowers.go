@@ -35,7 +35,7 @@ func (CommandAppFollowers) Example() string {
 }
 
 func (CommandAppFollowers) Description() string {
-	return "Gets the number of followers for a game."
+	return "Retrieve information about a game's followers"
 }
 
 func (CommandAppFollowers) Type() CommandType {

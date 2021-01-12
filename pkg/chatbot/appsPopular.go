@@ -36,7 +36,7 @@ func (CommandAppsPopular) Example() string {
 }
 
 func (CommandAppsPopular) Description() string {
-	return "Returns the most popular games in order of players over the last week"
+	return "Retrieve the most popular games this week"
 }
 
 func (CommandAppsPopular) Type() CommandType {

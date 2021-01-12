@@ -43,7 +43,7 @@ func (CommandPlayer) Example() string {
 }
 
 func (CommandPlayer) Description() string {
-	return "Get info on a player"
+	return "Retrieve information about a player"
 }
 
 func (CommandPlayer) Type() CommandType {

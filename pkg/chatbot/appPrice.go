@@ -33,7 +33,7 @@ func (CommandAppPrice) Example() string {
 }
 
 func (CommandAppPrice) Description() string {
-	return "Get the price of a game"
+	return "Retrieve information about the price of a game"
 }
 
 func (CommandAppPrice) Type() CommandType {

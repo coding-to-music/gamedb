@@ -34,7 +34,7 @@ func (CommandGroup) Example() string {
 }
 
 func (CommandGroup) Description() string {
-	return "Get info on a group"
+	return "Retrieve information about a group"
 }
 
 func (CommandGroup) Type() CommandType {

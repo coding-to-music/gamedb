@@ -37,7 +37,7 @@ func (CommandPlayerPlaytime) Example() string {
 }
 
 func (CommandPlayerPlaytime) Description() string {
-	return "Get the playtime of a player"
+	return "Retrieve a player's total playtime"
 }
 
 func (CommandPlayerPlaytime) Type() CommandType {

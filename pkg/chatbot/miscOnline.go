@@ -32,7 +32,7 @@ func (CommandSteamOnline) Example() string {
 }
 
 func (CommandSteamOnline) Description() string {
-	return "Gets the number of people on Steam."
+	return "Retrieve the number of people currently on Steam"
 }
 
 func (CommandSteamOnline) Type() CommandType {

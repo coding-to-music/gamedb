@@ -41,7 +41,7 @@ func (CommandPlayerWishlist) Example() string {
 }
 
 func (CommandPlayerWishlist) Description() string {
-	return "Lists a player's wishlist"
+	return "Retrieve a player's wishlist"
 }
 
 func (CommandPlayerWishlist) Type() CommandType {
