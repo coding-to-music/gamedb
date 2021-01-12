@@ -109,8 +109,8 @@ func discordHandler(w http.ResponseWriter, r *http.Request) {
 	// Save stats
 	defer saveToDB(
 		command,
-		event.Arguments(),
 		true,
+		event.ArgumentsString(),
 		event.GuildID,
 		event.ChannelID,
 		event.Member.User.ID,

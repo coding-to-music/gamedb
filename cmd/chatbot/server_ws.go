@@ -67,8 +67,8 @@ func websocketServer() (*discordgo.Session, error) {
 					// Save stats
 					defer saveToDB(
 						command,
-						command.LegacyInputs(msg),
 						false,
+						msg,
 						m.GuildID,
 						m.ChannelID,
 						m.Author.ID,

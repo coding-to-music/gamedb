@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"net/http"
 	"strconv"
 	"sync"
@@ -111,7 +110,7 @@ func getSession() (*discordgo.Session, error) {
 
 }
 
-func saveToDB(command chatbot.Command, inputs map[string]string, slash bool, guildID, channelID, authorID, authorName, authorAvatar string) {
+func saveToDB(command chatbot.Command, slash bool, message, guildID, channelID, authorID, authorName, authorAvatar string) {
 
 	if authorID == discord.AdminID {
 		return
@@ -147,12 +146,6 @@ func saveToDB(command chatbot.Command, inputs map[string]string, slash bool, gui
 		log.ErrS(err)
 	}
 
-	// Mongo
-	b, err := json.Marshal(inputs)
-	if err != nil {
-		log.ErrS(err)
-	}
-
 	var row = mongo.ChatBotCommand{
 		GuildID:      guildID,
 		ChannelID:    channelID,
@@ -160,7 +153,7 @@ func saveToDB(command chatbot.Command, inputs map[string]string, slash bool, gui
 		AuthorName:   authorName,
 		AuthorAvatar: authorAvatar,
 		CommandID:    command.ID(),
-		Message:      string(b),
+		Message:      message,
 		Slash:        slash,
 		Time:         time.Now(), // Can get from ws message?
 	}
