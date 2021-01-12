@@ -173,8 +173,11 @@ func discordHandler(w http.ResponseWriter, r *http.Request) {
 		Data: interactions.ResponseData{
 			TTS:     false,
 			Content: out.Content,
-			Embeds:  []*discordgo.MessageEmbed{out.Embed},
 		},
+	}
+
+	if out.Embed != nil {
+		response.Data.Embeds = []*discordgo.MessageEmbed{out.Embed}
 	}
 
 	// Save to cache
