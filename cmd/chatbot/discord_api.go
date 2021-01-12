@@ -84,7 +84,7 @@ func setCommands() {
 
 			payload := interactions.Interaction{
 				Name:        c.ID(),
-				Description: strings.ToUpper(string(c.Type())) + ":" + c.Description(),
+				Description: strings.ToUpper(string(c.Type())) + ": " + c.Description(),
 				Options:     c.Slash(),
 			}
 
