@@ -49,7 +49,7 @@ func mailjetWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 	defer helpers.Close(r.Body)
 
 	// Save webhook
-	err = mongo.NewWebhook(mongo.WebhookServiceMailjet, "", string(body))
+	err = mongo.SaveWebhook(mongo.WebhookServiceMailjet, "", string(body))
 	if err != nil {
 		log.ErrS(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -86,7 +86,7 @@ func sendgridWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 	defer helpers.Close(r.Body)
 
 	// Save webhook
-	err = mongo.NewWebhook(mongo.WebhookServiceSendgrid, "", string(body))
+	err = mongo.SaveWebhook(mongo.WebhookServiceSendgrid, "", string(body))
 	if err != nil {
 		log.ErrS(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -125,7 +125,7 @@ func twitterZapierWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 	defer helpers.Close(r.Body)
 
 	// Save webhook
-	err = mongo.NewWebhook(mongo.WebhookServiceTwitter, "", string(body))
+	err = mongo.SaveWebhook(mongo.WebhookServiceTwitter, "", string(body))
 	if err != nil {
 		log.ErrS(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -209,7 +209,7 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Save webhook
-	err = mongo.NewWebhook(mongo.WebhookServicePatreon, event, string(b))
+	err = mongo.SaveWebhook(mongo.WebhookServicePatreon, event, string(b))
 	if err != nil {
 		log.ErrS(err)
 	}
@@ -378,7 +378,7 @@ func gitHubWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Save webhook
-	err = mongo.NewWebhook(mongo.WebhookServiceGithub, event, string(body))
+	err = mongo.SaveWebhook(mongo.WebhookServiceGithub, event, string(body))
 	if err != nil {
 		log.ErrS(err)
 	}

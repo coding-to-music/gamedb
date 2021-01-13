@@ -63,7 +63,7 @@ func (webhook Webhook) GetHash() string {
 	return hash
 }
 
-func NewWebhook(service WebhookService, event string, body string) error {
+func SaveWebhook(service WebhookService, event string, body string) error {
 
 	row := Webhook{
 		CreatedAt:   time.Now(),
