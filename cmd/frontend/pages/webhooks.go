@@ -159,6 +159,11 @@ func twitterZapierWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Err(err.Error())
 		}
+
+		err = discordSession.Close()
+		if err != nil {
+			log.ErrS(err)
+		}
 	}
 
 	// Return
