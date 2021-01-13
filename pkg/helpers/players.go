@@ -23,6 +23,7 @@ func GetPlayerCommunityLink(playerID int64, vanityURL string) string {
 	return "https://steamcommunity.com/profiles/" + strconv.FormatInt(playerID, 10)
 }
 
+// 184 x 184
 func GetPlayerAvatar(avatar string) string {
 
 	if strings.HasPrefix(avatar, "http") || strings.HasPrefix(avatar, "/") {

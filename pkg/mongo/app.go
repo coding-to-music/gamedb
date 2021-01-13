@@ -268,6 +268,7 @@ func (app App) GetStoreLink() string {
 	return helpers.GetAppStoreLink(app.ID)
 }
 
+// 460 x 215
 func (app App) GetHeaderImage() string {
 	return "https://steamcdn-a.akamaihd.net/steam/apps/" + strconv.Itoa(app.ID) + "/header.jpg"
 }
