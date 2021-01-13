@@ -7,6 +7,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
+	"github.com/gamedb/gamedb/pkg/i18n"
 )
 
 type CommandAppPrice struct {
@@ -78,13 +79,28 @@ func (c CommandAppPrice) Output(_ string, region steamapi.ProductCC, inputs map[
 		return message, nil
 	}
 
+	if inputs["region"] != "" {
+		val, ok := i18n.ProductCountryCodes[steamapi.ProductCC(strings.ToLower(inputs["region"]))]
+		if ok {
+			if val.Enabled {
+				region = val.ProductCode
+			} else {
+				message.Content = "We are not currently tracking " + strings.ToUpper(string(region))
+				return message, nil
+			}
+		} else {
+			message.Content = "Invalid region: " + strings.ToUpper(string(region))
+			return message, nil
+		}
+	}
+
 	price := apps[0].Prices.Get(region)
 
 	if price.Exists {
-		message.Content = apps[0].GetName() + " is **" + price.GetFinal() + "** for " + strings.ToUpper(inputs["region"])
+		message.Content = apps[0].GetName() + " is **" + price.GetFinal() + "** for " + strings.ToUpper(string(region))
 		return message, nil
 	}
 
-	message.Content = apps[0].GetName() + " has no price for " + strings.ToUpper(inputs["region"])
+	message.Content = apps[0].GetName() + " has no price for " + strings.ToUpper(string(region))
 	return message, nil
 }
