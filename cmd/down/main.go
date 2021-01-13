@@ -29,7 +29,7 @@ func main() {
 
 	// Serve
 	if config.C.FrontendPort == "" {
-		log.ErrS("Missing environment variables")
+		log.Err("Missing environment variables")
 		return
 	}
 

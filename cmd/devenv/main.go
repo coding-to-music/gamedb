@@ -100,7 +100,7 @@ func startAll(cfg processesConfig, only ...string) {
 					if exiterr, ok := err.(*exec.ExitError); ok {
 						if status, ok := exiterr.Sys().(syscall.WaitStatus); ok {
 							if status.ExitStatus() == 2 {
-								log.ErrS("Could not build " + process)
+								log.Err("Could not build " + process)
 								return
 							}
 						}
@@ -240,7 +240,7 @@ func watchFiles(cfg processesConfig) {
 	}
 
 	if len(dirs) < 10 {
-		log.ErrS("Could not find dirs to watch")
+		log.Err("Could not find dirs to watch")
 	}
 
 	for _, v := range dirs {

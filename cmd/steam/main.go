@@ -46,7 +46,7 @@ func main() {
 	}
 
 	if config.C.SteamUsername == "" || config.C.SteamPassword == "" {
-		log.ErrS("Missing environment variables")
+		log.Err("Missing environment variables")
 	}
 
 	loginDetails := gosteam.LogOnDetails{}

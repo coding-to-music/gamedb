@@ -67,7 +67,7 @@ func sendgridWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Validate
 	if config.C.SendGridSecret == "" {
-		log.ErrS("Missing sendgrid environment variables")
+		log.Err("Missing sendgrid environment variables")
 	}
 
 	if r.Header.Get("X-Twilio-Email-Event-Webhook-Signature") != config.C.SendGridSecret {
@@ -104,7 +104,7 @@ func twitterZapierWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Validate secret
 	if config.C.TwitterWebhookSecret == "" {
-		log.ErrS("Missing Twitter environment variables")
+		log.Err("Missing Twitter environment variables")
 	}
 
 	var secret = r.URL.Query().Get("secret")
@@ -146,7 +146,7 @@ func twitterZapierWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 	if webhooks.Link != "" {
 
 		if config.C.DiscordRelayBotToken == "" {
-			log.ErrS("Missing discord environment variable")
+			log.Err("Missing discord environment variable")
 		}
 
 		discordSession, err := discordgo.New("Bot " + config.C.DiscordRelayBotToken)
@@ -198,7 +198,7 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Validate
 	if config.C.PatreonSecret == "" {
-		log.ErrS("Missing patreon environment variable")
+		log.Err("Missing patreon environment variable")
 	}
 
 	b, event, err := patreon.Validate(r, config.C.PatreonSecret)
@@ -364,7 +364,7 @@ func gitHubWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if config.C.GithubWebhookSecret == "" {
-		log.ErrS("Missing github environment variables")
+		log.Err("Missing github environment variables")
 	}
 
 	mac := hmac.New(sha1.New, []byte(config.C.GithubWebhookSecret))

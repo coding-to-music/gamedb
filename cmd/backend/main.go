@@ -35,7 +35,7 @@ func main() {
 	}
 
 	if config.C.GRPCKeysPath == "" {
-		log.ErrS("Missing environment variables")
+		log.Err("Missing environment variables")
 		return
 	}
 
@@ -56,7 +56,7 @@ func main() {
 
 	// Append the client certificates from the CA
 	if ok := certPool.AppendCertsFromPEM(ca); !ok {
-		log.ErrS("failed to append client certs")
+		log.Err("failed to append client certs")
 		return
 	}
 

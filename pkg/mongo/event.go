@@ -41,7 +41,7 @@ func (event EventEnum) ToString() string {
 			if provider != nil {
 				parts[1] = provider.GetName()
 			} else {
-				log.ErrS("invalid provider", zap.String("provider", parts[1]))
+				log.Err("invalid provider", zap.String("provider", parts[1]))
 			}
 		}
 		return strings.Join(parts, " ")

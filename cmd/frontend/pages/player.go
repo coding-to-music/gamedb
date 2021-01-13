@@ -1173,7 +1173,7 @@ func playersHistoryAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "id")
 	if id == "" {
-		log.ErrS("invalid id")
+		log.Err("invalid id")
 		return
 	}
 

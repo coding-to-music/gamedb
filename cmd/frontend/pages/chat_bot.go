@@ -47,7 +47,7 @@ type chatBotTemplate struct {
 func (cbt chatBotTemplate) Guilds() (guilds int) {
 
 	if config.C.DiscordChatBotToken == "" {
-		log.ErrS("Missing environment variables")
+		log.Err("Missing environment variables")
 		return 0
 	}
 

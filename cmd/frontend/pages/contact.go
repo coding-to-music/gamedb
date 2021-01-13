@@ -98,7 +98,7 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Send
 		if config.C.AdminName == "" || config.C.AdminEmail == "" {
-			log.ErrS("Missing environment variables")
+			log.Err("Missing environment variables")
 		} else {
 
 			err = email.GetProvider().Send(
