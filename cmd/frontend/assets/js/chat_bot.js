@@ -1,5 +1,28 @@
 if ($('#chat-bot-page').length > 0) {
 
+    $('#commands-docs').gdbTable({
+        order: [[0, "asc"], [1, "asc"]],
+        tableOptions: {
+            "drawCallback": function (settings) {
+                const api = this.api();
+                if (api.order()[0] && api.order()[0][0] === 0) {
+                    const rows = api.rows({page: 'current'}).nodes();
+
+                    let last = null;
+                    api.rows().every(function (rowIdx, tableLoop, rowLoop) {
+                        let group = this.data()[0].display;
+                        if (last !== group) {
+                            $(rows).eq(rowLoop).before(
+                                '<tr class="table-success"><td colspan="4">' + group + '</td></tr>'
+                            );
+                            last = group;
+                        }
+                    });
+                }
+            },
+        },
+    });
+
     const options = {
         "order": [[2, 'desc']],
         "columnDefs": [
