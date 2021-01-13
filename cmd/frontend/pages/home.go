@@ -3,6 +3,8 @@ package pages
 import (
 	"encoding/xml"
 	"fmt"
+	"github.com/gamedb/gamedb/pkg/elasticsearch"
+	"github.com/olivere/elastic/v7"
 	"html/template"
 	"net/http"
 	"regexp"
@@ -223,26 +225,27 @@ func homeNewsHandler(w http.ResponseWriter, r *http.Request) {
 	t := homeNewsTemplate{}
 	t.fill(w, r, "home_news", "", "")
 
-	apps, err := mongo.PopularApps()
+	popularApps, err := mongo.PopularApps()
 	if err != nil {
 		log.ErrS(err)
 	}
 
-	var appIDs []int
-	var appIDmap = map[int]mongo.App{}
-	for _, app := range apps {
-		appIDs = append(appIDs, app.ID)
-		appIDmap[app.ID] = app
+	var popularAppIDs []string
+	for _, app := range popularApps {
+		popularAppIDs = append(popularAppIDs, fmt.Sprint(app.ID))
 	}
 
-	news, err := mongo.GetArticlesByAppIDs(appIDs, 20, time.Time{})
-	if err != nil {
-		log.ErrS(err)
-	}
+	articles, _, err := elasticsearch.SearchArticles(
+		0,
+		20,
+		[]elastic.Sorter{elastic.NewFieldSort("time").Desc()},
+		"",
+		[]elastic.Query{elastic.NewTermsQueryFromStrings("app_id", popularAppIDs...)},
+	)
 
-	for _, v := range news {
+	for _, article := range articles {
 
-		contents := string(v.GetBody())
+		contents := string(article.GetBody())
 		contents = htmlPolicy.Sanitize(contents)
 		contents = helpers.RegexSpacesStartEnd.ReplaceAllString(contents, "")
 
@@ -254,13 +257,13 @@ func homeNewsHandler(w http.ResponseWriter, r *http.Request) {
 		contents = strings.TrimSpace(contents)
 
 		t.News = append(t.News, homeNewsItemTemplate{
-			Title:    v.Title,
+			Title:    article.Title,
 			Contents: template.HTML(contents),
-			Link:     "/games/" + fmt.Sprint(v.AppID) + "/" + slug.Make(v.AppName) + "#news," + strconv.FormatInt(v.ID, 10),
-			Image:    template.HTMLAttr(appIDmap[v.AppID].GetHeaderImage()),
+			Link:     "/games/" + fmt.Sprint(article.AppID) + "/" + slug.Make(article.AppName) + "#news," + strconv.FormatInt(article.ID, 10),
+			Image:    template.HTMLAttr(article.GetHeaderImage()),
 		})
 
-		t.NewsID = v.ID
+		t.NewsID = article.ID
 	}
 
 	returnTemplate(w, r, t)

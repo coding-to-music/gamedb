@@ -139,7 +139,7 @@ func newsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		//
-		articles, filtered, err = elasticsearch.SearchArticles(query.GetOffset(), sorters, search, filters)
+		articles, filtered, err = elasticsearch.SearchArticles(query.GetOffset(), 0, sorters, search, filters)
 		if err != nil {
 			log.ErrS(err)
 		}

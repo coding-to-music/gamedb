@@ -2,6 +2,7 @@ package elasticsearch
 
 import (
 	"encoding/json"
+	"fmt"
 	"html/template"
 	"strconv"
 	"time"
@@ -56,6 +57,11 @@ func (article Article) GetDate() string {
 	return time.Unix(article.Time, 0).Format(helpers.DateYearTime)
 }
 
+// 460 x 215
+func (article Article) GetHeaderImage() string {
+	return "https://steamcdn-a.akamaihd.net/steam/apps/" + fmt.Sprint(article.AppID) + "/header.jpg"
+}
+
 func (article Article) OutputForJSON() []interface{} {
 
 	var id = strconv.FormatInt(article.ID, 10)
@@ -91,17 +97,21 @@ func IndexArticlesBulk(articles map[string]Article) error {
 	return indexDocuments(IndexArticles, i)
 }
 
-func SearchArticles(offset int, sorters []elastic.Sorter, search string, filters []elastic.Query) (articles []Article, total int64, err error) {
+func SearchArticles(offset int, limit int, sorters []elastic.Sorter, search string, filters []elastic.Query) (articles []Article, total int64, err error) {
 
 	client, ctx, err := GetElastic()
 	if err != nil {
 		return articles, 0, err
 	}
 
+	if limit == 0 {
+		limit = 100
+	}
+
 	searchService := client.Search().
 		Index(IndexArticles).
 		From(offset).
-		Size(100).
+		Size(limit).
 		TrackTotalHits(true).
 		SortBy(sorters...)
 

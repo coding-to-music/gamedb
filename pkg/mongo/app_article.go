@@ -73,28 +73,6 @@ func (article Article) GetAppPath() string {
 	return helpers.GetAppPath(article.AppID, article.AppName)
 }
 
-func GetArticlesByAppIDs(appIDs []int, limit int64, afterDate time.Time) (news []Article, err error) {
-
-	if len(appIDs) < 1 {
-		return news, nil
-	}
-
-	appsFilter := bson.A{}
-	for _, v := range appIDs {
-		appsFilter = append(appsFilter, v)
-	}
-
-	filter := bson.D{
-		{"app_id", bson.M{"$in": appsFilter}},
-	}
-
-	if !afterDate.IsZero() && afterDate.Unix() != 0 {
-		filter = append(filter, bson.E{Key: "date", Value: bson.M{"$gte": afterDate}})
-	}
-
-	return getArticles(0, limit, filter, bson.D{{"date", -1}}, nil)
-}
-
 func GetArticles(offset int64, limit int64, order bson.D, filter bson.D) (news []Article, err error) {
 
 	return getArticles(offset, limit, filter, order, nil)
@@ -111,8 +89,6 @@ func getArticles(offset int64, limit int64, filter bson.D, order bson.D, project
 
 	defer closeCursor(cur, ctx)
 
-	lastTitle := ""
-
 	for cur.Next(ctx) {
 
 		var article Article
@@ -122,11 +98,7 @@ func getArticles(offset int64, limit int64, filter bson.D, order bson.D, project
 			continue
 		}
 
-		if lastTitle != article.Title {
-
-			news = append(news, article)
-			lastTitle = article.Title
-		}
+		news = append(news, article)
 	}
 
 	return news, cur.Err()
