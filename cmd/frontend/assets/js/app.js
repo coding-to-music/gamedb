@@ -111,7 +111,9 @@ if ($appPage.length > 0) {
                     }));
                 });
 
-                $feed.val('steam_community_announcements');
+                if (!window.location.hash.includes(",")) {
+                    $feed.val('steam_community_announcements');
+                }
 
                 $feed.chosen({
                     disable_search_threshold: 5,
