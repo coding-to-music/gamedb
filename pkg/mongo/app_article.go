@@ -111,14 +111,21 @@ func getArticles(offset int64, limit int64, filter bson.D, order bson.D, project
 
 	defer closeCursor(cur, ctx)
 
+	lastTitle := ""
+
 	for cur.Next(ctx) {
 
 		var article Article
 		err := cur.Decode(&article)
 		if err != nil {
 			log.ErrS(err, article.ID)
-		} else {
+			continue
+		}
+
+		if lastTitle != article.Title {
+
 			news = append(news, article)
+			lastTitle = article.Title
 		}
 	}
 

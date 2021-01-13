@@ -142,6 +142,8 @@ func SearchArticles(offset int, sorters []elastic.Sorter, search string, filters
 		return articles, 0, err
 	}
 
+	lastTitle := ""
+
 	for _, hit := range searchResult.Hits.Hits {
 
 		var article Article
@@ -151,24 +153,29 @@ func SearchArticles(offset int, sorters []elastic.Sorter, search string, filters
 			continue
 		}
 
-		if hit.Score != nil {
-			article.Score = *hit.Score
-		}
+		if lastTitle != article.Title {
 
-		article.TitleMarked = article.Title
-		if val, ok := hit.Highlight["title"]; ok {
-			if len(val) > 0 {
-				article.TitleMarked = val[0]
+			if hit.Score != nil {
+				article.Score = *hit.Score
 			}
-		}
 
-		if val, ok := hit.Highlight["app_name"]; ok {
-			if len(val) > 0 {
-				article.AppName = val[0]
+			article.TitleMarked = article.Title
+			if val, ok := hit.Highlight["title"]; ok {
+				if len(val) > 0 {
+					article.TitleMarked = val[0]
+				}
 			}
-		}
 
-		articles = append(articles, article)
+			if val, ok := hit.Highlight["app_name"]; ok {
+				if len(val) > 0 {
+					article.AppName = val[0]
+				}
+			}
+
+			articles = append(articles, article)
+
+			lastTitle = article.Title
+		}
 	}
 
 	return articles, searchResult.TotalHits(), nil
