@@ -88,6 +88,7 @@ func (c CommandPlayerLibrary) Output(authorID string, _ steamapi.ProductCC, inpu
 		}
 	}
 
+	// Sucess response
 	apps, err := mongo.GetPlayerAppsByPlayer(player.ID, 0, 10, bson.D{{"app_time", -1}}, bson.M{"app_name": 1, "app_time": 1, "app_id": 1}, nil)
 	if err != nil {
 		return message, err
@@ -99,33 +100,19 @@ func (c CommandPlayerLibrary) Output(authorID string, _ steamapi.ProductCC, inpu
 
 	if len(apps) > 0 {
 
-		message.Embed = &discordgo.MessageEmbed{
-			Title:  player.GetName() + "'s Top Games",
-			URL:    config.C.GameDBDomain + player.GetPath() + "#games",
-			Author: getAuthor(authorID),
-			Color:  2664261,
-		}
-
 		var code []string
-
 		for k, app := range apps {
-
-			if k == 0 {
-
-				avatar := app.GetHeaderImage()
-				if strings.HasPrefix(avatar, "/") {
-					avatar = "https://gamedb.online" + avatar
-				}
-
-				message.Embed.Thumbnail = &discordgo.MessageEmbedThumbnail{
-					URL: avatar,
-				}
-			}
-
 			code = append(code, fmt.Sprintf("%2d", k+1)+": "+app.GetTimeNice()+" - "+app.AppName)
 		}
 
-		message.Embed.Description = "```" + strings.Join(code, "\n") + "```"
+		message.Embed = &discordgo.MessageEmbed{
+			Title:       player.GetName() + "'s Top Games",
+			URL:         config.C.GameDBDomain + player.GetPath() + "#games",
+			Author:      getAuthor(authorID),
+			Color:       greenHexDec,
+			Thumbnail:   &discordgo.MessageEmbedThumbnail{URL: player.GetAvatarAbsolute(), Width: 184, Height: 184},
+			Description: "```" + strings.Join(code, "\n") + "```",
+		}
 
 	} else {
 		message.Content = "Profile set to private"

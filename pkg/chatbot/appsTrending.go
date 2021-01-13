@@ -56,7 +56,7 @@ func (CommandAppsTrending) Output(authorID string, _ steamapi.ProductCC, _ map[s
 		Title:  "Trending Games",
 		URL:    config.C.GameDBDomain + "/games/trending",
 		Author: getAuthor(authorID),
-		Color:  2664261,
+		Color:  greenHexDec,
 	}
 
 	apps, err := mongo.TrendingApps()
@@ -69,11 +69,10 @@ func (CommandAppsTrending) Output(authorID string, _ steamapi.ProductCC, _ map[s
 	}
 
 	var code []string
-
 	for k, app := range apps {
 
 		if k == 0 {
-			message.Embed.Thumbnail = &discordgo.MessageEmbedThumbnail{URL: app.GetHeaderImage()}
+			message.Embed.Thumbnail = &discordgo.MessageEmbedThumbnail{URL: app.GetHeaderImage(), Width: 460, Height: 215}
 		}
 
 		code = append(code, fmt.Sprintf("%2d", k+1)+": "+app.GetTrend()+" "+app.GetName())

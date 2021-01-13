@@ -57,7 +57,7 @@ func (CommandAppsNew) Output(authorID string, _ steamapi.ProductCC, _ map[string
 		Title:  "Popular New Apps",
 		URL:    config.C.GameDBDomain + "/games/new-releases",
 		Author: getAuthor(authorID),
-		Color:  2664261,
+		Color:  greenHexDec,
 	}
 
 	apps, err := mongo.PopularNewApps()
@@ -70,7 +70,6 @@ func (CommandAppsNew) Output(authorID string, _ steamapi.ProductCC, _ map[string
 	}
 
 	var code []string
-
 	for k, v := range apps {
 
 		if k == 0 {

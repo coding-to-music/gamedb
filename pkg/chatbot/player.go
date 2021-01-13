@@ -2,7 +2,6 @@ package chatbot
 
 import (
 	"strconv"
-	"strings"
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
@@ -138,11 +137,6 @@ func (c CommandPlayer) Output(authorID string, _ steamapi.ProductCC, inputs map[
 		}
 	}
 
-	avatar := player.GetAvatar()
-	if strings.HasPrefix(avatar, "/") {
-		avatar = "https://gamedb.online" + avatar
-	}
-
 	var games string
 	if player.GamesCount == 0 {
 		games = "Profile set to private"
@@ -158,13 +152,11 @@ func (c CommandPlayer) Output(authorID string, _ steamapi.ProductCC, inputs map[
 	}
 
 	message.Embed = &discordgo.MessageEmbed{
-		Title: player.GetName(),
-		URL:   config.C.GameDBDomain + player.GetPath(),
-		Thumbnail: &discordgo.MessageEmbedThumbnail{
-			URL: avatar,
-		},
-		Footer: getFooter(),
-		Color:  2664261,
+		Title:     player.GetName(),
+		URL:       config.C.GameDBDomain + player.GetPath(),
+		Thumbnail: &discordgo.MessageEmbedThumbnail{URL: player.GetAvatarAbsolute(), Width: 184, Height: 184},
+		Footer:    getFooter(),
+		Color:     greenHexDec,
 		Fields: []*discordgo.MessageEmbedField{
 			{
 				Name:  "Level",

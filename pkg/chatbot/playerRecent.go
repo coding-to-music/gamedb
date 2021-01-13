@@ -99,31 +99,19 @@ func (c CommandPlayerRecent) Output(authorID string, _ steamapi.ProductCC, input
 
 	if len(recent) > 0 {
 
-		message.Embed = &discordgo.MessageEmbed{
-			Title:  "Recent Games",
-			URL:    config.C.GameDBDomain + player.GetPath() + "#games",
-			Author: getAuthor(authorID),
-			Color:  2664261,
-		}
-
 		var code []string
-
 		for k, app := range recent {
-
-			if k == 0 {
-
-				avatar := app.GetHeaderImage()
-				if strings.HasPrefix(avatar, "/") {
-					avatar = "https://gamedb.online" + avatar
-				}
-
-				message.Embed.Thumbnail = &discordgo.MessageEmbedThumbnail{URL: avatar}
-			}
-
 			code = append(code, fmt.Sprintf("%2d", k+1)+": "+helpers.GetTimeShort(app.PlayTime2Weeks, 2)+" - "+app.AppName)
 		}
 
-		message.Embed.Description = "```" + strings.Join(code, "\n") + "```"
+		message.Embed = &discordgo.MessageEmbed{
+			Title:       "Recent Games",
+			URL:         config.C.GameDBDomain + player.GetPath() + "#games",
+			Author:      getAuthor(authorID),
+			Color:       greenHexDec,
+			Thumbnail:   &discordgo.MessageEmbedThumbnail{URL: player.GetAvatarAbsolute(), Width: 184, Height: 184},
+			Description: "```" + strings.Join(code, "\n") + "```",
+		}
 
 	} else {
 		message.Content = "Profile set to private"

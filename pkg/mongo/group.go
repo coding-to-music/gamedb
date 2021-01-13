@@ -2,6 +2,7 @@ package mongo
 
 import (
 	"errors"
+	"strings"
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/config"
@@ -118,6 +119,14 @@ func (group Group) GetAbbr() string {
 
 func (group Group) GetIcon() string {
 	return helpers.GetGroupIcon(group.Icon)
+}
+
+func (group Group) GetIconAbsolute() string {
+	icon := group.GetIcon()
+	if strings.HasPrefix(icon, "/") {
+		icon = "https://gamedb.online" + icon
+	}
+	return icon
 }
 
 func (group Group) ShouldUpdate() bool {

@@ -1,13 +1,14 @@
 package chatbot
 
 import (
-	"strconv"
-
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
+	"github.com/gamedb/gamedb/pkg/chatbot/charts"
 	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	influxHelper "github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -87,12 +88,32 @@ func (c CommandPlayerLevel) Output(_ string, _ steamapi.ProductCC, inputs map[st
 		}
 	}
 
+	// Sucess response
 	var rank = "Unranked"
 	if val, ok := player.Ranks[string(mongo.RankKeyLevel)]; ok {
-		rank = "Rank " + humanize.Comma(int64(val))
+		rank = helpers.OrdinalComma(val)
 	}
 
-	message.Content = player.GetName() + " is level **" + strconv.Itoa(player.Level) + "**" +
-		" (" + rank + ")"
+	message.Embed = &discordgo.MessageEmbed{
+		Title:     player.GetName(),
+		URL:       config.C.GameDBDomain + player.GetPath(),
+		Thumbnail: &discordgo.MessageEmbedThumbnail{URL: player.GetAvatarAbsolute(), Width: 184, Height: 184},
+		Footer:    getFooter(),
+		Color:     greenHexDec,
+		Image:     &discordgo.MessageEmbedImage{URL: charts.GetPlayerChart(c.ID(), player.ID, influxHelper.InfPlayersLevel, "Level")},
+		Fields: []*discordgo.MessageEmbedField{
+			{
+				Name:   "Level",
+				Value:  humanize.Comma(int64(player.Level)),
+				Inline: true,
+			},
+			{
+				Name:   "Rank",
+				Value:  rank,
+				Inline: true,
+			},
+		},
+	}
+
 	return message, nil
 }

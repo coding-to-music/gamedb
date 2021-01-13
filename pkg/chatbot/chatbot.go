@@ -12,6 +12,8 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 )
 
+const greenHexDec = 2664261
+
 type CommandType string
 
 func (ct CommandType) Order() int {
@@ -158,12 +160,10 @@ func getAppEmbed(commandID string, app App, code steamapi.ProductCC) *discordgo.
 	return &discordgo.MessageEmbed{
 		Title:     app.GetName(),
 		URL:       config.C.GameDBDomain + app.GetPath(),
-		Thumbnail: &discordgo.MessageEmbedThumbnail{URL: app.GetHeaderImage()},
+		Thumbnail: &discordgo.MessageEmbedThumbnail{URL: app.GetHeaderImage(), Width: 460, Height: 215},
 		Footer:    getFooter(),
-		Color:     2664261,
-		Image: &discordgo.MessageEmbedImage{
-			URL: charts.GetAppPlayersChart(commandID, app.GetID(), "168d", "1d"),
-		},
+		Color:     greenHexDec,
+		Image:     &discordgo.MessageEmbedImage{URL: charts.GetAppPlayersChart(commandID, app.GetID(), "168d", "1d")},
 		Fields: []*discordgo.MessageEmbedField{
 			{
 				Name:   "Max Weekly Players",

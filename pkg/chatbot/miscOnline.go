@@ -4,6 +4,7 @@ import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
+	"github.com/gamedb/gamedb/pkg/chatbot/charts"
 	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"github.com/gamedb/gamedb/pkg/mongo"
 )
@@ -62,7 +63,26 @@ func (c CommandSteamOnline) Output(_ string, _ steamapi.ProductCC, _ map[string]
 		return message, err
 	}
 
-	message.Content = "Steam has **" + humanize.Comma(i) + "** players online, **" + humanize.Comma(i2) + "** in game."
+	message.Embed = &discordgo.MessageEmbed{
+		Title:     "Online Players",
+		URL:       "https://gamedb.online/stats",
+		Thumbnail: &discordgo.MessageEmbedThumbnail{URL: "https://gamedb.online/assets/img/no-app-image-square.jpg"},
+		Footer:    getFooter(),
+		Color:     greenHexDec,
+		Image:     &discordgo.MessageEmbedImage{URL: charts.GetAppPlayersChart(c.ID(), 0, "7d", "10m")},
+		Fields: []*discordgo.MessageEmbedField{
+			{
+				Name:   "Online",
+				Value:  humanize.Comma(i),
+				Inline: true,
+			},
+			{
+				Name:   "In Game",
+				Value:  humanize.Comma(i2),
+				Inline: true,
+			},
+		},
+	}
 
 	return message, nil
 }

@@ -85,19 +85,15 @@ func (c CommandGroup) Output(_ string, _ steamapi.ProductCC, inputs map[string]s
 		Title:       groups[0].GetName(),
 		Description: headline,
 		URL:         config.C.GameDBDomain + groups[0].GetPath(),
-		Thumbnail: &discordgo.MessageEmbedThumbnail{
-			URL: groups[0].GetIcon(),
-		},
-		Footer: getFooter(),
-		Color:  2664261,
+		Thumbnail:   &discordgo.MessageEmbedThumbnail{URL: groups[0].GetIcon()},
+		Footer:      getFooter(),
+		Color:       greenHexDec,
+		Image:       &discordgo.MessageEmbedImage{URL: charts.GetGroupChart(c.ID(), groups[0].ID)},
 		Fields: []*discordgo.MessageEmbedField{
 			{
 				Name:  "Members",
 				Value: humanize.Comma(int64(groups[0].Members)),
 			},
-		},
-		Image: &discordgo.MessageEmbedImage{
-			URL: charts.GetGroupChart(c.ID(), groups[0].ID),
 		},
 	}
 

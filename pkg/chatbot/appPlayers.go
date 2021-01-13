@@ -86,12 +86,10 @@ func (c CommandAppPlayers) Output(_ string, _ steamapi.ProductCC, inputs map[str
 	message.Embed = &discordgo.MessageEmbed{
 		Title:     app.GetName(),
 		URL:       config.C.GameDBDomain + app.GetPath(),
-		Thumbnail: &discordgo.MessageEmbedThumbnail{URL: app.GetHeaderImage()},
+		Thumbnail: &discordgo.MessageEmbedThumbnail{URL: app.GetHeaderImage(), Width: 460, Height: 215},
 		Footer:    getFooter(),
-		Color:     2664261,
-		Image: &discordgo.MessageEmbedImage{
-			URL: charts.GetAppPlayersChart(c.ID(), app.ID, "7d", "10m"),
-		},
+		Color:     greenHexDec,
+		Image:     &discordgo.MessageEmbedImage{URL: charts.GetAppPlayersChart(c.ID(), app.ID, "7d", "10m")},
 		Fields: []*discordgo.MessageEmbedField{
 			{
 				Name:   "Now",

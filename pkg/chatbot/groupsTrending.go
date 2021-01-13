@@ -56,7 +56,7 @@ func (CommandGroupsTrending) Output(authorID string, _ steamapi.ProductCC, _ map
 		Title:  "Trending Groups",
 		URL:    config.C.GameDBDomain + "/groups",
 		Author: getAuthor(authorID),
-		Color:  2664261,
+		Color:  greenHexDec,
 	}
 
 	groups, err := mongo.TrendingGroups()
@@ -69,17 +69,10 @@ func (CommandGroupsTrending) Output(authorID string, _ steamapi.ProductCC, _ map
 	}
 
 	var code []string
-
 	for k, group := range groups {
 
 		if k == 0 {
-
-			avatar := group.GetIcon()
-			if strings.HasPrefix(avatar, "/") {
-				avatar = "https://gamedb.online" + avatar
-			}
-
-			message.Embed.Thumbnail = &discordgo.MessageEmbedThumbnail{URL: avatar}
+			message.Embed.Thumbnail = &discordgo.MessageEmbedThumbnail{URL: group.GetIconAbsolute()}
 		}
 
 		code = append(code, fmt.Sprintf("%2d", k+1)+": "+group.GetTrend()+" - "+group.GetName())

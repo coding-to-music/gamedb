@@ -285,6 +285,14 @@ func (player Player) GetAvatar() string {
 	return helpers.GetPlayerAvatar(player.Avatar)
 }
 
+func (player Player) GetAvatarAbsolute() string {
+	avatar := player.GetAvatar()
+	if strings.HasPrefix(avatar, "/") {
+		avatar = "https://gamedb.online" + avatar
+	}
+	return avatar
+}
+
 func (player Player) GetFlag() string {
 	return helpers.GetPlayerFlagPath(player.CountryCode)
 }

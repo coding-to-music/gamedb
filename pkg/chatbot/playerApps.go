@@ -5,9 +5,11 @@ import (
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
-	"github.com/dustin/go-humanize"
+	"github.com/gamedb/gamedb/pkg/chatbot/charts"
 	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	influxHelper "github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -87,13 +89,33 @@ func (c CommandPlayerApps) Output(_ string, _ steamapi.ProductCC, inputs map[str
 		}
 	}
 
+	// Sucess response
 	var rank = "Unranked"
 	if val, ok := player.Ranks[string(mongo.RankKeyGames)]; ok {
-		rank = "Rank " + humanize.Comma(int64(val))
+		rank = helpers.OrdinalComma(val)
 	}
 
 	if player.GamesCount > 0 {
-		message.Content = player.GetName() + " has **" + strconv.Itoa(player.GamesCount) + "** games (" + rank + ")"
+		message.Embed = &discordgo.MessageEmbed{
+			Title:     player.GetName(),
+			URL:       config.C.GameDBDomain + player.GetPath(),
+			Thumbnail: &discordgo.MessageEmbedThumbnail{URL: player.GetAvatarAbsolute(), Width: 184, Height: 184},
+			Footer:    getFooter(),
+			Color:     greenHexDec,
+			Image:     &discordgo.MessageEmbedImage{URL: charts.GetPlayerChart(c.ID(), player.ID, influxHelper.InfPlayersGames, "Games")},
+			Fields: []*discordgo.MessageEmbedField{
+				{
+					Name:   "Games",
+					Value:  strconv.Itoa(player.GamesCount),
+					Inline: true,
+				},
+				{
+					Name:   "Rank",
+					Value:  rank,
+					Inline: true,
+				},
+			},
+		}
 	} else {
 		message.Content = "Profile set to private"
 	}

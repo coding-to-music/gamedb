@@ -51,6 +51,25 @@ func GetAppPlayersChart(commandID string, appID int, time string, groupBy string
 	return path
 }
 
+func GetPlayerChart(commandID string, playerID int64, field influx.Field, title string) (path string) {
+
+	field.Max()
+
+	builder := influxql.NewBuilder()
+	builder.AddSelect(field.String(), field.Alias())
+	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementPlayers.String())
+	builder.AddWhere("time", ">", "NOW()-180d")
+	builder.AddWhere("player_id", "=", playerID)
+	builder.AddGroupByTime("1d")
+	builder.SetFillNone()
+
+	path, err := getChart(commandID, builder, strconv.FormatInt(playerID, 10), title+" (6 Months)")
+	if err != nil {
+		log.Err(err.Error())
+	}
+	return path
+}
+
 func getChart(commandID string, builder *influxql.Builder, id string, title string) (path string, err error) {
 
 	resp, err := influx.InfluxQuery(builder)
