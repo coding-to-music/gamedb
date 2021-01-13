@@ -321,6 +321,16 @@ if ($homePage.length > 0) {
                             $change1.html('Friends');
                             $change2.html('Comments');
                             break;
+                        case 'awards':
+                            tds.push({
+                                '<>': 'td', 'nowrap': 'nowrap', 'html': "${awards_sent}"
+                            });
+                            tds.push({
+                                '<>': 'td', 'nowrap': 'nowrap', 'html': "${awards_received}"
+                            });
+                            $change1.html('Given');
+                            $change2.html('Received');
+                            break;
                     }
 
                     $container.json2html(

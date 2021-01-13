@@ -442,6 +442,8 @@ func homePlayersHandler(w http.ResponseWriter, r *http.Request) {
 		sort = "bans_game"
 	case "profile":
 		sort = "friends_count"
+	case "awards":
+		sort = "awards_given_count"
 	default:
 		return
 	}
@@ -457,19 +459,21 @@ func homePlayersHandler(w http.ResponseWriter, r *http.Request) {
 	for k, player := range players {
 
 		resp = append(resp, homePlayer{
-			Name:     player.GetName(),
-			Link:     player.GetPath(),
-			Avatar:   player.GetAvatar(),
-			Rank:     helpers.OrdinalComma(k + 1),
-			Class:    helpers.GetPlayerAvatar2(player.Level),
-			Level:    humanize.Comma(int64(player.Level)),
-			Badges:   humanize.Comma(int64(player.BadgesCount)),
-			Games:    humanize.Comma(int64(player.GamesCount)),
-			Playtime: helpers.GetTimeLong(player.PlayTime, 2),
-			GameBans: humanize.Comma(int64(player.NumberOfGameBans)),
-			VACBans:  humanize.Comma(int64(player.NumberOfVACBans)),
-			Friends:  humanize.Comma(int64(player.FriendsCount)),
-			Comments: humanize.Comma(int64(player.CommentsCount)),
+			Name:           player.GetName(),
+			Link:           player.GetPath(),
+			Avatar:         player.GetAvatar(),
+			Rank:           helpers.OrdinalComma(k + 1),
+			Class:          helpers.GetPlayerAvatar2(player.Level),
+			Level:          humanize.Comma(int64(player.Level)),
+			Badges:         humanize.Comma(int64(player.BadgesCount)),
+			Games:          humanize.Comma(int64(player.GamesCount)),
+			Playtime:       helpers.GetTimeLong(player.PlayTime, 2),
+			GameBans:       humanize.Comma(int64(player.NumberOfGameBans)),
+			VACBans:        humanize.Comma(int64(player.NumberOfVACBans)),
+			Friends:        humanize.Comma(int64(player.FriendsCount)),
+			Comments:       humanize.Comma(int64(player.CommentsCount)),
+			AwardsSent:     humanize.Comma(int64(player.AwardsGivenPoints)),
+			AwardsReceived: humanize.Comma(int64(player.AwardsReceivedPoints)),
 		})
 	}
 
@@ -477,19 +481,21 @@ func homePlayersHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type homePlayer struct {
-	Rank     string `json:"rank"`
-	Name     string `json:"name"`
-	Link     string `json:"link"`
-	Avatar   string `json:"avatar"`
-	Class    string `json:"class"`
-	Level    string `json:"level"`
-	Badges   string `json:"badges"`
-	Games    string `json:"games"`
-	Playtime string `json:"playtime"`
-	GameBans string `json:"game_bans"`
-	VACBans  string `json:"vac_bans"`
-	Friends  string `json:"friends"`
-	Comments string `json:"comments"`
+	Rank           string `json:"rank"`
+	Name           string `json:"name"`
+	Link           string `json:"link"`
+	Avatar         string `json:"avatar"`
+	Class          string `json:"class"`
+	Level          string `json:"level"`
+	Badges         string `json:"badges"`
+	Games          string `json:"games"`
+	Playtime       string `json:"playtime"`
+	GameBans       string `json:"game_bans"`
+	VACBans        string `json:"vac_bans"`
+	Friends        string `json:"friends"`
+	Comments       string `json:"comments"`
+	AwardsSent     string `json:"awards_sent"`
+	AwardsReceived string `json:"awards_received"`
 }
 
 func getPlayersForHome(sort string) (players []mongo.Player, err error) {
@@ -497,17 +503,19 @@ func getPlayersForHome(sort string) (players []mongo.Player, err error) {
 	err = memcache.GetSetInterface(memcache.ItemHomePlayers(sort), &players, func() (interface{}, error) {
 
 		projection := bson.M{
-			"_id":            1,
-			"persona_name":   1,
-			"avatar":         1,
-			"level":          1,
-			"badges_count":   1,
-			"games_count":    1,
-			"play_time":      1,
-			"bans_game":      1,
-			"bans_cav":       1,
-			"friends_count":  1,
-			"comments_count": 1,
+			"_id":                    1,
+			"persona_name":           1,
+			"avatar":                 1,
+			"level":                  1,
+			"badges_count":           1,
+			"games_count":            1,
+			"play_time":              1,
+			"bans_game":              1,
+			"bans_cav":               1,
+			"friends_count":          1,
+			"comments_count":         1,
+			"awards_given_points":    1,
+			"awards_received_points": 1,
 		}
 
 		return mongo.GetPlayers(0, 10, bson.D{{Key: sort, Value: -1}}, bson.D{{Key: sort, Value: bson.M{"$gt": 0}}}, projection)
