@@ -143,19 +143,22 @@ func twitterZapierWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Forward to Discord
-	if config.C.DiscordRelayBotToken == "" {
-		log.ErrS("Missing discord environment variable")
-	}
+	if webhooks.Link != "" {
 
-	discordSession, err := discordgo.New("Bot " + config.C.DiscordRelayBotToken)
-	if err != nil {
-		log.ErrS(err)
-		return
-	}
+		if config.C.DiscordRelayBotToken == "" {
+			log.ErrS("Missing discord environment variable")
+		}
 
-	_, err = discordSession.ChannelMessageSend(announcementsChannelID, webhooks.Link)
-	if err != nil {
-		log.Err(err.Error())
+		discordSession, err := discordgo.New("Bot " + config.C.DiscordRelayBotToken)
+		if err != nil {
+			log.ErrS(err)
+			return
+		}
+
+		_, err = discordSession.ChannelMessageSend(announcementsChannelID, webhooks.Link)
+		if err != nil {
+			log.Err(err.Error())
+		}
 	}
 
 	// Return
