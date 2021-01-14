@@ -137,7 +137,7 @@ func getChart(commandID string, builder *influxql.Builder, id string, title stri
 				Show: true,
 			},
 			Range: &chart.ContinuousRange{
-				Min: min - 1,
+				Min: 0,
 				Max: max + 1,
 			},
 			ValueFormatter: func(v interface{}) string {
