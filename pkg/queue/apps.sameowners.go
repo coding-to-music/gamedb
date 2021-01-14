@@ -22,9 +22,6 @@ func (m AppSameownersMessage) Queue() rabbit.QueueName {
 
 func appSameownersHandler(message *rabbit.Message) {
 
-	message.Ack()
-	return
-
 	payload := AppSameownersMessage{}
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
