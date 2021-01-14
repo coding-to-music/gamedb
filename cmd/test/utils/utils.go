@@ -13,6 +13,7 @@ type util interface {
 }
 
 var utils = []util{
+	chatCommands{},
 	queuePackages{},
 	saveFromPics{},
 	syncStates{},
