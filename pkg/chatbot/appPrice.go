@@ -85,11 +85,11 @@ func (c CommandAppPrice) Output(_ string, region steamapi.ProductCC, inputs map[
 			if val.Enabled {
 				region = val.ProductCode
 			} else {
-				message.Content = "We are not currently tracking " + strings.ToUpper(string(region))
+				message.Content = "We are not currently tracking " + strings.ToUpper(inputs["region"])
 				return message, nil
 			}
 		} else {
-			message.Content = "Invalid region: " + strings.ToUpper(string(region))
+			message.Content = "Invalid region: " + strings.ToUpper(inputs["region"])
 			return message, nil
 		}
 	}
