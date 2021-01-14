@@ -33,10 +33,12 @@ func appSameownersHandler(message *rabbit.Message) {
 
 	ownerRows, err := mongo.GetAppOwners(payload.AppID)
 	if err != nil {
-		log.ErrS(err, payload.AppID)
-		sendToFailQueue(message)
+		log.Err(err.Error(), zap.Int("app", payload.AppID))
+		sendToRetryQueue(message)
 		return
 	}
+
+	log.Info("Same owner", zap.Int("owners", len(ownerRows)))
 
 	if len(ownerRows) == 0 {
 		message.Ack()
@@ -48,19 +50,24 @@ func appSameownersHandler(message *rabbit.Message) {
 		playerIDs = append(playerIDs, v.PlayerID)
 	}
 
-	apps, err := mongo.GetPlayerAppsByPlayers(playerIDs, bson.M{"_id": -1, "app_id": 1})
-	if err != nil {
-		log.ErrS(err, payload.AppID)
-		sendToFailQueue(message)
-		return
-	}
-
+	const batch = 100
 	var countMap = map[int]int{}
-	for _, v := range apps {
-		if _, ok := countMap[v.AppID]; ok {
+
+	for k, chunk := range helpers.ChunkInt64s(playerIDs, batch) {
+
+		if k%10 == 0 { // Every 10
+			log.Info("Same owner", zap.Int("offset", k*batch))
+		}
+
+		apps, err := mongo.GetPlayerAppsByPlayers(chunk, bson.M{"_id": -1, "app_id": 1})
+		if err != nil {
+			log.Err(err.Error(), zap.Int("app", payload.AppID))
+			sendToRetryQueue(message)
+			return
+		}
+
+		for _, v := range apps {
 			countMap[v.AppID]++
-		} else {
-			countMap[v.AppID] = 1
 		}
 	}
 
@@ -78,11 +85,12 @@ func appSameownersHandler(message *rabbit.Message) {
 	}
 
 	// Update app row
-	update := bson.D{{"related_owners_app_ids", countSlice}}
+	var filter = bson.D{{"_id", payload.AppID}}
+	var update = bson.D{{"related_owners_app_ids", countSlice}}
 
-	_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", payload.AppID}}, update)
+	_, err = mongo.UpdateOne(mongo.CollectionApps, filter, update)
 	if err != nil {
-		log.ErrS(err, payload.AppID)
+		log.Err(err.Error(), zap.Int("app", payload.AppID))
 		sendToRetryQueue(message)
 		return
 	}
@@ -90,7 +98,7 @@ func appSameownersHandler(message *rabbit.Message) {
 	// Clear cache
 	err = memcache.Delete(memcache.ItemApp(payload.AppID).Key)
 	if err != nil {
-		log.ErrS(err, payload.AppID)
+		log.Err(err.Error(), zap.Int("app", payload.AppID))
 		sendToRetryQueue(message)
 		return
 	}
@@ -98,7 +106,7 @@ func appSameownersHandler(message *rabbit.Message) {
 	// Update in Elastic
 	err = ProduceAppSearch(nil, payload.AppID)
 	if err != nil {
-		log.ErrS(err, payload.AppID)
+		log.Err(err.Error(), zap.Int("app", payload.AppID))
 		sendToRetryQueue(message)
 		return
 	}

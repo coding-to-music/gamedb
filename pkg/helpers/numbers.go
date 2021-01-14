@@ -90,6 +90,20 @@ func ChunkInts(ints []int, n int) (chunks [][]int) {
 	return chunks
 }
 
+func ChunkInt64s(ints []int64, n int) (chunks [][]int64) {
+
+	for i := 0; i < len(ints); i += n {
+		end := i + n
+
+		if end > len(ints) {
+			end = len(ints)
+		}
+
+		chunks = append(chunks, ints[i:end])
+	}
+	return chunks
+}
+
 func StringToInt(s string) int {
 
 	s = RegexNonInts.ReplaceAllString(s, "")
