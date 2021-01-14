@@ -126,6 +126,34 @@ func (st StatsType) Plural() string {
 	}
 }
 
+func ensureStatIndexes() {
+
+	var indexModels = []mongo.IndexModel{
+		{
+			Keys: bson.D{{"type", 1}, {"id", 1}},
+		},
+		{
+			Keys: bson.D{{"type", 1}, {"name", 1}},
+			Options: options.Index().SetCollation(&options.Collation{
+				Locale:   "en",
+				Strength: 2, // Case insensitive
+			}),
+		},
+	}
+
+	//
+	client, ctx, err := getMongo()
+	if err != nil {
+		log.ErrS(err)
+		return
+	}
+
+	_, err = client.Database(config.C.MongoDatabase).Collection(CollectionPlayers.String()).Indexes().CreateMany(ctx, indexModels)
+	if err != nil {
+		log.ErrS(err)
+	}
+}
+
 //
 func GetStat(typex StatsType, id int) (stat Stat, err error) {
 
