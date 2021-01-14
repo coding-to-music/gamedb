@@ -69,6 +69,7 @@ var (
 		&AppsQueueSteamSpy{},
 		&AppsQueueWishlists{},
 		&AppsQueueYoutube{},
+		&AppsSameOwners{},
 		&ArticlesLatest{},
 		&AutoPlayerRefreshes{},
 		&BadgesUpdateRandom{},
