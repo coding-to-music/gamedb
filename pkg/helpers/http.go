@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gamedb/gamedb/pkg/log"
 	"go.uber.org/zap"
 
 	"github.com/cenkalti/backoff/v4"
@@ -44,7 +45,7 @@ func Head(link string, timeout time.Duration) (code int, err error) {
 	policy := backoff.NewExponentialBackOff()
 	policy.InitialInterval = time.Second
 
-	err = backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 5), func(err error, t time.Duration) { zap.L().Info("Doing a HEAD call", zap.Error(err)) })
+	err = backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 5), func(err error, t time.Duration) { log.Info("Doing a HEAD call", zap.Error(err), zap.Duration("duration", timeout), zap.String("link", link)) })
 	return code, err
 }
 

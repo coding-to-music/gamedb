@@ -169,7 +169,7 @@ func updateBundle(bundle *mysql.Bundle) (err error) {
 
 	policy := backoff.NewExponentialBackOff()
 
-	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { zap.L().Info("Scraping bundle", zap.Error(err)) })
+	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info("Scraping bundle", zap.Error(err)) })
 	if err != nil {
 		return err
 	}

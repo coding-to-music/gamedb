@@ -10,6 +10,7 @@ import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/cenkalti/backoff/v4"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/steam"
 	"github.com/yohcop/openid-go"
 	"go.uber.org/zap"
@@ -81,7 +82,7 @@ func (c steamProvider) GetUser(r *http.Request) (user User, err error) {
 
 	policy := backoff.NewExponentialBackOff()
 
-	err = backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 5), func(err error, t time.Duration) { zap.L().Info("Finding Steam player info for oauth", zap.Error(err)) })
+	err = backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 5), func(err error, t time.Duration) { log.Info("Finding Steam player info for oauth", zap.Error(err)) })
 	if err != nil {
 		return user, err
 	}

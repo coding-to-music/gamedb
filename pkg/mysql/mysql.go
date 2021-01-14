@@ -61,7 +61,7 @@ func GetMySQLClient() (conn *gorm.DB, err error) {
 
 		policy := backoff.NewConstantBackOff(time.Second * 5)
 
-		err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { zap.L().Info("Connecting to MySQL", zap.Error(err)) })
+		err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info("Connecting to MySQL", zap.Error(err)) })
 		if err != nil {
 			log.ErrS(err)
 		}

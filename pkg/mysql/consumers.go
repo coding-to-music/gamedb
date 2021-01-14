@@ -93,7 +93,7 @@ func GetConsumer(tag string) (err error) {
 	}
 
 	policy := backoff.NewConstantBackOff(consumerSessionRetry)
-	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { zap.L().Info("Getting an available consumer", zap.Error(err)) })
+	err = backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info("Getting an available consumer", zap.Error(err)) })
 	if err != nil {
 		return err
 	}

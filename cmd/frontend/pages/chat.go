@@ -182,7 +182,7 @@ func chatAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	policy := backoff.NewExponentialBackOff()
 
-	err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { zap.L().Info("Getting channel messages from discord API", zap.Error(err)) })
+	err := backoff.RetryNotify(operation, policy, func(err error, t time.Duration) { log.Info("Getting channel messages from discord API", zap.Error(err)) })
 	if err != nil {
 		log.ErrS(err)
 		return
