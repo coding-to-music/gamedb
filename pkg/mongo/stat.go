@@ -10,10 +10,12 @@ import (
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/cenkalti/backoff/v4"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.uber.org/zap"
 )
@@ -191,6 +193,27 @@ func GetStats(offset int64, limit int64, filter bson.D, sort bson.D) (stats []St
 	}
 
 	return stats, cur.Err()
+}
+
+func GetStatByName(name string) (stat Stat, err error) {
+
+	var ops = options.FindOne().
+		SetCollation(&options.Collation{Locale: "en", Strength: 2}) // Set to case insensitive
+
+	client, ctx, err := getMongo()
+	if err != nil {
+		return stat, err
+	}
+
+	filter := bson.D{
+		{"type", StatsTypeTags},
+		{"name", name},
+	}
+
+	c := client.Database(config.C.MongoDatabase).Collection(CollectionStats.String())
+
+	err = c.FindOne(ctx, filter, ops).Decode(&stat)
+	return stat, err
 }
 
 func GetStatsByID(typex StatsType, ids []int) (stats []Stat, err error) {

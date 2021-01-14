@@ -31,19 +31,24 @@ func (CommandAppRandom) PerProdCode() bool {
 }
 
 func (CommandAppRandom) Example() string {
-	return ".random"
+	return ".random {tag}?"
 }
 
 func (CommandAppRandom) Description() string {
-	return "Retrieve a random game"
+	return "Retrieve a random game, optionally by tag"
 }
 
 func (CommandAppRandom) Type() CommandType {
 	return TypeGame
 }
 
-func (CommandAppRandom) LegacyInputs(input string) map[string]string {
-	return map[string]string{}
+func (c CommandAppRandom) LegacyInputs(input string) map[string]string {
+
+	matches := RegexCache[c.Regex()].FindStringSubmatch(input)
+
+	return map[string]string{
+		"tag": matches[1],
+	}
 }
 
 func (c CommandAppRandom) Slash() []interactions.InteractionOption {
@@ -64,17 +69,17 @@ func (c CommandAppRandom) Output(_ string, region steamapi.ProductCC, inputs map
 		elastic.NewRangeQuery("players").Gte(10),
 	}
 
-	tag := inputs["tag"]
-	if tag != "" {
+	if inputs["tag"] != "" {
 
-		tags, err := mongo.GetStats(0, 1, bson.D{{"type", mongo.StatsTypeTags}, {"name", tag}}, nil)
-		if err != nil {
-			log.ErrS(err)
-		} else {
-			if len(tags) > 0 {
-				filters = append(filters, elastic.NewTermQuery("tags", tags[0].ID))
-			}
+		tag, err := mongo.GetStatByName(inputs["tag"])
+		if err == mongo.ErrNoDocuments {
+			message.Content = "Tag **" + inputs["tag"] + "** not found, see <https://gamedb.online/tags>"
+			return message, nil
+		} else if err != nil {
+			return message, err
 		}
+
+		filters = append(filters, elastic.NewTermQuery("tags", tag.ID))
 	}
 
 	query := []elastic.Query{
