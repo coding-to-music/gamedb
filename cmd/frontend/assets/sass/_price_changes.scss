@@ -1,5 +1,10 @@
 #price-changes-page {
     table.table tbody {
+
+        a {
+            color: #212529;
+        }
+
         @for $i from 0 through 100 {
             tr.col-grad-#{$i} {
                 $bg: mix(#f5c6cb, #c3e6cb, $i);
