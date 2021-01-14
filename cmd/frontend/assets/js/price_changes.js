@@ -52,10 +52,17 @@ if ($('#price-changes-page').length > 0) {
         }
 
         const prices = priceSlider.get();
+
+        let left = Math.round(prices[0]);
+        left = left === 100 ? '100+' : left;
+
+        let right = Math.round(prices[1]);
+        right = right === 100 ? '100+' : right;
+
         if (prices[0] === prices[1]) {
-            $('label#price-label').html('Final Price (' + user.userCurrencySymbol + Math.round(prices[0]) + ')');
+            $('label#price-label').html('Final Price (' + user.userCurrencySymbol + left + ')');
         } else {
-            $('label#price-label').html('Final Price (' + user.userCurrencySymbol + Math.round(prices[0]) + ' - ' + user.userCurrencySymbol + Math.round(prices[1]) + ')');
+            $('label#price-label').html('Final Price (' + user.userCurrencySymbol + left + ' - ' + user.userCurrencySymbol + right + ')');
         }
     }
 
