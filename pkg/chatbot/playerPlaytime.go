@@ -69,7 +69,7 @@ func (c CommandPlayerPlaytime) Slash() []interactions.InteractionOption {
 
 func (c CommandPlayerPlaytime) Output(_ string, _ steamapi.ProductCC, inputs map[string]string) (message discordgo.MessageSend, err error) {
 
-	player, q, err := mongo.SearchPlayer(inputs["player"], bson.M{"_id": 1, "persona_name": 1, "play_time": 1, "ranks": 1})
+	player, q, err := mongo.SearchPlayer(inputs["player"], bson.M{"_id": 1, "persona_name": 1, "play_time": 1, "ranks": 1, "avatar": 1})
 	if err == mongo.ErrNoDocuments {
 
 		message.Content = "Player **" + inputs["player"] + "** not found, please enter a user's vanity URL"
