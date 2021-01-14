@@ -90,7 +90,7 @@ func (c CommandAppFollowers) Output(_ string, _ steamapi.ProductCC, inputs map[s
 		Thumbnail:   &discordgo.MessageEmbedThumbnail{URL: app.GetHeaderImage(), Width: 460, Height: 215},
 		Footer:      getFooter(),
 		Color:       greenHexDec,
-		Image:       &discordgo.MessageEmbedImage{URL: charts.GetGroupChart(c.ID(), app.GroupID)},
+		Image:       &discordgo.MessageEmbedImage{URL: charts.GetGroupChart(c.ID(), app.GroupID, "Followers")},
 	}
 
 	return message, nil

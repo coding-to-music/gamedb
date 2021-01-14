@@ -5,10 +5,8 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/olivere/elastic/v7"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 type CommandAppRandom struct {
@@ -19,7 +17,7 @@ func (c CommandAppRandom) ID() string {
 }
 
 func (CommandAppRandom) Regex() string {
-	return `^[.|!]random`
+	return `^[.|!]random\s?(.*)?`
 }
 
 func (CommandAppRandom) DisableCache() bool {

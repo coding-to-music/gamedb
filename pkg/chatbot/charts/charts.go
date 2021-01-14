@@ -17,27 +17,31 @@ import (
 	"github.com/wcharczuk/go-chart/drawing"
 )
 
-func GetGroupChart(commandID string, groupID string) (path string) {
+func GetGroupChart(commandID string, groupID string, title string) (path string) {
 
 	builder := influxql.NewBuilder()
 	builder.AddSelect(`max("members_count")`, "max_members_count")
 	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementGroups.String())
-	builder.AddWhere("time", ">", "NOW()-180d")
+	builder.AddWhere("time", ">", "NOW()-365d")
 	builder.AddWhere("group_id", "=", groupID)
 	builder.AddGroupByTime("1d")
 	builder.SetFillNone()
 
-	path, err := getChart(commandID, builder, groupID, "Members (180d)")
+	path, err := getChart(commandID, builder, groupID, title)
 	if err != nil {
 		log.Err(err.Error())
 	}
 	return path
 }
 
-func GetAppPlayersChart(commandID string, appID int, time string, groupBy string) (path string) {
+func GetAppPlayersChart(commandID string, appID int, groupBy string, time string, title string) (path string) {
 
 	builder := influxql.NewBuilder()
-	builder.AddSelect("max(player_count)", "max_player_count")
+	if appID == 0 {
+		builder.AddSelect("max(player_online)", "max_player_online")
+	} else {
+		builder.AddSelect("max(player_count)", "max_player_count")
+	}
 	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
 	builder.AddWhere("time", ">", "NOW()-"+time)
 	builder.AddWhere("app_id", "=", appID)
@@ -58,12 +62,12 @@ func GetPlayerChart(commandID string, playerID int64, field influx.Field, title 
 	builder := influxql.NewBuilder()
 	builder.AddSelect(field.String(), field.Alias())
 	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementPlayers.String())
-	builder.AddWhere("time", ">", "NOW()-180d")
+	builder.AddWhere("time", ">", "NOW()-365d")
 	builder.AddWhere("player_id", "=", playerID)
 	builder.AddGroupByTime("1d")
 	builder.SetFillNone()
 
-	path, err := getChart(commandID, builder, strconv.FormatInt(playerID, 10), title+" (6 Months)")
+	path, err := getChart(commandID, builder, strconv.FormatInt(playerID, 10), title)
 	if err != nil {
 		log.Err(err.Error())
 	}
@@ -122,7 +126,7 @@ func getChart(commandID string, builder *influxql.Builder, id string, title stri
 			ValueFormatter: chart.TimeDateValueFormatter,
 		},
 		YAxis: chart.YAxis{
-			Name:     "Members",
+			Name:     title,
 			AxisType: chart.YAxisSecondary,
 			Style: chart.Style{
 				Show:        true,
@@ -133,7 +137,7 @@ func getChart(commandID string, builder *influxql.Builder, id string, title stri
 				Show: true,
 			},
 			Range: &chart.ContinuousRange{
-				Min: 0,
+				Min: min - 1,
 				Max: max + 1,
 			},
 			ValueFormatter: func(v interface{}) string {

@@ -103,7 +103,7 @@ func (c CommandPlayerPlaytime) Output(_ string, _ steamapi.ProductCC, inputs map
 			Thumbnail: &discordgo.MessageEmbedThumbnail{URL: player.GetAvatarAbsolute(), Width: 184, Height: 184},
 			Footer:    getFooter(),
 			Color:     greenHexDec,
-			Image:     &discordgo.MessageEmbedImage{URL: charts.GetPlayerChart(c.ID(), player.ID, influxHelper.InfPlayersLevel, "Level")},
+			Image:     &discordgo.MessageEmbedImage{URL: charts.GetPlayerChart(c.ID(), player.ID, influxHelper.InfPlayersPlaytime, "Playtime")},
 			Fields: []*discordgo.MessageEmbedField{
 				{
 					Name:   "Playtime",
