@@ -13,7 +13,7 @@ import (
 )
 
 type AppSameownersMessage struct {
-	AppID int `json:"id"`
+	AppID int `json:"app_id"`
 }
 
 func (m AppSameownersMessage) Queue() rabbit.QueueName {
