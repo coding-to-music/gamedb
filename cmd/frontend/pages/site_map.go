@@ -14,6 +14,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
+const siteMapLimit = 10_000
+
 //noinspection GoUnusedParameter
 func SiteMapIndexHandler(w http.ResponseWriter, r *http.Request) {
 
@@ -100,7 +102,7 @@ func SiteMapPagesHandler(w http.ResponseWriter, r *http.Request) {
 
 func SiteMapGamesByPlayersHandler(w http.ResponseWriter, r *http.Request) {
 
-	apps, err := mongo.GetApps(0, 1000, bson.D{{"player_peak_week", -1}}, bson.D{}, bson.M{"_id": 1, "name": 1, "updated_at": 1})
+	apps, err := mongo.GetApps(0, siteMapLimit, bson.D{{"player_peak_week", -1}}, bson.D{}, bson.M{"_id": 1, "name": 1, "updated_at": 1})
 	if err != nil {
 		log.ErrS(err)
 		return
@@ -121,7 +123,7 @@ func SiteMapGamesByPlayersHandler(w http.ResponseWriter, r *http.Request) {
 
 func SiteMapGamesByScoreHandler(w http.ResponseWriter, r *http.Request) {
 
-	apps, err := mongo.GetApps(0, 1000, bson.D{{"reviews_score", -1}}, bson.D{}, bson.M{"_id": 1, "name": 1, "updated_at": 1})
+	apps, err := mongo.GetApps(0, siteMapLimit, bson.D{{"reviews_score", -1}}, bson.D{}, bson.M{"_id": 1, "name": 1, "updated_at": 1})
 	if err != nil {
 		log.ErrS(err)
 		return
@@ -142,7 +144,7 @@ func SiteMapGamesByScoreHandler(w http.ResponseWriter, r *http.Request) {
 
 func SiteMapGamesUpcomingHandler(w http.ResponseWriter, r *http.Request) {
 
-	apps, err := mongo.GetApps(0, 1000, bson.D{{"release_date_unix", 1}}, upcomingFilter, bson.M{"_id": 1, "name": 1, "updated_at": 1})
+	apps, err := mongo.GetApps(0, siteMapLimit, bson.D{{"release_date_unix", 1}}, upcomingFilter, bson.M{"_id": 1, "name": 1, "updated_at": 1})
 	if err != nil {
 		log.ErrS(err)
 		return
@@ -168,7 +170,7 @@ func SiteMapGamesNewHandler(w http.ResponseWriter, r *http.Request) {
 		{"release_date_unix", bson.M{"$gt": time.Now().AddDate(0, 0, -config.C.NewReleaseDays).Unix()}},
 	}
 
-	apps, err := mongo.GetApps(0, 1000, bson.D{{"release_date_unix", -1}}, filter, bson.M{"_id": 1, "name": 1, "updated_at": 1})
+	apps, err := mongo.GetApps(0, siteMapLimit, bson.D{{"release_date_unix", -1}}, filter, bson.M{"_id": 1, "name": 1, "updated_at": 1})
 	if err != nil {
 		log.ErrS(err)
 		return
@@ -192,7 +194,7 @@ func SiteMapPlayersByLevel(w http.ResponseWriter, r *http.Request) {
 
 	sm := sitemap.NewSitemap()
 
-	players, err := mongo.GetPlayers(0, 1000, bson.D{{Key: "level", Value: -1}}, nil, bson.M{"_id": 1, "persona_name": 1, "updated_at": 1})
+	players, err := mongo.GetPlayers(0, siteMapLimit, bson.D{{Key: "level", Value: -1}}, nil, bson.M{"_id": 1, "persona_name": 1, "updated_at": 1})
 	if err != nil {
 		log.ErrS(err)
 	}
@@ -214,7 +216,7 @@ func SiteMapPlayersByGamesCount(w http.ResponseWriter, r *http.Request) {
 
 	sm := sitemap.NewSitemap()
 
-	players, err := mongo.GetPlayers(0, 1000, bson.D{{Key: "games_count", Value: -1}}, nil, bson.M{"_id": 1, "persona_name": 1, "updated_at": 1})
+	players, err := mongo.GetPlayers(0, siteMapLimit, bson.D{{Key: "games_count", Value: -1}}, nil, bson.M{"_id": 1, "persona_name": 1, "updated_at": 1})
 	if err != nil {
 		log.ErrS(err)
 	}
@@ -242,7 +244,7 @@ func SiteMapGroups(w http.ResponseWriter, r *http.Request) {
 
 	message := &generated.GroupsRequest{
 		Pagination: &generated.PaginationRequest{
-			Limit:     1000,
+			Limit:     siteMapLimit,
 			SortField: "members",
 			SortOrder: "desc",
 		},
