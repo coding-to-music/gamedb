@@ -87,7 +87,7 @@ type App struct {
 	PublicOnly                    bool                           `bson:"public_only"`
 	Publishers                    []int                          `bson:"publishers"`
 	RelatedAppIDs                 []int                          `bson:"related_app_ids"`        // Taken from store page
-	RelatedOwnersAppIDs           []helpers.TupleInt             `bson:"related_owners_app_ids"` // Calculated from owners
+	RelatedOwnersAppIDs           []RelatedAppOwner              `bson:"related_owners_app_ids"` // Calculated from owners
 	ReleaseDate                   string                         `bson:"release_date"`           // Steam release
 	ReleaseDateUnix               int64                          `bson:"release_date_unix"`      // Steam release
 	ReleaseDateOriginal           int64                          `bson:"release_date_original"`  // Game release
@@ -112,6 +112,12 @@ type App struct {
 	WishlistCount                 int                            `bson:"wishlist_count"`
 	WishlistPercent               float64                        `bson:"wishlist_percent"`
 	WishlistFirsts                float64                        `bson:"wishlist_firsts"`
+}
+
+type RelatedAppOwner struct {
+	AppID int     `json:"app_id"`
+	Count int     `json:"count"`
+	Order float64 `json:"order"`
 }
 
 func (app App) BSON() bson.D {

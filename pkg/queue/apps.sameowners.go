@@ -1,6 +1,7 @@
 package queue
 
 import (
+	"math"
 	"sort"
 
 	"github.com/Jleagle/rabbit-go"
@@ -38,7 +39,7 @@ func appSameownersHandler(message *rabbit.Message) {
 		return
 	}
 
-	log.Info("Same owner", zap.Int("owners", len(ownerRows)))
+	log.Info("Same owners", zap.Int("owners", len(ownerRows)))
 
 	if len(ownerRows) == 0 {
 		message.Ack()
@@ -50,13 +51,13 @@ func appSameownersHandler(message *rabbit.Message) {
 		playerIDs = append(playerIDs, v.PlayerID)
 	}
 
-	const batch = 100
-	var countMap = map[int]int{}
+	const batch1 = 100
+	var countMap = map[int]*mongo.RelatedAppOwner{}
 
-	for k, chunk := range helpers.ChunkInt64s(playerIDs, batch) {
+	for k, chunk := range helpers.ChunkInt64s(playerIDs, batch1) {
 
 		if k%10 == 0 { // Every 10
-			log.Info("Same owner", zap.Int("offset", k*batch))
+			log.Info("Same owners", zap.Int("offset", k*batch1))
 		}
 
 		apps, err := mongo.GetPlayerAppsByPlayers(chunk, bson.M{"_id": -1, "app_id": 1})
@@ -67,17 +68,52 @@ func appSameownersHandler(message *rabbit.Message) {
 		}
 
 		for _, v := range apps {
-			countMap[v.AppID]++
+
+			if _, ok := countMap[v.AppID]; ok {
+				countMap[v.AppID].Count++
+			} else {
+				countMap[v.AppID] = &mongo.RelatedAppOwner{AppID: v.AppID, Count: 1}
+			}
 		}
 	}
 
-	var countSlice []helpers.TupleInt
-	for k, v := range countMap {
-		countSlice = append(countSlice, helpers.TupleInt{Key: k, Value: v})
+	log.Info("Same owners", zap.Int("games", len(countMap)))
+
+	// Set the order by how popular the game is
+	var appIDs []int
+	for k := range countMap {
+		appIDs = append(appIDs, k)
+	}
+
+	const batch2 = 1000
+	for k, chunk := range helpers.ChunkInts(appIDs, batch2) {
+
+		if k%10 == 0 { // Every 10
+			log.Info("Same owners, app owners", zap.Int("offset", k*batch2))
+		}
+
+		apps, err := mongo.GetAppsByID(chunk, bson.M{"owners": 1})
+		if err != nil {
+			log.Err(err.Error(), zap.Int("app", payload.AppID))
+			sendToRetryQueue(message)
+			return
+		}
+
+		for _, v := range apps {
+			if countMap[v.ID].Count > 0 && v.Owners > 0 {
+				countMap[v.ID].Order = float64(countMap[v.ID].Count) / math.Pow(float64(v.Owners), 0.5) // Higher removed popular apps
+			}
+		}
+	}
+
+	// Get top 100
+	var countSlice []mongo.RelatedAppOwner
+	for _, v := range countMap {
+		countSlice = append(countSlice, *v)
 	}
 
 	sort.Slice(countSlice, func(i, j int) bool {
-		return countSlice[i].Value > countSlice[j].Value
+		return countSlice[i].Order > countSlice[j].Order
 	})
 
 	if len(countSlice) > 100 {
@@ -110,6 +146,8 @@ func appSameownersHandler(message *rabbit.Message) {
 		sendToRetryQueue(message)
 		return
 	}
+
+	log.Info("Done")
 
 	//
 	message.Ack()
