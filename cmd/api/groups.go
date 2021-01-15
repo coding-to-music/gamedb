@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gamedb/gamedb/cmd/api/generated"
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"go.mongodb.org/mongo-driver/bson"
@@ -51,14 +52,10 @@ func (s Server) GetGroups(w http.ResponseWriter, r *http.Request, params generat
 			}
 		}
 
-		filter := bson.D{}
+		filter := bson.D{{Key: "type", Value: helpers.GroupTypeGroup}}
 
 		if params.Ids != nil {
 			filter = append(filter, bson.E{Key: "_id", Value: bson.M{"$in": *params.Ids}})
-		}
-
-		if params.Type != nil {
-			filter = append(filter, bson.E{Key: "type", Value: *params.Type})
 		}
 
 		projection := bson.M{
@@ -108,7 +105,6 @@ func (s Server) GetGroups(w http.ResponseWriter, r *http.Request, params generat
 				Name:          group.GetName(),
 				Primaries:     int32(group.Primaries),
 				Trending:      float32(group.Trending),
-				Type:          group.Type,
 				Url:           group.GetURL(),
 			})
 		}

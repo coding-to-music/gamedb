@@ -40,7 +40,6 @@ func (c GroupsQueuePrimaries) work() (err error) {
 
 	message := &generated.GroupsRequest{
 		Projection: []string{"_id", "type", "primaries"},
-		Type:       helpers.GroupTypeGroup,
 	}
 
 	resp, err := generated.NewGroupsServiceClient(conn).Stream(ctx, message)
@@ -59,7 +58,7 @@ func (c GroupsQueuePrimaries) work() (err error) {
 			continue
 		}
 
-		err = queue.ProduceGroupPrimaries(group.GetID(), group.GetType(), int(group.GetPrimaries()))
+		err = queue.ProduceGroupPrimaries(group.GetID(), helpers.GroupTypeGroup, int(group.GetPrimaries()))
 		if err != nil {
 			log.Err(err.Error())
 			continue

@@ -74,7 +74,6 @@ type GroupSchema struct {
 	Name          string  `json:"name"`
 	Primaries     int32   `json:"primaries"`
 	Trending      float32 `json:"trending"`
-	Type          string  `json:"type"`
 	Url           string  `json:"url"`
 }
 
@@ -241,7 +240,6 @@ type GetGroupsParams struct {
 	Order  *OrderParamDesc `json:"order,omitempty"`
 	Sort   *string         `json:"sort,omitempty"`
 	Ids    *[]int64        `json:"ids,omitempty"`
-	Type   *[]string       `json:"type,omitempty"`
 }
 
 // GetPackagesParams defines parameters for GetPackages.
@@ -402,8 +400,11 @@ type ServerInterface interface {
 
 // ServerInterfaceWrapper converts contexts to parameters.
 type ServerInterfaceWrapper struct {
-	Handler ServerInterface
+	Handler            ServerInterface
+	HandlerMiddlewares []MiddlewareFunc
 }
+
+type MiddlewareFunc func(http.HandlerFunc) http.HandlerFunc
 
 // GetArticles operation middleware
 func (siw *ServerInterfaceWrapper) GetArticles(w http.ResponseWriter, r *http.Request) {
@@ -495,7 +496,15 @@ func (siw *ServerInterfaceWrapper) GetArticles(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	siw.Handler.GetArticles(w, r.WithContext(ctx), params)
+	var handler = func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetArticles(w, r, params)
+	}
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler(w, r.WithContext(ctx))
 }
 
 // GetGames operation middleware
@@ -632,7 +641,15 @@ func (siw *ServerInterfaceWrapper) GetGames(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	siw.Handler.GetGames(w, r.WithContext(ctx), params)
+	var handler = func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetGames(w, r, params)
+	}
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler(w, r.WithContext(ctx))
 }
 
 // GetGamesId operation middleware
@@ -654,7 +671,15 @@ func (siw *ServerInterfaceWrapper) GetGamesId(w http.ResponseWriter, r *http.Req
 
 	ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
 
-	siw.Handler.GetGamesId(w, r.WithContext(ctx), id)
+	var handler = func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetGamesId(w, r, id)
+	}
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler(w, r.WithContext(ctx))
 }
 
 // GetGroups operation middleware
@@ -725,18 +750,15 @@ func (siw *ServerInterfaceWrapper) GetGroups(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	// ------------- Optional query parameter "type" -------------
-	if paramValue := r.URL.Query().Get("type"); paramValue != "" {
-
+	var handler = func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetGroups(w, r, params)
 	}
 
-	err = runtime.BindQueryParameter("form", true, false, "type", r.URL.Query(), &params.Type)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Invalid format for parameter type: %s", err), http.StatusBadRequest)
-		return
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetGroups(w, r.WithContext(ctx), params)
+	handler(w, r.WithContext(ctx))
 }
 
 // GetPackages operation middleware
@@ -840,7 +862,15 @@ func (siw *ServerInterfaceWrapper) GetPackages(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	siw.Handler.GetPackages(w, r.WithContext(ctx), params)
+	var handler = func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetPackages(w, r, params)
+	}
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler(w, r.WithContext(ctx))
 }
 
 // GetPlayers operation middleware
@@ -922,7 +952,15 @@ func (siw *ServerInterfaceWrapper) GetPlayers(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	siw.Handler.GetPlayers(w, r.WithContext(ctx), params)
+	var handler = func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetPlayers(w, r, params)
+	}
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler(w, r.WithContext(ctx))
 }
 
 // GetPlayersId operation middleware
@@ -944,7 +982,15 @@ func (siw *ServerInterfaceWrapper) GetPlayersId(w http.ResponseWriter, r *http.R
 
 	ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
 
-	siw.Handler.GetPlayersId(w, r.WithContext(ctx), id)
+	var handler = func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetPlayersId(w, r, id)
+	}
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler(w, r.WithContext(ctx))
 }
 
 // PostPlayersId operation middleware
@@ -966,47 +1012,77 @@ func (siw *ServerInterfaceWrapper) PostPlayersId(w http.ResponseWriter, r *http.
 
 	ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
 
-	siw.Handler.PostPlayersId(w, r.WithContext(ctx), id)
+	var handler = func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PostPlayersId(w, r, id)
+	}
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler(w, r.WithContext(ctx))
 }
 
 // Handler creates http.Handler with routing matching OpenAPI spec.
 func Handler(si ServerInterface) http.Handler {
-	return HandlerFromMux(si, chi.NewRouter())
+	return HandlerWithOptions(si, ChiServerOptions{})
+}
+
+type ChiServerOptions struct {
+	BaseURL     string
+	BaseRouter  chi.Router
+	Middlewares []MiddlewareFunc
 }
 
 // HandlerFromMux creates http.Handler with routing matching OpenAPI spec based on the provided mux.
 func HandlerFromMux(si ServerInterface, r chi.Router) http.Handler {
-	return HandlerFromMuxWithBaseURL(si, r, "")
+	return HandlerWithOptions(si, ChiServerOptions{
+		BaseRouter: r,
+	})
 }
 
 func HandlerFromMuxWithBaseURL(si ServerInterface, r chi.Router, baseURL string) http.Handler {
+	return HandlerWithOptions(si, ChiServerOptions{
+		BaseURL:    baseURL,
+		BaseRouter: r,
+	})
+}
+
+// HandlerWithOptions creates http.Handler with additional options
+func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handler {
+	r := options.BaseRouter
+
+	if r == nil {
+		r = chi.NewRouter()
+	}
 	wrapper := ServerInterfaceWrapper{
-		Handler: si,
+		Handler:            si,
+		HandlerMiddlewares: options.Middlewares,
 	}
 
 	r.Group(func(r chi.Router) {
-		r.Get(baseURL+"/articles", wrapper.GetArticles)
+		r.Get(options.BaseURL+"/articles", wrapper.GetArticles)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(baseURL+"/games", wrapper.GetGames)
+		r.Get(options.BaseURL+"/games", wrapper.GetGames)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(baseURL+"/games/{id}", wrapper.GetGamesId)
+		r.Get(options.BaseURL+"/games/{id}", wrapper.GetGamesId)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(baseURL+"/groups", wrapper.GetGroups)
+		r.Get(options.BaseURL+"/groups", wrapper.GetGroups)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(baseURL+"/packages", wrapper.GetPackages)
+		r.Get(options.BaseURL+"/packages", wrapper.GetPackages)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(baseURL+"/players", wrapper.GetPlayers)
+		r.Get(options.BaseURL+"/players", wrapper.GetPlayers)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(baseURL+"/players/{id}", wrapper.GetPlayersId)
+		r.Get(options.BaseURL+"/players/{id}", wrapper.GetPlayersId)
 	})
 	r.Group(func(r chi.Router) {
-		r.Post(baseURL+"/players/{id}", wrapper.PostPlayersId)
+		r.Post(options.BaseURL+"/players/{id}", wrapper.PostPlayersId)
 	})
 
 	return r
@@ -1015,42 +1091,42 @@ func HandlerFromMuxWithBaseURL(si ServerInterface, r chi.Router, baseURL string)
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
-	"AAD//wnWuLpINwAA",
+	"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",
+	"bTaX3y/2/wsAAP//rM1n9CQ3AAA=",
 }
 
 // GetSwagger returns the Swagger specification corresponding to the generated code

@@ -3,8 +3,9 @@ package main
 import (
 	"context"
 
-	"github.com/gamedb/gamedb/cmd/backend/helpers"
+	backendHelpers "github.com/gamedb/gamedb/cmd/backend/helpers"
 	"github.com/gamedb/gamedb/pkg/backend/generated"
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/golang/protobuf/ptypes"
@@ -19,7 +20,7 @@ func (g GroupsServer) Stream(request *generated.GroupsRequest, response generate
 
 	var offset int64 = 0
 	var limit int64 = 10_000
-	var projection = helpers.MakeMongoProjection(request.GetProjection())
+	var projection = backendHelpers.MakeMongoProjection(request.GetProjection())
 	var filter = g.makeFilter(request)
 
 	for {
@@ -49,8 +50,8 @@ func (g GroupsServer) Stream(request *generated.GroupsRequest, response generate
 
 func (g GroupsServer) List(ctx context.Context, request *generated.GroupsRequest) (response *generated.GroupsResponse, err error) {
 
-	sort := helpers.MakeMongoOrder(request.GetPagination())
-	projection := helpers.MakeMongoProjection(request.GetProjection())
+	sort := backendHelpers.MakeMongoOrder(request.GetPagination())
+	projection := backendHelpers.MakeMongoProjection(request.GetProjection())
 	filter := g.makeFilter(request)
 
 	groups, err := mongo.GetGroups(request.GetPagination().GetOffset(), request.GetPagination().GetLimit(), sort, filter, projection)
@@ -58,7 +59,7 @@ func (g GroupsServer) List(ctx context.Context, request *generated.GroupsRequest
 		return nil, err
 	}
 
-	total, err := mongo.CountDocuments(mongo.CollectionGroups, nil, 0)
+	total, err := mongo.CountDocuments(mongo.CollectionGroups, bson.D{{Key: "type", Value: helpers.GroupTypeGroup}}, 0)
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +70,7 @@ func (g GroupsServer) List(ctx context.Context, request *generated.GroupsRequest
 	}
 
 	response = &generated.GroupsResponse{}
-	response.Pagination = helpers.MakePaginationResponse(request.GetPagination(), total, filtered)
+	response.Pagination = backendHelpers.MakePaginationResponse(request.GetPagination(), total, filtered)
 
 	for _, group := range groups {
 		response.Groups = append(response.Groups, g.makeGroup(group))
@@ -111,21 +112,18 @@ func (g GroupsServer) makeGroup(m mongo.Group) (r *generated.GroupResponse) {
 		MembersInGame: int32(m.MembersInGame),
 		MembersOnline: int32(m.MembersOnline),
 		Error:         m.Error,
-		Type:          m.Type,
 		Primaries:     int32(m.Primaries),
 	}
 }
 
 func (g GroupsServer) makeFilter(request *generated.GroupsRequest) (b bson.D) {
 
-	filter := bson.D{}
+	filter := bson.D{
+		{Key: "type", Value: helpers.GroupTypeGroup},
+	}
 
 	if len(request.GetIDs()) > 0 {
 		filter = append(filter, bson.E{Key: "_id", Value: bson.M{"$in": request.GetIDs()}})
-	}
-
-	if len(request.GetType()) > 0 {
-		filter = append(filter, bson.E{Key: "type", Value: request.GetType()})
 	}
 
 	return b

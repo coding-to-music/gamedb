@@ -20,7 +20,6 @@ message GroupsRequest {
     PaginationRequest pagination = 1;
     repeated string projection = 2;
     repeated string IDs = 3;
-    string Type = 4;
 }
 
 message GroupRequest {
@@ -49,6 +48,5 @@ message GroupResponse {
     int32 MembersInGame = 14;
     int32 MembersOnline = 15;
     string Error = 16;
-    string Type = 17;
     int32 Primaries = 18;
 }

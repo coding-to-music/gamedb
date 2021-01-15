@@ -124,7 +124,7 @@ var SwaggerGameDB = &openapi3.Swagger{
 			},
 			"group-schema": {
 				Value: &openapi3.Schema{
-					Required: []string{"id", "name", "abbreviation", "url", "app_id", "headline", "icon", "trending", "members", "members_in_chat", "members_in_game", "members_online", "error", "type", "primaries"},
+					Required: []string{"id", "name", "abbreviation", "url", "app_id", "headline", "icon", "trending", "members", "members_in_chat", "members_in_game", "members_online", "error", "primaries"},
 					Properties: map[string]*openapi3.SchemaRef{
 						"id":              {Value: openapi3.NewStringSchema()},
 						"name":            {Value: openapi3.NewStringSchema()},
@@ -139,7 +139,6 @@ var SwaggerGameDB = &openapi3.Swagger{
 						"members_in_game": {Value: openapi3.NewInt32Schema()},
 						"members_online":  {Value: openapi3.NewInt32Schema()},
 						"error":           {Value: openapi3.NewStringSchema()},
-						"type":            {Value: openapi3.NewStringSchema()},
 						"primaries":       {Value: openapi3.NewInt32Schema()},
 					},
 				},
@@ -488,7 +487,6 @@ var SwaggerGameDB = &openapi3.Swagger{
 					{Ref: "#/components/parameters/order-param-desc"},
 					{Value: openapi3.NewQueryParameter("sort").WithSchema(openapi3.NewStringSchema().WithEnum("id", "members", "trending", "primaries").WithDefault("id"))},
 					{Value: openapi3.NewQueryParameter("ids").WithSchema(openapi3.NewArraySchema().WithMaxItems(10).WithItems(openapi3.NewInt64Schema()))},
-					{Value: openapi3.NewQueryParameter("type").WithSchema(openapi3.NewArraySchema().WithMaxItems(2).WithItems(openapi3.NewStringSchema()))},
 				},
 				Responses: map[string]*openapi3.ResponseRef{
 					"200": {
