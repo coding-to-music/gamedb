@@ -1,7 +1,6 @@
 package tasks
 
 import (
-	"strconv"
 	"time"
 
 	"github.com/Jleagle/rabbit-go"
@@ -55,7 +54,7 @@ func (c PlayersQueueLastUpdated) work() (err error) {
 	var consumers int
 	for _, q := range queues {
 		if val, ok := limits[rabbit.QueueName(q.Name)]; ok && q.Messages > val {
-			log.InfoS("skipping " + c.ID() + " as " + q.Name + " has " + strconv.Itoa(q.Messages) + " messages")
+			// log.InfoS("skipping " + c.ID() + " as " + q.Name + " has " + strconv.Itoa(q.Messages) + " messages")
 			return nil
 		}
 		if q.Name == string(queue.QueuePlayers) {
