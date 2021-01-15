@@ -3,8 +3,6 @@ package pages
 import (
 	"encoding/xml"
 	"fmt"
-	"github.com/gamedb/gamedb/pkg/elasticsearch"
-	"github.com/olivere/elastic/v7"
 	"html/template"
 	"net/http"
 	"regexp"
@@ -17,6 +15,7 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	twitterHelper "github.com/gamedb/gamedb/cmd/frontend/helpers/twitter"
+	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
@@ -27,8 +26,10 @@ import (
 	"github.com/gosimple/slug"
 	"github.com/mborgerson/GoTruncateHtml/truncatehtml"
 	"github.com/microcosm-cc/bluemonday"
+	"github.com/olivere/elastic/v7"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.uber.org/zap"
+	"mvdan.cc/xurls/v2"
 )
 
 func HomeRouter() http.Handler {
@@ -282,6 +283,9 @@ type homeNewsItemTemplate struct {
 	Image    template.HTMLAttr
 }
 
+//goland:noinspection RegExpRedundantEscape
+var regexLinkSuffix = regexp.MustCompile(`https\:\/\/t\.co\/[a-zA-Z0-9]+$`)
+
 func homeTweetsHandler(w http.ResponseWriter, r *http.Request) {
 
 	var ret []homeTweet
@@ -305,14 +309,30 @@ func homeTweetsHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer helpers.Close(resp.Body)
 
-		for _, v := range tweets {
-			ret = append(ret, homeTweet{
-				ScreenName: v.User.ScreenName,
-				Name:       v.User.Name,
-				Avatar:     v.User.ProfileImageURLHttps,
-				Text:       v.Text,
-				Link:       fmt.Sprintf("https://twitter.com/%s/status/%s", v.User.ScreenName, v.IDStr),
-			})
+		rxStrict := xurls.Strict()
+
+		for _, tweet := range tweets {
+
+			resp := homeTweet{
+				Text: strings.TrimSpace(regexLinkSuffix.ReplaceAllString(tweet.Text, "")),
+			}
+
+			resp.Text = rxStrict.ReplaceAllString(resp.Text, `<a href="$1$4">$4</a>`)
+
+			if tweet.Entities != nil && len(tweet.Entities.Media) > 0 {
+				resp.Image = tweet.Entities.Media[0].MediaURLHttps
+			}
+
+			if tweet.Entities != nil {
+				for _, v := range tweet.Entities.Urls {
+					if !strings.Contains(v.ExpandedURL, "twitter.com") {
+						resp.Link = v.ExpandedURL
+						break
+					}
+				}
+			}
+
+			ret = append(ret, resp)
 		}
 
 		return ret, nil
@@ -328,11 +348,9 @@ func homeTweetsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type homeTweet struct {
-	ScreenName string `json:"screen_name"`
-	Name       string `json:"name"`
-	Avatar     string `json:"avatar"`
-	Text       string `json:"text"`
-	Link       string `json:"link"`
+	Text  string `json:"text"`
+	Image string `json:"image"`
+	Link  string `json:"link"`
 }
 
 func homeSalesHandler(w http.ResponseWriter, r *http.Request) {

@@ -120,4 +120,5 @@ require (
 	gopkg.in/djherbis/stream.v1 v1.3.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0
 	jaytaylor.com/html2text v0.0.0-20200412013138-3577fbdbcff7
+	mvdan.cc/xurls/v2 v2.2.0
 )

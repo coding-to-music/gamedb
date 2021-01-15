@@ -33,24 +33,46 @@ body.dark {
     }
 
     #tweets {
+
         i.fa-twitter, svg.fa-twitter {
             color: rgb(29, 161, 242);
         }
 
-        .tweet {
-            border-bottom: solid lightgray 1px;
-            @extend .mb-2;
-            @extend .pb-2;
 
-            p {
-                margin-bottom: 0;
+        .card-body {
+
+            overflow: auto;
+
+            @include media-breakpoint-up(lg) {
+                height: 450px;
             }
-        }
 
-        .tweet:last-child {
-            border-bottom: none;
-            @extend .mb-0;
-            @extend .pb-0;
+            .tweet {
+
+                border-bottom: solid lightgray 1px;
+                @extend .mb-4;
+                @extend .pb-4;
+
+                p {
+                    margin-bottom: 0;
+                }
+
+                img {
+                    @extend .mb-3;
+                    max-width: 100%;
+                    max-height: 100px;
+                }
+
+                img[src=""] {
+                    display: none;
+                }
+            }
+
+            .tweet:last-child {
+                border-bottom: none;
+                @extend .mb-0;
+                @extend .pb-0;
+            }
         }
     }
 

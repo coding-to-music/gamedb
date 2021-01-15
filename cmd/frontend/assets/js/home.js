@@ -50,9 +50,12 @@ if ($homePage.length > 0) {
                     $container.json2html(
                         data,
                         {
-                            '<>': 'div', 'class': 'tweet', 'target': '_blank', 'rel': 'noopener', 'data-link': '${link}', 'html': [
+                            '<>': 'div', 'class': 'tweet', 'html': [
                                 {
-                                    '<>': 'p', 'html': '<i class="fas fa-star"></i> ${text}',
+                                    '<>': 'img', 'src': '${image}', 'alt': '${text}',
+                                },
+                                {
+                                    '<>': 'p', 'html': '<i class="fas fa-star text-warning"></i> ${text}',
                                 },
                             ]
                         },
