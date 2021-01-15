@@ -17,7 +17,6 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type GroupsServiceClient interface {
-	Stream(ctx context.Context, in *GroupsRequest, opts ...grpc.CallOption) (GroupsService_StreamClient, error)
 	List(ctx context.Context, in *GroupsRequest, opts ...grpc.CallOption) (*GroupsResponse, error)
 	Retrieve(ctx context.Context, in *GroupRequest, opts ...grpc.CallOption) (*GroupResponse, error)
 }
@@ -28,38 +27,6 @@ type groupsServiceClient struct {
 
 func NewGroupsServiceClient(cc grpc.ClientConnInterface) GroupsServiceClient {
 	return &groupsServiceClient{cc}
-}
-
-func (c *groupsServiceClient) Stream(ctx context.Context, in *GroupsRequest, opts ...grpc.CallOption) (GroupsService_StreamClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_GroupsService_serviceDesc.Streams[0], "/generated.GroupsService/Stream", opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &groupsServiceStreamClient{stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
-}
-
-type GroupsService_StreamClient interface {
-	Recv() (*GroupResponse, error)
-	grpc.ClientStream
-}
-
-type groupsServiceStreamClient struct {
-	grpc.ClientStream
-}
-
-func (x *groupsServiceStreamClient) Recv() (*GroupResponse, error) {
-	m := new(GroupResponse)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
 }
 
 func (c *groupsServiceClient) List(ctx context.Context, in *GroupsRequest, opts ...grpc.CallOption) (*GroupsResponse, error) {
@@ -84,7 +51,6 @@ func (c *groupsServiceClient) Retrieve(ctx context.Context, in *GroupRequest, op
 // All implementations must embed UnimplementedGroupsServiceServer
 // for forward compatibility
 type GroupsServiceServer interface {
-	Stream(*GroupsRequest, GroupsService_StreamServer) error
 	List(context.Context, *GroupsRequest) (*GroupsResponse, error)
 	Retrieve(context.Context, *GroupRequest) (*GroupResponse, error)
 	mustEmbedUnimplementedGroupsServiceServer()
@@ -94,9 +60,6 @@ type GroupsServiceServer interface {
 type UnimplementedGroupsServiceServer struct {
 }
 
-func (UnimplementedGroupsServiceServer) Stream(*GroupsRequest, GroupsService_StreamServer) error {
-	return status.Errorf(codes.Unimplemented, "method Stream not implemented")
-}
 func (UnimplementedGroupsServiceServer) List(context.Context, *GroupsRequest) (*GroupsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method List not implemented")
 }
@@ -114,27 +77,6 @@ type UnsafeGroupsServiceServer interface {
 
 func RegisterGroupsServiceServer(s grpc.ServiceRegistrar, srv GroupsServiceServer) {
 	s.RegisterService(&_GroupsService_serviceDesc, srv)
-}
-
-func _GroupsService_Stream_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(GroupsRequest)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
-	}
-	return srv.(GroupsServiceServer).Stream(m, &groupsServiceStreamServer{stream})
-}
-
-type GroupsService_StreamServer interface {
-	Send(*GroupResponse) error
-	grpc.ServerStream
-}
-
-type groupsServiceStreamServer struct {
-	grpc.ServerStream
-}
-
-func (x *groupsServiceStreamServer) Send(m *GroupResponse) error {
-	return x.ServerStream.SendMsg(m)
 }
 
 func _GroupsService_List_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -186,12 +128,6 @@ var _GroupsService_serviceDesc = grpc.ServiceDesc{
 			Handler:    _GroupsService_Retrieve_Handler,
 		},
 	},
-	Streams: []grpc.StreamDesc{
-		{
-			StreamName:    "Stream",
-			Handler:       _GroupsService_Stream_Handler,
-			ServerStreams: true,
-		},
-	},
+	Streams:  []grpc.StreamDesc{},
 	Metadata: "groups.proto",
 }

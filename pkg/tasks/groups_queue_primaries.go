@@ -1,12 +1,9 @@
 package tasks
 
 import (
-	"io"
-
 	"github.com/gamedb/gamedb/pkg/backend"
 	"github.com/gamedb/gamedb/pkg/backend/generated"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/queue"
 )
 
@@ -34,35 +31,41 @@ func (c GroupsQueuePrimaries) work() (err error) {
 
 	conn, ctx, err := backend.GetClient()
 	if err != nil {
-		log.Err(err.Error())
-		return
+		return err
 	}
 
-	message := &generated.GroupsRequest{
-		Projection: []string{"_id", "type", "primaries"},
-	}
-
-	resp, err := generated.NewGroupsServiceClient(conn).Stream(ctx, message)
-	if err != nil {
-		log.Err(err.Error())
-		return
-	}
+	var offset int64 = 0
+	var limit int64 = 10_000
 
 	for {
 
-		group, err := resp.Recv()
-		if err == io.EOF {
-			break
-		} else if err != nil {
-			log.Err(err.Error())
-			continue
+		message := &generated.GroupsRequest{
+			Pagination: &generated.PaginationRequest{
+				Offset: offset,
+				Limit:  limit,
+			},
+			Projection: []string{"_id", "type", "primaries"},
 		}
 
-		err = queue.ProduceGroupPrimaries(group.GetID(), helpers.GroupTypeGroup, int(group.GetPrimaries()))
+		resp, err := generated.NewGroupsServiceClient(conn).List(ctx, message)
 		if err != nil {
-			log.Err(err.Error())
-			continue
+			return err
 		}
+
+		groups := resp.GetGroups()
+		for _, group := range groups {
+
+			err = queue.ProduceGroupPrimaries(group.GetID(), helpers.GroupTypeGroup, int(group.GetPrimaries()))
+			if err != nil {
+				return err
+			}
+		}
+
+		if int64(len(groups)) != limit {
+			break
+		}
+
+		offset += limit
 	}
 
 	return nil

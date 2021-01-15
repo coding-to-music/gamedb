@@ -16,43 +16,18 @@ type GroupsServer struct {
 	generated.UnimplementedGroupsServiceServer
 }
 
-func (g GroupsServer) Stream(request *generated.GroupsRequest, response generated.GroupsService_StreamServer) (err error) {
-
-	var offset int64 = 0
-	var limit int64 = 10_000
-	var projection = backendHelpers.MakeMongoProjection(request.GetProjection())
-	var filter = g.makeFilter(request)
-
-	for {
-
-		groups, err := mongo.GetGroups(limit, offset, bson.D{{"_id", 1}}, filter, projection)
-		if err != nil {
-			return err
-		}
-
-		for _, group := range groups {
-
-			err = response.Send(g.makeGroup(group))
-			if err != nil {
-				return err
-			}
-		}
-
-		if int64(len(groups)) != limit {
-			break
-		}
-
-		offset += limit
-	}
-
-	return nil
-}
-
 func (g GroupsServer) List(ctx context.Context, request *generated.GroupsRequest) (response *generated.GroupsResponse, err error) {
 
 	sort := backendHelpers.MakeMongoOrder(request.GetPagination())
 	projection := backendHelpers.MakeMongoProjection(request.GetProjection())
-	filter := g.makeFilter(request)
+
+	filter := bson.D{
+		{Key: "type", Value: helpers.GroupTypeGroup},
+	}
+
+	if len(request.GetIDs()) > 0 {
+		filter = append(filter, bson.E{Key: "_id", Value: bson.M{"$in": request.GetIDs()}})
+	}
 
 	groups, err := mongo.GetGroups(request.GetPagination().GetOffset(), request.GetPagination().GetLimit(), sort, filter, projection)
 	if err != nil {
@@ -114,17 +89,4 @@ func (g GroupsServer) makeGroup(m mongo.Group) (r *generated.GroupResponse) {
 		Error:         m.Error,
 		Primaries:     int32(m.Primaries),
 	}
-}
-
-func (g GroupsServer) makeFilter(request *generated.GroupsRequest) (b bson.D) {
-
-	filter := bson.D{
-		{Key: "type", Value: helpers.GroupTypeGroup},
-	}
-
-	if len(request.GetIDs()) > 0 {
-		filter = append(filter, bson.E{Key: "_id", Value: bson.M{"$in": request.GetIDs()}})
-	}
-
-	return b
 }

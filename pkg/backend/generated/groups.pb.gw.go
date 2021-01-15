@@ -31,31 +31,6 @@ var _ = runtime.String
 var _ = utilities.NewDoubleArray
 var _ = metadata.Join
 
-func request_GroupsService_Stream_0(ctx context.Context, marshaler runtime.Marshaler, client GroupsServiceClient, req *http.Request, pathParams map[string]string) (GroupsService_StreamClient, runtime.ServerMetadata, error) {
-	var protoReq GroupsRequest
-	var metadata runtime.ServerMetadata
-
-	newReader, berr := utilities.IOReaderFactory(req.Body)
-	if berr != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", berr)
-	}
-	if err := marshaler.NewDecoder(newReader()).Decode(&protoReq); err != nil && err != io.EOF {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-
-	stream, err := client.Stream(ctx, &protoReq)
-	if err != nil {
-		return nil, metadata, err
-	}
-	header, err := stream.Header()
-	if err != nil {
-		return nil, metadata, err
-	}
-	metadata.HeaderMD = header
-	return stream, metadata, nil
-
-}
-
 func request_GroupsService_List_0(ctx context.Context, marshaler runtime.Marshaler, client GroupsServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GroupsRequest
 	var metadata runtime.ServerMetadata
@@ -129,13 +104,6 @@ func local_request_GroupsService_Retrieve_0(ctx context.Context, marshaler runti
 // StreamingRPC :currently unsupported pending https://github.com/grpc/grpc-go/issues/906.
 // Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterGroupsServiceHandlerFromEndpoint instead.
 func RegisterGroupsServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server GroupsServiceServer) error {
-
-	mux.Handle("POST", pattern_GroupsService_Stream_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		err := status.Error(codes.Unimplemented, "streaming calls are not yet supported in the in-process transport")
-		_, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-		return
-	})
 
 	mux.Handle("POST", pattern_GroupsService_List_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
@@ -224,26 +192,6 @@ func RegisterGroupsServiceHandler(ctx context.Context, mux *runtime.ServeMux, co
 // "GroupsServiceClient" to call the correct interceptors.
 func RegisterGroupsServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client GroupsServiceClient) error {
 
-	mux.Handle("POST", pattern_GroupsService_Stream_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/generated.GroupsService/Stream")
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := request_GroupsService_Stream_0(rctx, inboundMarshaler, client, req, pathParams)
-		ctx = runtime.NewServerMetadataContext(ctx, md)
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-
-		forward_GroupsService_Stream_0(ctx, mux, outboundMarshaler, w, req, func() (proto.Message, error) { return resp.Recv() }, mux.GetForwardResponseOptions()...)
-
-	})
-
 	mux.Handle("POST", pattern_GroupsService_List_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
@@ -288,16 +236,12 @@ func RegisterGroupsServiceHandlerClient(ctx context.Context, mux *runtime.ServeM
 }
 
 var (
-	pattern_GroupsService_Stream_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"generated.GroupsService", "Stream"}, ""))
-
 	pattern_GroupsService_List_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"generated.GroupsService", "List"}, ""))
 
 	pattern_GroupsService_Retrieve_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"generated.GroupsService", "Retrieve"}, ""))
 )
 
 var (
-	forward_GroupsService_Stream_0 = runtime.ForwardResponseStream
-
 	forward_GroupsService_List_0 = runtime.ForwardResponseMessage
 
 	forward_GroupsService_Retrieve_0 = runtime.ForwardResponseMessage

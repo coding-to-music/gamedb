@@ -8,8 +8,6 @@ import "shared.proto";
 import "google/protobuf/timestamp.proto";
 
 service GroupsService {
-    rpc Stream (GroupsRequest) returns (stream GroupResponse) {
-    }
     rpc List (GroupsRequest) returns (GroupsResponse) {
     }
     rpc Retrieve (GroupRequest) returns (GroupResponse) {
