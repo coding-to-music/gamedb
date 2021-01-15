@@ -61,7 +61,7 @@ var (
 	ItemPackageBundles = func(packageID int) Item { return Item{Key: "package-bundles-" + strconv.Itoa(packageID), Expiration: 0} }
 
 	// Home
-	ItemHomeTweets     = Item{Key: "home-tweets", Expiration: 60 * 60}
+	ItemHomeTweets     = Item{Key: "home-tweets", Expiration: 60 * 60 * 24 * 7}
 	ItemHomeTopSellers = Item{Key: "home-top-sellers", Expiration: 60 * 60 * 6}
 	ItemHomePlayers    = func(sort string) Item { return Item{Key: "home-players-" + sort, Expiration: 60 * 60 * 48} }
 
