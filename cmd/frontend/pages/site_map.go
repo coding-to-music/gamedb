@@ -248,7 +248,7 @@ func SiteMapGroups(w http.ResponseWriter, r *http.Request) {
 			SortField: "members",
 			SortOrder: "desc",
 		},
-		Type: helpers.GroupTypeGroup,
+		Projection: []string{"_id", "updated_at", "name"},
 	}
 
 	resp, err := generated.NewGroupsServiceClient(conn).List(ctx, message)
