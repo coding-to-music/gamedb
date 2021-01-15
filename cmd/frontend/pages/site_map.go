@@ -88,8 +88,8 @@ func SiteMapPagesHandler(w http.ResponseWriter, r *http.Request) {
 
 	sm := sitemap.NewSitemap()
 
-	for _, v := range pages {
-		sm.AddLocation(config.C.GameDBDomain+v, time.Time{}, sitemap.FrequencyHourly, 1)
+	for _, page := range pages {
+		sm.AddLocation(config.C.GameDBDomain+page, time.Time{}, sitemap.FrequencyHourly, 1)
 	}
 
 	s, err := sm.String()
@@ -258,11 +258,11 @@ func SiteMapGroups(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sm := sitemap.NewSitemap()
-	for _, v := range resp.GetGroups() {
+	for _, group := range resp.GetGroups() {
 
-		p := helpers.GetGroupPath(v.GetID(), v.GetName())
+		p := helpers.GetGroupPath(group.GetID(), group.GetName())
 
-		sm.AddLocation(config.C.GameDBDomain+p, v.GetUpdatedAt().AsTime(), sitemap.FrequencyWeekly, 0.9)
+		sm.AddLocation(config.C.GameDBDomain+p, group.GetUpdatedAt().AsTime(), sitemap.FrequencyWeekly, 0.9)
 	}
 
 	s, err := sm.String()
