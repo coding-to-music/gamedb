@@ -316,6 +316,9 @@ func Init(definitions []QueueDefinition) {
 			Handler:       queue.consumer,
 			UpdateHeaders: !queue.skipHeaders,
 			AutoDelete:    false,
+			QueueArgs: amqp.Table{
+				// "x-queue-mode": "lazy",
+			},
 		}
 
 		q, err := rabbit.NewChannel(chanConfig)
@@ -370,6 +373,9 @@ func Init(definitions []QueueDefinition) {
 						Handler:       queue.consumer,
 						UpdateHeaders: !queue.skipHeaders,
 						AutoDelete:    false,
+						QueueArgs: amqp.Table{
+							// "x-queue-mode": "lazy",
+						},
 					}
 
 					q, err := rabbit.NewChannel(chanConfig)

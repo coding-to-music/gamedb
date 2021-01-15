@@ -9,7 +9,7 @@ require (
 	github.com/Jleagle/go-durationfmt v0.0.0-20190307132420-e57bfad84057
 	github.com/Jleagle/influxql v0.0.0-20200804190929-88324f67bffe
 	github.com/Jleagle/patreon-go v0.0.0-20201006180837-366bfaa6710a
-	github.com/Jleagle/rabbit-go v0.0.0-20200831220529-13e96c303e94
+	github.com/Jleagle/rabbit-go v0.0.0-20210115203259-266db76b636e
 	github.com/Jleagle/session-go v0.0.0-20190515070633-3c8712426233
 	github.com/Jleagle/sitemap-go v0.0.0-20201217201247-75f3818f336a
 	github.com/Jleagle/steam-go v0.0.0-20201203202638-01820f681d7a
@@ -47,7 +47,7 @@ require (
 	github.com/golang/protobuf v1.4.3
 	github.com/golang/snappy v0.0.2 // indirect
 	github.com/google/go-github/v32 v32.1.0
-	github.com/google/uuid v1.1.4 // indirect
+	github.com/google/uuid v1.1.5 // indirect
 	github.com/gorilla/securecookie v1.1.1
 	github.com/gorilla/sessions v1.2.1
 	github.com/gorilla/websocket v1.4.2
