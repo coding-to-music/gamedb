@@ -297,7 +297,7 @@ func homeTweetsHandler(w http.ResponseWriter, r *http.Request) {
 
 		params := &twitter.UserTimelineParams{
 			ScreenName:      "gamedb_online",
-			Count:           4,
+			Count:           5,
 			ExcludeReplies:  &t,
 			IncludeRetweets: &f,
 		}
