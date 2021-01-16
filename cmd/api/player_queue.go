@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 
+	"github.com/gamedb/gamedb/cmd/api/generated"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/queue"
@@ -10,16 +11,18 @@ import (
 
 func (s Server) PostPlayersId(w http.ResponseWriter, r *http.Request, id int64) {
 
-	s.call(w, r, func(w http.ResponseWriter, r *http.Request) (code int, response interface{}) {
+	err := queue.ProducePlayer(queue.PlayerMessage{ID: id}, "api-update")
+	if err == memcache.ErrInQueue {
 
-		err := queue.ProducePlayer(queue.PlayerMessage{ID: id}, "api-update")
-		if err == memcache.ErrInQueue {
-			return 200, err
-		} else if err != nil {
-			log.ErrS(err)
-			return 500, err
-		}
+		returnErrorResponse(w, http.StatusOK, err)
+		return
 
-		return 200, "Player queued"
-	})
+	} else if err != nil {
+
+		log.ErrS(err)
+		returnErrorResponse(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	returnResponse(w, http.StatusOK, generated.MessageResponse{Message: "Player queued"})
 }
