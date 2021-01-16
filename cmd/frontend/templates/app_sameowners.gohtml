@@ -1,0 +1,33 @@
+{{define "app_sameowners"}}
+
+    {{ if eq (len .Apps) 0 }}
+
+        <p class="mb-0">This app is yet to be scanned</p>
+
+    {{ else }}
+
+        <table class="table table-hover table-striped mb-0">
+            <thead class="thead-light">
+            <th>Game</th>
+            <th>Owners</th>
+            </thead>
+            <tbody>
+            {{ range $key, $value := .Apps }}
+                <tr data-app-id="{{ .ID }}" data-link="{{ .GetPath }}">
+                    <td class="img">
+                        <div class="icon-name">
+                            <div class="icon">
+                                <img class="tall" src="" data-lazy="{{ .GetIcon }}" alt="" data-lazy-alt="{{ .GetName }}">
+                            </div>
+                            <div class="name">{{ .GetName }}</div>
+                        </div>
+                    </td>
+                    <td>{{ comma (index $.Counts .ID) }}</td>
+                </tr>
+            {{ end }}
+            </tbody>
+        </table>
+
+    {{ end }}
+
+{{end}}

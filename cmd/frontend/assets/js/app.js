@@ -48,7 +48,7 @@ if ($appPage.length > 0) {
         'news': loadNews,
         'items': loadItems,
         'prices': loadPriceChart,
-        'similar-wrapper': loadAppSimilar,
+        'similar-owners-wrapper': loadAppSimilar,
         'reviews': loadAppReviewsChart,
         'achievements': loadAchievements,
         'dlc': loadDLC,
@@ -329,7 +329,24 @@ if ($appPage.length > 0) {
 
     function loadAppSimilar() {
 
-        const $wrapper = $('#similar-wrapper');
+        const $ownersWrapper = $('#similar-owners-wrapper');
+        const $tagsWrapper = $('#similar-tags-wrapper');
+
+        $.ajax({
+            type: "GET",
+            url: '/games/' + $appPage.attr('data-id') + '/sameowners.html',
+            dataType: 'html',
+            success: function (data, textStatus, jqXHR) {
+
+                if (data === null) {
+                    data = '';
+                }
+
+                $ownersWrapper.html(data);
+
+                observeLazyImages($ownersWrapper.find('img[data-lazy]'));
+            },
+        });
 
         $.ajax({
             type: "GET",
@@ -341,9 +358,9 @@ if ($appPage.length > 0) {
                     data = '';
                 }
 
-                $wrapper.html(data);
+                $tagsWrapper.html(data);
 
-                observeLazyImages($wrapper.find('img[data-lazy]'));
+                observeLazyImages($tagsWrapper.find('img[data-lazy]'));
             },
         });
     }

@@ -53,6 +53,7 @@ func appRouter() http.Handler {
 	r.Get("/prices.json", appPricesAjaxHandler)
 	r.Get("/reviews.html", appReviewsHandler)
 	r.Get("/reviews.json", appReviewsAjaxHandler)
+	r.Get("/sameowners.html", appSamdOwnersHandler)
 	r.Get("/similar.html", appSimilarHandler)
 	r.Get("/tags.json", appTagsAjaxHandler)
 	r.Get("/time.json", appTimeAjaxHandler)
@@ -435,6 +436,60 @@ func appLocalizationHandler(w http.ResponseWriter, r *http.Request) {
 type appLocalizationTemplate struct {
 	globalTemplate
 	App mongo.App
+}
+
+func appSamdOwnersHandler(w http.ResponseWriter, r *http.Request) {
+
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		return
+	}
+
+	if !helpers.IsValidAppID(id) {
+		return
+	}
+
+	app, err := mongo.GetApp(id)
+	if err != nil {
+		log.ErrS(err)
+		return
+	}
+
+	var countsMap = map[int]int{}
+	var appIDs []int
+	for _, v := range app.RelatedOwnersAppIDs {
+		appIDs = append(appIDs, v.AppID)
+		countsMap[v.AppID] = v.Count
+	}
+
+	apps, err := mongo.GetAppsByID(appIDs, bson.M{"_id": 1, "name": 1, "icon": 1})
+	if err != nil {
+		log.ErrS(err)
+		return
+	}
+
+	appsMap := map[int]mongo.App{}
+	for _, v := range apps {
+		appsMap[v.ID] = v
+	}
+
+	var orderedApps []mongo.App
+	for _, v := range appIDs {
+		orderedApps = append(orderedApps, appsMap[v])
+	}
+
+	t := appSameOwnersTemplate{}
+	t.fill(w, r, "app_sameowners", "", "")
+	t.Apps = orderedApps
+	t.Counts = countsMap
+
+	returnTemplate(w, r, t)
+}
+
+type appSameOwnersTemplate struct {
+	globalTemplate
+	Apps   []mongo.App
+	Counts map[int]int
 }
 
 func appSimilarHandler(w http.ResponseWriter, r *http.Request) {
@@ -1267,7 +1322,7 @@ func appPlayersAjaxHandler(limit bool) func(http.ResponseWriter, *http.Request) 
 
 			builder := influxql.NewBuilder()
 			builder.AddSelect("max(player_count)", "max_player_count")
-			//builder.AddSelect("max(twitch_viewers)", "max_twitch_viewers")
+			// builder.AddSelect("max(twitch_viewers)", "max_twitch_viewers")
 			if limit || session.IsLoggedIn(r) {
 				builder.AddSelect("max(youtube_views)", "max_youtube_views")
 				builder.AddSelect("max(youtube_comments)", "max_youtube_comments")
