@@ -3,6 +3,7 @@ package queue
 import (
 	"math"
 	"sort"
+	"time"
 
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -32,6 +33,8 @@ func appSameownersHandler(message *rabbit.Message) {
 		return
 	}
 
+	log.Info("Same owners", zap.Int("app", payload.AppID))
+
 	ownerRows, err := mongo.GetAppOwners(payload.AppID)
 	if err != nil {
 		log.Err(err.Error(), zap.Int("app", payload.AppID))
@@ -42,6 +45,18 @@ func appSameownersHandler(message *rabbit.Message) {
 	log.Info("Same owners", zap.Int("owners", len(ownerRows)))
 
 	if len(ownerRows) == 0 {
+
+		// Update app row
+		var filter = bson.D{{"_id", payload.AppID}}
+		var update = bson.D{{"related_owners_app_ids_date", time.Now()}}
+
+		_, err = mongo.UpdateOne(mongo.CollectionApps, filter, update)
+		if err != nil {
+			log.Err(err.Error(), zap.Int("app", payload.AppID))
+			sendToRetryQueue(message)
+			return
+		}
+
 		message.Ack()
 		return
 	}
@@ -122,7 +137,10 @@ func appSameownersHandler(message *rabbit.Message) {
 
 	// Update app row
 	var filter = bson.D{{"_id", payload.AppID}}
-	var update = bson.D{{"related_owners_app_ids", countSlice}}
+	var update = bson.D{
+		{"related_owners_app_ids", countSlice},
+		{"related_owners_app_ids_date", time.Now()},
+	}
 
 	_, err = mongo.UpdateOne(mongo.CollectionApps, filter, update)
 	if err != nil {

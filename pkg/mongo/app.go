@@ -86,11 +86,12 @@ type App struct {
 	Prices                        helpers.ProductPrices          `bson:"prices"`
 	PublicOnly                    bool                           `bson:"public_only"`
 	Publishers                    []int                          `bson:"publishers"`
-	RelatedAppIDs                 []int                          `bson:"related_app_ids"`        // Taken from store page
-	RelatedOwnersAppIDs           []RelatedAppOwner              `bson:"related_owners_app_ids"` // Calculated from owners
-	ReleaseDate                   string                         `bson:"release_date"`           // Steam release
-	ReleaseDateUnix               int64                          `bson:"release_date_unix"`      // Steam release
-	ReleaseDateOriginal           int64                          `bson:"release_date_original"`  // Game release
+	RelatedAppIDs                 []int                          `bson:"related_app_ids"`             // Taken from store page
+	RelatedOwnersAppIDs           []RelatedAppOwner              `bson:"related_owners_app_ids"`      // Calculated from owners
+	RelatedOwnersAppIDsDate       time.Time                      `bson:"related_owners_app_ids_date"` // Calculated from owners - Last Updated
+	ReleaseDate                   string                         `bson:"release_date"`                // Steam release
+	ReleaseDateUnix               int64                          `bson:"release_date_unix"`           // Steam release
+	ReleaseDateOriginal           int64                          `bson:"release_date_original"`       // Game release
 	ReleaseState                  string                         `bson:"release_state"`
 	Reviews                       helpers.AppReviewSummary       `bson:"reviews"`
 	ReviewsScore                  float64                        `bson:"reviews_score"`
@@ -186,6 +187,7 @@ func (app App) BSON() bson.D {
 		{"publishers", app.Publishers},
 		{"related_app_ids", app.RelatedAppIDs},
 		{"related_owners_app_ids", app.RelatedOwnersAppIDs},
+		{"related_owners_app_ids_date", app.RelatedOwnersAppIDsDate},
 		{"release_date", app.ReleaseDate},
 		{"release_date_unix", app.ReleaseDateUnix},
 		{"release_date_original", app.ReleaseDateOriginal},

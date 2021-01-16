@@ -21,6 +21,7 @@ const ( //                                       min  hour
 	CronTimeSteamClientPlayers       TaskTime = "*/10 *"
 	CronTimeAppPlayers               TaskTime = "*/10 *"
 	CronTimeAppPlayersTop            TaskTime = "*/10 *"
+	CronTimeAppsSameowners           TaskTime = "*/10 *"
 	CronTimeAppsInflux               TaskTime = "0    */2"
 	CronTimeAutoPlayerRefreshes      TaskTime = "0    */6"
 	CronTimeGameDBStats              TaskTime = "0    */6"

@@ -21,6 +21,8 @@ import (
 	"go.uber.org/zap"
 )
 
+const ConsumersPerProcess = 2
+
 type QueueMessageInterface interface {
 	Queue() rabbit.QueueName
 }
@@ -187,6 +189,7 @@ var (
 		{Name: QueueAppsSteamspy},
 		{Name: QueueAppsWishlists, prefetchSize: 1_000},
 		{Name: QueueAppsYoutube},
+		{Name: QueueAppsSameowners},
 		{Name: QueueApps},
 		{Name: QueueBundles},
 		{Name: QueueChanges},
@@ -229,6 +232,7 @@ var (
 		{Name: QueueAppsSteamspy},
 		{Name: QueueAppsWishlists, prefetchSize: 1_000},
 		{Name: QueueAppsYoutube},
+		{Name: QueueAppsSameowners},
 		{Name: QueueApps},
 		{Name: QueueDelay, skipHeaders: true},
 		{Name: QueueGroupsPrimaries, prefetchSize: 1_000},
@@ -363,7 +367,7 @@ func Init(definitions []QueueDefinition) {
 					prefetchSize = queue.prefetchSize
 				}
 
-				for k := range make([]int, 2) {
+				for k := range make([]struct{}, ConsumersPerProcess) {
 
 					chanConfig := rabbit.ChannelConfig{
 						Connection:    consumerConnection,
@@ -653,6 +657,12 @@ func ProduceGroupSearch(group *mongo.Group, groupID string, groupType string) (e
 func ProduceGroupPrimaries(groupID string, groupType string, prims int) (err error) {
 
 	m := GroupPrimariesMessage{GroupID: groupID, GroupType: groupType, CurrentPrimaries: prims}
+	return produce(m.Queue(), m)
+}
+
+func ProduceSameOwners(appID int) (err error) {
+
+	m := AppSameownersMessage{AppID: appID}
 	return produce(m.Queue(), m)
 }
 
