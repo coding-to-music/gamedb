@@ -163,9 +163,9 @@ func playerHandler(message *rabbit.Message) {
 
 		defer wg.Done()
 
-		err = updatePlayerComments(&player)
+		b, err := updatePlayerComments(&player)
 		if err != nil {
-			steam.LogSteamError(err, zap.Int64("player id", payload.ID))
+			steam.LogSteamError(err, zap.Int64("player id", payload.ID), zap.String("resp", string(b)))
 			sendToRetryQueue(message)
 			return
 		}
@@ -592,17 +592,17 @@ func updatePlayerBans(player *mongo.Player) error {
 	return nil
 }
 
-func updatePlayerComments(player *mongo.Player) error {
+func updatePlayerComments(player *mongo.Player) ([]byte, error) {
 
-	resp, err := steam.GetSteam().GetComments(player.ID, 1, 0)
+	resp, b, err := steam.GetSteam().GetComments(player.ID, 1, 0)
 	err = steam.AllowSteamCodes(err)
 	if err != nil {
-		return err
+		return b, err
 	}
 
 	player.CommentsCount = resp.TotalCount
 
-	return nil
+	return b, nil
 }
 
 func savePlayerRow(player mongo.Player) error {

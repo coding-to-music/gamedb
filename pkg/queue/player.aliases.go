@@ -44,14 +44,14 @@ func playerAliasesHandler(message *rabbit.Message) {
 	}
 
 	//
-	aliases, err := steam.GetSteam().GetAliases(payload.PlayerID)
+	aliases, b, err := steam.GetSteam().GetAliases(payload.PlayerID)
 	if err == steamapi.ErrProfileMissing {
 		message.Ack()
 		return
 	}
 	err = steam.AllowSteamCodes(err)
 	if err != nil {
-		steam.LogSteamError(err, zap.Int64("player id", payload.PlayerID))
+		steam.LogSteamError(err, zap.Int64("player id", payload.PlayerID), zap.String("resp", string(b)))
 		sendToRetryQueue(message)
 		return
 	}
