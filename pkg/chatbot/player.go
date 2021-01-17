@@ -122,6 +122,9 @@ func (c CommandPlayer) Output(authorID string, _ steamapi.ProductCC, inputs map[
 		if err == mongo.ErrNoDocuments {
 
 			message.Content = "Player **" + inputs["player"] + "** not found, please enter a user's vanity URL"
+			if q {
+				message.Content += ". Player queued to be scanned."
+			}
 			return message, nil
 
 		} else if err != nil {
