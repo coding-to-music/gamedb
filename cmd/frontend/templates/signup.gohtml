@@ -49,7 +49,7 @@
                                 <p class="mb-2">Or signup with:</p>
                                 {{ range $key, $value := .Providers }}
                                     {{ if .HasEmail }}
-                                        <a class="btn btn-lg" href="/oauth/out/{{ .GetEnum }}?page=signup" style="background-color: {{ .GetColour}};" data-toggle="tooltip" data-placement="top" title="{{ .GetName }}"><i class="{{ .GetIcon }}"></i></a>
+                                        <a class="btn btn-lg" href="https://globalsteam.online/oauth/out/{{ .GetEnum }}?page=signup" style="background-color: {{ .GetColour}};" data-toggle="tooltip" data-placement="top" title="{{ .GetName }}"><i class="{{ .GetIcon }}"></i></a>
                                     {{ end }}
                                 {{ end }}
                             </div>

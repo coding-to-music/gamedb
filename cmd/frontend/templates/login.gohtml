@@ -41,7 +41,7 @@
                             <div class="col-12 col-lg-6" id="providers">
                                 <p class="mb-2">Or login with:</p>
                                 {{ range $key, $value := .Providers }}
-                                    <a class="btn btn-lg" href="/oauth/out/{{ .GetEnum }}?page=login" style="background-color: {{ .GetColour}};" data-toggle="tooltip" data-placement="top" title="{{ .GetName }}"><i class="{{ .GetIcon }}"></i></a>
+                                    <a class="btn btn-lg" href="https://globalsteam.online/oauth/out/{{ .GetEnum }}?page=login" style="background-color: {{ .GetColour}};" data-toggle="tooltip" data-placement="top" title="{{ .GetName }}"><i class="{{ .GetIcon }}"></i></a>
                                 {{ end }}
                             </div>
                         </div>
