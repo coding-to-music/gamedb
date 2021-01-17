@@ -49,10 +49,10 @@ func (c InstagramPost) work() (err error) {
 	// 	return errors.New("empty url")
 	// }
 	//
-	// text := app.GetName() + " (Score: " + helpers.FloatToString(app.ReviewsScore, 2) + ") https://gamedb.online/games/" + strconv.Itoa(app.ID) +
+	// text := app.GetName() + " (Score: " + helpers.FloatToString(app.ReviewsScore, 2) + ") " + config.C.GameDBDomain + "/games/" + strconv.Itoa(app.ID) +
 	// 	" #steamgames #steam #gaming " + helpers.GetHashTag(app.GetName())
 	//
-	// // err = helpers.UpdateBio("https://gamedb.online" + app.GetPath())
+	// // err = helpers.UpdateBio(" + config.C.GameDBDomain + " + app.GetPath())
 	// // log.ErrS(err)
 	//
 	// return instagram.UploadInstagram(url, text)

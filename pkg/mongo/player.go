@@ -288,7 +288,7 @@ func (player Player) GetAvatar() string {
 func (player Player) GetAvatarAbsolute() string {
 	avatar := player.GetAvatar()
 	if strings.HasPrefix(avatar, "/") {
-		avatar = "https://gamedb.online" + avatar
+		avatar = config.C.GameDBDomain + avatar
 	}
 	return avatar
 }

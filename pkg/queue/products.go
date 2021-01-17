@@ -311,7 +311,7 @@ func saveProductPricesToMongo(before helpers.ProductInterface, after helpers.Pro
 		// 	if ok && appBefore.IsOnSale() {
 		//
 		// 		// Twitter
-		// 		_, _, err = twitter.GetTwitter().Statuses.Update("["+helpers.FloatToString(percentIncrease, 0)+"%] ($"+helpers.FloatToString(float64(newPrice)/100, 2)+") gamedb.online/games/"+strconv.Itoa(before.GetID())+" #freegame #steam "+helpers.GetHashTag(before.GetName()), nil)
+		// 		_, _, err = twitter.GetTwitter().Statuses.Update("["+helpers.FloatToString(percentIncrease, 0)+"%] ($"+helpers.FloatToString(float64(newPrice)/100, 2)+") globalsteam.online/games/"+strconv.Itoa(before.GetID())+" #freegame #steam "+helpers.GetHashTag(before.GetName()), nil)
 		// 		if err != nil {
 		// 			if !strings.Contains(err.Error(), "Status is a duplicate") {
 		// 				log.FatalS(err)
@@ -319,7 +319,7 @@ func saveProductPricesToMongo(before helpers.ProductInterface, after helpers.Pro
 		// 		}
 		//
 		// 		// Reddit
-		// 		err = reddit.PostToReddit("["+helpers.FloatToString(percentIncrease, 0)+"%] "+before.GetName()+" ($"+helpers.FloatToString(float64(newPrice)/100, 2)+")", "https://gamedb.online"+before.GetPath())
+		// 		err = reddit.PostToReddit("["+helpers.FloatToString(percentIncrease, 0)+"%] "+before.GetName()+" ($"+helpers.FloatToString(float64(newPrice)/100, 2)+")", config.C.GameDBDomain +before.GetPath())
 		// 		if err != nil {
 		// 			log.FatalS(err)
 		// 		}

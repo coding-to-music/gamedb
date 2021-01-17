@@ -16,7 +16,7 @@ function websocketListener(page, onMessage, attempt = 1) {
     }
 
     // Connect
-    _websocket = new WebSocket((location.protocol === 'https:' ? "wss://gamedb.online" : "ws://" + location.host) + "/websocket/" + page);
+    _websocket = new WebSocket((location.protocol === 'https:' ? "wss://" + window.location.hostname : "ws://" + location.host) + "/websocket/" + page);
 
     let $badge = $('#live-badge');
 

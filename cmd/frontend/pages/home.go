@@ -152,7 +152,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 							image = helpers.DefaultAppIcon
 						}
 						if strings.HasPrefix(image, "/") {
-							image = "http://gamedb.online" + image // Not using domain from config to make local work
+							image = "http://globalsteam.online" + image // Not using domain from config to make local work
 						}
 
 						topSellers = append(topSellers, homeTopSellerTemplate{

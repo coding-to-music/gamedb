@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steamapi"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -58,7 +59,7 @@ func (price ProductPrice) GetPath() string {
 
 func (price ProductPrice) GetIcon() string {
 	icon := helpers.GetAppIcon(price.AppID, price.Icon)
-	return strings.TrimPrefix(icon, "https://gamedb.online")
+	return strings.TrimPrefix(icon, config.C.GameDBDomain)
 }
 
 func (price ProductPrice) GetPercentChange() float64 {

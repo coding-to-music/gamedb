@@ -10,7 +10,7 @@ import (
 	"golang.org/x/oauth2"
 )
 
-const UserAgent = "gamedb.online"
+const UserAgent = "globalsteam.online"
 
 type redditProvider struct {
 }

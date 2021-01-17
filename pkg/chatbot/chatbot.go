@@ -117,9 +117,9 @@ func init() {
 func getAuthor(guildID string) *discordgo.MessageEmbedAuthor {
 
 	author := &discordgo.MessageEmbedAuthor{
-		Name:    "gamedb.online",
+		Name:    "globalsteam.online",
 		URL:     config.C.GameDBDomain + "/?utm_source=discord&utm_medium=discord&utm_content=" + guildID,
-		IconURL: "https://gamedb.online/assets/img/sa-bg-32x32.png",
+		IconURL: config.C.GameDBDomain + "/assets/img/sa-bg-32x32.png",
 	}
 	if config.IsLocal() {
 		author.Name = "localhost:" + config.C.FrontendPort
@@ -131,8 +131,8 @@ func getAuthor(guildID string) *discordgo.MessageEmbedAuthor {
 func getFooter() *discordgo.MessageEmbedFooter {
 
 	footer := &discordgo.MessageEmbedFooter{
-		Text:         "gamedb.online/discord for all commands",
-		IconURL:      "https://gamedb.online/assets/img/sa-bg-32x32.png",
+		Text:         "globalsteam.online/discord for all commands",
+		IconURL:      config.C.GameDBDomain + "/assets/img/sa-bg-32x32.png",
 		ProxyIconURL: "",
 	}
 

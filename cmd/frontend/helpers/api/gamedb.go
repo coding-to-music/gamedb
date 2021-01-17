@@ -20,7 +20,7 @@ func stringPointer(s string) *string {
 var SwaggerGameDB = &openapi3.Swagger{
 	OpenAPI: "3.0.0",
 	Servers: []*openapi3.Server{
-		{URL: "https://api.gamedb.online"},
+		{URL: "https://api.globalsteam.online"},
 	},
 	ExternalDocs: &openapi3.ExternalDocs{
 		URL: config.C.GameDBDomain + "/api/gamedb",

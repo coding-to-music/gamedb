@@ -29,7 +29,7 @@ func (mailjetProvider) Send(toEmail, replyToName, replyToEmail, subject string, 
 
 	message := mailjet.InfoMessagesV31{
 		To:       &mailjet.RecipientsV31{mailjet.RecipientV31{Email: toEmail}},
-		From:     &mailjet.RecipientV31{Name: "Global Steam", Email: "no-reply@gamedb.online"}, // Must be from verified domain
+		From:     &mailjet.RecipientV31{Name: "Global Steam", Email: "no-reply@globalsteam.online"}, // Must be from verified domain
 		Subject:  subject,
 		HTMLPart: html,
 		TextPart: text,

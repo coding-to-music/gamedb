@@ -4,6 +4,7 @@ import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/olivere/elastic/v7"
@@ -71,7 +72,7 @@ func (c CommandAppRandom) Output(_ string, region steamapi.ProductCC, inputs map
 
 		tag, err := mongo.GetStatByName(inputs["tag"])
 		if err == mongo.ErrNoDocuments {
-			message.Content = "Tag **" + inputs["tag"] + "** not found, see <https://gamedb.online/tags>"
+			message.Content = "Tag **" + inputs["tag"] + "** not found, see <" + config.C.GameDBDomain + "/tags>"
 			return message, nil
 		} else if err != nil {
 			return message, err

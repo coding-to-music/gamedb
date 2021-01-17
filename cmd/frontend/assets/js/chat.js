@@ -31,7 +31,7 @@ if ($('#chat-page').length > 0) {
         const fadeClass = (addToTop ? ' fade-green' : '');
 
         if (!data.content && data.embeds) {
-            data.content = '<small>Media content not available on gamedb.online, please view in Discord</small>';
+            data.content = '<small>Media content not available on our website, please view in Discord</small>';
         }
 
         $container.json2html(

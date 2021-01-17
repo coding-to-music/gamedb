@@ -10,12 +10,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gamedb/gamedb/pkg/log"
-	"go.uber.org/zap"
-
 	"github.com/cenkalti/backoff/v4"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/mssola/user_agent"
+	"go.uber.org/zap"
 )
 
 func IsBot(userAgent string) bool {

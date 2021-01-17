@@ -56,7 +56,7 @@ func Init() {
 		SameSite: http.SameSiteLaxMode, // Can't be strict, stops oauth callbacks working
 		MaxAge:   2419200,              // 30 days
 		Path:     "/",
-		Domain:   "gamedb.online",
+		Domain:   "globalsteam.online",
 		Secure:   true,
 	}
 
