@@ -323,23 +323,35 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 
 	} else if provider.GetType() == oauth.TypeOAuth {
 
-		// Look for existing user by email
-		user, err = mysql.GetUserByEmail(resp.Email)
-		if err == mysql.ErrRecordNotFound {
+		if provider.HasEmail() {
 
-			// Create new user
-			user, err = mysql.NewUser(r, resp.Email, "", session.GetProductCC(r), true)
-			if err != nil {
+			// Look for existing user by email
+			user, err = mysql.GetUserByEmail(resp.Email)
+			if err == mysql.ErrRecordNotFound {
+
+				// Create new user
+				user, err = mysql.NewUser(r, resp.Email, "", session.GetProductCC(r), true)
+				if err != nil {
+					log.ErrS(err)
+					session.SetFlash(r, session.SessionBad, "Account could not be created (1105)")
+					return
+				}
+				newUser = true
+
+			} else if err != nil {
 				log.ErrS(err)
-				session.SetFlash(r, session.SessionBad, "Account could not be created (1105)")
+				session.SetFlash(r, session.SessionBad, "An error occurred (1106)")
 				return
 			}
-			newUser = true
 
-		} else if err != nil {
-			log.ErrS(err)
-			session.SetFlash(r, session.SessionBad, "An error occurred (1106)")
-			return
+		} else {
+
+			user, err = mysql.GetUserByProviderID(provider.GetEnum(), resp.ID)
+			if err != nil {
+				log.ErrS(err)
+				session.SetFlash(r, session.SessionBad, "Unable to find user (1106)")
+				return
+			}
 		}
 
 	} else if provider.GetType() == oauth.TypeOpenID {
