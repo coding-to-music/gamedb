@@ -50,14 +50,18 @@ func main() {
 	r.Use(chiMiddleware.NewCompressor(flate.DefaultCompression, "text/html", "text/css", "text/javascript", "application/json", "application/javascript").Handler)
 	r.Use(middleware.RealIP)
 	r.Use(middleware.RateLimiterBlock(time.Second/2, 1, rateLimitedHandler))
-	r.Use(authMiddlewear)
 
 	r.Get("/", homeHandler)
 	r.Get("/health-check", healthCheckHandler)
 
 	r.NotFound(errorHandler)
 
-	generated.HandlerFromMux(Server{}, r)
+	generated.HandlerWithOptions(Server{}, generated.ChiServerOptions{
+		BaseRouter: r,
+		Middlewares: []generated.MiddlewareFunc{
+			authMiddlewear,
+		},
+	})
 
 	s := &http.Server{
 		Addr:              "0.0.0.0:" + config.C.APIPort,
@@ -113,8 +117,8 @@ func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, http.StatusText(http.StatusOK), http.StatusOK)
 }
 
-func authMiddlewear(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func authMiddlewear(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 
