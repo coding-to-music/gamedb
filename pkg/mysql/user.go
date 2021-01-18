@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"errors"
 	"net/http"
 	"time"
 
@@ -120,6 +121,10 @@ func (user User) SetProdCC(cc steamapi.ProductCC) error {
 }
 
 func NewUser(r *http.Request, userEmail, password string, prodCC steamapi.ProductCC, verified bool) (user User, err error) {
+
+	if userEmail == "" {
+		return user, errors.New("empty email")
+	}
 
 	db, err := GetMySQLClient()
 	if err != nil {
