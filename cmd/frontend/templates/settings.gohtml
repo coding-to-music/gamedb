@@ -155,12 +155,12 @@
                                             {{ if ne $p.ID "" }}
                                                 <span class="float-left mr-1">{{ $p.Username }}</span>
                                                 <small class="float-right d-block nowrap pt-1">
-                                                    <a href="https://globalsteam.online/oauth/out/{{ .GetEnum }}?page=settings" class="mr-2"><i class="fas fa-link"></i> Relink</a>
+                                                    <a href="/oauth/out/{{ .GetEnum }}?page=settings" class="mr-2"><i class="fas fa-link"></i> Relink</a>
                                                     <a href="/settings/remove-provider/{{ .GetEnum }}"><i class="fas fa-unlink"></i> Unlink</a>
                                                 </small>
                                             {{ else }}
                                                 <div class="nowrap">
-                                                    <a href="https://globalsteam.online/oauth/out/{{ .GetEnum }}?page=settings" class="mr-2"><i class="fas fa-link"></i> Link</a>
+                                                    <a href="/oauth/out/{{ .GetEnum }}?page=settings" class="mr-2"><i class="fas fa-link"></i> Link</a>
                                                 </div>
                                             {{ end }}
                                         </div>
