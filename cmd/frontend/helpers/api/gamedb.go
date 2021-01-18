@@ -80,7 +80,7 @@ var SwaggerGameDB = &openapi3.Swagger{
 					},
 				},
 			},
-			"app-schema": {
+			"game-schema": {
 				Value: &openapi3.Schema{
 					Required: []string{"id", "name", "tags", "genres", "categories", "developers", "publishers", "prices", "players_max", "players_week_max", "players_week_avg", "release_date", "reviews_positive", "reviews_negative", "reviews_score", "metacritic_score"},
 					Properties: map[string]*openapi3.SchemaRef{
@@ -234,19 +234,15 @@ var SwaggerGameDB = &openapi3.Swagger{
 					}),
 				},
 			},
-			"pagination-response": {
-				Value: &openapi3.Response{
-					Description: stringPointer("Page information"),
-					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-						Ref: "#/components/schemas/pagination-schema",
-					}),
-				},
-			},
 			"article-response": {
 				Value: &openapi3.Response{
-					Description: stringPointer("A article"),
-					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-						Ref: "#/components/schemas/article-schema",
+					Description: stringPointer("An article"),
+					Content: openapi3.NewContentWithJSONSchema(&openapi3.Schema{
+						Required: []string{"article", "error"},
+						Properties: map[string]*openapi3.SchemaRef{
+							"article": {Ref: "#/components/schemas/article-schema"},
+							"error":   {Value: openapi3.NewStringSchema()},
+						},
 					}),
 				},
 			},
@@ -268,19 +264,24 @@ var SwaggerGameDB = &openapi3.Swagger{
 									},
 								},
 							},
+							"error": {Value: openapi3.NewStringSchema()},
 						},
 					}),
 				},
 			},
-			"app-response": {
+			"game-response": {
 				Value: &openapi3.Response{
 					Description: stringPointer("A game"),
-					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-						Ref: "#/components/schemas/app-schema",
+					Content: openapi3.NewContentWithJSONSchema(&openapi3.Schema{
+						Required: []string{"game", "error"},
+						Properties: map[string]*openapi3.SchemaRef{
+							"game":  {Ref: "#/components/schemas/game-schema"},
+							"error": {Value: openapi3.NewStringSchema()},
+						},
 					}),
 				},
 			},
-			"apps-response": {
+			"games-response": {
 				Value: &openapi3.Response{
 					Description: stringPointer("List of games"),
 					Content: openapi3.NewContentWithJSONSchema(&openapi3.Schema{
@@ -294,10 +295,11 @@ var SwaggerGameDB = &openapi3.Swagger{
 								Value: &openapi3.Schema{
 									Type: "array",
 									Items: &openapi3.SchemaRef{
-										Ref: "#/components/schemas/app-schema",
+										Ref: "#/components/schemas/game-schema",
 									},
 								},
 							},
+							"error": {Value: openapi3.NewStringSchema()},
 						},
 					}),
 				},
@@ -305,8 +307,12 @@ var SwaggerGameDB = &openapi3.Swagger{
 			"group-response": {
 				Value: &openapi3.Response{
 					Description: stringPointer("A group"),
-					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-						Ref: "#/components/schemas/group-schema",
+					Content: openapi3.NewContentWithJSONSchema(&openapi3.Schema{
+						Required: []string{"group", "error"},
+						Properties: map[string]*openapi3.SchemaRef{
+							"group": {Ref: "#/components/schemas/group-schema"},
+							"error": {Value: openapi3.NewStringSchema()},
+						},
 					}),
 				},
 			},
@@ -328,6 +334,7 @@ var SwaggerGameDB = &openapi3.Swagger{
 									},
 								},
 							},
+							"error": {Value: openapi3.NewStringSchema()},
 						},
 					}),
 				},
@@ -335,8 +342,12 @@ var SwaggerGameDB = &openapi3.Swagger{
 			"package-response": {
 				Value: &openapi3.Response{
 					Description: stringPointer("A package"),
-					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-						Ref: "#/components/schemas/package-schema",
+					Content: openapi3.NewContentWithJSONSchema(&openapi3.Schema{
+						Required: []string{"package", "error"},
+						Properties: map[string]*openapi3.SchemaRef{
+							"package": {Ref: "#/components/schemas/package-schema"},
+							"error":   {Value: openapi3.NewStringSchema()},
+						},
 					}),
 				},
 			},
@@ -358,6 +369,7 @@ var SwaggerGameDB = &openapi3.Swagger{
 									},
 								},
 							},
+							"error": {Value: openapi3.NewStringSchema()},
 						},
 					}),
 				},
@@ -365,8 +377,12 @@ var SwaggerGameDB = &openapi3.Swagger{
 			"player-response": {
 				Value: &openapi3.Response{
 					Description: stringPointer("A player"),
-					Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-						Ref: "#/components/schemas/player-schema",
+					Content: openapi3.NewContentWithJSONSchema(&openapi3.Schema{
+						Required: []string{"player", "error"},
+						Properties: map[string]*openapi3.SchemaRef{
+							"player": {Ref: "#/components/schemas/player-schema"},
+							"error":  {Value: openapi3.NewStringSchema()},
+						},
 					}),
 				},
 			},
@@ -387,6 +403,7 @@ var SwaggerGameDB = &openapi3.Swagger{
 									},
 								},
 							},
+							"error": {Value: openapi3.NewStringSchema()},
 						},
 					}),
 				},
@@ -408,15 +425,11 @@ var SwaggerGameDB = &openapi3.Swagger{
 					{Value: openapi3.NewQueryParameter("feed").WithSchema(openapi3.NewStringSchema())},
 				},
 				Responses: map[string]*openapi3.ResponseRef{
-					"200": {
-						Ref: "#/components/responses/articles-response",
-					},
-					"401": {
-						Ref: "#/components/responses/message-response",
-					},
-					"500": {
-						Ref: "#/components/responses/message-response",
-					},
+					"200": {Ref: "#/components/responses/articles-response"},
+					"400": {Ref: "#/components/responses/articles-response"},
+					"401": {Ref: "#/components/responses/articles-response"},
+					"404": {Ref: "#/components/responses/articles-response"},
+					"500": {Ref: "#/components/responses/articles-response"},
 				},
 			},
 		},
@@ -439,15 +452,11 @@ var SwaggerGameDB = &openapi3.Swagger{
 					{Value: openapi3.NewQueryParameter("platforms").WithSchema(openapi3.NewArraySchema().WithItems(openapi3.NewStringSchema()).WithMaxItems(3))},
 				},
 				Responses: map[string]*openapi3.ResponseRef{
-					"200": {
-						Ref: "#/components/responses/apps-response",
-					},
-					"401": {
-						Ref: "#/components/responses/message-response",
-					},
-					"500": {
-						Ref: "#/components/responses/message-response",
-					},
+					"200": {Ref: "#/components/responses/games-response"},
+					"400": {Ref: "#/components/responses/games-response"},
+					"401": {Ref: "#/components/responses/games-response"},
+					"404": {Ref: "#/components/responses/games-response"},
+					"500": {Ref: "#/components/responses/games-response"},
 				},
 			},
 		},
@@ -459,21 +468,11 @@ var SwaggerGameDB = &openapi3.Swagger{
 					{Value: openapi3.NewPathParameter("id").WithRequired(true).WithSchema(openapi3.NewInt32Schema().WithMin(1))},
 				},
 				Responses: map[string]*openapi3.ResponseRef{
-					"200": {
-						Ref: "#/components/responses/app-response",
-					},
-					"400": {
-						Ref: "#/components/responses/message-response",
-					},
-					"401": {
-						Ref: "#/components/responses/message-response",
-					},
-					"404": {
-						Ref: "#/components/responses/message-response",
-					},
-					"500": {
-						Ref: "#/components/responses/message-response",
-					},
+					"200": {Ref: "#/components/responses/game-response"},
+					"400": {Ref: "#/components/responses/message-response"},
+					"401": {Ref: "#/components/responses/message-response"},
+					"404": {Ref: "#/components/responses/message-response"},
+					"500": {Ref: "#/components/responses/message-response"},
 				},
 			},
 		},
@@ -489,21 +488,11 @@ var SwaggerGameDB = &openapi3.Swagger{
 					{Value: openapi3.NewQueryParameter("ids").WithSchema(openapi3.NewArraySchema().WithMaxItems(10).WithItems(openapi3.NewInt64Schema()))},
 				},
 				Responses: map[string]*openapi3.ResponseRef{
-					"200": {
-						Ref: "#/components/responses/groups-response",
-					},
-					"400": {
-						Ref: "#/components/responses/message-response",
-					},
-					"401": {
-						Ref: "#/components/responses/message-response",
-					},
-					"404": {
-						Ref: "#/components/responses/message-response",
-					},
-					"500": {
-						Ref: "#/components/responses/message-response",
-					},
+					"200": {Ref: "#/components/responses/groups-response"},
+					"400": {Ref: "#/components/responses/groups-response"},
+					"401": {Ref: "#/components/responses/groups-response"},
+					"404": {Ref: "#/components/responses/groups-response"},
+					"500": {Ref: "#/components/responses/groups-response"},
 				},
 			},
 		},
@@ -523,21 +512,11 @@ var SwaggerGameDB = &openapi3.Swagger{
 					{Value: openapi3.NewQueryParameter("status").WithSchema(openapi3.NewArraySchema().WithMaxItems(10).WithItems(openapi3.NewInt32Schema()))},
 				},
 				Responses: map[string]*openapi3.ResponseRef{
-					"200": {
-						Ref: "#/components/responses/packages-response",
-					},
-					"400": {
-						Ref: "#/components/responses/message-response",
-					},
-					"401": {
-						Ref: "#/components/responses/message-response",
-					},
-					"404": {
-						Ref: "#/components/responses/message-response",
-					},
-					"500": {
-						Ref: "#/components/responses/message-response",
-					},
+					"200": {Ref: "#/components/responses/packages-response"},
+					"400": {Ref: "#/components/responses/packages-response"},
+					"401": {Ref: "#/components/responses/packages-response"},
+					"404": {Ref: "#/components/responses/packages-response"},
+					"500": {Ref: "#/components/responses/packages-response"},
 				},
 			},
 		},
@@ -555,21 +534,11 @@ var SwaggerGameDB = &openapi3.Swagger{
 					{Value: openapi3.NewQueryParameter("country").WithSchema(openapi3.NewArraySchema().WithMaxItems(3).WithItems(openapi3.NewStringSchema().WithMaxLength(2)))},
 				},
 				Responses: map[string]*openapi3.ResponseRef{
-					"200": {
-						Ref: "#/components/responses/players-response",
-					},
-					"400": {
-						Ref: "#/components/responses/message-response",
-					},
-					"401": {
-						Ref: "#/components/responses/message-response",
-					},
-					"404": {
-						Ref: "#/components/responses/message-response",
-					},
-					"500": {
-						Ref: "#/components/responses/message-response",
-					},
+					"200": {Ref: "#/components/responses/players-response"},
+					"400": {Ref: "#/components/responses/players-response"},
+					"401": {Ref: "#/components/responses/players-response"},
+					"404": {Ref: "#/components/responses/players-response"},
+					"500": {Ref: "#/components/responses/players-response"},
 				},
 			},
 		},
@@ -581,9 +550,7 @@ var SwaggerGameDB = &openapi3.Swagger{
 					{Value: openapi3.NewPathParameter("id").WithRequired(true).WithSchema(openapi3.NewInt64Schema().WithMin(1))},
 				},
 				Responses: map[string]*openapi3.ResponseRef{
-					"200": {
-						Ref: "#/components/responses/player-response",
-					},
+					"200": {Ref: "#/components/responses/player-response"},
 				},
 			},
 			Post: &openapi3.Operation{
@@ -593,15 +560,9 @@ var SwaggerGameDB = &openapi3.Swagger{
 					{Value: openapi3.NewPathParameter("id").WithRequired(true).WithSchema(openapi3.NewInt64Schema().WithMaxLength(2))},
 				},
 				Responses: map[string]*openapi3.ResponseRef{
-					"200": {
-						Ref: "#/components/responses/message-response",
-					},
-					"401": {
-						Ref: "#/components/responses/message-response",
-					},
-					"500": {
-						Ref: "#/components/responses/message-response",
-					},
+					"200": {Ref: "#/components/responses/message-response"},
+					"401": {Ref: "#/components/responses/message-response"},
+					"500": {Ref: "#/components/responses/message-response"},
 				},
 			},
 		},
