@@ -8,7 +8,7 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-func newFileCore(bin string) zapcore.Core {
+func newFileCore(encoderConfig zapcore.EncoderConfig, bin string) zapcore.Core {
 
 	err := os.MkdirAll("/tmp/gamedb/logs/", os.ModePerm)
 	if err != nil {
@@ -23,7 +23,7 @@ func newFileCore(bin string) zapcore.Core {
 	return fileCore{
 		file:         f,
 		levelEnabler: zap.NewAtomicLevelAt(zapcore.DebugLevel),
-		encoder:      zapcore.NewConsoleEncoder(zap.NewDevelopmentEncoderConfig()),
+		encoder:      zapcore.NewConsoleEncoder(encoderConfig),
 		output:       zapcore.AddSync(ioutil.Discard),
 	}
 }

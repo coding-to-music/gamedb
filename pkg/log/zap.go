@@ -11,9 +11,7 @@ import (
 
 func InitZap(logName string) {
 
-	var cores = []zapcore.Core{
-		getStandardCore(),
-	}
+	var cores []zapcore.Core
 
 	var options = []zap.Option{
 		zap.AddCaller(),
@@ -24,14 +22,27 @@ func InitZap(logName string) {
 
 		options = append(options, zap.Development())
 
-		cores = append(cores, newFileCore(logName))
+		encoderConfig := zap.NewDevelopmentEncoderConfig()
+
+		cores = append(cores,
+			getStandardCore(encoderConfig),
+			newFileCore(encoderConfig, logName),
+		)
 
 	} else {
 
 		options = append(options, zap.AddStacktrace(zap.WarnLevel))
 
+		encoderConfig := zap.NewProductionEncoderConfig()
+		encoderConfig.TimeKey = ""
+		encoderConfig.LevelKey = ""
+
+		cores = append(cores,
+			getStandardCore(encoderConfig),
+		)
+
 		if config.C.GoogleProject != "" && config.C.GoogleAuthFile != "" {
-			cores = append(cores, newGoogleCore())
+			cores = append(cores, newGoogleCore(encoderConfig))
 		}
 		if config.C.RollbarSecret != "" && config.C.RollbarUser != "" {
 			// Add rollbar core
@@ -69,9 +80,9 @@ func Flush() {
 	}
 }
 
-func getStandardCore() zapcore.Core {
+func getStandardCore(encoderConfig zapcore.EncoderConfig) zapcore.Core {
 
-	encoder := zapcore.NewConsoleEncoder(zap.NewDevelopmentEncoderConfig())
+	encoder := zapcore.NewConsoleEncoder(encoderConfig)
 	output := zapcore.Lock(os.Stdout)
 	level := zap.NewAtomicLevelAt(zapcore.DebugLevel)
 

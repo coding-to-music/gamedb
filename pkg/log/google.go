@@ -13,7 +13,7 @@ import (
 	"google.golang.org/api/option"
 )
 
-func newGoogleCore() zapcore.Core {
+func newGoogleCore(encoderConfig zapcore.EncoderConfig) zapcore.Core {
 
 	ctx := context.Background()
 
@@ -29,7 +29,7 @@ func newGoogleCore() zapcore.Core {
 		async:   true,
 
 		levelEnabler: zap.NewAtomicLevelAt(zapcore.DebugLevel),
-		encoder:      zapcore.NewConsoleEncoder(zap.NewDevelopmentEncoderConfig()),
+		encoder:      zapcore.NewConsoleEncoder(encoderConfig),
 		output:       zapcore.AddSync(ioutil.Discard),
 	}
 }
