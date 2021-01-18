@@ -15,6 +15,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/mysql/pics"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.uber.org/zap"
 )
 
 func getAppConfig(kv steamvdf.KeyValue) (config pics.PICSKeyValues, launch []pics.PICSAppConfigLaunchItem) {
@@ -236,7 +237,7 @@ func setAppLaunchItem(kv steamvdf.KeyValue, launchItem *pics.PICSAppConfigLaunch
 		case "config":
 			setAppLaunchItem(child, launchItem)
 		default:
-			log.WarnS("setAppLaunchItem missing case: " + child.Key)
+			log.Warn("setAppLaunchItem missing case: ", zap.String("key", child.Key), zap.String("val", child.Value))
 		}
 	}
 }
