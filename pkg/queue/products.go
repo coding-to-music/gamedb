@@ -223,6 +223,8 @@ func setAppLaunchItem(kv steamvdf.KeyValue, launchItem *pics.PICSAppConfigLaunch
 			launchItem.WorkingDir = child.Value
 		case "vrmode":
 			launchItem.VRMode = child.Value
+		case "description_loc":
+			launchItem.DescriptionLocation = child.Value
 		case "ownsdlc":
 			dlcSlice := strings.Split(child.Value, ",")
 			for _, v := range dlcSlice {
