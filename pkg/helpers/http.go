@@ -38,6 +38,9 @@ func Head(link string, timeout time.Duration) (code int, err error) {
 
 	operation := func() (err error) {
 		_, code, err = requestWithTimeout("HEAD", link, timeout, nil, nil)
+		if code == 404 {
+			return backoff.Permanent(err)
+		}
 		return err
 	}
 
