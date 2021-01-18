@@ -180,6 +180,9 @@ func main() {
 	r.Get("/steam-api", redirectHandler("/api/steam"))
 	r.Get("/api", redirectHandler("/api/gamedb"))
 	r.Get("/discord", redirectHandler("/discord-bot")) // Used in discord messages
+	r.Get("/api/gamedb", redirectHandler("/api/globalsteam"))
+	r.Get("/api/gamedb.json", redirectHandler("/api/globalsteam.json"))
+	r.Get("/api/gamedb.yaml", redirectHandler("/api/globalsteam.yaml"))
 
 	// Game Redirects
 	r.Get("/new-releases", redirectHandler("/games/new-releases"))

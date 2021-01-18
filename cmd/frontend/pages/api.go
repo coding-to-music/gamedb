@@ -17,9 +17,9 @@ func APIRouter() http.Handler {
 
 	r := chi.NewRouter()
 	r.Get("/", apiHandler)
-	r.Get("/gamedb", apiHandler)
-	r.Get("/gamedb.json", apiGamedbJSONHandler)
-	r.Get("/gamedb.yaml", apiGamedbYAMLHandler)
+	r.Get("/globalsteam", apiHandler)
+	r.Get("/globalsteam.json", apiGamedbJSONHandler)
+	r.Get("/globalsteam.yaml", apiGamedbYAMLHandler)
 	r.Get("/steam", apiHandler)
 	r.Get("/steam.json", apiSteamJSONHandler)
 	r.Get("/steam.yaml", apiSteamYAMLHandler)
@@ -31,7 +31,7 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 
 	var spec = path.Base(r.URL.Path)
 	if spec == "api" {
-		http.Redirect(w, r, "/api/gamedb", http.StatusTemporaryRedirect)
+		http.Redirect(w, r, "/api/globalsteam", http.StatusTemporaryRedirect)
 		return
 	}
 
