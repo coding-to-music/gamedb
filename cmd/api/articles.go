@@ -8,7 +8,7 @@ import (
 	generatedBackend "github.com/gamedb/gamedb/pkg/backend/generated"
 )
 
-func (s Server) GetArticles(w http.ResponseWriter, _ *http.Request, params generated.GetArticlesParams) {
+func (s Server) GetArticles(w http.ResponseWriter, r *http.Request, params generated.GetArticlesParams) {
 
 	var limit int64 = 10
 	if params.Limit != nil && *params.Limit >= 1 && *params.Limit <= 1000 {
@@ -41,13 +41,13 @@ func (s Server) GetArticles(w http.ResponseWriter, _ *http.Request, params gener
 
 	conn, ctx, err := backend.GetClient()
 	if err != nil {
-		returnErrorResponse(w, http.StatusInternalServerError, err)
+		returnErrorResponse(w, r, http.StatusInternalServerError, err)
 		return
 	}
 
 	resp, err := generatedBackend.NewArticlesServiceClient(conn).List(ctx, payload)
 	if err != nil {
-		returnErrorResponse(w, http.StatusInternalServerError, err)
+		returnErrorResponse(w, r, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -72,5 +72,5 @@ func (s Server) GetArticles(w http.ResponseWriter, _ *http.Request, params gener
 		})
 	}
 
-	returnResponse(w, http.StatusOK, result)
+	returnResponse(w, r, http.StatusOK, result)
 }

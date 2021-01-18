@@ -10,7 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func (s Server) GetPackages(w http.ResponseWriter, _ *http.Request, params generated.GetPackagesParams) {
+func (s Server) GetPackages(w http.ResponseWriter, r *http.Request, params generated.GetPackagesParams) {
 
 	var limit int64 = 10
 	if params.Limit != nil && *params.Limit >= 1 && *params.Limit <= 1000 {
@@ -96,7 +96,7 @@ func (s Server) GetPackages(w http.ResponseWriter, _ *http.Request, params gener
 
 	packages, err := mongo.GetPackages(offset, limit, bson.D{{sort, order}}, filter, projection)
 	if err != nil {
-		returnErrorResponse(w, http.StatusInternalServerError, err)
+		returnErrorResponse(w, r, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -148,5 +148,5 @@ func (s Server) GetPackages(w http.ResponseWriter, _ *http.Request, params gener
 		result.Packages = append(result.Packages, newPackage)
 	}
 
-	returnResponse(w, http.StatusOK, result)
+	returnResponse(w, r, http.StatusOK, result)
 }

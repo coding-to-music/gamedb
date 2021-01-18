@@ -10,7 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func (s Server) GetPlayers(w http.ResponseWriter, _ *http.Request, params generated.GetPlayersParams) {
+func (s Server) GetPlayers(w http.ResponseWriter, r *http.Request, params generated.GetPlayersParams) {
 
 	var limit int64 = 10
 	if params.Limit != nil && *params.Limit >= 1 && *params.Limit <= 1000 {
@@ -82,7 +82,7 @@ func (s Server) GetPlayers(w http.ResponseWriter, _ *http.Request, params genera
 		"play_time":      1,
 	})
 	if err != nil {
-		returnErrorResponse(w, http.StatusInternalServerError, err)
+		returnErrorResponse(w, r, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -115,5 +115,5 @@ func (s Server) GetPlayers(w http.ResponseWriter, _ *http.Request, params genera
 		})
 	}
 
-	returnResponse(w, http.StatusOK, result)
+	returnResponse(w, r, http.StatusOK, result)
 }

@@ -16,7 +16,7 @@ func (s Server) GetPlayersId(w http.ResponseWriter, r *http.Request, id int64) {
 
 	id, err := helpers.IsValidPlayerID(id)
 	if err != nil {
-		returnErrorResponse(w, http.StatusBadRequest, err)
+		returnErrorResponse(w, r, http.StatusBadRequest, err)
 		return
 	}
 
@@ -29,13 +29,13 @@ func (s Server) GetPlayersId(w http.ResponseWriter, r *http.Request, id int64) {
 			log.ErrS(err)
 		}
 
-		returnErrorResponse(w, http.StatusNotFound, errors.New("player not found, queued"))
+		returnErrorResponse(w, r, http.StatusNotFound, errors.New("player not found, queued"))
 		return
 
 	} else if err != nil {
 
 		log.ErrS(err)
-		returnErrorResponse(w, http.StatusInternalServerError, err)
+		returnErrorResponse(w, r, http.StatusInternalServerError, err)
 		return
 
 	} else {
@@ -57,6 +57,6 @@ func (s Server) GetPlayersId(w http.ResponseWriter, r *http.Request, id int64) {
 		ret.Playtime = player.PlayTime
 		ret.Groups = player.GroupsCount
 
-		returnResponse(w, http.StatusOK, ret)
+		returnResponse(w, r, http.StatusOK, ret)
 	}
 }

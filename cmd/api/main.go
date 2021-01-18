@@ -4,6 +4,7 @@ package main
 
 import (
 	"compress/flate"
+	"context"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -27,6 +28,7 @@ import (
 )
 
 const keyField = "key"
+const ctxUserField = "user_id"
 
 var apiKeyRegexp = regexp.MustCompile("^[A-Z0-9]{20}$")
 
@@ -109,8 +111,8 @@ func errorHandler(w http.ResponseWriter, _ *http.Request) {
 	}
 }
 
-func rateLimitedHandler(w http.ResponseWriter, _ *http.Request) {
-	returnErrorResponse(w, http.StatusTooManyRequests, errors.New(http.StatusText(http.StatusTooManyRequests)))
+func rateLimitedHandler(w http.ResponseWriter, r *http.Request) {
+	returnErrorResponse(w, r, http.StatusTooManyRequests, errors.New(http.StatusText(http.StatusTooManyRequests)))
 }
 
 func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
@@ -132,12 +134,12 @@ func authMiddlewear(next http.HandlerFunc) http.HandlerFunc {
 		}
 
 		if key == "" {
-			returnErrorResponse(w, http.StatusUnauthorized, errors.New("empty api key"))
+			returnErrorResponse(w, r, http.StatusUnauthorized, errors.New("empty api key"))
 			return
 		}
 
 		if !apiKeyRegexp.MatchString(key) {
-			returnErrorResponse(w, http.StatusUnauthorized, errors.New("invalid api key: "+key))
+			returnErrorResponse(w, r, http.StatusUnauthorized, errors.New("invalid api key: "+key))
 			return
 		}
 
@@ -145,35 +147,32 @@ func authMiddlewear(next http.HandlerFunc) http.HandlerFunc {
 		user, err := mysql.GetUserByAPIKey(key)
 		if err == mysql.ErrRecordNotFound {
 
-			returnErrorResponse(w, http.StatusUnauthorized, errors.New("invalid api key: "+key))
+			returnErrorResponse(w, r, http.StatusUnauthorized, errors.New("invalid api key: "+key))
 			return
 
 		} else if err != nil {
 
-			returnErrorResponse(w, http.StatusInternalServerError, err)
+			returnErrorResponse(w, r, http.StatusInternalServerError, err)
 			return
 
 		} else if user.Level < mysql.UserLevel2 {
 
-			returnErrorResponse(w, http.StatusUnauthorized, errors.New("invalid user level"))
+			returnErrorResponse(w, r, http.StatusUnauthorized, errors.New("invalid user level"))
 			return
 		}
 
-		go storeInInflux(map[string]string{
-			"path":    r.URL.Path,
-			"user_id": strconv.Itoa(user.ID),
-		})
+		r = r.WithContext(context.WithValue(r.Context(), ctxUserField, user.ID))
 
 		next.ServeHTTP(w, r)
-	})
+	}
 }
 
-func returnErrorResponse(w http.ResponseWriter, code int, err error) {
+func returnErrorResponse(w http.ResponseWriter, r *http.Request, code int, err error) {
 
-	returnResponse(w, code, generated.MessageResponse{Message: err.Error()})
+	returnResponse(w, r, code, generated.MessageResponse{Message: err.Error()})
 }
 
-func returnResponse(w http.ResponseWriter, code int, i interface{}) {
+func returnResponse(w http.ResponseWriter, r *http.Request, code int, i interface{}) {
 
 	w.Header().Set("content-type", "application/json")
 	w.WriteHeader(code)
@@ -183,17 +182,17 @@ func returnResponse(w http.ResponseWriter, code int, i interface{}) {
 		log.ErrS(err)
 	}
 
-	go storeInInflux(map[string]string{
-		"code": strconv.Itoa(code),
-	})
-}
+	go func() {
 
-func storeInInflux(tags map[string]string) {
+		userID, _ := r.Context().Value(ctxUserField).(int)
 
-	if len(tags) > 0 {
 		_, err := influxHelpers.InfluxWrite(influxHelpers.InfluxRetentionPolicyAllTime, influx.Point{
 			Measurement: string(influxHelpers.InfluxMeasurementAPICalls),
-			Tags:        tags,
+			Tags: map[string]string{
+				"path":    r.URL.Path,
+				"user_id": strconv.Itoa(userID),
+				"code":    strconv.Itoa(code),
+			},
 			Fields: map[string]interface{}{
 				"call": 1,
 			},
@@ -204,5 +203,5 @@ func storeInInflux(tags map[string]string) {
 		if err != nil {
 			log.ErrS(err)
 		}
-	}
+	}()
 }

@@ -9,18 +9,18 @@ import (
 	"github.com/gamedb/gamedb/pkg/mongo"
 )
 
-func (s Server) GetGamesId(w http.ResponseWriter, _ *http.Request, id int32) {
+func (s Server) GetGamesId(w http.ResponseWriter, r *http.Request, id int32) {
 
 	app, err := mongo.GetApp(int(id))
 	if err == mongo.ErrNoDocuments {
 
-		returnErrorResponse(w, http.StatusNotFound, errors.New("app not found"))
+		returnErrorResponse(w, r, http.StatusNotFound, errors.New("app not found"))
 		return
 
 	} else if err != nil {
 
 		log.ErrS(err)
-		returnErrorResponse(w, http.StatusInternalServerError, err)
+		returnErrorResponse(w, r, http.StatusInternalServerError, err)
 		return
 
 	} else {
@@ -93,6 +93,6 @@ func (s Server) GetGamesId(w http.ResponseWriter, _ *http.Request, id int32) {
 			ret.Developers = append(ret.Developers, generated.StatSchema{Id: v.ID, Name: v.Name})
 		}
 
-		returnResponse(w, http.StatusOK, ret)
+		returnResponse(w, r, http.StatusOK, ret)
 	}
 }
