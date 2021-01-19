@@ -128,11 +128,11 @@ if ($('#admin-users-page').length > 0) {
                             str += '<span class="mr-1"><i class="fab fa-google"></i></span>';
                         }
                         if (m.hasOwnProperty('twitch')) {
-                            str += '<span class="mr-1"><i class="fab twitch"></i></span>';
+                            str += '<span class="mr-1"><i class="fab fa-twitch"></i></span>';
                         }
                         if (m.hasOwnProperty('github')) {
                             str += '<a class="mr-1" href="https://api.github.com/user/' + m['github'] + '" target="_blank" rel="noopener">' +
-                                '<i class="fab github"></i></a>';
+                                '<i class="fab fa-github"></i></a>';
                         }
                         if (m.hasOwnProperty('patreon')) {
                             str += '<a class="mr-1" href="https://www.patreon.com/user?u=' + m['patreon'] + '" target="_blank" rel="noopener">' +
