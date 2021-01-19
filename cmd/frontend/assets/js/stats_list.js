@@ -13,6 +13,7 @@ if ($('#stats-list-page').length > 0) {
                 {
                     "targets": 0,
                     "render": function (data, type, row) {
+                        row[1] = row[1] ? row[1] : '-';
                         return '<i class="fas fa-star"></i> <span class="markable">' + row[1] + '</span>';
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
