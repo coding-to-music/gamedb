@@ -119,7 +119,7 @@ if ($('#admin-users-page').length > 0) {
                         const m = row[3];
                         let str = '';
                         if (m.hasOwnProperty('steam')) {
-                            str += '<a class="mr-1" href="/players/' + m['steam'] + '"><i class="fab fa-steam"></i></a>';
+                            str += '<a class="mr-1" href="/players/' + m['steam'] + '" target="_blank" rel="noopener"><i class="fab fa-steam"></i></a>';
                         }
                         if (m.hasOwnProperty('discord')) {
                             str += '<span class="mr-1"><i class="fab fa-discord"></i></span>';
