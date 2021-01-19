@@ -91,6 +91,29 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
+	// Upcoming games
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		t.Upcoming, _, err = elasticsearch.SearchAppsAdvanced(
+			0,
+			10,
+			"",
+			[]elastic.Sorter{elastic.NewFieldSort("followers").Desc()},
+			elastic.NewBoolQuery().Filter(
+				elastic.NewRangeQuery("release_date").From(time.Now().Add(upcomingFilterHours).Unix()),
+				elastic.NewRangeQuery("release_date").To(time.Now().Add(time.Hour*24*14).Unix()),
+			),
+		)
+
+		if err != nil {
+			log.ErrS(err)
+		}
+	}()
+
 	// Top sellers
 	wg.Add(1)
 	go func() {
@@ -191,8 +214,9 @@ type homeTemplate struct {
 	globalTemplate
 	TopGames     []mongo.App
 	NewGames     []mongo.App
-	Players      []mongo.Player
+	Upcoming     []elasticsearch.App
 	TopSellers   []homeTopSellerTemplate
+	Players      []mongo.Player
 	ConstApp     helpers.ProductType
 	ConstPackage helpers.ProductType
 }

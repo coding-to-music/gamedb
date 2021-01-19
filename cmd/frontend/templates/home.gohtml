@@ -99,8 +99,8 @@
                     <a class="card-footer" href="https://twitter.com/gamedb_online" target="_blank" rel="noopener">@gamedb_online</a>
                 </div>
             </div>
-            <div class="col-12 col-md-6 col-lg-4 col-xl-3">
 
+            <div class="col-12 col-md-6 col-lg-3">
                 <div class="card border-0 games mb-4">
                     <h5 class="card-header text-center">Top Games</h5>
                     <div class="card-body p-0">
@@ -116,10 +116,8 @@
                     </div>
                     <a class="card-footer text-center" href="/games">More Games</a>
                 </div>
-
             </div>
-            <div class="col-12 col-md-6 col-lg-4 col-xl-3">
-
+            <div class="col-12 col-md-6 col-lg-3">
                 <div class="card border-0 games mb-4">
                     <h5 class="card-header text-center">Top New Games</h5>
                     <div class="card-body p-0">
@@ -133,12 +131,27 @@
                             {{ end }}
                         </div>
                     </div>
-                    <a class="card-footer text-center" href="/games/new-releases">More Releases</a>
+                    <a class="card-footer text-center" href="/games/new-releases">More New</a>
                 </div>
-
             </div>
-            <div class="col-12 col-md-6 col-lg-4 col-xl-3">
-
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="card border-0 games mb-4">
+                    <h5 class="card-header text-center">Top Upcoming</h5>
+                    <div class="card-body p-0">
+                        <div class="row no-gutters">
+                            {{ range $key, $value := .Upcoming }}
+                                <div class="col-6 col-md-12">
+                                    <a href="{{ .GetPath }}">
+                                        <img src='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 215"%3E%3C/svg%3E' data-lazy="https://images.weserv.nl/?url={{ .GetHeaderImage }}&output=webp" alt="{{ .GetName }}">
+                                    </a>
+                                </div>
+                            {{ end }}
+                        </div>
+                    </div>
+                    <a class="card-footer text-center" href="/games/upcoming">More Upcoming</a>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-3">
                 <div class="card border-0 games mb-4">
                     <h5 class="card-header text-center">Top Sellers</h5>
                     <div class="card-body p-0">
@@ -155,10 +168,10 @@
                             {{ end }}
                         </div>
                     </div>
-                    <a class="card-footer text-center" href="/games/new-releases">More Releases</a>
+                    <a class="card-footer text-center" href="/games">More Games</a>
                 </div>
-
             </div>
+
             <div class="col-12 col-md-12 col-lg-6">
 
                 <div class="card mb-4" id="players">
