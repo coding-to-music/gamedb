@@ -106,7 +106,7 @@ func errorHandler(w http.ResponseWriter, _ *http.Request) {
 
 	w.WriteHeader(404)
 
-	b, err := json.Marshal(generated.MessageResponse{Message: "Invalid endpoint"})
+	b, err := json.Marshal(generated.MessageResponse{Error: "Invalid endpoint"})
 	if err != nil {
 		log.ErrS(err)
 	}
