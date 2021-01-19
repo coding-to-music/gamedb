@@ -21,7 +21,7 @@ func BadgesRouter() http.Handler {
 func badgesHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := badgesTemplate{}
-	t.fill(w, r, "badges", "Badges", "Steam badge leaderboards")
+	t.fill(w, r, "badges", "Steam badge leaderboards", "See who's the highst badge level, and who got it first")
 
 	var err error
 	t.Badges, err = mongo.GetBadgeSummaries()
