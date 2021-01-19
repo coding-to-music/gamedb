@@ -34,4 +34,5 @@ message StatResponse {
     int32 medianPrice = 8;
     float medianScore = 9;
     int32 medianPlayers = 10;
+    int32 maxDiscount = 11;
 }

@@ -87,6 +87,7 @@ func statsListJSONHandler(w http.ResponseWriter, r *http.Request) {
 		"3": "mean_price",
 		"4": "mean_score",
 		"5": "mean_players",
+		"6": "max_discount",
 	}
 
 	code := session.GetProductCC(r)
@@ -120,6 +121,7 @@ func statsListJSONHandler(w http.ResponseWriter, r *http.Request) {
 			statPlayers,           // 4
 			statScore,             // 5
 			stat.GetAppsPercent(), // 6
+			stat.GetMaxDiscount(), // 7
 		})
 	}
 

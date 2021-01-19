@@ -32,6 +32,7 @@ type Stat struct {
 	MedianPrice   map[steamapi.ProductCC]int     `bson:"median_price"`
 	MedianScore   float32                        `bson:"median_score"`
 	MedianPlayers int                            `bson:"median_players"`
+	MaxDiscount   map[steamapi.ProductCC]int     `bson:"max_discount"`
 }
 
 func (stat Stat) BSON() bson.D {
@@ -48,6 +49,7 @@ func (stat Stat) BSON() bson.D {
 		{"median_price", stat.MedianPrice},
 		{"median_score", stat.MedianScore},
 		{"median_players", stat.MedianPlayers},
+		{"max_discount", stat.MaxDiscount},
 	}
 }
 

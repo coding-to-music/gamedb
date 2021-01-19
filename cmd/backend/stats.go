@@ -20,6 +20,13 @@ func (s StatsServer) List(ctx context.Context, request *generated.StatsRequest) 
 	offset := request.GetPagination().GetOffset()
 	limit := request.GetPagination().GetLimit()
 
+	// Default currency
+	var currency = steamapi.ProductCCUS
+	if steamapi.IsProductCC(request.GetCurrency()) {
+		currency = steamapi.ProductCC(request.GetCurrency())
+	}
+
+	//
 	filter := bson.D{{"type", request.GetType()}}
 	filter2 := filter
 
@@ -51,16 +58,19 @@ func (s StatsServer) List(ctx context.Context, request *generated.StatsRequest) 
 	for _, stat := range stats {
 
 		s := &generated.StatResponse{
-			Id:            int32(stat.ID),
-			Name:          stat.Name,
-			Apps:          int32(stat.Apps),
-			AppsPercent:   stat.AppsPercnt,
-			MeanScore:     stat.MeanScore,
-			MeanPlayers:   float32(stat.MeanPlayers),
+			Id:          int32(stat.ID),
+			Name:        stat.Name,
+			Apps:        int32(stat.Apps),
+			AppsPercent: stat.AppsPercnt,
+			MaxDiscount: int32(stat.MaxDiscount[currency]),
+
+			MeanScore:   stat.MeanScore,
+			MeanPlayers: float32(stat.MeanPlayers),
+			MeanPrice:   stat.MeanPrice[currency],
+
 			MedianScore:   stat.MedianScore,
 			MedianPlayers: int32(stat.MedianPlayers),
-			// MeanPrice:     stat.MeanPrice,
-			// MedianPrice:   stat.MedianPrice,
+			MedianPrice:   int32(stat.MedianPrice[currency]),
 		}
 
 		if val, ok := stat.MeanPrice[steamapi.ProductCC(request.GetCurrency())]; ok {

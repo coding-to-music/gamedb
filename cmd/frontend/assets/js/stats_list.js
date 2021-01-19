@@ -73,6 +73,15 @@ if ($('#stats-list-page').length > 0) {
                     },
                     "orderSequence": ['desc', 'asc'],
                 },
+                // Max Discount
+                {
+                    "targets": 6,
+                    "render": function (data, type, row) {
+                        return row[7] + '%';
+                    },
+                    "orderSequence": ['desc', 'asc'],
+                    "visible": window.location.pathname.includes("publishers") || window.location.pathname.includes("developers"),
+                },
             ]
         };
 

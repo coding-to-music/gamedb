@@ -51,6 +51,7 @@ func statsHandler(message *rabbit.Message) {
 	var scores stats.Float64Data
 	var prices = map[steamapi.ProductCC]stats.Float64Data{}
 	var players stats.Float64Data
+	var maxDiscount = map[steamapi.ProductCC]int{}
 
 	filter := bson.D{{payload.Type.MongoCol(), payload.StatID}}
 	projection := bson.M{"reviews_score": 1, "prices": 1, "player_peak_week": 1}
@@ -67,9 +68,15 @@ func statsHandler(message *rabbit.Message) {
 				scores = append(scores, app.ReviewsScore)
 			}
 
-			// Prices
 			for k, v := range app.Prices {
+
+				// Prices
 				prices[k] = append(prices[k], float64(v.Final))
+
+				// Discounts
+				if v.DiscountPercent > maxDiscount[k] {
+					maxDiscount[k] = v.DiscountPercent
+				}
 			}
 
 			// Players
@@ -132,6 +139,8 @@ func statsHandler(message *rabbit.Message) {
 		{Key: "median_price", Value: medianPrice},
 		{Key: "median_score", Value: float32(medianScore)},
 		{Key: "median_players", Value: int(medianPlayers)},
+
+		{Key: "max_discount", Value: maxDiscount},
 	}
 
 	_, err = mongo.UpdateOne(mongo.CollectionStats, bson.D{{"_id", stat.GetKey()}}, update)
