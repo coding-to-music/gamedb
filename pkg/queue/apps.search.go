@@ -137,26 +137,34 @@ func makeAppAliases(ID int, name string) (aliases []string) {
 
 	for _, convertRoman := range []bool{true, false} {
 		for _, trimSmall := range []bool{true, false} {
+			for _, removeSymbols := range []bool{true, false} {
 
-			var alias []string
-			for _, v := range helpers.RegexNonAlphaNumeric.Split(name, -1) {
+				name2 := name
 
-				if v == "" {
-					continue
+				if removeSymbols {
+					name2 = helpers.RegexNonAlphaNumericSpace.ReplaceAllString(name2, "")
 				}
 
-				if convertRoman && helpers.RegexSmallRomanOnly.MatchString(v) {
-					v = strconv.Itoa(roman.Arabic(v))
-				}
+				var alias []string
+				for _, part := range helpers.RegexNonAlphaNumeric.Split(name2, -1) {
 
-				if helpers.RegexIntsOnly.MatchString(v) {
-					alias = append(alias, v)
-				} else if !trimSmall || len(v) > 1 {
-					alias = append(alias, strings.ToLower(v[0:1]))
+					if part == "" {
+						continue
+					}
+
+					if convertRoman && helpers.RegexSmallRomanOnly.MatchString(part) {
+						part = strconv.Itoa(roman.Arabic(part))
+					}
+
+					if helpers.RegexIntsOnly.MatchString(part) {
+						alias = append(alias, part)
+					} else if !trimSmall || len(part) > 1 {
+						alias = append(alias, strings.ToLower(part[0:1]))
+					}
 				}
-			}
-			if len(alias) > 1 {
-				aliases = append(aliases, strings.Join(alias, ""))
+				if len(alias) > 1 {
+					aliases = append(aliases, strings.Join(alias, ""))
+				}
 			}
 		}
 	}
