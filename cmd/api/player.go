@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"net/http"
 	"strconv"
 
@@ -16,7 +15,7 @@ func (s Server) GetPlayersId(w http.ResponseWriter, r *http.Request, id int64) {
 
 	id, err := helpers.IsValidPlayerID(id)
 	if err != nil {
-		returnErrorResponse(w, r, http.StatusBadRequest, err)
+		returnResponse(w, r, http.StatusBadRequest, generated.PlayerResponse{Error: err.Error()})
 		return
 	}
 
@@ -29,34 +28,34 @@ func (s Server) GetPlayersId(w http.ResponseWriter, r *http.Request, id int64) {
 			log.ErrS(err)
 		}
 
-		returnErrorResponse(w, r, http.StatusNotFound, errors.New("player not found, queued"))
+		returnResponse(w, r, http.StatusNotFound, generated.PlayerResponse{Error: "player not found, queued"})
 		return
 
 	} else if err != nil {
 
 		log.ErrS(err)
-		returnErrorResponse(w, r, http.StatusInternalServerError, err)
+		returnResponse(w, r, http.StatusInternalServerError, generated.PlayerResponse{Error: err.Error()})
 		return
 
 	} else {
 
-		ret := generated.PlayerResponse{}
-		ret.Id = strconv.FormatInt(player.ID, 10)
-		ret.Name = player.GetName()
-		ret.Avatar = player.GetAvatar()
+		playerSchema := generated.PlayerSchema{}
+		playerSchema.Id = strconv.FormatInt(player.ID, 10)
+		playerSchema.Name = player.GetName()
+		playerSchema.Avatar = player.GetAvatar()
 
-		ret.Continent = player.ContinentCode
-		ret.Country = player.CountryCode
-		ret.State = player.StateCode
+		playerSchema.Continent = player.ContinentCode
+		playerSchema.Country = player.CountryCode
+		playerSchema.State = player.StateCode
 
-		ret.Badges = player.BadgesCount
-		ret.Comments = player.CommentsCount
-		ret.Friends = player.FriendsCount
-		ret.Games = player.GamesCount
-		ret.Level = player.Level
-		ret.Playtime = player.PlayTime
-		ret.Groups = player.GroupsCount
+		playerSchema.Badges = player.BadgesCount
+		playerSchema.Comments = player.CommentsCount
+		playerSchema.Friends = player.FriendsCount
+		playerSchema.Games = player.GamesCount
+		playerSchema.Level = player.Level
+		playerSchema.Playtime = player.PlayTime
+		playerSchema.Groups = player.GroupsCount
 
-		returnResponse(w, r, http.StatusOK, ret)
+		returnResponse(w, r, http.StatusOK, generated.PlayerResponse{Player: playerSchema})
 	}
 }

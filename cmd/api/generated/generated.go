@@ -19,30 +19,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-// AppSchema defines model for app-schema.
-type AppSchema struct {
-	Categories      []StatSchema     `json:"categories"`
-	Developers      []StatSchema     `json:"developers"`
-	Genres          []StatSchema     `json:"genres"`
-	Id              int              `json:"id"`
-	MetacriticScore int32            `json:"metacritic_score"`
-	Name            string           `json:"name"`
-	PlayersMax      int              `json:"players_max"`
-	PlayersWeekMax  int              `json:"players_week_max"`
-	Prices          AppSchema_Prices `json:"prices"`
-	Publishers      []StatSchema     `json:"publishers"`
-	ReleaseDate     int64            `json:"release_date"`
-	ReviewsNegative int              `json:"reviews_negative"`
-	ReviewsPositive int              `json:"reviews_positive"`
-	ReviewsScore    float64          `json:"reviews_score"`
-	Tags            []StatSchema     `json:"tags"`
-}
-
-// AppSchema_Prices defines model for AppSchema.Prices.
-type AppSchema_Prices struct {
-	AdditionalProperties map[string]ProductPriceSchema `json:"-"`
-}
-
 // ArticleSchema defines model for article-schema.
 type ArticleSchema struct {
 	AppIcon   string `json:"app_icon"`
@@ -57,6 +33,30 @@ type ArticleSchema struct {
 	Id        int64  `json:"id"`
 	Title     string `json:"title"`
 	Url       string `json:"url"`
+}
+
+// GameSchema defines model for game-schema.
+type GameSchema struct {
+	Categories      []StatSchema      `json:"categories"`
+	Developers      []StatSchema      `json:"developers"`
+	Genres          []StatSchema      `json:"genres"`
+	Id              int               `json:"id"`
+	MetacriticScore int32             `json:"metacritic_score"`
+	Name            string            `json:"name"`
+	PlayersMax      int               `json:"players_max"`
+	PlayersWeekMax  int               `json:"players_week_max"`
+	Prices          GameSchema_Prices `json:"prices"`
+	Publishers      []StatSchema      `json:"publishers"`
+	ReleaseDate     int64             `json:"release_date"`
+	ReviewsNegative int               `json:"reviews_negative"`
+	ReviewsPositive int               `json:"reviews_positive"`
+	ReviewsScore    float64           `json:"reviews_score"`
+	Tags            []StatSchema      `json:"tags"`
+}
+
+// GameSchema_Prices defines model for GameSchema.Prices.
+type GameSchema_Prices struct {
+	AdditionalProperties map[string]ProductPriceSchema `json:"-"`
 }
 
 // GroupSchema defines model for group-schema.
@@ -79,6 +79,7 @@ type GroupSchema struct {
 
 // MessageSchema defines model for message-schema.
 type MessageSchema struct {
+	Error   string `json:"error"`
 	Message string `json:"message"`
 }
 
@@ -168,23 +169,29 @@ const (
 	OrderParamDesc_desc OrderParamDesc = "desc"
 )
 
-// AppResponse defines model for app-response.
-type AppResponse AppSchema
-
-// AppsResponse defines model for apps-response.
-type AppsResponse struct {
-	Apps       []AppSchema      `json:"apps"`
-	Pagination PaginationSchema `json:"pagination"`
-}
-
 // ArticlesResponse defines model for articles-response.
 type ArticlesResponse struct {
 	Articles   []ArticleSchema  `json:"articles"`
+	Error      string           `json:"error"`
+	Pagination PaginationSchema `json:"pagination"`
+}
+
+// GameResponse defines model for game-response.
+type GameResponse struct {
+	Error string     `json:"error"`
+	Game  GameSchema `json:"game"`
+}
+
+// GamesResponse defines model for games-response.
+type GamesResponse struct {
+	Error      string           `json:"error"`
+	Games      []GameSchema     `json:"games"`
 	Pagination PaginationSchema `json:"pagination"`
 }
 
 // GroupsResponse defines model for groups-response.
 type GroupsResponse struct {
+	Error      string           `json:"error"`
 	Groups     []GroupSchema    `json:"groups"`
 	Pagination PaginationSchema `json:"pagination"`
 }
@@ -194,15 +201,20 @@ type MessageResponse MessageSchema
 
 // PackagesResponse defines model for packages-response.
 type PackagesResponse struct {
+	Error      string           `json:"error"`
 	Packages   []PackageSchema  `json:"packages"`
 	Pagination PaginationSchema `json:"pagination"`
 }
 
 // PlayerResponse defines model for player-response.
-type PlayerResponse PlayerSchema
+type PlayerResponse struct {
+	Error  string       `json:"error"`
+	Player PlayerSchema `json:"player"`
+}
 
 // PlayersResponse defines model for players-response.
 type PlayersResponse struct {
+	Error      string           `json:"error"`
 	Pagination PaginationSchema `json:"pagination"`
 	Players    []PlayerSchema   `json:"players"`
 }
@@ -264,25 +276,25 @@ type GetPlayersParams struct {
 	Country   *[]string       `json:"country,omitempty"`
 }
 
-// Getter for additional properties for AppSchema_Prices. Returns the specified
+// Getter for additional properties for GameSchema_Prices. Returns the specified
 // element and whether it was found
-func (a AppSchema_Prices) Get(fieldName string) (value ProductPriceSchema, found bool) {
+func (a GameSchema_Prices) Get(fieldName string) (value ProductPriceSchema, found bool) {
 	if a.AdditionalProperties != nil {
 		value, found = a.AdditionalProperties[fieldName]
 	}
 	return
 }
 
-// Setter for additional properties for AppSchema_Prices
-func (a *AppSchema_Prices) Set(fieldName string, value ProductPriceSchema) {
+// Setter for additional properties for GameSchema_Prices
+func (a *GameSchema_Prices) Set(fieldName string, value ProductPriceSchema) {
 	if a.AdditionalProperties == nil {
 		a.AdditionalProperties = make(map[string]ProductPriceSchema)
 	}
 	a.AdditionalProperties[fieldName] = value
 }
 
-// Override default JSON handling for AppSchema_Prices to handle AdditionalProperties
-func (a *AppSchema_Prices) UnmarshalJSON(b []byte) error {
+// Override default JSON handling for GameSchema_Prices to handle AdditionalProperties
+func (a *GameSchema_Prices) UnmarshalJSON(b []byte) error {
 	object := make(map[string]json.RawMessage)
 	err := json.Unmarshal(b, &object)
 	if err != nil {
@@ -303,8 +315,8 @@ func (a *AppSchema_Prices) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-// Override default JSON handling for AppSchema_Prices to handle AdditionalProperties
-func (a AppSchema_Prices) MarshalJSON() ([]byte, error) {
+// Override default JSON handling for GameSchema_Prices to handle AdditionalProperties
+func (a GameSchema_Prices) MarshalJSON() ([]byte, error) {
 	var err error
 	object := make(map[string]json.RawMessage)
 
@@ -1091,42 +1103,43 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
-	"bTaX3y/2/wsAAP//rM1n9CQ3AAA=",
+	"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",
 }
 
 // GetSwagger returns the Swagger specification corresponding to the generated code

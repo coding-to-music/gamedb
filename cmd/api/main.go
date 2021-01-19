@@ -6,7 +6,6 @@ import (
 	"compress/flate"
 	"context"
 	"encoding/json"
-	"errors"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -92,8 +91,15 @@ func main() {
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
-
 	http.Redirect(w, r, config.C.GameDBDomain+"/api/gamedb", http.StatusTemporaryRedirect)
+}
+
+func rateLimitedHandler(w http.ResponseWriter, r *http.Request) {
+	returnResponse(w, r, http.StatusTooManyRequests, generated.MessageResponse{Error: http.StatusText(http.StatusTooManyRequests)})
+}
+
+func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
+	http.Error(w, http.StatusText(http.StatusOK), http.StatusOK)
 }
 
 func errorHandler(w http.ResponseWriter, _ *http.Request) {
@@ -111,14 +117,6 @@ func errorHandler(w http.ResponseWriter, _ *http.Request) {
 	}
 }
 
-func rateLimitedHandler(w http.ResponseWriter, r *http.Request) {
-	returnErrorResponse(w, r, http.StatusTooManyRequests, errors.New(http.StatusText(http.StatusTooManyRequests)))
-}
-
-func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, http.StatusText(http.StatusOK), http.StatusOK)
-}
-
 func authMiddlewear(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -134,12 +132,12 @@ func authMiddlewear(next http.HandlerFunc) http.HandlerFunc {
 		}
 
 		if key == "" {
-			returnErrorResponse(w, r, http.StatusUnauthorized, errors.New("empty api key"))
+			returnResponse(w, r, http.StatusUnauthorized, generated.MessageResponse{Error: "empty api key"})
 			return
 		}
 
 		if !apiKeyRegexp.MatchString(key) {
-			returnErrorResponse(w, r, http.StatusUnauthorized, errors.New("invalid api key: "+key))
+			returnResponse(w, r, http.StatusUnauthorized, generated.MessageResponse{Error: "invalid api key: " + key})
 			return
 		}
 
@@ -147,17 +145,17 @@ func authMiddlewear(next http.HandlerFunc) http.HandlerFunc {
 		user, err := mysql.GetUserByAPIKey(key)
 		if err == mysql.ErrRecordNotFound {
 
-			returnErrorResponse(w, r, http.StatusUnauthorized, errors.New("invalid api key: "+key))
+			returnResponse(w, r, http.StatusUnauthorized, generated.MessageResponse{Error: "invalid api key: " + key})
 			return
 
 		} else if err != nil {
 
-			returnErrorResponse(w, r, http.StatusInternalServerError, err)
+			returnResponse(w, r, http.StatusInternalServerError, err)
 			return
 
 		} else if user.Level < mysql.UserLevel2 {
 
-			returnErrorResponse(w, r, http.StatusUnauthorized, errors.New("invalid user level"))
+			returnResponse(w, r, http.StatusUnauthorized, generated.MessageResponse{Error: "invalid user level"})
 			return
 		}
 
@@ -165,11 +163,6 @@ func authMiddlewear(next http.HandlerFunc) http.HandlerFunc {
 
 		next.ServeHTTP(w, r)
 	}
-}
-
-func returnErrorResponse(w http.ResponseWriter, r *http.Request, code int, err error) {
-
-	returnResponse(w, r, code, generated.MessageResponse{Message: err.Error()})
 }
 
 func returnResponse(w http.ResponseWriter, r *http.Request, code int, i interface{}) {

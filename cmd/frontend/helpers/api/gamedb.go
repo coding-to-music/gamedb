@@ -214,9 +214,10 @@ var SwaggerGameDB = &openapi3.Swagger{
 			},
 			"message-schema": {
 				Value: &openapi3.Schema{
-					Required: []string{"message"},
+					Required: []string{"message", "error"},
 					Properties: map[string]*openapi3.SchemaRef{
 						"message": {Value: openapi3.NewStringSchema()},
+						"error":   {Value: openapi3.NewStringSchema()},
 					},
 				},
 			},
@@ -251,7 +252,7 @@ var SwaggerGameDB = &openapi3.Swagger{
 					Description: stringPointer("List of articles"),
 					Content: openapi3.NewContentWithJSONSchema(&openapi3.Schema{
 						Description: "List of articles",
-						Required:    []string{"pagination", "articles"},
+						Required:    []string{"pagination", "articles", "error"},
 						Properties: map[string]*openapi3.SchemaRef{
 							"pagination": {
 								Ref: "#/components/schemas/pagination-schema",
@@ -286,12 +287,12 @@ var SwaggerGameDB = &openapi3.Swagger{
 					Description: stringPointer("List of games"),
 					Content: openapi3.NewContentWithJSONSchema(&openapi3.Schema{
 						Description: "List of apps, with pagination",
-						Required:    []string{"pagination", "apps"},
+						Required:    []string{"pagination", "games", "error"},
 						Properties: map[string]*openapi3.SchemaRef{
 							"pagination": {
 								Ref: "#/components/schemas/pagination-schema",
 							},
-							"apps": {
+							"games": {
 								Value: &openapi3.Schema{
 									Type: "array",
 									Items: &openapi3.SchemaRef{
@@ -321,7 +322,7 @@ var SwaggerGameDB = &openapi3.Swagger{
 					Description: stringPointer("List of groups"),
 					Content: openapi3.NewContentWithJSONSchema(&openapi3.Schema{
 						Description: "List of groups",
-						Required:    []string{"pagination", "groups"},
+						Required:    []string{"pagination", "groups", "error"},
 						Properties: map[string]*openapi3.SchemaRef{
 							"pagination": {
 								Ref: "#/components/schemas/pagination-schema",
@@ -356,7 +357,7 @@ var SwaggerGameDB = &openapi3.Swagger{
 					Description: stringPointer("List of games"),
 					Content: openapi3.NewContentWithJSONSchema(&openapi3.Schema{
 						Description: "List of packages",
-						Required:    []string{"pagination", "packages"},
+						Required:    []string{"pagination", "packages", "error"},
 						Properties: map[string]*openapi3.SchemaRef{
 							"pagination": {
 								Ref: "#/components/schemas/pagination-schema",
@@ -390,7 +391,7 @@ var SwaggerGameDB = &openapi3.Swagger{
 				Value: &openapi3.Response{
 					Description: stringPointer("List of players"),
 					Content: openapi3.NewContentWithJSONSchema(&openapi3.Schema{
-						Required: []string{"pagination", "players"},
+						Required: []string{"pagination", "players", "error"},
 						Properties: map[string]*openapi3.SchemaRef{
 							"pagination": {
 								Ref: "#/components/schemas/pagination-schema",

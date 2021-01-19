@@ -6,6 +6,7 @@ import (
 	"github.com/gamedb/gamedb/cmd/api/generated"
 	"github.com/gamedb/gamedb/pkg/backend"
 	generatedBackend "github.com/gamedb/gamedb/pkg/backend/generated"
+	"github.com/gamedb/gamedb/pkg/log"
 )
 
 func (s Server) GetArticles(w http.ResponseWriter, r *http.Request, params generated.GetArticlesParams) {
@@ -41,13 +42,15 @@ func (s Server) GetArticles(w http.ResponseWriter, r *http.Request, params gener
 
 	conn, ctx, err := backend.GetClient()
 	if err != nil {
-		returnErrorResponse(w, r, http.StatusInternalServerError, err)
+		log.ErrS(err)
+		returnResponse(w, r, http.StatusInternalServerError, generated.ArticlesResponse{Error: err.Error()})
 		return
 	}
 
 	resp, err := generatedBackend.NewArticlesServiceClient(conn).List(ctx, payload)
 	if err != nil {
-		returnErrorResponse(w, r, http.StatusInternalServerError, err)
+		log.ErrS(err)
+		returnResponse(w, r, http.StatusInternalServerError, generated.ArticlesResponse{Error: err.Error()})
 		return
 	}
 

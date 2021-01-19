@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"net/http"
 
 	"github.com/gamedb/gamedb/cmd/api/generated"
@@ -14,36 +13,36 @@ func (s Server) GetGamesId(w http.ResponseWriter, r *http.Request, id int32) {
 	app, err := mongo.GetApp(int(id))
 	if err == mongo.ErrNoDocuments {
 
-		returnErrorResponse(w, r, http.StatusNotFound, errors.New("app not found"))
+		returnResponse(w, r, http.StatusNotFound, generated.GameResponse{Error: "app not found"})
 		return
 
 	} else if err != nil {
 
 		log.ErrS(err)
-		returnErrorResponse(w, r, http.StatusInternalServerError, err)
+		returnResponse(w, r, http.StatusInternalServerError, generated.GameResponse{Error: err.Error()})
 		return
 
 	} else {
 
-		ret := generated.AppResponse{}
-		ret.Id = app.ID
-		ret.Name = app.GetName()
-		ret.ReleaseDate = app.ReleaseDateUnix
-		ret.PlayersMax = app.PlayerPeakAllTime
-		ret.PlayersWeekMax = app.PlayerPeakWeek
-		ret.ReviewsNegative = app.Reviews.Positive
-		ret.ReviewsPositive = app.Reviews.Negative
-		ret.ReviewsScore = app.ReviewsScore
-		ret.MetacriticScore = int32(app.MetacriticScore)
+		gameSchema := generated.GameSchema{}
+		gameSchema.Id = app.ID
+		gameSchema.Name = app.GetName()
+		gameSchema.ReleaseDate = app.ReleaseDateUnix
+		gameSchema.PlayersMax = app.PlayerPeakAllTime
+		gameSchema.PlayersWeekMax = app.PlayerPeakWeek
+		gameSchema.ReviewsNegative = app.Reviews.Positive
+		gameSchema.ReviewsPositive = app.Reviews.Negative
+		gameSchema.ReviewsScore = app.ReviewsScore
+		gameSchema.MetacriticScore = int32(app.MetacriticScore)
 		// ret.PlayersWeekAvg = app.PlayerAverageWeek
 
 		// Fix nulls in JSON
-		ret.Prices = generated.AppSchema_Prices{
+		gameSchema.Prices = generated.GameSchema_Prices{
 			AdditionalProperties: map[string]generated.ProductPriceSchema{},
 		}
 
 		for k, v := range app.Prices {
-			ret.Prices.AdditionalProperties[string(k)] = generated.ProductPriceSchema{
+			gameSchema.Prices.AdditionalProperties[string(k)] = generated.ProductPriceSchema{
 				Currency:        string(v.Currency),
 				DiscountPercent: int32(v.DiscountPercent),
 				Final:           int32(v.Final),
@@ -58,7 +57,7 @@ func (s Server) GetGamesId(w http.ResponseWriter, r *http.Request, id int32) {
 			log.ErrS(err)
 		}
 		for _, v := range categories {
-			ret.Categories = append(ret.Categories, generated.StatSchema{Id: v.ID, Name: v.Name})
+			gameSchema.Categories = append(gameSchema.Categories, generated.StatSchema{Id: v.ID, Name: v.Name})
 		}
 
 		tags, err := app.GetTags()
@@ -66,7 +65,7 @@ func (s Server) GetGamesId(w http.ResponseWriter, r *http.Request, id int32) {
 			log.ErrS(err)
 		}
 		for _, v := range tags {
-			ret.Tags = append(ret.Tags, generated.StatSchema{Id: v.ID, Name: v.Name})
+			gameSchema.Tags = append(gameSchema.Tags, generated.StatSchema{Id: v.ID, Name: v.Name})
 		}
 
 		genres, err := app.GetGenres()
@@ -74,7 +73,7 @@ func (s Server) GetGamesId(w http.ResponseWriter, r *http.Request, id int32) {
 			log.ErrS(err)
 		}
 		for _, v := range genres {
-			ret.Genres = append(ret.Genres, generated.StatSchema{Id: v.ID, Name: v.Name})
+			gameSchema.Genres = append(gameSchema.Genres, generated.StatSchema{Id: v.ID, Name: v.Name})
 		}
 
 		publishers, err := app.GetPublishers()
@@ -82,7 +81,7 @@ func (s Server) GetGamesId(w http.ResponseWriter, r *http.Request, id int32) {
 			log.ErrS(err)
 		}
 		for _, v := range publishers {
-			ret.Publishers = append(ret.Publishers, generated.StatSchema{Id: v.ID, Name: v.Name})
+			gameSchema.Publishers = append(gameSchema.Publishers, generated.StatSchema{Id: v.ID, Name: v.Name})
 		}
 
 		developers, err := app.GetDevelopers()
@@ -90,9 +89,9 @@ func (s Server) GetGamesId(w http.ResponseWriter, r *http.Request, id int32) {
 			log.ErrS(err)
 		}
 		for _, v := range developers {
-			ret.Developers = append(ret.Developers, generated.StatSchema{Id: v.ID, Name: v.Name})
+			gameSchema.Developers = append(gameSchema.Developers, generated.StatSchema{Id: v.ID, Name: v.Name})
 		}
 
-		returnResponse(w, r, http.StatusOK, ret)
+		returnResponse(w, r, http.StatusOK, generated.GameResponse{Game: gameSchema})
 	}
 }

@@ -82,7 +82,8 @@ func (s Server) GetPlayers(w http.ResponseWriter, r *http.Request, params genera
 		"play_time":      1,
 	})
 	if err != nil {
-		returnErrorResponse(w, r, http.StatusInternalServerError, err)
+		log.ErrS(err)
+		returnResponse(w, r, http.StatusInternalServerError, generated.PlayersResponse{Error: err.Error()})
 		return
 	}
 

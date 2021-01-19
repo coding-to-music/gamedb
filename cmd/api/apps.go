@@ -61,13 +61,15 @@ func (s Server) GetGames(w http.ResponseWriter, r *http.Request, params generate
 
 	conn, ctx, err := backend.GetClient()
 	if err != nil {
-		returnErrorResponse(w, r, http.StatusInternalServerError, err)
+		log.ErrS(err)
+		returnResponse(w, r, http.StatusInternalServerError, generated.GamesResponse{Error: err.Error()})
 		return
 	}
 
 	resp, err := generatedBackend.NewAppsServiceClient(conn).List(ctx, payload)
 	if err != nil {
-		returnErrorResponse(w, r, http.StatusInternalServerError, err)
+		log.ErrS(err)
+		returnResponse(w, r, http.StatusInternalServerError, generated.GamesResponse{Error: err.Error()})
 		return
 	}
 
@@ -137,12 +139,12 @@ func (s Server) GetGames(w http.ResponseWriter, r *http.Request, params generate
 		}
 	}
 
-	result := generated.AppsResponse{}
+	result := generated.GamesResponse{}
 	result.Pagination.Fill(offset, limit, resp.Pagination.GetTotal())
 
 	for _, app := range resp.Apps {
 
-		newApp := generated.AppSchema{
+		newApp := generated.GameSchema{
 			Id:              int(app.GetId()),
 			Name:            app.GetName(),
 			MetacriticScore: app.GetMetaScore(),
@@ -155,7 +157,7 @@ func (s Server) GetGames(w http.ResponseWriter, r *http.Request, params generate
 			// PlayersWeekAvg:  float64(app.GetPlayersWeekAvg()),
 
 			// Fix nulls in JSON
-			Prices: generated.AppSchema_Prices{
+			Prices: generated.GameSchema_Prices{
 				AdditionalProperties: map[string]generated.ProductPriceSchema{},
 			},
 			Tags:       []generated.StatSchema{},
@@ -201,7 +203,7 @@ func (s Server) GetGames(w http.ResponseWriter, r *http.Request, params generate
 			newApp.Publishers = append(newApp.Publishers, generated.StatSchema{Id: stat.ID, Name: stat.Name})
 		}
 
-		result.Apps = append(result.Apps, newApp)
+		result.Games = append(result.Games, newApp)
 	}
 
 	returnResponse(w, r, http.StatusOK, result)
