@@ -98,7 +98,8 @@ func statAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var columns = map[string]string{
 			"1": "player_peak_week",
 			"2": "prices." + string(code) + ".final",
-			"3": "reviews_score",
+			"3": "prices." + string(code) + ".discount_percent",
+			"4": "reviews_score",
 		}
 
 		var projection = bson.M{
@@ -145,14 +146,15 @@ func statAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		response.AddRow([]interface{}{
-			app.ID,                          // 0
-			app.GetName(),                   // 1
-			app.GetIcon(),                   // 2
-			app.GetPath(),                   // 3
-			app.PlayerPeakWeek,              // 4
-			app.Prices.Get(code).GetFinal(), // 5
-			app.GetReviewScore(),            // 6
-			app.GetStoreLink(),              // 7
+			app.ID,                               // 0
+			app.GetName(),                        // 1
+			app.GetIcon(),                        // 2
+			app.GetPath(),                        // 3
+			app.PlayerPeakWeek,                   // 4
+			app.GetPrices().Get(code).GetFinal(), // 5
+			app.GetReviewScore(),                 // 6
+			app.GetStoreLink(),                   // 7
+			app.GetPrices().Get(code).GetDiscountPercent(), // 8
 		})
 	}
 

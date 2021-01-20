@@ -43,9 +43,17 @@ if ($statPage.length > 0) {
                     },
                     "orderSequence": ["desc"],
                 },
-                // Score
+                // Discount
                 {
                     "targets": 3,
+                    "render": function (data, type, row) {
+                        return row[8];
+                    },
+                    "orderSequence": ["desc", "asc"],
+                },
+                // Score
+                {
+                    "targets": 4,
                     "render": function (data, type, row) {
                         return row[6];
                     },
@@ -53,7 +61,7 @@ if ($statPage.length > 0) {
                 },
                 // Link
                 {
-                    "targets": 4,
+                    "targets": 5,
                     "render": function (data, type, row) {
                         if (row[7]) {
                             return '<a href="' + row[7] + '" target="_blank" rel="noopener"><i class="fas fa-link"></i></a>';
