@@ -341,11 +341,11 @@ func checkDependencies(cfg processesConfig) error {
 
 func netcat(host, port string) bool {
 
-	cmd := exec.Command("nc", "-z", host, port)
+	cmd := exec.Command("nc", "-vz", host, port)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		return false
 	}
 
-	return strings.Contains(string(out), "succeeded")
+	return strings.Contains(string(out), "open") || strings.Contains(string(out), "succeeded")
 }
