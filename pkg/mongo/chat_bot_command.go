@@ -51,9 +51,16 @@ func (command ChatBotCommand) GetTableRowJSON(guilds map[string]DiscordGuild) []
 
 func (command ChatBotCommand) GetCommand() string {
 
-	// Show all command prefixes as a full stop
+	if command.Slash {
+		return "/" + command.Message
+	}
+
 	if strings.HasPrefix(command.Message, "!") {
-		return strings.Replace(command.Message, "!", ".", 1)
+		return strings.Replace(command.Message, "!", "/", 1)
+	}
+
+	if strings.HasPrefix(command.Message, ".") {
+		return strings.Replace(command.Message, ".", "/", 1)
 	}
 
 	return command.Message
