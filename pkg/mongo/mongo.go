@@ -33,6 +33,7 @@ const (
 	CollectionAppItems            collection = "app_items"
 	CollectionApps                collection = "apps"
 	CollectionAppSales            collection = "app_offers"
+	CollectionAppSameOwners       collection = "app_same_owners"
 	CollectionBundlePrices        collection = "bundle_prices"
 	CollectionChangeItems         collection = "change_products"
 	CollectionChanges             collection = "changes"
@@ -130,6 +131,7 @@ func EnsureIndexes() {
 	ensurePlayerFriendIndexes()
 	ensureSaleIndexes()
 	ensureStatIndexes()
+	ensureAppSameOwnersIndexes()
 	log.Info("Finished migrations")
 }
 

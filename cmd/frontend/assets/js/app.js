@@ -48,7 +48,8 @@ if ($appPage.length > 0) {
         'news': loadNews,
         'items': loadItems,
         'prices': loadPriceChart,
-        'similar-owners-wrapper': loadAppSimilar,
+        'similar-owners': loadAppSimilar,
+        'similar-owners-small': loadAppSimilarSmall,
         'reviews': loadAppReviewsChart,
         'achievements': loadAchievements,
         'dlc': loadDLC,
@@ -327,27 +328,90 @@ if ($appPage.length > 0) {
         );
     }
 
-    function loadAppSimilar() {
+    function loadAppSimilarSmall() {
 
-        const $ownersWrapper = $('#similar-owners-wrapper');
-        const $tagsWrapper = $('#similar-tags-wrapper');
-
-        $.ajax({
-            type: "GET",
-            url: '/games/' + $appPage.attr('data-id') + '/sameowners.html',
-            dataType: 'html',
-            success: function (data, textStatus, jqXHR) {
-
-                if (data === null) {
-                    data = '';
-                }
-
-                $ownersWrapper.html(data);
-
-                observeLazyImages($ownersWrapper.find('img[data-lazy]'));
+        const $table = $('#similar-owners-small');
+        const dt = $table.gdbTable({
+            tableOptions: {
+                "language": {
+                    "zeroRecords": function () {
+                        return 'This app is yet to be scanned';
+                    },
+                },
+                "createdRow": function (row, data, dataIndex) {
+                    $(row).attr('data-app-id', data[0]);
+                    $(row).attr('data-link', data[1]);
+                },
+                "columnDefs": [
+                    // App
+                    {
+                        "targets": 0,
+                        "render": function (data, type, row) {
+                            return '<div class="icon-name"><div class="icon"><img data-lazy="' + row[2] + '" alt="" data-lazy-alt="' + row[3] + '"></div><div class="name">' + row[3] + '</div></div>'
+                        },
+                        "createdCell": function (td, cellData, rowData, row, col) {
+                            $(td).addClass('img');
+                        },
+                        "orderable": false,
+                    },
+                ]
             },
         });
 
+        dt.on('draw.dt', function (e, settings) {
+            $table.find('thead').remove();
+        });
+    }
+
+    function loadAppSimilar() {
+
+        $('#similar-owners').gdbTable({
+            tableOptions: {
+                "language": {
+                    "zeroRecords": function () {
+                        return 'This app is yet to be scanned';
+                    },
+                },
+                "createdRow": function (row, data, dataIndex) {
+                    $(row).attr('data-app-id', data[0]);
+                    $(row).attr('data-link', data[1]);
+                },
+                "columnDefs": [
+                    // App
+                    {
+                        "targets": 0,
+                        "render": function (data, type, row) {
+                            return '<div class="icon-name"><div class="icon"><img class="tall" data-lazy="' + row[2] + '" alt="" data-lazy-alt="' + row[3] + '"></div><div class="name">' + row[3] + '</div></div>'
+                        },
+                        "createdCell": function (td, cellData, rowData, row, col) {
+                            $(td).addClass('img');
+                        },
+                        "orderable": false,
+                    },
+                    // Same Owners
+                    {
+                        "targets": 1,
+                        "render": function (data, type, row) {
+                            return row[4].toLocaleString();
+                        },
+                        "orderable": false,
+                    },
+                    // External Link
+                    {
+                        "targets": 2,
+                        "render": function (data, type, row) {
+                            if (row[5]) {
+                                return '<a href="' + row[5] + '" target="_blank" rel="noopener"><i class="fas fa-link"></i></a>';
+                            }
+                            return '';
+                        },
+                        "orderable": false,
+                    },
+                ]
+            },
+        });
+
+        const $tagsWrapper = $('#similar-tags');
         $.ajax({
             type: "GET",
             url: '/games/' + $appPage.attr('data-id') + '/similar.html',

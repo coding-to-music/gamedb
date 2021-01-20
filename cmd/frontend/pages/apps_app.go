@@ -53,7 +53,7 @@ func appRouter() http.Handler {
 	r.Get("/prices.json", appPricesAjaxHandler)
 	r.Get("/reviews.html", appReviewsHandler)
 	r.Get("/reviews.json", appReviewsAjaxHandler)
-	r.Get("/sameowners.html", appSamdOwnersHandler)
+	r.Get("/same-owners.json", appSamdOwnersHandler)
 	r.Get("/similar.html", appSimilarHandler)
 	r.Get("/tags.json", appTagsAjaxHandler)
 	r.Get("/time.json", appTimeAjaxHandler)
@@ -449,7 +449,12 @@ func appSamdOwnersHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	app, err := mongo.GetApp(id)
+	var  limit int64 = 100
+	if r.URL.Query().Get("small") == "1" {
+		limit = 5
+	}
+
+	sameApps, err := mongo.GetAppSameOwners(id, limit)
 	if err != nil {
 		log.ErrS(err)
 		return
@@ -457,9 +462,9 @@ func appSamdOwnersHandler(w http.ResponseWriter, r *http.Request) {
 
 	var countsMap = map[int]int{}
 	var appIDs []int
-	for _, v := range app.RelatedOwnersAppIDs {
-		appIDs = append(appIDs, v.AppID)
-		countsMap[v.AppID] = v.Count
+	for _, sameApp := range sameApps {
+		appIDs = append(appIDs, sameApp.SameAppID)
+		countsMap[sameApp.SameAppID] = sameApp.Count
 	}
 
 	apps, err := mongo.GetAppsByID(appIDs, bson.M{"_id": 1, "name": 1, "icon": 1})
@@ -474,22 +479,27 @@ func appSamdOwnersHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var orderedApps []mongo.App
-	for _, v := range appIDs {
-		orderedApps = append(orderedApps, appsMap[v])
+	for _, v := range sameApps {
+		orderedApps = append(orderedApps, appsMap[v.SameAppID])
 	}
 
-	t := appSameOwnersTemplate{}
-	t.fill(w, r, "app_sameowners", "", "")
-	t.Apps = orderedApps
-	t.Counts = countsMap
+	//
+	var query = datatable.NewDataTableQuery(r, false)
+	var response = datatable.NewDataTablesResponse(r, query, 0, 0, nil)
+	for _, app := range orderedApps {
 
-	returnTemplate(w, r, t)
-}
+		response.AddRow([]interface{}{
+			app.ID,             // 0
+			app.GetPath(),      // 1
+			app.GetIcon(),      // 2
+			app.GetName(),      // 3
+			countsMap[app.ID],  // 4
+			app.GetStoreLink(), // 5
 
-type appSameOwnersTemplate struct {
-	globalTemplate
-	Apps   []mongo.App
-	Counts map[int]int
+		})
+	}
+
+	returnJSON(w, r, response)
 }
 
 func appSimilarHandler(w http.ResponseWriter, r *http.Request) {

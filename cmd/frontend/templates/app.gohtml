@@ -262,6 +262,25 @@
                                 </div>
 
                                 <div class="card mt-3">
+                                    <h5 class="card-header">Same Owners</h5>
+                                    <div class="card-body p-0">
+                                        <div class="table-responsive">
+                                            <table class="table table-hover table-striped" data-row-type="games" data-ordering="false" id="similar-owners-small" data-path="/games/{{ .App.ID }}/same-owners.json?small=1">
+                                                <thead class="thead-light">
+                                                <tr>
+                                                    <th>Game</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer" data-link-tab="similar">More!</div>
+                                </div>
+
+                                <div class="card mt-3">
                                     <h5 class="card-header">Links</h5>
                                     <div class="card-body p-2" id="links">
                                         {{ range .Links }}
@@ -846,8 +865,19 @@
                     <div class="tab-pane" id="similar" role="tabpanel">
 
                         <h5>Similar by owners</h5>
-                        <div class="table-responsive mb-4" id="similar-owners-wrapper">
-                            <i class="fas fa-spinner fa-spin"></i>
+                        <div class="table-responsive mb-4">
+                            <table class="table table-hover table-striped" data-row-type="games" data-ordering="false" id="similar-owners" data-path="/games/{{ .App.ID }}/same-owners.json">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th>Game</th>
+                                    <th>Owners</th>
+                                    <th></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+
+                                </tbody>
+                            </table>
                         </div>
 
                         <h5>Similar by Tags</h5>
