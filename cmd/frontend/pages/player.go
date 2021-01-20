@@ -1204,7 +1204,7 @@ func playersHistoryAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementPlayers.String())
 	builder.AddWhere("player_id", "=", id)
-	builder.AddWhere("time", ">", "now()-365d")
+	builder.AddWhere("time", ">", "now()-180d")
 	builder.AddGroupByTime("1d")
 	builder.SetFillNone()
 
