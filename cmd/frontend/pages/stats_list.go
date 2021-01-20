@@ -72,7 +72,7 @@ type statsTagsTemplate struct {
 
 func statsListJSONHandler(w http.ResponseWriter, r *http.Request) {
 
-	query := datatable.NewDataTableQuery(r, false)
+	query := datatable.NewDataTableQuery(r, true)
 
 	conn, ctx, err := backend.GetClient()
 	if err != nil {
