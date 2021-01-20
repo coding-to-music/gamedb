@@ -220,25 +220,22 @@
                                             </tr>
                                         {{ end }}
 
-                                        {{ if ne .App.GetMicroTrailer "" }}
-                                            <tr>
-                                                <th scope="row">Micro Trailer</th>
-                                                <td>
-                                                    <video controls preload="none" class="rounded">
-                                                        <source src="{{ https (.App.GetMicroTrailer) }}" type="video/webm">
-                                                        Sorry, your browser doesn't support embedded videos.
-                                                    </video>
-                                                </td>
-                                            </tr>
-                                        {{ end }}
-
                                     </table>
                                 </div>
 
                             </div>
                             <div class="col-12 col-lg-4">
 
-                                <div class="card mt-3 mt-lg-0">
+                                {{ if ne .App.GetMicroTrailer "" }}
+                                    <div class="mt-3 mt-lg-0">
+                                        <video controls preload="none" class="rounded">
+                                            <source src="{{ https (.App.GetMicroTrailer) }}" type="video/webm">
+                                            Sorry, your browser doesn't support embedded videos.
+                                        </video>
+                                    </div>
+                                {{ end }}
+
+                                <div class="card mt-3">
                                     <h5 class="card-header">Tags</h5>
                                     {{ if gt (len .App.TagCounts) 0 }}
                                         <div class="card-body p-0">
