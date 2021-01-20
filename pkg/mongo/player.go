@@ -3,6 +3,7 @@ package mongo
 import (
 	"html/template"
 	"math"
+	"path"
 	"sort"
 	"strconv"
 	"strings"
@@ -506,7 +507,7 @@ func GetPlayer(id int64) (player Player, err error) {
 
 func SearchPlayer(search string, projection bson.M) (player Player, queue bool, err error) {
 
-	search = strings.TrimSpace(search)
+	search = strings.TrimSpace(path.Base(search))
 
 	if search == "" {
 		return player, false, steamid.ErrInvalidPlayerID
