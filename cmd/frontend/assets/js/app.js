@@ -359,7 +359,9 @@ if ($appPage.length > 0) {
         });
 
         dt.on('draw.dt', function (e, settings) {
-            $table.find('thead').remove();
+            if (!dt.page.info().recordsTotal) {
+                $('#same-owners-small-wrapper div.card-footer').remove();
+            }
         });
     }
 
