@@ -451,7 +451,7 @@ func homeUpdatedPlayersHandler(w http.ResponseWriter, r *http.Request) {
 		"updated_at":   1,
 	}
 
-	players, err := mongo.GetPlayers(0, 10, bson.D{{"updated_at", -1}}, nil, projection)
+	players, err := mongo.GetPlayers(0, 10, bson.D{{"created_at", -1}}, nil, projection)
 	if err != nil {
 		log.ErrS(err)
 		return

@@ -132,6 +132,7 @@ type Player struct {
 	CommunityVisibilityState int                        `bson:"community_visibility_state"` // 1=private 3=public
 	ContinentCode            string                     `bson:"continent_code"`
 	CountryCode              string                     `bson:"country_code"`
+	CreatedAt                time.Time                  `bson:"created_at"` // Added late
 	Donated                  int                        `bson:"donated"`
 	FriendsCount             int                        `bson:"friends_count"`
 	GamesByType              map[string]int             `bson:"games_by_type"`
@@ -175,6 +176,10 @@ func (player Player) BSON() bson.D {
 
 	player.UpdatedAt = time.Now()
 
+	if player.CreatedAt.IsZero() || player.CreatedAt.Unix() == 0 {
+		player.CreatedAt = time.Now()
+	}
+
 	return bson.D{
 		{"_id", player.ID},
 		{"achievement_count", player.AchievementCount},
@@ -187,6 +192,7 @@ func (player Player) BSON() bson.D {
 		{"community_visibility_state", player.CommunityVisibilityState},
 		{"continent_code", player.ContinentCode},
 		{"country_code", player.CountryCode},
+		{"created_at", player.CreatedAt},
 		{"donated", player.Donated},
 		{"game_stats", player.GameStats},
 		{"games_by_type", player.GamesByType},
@@ -472,6 +478,7 @@ func ensurePlayerIndexes() {
 		mongo.IndexModel{Keys: bson.D{{"bans_cav", -1}}},
 		mongo.IndexModel{Keys: bson.D{{"bans_game", -1}}},
 		mongo.IndexModel{Keys: bson.D{{"bans_last", -1}}},
+		mongo.IndexModel{Keys: bson.D{{"created_at", -1}}},
 	)
 
 	//

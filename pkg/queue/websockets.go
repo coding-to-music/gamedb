@@ -234,6 +234,7 @@ type PlayerPayload struct {
 	UpdatedAt     int64  `json:"updated_at"`
 	Queue         string `json:"queue"`
 	CommunityLink string `json:"community_link"`
+	New           bool   `json:"new"`
 }
 
 type NewsPayload struct {

@@ -93,6 +93,7 @@ func playerHandler(message *rabbit.Message) {
 			CommunityLink: player.CommunityLink(),
 			UpdatedAt:     time.Now().Unix(),
 			Queue:         "player",
+			New:           newPlayer,
 		}
 
 		err = ProduceWebsocket(wsPayload, websockets.PagePlayer)
