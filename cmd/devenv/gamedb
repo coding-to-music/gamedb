@@ -1,5 +1,7 @@
 #!/bin/bash
 
+rm -rf /tmp/gamedb
+
 mkdir -p /tmp/gamedb/bins
 mkdir -p /tmp/gamedb/pids
 mkdir -p /tmp/gamedb/logs
