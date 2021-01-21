@@ -22,7 +22,6 @@ const ( //                                       min  hour
 	CronTimeAppPlayers               TaskTime = "*/10 *"
 	CronTimeAppPlayersTop            TaskTime = "*/10 *"
 	CronTimeAppsSameowners           TaskTime = "*/10 *"
-	CronTimeAppsInflux               TaskTime = "0    */2"
 	CronTimeAutoPlayerRefreshes      TaskTime = "0    */6"
 	CronTimeGameDBStats              TaskTime = "0    */6"
 	CronTimeAppsReviews              TaskTime = "0    0"
@@ -35,6 +34,7 @@ const ( //                                       min  hour
 	CronTimeStats                    TaskTime = "35   0"
 	CronTimeAppsWishlists            TaskTime = "40   0"
 	CronTimeAddAppTagsToInflux       TaskTime = "45   0"
+	CronTimeAppsInflux               TaskTime = ""
 	CronTimeSteamSpy                 TaskTime = ""
 	CronTimeInstagram                TaskTime = ""
 )

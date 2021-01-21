@@ -35,6 +35,14 @@ func appPlayersHandler(message *rabbit.Message) {
 		return
 	}
 
+	// Also push to influx queue
+	err = ProduceAppsInflux(payload.IDs)
+	if err != nil {
+		log.ErrS(err, payload.IDs)
+		sendToRetryQueue(message)
+		return
+	}
+
 	// Get apps
 	apps, err := mongo.GetAppsByID(payload.IDs, bson.M{"_id": 1, "twitch_id": 1, "player_peak_week": 1, "player_peak_alltime": 1})
 	if err != nil {
