@@ -17,19 +17,19 @@ type AppSameOwners struct {
 	Order     float64 `bson:"order"`
 }
 
-func (sameowner AppSameOwners) BSON() bson.D {
+func (sameOwner AppSameOwners) BSON() bson.D {
 
 	return bson.D{
-		{"_id", sameowner.GetKey()},
-		{"app_id", sameowner.AppID},
-		{"same_id", sameowner.SameAppID},
-		{"count", sameowner.Count},
-		{"order", sameowner.Order},
+		{"_id", sameOwner.GetKey()},
+		{"app_id", sameOwner.AppID},
+		{"same_id", sameOwner.SameAppID},
+		{"count", sameOwner.Count},
+		{"order", sameOwner.Order},
 	}
 }
 
-func (sameowner AppSameOwners) GetKey() string {
-	return strconv.Itoa(sameowner.AppID) + "-" + strconv.Itoa(sameowner.SameAppID)
+func (sameOwner AppSameOwners) GetKey() string {
+	return strconv.Itoa(sameOwner.AppID) + "-" + strconv.Itoa(sameOwner.SameAppID)
 }
 
 func ensureAppSameOwnersIndexes() {
