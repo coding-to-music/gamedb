@@ -347,5 +347,6 @@ func netcat(host, port string) bool {
 		return false
 	}
 
-	return strings.Contains(string(out), "open") || strings.Contains(string(out), "succeeded")
+	return strings.Contains(string(out), "open") || // Linux
+		strings.Contains(string(out), "succeeded") // OSX
 }
