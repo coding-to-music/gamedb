@@ -550,6 +550,10 @@ func (t globalTemplate) GetCookieFlag(key string) interface{} {
 		return false
 	}
 
+	if c.Value == "" {
+		return false
+	}
+
 	c.Value, err = url.PathUnescape(c.Value)
 	if err != nil {
 		log.ErrS(err)

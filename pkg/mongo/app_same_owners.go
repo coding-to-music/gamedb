@@ -81,6 +81,10 @@ func ReplaceAppSameOwners(appID int, sameApps []AppSameOwners) (err error) {
 		return err
 	}
 
+	if len(sameApps) == 0 {
+		return nil
+	}
+
 	client, ctx, err := getMongo()
 	if err != nil {
 		return err
@@ -98,6 +102,10 @@ func ReplaceAppSameOwners(appID int, sameApps []AppSameOwners) (err error) {
 
 			writes = append(writes, write)
 		}
+	}
+
+	if len(writes) == 0 {
+		return nil
 	}
 
 	c := client.Database(config.C.MongoDatabase).Collection(CollectionAppSameOwners.String())
