@@ -162,13 +162,17 @@ func Run(task TaskInterface) {
 	// Do work
 	policy := backoff.NewConstantBackOff(time.Second * 30)
 
-	err = backoff.RetryNotify(task.work, backoff.WithMaxRetries(policy, 10), func(err error, t time.Duration) { log.Info(err.Error(), zap.String("cron id", task.ID())) })
+	notify := func(err error, t time.Duration) {
+		log.Info("Cron retry failed", zap.String("cron id", task.ID()), zap.Error(err))
+	}
+
+	err = backoff.RetryNotify(task.work, backoff.WithMaxRetries(policy, 10), notify)
 	if err != nil {
 
 		if val, ok := err.(TaskError); ok && val.Okay {
-			log.Info(err.Error(), zap.String("cron id", task.ID()))
+			log.Info("Cron failed", zap.String("cron id", task.ID()), zap.Error(err))
 		} else {
-			log.Err(err.Error(), zap.String("cron id", task.ID()))
+			log.Err("Cron failed", zap.String("cron id", task.ID()), zap.Error(err))
 		}
 	} else {
 
