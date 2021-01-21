@@ -35,7 +35,7 @@ func (sameowner AppSameOwners) GetKey() string {
 func ensureAppSameOwnersIndexes() {
 
 	var indexModels = []mongo.IndexModel{
-		{Keys: bson.D{{"app_id", 1}}},
+		{Keys: bson.D{{"app_id", 1}, {"order", -1}}},
 	}
 
 	//
