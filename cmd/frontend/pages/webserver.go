@@ -656,8 +656,11 @@ func (t globalTemplate) IsLocal() bool {
 }
 
 func (t globalTemplate) ShowAds() bool {
-
 	return t.userLevel < mysql.UserLevel1 && !t.hideAds
+}
+
+func (t globalTemplate) ShowPatreonMessage() bool {
+	return t.ShowAds() && !strings.Contains(t.request.URL.Path, "donate") && t.request.URL.Path != "/"
 }
 
 func (t *globalTemplate) addToast(toast Toast) {
