@@ -98,7 +98,7 @@ func statAppsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var columns = map[string]string{
 			"1": "player_peak_week",
 			"2": "prices." + string(code) + ".final",
-			"3": "prices." + string(code) + ".discount_percent",
+			"3": "prices." + string(code) + ".discountpercent",
 			"4": "reviews_score",
 		}
 
