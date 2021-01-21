@@ -288,7 +288,7 @@ if ($('#players-page').length > 0) {
                     return row[24];
                 },
                 "orderable": false,
-                "visible": false,
+                "visible": user.isLocal,
             },
         ]
     };
