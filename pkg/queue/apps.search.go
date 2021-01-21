@@ -2,6 +2,7 @@ package queue
 
 import (
 	"encoding/json"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -129,41 +130,61 @@ var aliasMap = map[int][]string{
 	230410:  {"wf"},                    // Warframe
 }
 
+//goland:noinspection RegExpRedundantEscape
+var (
+	regexpRoman                          = regexp.MustCompile(`[IVX]{1,4}|[0-9]{1,2}`)
+	regexpFirstLetterAndRomansAndNumbers = regexp.MustCompile(`[IVX]{1,4}|[0-9]{1,2}|\b[a-zA-Z]`)
+	regexpSplitOnEnding                  = regexp.MustCompile(`\s\(|\:\s`)
+)
+
 func makeAppAliases(ID int, name string) (aliases []string) {
 
+	// Add aliases
 	if val, ok := aliasMap[ID]; ok {
 		aliases = val
 	}
 
-	for _, convertRoman := range []bool{true, false} {
-		for _, trimSmall := range []bool{true, false} {
+	// Add abreviations
+	aliases = append(aliases, strings.Join(regexpFirstLetterAndRomansAndNumbers.FindAllString(helpers.RegexNonAlphaNumericSpace.ReplaceAllString(name, ""), -1), ""))
+
+	// Add variations
+	for _, convertRomanToInt := range []bool{true, false} {
+		for _, convertIntToRoman := range []bool{true, false} {
 			for _, removeSymbols := range []bool{true, false} {
+				for _, removeEndings := range []bool{true, false} {
 
-				name2 := name
+					name2 := name
 
-				if removeSymbols {
-					name2 = helpers.RegexNonAlphaNumericSpace.ReplaceAllString(name2, "")
-				}
-
-				var alias []string
-				for _, part := range helpers.RegexNonAlphaNumeric.Split(name2, -1) {
-
-					if part == "" {
-						continue
+					if removeEndings {
+						name2 = regexpSplitOnEnding.Split(name2, 2)[0]
 					}
 
-					if convertRoman && helpers.RegexSmallRomanOnly.MatchString(part) {
-						part = strconv.Itoa(roman.Arabic(part))
+					if removeSymbols {
+						name2 = helpers.RegexNonAlphaNumericSpace.ReplaceAllString(name2, "")
 					}
 
-					if helpers.RegexIntsOnly.MatchString(part) {
-						alias = append(alias, part)
-					} else if !trimSmall || len(part) > 1 {
-						alias = append(alias, strings.ToLower(part[0:1]))
-					}
-				}
-				if len(alias) > 1 {
-					aliases = append(aliases, strings.Join(alias, ""))
+					// Swap roman numerals
+					name2 = regexpRoman.ReplaceAllStringFunc(name2, func(part string) string {
+						if convertRomanToInt {
+							part = helpers.RegexSmallRomanOnly.ReplaceAllStringFunc(part, func(part string) string {
+								return strconv.Itoa(roman.Arabic(part))
+							})
+						}
+						if convertIntToRoman {
+							part = regexpRoman.ReplaceAllStringFunc(part, func(part string) string {
+								i, _ := strconv.Atoi(part)
+								if i <= 20 {
+									return part
+								}
+								return roman.Roman(i)
+							})
+						}
+
+						return part
+					})
+
+					//
+					aliases = append(aliases, name2)
 				}
 			}
 		}
