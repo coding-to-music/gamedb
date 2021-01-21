@@ -40,7 +40,7 @@ func setHeaders(w http.ResponseWriter, contentType string) {
 		"default-src 'none'",
 		"script-src 'self' 'unsafe-eval' 'unsafe-inline' blob: https://cdnjs.cloudflare.com https://cdn.datatables.net https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://platform.twitter.com https://www.google.com https://*.gstatic.com https://*.patreon.com https://cdn.jsdelivr.net https://hcaptcha.com https://*.hcaptcha.com https://arc.io https://*.arc.io https://browser.sentry-cdn.com",
 		"style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.datatables.net https://fonts.googleapis.com https://cdn.jsdelivr.net https://hcaptcha.com https://*.hcaptcha.com https://static.arc.io",
-		"media-src https://steamcdn-a.akamaihd.net",
+		"media-src https://*.akamaihd.net https://*.steamstatic.com",
 		"font-src https://fonts.gstatic.com https://cdnjs.cloudflare.com",
 		"frame-src https://platform.twitter.com https://*.facebook.com https://www.youtube.com https://*.google.com https://www.patreon.com https://hcaptcha.com https://*.hcaptcha.com https://core.arc.io",
 		"connect-src 'self' ws: wss: https://*.infolinks.com https://www.google-analytics.com https://stats.g.doubleclick.net https://hcaptcha.com https://*.hcaptcha.com https://*.arc.io",
