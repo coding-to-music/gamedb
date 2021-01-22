@@ -67,7 +67,9 @@ func playerHandler(message *rabbit.Message) {
 		message.Ack()
 		return
 	}
+
 	newPlayer := err == mongo.ErrNoDocuments
+
 	err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
 	if err != nil {
 
@@ -81,7 +83,10 @@ func playerHandler(message *rabbit.Message) {
 	}
 
 	player.ID = payload.ID
-
+	if newPlayer {
+		player.CreatedAt = time.Now()
+	}
+	
 	// Websocket
 	defer func() {
 

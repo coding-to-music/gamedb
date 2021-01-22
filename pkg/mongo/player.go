@@ -176,9 +176,10 @@ func (player Player) BSON() bson.D {
 
 	player.UpdatedAt = time.Now()
 
-	if player.CreatedAt.IsZero() || player.CreatedAt.Unix() == 0 {
-		player.CreatedAt = time.Now()
-	}
+	// we now only set this on new players
+	// if player.CreatedAt.IsZero() || player.CreatedAt.Unix() == 0 {
+	// 	player.CreatedAt = time.Now()
+	// }
 
 	return bson.D{
 		{"_id", player.ID},
