@@ -53,7 +53,7 @@ func (e Event) ArgumentsString() string {
 
 	var s = []string{e.Data.Name}
 	for _, v := range e.Data.Options {
-		s = append(s, v.Name+":"+v.Value)
+		s = append(s, v.Value)
 	}
 	return strings.Join(s, " ")
 }
