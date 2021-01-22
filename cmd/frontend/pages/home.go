@@ -98,16 +98,20 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.Upcoming, _, err = elasticsearch.SearchAppsAdvanced(
-			0,
-			10,
-			"",
-			[]elastic.Sorter{elastic.NewFieldSort("followers").Desc()},
-			elastic.NewBoolQuery().Filter(
-				elastic.NewRangeQuery("release_date").From(time.Now().Add(upcomingFilterHours).Unix()),
-				elastic.NewRangeQuery("release_date").To(time.Now().Add(time.Hour*24*14).Unix()),
-			),
-		)
+		err = memcache.GetSetInterface(memcache.ItemHomeUpcoming, &t.Upcoming, func() (interface{}, error) {
+
+			apps, _, err := elasticsearch.SearchAppsAdvanced(
+				0,
+				10,
+				"",
+				[]elastic.Sorter{elastic.NewFieldSort("followers").Desc()},
+				elastic.NewBoolQuery().Filter(
+					elastic.NewRangeQuery("release_date").From(time.Now().Add(upcomingFilterHours).Unix()),
+					elastic.NewRangeQuery("release_date").To(time.Now().Add(time.Hour*24*14).Unix()),
+				),
+			)
+			return apps, err
+		})
 
 		if err != nil {
 			log.ErrS(err)
@@ -250,23 +254,33 @@ func homeNewsHandler(w http.ResponseWriter, r *http.Request) {
 	t := homeNewsTemplate{}
 	t.fill(w, r, "home_news", "", "")
 
-	popularApps, err := mongo.PopularApps()
+	var articles []elasticsearch.Article
+	err := memcache.GetSetInterface(memcache.ItemHomeNews, &articles, func() (interface{}, error) {
+
+		popularApps, err := mongo.PopularApps()
+		if err != nil {
+			log.ErrS(err)
+		}
+
+		var popularAppIDs []string
+		for _, app := range popularApps {
+			popularAppIDs = append(popularAppIDs, fmt.Sprint(app.ID))
+		}
+
+		articles, _, err := elasticsearch.SearchArticles(
+			0,
+			20,
+			[]elastic.Sorter{elastic.NewFieldSort("time").Desc()},
+			"",
+			[]elastic.Query{elastic.NewTermsQueryFromStrings("app_id", popularAppIDs...)},
+		)
+
+		return articles, err
+	})
 	if err != nil {
 		log.ErrS(err)
+		return
 	}
-
-	var popularAppIDs []string
-	for _, app := range popularApps {
-		popularAppIDs = append(popularAppIDs, fmt.Sprint(app.ID))
-	}
-
-	articles, _, err := elasticsearch.SearchArticles(
-		0,
-		20,
-		[]elastic.Sorter{elastic.NewFieldSort("time").Desc()},
-		"",
-		[]elastic.Query{elastic.NewTermsQueryFromStrings("app_id", popularAppIDs...)},
-	)
 
 	for _, article := range articles {
 

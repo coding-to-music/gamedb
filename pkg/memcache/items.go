@@ -64,6 +64,8 @@ var (
 	ItemHomeTweets     = Item{Key: "home-tweets", Expiration: 60 * 60 * 24 * 7}
 	ItemHomeTopSellers = Item{Key: "home-top-sellers", Expiration: 60 * 60 * 6}
 	ItemHomePlayers    = func(sort string) Item { return Item{Key: "home-players-" + sort, Expiration: 60 * 60 * 48} }
+	ItemHomeUpcoming   = Item{Key: "home-upcoming", Expiration: 60 * 60}
+	ItemHomeNews       = Item{Key: "home-news", Expiration: 60 * 60}
 
 	// Queue
 	ItemQueues         = Item{Key: "queues", Expiration: 9} // Frontend refreshes every 10 seconds
