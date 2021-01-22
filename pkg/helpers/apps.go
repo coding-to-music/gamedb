@@ -2,7 +2,7 @@ package helpers
 
 import (
 	"html/template"
-	"regexp"
+	"path"
 	"strconv"
 	"strings"
 	"time"
@@ -149,10 +149,8 @@ type AppVideo struct {
 	Title         string `json:"t"`
 }
 
-var microTrailerRegex = regexp.MustCompile(`\/[a-z0-9_]+\.`)
-
 func (video AppVideo) Micro() string {
-	return microTrailerRegex.ReplaceAllString(video.PathFull, "/microtrailer.")
+	return strings.Replace(video.PathFull, path.Base(video.PathFull), "microtrailer.webm", 1)
 }
 
 type AppStat struct {
