@@ -676,7 +676,7 @@ func GetApp(id int, full ...bool) (app App, err error) {
 
 func GetApps(offset int64, limit int64, sort bson.D, filter bson.D, projection bson.M) (apps []App, err error) {
 
-	cur, ctx, err := Find(CollectionApps, offset, limit, sort, filter, projection, nil)
+	cur, ctx, err := find(CollectionApps, offset, limit, sort, filter, projection, nil)
 	if err != nil {
 		return apps, err
 	}

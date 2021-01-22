@@ -68,7 +68,7 @@ func (command ChatBotCommand) GetCommand() string {
 
 func GetChatBotCommandsRecent() (commands []ChatBotCommand, err error) {
 
-	cur, ctx, err := Find(CollectionChatBotCommands, 0, 100, bson.D{{"_id", -1}}, nil, nil, nil)
+	cur, ctx, err := find(CollectionChatBotCommands, 0, 100, bson.D{{"_id", -1}}, nil, nil, nil)
 	if err != nil {
 		return commands, err
 	}

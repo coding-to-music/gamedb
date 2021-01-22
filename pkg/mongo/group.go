@@ -204,7 +204,7 @@ func GetGroups(offset int64, limit int64, sort bson.D, filter bson.D, projection
 
 func getGroups(offset int64, limit int64, sort bson.D, filter bson.D, projection bson.M) (groups []Group, err error) {
 
-	cur, ctx, err := Find(CollectionGroups, offset, limit, sort, filter, projection, nil)
+	cur, ctx, err := find(CollectionGroups, offset, limit, sort, filter, projection, nil)
 	if err != nil {
 		return groups, err
 	}

@@ -78,7 +78,7 @@ func SaveWebhook(service WebhookService, event string, body string) error {
 
 func GetWebhooks(offset int64, limit int64, sort bson.D, filter bson.D, projection bson.M) (webhooks []Webhook, err error) {
 
-	cur, ctx, err := Find(CollectionWebhooks, offset, limit, sort, filter, projection, nil)
+	cur, ctx, err := find(CollectionWebhooks, offset, limit, sort, filter, projection, nil)
 	if err != nil {
 		return webhooks, err
 	}

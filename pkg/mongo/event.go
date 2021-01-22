@@ -102,7 +102,7 @@ func GetEvents(filter bson.D, offset int64) (events []Event, err error) {
 
 	var sortx = bson.D{{"created_at", -1}}
 
-	cur, ctx, err := Find(CollectionEvents, offset, 100, sortx, filter, nil, nil)
+	cur, ctx, err := find(CollectionEvents, offset, 100, sortx, filter, nil, nil)
 	if err != nil {
 		return events, err
 	}

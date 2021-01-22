@@ -372,7 +372,7 @@ func CountDocuments(collection collection, filter bson.D, ttl uint32) (count int
 }
 
 // Need to close cursor after calling this
-func Find(collection collection, offset int64, limit int64, sort bson.D, filter bson.D, projection bson.M, ops *options.FindOptions) (cur *mongo.Cursor, ctx context.Context, err error) {
+func find(collection collection, offset int64, limit int64, sort bson.D, filter bson.D, projection bson.M, ops *options.FindOptions) (cur *mongo.Cursor, ctx context.Context, err error) {
 
 	if filter == nil {
 		filter = bson.D{}

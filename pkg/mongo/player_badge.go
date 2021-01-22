@@ -189,7 +189,7 @@ func GetBadgePlayers(offset int64, filter bson.D) (badges []PlayerBadge, err err
 
 func getPlayerBadges(offset int64, limit int64, filter bson.D, sort bson.D, projection bson.M) (badges []PlayerBadge, err error) {
 
-	cur, ctx, err := Find(CollectionPlayerBadges, offset, limit, sort, filter, projection, nil)
+	cur, ctx, err := find(CollectionPlayerBadges, offset, limit, sort, filter, projection, nil)
 	if err != nil {
 		return badges, err
 	}

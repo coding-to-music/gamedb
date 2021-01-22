@@ -372,7 +372,7 @@ func GetPackagesByID(ids []int, projection bson.M) (packages []Package, err erro
 
 func GetPackages(offset int64, limit int64, sort bson.D, filter bson.D, projection bson.M) (packages []Package, err error) {
 
-	cur, ctx, err := Find(CollectionPackages, offset, limit, sort, filter, projection, nil)
+	cur, ctx, err := find(CollectionPackages, offset, limit, sort, filter, projection, nil)
 	if err != nil {
 		return packages, err
 	}

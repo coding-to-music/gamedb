@@ -172,7 +172,7 @@ func GetPlayerAchievementsByPlayersAndApp(playerIDs []int64, appID int) (achieve
 
 func getPlayerAchievements(offset int64, limit int64, filter bson.D, sort bson.D, ops *options.FindOptions) (achievements []PlayerAchievement, err error) {
 
-	cur, ctx, err := Find(CollectionPlayerAchievements, offset, limit, sort, filter, nil, ops)
+	cur, ctx, err := find(CollectionPlayerAchievements, offset, limit, sort, filter, nil, ops)
 	if err != nil {
 		return achievements, err
 	}

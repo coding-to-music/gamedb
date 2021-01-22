@@ -695,7 +695,7 @@ func GetPlayersByID(ids []int64, projection bson.M) (players []Player, err error
 
 func GetPlayers(offset int64, limit int64, sort bson.D, filter bson.D, projection bson.M) (players []Player, err error) {
 
-	cur, ctx, err := Find(CollectionPlayers, offset, limit, sort, filter, projection, nil)
+	cur, ctx, err := find(CollectionPlayers, offset, limit, sort, filter, projection, nil)
 	if err != nil {
 		return players, err
 	}

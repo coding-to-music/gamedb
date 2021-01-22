@@ -34,7 +34,7 @@ func GetGuilds(guildIDs []string) (guilds map[string]DiscordGuild, err error) {
 
 	var filter = bson.D{{"_id", bson.M{"$in": a}}}
 
-	cur, ctx, err := Find(CollectionDiscordGuilds, 0, 100, nil, filter, nil, nil)
+	cur, ctx, err := find(CollectionDiscordGuilds, 0, 100, nil, filter, nil, nil)
 	if err != nil {
 		return guilds, err
 	}

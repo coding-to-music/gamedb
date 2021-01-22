@@ -117,7 +117,7 @@ func GetChanges(offset int64) (changes []Change, err error) {
 
 	var sort = bson.D{{"_id", -1}}
 
-	cur, ctx, err := Find(CollectionChanges, offset, 100, sort, nil, nil, nil)
+	cur, ctx, err := find(CollectionChanges, offset, 100, sort, nil, nil, nil)
 	if err != nil {
 		return changes, err
 	}

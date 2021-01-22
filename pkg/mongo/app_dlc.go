@@ -63,7 +63,7 @@ func GetDLCForApps(appIDs []int, offset int64, limit int64, filter bson.D, sort 
 
 func GetDLCForApp(offset int64, limit int64, filter bson.D, sort bson.D, projection bson.M) (dlcs []AppDLC, err error) {
 
-	cur, ctx, err := Find(CollectionAppDLC, offset, limit, sort, filter, projection, nil)
+	cur, ctx, err := find(CollectionAppDLC, offset, limit, sort, filter, projection, nil)
 	if err != nil {
 		return dlcs, err
 	}
