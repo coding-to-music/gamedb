@@ -462,7 +462,7 @@ func homeUpdatedPlayersHandler(w http.ResponseWriter, r *http.Request) {
 		"_id":          1,
 		"persona_name": 1,
 		"avatar":       1,
-		"updated_at":   1,
+		"created_at":   1,
 	}
 
 	players, err := mongo.GetPlayers(0, 10, bson.D{{"created_at", -1}}, nil, projection)
@@ -479,7 +479,7 @@ func homeUpdatedPlayersHandler(w http.ResponseWriter, r *http.Request) {
 			Avatar:        player.GetAvatar(),
 			Link:          player.GetPath(),
 			CommunityLink: player.CommunityLink(),
-			UpdatedAt:     player.UpdatedAt.Unix(),
+			UpdatedAt:     player.CreatedAt.Unix(),
 		})
 	}
 
