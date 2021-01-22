@@ -107,6 +107,7 @@ func main() {
 	r.Mount("/discord-server", pages.ChatRouter())
 	r.Mount("/donate", pages.DonateRouter())
 	r.Mount("/experience", pages.ExperienceRouter())
+	r.Mount("/features", pages.FeaturesRouter())
 	r.Mount("/forgot", pages.ForgotRouter())
 	r.Mount("/franchise", pages.FranchiseRouter())
 	r.Mount("/games", pages.GamesRouter())

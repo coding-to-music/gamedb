@@ -1,0 +1,85 @@
+{{define "features"}}
+    {{ template "header" . }}
+
+    <div class="container" id="features-page">
+
+        <div class="jumbotron">
+            <h1><i class="fas fa-info-circle"></i> {{ .TitleOnly }}</h1>
+        </div>
+
+        {{ template "flashes" . }}
+
+        <div class="card">
+            <div class="card-body">
+
+                <h5>Tools</h5>
+                <ul>
+                    <li>Compare game achievements with other players</li>
+                    <li>Compare games</li>
+                    <li>Find co-op games to play with friends</li>
+                    <li>Discord bot</li>
+                    <li>Experience tables</li>
+                </ul>
+
+                <h5>Players</h5>
+                <ul>
+                    <li>The largest third party Steam player database</li>
+                    <li>Ladders for {{ len .PlayerMetrics }} player metrics</li>
+                    <li>Ladders for {{ len .Countries }} countries</li>
+                    <li>Achievement tracking</li>
+                    <li>Library statistics</li>
+                </ul>
+
+                <h5>Groups</h5>
+                <ul>
+                    <li>The largest third party Steam group database</li>
+                    <li>Player ladders for all {{ comma64 .GroupsCount }} groups</li>
+                    <li>Popularity and trend tracking</li>
+                    <li>Primary group tracking</li>
+                </ul>
+
+                <h5>Games</h5>
+                <ul>
+                    <li>Information on all Steam games, packages and bundles</li>
+                    <li>Custom game lists: upcoming, trending, wishlists, new releases, popularity</li>
+                    <li>Playtime ladders for all {{ comma64 .AppCount }} games</li>
+                    <li>
+                        Tracking:
+                        <ul>
+                            <li>Tags over time</li>
+                            <li>In game players over time</li>
+                            <li>Wishlist counts over time</li>
+                            <li>Price changes over time</li>
+                            <li>Review score over time</li>
+                            <li>Achievement completion over time</li>
+                            <li>Similar owners</li>
+                            <li>
+                                Publisher & developer metrics
+                                <ul>
+                                    <li>Max discounts</li>
+                                    <li>Review score over time</li>
+                                    <li>Prices info over time</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <h5>Badges</h5>
+                <ul>
+                    <li>Ladders for all {{ sum (len .SpecialBadges) (len .EventBagdes) }} event & special badges</li>
+                    <li>Ladders for all {{ comma64 .AppCount }} game badges</li>
+                </ul>
+
+                <h5>News</h5>
+                <ul>
+                    <li>Database of all {{ comma64 .ArticleCount }} news stories</li>
+                    <li>Searchable, filterable</li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+    {{ template "footer" . }}
+{{end}}
