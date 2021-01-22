@@ -332,7 +332,9 @@ if (darkMode === undefined && window.matchMedia && window.matchMedia('(prefers-c
 // Hide patreon banner
 $(document).on('click', '#patreon-message i, #patreon-message svg', function (e) {
     setCookieFlag('patreon-message', true);
-    $(this).parent().slideUp(400);
+    $(this).parent().slideUp(300, function () {
+        $('#patreon-message').remove();
+    });
     return false
 });
 

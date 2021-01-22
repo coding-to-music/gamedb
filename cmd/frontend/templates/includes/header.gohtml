@@ -241,8 +241,8 @@
                         </div>
                     </li>
 
-                    {{ if .ShowAds }}
-                        <li class="nav-item {{if startsWith .Path "/donate" }}active{{end}} {{ if not (.GetCookieFlag "patreon-message") }}d-none{{end }}" id="patreon-link">
+                    {{ if and .ShowAds (.GetCookieFlag "patreon-message") }}
+                        <li class="nav-item {{if startsWith .Path "/donate" }}active{{end}}" id="patreon-link">
                             <a class="nav-link" href="/donate"><i class="fas fa-heart text-danger"></i> Donate</a>
                         </li>
                     {{ end }}
@@ -317,9 +317,8 @@
         </nav>
     </div>
 
-    {{ if .ShowPatreonMessage }}
-        <a class="{{ if (.GetCookieFlag "patreon-message") }}d-none{{end }}" id="patreon-message" href="/donate"
-           style="display: block; color: red; text-align: center; position:relative; margin-top: -8px; margin-bottom: 4px; text-shadow: 0 0 10px #1b2738, 0 0 10px #1b2738;">
+    {{ if and .ShowPatreonMessage (not (.GetCookieFlag "patreon-message")) }}
+        <a id="patreon-message" href="/donate">
             Subscribe to our Patreon to support new features and hosting costs! <i class="fas fa-times"></i>
         </a>
     {{ end }}
