@@ -6,6 +6,13 @@
             width: 100%;
         }
 
+        #tags-wrapper {
+            .card-body {
+                overflow: auto;
+                max-height: 270px;
+            }
+        }
+
         #links {
             div {
                 @include clearfix();
