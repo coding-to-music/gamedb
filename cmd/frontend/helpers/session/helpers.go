@@ -101,19 +101,19 @@ func GetPlayerIDFromSesion(r *http.Request) (id int64) {
 
 func GetProductCC(r *http.Request) steamapi.ProductCC {
 
+	// Get from URL
+	q := strings.ToLower(r.URL.Query().Get("cc"))
+	if q != "" && steamapi.IsProductCC(q) {
+		return steamapi.ProductCC(q)
+	}
+
+	// Get from session
+	val := Get(r, SessionUserProdCC)
+	if val != "" && steamapi.IsProductCC(val) {
+		return steamapi.ProductCC(val)
+	}
+
 	cc := func() steamapi.ProductCC {
-
-		// Get from URL
-		q := strings.ToLower(r.URL.Query().Get("cc"))
-		if q != "" && steamapi.IsProductCC(q) {
-			return steamapi.ProductCC(q)
-		}
-
-		// Get from session
-		val := Get(r, SessionUserProdCC)
-		if val != "" && steamapi.IsProductCC(val) {
-			return steamapi.ProductCC(val)
-		}
 
 		// If local
 		if strings.Contains(r.RemoteAddr, "[::1]:") {
@@ -124,7 +124,7 @@ func GetProductCC(r *http.Request) steamapi.ProductCC {
 		q = strings.ToLower(r.Header.Get("cf-ipcountry"))
 		if q != "" {
 			if q == "gb" {
-				q = "uk" // Convert to Steam's incorrect cc
+				q = "uk"
 			}
 			if steamapi.IsProductCC(q) {
 				return steamapi.ProductCC(q)
