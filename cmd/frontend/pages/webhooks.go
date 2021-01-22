@@ -145,11 +145,11 @@ func twitterZapierWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 	// Forward to Discord
 	if webhooks.Link != "" {
 
-		if config.C.DiscordRelayBotToken == "" {
+		if config.C.DiscordChatBotToken == "" {
 			log.Err("Missing discord environment variable")
 		}
 
-		discordSession, err := discordgo.New("Bot " + config.C.DiscordRelayBotToken)
+		discordSession, err := discordgo.New("Bot " + config.C.DiscordChatBotToken)
 		if err != nil {
 			log.ErrS(err)
 			return
