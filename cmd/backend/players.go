@@ -10,10 +10,10 @@ type PlayersServer struct {
 	generated.UnimplementedPlayersServiceServer
 }
 
-func (p PlayersServer) List(ctx context.Context, request *generated.ListPlayersRequest) (*generated.PlayersMongoResponse, error) {
+func (p PlayersServer) List(_ context.Context, request *generated.ListPlayersRequest) (*generated.PlayersMongoResponse, error) {
 	panic("implement me")
 }
 
-func (p PlayersServer) Search(ctx context.Context, request *generated.SearchPlayersRequest) (*generated.PlayersElasticResponse, error) {
+func (p PlayersServer) Search(_ context.Context, request *generated.SearchPlayersRequest) (*generated.PlayersElasticResponse, error) {
 	panic("implement me")
 }

@@ -15,7 +15,7 @@ type ArticlesServer struct {
 	generated.UnimplementedArticlesServiceServer
 }
 
-func (as ArticlesServer) List(ctx context.Context, request *generated.ListArticlesRequest) (response *generated.ArticlesResponse, err error) {
+func (as ArticlesServer) List(_ context.Context, request *generated.ListArticlesRequest) (response *generated.ArticlesResponse, err error) {
 
 	sort := helpers.MakeMongoOrder(request.GetPagination())
 	// projection := helpers.MakeMongoProjection(request.GetProjection())

@@ -10,6 +10,6 @@ type PackagesServer struct {
 	generated.UnimplementedPackagesServiceServer
 }
 
-func (p PackagesServer) List(ctx context.Context, request *generated.ListPackagesRequest) (*generated.PackagesResponse, error) {
+func (p PackagesServer) List(_ context.Context, request *generated.ListPackagesRequest) (*generated.PackagesResponse, error) {
 	panic("implement me")
 }

@@ -19,7 +19,7 @@ type AppsServer struct {
 	generated.UnimplementedAppsServiceServer
 }
 
-func (a AppsServer) List(ctx context.Context, request *generated.ListAppsRequest) (response *generated.AppsMongoResponse, err error) {
+func (a AppsServer) List(_ context.Context, request *generated.ListAppsRequest) (response *generated.AppsMongoResponse, err error) {
 
 	filter := bson.D{}
 
@@ -131,7 +131,7 @@ func (a AppsServer) List(ctx context.Context, request *generated.ListAppsRequest
 	return response, err
 }
 
-func (a AppsServer) Search(ctx context.Context, request *generated.SearchAppsRequest) (response *generated.AppsElasticResponse, err error) {
+func (a AppsServer) Search(_ context.Context, request *generated.SearchAppsRequest) (response *generated.AppsElasticResponse, err error) {
 
 	var filters []elastic.Query
 

@@ -13,7 +13,7 @@ type GithubServer struct {
 	generated.UnimplementedGitHubServiceServer
 }
 
-func (g GithubServer) Commits(ctx context.Context, request *generated.CommitsRequest) (response *generated.CommitsResponse, err error) {
+func (g GithubServer) Commits(_ context.Context, request *generated.CommitsRequest) (response *generated.CommitsResponse, err error) {
 
 	client, ctx := githubHelper.GetGithub()
 

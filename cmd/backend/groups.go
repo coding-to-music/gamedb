@@ -16,7 +16,7 @@ type GroupsServer struct {
 	generated.UnimplementedGroupsServiceServer
 }
 
-func (g GroupsServer) List(ctx context.Context, request *generated.GroupsRequest) (response *generated.GroupsResponse, err error) {
+func (g GroupsServer) List(_ context.Context, request *generated.GroupsRequest) (response *generated.GroupsResponse, err error) {
 
 	sort := backendHelpers.MakeMongoOrder(request.GetPagination())
 	projection := backendHelpers.MakeMongoProjection(request.GetProjection())
@@ -54,7 +54,7 @@ func (g GroupsServer) List(ctx context.Context, request *generated.GroupsRequest
 	return response, err
 }
 
-func (g GroupsServer) Retrieve(ctx context.Context, request *generated.GroupRequest) (*generated.GroupResponse, error) {
+func (g GroupsServer) Retrieve(_ context.Context, request *generated.GroupRequest) (*generated.GroupResponse, error) {
 	panic("implement me")
 }
 

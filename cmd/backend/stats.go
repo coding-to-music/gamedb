@@ -15,7 +15,7 @@ type StatsServer struct {
 	generated.UnimplementedStatsServiceServer
 }
 
-func (s StatsServer) List(ctx context.Context, request *generated.StatsRequest) (response *generated.StatsResponse, err error) {
+func (s StatsServer) List(_ context.Context, request *generated.StatsRequest) (response *generated.StatsResponse, err error) {
 
 	offset := request.GetPagination().GetOffset()
 	limit := request.GetPagination().GetLimit()
