@@ -21,9 +21,8 @@ protoc \
   --grpc-gateway_opt logtostderr=true \
   --grpc-gateway_opt paths=source_relative \
   --grpc-gateway_opt generate_unbound_methods=true \
+  --openapiv2_out "$STEAM_PATH"/cmd/api/generated_openapi \
+  --openapiv2_opt logtostderr=true \
   "$STEAM_PATH"/pkg/backend/protos/*.proto
-
-#  --openapiv2_out "$STEAM_PATH"/cmd/api/generated_openapi \
-#  --openapiv2_opt logtostderr=true \
 
 echo "Done"
