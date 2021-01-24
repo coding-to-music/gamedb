@@ -8,9 +8,7 @@ files=(
 )
 
 for i in "${files[@]}"; do
-  if [ ! -f $(which $(basename $i)) ]; then
-    go get -u "$i"
-  fi
+  go get -u "$i"
 done
 
 protoc \
