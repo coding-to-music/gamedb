@@ -85,6 +85,7 @@ message AppsMongoResponse {
 message AppMongoResponse {
     int32 id = 1;
     string name = 2;
+    string icon = 18;
     repeated int32 tags = 3;
     repeated int32 genres = 4;
     repeated int32 categories = 5;

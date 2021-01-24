@@ -82,10 +82,11 @@ var SwaggerGameDB = &openapi3.Swagger{
 			},
 			"game-schema": {
 				Value: &openapi3.Schema{
-					Required: []string{"id", "name", "tags", "genres", "categories", "developers", "publishers", "prices", "players_max", "players_week_max", "players_week_avg", "release_date", "reviews_positive", "reviews_negative", "reviews_score", "metacritic_score"},
+					Required: []string{"id", "name", "icon", "tags", "genres", "categories", "developers", "publishers", "prices", "players_max", "players_week_max", "players_week_avg", "release_date", "reviews_positive", "reviews_negative", "reviews_score", "metacritic_score"},
 					Properties: map[string]*openapi3.SchemaRef{
 						"id":               {Value: openapi3.NewIntegerSchema()},
 						"name":             {Value: openapi3.NewStringSchema()},
+						"icon":             {Value: openapi3.NewStringSchema()},
 						"tags":             {Value: &openapi3.Schema{Type: "array", Items: &openapi3.SchemaRef{Ref: "#/components/schemas/stat-schema"}}},
 						"genres":           {Value: &openapi3.Schema{Type: "array", Items: &openapi3.SchemaRef{Ref: "#/components/schemas/stat-schema"}}},
 						"categories":       {Value: &openapi3.Schema{Type: "array", Items: &openapi3.SchemaRef{Ref: "#/components/schemas/stat-schema"}}},

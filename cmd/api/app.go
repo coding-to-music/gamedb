@@ -26,7 +26,8 @@ func (s Server) GetGamesId(w http.ResponseWriter, r *http.Request, id int32) {
 
 		gameSchema := generated.GameSchema{}
 		gameSchema.Id = app.ID
-		gameSchema.Name = app.GetName()
+		gameSchema.Name = app.Name
+		gameSchema.Icon = app.Icon
 		gameSchema.ReleaseDate = app.ReleaseDateUnix
 		gameSchema.PlayersMax = app.PlayerPeakAllTime
 		gameSchema.PlayersWeekMax = app.PlayerPeakWeek

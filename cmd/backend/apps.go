@@ -54,6 +54,7 @@ func (a AppsServer) List(ctx context.Context, request *generated.ListAppsRequest
 	var projection = bson.M{
 		"id":                  1,
 		"name":                1,
+		"icon":                1,
 		"tags":                1,
 		"genres":              1,
 		"developers":          1,
@@ -92,6 +93,7 @@ func (a AppsServer) List(ctx context.Context, request *generated.ListAppsRequest
 		newApp := &generated.AppMongoResponse{
 			Id:              int32(app.GetID()),
 			Name:            app.Name,
+			Icon:            app.Icon,
 			Tags:            helpers.IntsToInt32s(app.Tags),
 			Genres:          helpers.IntsToInt32s(app.Genres),
 			Categories:      helpers.IntsToInt32s(app.Categories),

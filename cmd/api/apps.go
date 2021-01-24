@@ -147,6 +147,7 @@ func (s Server) GetGames(w http.ResponseWriter, r *http.Request, params generate
 		newApp := generated.GameSchema{
 			Id:              int(app.GetId()),
 			Name:            app.GetName(),
+			Icon:            app.GetIcon(),
 			MetacriticScore: app.GetMetaScore(),
 			PlayersMax:      int(app.GetPlayersMax()),
 			PlayersWeekMax:  int(app.GetPlayersWeekMax()),
