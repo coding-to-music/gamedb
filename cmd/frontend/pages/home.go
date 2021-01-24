@@ -11,12 +11,14 @@ import (
 	"sync"
 	"time"
 
+	"github.com/Jleagle/influxql"
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	twitterHelper "github.com/gamedb/gamedb/cmd/frontend/helpers/twitter"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -40,6 +42,7 @@ func HomeRouter() http.Handler {
 	// r.Get("/sales/{sort}.json", homeSalesHandler)
 	r.Get("/tweets.json", homeTweetsHandler)
 	r.Get("/updated-players.json", homeUpdatedPlayersHandler)
+	r.Get("/followers.json", homeFollowersHandler)
 	return r
 }
 
@@ -54,6 +57,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	t.setRandomBackground(true, true)
 	t.fill(w, r, "home", "Home", "Stats and information on the Steam Catalogue.")
 	t.addAssetJSON2HTML()
+	t.addAssetHighCharts()
 
 	var wg sync.WaitGroup
 
@@ -98,21 +102,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		err = memcache.GetSetInterface(memcache.ItemHomeUpcoming, &t.Upcoming, func() (interface{}, error) {
-
-			apps, _, err := elasticsearch.SearchAppsAdvanced(
-				0,
-				10,
-				"",
-				[]elastic.Sorter{elastic.NewFieldSort("followers").Desc()},
-				elastic.NewBoolQuery().Filter(
-					elastic.NewRangeQuery("release_date").From(time.Now().Add(upcomingFilterHours).Unix()),
-					elastic.NewRangeQuery("release_date").To(time.Now().Add(time.Hour*24*14).Unix()),
-				),
-			)
-			return apps, err
-		})
-
+		t.Upcoming, err = elasticsearch.GetUpcomingGames()
 		if err != nil {
 			log.ErrS(err)
 		}
@@ -581,4 +571,61 @@ func getPlayersForHome(sort string) (players []mongo.Player, err error) {
 	})
 
 	return players, err
+}
+
+func homeFollowersHandler(w http.ResponseWriter, r *http.Request) {
+
+	apps, err := elasticsearch.GetUpcomingGames()
+	if err != nil {
+		log.ErrS(err)
+		return
+	}
+
+	var appsMap = map[string]map[string]interface{}{}
+	var groupIDs []string
+	for _, v := range apps {
+		appsMap[v.GroupID] = map[string]interface{}{
+			"id":        v.ID,
+			"group":     v.GroupID,
+			"followers": v.FollowersCount,
+			"name":      v.GetName(),
+			"icon":      v.GetIcon(),
+			"path":      v.GetPath(),
+		}
+		groupIDs = append(groupIDs, v.GroupID)
+	}
+
+	builder := influxql.NewBuilder()
+	builder.AddSelect(`max("members_count")`, "max_members_count")
+	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementGroups.String())
+	builder.AddWhereRaw(`"group_id" =~ /^(` + strings.Join(groupIDs, "|") + `)$/`)
+	builder.AddWhere("time", ">", "now()-90d")
+	builder.AddGroupByTime("1d")
+	builder.AddGroupBy("group_id")
+	builder.SetFillNone()
+
+	resp, err := influx.InfluxQuery(builder)
+	if err != nil {
+		log.Err(err.Error(), zap.String("query", builder.String()))
+		return
+	}
+
+	var ret []influx.HighChartsJSONMulti
+	if len(resp.Results) > 0 {
+		for _, id := range groupIDs {
+			for _, v := range resp.Results[0].Series {
+				if id == v.Tags["group_id"] {
+					ret = append(ret, influx.HighChartsJSONMulti{
+						Key:   v.Tags["group_id"],
+						Value: influx.InfluxResponseToHighCharts(v, true),
+					})
+				}
+			}
+		}
+	}
+
+	returnJSON(w, r, map[string]interface{}{
+		"apps":      appsMap,
+		"followers": ret,
+	})
 }

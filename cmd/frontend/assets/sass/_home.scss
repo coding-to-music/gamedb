@@ -26,6 +26,42 @@ body.dark {
 
 #home-page {
 
+    #followers-wrapper {
+
+        position: relative;
+        height: 300px;
+        z-index: 1;
+
+        #followers {
+            height: 300px;
+            position: relative;
+            z-index: 3;
+            margin-right: 300px;
+        }
+
+        #followers-legend {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            top: 0;
+            right: 0;
+            z-index: 2;
+
+            div {
+                overflow: hidden;
+                white-space: nowrap;
+                line-height: 28px;
+                height: 28px;
+                margin: 1px 0;
+
+                img {
+                    height: 28px;
+                    width: 28px;
+                }
+            }
+        }
+    }
+
     #panels {
         > a {
             color: #212529;

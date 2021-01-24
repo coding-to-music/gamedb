@@ -31,6 +31,7 @@ if ($homePage.length > 0) {
             loadPlayers('level');
         },
         "updated-players": loadLatestUpdatedPlayers,
+        "followers-wrapper": homeFollowers,
         "news": loadNewsSection,
         "tweets": loadHomeTweets,
     });
@@ -348,6 +349,91 @@ if ($homePage.length > 0) {
 
                     observeLazyImages($container.find('img[data-lazy]'));
                 }
+            },
+        });
+    }
+
+    function homeFollowers() {
+
+        $.ajax({
+            type: "GET",
+            url: '/home/followers.json',
+            dataType: 'json',
+            cache: true,
+            success: function (data, textStatus, jqXHR) {
+
+                let series = [];
+
+                for (const datum of data['followers']) {
+
+                    const app = data.apps[datum.key];
+
+                    series.push({
+                        group: app.group,
+                        name: app.name,
+                        data: datum['value']['max_members_count'],
+                        connectNulls: true,
+                    });
+                }
+
+                const hc = Highcharts.chart('followers', $.extend(true, {}, defaultChartOptions, {
+                    yAxis: {
+                        allowDecimals: false,
+                        title: {
+                            text: ''
+                        },
+                        labels: {
+                            formatter: function () {
+                                return this.value.toLocaleString();
+                            },
+                        },
+                    },
+                    plotOptions: {
+                        series: {
+                            cursor: 'pointer',
+                            point: {
+                                events: {
+                                    click: function () {
+                                        location.href = data.apps[this.series.userOptions.group].path;
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    xAxis: {
+                        visible: false,
+                    },
+                    legend: {
+                        enabled: false,
+                        layout: 'proximate',
+                        align: 'right',
+                    },
+                    tooltip: {
+                        formatter: function () {
+                            return this.series.name + ' had ' + this.y + 'followers on ' + moment(this.key).format("dddd DD MMM");
+                        },
+                    },
+                    series: series,
+                }));
+
+                const $legend = $('#followers-legend');
+
+                $.each(hc.series, function (j, series) {
+
+                    const app = data.apps[series.userOptions.group];
+
+                    $legend.append('<div class="cursor-pointer" style="color:' + series.color + '" data-link="' + app.path + '">' +
+                        '<img src="' + app.icon + '" alt="' + series.name + '"> ' + series.name + '</div>');
+                });
+
+                $legend.find('div').hover(
+                    function () {
+                        hc.series[$(this).index()].setState('hover');
+                    },
+                    function () {
+                        hc.series[$(this).index()].setState('normal');
+                    }
+                );
             },
         });
     }

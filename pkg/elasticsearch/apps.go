@@ -10,6 +10,7 @@ import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/olivere/elastic/v7"
 )
 
@@ -177,6 +178,26 @@ func SearchAppsRandom(filters []elastic.Query) (app App, count int64, err error)
 
 	return app, count, ErrNoResult
 
+}
+
+func GetUpcomingGames() (apps []App, err error) {
+
+	err = memcache.GetSetInterface(memcache.ItemHomeUpcoming, &apps, func() (interface{}, error) {
+
+		apps, _, err := SearchAppsAdvanced(
+			0,
+			10,
+			"",
+			[]elastic.Sorter{elastic.NewFieldSort("followers").Desc()},
+			elastic.NewBoolQuery().Filter(
+				elastic.NewRangeQuery("release_date").From(time.Now().Add(time.Hour*-12).Unix()),
+				elastic.NewRangeQuery("release_date").To(time.Now().Add(time.Hour*24*14).Unix()),
+			),
+		)
+		return apps, err
+	})
+
+	return apps, err
 }
 
 func searchApps(limit int, offset int, search string, totals bool, highlights bool, sorters []elastic.Sorter, boolQuery *elastic.BoolQuery, random bool) (apps []App, total int64, err error) {
