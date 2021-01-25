@@ -63,6 +63,8 @@ func GetArticleBody(body string) template.HTML {
 			log.ErrS(err)
 		}
 		body = buf.String()
+		body = strings.TrimPrefix(body, "<html><head></head><body>")
+		body = strings.TrimSuffix(body, "</body></html>")
 	}
 
 	return template.HTML(body)

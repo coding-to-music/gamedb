@@ -5,11 +5,14 @@ import (
 	"fmt"
 	"html/template"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
+	"github.com/mborgerson/GoTruncateHtml/truncatehtml"
+	"github.com/microcosm-cc/bluemonday"
 	"github.com/olivere/elastic/v7"
 )
 
@@ -31,6 +34,31 @@ type Article struct {
 
 func (article Article) GetBody() template.HTML {
 	return helpers.GetArticleBody(article.Body)
+}
+
+var htmlPolicy = bluemonday.
+	NewPolicy().
+	AllowElements("br").
+	AllowAttrs("data-lazy").Globally()
+
+func (article Article) GetBodyTruncated() template.HTML {
+
+	contents := string(article.GetBody())
+	contents = htmlPolicy.Sanitize(contents)
+
+	b, err := truncatehtml.TruncateHtml([]byte(contents), 200, "...")
+	if err == nil {
+		contents = string(b)
+	}
+
+	for range make([]struct{}, 5) {
+		contents = helpers.RegexSpacesStartEnd.ReplaceAllString(contents, "")
+		contents = strings.TrimSpace(contents)
+		contents = strings.TrimPrefix(contents, "<br/>")
+		contents = strings.TrimSuffix(contents, "<br/>")
+	}
+
+	return template.HTML(contents)
 }
 
 func (article Article) GetArticleIcon() string {

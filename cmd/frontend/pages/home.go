@@ -26,8 +26,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/steam"
 	"github.com/go-chi/chi"
 	"github.com/gosimple/slug"
-	"github.com/mborgerson/GoTruncateHtml/truncatehtml"
-	"github.com/microcosm-cc/bluemonday"
 	"github.com/olivere/elastic/v7"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.uber.org/zap"
@@ -234,11 +232,6 @@ type RDF struct {
 	} `xml:"channel"`
 }
 
-var htmlPolicy = bluemonday.
-	NewPolicy().
-	AllowElements("br").
-	AllowAttrs("data-lazy").Globally()
-
 func homeNewsHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := homeNewsTemplate{}
@@ -274,20 +267,9 @@ func homeNewsHandler(w http.ResponseWriter, r *http.Request) {
 
 	for _, article := range articles {
 
-		contents := string(article.GetBody())
-		contents = htmlPolicy.Sanitize(contents)
-		contents = helpers.RegexSpacesStartEnd.ReplaceAllString(contents, "")
-
-		b, err := truncatehtml.TruncateHtml([]byte(contents), 200, "...")
-		if err == nil {
-			contents = string(b)
-		}
-
-		contents = strings.TrimSpace(contents)
-
 		t.News = append(t.News, homeNewsItemTemplate{
 			Title:    article.Title,
-			Contents: template.HTML(contents),
+			Contents: article.GetBodyTruncated(),
 			Link:     "/games/" + fmt.Sprint(article.AppID) + "/" + slug.Make(article.AppName) + "#news," + strconv.FormatInt(article.ID, 10),
 			Image:    template.HTMLAttr(article.GetHeaderImage()),
 		})
