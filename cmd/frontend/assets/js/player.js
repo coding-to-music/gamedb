@@ -56,6 +56,7 @@ if ($playerPage.length > 0) {
                 t.find('[data-queue="' + data.Data['queue'] + '"]').addClass('line-through');
 
                 if (t.find('li:not(.line-through)').length === 0) {
+                    t.find('.toast-title').html('Player Updated');
                     t.find('.toast-message').html('Click to refresh!');
                 }
             }
