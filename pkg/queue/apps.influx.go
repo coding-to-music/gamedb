@@ -9,7 +9,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/memcache"
 	mongoHelper "github.com/gamedb/gamedb/pkg/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -112,17 +111,17 @@ func appInfluxHandler(message *rabbit.Message) {
 	}
 
 	// Clear app cache
-	var items []string
-	for _, v := range payload.AppIDs {
-		items = append(items, memcache.ItemApp(v).Key)
-	}
-
-	err = memcache.Delete(items...)
-	if err != nil {
-		log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
-		sendToRetryQueue(message)
-		return
-	}
+	// var items []string
+	// for _, v := range payload.AppIDs {
+	// 	items = append(items, memcache.ItemApp(v).Key)
+	// }
+	//
+	// err = memcache.Delete(items...)
+	// if err != nil {
+	// 	log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
+	// 	sendToRetryQueue(message)
+	// 	return
+	// }
 
 	// Update in Elastic
 	for _, v := range payload.AppIDs {
