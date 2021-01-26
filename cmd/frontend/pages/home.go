@@ -272,6 +272,7 @@ func homeNewsHandler(w http.ResponseWriter, r *http.Request) {
 			Contents: article.GetBodyTruncated(),
 			Link:     "/games/" + fmt.Sprint(article.AppID) + "/" + slug.Make(article.AppName) + "#news," + strconv.FormatInt(article.ID, 10),
 			Image:    template.HTMLAttr(article.GetHeaderImage()),
+			Date:     article.Time,
 		})
 
 		t.NewsID = article.ID
@@ -291,6 +292,7 @@ type homeNewsItemTemplate struct {
 	Contents template.HTML
 	Link     string
 	Image    template.HTMLAttr
+	Date     int64
 }
 
 //goland:noinspection RegExpRedundantEscape

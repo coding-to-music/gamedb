@@ -8,7 +8,8 @@
                 <li class="media" data-link="{{ .Link }}">
                     <img src="" data-lazy="https://images.weserv.nl/?url={{ .Image }}&output=webp" alt="" data-lazy-alt="{{ .Title }}" class="mr-3 mb-2 img rounded">
                     <div class="media-body">
-                        <h5 class="mt-0 mb-1">{{ .Title }}</h5>
+                        <h5 class="mt-0 mb-0">{{ .Title }}</h5>
+                        <small data-livestamp="{{ .Date }}" style="display: block;">&nbsp;</small>
                         {{ .Contents }}
                     </div>
                 </li>
