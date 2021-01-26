@@ -269,6 +269,12 @@ table.dataTable thead > tr > td.sorting {
 
         div {
             @extend .pt-0;
+            display: inline-block;
+
+            button {
+                @extend .ml-2;
+                vertical-align: baseline;
+            }
         }
     }
 }

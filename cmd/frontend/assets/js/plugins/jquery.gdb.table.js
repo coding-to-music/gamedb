@@ -8,7 +8,8 @@
         searchFields: [],
         tableOptions: {
             "autoWidth": false,
-            "dom": '<"dt-header"<"dt-pagination"p><"dt-info"i>>t<"dt-footer"<"dt-pagination"p>>r',
+            "buttons": ['csv'],
+            "dom": '<"dt-header"<"dt-pagination"p><"dt-info"iB>>t<"dt-footer"<"dt-pagination"p>>r',
             "fixedHeader": true,
             "info": true, // Counts
             "processing": false,
@@ -43,7 +44,7 @@
 
         // Remove info text unless we want it
         if (!$element.hasClass('table-counts')) {
-            options.tableOptions.dom = options.tableOptions.dom.replace("<\"dt-info\"i>", "");
+            options.tableOptions.dom = options.tableOptions.dom.replace("<\"dt-info\"iB>", "");
         }
 
         // Add helper
