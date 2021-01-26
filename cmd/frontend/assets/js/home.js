@@ -410,7 +410,7 @@ if ($homePage.length > 0) {
                     },
                     tooltip: {
                         formatter: function () {
-                            return this.series.name + ' had ' + this.y + 'followers on ' + moment(this.key).format("dddd DD MMM");
+                            return this.series.name + ' had ' + this.y + ' followers on ' + moment(this.key).format("dddd DD MMM");
                         },
                     },
                     series: series,
