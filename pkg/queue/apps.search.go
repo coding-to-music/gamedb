@@ -17,8 +17,9 @@ import (
 )
 
 type AppsSearchMessage struct {
-	App   *mongo.App `json:"app"`
-	AppID int        `json:"app_id"`
+	App    *mongo.App             `json:"app"`
+	AppID  int                    `json:"app_id"`
+	Fields map[string]interface{} `json:"fields"` // Optional
 }
 
 func (m AppsSearchMessage) Queue() rabbit.QueueName {
@@ -33,6 +34,19 @@ func appsSearchHandler(message *rabbit.Message) {
 	if err != nil {
 		log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 		sendToFailQueue(message)
+		return
+	}
+
+	if len(payload.Fields) > 0 && payload.AppID > 0 {
+
+		err = elasticsearch.UpdateDocumentFields(elasticsearch.IndexApps, strconv.Itoa(payload.AppID), payload.Fields)
+		if err != nil {
+			log.ErrS(err)
+			sendToRetryQueue(message)
+			return
+		}
+
+		message.Ack()
 		return
 	}
 

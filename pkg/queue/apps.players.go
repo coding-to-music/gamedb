@@ -144,7 +144,7 @@ func appPlayersHandler(message *rabbit.Message) {
 				}
 
 				// Update in Elastic
-				err = ProduceAppSearch(nil, app.ID)
+				err = ProduceAppSearch(nil, app.ID, nil)
 				if err != nil {
 					log.ErrS(err, app.ID)
 					sendToRetryQueue(message)

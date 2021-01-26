@@ -146,7 +146,7 @@ func appNewsHandler(message *rabbit.Message) {
 	}
 
 	// Update app in Elastic
-	err = ProduceAppSearch(nil, payload.AppID)
+	err = ProduceAppSearch(nil, payload.AppID, nil)
 	if err != nil {
 		log.ErrS(err, payload.AppID)
 		sendToRetryQueue(message)

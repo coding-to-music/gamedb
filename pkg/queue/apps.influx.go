@@ -126,7 +126,18 @@ func appInfluxHandler(message *rabbit.Message) {
 
 	// Update in Elastic
 	for _, v := range payload.AppIDs {
-		err = ProduceAppSearch(nil, v)
+
+		doc := map[string]interface{}{}
+
+		if val, ok := appPlayersWeek[v]; ok {
+			doc["players"] = val
+		}
+
+		if val, ok := appTrend[v]; ok {
+			doc["trend"] = val
+		}
+
+		err = ProduceAppSearch(nil, v, doc)
 		if err != nil {
 			log.ErrS(err)
 		}

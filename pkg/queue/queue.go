@@ -725,9 +725,9 @@ func ProducePlayerGroup(player mongo.Player, skipGroupUpdate bool, force bool) (
 	})
 }
 
-func ProduceAppSearch(app *mongo.App, appID int) (err error) {
+func ProduceAppSearch(app *mongo.App, appID int, fields map[string]interface{}) (err error) {
 
-	m := AppsSearchMessage{App: app, AppID: appID}
+	m := AppsSearchMessage{App: app, AppID: appID, Fields: fields}
 	return produce(m.Queue(), m)
 }
 

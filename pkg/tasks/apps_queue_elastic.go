@@ -44,7 +44,7 @@ func (c AppsQueueElastic) work() (err error) {
 
 		for _, app := range apps {
 
-			err = queue.ProduceAppSearch(&app, 0)
+			err = queue.ProduceAppSearch(&app, 0, nil)
 			if err != nil {
 				log.ErrS(err)
 				return

@@ -77,7 +77,7 @@ func appsFindGroupHandler(message *rabbit.Message) {
 	}
 
 	// Update in Elastic
-	err = ProduceAppSearch(nil, payload.AppID)
+	err = ProduceAppSearch(nil, payload.AppID, nil)
 	if err != nil {
 		log.ErrS(err, payload.AppID)
 		sendToRetryQueue(message)

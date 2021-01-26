@@ -92,6 +92,17 @@ func GetElastic() (*elastic.Client, context.Context, error) {
 	return client, ctx, err
 }
 
+func UpdateDocumentFields(index string, key string, doc map[string]interface{}) error {
+
+	client, ctx, err := GetElastic()
+	if err != nil {
+		return err
+	}
+
+	_, err = client.Update().Index(index).Doc(doc).Id(key).Do(ctx)
+	return err
+}
+
 func indexDocument(index string, key string, doc interface{}) error {
 
 	client, ctx, err := GetElastic()
