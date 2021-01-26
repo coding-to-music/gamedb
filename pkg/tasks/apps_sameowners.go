@@ -46,8 +46,15 @@ func (c AppsSameOwners) work() (err error) {
 		return nil
 	}
 
-	filter := bson.D{{"group_followers", bson.M{"$gte": 1000}}}
-	sort := bson.D{{"related_owners_app_ids_date", 1}, {"group_followers", 1}}
+	filter := bson.D{
+		{"group_followers", bson.M{"$gte": 1000}},
+		{"owners", bson.M{"$gte": 0}},
+	}
+
+	sort := bson.D{
+		{"related_owners_app_ids_date", 1},
+		{"group_followers", 1},
+	}
 
 	apps, err := mongo.GetApps(0, int64(free), sort, filter, bson.M{"_id": 1})
 	for _, v := range apps {
