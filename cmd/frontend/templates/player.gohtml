@@ -17,7 +17,10 @@
             </h1>
 
             <small class="d-block">
-                <a target="_blank" rel="noopener" href="{{ .Player.CommunityLink }}"><i class="fab fa-steam-square"></i> Steam Community Profile</a>
+                <a target="_blank" rel="noopener" href="{{ .Player.CommunityLink }}"><i class="fab fa-steam-square"></i> Community Profile</a>
+                <a target="_blank" rel="noopener" href="{{ .Player.WishlistLink }}"><i class="fab fa-steam-square"></i> Wishlist</a>
+                <a target="_blank" rel="noopener" href="{{ .Player.FriendsLink }}"><i class="fab fa-steam-square"></i> Friends</a>
+                <a target="_blank" rel="noopener" href="{{ .Player.GroupsLink }}"><i class="fab fa-steam-square"></i> Groups</a>
                 <a href="{{ .Player.GetFriendLink }}"><i class="fab fa-steam-square"></i> Add to Friends</a>
                 <a href="{{ .Player.GetMessageLink }}"><i class="fab fa-steam-square"></i> Send Message</a>
                 <a href="/games/coop/{{ .Player.ID }}{{ if .PlayerID }},{{ .PlayerID }}{{ end }}" role="tab" rel="nofollow"><i class="fas fa-user-friends"></i> Co-op</a>

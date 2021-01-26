@@ -272,6 +272,18 @@ func (player Player) CommunityLink() string {
 	return helpers.GetPlayerCommunityLink(player.ID, player.VanityURL)
 }
 
+func (player Player) WishlistLink() string {
+	return "http://store.steampowered.com/wishlist/profiles/" + strconv.FormatInt(player.ID, 10)
+}
+
+func (player Player) FriendsLink() string {
+	return "https://steamcommunity.com/profiles/" + strconv.FormatInt(player.ID, 10) + "/friends"
+}
+
+func (player Player) GroupsLink() string {
+	return "https://steamcommunity.com/profiles/" + strconv.FormatInt(player.ID, 10) + "/groups"
+}
+
 func (player Player) GetStateName() string {
 
 	if player.CountryCode == "" || player.StateCode == "" {
