@@ -373,6 +373,7 @@ if ($homePage.length > 0) {
                         name: app.name,
                         data: datum['value']['max_members_count'],
                         connectNulls: true,
+                        date: app.date,
                     });
                 }
 
@@ -387,6 +388,7 @@ if ($homePage.length > 0) {
                                 return this.value.toLocaleString();
                             },
                         },
+                        gridLineColor: darkMode ? '#00ff0011' : '#44774411',
                     },
                     plotOptions: {
                         series: {
@@ -400,17 +402,13 @@ if ($homePage.length > 0) {
                             }
                         }
                     },
-                    xAxis: {
-                        visible: false,
-                    },
                     legend: {
                         enabled: false,
-                        layout: 'proximate',
-                        align: 'right',
                     },
                     tooltip: {
                         formatter: function () {
-                            return this.series.name + ' had ' + this.y + ' followers on ' + moment(this.key).format("dddd DD MMM");
+                            return this.series.name + ' had ' + this.y.toLocaleString()
+                                + ' followers on ' + moment(this.key).format("dddd DD MMM");
                         },
                     },
                     series: series,
@@ -422,12 +420,17 @@ if ($homePage.length > 0) {
 
                     const app = data.apps[series.userOptions.group];
 
-                    $legend.append('<div class="cursor-pointer" style="color:' + series.color + '" data-link="' + app.path + '">' +
-                        '<img src="' + app.icon + '" alt="' + series.name + '"> ' + series.name + '</div>');
+                    $legend.append('<div class="cursor-pointer" style="color:' + series.color + '" data-link="' + app.path + '" data-toggle="tooltip" data-placement="top" title="' + app.date + '">'
+                        + '<img src="' + app.icon + '" alt="' + series.name + '"> ' + series.name + '</div>');
                 });
 
                 $legend.find('div').hover(
                     function () {
+
+                        $.each(hc.series, function (j, series) {
+                            hc.series[j].setState('inactive');
+                        });
+
                         hc.series[$(this).index()].setState('hover');
                     },
                     function () {

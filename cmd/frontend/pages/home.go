@@ -575,6 +575,7 @@ func homeFollowersHandler(w http.ResponseWriter, r *http.Request) {
 			"name":      v.GetName(),
 			"icon":      v.GetIcon(),
 			"path":      v.GetPath(),
+			"date":      v.GetReleaseDateNice(),
 		}
 		groupIDs = append(groupIDs, v.GroupID)
 	}
