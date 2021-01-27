@@ -1,6 +1,8 @@
 package steam
 
 import (
+	"context"
+	"errors"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
@@ -43,6 +45,10 @@ func LogSteamError(err error, interfaces ...zap.Field) {
 				time.Sleep(time.Second * 5)
 			}
 
+			return false
+		}
+
+		if errors.Is(err, context.DeadlineExceeded) {
 			return false
 		}
 
