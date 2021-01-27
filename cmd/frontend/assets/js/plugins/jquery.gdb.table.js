@@ -19,7 +19,7 @@
                     "next": '<i class="fas fa-chevron-right"></i>',
                     "previous": '<i class="fas fa-chevron-left"></i>',
                 },
-                "info": "_TOTAL_ rows (_PAGES_ pages)",
+                "info": "_TOTAL_ rows",
                 "infoFiltered": " of _MAX_",
             },
             "lengthChange": false,
