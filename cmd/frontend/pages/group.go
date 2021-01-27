@@ -135,6 +135,16 @@ func groupTableAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get group
+	group, err := mongo.GetGroup(id)
+	if err != nil {
+		err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
+		if err != nil {
+			log.ErrS(err)
+		}
+		return
+	}
+
 	//
 	query := datatable.NewDataTableQuery(r, true)
 
@@ -177,7 +187,7 @@ func groupTableAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
-	var response = datatable.NewDataTablesResponse(r, query, total, total, nil)
+	var response = datatable.NewDataTablesResponse(r, query, int64(group.Members), total, nil)
 	for _, playerGroup := range playerGroups {
 		response.AddRow([]interface{}{
 			playerGroup.PlayerID,                 // 0
