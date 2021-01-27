@@ -49,8 +49,6 @@ func (s Server) GetPlayersId(w http.ResponseWriter, r *http.Request, id int64) {
 		playerSchema.State = player.StateCode
 
 		playerSchema.Badges = player.BadgesCount
-		playerSchema.Comments = player.CommentsCount
-		playerSchema.Friends = player.FriendsCount
 		playerSchema.Games = player.GamesCount
 		playerSchema.Level = player.Level
 		playerSchema.Playtime = player.PlayTime

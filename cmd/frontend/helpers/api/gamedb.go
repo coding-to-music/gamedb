@@ -194,14 +194,12 @@ var SwaggerGameDB = &openapi3.Swagger{
 			},
 			"player-schema": {
 				Value: &openapi3.Schema{
-					Required: []string{"id", "name", "avatar", "badges", "comments", "friends", "games", "groups", "level", "playtime", "country", "continent", "state", "vanity_url"},
+					Required: []string{"id", "name", "avatar", "badges", "games", "groups", "level", "playtime", "country", "continent", "state", "vanity_url"},
 					Properties: map[string]*openapi3.SchemaRef{
 						"id":         {Value: openapi3.NewStringSchema()}, // Too big for int in JS
 						"name":       {Value: openapi3.NewStringSchema()},
 						"avatar":     {Value: openapi3.NewStringSchema()},
 						"badges":     {Value: openapi3.NewIntegerSchema()},
-						"comments":   {Value: openapi3.NewIntegerSchema()},
-						"friends":    {Value: openapi3.NewIntegerSchema()},
 						"games":      {Value: openapi3.NewIntegerSchema()},
 						"groups":     {Value: openapi3.NewIntegerSchema()},
 						"level":      {Value: openapi3.NewIntegerSchema()},
@@ -531,7 +529,7 @@ var SwaggerGameDB = &openapi3.Swagger{
 					{Ref: "#/components/parameters/offset-param"},
 					{Ref: "#/components/parameters/limit-param"},
 					{Ref: "#/components/parameters/order-param-desc"},
-					{Value: openapi3.NewQueryParameter("sort").WithSchema(openapi3.NewStringSchema().WithEnum("id", "level", "badges", "games", "time", "friends", "comments").WithDefault("id"))},
+					{Value: openapi3.NewQueryParameter("sort").WithSchema(openapi3.NewStringSchema().WithEnum("id", "level", "badges", "games", "time").WithDefault("id"))},
 					{Value: openapi3.NewQueryParameter("continent").WithSchema(openapi3.NewArraySchema().WithMaxItems(3).WithItems(openapi3.NewStringSchema().WithMaxLength(2)))},
 					{Value: openapi3.NewQueryParameter("country").WithSchema(openapi3.NewArraySchema().WithMaxItems(3).WithItems(openapi3.NewStringSchema().WithMaxLength(2)))},
 				},

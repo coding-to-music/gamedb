@@ -207,7 +207,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var sorters = query.GetOrderElastic(map[string]string{
 		"3":  "level",
 		"4":  "badges",
-		"14": "badges_foil",
+		"12": "badges_foil",
 
 		"5": "games",
 		"6": "play_time",
@@ -216,16 +216,13 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		"8": "vac_bans",
 		"9": "last_ban",
 
-		"10": "comments",
-		"11": "friends",
+		"10": "achievements",
+		"11": "achievements_100",
 
-		"12": "achievements",
-		"13": "achievements_100",
-
-		"15": "awards_given_count",
-		"16": "awards_given_points",
-		"17": "awards_received_count",
-		"18": "awards_received_points",
+		"13": "awards_given_count",
+		"14": "awards_given_points",
+		"15": "awards_received_count",
+		"16": "awards_received_points",
 	})
 
 	var isContinent bool
@@ -322,7 +319,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			v.Badges,               // 7
 			playtimeShort,          // 8
 			playtimeLong,           // 9
-			v.Friends,              // 10
+			0,                      // 10 // Friends
 			v.GetFlag(),            // 11
 			v.GetCountry(),         // 12
 			v.GetPath(),            // 13
@@ -332,7 +329,7 @@ func playersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			v.LastBan,              // 17
 			lastBan,                // 18
 			v.CountryCode,          // 19
-			v.Comments,             // 20
+			0,                      // 20 // Comments
 			v.Achievements,         // 21
 			v.Achievements100,      // 22
 			v.GetNameMarked(),      // 23

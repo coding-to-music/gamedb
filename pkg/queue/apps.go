@@ -829,7 +829,7 @@ func scrapeApp(app *mongo.App) (sales []mongo.Sale, err error) {
 					sale.SaleEnd = t
 
 				} else {
-					log.ErrS(err, dateString)
+					log.ErrS(err, dateString) // March 9th, must be a new EA Play subscriber to purchase.
 					return
 				}
 

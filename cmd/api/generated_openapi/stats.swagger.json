@@ -4,6 +4,11 @@
     "title": "stats.proto",
     "version": "version not set"
   },
+  "tags": [
+    {
+      "name": "StatsService"
+    }
+  ],
   "consumes": [
     "application/json"
   ],
@@ -99,6 +104,10 @@
           "format": "float"
         },
         "medianPlayers": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxDiscount": {
           "type": "integer",
           "format": "int32"
         }

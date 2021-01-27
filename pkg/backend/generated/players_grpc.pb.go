@@ -11,6 +11,7 @@ import (
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
+// Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
 // PlayersServiceClient is the client API for PlayersService service.
@@ -76,7 +77,7 @@ type UnsafePlayersServiceServer interface {
 }
 
 func RegisterPlayersServiceServer(s grpc.ServiceRegistrar, srv PlayersServiceServer) {
-	s.RegisterService(&_PlayersService_serviceDesc, srv)
+	s.RegisterService(&PlayersService_ServiceDesc, srv)
 }
 
 func _PlayersService_Search_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -115,7 +116,10 @@ func _PlayersService_List_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
-var _PlayersService_serviceDesc = grpc.ServiceDesc{
+// PlayersService_ServiceDesc is the grpc.ServiceDesc for PlayersService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var PlayersService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "generated.PlayersService",
 	HandlerType: (*PlayersServiceServer)(nil),
 	Methods: []grpc.MethodDesc{

@@ -4,6 +4,11 @@
     "title": "packages.proto",
     "version": "version not set"
   },
+  "tags": [
+    {
+      "name": "PackagesService"
+    }
+  ],
   "consumes": [
     "application/json"
   ],

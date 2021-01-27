@@ -4,6 +4,11 @@
     "title": "groups.proto",
     "version": "version not set"
   },
+  "tags": [
+    {
+      "name": "GroupsService"
+    }
+  ],
   "consumes": [
     "application/json"
   ],
@@ -69,9 +74,6 @@
           "format": "int32"
         },
         "Error": {
-          "type": "string"
-        },
-        "Type": {
           "type": "string"
         },
         "Primaries": {

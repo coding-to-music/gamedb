@@ -35,10 +35,6 @@ func (s Server) GetPlayers(w http.ResponseWriter, r *http.Request, params genera
 			sort = "games_count"
 		case "time":
 			sort = "play_time"
-		case "friends":
-			sort = "friends_count"
-		case "comments":
-			sort = "comments_count"
 		default:
 			sort = "_id"
 		}
@@ -74,8 +70,6 @@ func (s Server) GetPlayers(w http.ResponseWriter, r *http.Request, params genera
 		"country_code":   1,
 		"status_code":    1,
 		"badges_count":   1,
-		"comments_count": 1,
-		"friends_count":  1,
 		"games_count":    1,
 		"groups_count":   1,
 		"level":          1,
@@ -107,8 +101,6 @@ func (s Server) GetPlayers(w http.ResponseWriter, r *http.Request, params genera
 			State:     player.StateCode,
 
 			Badges:   player.BadgesCount,
-			Comments: player.CommentsCount,
-			Friends:  player.FriendsCount,
 			Games:    player.GamesCount,
 			Level:    player.Level,
 			Playtime: player.PlayTime,

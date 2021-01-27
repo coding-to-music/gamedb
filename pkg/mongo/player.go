@@ -34,10 +34,6 @@ func (rk RankMetric) String() string {
 		return "Badges"
 	case RankKeyBadgesFoil:
 		return "Foil Badges"
-	case RankKeyFriends:
-		return "Friends"
-	case RankKeyComments:
-		return "Comments"
 	case RankKeyGames:
 		return "Games"
 	case RankKeyAchievements:
@@ -56,10 +52,6 @@ func (rk RankMetric) Value(p Player) int {
 		return p.BadgesCount
 	case RankKeyBadgesFoil:
 		return p.BadgesFoilCount
-	case RankKeyFriends:
-		return p.FriendsCount
-	case RankKeyComments:
-		return p.CommentsCount
 	case RankKeyGames:
 		return p.GamesCount
 	case RankKeyAchievements:
@@ -78,8 +70,6 @@ const (
 	RankKeyLevel        RankMetric = "l"
 	RankKeyBadges       RankMetric = "b"
 	RankKeyBadgesFoil   RankMetric = "d"
-	RankKeyFriends      RankMetric = "f"
-	RankKeyComments     RankMetric = "c"
 	RankKeyGames        RankMetric = "g"
 	RankKeyPlaytime     RankMetric = "p"
 	RankKeyAchievements RankMetric = "a"
@@ -92,8 +82,6 @@ var PlayerRankFields = map[string]RankMetric{
 	"badges_count":      RankKeyBadges,
 	"badges_foil_count": RankKeyBadgesFoil,
 	"play_time":         RankKeyPlaytime,
-	"friends_count":     RankKeyFriends,
-	"comments_count":    RankKeyComments,
 	"achievement_count": RankKeyAchievements,
 }
 
@@ -104,8 +92,6 @@ var PlayerRankFieldsInflux = map[RankMetric]string{
 	RankKeyBadges:       influx.InfPlayersBadgesRank.String(),
 	RankKeyBadgesFoil:   influx.InfPlayersBadgesFoilRank.String(),
 	RankKeyPlaytime:     influx.InfPlayersPlaytimeRank.String(),
-	RankKeyFriends:      influx.InfPlayersFriendsRank.String(),
-	RankKeyComments:     influx.InfPlayersCommentsRank.String(),
 	RankKeyAchievements: influx.InfPlayersAchievementsRank.String(),
 }
 
@@ -128,13 +114,11 @@ type Player struct {
 	BadgesFoilCount          int                        `bson:"badges_foil_count"`
 	BadgeStats               ProfileBadgeStats          `bson:"badge_stats"`
 	Bans                     PlayerBans                 `bson:"bans"`
-	CommentsCount            int                        `bson:"comments_count"`
 	CommunityVisibilityState int                        `bson:"community_visibility_state"` // 1=private 3=public
 	ContinentCode            string                     `bson:"continent_code"`
 	CountryCode              string                     `bson:"country_code"`
 	CreatedAt                time.Time                  `bson:"created_at"` // Added late
 	Donated                  int                        `bson:"donated"`
-	FriendsCount             int                        `bson:"friends_count"`
 	GamesByType              map[string]int             `bson:"games_by_type"`
 	GamesCount               int                        `bson:"games_count"`
 	GameStats                PlayerAppStatsTemplate     `bson:"game_stats"`
@@ -220,11 +204,9 @@ func (player Player) BSON() bson.D {
 		// Rank Metrics
 		{"badges_count", player.BadgesCount},
 		{"badges_foil_count", player.BadgesFoilCount},
-		{"friends_count", player.FriendsCount},
 		{"games_count", player.GamesCount},
 		{"level", player.Level},
 		{"play_time", player.PlayTime},
-		{"comments_count", player.CommentsCount},
 		{"awards_given_count", player.AwardsGivenCount},
 		{"awards_given_points", player.AwardsGivenPoints},
 		{"awards_received_count", player.AwardsReceivedCount},
@@ -635,49 +617,6 @@ func SearchPlayer(search string, projection bson.M) (player Player, queue bool, 
 							player.PersonaName = summary.PersonaName
 							player.Avatar = summary.AvatarHash
 						}
-					}()
-
-				case "games_count", "play_time":
-
-					wg.Add(1)
-					go func() {
-
-						defer wg.Done()
-
-						if player.GamesCount == 0 {
-
-							resp, err := steam.GetSteam().GetOwnedGames(player.ID)
-							err = steam.AllowSteamCodes(err)
-							if err != nil {
-								log.ErrS(err)
-								return
-							}
-
-							var playtime = 0
-							for _, v := range resp.Games {
-								playtime += v.PlaytimeForever
-							}
-
-							player.PlayTime = playtime
-							player.GamesCount = len(resp.Games)
-						}
-					}()
-
-				case "friends_count":
-
-					wg.Add(1)
-					go func() {
-
-						defer wg.Done()
-
-						resp, err := steam.GetSteam().GetFriendList(player.ID)
-						err = steam.AllowSteamCodes(err, 401, 404)
-						if err != nil {
-							log.ErrS(err)
-							return
-						}
-
-						player.FriendsCount = len(resp)
 					}()
 				}
 			}

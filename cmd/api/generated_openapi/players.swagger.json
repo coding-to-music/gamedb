@@ -4,6 +4,11 @@
     "title": "players.proto",
     "version": "version not set"
   },
+  "tags": [
+    {
+      "name": "PlayersService"
+    }
+  ],
   "consumes": [
     "application/json"
   ],

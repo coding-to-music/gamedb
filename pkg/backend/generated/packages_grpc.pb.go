@@ -11,6 +11,7 @@ import (
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
+// Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
 // PackagesServiceClient is the client API for PackagesService service.
@@ -62,7 +63,7 @@ type UnsafePackagesServiceServer interface {
 }
 
 func RegisterPackagesServiceServer(s grpc.ServiceRegistrar, srv PackagesServiceServer) {
-	s.RegisterService(&_PackagesService_serviceDesc, srv)
+	s.RegisterService(&PackagesService_ServiceDesc, srv)
 }
 
 func _PackagesService_List_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -83,7 +84,10 @@ func _PackagesService_List_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
-var _PackagesService_serviceDesc = grpc.ServiceDesc{
+// PackagesService_ServiceDesc is the grpc.ServiceDesc for PackagesService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var PackagesService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "generated.PackagesService",
 	HandlerType: (*PackagesServiceServer)(nil),
 	Methods: []grpc.MethodDesc{

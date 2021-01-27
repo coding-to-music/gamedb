@@ -11,6 +11,7 @@ import (
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
+// Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
 // AppsServiceClient is the client API for AppsService service.
@@ -76,7 +77,7 @@ type UnsafeAppsServiceServer interface {
 }
 
 func RegisterAppsServiceServer(s grpc.ServiceRegistrar, srv AppsServiceServer) {
-	s.RegisterService(&_AppsService_serviceDesc, srv)
+	s.RegisterService(&AppsService_ServiceDesc, srv)
 }
 
 func _AppsService_Search_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -115,7 +116,10 @@ func _AppsService_List_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
-var _AppsService_serviceDesc = grpc.ServiceDesc{
+// AppsService_ServiceDesc is the grpc.ServiceDesc for AppsService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var AppsService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "generated.AppsService",
 	HandlerType: (*AppsServiceServer)(nil),
 	Methods: []grpc.MethodDesc{

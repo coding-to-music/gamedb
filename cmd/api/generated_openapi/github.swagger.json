@@ -4,6 +4,11 @@
     "title": "github.proto",
     "version": "version not set"
   },
+  "tags": [
+    {
+      "name": "GitHubService"
+    }
+  ],
   "consumes": [
     "application/json"
   ],

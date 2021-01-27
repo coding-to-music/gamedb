@@ -191,32 +191,9 @@ if ($('#players-page').length > 0) {
                 },
                 "orderSequence": ["desc"],
             },
-            // Comments
-            {
-                "targets": 10,
-                "render": function (data, type, row) {
-                    return row[20].toLocaleString();
-                },
-                "orderSequence": ["desc"],
-                "visible": false,
-            },
-            // Friends
-            {
-                "targets": 11,
-                "render": function (data, type, row) {
-
-                    if (row[10] === 0) {
-                        return $lockIcon;
-                    }
-
-                    return row[10].toLocaleString();
-                },
-                "orderSequence": ["desc"],
-                "visible": false,
-            },
             // Achievements
             {
-                "targets": 12,
+                "targets": 10,
                 "render": function (data, type, row) {
                     return row[21].toLocaleString();
                 },
@@ -224,7 +201,7 @@ if ($('#players-page').length > 0) {
             },
             // Achievements
             {
-                "targets": 13,
+                "targets": 11,
                 "render": function (data, type, row) {
                     return row[22].toLocaleString();
                 },
@@ -232,7 +209,7 @@ if ($('#players-page').length > 0) {
             },
             // Foil Badges
             {
-                "targets": 14,
+                "targets": 12,
                 "render": function (data, type, row) {
                     return row[25].toLocaleString();
                 },
@@ -240,7 +217,7 @@ if ($('#players-page').length > 0) {
             },
             // Awards Given Count
             {
-                "targets": 15,
+                "targets": 13,
                 "render": function (data, type, row) {
                     return row[26].toLocaleString();
                 },
@@ -248,7 +225,7 @@ if ($('#players-page').length > 0) {
             },
             // Awards Given Points
             {
-                "targets": 16,
+                "targets": 14,
                 "render": function (data, type, row) {
                     return row[27].toLocaleString();
                 },
@@ -256,7 +233,7 @@ if ($('#players-page').length > 0) {
             },
             // Awards Received Count
             {
-                "targets": 17,
+                "targets": 15,
                 "render": function (data, type, row) {
                     return row[28].toLocaleString();
                 },
@@ -264,7 +241,7 @@ if ($('#players-page').length > 0) {
             },
             // Awards Received Points
             {
-                "targets": 18,
+                "targets": 16,
                 "render": function (data, type, row) {
                     return row[29].toLocaleString();
                 },
@@ -272,7 +249,7 @@ if ($('#players-page').length > 0) {
             },
             // Link
             {
-                "targets": 19,
+                "targets": 17,
                 "render": function (data, type, row) {
                     if (row[14]) {
                         return '<a href="' + row[14] + '" target="_blank" rel="noopener"><i class="fas fa-link"></i></a>';
@@ -283,7 +260,7 @@ if ($('#players-page').length > 0) {
             },
             // Search Score
             {
-                "targets": 20,
+                "targets": 18,
                 "render": function (data, type, row) {
                     return row[24];
                 },
@@ -314,12 +291,10 @@ if ($('#players-page').length > 0) {
                 return [5, 'desc'];
             case '#bans':
                 return [7, 'desc'];
-            case '#profile':
-                return [10, 'desc'];
             case '#achievements':
-                return [12, 'desc'];
+                return [10, 'desc'];
             case '#awards':
-                return [15, 'desc'];
+                return [13, 'desc'];
             default:
                 // Level
                 return [3, 'desc'];
@@ -340,28 +315,24 @@ if ($('#players-page').length > 0) {
 
         switch (hash) {
             case '#level':
-                show = [3, 4, 14];
-                hide = [5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 17, 18];
+                show = [3, 4, 12];
+                hide = [5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16];
                 break;
             case '#games':
                 show = [5, 6];
-                hide = [3, 4, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
+                hide = [3, 4, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
                 break;
             case '#bans':
                 show = [7, 8, 9];
-                hide = [3, 4, 5, 6, 10, 11, 12, 13, 14, 15, 16, 17, 18];
-                break;
-            case '#profile':
-                show = [10, 11];
-                hide = [3, 4, 5, 6, 7, 8, 9, 12, 13, 14, 15, 16, 17, 18];
+                hide = [3, 4, 5, 6, 10, 11, 12, 13, 14, 15, 16];
                 break;
             case '#achievements':
-                show = [12, 13];
-                hide = [3, 4, 5, 6, 7, 8, 9, 10, 11, 14, 15, 16, 17, 18];
+                show = [10, 11];
+                hide = [3, 4, 5, 6, 7, 8, 9, 12, 13, 14, 15, 16];
                 break;
             case '#awards':
-                show = [15, 16, 17, 18];
-                hide = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
+                show = [13, 14, 15, 16];
+                hide = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
                 break;
         }
 

@@ -78,8 +78,6 @@ func (c CommandPlayer) Output(authorID string, _ steamapi.ProductCC, inputs map[
 		"avatar":            1,
 		"badges_count":      1,
 		"badges_foil_count": 1,
-		"comments_count":    1,
-		"friends_count":     1,
 		"games_count":       1,
 		"level":             1,
 		"persona_name":      1,
@@ -184,14 +182,6 @@ func (c CommandPlayer) Output(authorID string, _ steamapi.ProductCC, inputs map[
 			{
 				Name:  "Playtime",
 				Value: playtime,
-			},
-			{
-				Name:  "Friends",
-				Value: humanize.Comma(int64(player.FriendsCount)) + " (" + helpers.OrdinalComma(player.Ranks[string(mongo.RankKeyFriends)]) + ")",
-			},
-			{
-				Name:  "Comments",
-				Value: humanize.Comma(int64(player.CommentsCount)) + " (" + helpers.OrdinalComma(player.Ranks[string(mongo.RankKeyComments)]) + ")",
 			},
 		},
 	}

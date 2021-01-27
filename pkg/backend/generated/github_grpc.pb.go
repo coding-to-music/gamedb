@@ -11,6 +11,7 @@ import (
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
+// Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
 // GitHubServiceClient is the client API for GitHubService service.
@@ -62,7 +63,7 @@ type UnsafeGitHubServiceServer interface {
 }
 
 func RegisterGitHubServiceServer(s grpc.ServiceRegistrar, srv GitHubServiceServer) {
-	s.RegisterService(&_GitHubService_serviceDesc, srv)
+	s.RegisterService(&GitHubService_ServiceDesc, srv)
 }
 
 func _GitHubService_Commits_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -83,7 +84,10 @@ func _GitHubService_Commits_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
-var _GitHubService_serviceDesc = grpc.ServiceDesc{
+// GitHubService_ServiceDesc is the grpc.ServiceDesc for GitHubService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var GitHubService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "generated.GitHubService",
 	HandlerType: (*GitHubServiceServer)(nil),
 	Methods: []grpc.MethodDesc{

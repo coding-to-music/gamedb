@@ -4,6 +4,11 @@
     "title": "articles.proto",
     "version": "version not set"
   },
+  "tags": [
+    {
+      "name": "ArticlesService"
+    }
+  ],
   "consumes": [
     "application/json"
   ],

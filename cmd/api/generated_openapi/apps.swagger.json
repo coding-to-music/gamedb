@@ -4,6 +4,11 @@
     "title": "apps.proto",
     "version": "version not set"
   },
+  "tags": [
+    {
+      "name": "AppsService"
+    }
+  ],
   "consumes": [
     "application/json"
   ],
@@ -140,6 +145,9 @@
           "format": "int32"
         },
         "name": {
+          "type": "string"
+        },
+        "icon": {
           "type": "string"
         },
         "tags": {

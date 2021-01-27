@@ -472,10 +472,6 @@ func homePlayersHandler(w http.ResponseWriter, r *http.Request) {
 		sort = "level"
 	case "games":
 		sort = "games_count"
-	case "bans":
-		sort = "bans_game"
-	case "profile":
-		sort = "friends_count"
 	case "awards":
 		sort = "awards_given_count"
 	default:
@@ -504,8 +500,6 @@ func homePlayersHandler(w http.ResponseWriter, r *http.Request) {
 			Playtime:       helpers.GetTimeLong(player.PlayTime, 2),
 			GameBans:       humanize.Comma(int64(player.NumberOfGameBans)),
 			VACBans:        humanize.Comma(int64(player.NumberOfVACBans)),
-			Friends:        humanize.Comma(int64(player.FriendsCount)),
-			Comments:       humanize.Comma(int64(player.CommentsCount)),
 			AwardsSent:     humanize.Comma(int64(player.AwardsGivenPoints)),
 			AwardsReceived: humanize.Comma(int64(player.AwardsReceivedPoints)),
 		})
@@ -526,8 +520,6 @@ type homePlayer struct {
 	Playtime       string `json:"playtime"`
 	GameBans       string `json:"game_bans"`
 	VACBans        string `json:"vac_bans"`
-	Friends        string `json:"friends"`
-	Comments       string `json:"comments"`
 	AwardsSent     string `json:"awards_sent"`
 	AwardsReceived string `json:"awards_received"`
 }
@@ -546,8 +538,6 @@ func getPlayersForHome(sort string) (players []mongo.Player, err error) {
 			"play_time":              1,
 			"bans_game":              1,
 			"bans_cav":               1,
-			"friends_count":          1,
-			"comments_count":         1,
 			"awards_given_points":    1,
 			"awards_received_points": 1,
 		}
