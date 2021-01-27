@@ -504,25 +504,23 @@ func getGroupTrending(group mongo.Group) (trend float64, err error) {
 func saveGroup(group mongo.Group) (err error) {
 
 	_, err = mongo.ReplaceOne(mongo.CollectionGroups, bson.D{{"_id", group.ID}}, group)
-	if err != nil {
-		return err
-	}
-
-	// This uses a bunch of cpu
-	var filter = bson.D{
-		{"group_id", group.ID},
-		{"group_members", bson.M{"$ne": group.Members}},
-	}
-
-	var update = bson.D{
-		{"group_name", helpers.TruncateString(group.Name, 1000, "")}, // Truncated as caused mongo driver issue
-		{"group_icon", group.Icon},
-		{"group_members", group.Members},
-		{"group_url", group.URL},
-	}
-
-	_, err = mongo.UpdateManySet(mongo.CollectionPlayerGroups, filter, update)
 	return err
+
+	// This uses too much CPU
+	// var filter = bson.D{
+	// 	{"group_id", group.ID},
+	// 	{"group_members", bson.M{"$ne": group.Members}},
+	// }
+	//
+	// var update = bson.D{
+	// 	{"group_name", helpers.TruncateString(group.Name, 1000, "")}, // Truncated as caused mongo driver issue
+	// 	{"group_icon", group.Icon},
+	// 	{"group_members", group.Members},
+	// 	{"group_url", group.URL},
+	// }
+	//
+	// _, err = mongo.UpdateManySet(mongo.CollectionPlayerGroups, filter, update)
+	// return err
 }
 
 func getAppFromGroup(group mongo.Group) (app mongo.App, err error) {
