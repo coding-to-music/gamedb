@@ -134,6 +134,8 @@ var aliasMap = map[int][]string{
 	1091500: {"cp", "cp2077", "cyber"}, // Cyberpunk 2077
 	570:     {"dota", "dota2"},         // Dota 2
 	8500:    {"eve", "eo"},             // EVE Online
+	261550:  {"mab2"},                  // Mount & Blade II: Bannerlord
+	48700:   {"mab", "mabw"},           // Mount & Blade: Warband
 	24240:   {"pd", "pd1", "pdth"},     // PAYDAY: The Heist
 	218620:  {"pd", "pd2"},             // PAYDAY 2
 	578080:  {"pubg"},                  // PLAYERUNKNOWN'S BATTLEGROUNDS
@@ -142,6 +144,7 @@ var aliasMap = map[int][]string{
 	289070:  {"civ", "civ6"},           // Sid Meier's Civilization VI
 	359550:  {"r6"},                    // Tom Clancy's Rainbow Six Siege
 	230410:  {"wf"},                    // Warframe
+	444200:  {"wot"},                   // World of Tanks Blitz
 }
 
 //goland:noinspection RegExpRedundantEscape
