@@ -11,4 +11,9 @@
     #group-chart {
         height: 400px;
     }
+
+    #group-description div.card-body {
+        overflow: auto;
+        max-height: 400px;
+    }
 }
