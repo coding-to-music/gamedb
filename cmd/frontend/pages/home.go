@@ -365,6 +365,7 @@ type homeTweet struct {
 	Link  string `json:"link"`
 }
 
+//goland:noinspection GoUnusedFunction
 func homeSalesHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "sort")
