@@ -254,34 +254,6 @@ if ($playerPage.length > 0) {
                             yAxis: 1,
                         },
                     ],
-                    // 'f': [
-                    //     {
-                    //         name: 'Friends',
-                    //         data: data['max_friends'],
-                    //         marker: {symbol: 'circle'},
-                    //         yAxis: 0,
-                    //     },
-                    //     {
-                    //         name: 'Friends Rank',
-                    //         data: data['max_friends_rank'],
-                    //         marker: {symbol: 'circle'},
-                    //         yAxis: 1,
-                    //     },
-                    // ],
-                    // 'c': [
-                    //     {
-                    //         name: 'Comments',
-                    //         data: data['max_comments'],
-                    //         marker: {symbol: 'circle'},
-                    //         yAxis: 0,
-                    //     },
-                    //     {
-                    //         name: 'Comments Rank',
-                    //         data: data['max_comments_rank'],
-                    //         marker: {symbol: 'circle'},
-                    //         yAxis: 1,
-                    //     },
-                    // ],
                     'g': [
                         {
                             name: 'Games',
