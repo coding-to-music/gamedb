@@ -50,6 +50,10 @@ func (p *ProductPrices) AddPriceFromApp(code steamapi.ProductCC, prices steamapi
 
 	if prices.Data.PriceOverview != nil {
 
+		if code == steamapi.ProductCCEU {
+			prices.Data.PriceOverview.Currency = steamapi.CurrencyEUR
+		}
+
 		if prices.Data.PriceOverview.Currency == "" {
 			prices.Data.PriceOverview.Currency = i18n.GetProdCC(code).CurrencyCode
 		}
@@ -66,7 +70,13 @@ func (p *ProductPrices) AddPriceFromApp(code steamapi.ProductCC, prices steamapi
 func (p ProductPrices) Get(code steamapi.ProductCC) (price ProductPrice) {
 
 	if val, ok := p[code]; ok {
+
 		val.Exists = true
+
+		if code == steamapi.ProductCCEU {
+			val.Currency = steamapi.CurrencyEUR
+		}
+
 		return val
 	}
 
