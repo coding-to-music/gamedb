@@ -8,9 +8,12 @@ if ($badgePage.length > 0) {
             $(row).attr('data-link', data[5]);
         },
         "columnDefs": [
-            // Ranks
+            // Rank
             {
                 "targets": 0,
+                "createdCell": function (td, cellData, rowData, row, col) {
+                    $(td).addClass('font-weight-bold')
+                },
                 "render": function (data, type, row) {
                     return row[0];
                 },

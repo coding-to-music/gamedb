@@ -229,7 +229,7 @@ func badgeAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	for k, playerBadge := range badges {
 
 		response.AddRow([]interface{}{
-			query.GetOffset() + k + 1,                               // 0
+			helpers.OrdinalComma(query.GetOffset() + k + 1),         // 0
 			playerBadge.GetPlayerName(),                             // 1
 			playerBadge.GetPlayerIcon(),                             // 2
 			playerBadge.BadgeLevel,                                  // 3
