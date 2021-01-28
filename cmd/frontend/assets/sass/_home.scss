@@ -118,6 +118,28 @@ body.dark {
 
     .games {
 
+        .card-body {
+            a {
+                position: relative;
+                display: block;
+
+                div {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    pointer-events: none;
+                    border-bottom-right-radius: $border-radius !important;
+                    background-color: #ffffff;
+                    opacity: .7;
+                    color: #212529;
+                    text-align: center;
+                    line-height: 25px;
+                    width: 25px;
+                    height: 25px;
+                }
+            }
+        }
+
         .type {
             position: absolute;
             top: 0;

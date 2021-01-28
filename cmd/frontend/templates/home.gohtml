@@ -103,10 +103,10 @@
             <div class="col-12 mb-4 d-none d-lg-block">
 
                 <div class="card">
-                    <div class="card-header">
-                        Upcoming Games (Next Two Weeks) - Ordered by followers
-                        <a href="/games/upcoming" class="float-right">See all Upcoming Games</a>
-                    </div>
+                    <h5 class="card-header">
+                        Upcoming Games <small>(Next Two Weeks) - Ordered by followers</small>
+                        <small><a href="/games/upcoming" class="float-right">See all Upcoming Games</a></small>
+                    </h5>
                     <div class="card-body">
                         <div id="followers-wrapper">
                             <div id="followers">
@@ -127,6 +127,7 @@
                             {{ range $key, $value := .TopGames }}
                                 <div class="col-6">
                                     <a href="{{ .GetPath }}">
+                                        <div>{{ sum $key 1 }}</div>
                                         <img src='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 215"%3E%3C/svg%3E' data-lazy="https://images.weserv.nl/?url={{ .GetHeaderImage }}&output=webp" alt="{{ .GetName }}">
                                     </a>
                                 </div>
@@ -144,6 +145,7 @@
                             {{ range $key, $value := .NewGames }}
                                 <div class="col-6">
                                     <a href="{{ .GetPath }}">
+                                        <div>{{ sum $key 1 }}</div>
                                         <img src='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 215"%3E%3C/svg%3E' data-lazy="https://images.weserv.nl/?url={{ .GetHeaderImage }}&output=webp" alt="{{ .GetName }}">
                                     </a>
                                 </div>
@@ -161,6 +163,7 @@
                             {{ range $key, $value := .Upcoming }}
                                 <div class="col-6">
                                     <a href="{{ .GetPath }}">
+                                        <div>{{ sum $key 1 }}</div>
                                         <img src='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 215"%3E%3C/svg%3E' data-lazy="https://images.weserv.nl/?url={{ .GetHeaderImage }}&output=webp" alt="{{ .GetName }}">
                                     </a>
                                 </div>
@@ -175,12 +178,13 @@
                     <h5 class="card-header text-center">Top Sellers</h5>
                     <div class="card-body p-0">
                         <div class="row no-gutters">
-                            {{ range .TopSellers }}
+                            {{ range $key, $value := .TopSellers }}
                                 <div class="col-6">
                                     {{ if eq .Type $.ConstPackage }}
                                         <div class="type">{{ .Type.String }}</div>
                                     {{ end }}
                                     <a href="{{ .Path }}">
+                                        <div>{{ sum $key 1 }}</div>
                                         <img src='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 215"%3E%3C/svg%3E' data-lazy="https://images.weserv.nl/?url={{ .Image }}&output=webp&w=460&h=215&fit=cover" alt="{{ .Name }}">
                                     </a>
                                 </div>
