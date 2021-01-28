@@ -163,6 +163,20 @@ func playerHandler(message *rabbit.Message) {
 		}
 	}()
 
+	// Calls to store.steampowered.com
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		b, err := updatePlayerComments(&player)
+		if err != nil {
+			steam.LogSteamError(err, zap.Int64("player id", payload.ID), zap.String("resp", string(b)))
+			sendToRetryQueue(message)
+			return
+		}
+	}()
+
 	wg.Wait()
 
 	if message.ActionTaken {
@@ -465,6 +479,9 @@ func updatePlayerFriends(player *mongo.Player) error {
 		return err
 	}
 
+	//
+	player.FriendsCount = len(newFriendsSlice)
+
 	// Get data
 	oldFriendsSlice, err := mongo.GetFriends(player.ID, 0, 0, nil, nil)
 	if err != nil {
@@ -581,6 +598,19 @@ func updatePlayerBans(player *mongo.Player) error {
 	return nil
 }
 
+func updatePlayerComments(player *mongo.Player) ([]byte, error) {
+
+	resp, b, err := steam.GetSteam().GetComments(player.ID, 1, 0)
+	err = steam.AllowSteamCodes(err)
+	if err != nil {
+		return b, err
+	}
+
+	player.CommentsCount = resp.TotalCount
+
+	return b, nil
+}
+
 func savePlayerRow(player mongo.Player) error {
 
 	_, err := mongo.ReplaceOne(mongo.CollectionPlayers, bson.D{{"_id", player.ID}}, player)
@@ -603,7 +633,9 @@ func updatePlayerFriendRows(player mongo.Player) error {
 func savePlayerToInflux(player mongo.Player) (err error) {
 
 	fields := map[string]interface{}{
-		influxHelper.InfPlayersLevel.String(): player.Level,
+		influxHelper.InfPlayersComments.String(): player.CommentsCount,
+		influxHelper.InfPlayersFriends.String():  player.FriendsCount,
+		influxHelper.InfPlayersLevel.String():    player.Level,
 		// Others stored in sub queues
 	}
 

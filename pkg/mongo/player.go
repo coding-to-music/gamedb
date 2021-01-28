@@ -114,11 +114,13 @@ type Player struct {
 	BadgesFoilCount          int                        `bson:"badges_foil_count"`
 	BadgeStats               ProfileBadgeStats          `bson:"badge_stats"`
 	Bans                     PlayerBans                 `bson:"bans"`
+	CommentsCount            int                        `bson:"comments_count"`
 	CommunityVisibilityState int                        `bson:"community_visibility_state"` // 1=private 3=public
 	ContinentCode            string                     `bson:"continent_code"`
 	CountryCode              string                     `bson:"country_code"`
 	CreatedAt                time.Time                  `bson:"created_at"` // Added late
 	Donated                  int                        `bson:"donated"`
+	FriendsCount             int                        `bson:"friends_count"`
 	GamesByType              map[string]int             `bson:"games_by_type"`
 	GamesCount               int                        `bson:"games_count"`
 	GameStats                PlayerAppStatsTemplate     `bson:"game_stats"`
@@ -200,6 +202,8 @@ func (player Player) BSON() bson.D {
 		{"play_time_windows", player.PlayTimeWindows},
 		{"play_time_mac", player.PlayTimeMac},
 		{"play_time_linux", player.PlayTimeLinux},
+		{"friends_count", player.FriendsCount},
+		{"comments_count", player.CommentsCount},
 
 		// Rank Metrics
 		{"badges_count", player.BadgesCount},
@@ -617,6 +621,49 @@ func SearchPlayer(search string, projection bson.M) (player Player, queue bool, 
 							player.PersonaName = summary.PersonaName
 							player.Avatar = summary.AvatarHash
 						}
+					}()
+
+				case "games_count", "play_time":
+
+					wg.Add(1)
+					go func() {
+
+						defer wg.Done()
+
+						if player.GamesCount == 0 {
+
+							resp, err := steam.GetSteam().GetOwnedGames(player.ID)
+							err = steam.AllowSteamCodes(err)
+							if err != nil {
+								log.ErrS(err)
+								return
+							}
+
+							var playtime = 0
+							for _, v := range resp.Games {
+								playtime += v.PlaytimeForever
+							}
+
+							player.PlayTime = playtime
+							player.GamesCount = len(resp.Games)
+						}
+					}()
+
+				case "friends_count":
+
+					wg.Add(1)
+					go func() {
+
+						defer wg.Done()
+
+						resp, err := steam.GetSteam().GetFriendList(player.ID)
+						err = steam.AllowSteamCodes(err, 401, 404)
+						if err != nil {
+							log.ErrS(err)
+							return
+						}
+
+						player.FriendsCount = len(resp)
 					}()
 				}
 			}

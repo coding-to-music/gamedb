@@ -105,10 +105,10 @@
                                                     <th scope="row" nowrap="nowrap">Level</th>
                                                     <td><a href="/experience/{{ .Player.Level }}">{{ comma .Player.Level }}</a></td>
                                                 </tr>
-                                                {{/*                                                <tr>*/}}
-                                                {{/*                                                    <th scope="row" nowrap="nowrap">Comments</th>*/}}
-                                                {{/*                                                    <td>{{ comma .Player.CommentsCount }}</td>*/}}
-                                                {{/*                                                </tr>*/}}
+                                                <tr>
+                                                    <th scope="row" nowrap="nowrap">Comments</th>
+                                                    <td>{{ comma .Player.CommentsCount }}</td>
+                                                </tr>
                                                 <tr data-link-tab="stats">
                                                     <th scope="row" nowrap="nowrap">Playtime</th>
                                                     <td>{{ .Player.GetPlaytimeShort "" 3 }}</td>
