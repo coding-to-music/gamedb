@@ -4,12 +4,14 @@ if ($appPage.length > 0) {
 
     // Scroll to videos link
     $("#scroll-to-videos").on('mouseup', function (e) {
-        const $videosDiv = $("#videos");
-        $('html, body').animate({scrollTop: $videosDiv.offset().top - 15}, 500);
 
-        const $videos = $videosDiv.find('video')
-        if ($videos[0].paused) {
-            $videos.first().trigger('click');
+        const $video = $("#videos video").first();
+        const offset = ($(window).height() / 2) - ($video.height() / 2)
+
+        $('html, body').animate({scrollTop: $video.offset().top - offset}, 500);
+
+        if ($video[0].paused) {
+            $video.trigger('click');
         }
     });
 
