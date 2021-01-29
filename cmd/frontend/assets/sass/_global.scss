@@ -245,18 +245,6 @@ header {
 
 //
 div#top {
-    position: fixed;
-    right: 20px;
-    opacity: 0;
-    display: inline-block;
-    z-index: 1000;
-}
-
-div#top.show {
-    opacity: 1;
-}
-
-div#top {
     bottom: 20px;
     cursor: pointer;
     color: #fff;
@@ -267,6 +255,15 @@ div#top {
     width: 40px;
     height: 40px;
     transition: opacity 1s;
+    position: fixed;
+    right: 20px;
+    opacity: 0;
+    display: inline-block;
+    z-index: 1000;
+}
+
+div#top.show {
+    opacity: 1;
 }
 
 //div#loading {
