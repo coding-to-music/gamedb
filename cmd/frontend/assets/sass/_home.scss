@@ -127,10 +127,11 @@ body.dark {
                     position: absolute;
                     top: 0;
                     left: 0;
+                    z-index: 10;
                     pointer-events: none;
                     border-bottom-right-radius: $border-radius !important;
                     background-color: #ffffff;
-                    opacity: .7;
+                    opacity: .3;
                     color: #212529;
                     text-align: center;
                     line-height: 25px;
