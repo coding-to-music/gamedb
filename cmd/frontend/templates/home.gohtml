@@ -104,15 +104,34 @@
 
                 <div class="card">
                     <h5 class="card-header">
+                        New Games <small>(Last Two Weeks) - Ordered by peak daily players</small>
+                        <small><a href="/games/new-releases" class="float-right">See all New Games</a></small>
+                    </h5>
+                    <div class="card-body">
+                        <div class="chart-wrapper">
+                            <div class="chart" id="new-releases">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </div>
+                            <div class="chart-legend" id="new-releases-legend"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col-12 mb-4 d-none d-lg-block">
+
+                <div class="card">
+                    <h5 class="card-header">
                         Upcoming Games <small>(Next Two Weeks) - Ordered by followers</small>
                         <small><a href="/games/upcoming" class="float-right">See all Upcoming Games</a></small>
                     </h5>
                     <div class="card-body">
-                        <div id="followers-wrapper">
-                            <div id="followers">
+                        <div class="chart-wrapper">
+                            <div class="chart" id="upcoming-games">
                                 <i class="fas fa-spinner fa-spin"></i>
                             </div>
-                            <div id="followers-legend"></div>
+                            <div class="chart-legend" id="upcoming-games-legend"></div>
                         </div>
                     </div>
                 </div>
@@ -197,7 +216,7 @@
 
             <div class="col-12 col-md-12 col-lg-6">
 
-                <div class="card mb-4" id="players">
+                <div class="card mb-4" id="top-players">
                     <div class="card-header">
                         <h5 class="d-inline">Top Players</h5>
                         <h5 class="float-right mb-0">
@@ -232,7 +251,7 @@
             </div>
             <div class="col-12 col-md-12 col-lg-6">
 
-                <div class="card mb-4" id="updated-players">
+                <div class="card mb-4" id="new-players">
 
                     <div class="card-header">
                         <h5 class="mb-0">

@@ -741,7 +741,7 @@ func PopularNewApps() (apps []App, err error) {
 				{Key: "release_date_unix", Value: bson.M{"$gt": releaseDate}},
 				{Key: "type", Value: "game"},
 			},
-			bson.M{"_id": 1, "name": 1, "player_peak_week": 1},
+			bson.M{"_id": 1, "name": 1, "player_peak_week": 1, "icon": 1},
 		)
 	})
 

@@ -26,20 +26,20 @@ body.dark {
 
 #home-page {
 
-    #followers-wrapper {
+    .chart-wrapper {
 
         position: relative;
         height: 300px;
         z-index: 1;
 
-        #followers {
+        .chart {
             height: 300px;
             position: relative;
             z-index: 3;
             margin-right: 305px;
         }
 
-        #followers-legend {
+        .chart-legend {
             position: absolute;
             width: 300px;
             height: 300px;

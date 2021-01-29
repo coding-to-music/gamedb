@@ -8,8 +8,8 @@ if ($homePage.length > 0) {
     });
 
     // Players
-    $homePage.on('click', '#players span[data-sort]:not(.badge-success)', function (e) {
-        loadPlayers($(this).attr('data-sort'));
+    $homePage.on('click', '#top-players span[data-sort]:not(.badge-success)', function (e) {
+        homeTopPlayers($(this).attr('data-sort'));
     });
 
     // Fix top panel heights
@@ -27,11 +27,12 @@ if ($homePage.length > 0) {
         // "sales": function () {
         //     loadSales('top-rated');
         // },
-        "players": function () {
-            loadPlayers('level');
+        "top-players": function () {
+            homeTopPlayers('level');
         },
-        "updated-players": loadLatestUpdatedPlayers,
-        "followers-wrapper": homeFollowers,
+        "new-players": homeNewPlayers,
+        "upcoming-games": homeUpcomingGames,
+        "new-releases": homeNewReleases,
         "news": loadNewsSection,
         "tweets": loadHomeTweets,
     });
@@ -91,10 +92,10 @@ if ($homePage.length > 0) {
         observeLazyImages($news.find('img[data-lazy]'));
     }
 
-    function loadLatestUpdatedPlayers() {
+    function homeNewPlayers() {
 
         let lastPlayerId = 0;
-        const $tbody = $('#updated-players tbody');
+        const $tbody = $('#new-players tbody');
         const schema = function (fade, instantTime) {
             return {
                 '<>': 'tr', 'class': (fade ? 'fade-green' : ''), 'data-app-id': '${id}', 'data-link': '${link}', 'html': [
@@ -133,7 +134,7 @@ if ($homePage.length > 0) {
         };
 
         $.ajax({
-            url: '/home/updated-players.json',
+            url: '/home/new-players.json',
             dataType: 'json',
             cache: true,
             success: function (data, textStatus, jqXHR) {
@@ -239,27 +240,27 @@ if ($homePage.length > 0) {
         });
     }
 
-    function loadPlayers(sort) {
+    function homeTopPlayers(sort) {
 
         $.ajax({
-            url: '/home/players/' + sort + '.json',
+            url: '/home/top-players/' + sort + '.json',
             dataType: 'json',
             cache: true,
             success: function (data, textStatus, jqXHR) {
 
-                const $allCols = $('#players span[data-sort]');
+                const $allCols = $('#top-players span[data-sort]');
                 $allCols.removeClass('badge-success');
                 $allCols.addClass('cursor-pointer');
 
-                const $thisCol = $('#players span[data-sort="' + sort + '"]');
+                const $thisCol = $('#top-players span[data-sort="' + sort + '"]');
                 $thisCol.addClass('badge-success');
                 $thisCol.removeClass('cursor-pointer');
 
-                $('#players tbody tr').remove();
+                $('#top-players tbody tr').remove();
 
                 if (isIterable(data)) {
 
-                    const $container = $('#players tbody');
+                    const $container = $('#top-players tbody');
 
                     const tds = [
                         {
@@ -281,8 +282,8 @@ if ($homePage.length > 0) {
                         },
                     ];
 
-                    const $change1 = $('#players .change1');
-                    const $change2 = $('#players .change2');
+                    const $change1 = $('#top-players .change1');
+                    const $change2 = $('#top-players .change2');
 
                     switch (sort) {
                         case 'level':
@@ -353,11 +354,93 @@ if ($homePage.length > 0) {
         });
     }
 
-    function homeFollowers() {
+    const homeChartsBase = $.extend(true, {}, defaultChartOptions, {
+        yAxis: {
+            allowDecimals: false,
+            title: {
+                text: ''
+            },
+            labels: {
+                formatter: function () {
+                    return this.value.toLocaleString();
+                },
+            },
+            gridLineColor: darkMode ? '#00ff0011' : '#44774411',
+        },
+        plotOptions: {
+            series: {
+                cursor: 'pointer',
+            }
+        },
+        legend: {
+            enabled: false,
+        },
+    });
+
+    function homeNewReleases() {
 
         $.ajax({
             type: "GET",
-            url: '/home/followers.json',
+            url: '/home/new-releases.json',
+            dataType: 'json',
+            cache: true,
+            success: function (data, textStatus, jqXHR) {
+
+                let series = [];
+
+                for (const datum of data['players']) {
+
+                    const app = data.apps[datum.key];
+
+                    series.push({
+                        app: datum.key,
+                        name: app.name,
+                        data: datum['value']['max_player_count'],
+                        connectNulls: true,
+                    });
+                }
+
+                const hc = Highcharts.chart('new-releases', $.extend(true, {}, homeChartsBase, {
+                    plotOptions: {
+                        series: {
+                            point: {
+                                events: {
+                                    click: function () {
+                                        location.href = data.apps[this.series.userOptions.id].path;
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    tooltip: {
+                        formatter: function () {
+                            return this.series.name + ' had ' + this.y.toLocaleString()
+                                + ' players on ' + moment(this.key).format("dddd DD MMM");
+                        },
+                    },
+                    series: series,
+                }));
+
+                const $legend = $('#new-releases-legend');
+
+                $.each(hc.series, function (j, series) {
+
+                    const app = data.apps[series.userOptions.app];
+
+                    $legend.append('<div class="cursor-pointer" style="color:' + series.color + '" data-link="' + app.path + '">'
+                        + '<img class="rounded" src="' + app.icon + '" alt="' + series.name + '"> ' + series.name + '</div>');
+                });
+
+                homeAttachLegendEvents(hc, $legend);
+            },
+        });
+    }
+
+    function homeUpcomingGames() {
+
+        $.ajax({
+            type: "GET",
+            url: '/home/upcoming-games.json',
             dataType: 'json',
             cache: true,
             success: function (data, textStatus, jqXHR) {
@@ -377,22 +460,9 @@ if ($homePage.length > 0) {
                     });
                 }
 
-                const hc = Highcharts.chart('followers', $.extend(true, {}, defaultChartOptions, {
-                    yAxis: {
-                        allowDecimals: false,
-                        title: {
-                            text: ''
-                        },
-                        labels: {
-                            formatter: function () {
-                                return this.value.toLocaleString();
-                            },
-                        },
-                        gridLineColor: darkMode ? '#00ff0011' : '#44774411',
-                    },
+                const hc = Highcharts.chart('upcoming-games', $.extend(true, {}, homeChartsBase, {
                     plotOptions: {
                         series: {
-                            cursor: 'pointer',
                             point: {
                                 events: {
                                     click: function () {
@@ -401,9 +471,6 @@ if ($homePage.length > 0) {
                                 }
                             }
                         }
-                    },
-                    legend: {
-                        enabled: false,
                     },
                     tooltip: {
                         formatter: function () {
@@ -414,30 +481,35 @@ if ($homePage.length > 0) {
                     series: series,
                 }));
 
-                const $legend = $('#followers-legend');
+                const $legend = $('#upcoming-games-legend');
 
                 $.each(hc.series, function (j, series) {
 
                     const app = data.apps[series.userOptions.group];
 
                     $legend.append('<div class="cursor-pointer" style="color:' + series.color + '" data-link="' + app.path + '" data-toggle="tooltip" data-placement="top" title="' + app.date + '">'
-                        + '<img src="' + app.icon + '" alt="' + series.name + '"> ' + series.name + '</div>');
+                        + '<img class="rounded" src="' + app.icon + '" alt="' + series.name + '"> ' + series.name + '</div>');
                 });
 
-                $legend.find('div').hover(
-                    function () {
-
-                        $.each(hc.series, function (j, series) {
-                            hc.series[j].setState('inactive');
-                        });
-
-                        hc.series[$(this).index()].setState('hover');
-                    },
-                    function () {
-                        hc.series[$(this).index()].setState('normal');
-                    }
-                );
+                homeAttachLegendEvents(hc, $legend);
             },
+        });
+    }
+
+    function homeAttachLegendEvents(hc, $legend) {
+
+        $legend.on('mouseenter', 'div', function () {
+
+            $.each(hc.series, function (j, series) {
+                hc.series[j].setState('inactive');
+            });
+
+            hc.series[$(this).index()].setState('hover');
+
+        }).on('mouseleave', 'div', function () {
+            $.each(hc.series, function (j, series) {
+                hc.series[j].setState('normal');
+            });
         });
     }
 }

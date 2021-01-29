@@ -36,11 +36,12 @@ func HomeRouter() http.Handler {
 
 	r := chi.NewRouter()
 	r.Get("/news.html", homeNewsHandler)
-	r.Get("/players/{sort}.json", homePlayersHandler)
+	r.Get("/top-players/{sort}.json", homeTopPlayersHandler)
 	// r.Get("/sales/{sort}.json", homeSalesHandler)
 	r.Get("/tweets.json", homeTweetsHandler)
-	r.Get("/updated-players.json", homeUpdatedPlayersHandler)
-	r.Get("/followers.json", homeFollowersHandler)
+	r.Get("/new-players.json", homeNewPlayersHandler)
+	r.Get("/upcoming-games.json", homeUpcomingHandler)
+	r.Get("/new-releases.json", homeNewReleasesHandler)
 	return r
 }
 
@@ -431,7 +432,7 @@ type homeSale struct {
 	StoreLink string    `json:"store_link"`
 }
 
-func homeUpdatedPlayersHandler(w http.ResponseWriter, r *http.Request) {
+func homeNewPlayersHandler(w http.ResponseWriter, r *http.Request) {
 
 	var projection = bson.M{
 		"_id":          1,
@@ -461,7 +462,7 @@ func homeUpdatedPlayersHandler(w http.ResponseWriter, r *http.Request) {
 	returnJSON(w, r, resp)
 }
 
-func homePlayersHandler(w http.ResponseWriter, r *http.Request) {
+func homeTopPlayersHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "sort")
 
@@ -548,7 +549,62 @@ func getPlayersForHome(sort string) (players []mongo.Player, err error) {
 	return players, err
 }
 
-func homeFollowersHandler(w http.ResponseWriter, r *http.Request) {
+func homeNewReleasesHandler(w http.ResponseWriter, r *http.Request) {
+
+	apps, err := mongo.PopularNewApps()
+	if err != nil {
+		log.ErrS(err)
+		return
+	}
+
+	var appsMap = map[int]map[string]interface{}{}
+	var appIDs []string
+	for _, v := range apps {
+		appsMap[v.ID] = map[string]interface{}{
+			"players": v.GetPlayersPeakWeek(),
+			"name":    v.GetName(),
+			"icon":    v.GetIcon(),
+			"path":    v.GetPath(),
+		}
+		appIDs = append(appIDs, strconv.Itoa(v.ID))
+	}
+
+	builder := influxql.NewBuilder()
+	builder.AddSelect("max(player_count)", "max_player_count")
+	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
+	builder.AddWhereRaw(`"app_id" =~ /^(` + strings.Join(appIDs, "|") + `)$/`)
+	builder.AddWhere("time", ">", "now()-14d")
+	builder.AddGroupByTime("6h")
+	builder.AddGroupBy("app_id")
+	builder.SetFillNone()
+
+	resp, err := influx.InfluxQuery(builder)
+	if err != nil {
+		log.Err(err.Error(), zap.String("query", builder.String()))
+		return
+	}
+
+	var ret []influx.HighChartsJSONMulti
+	if len(resp.Results) > 0 {
+		for _, id := range appIDs {
+			for _, v := range resp.Results[0].Series {
+				if id == v.Tags["app_id"] {
+					ret = append(ret, influx.HighChartsJSONMulti{
+						Key:   v.Tags["app_id"],
+						Value: influx.InfluxResponseToHighCharts(v, true),
+					})
+				}
+			}
+		}
+	}
+
+	returnJSON(w, r, map[string]interface{}{
+		"apps":    appsMap,
+		"players": ret,
+	})
+}
+
+func homeUpcomingHandler(w http.ResponseWriter, r *http.Request) {
 
 	apps, err := elasticsearch.GetUpcomingGames()
 	if err != nil {
