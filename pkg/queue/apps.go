@@ -252,7 +252,7 @@ func appHandler(message *rabbit.Message) {
 		AppAchievementsMessage{AppID: app.ID, AppName: app.Name, AppOwners: app.Owners},
 		AppMorelikeMessage{AppID: app.ID},
 		AppNewsMessage{AppID: app.ID},
-		//AppSameownersMessage{AppID: app.ID},
+		// AppSameownersMessage{AppID: app.ID},
 		AppTwitchMessage{AppID: app.ID},
 		AppReviewsMessage{AppID: app.ID},
 		AppItemsMessage{AppID: app.ID, OldDigect: app.ItemsDigest},
@@ -476,6 +476,10 @@ func updateAppDetails(app *mongo.App) (err error) {
 	prices := helpers.ProductPrices{}
 
 	for _, code := range i18n.GetProdCCs(true) {
+
+		if code.ProductCode == steamapi.ProductCCEU {
+			code.ProductCode = "de"
+		}
 
 		// No price_overview filter so we can get `is_free`
 		response, err := steam.GetSteam().GetAppDetails(uint(app.ID), code.ProductCode, steamapi.LanguageEnglish, nil)
