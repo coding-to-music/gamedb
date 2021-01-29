@@ -126,7 +126,12 @@ func appWishlistsHandler(message *rabbit.Message) {
 	}
 
 	// Update in Elastic
-	err = ProduceAppSearch(nil, payload.AppID, nil)
+	updateInElastic := map[string]interface{}{
+		"wishlist_count": wishlistCount,
+		"wishlist_avg":   wishlistAverage,
+	}
+
+	err = ProduceAppSearch(nil, payload.AppID, updateInElastic)
 	if err != nil {
 		log.ErrS(err, payload.AppID)
 		sendToRetryQueue(message)

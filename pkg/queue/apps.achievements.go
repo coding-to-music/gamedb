@@ -210,7 +210,13 @@ func appAchievementsHandler(message *rabbit.Message) {
 	}
 
 	// Update in Elastic
-	err = ProduceAppSearch(nil, payload.AppID, nil)
+	updateInElastic := map[string]interface{}{
+		"achievements_counts": len(schemaResponse.AvailableGameStats.Achievements),
+		"achievements_avg":    average,
+		"achievements_icons":  achievementsCol,
+	}
+
+	err = ProduceAppSearch(nil, payload.AppID, updateInElastic)
 	if err != nil {
 		log.ErrS(err, payload.AppID)
 		sendToRetryQueue(message)

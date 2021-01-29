@@ -145,13 +145,7 @@ func appNewsHandler(message *rabbit.Message) {
 		return
 	}
 
-	// Update app in Elastic
-	err = ProduceAppSearch(nil, payload.AppID, nil)
-	if err != nil {
-		log.ErrS(err, payload.AppID)
-		sendToRetryQueue(message)
-		return
-	}
+	// No need to update in Elastic
 
 	//
 	message.Ack()

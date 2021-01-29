@@ -125,13 +125,7 @@ func appSteamspyHandler(message *rabbit.Message) {
 		return
 	}
 
-	// Update in Elastic
-	err = ProduceAppSearch(nil, payload.AppID, nil)
-	if err != nil {
-		log.ErrS(err, payload.AppID, u)
-		sendToRetryQueue(message)
-		return
-	}
+	// No need to update in Elastic
 
 	//
 	message.Ack()

@@ -62,7 +62,10 @@ func appMorelikeHandler(message *rabbit.Message) {
 	}
 
 	// Update app
-	_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", payload.AppID}}, bson.D{{"related_app_ids", relatedAppIDs}})
+	filter := bson.D{{"_id", payload.AppID}}
+	update := bson.D{{"related_app_ids", relatedAppIDs}}
+
+	_, err = mongo.UpdateOne(mongo.CollectionApps, filter, update)
 	if err != nil {
 		log.ErrS(err, payload.AppID)
 		sendToRetryQueue(message)
@@ -77,13 +80,7 @@ func appMorelikeHandler(message *rabbit.Message) {
 		return
 	}
 
-	// Update in Elastic
-	err = ProduceAppSearch(nil, payload.AppID, nil)
-	if err != nil {
-		log.ErrS(err, payload.AppID)
-		sendToRetryQueue(message)
-		return
-	}
+	// No need to update in Elastic
 
 	message.Ack()
 }

@@ -155,7 +155,11 @@ func appReviewsHandler(message *rabbit.Message) {
 	}
 
 	// Update in Elastic
-	err = ProduceAppSearch(nil, payload.AppID, nil)
+	updateInElastic := map[string]interface{}{
+		"reviews_count": reviews.GetTotal(),
+	}
+
+	err = ProduceAppSearch(nil, payload.AppID, updateInElastic)
 	if err != nil {
 		log.ErrS(err, payload.AppID)
 		sendToRetryQueue(message)
