@@ -39,7 +39,7 @@ const defaultChartOptions = {
         '#f15c80',
         '#f7a35c',
         '#8085e9',
-        '#434348',
+        '#434348', // todo, find a better colour
         '#e4d354',
         '#2b908f',
         '#f45b5b',
