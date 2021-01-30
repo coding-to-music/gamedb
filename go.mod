@@ -4,7 +4,7 @@ go 1.13
 
 require (
 	cloud.google.com/go v0.75.0 // indirect
-	cloud.google.com/go/logging v1.1.2
+	cloud.google.com/go/logging v1.2.0
 	github.com/Jleagle/captcha-go v0.0.0-20201203202350-806e55b8099c
 	github.com/Jleagle/go-durationfmt v0.0.0-20190307132420-e57bfad84057
 	github.com/Jleagle/influxql v0.0.0-20200804190929-88324f67bffe
@@ -20,14 +20,14 @@ require (
 	github.com/ahmdrz/goinsta/v2 v2.4.5
 	github.com/antchfx/xmlquery v1.3.3 // indirect
 	github.com/antchfx/xpath v1.1.11 // indirect
-	github.com/aws/aws-sdk-go v1.36.31 // indirect
+	github.com/aws/aws-sdk-go v1.37.1 // indirect
 	github.com/badoux/checkmail v1.2.1
 	github.com/blend/go-sdk v1.1.1 // indirect
 	github.com/buger/jsonparser v1.1.1 // indirect
-	github.com/bwmarrin/discordgo v0.22.1
+	github.com/bwmarrin/discordgo v0.23.1
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/cenkalti/backoff/v4 v4.1.0
-	github.com/deepmap/oapi-codegen v1.4.2
+	github.com/deepmap/oapi-codegen v1.5.0
 	github.com/derekstavis/go-qs v0.0.0-20180720192143-9eef69e6c4e7
 	github.com/dghubble/go-twitter v0.0.0-20201011215211-4b180d0cc78d
 	github.com/dghubble/oauth1 v0.7.0
@@ -36,7 +36,7 @@ require (
 	github.com/dustin/go-humanize v1.0.0
 	github.com/frustra/bbcode v0.0.0-20201127003707-6ef347fbe1c8
 	github.com/fsnotify/fsnotify v1.4.9
-	github.com/getkin/kin-openapi v0.36.0
+	github.com/getkin/kin-openapi v0.38.0
 	github.com/ghodss/yaml v1.0.1-0.20190212211648-25d852aebe32 // indirect
 	github.com/go-chi/chi v4.1.2+incompatible
 	github.com/go-chi/cors v1.1.1
@@ -54,7 +54,7 @@ require (
 	github.com/gosimple/slug v1.9.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.1.0
 	github.com/hetznercloud/hcloud-go v1.23.1
-	github.com/influxdata/influxdb-client-go/v2 v2.2.1
+	github.com/influxdata/influxdb-client-go/v2 v2.2.2
 	github.com/influxdata/influxdb1-client v0.0.0-20200827194710-b269163b24ab
 	github.com/influxdata/line-protocol v0.0.0-20201012155213-5f565037cbc9 // indirect
 	github.com/jinzhu/gorm v1.9.16
@@ -97,6 +97,7 @@ require (
 	github.com/xdg/stringprep v1.0.0 // indirect
 	github.com/yohcop/openid-go v1.0.0
 	go.mongodb.org/mongo-driver v1.4.5
+	go.opencensus.io v0.22.6 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
 	go.uber.org/zap v1.16.0
 	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad
@@ -104,7 +105,7 @@ require (
 	golang.org/x/image v0.0.0-20201208152932-35266b937fa6 // indirect
 	golang.org/x/mod v0.4.1 // indirect
 	golang.org/x/net v0.0.0-20210119194325-5f4716e94777
-	golang.org/x/oauth2 v0.0.0-20210113205817-d3ed898aa8a3
+	golang.org/x/oauth2 v0.0.0-20210126194326-f9ce19ea3013
 	golang.org/x/sync v0.0.0-20201207232520-09787c993a3a // indirect
 	golang.org/x/sys v0.0.0-20210124154548-22da62e12c0c // indirect
 	golang.org/x/term v0.0.0-20201210144234-2321bbc49cbf // indirect
@@ -112,7 +113,7 @@ require (
 	golang.org/x/time v0.0.0-20201208040808-7e3f01d25324
 	golang.org/x/tools v0.1.0 // indirect
 	gonum.org/v1/gonum v0.8.2
-	google.golang.org/api v0.36.0
+	google.golang.org/api v0.38.0
 	google.golang.org/genproto v0.0.0-20210126160654-44e461bb6506 // indirect
 	google.golang.org/grpc v1.35.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.1.0
