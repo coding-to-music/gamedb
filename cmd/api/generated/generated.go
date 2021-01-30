@@ -19,6 +19,11 @@ import (
 	"github.com/pkg/errors"
 )
 
+const (
+	KeyHeaderScopes = "keyHeader.Scopes"
+	KeyQueryScopes  = "keyQuery.Scopes"
+)
+
 // ArticleSchema defines model for article-schema.
 type ArticleSchema struct {
 	AppIcon   string `json:"app_icon"`
@@ -423,9 +428,9 @@ func (siw *ServerInterfaceWrapper) GetArticles(w http.ResponseWriter, r *http.Re
 
 	var err error
 
-	ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
+	ctx = context.WithValue(ctx, KeyHeaderScopes, []string{""})
 
-	ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
+	ctx = context.WithValue(ctx, KeyQueryScopes, []string{""})
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params GetArticlesParams
@@ -524,9 +529,9 @@ func (siw *ServerInterfaceWrapper) GetGames(w http.ResponseWriter, r *http.Reque
 
 	var err error
 
-	ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
+	ctx = context.WithValue(ctx, KeyHeaderScopes, []string{""})
 
-	ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
+	ctx = context.WithValue(ctx, KeyQueryScopes, []string{""})
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params GetGamesParams
@@ -678,9 +683,9 @@ func (siw *ServerInterfaceWrapper) GetGamesId(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
+	ctx = context.WithValue(ctx, KeyHeaderScopes, []string{""})
 
-	ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
+	ctx = context.WithValue(ctx, KeyQueryScopes, []string{""})
 
 	var handler = func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetGamesId(w, r, id)
@@ -699,9 +704,9 @@ func (siw *ServerInterfaceWrapper) GetGroups(w http.ResponseWriter, r *http.Requ
 
 	var err error
 
-	ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
+	ctx = context.WithValue(ctx, KeyHeaderScopes, []string{""})
 
-	ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
+	ctx = context.WithValue(ctx, KeyQueryScopes, []string{""})
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params GetGroupsParams
@@ -778,9 +783,9 @@ func (siw *ServerInterfaceWrapper) GetPackages(w http.ResponseWriter, r *http.Re
 
 	var err error
 
-	ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
+	ctx = context.WithValue(ctx, KeyHeaderScopes, []string{""})
 
-	ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
+	ctx = context.WithValue(ctx, KeyQueryScopes, []string{""})
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params GetPackagesParams
@@ -890,9 +895,9 @@ func (siw *ServerInterfaceWrapper) GetPlayers(w http.ResponseWriter, r *http.Req
 
 	var err error
 
-	ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
+	ctx = context.WithValue(ctx, KeyHeaderScopes, []string{""})
 
-	ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
+	ctx = context.WithValue(ctx, KeyQueryScopes, []string{""})
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params GetPlayersParams
@@ -989,9 +994,9 @@ func (siw *ServerInterfaceWrapper) GetPlayersId(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
+	ctx = context.WithValue(ctx, KeyHeaderScopes, []string{""})
 
-	ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
+	ctx = context.WithValue(ctx, KeyQueryScopes, []string{""})
 
 	var handler = func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetPlayersId(w, r, id)
@@ -1019,9 +1024,9 @@ func (siw *ServerInterfaceWrapper) PostPlayersId(w http.ResponseWriter, r *http.
 		return
 	}
 
-	ctx = context.WithValue(ctx, "key-header.Scopes", []string{""})
+	ctx = context.WithValue(ctx, KeyHeaderScopes, []string{""})
 
-	ctx = context.WithValue(ctx, "key-query.Scopes", []string{""})
+	ctx = context.WithValue(ctx, KeyQueryScopes, []string{""})
 
 	var handler = func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.PostPlayersId(w, r, id)
@@ -1102,43 +1107,43 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
+	"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",
 }
 
 // GetSwagger returns the Swagger specification corresponding to the generated code
@@ -1164,3 +1169,4 @@ func GetSwagger() (*openapi3.Swagger, error) {
 	}
 	return swagger, nil
 }
+

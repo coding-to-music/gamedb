@@ -45,13 +45,13 @@ var SwaggerGameDB = &openapi3.Swagger{
 		&openapi3.Tag{Name: tagGroups},
 	},
 	Security: openapi3.SecurityRequirements{
-		openapi3.NewSecurityRequirement().Authenticate("key-header"),
-		openapi3.NewSecurityRequirement().Authenticate("key-query"),
+		openapi3.NewSecurityRequirement().Authenticate("keyHeader"),
+		openapi3.NewSecurityRequirement().Authenticate("keyQuery"),
 	},
 	Components: openapi3.Components{
 		SecuritySchemes: map[string]*openapi3.SecuritySchemeRef{
-			"key-header": {Value: openapi3.NewSecurityScheme().WithName("key").WithType("apiKey").WithIn("header")},
-			"key-query":  {Value: openapi3.NewSecurityScheme().WithName("key").WithType("apiKey").WithIn("query")},
+			"keyHeader": {Value: openapi3.NewSecurityScheme().WithName("key").WithType("apiKey").WithIn("header")},
+			"keyQuery":  {Value: openapi3.NewSecurityScheme().WithName("key").WithType("apiKey").WithIn("query")},
 		},
 		Parameters: map[string]*openapi3.ParameterRef{
 			"limit-param": {

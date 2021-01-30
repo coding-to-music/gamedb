@@ -63,7 +63,7 @@ require (
 	github.com/karrick/godirwalk v1.16.1 // indirect
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/klauspost/compress v1.11.7 // indirect
-	github.com/labstack/echo/v4 v4.1.17 // indirect
+	github.com/labstack/echo/v4 v4.1.17
 	github.com/lib/pq v1.3.0 // indirect
 	github.com/mailjet/mailjet-apiv3-go v0.0.0-20201009050126-c24bc15a9394
 	github.com/mattn/go-colorable v0.1.8 // indirect
