@@ -28,7 +28,10 @@ if ($('#packages-page').length > 0) {
             {
                 "targets": 1,
                 "render": function (data, type, row) {
-                    return row[5];
+                    if (user.prodCC in row[5]) {
+                        return row[5][user.prodCC];
+                    }
+                    return '-';
                 },
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
@@ -39,7 +42,10 @@ if ($('#packages-page').length > 0) {
             {
                 "targets": 2,
                 "render": function (data, type, row) {
-                    return row[9];
+                    if (user.prodCC in row[9]) {
+                        return row[9][user.prodCC];
+                    }
+                    return '0%';
                 },
                 'orderSequence': ['desc', 'asc'],
             },

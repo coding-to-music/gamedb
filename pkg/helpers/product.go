@@ -88,9 +88,31 @@ func (p ProductPrices) Map() (prices map[steamapi.ProductCC]int) {
 	prices = map[steamapi.ProductCC]int{}
 
 	for k, v := range p {
-		if v.Exists {
-			prices[k] = v.Final
-		}
+		prices[k] = v.Final
+	}
+
+	return prices
+}
+
+func (p ProductPrices) MapFormatted() (prices map[steamapi.ProductCC]string) {
+
+	prices = map[steamapi.ProductCC]string{}
+
+	for k := range p {
+		price := p.Get(k)
+		prices[k] = price.GetFinal()
+	}
+
+	return prices
+}
+
+func (p ProductPrices) MapDiscountedFormatted() (prices map[steamapi.ProductCC]string) {
+
+	prices = map[steamapi.ProductCC]string{}
+
+	for k := range p {
+		price := p.Get(k)
+		prices[k] = price.GetDiscountPercent()
 	}
 
 	return prices

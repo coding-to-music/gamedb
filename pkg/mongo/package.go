@@ -293,21 +293,20 @@ var PackageOutputForJSON = bson.M{"id": 1, "name": 1, "apps_count": 1, "prices":
 func (pack Package) OutputForJSON(code steamapi.ProductCC) (output []interface{}) {
 
 	var changeNumberDate = pack.ChangeNumberDate.Format(helpers.DateYearTime)
-	var discount = pack.Prices.Get(code).GetDiscountPercent()
 
 	return []interface{}{
-		pack.ID,                          // 0
-		pack.GetPath(),                   // 1
-		pack.GetName(),                   // 2
-		"",                               // 3
-		pack.AppsCount,                   // 4
-		pack.Prices.Get(code).GetFinal(), // 5
-		pack.ChangeNumberDate.Unix(),     // 6
-		changeNumberDate,                 // 7
-		pack.GetIcon(),                   // 8
-		discount,                         // 9
-		pack.StoreLink(),                 // 10
-		pack.GetBillingType(),            // 11
+		pack.ID,                              // 0
+		pack.GetPath(),                       // 1
+		pack.GetName(),                       // 2
+		"",                                   // 3
+		pack.AppsCount,                       // 4
+		pack.Prices.MapFormatted(),           // 5
+		pack.ChangeNumberDate.Unix(),         // 6
+		changeNumberDate,                     // 7
+		pack.GetIcon(),                       // 8
+		pack.Prices.MapDiscountedFormatted(), // 9
+		pack.StoreLink(),                     // 10
+		pack.GetBillingType(),                // 11
 	}
 }
 
