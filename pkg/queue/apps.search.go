@@ -13,6 +13,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/olivere/elastic/v7"
 	"go.uber.org/zap"
 )
 
@@ -41,7 +42,13 @@ func appsSearchHandler(message *rabbit.Message) {
 
 		err = elasticsearch.UpdateDocumentFields(elasticsearch.IndexApps, strconv.Itoa(payload.AppID), payload.Fields)
 		if err != nil {
-			log.ErrS(err)
+
+			if val, ok := err.(*elastic.Error); ok && val.Status == 404 {
+				sendToRetryQueueWithDelay(message, time.Minute)
+				return
+			}
+
+			log.Err("Saving to Elastic", zap.Error(err), zap.Int("app", payload.AppID))
 			sendToRetryQueue(message)
 			return
 		}
