@@ -51,6 +51,7 @@ func main() {
 	r.Use(chiMiddleware.NewCompressor(flate.DefaultCompression, "text/html", "text/css", "text/javascript", "application/json", "application/javascript").Handler)
 	r.Use(middleware.RealIP)
 	r.Use(middleware.RateLimiterBlock(time.Second/2, 1, rateLimitedHandler))
+	// r.Use(codegenMiddleware.OapiRequestValidator(swagger)) // todo
 
 	r.Get("/", homeHandler)
 	r.Get("/health-check", healthCheckHandler)
@@ -58,10 +59,8 @@ func main() {
 	r.NotFound(errorHandler)
 
 	generated.HandlerWithOptions(Server{}, generated.ChiServerOptions{
-		BaseRouter: r,
-		Middlewares: []generated.MiddlewareFunc{
-			authMiddlewear,
-		},
+		BaseRouter:  r,
+		Middlewares: []generated.MiddlewareFunc{authMiddlewear},
 	})
 
 	s := &http.Server{
