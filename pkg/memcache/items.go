@@ -31,6 +31,7 @@ var (
 	ItemAppAchievementsCounts = func(appID int) Item { return Item{Key: "app-ach-counts-" + strconv.Itoa(appID), Expiration: 60 * 60 * 24} }
 	ItemAppTagsChart          = func(appID int) Item { return Item{Key: "app-tags-chart-" + strconv.Itoa(appID), Expiration: 10 * 60} }
 	ItemAppWishlistChart      = func(appID string) Item { return Item{Key: "app-wishlist-chart-" + appID, Expiration: 10 * 60} }
+	ItemAppTopPrice           = func(cc steamapi.ProductCC) Item { return Item{Key: "app-top-price-" + string(cc), Expiration: 86400} }
 
 	// Apps
 	ItemAppsPopular    = Item{Key: "popular-apps", Expiration: 60 * 3}

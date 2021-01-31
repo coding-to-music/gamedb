@@ -8,6 +8,7 @@ import (
 
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/datatable"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
+	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
@@ -30,11 +31,18 @@ func priceChangesHandler(w http.ResponseWriter, r *http.Request) {
 	t.addAssetChosen()
 	t.addAssetSlider()
 
+	var err error
+	t.TopPrice, err = elasticsearch.GetMostExpensiveApp(session.GetProductCC(r))
+	if err != nil {
+		log.ErrS(err)
+	}
+
 	returnTemplate(w, r, t)
 }
 
 type priceChangesTemplate struct {
 	globalTemplate
+	TopPrice int
 }
 
 func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {

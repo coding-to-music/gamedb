@@ -180,6 +180,37 @@ func SearchAppsRandom(filters []elastic.Query) (app App, count int64, err error)
 
 }
 
+func GetMostExpensiveApp(code steamapi.ProductCC) (top int, err error) {
+
+	const aggName = "max_price"
+
+	err = memcache.GetSetInterface(memcache.ItemAppTopPrice(code), &top, func() (interface{}, error) {
+
+		client, ctx, err := GetElastic()
+		if err != nil {
+			return top, err
+		}
+
+		searchService := client.Search().
+			Index(IndexApps).
+			Size(0).
+			Aggregation(aggName, elastic.NewMaxAggregation().Field("prices."+string(code)+".final"))
+
+		searchResult, err := searchService.Do(ctx)
+		if err != nil {
+			return top, err
+		}
+
+		aggs, ok := searchResult.Aggregations.Max(aggName)
+		if ok {
+			return int(*aggs.Value), nil
+		}
+		return 0, err
+	})
+
+	return top, err
+}
+
 func GetUpcomingGames() (apps []App, err error) {
 
 	err = memcache.GetSetInterface(memcache.ItemHomeUpcoming, &apps, func() (interface{}, error) {
