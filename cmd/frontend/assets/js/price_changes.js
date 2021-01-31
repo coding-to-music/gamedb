@@ -30,7 +30,7 @@ if ($('#price-changes-page').length > 0) {
     const $priceElement = $('#price-slider');
     const priceSlider = noUiSlider.create($priceElement[0], {
         start: [
-            parseInt(priceLow ? priceLow : -100),
+            parseInt(priceLow ? priceLow : 0),
             parseInt(priceHigh ? priceHigh : 100)
         ],
         connect: true,
