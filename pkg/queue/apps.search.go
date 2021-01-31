@@ -44,6 +44,7 @@ func appsSearchHandler(message *rabbit.Message) {
 		if err != nil {
 
 			if val, ok := err.(*elastic.Error); ok && val.Status == 404 {
+				log.Info("Updating missing Elastic row", zap.Error(err), zap.Int("app", payload.AppID))
 				sendToRetryQueueWithDelay(message, time.Minute)
 				return
 			}
