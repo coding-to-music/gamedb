@@ -25,4 +25,5 @@ var (
 	RegexSmallRomanOnly        = regexp.MustCompile(`^[IVX]+$`)
 	RegexYouTubeID             = regexp.MustCompile(`[a-zA-Z0-9_\-]{11}`)
 	RegexIP                    = regexp.MustCompile(`(?:[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})`)
+	RegexOrdinals              = regexp.MustCompile(`[0-9]st|[0-9]nd|[0-9]rd|[0-9]th`)
 )

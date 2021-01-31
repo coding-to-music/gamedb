@@ -804,6 +804,15 @@ func scrapeApp(app *mongo.App) (sales []mongo.Sale, err error) {
 				// Get end time
 				dateString := strings.TrimSpace(e.Text[index+len("Offer ends"):])
 
+				// Trim date ordinals
+				dateString = helpers.RegexOrdinals.ReplaceAllStringFunc(dateString, func(s string) string {
+					return helpers.RegexNonInts.ReplaceAllString(s, "")
+				})
+
+				// Trim EA Play
+				// March 9th, must be a new EA Play subscriber to purchase.
+				dateString = strings.Split(dateString, ",")[0]
+
 				var t time.Time
 				var timeSet bool
 
@@ -833,7 +842,7 @@ func scrapeApp(app *mongo.App) (sales []mongo.Sale, err error) {
 					sale.SaleEnd = t
 
 				} else {
-					log.ErrS(err, dateString) // March 9th, must be a new EA Play subscriber to purchase.
+					log.Err("Parsing date", zap.Error(err), zap.String("string", dateString), zap.Int("app", app.ID))
 					return
 				}
 
