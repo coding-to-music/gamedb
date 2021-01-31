@@ -357,7 +357,7 @@
 
                     // Sliders
                     $field[0].noUiSlider.on('set', callback);
-                    $field[0].noUiSlider.on('set update', function (e) {
+                    $field[0].noUiSlider.on('update', function (e) {
                         if (typeof window.updateLabels == 'function') {
                             window.updateLabels();
                         }
