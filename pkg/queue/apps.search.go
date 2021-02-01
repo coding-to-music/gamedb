@@ -43,9 +43,13 @@ func appsSearchHandler(message *rabbit.Message) {
 		err = elasticsearch.UpdateDocumentFields(elasticsearch.IndexApps, strconv.Itoa(payload.AppID), payload.Fields)
 		if err != nil {
 
-			if val, ok := err.(*elastic.Error); ok && val.Status == 404 {
+			if val, ok := err.(*elastic.Error); ok && (val.Status == 404 || val.Status == 409) {
 				log.Info("Updating missing Elastic row", zap.Error(err), zap.Int("app", payload.AppID))
-				sendToRetryQueueWithDelay(message, time.Minute)
+				if val.Status == 404 {
+					sendToRetryQueueWithDelay(message, time.Minute)
+				} else {
+					sendToRetryQueueWithDelay(message, time.Second)
+				}
 				return
 			}
 
