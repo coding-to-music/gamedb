@@ -9,6 +9,7 @@ import (
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/datatable"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
@@ -42,7 +43,7 @@ func priceChangesHandler(w http.ResponseWriter, r *http.Request) {
 
 type priceChangesTemplate struct {
 	globalTemplate
-	TopPrice int
+	TopPrice float64
 }
 
 func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
@@ -106,6 +107,11 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	maxPrice, err := elasticsearch.GetMostExpensiveApp(session.GetProductCC(r))
+	if err != nil {
+		log.ErrS(err)
+	}
+
 	prices := query.GetSearchSlice("price")
 	if len(prices) == 2 {
 
@@ -118,7 +124,7 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		if prices[1] != "100.00" {
+		if prices[1] != helpers.FloatToString(maxPrice, 2) {
 			max, err := strconv.Atoi(strings.Replace(prices[1], ".", "", 1))
 			if err != nil {
 				log.ErrS(err)

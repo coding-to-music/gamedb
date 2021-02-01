@@ -2,10 +2,7 @@ const $priceChangesPage = $('#price-changes-page');
 
 if ($priceChangesPage.length > 0) {
 
-    let topPrice = $priceChangesPage.attr('data-top-price');
-    if (topPrice > 0) {
-        topPrice = topPrice / 100
-    }
+    const topPrice = parseInt($priceChangesPage.attr('data-top-price'));
 
     // Setup drop downs
     $('select.form-control-chosen').chosen({
@@ -59,10 +56,17 @@ if ($priceChangesPage.length > 0) {
         }
 
         const prices = priceSlider.get();
+
+        let left = Math.round(prices[0]);
+        left = left === topPrice ? topPrice + '+' : left;
+
+        let right = Math.round(prices[1]);
+        right = right === topPrice ? topPrice + '+' : right;
+
         if (prices[0] === prices[1]) {
-            $('label#price-label').html('Final Price (' + parseFloat(prices[0]).toFixed(2) + '%)');
+            $('label#price-label').html('Final Price (' + user.userCurrencySymbol + left + ')');
         } else {
-            $('label#price-label').html('Final Price (' + parseFloat(prices[0]).toFixed(2) + '% - ' + parseFloat(prices[1]).toFixed(2) + '%)');
+            $('label#price-label').html('Final Price (' + user.userCurrencySymbol + left + ' - ' + user.userCurrencySymbol + right + ')');
         }
     }
 

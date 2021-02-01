@@ -3,6 +3,7 @@ package elasticsearch
 import (
 	"encoding/json"
 	"html/template"
+	"math"
 	"strconv"
 	"strings"
 	"time"
@@ -180,7 +181,7 @@ func SearchAppsRandom(filters []elastic.Query) (app App, count int64, err error)
 
 }
 
-func GetMostExpensiveApp(code steamapi.ProductCC) (top int, err error) {
+func GetMostExpensiveApp(code steamapi.ProductCC) (top float64, err error) {
 
 	const aggName = "max_price"
 
@@ -203,10 +204,18 @@ func GetMostExpensiveApp(code steamapi.ProductCC) (top int, err error) {
 
 		aggs, ok := searchResult.Aggregations.Max(aggName)
 		if ok {
-			return int(*aggs.Value), nil
+			return *aggs.Value, nil
 		}
 		return 0, err
 	})
+
+	if top > 0 {
+		top = top / 100                    // Convert to cents
+		top = top / 10                     // Trim expensive apps
+		top = (math.Ceil(top / 100)) * 100 // Round to nearest 100
+	} else {
+		top = 100
+	}
 
 	return top, err
 }
