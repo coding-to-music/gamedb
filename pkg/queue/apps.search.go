@@ -85,10 +85,14 @@ func appsSearchHandler(message *rabbit.Message) {
 	}
 
 	app := elasticsearch.App{}
+
+	if mongoApp.PlayerPeakWeek > 0 && mongoApp.GroupFollowers > 0 {
+		app.Aliases = makeAppAliases(mongoApp.ID, mongoApp.Name)
+	}
+
 	app.AchievementsAvg = mongoApp.AchievementsAverageCompletion
 	app.AchievementsCount = mongoApp.AchievementsCount
 	app.AchievementsIcons = mongoApp.Achievements
-	app.Aliases = makeAppAliases(mongoApp.ID, mongoApp.Name)
 	app.Background = mongoApp.Background
 	app.Categories = mongoApp.Categories
 	app.Developers = mongoApp.Developers
