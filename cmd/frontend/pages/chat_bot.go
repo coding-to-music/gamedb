@@ -2,10 +2,13 @@ package pages
 
 import (
 	"net/http"
+	"regexp"
+	"strings"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/chatbot"
+	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/i18n"
 	influxHelper "github.com/gamedb/gamedb/pkg/influx"
@@ -42,6 +45,27 @@ type chatBotTemplate struct {
 	Link     string
 	Regions  []i18n.ProductCountryCode
 	Commands []chatbot.Command
+}
+
+//goland:noinspection RegExpRedundantEscape
+var (
+	regexpChatLegacy      = regexp.MustCompile(`\{\w+\}\??`)
+	regexpChatLegacyStart = regexp.MustCompile(`^[.!]\w+`)
+)
+
+func (cbt chatBotTemplate) RenderLegacy(input string) (interaction interactions.Interaction) {
+
+	interaction.ID = regexpChatLegacyStart.FindString(input)
+
+	for _, v := range regexpChatLegacy.FindAllString(input, -1) {
+
+		interaction.Options = append(interaction.Options, interactions.InteractionOption{
+			Name:     strings.Trim(v, "{}?"),
+			Required: !strings.Contains(v, "?"),
+		})
+	}
+
+	return interaction
 }
 
 func (cbt chatBotTemplate) Guilds() (guilds int) {

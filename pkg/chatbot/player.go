@@ -38,7 +38,7 @@ func (CommandPlayer) PerProdCode() bool {
 }
 
 func (CommandPlayer) Example() string {
-	return ".player {player}"
+	return ".player {player}?"
 }
 
 func (CommandPlayer) Description() string {

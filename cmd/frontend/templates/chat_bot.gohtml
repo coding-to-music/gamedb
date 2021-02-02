@@ -29,8 +29,8 @@
                         <thead class="thead-light">
                         <tr>
                             <th scope="col">Category</th>
-                            <th scope="col">Slash Command</th>
-                            <th scope="col">Legacy Command</th>
+                            <th scope="col" style="width: 25%;">Slash Command</th>
+                            <th scope="col" style="width: 25%;">Legacy Command</th>
                             <th scope="col">Description</th>
                         </tr>
                         </thead>
@@ -38,7 +38,7 @@
                         {{ range .Commands }}
                             <tr>
                                 <td class="nowrap" data-sort="{{ .Type.Order }}">{{ .Type }}</td>
-                                <td class="nowrap" style="width: 25%;">
+                                <td class="nowrap">
                                     /{{ .ID }}
                                     {{ range .Slash }}
                                         <span class="badge rounded-pill bg-light text-dark" data-toggle="tooltip" data-placement="top" title="{{ .Description }}">
@@ -47,7 +47,16 @@
                                         </span>
                                     {{ end }}
                                 </td>
-                                <td class="nowrap" style="width: 25%;"><span data-toggle="tooltip" data-placement="top" title="{{ .Regex }}">{{ .Example }}</span></td>
+                                <td class="nowrap">
+                                    {{ $interaction := $.RenderLegacy .Example }}
+                                    {{ $interaction.ID }}
+                                    {{ range $interaction.Options }}
+                                        <span class="badge rounded-pill bg-light text-dark" data-toggle="tooltip" data-placement="top" title="{{ .Description }}">
+                                            {{ .Name }}
+                                            {{ if not .Required }}?{{ end }}
+                                        </span>
+                                    {{ end }}
+                                </td>
                                 <td class="nowrap">{{ .Description }}</td>
                             </tr>
                         {{ end }}

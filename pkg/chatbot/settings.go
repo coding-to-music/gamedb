@@ -31,7 +31,7 @@ func (CommandSettings) PerProdCode() bool {
 }
 
 func (CommandSettings) Example() string {
-	return ".set region uk"
+	return ".set {setting} {value}?"
 }
 
 func (CommandSettings) Description() string {
