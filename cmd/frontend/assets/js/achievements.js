@@ -46,7 +46,7 @@ if ($achievementsPage.length > 0) {
                     return row[6];
                 },
                 "orderable": false,
-                "visible": false,
+                "visible": user.isLocal,
             },
         ]
     };

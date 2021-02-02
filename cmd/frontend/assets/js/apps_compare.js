@@ -75,7 +75,7 @@ if ($appsComparePage.length > 0) {
                         return row[9];
                     },
                     "orderable": false,
-                    "visible": false,
+                    "visible": user.isLocal,
                 },
             ]
         };
