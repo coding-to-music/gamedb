@@ -163,7 +163,7 @@ func getAppEmbed(commandID string, app App, code steamapi.ProductCC) *discordgo.
 		Thumbnail: &discordgo.MessageEmbedThumbnail{URL: app.GetHeaderImage(), Width: 460, Height: 215},
 		Footer:    getFooter(),
 		Color:     greenHexDec,
-		Image:     &discordgo.MessageEmbedImage{URL: charts.GetAppPlayersChart(commandID, app.GetID(), "10m", "7d", "Players (1 Week)")},
+		Image:     &discordgo.MessageEmbedImage{URL: charts.GetAppPlayersChart(commandID, app.GetID(), "1d", "180d", "Players (6 Months)")},
 		Fields: []*discordgo.MessageEmbedField{
 			{
 				Name:   "Max Weekly Players",
