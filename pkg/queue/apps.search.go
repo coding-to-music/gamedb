@@ -86,13 +86,10 @@ func appsSearchHandler(message *rabbit.Message) {
 
 	app := elasticsearch.App{}
 
-	if mongoApp.PlayerPeakWeek > 0 && mongoApp.GroupFollowers > 0 {
-		app.Aliases = makeAppAliases(mongoApp.ID, mongoApp.Name)
-	}
-
 	app.AchievementsAvg = mongoApp.AchievementsAverageCompletion
 	app.AchievementsCount = mongoApp.AchievementsCount
 	app.AchievementsIcons = mongoApp.Achievements
+	app.Aliases = makeAppAliases(mongoApp.ID, mongoApp.Name)
 	app.Background = mongoApp.Background
 	app.Categories = mongoApp.Categories
 	app.Developers = mongoApp.Developers
@@ -185,39 +182,45 @@ func makeAppAliases(ID int, name string) (aliases []string) {
 		for _, convertIntToRoman := range []bool{true, false} {
 			for _, removeSymbols := range []bool{true, false} {
 				for _, removeEndings := range []bool{true, false} {
+					for _, removeSpaces := range []bool{true, false} {
 
-					name2 := name
+						name2 := name
 
-					if removeEndings {
-						name2 = regexpSplitOnEnding.Split(name2, 2)[0]
-					}
-
-					if removeSymbols {
-						name2 = helpers.RegexNonAlphaNumericSpace.ReplaceAllString(name2, "")
-					}
-
-					// Swap roman numerals
-					name2 = regexpRoman.ReplaceAllStringFunc(name2, func(part string) string {
-						if convertRomanToInt {
-							part = helpers.RegexSmallRomanOnly.ReplaceAllStringFunc(part, func(part string) string {
-								return strconv.Itoa(roman.Arabic(part))
-							})
-						}
-						if convertIntToRoman {
-							part = regexpRoman.ReplaceAllStringFunc(part, func(part string) string {
-								i, _ := strconv.Atoi(part)
-								if i <= 20 {
-									return part
-								}
-								return roman.Roman(i)
-							})
+						if removeEndings {
+							name2 = regexpSplitOnEnding.Split(name2, 2)[0]
 						}
 
-						return part
-					})
+						if removeSymbols {
+							name2 = helpers.RegexNonAlphaNumericSpace.ReplaceAllString(name2, "")
+						}
 
-					//
-					aliases = append(aliases, name2)
+						// Swap roman numerals
+						name2 = regexpRoman.ReplaceAllStringFunc(name2, func(part string) string {
+							if convertRomanToInt {
+								part = helpers.RegexSmallRomanOnly.ReplaceAllStringFunc(part, func(part string) string {
+									return strconv.Itoa(roman.Arabic(part))
+								})
+							}
+							if convertIntToRoman {
+								part = regexpRoman.ReplaceAllStringFunc(part, func(part string) string {
+									i, _ := strconv.Atoi(part)
+									if i <= 20 {
+										return part
+									}
+									return roman.Roman(i)
+								})
+							}
+
+							return part
+						})
+
+						if removeSpaces {
+							name2 = strings.ReplaceAll(name2, " ", "")
+						}
+
+						//
+						aliases = append(aliases, name2)
+					}
 				}
 			}
 		}
