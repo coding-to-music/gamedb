@@ -30,6 +30,7 @@ func slashCommandServer() error {
 	r.Use(chiMiddleware.NewCompressor(flate.DefaultCompression, "text/plain", "application/json").Handler)
 	r.Use(middleware.RealIP)
 
+	r.Get("/", healthCheckHandler)
 	r.Post("/", discordHandler)
 	r.Get("/health-check", healthCheckHandler)
 
