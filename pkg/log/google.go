@@ -29,7 +29,7 @@ func newGoogleCore(encoderConfig zapcore.EncoderConfig) zapcore.Core {
 		async:   true,
 
 		levelEnabler: zap.NewAtomicLevelAt(zapcore.DebugLevel),
-		encoder:      zapcore.NewConsoleEncoder(encoderConfig),
+		encoder:      zapcore.NewConsoleEncoder(googleEncoderConfig()),
 		output:       zapcore.AddSync(ioutil.Discard),
 	}
 }
@@ -155,4 +155,38 @@ func (g googleCore) Sync() error {
 	}
 
 	return g.output.Sync()
+}
+
+// https://cloud.google.com/logging/docs/reference/v2/rest/v2/LogEntry
+func googleEncoderConfig() zapcore.EncoderConfig {
+	return zapcore.EncoderConfig{
+		TimeKey:       "timestamp",
+		LevelKey:      "severity",
+		NameKey:       "logName",
+		CallerKey:     "caller",
+		MessageKey:    "textPayload",
+		StacktraceKey: "trace",
+		LineEnding:    zapcore.DefaultLineEnding,
+		EncodeLevel: func(l zapcore.Level, enc zapcore.PrimitiveArrayEncoder) {
+			switch l {
+			case zapcore.DebugLevel:
+				enc.AppendString("DEBUG")
+			case zapcore.InfoLevel:
+				enc.AppendString("INFO")
+			case zapcore.WarnLevel:
+				enc.AppendString("WARNING")
+			case zapcore.ErrorLevel:
+				enc.AppendString("ERROR")
+			case zapcore.DPanicLevel:
+				enc.AppendString("CRITICAL")
+			case zapcore.PanicLevel:
+				enc.AppendString("ALERT")
+			case zapcore.FatalLevel:
+				enc.AppendString("EMERGENCY")
+			}
+		},
+		EncodeTime:     zapcore.ISO8601TimeEncoder,
+		EncodeDuration: zapcore.SecondsDurationEncoder,
+		EncodeCaller:   zapcore.ShortCallerEncoder,
+	}
 }
