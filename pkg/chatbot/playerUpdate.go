@@ -5,7 +5,6 @@ import (
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
-	"github.com/gamedb/gamedb/cmd/frontend/helpers/oauth"
 	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -13,6 +12,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
+	"github.com/gamedb/gamedb/pkg/oauth"
 	"github.com/gamedb/gamedb/pkg/queue"
 )
 
@@ -96,7 +96,7 @@ func (c CommandPlayerUpdate) Output(authorID string, _ steamapi.ProductCC, input
 		return message, nil
 	}
 
-	player, _, err := mongo.SearchPlayer(inputs["player"], nil)
+	player, err := searchForPlayer(inputs["player"])
 	if err == mongo.ErrNoDocuments {
 
 		message.Content = "Player **" + inputs["player"] + "** not found, please enter a user's vanity URL"

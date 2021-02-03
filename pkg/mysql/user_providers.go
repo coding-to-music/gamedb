@@ -5,9 +5,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/gamedb/gamedb/cmd/frontend/helpers/oauth"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/oauth"
 	"golang.org/x/oauth2"
 )
 
