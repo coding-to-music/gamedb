@@ -2,6 +2,7 @@ package config
 
 import (
 	"errors"
+	"net/url"
 	"strings"
 
 	"github.com/gamedb/gamedb/pkg/discord"
@@ -188,7 +189,14 @@ func Init(ip string) (err error) {
 	C.IP = ip
 	C.NewReleaseDays = 14
 	C.DiscordServerInviteURL = "https://discord.gg/c5zrcus"
-	C.DiscordBotInviteURL = "https://discordapp.com/oauth2/authorize?client_id=" + discord.ClientIDBot + "&scope=bot&scope=applications.commands&permissions=0"
+
+	q := url.Values{}
+	q.Set("client_id", discord.ClientIDBot)
+	q.Set("permissions", "0")
+	q.Add("scope", "bot")
+	q.Add("scope", "applications.commands")
+
+	C.DiscordBotInviteURL = "https://discordapp.com/oauth2/authorize?" + q.Encode()
 
 	return err
 }
