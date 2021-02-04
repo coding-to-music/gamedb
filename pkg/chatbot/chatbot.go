@@ -9,7 +9,13 @@ import (
 	"github.com/gamedb/gamedb/pkg/chatbot/charts"
 	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/memcache"
+	"github.com/gamedb/gamedb/pkg/queue"
+	"github.com/gamedb/gamedb/pkg/steam"
+	"go.uber.org/zap"
 )
 
 const greenHexDec = 2664261
@@ -155,6 +161,19 @@ type App interface {
 	GetReleaseDateNice() string
 }
 
+type Player interface {
+	GetName() string
+	GetPath() string
+	GetAvatarAbsolute() string
+	GetGamesCount() int
+	GetAchievements() int
+	GetPlaytime() int
+	GetLevel() int
+	GetBadges() int
+	GetBadgesFoil() int
+	GetRanks() map[string]int
+}
+
 func getAppEmbed(commandID string, app App, code steamapi.ProductCC) *discordgo.MessageEmbed {
 
 	return &discordgo.MessageEmbed{
@@ -202,4 +221,42 @@ func getAppEmbed(commandID string, app App, code steamapi.ProductCC) *discordgo.
 			},
 		},
 	}
+}
+
+func searchForPlayer(search string) (player elasticsearch.Player, err error) {
+
+	// Check Elastic
+	players, _, err := elasticsearch.SearchPlayers(1, 0, search, nil, nil)
+	if err != nil {
+		return player, err
+	}
+
+	if len(players) > 0 {
+		return players[0], nil
+	}
+
+	// Check Steam
+	tempPlayer, err := steam.GetPlayer(search)
+	if err != nil {
+		return player, err
+	}
+
+	player = elasticsearch.Player{
+		ID:          tempPlayer.ID,
+		PersonaName: tempPlayer.PersonaName,
+		Avatar:      tempPlayer.Avatar,
+		PlayTime:    tempPlayer.PlayTime,
+		Games:       tempPlayer.Games,
+		Level:       tempPlayer.Level,
+		// Friends:     tempPlayer.Friends,
+	}
+
+	// Queue
+	err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID}, "chatbot-player")
+	err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
+	if err != nil {
+		log.Err("Producing player", zap.Error(err))
+	}
+
+	return player, nil
 }

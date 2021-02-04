@@ -49,7 +49,7 @@ func releaseDatesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 
 		columns := map[string]string{
-			"2": "followers, name.raw asc",
+			"2": "followers, name asc",
 			"4": "_score",
 		}
 

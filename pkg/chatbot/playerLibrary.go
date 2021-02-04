@@ -8,11 +8,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -70,25 +66,14 @@ func (c CommandPlayerLibrary) Slash() []interactions.InteractionOption {
 
 func (c CommandPlayerLibrary) Output(authorID string, _ steamapi.ProductCC, inputs map[string]string) (message discordgo.MessageSend, err error) {
 
-	player, q, err := mongo.SearchPlayer(inputs["player"], nil)
+	player, err := searchForPlayer(inputs["player"])
 	if err == mongo.ErrNoDocuments {
 
 		message.Content = "Player **" + inputs["player"] + "** not found, please enter a user's vanity URL"
-		if q {
-			message.Content += ". Player queued to be scanned."
-		}
 		return message, nil
 
 	} else if err != nil {
 		return message, err
-	}
-
-	if q {
-		err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID}, "chatbot-player.library")
-		err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
-		if err != nil {
-			log.ErrS(err)
-		}
 	}
 
 	// Sucess response

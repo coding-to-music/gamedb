@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/Jleagle/steam-go/steamid"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gosimple/slug"
 )
 
@@ -33,6 +34,14 @@ func GetPlayerAvatar(avatar string) string {
 	} else {
 		return DefaultPlayerAvatar
 	}
+}
+
+func GetPlayerAvatarAbsolute(avatar string) string {
+	avatar = GetPlayerAvatar(avatar)
+	if strings.HasPrefix(avatar, "/") {
+		avatar = config.C.GameDBDomain + avatar
+	}
+	return avatar
 }
 
 // Steam's generated avatar

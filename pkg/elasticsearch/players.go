@@ -9,34 +9,36 @@ import (
 	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/olivere/elastic/v7"
 )
 
 type Player struct {
-	ID                   int64    `json:"id"`
-	PersonaName          string   `json:"name"`
-	PersonaNameMarked    string   `json:"name_marked"`
-	PersonaNameRecent    []string `json:"name_recent"`
-	VanityURL            string   `json:"url"`
-	Avatar               string   `json:"avatar"`
-	Continent            string   `json:"continent"`
-	CountryCode          string   `json:"country_code"`
-	StateCode            string   `json:"state_code"`
-	LastBan              int64    `json:"last_ban"`
-	GameBans             int      `json:"game_bans"`
-	VACBans              int      `json:"vac_bans"`
-	Level                int      `json:"level"`
-	PlayTime             int      `json:"play_time"`
-	Badges               int      `json:"badges"`
-	BadgesFoil           int      `json:"badges_foil"`
-	Games                int      `json:"games"`
-	Achievements         int      `json:"achievements"`
-	Achievements100      int      `json:"achievements_100"`
-	AwardsGivenCount     int      `json:"awards_given_count"`
-	AwardsGivenPoints    int      `json:"awards_given_points"`
-	AwardsReceivedCount  int      `json:"awards_received_count"`
-	AwardsReceivedPoints int      `json:"awards_received_points"`
-	Score                float64  `json:"-"`
+	ID                   int64          `json:"id"`
+	PersonaName          string         `json:"name"`
+	PersonaNameMarked    string         `json:"name_marked"`
+	PersonaNameRecent    []string       `json:"name_recent"`
+	VanityURL            string         `json:"url"`
+	Avatar               string         `json:"avatar"`
+	Continent            string         `json:"continent"`
+	CountryCode          string         `json:"country_code"`
+	StateCode            string         `json:"state_code"`
+	LastBan              int64          `json:"last_ban"`
+	GameBans             int            `json:"game_bans"`
+	VACBans              int            `json:"vac_bans"`
+	Level                int            `json:"level"`
+	PlayTime             int            `json:"play_time"`
+	Badges               int            `json:"badges"`
+	BadgesFoil           int            `json:"badges_foil"`
+	Games                int            `json:"games"`
+	Achievements         int            `json:"achievements"`
+	Achievements100      int            `json:"achievements_100"`
+	AwardsGivenCount     int            `json:"awards_given_count"`
+	AwardsGivenPoints    int            `json:"awards_given_points"`
+	AwardsReceivedCount  int            `json:"awards_received_count"`
+	AwardsReceivedPoints int            `json:"awards_received_points"`
+	Ranks                map[string]int `json:"ranks"`
+	Score                float64        `json:"-"`
 }
 
 func (player Player) GetName() string {
@@ -55,6 +57,10 @@ func (player Player) GetAvatar() string {
 	return helpers.GetPlayerAvatar(player.Avatar)
 }
 
+func (player Player) GetAvatarAbsolute() string {
+	return helpers.GetPlayerAvatarAbsolute(player.Avatar)
+}
+
 func (player Player) GetAvatar2() string {
 	return helpers.GetPlayerAvatar2(player.Level)
 }
@@ -69,6 +75,34 @@ func (player Player) GetCountry() string {
 
 func (player Player) GetCommunityLink() string {
 	return helpers.GetPlayerCommunityLink(player.ID, player.VanityURL)
+}
+
+func (player Player) GetGamesCount() int {
+	return player.Games
+}
+
+func (player Player) GetAchievements() int {
+	return player.Achievements
+}
+
+func (player Player) GetPlaytime() int {
+	return player.PlayTime
+}
+
+func (player Player) GetLevel() int {
+	return player.Level
+}
+
+func (player Player) GetBadges() int {
+	return player.Badges
+}
+
+func (player Player) GetBadgesFoil() int {
+	return player.BadgesFoil
+}
+
+func (player Player) GetRanks() map[string]int {
+	return player.Ranks
 }
 
 func IndexPlayer(p Player) error {
@@ -200,6 +234,11 @@ func AggregatePlayerCountries() (aggregations map[string]int64, err error) {
 //noinspection GoUnusedExportedFunction
 func DeleteAndRebuildPlayersIndex() {
 
+	var rankProperties = map[string]interface{}{}
+	for _, v := range mongo.PlayerRankFields {
+		rankProperties[string(v)] = fieldTypeInt32
+	}
+
 	var mapping = map[string]interface{}{
 		"settings": settings,
 		"mappings": map[string]interface{}{
@@ -235,6 +274,7 @@ func DeleteAndRebuildPlayersIndex() {
 				"awards_given_points":    fieldTypeInt32,
 				"awards_received_count":  fieldTypeInt32,
 				"awards_received_points": fieldTypeInt32,
+				"ranks":                  map[string]interface{}{"type": "object", "properties": rankProperties},
 			},
 		},
 	}

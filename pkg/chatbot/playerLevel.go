@@ -9,11 +9,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/influx"
-	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/queue"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 type CommandPlayerLevel struct {
@@ -70,25 +66,14 @@ func (c CommandPlayerLevel) Slash() []interactions.InteractionOption {
 
 func (c CommandPlayerLevel) Output(_ string, _ steamapi.ProductCC, inputs map[string]string) (message discordgo.MessageSend, err error) {
 
-	player, q, err := mongo.SearchPlayer(inputs["player"], bson.M{"_id": 1, "persona_name": 1, "level": 1, "ranks": 1, "avatar": 1})
+	player, err := searchForPlayer(inputs["player"])
 	if err == mongo.ErrNoDocuments {
 
 		message.Content = "Player **" + inputs["player"] + "** not found, please enter a user's vanity URL"
-		if q {
-			message.Content += ". Player queued to be scanned."
-		}
 		return message, nil
 
 	} else if err != nil {
 		return message, err
-	}
-
-	if q {
-		err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID}, "chatbot-player.level")
-		err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
-		if err != nil {
-			log.ErrS(err)
-		}
 	}
 
 	// Sucess response

@@ -257,17 +257,13 @@ func searchApps(limit int, offset int, search string, totals bool, highlights bo
 		boolQuery = elastic.NewBoolQuery()
 	}
 
+	search = strings.TrimSpace(search)
 	if search != "" {
-
-		search2 := helpers.RegexNonAlphaNumeric.ReplaceAllString(search, "")
-		search2 = strings.ToLower(search2)
 
 		boolQuery.Must(
 			elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
-				elastic.NewTermQuery("id", search2).Boost(5),
-				elastic.NewTermQuery("aliases", search2).Boost(1.5),
-				elastic.NewMatchQuery("name", search).Boost(1),
-				elastic.NewPrefixQuery("name", search).Boost(0.5),
+				elastic.NewTermQuery("id", search).Boost(5),
+				elastic.NewMatchQuery("aliases", search),
 			),
 		).Should(
 			elastic.NewFunctionScoreQuery().
@@ -354,32 +350,23 @@ func DeleteAndRebuildAppsIndex() {
 				"achievements_counts": fieldTypeInt32,
 				"achievements_avg":    fieldTypeFloat16,
 				"achievements_icons":  fieldTypeDisabled,
-				"aliases": map[string]interface{}{
-					"type":     "text",
-					"analyzer": "gdb_lowercase_text",
-				},
-				"background":    fieldTypeDisabled,
-				"categories":    fieldTypeKeyword,
-				"developers":    fieldTypeKeyword,
-				"followers":     fieldTypeInt32,
-				"genres":        fieldTypeKeyword,
-				"group_id":      fieldTypeDisabled,
-				"icon":          fieldTypeDisabled,
-				"id":            fieldTypeKeyword,
-				"micro_trailor": fieldTypeDisabled,
-				"movies":        fieldTypeDisabled,
-				"movies_count":  fieldTypeInt32,
-				"name": map[string]interface{}{ // type:text allows search, type:keyword allows sorting
-					"type":     "text",
-					"analyzer": "gdb_lowercase_text",
-					"fields": map[string]interface{}{
-						"raw": fieldTypeKeyword,
-					},
-				},
-				"platforms":  fieldTypeKeyword,
-				"players":    fieldTypeInt32,
-				"prices":     map[string]interface{}{"type": "object", "properties": priceProperties},
-				"publishers": fieldTypeKeyword,
+				"aliases":             fieldTypeText, // Used for searching
+				"background":          fieldTypeDisabled,
+				"categories":          fieldTypeKeyword,
+				"developers":          fieldTypeKeyword,
+				"followers":           fieldTypeInt32,
+				"genres":              fieldTypeKeyword,
+				"group_id":            fieldTypeDisabled,
+				"icon":                fieldTypeDisabled,
+				"id":                  fieldTypeKeyword,
+				"micro_trailor":       fieldTypeDisabled,
+				"movies":              fieldTypeDisabled,
+				"movies_count":        fieldTypeInt32,
+				"name":                fieldTypeKeyword, // Just used for sorting
+				"platforms":           fieldTypeKeyword,
+				"players":             fieldTypeInt32,
+				"prices":              map[string]interface{}{"type": "object", "properties": priceProperties},
+				"publishers":          fieldTypeKeyword,
 				"release_date_original": map[string]interface{}{ // type:text allows search, type:keyword allows sorting
 					"type":     "text",
 					"analyzer": "gdb_lowercase_text",

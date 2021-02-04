@@ -84,7 +84,7 @@ func (c CommandAppRandom) Output(_ string, region steamapi.ProductCC, inputs map
 	query := []elastic.Query{
 		elastic.NewBoolQuery().
 			Filter(filters...).
-			MustNot(elastic.NewTermQuery("name.raw", "")),
+			MustNot(elastic.NewTermQuery("name", "")),
 	}
 
 	app, _, err := elasticsearch.SearchAppsRandom(query)

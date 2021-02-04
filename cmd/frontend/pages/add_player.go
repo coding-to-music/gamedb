@@ -1,15 +1,16 @@
 package pages
 
 import (
+	"fmt"
 	"net/http"
-	"path"
-	"strconv"
+	"strings"
 
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/Jleagle/steam-go/steamid"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/mongo"
-	"go.mongodb.org/mongo-driver/bson"
+	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/steam"
 )
 
 func playerAddHandler(w http.ResponseWriter, r *http.Request) {
@@ -42,31 +43,29 @@ func playerAddHandler(w http.ResponseWriter, r *http.Request) {
 				return "Please enter a search term"
 			}
 
-			search = path.Base(search)
+			search = strings.TrimSpace(search)
+			search = strings.Split(search, "/id/")[0]
+			search = strings.Split(search, "/profiles/")[0]
+			search = strings.Split(search, "/")[0]
 
 			// Check if search term is a Steam ID
 			id, err := steamid.ParsePlayerID(search)
 			if err == nil && id > 0 {
-				http.Redirect(w, r, "/players/"+strconv.FormatUint(uint64(id), 10), http.StatusFound)
+				http.Redirect(w, r, "/players/"+fmt.Sprint(id), http.StatusFound)
 				return ""
 			}
 
-			// Search Mongo
-			player, _, err := mongo.SearchPlayer(search, bson.M{"_id": 1})
-			if err == nil {
-				http.Redirect(w, r, "/players/"+strconv.FormatInt(player.ID, 10), http.StatusFound)
-				return ""
+			// Check in Steam API
+			resp, err := steam.GetSteam().ResolveVanityURL(search, steamapi.VanityURLProfile)
+			err = steam.AllowSteamCodes(err)
+			if err != nil {
+				log.ErrS(err)
 			}
 
-			// This gets checked in mongo.SearchPlayer()
-			// Check Steam API
-			// resp, b, err := steam.GetSteam().ResolveVanityURL(search, steamapi.VanityURLProfile)
-			// err = steam.AllowSteamCodes(err, b, nil)
-			// if err == nil && resp.Success > 0 && resp.SteamID > 0 {
-			//
-			// 	http.Redirect(w, r, "/players/"+strconv.FormatInt(int64(resp.SteamID), 10), http.StatusFound)
-			// 	return ""
-			// }
+			if resp.SteamID > 0 {
+				http.Redirect(w, r, "/players/"+fmt.Sprint(resp.SteamID), http.StatusFound)
+				return ""
+			}
 
 			return "Player " + search + " not found on Steam"
 		}()

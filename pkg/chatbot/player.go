@@ -9,12 +9,9 @@ import (
 	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
-	"github.com/gamedb/gamedb/pkg/queue"
-	"go.mongodb.org/mongo-driver/bson"
+	"github.com/gamedb/gamedb/pkg/oauth"
 )
 
 type CommandPlayer struct {
@@ -71,20 +68,7 @@ func (c CommandPlayer) Slash() []interactions.InteractionOption {
 
 func (c CommandPlayer) Output(authorID string, _ steamapi.ProductCC, inputs map[string]string) (message discordgo.MessageSend, err error) {
 
-	projection := bson.M{
-		"_id":               1,
-		"achievement_count": 1,
-		"avatar":            1,
-		"badges_count":      1,
-		"badges_foil_count": 1,
-		"games_count":       1,
-		"level":             1,
-		"persona_name":      1,
-		"play_time":         1,
-		"ranks":             1,
-	}
-
-	var player mongo.Player
+	var player Player
 
 	if inputs["player"] == "" {
 
@@ -114,41 +98,29 @@ func (c CommandPlayer) Output(authorID string, _ steamapi.ProductCC, inputs map[
 
 	} else {
 
-		var q bool
-		player, q, err = mongo.SearchPlayer(inputs["player"], projection)
+		player, err = searchForPlayer(inputs["player"])
 		if err == mongo.ErrNoDocuments {
 
 			message.Content = "Player **" + inputs["player"] + "** not found, please enter a user's vanity URL"
-			if q {
-				message.Content += ". Player queued to be scanned."
-			}
 			return message, nil
 
 		} else if err != nil {
 			return message, err
 		}
-
-		if q {
-			err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID}, "chatbot-player")
-			err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
-			if err != nil {
-				log.ErrS(err)
-			}
-		}
 	}
 
 	var games string
-	if player.GamesCount == 0 {
+	if player.GetGamesCount() == 0 {
 		games = "Profile set to private"
 	} else {
-		games = humanize.Comma(int64(player.GamesCount)) + " (" + helpers.OrdinalComma(player.Ranks[string(mongo.RankKeyGames)]) + ")"
+		games = humanize.Comma(int64(player.GetGamesCount())) + " (" + helpers.OrdinalComma(player.GetRanks()[string(mongo.RankKeyGames)]) + ")"
 	}
 
 	var playtime string
-	if player.PlayTime == 0 {
+	if player.GetPlaytime() == 0 {
 		playtime = "Profile set to private"
 	} else {
-		playtime = helpers.GetTimeLong(player.PlayTime, 3) + " (" + helpers.OrdinalComma(player.Ranks[string(mongo.RankKeyPlaytime)]) + ")"
+		playtime = helpers.GetTimeLong(player.GetPlaytime(), 3) + " (" + helpers.OrdinalComma(player.GetRanks()[string(mongo.RankKeyPlaytime)]) + ")"
 	}
 
 	message.Embed = &discordgo.MessageEmbed{
@@ -160,7 +132,7 @@ func (c CommandPlayer) Output(authorID string, _ steamapi.ProductCC, inputs map[
 		Fields: []*discordgo.MessageEmbedField{
 			{
 				Name:  "Level",
-				Value: humanize.Comma(int64(player.Level)) + " (" + helpers.OrdinalComma(player.Ranks[string(mongo.RankKeyLevel)]) + ")",
+				Value: humanize.Comma(int64(player.GetLevel())) + " (" + helpers.OrdinalComma(player.GetRanks()[string(mongo.RankKeyLevel)]) + ")",
 			},
 			{
 				Name:  "Games",
@@ -168,15 +140,15 @@ func (c CommandPlayer) Output(authorID string, _ steamapi.ProductCC, inputs map[
 			},
 			{
 				Name:  "Achievements",
-				Value: humanize.Comma(int64(player.AchievementCount)) + " (" + helpers.OrdinalComma(player.Ranks[string(mongo.RankKeyAchievements)]) + ")",
+				Value: humanize.Comma(int64(player.GetAchievements())) + " (" + helpers.OrdinalComma(player.GetRanks()[string(mongo.RankKeyAchievements)]) + ")",
 			},
 			{
 				Name:  "Badges",
-				Value: humanize.Comma(int64(player.BadgesCount)) + " (" + helpers.OrdinalComma(player.Ranks[string(mongo.RankKeyBadges)]) + ")",
+				Value: humanize.Comma(int64(player.GetBadges())) + " (" + helpers.OrdinalComma(player.GetRanks()[string(mongo.RankKeyBadges)]) + ")",
 			},
 			{
 				Name:  "Foil Badges",
-				Value: humanize.Comma(int64(player.BadgesFoilCount)) + " (" + helpers.OrdinalComma(player.Ranks[string(mongo.RankKeyBadgesFoil)]) + ")",
+				Value: humanize.Comma(int64(player.GetBadgesFoil())) + " (" + helpers.OrdinalComma(player.GetRanks()[string(mongo.RankKeyBadgesFoil)]) + ")",
 			},
 			{
 				Name:  "Playtime",

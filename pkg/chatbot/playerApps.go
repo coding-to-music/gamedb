@@ -10,11 +10,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/influx"
-	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/queue"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 type CommandPlayerApps struct {
@@ -71,33 +67,14 @@ func (c CommandPlayerApps) Slash() []interactions.InteractionOption {
 
 func (c CommandPlayerApps) Output(_ string, _ steamapi.ProductCC, inputs map[string]string) (message discordgo.MessageSend, err error) {
 
-	projection := bson.M{
-		"_id":          1,
-		"persona_name": 1,
-		"avatar":       1,
-		"ranks":        1,
-		"games_count":  1,
-	}
-
-	player, q, err := mongo.SearchPlayer(inputs["player"], projection)
+	player, err := searchForPlayer(inputs["player"])
 	if err == mongo.ErrNoDocuments {
 
 		message.Content = "Player **" + inputs["player"] + "** not found, please enter a user's vanity URL"
-		if q {
-			message.Content += ". Player queued to be scanned."
-		}
 		return message, nil
 
 	} else if err != nil {
 		return message, err
-	}
-
-	if q {
-		err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID}, "chatbot-player.apps")
-		err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
-		if err != nil {
-			log.ErrS(err)
-		}
 	}
 
 	// Sucess response
@@ -106,7 +83,7 @@ func (c CommandPlayerApps) Output(_ string, _ steamapi.ProductCC, inputs map[str
 		rank = helpers.OrdinalComma(val)
 	}
 
-	if player.GamesCount > 0 {
+	if player.Games > 0 {
 		message.Embed = &discordgo.MessageEmbed{
 			Title:     player.GetName(),
 			URL:       config.C.GameDBDomain + player.GetPath(),
@@ -117,7 +94,7 @@ func (c CommandPlayerApps) Output(_ string, _ steamapi.ProductCC, inputs map[str
 			Fields: []*discordgo.MessageEmbedField{
 				{
 					Name:   "Games",
-					Value:  strconv.Itoa(player.GamesCount),
+					Value:  strconv.Itoa(player.Games),
 					Inline: true,
 				},
 				{

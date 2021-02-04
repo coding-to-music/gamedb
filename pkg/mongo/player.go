@@ -3,11 +3,8 @@ package mongo
 import (
 	"html/template"
 	"math"
-	"path"
 	"sort"
 	"strconv"
-	"strings"
-	"sync"
 	"time"
 
 	"github.com/Jleagle/steam-go/steamapi"
@@ -18,7 +15,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
-	"github.com/gamedb/gamedb/pkg/steam"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -292,11 +288,7 @@ func (player Player) GetAvatar() string {
 }
 
 func (player Player) GetAvatarAbsolute() string {
-	avatar := player.GetAvatar()
-	if strings.HasPrefix(avatar, "/") {
-		avatar = config.C.GameDBDomain + avatar
-	}
-	return avatar
+	return helpers.GetPlayerAvatarAbsolute(player.Avatar)
 }
 
 func (player Player) GetFlag() string {
@@ -399,6 +391,34 @@ func (player Player) NeedsUpdate(updateType UpdateType) bool {
 	}
 
 	return false
+}
+
+func (player Player) GetGamesCount() int {
+	return player.GamesCount
+}
+
+func (player Player) GetAchievements() int {
+	return player.AchievementCount
+}
+
+func (player Player) GetPlaytime() int {
+	return player.PlayTime
+}
+
+func (player Player) GetLevel() int {
+	return player.Level
+}
+
+func (player Player) GetBadges() int {
+	return player.BadgesCount
+}
+
+func (player Player) GetBadgesFoil() int {
+	return player.BadgesFoilCount
+}
+
+func (player Player) GetRanks() map[string]int {
+	return player.Ranks
 }
 
 func ensurePlayerIndexes() {
@@ -509,173 +529,6 @@ func GetPlayer(id int64) (player Player, err error) {
 	player.ID = id
 
 	return player, err
-}
-
-func SearchPlayer(search string, projection bson.M) (player Player, queue bool, err error) {
-
-	search = strings.TrimSpace(path.Base(search))
-
-	if search == "" {
-		return player, false, steamid.ErrInvalidPlayerID
-	}
-
-	//
-	var ops = options.FindOne()
-
-	// Set to case insensitive
-	ops.SetCollation(&options.Collation{
-		Locale:   "en",
-		Strength: 2,
-	})
-
-	if projection != nil {
-		ops.SetProjection(projection)
-	}
-
-	client, ctx, err := getMongo()
-	if err != nil {
-		return player, false, err
-	}
-
-	c := client.Database(config.C.MongoDatabase).Collection(CollectionPlayers.String())
-
-	// Get by ID
-	id, err := steamid.ParsePlayerID(search)
-	if err == nil {
-
-		err = c.FindOne(ctx, bson.D{{"_id", id}}, ops).Decode(&player)
-		err = helpers.IgnoreErrors(err, ErrNoDocuments)
-		if err != nil {
-			log.ErrS(err)
-		}
-	}
-
-	if player.ID == 0 {
-
-		err = c.FindOne(ctx, bson.D{{"persona_name", search}}, ops).Decode(&player)
-		err = helpers.IgnoreErrors(err, ErrNoDocuments)
-		if err != nil {
-			log.ErrS(err)
-		}
-	}
-
-	if player.ID == 0 {
-
-		err = c.FindOne(ctx, bson.D{{"vanity_url", search}}, ops).Decode(&player)
-		err = helpers.IgnoreErrors(err, ErrNoDocuments)
-		if err != nil {
-			log.ErrS(err)
-		}
-	}
-
-	if player.ID == 0 {
-
-		resp, err := steam.GetSteam().ResolveVanityURL(search, steamapi.VanityURLProfile)
-		if err == nil && resp.Success > 0 {
-
-			player.ID = int64(resp.SteamID)
-
-			var wg sync.WaitGroup
-			for k, v := range projection {
-
-				if v.(int) < 1 {
-					continue
-				}
-
-				switch k {
-				case "level":
-
-					wg.Add(1)
-					go func() {
-
-						defer wg.Done()
-
-						resp, err := steam.GetSteam().GetSteamLevel(player.ID)
-						err = steam.AllowSteamCodes(err)
-						if err != nil {
-							log.ErrS(err)
-							return
-						}
-
-						player.Level = resp
-					}()
-
-				case "persona_name", "avatar":
-
-					wg.Add(1)
-					go func() {
-
-						defer wg.Done()
-
-						if player.PersonaName == "" {
-
-							summary, err := steam.GetSteam().GetPlayer(player.ID)
-							if err == steamapi.ErrProfileMissing {
-								return
-							}
-							if err = steam.AllowSteamCodes(err); err != nil {
-								log.ErrS(err)
-								return
-							}
-
-							player.PersonaName = summary.PersonaName
-							player.Avatar = summary.AvatarHash
-						}
-					}()
-
-				case "games_count", "play_time":
-
-					wg.Add(1)
-					go func() {
-
-						defer wg.Done()
-
-						if player.GamesCount == 0 {
-
-							resp, err := steam.GetSteam().GetOwnedGames(player.ID)
-							err = steam.AllowSteamCodes(err)
-							if err != nil {
-								log.ErrS(err)
-								return
-							}
-
-							var playtime = 0
-							for _, v := range resp.Games {
-								playtime += v.PlaytimeForever
-							}
-
-							player.PlayTime = playtime
-							player.GamesCount = len(resp.Games)
-						}
-					}()
-
-				case "friends_count":
-
-					wg.Add(1)
-					go func() {
-
-						defer wg.Done()
-
-						resp, err := steam.GetSteam().GetFriendList(player.ID)
-						err = steam.AllowSteamCodes(err, 401, 404)
-						if err != nil {
-							log.ErrS(err)
-							return
-						}
-
-						player.FriendsCount = len(resp)
-					}()
-				}
-			}
-			wg.Wait()
-		}
-	}
-
-	if player.ID == 0 {
-		return player, false, mongo.ErrNoDocuments
-	}
-
-	return player, true, nil
 }
 
 func GetPlayersByID(ids []int64, projection bson.M) (players []Player, err error) {

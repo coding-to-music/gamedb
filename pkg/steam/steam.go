@@ -1,11 +1,14 @@
 package steam
 
 import (
+	"path"
+	"strings"
 	"sync"
 	"time"
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/log"
 )
 
 var (
@@ -48,4 +51,108 @@ func GetSteamUnlimited() *steamapi.Client {
 	}
 
 	return clientUnlimited
+}
+
+type TempPlayer struct {
+	ID          int64
+	PersonaName string
+	Avatar      string
+	Level       int
+	PlayTime    int
+	Games       int
+	Friends     int
+}
+
+func GetPlayer(search string) (player TempPlayer, err error) {
+
+	search = strings.TrimSpace(path.Base(search))
+
+	resp, err := GetSteam().ResolveVanityURL(search, steamapi.VanityURLProfile)
+	err = AllowSteamCodes(err)
+	if err != nil {
+		return player, err
+	}
+
+	player.ID = int64(resp.SteamID)
+
+	var wg sync.WaitGroup
+
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		resp, err := GetSteam().GetSteamLevel(player.ID)
+		err = AllowSteamCodes(err)
+		if err != nil {
+			log.ErrS(err)
+			return
+		}
+
+		player.Level = resp
+	}()
+
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		if player.PersonaName == "" {
+
+			summary, err := GetSteam().GetPlayer(player.ID)
+			if err == steamapi.ErrProfileMissing {
+				return
+			}
+			if err = AllowSteamCodes(err); err != nil {
+				log.ErrS(err)
+				return
+			}
+
+			player.PersonaName = summary.PersonaName
+			player.Avatar = summary.AvatarHash
+		}
+	}()
+
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		if player.Games == 0 {
+
+			resp, err := GetSteam().GetOwnedGames(player.ID)
+			err = AllowSteamCodes(err)
+			if err != nil {
+				log.ErrS(err)
+				return
+			}
+
+			var playtime = 0
+			for _, v := range resp.Games {
+				playtime += v.PlaytimeForever
+			}
+
+			player.PlayTime = playtime
+			player.Games = len(resp.Games)
+		}
+	}()
+
+	// 	wg.Add(1)
+	// 	go func() {
+	//
+	// 		defer wg.Done()
+	//
+	// 		resp, err := GetSteam().GetFriendList(player.ID)
+	// 		err = AllowSteamCodes(err, 401, 404)
+	// 		if err != nil {
+	// 			log.ErrS(err)
+	// 			return
+	// 		}
+	//
+	// 		player.Friends = len(resp)
+	// 	}()
+
+	wg.Wait()
+
+	return player, nil
 }

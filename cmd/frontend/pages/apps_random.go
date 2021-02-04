@@ -32,7 +32,7 @@ func appsRandomHandler(w http.ResponseWriter, r *http.Request) {
 					elastic.NewTermsQuery("type", "game", ""),
 				).
 				MustNot(
-					elastic.NewTermQuery("name.raw", ""),
+					elastic.NewTermQuery("name", ""),
 				).
 				Should(
 					elastic.NewRangeQuery("movies_count").From(1),
