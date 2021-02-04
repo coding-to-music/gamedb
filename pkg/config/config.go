@@ -193,8 +193,7 @@ func Init(ip string) (err error) {
 	q := url.Values{}
 	q.Set("client_id", discord.ClientIDBot)
 	q.Set("permissions", "0")
-	q.Add("scope", "bot")
-	q.Add("scope", "applications.commands")
+	q.Set("scope", strings.Join([]string{"bot", "applications.commands"}, " "))
 
 	C.DiscordBotInviteURL = "https://discordapp.com/oauth2/authorize?" + q.Encode()
 
