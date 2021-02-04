@@ -7,7 +7,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/chatbot"
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/discord"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mysql"
@@ -41,7 +40,7 @@ func websocketServer() (*discordgo.Session, error) {
 		}
 
 		// Stop users getting two responses
-		if config.IsLocal() && m.Author.ID != discord.AdminID {
+		if config.IsLocal() && m.Author.ID != config.DiscordAdminID {
 			return
 		}
 
@@ -60,7 +59,7 @@ func websocketServer() (*discordgo.Session, error) {
 						discordError(err)
 						return
 					}
-					if private && m.Author.ID != discord.AdminID {
+					if private && m.Author.ID != config.DiscordAdminID {
 						return
 					}
 

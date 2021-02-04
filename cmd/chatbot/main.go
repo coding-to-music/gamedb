@@ -9,7 +9,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/chatbot"
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/discord"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -112,7 +111,7 @@ func getSession() (*discordgo.Session, error) {
 
 func saveToDB(command chatbot.Command, slash bool, message, guildID, channelID, authorID, authorName, authorAvatar string) {
 
-	if authorID == discord.AdminID {
+	if authorID == config.DiscordAdminID {
 		return
 	}
 

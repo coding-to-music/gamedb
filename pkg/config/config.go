@@ -5,7 +5,6 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/gamedb/gamedb/pkg/discord"
 	"github.com/gamedb/gamedb/pkg/ldflags"
 	"github.com/kelseyhightower/envconfig"
 )
@@ -14,6 +13,10 @@ const (
 	EnvProd     = "production"
 	EnvLocal    = "local"
 	EnvConsumer = "consumer"
+
+	DiscordAdminID     = "145456943912189952"
+	DiscordGuildID     = "407493776597057538"
+	DiscordBotClientID = "567257603185311745"
 )
 
 var ErrMissingEnvironmentVariable = errors.New("missing env var")
@@ -191,7 +194,7 @@ func Init(ip string) (err error) {
 	C.DiscordServerInviteURL = "https://discord.gg/c5zrcus"
 
 	q := url.Values{}
-	q.Set("client_id", discord.ClientIDBot)
+	q.Set("client_id", DiscordBotClientID)
 	q.Set("permissions", "0")
 	q.Set("scope", strings.Join([]string{"bot", "applications.commands"}, " "))
 

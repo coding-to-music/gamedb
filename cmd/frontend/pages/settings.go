@@ -16,7 +16,6 @@ import (
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/geo"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
-	discordHelpers "github.com/gamedb/gamedb/pkg/discord"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -207,7 +206,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 					return true, err
 				}
 
-				_, err = discord.GuildMember(discordHelpers.GuildID, val.ID)
+				_, err = discord.GuildMember(config.DiscordGuildID, val.ID)
 				if val, ok := err.(*discordgo.RESTError); ok {
 					if val.Response.StatusCode == 404 { // Not in guilds
 						return false, nil
@@ -474,7 +473,7 @@ func joinDiscordServerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = discord.GuildMemberAdd(token.AccessToken, discordHelpers.GuildID, provider.ID, "", nil, false, false)
+	err = discord.GuildMemberAdd(token.AccessToken, config.DiscordGuildID, provider.ID, "", nil, false, false)
 	if err != nil {
 		log.ErrS(err)
 		session.SetFlash(r, session.SessionBad, "Something went wrong (1003)")

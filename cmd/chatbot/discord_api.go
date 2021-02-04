@@ -11,7 +11,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/chatbot"
 	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/discord"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.uber.org/zap"
@@ -48,7 +47,7 @@ func deleteCommand(id string) (int, error) {
 	headers.Set("Authorization", "Bot "+config.C.DiscordChatBotToken)
 	headers.Set("Content-Type", "application/json")
 
-	_, code, err := helpers.Delete("https://discord.com/api/v8/applications/"+discord.ClientIDBot+"/commands/"+id, 0, headers)
+	_, code, err := helpers.Delete("https://discord.com/api/v8/applications/"+config.DiscordBotClientID+"/commands/"+id, 0, headers)
 	return code, err
 }
 
@@ -59,7 +58,7 @@ func getCommands() (ints []interactions.Interaction, err error) {
 	headers.Set("Authorization", "Bot "+config.C.DiscordChatBotToken)
 	headers.Set("Content-Type", "application/json")
 
-	b, _, err := helpers.Get("https://discord.com/api/v8/applications/"+discord.ClientIDBot+"/commands", 0, headers)
+	b, _, err := helpers.Get("https://discord.com/api/v8/applications/"+config.DiscordBotClientID+"/commands", 0, headers)
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +71,7 @@ func getCommands() (ints []interactions.Interaction, err error) {
 //goland:noinspection GoUnusedFunction
 func setCommands() {
 
-	path := "https://discord.com/api/v8/applications/" + discord.ClientIDBot + "/commands"
+	path := "https://discord.com/api/v8/applications/" + config.DiscordBotClientID + "/commands"
 
 	headers := http.Header{}
 	headers.Set("Authorization", "Bot "+config.C.DiscordChatBotToken)
