@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"path"
 	"strconv"
+	"time"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
@@ -13,19 +14,19 @@ import (
 )
 
 type Player struct {
-	ID                   int64                    `json:"id"`
-	PersonaName          string                   `json:"name"`
-	PersonaNameMarked    string                   `json:"name_marked"`
-	PersonaNameRecent    []string                 `json:"name_recent"`
-	VanityURL            string                   `json:"url"`
-	Avatar               string                   `json:"avatar"`
-	Continent            string                   `json:"continent"`
-	CountryCode          string                   `json:"country_code"`
-	StateCode            string                   `json:"state_code"`
-	LastBan              int64                    `json:"last_ban"`
-	GameBans             int                      `json:"game_bans"`
-	VACBans              int                      `json:"vac_bans"`
-	Level                int                      `json:"level"`
+	ID                   int64                      `json:"id"`
+	PersonaName          string                     `json:"name"`
+	PersonaNameMarked    string                     `json:"name_marked"`
+	PersonaNameRecent    []string                   `json:"name_recent"`
+	VanityURL            string                     `json:"url"`
+	Avatar               string                     `json:"avatar"`
+	Continent            string                     `json:"continent"`
+	CountryCode          string                     `json:"country_code"`
+	StateCode            string                     `json:"state_code"`
+	LastBan              int64                      `json:"last_ban"`
+	GameBans             int                        `json:"game_bans"`
+	VACBans              int                        `json:"vac_bans"`
+	Level                int                        `json:"level"`
 	PlayTime             int                        `json:"play_time"`
 	Badges               int                        `json:"badges"`
 	BadgesFoil           int                        `json:"badges_foil"`
@@ -102,6 +103,18 @@ func (player Player) GetBadgesFoil() int {
 
 func (player Player) GetRanks() map[helpers.RankMetric]int {
 	return player.Ranks
+}
+
+func (player Player) GetVACBans() int {
+	return player.VACBans
+}
+
+func (player Player) GetGameBans() int {
+	return player.GameBans
+}
+
+func (player Player) GetLastBan() time.Time {
+	return time.Unix(player.LastBan, 0)
 }
 
 func IndexPlayer(p Player) error {

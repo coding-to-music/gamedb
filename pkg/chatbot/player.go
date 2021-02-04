@@ -2,6 +2,7 @@ package chatbot
 
 import (
 	"strconv"
+	"time"
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
@@ -123,6 +124,11 @@ func (c CommandPlayer) Output(authorID string, _ steamapi.ProductCC, inputs map[
 		playtime = helpers.GetTimeLong(player.GetPlaytime(), 3) + " (" + helpers.OrdinalComma(player.GetRanks()[helpers.RankKeyPlaytime]) + ")"
 	}
 
+	var lastBan string
+	if player.GetVACBans() > 0 {
+		lastBan = "\nVAC Banned " + helpers.GetTimeShort(int(time.Now().Sub(player.GetLastBan()).Minutes()), 2) + " ago"
+	}
+
 	message.Embed = &discordgo.MessageEmbed{
 		Title:     player.GetName(),
 		URL:       config.C.GameDBDomain + player.GetPath(),
@@ -153,6 +159,11 @@ func (c CommandPlayer) Output(authorID string, _ steamapi.ProductCC, inputs map[
 			{
 				Name:  "Playtime",
 				Value: playtime,
+			},
+			{
+				Name: "Bans",
+				Value: humanize.Comma(int64(player.GetGameBans())) + " Game Bans\n" +
+					humanize.Comma(int64(player.GetVACBans())) + " VAC Bans" + lastBan,
 			},
 		},
 	}

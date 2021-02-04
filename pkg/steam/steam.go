@@ -60,6 +60,9 @@ type TempPlayer struct {
 	PlayTime    int
 	Games       int
 	Friends     int
+	VACBans     int
+	GameBans    int
+	LastBan     time.Time
 }
 
 func GetPlayer(search string) (player TempPlayer, err error) {
@@ -133,6 +136,26 @@ func GetPlayer(search string) (player TempPlayer, err error) {
 
 			player.PlayTime = playtime
 			player.Games = len(resp.Games)
+		}
+	}()
+
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		if player.Games == 0 {
+
+			resp, err := GetSteam().GetPlayerBans(player.ID)
+			err = AllowSteamCodes(err)
+			if err != nil {
+				LogSteamError(err)
+				return
+			}
+
+			player.LastBan = time.Now().Add(time.Hour * 24 * time.Duration(resp.DaysSinceLastBan) * -1)
+			player.GameBans = resp.NumberOfGameBans
+			player.VACBans = resp.NumberOfVACBans
 		}
 	}()
 

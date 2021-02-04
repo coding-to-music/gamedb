@@ -349,6 +349,18 @@ func (player Player) GetRanks() map[helpers.RankMetric]int {
 	return player.Ranks
 }
 
+func (player Player) GetVACBans() int {
+	return player.NumberOfVACBans
+}
+
+func (player Player) GetGameBans() int {
+	return player.NumberOfGameBans
+}
+
+func (player Player) GetLastBan() time.Time {
+	return player.LastBan
+}
+
 func ensurePlayerIndexes() {
 
 	var indexModels []mongo.IndexModel

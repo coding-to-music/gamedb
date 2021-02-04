@@ -2,6 +2,7 @@ package chatbot
 
 import (
 	"regexp"
+	"time"
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
@@ -172,6 +173,9 @@ type Player interface {
 	GetBadges() int
 	GetBadgesFoil() int
 	GetRanks() map[helpers.RankMetric]int
+	GetVACBans() int
+	GetGameBans() int
+	GetLastBan() time.Time
 }
 
 func getAppEmbed(commandID string, app App, code steamapi.ProductCC) *discordgo.MessageEmbed {
@@ -248,6 +252,9 @@ func searchForPlayer(search string) (player elasticsearch.Player, err error) {
 		PlayTime:    tempPlayer.PlayTime,
 		Games:       tempPlayer.Games,
 		Level:       tempPlayer.Level,
+		GameBans:    tempPlayer.GameBans,
+		VACBans:     tempPlayer.VACBans,
+		LastBan:     tempPlayer.LastBan.Unix(),
 		// Friends:     tempPlayer.Friends,
 	}
 
