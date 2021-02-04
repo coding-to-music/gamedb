@@ -8,7 +8,6 @@ import (
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/config"
-	"github.com/gamedb/gamedb/pkg/log"
 )
 
 var (
@@ -85,7 +84,7 @@ func GetPlayer(search string) (player TempPlayer, err error) {
 		resp, err := GetSteam().GetSteamLevel(player.ID)
 		err = AllowSteamCodes(err)
 		if err != nil {
-			log.ErrS(err)
+			LogSteamError(err)
 			return
 		}
 
@@ -104,7 +103,7 @@ func GetPlayer(search string) (player TempPlayer, err error) {
 				return
 			}
 			if err = AllowSteamCodes(err); err != nil {
-				log.ErrS(err)
+				LogSteamError(err)
 				return
 			}
 
@@ -123,7 +122,7 @@ func GetPlayer(search string) (player TempPlayer, err error) {
 			resp, err := GetSteam().GetOwnedGames(player.ID)
 			err = AllowSteamCodes(err)
 			if err != nil {
-				log.ErrS(err)
+				LogSteamError(err)
 				return
 			}
 
