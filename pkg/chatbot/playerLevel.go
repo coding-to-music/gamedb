@@ -8,7 +8,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	influxHelper "github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/mongo"
 )
 
@@ -78,7 +77,7 @@ func (c CommandPlayerLevel) Output(_ string, _ steamapi.ProductCC, inputs map[st
 
 	// Sucess response
 	var rank = "Unranked"
-	if val, ok := player.Ranks[string(mongo.RankKeyLevel)]; ok {
+	if val, ok := player.Ranks[helpers.RankKeyLevel]; ok {
 		rank = helpers.OrdinalComma(val)
 	}
 
@@ -88,7 +87,7 @@ func (c CommandPlayerLevel) Output(_ string, _ steamapi.ProductCC, inputs map[st
 		Thumbnail: &discordgo.MessageEmbedThumbnail{URL: player.GetAvatarAbsolute(), Width: 184, Height: 184},
 		Footer:    getFooter(),
 		Color:     greenHexDec,
-		Image:     &discordgo.MessageEmbedImage{URL: charts.GetPlayerChart(c.ID(), player.ID, influxHelper.InfPlayersLevel, "Level")},
+		Image:     &discordgo.MessageEmbedImage{URL: charts.GetPlayerChart(c.ID(), player.ID, helpers.InfPlayersLevel, "Level")},
 		Fields: []*discordgo.MessageEmbedField{
 			{
 				Name:   "Level",

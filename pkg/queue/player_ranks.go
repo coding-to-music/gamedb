@@ -91,7 +91,7 @@ func playerRanksHandler(message *rabbit.Message) {
 			var points []influx.Point
 			if len(payload.ObjectKey) == 1 { // Global
 				for position, player := range players {
-					if val, ok := mongo.PlayerRankFieldsInflux[mongo.RankMetric(payload.ObjectKey)]; ok {
+					if val, ok := helpers.PlayerRankFieldsInflux[helpers.RankMetric(payload.ObjectKey)]; ok {
 						points = append(points, influx.Point{
 							Measurement: string(influxHelper.InfluxMeasurementPlayers),
 							Tags: map[string]string{

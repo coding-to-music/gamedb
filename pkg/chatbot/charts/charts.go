@@ -55,7 +55,7 @@ func GetAppPlayersChart(commandID string, appID int, groupBy string, time string
 	return path
 }
 
-func GetPlayerChart(commandID string, playerID int64, field influx.Field, title string) (path string) {
+func GetPlayerChart(commandID string, playerID int64, field helpers.Field, title string) (path string) {
 
 	field.Max()
 

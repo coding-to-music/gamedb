@@ -12,84 +12,12 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
-	"github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
-
-type RankMetric string
-
-func (rk RankMetric) String() string {
-	switch rk {
-	case RankKeyLevel:
-		return "Level"
-	case RankKeyBadges:
-		return "Badges"
-	case RankKeyBadgesFoil:
-		return "Foil Badges"
-	case RankKeyGames:
-		return "Games"
-	case RankKeyAchievements:
-		return "Achievements"
-	case RankKeyPlaytime:
-		return "Playtime"
-	}
-	return ""
-}
-
-func (rk RankMetric) Value(p Player) int {
-	switch rk {
-	case RankKeyLevel:
-		return p.Level
-	case RankKeyBadges:
-		return p.BadgesCount
-	case RankKeyBadgesFoil:
-		return p.BadgesFoilCount
-	case RankKeyGames:
-		return p.GamesCount
-	case RankKeyAchievements:
-		return p.AchievementCount
-	case RankKeyPlaytime:
-		return p.PlayTime
-	}
-	return 0
-}
-
-func (rk RankMetric) Letter() string {
-	return string(rk)
-}
-
-const (
-	RankKeyLevel        RankMetric = "l"
-	RankKeyBadges       RankMetric = "b"
-	RankKeyBadgesFoil   RankMetric = "d"
-	RankKeyGames        RankMetric = "g"
-	RankKeyPlaytime     RankMetric = "p"
-	RankKeyAchievements RankMetric = "a"
-)
-
-// Mongo col -> Rank key
-var PlayerRankFields = map[string]RankMetric{
-	"level":             RankKeyLevel,
-	"games_count":       RankKeyGames,
-	"badges_count":      RankKeyBadges,
-	"badges_foil_count": RankKeyBadgesFoil,
-	"play_time":         RankKeyPlaytime,
-	"achievement_count": RankKeyAchievements,
-}
-
-// Rank key -> Influx col
-var PlayerRankFieldsInflux = map[RankMetric]string{
-	RankKeyLevel:        influx.InfPlayersLevelRank.String(),
-	RankKeyGames:        influx.InfPlayersGamesRank.String(),
-	RankKeyBadges:       influx.InfPlayersBadgesRank.String(),
-	RankKeyBadgesFoil:   influx.InfPlayersBadgesFoilRank.String(),
-	RankKeyPlaytime:     influx.InfPlayersPlaytimeRank.String(),
-	RankKeyAchievements: influx.InfPlayersAchievementsRank.String(),
-}
 
 const (
 	PrivacyState            helpers.Bits = 1 << iota // Friends list, badges, Steam Level, showcases, comments, and group membership.
@@ -134,7 +62,7 @@ type Player struct {
 	PlayTimeLinux            int                        `bson:"play_time_linux"`
 	PrimaryGroupID           string                     `bson:"primary_clan_id_string"`
 	Private                  bool                       `bson:"private"`
-	Ranks                    map[string]int             `bson:"ranks"`
+	Ranks                    map[helpers.RankMetric]int `bson:"ranks"`
 	RecentAppsCount          int                        `bson:"recent_apps_count"`
 	Removed                  bool                       `bson:"removed"` // Removed from Steam
 	AwardsGivenCount         int                        `bson:"awards_given_count"`
@@ -153,7 +81,7 @@ func (player Player) BSON() bson.D {
 
 	// Stops ranks saving as null
 	if player.Ranks == nil {
-		player.Ranks = map[string]int{}
+		player.Ranks = map[helpers.RankMetric]int{}
 	}
 
 	player.UpdatedAt = time.Now()
@@ -417,7 +345,7 @@ func (player Player) GetBadgesFoil() int {
 	return player.BadgesFoilCount
 }
 
-func (player Player) GetRanks() map[string]int {
+func (player Player) GetRanks() map[helpers.RankMetric]int {
 	return player.Ranks
 }
 
@@ -426,7 +354,7 @@ func ensurePlayerIndexes() {
 	var indexModels []mongo.IndexModel
 
 	// These are for the ranking cron
-	for col := range PlayerRankFields {
+	for col := range helpers.PlayerRankFields {
 		indexModels = append(indexModels, mongo.IndexModel{
 			Keys: bson.D{
 				{col, -1},

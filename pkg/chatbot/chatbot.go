@@ -171,7 +171,7 @@ type Player interface {
 	GetLevel() int
 	GetBadges() int
 	GetBadgesFoil() int
-	GetRanks() map[string]int
+	GetRanks() map[helpers.RankMetric]int
 }
 
 func getAppEmbed(commandID string, app App, code steamapi.ProductCC) *discordgo.MessageEmbed {

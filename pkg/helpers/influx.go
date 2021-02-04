@@ -1,4 +1,4 @@
-package influx
+package helpers
 
 var (
 	InfPlayersAchievements     = Field{Field: "achievements"}

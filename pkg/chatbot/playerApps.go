@@ -9,7 +9,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	influxHelper "github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/mongo"
 )
 
@@ -79,7 +78,7 @@ func (c CommandPlayerApps) Output(_ string, _ steamapi.ProductCC, inputs map[str
 
 	// Sucess response
 	var rank = "Unranked"
-	if val, ok := player.Ranks[string(mongo.RankKeyGames)]; ok {
+	if val, ok := player.Ranks[helpers.RankKeyGames]; ok {
 		rank = helpers.OrdinalComma(val)
 	}
 
@@ -90,7 +89,7 @@ func (c CommandPlayerApps) Output(_ string, _ steamapi.ProductCC, inputs map[str
 			Thumbnail: &discordgo.MessageEmbedThumbnail{URL: player.GetAvatarAbsolute(), Width: 184, Height: 184},
 			Footer:    getFooter(),
 			Color:     greenHexDec,
-			Image:     &discordgo.MessageEmbedImage{URL: charts.GetPlayerChart(c.ID(), player.ID, influxHelper.InfPlayersGames, "Games")},
+			Image:     &discordgo.MessageEmbedImage{URL: charts.GetPlayerChart(c.ID(), player.ID, helpers.InfPlayersGames, "Games")},
 			Fields: []*discordgo.MessageEmbedField{
 				{
 					Name:   "Games",

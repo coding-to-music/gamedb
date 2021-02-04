@@ -127,3 +127,56 @@ func GetPlayerMaxFriends(level int) (ret int) {
 	}
 	return ret
 }
+
+type RankMetric string
+
+func (rk RankMetric) String() string {
+	switch rk {
+	case RankKeyLevel:
+		return "Level"
+	case RankKeyBadges:
+		return "Badges"
+	case RankKeyBadgesFoil:
+		return "Foil Badges"
+	case RankKeyGames:
+		return "Games"
+	case RankKeyAchievements:
+		return "Achievements"
+	case RankKeyPlaytime:
+		return "Playtime"
+	}
+	return ""
+}
+
+func (rk RankMetric) Letter() string {
+	return string(rk)
+}
+
+const (
+	RankKeyLevel        RankMetric = "l"
+	RankKeyBadges       RankMetric = "b"
+	RankKeyBadgesFoil   RankMetric = "d"
+	RankKeyGames        RankMetric = "g"
+	RankKeyPlaytime     RankMetric = "p"
+	RankKeyAchievements RankMetric = "a"
+)
+
+// Mongo col -> Rank key
+var PlayerRankFields = map[string]RankMetric{
+	"level":             RankKeyLevel,
+	"games_count":       RankKeyGames,
+	"badges_count":      RankKeyBadges,
+	"badges_foil_count": RankKeyBadgesFoil,
+	"play_time":         RankKeyPlaytime,
+	"achievement_count": RankKeyAchievements,
+}
+
+// Rank key -> Influx col
+var PlayerRankFieldsInflux = map[RankMetric]string{
+	RankKeyLevel:        InfPlayersLevelRank.String(),
+	RankKeyGames:        InfPlayersGamesRank.String(),
+	RankKeyBadges:       InfPlayersBadgesRank.String(),
+	RankKeyBadgesFoil:   InfPlayersBadgesFoilRank.String(),
+	RankKeyPlaytime:     InfPlayersPlaytimeRank.String(),
+	RankKeyAchievements: InfPlayersAchievementsRank.String(),
+}

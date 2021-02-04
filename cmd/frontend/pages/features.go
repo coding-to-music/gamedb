@@ -24,7 +24,7 @@ func featuresHandler(w http.ResponseWriter, r *http.Request) {
 
 	t := uniqueTemplate{}
 	t.fill(w, r, "features", "Global Steam Features", "Global Steam Features")
-	t.PlayerMetrics = mongo.PlayerRankFields
+	t.PlayerMetrics = helpers.PlayerRankFields
 	t.SpecialBadges = helpers.BuiltInSpecialBadges
 	t.EventBagdes = helpers.BuiltInEventBadges
 	t.Countries, err = elasticsearch.AggregatePlayerCountries()
@@ -55,7 +55,7 @@ func featuresHandler(w http.ResponseWriter, r *http.Request) {
 
 type uniqueTemplate struct {
 	globalTemplate
-	PlayerMetrics map[string]mongo.RankMetric
+	PlayerMetrics map[string]helpers.RankMetric
 	SpecialBadges map[int]helpers.BuiltInbadge
 	EventBagdes   map[int]helpers.BuiltInbadge
 	Countries     map[string]int64

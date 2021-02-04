@@ -324,34 +324,50 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	t.User = user
 	t.Aliases = aliases
 
-	for _, v := range mongo.PlayerRankFields {
+	for _, metric := range helpers.PlayerRankFields {
 
 		rank := playerRankTemplate{}
-		rank.Metric = v
-		rank.Value = v.Value(player)
+		rank.Metric = metric
 
-		if position, ok := player.Ranks[string(v)]; ok {
+		switch metric {
+		case helpers.RankKeyLevel:
+			rank.Value = player.Level
+		case helpers.RankKeyBadges:
+			rank.Value = player.BadgesCount
+		case helpers.RankKeyBadgesFoil:
+			rank.Value = player.BadgesFoilCount
+		case helpers.RankKeyGames:
+			rank.Value = player.GamesCount
+		case helpers.RankKeyAchievements:
+			rank.Value = player.AchievementCount
+		case helpers.RankKeyPlaytime:
+			rank.Value = player.PlayTime
+		default:
+			rank.Value = 0
+		}
+
+		if position, ok := player.Ranks[metric]; ok {
 			rank.Geos = append(rank.Geos, playerRankGeoTemplate{
 				Geo:   "Global",
 				Rank:  position,
 				Total: playersCount,
 			})
 		}
-		if position, ok := player.Ranks[string(v)+"_continent-"+player.ContinentCode]; ok {
+		if position, ok := player.Ranks[metric+helpers.RankMetric("_continent-"+player.ContinentCode)]; ok {
 			rank.Geos = append(rank.Geos, playerRankGeoTemplate{
 				Geo:   "Continent",
 				Rank:  position,
 				Total: playersContinentCount,
 			})
 		}
-		if position, ok := player.Ranks[string(v)+"_country-"+player.CountryCode]; ok {
+		if position, ok := player.Ranks[metric+helpers.RankMetric("_country-"+player.CountryCode)]; ok {
 			rank.Geos = append(rank.Geos, playerRankGeoTemplate{
 				Geo:   "Country",
 				Rank:  position,
 				Total: playersCountryCount,
 			})
 		}
-		if position, ok := player.Ranks[string(v)+"_state-"+player.StateCode]; ok {
+		if position, ok := player.Ranks[metric+helpers.RankMetric("_state-"+player.StateCode)]; ok {
 			rank.Geos = append(rank.Geos, playerRankGeoTemplate{
 				Geo:   "State",
 				Rank:  position,
@@ -370,14 +386,14 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type playerRankTemplate struct {
-	Metric mongo.RankMetric
+	Metric helpers.RankMetric
 	Geos   []playerRankGeoTemplate
 	Value  int
 }
 
 func (rank playerRankTemplate) GetValue() string {
 
-	if rank.Metric == mongo.RankKeyPlaytime {
+	if rank.Metric == helpers.RankKeyPlaytime {
 		return helpers.GetTimeLong(rank.Value, 2)
 	}
 	return humanize.Comma(int64(rank.Value))
@@ -1177,24 +1193,24 @@ func playersHistoryAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fields := []influx.Field{
-		influx.InfPlayersAchievements,
-		influx.InfPlayersBadges,
-		influx.InfPlayersBadgesFoil,
-		influx.InfPlayersComments,
-		influx.InfPlayersFriends,
-		influx.InfPlayersGames,
-		influx.InfPlayersLevel,
-		influx.InfPlayersPlaytime,
+	fields := []helpers.Field{
+		helpers.InfPlayersAchievements,
+		helpers.InfPlayersBadges,
+		helpers.InfPlayersBadgesFoil,
+		helpers.InfPlayersComments,
+		helpers.InfPlayersFriends,
+		helpers.InfPlayersGames,
+		helpers.InfPlayersLevel,
+		helpers.InfPlayersPlaytime,
 
-		influx.InfPlayersAchievementsRank,
-		influx.InfPlayersBadgesRank,
-		influx.InfPlayersBadgesFoilRank,
-		influx.InfPlayersCommentsRank,
-		influx.InfPlayersFriendsRank,
-		influx.InfPlayersGamesRank,
-		influx.InfPlayersLevelRank,
-		influx.InfPlayersPlaytimeRank,
+		helpers.InfPlayersAchievementsRank,
+		helpers.InfPlayersBadgesRank,
+		helpers.InfPlayersBadgesFoilRank,
+		helpers.InfPlayersCommentsRank,
+		helpers.InfPlayersFriendsRank,
+		helpers.InfPlayersGamesRank,
+		helpers.InfPlayersLevelRank,
+		helpers.InfPlayersPlaytimeRank,
 	}
 
 	builder := influxql.NewBuilder()
@@ -1241,9 +1257,9 @@ func playerAchievementInfluxAjaxHandler(w http.ResponseWriter, r *http.Request) 
 	err = memcache.GetSetInterface(memcache.ItemPlayerAchievementsInflux(playerID), &hc, func() (interface{}, error) {
 
 		builder := influxql.NewBuilder()
-		builder.AddSelect("MAX("+influx.InfPlayersAchievements.String()+")", "max_"+influx.InfPlayersAchievements.String())
-		builder.AddSelect("MAX("+influx.InfPlayersAchievements100.String()+")", "max_"+influx.InfPlayersAchievements100.String())
-		builder.AddSelect("MAX("+influx.InfPlayersAchievementsApps.String()+")", "max_"+influx.InfPlayersAchievementsApps.String())
+		builder.AddSelect("MAX("+helpers.InfPlayersAchievements.String()+")", "max_"+helpers.InfPlayersAchievements.String())
+		builder.AddSelect("MAX("+helpers.InfPlayersAchievements100.String()+")", "max_"+helpers.InfPlayersAchievements100.String())
+		builder.AddSelect("MAX("+helpers.InfPlayersAchievementsApps.String()+")", "max_"+helpers.InfPlayersAchievementsApps.String())
 		builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementPlayers.String())
 		builder.AddWhere("player_id", "=", id)
 		builder.AddGroupByTime("1d")

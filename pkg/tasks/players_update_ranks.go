@@ -1,8 +1,8 @@
 package tasks
 
 import (
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
-	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 )
 
@@ -29,7 +29,7 @@ func (c PlayersUpdateRanks) Cron() TaskTime {
 func (c PlayersUpdateRanks) work() (err error) {
 
 	// Global
-	for read, write := range mongo.PlayerRankFields {
+	for read, write := range helpers.PlayerRankFields {
 		err = queue.ProducePlayerRank(queue.PlayerRanksMessage{
 			SortColumn: read,
 			ObjectKey:  string(write),
@@ -41,7 +41,7 @@ func (c PlayersUpdateRanks) work() (err error) {
 
 	// Continents
 	for _, continent := range i18n.Continents {
-		for read, write := range mongo.PlayerRankFields {
+		for read, write := range helpers.PlayerRankFields {
 			err = queue.ProducePlayerRank(queue.PlayerRanksMessage{
 				SortColumn: read,
 				ObjectKey:  string(write) + "_continent-" + continent.Key,
@@ -55,7 +55,7 @@ func (c PlayersUpdateRanks) work() (err error) {
 
 	// Countries
 	for cc := range i18n.States {
-		for read, write := range mongo.PlayerRankFields {
+		for read, write := range helpers.PlayerRankFields {
 			err = queue.ProducePlayerRank(queue.PlayerRanksMessage{
 				SortColumn: read,
 				ObjectKey:  string(write) + "_country-" + cc,
@@ -70,7 +70,7 @@ func (c PlayersUpdateRanks) work() (err error) {
 	// Rank by State
 	for cc, states := range i18n.States {
 		for state := range states {
-			for read, write := range mongo.PlayerRankFields {
+			for read, write := range helpers.PlayerRankFields {
 				err = queue.ProducePlayerRank(queue.PlayerRanksMessage{
 					SortColumn: read,
 					ObjectKey:  string(write) + "_state-" + state,
