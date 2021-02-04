@@ -139,7 +139,7 @@ func getFooter() *discordgo.MessageEmbedFooter {
 
 	footer := &discordgo.MessageEmbedFooter{
 		Text:         "globalsteam.online/discord for all commands",
-		IconURL:      config.C.GameDBDomain + "/assets/img/sa-bg-32x32.png",
+		IconURL:      "https://globalsteam.online/assets/img/sa-bg-32x32.png", // Use domain to hotlink
 		ProxyIconURL: "",
 	}
 
