@@ -99,20 +99,17 @@ func GetPlayer(search string) (player TempPlayer, err error) {
 
 		defer wg.Done()
 
-		if player.PersonaName == "" {
-
-			summary, err := GetSteam().GetPlayer(player.ID)
-			if err == steamapi.ErrProfileMissing {
-				return
-			}
-			if err = AllowSteamCodes(err); err != nil {
-				LogSteamError(err)
-				return
-			}
-
-			player.PersonaName = summary.PersonaName
-			player.Avatar = summary.AvatarHash
+		summary, err := GetSteam().GetPlayer(player.ID)
+		if err == steamapi.ErrProfileMissing {
+			return
 		}
+		if err = AllowSteamCodes(err); err != nil {
+			LogSteamError(err)
+			return
+		}
+
+		player.PersonaName = summary.PersonaName
+		player.Avatar = summary.AvatarHash
 	}()
 
 	wg.Add(1)
@@ -120,23 +117,20 @@ func GetPlayer(search string) (player TempPlayer, err error) {
 
 		defer wg.Done()
 
-		if player.Games == 0 {
-
-			resp, err := GetSteam().GetOwnedGames(player.ID)
-			err = AllowSteamCodes(err)
-			if err != nil {
-				LogSteamError(err)
-				return
-			}
-
-			var playtime = 0
-			for _, v := range resp.Games {
-				playtime += v.PlaytimeForever
-			}
-
-			player.PlayTime = playtime
-			player.Games = len(resp.Games)
+		resp, err := GetSteam().GetOwnedGames(player.ID)
+		err = AllowSteamCodes(err)
+		if err != nil {
+			LogSteamError(err)
+			return
 		}
+
+		var playtime = 0
+		for _, v := range resp.Games {
+			playtime += v.PlaytimeForever
+		}
+
+		player.PlayTime = playtime
+		player.Games = len(resp.Games)
 	}()
 
 	wg.Add(1)
@@ -144,19 +138,16 @@ func GetPlayer(search string) (player TempPlayer, err error) {
 
 		defer wg.Done()
 
-		if player.Games == 0 {
-
-			resp, err := GetSteam().GetPlayerBans(player.ID)
-			err = AllowSteamCodes(err)
-			if err != nil {
-				LogSteamError(err)
-				return
-			}
-
-			player.LastBan = time.Now().Add(time.Hour * 24 * time.Duration(resp.DaysSinceLastBan) * -1)
-			player.GameBans = resp.NumberOfGameBans
-			player.VACBans = resp.NumberOfVACBans
+		resp, err := GetSteam().GetPlayerBans(player.ID)
+		err = AllowSteamCodes(err)
+		if err != nil {
+			LogSteamError(err)
+			return
 		}
+
+		player.LastBan = time.Now().Add(time.Hour * 24 * time.Duration(resp.DaysSinceLastBan) * -1)
+		player.GameBans = resp.NumberOfGameBans
+		player.VACBans = resp.NumberOfVACBans
 	}()
 
 	// 	wg.Add(1)
