@@ -56,11 +56,7 @@ func (command ChatBotCommand) GetCommand() string {
 	}
 
 	if strings.HasPrefix(command.Message, "!") {
-		return strings.Replace(command.Message, "!", "/", 1)
-	}
-
-	if strings.HasPrefix(command.Message, ".") {
-		return strings.Replace(command.Message, ".", "/", 1)
+		return strings.Replace(command.Message, "!", ".", 1)
 	}
 
 	return command.Message
