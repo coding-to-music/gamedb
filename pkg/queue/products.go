@@ -127,7 +127,7 @@ func getAppDepots(kv steamvdf.KeyValue) (depots pics.Depots) {
 					depot.AllowAddRemoveWhileRunning = true
 				}
 			default:
-				log.WarnS("GetAppDepots missing case: " + vv.Key)
+				log.WarnS("GetAppDepots missing case", zap.String("key", vv.Key), zap.String("val", vv.Value))
 			}
 		}
 
@@ -176,7 +176,7 @@ func getAppDepotBranches(kv steamvdf.KeyValue) (branches []pics.AppDepotBranches
 					branch.LCSRequired = true
 				}
 			default:
-				log.WarnS("GetAppDepotBranches missing case: " + vv.Key)
+				log.Warn("GetAppDepotBranches missing case", zap.String("key", vv.Key), zap.String("val", vv.Value))
 			}
 		}
 
