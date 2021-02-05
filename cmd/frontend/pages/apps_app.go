@@ -485,7 +485,7 @@ func appSamdOwnersHandler(w http.ResponseWriter, r *http.Request) {
 
 	//
 	var query = datatable.NewDataTableQuery(r, false)
-	var response = datatable.NewDataTablesResponse(r, query, 0, 0, nil)
+	var response = datatable.NewDataTablesResponse(r, query, int64(len(orderedApps)), int64(len(orderedApps)), nil)
 	for _, app := range orderedApps {
 
 		response.AddRow([]interface{}{
