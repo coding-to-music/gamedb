@@ -444,7 +444,11 @@ if ($playerPage.length > 0) {
                             $('#add-missing-friends').removeClass('d-none');
                         }
 
-                        return row[4].toLocaleString();
+                        if (row[4]) {
+                            return row[4].toLocaleString();
+                        }
+
+                        return $lockIcon;
                     },
                     'orderSequence': ['desc', 'asc'],
                 },

@@ -68,7 +68,10 @@ if ($groupPage.length > 0) {
                 {
                     "targets": 3,
                     "render": function (data, type, row) {
-                        return row[9].toLocaleString();
+                        if (row[9]) {
+                            return row[9].toLocaleString();
+                        }
+                        return $lockIcon;
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');

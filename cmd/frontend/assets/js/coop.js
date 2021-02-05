@@ -47,7 +47,10 @@ if ($('#coop-page').length > 0) {
                 {
                     "targets": 2,
                     "render": function (data, type, row) {
-                        return row[6].toLocaleString();
+                        if (row[6]) {
+                            return row[6].toLocaleString();
+                        }
+                        return $lockIcon;
                     },
                     "orderable": false,
                 },
