@@ -93,7 +93,7 @@ func appsPlayersHandler(message *rabbit.Message) {
 	// Send to Elastic
 	err = elasticsearch.IndexPlayer(player)
 	if err != nil {
-		log.ErrS(err)
+		log.Err("Indexing player", zap.Error(err), zap.Int64("app", mongoPlayer.ID))
 		sendToRetryQueue(message)
 		return
 	}
