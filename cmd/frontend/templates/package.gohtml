@@ -38,11 +38,6 @@
                             <a class="nav-link" data-toggle="tab" href="#prices" role="tab">Prices</a>
                         </li>
                     {{ end }}
-                    {{ if .ShowDev }}
-                        <li class="nav-item">
-                            <a class="nav-link" data-toggle="tab" href="#dev" role="tab">Dev</a>
-                        </li>
-                    {{ end }}
                 </ul>
             </div>
             <div class="card-body">
@@ -96,6 +91,14 @@
                                             <th>Platforms</th>
                                             <td class="platforms">{{ .Package.GetPlatformImages }}</td>
                                         </tr>
+                                        <tr>
+                                            <th>Update on Global Steam</th>
+                                            <td>{{ .Package.GetUpdatedNice }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Update on Steam</th>
+                                            <td>{{ .Package.GetPICSUpdatedNice }}</td>
+                                        </tr>
                                     </table>
                                 </div>
 
@@ -120,6 +123,39 @@
                                         <td>{{ .Price.GetIndividual }}</td>
                                     </tr>
                                 </table>
+
+                            </div>
+                            <div class="col-12">
+
+                                <h5>PICS Info</h5>
+
+                                <div class="table-responsive">
+                                    <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
+                                        <thead class="thead-light">
+                                        <tr>
+                                            <th scope="col" class="thin">Section</th>
+                                            <th scope="col">Key</th>
+                                            <th scope="col">Value</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {{ range .Extended }}
+                                            <tr>
+                                                <td>Extended</td>
+                                                <td><a href="/product-keys?type=package&key={{ .Key }}&value={{ .Value }}">{{ .Key }}</a></td>
+                                                <td class="{{ .TDClass }}">{{ .ValueFormatted }}</td>
+                                            </tr>
+                                        {{ end }}
+                                        {{ range $key, $value := .Controller }}
+                                            <tr>
+                                                <td>Controller</td>
+                                                <td>{{ $key }}</td>
+                                                <td>{{ $value }}</td>
+                                            </tr>
+                                        {{ end }}
+                                        </tbody>
+                                    </table>
+                                </div>
 
                             </div>
                         </div>
@@ -237,96 +273,6 @@
                                     </tr>
                                 {{ end }}
                             </table>
-                        </div>
-
-                    </div>
-
-                    {{/* Dev */}}
-                    <div class="tab-pane" id="dev" role="tabpanel">
-
-                        <div class="card">
-                            <div class="card-header">
-
-                                <ul class="nav nav-tabs card-header-tabs" role="tablist">
-                                    <li class="nav-item">
-                                        <a class="nav-link active" data-toggle="tab" href="#dev-info" role="tab">Info</a>
-                                    </li>
-                                    {{if gt (len .Package.Depots) 0}}
-                                        <li class="nav-item">
-                                            <a class="nav-link" data-toggle="tab" href="#dev-depots" role="tab">Depots ({{ len .Package.Depots }})</a>
-                                        </li>
-                                    {{ end }}
-                                </ul>
-
-                            </div>
-                            <div class="card-body">
-                                <div class="tab-content" id="tab-content-dev">
-
-                                    {{/* Info */}}
-                                    <div class="tab-pane show active" id="dev-info" role="tabpanel">
-
-                                        <div class="table-responsive">
-                                            <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
-                                                <thead class="thead-light">
-                                                <tr>
-                                                    <th scope="col">Key</th>
-                                                    <th scope="col" class="thin">Section</th>
-                                                    <th scope="col">Value</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                <tr>
-                                                    <td class="thin">updated_steam</td>
-                                                    <td>Other</td>
-                                                    <td>{{ .Package.GetPICSUpdatedNice }}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="thin">updated_global_steam</td>
-                                                    <td>Other</td>
-                                                    <td>{{ .Package.GetUpdatedNice }}</td>
-                                                </tr>
-                                                {{ range .Extended }}
-                                                    <tr>
-                                                        <td><a href="/product-keys?type=package&key={{ .Key }}&value={{ .Value }}">{{ .Key }}</a></td>
-                                                        <td>Extended</td>
-                                                        <td class="{{ .TDClass }}">{{ .ValueFormatted }}</td>
-                                                    </tr>
-                                                {{ end }}
-                                                {{ range $key, $value := .Controller }}
-                                                    <tr>
-                                                        <td>{{ $key }}</td>
-                                                        <td>Controller</td>
-                                                        <td>{{ $value }}</td>
-                                                    </tr>
-                                                {{ end }}
-                                                </tbody>
-                                            </table>
-                                        </div>
-
-                                    </div>
-
-                                    {{/* Depots */}}
-                                    <div class="tab-pane" id="dev-depots" role="tabpanel">
-
-                                        <div class="table-responsive">
-                                            <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
-                                                <thead class="thead-light">
-                                                <tr>
-                                                    <th scope="col">ID</th>
-                                                </tr>
-                                                </thead>
-                                                {{ range $key, $value := .Package.Depots }}
-                                                    <tr>
-                                                        <td>{{ $value }}</td>
-                                                    </tr>
-                                                {{ end }}
-                                            </table>
-                                        </div>
-
-                                    </div>
-
-                                </div>
-                            </div>
                         </div>
 
                     </div>
