@@ -25,7 +25,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/steam"
 	"github.com/go-chi/chi"
-	"github.com/gosimple/slug"
 	"github.com/olivere/elastic/v7"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.uber.org/zap"
@@ -271,12 +270,10 @@ func homeNewsHandler(w http.ResponseWriter, r *http.Request) {
 		t.News = append(t.News, homeNewsItemTemplate{
 			Title:    article.Title,
 			Contents: article.GetBodyTruncated(),
-			Link:     "/games/" + fmt.Sprint(article.AppID) + "/" + slug.Make(article.AppName) + "#news," + strconv.FormatInt(article.ID, 10),
+			Link:     helpers.GetAppPath(article.AppID, article.AppName) + "#news," + strconv.FormatInt(article.ID, 10),
 			Image:    template.HTMLAttr(article.GetHeaderImage()),
 			Date:     article.Time,
 		})
-
-		t.NewsID = article.ID
 	}
 
 	returnTemplate(w, r, t)
@@ -284,8 +281,7 @@ func homeNewsHandler(w http.ResponseWriter, r *http.Request) {
 
 type homeNewsTemplate struct {
 	globalTemplate
-	News   []homeNewsItemTemplate
-	NewsID int64
+	News []homeNewsItemTemplate
 }
 
 type homeNewsItemTemplate struct {

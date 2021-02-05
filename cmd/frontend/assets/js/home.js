@@ -72,24 +72,19 @@ if ($homePage.length > 0) {
 
     function loadNewsSection() {
 
-        const $news = $('#news');
+        const $news = $('#news .card-body');
 
         $.ajax({
             type: "GET",
             url: '/home/news.html',
             dataType: 'html',
             success: function (data, textStatus, jqXHR) {
-
-                if (data === null) {
-                    data = '';
+                if (data) {
+                    $news.html(data);
+                    observeLazyImages($news.find('img[data-lazy]'));
                 }
-
-                $news.html(data);
-                observeLazyImages($news.find('img[data-lazy]'));
             },
         });
-
-        observeLazyImages($news.find('img[data-lazy]'));
     }
 
     function homeNewPlayers() {
