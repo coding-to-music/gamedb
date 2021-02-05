@@ -165,6 +165,8 @@ func getAppDepotBranches(kv steamvdf.KeyValue) (branches []pics.AppDepotBranches
 				branch.UnlockForSubs = vv.Value
 			case "description":
 				branch.Description = vv.Value
+			case "sc_schinese":
+				branch.SCSchinese = vv.Value
 			case "pwdrequired":
 				if vv.Value == "1" {
 					branch.PasswordRequired = true
@@ -226,6 +228,8 @@ func setAppLaunchItem(kv steamvdf.KeyValue, launchItem *pics.PICSAppConfigLaunch
 			launchItem.VRMode = child.Value
 		case "description_loc":
 			launchItem.DescriptionLocation = child.Value
+		case "realm":
+			launchItem.Realm = child.Value
 		case "ownsdlc":
 			dlcSlice := strings.Split(child.Value, ",")
 			for _, v := range dlcSlice {

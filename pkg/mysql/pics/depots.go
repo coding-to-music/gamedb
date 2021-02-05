@@ -30,6 +30,7 @@ type AppDepotBranches struct {
 	LCSRequired      bool   `json:"lcsrequired"`
 	DefaultForSubs   string `json:"defaultforsubs"`
 	UnlockForSubs    string `json:"unlockforsubs"`
+	SCSchinese       string `json:"sc_schinese"`
 }
 
 type DepotConfig struct {

@@ -14,4 +14,5 @@ type PICSAppConfigLaunchItem struct {
 	VRMode              string      `json:"vrmode"`
 	VACModuleFilename   string      `json:"vacmodulefilename"`
 	DescriptionLocation string      `json:"description_loc"`
+	Realm               string      `json:"realm"`
 }
