@@ -286,7 +286,7 @@ func DeleteAndRebuildPlayersIndex() {
 				"awards_given_points":    fieldTypeInt32,
 				"awards_received_count":  fieldTypeInt32,
 				"awards_received_points": fieldTypeInt32,
-				"ranks":                  map[string]interface{}{"type": "object", "properties": rankProperties},
+				"ranks":                  fieldTypeDisabled,
 			},
 		},
 	}
