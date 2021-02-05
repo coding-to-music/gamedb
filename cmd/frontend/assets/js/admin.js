@@ -151,7 +151,7 @@ if ($('#admin-users-page').length > 0) {
                 },
                 'orderable': false,
             },
-            // level
+            // User level
             {
                 'targets': 4,
                 'render': function (data, type, row) {
