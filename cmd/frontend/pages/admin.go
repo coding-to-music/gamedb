@@ -542,7 +542,7 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 
 		ua := r.UserAgent()
 
-		//
+		// Apps
 		var appIDs []int
 		if val := r.PostForm.Get("app-id"); val != "" {
 
@@ -559,6 +559,7 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
+		// Apps since timestamp
 		if val := r.PostForm.Get("apps-ts"); val != "" {
 
 			log.InfoS("Queueing apps")
@@ -583,6 +584,7 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
+		// Packages
 		var packageIDs []int
 		if val := r.PostForm.Get("package-id"); val != "" {
 
@@ -599,6 +601,7 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
+		// Players
 		if val := r.PostForm.Get("player-id"); val != "" {
 
 			vals := strings.Split(val, ",")
@@ -618,6 +621,25 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
+		// Players search
+		if val := r.PostForm.Get("player-id-search"); val != "" {
+
+			for _, val := range strings.Split(val, ",") {
+
+				val = strings.TrimSpace(val)
+
+				playerID, err := strconv.ParseInt(val, 10, 64)
+				if err == nil {
+					err = queue.ProducePlayerSearch(nil, playerID)
+					err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
+					if err != nil {
+						log.Err("Producing player search", zap.Error(err), zap.Int64("id", playerID))
+					}
+				}
+			}
+		}
+
+		// Bundles
 		if val := r.PostForm.Get("bundle-id"); val != "" {
 
 			vals := strings.Split(val, ",")
@@ -638,6 +660,7 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
+		// Test
 		if val := r.PostForm.Get("test-id"); val != "" {
 
 			val = strings.TrimSpace(val)
@@ -656,6 +679,7 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
+		// Groups
 		if val := r.PostForm.Get("group-id"); val != "" {
 
 			vals := strings.Split(val, ",")
@@ -672,6 +696,7 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
+		// Group members
 		if val := r.PostForm.Get("group-members"); val != "" {
 
 			vals := strings.Split(val, ",")
@@ -706,6 +731,7 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
+		//
 		err = queue.ProduceSteam(queue.SteamMessage{AppIDs: appIDs, PackageIDs: packageIDs})
 		if err != nil {
 			log.Err(err.Error(), zap.Ints("app-ids", appIDs), zap.Ints("pack-ids", packageIDs))
