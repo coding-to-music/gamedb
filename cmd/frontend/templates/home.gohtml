@@ -140,7 +140,7 @@
 
             <div class="col-12 col-md-6">
                 <div class="card border-0 games mb-4">
-                    <h5 class="card-header text-center">Top Games</h5>
+                    <h5 class="card-header">Top Games</h5>
                     <div class="card-body p-0">
                         <div class="row no-gutters">
                             {{ range $key, $value := .TopGames }}
@@ -153,12 +153,12 @@
                             {{ end }}
                         </div>
                     </div>
-                    <a class="card-footer text-center" href="/games">More Games</a>
+                    <a class="card-footer" href="/games">More Games</a>
                 </div>
             </div>
             <div class="col-12 col-md-6 col-lg-3 d-lg-none">
                 <div class="card border-0 games mb-4">
-                    <h5 class="card-header text-center">Top New Games</h5>
+                    <h5 class="card-header">Top New Games</h5>
                     <div class="card-body p-0">
                         <div class="row no-gutters">
                             {{ range $key, $value := .NewGames }}
@@ -171,12 +171,12 @@
                             {{ end }}
                         </div>
                     </div>
-                    <a class="card-footer text-center" href="/games/new-releases">More New</a>
+                    <a class="card-footer" href="/games/new-releases">More New</a>
                 </div>
             </div>
             <div class="col-12 col-md-6 col-lg-3 d-lg-none">
                 <div class="card border-0 games mb-4">
-                    <h5 class="card-header text-center">Top Upcoming</h5>
+                    <h5 class="card-header">Top Upcoming</h5>
                     <div class="card-body p-0">
                         <div class="row no-gutters">
                             {{ range $key, $value := .Upcoming }}
@@ -189,12 +189,12 @@
                             {{ end }}
                         </div>
                     </div>
-                    <a class="card-footer text-center" href="/games/upcoming">More Upcoming</a>
+                    <a class="card-footer" href="/games/upcoming">More Upcoming</a>
                 </div>
             </div>
             <div class="col-12 col-md-6">
                 <div class="card border-0 games mb-4">
-                    <h5 class="card-header text-center">Top Sellers</h5>
+                    <h5 class="card-header">Top Sellers</h5>
                     <div class="card-body p-0">
                         <div class="row no-gutters">
                             {{ range $key, $value := .TopSellers }}
@@ -210,7 +210,7 @@
                             {{ end }}
                         </div>
                     </div>
-                    <a class="card-footer text-center" href="/games">More Games</a>
+                    <a class="card-footer" href="/games">More Games</a>
                 </div>
             </div>
 
