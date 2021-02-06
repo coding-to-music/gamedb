@@ -44,8 +44,17 @@ func playerAddHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			search = strings.TrimSpace(search)
-			search = strings.Split(search, "/id/")[0]
-			search = strings.Split(search, "/profiles/")[0]
+
+			split := strings.Split(search, "/id/")
+			if len(split) > 1 {
+				search = split[1]
+			}
+
+			split = strings.Split(search, "/profiles/")
+			if len(split) > 1 {
+				search = split[1]
+			}
+
 			search = strings.Split(search, "/")[0]
 
 			// Check if search term is a Steam ID
