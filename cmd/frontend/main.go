@@ -12,9 +12,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gamedb/gamedb/cmd/frontend/handlers"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/email"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
-	"github.com/gamedb/gamedb/cmd/frontend/pages"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/influx"
@@ -70,7 +70,7 @@ func main() {
 	// Init modules
 	queue.Init(queue.FrontendDefinitions)
 	session.Init()
-	pages.Init()
+	handlers.Init()
 	email.Init()
 
 	// Clear caches on process restart
@@ -94,57 +94,57 @@ func main() {
 	r.Use(middleware.RateLimiterWait(time.Second, 10))
 
 	// Pages
-	r.Mount("/{type:(categories|developers|genres|publishers|tags)}", pages.StatsListRouter())
-	r.Mount("/achievements", pages.AchievementsRouter())
-	r.Mount("/admin", pages.AdminRouter())
-	r.Mount("/api", pages.APIRouter())
-	r.Mount("/badges", pages.BadgesRouter())
-	r.Mount("/bundles", pages.BundlesRouter())
-	r.Mount("/changes", pages.ChangesRouter())
-	r.Mount("/commits", pages.CommitsRouter())
-	r.Mount("/contact", pages.ContactRouter())
-	r.Mount("/discord-bot", pages.ChatBotRouter())
-	r.Mount("/discord-server", pages.ChatRouter())
-	r.Mount("/donate", pages.DonateRouter())
-	r.Mount("/experience", pages.ExperienceRouter())
-	r.Mount("/features", pages.FeaturesRouter())
-	r.Mount("/forgot", pages.ForgotRouter())
-	r.Mount("/franchise", pages.FranchiseRouter())
-	r.Mount("/games", pages.GamesRouter())
-	r.Mount("/groups", pages.GroupsRouter())
-	r.Mount("/health-check", pages.HealthCheckRouter())
-	r.Mount("/home", pages.HomeRouter())
-	r.Mount("/info", pages.InfoRouter())
-	r.Mount("/login", pages.LoginRouter())
-	r.Mount("/logout", pages.LogoutRouter())
-	r.Mount("/news", pages.NewsRouter())
-	r.Mount("/oauth", pages.OauthRouter())
-	r.Mount("/packages", pages.PackagesRouter())
-	r.Mount("/players", pages.PlayersRouter())
-	r.Mount("/price-changes", pages.PriceChangeRouter())
-	r.Mount("/product-keys", pages.ProductKeysRouter())
-	r.Mount("/queues", pages.QueuesRouter())
-	r.Mount("/settings", pages.SettingsRouter())
-	r.Mount("/signup", pages.SignupRouter())
-	r.Mount("/stats", pages.StatsRouter())
-	r.Mount("/terms", pages.TermsRouter())
-	r.Mount("/webhooks", pages.WebhooksRouter())
-	r.Mount("/websocket", pages.WebsocketsRouter())
+	r.Mount("/{type:(categories|developers|genres|publishers|tags)}", handlers.StatsListRouter())
+	r.Mount("/achievements", handlers.AchievementsRouter())
+	r.Mount("/admin", handlers.AdminRouter())
+	r.Mount("/api", handlers.APIRouter())
+	r.Mount("/badges", handlers.BadgesRouter())
+	r.Mount("/bundles", handlers.BundlesRouter())
+	r.Mount("/changes", handlers.ChangesRouter())
+	r.Mount("/commits", handlers.CommitsRouter())
+	r.Mount("/contact", handlers.ContactRouter())
+	r.Mount("/discord-bot", handlers.ChatBotRouter())
+	r.Mount("/discord-server", handlers.ChatRouter())
+	r.Mount("/donate", handlers.DonateRouter())
+	r.Mount("/experience", handlers.ExperienceRouter())
+	r.Mount("/features", handlers.FeaturesRouter())
+	r.Mount("/forgot", handlers.ForgotRouter())
+	r.Mount("/franchise", handlers.FranchiseRouter())
+	r.Mount("/games", handlers.GamesRouter())
+	r.Mount("/groups", handlers.GroupsRouter())
+	r.Mount("/health-check", handlers.HealthCheckRouter())
+	r.Mount("/home", handlers.HomeRouter())
+	r.Mount("/info", handlers.InfoRouter())
+	r.Mount("/login", handlers.LoginRouter())
+	r.Mount("/logout", handlers.LogoutRouter())
+	r.Mount("/news", handlers.NewsRouter())
+	r.Mount("/oauth", handlers.OauthRouter())
+	r.Mount("/packages", handlers.PackagesRouter())
+	r.Mount("/players", handlers.PlayersRouter())
+	r.Mount("/price-changes", handlers.PriceChangeRouter())
+	r.Mount("/product-keys", handlers.ProductKeysRouter())
+	r.Mount("/queues", handlers.QueuesRouter())
+	r.Mount("/settings", handlers.SettingsRouter())
+	r.Mount("/signup", handlers.SignupRouter())
+	r.Mount("/stats", handlers.StatsRouter())
+	r.Mount("/terms", handlers.TermsRouter())
+	r.Mount("/webhooks", handlers.WebhooksRouter())
+	r.Mount("/websocket", handlers.WebsocketsRouter())
 
-	r.Get("/", pages.HomeHandler)
-	r.Get("/currency/{id}", pages.CurrencyHandler)
+	r.Get("/", handlers.HomeHandler)
+	r.Get("/currency/{id}", handlers.CurrencyHandler)
 
 	// Sitemaps, Google doesnt like having a sitemap in a sub directory
-	r.Get("/sitemap-badges.xml", pages.SiteMapBadges)
-	r.Get("/sitemap-games-by-players.xml", pages.SiteMapGamesByPlayersHandler)
-	r.Get("/sitemap-games-by-score.xml", pages.SiteMapGamesByScoreHandler)
-	r.Get("/sitemap-games-new.xml", pages.SiteMapGamesNewHandler)
-	r.Get("/sitemap-games-upcoming.xml", pages.SiteMapGamesUpcomingHandler)
-	r.Get("/sitemap-groups.xml", pages.SiteMapGroups)
-	r.Get("/sitemap-pages.xml", pages.SiteMapPagesHandler)
-	r.Get("/sitemap-players-by-games.xml", pages.SiteMapPlayersByGamesCount)
-	r.Get("/sitemap-players-by-level.xml", pages.SiteMapPlayersByLevel)
-	r.Get("/sitemap.xml", pages.SiteMapIndexHandler)
+	r.Get("/sitemap-badges.xml", handlers.SiteMapBadges)
+	r.Get("/sitemap-games-by-players.xml", handlers.SiteMapGamesByPlayersHandler)
+	r.Get("/sitemap-games-by-score.xml", handlers.SiteMapGamesByScoreHandler)
+	r.Get("/sitemap-games-new.xml", handlers.SiteMapGamesNewHandler)
+	r.Get("/sitemap-games-upcoming.xml", handlers.SiteMapGamesUpcomingHandler)
+	r.Get("/sitemap-groups.xml", handlers.SiteMapGroups)
+	r.Get("/sitemap-pages.xml", handlers.SiteMapPagesHandler)
+	r.Get("/sitemap-players-by-games.xml", handlers.SiteMapPlayersByGamesCount)
+	r.Get("/sitemap-players-by-level.xml", handlers.SiteMapPlayersByLevel)
+	r.Get("/sitemap.xml", handlers.SiteMapIndexHandler)
 
 	// Assets
 	r.Route("/assets", func(r chi.Router) {
@@ -194,7 +194,7 @@ func main() {
 	r.Get("/wishlists", redirectHandler("/games/wishlists"))
 
 	// 404
-	r.NotFound(pages.Error404Handler)
+	r.NotFound(handlers.Error404Handler)
 
 	// Serve
 	if config.C.FrontendPort == "" {
