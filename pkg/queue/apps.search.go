@@ -141,6 +141,9 @@ var aliasMap = map[int][]string{
 	105430:  {"aoe", "aoeo"},                        // Age of Empires Online
 	1172470: {"apex"},                               // Apex Legends
 	346110:  {"ark"},                                // ARK: Survival Evolved
+	1238840: {"bf1"},                                // Battlefield 1
+	1238860: {"bf4"},                                // Battlefield 4
+	1238810: {"bf5"},                                // Battlefield V
 	49520:   {"bl", "bl2"},                          // Borderlands 2
 	397540:  {"bl", "bl3"},                          // Borderlands 3
 	8980:    {"bl", "goty"},                         // Borderlands GOTY
