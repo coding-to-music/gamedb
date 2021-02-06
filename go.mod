@@ -3,7 +3,7 @@ module github.com/gamedb/gamedb
 go 1.13
 
 require (
-	cloud.google.com/go v0.75.0 // indirect
+	cloud.google.com/go v0.76.0 // indirect
 	cloud.google.com/go/logging v1.2.0
 	github.com/Jleagle/captcha-go v0.0.0-20201203202350-806e55b8099c
 	github.com/Jleagle/go-durationfmt v0.0.0-20190307132420-e57bfad84057
@@ -20,11 +20,11 @@ require (
 	github.com/ahmdrz/goinsta/v2 v2.4.5
 	github.com/antchfx/xmlquery v1.3.3 // indirect
 	github.com/antchfx/xpath v1.1.11 // indirect
-	github.com/aws/aws-sdk-go v1.37.1 // indirect
+	github.com/aws/aws-sdk-go v1.37.6 // indirect
 	github.com/badoux/checkmail v1.2.1
 	github.com/blend/go-sdk v1.1.1 // indirect
 	github.com/buger/jsonparser v1.1.1 // indirect
-	github.com/bwmarrin/discordgo v0.23.1
+	github.com/bwmarrin/discordgo v0.23.2
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/cenkalti/backoff/v4 v4.1.0
 	github.com/deepmap/oapi-codegen v1.5.0
@@ -36,7 +36,7 @@ require (
 	github.com/dustin/go-humanize v1.0.0
 	github.com/frustra/bbcode v0.0.0-20201127003707-6ef347fbe1c8
 	github.com/fsnotify/fsnotify v1.4.9
-	github.com/getkin/kin-openapi v0.38.0
+	github.com/getkin/kin-openapi v0.39.0
 	github.com/ghodss/yaml v1.0.1-0.20190212211648-25d852aebe32 // indirect
 	github.com/go-chi/chi v4.1.2+incompatible
 	github.com/go-chi/cors v1.1.1
@@ -74,7 +74,7 @@ require (
 	github.com/microcosm-cc/bluemonday v1.0.4
 	github.com/montanaflynn/stats v0.6.4
 	github.com/mssola/user_agent v0.5.2
-	github.com/nicklaw5/helix v1.4.0
+	github.com/nicklaw5/helix v1.5.0
 	github.com/olekukonko/tablewriter v0.0.4 // indirect
 	github.com/olivere/elastic/v7 v7.0.22
 	github.com/oschwald/maxminddb-golang v1.8.0
@@ -96,7 +96,7 @@ require (
 	github.com/wcharczuk/go-chart v2.0.1+incompatible
 	github.com/xdg/stringprep v1.0.0 // indirect
 	github.com/yohcop/openid-go v1.0.0
-	go.mongodb.org/mongo-driver v1.4.5
+	go.mongodb.org/mongo-driver v1.4.6
 	go.opencensus.io v0.22.6 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
 	go.uber.org/zap v1.16.0
@@ -105,7 +105,7 @@ require (
 	golang.org/x/image v0.0.0-20201208152932-35266b937fa6 // indirect
 	golang.org/x/mod v0.4.1 // indirect
 	golang.org/x/net v0.0.0-20210119194325-5f4716e94777
-	golang.org/x/oauth2 v0.0.0-20210126194326-f9ce19ea3013
+	golang.org/x/oauth2 v0.0.0-20210201163806-010130855d6c
 	golang.org/x/sync v0.0.0-20201207232520-09787c993a3a // indirect
 	golang.org/x/sys v0.0.0-20210124154548-22da62e12c0c // indirect
 	golang.org/x/term v0.0.0-20201210144234-2321bbc49cbf // indirect
@@ -113,8 +113,8 @@ require (
 	golang.org/x/time v0.0.0-20201208040808-7e3f01d25324
 	golang.org/x/tools v0.1.0 // indirect
 	gonum.org/v1/gonum v0.8.2
-	google.golang.org/api v0.38.0
-	google.golang.org/genproto v0.0.0-20210126160654-44e461bb6506 // indirect
+	google.golang.org/api v0.39.0
+	google.golang.org/genproto v0.0.0-20210204154452-deb828366460 // indirect
 	google.golang.org/grpc v1.35.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.1.0
 	google.golang.org/protobuf v1.25.0
