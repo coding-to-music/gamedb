@@ -159,13 +159,13 @@ func SearchPlayers(limit int, offset int, search string, sorters []elastic.Sorte
 		)
 
 		searchService.Highlight(elastic.NewHighlight().Field("name").PreTags("<mark>").PostTags("</mark>"))
+	} else {
+		if len(sorters) > 0 {
+			searchService.SortBy(sorters...)
+		}
 	}
 
 	searchService.Query(query)
-
-	if len(sorters) > 0 {
-		searchService.SortBy(sorters...)
-	}
 
 	searchResult, err := searchService.Do(ctx)
 	if err != nil {
