@@ -9,6 +9,7 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
@@ -100,9 +101,9 @@ func (c CommandPlayer) Output(authorID string, _ steamapi.ProductCC, inputs map[
 	} else {
 
 		player, err = searchForPlayer(inputs["player"])
-		if err == mongo.ErrNoDocuments {
+		if err == elasticsearch.ErrNoResult || err == steamapi.ErrProfileMissing {
 
-			message.Content = "Player **" + inputs["player"] + "** not found, please enter a user's vanity URL"
+			message.Content = "Player **" + inputs["player"] + "** not found, they may be set to private, please enter a user's vanity URL"
 			return message, nil
 
 		} else if err != nil {

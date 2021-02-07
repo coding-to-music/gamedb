@@ -7,10 +7,10 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
-	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/oauth"
 	"github.com/gamedb/gamedb/pkg/queue"
@@ -97,9 +97,9 @@ func (c CommandPlayerUpdate) Output(authorID string, _ steamapi.ProductCC, input
 	}
 
 	player, err := searchForPlayer(inputs["player"])
-	if err == mongo.ErrNoDocuments {
+	if err == elasticsearch.ErrNoResult || err == steamapi.ErrProfileMissing {
 
-		message.Content = "Player **" + inputs["player"] + "** not found, please enter a user's vanity URL"
+		message.Content = "Player **" + inputs["player"] + "** not found, they may be set to private, please enter a user's vanity URL"
 		return message, nil
 
 	} else if err != nil {

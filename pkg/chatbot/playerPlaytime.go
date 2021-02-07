@@ -6,8 +6,8 @@ import (
 	"github.com/gamedb/gamedb/pkg/chatbot/charts"
 	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/mongo"
 )
 
 type CommandPlayerPlaytime struct {
@@ -65,9 +65,9 @@ func (c CommandPlayerPlaytime) Slash() []interactions.InteractionOption {
 func (c CommandPlayerPlaytime) Output(_ string, _ steamapi.ProductCC, inputs map[string]string) (message discordgo.MessageSend, err error) {
 
 	player, err := searchForPlayer(inputs["player"])
-	if err == mongo.ErrNoDocuments {
+	if err == elasticsearch.ErrNoResult || err == steamapi.ErrProfileMissing {
 
-		message.Content = "Player **" + inputs["player"] + "** not found, please enter a user's vanity URL"
+		message.Content = "Player **" + inputs["player"] + "** not found, they may be set to private, please enter a user's vanity URL"
 		return message, nil
 
 	} else if err != nil {
