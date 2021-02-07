@@ -426,7 +426,7 @@ if ($homePage.length > 0) {
                         + '<img class="rounded" src="' + app.icon + '" alt="' + series.name + '"> ' + series.name + '</div>');
                 });
 
-                homeAttachLegendEvents(hc, $legend);
+                homeAttachLegendEvents(hc, $legend, data);
             },
         });
     }
@@ -486,14 +486,22 @@ if ($homePage.length > 0) {
                         + '<img class="rounded" src="' + app.icon + '" alt="' + series.name + '"> ' + series.name + '</div>');
                 });
 
-                homeAttachLegendEvents(hc, $legend);
+                homeAttachLegendEvents(hc, $legend, null);
             },
         });
     }
 
-    function homeAttachLegendEvents(hc, $legend) {
+    function homeAttachLegendEvents(hc, $legend, data) {
 
         $legend.on('mouseenter', 'div', function () {
+
+            if (data) {
+                let max = 0;
+                data['players'][$(this).index()]['value']['max_player_count'].forEach(function (item) {
+                    max = Math.max(max, item[1]);
+                })
+                hc.yAxis[0].update({max: max});
+            }
 
             $.each(hc.series, function (j, series) {
                 hc.series[j].setState('inactive');
@@ -502,6 +510,11 @@ if ($homePage.length > 0) {
             hc.series[$(this).index()].setState('hover');
 
         }).on('mouseleave', 'div', function () {
+
+            if (data) {
+                hc.yAxis[0].update({max: null});
+            }
+
             $.each(hc.series, function (j, series) {
                 hc.series[j].setState('normal');
             });
