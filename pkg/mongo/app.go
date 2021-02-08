@@ -235,6 +235,10 @@ func (app App) GetPath() string {
 	return helpers.GetAppPath(app.ID, app.Name)
 }
 
+func (app App) GetPathAbsolute() string {
+	return helpers.GetAppPathAbsolute(app.ID, app.Name)
+}
+
 func (app App) GetTrend() string {
 	return helpers.GetTrendValue(app.PlayerTrend)
 }

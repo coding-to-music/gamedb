@@ -45,6 +45,10 @@ func (group Group) GetPath() string {
 	return helpers.GetGroupPath(group.ID, group.GetName())
 }
 
+func (group Group) GetPathAbsolute() string {
+	return helpers.GetGroupPathAbsolute(group.ID, group.GetName())
+}
+
 func (group Group) GetIcon() string {
 	return helpers.GetGroupIcon(group.Icon)
 }

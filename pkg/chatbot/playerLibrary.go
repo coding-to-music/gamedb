@@ -7,7 +7,6 @@ import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
-	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"go.mongodb.org/mongo-driver/bson"
@@ -96,7 +95,7 @@ func (c CommandPlayerLibrary) Output(authorID string, _ steamapi.ProductCC, inpu
 
 		message.Embed = &discordgo.MessageEmbed{
 			Title:       player.GetName() + "'s Top Games",
-			URL:         config.C.GameDBDomain + player.GetPath() + "#games",
+			URL:         player.GetPathAbsolute() + "#games",
 			Author:      getAuthor(authorID),
 			Color:       greenHexDec,
 			Thumbnail:   &discordgo.MessageEmbedThumbnail{URL: player.GetAvatarAbsolute(), Width: 184, Height: 184},

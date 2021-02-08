@@ -8,7 +8,6 @@ import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
-	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"go.mongodb.org/mongo-driver/bson"
@@ -104,7 +103,7 @@ func (c CommandPlayerWishlist) Output(authorID string, _ steamapi.ProductCC, inp
 
 		message.Embed = &discordgo.MessageEmbed{
 			Title:       "Wishlist Items",
-			URL:         config.C.GameDBDomain + player.GetPath() + "#wishlist",
+			URL:         player.GetPathAbsolute() + "#wishlist",
 			Author:      getAuthor(authorID),
 			Color:       greenHexDec,
 			Thumbnail:   &discordgo.MessageEmbedThumbnail{URL: player.GetAvatarAbsolute(), Width: 184, Height: 184},

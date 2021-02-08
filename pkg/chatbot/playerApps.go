@@ -7,7 +7,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/chatbot/charts"
 	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
-	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
 )
@@ -85,7 +84,7 @@ func (c CommandPlayerApps) Output(_ string, _ steamapi.ProductCC, inputs map[str
 	if player.Games > 0 {
 		message.Embed = &discordgo.MessageEmbed{
 			Title:     player.GetName(),
-			URL:       config.C.GameDBDomain + player.GetPath(),
+			URL:       player.GetPathAbsolute(),
 			Thumbnail: &discordgo.MessageEmbedThumbnail{URL: player.GetAvatarAbsolute(), Width: 184, Height: 184},
 			Footer:    getFooter(),
 			Color:     greenHexDec,

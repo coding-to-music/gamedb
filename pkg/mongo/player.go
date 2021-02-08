@@ -146,6 +146,10 @@ func (player Player) GetPath() string {
 	return helpers.GetPlayerPath(player.ID, player.GetName())
 }
 
+func (player Player) GetPathAbsolute() string {
+	return helpers.GetPlayerPathAbsolute(player.ID, player.GetName())
+}
+
 func (player Player) GetName() string {
 	return helpers.GetPlayerName(player.ID, player.PersonaName)
 }

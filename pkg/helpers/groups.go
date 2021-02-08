@@ -42,6 +42,17 @@ func GetGroupPath(id string, name string) string {
 	return "/groups/" + id + "/" + slug.Make(name)
 }
 
+func GetGroupPathAbsolute(id string, name string) string {
+
+	pathx := GetGroupPath(id, name)
+
+	if strings.HasPrefix(pathx, "/") {
+		pathx = config.C.GameDBDomain + pathx
+	}
+
+	return pathx
+}
+
 func GetGroupType(typex string) string {
 	return strings.Title(typex)
 }

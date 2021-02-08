@@ -86,6 +86,17 @@ func GetPlayerPath(id int64, name string) string {
 	return p
 }
 
+func GetPlayerPathAbsolute(id int64, name string) string {
+
+	pathx := GetPlayerPath(id, name)
+
+	if strings.HasPrefix(pathx, "/") {
+		pathx = config.C.GameDBDomain + pathx
+	}
+
+	return pathx
+}
+
 func GetPlayerName(id int64, name string) string {
 
 	name = RegexFilterEmptyCharacters.ReplaceAllString(name, "")

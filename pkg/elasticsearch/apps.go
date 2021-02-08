@@ -80,6 +80,14 @@ func (app App) GetPath() string {
 	return helpers.GetAppPath(app.ID, app.Name)
 }
 
+func (app App) GetPathAbsolute() string {
+	return helpers.GetAppPathAbsolute(app.ID, app.Name)
+}
+
+func (app App) GetIconAbsolute() string {
+	return helpers.GetAppIconAbsolute(app.ID, app.Name)
+}
+
 func (app App) GetType() string {
 	return helpers.GetAppType(app.Type)
 }

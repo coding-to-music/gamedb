@@ -53,6 +53,10 @@ func (player Player) GetPath() string {
 	return helpers.GetPlayerPath(player.ID, player.PersonaName)
 }
 
+func (player Player) GetPathAbsolute() string {
+	return helpers.GetPlayerPathAbsolute(player.ID, player.PersonaName)
+}
+
 func (player Player) GetAvatar() string {
 	return helpers.GetPlayerAvatar(player.Avatar)
 }

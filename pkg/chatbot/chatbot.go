@@ -154,6 +154,7 @@ type App interface {
 	GetID() int
 	GetName() string
 	GetPath() string
+	GetPathAbsolute() string
 	GetHeaderImage() string
 	GetPlayersPeakWeek() int
 	GetFollowers() string
@@ -165,6 +166,7 @@ type App interface {
 type Player interface {
 	GetName() string
 	GetPath() string
+	GetPathAbsolute() string
 	GetAvatarAbsolute() string
 	GetGamesCount() int
 	GetAchievements() int
@@ -182,7 +184,7 @@ func getAppEmbed(commandID string, app App, code steamapi.ProductCC) *discordgo.
 
 	return &discordgo.MessageEmbed{
 		Title:     app.GetName(),
-		URL:       config.C.GameDBDomain + app.GetPath(),
+		URL:       app.GetPathAbsolute(),
 		Thumbnail: &discordgo.MessageEmbedThumbnail{URL: app.GetHeaderImage(), Width: 460, Height: 215},
 		Footer:    getFooter(),
 		Color:     greenHexDec,

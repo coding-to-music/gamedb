@@ -132,7 +132,7 @@ func (c CommandPlayer) Output(authorID string, _ steamapi.ProductCC, inputs map[
 
 	message.Embed = &discordgo.MessageEmbed{
 		Title:     player.GetName(),
-		URL:       config.C.GameDBDomain + player.GetPath(),
+		URL:       player.GetPathAbsolute(),
 		Thumbnail: &discordgo.MessageEmbedThumbnail{URL: player.GetAvatarAbsolute(), Width: 184, Height: 184},
 		Footer:    getFooter(),
 		Color:     greenHexDec,

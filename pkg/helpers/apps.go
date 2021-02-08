@@ -52,6 +52,17 @@ func GetAppPath(id int, name string) string {
 	return p
 }
 
+func GetAppPathAbsolute(id int, name string) string {
+
+	pathx := GetAppPath(id, name)
+
+	if strings.HasPrefix(pathx, "/") {
+		pathx = config.C.GameDBDomain + pathx
+	}
+
+	return pathx
+}
+
 func GetAppCommunityLink(appID int) string {
 	name := config.C.GameDBShortName
 	return "https://steamcommunity.com/app/" + strconv.Itoa(appID) + "?utm_source=" + name + "&utm_medium=link&curator_clanid=" // todo curator_clanid
@@ -80,6 +91,17 @@ func GetAppIcon(id int, icon string) string {
 	}
 
 	return DefaultAppIcon
+}
+
+func GetAppIconAbsolute(id int, icon string) string {
+
+	icon = GetAppIcon(id, icon)
+
+	if strings.HasPrefix(icon, "/") {
+		icon = config.C.GameDBDomain + icon
+	}
+
+	return icon
 }
 
 func GetAppReleaseState(state string) (ret string) {

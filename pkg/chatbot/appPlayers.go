@@ -6,7 +6,6 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/chatbot/charts"
 	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
-	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/mongo"
 )
@@ -85,7 +84,7 @@ func (c CommandAppPlayers) Output(_ string, _ steamapi.ProductCC, inputs map[str
 
 	message.Embed = &discordgo.MessageEmbed{
 		Title:     app.GetName(),
-		URL:       config.C.GameDBDomain + app.GetPath(),
+		URL:       app.GetPathAbsolute(),
 		Thumbnail: &discordgo.MessageEmbedThumbnail{URL: app.GetHeaderImage(), Width: 460, Height: 215},
 		Footer:    getFooter(),
 		Color:     greenHexDec,

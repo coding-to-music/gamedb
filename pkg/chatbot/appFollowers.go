@@ -6,7 +6,6 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/chatbot/charts"
 	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
-	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/mongo"
 )
@@ -86,7 +85,7 @@ func (c CommandAppFollowers) Output(_ string, _ steamapi.ProductCC, inputs map[s
 	message.Embed = &discordgo.MessageEmbed{
 		Title:       app.GetName(),
 		Description: humanize.Comma(int64(app.GroupFollowers)) + " followers",
-		URL:         config.C.GameDBDomain + app.GetPath(),
+		URL:         app.GetPathAbsolute(),
 		Thumbnail:   &discordgo.MessageEmbedThumbnail{URL: app.GetHeaderImage(), Width: 460, Height: 215},
 		Footer:      getFooter(),
 		Color:       greenHexDec,
