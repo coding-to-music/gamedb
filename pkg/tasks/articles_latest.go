@@ -42,7 +42,7 @@ var (
 func (c ArticlesLatest) work() (err error) {
 
 	col := colly.NewCollector(
-		steam.WithTimeout(0),
+		steam.WithTimeout(30),
 	)
 
 	// Tags
