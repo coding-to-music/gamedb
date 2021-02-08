@@ -9,6 +9,7 @@ import (
 	"github.com/Jleagle/steam-go/steamid"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/steam"
 )
@@ -67,6 +68,7 @@ func playerAddHandler(w http.ResponseWriter, r *http.Request) {
 			// Check in Steam API
 			resp, err := steam.GetSteam().ResolveVanityURL(search, steamapi.VanityURLProfile)
 			err = steam.AllowSteamCodes(err)
+			err = helpers.IgnoreErrors(err, steamapi.ErrProfileMissing)
 			if err != nil {
 				log.ErrS(err)
 			}
