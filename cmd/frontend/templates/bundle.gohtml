@@ -64,7 +64,8 @@
                         <table class="table table-hover table-striped table-datatable" id="packages" data-order='[[0, "asc"]]'>
                             <thead class="thead-light">
                             <tr>
-                                <th scope="col">Packages</th>
+                                <th scope="col">Package</th>
+                                <th scope="col">Price</th>
                                 <th scope="col">Billing</th>
                                 <th scope="col">License</th>
                                 <th scope="col">Status</th>
@@ -79,6 +80,7 @@
                                             <div class="name">{{ .GetName }}</div>
                                         </div>
                                     </td>
+                                    <td>{{ (.GetPrices.Get $.UserProductCC.ProductCode).GetFinal }}</td>
                                     <td>{{ .GetBillingType }}</td>
                                     <td>{{ .GetLicenseType }}</td>
                                     <td>{{ .GetStatus }}</td>
@@ -96,7 +98,7 @@
                         <table class="table table-hover table-striped table-datatable" id="apps" data-order='[[0, "asc"]]'>
                             <thead class="thead-light">
                             <tr>
-                                <th scope="col">Apps</th>
+                                <th scope="col">App</th>
                                 <th scope="col">Price</th>
                                 <th scope="col">Type</th>
                                 <th scope="col">Developers</th>
