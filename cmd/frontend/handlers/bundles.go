@@ -55,14 +55,14 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		db = db.Model(&mysql.Bundle{})
-		db = db.Select([]string{"id", "name", "updated_at", "discount", "highest_discount", "app_ids", "package_ids"})
+		db = db.Select([]string{"id", "name", "updated_at", "discount", "highest_discount", "app_ids", "package_ids", "prices"})
 		db = db.Limit(100)
 
 		sortCols := map[string]string{
 			"1": "discount",
-			"2": "JSON_LENGTH(app_ids)",
-			"3": "JSON_LENGTH(package_ids)",
-			"4": "updated_at",
+			"3": "JSON_LENGTH(app_ids)",
+			"4": "JSON_LENGTH(package_ids)",
+			"5": "updated_at",
 		}
 		db = query.SetOrderOffsetGorm(db, sortCols)
 

@@ -5,8 +5,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gosimple/slug"
@@ -23,7 +25,8 @@ type Bundle struct {
 	LowestDiscount  int       `gorm:"not null;column:lowest_discount"`
 	AppIDs          string    `gorm:"not null;column:app_ids"`     // JSON
 	PackageIDs      string    `gorm:"not null;column:package_ids"` // JSON
-	Image           string    `gorm:"not null;column:image"`
+	Image           string    `gorm:"not null;column:image"`       //
+	Prices          string    `gorm:"not null;column:prices"`      // JSON
 }
 
 func (bundle *Bundle) BeforeSave(scope *gorm.Scope) error {
@@ -84,6 +87,28 @@ func (bundle Bundle) GetAppIDs() (ids []int, err error) {
 	return ids, err
 }
 
+func (bundle Bundle) GetPrices() (ret map[steamapi.ProductCC]string) {
+
+	ret = map[steamapi.ProductCC]string{}
+
+	if bundle.Prices == "" {
+		return ret
+	}
+
+	prices := map[steamapi.ProductCC]int{}
+	err := helpers.Unmarshal([]byte(bundle.Prices), &prices)
+	if err != nil {
+		log.ErrS(err)
+		return nil
+	}
+
+	for k, v := range prices {
+		ret[k] = i18n.FormatPrice(i18n.GetProdCC(k).CurrencyCode, v)
+	}
+
+	return ret
+}
+
 func (bundle Bundle) AppsCount() int {
 
 	apps, err := bundle.GetAppIDs()
@@ -105,16 +130,20 @@ func (bundle Bundle) GetPackageIDs() (ids []int) {
 
 func (bundle Bundle) OutputForJSON() (output []interface{}) {
 
+	updated := strconv.FormatInt(bundle.UpdatedAt.Unix(), 10)
+	highest := bundle.HighestDiscount == bundle.Discount && bundle.Discount != 0
+
 	return []interface{}{
-		bundle.ID,        // 0
-		bundle.GetName(), // 1
-		bundle.GetPath(), // 2
-		strconv.FormatInt(bundle.UpdatedAt.Unix(), 10), // 3
+		bundle.ID,                   // 0
+		bundle.GetName(),            // 1
+		bundle.GetPath(),            // 2
+		updated,                     // 3
 		bundle.Discount,             // 4
 		bundle.AppsCount(),          // 5
 		len(bundle.GetPackageIDs()), // 6
-		bundle.HighestDiscount == bundle.Discount && bundle.Discount != 0, // 7 Highest ever discount
-		bundle.GetStoreLink(), // 8
+		highest,                     // 7
+		bundle.GetStoreLink(),       // 8
+		bundle.GetPrices(),          // 9
 	}
 }
 

@@ -1,7 +1,7 @@
 if ($('#bundles-page').length > 0) {
 
     const options = {
-        "order": [[4, 'desc']],
+        "order": [[5, 'desc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-link', data[2]);
         },
@@ -29,11 +29,25 @@ if ($('#bundles-page').length > 0) {
                 "render": function (data, type, row) {
                     return row[4] + '%'
                 },
-                "orderSequence": ["asc"],
+                "orderSequence": ["asc", "desc"],
+            },
+            // Price
+            {
+                "targets": 2,
+                "createdCell": function (td, cellData, rowData, row, col) {
+                    $(td).attr('nowrap', 'nowrap');
+                },
+                "render": function (data, type, row) {
+                    if (user.prodCC in row[9]) {
+                        return row[9][user.prodCC];
+                    }
+                    return '-';
+                },
+                "orderable": false,
             },
             // Apps
             {
-                "targets": 2,
+                "targets": 3,
                 "render": function (data, type, row) {
                     return row[5].toLocaleString();
                 },
@@ -41,7 +55,7 @@ if ($('#bundles-page').length > 0) {
             },
             // Packages
             {
-                "targets": 3,
+                "targets": 4,
                 "render": function (data, type, row) {
                     return row[6].toLocaleString();
                 },
@@ -49,7 +63,7 @@ if ($('#bundles-page').length > 0) {
             },
             // Updated At
             {
-                "targets": 4,
+                "targets": 5,
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
                 },
@@ -59,7 +73,7 @@ if ($('#bundles-page').length > 0) {
             },
             // Link
             {
-                "targets": 5,
+                "targets": 6,
                 "render": function (data, type, row) {
                     if (row[8]) {
                         return '<a href="' + row[8] + '" target="_blank" rel="noopener"><i class="fas fa-link"></i></a>';

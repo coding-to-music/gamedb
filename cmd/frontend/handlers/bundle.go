@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
@@ -128,6 +129,12 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 	t.Apps = apps
 	t.Packages = packages
 
+	if val, ok := bundle.GetPrices()[session.GetProductCC(r)]; ok {
+		t.Price = val
+	} else {
+		t.Price = "-"
+	}
+
 	//
 	returnTemplate(w, r, t)
 }
@@ -137,6 +144,7 @@ type bundleTemplate struct {
 	Bundle   mysql.Bundle
 	Apps     []mongo.App
 	Packages []mongo.Package
+	Price    string
 }
 
 func bundlePricesAjaxHandler(w http.ResponseWriter, r *http.Request) {
