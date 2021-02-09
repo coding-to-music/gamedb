@@ -1,13 +1,13 @@
 package chatbot
 
 import (
-	"strconv"
 	"strings"
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/chatbot/charts"
 	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/i18n"
 )
@@ -103,12 +103,13 @@ func (c CommandAppPrice) Output(_ string, region steamapi.ProductCC, inputs map[
 		message.Content = apps[0].GetName() + " is **" + price.GetFinal() + "** for " + strings.ToUpper(string(region))
 
 		message.Embed = &discordgo.MessageEmbed{
-			Title:     app.GetName(),
-			URL:       app.GetPathAbsolute(),
-			Thumbnail: &discordgo.MessageEmbedThumbnail{URL: app.GetIconAbsolute(), Width: 184, Height: 184},
-			Footer:    getFooter(),
-			Color:     greenHexDec,
-			Image:     &discordgo.MessageEmbedImage{URL: charts.GetPriceChart(region, c.ID(), strconv.Itoa(app.ID), "Level")},
+			Title:       app.GetName(),
+			Description: apps[0].GetName() + " is **" + price.GetFinal() + "** for " + strings.ToUpper(string(region)),
+			URL:         config.C.GameDBDomain + app.GetPath(),
+			Thumbnail:   &discordgo.MessageEmbedThumbnail{URL: app.GetHeaderImage(), Width: 460, Height: 215},
+			Footer:      getFooter(),
+			Color:       greenHexDec,
+			Image:       &discordgo.MessageEmbedImage{URL: charts.GetPriceChart(region, c.ID(), app.ID, "Price History")},
 		}
 
 		return message, nil

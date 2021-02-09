@@ -8,11 +8,13 @@ import (
 	"time"
 
 	"github.com/Jleagle/influxql"
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/wcharczuk/go-chart"
 	"github.com/wcharczuk/go-chart/drawing"
 )
@@ -27,7 +29,7 @@ func GetGroupChart(commandID string, groupID string, title string) (path string)
 	builder.AddGroupByTime("1d")
 	builder.SetFillNone()
 
-	path, err := getChart(commandID, builder, groupID, title)
+	path, err := getInfluxChart(commandID, builder, groupID, title)
 	if err != nil {
 		log.Err(err.Error())
 	}
@@ -48,7 +50,7 @@ func GetAppPlayersChart(commandID string, appID int, groupBy string, time string
 	builder.AddGroupByTime(groupBy)
 	builder.SetFillNone()
 
-	path, err := getChart(commandID, builder, strconv.Itoa(appID), "In Game ("+time+")")
+	path, err := getInfluxChart(commandID, builder, strconv.Itoa(appID), title)
 	if err != nil {
 		log.Err(err.Error())
 	}
@@ -67,14 +69,14 @@ func GetPlayerChart(commandID string, playerID int64, field helpers.Field, title
 	builder.AddGroupByTime("1d")
 	builder.SetFillNone()
 
-	path, err := getChart(commandID, builder, strconv.FormatInt(playerID, 10), title)
+	path, err := getInfluxChart(commandID, builder, strconv.FormatInt(playerID, 10), title)
 	if err != nil {
 		log.Err(err.Error())
 	}
 	return path
 }
 
-func getChart(commandID string, builder *influxql.Builder, id string, title string) (path string, err error) {
+func getInfluxChart(commandID string, builder *influxql.Builder, id string, title string) (path string, err error) {
 
 	resp, err := influx.InfluxQuery(builder)
 	if err != nil {
@@ -86,6 +88,50 @@ func getChart(commandID string, builder *influxql.Builder, id string, title stri
 	}
 
 	x, y := influx.InfluxResponseToImageChartData(resp.Results[0].Series[0])
+
+	return getChart(x, y, id, title, commandID)
+}
+
+func GetPriceChart(code steamapi.ProductCC, commandID string, id int, title string) (path string) {
+
+	prices, err := mongo.GetPricesForProduct(id, helpers.ProductTypeApp, code)
+	if err != nil {
+		log.Err(err.Error())
+		return ""
+	}
+
+	var x []time.Time
+	var y []float64
+
+	for k, price := range prices {
+
+		value := float64(price.PriceAfter) / 100
+
+		x = append(x, price.CreatedAt)
+		y = append(y, value)
+
+		// Create stepped chart
+		if len(prices) > k+1 {
+			x = append(x, prices[k+1].CreatedAt.Add(time.Second*-1))
+			y = append(y, value)
+		}
+	}
+
+	if len(y) > 0 {
+		x = append(x, time.Now())
+		y = append(y, y[len(y)-1])
+	}
+
+	path, err = getChart(x, y, strconv.Itoa(id), title, commandID)
+	if err != nil {
+		log.Err(err.Error())
+		return ""
+	}
+
+	return path
+}
+
+func getChart(x []time.Time, y []float64, id string, title string, commandID string) (path string, err error) {
 
 	if len(x) < 1 || len(y) < 1 {
 		return "", nil
