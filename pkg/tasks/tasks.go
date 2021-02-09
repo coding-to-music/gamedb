@@ -43,6 +43,7 @@ type TaskGroup string
 
 const (
 	TaskGroupApps     TaskGroup = "apps"
+	TaskGroupBundles  TaskGroup = "bundles"
 	TaskGroupGroups   TaskGroup = "groups"
 	TaskGroupBadges   TaskGroup = "badges"
 	TaskGroupNews     TaskGroup = "news"
@@ -74,6 +75,7 @@ var (
 		&ArticlesLatest{},
 		&AutoPlayerRefreshes{},
 		&BadgesUpdateRandom{},
+		&BundlesQueueAll{},
 		&GameDBStats{},
 		&GroupsQueueElastic{},
 		&GroupsQueuePrimaries{},

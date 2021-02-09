@@ -455,6 +455,7 @@ func adminTasksHandler(w http.ResponseWriter, r *http.Request) {
 
 	t.Tasks = []adminTaskListTemplate{
 		{Tasks: grouped[tasks.TaskGroupApps], Title: "Apps"},
+		{Tasks: grouped[tasks.TaskGroupBundles], Title: "Bundles"},
 		{Tasks: grouped[tasks.TaskGroupPackages], Title: "Packages"},
 		{Tasks: grouped[tasks.TaskGroupGroups], Title: "Groups"},
 		{Tasks: grouped[tasks.TaskGroupPlayers], Title: "Players"},
