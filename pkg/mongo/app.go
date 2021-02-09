@@ -545,8 +545,42 @@ func (app App) GetPublishers() (stats []Stat, err error) {
 	return GetStatsByType(StatsTypePublishers, app.Publishers, app.ID)
 }
 
+func (app App) GetPublishersHTML() template.HTML {
+
+	var ret []string
+
+	devs, err := app.GetPublishers()
+	if err != nil {
+		log.ErrS(err)
+		return ""
+	}
+
+	for _, v := range devs {
+		ret = append(ret, `<a href="`+v.GetPath()+`">`+v.Name+`</a>`)
+	}
+
+	return template.HTML(strings.Join(ret, ", "))
+}
+
 func (app App) GetDevelopers() (stats []Stat, err error) {
 	return GetStatsByType(StatsTypeDevelopers, app.Developers, app.ID)
+}
+
+func (app App) GetDevelopersHTML() template.HTML {
+
+	var ret []string
+
+	devs, err := app.GetDevelopers()
+	if err != nil {
+		log.ErrS(err)
+		return ""
+	}
+
+	for _, v := range devs {
+		ret = append(ret, `<a href="`+v.GetPath()+`">`+v.Name+`</a>`)
+	}
+
+	return template.HTML(strings.Join(ret, ", "))
 }
 
 //
