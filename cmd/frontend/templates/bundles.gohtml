@@ -4,7 +4,24 @@
     <div class="container" id="bundles-page">
 
         <div class="jumbotron">
-            <h1><i class="fas fa-cubes"></i> Bundles</h1>
+            <div class="row">
+                <div class="col-sm-12 col-lg-6">
+
+                    <h1><i class="fas fa-cubes"></i> Bundles</h1>
+
+                </div>
+                <div class="col-sm-12 col-lg-6">
+
+                    <div class="input-group input-group-lg mt-1 mb-2">
+                        <input class="form-control" type="search" placeholder="Search Bundles" id="search" name="search" autofocus data-col-sort="7">
+                        <label for="search" class="sr-only sr-only-focusable">Search Bundles</label>
+                        <div class="input-group-append">
+                            <input type="submit" value="Search" class="input-group-text">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
         </div>
 
         {{ template "flashes" . }}
@@ -12,8 +29,58 @@
         <div class="card">
             {{ template "packages_header" . }}
             <div class="card-body">
+                <div class="row">
 
-                {{/* Bundles List */}}
+                    <div class="col-sm-6 col-md-4">
+                        <div class="form-group slider">
+                            <label for="discount">Discount</label>
+                            <div id="discount" data-name="discount"></div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4">
+                        <div class="form-group slider">
+                            <label for="apps">Apps</label>
+                            <div id="apps" data-name="apps"></div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4">
+                        <div class="form-group slider">
+                            <label for="packages">Packages</label>
+                            <div id="packages" data-name="packages"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6 col-md-4">
+                        <div class="form-group">
+                            <label for="type">Type</label>
+                            <select data-placeholder="Type" class="form-control form-control-chosen" id="type" name="type">
+                                <option value="">All Bundles</option>
+                                <option value="cts">Complete The Set</option>
+                                <option value="pt">Purchase Together</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4">
+                        <div class="form-group">
+                            <label for="giftable">Giftable</label>
+                            <select data-placeholder="Giftable" class="form-control form-control-chosen" id="giftable" name="giftable">
+                                <option value="">All Bundles</option>
+                                <option value="1">Only Giftable</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-4">
+                        <div class="form-group">
+                            <label for="onsale">On Sale</label>
+                            <select data-placeholder="On Sale" class="form-control form-control-chosen" id="onsale" name="onsale">
+                                <option value="">All Bundles</option>
+                                <option value="1">Only On Sale</option>
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+
                 <div class="table-responsive">
                     <table class="table table-hover table-striped table-counts" data-row-type="bundles" data-path="/bundles/bundles.json">
                         <thead class="thead-light">

@@ -1,5 +1,94 @@
 if ($('#bundles-page').length > 0) {
 
+    // Setup drop downs
+    $('select.form-control-chosen').chosen({
+        disable_search_threshold: 5,
+        allow_single_deselect: true,
+        max_selected_options: 10
+    });
+
+    // Discount
+    const $discountElement = $('#discount');
+    const discountSlider = noUiSlider.create($discountElement[0], {
+        start: [0, 100],
+        connect: true,
+        step: 1,
+        range: {
+            'min': 0,
+            'max': 100,
+        },
+        format: {
+            to: (v) => parseFloat(v).toFixed(0),
+            from: (v) => parseFloat(v).toFixed(0)
+        },
+    });
+
+    // Apps slider
+    const $appsElement = $('#apps');
+    const appsSlider = noUiSlider.create($appsElement[0], {
+        start: [0, 100],
+        connect: true,
+        step: 1,
+        range: {
+            'min': 0,
+            'max': 100,
+        },
+        format: {
+            to: (v) => parseFloat(v).toFixed(0),
+            from: (v) => parseFloat(v).toFixed(0)
+        },
+    });
+
+    // Packages slider
+    const $packagesElement = $('#packages');
+    const packagesSlider = noUiSlider.create($packagesElement[0], {
+        start: [0, 100],
+        connect: true,
+        step: 1,
+        range: {
+            'min': 0,
+            'max': 100,
+        },
+        format: {
+            to: (v) => parseFloat(v).toFixed(0),
+            from: (v) => parseFloat(v).toFixed(0)
+        },
+    });
+
+    //
+    function updateLabels(e) {
+
+        const discount = discountSlider.get();
+        if (discount[0] === discount[1]) {
+            $('label[for=discount]').html('Discount (' + Math.round(discount[0]) + ')');
+        } else {
+            $('label[for=discount]').html('Discount (' + Math.round(discount[0]) + ' - ' + Math.round(discount[1]) + ')');
+        }
+
+        //
+        const apps = appsSlider.get();
+        const appsRight = (apps[1] === '100' ? '100+' : apps[1]);
+        if (apps[0] === apps[1]) {
+            $('label[for=apps]').html('Apps (' + appsRight + ')');
+        } else {
+            $('label[for=apps]').html('Apps (' + apps[0] + ' - ' + appsRight + ')');
+        }
+
+        //
+        const packages = packagesSlider.get();
+        const packagesRight = (apps[1] === '100' ? '100+' : apps[1]);
+        if (packages[0] === packages[1]) {
+            $('label[for=packages]').html('Packages (' + packagesRight + ')');
+        } else {
+            $('label[for=packages]').html('Packages (' + apps[0] + ' - ' + packagesRight + ')');
+        }
+    }
+
+    window.updateLabels = updateLabels;
+
+    $(updateLabels);
+
+    //
     const options = {
         "order": [[5, 'desc']],
         "createdRow": function (row, data, dataIndex) {
@@ -82,12 +171,31 @@ if ($('#bundles-page').length > 0) {
                 },
                 "orderable": false,
             },
+            // Search score
+            {
+                "targets": 7,
+                "render": function (data, type, row) {
+                    return row[10];
+                },
+                "orderable": false,
+                "visible": user.isLocal,
+            },
         ]
     };
 
 
     const $table = $('table.table');
-    const dt = $table.gdbTable({tableOptions: options});
+    const searchFields = [
+        $('#search'),
+        $discountElement,
+        $appsElement,
+        $packagesElement,
+        $('#type'),
+        $('#giftable'),
+        $('#onsale'),
+    ];
+
+    const dt = $table.gdbTable({tableOptions: options, searchFields: searchFields});
 
     websocketListener('bundles', function (e) {
 
