@@ -35,12 +35,6 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// todo, validate
-	// if !db.IsValidAppID(idx) {
-	// 	returnErrorTemplate(w, r, errorTemplate{Code: 400, Message: "Invalid bundle ID: " + id})
-	// 	return
-	// }
-
 	// Get bundle
 	bundle, err := mysql.GetBundle(id, nil)
 	if err != nil {
