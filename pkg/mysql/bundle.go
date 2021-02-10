@@ -1,17 +1,13 @@
 package mysql
 
 import (
-	"strconv"
-	"strings"
 	"time"
 
 	"github.com/Jleagle/steam-go/steamapi"
-	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
-	"github.com/gosimple/slug"
 	"github.com/jinzhu/gorm"
 )
 
@@ -20,13 +16,45 @@ type Bundle struct {
 	CreatedAt       time.Time `gorm:"not null;column:created_at;type:datetime"`
 	UpdatedAt       time.Time `gorm:"not null;column:updated_at;type:datetime"`
 	Name            string    `gorm:"not null;column:name"`
+	Icon            string    `gorm:"not null;column:icon"`
 	Discount        int       `gorm:"not null;column:discount"`
+	SaleDiscount    int       `gorm:"not null;column:discount"`
 	HighestDiscount int       `gorm:"not null;column:highest_discount"`
 	LowestDiscount  int       `gorm:"not null;column:lowest_discount"`
 	AppIDs          string    `gorm:"not null;column:app_ids"`     // JSON
 	PackageIDs      string    `gorm:"not null;column:package_ids"` // JSON
 	Image           string    `gorm:"not null;column:image"`       //
 	Prices          string    `gorm:"not null;column:prices"`      // JSON
+	SalePrices      string    `gorm:"not null;column:sale_prices"` // JSON
+	Type            string    `gorm:"not null;column:type"`
+}
+
+func (bundle Bundle) GetID() int {
+	return bundle.ID
+}
+
+func (bundle Bundle) GetUpdated() time.Time {
+	return bundle.UpdatedAt
+}
+
+func (bundle Bundle) GetDiscount() int {
+	return bundle.Discount
+}
+
+func (bundle Bundle) GetDiscountHighest() int {
+	return bundle.HighestDiscount
+}
+
+func (bundle Bundle) GetScore() float64 {
+	return 0
+}
+
+func (bundle Bundle) GetApps() int {
+	return bundle.AppsCount()
+}
+
+func (bundle Bundle) GetPackages() int {
+	return bundle.PackagesCount()
 }
 
 func (bundle *Bundle) BeforeSave(scope *gorm.Scope) error {
@@ -55,22 +83,15 @@ func (bundle *Bundle) SetDiscount(discount int) {
 }
 
 func (bundle Bundle) GetPath() string {
-	return "/bundles/" + strconv.Itoa(bundle.ID) + "/" + slug.Make(bundle.GetName())
+	return helpers.GetBundlePath(bundle.ID, bundle.Name)
 }
 
 func (bundle Bundle) GetName() string {
-
-	var name = strings.TrimSpace(bundle.Name)
-
-	if name != "" {
-		return name
-	}
-	return "Bundle " + strconv.Itoa(bundle.ID)
+	return helpers.GetBundleName(bundle.ID, bundle.Name)
 }
 
 func (bundle Bundle) GetStoreLink() string {
-	name := config.C.GameDBShortName
-	return "https://store.steampowered.com/bundle/" + strconv.Itoa(bundle.ID) + "?utm_source=" + name + "&utm_medium=referral&utm_campaign=app-store-link"
+	return helpers.GetBundleStoreLink(bundle.ID)
 }
 
 func (bundle Bundle) GetCreatedNice() string {
@@ -87,22 +108,28 @@ func (bundle Bundle) GetAppIDs() (ids []int, err error) {
 	return ids, err
 }
 
-func (bundle Bundle) GetPrices() (ret map[steamapi.ProductCC]string) {
+func (bundle Bundle) GetPrices() (ret map[steamapi.ProductCC]int) {
 
-	ret = map[steamapi.ProductCC]string{}
+	ret = map[steamapi.ProductCC]int{}
 
 	if bundle.Prices == "" {
 		return ret
 	}
 
-	prices := map[steamapi.ProductCC]int{}
-	err := helpers.Unmarshal([]byte(bundle.Prices), &prices)
+	err := helpers.Unmarshal([]byte(bundle.Prices), &ret)
 	if err != nil {
 		log.ErrS(err)
-		return nil
+		return ret
 	}
 
-	for k, v := range prices {
+	return ret
+}
+
+func (bundle Bundle) GetPricesFormatted() (ret map[steamapi.ProductCC]string) {
+
+	ret = map[steamapi.ProductCC]string{}
+
+	for k, v := range bundle.GetPrices() {
 		ret[k] = i18n.FormatPrice(i18n.GetProdCC(k).CurrencyCode, v)
 	}
 
@@ -118,6 +145,11 @@ func (bundle Bundle) AppsCount() int {
 	return len(apps)
 }
 
+func (bundle Bundle) PackagesCount() int {
+
+	return len(bundle.GetPackageIDs())
+}
+
 func (bundle Bundle) GetPackageIDs() (ids []int) {
 
 	err := helpers.Unmarshal([]byte(bundle.PackageIDs), &ids)
@@ -129,22 +161,7 @@ func (bundle Bundle) GetPackageIDs() (ids []int) {
 }
 
 func (bundle Bundle) OutputForJSON() (output []interface{}) {
-
-	updated := strconv.FormatInt(bundle.UpdatedAt.Unix(), 10)
-	highest := bundle.HighestDiscount == bundle.Discount && bundle.Discount != 0
-
-	return []interface{}{
-		bundle.ID,                   // 0
-		bundle.GetName(),            // 1
-		bundle.GetPath(),            // 2
-		updated,                     // 3
-		bundle.Discount,             // 4
-		bundle.AppsCount(),          // 5
-		len(bundle.GetPackageIDs()), // 6
-		highest,                     // 7
-		bundle.GetStoreLink(),       // 8
-		bundle.GetPrices(),          // 9
-	}
+	return helpers.OutputBundleForJSON(bundle)
 }
 
 func (bundle Bundle) Save() error {

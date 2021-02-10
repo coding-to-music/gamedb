@@ -151,7 +151,8 @@ func websocketHandler(message *rabbit.Message) {
 				continue
 			}
 
-			bundle, err := mysql.GetBundle(idPayload.ID, nil)
+			var bundle helpers.Bundle
+			bundle, err = mysql.GetBundle(idPayload.ID, nil)
 			if err != nil {
 				log.ErrS(err)
 				continue

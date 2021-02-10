@@ -117,6 +117,14 @@ func bundleHandler(message *rabbit.Message) {
 		return
 	}
 
+	// Elastic
+	err = ProduceBundleSearch(bundle)
+	if err != nil {
+		log.Err("Producing bundle search", zap.Error(err), zap.Int("bundle", payload.ID))
+		sendToRetryQueue(message)
+		return
+	}
+
 	message.Ack()
 }
 func updateBundle(bundle *mysql.Bundle) (err error) {

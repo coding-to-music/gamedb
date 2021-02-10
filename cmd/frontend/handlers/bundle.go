@@ -123,7 +123,7 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 	t.Apps = apps
 	t.Packages = packages
 
-	if val, ok := bundle.GetPrices()[session.GetProductCC(r)]; ok {
+	if val, ok := bundle.GetPricesFormatted()[session.GetProductCC(r)]; ok {
 		t.Price = val
 	} else {
 		t.Price = "-"

@@ -15,6 +15,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	influx "github.com/influxdata/influxdb1-client"
 	"github.com/streadway/amqp"
@@ -47,6 +48,10 @@ const (
 	QueueAppsSteamspy           rabbit.QueueName = "GDB_Apps.Steamspy"
 	QueueAppsSearch             rabbit.QueueName = "GDB_Apps.Search"
 
+	// Bundles
+	QueueBundles       rabbit.QueueName = "GDB_Bundles"
+	QueueBundlesSearch rabbit.QueueName = "GDB_Bundles.Search"
+
 	// Packages
 	QueuePackages       rabbit.QueueName = "GDB_Packages"
 	QueuePackagesPrices rabbit.QueueName = "GDB_Packages.Prices"
@@ -72,7 +77,6 @@ const (
 	QueueAppPlayersTop rabbit.QueueName = "GDB_App_Players_Top"
 
 	// Other
-	QueueBundles     rabbit.QueueName = "GDB_Bundles"
 	QueueChanges     rabbit.QueueName = "GDB_Changes"
 	QueueDelay       rabbit.QueueName = "GDB_Delay"
 	QueueFailed      rabbit.QueueName = "GDB_Failed"
@@ -101,6 +105,7 @@ var (
 		{Name: QueueAppsReviews},
 		{Name: QueueAppsSameowners},
 		{Name: QueueAppsSearch, prefetchSize: 1_000},
+		{Name: QueueBundlesSearch, prefetchSize: 1_000},
 		{Name: QueueAppsSteamspy},
 		{Name: QueueAppsTwitch},
 		{Name: QueueAppsWishlists, prefetchSize: 1_000},
@@ -152,6 +157,7 @@ var (
 		{Name: QueueAppsWishlists, consumer: appWishlistsHandler, prefetchSize: 1_000},
 		{Name: QueueAppsYoutube, consumer: appYoutubeHandler},
 		{Name: QueueBundles, consumer: bundleHandler},
+		{Name: QueueBundlesSearch, consumer: bundleSearchHandler, prefetchSize: 1_000},
 		{Name: QueueChanges, consumer: changesHandler},
 		{Name: QueueDelay, consumer: delayHandler, skipHeaders: true},
 		{Name: QueueFailed, skipHeaders: true},
@@ -192,6 +198,7 @@ var (
 		{Name: QueueAppsSameowners},
 		{Name: QueueApps},
 		{Name: QueueBundles},
+		{Name: QueueBundlesSearch, prefetchSize: 1_000},
 		{Name: QueueChanges},
 		{Name: QueueDelay, skipHeaders: true},
 		{Name: QueueFailed, skipHeaders: true},
@@ -234,6 +241,7 @@ var (
 		{Name: QueueAppsYoutube},
 		{Name: QueueAppsSameowners},
 		{Name: QueueApps},
+		{Name: QueueBundlesSearch, prefetchSize: 1_000},
 		{Name: QueueDelay, skipHeaders: true},
 		{Name: QueueGroupsPrimaries, prefetchSize: 1_000},
 		{Name: QueueGroupsSearch, prefetchSize: 1_000},
@@ -652,6 +660,11 @@ func ProducePlayerRank(payload PlayerRanksMessage) (err error) {
 func ProduceGroupSearch(group *mongo.Group, groupID string, groupType string) (err error) {
 
 	return produce(QueueGroupsSearch, GroupSearchMessage{Group: group, GroupID: groupID, GroupType: groupType})
+}
+
+func ProduceBundleSearch(bundle mysql.Bundle) (err error) {
+
+	return produce(QueueBundlesSearch, BundlesSearchMessage{Bundle: bundle})
 }
 
 func ProduceGroupPrimaries(groupID string, groupType string, prims int) (err error) {

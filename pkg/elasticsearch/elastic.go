@@ -15,6 +15,7 @@ var ErrNoResult = errors.New("no result")
 
 const (
 	IndexAchievements = "achievements"
+	IndexBundles      = "bundles"
 	IndexGroups       = "groups"
 	IndexArticles     = "articles"
 	IndexApps         = "apps"
