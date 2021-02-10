@@ -15,7 +15,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	influx "github.com/influxdata/influxdb1-client"
 	"github.com/streadway/amqp"
@@ -662,7 +661,7 @@ func ProduceGroupSearch(group *mongo.Group, groupID string, groupType string) (e
 	return produce(QueueGroupsSearch, GroupSearchMessage{Group: group, GroupID: groupID, GroupType: groupType})
 }
 
-func ProduceBundleSearch(bundle mysql.Bundle) (err error) {
+func ProduceBundleSearch(bundle mongo.Bundle) (err error) {
 
 	return produce(QueueBundlesSearch, BundlesSearchMessage{Bundle: bundle})
 }

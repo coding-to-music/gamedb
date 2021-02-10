@@ -34,6 +34,7 @@ const (
 	CollectionApps                collection = "apps"
 	CollectionAppSales            collection = "app_offers"
 	CollectionAppSameOwners       collection = "app_same_owners"
+	CollectionBundles             collection = "bundles"
 	CollectionBundlePrices        collection = "bundle_prices"
 	CollectionChangeItems         collection = "change_products"
 	CollectionChanges             collection = "changes"

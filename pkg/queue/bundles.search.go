@@ -5,12 +5,12 @@ import (
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/mysql"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"go.uber.org/zap"
 )
 
 type BundlesSearchMessage struct {
-	Bundle mysql.Bundle `json:"bundle"`
+	Bundle mongo.Bundle `json:"bundle"`
 }
 
 func (m BundlesSearchMessage) Queue() rabbit.QueueName {
@@ -33,13 +33,13 @@ func bundleSearchHandler(message *rabbit.Message) {
 		UpdatedAt:       payload.Bundle.UpdatedAt,
 		Name:            payload.Bundle.Name,
 		Discount:        payload.Bundle.Discount,
-		SaleDiscount:    payload.Bundle.SaleDiscount,
-		HighestDiscount: payload.Bundle.HighestDiscount,
-		Apps:            payload.Bundle.AppsCount(),
-		Packages:        payload.Bundle.PackagesCount(),
+		SaleDiscount:    payload.Bundle.DiscountSale,
+		HighestDiscount: payload.Bundle.DiscountHighest,
+		Apps:            payload.Bundle.Apps,
+		Packages:        payload.Bundle.Packages,
 		Icon:            payload.Bundle.Icon,
-		Prices:          payload.Bundle.GetPrices(),
-		SalePrices:      payload.Bundle.GetPrices(),
+		Prices:          payload.Bundle.Prices,
+		SalePrices:      payload.Bundle.PricesSale,
 		Type:            payload.Bundle.Type,
 	}
 

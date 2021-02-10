@@ -110,15 +110,37 @@ func bundleHandler(message *rabbit.Message) {
 	}
 
 	// Clear caches
-	err = memcache.Delete(memcache.ItemBundleInQueue(bundle.ID).Key)
+	items := []string{
+		memcache.ItemBundleInQueue(bundle.ID).Key,
+		memcache.ItemBundle(bundle.ID).Key,
+	}
+
+	err = memcache.Delete(items...)
 	if err != nil {
 		log.ErrS(err, payload.ID)
 		sendToRetryQueue(message)
 		return
 	}
 
+	mongoBundle := mongo.Bundle{
+		Apps:            bundle.AppsCount(),
+		Discount:        bundle.Discount,
+		DiscountHighest: bundle.HighestDiscount,
+		DiscountSale:    bundle.SaleDiscount,
+		Icon:            bundle.Icon,
+		ID:              bundle.ID,
+		Name:            bundle.Name,
+		Packages:        bundle.PackagesCount(),
+		Prices:          bundle.GetPrices(),
+		PricesSale:      bundle.GetPrices(),
+		Type:            bundle.Type,
+		UpdatedAt:       bundle.UpdatedAt,
+		// Score:           "",
+		// NameMarked:      "",
+	}
+
 	// Elastic
-	err = ProduceBundleSearch(bundle)
+	err = ProduceBundleSearch(mongoBundle)
 	if err != nil {
 		log.Err("Producing bundle search", zap.Error(err), zap.Int("bundle", payload.ID))
 		sendToRetryQueue(message)

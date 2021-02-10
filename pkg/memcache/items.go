@@ -20,7 +20,7 @@ var (
 	// App
 	ItemAppReleaseDateCounts  = Item{Key: "app-release-date-counts", Expiration: 60 * 60 * 24}
 	ItemAppReviewScoreCounts  = Item{Key: "app-review-score-counts", Expiration: 60 * 60 * 24 * 2}
-	ItemApp                   = func(changeID int) Item { return Item{Key: "app-" + strconv.Itoa(changeID), Expiration: 0} }
+	ItemApp                   = func(appID int) Item { return Item{Key: "app-" + strconv.Itoa(appID), Expiration: 0} }
 	ItemAppTypeCounts         = func(cc steamapi.ProductCC) Item { return Item{Key: "app-type-counts-" + string(cc), Expiration: 86400 * 7} }
 	ItemAppStats              = func(typex string, appID int) Item { return Item{Key: "app-stats-" + typex + "-" + strconv.Itoa(appID), Expiration: 0} }
 	ItemAppDemos              = func(appID int) Item { return Item{Key: "app-demos-" + strconv.Itoa(appID), Expiration: 0} }
@@ -43,6 +43,9 @@ var (
 	ItemAppPlayersRow          = func(appID int) Item { return Item{Key: "app-players-" + strconv.Itoa(appID), Expiration: 10 * 60} }
 	ItemAppPlayersChart        = func(appID string, limited bool) Item { return Item{Key: "app-players-chart-" + appID + "-" + strconv.FormatBool(limited), Expiration: 10 * 60} }
 	ItemAppPlayersHeatmapChart = func(appID string) Item { return Item{Key: "app-players-heatmap-chart-" + appID, Expiration: 10 * 60} }
+
+	// Bundles
+	ItemBundle = func(bundleID int) Item { return Item{Key: "bundle-" + strconv.Itoa(bundleID), Expiration: 0} }
 
 	// Chat
 	ItemChatBotGuildsCount  = Item{Key: "chat-bot-guilds", Expiration: 60 * 60 * 24}
