@@ -36,6 +36,8 @@ func refreshCommands() error {
 		}
 	}
 
+	// todo, only update commands that are changed
+
 	setCommands()
 	return nil
 }
