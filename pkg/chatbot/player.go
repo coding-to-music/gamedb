@@ -118,6 +118,13 @@ func (c CommandPlayer) Output(authorID string, _ steamapi.ProductCC, inputs map[
 		games = humanize.Comma(int64(player.GetGamesCount())) + " (" + helpers.OrdinalComma(player.GetRanks()[helpers.RankKeyGames]) + ")"
 	}
 
+	var achievements string
+	if player.GetAchievements() == 0 {
+		games = "Profile set to private"
+	} else {
+		games = humanize.Comma(int64(player.GetAchievements())) + " (" + helpers.OrdinalComma(player.GetRanks()[helpers.RankKeyAchievements]) + ")"
+	}
+
 	var playtime string
 	if player.GetPlaytime() == 0 {
 		playtime = "Profile set to private"
@@ -147,7 +154,7 @@ func (c CommandPlayer) Output(authorID string, _ steamapi.ProductCC, inputs map[
 			},
 			{
 				Name:  "Achievements",
-				Value: humanize.Comma(int64(player.GetAchievements())) + " (" + helpers.OrdinalComma(player.GetRanks()[helpers.RankKeyAchievements]) + ")",
+				Value: achievements,
 			},
 			{
 				Name:  "Badges",
