@@ -36,12 +36,21 @@ func (command ChatBotCommand) BSON() bson.D {
 	}
 }
 
+func (command ChatBotCommand) GetAvatar() string {
+
+	if command.AuthorAvatar == "" {
+		command.AuthorAvatar = "/assets/img/discord.png"
+	}
+
+	return command.AuthorAvatar
+}
+
 func (command ChatBotCommand) GetTableRowJSON(guilds map[string]DiscordGuild) []interface{} {
 
 	return []interface{}{
 		command.AuthorID,                     // 0
 		command.AuthorName,                   // 1
-		command.AuthorAvatar,                 // 2
+		command.GetAvatar(),                  // 2
 		command.GetCommand(),                 // 3
 		command.Time.Unix(),                  // 4
 		command.Time.Format(helpers.DateSQL), // 5
