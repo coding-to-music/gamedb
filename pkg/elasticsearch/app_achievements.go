@@ -10,9 +10,8 @@ import (
 )
 
 type Achievement struct {
-	ID          string  `json:"id"` // Achievement key
+	ID          string  `json:"id"`
 	Name        string  `json:"name"`
-	NameMarked  string  `json:"name_marked"`
 	Icon        string  `json:"icon"`
 	Description string  `json:"description"`
 	Hidden      bool    `json:"hidden"`
@@ -20,7 +19,8 @@ type Achievement struct {
 	AppID       int     `json:"app_id"`
 	AppName     string  `json:"app_name"`
 	AppOwners   int64   `json:"app_owners"`
-	Score       float64 `json:"-"` // Not stored, just used on frontend
+	NameMarked  string  `json:"-"`
+	Score       float64 `json:"-"`
 }
 
 func (achievement Achievement) GetKey() string {

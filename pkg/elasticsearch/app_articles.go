@@ -19,7 +19,6 @@ import (
 type Article struct {
 	ID          int64   `json:"id"`
 	Title       string  `json:"title"`
-	TitleMarked string  `json:"title_marked"`
 	Author      string  `json:"author"`
 	Body        string  `json:"body"`
 	Feed        string  `json:"feed"`
@@ -29,6 +28,7 @@ type Article struct {
 	AppIcon     string  `json:"app_icon"`
 	Time        int64   `json:"time"`
 	ArticleIcon string  `json:"icon"`
+	TitleMarked string  `json:"-"`
 	Score       float64 `json:"-"`
 }
 

@@ -16,7 +16,6 @@ import (
 type Player struct {
 	ID                   int64                      `json:"id"`
 	PersonaName          string                     `json:"name"`
-	PersonaNameMarked    string                     `json:"name_marked"`
 	PersonaNameRecent    []string                   `json:"name_recent"`
 	VanityURL            string                     `json:"url"`
 	Avatar               string                     `json:"avatar"`
@@ -38,6 +37,7 @@ type Player struct {
 	AwardsReceivedCount  int                        `json:"awards_received_count"`
 	AwardsReceivedPoints int                        `json:"awards_received_points"`
 	Ranks                map[helpers.RankMetric]int `json:"ranks"`
+	PersonaNameMarked    string                     `json:"-"`
 	Score                float64                    `json:"-"`
 }
 

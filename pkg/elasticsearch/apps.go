@@ -32,7 +32,6 @@ type App struct {
 	Movies              string                `json:"movies"`
 	MoviesCount         int                   `json:"movies_count"`
 	Name                string                `json:"name"`
-	NameMarked          string                `json:"name_marked"` // Not in DB
 	Platforms           []string              `json:"platforms"`
 	PlayersCount        int                   `json:"players"` // Peak week
 	Prices              helpers.ProductPrices `json:"prices"`
@@ -42,7 +41,6 @@ type App struct {
 	ReleaseDateRounded  int64                 `json:"release_date_rounded"`
 	ReviewScore         float64               `json:"score"`
 	ReviewsCount        int                   `json:"reviews_count"`
-	Score               float64               `json:"-"` // Not in DB - Search score
 	Screenshots         string                `json:"screenshots"`
 	ScreenshotsCount    int                   `json:"screenshots_count"`
 	Tags                []int                 `json:"tags"`
@@ -50,6 +48,8 @@ type App struct {
 	Type                string                `json:"type"`
 	WishlistAvg         float64               `json:"wishlist_avg"`
 	WishlistCount       int                   `json:"wishlist_count"`
+	NameMarked          string                `json:"-"`
+	Score               float64               `json:"-"`
 }
 
 func (app App) GetID() int {

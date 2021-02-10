@@ -11,7 +11,6 @@ import (
 type Group struct {
 	ID           string  `json:"id"`
 	Name         string  `json:"name"`
-	NameMarked   string  `json:"name_marked"`
 	URL          string  `json:"url"`
 	Abbreviation string  `json:"abbreviation"`
 	Headline     string  `json:"headline"`
@@ -20,6 +19,7 @@ type Group struct {
 	Trend        float64 `json:"trend"`
 	Error        bool    `json:"error"`
 	Primaries    int     `json:"primaries"`
+	NameMarked   string  `json:"-"`
 	Score        float64 `json:"-"`
 }
 
