@@ -7,7 +7,13 @@
         </h5>
 
         <ul class="nav nav-tabs card-header-tabs nav-fill-mobile" role="tablist">
-
+            <li class="nav-item">
+                {{if startsWith .Path "/games" }}
+                    <span class="nav-link active" role="tab"><i class="fas fa-cube"></i> Games</span>
+                {{else}}
+                    <a class="nav-link" href="/games" role="tab"><i class="fas fa-cube"></i> Games</a>
+                {{end}}
+            </li>
             <li class="nav-item">
                 {{if startsWith .Path "/packages" }}
                     <span class="nav-link active" role="tab"><i class="fas fa-cube"></i> Packages</span>
@@ -22,7 +28,6 @@
                     <a class="nav-link" href="/bundles" role="tab"><i class="fas fa-cubes"></i> Bundles</a>
                 {{end}}
             </li>
-
         </ul>
     </div>
 
