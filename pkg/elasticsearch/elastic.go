@@ -99,7 +99,7 @@ func UpdateDocumentFields(index string, key string, doc map[string]interface{}) 
 		return err
 	}
 
-	_, err = client.Update().Index(index).Doc(doc).Id(key).Do(ctx)
+	_, err = client.Update().Upsert(doc).Doc(doc).Index(index).Id(key).Do(ctx)
 	return err
 }
 
