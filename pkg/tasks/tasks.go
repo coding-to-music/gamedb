@@ -76,6 +76,7 @@ var (
 		&AutoPlayerRefreshes{},
 		&BadgesUpdateRandom{},
 		&BundlesQueueAll{},
+		&BundlesQueueElastic{},
 		&GameDBStats{},
 		&GroupsQueueElastic{},
 		&GroupsQueuePrimaries{},
