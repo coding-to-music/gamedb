@@ -125,7 +125,7 @@ func setCommands() {
 				log.Err("Upserting discord command", zap.Int("code", resp.StatusCode), zap.String("id", c.ID()), zap.String("body", string(body)))
 			}
 
-			time.Sleep(time.Second / 4)
+			time.Sleep(time.Second)
 		}(c)
 	}
 }
