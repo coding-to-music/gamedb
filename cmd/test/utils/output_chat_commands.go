@@ -29,6 +29,8 @@ func (chatCommands) run() {
 
 		if lastType != v.Type() {
 			fmt.Println()
+			fmt.Println("&nbsp;")
+			fmt.Println()
 			fmt.Println(v.Type() + " Commands | Description")
 			fmt.Println("--- | ---")
 		}
@@ -36,5 +38,13 @@ func (chatCommands) run() {
 		fmt.Println("/" + v.ID() + " | " + v.Description())
 
 		lastType = v.Type()
+	}
+
+	fmt.Println()
+
+	imgurIDs := []string{"g6oINcF", "Fc2ANPn", "dqolEon", "JhQEpJE", "5tS66Aw", "Su20AZ6", "xJx34ZW", "bT0Pcdv", "g16Uekz", "mWoDw3F"}
+
+	for _, id := range imgurIDs {
+		fmt.Println("![Global Steam Discord Bot](https://i.imgur.com/" + id + ".png)<br>")
 	}
 }
