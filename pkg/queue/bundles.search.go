@@ -29,18 +29,25 @@ func bundleSearchHandler(message *rabbit.Message) {
 	}
 
 	bundle := elasticsearch.Bundle{
-		ID:              payload.Bundle.ID,
-		UpdatedAt:       payload.Bundle.UpdatedAt,
-		Name:            payload.Bundle.Name,
-		Discount:        payload.Bundle.Discount,
-		SaleDiscount:    payload.Bundle.DiscountSale,
-		HighestDiscount: payload.Bundle.DiscountHighest,
 		Apps:            payload.Bundle.Apps,
-		Packages:        payload.Bundle.Packages,
+		CreatedAt:       payload.Bundle.CreatedAt.Unix(),
+		Discount:        payload.Bundle.Discount,
+		DiscountHighest: payload.Bundle.DiscountHighest,
+		DiscountLowest:  payload.Bundle.DiscountLowest,
+		DiscountSale:    payload.Bundle.DiscountSale,
+		Giftable:        payload.Bundle.Giftable,
 		Icon:            payload.Bundle.Icon,
+		ID:              payload.Bundle.ID,
+		Image:           payload.Bundle.Image,
+		OnSale:          payload.Bundle.OnSale,
+		Name:            payload.Bundle.Name,
+		Packages:        payload.Bundle.Packages,
 		Prices:          payload.Bundle.Prices,
-		SalePrices:      payload.Bundle.PricesSale,
+		PricesSale:      payload.Bundle.PricesSale,
 		Type:            payload.Bundle.Type,
+		UpdatedAt:       payload.Bundle.UpdatedAt.Unix(),
+		NameMarked:      "",
+		Score:           0,
 	}
 
 	err = elasticsearch.IndexBundle(bundle)

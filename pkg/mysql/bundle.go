@@ -12,21 +12,23 @@ import (
 )
 
 type Bundle struct {
-	ID              int       `gorm:"not null;column:id"`
+	AppIDs          string    `gorm:"not null;column:app_ids"` // JSON
 	CreatedAt       time.Time `gorm:"not null;column:created_at;type:datetime"`
-	UpdatedAt       time.Time `gorm:"not null;column:updated_at;type:datetime"`
-	Name            string    `gorm:"not null;column:name"`
-	Icon            string    `gorm:"not null;column:icon"`
 	Discount        int       `gorm:"not null;column:discount"`
-	SaleDiscount    int       `gorm:"not null;column:discount"`
-	HighestDiscount int       `gorm:"not null;column:highest_discount"`
-	LowestDiscount  int       `gorm:"not null;column:lowest_discount"`
-	AppIDs          string    `gorm:"not null;column:app_ids"`     // JSON
+	DiscountHighest int       `gorm:"not null;column:highest_discount"`
+	DiscountLowest  int       `gorm:"not null;column:lowest_discount"`
+	DiscountSale    int       `gorm:"not null;column:discount"`
+	Giftable        bool      `gorm:"not null;column:giftable"`
+	Icon            string    `gorm:"not null;column:icon"`
+	ID              int       `gorm:"not null;column:id"`
+	Image           string    `gorm:"not null;column:image"`
+	Name            string    `gorm:"not null;column:name"`
+	OnSale          bool      `gorm:"not null;column:on_sale"`
 	PackageIDs      string    `gorm:"not null;column:package_ids"` // JSON
-	Image           string    `gorm:"not null;column:image"`       //
 	Prices          string    `gorm:"not null;column:prices"`      // JSON
-	SalePrices      string    `gorm:"not null;column:sale_prices"` // JSON
+	PricesSale      string    `gorm:"not null;column:sale_prices"` // JSON
 	Type            string    `gorm:"not null;column:type"`
+	UpdatedAt       time.Time `gorm:"not null;column:updated_at;type:datetime"`
 }
 
 func (bundle Bundle) GetID() int {
@@ -42,7 +44,7 @@ func (bundle Bundle) GetDiscount() int {
 }
 
 func (bundle Bundle) GetDiscountHighest() int {
-	return bundle.HighestDiscount
+	return bundle.DiscountHighest
 }
 
 func (bundle Bundle) GetScore() float64 {
@@ -66,20 +68,21 @@ func (bundle *Bundle) BeforeSave(scope *gorm.Scope) error {
 		bundle.PackageIDs = "[]"
 	}
 
+	bundle.OnSale = bundle.DiscountSale > bundle.Discount
+
+	if bundle.DiscountSale < bundle.Discount {
+		bundle.DiscountSale = bundle.Discount
+	}
+
+	if bundle.DiscountSale > bundle.DiscountHighest {
+		bundle.DiscountHighest = bundle.DiscountSale
+	}
+
+	if bundle.Discount < bundle.DiscountLowest {
+		bundle.DiscountLowest = bundle.Discount
+	}
+
 	return nil
-}
-
-func (bundle *Bundle) SetDiscount(discount int) {
-
-	bundle.Discount = discount
-
-	if discount < bundle.HighestDiscount {
-		bundle.HighestDiscount = discount
-	}
-
-	if discount > bundle.LowestDiscount || bundle.LowestDiscount == 0 {
-		bundle.LowestDiscount = discount
-	}
 }
 
 func (bundle Bundle) GetPath() string {
@@ -117,6 +120,23 @@ func (bundle Bundle) GetPrices() (ret map[steamapi.ProductCC]int) {
 	}
 
 	err := helpers.Unmarshal([]byte(bundle.Prices), &ret)
+	if err != nil {
+		log.ErrS(err)
+		return ret
+	}
+
+	return ret
+}
+
+func (bundle Bundle) GetPricesSale() (ret map[steamapi.ProductCC]int) {
+
+	ret = map[steamapi.ProductCC]int{}
+
+	if bundle.Prices == "" {
+		return ret
+	}
+
+	err := helpers.Unmarshal([]byte(bundle.PricesSale), &ret)
 	if err != nil {
 		log.ErrS(err)
 		return ret

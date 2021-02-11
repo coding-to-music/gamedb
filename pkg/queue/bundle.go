@@ -10,6 +10,7 @@ import (
 
 	"github.com/Jleagle/rabbit-go"
 	"github.com/Jleagle/steam-go/steamapi"
+	"github.com/Jleagle/unmarshal-go/ctypes"
 	"github.com/cenkalti/backoff/v4"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
@@ -80,7 +81,7 @@ func bundleHandler(message *rabbit.Message) {
 		}
 	}()
 
-	// Save to InfluxDB
+	// Save price change to Mongo
 	wg.Add(1)
 	go func() {
 
@@ -100,15 +101,6 @@ func bundleHandler(message *rabbit.Message) {
 		return
 	}
 
-	// Send websocket
-	wsPayload := IntPayload{ID: payload.ID}
-	err = ProduceWebsocket(wsPayload, websockets.PageBundle, websockets.PageBundles)
-	if err != nil {
-		log.ErrS(err, payload.ID)
-		sendToRetryQueue(message)
-		return
-	}
-
 	// Clear caches
 	items := []string{
 		memcache.ItemBundleInQueue(bundle.ID).Key,
@@ -122,21 +114,43 @@ func bundleHandler(message *rabbit.Message) {
 		return
 	}
 
+	// Send websocket
+	wsPayload := IntPayload{ID: payload.ID}
+	err = ProduceWebsocket(wsPayload, websockets.PageBundle, websockets.PageBundles)
+	if err != nil {
+		log.ErrS(err, payload.ID)
+		sendToRetryQueue(message)
+		return
+	}
+
+	//
+	apps, _ := bundle.GetAppIDs()
+
 	mongoBundle := mongo.Bundle{
-		Apps:            bundle.AppsCount(),
+		Apps:            apps,
+		CreatedAt:       bundle.CreatedAt,
 		Discount:        bundle.Discount,
-		DiscountHighest: bundle.HighestDiscount,
-		DiscountSale:    bundle.SaleDiscount,
+		DiscountHighest: bundle.DiscountHighest,
+		DiscountLowest:  bundle.DiscountLowest,
+		DiscountSale:    bundle.DiscountSale,
+		Giftable:        bundle.Giftable,
 		Icon:            bundle.Icon,
 		ID:              bundle.ID,
+		Image:           bundle.Image,
 		Name:            bundle.Name,
-		Packages:        bundle.PackagesCount(),
+		OnSale:          bundle.OnSale,
+		Packages:        bundle.GetPackageIDs(),
 		Prices:          bundle.GetPrices(),
-		PricesSale:      bundle.GetPrices(),
+		PricesSale:      bundle.GetPricesSale(),
 		Type:            bundle.Type,
 		UpdatedAt:       bundle.UpdatedAt,
-		// Score:           "",
-		// NameMarked:      "",
+	}
+
+	_, err = mongo.ReplaceOne(mongo.CollectionBundles, bson.D{{"_id", bundle.ID}}, mongoBundle)
+	if err != nil {
+		log.ErrS(err, payload.ID)
+		sendToRetryQueue(message)
+		return
 	}
 
 	// Elastic
@@ -149,6 +163,7 @@ func bundleHandler(message *rabbit.Message) {
 
 	message.Ack()
 }
+
 func updateBundle(bundle *mysql.Bundle) (err error) {
 
 	var prices = map[steamapi.ProductCC]int{}
@@ -164,8 +179,8 @@ func updateBundle(bundle *mysql.Bundle) (err error) {
 
 		if prodCC.ProductCode == steamapi.ProductCCUS {
 
-			var apps []string
-			var packages []string
+			var apps []int
+			var packages []int
 
 			// Title
 			c.OnHTML("h2.pageheader", func(e *colly.HTMLElement) {
@@ -179,44 +194,49 @@ func updateBundle(bundle *mysql.Bundle) (err error) {
 
 			// Discount
 			c.OnHTML(".game_purchase_discount .bundle_base_discount", func(e *colly.HTMLElement) {
-				var discount int
-				discount, err = strconv.Atoi(strings.Replace(e.Text, "%", "", 1))
-				bundle.SetDiscount(discount)
+
+				bundle.Discount, err = strconv.Atoi(strings.Replace(e.Text, "%", "", 1))
+				if err != nil {
+					log.ErrS(err)
+				}
 			})
 
-			// Bigger discount
+			// Sale discount
 			c.OnHTML(".game_purchase_discount .discount_pct", func(e *colly.HTMLElement) {
-				var discount int
-				discount, err = strconv.Atoi(strings.Replace(e.Text, "%", "", 1))
-				bundle.SetDiscount(discount)
-			})
 
-			// Apps
-			c.OnHTML("[data-ds-appid]", func(e *colly.HTMLElement) {
-
-				apps = append(apps, strings.Split(e.Attr("data-ds-appid"), ",")...)
-
-				b, err := json.Marshal(helpers.StringSliceToIntSlice(apps))
+				bundle.DiscountSale, err = strconv.Atoi(strings.Replace(e.Text, "%", "", 1))
 				if err != nil {
 					log.ErrS(err)
-					return
 				}
-
-				bundle.AppIDs = string(b)
 			})
 
-			// Packages
-			c.OnHTML("[data-ds-packageid]", func(e *colly.HTMLElement) {
+			// Bundle data
+			c.OnHTML("[data-ds-bundle-data]", func(e *colly.HTMLElement) {
 
-				packages = append(packages, strings.Split(e.Attr("data-ds-packageid"), ",")...)
-
-				b, err := json.Marshal(helpers.StringSliceToIntSlice(packages))
+				var data bundleData
+				err = json.Unmarshal([]byte(e.Attr("data-ds-bundle-data")), &data)
 				if err != nil {
-					log.ErrS(err)
-					return
+					log.Err("Reading bundle data", zap.Error(err), zap.Int("bundle", bundle.ID))
 				}
 
-				bundle.PackageIDs = string(b)
+				bundle.Giftable = !data.RestrictGifting
+
+				if data.MustPurchaseAsSet {
+					bundle.Type = mongo.BundleTypePurchaseTogether
+				} else {
+					bundle.Type = mongo.BundleTypeCompleteTheSet
+				}
+
+				for _, v := range data.Items {
+					apps = append(apps, v.IncludedAppIDs...)
+					packages = append(packages, v.PackageID)
+				}
+
+				b1, _ := json.Marshal(apps)
+				bundle.AppIDs = string(b1)
+
+				b2, _ := json.Marshal(packages)
+				bundle.PackageIDs = string(b2)
 			})
 		}
 
@@ -261,14 +281,27 @@ func updateBundle(bundle *mysql.Bundle) (err error) {
 	return nil
 }
 
+type bundleData struct {
+	DiscountPct       ctypes.Int  `json:"m_nDiscountPct"`
+	MustPurchaseAsSet ctypes.Bool `json:"m_bMustPurchaseAsSet"`
+	Items             []struct {
+		PackageID                    int   `json:"m_nPackageID"`
+		IncludedAppIDs               []int `json:"m_rgIncludedAppIDs"`
+		PackageDiscounted            bool  `json:"m_bPackageDiscounted"`
+		BasePriceInCents             int   `json:"m_nBasePriceInCents"`
+		FinalPriceInCents            int   `json:"m_nFinalPriceInCents"`
+		FinalPriceWithBundleDiscount int   `json:"m_nFinalPriceWithBundleDiscount"`
+	} `json:"m_rgItems"`
+	IsCommercial    bool `json:"m_bIsCommercial"`
+	RestrictGifting bool `json:"m_bRestrictGifting"`
+}
+
 var bundlePriceLock sync.Mutex
 
 func saveBundlePriceToMongo(bundle mysql.Bundle, oldBundle mysql.Bundle) (err error) {
 
 	bundlePriceLock.Lock()
 	defer bundlePriceLock.Unlock()
-
-	// time.Sleep(time.Second) // prices are keyed by the second
 
 	if bundle.Discount != oldBundle.Discount {
 

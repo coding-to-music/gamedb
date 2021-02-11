@@ -9,26 +9,50 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
+const BundleTypeCompleteTheSet = "cts"
+const BundleTypePurchaseTogether = "pt"
+
 type Bundle struct {
-	Apps            int                        `bson:"apps"`
+	Apps            []int                      `bson:"apps"`
+	CreatedAt       time.Time                  `bson:"created_at"`
 	Discount        int                        `bson:"discount"`
 	DiscountHighest int                        `bson:"discount_highest"`
+	DiscountLowest  int                        `bson:"discount_lowest"`
 	DiscountSale    int                        `bson:"discount_sale"`
+	Giftable        bool                       `bson:"giftable"`
 	Icon            string                     `bson:"icon"`
 	ID              int                        `bson:"_id"`
+	Image           string                     `bson:"image"`
 	Name            string                     `bson:"name"`
-	NameMarked      string                     `bson:"-"`
-	Packages        int                        `bson:"packages"`
+	OnSale          bool                       `bson:"on_sale"`
+	Packages        []int                      `bson:"packages"`
 	Prices          map[steamapi.ProductCC]int `bson:"prices"`
 	PricesSale      map[steamapi.ProductCC]int `bson:"prices_sale"`
-	Score           float64                    `bson:"-"`
 	Type            string                     `bson:"type"`
 	UpdatedAt       time.Time                  `bson:"updated_at"`
 }
 
-func (bundle *Bundle) BSON() bson.D {
+func (bundle Bundle) BSON() bson.D {
 
 	bundle.UpdatedAt = time.Now()
+
+	if bundle.CreatedAt.IsZero() || bundle.CreatedAt.Unix() == 0 {
+		bundle.CreatedAt = time.Now()
+	}
+
+	bundle.OnSale = bundle.DiscountSale > bundle.Discount
+
+	if bundle.DiscountSale < bundle.Discount {
+		bundle.DiscountSale = bundle.Discount
+	}
+
+	if bundle.DiscountSale > bundle.DiscountHighest {
+		bundle.DiscountHighest = bundle.DiscountSale
+	}
+
+	if bundle.Discount < bundle.DiscountLowest {
+		bundle.DiscountLowest = bundle.Discount
+	}
 
 	return bson.D{
 		{"_id", bundle.ID},

@@ -40,7 +40,7 @@ func OutputBundleForJSON(bundle Bundle) []interface{} {
 		bundle.GetPackages(),  // 6
 		highest,               // 7
 		bundle.GetStoreLink(), // 8
-		bundle.GetPrices,      // 9
+		bundle.GetPrices(),    // 9
 		bundle.GetScore(),     // 10
 	}
 }

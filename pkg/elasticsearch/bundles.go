@@ -14,18 +14,23 @@ import (
 )
 
 type Bundle struct {
-	ID              int                        `json:"id"`
-	UpdatedAt       time.Time                  `json:"updated_at"`
-	Name            string                     `json:"name"`
+	Apps            []int                      `json:"apps"`
+	CreatedAt       int64                      `json:"created_at"`
 	Discount        int                        `json:"discount"`
-	SaleDiscount    int                        `json:"sale_discount"`
-	HighestDiscount int                        `json:"highest_discount"`
-	Apps            int                        `json:"apps"`
-	Packages        int                        `json:"packages"`
+	DiscountHighest int                        `json:"discount_highest"`
+	DiscountLowest  int                        `json:"discount_lowest"`
+	DiscountSale    int                        `json:"discount_sale"`
+	Giftable        bool                       `json:"giftable"`
 	Icon            string                     `json:"icon"`
+	ID              int                        `json:"id"`
+	Image           string                     `json:"image"`
+	Name            string                     `json:"name"`
+	OnSale          bool                       `json:"on_sale"`
+	Packages        []int                      `json:"packages"`
 	Prices          map[steamapi.ProductCC]int `json:"prices"`
-	SalePrices      map[steamapi.ProductCC]int `json:"sale_prices"`
+	PricesSale      map[steamapi.ProductCC]int `json:"prices_sale"`
 	Type            string                     `json:"type"`
+	UpdatedAt       int64                      `json:"updated_at"`
 	NameMarked      string                     `json:"-"`
 	Score           float64                    `json:"-"`
 }
@@ -35,7 +40,7 @@ func (bundle Bundle) GetID() int {
 }
 
 func (bundle Bundle) GetUpdated() time.Time {
-	return bundle.UpdatedAt
+	return time.Unix(bundle.UpdatedAt, 0)
 }
 
 func (bundle Bundle) GetDiscount() int {
@@ -43,7 +48,7 @@ func (bundle Bundle) GetDiscount() int {
 }
 
 func (bundle Bundle) GetDiscountHighest() int {
-	return bundle.GetDiscountHighest()
+	return bundle.DiscountHighest
 }
 
 func (bundle Bundle) GetPrices() map[steamapi.ProductCC]int {
@@ -55,11 +60,11 @@ func (bundle Bundle) GetScore() float64 {
 }
 
 func (bundle Bundle) GetApps() int {
-	return bundle.Apps
+	return len(bundle.Apps)
 }
 
 func (bundle Bundle) GetPackages() int {
-	return bundle.Discount
+	return len(bundle.Packages)
 }
 
 func (bundle Bundle) GetPath() string {
@@ -159,20 +164,23 @@ func DeleteAndRebuildBundlesIndex() {
 		"settings": settings,
 		"mappings": map[string]interface{}{
 			"properties": map[string]interface{}{
-				"id":               fieldTypeInt32,
-				"updated_at":       fieldTypeInt64,
-				"name":             fieldTypeText,
-				"discount":         fieldTypeInt32,
-				"sale_discount":    fieldTypeInt32,
-				"highest_discount": fieldTypeInt32,
 				"apps":             fieldTypeInt32,
-				"packages":         fieldTypeInt32,
-				"icon":             fieldTypeDisabled,
-				"prices":           map[string]interface{}{"type": "object", "properties": priceProperties},
-				"sale_prices":      map[string]interface{}{"type": "object", "properties": priceProperties},
-				"type":             fieldTypeKeyword,
+				"created_at":       fieldTypeInt64,
+				"discount":         fieldTypeInt32,
+				"discount_highest": fieldTypeInt32,
+				"discount_lowest":  fieldTypeInt32,
+				"discount_sale":    fieldTypeInt32,
 				"giftable":         fieldTypeBool,
+				"icon":             fieldTypeDisabled,
+				"id":               fieldTypeInt32,
+				"image":            fieldTypeDisabled,
+				"name":             fieldTypeText,
 				"on_sale":          fieldTypeBool,
+				"packages":         fieldTypeInt32,
+				"prices":           map[string]interface{}{"type": "object", "properties": priceProperties},
+				"prices_sale":      map[string]interface{}{"type": "object", "properties": priceProperties},
+				"type":             fieldTypeKeyword,
+				"updated_at":       fieldTypeInt64,
 			},
 		},
 	}
