@@ -16,44 +16,69 @@ import (
 	"go.uber.org/zap"
 )
 
-//goland:noinspection GoUnusedFunction
 func refreshCommands() error {
 
-	ints, err := getCommands()
+	apiCommands, err := getCommands()
 	if err != nil {
 		return err
 	}
 
-	for _, v := range ints {
-		if _, ok := chatbot.CommandCache[v.Name]; !ok {
+	// Delete removed commands
+	for _, apiCommand := range apiCommands {
+		if _, ok := chatbot.CommandCache[apiCommand.Name]; !ok {
 
-			log.Info("Deleting " + v.Name)
-
-			code, err := deleteCommand(v.ID)
+			log.Info("Deleting dommand", zap.String("id", apiCommand.Name))
+			code, err := deleteCommand(apiCommand.ID)
 			if err != nil {
-				log.Err("Deleting old discord command", zap.Int("code", code), zap.Error(err))
+				log.Err("Deleting command", zap.Int("code", code), zap.Error(err))
 			}
 		}
 	}
 
-	// todo, only update commands that are changed
+	// Update updated commands
+	for _, apiCommand := range apiCommands {
+		if localCommand, ok := chatbot.CommandCache[apiCommand.Name]; ok {
 
-	setCommands()
+			if apiCommand.Options == nil {
+				apiCommand.Options = []interactions.InteractionOption{}
+			}
+
+			b1, _ := json.Marshal(apiCommand.Options)
+			b2, _ := json.Marshal(localCommand.Slash())
+			if string(b1) != string(b2) {
+
+				log.Info("Updating command", zap.String("id", localCommand.ID()))
+				err = upsertCommand(localCommand)
+				if err != nil {
+					return err
+				}
+			}
+		}
+	}
+
+	// Add missing commands
+	for k, localCommand := range chatbot.CommandCache {
+		func() {
+
+			// Check if already exists
+			for _, apiCommand := range apiCommands {
+				if apiCommand.Name == k {
+					return
+				}
+			}
+
+			log.Info("Adding command", zap.String("id", localCommand.ID()))
+			err = upsertCommand(localCommand)
+			if err != nil {
+				log.Err("Adding command", zap.String("id", localCommand.ID()))
+				return
+			}
+		}()
+	}
+
 	return nil
 }
 
-//goland:noinspection GoUnusedFunction
-func deleteCommand(id string) (int, error) {
-
-	headers := http.Header{}
-	headers.Set("Authorization", "Bot "+config.C.DiscordChatBotToken)
-	headers.Set("Content-Type", "application/json")
-
-	_, code, err := helpers.Delete("https://discord.com/api/v8/applications/"+config.DiscordBotClientID+"/commands/"+id, 0, headers)
-	return code, err
-}
-
-//goland:noinspection GoUnusedFunction
 func getCommands() (ints []interactions.Interaction, err error) {
 
 	headers := http.Header{}
@@ -70,64 +95,62 @@ func getCommands() (ints []interactions.Interaction, err error) {
 	return ints, err
 }
 
-//goland:noinspection GoUnusedFunction
-func setCommands() {
+func upsertCommand(command chatbot.Command) error {
+
+	time.Sleep(time.Second)
+
+	payload := interactions.Interaction{
+		Name:        command.ID(),
+		Description: strings.ToUpper(string(command.Type())) + ": " + command.Description(),
+		Options:     command.Slash(),
+	}
+
+	b, err := json.Marshal(payload)
+	if err != nil {
+		return err
+	}
 
 	path := "https://discord.com/api/v8/applications/" + config.DiscordBotClientID + "/commands"
+	req, err := http.NewRequest("POST", path, bytes.NewBuffer(b))
+	if err != nil {
+		return err
+	}
+
+	req.Header = http.Header{}
+	req.Header.Set("Authorization", "Bot "+config.C.DiscordChatBotToken)
+	req.Header.Set("Content-Type", "application/json")
+
+	clientWithTimeout := &http.Client{
+		Timeout: time.Second * 2,
+	}
+
+	resp, err := clientWithTimeout.Do(req)
+	if err != nil {
+		return err
+	}
+
+	defer helpers.Close(resp.Body)
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode != 200 && resp.StatusCode != 201 {
+		log.Err("Upserting discord command", zap.Int("code", resp.StatusCode), zap.String("id", command.ID()), zap.String("body", string(body)))
+	}
+
+	return nil
+}
+
+func deleteCommand(id string) (int, error) {
+
+	time.Sleep(time.Second)
 
 	headers := http.Header{}
 	headers.Set("Authorization", "Bot "+config.C.DiscordChatBotToken)
 	headers.Set("Content-Type", "application/json")
 
-	for _, c := range chatbot.CommandRegister {
-
-		func(c chatbot.Command) {
-
-			payload := interactions.Interaction{
-				Name:        c.ID(),
-				Description: strings.ToUpper(string(c.Type())) + ": " + c.Description(),
-				Options:     c.Slash(),
-			}
-
-			b, err := json.Marshal(payload)
-			if err != nil {
-				log.ErrS(err)
-				return
-			}
-
-			req, err := http.NewRequest("POST", path, bytes.NewBuffer(b))
-			if err != nil {
-				log.ErrS(err)
-				return
-			}
-
-			req.Header = headers
-
-			clientWithTimeout := &http.Client{
-				Timeout: time.Second * 2,
-			}
-
-			resp, err := clientWithTimeout.Do(req)
-			if err != nil {
-				log.ErrS(err)
-				return
-			}
-
-			defer helpers.Close(resp.Body)
-
-			body, err := ioutil.ReadAll(resp.Body)
-			if err != nil {
-				log.ErrS(err)
-				return
-			}
-
-			log.Info("Command updated", zap.Int("code", resp.StatusCode), zap.String("id", c.ID()))
-
-			if resp.StatusCode != 200 && resp.StatusCode != 201 {
-				log.Err("Upserting discord command", zap.Int("code", resp.StatusCode), zap.String("id", c.ID()), zap.String("body", string(body)))
-			}
-
-			time.Sleep(time.Second)
-		}(c)
-	}
+	_, code, err := helpers.Delete("https://discord.com/api/v8/applications/"+config.DiscordBotClientID+"/commands/"+id, 0, headers)
+	return code, err
 }
