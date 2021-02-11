@@ -2,11 +2,11 @@ package queue
 
 import (
 	"strconv"
-	"strings"
 	"sync"
 	"time"
 
 	"github.com/Jleagle/rabbit-go"
+	"github.com/cenkalti/backoff/v4"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -65,15 +65,7 @@ func appPlayersHandler(message *rabbit.Message) {
 			var err error
 			twitchViewers, err = getAppTwitchStreamers(app.TwitchID)
 			if err != nil {
-
-				if strings.Contains(err.Error(), "read: connection reset by peer") ||
-					strings.Contains(err.Error(), "i/o timeout") ||
-					strings.Contains(err.Error(), "unexpected EOF") {
-					log.InfoS(err, payload.IDs)
-				} else {
-					log.ErrS(err, payload.IDs)
-				}
-
+				log.Err("Getting twitch streams", zap.Error(err), zap.Ints("ids", payload.IDs))
 				sendToRetryQueue(message)
 				return
 			}
@@ -162,12 +154,28 @@ func getAppTwitchStreamers(twitchID int) (viewers int, err error) {
 
 	if twitchID > 0 {
 
-		client, err := twitch.GetTwitch()
-		if err != nil {
-			return 0, err
+		var resp *helix.StreamsResponse
+
+		// Retry call
+		operation := func() (err error) {
+
+			client, err := twitch.GetTwitch()
+			if err != nil {
+				return err
+			}
+
+			resp, err = client.GetStreams(&helix.StreamsParams{First: 100, GameIDs: []string{strconv.Itoa(twitchID)}, Language: []string{"en"}})
+			return err
 		}
 
-		resp, err := client.GetStreams(&helix.StreamsParams{First: 100, GameIDs: []string{strconv.Itoa(twitchID)}, Language: []string{"en"}})
+		notify := func(err error, t time.Duration) {
+			log.Info("Getting twitch streams", zap.Int("twitch id", twitchID), zap.Error(err))
+		}
+
+		policy := backoff.NewExponentialBackOff()
+		policy.InitialInterval = time.Second * 2
+
+		err = backoff.RetryNotify(operation, backoff.WithMaxRetries(policy, 5), notify)
 		if err != nil {
 			return 0, err
 		}
