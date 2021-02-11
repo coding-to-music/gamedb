@@ -146,17 +146,17 @@ func SearchPlayers(limit int, offset int, search string, sorters []elastic.Sorte
 
 		query.Must(
 			elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
-				elastic.NewTermQuery("id", search).Boost(4),
-				elastic.NewMatchQuery("name", search).Boost(3),
-				elastic.NewMatchQuery("url", search).Boost(2),
-				elastic.NewMatchQuery("name_recent", search).Boost(0.1),
+				elastic.NewTermQuery("id", search).Boost(6),
+				elastic.NewMatchQuery("name", search).Boost(4),
+				elastic.NewTermQuery("url", search).Boost(2),
 			),
 		)
 
 		query.Should(
 			elastic.NewFunctionScoreQuery().
-				AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("level").Factor(0.01)).
-				AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("games").Factor(0.001)),
+				AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("level").Factor(0.1)),
+			elastic.NewFunctionScoreQuery().
+				AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("games").Factor(0.1)),
 		)
 
 		searchService.Highlight(elastic.NewHighlight().Field("name").PreTags("<mark>").PostTags("</mark>"))
