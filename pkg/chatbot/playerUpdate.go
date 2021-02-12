@@ -63,7 +63,7 @@ func (c CommandPlayerUpdate) Slash() []interactions.InteractionOption {
 			Name:        "player",
 			Description: "The name or ID of the player",
 			Type:        interactions.InteractionOptionTypeString,
-			Required:    true,
+			Required:    false,
 		},
 	}
 }
