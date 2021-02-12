@@ -24,8 +24,91 @@ if ($('#chat-bot-page').length > 0) {
     });
 
     loadAjaxOnObserve({
+        'chart': loadChart,
         'recent-table': loadLatest,
     });
+
+    function loadChart() {
+
+        $.ajax({
+            type: "GET",
+            url: '/discord-bot/chart.json',
+            dataType: 'json',
+            success: function (data, textStatus, jqXHR) {
+
+                if (data === null) {
+                    data = [];
+                }
+
+                Highcharts.chart('chart', $.extend(true, {}, defaultChartOptions, {
+                    yAxis: [
+                        {
+                            allowDecimals: false,
+                            title: {
+                                text: ''
+                            },
+                            labels: {
+                                formatter: function () {
+                                    return this.value.toLocaleString();
+                                },
+                            },
+                        },
+                        {
+                            allowDecimals: false,
+                            title: {
+                                text: ''
+                            },
+                            labels: {
+                                formatter: function () {
+                                    return this.value.toLocaleString();
+                                },
+                            },
+                            opposite: true,
+                        }
+                    ],
+                    tooltip: {
+                        formatter: function () {
+                            switch (this.series.name) {
+                                case 'Requests':
+                                    return this.y.toLocaleString() + ' requests at ' + moment(this.key).format("dddd DD MMM YYYY @ HH:00");
+                                case 'Servers':
+                                    return this.y.toLocaleString() + ' guilds on ' + moment(this.key).format("dddd DD MMM YYYY @ HH:00");
+                            }
+                        },
+                    },
+                    plotOptions: {
+                        series: {
+                            fillColor: {
+                                linearGradient: {x1: 0, x2: 0, y1: 0, y2: 1},
+                                stops: [
+                                    [0, defaultChartOptions.colors[0] + 'FF'],
+                                    [1, defaultChartOptions.colors[0] + '00']
+                                ]
+                            }
+                        }
+                    },
+                    series: [
+                        {
+                            name: 'Servers',
+                            data: data['max_guilds'],
+                            yAxis: 1,
+                            color: defaultChartOptions.colors[1],
+                            marker: {symbol: 'circle'},
+                        },
+                        {
+                            name: 'Requests',
+                            data: data['sum_request'],
+                            yAxis: 0,
+                            color: defaultChartOptions.colors[0],
+                            marker: {symbol: 'circle'},
+                            type: 'area',
+                            step: 'left',
+                        },
+                    ],
+                }));
+            },
+        });
+    }
 
     function loadLatest() {
 

@@ -109,4 +109,5 @@ var (
 	ItemFirstAppBadge        = func(appID int) Item { return Item{Key: "first-app-badge-" + strconv.Itoa(appID), Expiration: 0} }
 	ItemMongoCount           = func(collection string, filter bson.D) Item { return Item{Key: "mongo-count-" + collection + "-" + FilterToString(filter), Expiration: 60 * 60} }
 	ItemUniqueSaleTypes      = Item{Key: "unique-sale-types", Expiration: 60 * 60 * 1}
+	ItemChatbotCalls         = Item{Key: "chatbot-calls", Expiration: 60 * 10}
 )

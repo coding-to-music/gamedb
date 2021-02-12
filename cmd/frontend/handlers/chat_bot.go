@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/bwmarrin/discordgo"
+	"github.com/Jleagle/influxql"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/chatbot"
 	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
@@ -16,13 +16,14 @@ import (
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
-	influx "github.com/influxdata/influxdb1-client"
+	"go.uber.org/zap"
 )
 
 func ChatBotRouter() http.Handler {
 
 	r := chi.NewRouter()
 	r.Get("/", chatBotHandler)
+	r.Get("/chart.json", chatbotChartAjaxHandler)
 	r.Get("/recent.json", chatBotRecentHandler)
 	return r
 }
@@ -33,6 +34,7 @@ func chatBotHandler(w http.ResponseWriter, r *http.Request) {
 	t := chatBotTemplate{}
 	t.fill(w, r, "chat_bot", "Steam Discord Chat Bot", "Steam Discord Chat Bot")
 	t.addAssetJSON2HTML()
+	t.addAssetHighCharts()
 	t.Link = config.C.DiscordBotInviteURL
 	t.Regions = i18n.GetProdCCs(true)
 	t.Commands = chatbot.CommandRegister
@@ -95,4 +97,65 @@ func chatBotRecentHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	returnJSON(w, r, response)
+}
+
+func chatbotChartAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	var hc influxHelper.HighChartsJSON
+
+	callback := func() (interface{}, error) {
+
+		// Requests
+		builder := influxql.NewBuilder()
+		builder.AddSelect(`sum("request")`, "sum_request")
+		builder.SetFrom(influxHelper.InfluxGameDB, influxHelper.InfluxRetentionPolicyAllTime.String(), influxHelper.InfluxMeasurementChatBot.String())
+		builder.AddWhere("time", ">", "now()-14d")
+		builder.AddGroupByTime("1h")
+		builder.SetFillNumber(0)
+
+		resp, err := influxHelper.InfluxQuery(builder)
+		if err != nil {
+			log.Err(err.Error(), zap.String("query", builder.String()))
+			return hc, err
+		}
+
+		var hc1 influxHelper.HighChartsJSON
+		if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
+			hc1 = influxHelper.InfluxResponseToHighCharts(resp.Results[0].Series[0], true)
+		}
+
+		// Guilds
+		builder = influxql.NewBuilder()
+		builder.AddSelect(`max("guilds")`, "max_guilds")
+		builder.SetFrom(influxHelper.InfluxGameDB, influxHelper.InfluxRetentionPolicyAllTime.String(), influxHelper.InfluxMeasurementChatBot.String())
+		builder.AddWhere("time", ">", "now()-14d")
+		builder.AddGroupByTime("1h")
+		builder.SetFillPrevious()
+
+		resp, err = influxHelper.InfluxQuery(builder)
+		if err != nil {
+			log.Err(err.Error(), zap.String("query", builder.String()))
+			return hc, err
+		}
+
+		var hc2 influxHelper.HighChartsJSON
+		if len(resp.Results) > 0 && len(resp.Results[0].Series) > 0 {
+			hc2 = influxHelper.InfluxResponseToHighCharts(resp.Results[0].Series[0], true)
+		}
+
+		//
+		hc = influxHelper.HighChartsJSON{
+			"sum_request": hc1["sum_request"],
+			"max_guilds":  hc2["max_guilds"],
+		}
+
+		return hc, err
+	}
+
+	err := memcache.GetSetInterface(memcache.ItemChatbotCalls, &hc, callback)
+	if err != nil {
+		log.Err("GetSet memcache", zap.Error(err))
+	}
+
+	returnJSON(w, r, hc)
 }

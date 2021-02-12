@@ -1,8 +1,18 @@
 #chat-bot-page {
 
     .jumbotron {
-        img {
-            height: 105px;
+        .btn {
+            display: block;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        @include media-breakpoint-up(md) {
+            .btn {
+                display: inline-block;
+                width: auto;
+                margin-top: 0;
+            }
         }
     }
 
@@ -19,5 +29,9 @@
 
     #recent-card .card-body {
         min-height: 7300px;
+    }
+
+    #chart {
+        height: 300px;
     }
 }
