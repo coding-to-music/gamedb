@@ -27,6 +27,7 @@ func GetSteam() *steamapi.Client {
 		clientNormal.SetLogger(steamLogger{})
 		clientNormal.SetAPIRateLimit(time.Millisecond*950, 10)
 		clientNormal.SetStoreRateLimit(time.Millisecond*1750, 10)
+		clientNormal.SetTimeout(time.Second * 10)
 	}
 
 	return clientNormal
@@ -47,6 +48,7 @@ func GetSteamUnlimited() *steamapi.Client {
 		clientUnlimited = steamapi.NewClient()
 		clientUnlimited.SetKey(config.C.SteamAPIKey)
 		clientUnlimited.SetLogger(steamLogger{})
+		clientUnlimited.SetTimeout(time.Second * 10)
 	}
 
 	return clientUnlimited

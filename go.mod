@@ -12,7 +12,7 @@ require (
 	github.com/Jleagle/rabbit-go v0.0.0-20210115203259-266db76b636e
 	github.com/Jleagle/session-go v0.0.0-20190515070633-3c8712426233
 	github.com/Jleagle/sitemap-go v0.0.0-20201217201247-75f3818f336a
-	github.com/Jleagle/steam-go v0.0.0-20210117221757-b3e2e7bbd522
+	github.com/Jleagle/steam-go v0.0.0-20210211214415-6e5c1aecbba1
 	github.com/Jleagle/unmarshal-go v0.0.0-20200217225147-fd7db71d9ac0
 	github.com/Philipp15b/go-steam v1.0.1-0.20190816133340-b04c5a83c1c0
 	github.com/PuerkitoBio/goquery v1.6.1 // indirect

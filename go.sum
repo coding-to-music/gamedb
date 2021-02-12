@@ -97,6 +97,8 @@ github.com/Jleagle/steam-go v0.0.0-20210109210526-d9b45286027a h1:gcdmufp6oegCFO
 github.com/Jleagle/steam-go v0.0.0-20210109210526-d9b45286027a/go.mod h1:u2NS0l9MOJZ7dYDxv4OWfVFmevvtx+ZqUGMh0j6QrcA=
 github.com/Jleagle/steam-go v0.0.0-20210117221757-b3e2e7bbd522 h1:ybKSNQZECv/JMzakZG3iDoHQf5rOeUlJZdKuQutK1oM=
 github.com/Jleagle/steam-go v0.0.0-20210117221757-b3e2e7bbd522/go.mod h1:mfol0ISlGbQfz5UD+cK9mC0tyQf+NEuGzMsZl8Dh41o=
+github.com/Jleagle/steam-go v0.0.0-20210211214415-6e5c1aecbba1 h1:Zj7GNw8AVicoa3jDg70aEWCvjTWBxVccWuIzp/4pBps=
+github.com/Jleagle/steam-go v0.0.0-20210211214415-6e5c1aecbba1/go.mod h1:mfol0ISlGbQfz5UD+cK9mC0tyQf+NEuGzMsZl8Dh41o=
 github.com/Jleagle/unmarshal-go v0.0.0-20200217225147-fd7db71d9ac0 h1:DYxBI3XK1rB2S6HcBN37F6UpuoM1s7PXniT5rVwn2WU=
 github.com/Jleagle/unmarshal-go v0.0.0-20200217225147-fd7db71d9ac0/go.mod h1:ilcgtR3U6eAPVcoKJOG/01kzZH7gaQw1gXM62hUAGHE=
 github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=
