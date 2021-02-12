@@ -21,16 +21,6 @@ func websocketServer() (*discordgo.Session, error) {
 		return nil, err
 	}
 
-	// On joining a new guild
-	discordSession.AddHandler(func(s *discordgo.Session, m *discordgo.GuildCreate) {
-
-		err := memcache.Delete(memcache.ItemChatBotGuildsCount.Key)
-		if err != nil {
-			log.ErrS(err)
-			return
-		}
-	})
-
 	// On new messages
 	discordSession.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
 

@@ -68,64 +68,6 @@ func (cbt chatBotTemplate) RenderLegacy(input string) (interaction interactions.
 	return interaction
 }
 
-func (cbt chatBotTemplate) Guilds() (guilds int) {
-
-	if config.C.DiscordChatBotToken == "" {
-		log.Err("Missing environment variables")
-		return 0
-	}
-
-	err := memcache.GetSetInterface(memcache.ItemChatBotGuildsCount, &guilds, func() (i interface{}, err error) {
-
-		discordChatBotSession, err := discordgo.New("Bot " + config.C.DiscordChatBotToken)
-		if err != nil {
-			return i, err
-		}
-
-		after := ""
-		more := true
-		count := 1
-
-		for more {
-
-			guilds, err := discordChatBotSession.UserGuilds(100, "", after)
-			if err != nil {
-				return i, err
-			}
-
-			if len(guilds) < 100 {
-				more = false
-			}
-
-			for _, v := range guilds {
-				after = v.ID
-			}
-
-			count += len(guilds)
-		}
-
-		// Save to Influx
-		_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, influx.Point{
-			Measurement: influxHelper.InfluxMeasurementChatBot.String(),
-			Fields: map[string]interface{}{
-				"guilds": count,
-			},
-			Precision: "h",
-		})
-		if err != nil {
-			log.ErrS(err)
-		}
-
-		return count, nil
-	})
-
-	if err != nil {
-		log.ErrS(err)
-	}
-
-	return guilds
-}
-
 func chatBotRecentHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := datatable.NewDataTableQuery(r, false)

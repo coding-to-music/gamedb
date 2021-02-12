@@ -66,12 +66,13 @@ func main() {
 	}
 
 	if config.IsProd() {
-
 		err = refreshCommands()
 		if err != nil {
 			log.Err("refreshing commands", zap.Error(err))
 		}
 	}
+
+	go updateGuildsCount()
 
 	helpers.KeepAlive(
 		mysql.Close,
@@ -194,5 +195,55 @@ func discordError(err error) {
 
 		zap.S().Error(err) // No helper to fix stack offset
 		return
+	}
+}
+
+func updateGuildsCount() {
+
+	session, err := getSession()
+	if err != nil {
+		log.FatalS(err)
+		return
+	}
+
+	for {
+		func() {
+
+			var after = ""
+			var count = 0
+			for {
+
+				guilds, err := session.UserGuilds(100, "", after)
+				if err != nil {
+					log.ErrS(err)
+					return
+				}
+
+				for _, guild := range guilds {
+					count++
+					after = guild.ID
+				}
+
+				if len(guilds) < 100 {
+					break
+				}
+			}
+
+			// Save to Influx
+			point := influx.Point{
+				Measurement: influxHelper.InfluxMeasurementChatBot.String(),
+				Fields: map[string]interface{}{
+					"guilds": count,
+				},
+				Precision: "h",
+			}
+
+			_, err := influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, point)
+			if err != nil {
+				log.ErrS(err)
+			}
+		}()
+
+		time.Sleep(time.Hour)
 	}
 }

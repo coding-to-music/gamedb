@@ -48,7 +48,6 @@ var (
 	ItemBundle = func(bundleID int) Item { return Item{Key: "bundle-" + strconv.Itoa(bundleID), Expiration: 0} }
 
 	// Chat
-	ItemChatBotGuildsCount  = Item{Key: "chat-bot-guilds", Expiration: 60 * 60 * 24}
 	ItemChatBotSettings     = func(discordID string) Item { return Item{Key: "chat-bot-settings-" + discordID, Expiration: 0} }
 	ItemChatBotRequest      = func(request string, code steamapi.ProductCC) Item { return Item{Key: "interaction-" + string(code) + "-" + helpers.MD5([]byte(request)), Expiration: 60 * 10} }
 	ItemChatBotRequestSlash = func(commandID string, inputs map[string]string, code steamapi.ProductCC) Item { return Item{Key: "interaction-slash-" + commandID + "-" + string(code) + "-" + helpers.MD5Interface(inputs), Expiration: 60 * 10} }
