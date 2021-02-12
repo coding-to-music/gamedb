@@ -53,7 +53,7 @@ func appSteamspyHandler(message *rabbit.Message) {
 		return
 	}
 
-	body, statusCode, err := helpers.Get(u, 0, nil)
+	body, statusCode, err := helpers.Get(u, time.Second*30, nil)
 	if err != nil {
 
 		if strings.Contains(err.Error(), "Client.Timeout exceeded while awaiting headers") ||
