@@ -67,6 +67,11 @@ func (c CommandPlayerWishlist) Slash() []interactions.InteractionOption {
 
 func (c CommandPlayerWishlist) Output(authorID string, _ steamapi.ProductCC, inputs map[string]string) (message discordgo.MessageSend, err error) {
 
+	if inputs["player"] == "" {
+		message.Content = "Missing player name"
+		return message, nil
+	}
+
 	player, err := searchForPlayer(inputs["player"])
 	if err == elasticsearch.ErrNoResult || err == steamapi.ErrProfileMissing {
 

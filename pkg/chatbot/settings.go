@@ -75,6 +75,11 @@ func (c CommandSettings) Slash() []interactions.InteractionOption {
 
 func (c CommandSettings) Output(authorID string, _ steamapi.ProductCC, inputs map[string]string) (message discordgo.MessageSend, err error) {
 
+	if inputs["setting"] == "" {
+		message.Content = "Missing setting name"
+		return message, nil
+	}
+
 	var setting = strings.ToLower(inputs["setting"])
 	var value = strings.ToLower(inputs["value"])
 	var text string

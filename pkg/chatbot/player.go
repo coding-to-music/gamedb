@@ -70,6 +70,11 @@ func (c CommandPlayer) Slash() []interactions.InteractionOption {
 
 func (c CommandPlayer) Output(authorID string, _ steamapi.ProductCC, inputs map[string]string) (message discordgo.MessageSend, err error) {
 
+	if inputs["player"] == "" {
+		message.Content = "Missing player name"
+		return message, nil
+	}
+
 	var player Player
 
 	if inputs["player"] == "" {

@@ -63,6 +63,11 @@ func (c CommandGroup) Slash() []interactions.InteractionOption {
 
 func (c CommandGroup) Output(_ string, _ steamapi.ProductCC, inputs map[string]string) (message discordgo.MessageSend, err error) {
 
+	if inputs["group"] == "" {
+		message.Content = "Missing group name"
+		return message, nil
+	}
+
 	groups, _, _, err := elasticsearch.SearchGroups(0, 1, nil, inputs["group"], "")
 	if err != nil {
 		return message, err

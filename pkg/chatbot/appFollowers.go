@@ -64,6 +64,11 @@ func (c CommandAppFollowers) Slash() []interactions.InteractionOption {
 
 func (c CommandAppFollowers) Output(_ string, _ steamapi.ProductCC, inputs map[string]string) (message discordgo.MessageSend, err error) {
 
+	if inputs["game"] == "" {
+		message.Content = "Missing game name"
+		return message, nil
+	}
+
 	apps, err := elasticsearch.SearchAppsSimple(1, inputs["game"])
 	if err != nil {
 		return message, err
