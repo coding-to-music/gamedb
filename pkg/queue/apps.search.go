@@ -43,10 +43,18 @@ func appsSearchHandler(message *rabbit.Message) {
 		err = elasticsearch.UpdateDocumentFields(elasticsearch.IndexApps, strconv.Itoa(payload.AppID), payload.Fields)
 		if err != nil {
 
-			if val, ok := err.(*elastic.Error); ok && val.Status == 409 {
-				log.Info("Updating missing Elastic row", zap.Error(err), zap.Int("app", payload.AppID))
-				sendToRetryQueueWithDelay(message, time.Second)
-				return
+			if val, ok := err.(*elastic.Error); ok {
+
+				switch val.Status {
+				case 409:
+					// Index conflict when two writes happen at the same time
+					sendToRetryQueueWithDelay(message, time.Second)
+					return
+				case 404:
+					// Row has not been created yet to update
+					message.Ack()
+					return
+				}
 			}
 
 			log.Err("Saving to Elastic", zap.Error(err), zap.Int("app", payload.AppID))
