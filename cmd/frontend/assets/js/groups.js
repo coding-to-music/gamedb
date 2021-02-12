@@ -65,18 +65,9 @@ if ($('#groups-page').length > 0) {
                 },
                 "orderSequence": ["desc", "asc"],
             },
-            // Search Score
-            {
-                "targets": 5,
-                "render": function (data, type, row) {
-                    return row[11];
-                },
-                "orderable": false,
-                "visible": user.isLocal,
-            },
             // Link
             {
-                "targets": 6,
+                "targets": 5,
                 "render": function (data, type, row) {
                     if (row[2]) {
                         return '<a href="' + row[2] + '" target="_blank" rel="noopener"><i class="fas fa-link"></i></a>';
@@ -84,6 +75,15 @@ if ($('#groups-page').length > 0) {
                     return '';
                 },
                 "orderable": false,
+            },
+            // Search Score
+            {
+                "targets": 6,
+                "render": function (data, type, row) {
+                    return row[11];
+                },
+                "orderable": false,
+                "visible": user.isLocal,
             },
         ]
     };
