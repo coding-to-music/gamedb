@@ -143,6 +143,7 @@ var aliasMap = map[int][]string{
 	49520:   {"bl", "bl2"},                          // Borderlands 2
 	397540:  {"bl", "bl3"},                          // Borderlands 3
 	8980:    {"bl", "goty"},                         // Borderlands GOTY
+	730:     {"csgo", "cs go"},                      // Counter-Strike: Global Offensive
 	1091500: {"cp", "cp2077", "cyber punk", "cp77"}, // Cyberpunk 2077
 	570:     {"dota", "dota2"},                      // Dota 2
 	8500:    {"eve", "eo"},                          // EVE Online
@@ -223,7 +224,7 @@ func makeAppAliases(ID int, name string) (aliases []string) {
 								aliases = append(aliases, name2)
 
 								// Add abreviations
-								if removeSymbols && removeEndings && !removeSpaces {
+								if removeSymbols && !removeSpaces {
 
 									var r *regexp.Regexp
 									if spaceBeforeNumbers {
