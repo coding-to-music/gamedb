@@ -9,27 +9,27 @@ import (
 	influx "github.com/influxdata/influxdb1-client"
 )
 
-type GameDBStats struct {
+type GlobalSteamStats struct {
 	BaseTask
 }
 
-func (c GameDBStats) ID() string {
+func (c GlobalSteamStats) ID() string {
 	return "gamedb-stats"
 }
 
-func (c GameDBStats) Name() string {
+func (c GlobalSteamStats) Name() string {
 	return "Game DB Stats"
 }
 
-func (c GameDBStats) Group() TaskGroup {
+func (c GlobalSteamStats) Group() TaskGroup {
 	return ""
 }
 
-func (c GameDBStats) Cron() TaskTime {
+func (c GlobalSteamStats) Cron() TaskTime {
 	return CronTimeGameDBStats
 }
 
-func (c GameDBStats) work() (err error) {
+func (c GlobalSteamStats) work() (err error) {
 
 	apps, err := mongo.CountDocuments(mongo.CollectionApps, nil, 0)
 	if err != nil {

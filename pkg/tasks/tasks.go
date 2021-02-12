@@ -77,7 +77,7 @@ var (
 		&BadgesUpdateRandom{},
 		&BundlesQueueAll{},
 		&BundlesQueueElastic{},
-		&GameDBStats{},
+		&GlobalSteamStats{},
 		&GroupsQueueElastic{},
 		&GroupsQueuePrimaries{},
 		&GroupsUpdateTop{},
