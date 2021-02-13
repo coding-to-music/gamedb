@@ -6,7 +6,6 @@ import (
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/jinzhu/gorm"
@@ -156,14 +155,11 @@ func (bundle Bundle) GetPricesSale() (ret map[steamapi.ProductCC]int) {
 }
 
 func (bundle Bundle) GetPricesFormatted() (ret map[steamapi.ProductCC]string) {
+	return helpers.GetBundlePricesFormatted(bundle.GetPrices())
+}
 
-	ret = map[steamapi.ProductCC]string{}
-
-	for k, v := range bundle.GetPrices() {
-		ret[k] = i18n.FormatPrice(i18n.GetProdCC(k).CurrencyCode, v)
-	}
-
-	return ret
+func (bundle Bundle) GetPricesSaleFormatted() map[steamapi.ProductCC]string {
+	return helpers.GetBundlePricesFormatted(bundle.GetPricesSale())
 }
 
 func (bundle Bundle) AppsCount() int {

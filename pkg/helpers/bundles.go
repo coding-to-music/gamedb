@@ -7,6 +7,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gosimple/slug"
 )
 
@@ -21,6 +22,7 @@ type Bundle interface {
 	GetDiscountHighest() int
 	GetPrices() map[steamapi.ProductCC]int
 	GetPricesFormatted() map[steamapi.ProductCC]string
+	GetPricesSaleFormatted() map[steamapi.ProductCC]string
 	GetScore() float64
 	GetApps() int
 	GetPackages() int
@@ -33,17 +35,18 @@ func OutputBundleForJSON(bundle Bundle) []interface{} {
 	highest := bundle.GetDiscountHighest() == bundle.GetDiscount() && bundle.GetDiscount() != 0
 
 	return []interface{}{
-		bundle.GetID(),              // 0
-		bundle.GetName(),            // 1
-		bundle.GetPath(),            // 2
-		updated,                     // 3
-		bundle.GetDiscount(),        // 4
-		bundle.GetApps(),            // 5
-		bundle.GetPackages(),        // 6
-		highest,                     // 7
-		bundle.GetStoreLink(),       // 8
-		bundle.GetPricesFormatted(), // 9
-		bundle.GetScore(),           // 10
+		bundle.GetID(),                  // 0
+		bundle.GetName(),                // 1
+		bundle.GetPath(),                // 2
+		updated,                         // 3
+		bundle.GetDiscount(),            // 4
+		bundle.GetApps(),                // 5
+		bundle.IsGiftable(),             // 6
+		highest,                         // 7
+		bundle.GetStoreLink(),           // 8
+		bundle.GetPricesFormatted(),     // 9
+		bundle.GetScore(),               // 10
+		bundle.GetPricesSaleFormatted(), // 11
 	}
 }
 
@@ -65,4 +68,15 @@ func GetBundleName(id int, name string) string {
 func GetBundleStoreLink(id int) string {
 	return "https://store.steampowered.com/bundle/" + strconv.Itoa(id) +
 		"?utm_source=" + config.C.GameDBShortName + "&utm_medium=referral&utm_campaign=app-store-link"
+}
+
+func GetBundlePricesFormatted(prices map[steamapi.ProductCC]int) (ret map[steamapi.ProductCC]string) {
+
+	ret = map[steamapi.ProductCC]string{}
+
+	for k, v := range prices {
+		ret[k] = i18n.FormatPrice(i18n.GetProdCC(k).CurrencyCode, v)
+	}
+
+	return ret
 }

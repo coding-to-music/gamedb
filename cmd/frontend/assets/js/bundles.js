@@ -120,7 +120,7 @@ if ($('#bundles-page').length > 0) {
                 },
                 "orderSequence": ["asc", "desc"],
             },
-            // Discount
+            // Price
             {
                 "targets": 2,
                 "createdCell": function (td, cellData, rowData, row, col) {
@@ -128,7 +128,14 @@ if ($('#bundles-page').length > 0) {
                 },
                 "render": function (data, type, row) {
                     if (user.prodCC in row[9]) {
-                        return row[9][user.prodCC];
+
+                        let price = row[9][user.prodCC];
+
+                        if (user.prodCC in row[11]) {
+                            price += ' <strike>(' + row[11][user.prodCC] + ')</strike>';
+                        }
+
+                        return price;
                     }
                     return '-';
                 },
