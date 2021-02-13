@@ -108,8 +108,7 @@ func SearchBundles(offset int, limit int, search string, sorters []elastic.Sorte
 	searchService := client.Search().
 		Index(IndexBundles).
 		From(offset).
-		Size(limit).
-		SortBy(sorters...)
+		Size(limit)
 
 	if boolQuery == nil {
 		boolQuery = elastic.NewBoolQuery()
@@ -126,6 +125,8 @@ func SearchBundles(offset int, limit int, search string, sorters []elastic.Sorte
 		)
 
 		searchService.Highlight(elastic.NewHighlight().Field("name").PreTags("<mark>").PostTags("</mark>"))
+	} else {
+		searchService.SortBy(sorters...)
 	}
 
 	searchService.Query(boolQuery)
