@@ -53,9 +53,9 @@ if ($('#release-dates-page').length > 0) {
                     "render": function (data, type, row) {
                         return row[7];
                     },
-                    "visible": user.isLocal,
                     "orderable": false,
                     "orderSequence": ["asc", "desc"],
+                    "visible": user.isLocal,
                 },
             ]
         },
