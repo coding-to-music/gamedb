@@ -295,12 +295,12 @@ func saveBundlePriceToMongo(bundle mysql.Bundle, oldBundle mysql.Bundle) (err er
 	bundlePriceLock.Lock()
 	defer bundlePriceLock.Unlock()
 
-	if bundle.Discount != oldBundle.Discount {
+	if bundle.DiscountSale != oldBundle.DiscountSale {
 
 		doc := mongo.BundlePrice{
 			CreatedAt: time.Now(),
 			BundleID:  bundle.ID,
-			Discount:  bundle.Discount,
+			Discount:  bundle.DiscountSale,
 		}
 
 		// Does a replace, as sometimes doing a InsertOne would error on key already existing
