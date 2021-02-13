@@ -17,7 +17,7 @@ type Bundle struct {
 	Discount        int       `gorm:"not null;column:discount"`
 	DiscountHighest int       `gorm:"not null;column:highest_discount"`
 	DiscountLowest  int       `gorm:"not null;column:lowest_discount"`
-	DiscountSale    int       `gorm:"not null;column:discount"`
+	DiscountSale    int       `gorm:"not null;column:discount_sale"`
 	Giftable        bool      `gorm:"not null;column:giftable"`
 	Icon            string    `gorm:"not null;column:icon"`
 	ID              int       `gorm:"not null;column:id"`
