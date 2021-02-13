@@ -231,6 +231,9 @@ if ($('#admin-consumers-page').length > 0) {
             {
                 'targets': 4,
                 'render': function (data, type, row) {
+                    if (!row[4]) {
+                        return '-';
+                    }
                     return parseInt(row[4]).toLocaleString();
                 },
                 'orderSequence': ['desc', 'asc'],
