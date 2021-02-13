@@ -142,13 +142,13 @@ if ($('#bundles-page').length > 0) {
                 },
                 "orderSequence": ["desc"],
             },
-            // Packages
+            // Giftable
             {
                 "targets": 4,
                 "render": function (data, type, row) {
-                    return row[6].toLocaleString();
+                    return '<i class="fas fa-check text-' + (row[6] ? 'success' : 'danger') + ' fa-fw"></i>';
                 },
-                "orderSequence": ["desc"],
+                "orderable": false,
             },
             // Updated At
             {

@@ -60,6 +60,10 @@ func (bundle Bundle) GetPackages() int {
 	return bundle.PackagesCount()
 }
 
+func (bundle Bundle) IsGiftable() bool {
+	return bundle.Giftable
+}
+
 func (bundle *Bundle) BeforeSave(scope *gorm.Scope) error {
 
 	bundle.Discount = int(math.Abs(float64(bundle.Discount)))

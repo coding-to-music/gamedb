@@ -24,6 +24,7 @@ type Bundle interface {
 	GetScore() float64
 	GetApps() int
 	GetPackages() int
+	IsGiftable() bool
 }
 
 func OutputBundleForJSON(bundle Bundle) []interface{} {

@@ -94,6 +94,10 @@ func (bundle Bundle) OutputForJSON() (output []interface{}) {
 	return helpers.OutputBundleForJSON(bundle)
 }
 
+func (bundle Bundle) IsGiftable() bool {
+	return bundle.Giftable
+}
+
 func SearchBundles(offset int, limit int, search string, sorters []elastic.Sorter, boolQuery *elastic.BoolQuery) (bundles []Bundle, total int64, err error) {
 
 	client, ctx, err := GetElastic()
