@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"math"
 	"time"
 
 	"github.com/Jleagle/steam-go/steamapi"
@@ -60,6 +61,11 @@ func (bundle Bundle) GetPackages() int {
 }
 
 func (bundle *Bundle) BeforeSave(scope *gorm.Scope) error {
+
+	bundle.Discount = int(math.Abs(float64(bundle.Discount)))
+	bundle.DiscountHighest = int(math.Abs(float64(bundle.DiscountHighest)))
+	bundle.DiscountLowest = int(math.Abs(float64(bundle.DiscountLowest)))
+	bundle.DiscountSale = int(math.Abs(float64(bundle.DiscountSale)))
 
 	if bundle.AppIDs == "" {
 		bundle.AppIDs = "[]"

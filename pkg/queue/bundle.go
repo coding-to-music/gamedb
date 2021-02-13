@@ -2,6 +2,7 @@ package queue
 
 import (
 	"encoding/json"
+	"math"
 	"net/url"
 	"strconv"
 	"strings"
@@ -295,7 +296,7 @@ func saveBundlePriceToMongo(bundle mysql.Bundle, oldBundle mysql.Bundle) (err er
 	bundlePriceLock.Lock()
 	defer bundlePriceLock.Unlock()
 
-	if bundle.DiscountSale != oldBundle.DiscountSale {
+	if math.Abs(float64(bundle.DiscountSale)) != math.Abs(float64(oldBundle.DiscountSale)) {
 
 		doc := mongo.BundlePrice{
 			CreatedAt: time.Now(),

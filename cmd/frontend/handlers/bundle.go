@@ -168,7 +168,7 @@ func bundlePricesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.ErrS(err)
 	} else {
-		prices = append(prices, []int64{time.Now().Unix() * 1000, int64(price.Discount)})
+		prices = append(prices, []int64{time.Now().Unix() * 1000, int64(price.DiscountSale)})
 	}
 
 	// Sort prices for Highcharts
