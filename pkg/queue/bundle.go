@@ -301,7 +301,7 @@ func saveBundlePriceToMongo(bundle mysql.Bundle, oldBundle mysql.Bundle) (err er
 		doc := mongo.BundlePrice{
 			CreatedAt: time.Now(),
 			BundleID:  bundle.ID,
-			Discount:  bundle.DiscountSale,
+			Discount:  int(math.Abs(float64(bundle.DiscountSale))),
 		}
 
 		// Does a replace, as sometimes doing a InsertOne would error on key already existing
