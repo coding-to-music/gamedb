@@ -192,15 +192,6 @@ func updateBundle(bundle *mysql.Bundle) (err error) {
 				bundle.Image = e.Attr("src")
 			})
 
-			// Discount
-			c.OnHTML(".game_purchase_discount .bundle_base_discount", func(e *colly.HTMLElement) {
-
-				bundle.Discount, err = strconv.Atoi(strings.Replace(e.Text, "%", "", 1))
-				if err != nil {
-					log.ErrS(err)
-				}
-			})
-
 			// Sale discount
 			c.OnHTML(".game_purchase_discount .discount_pct", func(e *colly.HTMLElement) {
 
@@ -220,6 +211,7 @@ func updateBundle(bundle *mysql.Bundle) (err error) {
 				}
 
 				bundle.Giftable = !data.RestrictGifting
+				bundle.Discount = int(data.DiscountPct)
 
 				if data.MustPurchaseAsSet {
 					bundle.Type = mongo.BundleTypePurchaseTogether
