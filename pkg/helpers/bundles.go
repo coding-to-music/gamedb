@@ -20,6 +20,7 @@ type Bundle interface {
 	GetDiscount() int
 	GetDiscountHighest() int
 	GetPrices() map[steamapi.ProductCC]int
+	GetPricesFormatted() map[steamapi.ProductCC]string
 	GetScore() float64
 	GetApps() int
 	GetPackages() int
@@ -31,17 +32,17 @@ func OutputBundleForJSON(bundle Bundle) []interface{} {
 	highest := bundle.GetDiscountHighest() == bundle.GetDiscount() && bundle.GetDiscount() != 0
 
 	return []interface{}{
-		bundle.GetID(),        // 0
-		bundle.GetName(),      // 1
-		bundle.GetPath(),      // 2
-		updated,               // 3
-		bundle.GetDiscount(),  // 4
-		bundle.GetApps(),      // 5
-		bundle.GetPackages(),  // 6
-		highest,               // 7
-		bundle.GetStoreLink(), // 8
-		bundle.GetPrices(),    // 9
-		bundle.GetScore(),     // 10
+		bundle.GetID(),              // 0
+		bundle.GetName(),            // 1
+		bundle.GetPath(),            // 2
+		updated,                     // 3
+		bundle.GetDiscount(),        // 4
+		bundle.GetApps(),            // 5
+		bundle.GetPackages(),        // 6
+		highest,                     // 7
+		bundle.GetStoreLink(),       // 8
+		bundle.GetPricesFormatted(), // 9
+		bundle.GetScore(),           // 10
 	}
 }
 

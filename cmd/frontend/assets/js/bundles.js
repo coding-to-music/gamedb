@@ -120,7 +120,7 @@ if ($('#bundles-page').length > 0) {
                 },
                 "orderSequence": ["asc", "desc"],
             },
-            // Price
+            // Discount
             {
                 "targets": 2,
                 "createdCell": function (td, cellData, rowData, row, col) {

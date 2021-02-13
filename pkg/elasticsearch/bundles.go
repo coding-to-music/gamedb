@@ -55,6 +55,17 @@ func (bundle Bundle) GetPrices() map[steamapi.ProductCC]int {
 	return bundle.Prices
 }
 
+func (bundle Bundle) GetPricesFormatted() (ret map[steamapi.ProductCC]string) {
+
+	ret = map[steamapi.ProductCC]string{}
+
+	for k, v := range bundle.GetPrices() {
+		ret[k] = i18n.FormatPrice(i18n.GetProdCC(k).CurrencyCode, v)
+	}
+
+	return ret
+}
+
 func (bundle Bundle) GetScore() float64 {
 	return bundle.Score
 }
