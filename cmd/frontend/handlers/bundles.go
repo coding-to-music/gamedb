@@ -58,8 +58,8 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var code = session.GetProductCC(r)
 		var err error
 		var sortCols = map[string]string{
-			"1": "sale_discount",
-			"2": "sale_prices." + string(code),
+			"1": "discount_sale",
+			"2": "prices." + string(code),
 			"3": "apps",
 			"4": "packages",
 			"5": "updated_at",
