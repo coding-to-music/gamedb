@@ -31,13 +31,17 @@ if ($bundlePage.length > 0) {
                 },
                 yAxis: {
                     title: {
-                        text: 'Discount (%)'
+                        text: ''
                     },
                     type: 'linear',
-                    max: 0,
-                    min: -100,
+                    max: 100,
+                    min: 0,
                     allowDecimals: false,
-                    reversed: true,
+                    labels: {
+                        formatter: function () {
+                            return this.value + '%';
+                        },
+                    },
                 },
                 series: [
                     {
