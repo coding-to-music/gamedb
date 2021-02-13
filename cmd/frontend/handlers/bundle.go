@@ -150,7 +150,7 @@ func bundlePricesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get prices
-	pricesResp, err := mongo.GetBundlePrices(id)
+	pricesResp, err := mongo.GetBundlePricesByID(id)
 	if err != nil {
 		log.ErrS(err)
 		return

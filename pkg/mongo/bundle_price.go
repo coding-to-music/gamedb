@@ -28,10 +28,19 @@ func (price BundlePrice) GetKey() string {
 	return strconv.Itoa(price.BundleID) + "-" + price.CreatedAt.Format(time.RFC3339)
 }
 
-func GetBundlePrices(bundleID int) (prices []BundlePrice, err error) {
+func GetBundlePrices(filter bson.D) (prices []BundlePrice, err error) {
+	return getBundlePrices(filter, nil)
+}
 
-	var sort = bson.D{{"created_at", 1}}
+func GetBundlePricesByID(bundleID int) (prices []BundlePrice, err error) {
+
 	var filter = bson.D{{"bundle_id", bundleID}}
+	var sort = bson.D{{"created_at", 1}}
+
+	return getBundlePrices(filter, sort)
+}
+
+func getBundlePrices(filter, sort bson.D) (prices []BundlePrice, err error) {
 
 	cur, ctx, err := find(CollectionBundlePrices, 0, 0, sort, filter, nil, nil)
 	if err != nil {
