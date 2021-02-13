@@ -20,14 +20,14 @@ require (
 	github.com/ahmdrz/goinsta/v2 v2.4.5
 	github.com/antchfx/xmlquery v1.3.3 // indirect
 	github.com/antchfx/xpath v1.1.11 // indirect
-	github.com/aws/aws-sdk-go v1.37.6 // indirect
+	github.com/aws/aws-sdk-go v1.37.10 // indirect
 	github.com/badoux/checkmail v1.2.1
 	github.com/blend/go-sdk v1.1.1 // indirect
 	github.com/buger/jsonparser v1.1.1 // indirect
 	github.com/bwmarrin/discordgo v0.23.2
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/cenkalti/backoff/v4 v4.1.0
-	github.com/deepmap/oapi-codegen v1.5.0
+	github.com/deepmap/oapi-codegen v1.5.1
 	github.com/derekstavis/go-qs v0.0.0-20180720192143-9eef69e6c4e7
 	github.com/dghubble/go-twitter v0.0.0-20201011215211-4b180d0cc78d
 	github.com/dghubble/oauth1 v0.7.0
@@ -40,7 +40,7 @@ require (
 	github.com/ghodss/yaml v1.0.1-0.20190212211648-25d852aebe32 // indirect
 	github.com/go-chi/chi v4.1.2+incompatible
 	github.com/go-chi/cors v1.1.1
-	github.com/go-openapi/swag v0.19.13 // indirect
+	github.com/go-openapi/swag v0.19.14 // indirect
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/gobuffalo/packr/v2 v2.8.1
 	github.com/gocolly/colly/v2 v2.1.0
@@ -52,7 +52,7 @@ require (
 	github.com/gorilla/sessions v1.2.1
 	github.com/gorilla/websocket v1.4.2
 	github.com/gosimple/slug v1.9.0
-	github.com/grpc-ecosystem/grpc-gateway/v2 v2.1.0
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.2.0
 	github.com/hetznercloud/hcloud-go v1.23.1
 	github.com/influxdata/influxdb-client-go/v2 v2.2.2
 	github.com/influxdata/influxdb1-client v0.0.0-20200827194710-b269163b24ab
@@ -66,6 +66,7 @@ require (
 	github.com/labstack/echo/v4 v4.1.17
 	github.com/lib/pq v1.3.0 // indirect
 	github.com/mailjet/mailjet-apiv3-go v0.0.0-20201009050126-c24bc15a9394
+	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/mattn/go-runewidth v0.0.10 // indirect
 	github.com/mattn/go-sqlite3 v2.0.1+incompatible // indirect
@@ -75,7 +76,7 @@ require (
 	github.com/montanaflynn/stats v0.6.4
 	github.com/mssola/user_agent v0.5.2
 	github.com/nicklaw5/helix v1.5.0
-	github.com/olekukonko/tablewriter v0.0.4 // indirect
+	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/olivere/elastic/v7 v7.0.22
 	github.com/oschwald/maxminddb-golang v1.8.0
 	github.com/pariz/gountries v0.0.0-20200430155801-1c6a393df9c7
@@ -87,11 +88,12 @@ require (
 	github.com/russross/blackfriday v2.0.0+incompatible
 	github.com/satori/go.uuid v1.2.0
 	github.com/sendgrid/rest v2.6.2+incompatible // indirect
-	github.com/sendgrid/sendgrid-go v3.7.2+incompatible
+	github.com/sendgrid/sendgrid-go v3.8.0+incompatible
 	github.com/sirupsen/logrus v1.7.0 // indirect
 	github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf // indirect
 	github.com/streadway/amqp v1.0.0
-	github.com/tdewolff/minify/v2 v2.9.11
+	github.com/tdewolff/minify/v2 v2.9.12
+	github.com/tdewolff/parse/v2 v2.5.10 // indirect
 	github.com/tidwall/pretty v1.0.1 // indirect
 	github.com/wcharczuk/go-chart v2.0.1+incompatible
 	github.com/xdg/stringprep v1.0.0 // indirect
@@ -105,7 +107,7 @@ require (
 	golang.org/x/image v0.0.0-20201208152932-35266b937fa6 // indirect
 	golang.org/x/mod v0.4.1 // indirect
 	golang.org/x/net v0.0.0-20210119194325-5f4716e94777
-	golang.org/x/oauth2 v0.0.0-20210201163806-010130855d6c
+	golang.org/x/oauth2 v0.0.0-20210210192628-66670185b0cd
 	golang.org/x/sync v0.0.0-20201207232520-09787c993a3a // indirect
 	golang.org/x/sys v0.0.0-20210124154548-22da62e12c0c // indirect
 	golang.org/x/term v0.0.0-20201210144234-2321bbc49cbf // indirect
@@ -113,8 +115,8 @@ require (
 	golang.org/x/time v0.0.0-20201208040808-7e3f01d25324
 	golang.org/x/tools v0.1.0 // indirect
 	gonum.org/v1/gonum v0.8.2
-	google.golang.org/api v0.39.0
-	google.golang.org/genproto v0.0.0-20210204154452-deb828366460 // indirect
+	google.golang.org/api v0.40.0
+	google.golang.org/genproto v0.0.0-20210212180131-e7f2df4ecc2d // indirect
 	google.golang.org/grpc v1.35.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.1.0
 	google.golang.org/protobuf v1.25.0
