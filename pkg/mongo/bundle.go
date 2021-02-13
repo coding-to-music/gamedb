@@ -1,6 +1,7 @@
 package mongo
 
 import (
+	"math"
 	"time"
 
 	"github.com/Jleagle/steam-go/steamapi"
@@ -33,6 +34,11 @@ type Bundle struct {
 }
 
 func (bundle Bundle) BSON() bson.D {
+
+	bundle.Discount = int(math.Abs(float64(bundle.Discount)))
+	bundle.DiscountHighest = int(math.Abs(float64(bundle.DiscountHighest)))
+	bundle.DiscountLowest = int(math.Abs(float64(bundle.DiscountLowest)))
+	bundle.DiscountSale = int(math.Abs(float64(bundle.DiscountSale)))
 
 	bundle.UpdatedAt = time.Now()
 
