@@ -72,7 +72,7 @@ if ($('#chat-bot-page').length > 0) {
                                 case 'Requests':
                                     return this.y.toLocaleString() + ' requests at ' + moment(this.key).format("dddd DD MMM YYYY @ HH:00");
                                 case 'Servers':
-                                    return this.y.toLocaleString() + ' guilds on ' + moment(this.key).format("dddd DD MMM YYYY @ HH:00");
+                                    return 'On ' + this.y.toLocaleString() + ' servers on ' + moment(this.key).format("dddd DD MMM YYYY @ HH:00");
                             }
                         },
                     },
