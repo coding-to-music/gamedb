@@ -29,7 +29,7 @@ func bundleSearchHandler(message *rabbit.Message) {
 	}
 
 	bundle := elasticsearch.Bundle{
-		Apps:            payload.Bundle.Apps,
+		Apps:            len(payload.Bundle.Apps),
 		CreatedAt:       payload.Bundle.CreatedAt.Unix(),
 		Discount:        payload.Bundle.Discount,
 		DiscountHighest: payload.Bundle.DiscountHighest,
@@ -41,7 +41,7 @@ func bundleSearchHandler(message *rabbit.Message) {
 		Image:           payload.Bundle.Image,
 		OnSale:          payload.Bundle.OnSale,
 		Name:            payload.Bundle.Name,
-		Packages:        payload.Bundle.Packages,
+		Packages:        len(payload.Bundle.Packages),
 		Prices:          payload.Bundle.Prices,
 		PricesSale:      payload.Bundle.PricesSale,
 		Type:            payload.Bundle.Type,

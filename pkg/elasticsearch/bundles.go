@@ -14,7 +14,7 @@ import (
 )
 
 type Bundle struct {
-	Apps            []int                      `json:"apps"`
+	Apps            int                        `json:"apps"`
 	CreatedAt       int64                      `json:"created_at"`
 	Discount        int                        `json:"discount"`
 	DiscountHighest int                        `json:"discount_highest"`
@@ -26,7 +26,7 @@ type Bundle struct {
 	Image           string                     `json:"image"`
 	Name            string                     `json:"name"`
 	OnSale          bool                       `json:"on_sale"`
-	Packages        []int                      `json:"packages"`
+	Packages        int                        `json:"packages"`
 	Prices          map[steamapi.ProductCC]int `json:"prices"`
 	PricesSale      map[steamapi.ProductCC]int `json:"prices_sale"`
 	Type            string                     `json:"type"`
@@ -68,11 +68,11 @@ func (bundle Bundle) GetScore() float64 {
 }
 
 func (bundle Bundle) GetApps() int {
-	return len(bundle.Apps)
+	return bundle.Apps
 }
 
 func (bundle Bundle) GetPackages() int {
-	return len(bundle.Packages)
+	return bundle.Packages
 }
 
 func (bundle Bundle) GetPath() string {
