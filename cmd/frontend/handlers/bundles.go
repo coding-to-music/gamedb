@@ -141,7 +141,9 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		bundles, countFiltered, err = elasticsearch.SearchBundles(query.GetOffset(), 100, "", query.GetOrderElastic(sortCols), filters)
+		search := query.GetSearchString("search")
+
+		bundles, countFiltered, err = elasticsearch.SearchBundles(query.GetOffset(), 100, search, query.GetOrderElastic(sortCols), filters)
 		if err != nil {
 			log.Err("Searching bundles", zap.Error(err))
 		}

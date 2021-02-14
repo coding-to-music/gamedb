@@ -116,9 +116,11 @@ func SearchBundles(offset int, limit int, search string, sorters []elastic.Sorte
 	search = strings.TrimSpace(search)
 	if search != "" {
 
+		i, _ := strconv.ParseInt(search, 10, 64)
+
 		boolQuery.Must(
 			elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
-				elastic.NewTermQuery("id", search).Boost(5),
+				elastic.NewTermQuery("id", i).Boost(5),
 				elastic.NewMatchQuery("name", search),
 			),
 		)
