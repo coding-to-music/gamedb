@@ -189,6 +189,10 @@ function addDataTablesRow(options, data, limit, $table) {
 
             let value = data[v];
 
+            if ('visible' in v && v.visible === false) {
+                continue;
+            }
+
             if ('render' in v) {
                 value = v.render(null, null, data);
             }
