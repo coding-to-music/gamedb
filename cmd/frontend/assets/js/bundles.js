@@ -146,7 +146,7 @@ if ($('#bundles-page').length > 0) {
                     }
                     return '-';
                 },
-                "orderable": false,
+                "orderSequence": ["asc", "desc"],
             },
             // Items
             {
