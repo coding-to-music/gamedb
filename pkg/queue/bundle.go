@@ -168,6 +168,7 @@ func bundleHandler(message *rabbit.Message) {
 func updateBundle(bundle *mysql.Bundle) (err error) {
 
 	var prices = map[steamapi.ProductCC]int{}
+	var pricesSale = map[steamapi.ProductCC]int{}
 
 	for _, prodCC := range i18n.GetProdCCs(true) {
 
@@ -234,16 +235,21 @@ func updateBundle(bundle *mysql.Bundle) (err error) {
 		}
 
 		// Price
+		c.OnHTML(".game_purchase_discount .discount_original_price", func(e *colly.HTMLElement) {
+
+			val := helpers.RegexNonInts.ReplaceAllString(e.Text, "")
+			if len(val) > 0 {
+				i, _ := strconv.Atoi(val)
+				prices[prodCC.ProductCode] = i
+			}
+		})
+
 		c.OnHTML(".game_purchase_discount .discount_final_price", func(e *colly.HTMLElement) {
 
-			if helpers.RegexInts.MatchString(e.Text) {
-
-				i, err := strconv.Atoi(helpers.RegexNonInts.ReplaceAllString(e.Text, ""))
-				if err != nil {
-					return
-				}
-
-				prices[prodCC.ProductCode] = i
+			val := helpers.RegexNonInts.ReplaceAllString(e.Text, "")
+			if len(val) > 0 {
+				i, _ := strconv.Atoi(val)
+				pricesSale[prodCC.ProductCode] = i
 			}
 		})
 
@@ -269,6 +275,12 @@ func updateBundle(bundle *mysql.Bundle) (err error) {
 			return err
 		}
 		bundle.Prices = string(b)
+
+		b, err = json.Marshal(pricesSale)
+		if err != nil {
+			return err
+		}
+		bundle.PricesSale = string(b)
 	}
 
 	return nil
