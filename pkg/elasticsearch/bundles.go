@@ -47,8 +47,16 @@ func (bundle Bundle) GetDiscount() int {
 	return bundle.Discount
 }
 
+func (bundle Bundle) GetDiscountSale() int {
+	return bundle.DiscountSale
+}
+
 func (bundle Bundle) GetDiscountHighest() int {
 	return bundle.DiscountHighest
+}
+
+func (bundle Bundle) GetType() string {
+	return bundle.Type
 }
 
 func (bundle Bundle) GetPrices() map[steamapi.ProductCC]int {

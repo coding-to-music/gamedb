@@ -40,20 +40,20 @@ if ($('#bundles-page').length > 0) {
     });
 
     // Packages slider
-    const $packagesElement = $('#packages');
-    const packagesSlider = noUiSlider.create($packagesElement[0], {
-        start: [0, 100],
-        connect: true,
-        step: 1,
-        range: {
-            'min': 0,
-            'max': 100,
-        },
-        format: {
-            to: (v) => parseFloat(v).toFixed(0),
-            from: (v) => parseFloat(v).toFixed(0)
-        },
-    });
+    // const $packagesElement = $('#packages');
+    // const packagesSlider = noUiSlider.create($packagesElement[0], {
+    //     start: [0, 100],
+    //     connect: true,
+    //     step: 1,
+    //     range: {
+    //         'min': 0,
+    //         'max': 100,
+    //     },
+    //     format: {
+    //         to: (v) => parseFloat(v).toFixed(0),
+    //         from: (v) => parseFloat(v).toFixed(0)
+    //     },
+    // });
 
     //
     function updateLabels(e) {
@@ -75,13 +75,13 @@ if ($('#bundles-page').length > 0) {
         }
 
         //
-        const packages = packagesSlider.get();
-        const packagesRight = (apps[1] === '100' ? '100+' : apps[1]);
-        if (packages[0] === packages[1]) {
-            $('label[for=packages]').html('Packages (' + packagesRight + ')');
-        } else {
-            $('label[for=packages]').html('Packages (' + apps[0] + ' - ' + packagesRight + ')');
-        }
+        // const packages = packagesSlider.get();
+        // const packagesRight = (apps[1] === '100' ? '100+' : apps[1]);
+        // if (packages[0] === packages[1]) {
+        //     $('label[for=packages]').html('Packages (' + packagesRight + ')');
+        // } else {
+        //     $('label[for=packages]').html('Packages (' + apps[0] + ' - ' + packagesRight + ')');
+        // }
     }
 
     window.updateLabels = updateLabels;
@@ -90,7 +90,7 @@ if ($('#bundles-page').length > 0) {
 
     //
     const options = {
-        "order": [[5, 'desc']],
+        "order": [[6, 'desc']],
         "createdRow": function (row, data, dataIndex) {
             $(row).attr('data-link', data[2]);
         },
@@ -116,7 +116,14 @@ if ($('#bundles-page').length > 0) {
             {
                 "targets": 1,
                 "render": function (data, type, row) {
-                    return row[4] + '%'
+
+                    let discount = row[13] + '%';
+
+                    if (row[13] > row[4]) {
+                        discount += ' <small>(' + row[4] + '%)<small>';
+                    }
+
+                    return discount
                 },
                 "orderSequence": ["asc", "desc"],
             },
@@ -132,7 +139,7 @@ if ($('#bundles-page').length > 0) {
                         let price = row[9][user.prodCC];
 
                         if (user.prodCC in row[11]) {
-                            price += ' <strike>(' + row[11][user.prodCC] + ')</strike>';
+                            price += ' <small>(' + row[11][user.prodCC] + ')</small>';
                         }
 
                         return price;
@@ -141,7 +148,7 @@ if ($('#bundles-page').length > 0) {
                 },
                 "orderable": false,
             },
-            // Apps
+            // Items
             {
                 "targets": 3,
                 "render": function (data, type, row) {
@@ -153,23 +160,40 @@ if ($('#bundles-page').length > 0) {
             {
                 "targets": 4,
                 "render": function (data, type, row) {
-                    return '<i class="fas fa-check text-' + (row[6] ? 'success' : 'danger') + ' fa-fw"></i>';
+                    if (row[6]) {
+                        return '<i class="fas fa-check text-success fa-fw"></i>';
+                    } else {
+                        return '<i class="fas fa-times text-danger fa-fw"></i>';
+                    }
+                },
+                "orderable": false,
+            },
+            // Complete the set
+            {
+                "targets": 5,
+                "render": function (data, type, row) {
+                    if (row[12] === 'cts') {
+                        return '<i class="fas fa-check fa-fw"></i>';
+                    } else {
+                        return '<i class="fas fa-times fa-fw"></i>';
+                    }
                 },
                 "orderable": false,
             },
             // Updated At
             {
-                "targets": 5,
+                "targets": 6,
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).attr('nowrap', 'nowrap');
                 },
                 "render": function (data, type, row) {
                     return '<span data-livestamp="' + row[3] + '"></span>';
-                }
+                },
+                "orderSequence": ["desc"],
             },
             // Link
             {
-                "targets": 6,
+                "targets": 7,
                 "render": function (data, type, row) {
                     if (row[8]) {
                         return '<a href="' + row[8] + '" target="_blank" rel="noopener"><i class="fas fa-link"></i></a>';
@@ -180,7 +204,7 @@ if ($('#bundles-page').length > 0) {
             },
             // Search score
             {
-                "targets": 7,
+                "targets": 8,
                 "render": function (data, type, row) {
                     return row[10];
                 },
@@ -196,7 +220,7 @@ if ($('#bundles-page').length > 0) {
         $('#search'),
         $discountElement,
         $appsElement,
-        $packagesElement,
+        // $packagesElement,
         $('#type'),
         $('#giftable'),
         $('#onsale'),

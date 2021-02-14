@@ -58,10 +58,12 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var code = session.GetProductCC(r)
 		var err error
 		var sortCols = map[string]string{
+			// "0": "name",
 			"1": "discount_sale",
-			"2": "prices." + string(code),
+			"2": "prices_sale." + string(code),
 			"3": "apps",
-			"4": "packages",
+			// "4": "giftable",
+			// "5": "type,
 			"5": "updated_at",
 		}
 
@@ -94,13 +96,13 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			if discount[0] != "0" {
 				min, err := strconv.Atoi(discount[0])
 				if err == nil {
-					filters = append(filters, elastic.NewRangeQuery("discount").Gte(min))
+					filters = append(filters, elastic.NewRangeQuery("discount_sale").Gte(min))
 				}
 			}
 			if discount[1] != "100" {
 				max, err := strconv.Atoi(discount[1])
 				if err == nil {
-					filters = append(filters, elastic.NewRangeQuery("discount").Lte(max))
+					filters = append(filters, elastic.NewRangeQuery("discount_sale").Lte(max))
 				}
 			}
 		}
@@ -125,21 +127,21 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		//
-		packages := query.GetSearchSlice("packages")
-		if len(packages) == 2 {
-			if packages[0] != "0" {
-				min, err := strconv.Atoi(packages[0])
-				if err == nil {
-					filters = append(filters, elastic.NewRangeQuery("packages").Gte(min))
-				}
-			}
-			if packages[1] != "100" {
-				max, err := strconv.Atoi(packages[1])
-				if err == nil {
-					filters = append(filters, elastic.NewRangeQuery("packages").Lte(max))
-				}
-			}
-		}
+		// packages := query.GetSearchSlice("packages")
+		// if len(packages) == 2 {
+		// 	if packages[0] != "0" {
+		// 		min, err := strconv.Atoi(packages[0])
+		// 		if err == nil {
+		// 			filters = append(filters, elastic.NewRangeQuery("packages").Gte(min))
+		// 		}
+		// 	}
+		// 	if packages[1] != "100" {
+		// 		max, err := strconv.Atoi(packages[1])
+		// 		if err == nil {
+		// 			filters = append(filters, elastic.NewRangeQuery("packages").Lte(max))
+		// 		}
+		// 	}
+		// }
 
 		search := query.GetSearchString("search")
 

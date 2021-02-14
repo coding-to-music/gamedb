@@ -43,12 +43,20 @@ func (bundle Bundle) GetDiscount() int {
 	return bundle.Discount
 }
 
+func (bundle Bundle) GetDiscountSale() int {
+	return bundle.DiscountSale
+}
+
 func (bundle Bundle) GetDiscountHighest() int {
 	return bundle.DiscountHighest
 }
 
 func (bundle Bundle) GetScore() float64 {
 	return 0
+}
+
+func (bundle Bundle) GetType() string {
+	return bundle.Type
 }
 
 func (bundle Bundle) GetApps() int {

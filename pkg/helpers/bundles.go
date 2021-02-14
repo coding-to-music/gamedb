@@ -19,11 +19,13 @@ type Bundle interface {
 	GetID() int
 	GetUpdated() time.Time
 	GetDiscount() int
+	GetDiscountSale() int
 	GetDiscountHighest() int
 	GetPrices() map[steamapi.ProductCC]int
 	GetPricesFormatted() map[steamapi.ProductCC]string
 	GetPricesSaleFormatted() map[steamapi.ProductCC]string
 	GetScore() float64
+	GetType() string
 	GetApps() int
 	GetPackages() int
 	IsGiftable() bool
@@ -47,6 +49,8 @@ func OutputBundleForJSON(bundle Bundle) []interface{} {
 		bundle.GetPricesFormatted(),     // 9
 		bundle.GetScore(),               // 10
 		bundle.GetPricesSaleFormatted(), // 11
+		bundle.GetType(),                // 12
+		bundle.GetDiscountSale(),        // 13
 	}
 }
 
