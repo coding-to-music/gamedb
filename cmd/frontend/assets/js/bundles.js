@@ -173,9 +173,9 @@ if ($('#bundles-page').length > 0) {
                 "targets": 5,
                 "render": function (data, type, row) {
                     if (row[12] === 'cts') {
-                        return '<i class="fas fa-check fa-fw"></i>';
+                        return '<i class="fas fa-check text-success fa-fw"></i>';
                     } else {
-                        return '<i class="fas fa-times fa-fw"></i>';
+                        return '<i class="fas fa-times text-danger fa-fw"></i>';
                     }
                 },
                 "orderable": false,
