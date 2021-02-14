@@ -95,7 +95,7 @@ func (bundle Bundle) IsGiftable() bool {
 	return bundle.Giftable
 }
 
-func SearchBundles(offset int, limit int, search string, sorters []elastic.Sorter, boolQuery *elastic.BoolQuery) (bundles []Bundle, total int64, err error) {
+func SearchBundles(offset int, limit int, search string, sorters []elastic.Sorter, filters []elastic.Query) (bundles []Bundle, total int64, err error) {
 
 	client, ctx, err := GetElastic()
 	if err != nil {
@@ -107,8 +107,10 @@ func SearchBundles(offset int, limit int, search string, sorters []elastic.Sorte
 		From(offset).
 		Size(limit)
 
-	if boolQuery == nil {
-		boolQuery = elastic.NewBoolQuery()
+	boolQuery := elastic.NewBoolQuery()
+
+	if len(filters) > 0 {
+		boolQuery.Filter(filters...)
 	}
 
 	search = strings.TrimSpace(search)
