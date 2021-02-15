@@ -42,7 +42,7 @@ func (CommandGroupsTrending) Type() CommandType {
 	return TypeGroup
 }
 
-func (CommandGroupsTrending) LegacyInputs(input string) map[string]string {
+func (CommandGroupsTrending) LegacyInputs(_ string) map[string]string {
 	return map[string]string{}
 }
 

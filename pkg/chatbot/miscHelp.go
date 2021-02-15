@@ -38,7 +38,7 @@ func (CommandHelp) Type() CommandType {
 	return TypeOther
 }
 
-func (CommandHelp) LegacyInputs(input string) map[string]string {
+func (CommandHelp) LegacyInputs(_ string) map[string]string {
 	return map[string]string{}
 }
 

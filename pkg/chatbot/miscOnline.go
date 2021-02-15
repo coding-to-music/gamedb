@@ -41,7 +41,7 @@ func (CommandSteamOnline) Type() CommandType {
 	return TypeOther
 }
 
-func (CommandSteamOnline) LegacyInputs(input string) map[string]string {
+func (CommandSteamOnline) LegacyInputs(_ string) map[string]string {
 	return map[string]string{}
 }
 

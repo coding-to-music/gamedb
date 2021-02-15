@@ -42,7 +42,7 @@ func (CommandAppsTrending) Type() CommandType {
 	return TypeGame
 }
 
-func (CommandAppsTrending) LegacyInputs(input string) map[string]string {
+func (CommandAppsTrending) LegacyInputs(_ string) map[string]string {
 	return map[string]string{}
 }
 

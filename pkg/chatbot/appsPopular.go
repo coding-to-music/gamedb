@@ -43,7 +43,7 @@ func (CommandAppsPopular) Type() CommandType {
 	return TypeGame
 }
 
-func (CommandAppsPopular) LegacyInputs(input string) map[string]string {
+func (CommandAppsPopular) LegacyInputs(_ string) map[string]string {
 	return map[string]string{}
 }
 

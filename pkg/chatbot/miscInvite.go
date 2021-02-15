@@ -38,7 +38,7 @@ func (CommandInvite) Type() CommandType {
 	return TypeOther
 }
 
-func (CommandInvite) LegacyInputs(input string) map[string]string {
+func (CommandInvite) LegacyInputs(_ string) map[string]string {
 	return map[string]string{}
 }
 
