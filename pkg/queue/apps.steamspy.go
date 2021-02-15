@@ -30,6 +30,8 @@ var steamspyLimiter = ratelimit.New(time.Second, 1)
 
 func appSteamspyHandler(message *rabbit.Message) {
 
+	attempt := time.Duration(message.Attempt())
+
 	payload := AppSteamspyMessage{}
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
@@ -66,21 +68,21 @@ func appSteamspyHandler(message *rabbit.Message) {
 			log.Err(err.Error(), zap.Int("app", payload.AppID), zap.String("url", u))
 		}
 
-		sendToRetryQueueWithDelay(message, time.Minute)
+		sendToRetryQueueWithDelay(message, time.Minute*attempt)
 		return
 	}
 
 	if statusCode != 200 {
 
 		log.InfoS("steamspy is down", payload.AppID)
-		sendToRetryQueueWithDelay(message, time.Minute*30)
+		sendToRetryQueueWithDelay(message, time.Minute*30*attempt)
 		return
 	}
 
 	if strings.Contains(string(body), "Connection failed") {
 
 		log.Info("steamspy is down", zap.Int("app", payload.AppID), zap.String("url", u), zap.String("body", string(body)))
-		sendToRetryQueueWithDelay(message, time.Minute*30)
+		sendToRetryQueueWithDelay(message, time.Minute*30*attempt)
 		return
 	}
 
@@ -90,7 +92,7 @@ func appSteamspyHandler(message *rabbit.Message) {
 	if err != nil {
 
 		log.InfoS(err, payload.AppID, helpers.TruncateString(string(body), 200, "..."))
-		sendToRetryQueueWithDelay(message, time.Minute*30)
+		sendToRetryQueueWithDelay(message, time.Minute*30*attempt)
 		return
 	}
 
