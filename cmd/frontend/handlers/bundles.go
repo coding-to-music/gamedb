@@ -64,7 +64,7 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			"3": "apps",
 			// "4": "giftable",
 			// "5": "type,
-			"5": "updated_at",
+			"6": "created_at",
 		}
 
 		var filters []elastic.Query

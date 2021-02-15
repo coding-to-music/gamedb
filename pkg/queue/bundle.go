@@ -57,6 +57,7 @@ func bundleHandler(message *rabbit.Message) {
 		return
 	}
 
+	newBundle := bundle.Type == ""
 	oldBundle := bundle
 
 	err = updateBundle(&bundle)
@@ -116,12 +117,15 @@ func bundleHandler(message *rabbit.Message) {
 	}
 
 	// Send websocket
-	wsPayload := IntPayload{ID: payload.ID}
-	err = ProduceWebsocket(wsPayload, websockets.PageBundle, websockets.PageBundles)
-	if err != nil {
-		log.ErrS(err, payload.ID)
-		sendToRetryQueue(message)
-		return
+	if newBundle {
+
+		wsPayload := IntPayload{ID: payload.ID}
+		err = ProduceWebsocket(wsPayload, websockets.PageBundle, websockets.PageBundles)
+		if err != nil {
+			log.ErrS(err, payload.ID)
+			sendToRetryQueue(message)
+			return
+		}
 	}
 
 	//
