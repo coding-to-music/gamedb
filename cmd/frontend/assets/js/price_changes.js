@@ -176,11 +176,17 @@ if ($priceChangesPage.length > 0) {
         $changeElement,
         $priceElement,
     ];
+    const original = serialiseTable(searchFields, options.order)
 
     const $table = $('table.table');
     const dt = $table.gdbTable({tableOptions: options, searchFields: searchFields});
 
     websocketListener('prices', function (e) {
+
+        if ((Object.toJSON(original) !== Object.toJSON(serialiseTable(searchFields, dt.order())))) {
+            toast(true, 'Reset table filters/sorting to show live', 'New Price Change');
+            return;
+        }
 
         const info = dt.page.info();
         if (info.page === 0) { // Page 1

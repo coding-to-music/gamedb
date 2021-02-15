@@ -225,10 +225,16 @@ if ($('#bundles-page').length > 0) {
         $('#giftable'),
         $('#onsale'),
     ];
+    const original = serialiseTable(searchFields, options.order)
 
     const dt = $table.gdbTable({tableOptions: options, searchFields: searchFields});
 
     websocketListener('bundles', function (e) {
+
+        if ((Object.toJSON(original) !== Object.toJSON(serialiseTable(searchFields, dt.order())))) {
+            toast(true, 'Reset table filters/sorting to show live', 'New Bundle Added');
+            return;
+        }
 
         const info = dt.page.info();
         if (info.page === 0) { // Page 1

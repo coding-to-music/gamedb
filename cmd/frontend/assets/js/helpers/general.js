@@ -76,3 +76,16 @@ function pad(n, width, z) {
     n = n + '';
     return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
 }
+
+function serialiseTable(searchFields, order) {
+
+    const obj = {};
+    $(searchFields).each(function (index, $field) {
+        const name = $field.attr('name') ? $field.attr('name') : $field.attr('data-name');
+        obj[name] = $field.val();
+    });
+
+    obj.order = order;
+
+    return obj
+}
