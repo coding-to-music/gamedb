@@ -120,7 +120,7 @@ if ($('#bundles-page').length > 0) {
                     let discount = row[13] + '%';
 
                     if (row[13] > row[4]) {
-                        discount += ' <small>(' + row[4] + '%)<small>';
+                        discount += ' <small>' + row[4] + '%<small>';
                     }
 
                     return discount
@@ -139,7 +139,7 @@ if ($('#bundles-page').length > 0) {
                         let price = row[9][user.prodCC];
 
                         if (user.prodCC in row[11]) {
-                            price += ' <small>(' + row[11][user.prodCC] + ')</small>';
+                            price += ' <small>' + row[11][user.prodCC] + '</small>';
                         }
 
                         return price;
