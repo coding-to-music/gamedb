@@ -14,7 +14,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/go-chi/chi"
 	"go.uber.org/zap"
 )
@@ -64,7 +63,7 @@ func statsSteamHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		t.BundlesCount, err = mysql.CountBundles()
+		t.BundlesCount, err = mongo.CountDocuments(mongo.CollectionBundles, nil, 0)
 		if err != nil {
 			log.ErrS(err)
 		}
@@ -142,7 +141,7 @@ func statsSteamHandler(w http.ResponseWriter, r *http.Request) {
 type statsTemplate struct {
 	globalTemplate
 	AppsCount          int64
-	BundlesCount       int
+	BundlesCount       int64
 	PackagesCount      int64
 	AchievementsCount  int64
 	ArticlesCount      int64

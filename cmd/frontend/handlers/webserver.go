@@ -24,7 +24,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/ldflags"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gosimple/slug"
@@ -795,20 +794,4 @@ func getPlayerFromSession(r *http.Request) (player mongo.Player, err error) {
 	}
 
 	return mongo.GetPlayer(playerID)
-}
-
-// Has to be here as it contains mysql _and_ mongo
-func GetPackageBundles(pack mongo.Package) (bundles []mysql.Bundle, err error) {
-
-	bundles = []mysql.Bundle{} // Needed for marshalling into type
-
-	if len(pack.Bundles) == 0 {
-		return bundles, nil
-	}
-
-	err = memcache.GetSetInterface(memcache.ItemPackageBundles(pack.ID), &bundles, func() (interface{}, error) {
-		return mysql.GetBundlesByID(pack.Bundles, []string{})
-	})
-
-	return bundles, err
 }

@@ -9,7 +9,7 @@ import (
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/mysql"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/go-chi/chi"
 	"github.com/olivere/elastic/v7"
 	"go.uber.org/zap"
@@ -152,14 +152,14 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	// Get total
-	var count int
+	var count int64
 	wg.Add(1)
 	go func() {
 
 		defer wg.Done()
 
 		var err error
-		count, err = mysql.CountBundles()
+		count, err = mongo.CountDocuments(mongo.CollectionBundles, nil, 0)
 		if err != nil {
 			log.ErrS(err)
 		}
@@ -168,7 +168,7 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	// Wait
 	wg.Wait()
 
-	var response = datatable.NewDataTablesResponse(r, query, int64(count), countFiltered, nil)
+	var response = datatable.NewDataTablesResponse(r, query, count, countFiltered, nil)
 	for _, v := range bundles {
 		response.AddRow(v.OutputForJSON())
 	}

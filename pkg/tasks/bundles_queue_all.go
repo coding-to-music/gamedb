@@ -2,8 +2,9 @@ package tasks
 
 import (
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/mysql"
+	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type BundlesQueueAll struct {
@@ -28,31 +29,15 @@ func (c BundlesQueueAll) Cron() TaskTime {
 
 func (c BundlesQueueAll) work() (err error) {
 
-	db, err := mysql.GetMySQLClient()
-	if err != nil {
-		log.ErrS(err)
-		return
-	}
+	return mongo.BatchBundles(nil, bson.M{"_id": 1}, func(bundles []mongo.Bundle) {
 
-	var bundles []mysql.Bundle
+		for _, bundle := range bundles {
 
-	db = db.Model(&mysql.Bundle{})
-	db = db.Select([]string{"id"})
-	db = db.Order("id asc")
-	db = db.Find(&bundles)
-
-	if db.Error != nil {
-		return db.Error
-	}
-
-	for _, bundle := range bundles {
-
-		err = queue.ProduceBundle(bundle.ID)
-		if err != nil {
-			log.ErrS(err)
-			return
+			err = queue.ProduceBundle(bundle.ID)
+			if err != nil {
+				log.ErrS(err)
+				return
+			}
 		}
-	}
-
-	return nil
+	})
 }

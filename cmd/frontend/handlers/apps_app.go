@@ -22,7 +22,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/mysql/pics"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/go-chi/chi"
@@ -449,7 +448,7 @@ func appSamdOwnersHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var  limit int64 = 100
+	var limit int64 = 100
 	if r.URL.Query().Get("small") == "1" {
 		limit = 5
 	}
@@ -1058,9 +1057,9 @@ func appBundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var bundles []mysql.Bundle
+	var bundles []mongo.Bundle
 	var callback = func() (interface{}, error) {
-		return mysql.GetBundlesByID(app.Bundles, nil)
+		return mongo.GetBundlesByID(app.Bundles, nil)
 	}
 
 	err = memcache.GetSetInterface(memcache.ItemAppBundles(app.ID), &bundles, callback)
@@ -1073,13 +1072,13 @@ func appBundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var response = datatable.NewDataTablesResponse(r, query, int64(len(app.Bundles)), int64(len(app.Bundles)), nil)
 	for _, bundle := range bundles {
 		response.AddRow([]interface{}{
-			bundle.ID,                   // 0
-			bundle.GetPath(),            // 1
-			bundle.GetName(),            // 2
-			bundle.Discount,             // 3
-			bundle.AppsCount(),          // 4
-			len(bundle.GetPackageIDs()), // 5
-			bundle.GetUpdatedNice(),     // 6
+			bundle.ID,               // 0
+			bundle.GetPath(),        // 1
+			bundle.GetName(),        // 2
+			bundle.Discount,         // 3
+			bundle.GetApps(),        // 4
+			bundle.GetPackages(),    // 5
+			bundle.GetUpdatedNice(), // 6
 		})
 	}
 

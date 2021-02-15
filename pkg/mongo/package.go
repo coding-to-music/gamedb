@@ -272,6 +272,21 @@ func (pack Package) GetPlatformImages() (ret template.HTML) {
 	return ret
 }
 
+func (pack Package) GetBundles() (bundles []Bundle, err error) {
+
+	bundles = []Bundle{} // Needed for marshalling into type
+
+	if len(pack.Bundles) == 0 {
+		return bundles, nil
+	}
+
+	err = memcache.GetSetInterface(memcache.ItemPackageBundles(pack.ID), &bundles, func() (interface{}, error) {
+		return GetBundlesByID(pack.Bundles, nil)
+	})
+
+	return bundles, err
+}
+
 func (pack Package) GetPICSUpdatedNice() string {
 
 	if pack.ChangeNumberDate.IsZero() || pack.ChangeNumberDate.Unix() == 0 {

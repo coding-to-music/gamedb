@@ -15,7 +15,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/go-chi/chi"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 func BundleRouter() http.Handler {
@@ -36,7 +35,7 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get bundle
-	bundle, err := mysql.GetBundle(id, nil)
+	bundle, err := mongo.GetBundle(id)
 	if err != nil {
 
 		if err == mysql.ErrRecordNotFound {
@@ -59,20 +58,14 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		appIDs, err := bundle.GetAppIDs()
-		if err != nil {
-			log.ErrS(err)
-			return
-		}
-
-		apps, err = mongo.GetAppsByID(appIDs, nil)
+		apps, err = mongo.GetAppsByID(bundle.Apps, nil)
 		if err != nil {
 			log.ErrS(err)
 		}
 
 		// Queue missing apps
-		if len(appIDs) != len(apps) {
-			for _, v := range appIDs {
+		if len(bundle.Apps) != len(apps) {
+			for _, v := range bundle.Apps {
 				var found = false
 				for _, vv := range apps {
 					if v == vv.ID {
@@ -99,7 +92,7 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		packages, err = mongo.GetPackagesByID(bundle.GetPackageIDs(), bson.M{})
+		packages, err = mongo.GetPackagesByID(bundle.Packages, nil)
 		if err != nil {
 			log.ErrS(err)
 		}
@@ -135,7 +128,7 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 
 type bundleTemplate struct {
 	globalTemplate
-	Bundle   mysql.Bundle
+	Bundle   mongo.Bundle
 	Apps     []mongo.App
 	Packages []mongo.Package
 	Price    string
@@ -164,7 +157,7 @@ func bundlePricesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Add current price
-	price, err := mysql.GetBundle(id, []string{"discount"})
+	price, err := mongo.GetBundle(id)
 	if err != nil {
 		log.ErrS(err)
 	} else {

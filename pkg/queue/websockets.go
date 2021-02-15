@@ -6,7 +6,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"go.uber.org/zap"
 )
@@ -152,7 +151,7 @@ func websocketHandler(message *rabbit.Message) {
 			}
 
 			var bundle helpers.Bundle
-			bundle, err = mysql.GetBundle(idPayload.ID, nil)
+			bundle, err = mongo.GetBundle(idPayload.ID)
 			if err != nil {
 				log.ErrS(err)
 				continue

@@ -18,7 +18,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/steam"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/gocolly/colly/v2"
@@ -42,22 +41,24 @@ func bundleHandler(message *rabbit.Message) {
 	}
 
 	// Load current bundle
-	db, err := mysql.GetMySQLClient()
-	if err != nil {
-		log.ErrS(err)
+	var newBundle bool
+
+	bundle, err := mongo.GetBundle(payload.ID)
+	if err == mongo.ErrNoDocuments {
+
+		bundle = mongo.Bundle{}
+		bundle.ID = payload.ID
+		bundle.CreatedAt = time.Now()
+
+		newBundle = true
+
+	} else if err != nil {
+
+		log.Err("GetBundle", zap.Error(err), zap.Int("bundle", payload.ID))
 		sendToRetryQueue(message)
 		return
 	}
 
-	bundle := mysql.Bundle{}
-	db = db.FirstOrInit(&bundle, mysql.Bundle{ID: payload.ID})
-	if db.Error != nil {
-		log.ErrS(db.Error, payload.ID)
-		sendToRetryQueue(message)
-		return
-	}
-
-	newBundle := bundle.Type == ""
 	oldBundle := bundle
 
 	err = updateBundle(&bundle)
@@ -75,9 +76,10 @@ func bundleHandler(message *rabbit.Message) {
 
 		defer wg.Done()
 
-		db = db.Save(&bundle)
-		if db.Error != nil {
-			log.ErrS(db.Error, payload.ID)
+		var err error
+		_, err = mongo.ReplaceOne(mongo.CollectionBundles, bson.D{{"_id", bundle.ID}}, bundle)
+		if err != nil {
+			log.ErrS(err, payload.ID)
 			sendToRetryQueue(message)
 			return
 		}
@@ -128,38 +130,8 @@ func bundleHandler(message *rabbit.Message) {
 		}
 	}
 
-	//
-	apps, _ := bundle.GetAppIDs()
-
-	mongoBundle := mongo.Bundle{
-		Apps:            apps,
-		CreatedAt:       bundle.CreatedAt,
-		Discount:        bundle.Discount,
-		DiscountHighest: bundle.DiscountHighest,
-		DiscountLowest:  bundle.DiscountLowest,
-		DiscountSale:    bundle.DiscountSale,
-		Giftable:        bundle.Giftable,
-		Icon:            bundle.Icon,
-		ID:              bundle.ID,
-		Image:           bundle.Image,
-		Name:            bundle.Name,
-		OnSale:          bundle.OnSale,
-		Packages:        bundle.GetPackageIDs(),
-		Prices:          bundle.GetPrices(),
-		PricesSale:      bundle.GetPricesSale(),
-		Type:            bundle.Type,
-		UpdatedAt:       bundle.UpdatedAt,
-	}
-
-	_, err = mongo.ReplaceOne(mongo.CollectionBundles, bson.D{{"_id", bundle.ID}}, mongoBundle)
-	if err != nil {
-		log.ErrS(err, payload.ID)
-		sendToRetryQueue(message)
-		return
-	}
-
 	// Elastic
-	err = ProduceBundleSearch(mongoBundle)
+	err = ProduceBundleSearch(bundle)
 	if err != nil {
 		log.Err("Producing bundle search", zap.Error(err), zap.Int("bundle", payload.ID))
 		sendToRetryQueue(message)
@@ -169,7 +141,7 @@ func bundleHandler(message *rabbit.Message) {
 	message.Ack()
 }
 
-func updateBundle(bundle *mysql.Bundle) (err error) {
+func updateBundle(bundle *mongo.Bundle) (err error) {
 
 	var prices = map[steamapi.ProductCC]int{}
 	var pricesSale = map[steamapi.ProductCC]int{}
@@ -230,11 +202,8 @@ func updateBundle(bundle *mysql.Bundle) (err error) {
 					packages = append(packages, v.PackageID)
 				}
 
-				b1, _ := json.Marshal(apps)
-				bundle.AppIDs = string(b1)
-
-				b2, _ := json.Marshal(packages)
-				bundle.PackageIDs = string(b2)
+				bundle.Apps = apps
+				bundle.Packages = packages
 			})
 		}
 
@@ -274,17 +243,8 @@ func updateBundle(bundle *mysql.Bundle) (err error) {
 		}
 
 		// Prices
-		b, err := json.Marshal(prices)
-		if err != nil {
-			return err
-		}
-		bundle.Prices = string(b)
-
-		b, err = json.Marshal(pricesSale)
-		if err != nil {
-			return err
-		}
-		bundle.PricesSale = string(b)
+		bundle.Prices = prices
+		bundle.PricesSale = pricesSale
 	}
 
 	return nil
@@ -307,7 +267,7 @@ type bundleData struct {
 
 var bundlePriceLock sync.Mutex
 
-func saveBundlePriceToMongo(bundle mysql.Bundle, oldBundle mysql.Bundle) (err error) {
+func saveBundlePriceToMongo(bundle mongo.Bundle, oldBundle mongo.Bundle) (err error) {
 
 	bundlePriceLock.Lock()
 	defer bundlePriceLock.Unlock()

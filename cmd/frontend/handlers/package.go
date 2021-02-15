@@ -10,7 +10,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/mysql/pics"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/go-chi/chi"
@@ -92,14 +91,14 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	var bundles []mysql.Bundle
+	var bundles []mongo.Bundle
 	wg.Add(1)
 	go func() {
 
 		defer wg.Done()
 
 		var err error
-		bundles, err = GetPackageBundles(pack)
+		bundles, err = pack.GetBundles()
 		if err != nil {
 			log.ErrS(err)
 		}
@@ -167,7 +166,7 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 type packageTemplate struct {
 	globalTemplate
 	Apps       map[int]mongo.App
-	Bundles    []mysql.Bundle
+	Bundles    []mongo.Bundle
 	Banners    map[string][]string
 	Controller pics.PICSController
 	Extended   []pics.KeyValue

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steamapi"
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"go.mongodb.org/mongo-driver/bson"
@@ -76,6 +77,78 @@ func (bundle Bundle) BSON() bson.D {
 	}
 }
 
+func (bundle Bundle) OutputForJSON() (output []interface{}) {
+	return helpers.OutputBundleForJSON(bundle)
+}
+
+func (bundle Bundle) GetName() string {
+	return bundle.Name
+}
+
+func (bundle Bundle) GetPath() string {
+	return helpers.GetBundlePath(bundle.ID, bundle.Name)
+}
+
+func (bundle Bundle) GetStoreLink() string {
+	return helpers.GetBundleStoreLink(bundle.ID)
+}
+
+func (bundle Bundle) GetID() int {
+	return bundle.ID
+}
+
+func (bundle Bundle) GetUpdated() time.Time {
+	return bundle.UpdatedAt
+}
+
+func (bundle Bundle) GetDiscount() int {
+	return bundle.Discount
+}
+
+func (bundle Bundle) GetDiscountSale() int {
+	return bundle.DiscountSale
+}
+
+func (bundle Bundle) GetDiscountHighest() int {
+	return bundle.DiscountHighest
+}
+
+func (bundle Bundle) GetPrices() map[steamapi.ProductCC]int {
+	return bundle.Prices
+}
+
+func (bundle Bundle) GetPricesFormatted() map[steamapi.ProductCC]string {
+	return helpers.GetBundlePricesFormatted(bundle.Prices)
+}
+
+func (bundle Bundle) GetPricesSaleFormatted() map[steamapi.ProductCC]string {
+	return helpers.GetBundlePricesFormatted(bundle.PricesSale)
+}
+
+func (bundle Bundle) GetScore() float64 {
+	return 0
+}
+
+func (bundle Bundle) GetType() string {
+	return bundle.Type
+}
+
+func (bundle Bundle) GetApps() int {
+	return len(bundle.Apps)
+}
+
+func (bundle Bundle) GetPackages() int {
+	return len(bundle.Packages)
+}
+
+func (bundle Bundle) IsGiftable() bool {
+	return bundle.Giftable
+}
+
+func (bundle Bundle) GetUpdatedNice() string {
+	return bundle.UpdatedAt.Format(helpers.DateYearTime)
+}
+
 func BatchBundles(filter bson.D, projection bson.M, callback func(bundles []Bundle)) (err error) {
 
 	var offset int64 = 0
@@ -109,6 +182,22 @@ func GetBundle(id int) (bundle Bundle, err error) {
 	})
 
 	return bundle, err
+}
+
+func GetBundlesByID(ids []int, projection bson.M) (bundles []Bundle, err error) {
+
+	if len(ids) < 1 {
+		return bundles, nil
+	}
+
+	a := bson.A{}
+	for _, v := range ids {
+		a = append(a, v)
+	}
+
+	filter := bson.D{{"_id", bson.M{"$in": a}}}
+
+	return GetBundles(0, 0, nil, filter, projection)
 }
 
 func GetBundles(offset int64, limit int64, sort bson.D, filter bson.D, projection bson.M) (bundles []Bundle, err error) {
