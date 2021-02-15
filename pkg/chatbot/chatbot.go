@@ -84,6 +84,7 @@ const (
 	CPlayerWishlist = "wishlist"        //
 	CPlayerLibrary  = "library"         //
 	CHelp           = "help"            //
+	CFeedback       = "feedback"        //
 	CInvite         = "invite"          //
 	CSettings       = "settings"        //
 	CSteamOnline    = "online"          //
@@ -112,6 +113,7 @@ var CommandRegister = []Command{
 	&CommandHelp{},
 	&CommandInvite{},
 	&CommandSettings{},
+	&CommandFeedback{},
 }
 
 func init() {
