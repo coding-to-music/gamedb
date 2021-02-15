@@ -39,7 +39,9 @@
                                         <input type="password" class="form-control" id="password2" name="password2" autocomplete="new-password" required>
                                     </div>
 
-                                    {{ template "hcaptcha" . }}
+                                    <div class="form-group">
+                                        {{ template "hcaptcha" . }}
+                                    </div>
 
                                     <button type="submit" class="btn btn-success" aria-label="Sign Up">Sign Up</button>
                                 </form>

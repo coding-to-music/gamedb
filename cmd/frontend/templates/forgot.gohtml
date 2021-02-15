@@ -22,12 +22,15 @@
                             <div class="col-12 col-sm-12 col-md-8 col-lg-6">
 
                                 <form action="/forgot" method="post">
+
                                     <div class="form-group">
                                         <label for="email">Email Address</label>
                                         <input type="email" class="form-control" id="email" name="email" value="{{ .LoginEmail }}" autofocus required>
                                     </div>
 
-                                    {{ template "hcaptcha" . }}
+                                    <div class="form-group">
+                                        {{ template "hcaptcha" . }}
+                                    </div>
 
                                     <button type="submit" class="btn btn-success" aria-label="Login">Send Email</button>
                                 </form>
