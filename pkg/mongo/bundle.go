@@ -149,6 +149,10 @@ func (bundle Bundle) GetUpdatedNice() string {
 	return bundle.UpdatedAt.Format(helpers.DateYearTime)
 }
 
+func (bundle Bundle) GetCreatedNice() string {
+	return bundle.CreatedAt.Format(helpers.DateYearTime)
+}
+
 func BatchBundles(filter bson.D, projection bson.M, callback func(bundles []Bundle)) (err error) {
 
 	var offset int64 = 0

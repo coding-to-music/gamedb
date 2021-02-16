@@ -122,16 +122,23 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 		t.Price = "-"
 	}
 
+	if val, ok := bundle.GetPricesSaleFormatted()[session.GetProductCC(r)]; ok {
+		t.PriceSale = val
+	} else {
+		t.PriceSale = "-"
+	}
+
 	//
 	returnTemplate(w, r, t)
 }
 
 type bundleTemplate struct {
 	globalTemplate
-	Bundle   mongo.Bundle
-	Apps     []mongo.App
-	Packages []mongo.Package
-	Price    string
+	Bundle    mongo.Bundle
+	Apps      []mongo.App
+	Packages  []mongo.Package
+	Price     string
+	PriceSale string
 }
 
 func bundlePricesAjaxHandler(w http.ResponseWriter, r *http.Request) {

@@ -21,24 +21,35 @@
             <div class="card-body">
 
                 {{ if ne .Bundle.Image ""}}
-                    <div id="bundle-image">
+                    <div id="bundle-image" class="mb-3">
                         <img class="rounded" src="{{ .Bundle.Image }}" alt="{{ .Bundle.GetName }}">
                     </div>
                 {{ end }}
 
                 <div class="table-responsive">
-                    <table class="table mt-3">
+                    <table class="table">
                         <tr>
                             <th>Price</th>
-                            <td>{{ .Price }}</td>
+                            <td>
+                                {{ .PriceSale }}
+                                {{ if ne .PriceSale .Price }}
+                                    <small style="text-decoration: line-through;">{{ .Price }}</small>
+                                {{ end }}
+                            </td>
                         </tr>
                         <tr>
                             <th scope="row" nowrap="nowrap" class="thin">Discount</th>
-
                             <td>Current: <strong>{{ .Bundle.Discount }}%</strong><br>
                                 Highest: <strong>{{ .Bundle.DiscountHighest }}%</strong><br>
                                 Lowest: <strong>{{ .Bundle.DiscountLowest }}%</strong></td>
-
+                        </tr>
+                        <tr>
+                            <th>Type</th>
+                            <td>{{ if eq .Bundle.Type "pt" }}Purchase Together{{ else }}Complete The Set{{ end }}</td>
+                        </tr>
+                        <tr>
+                            <th>Giftable</th>
+                            <td>{{ if .Bundle.Giftable }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
                         </tr>
                         <tr>
                             <th scope="row" nowrap="nowrap" class="thin">First seen on Global Steam</th>
@@ -63,10 +74,10 @@
 
                         <ul class="nav nav-tabs card-header-tabs" role="tablist">
                             <li class="nav-item">
-                                <a class="nav-link active" data-toggle="tab" href="#games" role="tab">Games</a>
+                                <a class="nav-link active" data-toggle="tab" href="#games" role="tab">Games ({{ comma (len .Bundle.Apps) }})</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" data-toggle="tab" href="#packages" role="tab">Packages</a>
+                                <a class="nav-link" data-toggle="tab" href="#packages" role="tab">Packages ({{ comma (len .Bundle.Packages) }})</a>
                             </li>
                         </ul>
 
