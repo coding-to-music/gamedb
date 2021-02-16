@@ -164,6 +164,10 @@ func bundlePricesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		prices = append(prices, []int64{time.Now().Unix() * 1000, int64(price.DiscountSale)})
 	}
 
+	if len(prices) == 1 {
+		prices = append(prices, []int64{prices[0][0] - 1, prices[0][1]})
+	}
+
 	// Sort prices for Highcharts
 	sort.Slice(prices, func(i, j int) bool {
 		return prices[i][0] < prices[j][0]
