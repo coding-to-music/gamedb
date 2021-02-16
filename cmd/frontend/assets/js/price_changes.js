@@ -183,25 +183,28 @@ if ($priceChangesPage.length > 0) {
 
     websocketListener('prices', function (e) {
 
-        if ((Object.toJSON(original) !== Object.toJSON(serialiseTable(searchFields, dt.order())))) {
-            toast(true, 'Reset table filters/sorting to show live', 'New Price Change');
-            return;
-        }
+        let success = false;
 
-        const info = dt.page.info();
-        if (info.page === 0) { // Page 1
+        if ((Object.toJSON(original) === Object.toJSON(serialiseTable(searchFields, dt.order())))) {
 
-            const data = JSON.parse(e.data);
-            const type = $typeField.val();
+            const info = dt.page.info();
+            if (info.page === 0) { // Page 1
 
-            // Check cc matches
-            if (data.Data[13] === user.prodCC) {
-                // Check product type
-                if (type === 'all' || (type === 'apps' && data.Data[0] > 0) || (type === 'packages' && data.Data[1] > 0)) {
+                success = true
+
+                // Check cc matches
+                const data = JSON.parse(e.data);
+                if (data.Data[13] === user.prodCC) {
+
                     // Add row
                     addDataTablesRow(options, data.Data, info.length, $table);
+                    return
                 }
             }
+        }
+
+        if (!success) {
+            toast(true, 'Reset table filters/sorting/page to show live', 'New Price Change');
         }
     });
 }
