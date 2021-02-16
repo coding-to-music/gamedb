@@ -60,11 +60,13 @@ func priceChangesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		{Key: "prod_cc", Value: string(code)},
 	}
 
-	typex := query.GetSearchString("type")
-	if typex == "apps" {
+	switch query.GetSearchString("type") {
+	case "apps":
 		filter = append(filter, bson.E{Key: "app_id", Value: bson.M{"$gt": 0}})
-	} else if typex == "packages" {
+	case "packages":
 		filter = append(filter, bson.E{Key: "package_id", Value: bson.M{"$gt": 0}})
+	case "bundles":
+		filter = append(filter, bson.E{Key: "bundle_id", Value: bson.M{"$gt": 0}})
 	}
 
 	percents := query.GetSearchSlice("change")
