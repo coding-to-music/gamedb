@@ -58,73 +58,92 @@
                     </div>
                 </div>
 
-                {{if gt (len .Packages) 0}}
+                <div class="card mt-4">
+                    <div class="card-header">
 
-                    <div class="table-responsive mt-4">
-                        <table class="table table-hover table-striped table-datatable" id="packages" data-order='[[0, "asc"]]'>
-                            <thead class="thead-light">
-                            <tr>
-                                <th scope="col">Package</th>
-                                <th scope="col">Price</th>
-                                <th scope="col">Billing</th>
-                                <th scope="col">License</th>
-                                <th scope="col">Status</th>
-                                <th scope="col">Apps</th>
-                            </tr>
-                            </thead>
-                            {{ range $key, $value := .Packages }}
-                                <tr data-link="{{ .GetPath }}">
-                                    <td class="img">
-                                        <div class="icon-name">
-                                            <div class="icon"><img src="/assets/img/no-app-image-square.jpg" alt="{{ .GetName }}"></div>
-                                            <div class="name">{{ .GetName }}</div>
-                                        </div>
-                                    </td>
-                                    <td>{{ (.GetPrices.Get $.UserProductCC.ProductCode).GetFinal }}</td>
-                                    <td>{{ .GetBillingType }}</td>
-                                    <td>{{ .GetLicenseType }}</td>
-                                    <td>{{ .GetStatus }}</td>
-                                    <td>{{ comma (len .Apps) }}</td>
-                                </tr>
-                            {{ end }}
-                        </table>
+                        <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-toggle="tab" href="#games" role="tab">Games</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" href="#packages" role="tab">Packages</a>
+                            </li>
+                        </ul>
+
                     </div>
+                    <div class="card-body">
 
-                {{ end }}
+                        <div class="tab-content">
+                            <div class="tab-pane show active" id="games" role="tabpanel">
 
-                {{if gt (len .Apps) 0}}
+                                <div class="table-responsive">
+                                    <table class="table table-hover table-striped table-datatable" id="apps" data-order='[[0, "asc"]]'>
+                                        <thead class="thead-light">
+                                        <tr>
+                                            <th scope="col">App</th>
+                                            <th scope="col">Price</th>
+                                            <th scope="col">Type</th>
+                                            <th scope="col">Developers</th>
+                                            <th scope="col">Publishers</th>
+                                            <th scope="col" data-disabled>Platforms</th>
+                                        </tr>
+                                        </thead>
+                                        {{ range $key, $value := .Apps }}
+                                            <tr data-link="{{.GetPath}}">
+                                                <td data-app-id="{{ .ID }}" class="img">
+                                                    <div class="icon-name">
+                                                        <div class="icon"><img src="{{ .GetIcon }}" alt="{{.GetName}}"></div>
+                                                        <div class="name">{{ .GetName }}</div>
+                                                    </div>
+                                                </td>
+                                                <td nowrap="nowrap">{{ (.GetPrices.Get $.UserProductCC.ProductCode).GetFinal }}</td>
+                                                <td>{{ .GetType }}</td>
+                                                <td>{{ .GetDevelopersHTML }}</td>
+                                                <td>{{ .GetPublishersHTML }}</td>
+                                                <td class="platforms">{{ .GetPlatformImages }}</td>
+                                            </tr>
+                                        {{ end }}
+                                    </table>
+                                </div>
 
-                    <div class="table-responsive mt-4">
-                        <table class="table table-hover table-striped table-datatable" id="apps" data-order='[[0, "asc"]]'>
-                            <thead class="thead-light">
-                            <tr>
-                                <th scope="col">App</th>
-                                <th scope="col">Price</th>
-                                <th scope="col">Type</th>
-                                <th scope="col">Developers</th>
-                                <th scope="col">Publishers</th>
-                                <th scope="col" data-disabled>Platforms</th>
-                            </tr>
-                            </thead>
-                            {{ range $key, $value := .Apps }}
-                                <tr data-link="{{.GetPath}}">
-                                    <td data-app-id="{{ .ID }}" class="img">
-                                        <div class="icon-name">
-                                            <div class="icon"><img src="{{ .GetIcon }}" alt="{{.GetName}}"></div>
-                                            <div class="name">{{ .GetName }}</div>
-                                        </div>
-                                    </td>
-                                    <td nowrap="nowrap">{{ (.GetPrices.Get $.UserProductCC.ProductCode).GetFinal }}</td>
-                                    <td>{{ .GetType }}</td>
-                                    <td>{{ .GetDevelopersHTML }}</td>
-                                    <td>{{ .GetPublishersHTML }}</td>
-                                    <td class="platforms">{{ .GetPlatformImages }}</td>
-                                </tr>
-                            {{ end }}
-                        </table>
+                            </div>
+                            <div class="tab-pane" id="packages" role="tabpanel">
+
+                                <div class="table-responsive">
+                                    <table class="table table-hover table-striped table-datatable" id="packages" data-order='[[0, "asc"]]'>
+                                        <thead class="thead-light">
+                                        <tr>
+                                            <th scope="col">Package</th>
+                                            <th scope="col">Price</th>
+                                            <th scope="col">Billing</th>
+                                            <th scope="col">License</th>
+                                            <th scope="col">Status</th>
+                                            <th scope="col">Apps</th>
+                                        </tr>
+                                        </thead>
+                                        {{ range $key, $value := .Packages }}
+                                            <tr data-link="{{ .GetPath }}">
+                                                <td class="img">
+                                                    <div class="icon-name">
+                                                        <div class="icon"><img src="/assets/img/no-app-image-square.jpg" alt="{{ .GetName }}"></div>
+                                                        <div class="name">{{ .GetName }}</div>
+                                                    </div>
+                                                </td>
+                                                <td>{{ (.GetPrices.Get $.UserProductCC.ProductCode).GetFinal }}</td>
+                                                <td>{{ .GetBillingType }}</td>
+                                                <td>{{ .GetLicenseType }}</td>
+                                                <td>{{ .GetStatus }}</td>
+                                                <td>{{ comma (len .Apps) }}</td>
+                                            </tr>
+                                        {{ end }}
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+
                     </div>
-
-                {{ end }}
+                </div>
 
             </div>
         </div>
