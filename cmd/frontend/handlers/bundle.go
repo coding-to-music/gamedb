@@ -12,7 +12,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/go-chi/chi"
 )
@@ -38,7 +37,7 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 	bundle, err := mongo.GetBundle(id)
 	if err != nil {
 
-		if err == mysql.ErrRecordNotFound {
+		if err == mongo.ErrNoDocuments {
 			returnErrorTemplate(w, r, errorTemplate{Code: 404, Message: "Sorry but we can not find this bundle."})
 			return
 		}
