@@ -30,12 +30,7 @@
                     <table class="table">
                         <tr>
                             <th>Price</th>
-                            <td>
-                                {{ .PriceSale }}
-                                {{ if ne .PriceSale .Price }}
-                                    <small style="text-decoration: line-through;">{{ .Price }}</small>
-                                {{ end }}
-                            </td>
+                            <td>{{ .PriceSale }} {{ if ne .PriceSale .Price }}<small style="text-decoration: line-through;">{{ .Price }}</small>{{ end }}</td>
                         </tr>
                         <tr>
                             <th scope="row" nowrap="nowrap" class="thin">Discount</th>
