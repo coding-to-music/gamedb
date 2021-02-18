@@ -22,9 +22,9 @@ var SwaggerGameDB = &openapi3.Swagger{
 	Servers: []*openapi3.Server{
 		{URL: "https://api.globalsteam.online"},
 	},
-	ExternalDocs: &openapi3.ExternalDocs{
-		URL: config.C.GameDBDomain + "/api/gamedb",
-	},
+	// ExternalDocs: &openapi3.ExternalDocs{
+	// 	URL: config.C.GameDBDomain + "/api/gamedb",
+	// },
 	Info: &openapi3.Info{
 		Title:          "Global Steam API",
 		Version:        "1.0.0",
@@ -36,6 +36,7 @@ var SwaggerGameDB = &openapi3.Swagger{
 		ExtensionProps: openapi3.ExtensionProps{Extensions: map[string]interface{}{
 			"x-logo": config.C.GameDBDomain + "/assets/img/sa-bg-192x192.png",
 		}},
+		Description: "https://api.globalsteam.online",
 	},
 	Tags: openapi3.Tags{
 		&openapi3.Tag{Name: tagGames},
