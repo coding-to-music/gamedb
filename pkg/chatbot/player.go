@@ -125,9 +125,9 @@ func (c CommandPlayer) Output(authorID string, _ steamapi.ProductCC, inputs map[
 
 	var achievements string
 	if player.GetAchievements() == 0 {
-		games = "Profile set to private"
+		achievements = "Profile set to private"
 	} else {
-		games = humanize.Comma(int64(player.GetAchievements())) + " (" + helpers.OrdinalComma(player.GetRanks()[helpers.RankKeyAchievements]) + ")"
+		achievements = humanize.Comma(int64(player.GetAchievements())) + " (" + helpers.OrdinalComma(player.GetRanks()[helpers.RankKeyAchievements]) + ")"
 	}
 
 	var playtime string
