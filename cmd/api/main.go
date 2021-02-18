@@ -56,7 +56,7 @@ func main() {
 	r.Get("/", homeHandler)
 	r.Get("/health-check", healthCheckHandler)
 
-	r.NotFound(errorHandler)
+	r.NotFound(notFoundHandler)
 
 	generated.HandlerWithOptions(Server{}, generated.ChiServerOptions{
 		BaseRouter:  r,
@@ -101,7 +101,7 @@ func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, http.StatusText(http.StatusOK), http.StatusOK)
 }
 
-func errorHandler(w http.ResponseWriter, _ *http.Request) {
+func notFoundHandler(w http.ResponseWriter, _ *http.Request) {
 
 	w.WriteHeader(404)
 
