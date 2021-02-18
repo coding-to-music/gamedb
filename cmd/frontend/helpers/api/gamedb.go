@@ -29,10 +29,6 @@ var SwaggerGameDB = &openapi3.Swagger{
 		Title:          "Global Steam API",
 		Version:        "1.0.0",
 		TermsOfService: config.C.GameDBDomain + "/terms",
-		Contact: &openapi3.Contact{
-			Name: "Jleagle",
-			URL:  config.C.GameDBDomain + "/contact",
-		},
 		ExtensionProps: openapi3.ExtensionProps{Extensions: map[string]interface{}{
 			"x-logo": config.C.GameDBDomain + "/assets/img/sa-bg-192x192.png",
 		}},
