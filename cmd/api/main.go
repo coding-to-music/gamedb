@@ -53,7 +53,6 @@ func main() {
 	r.Use(middleware.RateLimiterBlock(time.Second/2, 1, rateLimitedHandler))
 	// r.Use(codegenMiddleware.OapiRequestValidator(swagger)) // todo
 
-	r.Get("/", homeHandler)
 	r.Get("/health-check", healthCheckHandler)
 
 	r.NotFound(notFoundHandler)
@@ -87,10 +86,6 @@ func main() {
 		mysql.Close,
 		mongo.Close,
 	)
-}
-
-func homeHandler(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, config.C.GameDBDomain+"/api/gamedb", http.StatusTemporaryRedirect)
 }
 
 func rateLimitedHandler(w http.ResponseWriter, r *http.Request) {
