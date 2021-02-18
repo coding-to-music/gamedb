@@ -3,8 +3,8 @@ package main
 import (
 	"crypto/tls"
 	"crypto/x509"
-	"io/ioutil"
 	"net"
+	"os"
 	"path/filepath"
 
 	"github.com/gamedb/gamedb/pkg/backend/generated"
@@ -48,7 +48,7 @@ func main() {
 
 	// Create a certificate pool from the certificate authority
 	certPool := x509.NewCertPool()
-	ca, err := ioutil.ReadFile(filepath.Join(config.C.GRPCKeysPath, "root.crt"))
+	ca, err := os.ReadFile(filepath.Join(config.C.GRPCKeysPath, "root.crt"))
 	if err != nil {
 		zap.S().Errorf("could not read ca certificate: %s", err)
 		return

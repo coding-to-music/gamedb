@@ -6,7 +6,7 @@ import (
 	"crypto/x509"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"sync"
 
@@ -42,7 +42,7 @@ func GetClient() (*grpc.ClientConn, context.Context, error) {
 
 		// Create a certificate pool from the certificate authority
 		certPool := x509.NewCertPool()
-		ca, err := ioutil.ReadFile(filepath.Join(config.C.GRPCKeysPath, "root.crt"))
+		ca, err := os.ReadFile(filepath.Join(config.C.GRPCKeysPath, "root.crt"))
 		if err != nil {
 			return nil, nil, fmt.Errorf("could not read ca certificate: %s", err)
 		}

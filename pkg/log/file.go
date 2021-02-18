@@ -1,7 +1,7 @@
 package log
 
 import (
-	"io/ioutil"
+	"io"
 	"os"
 
 	"go.uber.org/zap"
@@ -24,7 +24,7 @@ func newFileCore(encoderConfig zapcore.EncoderConfig, bin string) zapcore.Core {
 		file:         f,
 		levelEnabler: zap.NewAtomicLevelAt(zapcore.DebugLevel),
 		encoder:      zapcore.NewConsoleEncoder(encoderConfig),
-		output:       zapcore.AddSync(ioutil.Discard),
+		output:       zapcore.AddSync(io.Discard),
 	}
 }
 

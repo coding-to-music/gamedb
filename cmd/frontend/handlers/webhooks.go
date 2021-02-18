@@ -5,7 +5,7 @@ import (
 	"crypto/sha1"
 	"encoding/hex"
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strconv"
 	"strings"
@@ -39,7 +39,7 @@ func WebhooksRouter() http.Handler {
 func mailjetWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get body
-	body, err := ioutil.ReadAll(r.Body)
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		log.ErrS(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -76,7 +76,7 @@ func sendgridWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get body
-	body, err := ioutil.ReadAll(r.Body)
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		log.ErrS(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -115,7 +115,7 @@ func twitterZapierWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get body
-	body, err := ioutil.ReadAll(r.Body)
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		log.ErrS(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -350,7 +350,7 @@ func patreonWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 func gitHubWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get body
-	body, err := ioutil.ReadAll(r.Body)
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		log.ErrS(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)

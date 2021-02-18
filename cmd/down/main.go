@@ -1,8 +1,8 @@
 package main
 
 import (
-	"io/ioutil"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/config"
@@ -57,7 +57,7 @@ func main() {
 
 func handler(w http.ResponseWriter, r *http.Request) {
 
-	b, err := ioutil.ReadFile("down.gohtml")
+	b, err := os.ReadFile("down.gohtml")
 	if err != nil {
 		log.ErrS(zap.Error(err))
 		return

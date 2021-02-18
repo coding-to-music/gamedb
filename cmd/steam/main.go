@@ -1,7 +1,7 @@
 package main
 
 import (
-	"io/ioutil"
+	"os"
 	"strconv"
 	"sync"
 	"time"
@@ -52,7 +52,7 @@ func main() {
 	loginDetails := gosteam.LogOnDetails{}
 	loginDetails.Username = config.C.SteamUsername
 	loginDetails.Password = config.C.SteamPassword
-	loginDetails.SentryFileHash, _ = ioutil.ReadFile(steamSentryFilename)
+	loginDetails.SentryFileHash, _ = os.ReadFile(steamSentryFilename)
 	loginDetails.ShouldRememberPassword = true
 	loginDetails.AuthCode = ""
 
@@ -111,7 +111,7 @@ func main() {
 
 				log.InfoS("Steam: Updating auth hash, it should no longer ask for auth")
 				loginDetails.SentryFileHash = e.Hash
-				err = ioutil.WriteFile(steamSentryFilename, e.Hash, 0666)
+				err = os.WriteFile(steamSentryFilename, e.Hash, 0666)
 				if err != nil {
 					log.ErrS(err)
 				}
@@ -146,7 +146,7 @@ func checkForChanges() {
 
 				// Get last change number from file
 				if steamChangeNumber == 0 {
-					b, _ := ioutil.ReadFile(steamCurrentChangeFilename)
+					b, _ := os.ReadFile(steamCurrentChangeFilename)
 					if len(b) > 0 {
 						ui, err := strconv.ParseUint(string(b), 10, 32)
 						if err != nil {
@@ -343,7 +343,7 @@ func (ph packetHandler) handleChangesSince(packet *protocol.Packet) {
 
 	// Update cached change number
 	steamChangeNumber = body.GetCurrentChangeNumber()
-	err = ioutil.WriteFile(steamCurrentChangeFilename, []byte(strconv.FormatUint(uint64(steamChangeNumber), 10)), 0644)
+	err = os.WriteFile(steamCurrentChangeFilename, []byte(strconv.FormatUint(uint64(steamChangeNumber), 10)), 0644)
 	if err != nil {
 		log.ErrS(err)
 	}

@@ -3,7 +3,7 @@ package log
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 
 	"cloud.google.com/go/logging"
 	"github.com/gamedb/gamedb/pkg/config"
@@ -30,7 +30,7 @@ func newGoogleCore(encoderConfig zapcore.EncoderConfig) zapcore.Core {
 
 		levelEnabler: zap.NewAtomicLevelAt(zapcore.DebugLevel),
 		encoder:      zapcore.NewConsoleEncoder(googleEncoderConfig()),
-		output:       zapcore.AddSync(ioutil.Discard),
+		output:       zapcore.AddSync(io.Discard),
 	}
 }
 

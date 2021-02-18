@@ -2,7 +2,7 @@ package hosts
 
 import (
 	"context"
-	"io/ioutil"
+	"os"
 	"time"
 
 	"github.com/digitalocean/godo"
@@ -78,7 +78,7 @@ func (do DigitalOcean) ListConsumers() (consumers []Consumer, err error) {
 func (do DigitalOcean) CreateConsumer() (consumer Consumer, err error) {
 
 	// todo, download file off github
-	cc, err := ioutil.ReadFile("cloud-config.yaml")
+	cc, err := os.ReadFile("cloud-config.yaml")
 	if err != nil {
 		return consumer, err
 	}

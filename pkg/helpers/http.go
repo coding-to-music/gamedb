@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"errors"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
@@ -105,7 +104,7 @@ func requestWithTimeout(method string, link string, timeout time.Duration, heade
 		return nil, resp.StatusCode, ErrNon200
 	}
 
-	body, err = ioutil.ReadAll(resp.Body)
+	body, err = io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, 0, err
 	}

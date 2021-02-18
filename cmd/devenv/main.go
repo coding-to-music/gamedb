@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"errors"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -46,7 +45,7 @@ func main() {
 	}
 
 	// Get config
-	b, err := ioutil.ReadFile("./cmd/devenv/config.json")
+	b, err := os.ReadFile("./cmd/devenv/config.json")
 	if err != nil {
 		log.ErrS(err)
 		return
@@ -117,7 +116,7 @@ func startAll(cfg processesConfig, only ...string) {
 					return
 				}
 
-				err = ioutil.WriteFile(TMP+"/pids/"+process+".pid", []byte(strconv.Itoa(cmd.Process.Pid)), 0644)
+				err = os.WriteFile(TMP+"/pids/"+process+".pid", []byte(strconv.Itoa(cmd.Process.Pid)), 0644)
 				if err != nil {
 					log.ErrS(err, zap.String("process", process))
 				}
@@ -151,7 +150,7 @@ func stopAll(cfg processesConfig, only ...string) {
 
 				filename := TMP + "/pids/" + process + ".pid"
 
-				b, err := ioutil.ReadFile(filename)
+				b, err := os.ReadFile(filename)
 				if err != nil {
 					return
 				}

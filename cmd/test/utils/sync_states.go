@@ -2,9 +2,10 @@ package utils
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 
 	"github.com/gamedb/gamedb/pkg/log"
@@ -60,7 +61,7 @@ func (syncStates) run() {
 			continue
 		}
 
-		b, err := ioutil.ReadAll(resp.Body)
+		b, err := io.ReadAll(resp.Body)
 
 		steamResponse := response{}
 		err = json.Unmarshal(b, &steamResponse)
@@ -95,7 +96,7 @@ func (syncStates) run() {
 		return
 	}
 
-	err = ioutil.WriteFile("states.txt", b, 0644)
+	err = os.WriteFile("states.txt", b, 0644)
 	if err != nil {
 		log.ErrS(err)
 		return
