@@ -15,7 +15,7 @@ func (c CommandFeedback) ID() string {
 }
 
 func (CommandFeedback) Regex() string {
-	return `^[.|!]feedback`
+	return `^[.|!](feedback|support)$`
 }
 
 func (CommandFeedback) DisableCache() bool {
