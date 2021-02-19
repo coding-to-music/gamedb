@@ -112,8 +112,18 @@ if ($queuesPage.length > 0 || $playerMissingPage.length > 0) {
             },
             series: [],
             tooltip: {
+                outside: true,
+                shared: true,
+                crosshairs: true,
                 formatter: function () {
-                    return this.y.toLocaleString() + ' items in ' + this.series.name.replace(/^GDB_/, '') + ' at ' + moment(this.key).format("h:mm");
+
+                    let s = '<b>' + moment(this.x).format("hh:mm") + '</b>';
+                    $.each(this.points, function (i, point) {
+                        if (point.y > 0) {
+                            s += '<br/>' + point.series.name.replace(/^GDB_/, '') + ': ' + point.y.toLocaleString();
+                        }
+                    });
+                    return s;
                 },
             }
         }));

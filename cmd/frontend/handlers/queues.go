@@ -50,14 +50,14 @@ func queuesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var highcharts = map[string]influx.HighChartsJSON{}
 
-	err := memcache.GetSetInterface(memcache.ItemQueues, &highcharts, func() (interface{}, error) {
+	callback := func() (interface{}, error) {
 
 		builder := influxql.NewBuilder()
 		builder.AddSelect(`sum("messages")`, "sum_messages")
 		builder.SetFrom(influx.InfluxTelegrafDB, influx.InfluxRetentionPolicy14Day.String(), influx.InfluxMeasurementRabbitQueue.String())
 		builder.AddWhere("time", ">=", "now() - 1h")
 		builder.AddWhereRaw(`"queue" =~ /^(` + strings.Join(queuePageCharts, "|") + `)/`) // just get the main prefixes
-		builder.AddGroupByTime("10s")
+		builder.AddGroupByTime("1m")
 		builder.AddGroupBy("queue")
 		builder.SetFillNone()
 
@@ -75,8 +75,9 @@ func queuesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		return ret, err
-	})
+	}
 
+	err := memcache.GetSetInterface(memcache.ItemQueues, &highcharts, callback)
 	if err != nil {
 		log.ErrS(err)
 		return
