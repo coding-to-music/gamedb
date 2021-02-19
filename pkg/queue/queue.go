@@ -151,7 +151,7 @@ var (
 		{Name: QueueAppsReviews, consumer: appReviewsHandler},
 		{Name: QueueAppsSameowners, consumer: appSameownersHandler},
 		{Name: QueueAppsSearch, consumer: appsSearchHandler, prefetchSize: 1_000},
-		{Name: QueueAppsSteamspy, consumer: appSteamspyHandler},
+		{Name: QueueAppsSteamspy}, // , consumer: appSteamspyHandler
 		{Name: QueueAppsTwitch, consumer: appTwitchHandler},
 		{Name: QueueAppsWishlists, consumer: appWishlistsHandler, prefetchSize: 1_000},
 		{Name: QueueAppsYoutube, consumer: appYoutubeHandler},
