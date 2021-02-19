@@ -168,26 +168,28 @@ func returnResponse(w http.ResponseWriter, r *http.Request, code int, i interfac
 		log.ErrS(err)
 	}
 
-	go func() {
+	if config.IsProd() {
+		go func() {
 
-		userID, _ := r.Context().Value(ctxUserField).(int)
+			userID, _ := r.Context().Value(ctxUserField).(int)
 
-		_, err := influxHelpers.InfluxWrite(influxHelpers.InfluxRetentionPolicyAllTime, influx.Point{
-			Measurement: string(influxHelpers.InfluxMeasurementAPICalls),
-			Tags: map[string]string{
-				"path":    r.URL.Path,
-				"user_id": strconv.Itoa(userID),
-				"code":    strconv.Itoa(code),
-			},
-			Fields: map[string]interface{}{
-				"call": 1,
-			},
-			Time:      time.Now(),
-			Precision: "s",
-		})
+			_, err := influxHelpers.InfluxWrite(influxHelpers.InfluxRetentionPolicyAllTime, influx.Point{
+				Measurement: string(influxHelpers.InfluxMeasurementAPICalls),
+				Tags: map[string]string{
+					"path":    r.URL.Path,
+					"user_id": strconv.Itoa(userID),
+					"code":    strconv.Itoa(code),
+				},
+				Fields: map[string]interface{}{
+					"call": 1,
+				},
+				Time:      time.Now(),
+				Precision: "s",
+			})
 
-		if err != nil {
-			log.ErrS(err)
-		}
-	}()
+			if err != nil {
+				log.ErrS(err)
+			}
+		}()
+	}
 }
