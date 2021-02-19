@@ -47,7 +47,6 @@ func main() {
 	session.Init()
 
 	r := chi.NewRouter()
-	r.Use(chiMiddleware.RedirectSlashes)
 	r.Use(chiMiddleware.NewCompressor(flate.DefaultCompression, "text/html", "text/css", "text/javascript", "application/json", "application/javascript").Handler)
 	r.Use(middleware.RealIP)
 	r.Use(middleware.RateLimiterBlock(time.Second/2, 1, rateLimitedHandler))
