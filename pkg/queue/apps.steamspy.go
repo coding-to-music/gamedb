@@ -26,7 +26,7 @@ func (m AppSteamspyMessage) Queue() rabbit.QueueName {
 }
 
 // https://steamspy.com/api.php
-var steamspyLimiter = ratelimit.New(time.Second*2, 1)
+var steamspyLimiter = ratelimit.New(time.Second*5, 1)
 
 func appSteamspyHandler(message *rabbit.Message) {
 
