@@ -4,7 +4,6 @@ import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
-	"github.com/gamedb/gamedb/pkg/config"
 )
 
 type CommandFeedback struct {
@@ -48,7 +47,7 @@ func (c CommandFeedback) Slash() []interactions.InteractionOption {
 
 func (CommandFeedback) Output(_ string, _ steamapi.ProductCC, _ map[string]string) (message discordgo.MessageSend, err error) {
 
-	message.Content = "See <" + config.C.GameDBDomain + "/contact>"
+	message.Content = "https://discord.gg/c5zrcus"
 
 	return message, nil
 }
