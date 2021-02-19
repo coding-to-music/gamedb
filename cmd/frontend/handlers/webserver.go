@@ -35,18 +35,18 @@ import (
 
 func setHeaders(w http.ResponseWriter, contentType string) {
 
-	csp := []string{
-		"default-src 'none'",
-		"script-src 'self' 'unsafe-eval' 'unsafe-inline' blob: https://cdnjs.cloudflare.com https://cdn.datatables.net https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://platform.twitter.com https://www.google.com https://*.gstatic.com https://*.patreon.com https://cdn.jsdelivr.net https://hcaptcha.com https://*.hcaptcha.com https://arc.io https://*.arc.io https://browser.sentry-cdn.com",
-		"style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.datatables.net https://fonts.googleapis.com https://cdn.jsdelivr.net https://hcaptcha.com https://*.hcaptcha.com https://static.arc.io",
-		"media-src https://*.akamaihd.net https://*.steamstatic.com",
-		"font-src https://fonts.gstatic.com https://cdnjs.cloudflare.com",
-		"frame-src https://platform.twitter.com https://*.facebook.com https://www.youtube.com https://*.google.com https://www.patreon.com https://hcaptcha.com https://*.hcaptcha.com https://core.arc.io",
-		"connect-src 'self' ws: wss: https://*.infolinks.com https://www.google-analytics.com https://stats.g.doubleclick.net https://hcaptcha.com https://*.hcaptcha.com https://*.arc.io",
-		"manifest-src 'self'",
-		"img-src 'self' data: *", // * to hotlink news article images, info link images etc
-		"worker-src 'self' blob:",
-	}
+	// csp := []string{
+	// 	"default-src 'none'",
+	// 	"script-src 'self' 'unsafe-eval' 'unsafe-inline' blob: https://cdnjs.cloudflare.com https://cdn.datatables.net https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://platform.twitter.com https://www.google.com https://*.gstatic.com https://*.patreon.com https://cdn.jsdelivr.net https://hcaptcha.com https://*.hcaptcha.com https://arc.io https://*.arc.io https://browser.sentry-cdn.com",
+	// 	"style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.datatables.net https://fonts.googleapis.com https://cdn.jsdelivr.net https://hcaptcha.com https://*.hcaptcha.com https://static.arc.io",
+	// 	"media-src https://*.akamaihd.net https://*.steamstatic.com",
+	// 	"font-src https://fonts.gstatic.com https://cdnjs.cloudflare.com",
+	// 	"frame-src https://platform.twitter.com https://*.facebook.com https://www.youtube.com https://*.google.com https://www.patreon.com https://hcaptcha.com https://*.hcaptcha.com https://core.arc.io",
+	// 	"connect-src 'self' ws: wss: https://*.infolinks.com https://www.google-analytics.com https://stats.g.doubleclick.net https://hcaptcha.com https://*.hcaptcha.com https://*.arc.io",
+	// 	"manifest-src 'self'",
+	// 	"img-src 'self' data: *", // * to hotlink news article images, info link images etc
+	// 	"worker-src 'self' blob:",
+	// }
 
 	fp := []string{
 		"accelerometer 'none'",
@@ -70,10 +70,10 @@ func setHeaders(w http.ResponseWriter, contentType string) {
 	}
 
 	w.Header().Set("Content-Type", contentType)
-	w.Header().Set("X-Content-Type-Options", "nosniff")                // MIME sniffing
-	w.Header().Set("X-XSS-Protection", "1; mode=block")                // XSS
-	w.Header().Set("X-Frame-Options", "SAMEORIGIN")                    // Clickjacking
-	w.Header().Set("Content-Security-Policy", strings.Join(csp, "; ")) // XSS
+	w.Header().Set("X-Content-Type-Options", "nosniff") // MIME sniffing
+	w.Header().Set("X-XSS-Protection", "1; mode=block") // XSS
+	w.Header().Set("X-Frame-Options", "SAMEORIGIN")     // Clickjacking
+	// w.Header().Set("Content-Security-Policy", strings.Join(csp, "; ")) // XSS
 	w.Header().Set("Referrer-Policy", "no-referrer-when-downgrade")
 	w.Header().Set("Feature-Policy", strings.Join(fp, "; "))
 	w.Header().Set("Server", "")
