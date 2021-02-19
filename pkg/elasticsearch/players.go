@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"path"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -142,15 +143,27 @@ func SearchPlayers(limit int, offset int, search string, sorters []elastic.Sorte
 
 	if search != "" {
 
-		search = path.Base(search) // Incase someone tries a profile URL
+		if strings.HasPrefix(search, "http") {
 
-		query.Must(
-			elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
-				elastic.NewTermQuery("id", search).Boost(6),
-				elastic.NewMatchQuery("name", search).Boost(4),
-				elastic.NewTermQuery("url", search).Boost(2),
-			),
-		)
+			search = path.Base(search)
+
+			query.Must(
+				elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
+					elastic.NewTermQuery("id", search).Boost(6),
+					elastic.NewTermQuery("url", search).Boost(2),
+				),
+			)
+
+		} else {
+
+			query.Must(
+				elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
+					elastic.NewTermQuery("id", search).Boost(6),
+					elastic.NewMatchQuery("name", search).Boost(4),
+					elastic.NewTermQuery("url", search).Boost(2),
+				),
+			)
+		}
 
 		query.Should(
 			elastic.NewFunctionScoreQuery().
@@ -160,6 +173,7 @@ func SearchPlayers(limit int, offset int, search string, sorters []elastic.Sorte
 		)
 
 		searchService.Highlight(elastic.NewHighlight().Field("name").PreTags("<mark>").PostTags("</mark>"))
+
 	} else {
 		if len(sorters) > 0 {
 			searchService.SortBy(sorters...)
