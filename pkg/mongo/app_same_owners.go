@@ -97,8 +97,11 @@ func ReplaceAppSameOwners(appID int, sameApps []AppSameOwners) (err error) {
 
 			sameApp.AppID = appID
 
-			write := mongo.NewInsertOneModel()
-			write.SetDocument(sameApp.BSON())
+			// Uses ReplaceOneModel to fix "duplicate key" errors
+			write := mongo.NewReplaceOneModel()
+			write.SetFilter(bson.M{"_Id": sameApp.GetKey()})
+			write.SetReplacement(sameApp.BSON())
+			write.SetUpsert(true)
 
 			writes = append(writes, write)
 		}
