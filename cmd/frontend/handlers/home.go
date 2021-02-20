@@ -570,7 +570,7 @@ func homeNewReleasesHandler(w http.ResponseWriter, r *http.Request) {
 	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
 	builder.AddWhereRaw(`"app_id" =~ /^(` + strings.Join(appIDs, "|") + `)$/`)
 	builder.AddWhere("time", ">", "now()-14d")
-	builder.AddGroupByTime("6h")
+	builder.AddGroupByTime("1h")
 	builder.AddGroupBy("app_id")
 	builder.SetFillNone()
 

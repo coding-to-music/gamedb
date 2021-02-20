@@ -410,7 +410,7 @@ if ($homePage.length > 0) {
                     tooltip: {
                         formatter: function () {
                             return this.series.name + ' had ' + this.y.toLocaleString()
-                                + ' players on ' + moment(this.key).format("dddd DD MMM");
+                                + ' players on ' + moment(this.key).format("dddd DD MMM YYYY @ HH:00");
                         },
                     },
                     series: series,
