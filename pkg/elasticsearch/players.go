@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Jleagle/steam-go/steamid"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -143,33 +144,37 @@ func SearchPlayers(limit int, offset int, search string, sorters []elastic.Sorte
 
 	if search != "" {
 
+		var musts []elastic.Query
+
 		if strings.HasPrefix(search, "http") {
 
 			search = path.Base(search)
 
-			query.Must(
-				elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
-					elastic.NewTermQuery("id", search).Boost(6),
-					elastic.NewTermQuery("url", search).Boost(2),
-				),
-			)
+			playerID, err := steamid.ParsePlayerID(search)
+			if err != nil {
+				musts = []elastic.Query{elastic.NewTermQuery("url", search).Boost(2)}
+			} else {
+				musts = []elastic.Query{elastic.NewTermQuery("id", playerID).Boost(6)}
+			}
 
 		} else {
 
-			query.Must(
-				elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
-					elastic.NewTermQuery("id", search).Boost(6),
-					elastic.NewMatchQuery("name", search).Boost(4),
-					elastic.NewTermQuery("url", search).Boost(2),
-				),
+			musts = []elastic.Query{
+				elastic.NewTermQuery("id", search).Boost(6),
+				elastic.NewMatchQuery("name", search).Boost(4),
+				elastic.NewTermQuery("url", search).Boost(2),
+			}
+
+			query.Should(
+				elastic.NewFunctionScoreQuery().AddScoreFunc(elastic.NewFieldValueFactorFunction().
+					Modifier("sqrt").Field("level").Factor(0.1)),
+				elastic.NewFunctionScoreQuery().AddScoreFunc(elastic.NewFieldValueFactorFunction().
+					Modifier("sqrt").Field("games").Factor(0.1)),
 			)
 		}
 
-		query.Should(
-			elastic.NewFunctionScoreQuery().
-				AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("level").Factor(0.1)),
-			elastic.NewFunctionScoreQuery().
-				AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("games").Factor(0.1)),
+		query.Must(
+			elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(musts...),
 		)
 
 		searchService.Highlight(elastic.NewHighlight().Field("name").PreTags("<mark>").PostTags("</mark>"))
