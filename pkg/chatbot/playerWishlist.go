@@ -21,7 +21,7 @@ func (c CommandPlayerWishlist) ID() string {
 }
 
 func (CommandPlayerWishlist) Regex() string {
-	return `^[.|!]wishlist (.{2,32})`
+	return `^[.|!]wishlist (.+)`
 }
 
 func (CommandPlayerWishlist) DisableCache() bool {

@@ -21,7 +21,7 @@ func (c CommandPlayerRecent) ID() string {
 }
 
 func (CommandPlayerRecent) Regex() string {
-	return `^[.|!]recent (.{2,32})`
+	return `^[.|!]recent (.+)`
 }
 
 func (CommandPlayerRecent) DisableCache() bool {

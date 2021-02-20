@@ -19,7 +19,7 @@ func (c CommandPlayerApps) ID() string {
 }
 
 func (CommandPlayerApps) Regex() string {
-	return `^[.|!](games|apps) (.{2,32})`
+	return `^[.|!](games|apps) (.+)`
 }
 
 func (CommandPlayerApps) DisableCache() bool {

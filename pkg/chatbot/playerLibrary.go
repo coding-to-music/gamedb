@@ -20,7 +20,7 @@ func (c CommandPlayerLibrary) ID() string {
 }
 
 func (CommandPlayerLibrary) Regex() string {
-	return `^[.|!](library|top) (.{2,32})`
+	return `^[.|!](library|top) (.+)`
 }
 
 func (CommandPlayerLibrary) DisableCache() bool {

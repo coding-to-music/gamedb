@@ -24,7 +24,7 @@ func (c CommandPlayer) ID() string {
 }
 
 func (CommandPlayer) Regex() string {
-	return `^[.|!](player|user)\s(.{2,32})`
+	return `^[.|!](player|user)\s(.+)`
 }
 
 func (CommandPlayer) DisableCache() bool {
