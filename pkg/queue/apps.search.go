@@ -155,6 +155,7 @@ var aliasMap = map[int][]string{
 	1091500: {"cp", "cp2077", "cyber punk", "cp77"}, // Cyberpunk 2077
 	570:     {"dota", "dota2"},                      // Dota 2
 	8500:    {"eve", "eo"},                          // EVE Online
+	39210:   {"ff14", "ff 14"},                      // FINAL FANTASY XIV Online
 	261550:  {"mab2"},                               // Mount & Blade II: Bannerlord
 	48700:   {"mab", "mabw"},                        // Mount & Blade: Warband
 	24240:   {"pd", "pd1", "pdth"},                  // PAYDAY: The Heist
