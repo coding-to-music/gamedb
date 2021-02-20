@@ -53,10 +53,10 @@ if ($queuesPage.length > 0 || $playerMissingPage.length > 0) {
                                 if (firstRun) {
                                     value.addSeries({
                                         name: k,
-                                        data: data[k]['sum_messages'],
+                                        data: data[k]['max_messages'],
                                     });
                                 } else {
-                                    value.series[seriesKey].setData(data[k]['sum_messages']);
+                                    value.series[seriesKey].setData(data[k]['max_messages']);
                                 }
 
                                 seriesKey++;

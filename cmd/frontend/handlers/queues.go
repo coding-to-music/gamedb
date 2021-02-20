@@ -53,7 +53,7 @@ func queuesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	callback := func() (interface{}, error) {
 
 		builder := influxql.NewBuilder()
-		builder.AddSelect(`sum("messages")`, "sum_messages")
+		builder.AddSelect(`max("messages")`, "max_messages")
 		builder.SetFrom(influx.InfluxTelegrafDB, influx.InfluxRetentionPolicy14Day.String(), influx.InfluxMeasurementRabbitQueue.String())
 		builder.AddWhere("time", ">=", "now() - 1h")
 		builder.AddWhereRaw(`"queue" =~ /^(` + strings.Join(queuePageCharts, "|") + `)/`) // just get the main prefixes
