@@ -22,8 +22,6 @@ func (c InstagramPost) Cron() TaskTime {
 
 func (c InstagramPost) work() (err error) {
 
-	return nil
-
 	// filter := bson.D{
 	// 	{"type", "game"},
 	// 	{"name", bson.M{"$ne": ""}},
@@ -52,8 +50,21 @@ func (c InstagramPost) work() (err error) {
 	// text := app.GetName() + " (Score: " + helpers.FloatToString(app.ReviewsScore, 2) + ") " + config.C.GameDBDomain + "/games/" + strconv.Itoa(app.ID) +
 	// 	" #steamgames #steam #gaming " + helpers.GetHashTag(app.GetName())
 	//
-	// // err = helpers.UpdateBio(" + config.C.GameDBDomain + " + app.GetPath())
-	// // log.ErrS(err)
+	// ig, err := instagram.GetInstagram()
+	// if err != nil {
+	// 	return err
+	// }
 	//
-	// return instagram.UploadInstagram(url, text)
+	// err = ig.Account.SetBiography(bio)
+	// if err != nil {
+	// 	return err
+	// }
+	//
+	// body, _, err := helpers.Get(imageURL, 0, nil)
+	// if err != nil {
+	// 	return err
+	// }
+	//
+	// _, err = ig.UploadPhoto(bytes.NewReader(body), message, 0, 0)
+	return err
 }
