@@ -454,7 +454,7 @@
                                 <div class="card" id="player-countries">
                                     <h5 class="card-header">Player Countries</h5>
                                     <div class="card-body p-0">
-                                        <table class="table table-no-border table-sm mb-0">
+                                        <table class="table table-no-border mb-0 table-sm">
                                             <tbody>
                                             {{  range $key, $val:= .Countries }}
                                                 <tr style="background: linear-gradient(to right, #28a74522 {{ .Percent }}%, transparent {{ .Percent }}%)">
@@ -1088,52 +1088,74 @@
                                     {{/* Depots */}}
                                     <div class="tab-pane" id="dev-depots" role="tabpanel">
 
-                                        <div class="table-responsive mb-4">
-                                            <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
-                                                <thead class="thead-light">
-                                                <tr>
-                                                    <th scope="col">ID</th>
-                                                    <th scope="col">Name</th>
-                                                    <th scope="col">Configs</th>
-                                                    <th scope="col">Manifests</th>
-                                                    <th scope="col">Encrypted Manifests</th>
-                                                    <th scope="col">Max Size</th>
-                                                    <th scope="col">App</th>
-                                                    <th scope="col">DLC App</th>
-                                                    <th scope="col" data-toggle="tooltip" data-placement="top" title="System Defined">SD</th>
-                                                    <th scope="col" data-toggle="tooltip" data-placement="top" title="Optional">Op</th>
-                                                    <th scope="col" data-toggle="tooltip" data-placement="top" title="Shared Install">SI</th>
-                                                    <th scope="col" data-toggle="tooltip" data-placement="top" title="Shared Depot Type">SD</th>
-                                                    <th scope="col" data-toggle="tooltip" data-placement="top" title="LV Cache">LV</th>
-                                                    <th scope="col" data-toggle="tooltip" data-placement="top" title="Allow Add Remove While Running">AR</th>
-                                                </tr>
-                                                </thead>
-                                                {{ range $key, $value := .App.Depots.Depots }}
-                                                    <tr>
-                                                        <td>{{ .ID }}</td>
-                                                        <td nowrap="nowrap">{{ .Name }}</td>
-                                                        <td>
-                                                            <div class="json-hover">{{ json .Configs }}</div>
-                                                        </td>
-                                                        <td>
-                                                            <div class="json-hover">{{ json .Manifests }}</div>
-                                                        </td>
-                                                        <td>
-                                                            <div class="json-hover">{{ .EncryptedManifests }}</div>
-                                                        </td>
-                                                        <td>{{ bytes .MaxSize }}</td>
-                                                        <td>{{ if ne .App 0 }}<a href="/games/{{ .App }}">{{ .App }}</a>{{ end }}</td>
-                                                        <td>{{ if ne .DLCApp 0 }}<a href="/games/{{ .DLCApp }}">{{ .DLCApp }}</a>{{ end }}</td>
-                                                        <td>{{ if .SystemDefined }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
-                                                        <td>{{ if .Optional }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
-                                                        <td>{{ if .SharedInstall }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
-                                                        <td>{{ if .SharedDepotType }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
-                                                        <td>{{ if .LVCache }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
-                                                        <td>{{ if .AllowAddRemoveWhileRunning }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
-                                                    </tr>
-                                                {{ end }}
-                                            </table>
-                                        </div>
+                                        {{ range $key, $value := .App.Depots.Depots }}
+                                            <div class="card mb-4">
+                                                <h5 class="card-header">
+                                                    <a data-toggle="collapse" href="#launch-collapse-{{ $key }}" aria-expanded="true" aria-controls="launch-collapse-{{ $key }}" id="launch-heading-{{ $key }}" class="d-block {{ if gt $key 0 }}collapsed{{ end }}">
+                                                        <i class="fas fa-chevron-down float-right"></i>
+                                                        {{ .Name }}
+                                                    </a>
+                                                </h5>
+                                                <div id="launch-collapse-{{ $key }}" class="collapse {{ if eq $key 0 }}show{{ end }}" aria-labelledby="launch-heading-{{ $key }}">
+                                                    <div class="card-body p-0">
+                                                        <table class="table table-no-border mb-0 table-sm">
+                                                            <tr>
+                                                                <th scope="col">ID</th>
+                                                                <td>{{ .ID }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="col">Configs</th>
+                                                                <td>{{ json .Configs }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="col">Manifests</th>
+                                                                <td>{{ json .Manifests }}</td>
+                                                            </tr>
+                                                            {{/*<tr>*/}}
+                                                            {{/*    <th scope="col">Encrypted Manifests</th>*/}}
+                                                            {{/*    <td>{{ .EncryptedManifests }}</td>*/}}
+                                                            {{/*</tr>*/}}
+                                                            <tr>
+                                                                <th scope="col">Max Size</th>
+                                                                <td>{{ bytes .MaxSize }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="col">App</th>
+                                                                <td>{{ if ne .App 0 }}<a href="/games/{{ .App }}">{{ .App }}</a>{{ end }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="col">DLC Ap</th>
+                                                                <td>{{ if ne .DLCApp 0 }}<a href="/games/{{ .DLCApp }}">{{ .DLCApp }}</a>{{ end }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="col">System Defined</th>
+                                                                <td>{{ if .SystemDefined }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="col">Optional</th>
+                                                                <td>{{ if .Optional }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="col">Shared Install</th>
+                                                                <td>{{ if .SharedInstall }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="col">Shared Depot Type</th>
+                                                                <td>{{ if .SharedDepotType }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="col">LV Cache</th>
+                                                                <td>{{ if .LVCache }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="col" class="thin nowrap">Allow Add Remove While Running</th>
+                                                                <td>{{ if .AllowAddRemoveWhileRunning }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {{ end }}
 
                                         {{ if gt (len .App.Depots.Branches) 0 }}
                                             <h5>Branches</h5>
@@ -1192,42 +1214,66 @@
                                     {{/* Launch */}}
                                     <div class="tab-pane" id="dev-launch" role="tabpanel">
 
-                                        <div class="table-responsive">
-                                            <table class="table table-hover table-striped table-datatable mb-0" data-order='[[0, "asc"]]'>
-                                                <thead class="thead-light">
-                                                <tr>
-                                                    <th scope="col">Order</th>
-                                                    <th scope="col">Executable</th>
-                                                    <th scope="col">Arguments</th>
-                                                    <th scope="col">Description</th>
-                                                    <th scope="col">Type</th>
-                                                    <th scope="col">OS List</th>
-                                                    <th scope="col">OS Architecture</th>
-                                                    <th scope="col">Owns DLCs</th>
-                                                    <th scope="col">Beta Key</th>
-                                                    <th scope="col">Working Dir</th>
-                                                    <th scope="col">VAC Module Filename</th>
-                                                    <th scope="col">VR Mode</th>
-                                                </tr>
-                                                </thead>
-                                                {{ range $key, $value := .App.Launch }}
-                                                    <tr>
-                                                        <td>{{ .Order }}</td>
-                                                        <td nowrap="nowrap">{{ .Executable }}</td>
-                                                        <td nowrap="nowrap">{{ .Arguments }}</td>
-                                                        <td>{{ .Description }}</td>
-                                                        <td>{{ .Typex }}</td>
-                                                        <td>{{ .OSList }}</td>
-                                                        <td>{{ .OSArch }}</td>
-                                                        <td>{{ join .OwnsDLCs ", " }}</td>
-                                                        <td>{{ .BetaKey }}</td>
-                                                        <td>{{ .WorkingDir }}</td>
-                                                        <td>{{ .VACModuleFilename }}</td>
-                                                        <td>{{ .VRMode }}</td>
-                                                    </tr>
-                                                {{ end }}
-                                            </table>
-                                        </div>
+                                        {{ range $key, $value := .App.Launch }}
+                                            <div class="card mb-4">
+                                                <h5 class="card-header">
+                                                    <a data-toggle="collapse" href="#launch-collapse-{{ $key }}" aria-expanded="true" aria-controls="launch-collapse-{{ $key }}" id="launch-heading-{{ $key }}" class="d-block {{ if gt $key 0 }}collapsed{{ end }}">
+                                                        <i class="fas fa-chevron-down float-right"></i>
+                                                        {{ sum .OrderInt 1 }}. {{ title .OSList }}
+                                                    </a>
+                                                </h5>
+                                                <div id="launch-collapse-{{ $key }}" class="collapse {{ if eq $key 0 }}show{{ end }}" aria-labelledby="launch-heading-{{ $key }}">
+                                                    <div class="card-body">
+                                                        <table class="table table-no-border mb-0 table-sm">
+                                                            <tr>
+                                                                <th scope="col">Order</th>
+                                                                <td>{{ .Order }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="col">Executable</th>
+                                                                <td>{{ .Executable }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="col">Arguments</th>
+                                                                <td>{{ .Arguments }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="col">Description</th>
+                                                                <td>{{ .Description }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="col">Type</th>
+                                                                <td>{{ .Typex }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="col">OS Architecture</th>
+                                                                <td>{{ .OSArch }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="col">Owns DLCs</th>
+                                                                <td>{{ join .OwnsDLCs ", " }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="col">Beta Key</th>
+                                                                <td>{{ .BetaKey }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="col">Working Dir</th>
+                                                                <td>{{ .WorkingDir }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="col" class="thin nowrap">VAC Module Filename</th>
+                                                                <td>{{ .VACModuleFilename }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="col">VR Mode</th>
+                                                                <td>{{ .VRMode }}</td>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {{ end }}
 
                                     </div>
 

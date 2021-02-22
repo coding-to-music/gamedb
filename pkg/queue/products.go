@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steamvdf"
+	"github.com/Jleagle/unmarshal-go/ctypes"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -191,7 +192,7 @@ func getAppLaunch(kv steamvdf.KeyValue) (items []pics.PICSAppConfigLaunchItem) {
 	for _, v := range kv.Children {
 
 		item := pics.PICSAppConfigLaunchItem{}
-		item.Order = v.Key
+		item.Order = ctypes.String(v.Key)
 
 		setAppLaunchItem(v, &item)
 

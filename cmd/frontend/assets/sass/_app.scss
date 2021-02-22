@@ -125,4 +125,19 @@
             max-width: 100%;
         }
     }
+
+    #dev-launch, #dev-depots {
+
+        .card-header {
+            .i, svg {
+                transition: .3s transform ease-in-out;
+            }
+        }
+
+        .card-header .collapsed {
+            .i, svg {
+                transform: rotate(90deg);
+            }
+        }
+    }
 }
