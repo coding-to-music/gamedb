@@ -241,11 +241,11 @@
                         </div>
                     </li>
 
-                    {{ if and .ShowAds (.GetCookieFlag "patreon-message") }}
-                        <li class="nav-item {{if startsWith .Path "/donate" }}active{{end}}" id="patreon-link">
-                            <a class="nav-link" href="/donate"><i class="fas fa-heart text-danger"></i> Donate</a>
-                        </li>
-                    {{ end }}
+                    {{/*                    {{ if and .ShowAds (.GetCookieFlag "patreon-message") }}*/}}
+                    <li class="nav-item {{if startsWith .Path "/donate" }}active{{end}}" id="patreon-link">
+                        <a class="nav-link" href="/donate"><i class="fas fa-heart text-danger"></i> Donate</a>
+                    </li>
+                    {{/*                    {{ end }}*/}}
 
                     {{ if .IsAdmin }}
                         <li class="nav-item {{if startsWith .Path "/admin" }}active{{end}}">
