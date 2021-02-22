@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -17,7 +18,14 @@ func RateLimiterBlock(per time.Duration, burst int, handler http.HandlerFunc) fu
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-			if !limiters.GetLimiter(r.RemoteAddr).Allow() {
+			reservation := limiters.GetLimiter(r.RemoteAddr).Reserve()
+
+			w.Header().Set("X-RateLimit-Every", per.String())
+			w.Header().Set("X-RateLimit-Burst", fmt.Sprint(burst))
+			w.Header().Set("X-RateLimit-Wait", reservation.Delay().String())
+			w.Header().Set("X-RateLimit-Bucket", "global")
+
+			if !reservation.OK() {
 				handler(w, r)
 				return
 			}
