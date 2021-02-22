@@ -2,6 +2,7 @@ package queue
 
 import (
 	"context"
+	"fmt"
 	"net/url"
 	"strconv"
 	"strings"
@@ -26,7 +27,10 @@ func (m AppSteamspyMessage) Queue() rabbit.QueueName {
 }
 
 // https://steamspy.com/api.php
-var steamspyLimiter = ratelimit.New(time.Second*5, 1)
+var (
+	steamspyLimiterGlobal = ratelimit.New(time.Second*2, 1)
+	steamspyLimiterApp    = ratelimit.New(time.Hour*2, 1)
+)
 
 func appSteamspyHandler(message *rabbit.Message) {
 
@@ -41,19 +45,24 @@ func appSteamspyHandler(message *rabbit.Message) {
 		return
 	}
 
+	// Rate limiters
+	err = steamspyLimiterGlobal.GetLimiter("global").Wait(context.TODO())
+	if err != nil {
+		log.ErrS(err)
+		sendToRetryQueue(message)
+		return
+	}
+	if !steamspyLimiterApp.GetLimiter(fmt.Sprint(payload.AppID)).Allow() {
+		message.Ack()
+		return
+	}
+
 	// Create request
 	query := url.Values{}
 	query.Set("request", "appdetails")
 	query.Set("appid", strconv.Itoa(payload.AppID))
 
 	u := "https://steamspy.com/api.php?" + query.Encode()
-
-	err = steamspyLimiter.GetLimiter("ss").Wait(context.TODO())
-	if err != nil {
-		log.ErrS(err)
-		sendToRetryQueue(message)
-		return
-	}
 
 	body, statusCode, err := helpers.Get(u, time.Second*30, nil)
 	if err != nil {
