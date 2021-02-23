@@ -456,12 +456,18 @@
                                     <div class="card-body p-0">
                                         <table class="table table-no-border mb-0 table-sm">
                                             <tbody>
-                                            {{  range $key, $val:= .Countries }}
-                                                <tr style="background: linear-gradient(to right, #28a74522 {{ .Percent }}%, transparent {{ .Percent }}%)">
-                                                    <td>{{ .Country }}</td>
-                                                    <td data-toggle="tooltip" data-placement="left" title="{{ comma .Count }} Global Steam players">
-                                                        {{ .GetPercent }}<small>%</small>
-                                                    </td>
+                                            {{  if gt (len .Countries) 0 }}
+                                                {{  range $key, $val := .Countries }}
+                                                    <tr style="background: linear-gradient(to right, #28a74522 {{ .Percent }}%, transparent {{ .Percent }}%)">
+                                                        <td>{{ .Country }}</td>
+                                                        <td data-toggle="tooltip" data-placement="left" title="{{ comma .Count }} Global Steam players">
+                                                            {{ .GetPercent }}<small>%</small>
+                                                        </td>
+                                                    </tr>
+                                                {{ end }}
+                                            {{ else }}
+                                                <tr>
+                                                    <td>None found yet</td>
                                                 </tr>
                                             {{ end }}
                                             </tbody>
