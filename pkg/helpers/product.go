@@ -48,21 +48,23 @@ func (p *ProductPrices) AddPriceFromApp(code steamapi.ProductCC, prices steamapi
 		Free: prices.Data.IsFree,
 	}
 
-	if prices.Data.PriceOverview != nil {
-
-		if prices.Data.PriceOverview.Currency == "" {
-			if code == "de" {
-				prices.Data.PriceOverview.Currency = steamapi.CurrencyEUR
-			} else {
-				prices.Data.PriceOverview.Currency = i18n.GetProdCC(code).CurrencyCode
-			}
-		}
-
-		pp.Currency = prices.Data.PriceOverview.Currency
-		pp.Initial = prices.Data.PriceOverview.Initial
-		pp.Final = prices.Data.PriceOverview.Final
-		pp.DiscountPercent = prices.Data.PriceOverview.DiscountPercent
+	if prices.Data.PriceOverview == nil {
+		delete(*p, code)
+		return
 	}
+
+	if prices.Data.PriceOverview.Currency == "" {
+		if code == "de" {
+			prices.Data.PriceOverview.Currency = steamapi.CurrencyEUR
+		} else {
+			prices.Data.PriceOverview.Currency = i18n.GetProdCC(code).CurrencyCode
+		}
+	}
+
+	pp.Currency = prices.Data.PriceOverview.Currency
+	pp.Initial = prices.Data.PriceOverview.Initial
+	pp.Final = prices.Data.PriceOverview.Final
+	pp.DiscountPercent = prices.Data.PriceOverview.DiscountPercent
 
 	(*p)[code] = pp
 }
