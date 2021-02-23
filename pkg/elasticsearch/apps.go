@@ -32,6 +32,7 @@ type App struct {
 	Movies              string                `json:"movies"`
 	MoviesCount         int                   `json:"movies_count"`
 	Name                string                `json:"name"`
+	NameLC              string                `json:"name_lc"`
 	Platforms           []string              `json:"platforms"`
 	PlayersCount        int                   `json:"players"` // Peak week
 	Prices              helpers.ProductPrices `json:"prices"`
@@ -268,12 +269,16 @@ func searchApps(limit int, offset int, search string, totals bool, highlights bo
 	search = strings.TrimSpace(search)
 	if search != "" {
 
-		boolQuery.Must(
-			elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
-				elastic.NewTermQuery("id", search).Boost(5),
+		if helpers.RegexIntsOnly.MatchString(search) {
+			boolQuery.Must(elastic.NewTermQuery("id", search))
+		} else {
+			boolQuery.Must(elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
+				elastic.NewTermQuery("name_lc", strings.ToLower(search)).Boost(2),
 				elastic.NewMatchQuery("aliases", search),
-			),
-		).Should(
+			))
+		}
+
+		boolQuery.Should(
 			elastic.NewFunctionScoreQuery().
 				AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("players").Factor(0.0001)),
 			elastic.NewFunctionScoreQuery().
@@ -371,6 +376,7 @@ func DeleteAndRebuildAppsIndex() {
 				"movies":              fieldTypeDisabled,
 				"movies_count":        fieldTypeInt32,
 				"name":                fieldTypeKeyword, // Just used for sorting
+				"name_lc":             fieldTypeKeyword,
 				"platforms":           fieldTypeKeyword,
 				"players":             fieldTypeInt32,
 				"prices":              map[string]interface{}{"type": "object", "properties": priceProperties},
