@@ -10,6 +10,7 @@ require (
 	github.com/Jleagle/influxql v0.0.0-20200804190929-88324f67bffe
 	github.com/Jleagle/patreon-go v0.0.0-20201006180837-366bfaa6710a
 	github.com/Jleagle/rabbit-go v0.0.0-20210115203259-266db76b636e
+	github.com/Jleagle/rate-limit-go v0.0.0-20210222223601-8aae7305d594 // indirect
 	github.com/Jleagle/session-go v0.0.0-20190515070633-3c8712426233
 	github.com/Jleagle/sitemap-go v0.0.0-20201217201247-75f3818f336a
 	github.com/Jleagle/steam-go v0.0.0-20210211214415-6e5c1aecbba1

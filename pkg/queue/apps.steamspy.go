@@ -9,11 +9,11 @@ import (
 	"time"
 
 	"github.com/Jleagle/rabbit-go"
+	"github.com/Jleagle/rate-limit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/ratelimit"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.uber.org/zap"
 )
@@ -28,8 +28,8 @@ func (m AppSteamspyMessage) Queue() rabbit.QueueName {
 
 // https://steamspy.com/api.php
 var (
-	steamspyLimiterGlobal = ratelimit.New(time.Second*2, 1)
-	steamspyLimiterApp    = ratelimit.New(time.Hour*2, 1)
+	steamspyLimiterGlobal = rate.New(time.Second * 2)
+	steamspyLimiterApp    = rate.New(time.Hour * 2)
 )
 
 func appSteamspyHandler(message *rabbit.Message) {

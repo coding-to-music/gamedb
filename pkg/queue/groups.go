@@ -12,6 +12,7 @@ import (
 
 	"github.com/Jleagle/influxql"
 	"github.com/Jleagle/rabbit-go"
+	"github.com/Jleagle/rate-limit-go"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/influx"
@@ -19,7 +20,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
-	"github.com/gamedb/gamedb/pkg/ratelimit"
 	"github.com/gamedb/gamedb/pkg/steam"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/gocolly/colly/v2"
@@ -28,7 +28,7 @@ import (
 	"go.uber.org/zap"
 )
 
-var groupScrapeRateLimit = ratelimit.New(time.Second, 1)
+var groupScrapeRateLimit = rate.New(time.Second)
 
 type GroupMessage struct {
 	ID        string  `json:"id"`

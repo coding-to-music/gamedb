@@ -6,6 +6,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/Jleagle/rate-limit-go"
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/chatbot"
 	"github.com/gamedb/gamedb/pkg/config"
@@ -15,13 +16,12 @@ import (
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/queue"
-	"github.com/gamedb/gamedb/pkg/ratelimit"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	influx "github.com/influxdata/influxdb1-client"
 	"go.uber.org/zap"
 )
 
-var limits = ratelimit.New(time.Second, 3)
+var limits = rate.New(time.Second, rate.WithBurst(3))
 
 func main() {
 

@@ -6,14 +6,14 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Jleagle/rate-limit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/ratelimit"
 )
 
 func RateLimiterBlock(per time.Duration, burst int, handler http.HandlerFunc) func(http.Handler) http.Handler {
 
-	limiters := ratelimit.New(per, burst)
+	limiters := rate.New(per, rate.WithBurst(burst))
 
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -37,7 +37,7 @@ func RateLimiterBlock(per time.Duration, burst int, handler http.HandlerFunc) fu
 
 func RateLimiterWait(per time.Duration, burst int) func(http.Handler) http.Handler {
 
-	limiters := ratelimit.New(per, burst)
+	limiters := rate.New(per, rate.WithBurst(burst))
 
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
