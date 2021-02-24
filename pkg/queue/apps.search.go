@@ -104,6 +104,7 @@ func appsSearchHandler(message *rabbit.Message) {
 	app.ID = mongoApp.ID
 	app.MicroTrailor = mongoApp.GetMicroTrailer()
 	app.Name = mongoApp.Name
+	app.NameLC = strings.ToLower(mongoApp.Name)
 	app.Platforms = mongoApp.Platforms
 	app.PlayersCount = mongoApp.PlayerPeakWeek
 	app.Prices = mongoApp.Prices
