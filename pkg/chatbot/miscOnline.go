@@ -5,7 +5,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/chatbot/charts"
-	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/mongo"
 )
@@ -45,9 +44,9 @@ func (CommandSteamOnline) LegacyInputs(_ string) map[string]string {
 	return map[string]string{}
 }
 
-func (c CommandSteamOnline) Slash() []interactions.InteractionOption {
+func (c CommandSteamOnline) Slash() []*discordgo.ApplicationCommandOption {
 
-	return []interactions.InteractionOption{}
+	return []*discordgo.ApplicationCommandOption{}
 }
 
 func (c CommandSteamOnline) Output(_ string, _ steamapi.ProductCC, _ map[string]string) (message discordgo.MessageSend, err error) {

@@ -5,7 +5,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/chatbot/charts"
-	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/mongo"
 )
@@ -50,13 +49,13 @@ func (c CommandAppPlayers) LegacyInputs(input string) map[string]string {
 	}
 }
 
-func (c CommandAppPlayers) Slash() []interactions.InteractionOption {
+func (c CommandAppPlayers) Slash() []*discordgo.ApplicationCommandOption {
 
-	return []interactions.InteractionOption{
+	return []*discordgo.ApplicationCommandOption{
 		{
 			Name:        "game",
 			Description: "The name or ID of the game, or blank for all of steam",
-			Type:        interactions.InteractionOptionTypeString,
+			Type:        discordgo.ApplicationCommandOptionString,
 			Required:    true,
 		},
 	}

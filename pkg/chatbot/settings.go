@@ -5,7 +5,6 @@ import (
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
-	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mysql"
@@ -52,22 +51,22 @@ func (c CommandSettings) LegacyInputs(input string) map[string]string {
 	}
 }
 
-func (c CommandSettings) Slash() []interactions.InteractionOption {
+func (c CommandSettings) Slash() []*discordgo.ApplicationCommandOption {
 
-	return []interactions.InteractionOption{
+	return []*discordgo.ApplicationCommandOption{
 		{
 			Name:        "setting",
 			Description: "The setting to set/retrieve",
-			Type:        interactions.InteractionOptionTypeString,
+			Type:        discordgo.ApplicationCommandOptionString,
 			Required:    true,
-			Choices: []interactions.InteractionChoice{
+			Choices: []*discordgo.ApplicationCommandOptionChoice{
 				{"Region", "region"},
 			},
 		},
 		{
 			Name:        "value",
 			Description: "The value to set, leave empty to retrieve the value",
-			Type:        interactions.InteractionOptionTypeString,
+			Type:        discordgo.ApplicationCommandOptionString,
 			Required:    false,
 		},
 	}

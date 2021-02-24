@@ -12,7 +12,6 @@ import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/chatbot"
-	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
@@ -79,8 +78,8 @@ func discordHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	event := interactions.Event{}
-	err = json.Unmarshal(body, &event)
+	interaction := &discordgo.Interaction{}
+	err = json.Unmarshal(body, interaction)
 	if err != nil {
 		log.ErrS(err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -88,10 +87,10 @@ func discordHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check for pings
-	if event.Type == 1 {
+	if interaction.Type == discordgo.InteractionPing {
 
-		response := interactions.Response{
-			Type: interactions.ResponseTypePong,
+		response := discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponsePong,
 		}
 
 		b, _ := json.Marshal(response)
@@ -100,51 +99,35 @@ func discordHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get command
-	command, ok := chatbot.CommandCache[event.Data.Name]
+	command, ok := chatbot.CommandCache[interaction.Data.Name]
 	if !ok {
 		http.Error(w, "Command ID not found in register", http.StatusNotFound)
 		return
 	}
 
 	// Save stats
-	defer saveToDB(
-		command,
-		true,
-		event.ArgumentsString(),
-		event.GuildID,
-		event.ChannelID,
-		event.Member.User.ID,
-		event.Member.User.Username,
-		event.Member.User.Avatar,
-	)
-
-	discordSession, err := getSession()
-	if err != nil {
-		log.ErrS(err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
-	}
+	defer saveToDB(command, true, argumentsString(interaction), interaction.GuildID, interaction.ChannelID, interaction.Member.User)
 
 	// Typing notification
-	err = discordSession.ChannelTyping(event.ChannelID)
+	err = discordSession.ChannelTyping(interaction.ChannelID)
 	discordError(err)
 
 	// Get user settings
 	code := steamapi.ProductCCUS
 	if command.PerProdCode() {
-		settings, err := mysql.GetChatBotSettings(event.Member.User.ID)
+		settings, err := mysql.GetChatBotSettings(interaction.Member.User.ID)
 		if err != nil {
 			log.ErrS(err)
 		}
 		code = settings.ProductCode
 	}
 
-	cacheItem := memcache.ItemChatBotRequestSlash(command.ID(), event.Arguments(), code)
+	cacheItem := memcache.ItemChatBotRequestSlash(command.ID(), arguments(interaction), code)
 
 	// Check in cache first
 	if !command.DisableCache() && !config.IsLocal() {
 
-		var response interactions.Response
+		var response discordgo.InteractionResponse
 		err = memcache.GetInterface(cacheItem.Key, &response)
 		if err == nil {
 
@@ -155,22 +138,22 @@ func discordHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Rate limit
-	if !limits.GetLimiter(event.Member.User.ID).Allow() {
-		log.Warn("over chatbot rate limit", zap.String("author", event.Member.User.ID), zap.String("msg", event.ArgumentsString()))
+	if !limits.GetLimiter(interaction.Member.User.ID).Allow() {
+		log.Warn("over chatbot rate limit", zap.String("author", interaction.Member.User.ID), zap.String("msg", argumentsString(interaction)))
 		http.Error(w, http.StatusText(http.StatusTooManyRequests), http.StatusTooManyRequests)
 		return
 	}
 
-	out, err := command.Output(event.Member.User.ID, code, event.Arguments())
+	out, err := command.Output(interaction.Member.User.ID, code, arguments(interaction))
 	if err != nil {
 		log.ErrS(err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
-	response := interactions.Response{
-		Type: interactions.ResponseTypeMessageWithSource,
-		Data: interactions.ResponseData{
+	response := discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionApplicationCommandResponseData{
 			Content: out.Content,
 		},
 	}
@@ -182,7 +165,7 @@ func discordHandler(w http.ResponseWriter, r *http.Request) {
 	// Save to cache
 	err = memcache.SetInterface(cacheItem.Key, response, cacheItem.Expiration)
 	if err != nil {
-		log.Err("Saving to memcache", zap.Error(err), zap.String("msg", event.ArgumentsString()))
+		log.Err("Saving to memcache", zap.Error(err), zap.String("msg", argumentsString(interaction)))
 	}
 
 	// Respond
@@ -195,6 +178,7 @@ func discordHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// todo, use the function in discordgo
 func verifyRequest(signature, hash, publicKey string) (bool, error) {
 
 	decodedSignature, err := hex.DecodeString(signature)

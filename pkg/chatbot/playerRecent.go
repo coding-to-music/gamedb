@@ -6,7 +6,6 @@ import (
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
-	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -53,13 +52,13 @@ func (c CommandPlayerRecent) LegacyInputs(input string) map[string]string {
 	}
 }
 
-func (c CommandPlayerRecent) Slash() []interactions.InteractionOption {
+func (c CommandPlayerRecent) Slash() []*discordgo.ApplicationCommandOption {
 
-	return []interactions.InteractionOption{
+	return []*discordgo.ApplicationCommandOption{
 		{
 			Name:        "player",
 			Description: "The name or ID of the player",
-			Type:        interactions.InteractionOptionTypeString,
+			Type:        discordgo.ApplicationCommandOptionString,
 			Required:    true,
 		},
 	}

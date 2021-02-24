@@ -6,7 +6,6 @@ import (
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
-	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/mongo"
 )
@@ -46,8 +45,8 @@ func (CommandAppsTrending) LegacyInputs(_ string) map[string]string {
 	return map[string]string{}
 }
 
-func (c CommandAppsTrending) Slash() []interactions.InteractionOption {
-	return []interactions.InteractionOption{}
+func (c CommandAppsTrending) Slash() []*discordgo.ApplicationCommandOption {
+	return []*discordgo.ApplicationCommandOption{}
 }
 
 func (CommandAppsTrending) Output(authorID string, _ steamapi.ProductCC, _ map[string]string) (message discordgo.MessageSend, err error) {

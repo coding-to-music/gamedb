@@ -3,7 +3,6 @@ package chatbot
 import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
-	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 )
 
 type CommandFeedback struct {
@@ -41,8 +40,8 @@ func (CommandFeedback) LegacyInputs(_ string) map[string]string {
 	return map[string]string{}
 }
 
-func (c CommandFeedback) Slash() []interactions.InteractionOption {
-	return []interactions.InteractionOption{}
+func (c CommandFeedback) Slash() []*discordgo.ApplicationCommandOption {
+	return []*discordgo.ApplicationCommandOption{}
 }
 
 func (CommandFeedback) Output(_ string, _ steamapi.ProductCC, _ map[string]string) (message discordgo.MessageSend, err error) {

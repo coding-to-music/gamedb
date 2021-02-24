@@ -3,7 +3,6 @@ package chatbot
 import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
-	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"github.com/gamedb/gamedb/pkg/config"
 )
 
@@ -42,8 +41,8 @@ func (CommandInvite) LegacyInputs(_ string) map[string]string {
 	return map[string]string{}
 }
 
-func (c CommandInvite) Slash() []interactions.InteractionOption {
-	return []interactions.InteractionOption{}
+func (c CommandInvite) Slash() []*discordgo.ApplicationCommandOption {
+	return []*discordgo.ApplicationCommandOption{}
 }
 
 func (CommandInvite) Output(_ string, _ steamapi.ProductCC, _ map[string]string) (message discordgo.MessageSend, err error) {

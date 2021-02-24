@@ -5,7 +5,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/chatbot/charts"
-	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 )
 
@@ -49,13 +48,13 @@ func (c CommandGroup) LegacyInputs(input string) map[string]string {
 	}
 }
 
-func (c CommandGroup) Slash() []interactions.InteractionOption {
+func (c CommandGroup) Slash() []*discordgo.ApplicationCommandOption {
 
-	return []interactions.InteractionOption{
+	return []*discordgo.ApplicationCommandOption{
 		{
 			Name:        "group",
 			Description: "The name or ID of the group",
-			Type:        interactions.InteractionOptionTypeString,
+			Type:        discordgo.ApplicationCommandOptionString,
 			Required:    true,
 		},
 	}

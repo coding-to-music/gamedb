@@ -3,7 +3,6 @@ package chatbot
 import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
-	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -50,12 +49,12 @@ func (c CommandAppRandom) LegacyInputs(input string) map[string]string {
 	}
 }
 
-func (c CommandAppRandom) Slash() []interactions.InteractionOption {
-	return []interactions.InteractionOption{
+func (c CommandAppRandom) Slash() []*discordgo.ApplicationCommandOption {
+	return []*discordgo.ApplicationCommandOption{
 		{
 			Name:        "tag",
 			Description: "Tag",
-			Type:        interactions.InteractionOptionTypeString,
+			Type:        discordgo.ApplicationCommandOptionString,
 			Required:    false,
 		},
 	}

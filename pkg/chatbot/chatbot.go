@@ -8,7 +8,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/chatbot/charts"
-	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -59,7 +58,7 @@ type Command interface {
 	Example() string
 	Description() string
 	Type() CommandType
-	Slash() []interactions.InteractionOption
+	Slash() []*discordgo.ApplicationCommandOption
 	LegacyInputs(input string) map[string]string
 }
 

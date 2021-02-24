@@ -6,7 +6,6 @@ import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/chatbot/charts"
-	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/i18n"
@@ -53,19 +52,19 @@ func (c CommandAppPrice) LegacyInputs(input string) map[string]string {
 	}
 }
 
-func (c CommandAppPrice) Slash() []interactions.InteractionOption {
+func (c CommandAppPrice) Slash() []*discordgo.ApplicationCommandOption {
 
-	return []interactions.InteractionOption{
+	return []*discordgo.ApplicationCommandOption{
 		{
 			Name:        "game",
 			Description: "The name or ID of the game",
-			Type:        interactions.InteractionOptionTypeString,
+			Type:        discordgo.ApplicationCommandOptionString,
 			Required:    true,
 		},
 		{
 			Name:        "region",
 			Description: "The region code",
-			Type:        interactions.InteractionOptionTypeString,
+			Type:        discordgo.ApplicationCommandOptionString,
 			Required:    false,
 		},
 	}
@@ -106,20 +105,19 @@ func (c CommandAppPrice) Output(_ string, region steamapi.ProductCC, inputs map[
 
 	if price.Exists {
 		message.Content = apps[0].GetName() + " is **" + price.GetFinal() + "** for " + strings.ToUpper(string(region))
-
-		message.Embed = &discordgo.MessageEmbed{
-			Title:       app.GetName(),
-			Description: apps[0].GetName() + " is **" + price.GetFinal() + "** for " + strings.ToUpper(string(region)),
-			URL:         config.C.GameDBDomain + app.GetPath(),
-			Thumbnail:   &discordgo.MessageEmbedThumbnail{URL: app.GetHeaderImage(), Width: 460, Height: 215},
-			Footer:      getFooter(),
-			Color:       greenHexDec,
-			Image:       &discordgo.MessageEmbedImage{URL: charts.GetPriceChart(region, c.ID(), app.ID, "Price History")},
-		}
-
-		return message, nil
+	} else {
+		message.Content = apps[0].GetName() + " currently has no price for " + strings.ToUpper(string(region))
 	}
 
-	message.Content = apps[0].GetName() + " has no price for " + strings.ToUpper(string(region))
+	message.Embed = &discordgo.MessageEmbed{
+		Title:       app.GetName(),
+		Description: apps[0].GetName() + " is **" + price.GetFinal() + "** for " + strings.ToUpper(string(region)),
+		URL:         config.C.GameDBDomain + app.GetPath(),
+		Thumbnail:   &discordgo.MessageEmbedThumbnail{URL: app.GetHeaderImage(), Width: 460, Height: 215},
+		Footer:      getFooter(),
+		Color:       greenHexDec,
+		Image:       &discordgo.MessageEmbedImage{URL: charts.GetPriceChart(region, c.ID(), app.ID, "Price History")},
+	}
+
 	return message, nil
 }

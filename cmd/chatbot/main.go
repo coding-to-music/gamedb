@@ -1,9 +1,9 @@
 package main
 
 import (
-	"net/http"
+	"fmt"
 	"strconv"
-	"sync"
+	"strings"
 	"time"
 
 	"github.com/Jleagle/rate-limit-go"
@@ -21,7 +21,10 @@ import (
 	"go.uber.org/zap"
 )
 
-var limits = rate.New(time.Second, rate.WithBurst(3))
+var (
+	limits         = rate.New(time.Second, rate.WithBurst(3))
+	discordSession *discordgo.Session
+)
 
 func main() {
 
@@ -33,14 +36,20 @@ func main() {
 		return
 	}
 
-	if !config.IsConsumer() {
-		go func() {
-			err := http.ListenAndServe(":6061", nil)
-			if err != nil {
-				log.ErrS(err)
-			}
-		}()
+	if config.IsConsumer() {
+		log.Err("Prod & local only")
+		return
 	}
+
+	// Profiling
+	// if config.IsLocal() {
+	// 	go func() {
+	// 		err := http.ListenAndServe(":6061", nil)
+	// 		if err != nil {
+	// 			log.ErrS(err)
+	// 		}
+	// 	}()
+	// }
 
 	err = mysql.GetConsumer("chatbot")
 	if err != nil {
@@ -48,14 +57,12 @@ func main() {
 		return
 	}
 
-	if config.IsConsumer() {
-		log.Err("Prod & local only")
-		return
-	}
-
+	// Queues
 	queue.Init(queue.ChatbotDefinitions)
 
-	discordSession, err := websocketServer()
+	// Websocket connection
+	log.Info("Starting chatbot websocket connection")
+	discordSession, err = websocketServer()
 	if err != nil {
 		log.FatalS(err)
 	}
@@ -66,7 +73,7 @@ func main() {
 	}
 
 	if config.IsProd() {
-		err = refreshCommands()
+		err = refreshCommands(discordSession)
 		if err != nil {
 			log.Err("refreshing commands", zap.Error(err))
 		}
@@ -89,30 +96,9 @@ func main() {
 	)
 }
 
-var discordSession *discordgo.Session
-var discordSessionLock sync.Mutex
+func saveToDB(command chatbot.Command, slash bool, message, guildID, channelID string, user *discordgo.User) {
 
-func getSession() (*discordgo.Session, error) {
-
-	discordSessionLock.Lock()
-	defer discordSessionLock.Unlock()
-
-	var err error
-
-	if discordSession == nil {
-		discordSession, err = discordgo.New("Bot " + config.C.DiscordChatBotToken)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	return discordSession, err
-
-}
-
-func saveToDB(command chatbot.Command, slash bool, message, guildID, channelID, authorID, authorName, authorAvatar string) {
-
-	if authorID == config.DiscordAdminID {
+	if user.ID == config.DiscordAdminID {
 		return
 	}
 
@@ -130,7 +116,7 @@ func saveToDB(command chatbot.Command, slash bool, message, guildID, channelID, 
 		Tags: map[string]string{
 			"guild_id":   guildID,
 			"channel_id": channelID,
-			"author_id":  authorID,
+			"author_id":  user.ID,
 			"command_id": command.ID(),
 			"slash":      strconv.FormatBool(slash),
 		},
@@ -149,9 +135,9 @@ func saveToDB(command chatbot.Command, slash bool, message, guildID, channelID, 
 	var row = mongo.ChatBotCommand{
 		GuildID:      guildID,
 		ChannelID:    channelID,
-		AuthorID:     authorID,
-		AuthorName:   authorName,
-		AuthorAvatar: authorAvatar,
+		AuthorID:     user.ID,
+		AuthorName:   user.Username,
+		AuthorAvatar: user.Avatar,
 		CommandID:    command.ID(),
 		Message:      message,
 		Slash:        slash,
@@ -200,12 +186,6 @@ func discordError(err error) {
 
 func updateGuildsCount() {
 
-	session, err := getSession()
-	if err != nil {
-		log.FatalS(err)
-		return
-	}
-
 	for {
 		func() {
 
@@ -213,7 +193,7 @@ func updateGuildsCount() {
 			var count = 0
 			for {
 
-				guilds, err := session.UserGuilds(100, "", after)
+				guilds, err := discordSession.UserGuilds(100, "", after)
 				if err != nil {
 					log.ErrS(err)
 					return
@@ -246,4 +226,22 @@ func updateGuildsCount() {
 
 		time.Sleep(time.Hour)
 	}
+}
+
+func arguments(event *discordgo.Interaction) (a map[string]string) {
+
+	a = map[string]string{}
+	for _, v := range event.Data.Options {
+		a[v.Name] = fmt.Sprint(v.Value)
+	}
+	return a
+}
+
+func argumentsString(event *discordgo.Interaction) string {
+
+	var s = []string{event.Data.Name}
+	for _, v := range event.Data.Options {
+		s = append(s, fmt.Sprint(v.Value))
+	}
+	return strings.Join(s, " ")
 }
