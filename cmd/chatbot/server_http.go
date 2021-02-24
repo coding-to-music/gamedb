@@ -26,7 +26,6 @@ import (
 func slashCommandServer() error {
 
 	r := chi.NewRouter()
-	r.Use(chiMiddleware.RedirectSlashes)
 	r.Use(chiMiddleware.NewCompressor(flate.DefaultCompression, "text/plain", "application/json").Handler)
 	r.Use(middleware.RealIP)
 
