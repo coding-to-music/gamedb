@@ -2,6 +2,13 @@
 
     <footer>
         <div class="container">
+
+            {{ if .ShowAds }}
+                <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                <ins class="adsbygoogle mt-4" style="display:block" data-ad-client="ca-pub-5468884371420326" data-ad-slot="2209242047" data-ad-format="auto" data-full-width-responsive="true"></ins>
+                <script> (adsbygoogle = window.adsbygoogle || []).push({});</script>
+            {{ end }}
+
             <small class="text-muted text-center">
                 Global Steam is not affiliated with Steam.
                 All copyrights reserved to their respective owners.
@@ -54,18 +61,6 @@
             gtag('set', {'user_id': {{ .UserID }}});
             {{ end }}
         </script>
-
-        {{ if .ShowAds }}
-            {{/*        <!--suppress ES6ConvertVarToLetConst -->*/}}
-            {{/*        <script>*/}}
-            {{/*            $('small.small-print').css('margin-bottom', '140px');*/}}
-
-            {{/*            // Must be vars*/}}
-            {{/*            var infolinks_pid = 3185749;*/}}
-            {{/*            var infolinks_wsid = 0;*/}}
-            {{/*        </script>*/}}
-            {{/*        <script src="https://resources.infolinks.com/js/infolinks_main.js"></script>*/}}
-        {{ end }}
 
     {{ end }}
 

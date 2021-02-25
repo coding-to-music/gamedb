@@ -153,10 +153,10 @@ func main() {
 	})
 
 	// Root files
+	r.Get("/ads.txt", rootFileHandler(filesBox, ""))
 	r.Get("/browserconfig.xml", rootFileHandler(filesBox, ""))
 	r.Get("/robots.txt", rootFileHandler(filesBox, ""))
 	r.Get("/site.webmanifest", rootFileHandler(filesBox, ""))
-	// r.Get("/ads.txt", rootFileHandler)
 
 	// Shortcuts
 	r.Get("/a{id:[0-9]+}", redirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/games/" + chi.URLParam(r, "id") }))
