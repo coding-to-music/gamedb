@@ -115,32 +115,73 @@ func (c CommandPlayer) Output(authorID string, _ steamapi.ProductCC, inputs map[
 		}
 	}
 
-	var games string
-	if player.GetGamesCount() == 0 {
-		games = "Profile set to private"
-	} else {
-		games = humanize.Comma(int64(player.GetGamesCount())) + " (" + helpers.OrdinalComma(player.GetRanks()[helpers.RankKeyGames]) + ")"
+	// Fields
+	var games = "None / Profile set to private"
+	if player.GetGamesCount() > 0 {
+		games = humanize.Comma(int64(player.GetGamesCount()))
+		if val, ok := player.GetRanks()[helpers.RankKeyGames]; ok && val > 0 {
+			games += " (" + helpers.OrdinalComma(val) + ")"
+		} else {
+			games += " (Unranked)"
+		}
 	}
 
-	var achievements string
-	if player.GetAchievements() == 0 {
-		achievements = "Profile set to private"
-	} else {
-		achievements = humanize.Comma(int64(player.GetAchievements())) + " (" + helpers.OrdinalComma(player.GetRanks()[helpers.RankKeyAchievements]) + ")"
+	var level = "Profile set to private"
+	if player.GetLevel() > 0 {
+		level = humanize.Comma(int64(player.GetLevel()))
+		if val, ok := player.GetRanks()[helpers.RankKeyLevel]; ok && val > 0 {
+			level += " (" + helpers.OrdinalComma(val) + ")"
+		} else {
+			level += " (Unranked)"
+		}
 	}
 
-	var playtime string
-	if player.GetPlaytime() == 0 {
-		playtime = "Profile set to private"
-	} else {
-		playtime = helpers.GetTimeLong(player.GetPlaytime(), 3) + " (" + helpers.OrdinalComma(player.GetRanks()[helpers.RankKeyPlaytime]) + ")"
+	var badges = "None / Profile set to private"
+	if player.GetBadges() > 0 {
+		badges = humanize.Comma(int64(player.GetBadges()))
+		if val, ok := player.GetRanks()[helpers.RankKeyBadges]; ok && val > 0 {
+			badges += " (" + helpers.OrdinalComma(val) + ")"
+		} else {
+			badges += " (Unranked)"
+		}
 	}
 
-	var lastBan string
+	var foils = "None / Profile set to private"
+	if player.GetBadgesFoil() > 0 {
+		foils = humanize.Comma(int64(player.GetBadgesFoil()))
+		if val, ok := player.GetRanks()[helpers.RankKeyBadgesFoil]; ok && val > 0 {
+			foils += " (" + helpers.OrdinalComma(val) + ")"
+		} else {
+			foils += " (Unranked)"
+		}
+	}
+
+	var achievements = "None / Profile set to private"
+	if player.GetAchievements() > 0 {
+		achievements = humanize.Comma(int64(player.GetAchievements()))
+		if val, ok := player.GetRanks()[helpers.RankKeyAchievements]; ok && val > 0 {
+			achievements += " (" + helpers.OrdinalComma(val) + ")"
+		} else {
+			achievements += " (Unranked)"
+		}
+	}
+
+	var playtime = "None / Profile set to private"
+	if player.GetPlaytime() > 0 {
+		playtime = helpers.GetTimeLong(player.GetPlaytime(), 3)
+		if val, ok := player.GetRanks()[helpers.RankKeyPlaytime]; ok && val > 0 {
+			playtime += " (" + helpers.OrdinalComma(val) + ")"
+		} else {
+			playtime += " (Unranked)"
+		}
+	}
+
+	var bans = humanize.Comma(int64(player.GetGameBans())) + " Game Bans\n" + humanize.Comma(int64(player.GetVACBans())) + " VAC Bans"
 	if player.GetVACBans() > 0 {
-		lastBan = "\nVAC Banned " + helpers.GetTimeShort(int(time.Now().Sub(player.GetLastBan()).Minutes()), 2) + " ago"
+		bans += "\nVAC Banned " + helpers.GetTimeShort(int(time.Now().Sub(player.GetLastBan()).Minutes()), 2) + " ago"
 	}
 
+	//
 	message.Embed = &discordgo.MessageEmbed{
 		Title:     player.GetName(),
 		URL:       player.GetPathAbsolute(),
@@ -148,35 +189,13 @@ func (c CommandPlayer) Output(authorID string, _ steamapi.ProductCC, inputs map[
 		Footer:    getFooter(),
 		Color:     greenHexDec,
 		Fields: []*discordgo.MessageEmbedField{
-			{
-				Name:  "Level",
-				Value: humanize.Comma(int64(player.GetLevel())) + " (" + helpers.OrdinalComma(player.GetRanks()[helpers.RankKeyLevel]) + ")",
-			},
-			{
-				Name:  "Games",
-				Value: games,
-			},
-			{
-				Name:  "Achievements",
-				Value: achievements,
-			},
-			{
-				Name:  "Badges",
-				Value: humanize.Comma(int64(player.GetBadges())) + " (" + helpers.OrdinalComma(player.GetRanks()[helpers.RankKeyBadges]) + ")",
-			},
-			{
-				Name:  "Foil Badges",
-				Value: humanize.Comma(int64(player.GetBadgesFoil())) + " (" + helpers.OrdinalComma(player.GetRanks()[helpers.RankKeyBadgesFoil]) + ")",
-			},
-			{
-				Name:  "Playtime",
-				Value: playtime,
-			},
-			{
-				Name: "Bans",
-				Value: humanize.Comma(int64(player.GetGameBans())) + " Game Bans\n" +
-					humanize.Comma(int64(player.GetVACBans())) + " VAC Bans" + lastBan,
-			},
+			{Name: "Level", Value: level},
+			{Name: "Games", Value: games},
+			{Name: "Achievements", Value: achievements},
+			{Name: "Badges", Value: badges},
+			{Name: "Foil Badges", Value: foils},
+			{Name: "Playtime", Value: playtime},
+			{Name: "Bans", Value: bans},
 		},
 	}
 

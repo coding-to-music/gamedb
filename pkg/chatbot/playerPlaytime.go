@@ -79,7 +79,7 @@ func (c CommandPlayerPlaytime) Output(_ string, _ steamapi.ProductCC, inputs map
 
 	// Sucess response
 	var rank = "Unranked"
-	if val, ok := player.Ranks[helpers.RankKeyPlaytime]; ok {
+	if val, ok := player.Ranks[helpers.RankKeyPlaytime]; ok && val > 0 {
 		rank = helpers.OrdinalComma(val)
 	}
 

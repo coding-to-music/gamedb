@@ -81,7 +81,7 @@ func (c CommandPlayerApps) Output(_ string, _ steamapi.ProductCC, inputs map[str
 
 	// Sucess response
 	var rank = "Unranked"
-	if val, ok := player.Ranks[helpers.RankKeyGames]; ok {
+	if val, ok := player.Ranks[helpers.RankKeyGames]; ok && val > 0 {
 		rank = helpers.OrdinalComma(val)
 	}
 
