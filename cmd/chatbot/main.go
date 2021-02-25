@@ -186,45 +186,46 @@ func discordError(err error) {
 
 func updateGuildsCount() {
 
-	for {
-		func() {
+	if config.IsProd() {
+		for {
+			func() {
+				var after = ""
+				var count = 0
+				for {
 
-			var after = ""
-			var count = 0
-			for {
+					guilds, err := discordSession.UserGuilds(100, "", after)
+					if err != nil {
+						log.ErrS(err)
+						return
+					}
 
-				guilds, err := discordSession.UserGuilds(100, "", after)
+					for _, guild := range guilds {
+						count++
+						after = guild.ID
+					}
+
+					if len(guilds) < 100 {
+						break
+					}
+				}
+
+				// Save to Influx
+				point := influx.Point{
+					Measurement: influxHelper.InfluxMeasurementChatBot.String(),
+					Fields: map[string]interface{}{
+						"guilds": count,
+					},
+					Precision: "h",
+				}
+
+				_, err := influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, point)
 				if err != nil {
 					log.ErrS(err)
-					return
 				}
+			}()
 
-				for _, guild := range guilds {
-					count++
-					after = guild.ID
-				}
-
-				if len(guilds) < 100 {
-					break
-				}
-			}
-
-			// Save to Influx
-			point := influx.Point{
-				Measurement: influxHelper.InfluxMeasurementChatBot.String(),
-				Fields: map[string]interface{}{
-					"guilds": count,
-				},
-				Precision: "h",
-			}
-
-			_, err := influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, point)
-			if err != nil {
-				log.ErrS(err)
-			}
-		}()
-
-		time.Sleep(time.Hour)
+			time.Sleep(time.Hour)
+		}
 	}
 }
 
