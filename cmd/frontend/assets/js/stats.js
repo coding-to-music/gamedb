@@ -230,6 +230,11 @@ if ($('#stats-page').length > 0) {
                             type: 'category',
                             tickInterval: 5,
                             categories: categories,
+                            labels: {
+                                formatter: function () {
+                                    return this.value.toLocaleString();
+                                },
+                            },
                         },
                         yAxis: {
                             type: 'logarithmic',
