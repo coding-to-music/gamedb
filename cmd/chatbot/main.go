@@ -22,7 +22,7 @@ import (
 )
 
 var (
-	limits         = rate.New(time.Second, rate.WithBurst(3))
+	limits         = rate.New(time.Second*3, rate.WithBurst(3))
 	discordSession *discordgo.Session
 )
 
