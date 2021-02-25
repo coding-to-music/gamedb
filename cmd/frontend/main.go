@@ -30,8 +30,8 @@ import (
 )
 
 var (
+	filesBox = packr.New("files", "./assets")
 	distBox  = packr.New("dist", "./assets/dist")
-	filesBox = packr.New("files", "./assets/files")
 	imgBox   = packr.New("img", "./assets/img")
 )
 
@@ -149,7 +149,6 @@ func main() {
 	// Assets
 	r.Route("/assets", func(r chi.Router) {
 		r.Get("/img/*", rootFileHandler(imgBox, "/assets/img"))
-		r.Get("/files/*", rootFileHandler(filesBox, "/assets/files"))
 		r.Get("/dist/*", rootFileHandler(distBox, "/assets/dist"))
 	})
 
