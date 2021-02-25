@@ -6,9 +6,9 @@ import (
 	"strings"
 
 	"github.com/Jleagle/influxql"
+	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/chatbot"
-	"github.com/gamedb/gamedb/pkg/chatbot/interactions"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/i18n"
 	influxHelper "github.com/gamedb/gamedb/pkg/influx"
@@ -55,13 +55,13 @@ var (
 	regexpChatLegacyStart = regexp.MustCompile(`^[.!]\w+`)
 )
 
-func (cbt chatBotTemplate) RenderLegacy(input string) (interaction interactions.Interaction) {
+func (cbt chatBotTemplate) RenderLegacy(input string) (interaction discordgo.ApplicationCommand) {
 
 	interaction.ID = regexpChatLegacyStart.FindString(input)
 
 	for _, v := range regexpChatLegacy.FindAllString(input, -1) {
 
-		interaction.Options = append(interaction.Options, interactions.InteractionOption{
+		interaction.Options = append(interaction.Options, &discordgo.ApplicationCommandOption{
 			Name:     strings.Trim(v, "{}?"),
 			Required: !strings.Contains(v, "?"),
 		})
