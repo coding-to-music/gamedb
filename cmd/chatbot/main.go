@@ -57,12 +57,10 @@ func main() {
 		return
 	}
 
-	// Queues
 	queue.Init(queue.ChatbotDefinitions)
 
-	// Websocket connection
 	log.Info("Starting chatbot websocket connection")
-	discordSession, err = websocketServer()
+	err = websocketServer()
 	if err != nil {
 		log.FatalS(err)
 	}
@@ -72,11 +70,9 @@ func main() {
 		log.FatalS(err)
 	}
 
-	if config.IsProd() {
-		err = refreshCommands(discordSession)
-		if err != nil {
-			log.Err("refreshing commands", zap.Error(err))
-		}
+	err = refreshCommands()
+	if err != nil {
+		log.Err("refreshing commands", zap.Error(err))
 	}
 
 	go updateGuildsCount()

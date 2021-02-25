@@ -13,32 +13,38 @@ import (
 	"go.uber.org/zap"
 )
 
-func websocketServer() (*discordgo.Session, error) {
+func websocketServer() (err error) {
 
 	// Start discord
-	discordSession, err := discordgo.New("Bot " + config.C.DiscordChatBotToken)
+	discordSession, err = discordgo.New("Bot " + config.C.DiscordChatBotToken)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	discordSession.AddHandler(func(s *discordgo.Session, i *discordgo.InteractionCreate) {
+	discordSession.AddHandler(func(s *discordgo.Session, interaction *discordgo.InteractionCreate) {
 
-		interaction := i.Interaction
+		i := interaction.Interaction
+
+		// Ignore PMs
+		// member is sent when the command is invoked in a guild, and user is sent when invoked in a DM
+		// todo, make PR to add user with isDM() func
+		if i.Member == nil {
+			return
+		}
 
 		// Stop users getting two responses
-		if config.IsLocal() && interaction.Member.User.ID != config.DiscordAdminID {
-			ackWithSource(discordSession, interaction)
+		if config.IsLocal() && i.Member.User.ID != config.DiscordAdminID {
 			return
 		}
 
 		// Check for pings
-		if interaction.Type == discordgo.InteractionPing {
+		if i.Type == discordgo.InteractionPing {
 
 			response := &discordgo.InteractionResponse{
 				Type: discordgo.InteractionResponsePong,
 			}
 
-			err = discordSession.InteractionRespond(interaction, response)
+			err = s.InteractionRespond(i, response)
 			if err != nil {
 				log.ErrS(err)
 			}
@@ -46,26 +52,24 @@ func websocketServer() (*discordgo.Session, error) {
 		}
 
 		// Get command
-		command, ok := chatbot.CommandCache[interaction.Data.Name]
+		command, ok := chatbot.CommandCache[i.Data.Name]
 		if !ok {
-			ackWithSource(s, interaction)
 			log.ErrS("Command ID not found in register")
 			return
 		}
 
 		// Save stats
-		defer saveToDB(command, true, argumentsString(interaction), interaction.GuildID, interaction.ChannelID, interaction.Member.User)
+		defer saveToDB(command, true, argumentsString(i), i.GuildID, i.ChannelID, i.Member.User)
 
 		// Typing notification
-		err = discordSession.ChannelTyping(interaction.ChannelID)
+		// todo Remove this when slash commands have `thinking`
+		err = s.ChannelTyping(i.ChannelID)
 		discordError(err)
 
-		ackWithSource(discordSession, interaction)
-
 		//
-		code := getAuthorCode(command, interaction.Member.User.ID)
+		code := getAuthorCode(command, i.Member.User.ID)
 
-		cacheItem := memcache.ItemChatBotRequestSlash(command.ID(), arguments(interaction), code)
+		cacheItem := memcache.ItemChatBotRequestSlash(command.ID(), arguments(i), code)
 
 		// Check in cache first
 		if !command.DisableCache() && !config.IsLocal() {
@@ -74,7 +78,7 @@ func websocketServer() (*discordgo.Session, error) {
 			err = memcache.GetInterface(cacheItem.Key, &response)
 			if err == nil {
 
-				err = discordSession.InteractionRespond(interaction, response)
+				err = s.InteractionRespond(i, response)
 				if err != nil {
 					log.ErrS(err)
 				}
@@ -83,19 +87,19 @@ func websocketServer() (*discordgo.Session, error) {
 		}
 
 		// Rate limit
-		if !limits.GetLimiter(interaction.Member.User.ID).Allow() {
-			log.Warn("over chatbot rate limit", zap.String("author", interaction.Member.User.ID), zap.String("msg", argumentsString(interaction)))
-			ackWithSource(discordSession, interaction)
+		if !limits.GetLimiter(i.Member.User.ID).Allow() {
+			log.Warn("over chatbot rate limit", zap.String("author", i.Member.User.ID), zap.String("msg", argumentsString(i)))
 			return
 		}
 
-		out, err := command.Output(interaction.Member.User.ID, code, arguments(interaction))
+		// Make output
+		out, err := command.Output(i.Member.User.ID, code, arguments(i))
 		if err != nil {
 			log.ErrS(err)
-			ackWithSource(discordSession, interaction)
 			return
 		}
 
+		// Convert to slash format
 		response := &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionApplicationCommandResponseData{
@@ -107,22 +111,16 @@ func websocketServer() (*discordgo.Session, error) {
 			response.Data.Embeds = []*discordgo.MessageEmbed{out.Embed}
 		}
 
-		// Save to cache
-		defer func() {
-			err = memcache.SetInterface(cacheItem.Key, response, cacheItem.Expiration)
-			if err != nil {
-				log.Err("Saving to memcache", zap.Error(err), zap.String("msg", argumentsString(interaction)))
-			}
-		}()
-
-		update := &discordgo.WebhookEdit{
-			Content: response.Data.Content,
-			Embeds:  response.Data.Embeds,
-		}
-
-		err = discordSession.InteractionResponseEdit("", interaction, update)
+		// Respond
+		err = s.InteractionRespond(i, response)
 		if err != nil {
 			log.ErrS(err)
+		}
+
+		// Save to cache
+		err = memcache.SetInterface(cacheItem.Key, response, cacheItem.Expiration)
+		if err != nil {
+			log.Err("Saving to memcache", zap.Error(err), zap.String("msg", argumentsString(i)))
 		}
 	})
 
@@ -148,7 +146,7 @@ func websocketServer() (*discordgo.Session, error) {
 
 				func() { // In a func for the defer
 
-					// Disable PMs
+					// Ignore PMs
 					private, err := isChannelPrivateMessage(s, m)
 					if err != nil {
 						discordError(err)
@@ -187,12 +185,14 @@ func websocketServer() (*discordgo.Session, error) {
 						return
 					}
 
+					// Make output
 					message, err := command.Output(m.Author.ID, code, command.LegacyInputs(msg))
 					if err != nil {
 						log.WarnS(err, msg)
 						return
 					}
 
+					// Reply
 					_, err = s.ChannelMessageSendComplex(m.ChannelID, &message)
 					if err != nil {
 						discordError(err)
@@ -211,7 +211,7 @@ func websocketServer() (*discordgo.Session, error) {
 		}
 	})
 
-	return discordSession, discordSession.Open()
+	return discordSession.Open()
 }
 
 func isChannelPrivateMessage(s *discordgo.Session, m *discordgo.MessageCreate) (bool, error) {
@@ -223,18 +223,6 @@ func isChannelPrivateMessage(s *discordgo.Session, m *discordgo.MessageCreate) (
 	}
 
 	return channel.Type == discordgo.ChannelTypeDM, nil
-}
-
-func ackWithSource(s *discordgo.Session, i *discordgo.Interaction) {
-
-	response := &discordgo.InteractionResponse{
-		Type: discordgo.InteractionResponseACKWithSource,
-	}
-
-	err := s.InteractionRespond(i, response)
-	if err != nil {
-		log.ErrS(err)
-	}
 }
 
 func getAuthorCode(command chatbot.Command, authorID string) steamapi.ProductCC {

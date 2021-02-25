@@ -10,9 +10,9 @@ import (
 	"go.uber.org/zap"
 )
 
-func refreshCommands(session *discordgo.Session) error {
+func refreshCommands() error {
 
-	apiCommands, err := session.ApplicationCommands("", "")
+	apiCommands, err := discordSession.ApplicationCommands("", "")
 	if err != nil {
 		return err
 	}
@@ -22,7 +22,7 @@ func refreshCommands(session *discordgo.Session) error {
 		if _, ok := chatbot.CommandCache[apiCommand.Name]; !ok {
 
 			log.Info("Deleting dommand", zap.String("id", apiCommand.Name))
-			err = session.ApplicationCommandDelete("", "", apiCommand.ID)
+			err = discordSession.ApplicationCommandDelete("", "", apiCommand.ID)
 			if err != nil {
 				log.Err("Deleting command", zap.Error(err))
 			}
@@ -47,7 +47,7 @@ func refreshCommands(session *discordgo.Session) error {
 					Description: strings.ToUpper(string(localCommand.Type())) + ": " + localCommand.Description(),
 					Options:     localCommand.Slash(),
 				}
-				_, err = session.ApplicationCommandCreate("", "", command)
+				_, err = discordSession.ApplicationCommandCreate("", "", command)
 				if err != nil {
 					return err
 				}
@@ -72,7 +72,7 @@ func refreshCommands(session *discordgo.Session) error {
 				Description: strings.ToUpper(string(localCommand.Type())) + ": " + localCommand.Description(),
 				Options:     localCommand.Slash(),
 			}
-			_, err = session.ApplicationCommandCreate("", "", command)
+			_, err = discordSession.ApplicationCommandCreate("", "", command)
 			if err != nil {
 				log.Err("Adding command", zap.String("id", localCommand.ID()))
 				return
