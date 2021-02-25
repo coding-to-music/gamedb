@@ -607,7 +607,7 @@ func GetPlayerLevelsRounded() (counts []Count, err error) {
 		}
 
 		pipeline := mongo.Pipeline{
-			{{Key: "$match", Value: bson.M{"level": bson.M{"$lte": 2000}}}},
+			{{Key: "$match", Value: bson.M{"level": bson.M{"$lte": 1000}}}},
 			{{Key: "$group", Value: bson.M{"_id": bson.M{"$trunc": bson.A{"$level", -1}}, "count": bson.M{"$sum": 1}}}},
 		}
 
