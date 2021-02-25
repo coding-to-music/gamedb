@@ -655,7 +655,7 @@ func (t globalTemplate) IsLocal() bool {
 }
 
 func (t globalTemplate) ShowAds() bool {
-	return t.userLevel < mysql.UserLevel1 && !t.hideAds
+	return (t.userLevel < mysql.UserLevel1) && !t.hideAds
 }
 
 func (t globalTemplate) ShowPatreonMessage() bool {
