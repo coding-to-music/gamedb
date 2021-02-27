@@ -193,6 +193,78 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		t.TopSellers = topSellers
 	}()
 
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		t.PlayersCount, err = mongo.CountDocuments(mongo.CollectionPlayers, nil, 0)
+		if err != nil {
+			log.ErrS(err)
+		}
+	}()
+
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		t.AppsCount, err = mongo.CountDocuments(mongo.CollectionApps, nil, 0)
+		if err != nil {
+			log.ErrS(err)
+		}
+	}()
+
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		t.BundlesCount, err = mongo.CountDocuments(mongo.CollectionBundles, nil, 0)
+		if err != nil {
+			log.ErrS(err)
+		}
+	}()
+
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		t.PackagesCount, err = mongo.CountDocuments(mongo.CollectionPackages, nil, 0)
+		if err != nil {
+			log.ErrS(err)
+		}
+	}()
+
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		t.AchievementsCount, err = mongo.CountDocuments(mongo.CollectionAppAchievements, nil, 0)
+		if err != nil {
+			log.ErrS(err)
+		}
+	}()
+
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		t.ArticlesCount, err = mongo.CountDocuments(mongo.CollectionAppArticles, nil, 0)
+		if err != nil {
+			log.ErrS(err)
+		}
+	}()
+
 	wg.Wait()
 
 	t.ConstApp = helpers.ProductTypeApp
@@ -204,13 +276,19 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 type homeTemplate struct {
 	globalTemplate
-	TopGames     []mongo.App
-	NewGames     []mongo.App
-	Upcoming     []elasticsearch.App
-	TopSellers   []homeTopSellerTemplate
-	Players      []mongo.Player
-	ConstApp     helpers.ProductType
-	ConstPackage helpers.ProductType
+	TopGames          []mongo.App
+	NewGames          []mongo.App
+	Upcoming          []elasticsearch.App
+	TopSellers        []homeTopSellerTemplate
+	Players           []mongo.Player
+	ConstApp          helpers.ProductType
+	ConstPackage      helpers.ProductType
+	AppsCount         int64
+	BundlesCount      int64
+	PackagesCount     int64
+	AchievementsCount int64
+	ArticlesCount     int64
+	PlayersCount      int64
 }
 
 type homeTopSellerTemplate struct {
