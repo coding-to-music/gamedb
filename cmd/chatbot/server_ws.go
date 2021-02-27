@@ -211,6 +211,7 @@ func websocketServer() (err error) {
 		}
 	})
 
+	log.Info("Starting chatbot websocket connection")
 	return discordSession.Open()
 }
 

@@ -59,7 +59,6 @@ func main() {
 
 	queue.Init(queue.ChatbotDefinitions)
 
-	log.Info("Starting chatbot websocket connection")
 	err = websocketServer()
 	if err != nil {
 		log.FatalS(err)
