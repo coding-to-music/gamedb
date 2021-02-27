@@ -64,11 +64,6 @@ func main() {
 		log.FatalS(err)
 	}
 
-	err = slashCommandServer()
-	if err != nil {
-		log.FatalS(err)
-	}
-
 	err = refreshCommands()
 	if err != nil {
 		log.Err("refreshing commands", zap.Error(err))
