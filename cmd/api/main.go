@@ -3,7 +3,6 @@ package main
 //go:generate bash ./scripts/generate.sh
 
 import (
-	"compress/flate"
 	"context"
 	"encoding/json"
 	"net/http"
@@ -47,7 +46,7 @@ func main() {
 	session.Init()
 
 	r := chi.NewRouter()
-	r.Use(chiMiddleware.NewCompressor(flate.DefaultCompression, "text/html", "text/css", "text/javascript", "application/json", "application/javascript").Handler)
+	r.Use(chiMiddleware.DefaultCompress)
 	r.Use(middleware.RealIP)
 	r.Use(middleware.RateLimiterBlock(time.Second/2, 1, rateLimitedHandler))
 	// r.Use(codegenMiddleware.OapiRequestValidator(swagger)) // todo

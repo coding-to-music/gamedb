@@ -1,7 +1,6 @@
 package main
 
 import (
-	"compress/flate"
 	"errors"
 	"math/rand"
 	"net/http"
@@ -90,7 +89,7 @@ func main() {
 	r.Use(middleware.MiddlewareDownMessage)
 	r.Use(middleware.MiddlewareCors())
 	r.Use(middleware.RealIP)
-	r.Use(chiMiddleware.NewCompressor(flate.DefaultCompression, "text/html", "text/css", "text/javascript", "application/json", "application/javascript").Handler)
+	r.Use(chiMiddleware.DefaultCompress)
 	r.Use(middleware.RateLimiterWait(time.Second, 10))
 
 	// Pages
