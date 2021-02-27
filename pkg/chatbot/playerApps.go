@@ -94,16 +94,8 @@ func (c CommandPlayerApps) Output(_ string, _ steamapi.ProductCC, inputs map[str
 			Color:     greenHexDec,
 			Image:     &discordgo.MessageEmbedImage{URL: charts.GetPlayerChart(c.ID(), player.ID, helpers.InfPlayersGames, "Games")},
 			Fields: []*discordgo.MessageEmbedField{
-				{
-					Name:   "Games",
-					Value:  strconv.Itoa(player.Games),
-					Inline: true,
-				},
-				{
-					Name:   "Rank",
-					Value:  rank,
-					Inline: true,
-				},
+				{Name: "Games", Value: strconv.Itoa(player.Games), Inline: true},
+				{Name: "Rank", Value: rank, Inline: true},
 			},
 		}
 	} else {
