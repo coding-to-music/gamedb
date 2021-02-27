@@ -56,6 +56,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, "home", "Home", "Stats and information on the Steam Catalogue.")
 	t.addAssetJSON2HTML()
 	t.addAssetHighCharts()
+	t.addJSFile("https://platform.twitter.com/widgets.js")
 
 	var wg sync.WaitGroup
 

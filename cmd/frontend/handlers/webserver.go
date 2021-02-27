@@ -666,6 +666,10 @@ func (t *globalTemplate) addToast(toast Toast) {
 	t.toasts = append(t.toasts, toast)
 }
 
+func (t *globalTemplate) addJSFile(url string) {
+	t.JSFiles = append(t.JSFiles, Asset{URL: url})
+}
+
 func (t *globalTemplate) addAssetChosen() {
 	t.JSFiles = append(t.JSFiles, Asset{
 		URL:       "https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js",
