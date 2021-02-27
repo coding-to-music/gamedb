@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/steam-go/steamapi"
+	"github.com/Jleagle/steam-go/steamid"
 	"github.com/gamedb/gamedb/pkg/config"
 )
 
@@ -71,13 +72,20 @@ func GetPlayer(search string) (player TempPlayer, err error) {
 
 	search = strings.TrimSpace(path.Base(search))
 
-	resp, err := GetSteam().ResolveVanityURL(search, steamapi.VanityURLProfile)
-	err = AllowSteamCodes(err)
+	playerID, err := steamid.ParsePlayerID(search)
 	if err != nil {
-		return player, err
-	}
 
-	player.ID = int64(resp.SteamID)
+		resp, err := GetSteam().ResolveVanityURL(search, steamapi.VanityURLProfile)
+		err = AllowSteamCodes(err)
+		if err != nil {
+			return player, err
+		}
+
+		player.ID = int64(resp.SteamID)
+
+	} else {
+		player.ID = int64(playerID)
+	}
 
 	var wg sync.WaitGroup
 
