@@ -86,7 +86,7 @@ func main() {
 	)
 }
 
-func saveToDB(command chatbot.Command, slash bool, message, guildID, channelID string, user *discordgo.User) {
+func saveToDB(command chatbot.Command, isSlash, wasSuccess bool, message, guildID, channelID string, user *discordgo.User) {
 
 	if user.ID == config.DiscordAdminID {
 		return
@@ -108,7 +108,8 @@ func saveToDB(command chatbot.Command, slash bool, message, guildID, channelID s
 			"channel_id": channelID,
 			"author_id":  user.ID,
 			"command_id": command.ID(),
-			"slash":      strconv.FormatBool(slash),
+			"slash":      strconv.FormatBool(isSlash),
+			"success":    strconv.FormatBool(wasSuccess),
 		},
 		Fields: map[string]interface{}{
 			"request": 1,
@@ -130,7 +131,7 @@ func saveToDB(command chatbot.Command, slash bool, message, guildID, channelID s
 		AuthorAvatar: user.Avatar,
 		CommandID:    command.ID(),
 		Message:      message,
-		Slash:        slash,
+		Slash:        isSlash,
 		Time:         time.Now(), // Can get from ws message?
 	}
 

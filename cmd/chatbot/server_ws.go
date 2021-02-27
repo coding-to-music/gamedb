@@ -59,7 +59,8 @@ func websocketServer() (err error) {
 		}
 
 		// Save stats
-		defer saveToDB(command, true, argumentsString(i), i.GuildID, i.ChannelID, i.Member.User)
+		var success bool
+		defer saveToDB(command, true, success, argumentsString(i), i.GuildID, i.ChannelID, i.Member.User)
 
 		// Typing notification
 		// todo Remove this when slash commands have `thinking`
@@ -122,6 +123,8 @@ func websocketServer() (err error) {
 		if err != nil {
 			log.Err("Saving to memcache", zap.Error(err), zap.String("msg", argumentsString(i)))
 		}
+
+		success = true
 	})
 
 	// On new messages
@@ -157,7 +160,8 @@ func websocketServer() (err error) {
 					}
 
 					// Save stats
-					defer saveToDB(command, false, msg, m.GuildID, m.ChannelID, m.Author)
+					var success bool
+					defer saveToDB(command, false, success, msg, m.GuildID, m.ChannelID, m.Author)
 
 					// Typing notification
 					err = s.ChannelTyping(m.ChannelID)
@@ -204,6 +208,8 @@ func websocketServer() (err error) {
 					if err != nil {
 						log.ErrS(err, msg)
 					}
+
+					success = true
 				}()
 
 				break
