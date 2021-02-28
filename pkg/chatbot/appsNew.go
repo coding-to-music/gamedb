@@ -30,6 +30,10 @@ func (CommandAppsNew) PerProdCode() bool {
 	return false
 }
 
+func (CommandAppsNew) AllowDM() bool {
+	return false
+}
+
 func (CommandAppsNew) Example() string {
 	return ".new"
 }

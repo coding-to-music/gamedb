@@ -24,6 +24,10 @@ func (CommandFeedback) PerProdCode() bool {
 	return false
 }
 
+func (CommandFeedback) AllowDM() bool {
+	return true
+}
+
 func (CommandFeedback) Example() string {
 	return ".feedback"
 }

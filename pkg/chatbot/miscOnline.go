@@ -28,6 +28,10 @@ func (CommandSteamOnline) PerProdCode() bool {
 	return false
 }
 
+func (CommandSteamOnline) AllowDM() bool {
+	return false
+}
+
 func (CommandSteamOnline) Example() string {
 	return ".players"
 }

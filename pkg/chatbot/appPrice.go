@@ -30,6 +30,10 @@ func (CommandAppPrice) PerProdCode() bool {
 	return true
 }
 
+func (CommandAppPrice) AllowDM() bool {
+	return false
+}
+
 func (CommandAppPrice) Example() string {
 	return ".price {region}? {game}"
 }

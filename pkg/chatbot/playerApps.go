@@ -29,6 +29,10 @@ func (CommandPlayerApps) PerProdCode() bool {
 	return false
 }
 
+func (CommandPlayerApps) AllowDM() bool {
+	return false
+}
+
 func (CommandPlayerApps) Example() string {
 	return ".games {player}"
 }

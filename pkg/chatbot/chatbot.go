@@ -60,6 +60,7 @@ type Command interface {
 	Type() CommandType
 	Slash() []*discordgo.ApplicationCommandOption
 	LegacyInputs(input string) map[string]string
+	AllowDM() bool
 }
 
 // These are the discord slash command names, if changed, the old one needs to be deleted

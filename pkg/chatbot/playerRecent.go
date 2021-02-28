@@ -31,6 +31,10 @@ func (CommandPlayerRecent) PerProdCode() bool {
 	return false
 }
 
+func (CommandPlayerRecent) AllowDM() bool {
+	return false
+}
+
 func (CommandPlayerRecent) Example() string {
 	return ".recent {player}"
 }

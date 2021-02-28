@@ -36,6 +36,7 @@ func websocketServer() (err error) {
 		// Ignore PMs
 		// member is sent when the command is invoked in a guild, and user is sent when invoked in a DM
 		// todo, make PR to add user with isDM() func
+		// todo, if command.AllowDM() then use user and not member
 		if i.Member == nil {
 			return
 		}
@@ -161,9 +162,9 @@ func websocketServer() (err error) {
 					private, err := isChannelPrivateMessage(s, m)
 					if err != nil {
 						discordError(err)
-						return
 					}
-					if private && m.Author.ID != config.DiscordAdminID {
+
+					if !command.AllowDM() && private {
 						return
 					}
 
@@ -230,14 +231,17 @@ func websocketServer() (err error) {
 }
 
 func isChannelPrivateMessage(s *discordgo.Session, m *discordgo.MessageCreate) (bool, error) {
+
 	channel, err := s.State.Channel(m.ChannelID)
 	if err != nil {
-		if channel, err = s.Channel(m.ChannelID); err != nil {
+
+		channel, err = s.Channel(m.ChannelID)
+		if err != nil {
 			return false, err
 		}
 	}
 
-	return channel.Type == discordgo.ChannelTypeDM, nil
+	return channel.Type == discordgo.ChannelTypeDM, err
 }
 
 func getAuthorCode(command chatbot.Command, authorID string) steamapi.ProductCC {

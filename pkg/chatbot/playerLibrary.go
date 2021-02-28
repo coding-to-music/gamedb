@@ -30,6 +30,10 @@ func (CommandPlayerLibrary) PerProdCode() bool {
 	return false
 }
 
+func (CommandPlayerLibrary) AllowDM() bool {
+	return false
+}
+
 func (CommandPlayerLibrary) Example() string {
 	return ".library {player}"
 }

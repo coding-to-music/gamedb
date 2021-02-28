@@ -29,6 +29,10 @@ func (CommandAppsTrending) PerProdCode() bool {
 	return false
 }
 
+func (CommandAppsTrending) AllowDM() bool {
+	return false
+}
+
 func (CommandAppsTrending) Example() string {
 	return ".trending"
 }

@@ -28,6 +28,10 @@ func (CommandAppRandom) PerProdCode() bool {
 	return true
 }
 
+func (CommandAppRandom) AllowDM() bool {
+	return false
+}
+
 func (CommandAppRandom) Example() string {
 	return ".random {tag}?"
 }

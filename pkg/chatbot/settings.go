@@ -29,6 +29,10 @@ func (CommandSettings) PerProdCode() bool {
 	return false
 }
 
+func (CommandSettings) AllowDM() bool {
+	return true
+}
+
 func (CommandSettings) Example() string {
 	return ".set {setting} {value}?"
 }

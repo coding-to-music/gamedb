@@ -34,6 +34,10 @@ func (CommandPlayer) PerProdCode() bool {
 	return false
 }
 
+func (CommandPlayer) AllowDM() bool {
+	return false
+}
+
 func (CommandPlayer) Example() string {
 	return ".player {player}?"
 }

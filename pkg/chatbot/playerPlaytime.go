@@ -27,6 +27,10 @@ func (CommandPlayerPlaytime) PerProdCode() bool {
 	return false
 }
 
+func (CommandPlayerPlaytime) AllowDM() bool {
+	return false
+}
+
 func (CommandPlayerPlaytime) Example() string {
 	return ".playtime {player}"
 }

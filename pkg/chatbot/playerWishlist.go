@@ -31,6 +31,10 @@ func (CommandPlayerWishlist) PerProdCode() bool {
 	return false
 }
 
+func (CommandPlayerWishlist) AllowDM() bool {
+	return false
+}
+
 func (CommandPlayerWishlist) Example() string {
 	return ".wishlist {player}"
 }

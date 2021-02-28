@@ -49,6 +49,7 @@
                                     <th scope="col" style="width: 25%;">Slash Command</th>
                                     <th scope="col" style="width: 25%;">Legacy Command</th>
                                     <th scope="col">Description</th>
+                                    <th scope="col" class="thin" data-toggle="tooltip" data-placement="top" title="Allowed in direct messages">DMs</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -75,6 +76,7 @@
                                             {{ end }}
                                         </td>
                                         <td class="nowrap">{{ .Description }}</td>
+                                        <td>{{ if .AllowDM }}<i class="fas fa-check text-success"></i>{{ else }}<i class="fas fa-times text-danger"></i>{{ end }}</td>
                                     </tr>
                                 {{ end }}
                                 </tbody>

@@ -26,6 +26,10 @@ func (CommandApp) PerProdCode() bool {
 	return true
 }
 
+func (CommandApp) AllowDM() bool {
+	return false
+}
+
 func (CommandApp) Example() string {
 	return ".game {game}"
 }

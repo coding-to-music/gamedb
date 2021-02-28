@@ -28,6 +28,10 @@ func (CommandPlayerLevel) PerProdCode() bool {
 	return false
 }
 
+func (CommandPlayerLevel) AllowDM() bool {
+	return false
+}
+
 func (CommandPlayerLevel) Example() string {
 	return ".level {player}"
 }

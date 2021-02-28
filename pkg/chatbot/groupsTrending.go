@@ -29,6 +29,10 @@ func (CommandGroupsTrending) PerProdCode() bool {
 	return false
 }
 
+func (CommandGroupsTrending) AllowDM() bool {
+	return false
+}
+
 func (CommandGroupsTrending) Example() string {
 	return ".trending groups"
 }

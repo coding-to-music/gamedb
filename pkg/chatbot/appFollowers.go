@@ -28,6 +28,10 @@ func (CommandAppFollowers) PerProdCode() bool {
 	return false
 }
 
+func (CommandAppFollowers) AllowDM() bool {
+	return false
+}
+
 func (CommandAppFollowers) Example() string {
 	return ".followers {game}"
 }

@@ -25,6 +25,9 @@ func (CommandHelp) PerProdCode() bool {
 	return false
 }
 
+func (CommandHelp) AllowDM() bool {
+	return true
+}
 func (CommandHelp) Example() string {
 	return ".help"
 }

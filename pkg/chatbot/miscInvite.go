@@ -25,6 +25,10 @@ func (CommandInvite) PerProdCode() bool {
 	return false
 }
 
+func (CommandInvite) AllowDM() bool {
+	return true
+}
+
 func (CommandInvite) Example() string {
 	return ".invite"
 }

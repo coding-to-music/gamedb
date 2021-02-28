@@ -13,7 +13,7 @@ if ($('#chat-bot-page').length > 0) {
                         let group = this.data()[0].display;
                         if (last !== group) {
                             $(rows).eq(rowLoop).before(
-                                '<tr class="table-success"><td colspan="4">' + group + '</td></tr>'
+                                '<tr class="table-success"><td colspan="5">' + group + '</td></tr>'
                             );
                             last = group;
                         }

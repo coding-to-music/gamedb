@@ -27,6 +27,10 @@ func (CommandGroup) PerProdCode() bool {
 	return false
 }
 
+func (CommandGroup) AllowDM() bool {
+	return false
+}
+
 func (CommandGroup) Example() string {
 	return ".group {group}"
 }

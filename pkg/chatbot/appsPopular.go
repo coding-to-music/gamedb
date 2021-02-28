@@ -30,6 +30,10 @@ func (CommandAppsPopular) PerProdCode() bool {
 	return false
 }
 
+func (CommandAppsPopular) AllowDM() bool {
+	return false
+}
+
 func (CommandAppsPopular) Example() string {
 	return ".popular"
 }
