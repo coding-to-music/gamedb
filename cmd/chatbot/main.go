@@ -1,14 +1,10 @@
 package main
 
 import (
-	"fmt"
-	"strconv"
-	"strings"
 	"time"
 
 	"github.com/Jleagle/rate-limit-go"
 	"github.com/bwmarrin/discordgo"
-	"github.com/gamedb/gamedb/pkg/chatbot"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/influx"
@@ -16,7 +12,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/queue"
-	"github.com/gamedb/gamedb/pkg/websockets"
 	influx "github.com/influxdata/influxdb1-client"
 	"go.uber.org/zap"
 )
@@ -86,95 +81,6 @@ func main() {
 	)
 }
 
-func saveToDB(command chatbot.Command, isSlash, wasSuccess bool, message, guildID, channelID string, user *discordgo.User) {
-
-	if user.ID == config.DiscordAdminID {
-		return
-	}
-
-	if config.IsLocal() {
-		return
-	}
-
-	if command.ID() == chatbot.CHelp && !isSlash {
-		return
-	}
-
-	// Influx
-	point := influx.Point{
-		Measurement: string(influxHelper.InfluxMeasurementChatBot),
-		Tags: map[string]string{
-			"guild_id":   guildID,
-			"channel_id": channelID,
-			"author_id":  user.ID,
-			"command_id": command.ID(),
-			"slash":      strconv.FormatBool(isSlash),
-			"success":    strconv.FormatBool(wasSuccess),
-		},
-		Fields: map[string]interface{}{
-			"request": 1,
-		},
-		Time:      time.Now(),
-		Precision: "ms",
-	}
-
-	_, err := influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, point)
-	if err != nil {
-		log.ErrS(err)
-	}
-
-	var row = mongo.ChatBotCommand{
-		GuildID:      guildID,
-		ChannelID:    channelID,
-		AuthorID:     user.ID,
-		AuthorName:   user.Username,
-		AuthorAvatar: user.Avatar,
-		CommandID:    command.ID(),
-		Message:      message,
-		Slash:        isSlash,
-		Time:         time.Now(), // Can get from ws message?
-	}
-
-	_, err = mongo.InsertOne(mongo.CollectionChatBotCommands, row)
-	if err != nil {
-		log.ErrS(err)
-	}
-
-	// Websocket
-	guilds, err := mongo.GetGuilds([]string{row.GuildID})
-	if err != nil {
-		log.ErrS(err)
-	}
-
-	wsPayload := queue.ChatBotPayload{}
-	wsPayload.RowData = row.GetTableRowJSON(guilds)
-
-	err = queue.ProduceWebsocket(wsPayload, websockets.PageChatBot)
-	if err != nil {
-		log.ErrS(err)
-	}
-}
-
-func discordError(err error) {
-
-	var allowed = map[int]string{
-		50001: "Missing Access",
-		50013: "Missing Permissions",
-	}
-
-	if err != nil {
-		if val, ok := err.(*discordgo.RESTError); ok {
-			if _, ok2 := allowed[val.Message.Code]; ok2 {
-				zap.S().Info(err) // No helper to fix stack offset
-				return
-			}
-		}
-
-		zap.S().Error(err) // No helper to fix stack offset
-		return
-	}
-}
-
 func updateGuildsCount() {
 
 	if config.IsProd() {
@@ -218,22 +124,4 @@ func updateGuildsCount() {
 			time.Sleep(time.Hour)
 		}
 	}
-}
-
-func arguments(event *discordgo.Interaction) (a map[string]string) {
-
-	a = map[string]string{}
-	for _, v := range event.Data.Options {
-		a[v.Name] = fmt.Sprint(v.Value)
-	}
-	return a
-}
-
-func argumentsString(event *discordgo.Interaction) string {
-
-	var s = []string{event.Data.Name}
-	for _, v := range event.Data.Options {
-		s = append(s, fmt.Sprint(v.Value))
-	}
-	return strings.Join(s, " ")
 }
