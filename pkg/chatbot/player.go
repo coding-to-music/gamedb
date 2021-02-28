@@ -189,13 +189,34 @@ func (c CommandPlayer) Output(authorID string, _ steamapi.ProductCC, inputs map[
 		Footer:    getFooter(),
 		Color:     greenHexDec,
 		Fields: []*discordgo.MessageEmbedField{
-			{Name: "Level", Value: level},
-			{Name: "Games", Value: games},
-			{Name: "Achievements", Value: achievements},
-			{Name: "Badges", Value: badges},
-			{Name: "Foil Badges", Value: foils},
-			{Name: "Playtime", Value: playtime},
-			{Name: "Bans", Value: bans},
+			{
+				Name:  "Level",
+				Value: level,
+			},
+			{
+				Name:  "Games",
+				Value: games,
+			},
+			{
+				Name:  "Achievements",
+				Value: achievements,
+			},
+			{
+				Name:  "Badges",
+				Value: badges,
+			},
+			{
+				Name:  "Foil Badges",
+				Value: foils,
+			},
+			{
+				Name:  "Playtime",
+				Value: playtime,
+			},
+			{
+				Name:  "Bans",
+				Value: bans,
+			},
 		},
 	}
 
