@@ -9,7 +9,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/queue"
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 )
 
 var queuePageCharts = []string{

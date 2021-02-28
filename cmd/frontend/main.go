@@ -1,6 +1,7 @@
 package main
 
 import (
+	"compress/flate"
 	"errors"
 	"math/rand"
 	"net/http"
@@ -23,8 +24,8 @@ import (
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/queue"
-	"github.com/go-chi/chi"
-	chiMiddleware "github.com/go-chi/chi/middleware"
+	"github.com/go-chi/chi/v5"
+	chiMiddleware "github.com/go-chi/chi/v5/middleware"
 	"github.com/gobuffalo/packr/v2"
 )
 
@@ -89,7 +90,7 @@ func main() {
 	r.Use(middleware.MiddlewareDownMessage)
 	r.Use(middleware.MiddlewareCors())
 	r.Use(middleware.RealIP)
-	r.Use(chiMiddleware.DefaultCompress)
+	r.Use(chiMiddleware.Compress(flate.DefaultCompression))
 	r.Use(middleware.RateLimiterWait(time.Second, 10))
 
 	// Pages

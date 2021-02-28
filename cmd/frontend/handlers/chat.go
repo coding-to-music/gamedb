@@ -9,7 +9,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/queue"
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 	"github.com/russross/blackfriday"
 	"go.uber.org/zap"
 )

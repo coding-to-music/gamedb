@@ -7,7 +7,7 @@ import (
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 )
 
 func CurrencyHandler(w http.ResponseWriter, r *http.Request) {

@@ -24,7 +24,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/oauth"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/tasks/helpers/rabbitweb"
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 	"github.com/justinas/nosurf"
 	"github.com/memcachier/mc/v3"
 	"go.mongodb.org/mongo-driver/bson"

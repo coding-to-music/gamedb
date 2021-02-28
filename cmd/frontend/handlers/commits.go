@@ -12,7 +12,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/ldflags"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 )
 
 func CommitsRouter() http.Handler {

@@ -9,7 +9,7 @@ import (
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 	"gopkg.in/yaml.v2"
 )
 

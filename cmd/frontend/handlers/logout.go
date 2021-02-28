@@ -6,7 +6,7 @@ import (
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 )
 
 func LogoutRouter() http.Handler {
