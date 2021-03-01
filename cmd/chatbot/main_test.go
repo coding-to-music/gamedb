@@ -9,7 +9,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 )
 
-func Test(t *testing.T) {
+func TestLegacyRegexes(t *testing.T) {
 
 	err := config.Init("")
 	log.InitZap(log.LogNameTest)
