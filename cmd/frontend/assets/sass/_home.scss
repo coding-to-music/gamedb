@@ -80,7 +80,11 @@ body.dark {
             overflow: auto;
 
             @include media-breakpoint-up(lg) {
-                height: 450px;
+                height: 406px;
+            }
+
+            @include media-breakpoint-up(xl) {
+                height: 333px;
             }
 
             .tweet {
