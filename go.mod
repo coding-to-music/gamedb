@@ -15,7 +15,7 @@ require (
 	github.com/Jleagle/sitemap-go v0.0.0-20201217201247-75f3818f336a
 	github.com/Jleagle/steam-go v0.0.0-20210211214415-6e5c1aecbba1
 	github.com/Jleagle/unmarshal-go v0.0.0-20200217225147-fd7db71d9ac0
-	github.com/Philipp15b/go-steam v1.0.1-0.20190816133340-b04c5a83c1c0
+	github.com/Philipp15b/go-steam v1.0.1-0.20210301125207-f5f3f40fa791
 	github.com/PuerkitoBio/goquery v1.6.1 // indirect
 	github.com/StefanSchroeder/Golang-Roman v0.0.0-20191231161654-ef19f7247884
 	github.com/ahmdrz/goinsta/v2 v2.4.5
