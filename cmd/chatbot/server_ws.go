@@ -270,7 +270,7 @@ func saveToDB(command chatbot.Command, isSlash, wasSuccess bool, message, guildI
 		return
 	}
 
-	if command.ID() == chatbot.CHelp && !isSlash {
+	if !isSlash && (command.ID() == chatbot.CHelp || command.ID() == chatbot.CInvite) {
 		return
 	}
 
