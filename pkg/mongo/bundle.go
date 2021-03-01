@@ -1,11 +1,11 @@
 package mongo
 
 import (
-	"math"
 	"time"
 
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"go.mongodb.org/mongo-driver/bson"
@@ -36,23 +36,27 @@ type Bundle struct {
 
 func (bundle Bundle) BSON() bson.D {
 
-	bundle.Discount = int(math.Abs(float64(bundle.Discount)))
-	bundle.DiscountHighest = int(math.Abs(float64(bundle.DiscountHighest)))
-	bundle.DiscountLowest = int(math.Abs(float64(bundle.DiscountLowest)))
-	bundle.DiscountSale = int(math.Abs(float64(bundle.DiscountSale)))
-
+	// Dates
 	bundle.UpdatedAt = time.Now()
 
 	if bundle.CreatedAt.IsZero() || bundle.CreatedAt.Unix() == 0 {
 		bundle.CreatedAt = time.Now()
 	}
 
-	bundle.OnSale = bundle.DiscountSale > bundle.Discount
-
-	if bundle.DiscountSale < bundle.Discount {
+	// Discount always set, discountSale NOT always set
+	if bundle.DiscountSale == 0 {
 		bundle.DiscountSale = bundle.Discount
 	}
 
+	// priceSale is always set, price is NOT always set
+	for _, v := range i18n.GetProdCCs(true) {
+
+		if bundle.Prices[v.ProductCode] == 0 {
+			bundle.Prices[v.ProductCode] = bundle.PricesSale[v.ProductCode]
+		}
+	}
+
+	// Set highest and lowest
 	if bundle.DiscountSale > bundle.DiscountHighest {
 		bundle.DiscountHighest = bundle.DiscountSale
 	}
@@ -60,6 +64,9 @@ func (bundle Bundle) BSON() bson.D {
 	if bundle.Discount < bundle.DiscountLowest {
 		bundle.DiscountLowest = bundle.Discount
 	}
+
+	//
+	bundle.OnSale = bundle.DiscountSale > bundle.Discount
 
 	return bson.D{
 		{"_id", bundle.ID},
