@@ -99,16 +99,19 @@ func (c CommandAppPlayers) Output(_ string, _ steamapi.ProductCC, inputs map[str
 		Image:     &discordgo.MessageEmbedImage{URL: charts.GetAppPlayersChart(c.ID(), app.ID, "10m", "7d", "Players (1 Week)")},
 		Fields: []*discordgo.MessageEmbedField{
 			{
-				Name:  "Now",
-				Value: humanize.Comma(i), Inline: true,
+				Name:   "Now",
+				Value:  humanize.Comma(i),
+				Inline: true,
 			},
 			{
-				Name:  "7 Days",
-				Value: humanize.Comma(int64(app.PlayerPeakWeek)), Inline: true,
+				Name:   "7 Days",
+				Value:  humanize.Comma(int64(app.PlayerPeakWeek)),
+				Inline: true,
 			},
 			{
-				Name:  "All Time",
-				Value: humanize.Comma(int64(app.PlayerPeakAllTime)), Inline: true,
+				Name:   "All Time",
+				Value:  humanize.Comma(int64(app.PlayerPeakAllTime)),
+				Inline: true,
 			},
 		},
 	}
