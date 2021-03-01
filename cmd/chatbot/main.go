@@ -5,8 +5,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Jleagle/rate-limit-go"
 	"github.com/bwmarrin/discordgo"
+	"github.com/gamedb/gamedb/pkg/chatbot"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/influx"
@@ -16,11 +16,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/queue"
 	influx "github.com/influxdata/influxdb1-client"
 	"go.uber.org/zap"
-)
-
-var (
-	limits         = rate.New(time.Second*3, rate.WithBurst(3))
-	discordSession *discordgo.Session
 )
 
 func main() {
@@ -56,23 +51,23 @@ func main() {
 
 	queue.Init(queue.ChatbotDefinitions)
 
-	err = websocketServer()
+	session, err := websocketServer()
 	if err != nil {
 		log.FatalS(err)
 	}
 
-	err = refreshCommands()
+	err = refreshCommands(session)
 	if err != nil {
 		log.Err("refreshing commands", zap.Error(err))
 	}
 
-	go updateGuildsCount()
+	go updateGuildsCount(session)
 
 	helpers.KeepAlive(
 		mysql.Close,
 		mongo.Close,
 		func() {
-			err = discordSession.Close()
+			err = session.Close()
 			if err != nil {
 				log.Err("disconnecting from discord", zap.Error(err))
 			}
@@ -165,7 +160,7 @@ func updateGuildsCount(session *discordgo.Session) {
 				var count = 0
 				for {
 
-					guilds, err := discordSession.UserGuilds(100, "", after)
+					guilds, err := session.UserGuilds(100, "", after)
 					if err != nil {
 						log.ErrS(err)
 						return

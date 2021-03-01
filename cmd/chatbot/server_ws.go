@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Jleagle/rate-limit-go"
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/chatbot"
@@ -21,15 +22,17 @@ import (
 	"go.uber.org/zap"
 )
 
-func websocketServer() (err error) {
+var rateLimit = rate.New(time.Second*3, rate.WithBurst(3))
+
+func websocketServer() (session *discordgo.Session, err error) {
 
 	// Start discord
-	discordSession, err = discordgo.New("Bot " + config.C.DiscordChatBotToken)
+	session, err = discordgo.New("Bot " + config.C.DiscordChatBotToken)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	discordSession.AddHandler(func(s *discordgo.Session, interaction *discordgo.InteractionCreate) {
+	session.AddHandler(func(s *discordgo.Session, interaction *discordgo.InteractionCreate) {
 
 		i := interaction.Interaction
 
@@ -77,7 +80,7 @@ func websocketServer() (err error) {
 		discordError(err)
 
 		//
-		code := getAuthorCode(command, i.Member.User.ID)
+		code := getProdCC(command, i.Member.User.ID)
 
 		cacheItem := memcache.ItemChatBotRequestSlash(command.ID(), arguments(i), code)
 
@@ -97,7 +100,7 @@ func websocketServer() (err error) {
 		}
 
 		// Rate limit
-		if !limits.GetLimiter(i.Member.User.ID).Allow() {
+		if !rateLimit.GetLimiter(i.Member.User.ID).Allow() {
 			log.Warn("over chatbot rate limit", zap.String("author", i.Member.User.ID), zap.String("msg", argumentsString(i)))
 			return
 		}
@@ -137,7 +140,7 @@ func websocketServer() (err error) {
 	})
 
 	// On new messages
-	discordSession.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
+	session.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 		// Don't reply to bots
 		if m.Author.Bot {
@@ -177,7 +180,7 @@ func websocketServer() (err error) {
 					discordError(err)
 
 					// Get user settings
-					code := getAuthorCode(command, m.Author.ID)
+					code := getProdCC(command, m.Author.ID)
 
 					cacheItem := memcache.ItemChatBotRequest(msg, code)
 
@@ -193,7 +196,7 @@ func websocketServer() (err error) {
 					}
 
 					// Rate limit
-					if !limits.GetLimiter(m.Author.ID).Allow() {
+					if !rateLimit.GetLimiter(m.Author.ID).Allow() {
 						log.Warn("over chatbot rate limit", zap.String("author", m.Author.ID), zap.String("msg", msg))
 						return
 					}
@@ -227,7 +230,7 @@ func websocketServer() (err error) {
 	})
 
 	log.Info("Starting chatbot websocket connection")
-	return discordSession.Open()
+	return session, session.Open()
 }
 
 func isChannelPrivateMessage(s *discordgo.Session, m *discordgo.MessageCreate) (bool, error) {
@@ -244,7 +247,7 @@ func isChannelPrivateMessage(s *discordgo.Session, m *discordgo.MessageCreate) (
 	return channel.Type == discordgo.ChannelTypeDM, err
 }
 
-func getAuthorCode(command chatbot.Command, authorID string) steamapi.ProductCC {
+func getProdCC(command chatbot.Command, authorID string) steamapi.ProductCC {
 
 	code := steamapi.ProductCCUS
 	if command.PerProdCode() {
