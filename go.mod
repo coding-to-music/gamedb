@@ -2,8 +2,6 @@ module github.com/gamedb/gamedb
 
 go 1.13
 
-replace github.com/bwmarrin/discordgo => github.com/FedorLap2006/discordgo v0.22.1-0.20210217184539-8718e2d37898
-
 require (
 	cloud.google.com/go v0.78.0 // indirect
 	cloud.google.com/go/logging v1.3.0
@@ -26,7 +24,7 @@ require (
 	github.com/aws/aws-sdk-go v1.37.20 // indirect
 	github.com/badoux/checkmail v1.2.1
 	github.com/blend/go-sdk v1.1.1 // indirect
-	github.com/bwmarrin/discordgo v0.23.2
+	github.com/bwmarrin/discordgo v0.23.3-0.20210301043234-abe5ba6f0f66
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/cenkalti/backoff/v4 v4.1.0
 	github.com/deepmap/oapi-codegen v1.5.1
