@@ -80,7 +80,7 @@ func main() {
 
 func refreshCommands(session *discordgo.Session) error {
 
-	apiCommands, err := session.ApplicationCommands(config.DiscordBotClientID, config.DiscordGuildID)
+	apiCommands, err := session.ApplicationCommands(config.DiscordBotClientID, "")
 	if err != nil {
 		return err
 	}
@@ -90,7 +90,7 @@ func refreshCommands(session *discordgo.Session) error {
 		if _, ok := chatbot.CommandCache[apiCommand.Name]; !ok {
 
 			log.Info("Deleting dommand", zap.String("id", apiCommand.Name))
-			err = session.ApplicationCommandDelete(config.DiscordBotClientID, config.DiscordGuildID, apiCommand.ID)
+			err = session.ApplicationCommandDelete(config.DiscordBotClientID, "", apiCommand.ID)
 			if err != nil {
 				log.Err("Deleting command", zap.Error(err))
 			}
@@ -115,7 +115,7 @@ func refreshCommands(session *discordgo.Session) error {
 					Description: strings.ToUpper(string(localCommand.Type())) + ": " + localCommand.Description(),
 					Options:     localCommand.Slash(),
 				}
-				_, err = session.ApplicationCommandCreate(config.DiscordBotClientID, config.DiscordGuildID, command)
+				_, err = session.ApplicationCommandCreate(config.DiscordBotClientID, "", command)
 				if err != nil {
 					return err
 				}
@@ -140,7 +140,7 @@ func refreshCommands(session *discordgo.Session) error {
 				Description: strings.ToUpper(string(localCommand.Type())) + ": " + localCommand.Description(),
 				Options:     localCommand.Slash(),
 			}
-			_, err = session.ApplicationCommandCreate(config.DiscordBotClientID, config.DiscordGuildID, command)
+			_, err = session.ApplicationCommandCreate(config.DiscordBotClientID, "", command)
 			if err != nil {
 				log.Err("Adding command", zap.String("id", localCommand.ID()))
 				return
