@@ -1311,12 +1311,12 @@ func appPlayersAjaxHandler(limit bool) func(http.ResponseWriter, *http.Request) 
 
 	if limit {
 		group = "10m"
-		days = "8d" // Gets trimmed to 7 in JS
-		rolling = "144"
+		days = "8d"     // Gets trimmed to 7 in JS
+		rolling = "144" // 1 day
 	} else {
 		group = "1d"
 		days = "1825d"
-		rolling = "7"
+		rolling = "7" // 1 week
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
