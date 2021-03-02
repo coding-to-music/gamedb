@@ -82,7 +82,7 @@ func getArticles(offset int64, limit int64, filter bson.D, order bson.D, project
 
 	filter = append(filter, bson.E{Key: "feed_name", Value: bson.M{"$ne": "Gamemag.ru"}})
 
-	cur, ctx, err := find(CollectionAppArticles, offset, limit, order, filter, projection, nil)
+	cur, ctx, err := find(CollectionAppArticles, offset, limit, filter, order, projection, nil)
 	if err != nil {
 		return news, err
 	}

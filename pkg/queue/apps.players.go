@@ -120,7 +120,7 @@ func appPlayersHandler(message *rabbit.Message) {
 					{"player_peak_alltime_time", time.Now()},
 				}
 
-				_, err = mongo.UpdateOne(mongo.CollectionApps, filter, update)
+				_, err = mongo.UpdateOne(mongo.CollectionApps, filter, update, nil)
 				if err != nil {
 					log.ErrS(err, app.ID)
 					sendToRetryQueue(message)

@@ -95,7 +95,7 @@ func GetPackageApps(packageID int, offset int64, sort bson.D) (apps []PackageApp
 
 	var filter = bson.D{{"package_id", packageID}}
 
-	cur, ctx, err := find(CollectionPackageApps, offset, 100, sort, filter, nil, nil)
+	cur, ctx, err := find(CollectionPackageApps, offset, 100, filter, sort, nil, nil)
 	if err != nil {
 		return apps, err
 	}

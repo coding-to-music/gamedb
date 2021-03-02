@@ -172,7 +172,7 @@ func appAchievementsHandler(message *rabbit.Message) {
 		{"stats", stats},
 	}
 
-	_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", payload.AppID}}, updateApp)
+	_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", payload.AppID}}, updateApp, nil)
 	if err != nil {
 		log.ErrS(err, payload.AppID)
 		sendToRetryQueue(message)

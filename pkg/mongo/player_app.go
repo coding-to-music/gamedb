@@ -261,7 +261,7 @@ func GetAppOwners(appID int) ([]PlayerApp, error) {
 
 func getPlayerApps(offset int64, limit int64, filter bson.D, sort bson.D, projection bson.M, ops *options.FindOptions) (apps []PlayerApp, err error) {
 
-	cur, ctx, err := find(CollectionPlayerApps, offset, limit, sort, filter, projection, ops)
+	cur, ctx, err := find(CollectionPlayerApps, offset, limit, filter, sort, projection, ops)
 	if err != nil {
 		return apps, err
 	}

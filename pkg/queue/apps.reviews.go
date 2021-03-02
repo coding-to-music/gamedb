@@ -140,7 +140,7 @@ func appReviewsHandler(message *rabbit.Message) {
 		{"reviews_count", reviews.GetTotal()},
 	}
 
-	_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", payload.AppID}}, update)
+	_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", payload.AppID}}, update, nil)
 	if err != nil {
 		log.ErrS(err, payload.AppID)
 		sendToRetryQueue(message)

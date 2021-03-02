@@ -73,7 +73,7 @@ func packagePriceHandler(message *rabbit.Message) {
 			},
 		}
 
-		_, err = mongo.UpdateOne(mongo.CollectionPackages, bson.D{{"_id", payload.PackageID}}, update)
+		_, err = mongo.UpdateOne(mongo.CollectionPackages, bson.D{{"_id", payload.PackageID}}, update, nil)
 		if err != nil {
 			log.ErrS(err)
 			sendToRetryQueue(message)

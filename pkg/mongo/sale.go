@@ -189,7 +189,7 @@ func GetAllSales(offset int64, limit int64, filter bson.D, sort bson.D) (offers 
 
 func getSales(offset int64, limit int64, filter bson.D, sort bson.D, projection bson.M) (offers []Sale, err error) {
 
-	cur, ctx, err := find(CollectionAppSales, offset, limit, sort, filter, projection, nil)
+	cur, ctx, err := find(CollectionAppSales, offset, limit, filter, sort, projection, nil)
 	if err != nil {
 		return offers, err
 	}

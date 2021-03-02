@@ -275,21 +275,20 @@ func UpdateManyUnset(collection collection, columns bson.D) (resp *mongo.UpdateR
 }
 
 // Does not upsert
-func UpdateOne(collection collection, filter bson.D, update bson.D, ops ...*options.UpdateOptions) (resp *mongo.UpdateResult, err error) {
+func UpdateOne(collection collection, filter bson.D, update bson.D, ops *options.UpdateOptions) (resp *mongo.UpdateResult, err error) {
 
 	client, ctx, err := getMongo()
 	if err != nil {
 		return resp, nil
 	}
 
-	var updateOps *options.UpdateOptions
-	if len(ops) > 0 {
-		updateOps = ops[0]
+	if ops == nil {
+		ops = options.Update()
 	}
 
 	resp, err = client.Database(config.C.MongoDatabase, options.Database()).
 		Collection(collection.String()).
-		UpdateOne(ctx, filter, bson.M{"$set": update}, updateOps)
+		UpdateOne(ctx, filter, bson.M{"$set": update}, ops)
 
 	return resp, err
 }
@@ -378,7 +377,7 @@ func CountDocuments(collection collection, filter bson.D, ttl uint32) (count int
 }
 
 // Need to close cursor after calling this
-func find(collection collection, offset int64, limit int64, sort bson.D, filter bson.D, projection bson.M, ops *options.FindOptions) (cur *mongo.Cursor, ctx context.Context, err error) {
+func find(collection collection, offset int64, limit int64, filter bson.D, sort bson.D, projection bson.M, ops *options.FindOptions) (cur *mongo.Cursor, ctx context.Context, err error) {
 
 	if filter == nil {
 		filter = bson.D{}

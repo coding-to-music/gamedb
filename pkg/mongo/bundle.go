@@ -218,7 +218,7 @@ func GetBundlesByID(ids []int, projection bson.M) (bundles []Bundle, err error) 
 
 func GetBundles(offset int64, limit int64, sort bson.D, filter bson.D, projection bson.M) (bundles []Bundle, err error) {
 
-	cur, ctx, err := find(CollectionBundles, offset, limit, sort, filter, projection, nil)
+	cur, ctx, err := find(CollectionBundles, offset, limit, filter, sort, projection, nil)
 	if err != nil {
 		return bundles, err
 	}

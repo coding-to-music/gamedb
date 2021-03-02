@@ -171,7 +171,7 @@ func GetGroupPlayers(groupID string, offset int64, order bson.D) (players []Play
 
 func getPlayerGroups(offset int64, limit int64, filter bson.D, sort bson.D) (players []PlayerGroup, err error) {
 
-	cur, ctx, err := find(CollectionPlayerGroups, offset, limit, sort, filter, nil, nil)
+	cur, ctx, err := find(CollectionPlayerGroups, offset, limit, filter, sort, nil, nil)
 	if err != nil {
 		return players, err
 	}

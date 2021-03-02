@@ -42,7 +42,7 @@ func GetBundlePricesByID(bundleID int) (prices []BundlePrice, err error) {
 
 func getBundlePrices(filter, sort bson.D) (prices []BundlePrice, err error) {
 
-	cur, ctx, err := find(CollectionBundlePrices, 0, 0, sort, filter, nil, nil)
+	cur, ctx, err := find(CollectionBundlePrices, 0, 0, filter, sort, nil, nil)
 	if err != nil {
 		return prices, err
 	}

@@ -157,7 +157,7 @@ func GetPrices(offset int64, limit int64, filter bson.D) (prices []ProductPrice,
 
 func getProductPrices(filter bson.D, offset int64, limit int64, sort bson.D) (prices []ProductPrice, err error) {
 
-	cur, ctx, err := find(CollectionProductPrices, offset, limit, sort, filter, nil, nil)
+	cur, ctx, err := find(CollectionProductPrices, offset, limit, filter, sort, nil, nil)
 	if err != nil {
 		return prices, err
 	}

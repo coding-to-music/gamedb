@@ -176,7 +176,7 @@ func GetStat(typex StatsType, id int) (stat Stat, err error) {
 //
 func GetStats(offset int64, limit int64, filter bson.D, sort bson.D) (stats []Stat, err error) {
 
-	cur, ctx, err := find(CollectionStats, offset, limit, sort, filter, nil, options.Find())
+	cur, ctx, err := find(CollectionStats, offset, limit, filter, sort, nil, options.Find())
 	if err != nil {
 		return stats, err
 	}

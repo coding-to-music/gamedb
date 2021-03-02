@@ -150,7 +150,7 @@ func GetAppItems(offset int64, limit int64, filter bson.D, projection bson.M) (i
 
 	var sort = bson.D{{"item_def_id", 1}}
 
-	cur, ctx, err := find(CollectionAppItems, offset, limit, sort, filter, projection, nil)
+	cur, ctx, err := find(CollectionAppItems, offset, limit, filter, sort, projection, nil)
 	if err != nil {
 		return items, err
 	}

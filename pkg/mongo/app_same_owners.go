@@ -53,7 +53,7 @@ func ensureAppSameOwnersIndexes() {
 
 func GetAppSameOwners(appID int, limit int64) (sameOwners []AppSameOwners, err error) {
 
-	cur, ctx, err := find(CollectionAppSameOwners, 0, limit, bson.D{{"order", -1}}, bson.D{{"app_id", appID}}, nil, nil)
+	cur, ctx, err := find(CollectionAppSameOwners, 0, limit, bson.D{{"app_id", appID}}, bson.D{{"order", -1}}, nil, nil)
 	if err != nil {
 		return sameOwners, err
 	}

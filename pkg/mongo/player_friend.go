@@ -170,7 +170,7 @@ func GetFriends(playerID int64, offset int64, limit int64, sort bson.D, filter b
 
 	filter = append(bson.D{{"player_id", playerID}}, filter...)
 
-	cur, ctx, err := find(CollectionPlayerFriends, offset, limit, sort, filter, nil, nil)
+	cur, ctx, err := find(CollectionPlayerFriends, offset, limit, filter, sort, nil, nil)
 	if err != nil {
 		return friends, err
 	}

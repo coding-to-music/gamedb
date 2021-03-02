@@ -134,7 +134,7 @@ func GetPlayerWishlistAppsByPlayer(playerID int64, offset int64, limit int64, or
 
 func getPlayerWishlistApps(offset int64, limit int64, filter bson.D, sort bson.D, projection bson.M) (apps []PlayerWishlistApp, err error) {
 
-	cur, ctx, err := find(CollectionPlayerWishlistApps, offset, limit, sort, filter, projection, nil)
+	cur, ctx, err := find(CollectionPlayerWishlistApps, offset, limit, filter, sort, projection, nil)
 	if err != nil {
 		return apps, err
 	}

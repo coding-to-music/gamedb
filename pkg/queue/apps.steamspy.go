@@ -121,7 +121,7 @@ func appSteamspyHandler(message *rabbit.Message) {
 	filter := bson.D{{"_id", payload.AppID}}
 	update := bson.D{{"steam_spy", ss}}
 
-	_, err = mongo.UpdateOne(mongo.CollectionApps, filter, update)
+	_, err = mongo.UpdateOne(mongo.CollectionApps, filter, update, nil)
 	if err != nil {
 		log.ErrS(err, payload.AppID, u)
 		sendToRetryQueue(message)

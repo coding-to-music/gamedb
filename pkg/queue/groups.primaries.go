@@ -51,7 +51,7 @@ func groupPrimariesHandler(message *rabbit.Message) {
 		{"primaries", int(prims)},
 	}
 
-	_, err = mongo.UpdateOne(mongo.CollectionGroups, filter, update)
+	_, err = mongo.UpdateOne(mongo.CollectionGroups, filter, update, nil)
 	if err != nil {
 		log.ErrS(err, payload.GroupID)
 		sendToRetryQueue(message)

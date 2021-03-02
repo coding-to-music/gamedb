@@ -200,7 +200,7 @@ func playerGamesHandler(message *rabbit.Message) {
 	}
 
 	// Update player row
-	_, err = mongo.UpdateOne(mongo.CollectionPlayers, bson.D{{"_id", payload.PlayerID}}, updatePlayer)
+	_, err = mongo.UpdateOne(mongo.CollectionPlayers, bson.D{{"_id", payload.PlayerID}}, updatePlayer, nil)
 	if err != nil {
 		log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 		sendToRetryQueue(message)

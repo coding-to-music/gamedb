@@ -65,7 +65,7 @@ func appMorelikeHandler(message *rabbit.Message) {
 	filter := bson.D{{"_id", payload.AppID}}
 	update := bson.D{{"related_app_ids", relatedAppIDs}}
 
-	_, err = mongo.UpdateOne(mongo.CollectionApps, filter, update)
+	_, err = mongo.UpdateOne(mongo.CollectionApps, filter, update, nil)
 	if err != nil {
 		log.ErrS(err, payload.AppID)
 		sendToRetryQueue(message)

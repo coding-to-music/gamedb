@@ -43,7 +43,7 @@ func appSameownersHandler(message *rabbit.Message) {
 		var filter = bson.D{{"_id", payload.AppID}}
 		var update = bson.D{{"related_owners_app_ids_date", time.Now()}}
 
-		_, err = mongo.UpdateOne(mongo.CollectionApps, filter, update)
+		_, err = mongo.UpdateOne(mongo.CollectionApps, filter, update, nil)
 		if err != nil {
 			log.Err("Updating app", zap.Error(err), zap.Int("app", payload.AppID))
 		}

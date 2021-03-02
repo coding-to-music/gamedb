@@ -93,7 +93,7 @@ func playerAwardsHandler(message *rabbit.Message) {
 		{"awards_received_points", awardsReceivedPoints},
 	}
 
-	_, err = mongo.UpdateOne(mongo.CollectionPlayers, bson.D{{"_id", payload.PlayerID}}, update)
+	_, err = mongo.UpdateOne(mongo.CollectionPlayers, bson.D{{"_id", payload.PlayerID}}, update, nil)
 	if err != nil {
 		log.ErrS(err, payload.PlayerID)
 		sendToRetryQueue(message)

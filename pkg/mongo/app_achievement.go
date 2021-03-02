@@ -69,7 +69,7 @@ func (achievement *AppAchievement) Fill(appID int, response steamapi.SchemaForGa
 
 func GetAppAchievements(offset int64, limit int64, filter bson.D, sort bson.D) (achievements []AppAchievement, err error) {
 
-	cur, ctx, err := find(CollectionAppAchievements, offset, limit, sort, filter, nil, nil)
+	cur, ctx, err := find(CollectionAppAchievements, offset, limit, filter, sort, nil, nil)
 	if err != nil {
 		return achievements, err
 	}

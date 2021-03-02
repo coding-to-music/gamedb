@@ -541,10 +541,12 @@ func updateApp(app mongo.App, group mongo.Group) (err error) {
 		return nil
 	}
 
-	_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", app.ID}}, bson.D{
+	update := bson.D{
 		{"group_id", group.ID},
 		{"group_followers", group.Members},
-	})
+	}
+
+	_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", app.ID}}, update, nil)
 	return err
 }
 

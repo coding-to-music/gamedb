@@ -103,7 +103,7 @@ func GetRecentApps(playerID int64, offset int64, limit int64, sort bson.D) (apps
 
 	filter := bson.D{{"player_id", playerID}}
 
-	cur, ctx, err := find(CollectionPlayerAppsRecent, offset, limit, sort, filter, nil, nil)
+	cur, ctx, err := find(CollectionPlayerAppsRecent, offset, limit, filter, sort, nil, nil)
 	if err != nil {
 		return apps, err
 	}

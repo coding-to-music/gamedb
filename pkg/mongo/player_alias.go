@@ -72,7 +72,7 @@ func GetPlayerAliases(playerID int64, limit int64, afterTimestamp int64) (aliase
 		{"time", bson.M{"$gt": afterTimestamp}},
 	}
 
-	cur, ctx, err := find(CollectionPlayerAliases, 0, limit, bson.D{{"time", -1}}, filter, nil, nil)
+	cur, ctx, err := find(CollectionPlayerAliases, 0, limit, filter, bson.D{{"time", -1}}, nil, nil)
 	if err != nil {
 		return aliases, err
 	}

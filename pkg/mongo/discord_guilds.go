@@ -71,7 +71,7 @@ func GetGuilds(offset int64, limit int64, sort bson.D, filter bson.D) (guilds []
 		Strength: 2, // Case insensitive
 	})
 
-	cur, ctx, err := find(CollectionDiscordGuilds, offset, limit, sort, filter, nil, ops)
+	cur, ctx, err := find(CollectionDiscordGuilds, offset, limit, filter, sort, nil, ops)
 	if err != nil {
 		return guilds, err
 	}
