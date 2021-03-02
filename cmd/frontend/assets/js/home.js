@@ -390,7 +390,7 @@ if ($homePage.length > 0) {
                     series.push({
                         app: datum.key,
                         name: app.name,
-                        data: datum['value']['max_player_count'],
+                        data: datum['value']['max_moving_average'], // max_player_count
                         connectNulls: true,
                     });
                 }

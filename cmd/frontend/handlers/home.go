@@ -646,6 +646,7 @@ func homeNewReleasesHandler(w http.ResponseWriter, r *http.Request) {
 
 	builder := influxql.NewBuilder()
 	builder.AddSelect("max(player_count)", "max_player_count")
+	builder.AddSelect("MOVING_AVERAGE(max(\"player_count\"), 24)", "max_moving_average")
 	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
 	builder.AddWhereRaw(`"app_id" =~ /^(` + strings.Join(appIDs, "|") + `)$/`)
 	builder.AddWhere("time", ">", "now()-14d")
