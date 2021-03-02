@@ -61,6 +61,10 @@ func (app App) GetPlayersPeakWeek() int {
 	return app.PlayersCount
 }
 
+func (app App) GetGroupID() string {
+	return app.GroupID
+}
+
 func (app App) GetName() string {
 	return helpers.GetAppName(app.ID, app.Name)
 }

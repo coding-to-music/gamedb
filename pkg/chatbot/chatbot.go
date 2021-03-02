@@ -163,6 +163,7 @@ type App interface {
 	GetPrices() helpers.ProductPrices
 	GetReviewScore() string
 	GetReleaseDateNice() string
+	GetGroupID() string
 }
 
 type Player interface {
@@ -184,13 +185,20 @@ type Player interface {
 
 func getAppEmbed(commandID string, app App, code steamapi.ProductCC) *discordgo.MessageEmbed {
 
+	var image string
+	if app.GetPlayersPeakWeek() > 0 {
+		image = charts.GetAppPlayersChart(commandID, app.GetID(), "1d", "180d", "Players (6 Months)")
+	} else {
+		image = charts.GetGroupChart(commandID, app.GetGroupID(), "Followers")
+	}
+
 	return &discordgo.MessageEmbed{
 		Title:     app.GetName(),
 		URL:       app.GetPathAbsolute(),
 		Thumbnail: &discordgo.MessageEmbedThumbnail{URL: app.GetHeaderImage(), Width: 460, Height: 215},
 		Footer:    getFooter(),
 		Color:     greenHexDec,
-		Image:     &discordgo.MessageEmbedImage{URL: charts.GetAppPlayersChart(commandID, app.GetID(), "1d", "180d", "Players (6 Months)")},
+		Image:     &discordgo.MessageEmbedImage{URL: image},
 		Fields: []*discordgo.MessageEmbedField{
 			{
 				Name:   "Max Weekly Players",

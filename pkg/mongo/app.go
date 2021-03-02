@@ -252,6 +252,10 @@ func (app App) GetBackground() string {
 	return app.Background
 }
 
+func (app App) GetGroupID() string {
+	return app.GroupID
+}
+
 func (app App) GetTypeLower() (ret string) {
 
 	switch app.Type {
