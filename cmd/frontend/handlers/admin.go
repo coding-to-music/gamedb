@@ -49,6 +49,8 @@ func AdminRouter() http.Handler {
 	r.Get("/webhooks", adminWebhooksHandler)
 	r.Get("/webhooks.json", adminWebhooksAjaxHandler)
 	r.Get("/websockets", adminWebsocketsHandler)
+	r.Get("/discord-guilds", adminDiscordGuildsHandler)
+	r.Get("/discord-guilds.json", adminDiscordGuildsAjaxHandler)
 	r.Post("/queues", adminQueuesHandler)
 	r.Post("/settings", adminSettingsHandler)
 	return r
@@ -772,4 +774,73 @@ type adminWebsocketsTemplate struct {
 	globalTemplate
 	Websockets map[websockets.WebsocketPage]*websockets.Page
 	Total      int
+}
+
+func adminDiscordGuildsHandler(w http.ResponseWriter, r *http.Request) {
+
+	t := adminDiscordGuildsTemplate{}
+	t.fill(w, r, "admin_discord_guilds", "Admin", "Admin")
+
+	returnTemplate(w, r, t)
+}
+
+type adminDiscordGuildsTemplate struct {
+	globalTemplate
+}
+
+func adminDiscordGuildsAjaxHandler(w http.ResponseWriter, r *http.Request) {
+
+	query := datatable.NewDataTableQuery(r, false)
+
+	var wg sync.WaitGroup
+
+	// Get webhooks
+	var guilds []mongo.DiscordGuild
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		var columns = map[string]string{
+			"0": "name",
+			"1": "members",
+		}
+
+		guilds, err = mongo.GetGuilds(query.GetOffset64(), 100, query.GetOrderMongo(columns), nil)
+		if err != nil {
+			log.ErrS(err)
+		}
+	}()
+
+	// Get count
+	var count int64
+	wg.Add(1)
+	go func() {
+
+		defer wg.Done()
+
+		var err error
+		count, err = mongo.CountDocuments(mongo.CollectionDiscordGuilds, nil, 0)
+		if err != nil {
+			log.ErrS(err)
+		}
+	}()
+
+	// Wait
+	wg.Wait()
+
+	var response = datatable.NewDataTablesResponse(r, query, count, count, nil)
+	for _, guild := range guilds {
+
+		response.AddRow([]interface{}{
+			guild.ID,       // 0
+			guild.Name,     // 1
+			guild.Icon,     // 2
+			guild.Members,  // 3
+			guild.UpdateAt, // 4
+		})
+	}
+
+	returnJSON(w, r, response)
 }

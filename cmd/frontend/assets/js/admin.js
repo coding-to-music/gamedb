@@ -171,6 +171,39 @@ if ($('#admin-users-page').length > 0) {
     });
 }
 
+if ($('#admin-discord-guilds-page').length > 0) {
+
+    const options = {
+        "order": [[1, 'desc']],
+        "columnDefs": [
+            // Icon / Guild Name
+            {
+                "targets": 0,
+                "render": function (data, type, row) {
+                    return '<a class="icon-name"><div class="icon"><img data-lazy="' + row[2] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '</div></a>'
+                },
+                "createdCell": function (td, cellData, rowData, row, col) {
+                    $(td).addClass('img');
+                },
+                "orderSequence": ["asc"],
+            },
+            // Members
+            {
+                "targets": 1,
+                "render": function (data, type, row) {
+                    return row[3].toLocaleString();
+                },
+                "orderSequence": ["desc"],
+            },
+        ]
+    };
+
+    const $table = $('table.table');
+    const dt = $table.gdbTable({
+        tableOptions: options,
+    });
+}
+
 if ($('#admin-consumers-page').length > 0) {
 
     const options = {

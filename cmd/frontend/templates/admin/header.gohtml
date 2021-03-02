@@ -67,6 +67,14 @@
                 {{end}}
             </li>
 
+            <li class="nav-item">
+                {{if endsWith .Path "/discord-guilds" }}
+                    <span class="nav-link active" role="tab">Discord Guilds</span>
+                {{else}}
+                    <a class="nav-link" href="/admin/discord-guilds" role="tab">Discord Guilds</a>
+                {{end}}
+            </li>
+
         </ul>
     </div>
 

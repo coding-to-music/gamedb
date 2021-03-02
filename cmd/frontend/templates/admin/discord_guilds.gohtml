@@ -1,0 +1,32 @@
+{{define "admin_discord_guilds"}}
+    {{ template "header" . }}
+
+    <div class="container" id="admin-discord-guilds-page">
+
+        {{ template "flashes" . }}
+
+        <div class="card">
+            {{ template "admin_header" . }}
+            <div class="card-body">
+
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped table-counts" data-row-type="guilds" data-path="/admin/discord-guilds.json">
+                        <thead class="thead-light">
+                        <tr>
+                            <th scope="col">Guild</th>
+                            <th scope="col">Members</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    {{ template "footer" . }}
+{{end}}
