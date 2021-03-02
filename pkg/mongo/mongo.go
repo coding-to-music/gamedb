@@ -275,16 +275,21 @@ func UpdateManyUnset(collection collection, columns bson.D) (resp *mongo.UpdateR
 }
 
 // Does not upsert
-func UpdateOne(collection collection, filter bson.D, update bson.D) (resp *mongo.UpdateResult, err error) {
+func UpdateOne(collection collection, filter bson.D, update bson.D, ops ...*options.UpdateOptions) (resp *mongo.UpdateResult, err error) {
 
 	client, ctx, err := getMongo()
 	if err != nil {
 		return resp, nil
 	}
 
+	var updateOps *options.UpdateOptions
+	if len(ops) > 0 {
+		updateOps = ops[0]
+	}
+
 	resp, err = client.Database(config.C.MongoDatabase, options.Database()).
 		Collection(collection.String()).
-		UpdateOne(ctx, filter, bson.M{"$set": update}, options.Update())
+		UpdateOne(ctx, filter, bson.M{"$set": update}, updateOps)
 
 	return resp, err
 }

@@ -19,6 +19,8 @@ import (
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	influx "github.com/influxdata/influxdb1-client"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.uber.org/zap"
 )
 
@@ -229,8 +231,43 @@ func websocketServer() (session *discordgo.Session, err error) {
 		}
 	})
 
+	// On new messages
+	session.AddHandler(func(s *discordgo.Session, event *discordgo.GuildCreate) {
+		updateGuildDetailsHandler(event.Guild)
+	})
+	session.AddHandler(func(s *discordgo.Session, event *discordgo.GuildDelete) {
+		updateGuildDetailsHandler(event.Guild)
+	})
+	session.AddHandler(func(s *discordgo.Session, event *discordgo.GuildUpdate) {
+		updateGuildDetailsHandler(event.Guild)
+	})
+
+	session.Identify.Intents = discordgo.IntentsGuildMessages | discordgo.IntentsGuildIntegrations
+
 	log.Info("Starting chatbot websocket connection")
 	return session, session.Open()
+}
+
+func updateGuildDetailsHandler(guild *discordgo.Guild) {
+
+	if guild.MemberCount == 0 {
+		return
+	}
+
+	mongoGuild := mongo.DiscordGuild{
+		ID:      guild.ID,
+		Name:    guild.Name,
+		Icon:    guild.IconURL(),
+		Members: guild.MemberCount,
+	}
+
+	ops := options.Update()
+	ops.SetUpsert(true)
+
+	_, err := mongo.UpdateOne(mongo.CollectionDiscordGuilds, bson.D{{"_id", guild.ID}}, mongoGuild.BSON(), ops)
+	if err != nil {
+		log.Err("Updating guild row", zap.Error(err))
+	}
 }
 
 func isChannelPrivateMessage(s *discordgo.Session, m *discordgo.MessageCreate) (bool, error) {
@@ -315,7 +352,7 @@ func saveToDB(command chatbot.Command, isSlash bool, wasSuccess *bool, message, 
 	}
 
 	// Websocket
-	guilds, err := mongo.GetGuilds([]string{row.GuildID})
+	guilds, err := mongo.GetGuildsByIDs([]string{row.GuildID})
 	if err != nil {
 		log.ErrS(err)
 	}

@@ -85,7 +85,7 @@ func chatBotRecentHandler(w http.ResponseWriter, r *http.Request) {
 		guildIDs = append(guildIDs, v.GuildID)
 	}
 
-	guilds, err := mongo.GetGuilds(guildIDs)
+	guilds, err := mongo.GetGuildsByIDs(guildIDs)
 	if err != nil {
 		log.ErrS(err)
 	}
