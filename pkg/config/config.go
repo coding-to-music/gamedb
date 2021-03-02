@@ -14,9 +14,8 @@ const (
 	EnvLocal    = "local"
 	EnvConsumer = "consumer"
 
-	DiscordAdminID     = "145456943912189952"
-	DiscordGuildID     = "407493776597057538"
-	DiscordBotClientID = "567257603185311745"
+	DiscordAdminID = "145456943912189952"
+	DiscordGuildID = "407493776597057538"
 )
 
 var ErrMissingEnvironmentVariable = errors.New("missing env var")
@@ -40,7 +39,8 @@ type Config struct {
 	// Discord
 	DiscordChangesBotToken string `envconfig:"DISCORD_CHANGES_BOT_TOKEN"` // Changes
 	DiscordChatBotToken    string `envconfig:"DISCORD_BOT_TOKEN"`         // Chat Bot
-	DiscordOChatBotPublKey string `envconfig:"DISCORD_BOT_PUBLIC_KEY"`    // Chat Bot
+	DiscordChatBotPublKey  string `envconfig:"DISCORD_BOT_PUBLIC_KEY"`    // Chat Bot
+	DiscordChatBotClientID string `envconfig:"DISCORD_BOT_CLIENT_ID"`     // Chat Bot
 	DiscordClientID        string `envconfig:"DISCORD_CLIENT_ID"`         // OAuth
 	DiscordClientSescret   string `envconfig:"DISCORD_SECRET"`            // OAuth
 	DiscordOAuthBotToken   string `envconfig:"DISCORD_OAUTH_BOT_TOKEN"`   // Oauth
@@ -194,7 +194,7 @@ func Init(ip string) (err error) {
 	C.DiscordServerInviteURL = "https://discord.gg/c5zrcus"
 
 	q := url.Values{}
-	q.Set("client_id", DiscordBotClientID)
+	q.Set("client_id", C.DiscordChatBotClientID)
 	q.Set("permissions", "0")
 	q.Set("scope", strings.Join([]string{"bot", "applications.commands"}, " "))
 
