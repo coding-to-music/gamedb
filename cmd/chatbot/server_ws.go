@@ -72,7 +72,7 @@ func websocketServer() (session *discordgo.Session, err error) {
 
 		// Save stats
 		var success bool
-		defer saveToDB(command, true, success, argumentsString(i), i.GuildID, i.ChannelID, i.Member.User)
+		defer saveToDB(command, true, &success, argumentsString(i), i.GuildID, i.ChannelID, i.Member.User)
 
 		// Typing notification
 		// todo Remove this when slash commands have `thinking`
@@ -173,7 +173,7 @@ func websocketServer() (session *discordgo.Session, err error) {
 
 					// Save stats
 					var success bool
-					defer saveToDB(command, false, success, msg, m.GuildID, m.ChannelID, m.Author)
+					defer saveToDB(command, false, &success, msg, m.GuildID, m.ChannelID, m.Author)
 
 					// Typing notification
 					err = s.ChannelTyping(m.ChannelID)
@@ -260,7 +260,7 @@ func getProdCC(command chatbot.Command, authorID string) steamapi.ProductCC {
 	return code
 }
 
-func saveToDB(command chatbot.Command, isSlash, wasSuccess bool, message, guildID, channelID string, user *discordgo.User) {
+func saveToDB(command chatbot.Command, isSlash bool, wasSuccess *bool, message, guildID, channelID string, user *discordgo.User) {
 
 	if user.ID == config.DiscordAdminID {
 		return
@@ -283,7 +283,7 @@ func saveToDB(command chatbot.Command, isSlash, wasSuccess bool, message, guildI
 			"author_id":  user.ID,
 			"command_id": command.ID(),
 			"slash":      strconv.FormatBool(isSlash),
-			"success":    strconv.FormatBool(wasSuccess),
+			"success":    strconv.FormatBool(*wasSuccess),
 		},
 		Fields: map[string]interface{}{
 			"request": 1,
