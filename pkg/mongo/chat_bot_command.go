@@ -21,54 +21,56 @@ type ChatBotCommand struct {
 	Time         time.Time `bson:"time"`
 }
 
-func (command ChatBotCommand) BSON() bson.D {
+func (c ChatBotCommand) BSON() bson.D {
+
+	c.Time = time.Now()
 
 	return bson.D{
-		{"guild_id", command.GuildID},
-		{"channel_id", command.ChannelID},
-		{"author_id", command.AuthorID},
-		{"command_id", command.CommandID},
-		{"author_name", command.AuthorName},
-		{"author_avatar", command.AuthorAvatar},
-		{"message", command.Message},
-		{"slash", command.Slash},
-		{"time", command.Time},
+		{"guild_id", c.GuildID},
+		{"channel_id", c.ChannelID},
+		{"author_id", c.AuthorID},
+		{"command_id", c.CommandID},
+		{"author_name", c.AuthorName},
+		{"author_avatar", c.AuthorAvatar},
+		{"message", c.Message},
+		{"slash", c.Slash},
+		{"time", c.Time},
 	}
 }
 
-func (command ChatBotCommand) GetAvatar() string {
+func (c ChatBotCommand) GetAvatar() string {
 
-	if command.AuthorAvatar == "" {
-		command.AuthorAvatar = "/assets/img/discord.png"
+	if c.AuthorAvatar == "" {
+		c.AuthorAvatar = "/assets/img/discord.png"
 	}
 
-	return command.AuthorAvatar
+	return c.AuthorAvatar
 }
 
-func (command ChatBotCommand) GetTableRowJSON(guilds map[string]DiscordGuild) []interface{} {
+func (c ChatBotCommand) GetTableRowJSON(guilds map[string]DiscordGuild) []interface{} {
 
 	return []interface{}{
-		command.AuthorID,                     // 0
-		command.AuthorName,                   // 1
-		command.GetAvatar(),                  // 2
-		command.GetCommand(),                 // 3
-		command.Time.Unix(),                  // 4
-		command.Time.Format(helpers.DateSQL), // 5
-		guilds[command.GuildID].Name,         // 6
+		c.AuthorID,                     // 0
+		c.AuthorName,                   // 1
+		c.GetAvatar(),                  // 2
+		c.GetCommand(),                 // 3
+		c.Time.Unix(),                  // 4
+		c.Time.Format(helpers.DateSQL), // 5
+		guilds[c.GuildID].Name,         // 6
 	}
 }
 
-func (command ChatBotCommand) GetCommand() string {
+func (c ChatBotCommand) GetCommand() string {
 
-	if command.Slash {
-		return "/" + command.Message
+	if c.Slash {
+		return "/" + c.Message
 	}
 
-	if strings.HasPrefix(command.Message, "!") {
-		return strings.Replace(command.Message, "!", ".", 1)
+	if strings.HasPrefix(c.Message, "!") {
+		return strings.Replace(c.Message, "!", ".", 1)
 	}
 
-	return command.Message
+	return c.Message
 }
 
 func GetChatBotCommandsRecent() (commands []ChatBotCommand, err error) {
