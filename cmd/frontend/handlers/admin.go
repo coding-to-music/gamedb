@@ -805,6 +805,7 @@ func adminDiscordGuildsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var columns = map[string]string{
 			"0": "name",
 			"1": "members",
+			"2": "requests",
 		}
 
 		guilds, err = mongo.GetGuilds(query.GetOffset64(), 100, query.GetOrderMongo(columns), nil)
@@ -838,7 +839,7 @@ func adminDiscordGuildsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			guild.Name,     // 1
 			guild.Icon,     // 2
 			guild.Members,  // 3
-			guild.UpdateAt, // 4
+			guild.Requests, // 4
 		})
 	}
 

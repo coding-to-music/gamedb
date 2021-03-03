@@ -185,7 +185,7 @@ if ($('#admin-discord-guilds-page').length > 0) {
                 "createdCell": function (td, cellData, rowData, row, col) {
                     $(td).addClass('img');
                 },
-                "orderSequence": ["asc"],
+                "orderSequence": ["asc", "desc"],
             },
             // Members
             {
@@ -193,7 +193,15 @@ if ($('#admin-discord-guilds-page').length > 0) {
                 "render": function (data, type, row) {
                     return row[3].toLocaleString();
                 },
-                "orderSequence": ["desc"],
+                "orderSequence": ["desc", "asc"],
+            },
+            // Requests
+            {
+                "targets": 2,
+                "render": function (data, type, row) {
+                    return row[4].toLocaleString();
+                },
+                "orderSequence": ["desc", "asc"],
             },
         ]
     };
