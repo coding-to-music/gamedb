@@ -13,6 +13,7 @@ import (
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/geo"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/crons"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/ldflags"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -23,7 +24,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/oauth"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/steam"
-	"github.com/gamedb/gamedb/pkg/tasks"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/go-chi/chi/v5"
 	"go.mongodb.org/mongo-driver/bson"
@@ -424,8 +424,8 @@ func adminTasksHandler(w http.ResponseWriter, r *http.Request) {
 
 		c := r.URL.Query().Get("run")
 
-		if val, ok := tasks.TaskRegister[c]; ok {
-			go tasks.Run(val)
+		if val, ok := crons.TaskRegister[c]; ok {
+			go crons.Run(val)
 		}
 
 		w.Header().Set("Content-Type", "text/plain")
@@ -444,26 +444,26 @@ func adminTasksHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, "admin_tasks", "Admin", "Admin")
 	t.hideAds = true
 
-	var grouped = map[tasks.TaskGroup][]adminTaskTemplate{}
+	var grouped = map[crons.TaskGroup][]adminTaskTemplate{}
 
-	for _, v := range tasks.TaskRegister {
+	for _, v := range crons.TaskRegister {
 		grouped[v.Group()] = append(grouped[v.Group()], adminTaskTemplate{
 			Task: v,
-			Bad:  tasks.Bad(v),
-			Next: tasks.Next(v),
-			Prev: tasks.Prev(v),
+			Bad:  crons.Bad(v),
+			Next: crons.Next(v),
+			Prev: crons.Prev(v),
 		})
 	}
 
 	t.Tasks = []adminTaskListTemplate{
-		{Tasks: grouped[tasks.TaskGroupApps], Title: "Apps"},
-		{Tasks: grouped[tasks.TaskGroupBundles], Title: "Bundles"},
-		{Tasks: grouped[tasks.TaskGroupPackages], Title: "Packages"},
-		{Tasks: grouped[tasks.TaskGroupGroups], Title: "Groups"},
-		{Tasks: grouped[tasks.TaskGroupPlayers], Title: "Players"},
-		{Tasks: grouped[tasks.TaskGroupBadges], Title: "Badges"},
-		{Tasks: grouped[tasks.TaskGroupNews], Title: "News"},
-		{Tasks: grouped[tasks.TaskGroupElastic], Title: "Elastic"},
+		{Tasks: grouped[crons.TaskGroupApps], Title: "Apps"},
+		{Tasks: grouped[crons.TaskGroupBundles], Title: "Bundles"},
+		{Tasks: grouped[crons.TaskGroupPackages], Title: "Packages"},
+		{Tasks: grouped[crons.TaskGroupGroups], Title: "Groups"},
+		{Tasks: grouped[crons.TaskGroupPlayers], Title: "Players"},
+		{Tasks: grouped[crons.TaskGroupBadges], Title: "Badges"},
+		{Tasks: grouped[crons.TaskGroupNews], Title: "News"},
+		{Tasks: grouped[crons.TaskGroupElastic], Title: "Elastic"},
 		{Tasks: grouped[""], Title: "Other"},
 	}
 
@@ -490,7 +490,7 @@ type adminTaskListTemplate struct {
 }
 
 type adminTaskTemplate struct {
-	Task tasks.TaskInterface
+	Task crons.TaskInterface
 	Bad  bool
 	Next time.Time
 	Prev time.Time

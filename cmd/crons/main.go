@@ -5,12 +5,12 @@ import (
 	_ "net/http/pprof"
 
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/crons"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/queue"
-	"github.com/gamedb/gamedb/pkg/tasks"
 	"github.com/robfig/cron/v3"
 )
 
@@ -44,14 +44,14 @@ func main() {
 
 	c := cron.New(
 		cron.WithLogger(cronLogger{}),
-		cron.WithParser(tasks.Parser),
+		cron.WithParser(crons.Parser),
 	)
 
-	for _, task := range tasks.TaskRegister {
+	for _, task := range crons.TaskRegister {
 		// In a func here so `task` gets copied into a new memory location and can not be replaced at a later time
-		func(task tasks.TaskInterface) {
+		func(task crons.TaskInterface) {
 			if task.Cron() != "" {
-				_, err := c.AddFunc(string(task.Cron()), func() { tasks.Run(task) })
+				_, err := c.AddFunc(string(task.Cron()), func() { crons.Run(task) })
 				if err != nil {
 					log.ErrS(err, task.ID())
 				}
