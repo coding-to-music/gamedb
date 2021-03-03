@@ -315,7 +315,7 @@ func saveToDB(command chatbot.Command, isSlash bool, wasSuccess *bool, message, 
 		log.ErrS(err)
 	}
 
-	var row = mongo.ChatBotCommand{
+	var row = mongo.DiscordMessage{
 		GuildID:      guildID,
 		ChannelID:    channelID,
 		AuthorID:     user.ID,

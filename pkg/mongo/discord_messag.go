@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-type ChatBotCommand struct {
+type DiscordMessage struct {
 	GuildID      string    `bson:"guild_id"`
 	ChannelID    string    `bson:"channel_id"`
 	AuthorID     string    `bson:"author_id"`
@@ -21,7 +21,7 @@ type ChatBotCommand struct {
 	Time         time.Time `bson:"time"`
 }
 
-func (c ChatBotCommand) BSON() bson.D {
+func (c DiscordMessage) BSON() bson.D {
 
 	c.Time = time.Now()
 
@@ -38,7 +38,7 @@ func (c ChatBotCommand) BSON() bson.D {
 	}
 }
 
-func (c ChatBotCommand) GetAvatar() string {
+func (c DiscordMessage) GetAvatar() string {
 
 	if c.AuthorAvatar == "" {
 		c.AuthorAvatar = "/assets/img/discord.png"
@@ -47,7 +47,7 @@ func (c ChatBotCommand) GetAvatar() string {
 	return c.AuthorAvatar
 }
 
-func (c ChatBotCommand) GetTableRowJSON(guilds map[string]DiscordGuild) []interface{} {
+func (c DiscordMessage) GetTableRowJSON(guilds map[string]DiscordGuild) []interface{} {
 
 	return []interface{}{
 		c.AuthorID,                     // 0
@@ -60,7 +60,7 @@ func (c ChatBotCommand) GetTableRowJSON(guilds map[string]DiscordGuild) []interf
 	}
 }
 
-func (c ChatBotCommand) GetCommand() string {
+func (c DiscordMessage) GetCommand() string {
 
 	if c.Slash {
 		return "/" + c.Message
@@ -73,7 +73,7 @@ func (c ChatBotCommand) GetCommand() string {
 	return c.Message
 }
 
-func GetChatBotCommandsRecent() (commands []ChatBotCommand, err error) {
+func GetChatBotCommandsRecent() (commands []DiscordMessage, err error) {
 
 	cur, ctx, err := find(CollectionChatBotCommands, 0, 100, nil, bson.D{{"_id", -1}}, nil, nil)
 	if err != nil {
@@ -84,7 +84,7 @@ func GetChatBotCommandsRecent() (commands []ChatBotCommand, err error) {
 
 	for cur.Next(ctx) {
 
-		var command ChatBotCommand
+		var command DiscordMessage
 		err := cur.Decode(&command)
 		if err != nil {
 			log.ErrS(err)
