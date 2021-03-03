@@ -293,21 +293,6 @@ func UpdateOne(collection collection, filter bson.D, update bson.D, ops *options
 	return resp, err
 }
 
-// DOES upsert
-func UpdateOneWithInsert(collection collection, filter bson.D, update bson.D, onInsert bson.D) (resp *mongo.UpdateResult, err error) {
-
-	client, ctx, err := getMongo()
-	if err != nil {
-		return resp, nil
-	}
-
-	resp, err = client.Database(config.C.MongoDatabase, options.Database()).
-		Collection(collection.String()).
-		UpdateOne(ctx, filter, bson.M{"$set": update, "$setOnInsert": onInsert}, options.Update().SetUpsert(true))
-
-	return resp, err
-}
-
 // Will skip documents that already exist
 func InsertMany(collection collection, documents []Document) (resp *mongo.InsertManyResult, err error) {
 
