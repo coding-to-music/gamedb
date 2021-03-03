@@ -65,7 +65,10 @@ func SetInterface(key string, val interface{}, exp uint32) (err error) {
 	return err
 }
 
-var ErrNotPointer = errors.New("value must be a pointer")
+var (
+	ErrNotPointer = errors.New("value must be a pointer")
+	ErrNoSet      = errors.New("return result but don't save")
+)
 
 func GetSetInterface(item Item, value interface{}, callback func() (interface{}, error)) (err error) {
 
@@ -77,8 +80,13 @@ func GetSetInterface(item Item, value interface{}, callback func() (interface{},
 	if err == mc.ErrNotFound {
 
 		var s interface{}
+		var set = true
 
 		s, err = callback()
+		if err == ErrNoSet {
+			set = false
+			err = nil
+		}
 		if err != nil {
 			return err
 		}
@@ -90,6 +98,10 @@ func GetSetInterface(item Item, value interface{}, callback func() (interface{},
 		err = helpers.MarshalUnmarshal(s, value)
 		if err != nil {
 			return err
+		}
+
+		if !set {
+			return nil
 		}
 
 		return SetInterface(item.Key, s, item.Expiration)

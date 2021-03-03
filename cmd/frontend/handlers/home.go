@@ -182,6 +182,10 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 
+			if len(vdf.Channel.Seq.Li) == 0 {
+				return topSellers, memcache.ErrNoSet
+			}
+
 			return topSellers, nil
 		}
 
