@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
@@ -49,33 +48,6 @@ func (guild DiscordGuild) BSON() bson.D {
 		{"requests", guild.Requests},
 		{"update_at", guild.UpdateAt},
 	}
-}
-
-func (guild *DiscordGuild) Update() (err error) {
-
-	discord, err := discordgo.New("Bot " + config.C.DiscordChatBotToken)
-	if err != nil {
-		return err
-	}
-
-	resp, err := discord.GuildPreview(guild.ID)
-	if err != nil {
-		return err
-	}
-
-	if resp.ApproximateMemberCount == 0 {
-		return
-	}
-
-	fullGuild := discordgo.Guild{Icon: resp.Icon} // todo, remove when pr gets merged in
-
-	guild.ID = resp.ID
-	guild.Name = resp.Name
-	guild.Icon = fullGuild.IconURL()
-	guild.Members = resp.ApproximateMemberCount
-
-	_, err = ReplaceOne(CollectionDiscordGuilds, bson.D{{"_id", resp.ID}}, guild)
-	return err
 }
 
 func GetGuilds(offset int64, limit int64, sort bson.D, filter bson.D) (guilds []DiscordGuild, err error) {

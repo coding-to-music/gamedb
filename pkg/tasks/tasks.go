@@ -18,6 +18,7 @@ type TaskTime string
 const ( //                                       min  hour
 	CronTimeUpdateLastUpdatedPlayers TaskTime = "*    *"
 	CronTimeNewsLatest               TaskTime = "*    *"
+	CronTimeUpdateDiscordGuild       TaskTime = "*    *"
 	CronTimeSteamClientPlayers       TaskTime = "*/10 *"
 	CronTimeAppPlayers               TaskTime = "*/10 *"
 	CronTimeAppPlayersTop            TaskTime = "*/10 *"
@@ -77,6 +78,7 @@ var (
 		&BadgesUpdateRandom{},
 		&BundlesQueueAll{},
 		&BundlesQueueElastic{},
+		&DiscordUpdateGuild{},
 		&GlobalSteamStats{},
 		&GroupsQueueElastic{},
 		&GroupsQueuePrimaries{},
