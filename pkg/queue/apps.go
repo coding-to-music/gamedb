@@ -7,7 +7,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Jleagle/go-durationfmt"
 	"github.com/Jleagle/rabbit-go"
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/Jleagle/steam-go/steamvdf"
@@ -65,12 +64,13 @@ func appHandler(message *rabbit.Message) {
 	// Skip if updated in last day, unless its from PICS
 	if !config.IsLocal() && !app.ShouldUpdate() && app.ChangeNumber >= payload.ChangeNumber {
 
-		s, err := durationfmt.Format(time.Since(app.UpdatedAt), "%hh %mm")
-		if err != nil {
-			log.ErrS(err)
-		}
+		// s, err := durationfmt.Format(time.Since(app.UpdatedAt), "%hh %mm")
+		// if err != nil {
+		// 	log.ErrS(err)
+		// }
+		//
+		// log.InfoS("Skipping app, updated " + s + " ago")
 
-		log.InfoS("Skipping app, updated " + s + " ago")
 		message.Ack()
 		return
 	}
