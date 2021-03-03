@@ -33,29 +33,20 @@ func websocketServer() (session *discordgo.Session, err error) {
 		return nil, err
 	}
 
-	session.AddHandler(interactionHandler)
-
-	session.AddHandler(messageHandler)
-
-	session.AddHandler(func(s *discordgo.Session, event *discordgo.GuildCreate) {
-		updateGuildDetailsHandler(event.Guild)
-	})
-	session.AddHandler(func(s *discordgo.Session, event *discordgo.GuildDelete) {
-		updateGuildDetailsHandler(event.Guild)
-	})
-	session.AddHandler(func(s *discordgo.Session, event *discordgo.GuildUpdate) {
-		updateGuildDetailsHandler(event.Guild)
-	})
-
-	session.Identify.Intents = discordgo.IntentsGuildMessages | discordgo.IntentsGuildIntegrations
+	session.AddHandler(func(s *discordgo.Session, e *discordgo.InteractionCreate) { interactionHandler(s, e.Interaction) })
+	session.AddHandler(func(s *discordgo.Session, e *discordgo.MessageCreate) { messageHandler(s, e.Message) })
+	session.AddHandler(func(s *discordgo.Session, e *discordgo.GuildCreate) { guildHandler(e.Guild) }) // When bot joins a guild
 
 	log.Info("Starting chatbot websocket connection")
-	return session, session.Open()
+	err = session.Open()
+	if err != nil {
+		return nil, err
+	}
+
+	return session, nil
 }
 
-func interactionHandler(s *discordgo.Session, interaction *discordgo.InteractionCreate) {
-
-	i := interaction.Interaction
+func interactionHandler(s *discordgo.Session, i *discordgo.Interaction) {
 
 	// Ignore PMs
 	// member is sent when the command is invoked in a guild, and user is sent when invoked in a DM
@@ -160,7 +151,7 @@ func interactionHandler(s *discordgo.Session, interaction *discordgo.Interaction
 	success = true
 }
 
-func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
+func messageHandler(s *discordgo.Session, m *discordgo.Message) {
 
 	// Don't reply to bots
 	if m.Author.Bot {
@@ -175,7 +166,7 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 	// Scan commands
 	for _, command := range chatbot.CommandRegister {
 
-		msg := strings.TrimSpace(m.Message.Content)
+		msg := strings.TrimSpace(m.Content)
 
 		if chatbot.RegexCache[command.Regex()].MatchString(msg) {
 
@@ -203,7 +194,7 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 				defer saveToDB(command, false, &success, msg, m.GuildID, m.ChannelID, m.Author)
 
 				// Typing notification
-				err = s.ChannelTyping(m.ChannelID)
+				err := s.ChannelTyping(m.ChannelID)
 				discordError(err)
 
 				// Get user settings
@@ -256,7 +247,7 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 }
 
-func updateGuildDetailsHandler(guild *discordgo.Guild) {
+func guildHandler(guild *discordgo.Guild) {
 
 	if guild.MemberCount == 0 {
 		return
