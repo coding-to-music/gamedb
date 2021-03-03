@@ -72,7 +72,7 @@ func syncSubAppInner(pack *mongo.Package) {
 		}
 
 		if len(update) > 0 {
-			_, err = mongo.UpdateOne(mongo.CollectionPackages, bson.D{{"_id", pack.ID}}, update, nil)
+			_, err = mongo.UpdateOne(mongo.CollectionPackages, bson.D{{"_id", pack.ID}}, update)
 			if err != nil {
 				log.ErrS(err)
 			}

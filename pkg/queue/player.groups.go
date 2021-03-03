@@ -155,7 +155,7 @@ func playersGroupsHandler(message *rabbit.Message) {
 		{"groups_count", len(newGroupsMap)},
 	}
 
-	_, err = mongo.UpdateOne(mongo.CollectionPlayers, bson.D{{"_id", payload.Player.ID}}, update, nil)
+	_, err = mongo.UpdateOne(mongo.CollectionPlayers, bson.D{{"_id", payload.Player.ID}}, update)
 	if err != nil {
 		log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 		sendToRetryQueue(message)

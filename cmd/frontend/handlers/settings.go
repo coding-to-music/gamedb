@@ -411,7 +411,7 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 		filter := bson.D{{"_id", playerID}}
 		update := bson.D{{"private", r.PostForm.Get("private") == "1"}}
 
-		_, err = mongo.UpdateOne(mongo.CollectionPlayers, filter, update, nil)
+		_, err = mongo.UpdateOne(mongo.CollectionPlayers, filter, update)
 		if err != nil {
 			log.ErrS(err)
 			session.SetFlash(r, session.SessionBad, "We had trouble saving your settings")

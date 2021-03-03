@@ -76,7 +76,7 @@ func appTwitchHandler(message *rabbit.Message) {
 		{"twitch_url", resp.Data.Games[0].Name},
 	}
 
-	_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", payload.AppID}}, update, nil)
+	_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", payload.AppID}}, update)
 	if err != nil {
 		log.ErrS(err, payload.AppID)
 		sendToRetryQueue(message)

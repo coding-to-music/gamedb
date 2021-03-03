@@ -130,7 +130,7 @@ func appNewsHandler(message *rabbit.Message) {
 	// Update app row
 	newsIDs = helpers.UniqueInt64(newsIDs)
 
-	_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", app.ID}}, bson.D{{"news_ids", newsIDs}}, nil)
+	_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", app.ID}}, bson.D{{"news_ids", newsIDs}})
 	if err != nil {
 		log.ErrS(err, payload.AppID)
 		sendToRetryQueue(message)

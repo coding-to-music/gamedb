@@ -133,7 +133,7 @@ func playersWishlistHandler(message *rabbit.Message) {
 		{"wishlist_apps_count", len(resp.Items)},
 	}
 
-	_, err = mongo.UpdateOne(mongo.CollectionPlayers, bson.D{{"_id", payload.PlayerID}}, update, nil)
+	_, err = mongo.UpdateOne(mongo.CollectionPlayers, bson.D{{"_id", payload.PlayerID}}, update)
 	if err != nil {
 		log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 		sendToRetryQueue(message)

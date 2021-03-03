@@ -143,7 +143,7 @@ func statsHandler(message *rabbit.Message) {
 		{Key: "max_discount", Value: maxDiscount},
 	}
 
-	_, err = mongo.UpdateOne(mongo.CollectionStats, bson.D{{"_id", stat.GetKey()}}, update, nil)
+	_, err = mongo.UpdateOne(mongo.CollectionStats, bson.D{{"_id", stat.GetKey()}}, update)
 	if err != nil {
 		log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 		sendToRetryQueue(message)

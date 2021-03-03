@@ -32,7 +32,7 @@ func (saveFromPics) run() {
 			icon := app.Common.GetValue("icon")
 			if icon != "" {
 
-				_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", app.ID}}, bson.D{{"icon", icon}}, nil)
+				_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", app.ID}}, bson.D{{"icon", icon}})
 				if err != nil {
 					log.Err(err.Error())
 				}

@@ -61,7 +61,7 @@ func appsFindGroupHandler(message *rabbit.Message) {
 	filter := bson.D{{"_id", payload.AppID}}
 	update := bson.D{{"group_id", groupID}}
 
-	_, err = mongo.UpdateOne(mongo.CollectionApps, filter, update, nil)
+	_, err = mongo.UpdateOne(mongo.CollectionApps, filter, update)
 	if err != nil {
 		log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 		sendToRetryQueue(message)
