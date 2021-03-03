@@ -182,10 +182,17 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 			func() { // In a func for the defer
 
 				// Ignore PMs
-				private, err := isChannelPrivateMessage(s, m)
-				if err != nil {
-					discordError(err)
-				}
+				private := func() bool {
+					channel, err := s.State.Channel(m.ChannelID)
+					if err != nil {
+						channel, err = s.Channel(m.ChannelID)
+						if err != nil {
+							discordError(err)
+							return false
+						}
+					}
+					return channel.Type == discordgo.ChannelTypeDM
+				}()
 
 				if !command.AllowDM() && private {
 					return
@@ -269,20 +276,6 @@ func updateGuildDetailsHandler(guild *discordgo.Guild) {
 	if err != nil {
 		log.Err("Updating guild row", zap.Error(err))
 	}
-}
-
-func isChannelPrivateMessage(s *discordgo.Session, m *discordgo.MessageCreate) (bool, error) {
-
-	channel, err := s.State.Channel(m.ChannelID)
-	if err != nil {
-
-		channel, err = s.Channel(m.ChannelID)
-		if err != nil {
-			return false, err
-		}
-	}
-
-	return channel.Type == discordgo.ChannelTypeDM, err
 }
 
 func getProdCC(command chatbot.Command, authorID string) steamapi.ProductCC {
