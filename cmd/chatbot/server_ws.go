@@ -20,7 +20,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/websockets"
 	influx "github.com/influxdata/influxdb1-client"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.uber.org/zap"
 )
 
@@ -260,10 +259,7 @@ func guildHandler(guild *discordgo.Guild) {
 		Members: guild.MemberCount,
 	}
 
-	ops := options.Update()
-	ops.SetUpsert(true)
-
-	_, err := mongo.UpdateOne(mongo.CollectionDiscordGuilds, bson.D{{"_id", guild.ID}}, mongoGuild.BSON(), ops)
+	_, err := mongo.ReplaceOne(mongo.CollectionDiscordGuilds, bson.D{{"_id", guild.ID}}, mongoGuild)
 	if err != nil {
 		log.Err("Updating guild row", zap.Error(err))
 	}
