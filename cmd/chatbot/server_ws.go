@@ -255,7 +255,7 @@ func guildHandler(guild *discordgo.Guild) {
 	mongoGuild := mongo.DiscordGuild{
 		ID:      guild.ID,
 		Name:    guild.Name,
-		Icon:    guild.IconURL(),
+		Icon:    guild.Icon,
 		Members: guild.MemberCount,
 	}
 
@@ -324,7 +324,6 @@ func saveToDB(command chatbot.Command, isSlash bool, wasSuccess *bool, message, 
 		CommandID:    command.ID(),
 		Message:      message,
 		Slash:        isSlash,
-		Time:         time.Now(), // Can get from ws message?
 	}
 
 	_, err = mongo.InsertOne(mongo.CollectionChatBotCommands, row)

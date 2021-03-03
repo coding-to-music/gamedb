@@ -1,6 +1,7 @@
 package mongo
 
 import (
+	"strings"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -16,6 +17,7 @@ type DiscordGuild struct {
 	Name     string    `bson:"name"`
 	Icon     string    `bson:"icon"`
 	Members  int       `json:"members"`
+	Requests int       `json:"requests"`
 	UpdateAt time.Time `json:"update_at"`
 }
 
@@ -27,11 +29,24 @@ func (guild DiscordGuild) BSON() bson.D {
 		guild.Icon = "https://globalsteam.online/assets/img/discord2.png"
 	}
 
+	if !strings.HasPrefix(guild.Icon, "http") {
+		dg := discordgo.Guild{ID: guild.ID, Icon: guild.Icon} // todo, remove when pr gets merged in
+		guild.Icon = dg.IconURL()
+	}
+
+	requests, err := CountDocuments(CollectionChatBotCommands, bson.D{{"guild_id", guild.ID}}, 0)
+	if err != nil {
+		log.ErrS(err)
+	}
+
+	guild.Requests = int(requests)
+
 	return bson.D{
 		{"_id", guild.ID},
 		{"name", guild.Name},
 		{"icon", guild.Icon},
 		{"members", guild.Members},
+		{"requests", guild.Requests},
 		{"update_at", guild.UpdateAt},
 	}
 }
