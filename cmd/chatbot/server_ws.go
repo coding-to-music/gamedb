@@ -32,9 +32,225 @@ func websocketServer() (session *discordgo.Session, err error) {
 		return nil, err
 	}
 
-	session.AddHandler(func(s *discordgo.Session, e *discordgo.InteractionCreate) { interactionHandler(s, e.Interaction) })
-	session.AddHandler(func(s *discordgo.Session, e *discordgo.MessageCreate) { messageHandler(s, e.Message) })
-	session.AddHandler(func(s *discordgo.Session, e *discordgo.GuildCreate) { guildHandler(e.Guild) }) // When bot joins a guild
+	session.AddHandler(func(s *discordgo.Session, e *discordgo.InteractionCreate) {
+
+		// Ignore PMs
+		// member is sent when the command is invoked in a guild, and user is sent when invoked in a DM
+		// todo, make PR to add user with isDM() func
+		// todo, if command.AllowDM() then use user and not member
+		if e.Member == nil {
+			return
+		}
+
+		// Stop users getting two responses
+		if config.IsLocal() && e.Member.User.ID != config.DiscordAdminID {
+			return
+		}
+
+		// Check for pings
+		if e.Type == discordgo.InteractionPing {
+
+			response := &discordgo.InteractionResponse{
+				Type: discordgo.InteractionResponsePong,
+			}
+
+			err := s.InteractionRespond(e.Interaction, response)
+			if err != nil {
+				log.ErrS(err)
+			}
+			return
+		}
+
+		// Get command
+		command, ok := chatbot.CommandCache[e.Data.Name]
+		if !ok {
+			log.ErrS("Command ID not found in register")
+			return
+		}
+
+		// Save stats
+		var success bool
+		defer saveToDB(command, true, &success, argumentsString(e), e.GuildID, e.ChannelID, e.Member.User)
+
+		// Typing notification
+		// todo Remove this when slash commands have `thinking`
+		err := s.ChannelTyping(e.ChannelID)
+		discordError(err)
+
+		//
+		code := getProdCC(command, e.Member.User.ID)
+
+		cacheItem := memcache.ItemChatBotRequestSlash(command.ID(), arguments(e), code)
+
+		// Check in cache first
+		if !command.DisableCache() && !config.IsLocal() {
+
+			var response = &discordgo.InteractionResponse{}
+			err = memcache.GetInterface(cacheItem.Key, &response)
+			if err == nil {
+
+				err = s.InteractionRespond(e.Interaction, response)
+				if err != nil {
+					log.ErrS(err)
+				}
+				return
+			}
+		}
+
+		// Rate limit
+		if !rateLimit.GetLimiter(e.Member.User.ID).Allow() {
+			log.Warn("over chatbot rate limit", zap.String("author", e.Member.User.ID), zap.String("msg", argumentsString(e)))
+			return
+		}
+
+		// Make output
+		out, err := command.Output(e.Member.User.ID, code, arguments(e))
+		if err != nil {
+			log.ErrS(err)
+			return
+		}
+
+		// Convert to slash format
+		response := &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionApplicationCommandResponseData{
+				Content: out.Content,
+			},
+		}
+
+		if out.Embed != nil {
+			response.Data.Embeds = []*discordgo.MessageEmbed{out.Embed}
+		}
+
+		// Respond
+		err = s.InteractionRespond(e.Interaction, response)
+		if err != nil {
+			log.ErrS(err)
+		}
+
+		// Save to cache
+		err = memcache.SetInterface(cacheItem.Key, response, cacheItem.Expiration)
+		if err != nil {
+			log.Err("Saving to memcache", zap.Error(err), zap.String("msg", argumentsString(e)))
+		}
+
+		success = true
+	})
+	session.AddHandler(func(s *discordgo.Session, e *discordgo.MessageCreate) {
+
+		// Don't reply to bots
+		if e.Author.Bot {
+			return
+		}
+
+		// Stop users getting two responses
+		if config.IsLocal() && e.Author.ID != config.DiscordAdminID {
+			return
+		}
+
+		// Scan commands
+		for _, command := range chatbot.CommandRegister {
+
+			msg := strings.TrimSpace(e.Content)
+
+			if chatbot.RegexCache[command.Regex()].MatchString(msg) {
+
+				func() { // In a func for the defer
+
+					// Ignore PMs
+					private := func() bool {
+						channel, err := s.State.Channel(e.ChannelID)
+						if err != nil {
+							channel, err = s.Channel(e.ChannelID)
+							if err != nil {
+								discordError(err)
+								return false
+							}
+						}
+						return channel.Type == discordgo.ChannelTypeDM
+					}()
+
+					if !command.AllowDM() && private {
+						return
+					}
+
+					// Save stats
+					var success bool
+					defer saveToDB(command, false, &success, msg, e.GuildID, e.ChannelID, e.Author)
+
+					// Typing notification
+					err := s.ChannelTyping(e.ChannelID)
+					discordError(err)
+
+					// Get user settings
+					code := getProdCC(command, e.Author.ID)
+
+					cacheItem := memcache.ItemChatBotRequest(msg, code)
+
+					// Check in cache first
+					if !command.DisableCache() && !config.IsLocal() {
+						var message discordgo.MessageSend
+						err = memcache.GetInterface(cacheItem.Key, &message)
+						if err == nil {
+							_, err = s.ChannelMessageSendComplex(e.ChannelID, &message)
+							discordError(err)
+							return
+						}
+					}
+
+					// Rate limit
+					if !rateLimit.GetLimiter(e.Author.ID).Allow() {
+						log.Warn("over chatbot rate limit", zap.String("author", e.Author.ID), zap.String("msg", msg))
+						return
+					}
+
+					// Make output
+					message, err := command.Output(e.Author.ID, code, command.LegacyInputs(msg))
+					if err != nil {
+						log.WarnS(err, msg)
+						return
+					}
+
+					// Reply
+					_, err = s.ChannelMessageSendComplex(e.ChannelID, &message)
+					if err != nil {
+						discordError(err)
+						return
+					}
+
+					// Save to cache
+					err = memcache.SetInterface(cacheItem.Key, message, cacheItem.Expiration)
+					if err != nil {
+						log.ErrS(err, msg)
+					}
+
+					success = true
+				}()
+
+				break
+			}
+		}
+	})
+
+	// When the bot joins a guild
+	session.AddHandler(func(_ *discordgo.Session, e *discordgo.GuildCreate) {
+
+		if e.MemberCount == 0 {
+			return
+		}
+
+		mongoGuild := mongo.DiscordGuild{
+			ID:      e.ID,
+			Name:    e.Name,
+			Icon:    e.Icon,
+			Members: e.MemberCount,
+		}
+
+		_, err := mongo.ReplaceOne(mongo.CollectionDiscordGuilds, bson.D{{"_id", e.ID}}, mongoGuild)
+		if err != nil {
+			log.Err("Updating guild row", zap.Error(err))
+		}
+	})
 
 	log.Info("Starting chatbot websocket connection")
 	err = session.Open()
@@ -43,226 +259,6 @@ func websocketServer() (session *discordgo.Session, err error) {
 	}
 
 	return session, nil
-}
-
-func interactionHandler(s *discordgo.Session, i *discordgo.Interaction) {
-
-	// Ignore PMs
-	// member is sent when the command is invoked in a guild, and user is sent when invoked in a DM
-	// todo, make PR to add user with isDM() func
-	// todo, if command.AllowDM() then use user and not member
-	if i.Member == nil {
-		return
-	}
-
-	// Stop users getting two responses
-	if config.IsLocal() && i.Member.User.ID != config.DiscordAdminID {
-		return
-	}
-
-	// Check for pings
-	if i.Type == discordgo.InteractionPing {
-
-		response := &discordgo.InteractionResponse{
-			Type: discordgo.InteractionResponsePong,
-		}
-
-		err := s.InteractionRespond(i, response)
-		if err != nil {
-			log.ErrS(err)
-		}
-		return
-	}
-
-	// Get command
-	command, ok := chatbot.CommandCache[i.Data.Name]
-	if !ok {
-		log.ErrS("Command ID not found in register")
-		return
-	}
-
-	// Save stats
-	var success bool
-	defer saveToDB(command, true, &success, argumentsString(i), i.GuildID, i.ChannelID, i.Member.User)
-
-	// Typing notification
-	// todo Remove this when slash commands have `thinking`
-	err := s.ChannelTyping(i.ChannelID)
-	discordError(err)
-
-	//
-	code := getProdCC(command, i.Member.User.ID)
-
-	cacheItem := memcache.ItemChatBotRequestSlash(command.ID(), arguments(i), code)
-
-	// Check in cache first
-	if !command.DisableCache() && !config.IsLocal() {
-
-		var response = &discordgo.InteractionResponse{}
-		err = memcache.GetInterface(cacheItem.Key, &response)
-		if err == nil {
-
-			err = s.InteractionRespond(i, response)
-			if err != nil {
-				log.ErrS(err)
-			}
-			return
-		}
-	}
-
-	// Rate limit
-	if !rateLimit.GetLimiter(i.Member.User.ID).Allow() {
-		log.Warn("over chatbot rate limit", zap.String("author", i.Member.User.ID), zap.String("msg", argumentsString(i)))
-		return
-	}
-
-	// Make output
-	out, err := command.Output(i.Member.User.ID, code, arguments(i))
-	if err != nil {
-		log.ErrS(err)
-		return
-	}
-
-	// Convert to slash format
-	response := &discordgo.InteractionResponse{
-		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: &discordgo.InteractionApplicationCommandResponseData{
-			Content: out.Content,
-		},
-	}
-
-	if out.Embed != nil {
-		response.Data.Embeds = []*discordgo.MessageEmbed{out.Embed}
-	}
-
-	// Respond
-	err = s.InteractionRespond(i, response)
-	if err != nil {
-		log.ErrS(err)
-	}
-
-	// Save to cache
-	err = memcache.SetInterface(cacheItem.Key, response, cacheItem.Expiration)
-	if err != nil {
-		log.Err("Saving to memcache", zap.Error(err), zap.String("msg", argumentsString(i)))
-	}
-
-	success = true
-}
-
-func messageHandler(s *discordgo.Session, m *discordgo.Message) {
-
-	// Don't reply to bots
-	if m.Author.Bot {
-		return
-	}
-
-	// Stop users getting two responses
-	if config.IsLocal() && m.Author.ID != config.DiscordAdminID {
-		return
-	}
-
-	// Scan commands
-	for _, command := range chatbot.CommandRegister {
-
-		msg := strings.TrimSpace(m.Content)
-
-		if chatbot.RegexCache[command.Regex()].MatchString(msg) {
-
-			func() { // In a func for the defer
-
-				// Ignore PMs
-				private := func() bool {
-					channel, err := s.State.Channel(m.ChannelID)
-					if err != nil {
-						channel, err = s.Channel(m.ChannelID)
-						if err != nil {
-							discordError(err)
-							return false
-						}
-					}
-					return channel.Type == discordgo.ChannelTypeDM
-				}()
-
-				if !command.AllowDM() && private {
-					return
-				}
-
-				// Save stats
-				var success bool
-				defer saveToDB(command, false, &success, msg, m.GuildID, m.ChannelID, m.Author)
-
-				// Typing notification
-				err := s.ChannelTyping(m.ChannelID)
-				discordError(err)
-
-				// Get user settings
-				code := getProdCC(command, m.Author.ID)
-
-				cacheItem := memcache.ItemChatBotRequest(msg, code)
-
-				// Check in cache first
-				if !command.DisableCache() && !config.IsLocal() {
-					var message discordgo.MessageSend
-					err = memcache.GetInterface(cacheItem.Key, &message)
-					if err == nil {
-						_, err = s.ChannelMessageSendComplex(m.ChannelID, &message)
-						discordError(err)
-						return
-					}
-				}
-
-				// Rate limit
-				if !rateLimit.GetLimiter(m.Author.ID).Allow() {
-					log.Warn("over chatbot rate limit", zap.String("author", m.Author.ID), zap.String("msg", msg))
-					return
-				}
-
-				// Make output
-				message, err := command.Output(m.Author.ID, code, command.LegacyInputs(msg))
-				if err != nil {
-					log.WarnS(err, msg)
-					return
-				}
-
-				// Reply
-				_, err = s.ChannelMessageSendComplex(m.ChannelID, &message)
-				if err != nil {
-					discordError(err)
-					return
-				}
-
-				// Save to cache
-				err = memcache.SetInterface(cacheItem.Key, message, cacheItem.Expiration)
-				if err != nil {
-					log.ErrS(err, msg)
-				}
-
-				success = true
-			}()
-
-			break
-		}
-	}
-}
-
-func guildHandler(guild *discordgo.Guild) {
-
-	if guild.MemberCount == 0 {
-		return
-	}
-
-	mongoGuild := mongo.DiscordGuild{
-		ID:      guild.ID,
-		Name:    guild.Name,
-		Icon:    guild.Icon,
-		Members: guild.MemberCount,
-	}
-
-	_, err := mongo.ReplaceOne(mongo.CollectionDiscordGuilds, bson.D{{"_id", guild.ID}}, mongoGuild)
-	if err != nil {
-		log.Err("Updating guild row", zap.Error(err))
-	}
 }
 
 func getProdCC(command chatbot.Command, authorID string) steamapi.ProductCC {
@@ -346,7 +342,7 @@ func saveToDB(command chatbot.Command, isSlash bool, wasSuccess *bool, message, 
 	}
 }
 
-func arguments(event *discordgo.Interaction) (a map[string]string) {
+func arguments(event *discordgo.InteractionCreate) (a map[string]string) {
 
 	a = map[string]string{}
 	for _, v := range event.Data.Options {
@@ -355,7 +351,7 @@ func arguments(event *discordgo.Interaction) (a map[string]string) {
 	return a
 }
 
-func argumentsString(event *discordgo.Interaction) string {
+func argumentsString(event *discordgo.InteractionCreate) string {
 
 	var s = []string{event.Data.Name}
 	for _, v := range event.Data.Options {
