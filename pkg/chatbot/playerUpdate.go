@@ -9,7 +9,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/oauth"
 	"github.com/gamedb/gamedb/pkg/queue"
@@ -87,7 +86,7 @@ func (c CommandPlayerUpdate) Output(authorID string, _ steamapi.ProductCC, input
 		if playerID > 0 {
 
 			err = queue.ProducePlayer(queue.PlayerMessage{ID: playerID}, "chatbot-player.update")
-			err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
+			err = helpers.IgnoreErrors(err, queue.ErrInQueue)
 			if err != nil {
 				log.ErrS(err)
 			}
@@ -110,7 +109,7 @@ func (c CommandPlayerUpdate) Output(authorID string, _ steamapi.ProductCC, input
 	}
 
 	err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID}, "chatbot-player.update")
-	err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
+	err = helpers.IgnoreErrors(err, queue.ErrInQueue)
 	if err != nil {
 		log.ErrS(err)
 	}

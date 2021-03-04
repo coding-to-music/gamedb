@@ -143,7 +143,7 @@ func playersGroupsHandler(message *rabbit.Message) {
 	if !payload.SkipGroupUpdate {
 		for id := range newGroupsMap {
 			err = ProduceGroup(GroupMessage{ID: id, UserAgent: payload.UserAgent})
-			err = helpers.IgnoreErrors(err, memcache.ErrInQueue, ErrIsBot)
+			err = helpers.IgnoreErrors(err, ErrInQueue, ErrIsBot)
 			if err != nil {
 				log.ErrS(err)
 			}

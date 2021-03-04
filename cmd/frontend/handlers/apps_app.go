@@ -135,7 +135,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 			t.addToast(Toast{Title: "Update", Message: "App has been queued for an update", Success: true})
 			log.Info("app queued", zap.String("ua", r.UserAgent()))
 		}
-		err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
+		err = helpers.IgnoreErrors(err, queue.ErrInQueue)
 		if err != nil {
 			log.ErrS(err)
 		}

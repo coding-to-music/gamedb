@@ -23,6 +23,8 @@ import (
 
 const ConsumersPerProcess = 2
 
+var ErrInQueue = errors.New("already in queue")
+
 type QueueMessageInterface interface {
 	Queue() rabbit.QueueName
 }
@@ -458,7 +460,7 @@ func ProduceApp(payload AppMessage) (err error) {
 	if payload.ChangeNumber == 0 {
 		_, err = memcache.Get(item.Key)
 		if err == nil {
-			return memcache.ErrInQueue
+			return ErrInQueue
 		}
 	}
 
@@ -512,7 +514,7 @@ func ProduceBundle(id int) (err error) {
 
 	_, err = memcache.Get(item.Key)
 	if err == nil {
-		return memcache.ErrInQueue
+		return ErrInQueue
 	}
 
 	err = produce(QueueBundles, BundleMessage{ID: id})
@@ -555,7 +557,7 @@ func ProduceGroup(payload GroupMessage) (err error) {
 
 	_, err = memcache.Get(item.Key)
 	if err == nil {
-		return memcache.ErrInQueue
+		return ErrInQueue
 	}
 
 	err = produce(QueueGroups, payload)
@@ -577,7 +579,7 @@ func ProducePackage(payload PackageMessage) (err error) {
 	if payload.ChangeNumber == 0 {
 		_, err = memcache.Get(item.Key)
 		if err == nil {
-			return memcache.ErrInQueue
+			return ErrInQueue
 		}
 	}
 
@@ -610,7 +612,7 @@ func ProducePlayer(payload PlayerMessage, event string) (err error) {
 
 	_, err = memcache.Get(item.Key)
 	if err == nil {
-		return memcache.ErrInQueue
+		return ErrInQueue
 	}
 
 	err = produce(QueuePlayers, payload)

@@ -12,7 +12,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/oauth"
@@ -447,7 +446,7 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 
 		ua := r.UserAgent()
 		err = queue.ProducePlayer(queue.PlayerMessage{ID: i, UserAgent: &ua}, "frontend-oauth")
-		if err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue); err != nil {
+		if err = helpers.IgnoreErrors(err, queue.ErrIsBot, queue.ErrInQueue); err != nil {
 			log.ErrS(err)
 			break
 		}

@@ -51,7 +51,7 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 
 			ua := r.UserAgent()
 			err = queue.ProduceGroup(queue.GroupMessage{ID: id, UserAgent: &ua})
-			err = helpers.IgnoreErrors(err, memcache.ErrInQueue, queue.ErrIsBot)
+			err = helpers.IgnoreErrors(err, queue.ErrInQueue, queue.ErrIsBot)
 			if err != nil {
 				log.ErrS(err)
 			}
@@ -99,7 +99,7 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 			log.Info("group queued", zap.String("ua", ua))
 			t.addToast(Toast{Title: "Update", Message: "Group has been queued for an update", Success: true})
 		}
-		err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
+		err = helpers.IgnoreErrors(err, queue.ErrIsBot, queue.ErrInQueue)
 		if err != nil {
 			log.ErrS(err)
 		}

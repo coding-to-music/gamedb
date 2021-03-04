@@ -12,7 +12,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/steam"
 	"go.uber.org/zap"
@@ -272,7 +271,7 @@ func searchForPlayer(search string) (player elasticsearch.Player, err error) {
 
 	// Queue
 	err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID}, "chatbot-player")
-	err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
+	err = helpers.IgnoreErrors(err, queue.ErrInQueue)
 	if err != nil {
 		log.Err("Producing player", zap.Error(err))
 	}

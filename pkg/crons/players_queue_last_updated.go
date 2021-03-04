@@ -8,7 +8,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/crons/helpers/rabbitweb"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
@@ -86,7 +85,7 @@ func (c PlayersQueueLastUpdated) work() (err error) {
 		}
 
 		err = queue.ProducePlayer(m, "crons-last-updated")
-		err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
+		err = helpers.IgnoreErrors(err, queue.ErrInQueue)
 		if err != nil {
 			return err
 		}

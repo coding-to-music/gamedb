@@ -616,7 +616,7 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 				playerID, err := strconv.ParseInt(val, 10, 64)
 				if err == nil {
 					err = queue.ProducePlayer(queue.PlayerMessage{ID: playerID, UserAgent: &ua}, "frontend-admin")
-					err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
+					err = helpers.IgnoreErrors(err, queue.ErrInQueue)
 					if err != nil {
 						log.Err(err.Error(), zap.Int64("id", playerID))
 					}
@@ -634,7 +634,7 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 				playerID, err := strconv.ParseInt(val, 10, 64)
 				if err == nil {
 					err = queue.ProducePlayerSearch(nil, playerID)
-					err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
+					err = helpers.IgnoreErrors(err, queue.ErrInQueue)
 					if err != nil {
 						log.Err("Producing player search", zap.Error(err), zap.Int64("id", playerID))
 					}
@@ -655,7 +655,7 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 				if err == nil {
 
 					err = queue.ProduceBundle(bundleID)
-					err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
+					err = helpers.IgnoreErrors(err, queue.ErrInQueue)
 					if err != nil {
 						log.Err(err.Error(), zap.Int("id", bundleID))
 					}
@@ -675,7 +675,7 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 			for i := 1; i <= count; i++ {
 
 				err = queue.ProduceTest(i)
-				err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
+				err = helpers.IgnoreErrors(err, queue.ErrInQueue)
 				if err != nil {
 					log.Err(err.Error(), zap.Int("id", i))
 				}
@@ -692,7 +692,7 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 				val = strings.TrimSpace(val)
 
 				err := queue.ProduceGroup(queue.GroupMessage{ID: val, UserAgent: &ua})
-				err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
+				err = helpers.IgnoreErrors(err, queue.ErrIsBot, queue.ErrInQueue)
 				if err != nil {
 					log.ErrS(err)
 				}
@@ -719,7 +719,7 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 					for _, playerID := range resp.Members.SteamID64 {
 
 						err = queue.ProducePlayer(queue.PlayerMessage{ID: int64(playerID), SkipExistingPlayer: true}, "frontend-admin-group")
-						err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
+						err = helpers.IgnoreErrors(err, queue.ErrInQueue)
 						if err != nil {
 							log.ErrS(err)
 						}

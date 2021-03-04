@@ -10,7 +10,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/go-chi/chi/v5"
@@ -196,7 +195,7 @@ func coopGames(w http.ResponseWriter, r *http.Request) {
 			ua := r.UserAgent()
 			err = queue.ProducePlayer(queue.PlayerMessage{ID: playerID, UserAgent: &ua}, "frontend-coop")
 
-			if err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue); err != nil {
+			if err = helpers.IgnoreErrors(err, queue.ErrIsBot, queue.ErrInQueue); err != nil {
 				log.ErrS(err)
 			}
 		}

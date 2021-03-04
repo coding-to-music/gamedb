@@ -2,7 +2,6 @@ package crons
 
 import (
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/queue"
@@ -55,7 +54,7 @@ func (c AutoPlayerRefreshes) work() (err error) {
 			playerIDs = append(playerIDs, playerID)
 
 			err = queue.ProducePlayer(queue.PlayerMessage{ID: playerID}, "crons-donators")
-			err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
+			err = helpers.IgnoreErrors(err, queue.ErrInQueue)
 			if err != nil {
 				return err
 			}
@@ -71,7 +70,7 @@ func (c AutoPlayerRefreshes) work() (err error) {
 	for _, v := range players {
 		if v.PrimaryGroupID != "" {
 			err = queue.ProduceGroup(queue.GroupMessage{ID: v.PrimaryGroupID})
-			err = helpers.IgnoreErrors(err, queue.ErrIsBot, memcache.ErrInQueue)
+			err = helpers.IgnoreErrors(err, queue.ErrIsBot, queue.ErrInQueue)
 			if err != nil {
 				return err
 			}

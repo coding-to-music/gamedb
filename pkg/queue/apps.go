@@ -916,7 +916,7 @@ func scrapeApp(app *mongo.App) (sales []mongo.Sale, err error) {
 	for _, bundleID := range bundleIntIDs {
 
 		err = ProduceBundle(bundleID)
-		err = helpers.IgnoreErrors(err, memcache.ErrInQueue)
+		err = helpers.IgnoreErrors(err, ErrInQueue)
 		if err != nil {
 			log.ErrS(err)
 		}
