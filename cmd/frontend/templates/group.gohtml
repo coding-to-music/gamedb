@@ -38,7 +38,7 @@
                     <div class="alert alert-danger" role="alert">{{ .Group.Error }}</div>
                 {{ end }}
 
-                {{ if eq .Group.Type "game" }}
+                {{ if eq .Group.Type "group" }}
                     <div class="row">
                         <div class="col-6 col-md-4 col-lg-3 mb-3">
                             <div role="button" class="btn btn-success btn-block mb-0">Primaries<br/>{{ comma .Group.Primaries }}</div>
