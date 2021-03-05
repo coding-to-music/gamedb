@@ -34,7 +34,7 @@ func (c BundlesQueueAll) work() (err error) {
 		for _, bundle := range bundles {
 
 			err = queue.ProduceBundle(bundle.ID)
-			if err != nil {
+			if err != nil && err != queue.ErrInQueue {
 				log.ErrS(err)
 				return
 			}
