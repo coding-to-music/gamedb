@@ -56,8 +56,6 @@ var (
 	ItemChatBotSettings     = func(discordID string) Item { return Item{Key: "chat-bot-settings-" + discordID, Expiration: 0} }
 	ItemChatBotRequest      = func(request string, code steamapi.ProductCC) Item { return Item{Key: "interaction-" + string(code) + "-" + helpers.MD5([]byte(request)), Expiration: 60 * 10} }
 	ItemChatBotRequestSlash = func(commandID string, inputs map[string]string, code steamapi.ProductCC) Item { return Item{Key: "interaction-slash-" + commandID + "-" + string(code) + "-" + helpers.MD5Interface(inputs), Expiration: 60 * 10} }
-	ItemChatBotCommands     = Item{Key: "chat-bot-grouped-commands", Expiration: 60 * 10}
-	ItemChatBotGuilds       = Item{Key: "chat-bot-grouped-guilds", Expiration: 60 * 10}
 
 	// Group
 	ItemGroup               = func(changeID string) Item { return Item{Key: "group-" + changeID, Expiration: 0} }
@@ -107,7 +105,6 @@ var (
 	ItemAPISteam             = Item{Key: "api-steam", Expiration: 60 * 60 * 24 * 7}
 	ItemArticleFeedAggs      = Item{Key: "app-article-feeds", Expiration: 60 * 60 * 24 * 7}
 	ItemArticleFeedAggsMongo = func(appID int) Item { return Item{Key: "app-article-feeds-mongo-" + strconv.Itoa(appID), Expiration: 60 * 60 * 24 * 7} }
-	ItemBundlesCount         = Item{Key: "bundles-count", Expiration: 86400}
 	ItemChange               = func(changeID int64) Item { return Item{Key: "change-" + strconv.FormatInt(changeID, 10), Expiration: 0} }
 	ItemCommitsPage          = func(page int) Item { return Item{Key: "commits-page-" + strconv.Itoa(page), Expiration: 60 * 60} }
 	ItemConfigItem           = func(configID string) Item { return Item{Key: "config-item-" + configID, Expiration: 0} }
