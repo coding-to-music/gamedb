@@ -3,6 +3,7 @@ package helpers
 import (
 	"os"
 	"os/signal"
+	"sync"
 	"syscall"
 
 	"github.com/gamedb/gamedb/pkg/log"
@@ -24,11 +25,17 @@ func KeepAlive(callbacks ...func()) {
 
 	s := <-signalsChan // Blocks
 
+	// Run callbacks
+	var wg sync.WaitGroup
 	for _, callback := range callbacks {
-		callback()
+		wg.Add(1)
+		go func(callback func()) {
+			callback()
+			wg.Done()
+		}(callback)
 	}
-
-	log.Flush()
+	wg.Wait()
 
 	log.Info("Shutting down", zap.String("signal", s.String()))
+	log.Flush()
 }
