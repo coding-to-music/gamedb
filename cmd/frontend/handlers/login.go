@@ -87,7 +87,7 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 
 		if config.IsProd() {
 
-			resp, err := captcha.GetCaptcha().CheckRequest(r)
+			resp, err := captcha.Client().CheckRequest(r)
 			if err != nil {
 				log.ErrS(err)
 				return "Something went wrong", false

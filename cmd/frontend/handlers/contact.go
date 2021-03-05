@@ -85,7 +85,7 @@ func postContactHandler(w http.ResponseWriter, r *http.Request) {
 		// Captcha
 		if !config.IsLocal() {
 
-			resp, err := captcha.GetCaptcha().CheckRequest(r)
+			resp, err := captcha.Client().CheckRequest(r)
 			if err != nil {
 				log.ErrS(err)
 				return session.SessionBad, "Something has gone wrong (1002)"

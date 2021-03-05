@@ -15,7 +15,7 @@ type GithubServer struct {
 
 func (g GithubServer) Commits(_ context.Context, request *generated.CommitsRequest) (response *generated.CommitsResponse, err error) {
 
-	client, ctx := githubHelper.GetGithub()
+	client, ctx := githubHelper.Client()
 
 	ops := &github.CommitsListOptions{
 		ListOptions: github.ListOptions{

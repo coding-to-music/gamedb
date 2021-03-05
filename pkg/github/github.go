@@ -15,7 +15,7 @@ var (
 	lock   sync.Mutex
 )
 
-func GetGithub() (*github.Client, context.Context) {
+func Client() (*github.Client, context.Context) {
 
 	lock.Lock()
 	defer lock.Unlock()

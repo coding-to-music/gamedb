@@ -12,7 +12,7 @@ var (
 	lock      sync.Mutex
 )
 
-func GetInstagram() (*goinsta.Instagram, error) {
+func Client() (*goinsta.Instagram, error) {
 
 	lock.Lock()
 	defer lock.Unlock()

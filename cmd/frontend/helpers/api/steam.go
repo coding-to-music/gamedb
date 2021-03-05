@@ -50,7 +50,7 @@ func GetSteam() *openapi3.Swagger {
 	}
 
 	// Put into a map to remove dupes from Github
-	client, ctx := githubHelper.GetGithub()
+	client, ctx := githubHelper.Client()
 	_, dirs, _, err := client.Repositories.GetContents(ctx, "SteamDatabase", "SteamTracking", "API", nil)
 	if err != nil {
 		log.ErrS(err)

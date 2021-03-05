@@ -12,7 +12,7 @@ var (
 	hcaptchaLock   sync.Mutex
 )
 
-func GetCaptcha() captcha.Provider {
+func Client() captcha.Provider {
 
 	hcaptchaLock.Lock()
 	defer hcaptchaLock.Unlock()

@@ -77,7 +77,7 @@ func forgotPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	if config.IsProd() {
 
-		resp, err := captcha.GetCaptcha().CheckRequest(r)
+		resp, err := captcha.Client().CheckRequest(r)
 		if err != nil {
 			log.ErrS(err)
 			session.SetFlash(r, session.SessionBad, "An error occurred (1002)")
