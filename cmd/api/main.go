@@ -17,6 +17,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelpers "github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/middleware"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
@@ -83,6 +84,7 @@ func main() {
 	helpers.KeepAlive(
 		mysql.Close,
 		mongo.Close,
+		memcache.Close,
 	)
 }
 

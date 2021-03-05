@@ -17,7 +17,6 @@ import (
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/middleware"
@@ -220,9 +219,8 @@ func main() {
 	helpers.KeepAlive(
 		mysql.Close,
 		mongo.Close,
-		func() {
-			influx.GetWriter().Flush()
-		})
+		memcache.Close,
+	)
 }
 
 func redirectHandler(path string) func(w http.ResponseWriter, r *http.Request) {

@@ -8,8 +8,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/go-chi/chi/v5"
 	"go.uber.org/zap"
 )
@@ -49,10 +47,7 @@ func main() {
 		}
 	}()
 
-	helpers.KeepAlive(
-		mysql.Close,
-		mongo.Close,
-	)
+	helpers.KeepAlive()
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {

@@ -143,6 +143,10 @@ func Client() *memcache.Client {
 	return client
 }
 
+func Close() {
+	Client().Close()
+}
+
 func FilterToString(d bson.D) string {
 
 	if d == nil || len(d) == 0 {

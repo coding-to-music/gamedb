@@ -11,6 +11,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/queue"
@@ -66,16 +67,18 @@ func main() {
 	helpers.KeepAlive(
 		mysql.Close,
 		mongo.Close,
-		func() {
-			err = session.Close()
-			if err != nil {
-				log.Err("disconnecting from discord", zap.Error(err))
-			}
-		},
-		func() {
-			influxHelper.GetWriter().Flush()
-		},
+		memcache.Close,
+		closeWebcocketConn(session),
 	)
+}
+
+func closeWebcocketConn(session *discordgo.Session) func() {
+	return func() {
+		err := session.Close()
+		if err != nil {
+			log.Err("disconnecting from discord", zap.Error(err))
+		}
+	}
 }
 
 func refreshCommands(session *discordgo.Session) error {
