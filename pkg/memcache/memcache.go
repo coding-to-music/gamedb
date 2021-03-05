@@ -1,19 +1,24 @@
 package memcache
 
 import (
+	"encoding/json"
+	"sort"
 	"strconv"
+	"strings"
+	"sync"
 
+	"github.com/Jleagle/memcache-go"
 	"github.com/Jleagle/steam-go/steamapi"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
 type Item struct {
 	Key        string // Key is the Item's key (250 bytes maximum).
 	Value      string // Value is the Item's value.
-	Flags      uint32 // Flags are server-opaque flags whose semantics are entirely up to the app.
 	Expiration uint32 // Expiration is the cache expiration time, in seconds: either a relative time from now (up to 1 month), or an absolute Unix epoch time. Zero means the Item has no expiration time.
-	// casid   uint64 // Compare and swap ID.
 }
 
 var (
@@ -111,3 +116,65 @@ var (
 	ItemUniqueSaleTypes      = Item{Key: "unique-sale-types", Expiration: 60 * 60 * 1}
 	ItemChatbotCalls         = Item{Key: "chatbot-calls", Expiration: 60 * 10}
 )
+
+var lock sync.Mutex
+var client *memcache.Client
+
+func Client() *memcache.Client {
+
+	lock.Lock()
+	defer lock.Unlock()
+
+	if client == nil {
+
+		if config.C.MemcacheDSN == "" {
+			log.Err("Missing environment variables")
+		}
+
+		options := []memcache.Option{
+			memcache.WithAuth(config.C.MemcacheUsername, config.C.MemcachePassword),
+			memcache.WithNamespace("gs_"),
+		}
+
+		if config.IsLocal() {
+			options = append(options, memcache.WithTypeChecks(true))
+		}
+
+		client = memcache.NewClient(config.C.MemcacheDSN, options...)
+	}
+
+	return client
+}
+
+func FilterToString(d bson.D) string {
+
+	if d == nil || len(d) == 0 {
+		return "[]"
+	}
+
+	b, err := json.Marshal(d)
+	if err != nil {
+		log.ErrS(err)
+		return "[]"
+	}
+
+	return helpers.MD5(b)
+}
+
+func ProjectionToString(m bson.M) string {
+
+	if len(m) == 0 {
+		return "*"
+	}
+
+	var cols []string
+	for k := range m {
+		cols = append(cols, k)
+	}
+
+	sort.Slice(cols, func(i, j int) bool {
+		return cols[i] < cols[j]
+	})
+
+	return strings.Join(cols, "-")
+}

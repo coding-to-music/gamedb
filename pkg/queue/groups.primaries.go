@@ -59,7 +59,7 @@ func groupPrimariesHandler(message *rabbit.Message) {
 	}
 
 	// Clear group cache
-	err = memcache.Delete(memcache.ItemGroup(payload.GroupID).Key)
+	err = memcache.Client().Delete(memcache.ItemGroup(payload.GroupID).Key)
 	if err != nil {
 		log.ErrS(err, payload.GroupID)
 		sendToRetryQueue(message)

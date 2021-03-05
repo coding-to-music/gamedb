@@ -195,7 +195,8 @@ func getPlayerAchievements(offset int64, limit int64, filter bson.D, sort bson.D
 
 func GetPlayerAchievementDays(playerID int64) (counts []DateCount, err error) {
 
-	err = memcache.GetSetInterface(memcache.ItemPlayerAchievementsDays(playerID), &counts, func() (interface{}, error) {
+	item := memcache.ItemPlayerAchievementsDays(playerID)
+	err = memcache.Client().GetSet(item.Key, item.Expiration, &counts, func() (interface{}, error) {
 
 		client, ctx, err := getMongo()
 		if err != nil {

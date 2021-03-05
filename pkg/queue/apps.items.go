@@ -149,7 +149,7 @@ func appItemsHandler(message *rabbit.Message) {
 		memcache.ItemMongoCount(mongo.CollectionAppItems.String(), bson.D{{"app_id", payload.AppID}}).Key,
 	}
 
-	err = memcache.Delete(items...)
+	err = memcache.Client().Delete(items...)
 	if err != nil {
 		log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 		sendToRetryQueue(message)

@@ -140,7 +140,8 @@ func GetGroup(id string) (group Group, err error) {
 		return group, ErrInvalidGroupID
 	}
 
-	err = memcache.GetSetInterface(memcache.ItemGroup(id), &group, func() (interface{}, error) {
+	item := memcache.ItemGroup(id)
+	err = memcache.Client().GetSet(item.Key, item.Expiration, &group, func() (interface{}, error) {
 
 		err = FindOne(CollectionGroups, bson.D{{"_id", id}}, nil, nil, &group)
 		return group, err
@@ -184,7 +185,8 @@ func GetGroupsByID(ids []string, projection bson.M) (groups []Group, err error) 
 
 func TrendingGroups() (groups []Group, err error) {
 
-	err = memcache.GetSetInterface(memcache.ItemGroupsTrending, &groups, func() (interface{}, error) {
+	item := memcache.ItemGroupsTrending
+	err = memcache.Client().GetSet(item.Key, item.Expiration, &groups, func() (interface{}, error) {
 		return getGroups(
 			0,
 			10,

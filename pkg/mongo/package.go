@@ -280,7 +280,8 @@ func (pack Package) GetBundles() (bundles []Bundle, err error) {
 		return bundles, nil
 	}
 
-	err = memcache.GetSetInterface(memcache.ItemPackageBundles(pack.ID), &bundles, func() (interface{}, error) {
+	item := memcache.ItemPackageBundles(pack.ID)
+	err = memcache.Client().GetSet(item.Key, item.Expiration, &bundles, func() (interface{}, error) {
 		return GetBundlesByID(pack.Bundles, nil)
 	})
 
@@ -365,7 +366,8 @@ func GetPackage(id int) (pack Package, err error) {
 		return pack, ErrInvalidPackageID
 	}
 
-	err = memcache.GetSetInterface(memcache.ItemPackage(id), &pack, func() (interface{}, error) {
+	item := memcache.ItemPackage(id)
+	err = memcache.Client().GetSet(item.Key, item.Expiration, &pack, func() (interface{}, error) {
 
 		err := FindOne(CollectionPackages, bson.D{{"_id", id}}, nil, nil, &pack)
 		return pack, err

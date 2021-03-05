@@ -212,7 +212,7 @@ func groupsHandler(message *rabbit.Message) {
 		memcache.ItemGroupInQueue(payload.ID).Key,
 	}
 
-	err = memcache.Delete(items...)
+	err = memcache.Client().Delete(items...)
 	if err != nil {
 		log.ErrS(err, payload.ID)
 		sendToRetryQueue(message)

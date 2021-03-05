@@ -295,7 +295,7 @@ func playerHandler(message *rabbit.Message) {
 			memcache.ItemPlayerInQueue(player.ID).Key,
 		}
 
-		err = memcache.Delete(items...)
+		err = memcache.Client().Delete(items...)
 		if err != nil {
 			log.ErrS(err, payload.ID)
 			sendToRetryQueue(message)

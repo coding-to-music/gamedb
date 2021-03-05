@@ -149,7 +149,8 @@ func (af ArticleFeed) GetName() string {
 
 func GetAppArticlesGroupedByFeed(appID int) (feeds []ArticleFeed, err error) {
 
-	err = memcache.GetSetInterface(memcache.ItemArticleFeedAggsMongo(appID), &feeds, func() (interface{}, error) {
+	item := memcache.ItemArticleFeedAggsMongo(appID)
+	err = memcache.Client().GetSet(item.Key, item.Expiration, &feeds, func() (interface{}, error) {
 
 		client, ctx, err := getMongo()
 		if err != nil {

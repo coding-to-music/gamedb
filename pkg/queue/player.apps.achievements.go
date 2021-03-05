@@ -122,7 +122,7 @@ func playerAchievementsHandler(message *rabbit.Message) {
 			memcache.ItemPlayerAchievementsInflux(payload.PlayerID).Key,
 		}
 
-		err = memcache.Delete(items...)
+		err = memcache.Client().Delete(items...)
 		if err != nil {
 			log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 			sendToRetryQueue(message)
@@ -144,8 +144,11 @@ func playerAchievementsHandler(message *rabbit.Message) {
 
 	item := memcache.ItemAppNoAchievements(payload.AppID) // Cache if this app has no achievements
 
-	_, err = memcache.Get(item.Key)
-	if err == nil {
+	exists, err := memcache.Client().Exists(item.Key)
+	if err != nil {
+		log.ErrS(err)
+	}
+	if exists {
 		message.Ack()
 		return
 	}
@@ -159,7 +162,7 @@ func playerAchievementsHandler(message *rabbit.Message) {
 	}
 
 	if app.AchievementsCount == 0 {
-		err = memcache.Set(item.Key, item.Value, item.Expiration)
+		err = memcache.Client().Set(item.Key, item.Value, item.Expiration)
 		if err != nil {
 			log.ErrS(err)
 		}
@@ -198,7 +201,7 @@ func playerAchievementsHandler(message *rabbit.Message) {
 	if !resp.Success {
 
 		if resp.Error == "Requested app has no stats" {
-			err = memcache.Set(item.Key, item.Value, item.Expiration)
+			err = memcache.Client().Set(item.Key, item.Value, item.Expiration)
 			if err != nil {
 				log.ErrS(err)
 			}

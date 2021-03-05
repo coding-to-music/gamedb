@@ -152,7 +152,8 @@ func chatbotChartAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return hc, err
 	}
 
-	err := memcache.GetSetInterface(memcache.ItemChatbotCalls, &hc, callback)
+	item := memcache.ItemChatbotCalls
+	err := memcache.Client().GetSet(item.Key, item.Expiration, &hc, callback)
 	if err != nil {
 		log.Err("GetSet memcache", zap.Error(err))
 	}

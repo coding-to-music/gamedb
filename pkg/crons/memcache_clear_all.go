@@ -26,5 +26,5 @@ func (c MemcacheClearAll) Cron() TaskTime {
 
 func (c MemcacheClearAll) work() (err error) {
 
-	return memcache.DeleteAll()
+	return memcache.Client().DeleteAll()
 }

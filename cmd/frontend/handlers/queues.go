@@ -77,7 +77,8 @@ func queuesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return ret, err
 	}
 
-	err := memcache.GetSetInterface(memcache.ItemQueues, &highcharts, callback)
+	item := memcache.ItemQueues
+	err := memcache.Client().GetSet(item.Key, item.Expiration, &highcharts, callback)
 	if err != nil {
 		log.ErrS(err)
 		return

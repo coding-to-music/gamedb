@@ -458,15 +458,18 @@ func ProduceApp(payload AppMessage) (err error) {
 	item := memcache.ItemAppInQueue(payload.ID)
 
 	if payload.ChangeNumber == 0 {
-		_, err = memcache.Get(item.Key)
-		if err == nil {
+		exists, err := memcache.Client().Exists(item.Key)
+		if err != nil {
+			log.ErrS(err)
+		}
+		if exists {
 			return ErrInQueue
 		}
 	}
 
 	err = produce(QueueApps, payload)
 	if err == nil {
-		err = memcache.Set(item.Key, item.Value, item.Expiration)
+		err = memcache.Client().Set(item.Key, item.Value, item.Expiration)
 	}
 
 	return err
@@ -512,14 +515,17 @@ func ProduceBundle(id int) (err error) {
 
 	item := memcache.ItemBundleInQueue(id)
 
-	_, err = memcache.Get(item.Key)
-	if err == nil {
+	exists, err := memcache.Client().Exists(item.Key)
+	if err != nil {
+		log.ErrS(err)
+	}
+	if exists {
 		return ErrInQueue
 	}
 
 	err = produce(QueueBundles, BundleMessage{ID: id})
 	if err == nil {
-		err = memcache.Set(item.Key, item.Value, item.Expiration)
+		err = memcache.Client().Set(item.Key, item.Value, item.Expiration)
 	}
 
 	return err
@@ -555,14 +561,17 @@ func ProduceGroup(payload GroupMessage) (err error) {
 
 	item := memcache.ItemGroupInQueue(payload.ID)
 
-	_, err = memcache.Get(item.Key)
-	if err == nil {
+	exists, err := memcache.Client().Exists(item.Key)
+	if err != nil {
+		log.ErrS(err)
+	}
+	if exists {
 		return ErrInQueue
 	}
 
 	err = produce(QueueGroups, payload)
 	if err == nil {
-		err = memcache.Set(item.Key, item.Value, item.Expiration)
+		err = memcache.Client().Set(item.Key, item.Value, item.Expiration)
 	}
 
 	return err
@@ -577,15 +586,18 @@ func ProducePackage(payload PackageMessage) (err error) {
 	item := memcache.ItemPackageInQueue(payload.ID)
 
 	if payload.ChangeNumber == 0 {
-		_, err = memcache.Get(item.Key)
-		if err == nil {
+		exists, err := memcache.Client().Exists(item.Key)
+		if err != nil {
+			log.ErrS(err)
+		}
+		if exists {
 			return ErrInQueue
 		}
 	}
 
 	err = produce(QueuePackages, payload)
 	if err == nil {
-		err = memcache.Set(item.Key, item.Value, item.Expiration)
+		err = memcache.Client().Set(item.Key, item.Value, item.Expiration)
 	}
 
 	return err
@@ -610,8 +622,11 @@ func ProducePlayer(payload PlayerMessage, event string) (err error) {
 
 	item := memcache.ItemPlayerInQueue(payload.ID)
 
-	_, err = memcache.Get(item.Key)
-	if err == nil {
+	exists, err := memcache.Client().Exists(item.Key)
+	if err != nil {
+		log.ErrS(err)
+	}
+	if exists {
 		return ErrInQueue
 	}
 
@@ -619,7 +634,7 @@ func ProducePlayer(payload PlayerMessage, event string) (err error) {
 	if err == nil {
 
 		go func() {
-			if err := memcache.Set(item.Key, item.Value, item.Expiration); err != nil {
+			if err := memcache.Client().Set(item.Key, item.Value, item.Expiration); err != nil {
 				log.ErrS(err)
 			}
 		}()

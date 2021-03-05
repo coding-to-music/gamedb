@@ -138,7 +138,7 @@ func appNewsHandler(message *rabbit.Message) {
 	}
 
 	// Clear app cache
-	err = memcache.Delete(memcache.ItemApp(app.ID).Key)
+	err = memcache.Client().Delete(memcache.ItemApp(app.ID).Key)
 	if err != nil {
 		log.ErrS(err, payload.AppID)
 		sendToRetryQueue(message)

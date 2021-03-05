@@ -161,7 +161,8 @@ func ensureStatIndexes() {
 //
 func GetStat(typex StatsType, id int) (stat Stat, err error) {
 
-	err = memcache.GetSetInterface(memcache.ItemStat(string(typex), id), &stat, func() (interface{}, error) {
+	item := memcache.ItemStat(string(typex), id)
+	err = memcache.Client().GetSet(item.Key, item.Expiration, &stat, func() (interface{}, error) {
 
 		stat.Type = typex
 		stat.ID = id
@@ -236,7 +237,8 @@ func GetStatsByID(typex StatsType, ids []int) (stats []Stat, err error) {
 
 func GetStatsForSelect(typex StatsType) (stats []Stat, err error) {
 
-	err = memcache.GetSetInterface(memcache.ItemStatsForSelect(string(typex)), &stats, func() (interface{}, error) {
+	item := memcache.ItemStatsForSelect(string(typex))
+	err = memcache.Client().GetSet(item.Key, item.Expiration, &stats, func() (interface{}, error) {
 
 		stats, err = GetStats(0, 500, bson.D{{"type", typex}}, bson.D{{"mean_score", -1}})
 
@@ -387,6 +389,7 @@ func GetStatsByType(typex StatsType, ids []int, id int) (stats []Stat, err error
 		return GetStatsByID(typex, ids)
 	}
 
-	err = memcache.GetSetInterface(memcache.ItemAppStats(string(typex), id), &stats, callback)
+	item := memcache.ItemAppStats(string(typex), id)
+	err = memcache.Client().GetSet(item.Key, item.Expiration, &stats, callback)
 	return stats, err
 }

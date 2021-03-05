@@ -69,7 +69,7 @@ func appsFindGroupHandler(message *rabbit.Message) {
 	}
 
 	// Clear cache
-	err = memcache.Delete(memcache.ItemApp(payload.AppID).Key)
+	err = memcache.Client().Delete(memcache.ItemApp(payload.AppID).Key)
 	if err != nil {
 		log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 		sendToRetryQueue(message)

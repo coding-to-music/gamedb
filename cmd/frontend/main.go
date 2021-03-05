@@ -78,7 +78,7 @@ func main() {
 		keys := []string{
 			memcache.ItemCommitsPage(1).Key,
 		}
-		err = memcache.Delete(keys...)
+		err = memcache.Client().Delete(keys...)
 		if err != nil {
 			log.ErrS(err)
 		}

@@ -219,7 +219,7 @@ func playerGamesHandler(message *rabbit.Message) {
 	}
 
 	// Clear player cache
-	err = memcache.Delete(memcache.ItemPlayer(payload.PlayerID).Key)
+	err = memcache.Client().Delete(memcache.ItemPlayer(payload.PlayerID).Key)
 	if err != nil {
 		log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 		sendToRetryQueue(message)

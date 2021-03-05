@@ -214,7 +214,7 @@ func appHandler(message *rabbit.Message) {
 			memcache.ItemMongoCount(mongo.CollectionAppSales.String(), bson.D{{"app_id", app.ID}}).Key,
 		}
 
-		err := memcache.Delete(items...)
+		err := memcache.Client().Delete(items...)
 		if err != nil {
 			log.ErrS(err, payload.ID)
 			sendToRetryQueue(message)
@@ -1035,5 +1035,5 @@ func replaceAppRow(app mongo.App) (err error) {
 	}
 
 	// Cache cleared here to stop any race conditions with other queues
-	return memcache.Delete(memcache.ItemApp(app.ID).Key)
+	return memcache.Client().Delete(memcache.ItemApp(app.ID).Key)
 }

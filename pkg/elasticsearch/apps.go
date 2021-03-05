@@ -198,7 +198,8 @@ func GetMostExpensiveApp(code steamapi.ProductCC) (top float64, err error) {
 
 	const aggName = "max_price"
 
-	err = memcache.GetSetInterface(memcache.ItemAppTopPrice(code), &top, func() (interface{}, error) {
+	item := memcache.ItemAppTopPrice(code)
+	err = memcache.Client().GetSet(item.Key, item.Expiration, &top, func() (interface{}, error) {
 
 		client, ctx, err := GetElastic()
 		if err != nil {
@@ -235,7 +236,8 @@ func GetMostExpensiveApp(code steamapi.ProductCC) (top float64, err error) {
 
 func GetUpcomingGames() (apps []App, err error) {
 
-	err = memcache.GetSetInterface(memcache.ItemHomeUpcoming, &apps, func() (interface{}, error) {
+	item := memcache.ItemHomeUpcoming
+	err = memcache.Client().GetSet(item.Key, item.Expiration, &apps, func() (interface{}, error) {
 
 		apps, _, err := SearchAppsAdvanced(
 			0,

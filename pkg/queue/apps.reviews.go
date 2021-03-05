@@ -147,7 +147,7 @@ func appReviewsHandler(message *rabbit.Message) {
 		return
 	}
 
-	err = memcache.Delete(memcache.ItemApp(payload.AppID).Key)
+	err = memcache.Client().Delete(memcache.ItemApp(payload.AppID).Key)
 	if err != nil {
 		log.ErrS(err, payload.AppID)
 		sendToRetryQueue(message)

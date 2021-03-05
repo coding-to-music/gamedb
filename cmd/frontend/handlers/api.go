@@ -66,7 +66,8 @@ func apiSteamJSONHandler(w http.ResponseWriter, r *http.Request) {
 		return json.Marshal(api.GetSteam())
 	}
 
-	err := memcache.GetSetInterface(memcache.ItemAPISteam, &b, callback)
+	item := memcache.ItemAPISteam
+	err := memcache.Client().GetSet(item.Key, item.Expiration, &b, callback)
 	if err != nil {
 		log.ErrS(err)
 		return
@@ -82,7 +83,8 @@ func apiSteamYAMLHandler(w http.ResponseWriter, r *http.Request) {
 		return yaml.Marshal(api.GetSteam())
 	}
 
-	err := memcache.GetSetInterface(memcache.ItemAPISteam, &b, callback)
+	item := memcache.ItemAPISteam
+	err := memcache.Client().GetSet(item.Key, item.Expiration, &b, callback)
 	if err != nil {
 		log.ErrS(err)
 		return

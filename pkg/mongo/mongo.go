@@ -330,7 +330,7 @@ func CountDocuments(collection collection, filter bson.D, ttl uint32) (count int
 		item.Expiration = ttl
 	}
 
-	err = memcache.GetSetInterface(item, &count, func() (interface{}, error) {
+	err = memcache.Client().GetSet(item.Key, item.Expiration, &count, func() (interface{}, error) {
 
 		client, ctx, err := getMongo()
 		if err != nil {

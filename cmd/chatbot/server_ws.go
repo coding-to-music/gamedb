@@ -86,7 +86,7 @@ func websocketServer() (session *discordgo.Session, err error) {
 		if !command.DisableCache() && !config.IsLocal() {
 
 			var response = &discordgo.InteractionResponse{}
-			err = memcache.GetInterface(cacheItem.Key, &response)
+			err = memcache.Client().Get(cacheItem.Key, &response)
 			if err == nil {
 
 				err = s.InteractionRespond(e.Interaction, response)
@@ -129,7 +129,7 @@ func websocketServer() (session *discordgo.Session, err error) {
 		}
 
 		// Save to cache
-		err = memcache.SetInterface(cacheItem.Key, response, cacheItem.Expiration)
+		err = memcache.Client().Set(cacheItem.Key, response, cacheItem.Expiration)
 		if err != nil {
 			log.Err("Saving to memcache", zap.Error(err), zap.String("msg", argumentsString(e)))
 		}
@@ -190,7 +190,7 @@ func websocketServer() (session *discordgo.Session, err error) {
 					// Check in cache first
 					if !command.DisableCache() && !config.IsLocal() {
 						var message discordgo.MessageSend
-						err = memcache.GetInterface(cacheItem.Key, &message)
+						err = memcache.Client().Get(cacheItem.Key, &message)
 						if err == nil {
 							_, err = s.ChannelMessageSendComplex(e.ChannelID, &message)
 							discordError(err)
@@ -219,7 +219,7 @@ func websocketServer() (session *discordgo.Session, err error) {
 					}
 
 					// Save to cache
-					err = memcache.SetInterface(cacheItem.Key, message, cacheItem.Expiration)
+					err = memcache.Client().Set(cacheItem.Key, message, cacheItem.Expiration)
 					if err != nil {
 						log.ErrS(err, msg)
 					}

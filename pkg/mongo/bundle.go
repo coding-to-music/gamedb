@@ -191,7 +191,8 @@ func BatchBundles(filter bson.D, projection bson.M, callback func(bundles []Bund
 
 func GetBundle(id int) (bundle Bundle, err error) {
 
-	err = memcache.GetSetInterface(memcache.ItemBundle(id), &bundle, func() (interface{}, error) {
+	item := memcache.ItemBundle(id)
+	err = memcache.Client().GetSet(item.Key, item.Expiration, &bundle, func() (interface{}, error) {
 
 		err = FindOne(CollectionBundles, bson.D{{"_id", id}}, nil, nil, &bundle)
 		return bundle, err

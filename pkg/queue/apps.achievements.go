@@ -202,7 +202,7 @@ func appAchievementsHandler(message *rabbit.Message) {
 		memcache.ItemMongoCount(mongo.CollectionAppAchievements.String(), bson.D{{"app_id", payload.AppID}}).Key,
 	}
 
-	err = memcache.Delete(items...)
+	err = memcache.Client().Delete(items...)
 	if err != nil {
 		log.ErrS(err, payload.AppID)
 		sendToRetryQueue(message)

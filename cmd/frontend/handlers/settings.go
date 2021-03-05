@@ -219,7 +219,8 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 				return true, err
 			}
 
-			err = memcache.GetSetInterface(memcache.ItemUserInDiscord(val.ID), &inGuild, callback)
+			item := memcache.ItemUserInDiscord(val.ID)
+			err = memcache.Client().GetSet(item.Key, item.Expiration, &inGuild, callback)
 			if err != nil {
 				log.ErrS(err)
 			}
@@ -418,7 +419,7 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = memcache.Delete(memcache.ItemPlayer(playerID).Key)
+		err = memcache.Client().Delete(memcache.ItemPlayer(playerID).Key)
 		if err != nil {
 			log.ErrS(err)
 		}

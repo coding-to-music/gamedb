@@ -100,7 +100,7 @@ func playerAwardsHandler(message *rabbit.Message) {
 		return
 	}
 
-	err = memcache.Delete(memcache.ItemPlayer(payload.PlayerID).Key)
+	err = memcache.Client().Delete(memcache.ItemPlayer(payload.PlayerID).Key)
 	if err != nil {
 		log.ErrS(err, payload.PlayerID)
 		sendToRetryQueue(message)

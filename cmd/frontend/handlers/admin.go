@@ -509,7 +509,7 @@ func adminSettingsHandler(w http.ResponseWriter, r *http.Request) {
 
 		mcItem := r.PostFormValue("del-mc-item")
 		if mcItem != "" {
-			err := memcache.Delete(mcItem)
+			err := memcache.Client().Delete(mcItem)
 			if err != nil {
 				log.ErrS(err)
 			}

@@ -166,7 +166,8 @@ func GetPlayerBadges(offset int64, filter bson.D, sort bson.D) (badges []PlayerB
 // Get the first PlayerBadge for an app ID
 func GetAppBadge(appID int) (badge PlayerBadge, err error) {
 
-	err = memcache.GetSetInterface(memcache.ItemFirstAppBadge(appID), &badge, func() (interface{}, error) {
+	item := memcache.ItemFirstAppBadge(appID)
+	err = memcache.Client().GetSet(item.Key, item.Expiration, &badge, func() (interface{}, error) {
 
 		badges, err := getPlayerBadges(0, 1, bson.D{{"app_id", appID}}, nil, nil)
 		if err != nil {

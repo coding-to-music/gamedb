@@ -59,6 +59,10 @@ github.com/Jleagle/go-durationfmt v0.0.0-20190307132420-e57bfad84057 h1:gIPGag4G
 github.com/Jleagle/go-durationfmt v0.0.0-20190307132420-e57bfad84057/go.mod h1:6Q6xyLL3Dcnj8DkW7BAHG0Y4+vFG+sNhXom2uFUGC20=
 github.com/Jleagle/influxql v0.0.0-20200804190929-88324f67bffe h1:HI7ZQfPMj8bROO9GBuiZWk8wt9OTZ2HPB6+9Y1uvZi4=
 github.com/Jleagle/influxql v0.0.0-20200804190929-88324f67bffe/go.mod h1:uk/L49IGLafa767sMdk1sCwO6AWZEzEOriCIERzdB6E=
+github.com/Jleagle/memcache-go v0.0.0-20210304222944-fd167af26578 h1:DWEAWibkqY42PnQV09ACv/nXvN+vgavVBwGMMXoVAkE=
+github.com/Jleagle/memcache-go v0.0.0-20210304222944-fd167af26578/go.mod h1:ODivZqYxpSdmX9014JsJsl59jWBMgXpJR6qKQ/bm3HE=
+github.com/Jleagle/memcache-go v0.0.0-20210305131412-b4b18e8b5a6a h1:A7pkPBn8LlU94AoDGLwgm1CpkPY7fw3eu4grqPQSQGU=
+github.com/Jleagle/memcache-go v0.0.0-20210305131412-b4b18e8b5a6a/go.mod h1:ODivZqYxpSdmX9014JsJsl59jWBMgXpJR6qKQ/bm3HE=
 github.com/Jleagle/patreon-go v0.0.0-20201006180837-366bfaa6710a h1:I4uIIzK7ivhbgPQ5VQayCCMwS5F9Q1TCubjXqgq/u9o=
 github.com/Jleagle/patreon-go v0.0.0-20201006180837-366bfaa6710a/go.mod h1:nf7hEdupgOorSajbB7rcl+HUpLOUJbwG4hF15kkTeJE=
 github.com/Jleagle/rabbit-go v0.0.0-20210115203259-266db76b636e h1:cvCVrGzCudtk3D0kn5FV3eaUbgYdCKMQXVdGHDugcKg=

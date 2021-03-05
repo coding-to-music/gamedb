@@ -145,7 +145,8 @@ func ensurePlayerAppIndexes() {
 
 func GetAchievmentCounts(appID int) (counts []Count, err error) {
 
-	err = memcache.GetSetInterface(memcache.ItemAppAchievementsCounts(appID), &counts, func() (interface{}, error) {
+	item := memcache.ItemAppAchievementsCounts(appID)
+	err = memcache.Client().GetSet(item.Key, item.Expiration, &counts, func() (interface{}, error) {
 
 		client, ctx, err := getMongo()
 		if err != nil {

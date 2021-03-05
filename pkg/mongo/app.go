@@ -392,7 +392,8 @@ func (app App) GetAppRelatedApps() (apps []App, err error) {
 		return apps, nil
 	}
 
-	err = memcache.GetSetInterface(memcache.ItemAppRelated(app.ID), &apps, func() (interface{}, error) {
+	item := memcache.ItemAppRelated(app.ID)
+	err = memcache.Client().GetSet(item.Key, item.Expiration, &apps, func() (interface{}, error) {
 
 		return GetAppsByID(app.RelatedAppIDs, bson.M{"_id": 1, "name": 1, "icon": 1, "tags": 1})
 	})
@@ -408,9 +409,12 @@ func (app App) GetDemos() (demos []App, err error) {
 		return demos, nil
 	}
 
-	err = memcache.GetSetInterface(memcache.ItemAppDemos(app.ID), &demos, func() (interface{}, error) {
+	callback := func() (interface{}, error) {
 		return GetAppsByID(app.Demos, bson.M{"_id": 1, "name": 1})
-	})
+	}
+
+	item := memcache.ItemAppDemos(app.ID)
+	err = memcache.Client().GetSet(item.Key, item.Expiration, &demos, callback)
 
 	return demos, err
 }
@@ -453,7 +457,8 @@ func (app App) GetPlayersInGame() (players int64, err error) {
 	GetPlayersInGameLock.Lock()
 	defer GetPlayersInGameLock.Unlock()
 
-	err = memcache.GetSetInterface(memcache.ItemAppPlayersRow(app.ID), &players, func() (interface{}, error) {
+	item := memcache.ItemAppPlayersRow(app.ID)
+	err = memcache.Client().GetSet(item.Key, item.Expiration, &players, func() (interface{}, error) {
 
 		builder := influxql.NewBuilder()
 		builder.AddSelect("player_count", "")
@@ -476,7 +481,8 @@ func (app App) GetPlayersOnline() (players int64, err error) {
 	GetPlayersOnlineLock.Lock()
 	defer GetPlayersOnlineLock.Unlock()
 
-	err = memcache.GetSetInterface(memcache.ItemAppPlayersInGameRow, &players, func() (interface{}, error) {
+	item := memcache.ItemAppPlayersInGameRow
+	err = memcache.Client().GetSet(item.Key, item.Expiration, &players, func() (interface{}, error) {
 
 		builder := influxql.NewBuilder()
 		builder.AddSelect("player_online", "")
@@ -704,7 +710,8 @@ func GetApp(id int, full ...bool) (app App, err error) {
 	} else {
 
 		// Load from Memcache
-		err = memcache.GetSetInterface(memcache.ItemApp(id), &app, func() (interface{}, error) {
+		item := memcache.ItemApp(id)
+		err = memcache.Client().GetSet(item.Key, item.Expiration, &app, func() (interface{}, error) {
 
 			var projection = bson.M{"reviews.reviews": 0, "localization": 0, "achievements": 0, "achievements_5": 0} // Too much for memcache
 
@@ -755,7 +762,8 @@ func GetAppsByID(ids []int, projection bson.M) (apps []App, err error) {
 
 func PopularApps() (apps []App, err error) {
 
-	err = memcache.GetSetInterface(memcache.ItemAppsPopular, &apps, func() (interface{}, error) {
+	item := memcache.ItemAppsPopular
+	err = memcache.Client().GetSet(item.Key, item.Expiration, &apps, func() (interface{}, error) {
 
 		return GetApps(
 			0,
@@ -771,7 +779,8 @@ func PopularApps() (apps []App, err error) {
 
 func PopularNewApps() (apps []App, err error) {
 
-	err = memcache.GetSetInterface(memcache.ItemNewPopularApps, &apps, func() (interface{}, error) {
+	item := memcache.ItemNewPopularApps
+	err = memcache.Client().GetSet(item.Key, item.Expiration, &apps, func() (interface{}, error) {
 
 		releaseDate := time.Now().AddDate(0, 0, -config.C.NewReleaseDays).Unix()
 
@@ -792,7 +801,8 @@ func PopularNewApps() (apps []App, err error) {
 
 func TrendingApps() (apps []App, err error) {
 
-	err = memcache.GetSetInterface(memcache.ItemAppsTrending, &apps, func() (interface{}, error) {
+	item := memcache.ItemAppsTrending
+	err = memcache.Client().GetSet(item.Key, item.Expiration, &apps, func() (interface{}, error) {
 		return GetApps(
 			0,
 			10,
@@ -807,7 +817,8 @@ func TrendingApps() (apps []App, err error) {
 
 func GetAppsGroupedByType(code steamapi.ProductCC) (counts []AppTypeCount, err error) {
 
-	err = memcache.GetSetInterface(memcache.ItemAppTypeCounts(code), &counts, func() (interface{}, error) {
+	item := memcache.ItemAppTypeCounts(code)
+	err = memcache.Client().GetSet(item.Key, item.Expiration, &counts, func() (interface{}, error) {
 
 		client, ctx, err := getMongo()
 		if err != nil {
@@ -872,7 +883,8 @@ func (atc AppTypeCount) Format() string {
 
 func GetAppsGroupedByReleaseDate() (counts []AppReleaseDateCount, err error) {
 
-	err = memcache.GetSetInterface(memcache.ItemAppReleaseDateCounts, &counts, func() (interface{}, error) {
+	item := memcache.ItemAppReleaseDateCounts
+	err = memcache.Client().GetSet(item.Key, item.Expiration, &counts, func() (interface{}, error) {
 
 		client, ctx, err := getMongo()
 		if err != nil {
@@ -922,7 +934,8 @@ type AppReleaseDateCount struct {
 
 func GetAppsGroupedByReviewScore() (counts []AppReviewScoreCount, err error) {
 
-	err = memcache.GetSetInterface(memcache.ItemAppReviewScoreCounts, &counts, func() (interface{}, error) {
+	item := memcache.ItemAppReviewScoreCounts
+	err = memcache.Client().GetSet(item.Key, item.Expiration, &counts, func() (interface{}, error) {
 
 		client, ctx, err := getMongo()
 		if err != nil {

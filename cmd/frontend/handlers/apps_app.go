@@ -1062,7 +1062,8 @@ func appBundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return mongo.GetBundlesByID(app.Bundles, nil)
 	}
 
-	err = memcache.GetSetInterface(memcache.ItemAppBundles(app.ID), &bundles, callback)
+	item := memcache.ItemAppBundles(app.ID)
+	err = memcache.Client().GetSet(item.Key, item.Expiration, &bundles, callback)
 	if err != nil {
 		log.ErrS(err)
 		return
@@ -1106,7 +1107,8 @@ func appPackagesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return mongo.GetPackagesByID(app.Packages, bson.M{})
 	}
 
-	err = memcache.GetSetInterface(memcache.ItemAppPackages(app.ID), &packages, callback)
+	item := memcache.ItemAppPackages(app.ID)
+	err = memcache.Client().GetSet(item.Key, item.Expiration, &packages, callback)
 	if err != nil {
 		log.ErrS(err)
 		return
@@ -1138,7 +1140,8 @@ func appWishlistAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var hc influx.HighChartsJSON
 
-	err := memcache.GetSetInterface(memcache.ItemAppWishlistChart(id), &hc, func() (interface{}, error) {
+	item := memcache.ItemAppWishlistChart(id)
+	err := memcache.Client().GetSet(item.Key, item.Expiration, &hc, func() (interface{}, error) {
 
 		builder := influxql.NewBuilder()
 		builder.AddSelect("MEAN(wishlist_avg_position)", "mean_wishlist_avg_position")
@@ -1237,7 +1240,8 @@ func appPlayersHeatmapAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return hc, err
 	}
 
-	err := memcache.GetSetInterface(memcache.ItemAppPlayersHeatmapChart(id), &hc, callback)
+	item := memcache.ItemAppPlayersHeatmapChart(id)
+	err := memcache.Client().GetSet(item.Key, item.Expiration, &hc, callback)
 	if err != nil {
 		log.ErrS(err)
 	}
@@ -1267,7 +1271,8 @@ func appTagsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		tagsOrder = append(tagsOrder, v.ID)
 	}
 
-	err = memcache.GetSetInterface(memcache.ItemAppTagsChart(id), &hc, func() (interface{}, error) {
+	item := memcache.ItemAppTagsChart(id)
+	err = memcache.Client().GetSet(item.Key, item.Expiration, &hc, func() (interface{}, error) {
 
 		builder := influxql.NewBuilder()
 		for _, v := range app.TagCounts {
@@ -1357,7 +1362,8 @@ func appPlayersAjaxHandler(limit bool) func(http.ResponseWriter, *http.Request) 
 			return hc, err
 		}
 
-		err := memcache.GetSetInterface(memcache.ItemAppPlayersChart(id, limit), &hc, callback)
+		item := memcache.ItemAppPlayersChart(id, limit)
+		err := memcache.Client().GetSet(item.Key, item.Expiration, &hc, callback)
 		if err != nil {
 			log.ErrS(err)
 		}
@@ -1593,7 +1599,8 @@ func friendsJSONHandler(w http.ResponseWriter, r *http.Request) {
 		return friends2, err
 	}
 
-	err = memcache.GetSetInterface(memcache.ItemPlayerFriends(playerID, appID), &friends, callback)
+	item := memcache.ItemPlayerFriends(playerID, appID)
+	err = memcache.Client().GetSet(item.Key, item.Expiration, &friends, callback)
 	if err != nil {
 		log.ErrS(err)
 		return

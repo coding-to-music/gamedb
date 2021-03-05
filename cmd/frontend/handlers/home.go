@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/influxql"
+	memcache2 "github.com/Jleagle/memcache-go"
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
@@ -183,13 +184,14 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			if len(vdf.Channel.Seq.Li) == 0 {
-				return topSellers, memcache.ErrNoSet
+				return topSellers, memcache2.ErrNoSet
 			}
 
 			return topSellers, nil
 		}
 
-		err := memcache.GetSetInterface(memcache.ItemHomeTopSellers, &topSellers, callback)
+		item := memcache.ItemHomeTopSellers
+		err := memcache.Client().GetSet(item.Key, item.Expiration, &topSellers, callback)
 		if err != nil {
 			steam.LogSteamError(err)
 			return
@@ -321,7 +323,8 @@ func homeNewsHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, "home_news", "", "")
 
 	var articles []elasticsearch.Article
-	err := memcache.GetSetInterface(memcache.ItemHomeNews, &articles, func() (interface{}, error) {
+	item := memcache.ItemHomeNews
+	err := memcache.Client().GetSet(item.Key, item.Expiration, &articles, func() (interface{}, error) {
 
 		popularApps, err := mongo.PopularApps()
 		if err != nil {
@@ -430,7 +433,8 @@ func homeTweetsHandler(w http.ResponseWriter, r *http.Request) {
 		return ret, nil
 	}
 
-	err := memcache.GetSetInterface(memcache.ItemHomeTweets, &ret, callback)
+	item := memcache.ItemHomeTweets
+	err := memcache.Client().GetSet(item.Key, item.Expiration, &ret, callback)
 	if err != nil {
 		log.ErrS(err)
 		return
@@ -606,7 +610,8 @@ type homePlayer struct {
 
 func getPlayersForHome(sort string) (players []mongo.Player, err error) {
 
-	err = memcache.GetSetInterface(memcache.ItemHomePlayers(sort), &players, func() (interface{}, error) {
+	item := memcache.ItemHomePlayers(sort)
+	err = memcache.Client().GetSet(item.Key, item.Expiration, &players, func() (interface{}, error) {
 
 		projection := bson.M{
 			"_id":                    1,

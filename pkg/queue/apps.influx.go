@@ -116,7 +116,7 @@ func appInfluxHandler(message *rabbit.Message) {
 	// 	items = append(items, memcache.ItemApp(v).Key)
 	// }
 	//
-	// err = memcache.Delete(items...)
+	// err = memcache.Client().Delete(items...)
 	// if err != nil {
 	// 	log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 	// 	sendToRetryQueue(message)
