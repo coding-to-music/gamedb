@@ -26,7 +26,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/go-chi/chi/v5"
 	"github.com/justinas/nosurf"
-	"github.com/memcachier/mc/v3"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.uber.org/zap"
 )
@@ -249,11 +248,6 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		inQueue, err = memcache.Client().Exists(memcache.ItemPlayerInQueue(player.ID).Key)
-		if err != nil {
-			log.ErrS(err)
-		}
-
-		err = helpers.IgnoreErrors(err, mc.ErrNotFound)
 		if err != nil {
 			log.ErrS(err)
 		}
