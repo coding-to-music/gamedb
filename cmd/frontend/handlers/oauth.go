@@ -478,7 +478,7 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 			}
 
 			err = discord.GuildMemberNickname(config.DiscordGuildID, discordProvider.ID, player.GetName())
-			if val, ok := err.(*discordgo.RESTError); ok && val.Message.Code == 401 {
+			if val, ok := err.(*discordgo.RESTError); ok && (val.Message.Code == 401 || val.Message.Message == "401: Unauthorized") { // Code can be 0
 				break
 			}
 			if err != nil {
