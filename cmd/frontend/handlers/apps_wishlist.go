@@ -27,11 +27,18 @@ func wishlistsHandler(w http.ResponseWriter, r *http.Request) {
 	t := wishlistsTemplate{}
 	t.fill(w, r, "wishlists", "Wishlists", "Games on the most wishlists")
 
+	var err error
+	t.Players, err = mongo.CountDocuments(mongo.CollectionPlayers, nil, 0)
+	if err != nil {
+		log.ErrS(err)
+	}
+
 	returnTemplate(w, r, t)
 }
 
 type wishlistsTemplate struct {
 	globalTemplate
+	Players int64
 }
 
 func wishlistAppsHandler(w http.ResponseWriter, r *http.Request) {
