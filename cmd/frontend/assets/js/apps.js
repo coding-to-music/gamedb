@@ -19,7 +19,11 @@ if ($('#apps-page').length > 0) {
             range: {
                 'min': 0,
                 'max': 100,
-            }
+            },
+            format: {
+                to: (v) => parseFloat(v).toFixed(2),
+                from: (v) => parseFloat(v).toFixed(2)
+            },
         });
 
         // Score slider
@@ -31,7 +35,11 @@ if ($('#apps-page').length > 0) {
             range: {
                 'min': 0,
                 'max': 100
-            }
+            },
+            format: {
+                to: (v) => parseFloat(v).toFixed(0),
+                from: (v) => parseFloat(v).toFixed(0)
+            },
         });
 
         //

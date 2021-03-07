@@ -93,17 +93,15 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		//
 		discount := query.GetSearchSlice("discount")
 		if len(discount) == 2 {
-			if discount[0] != "0" {
-				min, err := strconv.Atoi(discount[0])
-				if err == nil {
-					filters = append(filters, elastic.NewRangeQuery("discount_sale").Gte(min))
-				}
+
+			min, err := strconv.Atoi(discount[0])
+			if err == nil && min > 0 {
+				filters = append(filters, elastic.NewRangeQuery("discount_sale").Gte(min))
 			}
-			if discount[1] != "100" {
-				max, err := strconv.Atoi(discount[1])
-				if err == nil {
-					filters = append(filters, elastic.NewRangeQuery("discount_sale").Lte(max))
-				}
+
+			max, err := strconv.Atoi(discount[1])
+			if err == nil && max < 100 {
+				filters = append(filters, elastic.NewRangeQuery("discount_sale").Lte(max))
 			}
 		}
 
@@ -111,18 +109,15 @@ func bundlesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		apps := query.GetSearchSlice("apps")
 		if len(apps) == 2 {
 
-			if apps[0] != "0" {
-				min, err := strconv.Atoi(apps[0])
-				if err == nil {
-					filters = append(filters, elastic.NewRangeQuery("apps").Gte(min))
-				}
+			min, err := strconv.Atoi(apps[0])
+			if err == nil && min > 0 {
+				filters = append(filters, elastic.NewRangeQuery("apps").Gte(min))
+
 			}
 
-			if apps[1] != "100" {
-				max, err := strconv.Atoi(apps[1])
-				if err == nil {
-					filters = append(filters, elastic.NewRangeQuery("apps").Lte(max))
-				}
+			max, err := strconv.Atoi(apps[1])
+			if err == nil && max < 100 {
+				filters = append(filters, elastic.NewRangeQuery("apps").Lte(max))
 			}
 		}
 

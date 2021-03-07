@@ -273,60 +273,28 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	prices := query.GetSearchSlice("price")
 	if len(prices) == 2 {
 
-		lowCheck, highCheck := false, false
-
-		q := elastic.NewRangeQuery("prices." + string(code) + ".final")
-
 		low, err := strconv.Atoi(strings.Replace(prices[0], ".", "", 1))
-		if err != nil {
-			log.ErrS(err)
-		}
 		if err == nil && low > 0 {
-			lowCheck = true
-			q.From(low)
+			filters = append(filters, elastic.NewRangeQuery("prices."+string(code)+".final").From(low))
 		}
 
 		high, err := strconv.Atoi(strings.Replace(prices[1], ".", "", 1))
-		if err != nil {
-			log.ErrS(err)
-		}
-		if err == nil && high < 100*100 {
-			highCheck = true
-			q.To(high)
-		}
-
-		if lowCheck || highCheck {
-			filters = append(filters, q)
+		if err == nil && high < 100_00 {
+			filters = append(filters, elastic.NewRangeQuery("prices."+string(code)+".final").To(high))
 		}
 	}
 
 	scores := query.GetSearchSlice("score")
 	if len(scores) == 2 {
 
-		lowCheck, highCheck := false, false
-
-		q := elastic.NewRangeQuery("score")
-
-		low, err := strconv.Atoi(strings.TrimSuffix(scores[0], ".00"))
-		if err != nil {
-			log.ErrS(err)
-		}
+		low, err := strconv.Atoi(scores[0])
 		if err == nil && low > 0 {
-			lowCheck = true
-			q.From(low)
+			filters = append(filters, elastic.NewRangeQuery("score").From(low))
 		}
 
-		high, err := strconv.Atoi(strings.TrimSuffix(scores[1], ".00"))
-		if err != nil {
-			log.ErrS(err)
-		}
+		high, err := strconv.Atoi(scores[1])
 		if err == nil && high < 100 {
-			highCheck = true
-			q.To(high)
-		}
-
-		if lowCheck || highCheck {
-			filters = append(filters, q)
+			filters = append(filters, elastic.NewRangeQuery("score").To(high))
 		}
 	}
 
