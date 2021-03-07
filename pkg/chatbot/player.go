@@ -66,7 +66,6 @@ func (c CommandPlayer) Slash() []*discordgo.ApplicationCommandOption {
 			Name:        "player",
 			Description: "The name or ID of the player",
 			Type:        discordgo.ApplicationCommandOptionString,
-			Required:    true,
 		},
 	}
 }
