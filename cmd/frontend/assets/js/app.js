@@ -1035,6 +1035,11 @@ if ($appPage.length > 0) {
                         "render": function (data, type, row) {
 
                             let name = row[0];
+
+                            if (!name) {
+                                name = row[9];
+                            }
+
                             if (!row[4]) {
                                 name += '<span class="badge badge-danger float-right ml-1">Inactive</span>';
                             }
