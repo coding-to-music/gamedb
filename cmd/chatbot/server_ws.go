@@ -136,6 +136,7 @@ func websocketServer() (session *discordgo.Session, err error) {
 
 		success = true
 	})
+
 	session.AddHandler(func(s *discordgo.Session, e *discordgo.MessageCreate) {
 
 		// Don't reply to bots
