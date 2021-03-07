@@ -1,5 +1,9 @@
 package pics
 
+import (
+	"strconv"
+)
+
 type PICSAppConfigLaunchItem struct {
 	Order               interface{} `json:"order"` // Int but can be "main", Mongo does not support ctypes package
 	Executable          string      `json:"executable"`
@@ -19,8 +23,13 @@ type PICSAppConfigLaunchItem struct {
 
 func (li PICSAppConfigLaunchItem) OrderInt() int {
 
-	if val, ok := li.Order.(int); ok {
+	switch val := li.Order.(type) {
+	case int:
 		return val
+	case string:
+		s, _ := strconv.Atoi(val)
+		return s
+	default:
+		return 0
 	}
-	return 0
 }

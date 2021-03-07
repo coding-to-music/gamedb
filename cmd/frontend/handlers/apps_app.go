@@ -296,9 +296,14 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	t.Config = app.Config.Formatted(app.ID, pics.ConfigKeys)
 	t.UFS = app.UFS.Formatted(app.ID, pics.UFSKeys)
 
-	//
+	// Sort reviews
 	sort.Slice(app.Reviews.Reviews, func(i, j int) bool {
 		return app.Reviews.Reviews[i].VotesGood > app.Reviews.Reviews[j].VotesGood
+	})
+
+	// Sort launch
+	sort.Slice(app.Launch, func(i, j int) bool {
+		return app.Launch[i].OrderInt() < app.Launch[j].OrderInt()
 	})
 
 	// Get max tag count
