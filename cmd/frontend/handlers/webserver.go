@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"bytes"
 	"encoding/json"
 	"encoding/xml"
 	"errors"
@@ -27,8 +26,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gosimple/slug"
-	"github.com/tdewolff/minify/v2"
-	minhtml "github.com/tdewolff/minify/v2/html"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
 )
@@ -204,35 +201,35 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, pageData pageInterfa
 	setHeaders(w, "text/html")
 
 	// Write a respone
-	buf := &bytes.Buffer{}
-	err := templatex.ExecuteTemplate(buf, path.Base(page), pageData)
+	// buf := &bytes.Buffer{}
+	err := templatex.ExecuteTemplate(w, path.Base(page), pageData)
 	if err != nil {
 		log.ErrS(err)
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Looks like I messed something up, will be fixed soon!"})
 		return
 	}
 
-	if config.IsProd() {
-
-		m := minify.New()
-		m.Add("text/html", &minhtml.Minifier{
-			KeepConditionalComments: false,
-			KeepDefaultAttrVals:     true,
-			KeepDocumentTags:        true,
-			KeepEndTags:             true,
-			KeepQuotes:              false,
-			KeepWhitespace:          true,
-		})
-
-		err = m.Minify("text/html", w, buf)
-
-	} else {
-		_, err = buf.WriteTo(w)
-	}
-
-	if err != nil && !strings.Contains(err.Error(), "write: broken pipe") {
-		log.ErrS(err)
-	}
+	// if config.IsProd() {
+	//
+	// 	m := minify.New()
+	// 	m.Add("text/html", &minhtml.Minifier{
+	// 		KeepConditionalComments: false,
+	// 		KeepDefaultAttrVals:     true,
+	// 		KeepDocumentTags:        true,
+	// 		KeepEndTags:             true,
+	// 		KeepQuotes:              false,
+	// 		KeepWhitespace:          true,
+	// 	})
+	//
+	// 	err = m.Minify("text/html", w, buf)
+	//
+	// } else {
+	// 	_, err = buf.WriteTo(w)
+	// }
+	//
+	// if err != nil && !strings.Contains(err.Error(), "write: broken pipe") {
+	// 	log.ErrS(err)
+	// }
 }
 
 func returnErrorTemplate(w http.ResponseWriter, r *http.Request, t errorTemplate) {
