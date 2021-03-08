@@ -158,11 +158,8 @@ func DeleteAndRebuildGroupsIndex() {
 		"settings": settings,
 		"mappings": map[string]interface{}{
 			"properties": map[string]interface{}{
-				"id": fieldTypeKeyword,
-				"name": map[string]interface{}{
-					"type":     "text",
-					"analyzer": "gdb_lowercase_text",
-				},
+				"id":           fieldTypeKeyword,
+				"name":         fieldTypeText,
 				"url":          fieldTypeText,
 				"abbreviation": fieldTypeText,
 				"headline":     fieldTypeText,

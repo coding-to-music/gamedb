@@ -261,26 +261,17 @@ func DeleteAndRebuildArticlesIndex() {
 		"settings": settings,
 		"mappings": map[string]interface{}{
 			"properties": map[string]interface{}{
-				"id": fieldTypeDisabled,
-				"title": map[string]interface{}{
-					"type":     "text",
-					"analyzer": "gdb_lowercase_text",
-				},
-				"author": map[string]interface{}{
-					"type":       "keyword",
-					"normalizer": "gdb_lowercase_keyword",
-				},
+				"id":        fieldTypeDisabled,
+				"title":     fieldTypeText,
+				"author":    fieldTypeKeyword,
 				"body":      fieldTypeDisabled,
 				"feed":      fieldTypeKeyword,
 				"feed_name": fieldTypeDisabled,
 				"app_id":    fieldTypeKeyword,
-				"app_name": map[string]interface{}{
-					"type":     "text",
-					"analyzer": "gdb_lowercase_text",
-				},
-				"app_icon": fieldTypeDisabled,
-				"icon":     fieldTypeDisabled,
-				"time":     fieldTypeInt64,
+				"app_name":  fieldTypeText,
+				"app_icon":  fieldTypeDisabled,
+				"icon":      fieldTypeDisabled,
+				"time":      fieldTypeInt64,
 			},
 		},
 	}

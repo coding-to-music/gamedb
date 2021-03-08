@@ -89,7 +89,6 @@ func appsSearchHandler(message *rabbit.Message) {
 	}
 
 	app := elasticsearch.App{}
-
 	app.AchievementsAvg = mongoApp.AchievementsAverageCompletion
 	app.AchievementsCount = mongoApp.AchievementsCount
 	app.AchievementsIcons = mongoApp.Achievements

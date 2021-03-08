@@ -27,22 +27,6 @@ var (
 	settings = map[string]interface{}{
 		"number_of_shards":   1,
 		"number_of_replicas": 0,
-		"analysis": map[string]interface{}{
-			"normalizer": map[string]interface{}{
-				"gdb_lowercase_keyword": map[string]interface{}{
-					"type":        "custom",
-					"char_filter": []string{},
-					"filter":      []string{"lowercase"},
-				},
-			},
-			"analyzer": map[string]interface{}{
-				"gdb_lowercase_text": map[string]interface{}{
-					"type":      "custom",
-					"tokenizer": "standard",
-					"filter":    []string{"lowercase"},
-				},
-			},
-		},
 	}
 
 	fieldTypeInt32    = map[string]interface{}{"type": "integer"}
@@ -50,8 +34,8 @@ var (
 	fieldTypeFloat32  = map[string]interface{}{"type": "float"}
 	fieldTypeFloat16  = map[string]interface{}{"type": "half_float"}
 	fieldTypeBool     = map[string]interface{}{"type": "boolean"}
-	fieldTypeKeyword  = map[string]interface{}{"type": "keyword"} // Exact matches
-	fieldTypeText     = map[string]interface{}{"type": "text"}    // To search, no sorting
+	fieldTypeKeyword  = map[string]interface{}{"type": "keyword"} // Exact matches, case sensitive
+	fieldTypeText     = map[string]interface{}{"type": "text"}    // To search, no sorting, case insensitive
 	fieldTypeDisabled = map[string]interface{}{"enabled": false}  // No indexing
 
 	// fieldTypeTextWithPrefix = map[string]interface{}{
@@ -64,21 +48,17 @@ var (
 )
 
 var (
-	client *elastic.Client
-	ctx    context.Context
-	lock   sync.Mutex
+	clientStruct  *elastic.Client
+	clientContext context.Context
+	clientLock    sync.Mutex
 )
 
-func GetElastic() (*elastic.Client, context.Context, error) {
+func client() (*elastic.Client, context.Context, error) {
 
-	lock.Lock()
-	defer lock.Unlock()
+	clientLock.Lock()
+	defer clientLock.Unlock()
 
-	var err error
-
-	if client == nil {
-
-		ctx = context.Background()
+	if clientStruct == nil {
 
 		ops := []elastic.ClientOptionFunc{
 			elastic.SetURL(config.C.ElasticAddress),
@@ -87,10 +67,16 @@ func GetElastic() (*elastic.Client, context.Context, error) {
 			elastic.SetBasicAuth(config.C.ElasticUsername, config.C.ElasticPassword),
 		}
 
-		client, err = elastic.NewClient(ops...)
+		var err error
+		clientStruct, err = elastic.NewClient(ops...)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		clientContext = context.Background()
 	}
 
-	return client, ctx, err
+	return clientStruct, clientContext, nil
 }
 
 func UpdateDocumentFields(index string, key string, doc map[string]interface{}) error {
