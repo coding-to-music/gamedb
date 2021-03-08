@@ -164,12 +164,14 @@ func (rk RankMetric) Letter() string {
 }
 
 const (
-	RankKeyLevel        RankMetric = "l"
-	RankKeyBadges       RankMetric = "b"
-	RankKeyBadgesFoil   RankMetric = "d"
-	RankKeyGames        RankMetric = "g"
-	RankKeyPlaytime     RankMetric = "p"
-	RankKeyAchievements RankMetric = "a"
+	RankKeyLevel          RankMetric = "l"
+	RankKeyBadges         RankMetric = "b"
+	RankKeyBadgesFoil     RankMetric = "d"
+	RankKeyGames          RankMetric = "g"
+	RankKeyPlaytime       RankMetric = "p"
+	RankKeyAchievements   RankMetric = "a"
+	RankKeyAwardsGiven    RankMetric = "c"
+	RankKeyAwardsReceived RankMetric = "e"
 )
 
 // Mongo col -> Rank key
@@ -180,14 +182,18 @@ var PlayerRankFields = map[string]RankMetric{
 	"badges_foil_count": RankKeyBadgesFoil,
 	"play_time":         RankKeyPlaytime,
 	"achievement_count": RankKeyAchievements,
+	"awards_given":      RankKeyAwardsGiven,
+	"awards_received":   RankKeyAwardsReceived,
 }
 
 // Rank key -> Influx col
 var PlayerRankFieldsInflux = map[RankMetric]string{
-	RankKeyLevel:        InfPlayersLevelRank.String(),
-	RankKeyGames:        InfPlayersGamesRank.String(),
-	RankKeyBadges:       InfPlayersBadgesRank.String(),
-	RankKeyBadgesFoil:   InfPlayersBadgesFoilRank.String(),
-	RankKeyPlaytime:     InfPlayersPlaytimeRank.String(),
-	RankKeyAchievements: InfPlayersAchievementsRank.String(),
+	RankKeyLevel:          InfPlayersLevelRank.String(),
+	RankKeyGames:          InfPlayersGamesRank.String(),
+	RankKeyBadges:         InfPlayersBadgesRank.String(),
+	RankKeyBadgesFoil:     InfPlayersBadgesFoilRank.String(),
+	RankKeyPlaytime:       InfPlayersPlaytimeRank.String(),
+	RankKeyAchievements:   InfPlayersAchievementsRank.String(),
+	RankKeyAwardsGiven:    InfPlayersAwardsGiven.String(),
+	RankKeyAwardsReceived: InfPlayersAwardsReceived.String(),
 }

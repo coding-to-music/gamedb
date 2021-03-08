@@ -1197,6 +1197,8 @@ func playersHistoryAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		helpers.InfPlayersGames,
 		helpers.InfPlayersLevel,
 		helpers.InfPlayersPlaytime,
+		helpers.InfPlayersAwardsGiven,
+		helpers.InfPlayersAwardsReceived,
 
 		helpers.InfPlayersAchievementsRank,
 		helpers.InfPlayersBadgesRank,
@@ -1206,6 +1208,8 @@ func playersHistoryAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		helpers.InfPlayersGamesRank,
 		helpers.InfPlayersLevelRank,
 		helpers.InfPlayersPlaytimeRank,
+		helpers.InfPlayersAwardsGivenRank,
+		helpers.InfPlayersAwardsReceivedRank,
 	}
 
 	builder := influxql.NewBuilder()

@@ -1,24 +1,28 @@
 package helpers
 
 var (
-	InfPlayersAchievements     = Field{Field: "achievements"}
-	InfPlayersAchievements100  = Field{Field: "achievements_count_100"}
-	InfPlayersAchievementsApps = Field{Field: "achievements_count_apps"}
-	InfPlayersAchievementsRank = Field{Field: "achievements_rank"}
-	InfPlayersBadges           = Field{Field: "badges"}
-	InfPlayersBadgesRank       = Field{Field: "badges_rank"}
-	InfPlayersBadgesFoil       = Field{Field: "badges_foil"}
-	InfPlayersBadgesFoilRank   = Field{Field: "badges_foil_rank"}
-	InfPlayersComments         = Field{Field: "comments"}
-	InfPlayersCommentsRank     = Field{Field: "comments_rank"}
-	InfPlayersFriends          = Field{Field: "friends"}
-	InfPlayersFriendsRank      = Field{Field: "friends_rank"}
-	InfPlayersGames            = Field{Field: "games"}
-	InfPlayersGamesRank        = Field{Field: "games_rank"}
-	InfPlayersLevel            = Field{Field: "level"}
-	InfPlayersLevelRank        = Field{Field: "level_rank"}
-	InfPlayersPlaytime         = Field{Field: "playtime"}
-	InfPlayersPlaytimeRank     = Field{Field: "playtime_rank"}
+	InfPlayersAchievements       = Field{Field: "achievements"}
+	InfPlayersAchievements100    = Field{Field: "achievements_count_100"}
+	InfPlayersAchievementsApps   = Field{Field: "achievements_count_apps"}
+	InfPlayersAchievementsRank   = Field{Field: "achievements_rank"}
+	InfPlayersBadges             = Field{Field: "badges"}
+	InfPlayersBadgesRank         = Field{Field: "badges_rank"}
+	InfPlayersBadgesFoil         = Field{Field: "badges_foil"}
+	InfPlayersBadgesFoilRank     = Field{Field: "badges_foil_rank"}
+	InfPlayersComments           = Field{Field: "comments"}
+	InfPlayersCommentsRank       = Field{Field: "comments_rank"}
+	InfPlayersFriends            = Field{Field: "friends"}
+	InfPlayersFriendsRank        = Field{Field: "friends_rank"}
+	InfPlayersGames              = Field{Field: "games"}
+	InfPlayersGamesRank          = Field{Field: "games_rank"}
+	InfPlayersLevel              = Field{Field: "level"}
+	InfPlayersLevelRank          = Field{Field: "level_rank"}
+	InfPlayersPlaytime           = Field{Field: "playtime"}
+	InfPlayersPlaytimeRank       = Field{Field: "playtime_rank"}
+	InfPlayersAwardsGiven        = Field{Field: "awards_given"}
+	InfPlayersAwardsGivenRank    = Field{Field: "awards_given_rank"}
+	InfPlayersAwardsReceived     = Field{Field: "awards_received"}
+	InfPlayersAwardsReceivedRank = Field{Field: "awards_received_rank"}
 )
 
 type Field struct {
