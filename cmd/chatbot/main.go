@@ -57,10 +57,7 @@ func main() {
 		log.FatalS(err)
 	}
 
-	err = refreshCommands(session)
-	if err != nil {
-		log.Err("refreshing commands", zap.Error(err))
-	}
+	refreshCommands(session)
 
 	go updateGuildsCount(session)
 
@@ -81,11 +78,12 @@ func closeWebcocketConn(session *discordgo.Session) func() {
 	}
 }
 
-func refreshCommands(session *discordgo.Session) error {
+func refreshCommands(session *discordgo.Session) {
 
 	apiCommands, err := session.ApplicationCommands(config.C.DiscordChatBotClientID, "")
 	if err != nil {
-		return err
+		log.Err("ApplicationCommands()", zap.Error(err))
+		return
 	}
 
 	// Delete removed commands
@@ -95,7 +93,8 @@ func refreshCommands(session *discordgo.Session) error {
 			log.Info("Deleting dommand", zap.String("id", apiCommand.Name))
 			err = session.ApplicationCommandDelete(config.C.DiscordChatBotClientID, "", apiCommand.ID)
 			if err != nil {
-				log.Err("Deleting command", zap.Error(err))
+				log.Err("ApplicationCommandDelete()", zap.Error(err), zap.String("name", apiCommand.Name))
+				return
 			}
 		}
 	}
@@ -120,7 +119,8 @@ func refreshCommands(session *discordgo.Session) error {
 				}
 				_, err = session.ApplicationCommandCreate(config.C.DiscordChatBotClientID, "", command)
 				if err != nil {
-					return err
+					log.Err("ApplicationCommandCreate()", zap.Error(err), zap.String("id", localCommand.ID()))
+					return
 				}
 			}
 		}
@@ -145,13 +145,11 @@ func refreshCommands(session *discordgo.Session) error {
 			}
 			_, err = session.ApplicationCommandCreate(config.C.DiscordChatBotClientID, "", command)
 			if err != nil {
-				log.Err("Adding command", zap.String("id", localCommand.ID()))
+				log.Err("ApplicationCommandCreate()", zap.String("id", localCommand.ID()))
 				return
 			}
 		}()
 	}
-
-	return nil
 }
 
 func updateGuildsCount(session *discordgo.Session) {
