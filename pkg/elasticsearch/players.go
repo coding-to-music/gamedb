@@ -129,7 +129,7 @@ func IndexPlayer(p Player) error {
 
 func SearchPlayers(limit int, offset int, search string, sorters []elastic.Sorter, filters []elastic.Query) (players []Player, total int64, err error) {
 
-	client, ctx, err := GetElastic()
+	client, ctx, err := client()
 	if err != nil {
 		return players, 0, err
 	}
@@ -222,7 +222,7 @@ func AggregatePlayerCountries() (aggregations map[string]int64, err error) {
 	item := memcache.ItemPlayerLocationAggs
 	err = memcache.Client().GetSet(item.Key, item.Expiration, &aggregations, func() (interface{}, error) {
 
-		client, ctx, err := GetElastic()
+		client, ctx, err := client()
 		if err != nil {
 			return aggregations, err
 		}

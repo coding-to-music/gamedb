@@ -109,7 +109,7 @@ func (bundle Bundle) IsGiftable() bool {
 
 func SearchBundles(offset int, limit int, search string, sorters []elastic.Sorter, filters []elastic.Query) (bundles []Bundle, total int64, err error) {
 
-	client, ctx, err := GetElastic()
+	client, ctx, err := client()
 	if err != nil {
 		return bundles, 0, err
 	}

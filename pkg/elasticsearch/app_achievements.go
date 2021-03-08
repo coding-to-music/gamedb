@@ -60,7 +60,7 @@ func IndexAchievementBulk(achievements map[string]Achievement) error {
 
 func SearchAppAchievements(offset int, search string, sorters []elastic.Sorter) (achievements []Achievement, total int64, err error) {
 
-	client, ctx, err := GetElastic()
+	client, ctx, err := client()
 	if err != nil {
 		return achievements, 0, err
 	}

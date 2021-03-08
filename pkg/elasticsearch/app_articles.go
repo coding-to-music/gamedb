@@ -127,7 +127,7 @@ func IndexArticlesBulk(articles map[string]Article) error {
 
 func SearchArticles(offset int, limit int, sorters []elastic.Sorter, search string, filters []elastic.Query) (articles []Article, total int64, err error) {
 
-	client, ctx, err := GetElastic()
+	client, ctx, err := client()
 	if err != nil {
 		return articles, 0, err
 	}
@@ -224,7 +224,7 @@ func AggregateArticleFeeds() (aggregations []helpers.TupleStringInt, err error) 
 	item := memcache.ItemArticleFeedAggs
 	err = memcache.Client().GetSet(item.Key, item.Expiration, &aggregations, func() (interface{}, error) {
 
-		client, ctx, err := GetElastic()
+		client, ctx, err := client()
 		if err != nil {
 			return aggregations, err
 		}

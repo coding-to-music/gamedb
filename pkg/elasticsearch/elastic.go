@@ -95,7 +95,7 @@ func GetElastic() (*elastic.Client, context.Context, error) {
 
 func UpdateDocumentFields(index string, key string, doc map[string]interface{}) error {
 
-	client, ctx, err := GetElastic()
+	client, ctx, err := client()
 	if err != nil {
 		return err
 	}
@@ -106,7 +106,7 @@ func UpdateDocumentFields(index string, key string, doc map[string]interface{}) 
 
 func indexDocument(index string, key string, doc interface{}) error {
 
-	client, ctx, err := GetElastic()
+	client, ctx, err := client()
 	if err != nil {
 		return err
 	}
@@ -117,7 +117,7 @@ func indexDocument(index string, key string, doc interface{}) error {
 
 func indexDocuments(index string, docs map[string]interface{}) error {
 
-	client, ctx, err := GetElastic()
+	client, ctx, err := client()
 	if err != nil {
 		return err
 	}
@@ -142,7 +142,7 @@ func indexDocuments(index string, docs map[string]interface{}) error {
 
 func DeleteDocument(index string, key string) error {
 
-	client, ctx, err := GetElastic()
+	client, ctx, err := client()
 	if err != nil {
 		return err
 	}
@@ -153,7 +153,7 @@ func DeleteDocument(index string, key string) error {
 
 func rebuildIndex(index string, mapping map[string]interface{}) {
 
-	client, ctx, err := GetElastic()
+	client, ctx, err := client()
 	if err != nil {
 		log.InfoS(err)
 		return

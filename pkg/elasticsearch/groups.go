@@ -71,7 +71,7 @@ func IndexGroup(g Group) error {
 
 func SearchGroups(offset int, limit int, sorters []elastic.Sorter, search string, errors string) (groups []Group, aggregations map[string]map[string]int64, total int64, err error) {
 
-	client, ctx, err := GetElastic()
+	client, ctx, err := client()
 	if err != nil {
 		return groups, aggregations, 0, err
 	}
