@@ -1,10 +1,10 @@
 package crons
 
 import (
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -42,7 +42,7 @@ func (c AppsQueueInflux) work() (err error) {
 		var chunks = helpers.ChunkInts(ids, 20)
 
 		for _, chunk := range chunks {
-			err = queue.ProduceAppsInflux(chunk)
+			err = consumers.ProduceAppsInflux(chunk)
 			if err != nil {
 				log.ErrS(err)
 				return

@@ -6,12 +6,12 @@ import (
 	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/oauth"
-	"github.com/gamedb/gamedb/pkg/queue"
 )
 
 type CommandPlayerUpdate struct {
@@ -85,8 +85,8 @@ func (c CommandPlayerUpdate) Output(authorID string, _ steamapi.ProductCC, input
 		playerID := mysql.GetUserSteamID(user.ID)
 		if playerID > 0 {
 
-			err = queue.ProducePlayer(queue.PlayerMessage{ID: playerID}, "chatbot-player.update")
-			err = helpers.IgnoreErrors(err, queue.ErrInQueue)
+			err = consumers.ProducePlayer(consumers.PlayerMessage{ID: playerID}, "chatbot-player.update")
+			err = helpers.IgnoreErrors(err, consumers.ErrInQueue)
 			if err != nil {
 				log.ErrS(err)
 			}
@@ -108,8 +108,8 @@ func (c CommandPlayerUpdate) Output(authorID string, _ steamapi.ProductCC, input
 		return message, err
 	}
 
-	err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID}, "chatbot-player.update")
-	err = helpers.IgnoreErrors(err, queue.ErrInQueue)
+	err = consumers.ProducePlayer(consumers.PlayerMessage{ID: player.ID}, "chatbot-player.update")
+	err = helpers.IgnoreErrors(err, consumers.ErrInQueue)
 	if err != nil {
 		log.ErrS(err)
 	}

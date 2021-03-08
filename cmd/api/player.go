@@ -5,10 +5,10 @@ import (
 	"strconv"
 
 	"github.com/gamedb/gamedb/cmd/api/generated"
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/queue"
 )
 
 func (s Server) GetPlayersId(w http.ResponseWriter, r *http.Request, id int64) {
@@ -23,7 +23,7 @@ func (s Server) GetPlayersId(w http.ResponseWriter, r *http.Request, id int64) {
 	if err == mongo.ErrNoDocuments {
 
 		ua := r.UserAgent()
-		err = queue.ProducePlayer(queue.PlayerMessage{ID: id, UserAgent: &ua}, "api-retrieve")
+		err = consumers.ProducePlayer(consumers.PlayerMessage{ID: id, UserAgent: &ua}, "api-retrieve")
 		if err != nil {
 			log.ErrS(err)
 		}

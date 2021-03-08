@@ -8,10 +8,10 @@ import (
 	"time"
 
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -73,8 +73,8 @@ func bundleHandler(w http.ResponseWriter, r *http.Request) {
 				}
 
 				if !found {
-					err = queue.ProduceSteam(queue.SteamMessage{AppIDs: []int{v}})
-					err = helpers.IgnoreErrors(err, queue.ErrInQueue)
+					err = consumers.ProduceSteam(consumers.SteamMessage{AppIDs: []int{v}})
+					err = helpers.IgnoreErrors(err, consumers.ErrInQueue)
 					if err != nil {
 						log.ErrS(err)
 					}

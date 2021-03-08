@@ -1,10 +1,10 @@
 package crons
 
 import (
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -42,7 +42,7 @@ func (c AppsArticlesQueueElastic) work() (err error) {
 
 		for _, article := range articles {
 
-			err = queue.ProduceArticlesSearch(queue.AppsArticlesSearchMessage{
+			err = consumers.ProduceArticlesSearch(consumers.AppsArticlesSearchMessage{
 				Elastic: elasticsearch.Article{
 					ID:          article.ID,
 					Title:       article.Title,

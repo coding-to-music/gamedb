@@ -6,11 +6,11 @@ import (
 	"sync"
 
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql/pics"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/go-chi/chi/v5"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.uber.org/zap"
@@ -83,8 +83,8 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		err = queue.ProduceSteam(queue.SteamMessage{AppIDs: missingAppIDs})
-		err = helpers.IgnoreErrors(err, queue.ErrInQueue)
+		err = consumers.ProduceSteam(consumers.SteamMessage{AppIDs: missingAppIDs})
+		err = helpers.IgnoreErrors(err, consumers.ErrInQueue)
 		if err != nil {
 			log.ErrS(err)
 		}
@@ -142,12 +142,12 @@ func packageHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = queue.ProduceSteam(queue.SteamMessage{PackageIDs: []int{pack.ID}})
+		err = consumers.ProduceSteam(consumers.SteamMessage{PackageIDs: []int{pack.ID}})
 		if err == nil {
 			t.addToast(Toast{Title: "Update", Message: "Package has been queued for an update", Success: true})
 			log.Info("package queued", zap.String("ua", r.UserAgent()))
 		}
-		err = helpers.IgnoreErrors(err, queue.ErrInQueue)
+		err = helpers.IgnoreErrors(err, consumers.ErrInQueue)
 		if err != nil {
 			log.ErrS(err)
 		}

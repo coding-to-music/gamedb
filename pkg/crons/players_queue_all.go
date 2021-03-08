@@ -1,8 +1,8 @@
 package crons
 
 import (
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -40,7 +40,7 @@ func (c PlayersQueueAll) work() (err error) {
 
 		for _, player := range players {
 
-			err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID}, "crons-queue-all")
+			err = consumers.ProducePlayer(consumers.PlayerMessage{ID: player.ID}, "crons-queue-all")
 			if err != nil {
 				return err
 			}

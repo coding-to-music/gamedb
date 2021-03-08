@@ -5,21 +5,21 @@ import (
 	"strings"
 
 	"github.com/Jleagle/influxql"
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/go-chi/chi/v5"
 )
 
 var queuePageCharts = []string{
-	string(queue.QueuePlayers),
-	string(queue.QueueGroups),
-	string(queue.QueueApps),
-	string(queue.QueuePackages),
-	string(queue.QueueBundles),
-	string(queue.QueueChanges),
-	string(queue.QueueDelay),
+	string(consumers.QueuePlayers),
+	string(consumers.QueueGroups),
+	string(consumers.QueueApps),
+	string(consumers.QueuePackages),
+	string(consumers.QueueBundles),
+	string(consumers.QueueChanges),
+	string(consumers.QueueDelay),
 }
 
 func QueuesRouter() http.Handler {

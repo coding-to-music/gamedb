@@ -1,8 +1,8 @@
 package crons
 
 import (
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -58,7 +58,7 @@ func (c AppsQueuePackages) work() (err error) {
 			packageSlice = append(packageSlice, k)
 		}
 
-		err = queue.ProduceSteam(queue.SteamMessage{PackageIDs: packageSlice})
+		err = consumers.ProduceSteam(consumers.SteamMessage{PackageIDs: packageSlice})
 		if err != nil {
 			return err
 		}

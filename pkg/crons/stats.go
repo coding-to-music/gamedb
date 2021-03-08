@@ -1,8 +1,8 @@
 package crons
 
 import (
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/steam"
 )
 
@@ -44,7 +44,7 @@ func (c StatsTask) work() (err error) {
 	for _, t := range types {
 		err := mongo.BatchStats(t, func(stats []mongo.Stat) {
 			for _, stat := range stats {
-				err = queue.ProduceStats(stat.Type, stat.ID, appsCount)
+				err = consumers.ProduceStats(stat.Type, stat.ID, appsCount)
 			}
 		})
 		if err != nil {

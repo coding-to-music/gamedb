@@ -1,8 +1,8 @@
 package crons
 
 import (
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -40,7 +40,7 @@ func (c PlayersQueueElastic) work() (err error) {
 
 		for _, player := range players {
 
-			err = queue.ProducePlayerSearch(&player, 0)
+			err = consumers.ProducePlayerSearch(&player, 0)
 			if err != nil {
 				return err
 			}

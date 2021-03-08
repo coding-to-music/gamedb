@@ -7,11 +7,11 @@ import (
 	"sync"
 
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/datatable"
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/go-chi/chi/v5"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -193,9 +193,9 @@ func coopGames(w http.ResponseWriter, r *http.Request) {
 		if !helpers.SliceHasInt64(foundPlayerIDs, playerID) {
 
 			ua := r.UserAgent()
-			err = queue.ProducePlayer(queue.PlayerMessage{ID: playerID, UserAgent: &ua}, "frontend-coop")
+			err = consumers.ProducePlayer(consumers.PlayerMessage{ID: playerID, UserAgent: &ua}, "frontend-coop")
 
-			if err = helpers.IgnoreErrors(err, queue.ErrIsBot, queue.ErrInQueue); err != nil {
+			if err = helpers.IgnoreErrors(err, consumers.ErrIsBot, consumers.ErrInQueue); err != nil {
 				log.ErrS(err)
 			}
 		}

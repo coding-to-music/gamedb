@@ -17,13 +17,13 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	twitterHelper "github.com/gamedb/gamedb/cmd/frontend/helpers/twitter"
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/steam"
 	"github.com/go-chi/chi/v5"
 	"github.com/olivere/elastic/v7"
@@ -530,9 +530,9 @@ func homeNewPlayersHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var resp []queue.PlayerPayload
+	var resp []consumers.PlayerPayload
 	for _, player := range players {
-		resp = append(resp, queue.PlayerPayload{
+		resp = append(resp, consumers.PlayerPayload{
 			ID:            strconv.FormatInt(player.ID, 10),
 			Name:          player.GetName(),
 			Avatar:        player.GetAvatar(),

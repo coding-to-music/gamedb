@@ -1,8 +1,8 @@
 package crons
 
 import (
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -50,7 +50,7 @@ func (c AppsAchievementsQueueElastic) work() (err error) {
 				}
 			}
 
-			err = queue.ProduceAchievementSearch(appAchievement, appCache.Name, appCache.Owners)
+			err = consumers.ProduceAchievementSearch(appAchievement, appCache.Name, appCache.Owners)
 			if err != nil {
 				return err
 			}

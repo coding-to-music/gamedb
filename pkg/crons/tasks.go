@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"github.com/cenkalti/backoff/v4"
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mysql"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/robfig/cron/v3"
 	"go.uber.org/zap"
@@ -158,8 +158,8 @@ func Run(task TaskInterface) {
 	// log.InfoS("Cron started: " + task.ID())
 
 	// Send start websocket
-	wsPayload := queue.AdminPayload{TaskID: task.ID(), Action: "started"}
-	err := queue.ProduceWebsocket(wsPayload, websockets.PageAdmin)
+	wsPayload := consumers.AdminPayload{TaskID: task.ID(), Action: "started"}
+	err := consumers.ProduceWebsocket(wsPayload, websockets.PageAdmin)
 	if err != nil {
 		log.ErrS(err)
 	}
@@ -188,8 +188,8 @@ func Run(task TaskInterface) {
 		}
 
 		// Send end websocket
-		wsPayload = queue.AdminPayload{TaskID: task.ID(), Action: "finished", Time: Next(task).Unix()}
-		err = queue.ProduceWebsocket(wsPayload, websockets.PageAdmin)
+		wsPayload = consumers.AdminPayload{TaskID: task.ID(), Action: "finished", Time: Next(task).Unix()}
+		err = consumers.ProduceWebsocket(wsPayload, websockets.PageAdmin)
 		if err != nil {
 			log.ErrS(err)
 		}

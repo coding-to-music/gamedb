@@ -5,13 +5,13 @@ import (
 	_ "net/http/pprof"
 
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/crons"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/robfig/cron/v3"
 )
 
@@ -26,7 +26,7 @@ func main() {
 	}
 
 	// Load queue producers
-	queue.Init(queue.QueueCronsDefinitions)
+	consumers.Init(consumers.QueueCronsDefinitions)
 
 	// Profiling
 	go func() {

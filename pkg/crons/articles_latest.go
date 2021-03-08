@@ -6,9 +6,9 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/steam"
 	"github.com/gocolly/colly/v2"
 	"github.com/patrickmn/go-cache"
@@ -58,7 +58,7 @@ func (c ArticlesLatest) work() (err error) {
 			if len(sub) == 2 {
 				i, err := strconv.Atoi(sub[1])
 				if err == nil {
-					err = queue.ProduceAppNews(i)
+					err = consumers.ProduceAppNews(i)
 					if err != nil {
 						log.ErrS(err)
 					}

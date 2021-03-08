@@ -15,6 +15,7 @@ import (
 	"github.com/Jleagle/influxql"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/datatable"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
@@ -23,7 +24,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql/pics"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/go-chi/chi/v5"
 	"github.com/olivere/elastic/v7"
 	"go.mongodb.org/mongo-driver/bson"
@@ -130,12 +130,12 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = queue.ProduceSteam(queue.SteamMessage{AppIDs: []int{app.ID}})
+		err = consumers.ProduceSteam(consumers.SteamMessage{AppIDs: []int{app.ID}})
 		if err == nil {
 			t.addToast(Toast{Title: "Update", Message: "App has been queued for an update", Success: true})
 			log.Info("app queued", zap.String("ua", r.UserAgent()))
 		}
-		err = helpers.IgnoreErrors(err, queue.ErrInQueue)
+		err = helpers.IgnoreErrors(err, consumers.ErrInQueue)
 		if err != nil {
 			log.ErrS(err)
 		}

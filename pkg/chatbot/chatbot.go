@@ -9,10 +9,10 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/pkg/chatbot/charts"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/steam"
 	"go.uber.org/zap"
 )
@@ -270,8 +270,8 @@ func searchForPlayer(search string) (player elasticsearch.Player, err error) {
 	}
 
 	// Queue
-	err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID}, "chatbot-player")
-	err = helpers.IgnoreErrors(err, queue.ErrInQueue)
+	err = consumers.ProducePlayer(consumers.PlayerMessage{ID: player.ID}, "chatbot-player")
+	err = helpers.IgnoreErrors(err, consumers.ErrInQueue)
 	if err != nil {
 		log.Err("Producing player", zap.Error(err))
 	}

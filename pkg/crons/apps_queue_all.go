@@ -3,8 +3,8 @@ package crons
 import (
 	"strconv"
 
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/steam"
 )
 
@@ -46,7 +46,7 @@ func (c AppsQueueAll) work() (err error) {
 
 		for _, v := range apps.Apps {
 
-			err = queue.ProduceApp(queue.AppMessage{ID: v.AppID})
+			err = consumers.ProduceApp(consumers.AppMessage{ID: v.AppID})
 			if err != nil {
 				return err
 			}

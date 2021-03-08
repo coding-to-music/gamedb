@@ -3,8 +3,8 @@ package crons
 import (
 	"github.com/gamedb/gamedb/pkg/backend"
 	"github.com/gamedb/gamedb/pkg/backend/generated"
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/queue"
 )
 
 type GroupsQueuePrimaries struct {
@@ -55,7 +55,7 @@ func (c GroupsQueuePrimaries) work() (err error) {
 		groups := resp.GetGroups()
 		for _, group := range groups {
 
-			err = queue.ProduceGroupPrimaries(group.GetID(), helpers.GroupTypeGroup, int(group.GetPrimaries()))
+			err = consumers.ProduceGroupPrimaries(group.GetID(), helpers.GroupTypeGroup, int(group.GetPrimaries()))
 			if err != nil {
 				return err
 			}

@@ -4,14 +4,14 @@ import (
 	"net/http"
 
 	"github.com/gamedb/gamedb/cmd/api/generated"
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/queue"
 )
 
 func (s Server) PostPlayersId(w http.ResponseWriter, r *http.Request, id int64) {
 
-	err := queue.ProducePlayer(queue.PlayerMessage{ID: id}, "api-update")
-	if err == queue.ErrInQueue {
+	err := consumers.ProducePlayer(consumers.PlayerMessage{ID: id}, "api-update")
+	if err == consumers.ErrInQueue {
 
 		returnResponse(w, r, http.StatusOK, generated.MessageResponse{Message: "Already in queue"})
 		return

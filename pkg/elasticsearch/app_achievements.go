@@ -140,15 +140,15 @@ func DeleteAndRebuildAchievementsIndex() {
 		"settings": settings,
 		"mappings": map[string]interface{}{
 			"properties": map[string]interface{}{
-				"id": fieldTypeKeyword,
-				"name": fieldTypeText,
-				"icon": fieldTypeDisabled,
+				"id":          fieldTypeKeyword,
+				"name":        fieldTypeText,
+				"icon":        fieldTypeDisabled,
 				"description": fieldTypeText,
-				"hidden":    fieldTypeBool,
-				"completed": fieldTypeFloat16,
-				"app_id":    fieldTypeInt32,
-				"app_name": fieldTypeText,
-				"app_owners": fieldTypeInt64,
+				"hidden":      fieldTypeBool,
+				"completed":   fieldTypeFloat16,
+				"app_id":      fieldTypeInt32,
+				"app_name":    fieldTypeText,
+				"app_owners":  fieldTypeInt64,
 			},
 		},
 	}

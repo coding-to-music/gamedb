@@ -1,8 +1,8 @@
 package crons
 
 import (
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -35,7 +35,7 @@ func (c AppsQueueYoutube) work() (err error) {
 
 	for _, app := range apps {
 
-		err = queue.ProduceAppsYoutube(app.ID, app.Name)
+		err = consumers.ProduceAppsYoutube(app.ID, app.Name)
 		if err != nil {
 			return err
 		}

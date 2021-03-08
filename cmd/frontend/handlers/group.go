@@ -8,12 +8,12 @@ import (
 
 	"github.com/Jleagle/influxql"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/datatable"
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/go-chi/chi/v5"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.uber.org/zap"
@@ -50,8 +50,8 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 		if err == mongo.ErrNoDocuments {
 
 			ua := r.UserAgent()
-			err = queue.ProduceGroup(queue.GroupMessage{ID: id, UserAgent: &ua})
-			err = helpers.IgnoreErrors(err, queue.ErrInQueue, queue.ErrIsBot)
+			err = consumers.ProduceGroup(consumers.GroupMessage{ID: id, UserAgent: &ua})
+			err = helpers.IgnoreErrors(err, consumers.ErrInQueue, consumers.ErrIsBot)
 			if err != nil {
 				log.ErrS(err)
 			}
@@ -94,12 +94,12 @@ func groupHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		ua := r.UserAgent()
-		err = queue.ProduceGroup(queue.GroupMessage{ID: group.ID, UserAgent: &ua})
+		err = consumers.ProduceGroup(consumers.GroupMessage{ID: group.ID, UserAgent: &ua})
 		if err == nil {
 			log.Info("group queued", zap.String("ua", ua))
 			t.addToast(Toast{Title: "Update", Message: "Group has been queued for an update", Success: true})
 		}
-		err = helpers.IgnoreErrors(err, queue.ErrIsBot, queue.ErrInQueue)
+		err = helpers.IgnoreErrors(err, consumers.ErrIsBot, consumers.ErrInQueue)
 		if err != nil {
 			log.ErrS(err)
 		}

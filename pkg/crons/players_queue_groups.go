@@ -1,8 +1,8 @@
 package crons
 
 import (
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -51,7 +51,7 @@ func (c PlayersQueueGroups) work() (err error) {
 
 		for _, player := range players {
 
-			err = queue.ProducePlayerGroup(player, true, false)
+			err = consumers.ProducePlayerGroup(player, true, false)
 			if err != nil {
 				return err
 			}

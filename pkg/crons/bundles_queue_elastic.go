@@ -1,8 +1,8 @@
 package crons
 
 import (
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -40,7 +40,7 @@ func (c BundlesQueueElastic) work() (err error) {
 
 		for _, bundle := range bundles {
 
-			err = queue.ProduceBundleSearch(bundle)
+			err = consumers.ProduceBundleSearch(bundle)
 			if err != nil {
 				return err
 			}

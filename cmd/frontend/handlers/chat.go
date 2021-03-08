@@ -7,8 +7,8 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/cenkalti/backoff/v4"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/log"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/go-chi/chi/v5"
 	"github.com/russross/blackfriday"
 	"go.uber.org/zap"
@@ -188,13 +188,13 @@ func chatAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var messages []queue.ChatPayload
+	var messages []consumers.ChatPayload
 	var i float32
 	for _, message := range messagesResponse {
 
 		if message.Type == discordgo.MessageTypeDefault {
 
-			messages = append(messages, queue.ChatPayload{
+			messages = append(messages, consumers.ChatPayload{
 				AuthorID:     message.Author.ID,
 				AuthorUser:   message.Author.Username,
 				AuthorAvatar: message.Author.Avatar,

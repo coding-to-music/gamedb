@@ -1,9 +1,9 @@
 package crons
 
 import (
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -55,8 +55,8 @@ func (c GroupsUpdateTop) work() (err error) {
 
 	for groupID := range groupMap {
 
-		err = queue.ProduceGroup(queue.GroupMessage{ID: groupID})
-		err = helpers.IgnoreErrors(err, queue.ErrInQueue)
+		err = consumers.ProduceGroup(consumers.GroupMessage{ID: groupID})
+		err = helpers.IgnoreErrors(err, consumers.ErrInQueue)
 		if err != nil {
 			return err
 		}

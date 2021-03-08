@@ -13,6 +13,7 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/datatable"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/crons/helpers/rabbitweb"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
@@ -23,7 +24,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/oauth"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/go-chi/chi/v5"
 	"github.com/justinas/nosurf"
 	"go.mongodb.org/mongo-driver/bson"
@@ -75,8 +75,8 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	if err == mongo.ErrNoDocuments {
 
 		ua := r.UserAgent()
-		err = queue.ProducePlayer(queue.PlayerMessage{ID: id, UserAgent: &ua}, "frontend-player-missing")
-		if err = helpers.IgnoreErrors(err, queue.ErrInQueue, queue.ErrIsBot); err != nil {
+		err = consumers.ProducePlayer(consumers.PlayerMessage{ID: id, UserAgent: &ua}, "frontend-player-missing")
+		if err = helpers.IgnoreErrors(err, consumers.ErrInQueue, consumers.ErrIsBot); err != nil {
 			log.ErrS(err)
 		}
 
@@ -91,7 +91,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		p := rabbit.Payload{}
 		p.Preset(rabbit.RangeOneMinute)
 
-		q, err := rabbitweb.GetRabbitWebClient().GetQueue(queue.QueuePlayers, p)
+		q, err := rabbitweb.GetRabbitWebClient().GetQueue(consumers.QueuePlayers, p)
 		if err != nil {
 			log.ErrS(err)
 		} else {
@@ -195,7 +195,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 			backgroundApp, err = mongo.GetApp(player.BackgroundAppID)
 			err = helpers.IgnoreErrors(err, mongo.ErrInvalidAppID)
 			if err == mongo.ErrNoDocuments {
-				err = queue.ProduceSteam(queue.SteamMessage{AppIDs: []int{player.BackgroundAppID}})
+				err = consumers.ProduceSteam(consumers.SteamMessage{AppIDs: []int{player.BackgroundAppID}})
 				if err != nil {
 					log.ErrS(err, player.BackgroundAppID)
 				}
@@ -294,11 +294,11 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	if player.NeedsUpdate(mongo.PlayerUpdateAuto) {
 
 		ua := r.UserAgent()
-		err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID, UserAgent: &ua}, "frontend-update-request")
+		err = consumers.ProducePlayer(consumers.PlayerMessage{ID: player.ID, UserAgent: &ua}, "frontend-update-request")
 		if err == nil {
 			t.addToast(Toast{Title: "Update", Message: "Player has been queued for an update", Success: true})
 		}
-		if err = helpers.IgnoreErrors(err, queue.ErrIsBot, queue.ErrInQueue); err != nil {
+		if err = helpers.IgnoreErrors(err, consumers.ErrIsBot, consumers.ErrInQueue); err != nil {
 			log.ErrS(err)
 		}
 	}
@@ -514,8 +514,8 @@ func playerAddFriendsHandler(w http.ResponseWriter, r *http.Request) {
 	for friendID := range friendIDsMap {
 
 		ua := r.UserAgent()
-		err = queue.ProducePlayer(queue.PlayerMessage{ID: friendID, UserAgent: &ua}, "frontend-friends")
-		if err = helpers.IgnoreErrors(err, queue.ErrIsBot, queue.ErrInQueue); err != nil {
+		err = consumers.ProducePlayer(consumers.PlayerMessage{ID: friendID, UserAgent: &ua}, "frontend-friends")
+		if err = helpers.IgnoreErrors(err, consumers.ErrIsBot, consumers.ErrInQueue); err != nil {
 			log.ErrS(err)
 		}
 	}
@@ -1156,8 +1156,8 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		ua := r.UserAgent()
-		err = queue.ProducePlayer(queue.PlayerMessage{ID: player.ID, UserAgent: &ua}, "frontend-udate-click")
-		if err = helpers.IgnoreErrors(err, queue.ErrIsBot, queue.ErrInQueue); err != nil {
+		err = consumers.ProducePlayer(consumers.PlayerMessage{ID: player.ID, UserAgent: &ua}, "frontend-udate-click")
+		if err = helpers.IgnoreErrors(err, consumers.ErrIsBot, consumers.ErrInQueue); err != nil {
 			log.ErrS(err)
 			return "Something has gone wrong", false, err
 		}

@@ -1,9 +1,9 @@
 package crons
 
 import (
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -35,7 +35,7 @@ func (c AppsQueueWishlists) work() (err error) {
 
 		for _, app := range apps {
 
-			err = queue.ProduceAppsWishlists(app.ID)
+			err = consumers.ProduceAppsWishlists(app.ID)
 			if err != nil {
 				log.ErrS(err)
 				return

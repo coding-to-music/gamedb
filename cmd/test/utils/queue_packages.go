@@ -7,10 +7,10 @@ import (
 	"sync"
 	"time"
 
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.uber.org/zap"
 )
@@ -40,7 +40,7 @@ func (queuePackages) run() {
 		for {
 			time.Sleep(time.Second * 5)
 
-			c, err := queue.ProducerChannels[queue.QueuePackages].Inspect()
+			c, err := consumers.ProducerChannels[consumers.QueuePackages].Inspect()
 			if err != nil {
 				log.ErrS(err)
 				continue
@@ -84,7 +84,7 @@ func (queuePackages) run() {
 		}
 
 		if err == mongo.ErrNoDocuments {
-			err = queue.ProduceSteam(queue.SteamMessage{PackageIDs: []int{packageID}})
+			err = consumers.ProduceSteam(consumers.SteamMessage{PackageIDs: []int{packageID}})
 			if err != nil {
 				log.ErrS(err)
 			} else {

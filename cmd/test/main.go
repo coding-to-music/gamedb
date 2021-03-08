@@ -5,12 +5,12 @@ import (
 
 	"github.com/gamedb/gamedb/cmd/test/utils"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
-	"github.com/gamedb/gamedb/pkg/queue"
 )
 
 func main() {
@@ -27,7 +27,7 @@ func main() {
 		utils.RunUtil(os.Args[1])
 	}
 
-	queue.Init(queue.AllProducerDefinitions)
+	consumers.Init(consumers.AllProducerDefinitions)
 
 	//
 	helpers.KeepAlive(

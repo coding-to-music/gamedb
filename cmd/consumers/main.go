@@ -5,12 +5,12 @@ import (
 	_ "net/http/pprof"
 
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
-	"github.com/gamedb/gamedb/pkg/queue"
 )
 
 func main() {
@@ -60,7 +60,7 @@ func main() {
 	}
 
 	// Load consumers
-	queue.Init(queue.ConsumersDefinitions)
+	consumers.Init(consumers.ConsumersDefinitions)
 
 	helpers.KeepAlive(
 		mysql.Close,

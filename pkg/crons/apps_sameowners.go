@@ -1,9 +1,9 @@
 package crons
 
 import (
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/crons/helpers/rabbitweb"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -36,8 +36,8 @@ func (c AppsSameOwners) work() (err error) {
 
 	var free int
 	for _, v := range queues {
-		if v.Name == string(queue.QueueAppsSameowners) {
-			free = int(float64(v.Consumers)/float64(queue.ConsumersPerProcess)) - v.Messages
+		if v.Name == string(consumers.QueueAppsSameowners) {
+			free = int(float64(v.Consumers)/float64(consumers.ConsumersPerProcess)) - v.Messages
 			break
 		}
 	}
@@ -59,7 +59,7 @@ func (c AppsSameOwners) work() (err error) {
 	apps, err := mongo.GetApps(0, int64(free), sort, filter, bson.M{"_id": 1})
 	for _, v := range apps {
 
-		err = queue.ProduceSameOwners(v.ID)
+		err = consumers.ProduceSameOwners(v.ID)
 		if err != nil {
 			return err
 		}

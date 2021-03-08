@@ -13,6 +13,7 @@ import (
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/geo"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/crons"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/ldflags"
@@ -22,7 +23,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/oauth"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"github.com/gamedb/gamedb/pkg/steam"
 	"github.com/gamedb/gamedb/pkg/websockets"
 	"github.com/go-chi/chi/v5"
@@ -615,8 +615,8 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 
 				playerID, err := strconv.ParseInt(val, 10, 64)
 				if err == nil {
-					err = queue.ProducePlayer(queue.PlayerMessage{ID: playerID, UserAgent: &ua}, "frontend-admin")
-					err = helpers.IgnoreErrors(err, queue.ErrInQueue)
+					err = consumers.ProducePlayer(consumers.PlayerMessage{ID: playerID, UserAgent: &ua}, "frontend-admin")
+					err = helpers.IgnoreErrors(err, consumers.ErrInQueue)
 					if err != nil {
 						log.Err(err.Error(), zap.Int64("id", playerID))
 					}
@@ -633,8 +633,8 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 
 				playerID, err := strconv.ParseInt(val, 10, 64)
 				if err == nil {
-					err = queue.ProducePlayerSearch(nil, playerID)
-					err = helpers.IgnoreErrors(err, queue.ErrInQueue)
+					err = consumers.ProducePlayerSearch(nil, playerID)
+					err = helpers.IgnoreErrors(err, consumers.ErrInQueue)
 					if err != nil {
 						log.Err("Producing player search", zap.Error(err), zap.Int64("id", playerID))
 					}
@@ -654,8 +654,8 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 				bundleID, err := strconv.Atoi(val)
 				if err == nil {
 
-					err = queue.ProduceBundle(bundleID)
-					err = helpers.IgnoreErrors(err, queue.ErrInQueue)
+					err = consumers.ProduceBundle(bundleID)
+					err = helpers.IgnoreErrors(err, consumers.ErrInQueue)
 					if err != nil {
 						log.Err(err.Error(), zap.Int("id", bundleID))
 					}
@@ -674,8 +674,8 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 
 			for i := 1; i <= count; i++ {
 
-				err = queue.ProduceTest(i)
-				err = helpers.IgnoreErrors(err, queue.ErrInQueue)
+				err = consumers.ProduceTest(i)
+				err = helpers.IgnoreErrors(err, consumers.ErrInQueue)
 				if err != nil {
 					log.Err(err.Error(), zap.Int("id", i))
 				}
@@ -691,8 +691,8 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 
 				val = strings.TrimSpace(val)
 
-				err := queue.ProduceGroup(queue.GroupMessage{ID: val, UserAgent: &ua})
-				err = helpers.IgnoreErrors(err, queue.ErrIsBot, queue.ErrInQueue)
+				err := consumers.ProduceGroup(consumers.GroupMessage{ID: val, UserAgent: &ua})
+				err = helpers.IgnoreErrors(err, consumers.ErrIsBot, consumers.ErrInQueue)
 				if err != nil {
 					log.ErrS(err)
 				}
@@ -718,8 +718,8 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 
 					for _, playerID := range resp.Members.SteamID64 {
 
-						err = queue.ProducePlayer(queue.PlayerMessage{ID: int64(playerID), SkipExistingPlayer: true}, "frontend-admin-group")
-						err = helpers.IgnoreErrors(err, queue.ErrInQueue)
+						err = consumers.ProducePlayer(consumers.PlayerMessage{ID: int64(playerID), SkipExistingPlayer: true}, "frontend-admin-group")
+						err = helpers.IgnoreErrors(err, consumers.ErrInQueue)
 						if err != nil {
 							log.ErrS(err)
 						}
@@ -735,7 +735,7 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		//
-		err = queue.ProduceSteam(queue.SteamMessage{AppIDs: appIDs, PackageIDs: packageIDs})
+		err = consumers.ProduceSteam(consumers.SteamMessage{AppIDs: appIDs, PackageIDs: packageIDs})
 		if err != nil {
 			log.Err(err.Error(), zap.Ints("app-ids", appIDs), zap.Ints("pack-ids", packageIDs))
 		}

@@ -1,9 +1,9 @@
 package crons
 
 import (
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -33,8 +33,8 @@ func (c BundlesQueueAll) work() (err error) {
 
 		for _, bundle := range bundles {
 
-			err = queue.ProduceBundle(bundle.ID)
-			if err != nil && err != queue.ErrInQueue {
+			err = consumers.ProduceBundle(bundle.ID)
+			if err != nil && err != consumers.ErrInQueue {
 				log.ErrS(err)
 				return
 			}

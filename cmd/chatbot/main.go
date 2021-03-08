@@ -8,13 +8,13 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/chatbot"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
-	"github.com/gamedb/gamedb/pkg/queue"
 	influx "github.com/influxdata/influxdb1-client"
 	"go.uber.org/zap"
 )
@@ -50,7 +50,7 @@ func main() {
 		return
 	}
 
-	queue.Init(queue.ChatbotDefinitions)
+	consumers.Init(consumers.ChatbotDefinitions)
 
 	session, err := websocketServer()
 	if err != nil {

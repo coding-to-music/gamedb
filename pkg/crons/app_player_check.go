@@ -2,11 +2,11 @@ package crons
 
 import (
 	"github.com/Jleagle/rabbit-go"
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/crons/helpers/rabbitweb"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/queue"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -34,7 +34,7 @@ func (c AppsPlayerCheck) work() (err error) {
 
 	// Skip if queues have activity
 	limits := map[rabbit.QueueName]int{
-		queue.QueueAppPlayers: 1000,
+		consumers.QueueAppPlayers: 1000,
 	}
 
 	queues, err := rabbitweb.GetRabbitWebClient().GetQueues()
@@ -67,7 +67,7 @@ func (c AppsPlayerCheck) work() (err error) {
 		var chunks = helpers.ChunkInts(ids, 20)
 
 		for _, chunk := range chunks {
-			err = queue.ProduceAppPlayers(chunk)
+			err = consumers.ProduceAppPlayers(chunk)
 			if err != nil {
 				log.ErrS(err)
 				return

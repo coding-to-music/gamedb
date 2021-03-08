@@ -1,9 +1,9 @@
 package crons
 
 import (
+	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
-	"github.com/gamedb/gamedb/pkg/queue"
 )
 
 type PlayersUpdateRanks struct {
@@ -30,7 +30,7 @@ func (c PlayersUpdateRanks) work() (err error) {
 
 	// Global
 	for read, write := range helpers.PlayerRankFields {
-		err = queue.ProducePlayerRank(queue.PlayerRanksMessage{
+		err = consumers.ProducePlayerRank(consumers.PlayerRanksMessage{
 			SortColumn: read,
 			ObjectKey:  string(write),
 		})
@@ -42,7 +42,7 @@ func (c PlayersUpdateRanks) work() (err error) {
 	// Continents
 	for _, continent := range i18n.Continents {
 		for read, write := range helpers.PlayerRankFields {
-			err = queue.ProducePlayerRank(queue.PlayerRanksMessage{
+			err = consumers.ProducePlayerRank(consumers.PlayerRanksMessage{
 				SortColumn: read,
 				ObjectKey:  string(write) + "_continent-" + continent.Key,
 				Continent:  &continent.Key,
@@ -56,7 +56,7 @@ func (c PlayersUpdateRanks) work() (err error) {
 	// Countries
 	for cc := range i18n.States {
 		for read, write := range helpers.PlayerRankFields {
-			err = queue.ProducePlayerRank(queue.PlayerRanksMessage{
+			err = consumers.ProducePlayerRank(consumers.PlayerRanksMessage{
 				SortColumn: read,
 				ObjectKey:  string(write) + "_country-" + cc,
 				Country:    &cc,
@@ -71,7 +71,7 @@ func (c PlayersUpdateRanks) work() (err error) {
 	for cc, states := range i18n.States {
 		for state := range states {
 			for read, write := range helpers.PlayerRankFields {
-				err = queue.ProducePlayerRank(queue.PlayerRanksMessage{
+				err = consumers.ProducePlayerRank(consumers.PlayerRanksMessage{
 					SortColumn: read,
 					ObjectKey:  string(write) + "_state-" + state,
 					Country:    &cc,
