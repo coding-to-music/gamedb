@@ -149,7 +149,7 @@ func SearchArticles(offset int, limit int, sorters []elastic.Sorter, search stri
 		b.Filter(filters...)
 	}
 
-	b.MustNot(elastic.NewTermQuery("feed", "Gamemag.ru"))
+	b.MustNot(elastic.NewTermQuery("feed", "Gamemag.ru")) // Hide non-english
 
 	if search != "" {
 
