@@ -180,7 +180,7 @@ if ($('#bundles-page').length > 0) {
                 },
                 "orderable": false,
             },
-            // Updated At
+            // First Seen
             {
                 "targets": 6,
                 "createdCell": function (td, cellData, rowData, row, col) {
