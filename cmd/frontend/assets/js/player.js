@@ -32,6 +32,10 @@ if ($playerPage.length > 0) {
     let t;
     websocketListener('profile', async function (e) {
 
+        if (isMobile()){
+            return;
+        }
+
         const data = JSON.parse(e.data);
         if (data.Data['id'] === $playerPage.attr('data-id')) {
 
