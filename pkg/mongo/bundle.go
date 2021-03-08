@@ -109,6 +109,10 @@ func (bundle Bundle) GetID() int {
 	return bundle.ID
 }
 
+func (bundle Bundle) GetCreated() time.Time {
+	return bundle.CreatedAt
+}
+
 func (bundle Bundle) GetUpdated() time.Time {
 	return bundle.UpdatedAt
 }

@@ -39,6 +39,10 @@ func (bundle Bundle) GetID() int {
 	return bundle.ID
 }
 
+func (bundle Bundle) GetCreated() time.Time {
+	return time.Unix(bundle.CreatedAt, 0)
+}
+
 func (bundle Bundle) GetUpdated() time.Time {
 	return time.Unix(bundle.UpdatedAt, 0)
 }

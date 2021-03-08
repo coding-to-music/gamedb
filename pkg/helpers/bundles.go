@@ -18,6 +18,7 @@ type Bundle interface {
 	GetStoreLink() string
 	GetID() int
 	GetUpdated() time.Time
+	GetCreated() time.Time
 	GetDiscount() int
 	GetDiscountSale() int
 	GetDiscountHighest() int
@@ -33,7 +34,7 @@ type Bundle interface {
 
 func OutputBundleForJSON(bundle Bundle) []interface{} {
 
-	updated := strconv.FormatInt(bundle.GetUpdated().Unix(), 10)
+	updated := strconv.FormatInt(bundle.GetCreated().Unix(), 10)
 	highest := bundle.GetDiscountHighest() == bundle.GetDiscount() && bundle.GetDiscount() != 0
 
 	return []interface{}{
