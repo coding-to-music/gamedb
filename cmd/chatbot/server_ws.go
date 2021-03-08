@@ -193,8 +193,14 @@ func websocketServer() (session *discordgo.Session, err error) {
 						var message discordgo.MessageSend
 						err = memcache.Client().Get(cacheItem.Key, &message)
 						if err == nil {
-							_, err = s.ChannelMessageSendComplex(e.ChannelID, &message)
-							discordError(err)
+
+							err = sendMessage(s, &message, e.ChannelID, e.Author.ID, msg)
+							if err != nil {
+								discordError(err)
+								return
+							}
+
+							success = true
 							return
 						}
 					}
@@ -202,27 +208,30 @@ func websocketServer() (session *discordgo.Session, err error) {
 					// Rate limit
 					if !rateLimit.GetLimiter(e.Author.ID).Allow() {
 						log.Warn("over chatbot rate limit", zap.String("author", e.Author.ID), zap.String("msg", msg))
+						success = true
 						return
 					}
 
 					// Make output
 					message, err := command.Output(e.Author.ID, code, command.LegacyInputs(msg))
 					if err != nil {
-						log.WarnS(err, msg)
-						return
-					}
-
-					// Reply
-					_, err = s.ChannelMessageSendComplex(e.ChannelID, &message)
-					if err != nil {
-						discordError(err)
+						log.ErrS(err, msg)
 						return
 					}
 
 					// Save to cache
-					err = memcache.Client().Set(cacheItem.Key, message, cacheItem.Expiration)
+					defer func() {
+						err = memcache.Client().Set(cacheItem.Key, message, cacheItem.Expiration)
+						if err != nil {
+							log.ErrS(err, msg)
+						}
+					}()
+
+					// Reply
+					err = sendMessage(s, &message, e.ChannelID, e.Author.ID, msg)
 					if err != nil {
-						log.ErrS(err, msg)
+						discordError(err)
+						return
 					}
 
 					success = true
@@ -341,6 +350,32 @@ func saveToDB(command chatbot.Command, isSlash bool, wasSuccess *bool, message, 
 	if err != nil {
 		log.ErrS(err)
 	}
+}
+
+func sendMessage(s *discordgo.Session, message *discordgo.MessageSend, channelID, authorID, messageRaw string) (err error) {
+
+	_, err = s.ChannelMessageSendComplex(channelID, message)
+	if err != nil {
+		discordError(err)
+
+		// If reply failed, try to DM the OP
+		if val, ok := err.(*discordgo.RESTError); ok && val.Message.Code == 50013 { // Missing Permissions
+
+			channel, err := s.UserChannelCreate(authorID)
+			if err != nil {
+				log.Err("Getting user channel", zap.Error(err), zap.String("msg", messageRaw))
+				return err
+			}
+
+			_, err = s.ChannelMessageSend(channel.ID, "I do not have permission to post in that channel :(")
+			if err != nil {
+				log.Err("Sending channel message", zap.Error(err), zap.String("msg", messageRaw))
+				return err
+			}
+		}
+	}
+
+	return err
 }
 
 func arguments(event *discordgo.InteractionCreate) (a map[string]string) {
