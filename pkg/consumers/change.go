@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/rabbit-go"
+	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/influx"
@@ -183,6 +184,11 @@ func sendChangeToDiscord(changes []*mongo.Change, appMap map[int]string, package
 	var messageLimit = 2000 - 100
 
 	if !config.IsLocal() {
+
+		discordClient, err := discordgo.New("Bot " + config.C.DiscordChangesBotToken)
+		if err != nil {
+			return err
+		}
 
 		for _, change := range changes {
 

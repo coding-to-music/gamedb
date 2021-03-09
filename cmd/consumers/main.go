@@ -33,22 +33,6 @@ func main() {
 		return
 	}
 
-	// Load Discord
-	// discord, err := discordgo.New("Bot " + config.C.DiscordChangesBotToken)
-	// if err != nil {
-	// 	log.FatalS(err)
-	// 	return
-	// }
-	//
-	// // Not used right now
-	// err = discord.Open()
-	// if err != nil {
-	// 	log.FatalS(err)
-	// 	return
-	// }
-	//
-	// queue.SetDiscordClient(discord)
-
 	// Profiling
 	if config.IsLocal() {
 		go func() {

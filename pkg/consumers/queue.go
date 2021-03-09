@@ -8,7 +8,6 @@ import (
 
 	"github.com/Jleagle/rabbit-go"
 	"github.com/Jleagle/steam-go/steamid"
-	"github.com/bwmarrin/discordgo"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelpers "github.com/gamedb/gamedb/pkg/influx"
@@ -262,12 +261,6 @@ var (
 		{Name: QueueWebsockets},
 	}
 )
-
-var discordClient *discordgo.Session
-
-func SetDiscordClient(c *discordgo.Session) {
-	discordClient = c
-}
 
 type QueueDefinition struct {
 	Name         rabbit.QueueName
