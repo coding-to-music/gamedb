@@ -300,17 +300,17 @@ func updateAppPICS(app *mongo.App, message *rabbit.Message, payload AppMessage) 
 	}
 
 	// Reset values that might be removed
-	app.Common = map[string]string{}
-	app.Tags = []int{}
-	app.Extended = map[string]string{}
-	app.Config = map[string]string{}
-	app.Launch = []pics.PICSAppConfigLaunchItem{}
+	app.Common = pics.PICSKeyValues{}
+	app.Config = pics.PICSKeyValues{}
 	app.Depots = pics.Depots{}
-	app.PublicOnly = false
-	app.UFS = map[string]string{}
+	app.Extended = pics.PICSKeyValues{}
 	app.Install = map[string]interface{}{}
+	app.Launch = []pics.PICSAppConfigLaunchItem{}
 	app.Localization = pics.Localisation{}
+	app.PublicOnly = false
 	app.SystemRequirements = map[string]interface{}{}
+	app.Tags = []int{}
+	app.UFS = pics.PICSKeyValues{}
 
 	if len(kv.Children) == 1 && kv.Children[0].Key == "appinfo" {
 		kv = kv.Children[0]
