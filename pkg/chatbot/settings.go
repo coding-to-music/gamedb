@@ -18,11 +18,11 @@ func (c CommandSettings) ID() string {
 }
 
 func (CommandSettings) Regex() string {
-	return `^[.|!]set (region) ([a-zA-Z]{2})`
+	return `^[.|!]settings (region)\s?([a-zA-Z]{2})?`
 }
 
 func (CommandSettings) DisableCache() bool {
-	return false
+	return true
 }
 
 func (CommandSettings) PerProdCode() bool {
@@ -34,11 +34,11 @@ func (CommandSettings) AllowDM() bool {
 }
 
 func (CommandSettings) Example() string {
-	return ".set {setting} {value}?"
+	return ".settings {setting} {value}?"
 }
 
 func (CommandSettings) Description() string {
-	return "Update or view a Global Steam Discord setting"
+	return "Update or retrieve a GS user setting"
 }
 
 func (CommandSettings) Type() CommandType {
@@ -87,8 +87,22 @@ func (c CommandSettings) Output(authorID string, _ steamapi.ProductCC, inputs ma
 	var value = strings.ToLower(inputs["value"])
 	var text string
 
+	var authorSettings = mysql.ChatBotSetting{}
+	if value == "" {
+		authorSettings, err = mysql.GetChatBotSettings(authorID)
+		if err != nil {
+			log.ErrS(err)
+			return
+		}
+	}
+
 	switch setting {
 	case "region":
+
+		if value == "" {
+			message.Content = "Your region is set to " + strings.ToUpper(string(authorSettings.ProductCode)) + " (" + string(i18n.GetProdCC(authorSettings.ProductCode).CurrencyCode) + ")"
+			return message, nil
+		}
 
 		if value == "gb" {
 			value = "uk"
@@ -105,6 +119,7 @@ func (c CommandSettings) Output(authorID string, _ steamapi.ProductCC, inputs ma
 		} else {
 			text = "Invalid region, see .help"
 		}
+
 	default:
 		text = "Invalid setting, see .help"
 	}
