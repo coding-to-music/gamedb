@@ -384,7 +384,10 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 	// Save user
 	db, err := mysql.GetMySQLClient()
 	if err != nil {
-		log.ErrS(err)
+		err = helpers.IgnoreErrors(err, mysql.ErrRecordNotFound)
+		if err != nil {
+			log.ErrS(err)
+		}
 		session.SetFlash(r, session.SessionBad, "We had trouble saving your settings")
 		return
 	}
