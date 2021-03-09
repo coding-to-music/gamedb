@@ -8,7 +8,7 @@ require (
 	github.com/Jleagle/captcha-go v0.0.0-20201203202350-806e55b8099c
 	github.com/Jleagle/go-durationfmt v0.0.0-20190307132420-e57bfad84057
 	github.com/Jleagle/influxql v0.0.0-20200804190929-88324f67bffe
-	github.com/Jleagle/memcache-go v0.0.0-20210305131412-b4b18e8b5a6a
+	github.com/Jleagle/memcache-go v0.0.0-20210309190441-636ebc04a889
 	github.com/Jleagle/patreon-go v0.0.0-20201006180837-366bfaa6710a
 	github.com/Jleagle/rabbit-go v0.0.0-20210115203259-266db76b636e
 	github.com/Jleagle/rate-limit-go v0.0.0-20210222223601-8aae7305d594
