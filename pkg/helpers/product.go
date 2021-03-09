@@ -82,6 +82,11 @@ func (p ProductPrices) Get(code steamapi.ProductCC) (price ProductPrice) {
 		return val
 	}
 
+	// Fallback
+	if code == "eu" {
+		return p.Get("de")
+	}
+
 	return price
 }
 
