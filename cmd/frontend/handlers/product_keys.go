@@ -3,6 +3,7 @@ package handlers
 import (
 	"net/http"
 	"regexp"
+	"strings"
 	"sync"
 
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/datatable"
@@ -56,7 +57,7 @@ type productKeysTemplate struct {
 	Keys  []mysql.ProductKey
 }
 
-var keyRegex = regexp.MustCompile("[0-9a-z_]+") // To stop injection
+var keyRegex = regexp.MustCompile(`(common|config|extended|ufs)\.[0-9a-z_]+`) // To stop injection
 
 func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
@@ -66,13 +67,14 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var productType = query.GetSearchString("type")
 	var value = query.GetSearchString("value")
 	var key = query.GetSearchString("key")
+
 	if key == "" || !keyRegex.MatchString(key) {
 		return
 	}
 
 	var filter = bson.D{
-		{"extended." + key, bson.M{"$exists": true}},
-		{"extended." + key, value},
+		{key, bson.M{"$exists": true}},
+		{key, value},
 	}
 
 	var wg sync.WaitGroup
@@ -83,7 +85,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		var projection = bson.M{"_id": 1, "name": 1, "icon": 1, "extended." + key: 1}
+		var projection = bson.M{"_id": 1, "name": 1, "icon": 1, key: 1}
 
 		if productType == "packages" {
 
@@ -98,7 +100,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 					ID:    v.ID,
 					Name:  v.GetName(),
 					Icon:  v.GetIcon(),
-					Value: "",
+					Value: v.Extended.GetValue(key),
 				})
 			}
 
@@ -111,12 +113,33 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			for _, v := range apps {
-				products = append(products, productKeyResult{
-					ID:    v.ID,
-					Name:  v.GetName(),
-					Icon:  v.GetIcon(),
-					Value: "",
-				})
+
+				product := productKeyResult{
+					ID:   v.ID,
+					Name: v.GetName(),
+					Icon: v.GetIcon(),
+				}
+
+				key2 := key
+				keyParts := strings.Split(key, ".")
+				if len(keyParts) > 1 {
+					key2 = keyParts[1]
+				}
+
+				switch true {
+				case strings.HasPrefix(key, "config."):
+					product.Value = v.Config.GetValue(key2)
+				case strings.HasPrefix(key, "common."):
+					product.Value = v.Common.GetValue(key2)
+				case strings.HasPrefix(key, "ufs."):
+					product.Value = v.UFS.GetValue(key2)
+				case strings.HasPrefix(key, "extended."):
+					product.Value = v.Extended.GetValue(key2)
+				default:
+					continue
+				}
+
+				products = append(products, product)
 			}
 		}
 	}()
@@ -128,13 +151,11 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-
 		if productType == "packages" {
 			filteredCount, err = mongo.CountDocuments(mongo.CollectionPackages, filter, 0)
 		} else {
 			filteredCount, err = mongo.CountDocuments(mongo.CollectionApps, filter, 0)
 		}
-
 		if err != nil {
 			log.ErrS(err)
 			return
@@ -149,7 +170,11 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		count, err = mongo.CountDocuments(mongo.CollectionApps, nil, 0)
+		if productType == "packages" {
+			count, err = mongo.CountDocuments(mongo.CollectionPackages, nil, 0)
+		} else {
+			count, err = mongo.CountDocuments(mongo.CollectionApps, nil, 0)
+		}
 		if err != nil {
 			log.ErrS(err)
 		}
@@ -161,11 +186,11 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var response = datatable.NewDataTablesResponse(r, query, count, filteredCount, nil)
 	for _, v := range products {
 		response.AddRow([]interface{}{
-			v.ID,
-			v.Name,
-			v.GetIcon(),
-			v.GetPath(productType),
-			v.Value,
+			v.ID,                   // 0
+			v.Name,                 // 1
+			v.GetIcon(),            // 2
+			v.GetPath(productType), // 3
+			v.Value,                // 4
 		})
 	}
 

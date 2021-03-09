@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"strings"
 	"time"
 )
 
@@ -33,6 +34,16 @@ func (key ProductKey) Save() error {
 
 	db = db.Save(&key)
 	return db.Error
+}
+
+func (key ProductKey) FieldTitle() string {
+
+	switch v := key.Field; v {
+	case ProductKeyFieldUFS:
+		return strings.ToUpper(v)
+	default:
+		return strings.Title(v)
+	}
 }
 
 func GetProductKeys() (keys []ProductKey, err error) {
