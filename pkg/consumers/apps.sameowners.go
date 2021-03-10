@@ -99,8 +99,7 @@ func appSameownersHandler(message *rabbit.Message) {
 		appIDs = append(appIDs, k)
 	}
 
-	const batch2 = 1000
-	for _, chunk := range helpers.ChunkInts(appIDs, batch2) {
+	for _, chunk := range helpers.ChunkInts(appIDs, 1_000) {
 
 		apps, err := mongo.GetAppsByID(chunk, bson.M{"owners": 1})
 		if err != nil {
@@ -110,6 +109,9 @@ func appSameownersHandler(message *rabbit.Message) {
 		}
 
 		for _, app := range apps {
+
+			countMap[app.ID].Owners = int(app.Owners)
+
 			if countMap[app.ID].Count > 0 && app.Owners > 0 {
 				countMap[app.ID].Order = float64(countMap[app.ID].Count) / math.Pow(float64(app.Owners), 0.5) // Higher removes popular apps
 			}

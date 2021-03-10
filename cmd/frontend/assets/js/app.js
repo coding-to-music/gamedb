@@ -370,7 +370,9 @@ if ($appPage.length > 0) {
     function loadAppSimilar() {
 
         $('#similar-owners').gdbTable({
+            order: [[3, "desc"]],
             tableOptions: {
+                "serverSide": false,
                 "language": {
                     "zeroRecords": function () {
                         return 'This app is yet to be scanned';
@@ -390,19 +392,35 @@ if ($appPage.length > 0) {
                         "createdCell": function (td, cellData, rowData, row, col) {
                             $(td).addClass('img');
                         },
-                        "orderable": false,
+                        "orderSequence": ['asc', 'desc'],
                     },
                     // Same Owners
                     {
                         "targets": 1,
                         "render": function (data, type, row) {
-                            return row[4].toLocaleString();
+                            return row[5].toLocaleString();
                         },
-                        "orderable": false,
+                        "orderSequence": ['desc', 'asc'],
+                    },
+                    // Total Owners
+                    {
+                        "targets": 2,
+                        "render": function (data, type, row) {
+                            return row[6].toLocaleString();
+                        },
+                        "orderSequence": ['desc', 'asc'],
+                    },
+                    // Score
+                    {
+                        "targets": 3,
+                        "render": function (data, type, row) {
+                            return row[7].toFixed(2).toLocaleString();
+                        },
+                        "orderSequence": ['desc', 'asc'],
                     },
                     // External Link
                     {
-                        "targets": 2,
+                        "targets": 4,
                         "render": function (data, type, row) {
                             if (row[5]) {
                                 return '<a href="' + row[5] + '" target="_blank" rel="noopener"><i class="fas fa-link"></i></a>';

@@ -13,8 +13,9 @@ import (
 type AppSameOwners struct {
 	AppID     int     `bson:"app_id"`
 	SameAppID int     `bson:"same_id"`
-	Count     int     `bson:"count"`
-	Order     float64 `bson:"order"`
+	Count     int     `bson:"count"`  // Matching owners
+	Order     float64 `bson:"order"`  // Score to sort by
+	Owners    int     `bson:"owners"` // Total owners
 }
 
 func (sameOwner AppSameOwners) BSON() bson.D {
@@ -25,6 +26,7 @@ func (sameOwner AppSameOwners) BSON() bson.D {
 		{"same_id", sameOwner.SameAppID},
 		{"count", sameOwner.Count},
 		{"order", sameOwner.Order},
+		{"owners", sameOwner.Owners},
 	}
 }
 
