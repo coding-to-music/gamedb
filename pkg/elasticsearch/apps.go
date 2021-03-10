@@ -276,23 +276,26 @@ func searchApps(limit int, offset int, search string, totals bool, highlights bo
 	if search != "" {
 
 		if helpers.RegexIntsOnly.MatchString(search) {
+
 			boolQuery.Must(elastic.NewTermQuery("id", search))
+
 		} else {
+
 			boolQuery.Must(elastic.NewBoolQuery().MinimumNumberShouldMatch(1).Should(
 				elastic.NewTermQuery("name_lc", strings.ToLower(search)).Boost(2),
 				elastic.NewMatchQuery("aliases", search),
 			))
-		}
 
-		boolQuery.Should(
-			elastic.NewFunctionScoreQuery().
-				AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("players").Factor(0.0001)),
-			elastic.NewFunctionScoreQuery().
-				AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("followers").Factor(0.00001)),
-		)
+			boolQuery.Should(
+				elastic.NewFunctionScoreQuery().
+					AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("players").Factor(0.0001)),
+				elastic.NewFunctionScoreQuery().
+					AddScoreFunc(elastic.NewFieldValueFactorFunction().Modifier("sqrt").Field("followers").Factor(0.00001)),
+			)
 
-		if highlights {
-			searchService.Highlight(elastic.NewHighlight().Field("name").PreTags("<mark>").PostTags("</mark>"))
+			if highlights {
+				searchService.Highlight(elastic.NewHighlight().Field("name").PreTags("<mark>").PostTags("</mark>"))
+			}
 		}
 	}
 
