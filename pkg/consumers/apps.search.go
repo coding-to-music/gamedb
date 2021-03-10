@@ -190,59 +190,65 @@ func makeAppAliases(ID int, name string) (aliases []string) {
 					for _, removeSpaces := range []bool{true, false} {
 						for _, spaceBeforeNumbers := range []bool{true, false} {
 							for _, trimPrefixes := range []bool{true, false} {
+								for _, removeInts := range []bool{true, false} {
 
-								name2 := name
+									name2 := name
 
-								if trimPrefixes {
-									name2 = strings.TrimPrefix(name2, "the ")
-								}
-
-								if removeEndings {
-									name2 = regexpSplitOnEnding.Split(name2, 2)[0]
-								}
-
-								if removeSymbols {
-									name2 = helpers.RegexNonAlphaNumericSpace.ReplaceAllString(name2, "")
-								}
-
-								// Swap roman numerals
-								name2 = regexpRoman.ReplaceAllStringFunc(name2, func(part string) string {
-									if convertRomanToInt {
-										part = helpers.RegexSmallRomanOnly.ReplaceAllStringFunc(part, func(part string) string {
-											return strconv.Itoa(roman.Arabic(part))
-										})
-									}
-									if convertIntToRoman {
-										part = regexpRoman.ReplaceAllStringFunc(part, func(part string) string {
-											i, _ := strconv.Atoi(part)
-											if i <= 20 {
-												return part
-											}
-											return roman.Roman(i)
-										})
+									if trimPrefixes {
+										name2 = strings.TrimPrefix(name2, "the ")
 									}
 
-									return part
-								})
-
-								if removeSpaces {
-									name2 = strings.ReplaceAll(name2, " ", "")
-								}
-
-								//
-								aliases = append(aliases, name2)
-
-								// Add abreviations
-								if removeSymbols && !removeSpaces {
-
-									var r *regexp.Regexp
-									if spaceBeforeNumbers {
-										r = regexp.MustCompile(`\s[IVX]{1,4}|\s[0-9]{1,2}|\b[a-zA-Z]`)
-									} else {
-										r = regexp.MustCompile(`[IVX]{1,4}|[0-9]{1,2}|\b[a-zA-Z]`)
+									if removeEndings {
+										name2 = regexpSplitOnEnding.Split(name2, 2)[0]
 									}
 
-									aliases = append(aliases, strings.Join(r.FindAllString(name2, -1), ""))
+									if removeSymbols {
+										name2 = helpers.RegexNonAlphaNumericSpace.ReplaceAllString(name2, "")
+									}
+
+									// Swap roman numerals
+									name2 = regexpRoman.ReplaceAllStringFunc(name2, func(part string) string {
+										if convertRomanToInt {
+											part = helpers.RegexSmallRomanOnly.ReplaceAllStringFunc(part, func(part string) string {
+												return strconv.Itoa(roman.Arabic(part))
+											})
+										}
+										if convertIntToRoman {
+											part = regexpRoman.ReplaceAllStringFunc(part, func(part string) string {
+												i, _ := strconv.Atoi(part)
+												if i <= 20 {
+													return part
+												}
+												return roman.Roman(i)
+											})
+										}
+
+										return part
+									})
+
+									if removeSpaces {
+										name2 = strings.ReplaceAll(name2, " ", "")
+									}
+
+									if removeInts {
+										name2 = helpers.RegexInts.ReplaceAllString(name2, "")
+									}
+
+									//
+									aliases = append(aliases, strings.TrimSpace(name2))
+
+									// Add abreviations
+									if removeSymbols && !removeSpaces {
+
+										var r *regexp.Regexp
+										if spaceBeforeNumbers {
+											r = regexp.MustCompile(`\s[IVX]{1,4}|\s[0-9]{1,2}|\b[a-zA-Z]`)
+										} else {
+											r = regexp.MustCompile(`[IVX]{1,4}|[0-9]{1,2}|\b[a-zA-Z]`)
+										}
+
+										aliases = append(aliases, strings.Join(r.FindAllString(name2, -1), ""))
+									}
 								}
 							}
 						}
