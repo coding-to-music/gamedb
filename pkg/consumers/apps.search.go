@@ -138,35 +138,36 @@ func appsSearchHandler(message *rabbit.Message) {
 }
 
 var aliasMap = map[int][]string{
-	813780:  {"aoe", "aoe2"},                        // Age of Empires II: Definitive Edition
-	221380:  {"aoe", "aoe2"},                        // Age of Empires II (2013)
-	105450:  {"aoe", "aoe3"},                        // Age of Empires® III: Complete Collection
-	1017900: {"aoe", "aoede"},                       // Age of Empires: Definitive Edition
-	105430:  {"aoe", "aoeo"},                        // Age of Empires Online
-	1172470: {"apex"},                               // Apex Legends
-	346110:  {"ark"},                                // ARK: Survival Evolved
-	1238840: {"bf1"},                                // Battlefield 1
-	1238860: {"bf4"},                                // Battlefield 4
-	1238810: {"bf5"},                                // Battlefield V
-	49520:   {"bl", "bl2"},                          // Borderlands 2
-	397540:  {"bl", "bl3"},                          // Borderlands 3
-	8980:    {"bl", "goty"},                         // Borderlands GOTY
-	730:     {"csgo", "cs go", "cs"},                // Counter-Strike: Global Offensive
-	1091500: {"cp", "cp2077", "cyber punk", "cp77"}, // Cyberpunk 2077
-	570:     {"dota", "dota2"},                      // Dota 2
-	8500:    {"eve", "eo"},                          // EVE Online
-	39210:   {"ff14", "ff 14"},                      // FINAL FANTASY XIV Online
-	261550:  {"mab2"},                               // Mount & Blade II: Bannerlord
-	48700:   {"mab", "mabw"},                        // Mount & Blade: Warband
-	24240:   {"pd", "pd1", "pdth"},                  // PAYDAY: The Heist
-	218620:  {"pd", "pd2"},                          // PAYDAY 2
-	578080:  {"pubg"},                               // PLAYERUNKNOWN'S BATTLEGROUNDS
-	3900:    {"civ", "civ4"},                        // Sid Meier's Civilization IV
-	8930:    {"civ", "civ5"},                        // Sid Meier's Civilization V
-	289070:  {"civ", "civ6"},                        // Sid Meier's Civilization VI
-	359550:  {"r6"},                                 // Tom Clancy's Rainbow Six Siege
-	230410:  {"wf"},                                 // Warframe
-	444200:  {"wot"},                                // World of Tanks Blitz
+	813780:  {"aoe", "aoe2"},         // Age of Empires II: Definitive Edition
+	221380:  {"aoe", "aoe2"},         // Age of Empires II (2013)
+	105450:  {"aoe", "aoe3"},         // Age of Empires® III: Complete Collection
+	1017900: {"aoe", "aoede"},        // Age of Empires: Definitive Edition
+	105430:  {"aoe", "aoeo"},         // Age of Empires Online
+	1172470: {"apex"},                // Apex Legends
+	346110:  {"ark"},                 // ARK: Survival Evolved
+	1238840: {"bf1"},                 // Battlefield 1
+	1238860: {"bf4"},                 // Battlefield 4
+	1238810: {"bf5"},                 // Battlefield V
+	49520:   {"bl", "bl2"},           // Borderlands 2
+	397540:  {"bl", "bl3"},           // Borderlands 3
+	8980:    {"bl", "goty"},          // Borderlands GOTY
+	870780:  {"control"},             // Control Ultimate Edition
+	730:     {"csgo", "cs go", "cs"}, // Counter-Strike: Global Offensive
+	1091500: {"cp", "cyberpunk"},     // Cyberpunk 2077
+	570:     {"dota", "dota2"},       // Dota 2
+	8500:    {"eve", "eo"},           // EVE Online
+	39210:   {"ff14", "ff 14"},       // FINAL FANTASY XIV Online
+	261550:  {"mab2"},                // Mount & Blade II: Bannerlord
+	48700:   {"mab", "mabw"},         // Mount & Blade: Warband
+	24240:   {"pd", "pd1", "pdth"},   // PAYDAY: The Heist
+	218620:  {"pd", "pd2"},           // PAYDAY 2
+	578080:  {"pubg"},                // PLAYERUNKNOWN'S BATTLEGROUNDS
+	3900:    {"civ", "civ4"},         // Sid Meier's Civilization IV
+	8930:    {"civ", "civ5"},         // Sid Meier's Civilization V
+	289070:  {"civ", "civ6"},         // Sid Meier's Civilization VI
+	359550:  {"r6"},                  // Tom Clancy's Rainbow Six Siege
+	230410:  {"wf"},                  // Warframe
+	444200:  {"wot"},                 // World of Tanks Blitz
 }
 
 //goland:noinspection RegExpRedundantEscape
