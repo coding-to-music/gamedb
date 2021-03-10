@@ -64,7 +64,10 @@ func main() {
 
 	steamClient = gosteam.NewClient()
 	steamClient.RegisterPacketHandler(packetHandler{})
-	steamClient.Connect()
+	_, err = steamClient.Connect()
+	if err != nil {
+		log.Err("Connecting to Steam for first time", zap.Error(err))
+	}
 
 	consumers.SetSteamClient(steamClient)
 
@@ -96,12 +99,20 @@ func main() {
 
 			case *gosteam.DisconnectedEvent:
 
+				// Disconnected
 				log.InfoS("Steam: Disconnected")
 				steamLoggedOn = false
 
-				time.Sleep(time.Second * 5)
+				// Reconnect
+				go func() {
 
-				go steamClient.Connect()
+					time.Sleep(time.Second * 5)
+
+					_, err := steamClient.Connect()
+					if err != nil {
+						log.Err("Connecting to Steam after disconnect", zap.Error(err))
+					}
+				}()
 
 			case *gosteam.LogOnFailedEvent:
 
@@ -119,10 +130,17 @@ func main() {
 
 			case gosteam.FatalErrorEvent:
 
-				// Disconnects
+				// Disconnected
 				log.Info("Steam: Disconnected:", zap.Error(e))
 				steamLoggedOn = false
-				go steamClient.Connect()
+
+				// Reconnect
+				go func() {
+					_, err := steamClient.Connect()
+					if err != nil {
+						log.Err("Connecting to Steam after error", zap.Error(err))
+					}
+				}()
 
 			case error:
 				if e != nil {
