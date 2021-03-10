@@ -138,7 +138,7 @@ if ($('#bundles-page').length > 0) {
 
                         let price = row[9][user.prodCC];
 
-                        if (user.prodCC in row[11]) {
+                        if ((user.prodCC in row[11]) && (row[11][user.prodCC] !== row[9][user.prodCC])) {
                             price += ' <small>' + row[11][user.prodCC] + '</small>';
                         }
 
