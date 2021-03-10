@@ -188,7 +188,7 @@ func adminConsumersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	var query = datatable.NewDataTableQuery(r, false)
 	var wg sync.WaitGroup
-	var consumers []mysql.Consumer
+	var consumerRows []mysql.Consumer
 
 	wg.Add(1)
 	go func() {
@@ -212,7 +212,7 @@ func adminConsumersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		db = query.SetOrderOffsetGorm(db, sortCols)
 
-		db = db.Find(&consumers)
+		db = db.Find(&consumerRows)
 
 		if db.Error != nil {
 			log.ErrS(db.Error)
@@ -243,7 +243,7 @@ func adminConsumersAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	var response = datatable.NewDataTablesResponse(r, query, count, count, nil)
-	for _, consumer := range consumers {
+	for _, consumer := range consumerRows {
 
 		expires := consumer.Expires.Format(helpers.DateSQL)
 		inDate := consumer.Expires.Add(mysql.ConsumerSessionLength).After(time.Now())

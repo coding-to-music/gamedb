@@ -122,7 +122,8 @@ func (item *AppItem) Link() string {
 	return "https://steamcommunity.com/market/listings/" + strconv.Itoa(item.AppID) + "/" + url.PathEscape(item.Name)
 }
 
-var bbcodeRegex = regexp.MustCompile(`\[.{1,}?\]`)
+//goland:noinspection RegExpRedundantEscape
+var bbcodeRegex = regexp.MustCompile(`\[.+?\]`)
 
 func (item AppItem) ShortDescription() string {
 	return bbcodeRegex.ReplaceAllString(item.Description, "")
