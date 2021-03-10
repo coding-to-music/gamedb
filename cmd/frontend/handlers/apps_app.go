@@ -464,11 +464,11 @@ func appSamdOwnersHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var countsMap = map[int]int{}
+	var countsMap = map[int]mongo.AppSameOwners{}
 	var appIDs []int
 	for _, sameApp := range sameApps {
 		appIDs = append(appIDs, sameApp.SameAppID)
-		countsMap[sameApp.SameAppID] = sameApp.Count
+		countsMap[sameApp.SameAppID] = sameApp
 	}
 
 	apps, err := mongo.GetAppsByID(appIDs, bson.M{"_id": 1, "name": 1, "icon": 1})
@@ -493,13 +493,14 @@ func appSamdOwnersHandler(w http.ResponseWriter, r *http.Request) {
 	for _, app := range orderedApps {
 
 		response.AddRow([]interface{}{
-			app.ID,             // 0
-			app.GetPath(),      // 1
-			app.GetIcon(),      // 2
-			app.GetName(),      // 3
-			countsMap[app.ID],  // 4
-			app.GetStoreLink(), // 5
-
+			app.ID,                   // 0
+			app.GetPath(),            // 1
+			app.GetIcon(),            // 2
+			app.GetName(),            // 3
+			app.GetStoreLink(),       // 4
+			countsMap[app.ID].Count,  // 5
+			countsMap[app.ID].Owners, // 6
+			countsMap[app.ID].Order,  // 7
 		})
 	}
 
