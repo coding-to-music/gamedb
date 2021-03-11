@@ -18,7 +18,7 @@ require (
 	github.com/Jleagle/unmarshal-go v0.0.0-20200217225147-fd7db71d9ac0
 	github.com/Philipp15b/go-steam v1.0.1-0.20210301125207-f5f3f40fa791
 	github.com/PuerkitoBio/goquery v1.6.1 // indirect
-	github.com/StefanSchroeder/Golang-Roman v0.0.0-20191231161654-ef19f7247884
+	github.com/StefanSchroeder/Golang-Roman v1.0.1-0.20210311185938-864df5cde20d
 	github.com/ahmdrz/goinsta/v2 v2.4.5
 	github.com/antchfx/xmlquery v1.3.5 // indirect
 	github.com/antchfx/xpath v1.1.11 // indirect

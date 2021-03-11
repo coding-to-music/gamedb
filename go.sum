@@ -76,6 +76,10 @@ github.com/PuerkitoBio/goquery v1.6.1 h1:FgjbQZKl5HTmcn4sKBgvx8vv63nhyhIpv7lJpFG
 github.com/PuerkitoBio/goquery v1.6.1/go.mod h1:GsLWisAFVj4WgDibEWF4pvYnkVQBpKBKeU+7zCJoLcc=
 github.com/StefanSchroeder/Golang-Roman v0.0.0-20191231161654-ef19f7247884 h1:IRb2z0FoB/DHlJfXqThOhXxFcCduHPIAYPf0GSIBJSg=
 github.com/StefanSchroeder/Golang-Roman v0.0.0-20191231161654-ef19f7247884/go.mod h1:336VOr+vojvmHSkM72YY6bmk4krgXnsy+K1cRQfKs6U=
+github.com/StefanSchroeder/Golang-Roman v1.0.0 h1:4oZKXpCDYBiOqFb4md3SAk7kOVTnbv83f90F0qknnP0=
+github.com/StefanSchroeder/Golang-Roman v1.0.0/go.mod h1:336VOr+vojvmHSkM72YY6bmk4krgXnsy+K1cRQfKs6U=
+github.com/StefanSchroeder/Golang-Roman v1.0.1-0.20210311185938-864df5cde20d h1:H3pPZFaAMU4vT0we3Osf9sTEhfrqoGKLNvG/6/NE8q0=
+github.com/StefanSchroeder/Golang-Roman v1.0.1-0.20210311185938-864df5cde20d/go.mod h1:+Zn7ho5YadtFwMxz06cNsRx/v5uwGn1AVeHXBHm8nLM=
 github.com/ahmdrz/goinsta/v2 v2.4.5 h1:yiNEpTNEx/VWlcCq93miWUx6d2uxdEyklwljsZaiD5I=
 github.com/ahmdrz/goinsta/v2 v2.4.5/go.mod h1:XUEELCWd3hVSqADejqxTa8Uc7Yto9cb6a6HrfkGwVf8=
 github.com/airbrake/gobrake v3.6.1+incompatible/go.mod h1:wM4gu3Cn0W0K7GUuVWnlXZU11AGBXMILnrdOU8Kn00o=

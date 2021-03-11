@@ -220,7 +220,12 @@ func makeAppAliases(ID int, name string) (aliases []string) {
 												if i <= 20 {
 													return part
 												}
-												return roman.Roman(i)
+												converted, err := roman.Roman(i)
+												if err != nil {
+													return part
+												} else {
+													return converted
+												}
 											})
 										}
 
