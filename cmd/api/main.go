@@ -51,7 +51,7 @@ func main() {
 	r.Use(chiMiddleware.Compress(flate.DefaultCompression))
 	r.Use(middleware.RealIP)
 	r.Use(middleware.RateLimiterBlock(time.Second/2, 1, rateLimitedHandler))
-	// r.Use(codegenMiddleware.OapiRequestValidator(swagger)) // todo
+	// r.Use(codegenMiddleware.OapiRequestValidatorWithOptions(api.SwaggerGameDB, &codegenMiddleware.Options{Options: openapi3filter.Options{MultiError: true}}))
 
 	r.Get("/health-check", healthCheckHandler)
 
