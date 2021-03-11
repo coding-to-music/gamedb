@@ -85,7 +85,7 @@ func (c twitchProvider) GetConfig() oauth2.Config {
 		ClientID:     config.C.TwitchClientID,
 		ClientSecret: config.C.TwitchClientSecret,
 		Scopes:       []string{"user:read:email"},
-		RedirectURL:  config.C.GameDBDomain + "/oauth/in/" + string(c.GetEnum()),
+		RedirectURL:  config.C.GlobalSteamDomain + "/oauth/in/" + string(c.GetEnum()),
 		Endpoint:     twitch.Endpoint,
 	}
 }

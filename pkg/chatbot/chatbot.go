@@ -126,8 +126,8 @@ func getAuthor(guildID string) *discordgo.MessageEmbedAuthor {
 
 	author := &discordgo.MessageEmbedAuthor{
 		Name:    "globalsteam.online",
-		URL:     config.C.GameDBDomain + "/?utm_source=discord&utm_medium=discord&utm_content=" + guildID,
-		IconURL: config.C.GameDBDomain + "/assets/img/sa-bg-32x32.png",
+		URL:     config.C.GlobalSteamDomain + "/?utm_source=discord&utm_medium=discord&utm_content=" + guildID,
+		IconURL: config.C.GlobalSteamDomain + "/assets/img/sa-bg-32x32.png",
 	}
 	if config.IsLocal() {
 		author.Name = "localhost:" + config.C.FrontendPort

@@ -59,7 +59,7 @@ func (price ProductPrice) GetPath() string {
 
 func (price ProductPrice) GetIcon() string {
 	icon := helpers.GetAppIcon(price.AppID, price.Icon)
-	return strings.TrimPrefix(icon, config.C.GameDBDomain)
+	return strings.TrimPrefix(icon, config.C.GlobalSteamDomain)
 }
 
 func (price ProductPrice) GetPercentChange() float64 {

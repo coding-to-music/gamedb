@@ -58,7 +58,7 @@ func (CommandAppsPopular) Output(authorID string, _ steamapi.ProductCC, _ map[st
 
 	message.Embed = &discordgo.MessageEmbed{
 		Title:  "Popular Games",
-		URL:    config.C.GameDBDomain + "/games",
+		URL:    config.C.GlobalSteamDomain + "/games",
 		Author: getAuthor(authorID),
 		Color:  greenHexDec,
 	}

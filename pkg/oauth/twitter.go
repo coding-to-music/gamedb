@@ -103,7 +103,7 @@ func (c twitterProvider) GetConfig() oauth1.Config {
 	return oauth1.Config{
 		ConsumerKey:    config.C.TwitterConsumerKey,
 		ConsumerSecret: config.C.TwitterConsumerSecret,
-		CallbackURL:    config.C.GameDBDomain + "/oauth/in/" + string(c.GetEnum()),
+		CallbackURL:    config.C.GlobalSteamDomain + "/oauth/in/" + string(c.GetEnum()),
 		Endpoint:       twitter2.AuthorizeEndpoint,
 	}
 }

@@ -134,7 +134,7 @@ func forgotPostHandler(w http.ResponseWriter, r *http.Request) {
 		"",
 		"Global Steam Forgotten Password",
 		email.Forgot1Template{
-			Domain: config.C.GameDBDomain,
+			Domain: config.C.GlobalSteamDomain,
 			Code:   code.Code,
 			IP:     geo.GetFirstIP(r.RemoteAddr),
 		},

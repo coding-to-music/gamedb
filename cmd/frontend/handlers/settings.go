@@ -192,7 +192,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 		// Check if user has not linked steam yet
 		if _, ok := t.UserProviders[oauth.ProviderSteam]; !ok {
 			//goland:noinspection GoRedundantConversion
-			t.Banners = append(t.Banners, "<a href="+template.HTML(config.C.GameDBDomain)+"'/oauth/out/steam?page=settings'>Link your Steam account.</a>")
+			t.Banners = append(t.Banners, "<a href="+template.HTML(config.C.GlobalSteamDomain)+"'/oauth/out/steam?page=settings'>Link your Steam account.</a>")
 		}
 
 		// Check if user is in discord server

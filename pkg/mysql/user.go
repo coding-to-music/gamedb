@@ -218,7 +218,7 @@ func SendUserVerification(userID int, userEmail string, r *http.Request) error {
 		"",
 		"Global Steam Email Verification",
 		email.VerifyTemplate{
-			Domain: config.C.GameDBDomain,
+			Domain: config.C.GlobalSteamDomain,
 			Code:   code.Code,
 			IP:     geo.GetFirstIP(r.RemoteAddr),
 		},

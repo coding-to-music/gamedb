@@ -166,7 +166,7 @@ type Config struct {
 	BackendClientPort string `envconfig:"BACKEND_CLIENT_PORT"`
 
 	// Other
-	GameDBDomain        string `envconfig:"DOMAIN"` // With proto & port
+	GlobalSteamDomain   string `envconfig:"DOMAIN"` // With proto & port
 	Environment         string `envconfig:"ENV" required:"true"`
 	SlackGameDBWebhook  string `envconfig:"SLACK_GAMEDB_WEBHOOK"`
 	SlackPatreonWebhook string `envconfig:"SLACK_SOCIAL_WEBHOOK"`

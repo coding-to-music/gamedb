@@ -78,7 +78,7 @@ func (c battlenetProvider) GetConfig() oauth2.Config {
 		ClientID:     config.C.BattlenetClient,
 		ClientSecret: config.C.BattlenetSecret,
 		Scopes:       []string{"openid"},
-		RedirectURL:  config.C.GameDBDomain + "/oauth/in/" + string(c.GetEnum()),
+		RedirectURL:  config.C.GlobalSteamDomain + "/oauth/in/" + string(c.GetEnum()),
 		Endpoint: oauth2.Endpoint{
 			AuthURL:  "https://us.battle.net/oauth/authorize",
 			TokenURL: "https://us.battle.net/oauth/token",

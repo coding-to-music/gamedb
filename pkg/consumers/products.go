@@ -327,14 +327,14 @@ func saveProductPricesToMongo(before helpers.ProductInterface, after helpers.Pro
 		// 		}
 		//
 		// 		// Reddit
-		// 		err = reddit.PostToReddit("["+helpers.FloatToString(percentIncrease, 0)+"%] "+before.GetName()+" ($"+helpers.FloatToString(float64(newPrice)/100, 2)+")", config.C.GameDBDomain +before.GetPath())
+		// 		err = reddit.PostToReddit("["+helpers.FloatToString(percentIncrease, 0)+"%] "+before.GetName()+" ($"+helpers.FloatToString(float64(newPrice)/100, 2)+")", config.C.GlobalSteamDomain +before.GetPath())
 		// 		if err != nil {
 		// 			log.FatalS(err)
 		// 		}
 		//
 		// 		// Slack message
 		// 		err = slack.PostWebhook(config.Config.SlackSocialWebhook, &slack.WebhookMessage{
-		// 			Text: config.Config.GameDBDomain + before.GetPath(),
+		// 			Text: config.Config.GlobalSteamDomain + before.GetPath(),
 		// 		})
 		// if err != nil {
 		// 		log.ErrS(err)

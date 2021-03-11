@@ -57,7 +57,7 @@ func GetAppPathAbsolute(id int, name string) string {
 	pathx := GetAppPath(id, name)
 
 	if strings.HasPrefix(pathx, "/") {
-		pathx = config.C.GameDBDomain + pathx
+		pathx = config.C.GlobalSteamDomain + pathx
 	}
 
 	return pathx
@@ -98,7 +98,7 @@ func GetAppIconAbsolute(id int, icon string) string {
 	icon = GetAppIcon(id, icon)
 
 	if strings.HasPrefix(icon, "/") {
-		icon = config.C.GameDBDomain + icon
+		icon = config.C.GlobalSteamDomain + icon
 	}
 
 	return icon

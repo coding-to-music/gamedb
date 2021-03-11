@@ -58,7 +58,7 @@ func (CommandAppsNew) Output(authorID string, _ steamapi.ProductCC, _ map[string
 
 	message.Embed = &discordgo.MessageEmbed{
 		Title:  "Popular New Apps",
-		URL:    config.C.GameDBDomain + "/games/new-releases",
+		URL:    config.C.GlobalSteamDomain + "/games/new-releases",
 		Author: getAuthor(authorID),
 		Color:  greenHexDec,
 	}

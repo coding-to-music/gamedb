@@ -83,13 +83,13 @@ func (c CommandPlayer) Output(authorID string, _ steamapi.ProductCC, inputs map[
 
 		provider, err := mysql.GetUserProviderByProviderID(oauth.ProviderDiscord, authorID)
 		if err != nil {
-			message.Content = "Please connect your Discord account first: <" + config.C.GameDBDomain + "/oauth/out/discord?page=settings>"
+			message.Content = "Please connect your Discord account first: <" + config.C.GlobalSteamDomain + "/oauth/out/discord?page=settings>"
 			return message, nil
 		}
 
 		provider, err = mysql.GetUserProviderByUserID(oauth.ProviderSteam, provider.UserID)
 		if err != nil {
-			message.Content = "Please connect your Steam account first: <" + config.C.GameDBDomain + "/oauth/out/steam?page=settings>"
+			message.Content = "Please connect your Steam account first: <" + config.C.GlobalSteamDomain + "/oauth/out/steam?page=settings>"
 			return message, nil
 		}
 

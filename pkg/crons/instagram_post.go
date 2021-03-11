@@ -47,7 +47,7 @@ func (c InstagramPost) work() (err error) {
 	// 	return errors.New("empty url")
 	// }
 	//
-	// text := app.GetName() + " (Score: " + helpers.FloatToString(app.ReviewsScore, 2) + ") " + config.C.GameDBDomain + "/games/" + strconv.Itoa(app.ID) +
+	// text := app.GetName() + " (Score: " + helpers.FloatToString(app.ReviewsScore, 2) + ") " + config.C.GlobalSteamDomain + "/games/" + strconv.Itoa(app.ID) +
 	// 	" #steamgames #steam #gaming " + helpers.GetHashTag(app.GetName())
 	//
 	// ig, err := instagram.GetInstagram()

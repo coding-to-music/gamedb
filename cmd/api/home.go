@@ -10,6 +10,6 @@ import (
 func (s Server) Get(w http.ResponseWriter, r *http.Request) {
 
 	returnResponse(w, r, http.StatusOK, generated.HomeResponse{
-		Docs: config.C.GameDBDomain + "/api/globalsteam",
+		Docs: config.C.GlobalSteamDomain + "/api/globalsteam",
 	})
 }

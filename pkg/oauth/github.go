@@ -80,7 +80,7 @@ func (c githubProvider) GetConfig() oauth2.Config {
 		ClientID:     config.C.GitHubClient,
 		ClientSecret: config.C.GitHubSecret,
 		Scopes:       []string{""},
-		RedirectURL:  config.C.GameDBDomain + "/oauth/in/" + string(c.GetEnum()),
+		RedirectURL:  config.C.GlobalSteamDomain + "/oauth/in/" + string(c.GetEnum()),
 		Endpoint:     github.Endpoint,
 	}
 }

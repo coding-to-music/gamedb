@@ -50,8 +50,8 @@ func (c steamProvider) Redirect(w http.ResponseWriter, r *http.Request, page str
 	q.Set("openid.claimed_id", "http://specs.openid.net/auth/2.0/identifier_select")
 	q.Set("openid.ns", "http://specs.openid.net/auth/2.0")
 	q.Set("openid.mode", "checkid_setup")
-	q.Set("openid.realm", config.C.GameDBDomain+"/")
-	q.Set("openid.return_to", config.C.GameDBDomain+"/oauth/in/steam?page="+page)
+	q.Set("openid.realm", config.C.GlobalSteamDomain+"/")
+	q.Set("openid.return_to", config.C.GlobalSteamDomain+"/oauth/in/steam?page="+page)
 
 	http.Redirect(w, r, "https://steamcommunity.com/openid/login?"+q.Encode(), http.StatusFound)
 }
@@ -59,7 +59,7 @@ func (c steamProvider) Redirect(w http.ResponseWriter, r *http.Request, page str
 func (c steamProvider) GetUser(r *http.Request) (user User, err error) {
 
 	// Get Steam ID
-	resp, err := openid.Verify(config.C.GameDBDomain+r.URL.String(), openid.NewSimpleDiscoveryCache(), openid.NewSimpleNonceStore())
+	resp, err := openid.Verify(config.C.GlobalSteamDomain+r.URL.String(), openid.NewSimpleDiscoveryCache(), openid.NewSimpleNonceStore())
 	if err != nil {
 		return user, err
 	}

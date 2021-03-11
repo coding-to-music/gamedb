@@ -57,7 +57,7 @@ func (CommandGroupsTrending) Output(authorID string, _ steamapi.ProductCC, _ map
 
 	message.Embed = &discordgo.MessageEmbed{
 		Title:  "Trending Groups",
-		URL:    config.C.GameDBDomain + "/groups",
+		URL:    config.C.GlobalSteamDomain + "/groups",
 		Author: getAuthor(authorID),
 		Color:  greenHexDec,
 	}

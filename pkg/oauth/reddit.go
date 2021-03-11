@@ -80,7 +80,7 @@ func (c redditProvider) GetConfig() oauth2.Config {
 		ClientID:     config.C.RedditClient,
 		ClientSecret: config.C.RedditSecret,
 		Scopes:       []string{"identity"},
-		RedirectURL:  config.C.GameDBDomain + "/oauth/in/" + string(c.GetEnum()),
+		RedirectURL:  config.C.GlobalSteamDomain + "/oauth/in/" + string(c.GetEnum()),
 		Endpoint: oauth2.Endpoint{
 			AuthURL:  "https://www.reddit.com/api/v1/authorize",
 			TokenURL: "https://www.reddit.com/api/v1/access_token",

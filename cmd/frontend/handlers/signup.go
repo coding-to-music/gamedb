@@ -40,7 +40,7 @@ func signupHandler(w http.ResponseWriter, r *http.Request) {
 	t.fill(w, r, "signup", "Login", "Login to Global Steam to set your currency and other things.")
 	t.addAssetPasswordStrength()
 	t.hideAds = true
-	t.Domain = config.C.GameDBDomain
+	t.Domain = config.C.GlobalSteamDomain
 	t.HCaptchaPublic = config.C.HCaptchaPublic
 	t.SignupEmail = session.Get(r, signupSessionEmail)
 	t.Providers = oauth.Providers

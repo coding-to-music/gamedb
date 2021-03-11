@@ -57,7 +57,7 @@ func (CommandAppsTrending) Output(authorID string, _ steamapi.ProductCC, _ map[s
 
 	message.Embed = &discordgo.MessageEmbed{
 		Title:  "Trending Games",
-		URL:    config.C.GameDBDomain + "/games/trending",
+		URL:    config.C.GlobalSteamDomain + "/games/trending",
 		Author: getAuthor(authorID),
 		Color:  greenHexDec,
 	}

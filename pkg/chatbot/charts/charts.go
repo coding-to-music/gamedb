@@ -234,5 +234,5 @@ func getChart(x []time.Time, y []float64, id string, title string, commandID str
 		log.ErrS(err)
 	}
 
-	return config.C.GameDBDomain + "/assets/img/chatbot/" + file + "?_=" + strconv.FormatInt(time.Now().Truncate(time.Minute*10).Unix(), 10), err
+	return config.C.GlobalSteamDomain + "/assets/img/chatbot/" + file + "?_=" + strconv.FormatInt(time.Now().Truncate(time.Minute*10).Unix(), 10), err
 }

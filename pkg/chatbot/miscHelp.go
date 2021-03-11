@@ -50,7 +50,7 @@ func (c CommandHelp) Slash() []*discordgo.ApplicationCommandOption {
 
 func (CommandHelp) Output(_ string, _ steamapi.ProductCC, _ map[string]string) (message discordgo.MessageSend, err error) {
 
-	message.Content = "See <" + config.C.GameDBDomain + "/discord-bot>"
+	message.Content = "See <" + config.C.GlobalSteamDomain + "/discord-bot>"
 
 	return message, nil
 }

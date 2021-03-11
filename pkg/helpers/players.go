@@ -39,7 +39,7 @@ func GetPlayerAvatar(avatar string) string {
 func GetPlayerAvatarAbsolute(avatar string) string {
 	avatar = GetPlayerAvatar(avatar)
 	if strings.HasPrefix(avatar, "/") {
-		avatar = config.C.GameDBDomain + avatar
+		avatar = config.C.GlobalSteamDomain + avatar
 	}
 	return avatar
 }
@@ -91,7 +91,7 @@ func GetPlayerPathAbsolute(id int64, name string) string {
 	pathx := GetPlayerPath(id, name)
 
 	if strings.HasPrefix(pathx, "/") {
-		pathx = config.C.GameDBDomain + pathx
+		pathx = config.C.GlobalSteamDomain + pathx
 	}
 
 	return pathx

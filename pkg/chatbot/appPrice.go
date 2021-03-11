@@ -116,7 +116,7 @@ func (c CommandAppPrice) Output(_ string, region steamapi.ProductCC, inputs map[
 	message.Embed = &discordgo.MessageEmbed{
 		Title:       app.GetName(),
 		Description: apps[0].GetName() + " is **" + price.GetFinal() + "** for " + strings.ToUpper(string(region)),
-		URL:         config.C.GameDBDomain + app.GetPath(),
+		URL:         config.C.GlobalSteamDomain + app.GetPath(),
 		Thumbnail:   &discordgo.MessageEmbedThumbnail{URL: app.GetHeaderImage(), Width: 460, Height: 215},
 		Footer:      getFooter(),
 		Color:       greenHexDec,

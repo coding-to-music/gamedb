@@ -124,7 +124,7 @@ func (group Group) GetIcon() string {
 func (group Group) GetIconAbsolute() string {
 	icon := group.GetIcon()
 	if strings.HasPrefix(icon, "/") {
-		icon = config.C.GameDBDomain + icon
+		icon = config.C.GlobalSteamDomain + icon
 	}
 	return icon
 }

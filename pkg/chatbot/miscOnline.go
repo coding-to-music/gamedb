@@ -69,8 +69,8 @@ func (c CommandSteamOnline) Output(_ string, _ steamapi.ProductCC, _ map[string]
 
 	message.Embed = &discordgo.MessageEmbed{
 		Title:     "Online Players",
-		URL:       config.C.GameDBDomain + "/stats",
-		Thumbnail: &discordgo.MessageEmbedThumbnail{URL: config.C.GameDBDomain + "/assets/img/no-app-image-square.jpg"},
+		URL:       config.C.GlobalSteamDomain + "/stats",
+		Thumbnail: &discordgo.MessageEmbedThumbnail{URL: config.C.GlobalSteamDomain + "/assets/img/no-app-image-square.jpg"},
 		Footer:    getFooter(),
 		Color:     greenHexDec,
 		Image:     &discordgo.MessageEmbedImage{URL: charts.GetAppPlayersChart(c.ID(), 0, "10m", "7d", "Online (1 Week)")},

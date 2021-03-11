@@ -75,7 +75,7 @@ func (c CommandAppRandom) Output(_ string, region steamapi.ProductCC, inputs map
 
 		tag, err := mongo.GetStatByName(inputs["tag"])
 		if err == mongo.ErrNoDocuments {
-			message.Content = "Tag **" + inputs["tag"] + "** not found, see <" + config.C.GameDBDomain + "/tags>"
+			message.Content = "Tag **" + inputs["tag"] + "** not found, see <" + config.C.GlobalSteamDomain + "/tags>"
 			return message, nil
 		} else if err != nil {
 			return message, err

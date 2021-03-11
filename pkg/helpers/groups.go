@@ -47,7 +47,7 @@ func GetGroupPathAbsolute(id string, name string) string {
 	pathx := GetGroupPath(id, name)
 
 	if strings.HasPrefix(pathx, "/") {
-		pathx = config.C.GameDBDomain + pathx
+		pathx = config.C.GlobalSteamDomain + pathx
 	}
 
 	return pathx

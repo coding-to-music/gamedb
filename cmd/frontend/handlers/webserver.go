@@ -502,7 +502,7 @@ func (t globalTemplate) GetUserJSON() string {
 func (t globalTemplate) GetMetaImage() (text string) {
 
 	if t.metaImage == "" {
-		return config.C.GameDBDomain + "/assets/img/sa-bg-500x500.png"
+		return config.C.GlobalSteamDomain + "/assets/img/sa-bg-500x500.png"
 	}
 
 	return t.metaImage
@@ -576,9 +576,9 @@ func (t globalTemplate) GetCookieFlag(key string) interface{} {
 func (t globalTemplate) GetCanonical() (text string) {
 
 	if t.Canonical != "" {
-		return config.C.GameDBDomain + t.Canonical
+		return config.C.GlobalSteamDomain + t.Canonical
 	}
-	return config.C.GameDBDomain + t.request.URL.Path + strings.TrimRight("?"+t.request.URL.Query().Encode(), "?")
+	return config.C.GlobalSteamDomain + t.request.URL.Path + strings.TrimRight("?"+t.request.URL.Query().Encode(), "?")
 }
 
 func (t globalTemplate) GetVersionHash() string {

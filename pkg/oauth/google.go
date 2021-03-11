@@ -79,7 +79,7 @@ func (c googleProvider) GetConfig() oauth2.Config {
 		ClientID:     config.C.GoogleOauthClientID,
 		ClientSecret: config.C.GoogleOauthClientSecret,
 		Scopes:       []string{"profile", "email"},
-		RedirectURL:  config.C.GameDBDomain + "/oauth/in/" + string(c.GetEnum()),
+		RedirectURL:  config.C.GlobalSteamDomain + "/oauth/in/" + string(c.GetEnum()),
 		Endpoint:     google.Endpoint,
 	}
 }

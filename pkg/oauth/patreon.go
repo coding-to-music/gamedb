@@ -82,7 +82,7 @@ func (c patreonProvider) GetConfig() oauth2.Config {
 		ClientID:     config.C.PatreonClientID,
 		ClientSecret: config.C.PatreonClientSecret,
 		Scopes:       []string{"identity", "identity[email]"}, // identity[email] scope is only needed as the Patreon package we are using only handles v1 API
-		RedirectURL:  config.C.GameDBDomain + "/oauth/in/" + string(c.GetEnum()),
+		RedirectURL:  config.C.GlobalSteamDomain + "/oauth/in/" + string(c.GetEnum()),
 		Endpoint: oauth2.Endpoint{
 			AuthURL:  "https://www.patreon.com/oauth2/authorize",
 			TokenURL: "https://api.patreon.com/oauth2/token",
