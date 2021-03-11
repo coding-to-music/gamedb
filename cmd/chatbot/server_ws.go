@@ -42,11 +42,6 @@ func websocketServer() (session *discordgo.Session, err error) {
 			return
 		}
 
-		// Stop users getting two responses
-		if config.IsLocal() && e.Member.User.ID != config.DiscordAdminID {
-			return
-		}
-
 		// Check for pings
 		if e.Type == discordgo.InteractionPing {
 
@@ -141,11 +136,6 @@ func websocketServer() (session *discordgo.Session, err error) {
 
 		// Don't reply to bots
 		if e.Author.Bot {
-			return
-		}
-
-		// Stop users getting two responses
-		if config.IsLocal() && e.Author.ID != config.DiscordAdminID {
 			return
 		}
 
@@ -285,10 +275,6 @@ func getProdCC(command chatbot.Command, authorID string) steamapi.ProductCC {
 }
 
 func saveToDB(command chatbot.Command, isSlash bool, wasSuccess *bool, message, guildID, channelID string, user *discordgo.User) {
-
-	if user.ID == config.DiscordAdminID {
-		return
-	}
 
 	if config.IsLocal() {
 		return

@@ -14,7 +14,6 @@ const (
 	EnvLocal    = "local"
 	EnvConsumer = "consumer"
 
-	DiscordAdminID = "145456943912189952"
 	DiscordGuildID = "407493776597057538"
 )
 
