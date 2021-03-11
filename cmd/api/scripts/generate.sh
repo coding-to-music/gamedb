@@ -11,8 +11,8 @@ done
 oapi-codegen \
   -generate types,chi-server,spec \
   -package generated \
-  http://localhost:"$STEAM_PORT"/api/gamedb.json \
+  http://localhost:"$STEAM_PORT"/api/globalsteam.json \
   >./generated/generated.go
 
-echo http://localhost:"$STEAM_PORT"/api/gamedb.json
+echo http://localhost:"$STEAM_PORT"/api/globalsteam.json
 echo "Done"
