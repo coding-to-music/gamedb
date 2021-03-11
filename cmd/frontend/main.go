@@ -6,14 +6,11 @@ import (
 	"math/rand"
 	"net/http"
 	_ "net/http/pprof"
-	"net/url"
-	"path/filepath"
-	"strconv"
-	"strings"
 	"time"
 
 	"github.com/gamedb/gamedb/cmd/frontend/handlers"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/email"
+	handlers2 "github.com/gamedb/gamedb/cmd/frontend/helpers/handlers"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/consumers"
@@ -147,49 +144,46 @@ func main() {
 
 	// Assets
 	r.Route("/assets", func(r chi.Router) {
-		r.Get("/img/*", rootFileHandler(imgBox, "/assets/img"))
-		r.Get("/dist/*", rootFileHandler(distBox, "/assets/dist"))
+		r.Get("/img/*", handlers2.RootFileHandler(imgBox, "/assets/img"))
+		r.Get("/dist/*", handlers2.RootFileHandler(distBox, "/assets/dist"))
 	})
 
 	// Root files
-	r.Get("/ads.txt", rootFileHandler(filesBox, ""))
-	r.Get("/browserconfig.xml", rootFileHandler(filesBox, ""))
-	r.Get("/robots.txt", rootFileHandler(filesBox, ""))
-	r.Get("/site.webmanifest", rootFileHandler(filesBox, ""))
+	r.Get("/ads.txt", handlers2.RootFileHandler(filesBox, ""))
+	r.Get("/browserconfig.xml", handlers2.RootFileHandler(filesBox, ""))
+	r.Get("/robots.txt", handlers2.RootFileHandler(filesBox, ""))
+	r.Get("/site.webmanifest", handlers2.RootFileHandler(filesBox, ""))
 
 	// Shortcuts
-	r.Get("/a{id:[0-9]+}", redirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/games/" + chi.URLParam(r, "id") }))
-	r.Get("/g{id:[0-9]+}", redirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/games/" + chi.URLParam(r, "id") }))
-	r.Get("/s{id:[0-9]+}", redirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/packages/" + chi.URLParam(r, "id") }))
-	r.Get("/p{id:[0-9]+}", redirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/players/" + chi.URLParam(r, "id") }))
-	r.Get("/b{id:[0-9]+}", redirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/bundles/" + chi.URLParam(r, "id") }))
+	r.Get("/a{id:[0-9]+}", handlers2.RedirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/games/" + chi.URLParam(r, "id") }))
+	r.Get("/g{id:[0-9]+}", handlers2.RedirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/games/" + chi.URLParam(r, "id") }))
+	r.Get("/s{id:[0-9]+}", handlers2.RedirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/packages/" + chi.URLParam(r, "id") }))
+	r.Get("/p{id:[0-9]+}", handlers2.RedirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/players/" + chi.URLParam(r, "id") }))
+	r.Get("/b{id:[0-9]+}", handlers2.RedirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/bundles/" + chi.URLParam(r, "id") }))
 
 	// Redirects
-	r.Get("/apps", redirectHandler("/games"))
-	r.Get("/apps/{one}", redirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/games/" + chi.URLParam(r, "one") }))
-	r.Get("/apps/{one}/{two}", redirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/games/" + chi.URLParam(r, "one") + "/" + chi.URLParam(r, "two") }))
-	r.Get("/subs", redirectHandler("/packages"))
-	r.Get("/subs/{one}", redirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/packages/" + chi.URLParam(r, "one") }))
-	r.Get("/subs/{one}/{two}", redirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/packages/" + chi.URLParam(r, "one") + "/" + chi.URLParam(r, "two") }))
-	r.Get("/coop", redirectHandler("/games/coop"))
-	r.Get("/chat", redirectHandler("/discord-server"))
-	r.Get("/chat-bot", redirectHandler("/discord-bot"))
-	r.Get("/chat/{id}", redirectHandler("/discord-server"))
-	r.Get("/sitemap/index.xml", redirectHandler("/sitemap.xml"))
-	r.Get("/steam-api", redirectHandler("/api/steam"))
-	r.Get("/api", redirectHandler("/api/gamedb"))
-	r.Get("/discord", redirectHandler("/discord-bot")) // Used in discord messages
-	r.Get("/api/gamedb", redirectHandler("/api/globalsteam"))
-	r.Get("/api/gamedb.json", redirectHandler("/api/globalsteam.json"))
-	r.Get("/api/gamedb.yaml", redirectHandler("/api/globalsteam.yaml"))
+	r.Get("/apps", handlers2.RedirectHandler("/games"))
+	r.Get("/apps/{one}", handlers2.RedirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/games/" + chi.URLParam(r, "one") }))
+	r.Get("/apps/{one}/{two}", handlers2.RedirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/games/" + chi.URLParam(r, "one") + "/" + chi.URLParam(r, "two") }))
+	r.Get("/subs", handlers2.RedirectHandler("/packages"))
+	r.Get("/subs/{one}", handlers2.RedirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/packages/" + chi.URLParam(r, "one") }))
+	r.Get("/subs/{one}/{two}", handlers2.RedirectHandlerFunc(func(w http.ResponseWriter, r *http.Request) string { return "/packages/" + chi.URLParam(r, "one") + "/" + chi.URLParam(r, "two") }))
+	r.Get("/coop", handlers2.RedirectHandler("/games/coop"))
+	r.Get("/chat", handlers2.RedirectHandler("/discord-server"))
+	r.Get("/chat-bot", handlers2.RedirectHandler("/discord-bot"))
+	r.Get("/chat/{id}", handlers2.RedirectHandler("/discord-server"))
+	r.Get("/sitemap/index.xml", handlers2.RedirectHandler("/sitemap.xml"))
+	r.Get("/steam-api", handlers2.RedirectHandler("/api/steam"))
+	r.Get("/api", handlers2.RedirectHandler("/api/gamedb"))
+	r.Get("/discord", handlers2.RedirectHandler("/discord-bot")) // Used in discord messages
 
 	// Game Redirects
-	r.Get("/new-releases", redirectHandler("/games/new-releases"))
-	r.Get("/random", redirectHandler("/games/random"))
-	r.Get("/sales", redirectHandler("/games/sales"))
-	r.Get("/trending", redirectHandler("/games/trending"))
-	r.Get("/upcoming", redirectHandler("/games/upcoming"))
-	r.Get("/wishlists", redirectHandler("/games/wishlists"))
+	r.Get("/new-releases", handlers2.RedirectHandler("/games/new-releases"))
+	r.Get("/random", handlers2.RedirectHandler("/games/random"))
+	r.Get("/sales", handlers2.RedirectHandler("/games/sales"))
+	r.Get("/trending", handlers2.RedirectHandler("/games/trending"))
+	r.Get("/upcoming", handlers2.RedirectHandler("/games/upcoming"))
+	r.Get("/wishlists", handlers2.RedirectHandler("/games/wishlists"))
 
 	// 404
 	r.NotFound(handlers.Error404Handler)
@@ -223,80 +217,3 @@ func main() {
 	)
 }
 
-func redirectHandler(path string) func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-
-		u, _ := url.Parse(path)
-		q := u.Query()
-
-		for k, v := range r.URL.Query() {
-			for _, vv := range v {
-				q.Add(k, vv)
-			}
-		}
-
-		u.RawQuery = q.Encode()
-
-		http.Redirect(w, r, u.String(), http.StatusFound)
-	}
-}
-
-func redirectHandlerFunc(f func(w http.ResponseWriter, r *http.Request) string) func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-
-		u, _ := url.Parse(f(w, r))
-		q := u.Query()
-
-		for k, v := range r.URL.Query() {
-			for _, vv := range v {
-				q.Add(k, vv)
-			}
-		}
-
-		u.RawQuery = q.Encode()
-
-		http.Redirect(w, r, u.String(), http.StatusFound)
-	}
-}
-
-func rootFileHandler(box *packr.Box, path string) func(w http.ResponseWriter, r *http.Request) {
-
-	return func(w http.ResponseWriter, r *http.Request) {
-
-		w.Header().Set("X-Content-Type-Options", "nosniff")
-
-		b, err := box.Find(strings.TrimPrefix(r.URL.Path, path))
-		if err != nil {
-			w.WriteHeader(404)
-			_, err := w.Write([]byte("Unable to read file."))
-			if err != nil {
-				log.ErrS(err)
-			}
-			return
-		}
-
-		types := map[string]string{
-			".js":  "text/javascript",
-			".css": "text/css",
-			".png": "image/png",
-			".jpg": "image/jpeg",
-		}
-
-		if val, ok := types[filepath.Ext(r.URL.Path)]; ok {
-
-			// Cache for ages
-			duration := time.Hour * 1000
-			w.Header().Set("Cache-Control", "max-age="+strconv.Itoa(int(duration.Seconds())))
-			w.Header().Set("Expires", time.Now().Add(duration).Format(time.RFC1123))
-
-			// Fix headers, packr seems to break them
-			w.Header().Add("Content-Type", val)
-		}
-
-		// Output
-		_, err = w.Write(b)
-		if err != nil {
-			log.ErrS(err)
-		}
-	}
-}

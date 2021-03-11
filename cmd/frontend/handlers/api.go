@@ -6,6 +6,7 @@ import (
 	"path"
 
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/api"
+	"github.com/gamedb/gamedb/cmd/frontend/helpers/handlers"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
@@ -23,6 +24,11 @@ func APIRouter() http.Handler {
 	r.Get("/steam", apiHandler)
 	r.Get("/steam.json", apiSteamJSONHandler)
 	r.Get("/steam.yaml", apiSteamYAMLHandler)
+
+	// Redirects
+	r.Get("/gamedb", handlers.RedirectHandler("/api/globalsteam"))
+	r.Get("/gamedb.json", handlers.RedirectHandler("/api/globalsteam.json"))
+	r.Get("/gamedb.yaml", handlers.RedirectHandler("/api/globalsteam.yaml"))
 
 	return r
 }
