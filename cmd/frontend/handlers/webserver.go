@@ -14,6 +14,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/dustin/go-humanize"
@@ -97,7 +98,7 @@ func returnJSON(w http.ResponseWriter, r *http.Request, i interface{}) {
 	}
 
 	_, err = w.Write(b)
-	if err != nil && !strings.Contains(err.Error(), "write: broken pipe") {
+	if err != nil && !errors.Is(err, syscall.EPIPE) {
 		log.ErrS(err)
 	}
 }
@@ -123,7 +124,7 @@ func returnYAML(w http.ResponseWriter, r *http.Request, i interface{}) {
 	}
 
 	_, err = w.Write(b)
-	if err != nil && !strings.Contains(err.Error(), "write: broken pipe") {
+	if err != nil && !errors.Is(err, syscall.EPIPE) {
 		log.ErrS(err)
 	}
 }
@@ -149,7 +150,7 @@ func returnXML(w http.ResponseWriter, r *http.Request, i interface{}) {
 	}
 
 	_, err = w.Write(b)
-	if err != nil && !strings.Contains(err.Error(), "write: broken pipe") {
+	if err != nil && !errors.Is(err, syscall.EPIPE) {
 		log.ErrS(err)
 	}
 }
@@ -205,7 +206,9 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, pageData pageInterfa
 	err := templatex.ExecuteTemplate(w, path.Base(page), pageData)
 	if err != nil {
 		log.ErrS(err)
-		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Looks like I messed something up, will be fixed soon!"})
+		if !errors.Is(err, syscall.EPIPE) {
+			returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Looks like I messed something up, will be fixed soon!"})
+		}
 		return
 	}
 
@@ -227,7 +230,7 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, pageData pageInterfa
 	// 	_, err = buf.WriteTo(w)
 	// }
 	//
-	// if err != nil && !strings.Contains(err.Error(), "write: broken pipe") {
+	// if err != nil && !errors.Is(err, syscall.EPIPE) {
 	// 	log.ErrS(err)
 	// }
 }
