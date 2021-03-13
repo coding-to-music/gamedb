@@ -355,6 +355,11 @@ func sendMessage(s *discordgo.Session, message *discordgo.MessageSend, channelID
 
 			_, err = s.ChannelMessageSend(channel.ID, "I do not have permission to post in that channel :(")
 			if err != nil {
+
+				if _, ok := err.(*discordgo.RESTError); ok && val.Response.StatusCode == 403 {
+					return nil
+				}
+
 				log.Err("Sending channel message", zap.Error(err), zap.String("msg", messageRaw))
 				return err
 			}
