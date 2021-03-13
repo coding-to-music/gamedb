@@ -545,13 +545,11 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 
 		ua := r.UserAgent()
 
-		// Apps
+		// App IDs
 		var appIDs []int
 		if val := r.PostForm.Get("app-id"); val != "" {
 
-			vals := strings.Split(val, ",")
-
-			for _, val := range vals {
+			for _, val := range strings.Split(val, ",") {
 
 				val = strings.TrimSpace(val)
 
@@ -562,10 +560,26 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
+		// App IDs Search
+		if val := r.PostForm.Get("app-id-search"); val != "" {
+
+			for _, val := range strings.Split(val, ",") {
+
+				val = strings.TrimSpace(val)
+
+				appID, err := strconv.Atoi(val)
+				if err == nil {
+					err = consumers.ProduceAppSearch(nil, appID, nil)
+					err = helpers.IgnoreErrors(err, consumers.ErrInQueue)
+					if err != nil {
+						log.Err("Producing app search", zap.Error(err), zap.Int("app", appID))
+					}
+				}
+			}
+		}
+
 		// Apps since timestamp
 		if val := r.PostForm.Get("apps-ts"); val != "" {
-
-			log.InfoS("Queueing apps")
 
 			val = strings.TrimSpace(val)
 
@@ -607,9 +621,7 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 		// Players
 		if val := r.PostForm.Get("player-id"); val != "" {
 
-			vals := strings.Split(val, ",")
-
-			for _, val := range vals {
+			for _, val := range strings.Split(val, ",") {
 
 				val = strings.TrimSpace(val)
 
@@ -645,9 +657,7 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 		// Bundles
 		if val := r.PostForm.Get("bundle-id"); val != "" {
 
-			vals := strings.Split(val, ",")
-
-			for _, val := range vals {
+			for _, val := range strings.Split(val, ",") {
 
 				val = strings.TrimSpace(val)
 
@@ -685,9 +695,7 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 		// Groups
 		if val := r.PostForm.Get("group-id"); val != "" {
 
-			vals := strings.Split(val, ",")
-
-			for _, val := range vals {
+			for _, val := range strings.Split(val, ",") {
 
 				val = strings.TrimSpace(val)
 
@@ -702,8 +710,7 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 		// Group members
 		if val := r.PostForm.Get("group-members"); val != "" {
 
-			vals := strings.Split(val, ",")
-			for _, val := range vals {
+			for _, val := range strings.Split(val, ",") {
 
 				val = strings.TrimSpace(val)
 
