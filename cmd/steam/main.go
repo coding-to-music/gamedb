@@ -232,7 +232,7 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 
 			err = consumers.ProduceApp(consumers.AppMessage{ID: id, ChangeNumber: int(app.GetChangeNumber()), VDF: m})
 			if err != nil {
-				log.ErrS(err, id)
+				log.Err("Produce app", zap.Error(err), zap.Int("app", id))
 			}
 		}
 	}
@@ -244,7 +244,7 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 			var id = int(app)
 			err := consumers.ProduceApp(consumers.AppMessage{ID: id})
 			if err != nil {
-				log.ErrS(err, id)
+				log.Err("Produce app", zap.Error(err), zap.Int("app", id))
 			}
 		}
 	}
@@ -267,7 +267,7 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 			if err != nil {
 				err = helpers.IgnoreErrors(err, mongo.ErrInvalidPackageID)
 				if err != nil {
-					log.ErrS(err, id)
+					log.Err("Produce app", zap.Error(err), zap.Int("sub", id))
 				}
 			}
 		}
@@ -280,7 +280,7 @@ func (ph packetHandler) handleProductInfo(packet *protocol.Packet) {
 			var id = int(pack)
 			err := consumers.ProducePackage(consumers.PackageMessage{ID: id})
 			if err != nil {
-				log.ErrS(err, id)
+				log.Err("Produce app", zap.Error(err), zap.Int("sub", id))
 			}
 		}
 	}
