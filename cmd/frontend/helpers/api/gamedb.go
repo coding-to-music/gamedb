@@ -227,9 +227,9 @@ var SwaggerGameDB = &openapi3.Swagger{
 					},
 				},
 			},
-			"price-schema": {
-				Ref: "#/components/schemas/product-price-schema",
-			},
+			// "price-schema": {
+			// 	Ref: "#/components/schemas/product-price-schema",
+			// },
 		},
 		Responses: map[string]*openapi3.ResponseRef{
 			"home-response": {
