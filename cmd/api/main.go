@@ -12,7 +12,9 @@ import (
 	"strings"
 	"time"
 
+	codegenMiddleware "github.com/deepmap/oapi-codegen/pkg/chi-middleware"
 	"github.com/gamedb/gamedb/cmd/api/generated"
+	"github.com/gamedb/gamedb/cmd/frontend/helpers/api"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -22,6 +24,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/middleware"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
+	"github.com/getkin/kin-openapi/openapi3filter"
 	"github.com/go-chi/chi"
 	chiMiddleware "github.com/go-chi/chi/middleware"
 	influx "github.com/influxdata/influxdb1-client"
@@ -51,7 +54,7 @@ func main() {
 	r.Use(chiMiddleware.Compress(flate.DefaultCompression))
 	r.Use(middleware.RealIP)
 	r.Use(middleware.RateLimiterBlock(time.Second/2, 1, rateLimitedHandler))
-	// r.Use(codegenMiddleware.OapiRequestValidatorWithOptions(api.SwaggerGameDB, &codegenMiddleware.Options{Options: openapi3filter.Options{MultiError: true}}))
+	r.Use(codegenMiddleware.OapiRequestValidatorWithOptions(api.SwaggerGameDB, &codegenMiddleware.Options{Options: openapi3filter.Options{MultiError: true}}))
 
 	r.Get("/health-check", healthCheckHandler)
 
@@ -112,6 +115,8 @@ func notFoundHandler(w http.ResponseWriter, _ *http.Request) {
 	}
 }
 
+var router = openapi3filter.NewRouter().WithSwagger(api.SwaggerGameDB)
+
 func authMiddlewear(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -139,21 +144,25 @@ func authMiddlewear(next http.HandlerFunc) http.HandlerFunc {
 		// Check user has access to api
 		user, err := mysql.GetUserByAPIKey(key)
 		if err == mysql.ErrRecordNotFound {
-
 			returnResponse(w, r, http.StatusUnauthorized, generated.MessageResponse{Error: "invalid api key: " + key})
 			return
-
-		} else if err != nil {
-
+		}
+		if err != nil {
 			returnResponse(w, r, http.StatusInternalServerError, err)
 			return
+		}
 
-		} else if user.Level < mysql.UserLevel2 {
-
+		route, _, err := router.FindRoute(r.Method, r.URL)
+		if err != nil {
+			returnResponse(w, r, http.StatusInternalServerError, err)
+			return
+		}
+		if user.Level < mysql.UserLevel2 && !helpers.SliceHasString(api.TagFree, route.Operation.Tags) {
 			returnResponse(w, r, http.StatusUnauthorized, generated.MessageResponse{Error: "invalid user level"})
 			return
 		}
 
+		// Save user ID to context
 		r = r.WithContext(context.WithValue(r.Context(), ctxUserField, user.ID))
 
 		next.ServeHTTP(w, r)
