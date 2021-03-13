@@ -11,6 +11,7 @@ const (
 	tagArticles = "Articles"
 	tagPackages = "Packages"
 	tagGroups   = "Groups"
+	TagFree     = "Free"
 )
 
 func stringPointer(s string) *string {
@@ -40,6 +41,7 @@ var SwaggerGameDB = &openapi3.Swagger{
 		&openapi3.Tag{Name: tagArticles},
 		&openapi3.Tag{Name: tagPackages},
 		&openapi3.Tag{Name: tagGroups},
+		&openapi3.Tag{Name: TagFree},
 	},
 	Security: openapi3.SecurityRequirements{
 		openapi3.NewSecurityRequirement().Authenticate("keyHeader"),
@@ -427,6 +429,7 @@ var SwaggerGameDB = &openapi3.Swagger{
 	Paths: openapi3.Paths{
 		"/": &openapi3.PathItem{
 			Get: &openapi3.Operation{
+				Tags:    []string{TagFree},
 				Summary: "Home",
 				Responses: map[string]*openapi3.ResponseRef{
 					"200": {Ref: "#/components/responses/home-response"},
@@ -484,7 +487,7 @@ var SwaggerGameDB = &openapi3.Swagger{
 		},
 		"/games/{id}": &openapi3.PathItem{
 			Get: &openapi3.Operation{
-				Tags:    []string{tagGames},
+				Tags:    []string{tagGames, TagFree},
 				Summary: "Retrieve Game",
 				Parameters: openapi3.Parameters{
 					{Value: openapi3.NewPathParameter("id").WithRequired(true).WithSchema(openapi3.NewInt32Schema().WithMin(1))},
@@ -566,7 +569,7 @@ var SwaggerGameDB = &openapi3.Swagger{
 		},
 		"/players/{id}": &openapi3.PathItem{
 			Get: &openapi3.Operation{
-				Tags:    []string{tagPlayers},
+				Tags:    []string{tagPlayers, TagFree},
 				Summary: "Retrieve Player",
 				Parameters: openapi3.Parameters{
 					{Value: openapi3.NewPathParameter("id").WithRequired(true).WithSchema(openapi3.NewInt64Schema().WithMin(1))},
