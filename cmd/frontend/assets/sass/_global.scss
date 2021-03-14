@@ -309,6 +309,20 @@ video {
     }
 }
 
+// Ad
+#flashes-ad {
+    @extend .mb-3;
+    max-height: 120px;
+    position: relative;
+}
+
+body.local {
+    #flashes-ad {
+        border: solid 1px red;
+        height: 120px;
+    }
+}
+
 //
 .navbar {
 
