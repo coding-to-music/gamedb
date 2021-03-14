@@ -342,7 +342,6 @@ func sendMessage(s *discordgo.Session, message *discordgo.MessageSend, channelID
 
 	_, err = s.ChannelMessageSendComplex(channelID, message)
 	if err != nil {
-		discordError(err)
 
 		// If reply failed, try to DM the OP
 		if val, ok := err.(*discordgo.RESTError); ok && val.Message.Code == 50013 { // Missing Permissions
