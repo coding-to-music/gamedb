@@ -23,6 +23,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/middleware"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
+	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/getkin/kin-openapi/openapi3filter"
 	"github.com/go-chi/chi"
 	chiMiddleware "github.com/go-chi/chi/middleware"
@@ -118,12 +119,23 @@ func notFoundHandler(w http.ResponseWriter, _ *http.Request) {
 	}
 }
 
-var router = openapi3filter.NewRouter().WithSwagger(api.SwaggerGameDB)
+var router *openapi3filter.Router
 
 func authMiddlewear(next http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
 
-		var err error
+	if router == nil {
+
+		s := &*api.GetGlobalSteam()
+
+		err := openapi3.NewSwaggerLoader().ResolveRefsIn(s, nil)
+		if err != nil {
+			log.ErrS(err)
+		}
+
+		router = openapi3filter.NewRouter().WithSwagger(s)
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
 
 		// Check API key
 		key := r.URL.Query().Get(keyField)
@@ -154,6 +166,9 @@ func authMiddlewear(next http.HandlerFunc) http.HandlerFunc {
 			returnResponse(w, r, http.StatusInternalServerError, err)
 			return
 		}
+
+		r.URL.Host = r.Host
+		r.URL.Scheme = "https"
 
 		route, _, err := router.FindRoute(r.Method, r.URL)
 		if err != nil {
