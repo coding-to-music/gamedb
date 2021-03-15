@@ -7,10 +7,9 @@ import (
 	"github.com/go-chi/cors"
 )
 
-// todo, check this is alright
 func MiddlewareCors() func(next http.Handler) http.Handler {
 	return cors.New(cors.Options{
-		AllowedOrigins: []string{config.C.GlobalSteamDomain}, // Use this to allow specific origin hosts
+		AllowedOrigins: []string{config.C.GlobalSteamDomain, "https://editor.swagger.io"}, // Use this to allow specific origin hosts
 		AllowedMethods: []string{"GET", "POST"},
 	}).Handler
 }
