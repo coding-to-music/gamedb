@@ -178,6 +178,10 @@ func returnResponse(w http.ResponseWriter, r *http.Request, code int, i interfac
 	w.Header().Set("content-type", "application/json")
 	w.WriteHeader(code)
 
+	if val, ok := i.(error); ok {
+		i = generated.MessageResponse{Error: val.Error()}
+	}
+
 	err := json.NewEncoder(w).Encode(i)
 	if err != nil {
 		log.ErrS(err)
