@@ -12,7 +12,6 @@ import (
 	"strings"
 	"time"
 
-	codegenMiddleware "github.com/deepmap/oapi-codegen/pkg/chi-middleware"
 	"github.com/gamedb/gamedb/cmd/api/generated"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/api"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
@@ -57,8 +56,8 @@ func main() {
 	r := chi.NewRouter()
 	r.Use(chiMiddleware.Compress(flate.DefaultCompression))
 	r.Use(middleware.RealIP)
-	r.Use(middleware.RateLimiterBlock(time.Second/2, 1, rateLimitedHandler))
-	r.Use(codegenMiddleware.OapiRequestValidatorWithOptions(api.SwaggerGameDB, &codegenMiddleware.Options{Options: openapi3filter.Options{MultiError: true}}))
+	r.Use(middleware.RateLimiterBlock(time.Second, 1, rateLimitedHandler))
+	// r.Use(codegenMiddleware.OapiRequestValidatorWithOptions(api.SwaggerGameDB, &codegenMiddleware.Options{Options: openapi3filter.Options{MultiError: true}}))
 
 	r.Get("/health-check", healthCheckHandler)
 
