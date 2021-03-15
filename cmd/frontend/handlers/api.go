@@ -57,12 +57,12 @@ type apiTemplate struct {
 
 func apiGamedbJSONHandler(w http.ResponseWriter, r *http.Request) {
 
-	returnJSON(w, r, api.SwaggerGameDB)
+	returnJSON(w, r, api.GetGlobalSteam())
 }
 
 func apiGamedbYAMLHandler(w http.ResponseWriter, r *http.Request) {
 
-	returnYAML(w, r, api.SwaggerGameDB)
+	returnYAML(w, r, api.GetGlobalSteam())
 }
 
 func apiSteamJSONHandler(w http.ResponseWriter, r *http.Request) {
