@@ -30,8 +30,12 @@ import (
 	influx "github.com/influxdata/influxdb1-client"
 )
 
-const keyField = "key"
-const ctxUserField = "user_id"
+const (
+	keyField = "key"
+
+	ctxUserIDField    = "user_id"
+	ctxUserLevelField = "user_level"
+)
 
 var apiKeyRegexp = regexp.MustCompile("^[A-Z0-9]{20}$")
 
@@ -163,7 +167,8 @@ func authMiddlewear(next http.HandlerFunc) http.HandlerFunc {
 		}
 
 		// Save user ID to context
-		r = r.WithContext(context.WithValue(r.Context(), ctxUserField, user.ID))
+		r = r.WithContext(context.WithValue(r.Context(), ctxUserIDField, user.ID))
+		r = r.WithContext(context.WithValue(r.Context(), ctxUserLevelField, user.Level))
 
 		next.ServeHTTP(w, r)
 	}
@@ -182,7 +187,7 @@ func returnResponse(w http.ResponseWriter, r *http.Request, code int, i interfac
 	if config.IsProd() {
 		go func() {
 
-			userID, _ := r.Context().Value(ctxUserField).(int)
+			userID, _ := r.Context().Value(ctxUserIDField).(int)
 
 			_, err := influxHelpers.InfluxWrite(influxHelpers.InfluxRetentionPolicyAllTime, influx.Point{
 				Measurement: string(influxHelpers.InfluxMeasurementAPICalls),
