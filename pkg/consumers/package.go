@@ -241,19 +241,19 @@ func packageHandler(message *rabbit.Message) {
 	}()
 
 	// Queue apps
-	wg.Add(1)
-	go func() {
-
-		defer wg.Done()
-
-		if payload.ChangeNumber > 0 {
-
-			err := ProduceSteam(SteamMessage{AppIDs: pack.Apps})
-			if err != nil {
-				log.ErrS(err)
-			}
-		}
-	}()
+	//wg.Add(1)
+	//go func() {
+	//
+	//	defer wg.Done()
+	//
+	//	if payload.ChangeNumber > 0 {
+	//
+	//		err := ProduceSteam(SteamMessage{AppIDs: pack.Apps})
+	//		if err != nil {
+	//			log.ErrS(err)
+	//		}
+	//	}
+	//}()
 
 	wg.Wait()
 
