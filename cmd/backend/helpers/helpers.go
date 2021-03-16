@@ -44,24 +44,3 @@ func MakeMongoProjection(p []string) (b bson.M) {
 	}
 	return b
 }
-
-func StringsToInterfaces(s []string) (o []interface{}) {
-	for _, v := range s {
-		o = append(o, v)
-	}
-	return o
-}
-
-func IntsToInt32s(s []int) (o []int32) {
-	for _, v := range s {
-		o = append(o, int32(v))
-	}
-	return o
-}
-
-func Int32sToInts(s []int32) (o []int) {
-	for _, v := range s {
-		o = append(o, int(v))
-	}
-	return o
-}

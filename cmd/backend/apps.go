@@ -5,9 +5,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gamedb/gamedb/cmd/backend/helpers"
+	backendHelpers "github.com/gamedb/gamedb/cmd/backend/helpers"
 	"github.com/gamedb/gamedb/pkg/backend/generated"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/olivere/elastic/v7"
@@ -86,7 +87,7 @@ func (a AppsServer) List(_ context.Context, request *generated.ListAppsRequest) 
 	}
 
 	response = &generated.AppsMongoResponse{}
-	response.Pagination = helpers.MakePaginationResponse(request.GetPagination(), total, filtered)
+	response.Pagination = backendHelpers.MakePaginationResponse(request.GetPagination(), total, filtered)
 
 	for _, app := range apps {
 
@@ -258,7 +259,7 @@ func (a AppsServer) Search(_ context.Context, request *generated.SearchAppsReque
 	wg.Wait()
 
 	response = &generated.AppsElasticResponse{}
-	response.Pagination = helpers.MakePaginationResponse(request.GetPagination(), total, filtered)
+	response.Pagination = backendHelpers.MakePaginationResponse(request.GetPagination(), total, filtered)
 
 	for _, app := range apps {
 
