@@ -18,7 +18,6 @@ import (
 	"time"
 
 	"github.com/dustin/go-humanize"
-	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
@@ -26,6 +25,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
+	"github.com/gamedb/gamedb/pkg/session"
 	"github.com/gosimple/slug"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"

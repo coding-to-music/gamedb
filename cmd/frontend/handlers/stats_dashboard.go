@@ -8,12 +8,12 @@ import (
 
 	"github.com/Jleagle/influxql"
 	"github.com/dustin/go-humanize"
-	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
+	"github.com/gamedb/gamedb/pkg/session"
 	"github.com/go-chi/chi/v5"
 	"go.uber.org/zap"
 )

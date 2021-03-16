@@ -6,9 +6,9 @@ import (
 	"strings"
 
 	"github.com/derekstavis/go-qs"
-	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	"github.com/gamedb/gamedb/pkg/session"
 	"github.com/jinzhu/gorm"
 	"github.com/olivere/elastic/v7"
 	"go.mongodb.org/mongo-driver/bson"

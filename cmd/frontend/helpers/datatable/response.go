@@ -3,7 +3,7 @@ package datatable
 import (
 	"net/http"
 
-	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
+	"github.com/gamedb/gamedb/pkg/session"
 )
 
 func NewDataTablesResponse(r *http.Request, query DataTablesQuery, count int64, countFiltered int64, aggregations map[string]map[string]int64) (ret *DataTablesResponse) {

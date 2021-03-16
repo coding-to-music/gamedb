@@ -14,7 +14,6 @@ import (
 
 	"github.com/Jleagle/influxql"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/datatable"
-	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/pkg/consumers"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
@@ -24,6 +23,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql/pics"
+	"github.com/gamedb/gamedb/pkg/session"
 	"github.com/go-chi/chi/v5"
 	"github.com/olivere/elastic/v7"
 	"go.mongodb.org/mongo-driver/bson"

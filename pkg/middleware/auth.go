@@ -3,7 +3,7 @@ package middleware
 import (
 	"net/http"
 
-	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
+	"github.com/gamedb/gamedb/pkg/session"
 )
 
 func MiddlewareAuthCheck(next http.Handler) http.Handler {

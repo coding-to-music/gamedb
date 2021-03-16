@@ -6,10 +6,10 @@ import (
 	"path"
 
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/handlers"
-	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
 	"github.com/gamedb/gamedb/pkg/api"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
+	"github.com/gamedb/gamedb/pkg/session"
 	"github.com/go-chi/chi/v5"
 	"gopkg.in/yaml.v2"
 )
