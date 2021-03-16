@@ -13,8 +13,8 @@ import (
 	"time"
 
 	"github.com/gamedb/gamedb/cmd/api/generated"
-	"github.com/gamedb/gamedb/cmd/frontend/helpers/api"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/session"
+	"github.com/gamedb/gamedb/pkg/api"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelpers "github.com/gamedb/gamedb/pkg/influx"
