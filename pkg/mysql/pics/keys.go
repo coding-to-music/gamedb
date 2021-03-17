@@ -124,6 +124,7 @@ var ExtendedKeys = map[string]PicsKey{
 	"dlcavailableonstore":                  {FormatType: picsTypeBool},
 	"dlcforappid":                          appIDLinkType,
 	"dlcpurchasefromingame":                {FormatType: picsTypeBool},
+	"encrypted_video":                      {FormatType: picsTypeBool},
 	"expansionofappid":                     appIDLinkType,
 	"externallyupdated":                    {FormatType: picsTypeBool},
 	"forcelaunchoptions":                   {FormatType: picsTypeBool},
