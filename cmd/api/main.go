@@ -167,8 +167,10 @@ func authMiddlewear(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		r.URL.Host = r.Host
-		r.URL.Scheme = "https"
+		if config.IsLocal() {
+			r.URL.Host = r.Host
+			r.URL.Scheme = "http"
+		}
 
 		route, _, err := router.FindRoute(r.Method, r.URL)
 		if err != nil {
@@ -180,7 +182,7 @@ func authMiddlewear(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		// Save user ID to context
+		// Save user info to context
 		r = r.WithContext(context.WithValue(r.Context(), ctxUserIDField, user.ID))
 		r = r.WithContext(context.WithValue(r.Context(), ctxUserLevelField, user.Level))
 

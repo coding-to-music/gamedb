@@ -18,13 +18,12 @@ func stringPointer(s string) *string {
 	return &s
 }
 
-func GetGlobalSteam() *openapi3.Swagger {
+func GetGlobalSteam() (swagger *openapi3.Swagger) {
 
-	return &openapi3.Swagger{
+	swagger = &openapi3.Swagger{
 		OpenAPI: "3.0.0",
 		Servers: []*openapi3.Server{
 			{URL: "https://api.globalsteam.online"},
-			{URL: "https://localhost:" + config.C.APIPort + "/"},
 		},
 		// ExternalDocs: &openapi3.ExternalDocs{
 		// 	URL: config.C.GlobalSteamDomain + "/api/gamedb",
@@ -620,4 +619,10 @@ func GetGlobalSteam() *openapi3.Swagger {
 			// "/stats/Tags"
 		},
 	}
+
+	if config.IsLocal() {
+		swagger.Servers = append(swagger.Servers, &openapi3.Server{URL: "http://localhost:" + config.C.APIPort + "/"})
+	}
+
+	return swagger
 }
