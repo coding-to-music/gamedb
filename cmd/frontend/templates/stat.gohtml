@@ -20,7 +20,7 @@
             <div class="card-body">
 
                 <div class="card mb-4">
-                    {{/*<h5 class="card-header">Games</h5>*/}}
+                    {{/*<h5 class="card-header">Apps</h5>*/}}
                     <div class="card-body">
                         <div id="stat-chart">
                             <i class="fas fa-spinner fa-spin"></i>
@@ -28,12 +28,12 @@
                     </div>
                 </div>
 
-                <h5>{{ .Stat.Name }} Games</h5>
+                <h5>{{ .Stat.Name }} Apps</h5>
                 <div class="table-responsive">
-                    <table class="table table-hover table-striped table-counts mb-0" data-path="/{{ .Stat.Type.MongoCol }}/{{ .Stat.ID }}/apps.json" id="games" data-row-type="games">
+                    <table class="table table-hover table-striped table-counts mb-0" data-path="/{{ .Stat.Type.MongoCol }}/{{ .Stat.ID }}/apps.json" id="games" data-row-type="apps">
                         <thead class="thead-light">
                         <tr>
-                            <th>Game</th>
+                            <th>App</th>
                             <th>Players</th>
                             <th>Price</th>
                             <th>Discount</th>
