@@ -222,15 +222,23 @@ func makeAppAliases(ID int, name string) (aliases []string) {
 
 										// Swap roman numerals
 										name2 = regexpVersionsAndRomanNumerals.ReplaceAllStringFunc(name2, func(part string) string {
+
+											maxVersion := 30
+
 											if convertRomanToInt {
 												part = helpers.RegexSmallRomanOnly.ReplaceAllStringFunc(part, func(part string) string {
-													return strconv.Itoa(roman.Arabic(part))
+													i := roman.Arabic(part)
+													if i > maxVersion {
+														return part
+													}
+													return strconv.Itoa(i)
 												})
 											}
+
 											if convertIntToRoman {
 												part = regexpVersionsAndRomanNumerals.ReplaceAllStringFunc(part, func(part string) string {
 													i, _ := strconv.Atoi(part)
-													if i <= 20 {
+													if i > maxVersion {
 														return part
 													}
 													converted, err := roman.Roman(i)
