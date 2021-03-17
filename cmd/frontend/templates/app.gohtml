@@ -346,8 +346,7 @@
                                     <th scope="col" nowrap="nowrap">Discount %</th>
                                 </tr>
                                 </thead>
-                                {{ range $key, $value := .App.Prices }}
-                                    {{ $price := $.App.Prices.Get $key }}
+                                {{ range $key, $value := .App.GetPrices }}
                                     <tr data-code="{{ $key }}">
                                         <td class="img" nowrap="nowrap">
                                             <div class="icon-name">
@@ -355,15 +354,19 @@
                                                 <div class="name">{{ .GetCountryName $key }}</div>
                                             </div>
                                         </td>
-                                        <td nowrap="nowrap">{{ $price.GetFinal }}</td>
+                                        <td nowrap="nowrap">{{ .GetFinal }}</td>
                                         <td nowrap="nowrap">
-                                            {{ if ne $price.GetFinal $price.GetInitial }}
-                                                {{ $price.GetInitial }}
+                                            {{ if ne .GetFinal .GetInitial }}
+                                                {{ .GetInitial }}
+                                            {{ else }}
+                                                n/a
                                             {{ end }}
                                         </td>
                                         <td>
-                                            {{ if ne $price.GetFinal $price.GetInitial }}
-                                                {{ $price.GetDiscountPercent }}
+                                            {{ if ne .GetFinal .GetInitial }}
+                                                {{ .GetDiscountPercent }}
+                                            {{ else }}
+                                                n/a
                                             {{ end }}
                                         </td>
                                     </tr>

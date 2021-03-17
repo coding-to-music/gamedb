@@ -220,7 +220,14 @@ func (app App) GetProductType() helpers.ProductType {
 }
 
 func (app App) GetPrices() (prices helpers.ProductPrices) {
-	return app.Prices
+
+	prices = helpers.ProductPrices{}
+
+	for k := range app.Prices {
+		prices[k] = app.Prices.Get(k)
+	}
+
+	return prices
 }
 
 func (app App) GetName() string {

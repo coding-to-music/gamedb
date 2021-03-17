@@ -335,6 +335,11 @@ func IsValidProdCC(cc steamapi.ProductCC) bool {
 }
 
 func GetProdCC(cc steamapi.ProductCC) ProductCountryCode {
+
+	if cc == "de" {
+		cc = steamapi.ProductCCEU
+	}
+
 	val, ok := ProductCountryCodes[cc]
 	if ok {
 		return val
