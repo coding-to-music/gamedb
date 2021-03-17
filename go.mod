@@ -25,7 +25,7 @@ require (
 	github.com/aws/aws-sdk-go v1.37.30 // indirect
 	github.com/badoux/checkmail v1.2.1
 	github.com/blend/go-sdk v1.1.1 // indirect
-	github.com/bwmarrin/discordgo v0.23.3-0.20210301043234-abe5ba6f0f66
+	github.com/bwmarrin/discordgo v0.23.3-0.20210314162722-182d9b48f34b
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/cenkalti/backoff/v4 v4.1.0
 	github.com/deepmap/oapi-codegen v1.5.1
@@ -104,14 +104,14 @@ require (
 	go.mongodb.org/mongo-driver v1.5.0
 	go.opencensus.io v0.23.0 // indirect
 	go.uber.org/zap v1.16.0
-	golang.org/x/crypto v0.0.0-20210220033148-5ea612d1eb83
+	golang.org/x/crypto v0.0.0-20210317152858-513c2a44f670
 	golang.org/x/exp v0.0.0-20200331195152-e8c3332aa8e5 // indirect
 	golang.org/x/image v0.0.0-20210220032944-ac19c3e999fb // indirect
 	golang.org/x/mod v0.4.2 // indirect
 	golang.org/x/net v0.0.0-20210226172049-e18ecbb05110
 	golang.org/x/oauth2 v0.0.0-20210311163135-5366d9dc1934
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
-	golang.org/x/sys v0.0.0-20210313110737-8e9fff1a3a18 // indirect
+	golang.org/x/sys v0.0.0-20210317091845-390168757d9c // indirect
 	golang.org/x/term v0.0.0-20210220032956-6a3ed077a48d // indirect
 	golang.org/x/text v0.3.5
 	gonum.org/v1/gonum v0.9.0

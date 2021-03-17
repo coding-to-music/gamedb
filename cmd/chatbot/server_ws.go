@@ -34,14 +34,6 @@ func websocketServer() (session *discordgo.Session, err error) {
 
 	session.AddHandler(func(s *discordgo.Session, e *discordgo.InteractionCreate) {
 
-		// Ignore PMs
-		// member is sent when the command is invoked in a guild, and user is sent when invoked in a DM
-		// todo, make PR to add user with isDM() func
-		// todo, if command.AllowDM() then use user and not member
-		if e.Member == nil {
-			return
-		}
-
 		// Check for pings
 		if e.Type == discordgo.InteractionPing {
 
@@ -60,6 +52,11 @@ func websocketServer() (session *discordgo.Session, err error) {
 		command, ok := chatbot.CommandCache[e.Data.Name]
 		if !ok {
 			log.ErrS("Command ID not found in register")
+			return
+		}
+
+		// Ignore PMs
+		if !command.AllowDM() && e.User != nil {
 			return
 		}
 
