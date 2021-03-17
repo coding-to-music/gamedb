@@ -137,43 +137,39 @@ func appsSearchHandler(message *rabbit.Message) {
 	message.Ack()
 }
 
+// Mainly used for splitting words by syllable for abbreviations
+var replacementMap = map[string]string{
+	"battlefield":    "battle field",
+	"battlegrounds":  "battle grounds",
+	"borderlands":    "border lands",
+	"civilization":   "civ",
+	"cyberpunk":      "cyber punk",
+	"payday":         "pay day",
+	"playerunknowns": "player unknowns",
+	"warframe":       "war frame",
+}
+
+// For aliases that can not be calculated
 var aliasMap = map[int][]string{
-	813780:  {"aoe", "aoe2"},         // Age of Empires II: Definitive Edition
-	221380:  {"aoe", "aoe2"},         // Age of Empires II (2013)
-	105450:  {"aoe", "aoe3"},         // Age of Empires® III: Complete Collection
-	1017900: {"aoe", "aoede"},        // Age of Empires: Definitive Edition
-	105430:  {"aoe", "aoeo"},         // Age of Empires Online
-	1172470: {"apex"},                // Apex Legends
-	346110:  {"ark"},                 // ARK: Survival Evolved
-	1238840: {"bf1"},                 // Battlefield 1
-	1238860: {"bf4"},                 // Battlefield 4
-	1238810: {"bf5"},                 // Battlefield V
-	49520:   {"bl", "bl2"},           // Borderlands 2
-	397540:  {"bl", "bl3"},           // Borderlands 3
-	8980:    {"bl", "goty"},          // Borderlands GOTY
-	870780:  {"control"},             // Control Ultimate Edition
-	730:     {"csgo", "cs go", "cs"}, // Counter-Strike: Global Offensive
-	1091500: {"cp", "cyberpunk"},     // Cyberpunk 2077
-	570:     {"dota", "dota2"},       // Dota 2
-	8500:    {"eve", "eo"},           // EVE Online
-	39210:   {"ff14", "ff 14"},       // FINAL FANTASY XIV Online
-	261550:  {"mab2"},                // Mount & Blade II: Bannerlord
-	48700:   {"mab", "mabw"},         // Mount & Blade: Warband
-	24240:   {"pd", "pd1", "pdth"},   // PAYDAY: The Heist
-	218620:  {"pd", "pd2"},           // PAYDAY 2
-	578080:  {"pubg"},                // PLAYERUNKNOWN'S BATTLEGROUNDS
-	3900:    {"civ", "civ4"},         // Sid Meier's Civilization IV
-	8930:    {"civ", "civ5"},         // Sid Meier's Civilization V
-	289070:  {"civ", "civ6"},         // Sid Meier's Civilization VI
-	359550:  {"r6"},                  // Tom Clancy's Rainbow Six Siege
-	230410:  {"wf"},                  // Warframe
-	444200:  {"wot"},                 // World of Tanks Blitz
+	1172470: {"apex"},                  // Apex Legends
+	261550:  {"mab2"},                  // Mount & Blade II: Bannerlord
+	48700:   {"mab", "mabw"},           // Mount & Blade: Warband
+	578080:  {"pubg"},                  // PLAYERUNKNOWN'S BATTLEGROUNDS
+	359550:  {"r6"},                    // Tom Clancy's Rainbow Six Siege
+	444200:  {"wot", "world of tanks"}, // World of Tanks Blitz
 }
 
 //goland:noinspection RegExpRedundantEscape
 var (
-	regexpRoman         = regexp.MustCompile(`[IVX]{1,4}|[0-9]{1,2}`)
-	regexpSplitOnEnding = regexp.MustCompile(`\s\(|\:\s`)
+	regexpVersionsAndRomanNumerals = regexp.MustCompile(`\b[IVX]{1,4}\b|\b[0-9]{1,2}\b`)
+
+	regexpAppSuffix = regexp.MustCompile(strings.Join([]string{
+		`\:\s`,           // Colon
+		`\s\(`,           // Brackets
+		`\s\w+ edition$`, // editions
+		`\sgoty`,         // Game of the year
+		`\sonline`,       // Online
+	}, "|"))
 )
 
 func makeAppAliases(ID int, name string) (aliases []string) {
@@ -187,73 +183,83 @@ func makeAppAliases(ID int, name string) (aliases []string) {
 	for _, convertRomanToInt := range []bool{true, false} {
 		for _, convertIntToRoman := range []bool{true, false} {
 			for _, removeSymbols := range []bool{true, false} {
-				for _, removeEndings := range []bool{true, false} {
-					for _, removeSpaces := range []bool{true, false} {
-						for _, spaceBeforeNumbers := range []bool{true, false} {
-							for _, trimPrefixes := range []bool{true, false} {
-								for _, removeInts := range []bool{true, false} {
+				for _, swapSymbols := range []bool{true, false} {
+					for _, removeSuffixes := range []bool{true, false} {
+						for _, removeSpaces := range []bool{true, false} {
+							for _, splitSyllables := range []bool{true, false} {
+								for _, removePrefixes := range []bool{true, false} {
+									for _, removeNumbers := range []bool{true, false} {
 
-									name2 := name
+										name2 := name
 
-									if trimPrefixes {
-										name2 = strings.TrimPrefix(name2, "the ")
-									}
-
-									if removeEndings {
-										name2 = regexpSplitOnEnding.Split(name2, 2)[0]
-									}
-
-									if removeSymbols {
-										name2 = helpers.RegexNonAlphaNumericSpace.ReplaceAllString(name2, "")
-									}
-
-									// Swap roman numerals
-									name2 = regexpRoman.ReplaceAllStringFunc(name2, func(part string) string {
-										if convertRomanToInt {
-											part = helpers.RegexSmallRomanOnly.ReplaceAllStringFunc(part, func(part string) string {
-												return strconv.Itoa(roman.Arabic(part))
-											})
-										}
-										if convertIntToRoman {
-											part = regexpRoman.ReplaceAllStringFunc(part, func(part string) string {
-												i, _ := strconv.Atoi(part)
-												if i <= 20 {
-													return part
+										if splitSyllables {
+											words := strings.Split(name2, " ")
+											for k, v := range words {
+												if val, ok := replacementMap[strings.ToLower(v)]; ok {
+													words[k] = val
 												}
-												converted, err := roman.Roman(i)
-												if err != nil {
-													return part
-												} else {
-													return converted
-												}
-											})
+											}
+											name2 = strings.Join(words, " ")
 										}
 
-										return part
-									})
-
-									if removeSpaces {
-										name2 = strings.ReplaceAll(name2, " ", "")
-									}
-
-									if removeInts {
-										name2 = helpers.RegexInts.ReplaceAllString(name2, "")
-									}
-
-									//
-									aliases = append(aliases, strings.TrimSpace(name2))
-
-									// Add abreviations
-									if removeSymbols && !removeSpaces {
-
-										var r *regexp.Regexp
-										if spaceBeforeNumbers {
-											r = regexp.MustCompile(`\s[IVX]{1,4}|\s[0-9]{1,2}|\b[a-zA-Z]`)
-										} else {
-											r = regexp.MustCompile(`[IVX]{1,4}|[0-9]{1,2}|\b[a-zA-Z]`)
+										if removePrefixes {
+											name2 = strings.TrimPrefix(name2, "the ")
+											name2 = strings.TrimPrefix(name2, `Sid Meier's `)
+											name2 = strings.TrimPrefix(name2, `Tom Clancy's `)
 										}
 
-										aliases = append(aliases, strings.Join(r.FindAllString(name2, -1), ""))
+										if removeSuffixes {
+											name2 = regexpAppSuffix.Split(name2, 2)[0]
+										}
+
+										if removeSymbols {
+											name2 = helpers.RegexNonAlphaNumericSpace.ReplaceAllString(name2, "")
+										}
+
+										if swapSymbols {
+											name2 = helpers.RegexNonAlphaNumericSpace.ReplaceAllString(name2, " ")
+										}
+
+										// Swap roman numerals
+										name2 = regexpVersionsAndRomanNumerals.ReplaceAllStringFunc(name2, func(part string) string {
+											if convertRomanToInt {
+												part = helpers.RegexSmallRomanOnly.ReplaceAllStringFunc(part, func(part string) string {
+													return strconv.Itoa(roman.Arabic(part))
+												})
+											}
+											if convertIntToRoman {
+												part = regexpVersionsAndRomanNumerals.ReplaceAllStringFunc(part, func(part string) string {
+													i, _ := strconv.Atoi(part)
+													if i <= 20 {
+														return part
+													}
+													converted, err := roman.Roman(i)
+													if err != nil {
+														return part
+													} else {
+														return converted
+													}
+												})
+											}
+
+											return part
+										})
+
+										if removeSpaces {
+											name2 = strings.ReplaceAll(name2, " ", "")
+										}
+
+										if removeNumbers {
+											name2 = regexpVersionsAndRomanNumerals.ReplaceAllString(name2, "")
+										}
+
+										//
+										aliases = append(aliases, strings.TrimSpace(name2))
+
+										// Add abreviations
+										if removeSymbols && !removeSpaces {
+											aliases = append(aliases, makeAbbreviations(name2)...)
+										}
 									}
 								}
 							}
@@ -265,4 +271,15 @@ func makeAppAliases(ID int, name string) (aliases []string) {
 	}
 
 	return helpers.UniqueString(aliases)
+}
+
+func makeAbbreviations(name string) []string {
+
+	r1 := regexp.MustCompile(`\b[a-zA-Z]|\b\s[IVX]{1,4}\b|\b\s[0-9]{1,2}\b`) // With spaces
+	r2 := regexp.MustCompile(`\b[a-zA-Z]|\b[IVX]{1,4}\b|\b[0-9]{1,2}\b`)     // Without spaces
+
+	return []string{
+		strings.Join(r1.FindAllString(name, -1), ""),
+		strings.Join(r2.FindAllString(name, -1), ""),
+	}
 }
