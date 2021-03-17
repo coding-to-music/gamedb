@@ -11,12 +11,8 @@ const (
 	tagArticles = "Articles"
 	tagPackages = "Packages"
 	tagGroups   = "Groups"
-	TagFree     = "Free"
+	TagPublic   = "Public"
 )
-
-func stringPointer(s string) *string {
-	return &s
-}
 
 func GetGlobalSteam() (swagger *openapi3.Swagger) {
 
@@ -43,7 +39,7 @@ func GetGlobalSteam() (swagger *openapi3.Swagger) {
 			&openapi3.Tag{Name: tagArticles},
 			&openapi3.Tag{Name: tagPackages},
 			&openapi3.Tag{Name: tagGroups},
-			&openapi3.Tag{Name: TagFree},
+			&openapi3.Tag{Name: TagPublic},
 		},
 		Security: openapi3.SecurityRequirements{
 			openapi3.NewSecurityRequirement().Authenticate("keyHeader"),
@@ -428,7 +424,7 @@ func GetGlobalSteam() (swagger *openapi3.Swagger) {
 		Paths: openapi3.Paths{
 			"/": &openapi3.PathItem{
 				Get: &openapi3.Operation{
-					Tags:    []string{TagFree},
+					Tags:    []string{TagPublic},
 					Summary: "Home",
 					Responses: map[string]*openapi3.ResponseRef{
 						"200": {Ref: "#/components/responses/home-response"},
@@ -459,7 +455,7 @@ func GetGlobalSteam() (swagger *openapi3.Swagger) {
 			},
 			// "/articles/{id}": &openapi3.PathItem{
 			// 	// Get: &openapi3.Operation{
-			// 	// 	Tags: []string{TagFree},
+			// 	// 	Tags: []string{TagPublic},
 			// 	// },
 			// },
 			"/games": &openapi3.PathItem{
@@ -490,7 +486,7 @@ func GetGlobalSteam() (swagger *openapi3.Swagger) {
 			},
 			"/games/{id}": &openapi3.PathItem{
 				Get: &openapi3.Operation{
-					Tags:    []string{tagGames, TagFree},
+					Tags:    []string{tagGames, TagPublic},
 					Summary: "Retrieve Game",
 					Parameters: openapi3.Parameters{
 						{Value: openapi3.NewPathParameter("id").WithRequired(true).WithSchema(openapi3.NewInt32Schema().WithMin(1))},
@@ -526,7 +522,7 @@ func GetGlobalSteam() (swagger *openapi3.Swagger) {
 			},
 			// "/groups/{id}": &openapi3.PathItem{
 			// 	// Get: &openapi3.Operation{
-			// 	// 	Tags: []string{TagFree},
+			// 	// 	Tags: []string{TagPublic},
 			// 	// },
 			// },
 			"/packages": &openapi3.PathItem{
@@ -554,7 +550,7 @@ func GetGlobalSteam() (swagger *openapi3.Swagger) {
 			},
 			// "/packages/{id}": &openapi3.PathItem{
 			// 	// Get: &openapi3.Operation{
-			// 	// 	Tags: []string{TagFree},
+			// 	// 	Tags: []string{TagPublic},
 			// 	// },
 			// },
 			"/players": &openapi3.PathItem{
@@ -580,7 +576,7 @@ func GetGlobalSteam() (swagger *openapi3.Swagger) {
 			},
 			"/players/{id}": &openapi3.PathItem{
 				Get: &openapi3.Operation{
-					Tags:    []string{tagPlayers, TagFree},
+					Tags:    []string{tagPlayers, TagPublic},
 					Summary: "Retrieve Player",
 					Parameters: openapi3.Parameters{
 						{Value: openapi3.NewPathParameter("id").WithRequired(true).WithSchema(openapi3.NewInt64Schema().WithMin(1))},
@@ -625,4 +621,8 @@ func GetGlobalSteam() (swagger *openapi3.Swagger) {
 	}
 
 	return swagger
+}
+
+func stringPointer(s string) *string {
+	return &s
 }

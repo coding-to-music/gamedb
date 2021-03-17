@@ -177,7 +177,7 @@ func authMiddlewear(next http.HandlerFunc) http.HandlerFunc {
 			returnResponse(w, r, http.StatusInternalServerError, err)
 			return
 		}
-		if user.Level < mysql.UserLevel2 && !helpers.SliceHasString(api.TagFree, route.Operation.Tags) {
+		if user.Level < mysql.UserLevel2 && !helpers.SliceHasString(api.TagPublic, route.Operation.Tags) {
 			returnResponse(w, r, http.StatusUnauthorized, generated.MessageResponse{Error: "invalid user level"})
 			return
 		}
