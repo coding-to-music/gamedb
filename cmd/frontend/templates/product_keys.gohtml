@@ -56,7 +56,7 @@
                                 <tbody>
                                 {{ range $key, $value := .Keys }}
                                     {{if eq .Type "app" }}
-                                        <tr class="cursor-pointer" data-key="{{ .Key }}" data-type="app">
+                                        <tr class="cursor-pointer" data-key="{{ .Field }}.{{ .Key }}" data-type="app">
                                             <td>{{ title .Field }}</td>
                                             <td>{{ .Key }}</td>
                                             <td>{{ comma .Count }}</td>
@@ -82,7 +82,7 @@
                                 <tbody class="tags-list">
                                 {{ range .Keys }}
                                     {{if eq .Type "package" }}
-                                        <tr class="cursor-pointer" data-key="{{ .Key }}" data-type="package">
+                                        <tr class="cursor-pointer" data-key="{{ .Field }}.{{ .Key }}" data-type="package">
                                             <td>{{ title .Field }}</td>
                                             <td>{{ .Key }}</td>
                                             <td>{{ comma .Count }}</td>
