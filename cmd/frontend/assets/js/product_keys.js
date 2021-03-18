@@ -41,17 +41,15 @@ if ($('#product-keys-page').length > 0) {
         dt.draw();
     })
 
-    const $tableSearch = $('#table-search');
-
     $('#apps-table').gdbTable({
         searchFields: [
-            $tableSearch,
+            $('#app-search'),
         ]
     });
 
     $('#packages-table').gdbTable({
         searchFields: [
-            $tableSearch,
+            $('#package-search'),
         ]
     });
 

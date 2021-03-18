@@ -4,23 +4,7 @@
     <div class="container" id="product-keys-page">
 
         <div class="jumbotron">
-            <div class="row">
-                <div class="col-sm-12 col-lg-6">
-                    <h1><i class="fas fa-key"></i> Product Keys</h1>
-                    <p class="lead">{{ .Description }}</p>
-                </div>
-                <div class="col-sm-12 col-lg-6">
-
-                    <div class="input-group input-group-lg mt-1 mb-2">
-                        <label for="table-search" class="sr-only sr-only-focusable">Search</label>
-                        <input class="form-control" type="search" placeholder="Search for a Key" id="table-search" name="table-search" autofocus>
-                        <div class="input-group-append">
-                            <input type="submit" value="Search" class="input-group-text">
-                        </div>
-                    </div>
-
-                </div>
-            </div>
+            <h1><i class="fas fa-key"></i> Product Key Search</h1>
         </div>
 
         {{ template "flashes" . }}
@@ -43,6 +27,15 @@
 
                 <div class="tab-content">
                     <div class="tab-pane show active" id="apps" role="tabpanel">
+
+                        <div class="form-row">
+                            <div class="col-12 col-md-6 col-lg-5 col-xl-4 mb-2">
+                                <div class="form-group">
+                                    <label for="app-search">Search</label>
+                                    <input name="search" type="search" class="form-control" id="app-search">
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="table-responsive">
                             <table class="table table-hover table-striped table-counts mb-0" data-row-type="app keys" data-order='[[2, "desc"]]' id="apps-table" data-limit="1000">
@@ -69,6 +62,15 @@
 
                     </div>
                     <div class="tab-pane" id="packages" role="tabpanel">
+
+                        <div class="form-row">
+                            <div class="col-12 col-md-6 col-lg-5 col-xl-4 mb-2">
+                                <div class="form-group">
+                                    <label for="package-search">Search</label>
+                                    <input name="search" type="search" class="form-control" id="package-search">
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="table-responsive">
                             <table class="table table-hover table-striped table-counts mb-0" data-row-type="package keys" data-order='[[2, "desc"]]' id="packages-table" data-limit="1000">
