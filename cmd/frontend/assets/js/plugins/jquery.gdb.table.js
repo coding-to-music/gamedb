@@ -295,8 +295,10 @@
                     $(value).DataTable().fixedHeader.adjust();
                 });
 
-                //
-                clearUrlParams();
+                // Reset url query
+                if (!$(this).attr('data-keep-query')) {
+                    clearUrlParams();
+                }
             });
 
             // On search field change
