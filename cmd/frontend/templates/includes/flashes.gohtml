@@ -17,7 +17,7 @@
     {{ end }}
 
 
-    <div class="container text-center" id="flashes-ad">
+    <div class="container text-center" id="flashes-ad" style="max-height: 120px;">
         {{ if .ShowAds }}
             <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
             <ins class="adsbygoogle"
@@ -26,7 +26,7 @@
                     {{ end }}
                  data-ad-client="ca-pub-5468884371420326"
                  data-ad-slot="1243438873"
-                 style="display: inline-block; width: 100%; height: 120px;">
+                 style="display: block; width: 100%;">
             </ins>
             <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
         {{ end }}
