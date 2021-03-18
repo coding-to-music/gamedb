@@ -664,6 +664,11 @@ func ensureAppIndexes() {
 		{Keys: bson.D{{"type", 1}}},
 		{Keys: bson.D{{"wishlist_avg_position", 1}}},
 		{Keys: bson.D{{"wishlist_count", -1}}},
+
+		{Keys: bson.D{{"common.$**", 1}}},
+		{Keys: bson.D{{"config.$**", 1}}},
+		{Keys: bson.D{{"extended.$**", 1}}},
+		{Keys: bson.D{{"ufs.$**", 1}}},
 	}
 
 	//
