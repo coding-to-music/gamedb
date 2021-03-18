@@ -147,6 +147,9 @@ var replacementMap = map[string]string{
 	"payday":         "pay day",
 	"playerunknowns": "player unknowns",
 	"warframe":       "war frame",
+	"simulator":      "sim",
+	"fallout":        "fall out",
+	"tabletop":       "table top",
 }
 
 // For aliases that can not be calculated
@@ -203,7 +206,7 @@ func makeAppAliases(ID int, name string) (aliases []string) {
 										}
 
 										if removePrefixes {
-											name2 = strings.TrimPrefix(name2, "the ")
+											name2 = strings.TrimPrefix(name2, `the `)
 											name2 = strings.TrimPrefix(name2, `Sid Meier's `)
 											name2 = strings.TrimPrefix(name2, `Tom Clancy's `)
 										}
