@@ -14,7 +14,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/session"
 	"github.com/go-chi/chi/v5"
-	"go.uber.org/zap"
 )
 
 func StatsListRouter() http.Handler {
@@ -42,10 +41,8 @@ func statPathToConst(path string, r *http.Request) mongo.StatsType {
 	case "tags":
 		return mongo.StatsTypeTags
 	default:
-		log.Warn("invalid stats type", zap.String("path", path), zap.String("path", r.URL.Path))
 		return ""
 	}
-
 }
 
 func statsListHandler(w http.ResponseWriter, r *http.Request) {
