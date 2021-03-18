@@ -26,38 +26,40 @@ func ProductKeysRouter() http.Handler {
 
 func productKeysHandler(w http.ResponseWriter, r *http.Request) {
 
-	q := r.URL.Query()
+	t := productKeysTemplate{}
+	t.fill(w, r, "product_keys", "PICS Keys", "Search PICS keys")
+	t.addAssetChosen()
 
-	productType := q.Get("type")
-	if productType != "packages" {
-		productType = "apps"
-	}
-
-	keys, err := mysql.GetProductKeys()
+	var err error
+	t.Keys, err = mysql.GetProductKeys()
 	if err != nil {
 		log.ErrS(err)
 	}
 
-	// Template
-	t := productKeysTemplate{}
-	t.fill(w, r, "product_keys", "PICS Keys", "Search PICS keys")
-	t.Type = productType
+	q := r.URL.Query()
+
+	t.Type = q.Get("type")
+	t.Comparator = q.Get("comparator")
 	t.Key = q.Get("key")
 	t.Value = q.Get("value")
-	t.Keys = keys
+
+	if t.Type != "packages" {
+		t.Type = "apps"
+	}
 
 	returnTemplate(w, r, t)
 }
 
 type productKeysTemplate struct {
 	globalTemplate
-	Key   string
-	Value string
-	Type  string
-	Keys  []mysql.ProductKey
+	Key        string
+	Value      string
+	Type       string
+	Comparator string
+	Keys       []mysql.ProductKey
 }
 
-var keyRegex = regexp.MustCompile(`(common|config|extended|ufs)\.[0-9a-z_]+`) // To stop injection
+var keyRegex = regexp.MustCompile(`(common|config|extended|ufs)\.[0-9a-z\_\@]{2,}`)
 
 func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
@@ -65,16 +67,23 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	//
 	var productType = query.GetSearchString("type")
-	var value = query.GetSearchString("value")
 	var key = query.GetSearchString("key")
+	var comparator = query.GetSearchString("comparator")
+	var value = query.GetSearchString("value")
 
-	if key == "" || !keyRegex.MatchString(key) {
+	if !keyRegex.MatchString(key) {
 		return
 	}
 
-	var filter = bson.D{
-		{key, bson.M{"$exists": true}},
-		{key, value},
+	var filter = bson.D{{key, bson.M{"$exists": true}}}
+
+	switch comparator {
+	case "equals":
+		filter = append(filter, bson.E{Key: key, Value: value})
+	case "notequals":
+		filter = append(filter, bson.E{Key: key, Value: bson.M{"$ne": value}})
+	case "contains":
+		filter = append(filter, bson.E{Key: key, Value: bson.M{"$regex": regexp.QuoteMeta(value), "$options": "i"}})
 	}
 
 	var wg sync.WaitGroup
@@ -95,12 +104,10 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			for _, v := range packages {
+			for _, pack := range packages {
 				products = append(products, productKeyResult{
-					ID:    v.ID,
-					Name:  v.GetName(),
-					Icon:  v.GetIcon(),
-					Value: v.Extended.GetValue(key),
+					Product: pack,
+					Value:   pack.Extended.GetValue(key),
 				})
 			}
 
@@ -112,12 +119,10 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			for _, v := range apps {
+			for _, app := range apps {
 
 				product := productKeyResult{
-					ID:   v.ID,
-					Name: v.GetName(),
-					Icon: v.GetIcon(),
+					Product: app,
 				}
 
 				key2 := key
@@ -128,13 +133,13 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 				switch true {
 				case strings.HasPrefix(key, "config."):
-					product.Value = v.Config.GetValue(key2)
+					product.Value = app.Config.GetValue(key2)
 				case strings.HasPrefix(key, "common."):
-					product.Value = v.Common.GetValue(key2)
+					product.Value = app.Common.GetValue(key2)
 				case strings.HasPrefix(key, "ufs."):
-					product.Value = v.UFS.GetValue(key2)
+					product.Value = app.UFS.GetValue(key2)
 				case strings.HasPrefix(key, "extended."):
-					product.Value = v.Extended.GetValue(key2)
+					product.Value = app.Extended.GetValue(key2)
 				default:
 					continue
 				}
@@ -186,11 +191,11 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var response = datatable.NewDataTablesResponse(r, query, count, filteredCount, nil)
 	for _, v := range products {
 		response.AddRow([]interface{}{
-			v.ID,                   // 0
-			v.Name,                 // 1
-			v.GetIcon(),            // 2
-			v.GetPath(productType), // 3
-			v.Value,                // 4
+			v.Product.GetID(),   // 0
+			v.Product.GetName(), // 1
+			v.Product.GetIcon(), // 2
+			v.Product.GetPath(), // 3
+			v.Value,             // 4
 		})
 	}
 
@@ -198,19 +203,6 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type productKeyResult struct {
-	ID    int
-	Name  string
-	Icon  string
-	Value string
-}
-
-func (e productKeyResult) GetIcon() string {
-	return helpers.GetAppIcon(e.ID, e.Icon)
-}
-
-func (e productKeyResult) GetPath(productType string) string {
-	if productType == "app" {
-		return helpers.GetAppPath(e.ID, e.Name)
-	}
-	return helpers.GetPackagePath(e.ID, e.Name)
+	Product helpers.ProductInterface
+	Value   string
 }

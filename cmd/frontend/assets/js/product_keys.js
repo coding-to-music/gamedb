@@ -1,5 +1,19 @@
 if ($('#product-keys-page').length > 0) {
 
+    const $key = $('#key')
+    const $comparator = $('#comparator')
+
+    // Setup drop downs
+    $key.chosen({
+        allow_single_deselect: false,
+    });
+
+    $comparator.chosen({
+        allow_single_deselect: true,
+        disable_search_threshold: 10,
+    });
+
+    // Search results
     const searchOptions = {
         "order": [[0, 'asc']],
         "createdRow": function (row, data, dataIndex) {
@@ -31,9 +45,10 @@ if ($('#product-keys-page').length > 0) {
     const dt = $('#search-table').gdbTable({
         tableOptions: searchOptions,
         searchFields: [
-            $('#key'),
-            $('#value'),
             $('input[name=type]'),
+            $key,
+            $comparator,
+            $('#value'),
         ],
     });
 
