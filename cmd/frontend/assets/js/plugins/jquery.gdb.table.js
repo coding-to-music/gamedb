@@ -350,7 +350,7 @@
                         }, 600);
                         return true;
                     } else {
-                        dt.draw();
+                        dt.search(getFieldValue($field)).draw();
                         return false;
                     }
                 };
