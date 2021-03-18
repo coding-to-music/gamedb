@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/Jleagle/rabbit-go"
 	"github.com/Jleagle/steam-go/steamapi"
@@ -241,8 +242,8 @@ func packageHandler(message *rabbit.Message) {
 	}()
 
 	// Queue apps
-	//wg.Add(1)
-	//go func() {
+	// wg.Add(1)
+	// go func() {
 	//
 	//	defer wg.Done()
 	//
@@ -253,7 +254,7 @@ func packageHandler(message *rabbit.Message) {
 	//			log.ErrS(err)
 	//		}
 	//	}
-	//}()
+	// }()
 
 	wg.Wait()
 
@@ -527,7 +528,7 @@ func updatePackageFromStore(pack *mongo.Package) (err error) {
 
 				pack.ImagePage = ""
 
-				code, err := helpers.Head(response.Data.PageImage, 0)
+				code, err := helpers.Head(response.Data.PageImage, time.Second*30)
 				if err == helpers.ErrNon200 {
 					return
 				} else if err != nil {
