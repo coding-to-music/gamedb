@@ -466,6 +466,10 @@ div.jumbotron.inline {
 body.dark {
     div.jumbotron.inline {
         background-color: #28a745;
+
+        a {
+            color: #495057;
+        }
     }
 }
 
@@ -667,6 +671,10 @@ div.json-hover {
     cursor: pointer;
 }
 
+.no-cursor-pointer {
+    cursor: default !important;
+}
+
 .nowrap {
     white-space: nowrap !important;
 }
@@ -706,4 +714,11 @@ div.json-hover {
 
 .progress {
     background-color: transparent;
+}
+
+// Buttons
+.btn.btn-success {
+    a {
+        color: #212529;
+    }
 }
