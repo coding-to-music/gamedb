@@ -168,9 +168,14 @@ func authMiddlewear(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		if config.IsLocal() {
+		if r.URL.Host == "" {
 			r.URL.Host = r.Host
+		}
+
+		if config.IsLocal() {
 			r.URL.Scheme = "http"
+		} else {
+			r.URL.Scheme = "https"
 		}
 
 		route, _, err := router.FindRoute(r.Method, r.URL)
