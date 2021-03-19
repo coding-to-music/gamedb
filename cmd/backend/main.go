@@ -31,10 +31,6 @@ func main() {
 		return
 	}
 
-	if config.IsProd() {
-		go mongo.EnsureIndexes()
-	}
-
 	if config.C.GRPCKeysPath == "" {
 		log.Err("Missing environment variables")
 		return
@@ -94,6 +90,10 @@ func main() {
 			log.ErrS(err)
 		}
 	}()
+
+	if config.IsProd() {
+		mongo.EnsureIndexes()
+	}
 
 	helpers.KeepAlive(
 		mysql.Close,
