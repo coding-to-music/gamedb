@@ -83,6 +83,9 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	case "notequals":
 		filter = append(filter, bson.E{Key: key, Value: bson.M{"$ne": value}})
 	case "contains":
+		if value == "" {
+			break
+		}
 		filter = append(filter, bson.E{Key: key, Value: bson.M{"$regex": regexp.QuoteMeta(value), "$options": "i"}})
 	}
 
