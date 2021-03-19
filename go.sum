@@ -168,6 +168,8 @@ github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSs
 github.com/deepmap/oapi-codegen v1.3.13/go.mod h1:WAmG5dWY8/PYHt4vKxlt90NsbHMAOCiteYKZMiIRfOo=
 github.com/deepmap/oapi-codegen v1.5.1 h1:Xx8/OynzWhQeKFWr182hg6Ja2evS1gcqdja7qMn05yU=
 github.com/deepmap/oapi-codegen v1.5.1/go.mod h1:Eb1vtV3f58zvm37CJV4UAQ1bECb0fgAVvTdonC1ftJg=
+github.com/deepmap/oapi-codegen v1.5.5-0.20210319210032-ca3a80c78c26 h1:d1JXlZ+QYeitpJj+0R7LfJaN7ueeMFuvbFTAmI0U1ys=
+github.com/deepmap/oapi-codegen v1.5.5-0.20210319210032-ca3a80c78c26/go.mod h1:UH0NYSAlwJym/7s585qDuKeuazSRwnWxzol2E6yA430=
 github.com/denisenkom/go-mssqldb v0.0.0-20191124224453-732737034ffd h1:83Wprp6ROGeiHFAP8WJdI2RoxALQYgdllERc3N5N2DM=
 github.com/denisenkom/go-mssqldb v0.0.0-20191124224453-732737034ffd/go.mod h1:xbL0rPBG9cCiLr28tMa8zpbdarY27NDyej4t/EjAShU=
 github.com/derekstavis/go-qs v0.0.0-20180720192143-9eef69e6c4e7 h1:zmAiXR9h1TCVN/0yCMRYQNE91dNRORpSzMFiqfTTPOs=
@@ -210,6 +212,8 @@ github.com/getkin/kin-openapi v0.48.0 h1:S0GfNAB2kgpB3f7Y1fCYJJV8i39KTZwswJxAjg7
 github.com/getkin/kin-openapi v0.48.0/go.mod h1:ZJSfy1PxJv2QQvH9EdBj3nupRTVvV42mkW6zKUlRBwk=
 github.com/getkin/kin-openapi v0.49.0 h1:nKSq662fS0kZ11+Wu3FLg3GQGL0UuH1VxF8wV1QuDEU=
 github.com/getkin/kin-openapi v0.49.0/go.mod h1:ZJSfy1PxJv2QQvH9EdBj3nupRTVvV42mkW6zKUlRBwk=
+github.com/getkin/kin-openapi v0.50.0 h1:oB1zA3meOwIQxk8PixEBVfmWjK8nLK3+3k30FcRZ19I=
+github.com/getkin/kin-openapi v0.50.0/go.mod h1:2A98vcQ5YzTfxP4KRgugPL3i0U1B/IVLT+tN2zotSiQ=
 github.com/ghodss/yaml v1.0.0/go.mod h1:4dBDuWmgqj2HViK6kFavaiC9ZROes6MMH2rRYeMEF04=
 github.com/ghodss/yaml v1.0.1-0.20190212211648-25d852aebe32 h1:Mn26/9ZMNWSw9C9ERFA1PUxfmGpolnw2v0bKOREu5ew=
 github.com/ghodss/yaml v1.0.1-0.20190212211648-25d852aebe32/go.mod h1:GIjDIg/heH5DOkXY3YJ/wNhfHsQHoXGjl8G8amsYQ1I=
