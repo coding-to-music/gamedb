@@ -181,7 +181,7 @@ func authMiddlewear(next http.HandlerFunc) http.HandlerFunc {
 		route, _, err := router.FindRoute(r.Method, r.URL)
 		if err != nil {
 			log.Err("missing route", zap.Error(err), zap.String("method", r.Method), zap.String("url", r.URL.String()))
-			returnResponse(w, r, http.StatusNotFound, generated.MessageResponse{Message: "Invalid endpoint"})
+			returnResponse(w, r, http.StatusNotFound, generated.MessageResponse{Error: "Invalid endpoint"})
 			return
 		}
 		if user.Level < mysql.UserLevel2 && !helpers.SliceHasString(api.TagPublic, route.Operation.Tags) {
