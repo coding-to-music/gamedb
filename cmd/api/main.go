@@ -168,14 +168,12 @@ func authMiddlewear(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		if r.URL.Host == "" {
-			r.URL.Host = r.Host
-		}
-
 		if config.IsLocal() {
 			r.URL.Scheme = "http"
+			r.URL.Host = r.Host
 		} else {
 			r.URL.Scheme = "https"
+			r.URL.Host = "api.globalsteam.online"
 		}
 
 		route, _, err := router.FindRoute(r.Method, r.URL)
