@@ -365,6 +365,10 @@
                         }
                     });
 
+                } else if ($field.hasClass('form-control-chosen')) {
+
+                    $field.on('chosen:updated change', callback);
+
                 } else {
 
                     // Inputs
