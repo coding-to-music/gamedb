@@ -205,8 +205,8 @@ func returnTemplate(w http.ResponseWriter, r *http.Request, pageData pageInterfa
 	// buf := &bytes.Buffer{}
 	err := templatex.ExecuteTemplate(w, path.Base(page), pageData)
 	if err != nil {
-		log.ErrS(err)
 		if !errors.Is(err, syscall.EPIPE) {
+			log.ErrS(err)
 			returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Looks like I messed something up, will be fixed soon!"})
 		}
 		return
