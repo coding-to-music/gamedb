@@ -28,6 +28,7 @@ import (
 	"github.com/go-chi/chi"
 	chiMiddleware "github.com/go-chi/chi/middleware"
 	influx "github.com/influxdata/influxdb1-client"
+	"go.uber.org/zap"
 )
 
 const (
@@ -174,11 +175,12 @@ func authMiddlewear(next http.HandlerFunc) http.HandlerFunc {
 
 		route, _, err := router.FindRoute(r.Method, r.URL)
 		if err != nil {
-			returnResponse(w, r, http.StatusInternalServerError, err)
+			log.Err("missing route", zap.Error(err), zap.String("method", r.Method), zap.String("url", r.URL.String()))
+			returnResponse(w, r, http.StatusNotFound, generated.MessageResponse{Message: "Invalid endpoint"})
 			return
 		}
 		if user.Level < mysql.UserLevel2 && !helpers.SliceHasString(api.TagPublic, route.Operation.Tags) {
-			returnResponse(w, r, http.StatusUnauthorized, generated.MessageResponse{Error: "invalid user level"})
+			returnResponse(w, r, http.StatusUnauthorized, generated.MessageResponse{Error: "Invalid user level"})
 			return
 		}
 
@@ -201,7 +203,7 @@ func returnResponse(w http.ResponseWriter, r *http.Request, code int, i interfac
 
 	err := json.NewEncoder(w).Encode(i)
 	if err != nil {
-		log.ErrS(err)
+		log.Err("encoding response", zap.Error(err))
 	}
 
 	if config.IsProd() {
@@ -209,7 +211,7 @@ func returnResponse(w http.ResponseWriter, r *http.Request, code int, i interfac
 
 			userID, _ := r.Context().Value(ctxUserIDField).(int)
 
-			_, err := influxHelpers.InfluxWrite(influxHelpers.InfluxRetentionPolicyAllTime, influx.Point{
+			point := influx.Point{
 				Measurement: string(influxHelpers.InfluxMeasurementAPICalls),
 				Tags: map[string]string{
 					"path":    r.URL.Path,
@@ -221,10 +223,11 @@ func returnResponse(w http.ResponseWriter, r *http.Request, code int, i interfac
 				},
 				Time:      time.Now(),
 				Precision: "s",
-			})
+			}
 
+			_, err := influxHelpers.InfluxWrite(influxHelpers.InfluxRetentionPolicyAllTime, point)
 			if err != nil {
-				log.ErrS(err)
+				log.Err("saving to influx", zap.Error(err))
 			}
 		}()
 	}
