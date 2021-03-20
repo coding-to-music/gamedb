@@ -56,6 +56,7 @@ func main() {
 	session.Init()
 
 	r := chi.NewRouter()
+	r.Use(fixRequestURL)
 	r.Use(chiMiddleware.Compress(flate.DefaultCompression))
 	r.Use(middleware.RealIP)
 	r.Use(middleware.RateLimiterBlock(time.Second, 1, rateLimitedHandler))
@@ -168,14 +169,6 @@ func authMiddlewear(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		if config.IsLocal() {
-			r.URL.Scheme = "http"
-			r.URL.Host = r.Host
-		} else {
-			r.URL.Scheme = "https"
-			r.URL.Host = "api.globalsteam.online"
-		}
-
 		route, _, err := router.FindRoute(r.Method, r.URL)
 		if err != nil {
 			log.Err("missing route", zap.Error(err), zap.String("method", r.Method), zap.String("url", r.URL.String()))
@@ -234,4 +227,19 @@ func returnResponse(w http.ResponseWriter, r *http.Request, code int, i interfac
 			}
 		}()
 	}
+}
+
+func fixRequestURL(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		if config.IsLocal() {
+			r.URL.Scheme = "http"
+			r.URL.Host = r.Host
+		} else {
+			r.URL.Scheme = "https"
+			r.URL.Host = "api.globalsteam.online"
+		}
+
+		next.ServeHTTP(w, r)
+	})
 }
