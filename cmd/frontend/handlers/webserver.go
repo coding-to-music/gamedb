@@ -656,6 +656,10 @@ func (t globalTemplate) IsLocal() bool {
 
 func (t globalTemplate) ShowAds() bool {
 
+	if t.IsLocal() {
+		return false
+	}
+
 	if t.hideAds {
 		return false
 	}
