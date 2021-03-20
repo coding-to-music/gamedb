@@ -16,6 +16,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/mysql/pics"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.uber.org/zap"
 )
 
@@ -114,7 +115,10 @@ func ensurePackageIndexes() {
 	}
 
 	//
-	indexModels = append(indexModels, mongo.IndexModel{Keys: bson.D{{"extended.$**", 1}}})
+	indexModels = append(
+		indexModels,
+		mongo.IndexModel{Keys: bson.D{{"extended.$**", 1}}, Options: &options.IndexOptions{Name: stringToPointer("extended.wildcard_1")}},
+	)
 
 	//
 	client, ctx, err := getMongo()

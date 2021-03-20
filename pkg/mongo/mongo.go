@@ -459,3 +459,7 @@ func Close() {
 		}
 	}
 }
+
+func stringToPointer(s string) *string {
+	return &s
+}

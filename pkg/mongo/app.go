@@ -665,10 +665,10 @@ func ensureAppIndexes() {
 		{Keys: bson.D{{"wishlist_avg_position", 1}}},
 		{Keys: bson.D{{"wishlist_count", -1}}},
 
-		{Keys: bson.D{{"common.$**", 1}}},
-		{Keys: bson.D{{"config.$**", 1}}},
-		{Keys: bson.D{{"extended.$**", 1}}},
-		{Keys: bson.D{{"ufs.$**", 1}}},
+		{Keys: bson.D{{"common.$**", 1}}, Options: &options.IndexOptions{Name: stringToPointer("common.wildcard_1")}},
+		{Keys: bson.D{{"config.$**", 1}}, Options: &options.IndexOptions{Name: stringToPointer("config.wildcard_1")}},
+		{Keys: bson.D{{"extended.$**", 1}}, Options: &options.IndexOptions{Name: stringToPointer("extended.wildcard_1")}},
+		{Keys: bson.D{{"ufs.$**", 1}}, Options: &options.IndexOptions{Name: stringToPointer("ufs.wildcard_1")}},
 	}
 
 	//
