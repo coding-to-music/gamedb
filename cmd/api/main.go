@@ -12,6 +12,7 @@ import (
 	"strings"
 	"time"
 
+	codegenMiddleware "github.com/deepmap/oapi-codegen/pkg/chi-middleware"
 	"github.com/gamedb/gamedb/cmd/api/generated"
 	"github.com/gamedb/gamedb/pkg/api"
 	"github.com/gamedb/gamedb/pkg/config"
@@ -55,21 +56,38 @@ func main() {
 
 	session.Init()
 
+	resolved := &*api.GetGlobalSteam()
+
+	err = openapi3.NewSwaggerLoader().ResolveRefsIn(resolved, nil)
+	if err != nil {
+		log.ErrS(err)
+	}
+
+	options := &codegenMiddleware.Options{
+		Options: openapi3filter.Options{
+			MultiError:            true,
+			IncludeResponseStatus: true,
+			AuthenticationFunc: func(ctx context.Context, input *openapi3filter.AuthenticationInput) error {
+				return nil // Skip auth check for now
+			},
+		},
+	}
+
 	r := chi.NewRouter()
 	r.Use(fixRequestURL)
 	r.Use(chiMiddleware.Compress(flate.DefaultCompression))
 	r.Use(middleware.RealIP)
 	r.Use(middleware.RateLimiterBlock(time.Second, 1, rateLimitedHandler))
-	// r.Use(codegenMiddleware.OapiRequestValidatorWithOptions(api.SwaggerGameDB, &codegenMiddleware.Options{Options: openapi3filter.Options{MultiError: true}}))
+	r.Use(codegenMiddleware.OapiRequestValidatorWithOptions(resolved, options))
 
 	r.Get("/health-check", healthCheckHandler)
-
-	r.NotFound(notFoundHandler)
 
 	generated.HandlerWithOptions(Server{}, generated.ChiServerOptions{
 		BaseRouter:  r,
 		Middlewares: []generated.MiddlewareFunc{authMiddlewear},
 	})
+
+	r.NotFound(notFoundHandler)
 
 	s := &http.Server{
 		Addr:              "0.0.0.0:" + config.C.APIPort,
