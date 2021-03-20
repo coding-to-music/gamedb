@@ -98,58 +98,43 @@
                     </div>
                     <div class="tab-pane" id="search" role="tabpanel">
 
-                        <fieldset class="form-group">
-                            <div class="row">
-                                <label class="col-form-label col-sm-2 pt-0">Product Type</label>
-                                <div class="col-sm-10">
-                                    <div class="form-check">
-                                        <label class="form-check-label">
-                                            <input class="form-check-input" type="radio" name="type" value="apps" {{ if eq .Type "apps" }}checked{{ end }}>
-                                            App
-                                        </label>
-                                    </div>
-                                    <div class="form-check">
-                                        <label class="form-check-label">
-                                            <input class="form-check-input" type="radio" name="type" value="packages" {{ if eq .Type "packages" }}checked{{ end }}>
-                                            Package
-                                        </label>
-                                    </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="type">Product Type</label>
+                                    <select data-placeholder="Product Type" class="form-control form-control-chosen" id="type" name="type">
+                                        <option value="apps" selected>Apps</option>
+                                        <option value="packages">Packages</option>
+                                    </select>
                                 </div>
                             </div>
-                        </fieldset>
-
-                        <div class="form-group row">
-                            <label for="key" class="col-sm-2 col-form-label">Key</label>
-                            <div class="col-sm-10">
-
-                                <select class="form-control form-control-chosen" id="key" name="key">
-                                    <option></option>
-                                    {{ range .Keys }}
-                                        <option value="{{ .Field }}.{{ .Key }}">{{ .Key }} ({{ .FieldTitle }})</option>
-                                    {{ end }}
-                                </select>
-
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="comparator">Comparator</label>
+                                    <select data-placeholder="Choose Comparator" class="form-control form-control-chosen" id="comparator" name="comparator">
+                                        <option value="">Show All</option>
+                                        <option value="equals">Equals</option>
+                                        <option value="notequals">Not Equals</option>
+                                        <option value="contains">Contains</option>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label for="comparator" class="col-sm-2 col-form-label">Comparator</label>
-                            <div class="col-sm-10">
-
-                                <select class="form-control form-control-chosen" id="comparator" name="comparator">
-                                    <option value="">Show All</option>
-                                    <option value="equals">Equals</option>
-                                    <option value="notequals">Not Equals</option>
-                                    <option value="contains">Contains</option>
-                                </select>
-
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="key">Key</label>
+                                    <select data-placeholder="Product Key" class="form-control form-control-chosen" id="key" name="key">
+                                        <option></option>
+                                        {{ range .Keys }}
+                                            <option value="{{ .Field }}.{{ .Key }}">{{ .Key }} ({{ .FieldTitle }})</option>
+                                        {{ end }}
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label for="value" class="col-sm-2 col-form-label">Value</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" name="value" id="value" value="{{ .Value }}">
+                            <div class="col-md-6 d-none" id="value-wrapper">
+                                <div class="form-group">
+                                    <label for="value">Value</label>
+                                    <input type="text" class="form-control" name="value" id="value" value="{{ .Value }}">
+                                </div>
                             </div>
                         </div>
 

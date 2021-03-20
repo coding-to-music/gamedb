@@ -1,9 +1,16 @@
 if ($('#product-keys-page').length > 0) {
 
-    const $key = $('#key')
-    const $comparator = $('#comparator')
+    const $type = $('#type')
+    const $key = $('#key');
+    const $comparator = $('#comparator');
+    const $value = $('#value');
 
     // Setup drop downs
+    $type.chosen({
+        allow_single_deselect: false,
+        disable_search_threshold: 10,
+    });
+
     $key.chosen({
         allow_single_deselect: false,
     });
@@ -12,6 +19,14 @@ if ($('#product-keys-page').length > 0) {
         allow_single_deselect: true,
         disable_search_threshold: 10,
     });
+
+    $comparator.on('chosen:updated change', function (e) {
+        if ($comparator.val()) {
+            $('#value-wrapper').removeClass('d-none');
+        } else {
+            $('#value-wrapper').addClass('d-none');
+        }
+    })
 
     // Search results
     const searchOptions = {
@@ -44,12 +59,7 @@ if ($('#product-keys-page').length > 0) {
 
     const dt = $('#search-table').gdbTable({
         tableOptions: searchOptions,
-        searchFields: [
-            $('input[name=type]'),
-            $key,
-            $comparator,
-            $('#value'),
-        ],
+        searchFields: [$type, $key, $comparator, $value],
     });
 
     $('#search button').on('click', function (e) {
