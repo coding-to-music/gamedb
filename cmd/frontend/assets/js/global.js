@@ -401,3 +401,30 @@ function loadFriends(appID, addSelf, callback) {
         },
     });
 }
+
+window.addEventListener("message", (event) => {
+    try {
+        let message = JSON.parse(event.data);
+        if (message.msg_type === 'resize-me') {
+
+            let shouldCollapseAd = false;
+
+            for (let index in message.key_value) {
+                if (message.key_value.hasOwnProperty(index)) {
+                    let key = message.key_value[index].key;
+                    let value = message.key_value[index].value;
+
+                    if (key === 'r_nh' && value === '0') {
+                        shouldCollapseAd = true;
+                    }
+                }
+            }
+
+            if (shouldCollapseAd) {
+                $('#flashes-ad').hide();
+            }
+        }
+    } catch (e) {
+
+    }
+});
