@@ -22,6 +22,7 @@ COPY ./cmd/frontend/assets/GeoLite2-City.mmdb ./assets/GeoLite2-City.mmdb
 COPY ./cmd/frontend/templates/ ./templates/
 COPY ./cmd/frontend/helpers/email/templates ./helpers/email/templates/
 COPY ./cmd/frontend/health-check.sh ./health-check.sh
+COPY ./pkg/mysql/pics/key_templates/ ./pics_templates/
 RUN chmod +x health-check.sh \
   && mkdir -p ./chatbot \
   && touch ./google-auth.json \

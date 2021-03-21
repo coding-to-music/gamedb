@@ -1,0 +1,15 @@
+<ul class='mb-0 pl-3'>
+    {{ range .Files }}
+        <li>
+            <strong>Path:</strong> {{ .Path }}
+            <strong>Pattern:</strong> {{ .Pattern }}
+            <strong>Root:</strong> {{ .Root }}
+            {{ if ne .Recursive "" }}
+                <strong>Recursive:</strong> {{ .Recursive }}
+            {{ end }}
+            {{ if gt (len .Platforms) 0 }}
+                <strong>Platforms:</strong> {{ .GetPlatforms }}
+            {{ end }}
+        </li>
+    {{ end }}
+</ul>

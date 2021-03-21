@@ -1,6 +1,7 @@
 package pics
 
 import (
+	"bytes"
 	"html/template"
 	"regexp"
 	"sort"
@@ -9,6 +10,7 @@ import (
 	"time"
 
 	"github.com/dustin/go-humanize"
+	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 )
@@ -255,12 +257,11 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 			item.Link = strings.ReplaceAll(item.Link, "$val$", val)
 			item.Link = strings.ReplaceAll(item.Link, "$app$", strconv.Itoa(appID))
 
-			var blank string
-			if !strings.HasPrefix(item.Link, "/") {
-				blank = " target=\"_blank\" rel=\"noopener\""
-			}
-
-			return template.HTML("<a href=\"" + item.Link + "\"" + blank + " rel=\"noopener\">" + val + "</a>")
+			return outputHTML("link.gohtml", map[string]interface{}{
+				"Link":  item.Link,
+				"Blank": !strings.HasPrefix(item.Link, "/"),
+				"Val":   val,
+			})
 
 		case picsTypeImage:
 
@@ -607,45 +608,25 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 
 			case "savefiles":
 
-				if val != "" {
-
-					files := saveFiles{}
-					err := helpers.Unmarshal([]byte(val), &files)
-					if err != nil {
-						log.ErrS(err, val)
-					}
-
-					var items []string
-					for _, file := range files {
-
-						if file.Path == "{}" {
-							file.Path = ""
-						}
-
-						pieces := []string{
-							`<strong>Path:</strong> ` + string(file.Path),
-							`<strong>Pattern:</strong> ` + file.Pattern,
-							`<strong>Root:</strong> ` + file.Root,
-						}
-
-						if file.Recursive != "" {
-							pieces = append(pieces, `<strong>Recursive:</strong> `+file.Recursive)
-						}
-
-						if len(file.Platforms) > 0 {
-							var platforms []string
-							for _, v := range file.Platforms {
-								platforms = append(platforms, v)
-							}
-							pieces = append(pieces, `<strong>Platforms:</strong> `+strings.Join(platforms, ", "))
-						}
-
-						items = append(items, "<li>"+strings.Join(pieces, ", ")+"</li>")
-					}
-
-					return template.HTML("<ul class='mb-0 pl-3'>" + strings.Join(items, "") + "</ul>")
+				if val == "" {
+					return ""
 				}
 
+				files := saveFiles{}
+				err := helpers.Unmarshal([]byte(val), &files)
+				if err != nil {
+					log.ErrS(err, val)
+				}
+
+				for k := range files {
+					if files[k].Path == "{}" {
+						files[k].Path = ""
+					}
+				}
+
+				return outputHTML("savefiles.gohtml", map[string]interface{}{
+					"Files": files,
+				})
 			}
 
 			return val
@@ -653,4 +634,29 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 	}
 
 	return val
+}
+
+func outputHTML(filename string, data interface{}) template.HTML {
+
+	var dir string
+	if config.IsLocal() {
+		dir = "../../pkg/mysql/pics/key_templates"
+	} else {
+		dir = "./pics_templates"
+	}
+
+	t, err := template.ParseFiles(dir + "/" + filename)
+	if err != nil {
+		log.ErrS(err)
+		return ""
+	}
+
+	b := bytes.NewBufferString("")
+
+	if err := t.Execute(b, data); err != nil {
+		log.ErrS(err)
+		return ""
+	}
+
+	return template.HTML(b.String())
 }
