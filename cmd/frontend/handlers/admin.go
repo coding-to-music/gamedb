@@ -627,7 +627,12 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 
 				playerID, err := strconv.ParseInt(val, 10, 64)
 				if err == nil {
-					err = consumers.ProducePlayer(consumers.PlayerMessage{ID: playerID, UserAgent: &ua}, "frontend-admin")
+					message:= consumers.PlayerMessage{
+						ID:                       playerID,
+						ForceAchievementsRefresh: true,
+						UserAgent:                &ua,
+					}
+					err = consumers.ProducePlayer(message, "frontend-admin")
 					err = helpers.IgnoreErrors(err, consumers.ErrInQueue)
 					if err != nil {
 						log.Err(err.Error(), zap.Int64("id", playerID))

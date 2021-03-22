@@ -53,7 +53,7 @@ func (c AutoPlayerRefreshes) work() (err error) {
 
 			playerIDs = append(playerIDs, playerID)
 
-			err = consumers.ProducePlayer(consumers.PlayerMessage{ID: playerID}, "crons-donators")
+			err = consumers.ProducePlayer(consumers.PlayerMessage{ID: playerID, ForceAchievementsRefresh: true}, "crons-donators")
 			err = helpers.IgnoreErrors(err, consumers.ErrInQueue)
 			if err != nil {
 				return err

@@ -10,7 +10,7 @@ import (
 
 func (s Server) PostPlayersId(w http.ResponseWriter, r *http.Request, id int64) {
 
-	err := consumers.ProducePlayer(consumers.PlayerMessage{ID: id}, "api-update")
+	err := consumers.ProducePlayer(consumers.PlayerMessage{ID: id, ForceAchievementsRefresh: true}, "api-update")
 	if err == consumers.ErrInQueue {
 
 		returnResponse(w, r, http.StatusOK, generated.MessageResponse{Message: "Already in queue"})

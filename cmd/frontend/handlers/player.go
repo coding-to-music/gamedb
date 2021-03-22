@@ -75,7 +75,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	if err == mongo.ErrNoDocuments {
 
 		ua := r.UserAgent()
-		err = consumers.ProducePlayer(consumers.PlayerMessage{ID: id, UserAgent: &ua}, "frontend-player-missing")
+		err = consumers.ProducePlayer(consumers.PlayerMessage{ID: id, UserAgent: &ua, ForceAchievementsRefresh: true}, "frontend-player-missing")
 		if err = helpers.IgnoreErrors(err, consumers.ErrInQueue, consumers.ErrIsBot); err != nil {
 			log.ErrS(err)
 		}
@@ -1156,7 +1156,7 @@ func playersUpdateAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		ua := r.UserAgent()
-		err = consumers.ProducePlayer(consumers.PlayerMessage{ID: player.ID, UserAgent: &ua}, "frontend-udate-click")
+		err = consumers.ProducePlayer(consumers.PlayerMessage{ID: player.ID, UserAgent: &ua, ForceAchievementsRefresh: true}, "frontend-udate-click")
 		if err = helpers.IgnoreErrors(err, consumers.ErrIsBot, consumers.ErrInQueue); err != nil {
 			log.ErrS(err)
 			return "Something has gone wrong", false, err
