@@ -20,7 +20,7 @@ var templatex *template.Template
 func Init() {
 
 	var err error
-	templatex, err = template.ParseGlob("./helpers/email/templates/*.gohtml")
+	templatex, err = template.ParseGlob("./templates/emails/*.gohtml")
 	if err != nil {
 		log.ErrS(err)
 		return

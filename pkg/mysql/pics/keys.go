@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/dustin/go-humanize"
-	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 )
@@ -638,14 +637,7 @@ func FormatVal(key string, val string, appID int, keys map[string]PicsKey) inter
 
 func outputHTML(filename string, data interface{}) template.HTML {
 
-	var dir string
-	if config.IsLocal() {
-		dir = "../../pkg/mysql/pics/key_templates"
-	} else {
-		dir = "./pics_templates"
-	}
-
-	t, err := template.ParseFiles(dir + "/" + filename)
+	t, err := template.ParseFiles("./templates/pics_keys/" + filename)
 	if err != nil {
 		log.ErrS(err)
 		return ""
