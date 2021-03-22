@@ -108,6 +108,12 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var projection = bson.M{"_id": 1, "name": 1, "icon": 1, key: 1}
 
+		key2 := key
+		keyParts := strings.Split(key, ".")
+		if len(keyParts) > 1 {
+			key2 = keyParts[1]
+		}
+
 		if productType == "packages" {
 
 			packages, err := mongo.GetPackages(query.GetOffset64(), 100, bson.D{{"_id", 1}}, filter, projection)
@@ -117,9 +123,10 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			for _, pack := range packages {
+
 				products = append(products, productKeyResult{
 					Product: pack,
-					Value:   pack.Extended.GetValue(key),
+					Value:   pack.Extended.GetValue(key2),
 				})
 			}
 
@@ -133,15 +140,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 			for _, app := range apps {
 
-				product := productKeyResult{
-					Product: app,
-				}
-
-				key2 := key
-				keyParts := strings.Split(key, ".")
-				if len(keyParts) > 1 {
-					key2 = keyParts[1]
-				}
+				product := productKeyResult{Product: app}
 
 				switch true {
 				case strings.HasPrefix(key, "config."):
