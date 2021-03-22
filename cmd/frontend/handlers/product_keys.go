@@ -79,14 +79,23 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	switch comparator {
 	case "equals":
-		filter = append(filter, bson.E{Key: key, Value: value})
+		if helpers.RegexAlpha.MatchString(value) {
+			filter = append(filter, bson.E{Key: key, Value: bson.M{"$regex": "^" + regexp.QuoteMeta(value) + "$", "$options": "i"}})
+		} else {
+			filter = append(filter, bson.E{Key: key, Value: value})
+		}
 	case "notequals":
-		filter = append(filter, bson.E{Key: key, Value: bson.M{"$ne": value}})
+		if helpers.RegexAlpha.MatchString(value) {
+			filter = append(filter, bson.E{Key: key, Value: bson.M{"$not": bson.M{"$regex": "^" + regexp.QuoteMeta(value) + "$", "$options": "i"}}})
+		} else {
+			filter = append(filter, bson.E{Key: key, Value: bson.M{"$ne": value}})
+		}
 	case "contains":
 		if value == "" {
 			break
+		} else {
+			filter = append(filter, bson.E{Key: key, Value: bson.M{"$regex": regexp.QuoteMeta(value), "$options": "i"}})
 		}
-		filter = append(filter, bson.E{Key: key, Value: bson.M{"$regex": regexp.QuoteMeta(value), "$options": "i"}})
 	}
 
 	var wg sync.WaitGroup
