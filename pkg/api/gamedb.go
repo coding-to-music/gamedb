@@ -102,6 +102,17 @@ func GetGlobalSteam() (swagger *openapi3.Swagger) {
 						},
 					},
 				},
+				"similar-game-schema": {
+					Value: &openapi3.Schema{
+						Required: []string{"app_id", "count", "order", "owners"},
+						Properties: map[string]*openapi3.SchemaRef{
+							"app_id": {Value: openapi3.NewIntegerSchema()},
+							"count":  {Value: openapi3.NewIntegerSchema()},
+							"order":  {Value: openapi3.NewIntegerSchema()},
+							"owners": {Value: openapi3.NewIntegerSchema()},
+						},
+					},
+				},
 				"article-schema": {
 					Value: &openapi3.Schema{
 						Required: []string{"id", "title", "url", "author", "contents", "date", "feed_label", "feed", "feed_type", "app_id", "app_icon", "icon"},
@@ -316,6 +327,19 @@ func GetGlobalSteam() (swagger *openapi3.Swagger) {
 						}),
 					},
 				},
+				"similar-games-response": {
+					Value: &openapi3.Response{
+						Description: helpers.StringPointer("List of games with similar owners"),
+						Content: openapi3.NewContentWithJSONSchema(&openapi3.Schema{
+							Description: "List of apps, with pagination",
+							Required:    []string{"pagination", "games", "error"},
+							Properties: map[string]*openapi3.SchemaRef{
+								"games": {Value: &openapi3.Schema{Type: "array", Items: &openapi3.SchemaRef{Ref: "#/components/schemas/similar-game-schema"}}},
+								"error": {Value: openapi3.NewStringSchema()},
+							},
+						}),
+					},
+				},
 				"group-response": {
 					Value: &openapi3.Response{
 						Description: helpers.StringPointer("A group"),
@@ -498,6 +522,22 @@ func GetGlobalSteam() (swagger *openapi3.Swagger) {
 						"401": {Ref: "#/components/responses/message-response"},
 						"404": {Ref: "#/components/responses/message-response"},
 						"500": {Ref: "#/components/responses/message-response"},
+					},
+				},
+			},
+			"/games/{id}/similar": &openapi3.PathItem{
+				Get: &openapi3.Operation{
+					Tags:    []string{tagGames},
+					Summary: "List games with similar owners",
+					Parameters: openapi3.Parameters{
+						{Value: openapi3.NewPathParameter("id").WithRequired(true).WithSchema(openapi3.NewInt32Schema().WithMin(1))},
+					},
+					Responses: map[string]*openapi3.ResponseRef{
+						"200": {Ref: "#/components/responses/similar-games-response"},
+						"400": {Ref: "#/components/responses/similar-games-response"},
+						"401": {Ref: "#/components/responses/similar-games-response"},
+						"404": {Ref: "#/components/responses/similar-games-response"},
+						"500": {Ref: "#/components/responses/similar-games-response"},
 					},
 				},
 			},

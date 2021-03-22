@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 type AppsServiceClient interface {
 	Search(ctx context.Context, in *SearchAppsRequest, opts ...grpc.CallOption) (*AppsElasticResponse, error)
 	List(ctx context.Context, in *ListAppsRequest, opts ...grpc.CallOption) (*AppsMongoResponse, error)
+	Similar(ctx context.Context, in *ListSimilarAppsRequest, opts ...grpc.CallOption) (*SimilarAppsResponse, error)
 }
 
 type appsServiceClient struct {
@@ -48,12 +49,22 @@ func (c *appsServiceClient) List(ctx context.Context, in *ListAppsRequest, opts 
 	return out, nil
 }
 
+func (c *appsServiceClient) Similar(ctx context.Context, in *ListSimilarAppsRequest, opts ...grpc.CallOption) (*SimilarAppsResponse, error) {
+	out := new(SimilarAppsResponse)
+	err := c.cc.Invoke(ctx, "/generated.AppsService/Similar", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AppsServiceServer is the server API for AppsService service.
 // All implementations must embed UnimplementedAppsServiceServer
 // for forward compatibility
 type AppsServiceServer interface {
 	Search(context.Context, *SearchAppsRequest) (*AppsElasticResponse, error)
 	List(context.Context, *ListAppsRequest) (*AppsMongoResponse, error)
+	Similar(context.Context, *ListSimilarAppsRequest) (*SimilarAppsResponse, error)
 	mustEmbedUnimplementedAppsServiceServer()
 }
 
@@ -66,6 +77,9 @@ func (UnimplementedAppsServiceServer) Search(context.Context, *SearchAppsRequest
 }
 func (UnimplementedAppsServiceServer) List(context.Context, *ListAppsRequest) (*AppsMongoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method List not implemented")
+}
+func (UnimplementedAppsServiceServer) Similar(context.Context, *ListSimilarAppsRequest) (*SimilarAppsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Similar not implemented")
 }
 func (UnimplementedAppsServiceServer) mustEmbedUnimplementedAppsServiceServer() {}
 
@@ -116,6 +130,24 @@ func _AppsService_List_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AppsService_Similar_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListSimilarAppsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AppsServiceServer).Similar(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/generated.AppsService/Similar",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AppsServiceServer).Similar(ctx, req.(*ListSimilarAppsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AppsService_ServiceDesc is the grpc.ServiceDesc for AppsService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -130,6 +162,10 @@ var AppsService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "List",
 			Handler:    _AppsService_List_Handler,
+		},
+		{
+			MethodName: "Similar",
+			Handler:    _AppsService_Similar_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

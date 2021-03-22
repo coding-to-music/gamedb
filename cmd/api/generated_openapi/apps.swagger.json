@@ -381,6 +381,38 @@
       ],
       "default": "AE"
     },
+    "generatedSimilarAppResponse": {
+      "type": "object",
+      "properties": {
+        "appId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "count": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "order": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "owners": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "generatedSimilarAppsResponse": {
+      "type": "object",
+      "properties": {
+        "apps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/generatedSimilarAppResponse"
+          }
+        }
+      }
+    },
     "protobufAny": {
       "type": "object",
       "properties": {

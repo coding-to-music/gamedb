@@ -13,6 +13,8 @@ service AppsService {
     }
     rpc List (ListAppsRequest) returns (AppsMongoResponse) {
     }
+    rpc Similar (ListSimilarAppsRequest) returns (SimilarAppsResponse) {
+    }
 }
 
 // Search
@@ -101,4 +103,20 @@ message AppMongoResponse {
     int32 playersMax = 15;
     int32 playersWeekMax = 16;
     float playersWeekAvg = 17;
+}
+
+// Similar
+message ListSimilarAppsRequest {
+  int32 appId = 1;
+}
+
+message SimilarAppsResponse {
+  repeated SimilarAppResponse apps = 1;
+}
+
+message SimilarAppResponse {
+  int32 appId = 1;
+  int32 count = 2;
+  int32 order = 3;
+  int32 owners = 4;
 }
