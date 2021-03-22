@@ -158,13 +158,28 @@ func authMiddlewear(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		// Check API key
-		key := r.URL.Query().Get(keyField)
-		if key == "" {
-			key = strings.TrimLeft(r.Header.Get(keyField), "Bearer ")
-			if key == "" {
-				key = session.Get(r, session.SessionUserAPIKey)
+		key := func() string {
+
+			key := r.URL.Query().Get(keyField)
+			if key != "" {
+				w.Header().Set("Authed-With", "query")
+				return key
 			}
-		}
+
+			key = strings.TrimLeft(r.Header.Get(keyField), "Bearer ")
+			if key != "" {
+				w.Header().Set("Authed-With", "bearer")
+				return key
+			}
+
+			key = session.Get(r, session.SessionUserAPIKey)
+			if key != "" {
+				w.Header().Set("Authed-With", "session")
+				return key
+			}
+
+			return ""
+		}()
 
 		if key == "" {
 			returnResponse(w, r, http.StatusUnauthorized, generated.MessageResponse{Error: "empty api key"})
