@@ -81,16 +81,18 @@ if ($('#product-keys-page').length > 0) {
     //
     $('#apps-table tbody tr').on('click', function (e) {
 
-        $('#key').val($(this).attr('data-key')).trigger("chosen:updated");
-        $('input[name=type][value=apps]').prop("checked", true);
+        $key.val($(this).attr('data-key')).trigger("chosen:updated");
+        $type.val('apps').trigger("chosen:updated");
+
         $('a.nav-link[href="#search"]').tab('show');
         dt.draw();
     });
 
     $('#packages-table tbody tr').on('click', function (e) {
 
-        $('#key').val($(this).attr('data-key')).trigger("chosen:updated");
-        $('input[name=type][value=packages]').prop("checked", true);
+        $key.val($(this).attr('data-key')).trigger("chosen:updated");
+        $type.val('packages').trigger("chosen:updated");
+
         $('a.nav-link[href="#search"]').tab('show');
         dt.draw();
     });
