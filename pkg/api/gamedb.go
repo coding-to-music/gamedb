@@ -2,6 +2,7 @@ package api
 
 import (
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/getkin/kin-openapi/openapi3"
 )
 
@@ -230,7 +231,7 @@ func GetGlobalSteam() (swagger *openapi3.Swagger) {
 				"home-response": {
 					Value: &openapi3.Response{
 						ExtensionProps: openapi3.ExtensionProps{},
-						Description:    stringPointer("Home"),
+						Description:    helpers.StringPointer("Home"),
 						Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
 							Ref: "#/components/schemas/home-schema",
 						}),
@@ -239,7 +240,7 @@ func GetGlobalSteam() (swagger *openapi3.Swagger) {
 				"message-response": {
 					Value: &openapi3.Response{
 						ExtensionProps: openapi3.ExtensionProps{},
-						Description:    stringPointer("Message"),
+						Description:    helpers.StringPointer("Message"),
 						Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
 							Ref: "#/components/schemas/message-schema",
 						}),
@@ -247,7 +248,7 @@ func GetGlobalSteam() (swagger *openapi3.Swagger) {
 				},
 				"article-response": {
 					Value: &openapi3.Response{
-						Description: stringPointer("An article"),
+						Description: helpers.StringPointer("An article"),
 						Content: openapi3.NewContentWithJSONSchema(&openapi3.Schema{
 							Required: []string{"article", "error"},
 							Properties: map[string]*openapi3.SchemaRef{
@@ -259,7 +260,7 @@ func GetGlobalSteam() (swagger *openapi3.Swagger) {
 				},
 				"articles-response": {
 					Value: &openapi3.Response{
-						Description: stringPointer("List of articles"),
+						Description: helpers.StringPointer("List of articles"),
 						Content: openapi3.NewContentWithJSONSchema(&openapi3.Schema{
 							Description: "List of articles",
 							Required:    []string{"pagination", "articles", "error"},
@@ -282,7 +283,7 @@ func GetGlobalSteam() (swagger *openapi3.Swagger) {
 				},
 				"game-response": {
 					Value: &openapi3.Response{
-						Description: stringPointer("A game"),
+						Description: helpers.StringPointer("A game"),
 						Content: openapi3.NewContentWithJSONSchema(&openapi3.Schema{
 							Required: []string{"game", "error"},
 							Properties: map[string]*openapi3.SchemaRef{
@@ -294,7 +295,7 @@ func GetGlobalSteam() (swagger *openapi3.Swagger) {
 				},
 				"games-response": {
 					Value: &openapi3.Response{
-						Description: stringPointer("List of games"),
+						Description: helpers.StringPointer("List of games"),
 						Content: openapi3.NewContentWithJSONSchema(&openapi3.Schema{
 							Description: "List of apps, with pagination",
 							Required:    []string{"pagination", "games", "error"},
@@ -317,7 +318,7 @@ func GetGlobalSteam() (swagger *openapi3.Swagger) {
 				},
 				"group-response": {
 					Value: &openapi3.Response{
-						Description: stringPointer("A group"),
+						Description: helpers.StringPointer("A group"),
 						Content: openapi3.NewContentWithJSONSchema(&openapi3.Schema{
 							Required: []string{"group", "error"},
 							Properties: map[string]*openapi3.SchemaRef{
@@ -329,7 +330,7 @@ func GetGlobalSteam() (swagger *openapi3.Swagger) {
 				},
 				"groups-response": {
 					Value: &openapi3.Response{
-						Description: stringPointer("List of groups"),
+						Description: helpers.StringPointer("List of groups"),
 						Content: openapi3.NewContentWithJSONSchema(&openapi3.Schema{
 							Description: "List of groups",
 							Required:    []string{"pagination", "groups", "error"},
@@ -352,7 +353,7 @@ func GetGlobalSteam() (swagger *openapi3.Swagger) {
 				},
 				"package-response": {
 					Value: &openapi3.Response{
-						Description: stringPointer("A package"),
+						Description: helpers.StringPointer("A package"),
 						Content: openapi3.NewContentWithJSONSchema(&openapi3.Schema{
 							Required: []string{"package", "error"},
 							Properties: map[string]*openapi3.SchemaRef{
@@ -364,7 +365,7 @@ func GetGlobalSteam() (swagger *openapi3.Swagger) {
 				},
 				"packages-response": {
 					Value: &openapi3.Response{
-						Description: stringPointer("List of games"),
+						Description: helpers.StringPointer("List of games"),
 						Content: openapi3.NewContentWithJSONSchema(&openapi3.Schema{
 							Description: "List of packages",
 							Required:    []string{"pagination", "packages", "error"},
@@ -387,7 +388,7 @@ func GetGlobalSteam() (swagger *openapi3.Swagger) {
 				},
 				"player-response": {
 					Value: &openapi3.Response{
-						Description: stringPointer("A player"),
+						Description: helpers.StringPointer("A player"),
 						Content: openapi3.NewContentWithJSONSchema(&openapi3.Schema{
 							Required: []string{"player", "error"},
 							Properties: map[string]*openapi3.SchemaRef{
@@ -399,7 +400,7 @@ func GetGlobalSteam() (swagger *openapi3.Swagger) {
 				},
 				"players-response": {
 					Value: &openapi3.Response{
-						Description: stringPointer("List of players"),
+						Description: helpers.StringPointer("List of players"),
 						Content: openapi3.NewContentWithJSONSchema(&openapi3.Schema{
 							Required: []string{"pagination", "players", "error"},
 							Properties: map[string]*openapi3.SchemaRef{
@@ -621,8 +622,4 @@ func GetGlobalSteam() (swagger *openapi3.Swagger) {
 	}
 
 	return swagger
-}
-
-func stringPointer(s string) *string {
-	return &s
 }

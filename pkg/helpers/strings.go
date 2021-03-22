@@ -68,3 +68,7 @@ func ChunkStrings(strings []string, n int) (chunks [][]string) {
 	}
 	return chunks
 }
+
+func StringPointer(s string) *string {
+	return &s
+}
