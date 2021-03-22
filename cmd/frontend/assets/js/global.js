@@ -411,6 +411,7 @@ window.addEventListener("message", (event) => {
 
             for (let index in message.key_value) {
                 if (message.key_value.hasOwnProperty(index)) {
+
                     let key = message.key_value[index].key;
                     let value = message.key_value[index].value;
 
@@ -422,9 +423,9 @@ window.addEventListener("message", (event) => {
 
             if (shouldCollapseAd) {
                 $('#flashes-ad').hide();
+                logLocal('Ads collapsed');
             }
         }
     } catch (e) {
-
     }
 });
