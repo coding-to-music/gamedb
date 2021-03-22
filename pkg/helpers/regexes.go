@@ -6,6 +6,7 @@ import (
 
 //noinspection GoUnusedGlobalVariable
 var (
+	RegexAlpha                 = regexp.MustCompile(`[a-zA-Z]+`)
 	RegexInts                  = regexp.MustCompile(`[0-9]+`)
 	RegexIntsCommas            = regexp.MustCompile(`[0-9,]+`)
 	RegexIntsOnly              = regexp.MustCompile(`^[0-9]+$`)
