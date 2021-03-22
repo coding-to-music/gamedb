@@ -125,11 +125,12 @@ func playerGamesHandler(message *rabbit.Message) {
 		}
 
 		//
-		for code, vv := range gameRow.Prices {
+		for code, price := range gameRow.Prices {
 
-			vv = gameRow.Prices.Get(code)
+			price = gameRow.Prices.Get(code)
 
-			appPrices[gameRow.ID][string(code)] = vv.Final
+			appPrices[gameRow.ID][string(code)] = price.Initial // Not the sale price
+
 			if appPrices[gameRow.ID][string(code)] > 0 && playerApps[gameRow.ID].AppTime == 0 {
 				appPriceHour[gameRow.ID][string(code)] = -1 // Infinite
 			} else if appPrices[gameRow.ID][string(code)] > 0 && playerApps[gameRow.ID].AppTime > 0 {
