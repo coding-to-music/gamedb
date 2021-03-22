@@ -26,8 +26,8 @@ import (
 	"github.com/gamedb/gamedb/pkg/session"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/getkin/kin-openapi/openapi3filter"
-	"github.com/go-chi/chi"
 	chiMiddleware "github.com/go-chi/chi/middleware"
+	"github.com/go-chi/chi/v5"
 	influx "github.com/influxdata/influxdb1-client"
 	"go.uber.org/zap"
 )
@@ -38,8 +38,6 @@ const (
 	ctxUserIDField    = "user_id"
 	ctxUserLevelField = "user_level"
 )
-
-var apiKeyRegexp = regexp.MustCompile("^[A-Z0-9]{20}$")
 
 type Server struct {
 }
@@ -74,7 +72,7 @@ func main() {
 	}
 
 	r := chi.NewRouter()
-	r.Use(fixRequestURL)
+	r.Use(fixRequestURLMiddleware)
 	r.Use(chiMiddleware.Compress(flate.DefaultCompression))
 	r.Use(middleware.RealIP)
 	r.Use(middleware.RateLimiterBlock(time.Second, 1, rateLimitedHandler))
@@ -124,22 +122,14 @@ func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, http.StatusText(http.StatusOK), http.StatusOK)
 }
 
-func notFoundHandler(w http.ResponseWriter, _ *http.Request) {
-
-	w.WriteHeader(404)
-
-	b, err := json.Marshal(generated.MessageResponse{Error: "Invalid endpoint"})
-	if err != nil {
-		log.ErrS(err)
-	}
-
-	_, err = w.Write(b)
-	if err != nil {
-		log.ErrS(err)
-	}
+func notFoundHandler(w http.ResponseWriter, r *http.Request) {
+	returnResponse(w, r, http.StatusNotFound, generated.MessageResponse{Error: "Invalid endpoint"})
 }
 
-var router *openapi3filter.Router
+var (
+	apiKeyRegexp = regexp.MustCompile("^[A-Z0-9]{20}$")
+	router       *openapi3filter.Router
+)
 
 func authMiddlewear(next http.HandlerFunc) http.HandlerFunc {
 
@@ -205,7 +195,7 @@ func authMiddlewear(next http.HandlerFunc) http.HandlerFunc {
 		route, _, err := router.FindRoute(r.Method, r.URL)
 		if err != nil {
 			log.Err("missing route", zap.Error(err), zap.String("method", r.Method), zap.String("url", r.URL.String()))
-			returnResponse(w, r, http.StatusNotFound, generated.MessageResponse{Error: "Invalid endpoint"})
+			notFoundHandler(w, r)
 			return
 		}
 		if user.Level < mysql.UserLevel2 && !helpers.SliceHasString(api.TagPublic, route.Operation.Tags) {
@@ -262,7 +252,7 @@ func returnResponse(w http.ResponseWriter, r *http.Request, code int, i interfac
 	}
 }
 
-func fixRequestURL(next http.Handler) http.Handler {
+func fixRequestURLMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		if config.IsLocal() {
