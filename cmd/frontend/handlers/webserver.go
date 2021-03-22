@@ -163,8 +163,11 @@ func Init() {
 
 	templatex = template.New("t").Funcs(getTemplateFuncMap())
 
-	for _, v := range []string{"./templates/*.gohtml", "./templates/*/*.gohtml"} {
-
+	for _, v := range []string{
+		"./templates/*.gohtml",
+		"./templates/admin/*.gohtml",
+		"./templates/includes/*.gohtml",
+	} {
 		templatex, err = templatex.ParseGlob(v)
 		if err != nil {
 			log.ErrS(err)
