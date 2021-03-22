@@ -176,8 +176,8 @@ func playerGamesHandler(message *rabbit.Message) {
 
 	updatePlayer = append(updatePlayer, bson.E{Key: "game_stats", Value: gameStats})
 
-	if !payload.SkipAchievements || payload.ForceAchievementsRefresh {
-		if payload.PlayerUpdated.Before(time.Now().Add(time.Hour * 24 * 13 * -1)) { // Just under 2 weeks
+	if !payload.SkipAchievements {
+		if payload.PlayerUpdated.Before(time.Now().Add(time.Hour*24*13*-1)) || payload.ForceAchievementsRefresh { // If updated over 13 days ago
 			for _, v := range resp.Games {
 				if v.PlaytimeForever > 0 {
 					err = ProducePlayerAchievements(
