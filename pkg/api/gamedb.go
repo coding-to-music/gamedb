@@ -229,25 +229,8 @@ func GetGlobalSteam() (swagger *openapi3.Swagger) {
 						},
 					},
 				},
-				"home-schema": {
-					Value: &openapi3.Schema{
-						Required: []string{"docs"},
-						Properties: map[string]*openapi3.SchemaRef{
-							"docs": {Value: openapi3.NewStringSchema()},
-						},
-					},
-				},
 			},
 			Responses: map[string]*openapi3.ResponseRef{
-				"home-response": {
-					Value: &openapi3.Response{
-						ExtensionProps: openapi3.ExtensionProps{},
-						Description:    helpers.StringPointer("Home"),
-						Content: openapi3.NewContentWithJSONSchemaRef(&openapi3.SchemaRef{
-							Ref: "#/components/schemas/home-schema",
-						}),
-					},
-				},
 				"message-response": {
 					Value: &openapi3.Response{
 						ExtensionProps: openapi3.ExtensionProps{},
@@ -447,15 +430,6 @@ func GetGlobalSteam() (swagger *openapi3.Swagger) {
 			},
 		},
 		Paths: openapi3.Paths{
-			"/": &openapi3.PathItem{
-				Get: &openapi3.Operation{
-					Tags:    []string{TagPublic},
-					Summary: "Home",
-					Responses: map[string]*openapi3.ResponseRef{
-						"200": {Ref: "#/components/responses/home-response"},
-					},
-				},
-			},
 			"/articles": &openapi3.PathItem{
 				Get: &openapi3.Operation{
 					Tags:    []string{tagArticles},

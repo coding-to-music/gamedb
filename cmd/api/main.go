@@ -78,6 +78,7 @@ func main() {
 	r.Use(middleware.RateLimiterBlock(time.Second, 1, rateLimitedHandler))
 	r.Use(codegenMiddleware.OapiRequestValidatorWithOptions(resolved, options))
 
+	r.Get("/", rootHandler)
 	r.Get("/health-check", healthCheckHandler)
 
 	generated.HandlerWithOptions(Server{}, generated.ChiServerOptions{
@@ -98,7 +99,7 @@ func main() {
 		s.Addr = "localhost:" + config.C.APIPort
 	}
 
-	log.Info("Starting API on " + "http://" + s.Addr + "/games")
+	log.Info("Starting API on " + "http://" + s.Addr + "/")
 
 	go func() {
 		err = s.ListenAndServe()
@@ -120,6 +121,12 @@ func rateLimitedHandler(w http.ResponseWriter, r *http.Request) {
 
 func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, http.StatusText(http.StatusOK), http.StatusOK)
+}
+
+func rootHandler(w http.ResponseWriter, r *http.Request) {
+	returnResponse(w, r, http.StatusOK, map[string]interface{}{
+		"docs": config.C.GlobalSteamDomain + "/api/globalsteam",
+	})
 }
 
 func notFoundHandler(w http.ResponseWriter, r *http.Request) {
