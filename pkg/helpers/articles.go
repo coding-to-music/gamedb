@@ -102,9 +102,29 @@ func updateArticleDom(n *html.Node) {
 		}
 	}
 
+	// Javascript
+	for _, attribute := range n.Attr {
+
+		if strings.HasPrefix(strings.TrimSpace(attribute.Key), "on") {
+			removeAttribute(n, attribute.Key)
+			continue
+		}
+
+		if strings.HasPrefix(strings.TrimSpace(attribute.Val), "javascript:") {
+			removeAttribute(n, attribute.Key)
+			continue
+		}
+	}
+
 	// Recurse
 	for c := n.FirstChild; c != nil; c = c.NextSibling {
-		updateArticleDom(c)
+
+		switch c.Data {
+		case "script", "form", "input", "meta", "link", "style":
+			n.RemoveChild(c)
+		default:
+			updateArticleDom(c)
+		}
 	}
 }
 
