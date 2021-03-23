@@ -115,9 +115,8 @@ func appReviewsHandler(message *rabbit.Message) {
 
 	// Retry later to get queued players
 	if missingPlayers {
-		// Disable for now
-		// sendToRetryQueueWithDelay(message, time.Minute)
-		// return
+		sendToRetryQueueWithDelay(message, time.Minute)
+		return
 	}
 
 	// Set score
