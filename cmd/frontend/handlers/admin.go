@@ -370,7 +370,7 @@ func adminStatsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(players) > 0 {
-		t.Oldest, err = durationfmt.Format(time.Now().Sub(players[0].UpdatedAt), "%d days")
+		t.Oldest, err = durationfmt.Format(time.Since(players[0].UpdatedAt), "%d days")
 		if err != nil {
 			log.ErrS(err)
 		}

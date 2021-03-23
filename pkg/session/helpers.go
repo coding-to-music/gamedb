@@ -95,7 +95,9 @@ func GetPlayerIDFromSesion(r *http.Request) (id int64) {
 	id, err := strconv.ParseInt(idx, 10, 64)
 	if err != nil {
 		log.ErrS(err)
+		return 0
 	}
+
 	return id
 }
 

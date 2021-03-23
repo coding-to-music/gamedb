@@ -121,7 +121,7 @@ func bundleHandler(message *rabbit.Message) {
 	// Send websocket
 	if newBundle {
 
-		wsPayload := IntPayload{ID: payload.ID}
+		wsPayload := IntPayload(payload)
 		err = ProduceWebsocket(wsPayload, websockets.PageBundle, websockets.PageBundles)
 		if err != nil {
 			log.ErrS(err, payload.ID)

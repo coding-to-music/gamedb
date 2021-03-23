@@ -44,12 +44,12 @@ func InitZap(logName string) {
 		if config.C.GoogleProject != "" && config.C.GoogleAuthFile != "" {
 			cores = append(cores, newGoogleCore(encoderConfig))
 		}
-		if config.C.RollbarSecret != "" && config.C.RollbarUser != "" {
-			// Add rollbar core
-		}
-		if config.C.SentryDSN != "" {
-			// Add sentry core
-		}
+		// if config.C.RollbarSecret != "" && config.C.RollbarUser != "" {
+		// 	Add rollbar core
+		// }
+		// if config.C.SentryDSN != "" {
+		// 	Add sentry core
+		// }
 	}
 
 	logger := zap.New(zapcore.NewTee(cores...), options...).Named(logName)

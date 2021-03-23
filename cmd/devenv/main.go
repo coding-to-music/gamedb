@@ -251,31 +251,30 @@ func watchFiles(cfg processesConfig) {
 
 	go func() {
 		for {
-			select {
-			case <-buildTicker.C:
 
-				buildTicker.Stop()
+			<-buildTicker.C
+			buildTicker.Stop()
 
-				log.InfoS("to build ", processesToBuild)
+			log.InfoS("to build ", processesToBuild)
 
-				if len(processesToBuild) > 0 {
+			if len(processesToBuild) > 0 {
 
-					if _, ok := processesToBuild[""]; ok {
-						log.InfoS("building all")
-						stopAll(cfg)
-						startAll(cfg)
-					} else {
-						var x []string
-						for k := range processesToBuild {
-							x = append(x, k)
-						}
-						log.InfoS("building ", x)
-						stopAll(cfg, x...)
-						startAll(cfg, x...)
+				if _, ok := processesToBuild[""]; ok {
+					log.InfoS("building all")
+					stopAll(cfg)
+					startAll(cfg)
+				} else {
+					var x []string
+					for k := range processesToBuild {
+						x = append(x, k)
 					}
-
-					processesToBuild = map[string]bool{}
+					log.InfoS("building ", x)
+					stopAll(cfg, x...)
+					startAll(cfg, x...)
 				}
+
+				processesToBuild = map[string]bool{}
+
 			}
 		}
 	}()
@@ -319,20 +318,20 @@ func checkDependencies(cfg processesConfig) error {
 	// Memcache
 	if cfg.Memcache {
 		if !netcat("localhost", "11211") {
-			return errors.New("Memcache not running")
+			return errors.New("memcache not running")
 		}
 	}
 
 	// Rabbit
 	if cfg.Rabbit {
 		if !netcat("localhost", "15672") {
-			return errors.New("Rabbit not running")
+			return errors.New("rabbit not running")
 		}
 	}
 
 	// LNAV
 	if _, err := exec.LookPath("lnav"); err != nil {
-		return errors.New("LNAV not installed not running")
+		return errors.New("lnav not installed not running")
 	}
 
 	return nil

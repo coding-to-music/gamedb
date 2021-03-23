@@ -257,7 +257,7 @@ func playerAchievementsHandler(message *rabbit.Message) {
 	for _, v := range resp.Achievements {
 		if v.Achieved && v.UnlockTime >= timestamp {
 
-			appAchievement, _ := appAchievementsMap[v.APIName]
+			appAchievement := appAchievementsMap[v.APIName]
 
 			rows = append(rows, mongo.PlayerAchievement{
 				PlayerID:               payload.PlayerID,

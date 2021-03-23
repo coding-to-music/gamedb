@@ -135,11 +135,16 @@ func twitterZapierWebhookPostHandler(w http.ResponseWriter, r *http.Request) {
 	// Handle
 	webhooks := twitterWebhook{}
 	err = json.Unmarshal(body, &webhooks)
+	if err != nil {
+		log.ErrS(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	// Delete cache
 	err = memcache.Client().Delete(memcache.ItemHomeTweets.Key)
 	if err != nil {
-		log.Err(err.Error())
+		log.ErrS(err)
 	}
 
 	// Forward to Discord

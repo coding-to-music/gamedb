@@ -156,7 +156,7 @@ func authMiddlewear(next http.HandlerFunc) http.HandlerFunc {
 				return key
 			}
 
-			key = strings.TrimLeft(r.Header.Get(keyField), "Bearer ")
+			key = strings.TrimPrefix(r.Header.Get(keyField), "Bearer ")
 			if key != "" {
 				w.Header().Set("Authed-With", "bearer")
 				return key

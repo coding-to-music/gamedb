@@ -57,6 +57,10 @@ func (c AppsSameOwners) work() (err error) {
 	}
 
 	apps, err := mongo.GetApps(0, int64(free), sort, filter, bson.M{"_id": 1})
+	if err != nil {
+		return err
+	}
+
 	for _, v := range apps {
 
 		err = consumers.ProduceSameOwners(v.ID)

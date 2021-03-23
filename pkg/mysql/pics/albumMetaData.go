@@ -22,11 +22,7 @@ func (a AlbumMetaData) Albums() (albums map[string][]AlbumTrack) {
 	albums = map[string][]AlbumTrack{}
 
 	for _, v := range a.Tracks {
-		if _, ok := albums[v.DiscNumber]; ok {
-			albums[v.DiscNumber] = append(albums[v.DiscNumber], v)
-		} else {
-			albums[v.DiscNumber] = []AlbumTrack{v}
-		}
+		albums[v.DiscNumber] = append(albums[v.DiscNumber], v)
 	}
 
 	return albums

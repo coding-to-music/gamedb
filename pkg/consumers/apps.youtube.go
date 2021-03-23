@@ -25,7 +25,7 @@ type AppYoutubeMessage struct {
 
 func appYoutubeHandler(message *rabbit.Message) {
 
-	if time.Now().Sub(youtubeOverLimitAt) < time.Hour {
+	if time.Since(youtubeOverLimitAt) < time.Hour {
 		message.Ack()
 		return
 	}

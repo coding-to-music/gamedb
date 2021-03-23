@@ -181,7 +181,7 @@ func (c CommandPlayer) Output(authorID string, _ steamapi.ProductCC, inputs map[
 
 	var bans = humanize.Comma(int64(player.GetGameBans())) + " Game Bans\n" + humanize.Comma(int64(player.GetVACBans())) + " VAC Bans"
 	if player.GetVACBans() > 0 {
-		bans += "\nVAC Banned " + helpers.GetTimeShort(int(time.Now().Sub(player.GetLastBan()).Minutes()), 2) + " ago"
+		bans += "\nVAC Banned " + helpers.GetTimeShort(int(time.Since(player.GetLastBan()).Minutes()), 2) + " ago"
 	}
 
 	//

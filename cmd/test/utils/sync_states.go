@@ -62,6 +62,10 @@ func (syncStates) run() {
 		}
 
 		b, err := io.ReadAll(resp.Body)
+		if err != nil {
+			log.ErrS(err)
+			continue
+		}
 
 		steamResponse := response{}
 		err = json.Unmarshal(b, &steamResponse)

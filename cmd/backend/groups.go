@@ -6,10 +6,9 @@ import (
 	backendHelpers "github.com/gamedb/gamedb/cmd/backend/helpers"
 	"github.com/gamedb/gamedb/pkg/backend/generated"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/golang/protobuf/ptypes"
 	"go.mongodb.org/mongo-driver/bson"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type GroupsServer struct {
@@ -60,20 +59,10 @@ func (g GroupsServer) Retrieve(_ context.Context, request *generated.GroupReques
 
 func (g GroupsServer) makeGroup(m mongo.Group) (r *generated.GroupResponse) {
 
-	createdAt, err := ptypes.TimestampProto(m.CreatedAt)
-	if err != nil {
-		log.Err(err.Error())
-	}
-
-	updatedAt, err := ptypes.TimestampProto(m.UpdatedAt)
-	if err != nil {
-		log.Err(err.Error())
-	}
-
 	return &generated.GroupResponse{
 		ID:            m.ID,
-		CreatedAt:     createdAt,
-		UpdatedAt:     updatedAt,
+		CreatedAt:     timestamppb.New(m.CreatedAt),
+		UpdatedAt:     timestamppb.New(m.UpdatedAt),
 		Name:          m.Name,
 		Abbr:          m.Abbr,
 		URL:           m.URL,

@@ -68,10 +68,8 @@ func appsDLCAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 			// Get all DLC for page
 			var appIDs []int
-			var appIDs2 bson.A
 			for _, v := range playerApps {
 				appIDs = append(appIDs, v.AppID)
-				appIDs2 = append(appIDs2, v.AppID)
 			}
 
 			dlcs, err := mongo.GetDLCForApps(appIDs, 0, 0, nil, nil, bson.M{"app_id": 1, "dlc_id": 1})

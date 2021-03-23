@@ -13,7 +13,6 @@ import (
 	"github.com/influxdata/influxdb-client-go/v2"
 	influx "github.com/influxdata/influxdb1-client"
 	"github.com/influxdata/influxdb1-client/models"
-	influxModels "github.com/influxdata/influxdb1-client/models"
 	"gonum.org/v1/gonum/stat"
 )
 
@@ -146,7 +145,7 @@ func FilterAtLeastOne(vv []interface{}) bool {
 	return false
 }
 
-func InfluxResponseToHighCharts(series influxModels.Row, trimLeft bool, filters ...HCFilter) HighChartsJSON {
+func InfluxResponseToHighCharts(series models.Row, trimLeft bool, filters ...HCFilter) HighChartsJSON {
 
 	resp := HighChartsJSON{}
 
@@ -208,7 +207,7 @@ func InfluxResponseToHighCharts(series influxModels.Row, trimLeft bool, filters 
 	return resp
 }
 
-func InfluxResponseToImageChartData(series influxModels.Row) (x []time.Time, y []float64) {
+func InfluxResponseToImageChartData(series models.Row) (x []time.Time, y []float64) {
 
 	var gotData bool // This is used to trim leading zeros
 

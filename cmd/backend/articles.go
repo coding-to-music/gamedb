@@ -5,10 +5,9 @@ import (
 
 	"github.com/gamedb/gamedb/cmd/backend/helpers"
 	"github.com/gamedb/gamedb/pkg/backend/generated"
-	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/golang/protobuf/ptypes"
 	"go.mongodb.org/mongo-driver/bson"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type ArticlesServer struct {
@@ -61,11 +60,6 @@ func (as ArticlesServer) List(_ context.Context, request *generated.ListArticles
 
 func (as ArticlesServer) makeArticle(m mongo.Article) (r *generated.ArticleResponse) {
 
-	date, err := ptypes.TimestampProto(m.Date)
-	if err != nil {
-		log.Err(err.Error())
-	}
-
 	return &generated.ArticleResponse{
 		Id:          m.ID,
 		Title:       m.Title,
@@ -73,7 +67,7 @@ func (as ArticlesServer) makeArticle(m mongo.Article) (r *generated.ArticleRespo
 		IsExternal:  m.IsExternal,
 		Author:      m.Author,
 		Contents:    m.Contents,
-		Date:        date,
+		Date:        timestamppb.New(m.Date),
 		FeedLabel:   m.FeedLabel,
 		FeedName:    m.FeedName,
 		FeedType:    int32(m.FeedType),

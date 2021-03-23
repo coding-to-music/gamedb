@@ -88,14 +88,14 @@ func GetSteam() *openapi3.Swagger {
 	wg.Wait()
 
 	// Set groups
-	var is []interface{}
-	for k, v := range groups {
-
-		is = append(is, map[string]interface{}{
-			"name": k,
-			"tags": v,
-		})
-	}
+	// var is []interface{}
+	// for k, v := range groups {
+	//
+	// 	is = append(is, map[string]interface{}{
+	// 		"name": k,
+	// 		"tags": v,
+	// 	})
+	// }
 	// swagger.ExtensionProps.Extensions["x-tagGroups"] = is
 
 	return swagger
