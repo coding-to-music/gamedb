@@ -157,6 +157,7 @@ if ($('#apps-page').length > 0) {
 
         // Init table
         const searchFields = [
+            $('#user'),
             $('#tags'),
             $('#genres'),
             $('#categories'),

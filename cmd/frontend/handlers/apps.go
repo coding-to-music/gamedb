@@ -15,6 +15,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/session"
 	"github.com/go-chi/chi/v5"
 	"github.com/olivere/elastic/v7"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func GamesRouter() http.Handler {
@@ -295,6 +296,32 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		high, err := strconv.Atoi(scores[1])
 		if err == nil && high < 100 {
 			filters = append(filters, elastic.NewRangeQuery("score").To(high))
+		}
+	}
+
+	// Filter by owned games
+	userFilter := query.GetSearchString("user")
+	if userFilter == "owned" || userFilter == "played" {
+		playerID := session.GetPlayerIDFromSesion(r)
+		if playerID > 0 {
+
+			filter := bson.D{}
+
+			if userFilter == "played" {
+				filter = append(filter, bson.E{Key: "app_time", Value: bson.M{"$gt": 0}})
+			}
+
+			apps, err := mongo.GetPlayerAppsByPlayer(playerID, 0, 0, nil, bson.M{"app_id": 1}, filter)
+			if err != nil {
+				log.ErrS(err)
+			} else {
+				var appIDs []interface{}
+				for _, app := range apps {
+					appIDs = append(appIDs, app.AppID)
+				}
+
+				filters = append(filters, elastic.NewTermsQuery("id", appIDs...))
+			}
 		}
 	}
 

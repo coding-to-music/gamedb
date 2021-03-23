@@ -40,11 +40,15 @@
             <div class="card-body">
 
                 <div class="row">
-                    <div class="d-none">
-                        {{/* This div is so Chrome auto-fills this one and not the rest! */}}
-                        <label for="hidden">Hidden</label>
-                        <select multiple data-placeholder="Hidden" class="form-control form-control-chosen" id="hidden" name="hidden">
-                        </select>
+                    <div class="col-sm-6 col-md-4">
+                        <div class="form-group">
+                            <label for="user">Your Games <small>(Must be logged in)</small></label>
+                            <select data-placeholder="" class="form-control form-control-chosen" id="user" name="user">
+                                <option value="">All Games</option>
+                                <option value="owned">Owned Games</option>
+                                <option value="played">Played Games</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="col-sm-6 col-md-4">
                         <div class="form-group">
