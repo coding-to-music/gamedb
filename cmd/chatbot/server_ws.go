@@ -23,7 +23,10 @@ import (
 	"go.uber.org/zap"
 )
 
-var rateLimit = rate.New(time.Second*3, rate.WithBurst(3))
+var (
+	rateLimit        = rate.New(time.Second*3, rate.WithBurst(3))
+	errDirectMessage = "This command needs to be requested from a guild channel"
+)
 
 func websocketServer() (session *discordgo.Session, err error) {
 
@@ -57,20 +60,39 @@ func websocketServer() (session *discordgo.Session, err error) {
 
 		// Ignore PMs
 		if !command.AllowDM() && e.User != nil {
+
+			response := &discordgo.InteractionResponse{
+				Type: discordgo.InteractionResponseChannelMessageWithSource,
+				Data: &discordgo.InteractionApplicationCommandResponseData{
+					Content: errDirectMessage,
+				},
+			}
+
+			err := s.InteractionRespond(e.Interaction, response)
+			if err != nil {
+				log.ErrS(err)
+			}
 			return
+		}
+
+		// Get user
+		var user = e.User
+		if user == nil {
+			user = e.Member.User
 		}
 
 		// Save stats
 		var success bool
-		defer saveToDB(command, true, &success, argumentsString(e), e.GuildID, e.ChannelID, e.Member.User)
+		defer saveToDB(command, true, &success, argumentsString(e), e.GuildID, e.ChannelID, user)
 
 		// Typing notification
 		// todo Remove this when slash commands have `thinking`
+		// https://github.com/discord/discord-api-docs/pull/2615#issuecomment-805129870
 		err := s.ChannelTyping(e.ChannelID)
 		discordError(err)
 
 		//
-		code := getProdCC(command, e.Member.User.ID)
+		code := getProdCC(command, user.ID)
 
 		cacheItem := memcache.ItemChatBotRequestSlash(command.ID(), arguments(e), code)
 
@@ -90,13 +112,13 @@ func websocketServer() (session *discordgo.Session, err error) {
 		}
 
 		// Rate limit
-		if !rateLimit.GetLimiter(e.Member.User.ID).Allow() {
-			log.Warn("over chatbot rate limit", zap.String("author", e.Member.User.ID), zap.String("msg", argumentsString(e)))
+		if !rateLimit.GetLimiter(user.ID).Allow() {
+			log.Warn("over chatbot rate limit", zap.String("author", user.ID), zap.String("msg", argumentsString(e)))
 			return
 		}
 
 		// Make output
-		out, err := command.Output(e.Member.User.ID, code, arguments(e))
+		out, err := command.Output(user.ID, code, arguments(e))
 		if err != nil {
 			log.ErrS(err)
 			return
@@ -159,6 +181,13 @@ func websocketServer() (session *discordgo.Session, err error) {
 					}()
 
 					if !command.AllowDM() && private {
+
+						message := discordgo.MessageSend{
+							Content: errDirectMessage,
+						}
+
+						err = sendMessage(s, e, msg, &message)
+						discordError(err)
 						return
 					}
 
@@ -181,7 +210,7 @@ func websocketServer() (session *discordgo.Session, err error) {
 						err = memcache.Client().Get(cacheItem.Key, &message)
 						if err == nil {
 
-							err = sendMessage(s, &message, e.ChannelID, e.Author.ID, msg)
+							err = sendMessage(s, e, msg, &message)
 							if err != nil {
 								discordError(err)
 								return
@@ -215,7 +244,7 @@ func websocketServer() (session *discordgo.Session, err error) {
 					}()
 
 					// Reply
-					err = sendMessage(s, &message, e.ChannelID, e.Author.ID, msg)
+					err = sendMessage(s, e, msg, &message)
 					if err != nil {
 						discordError(err)
 						return
@@ -335,15 +364,15 @@ func saveToDB(command chatbot.Command, isSlash bool, wasSuccess *bool, message, 
 	}
 }
 
-func sendMessage(s *discordgo.Session, message *discordgo.MessageSend, channelID, authorID, messageRaw string) (err error) {
+func sendMessage(s *discordgo.Session, event *discordgo.MessageCreate, messageRaw string, message *discordgo.MessageSend) (err error) {
 
-	_, err = s.ChannelMessageSendComplex(channelID, message)
+	_, err = s.ChannelMessageSendComplex(event.ChannelID, message)
 	if err != nil {
 
 		// If reply failed, try to DM the OP
 		if val, ok := err.(*discordgo.RESTError); ok && val.Message.Code == 50013 { // Missing Permissions
 
-			channel, err := s.UserChannelCreate(authorID)
+			channel, err := s.UserChannelCreate(event.Author.ID)
 			if err != nil {
 				log.Err("Getting user channel", zap.Error(err), zap.String("msg", messageRaw))
 				return err
@@ -385,13 +414,14 @@ func argumentsString(event *discordgo.InteractionCreate) string {
 
 func discordError(err error) {
 
-	var allowed = map[int]string{
-		50001: "Missing Access",
-		50013: "Missing Permissions",
-	}
-
 	if err != nil {
 		if val, ok := err.(*discordgo.RESTError); ok {
+
+			var allowed = map[int]string{
+				50001: "Missing Access",
+				50013: "Missing Permissions",
+			}
+
 			if _, ok2 := allowed[val.Message.Code]; ok2 {
 				zap.S().Info(err) // No helper to fix stack offset
 				return
@@ -399,6 +429,5 @@ func discordError(err error) {
 		}
 
 		zap.S().Error(err) // No helper to fix stack offset
-		return
 	}
 }
