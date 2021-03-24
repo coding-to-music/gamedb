@@ -24,7 +24,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/session"
-	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/getkin/kin-openapi/openapi3filter"
 	chiMiddleware "github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
@@ -54,36 +53,21 @@ func main() {
 
 	session.Init()
 
-	resolved := &*api.GetGlobalSteam()
-
-	err = openapi3.NewSwaggerLoader().ResolveRefsIn(resolved, nil)
-	if err != nil {
-		log.ErrS(err)
-	}
-
-	options := &codegenMiddleware.Options{
-		Options: openapi3filter.Options{
-			MultiError:            true,
-			IncludeResponseStatus: true,
-			AuthenticationFunc: func(ctx context.Context, input *openapi3filter.AuthenticationInput) error {
-				return nil // Skip auth check for now
-			},
-		},
-	}
-
 	r := chi.NewRouter()
 	r.Use(fixRequestURLMiddleware)
 	r.Use(chiMiddleware.Compress(flate.DefaultCompression))
 	r.Use(middleware.RealIP)
-	r.Use(middleware.RateLimiterBlock(time.Second, 1, rateLimitedHandler))
-	r.Use(codegenMiddleware.OapiRequestValidatorWithOptions(resolved, options))
 
 	r.Get("/", rootHandler)
 	r.Get("/health-check", healthCheckHandler)
 
 	generated.HandlerWithOptions(Server{}, generated.ChiServerOptions{
-		BaseRouter:  r,
-		Middlewares: []generated.MiddlewareFunc{authMiddlewear},
+		BaseRouter: r,
+		Middlewares: []generated.MiddlewareFunc{
+			validateMiddlewear,
+			authMiddlewear,
+			rateLimitMiddlewear,
+		},
 	})
 
 	r.NotFound(notFoundHandler)
@@ -93,10 +77,6 @@ func main() {
 		Handler:           r,
 		ReadTimeout:       2 * time.Second,
 		ReadHeaderTimeout: 2 * time.Second,
-	}
-
-	if config.IsLocal() {
-		s.Addr = "localhost:" + config.C.APIPort
 	}
 
 	log.Info("Starting API on " + "http://" + s.Addr + "/")
@@ -115,42 +95,41 @@ func main() {
 	)
 }
 
+// Handlers
+func rootHandler(w http.ResponseWriter, r *http.Request) {
+	returnResponse(w, r, http.StatusOK, map[string]interface{}{"docs": config.C.GlobalSteamDomain + "/api/globalsteam"})
+}
+
 func rateLimitedHandler(w http.ResponseWriter, r *http.Request) {
 	returnResponse(w, r, http.StatusTooManyRequests, generated.MessageResponse{Error: http.StatusText(http.StatusTooManyRequests)})
-}
-
-func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, http.StatusText(http.StatusOK), http.StatusOK)
-}
-
-func rootHandler(w http.ResponseWriter, r *http.Request) {
-	returnResponse(w, r, http.StatusOK, map[string]interface{}{
-		"docs": config.C.GlobalSteamDomain + "/api/globalsteam",
-	})
 }
 
 func notFoundHandler(w http.ResponseWriter, r *http.Request) {
 	returnResponse(w, r, http.StatusNotFound, generated.MessageResponse{Error: "Invalid endpoint"})
 }
 
-var (
-	apiKeyRegexp = regexp.MustCompile("^[A-Z0-9]{20}$")
-	router       *openapi3filter.Router
-)
+func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
+	http.Error(w, http.StatusText(http.StatusOK), http.StatusOK)
+}
+
+var validateOptions = &codegenMiddleware.Options{
+	Options: openapi3filter.Options{
+		MultiError:            true,
+		IncludeResponseStatus: true,
+		AuthenticationFunc: func(ctx context.Context, input *openapi3filter.AuthenticationInput) error {
+			return nil // Skip auth check for now, done elseware
+		},
+	},
+}
+
+// Middlewares
+func validateMiddlewear(next http.HandlerFunc) http.HandlerFunc {
+	return codegenMiddleware.OapiRequestValidatorWithOptions(api.GetGlobalSteamResolved(), validateOptions)(next).ServeHTTP
+}
+
+var apiKeyRegexp = regexp.MustCompile("^[A-Z0-9]{20}$")
 
 func authMiddlewear(next http.HandlerFunc) http.HandlerFunc {
-
-	if router == nil {
-
-		s := &*api.GetGlobalSteam()
-
-		err := openapi3.NewSwaggerLoader().ResolveRefsIn(s, nil)
-		if err != nil {
-			log.ErrS(err)
-		}
-
-		router = openapi3filter.NewRouter().WithSwagger(s)
-	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -199,7 +178,7 @@ func authMiddlewear(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		route, _, err := router.FindRoute(r.Method, r.URL)
+		route, _, err := api.GetRouter().FindRoute(r.Method, r.URL)
 		if err != nil {
 			log.Err("missing route", zap.Error(err), zap.String("method", r.Method), zap.String("url", r.URL.String()))
 			notFoundHandler(w, r)
@@ -218,6 +197,35 @@ func authMiddlewear(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
+func rateLimitMiddlewear(next http.HandlerFunc) http.HandlerFunc {
+
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		level, _ := r.Context().Value(ctxUserLevelField).(mysql.UserLevel)
+		if level > mysql.UserLevelFree {
+			middleware.RateLimiterBlock(time.Second*1, 10, rateLimitedHandler)(next)
+		} else {
+			middleware.RateLimiterBlock(time.Second*5, 1, rateLimitedHandler)(next)
+		}
+	}
+}
+
+func fixRequestURLMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		if config.IsLocal() {
+			r.URL.Scheme = "http"
+			r.URL.Host = r.Host
+		} else {
+			r.URL.Scheme = "https"
+			r.URL.Host = "api.globalsteam.online"
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
+
+//
 func returnResponse(w http.ResponseWriter, r *http.Request, code int, i interface{}) {
 
 	w.Header().Set("content-type", "application/json")
@@ -257,19 +265,4 @@ func returnResponse(w http.ResponseWriter, r *http.Request, code int, i interfac
 			}
 		}()
 	}
-}
-
-func fixRequestURLMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
-		if config.IsLocal() {
-			r.URL.Scheme = "http"
-			r.URL.Host = r.Host
-		} else {
-			r.URL.Scheme = "https"
-			r.URL.Host = "api.globalsteam.online"
-		}
-
-		next.ServeHTTP(w, r)
-	})
 }

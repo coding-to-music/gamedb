@@ -1,9 +1,13 @@
 package api
 
 import (
+	"sync"
+
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/getkin/kin-openapi/openapi3"
+	"github.com/getkin/kin-openapi/openapi3filter"
 )
 
 const (
@@ -636,4 +640,46 @@ func GetGlobalSteam() (swagger *openapi3.Swagger) {
 	}
 
 	return swagger
+}
+
+var (
+	resolved     *openapi3.Swagger
+	resolvedLock sync.Mutex
+)
+
+func GetGlobalSteamResolved() *openapi3.Swagger {
+
+	resolvedLock.Lock()
+	defer resolvedLock.Unlock()
+
+	if resolved == nil {
+
+		x := &*GetGlobalSteam()
+
+		err := openapi3.NewSwaggerLoader().ResolveRefsIn(x, nil)
+		if err != nil {
+			log.ErrS(err)
+		}
+
+		resolved = x
+	}
+
+	return resolved
+}
+
+var (
+	router     *openapi3filter.Router
+	routerLock sync.Mutex
+)
+
+func GetRouter() *openapi3filter.Router {
+
+	routerLock.Lock()
+	defer routerLock.Unlock()
+
+	if router == nil {
+		router = openapi3filter.NewRouter().WithSwagger(GetGlobalSteamResolved())
+	}
+
+	return router
 }
