@@ -373,19 +373,18 @@ func appsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		var formattedReviewScore = helpers.RoundFloatTo2DP(app.ReviewScore)
 
 		response.AddRow([]interface{}{
-			app.ID,                          // 0
-			app.GetName(),                   // 1
-			app.GetIcon(),                   // 2
-			app.GetPath(),                   // 3
-			nil,                             // 4
+			query.GetOffset() + k + 1,       // 0
+			app.ID,                          // 1
+			app.GetName(),                   // 2
+			app.GetIcon(),                   // 3
+			app.GetPath(),                   // 4
 			formattedReviewScore,            // 5
 			app.Prices.Get(code).GetFinal(), // 6
 			app.PlayersCount,                // 7
 			app.GetStoreLink(),              // 8
-			query.GetOffset() + k + 1,       // 9
-			app.FollowersCount,              // 10
-			app.Score,                       // 11
-			app.GetMarkedName(),             // 12
+			app.FollowersCount,              // 9
+			app.Score,                       // 10
+			app.GetMarkedName(),             // 11
 		})
 	}
 

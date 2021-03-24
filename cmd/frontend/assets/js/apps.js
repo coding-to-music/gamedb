@@ -68,15 +68,15 @@ if ($('#apps-page').length > 0) {
         const options = {
             "order": [[2, 'desc']],
             "createdRow": function (row, data, dataIndex) {
-                $(row).attr('data-app-id', data[0]);
-                $(row).attr('data-link', data[3]);
+                $(row).attr('data-app-id', data[1]);
+                $(row).attr('data-link', data[4]);
             },
             "columnDefs": [
                 // Rank
                 {
                     "targets": 0,
                     "render": function (data, type, row) {
-                        return row[9].toLocaleString();
+                        return row[0].toLocaleString();
                     },
                     "orderable": false,
                 },
@@ -84,7 +84,7 @@ if ($('#apps-page').length > 0) {
                 {
                     "targets": 1,
                     "render": function (data, type, row) {
-                        return '<a href="' + row[3] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[2] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[12] + '</div></a>'
+                        return '<a href="' + row[4] + '" class="icon-name"><div class="icon"><img data-lazy="' + row[3] + '" alt="" data-lazy-alt="' + row[2] + '"></div><div class="name">' + row[11] + '</div></a>'
                     },
                     "createdCell": function (td, cellData, rowData, row, col) {
                         $(td).addClass('img');
@@ -103,7 +103,7 @@ if ($('#apps-page').length > 0) {
                 {
                     "targets": 3,
                     "render": function (data, type, row) {
-                        return row[10].toLocaleString();
+                        return row[9].toLocaleString();
                     },
                     "orderSequence": ["desc"],
                 },
@@ -138,7 +138,7 @@ if ($('#apps-page').length > 0) {
                 {
                     "targets": 7,
                     "render": function (data, type, row) {
-                        return row[11];
+                        return row[10];
                     },
                     "orderable": false,
                     "visible": user.isLocal,
