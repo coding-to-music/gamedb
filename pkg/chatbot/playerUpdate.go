@@ -34,7 +34,7 @@ func (CommandPlayerUpdate) PerProdCode() bool {
 }
 
 func (CommandPlayerUpdate) AllowDM() bool {
-	return true
+	return false
 }
 
 func (CommandPlayerUpdate) Example() string {
