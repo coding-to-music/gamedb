@@ -24,10 +24,10 @@ func InitZap(logName string) {
 
 		encoderConfig := zap.NewDevelopmentEncoderConfig()
 
-		cores = append(cores,
+		cores = []zapcore.Core{
 			getStandardCore(encoderConfig),
 			newFileCore(encoderConfig, logName),
-		)
+		}
 
 	} else {
 
@@ -37,19 +37,17 @@ func InitZap(logName string) {
 		encoderConfig.TimeKey = ""
 		encoderConfig.LevelKey = ""
 
-		cores = append(cores,
+		cores = []zapcore.Core{
 			getStandardCore(encoderConfig),
-		)
+		}
 
 		if config.C.GoogleProject != "" && config.C.GoogleAuthFile != "" {
 			cores = append(cores, newGoogleCore(encoderConfig))
 		}
-		// if config.C.RollbarSecret != "" && config.C.RollbarUser != "" {
-		// 	Add rollbar core
-		// }
-		// if config.C.SentryDSN != "" {
-		// 	Add sentry core
-		// }
+
+		if config.C.RollbarSecret != "" && config.C.RollbarUser != "" {
+			cores = append(cores, newRollbarCore(false))
+		}
 	}
 
 	logger := zap.New(zapcore.NewTee(cores...), options...).Named(logName)

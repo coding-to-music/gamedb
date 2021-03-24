@@ -8,7 +8,6 @@ import (
 	"cloud.google.com/go/logging"
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/ldflags"
-	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"google.golang.org/api/option"
 )
@@ -28,9 +27,8 @@ func newGoogleCore(encoderConfig zapcore.EncoderConfig) zapcore.Core {
 		loggers: map[string]*logging.Logger{},
 		async:   true,
 
-		levelEnabler: zap.NewAtomicLevelAt(zapcore.DebugLevel),
-		encoder:      zapcore.NewConsoleEncoder(googleEncoderConfig()),
-		output:       zapcore.AddSync(io.Discard),
+		encoder: zapcore.NewConsoleEncoder(googleEncoderConfig()),
+		output:  zapcore.AddSync(io.Discard),
 	}
 }
 
@@ -40,9 +38,8 @@ type googleCore struct {
 	loggers map[string]*logging.Logger
 	async   bool
 
-	levelEnabler zapcore.LevelEnabler
-	encoder      zapcore.Encoder
-	output       zapcore.WriteSyncer
+	encoder zapcore.Encoder
+	output  zapcore.WriteSyncer
 }
 
 func (g *googleCore) clone() *googleCore {
@@ -53,9 +50,8 @@ func (g *googleCore) clone() *googleCore {
 		loggers: g.loggers,
 		async:   g.async,
 
-		levelEnabler: g.levelEnabler,
-		encoder:      g.encoder.Clone(),
-		output:       g.output,
+		encoder: g.encoder.Clone(),
+		output:  g.output,
 	}
 }
 
