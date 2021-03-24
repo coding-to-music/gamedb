@@ -6,4 +6,6 @@
 #brew install graphviz
 #cd -
 
-goda graph ../...:root | dot -Tsvg -o dependencies.svg
+cd ../
+
+goda graph ./...:root | dot -Tsvg -o goda.svg
