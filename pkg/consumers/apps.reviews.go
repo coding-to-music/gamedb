@@ -58,13 +58,15 @@ func appReviewsHandler(message *rabbit.Message) {
 	reviews.Positive = respAll.QuerySummary.TotalPositive
 	reviews.Negative = respAll.QuerySummary.TotalNegative
 
-	// Make slice of playerIDs
+	// Get players
 	var playersSlice []int64
 	for _, v := range respAll.Reviews {
 		playersSlice = append(playersSlice, int64(v.Author.SteamID))
 	}
+	for _, v := range respEnglish.Reviews {
+		playersSlice = append(playersSlice, int64(v.Author.SteamID))
+	}
 
-	// Get players
 	players, err := mongo.GetPlayersByID(playersSlice, bson.M{"_id": 1, "persona_name": 1})
 	if err != nil {
 		log.ErrS(err)
@@ -78,28 +80,35 @@ func appReviewsHandler(message *rabbit.Message) {
 		playersMap[player.ID] = player
 	}
 
-	// Make template slice
-	var missingPlayers bool
+	// Queue missing players from bith API calls
+	var missingPlayersMap = map[int64]bool{}
+	for _, playerID := range playersSlice {
+		if _, ok := playersMap[playerID]; !ok {
+			missingPlayersMap[playerID] = true
+		}
+	}
 
+	for playerID := range missingPlayersMap {
+
+		err = ProducePlayer(PlayerMessage{ID: playerID, SkipExistingPlayer: true}, "queue-reviews")
+		err = helpers.IgnoreErrors(err, ErrInQueue)
+		if err != nil {
+			log.ErrS(err)
+		}
+	}
+
+	// Retry later to get queued players
+	if len(missingPlayersMap) > 0 {
+		sendToRetryQueueWithDelay(message, time.Minute)
+		return
+	}
+
+	// Make template slice
 	for _, review := range respEnglish.Reviews {
 
-		var player mongo.Player
-		if val, ok := playersMap[int64(review.Author.SteamID)]; ok {
-			player = val
-		} else {
+		player := playersMap[int64(review.Author.SteamID)]
+		player.ID = int64(review.Author.SteamID)
 
-			player.ID = int64(review.Author.SteamID)
-
-			err = ProducePlayer(PlayerMessage{ID: int64(review.Author.SteamID), SkipExistingPlayer: true}, "queue-reviews")
-			err = helpers.IgnoreErrors(err, ErrInQueue)
-			if err != nil {
-				log.ErrS(err)
-			}
-
-			missingPlayers = true
-		}
-
-		// Remove extra new lines
 		review.Review = helpers.RegexNewLines.ReplaceAllString(review.Review, "\n\n")
 
 		reviews.Reviews = append(reviews.Reviews, helpers.AppReview{
@@ -111,12 +120,6 @@ func appReviewsHandler(message *rabbit.Message) {
 			VotesFunny: review.VotesFunny,
 			Vote:       review.VotedUp,
 		})
-	}
-
-	// Retry later to get queued players
-	if missingPlayers {
-		sendToRetryQueueWithDelay(message, time.Minute)
-		return
 	}
 
 	// Set score
