@@ -12,6 +12,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Jleagle/rate-limit-go"
 	codegenMiddleware "github.com/deepmap/oapi-codegen/pkg/chi-middleware"
 	"github.com/gamedb/gamedb/cmd/api/generated"
 	"github.com/gamedb/gamedb/pkg/api"
@@ -197,16 +198,34 @@ func authMiddlewear(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
+var (
+	donatorLimiter = rate.New(time.Second*1, rate.WithBurst(10))
+	publicLimiter  = rate.New(time.Second*5, rate.WithBurst(1))
+)
+
 func rateLimitMiddlewear(next http.HandlerFunc) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		level, _ := r.Context().Value(ctxUserLevelField).(mysql.UserLevel)
+
+		var limiters *rate.Limiters
 		if level > mysql.UserLevelFree {
-			middleware.RateLimiterBlock(time.Second*1, 10, rateLimitedHandler)(next)
+			limiters = donatorLimiter
 		} else {
-			middleware.RateLimiterBlock(time.Second*5, 1, rateLimitedHandler)(next)
+			limiters = publicLimiter
 		}
+
+		reservation := limiters.GetLimiter(r.RemoteAddr).Reserve()
+
+		middleware.SetRateLimitHeaders(w, limiters, reservation)
+
+		if !reservation.OK() {
+			rateLimitedHandler(w, r)
+			return
+		}
+
+		next.ServeHTTP(w, r)
 	}
 }
 

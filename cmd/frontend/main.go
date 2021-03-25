@@ -8,6 +8,7 @@ import (
 	_ "net/http/pprof"
 	"time"
 
+	"github.com/Jleagle/rate-limit-go"
 	"github.com/gamedb/gamedb/cmd/frontend/handlers"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/email"
 	handlers2 "github.com/gamedb/gamedb/cmd/frontend/helpers/handlers"
@@ -80,6 +81,8 @@ func main() {
 		}
 	}
 
+	var limiter = rate.New(time.Second, rate.WithBurst(10))
+
 	// Routes
 	r := chi.NewRouter()
 	r.Use(chiMiddleware.RedirectSlashes)
@@ -87,7 +90,7 @@ func main() {
 	r.Use(middleware.MiddlewareCors())
 	r.Use(middleware.RealIP)
 	r.Use(chiMiddleware.Compress(flate.DefaultCompression))
-	r.Use(middleware.RateLimiterWait(time.Second, 10))
+	r.Use(middleware.RateLimiterWait(limiter))
 
 	// Pages
 	r.Mount("/{type:(categories|developers|genres|publishers|tags)}", handlers.StatsListRouter())
@@ -216,4 +219,3 @@ func main() {
 		memcache.Close,
 	)
 }
-

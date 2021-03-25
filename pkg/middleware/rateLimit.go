@@ -4,26 +4,29 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/Jleagle/rate-limit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
+	xrate "golang.org/x/time/rate"
 )
 
-func RateLimiterBlock(per time.Duration, burst int, handler http.HandlerFunc) func(http.Handler) http.Handler {
+func SetRateLimitHeaders(w http.ResponseWriter, limiters *rate.Limiters, reservation *xrate.Reservation) {
 
-	limiters := rate.New(per, rate.WithBurst(burst))
+	w.Header().Set("X-RateLimit-Every", limiters.GetMinInterval().String())
+	w.Header().Set("X-RateLimit-Burst", fmt.Sprint(limiters.GetBurst()))
+	w.Header().Set("X-RateLimit-Wait", reservation.Delay().String())
+	w.Header().Set("X-RateLimit-Bucket", "global")
+}
+
+func RateLimiterBlock(limiters *rate.Limiters, handler http.HandlerFunc) func(http.Handler) http.Handler {
 
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 			reservation := limiters.GetLimiter(r.RemoteAddr).Reserve()
 
-			w.Header().Set("X-RateLimit-Every", per.String())
-			w.Header().Set("X-RateLimit-Burst", fmt.Sprint(burst))
-			w.Header().Set("X-RateLimit-Wait", reservation.Delay().String())
-			w.Header().Set("X-RateLimit-Bucket", "global")
+			SetRateLimitHeaders(w, limiters, reservation)
 
 			if !reservation.OK() {
 				handler(w, r)
@@ -35,9 +38,7 @@ func RateLimiterBlock(per time.Duration, burst int, handler http.HandlerFunc) fu
 	}
 }
 
-func RateLimiterWait(per time.Duration, burst int) func(http.Handler) http.Handler {
-
-	limiters := rate.New(per, rate.WithBurst(burst))
+func RateLimiterWait(limiters *rate.Limiters) func(http.Handler) http.Handler {
 
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

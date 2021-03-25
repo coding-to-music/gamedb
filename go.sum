@@ -71,6 +71,8 @@ github.com/Jleagle/rabbit-go v0.0.0-20210115203259-266db76b636e h1:cvCVrGzCudtk3
 github.com/Jleagle/rabbit-go v0.0.0-20210115203259-266db76b636e/go.mod h1:7PltZcrBDjdPUl6rMohCe7DE/vAMAXoVx02z+bw7Z98=
 github.com/Jleagle/rate-limit-go v0.0.0-20210222223601-8aae7305d594 h1:nbtGiobzZzVKDz4eryFzx/GVYwD/C2jCIOi4BhHXUFM=
 github.com/Jleagle/rate-limit-go v0.0.0-20210222223601-8aae7305d594/go.mod h1:P6xmE6ZbH05pqnXUEyRnSpqb46TNdBFvgSEiIbxq+HA=
+github.com/Jleagle/rate-limit-go v0.0.0-20210325205318-d63b67037cea h1:QuSZK8vRJ7Avvmk9mQrvrihNA/oxZUs0jK7roa5OOnc=
+github.com/Jleagle/rate-limit-go v0.0.0-20210325205318-d63b67037cea/go.mod h1:P6xmE6ZbH05pqnXUEyRnSpqb46TNdBFvgSEiIbxq+HA=
 github.com/Jleagle/session-go v0.0.0-20190515070633-3c8712426233 h1:a51IBJjhY/73izx+ieGdWZtC2XWjQ3HnTUKoEV3Y844=
 github.com/Jleagle/session-go v0.0.0-20190515070633-3c8712426233/go.mod h1:atNOr9kQFyr7Zep/wGTj4t3fJIzNJ49DNURYEF7NQhQ=
 github.com/Jleagle/sitemap-go v0.0.0-20201217201247-75f3818f336a h1:GHVJ93ZGe1qPp2VwCqGh+N92Stt3VhA1mqM9aomi5qk=
