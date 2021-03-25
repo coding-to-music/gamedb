@@ -15,6 +15,7 @@ const (
 	EnvConsumer = "consumer"
 
 	DiscordGuildID = "407493776597057538"
+	DiscordAdminID = "145456943912189952"
 )
 
 var ErrMissingEnvironmentVariable = errors.New("missing env var")

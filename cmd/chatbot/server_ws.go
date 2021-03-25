@@ -305,7 +305,9 @@ func saveToDB(command chatbot.Command, isSlash bool, wasSuccess *bool, message, 
 	if config.IsLocal() {
 		return
 	}
-
+	if user.ID == config.DiscordAdminID {
+		return
+	}
 	if !isSlash && (command.ID() == chatbot.CHelp || command.ID() == chatbot.CInvite) {
 		return
 	}
