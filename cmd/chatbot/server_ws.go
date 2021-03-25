@@ -85,25 +85,24 @@ func websocketServer() (session *discordgo.Session, err error) {
 		var success bool
 		defer saveToDB(command, true, &success, argumentsString(e), e.GuildID, e.ChannelID, user)
 
-		// Typing notification
-		// todo Remove this when slash commands have `thinking`
-		// https://github.com/discord/discord-api-docs/pull/2615#issuecomment-805129870
-		err := s.ChannelTyping(e.ChannelID)
-		discordError(err)
-
-		//
-		code := getProdCC(command, user.ID)
-
-		cacheItem := memcache.ItemChatBotRequestSlash(command.ID(), arguments(e), code)
+		// Send an ACK response to update later
+		err := s.InteractionRespond(e.Interaction, &discordgo.InteractionResponse{Type: discordgo.InteractionResponseDeferredChannelMessageWithSource})
+		if err != nil {
+			log.ErrS(err)
+			return
+		}
 
 		// Check in cache first
+		code := getProdCC(command, user.ID)
+		cacheItem := memcache.ItemChatBotRequestSlash(command.ID(), arguments(e), code)
+
 		if !command.DisableCache() && !config.IsLocal() {
 
-			var response = &discordgo.InteractionResponse{}
-			err = memcache.Client().Get(cacheItem.Key, &response)
+			var edit = &discordgo.WebhookEdit{}
+			err = memcache.Client().Get(cacheItem.Key, edit)
 			if err == nil {
 
-				err = s.InteractionRespond(e.Interaction, response)
+				err = s.InteractionResponseEdit(config.C.DiscordChatBotClientID, e.Interaction, edit)
 				if err != nil {
 					log.ErrS(err)
 				}
@@ -124,26 +123,23 @@ func websocketServer() (session *discordgo.Session, err error) {
 			return
 		}
 
-		// Convert to slash format
-		response := &discordgo.InteractionResponse{
-			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionApplicationCommandResponseData{
-				Content: out.Content,
-			},
+		// Convert to edit
+		edit := &discordgo.WebhookEdit{
+			Content: out.Content,
 		}
 
 		if out.Embed != nil {
-			response.Data.Embeds = []*discordgo.MessageEmbed{out.Embed}
+			edit.Embeds = []*discordgo.MessageEmbed{out.Embed}
 		}
 
 		// Respond
-		err = s.InteractionRespond(e.Interaction, response)
+		err = s.InteractionResponseEdit(config.C.DiscordChatBotClientID, e.Interaction, edit)
 		if err != nil {
 			log.ErrS(err)
 		}
 
 		// Save to cache
-		err = memcache.Client().Set(cacheItem.Key, response, cacheItem.Expiration)
+		err = memcache.Client().Set(cacheItem.Key, edit, cacheItem.Expiration)
 		if err != nil {
 			log.Err("Saving to memcache", zap.Error(err), zap.String("msg", argumentsString(e)))
 		}

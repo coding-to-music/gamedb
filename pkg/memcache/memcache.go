@@ -55,7 +55,7 @@ var (
 	// Chat
 	ItemChatBotSettings     = func(discordID string) Item { return Item{Key: "chat-bot-settings-" + discordID, Expiration: 0} }
 	ItemChatBotRequest      = func(request string, code steamapi.ProductCC) Item { return Item{Key: "interaction-" + string(code) + "-" + helpers.MD5([]byte(request)), Expiration: 60 * 10} }
-	ItemChatBotRequestSlash = func(commandID string, inputs map[string]string, code steamapi.ProductCC) Item { return Item{Key: "interaction-slash-" + commandID + "-" + string(code) + "-" + helpers.MD5Interface(inputs), Expiration: 60 * 10} }
+	ItemChatBotRequestSlash = func(commandID string, inputs map[string]string, code steamapi.ProductCC) Item { return Item{Key: "interaction-slash-" + commandID + "-" + string(code) + "-" + helpers.MD5Interface(inputs) + "-2", Expiration: 60 * 10} }
 
 	// Group
 	ItemGroup               = func(changeID string) Item { return Item{Key: "group-" + changeID, Expiration: 0} }
