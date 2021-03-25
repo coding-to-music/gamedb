@@ -98,7 +98,10 @@ func main() {
 
 // Handlers
 func rootHandler(w http.ResponseWriter, r *http.Request) {
-	returnResponse(w, r, http.StatusOK, map[string]interface{}{"docs": config.C.GlobalSteamDomain + "/api/globalsteam"})
+	returnResponse(w, r, http.StatusOK, map[string]interface{}{
+		"docs":    config.C.GlobalSteamDomain + "/api/globalsteam",
+		"support": config.C.DiscordServerInviteURL,
+	})
 }
 
 func rateLimitedHandler(w http.ResponseWriter, r *http.Request) {
