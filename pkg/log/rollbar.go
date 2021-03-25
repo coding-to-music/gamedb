@@ -29,8 +29,7 @@ func newRollbarCore(sync bool) *rollbarCore {
 }
 
 type rollbarCore struct {
-	client *rollbar.Client
-
+	client  *rollbar.Client
 	encoder zapcore.Encoder
 	output  zapcore.WriteSyncer
 }
@@ -38,8 +37,7 @@ type rollbarCore struct {
 func (c *rollbarCore) clone() *rollbarCore {
 
 	return &rollbarCore{
-		client: c.client,
-
+		client:  c.client,
 		encoder: c.encoder.Clone(),
 		output:  zapcore.AddSync(io.Discard),
 	}
@@ -76,11 +74,11 @@ func (c *rollbarCore) Write(entry zapcore.Entry, fields []zapcore.Field) error {
 
 	switch entry.Level {
 	case zapcore.DebugLevel:
-		c.client.Message(rollbar.DEBUG, buf.String())
+		// c.client.Message(rollbar.DEBUG, buf.String())
 	case zapcore.InfoLevel:
-		c.client.Message(rollbar.INFO, buf.String())
+		// c.client.Message(rollbar.INFO, buf.String())
 	case zapcore.WarnLevel:
-		c.client.Message(rollbar.WARN, buf.String())
+		// c.client.Message(rollbar.WARN, buf.String())
 	case zapcore.ErrorLevel:
 		c.client.Message(rollbar.ERR, buf.String())
 	case zapcore.DPanicLevel:
