@@ -1,8 +1,10 @@
 package main
 
 import (
+	"math/rand"
 	"net/http"
 	_ "net/http/pprof"
+	"time"
 
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/consumers"
@@ -14,6 +16,8 @@ import (
 )
 
 func main() {
+
+	rand.Seed(time.Now().UnixNano())
 
 	err := config.Init(helpers.GetIP())
 	log.InitZap(log.LogNameConsumers)

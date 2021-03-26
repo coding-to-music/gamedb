@@ -2,9 +2,20 @@ package helpers
 
 import (
 	"math"
+	"math/rand"
 	"strconv"
 	"strings"
 )
+
+func ShuffleInt64s(slice []int64) []int64 {
+
+	for i := range slice {
+		j := rand.Intn(i + 1)
+		slice[i], slice[j] = slice[j], slice[i]
+	}
+
+	return slice
+}
 
 func StringToSlice(s string, glue string) (ret []string) {
 

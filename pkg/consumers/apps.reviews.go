@@ -59,15 +59,15 @@ func appReviewsHandler(message *rabbit.Message) {
 	reviews.Negative = respAll.QuerySummary.TotalNegative
 
 	// Get players
-	var playersSlice []int64
+	var reviewPlayersSlice []int64
 	for _, v := range respAll.Reviews {
-		playersSlice = append(playersSlice, int64(v.Author.SteamID))
+		reviewPlayersSlice = append(reviewPlayersSlice, int64(v.Author.SteamID))
 	}
 	for _, v := range respEnglish.Reviews {
-		playersSlice = append(playersSlice, int64(v.Author.SteamID))
+		reviewPlayersSlice = append(reviewPlayersSlice, int64(v.Author.SteamID))
 	}
 
-	players, err := mongo.GetPlayersByID(playersSlice, bson.M{"_id": 1, "persona_name": 1})
+	players, err := mongo.GetPlayersByID(reviewPlayersSlice, bson.M{"_id": 1, "persona_name": 1})
 	if err != nil {
 		log.ErrS(err)
 		sendToRetryQueue(message)
@@ -75,22 +75,34 @@ func appReviewsHandler(message *rabbit.Message) {
 	}
 
 	// Make map of players
-	var playersMap = map[int64]mongo.Player{}
+	var foundPlayersMap = map[int64]mongo.Player{}
 	for _, player := range players {
-		playersMap[player.ID] = player
+		foundPlayersMap[player.ID] = player
 	}
 
 	// Queue missing players from bith API calls
-	var missingPlayersMap = map[int64]bool{}
-	for _, playerID := range playersSlice {
-		if _, ok := playersMap[playerID]; !ok {
-			missingPlayersMap[playerID] = true
+	var missingPlayers []int64
+	for _, playerID := range reviewPlayersSlice {
+		if _, ok := foundPlayersMap[playerID]; !ok {
+			missingPlayers = append(missingPlayers, playerID)
 		}
 	}
 
-	for playerID := range missingPlayersMap {
+	for k, playerID := range helpers.ShuffleInt64s(helpers.UniqueInt64(missingPlayers)) {
 
-		err = ProducePlayer(PlayerMessage{ID: playerID, SkipExistingPlayer: true}, "queue-reviews")
+		// Just queue two players for now
+		if k > 1 {
+			break
+		}
+
+		producePayload := PlayerMessage{
+			ID:                 playerID,
+			SkipExistingPlayer: true,
+			SkipGroupUpdate:    true,
+			SkipAchievements:   true,
+		}
+
+		err = ProducePlayer(producePayload, "queue-reviews")
 		err = helpers.IgnoreErrors(err, ErrInQueue)
 		if err != nil {
 			log.ErrS(err)
@@ -98,15 +110,15 @@ func appReviewsHandler(message *rabbit.Message) {
 	}
 
 	// Retry later to get queued players
-	if len(missingPlayersMap) > 0 {
-		sendToRetryQueueWithDelay(message, time.Minute)
-		return
-	}
+	// if len(missingPlayersMap) > 0 {
+	// 	sendToRetryQueueWithDelay(message, time.Minute)
+	// 	return
+	// }
 
 	// Make template slice
 	for _, review := range respEnglish.Reviews {
 
-		player := playersMap[int64(review.Author.SteamID)]
+		player := foundPlayersMap[int64(review.Author.SteamID)]
 		player.ID = int64(review.Author.SteamID)
 
 		review.Review = helpers.RegexNewLines.ReplaceAllString(review.Review, "\n\n")

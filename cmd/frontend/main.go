@@ -34,7 +34,7 @@ var (
 
 func main() {
 
-	rand.Seed(time.Now().Unix())
+	rand.Seed(time.Now().UnixNano())
 
 	err := config.Init(helpers.GetIP())
 	log.InitZap(log.LogNameFrontend)
