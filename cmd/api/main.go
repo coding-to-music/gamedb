@@ -266,6 +266,9 @@ func returnResponse(w http.ResponseWriter, r *http.Request, code int, i interfac
 		go func() {
 
 			userID, _ := r.Context().Value(ctxUserIDField).(int)
+			if userID == 1 {
+				return
+			}
 
 			point := influx.Point{
 				Measurement: string(influxHelpers.InfluxMeasurementAPICalls),
