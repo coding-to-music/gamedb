@@ -36,7 +36,7 @@ func (c AppsQueueReviews) work() (err error) {
 
 		for _, app := range apps {
 
-			err = consumers.ProduceAppsReviews(app.ID)
+			err = consumers.ProduceAppsReviews(app.ID, false)
 			if err != nil {
 				log.ErrS(err)
 				return
