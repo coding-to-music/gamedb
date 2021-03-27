@@ -124,90 +124,85 @@ if ($appPage.length > 0) {
                     max_selected_options: 10
                 });
 
-                loadNewsTable();
-            },
-        });
-
-        function loadNewsTable() {
-
-            // Table
-            const $newsTable = $('#news-table');
-            const table = $newsTable.gdbTable({
-                searchFields: [
-                    $('#article-search'),
-                    $feed,
-                ],
-                tableOptions: {
-                    "order": [[1, 'desc']],
-                    "createdRow": function (row, data, dataIndex) {
-                        // $(row).attr('data-id', data[0]);
-                        $(row).attr('data-article-id', data[0]);
-                        $(row).addClass('cursor-pointer');
-                    },
-                    "columnDefs": [
-                        // Title
-                        {
-                            "targets": 0,
-                            "render": function (data, type, row) {
-                                return '<div class="icon-name"><div class="icon"><img class="tall" data-lazy="' + row[10] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '<br /><small>' + row[2] + '</small></div></div>'
-                                    + '<div class="d-none">' + row[5] + '</div>'
-                            },
-                            "createdCell": function (td, cellData, rowData, row, col) {
-                                $(td).attr('style', 'min-width: 300px;')
-                                $(td).addClass('img');
-                            },
-                            "orderable": false
+                // Table
+                const $newsTable = $('#news-table');
+                const table = $newsTable.gdbTable({
+                    searchFields: [
+                        $('#article-search'),
+                        $feed,
+                    ],
+                    tableOptions: {
+                        "order": [[1, 'desc']],
+                        "createdRow": function (row, data, dataIndex) {
+                            // $(row).attr('data-id', data[0]);
+                            $(row).attr('data-article-id', data[0]);
+                            $(row).addClass('cursor-pointer');
                         },
-                        // Date
-                        {
-                            "targets": 1,
-                            "render": function (data, type, row) {
-                                return '<span data-toggle="tooltip" data-placement="left" title="' + row[4] + '" data-livestamp="' + row[3] + '"></span>';
+                        "columnDefs": [
+                            // Title
+                            {
+                                "targets": 0,
+                                "render": function (data, type, row) {
+                                    return '<div class="icon-name"><div class="icon"><img class="tall" data-lazy="' + row[10] + '" alt="" data-lazy-alt="' + row[1] + '"></div><div class="name">' + row[1] + '<br /><small>' + row[2] + '</small></div></div>'
+                                        + '<div class="d-none">' + row[5] + '</div>'
+                                },
+                                "createdCell": function (td, cellData, rowData, row, col) {
+                                    $(td).attr('style', 'min-width: 300px;')
+                                    $(td).addClass('img');
+                                },
+                                "orderable": false
                             },
-                            "createdCell": function (td, cellData, rowData, row, col) {
-                                $(td).attr('nowrap', 'nowrap');
+                            // Date
+                            {
+                                "targets": 1,
+                                "render": function (data, type, row) {
+                                    return '<span data-toggle="tooltip" data-placement="left" title="' + row[4] + '" data-livestamp="' + row[3] + '"></span>';
+                                },
+                                "createdCell": function (td, cellData, rowData, row, col) {
+                                    $(td).attr('nowrap', 'nowrap');
+                                },
+                                "orderable": false
                             },
-                            "orderable": false
-                        },
-                    ]
-                }
-            });
+                        ]
+                    }
+                });
 
-            $newsTable.on('click', 'tbody tr[role=row]', function () {
+                $newsTable.on('click', 'tbody tr[role=row]', function () {
 
-                const row = table.row($(this));
+                    const row = table.row($(this));
 
-                // noinspection JSUnresolvedFunction
-                if (row.child.isShown()) {
+                    // noinspection JSUnresolvedFunction
+                    if (row.child.isShown()) {
 
-                    row.child.hide();
-                    $(this).removeClass('shown');
-                    history.replaceState(null, null, '#news');
+                        row.child.hide();
+                        $(this).removeClass('shown');
+                        history.replaceState(null, null, '#news');
 
-                } else {
+                    } else {
 
-                    row.child($("<div/>").html(row.data()[5])).show();
-                    $(this).addClass('shown');
-                    observeLazyImages($(this).next().find('img[data-lazy]'));
-                    history.replaceState(null, null, '#news,' + $(this).attr('data-article-id'));
-                }
-            });
+                        row.child($("<div/>").html(row.data()[5])).show();
+                        $(this).addClass('shown');
+                        observeLazyImages($(this).next().find('img[data-lazy]'));
+                        history.replaceState(null, null, '#news,' + $(this).attr('data-article-id'));
+                    }
+                });
 
-            $newsTable.on('draw.dt', function (e, settings) {
+                $newsTable.on('draw.dt', function (e, settings) {
 
-                const hash = window.location.hash;
-                if (hash) {
-                    const id = hash.replace('#', '').replace('news,', '');
-                    if (id) {
-                        const $tr = $('tr[data-article-id=' + id + ']');
-                        if ($tr.length > 0) {
-                            $tr.trigger('click');
-                            $('html, body').animate({scrollTop: $tr.offset().top - 100}, 200);
+                    const hash = window.location.hash;
+                    if (hash) {
+                        const id = hash.replace('#', '').replace('news,', '');
+                        if (id) {
+                            const $tr = $('tr[data-article-id=' + id + ']');
+                            if ($tr.length > 0) {
+                                $tr.trigger('click');
+                                $('html, body').animate({scrollTop: $tr.offset().top - 100}, 200);
+                            }
                         }
                     }
-                }
-            });
-        }
+                });
+            },
+        });
     }
 
     function loadAppMediaTab() {
