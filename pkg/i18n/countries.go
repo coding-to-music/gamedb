@@ -26,6 +26,8 @@ func CountryCodeToName(code string) string {
 		return "France, Metropolitan"
 	case "YU":
 		return "Yugoslavia"
+	case "TP":
+		return "East Timor"
 	}
 
 	country, err := gountriesInstance.FindCountryByAlpha(code)
@@ -46,6 +48,8 @@ func CountryCodeToContinent(code string) (string, error) {
 		return ContinentSouthAmerica, nil
 	case "SH":
 		return ContinentAfrica, nil
+	case "TP":
+		return ContinentAsia, nil
 	case "YU", "FX", "XK", "AN":
 		return ContinentEurope, nil
 	}

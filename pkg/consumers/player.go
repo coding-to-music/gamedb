@@ -377,7 +377,7 @@ func updatePlayerSummary(player *mongo.Player) error {
 
 	continent, err := i18n.CountryCodeToContinent(summary.CountryCode)
 	if err != nil {
-		log.Err(err.Error(), zap.Int64("player", player.ID), zap.String("country", summary.CountryCode))
+		return err
 	}
 
 	player.Avatar = summary.AvatarHash
