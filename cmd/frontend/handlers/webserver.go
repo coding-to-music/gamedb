@@ -706,47 +706,47 @@ func (t *globalTemplate) addAssetCountdown() {
 
 func (t *globalTemplate) addAssetJSON2HTML() {
 	t.JSFiles = append(t.JSFiles, Asset{
-		URL:       "https://cdnjs.cloudflare.com/ajax/libs/json2html/1.4.1/json2html.min.js",
-		Integrity: "sha512-+BxFu6KT6xP5Qww4Nag8Aqan3Y1nQGw8/vV+L6s1HxvJrATT2CoW8Rkx6+PLrdFq4sXSofdSYbRZfDnUtmfG/Q==",
+		URL:       "https://cdnjs.cloudflare.com/ajax/libs/json2html/2.0.0/json2html.min.js",
+		Integrity: "sha512-mgJ8/432G25Btg3uL6D5ke3NiOuUJHLu/OPcTcaa61QZKs5nG8yELZEkAwruUAdmacqCt5M794DqNL0vM66vDw==",
 	})
 }
 
 func (t *globalTemplate) addAssetHighCharts() {
 	t.JSFiles = append(t.JSFiles, Asset{
-		URL:       "https://cdnjs.cloudflare.com/ajax/libs/highcharts/8.1.2/highcharts.js",
-		Integrity: "sha512-EGkUnujrfu0497MBWKtDPsmhcor1++/hT49wnF4Ji//vj3kfvwSM8nocX5hNRZgEZB5wEkGmXUc6mYXpNBynPg==",
+		URL:       "https://cdnjs.cloudflare.com/ajax/libs/highcharts/9.0.1/highcharts.min.js",
+		Integrity: "sha512-EIJ4kNprq9ImB7okK8Wy5o4frtpx1zERP1A3ZrLXr5nOGEWhVViC1XVuzJ8GGG89sJ/bKbtw+6TsQlul9/WcEg==",
 	})
 }
 
 func (t *globalTemplate) addAssetHighChartsHeatmap() {
 	t.JSFiles = append(t.JSFiles, Asset{
-		URL:       "https://cdnjs.cloudflare.com/ajax/libs/highcharts/8.1.2/modules/heatmap.src.min.js",
-		Integrity: "sha512-6LYouPFmhQ9hCS76dIm1W+FrkqF4K7oHlPm7NNlo4qESqakFJzpL5esATFAkiM3jKpNgKrx2RxWHBYze0xSZ4A==",
+		URL:       "https://cdnjs.cloudflare.com/ajax/libs/highcharts/9.0.1/modules/heatmap.src.min.js",
+		Integrity: "sha512-XamSIuEa7zKLJVt/W3E0aDhCZ5S68ZHgZ0lQ3SGKoA9kHxl4exBjnJ8/E1Gx2k4nJDC4t2IB/YhbuMIw2gaVGA==",
 	})
 }
 
 func (t *globalTemplate) addAssetHighChartsDrilldown() {
 	t.JSFiles = append(t.JSFiles, Asset{
-		URL:       "https://cdnjs.cloudflare.com/ajax/libs/highcharts/8.1.2/modules/drilldown.min.js",
-		Integrity: "sha512-5gnV4nOL3wb+clZsM+VuHKQ0cB5zI2CTqvjT8bg4xuVT1gpIJjnX3DLauZsKMFcflTXVqHuv5GrAoiXF79xymg==",
+		URL:       "https://cdnjs.cloudflare.com/ajax/libs/highcharts/9.0.1/modules/drilldown.min.js",
+		Integrity: "sha512-J66mqmPC1SQyfUhwbbGPMAJZ5BfrqBuLslfeZweyb2Md1TT2+kniPP7aGcWTxFsRMQzCHnpz1llml1/SdyqZEA==",
 	})
 }
 
 func (t *globalTemplate) addAssetSlider() {
 	t.JSFiles = append(t.JSFiles, Asset{
-		URL:       "https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.0/nouislider.min.js",
-		Integrity: "sha512-Bqlq3MLgvOWTzDmCDFKjX+ajhLgi/D8/TQwlbJaNea1mUcX7T3e3OgrRkWtvgpbSDaHgUCC4BqRSLNvPJhOskw==",
+		URL:       "https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.4/nouislider.min.js",
+		Integrity: "sha512-0Z2o7qmtl7ixxWcEQxxTCT8mX4PsdffSGoVJ7A80zqt6DvdEHF800xrsSmKPkSoUaHtlIhkLAhCPb/tkf78SCA==",
 	})
 	t.CSSFiles = append(t.CSSFiles, Asset{
-		URL:       "https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.0/nouislider.min.css",
-		Integrity: "sha512-6JqGSqQ++AEggYltdgSse8pKG90U/5U0bbkZoa94uSDG/BhI5YpYcy2LyWPWjXu40lUVEgEKHZ/2hCrwQvbODw==",
+		URL:       "https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.4/nouislider.min.css",
+		Integrity: "sha512-8czuHxKbajKuQfbgBv5iwqftC1PbeLPmgVOYo8ZDlcOdi0OV18E+BbGQdqXs490kV9ZmJQTNupd0kvW8hokJlw==",
 	})
 }
 
 func (t *globalTemplate) addAssetBootbox() {
 	t.JSFiles = append(t.JSFiles, Asset{
-		URL:       "https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.4.1/bootbox.min.js",
-		Integrity: "sha512-eoo3vw71DUo5NRvDXP/26LFXjSFE1n5GQ+jZJhHz+oOTR4Bwt7QBCjsgGvuVMQUMMMqeEvKrQrNEI4xQMXp3uA==",
+		URL:       "https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.5.2/bootbox.min.js",
+		Integrity: "sha512-RdSPYh1WA6BF0RhpisYJVYkOyTzK4HwofJ3Q7ivt/jkpW6Vc8AurL1R+4AUcvn9IwEKAPm/fk7qFZW3OuiUDeg==",
 	})
 }
 
@@ -766,20 +766,14 @@ func (t *globalTemplate) addAssetMark() {
 
 func (t *globalTemplate) addAssetMomentData() {
 	t.JSFiles = append(t.JSFiles, Asset{
-		URL:       "https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.31/moment-timezone-with-data-2012-2022.js",
-		Integrity: "sha512-v6ox3Qn6udc+GWEnOS6euQx7U4q+pRdFs1xSffgBf2hjOTeC9CX04OEa1UqcjynGN121ERvz2wpsE8RpLAyWWg==",
+		URL:       "https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.33/moment-timezone-with-data-2012-2022.js",
+		Integrity: "sha512-Y8cfHn1UpmaS+QorATeuPx+3wpHUBUdOqFm/PLYXyvQBlJof3SCNl3xpxL9ren8G7FYOgF8L91kePsMXT7alGA==",
 	})
 }
 
 func (t *globalTemplate) addAssetCalmosaic() {
-	t.JSFiles = append(t.JSFiles, Asset{
-		URL:       "https://cdn.jsdelivr.net/gh/routekick/calmosaic@2.1.0/dist/jquery.calmosaic.min.js",
-		Integrity: "",
-	})
-	t.CSSFiles = append(t.CSSFiles, Asset{
-		URL:       "https://cdn.jsdelivr.net/gh/routekick/calmosaic@2.1.0/dist/jquery.calmosaic.min.css",
-		Integrity: "",
-	})
+	t.JSFiles = append(t.JSFiles, Asset{URL: "https://cdn.jsdelivr.net/gh/routekick/calmosaic@2.1.0/dist/jquery.calmosaic.min.js"})
+	t.CSSFiles = append(t.CSSFiles, Asset{URL: "https://cdn.jsdelivr.net/gh/routekick/calmosaic@2.1.0/dist/jquery.calmosaic.min.css"})
 }
 
 //
