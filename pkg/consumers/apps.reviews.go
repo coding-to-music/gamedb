@@ -94,7 +94,7 @@ func appReviewsHandler(message *rabbit.Message) {
 		for k, playerID := range helpers.ShuffleInt64s(helpers.UniqueInt64(missingPlayers)) {
 
 			// Just queue two players for now
-			if k >= 5 {
+			if k >= 2 {
 				break
 			}
 
