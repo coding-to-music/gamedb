@@ -19,7 +19,8 @@ import (
 )
 
 type AppReviewsMessage struct {
-	AppID int `json:"id"`
+	AppID              int  `json:"id"`
+	SkipMissingPlayers bool `json:"skip_missing_players"`
 }
 
 func (m AppReviewsMessage) Queue() rabbit.QueueName {
@@ -81,31 +82,34 @@ func appReviewsHandler(message *rabbit.Message) {
 	}
 
 	// Queue missing players from bith API calls
-	var missingPlayers []int64
-	for _, playerID := range reviewPlayersSlice {
-		if _, ok := foundPlayersMap[playerID]; !ok {
-			missingPlayers = append(missingPlayers, playerID)
-		}
-	}
+	if !payload.SkipMissingPlayers {
 
-	for k, playerID := range helpers.ShuffleInt64s(helpers.UniqueInt64(missingPlayers)) {
-
-		// Just queue two players for now
-		if k >= 5 {
-			break
+		var missingPlayers []int64
+		for _, playerID := range reviewPlayersSlice {
+			if _, ok := foundPlayersMap[playerID]; !ok {
+				missingPlayers = append(missingPlayers, playerID)
+			}
 		}
 
-		producePayload := PlayerMessage{
-			ID:                 playerID,
-			SkipExistingPlayer: true,
-			SkipGroupUpdate:    true,
-			SkipAchievements:   true,
-		}
+		for k, playerID := range helpers.ShuffleInt64s(helpers.UniqueInt64(missingPlayers)) {
 
-		err = ProducePlayer(producePayload, "queue-reviews")
-		err = helpers.IgnoreErrors(err, ErrInQueue)
-		if err != nil {
-			log.ErrS(err)
+			// Just queue two players for now
+			if k >= 5 {
+				break
+			}
+
+			producePayload := PlayerMessage{
+				ID:                 playerID,
+				SkipExistingPlayer: true,
+				SkipGroupUpdate:    true,
+				SkipAchievements:   true,
+			}
+
+			err = ProducePlayer(producePayload, "queue-reviews")
+			err = helpers.IgnoreErrors(err, ErrInQueue)
+			if err != nil {
+				log.ErrS(err)
+			}
 		}
 	}
 

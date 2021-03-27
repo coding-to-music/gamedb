@@ -473,8 +473,8 @@ func ProduceAppsInflux(appIDs []int) (err error) {
 	return produce(m.Queue(), m)
 }
 
-func ProduceAppsReviews(id int) (err error) {
-	m := AppReviewsMessage{AppID: id}
+func ProduceAppsReviews(id int, skipMissingPlayers bool) (err error) {
+	m := AppReviewsMessage{AppID: id, SkipMissingPlayers: skipMissingPlayers}
 	return produce(m.Queue(), m)
 }
 
