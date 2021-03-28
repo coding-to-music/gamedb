@@ -618,6 +618,7 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var query = datatable.NewDataTableQuery(r, false)
+	var community = r.URL.Query().Get("community") != ""
 	var wg sync.WaitGroup
 
 	// Get articles
@@ -630,15 +631,20 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var filters = []elastic.Query{elastic.NewTermQuery("app_id", id)}
 		var sorter = []elastic.Sorter{elastic.NewFieldSort("time").Desc()}
+		var limit int
 
 		// Feed
 		var feeds = query.GetSearchSliceInterface("article-feed")
 		if len(feeds) > 0 {
 			filters = append(filters, elastic.NewTermsQuery("feed", feeds...))
 		}
+		if community {
+			filters = append(filters, elastic.NewTermsQuery("feed", "steam_community_announcements"))
+			limit = 5
+		}
 
 		var err error
-		articles, filtered, err = elasticsearch.SearchArticles(query.GetOffset(), 0, sorter, query.GetSearchString("search"), filters)
+		articles, filtered, err = elasticsearch.SearchArticles(query.GetOffset(), limit, sorter, query.GetSearchString("search"), filters)
 		if err != nil {
 			log.ErrS(err, id)
 			return
@@ -652,6 +658,10 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
+		if community {
+			return
+		}
+
 		var err error
 		total, err = mongo.CountDocuments(mongo.CollectionAppArticles, bson.D{{"app_id", id}}, 60*60*24)
 		if err != nil {
@@ -661,6 +671,10 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	wg.Wait()
+
+	if community {
+		filtered = 5
+	}
 
 	//
 	var response = datatable.NewDataTablesResponse(r, query, total, filtered, nil)

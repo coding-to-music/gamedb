@@ -68,7 +68,7 @@
                     {{ end }}
                     {{ if gt (len .App.NewsIDs) 0 }}
                         <li class="nav-item">
-                            <a class="nav-link" data-toggle="tab" href="#news" role="tab">News ({{ comma (len .App.NewsIDs) }})</a>
+                            <a class="nav-link" data-toggle="tab" href="#news" role="tab" data-no-hash-change="1">News ({{ comma (len .App.NewsIDs) }})</a>
                         </li>
                     {{ end }}
                     {{ if gt (len .App.RelatedAppIDs) 0 }}
@@ -256,6 +256,25 @@
                                     {{ else }}
                                         <div class="card-body">No Tags</div>
                                     {{ end  }}
+                                </div>
+
+                                <div class="card mt-3" id="news-small-wrapper">
+                                    <h5 class="card-header">Latest News</h5>
+                                    <div class="card-body p-0">
+                                        <div class="table-responsive">
+                                            <table class="table table-hover table-striped" data-ordering="false" id="news-small" data-path="/games/{{ .App.ID }}/news.json?community=1">
+                                                <thead class="thead-light d-none">
+                                                <tr>
+                                                    <th>Title</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer" data-link-tab="news">All News</div>
                                 </div>
 
                                 <div class="card mt-3" id="same-owners-small-wrapper">

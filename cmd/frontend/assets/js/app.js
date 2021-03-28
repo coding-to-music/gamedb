@@ -48,6 +48,7 @@ if ($appPage.length > 0) {
 
     loadAjaxOnObserve({
         'news': loadNews,
+        'news-small': loadNewsSmall,
         'items': loadItems,
         'prices': loadPriceChart,
         'similar-owners': loadAppSimilar,
@@ -327,8 +328,7 @@ if ($appPage.length > 0) {
 
     function loadAppSimilarSmall() {
 
-        const $table = $('#similar-owners-small');
-        const dt = $table.gdbTable({
+        const dt = $('#similar-owners-small').gdbTable({
             tableOptions: {
                 "language": {
                     "zeroRecords": function () {
@@ -359,6 +359,44 @@ if ($appPage.length > 0) {
             if (!dt.page.info().recordsTotal) {
                 $('#same-owners-small-wrapper div.card-footer').remove();
             }
+        });
+    }
+
+    function loadNewsSmall() {
+
+        const $table = $('#news-small');
+        const dt = $table.gdbTable({
+            tableOptions: {
+                "language": {
+                    "zeroRecords": function () {
+                        return 'No community news yet';
+                    },
+                },
+                "createdRow": function (row, data, dataIndex) {
+                    $(row).attr('data-article-id', data[0]);
+                    $(row).addClass('cursor-pointer');
+                },
+                "columnDefs": [
+                    // Title
+                    {
+                        "targets": 0,
+                        "render": function (data, type, row) {
+                            return '<div class="icon-name">' + '<div class="name">' + row[1] + '<br /><small><span data-toggle="tooltip" data-placement="left" title="' + row[4] + '" data-livestamp="' + row[3] + '"></span></small></div></div>'
+                        },
+                        "createdCell": function (td, cellData, rowData, row, col) {
+                            $(td).attr('style', 'min-width: 300px;')
+                            $(td).addClass('img');
+                        },
+                        "orderable": false
+                    },
+                ]
+            },
+        });
+
+        $table.on('click', 'tbody tr[role=row]', function () {
+
+            history.pushState(null, null, '#news,' + $(this).attr('data-article-id'));
+            $('a.nav-link[href="#news"]').tab('show');
         });
     }
 

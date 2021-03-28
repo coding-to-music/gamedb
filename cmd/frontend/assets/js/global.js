@@ -128,7 +128,7 @@ $('.json').each(function (i, value) {
         }
 
         // Set URL from tab
-        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        $('a[data-toggle="tab"]:not([data-no-hash-change])').on('shown.bs.tab', function (e) {
             const hash = $(e.target).attr('href');
             if (history.pushState) {
                 history.pushState(null, null, hash);
