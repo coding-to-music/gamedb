@@ -191,7 +191,7 @@ if ($appPage.length > 0) {
 
                     const hash = window.location.hash;
                     if (hash) {
-                        const id = hash.replace('#', '').replace('news,', '');
+                        const id = hash.match(/\d{19}/)[0];
                         if (id) {
                             const $tr = $('tr[data-article-id=' + id + ']');
                             if ($tr.length > 0) {
