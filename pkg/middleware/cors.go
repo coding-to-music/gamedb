@@ -8,8 +8,14 @@ import (
 )
 
 func MiddlewareCors() func(next http.Handler) http.Handler {
-	return cors.New(cors.Options{
-		AllowedOrigins: []string{config.C.GlobalSteamDomain, "https://editor.swagger.io"}, // Use this to allow specific origin hosts
+
+	options := cors.Options{
 		AllowedMethods: []string{"GET", "POST"},
-	}).Handler
+	}
+
+	if !config.IsLocal() {
+		options.AllowedOrigins = []string{config.C.GlobalSteamDomain, "https://editor.swagger.io"}
+	}
+
+	return cors.New(options).Handler
 }
