@@ -231,7 +231,7 @@ type PlayerPayload struct {
 	Name          string `json:"name"`
 	Link          string `json:"link"`
 	Avatar        string `json:"avatar"`
-	UpdatedAt     int64  `json:"updated_at"`
+	CreatedAt     int64  `json:"created_at"`
 	Queue         string `json:"queue"`
 	CommunityLink string `json:"community_link"`
 	New           bool   `json:"new"`

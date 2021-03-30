@@ -96,7 +96,7 @@ func playerHandler(message *rabbit.Message) {
 			Link:          player.GetPath(),
 			Avatar:        player.GetAvatar(),
 			CommunityLink: player.CommunityLink(),
-			UpdatedAt:     time.Now().Unix(),
+			CreatedAt:     time.Now().Unix(),
 			Queue:         "player",
 			New:           newPlayer,
 		}

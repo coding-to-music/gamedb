@@ -538,7 +538,9 @@ func homeNewPlayersHandler(w http.ResponseWriter, r *http.Request) {
 			Avatar:        player.GetAvatar(),
 			Link:          player.GetPath(),
 			CommunityLink: player.CommunityLink(),
-			UpdatedAt:     player.CreatedAt.Unix(),
+			CreatedAt:     player.CreatedAt.Unix(),
+			Queue:         "player",
+			New:           true,
 		})
 	}
 
