@@ -68,13 +68,15 @@ func playerAwardsHandler(message *rabbit.Message) {
 		}
 	})
 
+	var url = "https://steamcommunity.com/profiles/" + strconv.FormatInt(payload.PlayerID, 10) + "/awards/"
+
 	c.OnError(func(r *colly.Response, err error) {
-		steam.LogSteamError(err)
+		steam.LogSteamError(err, zap.String("url", url), zap.String("body", string(message.Message.Body)))
 	})
 
-	err = c.Visit("https://steamcommunity.com/profiles/" + strconv.FormatInt(payload.PlayerID, 10) + "/awards/")
+	err = c.Visit(url)
 	if err != nil {
-		steam.LogSteamError(err, zap.String("body", string(message.Message.Body)))
+		// steam.LogSteamError(err) // Already logged
 		sendToRetryQueue(message)
 		return
 	}

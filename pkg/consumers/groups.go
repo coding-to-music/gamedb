@@ -114,7 +114,7 @@ func groupsHandler(message *rabbit.Message) {
 	}
 
 	if err != nil {
-		steam.LogSteamError(err)
+		// steam.LogSteamError(err) // Already logged
 		sendToRetryQueue(message)
 		return
 	}
@@ -373,11 +373,13 @@ func updateGameGroup(id string, group *mongo.Group) (foundNumbers bool, err erro
 	})
 
 	//
+	var url = "https://steamcommunity.com/gid/" + id
+
 	c.OnError(func(r *colly.Response, err error) {
-		steam.LogSteamError(err)
+		steam.LogSteamError(err, zap.String("url", url))
 	})
 
-	return foundNumbers, c.Visit("https://steamcommunity.com/gid/" + id)
+	return foundNumbers, c.Visit(url)
 }
 
 var (
@@ -481,11 +483,13 @@ func updateRegularGroup(id string, group *mongo.Group) (foundMembers bool, err e
 	})
 
 	//
+	var url = "https://steamcommunity.com/gid/" + id
+
 	c.OnError(func(r *colly.Response, err error) {
-		steam.LogSteamError(err)
+		steam.LogSteamError(err, zap.String("url", url))
 	})
 
-	return foundMembers, c.Visit("https://steamcommunity.com/gid/" + id)
+	return foundMembers, c.Visit(url)
 }
 
 func getGroupTrending(group mongo.Group) (trend float64, err error) {
