@@ -627,7 +627,7 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 
 				playerID, err := strconv.ParseInt(val, 10, 64)
 				if err == nil {
-					message:= consumers.PlayerMessage{
+					message := consumers.PlayerMessage{
 						ID:                       playerID,
 						ForceAchievementsRefresh: true,
 						UserAgent:                &ua,
@@ -637,6 +637,32 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 					if err != nil {
 						log.Err(err.Error(), zap.Int64("id", playerID))
 					}
+				}
+			}
+		}
+
+		// Players (new only)
+		if val := r.PostForm.Get("player-id-new"); val != "" {
+
+			for _, val := range strings.Split(val, ",") {
+
+				val = strings.TrimSpace(val)
+
+				playerID, err := strconv.ParseInt(val, 10, 64)
+				if err == nil {
+					message := consumers.PlayerMessage{
+						ID:                       playerID,
+						SkipExistingPlayer:       true,
+						ForceAchievementsRefresh: true,
+						UserAgent:                &ua,
+					}
+					err = consumers.ProducePlayer(message, "frontend-admin")
+					err = helpers.IgnoreErrors(err, consumers.ErrInQueue)
+					if err != nil {
+						log.Err(err.Error(), zap.Int64("id", playerID))
+					}
+
+					time.Sleep(time.Second * 3)
 				}
 			}
 		}
