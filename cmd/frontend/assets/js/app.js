@@ -697,15 +697,11 @@ if ($appPage.length > 0) {
             dataType: 'json',
             success: function (data, textStatus, jqXHR) {
 
-                if (data === null) {
-                    const now = Date.now();
-                    data = {
-                        "max_player_count": [[now, 0]],
-                        "max_moving_average": [[now, 0]],
-                        "max_twitch_viewers": [[now, 0]],
-                        "max_youtube_views": [[now, 0]],
-                        "max_youtube_comments": [[now, 0]],
-                    };
+                const $chart = $('#players-chart');
+
+                if (!data || Object.keys(data).length === 0) {
+                    $chart.html('No players.').css('height', 'auto');
+                    return;
                 }
 
                 const start = d.getTime();
@@ -731,7 +727,7 @@ if ($appPage.length > 0) {
                 }
                 $('#youtube-max-comments').html(max.toLocaleString());
 
-                Highcharts.chart('players-chart', $.extend(true, {}, chartOptions, {
+                Highcharts.chart($chart[0], $.extend(true, {}, chartOptions, {
                     xAxis: {
                         min: d.getTime(),
                     },
@@ -746,18 +742,14 @@ if ($appPage.length > 0) {
             dataType: 'json',
             success: function (data, textStatus, jqXHR) {
 
-                if (data === null) {
-                    const now = Date.now();
-                    data = {
-                        "max_player_count": [[now, 0]],
-                        "max_moving_average": [[now, 0]],
-                        "max_twitch_viewers": [[now, 0]],
-                        "max_youtube_views": [[now, 0]],
-                        "max_youtube_comments": [[now, 0]],
-                    };
+                const $chart = $('#players-chart2');
+
+                if (!data || Object.keys(data).length === 0) {
+                    $chart.html('No players.').css('height', 'auto');
+                    return;
                 }
 
-                Highcharts.chart('players-chart2', $.extend(true, {}, chartOptions, {
+                Highcharts.chart($chart[0], $.extend(true, {}, chartOptions, {
                     chart: {
                         zoomType: 'x',
                     },
@@ -775,8 +767,11 @@ if ($appPage.length > 0) {
             dataType: 'json',
             success: function (data, textStatus, jqXHR) {
 
-                if (data === null) {
-                    data = {"max_player_count": []};
+                const $chart = $('#players-heatmap-chart');
+
+                if (!data || Object.keys(data).length === 0) {
+                    $chart.html('No players.').css('height', 'auto');
+                    return
                 }
 
                 // Convert time local timezone
@@ -803,7 +798,7 @@ if ($appPage.length > 0) {
                     data = {"max_player_count": data2};
                 }
 
-                Highcharts.chart('players-heatmap-chart', $.extend(true, {}, defaultChartOptions, {
+                Highcharts.chart($chart[0], $.extend(true, {}, defaultChartOptions, {
                     chart: {
                         type: 'heatmap',
                     },
