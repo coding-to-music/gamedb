@@ -150,6 +150,7 @@ var replacementMap = map[string]string{
 	"simulator":      "sim",
 	"fallout":        "fall out",
 	"tabletop":       "table top",
+	"40,000":         "40k", // Warhammer
 }
 
 // For aliases that can not be calculated
