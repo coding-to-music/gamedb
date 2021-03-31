@@ -706,8 +706,8 @@ func (t *globalTemplate) addAssetCountdown() {
 
 func (t *globalTemplate) addAssetJSON2HTML() {
 	t.JSFiles = append(t.JSFiles, Asset{
-		URL:       "https://cdnjs.cloudflare.com/ajax/libs/json2html/2.0.0/json2html.min.js",
-		Integrity: "sha512-mgJ8/432G25Btg3uL6D5ke3NiOuUJHLu/OPcTcaa61QZKs5nG8yELZEkAwruUAdmacqCt5M794DqNL0vM66vDw==",
+		URL:       "https://cdnjs.cloudflare.com/ajax/libs/json2html/2.1.0/json2html.min.js",
+		Integrity: "sha512-YORSMMxcW1k24kZUBTVvNHsVraW3qAAlbf9Gmswmp71MH6Dgmbi1hVcDk8t9hZ+I2x+gVCREWbrUjaeFQns7DA==",
 	})
 }
 
