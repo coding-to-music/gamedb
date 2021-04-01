@@ -650,19 +650,24 @@ func adminQueuesHandler(w http.ResponseWriter, r *http.Request) {
 
 				playerID, err := strconv.ParseInt(val, 10, 64)
 				if err == nil {
-					message := consumers.PlayerMessage{
-						ID:                       playerID,
-						SkipExistingPlayer:       true,
-						ForceAchievementsRefresh: true,
-						UserAgent:                &ua,
-					}
-					err = consumers.ProducePlayer(message, "frontend-admin")
-					err = helpers.IgnoreErrors(err, consumers.ErrInQueue)
-					if err != nil {
-						log.Err(err.Error(), zap.Int64("id", playerID))
-					}
 
-					time.Sleep(time.Second * 3)
+					_, err := mongo.GetPlayer(playerID)
+					if err != nil {
+
+						message := consumers.PlayerMessage{
+							ID:                       playerID,
+							SkipExistingPlayer:       true,
+							ForceAchievementsRefresh: true,
+							UserAgent:                &ua,
+						}
+						err = consumers.ProducePlayer(message, "frontend-admin")
+						err = helpers.IgnoreErrors(err, consumers.ErrInQueue)
+						if err != nil {
+							log.Err(err.Error(), zap.Int64("id", playerID))
+						}
+
+						time.Sleep(time.Second * 2)
+					}
 				}
 			}
 		}
