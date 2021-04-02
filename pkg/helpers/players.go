@@ -150,6 +150,10 @@ func (rk RankMetric) String() string {
 		return "Achievements"
 	case RankKeyPlaytime:
 		return "Playtime"
+	case RankKeyAwardsGiven:
+		return "Awards Given"
+	case RankKeyAwardsReceived:
+		return "Awards Received"
 	}
 	return ""
 }

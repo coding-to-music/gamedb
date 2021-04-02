@@ -337,6 +337,10 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 			rank.Value = player.AchievementCount
 		case helpers.RankKeyPlaytime:
 			rank.Value = player.PlayTime
+		case helpers.RankKeyAwardsGiven:
+			rank.Value = player.AwardsGivenPoints
+		case helpers.RankKeyAwardsReceived:
+			rank.Value = player.AwardsReceivedPoints
 		default:
 			rank.Value = 0
 		}
