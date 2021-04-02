@@ -175,14 +175,14 @@ const (
 
 // Mongo col -> Rank key
 var PlayerRankFields = map[string]RankMetric{
-	"level":             RankKeyLevel,
-	"games_count":       RankKeyGames,
-	"badges_count":      RankKeyBadges,
-	"badges_foil_count": RankKeyBadgesFoil,
-	"play_time":         RankKeyPlaytime,
-	"achievement_count": RankKeyAchievements,
-	"awards_given":      RankKeyAwardsGiven,
-	"awards_received":   RankKeyAwardsReceived,
+	"level":                  RankKeyLevel,
+	"games_count":            RankKeyGames,
+	"badges_count":           RankKeyBadges,
+	"badges_foil_count":      RankKeyBadgesFoil,
+	"play_time":              RankKeyPlaytime,
+	"achievement_count":      RankKeyAchievements,
+	"awards_given_points":    RankKeyAwardsGiven,
+	"awards_received_points": RankKeyAwardsReceived,
 }
 
 // Rank key -> Influx col
