@@ -32,7 +32,7 @@ if ($playerPage.length > 0) {
     let t;
     websocketListener('profile', async function (e) {
 
-        if (isMobile()){
+        if (isMobile()) {
             return;
         }
 
@@ -302,9 +302,12 @@ if ($playerPage.length > 0) {
                 };
 
                 for (let k in charts) {
+
+                    const id = k + '-chart'
+
                     if (charts.hasOwnProperty(k)) {
 
-                        Highcharts.chart(k + '-chart', $.extend(true, {}, defaultChartOptions, {
+                        Highcharts.chart(id, $.extend(true, {}, defaultChartOptions, {
                             legend: {
                                 enabled: false,
                             },
@@ -339,6 +342,8 @@ if ($playerPage.length > 0) {
                             },
                             series: charts[k],
                         }));
+                    } else {
+                        $(id).empty();
                     }
                 }
             },
