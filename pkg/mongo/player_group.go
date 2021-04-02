@@ -95,7 +95,7 @@ func (group PlayerGroup) GetGroupIcon() string {
 }
 
 func (group PlayerGroup) GetPlayerCommunityLink() string {
-	return helpers.GetPlayerCommunityLink(group.PlayerID, group.PlayerName)
+	return helpers.GetPlayerCommunityLink(group.PlayerID)
 }
 
 func (group PlayerGroup) GetPlayerFlag() string {

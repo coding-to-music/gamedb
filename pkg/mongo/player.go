@@ -183,7 +183,7 @@ func (player Player) GetMessageLink() template.URL {
 }
 
 func (player Player) CommunityLink() string {
-	return helpers.GetPlayerCommunityLink(player.ID, player.VanityURL)
+	return helpers.GetPlayerCommunityLink(player.ID)
 }
 
 func (player Player) WishlistLink() string {

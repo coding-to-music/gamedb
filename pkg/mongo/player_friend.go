@@ -73,7 +73,7 @@ func (friend PlayerFriend) GetLevel() string {
 }
 
 func (friend PlayerFriend) CommunityLink() string {
-	return helpers.GetPlayerCommunityLink(friend.FriendID, "")
+	return helpers.GetPlayerCommunityLink(friend.FriendID)
 }
 
 func ensurePlayerFriendIndexes() {

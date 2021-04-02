@@ -14,13 +14,8 @@ const (
 	DefaultPlayerAvatar = "/assets/img/no-player-image.jpg"
 )
 
-func GetPlayerCommunityLink(playerID int64, vanityURL string) string {
-
-	// Just use ID in case url has changed
-	// if vanityURL != "" && vanityURL != strconv.FormatInt(playerID, 10) {
-	// 	return "https://steamcommunity.com/id/" + vanityURL
-	// }
-
+// Just use ID in case slug has changed
+func GetPlayerCommunityLink(playerID int64) string {
 	return "https://steamcommunity.com/profiles/" + strconv.FormatInt(playerID, 10)
 }
 

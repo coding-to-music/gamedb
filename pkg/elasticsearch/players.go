@@ -80,7 +80,7 @@ func (player Player) GetCountry() string {
 }
 
 func (player Player) GetCommunityLink() string {
-	return helpers.GetPlayerCommunityLink(player.ID, player.VanityURL)
+	return helpers.GetPlayerCommunityLink(player.ID)
 }
 
 func (player Player) GetGamesCount() int {
