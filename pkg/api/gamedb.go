@@ -7,7 +7,8 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/getkin/kin-openapi/openapi3"
-	"github.com/getkin/kin-openapi/openapi3filter"
+	"github.com/getkin/kin-openapi/routers"
+	"github.com/getkin/kin-openapi/routers/legacy"
 )
 
 const (
@@ -668,17 +669,22 @@ func GetGlobalSteamResolved() *openapi3.Swagger {
 }
 
 var (
-	router     *openapi3filter.Router
+	router     routers.Router
 	routerLock sync.Mutex
 )
 
-func GetRouter() *openapi3filter.Router {
+func GetRouter() routers.Router {
 
 	routerLock.Lock()
 	defer routerLock.Unlock()
 
 	if router == nil {
-		router = openapi3filter.NewRouter().WithSwagger(GetGlobalSteamResolved())
+
+		var err error
+		router, err = legacy.NewRouter(GetGlobalSteamResolved())
+		if err != nil {
+			log.ErrS(err)
+		}
 	}
 
 	return router

@@ -26,8 +26,8 @@ import (
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/gamedb/gamedb/pkg/session"
 	"github.com/getkin/kin-openapi/openapi3filter"
-	chiMiddleware "github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
+	chiMiddleware "github.com/go-chi/chi/v5/middleware"
 	influx "github.com/influxdata/influxdb1-client"
 	"go.uber.org/zap"
 )
@@ -182,7 +182,7 @@ func authMiddlewear(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		route, _, err := api.GetRouter().FindRoute(r.Method, r.URL)
+		route, _, err := api.GetRouter().FindRoute(r)
 		if err != nil {
 			log.Err("missing route", zap.Error(err), zap.String("method", r.Method), zap.String("url", r.URL.String()))
 			notFoundHandler(w, r)
