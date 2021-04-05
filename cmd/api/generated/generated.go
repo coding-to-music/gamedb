@@ -181,7 +181,7 @@ const (
 	OrderParamDesc_desc OrderParamDesc = "desc"
 )
 
-// ArticlesResponse defines model for articles-response.
+// List of articles
 type ArticlesResponse struct {
 	Articles   []ArticleSchema  `json:"articles"`
 	Error      string           `json:"error"`
@@ -194,14 +194,14 @@ type GameResponse struct {
 	Game  GameSchema `json:"game"`
 }
 
-// GamesResponse defines model for games-response.
+// List of apps, with pagination
 type GamesResponse struct {
 	Error      string           `json:"error"`
 	Games      []GameSchema     `json:"games"`
 	Pagination PaginationSchema `json:"pagination"`
 }
 
-// GroupsResponse defines model for groups-response.
+// List of groups
 type GroupsResponse struct {
 	Error      string           `json:"error"`
 	Groups     []GroupSchema    `json:"groups"`
@@ -211,7 +211,7 @@ type GroupsResponse struct {
 // MessageResponse defines model for message-response.
 type MessageResponse MessageSchema
 
-// PackagesResponse defines model for packages-response.
+// List of packages
 type PackagesResponse struct {
 	Error      string           `json:"error"`
 	Packages   []PackageSchema  `json:"packages"`
@@ -231,7 +231,7 @@ type PlayersResponse struct {
 	Players    []PlayerSchema   `json:"players"`
 }
 
-// SimilarGamesResponse defines model for similar-games-response.
+// List of apps, with pagination
 type SimilarGamesResponse struct {
 	Error string              `json:"error"`
 	Games []SimilarGameSchema `json:"games"`
