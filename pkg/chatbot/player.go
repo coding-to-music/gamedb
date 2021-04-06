@@ -63,19 +63,15 @@ func (c CommandPlayer) Slash() []*discordgo.ApplicationCommandOption {
 
 	return []*discordgo.ApplicationCommandOption{
 		{
+			Type:        discordgo.ApplicationCommandOptionString,
 			Name:        "player",
 			Description: "The name or ID of the player",
-			Type:        discordgo.ApplicationCommandOptionString,
+			Required:    false,
 		},
 	}
 }
 
 func (c CommandPlayer) Output(authorID string, _ steamapi.ProductCC, inputs map[string]string) (message discordgo.MessageSend, err error) {
-
-	if inputs["player"] == "" {
-		message.Content = "Missing player name"
-		return message, nil
-	}
 
 	var player Player
 
