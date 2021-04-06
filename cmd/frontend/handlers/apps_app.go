@@ -110,8 +110,13 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	t.App = app
 	t.Description = template.HTML(app.ShortDescription)
 	t.Canonical = app.GetPath()
-
 	t.GroupPath = helpers.GetGroupPath(app.GroupID, app.GetName())
+
+	for _, tagID := range app.Tags {
+		if tagID == 24904 {
+			t.hideAds = true
+		}
+	}
 
 	//
 	var wg sync.WaitGroup
