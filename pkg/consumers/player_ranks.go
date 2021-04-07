@@ -86,8 +86,9 @@ func playerRanksHandler(message *rabbit.Message) {
 			}
 
 			// Add player ranks to Influx
-			var points []influx.Point
 			if len(payload.ObjectKey) == 1 { // Global
+
+				var points []influx.Point
 				for position, player := range players {
 					if val, ok := helpers.PlayerRankFieldsInflux[helpers.RankMetric(payload.ObjectKey)]; ok {
 						points = append(points, influx.Point{
@@ -96,23 +97,27 @@ func playerRanksHandler(message *rabbit.Message) {
 								"player_id": strconv.FormatInt(player.ID, 10),
 							},
 							Fields: map[string]interface{}{
-								val: offset + int64(position) + 1,
+								string(val): offset + int64(position) + 1,
 							},
 							Time:      time.Now(),
 							Precision: "h",
 						})
 					}
 				}
+
+				batch := influx.BatchPoints{
+					Points:          points,
+					Database:        influxHelper.InfluxGameDB,
+					RetentionPolicy: influxHelper.InfluxRetentionPolicyAllTime.String(),
+				}
+
+				_, err = influxHelper.InfluxWriteMany(influxHelper.InfluxRetentionPolicyAllTime, batch)
+				if err != nil {
+					return err
+				}
 			}
 
-			batch := influx.BatchPoints{
-				Points:          points,
-				Database:        influxHelper.InfluxGameDB,
-				RetentionPolicy: influxHelper.InfluxRetentionPolicyAllTime.String(),
-			}
-
-			_, err = influxHelper.InfluxWriteMany(influxHelper.InfluxRetentionPolicyAllTime, batch)
-			return err
+			return nil
 		}()
 
 		// Error, add to retry queue and bail
