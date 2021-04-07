@@ -27,8 +27,6 @@ type PlayerRanksMessage struct {
 
 func playerRanksHandler(message *rabbit.Message) {
 
-	// time.Sleep(time.Second * 10)
-
 	payload := PlayerRanksMessage{}
 
 	err := helpers.Unmarshal(message.Message.Body, &payload)
