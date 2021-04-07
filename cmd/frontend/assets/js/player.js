@@ -75,7 +75,7 @@ if ($playerPage.length > 0) {
     loadAjaxOnObserve({
         "all-games": loadPlayerLibraryTab,
         "recent-games": loadPlayerLibraryStatsTab,
-        "details": loadPlayerDetailsTab,
+        "details": loadPlayerHistory,
         "badges-table": loadPlayerBadgesTab,
         "friends-table": loadPlayerFriendsTab,
         "groups-table": loadPlayerGroupsTab,
@@ -203,7 +203,7 @@ if ($playerPage.length > 0) {
         });
     }
 
-    function loadPlayerDetailsTab() {
+    function loadPlayerHistory() {
 
         $.ajax({
             type: "GET",
@@ -295,6 +295,34 @@ if ($playerPage.length > 0) {
                         {
                             name: 'Achievements Rank',
                             data: data['max_achievements_rank'],
+                            marker: {symbol: 'circle'},
+                            yAxis: 1,
+                        }
+                    ],
+                    'c': [
+                        {
+                            name: 'Awards Given',
+                            data: data['awards_given_points'],
+                            marker: {symbol: 'circle'},
+                            yAxis: 0,
+                        },
+                        {
+                            name: 'Awards Given Rank',
+                            data: data['awards_given_points_rank'],
+                            marker: {symbol: 'circle'},
+                            yAxis: 1,
+                        },
+                    ],
+                    'e': [
+                        {
+                            name: 'Awards Received',
+                            data: data['awards_received_points'],
+                            marker: {symbol: 'circle'},
+                            yAxis: 0,
+                        },
+                        {
+                            name: 'Awards Received Rank',
+                            data: data['awards_received_points_rank'],
                             marker: {symbol: 'circle'},
                             yAxis: 1,
                         }
