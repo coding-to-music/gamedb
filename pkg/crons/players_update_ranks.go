@@ -39,7 +39,7 @@ func (c PlayersUpdateRanks) work() (err error) {
 		}
 	}
 
-	// Continents
+	// By continent
 	for _, continent := range i18n.Continents {
 		for read, write := range helpers.PlayerRankFields {
 			err = consumers.ProducePlayerRank(consumers.PlayerRanksMessage{
@@ -53,8 +53,9 @@ func (c PlayersUpdateRanks) work() (err error) {
 		}
 	}
 
-	// Countries
-	for cc := range i18n.States {
+	// By country
+	for cc, states := range i18n.States {
+
 		for read, write := range helpers.PlayerRankFields {
 			err = consumers.ProducePlayerRank(consumers.PlayerRanksMessage{
 				SortColumn: read,
@@ -65,10 +66,8 @@ func (c PlayersUpdateRanks) work() (err error) {
 				return err
 			}
 		}
-	}
 
-	// Rank by State
-	for cc, states := range i18n.States {
+		// By state
 		for state := range states {
 			for read, write := range helpers.PlayerRankFields {
 				err = consumers.ProducePlayerRank(consumers.PlayerRanksMessage{
