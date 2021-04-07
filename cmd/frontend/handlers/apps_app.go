@@ -115,6 +115,7 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 	for _, tagID := range app.Tags {
 		if tagID == 24904 {
 			t.hideAds = true
+			break
 		}
 	}
 
