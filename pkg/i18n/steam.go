@@ -340,10 +340,10 @@ func GetProdCC(cc steamapi.ProductCC) ProductCountryCode {
 		cc = steamapi.ProductCCEU
 	}
 
-	val, ok := ProductCountryCodes[cc]
-	if ok {
+	if val, ok := ProductCountryCodes[cc]; ok && val.Enabled {
 		return val
 	}
+
 	return ProductCountryCodes[steamapi.ProductCCUS]
 }
 

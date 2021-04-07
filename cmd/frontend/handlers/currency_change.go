@@ -17,7 +17,7 @@ func CurrencyHandler(w http.ResponseWriter, r *http.Request) {
 		id = steamapi.ProductCCUS
 	}
 
-	if i18n.IsValidProdCC(id) {
+	if val, ok := i18n.ProductCountryCodes[id]; ok && val.Enabled {
 
 		// Set to session
 		session.Set(r, session.SessionUserProdCC, string(id))
