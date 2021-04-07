@@ -13,6 +13,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
 	influxHelper "github.com/gamedb/gamedb/pkg/influx"
+	"github.com/gamedb/gamedb/pkg/influx/schemas"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -632,10 +633,10 @@ func updatePlayerFriendRows(player mongo.Player) error {
 
 func savePlayerToInflux(player mongo.Player) (err error) {
 
-	fields := map[string]interface{}{
-		helpers.InfPlayersComments.String(): player.CommentsCount,
-		helpers.InfPlayersFriends.String():  player.FriendsCount,
-		helpers.InfPlayersLevel.String():    player.Level,
+	fields := map[schemas.PlayerField]interface{}{
+		schemas.InfPlayersComments: player.CommentsCount,
+		schemas.InfPlayersFriends:  player.FriendsCount,
+		schemas.InfPlayersLevel:    player.Level,
 		// Others stored in sub queues
 	}
 
@@ -643,16 +644,21 @@ func savePlayerToInflux(player mongo.Player) (err error) {
 }
 
 // Helper used in other consumers
-func savePlayerStatsToInflux(playerId int64, fields map[string]interface{}) error {
+func savePlayerStatsToInflux(playerId int64, fields map[schemas.PlayerField]interface{}) error {
+
+	interfaceFields := map[string]interface{}{}
+	for k, v := range fields {
+		interfaceFields[string(k)] = v
+	}
 
 	point := influx.Point{
 		Measurement: string(influxHelper.InfluxMeasurementPlayers),
 		Tags: map[string]string{
 			"player_id": strconv.FormatInt(playerId, 10),
 		},
-		Fields:    fields,
+		Fields:    interfaceFields,
 		Time:      time.Now(),
-		Precision: "h",
+		Precision: "m",
 	}
 
 	_, err := influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, point)

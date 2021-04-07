@@ -17,6 +17,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/i18n"
 	"github.com/gamedb/gamedb/pkg/influx"
+	"github.com/gamedb/gamedb/pkg/influx/schemas"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/middleware"
@@ -1192,35 +1193,34 @@ func playersHistoryAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fields := []helpers.Field{
-		helpers.InfPlayersAchievements,
-		helpers.InfPlayersBadges,
-		helpers.InfPlayersBadgesFoil,
-		helpers.InfPlayersComments,
-		helpers.InfPlayersFriends,
-		helpers.InfPlayersGames,
-		helpers.InfPlayersLevel,
-		helpers.InfPlayersPlaytime,
-		helpers.InfPlayersAwardsGiven,
-		helpers.InfPlayersAwardsReceived,
+	fields := []schemas.PlayerField{
+		schemas.InfPlayersAchievements,
+		schemas.InfPlayersBadges,
+		schemas.InfPlayersBadgesFoil,
+		schemas.InfPlayersComments,
+		schemas.InfPlayersFriends,
+		schemas.InfPlayersGames,
+		schemas.InfPlayersLevel,
+		schemas.InfPlayersPlaytime,
+		schemas.InfPlayersAwardsGivenPoints,
+		schemas.InfPlayersAwardsReceivedPoints,
 
-		helpers.InfPlayersAchievementsRank,
-		helpers.InfPlayersBadgesRank,
-		helpers.InfPlayersBadgesFoilRank,
-		helpers.InfPlayersCommentsRank,
-		helpers.InfPlayersFriendsRank,
-		helpers.InfPlayersGamesRank,
-		helpers.InfPlayersLevelRank,
-		helpers.InfPlayersPlaytimeRank,
-		helpers.InfPlayersAwardsGivenRank,
-		helpers.InfPlayersAwardsReceivedRank,
+		schemas.InfPlayersAchievementsRank,
+		schemas.InfPlayersBadgesRank,
+		schemas.InfPlayersBadgesFoilRank,
+		schemas.InfPlayersCommentsRank,
+		schemas.InfPlayersFriendsRank,
+		schemas.InfPlayersGamesRank,
+		schemas.InfPlayersLevelRank,
+		schemas.InfPlayersPlaytimeRank,
+		schemas.InfPlayersAwardsGivenPointsRank,
+		schemas.InfPlayersAwardsReceivedPointsRank,
 	}
 
 	builder := influxql.NewBuilder()
 	for _, v := range fields {
-		builder.AddSelect(v.Max().String(), v.Max().Alias())
+		builder.AddSelect("MAX("+string(v)+")", "max_"+string(v))
 	}
-
 	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementPlayers.String())
 	builder.AddWhere("player_id", "=", id)
 	builder.AddWhere("time", ">", "now()-180d")
@@ -1260,10 +1260,16 @@ func playerAchievementInfluxAjaxHandler(w http.ResponseWriter, r *http.Request) 
 	item := memcache.ItemPlayerAchievementsInflux(playerID)
 	err = memcache.Client().GetSet(item.Key, item.Expiration, &hc, func() (interface{}, error) {
 
+		cols := []schemas.PlayerField{
+			schemas.InfPlayersAchievements,
+			schemas.InfPlayersAchievements100,
+			schemas.InfPlayersAchievementsApps,
+		}
+
 		builder := influxql.NewBuilder()
-		builder.AddSelect("MAX("+helpers.InfPlayersAchievements.String()+")", "max_"+helpers.InfPlayersAchievements.String())
-		builder.AddSelect("MAX("+helpers.InfPlayersAchievements100.String()+")", "max_"+helpers.InfPlayersAchievements100.String())
-		builder.AddSelect("MAX("+helpers.InfPlayersAchievementsApps.String()+")", "max_"+helpers.InfPlayersAchievementsApps.String())
+		for _, v := range cols {
+			builder.AddSelect("MAX("+string(v)+")", "max_"+string(v))
+		}
 		builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementPlayers.String())
 		builder.AddWhere("player_id", "=", id)
 		builder.AddGroupByTime("1d")

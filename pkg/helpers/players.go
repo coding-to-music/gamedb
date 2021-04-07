@@ -7,6 +7,7 @@ import (
 
 	"github.com/Jleagle/steam-go/steamid"
 	"github.com/gamedb/gamedb/pkg/config"
+	"github.com/gamedb/gamedb/pkg/influx/schemas"
 	"github.com/gosimple/slug"
 )
 
@@ -162,6 +163,7 @@ func (rk RankMetric) Letter() string {
 	return string(rk)
 }
 
+// Must be single character
 const (
 	RankKeyLevel          RankMetric = "l"
 	RankKeyBadges         RankMetric = "b"
@@ -186,13 +188,13 @@ var PlayerRankFields = map[string]RankMetric{
 }
 
 // Rank key -> Influx col
-var PlayerRankFieldsInflux = map[RankMetric]string{
-	RankKeyLevel:          InfPlayersLevelRank.String(),
-	RankKeyGames:          InfPlayersGamesRank.String(),
-	RankKeyBadges:         InfPlayersBadgesRank.String(),
-	RankKeyBadgesFoil:     InfPlayersBadgesFoilRank.String(),
-	RankKeyPlaytime:       InfPlayersPlaytimeRank.String(),
-	RankKeyAchievements:   InfPlayersAchievementsRank.String(),
-	RankKeyAwardsGiven:    InfPlayersAwardsGiven.String(),
-	RankKeyAwardsReceived: InfPlayersAwardsReceived.String(),
+var PlayerRankFieldsInflux = map[RankMetric]schemas.PlayerField{
+	RankKeyLevel:          schemas.InfPlayersLevelRank,
+	RankKeyGames:          schemas.InfPlayersGamesRank,
+	RankKeyBadges:         schemas.InfPlayersBadgesRank,
+	RankKeyBadgesFoil:     schemas.InfPlayersBadgesFoilRank,
+	RankKeyPlaytime:       schemas.InfPlayersPlaytimeRank,
+	RankKeyAchievements:   schemas.InfPlayersAchievementsRank,
+	RankKeyAwardsGiven:    schemas.InfPlayersAwardsGivenPointsRank,
+	RankKeyAwardsReceived: schemas.InfPlayersAwardsReceivedPointsRank,
 }

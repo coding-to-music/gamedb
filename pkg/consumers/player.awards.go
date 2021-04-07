@@ -3,17 +3,15 @@ package consumers
 import (
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
-	influxHelper "github.com/gamedb/gamedb/pkg/influx"
+	"github.com/gamedb/gamedb/pkg/influx/schemas"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/gamedb/gamedb/pkg/steam"
 	"github.com/gocolly/colly/v2"
-	influx "github.com/influxdata/influxdb1-client"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.uber.org/zap"
 )
@@ -118,22 +116,14 @@ func playerAwardsHandler(message *rabbit.Message) {
 	}
 
 	// Add to Influx
-	point := influx.Point{
-		Measurement: string(influxHelper.InfluxMeasurementPlayers),
-		Tags: map[string]string{
-			"player_id": strconv.FormatInt(payload.PlayerID, 10),
-		},
-		Fields: map[string]interface{}{
-			"awards_given_count":     awardsGivenCount,
-			"awards_given_points":    awardsGivenPoints,
-			"awards_received_count":  awardsReceivedCount,
-			"awards_received_points": awardsReceivedPoints,
-		},
-		Time:      time.Now(),
-		Precision: "m",
+	fields := map[schemas.PlayerField]interface{}{
+		schemas.InfPlayersAwardsGivenCount:     awardsGivenCount,
+		schemas.InfPlayersAwardsGivenPoints:    awardsGivenPoints,
+		schemas.InfPlayersAwardsReceivedCount:  awardsReceivedCount,
+		schemas.InfPlayersAwardsReceivedPoints: awardsReceivedPoints,
 	}
 
-	_, err = influxHelper.InfluxWrite(influxHelper.InfluxRetentionPolicyAllTime, point)
+	err = savePlayerStatsToInflux(payload.PlayerID, fields)
 	if err != nil {
 		log.ErrS(err, payload.PlayerID)
 		sendToRetryQueue(message)

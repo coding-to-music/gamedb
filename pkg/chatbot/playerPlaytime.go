@@ -6,6 +6,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/chatbot/charts"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/influx/schemas"
 )
 
 type CommandPlayerPlaytime struct {
@@ -97,7 +98,7 @@ func (c CommandPlayerPlaytime) Output(_ string, _ steamapi.ProductCC, inputs map
 			Thumbnail: &discordgo.MessageEmbedThumbnail{URL: player.GetAvatarAbsolute(), Width: 184, Height: 184},
 			Footer:    getFooter(),
 			Color:     greenHexDec,
-			Image:     &discordgo.MessageEmbedImage{URL: charts.GetPlayerChart(c.ID(), player.ID, helpers.InfPlayersPlaytime, "Playtime")},
+			Image:     &discordgo.MessageEmbedImage{URL: charts.GetPlayerChart(c.ID(), player.ID, schemas.InfPlayersPlaytime, "Playtime")},
 			Fields: []*discordgo.MessageEmbedField{
 				{
 					Name:   "Playtime",

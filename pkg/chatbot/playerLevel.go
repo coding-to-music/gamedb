@@ -7,6 +7,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/chatbot/charts"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/influx/schemas"
 )
 
 type CommandPlayerLevel struct {
@@ -94,7 +95,7 @@ func (c CommandPlayerLevel) Output(_ string, _ steamapi.ProductCC, inputs map[st
 		Thumbnail: &discordgo.MessageEmbedThumbnail{URL: player.GetAvatarAbsolute(), Width: 184, Height: 184},
 		Footer:    getFooter(),
 		Color:     greenHexDec,
-		Image:     &discordgo.MessageEmbedImage{URL: charts.GetPlayerChart(c.ID(), player.ID, helpers.InfPlayersLevel, "Level")},
+		Image:     &discordgo.MessageEmbedImage{URL: charts.GetPlayerChart(c.ID(), player.ID, schemas.InfPlayersLevel, "Level")},
 		Fields: []*discordgo.MessageEmbedField{
 			{
 				Name:   "Level",

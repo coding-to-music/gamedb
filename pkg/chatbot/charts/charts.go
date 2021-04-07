@@ -13,6 +13,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/influx"
+	"github.com/gamedb/gamedb/pkg/influx/schemas"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/mongo"
 	"github.com/wcharczuk/go-chart"
@@ -57,12 +58,10 @@ func GetAppPlayersChart(commandID string, appID int, groupBy string, time string
 	return path
 }
 
-func GetPlayerChart(commandID string, playerID int64, field helpers.Field, title string) (path string) {
-
-	field.Max()
+func GetPlayerChart(commandID string, playerID int64, field schemas.PlayerField, title string) (path string) {
 
 	builder := influxql.NewBuilder()
-	builder.AddSelect(field.String(), field.Alias())
+	builder.AddSelect("MAX("+string(field)+")", "max_"+string(field))
 	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementPlayers.String())
 	builder.AddWhere("time", ">", "NOW()-365d")
 	builder.AddWhere("player_id", "=", playerID)

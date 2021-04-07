@@ -6,6 +6,7 @@ import (
 
 	"github.com/Jleagle/rabbit-go"
 	"github.com/gamedb/gamedb/pkg/helpers"
+	"github.com/gamedb/gamedb/pkg/influx/schemas"
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
@@ -209,10 +210,12 @@ func playerGamesHandler(message *rabbit.Message) {
 	}
 
 	// Save to Influx
-	err = savePlayerStatsToInflux(payload.PlayerID, map[string]interface{}{
-		helpers.InfPlayersGames.String():    len(resp.Games),
-		helpers.InfPlayersPlaytime.String(): playtime,
-	})
+	fields := map[schemas.PlayerField]interface{}{
+		schemas.InfPlayersGames:    len(resp.Games),
+		schemas.InfPlayersPlaytime: playtime,
+	}
+
+	err = savePlayerStatsToInflux(payload.PlayerID, fields)
 	if err != nil {
 		log.Err(err.Error(), zap.String("body", string(message.Message.Body)))
 		sendToRetryQueue(message)
