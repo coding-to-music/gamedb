@@ -1211,7 +1211,7 @@ func appPlayersHeatmapAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var callback = func() (interface{}, error) {
 
 		builder := influxql.NewBuilder()
-		builder.AddSelect("max(player_count)", "max_player_count")
+		builder.AddSelect("MAX(player_count)", "max_player_count")
 		builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
 		builder.AddWhere("time", ">", "NOW()-28d")
 		builder.AddWhere("app_id", "=", id)
@@ -1301,7 +1301,7 @@ func appTagsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		builder := influxql.NewBuilder()
 		for _, v := range app.TagCounts {
-			builder.AddSelect("max(tag_"+strconv.Itoa(v.ID)+")", "tag_"+strconv.Itoa(v.ID))
+			builder.AddSelect("MAX(tag_"+strconv.Itoa(v.ID)+")", "tag_"+strconv.Itoa(v.ID))
 		}
 		builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
 		builder.AddWhere("app_id", "=", id)
@@ -1360,11 +1360,11 @@ func appPlayersAjaxHandler(limit bool) func(http.ResponseWriter, *http.Request) 
 		var callback = func() (interface{}, error) {
 
 			builder := influxql.NewBuilder()
-			builder.AddSelect("max(player_count)", "max_player_count")
+			builder.AddSelect("MAX(player_count)", "max_player_count")
 			// builder.AddSelect("max(twitch_viewers)", "max_twitch_viewers")
 			if limit || session.IsLoggedIn(r) {
-				builder.AddSelect("max(youtube_views)", "max_youtube_views")
-				builder.AddSelect("max(youtube_comments)", "max_youtube_comments")
+				builder.AddSelect("MAX(youtube_views)", "max_youtube_views")
+				builder.AddSelect("MAX(youtube_comments)", "max_youtube_comments")
 			}
 			builder.AddSelect("MOVING_AVERAGE(max(\"player_count\"), "+rolling+")", "max_moving_average")
 			builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
@@ -1523,9 +1523,9 @@ func appReviewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	builder := influxql.NewBuilder()
-	builder.AddSelect("mean(reviews_score)", "mean_reviews_score")
-	builder.AddSelect("mean(reviews_positive)", "mean_reviews_positive")
-	builder.AddSelect("mean(reviews_negative)", "mean_reviews_negative")
+	builder.AddSelect("MEAN(reviews_score)", "mean_reviews_score")
+	builder.AddSelect("MEAN(reviews_positive)", "mean_reviews_positive")
+	builder.AddSelect("MEAN(reviews_negative)", "mean_reviews_negative")
 	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
 	builder.AddWhere("time", ">", "NOW()-365d")
 	builder.AddWhere("app_id", "=", id)

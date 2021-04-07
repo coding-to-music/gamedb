@@ -149,7 +149,7 @@ func appInfluxHandler(message *rabbit.Message) {
 func getAppTopPlayersWeek(appIDs []int) (vals map[int]int64, err error) {
 
 	builder := influxql.NewBuilder()
-	builder.AddSelect("max(player_count)", "max_player_count")
+	builder.AddSelect("MAX(player_count)", "max_player_count")
 	builder.SetFrom(influxHelper.InfluxGameDB, influxHelper.InfluxRetentionPolicyAllTime.String(), influxHelper.InfluxMeasurementApps.String())
 	builder.AddWhere("time", ">", "NOW() - 7d")
 	builder.AddWhereRaw(`"app_id" =~ /^(` + helpers.JoinInts(appIDs, "|") + `)$/`)
@@ -185,7 +185,7 @@ func getAppTopPlayersWeek(appIDs []int) (vals map[int]int64, err error) {
 func getAppAveragePlayersWeek(appIDs []int) (vals map[int]float64, err error) {
 
 	builder := influxql.NewBuilder()
-	builder.AddSelect("mean(player_count)", "mean_player_count")
+	builder.AddSelect("MEAN(player_count)", "mean_player_count")
 	builder.SetFrom(influxHelper.InfluxGameDB, influxHelper.InfluxRetentionPolicyAllTime.String(), influxHelper.InfluxMeasurementApps.String())
 	builder.AddWhere("time", ">", "NOW() - 7d")
 	builder.AddWhereRaw(`"app_id" =~ /^(` + helpers.JoinInts(appIDs, "|") + `)$/`)
@@ -221,7 +221,7 @@ func getAppAveragePlayersWeek(appIDs []int) (vals map[int]float64, err error) {
 func getAppTopPlayersAlltime(appIDs []int) (vals map[int]int64, err error) {
 
 	builder := influxql.NewBuilder()
-	builder.AddSelect("max(player_count)", "max_player_count")
+	builder.AddSelect("MAX(player_count)", "max_player_count")
 	builder.SetFrom(influxHelper.InfluxGameDB, influxHelper.InfluxRetentionPolicyAllTime.String(), influxHelper.InfluxMeasurementApps.String())
 	builder.AddWhereRaw(`"app_id" =~ /^(` + helpers.JoinInts(appIDs, "|") + `)$/`)
 	builder.AddGroupBy("app_id")
@@ -256,7 +256,7 @@ func getAppTopPlayersAlltime(appIDs []int) (vals map[int]int64, err error) {
 func getAppTrendValue(appIDs []int) (vals map[int]float64, err error) {
 
 	builder := influxql.NewBuilder()
-	builder.AddSelect("max(player_count)", "max_player_count")
+	builder.AddSelect("MAX(player_count)", "max_player_count")
 	builder.SetFrom(influxHelper.InfluxGameDB, influxHelper.InfluxRetentionPolicyAllTime.String(), influxHelper.InfluxMeasurementApps.String())
 	builder.AddWhere("time", ">", "NOW() - 7d - 1h")
 	builder.AddWhereRaw(`"app_id" =~ /^(` + helpers.JoinInts(appIDs, "|") + `)$/`)

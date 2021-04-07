@@ -218,9 +218,9 @@ func groupAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	callback := func() (interface{}, error) {
 
 		builder := influxql.NewBuilder()
-		builder.AddSelect(`max("members_count")`, "max_members_count")
-		builder.AddSelect(`max("members_in_chat")`, "max_members_in_chat")
-		builder.AddSelect(`max("members_in_game")`, "max_members_in_game")
+		builder.AddSelect(`MAX("members_count")`, "max_members_count")
+		builder.AddSelect(`MAX("members_in_chat")`, "max_members_in_chat")
+		builder.AddSelect(`MAX("members_in_game")`, "max_members_in_game")
 		// builder.AddSelect(`max("members_online")`, "max_members_online")
 		builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementGroups.String())
 		builder.AddWhere("group_id", "=", id)

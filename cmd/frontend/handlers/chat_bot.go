@@ -107,7 +107,7 @@ func chatbotChartAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Requests
 		builder := influxql.NewBuilder()
-		builder.AddSelect(`sum("request")`, "sum_request")
+		builder.AddSelect(`SUM("request")`, "sum_request")
 		builder.SetFrom(influxHelper.InfluxGameDB, influxHelper.InfluxRetentionPolicyAllTime.String(), influxHelper.InfluxMeasurementChatBot.String())
 		builder.AddWhere("time", ">", "now()-14d")
 		builder.AddGroupByTime("1h")
@@ -126,7 +126,7 @@ func chatbotChartAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Guilds
 		builder = influxql.NewBuilder()
-		builder.AddSelect(`max("guilds")`, "max_guilds")
+		builder.AddSelect(`MAX("guilds")`, "max_guilds")
 		builder.SetFrom(influxHelper.InfluxGameDB, influxHelper.InfluxRetentionPolicyAllTime.String(), influxHelper.InfluxMeasurementChatBot.String())
 		builder.AddWhere("time", ">", "now()-14d")
 		builder.AddGroupByTime("1h")

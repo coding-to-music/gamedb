@@ -23,7 +23,7 @@ import (
 func GetGroupChart(commandID string, groupID string, title string) (path string) {
 
 	builder := influxql.NewBuilder()
-	builder.AddSelect(`max("members_count")`, "max_members_count")
+	builder.AddSelect(`MAX("members_count")`, "max_members_count")
 	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementGroups.String())
 	builder.AddWhere("time", ">", "NOW()-365d")
 	builder.AddWhere("group_id", "=", groupID)
@@ -41,9 +41,9 @@ func GetAppPlayersChart(commandID string, appID int, groupBy string, time string
 
 	builder := influxql.NewBuilder()
 	if appID == 0 {
-		builder.AddSelect("max(player_online)", "max_player_online")
+		builder.AddSelect("MAX(player_online)", "max_player_online")
 	} else {
-		builder.AddSelect("max(player_count)", "max_player_count")
+		builder.AddSelect("MAX(player_count)", "max_player_count")
 	}
 	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
 	builder.AddWhere("time", ">", "NOW()-"+time)

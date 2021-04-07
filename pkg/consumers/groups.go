@@ -495,7 +495,7 @@ func updateRegularGroup(id string, group *mongo.Group) (foundMembers bool, err e
 func getGroupTrending(group mongo.Group) (trend float64, err error) {
 
 	builder := influxql.NewBuilder()
-	builder.AddSelect("max(members_count)", "max_members_count")
+	builder.AddSelect("MAX(members_count)", "max_members_count")
 	builder.SetFrom(influxHelper.InfluxGameDB, influxHelper.InfluxRetentionPolicyAllTime.String(), influxHelper.InfluxMeasurementGroups.String())
 	builder.AddWhere("time", ">", "NOW() - 28d")
 	builder.AddWhere("group_id", "=", group.ID)

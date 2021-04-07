@@ -390,8 +390,8 @@ type statsAppTypesRow struct {
 func statsClientPlayersHandler(w http.ResponseWriter, r *http.Request) {
 
 	builder := influxql.NewBuilder()
-	builder.AddSelect("max(player_count)", "max_player_count")
-	builder.AddSelect("max(player_online)", "max_player_online")
+	builder.AddSelect("MAX(player_count)", "max_player_count")
+	builder.AddSelect("MAX(player_online)", "max_player_online")
 	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
 	builder.AddWhere("time", ">", "NOW() - 7d")
 	builder.AddWhere("app_id", "=", "0")
@@ -417,8 +417,8 @@ func statsClientPlayersHandler(w http.ResponseWriter, r *http.Request) {
 func statsClientPlayers2Handler(w http.ResponseWriter, r *http.Request) {
 
 	builder := influxql.NewBuilder()
-	builder.AddSelect("max(player_count)", "max_player_count")
-	builder.AddSelect("max(player_online)", "max_player_online")
+	builder.AddSelect("MAX(player_count)", "max_player_count")
+	builder.AddSelect("MAX(player_online)", "max_player_online")
 	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
 	// builder.AddWhere("time", ">", "NOW()-1825d")
 	builder.AddWhere("time", ">", "2019-05-04") // Bad data befoe this

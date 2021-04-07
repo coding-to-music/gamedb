@@ -143,7 +143,7 @@ func trendingChartsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	builder := influxql.NewBuilder()
-	builder.AddSelect("max(player_count)", "max_player_count")
+	builder.AddSelect("MAX(player_count)", "max_player_count")
 	builder.SetFrom(influx.InfluxGameDB, influx.InfluxRetentionPolicyAllTime.String(), influx.InfluxMeasurementApps.String())
 	builder.AddWhere("time", ">", "NOW()-7d")
 	builder.AddWhereRaw(`"app_id" =~ /^(` + strings.Join(ids, "|") + `)$/`)
