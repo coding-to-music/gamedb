@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/Jleagle/steam-go/steamapi"
 	"github.com/dustin/go-humanize"
 	"github.com/gamedb/gamedb/cmd/frontend/helpers/datatable"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
@@ -148,7 +149,7 @@ func statesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var states = []helpers.Tuple{}
 
 	cc := r.URL.Query().Get("cc")
-	if cc != "" {
+	if steamapi.IsProductCC(cc) {
 
 		aggs, err := elasticsearch.AggregatePlayerCountries()
 		if err != nil {
