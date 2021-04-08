@@ -51,8 +51,8 @@ func playersGroupsHandler(message *rabbit.Message) {
 	}
 
 	oldGroupsMap := map[string]bool{}
-	for _, v := range oldGroupsSlice {
-		oldGroupsMap[v.GroupID] = true
+	for _, oldGroup := range oldGroupsSlice {
+		oldGroupsMap[oldGroup.GroupID] = true
 	}
 
 	// Get new groups

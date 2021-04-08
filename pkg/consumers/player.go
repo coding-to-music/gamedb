@@ -69,6 +69,8 @@ func playerHandler(message *rabbit.Message) {
 		return
 	}
 
+	var playerBeforeUpdate = player
+
 	newPlayer := err == mongo.ErrNoDocuments
 
 	err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
@@ -310,6 +312,12 @@ func playerHandler(message *rabbit.Message) {
 		return
 	}
 
+	var playerGroupRowHasChanged = player.PersonaName != playerBeforeUpdate.PersonaName ||
+		player.Avatar != playerBeforeUpdate.Avatar ||
+		player.Level != playerBeforeUpdate.Level ||
+		player.CountryCode != playerBeforeUpdate.CountryCode ||
+		player.GamesCount != playerBeforeUpdate.GamesCount
+
 	// Produce to sub queues
 	var produces = []QueueMessageInterface{
 		// PlayersSearchMessage{Player: &player}, // Done in sub queues
@@ -331,9 +339,10 @@ func playerHandler(message *rabbit.Message) {
 			OldAchievementCountApps:  player.AchievementCountApps,
 		},
 		PlayersGroupsMessage{
-			Player:          player,
-			SkipGroupUpdate: payload.SkipGroupUpdate,
-			UserAgent:       payload.UserAgent,
+			Player:                    player,
+			SkipGroupUpdate:           payload.SkipGroupUpdate,
+			ForceResavingPlayerGroups: playerGroupRowHasChanged,
+			UserAgent:                 payload.UserAgent,
 		},
 		PlayersAliasesMessage{
 			PlayerID:      player.ID,
