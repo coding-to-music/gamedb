@@ -179,7 +179,7 @@ func groupTableAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		total, err = mongo.CountDocuments(mongo.CollectionPlayerGroups, bson.D{{"group_id", id}}, 60*60*6)
+		total, err = mongo.CountDocuments(mongo.CollectionPlayerGroups, bson.D{{Key: "group_id", Value: id}}, 60*60*6)
 		if err != nil {
 			log.ErrS(err)
 		}

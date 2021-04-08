@@ -27,7 +27,7 @@ func (s StatsServer) List(_ context.Context, request *generated.StatsRequest) (r
 	}
 
 	//
-	filter := bson.D{{"type", request.GetType()}}
+	filter := bson.D{{Key: "type", Value: request.GetType()}}
 	filter2 := filter
 
 	if len(request.GetSearch()) > 0 {

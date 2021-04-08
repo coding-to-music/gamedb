@@ -94,7 +94,7 @@ func (s Server) GetPackages(w http.ResponseWriter, r *http.Request, params gener
 		"status":             1,
 	}
 
-	packages, err := mongo.GetPackages(offset, limit, bson.D{{sort, order}}, filter, projection)
+	packages, err := mongo.GetPackages(offset, limit, bson.D{{Key: sort, Value: order}}, filter, projection)
 	if err != nil {
 		log.ErrS(err)
 		returnResponse(w, r, http.StatusInternalServerError, generated.PackagesResponse{Error: err.Error()})

@@ -141,11 +141,6 @@ func main() {
 						log.Err("Connecting to Steam after error", zap.Error(err))
 					}
 				}()
-
-			case error:
-				if e != nil {
-					log.ErrS(e)
-				}
 			}
 		}
 	}()

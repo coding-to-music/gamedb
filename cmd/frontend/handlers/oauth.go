@@ -182,7 +182,7 @@ func providerOAuth2Callback(w http.ResponseWriter, r *http.Request, provider oau
 	}
 
 	//
-	oauthHandleUser(provider, resp, page, r)
+	oauthHandleUser(provider, resp, &page, r)
 }
 
 func providerOAuth1Callback(w http.ResponseWriter, r *http.Request, provider oauth.OAuth1Provider) {
@@ -232,7 +232,7 @@ func providerOAuth1Callback(w http.ResponseWriter, r *http.Request, provider oau
 	}
 
 	//
-	oauthHandleUser(provider, resp, page, r)
+	oauthHandleUser(provider, resp, &page, r)
 }
 
 func providerOpenIDCallback(w http.ResponseWriter, r *http.Request, provider oauth.OpenIDProvider) {
@@ -262,7 +262,7 @@ func providerOpenIDCallback(w http.ResponseWriter, r *http.Request, provider oau
 	}
 
 	//
-	oauthHandleUser(provider, resp, page, r)
+	oauthHandleUser(provider, resp, &page, r)
 }
 
 func oauthRedirect(w http.ResponseWriter, r *http.Request, page *string) {
@@ -282,10 +282,10 @@ func oauthRedirect(w http.ResponseWriter, r *http.Request, page *string) {
 	}
 }
 
-func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *http.Request) {
+func oauthHandleUser(provider oauth.Provider, resp oauth.User, page *string, r *http.Request) {
 
 	// Check page is valid
-	switch page {
+	switch *page {
 	case authPageLogin, authPageSignup, authPageSettings:
 	default:
 		session.SetFlash(r, session.SessionBad, "Invalid page (1101)")
@@ -293,7 +293,7 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 	}
 
 	// Check we can get an email/id if we need it
-	if page == authPageSignup && !provider.HasEmail() {
+	if *page == authPageSignup && !provider.HasEmail() {
 
 		session.SetFlash(r, session.SessionBad, provider.GetName()+" currently can't be used to sign up (1102)")
 		return
@@ -309,7 +309,7 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 	var err error
 	var newUser bool
 
-	if page == authPageSettings {
+	if *page == authPageSettings {
 
 		// Just get user from session
 		user, err = getUserFromSession(r)
@@ -401,7 +401,7 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 	}
 
 	// Create event
-	switch page {
+	switch *page {
 	case authPageSettings, authPageSignup:
 
 		err = mongo.NewEvent(r, user.ID, mongo.EventLink(provider.GetEnum()))
@@ -411,7 +411,7 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 	}
 
 	// Log the user in
-	switch page {
+	switch *page {
 	case authPageLogin, authPageSignup:
 		err, ok := login(r, user)
 		if !ok {
@@ -420,7 +420,7 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 	}
 
 	// Success flash
-	switch page {
+	switch *page {
 	case authPageSettings:
 		session.SetFlash(r, session.SessionGood, provider.GetName()+" account linked")
 	case authPageLogin, authPageSignup:
@@ -430,7 +430,7 @@ func oauthHandleUser(provider oauth.Provider, resp oauth.User, page string, r *h
 	}
 
 	if newUser {
-		page = authPageSettings
+		*page = authPageSettings
 	}
 
 	// Provider specific actions

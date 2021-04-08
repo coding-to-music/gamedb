@@ -65,8 +65,8 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		var filter2 = bson.D{
-			{"release_date_unix", bson.M{"$lt": time.Now().Unix()}},
-			{"release_date_unix", bson.M{"$gt": time.Now().AddDate(0, 0, -days).Unix()}},
+			{Key: "release_date_unix", Value: bson.M{"$lt": time.Now().Unix()}},
+			{Key: "release_date_unix", Value: bson.M{"$gt": time.Now().AddDate(0, 0, -days).Unix()}},
 		}
 
 		var search = query.GetSearchString("search")
@@ -106,8 +106,8 @@ func newReleasesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		var err error
 		var filter = bson.D{
-			{"release_date_unix", bson.M{"$lt": time.Now().Unix()}},
-			{"release_date_unix", bson.M{"$gt": time.Now().AddDate(0, 0, -config.C.NewReleaseDays).Unix()}},
+			{Key: "release_date_unix", Value: bson.M{"$lt": time.Now().Unix()}},
+			{Key: "release_date_unix", Value: bson.M{"$gt": time.Now().AddDate(0, 0, -config.C.NewReleaseDays).Unix()}},
 		}
 
 		countLock.Lock()

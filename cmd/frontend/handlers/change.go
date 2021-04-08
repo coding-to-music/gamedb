@@ -91,7 +91,7 @@ func changeHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		err = mongo.FindOne(mongo.CollectionChanges, bson.D{{"_id", bson.M{"$lt": change.ID}}}, bson.D{{"_id", -1}}, bson.M{"_id": 1}, &t.Previous)
+		err = mongo.FindOne(mongo.CollectionChanges, bson.D{{Key: "_id", Value: bson.M{"$lt": change.ID}}}, bson.D{{Key: "_id", Value: -1}}, bson.M{"_id": 1}, &t.Previous)
 		if err != nil {
 			err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
 			log.ErrS(err)
@@ -104,7 +104,7 @@ func changeHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer wg.Done()
 
-		err = mongo.FindOne(mongo.CollectionChanges, bson.D{{"_id", bson.M{"$gt": change.ID}}}, bson.D{{"_id", 1}}, bson.M{"_id": 1}, &t.Next)
+		err = mongo.FindOne(mongo.CollectionChanges, bson.D{{Key: "_id", Value: bson.M{"$gt": change.ID}}}, bson.D{{Key: "_id", Value: 1}}, bson.M{"_id": 1}, &t.Next)
 		if err != nil {
 			err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
 			if err != nil {

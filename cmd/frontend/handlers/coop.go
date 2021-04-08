@@ -249,8 +249,8 @@ func coopGames(w http.ResponseWriter, r *http.Request) {
 
 		filter := bson.D{
 			// {"type", "game"},
-			{"tags", bson.M{"$in": bson.A{128, 1685, 3843, 3841, 4508, 3859, 7368, 17770}}},
-			{"_id", bson.M{"$in": appsSlice}},
+			{Key: "tags", Value: bson.M{"$in": bson.A{128, 1685, 3843, 3841, 4508, 3859, 7368, 17770}}},
+			{Key: "_id", Value: bson.M{"$in": appsSlice}},
 		}
 
 		projection := bson.M{"id": 1, "name": 1, "icon": 1, "platforms": 1, "achievements_count": 1, "tags": 1}
@@ -262,7 +262,7 @@ func coopGames(w http.ResponseWriter, r *http.Request) {
 
 			defer wg.Done()
 
-			apps, err := mongo.GetApps(query.GetOffset64(), 100, bson.D{{"reviews_score", -1}}, filter, projection)
+			apps, err := mongo.GetApps(query.GetOffset64(), 100, bson.D{{Key: "reviews_score", Value: -1}}, filter, projection)
 			if err != nil {
 				log.ErrS(err)
 			}

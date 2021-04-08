@@ -102,7 +102,7 @@ func SiteMapPagesHandler(w http.ResponseWriter, r *http.Request) {
 
 func SiteMapGamesByPlayersHandler(w http.ResponseWriter, r *http.Request) {
 
-	apps, err := mongo.GetApps(0, siteMapLimit, bson.D{{"player_peak_week", -1}}, bson.D{}, bson.M{"_id": 1, "name": 1, "updated_at": 1})
+	apps, err := mongo.GetApps(0, siteMapLimit, bson.D{{Key: "player_peak_week", Value: -1}}, bson.D{}, bson.M{"_id": 1, "name": 1, "updated_at": 1})
 	if err != nil {
 		log.ErrS(err)
 		return
@@ -123,7 +123,7 @@ func SiteMapGamesByPlayersHandler(w http.ResponseWriter, r *http.Request) {
 
 func SiteMapGamesByScoreHandler(w http.ResponseWriter, r *http.Request) {
 
-	apps, err := mongo.GetApps(0, siteMapLimit, bson.D{{"reviews_score", -1}}, bson.D{}, bson.M{"_id": 1, "name": 1, "updated_at": 1})
+	apps, err := mongo.GetApps(0, siteMapLimit, bson.D{{Key: "reviews_score", Value: -1}}, bson.D{}, bson.M{"_id": 1, "name": 1, "updated_at": 1})
 	if err != nil {
 		log.ErrS(err)
 		return
@@ -144,7 +144,7 @@ func SiteMapGamesByScoreHandler(w http.ResponseWriter, r *http.Request) {
 
 func SiteMapGamesUpcomingHandler(w http.ResponseWriter, r *http.Request) {
 
-	apps, err := mongo.GetApps(0, siteMapLimit, bson.D{{"release_date_unix", 1}}, upcomingFilter, bson.M{"_id": 1, "name": 1, "updated_at": 1})
+	apps, err := mongo.GetApps(0, siteMapLimit, bson.D{{Key: "release_date_unix", Value: 1}}, upcomingFilter, bson.M{"_id": 1, "name": 1, "updated_at": 1})
 	if err != nil {
 		log.ErrS(err)
 		return
@@ -166,11 +166,11 @@ func SiteMapGamesUpcomingHandler(w http.ResponseWriter, r *http.Request) {
 func SiteMapGamesNewHandler(w http.ResponseWriter, r *http.Request) {
 
 	var filter = bson.D{
-		{"release_date_unix", bson.M{"$lt": time.Now().Unix()}},
-		{"release_date_unix", bson.M{"$gt": time.Now().AddDate(0, 0, -config.C.NewReleaseDays).Unix()}},
+		{Key: "release_date_unix", Value: bson.M{"$lt": time.Now().Unix()}},
+		{Key: "release_date_unix", Value: bson.M{"$gt": time.Now().AddDate(0, 0, -config.C.NewReleaseDays).Unix()}},
 	}
 
-	apps, err := mongo.GetApps(0, siteMapLimit, bson.D{{"release_date_unix", -1}}, filter, bson.M{"_id": 1, "name": 1, "updated_at": 1})
+	apps, err := mongo.GetApps(0, siteMapLimit, bson.D{{Key: "release_date_unix", Value: -1}}, filter, bson.M{"_id": 1, "name": 1, "updated_at": 1})
 	if err != nil {
 		log.ErrS(err)
 		return

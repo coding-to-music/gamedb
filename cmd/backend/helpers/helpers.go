@@ -25,7 +25,7 @@ func MakeMongoOrder(request *generated.PaginationRequest) (o bson.D) {
 	field := request.GetSortField()
 
 	if field == "" {
-		return bson.D{{"_id", 1}}
+		return bson.D{{Key: "_id", Value: 1}}
 	}
 
 	order := 1
@@ -33,7 +33,7 @@ func MakeMongoOrder(request *generated.PaginationRequest) (o bson.D) {
 		order = -1
 	}
 
-	return bson.D{{field, order}}
+	return bson.D{{Key: field, Value: order}}
 }
 
 func MakeMongoProjection(p []string) (b bson.M) {

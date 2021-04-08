@@ -75,7 +75,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var filter = bson.D{{key, bson.M{"$exists": true}}}
+	var filter = bson.D{{Key: key, Value: bson.M{"$exists": true}}}
 
 	switch comparator {
 	case "equals":
@@ -116,7 +116,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		if productType == "packages" {
 
-			packages, err := mongo.GetPackages(query.GetOffset64(), 100, bson.D{{"_id", 1}}, filter, projection)
+			packages, err := mongo.GetPackages(query.GetOffset64(), 100, bson.D{{Key: "_id", Value: 1}}, filter, projection)
 			if err != nil {
 				log.ErrS(err)
 				return
@@ -132,7 +132,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 		} else {
 
-			apps, err := mongo.GetApps(query.GetOffset64(), 100, bson.D{{"_id", 1}}, filter, projection)
+			apps, err := mongo.GetApps(query.GetOffset64(), 100, bson.D{{Key: "_id", Value: 1}}, filter, projection)
 			if err != nil {
 				log.ErrS(err)
 				return

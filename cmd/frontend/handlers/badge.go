@@ -95,7 +95,7 @@ func badgeHandler(w http.ResponseWriter, r *http.Request) {
 		if playerBadge.PlayerID > 0 {
 
 			var row = mongo.PlayerBadge{}
-			err = mongo.FindOne(mongo.CollectionPlayerBadges, bson.D{{"_id", playerBadge.GetKey()}}, nil, nil, &row)
+			err = mongo.FindOne(mongo.CollectionPlayerBadges, bson.D{{Key: "_id", Value: playerBadge.GetKey()}}, nil, nil, &row)
 			if err != nil && err != mongo.ErrNoDocuments {
 				log.ErrS(err)
 				returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: err.Error()})

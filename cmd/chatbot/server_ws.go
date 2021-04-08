@@ -268,7 +268,7 @@ func websocketServer() (session *discordgo.Session, err error) {
 			Members: e.MemberCount,
 		}
 
-		_, err := mongo.ReplaceOne(mongo.CollectionDiscordGuilds, bson.D{{"_id", e.ID}}, mongoGuild)
+		_, err := mongo.ReplaceOne(mongo.CollectionDiscordGuilds, bson.D{{Key: "_id", Value: e.ID}}, mongoGuild)
 		if err != nil {
 			log.Err("Updating guild row", zap.Error(err))
 		}

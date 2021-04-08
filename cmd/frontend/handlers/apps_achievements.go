@@ -39,7 +39,7 @@ func appsAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	query := datatable.NewDataTableQuery(r, false)
 
 	var wg sync.WaitGroup
-	var filter = bson.D{{"achievements_count", bson.M{"$gt": 0}}}
+	var filter = bson.D{{Key: "achievements_count", Value: bson.M{"$gt": 0}}}
 	var filter2 = filter
 	var countLock sync.Mutex
 

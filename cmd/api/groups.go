@@ -74,7 +74,7 @@ func (s Server) GetGroups(w http.ResponseWriter, r *http.Request, params generat
 		"primaries":       1,
 	}
 
-	groups, err := mongo.GetGroups(offset, limit, bson.D{{sort, order}}, filter, projection)
+	groups, err := mongo.GetGroups(offset, limit, bson.D{{Key: sort, Value: order}}, filter, projection)
 	if err != nil {
 		log.ErrS(err)
 		returnResponse(w, r, http.StatusInternalServerError, generated.GroupsResponse{Error: err.Error()})

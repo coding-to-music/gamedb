@@ -9,7 +9,6 @@ import (
 	"strconv"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/Jleagle/influxql"
 	memcache2 "github.com/Jleagle/memcache-go"
@@ -23,7 +22,6 @@ import (
 	"github.com/gamedb/gamedb/pkg/log"
 	"github.com/gamedb/gamedb/pkg/memcache"
 	"github.com/gamedb/gamedb/pkg/mongo"
-	"github.com/gamedb/gamedb/pkg/session"
 	"github.com/gamedb/gamedb/pkg/steam"
 	"github.com/go-chi/chi/v5"
 	"github.com/olivere/elastic/v7"
@@ -449,71 +447,70 @@ type homeTweet struct {
 	Link  string `json:"link"`
 }
 
-//goland:noinspection GoUnusedFunction
-func homeSalesHandler(w http.ResponseWriter, r *http.Request) {
-
-	id := chi.URLParam(r, "sort")
-
-	var sort string
-	var order int
-
-	switch id {
-	case "top-rated":
-		sort = "app_rating"
-		order = -1
-	case "ending-soon":
-		sort = "offer_end"
-		order = 1
-	case "latest-found":
-		sort = "badges_count"
-		order = -1
-	default:
-		return
-	}
-
-	filter := bson.D{
-		{Key: "app_type", Value: "game"},
-		{Key: "sub_order", Value: 0},
-		{Key: "offer_end", Value: bson.M{"$gt": time.Now()}},
-	}
-
-	sales, err := mongo.GetAllSales(0, 10, filter, bson.D{{Key: sort, Value: order}})
-	if err != nil {
-		log.ErrS(err)
-	}
-
-	var code = session.GetProductCC(r)
-
-	var homeSales []homeSale
-	for _, v := range sales {
-		homeSales = append(homeSales, homeSale{
-			ID:        v.AppID,
-			Name:      v.AppName,
-			Icon:      v.AppIcon,
-			Type:      v.SaleType,
-			Ends:      v.SaleEnd,
-			Rating:    v.GetAppRating(),
-			Price:     v.GetPriceString(code),
-			Link:      helpers.GetAppPath(v.AppID, v.AppName),
-			StoreLink: helpers.GetAppStoreLink(v.AppID),
-		})
-	}
-
-	returnJSON(w, r, homeSales)
-}
-
-type homeSale struct {
-	ID        int       `json:"id"`
-	Name      string    `json:"name"`
-	Icon      string    `json:"icon"`
-	Type      string    `json:"type"`
-	Price     string    `json:"price"`
-	Discount  int       `json:"discount"`
-	Rating    string    `json:"rating"`
-	Ends      time.Time `json:"ends"`
-	Link      string    `json:"link"`
-	StoreLink string    `json:"store_link"`
-}
+// func homeSalesHandler(w http.ResponseWriter, r *http.Request) {
+//
+// 	id := chi.URLParam(r, "sort")
+//
+// 	var sort string
+// 	var order int
+//
+// 	switch id {
+// 	case "top-rated":
+// 		sort = "app_rating"
+// 		order = -1
+// 	case "ending-soon":
+// 		sort = "offer_end"
+// 		order = 1
+// 	case "latest-found":
+// 		sort = "badges_count"
+// 		order = -1
+// 	default:
+// 		return
+// 	}
+//
+// 	filter := bson.D{
+// 		{Key: "app_type", Value: "game"},
+// 		{Key: "sub_order", Value: 0},
+// 		{Key: "offer_end", Value: bson.M{"$gt": time.Now()}},
+// 	}
+//
+// 	sales, err := mongo.GetAllSales(0, 10, filter, bson.D{{Key: sort, Value: order}})
+// 	if err != nil {
+// 		log.ErrS(err)
+// 	}
+//
+// 	var code = session.GetProductCC(r)
+//
+// 	var homeSales []homeSale
+// 	for _, v := range sales {
+// 		homeSales = append(homeSales, homeSale{
+// 			ID:        v.AppID,
+// 			Name:      v.AppName,
+// 			Icon:      v.AppIcon,
+// 			Type:      v.SaleType,
+// 			Ends:      v.SaleEnd,
+// 			Rating:    v.GetAppRating(),
+// 			Price:     v.GetPriceString(code),
+// 			Link:      helpers.GetAppPath(v.AppID, v.AppName),
+// 			StoreLink: helpers.GetAppStoreLink(v.AppID),
+// 		})
+// 	}
+//
+// 	returnJSON(w, r, homeSales)
+// }
+//
+// type homeSale struct {
+// 	ID        int       `json:"id"`
+// 	Name      string    `json:"name"`
+// 	Icon      string    `json:"icon"`
+// 	Type      string    `json:"type"`
+// 	Price     string    `json:"price"`
+// 	Discount  int       `json:"discount"`
+// 	Rating    string    `json:"rating"`
+// 	Ends      time.Time `json:"ends"`
+// 	Link      string    `json:"link"`
+// 	StoreLink string    `json:"store_link"`
+// }
 
 func homeNewPlayersHandler(w http.ResponseWriter, r *http.Request) {
 
@@ -524,7 +521,7 @@ func homeNewPlayersHandler(w http.ResponseWriter, r *http.Request) {
 		"created_at":   1,
 	}
 
-	players, err := mongo.GetPlayers(0, 10, bson.D{{"created_at", -1}}, nil, projection)
+	players, err := mongo.GetPlayers(0, 10, bson.D{{Key: "created_at", Value: -1}}, nil, projection)
 	if err != nil {
 		log.ErrS(err)
 		return

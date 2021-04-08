@@ -45,8 +45,8 @@ func appsDLCAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	if playerID > 0 {
 
 		filter := bson.D{
-			{"player_id", playerID}, // Needed for count
-			{"app_dlc_count", bson.M{"$gt": 0}},
+			{Key: "player_id", Value: playerID}, // Needed for count
+			{Key: "app_dlc_count", Value: bson.M{"$gt": 0}},
 		}
 
 		wg.Add(1)
@@ -86,7 +86,7 @@ func appsDLCAjaxHandler(w http.ResponseWriter, r *http.Request) {
 				dlcsMap[v.DLCID] = v.AppID
 			}
 
-			filter = bson.D{{"app_id", bson.M{"$in": dlcAppIDs}}}
+			filter = bson.D{{Key: "app_id", Value: bson.M{"$in": dlcAppIDs}}}
 
 			owned, err := mongo.GetPlayerAppsByPlayer(playerID, 0, 0, nil, bson.M{"_id": 1, "app_id": 1}, filter)
 			if err != nil {

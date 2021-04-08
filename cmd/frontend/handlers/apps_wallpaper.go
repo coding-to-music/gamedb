@@ -22,7 +22,7 @@ func wallpaperHandler(w http.ResponseWriter, r *http.Request) {
 	t := wallpaperTemplate{}
 	t.fill(w, r, "wallpaper", "Stats", "Some interesting Steam Store stats.")
 
-	apps, err := mongo.GetApps(0, 112, bson.D{{"player_peak_week", -1}}, nil, nil)
+	apps, err := mongo.GetApps(0, 112, bson.D{{Key: "player_peak_week", Value: -1}}, nil, nil)
 	if err != nil {
 		log.ErrS(err)
 	}

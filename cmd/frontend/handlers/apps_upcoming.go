@@ -17,7 +17,7 @@ import (
 
 const upcomingFilterHours = time.Hour * -12
 
-var upcomingFilter = bson.D{{"release_date_unix", bson.M{"$gte": time.Now().Add(upcomingFilterHours).Unix()}}}
+var upcomingFilter = bson.D{{Key: "release_date_unix", Value: bson.M{"$gte": time.Now().Add(upcomingFilterHours).Unix()}}}
 
 func upcomingRouter() http.Handler {
 

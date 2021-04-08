@@ -42,7 +42,7 @@ func appCompareAchievementsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get achievements
-	achievements, err := mongo.GetAppAchievements(0, 0, bson.D{{"app_id", app.ID}}, bson.D{{"completed", -1}})
+	achievements, err := mongo.GetAppAchievements(0, 0, bson.D{{Key: "app_id", Value: app.ID}}, bson.D{{Key: "completed", Value: -1}})
 	if err != nil {
 		log.ErrS(err)
 		returnErrorTemplate(w, r, errorTemplate{Code: 500, Message: "Something went wrong (1001)"})

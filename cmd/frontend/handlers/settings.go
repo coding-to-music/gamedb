@@ -93,7 +93,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		playerApps, err := mongo.GetPlayerApps(0, 0, bson.D{{"player_id", t.Player.ID}}, bson.D{})
+		playerApps, err := mongo.GetPlayerApps(0, 0, bson.D{{Key: "player_id", Value: t.Player.ID}}, bson.D{})
 		if err != nil {
 			log.ErrS(err)
 			return
@@ -412,8 +412,8 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 	playerID := session.GetPlayerIDFromSesion(r)
 
 	if playerID > 0 {
-		filter := bson.D{{"_id", playerID}}
-		update := bson.D{{"private", r.PostForm.Get("private") == "1"}}
+		filter := bson.D{{Key: "_id", Value: playerID}}
+		update := bson.D{{Key: "private", Value: r.PostForm.Get("private") == "1"}}
 
 		_, err = mongo.UpdateOne(mongo.CollectionPlayers, filter, update)
 		if err != nil {
@@ -537,7 +537,7 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	query := datatable.NewDataTableQuery(r, true)
 	types := query.GetSearchSlice("type")
 
-	var filter = bson.D{{"user_id", userID}}
+	var filter = bson.D{{Key: "user_id", Value: userID}}
 	if len(types) > 0 {
 		filter = append(filter, bson.E{Key: "type", Value: bson.M{"$in": types}})
 	}
@@ -566,7 +566,7 @@ func settingsEventsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		total, err = mongo.CountDocuments(mongo.CollectionEvents, bson.D{{"user_id", userID}}, 86400)
+		total, err = mongo.CountDocuments(mongo.CollectionEvents, bson.D{{Key: "user_id", Value: userID}}, 86400)
 		if err != nil {
 			log.ErrS(err)
 		}

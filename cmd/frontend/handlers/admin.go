@@ -317,7 +317,7 @@ func adminWebhooksAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		webhooks, err = mongo.GetWebhooks(query.GetOffset64(), 100, bson.D{{"created_at", -1}}, filter, nil)
+		webhooks, err = mongo.GetWebhooks(query.GetOffset64(), 100, bson.D{{Key: "created_at", Value: -1}}, filter, nil)
 		if err != nil {
 			log.ErrS(err)
 		}
@@ -364,7 +364,7 @@ func adminStatsHandler(w http.ResponseWriter, r *http.Request) {
 	t.Hash = config.GetShortCommitHash()
 
 	// Oldest player
-	players, err := mongo.GetPlayers(0, 1, bson.D{{"updated_at", 1}}, helpers.LastUpdatedQuery, bson.M{"updated_at": 1})
+	players, err := mongo.GetPlayers(0, 1, bson.D{{Key: "updated_at", Value: 1}}, helpers.LastUpdatedQuery, bson.M{"updated_at": 1})
 	if err != nil {
 		log.ErrS(err)
 	}
@@ -376,12 +376,12 @@ func adminStatsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	t.Private, err = mongo.CountDocuments(mongo.CollectionPlayers, bson.D{{"community_visibility_state", 1}}, 0)
+	t.Private, err = mongo.CountDocuments(mongo.CollectionPlayers, bson.D{{Key: "community_visibility_state", Value: 1}}, 0)
 	if err != nil {
 		log.ErrS(err)
 	}
 
-	t.Removed, err = mongo.CountDocuments(mongo.CollectionPlayers, bson.D{{"removed", true}}, 0)
+	t.Removed, err = mongo.CountDocuments(mongo.CollectionPlayers, bson.D{{Key: "removed", Value: true}}, 0)
 	if err != nil {
 		log.ErrS(err)
 	}

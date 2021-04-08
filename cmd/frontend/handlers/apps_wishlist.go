@@ -46,8 +46,8 @@ func wishlistAppsHandler(w http.ResponseWriter, r *http.Request) {
 	query := datatable.NewDataTableQuery(r, true)
 
 	var filter = bson.D{
-		{"wishlist_count", bson.M{"$gt": 0}},
-		{"wishlist_avg_position", bson.M{"$gt": 0}},
+		{Key: "wishlist_count", Value: bson.M{"$gt": 0}},
+		{Key: "wishlist_avg_position", Value: bson.M{"$gt": 0}},
 	}
 
 	filter2 := filter

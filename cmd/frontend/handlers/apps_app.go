@@ -427,7 +427,7 @@ func appLocalizationHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	app := mongo.App{}
-	err = mongo.FindOne(mongo.CollectionApps, bson.D{{"_id", id}}, nil, bson.M{"localization": 1}, &app)
+	err = mongo.FindOne(mongo.CollectionApps, bson.D{{Key: "_id", Value: id}}, nil, bson.M{"localization": 1}, &app)
 	if err != nil {
 		err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
 		if err != nil {
@@ -594,7 +594,7 @@ func appReviewsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	app := mongo.App{}
-	err = mongo.FindOne(mongo.CollectionApps, bson.D{{"_id", id}}, nil, bson.M{"reviews": 1}, &app)
+	err = mongo.FindOne(mongo.CollectionApps, bson.D{{Key: "_id", Value: id}}, nil, bson.M{"reviews": 1}, &app)
 	if err != nil {
 		err = helpers.IgnoreErrors(err, mongo.ErrNoDocuments)
 		if err != nil {
@@ -669,7 +669,7 @@ func appNewsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		var err error
-		total, err = mongo.CountDocuments(mongo.CollectionAppArticles, bson.D{{"app_id", id}}, 60*60*24)
+		total, err = mongo.CountDocuments(mongo.CollectionAppArticles, bson.D{{Key: "app_id", Value: id}}, 60*60*24)
 		if err != nil {
 			log.ErrS(err)
 			return
@@ -776,7 +776,7 @@ func appAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get player achievements
 	var achievedMap = map[string]int64{}
-	var filter = bson.D{{"app_id", id}}
+	var filter = bson.D{{Key: "app_id", Value: id}}
 	var query = datatable.NewDataTableQuery(r, false)
 
 	var playerID = session.GetPlayerIDFromSesion(r)
@@ -881,7 +881,7 @@ func appDLCAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var query = datatable.NewDataTableQuery(r, false)
 	var search = query.GetSearchString("search")
 
-	var filter = bson.D{{"app_id", id}}
+	var filter = bson.D{{Key: "app_id", Value: id}}
 	var filter2 = filter
 
 	if len(search) > 1 {
@@ -1593,7 +1593,7 @@ func friendsJSONHandler(w http.ResponseWriter, r *http.Request) {
 	var callback = func() (interface{}, error) {
 
 		// Get player's friends
-		friends, err := mongo.GetFriends(playerID, 0, 0, nil, bson.D{{"name", bson.M{"$ne": ""}}})
+		friends, err := mongo.GetFriends(playerID, 0, 0, nil, bson.D{{Key: "name", Value: bson.M{"$ne": ""}}})
 		if err != nil {
 			return nil, err
 		}

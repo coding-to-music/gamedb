@@ -146,16 +146,13 @@ func (q DataTablesQuery) GetOrderMongo(columns map[string]string) (cols bson.D) 
 
 func (q DataTablesQuery) GetOrderBackend(columns map[string]string) (a, b string) {
 
-	for _, v := range q.getOrder(columns) {
-
-		var sort string
-		if v.asc {
-			sort = "asc"
+	o := q.getOrder(columns)
+	if len(o) > 0 {
+		if o[0].asc {
+			return o[0].col, "asc"
 		} else {
-			sort = "desc"
+			return o[0].col, "desc"
 		}
-
-		return v.col, sort
 	}
 
 	return "", ""

@@ -71,7 +71,7 @@ func (a AppsServer) List(_ context.Context, request *generated.ListAppsRequest) 
 		// "player_avg_week":     1,
 	}
 
-	apps, err := mongo.GetApps(request.GetPagination().GetOffset(), request.GetPagination().GetLimit(), bson.D{{"_id", 1}}, filter, projection)
+	apps, err := mongo.GetApps(request.GetPagination().GetOffset(), request.GetPagination().GetLimit(), bson.D{{Key: "_id", Value: 1}}, filter, projection)
 	if err != nil {
 		return nil, err
 	}

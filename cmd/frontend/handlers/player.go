@@ -145,7 +145,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 			defer wg.Done()
 
 			var err error
-			playersContinentCount, err = mongo.CountDocuments(mongo.CollectionPlayers, bson.D{{"continent_code", player.ContinentCode}}, 60*60*24*7)
+			playersContinentCount, err = mongo.CountDocuments(mongo.CollectionPlayers, bson.D{{Key: "continent_code", Value: player.ContinentCode}}, 60*60*24*7)
 			if err != nil {
 				log.ErrS(err)
 			}
@@ -161,7 +161,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 			defer wg.Done()
 
 			var err error
-			playersCountryCount, err = mongo.CountDocuments(mongo.CollectionPlayers, bson.D{{"country_code", player.CountryCode}}, 60*60*24*7)
+			playersCountryCount, err = mongo.CountDocuments(mongo.CollectionPlayers, bson.D{{Key: "country_code", Value: player.CountryCode}}, 60*60*24*7)
 			if err != nil {
 				log.ErrS(err)
 			}
@@ -177,7 +177,7 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 			defer wg.Done()
 
 			var err error
-			playersStateCount, err = mongo.CountDocuments(mongo.CollectionPlayers, bson.D{{"country_code", player.CountryCode}, {"status_code", player.StateCode}}, 60*60*24*7)
+			playersStateCount, err = mongo.CountDocuments(mongo.CollectionPlayers, bson.D{{Key: "country_code", Value: player.CountryCode}, {Key: "status_code", Value: player.StateCode}}, 60*60*24*7)
 			if err != nil {
 				log.ErrS(err)
 			}
@@ -540,7 +540,7 @@ func playerGamesAjaxHandler(w http.ResponseWriter, r *http.Request) {
 	var code = session.GetProductCC(r)
 
 	// Make filter
-	var filter = bson.D{{"player_id", id}}
+	var filter = bson.D{{Key: "player_id", Value: id}}
 	var filter2 = filter
 
 	var search = query.GetSearchString("player-games-search")
@@ -750,7 +750,7 @@ func playerAchievementsAjaxHandler(w http.ResponseWriter, r *http.Request) {
 		defer wg.Done()
 
 		var err error
-		count, err = mongo.CountDocuments(mongo.CollectionPlayerAchievements, bson.D{{"player_id", playerID}}, 0)
+		count, err = mongo.CountDocuments(mongo.CollectionPlayerAchievements, bson.D{{Key: "player_id", Value: playerID}}, 0)
 		if err != nil {
 			log.ErrS(err)
 			return

@@ -96,7 +96,7 @@ func appsRandomHandler(w http.ResponseWriter, r *http.Request) {
 				var played = r.URL.Query().Get("played")
 				if played != "" {
 
-					playerApps, err := mongo.GetPlayerApps(0, 0, bson.D{{"player_id", player.ID}}, nil)
+					playerApps, err := mongo.GetPlayerApps(0, 0, bson.D{{Key: "player_id", Value: player.ID}}, nil)
 					if err != nil {
 						log.ErrS(err)
 						returnErrorTemplate(w, r, errorTemplate{Code: 500})
