@@ -302,13 +302,13 @@ if ($playerPage.length > 0) {
                     'c': [
                         {
                             name: 'Awards Given',
-                            data: data['awards_given_points'],
+                            data: data['max_awards_given_points'],
                             marker: {symbol: 'circle'},
                             yAxis: 0,
                         },
                         {
                             name: 'Awards Given Rank',
-                            data: data['awards_given_points_rank'],
+                            data: data['max_awards_given_points_rank'],
                             marker: {symbol: 'circle'},
                             yAxis: 1,
                         },
@@ -316,13 +316,13 @@ if ($playerPage.length > 0) {
                     'e': [
                         {
                             name: 'Awards Received',
-                            data: data['awards_received_points'],
+                            data: data['max_awards_received_points'],
                             marker: {symbol: 'circle'},
                             yAxis: 0,
                         },
                         {
                             name: 'Awards Received Rank',
-                            data: data['awards_received_points_rank'],
+                            data: data['max_awards_received_points_rank'],
                             marker: {symbol: 'circle'},
                             yAxis: 1,
                         }
