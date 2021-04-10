@@ -77,7 +77,7 @@ func (queuePackages) run() {
 
 		pack := mongo.Package{}
 
-		err = mongo.FindOne(mongo.CollectionPackages, bson.D{{"_id", packageID}}, nil, bson.M{"_id": 1}, &pack)
+		err = mongo.FindOne(mongo.CollectionPackages, bson.D{{Key: "_id", Value: packageID}}, nil, bson.M{"_id": 1}, &pack)
 		if err != nil && err != mongo.ErrNoDocuments {
 			log.ErrS(err)
 			continue

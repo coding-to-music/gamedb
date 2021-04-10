@@ -21,7 +21,7 @@ func (saveFromPics) run() {
 
 		log.InfoS(offset)
 
-		apps, err := mongo.GetApps(offset, limit, bson.D{{"_id", 1}}, bson.D{{"icon", ""}}, bson.M{"common": 1})
+		apps, err := mongo.GetApps(offset, limit, bson.D{{Key: "_id", Value: 1}}, bson.D{{Key: "icon", Value: ""}}, bson.M{"common": 1})
 		if err != nil {
 			log.Err(err.Error())
 			return
@@ -32,7 +32,7 @@ func (saveFromPics) run() {
 			icon := app.Common.GetValue("icon")
 			if icon != "" {
 
-				_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{"_id", app.ID}}, bson.D{{"icon", icon}})
+				_, err = mongo.UpdateOne(mongo.CollectionApps, bson.D{{Key: "_id", Value: app.ID}}, bson.D{{Key: "icon", Value: icon}})
 				if err != nil {
 					log.Err(err.Error())
 				}
