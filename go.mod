@@ -22,7 +22,7 @@ require (
 	github.com/ahmdrz/goinsta/v2 v2.4.5
 	github.com/antchfx/xmlquery v1.3.5 // indirect
 	github.com/antchfx/xpath v1.1.11 // indirect
-	github.com/aws/aws-sdk-go v1.38.13 // indirect
+	github.com/aws/aws-sdk-go v1.38.17 // indirect
 	github.com/badoux/checkmail v1.2.1
 	github.com/blend/go-sdk v1.1.1 // indirect
 	github.com/bwmarrin/discordgo v0.23.3-0.20210314162722-182d9b48f34b
@@ -70,7 +70,8 @@ require (
 	github.com/mattn/go-runewidth v0.0.12 // indirect
 	github.com/mattn/go-sqlite3 v2.0.1+incompatible // indirect
 	github.com/mborgerson/GoTruncateHtml v0.0.0-20150507032438-125d9154cd1e
-	github.com/microcosm-cc/bluemonday v1.0.6
+	github.com/memcachier/mc/v3 v3.0.3 // indirect
+	github.com/microcosm-cc/bluemonday v1.0.7
 	github.com/montanaflynn/stats v0.6.5
 	github.com/mssola/user_agent v0.5.2
 	github.com/nicklaw5/helix v1.7.1
@@ -83,7 +84,7 @@ require (
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/rogpeppe/go-internal v1.6.1 // indirect
-	github.com/rollbar/rollbar-go v1.2.0
+	github.com/rollbar/rollbar-go v1.3.0
 	github.com/russross/blackfriday v2.0.0+incompatible
 	github.com/satori/go.uuid v1.2.0
 	github.com/sendgrid/rest v2.6.3+incompatible // indirect
@@ -102,16 +103,16 @@ require (
 	golang.org/x/exp v0.0.0-20200331195152-e8c3332aa8e5 // indirect
 	golang.org/x/image v0.0.0-20210220032944-ac19c3e999fb // indirect
 	golang.org/x/mod v0.4.2 // indirect
-	golang.org/x/net v0.0.0-20210405180319-a5a99cb37ef4
+	golang.org/x/net v0.0.0-20210410081132-afb366fc7cd1
 	golang.org/x/oauth2 v0.0.0-20210402161424-2e8d93401602
 	golang.org/x/sys v0.0.0-20210403161142-5e06dd20ab57 // indirect
-	golang.org/x/term v0.0.0-20210317153231-de623e64d2a6 // indirect
+	golang.org/x/term v0.0.0-20210406210042-72f3dc4e9b72 // indirect
 	golang.org/x/text v0.3.6
 	golang.org/x/time v0.0.0-20210220033141-f8bda1e9f3ba
 	gonum.org/v1/gonum v0.9.1
-	google.golang.org/api v0.43.0
-	google.golang.org/genproto v0.0.0-20210405174219-a39eb2f71cb9 // indirect
-	google.golang.org/grpc v1.36.1
+	google.golang.org/api v0.44.0
+	google.golang.org/genproto v0.0.0-20210406143921-e86de6bf7a46 // indirect
+	google.golang.org/grpc v1.37.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.1.0
 	google.golang.org/protobuf v1.26.0
 	gopkg.in/djherbis/atime.v1 v1.0.0 // indirect
