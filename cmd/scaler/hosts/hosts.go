@@ -14,8 +14,8 @@ const (
 	selectedService = hostHetzner
 
 	hostDO      = "do"
-	hostVU      = "vultr"
 	hostHetzner = "hetzner"
+	// hostVU      = "vultr"
 
 	ConsumerTag = "scaler"
 )

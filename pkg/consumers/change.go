@@ -2,13 +2,10 @@ package consumers
 
 import (
 	"sort"
-	"strconv"
 	"strings"
 	"time"
 
 	"github.com/Jleagle/rabbit-go"
-	"github.com/bwmarrin/discordgo"
-	"github.com/gamedb/gamedb/pkg/config"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	influxHelper "github.com/gamedb/gamedb/pkg/influx"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -179,69 +176,69 @@ func sendChangesWebsocket(changes []*mongo.Change, appMap map[int]string, packag
 	return ProduceWebsocket(wsPayload, websockets.PageChanges)
 }
 
-func sendChangeToDiscord(changes []*mongo.Change, appMap map[int]string, packageMap map[int]string) (err error) {
-
-	var messageLimit = 2000 - 100
-
-	if !config.IsLocal() {
-
-		discordClient, err := discordgo.New("Bot " + config.C.DiscordChangesBotToken)
-		if err != nil {
-			return err
-		}
-
-		for _, change := range changes {
-
-			var messages []string
-			var message []string
-			var messageLen int
-
-			// Apps
-			for _, v := range change.Apps {
-
-				if messageLen > messageLimit {
-					messages = append(messages, strings.Join(message, ", "))
-					message = []string{}
-					messageLen = 0
-				}
-
-				m := "a-" + strconv.Itoa(v)
-				message = append(message, m)
-				messageLen += len(m)
-			}
-
-			// Packages
-			for _, v := range change.Packages {
-
-				if messageLen > messageLimit {
-					messages = append(messages, strings.Join(message, ", "))
-					message = []string{}
-					messageLen = 0
-				}
-
-				m := "p-" + strconv.Itoa(v)
-				message = append(message, m)
-				messageLen += len(m)
-			}
-
-			// Leftovers
-			if len(message) > 0 {
-				messages = append(messages, strings.Join(message, ", "))
-			}
-
-			// Send them
-			for _, message := range messages {
-				var msg = "Change " + strconv.Itoa(change.ID) + ": " + message
-				_, err := discordClient.ChannelMessageSend("574563721045606431", msg)
-				if err != nil {
-					log.ErrS(err)
-				}
-			}
-		}
-	}
-
-	return nil
-}
+// func sendChangeToDiscord(changes []*mongo.Change, appMap map[int]string, packageMap map[int]string) (err error) {
+//
+// 	var messageLimit = 2000 - 100
+//
+// 	if !config.IsLocal() {
+//
+// 		discordClient, err := discordgo.New("Bot " + config.C.DiscordChangesBotToken)
+// 		if err != nil {
+// 			return err
+// 		}
+//
+// 		for _, change := range changes {
+//
+// 			var messages []string
+// 			var message []string
+// 			var messageLen int
+//
+// 			// Apps
+// 			for _, v := range change.Apps {
+//
+// 				if messageLen > messageLimit {
+// 					messages = append(messages, strings.Join(message, ", "))
+// 					message = []string{}
+// 					messageLen = 0
+// 				}
+//
+// 				m := "a-" + strconv.Itoa(v)
+// 				message = append(message, m)
+// 				messageLen += len(m)
+// 			}
+//
+// 			// Packages
+// 			for _, v := range change.Packages {
+//
+// 				if messageLen > messageLimit {
+// 					messages = append(messages, strings.Join(message, ", "))
+// 					message = []string{}
+// 					messageLen = 0
+// 				}
+//
+// 				m := "p-" + strconv.Itoa(v)
+// 				message = append(message, m)
+// 				messageLen += len(m)
+// 			}
+//
+// 			// Leftovers
+// 			if len(message) > 0 {
+// 				messages = append(messages, strings.Join(message, ", "))
+// 			}
+//
+// 			// Send them
+// 			for _, message := range messages {
+// 				var msg = "Change " + strconv.Itoa(change.ID) + ": " + message
+// 				_, err := discordClient.ChannelMessageSend("574563721045606431", msg)
+// 				if err != nil {
+// 					log.ErrS(err)
+// 				}
+// 			}
+// 		}
+// 	}
+//
+// 	return nil
+// }
 
 func saveChangeToInflux(payload ChangesMessage) (err error) {
 

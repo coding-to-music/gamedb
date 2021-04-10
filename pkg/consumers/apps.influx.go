@@ -182,76 +182,76 @@ func getAppTopPlayersWeek(appIDs []int) (vals map[int]int64, err error) {
 	return vals, err
 }
 
-func getAppAveragePlayersWeek(appIDs []int) (vals map[int]float64, err error) {
+// func getAppAveragePlayersWeek(appIDs []int) (vals map[int]float64, err error) {
+//
+// 	builder := influxql.NewBuilder()
+// 	builder.AddSelect("MEAN(player_count)", "mean_player_count")
+// 	builder.SetFrom(influxHelper.InfluxGameDB, influxHelper.InfluxRetentionPolicyAllTime.String(), influxHelper.InfluxMeasurementApps.String())
+// 	builder.AddWhere("time", ">", "NOW() - 7d")
+// 	builder.AddWhereRaw(`"app_id" =~ /^(` + helpers.JoinInts(appIDs, "|") + `)$/`)
+// 	builder.AddGroupBy("app_id")
+// 	builder.SetFillNumber(0)
+//
+// 	resp, err := influxHelper.InfluxQuery(builder)
+// 	if err != nil {
+// 		return vals, err
+// 	}
+//
+// 	vals = map[int]float64{}
+// 	for _, v := range resp.Results[0].Series {
+//
+// 		appID, err := strconv.Atoi(v.Tags["app_id"])
+// 		if err != nil {
+// 			log.ErrS(err)
+// 			continue
+// 		}
+//
+// 		val, err := v.Values[0][1].(json.Number).Float64()
+// 		if err != nil {
+// 			log.ErrS(err)
+// 			continue
+// 		}
+//
+// 		vals[appID] = val
+// 	}
+//
+// 	return vals, err
+// }
 
-	builder := influxql.NewBuilder()
-	builder.AddSelect("MEAN(player_count)", "mean_player_count")
-	builder.SetFrom(influxHelper.InfluxGameDB, influxHelper.InfluxRetentionPolicyAllTime.String(), influxHelper.InfluxMeasurementApps.String())
-	builder.AddWhere("time", ">", "NOW() - 7d")
-	builder.AddWhereRaw(`"app_id" =~ /^(` + helpers.JoinInts(appIDs, "|") + `)$/`)
-	builder.AddGroupBy("app_id")
-	builder.SetFillNumber(0)
-
-	resp, err := influxHelper.InfluxQuery(builder)
-	if err != nil {
-		return vals, err
-	}
-
-	vals = map[int]float64{}
-	for _, v := range resp.Results[0].Series {
-
-		appID, err := strconv.Atoi(v.Tags["app_id"])
-		if err != nil {
-			log.ErrS(err)
-			continue
-		}
-
-		val, err := v.Values[0][1].(json.Number).Float64()
-		if err != nil {
-			log.ErrS(err)
-			continue
-		}
-
-		vals[appID] = val
-	}
-
-	return vals, err
-}
-
-func getAppTopPlayersAlltime(appIDs []int) (vals map[int]int64, err error) {
-
-	builder := influxql.NewBuilder()
-	builder.AddSelect("MAX(player_count)", "max_player_count")
-	builder.SetFrom(influxHelper.InfluxGameDB, influxHelper.InfluxRetentionPolicyAllTime.String(), influxHelper.InfluxMeasurementApps.String())
-	builder.AddWhereRaw(`"app_id" =~ /^(` + helpers.JoinInts(appIDs, "|") + `)$/`)
-	builder.AddGroupBy("app_id")
-	builder.SetFillNumber(0)
-
-	resp, err := influxHelper.InfluxQuery(builder)
-	if err != nil {
-		return vals, err
-	}
-
-	vals = map[int]int64{}
-	for _, v := range resp.Results[0].Series {
-
-		appID, err := strconv.Atoi(v.Tags["app_id"])
-		if err != nil {
-			log.ErrS(err)
-			continue
-		}
-
-		val, err := v.Values[0][1].(json.Number).Int64()
-		if err != nil {
-			log.ErrS(err)
-			continue
-		}
-
-		vals[appID] = val
-	}
-
-	return vals, err
-}
+// func getAppTopPlayersAlltime(appIDs []int) (vals map[int]int64, err error) {
+//
+// 	builder := influxql.NewBuilder()
+// 	builder.AddSelect("MAX(player_count)", "max_player_count")
+// 	builder.SetFrom(influxHelper.InfluxGameDB, influxHelper.InfluxRetentionPolicyAllTime.String(), influxHelper.InfluxMeasurementApps.String())
+// 	builder.AddWhereRaw(`"app_id" =~ /^(` + helpers.JoinInts(appIDs, "|") + `)$/`)
+// 	builder.AddGroupBy("app_id")
+// 	builder.SetFillNumber(0)
+//
+// 	resp, err := influxHelper.InfluxQuery(builder)
+// 	if err != nil {
+// 		return vals, err
+// 	}
+//
+// 	vals = map[int]int64{}
+// 	for _, v := range resp.Results[0].Series {
+//
+// 		appID, err := strconv.Atoi(v.Tags["app_id"])
+// 		if err != nil {
+// 			log.ErrS(err)
+// 			continue
+// 		}
+//
+// 		val, err := v.Values[0][1].(json.Number).Int64()
+// 		if err != nil {
+// 			log.ErrS(err)
+// 			continue
+// 		}
+//
+// 		vals[appID] = val
+// 	}
+//
+// 	return vals, err
+// }
 
 func getAppTrendValue(appIDs []int) (vals map[int]float64, err error) {
 
