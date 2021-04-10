@@ -19,7 +19,7 @@ func (c CommandAppsNew) ID() string {
 }
 
 func (CommandAppsNew) Regex() string {
-	return `^[.|!]new`
+	return `^[.|!]new$`
 }
 
 func (CommandAppsNew) DisableCache() bool {
