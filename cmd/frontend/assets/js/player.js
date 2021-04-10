@@ -360,9 +360,11 @@ if ($playerPage.length > 0) {
                                 outside: true,
                                 formatter: function () {
 
-                                    switch (this.series.name) {
-                                        case 'Playtime':
+                                    switch (true) {
+                                        case this.series.name === 'Playtime':
                                             return this.y.toLocaleString() + ' minutes played on ' + moment(this.key).format("dddd DD MMM YYYY");
+                                        case this.series.name.endsWith("Rank"):
+                                            return ordinal(this.y) + ' ' + this.series.name + ' on ' + moment(this.key).format("dddd DD MMM YYYY");
                                         default:
                                             return this.y.toLocaleString() + ' ' + this.series.name + ' on ' + moment(this.key).format("dddd DD MMM YYYY");
                                     }
