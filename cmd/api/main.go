@@ -32,11 +32,13 @@ import (
 	"go.uber.org/zap"
 )
 
+type contextKey string
+
 const (
 	keyField = "key"
 
-	ctxUserIDField    = "user_id"
-	ctxUserLevelField = "user_level"
+	ctxUserIDField    contextKey = "user_id"
+	ctxUserLevelField contextKey = "user_level"
 )
 
 type Server struct {
