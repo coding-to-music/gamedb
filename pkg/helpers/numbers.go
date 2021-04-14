@@ -148,6 +148,10 @@ func Max(vars ...float64) float64 {
 
 func Avg(vars ...float64) float64 {
 
+	if len(vars) == 0 {
+		return 0
+	}
+
 	var count float64
 	var sum float64
 
