@@ -269,7 +269,7 @@ func makeAppAliases(ID int, name string) (aliases []string) {
 										aliases = append(aliases, uniqueWords(strings.TrimSpace(name2)))
 
 										// Add abreviations
-										if removeSymbols && !removeSpaces {
+										if (removeSymbols || swapSymbols) && !removeSpaces {
 											aliases = append(aliases, makeAbbreviations(name2)...)
 										}
 									}
