@@ -4,7 +4,7 @@ go 1.13
 
 require (
 	cloud.google.com/go v0.81.0 // indirect
-	cloud.google.com/go/logging v1.3.0
+	cloud.google.com/go/logging v1.4.0
 	github.com/Jleagle/captcha-go v0.0.0-20201203202350-806e55b8099c
 	github.com/Jleagle/go-durationfmt v0.0.0-20190307132420-e57bfad84057
 	github.com/Jleagle/influxql v0.0.0-20200804190929-88324f67bffe
@@ -20,24 +20,24 @@ require (
 	github.com/PuerkitoBio/goquery v1.6.1 // indirect
 	github.com/StefanSchroeder/Golang-Roman v1.0.1-0.20210311185938-864df5cde20d
 	github.com/ahmdrz/goinsta/v2 v2.4.5
-	github.com/antchfx/xmlquery v1.3.5 // indirect
+	github.com/antchfx/xmlquery v1.3.6 // indirect
 	github.com/antchfx/xpath v1.1.11 // indirect
-	github.com/aws/aws-sdk-go v1.38.17 // indirect
+	github.com/aws/aws-sdk-go v1.38.21 // indirect
 	github.com/badoux/checkmail v1.2.1
 	github.com/blend/go-sdk v1.1.1 // indirect
 	github.com/bwmarrin/discordgo v0.23.3-0.20210314162722-182d9b48f34b
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/cenkalti/backoff/v4 v4.1.0
-	github.com/deepmap/oapi-codegen v1.6.0
+	github.com/deepmap/oapi-codegen v1.6.1
 	github.com/derekstavis/go-qs v0.0.0-20180720192143-9eef69e6c4e7
 	github.com/dghubble/go-twitter v0.0.0-20201011215211-4b180d0cc78d
 	github.com/dghubble/oauth1 v0.7.0
-	github.com/digitalocean/godo v1.59.0
+	github.com/digitalocean/godo v1.60.0
 	github.com/djherbis/fscache v0.10.1
 	github.com/dustin/go-humanize v1.0.0
 	github.com/frustra/bbcode v0.0.0-20201127003707-6ef347fbe1c8
 	github.com/fsnotify/fsnotify v1.4.9
-	github.com/getkin/kin-openapi v0.53.0
+	github.com/getkin/kin-openapi v0.55.0
 	github.com/ghodss/yaml v1.0.1-0.20190212211648-25d852aebe32 // indirect
 	github.com/go-chi/chi/v5 v5.0.2
 	github.com/go-chi/cors v1.2.0
@@ -64,19 +64,19 @@ require (
 	github.com/justinas/nosurf v1.1.1
 	github.com/karrick/godirwalk v1.16.1 // indirect
 	github.com/kelseyhightower/envconfig v1.4.0
-	github.com/klauspost/compress v1.11.13 // indirect
+	github.com/klauspost/compress v1.12.1 // indirect
 	github.com/lib/pq v1.3.0 // indirect
 	github.com/mailjet/mailjet-apiv3-go v0.0.0-20201009050126-c24bc15a9394
 	github.com/mattn/go-runewidth v0.0.12 // indirect
 	github.com/mattn/go-sqlite3 v2.0.1+incompatible // indirect
 	github.com/mborgerson/GoTruncateHtml v0.0.0-20150507032438-125d9154cd1e
 	github.com/memcachier/mc/v3 v3.0.3 // indirect
-	github.com/microcosm-cc/bluemonday v1.0.7
+	github.com/microcosm-cc/bluemonday v1.0.8
 	github.com/montanaflynn/stats v0.6.5
 	github.com/mssola/user_agent v0.5.2
-	github.com/nicklaw5/helix v1.7.1
+	github.com/nicklaw5/helix v1.9.0
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
-	github.com/olivere/elastic/v7 v7.0.23
+	github.com/olivere/elastic/v7 v7.0.24
 	github.com/oschwald/maxminddb-golang v1.8.0
 	github.com/pariz/gountries v0.0.0-20200430155801-1c6a393df9c7
 	github.com/patrickmn/go-cache v2.1.0+incompatible
@@ -99,19 +99,19 @@ require (
 	github.com/youmark/pkcs8 v0.0.0-20201027041543-1326539a0a0a // indirect
 	go.mongodb.org/mongo-driver v1.5.1
 	go.uber.org/zap v1.16.0
-	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
+	golang.org/x/crypto v0.0.0-20210415154028-4f45737414dc
 	golang.org/x/exp v0.0.0-20200331195152-e8c3332aa8e5 // indirect
 	golang.org/x/image v0.0.0-20210220032944-ac19c3e999fb // indirect
 	golang.org/x/mod v0.4.2 // indirect
-	golang.org/x/net v0.0.0-20210410081132-afb366fc7cd1
-	golang.org/x/oauth2 v0.0.0-20210402161424-2e8d93401602
-	golang.org/x/sys v0.0.0-20210403161142-5e06dd20ab57 // indirect
+	golang.org/x/net v0.0.0-20210415231046-e915ea6b2b7d
+	golang.org/x/oauth2 v0.0.0-20210413134643-5e61552d6c78
+	golang.org/x/sys v0.0.0-20210415045647-66c3f260301c // indirect
 	golang.org/x/term v0.0.0-20210406210042-72f3dc4e9b72 // indirect
 	golang.org/x/text v0.3.6
 	golang.org/x/time v0.0.0-20210220033141-f8bda1e9f3ba
 	gonum.org/v1/gonum v0.9.1
 	google.golang.org/api v0.44.0
-	google.golang.org/genproto v0.0.0-20210406143921-e86de6bf7a46 // indirect
+	google.golang.org/genproto v0.0.0-20210416161957-9910b6c460de // indirect
 	google.golang.org/grpc v1.37.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.1.0
 	google.golang.org/protobuf v1.26.0
