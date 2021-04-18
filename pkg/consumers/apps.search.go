@@ -150,6 +150,7 @@ var replacementMap = map[string]string{
 	"simulator":      "sim",
 	"fallout":        "fall out",
 	"tabletop":       "table top",
+	"titalfall":      "titan fall",
 	"40,000":         "40k", // Warhammer
 }
 
