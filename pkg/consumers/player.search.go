@@ -36,7 +36,10 @@ func appsPlayersHandler(message *rabbit.Message) {
 	if payload.PlayerID > 0 {
 
 		mongoPlayer, err = mongo.GetPlayer(payload.PlayerID)
-		if err != nil {
+		if err == mongo.ErrNoDocuments {
+			message.Ack()
+			return
+		} else if err != nil {
 			log.Err("retrieve player", zap.Error(err), zap.String("body", string(message.Message.Body)))
 			sendToRetryQueue(message)
 			return
