@@ -2,10 +2,10 @@ package mysql
 
 import (
 	"errors"
-	"strings"
 	"time"
 
 	"github.com/gamedb/gamedb/pkg/helpers"
+	mysql2 "github.com/go-sql-driver/mysql"
 )
 
 type UserVerification struct {
@@ -55,7 +55,8 @@ func CreateUserVerification(userID int) (userVerification UserVerification, err 
 
 	//
 	db = db.Create(&userVerification)
-	if db.Error != nil && strings.HasPrefix(db.Error.Error(), "Error 1062: Duplicate entry") {
+
+	if val, ok := db.Error.(*mysql2.MySQLError); ok && val.Number == 1062 {
 		time.Sleep(time.Second)
 		return CreateUserVerification(userID)
 	}
