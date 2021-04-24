@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/Jleagle/rabbit-go"
+	"github.com/Jleagle/steam-go/steamid"
 	"github.com/gamedb/gamedb/pkg/elasticsearch"
 	"github.com/gamedb/gamedb/pkg/helpers"
 	"github.com/gamedb/gamedb/pkg/log"
@@ -36,7 +37,7 @@ func appsPlayersHandler(message *rabbit.Message) {
 	if payload.PlayerID > 0 {
 
 		mongoPlayer, err = mongo.GetPlayer(payload.PlayerID)
-		if err == mongo.ErrNoDocuments {
+		if err == mongo.ErrNoDocuments || err == steamid.ErrInvalidPlayerID {
 			message.Ack()
 			return
 		} else if err != nil {
