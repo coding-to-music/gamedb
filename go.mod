@@ -22,7 +22,7 @@ require (
 	github.com/ahmdrz/goinsta/v2 v2.4.5
 	github.com/antchfx/xmlquery v1.3.6 // indirect
 	github.com/antchfx/xpath v1.1.11 // indirect
-	github.com/aws/aws-sdk-go v1.38.21 // indirect
+	github.com/aws/aws-sdk-go v1.38.25 // indirect
 	github.com/badoux/checkmail v1.2.1
 	github.com/blend/go-sdk v1.1.1 // indirect
 	github.com/bwmarrin/discordgo v0.23.3-0.20210314162722-182d9b48f34b
@@ -37,7 +37,7 @@ require (
 	github.com/dustin/go-humanize v1.0.0
 	github.com/frustra/bbcode v0.0.0-20201127003707-6ef347fbe1c8
 	github.com/fsnotify/fsnotify v1.4.9
-	github.com/getkin/kin-openapi v0.55.0
+	github.com/getkin/kin-openapi v0.60.0
 	github.com/ghodss/yaml v1.0.1-0.20190212211648-25d852aebe32 // indirect
 	github.com/go-chi/chi/v5 v5.0.2
 	github.com/go-chi/cors v1.2.0
@@ -71,10 +71,10 @@ require (
 	github.com/mattn/go-sqlite3 v2.0.1+incompatible // indirect
 	github.com/mborgerson/GoTruncateHtml v0.0.0-20150507032438-125d9154cd1e
 	github.com/memcachier/mc/v3 v3.0.3 // indirect
-	github.com/microcosm-cc/bluemonday v1.0.8
+	github.com/microcosm-cc/bluemonday v1.0.9
 	github.com/montanaflynn/stats v0.6.5
 	github.com/mssola/user_agent v0.5.2
-	github.com/nicklaw5/helix v1.9.0
+	github.com/nicklaw5/helix v1.13.0
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/olivere/elastic/v7 v7.0.24
 	github.com/oschwald/maxminddb-golang v1.8.0
@@ -84,7 +84,7 @@ require (
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/rogpeppe/go-internal v1.6.1 // indirect
-	github.com/rollbar/rollbar-go v1.3.0
+	github.com/rollbar/rollbar-go v1.4.0
 	github.com/russross/blackfriday v2.0.0+incompatible
 	github.com/satori/go.uuid v1.2.0
 	github.com/sendgrid/rest v2.6.3+incompatible // indirect
@@ -99,19 +99,19 @@ require (
 	github.com/youmark/pkcs8 v0.0.0-20201027041543-1326539a0a0a // indirect
 	go.mongodb.org/mongo-driver v1.5.1
 	go.uber.org/zap v1.16.0
-	golang.org/x/crypto v0.0.0-20210415154028-4f45737414dc
+	golang.org/x/crypto v0.0.0-20210421170649-83a5a9bb288b
 	golang.org/x/exp v0.0.0-20200331195152-e8c3332aa8e5 // indirect
 	golang.org/x/image v0.0.0-20210220032944-ac19c3e999fb // indirect
 	golang.org/x/mod v0.4.2 // indirect
-	golang.org/x/net v0.0.0-20210415231046-e915ea6b2b7d
+	golang.org/x/net v0.0.0-20210423184538-5f58ad60dda6
 	golang.org/x/oauth2 v0.0.0-20210413134643-5e61552d6c78
-	golang.org/x/sys v0.0.0-20210415045647-66c3f260301c // indirect
-	golang.org/x/term v0.0.0-20210406210042-72f3dc4e9b72 // indirect
+	golang.org/x/sys v0.0.0-20210423185535-09eb48e85fd7 // indirect
+	golang.org/x/term v0.0.0-20210422114643-f5beecf764ed // indirect
 	golang.org/x/text v0.3.6
 	golang.org/x/time v0.0.0-20210220033141-f8bda1e9f3ba
 	gonum.org/v1/gonum v0.9.1
-	google.golang.org/api v0.44.0
-	google.golang.org/genproto v0.0.0-20210416161957-9910b6c460de // indirect
+	google.golang.org/api v0.45.0
+	google.golang.org/genproto v0.0.0-20210423144448-3a41ef94ed2b // indirect
 	google.golang.org/grpc v1.37.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.1.0
 	google.golang.org/protobuf v1.26.0
