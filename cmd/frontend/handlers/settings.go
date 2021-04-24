@@ -25,6 +25,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/oauth"
 	"github.com/gamedb/gamedb/pkg/session"
 	"github.com/go-chi/chi/v5"
+	mysql2 "github.com/go-sql-driver/mysql"
 	"github.com/mssola/user_agent"
 	"go.mongodb.org/mongo-driver/bson"
 	"golang.org/x/crypto/bcrypt"
@@ -403,6 +404,12 @@ func settingsPostHandler(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if db.Error != nil {
+
+		if val, ok := db.Error.(*mysql2.MySQLError); ok && val.Number == 1062 {
+			session.SetFlash(r, session.SessionBad, "This email is in use")
+			return
+		}
+
 		log.ErrS(db.Error)
 		session.SetFlash(r, session.SessionBad, "Something went wrong saving your settings")
 		return
