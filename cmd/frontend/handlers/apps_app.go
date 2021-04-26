@@ -369,6 +369,9 @@ func appHandler(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
+	// Get user
+	t.APIKey = session.Get(r, session.SessionUserAPIKey)
+
 	//
 	returnTemplate(w, r, t)
 }
@@ -389,6 +392,7 @@ type appTemplate struct {
 	PlayersInGame int64
 	GroupPath     string
 	Countries     []AppCountry
+	APIKey        string
 
 	// Stats
 	Categories []mongo.Stat

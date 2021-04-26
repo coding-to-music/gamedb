@@ -16,6 +16,7 @@
                 {{end}}
                 <a href="{{ .App.GetPlayLink }}" class="mr-2"><i class="fas fa-sign-in-alt"></i> Play</a>
                 <a href="/games/compare/{{ .App.ID }}" class="mr-2"><i class="fas fa-sign-in-alt"></i> Compare</a>
+                <a href="https://api.globalsteam.online/games/{{ .App.ID }}?key={{ .APIKey }}" class="mr-2"><i class="fas fa-sign-in-alt"></i> API</a>
             </small>
         </div>
 
