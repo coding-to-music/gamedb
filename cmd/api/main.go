@@ -68,8 +68,8 @@ func main() {
 		BaseRouter: r,
 		Middlewares: []generated.MiddlewareFunc{
 			// validateMiddlewear,
-			authMiddlewear,
 			rateLimitMiddlewear,
+			authMiddlewear,
 		},
 	})
 
