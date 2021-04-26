@@ -17,6 +17,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/oauth"
 	"github.com/gamedb/gamedb/pkg/session"
 	"github.com/go-chi/chi/v5"
+	"go.uber.org/zap"
 	"golang.org/x/oauth2"
 )
 
@@ -251,7 +252,7 @@ func providerOpenIDCallback(w http.ResponseWriter, r *http.Request, provider oau
 	// Get user
 	resp, err := provider.GetUser(r)
 	if err != nil {
-		log.ErrS(err)
+		log.Err("getting user from provider", zap.Error(err), zap.String("provider", provider.GetName()))
 		session.SetFlash(r, session.SessionBad, "We were unable to fetch your details from "+provider.GetName()+" (1002)")
 		return
 	}
