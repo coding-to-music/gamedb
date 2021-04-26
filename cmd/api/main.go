@@ -57,7 +57,7 @@ func main() {
 	session.Init()
 
 	r := chi.NewRouter()
-	r.Use(fixRequestURLMiddleware)
+	// r.Use(fixRequestURLMiddleware)
 	r.Use(chiMiddleware.Compress(flate.DefaultCompression))
 	r.Use(middleware.RealIP)
 
@@ -67,7 +67,7 @@ func main() {
 	generated.HandlerWithOptions(Server{}, generated.ChiServerOptions{
 		BaseRouter: r,
 		Middlewares: []generated.MiddlewareFunc{
-			validateMiddlewear,
+			// validateMiddlewear,
 			authMiddlewear,
 			rateLimitMiddlewear,
 		},
