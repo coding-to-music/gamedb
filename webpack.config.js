@@ -71,7 +71,7 @@ module.exports = {
                             // name: 'css/[name].blocks.css',
                             sourceMap: false,
                             // minimize: true,
-                            implementation: require("node-sass"),
+                            implementation: require("sass"),
                             sassOptions: {
                                 includePaths: [
                                     path.resolve(__dirname, 'cmd/frontend/assets/sass/*'),
