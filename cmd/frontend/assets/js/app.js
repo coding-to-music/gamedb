@@ -455,8 +455,8 @@ if ($appPage.length > 0) {
                     {
                         "targets": 4,
                         "render": function (data, type, row) {
-                            if (row[5]) {
-                                return '<a href="' + row[5] + '" target="_blank" rel="noopener"><i class="fas fa-link"></i></a>';
+                            if (row[4]) {
+                                return '<a href="' + row[4] + '" target="_blank" rel="noopener"><i class="fas fa-link"></i></a>';
                             }
                             return '';
                         },
