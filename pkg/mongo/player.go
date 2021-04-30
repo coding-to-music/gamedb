@@ -187,7 +187,7 @@ func (player Player) CommunityLink() string {
 }
 
 func (player Player) WishlistLink() string {
-	return "http://store.steampowered.com/wishlist/profiles/" + strconv.FormatInt(player.ID, 10)
+	return "https://store.steampowered.com/wishlist/profiles/" + strconv.FormatInt(player.ID, 10)
 }
 
 func (player Player) FriendsLink() string {
