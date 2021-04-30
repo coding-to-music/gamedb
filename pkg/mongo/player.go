@@ -653,7 +653,6 @@ func BulkUpdatePlayers(writes []mongo.WriteModel) (err error) {
 	return err
 }
 
-// ProfileBadgeStats
 type ProfileBadgeStats struct {
 	PlayerXP                   int
 	PlayerLevel                int
@@ -662,7 +661,6 @@ type ProfileBadgeStats struct {
 	PercentOfLevel             int
 }
 
-// PlayerBans
 type PlayerBans struct {
 	CommunityBanned  bool   `json:"community_banned"`
 	VACBanned        bool   `json:"vac_banned"`
@@ -676,7 +674,6 @@ func (pb PlayerBans) History() bool {
 	return pb.CommunityBanned || pb.VACBanned || pb.NumberOfVACBans > 0 || pb.DaysSinceLastBan > 0 || pb.NumberOfGameBans > 0 || pb.EconomyBan != "none"
 }
 
-// PlayerAppStatsTemplate
 type PlayerAppStatsTemplate struct {
 	Played playerAppStatsInnerTemplate
 	All    playerAppStatsInnerTemplate
