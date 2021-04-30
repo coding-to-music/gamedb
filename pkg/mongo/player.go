@@ -406,24 +406,6 @@ func ensurePlayerIndexes() {
 		},
 	})
 
-	// For player search in chatbot
-	indexModels = append(indexModels,
-		mongo.IndexModel{
-			Keys: bson.D{{"persona_name", 1}},
-			Options: options.Index().SetCollation(&options.Collation{
-				Locale:   "en",
-				Strength: 2, // Case insensitive
-			}),
-		},
-		mongo.IndexModel{
-			Keys: bson.D{{"vanity_url", 1}},
-			Options: options.Index().SetCollation(&options.Collation{
-				Locale:   "en",
-				Strength: 2, // Case insensitive
-			}),
-		},
-	)
-
 	// For admin stats
 	indexModels = append(indexModels,
 		mongo.IndexModel{Keys: bson.D{{"community_visibility_state", 1}}},
@@ -440,7 +422,6 @@ func ensurePlayerIndexes() {
 		mongo.IndexModel{Keys: bson.D{{"achievement_count_100", -1}}},
 		mongo.IndexModel{Keys: bson.D{{"bans_cav", -1}}},
 		mongo.IndexModel{Keys: bson.D{{"bans_game", -1}}},
-		mongo.IndexModel{Keys: bson.D{{"bans_last", -1}}},
 		mongo.IndexModel{Keys: bson.D{{"created_at", -1}}},
 	)
 
