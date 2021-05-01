@@ -2,6 +2,8 @@ module github.com/gamedb/gamedb
 
 go 1.13
 
+replace github.com/getkin/kin-openapi v0.61.0 => github.com/getkin/kin-openapi v0.53.0
+
 require (
 	cloud.google.com/go v0.81.0 // indirect
 	cloud.google.com/go/logging v1.4.0
