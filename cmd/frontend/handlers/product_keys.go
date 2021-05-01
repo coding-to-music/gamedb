@@ -13,6 +13,7 @@ import (
 	"github.com/gamedb/gamedb/pkg/mysql"
 	"github.com/go-chi/chi/v5"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 func ProductKeysRouter() http.Handler {
@@ -134,7 +135,7 @@ func productKeysAjaxHandler(w http.ResponseWriter, r *http.Request) {
 
 			apps, err := mongo.GetApps(query.GetOffset64(), 100, bson.D{{Key: "_id", Value: 1}}, filter, projection)
 			if err != nil {
-				log.ErrS(err)
+				log.ErrS(err, zap.String("key", key))
 				return
 			}
 
